@@ -1,7 +1,7 @@
 @import '../mdc-helpers/mdc-helpers';
 
-@mixin mat-mdc-select-theme($theme) {
-  @include mat-using-mdc-theme($theme) {
+@mixin mat-mdc-select-color($config) {
+  @include mat-using-mdc-theme($config) {
     // TODO: implement MDC-based select.
   }
 }
@@ -11,3 +11,22 @@
     // TODO: implement MDC-based select.
   }
 }
+
+@mixin mat-mdc-select-density($density-scale) {}
+
+@mixin mat-mdc-select-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-mdc-select-color($color);
+  }
+  @if $density != null {
+    @include mat-mdc-select-density($density);
+  }
+  @if $typography != null {
+    @include mat-mdc-select-typography($typography);
+  }
+}
+

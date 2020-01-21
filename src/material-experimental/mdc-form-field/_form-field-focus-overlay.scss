@@ -16,7 +16,7 @@
   }
 }
 
-@mixin _mat-form-field-focus-overlay-theme() {
+@mixin _mat-form-field-focus-overlay-color() {
   $focus-opacity: ripple-functions.states-opacity($mdc-text-field-ink-color, focus);
   $hover-opacity: ripple-functions.states-opacity($mdc-text-field-ink-color, hover);
 

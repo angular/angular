@@ -1,12 +1,12 @@
 @import '../core/style/elevation';
 @import '../core/theming/theming';
 
-@mixin mat-autocomplete-theme($theme) {
-  $foreground: map-get($theme, foreground);
-  $background: map-get($theme, background);
+@mixin mat-autocomplete-color($config) {
+  $foreground: map-get($config, foreground);
+  $background: map-get($config, background);
 
   .mat-autocomplete-panel {
-    @include _mat-theme-overridable-elevation(4, $theme);
+    @include _mat-theme-overridable-elevation(4, $config);
     background: mat-color($background, card);
     color: mat-color($foreground, text);
 
@@ -23,7 +23,24 @@
       }
     }
   }
-
 }
 
 @mixin mat-autocomplete-typography($config) { }
+
+@mixin mat-autocomplete-density($density-scale) { }
+
+@mixin mat-autocomplete-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-autocomplete-color($color);
+  }
+  @if $density != null {
+    @include mat-autocomplete-density($density);
+  }
+  @if $typography != null {
+    @include mat-autocomplete-typography($typography);
+  }
+}

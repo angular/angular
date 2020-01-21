@@ -2,12 +2,12 @@
 @import '../theming/theming';
 @import '../typography/typography-utils';
 
-@mixin mat-option-theme($theme) {
-  $foreground: map-get($theme, foreground);
-  $background: map-get($theme, background);
-  $primary: map-get($theme, primary);
-  $accent: map-get($theme, accent);
-  $warn: map-get($theme, warn);
+@mixin mat-option-color($config) {
+  $foreground: map-get($config, foreground);
+  $background: map-get($config, background);
+  $primary: map-get($config, primary);
+  $accent: map-get($config, accent);
+  $warn: map-get($config, warn);
 
   .mat-option {
     color: mat-color($foreground, text);
@@ -51,5 +51,23 @@
       family: mat-font-family($config);
       size: mat-font-size($config, subheading-2);
     }
+  }
+}
+
+@mixin mat-option-density($density-scale) {}
+
+@mixin mat-option-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-option-color($color);
+  }
+  @if $density != null {
+    @include mat-option-density($density);
+  }
+  @if $typography != null {
+    @include mat-option-typography($typography);
   }
 }

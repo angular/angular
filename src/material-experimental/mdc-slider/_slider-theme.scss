@@ -1,8 +1,8 @@
 @import '../mdc-helpers/mdc-helpers';
 @import '@material/slider/mixins.import';
 
-@mixin mat-mdc-slider-theme($theme) {
-  @include mat-using-mdc-theme($theme) {
+@mixin mat-mdc-slider-color($config) {
+  @include mat-using-mdc-theme($config) {
     @include mdc-slider-core-styles($query: $mat-theme-styles-query);
 
     .mat-mdc-slider {
@@ -22,3 +22,22 @@
     @include mdc-slider-core-styles($query: $mat-typography-styles-query);
   }
 }
+
+@mixin mat-mdc-slider-density($density-scale) {}
+
+@mixin mat-mdc-slider-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-mdc-slider-color($color);
+  }
+  @if $density != null {
+    @include mat-mdc-slider-density($density);
+  }
+  @if $typography != null {
+    @include mat-mdc-slider-typography($typography);
+  }
+}
+

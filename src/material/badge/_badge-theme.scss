@@ -87,12 +87,12 @@ $mat-badge-large-size: $mat-badge-default-size + 6;
   }
 }
 
-@mixin mat-badge-theme($theme) {
-  $accent: map-get($theme, accent);
-  $warn: map-get($theme, warn);
-  $primary: map-get($theme, primary);
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
+@mixin mat-badge-color($config) {
+  $accent: map-get($config, accent);
+  $warn: map-get($config, warn);
+  $primary: map-get($config, primary);
+  $background: map-get($config, background);
+  $foreground: map-get($config, foreground);
 
   .mat-badge-content {
     color: mat-color($primary, default-contrast);
@@ -200,5 +200,23 @@ $mat-badge-large-size: $mat-badge-default-size + 6;
 
   .mat-badge-large .mat-badge-content {
     font-size: $mat-badge-font-size * 2;
+  }
+}
+
+@mixin mat-badge-density($density-scale) {}
+
+@mixin mat-badge-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-badge-color($color);
+  }
+  @if $density != null {
+    @include mat-badge-density($density);
+  }
+  @if $typography != null {
+    @include mat-badge-typography($typography);
   }
 }

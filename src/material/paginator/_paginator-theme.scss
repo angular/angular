@@ -3,9 +3,9 @@
 @import '../core/typography/typography-utils';
 
 
-@mixin mat-paginator-theme($theme) {
-  $foreground: map-get($theme, foreground);
-  $background: map-get($theme, background);
+@mixin mat-paginator-color($config) {
+  $foreground: map-get($config, foreground);
+  $background: map-get($config, background);
 
   .mat-paginator {
     background: mat-color($background, 'card');
@@ -44,5 +44,23 @@
       family: mat-font-family($config, caption);
       size: mat-font-size($config, caption);
     }
+  }
+}
+
+@mixin mat-paginator-density($density-scale) {}
+
+@mixin mat-paginator-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-paginator-color($color);
+  }
+  @if $density != null {
+    @include mat-paginator-density($density);
+  }
+  @if $typography != null {
+    @include mat-paginator-typography($typography);
   }
 }

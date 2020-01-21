@@ -4,6 +4,7 @@
 @import '../material-experimental/mdc-helpers/mdc-helpers';
 @import '../material-experimental/mdc-theming/all-theme';
 @import '../material-experimental/mdc-typography/all-typography';
+@import '../material-experimental/mdc-density/all-density';
 @import '../material-experimental/popover-edit/popover-edit';
 
 // Plus imports for other components in your app.
@@ -13,7 +14,7 @@
 // **Be sure that you only ever include this mixin once!**
 @include mat-core();
 @include angular-material-mdc-typography();
-@include mat-edit-typography(mat-typography-config());
+@include mat-popover-edit-typography(mat-typography-config());
 
 // Include base styles for strong focus indicators.
 .demo-strong-focus {
@@ -24,7 +25,12 @@
 // Define the default theme (same as the example above).
 $candy-app-primary: mat-palette($mat-indigo);
 $candy-app-accent: mat-palette($mat-pink, A200, A100, A400);
-$candy-app-theme: mat-light-theme($candy-app-primary, $candy-app-accent);
+$candy-app-theme: mat-light-theme((
+  color: (
+    primary: $candy-app-primary,
+    accent: $candy-app-accent
+  )
+));
 
 // Include the default theme styles.
 @include angular-material-theme($candy-app-theme);
@@ -36,7 +42,13 @@ $candy-app-theme: mat-light-theme($candy-app-primary, $candy-app-accent);
 $dark-primary: mat-palette($mat-blue-grey);
 $dark-accent: mat-palette($mat-amber, A200, A100, A400);
 $dark-warn: mat-palette($mat-deep-orange);
-$dark-theme: mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
+$dark-theme: mat-dark-theme((
+  color: (
+    primary: $dark-primary,
+    accent: $dark-accent,
+    warn: $dark-warn
+  )
+));
 
 // Include the default theme for focus indicators.
 .demo-strong-focus {
@@ -59,4 +71,14 @@ $dark-theme: mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
 .demo-unicorn-dark-theme.demo-strong-focus {
   @include mat-strong-focus-indicators-theme($dark-theme);
   @include mat-mdc-strong-focus-indicators-theme($dark-theme);
+}
+
+// Create classes for all density scales which are supported by all MDC-based components.
+// The classes are applied conditionally based on the selected density in the dev-app layout
+// component.
+$density-scales: (-1, -2, minimum, maximum);
+@each $density in$density-scales {
+  .demo-density-#{$density} {
+    @include angular-material-density-mdc($density);
+  }
 }

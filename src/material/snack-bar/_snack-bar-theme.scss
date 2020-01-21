@@ -1,10 +1,11 @@
 @import '../core/typography/typography-utils';
+@import '../core/theming/theming';
 @import '../core/theming/palette';
 @import '../core/style/elevation';
 
-@mixin mat-snack-bar-theme($theme) {
-  $is-dark-theme: map-get($theme, is-dark);
-  $accent: map-get($theme, accent);
+@mixin mat-snack-bar-color($config) {
+  $is-dark-theme: map-get($config, is-dark);
+  $accent: map-get($config, accent);
 
   .mat-snack-bar-container {
     // Use the primary text on the dark theme, even though the lighter one uses
@@ -12,7 +13,7 @@
     color: if($is-dark-theme, $dark-primary-text, $light-secondary-text);
     background: if($is-dark-theme, map-get($mat-grey, 50), #323232);
 
-    @include _mat-theme-elevation(6, $theme);
+    @include _mat-theme-elevation(6, $config);
   }
 
   .mat-simple-snackbar-action {
@@ -35,5 +36,23 @@
       size: inherit;
       weight: mat-font-weight($config, button);
     }
+  }
+}
+
+@mixin mat-snack-bar-density($density-scale) {}
+
+@mixin mat-snack-bar-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-snack-bar-color($color);
+  }
+  @if $density != null {
+    @include mat-snack-bar-density($density);
+  }
+  @if $typography != null {
+    @include mat-snack-bar-typography($typography);
   }
 }

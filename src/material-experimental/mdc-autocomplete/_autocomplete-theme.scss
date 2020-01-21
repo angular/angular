@@ -1,7 +1,7 @@
 @import '../mdc-helpers/mdc-helpers';
 
-@mixin mat-mdc-autocomplete-theme($theme) {
-  @include mat-using-mdc-theme($theme) {
+@mixin mat-mdc-autocomplete-color($config) {
+  @include mat-using-mdc-theme($config) {
     // TODO: implement MDC-based autocomplete.
   }
 }
@@ -9,5 +9,23 @@
 @mixin mat-mdc-autocomplete-typography($config) {
   @include mat-using-mdc-typography($config) {
     // TODO: implement MDC-based autocomplete.
+  }
+}
+
+@mixin mat-mdc-autocomplete-density($density-scale) {}
+
+@mixin mat-mdc-autocomplete-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-mdc-autocomplete-color($color);
+  }
+  @if $density != null {
+    @include mat-mdc-autocomplete-density($density);
+  }
+  @if $typography != null {
+    @include mat-mdc-autocomplete-typography($typography);
   }
 }

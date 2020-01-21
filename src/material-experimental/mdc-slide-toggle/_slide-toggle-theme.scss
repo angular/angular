@@ -5,10 +5,10 @@
 @import '@material/theme/functions.import';
 @import '../mdc-helpers/mdc-helpers';
 
-@mixin mat-mdc-slide-toggle-theme($theme) {
-  $primary: mat-color(map-get($theme, primary));
-  $accent: mat-color(map-get($theme, accent));
-  $warn: mat-color(map-get($theme, warn));
+@mixin mat-mdc-slide-toggle-color($config) {
+  $primary: mat-color(map-get($config, primary));
+  $accent: mat-color(map-get($config, accent));
+  $warn: mat-color(map-get($config, warn));
 
   // Save original values of MDC global variables. We need to save these so we can restore the
   // variables to their original values and prevent unintended side effects from using this mixin.
@@ -18,7 +18,7 @@
   $orig-mdc-switch-disabled-thumb-color: $mdc-switch-disabled-thumb-color;
   $orig-mdc-switch-disabled-track-color: $mdc-switch-disabled-track-color;
 
-  @include mat-using-mdc-theme($theme) {
+  @include mat-using-mdc-theme($config) {
     $mdc-switch-baseline-theme-color: primary !global;
     $mdc-switch-toggled-off-thumb-color: mdc-theme-prop-value(surface) !global;
     $mdc-switch-toggled-off-track-color: mdc-theme-prop-value(on-surface) !global;
@@ -83,3 +83,22 @@
     @include mdc-form-field-core-styles($query: $mat-typography-styles-query);
   }
 }
+
+@mixin mat-mdc-slide-toggle-density($density-scale) {}
+
+@mixin mat-mdc-slide-toggle-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-mdc-slide-toggle-color($color);
+  }
+  @if $density != null {
+    @include mat-mdc-slide-toggle-density($density);
+  }
+  @if $typography != null {
+    @include mat-mdc-slide-toggle-typography($typography);
+  }
+}
+

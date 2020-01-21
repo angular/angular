@@ -43,9 +43,9 @@ $mat-ripple-color-opacity: 0.1;
   }
 }
 
-/* Theme for the ripple elements.*/
-@mixin mat-ripple-theme($theme) {
-  $foreground: map_get($theme, foreground);
+/* Colors for the ripple elements.*/
+@mixin mat-ripple-color($config) {
+  $foreground: map_get($config, foreground);
   $foreground-base: map_get($foreground, base);
 
   .mat-ripple-element {
@@ -58,5 +58,12 @@ $mat-ripple-color-opacity: 0.1;
       background-color: $foreground-base;
       opacity: $mat-ripple-color-opacity;
     }
+  }
+}
+
+@mixin mat-ripple-theme($theme) {
+  $color: mat-get-color-config($theme);
+  @if $color != null {
+    @include mat-ripple-color($color);
   }
 }

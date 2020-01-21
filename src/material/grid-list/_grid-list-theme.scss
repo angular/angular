@@ -5,12 +5,30 @@
 
 
 // Include this empty mixin for consistency with the other components.
-@mixin mat-grid-list-theme($theme) { }
+@mixin mat-grid-list-color($config) { }
 
 @mixin mat-grid-list-typography($config) {
   .mat-grid-tile-header,
   .mat-grid-tile-footer {
     @include mat-line-base(mat-font-size($config, caption));
     font-size: mat-font-size($config, body-1);
+  }
+}
+
+@mixin mat-grid-list-density($density-scale) {}
+
+@mixin mat-grid-list-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-grid-list-color($color);
+  }
+  @if $density != null {
+    @include mat-grid-list-density($density);
+  }
+  @if $typography != null {
+    @include mat-grid-list-typography($typography);
   }
 }

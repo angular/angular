@@ -3,9 +3,9 @@
 @import '../../material/core/theming/palette';
 @import '../../material/core/theming/theming';
 
-@mixin mat-column-resize-theme($theme) {
-  $primary: map-get($theme, primary);
-  $foreground: map-get($theme, foreground);
+@mixin mat-column-resize-color($config) {
+  $primary: map-get($config, primary);
+  $foreground: map-get($config, foreground);
 
   $non-resizable-hover-divider: mat-color($foreground, divider);
   $resizable-hover-divider: mat-color($primary, 200);
@@ -92,5 +92,25 @@
           $resizable-active-divider, $resizable-active-divider 1px,
           transparent 8px, transparent);
     }
+  }
+}
+
+@mixin mat-column-resize-typography($config) {}
+
+@mixin mat-column-resize-density($density-scale) {}
+
+@mixin mat-column-resize-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-column-resize-color($color);
+  }
+  @if $density != null {
+    @include mat-column-resize-density($density);
+  }
+  @if $typography != null {
+    @include mat-column-resize-typography($typography);
   }
 }

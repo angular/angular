@@ -1,8 +1,9 @@
 @import '../core/style/elevation';
 @import '../core/typography/typography-utils';
 @import '../core/theming/palette';
+@import '../core/theming/theming';
 
-@mixin mat-bottom-sheet-theme($theme) {
+@mixin mat-bottom-sheet-color($theme) {
   $background: map-get($theme, background);
   $foreground: map-get($theme, foreground);
 
@@ -16,5 +17,23 @@
 @mixin mat-bottom-sheet-typography($config) {
   .mat-bottom-sheet-container {
     @include mat-typography-level-to-styles($config, body-1);
+  }
+}
+
+@mixin mat-bottom-sheet-density($density-scale) {}
+
+@mixin mat-bottom-sheet-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-bottom-sheet-color($color);
+  }
+  @if $density != null {
+    @include mat-bottom-sheet-density($density);
+  }
+  @if $typography != null {
+    @include mat-bottom-sheet-typography($typography);
   }
 }

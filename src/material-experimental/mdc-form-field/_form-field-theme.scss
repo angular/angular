@@ -32,16 +32,16 @@
   $mdc-text-field-focused-label-color: $_mdc-text-field-focused-label-color !global;
 }
 
-@mixin mat-mdc-form-field-theme($theme) {
-  @include mat-using-mdc-theme($theme) {
+@mixin mat-mdc-form-field-color($config) {
+  @include mat-using-mdc-theme($config) {
     @include _mdc-text-field-refresh-theme-variables() {
       @include mdc-text-field-without-ripple($query: $mat-theme-styles-query);
       @include mdc-floating-label-core-styles($query: $mat-theme-styles-query);
       @include mdc-notched-outline-core-styles($query: $mat-theme-styles-query);
       @include mdc-line-ripple-core-styles($query: $mat-theme-styles-query);
-      @include _mat-form-field-subscript-theme();
-      @include _mat-form-field-focus-overlay-theme();
-      @include _mat-form-field-native-select-theme($theme);
+      @include _mat-form-field-subscript-color();
+      @include _mat-form-field-focus-overlay-color();
+      @include _mat-form-field-native-select-color($config);
 
       .mat-mdc-form-field.mat-accent {
         @include _mdc-text-field-color-styles(secondary);
@@ -65,5 +65,23 @@
     .mat-mdc-form-field {
       @include mat-typography-level-to-styles($config, input);
     }
+  }
+}
+
+@mixin mat-mdc-form-field-density($density-scale) {}
+
+@mixin mat-mdc-form-field-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-mdc-form-field-color($color);
+  }
+  @if $density != null {
+    @include mat-mdc-form-field-density($density);
+  }
+  @if $typography != null {
+    @include mat-mdc-form-field-typography($typography);
   }
 }

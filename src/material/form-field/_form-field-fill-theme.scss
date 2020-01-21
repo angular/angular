@@ -6,9 +6,9 @@
 
 // Theme styles that only apply to the fill appearance of the form-field.
 
-@mixin mat-form-field-fill-theme($theme) {
-  $foreground: map-get($theme, foreground);
-  $is-dark-theme: map-get($theme, is-dark);
+@mixin mat-form-field-fill-color($config) {
+  $foreground: map-get($config, foreground);
+  $is-dark-theme: map-get($config, is-dark);
 
   $fill-background: mat-color($foreground, base, if($is-dark-theme, 0.1, 0.04));
   $fill-disabled-background: mat-color($foreground, base, if($is-dark-theme, 0.05, 0.02));
@@ -96,5 +96,23 @@ $mat-form-field-fill-dedupe: 0;
                 $infix-margin-top);
       }
     }
+  }
+}
+
+@mixin mat-form-field-fill-density($density-scale) {}
+
+@mixin mat-form-field-fill-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-form-field-fill-color($color);
+  }
+  @if $density != null {
+    @include mat-form-field-fill-density($density);
+  }
+  @if $typography != null {
+    @include mat-form-field-fill-typography($typography);
   }
 }

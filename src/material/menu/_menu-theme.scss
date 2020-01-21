@@ -4,12 +4,12 @@
 @import '../core/typography/typography-utils';
 
 
-@mixin mat-menu-theme($theme) {
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
+@mixin mat-menu-color($config) {
+  $background: map-get($config, background);
+  $foreground: map-get($config, foreground);
 
   .mat-menu-panel {
-    @include _mat-theme-overridable-elevation(4, $theme);
+    @include _mat-theme-overridable-elevation(4, $config);
     background: mat-color($background, 'card');
   }
 
@@ -48,3 +48,22 @@
     }
   }
 }
+
+@mixin mat-menu-density($density-scale) {}
+
+@mixin mat-menu-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-menu-color($color);
+  }
+  @if $density != null {
+    @include mat-menu-density($density);
+  }
+  @if $typography != null {
+    @include mat-menu-typography($typography);
+  }
+}
+

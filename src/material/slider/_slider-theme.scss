@@ -14,12 +14,12 @@
   }
 }
 
-@mixin mat-slider-theme($theme) {
-  $primary: map-get($theme, primary);
-  $accent: map-get($theme, accent);
-  $warn: map-get($theme, warn);
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
+@mixin mat-slider-color($config) {
+  $primary: map-get($config, primary);
+  $accent: map-get($config, accent);
+  $warn: map-get($config, warn);
+  $background: map-get($config, background);
+  $foreground: map-get($config, foreground);
 
   $mat-slider-off-color: mat-color($foreground, slider-off);
   $mat-slider-off-focused-color: mat-color($foreground, slider-off-active);
@@ -169,5 +169,23 @@
       size: mat-font-size($config, caption);
       weight: mat-font-weight($config, body-2);
     }
+  }
+}
+
+@mixin mat-slider-density($density-scale) {}
+
+@mixin mat-slider-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-slider-color($color);
+  }
+  @if $density != null {
+    @include mat-slider-density($density);
+  }
+  @if $typography != null {
+    @include mat-slider-typography($typography);
   }
 }

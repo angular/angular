@@ -49,8 +49,8 @@ $mat-button-state-target: '.mdc-button__ripple';
 }
 
 
-@mixin mat-mdc-button-theme($theme) {
-  @include mat-using-mdc-theme($theme) {
+@mixin mat-mdc-button-color($config) {
+  @include mat-using-mdc-theme($config) {
     // Add state interactions for hover, focus, press, active. Colors are changed based on
     // the mixin mdc-states-base-color
     .mat-mdc-button, .mat-mdc-raised-button, .mat-mdc-unelevated-button, .mat-mdc-outlined-button {
@@ -170,8 +170,26 @@ $mat-button-state-target: '.mdc-button__ripple';
   }
 }
 
-@mixin mat-mdc-fab-theme($theme) {
-  @include mat-using-mdc-theme($theme) {
+@mixin mat-mdc-button-density($density-scale) {}
+
+@mixin mat-mdc-button-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-mdc-button-color($color);
+  }
+  @if $density != null {
+    @include mat-mdc-button-density($density);
+  }
+  @if $typography != null {
+    @include mat-mdc-button-typography($typography);
+  }
+}
+
+@mixin mat-mdc-fab-color($config) {
+  @include mat-using-mdc-theme($config) {
     .mat-mdc-fab, .mat-mdc-mini-fab {
       @include mdc-states(
           $query: $mat-theme-styles-query, $ripple-target: $mat-button-state-target);
@@ -225,8 +243,27 @@ $mat-button-state-target: '.mdc-button__ripple';
   }
 }
 
-@mixin mat-mdc-icon-button-theme($theme) {
-  @include mat-using-mdc-theme($theme) {
+@mixin mat-mdc-fab-density($density-scale) {}
+
+@mixin mat-mdc-fab-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-mdc-fab-color($color);
+  }
+  @if $density != null {
+    @include mat-mdc-fab-density($density);
+  }
+  @if $typography != null {
+    @include mat-mdc-fab-typography($typography);
+  }
+}
+
+
+@mixin mat-mdc-icon-button-color($config) {
+  @include mat-using-mdc-theme($config) {
     .mat-mdc-icon-button {
       @include mdc-states(
           $query: $mat-theme-styles-query, $ripple-target: $mat-button-state-target);
@@ -271,5 +308,23 @@ $mat-button-state-target: '.mdc-button__ripple';
 @mixin mat-mdc-icon-button-typography($config) {
   @include mat-using-mdc-typography($config) {
     @include mdc-icon-button-without-ripple($query: $mat-typography-styles-query);
+  }
+}
+
+@mixin mat-mdc-icon-button-density($density-scale) {}
+
+@mixin mat-mdc-icon-button-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-mdc-icon-button-color($color);
+  }
+  @if $density != null {
+    @include mat-mdc-icon-button-density($density);
+  }
+  @if $typography != null {
+    @include mat-mdc-icon-button-typography($typography);
   }
 }

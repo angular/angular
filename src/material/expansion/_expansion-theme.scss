@@ -3,12 +3,12 @@
 @import '../core/style/elevation';
 @import '../core/typography/typography-utils';
 
-@mixin mat-expansion-panel-theme($theme) {
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
+@mixin mat-expansion-panel-color($config) {
+  $background: map-get($config, background);
+  $foreground: map-get($config, foreground);
 
   .mat-expansion-panel {
-    @include _mat-theme-overridable-elevation(2, $theme);
+    @include _mat-theme-overridable-elevation(2, $config);
     background: mat-color($background, card);
     color: mat-color($foreground, text);
   }
@@ -66,5 +66,23 @@
 
   .mat-expansion-panel-content {
     @include mat-typography-level-to-styles($config, body-1);
+  }
+}
+
+@mixin mat-expansion-panel-density($density-scale) {}
+
+@mixin mat-expansion-panel-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-expansion-panel-color($color);
+  }
+  @if $density != null {
+    @include mat-expansion-panel-density($density);
+  }
+  @if $typography != null {
+    @include mat-expansion-panel-typography($typography);
   }
 }

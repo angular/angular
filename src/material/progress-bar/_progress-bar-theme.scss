@@ -2,10 +2,10 @@
 @import '../core/theming/theming';
 
 
-@mixin mat-progress-bar-theme($theme) {
-  $primary: map-get($theme, primary);
-  $accent: map-get($theme, accent);
-  $warn: map-get($theme, warn);
+@mixin mat-progress-bar-color($config) {
+  $primary: map-get($config, primary);
+  $accent: map-get($config, accent);
+  $warn: map-get($config, warn);
 
   .mat-progress-bar-background {
     fill: mat-color($primary, lighter);
@@ -49,4 +49,22 @@
 }
 
 @mixin mat-progress-bar-typography($config) { }
+
+@mixin mat-progress-bar-density($density-scale) {}
+
+@mixin mat-progress-bar-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-progress-bar-color($color);
+  }
+  @if $density != null {
+    @include mat-progress-bar-density($density);
+  }
+  @if $typography != null {
+    @include mat-progress-bar-typography($typography);
+  }
+}
 

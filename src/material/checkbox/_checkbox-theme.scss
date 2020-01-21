@@ -2,13 +2,13 @@
 @import '../core/typography/typography-utils';
 
 
-@mixin mat-checkbox-theme($theme) {
-  $is-dark-theme: map-get($theme, is-dark);
-  $primary: map-get($theme, primary);
-  $accent: map-get($theme, accent);
-  $warn: map-get($theme, warn);
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
+@mixin mat-checkbox-color($config) {
+  $is-dark-theme: map-get($config, is-dark);
+  $primary: map-get($config, primary);
+  $accent: map-get($config, accent);
+  $warn: map-get($config, warn);
+  $background: map-get($config, background);
+  $foreground: map-get($config, foreground);
 
 
   // The color of the checkbox's checkmark / mixedmark.
@@ -75,7 +75,7 @@
   // Switch this to a solid color since we're using `opacity`
   // to control how opaque the ripple should be.
   .mat-checkbox .mat-ripple-element {
-    background-color: map_get(map-get($theme, foreground), base);
+    background-color: map_get(map-get($config, foreground), base);
   }
 
   .mat-checkbox-checked:not(.mat-checkbox-disabled),
@@ -102,5 +102,23 @@
   // TODO(kara): Remove this style when fixing vertical baseline
   .mat-checkbox-layout .mat-checkbox-label {
     line-height: mat-line-height($config, body-2);
+  }
+}
+
+@mixin mat-checkbox-density($density-scale) {}
+
+@mixin mat-checkbox-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-checkbox-color($color);
+  }
+  @if $density != null {
+    @include mat-checkbox-density($density);
+  }
+  @if $typography != null {
+    @include mat-checkbox-typography($typography);
   }
 }

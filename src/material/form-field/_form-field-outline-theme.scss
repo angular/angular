@@ -6,12 +6,12 @@
 
 // Theme styles that only apply to the outline appearance of the form-field.
 
-@mixin mat-form-field-outline-theme($theme) {
-  $primary: map-get($theme, primary);
-  $accent: map-get($theme, accent);
-  $warn: map-get($theme, warn);
-  $foreground: map-get($theme, foreground);
-  $is-dark-theme: map-get($theme, is-dark);
+@mixin mat-form-field-outline-color($config) {
+  $primary: map-get($config, primary);
+  $accent: map-get($config, accent);
+  $warn: map-get($config, warn);
+  $foreground: map-get($config, foreground);
+  $is-dark-theme: map-get($config, is-dark);
 
   $label-disabled-color: mat-color($foreground, disabled-text);
   $outline-color: mat-color($foreground, divider, if($is-dark-theme, 0.3, 0.12));
@@ -128,3 +128,22 @@ $mat-form-field-outline-dedupe: 0;
     }
   }
 }
+
+@mixin mat-form-field-outline-density($density-scale) {}
+
+@mixin mat-form-field-outline-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-form-field-outline-color($color);
+  }
+  @if $density != null {
+    @include mat-form-field-outline-density($density);
+  }
+  @if $typography != null {
+    @include mat-form-field-outline-typography($typography);
+  }
+}
+

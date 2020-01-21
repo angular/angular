@@ -2,8 +2,8 @@
 @import '../theming/theming';
 @import '../typography/typography-utils';
 
-@mixin mat-optgroup-theme($theme) {
-  $foreground: map-get($theme, foreground);
+@mixin mat-optgroup-color($config) {
+  $foreground: map-get($config, foreground);
 
   .mat-optgroup-label {
     color: mat-color($foreground, secondary-text);
@@ -17,5 +17,23 @@
 @mixin mat-optgroup-typography($config) {
   .mat-optgroup-label {
     @include mat-typography-level-to-styles($config, body-2);
+  }
+}
+
+@mixin mat-optgroup-density($density-scale) {}
+
+@mixin mat-optgroup-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-optgroup-color($color);
+  }
+  @if $density != null {
+    @include mat-optgroup-density($density);
+  }
+  @if $typography != null {
+    @include mat-optgroup-typography($typography);
   }
 }

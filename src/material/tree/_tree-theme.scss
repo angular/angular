@@ -2,9 +2,9 @@
 @import '../core/theming/theming';
 @import '../core/typography/typography-utils';
 
-@mixin mat-tree-theme($theme) {
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
+@mixin mat-tree-color($config) {
+  $background: map-get($config, background);
+  $foreground: map-get($config, foreground);
 
   .mat-tree {
     background: mat-color($background, 'card');
@@ -27,3 +27,22 @@
     font-size: mat-font-size($config, body-1);
   }
 }
+
+@mixin mat-tree-density($density-scale) {}
+
+@mixin mat-tree-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-tree-color($color);
+  }
+  @if $density != null {
+    @include mat-tree-density($density);
+  }
+  @if $typography != null {
+    @include mat-tree-typography($typography);
+  }
+}
+

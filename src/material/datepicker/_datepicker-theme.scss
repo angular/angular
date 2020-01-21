@@ -39,9 +39,9 @@ $mat-calendar-weekday-table-font-size: 11px !default;
   }
 }
 
-@mixin mat-datepicker-theme($theme) {
-  $foreground: map-get($theme, foreground);
-  $background: map-get($theme, background);
+@mixin mat-datepicker-color($config) {
+  $foreground: map-get($config, foreground);
+  $background: map-get($config, background);
 
   .mat-calendar-arrow {
     border-top-color: mat-color($foreground, icon);
@@ -119,35 +119,35 @@ $mat-calendar-weekday-table-font-size: 11px !default;
     }
   }
 
-  @include _mat-datepicker-color(map-get($theme, primary));
+  @include _mat-datepicker-color(map-get($config, primary));
 
   .mat-datepicker-content {
-    @include _mat-theme-elevation(4, $theme);
+    @include _mat-theme-elevation(4, $config);
     background-color: mat-color($background, card);
     color: mat-color($foreground, text);
 
     &.mat-accent {
-      @include _mat-datepicker-color(map-get($theme, accent));
+      @include _mat-datepicker-color(map-get($config, accent));
     }
 
     &.mat-warn {
-      @include _mat-datepicker-color(map-get($theme, warn));
+      @include _mat-datepicker-color(map-get($config, warn));
     }
   }
 
   .mat-datepicker-content-touch {
-    @include _mat-theme-elevation(0, $theme);
+    @include _mat-theme-elevation(0, $config);
   }
 
   .mat-datepicker-toggle-active {
-    color: mat-color(map-get($theme, primary), text);
+    color: mat-color(map-get($config, primary), text);
 
     &.mat-accent {
-      color: mat-color(map-get($theme, accent), text);
+      color: mat-color(map-get($config, accent), text);
     }
 
     &.mat-warn {
-      color: mat-color(map-get($theme, warn), text);
+      color: mat-color(map-get($config, warn), text);
     }
   }
 
@@ -211,5 +211,24 @@ $mat-calendar-weekday-table-font-size: 11px !default;
 
   .mat-calendar-body-in-comparison-range > .mat-calendar-body-selected {
     background: $overlap-selected-color;
+
+  }
+}
+
+@mixin mat-datepicker-density($density-scale) {}
+
+@mixin mat-datepicker-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-datepicker-color($color);
+  }
+  @if $density != null {
+    @include mat-datepicker-density($density);
+  }
+  @if $typography != null {
+    @include mat-datepicker-typography($typography);
   }
 }

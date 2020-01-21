@@ -2,12 +2,12 @@
 @import '../core/theming/theming';
 @import '../core/typography/typography-utils';
 
-@mixin mat-tabs-theme($theme) {
-  $primary: map-get($theme, primary);
-  $accent: map-get($theme, accent);
-  $warn: map-get($theme, warn);
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
+@mixin mat-tabs-color($config) {
+  $primary: map-get($config, primary);
+  $accent: map-get($config, accent);
+  $warn: map-get($config, warn);
+  $background: map-get($config, background);
+  $foreground: map-get($config, foreground);
   $header-border: 1px solid mat-color($foreground, divider);
 
   .mat-tab-nav-bar,
@@ -136,5 +136,23 @@
       size: mat-font-size($config, button);
       weight: mat-font-weight($config, button);
     }
+  }
+}
+
+@mixin mat-tabs-density($density-scale) {}
+
+@mixin mat-tabs-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-tabs-color($color);
+  }
+  @if $density != null {
+    @include mat-tabs-density($density);
+  }
+  @if $typography != null {
+    @include mat-tabs-typography($typography);
   }
 }

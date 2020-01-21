@@ -5,19 +5,19 @@
 @import '../core/typography/typography-utils';
 
 
-@mixin mat-select-theme($theme) {
-  $foreground: map-get($theme, foreground);
-  $background: map-get($theme, background);
-  $primary: map-get($theme, primary);
-  $accent: map-get($theme, accent);
-  $warn: map-get($theme, warn);
+@mixin mat-select-color($config) {
+  $foreground: map-get($config, foreground);
+  $background: map-get($config, background);
+  $primary: map-get($config, primary);
+  $accent: map-get($config, accent);
+  $warn: map-get($config, warn);
 
   .mat-select-value {
     color: mat-color($foreground, text);
   }
 
   .mat-select-placeholder {
-    color: _mat-control-placeholder-color($theme);
+    color: _mat-control-placeholder-color($config);
   }
 
   .mat-select-disabled .mat-select-value {
@@ -30,7 +30,7 @@
 
   .mat-select-panel {
     background: mat-color($background, card);
-    @include _mat-theme-overridable-elevation(4, $theme);
+    @include _mat-theme-overridable-elevation(4, $config);
 
     .mat-option.mat-selected:not(.mat-option-multiple) {
       background: mat-color($background, hover, 0.12);
@@ -72,5 +72,23 @@
 
   .mat-select-trigger {
     height: $line-height * 1em;
+  }
+}
+
+@mixin mat-select-density($density-scale) {}
+
+@mixin mat-select-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-select-color($color);
+  }
+  @if $density != null {
+    @include mat-select-density($density);
+  }
+  @if $typography != null {
+    @include mat-select-typography($typography);
   }
 }

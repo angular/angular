@@ -44,6 +44,10 @@
                   title="Toggle between RTL and LTR">
             {{dir.value.toUpperCase()}}
           </button>
+          <button mat-button (click)="selectNextDensity()"
+                  title="Use next density scale: {{densityScales[getNextDensityIndex()]}}">
+            Density scale: {{densityScales[this.currentDensityIndex]}}
+          </button>
         </div>
       </div>
     </mat-toolbar>

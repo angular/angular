@@ -8,14 +8,14 @@
 @import './form-field-outline-theme.scss';
 @import './form-field-standard-theme.scss';
 
-// Theme styles that apply to all appearances of the form-field.
-@mixin mat-form-field-theme($theme) {
-  $primary: map-get($theme, primary);
-  $accent: map-get($theme, accent);
-  $warn: map-get($theme, warn);
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
-  $is-dark-theme: map-get($theme, is-dark);
+// Color styles that apply to all appearances of the form-field.
+@mixin mat-form-field-color($config) {
+  $primary: map-get($config, primary);
+  $accent: map-get($config, accent);
+  $warn: map-get($config, warn);
+  $background: map-get($config, background);
+  $foreground: map-get($config, foreground);
+  $is-dark-theme: map-get($config, is-dark);
 
   // Label colors. Required is used for the `*` star shown in the label.
   $label-color: mat-color($foreground, secondary-text, if($is-dark-theme, 0.7, 0.6));
@@ -107,10 +107,10 @@
     color: $underline-color-warn;
   }
 
-  @include mat-form-field-legacy-theme($theme);
-  @include mat-form-field-standard-theme($theme);
-  @include mat-form-field-fill-theme($theme);
-  @include mat-form-field-outline-theme($theme);
+  @include mat-form-field-legacy-color($config);
+  @include mat-form-field-standard-color($config);
+  @include mat-form-field-fill-color($config);
+  @include mat-form-field-outline-color($config);
 }
 
 // Used to make instances of the _mat-form-field-label-floating mixin negligibly different,
@@ -233,4 +233,27 @@ $mat-form-field-dedupe: 0;
   @include mat-form-field-standard-typography($config);
   @include mat-form-field-fill-typography($config);
   @include mat-form-field-outline-typography($config);
+}
+
+@mixin mat-form-field-density($density-scale) {
+  @include mat-form-field-legacy-density($density-scale);
+  @include mat-form-field-standard-density($density-scale);
+  @include mat-form-field-fill-density($density-scale);
+  @include mat-form-field-outline-density($density-scale);
+}
+
+@mixin mat-form-field-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-form-field-color($color);
+  }
+  @if $density != null {
+    @include mat-form-field-density($density);
+  }
+  @if $typography != null {
+    @include mat-form-field-typography($typography);
+  }
 }

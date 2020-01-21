@@ -5,7 +5,7 @@
 
 $mat-chip-remove-font-size: 18px;
 
-@mixin mat-chips-color($foreground, $background) {
+@mixin _mat-chip-element-color($foreground, $background) {
   background-color: $background;
   color: $foreground;
 
@@ -29,31 +29,31 @@ $mat-chip-remove-font-size: 18px;
   }
 }
 
-@mixin mat-chips-theme-color($palette) {
-  @include mat-chips-color(mat-color($palette, default-contrast), mat-color($palette));
+@mixin _mat-chip-theme-color($palette) {
+  @include _mat-chip-element-color(mat-color($palette, default-contrast), mat-color($palette));
 
   .mat-ripple-element {
-   @include _mat-chips-ripple-background($palette, default-contrast, 0.1);
+    @include _mat-chips-ripple-background($palette, default-contrast, 0.1);
   }
 }
 
-@mixin mat-chips-theme($theme) {
-  $is-dark-theme: map-get($theme, is-dark);
-  $primary: map-get($theme, primary);
-  $accent: map-get($theme, accent);
-  $warn: map-get($theme, warn);
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
+@mixin mat-chips-color($config) {
+  $is-dark-theme: map-get($config, is-dark);
+  $primary: map-get($config, primary);
+  $accent: map-get($config, accent);
+  $warn: map-get($config, warn);
+  $background: map-get($config, background);
+  $foreground: map-get($config, foreground);
 
   $unselected-background: mat-color($background, unselected-chip);
   $unselected-foreground: mat-color($foreground, text);
 
   .mat-chip.mat-standard-chip {
-    @include mat-chips-color($unselected-foreground, $unselected-background);
+    @include _mat-chip-element-color($unselected-foreground, $unselected-background);
 
     &:not(.mat-chip-disabled) {
       &:active {
-        @include _mat-theme-elevation(3, $theme);
+        @include _mat-theme-elevation(3, $config);
       }
 
       .mat-chip-remove:hover {
@@ -72,15 +72,15 @@ $mat-chip-remove-font-size: 18px;
 
   .mat-chip.mat-standard-chip.mat-chip-selected {
     &.mat-primary {
-      @include mat-chips-theme-color($primary);
+      @include _mat-chip-theme-color($primary);
     }
 
     &.mat-warn {
-      @include mat-chips-theme-color($warn);
+      @include _mat-chip-theme-color($warn);
     }
 
     &.mat-accent {
-      @include mat-chips-theme-color($accent);
+      @include _mat-chip-theme-color($accent);
     }
   }
 }
@@ -96,3 +96,23 @@ $mat-chip-remove-font-size: 18px;
     }
   }
 }
+
+@mixin mat-chips-density($density-scale) {}
+
+@mixin mat-chips-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-chips-color($color);
+  }
+  @if $density != null {
+    @include mat-chips-density($density);
+  }
+  @if $typography != null {
+    @include mat-chips-typography($typography);
+  }
+}
+
+

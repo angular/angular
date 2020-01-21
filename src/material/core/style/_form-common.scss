@@ -12,8 +12,8 @@
 // Figures out the color of the placeholder for a form control.
 // Used primarily to prevent the various form controls from
 // becoming out of sync since these colors aren't in a palette.
-@function _mat-control-placeholder-color($theme) {
-  $foreground: map-get($theme, foreground);
-  $is-dark-theme: map-get($theme, is-dark);
+@function _mat-control-placeholder-color($config) {
+  $foreground: map-get($config, foreground);
+  $is-dark-theme: map-get($config, is-dark);
   @return mat-color($foreground, secondary-text, if($is-dark-theme, 0.5, 0.42));
 }

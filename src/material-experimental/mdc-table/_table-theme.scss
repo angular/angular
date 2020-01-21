@@ -3,7 +3,7 @@
 @import '@material/data-table/variables.import';
 @import '@material/data-table/mixins.import';
 
-@mixin mat-mdc-table-theme($theme) {
+@mixin mat-mdc-table-color($config) {
   // Save original values of MDC global variables. We need to save these so we can restore the
   // variables to their original values and prevent unintended side effects from using this mixin.
   $orig-mdc-data-table-selected-row-fill-color: $mdc-data-table-selected-row-fill-color;
@@ -16,7 +16,7 @@
   $orig-mdc-data-table-sort-icon-active-color: $mdc-data-table-sort-icon-active-color;
   $orig-mdc-data-table-stroke-color: $mdc-data-table-stroke-color;
 
-  @include mat-using-mdc-theme($theme) {
+  @include mat-using-mdc-theme($config) {
     $mdc-data-table-selected-row-fill-color: rgba(mdc-theme-prop-value(primary), 0.04) !global;
     $mdc-data-table-divider-color: rgba(mdc-theme-prop-value(on-surface), 0.12) !global;
     $mdc-data-table-row-hover-fill-color: rgba(mdc-theme-prop-value(on-surface), 0.04) !global;
@@ -44,5 +44,23 @@
 @mixin mat-mdc-table-typography($config) {
   @include mat-using-mdc-typography($config) {
     @include mdc-data-table-core-styles($query: $mat-typography-styles-query);
+  }
+}
+
+@mixin mat-mdc-table-density($density-scale) {}
+
+@mixin mat-mdc-table-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-mdc-table-color($color);
+  }
+  @if $density != null {
+    @include mat-mdc-table-density($density);
+  }
+  @if $typography != null {
+    @include mat-mdc-table-typography($typography);
   }
 }

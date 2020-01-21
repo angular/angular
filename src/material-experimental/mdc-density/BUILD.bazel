@@ -1,0 +1,26 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "sass_library")
+
+sass_library(
+    name = "all_density",
+    srcs = [
+        "_all-density.scss",
+    ],
+    deps = [
+        "//src/material-experimental/mdc-button:mdc_button_scss_lib",
+        "//src/material-experimental/mdc-card:mdc_card_scss_lib",
+        "//src/material-experimental/mdc-checkbox:mdc_checkbox_scss_lib",
+        "//src/material-experimental/mdc-chips:mdc_chips_scss_lib",
+        "//src/material-experimental/mdc-form-field:mdc_form_field_scss_lib",
+        "//src/material-experimental/mdc-input:mdc_input_scss_lib",
+        "//src/material-experimental/mdc-list:mdc_list_scss_lib",
+        "//src/material-experimental/mdc-menu:mdc_menu_scss_lib",
+        "//src/material-experimental/mdc-progress-bar:mdc_progress_bar_scss_lib",
+        "//src/material-experimental/mdc-radio:mdc_radio_scss_lib",
+        "//src/material-experimental/mdc-slide-toggle:mdc_slide_toggle_scss_lib",
+        "//src/material-experimental/mdc-slider:mdc_slider_scss_lib",
+        "//src/material-experimental/mdc-table:mdc_table_scss_lib",
+        "//src/material-experimental/mdc-tabs:mdc_tabs_scss_lib",
+    ],
+)

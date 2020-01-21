@@ -4,14 +4,14 @@
 @import '@material/tab/variables.import';
 @import '../mdc-helpers/mdc-helpers';
 
-@mixin mat-mdc-tabs-theme($theme) {
+@mixin mat-mdc-tabs-color($config) {
   // Save original values of MDC global variables. We need to save these so we can restore the
   // variables to their original values and prevent unintended side effects from using this mixin.
   $orig-mdc-tab-text-label-color-active: $mdc-tab-text-label-color-active;
   $orig-mdc-tab-icon-color-active: $mdc-tab-icon-color-active;
   $orig-mdc-tab-text-label-color-default: $mdc-tab-text-label-color-default;
 
-  @include mat-using-mdc-theme($theme) {
+  @include mat-using-mdc-theme($config) {
     // This value is the same as MDC's default, but MDC defines it once inside
     // a variables file which means that we can't override it with our own palette.
     $mdc-tab-text-label-color-default:
@@ -97,3 +97,22 @@
     @include mdc-tab-indicator-core-styles($query: $mat-typography-styles-query);
   }
 }
+
+@mixin mat-mdc-tabs-density($density-scale) {}
+
+@mixin mat-mdc-tabs-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-mdc-tabs-color($color);
+  }
+  @if $density != null {
+    @include mat-mdc-tabs-density($density);
+  }
+  @if $typography != null {
+    @include mat-mdc-tabs-typography($typography);
+  }
+}
+

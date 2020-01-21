@@ -2,10 +2,10 @@
 @import '../core/theming/theming';
 
 
-@mixin mat-progress-spinner-theme($theme) {
-  $primary: map-get($theme, primary);
-  $accent: map-get($theme, accent);
-  $warn: map-get($theme, warn);
+@mixin mat-progress-spinner-color($config) {
+  $primary: map-get($config, primary);
+  $accent: map-get($config, accent);
+  $warn: map-get($config, warn);
 
   .mat-progress-spinner, .mat-spinner {
     circle {
@@ -23,3 +23,21 @@
 }
 
 @mixin mat-progress-spinner-typography($config) { }
+
+@mixin mat-progress-spinner-density($density-scale) {}
+
+@mixin mat-progress-spinner-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-progress-spinner-color($color);
+  }
+  @if $density != null {
+    @include mat-progress-spinner-density($density);
+  }
+  @if $typography != null {
+    @include mat-progress-spinner-typography($typography);
+  }
+}

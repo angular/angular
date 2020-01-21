@@ -4,12 +4,12 @@
 
 // TODO: implement mat-list[dense] once density system is in master
 
-@mixin mat-mdc-list-theme($theme) {
-  $is-dark-theme: map-get($theme, is-dark);
+@mixin mat-mdc-list-color($config) {
+  $is-dark-theme: map-get($config, is-dark);
   $state-opacities:
       if($is-dark-theme, $mdc-ripple-light-ink-opacities, $mdc-ripple-dark-ink-opacities);
 
-  @include mat-using-mdc-theme($theme) {
+  @include mat-using-mdc-theme($config) {
     @include mdc-list-without-ripple($query: $mat-theme-styles-query);
   }
 
@@ -29,9 +29,26 @@
     }
   }
 }
-
-@mixin mat-mdc-list-typography($config) {
+@mixin mat-mdc-list-typography($config: null) {
   @include mat-using-mdc-typography($config) {
     @include mdc-list-without-ripple($query: $mat-typography-styles-query);
+  }
+}
+
+@mixin mat-mdc-list-density($density-scale) {}
+
+@mixin mat-mdc-list-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-mdc-list-color($color);
+  }
+  @if $density != null {
+    @include mat-mdc-list-density($density);
+  }
+  @if $typography != null {
+    @include mat-mdc-list-typography($typography);
   }
 }

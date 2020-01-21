@@ -5,10 +5,10 @@
 @import '@material/theme/functions.import';
 @import '../mdc-helpers/mdc-helpers';
 
-@mixin mat-mdc-checkbox-theme($theme) {
-  $primary: mat-color(map-get($theme, primary));
-  $accent: mat-color(map-get($theme, accent));
-  $warn: mat-color(map-get($theme, warn));
+@mixin mat-mdc-checkbox-color($config) {
+  $primary: mat-color(map-get($config, primary));
+  $accent: mat-color(map-get($config, accent));
+  $warn: mat-color(map-get($config, warn));
 
   // Save original values of MDC global variables. We need to save these so we can restore the
   // variables to their original values and prevent unintended side effects from using this mixin.
@@ -17,7 +17,7 @@
   $orig-mdc-checkbox-border-color: $mdc-checkbox-border-color;
   $orig-mdc-checkbox-disabled-color: $mdc-checkbox-disabled-color;
 
-  @include mat-using-mdc-theme($theme) {
+  @include mat-using-mdc-theme($config) {
     $mdc-checkbox-mark-color: mdc-theme-prop-value(on-primary) !global;
     $mdc-checkbox-baseline-theme-color: primary !global;
     $mdc-checkbox-border-color: rgba(mdc-theme-prop-value(on-surface), 0.54) !global;
@@ -74,5 +74,23 @@
   @include mat-using-mdc-typography($config) {
     @include mdc-checkbox-without-ripple($query: $mat-typography-styles-query);
     @include mdc-form-field-core-styles($query: $mat-typography-styles-query);
+  }
+}
+
+@mixin mat-mdc-checkbox-density($density-scale) {}
+
+@mixin mat-mdc-checkbox-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-mdc-checkbox-color($color);
+  }
+  @if $density != null {
+    @include mat-mdc-checkbox-density($density);
+  }
+  @if $typography != null {
+    @include mat-mdc-checkbox-typography($typography);
   }
 }

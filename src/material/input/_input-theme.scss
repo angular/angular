@@ -5,11 +5,11 @@
 @import '../core/style/vendor-prefixes';
 
 
-@mixin mat-input-theme($theme) {
-  $primary: map-get($theme, primary);
-  $accent: map-get($theme, accent);
-  $warn: map-get($theme, warn);
-  $foreground: map-get($theme, foreground);
+@mixin mat-input-color($config) {
+  $primary: map-get($config, primary);
+  $accent: map-get($config, accent);
+  $warn: map-get($config, warn);
+  $foreground: map-get($config, foreground);
 
   .mat-form-field-type-mat-native-select .mat-form-field-infix::after {
     color: mat-color($foreground, secondary-text);
@@ -24,7 +24,7 @@
     caret-color: mat-color($primary, text);
 
     @include input-placeholder {
-      color: _mat-control-placeholder-color($theme);
+      color: _mat-control-placeholder-color($config);
     }
 
     // On dark themes we set the native `select` color to some shade of white,
@@ -32,7 +32,7 @@
     // always on a white background inside the dropdown, causing them to blend in.
     // Since we can't change background of the dropdown, we need to explicitly
     // reset the color of the options to something dark.
-    @if (map-get($theme, is-dark)) {
+    @if (map-get($config, is-dark)) {
       option {
         color: $dark-primary-text;
       }
@@ -69,5 +69,23 @@
   // be misaligned w.r.t. the placeholder. Adding this margin corrects it.
   input.mat-input-element {
     margin-top: -$line-spacing * 1em;
+  }
+}
+
+@mixin mat-input-density($density-scale) {}
+
+@mixin mat-input-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-input-color($color);
+  }
+  @if $density != null {
+    @include mat-input-density($density);
+  }
+  @if $typography != null {
+    @include mat-input-typography($typography);
   }
 }

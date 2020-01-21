@@ -28,12 +28,12 @@
   }
 }
 
-@mixin mat-toolbar-theme($theme) {
-  $primary: map-get($theme, primary);
-  $accent: map-get($theme, accent);
-  $warn: map-get($theme, warn);
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
+@mixin mat-toolbar-color($config) {
+  $primary: map-get($config, primary);
+  $accent: map-get($config, accent);
+  $warn: map-get($config, warn);
+  $background: map-get($config, background);
+  $foreground: map-get($config, foreground);
 
   .mat-toolbar {
     background: mat-color($background, app-bar);
@@ -65,5 +65,23 @@
   .mat-toolbar h6 {
     @include mat-typography-level-to-styles($config, title);
     margin: 0;
+  }
+}
+
+@mixin mat-toolbar-density($density-scale) {}
+
+@mixin mat-toolbar-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-toolbar-color($color);
+  }
+  @if $density != null {
+    @include mat-toolbar-density($density);
+  }
+  @if $typography != null {
+    @include mat-toolbar-typography($typography);
   }
 }

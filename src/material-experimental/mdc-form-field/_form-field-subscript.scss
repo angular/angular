@@ -34,7 +34,7 @@
   }
 }
 
-@mixin _mat-form-field-subscript-theme() {
+@mixin _mat-form-field-subscript-color() {
   // MDC does not have built-in error treatment.
   .mat-mdc-form-field-error {
     @include mdc-theme-prop(color, $mdc-text-field-error);

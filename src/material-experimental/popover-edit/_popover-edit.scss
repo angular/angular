@@ -9,10 +9,10 @@
   @return linear-gradient($direction, rgba($background-color, 0), $background-color 8px);
 }
 
-@mixin mat-popover-edit-theme($theme) {
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
-  $primary: map-get($theme, primary);
+@mixin mat-popover-edit-color($config) {
+  $background: map-get($config, background);
+  $foreground: map-get($config, foreground);
+  $primary: map-get($config, primary);
   $background-color: mat-color($background, 'card');
 
   .mat-row-hover-content-host-cell {
@@ -75,7 +75,7 @@
   }
 
   .mat-edit-pane {
-    @include _mat-theme-elevation(2, $theme);
+    @include _mat-theme-elevation(2, $config);
     background: $background-color;
     color: mat-color($foreground, text);
     display: block;
@@ -141,8 +141,27 @@
   }
 }
 
-@mixin mat-edit-typography($config) {
+@mixin mat-popover-edit-typography($config) {
   [mat-edit-title] {
     @include mat-typography-level-to-styles($config, title);
+  }
+}
+
+
+@mixin mat-popover-edit-density($density-scale) {}
+
+@mixin mat-popover-edit-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-popover-edit-color($color);
+  }
+  @if $density != null {
+    @include mat-popover-edit-density($density);
+  }
+  @if $typography != null {
+    @include mat-popover-edit-typography($typography);
   }
 }

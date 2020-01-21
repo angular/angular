@@ -11,8 +11,8 @@ $mat-tooltip-handset-font-size: 14px;
 $mat-tooltip-handset-vertical-padding:
     ($mat-tooltip-handset-target-height - $mat-tooltip-handset-font-size) / 2;
 
-@mixin mat-tooltip-theme($theme) {
-  $background: map-get($theme, background);
+@mixin mat-tooltip-color($config) {
+  $background: map-get($config, background);
 
   .mat-tooltip {
     background: mat-color($background, tooltip, 0.9);
@@ -33,3 +33,22 @@ $mat-tooltip-handset-vertical-padding:
     padding-bottom: $mat-tooltip-handset-vertical-padding;
   }
 }
+
+@mixin mat-tooltip-density($density-scale) {}
+
+@mixin mat-tooltip-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-tooltip-color($color);
+  }
+  @if $density != null {
+    @include mat-tooltip-density($density);
+  }
+  @if $typography != null {
+    @include mat-tooltip-typography($typography);
+  }
+}
+

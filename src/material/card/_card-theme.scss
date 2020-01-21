@@ -4,18 +4,18 @@
 @import '../core/typography/typography-utils';
 
 
-@mixin mat-card-theme($theme) {
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
+@mixin mat-card-color($config) {
+  $background: map-get($config, background);
+  $foreground: map-get($config, foreground);
 
   .mat-card {
-    @include _mat-theme-overridable-elevation(1, $theme);
+    @include _mat-theme-overridable-elevation(1, $config);
     background: mat-color($background, card);
     color: mat-color($foreground, text);
 
     // Needs extra specificity to be able to override the elevation selectors.
     &.mat-card-flat {
-      @include _mat-theme-overridable-elevation(0, $theme);
+      @include _mat-theme-overridable-elevation(0, $config);
     }
   }
 
@@ -43,5 +43,23 @@
   .mat-card-subtitle,
   .mat-card-content {
     font-size: mat-font-size($config, body-1);
+  }
+}
+
+@mixin mat-card-density($density-scale) {}
+
+@mixin mat-card-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-card-color($color);
+  }
+  @if $density != null {
+    @include mat-card-density($density);
+  }
+  @if $typography != null {
+    @include mat-card-typography($typography);
   }
 }

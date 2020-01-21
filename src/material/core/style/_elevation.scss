@@ -157,8 +157,8 @@ $_mat-elevation-prefix: 'mat-elevation-z';
               #{map-get(_get-ambient-map($color, $opacity), $zValue)};
 }
 
-@mixin _mat-theme-elevation($zValue, $theme, $opacity: $mat-elevation-opacity) {
-  $foreground: map-get($theme, foreground);
+@mixin _mat-theme-elevation($zValue, $config, $opacity: $mat-elevation-opacity) {
+  $foreground: map-get($config, foreground);
   $elevation-color: map-get($foreground, elevation);
   $elevation-color-or-default: if($elevation-color == null, $mat-elevation-color, $elevation-color);
 
@@ -176,8 +176,8 @@ $_mat-elevation-prefix: 'mat-elevation-z';
   }
 }
 
-@mixin _mat-theme-overridable-elevation($zValue, $theme, $opacity: $mat-elevation-opacity) {
-  $foreground: map-get($theme, foreground);
+@mixin _mat-theme-overridable-elevation($zValue, $config, $opacity: $mat-elevation-opacity) {
+  $foreground: map-get($config, foreground);
   $elevation-color: map-get($foreground, elevation);
   $elevation-color-or-default: if($elevation-color == null, $mat-elevation-color, $elevation-color);
 

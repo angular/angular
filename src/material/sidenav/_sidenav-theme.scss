@@ -3,12 +3,12 @@
 @import '../core/theming/theming';
 
 
-@mixin mat-sidenav-theme($theme) {
-  $primary: map-get($theme, primary);
-  $accent: map-get($theme, accent);
-  $warn: map-get($theme, warn);
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
+@mixin mat-sidenav-color($config) {
+  $primary: map-get($config, primary);
+  $accent: map-get($config, accent);
+  $warn: map-get($config, warn);
+  $background: map-get($config, background);
+  $foreground: map-get($config, foreground);
 
   $drawer-background-color: mat-color($background, dialog);
   $drawer-container-background-color:  mat-color($background, background);
@@ -31,7 +31,7 @@
     &:not(.mat-drawer-side) {
       // The elevation of z-16 is noted in the design specifications.
       // See https://material.io/design/components/navigation-drawer.html
-      @include _mat-theme-elevation(16, $theme);
+      @include _mat-theme-elevation(16, $config);
     }
   }
 
@@ -74,3 +74,21 @@
 }
 
 @mixin mat-sidenav-typography($config) { }
+
+@mixin mat-sidenav-density($density-scale) {}
+
+@mixin mat-sidenav-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-sidenav-color($color);
+  }
+  @if $density != null {
+    @include mat-sidenav-density($density);
+  }
+  @if $typography != null {
+    @include mat-sidenav-typography($typography);
+  }
+}

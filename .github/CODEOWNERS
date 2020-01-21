@@ -97,6 +97,7 @@
 /src/material-experimental/mdc-card/**             @mmalerba
 /src/material-experimental/mdc-checkbox/**         @mmalerba
 /src/material-experimental/mdc-chips/**            @mmalerba
+/src/material-experimental/mdc-density/**          @devversion
 /src/material-experimental/mdc-dialog/**           @devversion
 /src/material-experimental/mdc-form-field/**       @devversion @mmalerba
 /src/material-experimental/mdc-helpers/**          @mmalerba

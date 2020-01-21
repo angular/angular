@@ -3,14 +3,14 @@
 @import '@material/radio/variables';
 @import '@material/theme/functions.import';
 
-@mixin mat-mdc-radio-theme($theme) {
+@mixin mat-mdc-radio-color($config) {
   // Save original values of MDC global variables. We need to save these so we can restore the
   // variables to their original values and prevent unintended side effects from using this mixin.
   $orig-mdc-radio-baseline-theme-color: $mdc-radio-baseline-theme-color;
   $orig-mdc-radio-unchecked-color: $mdc-radio-unchecked-color;
   $orig-mdc-radio-disabled-circle-color: $mdc-radio-disabled-circle-color;
 
-  @include mat-using-mdc-theme($theme) {
+  @include mat-using-mdc-theme($config) {
     $mdc-radio-baseline-theme-color: primary !global;
     $mdc-radio-unchecked-color: rgba(mdc-theme-prop-value(on-surface), 0.54) !global;
     $mdc-radio-disabled-circle-color: rgba(mdc-theme-prop-value(on-surface), 0.38) !global;
@@ -41,5 +41,23 @@
 @mixin mat-mdc-radio-typography($config) {
   @include mat-using-mdc-typography($config) {
     @include mdc-radio-without-ripple($query: $mat-typography-styles-query);
+  }
+}
+
+@mixin mat-mdc-radio-density($density-scale) {}
+
+@mixin mat-mdc-radio-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-mdc-radio-color($color);
+  }
+  @if $density != null {
+    @include mat-mdc-radio-density($density);
+  }
+  @if $typography != null {
+    @include mat-mdc-radio-typography($typography);
   }
 }

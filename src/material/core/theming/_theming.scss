@@ -64,28 +64,138 @@
   @return rgba($color, if($opacity == null, opacity($color), $opacity));
 }
 
+// Validates the specified theme by ensuring that the optional color config defines
+// a primary, accent and warn palette. Returns the theme if no failures were found.
+@function _mat-validate-theme($theme) {
+  @if map_has_key($theme, color) {
+    $color: map_get($theme, color);
+    @if not map_get($color, primary) {
+      @error 'Theme does not define a valid "primary" palette.';
+    }
+    @else if not map_get($color, accent) {
+      @error 'Theme does not define a valid "accent" palette.';
+    }
+    @else if not map_get($color, warn) {
+      @error 'Theme does not define a valid "warn" palette.';
+    }
+  }
+  @return $theme;
+}
 
-// Creates a container object for a light theme to be given to individual component theme mixins.
-@function mat-light-theme($primary, $accent, $warn: mat-palette($mat-red)) {
+// Creates a light-themed color configuration from the specified
+// primary, accent and warn palettes.
+@function _mat-create-light-color-config($primary, $accent, $warn: null) {
   @return (
     primary: $primary,
     accent: $accent,
-    warn: $warn,
+    warn: if($warn != null, $warn, mat-palette($mat-red)),
     is-dark: false,
     foreground: $mat-light-theme-foreground,
     background: $mat-light-theme-background,
   );
 }
 
-
-// Creates a container object for a dark theme to be given to individual component theme mixins.
-@function mat-dark-theme($primary, $accent, $warn: mat-palette($mat-red)) {
+// Creates a dark-themed color configuration from the specified
+// primary, accent and warn palettes.
+@function _mat-create-dark-color-config($primary, $accent, $warn: null) {
   @return (
     primary: $primary,
     accent: $accent,
-    warn: $warn,
+    warn: if($warn != null, $warn, mat-palette($mat-red)),
     is-dark: true,
     foreground: $mat-dark-theme-foreground,
     background: $mat-dark-theme-background,
   );
+}
+
+// Creates a container object for a light theme to be given to individual component theme mixins.
+@function mat-light-theme($config-or-primary, $accent: null, $warn: mat-palette($mat-red)) {
+  // This function creates a container object for the individual component theme mixins. Consumers
+  // can construct such an object by calling this function, or by building the object manually.
+  // There are two possible ways to invoke this function in order to create such an object:
+  //
+  //    (1) Passing in a map that holds optional configurations for individual parts of the
+  //        theming system. For `color` configurations, the function only expects the palettes
+  //        for `primary` and `accent` (and optionally `warn`). The function will expand the
+  //        shorthand into an actual configuration that can be consumed in `-color` mixins.
+  //    (2) Legacy pattern: Passing in the palettes as parameters. This is not as flexible
+  //        as passing in a configuration map because only the `color` system can be configured.
+  //
+  // If the legacy pattern is used, we generate a container object only with a light-themed
+  // configuration for the `color` theming part.
+  @if $accent != null {
+    @return _mat-validate-theme((
+      color: _mat-create-light-color-config($config-or-primary, $accent, $warn),
+    ));
+  }
+  // If the map pattern is used (1), we just pass-through the configurations for individual
+  // parts of the theming system, but update the `color` configuration if set. As explained
+  // above, the color shorthand will be expanded to an actual light-themed color configuration.
+  $result: $config-or-primary;
+  @if map_get($config-or-primary, color) {
+    $color-settings: map_get($config-or-primary, color);
+    $primary: map_get($color-settings, primary);
+    $accent: map_get($color-settings, accent);
+    $warn: map_get($color-settings, warn);
+    $result: map_merge($result, (color: _mat-create-light-color-config($primary, $accent, $warn)));
+  }
+  @return _mat-validate-theme($result);
+}
+
+// Creates a container object for a dark theme to be given to individual component theme mixins.
+@function mat-dark-theme($config-or-primary, $accent: null, $warn: mat-palette($mat-red)) {
+  // This function creates a container object for the individual component theme mixins. Consumers
+  // can construct such an object by calling this function, or by building the object manually.
+  // There are two possible ways to invoke this function in order to create such an object:
+  //
+  //    (1) Passing in a map that holds optional configurations for individual parts of the
+  //        theming system. For `color` configurations, the function only expects the palettes
+  //        for `primary` and `accent` (and optionally `warn`). The function will expand the
+  //        shorthand into an actual configuration that can be consumed in `-color` mixins.
+  //    (2) Legacy pattern: Passing in the palettes as parameters. This is not as flexible
+  //        as passing in a configuration map because only the `color` system can be configured.
+  //
+  // If the legacy pattern is used, we generate a container object only with a dark-themed
+  // configuration for the `color` theming part.
+  @if $accent != null {
+    @return _mat-validate-theme((
+      color: _mat-create-dark-color-config($config-or-primary, $accent, $warn),
+    ));
+  }
+  // If the map pattern is used (1), we just pass-through the configurations for individual
+  // parts of the theming system, but update the `color` configuration if set. As explained
+  // above, the color shorthand will be expanded to an actual dark-themed color configuration.
+  $result: $config-or-primary;
+  @if map_get($config-or-primary, color) {
+    $color-settings: map_get($config-or-primary, color);
+    $primary: map_get($color-settings, primary);
+    $accent: map_get($color-settings, accent);
+    $warn: map_get($color-settings, warn);
+    $result: map_merge($result, (color: _mat-create-dark-color-config($primary, $accent, $warn)));
+  }
+  @return _mat-validate-theme($result);
+}
+
+// Needed for backwards compatibility. If the passed `$theme` variable is not a
+// overall theme configuration, we use it as color config.
+@function mat-get-color-config($theme, $default: $theme) {
+  @if map_has_key($theme, color) {
+    @return map_get($theme, color);
+  }
+  @return $default;
+}
+
+@function mat-get-density-config($theme, $default: 0) {
+  @if map_has_key($theme, density) {
+    @return map_get($theme, density);
+  }
+  @return $default;
+}
+
+// For backwards compatibility, typography is not included by default.
+@function mat-get-typography-config($theme, $default: null) {
+  @if (map_has_key($theme, typography)) {
+    @return map_get($theme, typography);
+  }
+  @return $default;
 }

@@ -23,13 +23,13 @@
   }
 }
 
-@mixin mat-slide-toggle-theme($theme) {
-  $is-dark: map_get($theme, is-dark);
-  $primary: map-get($theme, primary);
-  $accent: map-get($theme, accent);
-  $warn: map-get($theme, warn);
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
+@mixin mat-slide-toggle-color($config) {
+  $is-dark: map_get($config, is-dark);
+  $primary: map-get($config, primary);
+  $accent: map-get($config, accent);
+  $warn: map-get($config, warn);
+  $background: map-get($config, background);
+  $foreground: map-get($config, foreground);
 
   // Color hues are based on the specs which briefly show the hues that are applied to a switch.
   // The 2018 specs no longer describe how dark switches should look like. Due to the lack of
@@ -62,7 +62,7 @@
   }
 
   .mat-slide-toggle-thumb {
-    @include _mat-theme-elevation(1, $theme);
+    @include _mat-theme-elevation(1, $config);
     background-color: mat-color($mat-grey, $thumb-unchecked-hue);
   }
 
@@ -76,3 +76,22 @@
     font-family: mat-font-family($config);
   }
 }
+
+@mixin mat-slide-toggle-density($density-scale) {}
+
+@mixin mat-slide-toggle-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-slide-toggle-color($color);
+  }
+  @if $density != null {
+    @include mat-slide-toggle-density($density);
+  }
+  @if $typography != null {
+    @include mat-slide-toggle-typography($typography);
+  }
+}
+

@@ -12,8 +12,8 @@
   @include mdc-linear-progress-buffer-color($buffer-color, $query: $mat-theme-styles-query);
 }
 
-@mixin mat-mdc-progress-bar-theme($theme) {
-  @include mat-using-mdc-theme($theme) {
+@mixin mat-mdc-progress-bar-color($config) {
+  @include mat-using-mdc-theme($config) {
     .mat-mdc-progress-bar {
       @include _mat-mdc-progress-bar-color(primary);
 
@@ -30,4 +30,22 @@
 
 @mixin mat-mdc-progress-bar-typography($config) {
   // No typography for this component.
+}
+
+@mixin mat-mdc-progress-bar-density($density-scale) {}
+
+@mixin mat-mdc-progress-bar-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-mdc-progress-bar-color($color);
+  }
+  @if $density != null {
+    @include mat-mdc-progress-bar-density($density);
+  }
+  @if $typography != null {
+    @include mat-mdc-progress-bar-typography($typography);
+  }
 }

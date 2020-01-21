@@ -82,12 +82,12 @@ $_mat-button-ripple-opacity: 0.1;
   }
 }
 
-@mixin mat-button-theme($theme) {
-  $primary: map-get($theme, primary);
-  $accent: map-get($theme, accent);
-  $warn: map-get($theme, warn);
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
+@mixin mat-button-color($config) {
+  $primary: map-get($config, primary);
+  $accent: map-get($config, accent);
+  $warn: map-get($config, warn);
+  $background: map-get($config, background);
+  $foreground: map-get($config, foreground);
 
   .mat-button, .mat-icon-button, .mat-stroked-button {
     // Buttons without a background color should inherit the font color. This is necessary to
@@ -97,8 +97,8 @@ $_mat-button-ripple-opacity: 0.1;
     color: inherit;
     background: transparent;
 
-    @include _mat-button-theme-property($theme, 'color', text);
-    @include _mat-button-focus-overlay-color($theme);
+    @include _mat-button-theme-property($config, 'color', text);
+    @include _mat-button-focus-overlay-color($config);
 
     // Setup the ripple color to be based on the text color. This ensures that the ripples
     // are matching with the current theme palette and are in contrast to the background color
@@ -124,36 +124,36 @@ $_mat-button-ripple-opacity: 0.1;
     color: mat-color($foreground, text);
     background-color: mat-color($background, raised-button);
 
-    @include _mat-button-theme-property($theme, 'color', default-contrast);
-    @include _mat-button-theme-property($theme, 'background-color', default);
-    @include _mat-button-ripple-color($theme, default-contrast);
+    @include _mat-button-theme-property($config, 'color', default-contrast);
+    @include _mat-button-theme-property($config, 'background-color', default);
+    @include _mat-button-ripple-color($config, default-contrast);
   }
 
   .mat-stroked-button, .mat-flat-button {
-    @include _mat-theme-overridable-elevation(0, $theme);
+    @include _mat-theme-overridable-elevation(0, $config);
   }
 
   .mat-raised-button {
-    @include _mat-theme-overridable-elevation(2, $theme);
+    @include _mat-theme-overridable-elevation(2, $config);
 
     &:not([disabled]):active {
-      @include _mat-theme-overridable-elevation(8, $theme);
+      @include _mat-theme-overridable-elevation(8, $config);
     }
 
     &[disabled] {
-      @include _mat-theme-overridable-elevation(0, $theme);
+      @include _mat-theme-overridable-elevation(0, $config);
     }
   }
 
   .mat-fab, .mat-mini-fab {
-    @include _mat-theme-overridable-elevation(6, $theme);
+    @include _mat-theme-overridable-elevation(6, $config);
 
     &:not([disabled]):active {
-      @include _mat-theme-overridable-elevation(12, $theme);
+      @include _mat-theme-overridable-elevation(12, $config);
     }
 
     &[disabled] {
-      @include _mat-theme-overridable-elevation(0, $theme);
+      @include _mat-theme-overridable-elevation(0, $config);
     }
   }
 }
@@ -166,5 +166,23 @@ $_mat-button-ripple-opacity: 0.1;
       size: mat-font-size($config, button);
       weight: mat-font-weight($config, button);
     }
+  }
+}
+
+@mixin mat-button-density($density-scale) {}
+
+@mixin mat-button-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-button-color($color);
+  }
+  @if $density != null {
+    @include mat-button-density($density);
+  }
+  @if $typography != null {
+    @include mat-button-typography($typography);
   }
 }

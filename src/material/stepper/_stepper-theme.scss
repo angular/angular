@@ -2,11 +2,11 @@
 @import '../core/theming/theming';
 @import '../core/typography/typography-utils';
 
-@mixin mat-stepper-theme($theme) {
-  $foreground: map-get($theme, foreground);
-  $background: map-get($theme, background);
-  $primary: map-get($theme, primary);
-  $warn: map-get($theme, warn);
+@mixin mat-stepper-color($config) {
+  $foreground: map-get($config, foreground);
+  $background: map-get($config, background);
+  $primary: map-get($config, primary);
+  $warn: map-get($config, warn);
 
   .mat-step-header {
     &.cdk-keyboard-focused,
@@ -99,5 +99,23 @@
       size: mat-font-size($config, body-2);
       weight: mat-font-weight($config, body-2);
     };
+  }
+}
+
+@mixin mat-stepper-density($density-scale) {}
+
+@mixin mat-stepper-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-stepper-color($color);
+  }
+  @if $density != null {
+    @include mat-stepper-density($density);
+  }
+  @if $typography != null {
+    @include mat-stepper-typography($typography);
   }
 }

@@ -15,12 +15,12 @@
   }
 }
 
-@mixin mat-radio-theme($theme) {
-  $primary: map-get($theme, primary);
-  $accent: map-get($theme, accent);
-  $warn: map-get($theme, warn);
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
+@mixin mat-radio-color($config) {
+  $primary: map-get($config, primary);
+  $accent: map-get($config, accent);
+  $warn: map-get($config, warn);
+  $background: map-get($config, background);
+  $foreground: map-get($config, foreground);
 
   .mat-radio-outer-circle {
     border-color: mat-color($foreground, secondary-text);
@@ -69,5 +69,23 @@
 @mixin mat-radio-typography($config) {
   .mat-radio-button {
     font-family: mat-font-family($config);
+  }
+}
+
+@mixin mat-radio-density($density-scale) {}
+
+@mixin mat-radio-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-radio-color($color);
+  }
+  @if $density != null {
+    @include mat-radio-density($density);
+  }
+  @if $typography != null {
+    @include mat-radio-typography($typography);
   }
 }

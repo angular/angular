@@ -4,9 +4,9 @@
 @import '../core/style/list-common';
 
 
-@mixin mat-list-theme($theme) {
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
+@mixin mat-list-color($config) {
+  $background: map-get($config, background);
+  $foreground: map-get($config, foreground);
 
   .mat-list-base {
     .mat-list-item {
@@ -88,5 +88,23 @@
       font-size: mat-font-size($config, caption);
       font-weight: mat-font-weight($config, body-2);
     }
+  }
+}
+
+@mixin mat-list-density($density-scale) {}
+
+@mixin mat-list-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-list-color($color);
+  }
+  @if $density != null {
+    @include mat-list-density($density);
+  }
+  @if $typography != null {
+    @include mat-list-typography($typography);
   }
 }

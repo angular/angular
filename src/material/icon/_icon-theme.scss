@@ -1,13 +1,11 @@
 @import '../core/theming/theming';
 
-
-// Include this empty mixin for consistency with the other components.
-@mixin mat-icon-theme($theme) {
-  $primary: map-get($theme, primary);
-  $accent: map-get($theme, accent);
-  $warn: map-get($theme, warn);
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
+@mixin mat-icon-color($config) {
+  $primary: map-get($config, primary);
+  $accent: map-get($config, accent);
+  $warn: map-get($config, warn);
+  $background: map-get($config, background);
+  $foreground: map-get($config, foreground);
 
   .mat-icon {
     &.mat-primary {
@@ -25,3 +23,22 @@
 }
 
 @mixin mat-icon-typography($config) { }
+
+@mixin mat-icon-density($density-scale) {}
+
+@mixin mat-icon-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-icon-color($color);
+  }
+  @if $density != null {
+    @include mat-icon-density($density);
+  }
+  @if $typography != null {
+    @include mat-icon-typography($typography);
+  }
+}
+

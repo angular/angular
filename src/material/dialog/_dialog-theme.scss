@@ -4,12 +4,12 @@
 @import '../core/typography/typography-utils';
 
 
-@mixin mat-dialog-theme($theme) {
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
+@mixin mat-dialog-color($config) {
+  $background: map-get($config, background);
+  $foreground: map-get($config, foreground);
 
   .mat-dialog-container {
-    @include _mat-theme-elevation(24, $theme);
+    @include _mat-theme-elevation(24, $config);
     background: mat-color($background, dialog);
     color: mat-color($foreground, text);
   }
@@ -18,5 +18,23 @@
 @mixin mat-dialog-typography($config) {
   .mat-dialog-title {
     @include mat-typography-level-to-styles($config, title);
+  }
+}
+
+@mixin mat-dialog-density($density-scale) {}
+
+@mixin mat-dialog-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-dialog-color($color);
+  }
+  @if $density != null {
+    @include mat-dialog-density($density);
+  }
+  @if $typography != null {
+    @include mat-dialog-typography($typography);
   }
 }

@@ -3,14 +3,14 @@
 @import '../core/theming/theming';
 @import '../core/typography/typography-utils';
 
-@mixin mat-button-toggle-theme($theme) {
-  $foreground: map-get($theme, foreground);
-  $background: map-get($theme, background);
+@mixin mat-button-toggle-color($config) {
+  $foreground: map-get($config, foreground);
+  $background: map-get($config, background);
   $divider-color: mat-color($foreground, divider);
 
   .mat-button-toggle-standalone,
   .mat-button-toggle-group {
-    @include _mat-theme-elevation(2, $theme);
+    @include _mat-theme-elevation(2, $config);
   }
 
   .mat-button-toggle-standalone.mat-button-toggle-appearance-standard,
@@ -83,5 +83,23 @@
 @mixin mat-button-toggle-typography($config) {
   .mat-button-toggle {
     font-family: mat-font-family($config);
+  }
+}
+
+@mixin mat-button-toggle-density($density-scale) {}
+
+@mixin mat-button-toggle-theme($theme) {
+  $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  @if $color != null {
+    @include mat-button-toggle-color($color);
+  }
+  @if $density != null {
+    @include mat-button-toggle-density($density);
+  }
+  @if $typography != null {
+    @include mat-button-toggle-typography($typography);
   }
 }

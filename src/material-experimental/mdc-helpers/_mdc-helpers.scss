@@ -113,11 +113,11 @@ $mat-typography-level-mappings: (
 
 // Configures MDC's global variables to reflect the given theme, applies the given styles,
 // then resets the global variables to prevent unintended side effects.
-@mixin mat-using-mdc-theme($theme) {
-  $primary: mat-color(map-get($theme, primary));
-  $accent: mat-color(map-get($theme, accent));
-  $warn: mat-color(map-get($theme, warn));
-  $background-palette: map-get($theme, background);
+@mixin mat-using-mdc-theme($config) {
+  $primary: mat-color(map-get($config, primary));
+  $accent: mat-color(map-get($config, accent));
+  $warn: mat-color(map-get($config, warn));
+  $background-palette: map-get($config, background);
 
   // Save the original values.
   $orig-mdc-theme-primary: $mdc-theme-primary;
