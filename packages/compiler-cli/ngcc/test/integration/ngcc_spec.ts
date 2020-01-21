@@ -801,12 +801,16 @@ runInEachFileSystem(() => {
            // Helpers
            function expectNotToHaveProp(obj: object, prop: string) {
              expect(obj.hasOwnProperty(prop))
-                 .toBe(false, `Expected object not to have property '${prop}'.`);
+                 .toBe(
+                     false,
+                     `Expected object not to have property '${prop}': ${JSON.stringify(obj, null, 2)}`);
            }
 
            function expectToHaveProp(obj: object, prop: string) {
              expect(obj.hasOwnProperty(prop))
-                 .toBe(true, `Expected object to have property '${prop}'.`);
+                 .toBe(
+                     true,
+                     `Expected object to have property '${prop}': ${JSON.stringify(obj, null, 2)}`);
            }
 
            function processFormatAndUpdatePackageJson(formatProp: string) {
