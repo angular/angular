@@ -3,6 +3,7 @@
 @import '@material/form-field/mixins.import';
 @import '@material/ripple/variables.import';
 @import '../mdc-helpers/mdc-helpers';
+@import '../../material/core/style/_layout-common.scss';
 
 @include mdc-checkbox-without-ripple($query: $mat-base-styles-query);
 @include mdc-form-field-core-styles($query: $mat-base-styles-query);
@@ -51,13 +52,18 @@
   }
 }
 
-.mat-mdc-checkbox-ripple, .mat-mdc-checkbox .mdc-checkbox__background::before {
-  $ripple-size: 40px;
-  position: absolute;
-  width: $ripple-size;
-  height: $ripple-size;
-  top: 50%;
-  left: 50%;
-  margin: (-$ripple-size / 2) 0 0 (-$ripple-size / 2);
+.mat-mdc-checkbox-ripple {
+  @include mat-fill();
+
+  // Usually the ripple radius would be specified through the MatRipple input, but
+  // since we dynamically adjust the size of the ripple container, we cannot use a
+  // fixed ripple radius.
+  border-radius: 50%;
   pointer-events: none;
+
+  // Fixes the ripples not clipping to the border radius on Safari. Uses `:not(:empty)`
+  // in order to avoid creating extra layers when there aren't any ripples.
+  &:not(:empty) {
+    transform: translateZ(0);
+  }
 }
