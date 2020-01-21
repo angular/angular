@@ -472,14 +472,13 @@ When building web applications, you want to make sure your application is compat
 Even as JavaScript continues to evolve, with new features being introduced, not all browsers are updated with support for these new features at the same pace.
 
 The code you write in development using TypeScript is compiled and bundled into ES2015, the JavaScript syntax that is compatible with most browsers.
-All modern browsers support ES2015 and beyond, but in most cases, you still have to account for users accessing your application from a browser that doesn't.
-When targeting older browsers, [polyfills](guide/browser-support#polyfills) can help bridge the gap by providing functionality that doesn't exist in the older versions of JavaScript supported by those browsers. To fully bridge the gap, you can compile a version of the application directly to ES5, in addition to the primary version compiled to ES2015.
+All modern browsers support ES2015 and beyond, but in most cases, you still have to account for users accessing your application from a browser that does not support ES2015.
 
-To maximize compatibility, you could ship an ES5 variant of your application that includes all your compiled code, plus any polyfills that may be needed.
-Users with modern browsers, however, shouldn't have to pay the price of increased bundle size that comes with both the polyfills they don't need and the larger code size for ES5 equivalents of ES2015 code. For example, ES5 does not support classes and they must be transformed into ES5 code that mimics their behavior.
-Differential loading, which is supported by default in Angular CLI version 8 and higher, solves this problem.
+When targeting browsers that do not support ES2015, like IE11, you will need to do two things to ensure that the application runs correctly:
+  1. Downlevel all JavaScript to ES5 so that the code is syntactically compatible
+  2. Load [polyfills](guide/browser-support#polyfills) to fill in any missing modern browser APIs that your application needs.
 
-Differential loading is a strategy that allows your web application to support multiple browsers, but only load the necessary code that the browser needs. When differential loading is enabled (which is the default) the CLI builds two separate bundles as part of your deployed application.
+Differential loading is a technique of building and loading your application that meets both of these requirements, without penalizing users with modern browsers by having them download code that only older browsers need. When differential loading is enabled (which is the default) the CLI builds two separate bundles as part of your deployed application.
 
 * The first bundle contains modern ES2015 syntax, takes advantage of built-in support in modern browsers, ships fewer polyfills, and results in a smaller bundle size.
 
