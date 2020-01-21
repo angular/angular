@@ -7,7 +7,7 @@
  */
 
 import {CompileDirectiveMetadata, NgAnalyzedModules, StaticSymbol} from '@angular/compiler';
-
+import * as ts from 'typescript';
 import {AstResult} from './common';
 import {BuiltinType, DeclarationKind, Definition, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from './symbols';
 
@@ -354,48 +354,12 @@ export interface Hover {
 /**
  * An instance of an Angular language service created by `createLanguageService()`.
  *
- * The language service returns information about Angular templates that are included in a project
- * as defined by the `LanguageServiceHost`.
- *
- * When a method expects a `fileName` this file can either be source file in the project that
- * contains a template in a string literal or a template file referenced by the project returned
- * by `getTemplateReference()`. All other files will cause the method to return `undefined`.
- *
- * If a method takes a `position`, it is the offset of the UTF-16 code-point relative to the
- * beginning of the file reference by `fileName`.
- *
- * This interface and all interfaces and types marked as `LanguageService` types, describe  a
- * particular implementation of the Angular language service and is not intended to be
- * implemented. Adding members to the interface will not be considered a breaking change as
- * defined by SemVer.
- *
- * Removing a member or making a member optional, changing a method parameters, or changing a
- * member's type will all be considered a breaking change.
- *
- * While an interface is marked as experimental breaking-changes will be allowed between minor
- * releases. After an interface is marked as stable breaking-changes will only be allowed between
- * major releases. No breaking changes are allowed between patch releases.
+ * The Angular language service implements a subset of methods defined in
+ * The Angular language service implements a subset of methods defined by
+ * the TypeScript language service.
  *
  * @publicApi
  */
-export interface LanguageService {
-  /**
-   * Returns a list of all error for all templates in the given file.
-   */
-  getDiagnostics(fileName: string): ts.Diagnostic[];
-
-  /**
-   * Return the completions at the given position.
-   */
-  getCompletionsAt(fileName: string, position: number): ts.CompletionInfo|undefined;
-
-  /**
-   * Return the definition location for the symbol at position.
-   */
-  getDefinitionAt(fileName: string, position: number): ts.DefinitionInfoAndBoundSpan|undefined;
-
-  /**
-   * Return the hover information for the symbol at position.
-   */
-  getHoverAt(fileName: string, position: number): ts.QuickInfo|undefined;
-}
+export type LanguageService = Pick<
+    ts.LanguageService, 'getCompletionsAtPosition'|'getDefinitionAndBoundSpan'|
+    'getQuickInfoAtPosition'|'getSemanticDiagnostics'>;

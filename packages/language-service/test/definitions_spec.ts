@@ -33,7 +33,7 @@ describe('definitions', () => {
       }`);
 
     const marker = mockHost.getReferenceMarkerFor(fileName, 'name');
-    const result = ngService.getDefinitionAt(fileName, marker.start);
+    const result = ngService.getDefinitionAndBoundSpan(fileName, marker.start);
     expect(result).toBeDefined();
     const {textSpan, definitions} = result !;
 
@@ -58,7 +58,7 @@ describe('definitions', () => {
       }`);
 
     const marker = mockHost.getReferenceMarkerFor(fileName, 'name');
-    const result = ngService.getDefinitionAt(fileName, marker.start);
+    const result = ngService.getDefinitionAndBoundSpan(fileName, marker.start);
     expect(result).toBeDefined();
     const {textSpan, definitions} = result !;
 
@@ -83,7 +83,7 @@ describe('definitions', () => {
       }`);
 
     const marker = mockHost.getReferenceMarkerFor(fileName, 'myClick');
-    const result = ngService.getDefinitionAt(fileName, marker.start);
+    const result = ngService.getDefinitionAndBoundSpan(fileName, marker.start);
     expect(result).toBeDefined();
     const {textSpan, definitions} = result !;
 
@@ -108,7 +108,7 @@ describe('definitions', () => {
       }`);
 
     const marker = mockHost.getReferenceMarkerFor(fileName, 'include');
-    const result = ngService.getDefinitionAt(fileName, marker.start);
+    const result = ngService.getDefinitionAndBoundSpan(fileName, marker.start);
     expect(result).toBeDefined();
     const {textSpan, definitions} = result !;
 
@@ -133,7 +133,7 @@ describe('definitions', () => {
     // Get the marker for «test-comp» in the code added above.
     const marker = mockHost.getReferenceMarkerFor(fileName, 'test-comp');
 
-    const result = ngService.getDefinitionAt(fileName, marker.start);
+    const result = ngService.getDefinitionAndBoundSpan(fileName, marker.start);
     expect(result).toBeDefined();
     const {textSpan, definitions} = result !;
 
@@ -170,7 +170,7 @@ describe('definitions', () => {
     // Get the marker for «test» in the code added above.
     const marker = mockHost.getReferenceMarkerFor(fileName, 'test');
 
-    const result = ngService.getDefinitionAt(fileName, marker.start);
+    const result = ngService.getDefinitionAndBoundSpan(fileName, marker.start);
     expect(result).toBeDefined();
     const {textSpan, definitions} = result !;
 
@@ -207,7 +207,7 @@ describe('definitions', () => {
     // Get the marker for «test» in the code added above.
     const marker = mockHost.getReferenceMarkerFor(fileName, 'tcName');
 
-    const result = ngService.getDefinitionAt(fileName, marker.start);
+    const result = ngService.getDefinitionAndBoundSpan(fileName, marker.start);
     expect(result).toBeDefined();
     const {textSpan, definitions} = result !;
 
@@ -244,7 +244,7 @@ describe('definitions', () => {
     // Get the marker for «test» in the code added above.
     const marker = mockHost.getReferenceMarkerFor(fileName, 'async');
 
-    const result = ngService.getDefinitionAt(fileName, marker.start);
+    const result = ngService.getDefinitionAndBoundSpan(fileName, marker.start);
     expect(result).toBeDefined();
     const {textSpan, definitions} = result !;
 
@@ -270,7 +270,7 @@ describe('definitions', () => {
     // Get the marker for ngIf in the code added above.
     const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'ngIf');
 
-    const result = ngService.getDefinitionAt(TEST_TEMPLATE, marker.start);
+    const result = ngService.getDefinitionAndBoundSpan(TEST_TEMPLATE, marker.start);
     expect(result).toBeDefined();
     const {textSpan, definitions} = result !;
 
@@ -296,7 +296,7 @@ describe('definitions', () => {
     // Get the marker for «model» in the code added above.
     const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'model');
 
-    const result = ngService.getDefinitionAt(TEST_TEMPLATE, marker.start);
+    const result = ngService.getDefinitionAndBoundSpan(TEST_TEMPLATE, marker.start);
     expect(result).toBeDefined();
     const {textSpan, definitions} = result !;
 
@@ -326,7 +326,7 @@ describe('definitions', () => {
 	      export class MyComponent {}`);
 
     const marker = mockHost.getReferenceMarkerFor(fileName, 'test');
-    const result = ngService.getDefinitionAt(fileName, marker.start);
+    const result = ngService.getDefinitionAndBoundSpan(fileName, marker.start);
 
     expect(result).toBeDefined();
     const {textSpan, definitions} = result !;
@@ -349,7 +349,7 @@ describe('definitions', () => {
 	      export class MyComponent {}`);
 
     const marker = mockHost.getReferenceMarkerFor(fileName, 'test');
-    const result = ngService.getDefinitionAt(fileName, marker.start);
+    const result = ngService.getDefinitionAndBoundSpan(fileName, marker.start);
 
     expect(result).toBeDefined();
     const {textSpan, definitions} = result !;
@@ -373,7 +373,7 @@ describe('definitions', () => {
       }`);
 
     const marker = mockHost.getReferenceMarkerFor(fileName, 'name');
-    const result = ngService.getDefinitionAt(fileName, marker.start);
+    const result = ngService.getDefinitionAndBoundSpan(fileName, marker.start);
     expect(result).toBeDefined();
     const {textSpan, definitions} = result !;
 

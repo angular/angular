@@ -36,7 +36,7 @@ export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
         return results;
       }
     }
-    return ngLS.getCompletionsAt(fileName, position);
+    return ngLS.getCompletionsAtPosition(fileName, position, options);
   }
 
   function getQuickInfoAtPosition(fileName: string, position: number): tss.QuickInfo|undefined {
@@ -47,7 +47,7 @@ export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
         return result;
       }
     }
-    return ngLS.getHoverAt(fileName, position);
+    return ngLS.getQuickInfoAtPosition(fileName, position);
   }
 
   function getSemanticDiagnostics(fileName: string): tss.Diagnostic[] {
@@ -56,7 +56,7 @@ export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
       results.push(...tsLS.getSemanticDiagnostics(fileName));
     }
     // For semantic diagnostics we need to combine both TS + Angular results
-    results.push(...ngLS.getDiagnostics(fileName));
+    results.push(...ngLS.getSemanticDiagnostics(fileName));
     return results;
   }
 
@@ -69,7 +69,7 @@ export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
         return results;
       }
     }
-    const result = ngLS.getDefinitionAt(fileName, position);
+    const result = ngLS.getDefinitionAndBoundSpan(fileName, position);
     if (!result || !result.definitions || !result.definitions.length) {
       return;
     }
@@ -85,7 +85,7 @@ export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
         return result;
       }
     }
-    return ngLS.getDefinitionAt(fileName, position);
+    return ngLS.getDefinitionAndBoundSpan(fileName, position);
   }
 
   const proxy: tss.LanguageService = Object.assign(
