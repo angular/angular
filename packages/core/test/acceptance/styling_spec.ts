@@ -13,13 +13,13 @@ import {TestBed} from '@angular/core/testing';
 import {getElementClasses, getElementStyles, getSortedClassName, getSortedStyle} from '@angular/core/testing/src/styling';
 import {By, DomSanitizer, SafeStyle} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
+import {ivyEnabled, modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
 describe('styling', () => {
   beforeEach(ngDevModeResetPerfCounters);
 
   describe('apply in prioritization order', () => {
-    onlyInIvy('style merging is ivy only feature').it('should perform static bindings', () => {
+    it('should perform static bindings', () => {
       @Component({template: `<div class="STATIC" style="color: blue"></div>`})
       class Cmp {
       }
@@ -32,7 +32,7 @@ describe('styling', () => {
       expect(getSortedStyle(staticDiv)).toEqual('color: blue;');
     });
 
-    onlyInIvy('style merging is ivy only feature').it('should perform prop bindings', () => {
+    it('should perform prop bindings', () => {
       @Component({
         template: `<div [class.dynamic]="true" 
                         [style.color]="'blue'"
@@ -127,7 +127,6 @@ describe('styling', () => {
       expect(getSortedStyle(div)).toEqual('color: blue; font-family: c2;');
     });
 
-    // onlyInIvy('style merging is ivy only feature')
     it('should support hostBindings inheritance', () => {
       @Component({template: `<div my-host-bindings class="STATIC" style="color: blue;"></div>`})
       class Cmp {
@@ -159,7 +158,6 @@ describe('styling', () => {
         .it('should apply template classes in correct order', () => {
           @Component({
             template: `
-        <div class="STATIC"></div>
         <div class="STATIC DELETE_MAP_A DELETE_PROP_B"
              [class]="{foo: true, DELETE_MAP_A: false}"
              [class.bar]="true"
@@ -173,9 +171,7 @@ describe('styling', () => {
           const fixture = TestBed.createComponent(Cmp);
           fixture.detectChanges();
 
-          const [staticDiv, classDiv] = fixture.nativeElement.querySelectorAll('div');
-          expect(getSortedClassName(staticDiv)).toEqual('STATIC');
-          expect(getSortedStyle(staticDiv)).toEqual('color: blue;');
+          const classDiv = fixture.nativeElement.querySelector('div');
           expect(getSortedClassName(classDiv)).toEqual('STATIC bar foo');
         });
 
@@ -183,7 +179,6 @@ describe('styling', () => {
         .it('should apply template styles in correct order', () => {
           @Component({
             template: `
-        <div style="color: blue"></div>
         <div style="width: 100px; height: 200px: color: red; background-color: yellow"
              [style]="{width: '110px', height: null}"
              [style.color]=" 'blue' "
@@ -197,13 +192,12 @@ describe('styling', () => {
           const fixture = TestBed.createComponent(Cmp);
           fixture.detectChanges();
 
-          const [staticDiv, styleDiv] = fixture.nativeElement.querySelectorAll('div');
-          expect(getSortedStyle(staticDiv)).toEqual('color: blue;');
+          const styleDiv = fixture.nativeElement.querySelector('div');
           expect(getSortedStyle(styleDiv))
               .toEqual('background-color: yellow; color: blue; width: 110px;');
         });
 
-    onlyInIvy('style merging is ivy only feature').it('should work with ngClass/ngStyle', () => {
+    it('should work with ngClass/ngStyle', () => {
       @Component(
           {template: `<div [ngClass]="['dynamic']" [ngStyle]="{'font-family': 'dynamic'}"></div>`})
       class Cmp {
@@ -211,7 +205,6 @@ describe('styling', () => {
       TestBed.configureTestingModule({declarations: [Cmp]});
       const fixture = TestBed.createComponent(Cmp);
       fixture.detectChanges();
-      // fixture.detectChanges();
 
       const div = fixture.nativeElement.querySelector('div');
       expect(getSortedClassName(div)).toEqual('dynamic');
@@ -219,74 +212,157 @@ describe('styling', () => {
     });
   });
 
-  it('should mimic VE [class] bindings behavior if shadowed', () => {
-    // VE Behavior https://stackblitz.com/edit/angular-cycpsf
-    @Component({
-      template: `
+  modifiedInIvy('shadow bindings include static portion')
+      .it('should bind [class] as input to directive', () => {
+        // VE Behavior https://stackblitz.com/edit/angular-cycpsf
+        // IVY behavior is slightly different see next test with same name.
+        @Component({
+          template: `
       <div class="s1" [class]=" 'd1' " dir-shadows-class-input></div>
       <div class="s2 {{'d2'}}" dir-shadows-class-input></div>
       `
-    })
-    class Cmp {
-    }
+        })
+        class Cmp {
+        }
 
-    @Directive({selector: '[dir-shadows-class-input]'})
-    class DirectiveShadowsClassInput {
-      constructor(private elementRef: ElementRef) {}
-      @Input('class')
-      set klass(value: string) {
-        this.elementRef.nativeElement.setAttribute('shadow-class', value);
-      }
-    }
+        @Directive({selector: '[dir-shadows-class-input]'})
+        class DirectiveShadowsClassInput {
+          constructor(private elementRef: ElementRef) {}
+          @Input('class')
+          set klass(value: string) {
+            this.elementRef.nativeElement.setAttribute('shadow-class', value);
+          }
+        }
 
-    TestBed.configureTestingModule({declarations: [Cmp, DirectiveShadowsClassInput]});
-    const fixture = TestBed.createComponent(Cmp);
-    fixture.detectChanges();
+        TestBed.configureTestingModule({declarations: [Cmp, DirectiveShadowsClassInput]});
+        const fixture = TestBed.createComponent(Cmp);
+        fixture.detectChanges();
 
-    const [div1, div2] = fixture.nativeElement.querySelectorAll('div');
-    expect(div1.className).toEqual('s1');
-    // VE has weird behavior where it calls the @Input('class') with either `class="static` or
-    // `[class]="dynamic"` but never both. This is determined at compile time. Due to locality we
-    // don't know if `[class]` is coming if we see `class` only. So we need to combine the two
-    // This results in slightly different calling sequence, but should result in the same final DOM.
-    expect(div1.getAttribute('shadow-class')).toEqual(ivyEnabled ? 's1 d1' : 'd1');
+        const [div1, div2] = fixture.nativeElement.querySelectorAll('div');
+        expect(div1.className).toEqual('s1');
+        // VE has weird behavior where it calls the @Input('class') with either `class="static` or
+        // `[class]="dynamic"` but never both. This is determined at compile time. Due to locality
+        // we
+        // don't know if `[class]` is coming if we see `class` only. So we need to combine the two
+        // This results in slightly different calling sequence, but should result in the same final
+        // DOM.
+        expect(div1.getAttribute('shadow-class')).toEqual('d1');
 
-    expect(div2.className).toEqual('');
-    expect(div2.getAttribute('shadow-class')).toEqual('s2 d2');
-  });
+        expect(div2.className).toEqual('');
+        expect(div2.getAttribute('shadow-class')).toEqual('s2 d2');
+      });
 
-  it('should mimic VE [style] bindings behavior if shadowed', () => {
-    // VE Behavior https://stackblitz.com/edit/angular-cycpsf
-    @Component({
-      template: `
-      <div style="color: red;" [style]=" 'width: 100px;' " dir-shadows-style-input></div>
+
+  onlyInIvy('shadow bindings include static portion')
+      .it('should bind [class] as input to directive', () => {
+        // VE Behavior https://stackblitz.com/edit/angular-cycpsf
+        // IVY behavior is slightly different see next test with same name.
+        @Component({
+          template: `
+      <div class="s1" [class]=" 'd1' " dir-shadows-class-input></div>
+      <div class="s2 {{'d2'}}" dir-shadows-class-input></div>
       `
-    })
-    class Cmp {
-    }
+        })
+        class Cmp {
+        }
 
-    @Directive({selector: '[dir-shadows-style-input]'})
-    class DirectiveShadowsClassInput {
-      constructor(private elementRef: ElementRef) {}
-      @Input('style')
-      set style(value: string) {
-        this.elementRef.nativeElement.setAttribute('shadow-style', value);
-      }
-    }
+        @Directive({selector: '[dir-shadows-class-input]'})
+        class DirectiveShadowsClassInput {
+          constructor(private elementRef: ElementRef) {}
+          @Input('class')
+          set klass(value: string) {
+            this.elementRef.nativeElement.setAttribute('shadow-class', value);
+          }
+        }
 
-    TestBed.configureTestingModule({declarations: [Cmp, DirectiveShadowsClassInput]});
-    const fixture = TestBed.createComponent(Cmp);
-    fixture.detectChanges();
+        TestBed.configureTestingModule({declarations: [Cmp, DirectiveShadowsClassInput]});
+        const fixture = TestBed.createComponent(Cmp);
+        fixture.detectChanges();
 
-    const div = fixture.nativeElement.querySelector('div');
-    expect(div.style.cssText).toEqual('color: red;');
-    // VE has weird behavior where it calls the @Input('class') with either `class="static` or
-    // `[class]="dynamic"` but never both. This is determined at compile time. Due to locality we
-    // don't know if `[class]` is coming if we see `class` only. So we need to combine the two
-    // This results in slightly different calling sequence, but should result in the same final DOM.
-    expect(div.getAttribute('shadow-style'))
-        .toEqual(ivyEnabled ? 'color: red; width: 100px;' : 'width: 100px;');
-  });
+        const [div1, div2] = fixture.nativeElement.querySelectorAll('div');
+        expect(div1.className).toEqual('s1');
+        // VE has weird behavior where it calls the @Input('class') with either `class="static` or
+        // `[class]="dynamic"` but never both. This is determined at compile time. Due to locality
+        // we
+        // don't know if `[class]` is coming if we see `class` only. So we need to combine the two
+        // This results in slightly different calling sequence, but should result in the same final
+        // DOM.
+        expect(div1.getAttribute('shadow-class')).toEqual('s1 d1');
+
+        expect(div2.className).toEqual('');
+        expect(div2.getAttribute('shadow-class')).toEqual('s2 d2');
+      });
+
+
+  modifiedInIvy('shadow bindings include static portion')
+      .it('should bind [style] as input to directive', () => {
+        // VE Behavior https://stackblitz.com/edit/angular-cycpsf
+        @Component({
+          template: `
+          <div style="color: red;" [style]=" 'width: 100px;' " dir-shadows-style-input></div>
+          `
+        })
+        class Cmp {
+        }
+
+        @Directive({selector: '[dir-shadows-style-input]'})
+        class DirectiveShadowsClassInput {
+          constructor(private elementRef: ElementRef) {}
+          @Input('style')
+          set style(value: string) {
+            this.elementRef.nativeElement.setAttribute('shadow-style', value);
+          }
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp, DirectiveShadowsClassInput]});
+        const fixture = TestBed.createComponent(Cmp);
+        fixture.detectChanges();
+
+        const div = fixture.nativeElement.querySelector('div');
+        expect(div.style.cssText).toEqual('color: red;');
+        // VE has weird behavior where it calls the @Input('class') with either `class="static` or
+        // `[class]="dynamic"` but never both. This is determined at compile time. Due to locality
+        // we
+        // don't know if `[class]` is coming if we see `class` only. So we need to combine the two
+        // This results in slightly different calling sequence, but should result in the same final
+        // DOM.
+        expect(div.getAttribute('shadow-style')).toEqual('width: 100px;');
+      });
+
+  onlyInIvy('shadow bindings include static portion')
+      .it('should bind [style] as input to directive', () => {
+        // VE Behavior https://stackblitz.com/edit/angular-cycpsf
+        @Component({
+          template: `
+          <div style="color: red;" [style]=" 'width: 100px;' " dir-shadows-style-input></div>
+          `
+        })
+        class Cmp {
+        }
+
+        @Directive({selector: '[dir-shadows-style-input]'})
+        class DirectiveShadowsClassInput {
+          constructor(private elementRef: ElementRef) {}
+          @Input('style')
+          set style(value: string) {
+            this.elementRef.nativeElement.setAttribute('shadow-style', value);
+          }
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp, DirectiveShadowsClassInput]});
+        const fixture = TestBed.createComponent(Cmp);
+        fixture.detectChanges();
+
+        const div = fixture.nativeElement.querySelector('div');
+        expect(div.style.cssText).toEqual('color: red;');
+        // VE has weird behavior where it calls the @Input('class') with either `class="static` or
+        // `[class]="dynamic"` but never both. This is determined at compile time. Due to locality
+        // we
+        // don't know if `[class]` is coming if we see `class` only. So we need to combine the two
+        // This results in slightly different calling sequence, but should result in the same final
+        // DOM.
+        expect(div.getAttribute('shadow-style')).toEqual('color: red; width: 100px;');
+      });
 
   it('should prevent circular ExpressionChangedAfterItHasBeenCheckedError on shadow inputs', () => {
     @Component({template: `<div class="s1" dir-shadows-class-input></div>`})
@@ -559,7 +635,7 @@ describe('styling', () => {
     });
   });
 
-  it('should not throw if host style binding is on a template node', () => {
+  it('should not write to the native element if a directive shadows the class input', () => {
     // This ex is a bit contrived. In real apps, you might have a shared class that is extended
     // both by components with host elements and by directives on template nodes. In that case, the
     // host styles for the template directives should just be ignored.
@@ -2767,7 +2843,6 @@ describe('styling', () => {
         root.classList.add('0');
         expect(root.className.split(/\s+/).sort().join(' ')).toEqual('0 1 2 3');
 
-        // TODO(pk): why ???
         fixture.componentInstance.classes = '1 2 3 4';
         fixture.detectChanges();
         expect(root.className.split(/\s+/).sort().join(' ')).toEqual('0 1 2 3 4');
