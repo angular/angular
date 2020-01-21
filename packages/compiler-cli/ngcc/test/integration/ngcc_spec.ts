@@ -795,8 +795,16 @@ runInEachFileSystem(() => {
            expect(pkgKeys).toContain('|esm5_ivy_ngcc|esm5|');
            expect(pkgKeys).toContain('|fesm2015_ivy_ngcc|fesm2015|');
            expect(pkgKeys).toContain('|fesm5_ivy_ngcc|fesm5|');
+
+           // NOTE:
+           // Along with the first format that is processed, the typings are processed as well.
+           // Also, once a property has been processed, alias properties as also marked as
+           // processed. Aliases properties are properties that point to the same entry-point file.
+           // For example:
+           // - `fesm2015` <=> `es2015`
+           // - `fesm5` <=> `module`
            expect(stringifyKeys(pkg.__processed_by_ivy_ngcc__ !))
-               .toMatch(/\|esm5\|(?:.+\|)?fesm2015\|(?:.+\|)?fesm5\|/);
+               .toBe('|es2015|esm5|fesm2015|fesm5|module|typings|');
 
            // Helpers
            function expectNotToHaveProp(obj: object, prop: string) {
