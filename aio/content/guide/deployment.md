@@ -474,11 +474,11 @@ Even as JavaScript continues to evolve, with new features being introduced, not 
 The code you write in development using TypeScript is compiled and bundled into ES2015, the JavaScript syntax that is compatible with most browsers.
 All modern browsers support ES2015 and beyond, but in most cases, you still have to account for users accessing your application from a browser that does not support ES2015.
 
-When targeting browsers that do not support ES2015, like IE11, you will need to do two things to ensure that the application runs correctly:
-  1. Downlevel all JavaScript to ES5 so that the code is syntactically compatible
+When targeting browsers that do not support ES2015, such as IE11, you must do two things to ensure that the application runs correctly:
+  1. Downlevel all JavaScript to ES5 so that the code is syntactically compatible.
   2. Load [polyfills](guide/browser-support#polyfills) to fill in any missing modern browser APIs that your application needs.
 
-Differential loading is a technique of building and loading your application that meets both of these requirements, without penalizing users with modern browsers by having them download code that only older browsers need. When differential loading is enabled (which is the default) the CLI builds two separate bundles as part of your deployed application.
+[Differential loading](guide/glossary#differential_loading) is a technique of building and loading your application that meets both of these requirements, without penalizing users with modern browsers by having them download code that only older browsers need. When differential loading is enabled (which is the default) the CLI builds two separate bundles as part of your deployed application.
 
 * The first bundle contains modern ES2015 syntax, takes advantage of built-in support in modern browsers, ships fewer polyfills, and results in a smaller bundle size.
 
@@ -614,7 +614,7 @@ To explicitly disable differential loading and create an ES5 build:
 ## Local development in older browsers
 
 In Angular CLI version 8 and higher, differential loading is enabled by default for the `ng build` command.
-The `ng serve`, `ng test`, and `ng e2e` commands, however, generate a single ES2015 build which cannot run in older browsers, such as IE 11.
+The `ng serve`, `ng test`, and `ng e2e` commands, however, generate a single ES2015 build that cannot run in older browsers, such as IE 11.
 
 If you want to run ES5 code during development, you could disable differential loading completely.
 To maintain the benefits of differential loading, however, a better option is to define multiple configurations for `ng serve`, `ng e2e`, and `ng test`.
