@@ -425,7 +425,7 @@ The following example displays the graph for the _main_ bundle.
 
 <code-example language="none" class="code-shell">
 
-  node_modules/.bin/source-map-explorer dist/main.*.bundle.js
+  node_modules/.bin/source-map-explorer dist/main*.js
 
 </code-example>
 
