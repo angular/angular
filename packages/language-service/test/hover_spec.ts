@@ -32,7 +32,7 @@ describe('hover', () => {
         name: string;
       }`);
     const marker = mockHost.getReferenceMarkerFor(fileName, 'name');
-    const quickInfo = ngLS.getHoverAt(fileName, marker.start);
+    const quickInfo = ngLS.getQuickInfoAtPosition(fileName, marker.start);
     expect(quickInfo).toBeTruthy();
     const {textSpan, displayParts} = quickInfo !;
     expect(textSpan).toEqual(marker);
@@ -48,7 +48,7 @@ describe('hover', () => {
         name: string;
       }`);
     const marker = mockHost.getReferenceMarkerFor(fileName, 'name');
-    const quickInfo = ngLS.getHoverAt(fileName, marker.start);
+    const quickInfo = ngLS.getQuickInfoAtPosition(fileName, marker.start);
     expect(quickInfo).toBeTruthy();
     const {textSpan, displayParts} = quickInfo !;
     expect(textSpan).toEqual(marker);
@@ -64,7 +64,7 @@ describe('hover', () => {
         myClick() { }
       }`);
     const marker = mockHost.getDefinitionMarkerFor(fileName, 'myClick');
-    const quickInfo = ngLS.getHoverAt(fileName, marker.start);
+    const quickInfo = ngLS.getQuickInfoAtPosition(fileName, marker.start);
     expect(quickInfo).toBeTruthy();
     const {textSpan, displayParts} = quickInfo !;
     expect(textSpan).toEqual(marker);
@@ -81,7 +81,7 @@ describe('hover', () => {
         include = true;
       }`);
     const marker = mockHost.getReferenceMarkerFor(fileName, 'include');
-    const quickInfo = ngLS.getHoverAt(fileName, marker.start);
+    const quickInfo = ngLS.getQuickInfoAtPosition(fileName, marker.start);
     expect(quickInfo).toBeTruthy();
     const {textSpan, displayParts} = quickInfo !;
     expect(textSpan).toEqual(marker);
@@ -95,7 +95,7 @@ describe('hover', () => {
       })
       export class MyComponent { }`);
     const marker = mockHost.getDefinitionMarkerFor(fileName, 'test');
-    const quickInfo = ngLS.getHoverAt(fileName, marker.start);
+    const quickInfo = ngLS.getQuickInfoAtPosition(fileName, marker.start);
     expect(quickInfo).toBeTruthy();
     const {textSpan, displayParts} = quickInfo !;
     expect(textSpan).toEqual(marker);
@@ -109,7 +109,7 @@ describe('hover', () => {
       })
       export class MyComponent { }`);
     const marker = mockHost.getReferenceMarkerFor(fileName, 'string-model');
-    const quickInfo = ngLS.getHoverAt(fileName, marker.start);
+    const quickInfo = ngLS.getQuickInfoAtPosition(fileName, marker.start);
     expect(quickInfo).toBeTruthy();
     const {textSpan, displayParts} = quickInfo !;
     expect(textSpan).toEqual(marker);
@@ -125,7 +125,7 @@ describe('hover', () => {
         myHandler() {}
       }`);
     const marker = mockHost.getDefinitionMarkerFor(fileName, 'test');
-    const quickInfo = ngLS.getHoverAt(fileName, marker.start);
+    const quickInfo = ngLS.getQuickInfoAtPosition(fileName, marker.start);
     expect(quickInfo).toBeTruthy();
     const {textSpan, displayParts} = quickInfo !;
     expect(textSpan).toEqual(marker);
@@ -141,7 +141,7 @@ describe('hover', () => {
         name = 'my name';
       }`);
     const marker = mockHost.getDefinitionMarkerFor(fileName, 'tcName');
-    const quickInfo = ngLS.getHoverAt(fileName, marker.start);
+    const quickInfo = ngLS.getQuickInfoAtPosition(fileName, marker.start);
     expect(quickInfo).toBeTruthy();
     const {textSpan, displayParts} = quickInfo !;
     expect(textSpan).toEqual(marker);
@@ -151,7 +151,7 @@ describe('hover', () => {
   it('should be able to find a structural directive', () => {
     mockHost.override(TEST_TEMPLATE, `<div «*ᐱngIfᐱ="true"»></div>`);
     const marker = mockHost.getDefinitionMarkerFor(TEST_TEMPLATE, 'ngIf');
-    const quickInfo = ngLS.getHoverAt(TEST_TEMPLATE, marker.start);
+    const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
     expect(quickInfo).toBeTruthy();
     const {textSpan, displayParts} = quickInfo !;
     expect(textSpan).toEqual(marker);
@@ -161,7 +161,7 @@ describe('hover', () => {
   it('should be able to find a reference to a two-way binding', () => {
     mockHost.override(TEST_TEMPLATE, `<test-comp string-model «[(ᐱmodelᐱ)]="title"»></test-comp>`);
     const marker = mockHost.getDefinitionMarkerFor(TEST_TEMPLATE, 'model');
-    const quickInfo = ngLS.getHoverAt(TEST_TEMPLATE, marker.start);
+    const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
     expect(quickInfo).toBeTruthy();
     const {textSpan, displayParts} = quickInfo !;
     expect(textSpan).toEqual(marker);
@@ -175,7 +175,7 @@ describe('hover', () => {
       })
       export class MyComponent {  }`);
     const marker = mockHost.getReferenceMarkerFor(fileName, 'chart');
-    const quickInfo = ngLS.getHoverAt(fileName, marker.start);
+    const quickInfo = ngLS.getQuickInfoAtPosition(fileName, marker.start);
     expect(quickInfo).toBeUndefined();
   });
 
@@ -191,7 +191,7 @@ describe('hover', () => {
         name: string;
       }`);
     const marker = mockHost.getReferenceMarkerFor(fileName, 'AppComponent');
-    const quickInfo = ngLS.getHoverAt(fileName, marker.start);
+    const quickInfo = ngLS.getQuickInfoAtPosition(fileName, marker.start);
     expect(quickInfo).toBeTruthy();
     const {textSpan, displayParts} = quickInfo !;
     expect(textSpan).toEqual(marker);
@@ -203,7 +203,7 @@ describe('hover', () => {
     const content = mockHost.readFile(fileName) !;
     const position = content.indexOf('StringModel');
     expect(position).toBeGreaterThan(0);
-    const quickInfo = ngLS.getHoverAt(fileName, position);
+    const quickInfo = ngLS.getQuickInfoAtPosition(fileName, position);
     expect(quickInfo).toBeTruthy();
     const {textSpan, displayParts} = quickInfo !;
     expect(textSpan).toEqual({
@@ -216,7 +216,7 @@ describe('hover', () => {
   it('should be able to provide quick info for $any() cast function', () => {
     const content = mockHost.override(TEST_TEMPLATE, '<div>{{$any(title)}}</div>');
     const position = content.indexOf('$any');
-    const quickInfo = ngLS.getHoverAt(TEST_TEMPLATE, position);
+    const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, position);
     expect(quickInfo).toBeDefined();
     const {textSpan, displayParts} = quickInfo !;
     expect(textSpan).toEqual({
@@ -229,7 +229,7 @@ describe('hover', () => {
   it('should provide documentation for a property', () => {
     mockHost.override(TEST_TEMPLATE, `<div>{{~{cursor}title}}</div>`);
     const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
-    const quickInfo = ngLS.getHoverAt(TEST_TEMPLATE, marker.start);
+    const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
     expect(quickInfo).toBeDefined();
     const documentation = toText(quickInfo !.documentation);
     expect(documentation).toBe('This is the title of the `TemplateReference` Component.');
@@ -238,7 +238,7 @@ describe('hover', () => {
   it('should provide documentation for a selector', () => {
     mockHost.override(TEST_TEMPLATE, `<~{cursor}test-comp></test-comp>`);
     const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
-    const quickInfo = ngLS.getHoverAt(TEST_TEMPLATE, marker.start);
+    const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
     expect(quickInfo).toBeDefined();
     const documentation = toText(quickInfo !.documentation);
     expect(documentation).toBe('This Component provides the `test-comp` selector.');
@@ -253,7 +253,7 @@ describe('hover', () => {
         name: string;
       }`);
     const marker = mockHost.getReferenceMarkerFor(fileName, 'name');
-    const quickInfo = ngLS.getHoverAt(fileName, marker.start);
+    const quickInfo = ngLS.getQuickInfoAtPosition(fileName, marker.start);
     expect(quickInfo).toBeTruthy();
     const {textSpan, displayParts} = quickInfo !;
     expect(textSpan).toEqual(marker);
