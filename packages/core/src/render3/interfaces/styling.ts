@@ -301,9 +301,10 @@ import {LView} from './view';
  *
  *   2. the `styleMap` instruction runs (it uses it by default internally).
  *
- *   3. The component/directive `LView` instance has a sanitizer object attached to it
- *      (this happens when `renderComponent` is executed with a `sanitizer` value or
- *      if the ngModule contains a sanitizer provider attached to it).
+ * Sanitization can be enabled in the cases above, however, if a sanitizer is attached
+ * in the `LView` then that sanitizer can be used to override whatever sanitizer is
+ * passed in the examples above (this happens when `renderComponent` is executed with a
+ * `sanitizer` value or if the ngModule contains a sanitizer provider attached to it).
  *
  * If and when sanitization is active then all property/value entries will be evaluated
  * through the active sanitizer before they are applied to the element (or the styling
