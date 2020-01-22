@@ -76,7 +76,7 @@ class PublishReleaseTask extends BaseReleaseTask {
     this.verifyNoUncommittedChanges();
 
     // Branch that will be used to build the output for the release of the current version.
-    const publishBranch = this.switchToPublishBranch(newVersion);
+    const publishBranch = await this.assertValidPublishBranch(newVersion);
 
     this._verifyLastCommitFromStagingScript();
     this.verifyLocalCommitsMatchUpstream(publishBranch);

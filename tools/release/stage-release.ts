@@ -92,7 +92,7 @@ class StageReleaseTask extends BaseReleaseTask {
     this.verifyNoUncommittedChanges();
 
     // Branch that will be used to stage the release for the new selected version.
-    const publishBranch = this.switchToPublishBranch(newVersion);
+    const publishBranch = await this.assertValidPublishBranch(newVersion);
 
     this.verifyLocalCommitsMatchUpstream(publishBranch);
     this._verifyAngularPeerDependencyVersion(newVersion);

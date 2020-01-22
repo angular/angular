@@ -13,7 +13,7 @@ export class BaseReleaseTask {
   constructor(public git: GitClient) {}
 
   /** Checks if the user is on an allowed publish branch for the specified version. */
-  protected switchToPublishBranch(newVersion: Version): string {
+  protected async assertValidPublishBranch(newVersion: Version): Promise<string> {
     const allowedBranches = getAllowedPublishBranches(newVersion);
     const currentBranchName = this.git.getCurrentBranch();
 
@@ -24,30 +24,24 @@ export class BaseReleaseTask {
       return currentBranchName;
     }
 
-    // In case there are multiple allowed publish branches for this version, we just
-    // exit and let the user decide which branch they want to release from.
-    if (allowedBranches.length !== 1) {
-      console.warn(chalk.yellow('  ✘   You are not on an allowed publish branch.'));
-      console.warn(chalk.yellow(`      Please switch to one of the following branches: ` +
-        `${allowedBranches.join(', ')}`));
-      process.exit(0);
+    console.error(chalk.red('  ✘   You are not on an allowed publish branch.'));
+    console.info(chalk.yellow(
+        `      Allowed branches are: ${chalk.bold(allowedBranches.join(', '))}`));
+    console.info();
+
+    // Prompt the user if they wants to forcibly use the current branch. We support this
+    // because in some cases, releases do not use the common publish branches. e.g. a major
+    // release is delayed, and new features for the next minor version are collected.
+    if (await this.promptConfirm(
+        `Do you want to forcibly use the current branch? (${chalk.italic(currentBranchName)})`)) {
+      console.log();
+      console.log(chalk.green(`  ✓   Using the "${chalk.italic(currentBranchName)}" branch.`));
+      return currentBranchName;
     }
 
-    // For this version there is only *one* allowed publish branch, so we could
-    // automatically switch to that branch in case the user isn't on it yet.
-    const defaultPublishBranch = allowedBranches[0];
-
-    if (!this.git.checkoutBranch(defaultPublishBranch)) {
-      console.error(chalk.red(
-          `  ✘   Could not switch to the "${chalk.italic(defaultPublishBranch)}" branch.`));
-      console.error(chalk.red(
-          `      Please ensure that the branch exists or manually switch to the branch.`));
-      process.exit(1);
-    }
-
-    console.log(chalk.green(
-        `  ✓   Switched to the "${chalk.italic(defaultPublishBranch)}" branch.`));
-    return defaultPublishBranch;
+    console.warn();
+    console.warn(chalk.yellow('      Please switch to one of the allowed publish branches.'));
+    process.exit(0);
   }
 
   /** Verifies that the local branch is up to date with the given publish branch. */
@@ -73,11 +67,12 @@ export class BaseReleaseTask {
   }
 
   /** Prompts the user with a confirmation question and a specified message. */
-  protected async promptConfirm(message: string): Promise<boolean> {
+  protected async promptConfirm(message: string, defaultValue = false): Promise<boolean> {
     return (await prompt<{result: boolean}>({
       type: 'confirm',
       name: 'result',
       message: message,
+      default: defaultValue,
     })).result;
   }
 }
