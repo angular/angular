@@ -4,7 +4,7 @@
      mat-ripple [matRippleDisabled]="_disableScrollBefore || disableRipple"
      [class.mat-tab-header-pagination-disabled]="_disableScrollBefore"
      (click)="_handlePaginatorClick('before')"
-     (mousedown)="_handlePaginatorPress('before')"
+     (mousedown)="_handlePaginatorPress('before', $event)"
      (touchend)="_stopInterval()">
   <div class="mat-tab-header-pagination-chevron"></div>
 </div>
@@ -28,7 +28,7 @@
      aria-hidden="true"
      mat-ripple [matRippleDisabled]="_disableScrollAfter || disableRipple"
      [class.mat-tab-header-pagination-disabled]="_disableScrollAfter"
-     (mousedown)="_handlePaginatorPress('after')"
+     (mousedown)="_handlePaginatorPress('after', $event)"
      (click)="_handlePaginatorClick('after')"
      (touchend)="_stopInterval()">
   <div class="mat-tab-header-pagination-chevron"></div>

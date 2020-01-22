@@ -7,6 +7,7 @@ import {
   dispatchKeyboardEvent,
   createKeyboardEvent,
   dispatchEvent,
+  createMouseEvent,
 } from '@angular/cdk/testing/private';
 import {CommonModule} from '@angular/common';
 import {Component, ViewChild} from '@angular/core';
@@ -456,6 +457,16 @@ describe('MDC-based MatTabHeader', () => {
         tick(100);
 
         expect(header.scrollDistance).toBe(previousDistance);
+      }));
+
+      it('should not scroll when pressing the right mouse button', fakeAsync(() => {
+        expect(header.scrollDistance).toBe(0, 'Expected to start off not scrolled.');
+
+        dispatchEvent(nextButton, createMouseEvent('mousedown', undefined, undefined, 2));
+        fixture.detectChanges();
+        tick(3000);
+
+        expect(header.scrollDistance).toBe(0, 'Expected not to have scrolled after a while.');
       }));
 
       /**
