@@ -22,7 +22,7 @@ describe('YoutubePlayer', () => {
 
     TestBed.configureTestingModule({
       imports: [YouTubePlayerModule],
-      declarations: [TestApp],
+      declarations: [TestApp, StaticStartEndSecondsApp],
     });
 
     TestBed.compileComponents();
@@ -326,6 +326,17 @@ describe('YoutubePlayer', () => {
     });
   });
 
+  it('should pick up static startSeconds and endSeconds values', () => {
+    const staticSecondsApp = TestBed.createComponent(StaticStartEndSecondsApp);
+    staticSecondsApp.detectChanges();
+
+    playerSpy.getPlayerState.and.returnValue(window.YT!.PlayerState.CUED);
+    events.onReady({target: playerSpy});
+
+    expect(playerSpy.cueVideoById).toHaveBeenCalledWith(
+      jasmine.objectContaining({startSeconds: 42, endSeconds: 1337}));
+  });
+
 });
 
 /** Test component that contains a YouTubePlayer. */
@@ -358,4 +369,14 @@ class TestApp {
   onError = jasmine.createSpy('onError');
   onApiChange = jasmine.createSpy('onApiChange');
   @ViewChild('player') youtubePlayer: YouTubePlayer;
+}
+
+
+@Component({
+  template: `
+    <youtube-player [videoId]="videoId" [startSeconds]="42"[endSeconds]="1337"></youtube-player>
+  `
+})
+class StaticStartEndSecondsApp {
+  videoId = VIDEO_ID;
 }

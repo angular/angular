@@ -39,6 +39,7 @@ import {
   pipe,
   Subject,
   of,
+  BehaviorSubject,
 } from 'rxjs';
 
 import {
@@ -91,51 +92,48 @@ type UninitializedPlayer = Pick<Player, 'videoId' | 'destroy' | 'addEventListene
 export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
   /** YouTube Video ID to view */
   @Input()
-  get videoId(): string | undefined { return this._videoId; }
+  get videoId(): string | undefined { return this._videoId.value; }
   set videoId(videoId: string | undefined) {
-    this._videoId = videoId;
-    this._videoIdObs.next(videoId);
+    this._videoId.next(videoId);
   }
-  private _videoId: string | undefined;
-  private _videoIdObs = new Subject<string | undefined>();
+  private _videoId = new BehaviorSubject<string | undefined>(undefined);
 
   /** Height of video player */
   @Input()
-  get height(): number | undefined { return this._height; }
+  get height(): number | undefined { return this._height.value; }
   set height(height: number | undefined) {
-    this._height = height || DEFAULT_PLAYER_HEIGHT;
-    this._heightObs.next(this._height);
+    this._height.next(height || DEFAULT_PLAYER_HEIGHT);
   }
-  private _height = DEFAULT_PLAYER_HEIGHT;
-  private _heightObs = new Subject<number>();
+  private _height = new BehaviorSubject<number>(DEFAULT_PLAYER_HEIGHT);
 
   /** Width of video player */
   @Input()
-  get width(): number | undefined { return this._width; }
+  get width(): number | undefined { return this._width.value; }
   set width(width: number | undefined) {
-    this._width = width || DEFAULT_PLAYER_WIDTH;
-    this._widthObs.next(this._width);
+    this._width.next(width || DEFAULT_PLAYER_WIDTH);
   }
-  private _width = DEFAULT_PLAYER_WIDTH;
-  private _widthObs = new Subject<number>();
+  private _width = new BehaviorSubject<number>(DEFAULT_PLAYER_WIDTH);
 
   /** The moment when the player is supposed to start playing */
-  @Input() set startSeconds(startSeconds: number | undefined) {
+  @Input()
+  set startSeconds(startSeconds: number | undefined) {
     this._startSeconds.next(startSeconds);
   }
-  private _startSeconds = new Subject<number | undefined>();
+  private _startSeconds = new BehaviorSubject<number | undefined>(undefined);
 
   /** The moment when the player is supposed to stop playing */
-  @Input() set endSeconds(endSeconds: number | undefined) {
+  @Input()
+  set endSeconds(endSeconds: number | undefined) {
     this._endSeconds.next(endSeconds);
   }
-  private _endSeconds = new Subject<number | undefined>();
+  private _endSeconds = new BehaviorSubject<number | undefined>(undefined);
 
   /** The suggested quality of the player */
-  @Input() set suggestedQuality(suggestedQuality: YT.SuggestedVideoQuality | undefined) {
+  @Input()
+  set suggestedQuality(suggestedQuality: YT.SuggestedVideoQuality | undefined) {
     this._suggestedQuality.next(suggestedQuality);
   }
-  private _suggestedQuality = new Subject<YT.SuggestedVideoQuality | undefined>();
+  private _suggestedQuality = new BehaviorSubject<YT.SuggestedVideoQuality | undefined>(undefined);
 
   /**
    * Whether the iframe will attempt to load regardless of the status of the api on the
@@ -202,23 +200,14 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
       iframeApiAvailableObs = iframeApiAvailableSubject.pipe(take(1), startWith(false));
     }
 
-    // Add initial values to all of the inputs.
-    const videoIdObs = this._videoIdObs.pipe(startWith(this._videoId));
-    const widthObs = this._widthObs.pipe(startWith(this._width));
-    const heightObs = this._heightObs.pipe(startWith(this._height));
-
-    const startSecondsObs = this._startSeconds.pipe(startWith(undefined));
-    const endSecondsObs = this._endSeconds.pipe(startWith(undefined));
-    const suggestedQualityObs = this._suggestedQuality.pipe(startWith(undefined));
-
     // An observable of the currently loaded player.
     const playerObs =
       createPlayerObservable(
         this._youtubeContainer,
-        videoIdObs,
+        this._videoId,
         iframeApiAvailableObs,
-        widthObs,
-        heightObs,
+        this._width,
+        this._height,
         this.createEventsBoundInZone(),
         this._ngZone
       ).pipe(waitUntilReady(), takeUntil(this._destroyed), publish());
@@ -226,16 +215,16 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
     // Set up side effects to bind inputs to the player.
     playerObs.subscribe(player => this._player = player);
 
-    bindSizeToPlayer(playerObs, widthObs, heightObs);
+    bindSizeToPlayer(playerObs, this._width, this._height);
 
-    bindSuggestedQualityToPlayer(playerObs, suggestedQualityObs);
+    bindSuggestedQualityToPlayer(playerObs, this._suggestedQuality);
 
     bindCueVideoCall(
       playerObs,
-      videoIdObs,
-      startSecondsObs,
-      endSecondsObs,
-      suggestedQualityObs,
+      this._videoId,
+      this._startSeconds,
+      this._endSeconds,
+      this._suggestedQuality,
       this._destroyed);
 
     // After all of the subscriptions are set up, connect the observable.
@@ -273,9 +262,9 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
       window.onYouTubeIframeAPIReady = this._existingApiReadyCallback;
     }
 
-    this._videoIdObs.complete();
-    this._heightObs.complete();
-    this._widthObs.complete();
+    this._videoId.complete();
+    this._height.complete();
+    this._width.complete();
     this._startSeconds.complete();
     this._endSeconds.complete();
     this._suggestedQuality.complete();
