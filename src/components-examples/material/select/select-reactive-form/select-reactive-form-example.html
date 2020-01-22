@@ -1,0 +1,24 @@
+<form [formGroup]="form">
+  <h4>mat-select</h4>
+  <mat-form-field>
+    <mat-label>Favorite Food</mat-label>
+    <mat-select [formControl]="foodControl" name="food">
+      <mat-option>None</mat-option>
+      <mat-option *ngFor="let food of foods" [value]="food.value">
+        {{food.viewValue}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <p>Selected: {{foodControl.value}}</p>
+  <h4>Native select</h4>
+  <mat-form-field>
+    <mat-label>Favorite Car</mat-label>
+    <select matNativeControl [formControl]="carControl" name="car">
+      <option value="">None</option>
+      <option *ngFor="let car of cars" [value]="car.value">
+        {{car.viewValue}}
+      </option>
+    </select>
+  </mat-form-field>
+  <p>Selected: {{carControl.value}}</p>
+</form>

@@ -18,6 +18,8 @@ import {SelectOverviewExample} from './select-overview/select-overview-example';
 import {SelectPanelClassExample} from './select-panel-class/select-panel-class-example';
 import {SelectResetExample} from './select-reset/select-reset-example';
 import {SelectValueBindingExample} from './select-value-binding/select-value-binding-example';
+import {SelectReactiveFormExample} from './select-reactive-form/select-reactive-form-example';
+import {SelectInitialValueExample} from './select-initial-value/select-initial-value-example';
 
 export {
   SelectCustomTriggerExample,
@@ -25,11 +27,13 @@ export {
   SelectErrorStateMatcherExample,
   SelectFormExample,
   SelectHintErrorExample,
+  SelectInitialValueExample,
   SelectMultipleExample,
   SelectNoRippleExample,
   SelectOptgroupExample,
   SelectOverviewExample,
   SelectPanelClassExample,
+  SelectReactiveFormExample,
   SelectResetExample,
   SelectValueBindingExample,
 };
@@ -40,11 +44,13 @@ const EXAMPLES = [
   SelectErrorStateMatcherExample,
   SelectFormExample,
   SelectHintErrorExample,
+  SelectInitialValueExample,
   SelectMultipleExample,
   SelectNoRippleExample,
   SelectOptgroupExample,
   SelectOverviewExample,
   SelectPanelClassExample,
+  SelectReactiveFormExample,
   SelectResetExample,
   SelectValueBindingExample,
 ];

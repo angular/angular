@@ -1,11 +1,11 @@
 import {Component} from '@angular/core';
 
-export interface Food {
+interface Food {
   value: string;
   viewValue: string;
 }
 
-export interface Car {
+interface Car {
   value: string;
   viewValue: string;
 }

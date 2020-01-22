@@ -1,12 +1,12 @@
 import {Component} from '@angular/core';
 import {FormControl} from '@angular/forms';
 
-export interface Pokemon {
+interface Pokemon {
   value: string;
   viewValue: string;
 }
 
-export interface PokemonGroup {
+interface PokemonGroup {
   disabled?: boolean;
   name: string;
   pokemon: Pokemon[];

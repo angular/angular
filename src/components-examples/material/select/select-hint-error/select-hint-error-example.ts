@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {FormControl, Validators} from '@angular/forms';
 
-export interface Animal {
+interface Animal {
   name: string;
   sound: string;
 }
@@ -13,7 +13,7 @@ export interface Animal {
   styleUrls: ['select-hint-error-example.css'],
 })
 export class SelectHintErrorExample {
-  animalControl = new FormControl('', [Validators.required]);
+  animalControl = new FormControl('', Validators.required);
   selectFormControl = new FormControl('', Validators.required);
   animals: Animal[] = [
     {name: 'Dog', sound: 'Woof!'},

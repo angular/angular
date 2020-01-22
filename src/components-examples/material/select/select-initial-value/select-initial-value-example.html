@@ -1,0 +1,20 @@
+<h4>Basic mat-select with initial value</h4>
+<mat-form-field>
+  <mat-label>Favorite Food</mat-label>
+  <mat-select [(value)]="selectedFood">
+    <mat-option></mat-option>
+    <mat-option [value]="option.value" *ngFor="let option of foods">{{ option.viewValue }}</mat-option>
+  </mat-select>
+</mat-form-field>
+<p>You selected: {{selectedFood}}</p>
+
+<h4>Basic native select with initial value</h4>
+<mat-form-field>
+  <mat-label>Favorite Car</mat-label>
+  <select matNativeControl (change)="selectedCar = $event.target.value">
+    <option value=""></option>
+    <option *ngFor="let option of cars" [value]="option.value"
+            [selected]="selectedCar === option.value">{{ option.viewValue }}</option>
+  </select>
+</mat-form-field>
+<p>You selected: {{selectedCar}}</p>

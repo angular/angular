@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 
-export interface Food {
+interface Food {
   value: string;
   viewValue: string;
 }
