@@ -88,9 +88,9 @@ On every invocation, the compiler receives (or can easily determine) several pie
 
 With this information, the compiler can perform rebuild optimizations:
 
-1. The compiler uses the last good compilation's dependency graph to determine which parts of its analysis work can be reused.
+1. The compiler uses the last good compilation's dependency graph to determine which parts of its analysis work can be reused, and an initial set of files which need to be re-emitted.
 2. The compiler analyzes the rest of the program and generates an updated dependency graph, which describes the relationships between files in the program as they are currently.
-3. Based on this graph, the compiler can make a determination for each TS file whether it needs to be re-emitted or can safely be skipped. This produces a set called `pendingEmit` of every file which requires a re-emit.
+3. Based on this graph, the compiler can make a final determination for each TS file whether it needs to be re-emitted or can safely be skipped. This produces a set called `pendingEmit` of every file which requires a re-emit.
 4. The compiler cycles through the files and emits those which are necessary, removing them from `pendingEmit`.
 
 Theoretically, after this process `pendingEmit` should be empty. As a precaution against errors which might happen in the future, `pendingEmit` is also passed into future compilations, so any files which previously were determined to need an emit (but have not been successfully produced yet) will be retried on subsequent compilations. This is mostly relevant if a client of `ngtsc` attempts to implement emit-on-error functionality.
@@ -112,6 +112,12 @@ If a new build starts and inherits from a failed build, it will merge the failed
 After analysis is successfully performed, the compiler uses its dependency graph to evaluate the impact of any accumulated changes from the `PendingBuildState`, and updates `pendingEmit` with all of the pending files. At this point, the compiler transitions from a `PendingBuildState` to an `AnalyzedBuildState`, which only tracks `pendingEmit`. In `AnalyzedBuildState` this set is complete, and the raw changes can be forgotten.
 
 If a new build is started after a successful build, only `pendingEmit` from the `AnalyzedBuildState` needs to be merged into the new build's `PendingBuildState`.
+
+## Component to NgModule dependencies
+
+The dependency of a component on its NgModule is slightly problematic, because its arrow is in the opposite direction of the source dependency (which is from NgModule to the component, via `declarations`). This creates a scenario where, if the NgModule is changed to no longer include the component, the component still needs to be re-emitted because the module has changed.
+
+This is one of very few cases where `pendingEmit` must be populated with the logical changes from the previous program (those files determined to be changed in step 1 under "Tracking of changes" above), and cannot simply be created from the current dependency graph.
 
 # What optimizations are possible in the future?
 
