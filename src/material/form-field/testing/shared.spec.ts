@@ -1,8 +1,4 @@
-import {
-  ComponentHarness,
-  HarnessLoader,
-  HarnessPredicate
-} from '@angular/cdk/testing';
+import {ComponentHarness, HarnessLoader, HarnessPredicate} from '@angular/cdk/testing';
 import {
   createFakeEvent,
   dispatchFakeEvent,
@@ -16,8 +12,12 @@ import {MatFormFieldHarness} from './form-field-harness';
 
 /** Shared tests to run on both the original and MDC-based form-field's. */
 export function runHarnessTests(
-    modules: Type<any>[], formFieldHarness: typeof MatFormFieldHarness, inputHarness: Type<any>,
-    selectHarness: Type<any>) {
+    modules: Type<any>[], {formFieldHarness, inputHarness, selectHarness, isMdcImplementation}: {
+      formFieldHarness: typeof MatFormFieldHarness,
+      inputHarness: Type<any>,
+      selectHarness: Type<any>,
+      isMdcImplementation: boolean
+    }) {
   let fixture: ComponentFixture<FormFieldHarnessTest>;
   let loader: HarnessLoader;
 
@@ -36,7 +36,7 @@ export function runHarnessTests(
 
   it('should be able to load harnesses', async () => {
     const formFields = await loader.getAllHarnesses(formFieldHarness);
-    expect(formFields.length).toBe(4);
+    expect(formFields.length).toBe(5);
   });
 
   it('should be able to load form-field that matches specific selector', async () => {
@@ -48,10 +48,11 @@ export function runHarnessTests(
 
   it('should be able to get appearance of form-field', async () => {
     const formFields = await loader.getAllHarnesses(formFieldHarness);
-    expect(await formFields[0].getAppearance()).toBe('legacy');
-    expect(await formFields[1].getAppearance()).toBe('standard');
+    expect(await formFields[0].getAppearance()).toBe(isMdcImplementation ? 'fill' : 'legacy');
+    expect(await formFields[1].getAppearance()).toBe(isMdcImplementation ? 'fill' : 'standard');
     expect(await formFields[2].getAppearance()).toBe('fill');
     expect(await formFields[3].getAppearance()).toBe('outline');
+    expect(await formFields[4].getAppearance()).toBe(isMdcImplementation ? 'fill' : 'legacy');
   });
 
   it('should be able to get control of form-field', async () => {
@@ -60,6 +61,7 @@ export function runHarnessTests(
     expect(await formFields[1].getControl() instanceof inputHarness).toBe(true);
     expect(await formFields[2].getControl() instanceof selectHarness).toBe(true);
     expect(await formFields[3].getControl() instanceof inputHarness).toBe(true);
+    expect(await formFields[4].getControl() instanceof inputHarness).toBe(true);
   });
 
   it('should be able to get custom control of form-field', async () => {
@@ -69,6 +71,7 @@ export function runHarnessTests(
         .toBe(true);
     expect(await formFields[2].getControl(CustomControlHarness)).toBe(null);
     expect(await formFields[3].getControl(CustomControlHarness)).toBe(null);
+    expect(await formFields[4].getControl(CustomControlHarness)).toBe(null);
   });
 
   it('should be able to get custom control of form-field using a predicate', async () => {
@@ -78,39 +81,34 @@ export function runHarnessTests(
     expect(await formFields[1].getControl(predicate) instanceof CustomControlHarness).toBe(true);
     expect(await formFields[2].getControl(predicate)).toBe(null);
     expect(await formFields[3].getControl(predicate)).toBe(null);
+    expect(await formFields[4].getControl(predicate)).toBe(null);
   });
 
   it('should be able to check whether form-field has label', async () => {
     const formFields = await loader.getAllHarnesses(formFieldHarness);
-    expect(await formFields[0].hasLabel()).toBe(true);
+    // The non MDC-based form-field elevates the placeholder to a floating
+    // label. This is not the case in the MDC-based implementation.
+    expect(await formFields[0].hasLabel()).toBe(!isMdcImplementation);
     expect(await formFields[1].hasLabel()).toBe(false);
     expect(await formFields[2].hasLabel()).toBe(true);
     expect(await formFields[3].hasLabel()).toBe(true);
-
-    fixture.componentInstance.hasLabel = true;
-    expect(await formFields[1].hasLabel()).toBe(true);
-  });
-
-  it('should be able to check whether form-field has floating label', async () => {
-    const formFields = await loader.getAllHarnesses(formFieldHarness);
-    expect(await formFields[0].hasFloatingLabel()).toBe(false);
-    expect(await formFields[1].hasFloatingLabel()).toBe(true);
-    expect(await formFields[2].hasFloatingLabel()).toBe(true);
-    expect(await formFields[3].hasFloatingLabel()).toBe(true);
-
-    fixture.componentInstance.shouldLabelFloat = 'auto';
-    expect(await formFields[0].hasFloatingLabel()).toBe(true);
+    expect(await formFields[4].hasLabel()).toBe(true);
   });
 
   it('should be able to check whether label is floating', async () => {
     const formFields = await loader.getAllHarnesses(formFieldHarness);
-    expect(await formFields[0].isLabelFloating()).toBe(false);
-    expect(await formFields[1].isLabelFloating()).toBe(true);
+    // The first form-field uses the legacy appearance. This means that the
+    // placeholder will be elevated to a label. Also since there is a static
+    // value, the label will float initially. The MDC implementation does not
+    // elevate placeholders to floating labels.
+    expect(await formFields[0].isLabelFloating()).toBe(!isMdcImplementation);
+    expect(await formFields[1].isLabelFloating()).toBe(false);
     expect(await formFields[2].isLabelFloating()).toBe(false);
     expect(await formFields[3].isLabelFloating()).toBe(true);
+    expect(await formFields[4].isLabelFloating()).toBe(false);
 
     fixture.componentInstance.shouldLabelFloat = 'always';
-    expect(await formFields[0].hasFloatingLabel()).toBe(true);
+    expect(await formFields[4].isLabelFloating()).toBe(true);
   });
 
   it('should be able to check whether form-field is disabled', async () => {
@@ -119,12 +117,14 @@ export function runHarnessTests(
     expect(await formFields[1].isDisabled()).toBe(false);
     expect(await formFields[2].isDisabled()).toBe(false);
     expect(await formFields[3].isDisabled()).toBe(false);
+    expect(await formFields[4].isDisabled()).toBe(false);
 
     fixture.componentInstance.isDisabled = true;
     expect(await formFields[0].isDisabled()).toBe(true);
     expect(await formFields[1].isDisabled()).toBe(false);
     expect(await formFields[2].isDisabled()).toBe(true);
     expect(await formFields[3].isDisabled()).toBe(false);
+    expect(await formFields[4].isDisabled()).toBe(false);
   });
 
   it('should be able to check whether form-field is auto-filled', async () => {
@@ -133,6 +133,7 @@ export function runHarnessTests(
     expect(await formFields[1].isAutofilled()).toBe(false);
     expect(await formFields[2].isAutofilled()).toBe(false);
     expect(await formFields[3].isAutofilled()).toBe(false);
+    expect(await formFields[4].isAutofilled()).toBe(false);
 
     const autofillTriggerEvent: any = createFakeEvent('animationstart');
     autofillTriggerEvent.animationName = 'cdk-text-field-autofill-start';
@@ -146,6 +147,7 @@ export function runHarnessTests(
     expect(await formFields[1].isAutofilled()).toBe(false);
     expect(await formFields[2].isAutofilled()).toBe(false);
     expect(await formFields[3].isAutofilled()).toBe(false);
+    expect(await formFields[4].isAutofilled()).toBe(false);
   });
 
   it('should be able to get theme color of form-field', async () => {
@@ -154,14 +156,18 @@ export function runHarnessTests(
     expect(await formFields[1].getThemeColor()).toBe('warn');
     expect(await formFields[2].getThemeColor()).toBe('accent');
     expect(await formFields[3].getThemeColor()).toBe('primary');
+    expect(await formFields[4].getThemeColor()).toBe('primary');
   });
 
   it('should be able to get label of form-field', async () => {
     const formFields = await loader.getAllHarnesses(formFieldHarness);
-    expect(await formFields[0].getLabel()).toBe('With placeholder');
+    // In the MDC based implementation, the placeholder will not be elevated
+    // to a label, and the harness will return `null`.
+    expect(await formFields[0].getLabel()).toBe(isMdcImplementation ? null : 'With placeholder');
     expect(await formFields[1].getLabel()).toBe(null);
     expect(await formFields[2].getLabel()).toBe('Label');
     expect(await formFields[3].getLabel()).toBe('autocomplete_label');
+    expect(await formFields[4].getLabel()).toBe('Label');
   });
 
   it('should be able to get error messages of form-field', async () => {
@@ -250,7 +256,6 @@ export function runHarnessTests(
 
     <mat-form-field appearance="standard" color="warn" id="with-errors">
       <span class="custom-control">Custom control harness</span>
-      <mat-label *ngIf="hasLabel">Second input label</mat-label>
       <input matInput [formControl]="requiredControl">
 
       <mat-error>Error 1</mat-error>
@@ -274,11 +279,16 @@ export function runHarnessTests(
     <mat-autocomplete #auto="matAutocomplete">
       <mat-option>autocomplete_option</mat-option>
     </mat-autocomplete>
+
+    <mat-form-field id="last-form-field" [floatLabel]="shouldLabelFloat">
+      <mat-label>Label</mat-label>
+      <input matInput>
+    </mat-form-field>
   `
 })
 class FormFieldHarnessTest {
   requiredControl = new FormControl('Initial value', [Validators.required]);
-  shouldLabelFloat: 'never'|'auto'|'always' = 'never';
+  shouldLabelFloat: 'always'|'auto' = 'auto';
   hasLabel = false;
   isDisabled = false;
 

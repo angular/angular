@@ -17,7 +17,6 @@ export declare class MatFormFieldHarness extends ComponentHarness {
     getTextHints(): Promise<string[]>;
     getThemeColor(): Promise<'primary' | 'accent' | 'warn'>;
     hasErrors(): Promise<boolean>;
-    hasFloatingLabel(): Promise<boolean>;
     hasLabel(): Promise<boolean>;
     isAutofilled(): Promise<boolean>;
     isControlDirty(): Promise<boolean | null>;

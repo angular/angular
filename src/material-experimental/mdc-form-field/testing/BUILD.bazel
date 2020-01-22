@@ -1,0 +1,59 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_test_library", "ng_web_test_suite", "ts_library")
+
+ts_library(
+    name = "testing",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    module_name = "@angular/material-experimental/mdc-form-field/testing",
+    deps = [
+        "//src/cdk/testing",
+        "//src/material/form-field/testing",
+        "//src/material/form-field/testing/control",
+        "//src/material/input/testing",
+        "//src/material/select/testing",
+    ],
+)
+
+filegroup(
+    name = "source-files",
+    srcs = glob(["**/*.ts"]),
+)
+
+ng_test_library(
+    name = "unit_tests_lib",
+    srcs = glob(
+        ["**/*.spec.ts"],
+        exclude = ["shared.spec.ts"],
+    ),
+    deps = [
+        ":testing",
+        "//src/cdk/overlay",
+        "//src/material-experimental/mdc-form-field",
+        "//src/material-experimental/mdc-input",
+        "//src/material/autocomplete",
+        "//src/material/core",
+        "//src/material/form-field/testing:harness_tests_lib",
+        "//src/material/input/testing",
+        "//src/material/select",
+        "//src/material/select/testing",
+        "@npm//@angular/common",
+    ],
+)
+
+ng_web_test_suite(
+    name = "unit_tests",
+    static_files = [
+        "@npm//:node_modules/@material/textfield/dist/mdc.textfield.js",
+        "@npm//:node_modules/@material/line-ripple/dist/mdc.lineRipple.js",
+        "@npm//:node_modules/@material/notched-outline/dist/mdc.notchedOutline.js",
+        "@npm//:node_modules/@material/floating-label/dist/mdc.floatingLabel.js",
+    ],
+    deps = [
+        ":unit_tests_lib",
+        "//src/material-experimental:mdc_require_config.js",
+    ],
+)
