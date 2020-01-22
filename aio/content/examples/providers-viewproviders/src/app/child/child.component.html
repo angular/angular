@@ -9,10 +9,9 @@
 
 <div class="container">
   <h3>Content projection</h3>
-  <!-- #enddocregion child-component -->
-  <p>The following is coming from content. It doesn't get to see the puppy because the puppy is declared inside the view only.</p>
-  <!-- #docregion child-component -->
-	<ng-content></ng-content>
+  <ng-content>
+    <p>The following is coming from content. It doesn't get to see the puppy because the puppy is declared inside the view only.</p>
+  </ng-content>  
 </div>
 
 <h3>Inside the view</h3>
