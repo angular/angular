@@ -59,7 +59,7 @@ describe('CdkCopyToClipboard', () => {
   it('emits copied event false when copy fails', fakeAsync(() => {
     spyOn(clipboard, 'copy').and.returnValue(false);
     fixture.nativeElement.querySelector('button')!.click();
-    tick();
+    tick(1);
 
     expect(fixture.componentInstance.copied).toHaveBeenCalledWith(false);
   }));
@@ -76,7 +76,7 @@ describe('CdkCopyToClipboard', () => {
 
     fixture.nativeElement.querySelector('button')!.click();
     fixture.detectChanges();
-    tick();
+    tick(3);
 
     expect(attempts).toBe(maxAttempts);
     expect(fixture.componentInstance.copied).toHaveBeenCalledTimes(1);
@@ -98,10 +98,37 @@ describe('CdkCopyToClipboard', () => {
 
     fixture.nativeElement.querySelector('button')!.click();
     fixture.detectChanges();
-    tick();
+    tick(3);
 
     expect(attempts).toBe(maxAttempts);
     expect(fixture.componentInstance.copied).toHaveBeenCalledTimes(1);
     expect(fixture.componentInstance.copied).toHaveBeenCalledWith(false);
   }));
+
+  it('should destroy any pending copies when the directive is destroyed', fakeAsync(() => {
+    const fakeCopy = {
+      copy: jasmine.createSpy('copy spy').and.returnValue(false) as () => boolean,
+      destroy: jasmine.createSpy('destroy spy') as () => void
+    } as PendingCopy;
+
+    fixture.componentInstance.attempts = 10;
+    fixture.detectChanges();
+
+    spyOn(clipboard, 'beginCopy').and.returnValue(fakeCopy);
+    fixture.detectChanges();
+
+    fixture.nativeElement.querySelector('button')!.click();
+    fixture.detectChanges();
+    tick(1);
+
+    expect(fakeCopy.copy).toHaveBeenCalledTimes(2);
+    expect(fakeCopy.destroy).toHaveBeenCalledTimes(0);
+
+    fixture.destroy();
+    tick(1);
+
+    expect(fakeCopy.copy).toHaveBeenCalledTimes(2);
+    expect(fakeCopy.destroy).toHaveBeenCalledTimes(1);
+  }));
+
 });

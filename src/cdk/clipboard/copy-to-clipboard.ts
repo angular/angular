@@ -15,8 +15,10 @@ import {
   InjectionToken,
   Inject,
   Optional,
+  OnDestroy,
 } from '@angular/core';
 import {Clipboard} from './clipboard';
+import {PendingCopy} from './pending-copy';
 
 /** Object that can be used to configure the default options for `CdkCopyToClipboard`. */
 export interface CdkCopyToClipboardConfig {
@@ -38,7 +40,7 @@ export const CKD_COPY_TO_CLIPBOARD_CONFIG =
     '(click)': 'copy()',
   }
 })
-export class CdkCopyToClipboard {
+export class CdkCopyToClipboard implements OnDestroy {
   /** Content to be copied. */
   @Input('cdkCopyToClipboard') text: string = '';
 
@@ -62,6 +64,15 @@ export class CdkCopyToClipboard {
    */
   @Output('copied') _deprecatedCopied = this.copied;
 
+  /** Copies that are currently being attempted. */
+  private _pending = new Set<PendingCopy>();
+
+  /** Whether the directive has been destroyed. */
+  private _destroyed: boolean;
+
+  /** Timeout for the current copy attempt. */
+  private _currentTimeout: any;
+
   constructor(
     private _clipboard: Clipboard,
     /**
@@ -81,16 +92,21 @@ export class CdkCopyToClipboard {
     if (attempts > 1) {
       let remainingAttempts = attempts;
       const pending = this._clipboard.beginCopy(this.text);
+      this._pending.add(pending);
+
       const attempt = () => {
         const successful = pending.copy();
-        if (!successful && --remainingAttempts) {
+        if (!successful && --remainingAttempts && !this._destroyed) {
           // @breaking-change 10.0.0 Remove null check for `_ngZone`.
           if (this._ngZone) {
-            this._ngZone.runOutsideAngular(() => setTimeout(attempt));
+            this._currentTimeout = this._ngZone.runOutsideAngular(() => setTimeout(attempt, 1));
           } else {
-            setTimeout(attempt);
+            // We use 1 for the timeout since it's more predictable when flushing in unit tests.
+            this._currentTimeout = setTimeout(attempt, 1);
           }
         } else {
+          this._currentTimeout = null;
+          this._pending.delete(pending);
           pending.destroy();
           this.copied.emit(successful);
         }
@@ -99,5 +115,15 @@ export class CdkCopyToClipboard {
     } else {
       this.copied.emit(this._clipboard.copy(this.text));
     }
+  }
+
+  ngOnDestroy() {
+    if (this._currentTimeout) {
+      clearTimeout(this._currentTimeout);
+    }
+
+    this._pending.forEach(copy => copy.destroy());
+    this._pending.clear();
+    this._destroyed = true;
   }
 }
