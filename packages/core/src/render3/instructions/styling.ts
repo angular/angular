@@ -6,7 +6,6 @@
 * found in the LICENSE file at https://angular.io/license
 */
 import {SafeValue} from '../../sanitization/bypass';
-import {ɵɵdefaultStyleSanitizer} from '../../sanitization/sanitization';
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {throwErrorIfNoChangesMode} from '../errors';
 import {setInputsForProperty} from '../instructions/shared';
@@ -16,7 +15,7 @@ import {StylingMapArray, StylingMapArrayIndex, TStylingContext} from '../interfa
 import {isDirectiveHost} from '../interfaces/type_checks';
 import {LView, RENDERER, TVIEW} from '../interfaces/view';
 import {getActiveDirectiveId, getCheckNoChangesMode, getCurrentStyleSanitizer, getLView, getSelectedIndex, incrementBindingIndex, nextBindingIndex, resetCurrentStyleSanitizer, setCurrentStyleSanitizer, setElementExitFn} from '../state';
-import {applyStylingMapDirectly, applyStylingValueDirectly, flushStyling, updateClassViaContext, updateStyleViaContext} from '../styling/bindings';
+import {applyStylingMapDirectly, applyStylingValueDirectly, flushStyling, setClass, setStyle, updateClassViaContext, updateStyleViaContext} from '../styling/bindings';
 import {activateStylingMapFeature} from '../styling/map_based_bindings';
 import {attachStylingDebugObject} from '../styling/styling_debug';
 import {NO_CHANGE} from '../tokens';
@@ -35,6 +34,26 @@ import {getNativeByTNode, getTNode} from '../util/view_utils';
  *
  * --------
  */
+
+/**
+ * Sets the current style sanitizer function which will then be used
+ * within all follow-up prop and map-based style binding instructions
+ * for the given element.
+ *
+ * Note that once styling has been applied to the element (i.e. once
+ * `advance(n)` is executed or the hostBindings/template function exits)
+ * then the active `sanitizerFn` will be set to `null`. This means that
+ * once styling is applied to another element then a another call to
+ * `styleSanitizer` will need to be made.
+ *
+ * @param sanitizerFn The sanitization function that will be used to
+ *       process style prop/value entries.
+ *
+ * @codeGenApi
+ */
+export function ɵɵstyleSanitizer(sanitizer: StyleSanitizeFn | null): void {
+  setCurrentStyleSanitizer(sanitizer);
+}
 
 /**
  * Update a style binding on an element with the provided value.
@@ -59,8 +78,8 @@ import {getNativeByTNode, getTNode} from '../util/view_utils';
  */
 export function ɵɵstyleProp(
     prop: string, value: string | number | SafeValue | null,
-    suffixOrSanitizer?: StyleSanitizeFn | string | null): typeof ɵɵstyleProp {
-  stylePropInternal(getSelectedIndex(), prop, value, suffixOrSanitizer);
+    suffix?: string | null): typeof ɵɵstyleProp {
+  stylePropInternal(getSelectedIndex(), prop, value, suffix);
   return ɵɵstyleProp;
 }
 
@@ -72,7 +91,7 @@ export function ɵɵstyleProp(
  */
 export function stylePropInternal(
     elementIndex: number, prop: string, value: string | number | SafeValue | null,
-    suffixOrSanitizer?: StyleSanitizeFn | string | null): void {
+    suffix?: string | null | undefined): void {
   // if a value is interpolated then it may render a `NO_CHANGE` value.
   // in this case we do not need to do anything, but the binding index
   // still needs to be incremented because all styling binding values
@@ -90,12 +109,9 @@ export function stylePropInternal(
     patchHostStylingFlag(tNode, isHostStyling(), false);
   }
 
-  const isString = typeof suffixOrSanitizer === 'string';
-  const suffix = isString ? (suffixOrSanitizer as string) : null;
-  const sanitizer = isString ? null : (suffixOrSanitizer as StyleSanitizeFn | null | undefined);
   const updated = stylingProp(
       tNode, firstUpdatePass, lView, bindingIndex, prop, resolveStylePropValue(value, suffix),
-      false, sanitizer);
+      false);
   if (ngDevMode) {
     ngDevMode.styleProp++;
     if (updated) {
@@ -138,8 +154,7 @@ export function ɵɵclassProp(className: string, value: boolean | null): typeof 
     patchHostStylingFlag(tNode, isHostStyling(), true);
   }
 
-  const updated =
-      stylingProp(tNode, firstUpdatePass, lView, bindingIndex, className, value, true, null);
+  const updated = stylingProp(tNode, firstUpdatePass, lView, bindingIndex, className, value, true);
   if (ngDevMode) {
     ngDevMode.classProp++;
     if (updated) {
@@ -162,15 +177,12 @@ export function ɵɵclassProp(className: string, value: boolean | null): typeof 
 function stylingProp(
     tNode: TNode, firstUpdatePass: boolean, lView: LView, bindingIndex: number, prop: string,
     value: boolean | number | SafeValue | string | null | undefined | NO_CHANGE,
-    isClassBased: boolean, sanitizer: StyleSanitizeFn | null | undefined): boolean {
+    isClassBased: boolean): boolean {
   let updated = false;
-
-  if (sanitizer) {
-    setCurrentStyleSanitizer(sanitizer);
-  }
 
   const native = getNativeByTNode(tNode, lView) as RElement;
   const context = isClassBased ? getClassesContext(tNode) : getStylesContext(tNode);
+  const sanitizer = isClassBased ? null : getCurrentStyleSanitizer();
 
   // [style.prop] and [class.name] bindings do not use `bind()` and will
   // therefore manage accessing and updating the new value in the lView directly.
@@ -271,8 +283,7 @@ export function ɵɵstyleMap(styles: {[styleName: string]: any} | NO_CHANGE | nu
   }
 
   stylingMap(
-      context, tNode, firstUpdatePass, lView, bindingIndex, styles, false, hasDirectiveInput,
-      ɵɵdefaultStyleSanitizer);
+      context, tNode, firstUpdatePass, lView, bindingIndex, styles, false, hasDirectiveInput);
 }
 
 /**
@@ -335,7 +346,7 @@ export function classMapInternal(
   }
 
   stylingMap(
-      context, tNode, firstUpdatePass, lView, bindingIndex, classes, true, hasDirectiveInput, null);
+      context, tNode, firstUpdatePass, lView, bindingIndex, classes, true, hasDirectiveInput);
 }
 
 /**
@@ -347,11 +358,11 @@ export function classMapInternal(
 function stylingMap(
     context: TStylingContext, tNode: TNode, firstUpdatePass: boolean, lView: LView,
     bindingIndex: number, value: {[key: string]: any} | string | null, isClassBased: boolean,
-    hasDirectiveInput: boolean, sanitizer: StyleSanitizeFn | null): void {
+    hasDirectiveInput: boolean): void {
   const directiveIndex = getActiveDirectiveId();
   const native = getNativeByTNode(tNode, lView) as RElement;
   const oldValue = getValue(lView, bindingIndex);
-  setCurrentStyleSanitizer(ɵɵdefaultStyleSanitizer);
+  const sanitizer = getCurrentStyleSanitizer();
   const valueHasChanged = hasValueChanged(oldValue, value);
 
   // [style] and [class] bindings do not use `bind()` and will therefore
