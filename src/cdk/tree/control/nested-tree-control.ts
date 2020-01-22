@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Observable} from 'rxjs';
+import {Observable, isObservable} from 'rxjs';
 import {take, filter} from 'rxjs/operators';
 import {BaseTreeControl} from './base-tree-control';
 
@@ -45,7 +45,7 @@ export class NestedTreeControl<T> extends BaseTreeControl<T> {
     const childrenNodes = this.getChildren(dataNode);
     if (Array.isArray(childrenNodes)) {
       childrenNodes.forEach((child: T) => this._getDescendants(descendants, child));
-    } else if (childrenNodes instanceof Observable) {
+    } else if (isObservable(childrenNodes)) {
       // TypeScript as of version 3.5 doesn't seem to treat `Boolean` like a function that
       // returns a `boolean` specifically in the context of `filter`, so we manually clarify that.
       childrenNodes.pipe(take(1), filter(Boolean as () => boolean))

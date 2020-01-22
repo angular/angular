@@ -15,7 +15,7 @@ import {
   OnDestroy,
   QueryList,
 } from '@angular/core';
-import {Observable} from 'rxjs';
+import {isObservable} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
 import {CDK_TREE_NODE_OUTLET_NODE, CdkTreeNodeOutlet} from './outlet';
@@ -70,7 +70,7 @@ export class CdkNestedTreeNode<T> extends CdkTreeNode<T> implements AfterContent
     const childrenNodes = this._tree.treeControl.getChildren(this.data);
     if (Array.isArray(childrenNodes)) {
       this.updateChildrenNodes(childrenNodes as T[]);
-    } else if (childrenNodes instanceof Observable) {
+    } else if (isObservable(childrenNodes)) {
       childrenNodes.pipe(takeUntil(this._destroyed))
         .subscribe(result => this.updateChildrenNodes(result));
     }

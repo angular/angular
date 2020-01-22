@@ -30,7 +30,7 @@ import {
   TrackByFunction,
   ViewContainerRef,
 } from '@angular/core';
-import {Observable, Subject, of as observableOf} from 'rxjs';
+import {Observable, Subject, of as observableOf, isObservable} from 'rxjs';
 import {pairwise, shareReplay, startWith, switchMap, takeUntil} from 'rxjs/operators';
 import {CdkVirtualScrollViewport} from './virtual-scroll-viewport';
 
@@ -93,7 +93,7 @@ export class CdkVirtualForOf<T> implements CollectionViewer, DoCheck, OnDestroy 
     } else {
       // Slice the value if its an NgIterable to ensure we're working with an array.
       this._dataSourceChanges.next(new ArrayDataSource<T>(
-          value instanceof Observable ? value : Array.prototype.slice.call(value || [])));
+          isObservable(value) ? value : Array.prototype.slice.call(value || [])));
     }
   }
   _cdkVirtualForOf: DataSource<T> | Observable<T[]> | NgIterable<T> | null | undefined;

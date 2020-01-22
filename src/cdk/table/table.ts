@@ -37,7 +37,14 @@ import {
   ViewContainerRef,
   ViewEncapsulation
 } from '@angular/core';
-import {BehaviorSubject, Observable, of as observableOf, Subject, Subscription} from 'rxjs';
+import {
+  BehaviorSubject,
+  Observable,
+  of as observableOf,
+  Subject,
+  Subscription,
+  isObservable,
+} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {CdkColumnDef} from './cell';
 import {
@@ -832,7 +839,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
 
     if (isDataSource(this.dataSource)) {
       dataStream = this.dataSource.connect(this);
-    } else if (this.dataSource instanceof Observable) {
+    } else if (isObservable(this.dataSource)) {
       dataStream = this.dataSource;
     } else if (Array.isArray(this.dataSource)) {
       dataStream = observableOf(this.dataSource);
