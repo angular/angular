@@ -441,6 +441,14 @@ describe('TestbedHarnessEnvironment', () => {
           '\n(SubComponentHarness with host element matching selector: "test-sub" satisfying' +
           ' the constraints: title = /not found/)');
     });
+
+    it('should check if element is focused', async () => {
+      const button = await harness.button();
+      await button.focus();
+      expect(await button.isFocused()).toBe(true);
+      await button.blur();
+      expect(await button.isFocused()).toBe(false);
+    });
   });
 
   describe('HarnessPredicate', () => {

@@ -142,4 +142,9 @@ export class UnitTestElement implements TestElement {
     return (elementPrototype['matches'] || elementPrototype['msMatchesSelector'])
         .call(this.element, selector);
   }
+
+  async isFocused(): Promise<boolean> {
+    await this._stabilize();
+    return document.activeElement === this.element;
+  }
 }

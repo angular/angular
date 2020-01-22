@@ -111,4 +111,7 @@ export interface TestElement {
 
   /** Checks whether this element matches the given selector. */
   matchesSelector(selector: string): Promise<boolean>;
+
+  /** Checks whether the element is focused. */
+  isFocused(): Promise<boolean>;
 }

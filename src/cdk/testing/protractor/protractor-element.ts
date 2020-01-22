@@ -146,4 +146,8 @@ export class ProtractorElement implements TestElement {
                   Element.prototype.msMatchesSelector).call(arguments[0], arguments[1])
           `, this.element, selector);
   }
+
+  async isFocused(): Promise<boolean> {
+    return this.element.equals(browser.driver.switchTo().activeElement());
+  }
 }

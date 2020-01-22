@@ -115,6 +115,7 @@ export interface TestElement {
     getProperty(name: string): Promise<any>;
     hasClass(name: string): Promise<boolean>;
     hover(): Promise<void>;
+    isFocused(): Promise<boolean>;
     matchesSelector(selector: string): Promise<boolean>;
     sendKeys(...keys: (string | TestKey)[]): Promise<void>;
     sendKeys(modifiers: ModifierKeys, ...keys: (string | TestKey)[]): Promise<void>;

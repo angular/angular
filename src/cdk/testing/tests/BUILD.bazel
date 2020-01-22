@@ -39,6 +39,7 @@ ng_test_library(
         "//src/cdk/testing",
         "//src/cdk/testing/private",
         "//src/cdk/testing/testbed",
+        "@npm//@angular/platform-browser",
     ],
 )
 
