@@ -345,13 +345,19 @@ describe('TestBed', () => {
   describe('multi providers', () => {
     const multiToken = new InjectionToken<string[]>('multiToken');
     const singleToken = new InjectionToken<string>('singleToken');
+    const multiTokenToOverrideAtModuleLevel =
+        new InjectionToken<string[]>('moduleLevelMultiOverride');
     @NgModule({providers: [{provide: multiToken, useValue: 'valueFromModule', multi: true}]})
     class MyModule {
     }
 
     @NgModule({
       providers: [
-        {provide: singleToken, useValue: 't1'},
+        {provide: singleToken, useValue: 't1'}, {
+          provide: multiTokenToOverrideAtModuleLevel,
+          useValue: 'multiTokenToOverrideAtModuleLevelOriginal',
+          multi: true
+        },
         {provide: multiToken, useValue: 'valueFromModule2', multi: true},
         {provide: multiToken, useValue: 'secondValueFromModule2', multi: true}
       ]
@@ -361,14 +367,23 @@ describe('TestBed', () => {
 
     beforeEach(() => {
       TestBed.configureTestingModule({
-        imports: [MyModule, MyModule2],
+        imports: [
+          MyModule, {
+            ngModule: MyModule2,
+            providers:
+                [{provide: multiTokenToOverrideAtModuleLevel, useValue: 'override', multi: true}]
+          }
+        ],
       });
     });
 
     it('is preserved when other provider is overridden', () => {
       TestBed.overrideProvider(singleToken, {useValue: ''});
-      const value = TestBed.inject(multiToken);
-      expect(value.length).toEqual(3);
+      expect(TestBed.inject(multiToken).length).toEqual(3);
+      expect(TestBed.inject(multiTokenToOverrideAtModuleLevel).length).toEqual(2);
+      expect(TestBed.inject(multiTokenToOverrideAtModuleLevel)).toEqual([
+        'multiTokenToOverrideAtModuleLevelOriginal', 'override'
+      ]);
     });
 
     it('overridden with an array', () => {
