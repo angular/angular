@@ -148,7 +148,9 @@ export class MatExpansionPanelHeader implements OnDestroy, FocusableOption {
 
   /** Toggles the expanded state of the panel. */
   _toggle(): void {
-    this.panel.toggle();
+    if (!this.disabled) {
+      this.panel.toggle();
+    }
   }
 
   /** Gets whether the panel is expanded. */

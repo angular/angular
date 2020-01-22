@@ -192,6 +192,21 @@ export class MatExpansionPanel extends CdkAccordionItem implements AfterContentI
     return this.expanded ? 'expanded' : 'collapsed';
   }
 
+  /** Toggles the expanded state of the expansion panel. */
+  toggle(): void {
+    this.expanded = !this.expanded;
+  }
+
+  /** Sets the expanded state of the expansion panel to false. */
+  close(): void {
+    this.expanded = false;
+  }
+
+  /** Sets the expanded state of the expansion panel to true. */
+  open(): void {
+    this.expanded = true;
+  }
+
   ngAfterContentInit() {
     if (this._lazyContent) {
       // Render the content as soon as the panel becomes open.

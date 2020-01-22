@@ -403,6 +403,52 @@ describe('MatExpansionPanel', () => {
       expect(header.classList).toContain('mat-expanded');
     });
 
+    it('should be able to toggle a disabled expansion panel programmatically via the ' +
+      'open/close methods', () => {
+        const panelInstance = fixture.componentInstance.panel;
+
+        expect(panelInstance.expanded).toBe(false);
+        expect(header.classList).not.toContain('mat-expanded');
+
+        fixture.componentInstance.disabled = true;
+        fixture.detectChanges();
+
+        panelInstance.open();
+        fixture.detectChanges();
+
+        expect(panelInstance.expanded).toBe(true);
+        expect(header.classList).toContain('mat-expanded');
+
+        panelInstance.close();
+        fixture.detectChanges();
+
+        expect(panelInstance.expanded).toBe(false);
+        expect(header.classList).not.toContain('mat-expanded');
+      });
+
+    it('should be able to toggle a disabled expansion panel programmatically via the ' +
+      'toggle method', () => {
+        const panelInstance = fixture.componentInstance.panel;
+
+        expect(panelInstance.expanded).toBe(false);
+        expect(header.classList).not.toContain('mat-expanded');
+
+        fixture.componentInstance.disabled = true;
+        fixture.detectChanges();
+
+        panelInstance.toggle();
+        fixture.detectChanges();
+
+        expect(panelInstance.expanded).toBe(true);
+        expect(header.classList).toContain('mat-expanded');
+
+        panelInstance.toggle();
+        fixture.detectChanges();
+
+        expect(panelInstance.expanded).toBe(false);
+        expect(header.classList).not.toContain('mat-expanded');
+      });
+
   });
 });
 
