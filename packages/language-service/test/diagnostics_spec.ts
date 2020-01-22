@@ -124,7 +124,7 @@ describe('diagnostics', () => {
     mockHost.override(TEST_TEMPLATE, `
       <test-comp (test)="myClick.bind(this)">
       </test-comp>`);
-    const diags = ngLS.getDiagnostics(TEST_TEMPLATE);
+    const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
     expect(diags).toEqual([]);
   });
 
