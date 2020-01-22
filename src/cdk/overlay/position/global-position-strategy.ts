@@ -164,14 +164,19 @@ export class GlobalPositionStrategy implements PositionStrategy {
     const styles = this._overlayRef.overlayElement.style;
     const parentStyles = this._overlayRef.hostElement.style;
     const config = this._overlayRef.getConfig();
+    const {width, height, maxWidth, maxHeight} = config;
+    const shouldBeFlushHorizontally = (width === '100%' || width === '100vw') &&
+                                      (!maxWidth || maxWidth === '100%' || maxWidth === '100vw');
+    const shouldBeFlushVertically = (height === '100%' || height === '100vh') &&
+                                    (!maxHeight || maxHeight === '100%' || maxHeight === '100vh');
 
     styles.position = this._cssPosition;
-    styles.marginLeft = config.width === '100%' ? '0' : this._leftOffset;
-    styles.marginTop = config.height === '100%' ? '0' : this._topOffset;
+    styles.marginLeft = shouldBeFlushHorizontally ? '0' : this._leftOffset;
+    styles.marginTop = shouldBeFlushVertically ? '0' : this._topOffset;
     styles.marginBottom = this._bottomOffset;
     styles.marginRight = this._rightOffset;
 
-    if (config.width === '100%') {
+    if (shouldBeFlushHorizontally) {
       parentStyles.justifyContent = 'flex-start';
     } else if (this._justifyContent === 'center') {
       parentStyles.justifyContent = 'center';
@@ -189,7 +194,7 @@ export class GlobalPositionStrategy implements PositionStrategy {
       parentStyles.justifyContent = this._justifyContent;
     }
 
-    parentStyles.alignItems = config.height === '100%' ? 'flex-start' : this._alignItems;
+    parentStyles.alignItems = shouldBeFlushVertically ? 'flex-start' : this._alignItems;
   }
 
   /**

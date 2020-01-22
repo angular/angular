@@ -195,7 +195,7 @@ describe('GlobalPositonStrategy', () => {
     attachOverlay({
       positionStrategy: overlay.position()
         .global()
-        .centerHorizontally()
+        .centerHorizontally('10px')
         .width('100%')
     });
 
@@ -206,11 +206,45 @@ describe('GlobalPositonStrategy', () => {
     expect(parentStyle.justifyContent).toBe('flex-start');
   });
 
+  it('should reset the horizontal position and offset when the width is 100% and the ' +
+    'maxWidth is 100%', () => {
+      attachOverlay({
+        maxWidth: '100%',
+        positionStrategy: overlay.position()
+          .global()
+          .centerHorizontally('10px')
+          .width('100%')
+      });
+
+      const elementStyle = overlayRef.overlayElement.style;
+      const parentStyle = (overlayRef.overlayElement.parentNode as HTMLElement).style;
+
+      expect(elementStyle.marginLeft).toBe('0px');
+      expect(parentStyle.justifyContent).toBe('flex-start');
+    });
+
+  it('should not reset the horizontal position and offset when the width is 100% and' +
+    'there is a defined maxWidth', () => {
+      attachOverlay({
+        maxWidth: '500px',
+        positionStrategy: overlay.position()
+          .global()
+          .centerHorizontally('10px')
+          .width('100%')
+      });
+
+      const elementStyle = overlayRef.overlayElement.style;
+      const parentStyle = (overlayRef.overlayElement.parentNode as HTMLElement).style;
+
+      expect(elementStyle.marginLeft).toBe('10px');
+      expect(parentStyle.justifyContent).toBe('center');
+    });
+
   it('should reset the vertical position and offset when the height is 100%', () => {
     attachOverlay({
       positionStrategy: overlay.position()
         .global()
-        .centerVertically()
+        .centerVertically('10px')
         .height('100%')
     });
 
@@ -220,6 +254,40 @@ describe('GlobalPositonStrategy', () => {
     expect(elementStyle.marginTop).toBe('0px');
     expect(parentStyle.alignItems).toBe('flex-start');
   });
+
+  it('should reset the vertical position and offset when the height is 100% and the ' +
+    'maxHeight is 100%', () => {
+      attachOverlay({
+        maxHeight: '100%',
+        positionStrategy: overlay.position()
+          .global()
+          .centerVertically('10px')
+          .height('100%')
+      });
+
+      const elementStyle = overlayRef.overlayElement.style;
+      const parentStyle = (overlayRef.overlayElement.parentNode as HTMLElement).style;
+
+      expect(elementStyle.marginTop).toBe('0px');
+      expect(parentStyle.alignItems).toBe('flex-start');
+    });
+
+  it('should not reset the vertical position and offset when the height is 100% and ' +
+    'there is a defined maxHeight', () => {
+      attachOverlay({
+        maxHeight: '500px',
+        positionStrategy: overlay.position()
+          .global()
+          .centerVertically('10px')
+          .height('100%')
+      });
+
+      const elementStyle = overlayRef.overlayElement.style;
+      const parentStyle = (overlayRef.overlayElement.parentNode as HTMLElement).style;
+
+      expect(elementStyle.marginTop).toBe('10px');
+      expect(parentStyle.alignItems).toBe('center');
+    });
 
   it('should not throw when attempting to apply after the overlay has been disposed', () => {
     const positionStrategy = overlay.position().global();
