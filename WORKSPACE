@@ -15,6 +15,10 @@ http_archive(
 # Add sass rules
 http_archive(
     name = "io_bazel_rules_sass",
+    # Patch `rules_sass` to work around a bug that causes error messages to be not
+    # printed in worker mode: https://github.com/bazelbuild/rules_sass/issues/96.
+    # TODO(devversion): remove this patch once the Sass Node entry-point returns a `Promise`.
+    patches = ["//tools/bazel:sass_worker_async.patch"],
     sha256 = "c78be58f5e0a29a04686b628cf54faaee0094322ae0ac99da5a8a8afca59a647",
     strip_prefix = "rules_sass-1.25.0",
     urls = [
