@@ -1,3 +1,18 @@
+<a name="9.0.0-rc.10"></a>
+# [9.0.0-rc.10](https://github.com/angular/angular/compare/9.0.0-rc.9...9.0.0-rc.10) (2020-01-22)
+
+
+### Bug Fixes
+
+* work around 'noImplicityAny' incompatibility due to ts3.7 update ([#34798](https://github.com/angular/angular/issues/34798)) ([251d548](https://github.com/angular/angular/commit/251d548))
+* **animations:** not waiting for child animations to finish when removing parent in Ivy ([#34702](https://github.com/angular/angular/issues/34702)) ([92c17fe](https://github.com/angular/angular/commit/92c17fe)), closes [#33597](https://github.com/angular/angular/issues/33597)
+* **common:** ensure diffing in ngStyle/ngClass correctly emits value changes ([#34307](https://github.com/angular/angular/issues/34307)) ([93a035f](https://github.com/angular/angular/commit/93a035f)), closes [#34336](https://github.com/angular/angular/issues/34336) [#34444](https://github.com/angular/angular/issues/34444)
+* **ivy:** ensure that `LOCALE_ID` is set after app initializers ([#34830](https://github.com/angular/angular/issues/34830)) ([7643913](https://github.com/angular/angular/commit/7643913)), closes [#34701](https://github.com/angular/angular/issues/34701)
+* **ivy:** more accurate detection of pipes in host bindings ([#34655](https://github.com/angular/angular/issues/34655)) ([da69335](https://github.com/angular/angular/commit/da69335))
+* **ngcc:** do not add DTS deep imports to missing packages list ([#34695](https://github.com/angular/angular/issues/34695)) ([32d4d97](https://github.com/angular/angular/commit/32d4d97)), closes [#34720](https://github.com/angular/angular/issues/34720)
+
+
+
 <a name="9.0.0-rc.9"></a>
 # [9.0.0-rc.9](https://github.com/angular/angular/compare/9.0.0-rc.8...9.0.0-rc.9) (2020-01-15)
 
