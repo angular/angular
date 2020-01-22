@@ -28,7 +28,9 @@ $mat-tab-animation-duration: 500ms !default;
     }
 
     @include cdk-high-contrast {
-      outline: dotted 2px;
+      $outline-width: 2px;
+      outline: dotted $outline-width;
+      outline-offset: -$outline-width; // Not supported on IE, but looks better everywhere else.
     }
   }
 
