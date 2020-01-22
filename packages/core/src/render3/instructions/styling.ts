@@ -68,7 +68,7 @@ export function ɵɵstyleSanitizer(sanitizer: StyleSanitizeFn | null): void {
  * @codeGenApi
  */
 export function ɵɵstyleProp(
-    prop: string, value: string | number | SafeValue | undefined | null,
+    prop: string, value: string | number | SafeValue | null | undefined,
     suffix?: string | null): typeof ɵɵstyleProp {
   checkStylingProperty(prop, value, suffix, false);
   return ɵɵstyleProp;
@@ -90,7 +90,7 @@ export function ɵɵstyleProp(
  * @codeGenApi
  */
 export function ɵɵclassProp(
-    className: string, value: boolean | undefined | null): typeof ɵɵclassProp {
+    className: string, value: boolean | null | undefined): typeof ɵɵclassProp {
   checkStylingProperty(className, value, null, true);
   return ɵɵclassProp;
 }
@@ -116,8 +116,8 @@ export function ɵɵclassProp(
  * @codeGenApi
  */
 export function ɵɵstyleMap(
-    styles: {[styleName: string]: any} | Map<string, string|number|null|undefined>| string |
-    undefined | null): void {
+    styles: {[styleName: string]: any} | Map<string, string|number|null|undefined>| string | null |
+    undefined): void {
   checkStylingMap(STYLE_MAP_STYLING_KEY, styles, false);
 }
 
@@ -140,8 +140,8 @@ export function ɵɵstyleMap(
  * @codeGenApi
  */
 export function ɵɵclassMap(
-    classes: {[className: string]: boolean | undefined | null} |
-    Map<string, boolean|undefined|null>| Set<string>| string[] | string | undefined | null): void {
+    classes: {[className: string]: boolean | null | undefined} |
+    Map<string, boolean|undefined|null>| Set<string>| string[] | string | null | undefined): void {
   checkStylingMap(CLASS_MAP_STYLING_KEY, classes, true);
 }
 
@@ -156,7 +156,7 @@ export function ɵɵclassMap(
  */
 export function checkStylingProperty(
     prop: string, value: any | NO_CHANGE,
-    suffixOrSanitizer: SanitizerFn | string | undefined | null, isClassBased: boolean): void {
+    suffixOrSanitizer: SanitizerFn | string | null | undefined, isClassBased: boolean): void {
   const lView = getLView();
   const tView = lView[TVIEW];
   // Styling instructions use 2 slots per binding.

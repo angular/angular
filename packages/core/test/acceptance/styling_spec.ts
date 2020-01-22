@@ -148,10 +148,12 @@ describe('styling', () => {
       const div = fixture.nativeElement.querySelector('div');
       expect(getSortedClassName(div))
           .toEqual(ivyEnabled ? 'HOST_STATIC STATIC SUPER_STATIC' : 'HOST_STATIC STATIC');
-      expect(getSortedStyle(div))
+      // Browsers keep the '"' around the font name, but Domino removes it some we do search and
+      // replace. Yes we could do `replace(/"/g, '')` but that fails on android.
+      expect(getSortedStyle(div).replace('"', '').replace('"', ''))
           .toEqual(
-              ivyEnabled ? 'color: blue; font-family: "host font"; width: 1px;' :
-                           'color: blue; font-family: "host font";');
+              ivyEnabled ? 'color: blue; font-family: host font; width: 1px;' :
+                           'color: blue; font-family: host font;');
     });
 
     onlyInIvy('style merging is ivy only feature')
