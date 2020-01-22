@@ -439,8 +439,10 @@ export class CdkRowHoverContent implements AfterViewInit, OnDestroy {
             if (!this.viewRef) {
               this.viewRef = this.viewContainerRef.createEmbeddedView(this.templateRef, {});
               this.initElement(this.viewRef.rootNodes[0] as HTMLElement);
+              this.viewRef.markForCheck();
             } else if (this.viewContainerRef.indexOf(this.viewRef) === -1) {
               this.viewContainerRef.insert(this.viewRef!);
+              this.viewRef.markForCheck();
             }
 
             if (eventState === HoverContentState.ON) {

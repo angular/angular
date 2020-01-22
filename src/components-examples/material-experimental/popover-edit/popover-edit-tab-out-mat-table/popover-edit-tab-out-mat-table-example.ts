@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
 import {NgForm} from '@angular/forms';
 import {BehaviorSubject, Observable} from 'rxjs';
@@ -40,6 +40,7 @@ const ELEMENT_DATA: PeriodicElement[] = [
   selector: 'popover-edit-tab-out-mat-table-example',
   styleUrls: ['popover-edit-tab-out-mat-table-example.css'],
   templateUrl: 'popover-edit-tab-out-mat-table-example.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PopoverEditTabOutMatTableExample {
   displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
