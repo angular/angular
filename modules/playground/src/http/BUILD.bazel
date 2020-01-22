@@ -7,8 +7,8 @@ ng_module(
     srcs = glob(["**/*.ts"]),
     tsconfig = "//modules/playground:tsconfig-build.json",
     deps = [
+        "//packages/common/http",
         "//packages/core",
-        "//packages/http",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
         "@npm//rxjs",
