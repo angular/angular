@@ -251,6 +251,72 @@ runInEachFileSystem(() => {
       expect(written).toContain('/foo_module.js');
     });
 
+    it('should rebuild a component if removed from an NgModule', () => {
+      // This test consists of a component with a dependency (the directive DepDir) provided via an
+      // NgModule. Initially this configuration is built, then the component is removed from its
+      // module (which removes DepDir from the component's scope) and a rebuild is performed.
+      // The compiler should re-emit the component without DepDir in its scope.
+      //
+      // This is a tricky scenario due to the backwards dependency arrow from a component to its
+      // module.
+      env.write('dep.ts', `
+        import {Directive, NgModule} from '@angular/core';
+
+        @Directive({selector: '[dep]'})
+        export class DepDir {}
+
+        @NgModule({
+          declarations: [DepDir],
+          exports: [DepDir],
+        })
+        export class DepModule {}
+      `);
+
+      env.write('cmp.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test-cmp',
+          template: '<div dep></div>',
+        })
+        export class Cmp {}
+      `);
+
+      env.write('module.ts', `
+        import {NgModule} from '@angular/core';
+        import {Cmp} from './cmp';
+        import {DepModule} from './dep';
+
+        @NgModule({
+          declarations: [Cmp],
+          imports: [DepModule],
+        })
+        export class Module {}
+      `);
+
+      env.driveMain();
+      env.flushWrittenFileTracking();
+
+      // Remove the component from the module and recompile.
+      env.write('module.ts', `
+        import {NgModule} from '@angular/core';
+        import {DepModule} from './dep';
+
+        @NgModule({
+          declarations: [],
+          imports: [DepModule],
+        })
+        export class Module {}
+      `);
+
+      env.driveMain();
+
+      // After removing the component from the module, it should have been re-emitted without DepDir
+      // in its scope.
+      expect(env.getFilesWrittenSinceLastFlush()).toContain('/cmp.js');
+      expect(env.getContents('cmp.js')).not.toContain('DepDir');
+    });
+
     it('should rebuild only a Component (but with the correct CompilationScope) and its module if its template has changed',
        () => {
          setupFooBarProgram(env);
