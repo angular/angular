@@ -3,6 +3,8 @@
  * want to launch any browser and just enable manual browser debugging.
  */
 
+const bazelKarma = require('@bazel/karma');
+
 module.exports = config => {
   const overwrites = {};
 
@@ -19,9 +21,17 @@ module.exports = config => {
   // Ensures that tests start executing once browsers have been manually connected. We need
   // to use "defineProperty" because the default "@bazel/karma" config overwrites the option.
   Object.defineProperty(overwrites, 'autoWatch', {
-    value: true,
-    writable: false,
+    get: () => true,
+    set: () => {},
+    enumerable: true,
   });
+
+  // When not running with ibazel, do not set up the `@bazel/karma` watcher. This one
+  // relies on ibazel to write to the `stdin` interface. When running without ibazel, the
+  // watcher will kill Karma since there is no data written to the `stdin` interface.
+  if (process.env['IBAZEL_NOTIFY_CHANGES'] !== 'y') {
+    delete bazelKarma['watcher'];
+  }
 
   config.set(overwrites);
 };
