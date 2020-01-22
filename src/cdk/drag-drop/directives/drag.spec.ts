@@ -1132,6 +1132,34 @@ describe('CdkDrag', () => {
       subscription.unsubscribe();
     }));
 
+    it('should prevent the default `mousemove` action even before the drag threshold has ' +
+      'been reached', fakeAsync(() => {
+        const fixture = createComponent(StandaloneDraggable, [], 5);
+        fixture.detectChanges();
+        const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+        dispatchMouseEvent(dragElement, 'mousedown', 2, 2);
+        fixture.detectChanges();
+        const mousemoveEvent = dispatchMouseEvent(document, 'mousemove', 2, 2);
+        fixture.detectChanges();
+
+        expect(mousemoveEvent.defaultPrevented).toBe(true);
+      }));
+
+    it('should prevent the default `touchmove` action even before the drag threshold has ' +
+      'been reached', fakeAsync(() => {
+        const fixture = createComponent(StandaloneDraggable, [], 5);
+        fixture.detectChanges();
+        const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+        dispatchTouchEvent(dragElement, 'touchstart', 2, 2);
+        fixture.detectChanges();
+        const touchmoveEvent = dispatchTouchEvent(document, 'touchmove', 2, 2);
+        fixture.detectChanges();
+
+        expect(touchmoveEvent.defaultPrevented).toBe(true);
+      }));
+
   });
 
   describe('draggable with a handle', () => {

@@ -525,6 +525,10 @@ export class DragRef<T = any> {
 
   /** Handler that is invoked when the user moves their pointer after they've initiated a drag. */
   private _pointerMove = (event: MouseEvent | TouchEvent) => {
+    // Prevent the default action as early as possible in order to block
+    // native actions like dragging the selected text or images with the mouse.
+    event.preventDefault();
+
     if (!this._hasStartedDragging) {
       const pointerPosition = this._getPointerPositionOnPage(event);
       const distanceX = Math.abs(pointerPosition.x - this._pickupPositionOnPage.x);
@@ -565,7 +569,6 @@ export class DragRef<T = any> {
 
     const constrainedPointerPosition = this._getConstrainedPointerPosition(event);
     this._hasMoved = true;
-    event.preventDefault();
     this._updatePointerDirectionDelta(constrainedPointerPosition);
 
     if (this._dropContainer) {
