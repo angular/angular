@@ -138,6 +138,15 @@ describe('MatChipInput', () => {
       expect(listElement.getAttribute('tabindex')).toBe('0', 'Expected tabindex to remain 0');
     }));
 
+    it('should be aria-required if the chip list is required', () => {
+      expect(inputNativeElement.hasAttribute('aria-required')).toBe(false);
+
+      fixture.componentInstance.required = true;
+      fixture.detectChanges();
+
+      expect(inputNativeElement.getAttribute('aria-required')).toBe('true');
+    });
+
   });
 
   describe('[addOnBlur]', () => {
@@ -245,7 +254,7 @@ describe('MatChipInput', () => {
 @Component({
   template: `
     <mat-form-field>
-      <mat-chip-list #chipList>
+      <mat-chip-list #chipList [required]="required">
         <mat-chip>Hello</mat-chip>
         <input matInput [matChipInputFor]="chipList"
                   [matChipInputAddOnBlur]="addOnBlur"
@@ -257,7 +266,8 @@ describe('MatChipInput', () => {
 })
 class TestChipInput {
   @ViewChild(MatChipList) chipListInstance: MatChipList;
-  addOnBlur: boolean = false;
+  addOnBlur = false;
+  required = false;
   placeholder = '';
 
   add(_: MatChipInputEvent) {
