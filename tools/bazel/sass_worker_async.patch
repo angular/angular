@@ -1,14 +1,16 @@
 diff --git sass/sass_wrapper.js sass/sass_wrapper.js
-index 21abb8f..168ee49 100644
+index 21abb8f..9c750a3 100644
 --- sass/sass_wrapper.js
 +++ sass/sass_wrapper.js
-@@ -17,7 +17,9 @@ const fs = require('fs');
+@@ -17,7 +17,11 @@ const fs = require('fs');
  const args = process.argv.slice(2);
  if (runAsWorker(args)) {
    debug('Starting Sass compiler persistent worker...');
 -  runWorkerLoop(args => sass.run_(args));
 +  runWorkerLoop(args => {
-+    return new Promise((resolve, reject) => sass.run_(args)['then$1$2$onError'](resolve, reject));
++    return new Promise(resolve => {
++      sass.run_(args)['then$1$2$onError'](() => resolve(true), () => resolve(false));
++    });
 +  });
    // Note: intentionally don't process.exit() here, because runWorkerLoop
    // is waiting for async callbacks from node.
