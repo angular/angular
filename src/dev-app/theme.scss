@@ -1,5 +1,6 @@
 @import '../material/core/theming/all-theme';
 @import '../material/core/focus-indicator/focus-indicator';
+@import '../material-experimental/mdc-helpers/mdc-helpers';
 @import '../material-experimental/mdc-slider/mdc-slider';
 @import '../material-experimental/mdc-theming/all-theme';
 @import '../material-experimental/mdc-typography/all-typography';
@@ -17,6 +18,7 @@
 // Include base styles for strong focus indicators.
 .demo-strong-focus {
   @include mat-strong-focus-indicators();
+  @include mat-mdc-strong-focus-indicators();
 }
 
 // Define the default theme (same as the example above).
@@ -39,6 +41,7 @@ $dark-theme: mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
 // Include the default theme for focus indicators.
 .demo-strong-focus {
   @include mat-strong-focus-indicators-theme($candy-app-theme);
+  @include mat-mdc-strong-focus-indicators-theme($candy-app-theme);
 }
 
 // Include the alternative theme styles inside of a block with a CSS class. You can make this
@@ -55,4 +58,5 @@ $dark-theme: mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
 // Include the dark theme for focus indicators.
 .demo-unicorn-dark-theme.demo-strong-focus {
   @include mat-strong-focus-indicators-theme($dark-theme);
+  @include mat-mdc-strong-focus-indicators-theme($dark-theme);
 }

@@ -9,9 +9,13 @@
 .mat-mdc-fab, .mat-mdc-mini-fab {
   @include _mat-button-interactive();
   @include _mat-button-disabled();
-}
 
-.mat-mdc-fab, .mat-mdc-mini-fab {
+  // MDC adds some styles to fab and mini-fab that conflict with some of our focus indicator
+  // styles and don't actually do anything. This undoes those conflicting styles.
+  &:not(.mdc-ripple-upgraded):focus::before {
+    background: transparent;
+    opacity: 1;
+  }
 }
 
 // MDC expects the fab icon to contain this HTML content:

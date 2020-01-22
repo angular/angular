@@ -35,6 +35,7 @@ export const MAT_BUTTON_HOST = {
   // an unthemed version. If color is undefined, apply a CSS class that makes it easy to
   // select and style this "theme".
   '[class.mat-unthemed]': '!color',
+  'class': 'mat-mdc-focus-indicator',
 };
 
 /** List of classes to add to buttons instances based on host attribute selector. */
@@ -147,6 +148,7 @@ export const MAT_ANCHOR_HOST = {
   // an unthemed version. If color is undefined, apply a CSS class that makes it easy to
   // select and style this "theme".
   '[class.mat-unthemed]': '!color',
+  'class': 'mat-mdc-focus-indicator',
 };
 
 /**

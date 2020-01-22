@@ -127,6 +127,10 @@ describe('MDC-based MatSlider', () => {
       expect(sliderInstance.value).toBe(100);
     });
 
+    it('should have a focus indicator', () => {
+      expect(sliderNativeElement.classList.contains('mat-mdc-focus-indicator')).toBe(true);
+    });
+
   });
 
   describe('disabled slider', () => {

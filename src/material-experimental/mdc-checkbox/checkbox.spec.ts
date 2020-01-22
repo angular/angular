@@ -588,6 +588,13 @@ describe('MDC-based MatCheckbox', () => {
            expect(inputElement.indeterminate).toBe(true, 'indeterminate should not change');
          }));
     });
+
+    it('should have a focus indicator', () => {
+      const checkboxRippleNativeElement =
+          checkboxNativeElement.querySelector('.mat-mdc-checkbox-ripple')!;
+
+      expect(checkboxRippleNativeElement.classList.contains('mat-mdc-focus-indicator')).toBe(true);
+    });
   });
 
   describe('with change event and no initial value', () => {

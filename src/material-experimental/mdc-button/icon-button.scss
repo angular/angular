@@ -13,4 +13,16 @@
   border-radius: 50%;
 
   @include _mat-button-disabled();
+
+  // MDC adds some styles to icon buttons that conflict with some of our focus indicator styles
+  // and don't actually do anything. This undoes those conflicting styles.
+  &.mat-unthemed,
+  &.mat-primary,
+  &.mat-accent,
+  &.mat-warn {
+    &:not(.mdc-ripple-upgraded):focus::before {
+      background: transparent;
+      opacity: 1;
+    }
+  }
 }

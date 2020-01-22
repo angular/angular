@@ -2160,6 +2160,18 @@ describe('MDC-based MatMenu', () => {
 
   });
 
+  it('should have a focus indicator', () => {
+    const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openMenu();
+    fixture.detectChanges();
+    const menuItemNativeElements =
+        Array.from(overlayContainerElement.querySelectorAll('.mat-mdc-menu-item'));
+
+    expect(menuItemNativeElements
+        .every(element => element.classList.contains('mat-mdc-focus-indicator'))).toBe(true);
+  });
+
 });
 
 describe('MatMenu default overrides', () => {

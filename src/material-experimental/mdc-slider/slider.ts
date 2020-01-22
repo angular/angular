@@ -81,7 +81,7 @@ export class MatSliderChange {
   templateUrl: 'slider.html',
   styleUrls: ['slider.css'],
   host: {
-    'class': 'mat-mdc-slider mdc-slider',
+    'class': 'mat-mdc-slider mdc-slider mat-mdc-focus-indicator',
     'role': 'slider',
     'aria-orientation': 'horizontal',
     // The tabindex if the slider turns disabled is managed by the MDC foundation which

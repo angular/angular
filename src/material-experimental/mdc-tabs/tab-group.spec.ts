@@ -292,6 +292,14 @@ describe('MDC-based MatTabGroup', () => {
       subscription.unsubscribe();
     });
 
+    it('should have a focus indicator', () => {
+      const tabLabelNativeElements =
+          [...fixture.debugElement.nativeElement.querySelectorAll('.mat-mdc-tab')];
+
+      expect(tabLabelNativeElements.every(el => el.classList.contains('mat-mdc-focus-indicator')))
+        .toBe(true);
+    });
+
   });
 
   describe('aria labelling', () => {

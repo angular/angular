@@ -119,7 +119,7 @@ export class MatTabNav extends _MatTabNavBase implements AfterContentInit {
   templateUrl: 'tab-link.html',
   styleUrls: ['tab-link.css'],
   host: {
-    'class': 'mdc-tab mat-mdc-tab-link',
+    'class': 'mdc-tab mat-mdc-tab-link mat-mdc-focus-indicator',
     '[attr.aria-current]': 'active ? "page" : null',
     '[attr.aria-disabled]': 'disabled',
     '[attr.tabIndex]': 'tabIndex',

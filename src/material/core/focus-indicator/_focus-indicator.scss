@@ -1,4 +1,10 @@
 @import '../theming/theming';
+@import '../style/layout-common';
+
+// Focus indicator styles.
+$mat-focus-indicator-border-radius: 4px;
+$mat-focus-indicator-border-width: 2px;
+$mat-focus-indicator-border-style: solid;
 
 /// Mixin that turns on strong focus indicators.
 ///
@@ -7,20 +13,15 @@
 ///     @include mat-strong-focus-indicators();
 ///   }
 @mixin mat-strong-focus-indicators() {
-  // Border width of the focus indicators.
-  $border-width: 2px;
 
   // Base styles for the focus indicators.
   .mat-focus-indicator::before {
-    border-radius: 4px;
-    border: $border-width solid transparent;
+    @include mat-fill();
+
+    border-radius: $mat-focus-indicator-border-radius;
+    border: $mat-focus-indicator-border-width $mat-focus-indicator-border-style transparent;
     box-sizing: border-box;
-    position: absolute;
     pointer-events: none;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
   }
 
   // By default, all focus indicators are flush with the bounding box of their
@@ -29,20 +30,19 @@
   // contrastive and renders appropriately.
 
   .mat-focus-indicator.mat-button-base::before,
-  .mat-focus-indicator.mat-button-base::before,
   .mat-focus-indicator.mat-card::before,
   .mat-focus-indicator.mat-chip::before,
   .mat-focus-indicator.mat-sort-header-button::before {
-    margin: $border-width * -2;
+    margin: $mat-focus-indicator-border-width * -2;
   }
 
   .mat-focus-indicator.mat-calendar-body-cell::before {
-    margin: $border-width * -1;
+    margin: $mat-focus-indicator-border-width * -1;
   }
 
   .mat-focus-indicator.mat-tab-link::before,
   .mat-focus-indicator.mat-tab-label::before {
-    margin: $border-width * 2;
+    margin: $mat-focus-indicator-border-width * 2;
   }
 
   // Render the focus indicator on focus. Defining a pseudo element's
