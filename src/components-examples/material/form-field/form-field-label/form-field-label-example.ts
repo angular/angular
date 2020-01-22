@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
 
 /** @title Form field with label */
 @Component({
@@ -9,11 +9,13 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 })
 export class FormFieldLabelExample {
   options: FormGroup;
+  hideRequiredControl = new FormControl(false);
+  floatLabelControl = new FormControl('auto');
 
   constructor(fb: FormBuilder) {
     this.options = fb.group({
-      hideRequired: false,
-      floatLabel: 'auto',
+      hideRequired: this.hideRequiredControl,
+      floatLabel: this.floatLabelControl,
     });
   }
 }
