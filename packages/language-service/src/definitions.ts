@@ -39,7 +39,7 @@ export function getDefinitionAndBoundSpan(
     return;
   }
 
-  let textSpan = ngSpanToTsTextSpan(symbols[0].span);
+  const textSpan = ngSpanToTsTextSpan(symbols[0].span);
   const definitions: ts.DefinitionInfo[] = [];
   for (const symbolInfo of symbols) {
     const {symbol} = symbolInfo;

@@ -70,7 +70,7 @@ describe('definitions', () => {
       expect(def.kind).toBe('property');
 
       const fileContent = mockHost.readFile(def.fileName);
-      expect(fileContent !.substr(def.textSpan.start, def.textSpan.length))
+      expect(fileContent !.substring(def.textSpan.start, def.textSpan.start + def.textSpan.length))
           .toEqual(`title = 'Some title';`);
     }
   });
@@ -315,14 +315,14 @@ describe('definitions', () => {
     expect(def1.name).toBe('model');
     expect(def1.kind).toBe('property');
     let content = mockHost.readFile(refFileName) !;
-    expect(content.substr(def1.textSpan.start, def1.textSpan.length))
+    expect(content.substring(def1.textSpan.start, def1.textSpan.start + def1.textSpan.length))
         .toEqual(`@Input() model: string = 'model';`);
 
     expect(def2.fileName).toBe(refFileName);
     expect(def2.name).toBe('modelChange');
     expect(def2.kind).toBe('event');
     content = mockHost.readFile(refFileName) !;
-    expect(content.substr(def2.textSpan.start, def2.textSpan.length))
+    expect(content.substring(def2.textSpan.start, def2.textSpan.start + def2.textSpan.length))
         .toEqual(`@Output() modelChange: EventEmitter<string> = new EventEmitter();`);
   });
 

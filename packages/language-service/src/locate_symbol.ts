@@ -53,8 +53,8 @@ function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult):
   const templatePosition = path.position;
   const position = templatePosition + info.template.span.start;
   let compileTypeSummary: CompileTypeSummary|undefined = undefined;
-  let symbol: Symbol|undefined = undefined;
-  let span: Span|undefined = undefined;
+  let symbol: Symbol|undefined;
+  let span: Span|undefined;
   const attributeValueSymbol = (ast: AST): boolean => {
     const attribute = findAttribute(info, position);
     if (attribute) {
