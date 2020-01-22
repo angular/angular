@@ -1,8 +1,8 @@
-### Unit tests for Angular CDK/Material
+### Unit tests for `angular/components`
 
 Currently, all changes to Ivy are validated against the test suite of the
 `angular/components` repository. Known failing tests are skipped based on
-the blocklist in `tools/material-ci/test-blocklist.ts`.
+the blocklist in `tools/components-repo-ci/test-blocklist.ts`.
 
 Whenever the root cause of a known failure is identified, the `notes` field
 for the corresponding tests should be updated. Whenever a failure is resolved,
@@ -10,7 +10,7 @@ the corresponding tests should be removed from the blocklist.
 
 ### Debugging
 
-Information on debugging can be found [here](../../docs/DEBUG_MATERIAL_IVY.md).
+Information on debugging can be found [here](../../docs/DEBUG_COMPONENTS_REPO_IVY.md).
 
 ### Excluding new tests
 
