@@ -108,7 +108,7 @@
     // Custom Rules
     "ts-loader": true,
     "no-exposed-todo": true,
-    "no-import-spacing": true,
+    "no-import-export-spacing": true,
     "no-private-getters": true,
     "no-undecorated-base-class-di": true,
     "no-undecorated-class-with-ng-fields": true,
