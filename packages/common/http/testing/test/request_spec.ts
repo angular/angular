@@ -61,4 +61,24 @@ describe('HttpClient TestRequest', () => {
               ' Requests received are: GET /some-url?query=hello.');
     }
   });
+
+  it('throws if no request matches with several requests received', () => {
+    const mock = new HttpClientTestingBackend();
+    const client = new HttpClient(mock);
+
+    let resp: any;
+    client.get('/some-other-url?query=world').subscribe(body => { resp = body; });
+    client.post('/and-another-url', {}).subscribe(body => { resp = body; });
+
+    try {
+      // expect different URL
+      mock.expectOne('/some-url').flush(null);
+      fail();
+    } catch (error) {
+      expect(error.message)
+          .toBe(
+              'Expected one matching request for criteria "Match URL: /some-url", found none.' +
+              ' Requests received are: GET /some-other-url?query=world, POST /and-another-url.');
+    }
+  });
 });
