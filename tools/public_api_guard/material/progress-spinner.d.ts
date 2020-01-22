@@ -39,9 +39,6 @@ export declare class MatProgressSpinnerModule {
 
 export declare class MatSpinner extends MatProgressSpinner {
     constructor(elementRef: ElementRef<HTMLElement>, platform: Platform, document: any, animationMode: string, defaults?: MatProgressSpinnerDefaultOptions);
-    static ngAcceptInputType_diameter: NumberInput;
-    static ngAcceptInputType_strokeWidth: NumberInput;
-    static ngAcceptInputType_value: NumberInput;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSpinner, "mat-spinner", never, { "color": "color"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatSpinner>;
 }

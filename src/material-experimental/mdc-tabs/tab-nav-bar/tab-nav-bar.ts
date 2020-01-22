@@ -36,7 +36,7 @@ import {Directionality} from '@angular/cdk/bidi';
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {Platform} from '@angular/cdk/platform';
 import {MatInkBar, MatInkBarItem, MatInkBarFoundation} from '../ink-bar';
-import {BooleanInput, coerceBooleanProperty, NumberInput} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
@@ -104,7 +104,6 @@ export class MatTabNav extends _MatTabNavBase implements AfterContentInit {
 
   static ngAcceptInputType_fitInkBarToContent: BooleanInput;
   static ngAcceptInputType_disableRipple: BooleanInput;
-  static ngAcceptInputType_selectedIndex: NumberInput;
 }
 
 /**
@@ -156,7 +155,4 @@ export class MatTabLink extends _MatTabLinkBase implements MatInkBarItem, OnInit
     super.ngOnDestroy();
     this._foundation.destroy();
   }
-
-  static ngAcceptInputType_disabled: BooleanInput;
-  static ngAcceptInputType_disableRipple: BooleanInput;
 }

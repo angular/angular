@@ -42,10 +42,5 @@ import {MatInput as BaseMatInput} from '@angular/material/input';
   },
   providers: [{provide: MatFormFieldControl, useExisting: MatInput}],
 })
-export class MatInput extends BaseMatInput {
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
-  static ngAcceptInputType_readonly: boolean | string | null | undefined;
-  static ngAcceptInputType_required: boolean | string | null | undefined;
-  static ngAcceptInputType_value: any;
-}
+export class MatInput extends BaseMatInput {}
 

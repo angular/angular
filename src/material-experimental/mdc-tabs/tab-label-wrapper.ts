@@ -55,5 +55,4 @@ export class MatTabLabelWrapper extends BaseMatTabLabelWrapper
   }
 
   static ngAcceptInputType_fitInkBarToContent: BooleanInput;
-  static ngAcceptInputType_disabled: BooleanInput;
 }

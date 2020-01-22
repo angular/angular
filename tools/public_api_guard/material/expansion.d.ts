@@ -14,7 +14,6 @@ export declare class MatAccordion extends CdkAccordion implements MatAccordionBa
     _handleHeaderKeydown(event: KeyboardEvent): void;
     ngAfterContentInit(): void;
     static ngAcceptInputType_hideToggle: BooleanInput;
-    static ngAcceptInputType_multi: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatAccordion, "mat-accordion", ["matAccordion"], { "multi": "multi"; "hideToggle": "hideToggle"; "displayMode": "displayMode"; "togglePosition": "togglePosition"; }, {}, ["_headers"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatAccordion>;
 }

@@ -181,7 +181,4 @@ export class MatAnchor extends MatButton {
       event.stopImmediatePropagation();
     }
   }
-
-  static ngAcceptInputType_disabled: BooleanInput;
-  static ngAcceptInputType_disableRipple: BooleanInput;
 }

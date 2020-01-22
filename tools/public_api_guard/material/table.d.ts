@@ -12,7 +12,6 @@ export declare class MatCellDef extends CdkCellDef {
 export declare class MatColumnDef extends CdkColumnDef {
     name: string;
     static ngAcceptInputType_sticky: BooleanInput;
-    static ngAcceptInputType_stickyEnd: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatColumnDef, "[matColumnDef]", never, { "sticky": "sticky"; "name": "matColumnDef"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatColumnDef>;
 }
@@ -73,7 +72,6 @@ export declare class MatRowDef<T> extends CdkRowDef<T> {
 
 export declare class MatTable<T> extends CdkTable<T> {
     protected stickyCssClass: string;
-    static ngAcceptInputType_multiTemplateDataRows: BooleanInput;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatTable<any>, "mat-table, table[mat-table]", ["matTable"], {}, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatTable<any>>;
 }

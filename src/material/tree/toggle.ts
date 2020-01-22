@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BooleanInput} from '@angular/cdk/coercion';
 import {CdkTreeNodeToggle} from '@angular/cdk/tree';
 import {Directive, Input} from '@angular/core';
 
@@ -19,6 +18,4 @@ import {Directive, Input} from '@angular/core';
 })
 export class MatTreeNodeToggle<T> extends CdkTreeNodeToggle<T> {
   @Input('matTreeNodeToggleRecursive') recursive: boolean = false;
-
-  static ngAcceptInputType_recursive: BooleanInput;
 }

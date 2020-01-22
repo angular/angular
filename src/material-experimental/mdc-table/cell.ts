@@ -63,7 +63,6 @@ export class MatColumnDef extends CdkColumnDef {
   @Input('matColumnDef') name: string;
 
   static ngAcceptInputType_sticky: BooleanInput;
-  static ngAcceptInputType_stickyEnd: BooleanInput;
 }
 
 /** Header cell template container that adds the right classes and role. */

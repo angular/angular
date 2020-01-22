@@ -11,9 +11,7 @@ export declare class MatHorizontalStepper extends MatStepper {
     static ngAcceptInputType_completed: BooleanInput;
     static ngAcceptInputType_editable: BooleanInput;
     static ngAcceptInputType_hasError: BooleanInput;
-    static ngAcceptInputType_linear: BooleanInput;
     static ngAcceptInputType_optional: BooleanInput;
-    static ngAcceptInputType_selectedIndex: NumberInput;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatHorizontalStepper, "mat-horizontal-stepper", ["matHorizontalStepper"], { "selectedIndex": "selectedIndex"; "labelPosition": "labelPosition"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatHorizontalStepper>;
 }
@@ -22,10 +20,6 @@ export declare class MatStep extends CdkStep implements ErrorStateMatcher {
     stepLabel: MatStepLabel;
     constructor(stepper: MatStepper, _errorStateMatcher: ErrorStateMatcher, stepperOptions?: StepperOptions);
     isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean;
-    static ngAcceptInputType_completed: BooleanInput;
-    static ngAcceptInputType_editable: BooleanInput;
-    static ngAcceptInputType_hasError: BooleanInput;
-    static ngAcceptInputType_optional: BooleanInput;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatStep, "mat-step", ["matStep"], {}, {}, ["stepLabel"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatStep>;
 }
@@ -74,9 +68,7 @@ export declare class MatStepper extends CdkStepper implements AfterContentInit {
     static ngAcceptInputType_completed: BooleanInput;
     static ngAcceptInputType_editable: BooleanInput;
     static ngAcceptInputType_hasError: BooleanInput;
-    static ngAcceptInputType_linear: BooleanInput;
     static ngAcceptInputType_optional: BooleanInput;
-    static ngAcceptInputType_selectedIndex: NumberInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatStepper, "[matStepper]", never, { "disableRipple": "disableRipple"; }, { "animationDone": "animationDone"; }, ["_steps", "_icons"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatStepper>;
 }
@@ -127,9 +119,7 @@ export declare class MatVerticalStepper extends MatStepper {
     static ngAcceptInputType_completed: BooleanInput;
     static ngAcceptInputType_editable: BooleanInput;
     static ngAcceptInputType_hasError: BooleanInput;
-    static ngAcceptInputType_linear: BooleanInput;
     static ngAcceptInputType_optional: BooleanInput;
-    static ngAcceptInputType_selectedIndex: NumberInput;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatVerticalStepper, "mat-vertical-stepper", ["matVerticalStepper"], { "selectedIndex": "selectedIndex"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatVerticalStepper>;
 }

@@ -2,8 +2,6 @@ export declare class MatAnchor extends MatButton {
     tabIndex: number;
     constructor(focusMonitor: FocusMonitor, elementRef: ElementRef, animationMode: string);
     _haltDisabledEvents(event: Event): void;
-    static ngAcceptInputType_disableRipple: BooleanInput;
-    static ngAcceptInputType_disabled: BooleanInput;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatAnchor, "a[mat-button], a[mat-raised-button], a[mat-icon-button], a[mat-fab],             a[mat-mini-fab], a[mat-stroked-button], a[mat-flat-button]", ["matButton", "matAnchor"], { "disabled": "disabled"; "disableRipple": "disableRipple"; "color": "color"; "tabIndex": "tabIndex"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatAnchor>;
 }

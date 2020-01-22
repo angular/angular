@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BooleanInput} from '@angular/cdk/coercion';
 import {CDK_TABLE_TEMPLATE, CdkTable} from '@angular/cdk/table';
 import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
 
@@ -30,6 +29,4 @@ import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/co
 export class MatTable<T> extends CdkTable<T> {
   /** Overrides the sticky CSS class set by the `CdkTable`. */
   protected stickyCssClass = 'mat-table-sticky';
-
-  static ngAcceptInputType_multiTemplateDataRows: BooleanInput;
 }

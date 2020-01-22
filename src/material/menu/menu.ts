@@ -475,6 +475,9 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
         this._directDescendantItems.notifyOnChanges();
       });
   }
+
+  static ngAcceptInputType_overlapTrigger: BooleanInput;
+  static ngAcceptInputType_hasBackdrop: BooleanInput;
 }
 
 /** @docs-private We show the "_MatMenu" class as "MatMenu" in the docs. */
@@ -516,7 +519,4 @@ export class _MatMenu extends MatMenu {
       @Inject(MAT_MENU_DEFAULT_OPTIONS) defaultOptions: MatMenuDefaultOptions) {
     super(elementRef, ngZone, defaultOptions);
   }
-
-  static ngAcceptInputType_overlapTrigger: BooleanInput;
-  static ngAcceptInputType_hasBackdrop: BooleanInput;
 }

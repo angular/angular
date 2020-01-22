@@ -332,10 +332,6 @@ export class MatSpinner extends MatProgressSpinner {
     super(elementRef, platform, document, animationMode, defaults);
     this.mode = 'indeterminate';
   }
-
-  static ngAcceptInputType_diameter: NumberInput;
-  static ngAcceptInputType_strokeWidth: NumberInput;
-  static ngAcceptInputType_value: NumberInput;
 }
 
 

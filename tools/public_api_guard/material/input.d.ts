@@ -76,9 +76,6 @@ export declare class MatTextareaAutosize extends CdkTextareaAutosize {
     set matAutosizeMinRows(value: number);
     get matTextareaAutosize(): boolean;
     set matTextareaAutosize(value: boolean);
-    static ngAcceptInputType_enabled: BooleanInput;
-    static ngAcceptInputType_maxRows: NumberInput;
-    static ngAcceptInputType_minRows: NumberInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatTextareaAutosize, "textarea[mat-autosize], textarea[matTextareaAutosize]", ["matTextareaAutosize"], { "cdkAutosizeMinRows": "cdkAutosizeMinRows"; "cdkAutosizeMaxRows": "cdkAutosizeMaxRows"; "matAutosizeMinRows": "matAutosizeMinRows"; "matAutosizeMaxRows": "matAutosizeMaxRows"; "matAutosize": "mat-autosize"; "matTextareaAutosize": "matTextareaAutosize"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatTextareaAutosize>;
 }

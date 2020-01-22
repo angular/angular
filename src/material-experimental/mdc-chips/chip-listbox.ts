@@ -557,6 +557,5 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
   static ngAcceptInputType_multiple: BooleanInput;
   static ngAcceptInputType_selectable: BooleanInput;
   static ngAcceptInputType_required: BooleanInput;
-  static ngAcceptInputType_disabled: BooleanInput;
 }
 

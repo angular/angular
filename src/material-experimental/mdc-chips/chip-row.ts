@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BooleanInput} from '@angular/cdk/coercion';
 import {BACKSPACE, DELETE} from '@angular/cdk/keycodes';
 import {
   AfterContentInit,
@@ -149,9 +148,4 @@ export class MatChipRow extends MatChip implements AfterContentInit, AfterViewIn
         this._handleInteraction(event);
     }
   }
-
-  static ngAcceptInputType_disabled: BooleanInput;
-  static ngAcceptInputType_removable: BooleanInput;
-  static ngAcceptInputType_highlighted: BooleanInput;
-  static ngAcceptInputType_disableRipple: BooleanInput;
 }

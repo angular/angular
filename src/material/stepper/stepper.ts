@@ -7,7 +7,7 @@
  */
 
 import {Directionality} from '@angular/cdk/bidi';
-import {BooleanInput, NumberInput} from '@angular/cdk/coercion';
+import {BooleanInput} from '@angular/cdk/coercion';
 import {
   CdkStep,
   CdkStepper,
@@ -81,11 +81,6 @@ export class MatStep extends CdkStep implements ErrorStateMatcher {
 
     return originalErrorState || customErrorState;
   }
-
-  static ngAcceptInputType_editable: BooleanInput;
-  static ngAcceptInputType_hasError: BooleanInput;
-  static ngAcceptInputType_optional: BooleanInput;
-  static ngAcceptInputType_completed: BooleanInput;
 }
 
 
@@ -137,8 +132,6 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
   static ngAcceptInputType_optional: BooleanInput;
   static ngAcceptInputType_completed: BooleanInput;
   static ngAcceptInputType_hasError: BooleanInput;
-  static ngAcceptInputType_linear: BooleanInput;
-  static ngAcceptInputType_selectedIndex: NumberInput;
 }
 
 @Component({
@@ -171,8 +164,6 @@ export class MatHorizontalStepper extends MatStepper {
   static ngAcceptInputType_optional: BooleanInput;
   static ngAcceptInputType_completed: BooleanInput;
   static ngAcceptInputType_hasError: BooleanInput;
-  static ngAcceptInputType_linear: BooleanInput;
-  static ngAcceptInputType_selectedIndex: NumberInput;
 }
 
 @Component({
@@ -209,6 +200,4 @@ export class MatVerticalStepper extends MatStepper {
   static ngAcceptInputType_optional: BooleanInput;
   static ngAcceptInputType_completed: BooleanInput;
   static ngAcceptInputType_hasError: BooleanInput;
-  static ngAcceptInputType_linear: BooleanInput;
-  static ngAcceptInputType_selectedIndex: NumberInput;
 }

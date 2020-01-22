@@ -103,12 +103,9 @@ export declare class MatSidenav extends MatDrawer {
     set fixedInViewport(value: boolean);
     get fixedTopGap(): number;
     set fixedTopGap(value: number);
-    static ngAcceptInputType_autoFocus: BooleanInput;
-    static ngAcceptInputType_disableClose: BooleanInput;
     static ngAcceptInputType_fixedBottomGap: NumberInput;
     static ngAcceptInputType_fixedInViewport: BooleanInput;
     static ngAcceptInputType_fixedTopGap: NumberInput;
-    static ngAcceptInputType_opened: BooleanInput;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSidenav, "mat-sidenav", ["matSidenav"], { "fixedInViewport": "fixedInViewport"; "fixedTopGap": "fixedTopGap"; "fixedBottomGap": "fixedBottomGap"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatSidenav>;
 }
@@ -116,7 +113,6 @@ export declare class MatSidenav extends MatDrawer {
 export declare class MatSidenavContainer extends MatDrawerContainer {
     _allDrawers: QueryList<MatSidenav>;
     _content: MatSidenavContent;
-    static ngAcceptInputType_autosize: BooleanInput;
     static ngAcceptInputType_hasBackdrop: BooleanInput;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSidenavContainer, "mat-sidenav-container", ["matSidenavContainer"], {}, {}, ["_content", "_allDrawers"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatSidenavContainer>;

@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {NumberInput} from '@angular/cdk/coercion';
 import {CdkTreeNodePadding} from '@angular/cdk/tree';
 import {Directive, Input} from '@angular/core';
 
@@ -23,6 +22,4 @@ export class MatTreeNodePadding<T> extends CdkTreeNodePadding<T> {
 
   /** The indent for each level. Default number 40px from material design menu sub-menu spec. */
   @Input('matTreeNodePaddingIndent') indent: number;
-
-  static ngAcceptInputType_level: NumberInput;
 }

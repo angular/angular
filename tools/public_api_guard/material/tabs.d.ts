@@ -62,6 +62,10 @@ export declare abstract class _MatTabGroupBase extends _MatTabGroupMixinBase imp
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
     realignInkBar(): void;
+    static ngAcceptInputType_animationDuration: NumberInput;
+    static ngAcceptInputType_disableRipple: BooleanInput;
+    static ngAcceptInputType_dynamicHeight: BooleanInput;
+    static ngAcceptInputType_selectedIndex: NumberInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatTabGroupBase, never, never, { "dynamicHeight": "dynamicHeight"; "selectedIndex": "selectedIndex"; "headerPosition": "headerPosition"; "animationDuration": "animationDuration"; "disablePagination": "disablePagination"; "backgroundColor": "backgroundColor"; }, { "selectedIndexChange": "selectedIndexChange"; "focusChange": "focusChange"; "animationDone": "animationDone"; "selectedTabChange": "selectedTabChange"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<_MatTabGroupBase>;
 }
@@ -85,6 +89,8 @@ export declare class _MatTabLinkBase extends _MatTabLinkMixinBase implements OnD
     constructor(_tabNavBar: _MatTabNavBase, elementRef: ElementRef, globalRippleOptions: RippleGlobalOptions | null, tabIndex: string, _focusMonitor: FocusMonitor, animationMode?: string);
     focus(): void;
     ngOnDestroy(): void;
+    static ngAcceptInputType_disableRipple: BooleanInput;
+    static ngAcceptInputType_disabled: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatTabLinkBase, never, never, { "active": "active"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<_MatTabLinkBase>;
 }
@@ -182,10 +188,6 @@ export declare class MatTabGroup extends _MatTabGroupBase {
     _tabBodyWrapper: ElementRef;
     _tabHeader: MatTabGroupBaseHeader;
     constructor(elementRef: ElementRef, changeDetectorRef: ChangeDetectorRef, defaultConfig?: MatTabsConfig, animationMode?: string);
-    static ngAcceptInputType_animationDuration: NumberInput;
-    static ngAcceptInputType_disableRipple: BooleanInput;
-    static ngAcceptInputType_dynamicHeight: BooleanInput;
-    static ngAcceptInputType_selectedIndex: NumberInput;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatTabGroup, "mat-tab-group", ["matTabGroup"], { "color": "color"; "disableRipple": "disableRipple"; }, {}, ["_allTabs"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatTabGroup>;
 }
@@ -199,7 +201,6 @@ export declare class MatTabHeader extends _MatTabHeaderBase {
     _tabListContainer: ElementRef;
     constructor(elementRef: ElementRef, changeDetectorRef: ChangeDetectorRef, viewportRuler: ViewportRuler, dir: Directionality, ngZone: NgZone, platform: Platform, animationMode?: string);
     static ngAcceptInputType_disableRipple: BooleanInput;
-    static ngAcceptInputType_selectedIndex: NumberInput;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatTabHeader, "mat-tab-header", never, { "selectedIndex": "selectedIndex"; }, { "selectFocusedIndex": "selectFocusedIndex"; "indexFocused": "indexFocused"; }, ["_items"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatTabHeader>;
 }
@@ -225,8 +226,6 @@ export declare class MatTabLabelWrapper extends _MatTabLabelWrapperMixinBase imp
 export declare class MatTabLink extends _MatTabLinkBase implements OnDestroy {
     constructor(tabNavBar: MatTabNav, elementRef: ElementRef, ngZone: NgZone, platform: Platform, globalRippleOptions: RippleGlobalOptions | null, tabIndex: string, focusMonitor: FocusMonitor, animationMode?: string);
     ngOnDestroy(): void;
-    static ngAcceptInputType_disableRipple: BooleanInput;
-    static ngAcceptInputType_disabled: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatTabLink, "[mat-tab-link], [matTabLink]", ["matTabLink"], { "disabled": "disabled"; "disableRipple": "disableRipple"; "tabIndex": "tabIndex"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatTabLink>;
 }
@@ -241,7 +240,6 @@ export declare class MatTabNav extends _MatTabNavBase {
     constructor(elementRef: ElementRef, dir: Directionality, ngZone: NgZone, changeDetectorRef: ChangeDetectorRef, viewportRuler: ViewportRuler,
     platform?: Platform, animationMode?: string);
     static ngAcceptInputType_disableRipple: BooleanInput;
-    static ngAcceptInputType_selectedIndex: NumberInput;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatTabNav, "[mat-tab-nav-bar]", ["matTabNavBar", "matTabNav"], { "color": "color"; }, {}, ["_items"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatTabNav>;
 }

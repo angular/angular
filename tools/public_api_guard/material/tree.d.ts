@@ -84,14 +84,12 @@ export declare class MatTreeNodeOutlet implements CdkTreeNodeOutlet {
 export declare class MatTreeNodePadding<T> extends CdkTreeNodePadding<T> {
     indent: number;
     level: number;
-    static ngAcceptInputType_level: NumberInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatTreeNodePadding<any>, "[matTreeNodePadding]", never, { "level": "matTreeNodePadding"; "indent": "matTreeNodePaddingIndent"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatTreeNodePadding<any>>;
 }
 
 export declare class MatTreeNodeToggle<T> extends CdkTreeNodeToggle<T> {
     recursive: boolean;
-    static ngAcceptInputType_recursive: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatTreeNodeToggle<any>, "[matTreeNodeToggle]", never, { "recursive": "matTreeNodeToggleRecursive"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatTreeNodeToggle<any>>;
 }

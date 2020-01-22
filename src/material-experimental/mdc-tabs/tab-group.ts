@@ -77,8 +77,5 @@ export class MatTabGroup extends _MatTabGroupBase {
   }
 
   static ngAcceptInputType_fitInkBarToContent: BooleanInput;
-  static ngAcceptInputType_dynamicHeight: BooleanInput;
   static ngAcceptInputType_animationDuration: NumberInput;
-  static ngAcceptInputType_selectedIndex: NumberInput;
-  static ngAcceptInputType_disableRipple: BooleanInput;
 }

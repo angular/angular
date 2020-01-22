@@ -22,7 +22,7 @@ import {
   Input,
 } from '@angular/core';
 import {Direction, Directionality} from '@angular/cdk/bidi';
-import {coerceNumberProperty} from '@angular/cdk/coercion';
+import {coerceNumberProperty, NumberInput} from '@angular/cdk/coercion';
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {FocusKeyManager, FocusableOption} from '@angular/cdk/a11y';
 import {END, ENTER, HOME, SPACE, hasModifierKey} from '@angular/cdk/keycodes';
@@ -593,4 +593,6 @@ export abstract class MatPaginatedTabHeader implements AfterContentChecked, Afte
 
     return {maxScrollDistance, distance: this._scrollDistance};
   }
+
+  static ngAcceptInputType_selectedIndex: NumberInput;
 }

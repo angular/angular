@@ -227,8 +227,4 @@ export class MatChipOption extends MatChip {
 
   static ngAcceptInputType_selectable: BooleanInput;
   static ngAcceptInputType_selected: BooleanInput;
-  static ngAcceptInputType_disabled: BooleanInput;
-  static ngAcceptInputType_removable: BooleanInput;
-  static ngAcceptInputType_highlighted: BooleanInput;
-  static ngAcceptInputType_disableRipple: BooleanInput;
 }
