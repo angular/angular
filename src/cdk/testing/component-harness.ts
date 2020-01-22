@@ -507,10 +507,13 @@ function _valueAsString(value: unknown) {
   }
   // `JSON.stringify` doesn't handle RegExp properly, so we need a custom replacer.
   try {
-    return JSON.stringify(value, (_, v) =>
-        v instanceof RegExp ? `/${v.toString()}/` :
-            typeof v === 'string' ? v.replace('/\//g', '\\/') : v
-    ).replace(/"\/\//g, '\\/').replace(/\/\/"/g, '\\/').replace(/\\\//g, '/');
+    return JSON.stringify(value, (_, v) => {
+      if (v instanceof RegExp) {
+        return `/${v.toString()}/`;
+      }
+
+      return typeof v === 'string' ? v.replace('/\//g', '\\/') : v;
+    }).replace(/"\/\//g, '\\/').replace(/\/\/"/g, '\\/').replace(/\\\//g, '/');
   } catch {
     // `JSON.stringify` will throw if the object is cyclical,
     // in this case the best we can do is report the value as `{...}`.

@@ -90,8 +90,13 @@ export class CdkScrollable implements OnInit, OnDestroy {
     const isRtl = this.dir && this.dir.value == 'rtl';
 
     // Rewrite start & end offsets as right or left offsets.
-    options.left = options.left == null ? (isRtl ? options.end : options.start) : options.left;
-    options.right = options.right == null ? (isRtl ? options.start : options.end) : options.right;
+    if (options.left == null) {
+      options.left = isRtl ? options.end : options.start;
+    }
+
+    if (options.right == null) {
+      options.right = isRtl ? options.start : options.end;
+    }
 
     // Rewrite the bottom offset as a top offset.
     if (options.bottom != null) {

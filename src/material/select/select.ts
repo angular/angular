@@ -1091,7 +1091,11 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   /** Gets the index of the provided option in the option list. */
   private _getOptionIndex(option: MatOption): number | undefined {
     return this.options.reduce((result: number | undefined, current: MatOption, index: number) => {
-      return result === undefined ? (option === current ? index : undefined) : result;
+      if (result !== undefined) {
+        return result;
+      }
+
+      return option === current ? index : undefined;
     }, undefined);
   }
 

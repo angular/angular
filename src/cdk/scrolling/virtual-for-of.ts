@@ -88,11 +88,13 @@ export class CdkVirtualForOf<T> implements CollectionViewer, DoCheck, OnDestroy 
   }
   set cdkVirtualForOf(value: DataSource<T> | Observable<T[]> | NgIterable<T> | null | undefined) {
     this._cdkVirtualForOf = value;
-    const ds = isDataSource(value) ? value :
-        // Slice the value if its an NgIterable to ensure we're working with an array.
-        new ArrayDataSource<T>(
-            value instanceof Observable ? value : Array.prototype.slice.call(value || []));
-    this._dataSourceChanges.next(ds);
+    if (isDataSource(value)) {
+      this._dataSourceChanges.next(value);
+    } else {
+      // Slice the value if its an NgIterable to ensure we're working with an array.
+      this._dataSourceChanges.next(new ArrayDataSource<T>(
+          value instanceof Observable ? value : Array.prototype.slice.call(value || [])));
+    }
   }
   _cdkVirtualForOf: DataSource<T> | Observable<T[]> | NgIterable<T> | null | undefined;
 

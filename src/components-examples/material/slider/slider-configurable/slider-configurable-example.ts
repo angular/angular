@@ -22,6 +22,10 @@ export class SliderConfigurableExample {
   tickInterval = 1;
 
   getSliderTickInterval(): number | 'auto' {
-    return this.showTicks ? (this.autoTicks ? 'auto' : this.tickInterval) : 0;
+    if (this.showTicks) {
+      return this.autoTicks ? 'auto' : this.tickInterval;
+    }
+
+    return 0;
   }
 }

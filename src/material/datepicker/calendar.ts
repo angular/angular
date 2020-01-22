@@ -353,8 +353,16 @@ export class MatCalendar<D> implements AfterContentInit, AfterViewChecked, OnDes
 
   /** Updates today's date after an update of the active date */
   updateTodaysDate() {
-    let view = this.currentView == 'month' ? this.monthView :
-            (this.currentView == 'year' ? this.yearView : this.multiYearView);
+    const currentView = this.currentView;
+    let view: MatMonthView<D> | MatYearView<D> | MatMultiYearView<D>;
+
+    if (currentView === 'month') {
+      view = this.monthView;
+    } else if (currentView === 'year') {
+      view = this.yearView;
+    } else {
+      view = this.multiYearView;
+    }
 
     view.ngAfterContentInit();
   }

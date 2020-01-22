@@ -337,7 +337,11 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
   }
 
   _getAriaChecked(): 'true' | 'false' | 'mixed' {
-    return this.checked ? 'true' : (this.indeterminate ? 'mixed' : 'false');
+    if (this.checked) {
+      return 'true';
+    }
+
+    return this.indeterminate ? 'mixed' : 'false';
   }
 
   private _transitionCheckState(newState: TransitionCheckState) {

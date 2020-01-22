@@ -116,6 +116,7 @@
     "ng-on-changes-property-access": true,
     "require-breaking-change-version": true,
     "class-list-signatures": true,
+    "no-nested-ternary": true,
     "coercion-types": [true,
       ["coerceBooleanProperty", "coerceCssPixelValue", "coerceNumberProperty"],
       {

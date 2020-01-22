@@ -358,8 +358,9 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
    *     in horizontal mode.
    */
   measureScrollOffset(from?: 'top' | 'left' | 'right' | 'bottom' | 'start' | 'end'): number {
-    return super.measureScrollOffset(
-        from ? from : this.orientation === 'horizontal' ? 'start' : 'top');
+    return from ?
+      super.measureScrollOffset(from) :
+      super.measureScrollOffset(this.orientation === 'horizontal' ? 'start' : 'top');
   }
 
   /** Measure the combined size of all of the rendered items. */

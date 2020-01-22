@@ -423,9 +423,14 @@ export class MatSlider extends _MatSliderMixinBase
     };
 
     if (this._isMinValue && this._thumbGap) {
-      let side = this.vertical ?
-          (this._invertAxis ? 'Bottom' : 'Top') :
-          (this._invertAxis ? 'Right' : 'Left');
+      let side: string;
+
+      if (this.vertical) {
+        side = this._invertAxis ? 'Bottom' : 'Top';
+      } else {
+        side = this._invertAxis ? 'Right' : 'Left';
+      }
+
       styles[`padding${side}`] = `${this._thumbGap}px`;
     }
 

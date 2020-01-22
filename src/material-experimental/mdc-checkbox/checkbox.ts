@@ -363,7 +363,11 @@ export class MatCheckbox implements AfterViewInit, OnDestroy, ControlValueAccess
 
   /** Gets the value for the `aria-checked` attribute of the native input. */
   _getAriaChecked(): 'true'|'false'|'mixed' {
-    return this.checked ? 'true' : (this.indeterminate ? 'mixed' : 'false');
+    if (this.checked) {
+      return 'true';
+    }
+
+    return this.indeterminate ? 'mixed' : 'false';
   }
 
   /** Sets whether the given CSS class should be applied to the native input. */
