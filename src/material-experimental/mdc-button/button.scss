@@ -1,6 +1,6 @@
-@import '@material/button/mixins';
-@import '@material/button/variables';
-@import '@material/ripple/mixins';
+@import '@material/button/mixins.import';
+@import '@material/button/variables.import';
+@import '@material/ripple/mixins.import';
 @import '../mdc-helpers/mdc-helpers';
 @import '../../cdk/a11y/a11y';
 @import '_button-base';

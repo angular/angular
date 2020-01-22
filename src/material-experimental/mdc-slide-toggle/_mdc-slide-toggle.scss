@@ -1,8 +1,8 @@
-@import '@material/switch/mixins';
-@import '@material/switch/variables';
-@import '@material/form-field/mixins';
-@import '@material/ripple/variables';
-@import '@material/theme/functions';
+@import '@material/switch/mixins.import';
+@import '@material/switch/variables.import';
+@import '@material/form-field/mixins.import';
+@import '@material/ripple/variables.import';
+@import '@material/theme/functions.import';
 @import '../mdc-helpers/mdc-helpers';
 
 @mixin mat-slide-toggle-theme-mdc($theme) {

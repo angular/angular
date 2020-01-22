@@ -1,6 +1,6 @@
-@import '@material/ripple/variables';
-@import '@material/tab/variables';
-@import '@material/tab/mixins';
+@import '@material/ripple/variables.import';
+@import '@material/tab/variables.import';
+@import '@material/tab/mixins.import';
 @import '../../material/core/style/variables';
 @import '../../material/core/style/noop-animation';
 @import '../../material/core/style/vendor-prefixes';

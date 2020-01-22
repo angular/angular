@@ -1,7 +1,7 @@
-@import '@material/checkbox/functions';
-@import '@material/checkbox/mixins';
-@import '@material/form-field/mixins';
-@import '@material/ripple/variables';
+@import '@material/checkbox/functions.import';
+@import '@material/checkbox/mixins.import';
+@import '@material/form-field/mixins.import';
+@import '@material/ripple/variables.import';
 @import '../mdc-helpers/mdc-helpers';
 
 @include mdc-checkbox-without-ripple($query: $mat-base-styles-query);

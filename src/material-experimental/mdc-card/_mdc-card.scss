@@ -1,5 +1,5 @@
-@import '@material/card/mixins';
-@import '@material/typography/mixins';
+@import '@material/card/mixins.import';
+@import '@material/typography/mixins.import';
 @import '../mdc-helpers/mdc-helpers';
 
 @mixin mat-card-theme-mdc($theme) {

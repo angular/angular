@@ -2,10 +2,10 @@
 //  "theming", "typography", "core". Currently splitting it is difficult because of our brittle
 //  gulp-based release build process. We can update this when we switch to bazel.
 
-@import '@material/feature-targeting/functions';
-@import '@material/theme/functions';
-@import '@material/theme/variables';
-@import '@material/typography/variables';
+@import '@material/feature-targeting/functions.import';
+@import '@material/theme/functions.import';
+@import '@material/theme/variables.import';
+@import '@material/typography/variables.import';
 @import '../../material/core/theming/theming';
 @import '../../material/core/typography/typography';
 

@@ -1,8 +1,8 @@
-@import '@material/menu-surface/mixins';
-@import '@material/menu-surface/variables';
-@import '@material/list/mixins';
-@import '@material/list/variables';
-@import '@material/theme/functions';
+@import '@material/menu-surface/mixins.import';
+@import '@material/menu-surface/variables.import';
+@import '@material/list/mixins.import';
+@import '@material/list/variables.import';
+@import '@material/theme/functions.import';
 @import '../mdc-helpers/mdc-helpers';
 
 @mixin mat-menu-theme-mdc($theme) {

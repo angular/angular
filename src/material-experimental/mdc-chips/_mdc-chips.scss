@@ -1,6 +1,6 @@
-@import '@material/chips/mixins';
+@import '@material/chips/mixins.import';
 @import '../mdc-helpers/mdc-helpers';
-@import '@material/theme/functions';
+@import '@material/theme/functions.import';
 
 @mixin mat-chips-theme-mdc($theme) {
   @include mdc-chip-set-core-styles($query: $mat-theme-styles-query);

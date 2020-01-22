@@ -1,8 +1,8 @@
-@import '@material/switch/functions';
-@import '@material/switch/mixins';
-@import '@material/switch/variables';
-@import '@material/form-field/mixins';
-@import '@material/ripple/variables';
+@import '@material/switch/functions.import';
+@import '@material/switch/mixins.import';
+@import '@material/switch/variables.import';
+@import '@material/form-field/mixins.import';
+@import '@material/ripple/variables.import';
 @import '../mdc-helpers/mdc-helpers';
 @import '../../material/core/style/layout-common';
 @import '../../cdk/a11y/a11y';

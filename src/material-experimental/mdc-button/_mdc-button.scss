@@ -1,8 +1,8 @@
-@import '@material/button/mixins';
-@import '@material/button/variables';
-@import '@material/fab/mixins';
-@import '@material/ripple/mixins';
-@import '@material/icon-button/mixins';
+@import '@material/button/mixins.import';
+@import '@material/button/variables.import';
+@import '@material/fab/mixins.import';
+@import '@material/ripple/mixins.import';
+@import '@material/icon-button/mixins.import';
 @import '../../material/core/ripple/ripple';
 @import '../mdc-helpers/mdc-helpers';
 

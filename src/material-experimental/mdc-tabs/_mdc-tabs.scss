@@ -1,7 +1,7 @@
-@import '@material/theme/functions';
-@import '@material/tab-indicator/mixins';
-@import '@material/tab/mixins';
-@import '@material/tab/variables';
+@import '@material/theme/functions.import';
+@import '@material/tab-indicator/mixins.import';
+@import '@material/tab/mixins.import';
+@import '@material/tab/variables.import';
 @import '../mdc-helpers/mdc-helpers';
 
 @mixin mat-tabs-theme-mdc($theme) {

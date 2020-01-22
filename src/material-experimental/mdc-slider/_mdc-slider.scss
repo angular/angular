@@ -1,5 +1,5 @@
 @import '../mdc-helpers/mdc-helpers';
-@import '@material/slider/mixins';
+@import '@material/slider/mixins.import';
 
 @mixin mat-slider-theme-mdc($theme) {
   @include mat-using-mdc-theme($theme) {

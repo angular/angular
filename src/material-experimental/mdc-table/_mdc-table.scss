@@ -1,5 +1,5 @@
 @import '../mdc-helpers/mdc-helpers';
-@import '@material/data-table/mixins';
+@import '@material/data-table/mixins.import';
 
 @mixin mat-table-theme-mdc($theme) {
   @include mat-using-mdc-theme($theme) {

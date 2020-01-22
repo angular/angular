@@ -1,6 +1,6 @@
-@import '@material/fab/mixins';
-@import '@material/button/variables';
-@import '@material/theme/variables';
+@import '@material/fab/mixins.import';
+@import '@material/button/variables.import';
+@import '@material/theme/variables.import';
 @import '../mdc-helpers/mdc-helpers';
 @import '_button-base';
 

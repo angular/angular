@@ -1,5 +1,5 @@
-@import '@material/linear-progress/mixins';
-@import '@material/theme/functions';
+@import '@material/linear-progress/mixins.import';
+@import '@material/theme/functions.import';
 @import '../mdc-helpers/mdc-helpers';
 
 @mixin _mat-mdc-progress-bar-color($color) {
