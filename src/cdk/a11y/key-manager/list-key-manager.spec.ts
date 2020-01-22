@@ -33,7 +33,9 @@ class FakeQueryList<T> extends QueryList<T> {
   set length(_) { /* Empty setter for base class constructor */  }
   get first() { return this.items[0]; }
   toArray() { return this.items; }
-  some() { return this.items.some.apply(this.items, arguments); }
+  some(...args: [(value: T, index: number, array: T[]) => unknown, any?]) {
+    return this.items.some(...args);
+  }
   notifyOnChanges() { this.changes.next(this); }
 }
 

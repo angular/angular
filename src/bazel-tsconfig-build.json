@@ -18,6 +18,7 @@
     "noImplicitAny": true,
     "noImplicitThis": true,
     "importHelpers": true,
+    "strictBindCallApply": true,
     "newLine": "lf",
     "module": "es2015",
     "moduleResolution": "node",

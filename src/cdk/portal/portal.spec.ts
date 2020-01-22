@@ -1,23 +1,24 @@
-import {inject, ComponentFixture, TestBed} from '@angular/core/testing';
+import {CommonModule} from '@angular/common';
 import {
-  NgModule,
-  Component,
-  ViewChild,
-  ViewChildren,
-  QueryList,
-  ViewContainerRef,
-  ComponentFactoryResolver,
-  Optional,
-  Injector,
   ApplicationRef,
-  TemplateRef,
+  Component,
+  ComponentFactoryResolver,
   ComponentRef,
   ElementRef,
+  Injector,
+  NgModule,
+  Optional,
+  QueryList,
+  TemplateRef,
+  Type,
+  ViewChild,
+  ViewChildren,
+  ViewContainerRef,
 } from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {CdkPortal, CdkPortalOutlet, PortalModule} from './portal-directives';
-import {Portal, ComponentPortal, TemplatePortal, DomPortal} from './portal';
+import {ComponentFixture, inject, TestBed} from '@angular/core/testing';
 import {DomPortalOutlet} from './dom-portal-outlet';
+import {ComponentPortal, DomPortal, Portal, TemplatePortal} from './portal';
+import {CdkPortal, CdkPortalOutlet, PortalModule} from './portal-directives';
 
 
 describe('Portals', () => {
@@ -377,10 +378,9 @@ describe('Portals', () => {
     it('should use the `ComponentFactoryResolver` from the portal, if available', () => {
       const spy = jasmine.createSpy('resolveComponentFactorySpy');
       const portal = new ComponentPortal(PizzaMsg, undefined, undefined, {
-        resolveComponentFactory: (...args: any[]) => {
+        resolveComponentFactory: <T>(...args: [Type<T>]) => {
           spy();
-          return componentFactoryResolver.resolveComponentFactory
-              .apply(componentFactoryResolver, args);
+          return componentFactoryResolver.resolveComponentFactory(...args);
         }
       });
 
@@ -560,10 +560,9 @@ describe('Portals', () => {
     it('should use the `ComponentFactoryResolver` from the portal, if available', () => {
       const spy = jasmine.createSpy('resolveComponentFactorySpy');
       const portal = new ComponentPortal(PizzaMsg, undefined, undefined, {
-        resolveComponentFactory: (...args: any[]) => {
+        resolveComponentFactory: <T>(...args: [Type<T>]) => {
           spy();
-          return componentFactoryResolver.resolveComponentFactory
-              .apply(componentFactoryResolver, args);
+          return componentFactoryResolver.resolveComponentFactory(...args);
         }
       });
 

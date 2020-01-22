@@ -27,28 +27,28 @@ describe('FullscreenOverlayContainer', () => {
             body: document.body,
             fullscreenElement: document.createElement('div'),
             fullscreenEnabled: true,
-            addEventListener: function(eventName: string, listener: Function) {
+            addEventListener: function(eventName: string, listener: EventListener) {
               if (eventName === 'fullscreenchange') {
                 fullscreenListeners.add(listener);
               } else {
-                document.addEventListener.apply(document, arguments);
+                document.addEventListener(eventName, listener);
               }
             },
-            removeEventListener: function(eventName: string, listener: Function) {
+            removeEventListener: function(eventName: string, listener: EventListener) {
               if (eventName === 'fullscreenchange') {
                 fullscreenListeners.delete(listener);
               } else {
-                document.addEventListener.apply(document, arguments);
+                document.addEventListener(eventName, listener);
               }
             },
-            querySelectorAll: function() {
-              return document.querySelectorAll.apply(document, arguments);
+            querySelectorAll: function(...args: [string]) {
+              return document.querySelectorAll(...args);
             },
-            createElement: function() {
-              return document.createElement.apply(document, arguments);
+            createElement: function(...args: [string, (ElementCreationOptions | undefined)?]) {
+              return document.createElement(...args);
             },
-            getElementsByClassName: function() {
-              return document.getElementsByClassName.apply(document, arguments);
+            getElementsByClassName: function(...args: [string]) {
+              return document.getElementsByClassName(...args);
             }
           };
 

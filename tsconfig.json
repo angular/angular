@@ -15,6 +15,7 @@
     "noImplicitAny": true,
     "noImplicitThis": true,
     "skipLibCheck": true,
+    "strictBindCallApply": true,
     "target": "es2015",
     "lib": ["es5", "es2015", "dom"],
     "types": ["jasmine"],

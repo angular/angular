@@ -14,7 +14,7 @@ import {getElement, FinderResult} from './query';
  */
 export async function pressKeys(...keys: string[]) {
   const actions = browser.actions();
-  await actions.sendKeys.call(actions, keys).perform();
+  await actions.sendKeys(...keys).perform();
 }
 
 /**

@@ -14,7 +14,7 @@ import {ModifierKeys} from '@angular/cdk/testing';
  */
 export function createMouseEvent(type: string, x = 0, y = 0, button = 0) {
   const event = document.createEvent('MouseEvent');
-  const originalPreventDefault = event.preventDefault;
+  const originalPreventDefault = event.preventDefault.bind(event);
 
   event.initMouseEvent(type,
     true, /* canBubble */
@@ -39,7 +39,7 @@ export function createMouseEvent(type: string, x = 0, y = 0, button = 0) {
   // IE won't set `defaultPrevented` on synthetic events so we need to do it manually.
   event.preventDefault = function() {
     Object.defineProperty(event, 'defaultPrevented', { get: () => true });
-    return originalPreventDefault.apply(this, arguments);
+    return originalPreventDefault();
   };
 
   return event;
