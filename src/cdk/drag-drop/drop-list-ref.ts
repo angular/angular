@@ -137,11 +137,11 @@ export class DropListRef<T = any> {
   /** Cache of the dimensions of all the items inside the container. */
   private _itemPositions: CachedItemPosition[] = [];
 
-  /** Keeps track of the container's scroll position. */
-  private _scrollPosition: ScrollPosition = {top: 0, left: 0};
-
-  /** Keeps track of the scroll position of the viewport. */
-  private _viewportScrollPosition: ScrollPosition = {top: 0, left: 0};
+  /** Cached positions of the scrollable parent elements. */
+  private _parentPositions = new Map<Document|HTMLElement, {
+    scrollPosition: ScrollPosition,
+    clientRect?: ClientRect
+  }>();
 
   /** Cached `ClientRect` of the drop list. */
   private _clientRect: ClientRect;
@@ -195,6 +195,9 @@ export class DropListRef<T = any> {
   /** Reference to the document. */
   private _document: Document;
 
+  /** Elements that can be scrolled while the user is dragging. */
+  private _scrollableElements: HTMLElement[];
+
   constructor(
     element: ElementRef<HTMLElement> | HTMLElement,
     private _dragDropRegistry: DragDropRegistry<DragRef, DropListRef>,
@@ -203,6 +206,7 @@ export class DropListRef<T = any> {
     private _viewportRuler: ViewportRuler) {
     this.element = coerceElement(element);
     this._document = _document;
+    this.withScrollableParents([this.element]);
     _dragDropRegistry.registerDropContainer(this);
   }
 
@@ -210,7 +214,7 @@ export class DropListRef<T = any> {
   dispose() {
     this._stopScrolling();
     this._stopScrollTimers.complete();
-    this._removeListeners();
+    this._viewportScrollSubscription.unsubscribe();
     this.beforeStarted.complete();
     this.entered.complete();
     this.exited.complete();
@@ -218,6 +222,7 @@ export class DropListRef<T = any> {
     this.sorted.complete();
     this._activeSiblings.clear();
     this._scrollNode = null!;
+    this._parentPositions.clear();
     this._dragDropRegistry.removeDropContainer(this);
   }
 
@@ -228,13 +233,11 @@ export class DropListRef<T = any> {
 
   /** Starts dragging an item. */
   start(): void {
-    const element = coerceElement(this.element);
     this.beforeStarted.next();
     this._isDragging = true;
     this._cacheItems();
     this._siblings.forEach(sibling => sibling._startReceiving(this));
-    this._removeListeners();
-    this._ngZone.runOutsideAngular(() => element.addEventListener('scroll', this._handleScroll));
+    this._viewportScrollSubscription.unsubscribe();
     this._listenToScrollEvents();
   }
 
@@ -368,6 +371,20 @@ export class DropListRef<T = any> {
   }
 
   /**
+   * Sets which parent elements are can be scrolled while the user is dragging.
+   * @param elements Elements that can be scrolled.
+   */
+  withScrollableParents(elements: HTMLElement[]): this {
+    const element = coerceElement(this.element);
+
+    // We always allow the current element to be scrollable
+    // so we need to ensure that it's in the array.
+    this._scrollableElements =
+        elements.indexOf(element) === -1 ? [element, ...elements] : elements.slice();
+    return this;
+  }
+
+  /**
    * Figures out the index of an item in the container.
    * @param item Item whose index should be determined.
    */
@@ -403,7 +420,7 @@ export class DropListRef<T = any> {
   _sortItem(item: DragRef, pointerX: number, pointerY: number,
             pointerDelta: {x: number, y: number}): void {
     // Don't sort the item if sorting is disabled or it's out of range.
-    if (this.sortingDisabled || !this._isPointerNearDropContainer(pointerX, pointerY)) {
+    if (this.sortingDisabled || !isPointerNearClientRect(this._clientRect, pointerX, pointerY)) {
       return;
     }
 
@@ -489,17 +506,23 @@ export class DropListRef<T = any> {
     let verticalScrollDirection = AutoScrollVerticalDirection.NONE;
     let horizontalScrollDirection = AutoScrollHorizontalDirection.NONE;
 
-    // Check whether we should start scrolling the container.
-    if (this._isPointerNearDropContainer(pointerX, pointerY)) {
-      const element = coerceElement(this.element);
-
-      [verticalScrollDirection, horizontalScrollDirection] =
-          getElementScrollDirections(element, this._clientRect, pointerX, pointerY);
-
-      if (verticalScrollDirection || horizontalScrollDirection) {
-        scrollNode = element;
+    // Check whether we should start scrolling any of the parent containers.
+    this._parentPositions.forEach((position, element) => {
+      // We have special handling for the `document` below. Also this would be
+      // nicer with a  for...of loop, but it requires changing a compiler flag.
+      if (element === this._document || !position.clientRect || scrollNode) {
+        return;
       }
-    }
+
+      if (isPointerNearClientRect(position.clientRect, pointerX, pointerY)) {
+        [verticalScrollDirection, horizontalScrollDirection] = getElementScrollDirections(
+            element as HTMLElement, position.clientRect, pointerX, pointerY);
+
+        if (verticalScrollDirection || horizontalScrollDirection) {
+          scrollNode = element as HTMLElement;
+        }
+      }
+    });
 
     // Otherwise check if we can start scrolling the viewport.
     if (!verticalScrollDirection && !horizontalScrollDirection) {
@@ -530,11 +553,27 @@ export class DropListRef<T = any> {
     this._stopScrollTimers.next();
   }
 
-  /** Caches the position of the drop list. */
-  private _cacheOwnPosition() {
-    const element = coerceElement(this.element);
-    this._clientRect = getMutableClientRect(element);
-    this._scrollPosition = {top: element.scrollTop, left: element.scrollLeft};
+  /** Caches the positions of the configured scrollable parents. */
+  private _cacheParentPositions() {
+    this._parentPositions.clear();
+    this._parentPositions.set(this._document, {
+      scrollPosition: this._viewportRuler!.getViewportScrollPosition(),
+    });
+    this._scrollableElements.forEach(element => {
+      const clientRect = getMutableClientRect(element);
+
+      // We keep the ClientRect cached in two properties, because it's referenced in a lot of
+      // performance-sensitive places and we want to avoid the extra lookups. The `element` is
+      // guaranteed to always be in the `_scrollableElements` so this should always match.
+      if (element === this.element) {
+        this._clientRect = clientRect;
+      }
+
+      this._parentPositions.set(element, {
+        scrollPosition: {top: element.scrollTop, left: element.scrollLeft},
+        clientRect
+      });
+    });
   }
 
   /** Refreshes the position cache of the items and sibling containers. */
@@ -566,7 +605,8 @@ export class DropListRef<T = any> {
     this._previousSwap.drag = null;
     this._previousSwap.delta = 0;
     this._stopScrolling();
-    this._removeListeners();
+    this._viewportScrollSubscription.unsubscribe();
+    this._parentPositions.clear();
   }
 
   /**
@@ -600,20 +640,6 @@ export class DropListRef<T = any> {
     }
 
     return siblingOffset;
-  }
-
-  /**
-   * Checks whether the pointer coordinates are close to the drop container.
-   * @param pointerX Coordinates along the X axis.
-   * @param pointerY Coordinates along the Y axis.
-   */
-  private _isPointerNearDropContainer(pointerX: number, pointerY: number): boolean {
-    const {top, right, bottom, left, width, height} = this._clientRect;
-    const xThreshold = width * DROP_PROXIMITY_THRESHOLD;
-    const yThreshold = height * DROP_PROXIMITY_THRESHOLD;
-
-    return pointerY > top - yThreshold && pointerY < bottom + yThreshold &&
-           pointerX > left - xThreshold && pointerX < right + xThreshold;
   }
 
   /**
@@ -676,26 +702,29 @@ export class DropListRef<T = any> {
   private _cacheItems(): void {
     this._activeDraggables = this._draggables.slice();
     this._cacheItemPositions();
-    this._cacheOwnPosition();
+    this._cacheParentPositions();
   }
 
   /**
    * Updates the internal state of the container after a scroll event has happened.
-   * @param scrollPosition Object that is keeping track of the scroll position.
+   * @param scrolledParent Element that was scrolled.
    * @param newTop New top scroll position.
    * @param newLeft New left scroll position.
-   * @param extraClientRect Extra `ClientRect` object that should be updated, in addition to the
-   *  ones of the drag items. Useful when the viewport has been scrolled and we also need to update
-   *  the `ClientRect` of the list.
    */
-  private _updateAfterScroll(scrollPosition: ScrollPosition, newTop: number, newLeft: number,
-    extraClientRect?: ClientRect) {
+  private _updateAfterScroll(scrolledParent: HTMLElement | Document,
+                             newTop: number,
+                             newLeft: number) {
+    const scrollPosition = this._parentPositions.get(scrolledParent)!.scrollPosition;
     const topDifference = scrollPosition.top - newTop;
     const leftDifference = scrollPosition.left - newLeft;
 
-    if (extraClientRect) {
-      adjustClientRect(extraClientRect, topDifference, leftDifference);
-    }
+    // Go through and update the cached positions of the scroll
+    // parents that are inside the element that was scrolled.
+    this._parentPositions.forEach((position, node) => {
+      if (position.clientRect && scrolledParent !== node && scrolledParent.contains(node)) {
+        adjustClientRect(position.clientRect, topDifference, leftDifference);
+      }
+    });
 
     // Since we know the amount that the user has scrolled we can shift all of the client rectangles
     // ourselves. This is cheaper than re-measuring everything and we can avoid inconsistent
@@ -716,22 +745,6 @@ export class DropListRef<T = any> {
 
     scrollPosition.top = newTop;
     scrollPosition.left = newLeft;
-  }
-
-  /** Handles the container being scrolled. Has to be an arrow function to preserve the context. */
-  private _handleScroll = () => {
-    if (!this.isDragging()) {
-      return;
-    }
-
-    const element = coerceElement(this.element);
-    this._updateAfterScroll(this._scrollPosition, element.scrollTop, element.scrollLeft);
-  }
-
-  /** Removes the event listeners associated with this drop list. */
-  private _removeListeners() {
-    coerceElement(this.element).removeEventListener('scroll', this._handleScroll);
-    this._viewportScrollSubscription.unsubscribe();
   }
 
   /** Starts the interval that'll auto-scroll the element. */
@@ -816,7 +829,7 @@ export class DropListRef<T = any> {
 
     if (!activeSiblings.has(sibling)) {
       activeSiblings.add(sibling);
-      this._cacheOwnPosition();
+      this._cacheParentPositions();
       this._listenToScrollEvents();
     }
   }
@@ -835,14 +848,28 @@ export class DropListRef<T = any> {
    * Used for updating the internal state of the list.
    */
   private _listenToScrollEvents() {
-    this._viewportScrollPosition = this._viewportRuler!.getViewportScrollPosition();
-    this._viewportScrollSubscription = this._dragDropRegistry.scroll.subscribe(() => {
+    this._viewportScrollSubscription = this._dragDropRegistry.scroll.subscribe(event => {
       if (this.isDragging()) {
-        const newPosition = this._viewportRuler!.getViewportScrollPosition();
-        this._updateAfterScroll(this._viewportScrollPosition, newPosition.top, newPosition.left,
-                                this._clientRect);
+        const target = event.target as HTMLElement | Document;
+        const position = this._parentPositions.get(target);
+
+        if (position) {
+          let newTop: number;
+          let newLeft: number;
+
+          if (target === this._document) {
+            const scrollPosition = this._viewportRuler!.getViewportScrollPosition();
+            newTop = scrollPosition.top;
+            newLeft = scrollPosition.left;
+          } else {
+            newTop = (target as HTMLElement).scrollTop;
+            newLeft = (target as HTMLElement).scrollLeft;
+          }
+
+          this._updateAfterScroll(target, newTop, newLeft);
+        }
       } else if (this.isReceiving()) {
-        this._cacheOwnPosition();
+        this._cacheParentPositions();
       }
     });
   }
@@ -877,6 +904,20 @@ function adjustClientRect(clientRect: ClientRect, top: number, left: number) {
   clientRect.right = clientRect.left + clientRect.width;
 }
 
+/**
+ * Checks whether the pointer coordinates are close to a ClientRect.
+ * @param rect ClientRect to check against.
+ * @param pointerX Coordinates along the X axis.
+ * @param pointerY Coordinates along the Y axis.
+ */
+function isPointerNearClientRect(rect: ClientRect, pointerX: number, pointerY: number): boolean {
+  const {top, right, bottom, left, width, height} = rect;
+  const xThreshold = width * DROP_PROXIMITY_THRESHOLD;
+  const yThreshold = height * DROP_PROXIMITY_THRESHOLD;
+
+  return pointerY > top - yThreshold && pointerY < bottom + yThreshold &&
+         pointerX > left - xThreshold && pointerX < right + xThreshold;
+}
 
 /**
  * Finds the index of an item that matches a predicate function. Used as an equivalent

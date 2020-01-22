@@ -22,6 +22,7 @@ import {
   AfterContentInit,
 } from '@angular/core';
 import {Directionality} from '@angular/cdk/bidi';
+import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {CdkDrag, CDK_DROP_LIST} from './drag';
 import {CdkDragDrop, CdkDragEnter, CdkDragExit, CdkDragSortEvent} from '../drag-events';
 import {CdkDropListGroup} from './drop-list-group';
@@ -148,7 +149,13 @@ export class CdkDropList<T = any> implements AfterContentInit, OnDestroy {
       /** Element that the drop list is attached to. */
       public element: ElementRef<HTMLElement>, dragDrop: DragDrop,
       private _changeDetectorRef: ChangeDetectorRef, @Optional() private _dir?: Directionality,
-      @Optional() @SkipSelf() private _group?: CdkDropListGroup<CdkDropList>) {
+      @Optional() @SkipSelf() private _group?: CdkDropListGroup<CdkDropList>,
+
+      /**
+       * @deprecated _scrollDispatcher parameter to become required.
+       * @breaking-change 11.0.0
+       */
+      private _scrollDispatcher?: ScrollDispatcher) {
     this._dropListRef = dragDrop.createDropList(element);
     this._dropListRef.data = this;
     this._dropListRef.enterPredicate = (drag: DragRef<CdkDrag>, drop: DropListRef<CdkDropList>) => {
@@ -165,6 +172,14 @@ export class CdkDropList<T = any> implements AfterContentInit, OnDestroy {
   }
 
   ngAfterContentInit() {
+    // @breaking-change 11.0.0 Remove null check for _scrollDispatcher once it's required.
+    if (this._scrollDispatcher) {
+      const scrollableParents = this._scrollDispatcher
+        .getAncestorScrollContainers(this.element)
+        .map(scrollable => scrollable.getElementRef().nativeElement);
+      this._dropListRef.withScrollableParents(scrollableParents);
+    }
+
     this._draggables.changes
       .pipe(startWith(this._draggables), takeUntil(this._destroyed))
       .subscribe((items: QueryList<CdkDrag>) => {
