@@ -5,13 +5,25 @@ import * as tsutils from 'tsutils';
 const TYPE_ACCEPT_MEMBER_PREFIX = 'ngAcceptInputType_';
 
 /**
+ * Type that describes the TypeScript type checker with internal methods for
+ * the type relation API methods being exposed.
+ */
+// TODO: remove if https://github.com/microsoft/TypeScript/issues/9879 is resolved.
+type TypeCheckerWithRelationApi = ts.TypeChecker & {
+  getNullType: () => ts.Type;
+  getUndefinedType: () => ts.Type;
+  isTypeAssignableTo: (a: ts.Type, b: ts.Type) => boolean;
+};
+
+/**
  * TSLint rule that verifies that classes declare corresponding `ngAcceptInputType_*`
  * static fields for inputs that use coercion inside of their setters. Also handles
  * inherited class members and members that come from an interface.
  */
 export class Rule extends Lint.Rules.TypedRule {
   applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): Lint.RuleFailure[] {
-    const walker = new Walker(sourceFile, this.getOptions(), program.getTypeChecker());
+    const walker = new Walker(sourceFile, this.getOptions(),
+        program.getTypeChecker() as TypeCheckerWithRelationApi);
     return this.applyWithWalker(walker);
   }
 }
@@ -23,9 +35,15 @@ class Walker extends Lint.RuleWalker {
   /** Mapping of interfaces known to have coercion properties and the property names themselves. */
   private _coercionInterfaces: {[interfaceName: string]: string[]};
 
+  /** Type resolving to the TS internal `null` type. */
+  private _nullType = this._typeChecker.getNullType();
+
+  /** Type resolving to the TS internal `undefined` type. */
+  private _undefinedType = this._typeChecker.getUndefinedType();
+
   constructor(sourceFile: ts.SourceFile,
               options: Lint.IOptions,
-              private _typeChecker: ts.TypeChecker) {
+              private _typeChecker: TypeCheckerWithRelationApi) {
     super(sourceFile, options);
     this._coercionFunctions = new Set(options.ruleArguments[0] || []);
     this._coercionInterfaces = options.ruleArguments[1] || {};
@@ -58,34 +76,9 @@ class Walker extends Lint.RuleWalker {
       return;
     }
 
-    if (node.type.kind === ts.SyntaxKind.AnyKeyword) {
-      // if the type is "any", then it can be "null" and "undefined" too.
-      return;
-    } else if (
-        ts.isTypeReferenceNode(node.type) && ts.isIdentifier(node.type.typeName) &&
-        (node.type.typeName.text === 'BooleanInput' || node.type.typeName.text === 'NumberInput')) {
-      // if the type is "BooleanInput" or "NumberInput", we don't need to check more. Ideally,
-      // we'd not have any of these hardcoded checks at all, and just rely on type assignability
-      // checks, but this is only programmatically possible with TypeScript 3.7. See:
-      // https://github.com/microsoft/TypeScript/issues/9879
-      return;
-    } else if (!ts.isUnionTypeNode(node.type)) {
-      this.addFailureAtNode(
-          node,
-          'Acceptance member does not have an union type. The member ' +
-              'should use an union type to also accept "null" and "undefined".');
-      return;
-    }
-
-    let hasNull = false;
-    let hasUndefined = false;
-    for (let type of node.type.types) {
-      if (type.kind === ts.SyntaxKind.NullKeyword) {
-        hasNull = true;
-      } else if (type.kind === ts.SyntaxKind.UndefinedKeyword) {
-        hasUndefined = true;
-      }
-    }
+    const type = this._typeChecker.getTypeFromTypeNode(node.type);
+    const hasUndefined = this._typeChecker.isTypeAssignableTo(this._undefinedType, type);
+    const hasNull = this._typeChecker.isTypeAssignableTo(this._nullType, type);
 
     if (!hasNull && !hasUndefined) {
       this.addFailureAtNode(
