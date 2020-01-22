@@ -663,14 +663,14 @@ In `angular.json` add two new configuration sections under the `build` and `serv
      ...
     },
     "es5": {
-      "browserTarget": "&lt;app-name&gt;:build:es5"
+      "browserTarget": "YOUR_APP_NAME:build:es5"
     }
   }
 },
 
 </code-example>
 
-You can then run the `ng serve` command with this configuration. Make sure to replace `<app-name>` (in `"<app-name>:build:es5"`) with the actual name of the app, as it appears under `projects` in `angular.json`. For example, if your app name is `myAngularApp` the config will become `"browserTarget": "myAngularApp:build:es5"`.
+You can then run the `ng serve` command with this configuration. Make sure to replace `YOUR_APP_NAME` (in `"YOUR_APP_NAME:build:es5"`) with the actual name of the app, as it appears under `projects` in `angular.json`. For example, if your app name is `myAngularApp` the config will become `"browserTarget": "myAngularApp:build:es5"`.
 
 <code-example language="none" class="code-shell">
 
