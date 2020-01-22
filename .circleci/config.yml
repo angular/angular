@@ -27,10 +27,10 @@ var_4: &cache_key_fallback v3-angular-node-10.16-
 var_3_win: &cache_key_win v5-angular-win-node-12.0-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}-{{ checksum "aio/yarn.lock" }}
 var_4_win: &cache_key_win_fallback v5-angular-win-node-12.0-
 
-# Cache key for the Material unit tests job. **Note** when updating the SHA in the cache keys,
-# also update the SHA for the "MATERIAL_REPO_COMMIT" environment variable.
-var_5: &material_unit_tests_cache_key v5-angular-material-97a7e2babbccd3dc58e7b3364004e45ed5bd9968
-var_6: &material_unit_tests_cache_key_fallback v5-angular-material-
+# Cache key for the `components-repo-unit-tests` job. **Note** when updating the SHA in the
+# cache keys also update the SHA for the "COMPONENTS_REPO_COMMIT" environment variable.
+var_5: &components_repo_unit_tests_cache_key v5-angular-components-97a7e2babbccd3dc58e7b3364004e45ed5bd9968
+var_6: &components_repo_unit_tests_cache_key_fallback v5-angular-components-
 
 # Workspace initially persisted by the `setup` job, and then enhanced by `build-npm-packages` and
 # `build-ivy-npm-packages`.
@@ -682,11 +682,10 @@ jobs:
       - run: yarn karma start ./karma-js.conf.js --single-run --browsers=${KARMA_JS_BROWSERS}
       - run: ./scripts/saucelabs/stop-tunnel.sh
 
-  # Job to run unit tests from angular/components. Needs a browser since all
-  # component unit tests assume they're running in the browser environment.
-  material-unit-tests:
+  # Job that runs all unit tests of the `angular/components` repository.
+  components-repo-unit-tests:
     executor:
-      name: browsers-executor
+      name: default-executor
       resource_class: xlarge
     steps:
       - custom_attach_workspace
@@ -696,33 +695,41 @@ jobs:
       # repository needs to be cloned (this is slow and increases based on commits in the repo).
       - restore_cache:
           keys:
-            - *material_unit_tests_cache_key
-            - *material_unit_tests_cache_key_fallback
+            - *components_repo_unit_tests_cache_key
+            # Whenever the `angular/components` SHA is updated, the cache key will no longer
+            # match. The fallback cache will still match, and CircleCI will restore the most
+            # recently cached repository folder. Without the fallback cache, we'd need to download
+            # the repository from scratch and it would slow down the job. This is because we can't
+            # clone the repository with reduced `--depth`, but rather need to clone the whole
+            # repository to be able to support arbitrary SHAs.
+            - *components_repo_unit_tests_cache_key_fallback
       - run:
-          name: "Fetching Material repository"
-          command: ./scripts/ci/clone_angular_material_repo.sh
+          name: "Fetching angular/components repository"
+          command: ./scripts/ci/clone_angular_components_repo.sh
       - run:
-          # Run yarn install to fetch the Bazel binaries as used in the Material repo.
-          name: Installing Material dependencies.
+          # Run yarn install to fetch the Bazel binaries as used in the components repo.
+          name: Installing dependencies.
           # TODO: remove this once the repo has been updated to use NodeJS v12 and Yarn 1.19.1.
           # We temporarily ignore the "engines" because the Angular components repository has
           # minimum dependency on NodeJS v12 and Yarn 1.19.1, but the framework repository uses
           # older versions.
-          command: yarn --ignore-engines --cwd ${MATERIAL_REPO_TMP_DIR} install --frozen-lockfile --non-interactive
+          command: yarn --ignore-engines --cwd ${COMPONENTS_REPO_TMP_DIR} install --frozen-lockfile --non-interactive
       - save_cache:
-          key: *material_unit_tests_cache_key
+          key: *components_repo_unit_tests_cache_key
           paths:
-            # Material directory must be kept in sync with the `$MATERIAL_REPO_TMP_DIR` env variable.
-            # It needs to be hardcoded here, because env variables interpolation is not supported.
-            - "/tmp/material2"
+            # Temporary directory must be kept in sync with the `$COMPONENTS_REPO_TMP_DIR` env
+            # variable. It needs to be hardcoded here, because env variables interpolation is
+            # not supported.
+            - "/tmp/angular-components-repo"
       - run:
-          # Updates Material's `package.json` to refer to the `packages-dist` directory. Note
-          # that it's not necessary to perform a yarn install, as Bazel runs it automatically.
+          # Updates the `angular/components` `package.json` file to refer to the release output
+          # inside the `packages-dist` directory. Note that it's not necessary to perform a yarn
+          # install as Bazel runs Yarn automatically when needed.
           name: Setting up release packages.
-          command: node scripts/ci/update-deps-to-dist-packages.js ${MATERIAL_REPO_TMP_DIR}/package.json dist/packages-dist/
+          command: node scripts/ci/update-deps-to-dist-packages.js ${COMPONENTS_REPO_TMP_DIR}/package.json dist/packages-dist/
       - run:
-          name: "Running Material unit tests"
-          command: ./scripts/ci/run_angular_material_unit_tests.sh
+          name: "Running `angular/components` unit tests"
+          command: ./scripts/ci/run_angular_components_unit_tests.sh
 
   test_zonejs:
     executor:
@@ -866,7 +873,7 @@ workflows:
             - build-npm-packages
             - build-ivy-npm-packages
             - legacy-unit-tests-saucelabs
-      - material-unit-tests:
+      - components-repo-unit-tests:
           requires:
             - build-npm-packages
       - test_zonejs:

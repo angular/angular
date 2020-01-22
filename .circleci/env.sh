@@ -66,16 +66,17 @@ setPublicVar SAUCE_TUNNEL_IDENTIFIER "angular-framework-${CIRCLE_BUILD_NUM}-${CI
 setPublicVar SAUCE_READY_FILE_TIMEOUT 120
 
 ####################################################################################################
-# Define environment variables for the Angular Material unit tests job.
+# Define environment variables for the `angular/components` repo unit tests job.
 ####################################################################################################
 # We specifically use a directory within "/tmp" here because we want the cloned repo to be
 # completely isolated from angular/angular in order to avoid any bad interactions between
-# their separate build setups.
-setPublicVar MATERIAL_REPO_TMP_DIR "/tmp/material2"
-setPublicVar MATERIAL_REPO_URL "https://github.com/angular/material2.git"
-setPublicVar MATERIAL_REPO_BRANCH "master"
-# **NOTE**: When updating the commit SHA, also update the cache key in the CircleCI "config.yml".
-setPublicVar MATERIAL_REPO_COMMIT "97a7e2babbccd3dc58e7b3364004e45ed5bd9968"
+# their separate build setups. **NOTE**: When updating the temporary directory, also update
+# the `save_cache` path configuration in `config.yml`
+setPublicVar COMPONENTS_REPO_TMP_DIR "/tmp/angular-components-repo"
+setPublicVar COMPONENTS_REPO_URL "https://github.com/angular/components.git"
+setPublicVar COMPONENTS_REPO_BRANCH "master"
+# **NOTE**: When updating the commit SHA, also update the cache key in the CircleCI `config.yml`.
+setPublicVar COMPONENTS_REPO_COMMIT "97a7e2babbccd3dc58e7b3364004e45ed5bd9968"
 
 
 ####################################################################################################

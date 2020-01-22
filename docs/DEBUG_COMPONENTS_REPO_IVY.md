@@ -1,7 +1,7 @@
-# Debugging the Material unit tests job
+# Debugging the `components-repo-unit-tests` job
 
 Currently all changes to Ivy are validated against the test suite of the
-`angular/components` repository. In order to debug the `material-unit-tests` CI
+`angular/components` repository. In order to debug the `components-repo-unit-tests` CI
 job, the following steps can be used:
 
 1\) Build the Ivy package output by running `node ./scripts/build-ivy-npm-packages.js` in
@@ -9,14 +9,14 @@ the `angular/angular` repo.
 
 2\) Clone the `angular/components` repository if not done yet ([quick link to repo](https://github.com/angular/components)).
 
-3\) Set up the package output in the `components` repository by running the following
+3\) Set up the package output in the `angular/components` repository by running the following
 command in the `angular/angular` repo:
 
 ```bash
 node ./scripts/ci/update-deps-to-dist-packages.js {COMPONENTS_REPO}/package.json ./dist/packages-dist-ivy-aot
 ```
 
-4\) Switch into the `components` repository and run the tests by using the
+4\) Switch into the `angular/components` repository and run the tests by using the
 following command:
 
 ```bash

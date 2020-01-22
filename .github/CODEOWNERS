@@ -939,10 +939,10 @@ testing/**                                                      @angular/fw-test
 
 
 # ================================================
-#  Material CI
+#  angular/components CI
 # ================================================
 
-/tools/material-ci/**                                           @angular/fw-core @angular/framework-global-approvers
+/tools/components-repo-ci/**                                    @angular/fw-core @angular/framework-global-approvers
 
 
 
