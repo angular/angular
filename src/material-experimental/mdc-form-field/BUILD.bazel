@@ -19,6 +19,7 @@ ng_module(
     module_name = "@angular/material-experimental/mdc-form-field",
     deps = [
         "//src/cdk/observers",
+        "//src/cdk/platform",
         "//src/material/core",
         "//src/material/form-field",
         "@npm//@angular/forms",

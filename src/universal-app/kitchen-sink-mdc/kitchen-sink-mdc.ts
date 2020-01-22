@@ -2,6 +2,8 @@ import {Component, NgModule, ErrorHandler} from '@angular/core';
 import {MatButtonModule} from '@angular/material-experimental/mdc-button';
 import {MatCardModule} from '@angular/material-experimental/mdc-card';
 import {MatCheckboxModule} from '@angular/material-experimental/mdc-checkbox';
+import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
+import {MatInputModule} from '@angular/material-experimental/mdc-input';
 import {MatProgressBarModule} from '@angular/material-experimental/mdc-progress-bar';
 import {MatChipsModule} from '@angular/material-experimental/mdc-chips';
 import {MatMenuModule} from '@angular/material-experimental/mdc-menu';
@@ -24,7 +26,9 @@ export class KitchenSinkMdc {
     MatCardModule,
     MatCheckboxModule,
     MatChipsModule,
+    MatFormFieldModule,
     MatIconModule,
+    MatInputModule,
     MatMenuModule,
     MatRadioModule,
     MatSlideToggleModule,

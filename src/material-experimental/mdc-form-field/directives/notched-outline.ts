@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Platform} from '@angular/cdk/platform';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -34,18 +35,26 @@ import {MDCNotchedOutline} from '@material/notched-outline';
   encapsulation: ViewEncapsulation.None,
 })
 export class MatFormFieldNotchedOutline implements AfterViewInit, OnDestroy {
-  private _mdcNotchedOutline: MDCNotchedOutline;
+  private _mdcNotchedOutline: MDCNotchedOutline|null = null;
 
-  constructor(private _elementRef: ElementRef) {}
+  constructor(private _elementRef: ElementRef, private _platform: Platform) {}
 
   ngAfterViewInit() {
-    // The notch component relies on the view to be initialized. This means
-    // that we cannot extend from the "MDCNotchedOutline".
-    this._mdcNotchedOutline = MDCNotchedOutline.attachTo(this._elementRef.nativeElement);
+    // The notched outline cannot be attached in the server platform. It schedules tasks
+    // for the next browser animation frame and relies on element client rectangles to render
+    // the outline notch. To avoid failures on the server, we just do not initialize it,
+    // but the actual notched-outline styles will be still displayed.
+    if (this._platform.isBrowser) {
+      // The notch component relies on the view to be initialized. This means
+      // that we cannot extend from the "MDCNotchedOutline".
+      this._mdcNotchedOutline = MDCNotchedOutline.attachTo(this._elementRef.nativeElement);
+    }
   }
 
   ngOnDestroy() {
-    this._mdcNotchedOutline.destroy();
+    if (this._mdcNotchedOutline !== null) {
+      this._mdcNotchedOutline.destroy();
+    }
   }
 
   /**
@@ -53,11 +62,15 @@ export class MatFormFieldNotchedOutline implements AfterViewInit, OnDestroy {
    * @param notchWidth The notch width in the outline.
    */
   notch(notchWidth: number) {
-    this._mdcNotchedOutline.notch(notchWidth);
+    if (this._mdcNotchedOutline !== null) {
+      this._mdcNotchedOutline.notch(notchWidth);
+    }
   }
 
   /** Closes the notch. */
   closeNotch() {
-    this._mdcNotchedOutline.closeNotch();
+    if (this._mdcNotchedOutline !== null) {
+      this._mdcNotchedOutline.closeNotch();
+    }
   }
 }
