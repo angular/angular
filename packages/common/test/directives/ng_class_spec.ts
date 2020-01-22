@@ -196,7 +196,7 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
         fixture = createTestComponent(`<div [ngClass]="['foo', {}]"></div>`);
         expect(() => fixture !.detectChanges())
             .toThrowError(
-                /NgClass can only toggle CSS classes expressed as strings, got: \[object Object\]/);
+                /NgClass can only toggle CSS classes expressed as strings, got \[object Object\]/);
       });
     });
 

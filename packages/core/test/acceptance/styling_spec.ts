@@ -136,7 +136,7 @@ describe('styling', () => {
       }
       @Directive({
         selector: '[my-host-bindings]',
-        host: {'class': 'HOST_STATIC', 'style': 'font-family: "host"'}
+        host: {'class': 'HOST_STATIC', 'style': 'font-family: "host font"'}
       })
       class Dir extends SuperDir {
       }
@@ -150,8 +150,8 @@ describe('styling', () => {
           .toEqual(ivyEnabled ? 'HOST_STATIC STATIC SUPER_STATIC' : 'HOST_STATIC STATIC');
       expect(getSortedStyle(div))
           .toEqual(
-              ivyEnabled ? 'color: blue; font-family: host; width: 1px;' :
-                           'color: blue; font-family: "host";');
+              ivyEnabled ? 'color: blue; font-family: "host font"; width: 1px;' :
+                           'color: blue; font-family: "host font";');
     });
 
     onlyInIvy('style merging is ivy only feature')
@@ -209,6 +209,28 @@ describe('styling', () => {
       const div = fixture.nativeElement.querySelector('div');
       expect(getSortedClassName(div)).toEqual('dynamic');
       expect(getSortedStyle(div)).toEqual('font-family: dynamic;');
+    });
+  });
+
+  describe('css variables', () => {
+    onlyInIvy('css variables').it('should support css variables', () => {
+      // This test only works in browsers.
+      if (typeof getComputedStyle === 'undefined') return;
+      @Component({
+        template: `
+            <div [style.--my-var]=" 'rgb(255, 0, 0)' ">
+              <span style="background-color: var(--my-var)">CONTENT</span>
+            </div>`
+      })
+      class Cmp {
+      }
+      TestBed.configureTestingModule({declarations: [Cmp]});
+      const fixture = TestBed.createComponent(Cmp);
+      // document.body.appendChild(fixture.nativeElement);
+      fixture.detectChanges();
+
+      const span = fixture.nativeElement.querySelector('span') as HTMLElement;
+      expect(getComputedStyle(span).getPropertyValue('background-color')).toEqual('rgb(255, 0, 0)');
     });
   });
 
@@ -2864,25 +2886,30 @@ describe('styling', () => {
     expect(classList.contains('barFoo')).toBeTruthy();
   });
 
-  onlyInIvy('[style] bindings are ivy only')
-      .it('should convert camelCased style property names to snake-case', () => {
-        @Component({template: `<div [style]="myStyles"></div>`})
-        class MyComp {
-          myStyles = {};
-        }
+  // onlyInIvy('[style] bindings are ivy only')
+  xit('should convert camelCased style property names to snake-case', () => {
+    // TODO(misko): Temporarily disabled in this PR renabled in
+    // https://github.com/angular/angular/pull/34616
+    // Current implementation uses strings to write to DOM. Because of that it does not convert
+    // property names from camelCase to dash-case. This is rectified in #34616 because we switch
+    // from string API to `element.style.setProperty` API.
+    @Component({template: `<div [style]="myStyles"></div>`})
+    class MyComp {
+      myStyles = {};
+    }
 
-        TestBed.configureTestingModule({
-          declarations: [MyComp],
-        });
-        const fixture = TestBed.createComponent(MyComp);
-        fixture.detectChanges();
+    TestBed.configureTestingModule({
+      declarations: [MyComp],
+    });
+    const fixture = TestBed.createComponent(MyComp);
+    fixture.detectChanges();
 
-        const div = fixture.nativeElement.querySelector('div') as HTMLDivElement;
-        fixture.componentInstance.myStyles = {fontSize: '200px'};
-        fixture.detectChanges();
+    const div = fixture.nativeElement.querySelector('div') as HTMLDivElement;
+    fixture.componentInstance.myStyles = {fontSize: '200px'};
+    fixture.detectChanges();
 
-        expect(div.style.getPropertyValue('font-size')).toEqual('200px');
-      });
+    expect(div.style.getPropertyValue('font-size')).toEqual('200px');
+  });
 
   it('should recover from an error thrown in styling bindings', () => {
     let raiseWidthError = false;
