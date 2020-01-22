@@ -210,7 +210,12 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
         this._height,
         this.createEventsBoundInZone(),
         this._ngZone
-      ).pipe(waitUntilReady(), takeUntil(this._destroyed), publish());
+      ).pipe(waitUntilReady(player => {
+        // Destroy the player if loading was aborted so that we don't end up leaking memory.
+        if (!playerIsReady(player)) {
+          player.destroy();
+        }
+      }), takeUntil(this._destroyed), publish());
 
     // Set up side effects to bind inputs to the player.
     playerObs.subscribe(player => this._player = player);
@@ -427,39 +432,43 @@ function bindSuggestedQualityToPlayer(
 /**
  * Returns an observable that emits the loaded player once it's ready. Certain properties/methods
  * won't be available until the iframe finishes loading.
+ * @param onAbort Callback function that will be invoked if the player loading was aborted before
+ * it was able to complete. Can be used to clean up any loose references.
  */
-function waitUntilReady(): OperatorFunction<UninitializedPlayer | undefined, Player | undefined> {
+function waitUntilReady(onAbort: (player: UninitializedPlayer) => void):
+  OperatorFunction<UninitializedPlayer | undefined, Player | undefined> {
   return flatMap(player => {
     if (!player) {
       return observableOf<Player|undefined>(undefined);
     }
-    if ('getPlayerStatus' in player) {
+    if (playerIsReady(player)) {
       return observableOf(player as Player);
     }
+
+    // Since removeEventListener is not on Player when it's initialized, we can't use fromEvent.
     // The player is not initialized fully until the ready is called.
-    return fromPlayerOnReady(player)
-        .pipe(take(1), startWith(undefined));
-  });
-}
+    return new Observable<Player>(emitter => {
+      let aborted = false;
+      let resolved = false;
+      const onReady = (event: YT.PlayerEvent) => {
+        resolved = true;
 
-/** Since removeEventListener is not on Player when it's initialized, we can't use fromEvent. */
-function fromPlayerOnReady(player: UninitializedPlayer): Observable<Player> {
-  return new Observable<Player>(emitter => {
-    let aborted = false;
+        if (!aborted) {
+          event.target.removeEventListener('onReady', onReady);
+          emitter.next(event.target);
+        }
+      };
 
-    const onReady = (event: YT.PlayerEvent) => {
-      if (aborted) {
-        return;
-      }
-      event.target.removeEventListener('onReady', onReady);
-      emitter.next(event.target);
-    };
+      player.addEventListener('onReady', onReady);
 
-    player.addEventListener('onReady', onReady);
+      return () => {
+        aborted = true;
 
-    return () => {
-      aborted = true;
-    };
+        if (!resolved) {
+          onAbort(player);
+        }
+      };
+    }).pipe(take(1), startWith(undefined));
   });
 }
 
@@ -573,7 +582,12 @@ function bindCueVideoCall(
 }
 
 function hasPlayerStarted(player: YT.Player): boolean {
-  return [YT.PlayerState.UNSTARTED, YT.PlayerState.CUED].indexOf(player.getPlayerState()) === -1;
+  const state = player.getPlayerState();
+  return state !== YT.PlayerState.UNSTARTED && state !== YT.PlayerState.CUED;
+}
+
+function playerIsReady(player: UninitializedPlayer): player is Player {
+  return 'getPlayerStatus' in player;
 }
 
 /** Combines the two observables temporarily for the filter function. */
