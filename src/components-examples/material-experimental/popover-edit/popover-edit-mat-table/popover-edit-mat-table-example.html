@@ -71,6 +71,43 @@
     </td>
   </ng-container>
 
+  <!-- Type Column -->
+  <ng-container matColumnDef="type">
+    <th mat-header-cell *matHeaderCellDef> Type </th>
+    <td mat-cell *matCellDef="let element"
+        [matPopoverEdit]="typeEdit">
+      {{element.type}}
+
+      <!-- This edit is defined in the cell and can implicitly access element -->
+      <ng-template #typeEdit>
+        <div>
+          <form #f="ngForm"
+              matEditLens
+              matEditClose
+              (ngSubmit)="onSubmitType(element, f)"
+              [(matEditLensPreservedFormValue)]="typeValues.for(element).value">
+            <div mat-edit-fill>
+              <mat-selection-list [multiple]="false"
+                  name="type"
+                  [ngModel]="[element.type]"
+                  (selectionChange)="f.ngSubmit.emit()"
+                  aria-label="Element type">
+                <mat-list-option *ngFor="let type of TYPES"
+                    [value]="type">
+                  {{type}}
+                </mat-list-option>
+              </mat-selection-list>
+            </div>
+          </form>
+        </div>
+      </ng-template>
+
+      <span *matRowHoverContent>
+        <button mat-icon-button matEditOpen><mat-icon>arrow_drop_down</mat-icon></button>
+      </span>
+    </td>
+  </ng-container>
+
   <!-- Weight Column -->
   <ng-container matColumnDef="weight">
     <th mat-header-cell *matHeaderCellDef> Weight </th>
@@ -92,4 +129,43 @@
 
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+  <!-- Fantasy Counterparts Column -->
+  <ng-container matColumnDef="fantasyCounterpart">
+    <th mat-header-cell *matHeaderCellDef> Fantasy Counterparts </th>
+    <td mat-cell *matCellDef="let element"
+        [matPopoverEdit]="fantasyCounterpartEdit">
+      {{element.fantasyCounterparts.join(', ')}}
+
+      <!-- This edit is defined in the cell and can implicitly access element -->
+      <ng-template #fantasyCounterpartEdit>
+        <div>
+          <form #f="ngForm"
+              matEditLens
+              (ngSubmit)="onSubmitFantasyCounterparts(element, f)"
+              [(matEditLensPreservedFormValue)]="fantasyValues.for(element).value">
+            <div mat-edit-fill>
+              <mat-selection-list [ngModel]="element.fantasyCounterparts"
+                  name="fantasyCounterparts"
+                  aria-label="Fantasy Element Counterparts">
+                <mat-list-option *ngFor="let fantasyElement of FANTASY_ELEMENTS"
+                    [value]="fantasyElement"
+                    checkboxPosition="before">
+                  {{fantasyElement}}
+                </mat-list-option>
+              </mat-selection-list>
+            </div>
+            <div mat-edit-actions>
+              <button mat-button type="submit">Confirm</button>
+              <button mat-button matEditRevert>Revert</button>
+            </div>
+          </form>
+        </div>
+      </ng-template>
+
+      <span *matRowHoverContent>
+        <button mat-icon-button matEditOpen><mat-icon>arrow_drop_down</mat-icon></button>
+      </span>
+    </td>
+  </ng-container>
 </table>

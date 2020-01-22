@@ -175,24 +175,27 @@ export class CdkEditRevert<FormValue> {
 }
 
 /** Closes the lens on click. */
-@Directive({
-  selector: 'button[cdkEditClose]',
-  host: {
-    'type': 'button', // Prevents accidental form submits.
-  }
-})
+@Directive({selector: '[cdkEditClose]'})
 export class CdkEditClose<FormValue> {
-  /** Type of the button. Defaults to `button` to avoid accident form submits. */
-  @Input() type: string = 'button';
-
   constructor(
-      protected readonly editRef: EditRef<FormValue>) {}
+      protected readonly elementRef: ElementRef<HTMLElement>,
+      protected readonly editRef: EditRef<FormValue>) {
+
+    const nativeElement = elementRef.nativeElement;
+
+    // Prevent accidental form submits.
+    if (nativeElement.nodeName === 'BUTTON' && !nativeElement.getAttribute('type')) {
+      nativeElement.setAttribute('type', 'button');
+    }
+  }
 
   // In Ivy the `host` metadata will be merged, whereas in ViewEngine it is overridden. In order
   // to avoid double event listeners, we need to use `HostListener`. Once Ivy is the default, we
   // can move this back into `host`.
   // tslint:disable:no-host-decorator-in-concrete
   @HostListener('click')
+  @HostListener('keyup.enter')
+  @HostListener('keyup.space')
   closeEdit(): void {
     // Note that we use `click` here, rather than a keyboard event, because some screen readers
     // will emit a fake click event instead of an enter keyboard event on buttons.

@@ -48,11 +48,6 @@ export class MatEditRevert<FormValue> extends CdkEditRevert<FormValue> {
 }
 
 /** Closes the lens on click. */
-@Directive({
-  selector: 'button[matEditClose]',
-  host: {
-    'type': 'button', // Prevents accidental form submits.
-  }
-})
+@Directive({selector: '[matEditClose]'})
 export class MatEditClose<FormValue> extends CdkEditClose<FormValue> {
 }

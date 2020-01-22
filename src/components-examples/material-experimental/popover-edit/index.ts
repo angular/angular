@@ -1,9 +1,11 @@
 import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {MatPopoverEditModule} from '@angular/material-experimental/popover-edit';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
+import {MatListModule} from '@angular/material/list';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatTableModule} from '@angular/material/table';
 import {
@@ -33,9 +35,11 @@ const EXAMPLES = [
 
 @NgModule({
   imports: [
+    CommonModule,
     MatButtonModule,
     MatIconModule,
     MatInputModule,
+    MatListModule,
     MatPopoverEditModule,
     MatSnackBarModule,
     MatTableModule,

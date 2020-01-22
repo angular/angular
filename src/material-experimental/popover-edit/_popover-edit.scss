@@ -99,7 +99,8 @@
     margin: 0;
   }
 
-  [mat-edit-content] {
+  [mat-edit-content],
+  [mat-edit-fill] {
     display: block;
 
     mat-form-field {
@@ -111,6 +112,20 @@
         padding-top: 0;
       }
     }
+
+    // Make mat-selection-lists inside of the look more like mat-select popups.
+    mat-selection-list {
+      max-height: 256px; // Same as mat-select.
+      overflow-y: auto;
+    }
+  }
+
+  [mat-edit-fill] {
+    margin: -16px -24px;
+
+    mat-selection-list:first-child {
+      padding-top: 0;
+    }
   }
 
   [mat-edit-actions] {
@@ -119,6 +134,10 @@
     flex-wrap: wrap;
     justify-content: flex-end;
     margin: 8px -16px -8px;
+
+    [mat-edit-fill] + & {
+      margin-top: 16px;
+    }
   }
 }
 
