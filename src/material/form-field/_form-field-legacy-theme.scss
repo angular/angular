@@ -172,7 +172,7 @@ $mat-form-field-legacy-dedupe: 0;
   }
 }
 
-@mixin mat-form-field-legacy-density($density-scale) {}
+@mixin _mat-form-field-legacy-density($density-scale) {}
 
 @mixin mat-form-field-legacy-theme($theme) {
   $color: mat-get-color-config($theme);
@@ -183,7 +183,7 @@ $mat-form-field-legacy-dedupe: 0;
     @include mat-form-field-legacy-color($color);
   }
   @if $density != null {
-    @include mat-form-field-legacy-density($density);
+    @include _mat-form-field-legacy-density($density);
   }
   @if $typography != null {
     @include mat-form-field-legacy-typography($typography);

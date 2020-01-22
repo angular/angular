@@ -20,7 +20,7 @@
   }
 }
 
-@mixin mat-optgroup-density($density-scale) {}
+@mixin _mat-optgroup-density($density-scale) {}
 
 @mixin mat-optgroup-theme($theme) {
   $color: mat-get-color-config($theme);
@@ -31,7 +31,7 @@
     @include mat-optgroup-color($color);
   }
   @if $density != null {
-    @include mat-optgroup-density($density);
+    @include _mat-optgroup-density($density);
   }
   @if $typography != null {
     @include mat-optgroup-typography($typography);

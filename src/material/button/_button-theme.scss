@@ -169,7 +169,7 @@ $_mat-button-ripple-opacity: 0.1;
   }
 }
 
-@mixin mat-button-density($density-scale) {}
+@mixin _mat-button-density($density-scale) {}
 
 @mixin mat-button-theme($theme) {
   $color: mat-get-color-config($theme);
@@ -180,7 +180,7 @@ $_mat-button-ripple-opacity: 0.1;
     @include mat-button-color($color);
   }
   @if $density != null {
-    @include mat-button-density($density);
+    @include _mat-button-density($density);
   }
   @if $typography != null {
     @include mat-button-typography($typography);

@@ -15,7 +15,7 @@
   }
 }
 
-@mixin mat-grid-list-density($density-scale) {}
+@mixin _mat-grid-list-density($density-scale) {}
 
 @mixin mat-grid-list-theme($theme) {
   $color: mat-get-color-config($theme);
@@ -26,7 +26,7 @@
     @include mat-grid-list-color($color);
   }
   @if $density != null {
-    @include mat-grid-list-density($density);
+    @include _mat-grid-list-density($density);
   }
   @if $typography != null {
     @include mat-grid-list-typography($typography);

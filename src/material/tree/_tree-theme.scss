@@ -28,7 +28,7 @@
   }
 }
 
-@mixin mat-tree-density($density-scale) {}
+@mixin _mat-tree-density($density-scale) {}
 
 @mixin mat-tree-theme($theme) {
   $color: mat-get-color-config($theme);
@@ -39,7 +39,7 @@
     @include mat-tree-color($color);
   }
   @if $density != null {
-    @include mat-tree-density($density);
+    @include _mat-tree-density($density);
   }
   @if $typography != null {
     @include mat-tree-typography($typography);

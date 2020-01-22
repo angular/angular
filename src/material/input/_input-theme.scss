@@ -72,7 +72,7 @@
   }
 }
 
-@mixin mat-input-density($density-scale) {}
+@mixin _mat-input-density($density-scale) {}
 
 @mixin mat-input-theme($theme) {
   $color: mat-get-color-config($theme);
@@ -83,7 +83,7 @@
     @include mat-input-color($color);
   }
   @if $density != null {
-    @include mat-input-density($density);
+    @include _mat-input-density($density);
   }
   @if $typography != null {
     @include mat-input-typography($typography);

@@ -97,7 +97,7 @@ $mat-chip-remove-font-size: 18px;
   }
 }
 
-@mixin mat-chips-density($density-scale) {}
+@mixin _mat-chips-density($density-scale) {}
 
 @mixin mat-chips-theme($theme) {
   $color: mat-get-color-config($theme);
@@ -108,7 +108,7 @@ $mat-chip-remove-font-size: 18px;
     @include mat-chips-color($color);
   }
   @if $density != null {
-    @include mat-chips-density($density);
+    @include _mat-chips-density($density);
   }
   @if $typography != null {
     @include mat-chips-typography($typography);

@@ -58,7 +58,7 @@
 }
 
 @mixin mat-pseudo-checkbox-typography($config) {}
-@mixin mat-pseudo-checkbox-density($density-scale) {}
+@mixin _mat-pseudo-checkbox-density($density-scale) {}
 
 @mixin mat-pseudo-checkbox-theme($theme) {
   $color: mat-get-color-config($theme);
@@ -69,7 +69,7 @@
     @include mat-pseudo-checkbox-color($color);
   }
   @if $density != null {
-    @include mat-pseudo-checkbox-density($density);
+    @include _mat-pseudo-checkbox-density($density);
   }
   @if $typography != null {
     @include mat-pseudo-checkbox-typography($typography);

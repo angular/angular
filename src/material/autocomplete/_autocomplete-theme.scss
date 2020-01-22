@@ -27,7 +27,7 @@
 
 @mixin mat-autocomplete-typography($config) { }
 
-@mixin mat-autocomplete-density($density-scale) { }
+@mixin _mat-autocomplete-density($density-scale) { }
 
 @mixin mat-autocomplete-theme($theme) {
   $color: mat-get-color-config($theme);
@@ -38,7 +38,7 @@
     @include mat-autocomplete-color($color);
   }
   @if $density != null {
-    @include mat-autocomplete-density($density);
+    @include _mat-autocomplete-density($density);
   }
   @if $typography != null {
     @include mat-autocomplete-typography($typography);

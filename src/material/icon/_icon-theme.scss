@@ -24,7 +24,7 @@
 
 @mixin mat-icon-typography($config) { }
 
-@mixin mat-icon-density($density-scale) {}
+@mixin _mat-icon-density($density-scale) {}
 
 @mixin mat-icon-theme($theme) {
   $color: mat-get-color-config($theme);
@@ -35,7 +35,7 @@
     @include mat-icon-color($color);
   }
   @if $density != null {
-    @include mat-icon-density($density);
+    @include _mat-icon-density($density);
   }
   @if $typography != null {
     @include mat-icon-typography($typography);

@@ -47,7 +47,7 @@
   }
 }
 
-@mixin mat-paginator-density($density-scale) {}
+@mixin _mat-paginator-density($density-scale) {}
 
 @mixin mat-paginator-theme($theme) {
   $color: mat-get-color-config($theme);
@@ -58,7 +58,7 @@
     @include mat-paginator-color($color);
   }
   @if $density != null {
-    @include mat-paginator-density($density);
+    @include _mat-paginator-density($density);
   }
   @if $typography != null {
     @include mat-paginator-typography($typography);

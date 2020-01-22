@@ -215,7 +215,7 @@ $mat-calendar-weekday-table-font-size: 11px !default;
   }
 }
 
-@mixin mat-datepicker-density($density-scale) {}
+@mixin _mat-datepicker-density($density-scale) {}
 
 @mixin mat-datepicker-theme($theme) {
   $color: mat-get-color-config($theme);
@@ -226,7 +226,7 @@ $mat-calendar-weekday-table-font-size: 11px !default;
     @include mat-datepicker-color($color);
   }
   @if $density != null {
-    @include mat-datepicker-density($density);
+    @include _mat-datepicker-density($density);
   }
   @if $typography != null {
     @include mat-datepicker-typography($typography);

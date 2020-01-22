@@ -105,7 +105,7 @@
   }
 }
 
-@mixin mat-checkbox-density($density-scale) {}
+@mixin _mat-checkbox-density($density-scale) {}
 
 @mixin mat-checkbox-theme($theme) {
   $color: mat-get-color-config($theme);
@@ -116,7 +116,7 @@
     @include mat-checkbox-color($color);
   }
   @if $density != null {
-    @include mat-checkbox-density($density);
+    @include _mat-checkbox-density($density);
   }
   @if $typography != null {
     @include mat-checkbox-typography($typography);

@@ -26,7 +26,7 @@
 
 @mixin mat-sort-typography($config) { }
 
-@mixin mat-sort-density($density-scale) {}
+@mixin _mat-sort-density($density-scale) {}
 
 @mixin mat-sort-theme($theme) {
   $color: mat-get-color-config($theme);
@@ -37,7 +37,7 @@
     @include mat-sort-color($color);
   }
   @if $density != null {
-    @include mat-sort-density($density);
+    @include _mat-sort-density($density);
   }
   @if $typography != null {
     @include mat-sort-typography($typography);

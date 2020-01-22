@@ -34,7 +34,7 @@ $mat-tooltip-handset-vertical-padding:
   }
 }
 
-@mixin mat-tooltip-density($density-scale) {}
+@mixin _mat-tooltip-density($density-scale) {}
 
 @mixin mat-tooltip-theme($theme) {
   $color: mat-get-color-config($theme);
@@ -45,7 +45,7 @@ $mat-tooltip-handset-vertical-padding:
     @include mat-tooltip-color($color);
   }
   @if $density != null {
-    @include mat-tooltip-density($density);
+    @include _mat-tooltip-density($density);
   }
   @if $typography != null {
     @include mat-tooltip-typography($typography);

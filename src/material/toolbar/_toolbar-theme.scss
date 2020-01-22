@@ -68,7 +68,7 @@
   }
 }
 
-@mixin mat-toolbar-density($density-scale) {}
+@mixin _mat-toolbar-density($density-scale) {}
 
 @mixin mat-toolbar-theme($theme) {
   $color: mat-get-color-config($theme);
@@ -79,7 +79,7 @@
     @include mat-toolbar-color($color);
   }
   @if $density != null {
-    @include mat-toolbar-density($density);
+    @include _mat-toolbar-density($density);
   }
   @if $typography != null {
     @include mat-toolbar-typography($typography);

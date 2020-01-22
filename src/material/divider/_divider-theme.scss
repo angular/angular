@@ -14,7 +14,7 @@
   }
 }
 
-@mixin mat-divider-density($density-scale) {}
+@mixin _mat-divider-density($density-scale) {}
 
 @mixin mat-divider-theme($theme) {
   $color: mat-get-color-config($theme);
@@ -25,7 +25,7 @@
     @include mat-divider-color($color);
   }
   @if $density != null {
-    @include mat-divider-density($density);
+    @include _mat-divider-density($density);
   }
   @if $typography != null {
     @include mat-divider-typography($typography);

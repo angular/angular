@@ -69,7 +69,7 @@
   }
 }
 
-@mixin mat-expansion-panel-density($density-scale) {}
+@mixin _mat-expansion-panel-density($density-scale) {}
 
 @mixin mat-expansion-panel-theme($theme) {
   $color: mat-get-color-config($theme);
@@ -80,7 +80,7 @@
     @include mat-expansion-panel-color($color);
   }
   @if $density != null {
-    @include mat-expansion-panel-density($density);
+    @include _mat-expansion-panel-density($density);
   }
   @if $typography != null {
     @include mat-expansion-panel-typography($typography);

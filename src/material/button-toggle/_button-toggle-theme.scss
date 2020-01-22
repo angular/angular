@@ -86,7 +86,7 @@
   }
 }
 
-@mixin mat-button-toggle-density($density-scale) {}
+@mixin _mat-button-toggle-density($density-scale) {}
 
 @mixin mat-button-toggle-theme($theme) {
   $color: mat-get-color-config($theme);
@@ -97,7 +97,7 @@
     @include mat-button-toggle-color($color);
   }
   @if $density != null {
-    @include mat-button-toggle-density($density);
+    @include _mat-button-toggle-density($density);
   }
   @if $typography != null {
     @include mat-button-toggle-typography($typography);

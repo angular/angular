@@ -102,7 +102,7 @@
   }
 }
 
-@mixin mat-stepper-density($density-scale) {}
+@mixin _mat-stepper-density($density-scale) {}
 
 @mixin mat-stepper-theme($theme) {
   $color: mat-get-color-config($theme);
@@ -113,7 +113,7 @@
     @include mat-stepper-color($color);
   }
   @if $density != null {
-    @include mat-stepper-density($density);
+    @include _mat-stepper-density($density);
   }
   @if $typography != null {
     @include mat-stepper-typography($typography);

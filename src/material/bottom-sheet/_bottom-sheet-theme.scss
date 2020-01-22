@@ -20,7 +20,7 @@
   }
 }
 
-@mixin mat-bottom-sheet-density($density-scale) {}
+@mixin _mat-bottom-sheet-density($density-scale) {}
 
 @mixin mat-bottom-sheet-theme($theme) {
   $color: mat-get-color-config($theme);
@@ -31,7 +31,7 @@
     @include mat-bottom-sheet-color($color);
   }
   @if $density != null {
-    @include mat-bottom-sheet-density($density);
+    @include _mat-bottom-sheet-density($density);
   }
   @if $typography != null {
     @include mat-bottom-sheet-typography($typography);
