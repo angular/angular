@@ -127,6 +127,16 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord> {
       for (const fileName of state.changedTsPaths) {
         logicalChanges.add(fileName);
       }
+
+      // Any logically changed files need to be re-emitted. Most of the time this would happen
+      // regardless because the new dependency graph would _also_ identify the file as stale.
+      // However there are edge cases such as removing a component from an NgModule without adding
+      // it to another one, where the previous graph identifies the file as logically changed, but
+      // the new graph (which does not have that edge) fails to identify that the file should be
+      // re-emitted.
+      for (const change of logicalChanges) {
+        state.pendingEmit.add(change);
+      }
     }
 
     // `state` now reflects the initial pending state of the current compilation.
