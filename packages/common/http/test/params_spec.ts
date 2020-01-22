@@ -76,5 +76,20 @@ import {HttpParams} from '@angular/common/http/src/params';
         expect(body.keys()).toEqual(['a', 'b', 'c', 'd']);
       });
     });
+
+    describe('toString', () => {
+      it('should stringify string params', () => {
+        const body = new HttpParams({fromObject: {a: '', b: '2', c: '3'}});
+        expect(body.toString()).toBe('a=&b=2&c=3');
+      });
+      it('should stringify array params', () => {
+        const body = new HttpParams({fromObject: {a: '', b: ['21', '22'], c: '3'}});
+        expect(body.toString()).toBe('a=&b=21&b=22&c=3');
+      });
+      it('should stringify empty array params', () => {
+        const body = new HttpParams({fromObject: {a: '', b: [], c: '3'}});
+        expect(body.toString()).toBe('a=&c=3');
+      });
+    });
   });
 }
