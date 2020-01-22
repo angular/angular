@@ -261,15 +261,12 @@ describe('styling', () => {
         fixture.detectChanges();
 
         const [div1, div2] = fixture.nativeElement.querySelectorAll('div');
+        // Static value `class="s1"` is always written to the DOM.
         expect(div1.className).toEqual('s1');
-        // VE has weird behavior where it calls the @Input('class') with either `class="static` or
-        // `[class]="dynamic"` but never both. This is determined at compile time. Due to locality
-        // we
-        // don't know if `[class]` is coming if we see `class` only. So we need to combine the two
-        // This results in slightly different calling sequence, but should result in the same final
-        // DOM.
+        // VE passes the dynamic portion of `class` to the directive.
         expect(div1.getAttribute('shadow-class')).toEqual('d1');
-
+        // Interpolation `class="s2 {{'d2'}}"` does not have a static portion and so no value is
+        // written to DOM.
         expect(div2.className).toEqual('');
         expect(div2.getAttribute('shadow-class')).toEqual('s2 d2');
       });
@@ -302,13 +299,13 @@ describe('styling', () => {
         fixture.detectChanges();
 
         const [div1, div2] = fixture.nativeElement.querySelectorAll('div');
+        // Static value `class="s1"` is always written to the DOM.
         expect(div1.className).toEqual('s1');
         // VE has weird behavior where it calls the @Input('class') with either `class="static` or
         // `[class]="dynamic"` but never both. This is determined at compile time. Due to locality
-        // we
-        // don't know if `[class]` is coming if we see `class` only. So we need to combine the two
-        // This results in slightly different calling sequence, but should result in the same final
-        // DOM.
+        // we don't know if `[class]` is coming if we see `class` only. So we need to combine the
+        // static and dynamic parte. This results in slightly different calling sequence, but should
+        // result in the same final DOM.
         expect(div1.getAttribute('shadow-class')).toEqual('s1 d1');
 
         expect(div2.className).toEqual('');

@@ -177,7 +177,7 @@ import {getLastParsedKey, parseClassName, parseClassNameNext, parseStyle, parseS
  * NOTE: See `should support example in 'tnode_linked_list.ts' documentation` in
  * `tnode_linked_list_spec.ts` for working example.
  */
-
+let __unused_const_as_closure_does_not_like_standalone_comment_blocks__: undefined;
 
 /**
  * Insert new `tStyleValue` at `TData` and link existing style bindings such that we maintain linked
@@ -359,7 +359,7 @@ function markDuplicates(
       // if we are a Map (and we have statics) we must assume duplicate
       foundDuplicate = true;
     } else if (staticValues != null) {
-      // If we found non-map than we iterate over its keys to determine if any of them match ours
+      // If we found non-map then we iterate over its keys to determine if any of them match ours
       // If we find a match than we mark it as duplicate.
       for (let i = isClassBinding ? parseClassName(staticValues) : parseStyle(staticValues);  //
            i >= 0;                                                                            //
@@ -402,7 +402,7 @@ export function flushStyleBinding(
       (isClassBinding ? tNode.classes : tNode.styles) :
       lView[lastUnchangedValueIndex + 1] as string | NO_CHANGE;
   if (text === null || text === NO_CHANGE) text = '';
-  ngDevMode && assertString(text, 'Last unchanged value value should be a string');
+  ngDevMode && assertString(text, 'Last unchanged value should be a string');
   let cursor = index;
   while (cursor !== 0) {
     const value = lView[cursor];

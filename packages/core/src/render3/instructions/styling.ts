@@ -68,7 +68,7 @@ export function ɵɵstyleSanitizer(sanitizer: StyleSanitizeFn | null): void {
  * @codeGenApi
  */
 export function ɵɵstyleProp(
-    prop: string, value: string | number | SafeValue | null,
+    prop: string, value: string | number | SafeValue | undefined | null,
     suffix?: string | null): typeof ɵɵstyleProp {
   checkStylingProperty(prop, value, suffix, false);
   return ɵɵstyleProp;
@@ -89,7 +89,8 @@ export function ɵɵstyleProp(
  *
  * @codeGenApi
  */
-export function ɵɵclassProp(className: string, value: boolean | null): typeof ɵɵclassProp {
+export function ɵɵclassProp(
+    className: string, value: boolean | undefined | null): typeof ɵɵclassProp {
   checkStylingProperty(className, value, null, true);
   return ɵɵclassProp;
 }
@@ -114,7 +115,9 @@ export function ɵɵclassProp(className: string, value: boolean | null): typeof 
  *
  * @codeGenApi
  */
-export function ɵɵstyleMap(styles: {[styleName: string]: any} | string | null): void {
+export function ɵɵstyleMap(
+    styles: {[styleName: string]: any} | Map<string, string|number|null|undefined>| string |
+    undefined | null): void {
   checkStylingMap(STYLE_MAP_STYLING_KEY, styles, false);
 }
 
@@ -136,7 +139,9 @@ export function ɵɵstyleMap(styles: {[styleName: string]: any} | string | null)
  *
  * @codeGenApi
  */
-export function ɵɵclassMap(classes: {[className: string]: any} | string | null): void {
+export function ɵɵclassMap(
+    classes: {[className: string]: boolean | undefined | null} |
+    Map<string, boolean|undefined|null>| Set<string>| string[] | string | undefined | null): void {
   checkStylingMap(CLASS_MAP_STYLING_KEY, classes, true);
 }
 
@@ -150,7 +155,7 @@ export function ɵɵclassMap(classes: {[className: string]: any} | string | null
  * @param isClassBased `true` if `class` change (`false` if `style`)
  */
 export function checkStylingProperty(
-    prop: string, value: string | number | SafeValue | null,
+    prop: string, value: any | NO_CHANGE,
     suffixOrSanitizer: SanitizerFn | string | undefined | null, isClassBased: boolean): void {
   const lView = getLView();
   const tView = lView[TVIEW];
@@ -170,7 +175,6 @@ export function checkStylingProperty(
     stylingPropertyFirstUpdatePass(tView, prop, suffixOrSanitizer, bindingIndex, isClassBased);
   }
   if (value !== NO_CHANGE && bindingUpdated(lView, bindingIndex, value)) {
-    lView[bindingIndex] = value;
     markStylingBindingDirty(bindingIndex, isClassBased);
     setElementExitFn(flushStylingOnElementExit);
   }
@@ -184,8 +188,7 @@ export function checkStylingProperty(
 * @param isClassBased `true` if `class` change (`false` if `style`)
 */
 export function checkStylingMap(
-    tStylingMapKey: TStylingMapKey, value: {[className: string]: any} | string | null,
-    isClassBased: boolean): void {
+    tStylingMapKey: TStylingMapKey, value: any | NO_CHANGE, isClassBased: boolean): void {
   const lView = getLView();
   const tView = lView[TVIEW];
   const bindingIndex = incrementBindingIndex(2);
@@ -193,6 +196,8 @@ export function checkStylingMap(
     stylingPropertyFirstUpdatePass(tView, tStylingMapKey, null, bindingIndex, isClassBased);
   }
   if (value !== NO_CHANGE && bindingUpdated(lView, bindingIndex, value)) {
+    // `getSelectedIndex()` should be here (rather than in instruction) so that it is guarded by the
+    // if so as not to read unnecessarily.
     const tNode = tView.data[getSelectedIndex() + HEADER_OFFSET] as TNode;
     if (hasStylingInputShadow(tNode, isClassBased) && !isInHostBindings(tView, bindingIndex)) {
       // VE concatenates the static portion with the dynamic portion.
@@ -208,7 +213,6 @@ export function checkStylingMap(
       // This takes over the `[style]` binding. (Same for `[class]`)
       setDirectiveInputsWhichShadowsStyling(tNode, lView, value, isClassBased);
     } else {
-      lView[bindingIndex] = value;
       markStylingBindingDirty(bindingIndex, isClassBased);
       setElementExitFn(flushStylingOnElementExit);
     }
@@ -252,6 +256,8 @@ function stylingPropertyFirstUpdatePass(
     // The above check is necessary because we don't clear first update pass until first successful
     // (no exception) template execution. This prevents the styling instruction from double adding
     // itself to the list.
+    // `getSelectedIndex()` should be here (rather than in instruction) so that it is guarded by the
+    // if so as not to read unnecessarily.
     const tNode = tData[getSelectedIndex() + HEADER_OFFSET] as TNode;
     if (hasStylingInputShadow(tNode, isClassBased) && typeof prop === 'object' &&
         !isInHostBindings(tView, bindingIndex)) {

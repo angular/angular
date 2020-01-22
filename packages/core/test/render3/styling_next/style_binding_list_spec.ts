@@ -459,14 +459,14 @@ describe('TNode styling linked list', () => {
       expect(fixture.flush(0)).toEqual('color: blue;');
     });
 
-    it('should remove falsy values', () => {
+    it('should treat undefined values as previous value', () => {
       const fixture = new StylingFixture([['color', 'color']], false);
       fixture.setBinding(0, 'red');
       fixture.setBinding(1, undefined);
       expect(fixture.flush(0)).toEqual('color: red;');
     });
 
-    it('should ignore falsy values', () => {
+    it('should treat null value as removal', () => {
       const fixture = new StylingFixture([['color']], false);
       fixture.setBinding(0, null);
       expect(fixture.flush(0)).toEqual('');

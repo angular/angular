@@ -113,7 +113,7 @@ interface LFrame {
    * recomputed. See: `flushStylingOnElementExit` and `markStylingBindingDirty` functions for
    * details.
    *
-   * If this value is set than `flushStylingOnElementExit` needs to execute during the `advance`
+   * If this value is set then `flushStylingOnElementExit` needs to execute during the `advance`
    * instruction to update the styling.
    */
   stylingBindingChanged: number;
