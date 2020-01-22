@@ -1,18 +1,10 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ng_module", "sass_library")
+load("//tools:defaults.bzl", "sass_library")
 
-ng_module(
+filegroup(
     name = "mdc-helpers",
-    srcs = glob(
-        ["**/*.ts"],
-        exclude = ["**/*.spec.ts"],
-    ),
-    assets = glob(["**/*.html"]),
-    module_name = "@angular/material-experimental/mdc-helpers",
-    deps = [
-        "@npm//@angular/core",
-    ],
+    srcs = [":mdc_helpers_scss_lib"],
 )
 
 # Add all MDC Sass files that we depend on here. After updating MDC dependencies, use the following

@@ -2,6 +2,14 @@ package(default_visibility = ["//visibility:public"])
 
 load("//tools:defaults.bzl", "sass_binary", "sass_library")
 
+filegroup(
+    name = "mdc-theming",
+    srcs = [
+        ":all_themes",
+        ":indigo_pink_prebuilt",
+    ],
+)
+
 sass_library(
     name = "all_themes",
     srcs = [

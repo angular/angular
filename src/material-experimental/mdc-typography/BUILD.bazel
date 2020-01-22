@@ -2,6 +2,11 @@ package(default_visibility = ["//visibility:public"])
 
 load("//tools:defaults.bzl", "sass_library")
 
+filegroup(
+    name = "mdc-typography",
+    srcs = [":all_typography"],
+)
+
 sass_library(
     name = "all_typography",
     srcs = [
