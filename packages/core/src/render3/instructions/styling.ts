@@ -316,7 +316,7 @@ function stylingPropertyFirstUpdatePass(
  * applied)
  *
  * The fact that `ArrayMap` is sorted is very important because it allows us to compute the
- * difference in linear fashion with out the need to allocate any additional data.
+ * difference in linear fashion without the need to allocate any additional data.
  *
  * For example if we kept this as a `Map` we would have to iterate over previous `Map` to determine
  * which values need to be delete, over the new `Map` to determine additions, and we would have to

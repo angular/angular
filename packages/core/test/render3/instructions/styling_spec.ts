@@ -106,7 +106,7 @@ describe('styling', () => {
     clearFirstUpdatePass();
     rewindBindingIndex();
     ɵɵclassProp('foo', false);      // no change
-    ɵɵclassProp('foo', undefined);  // change to green
+    ɵɵclassProp('foo', undefined);  // change (have no opinion)
     expectClass(div).toEqual({});
     expect(ngDevMode !.rendererAddClass).toEqual(0);
     expect(ngDevMode !.rendererRemoveClass).toEqual(1);
@@ -155,7 +155,7 @@ describe('styling', () => {
       ngDevModeResetPerfCounters();
     });
 
-    it('should work with object literal', () => {
+    it('should work with object literal and strings', () => {
       ɵɵstyleMap('');
       expectStyle(div).toEqual({});
       expect(ngDevMode !.rendererSetStyle).toEqual(0);
@@ -212,15 +212,23 @@ describe('styling', () => {
       expectStyle(div).toEqual({color: 'red', width: '200px'});
     });
 
-    describe(
-        'static values', () => {
-
-                         });
-
     describe('suffix', () => {
       it('should append suffix', () => {
         ɵɵstyleProp('width', 200, 'px');
         ɵɵstyleProp('width', 100, 'px');
+        expectStyle(div).toEqual({width: '100px'});
+
+        clearFirstUpdatePass();
+
+        rewindBindingIndex();
+        ɵɵstyleProp('width', 200, 'px');
+        ɵɵstyleProp('width', undefined, 'px');
+        expectStyle(div).toEqual({width: '200px'});
+      });
+
+      it('should append suffix and non-suffix bindings', () => {
+        ɵɵstyleProp('width', 200, 'px');
+        ɵɵstyleProp('width', '100px');
         expectStyle(div).toEqual({width: '100px'});
 
         clearFirstUpdatePass();
@@ -243,12 +251,12 @@ describe('styling', () => {
         clearFirstUpdatePass();
 
         rewindBindingIndex();
-        ɵɵstyleProp('background', bypassSanitizationTrustStyle('url("javascript:/safe")'));
+        ɵɵstyleProp('background', bypassSanitizationTrustStyle('url("javascript:/trusted")'));
         ɵɵstyleMap(
-            {'border-image-source': bypassSanitizationTrustStyle('url("javascript:/safe")')});
-        expect(div.style.getPropertyValue('background')).toEqual('url("javascript:/safe")');
+            {'border-image-source': bypassSanitizationTrustStyle('url("javascript:/trusted")')});
+        expect(div.style.getPropertyValue('background')).toEqual('url("javascript:/trusted")');
         expect(div.style.getPropertyValue('border-image-source'))
-            .toEqual('url("javascript:/safe")');
+            .toEqual('url("javascript:/trusted")');
       });
     });
 
