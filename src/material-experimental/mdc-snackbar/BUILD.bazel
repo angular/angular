@@ -12,7 +12,6 @@ ng_module(
     module_name = "@angular/material-experimental/mdc-snackbar",
     deps = [
         "//src/material/core",
-        "@npm//@angular/common",
         "@npm//@angular/core",
         "@npm//material-components-web",
     ],

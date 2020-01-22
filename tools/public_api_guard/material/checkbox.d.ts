@@ -73,7 +73,7 @@ export interface MatCheckboxDefaultOptions {
 
 export declare class MatCheckboxModule {
     static ɵinj: i0.ɵɵInjectorDef<MatCheckboxModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatCheckboxModule, [typeof i2.MatCheckbox], [typeof i3.CommonModule, typeof i4.MatRippleModule, typeof i4.MatCommonModule, typeof i5.ObserversModule, typeof _MatCheckboxRequiredValidatorModule], [typeof i2.MatCheckbox, typeof i4.MatCommonModule, typeof _MatCheckboxRequiredValidatorModule]>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatCheckboxModule, [typeof i2.MatCheckbox], [typeof i3.MatRippleModule, typeof i3.MatCommonModule, typeof i4.ObserversModule, typeof _MatCheckboxRequiredValidatorModule], [typeof i2.MatCheckbox, typeof i3.MatCommonModule, typeof _MatCheckboxRequiredValidatorModule]>;
 }
 
 export declare class MatCheckboxRequiredValidator extends CheckboxRequiredValidator {

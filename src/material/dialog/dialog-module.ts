@@ -8,7 +8,6 @@
 
 import {OverlayModule} from '@angular/cdk/overlay';
 import {PortalModule} from '@angular/cdk/portal';
-import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
 import {MAT_DIALOG_SCROLL_STRATEGY_PROVIDER, MatDialog} from './dialog';
@@ -23,7 +22,6 @@ import {
 
 @NgModule({
   imports: [
-    CommonModule,
     OverlayModule,
     PortalModule,
     MatCommonModule,

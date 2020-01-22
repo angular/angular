@@ -26,7 +26,6 @@ ng_module(
         "//src/cdk/collections",
         "//src/material/core",
         "@npm//@angular/animations",
-        "@npm//@angular/common",
         "@npm//@angular/core",
         "@npm//@angular/forms",
         "@npm//@angular/platform-browser",

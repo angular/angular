@@ -22,7 +22,6 @@ ng_module(
         "//src/cdk/collections",
         "//src/cdk/tree",
         "//src/material/core",
-        "@npm//@angular/common",
         "@npm//@angular/core",
         "@npm//rxjs",
     ],

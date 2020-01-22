@@ -19,7 +19,6 @@ ng_module(
     assets = [":table.css"],
     module_name = "@angular/material/table",
     deps = [
-        "@npm//@angular/common",
         "@npm//@angular/core",
         "@npm//rxjs",
         "//src/cdk/coercion",

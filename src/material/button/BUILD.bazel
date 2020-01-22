@@ -24,7 +24,6 @@ ng_module(
         "//src/cdk/a11y",
         "//src/material/core",
         "@npm//@angular/animations",
-        "@npm//@angular/common",
         "@npm//@angular/core",
         "@npm//@angular/platform-browser",
     ],

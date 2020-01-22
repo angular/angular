@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {HeaderRowOutlet, DataRowOutlet, CdkTable, FooterRowOutlet} from './table';
 import {
@@ -42,7 +41,6 @@ const EXPORTED_DECLARATIONS = [
 ];
 
 @NgModule({
-  imports: [CommonModule],
   exports: EXPORTED_DECLARATIONS,
   declarations: EXPORTED_DECLARATIONS
 

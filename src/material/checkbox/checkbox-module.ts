@@ -7,7 +7,6 @@
  */
 
 import {ObserversModule} from '@angular/cdk/observers';
-import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatCommonModule, MatRippleModule} from '@angular/material/core';
 import {MatCheckbox} from './checkbox';
@@ -24,7 +23,7 @@ export class _MatCheckboxRequiredValidatorModule {
 
 @NgModule({
   imports: [
-    CommonModule, MatRippleModule, MatCommonModule, ObserversModule,
+    MatRippleModule, MatCommonModule, ObserversModule,
     _MatCheckboxRequiredValidatorModule
   ],
   exports: [MatCheckbox, MatCommonModule, _MatCheckboxRequiredValidatorModule],

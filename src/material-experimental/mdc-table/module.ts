@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
 import {MatTable} from './table';
@@ -54,7 +53,7 @@ const EXPORTED_DECLARATIONS = [
 ];
 
 @NgModule({
-  imports: [MatCommonModule, CommonModule, CdkTableModule],
+  imports: [MatCommonModule, CdkTableModule],
   exports: EXPORTED_DECLARATIONS,
   declarations: EXPORTED_DECLARATIONS,
 })

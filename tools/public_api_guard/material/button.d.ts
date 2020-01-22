@@ -27,5 +27,5 @@ export declare class MatButton extends _MatButtonMixinBase implements OnDestroy,
 
 export declare class MatButtonModule {
     static ɵinj: i0.ɵɵInjectorDef<MatButtonModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatButtonModule, [typeof i1.MatButton, typeof i1.MatAnchor], [typeof i2.CommonModule, typeof i3.MatRippleModule, typeof i3.MatCommonModule], [typeof i1.MatButton, typeof i1.MatAnchor, typeof i3.MatCommonModule]>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatButtonModule, [typeof i1.MatButton, typeof i1.MatAnchor], [typeof i2.MatRippleModule, typeof i2.MatCommonModule], [typeof i1.MatButton, typeof i1.MatAnchor, typeof i2.MatCommonModule]>;
 }

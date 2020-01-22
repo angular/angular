@@ -8,14 +8,13 @@
 
 import {NgModule} from '@angular/core';
 import {CdkStepper, CdkStep} from './stepper';
-import {CommonModule} from '@angular/common';
 import {CdkStepLabel} from './step-label';
 import {CdkStepperNext, CdkStepperPrevious} from './stepper-button';
 import {CdkStepHeader} from './step-header';
 import {BidiModule} from '@angular/cdk/bidi';
 
 @NgModule({
-  imports: [BidiModule, CommonModule],
+  imports: [BidiModule],
   exports: [
     CdkStep,
     CdkStepper,

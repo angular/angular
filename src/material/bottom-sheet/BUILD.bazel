@@ -29,7 +29,6 @@ ng_module(
         "//src/cdk/portal",
         "//src/material/core",
         "@npm//@angular/animations",
-        "@npm//@angular/common",
         "@npm//@angular/core",
         "@npm//rxjs",
     ],

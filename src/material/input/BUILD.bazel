@@ -25,7 +25,6 @@ ng_module(
         "//src/cdk/text-field",
         "//src/material/core",
         "//src/material/form-field",
-        "@npm//@angular/common",
         "@npm//@angular/core",
         "@npm//@angular/forms",
         "@npm//rxjs",

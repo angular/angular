@@ -21,7 +21,6 @@ ng_module(
     deps = [
         "//src/cdk/coercion",
         "//src/material/core",
-        "@npm//@angular/common",
         "@npm//@angular/core",
     ],
 )

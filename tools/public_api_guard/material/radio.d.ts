@@ -92,5 +92,5 @@ export declare class MatRadioGroup implements AfterContentInit, ControlValueAcce
 
 export declare class MatRadioModule {
     static ɵinj: i0.ɵɵInjectorDef<MatRadioModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatRadioModule, [typeof i1.MatRadioGroup, typeof i1.MatRadioButton], [typeof i2.CommonModule, typeof i3.MatRippleModule, typeof i3.MatCommonModule], [typeof i1.MatRadioGroup, typeof i1.MatRadioButton, typeof i3.MatCommonModule]>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatRadioModule, [typeof i1.MatRadioGroup, typeof i1.MatRadioButton], [typeof i2.MatRippleModule, typeof i2.MatCommonModule], [typeof i1.MatRadioGroup, typeof i1.MatRadioButton, typeof i2.MatCommonModule]>;
 }

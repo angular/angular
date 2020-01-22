@@ -7,14 +7,13 @@
  */
 
 import {TextFieldModule} from '@angular/cdk/text-field';
-import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
 import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
 import {MatInput} from './input';
 
 @NgModule({
-  imports: [MatCommonModule, MatFormFieldModule, CommonModule],
+  imports: [MatCommonModule, MatFormFieldModule],
   exports: [MatInput, MatFormFieldModule, TextFieldModule, MatCommonModule],
   declarations: [MatInput],
 })

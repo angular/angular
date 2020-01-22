@@ -17,7 +17,6 @@ ng_module(
         "//src/cdk/overlay",
         "//src/cdk/portal",
         "@npm//@angular/animations",
-        "@npm//@angular/common",
         "@npm//@angular/core",
         "@npm//rxjs",
     ],

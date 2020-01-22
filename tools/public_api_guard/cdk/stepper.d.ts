@@ -85,7 +85,7 @@ export declare class CdkStepper implements AfterViewInit, OnDestroy {
 
 export declare class CdkStepperModule {
     static ɵinj: i0.ɵɵInjectorDef<CdkStepperModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<CdkStepperModule, [typeof i1.CdkStep, typeof i1.CdkStepper, typeof i2.CdkStepHeader, typeof i3.CdkStepLabel, typeof i4.CdkStepperNext, typeof i4.CdkStepperPrevious], [typeof i5.BidiModule, typeof i6.CommonModule], [typeof i1.CdkStep, typeof i1.CdkStepper, typeof i2.CdkStepHeader, typeof i3.CdkStepLabel, typeof i4.CdkStepperNext, typeof i4.CdkStepperPrevious]>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<CdkStepperModule, [typeof i1.CdkStep, typeof i1.CdkStepper, typeof i2.CdkStepHeader, typeof i3.CdkStepLabel, typeof i4.CdkStepperNext, typeof i4.CdkStepperPrevious], [typeof i5.BidiModule], [typeof i1.CdkStep, typeof i1.CdkStepper, typeof i2.CdkStepHeader, typeof i3.CdkStepLabel, typeof i4.CdkStepperNext, typeof i4.CdkStepperPrevious]>;
 }
 
 export declare class CdkStepperNext {

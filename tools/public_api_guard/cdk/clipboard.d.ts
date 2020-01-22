@@ -26,7 +26,7 @@ export declare class Clipboard {
 
 export declare class ClipboardModule {
     static ɵinj: i0.ɵɵInjectorDef<ClipboardModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<ClipboardModule, [typeof i1.CdkCopyToClipboard], [typeof i2.CommonModule], [typeof i1.CdkCopyToClipboard]>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<ClipboardModule, [typeof i1.CdkCopyToClipboard], never, [typeof i1.CdkCopyToClipboard]>;
 }
 
 export declare class PendingCopy {
