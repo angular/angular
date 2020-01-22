@@ -127,7 +127,6 @@ filegroup(
         "@npm//:node_modules/@material/drawer/dist/mdc.drawer.js",
         "@npm//:node_modules/@material/floating-label/dist/mdc.floatingLabel.js",
         "@npm//:node_modules/@material/form-field/dist/mdc.formField.js",
-        "@npm//:node_modules/@material/grid-list/dist/mdc.gridList.js",
         "@npm//:node_modules/@material/icon-button/dist/mdc.iconButton.js",
         "@npm//:node_modules/@material/line-ripple/dist/mdc.lineRipple.js",
         "@npm//:node_modules/@material/linear-progress/dist/mdc.linearProgress.js",

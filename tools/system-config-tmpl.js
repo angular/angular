@@ -46,7 +46,6 @@ var pathMapping = {
   '@material/drawer': 'node:@material/drawer/dist/mdc.drawer.js',
   '@material/floating-label': 'node:@material/floating-label/dist/mdc.floatingLabel.js',
   '@material/form-field': 'node:@material/form-field/dist/mdc.formField.js',
-  '@material/grid-list': '@material/grid-list/dist/mdc.gridList.js',
   '@material/icon-button': 'node:@material/icon-button/dist/mdc.iconButton.js',
   '@material/line-ripple': 'node:@material/line-ripple/dist/mdc.lineRipple.js',
   '@material/linear-progress': 'node:@material/linear-progress/dist/mdc.linearProgress.js',
