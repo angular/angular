@@ -1068,7 +1068,7 @@ describe('MatDatepicker', () => {
         expect(button.getAttribute('tabindex')).toBe('7');
       });
 
-      it('should clear the tabindex from the mat-datepicker-toggle host', () => {
+      it('should reset the tabindex from the mat-datepicker-toggle host', () => {
         const fixture = createComponent(DatepickerWithTabindexOnToggle, [MatNativeDateModule]);
         fixture.detectChanges();
 
@@ -1089,6 +1089,16 @@ describe('MatDatepicker', () => {
         host.focus();
 
         expect(document.activeElement).toBe(button);
+      });
+
+      it('should remove the tabindex from the mat-datepicker-toggle host when disabled', () => {
+        const fixture = createComponent(DatepickerWithTabindexOnToggle, [MatNativeDateModule]);
+        fixture.componentInstance.disabled = true;
+        fixture.detectChanges();
+
+        const host = fixture.nativeElement.querySelector('.mat-datepicker-toggle');
+
+        expect(host.hasAttribute('tabindex')).toBe(false);
       });
 
     });
@@ -2037,13 +2047,15 @@ class DelayedDatepicker {
 @Component({
   template: `
     <input [matDatepicker]="d">
-    <mat-datepicker-toggle tabIndex="7" [for]="d">
+    <mat-datepicker-toggle tabIndex="7" [for]="d" [disabled]="disabled">
       <div class="custom-icon" matDatepickerToggleIcon></div>
     </mat-datepicker-toggle>
     <mat-datepicker #d></mat-datepicker>
   `,
 })
-class DatepickerWithTabindexOnToggle {}
+class DatepickerWithTabindexOnToggle {
+  disabled = false;
+}
 
 
 @Component({

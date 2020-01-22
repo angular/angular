@@ -43,7 +43,7 @@ export class MatDatepickerToggleIcon {}
     'class': 'mat-datepicker-toggle',
     // Always set the tabindex to -1 so that it doesn't overlap with any custom tabindex the
     // consumer may have provided, while still being able to receive focus.
-    '[attr.tabindex]': '-1',
+    '[attr.tabindex]': 'disabled ? null : -1',
     '[class.mat-datepicker-toggle-active]': 'datepicker && datepicker.opened',
     '[class.mat-accent]': 'datepicker && datepicker.color === "accent"',
     '[class.mat-warn]': 'datepicker && datepicker.color === "warn"',
