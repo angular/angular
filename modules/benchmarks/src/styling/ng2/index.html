@@ -21,6 +21,12 @@
       <option value="6">(6) class="foo" [ngStyle]="{width: 10px}" [style.background-color]="exp" (Sierpinski's triangle)
       </option>
       <option value="7">(7) style="color: red" (static styling)</option>
+      <option value="8">(8) [style.width.px]="widthExp" [style.color]="exp" (style property bindings)
+      </option>
+      <option value="9">(9) style="width: 10px" [style.color]="exp" ((mix of static and class property bindings)
+      </option>
+      <option value="10">(10) [ngStyle]="{width.px: widthExp, color: exp}" (ngStyle with units)
+      </option>
     </select>
 
     <button id="create">create</button>
