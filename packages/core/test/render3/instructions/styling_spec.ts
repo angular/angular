@@ -250,7 +250,7 @@ describe('styling', () => {
 
         rewindBindingIndex();
         ɵɵstyleProp('background', bypassSanitizationTrustStyle('url("javascript:/trusted")'));
-        expect(div.style.getPropertyValue('background')).toEqual('url("javascript:/trusted")');
+        expect(div.style.getPropertyValue('background')).toContain('url("javascript:/trusted")');
       });
 
       it('should sanitize map', () => {
@@ -262,7 +262,7 @@ describe('styling', () => {
 
         rewindBindingIndex();
         ɵɵstyleMap({'background': bypassSanitizationTrustStyle('url("javascript:/trusted")')});
-        expect(div.style.getPropertyValue('background')).toEqual('url("javascript:/trusted")');
+        expect(div.style.getPropertyValue('background')).toContain('url("javascript:/trusted")');
       });
     });
 

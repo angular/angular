@@ -792,6 +792,9 @@
     "name": "initializeInputAndOutputAliases"
   },
   {
+    "name": "initializeStylingStaticArrayMap"
+  },
+  {
     "name": "injectElementRef"
   },
   {
@@ -1011,9 +1014,6 @@
     "name": "parserState"
   },
   {
-    "name": "populateStylingStaticArrayMap"
-  },
-  {
     "name": "readPatchedData"
   },
   {
@@ -1107,7 +1107,7 @@
     "name": "setBindingIndex"
   },
   {
-    "name": "setBindingRoot"
+    "name": "setBindingRootForHostBindings"
   },
   {
     "name": "setCheckNoChangesMode"

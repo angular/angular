@@ -453,7 +453,7 @@
     "name": "setBindingIndex"
   },
   {
-    "name": "setBindingRoot"
+    "name": "setBindingRootForHostBindings"
   },
   {
     "name": "setCurrentQueryIndex"
