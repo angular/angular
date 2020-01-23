@@ -734,38 +734,138 @@ describe('di', () => {
         expect(child.componentInstance.parentInjector.get('token')).toBe('PARENT');
       });
 
-      it('should support @SkipSelf and @Host when injecting Injectors', () => {
-        @Component({
-          selector: 'parent',
-          template: '<child></child>',
-          providers: [{
-            provide: 'token',
-            useValue: 'PARENT',
-          }]
-        })
-        class ParentComponent {
+      it('should throw when injecting Injectors using @SkipSelf and @Host and no Injectors are available in a current view',
+         () => {
+           @Component({
+             selector: 'parent',
+             template: '<child></child>',
+             providers: [{
+               provide: 'token',
+               useValue: 'PARENT',
+             }]
+           })
+           class ParentComponent {
+           }
+
+           @Component({
+             selector: 'child',
+             template: '...',
+             providers: [{
+               provide: 'token',
+               useValue: 'CHILD',
+             }]
+           })
+           class ChildComponent {
+             constructor(@Host() @SkipSelf() public injector: Injector) {}
+           }
+
+           TestBed.configureTestingModule({
+             declarations: [ParentComponent, ChildComponent],
+           });
+
+           // Ivy has different error message when dependency is not found
+           const expectedErrorMessage =
+               ivyEnabled ? /NodeInjector: NOT_FOUND \[Injector]/ : /No provider for Injector/;
+           expect(() => TestBed.createComponent(ParentComponent))
+               .toThrowError(expectedErrorMessage);
+         });
+
+      it('should throw when injecting ViewContainerRef using @SkipSelf and @Host and no ViewContainerRef are available in a current view',
+         () => {
+           @Directive({selector: '[child]'})
+           class ChildDirective {
+             constructor(@SkipSelf() @Host() vc: ViewContainerRef) {}
+           }
+
+           @Component({template: '<span child>child</span>'})
+           class MyComp {
+           }
+
+           TestBed.configureTestingModule({declarations: [ChildDirective, MyComp]});
+
+           // Ivy has different error message when dependency is not found
+           const expectedErrorMessage = ivyEnabled ? /NodeInjector: NOT_FOUND \[ViewContainerRef]/ :
+                                                     /No provider for ViewContainerRef/;
+           expect(() => TestBed.createComponent(MyComp)).toThrowError(expectedErrorMessage);
+         });
+
+      it('should support @SkipSelf when injecting ViewContainerRef', () => {
+        let parentViewContainer: ViewContainerRef|undefined;
+        let childViewContainer: ViewContainerRef|undefined;
+
+        @Directive({selector: '[parent]'})
+        class ParentDirective {
+          constructor(vc: ViewContainerRef) { parentViewContainer = vc; }
         }
 
-        @Component({
-          selector: 'child',
-          template: '...',
-          providers: [{
-            provide: 'token',
-            useValue: 'CHILD',
-          }]
-        })
-        class ChildComponent {
-          constructor(@Host() @SkipSelf() public injector: Injector) {}
+        @Directive({selector: '[child]'})
+        class ChildDirective {
+          constructor(@SkipSelf() vc: ViewContainerRef) { childViewContainer = vc; }
         }
 
-        TestBed.configureTestingModule({
-          declarations: [ParentComponent, ChildComponent],
-        });
+        @Component({template: '<div parent>parent <span child>child</span></div>'})
+        class MyComp {
+        }
 
-        // Ivy has different error message when dependency is not found
-        const expectedErrorMessage =
-            ivyEnabled ? /NodeInjector: NOT_FOUND \[Injector]/ : /No provider for Injector/;
-        expect(() => TestBed.createComponent(ParentComponent)).toThrowError(expectedErrorMessage);
+        TestBed.configureTestingModule({declarations: [ParentDirective, ChildDirective, MyComp]});
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
+
+        // Assert against the `element` since Ivy always returns a new ViewContainerRef.
+        expect(parentViewContainer !.element.nativeElement)
+            .toBe(childViewContainer !.element.nativeElement);
+      });
+
+      it('should support @SkipSelf when injecting ElementRef', () => {
+        let parentRef: ElementRef|undefined;
+        let childRef: ElementRef|undefined;
+
+        @Directive({selector: '[parent]'})
+        class ParentDirective {
+          constructor(elementRef: ElementRef) { parentRef = elementRef; }
+        }
+
+        @Directive({selector: '[child]'})
+        class ChildDirective {
+          constructor(@SkipSelf() elementRef: ElementRef) { childRef = elementRef; }
+        }
+
+        @Component({template: '<div parent>parent <span child>child</span></div>'})
+        class MyComp {
+        }
+
+        TestBed.configureTestingModule({declarations: [ParentDirective, ChildDirective, MyComp]});
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
+
+        // Assert against the `nativeElement` since Ivy always returns a new ElementRef.
+        expect(parentRef !.nativeElement).toBe(childRef !.nativeElement);
+      });
+
+      it('should support @SkipSelf when injecting ChangeDetectorRef', () => {
+        let parentRef: ChangeDetectorRef|undefined;
+        let childRef: ChangeDetectorRef|undefined;
+
+        @Directive({selector: '[parent]'})
+        class ParentDirective {
+          constructor(cdr: ChangeDetectorRef) { parentRef = cdr; }
+        }
+
+        @Directive({selector: '[child]'})
+        class ChildDirective {
+          constructor(@SkipSelf() cdr: ChangeDetectorRef) { childRef = cdr; }
+        }
+
+        @Component({template: '<div parent>parent <span child>child</span></div>'})
+        class MyComp {
+        }
+
+        TestBed.configureTestingModule({declarations: [ParentDirective, ChildDirective, MyComp]});
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
+
+        // Assert against the `rootNodes` since Ivy always returns a new ChangeDetectorRef.
+        expect((parentRef as ViewRef<any>).rootNodes).toEqual((childRef as ViewRef<any>).rootNodes);
       });
 
       onlyInIvy('Ivy has different error message when dependency is not found')

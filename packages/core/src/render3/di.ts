@@ -307,7 +307,7 @@ export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): str
   return null;
 }
 
-function getTNodeParent(
+function getParentTNode(
     tNode: TDirectiveHostNode, lView: LView, flags: InjectFlags): TDirectiveHostNode|null {
   const parent = tNode.parent;
   // Falling back to `T_HOST` in case we cross component boundary (thus `tNode.parent` is not
@@ -352,7 +352,19 @@ export function getOrCreateInjectable<T>(
     // If the ID stored here is a function, this is a special object like ElementRef or TemplateRef
     // so just call the factory function to create it.
     if (typeof bloomHash === 'function') {
-      enterDI(lView, tNode);
+      if (flags & InjectFlags.SkipSelf) {
+        const parentTNode = getParentTNode(tNode, lView, flags);
+        if (parentTNode === null) {
+          return notFoundValueOrThrow(notFoundValue, token, flags);
+        }
+        return getOrCreateInjectable(
+            parentTNode, getParentInjectorView(getParentInjectorLocation(tNode, lView), lView),
+            token, flags & InjectFlags.Optional ? InjectFlags.Optional : InjectFlags.Default,
+            notFoundValue);
+      } else {
+        enterDI(lView, tNode);
+      }
+
       try {
         const value = bloomHash();
         if (value == null && !(flags & InjectFlags.Optional)) {
@@ -367,12 +379,12 @@ export function getOrCreateInjectable<T>(
       // `-1` is a special value used to identify `Injector` types.
       if (bloomHash === -1) {
         if (flags & InjectFlags.SkipSelf) {
-          const _tNode = tNode;
-          tNode = getTNodeParent(tNode, lView, flags);
+          const parentInjectorLocation = getParentInjectorLocation(tNode, lView);
+          tNode = getParentTNode(tNode, lView, flags);
           if (tNode === null) {
             return notFoundValueOrThrow(notFoundValue, token, flags);
           }
-          lView = getParentInjectorView(getParentInjectorLocation(_tNode, lView), lView);
+          lView = getParentInjectorView(parentInjectorLocation, lView);
         }
         return new NodeInjector(tNode, lView) as any;
       }
