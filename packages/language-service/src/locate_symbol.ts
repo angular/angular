@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, Attribute, BoundDirectivePropertyAst, BoundEventAst, CompileTypeSummary, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, RecursiveTemplateAstVisitor, SelectorMatcher, TemplateAst, TemplateAstPath, templateVisitAll, tokenReference} from '@angular/compiler';
-
+import {AST, Attribute, BoundDirectivePropertyAst, BoundEventAst, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, RecursiveTemplateAstVisitor, SelectorMatcher, StaticSymbol, TemplateAst, TemplateAstPath, templateVisitAll, tokenReference} from '@angular/compiler';
+import * as tss from 'typescript/lib/tsserverlibrary';
 import {AstResult} from './common';
 import {getExpressionScope} from './expression_diagnostics';
 import {getExpressionSymbol} from './expressions';
@@ -16,8 +16,8 @@ import {diagnosticInfoFromTemplateInfo, findTemplateAstAt, getPathToNodeAtPositi
 
 export interface SymbolInfo {
   symbol: Symbol;
-  span: Span;
-  compileTypeSummary: CompileTypeSummary|undefined;
+  span: tss.TextSpan;
+  staticSymbol?: StaticSymbol;
 }
 
 /**
@@ -52,9 +52,9 @@ function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult):
     undefined {
   const templatePosition = path.position;
   const position = templatePosition + info.template.span.start;
-  let compileTypeSummary: CompileTypeSummary|undefined = undefined;
   let symbol: Symbol|undefined;
   let span: Span|undefined;
+  let staticSymbol: StaticSymbol|undefined;
   const attributeValueSymbol = (ast: AST): boolean => {
     const attribute = findAttribute(info, position);
     if (attribute) {
@@ -81,8 +81,9 @@ function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult):
         visitElement(ast) {
           const component = ast.directives.find(d => d.directive.isComponent);
           if (component) {
-            compileTypeSummary = component.directive;
-            symbol = info.template.query.getTypeSymbol(compileTypeSummary.type.reference);
+            // Need to cast because 'reference' is typed as any
+            staticSymbol = component.directive.type.reference as StaticSymbol;
+            symbol = info.template.query.getTypeSymbol(staticSymbol);
             symbol = symbol && new OverrideKindSymbol(symbol, DirectiveKind.COMPONENT);
             span = spanOf(ast);
           } else {
@@ -90,8 +91,9 @@ function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult):
             const directive = ast.directives.find(
                 d => d.directive.selector != null && d.directive.selector.indexOf(ast.name) >= 0);
             if (directive) {
-              compileTypeSummary = directive.directive;
-              symbol = info.template.query.getTypeSymbol(compileTypeSummary.type.reference);
+              // Need to cast because 'reference' is typed as any
+              staticSymbol = directive.directive.type.reference as StaticSymbol;
+              symbol = info.template.query.getTypeSymbol(staticSymbol);
               symbol = symbol && new OverrideKindSymbol(symbol, DirectiveKind.DIRECTIVE);
               span = spanOf(ast);
             }
@@ -124,8 +126,10 @@ function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult):
           const attributeSelector = `[${ast.name}=${ast.value}]`;
           const parsedAttribute = CssSelector.parse(attributeSelector);
           if (!parsedAttribute.length) return;
-          matcher.match(parsedAttribute[0], (_, directive) => {
-            symbol = info.template.query.getTypeSymbol(directive.directive.type.reference);
+          matcher.match(parsedAttribute[0], (_, {directive}) => {
+            // Need to cast because 'reference' is typed as any
+            staticSymbol = directive.type.reference as StaticSymbol;
+            symbol = info.template.query.getTypeSymbol(staticSymbol);
             symbol = symbol && new OverrideKindSymbol(symbol, DirectiveKind.DIRECTIVE);
             span = spanOf(ast);
           });
@@ -145,8 +149,9 @@ function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult):
         },
         visitText(ast) {},
         visitDirective(ast) {
-          compileTypeSummary = ast.directive;
-          symbol = info.template.query.getTypeSymbol(compileTypeSummary.type.reference);
+          // Need to cast because 'reference' is typed as any
+          staticSymbol = ast.directive.type.reference as StaticSymbol;
+          symbol = info.template.query.getTypeSymbol(staticSymbol);
           span = spanOf(ast);
         },
         visitDirectiveProperty(ast) {
@@ -158,7 +163,11 @@ function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult):
       },
       null);
   if (symbol && span) {
-    return {symbol, span: offsetSpan(span, info.template.span.start), compileTypeSummary};
+    const {start, end} = offsetSpan(span, info.template.span.start);
+    return {
+      symbol,
+      span: tss.createTextSpanFromBounds(start, end), staticSymbol,
+    };
   }
 }
 
