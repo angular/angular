@@ -12,12 +12,17 @@ import {runBenchmark} from '../../../e2e_util/perf_util';
 
 /** List of possible scenarios that should be tested.  */
 const SCENARIOS = [
-  {optionIndex: 0, id: 'no_styling_involved'}, {optionIndex: 1, id: 'static_class'},
-  {optionIndex: 2, id: 'static_class_with_interpolation'}, {optionIndex: 3, id: 'class_binding'},
+  {optionIndex: 0, id: 'no_styling_involved'},
+  {optionIndex: 1, id: 'static_class'},
+  {optionIndex: 2, id: 'static_class_with_interpolation'},
+  {optionIndex: 3, id: 'class_binding'},
   {optionIndex: 4, id: 'static_class_and_class_binding'},
   {optionIndex: 5, id: 'static_class_and_ngclass_binding'},
   {optionIndex: 6, id: 'static_class_and_ngstyle_binding_and_style_binding'},
-  {optionIndex: 7, id: 'static_style'}
+  {optionIndex: 7, id: 'static_style'},
+  {optionIndex: 8, id: 'style_property_bindings'},
+  {optionIndex: 9, id: 'static_style_and_property_binding'},
+  {optionIndex: 10, id: 'ng_style_with_units'},
 ];
 
 describe('styling benchmark spec', () => {
