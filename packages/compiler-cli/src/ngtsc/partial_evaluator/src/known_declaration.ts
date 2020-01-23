@@ -24,6 +24,6 @@ export function resolveKnownDeclaration(decl: KnownDeclaration): ResolvedValue {
     case KnownDeclaration.JsGlobalObject:
       return jsGlobalObjectValue;
     default:
-      throw new Error(`Cannot resolve known declaration. Received: ${decl}.`);
+      throw new Error(`Cannot resolve known declaration. Received: ${KnownDeclaration[decl]}.`);
   }
 }

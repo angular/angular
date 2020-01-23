@@ -32,7 +32,7 @@ export function evaluateTsHelperInline(
     case TsHelperFn.SpreadArrays:
       return evaluateTsSpreadHelper(node, args);
     default:
-      throw new Error(`Cannot evaluate unknown helper ${helper} inline`);
+      throw new Error(`Cannot evaluate TypeScript helper function: ${TsHelperFn[helper]}`);
   }
 }
 
