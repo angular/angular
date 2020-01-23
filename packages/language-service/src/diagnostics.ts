@@ -96,9 +96,6 @@ export function getDeclarationDiagnostics(
         span: error.span,
       });
     }
-    if (!metadata) {
-      continue;  // declaration is not an Angular directive
-    }
     if (metadata.isComponent) {
       if (!modules.ngModuleByPipeOrDirective.has(declaration.type)) {
         results.push({
