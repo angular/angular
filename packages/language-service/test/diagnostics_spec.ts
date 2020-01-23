@@ -646,7 +646,7 @@ describe('diagnostics', () => {
     expect(ngDiags).toEqual([]);
   });
 
-  // Issue #34874
+  // Issue https://github.com/angular/angular/issues/34874
   it('should recognize inputs and outputs listed inside directive decorators', () => {
     mockHost.override(
         TEST_TEMPLATE, `<div hint-model [hint]="title" (hintChange)="myClick($event)"></div>`);
