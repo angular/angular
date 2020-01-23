@@ -333,7 +333,15 @@ export function getOrCreateInjectable<T>(
     // If the ID stored here is a function, this is a special object like ElementRef or TemplateRef
     // so just call the factory function to create it.
     if (typeof bloomHash === 'function') {
-      enterDI(lView, tNode);
+      if (flags & InjectFlags.SkipSelf) {
+        return getOrCreateInjectable(
+            tNode.parent, getParentInjectorView(getParentInjectorLocation(tNode, lView), lView),
+            token, flags & InjectFlags.Optional ? InjectFlags.Optional : InjectFlags.Default,
+            notFoundValue);
+      } else {
+        enterDI(lView, tNode);
+      }
+
       try {
         const value = bloomHash();
         if (value == null && !(flags & InjectFlags.Optional)) {

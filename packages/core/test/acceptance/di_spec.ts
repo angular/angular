@@ -698,6 +698,85 @@ describe('di', () => {
         expect(dirA.dirB.value).toEqual('parent');
       });
 
+      it('should support @SkipSelf when injecting ViewContainerRef', () => {
+        let parentViewContainer: ViewContainerRef|undefined;
+        let childViewContainer: ViewContainerRef|undefined;
+
+        @Directive({selector: '[parent]'})
+        class ParentDirective {
+          constructor(vc: ViewContainerRef) { parentViewContainer = vc; }
+        }
+
+        @Directive({selector: '[child]'})
+        class ChildDirective {
+          constructor(@SkipSelf() vc: ViewContainerRef) { childViewContainer = vc; }
+        }
+
+        @Component({template: '<div parent>parent <span child>child</span></div>'})
+        class MyComp {
+        }
+
+        TestBed.configureTestingModule({declarations: [ParentDirective, ChildDirective, MyComp]});
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
+
+        // Assert against the `element` since Ivy always returns a new ViewContainerRef.
+        expect(parentViewContainer !.element.nativeElement)
+            .toBe(childViewContainer !.element.nativeElement);
+      });
+
+      it('should support @SkipSelf when injecting ElementRef', () => {
+        let parentRef: ElementRef|undefined;
+        let childRef: ElementRef|undefined;
+
+        @Directive({selector: '[parent]'})
+        class ParentDirective {
+          constructor(elementRef: ElementRef) { parentRef = elementRef; }
+        }
+
+        @Directive({selector: '[child]'})
+        class ChildDirective {
+          constructor(@SkipSelf() elementRef: ElementRef) { childRef = elementRef; }
+        }
+
+        @Component({template: '<div parent>parent <span child>child</span></div>'})
+        class MyComp {
+        }
+
+        TestBed.configureTestingModule({declarations: [ParentDirective, ChildDirective, MyComp]});
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
+
+        // Assert against the `nativeElement` since Ivy always returns a new ElementRef.
+        expect(parentRef !.nativeElement).toBe(childRef !.nativeElement);
+      });
+
+      it('should support @SkipSelf when injecting ChangeDetectorRef', () => {
+        let parentRef: ChangeDetectorRef|undefined;
+        let childRef: ChangeDetectorRef|undefined;
+
+        @Directive({selector: '[parent]'})
+        class ParentDirective {
+          constructor(cdr: ChangeDetectorRef) { parentRef = cdr; }
+        }
+
+        @Directive({selector: '[child]'})
+        class ChildDirective {
+          constructor(@SkipSelf() cdr: ChangeDetectorRef) { childRef = cdr; }
+        }
+
+        @Component({template: '<div parent>parent <span child>child</span></div>'})
+        class MyComp {
+        }
+
+        TestBed.configureTestingModule({declarations: [ParentDirective, ChildDirective, MyComp]});
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
+
+        // Assert against the `rootNodes` since Ivy always returns a new ChangeDetectorRef.
+        expect((parentRef as ViewRef<any>).rootNodes).toEqual((childRef as ViewRef<any>).rootNodes);
+      });
+
       onlyInIvy('Ivy has different error message when dependency is not found')
           .it('should check only the current node with @Self', () => {
 
