@@ -28,10 +28,10 @@ describe('getDirectiveClassLike()', () => {
       }
     });
     expect(result).toBeTruthy();
-    const {decoratorId, classDecl} = result !;
+    const {decoratorId, classId} = result !;
     expect(decoratorId.kind).toBe(ts.SyntaxKind.Identifier);
-    expect((decoratorId as ts.Identifier).text).toBe('NgModule');
-    expect(classDecl.name !.text).toBe('AppModule');
+    expect(decoratorId.text).toBe('NgModule');
+    expect(classId.text).toBe('AppModule');
   });
 });
 
