@@ -164,8 +164,8 @@ export function findTightestNode(node: ts.Node, position: number): ts.Node|undef
 }
 
 interface DirectiveClassLike {
-  decoratorId: ts.Identifier;  // decorator identifier
-  classDecl: ts.ClassDeclaration;
+  decoratorId: ts.Identifier;  // decorator identifier, like @Component
+  classId: ts.Identifier;
 }
 
 /**
@@ -178,11 +178,11 @@ interface DirectiveClassLike {
  *
  * For example,
  *     v---------- `decoratorId`
- * @NgModule({
- *   declarations: [],
- * })
- * class AppModule {}
- *          ^----- `classDecl`
+ * @NgModule({           <
+ *   declarations: [],   < classDecl
+ * })                    <
+ * class AppModule {}    <
+ *          ^----- `classId`
  *
  * @param node Potential node that represents an Angular directive.
  */
@@ -200,7 +200,7 @@ export function getDirectiveClassLike(node: ts.Node): DirectiveClassLike|undefin
     if (ts.isObjectLiteralExpression(arg)) {
       return {
         decoratorId: expr.expression,
-        classDecl: node,
+        classId: node.name,
       };
     }
   }

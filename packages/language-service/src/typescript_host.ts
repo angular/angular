@@ -288,9 +288,9 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     const visit = (child: tss.Node) => {
       const candidate = getDirectiveClassLike(child);
       if (candidate) {
-        const {decoratorId, classDecl} = candidate;
-        const declarationSpan = spanOf(decoratorId);
-        const className = classDecl.name !.text;
+        const {classId} = candidate;
+        const declarationSpan = spanOf(classId);
+        const className = classId.getText();
         const classSymbol = this.reflector.getStaticSymbol(sourceFile.fileName, className);
         // Ask the resolver to check if candidate is actually Angular directive
         if (!this.resolver.isDirective(classSymbol)) {
