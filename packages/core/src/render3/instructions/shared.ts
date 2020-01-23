@@ -1525,7 +1525,10 @@ function refreshDynamicEmbeddedViews(lView: LView) {
         const embeddedLView = viewOrContainer[i];
         const embeddedTView = embeddedLView[TVIEW];
         ngDevMode && assertDefined(embeddedTView, 'TView must be allocated');
-        refreshView(embeddedLView, embeddedTView, embeddedTView.template, embeddedLView[CONTEXT] !);
+        if (viewAttachedToChangeDetector(embeddedLView)) {
+          refreshView(
+              embeddedLView, embeddedTView, embeddedTView.template, embeddedLView[CONTEXT] !);
+        }
       }
       if ((activeIndexFlag & ActiveIndexFlag.HAS_TRANSPLANTED_VIEWS) !== 0) {
         // We should only CD moved views if the component where they were inserted does not match
