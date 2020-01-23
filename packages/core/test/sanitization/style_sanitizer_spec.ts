@@ -68,4 +68,27 @@ describe('Style sanitizer', () => {
     expectSanitize('url("javascript:evil()")').toEqual('unsafe');
     expectSanitize('url( " javascript:evil() " )').toEqual('unsafe');
   });
+
+  describe('css filter', () => {
+    it('accepts blur', () => { expectSanitize('blur(5%)').toEqual('blur(5%)'); });
+
+    it('accepts brightness', () => { expectSanitize('brightness(5%)').toEqual('brightness(5%)'); });
+
+    it('accepts contrast', () => { expectSanitize('contrast(5%)').toEqual('contrast(5%)'); });
+
+    it('accepts grayscale', () => { expectSanitize('grayscale(5%)').toEqual('grayscale(5%)'); });
+
+    it('accepts invert', () => { expectSanitize('invert(5%)').toEqual('invert(5%)'); });
+
+    it('accepts opacity', () => { expectSanitize('opacity(5%)').toEqual('opacity(5%)'); });
+
+    it('accepts saturate', () => { expectSanitize('saturate(5%)').toEqual('saturate(5%)'); });
+
+    it('accepts sepia', () => { expectSanitize('sepia(5%)').toEqual('sepia(5%)'); });
+
+    it('accepts hue-rotate', () => { expectSanitize('hue-rotate(5%)').toEqual('hue-rotate(5%)'); });
+
+    it('accepts drop-shadow',
+       () => { expectSanitize('drop-shadow(5%)').toEqual('drop-shadow(5%)'); });
+  });
 });

@@ -2531,7 +2531,34 @@ describe('styling', () => {
     expect(logs).toEqual([]);
   });
 
+  it('should allow background and filter properties for [style] and [style.prop]', () => {
+    @Component({
+      template: `
+        <div class="a" [style.background]="b"></div>
+        <div class="b" [style.filter]="f"></div>
+        <div class="c" [style]="{background:b, filter:f}"></div>
+      `
+    })
+    class Cmp {
+      b = 'rgb(255,0,0)';
+      f = 'brightness(0.5)';
+    }
+
+    TestBed.configureTestingModule({declarations: [Cmp]});
+    const fixture = TestBed.createComponent(Cmp);
+    fixture.detectChanges();
+
+    const [a, b, c] = fixture.nativeElement.querySelectorAll('.a, .b, .c');
+    expect(clearSpaces(a.style.getPropertyValue('background'))).toEqual('rgb(255,0,0)');
+    expect(clearSpaces(b.style.getPropertyValue('filter'))).toEqual('brightness(0.5)');
+    expect(clearSpaces(c.style.getPropertyValue('background'))).toEqual('rgb(255,0,0)');
+    expect(clearSpaces(c.style.getPropertyValue('filter'))).toEqual('brightness(0.5)');
+  });
 });
+
+function clearSpaces(value: any) {
+  return (value as string).replace(/\s+/g, '');
+}
 
 function assertStyleCounters(countForSet: number, countForRemove: number) {
   expect(ngDevMode !.rendererSetStyle).toEqual(countForSet);

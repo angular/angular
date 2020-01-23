@@ -28,12 +28,14 @@ import {_sanitizeUrl} from './url_sanitizer';
 const VALUES = '[-,."\'%_!# a-zA-Z0-9]+';
 const TRANSFORMATION_FNS = '(?:matrix|translate|scale|rotate|skew|perspective)(?:X|Y|Z|3d)?';
 const COLOR_FNS = '(?:rgb|hsl)a?';
+const FILTER_FNS =
+    '(?:blur|brightness|contrast|drop-shadow|grayscale|hue-rotate|invert|opacity|saturate|sepia)';
 const GRADIENTS = '(?:repeating-)?(?:linear|radial)-gradient';
 const CSS3_FNS = '(?:attr|calc|var)';
 const FN_ARGS = '\\([-0-9.%, #a-zA-Z]+\\)';
 const SAFE_STYLE_VALUE = new RegExp(
     `^(${VALUES}|` +
-        `(?:${TRANSFORMATION_FNS}|${COLOR_FNS}|${GRADIENTS}|${CSS3_FNS})` +
+        `(?:${TRANSFORMATION_FNS}|${COLOR_FNS}|${GRADIENTS}|${CSS3_FNS}|${FILTER_FNS})` +
         `${FN_ARGS})$`,
     'g');
 
