@@ -22,10 +22,10 @@ describe('change detection', () => {
     @Directive({selector: '[viewManipulation]', exportAs: 'vm'})
     class ViewManipulation {
       constructor(
-          private _tplRef: TemplateRef<{}>, private _vcRef: ViewContainerRef,
+          private _tplRef: TemplateRef<{}>, public vcRef: ViewContainerRef,
           private _appRef: ApplicationRef) {}
 
-      insertIntoVcRef() { this._vcRef.createEmbeddedView(this._tplRef); }
+      insertIntoVcRef() { return this.vcRef.createEmbeddedView(this._tplRef); }
 
       insertIntoAppRef(): EmbeddedViewRef<{}> {
         const viewRef = this._tplRef.createEmbeddedView({});
@@ -43,11 +43,8 @@ describe('change detection', () => {
     class TestCmpt {
     }
 
-    beforeEach(() => {
-      TestBed.configureTestingModule({declarations: [TestCmpt, ViewManipulation]});
-    });
-
     it('should detect changes for embedded views inserted through ViewContainerRef', () => {
+      TestBed.configureTestingModule({declarations: [TestCmpt, ViewManipulation]});
       const fixture = TestBed.createComponent(TestCmpt);
       const vm = fixture.debugElement.childNodes[0].references['vm'] as ViewManipulation;
 
@@ -58,6 +55,7 @@ describe('change detection', () => {
     });
 
     it('should detect changes for embedded views attached to ApplicationRef', () => {
+      TestBed.configureTestingModule({declarations: [TestCmpt, ViewManipulation]});
       const fixture = TestBed.createComponent(TestCmpt);
       const vm = fixture.debugElement.childNodes[0].references['vm'] as ViewManipulation;
 
@@ -68,6 +66,109 @@ describe('change detection', () => {
       fixture.detectChanges();
 
       expect(viewRef.rootNodes[0]).toHaveText('change-detected');
+    });
+
+    it('should not detect changes in child embedded views while they are detached', () => {
+      const counters = {componentView: 0, embeddedView: 0};
+
+      @Component({
+        template: `
+          <button (click)="noop()">Trigger change detection</button>
+          <div>{{increment('componentView')}}</div>
+          <ng-template #vm="vm" viewManipulation>{{increment('embeddedView')}}</ng-template>
+        `,
+        changeDetection: ChangeDetectionStrategy.OnPush
+      })
+      class App {
+        increment(counter: 'componentView'|'embeddedView') { counters[counter]++; }
+        noop() {}
+      }
+
+      TestBed.configureTestingModule({declarations: [App, ViewManipulation]});
+      const fixture = TestBed.createComponent(App);
+      const vm: ViewManipulation = fixture.debugElement.childNodes[2].references['vm'];
+      const button = fixture.nativeElement.querySelector('button');
+      const viewRef = vm.insertIntoVcRef();
+      fixture.detectChanges();
+
+      expect(counters).toEqual({componentView: 1, embeddedView: 1});
+
+      button.click();
+      fixture.detectChanges();
+      expect(counters).toEqual({componentView: 2, embeddedView: 2});
+
+      viewRef.detach();
+      button.click();
+      fixture.detectChanges();
+
+      expect(counters).toEqual({componentView: 3, embeddedView: 2});
+
+      // Re-attach the view to ensure that the process can be reversed.
+      viewRef.reattach();
+      button.click();
+      fixture.detectChanges();
+
+      expect(counters).toEqual({componentView: 4, embeddedView: 3});
+    });
+
+    it('should not detect changes in child component views while they are detached', () => {
+      let counter = 0;
+
+      @Component({
+        template: `<ng-template #vm="vm" viewManipulation></ng-template>`,
+        changeDetection: ChangeDetectionStrategy.OnPush
+      })
+      class App {
+      }
+
+      @Component({
+        template: `
+          <button (click)="noop()">Trigger change detection</button>
+          <div>{{increment()}}</div>
+        `,
+        changeDetection: ChangeDetectionStrategy.OnPush
+      })
+      class DynamicComp {
+        increment() { counter++; }
+        noop() {}
+      }
+
+      // We need to declare a module so that we can specify `entryComponents`
+      // for when the test is run against ViewEngine.
+      @NgModule({
+        declarations: [App, ViewManipulation, DynamicComp],
+        exports: [App, ViewManipulation, DynamicComp],
+        entryComponents: [DynamicComp]
+      })
+      class AppModule {
+      }
+
+      TestBed.configureTestingModule({imports: [AppModule]});
+      const fixture = TestBed.createComponent(App);
+      const vm: ViewManipulation = fixture.debugElement.childNodes[0].references['vm'];
+      const factory = TestBed.get(ComponentFactoryResolver).resolveComponentFactory(DynamicComp);
+      const componentRef = vm.vcRef.createComponent(factory);
+      const button = fixture.nativeElement.querySelector('button');
+      fixture.detectChanges();
+
+      expect(counter).toBe(1);
+
+      button.click();
+      fixture.detectChanges();
+      expect(counter).toBe(2);
+
+      componentRef.changeDetectorRef.detach();
+      button.click();
+      fixture.detectChanges();
+
+      expect(counter).toBe(2);
+
+      // Re-attach the change detector to ensure that the process can be reversed.
+      componentRef.changeDetectorRef.reattach();
+      button.click();
+      fixture.detectChanges();
+
+      expect(counter).toBe(3);
     });
 
   });
