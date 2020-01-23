@@ -650,7 +650,7 @@ describe('diagnostics', () => {
   it('should recognize inputs and outputs listed inside directive decorators', () => {
     mockHost.override(
         TEST_TEMPLATE, `<div hint-model [hint]="title" (hintChange)="myClick($event)"></div>`);
-    const ngDiags = ngLS.getDiagnostics(TEST_TEMPLATE);
+    const ngDiags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
     expect(ngDiags).toEqual([]);
   });
 
