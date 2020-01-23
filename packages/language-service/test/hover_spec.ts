@@ -89,31 +89,24 @@ describe('hover', () => {
   });
 
   it('should be able to find a reference to a component', () => {
-    const fileName = mockHost.addCode(`
-      @Component({
-        template: '«<ᐱtestᐱ-comp></test-comp>»'
-      })
-      export class MyComponent { }`);
-    const marker = mockHost.getDefinitionMarkerFor(fileName, 'test');
-    const quickInfo = ngLS.getQuickInfoAtPosition(fileName, marker.start);
-    expect(quickInfo).toBeTruthy();
-    const {textSpan, displayParts} = quickInfo !;
-    expect(textSpan).toEqual(marker);
-    expect(toText(displayParts)).toBe('(component) AppModule.TestComponent: class');
+    mockHost.override(TEST_TEMPLATE, '<~{cursor}test-comp></test-comp>');
+    const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+    const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+    expect(quickInfo).toBeDefined();
+    const {displayParts, documentation} = quickInfo !;
+    expect(toText(displayParts)).toBe('(component) AppModule.TestComponent: typeof TestComponent');
+    expect(toText(documentation)).toBe('This Component provides the `test-comp` selector.');
   });
 
   it('should be able to find a reference to a directive', () => {
-    const fileName = mockHost.addCode(`
-      @Component({
-        template: '<test-comp «string-model»></test-comp>'
-      })
-      export class MyComponent { }`);
-    const marker = mockHost.getReferenceMarkerFor(fileName, 'string-model');
-    const quickInfo = ngLS.getQuickInfoAtPosition(fileName, marker.start);
-    expect(quickInfo).toBeTruthy();
-    const {textSpan, displayParts} = quickInfo !;
-    expect(textSpan).toEqual(marker);
-    expect(toText(displayParts)).toBe('(directive) StringModel: typeof StringModel');
+    const content = mockHost.override(TEST_TEMPLATE, `<div string-model~{cursor}></div>`);
+    const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+    const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+    expect(quickInfo).toBeDefined();
+    const {displayParts, textSpan} = quickInfo !;
+    expect(toText(displayParts)).toBe('(directive) AppModule.StringModel: typeof StringModel');
+    expect(content.substring(textSpan.start, textSpan.start + textSpan.length))
+        .toBe('string-model');
   });
 
   it('should be able to find an event provider', () => {

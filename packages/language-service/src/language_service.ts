@@ -11,7 +11,7 @@ import * as tss from 'typescript/lib/tsserverlibrary';
 import {getTemplateCompletions} from './completions';
 import {getDefinitionAndBoundSpan, getTsDefinitionAndBoundSpan} from './definitions';
 import {getDeclarationDiagnostics, getTemplateDiagnostics, ngDiagnosticToTsDiagnostic, uniqueBySpan} from './diagnostics';
-import {getHover, getTsHover} from './hover';
+import {getTemplateHover, getTsHover} from './hover';
 import * as ng from './types';
 import {TypeScriptServiceHost} from './typescript_host';
 
@@ -88,19 +88,15 @@ class LanguageServiceImpl implements ng.LanguageService {
   }
 
   getQuickInfoAtPosition(fileName: string, position: number): tss.QuickInfo|undefined {
-    this.host.getAnalyzedModules();  // same role as 'synchronizeHostData'
+    const analyzedModules = this.host.getAnalyzedModules();  // same role as 'synchronizeHostData'
     const templateInfo = this.host.getTemplateAstAtPosition(fileName, position);
     if (templateInfo) {
-      return getHover(templateInfo, position, this.host);
+      return getTemplateHover(templateInfo, position, analyzedModules);
     }
 
     // Attempt to get Angular-specific hover information in a TypeScript file, the NgModule a
     // directive belongs to.
-    if (fileName.endsWith('.ts')) {
-      const sf = this.host.getSourceFile(fileName);
-      if (sf) {
-        return getTsHover(sf, position, this.host);
-      }
-    }
+    const declarations = this.host.getDeclarations(fileName);
+    return getTsHover(position, declarations, analyzedModules);
   }
 }
