@@ -239,8 +239,13 @@ export function checkStylingMap(
     // if so as not to read unnecessarily.
     const tNode = tView.data[getSelectedIndex() + HEADER_OFFSET] as TNode;
     if (hasStylingInputShadow(tNode, isClassBased) && !isInHostBindings(tView, bindingIndex)) {
-      // VE concatenates the static portion with the dynamic portion.
-      // We are doing the same.
+      // VE does not concatenate the static portion like we are doing here.
+      // Instead VE just ignores the static completely if dynamic binding is present.
+      // Because of locality we have already set the static portion because we don't know if there
+      // is a dynamic portion until later. If we would ignore the static portion it would look like
+      // tha the binding has removed it. This would confuse `[ngStyle]`/`[ngClass]` to do the wrong
+      // thing as it would think tha the static portion was removed. For this reason we
+      // concatenate it so that `[ngStyle]`/`[ngClass]`  can continue to work on changed.
       let staticPrefix = isClassBased ? tNode.classes : tNode.styles;
       ngDevMode && isClassBased === false && staticPrefix !== null &&
           assertEqual(
@@ -532,7 +537,7 @@ function findStylingValue(
     let staticArrayMap = isClassBased ? tNode.classesMap : tNode.stylesMap;
     if (staticArrayMap === undefined) {
       // This is the first time we are here, and we need to initialize it.
-      populateStylingStaticArrayMap(tNode);
+      initializeStylingStaticArrayMap(tNode);
       staticArrayMap = isClassBased ? tNode.classesMap : tNode.stylesMap;
     }
     if (staticArrayMap !== null) {
@@ -556,7 +561,16 @@ function isStylingValuePresent(value: any): boolean {
   return value !== undefined;
 }
 
-export function populateStylingStaticArrayMap(tNode: TNode) {
+/**
+ * Lazily computes `tNode.classesMap`/`tNode.stylesMap`.
+ *
+ * This code is here because we don't want to included it in `elementStart` as it would make hello
+ * world bigger even if no styling would be present. Instead we initialize the values here so that
+ * tree shaking will only bring it in if styling is present.
+ *
+ * @param tNode `TNode` to initialize.
+ */
+export function initializeStylingStaticArrayMap(tNode: TNode) {
   ngDevMode && assertEqual(tNode.classesMap, undefined, 'Already initialized!');
   ngDevMode && assertEqual(tNode.stylesMap, undefined, 'Already initialized!');
   let styleMap: ArrayMap<any>|null = null;

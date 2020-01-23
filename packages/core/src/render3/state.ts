@@ -334,8 +334,9 @@ export function incrementBindingIndex(count: number): number {
  * 0 index and we just shift the root so that they match next available location in the LView.
  * @param value
  */
-export function setBindingRoot(value: number) {
-  instructionState.lFrame.bindingRootIndex = value;
+export function setBindingRootForHostBindings(value: number) {
+  const lframe = instructionState.lFrame;
+  lframe.bindingIndex = lframe.bindingRootIndex = value;
 }
 
 export function getCurrentQueryIndex(): number {

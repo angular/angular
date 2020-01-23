@@ -31,7 +31,7 @@ import {isComponentDef, isComponentHost, isContentQueryHost, isLContainer, isRoo
 import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, TViewType, T_HOST} from '../interfaces/view';
 import {assertNodeOfPossibleTypes} from '../node_assert';
 import {isNodeMatchingSelectorList} from '../node_selector_matcher';
-import {clearActiveHostElement, enterView, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getPreviousOrParentTNode, getSelectedIndex, leaveView, setActiveHostElement, setBindingIndex, setBindingRoot, setCheckNoChangesMode, setCurrentQueryIndex, setPreviousOrParentTNode, setSelectedIndex} from '../state';
+import {clearActiveHostElement, enterView, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getPreviousOrParentTNode, getSelectedIndex, leaveView, setActiveHostElement, setBindingIndex, setBindingRootForHostBindings, setCheckNoChangesMode, setCurrentQueryIndex, setPreviousOrParentTNode, setSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {isAnimationProp, mergeHostAttrs} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER, renderStringify, stringifyForError} from '../util/misc_utils';
@@ -57,12 +57,10 @@ const _CLEAN_PROMISE = (() => Promise.resolve(null))();
  */
 export function setHostBindingsByExecutingExpandoInstructions(tView: TView, lView: LView): void {
   ngDevMode && assertSame(tView, lView[TVIEW], '`LView` is not associated with the `TView`!');
-  const selectedIndex = getSelectedIndex();
   try {
     const expandoInstructions = tView.expandoInstructions;
     if (expandoInstructions !== null) {
-      let bindingRootIndex = setBindingIndex(tView.expandoStartIndex);
-      setBindingRoot(bindingRootIndex);
+      let bindingRootIndex = tView.expandoStartIndex;
       let currentDirectiveIndex = -1;
       let currentElementIndex = -1;
       // TODO(misko): PERF It is possible to get here with `TVIew.expandoInstructions` containing no
@@ -97,11 +95,10 @@ export function setHostBindingsByExecutingExpandoInstructions(tView: TView, lVie
             // (to get to the next set of host bindings on this node).
             bindingRootIndex += instruction;
           }
-          setBindingRoot(bindingRootIndex);
         } else {
           // If it's not a number, it's a host binding function that needs to be executed.
           if (instruction !== null) {
-            setBindingIndex(bindingRootIndex);
+            setBindingRootForHostBindings(bindingRootIndex);
             const hostCtx = lView[currentDirectiveIndex];
             instruction(RenderFlags.Update, hostCtx, currentElementIndex);
           }
@@ -113,7 +110,6 @@ export function setHostBindingsByExecutingExpandoInstructions(tView: TView, lVie
           // iterate over those directives which actually have `hostBindings`.
           currentDirectiveIndex++;
         }
-        setBindingRoot(bindingRootIndex);
       }
     }
   } finally {

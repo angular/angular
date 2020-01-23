@@ -222,8 +222,8 @@ describe('styling', () => {
         return;
       @Component({
         template: `
-            <div [style.--my-var]=" 'rgb(255, 0, 0)' ">
-              <span style="background-color: var(--my-var)">CONTENT</span>
+            <div [style.--my-var]=" '100px' ">
+              <span style="width: var(--my-var)">CONTENT</span>
             </div>`
       })
       class Cmp {
@@ -234,7 +234,7 @@ describe('styling', () => {
       fixture.detectChanges();
 
       const span = fixture.nativeElement.querySelector('span') as HTMLElement;
-      expect(getComputedStyle(span).getPropertyValue('background-color')).toEqual('rgb(255, 0, 0)');
+      expect(getComputedStyle(span).getPropertyValue('width')).toEqual('100px');
     });
   });
 

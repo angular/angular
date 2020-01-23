@@ -10,7 +10,6 @@ import {Renderer2} from '../core';
 import {ViewEncapsulation} from '../metadata/view';
 import {addToArray, removeFromArray} from '../util/array_utils';
 import {assertDefined, assertDomNode, assertEqual, assertString} from '../util/assert';
-
 import {assertLContainer, assertLView, assertTNodeForLView} from './assert';
 import {attachPatchData} from './context_discovery';
 import {ACTIVE_INDEX, ActiveIndexFlag, CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS, NATIVE, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
@@ -940,17 +939,20 @@ export function applyStyling(
       }
     }
   } else {
+    // TODO(misko): Can't import RendererStyleFlags2.DashCase as it causes imports to be resolved in
+    // different order which causes failures. Using direct constant as workaround for now.
+    const flags = prop.indexOf('-') == -1 ? undefined : 2 /* RendererStyleFlags2.DashCase */;
     if (value === null || value === undefined) {
       ngDevMode && ngDevMode.rendererRemoveStyle++;
       if (isProcedural) {
-        (renderer as Renderer2).removeStyle(rNode, prop);
+        (renderer as Renderer2).removeStyle(rNode, prop, flags);
       } else {
         (rNode as HTMLElement).style.removeProperty(prop);
       }
     } else {
       ngDevMode && ngDevMode.rendererSetStyle++;
       if (isProcedural) {
-        (renderer as Renderer2).setStyle(rNode, prop, value);
+        (renderer as Renderer2).setStyle(rNode, prop, value, flags);
       } else {
         ngDevMode && assertDefined((rNode as HTMLElement).style, 'HTMLElement expected');
         (rNode as HTMLElement).style.setProperty(prop, value);

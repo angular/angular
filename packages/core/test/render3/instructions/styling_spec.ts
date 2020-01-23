@@ -6,7 +6,7 @@
   * found in the LICENSE file at https://angular.io/license
   */
 
-import {classStringParser, populateStylingStaticArrayMap, styleStringParser, toStylingArrayMap, ɵɵclassProp, ɵɵstyleMap, ɵɵstyleProp, ɵɵstyleSanitizer} from '@angular/core/src/render3/instructions/styling';
+import {classStringParser, initializeStylingStaticArrayMap, styleStringParser, toStylingArrayMap, ɵɵclassProp, ɵɵstyleMap, ɵɵstyleProp, ɵɵstyleSanitizer} from '@angular/core/src/render3/instructions/styling';
 import {AttributeMarker} from '@angular/core/src/render3/interfaces/node';
 import {TVIEW} from '@angular/core/src/render3/interfaces/view';
 import {getLView, leaveView} from '@angular/core/src/render3/state';
@@ -245,18 +245,24 @@ describe('styling', () => {
         ɵɵstyleSanitizer(ɵɵsanitizeStyle);
         ɵɵstyleProp('background', 'url("javascript:/unsafe")');
         expect(div.style.getPropertyValue('background')).not.toContain('javascript');
-        ɵɵstyleMap('border-image-source: url("javascript:/unsafe")');
-        expect(div.style.getPropertyValue('border-image-source')).not.toContain('javascript');
 
         clearFirstUpdatePass();
 
         rewindBindingIndex();
         ɵɵstyleProp('background', bypassSanitizationTrustStyle('url("javascript:/trusted")'));
-        ɵɵstyleMap(
-            {'border-image-source': bypassSanitizationTrustStyle('url("javascript:/trusted")')});
         expect(div.style.getPropertyValue('background')).toEqual('url("javascript:/trusted")');
-        expect(div.style.getPropertyValue('border-image-source'))
-            .toEqual('url("javascript:/trusted")');
+      });
+
+      it('should sanitize map', () => {
+        ɵɵstyleSanitizer(ɵɵsanitizeStyle);
+        ɵɵstyleMap('background: url("javascript:/unsafe")');
+        expect(div.style.getPropertyValue('background')).not.toContain('javascript');
+
+        clearFirstUpdatePass();
+
+        rewindBindingIndex();
+        ɵɵstyleMap({'background': bypassSanitizationTrustStyle('url("javascript:/trusted")')});
+        expect(div.style.getPropertyValue('background')).toEqual('url("javascript:/trusted")');
       });
     });
 
@@ -265,7 +271,7 @@ describe('styling', () => {
         const tNode = getLView()[TVIEW].firstChild !;
         expect(tNode.stylesMap).toEqual(undefined);
         expect(tNode.classesMap).toEqual(undefined);
-        populateStylingStaticArrayMap(tNode);
+        initializeStylingStaticArrayMap(tNode);
         expect(tNode.stylesMap).toEqual(null);
         expect(tNode.classesMap).toEqual(null);
       });
@@ -279,7 +285,7 @@ describe('styling', () => {
           AttributeMarker.Classes, 'foo', 'bar',                 //
           AttributeMarker.Styles, 'width', '0', 'color', 'red',  //
         ];
-        populateStylingStaticArrayMap(tNode);
+        initializeStylingStaticArrayMap(tNode);
         expect(tNode.classesMap).toEqual(['bar', true, 'foo', true] as any);
         expect(tNode.stylesMap).toEqual(['color', 'red', 'width', '0'] as any);
       });

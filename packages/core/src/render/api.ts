@@ -80,6 +80,9 @@ export abstract class RendererFactory2 {
  * @publicApi
  */
 export enum RendererStyleFlags2 {
+  // TODO(misko): This needs to be refactored into a separate file so that it can be imported from
+  // `node_manipulation.ts` Currently doing the import cause resolution order to change and fails
+  // the tests. The work around is to have hard coded value in `node_manipulation.ts` for now.
   /**
    * Marks a style as important.
    */

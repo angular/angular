@@ -9,8 +9,11 @@
 /**
  * Value stored in the `TData` which is needed to re-concatenate the styling.
  *
- * - `string`: Stores the property name. Used with `ɵɵstyleProp`/`ɵɵclassProp` instruction which
- * don't have suffix or don't need sanitization.
+ * - `string`: Stores the property name. Used with `ɵɵstyleProp`/`ɵɵclassProp` instruction.
+ * - `null`: Represents map, so there is no name. Used with `ɵɵstyleMap`/`ɵɵclassMap`.
+ * - `false`: Represents an ignore case. This happens when `ɵɵstyleProp`/`ɵɵclassProp` instruction
+ *   is combined with directive which shadows its input `@Input('class')`. That way the binding
+ *   should not participate in the styling resolution.
  */
 export type TStylingKey = string | null | false;
 
