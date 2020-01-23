@@ -22,7 +22,6 @@ import {DtsTransformRegistry} from './declaration';
 import {Trait, TraitState} from './trait';
 
 
-
 /**
  * Records information about a specific class that has matched traits.
  */

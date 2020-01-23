@@ -119,6 +119,8 @@ runInEachFileSystem(() => {
             getFileSystem(), bundle, reflectionHost, referencesRegistry,
             (error) => diagnosticLogs.push(error));
         testHandler = createTestHandler(options);
+
+        // Replace the default handlers with the test handler in the original array of handlers
         analyzer.handlers.splice(0, analyzer.handlers.length, testHandler);
         migrationLogs = [];
         const migration1 = new MockMigration('migration1', migrationLogs);
@@ -436,6 +438,8 @@ runInEachFileSystem(() => {
             name: _('/node_modules/test-package/index.d.ts'),
             contents: 'export declare class SomeDirective {}',
           }]);
+
+          // Replace the default handlers with the test handler in the original array of handlers
           analyzer.handlers.splice(0, analyzer.handlers.length, new FakeDecoratorHandler());
           result = analyzer.analyzeProgram();
           expect(result.size).toBe(0);

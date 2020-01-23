@@ -132,11 +132,9 @@ export class DecorationAnalyzer {
    */
   analyzeProgram(): DecorationAnalyses {
     for (const sourceFile of this.program.getSourceFiles()) {
-      if (sourceFile.isDeclarationFile || !isWithinPackage(this.packagePath, sourceFile)) {
-        continue;
+      if (!sourceFile.isDeclarationFile && isWithinPackage(this.packagePath, sourceFile)) {
+        this.compiler.analyzeFile(sourceFile);
       }
-
-      this.compiler.analyzeFile(sourceFile);
     }
 
     this.applyMigrations();

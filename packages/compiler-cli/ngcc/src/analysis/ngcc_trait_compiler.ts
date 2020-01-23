@@ -14,6 +14,12 @@ import {DecoratorHandler, DtsTransformRegistry, HandlerFlags, Trait, TraitCompil
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {isDefined} from '../utils';
 
+/**
+ * Specializes the `TraitCompiler` for ngcc purposes. Mainly, this includes an alternative way of
+ * scanning for classes to compile using the reflection host's `findClassSymbols`, together with
+ * support to inject synthetic decorators into the compilation for ad-hoc migrations that ngcc
+ * performs.
+ */
 export class NgccTraitCompiler extends TraitCompiler {
   constructor(
       handlers: DecoratorHandler<unknown, unknown, unknown>[],
@@ -25,6 +31,10 @@ export class NgccTraitCompiler extends TraitCompiler {
 
   get analyzedFiles(): ts.SourceFile[] { return Array.from(this.fileToClasses.keys()); }
 
+  /**
+   * Analyzes the source file in search for classes to process. For any class that is found in the
+   * file, a `ClassRecord` is created and the source file is included in the `analyzedFiles` array.
+   */
   analyzeFile(sf: ts.SourceFile): void {
     const ngccClassSymbols = this.ngccReflector.findClassSymbols(sf);
     for (const classSymbol of ngccClassSymbols) {
@@ -34,6 +44,13 @@ export class NgccTraitCompiler extends TraitCompiler {
     return undefined;
   }
 
+  /**
+   * Associate a new synthesized decorator, which did not appear in the original source, with a
+   * given class.
+   * @param clazz the class to receive the new decorator.
+   * @param decorator the decorator to inject.
+   * @param flags optional bitwise flag to influence the compilation of the decorator.
+   */
   injectSyntheticDecorator(clazz: ClassDeclaration, decorator: Decorator, flags?: HandlerFlags):
       Trait<unknown, unknown, unknown>[] {
     const migratedTraits = this.detectTraits(clazz, [decorator]);
@@ -48,6 +65,11 @@ export class NgccTraitCompiler extends TraitCompiler {
     return migratedTraits;
   }
 
+  /**
+   * Returns all decorators that have been recognized for the provided class, including any
+   * synthetically injected decorators.
+   * @param clazz the declaration for which the decorators are returned.
+   */
   getAllDecorators(clazz: ClassDeclaration): Decorator[]|null {
     const record = this.recordFor(clazz);
     if (record === null) {

@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ErrorCode, makeDiagnostic, ngErrorCode} from '../../../src/ngtsc/diagnostics';
+import {makeDiagnostic} from '../../../src/ngtsc/diagnostics';
 import {absoluteFrom} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {ClassDeclaration, Decorator, isNamedClassDeclaration} from '../../../src/ngtsc/reflection';
@@ -54,187 +54,22 @@ runInEachFileSystem(() => {
     }
 
     describe('injectSyntheticDecorator()', () => {
-      it('should call `detect()` on each of the provided handlers', () => {
-        const log: string[] = [];
-        const handler1 = new TestHandler('handler1', log);
-        const handler2 = new TestHandler('handler2', log);
+      it('should add the injected decorator into the compilation', () => {
+        const handler = new DetectDecoratorHandler('InjectedDecorator', HandlerPrecedence.WEAK);
         loadTestFiles([{name: _('/node_modules/test/index.js'), contents: ``}]);
         const entryPoint =
             makeTestEntryPointBundle('test', 'esm2015', false, [_('/node_modules/test/index.js')]);
-        const {host} = createMigrationHost({entryPoint, handlers: [handler1, handler2]});
-        host.injectSyntheticDecorator(mockClazz, injectedDecorator);
-        expect(log).toEqual([
-          `handler1:detect:MockClazz:InjectedDecorator`,
-          `handler2:detect:MockClazz:InjectedDecorator`,
-        ]);
-      });
-
-      it('should call `analyze()` on each of the provided handlers whose `detect()` call returns a result',
-         () => {
-           const log: string[] = [];
-           const handler1 = new TestHandler('handler1', log);
-           const handler2 = new AlwaysDetectHandler('handler2', log);
-           const handler3 = new TestHandler('handler3', log);
-           loadTestFiles([{name: _('/node_modules/test/index.js'), contents: ``}]);
-           const entryPoint = makeTestEntryPointBundle(
-               'test', 'esm2015', false, [_('/node_modules/test/index.js')]);
-           const {host} =
-               createMigrationHost({entryPoint, handlers: [handler1, handler2, handler3]});
-           host.injectSyntheticDecorator(mockClazz, injectedDecorator);
-           expect(log).toEqual([
-             `handler1:detect:MockClazz:InjectedDecorator`,
-             `handler2:detect:MockClazz:InjectedDecorator`,
-             `handler3:detect:MockClazz:InjectedDecorator`,
-             'handler2:analyze:MockClazz',
-           ]);
-         });
-
-      it('should inject a new class record into the compilation', () => {
-        const injectedHandler =
-            new DetectDecoratorHandler('InjectedDecorator', HandlerPrecedence.WEAK);
-        loadTestFiles([{name: _('/node_modules/test/index.js'), contents: ``}]);
-        const entryPoint =
-            makeTestEntryPointBundle('test', 'esm2015', false, [_('/node_modules/test/index.js')]);
-        const {host, compiler} = createMigrationHost({entryPoint, handlers: [injectedHandler]});
+        const {host, compiler} = createMigrationHost({entryPoint, handlers: [handler]});
         host.injectSyntheticDecorator(mockClazz, injectedDecorator);
 
-        const record = compiler.recordFor(mockClazz);
-        expect(record).toBeDefined();
-        expect(record !.traits.length).toBe(1);
-      });
-
-      it('should add a new trait to an existing class record', () => {
-        const directiveHandler = new DetectDecoratorHandler('Directive', HandlerPrecedence.WEAK);
-        const injectedHandler =
-            new DetectDecoratorHandler('InjectedDecorator', HandlerPrecedence.WEAK);
-        loadTestFiles([{
-          name: _('/node_modules/test/index.js'),
-          contents: `
-              import {Directive} from '@angular/core';
-
-              export class MyClass {};
-              MyClass.decorators = [{ type: Directive }];
-            `
-        }]);
-        const entryPoint =
-            makeTestEntryPointBundle('test', 'esm2015', false, [_('/node_modules/test/index.js')]);
-        const {host, compiler} =
-            createMigrationHost({entryPoint, handlers: [directiveHandler, injectedHandler]});
-        const myClass = getDeclaration(
-            entryPoint.src.program, _('/node_modules/test/index.js'), 'MyClass',
-            isNamedClassDeclaration);
-
-        compiler.analyzeFile(entryPoint.src.file);
-        host.injectSyntheticDecorator(myClass, injectedDecorator);
-
-        const record = compiler.recordFor(myClass) !;
-        expect(record).toBeDefined();
-        expect(record.traits.length).toBe(2);
-        expect(record.traits[0].detected.decorator !.name).toBe('Directive');
-        expect(record.traits[1].detected.decorator !.name).toBe('InjectedDecorator');
-      });
-
-      it('should not add a weak handler when a primary handler already exists', () => {
-        const directiveHandler = new DetectDecoratorHandler('Directive', HandlerPrecedence.PRIMARY);
-        const injectedHandler =
-            new DetectDecoratorHandler('InjectedDecorator', HandlerPrecedence.WEAK);
-        loadTestFiles([{
-          name: _('/node_modules/test/index.js'),
-          contents: `
-              import {Directive} from '@angular/core';
-
-              export class MyClass {};
-              MyClass.decorators = [{ type: Directive }];
-            `
-        }]);
-        const entryPoint =
-            makeTestEntryPointBundle('test', 'esm2015', false, [_('/node_modules/test/index.js')]);
-        const {host, compiler} =
-            createMigrationHost({entryPoint, handlers: [directiveHandler, injectedHandler]});
-        const myClass = getDeclaration(
-            entryPoint.src.program, _('/node_modules/test/index.js'), 'MyClass',
-            isNamedClassDeclaration);
-
-        compiler.analyzeFile(entryPoint.src.file);
-
-        host.injectSyntheticDecorator(myClass, injectedDecorator);
-
-        const record = compiler.recordFor(myClass) !;
+        const record = compiler.recordFor(mockClazz) !;
         expect(record).toBeDefined();
         expect(record.traits.length).toBe(1);
-        expect(record.traits[0].detected.decorator !.name).toBe('Directive');
+        expect(record.traits[0].detected.decorator).toBe(injectedDecorator);
       });
 
-      it('should replace an existing weak handler when injecting a primary handler', () => {
-        const directiveHandler = new DetectDecoratorHandler('Directive', HandlerPrecedence.WEAK);
-        const injectedHandler =
-            new DetectDecoratorHandler('InjectedDecorator', HandlerPrecedence.PRIMARY);
-        loadTestFiles([{
-          name: _('/node_modules/test/index.js'),
-          contents: `
-              import {Directive} from '@angular/core';
-
-              export class MyClass {};
-              MyClass.decorators = [{ type: Directive }];
-            `
-        }]);
-        const entryPoint =
-            makeTestEntryPointBundle('test', 'esm2015', false, [_('/node_modules/test/index.js')]);
-        const {host, compiler} =
-            createMigrationHost({entryPoint, handlers: [directiveHandler, injectedHandler]});
-        const myClass = getDeclaration(
-            entryPoint.src.program, _('/node_modules/test/index.js'), 'MyClass',
-            isNamedClassDeclaration);
-
-        compiler.analyzeFile(entryPoint.src.file);
-
-        host.injectSyntheticDecorator(myClass, injectedDecorator);
-
-        const record = compiler.recordFor(myClass) !;
-        expect(record).toBeDefined();
-        expect(record.traits.length).toBe(1);
-        expect(record.traits[0].detected.decorator !.name).toBe('InjectedDecorator');
-      });
-
-      it('should produce an error when a primary handler is added when a primary handler is already present',
-         () => {
-           const directiveHandler =
-               new DetectDecoratorHandler('Directive', HandlerPrecedence.PRIMARY);
-           const injectedHandler =
-               new DetectDecoratorHandler('InjectedDecorator', HandlerPrecedence.PRIMARY);
-           loadTestFiles([{
-             name: _('/node_modules/test/index.js'),
-             contents: `
-              import {Directive} from '@angular/core';
-
-              export class MyClass {};
-              MyClass.decorators = [{ type: Directive }];
-            `
-           }]);
-           const entryPoint = makeTestEntryPointBundle(
-               'test', 'esm2015', false, [_('/node_modules/test/index.js')]);
-           const {host, compiler} =
-               createMigrationHost({entryPoint, handlers: [directiveHandler, injectedHandler]});
-           const myClass = getDeclaration(
-               entryPoint.src.program, _('/node_modules/test/index.js'), 'MyClass',
-               isNamedClassDeclaration);
-
-           compiler.analyzeFile(entryPoint.src.file);
-
-           host.injectSyntheticDecorator(myClass, injectedDecorator);
-
-           const record = compiler.recordFor(myClass) !;
-           expect(record).toBeDefined();
-           expect(record.metaDiagnostics).toBeDefined();
-           expect(record.metaDiagnostics !.length).toBe(1);
-           expect(record.metaDiagnostics ![0].code)
-               .toBe(ngErrorCode(ErrorCode.DECORATOR_COLLISION));
-           expect(record.traits.length).toBe(0);
-         });
-
-      it('should report diagnostics from handlers', () => {
-        const log: string[] = [];
-        const handler = new DiagnosticProducingHandler('handler', log);
+      it('should mention the migration that failed in the diagnostics message', () => {
+        const handler = new DiagnosticProducingHandler();
         loadTestFiles([{name: _('/node_modules/test/index.js'), contents: ``}]);
         const entryPoint =
             makeTestEntryPointBundle('test', 'esm2015', false, [_('/node_modules/test/index.js')]);
@@ -260,20 +95,6 @@ runInEachFileSystem(() => {
 
 
     describe('getAllDecorators', () => {
-      it('should be null for classes without decorators', () => {
-        loadTestFiles(
-            [{name: _('/node_modules/test/index.js'), contents: `export class MyClass {};`}]);
-        const entryPoint =
-            makeTestEntryPointBundle('test', 'esm2015', false, [_('/node_modules/test/index.js')]);
-        const {host} = createMigrationHost({entryPoint, handlers: []});
-        const myClass = getDeclaration(
-            entryPoint.src.program, _('/node_modules/test/index.js'), 'MyClass',
-            isNamedClassDeclaration);
-
-        const decorators = host.getAllDecorators(myClass);
-        expect(decorators).toBeNull();
-      });
-
       it('should include injected decorators', () => {
         const directiveHandler = new DetectDecoratorHandler('Directive', HandlerPrecedence.WEAK);
         const injectedHandler =
@@ -346,42 +167,12 @@ runInEachFileSystem(() => {
   });
 });
 
-class TestHandler implements DecoratorHandler<unknown, unknown, unknown> {
-  constructor(readonly name: string, protected log: string[]) {}
+class DetectDecoratorHandler implements DecoratorHandler<unknown, unknown, unknown> {
+  readonly name = DetectDecoratorHandler.name;
 
-  precedence = HandlerPrecedence.PRIMARY;
-
-  detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<unknown>|undefined {
-    this.log.push(`${this.name}:detect:${node.name.text}:${decorators !.map(d => d.name)}`);
-    return undefined;
-  }
-
-  analyze(node: ClassDeclaration): AnalysisOutput<unknown> {
-    this.log.push(this.name + ':analyze:' + node.name.text);
-    return {};
-  }
-
-  compile(node: ClassDeclaration): CompileResult|CompileResult[] {
-    this.log.push(this.name + ':compile:' + node.name.text);
-    return [];
-  }
-}
-
-class AlwaysDetectHandler extends TestHandler {
-  detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<unknown>|undefined {
-    super.detect(node, decorators);
-    const decorator = decorators !== null ? decorators[0] : null;
-    return {trigger: node, decorator, metadata: {}};
-  }
-}
-
-class DetectDecoratorHandler extends TestHandler {
-  constructor(private decorator: string, readonly precedence: HandlerPrecedence) {
-    super(decorator, []);
-  }
+  constructor(private decorator: string, readonly precedence: HandlerPrecedence) {}
 
   detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<unknown>|undefined {
-    super.detect(node, decorators);
     if (decorators === null) {
       return undefined;
     }
@@ -391,11 +182,24 @@ class DetectDecoratorHandler extends TestHandler {
     }
     return {trigger: node, decorator, metadata: {}};
   }
+
+  analyze(node: ClassDeclaration): AnalysisOutput<unknown> { return {}; }
+
+  compile(node: ClassDeclaration): CompileResult|CompileResult[] { return []; }
 }
 
-class DiagnosticProducingHandler extends AlwaysDetectHandler {
+class DiagnosticProducingHandler implements DecoratorHandler<unknown, unknown, unknown> {
+  readonly name = DiagnosticProducingHandler.name;
+  readonly precedence = HandlerPrecedence.PRIMARY;
+
+  detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<unknown>|undefined {
+    const decorator = decorators !== null ? decorators[0] : null;
+    return {trigger: node, decorator, metadata: {}};
+  }
+
   analyze(node: ClassDeclaration): AnalysisOutput<any> {
-    super.analyze(node);
     return {diagnostics: [makeDiagnostic(9999, node, 'test diagnostic')]};
   }
+
+  compile(node: ClassDeclaration): CompileResult|CompileResult[] { return []; }
 }

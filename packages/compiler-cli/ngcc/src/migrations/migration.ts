@@ -43,6 +43,7 @@ export interface MigrationHost {
    * given class.
    * @param clazz the class to receive the new decorator.
    * @param decorator the decorator to inject.
+   * @param flags optional bitwise flag to influence the compilation of the decorator.
    */
   injectSyntheticDecorator(clazz: ClassDeclaration, decorator: Decorator, flags?: HandlerFlags):
       void;
