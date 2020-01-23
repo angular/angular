@@ -1825,7 +1825,7 @@ describe('styling', () => {
         expect(getSortedStyle(div)).toEqual('');
 
         // for some reasons `border-image: unsafe` is NOT suppressed
-        comp.styleMapExp = {'border-image-source': 'url("javascript:border")'};
+        comp.styleMapExp = {'filter': 'url("javascript:border")'};
         fixture.detectChanges();
         expect(getSortedStyle(div)).not.toContain('javascript');
 
@@ -1833,14 +1833,13 @@ describe('styling', () => {
         comp.widthExp = '789px';
         comp.bgImageExp = bypassSanitizationTrustStyle(comp.bgImageExp) as string;
         comp.styleMapExp = {
-          'border-image-source':
-              bypassSanitizationTrustStyle(comp.styleMapExp['border-image-source']) as string
+          'filter': bypassSanitizationTrustStyle(comp.styleMapExp['filter']) as string
         };
         fixture.detectChanges();
 
         expect(div.style.getPropertyValue('background-image')).toEqual('url("javascript:img")');
-        expect(div.style.getPropertyValue('border-image-source'))
-            .toEqual('url("javascript:border")');
+        // Some browsers strip `url` on filter so we use `toContain`
+        expect(div.style.getPropertyValue('filter')).toContain('javascript:border');
         expect(div.style.getPropertyValue('width')).toEqual('789px');
       });
 
