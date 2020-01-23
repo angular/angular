@@ -354,9 +354,7 @@ describe('diagnostics', () => {
         .toBe(
             `Component 'MyComponent' is not included in a module and will not be available inside a template. Consider adding it to a NgModule declaration.`);
     const content = mockHost.readFile(fileName) !;
-    const keyword = '@Component';
-    expect(start).toBe(content.lastIndexOf(keyword) + 1);  // exclude leading '@'
-    expect(length).toBe(keyword.length - 1);               // exclude leading '@'
+    expect(content.substring(start !, start ! + length !)).toBe('MyComponent');
   });
 
 
@@ -596,9 +594,7 @@ describe('diagnostics', () => {
         .toBe(
             'Invalid providers for "AppComponent in /app/app.component.ts" - only instances of Provider and Type are allowed, got: [?null?]');
     // TODO: Looks like this is the wrong span. Should point to 'null' instead.
-    const keyword = '@Component';
-    expect(start).toBe(content.lastIndexOf(keyword) + 1);  // exclude leading '@'
-    expect(length).toBe(keyword.length - 1);               // exclude leading '@
+    expect(content.substring(start !, start ! + length !)).toBe('AppComponent');
   });
 
   // Issue #15768
@@ -767,8 +763,7 @@ describe('diagnostics', () => {
       const {file, messageText, start, length} = diags[0];
       expect(file !.fileName).toBe(APP_COMPONENT);
       expect(messageText).toBe(`Component 'AppComponent' must have a template or templateUrl`);
-      expect(start).toBe(content.indexOf(`@Component`) + 1);
-      expect(length).toBe('Component'.length);
+      expect(content.substring(start !, start ! + length !)).toBe('AppComponent');
     });
 
     it('should report diagnostic for both template and templateUrl', () => {
@@ -787,8 +782,7 @@ describe('diagnostics', () => {
       expect(file !.fileName).toBe(APP_COMPONENT);
       expect(messageText)
           .toBe(`Component 'AppComponent' must not have both template and templateUrl`);
-      expect(start).toBe(content.indexOf(`@Component`) + 1);
-      expect(length).toBe('Component'.length);
+      expect(content.substring(start !, start ! + length !)).toBe('AppComponent');
     });
 
     it('should report errors for invalid styleUrls', () => {
