@@ -51,26 +51,16 @@ import {CdkDragHandle} from './drag-handle';
 import {CdkDragPlaceholder} from './drag-placeholder';
 import {CdkDragPreview} from './drag-preview';
 import {CDK_DRAG_PARENT} from '../drag-parent';
-import {DragRef, DragRefConfig, Point} from '../drag-ref';
+import {DragRef, Point} from '../drag-ref';
 import {CdkDropListInternal as CdkDropList} from './drop-list';
 import {DragDrop} from '../drag-drop';
+import {CDK_DRAG_CONFIG, DragDropConfig, DragStartDelay, DragAxis} from './config';
 
 /**
  * Injection token that is used to provide a CdkDropList instance to CdkDrag.
  * Used for avoiding circular imports.
  */
 export const CDK_DROP_LIST = new InjectionToken<CdkDropList>('CDK_DROP_LIST');
-
-/** Injection token that can be used to configure the behavior of `CdkDrag`. */
-export const CDK_DRAG_CONFIG = new InjectionToken<DragRefConfig>('CDK_DRAG_CONFIG', {
-  providedIn: 'root',
-  factory: CDK_DRAG_CONFIG_FACTORY
-});
-
-/** @docs-private */
-export function CDK_DRAG_CONFIG_FACTORY(): DragRefConfig {
-  return {dragStartThreshold: 5, pointerDirectionChangeThreshold: 5};
-}
 
 /** Element that can be moved inside a CdkDropList container. */
 @Directive({
@@ -102,7 +92,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
   @Input('cdkDragData') data: T;
 
   /** Locks the position of the dragged element along the specified axis. */
-  @Input('cdkDragLockAxis') lockAxis: 'x' | 'y';
+  @Input('cdkDragLockAxis') lockAxis: DragAxis;
 
   /**
    * Selector that will be used to determine the root draggable element, starting from
@@ -123,7 +113,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
    * Amount of milliseconds to wait after the user has put their
    * pointer down before starting to drag the element.
    */
-  @Input('cdkDragStartDelay') dragStartDelay: number | {touch: number, mouse: number} = 0;
+  @Input('cdkDragStartDelay') dragStartDelay: DragStartDelay;
 
   /**
    * Sets the position of a `CdkDrag` that is outside of a drop container.
@@ -140,7 +130,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
     this._disabled = coerceBooleanProperty(value);
     this._dragRef.disabled = this._disabled;
   }
-  private _disabled = false;
+  private _disabled: boolean;
 
   /**
    * Function that can be used to customize the logic of how the position of the drag item
@@ -200,11 +190,22 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
       /** Droppable container that the draggable is a part of. */
       @Inject(CDK_DROP_LIST) @Optional() @SkipSelf() public dropContainer: CdkDropList,
       @Inject(DOCUMENT) private _document: any, private _ngZone: NgZone,
-      private _viewContainerRef: ViewContainerRef, @Inject(CDK_DRAG_CONFIG) config: DragRefConfig,
+      private _viewContainerRef: ViewContainerRef,
+      @Optional() @Inject(CDK_DRAG_CONFIG) config: DragDropConfig,
       @Optional() private _dir: Directionality, dragDrop: DragDrop,
       private _changeDetectorRef: ChangeDetectorRef) {
-    this._dragRef = dragDrop.createDrag(element, config);
+    this._dragRef = dragDrop.createDrag(element, {
+      dragStartThreshold: config && config.dragStartThreshold != null ?
+          config.dragStartThreshold : 5,
+      pointerDirectionChangeThreshold: config && config.pointerDirectionChangeThreshold != null ?
+          config.pointerDirectionChangeThreshold : 5
+    });
     this._dragRef.data = this;
+
+    if (config) {
+      this._assignDefaults(config);
+    }
+
     this._syncInputs(this._dragRef);
     this._handleEvents(this._dragRef);
   }
@@ -412,6 +413,37 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
         distance: event.distance
       });
     });
+  }
+
+  /** Assigns the default input values based on a provided config object. */
+  private _assignDefaults(config: DragDropConfig) {
+    const {
+      lockAxis, dragStartDelay, constrainPosition, previewClass,
+      boundaryElement, draggingDisabled, rootElementSelector
+    } = config;
+
+    this.disabled = draggingDisabled == null ? false : draggingDisabled;
+    this.dragStartDelay = dragStartDelay || 0;
+
+    if (lockAxis) {
+      this.lockAxis = lockAxis;
+    }
+
+    if (constrainPosition) {
+      this.constrainPosition = constrainPosition;
+    }
+
+    if (previewClass) {
+      this.previewClass = previewClass;
+    }
+
+    if (boundaryElement) {
+      this.boundaryElement = boundaryElement;
+    }
+
+    if (rootElementSelector) {
+      this.rootElementSelector = rootElementSelector;
+    }
   }
 
   static ngAcceptInputType_disabled: BooleanInput;

@@ -29,11 +29,12 @@ import {of as observableOf} from 'rxjs';
 
 import {DragDropModule} from '../drag-drop-module';
 import {CdkDragDrop, CdkDragEnter} from '../drag-events';
-import {DragRefConfig, Point, DragRef} from '../drag-ref';
+import {Point, DragRef} from '../drag-ref';
 import {extendStyles} from '../drag-styling';
 import {moveItemInArray} from '../drag-utils';
 
-import {CDK_DRAG_CONFIG, CdkDrag} from './drag';
+import {CdkDrag} from './drag';
+import {CDK_DRAG_CONFIG, DragDropConfig} from './config';
 import {CdkDragHandle} from './drag-handle';
 import {CdkDropList} from './drop-list';
 import {CdkDropListGroup} from './drop-list-group';
@@ -58,7 +59,7 @@ describe('CdkDrag', () => {
                 // have to deal with thresholds.
                 dragStartThreshold: dragDistance,
                 pointerDirectionChangeThreshold: 5
-              } as DragRefConfig
+              } as DragDropConfig
             },
             ...providers
           ],
@@ -1159,6 +1160,32 @@ describe('CdkDrag', () => {
 
         expect(touchmoveEvent.defaultPrevented).toBe(true);
       }));
+
+    it('should be able to configure the drag input defaults through a provider', fakeAsync(() => {
+      const config: DragDropConfig = {
+        draggingDisabled: true,
+        dragStartDelay: 1337,
+        lockAxis: 'y',
+        constrainPosition: () => ({x: 1337, y: 42}),
+        previewClass: 'custom-preview-class',
+        boundaryElement: '.boundary',
+        rootElementSelector: '.root'
+      };
+
+      const fixture = createComponent(PlainStandaloneDraggable, [{
+        provide: CDK_DRAG_CONFIG,
+        useValue: config
+      }]);
+      fixture.detectChanges();
+      const drag = fixture.componentInstance.dragInstance;
+      expect(drag.disabled).toBe(true);
+      expect(drag.dragStartDelay).toBe(1337);
+      expect(drag.lockAxis).toBe('y');
+      expect(drag.constrainPosition).toBe(config.constrainPosition);
+      expect(drag.previewClass).toBe('custom-preview-class');
+      expect(drag.boundaryElement).toBe('.boundary');
+      expect(drag.rootElementSelector).toBe('.root');
+    }));
 
   });
 
@@ -3510,6 +3537,29 @@ describe('CdkDrag', () => {
       expect(dragItems.map(drag => drag.element.nativeElement.textContent!.trim()))
           .toEqual(['One', 'Two', 'Zero', 'Three']);
     }));
+
+    it('should be able to configure the drop input defaults through a provider', fakeAsync(() => {
+      const config: DragDropConfig = {
+        draggingDisabled: true,
+        sortingDisabled: true,
+        listAutoScrollDisabled: true,
+        listOrientation: 'horizontal',
+        lockAxis: 'y'
+      };
+
+      const fixture = createComponent(PlainStandaloneDropList, [{
+        provide: CDK_DRAG_CONFIG,
+        useValue: config
+      }]);
+      fixture.detectChanges();
+      const list = fixture.componentInstance.dropList;
+      expect(list.disabled).toBe(true);
+      expect(list.sortingDisabled).toBe(true);
+      expect(list.autoScrollDisabled).toBe(true);
+      expect(list.orientation).toBe('horizontal');
+      expect(list.lockAxis).toBe('y');
+    }));
+
   });
 
   describe('in a connected drop container', () => {
@@ -5343,6 +5393,20 @@ class NestedDropZones {
   @ViewChild('outerList') outerList: ElementRef<HTMLElement>;
   @ViewChild('innerList') innerList: ElementRef<HTMLElement>;
   items = ['Zero', 'One', 'Two', 'Three'];
+}
+
+@Component({
+  template: `<div cdkDrag></div>`
+})
+class PlainStandaloneDraggable {
+  @ViewChild(CdkDrag) dragInstance: CdkDrag;
+}
+
+@Component({
+  template: `<div cdkDropList></div>`
+})
+class PlainStandaloneDropList {
+  @ViewChild(CdkDropList) dropList: CdkDropList;
 }
 
 /**

@@ -20,6 +20,7 @@ import {
   ChangeDetectorRef,
   SkipSelf,
   AfterContentInit,
+  Inject,
 } from '@angular/core';
 import {Directionality} from '@angular/cdk/bidi';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
@@ -29,6 +30,7 @@ import {CdkDropListGroup} from './drop-list-group';
 import {DropListRef} from '../drop-list-ref';
 import {DragRef} from '../drag-ref';
 import {DragDrop} from '../drag-drop';
+import {DropListOrientation, DragAxis, DragDropConfig, CDK_DRAG_CONFIG} from './config';
 import {Subject} from 'rxjs';
 import {startWith, takeUntil} from 'rxjs/operators';
 
@@ -84,7 +86,7 @@ export class CdkDropList<T = any> implements AfterContentInit, OnDestroy {
   @Input('cdkDropListData') data: T;
 
   /** Direction in which the list is oriented. */
-  @Input('cdkDropListOrientation') orientation: 'horizontal' | 'vertical' = 'vertical';
+  @Input('cdkDropListOrientation') orientation: DropListOrientation;
 
   /**
    * Unique ID for the drop zone. Can be used as a reference
@@ -93,7 +95,7 @@ export class CdkDropList<T = any> implements AfterContentInit, OnDestroy {
   @Input() id: string = `cdk-drop-list-${_uniqueIdCounter++}`;
 
   /** Locks the position of the draggable elements inside the container along the specified axis. */
-  @Input('cdkDropListLockAxis') lockAxis: 'x' | 'y';
+  @Input('cdkDropListLockAxis') lockAxis: DragAxis;
 
   /** Whether starting a dragging sequence from this container is disabled. */
   @Input('cdkDropListDisabled')
@@ -107,11 +109,11 @@ export class CdkDropList<T = any> implements AfterContentInit, OnDestroy {
     // the user in a disabled state, so we also need to sync it as it's being set.
     this._dropListRef.disabled = this._disabled = coerceBooleanProperty(value);
   }
-  private _disabled = false;
+  private _disabled: boolean;
 
   /** Whether sorting within this drop list is disabled. */
   @Input('cdkDropListSortingDisabled')
-  sortingDisabled: boolean = false;
+  sortingDisabled: boolean;
 
   /**
    * Function that is used to determine whether an item
@@ -122,7 +124,7 @@ export class CdkDropList<T = any> implements AfterContentInit, OnDestroy {
 
   /** Whether to auto-scroll the view when the user moves their pointer close to the edges. */
   @Input('cdkDropListAutoScrollDisabled')
-  autoScrollDisabled: boolean = false;
+  autoScrollDisabled: boolean;
 
   /** Emits when the user drops an item inside the container. */
   @Output('cdkDropListDropped')
@@ -155,9 +157,15 @@ export class CdkDropList<T = any> implements AfterContentInit, OnDestroy {
        * @deprecated _scrollDispatcher parameter to become required.
        * @breaking-change 11.0.0
        */
-      private _scrollDispatcher?: ScrollDispatcher) {
+      private _scrollDispatcher?: ScrollDispatcher,
+      @Optional() @Inject(CDK_DRAG_CONFIG) config?: DragDropConfig) {
     this._dropListRef = dragDrop.createDropList(element);
     this._dropListRef.data = this;
+
+    if (config) {
+      this._assignDefaults(config);
+    }
+
     this._dropListRef.enterPredicate = (drag: DragRef<CdkDrag>, drop: DropListRef<CdkDropList>) => {
       return this.enterPredicate(drag.data, drop.data);
     };
@@ -345,6 +353,22 @@ export class CdkDropList<T = any> implements AfterContentInit, OnDestroy {
       // detection and we're not guaranteed for something else to have triggered it.
       this._changeDetectorRef.markForCheck();
     });
+  }
+
+  /** Assigns the default input values based on a provided config object. */
+  private _assignDefaults(config: DragDropConfig) {
+    const {
+      lockAxis, draggingDisabled, sortingDisabled, listAutoScrollDisabled, listOrientation
+    } = config;
+
+    this.disabled = draggingDisabled == null ? false : draggingDisabled;
+    this.sortingDisabled = sortingDisabled == null ? false : sortingDisabled;
+    this.autoScrollDisabled = listAutoScrollDisabled == null ? false : listAutoScrollDisabled;
+    this.orientation = listOrientation || 'vertical';
+
+    if (lockAxis) {
+      this.lockAxis = lockAxis;
+    }
   }
 
   static ngAcceptInputType_disabled: BooleanInput;

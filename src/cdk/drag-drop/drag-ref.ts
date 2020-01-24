@@ -64,6 +64,12 @@ interface DragHelperTemplate<T = any> {
   context: T;
 }
 
+/** Point on the page or within an element. */
+export interface Point {
+  x: number;
+  y: number;
+}
+
 /**
  * Reference to a draggable item. Used to manipulate or dispose of the item.
  */
@@ -1184,12 +1190,6 @@ export class DragRef<T = any> {
 
     return value ? value.mouse : 0;
   }
-}
-
-/** Point on the page or within an element. */
-export interface Point {
-  x: number;
-  y: number;
 }
 
 /**
