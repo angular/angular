@@ -21,7 +21,7 @@
 #
 #  - This configuration works in conjunction with the protected branch settings that require all changes to be made via pull requests with at least one approval.
 #  - This approval can come from an appropriate codeowner, or any repo collaborator (person with write access) if the PR is authored by a codeowner.
-#  - All groups whose conditions are met will be required for approval.
+#  - All groups whose pullapprove rules are matched will be required for overall approval.
 #
 #  NOTE:
 #    In the case of emergency, the repo administrators which include the current angular caretaker
@@ -81,14 +81,21 @@
 # =========================================================
 # @angular/framework-global-approvers-for-docs-only-changes
 # =========================================================
-# gkalpak
+# aikidave
 # kapunahelewong
+# gkalpak
 # petebacondarwin
 
 
 version: 3
+
+# turn on 'draft' support
+# https://docs.pullapprove.com/config/github-api-version/
+# https://developer.github.com/v3/previews/#draft-pull-requests
+github_api_version: "shadow-cat-preview"
+
 pullapprove_conditions:
-  - condition: "'WIP' not in title and 'PR state: WIP' not in labels"
+  - condition: "'WIP' not in title and 'PR state: WIP' not in labels and not draft"
     unmet_status: pending
     explanation: "Waiting to send reviews as PR is WIP"
 
@@ -115,6 +122,7 @@ groups:
         - matsko
       teams:
         - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
   #  Bazel
@@ -133,6 +141,7 @@ groups:
         - mgechev
       teams:
         - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
   #  Compiler
@@ -153,10 +162,11 @@ groups:
       users:
         - alxhub
         - AndrewKushnir
-        - kara
         - JoostK
+        - kara
       teams:
         - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
   #  NGCC
@@ -171,9 +181,11 @@ groups:
       users:
         - alxhub
         - gkalpak
+        - JoostK
         - petebacondarwin
       teams:
         - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
   #  CLI integration
@@ -193,6 +205,7 @@ groups:
         - mgechev
       teams:
         - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
   #  Core
@@ -311,6 +324,7 @@ groups:
         - pkozlowski-opensource
       teams:
         - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
   #  http
@@ -332,6 +346,7 @@ groups:
         - igorminar
       teams:
         - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
   #  Elements
@@ -352,6 +367,7 @@ groups:
         - robwormald
       teams:
         - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
   #  Forms
@@ -383,6 +399,7 @@ groups:
         - AndrewKushnir
       teams:
         - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
   #  Language Service
@@ -400,6 +417,7 @@ groups:
         - kyliau
       teams:
         - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
   #  Platform Server
@@ -417,6 +435,7 @@ groups:
         - alxhub
       teams:
         - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
   #  Router
@@ -436,6 +455,7 @@ groups:
         - atscott
       teams:
         - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
   #  Service Worker
@@ -462,6 +482,7 @@ groups:
         - igorminar
       teams:
         - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
   #  Upgrade
@@ -491,6 +512,7 @@ groups:
         - petebacondarwin
       teams:
         - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
   #  Testing
@@ -511,6 +533,7 @@ groups:
         - pkozlowski-opensource
       teams:
         - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
   #  i18n
@@ -543,6 +566,7 @@ groups:
         - petebacondarwin
       teams:
         - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
   #  Angular security
@@ -565,6 +589,7 @@ groups:
         - mhevery
       teams:
         - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
   #  zone.js
@@ -581,6 +606,7 @@ groups:
         - mhevery
       teams:
         - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
   #  Benchpress
@@ -596,6 +622,7 @@ groups:
         - alxhub
       teams:
         - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
   #  Integration
@@ -613,6 +640,7 @@ groups:
         - mhevery
       teams:
         - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
   #  Docs-infra
@@ -641,6 +669,7 @@ groups:
         - petebacondarwin
       teams:
         - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
   #  Docs: Gettings Started & Tutorial
@@ -667,11 +696,12 @@ groups:
           ])
     reviewers:
       users:
+        - aikidave
         - igorminar
         - stephenfluin
       teams:
-        - ~framework-global-approvers-for-docs-only-changes
         - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
   #  Docs: Observables
@@ -694,8 +724,8 @@ groups:
       users:
         - alxhub
       teams:
-        - ~framework-global-approvers-for-docs-only-changes
         - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
   #  Docs: Packaging, Tooling, Releasing
@@ -733,8 +763,8 @@ groups:
         - igorminar
         - mgechev
       teams:
-        - ~framework-global-approvers-for-docs-only-changes
         - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
   #  Docs: Libraries
@@ -753,8 +783,8 @@ groups:
         - igorminar
         - mgechev
       teams:
-        - ~framework-global-approvers-for-docs-only-changes
         - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
   #  Docs: Schematics
@@ -775,8 +805,8 @@ groups:
         - igorminar
         - mgechev
       teams:
-        - ~framework-global-approvers-for-docs-only-changes
         - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
   #  Docs: Marketing
@@ -796,8 +826,8 @@ groups:
         - igorminar
         - stephenfluin
       teams:
-        - ~framework-global-approvers-for-docs-only-changes
         - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
   #  Dev-infra
@@ -819,12 +849,11 @@ groups:
           'scripts/**',
           'third_party/**',
           'tools/build/**',
-          'tools/cjs-jasmine/**',
           'tools/gulp-tasks/**',
           'tools/ngcontainer/**',
           'tools/npm/**',
-          'tools/npm_workspace/**',
-          'tools/public_api_guard/**',
+          'tools/public_api_guard/BUILD',
+          'tools/public_api_guard/public_api_guard.bzl',
           'tools/rxjs/**',
           'tools/size-tracking/**',
           'tools/source-map-test/**',
@@ -902,7 +931,7 @@ groups:
         - igorminar
         - kara
       teams:
-        - ~ framework-global-approvers
+        - ~framework-global-approvers
 
 
   # =========================================================
@@ -938,8 +967,8 @@ groups:
       users:
         - kara
       teams:
-        - ~framework-global-approvers-for-docs-only-changes
         - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
 
 
   # ====================================================
