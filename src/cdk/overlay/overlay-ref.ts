@@ -114,13 +114,13 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
   attach(portal: Portal<any>): any {
     let attachResult = this._portalOutlet.attach(portal);
 
-    if (this._positionStrategy) {
-      this._positionStrategy.attach(this);
-    }
-
     // Update the pane element with the given configuration.
     if (!this._host.parentElement && this._previousHostParent) {
       this._previousHostParent.appendChild(this._host);
+    }
+
+    if (this._positionStrategy) {
+      this._positionStrategy.attach(this);
     }
 
     this._updateStackingOrder();

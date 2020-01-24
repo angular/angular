@@ -444,6 +444,29 @@ describe('Overlay', () => {
       expect(overlayContainerElement.querySelectorAll('.fake-positioned').length).toBe(1);
     }));
 
+    it('should have the overlay in the DOM in position strategy when reattaching', fakeAsync(() => {
+      let overlayPresentInDom = false;
+
+      config.positionStrategy = {
+        attach: (ref: OverlayRef) => overlayPresentInDom = !!ref.hostElement.parentElement,
+        apply: () => {},
+        dispose: () => {}
+      };
+
+      const overlayRef = overlay.create(config);
+
+      overlayRef.attach(componentPortal);
+      expect(overlayPresentInDom).toBeTruthy('Expected host element to be attached to the DOM.');
+
+      overlayRef.detach();
+      zone.simulateZoneExit();
+      tick();
+
+      overlayRef.attach(componentPortal);
+
+      expect(overlayPresentInDom).toBeTruthy('Expected host element to be attached to the DOM.');
+    }));
+
     it('should not apply the position if it detaches before the zone stabilizes', fakeAsync(() => {
       config.positionStrategy = new FakePositionStrategy();
 
