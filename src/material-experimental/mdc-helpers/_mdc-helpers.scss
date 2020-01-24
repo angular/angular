@@ -236,9 +236,15 @@ $mat-typography-level-mappings: (
   // contrastive and renders appropriately.
 
   .mat-mdc-focus-indicator.mdc-button::before,
+  .mat-mdc-focus-indicator.mdc-chip::before,
   .mat-mdc-focus-indicator.mdc-fab::before,
   .mat-mdc-focus-indicator.mdc-icon-button::before {
     margin: $mat-focus-indicator-border-width * -2;
+  }
+
+  .mat-mdc-focus-indicator.mat-mdc-chip-remove::before,
+  .mat-mdc-focus-indicator.mat-chip-row-focusable-text-content::before {
+    margin: $mat-focus-indicator-border-width * -1;
   }
 
   .mat-mdc-focus-indicator.mat-mdc-tab::before,

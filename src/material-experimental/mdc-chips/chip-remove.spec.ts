@@ -150,6 +150,11 @@ describe('MDC-based Chip Remove', () => {
       expect(event.defaultPrevented).toBe(false);
     });
 
+    it('should have a focus indicator', () => {
+      const buttonElement = chipNativeElement.querySelector('button')!;
+
+      expect(buttonElement.classList.contains('mat-mdc-focus-indicator')).toBe(true);
+    });
   });
 });
 

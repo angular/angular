@@ -7,7 +7,6 @@ import {
 } from '@angular/cdk/testing/private';
 import {Component, DebugElement, ViewChild} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {MAT_RIPPLE_GLOBAL_OPTIONS, RippleGlobalOptions} from '@angular/material/core';
 import {By} from '@angular/platform-browser';
 import {Subject} from 'rxjs';
 import {MatChipEvent, MatChipGrid, MatChipRow, MatChipsModule} from './index';
@@ -18,17 +17,14 @@ describe('MDC-based Row Chips', () => {
   let chipDebugElement: DebugElement;
   let chipNativeElement: HTMLElement;
   let chipInstance: MatChipRow;
-  let globalRippleOptions: RippleGlobalOptions;
 
   let dir = 'ltr';
 
   beforeEach(async(() => {
-    globalRippleOptions = {};
     TestBed.configureTestingModule({
       imports: [MatChipsModule],
       declarations: [SingleChip],
       providers: [
-        {provide: MAT_RIPPLE_GLOBAL_OPTIONS, useFactory: () => globalRippleOptions},
         {provide: Directionality, useFactory: () => ({
           value: dir,
           change: new Subject()

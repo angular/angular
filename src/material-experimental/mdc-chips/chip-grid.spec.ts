@@ -241,6 +241,14 @@ describe('MDC-based MatChipGrid', () => {
             expect(chipGridInstance._keyManager.activeColumnIndex).toBe(0);
         }));
       });
+
+      it('should have a focus indicator', () => {
+        const focusableTextNativeElements = Array.from(chipGridNativeElement
+            .querySelectorAll('.mat-chip-row-focusable-text-content'));
+
+        expect(focusableTextNativeElements
+            .every(element => element.classList.contains('mat-mdc-focus-indicator'))).toBe(true);
+      });
     });
 
     describe('keyboard behavior', () => {
