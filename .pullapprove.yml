@@ -978,6 +978,9 @@ groups:
   # ====================================================
   fallback:
     conditions:
+      # Groups which are found to have matching conditions are `active`
+      # according to PullApprove. If no groups are matched and considered
+      # active, we still want to have a review occur.
       - len(groups.active) == 0
     reviewers:
       users:
