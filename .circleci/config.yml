@@ -621,14 +621,10 @@ jobs:
       - init_environment
       - run: setPublicVar_CI_STABLE_BRANCH
       - run:
-          name: Check out `aio/` and `third_party/github.com/yarnpkg/` from the stable branch
+          name: Check out `aio/` and yarn from the stable branch
           command: |
-            localYarnDir=third_party/github.com/yarnpkg/
-            # Remove the directory to ensure there will be only one version available (the one
-            # checked out from the stable branch below).
-            rm -rf $localYarnDir
             git fetch origin $CI_STABLE_BRANCH
-            git checkout --force origin/$CI_STABLE_BRANCH -- aio/ $localYarnDir
+            git checkout --force origin/$CI_STABLE_BRANCH -- aio/ .yarn/ .yarnrc
         # Overwrite yarn again to use the version from the checked out branch.
       - overwrite_yarn
       - run:
