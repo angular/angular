@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {AstType, ExpressionDiagnosticsContext, TypeDiagnostic} from './expression_type';
 // TODO: This introduces a circular dependency between locate_symbol and expression_diagnostics.
 import {findOutputBinding} from './locate_symbol';
-import {BuiltinType, DeclarationKind, Definition, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from './symbols';
+import {BuiltinType, Definition, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from './symbols';
 import {Diagnostic} from './types';
 import {getPathToNodeAtPosition} from './utils';
 
@@ -197,17 +197,17 @@ function refinedVariableType(
 
 function getEventDeclaration(
     info: DiagnosticTemplateInfo, path: TemplateAstPath): SymbolDeclaration|undefined {
-  const genericEvent = {
-    name: '$event',
-    kind: 'variable' as DeclarationKind,
-    type: info.query.getBuiltinType(BuiltinType.Any),
-  };
-
   const event = path.tail;
   if (!(event instanceof BoundEventAst)) {
     // No event available in this context.
     return;
   }
+
+  const genericEvent: SymbolDeclaration = {
+    name: '$event',
+    kind: 'variable',
+    type: info.query.getBuiltinType(BuiltinType.Any),
+  };
 
   const outputSymbol = findOutputBinding(event, path, info.query);
   if (!outputSymbol) {
@@ -218,7 +218,7 @@ function getEventDeclaration(
 
   // The raw event type is wrapped in a generic, like EventEmitter<T> or Observable<T>.
   const ta = outputSymbol.typeArguments();
-  if (!ta || ta.length != 1) return genericEvent;
+  if (!ta || ta.length !== 1) return genericEvent;
   const eventType = ta[0];
 
   return {...genericEvent, type: eventType};
