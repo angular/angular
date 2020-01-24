@@ -3,10 +3,10 @@ export declare const APP_BASE_HREF: InjectionToken<string>;
 export declare class AsyncPipe implements OnDestroy, PipeTransform {
     constructor(_ref: ChangeDetectorRef);
     ngOnDestroy(): void;
+    transform<T>(obj: null): null;
+    transform<T>(obj: undefined): undefined;
     transform<T>(obj: Observable<T> | null | undefined): T | null;
     transform<T>(obj: Promise<T> | null | undefined): T | null;
-    transform<T>(obj: undefined): undefined;
-    transform<T>(obj: null): null;
 }
 
 export declare class CommonModule {
@@ -214,8 +214,8 @@ export declare class NgComponentOutlet implements OnChanges, OnDestroy {
 export declare class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck {
     set ngForOf(ngForOf: (U & NgIterable<T>) | undefined | null);
     set ngForTemplate(value: TemplateRef<NgForOfContext<T, U>>);
-    get ngForTrackBy(): TrackByFunction<T>;
     set ngForTrackBy(fn: TrackByFunction<T>);
+    get ngForTrackBy(): TrackByFunction<T>;
     constructor(_viewContainer: ViewContainerRef, _template: TemplateRef<NgForOfContext<T, U>>, _differs: IterableDiffers);
     ngDoCheck(): void;
     static ngTemplateContextGuard<T, U extends NgIterable<T>>(dir: NgForOf<T, U>, ctx: any): ctx is NgForOfContext<T, U>;

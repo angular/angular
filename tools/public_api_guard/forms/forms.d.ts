@@ -524,8 +524,8 @@ export interface ValidatorFn {
 }
 
 export declare class Validators {
-    static compose(validators: (ValidatorFn | null | undefined)[]): ValidatorFn | null;
     static compose(validators: null): null;
+    static compose(validators: (ValidatorFn | null | undefined)[]): ValidatorFn | null;
     static composeAsync(validators: (AsyncValidatorFn | null)[]): AsyncValidatorFn | null;
     static email(control: AbstractControl): ValidationErrors | null;
     static max(max: number): ValidatorFn;

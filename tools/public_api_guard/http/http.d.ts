@@ -142,8 +142,8 @@ export declare class RequestOptions {
     method: RequestMethod | string | null;
     params: URLSearchParams;
     responseType: ResponseContentType | null;
-    /** @deprecated */ set search(params: URLSearchParams);
     /** @deprecated */ get search(): URLSearchParams;
+    /** @deprecated */ set search(params: URLSearchParams);
     url: string | null;
     withCredentials: boolean | null;
     constructor(opts?: RequestOptionsArgs);
