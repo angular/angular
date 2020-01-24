@@ -1,3 +1,43 @@
+<a name="9.0.0-rc.11"></a>
+# [9.0.0-rc.11](https://github.com/angular/angular/compare/9.0.0-rc.10...9.0.0-rc.11) (2020-01-24)
+
+
+### Bug Fixes
+
+* **ivy:** correctly emit component when it's removed from its module ([#34912](https://github.com/angular/angular/issues/34912)) ([adc663e](https://github.com/angular/angular/commit/adc663e)), closes [#34813](https://github.com/angular/angular/issues/34813)
+* **ivy:** DebugNode.classes not working on SVG elements ([#34872](https://github.com/angular/angular/issues/34872)) ([7e8aac1](https://github.com/angular/angular/commit/7e8aac1)), closes [#34868](https://github.com/angular/angular/issues/34868)
+* **ivy:** disable use of aliasing in template type-checking ([#34649](https://github.com/angular/angular/issues/34649)) ([2cf7d0f](https://github.com/angular/angular/commit/2cf7d0f))
+* **ivy:** don't detect changes on detached child embedded views ([#34846](https://github.com/angular/angular/issues/34846)) ([62e1186](https://github.com/angular/angular/commit/62e1186)), closes [#34816](https://github.com/angular/angular/issues/34816)
+* **ivy:** ensure eventListeners added outside angular context are not called... ([#34514](https://github.com/angular/angular/issues/34514)) ([b6dfb4d](https://github.com/angular/angular/commit/b6dfb4d))
+* **ivy:** type-check multiple bindings to the same input ([#34649](https://github.com/angular/angular/issues/34649)) ([ba7f2f1](https://github.com/angular/angular/commit/ba7f2f1))
+* **ivy:** type-checking of properties which map to multiple fields ([#34649](https://github.com/angular/angular/issues/34649)) ([b04d4ba](https://github.com/angular/angular/commit/b04d4ba))
+* **ivy:** use any for generic context checks when !strictTemplates ([#34649](https://github.com/angular/angular/issues/34649)) ([e69d02c](https://github.com/angular/angular/commit/e69d02c))
+* **ivy:** wrap 'as any' casts in parentheses when needed ([#34649](https://github.com/angular/angular/issues/34649)) ([bf01b66](https://github.com/angular/angular/commit/bf01b66))
+* **language-service:** Diagnostic span should point to class name ([#34932](https://github.com/angular/angular/issues/34932)) ([c9db7bd](https://github.com/angular/angular/commit/c9db7bd))
+* **language-service:** Make metadata in Declaration non-optional ([#34936](https://github.com/angular/angular/issues/34936)) ([37727ce](https://github.com/angular/angular/commit/37727ce))
+* **language-service:** rename getDiagnostics to getSemanticDiagnostics ([#34909](https://github.com/angular/angular/issues/34909)) ([20dc436](https://github.com/angular/angular/commit/20dc436))
+* **ngcc:** do not attempt compilation when analysis fails ([#34889](https://github.com/angular/angular/issues/34889)) ([080a8bf](https://github.com/angular/angular/commit/080a8bf)), closes [#34288](https://github.com/angular/angular/issues/34288) [#34500](https://github.com/angular/angular/issues/34500)
+* **ngcc:** do not collect private declarations from external packages ([#34811](https://github.com/angular/angular/issues/34811)) ([c80392b](https://github.com/angular/angular/commit/c80392b)), closes [#34544](https://github.com/angular/angular/issues/34544) [#34544](https://github.com/angular/angular/issues/34544)
+* **ngcc:** libraries using spread in object literals cannot be processed ([#34661](https://github.com/angular/angular/issues/34661)) ([4eeb6cf](https://github.com/angular/angular/commit/4eeb6cf))
+* **ngcc:** only lock ngcc after targeted entry-point check ([#34722](https://github.com/angular/angular/issues/34722)) ([3897fb9](https://github.com/angular/angular/commit/3897fb9))
+* **ngcc:** update `package.json` deterministically ([#34870](https://github.com/angular/angular/issues/34870)) ([a10d2a8](https://github.com/angular/angular/commit/a10d2a8)), closes [#34635](https://github.com/angular/angular/issues/34635)
+
+
+### Features
+
+* **common:** expose getLocaleCurrencyCode publicly ([#34946](https://github.com/angular/angular/issues/34946)) ([622737c](https://github.com/angular/angular/commit/622737c))
+* **compiler-cli:** require node 10 as runtime engine ([#34722](https://github.com/angular/angular/issues/34722)) ([7b77b3d](https://github.com/angular/angular/commit/7b77b3d))
+* **language-service:** specific suggestions for template context diags ([#34751](https://github.com/angular/angular/issues/34751)) ([cc7fca4](https://github.com/angular/angular/commit/cc7fca4))
+* **language-service:** support multiple symbol definitions ([#34782](https://github.com/angular/angular/issues/34782)) ([2f2396c](https://github.com/angular/angular/commit/2f2396c))
+* **ngcc:** lock ngcc when processing ([#34722](https://github.com/angular/angular/issues/34722)) ([6dd51f1](https://github.com/angular/angular/commit/6dd51f1)), closes [/github.com/angular/angular/issues/32431#issuecomment-571825781](https://github.com//github.com/angular/angular/issues/32431/issues/issuecomment-571825781)
+
+
+### Performance
+
+* **ivy:** add more styling use-cases to benchmarks ([#34923](https://github.com/angular/angular/issues/34923)) ([ef70a89](https://github.com/angular/angular/commit/ef70a89))
+
+
+
 <a name="9.0.0-rc.10"></a>
 # [9.0.0-rc.10](https://github.com/angular/angular/compare/9.0.0-rc.9...9.0.0-rc.10) (2020-01-22)
 
