@@ -38,9 +38,12 @@ openssl aes-256-cbc -d -in .circleci\gcp_token -md md5 -out "$env:APPDATA\gcloud
 ####################################################################################################
 copy .circleci\bazel.windows.rc ${Env:USERPROFILE}\.bazelrc
 
+####################################################################################################
+# Install specific version of node.
+####################################################################################################
+choco install nodejs --version 12.14.1 --no-progress
 
 # These Bazel prereqs aren't needed because the CircleCI image already includes them.
-# choco install nodejs --version 10.16.0 --no-progress
 # choco install yarn --version 1.16.0 --no-progress
 # choco install vcredist2015 --version 14.0.24215.20170201
 
