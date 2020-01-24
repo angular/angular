@@ -57,6 +57,29 @@ export declare class CdkTrapFocus implements OnDestroy, AfterContentInit, DoChec
     static ɵfac: i0.ɵɵFactoryDef<CdkTrapFocus>;
 }
 
+export declare class ConfigurableFocusTrap extends FocusTrap implements ManagedFocusTrap {
+    get enabled(): boolean;
+    set enabled(value: boolean);
+    constructor(_element: HTMLElement, _checker: InteractivityChecker, _ngZone: NgZone, _document: Document, _focusTrapManager: FocusTrapManager, _inertStrategy: FocusTrapInertStrategy, config: ConfigurableFocusTrapConfig);
+    _disable(): void;
+    _enable(): void;
+    destroy(): void;
+}
+
+export declare class ConfigurableFocusTrapFactory {
+    constructor(_checker: InteractivityChecker, _ngZone: NgZone, _focusTrapManager: FocusTrapManager, _document: any, _inertStrategy?: FocusTrapInertStrategy);
+    create(element: HTMLElement, config?: ConfigurableFocusTrapConfig): ConfigurableFocusTrap;
+    static ɵfac: i0.ɵɵFactoryDef<ConfigurableFocusTrapFactory>;
+    static ɵprov: i0.ɵɵInjectableDef<ConfigurableFocusTrapFactory>;
+}
+
+export declare class EventListenerFocusTrapInertStrategy implements FocusTrapInertStrategy {
+    allowFocus(focusTrap: ConfigurableFocusTrap): void;
+    preventFocus(focusTrap: ConfigurableFocusTrap): void;
+}
+
+export declare const FOCUS_TRAP_INERT_STRATEGY: InjectionToken<FocusTrapInertStrategy>;
+
 export interface FocusableOption extends ListKeyManagerOption {
     focus(origin?: FocusOrigin): void;
 }
@@ -88,6 +111,10 @@ export interface FocusOptions {
 export declare type FocusOrigin = 'touch' | 'mouse' | 'keyboard' | 'program' | null;
 
 export declare class FocusTrap {
+    readonly _document: Document;
+    readonly _element: HTMLElement;
+    protected _enabled: boolean;
+    readonly _ngZone: NgZone;
     get enabled(): boolean;
     set enabled(value: boolean);
     protected endAnchorListener: () => boolean;
@@ -102,6 +129,7 @@ export declare class FocusTrap {
     focusLastTabbableElement(): boolean;
     focusLastTabbableElementWhenReady(): Promise<boolean>;
     hasAttached(): boolean;
+    protected toggleAnchors(enabled: boolean): void;
 }
 
 export declare class FocusTrapFactory {
@@ -109,6 +137,11 @@ export declare class FocusTrapFactory {
     create(element: HTMLElement, deferCaptureElements?: boolean): FocusTrap;
     static ɵfac: i0.ɵɵFactoryDef<FocusTrapFactory>;
     static ɵprov: i0.ɵɵInjectableDef<FocusTrapFactory>;
+}
+
+export interface FocusTrapInertStrategy {
+    allowFocus(focusTrap: FocusTrap): void;
+    preventFocus(focusTrap: FocusTrap): void;
 }
 
 export declare const enum HighContrastMode {

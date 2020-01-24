@@ -30,6 +30,9 @@ import {InteractivityChecker} from '../interactivity-checker/interactivity-check
  * This class currently uses a relatively simple approach to focus trapping.
  * It assumes that the tab order is the same as DOM order, which is not necessarily true.
  * Things like `tabIndex > 0`, flex `order`, and shadow roots can cause to two to misalign.
+ *
+ * @deprecated Use `ConfigurableFocusTrap` instead.
+ * @breaking-change for 11.0.0 Remove this class.
  */
 export class FocusTrap {
   private _startAnchor: HTMLElement | null;
@@ -50,13 +53,13 @@ export class FocusTrap {
       this._toggleAnchorTabIndex(value, this._endAnchor);
     }
   }
-  private _enabled: boolean = true;
+  protected _enabled: boolean = true;
 
   constructor(
-    private _element: HTMLElement,
+    readonly _element: HTMLElement,
     private _checker: InteractivityChecker,
-    private _ngZone: NgZone,
-    private _document: Document,
+    readonly _ngZone: NgZone,
+    readonly _document: Document,
     deferAnchors = false) {
 
     if (!deferAnchors) {
@@ -319,6 +322,17 @@ export class FocusTrap {
     isEnabled ? anchor.setAttribute('tabindex', '0') : anchor.removeAttribute('tabindex');
   }
 
+  /**
+   * Toggles the`tabindex` of both anchors to either trap Tab focus or allow it to escape.
+   * @param enabled: Whether the anchors should trap Tab.
+   */
+  protected toggleAnchors(enabled: boolean) {
+    if (this._startAnchor && this._endAnchor) {
+      this._toggleAnchorTabIndex(enabled, this._startAnchor);
+      this._toggleAnchorTabIndex(enabled, this._endAnchor);
+    }
+  }
+
   /** Executes a function when the zone is stable. */
   private _executeOnStable(fn: () => any): void {
     if (this._ngZone.isStable) {
@@ -329,8 +343,11 @@ export class FocusTrap {
   }
 }
 
-
-/** Factory that allows easy instantiation of focus traps. */
+/**
+ * Factory that allows easy instantiation of focus traps.
+ * @deprecated Use `ConfigurableFocusTrapFactory` instead.
+ * @breaking-change for 11.0.0 Remove this class.
+ */
 @Injectable({providedIn: 'root'})
 export class FocusTrapFactory {
   private _document: Document;
