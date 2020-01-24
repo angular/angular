@@ -806,7 +806,6 @@ workflows:
           # master only to avoid wasting resources.
           # TODO: Run this job on all branches (including PRs) as soon as it is not a PoC and
           # we can remove the legacy saucelabs job.
-          <<: *only_on_master
           requires:
             - setup
       - test_aio:
