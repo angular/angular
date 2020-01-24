@@ -23,7 +23,7 @@ setPublicVar CI_BUILD_URL "$CIRCLE_BUILD_URL";
 # `.circleci/config.yml`. See http://chromedriver.chromium.org/downloads for a list of versions.
 # This variable is intended to be passed as an arg to the `webdriver-manager update` command (e.g.
 # `"postinstall": "webdriver-manager update $CI_CHROMEDRIVER_VERSION_ARG"`).
-setPublicVar CI_CHROMEDRIVER_VERSION_ARG "--versions.chrome 75.0.3770.90";
+setPublicVar CI_CHROMEDRIVER_VERSION_ARG "--versions.chrome 79.0.3945.130";
 setPublicVar CI_COMMIT "$CIRCLE_SHA1";
 # `CI_COMMIT_RANGE` is only used on push builds (a.k.a. non-PR, non-scheduled builds and rerun
 # workflows of such builds).
