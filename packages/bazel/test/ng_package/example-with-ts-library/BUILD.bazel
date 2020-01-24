@@ -5,7 +5,7 @@ package(default_visibility = ["//packages/bazel/test:__subpackages__"])
 ts_library(
     name = "example",
     srcs = glob(["*.ts"]),
-    module_name = "example",
+    module_name = "example-with-ts-library",
     deps = [],
 )
 

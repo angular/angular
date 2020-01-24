@@ -62,6 +62,9 @@ utils
   utils/package.json
   utils/testing.d.ts
 utils.d.ts
+with-ts-library
+  with-ts-library/package.json
+with-ts-library.d.ts
 --- README.md ---
 
 Angular
@@ -437,8 +440,8 @@ e.dispatchFakeEvent=function t(e,n){e.dispatchEvent(n)},Object.defineProperty(e,
 
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-	typeof define === 'function' && define.amd ? define('example', ['exports'], factory) :
-	(global = global || self, factory(global.example = {}));
+	typeof define === 'function' && define.amd ? define('example-with-ts-library', ['exports'], factory) :
+	(global = global || self, factory(global.exampleWithTsLibrary = {}));
 }(this, (function (exports) { 'use strict';
 
 	/**
@@ -465,7 +468,7 @@ e.dispatchFakeEvent=function t(e,n){e.dispatchEvent(n)},Object.defineProperty(e,
  * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
-!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports):"function"==typeof define&&define.amd?define("example",["exports"],t):t((e=e||self).example={})}(this,(function(e){"use strict";
+!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports):"function"==typeof define&&define.amd?define("example-with-ts-library",["exports"],t):t((e=e||self).exampleWithTsLibrary={})}(this,(function(e){"use strict";
 /**
 	 * @license
 	 * Copyright Google Inc. All Rights Reserved.
@@ -988,4 +991,29 @@ export declare function dispatchFakeEvent(el: HTMLElement, ev: Event): void;
  */
 
 export * from './utils/index';
+
+
+--- with-ts-library/package.json ---
+
+{
+  "name": "example-with-ts-library",
+  "main": "./bundles/example-with-ts-library.umd.js",
+  "fesm5": "./fesm5/example-with-ts-library.js",
+  "fesm2015": "./fesm2015/example-with-ts-library.js",
+  "esm5": "../esm5/index.js",
+  "esm2015": "../esm2015/index.js",
+  "typings": "../index.d.ts",
+  "module": "./fesm5/example-with-ts-library.js",
+  "es2015": "./fesm2015/example-with-ts-library.js"
+}
+
+--- with-ts-library.d.ts ---
+
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2020 Google LLC. https://angular.io/
+ * License: MIT
+ */
+
+export * from './index';
 
