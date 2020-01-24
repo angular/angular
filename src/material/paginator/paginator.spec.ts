@@ -1,45 +1,31 @@
-import {async, ComponentFixture, TestBed, inject, tick, fakeAsync} from '@angular/core/testing';
-import {Component, ViewChild} from '@angular/core';
+import {ComponentFixture, TestBed, tick, fakeAsync} from '@angular/core/testing';
+import {Component, ViewChild, Type, Provider} from '@angular/core';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {dispatchMouseEvent} from '@angular/cdk/testing/private';
 import {ThemePalette} from '@angular/material/core';
 import {MatSelect} from '@angular/material/select';
 import {By} from '@angular/platform-browser';
 import {MatPaginatorModule, MatPaginator, MatPaginatorIntl} from './index';
+import {MAT_PAGINATOR_DEFAULT_OPTIONS, MatPaginatorDefaultOptions} from './paginator';
 
 
 describe('MatPaginator', () => {
-  let fixture: ComponentFixture<MatPaginatorApp>;
-  let component: MatPaginatorApp;
-  let paginator: MatPaginator;
-
-  beforeEach(async(() => {
+  function createComponent<T>(type: Type<T>, providers: Provider[] = []): ComponentFixture<T> {
     TestBed.configureTestingModule({
-      imports: [
-        MatPaginatorModule,
-        NoopAnimationsModule,
-      ],
-      declarations: [
-        MatPaginatorApp,
-        MatPaginatorWithoutPageSizeApp,
-        MatPaginatorWithoutOptionsApp,
-        MatPaginatorWithoutInputsApp,
-        MatPaginatorWithStringValues
-      ],
-      providers: [MatPaginatorIntl]
+      imports: [MatPaginatorModule, NoopAnimationsModule],
+      declarations: [type],
+      providers: [MatPaginatorIntl, ...providers]
     }).compileComponents();
-  }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(MatPaginatorApp);
+    const fixture = TestBed.createComponent(type);
     fixture.detectChanges();
-
-    component = fixture.componentInstance;
-    paginator = component.paginator;
-  });
+    return fixture;
+  }
 
   describe('with the default internationalization provider', () => {
     it('should show the right range text', () => {
+      const fixture = createComponent(MatPaginatorApp);
+      const component = fixture.componentInstance;
       const rangeElement = fixture.nativeElement.querySelector('.mat-paginator-range-label');
 
       // View second page of list of 100, each page contains 10 items.
@@ -86,6 +72,7 @@ describe('MatPaginator', () => {
     });
 
     it('should show right aria-labels for select and buttons', () => {
+      const fixture = createComponent(MatPaginatorApp);
       const select = fixture.nativeElement.querySelector('.mat-select');
       expect(select.getAttribute('aria-label')).toBe('Items per page:');
 
@@ -93,20 +80,24 @@ describe('MatPaginator', () => {
       expect(getNextButton(fixture).getAttribute('aria-label')).toBe('Next page');
     });
 
-    it('should re-render when the i18n labels change',
-      inject([MatPaginatorIntl], (intl: MatPaginatorIntl) => {
-        const label = fixture.nativeElement.querySelector('.mat-paginator-page-size-label');
+    it('should re-render when the i18n labels change', () => {
+      const fixture = createComponent(MatPaginatorApp);
+      const label = fixture.nativeElement.querySelector('.mat-paginator-page-size-label');
+      const intl = TestBed.get<MatPaginatorIntl>(MatPaginatorIntl);
 
-        intl.itemsPerPageLabel = '1337 items per page';
-        intl.changes.next();
-        fixture.detectChanges();
+      intl.itemsPerPageLabel = '1337 items per page';
+      intl.changes.next();
+      fixture.detectChanges();
 
-        expect(label.textContent!.trim()).toBe('1337 items per page');
-      }));
+      expect(label.textContent!.trim()).toBe('1337 items per page');
+    });
   });
 
   describe('when navigating with the next and previous buttons', () => {
     it('should be able to go to the next page', () => {
+      const fixture = createComponent(MatPaginatorApp);
+      const component = fixture.componentInstance;
+      const paginator = component.paginator;
       expect(paginator.pageIndex).toBe(0);
 
       dispatchMouseEvent(getNextButton(fixture), 'click');
@@ -119,6 +110,9 @@ describe('MatPaginator', () => {
     });
 
     it('should be able to go to the previous page', () => {
+      const fixture = createComponent(MatPaginatorApp);
+      const component = fixture.componentInstance;
+      const paginator = component.paginator;
       paginator.pageIndex = 1;
       fixture.detectChanges();
       expect(paginator.pageIndex).toBe(1);
@@ -134,6 +128,7 @@ describe('MatPaginator', () => {
   });
 
   it('should be able to show the first/last buttons', () => {
+    const fixture = createComponent(MatPaginatorApp);
     expect(getFirstButton(fixture))
         .toBeNull('Expected first button to not exist.');
 
@@ -151,6 +146,9 @@ describe('MatPaginator', () => {
   });
 
   it('should mark itself as initialized', fakeAsync(() => {
+    const fixture = createComponent(MatPaginatorApp);
+    const component = fixture.componentInstance;
+    const paginator = component.paginator;
     let isMarkedInitialized = false;
     paginator.initialized.subscribe(() => isMarkedInitialized = true);
 
@@ -159,16 +157,24 @@ describe('MatPaginator', () => {
   }));
 
   it('should not allow a negative pageSize', () => {
+    const fixture = createComponent(MatPaginatorApp);
+    const component = fixture.componentInstance;
+    const paginator = component.paginator;
     paginator.pageSize = -1337;
     expect(paginator.pageSize).toBeGreaterThanOrEqual(0);
   });
 
   it('should not allow a negative pageIndex', () => {
+    const fixture = createComponent(MatPaginatorApp);
+    const component = fixture.componentInstance;
+    const paginator = component.paginator;
     paginator.pageIndex = -42;
     expect(paginator.pageIndex).toBeGreaterThanOrEqual(0);
   });
 
   it('should be able to set the color of the form field', () => {
+    const fixture = createComponent(MatPaginatorApp);
+    const component = fixture.componentInstance;
     const formField: HTMLElement = fixture.nativeElement.querySelector('.mat-form-field');
 
     expect(formField.classList).toContain('mat-primary');
@@ -181,8 +187,14 @@ describe('MatPaginator', () => {
   });
 
   describe('when showing the first and last button', () => {
+    let fixture: ComponentFixture<MatPaginatorApp>;
+    let component: MatPaginatorApp;
+    let paginator: MatPaginator;
 
     beforeEach(() => {
+      fixture = createComponent(MatPaginatorApp);
+      component = fixture.componentInstance;
+      paginator = component.paginator;
       component.showFirstLastButtons = true;
       fixture.detectChanges();
     });
@@ -245,6 +257,9 @@ describe('MatPaginator', () => {
   });
 
   it('should mark for check when inputs are changed directly', () => {
+    const fixture = createComponent(MatPaginatorApp);
+    const component = fixture.componentInstance;
+    const paginator = component.paginator;
     const rangeElement = fixture.nativeElement.querySelector('.mat-paginator-range-label');
 
     expect(rangeElement.innerText.trim()).toBe('1 – 10 of 100');
@@ -270,21 +285,23 @@ describe('MatPaginator', () => {
   });
 
   it('should default the page size options to the page size if no options provided', () => {
-    const withoutOptionsAppFixture = TestBed.createComponent(MatPaginatorWithoutOptionsApp);
-    withoutOptionsAppFixture.detectChanges();
+    const fixture = createComponent(MatPaginatorWithoutOptionsApp);
+    fixture.detectChanges();
 
-    expect(withoutOptionsAppFixture.componentInstance.paginator._displayedPageSizeOptions)
-        .toEqual([10]);
+    expect(fixture.componentInstance.paginator._displayedPageSizeOptions).toEqual([10]);
   });
 
   it('should default the page size to the first page size option if not provided', () => {
-    const withoutPageSizeAppFixture = TestBed.createComponent(MatPaginatorWithoutPageSizeApp);
-    withoutPageSizeAppFixture.detectChanges();
+    const fixture = createComponent(MatPaginatorWithoutPageSizeApp);
+    fixture.detectChanges();
 
-    expect(withoutPageSizeAppFixture.componentInstance.paginator.pageSize).toEqual(10);
+    expect(fixture.componentInstance.paginator.pageSize).toEqual(10);
   });
 
   it('should show a sorted list of page size options including the current page size', () => {
+    const fixture = createComponent(MatPaginatorApp);
+    const component = fixture.componentInstance;
+    const paginator = component.paginator;
     expect(paginator._displayedPageSizeOptions).toEqual([5, 10, 25, 100]);
 
     component.pageSize = 30;
@@ -298,6 +315,10 @@ describe('MatPaginator', () => {
   });
 
   it('should be able to change the page size while keeping the first item present', () => {
+    const fixture = createComponent(MatPaginatorApp);
+    const component = fixture.componentInstance;
+    const paginator = component.paginator;
+
     // Start on the third page of a list of 100 with a page size of 10.
     component.pageIndex = 4;
     component.pageSize = 10;
@@ -339,6 +360,10 @@ describe('MatPaginator', () => {
   });
 
   it('should keep track of the right number of pages', () => {
+    const fixture = createComponent(MatPaginatorApp);
+    const component = fixture.componentInstance;
+    const paginator = component.paginator;
+
     component.pageSize = 10;
     component.length = 100;
     fixture.detectChanges();
@@ -356,6 +381,10 @@ describe('MatPaginator', () => {
   });
 
   it('should show a select only if there are multiple options', () => {
+    const fixture = createComponent(MatPaginatorApp);
+    const component = fixture.componentInstance;
+    const paginator = component.paginator;
+
     expect(paginator._displayedPageSizeOptions).toEqual([5, 10, 25, 100]);
     expect(fixture.nativeElement.querySelector('.mat-select')).not.toBeNull();
 
@@ -367,10 +396,10 @@ describe('MatPaginator', () => {
   });
 
   it('should handle the number inputs being passed in as strings', () => {
-    const withStringFixture = TestBed.createComponent(MatPaginatorWithStringValues);
-    withStringFixture.detectChanges();
+    const fixture = createComponent(MatPaginatorWithStringValues);
+    fixture.detectChanges();
 
-    const withStringPaginator = withStringFixture.componentInstance.paginator;
+    const withStringPaginator = fixture.componentInstance.paginator;
     expect(withStringPaginator.pageIndex).toEqual(0);
     expect(withStringPaginator.length).toEqual(100);
     expect(withStringPaginator.pageSize).toEqual(10);
@@ -378,6 +407,7 @@ describe('MatPaginator', () => {
   });
 
   it('should be able to hide the page size select', () => {
+    const fixture = createComponent(MatPaginatorApp);
     const element = fixture.nativeElement;
 
     expect(element.querySelector('.mat-paginator-page-size'))
@@ -391,6 +421,7 @@ describe('MatPaginator', () => {
   });
 
   it('should be able to disable all the controls in the paginator via the binding', () => {
+    const fixture = createComponent(MatPaginatorApp);
     const select: MatSelect =
         fixture.debugElement.query(By.directive(MatSelect))!.componentInstance;
 
@@ -412,6 +443,25 @@ describe('MatPaginator', () => {
     expect(getNextButton(fixture).hasAttribute('disabled')).toBe(true);
     expect(getFirstButton(fixture).hasAttribute('disabled')).toBe(true);
     expect(getLastButton(fixture).hasAttribute('disabled')).toBe(true);
+  });
+
+
+  it('should be able to configure the default options via a provider', () => {
+    const fixture = createComponent(MatPaginatorWithoutInputsApp, [{
+      provide: MAT_PAGINATOR_DEFAULT_OPTIONS,
+      useValue: {
+        pageSize: 7,
+        pageSizeOptions: [7, 14, 21],
+        hidePageSize: true,
+        showFirstLastButtons: true
+      } as MatPaginatorDefaultOptions
+    }]);
+    const paginator = fixture.componentInstance.paginator;
+
+    expect(paginator.pageSize).toBe(7);
+    expect(paginator.pageSizeOptions).toEqual([7, 14, 21]);
+    expect(paginator.hidePageSize).toBe(true);
+    expect(paginator.showFirstLastButtons).toBe(true);
   });
 
 });

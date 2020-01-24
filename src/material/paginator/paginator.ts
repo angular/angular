@@ -22,6 +22,9 @@ import {
   OnInit,
   Output,
   ViewEncapsulation,
+  InjectionToken,
+  Inject,
+  Optional,
 } from '@angular/core';
 import {Subscription} from 'rxjs';
 import {MatPaginatorIntl} from './paginator-intl';
@@ -58,6 +61,26 @@ export class PageEvent {
   /** The current total number of items being paged */
   length: number;
 }
+
+
+/** Object that can be used to configure the default options for the paginator module. */
+export interface MatPaginatorDefaultOptions {
+  /** Number of items to display on a page. By default set to 50. */
+  pageSize?: number;
+
+  /** The set of provided page size options to display to the user. */
+  pageSizeOptions?: number[];
+
+  /** Whether to hide the page size selection UI from the user. */
+  hidePageSize?: boolean;
+
+  /** Whether to show the first/last buttons UI to the user. */
+  showFirstLastButtons?: boolean;
+}
+
+/** Injection token that can be used to provide the default options for the paginator module. */
+export const MAT_PAGINATOR_DEFAULT_OPTIONS =
+    new InjectionToken<MatPaginatorDefaultOptions>('MAT_PAGINATOR_DEFAULT_OPTIONS');
 
 // Boilerplate for applying mixins to MatPaginator.
 /** @docs-private */
@@ -150,9 +173,31 @@ export class MatPaginator extends _MatPaginatorBase implements OnInit, OnDestroy
   _displayedPageSizeOptions: number[];
 
   constructor(public _intl: MatPaginatorIntl,
-              private _changeDetectorRef: ChangeDetectorRef) {
+              private _changeDetectorRef: ChangeDetectorRef,
+              @Optional() @Inject(MAT_PAGINATOR_DEFAULT_OPTIONS)
+                  defaults?: MatPaginatorDefaultOptions) {
     super();
     this._intlChanges = _intl.changes.subscribe(() => this._changeDetectorRef.markForCheck());
+
+    if (defaults) {
+      const {pageSize, pageSizeOptions, hidePageSize, showFirstLastButtons} = defaults;
+
+      if (pageSize != null) {
+        this._pageSize = pageSize;
+      }
+
+      if (pageSizeOptions != null) {
+        this._pageSizeOptions = pageSizeOptions;
+      }
+
+      if (hidePageSize != null) {
+        this._hidePageSize = hidePageSize;
+      }
+
+      if (showFirstLastButtons != null) {
+        this._showFirstLastButtons = showFirstLastButtons;
+      }
+    }
   }
 
   ngOnInit() {

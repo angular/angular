@@ -1,3 +1,5 @@
+export declare const MAT_PAGINATOR_DEFAULT_OPTIONS: InjectionToken<MatPaginatorDefaultOptions>;
+
 export declare const MAT_PAGINATOR_INTL_PROVIDER: {
     provide: typeof MatPaginatorIntl;
     deps: Optional[][];
@@ -23,7 +25,7 @@ export declare class MatPaginator extends _MatPaginatorBase implements OnInit, O
     set pageSizeOptions(value: number[]);
     get showFirstLastButtons(): boolean;
     set showFirstLastButtons(value: boolean);
-    constructor(_intl: MatPaginatorIntl, _changeDetectorRef: ChangeDetectorRef);
+    constructor(_intl: MatPaginatorIntl, _changeDetectorRef: ChangeDetectorRef, defaults?: MatPaginatorDefaultOptions);
     _changePageSize(pageSize: number): void;
     _nextButtonsDisabled(): boolean;
     _previousButtonsDisabled(): boolean;
@@ -44,6 +46,13 @@ export declare class MatPaginator extends _MatPaginatorBase implements OnInit, O
     static ngAcceptInputType_showFirstLastButtons: BooleanInput;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatPaginator, "mat-paginator", ["matPaginator"], { "disabled": "disabled"; "color": "color"; "pageIndex": "pageIndex"; "length": "length"; "pageSize": "pageSize"; "pageSizeOptions": "pageSizeOptions"; "hidePageSize": "hidePageSize"; "showFirstLastButtons": "showFirstLastButtons"; }, { "page": "page"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatPaginator>;
+}
+
+export interface MatPaginatorDefaultOptions {
+    hidePageSize?: boolean;
+    pageSize?: number;
+    pageSizeOptions?: number[];
+    showFirstLastButtons?: boolean;
 }
 
 export declare class MatPaginatorIntl {
