@@ -70,6 +70,11 @@
           "url": "gettingstarted/create-a-project",
           "title": "Create a project",
           "tooltip": "TBA"
+        },
+        {
+          "url": "gettingstarted/create-a-component",
+          "title": "Create a component",
+          "tooltip": "TBA"
         }
       ]
     },
