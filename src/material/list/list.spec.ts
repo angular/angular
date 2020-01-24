@@ -16,7 +16,7 @@ describe('MatList', () => {
         ListWithOneAnchorItem, ListWithOneItem, ListWithTwoLineItem, ListWithThreeLineItem,
         ListWithAvatar, ListWithItemWithCssClass, ListWithDynamicNumberOfLines,
         ListWithMultipleItems, ListWithManyLines, NavListWithOneAnchorItem, ActionListWithoutType,
-        ActionListWithType, ListWithIndirectDescendantLines
+        ActionListWithType, ListWithIndirectDescendantLines, ListWithDisabledItems,
       ],
     });
 
@@ -275,8 +275,40 @@ describe('MatList', () => {
     expect(listItems[0].nativeElement.className).toContain('mat-2-line');
     expect(listItems[1].nativeElement.className).toContain('mat-2-line');
   });
-});
 
+  it('should be able to disable a single list item', () => {
+    const fixture = TestBed.createComponent(ListWithDisabledItems);
+    const listItems: HTMLElement[] =
+        Array.from(fixture.nativeElement.querySelectorAll('mat-list-item'));
+    fixture.detectChanges();
+
+    expect(listItems.map(item => {
+      return item.classList.contains('mat-list-item-disabled');
+    })).toEqual([false, false, false]);
+
+    fixture.componentInstance.firstItemDisabled = true;
+    fixture.detectChanges();
+
+    expect(listItems.map(item => {
+      return item.classList.contains('mat-list-item-disabled');
+    })).toEqual([true, false, false]);
+  });
+
+  it('should be able to disable the entire list', () => {
+    const fixture = TestBed.createComponent(ListWithDisabledItems);
+    const listItems: HTMLElement[] =
+        Array.from(fixture.nativeElement.querySelectorAll('mat-list-item'));
+    fixture.detectChanges();
+
+    expect(listItems.every(item => item.classList.contains('mat-list-item-disabled'))).toBe(false);
+
+    fixture.componentInstance.listDisabled = true;
+    fixture.detectChanges();
+
+    expect(listItems.every(item => item.classList.contains('mat-list-item-disabled'))).toBe(true);
+  });
+
+});
 
 class BaseTestList {
   items: any[] = [
@@ -424,4 +456,16 @@ class ListWithMultipleItems extends BaseTestList { }
   </mat-list>`
 })
 class ListWithIndirectDescendantLines extends BaseTestList {
+}
+
+
+@Component({template: `
+  <mat-list [disabled]="listDisabled">
+    <mat-list-item [disabled]="firstItemDisabled">One</mat-list-item>
+    <mat-list-item>Two</mat-list-item>
+    <mat-list-item>Three</mat-list-item>
+  </mat-list>`})
+class ListWithDisabledItems {
+  firstItemDisabled = false;
+  listDisabled = false;
 }

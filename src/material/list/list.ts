@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BooleanInput} from '@angular/cdk/coercion';
+import {coerceBooleanProperty, BooleanInput} from '@angular/cdk/coercion';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -21,13 +21,17 @@ import {
   OnChanges,
   OnDestroy,
   ChangeDetectorRef,
+  Input,
 } from '@angular/core';
 import {
+  CanDisable,
+  CanDisableCtor,
   CanDisableRipple,
   CanDisableRippleCtor,
   MatLine,
   setLines,
   mixinDisableRipple,
+  mixinDisabled,
 } from '@angular/material/core';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
@@ -35,8 +39,8 @@ import {takeUntil} from 'rxjs/operators';
 // Boilerplate for applying mixins to MatList.
 /** @docs-private */
 class MatListBase {}
-const _MatListMixinBase: CanDisableRippleCtor & typeof MatListBase =
-    mixinDisableRipple(MatListBase);
+const _MatListMixinBase: CanDisableRippleCtor & CanDisableCtor & typeof MatListBase =
+    mixinDisabled(mixinDisableRipple(MatListBase));
 
 // Boilerplate for applying mixins to MatListItem.
 /** @docs-private */
@@ -53,12 +57,12 @@ const _MatListItemMixinBase: CanDisableRippleCtor & typeof MatListItemBase =
   },
   templateUrl: 'list.html',
   styleUrls: ['list.css'],
-  inputs: ['disableRipple'],
+  inputs: ['disableRipple', 'disabled'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatNavList extends _MatListMixinBase implements CanDisableRipple, OnChanges,
-  OnDestroy {
+export class MatNavList extends _MatListMixinBase implements CanDisable, CanDisableRipple,
+  OnChanges, OnDestroy {
   /** Emits when the state of the list changes. */
   _stateChanges = new Subject<void>();
 
@@ -71,6 +75,7 @@ export class MatNavList extends _MatListMixinBase implements CanDisableRipple, O
   }
 
   static ngAcceptInputType_disableRipple: BooleanInput;
+  static ngAcceptInputType_disabled: BooleanInput;
 }
 
 @Component({
@@ -81,11 +86,12 @@ export class MatNavList extends _MatListMixinBase implements CanDisableRipple, O
     'class': 'mat-list mat-list-base'
   },
   styleUrls: ['list.css'],
-  inputs: ['disableRipple'],
+  inputs: ['disableRipple', 'disabled'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatList extends _MatListMixinBase implements CanDisableRipple, OnChanges, OnDestroy {
+export class MatList extends _MatListMixinBase implements CanDisable, CanDisableRipple, OnChanges,
+  OnDestroy {
   /** Emits when the state of the list changes. */
   _stateChanges = new Subject<void>();
 
@@ -120,6 +126,7 @@ export class MatList extends _MatListMixinBase implements CanDisableRipple, OnCh
   }
 
   static ngAcceptInputType_disableRipple: BooleanInput;
+  static ngAcceptInputType_disabled: BooleanInput;
 }
 
 /**
@@ -158,6 +165,7 @@ export class MatListSubheaderCssMatStyler {}
   exportAs: 'matListItem',
   host: {
     'class': 'mat-list-item',
+    '[class.mat-list-item-disabled]': 'disabled',
     // @breaking-change 8.0.0 Remove `mat-list-item-avatar` in favor of `mat-list-item-with-avatar`.
     '[class.mat-list-item-avatar]': '_avatar || _icon',
     '[class.mat-list-item-with-avatar]': '_avatar || _icon',
@@ -202,6 +210,14 @@ export class MatListItem extends _MatListItemMixinBase implements AfterContentIn
     }
   }
 
+  /** Whether the option is disabled. */
+  @Input()
+  get disabled() { return this._disabled || !!(this._list && this._list.disabled); }
+  set disabled(value: boolean) {
+    this._disabled = coerceBooleanProperty(value);
+  }
+  private _disabled = false;
+
   ngAfterContentInit() {
     setLines(this._lines, this._element);
   }
@@ -223,4 +239,5 @@ export class MatListItem extends _MatListItemMixinBase implements AfterContentIn
   }
 
   static ngAcceptInputType_disableRipple: BooleanInput;
+  static ngAcceptInputType_disabled: BooleanInput;
 }

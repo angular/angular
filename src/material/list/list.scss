@@ -278,8 +278,8 @@ mat-action-list {
     font: inherit;
     outline: inherit;
     -webkit-tap-highlight-color: transparent;
-
     text-align: left;
+
     [dir='rtl'] & {
       text-align: right;
     }
@@ -298,6 +298,10 @@ mat-action-list {
 .mat-list-option:not(.mat-list-item-disabled) {
   cursor: pointer;
   outline: none;
+}
+
+.mat-list-item-disabled {
+  pointer-events: none;
 }
 
 @include cdk-high-contrast {
