@@ -12,7 +12,10 @@ import {InputHarnessFilters} from './input-harness-filters';
 
 /** Harness for interacting with a standard Material inputs in tests. */
 export class MatInputHarness extends MatFormFieldControlHarness {
-  static hostSelector = '[matInput]';
+  // TODO: We do not want to handle `select` elements with `matNativeControl` because
+  // not all methods of this harness work reasonably for native select elements.
+  // For more details. See: https://github.com/angular/components/pull/18221.
+  static hostSelector = '[matInput], input[matNativeControl], textarea[matNativeControl]';
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a `MatInputHarness` that meets
