@@ -58,6 +58,22 @@
       "hidden": true
     },
     {
+      "title": "New Getting Started",
+      "tooltip": "Before You Begin",
+      "children": [
+        {
+          "url": "gettingstarted/before-you-begin",
+          "title": "Before you begin",
+          "tooltip": "TBA"
+        },
+        {
+          "url": "gettingstarted/create-a-project",
+          "title": "Create a project",
+          "tooltip": "TBA"
+        }
+      ]
+    },
+    {
       "title": "Getting Started",
       "tooltip": "Learn the basics by building your first Angular application.",
       "children": [
