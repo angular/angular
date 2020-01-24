@@ -103,7 +103,7 @@ groups:
   # =========================================================
   #  Animations
   # =========================================================
-  animations:
+  fw-animations:
     conditions:
       - >
         contains_any_globs(files, [
@@ -125,28 +125,9 @@ groups:
         - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
-  #  Bazel
-  # =========================================================
-  bazel:
-    conditions:
-      - >
-        contains_any_globs(files, [
-          'packages/bazel/**',
-          'aio/content/guide/bazel.md'
-          ])
-    reviewers:
-      users:
-        - kyliau
-        - igorminar
-        - mgechev
-      teams:
-        - ~framework-global-approvers
-        - ~framework-global-approvers-for-docs-only-changes
-
-  # =========================================================
   #  Compiler
   # =========================================================
-  compiler:
+  fw-compiler:
     conditions:
       - >
         contains_any_globs(files, [
@@ -169,9 +150,9 @@ groups:
         - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
-  #  NGCC
+  #  Compiler / ngcc
   # =========================================================
-  ngcc:
+  fw-ngcc:
     conditions:
       - >
         contains_any_globs(files, [
@@ -208,9 +189,9 @@ groups:
         - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
-  #  Core
+  #  Framework Core
   # =========================================================
-  core:
+  fw-core:
     conditions:
       - >
         contains_any_globs(files, [
@@ -329,7 +310,7 @@ groups:
   # =========================================================
   #  http
   # =========================================================
-  http:
+  fw-http:
     conditions:
       - >
         contains_any_globs(files, [
@@ -351,7 +332,7 @@ groups:
   # =========================================================
   #  Elements
   # =========================================================
-  elements:
+  fw-elements:
     conditions:
       - >
         contains_any_globs(files, [
@@ -372,7 +353,7 @@ groups:
   # =========================================================
   #  Forms
   # =========================================================
-  forms:
+  fw-forms:
     conditions:
       - >
         contains_any_globs(files, [
@@ -422,7 +403,7 @@ groups:
   # =========================================================
   #  Platform Server
   # =========================================================
-  platform-server:
+  fw-platform-server:
     conditions:
       - >
         contains_any_globs(files, [
@@ -440,7 +421,7 @@ groups:
   # =========================================================
   #  Router
   # =========================================================
-  router:
+  fw-router:
     conditions:
       - >
         contains_any_globs(files, [
@@ -460,7 +441,7 @@ groups:
   # =========================================================
   #  Service Worker
   # =========================================================
-  server-worker:
+  fw-server-worker:
     conditions:
       - >
         contains_any_globs(files, [
@@ -487,7 +468,7 @@ groups:
   # =========================================================
   #  Upgrade
   # =========================================================
-  upgrade:
+  fw-upgrade:
     conditions:
       - >
         contains_any_globs(files, [
@@ -517,7 +498,7 @@ groups:
   # =========================================================
   #  Testing
   # =========================================================
-  testing:
+  fw-testing:
     conditions:
       - >
         contains_any_globs(files, [
@@ -538,7 +519,7 @@ groups:
   # =========================================================
   #  i18n
   # =========================================================
-  i18n:
+  fw-i18n:
     conditions:
       - >
         contains_any_globs(files, [
@@ -592,6 +573,25 @@ groups:
         - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
+  #  Bazel
+  # =========================================================
+  bazel:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'packages/bazel/**',
+          'aio/content/guide/bazel.md'
+          ])
+    reviewers:
+      users:
+        - kyliau
+        - igorminar
+        - mgechev
+      teams:
+        - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
+
+  # =========================================================
   #  zone.js
   # =========================================================
   zone-js:
@@ -625,9 +625,9 @@ groups:
         - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
-  #  Integration
+  #  Integration Tests
   # =========================================================
-  integration:
+  integration-tests:
     conditions:
       - >
         contains_any_globs(files, [
@@ -637,6 +637,7 @@ groups:
       users:
         - igorminar
         - josephperrott
+        - kara
         - mhevery
       teams:
         - ~framework-global-approvers
