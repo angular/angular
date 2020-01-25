@@ -45,7 +45,7 @@ task(':test:build-system-config', () => {
   const configOutputPath = join(buildConfig.outputDir, 'karma-system-config.js');
   shelljs.cd(buildConfig.projectDir);
   const bazelGenfilesDir = shelljs.exec('yarn -s bazel info bazel-genfiles').stdout.trim();
-  shelljs.exec('yarn -s bazel build //test:system-config.js --config=view-engine');
+  shelljs.exec('yarn -s bazel build //test:system-config.js');
   shelljs.cp(join(bazelGenfilesDir, 'test/system-config.js'), configOutputPath);
   shelljs.chmod('u+w', configOutputPath);
 });

@@ -121,9 +121,10 @@ function setupFrameworkPackages() {
       var entryPointName = segments.length ? moduleName + '/' + segments.join('/') : moduleName;
       var bundlePath = 'bundles/' + bundleName;
       // When running with Ivy, we need to load the ngcc processed UMD bundles.
-      // These are stored in the "__ivy_ngcc_" folder that has been generated
-      // since we run ngcc with "--create-ivy-entry-points".
-      if (isRunningWithIvy) {
+      // These are stored in the `__ivy_ngcc_` folder that has been generated
+      // since we run ngcc with `--create-ivy-entry-points`. Filter out the compiler
+      // package because it won't be processed by ngcc.
+      if (isRunningWithIvy && entryPointName !== '@angular/compiler') {
         bundlePath = '__ivy_ngcc__/' + bundlePath;
       }
       packagesConfig[entryPointName] = {
