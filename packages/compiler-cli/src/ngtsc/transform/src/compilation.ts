@@ -198,7 +198,8 @@ export class TraitCompiler {
     this.fileToClasses.get(sf) !.add(record.node);
   }
 
-  private scanClassForTraits(clazz: ClassDeclaration): Trait<unknown, unknown, unknown>[]|null {
+  private scanClassForTraits(clazz: ClassDeclaration):
+      PendingTrait<unknown, unknown, unknown>[]|null {
     if (!this.compileNonExportedClasses && !isExported(clazz)) {
       return null;
     }
@@ -209,9 +210,9 @@ export class TraitCompiler {
   }
 
   protected detectTraits(clazz: ClassDeclaration, decorators: Decorator[]|null):
-      Trait<unknown, unknown, unknown>[]|null {
+      PendingTrait<unknown, unknown, unknown>[]|null {
     let record: ClassRecord|null = this.recordFor(clazz);
-    let foundTraits: Trait<unknown, unknown, unknown>[] = [];
+    let foundTraits: PendingTrait<unknown, unknown, unknown>[] = [];
 
     for (const handler of this.handlers) {
       const result = handler.detect(clazz, decorators);
@@ -308,7 +309,7 @@ export class TraitCompiler {
           preanalysis = trait.handler.preanalyze(clazz, trait.detected.metadata) || null;
         } catch (err) {
           if (err instanceof FatalDiagnosticError) {
-            (trait as PendingTrait<unknown, unknown, unknown>).toErrored([err.toDiagnostic()]);
+            trait.toErrored([err.toDiagnostic()]);
             return;
           } else {
             throw err;

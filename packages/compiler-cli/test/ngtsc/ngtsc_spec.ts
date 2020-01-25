@@ -3578,9 +3578,7 @@ runInEachFileSystem(os => {
 
           const diags = await driveDiagnostics();
           expect(diags[0].messageText).toBe('component is missing a template');
-          expect(diags[0].file !.fileName).toContain('test.ts');
-          expect(diags[0].start).toBeDefined();
-          expect(diags[0].length).toBeDefined();
+          expect(diags[0].file !.fileName).toBe(absoluteFrom('/test.ts'));
         });
 
         it('should throw if `styleUrls` is defined incorrectly in @Component', async() => {
@@ -3597,9 +3595,7 @@ runInEachFileSystem(os => {
 
           const diags = await driveDiagnostics();
           expect(diags[0].messageText).toBe('styleUrls must be an array of strings');
-          expect(diags[0].file !.fileName).toContain('test.ts');
-          expect(diags[0].start).toBeDefined();
-          expect(diags[0].length).toBeDefined();
+          expect(diags[0].file !.fileName).toBe(absoluteFrom('/test.ts'));
         });
       });
     });
