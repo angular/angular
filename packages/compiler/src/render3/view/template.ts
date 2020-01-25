@@ -520,7 +520,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   visitElement(element: t.Element) {
     const elementIndex = this.allocateDataSlot();
-    const stylingBuilder = new StylingBuilder(o.literal(elementIndex), null);
+    const stylingBuilder = new StylingBuilder(null);
 
     let isNonBindableMode: boolean = false;
     const isI18nRootElement: boolean =

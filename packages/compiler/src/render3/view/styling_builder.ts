@@ -167,7 +167,7 @@ export class StylingBuilder {
   private _initialStyleValues: string[] = [];
   private _initialClassValues: string[] = [];
 
-  constructor(private _elementIndexExpr: o.Expression, private _directiveExpr: o.Expression|null) {}
+  constructor(private _directiveExpr: o.Expression|null) {}
 
   /**
    * Registers a given input to the styling builder to be later used when producing AOT code.
