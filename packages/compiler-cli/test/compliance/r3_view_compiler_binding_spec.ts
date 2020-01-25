@@ -672,7 +672,7 @@ describe('compiler compliance: bindings', () => {
         type: HostBindingDir,
         selectors: [["", "hostBindingDir", ""]],
           hostVars: 1,
-          hostBindings: function HostBindingDir_HostBindings(rf, ctx, elIndex) {
+          hostBindings: function HostBindingDir_HostBindings(rf, ctx) {
             if (rf & 2) {
               $r3$.ɵɵhostProperty("id", ctx.dirId);
             }
@@ -716,7 +716,7 @@ describe('compiler compliance: bindings', () => {
           type: HostBindingComp,
           selectors: [["host-binding-comp"]],
           hostVars: 3,
-          hostBindings: function HostBindingComp_HostBindings(rf, ctx, elIndex) {
+          hostBindings: function HostBindingComp_HostBindings(rf, ctx) {
             if (rf & 2) {
               $r3$.ɵɵhostProperty("id", $r3$.ɵɵpureFunction1(1, $ff$, ctx.id));
             }
@@ -761,7 +761,7 @@ describe('compiler compliance: bindings', () => {
           type: HostAttributeDir,
           selectors: [["", "hostAttributeDir", ""]],
           hostVars: 1,
-          hostBindings: function HostAttributeDir_HostBindings(rf, ctx, elIndex) {
+          hostBindings: function HostAttributeDir_HostBindings(rf, ctx) {
             if (rf & 2) {
               $r3$.ɵɵattribute("required", ctx.required);
             }
@@ -857,7 +857,7 @@ describe('compiler compliance: bindings', () => {
           selectors: [["", "hostAttributeDir", ""]],
           hostAttrs: ["title", "hello there from directive", ${AttributeMarker.Classes}, "one", "two", ${AttributeMarker.Styles}, "width", "200px", "height", "500px"],
           hostVars: 4,
-          hostBindings: function HostAttributeDir_HostBindings(rf, ctx, elIndex) {
+          hostBindings: function HostAttributeDir_HostBindings(rf, ctx) {
             …
           }
     `;
@@ -891,7 +891,7 @@ describe('compiler compliance: bindings', () => {
       const result = compile(files, angularFiles);
       const template = `
           …
-          hostBindings: function MyDirective_HostBindings(rf, ctx, elIndex) {
+          hostBindings: function MyDirective_HostBindings(rf, ctx) {
             …
             if (rf & 2) {
               $r3$.ɵɵhostProperty("title", ctx.myTitle)("tabindex", 1)("id", ctx.myId);
@@ -927,7 +927,7 @@ describe('compiler compliance: bindings', () => {
       const result = compile(files, angularFiles);
       const template = `
           …
-          hostBindings: function MyDirective_HostBindings(rf, ctx, elIndex) {
+          hostBindings: function MyDirective_HostBindings(rf, ctx) {
             …
             if (rf & 2) {
               $r3$.ɵɵhostProperty("tabindex", 1)("title", ctx.myTitle)("id", ctx.myId);
@@ -959,7 +959,7 @@ describe('compiler compliance: bindings', () => {
       const result = compile(files, angularFiles);
       const template = `
           …
-          hostBindings: function MyDirective_HostBindings(rf, ctx, elIndex) {
+          hostBindings: function MyDirective_HostBindings(rf, ctx) {
             …
             if (rf & 2) {
               $r3$.ɵɵhostProperty("title", "my title")("id", "my-id");
@@ -995,7 +995,7 @@ describe('compiler compliance: bindings', () => {
       const result = compile(files, angularFiles);
       const template = `
         …
-        hostBindings: function MyDirective_HostBindings(rf, ctx, elIndex) {
+        hostBindings: function MyDirective_HostBindings(rf, ctx) {
           …
           if (rf & 2) {
             $r3$.ɵɵupdateSyntheticHostBinding("@expand", ctx.expandedState)("@fadeOut", true)("@shrink", ctx.isSmall);
@@ -1030,7 +1030,7 @@ describe('compiler compliance: bindings', () => {
       const result = compile(files, angularFiles);
       const template = `
           …
-          hostBindings: function MyDirective_HostBindings(rf, ctx, elIndex) {
+          hostBindings: function MyDirective_HostBindings(rf, ctx) {
             …
             if (rf & 2) {
               $r3$.ɵɵattribute("title", ctx.myTitle)("tabindex", 1)("id", ctx.myId);
@@ -1066,7 +1066,7 @@ describe('compiler compliance: bindings', () => {
       const result = compile(files, angularFiles);
       const template = `
           …
-          hostBindings: function MyDirective_HostBindings(rf, ctx, elIndex) {
+          hostBindings: function MyDirective_HostBindings(rf, ctx) {
             …
             if (rf & 2) {
               $r3$.ɵɵattribute("tabindex", 1)("title", ctx.myTitle)("id", ctx.myId);
@@ -1098,7 +1098,7 @@ describe('compiler compliance: bindings', () => {
       const result = compile(files, angularFiles);
       const template = `
             …
-            hostBindings: function MyDirective_HostBindings(rf, ctx, elIndex) {
+            hostBindings: function MyDirective_HostBindings(rf, ctx) {
               …
               if (rf & 2) {
                 $r3$.ɵɵhostProperty("tabindex", 1);
@@ -1136,7 +1136,7 @@ describe('compiler compliance: bindings', () => {
       const result = compile(files, angularFiles);
       const template = `
           …
-          hostBindings: function MyDirective_HostBindings(rf, ctx, elIndex) {
+          hostBindings: function MyDirective_HostBindings(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵɵlistener("mousedown", function MyDirective_mousedown_HostBindingHandler($event) { return ctx.mousedown(); })("mouseup", function MyDirective_mouseup_HostBindingHandler($event) { return ctx.mouseup(); })("click", function MyDirective_click_HostBindingHandler($event) { return ctx.click(); });
             }
@@ -1169,7 +1169,7 @@ describe('compiler compliance: bindings', () => {
       const result = compile(files, angularFiles);
       const template = `
           …
-          hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
+          hostBindings: function MyComponent_HostBindings(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵɵcomponentHostSyntheticListener("@animation.done", function MyComponent_animation_animation_done_HostBindingHandler($event) { return ctx.done(); })("@animation.start", function MyComponent_animation_animation_start_HostBindingHandler($event) { return ctx.start(); });
             }
@@ -1207,7 +1207,7 @@ describe('compiler compliance: bindings', () => {
       const result = compile(files, angularFiles);
       const template = `
         …
-        hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
+        hostBindings: function MyComponent_HostBindings(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵcomponentHostSyntheticListener("@animation.done", function MyComponent_animation_animation_done_HostBindingHandler($event) { return ctx.done(); })("@animation.start", function MyComponent_animation_animation_start_HostBindingHandler($event) { return ctx.start(); });
             $r3$.ɵɵlistener("mousedown", function MyComponent_mousedown_HostBindingHandler($event) { return ctx.mousedown(); })("mouseup", function MyComponent_mouseup_HostBindingHandler($event) { return ctx.mouseup(); })("click", function MyComponent_click_HostBindingHandler($event) { return ctx.click(); });

@@ -100,7 +100,7 @@ export function setHostBindingsByExecutingExpandoInstructions(tView: TView, lVie
           if (instruction !== null) {
             setBindingRootForHostBindings(bindingRootIndex);
             const hostCtx = lView[currentDirectiveIndex];
-            instruction(RenderFlags.Update, hostCtx, currentElementIndex);
+            instruction(RenderFlags.Update, hostCtx);
           }
           // TODO(misko): PERF Relying on incrementing the `currentDirectiveIndex` here is
           // sub-optimal. The implications are that if we have a lot of directives but none of them
@@ -1266,7 +1266,7 @@ function invokeDirectivesHostBindings(tView: TView, lView: LView, tNode: TNode) 
       const def = tView.data[i] as DirectiveDef<any>;
       const directive = lView[i];
       if (def.hostBindings !== null || def.hostVars !== 0 || def.hostAttrs !== null) {
-        invokeHostBindingsInCreationMode(def, directive, tNode);
+        invokeHostBindingsInCreationMode(def, directive);
       } else if (firstCreatePass) {
         expando.push(null);
       }
@@ -1281,13 +1281,10 @@ function invokeDirectivesHostBindings(tView: TView, lView: LView, tNode: TNode) 
  *
  * @param def `DirectiveDef` which may contain the `hostBindings` function.
  * @param directive Instance of directive.
- * @param tNode Associated `TNode`.
  */
-export function invokeHostBindingsInCreationMode(
-    def: DirectiveDef<any>, directive: any, tNode: TNode) {
+export function invokeHostBindingsInCreationMode(def: DirectiveDef<any>, directive: any) {
   if (def.hostBindings !== null) {
-    const elementIndex = tNode.index - HEADER_OFFSET;
-    def.hostBindings !(RenderFlags.Create, directive, elementIndex);
+    def.hostBindings !(RenderFlags.Create, directive);
   }
 }
 

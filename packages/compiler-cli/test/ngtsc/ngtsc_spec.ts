@@ -2210,7 +2210,7 @@ runInEachFileSystem(os => {
       env.driveMain();
       const jsContents = env.getContents('test.js');
       const hostBindingsFn = `
-      hostBindings: function FooCmp_HostBindings(rf, ctx, elIndex) {
+      hostBindings: function FooCmp_HostBindings(rf, ctx) {
         if (rf & 1) {
           i0.ɵɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick(); })("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onDocumentClick($event.target); }, false, i0.ɵɵresolveDocument)("scroll", function FooCmp_scroll_HostBindingHandler($event) { return ctx.onWindowScroll(); }, false, i0.ɵɵresolveWindow);
         }
@@ -2341,7 +2341,7 @@ runInEachFileSystem(os => {
       const jsContents = env.getContents('test.js');
       const hostBindingsFn = `
       hostVars: 4,
-      hostBindings: function FooCmp_HostBindings(rf, ctx, elIndex) {
+      hostBindings: function FooCmp_HostBindings(rf, ctx) {
         if (rf & 1) {
           i0.ɵɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick($event); })("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onBodyClick($event); }, false, i0.ɵɵresolveBody)("change", function FooCmp_change_HostBindingHandler($event) { return ctx.onChange(ctx.arg1, ctx.arg2, ctx.arg3); });
         }
@@ -2419,7 +2419,7 @@ runInEachFileSystem(os => {
       env.driveMain();
       const jsContents = env.getContents('test.js');
       const hostBindingsFn = `
-      hostBindings: function Dir_HostBindings(rf, ctx, elIndex) {
+      hostBindings: function Dir_HostBindings(rf, ctx) {
         if (rf & 1) {
           i0.ɵɵlistener("change", function Dir_change_HostBindingHandler($event) { return ctx.onChange(ctx.arg); });
         }
@@ -4263,7 +4263,7 @@ runInEachFileSystem(os => {
            const jsContents = env.getContents('test.js');
            const hostBindingsFn = `
         hostVars: 6,
-        hostBindings: function UnsafeAttrsDirective_HostBindings(rf, ctx, elIndex) {
+        hostBindings: function UnsafeAttrsDirective_HostBindings(rf, ctx) {
           if (rf & 2) {
             i0.ɵɵattribute("href", ctx.attrHref, i0.ɵɵsanitizeUrlOrResourceUrl)("src", ctx.attrSrc, i0.ɵɵsanitizeUrlOrResourceUrl)("action", ctx.attrAction, i0.ɵɵsanitizeUrl)("profile", ctx.attrProfile, i0.ɵɵsanitizeResourceUrl)("innerHTML", ctx.attrInnerHTML, i0.ɵɵsanitizeHtml)("title", ctx.attrSafeTitle);
           }
@@ -4311,7 +4311,7 @@ runInEachFileSystem(os => {
            const jsContents = env.getContents('test.js');
            const hostBindingsFn = `
         hostVars: 6,
-        hostBindings: function UnsafePropsDirective_HostBindings(rf, ctx, elIndex) {
+        hostBindings: function UnsafePropsDirective_HostBindings(rf, ctx) {
           if (rf & 2) {
             i0.ɵɵhostProperty("href", ctx.propHref, i0.ɵɵsanitizeUrlOrResourceUrl)("src", ctx.propSrc, i0.ɵɵsanitizeUrlOrResourceUrl)("action", ctx.propAction, i0.ɵɵsanitizeUrl)("profile", ctx.propProfile, i0.ɵɵsanitizeResourceUrl)("innerHTML", ctx.propInnerHTML, i0.ɵɵsanitizeHtml)("title", ctx.propSafeTitle);
           }
@@ -4344,7 +4344,7 @@ runInEachFileSystem(os => {
            const jsContents = env.getContents('test.js');
            const hostBindingsFn = `
         hostVars: 6,
-        hostBindings: function FooCmp_HostBindings(rf, ctx, elIndex) {
+        hostBindings: function FooCmp_HostBindings(rf, ctx) {
           if (rf & 2) {
             i0.ɵɵhostProperty("src", ctx.srcProp)("href", ctx.hrefProp)("title", ctx.titleProp);
             i0.ɵɵattribute("src", ctx.srcAttr)("href", ctx.hrefAttr)("title", ctx.titleAttr);

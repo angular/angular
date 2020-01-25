@@ -172,9 +172,9 @@ function inheritHostBindings(
     definition: WritableDef, superHostBindings: HostBindingsFunction<any>) {
   const prevHostBindings = definition.hostBindings;
   if (prevHostBindings) {
-    definition.hostBindings = (rf: RenderFlags, ctx: any, elementIndex: number) => {
-      superHostBindings(rf, ctx, elementIndex);
-      prevHostBindings(rf, ctx, elementIndex);
+    definition.hostBindings = (rf: RenderFlags, ctx: any) => {
+      superHostBindings(rf, ctx);
+      prevHostBindings(rf, ctx);
     };
   } else {
     definition.hostBindings = superHostBindings;
