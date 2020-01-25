@@ -478,7 +478,7 @@ When targeting browsers that do not support ES2015, such as IE11, you must do tw
   1. Downlevel all JavaScript to ES5 so that the code is syntactically compatible.
   2. Load [polyfills](guide/browser-support#polyfills) to fill in any missing modern browser APIs that your application needs.
 
-[Differential loading](guide/glossary#differential_loading) is a technique of building and loading your application that meets both of these requirements, without penalizing users with modern browsers by having them download code that only older browsers need. When differential loading is enabled (which is the default) the CLI builds two separate bundles as part of your deployed application.
+[Differential loading](guide/glossary#differential-loading) is a technique of building and loading your application that meets both of these requirements, without penalizing users with modern browsers by having them download code that only older browsers need. When differential loading is enabled (which is the default) the CLI builds two separate bundles as part of your deployed application.
 
 * The first bundle contains modern ES2015 syntax, takes advantage of built-in support in modern browsers, ships fewer polyfills, and results in a smaller bundle size.
 
