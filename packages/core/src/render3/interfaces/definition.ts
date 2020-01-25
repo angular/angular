@@ -443,8 +443,7 @@ export type DirectiveTypeList =
     (DirectiveType<any>| ComponentType<any>|
      Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
 
-export type HostBindingsFunction<T> =
-    <U extends T>(rf: RenderFlags, ctx: U, elementIndex: number) => void;
+export type HostBindingsFunction<T> = <U extends T>(rf: RenderFlags, ctx: U) => void;
 
 /**
  * Type used for PipeDefs on component definition.

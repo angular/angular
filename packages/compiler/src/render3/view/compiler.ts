@@ -63,7 +63,7 @@ function baseDirectiveFields(
         'viewQuery', createViewQueriesFunction(meta.viewQueries, constantPool, meta.name));
   }
 
-  // e.g. `hostBindings: (rf, ctx, elIndex) => { ... }
+  // e.g. `hostBindings: (rf, ctx) => { ... }
   definitionMap.set(
       'hostBindings', createHostBindingsFunction(
                           meta.host, meta.typeSourceSpan, bindingParser, constantPool,
@@ -530,9 +530,8 @@ function createHostBindingsFunction(
     hostBindingsMetadata: R3HostMetadata, typeSourceSpan: ParseSourceSpan,
     bindingParser: BindingParser, constantPool: ConstantPool, selector: string, name: string,
     definitionMap: DefinitionMap): o.Expression|null {
-  const elVarExp = o.variable('elIndex');
   const bindingContext = o.variable(CONTEXT_NAME);
-  const styleBuilder = new StylingBuilder(elVarExp, bindingContext);
+  const styleBuilder = new StylingBuilder(bindingContext);
 
   const {styleAttr, classAttr} = hostBindingsMetadata.specialAttributes;
   if (styleAttr !== undefined) {
@@ -698,11 +697,8 @@ function createHostBindingsFunction(
       statements.push(renderFlagCheckIfStmt(core.RenderFlags.Update, updateStatements));
     }
     return o.fn(
-        [
-          new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, null),
-          new o.FnParam(elVarExp.name !, o.NUMBER_TYPE)
-        ],
-        statements, o.INFERRED_TYPE, null, hostBindingsFnName);
+        [new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, null)], statements,
+        o.INFERRED_TYPE, null, hostBindingsFnName);
   }
 
   return null;

@@ -245,7 +245,7 @@ export function createRootComponent<T>(
     addHostBindingsToExpandoInstructions(rootTView, componentDef);
     growHostVarsSpace(rootTView, rootLView, componentDef.hostVars);
 
-    invokeHostBindingsInCreationMode(componentDef, component, rootTNode);
+    invokeHostBindingsInCreationMode(componentDef, component);
   }
   return component;
 }
