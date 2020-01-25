@@ -334,7 +334,7 @@ describe('compiler compliance: styling', () => {
         MyAnimDir.ɵdir = $r3$.ɵɵdefineDirective({
           …
           hostVars: 1,
-          hostBindings: function MyAnimDir_HostBindings(rf, ctx, elIndex) {
+          hostBindings: function MyAnimDir_HostBindings(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵɵcomponentHostSyntheticListener("@myAnim.start", function MyAnimDir_animation_myAnim_start_HostBindingHandler($event) { return ctx.onStart(); })("@myAnim.done", function MyAnimDir_animation_myAnim_done_HostBindingHandler($event) { return ctx.onDone(); });
             } if (rf & 2) {
@@ -1007,7 +1007,7 @@ describe('compiler compliance: styling', () => {
       const template = `
           hostAttrs: [${AttributeMarker.Classes}, "foo", "baz", ${AttributeMarker.Styles}, "width", "200px", "height", "500px"],
           hostVars: 8,
-          hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
+          hostBindings: function MyComponent_HostBindings(rf, ctx) {
             if (rf & 2) {
               $r3$.ɵɵstyleMap(ctx.myStyle, $r3$.ɵɵdefaultStyleSanitizer);
               $r3$.ɵɵclassMap(ctx.myClass);
@@ -1062,7 +1062,7 @@ describe('compiler compliance: styling', () => {
 
       const template = `
           hostVars: 12,
-          hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
+          hostBindings: function MyComponent_HostBindings(rf, ctx) {
             if (rf & 2) {
               $r3$.ɵɵstyleMap(ctx.myStyle, $r3$.ɵɵdefaultStyleSanitizer);
               $r3$.ɵɵclassMap(ctx.myClasses);
@@ -1131,7 +1131,7 @@ describe('compiler compliance: styling', () => {
 
          const hostBindings = `
             hostVars: 8,
-            hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
+            hostBindings: function MyComponent_HostBindings(rf, ctx) {
               if (rf & 2) {
                 $r3$.ɵɵstyleMap(ctx.myStyleExp, $r3$.ɵɵdefaultStyleSanitizer);
                 $r3$.ɵɵclassMap(ctx.myClassExp);
@@ -1195,14 +1195,14 @@ describe('compiler compliance: styling', () => {
          const template = `
           …
           hostVars: 2,
-          hostBindings: function ClassDirective_HostBindings(rf, ctx, elIndex) {
+          hostBindings: function ClassDirective_HostBindings(rf, ctx) {
             if (rf & 2) {
               $r3$.ɵɵclassMap(ctx.myClassMap);
             }
           }
           …
           hostVars: 4,
-          hostBindings: function WidthDirective_HostBindings(rf, ctx, elIndex) {
+          hostBindings: function WidthDirective_HostBindings(rf, ctx) {
             if (rf & 2) {
               $r3$.ɵɵstyleProp("width", ctx.myWidth);
               $r3$.ɵɵclassProp("foo", ctx.myFooClass);
@@ -1210,7 +1210,7 @@ describe('compiler compliance: styling', () => {
           }
           …
           hostVars: 4,
-          hostBindings: function HeightDirective_HostBindings(rf, ctx, elIndex) {
+          hostBindings: function HeightDirective_HostBindings(rf, ctx) {
             if (rf & 2) {
               $r3$.ɵɵstyleProp("height", ctx.myHeight);
               $r3$.ɵɵclassProp("bar", ctx.myBarClass);
@@ -1804,7 +1804,7 @@ describe('compiler compliance: styling', () => {
          …
          MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
           …
-          hostBindings: function MyComponent_HostBindings(rf, $ctx$, elIndex) {
+          hostBindings: function MyComponent_HostBindings(rf, $ctx$) {
             …
             if (rf & 2) {
               $r3$.ɵɵstyleProp("color", $ctx$.color)("transition", $ctx$.transition)("border", $ctx$.border);
@@ -1861,7 +1861,7 @@ describe('compiler compliance: styling', () => {
     const template = `
       hostAttrs: ["title", "foo title", ${AttributeMarker.Classes}, "foo", "baz", ${AttributeMarker.Styles}, "width", "200px", "height", "500px"],
       hostVars: 6,
-      hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
+      hostBindings: function MyComponent_HostBindings(rf, ctx) {
         if (rf & 2) {
           $r3$.ɵɵhostProperty("id", ctx.id)("title", ctx.title);
           $r3$.ɵɵstyleMap(ctx.myStyle, $r3$.ɵɵdefaultStyleSanitizer);
@@ -1900,7 +1900,7 @@ describe('compiler compliance: styling', () => {
 
     const template = `
     hostVars: 6,
-    hostBindings: function WidthDirective_HostBindings(rf, ctx, elIndex) {
+    hostBindings: function WidthDirective_HostBindings(rf, ctx) {
         if (rf & 2) {
           $r3$.ɵɵhostProperty("id", ctx.id)("title", ctx.title);
           $r3$.ɵɵstyleProp("width", ctx.myWidth);
@@ -2062,7 +2062,7 @@ describe('compiler compliance: styling', () => {
 
       const template = `
           hostVars: 10,
-          hostBindings: function MyDir_HostBindings(rf, ctx, elIndex) {
+          hostBindings: function MyDir_HostBindings(rf, ctx) {
             if (rf & 2) {
               $r3$.ɵɵhostProperty("title", ctx.title);
               $r3$.ɵɵupdateSyntheticHostBinding("@anim",
