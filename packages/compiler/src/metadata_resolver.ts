@@ -668,7 +668,7 @@ export class CompileMetadataResolver {
           `provider for the NgModule '${stringifyType(moduleType)}'`, [], moduleType));
     }
 
-    if (meta.entryComponents) {
+    if (meta.entryComponents && (meta.entryComponents as any[]).indexOf(undefined) < 0) {
       entryComponents.push(...flattenAndDedupeArray(meta.entryComponents)
                                .map(type => this._getEntryComponentMetadata(type) !));
     }
