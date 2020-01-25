@@ -3,7 +3,7 @@
     "master": {
       "uncompressed": {
         "runtime-es2015": 2987,
-        "main-es2015": 455991,
+        "main-es2015": 456581,
         "polyfills-es2015": 52487
       }
     }
