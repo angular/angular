@@ -311,7 +311,7 @@ describe('definitions', () => {
 
       expect(definitions).toBeDefined();
       // The two definitions are setter and getter of 'ngForTrackBy'.
-      expect(definitions !.length).toBe(4);
+      expect(definitions !.length).toBe(2);
 
       const refFileName = '/node_modules/@angular/common/common.d.ts';
       definitions !.forEach(def => {
@@ -335,7 +335,7 @@ describe('definitions', () => {
       expect(textSpan).toEqual(marker);
 
       expect(definitions).toBeDefined();
-      expect(definitions !.length).toBe(2);
+      expect(definitions !.length).toBe(1);
 
       const refFileName = '/app/parsing-cases.ts';
       const def = definitions ![0];

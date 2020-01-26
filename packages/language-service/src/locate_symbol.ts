@@ -29,6 +29,8 @@ export function locateSymbols(info: AstResult, position: number): SymbolInfo[] {
   const templatePosition = position - info.template.span.start;
   // TODO: update `findTemplateAstAt` to use absolute positions.
   const path = findTemplateAstAt(info.templateAst, templatePosition);
+  const attribute = findAttribute(info, position);
+
   if (!path.tail) return [];
 
   const narrowest = spanOf(path.tail);
@@ -36,6 +38,11 @@ export function locateSymbols(info: AstResult, position: number): SymbolInfo[] {
   for (let node: TemplateAst|undefined = path.tail;
        node && isNarrower(spanOf(node.sourceSpan), narrowest); node = path.parentOf(node)) {
     toVisit.push(node);
+  }
+
+  // For the structural directive, only care about the last template AST.
+  if (attribute?.name.startsWith('*')) {
+    toVisit.splice(0, toVisit.length - 1);
   }
 
   return toVisit.map(ast => locateSymbol(ast, path, info))
