@@ -1184,7 +1184,7 @@ describe('acceptance integration tests', () => {
 
                 @Component({
                   template: `
-              <div DirWithSingleStylingBindings class="abc" style="width:100px; height:200px"></div>
+              <div DirWithSingleStylingBindings class="abc" style="width:100px;"></div>
             `
                 })
                 class App {
@@ -1198,7 +1198,7 @@ describe('acceptance integration tests', () => {
                 const dirInstance = fixture.componentInstance.dirInstance;
                 const target: HTMLDivElement = fixture.nativeElement.querySelector('div');
                 expect(target.style.getPropertyValue('width')).toEqual('100px');
-                expect(target.style.getPropertyValue('height')).toEqual('200px');
+                expect(target.style.getPropertyValue('height')).toEqual('');
                 expect(target.classList.contains('abc')).toBeTruthy();
                 expect(target.classList.contains('def')).toBeTruthy();
                 expect(target.classList.contains('xyz')).toBeFalsy();
@@ -1208,7 +1208,7 @@ describe('acceptance integration tests', () => {
                 dirInstance.activateXYZClass = true;
                 fixture.detectChanges();
 
-                expect(target.style.getPropertyValue('width')).toEqual('444px');
+                expect(target.style.getPropertyValue('width')).toEqual('100px');
                 expect(target.style.getPropertyValue('height')).toEqual('999px');
                 expect(target.classList.contains('abc')).toBeTruthy();
                 expect(target.classList.contains('def')).toBeTruthy();
@@ -1219,7 +1219,7 @@ describe('acceptance integration tests', () => {
                 fixture.detectChanges();
 
                 expect(target.style.getPropertyValue('width')).toEqual('100px');
-                expect(target.style.getPropertyValue('height')).toEqual('200px');
+                expect(target.style.getPropertyValue('height')).toEqual('');
                 expect(target.classList.contains('abc')).toBeTruthy();
                 expect(target.classList.contains('def')).toBeTruthy();
                 expect(target.classList.contains('xyz')).toBeTruthy();
