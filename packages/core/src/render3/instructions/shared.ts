@@ -24,7 +24,7 @@ import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags} fr
 import {ACTIVE_INDEX, ActiveIndexFlag, CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS} from '../interfaces/container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
 import {INJECTOR_BLOOM_PARENT_SIZE, NodeInjectorFactory} from '../interfaces/injector';
-import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliasValue, PropertyAliases, TAttributes, TConstants, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode, TViewNode} from '../interfaces/node';
+import {AttributeMarker, DirectiveDefs, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliasValue, PropertyAliases, TAttributes, TConstants, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode, TViewNode} from '../interfaces/node';
 import {RComment, RElement, RNode, RText, Renderer3, RendererFactory3, isProceduralRenderer} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentDef, isComponentHost, isContentQueryHost, isLContainer, isRootView} from '../interfaces/type_checks';
@@ -98,7 +98,7 @@ export function setHostBindingsByExecutingExpandoInstructions(tView: TView, lVie
         } else {
           // If it's not a number, it's a host binding function that needs to be executed.
           if (instruction !== null) {
-            setBindingRootForHostBindings(bindingRootIndex);
+            setBindingRootForHostBindings(bindingRootIndex, currentDirectiveIndex);
             const hostCtx = lView[currentDirectiveIndex];
             instruction(RenderFlags.Update, hostCtx);
           }
@@ -824,11 +824,12 @@ export function createTNode(
                          tParent,    // parent: TElementNode|TContainerNode|null
                          null,       // projection: number|(ITNode|RNode[])[]|null
                          null,       // styles: string|null
-                         undefined,  // stylesMap: string|null
+                         undefined,  // residualStyles: string|null
                          null,       // classes: string|null
-                         undefined,  // classesMap: string|null
+                         undefined,  // residualClasses: string|null
                          0 as any,   // classBindings: TStylingRange;
                          0 as any,   // styleBindings: TStylingRange;
+                         null,       // directives: TDirectiveDefs|null;
                          ) :
                      {
                        type: type,
@@ -853,11 +854,12 @@ export function createTNode(
                        parent: tParent,
                        projection: null,
                        styles: null,
-                       stylesMap: undefined,
+                       residualStyles: undefined,
                        classes: null,
-                       classesMap: undefined,
+                       residualClasses: undefined,
                        classBindings: 0 as any,
                        styleBindings: 0 as any,
+                       directives: null
                      };
 }
 
@@ -1111,6 +1113,7 @@ export function resolveDirectives(
     const exportsMap: ({[key: string]: number} | null) = localRefs === null ? null : {'': -1};
 
     if (directiveDefs !== null) {
+      tNode.directives = [DirectiveDefs.INITIAL_STYLING_CURSOR_VALUE];
       let totalDirectiveHostVars = 0;
       hasDirectives = true;
       initTNodeFlags(tNode, tView.data.length, directiveDefs.length);
@@ -1129,6 +1132,7 @@ export function resolveDirectives(
       let preOrderCheckHooksFound = false;
       for (let i = 0; i < directiveDefs.length; i++) {
         const def = directiveDefs[i];
+        tNode.directives.push(def);
         // Merge the attrs in the order of matches. This assumes that the first directive is the
         // component itself, so that the component has the least priority.
         tNode.mergedAttrs = mergeHostAttrs(tNode.mergedAttrs, def.hostAttrs);

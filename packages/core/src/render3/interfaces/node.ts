@@ -8,6 +8,7 @@
 import {ArrayMap} from '../../util/array_utils';
 import {TStylingRange} from '../interfaces/styling';
 
+import {DirectiveDef} from './definition';
 import {CssSelector} from './projection';
 import {RNode} from './renderer';
 import {LView, TView} from './view';
@@ -346,6 +347,11 @@ export interface TNode {
   mergedAttrs: TAttributes|null;
 
   /**
+   * Stores the directives associated with the current TNode (along with style cursor.)
+   */
+  directives: TDirectiveDefs|null;
+
+  /**
    * A set of local names under which a given element is exported in a template and
    * visible to queries. An entry in this array can be created for different reasons:
    * - an element itself is referenced, ex.: `<div #foo>`
@@ -490,18 +496,33 @@ export interface TNode {
   styles: string|null;
 
   /**
-   * An `ArrayMap` version of `styles.
+   * An `ArrayMap` version of residual `styles`.
    *
-   * We need this when style bindings are resolving. This gets populated only if there are styling
-   * binding instructions. The laziness is important since we don't want to allocate the memory
-   * because most styling is static. For tree shaking purposes the code to create these only comes
-   * with styling.
+   * When there are styling instructions than each instruction stores the static styling
+   * which is of lower priority than itself. This means that there may be a higher priority styling
+   * than the instruction.
+   *
+   * Imagine:
+   * ```
+   * <div style="color: highest;" my-dir>
+   *
+   * @Directive({
+   *   host: {
+   *     style: 'color: lowest; ',
+   *     '[class.color]': 'exp' // ɵɵstyleProp('color', ctx.exp);
+   *   }
+   * })
+   * ```
+   *
+   * In the above case:
+   * - `color: lowest` is stored with `ɵɵstyleProp('color', ctx.exp);` instruction
+   * -  `color: highest` is the residual and is stored here.
    *
    * - `undefined': not initialized.
    * - `null`: initialized but `styles` is `null`
    * - `ArrayMap`: parsed version of `styles`.
    */
-  stylesMap: ArrayMap<any>|undefined|null;
+  residualStyles: ArrayMap<any>|undefined|null;
 
   /**
    * A collection of all class bindings and/or static class values for an element.
@@ -513,18 +534,15 @@ export interface TNode {
   classes: string|null;
 
   /**
-   * An `ArrayMap` version of `classes`.
+   * An `ArrayMap` version of residual `classes`.
    *
-   * We need this when style bindings are resolving. This gets populated only if there are styling
-   * binding instructions. The laziness is important since we don't want to allocate the memory
-   * because most styling is static. For tree shaking purposes the code to create these only comes
-   * with styling.
+   * Same as `TNode.residualStyles` but for classes.
    *
    * - `undefined': not initialized.
    * - `null`: initialized but `classes` is `null`
    * - `ArrayMap`: parsed version of `S`.
    */
-  classesMap: ArrayMap<any>|undefined|null;
+  residualClasses: ArrayMap<any>|undefined|null;
 
   /**
    * Stores the head/tail index of the class bindings.
@@ -793,4 +811,49 @@ export function hasClassInput(tNode: TNode) {
  */
 export function hasStyleInput(tNode: TNode) {
   return (tNode.flags & TNodeFlags.hasStyleInput) !== 0;
+}
+
+/**
+ * Constant enums for accessing data in the `TDirectiveDefs`
+ */
+export const enum DirectiveDefs {
+  /// Location where the STYLING_CURSOR is stored.
+  STYLING_CURSOR = 0,
+  // Initial value for the `STYLING_CURSOR`
+  INITIAL_STYLING_CURSOR_VALUE = 0,
+  /// Header offset from which iterating over `DirectiveDefs` should start.
+  HEADER_OFFSET = 1
+}
+
+/**
+ * Stores `DirectiveDefs` associated with the current `TNode` as well as styling cursor.
+ */
+export interface TDirectiveDefs extends Array<number|DirectiveDef<any>> {
+  /**
+   * As styling instructions (`ɵɵstyleProp`/`ɵɵclassProp`/`ɵɵstyleMap`/`ɵɵclassMap`) are executing
+   * they also need to get a hold of the `DirectiveDef.hostAttrs` and so that they know what
+   * static styling values to use. The styling instructions need this information so that they can
+   * lazily create `TStylingStatic`.
+   *
+   * When styling is executing it can get a hold of its `DirectiveDefs` but that alone is not
+   * sufficient for two reasons:
+   * 1. Styling instruction needs to coalesce other directives which came before it and which have
+   *    static value but may not have a styling instruction to attach the static values to.
+   * 2. There may be more than one styling instruction per `hostBindings` and only the first
+   *    styling instruction should create the `TStylingStatic`.
+   *
+   * The algorithm for doing this is:
+   * - look up the current `DirectiveDef` associated with the current instruction.
+   * - If `STYLING_CURSOR === 0 || tDirectiveDefs[stylingCursor] !== currentDirectiveDef` than
+   *   create `TStylingStatic` and:
+   *   - iterate over `TDirectiveDefs[++stylingCursor]` and insert them into the `TStylingStatic`
+   *     until you reach `DirectiveDef` associated with the current instruction.
+   * - If new `TStylingStatic` was created, recompute the residual styling values.
+   *
+   * The above algorithm will ensure that the styling instructions consume static styling values
+   * associated until a given instruction. After consuming instructions, it is always important to
+   * clear the residual (See `TNode.residualClass`/`TNode.residualStyle`), since this may be the
+   * last styling instruction, and we need to lazily recreate the residual value on as needed basis.
+   */
+  [DirectiveDefs.STYLING_CURSOR]: number;
 }

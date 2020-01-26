@@ -6,10 +6,13 @@
   * found in the LICENSE file at https://angular.io/license
   */
 
+import {DirectiveDef} from '@angular/core/src/render3';
+import {ɵɵdefineDirective} from '@angular/core/src/render3/definition';
 import {classStringParser, initializeStylingStaticArrayMap, styleStringParser, toStylingArrayMap, ɵɵclassProp, ɵɵstyleMap, ɵɵstyleProp, ɵɵstyleSanitizer} from '@angular/core/src/render3/instructions/styling';
-import {AttributeMarker} from '@angular/core/src/render3/interfaces/node';
-import {TVIEW} from '@angular/core/src/render3/interfaces/view';
-import {getLView, leaveView} from '@angular/core/src/render3/state';
+import {AttributeMarker, TAttributes, TDirectiveDefs} from '@angular/core/src/render3/interfaces/node';
+import {TStylingKey, TStylingRange, getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate} from '@angular/core/src/render3/interfaces/styling';
+import {HEADER_OFFSET, TVIEW} from '@angular/core/src/render3/interfaces/view';
+import {getLView, leaveView, setBindingRootForHostBindings} from '@angular/core/src/render3/state';
 import {getNativeByIndex} from '@angular/core/src/render3/util/view_utils';
 import {bypassSanitizationTrustStyle} from '@angular/core/src/sanitization/bypass';
 import {ɵɵsanitizeStyle} from '@angular/core/src/sanitization/sanitization';
@@ -269,25 +272,155 @@ describe('styling', () => {
     describe('populateStylingStaticArrayMap', () => {
       it('should initialize to null if no mergedAttrs', () => {
         const tNode = getLView()[TVIEW].firstChild !;
-        expect(tNode.stylesMap).toEqual(undefined);
-        expect(tNode.classesMap).toEqual(undefined);
+        expect(tNode.residualStyles).toEqual(undefined);
+        expect(tNode.residualClasses).toEqual(undefined);
         initializeStylingStaticArrayMap(tNode);
-        expect(tNode.stylesMap).toEqual(null);
-        expect(tNode.classesMap).toEqual(null);
+        expect(tNode.residualStyles).toEqual(null);
+        expect(tNode.residualClasses).toEqual(null);
       });
 
       it('should initialize from mergeAttrs', () => {
         const tNode = getLView()[TVIEW].firstChild !;
-        expect(tNode.stylesMap).toEqual(undefined);
-        expect(tNode.classesMap).toEqual(undefined);
+        expect(tNode.residualStyles).toEqual(undefined);
+        expect(tNode.residualClasses).toEqual(undefined);
         tNode.mergedAttrs = [
           'ignore', 'value',                                     //
           AttributeMarker.Classes, 'foo', 'bar',                 //
           AttributeMarker.Styles, 'width', '0', 'color', 'red',  //
         ];
         initializeStylingStaticArrayMap(tNode);
-        expect(tNode.classesMap).toEqual(['bar', true, 'foo', true] as any);
-        expect(tNode.stylesMap).toEqual(['color', 'red', 'width', '0'] as any);
+        expect(tNode.residualClasses).toEqual(['bar', true, 'foo', true] as any);
+        expect(tNode.residualStyles).toEqual(['color', 'red', 'width', '0'] as any);
+      });
+    });
+  });
+
+  describe('static', () => {
+    describe('template only', () => {
+      it('should capture static values in TStylingKey', () => {
+        givenTemplateAttrs([AttributeMarker.Styles, 'content', '"TEMPLATE"']);
+
+        ɵɵstyleProp('content', '"dynamic"');
+        expectTStylingKeys('style').toEqual([
+          ['', 'content', 'content', '"TEMPLATE"'], 'prev',  // contains statics
+          null                                               // residual
+        ]);
+        expectStyle(div).toEqual({content: '"dynamic"'});
+
+        ɵɵstyleProp('content', undefined);
+        expectTStylingKeys('style').toEqual([
+          ['', 'content', 'content', '"TEMPLATE"'], 'both',  // contains statics
+          'content', 'prev',  // Making sure that second instruction does not have statics again.
+          null                // residual
+        ]);
+        expectStyle(div).toEqual({content: '"dynamic"'});
+      });
+    });
+
+    describe('directives only', () => {
+      it('should update residual on second directive', () => {
+        givenDirectiveAttrs([
+          [AttributeMarker.Styles, 'content', '"lowest"'],  // 0
+          [AttributeMarker.Styles, 'content', '"middle"'],  // 1
+        ]);
+        expectStyle(div).toEqual({content: '"middle"'});
+
+        activateHostBindings(0);
+        ɵɵstyleProp('content', '"dynamic"');
+        expectTStylingKeys('style').toEqual([
+          ['', 'content', 'content', '"lowest"'], 'both',  // 1: contains statics
+          ['content', '"middle"'],                         // residual
+        ]);
+        expectStyle(div).toEqual({content: '"middle"'});
+
+        // second binding should not get statics
+        ɵɵstyleProp('content', '"dynamic2"');
+        expectTStylingKeys('style').toEqual([
+          ['', 'content', 'content', '"lowest"'], 'both',  // 1: contains statics
+          'content', 'both',                               // 1: Should not get statics
+          ['content', '"middle"']                          // residual
+        ]);
+        expectStyle(div).toEqual({content: '"middle"'});
+
+        activateHostBindings(1);
+        ɵɵstyleProp('content', '"dynamic3"');
+        expectTStylingKeys('style').toEqual([
+          ['', 'content', 'content', '"lowest"'], 'both',  // 1: contains statics
+          'content', 'both',                               // 1: Should not get statics
+          ['', 'content', 'content', '"middle"'], 'prev',  // 0: contains statics
+          null                                             // residual
+        ]);
+        expectStyle(div).toEqual({content: '"dynamic3"'});
+      });
+    });
+
+    describe('template and directives', () => {
+      it('should combine property and map', () => {
+        givenDirectiveAttrs([
+          [AttributeMarker.Styles, 'content', '"lowest"', 'color', 'blue'],   // 0
+          [AttributeMarker.Styles, 'content', '"middle"', 'width', '100px'],  // 1
+        ]);
+        givenTemplateAttrs([AttributeMarker.Styles, 'content', '"TEMPLATE"', 'color', 'red']);
+
+        // TEMPLATE
+        ɵɵstyleProp('content', undefined);
+        expectTStylingKeys('style').toEqual([
+          // TEMPLATE
+          ['', 'content', 'color', 'red', 'content', '"TEMPLATE"', 'width', '100px'], 'prev',
+          // RESIDUAL
+          null
+        ]);
+        expectStyle(div).toEqual({content: '"TEMPLATE"', color: 'red', width: '100px'});
+
+        // Directive 0
+        activateHostBindings(0);
+        ɵɵstyleMap('color: red; width: 0px; height: 50px');
+        expectTStylingKeys('style').toEqual([
+          // Host Binding 0
+          ['', null, 'color', 'blue', 'content', '"lowest"'], 'both',
+          // TEMPLATE
+          ['', 'content', 'color', 'red', 'content', '"TEMPLATE"', 'width', '100px'], 'prev',
+          // RESIDUAL
+          null
+        ]);
+        expectStyle(div).toEqual(
+            {content: '"TEMPLATE"', color: 'red', width: '100px', height: '50px'});
+
+        // Directive 1
+        activateHostBindings(1);
+        ɵɵstyleMap('color: red; width: 0px; height: 50px');
+        expectTStylingKeys('style').toEqual([
+          // Host Binding 0
+          ['', null, 'color', 'blue', 'content', '"lowest"'], 'both',
+          // Host Binding 1
+          ['', null, 'content', '"middle"', 'width', '100px'], 'both',
+          // TEMPLATE
+          ['', 'content', 'color', 'red', 'content', '"TEMPLATE"'], 'prev',
+          // RESIDUAL
+          null
+        ]);
+        expectStyle(div).toEqual(
+            {content: '"TEMPLATE"', color: 'red', width: '0px', height: '50px'});
+      });
+
+      it('should read value from residual', () => {
+        givenDirectiveAttrs([
+          [AttributeMarker.Styles, 'content', '"lowest"', 'color', 'blue'],   // 0
+          [AttributeMarker.Styles, 'content', '"middle"', 'width', '100px'],  // 1
+        ]);
+        givenTemplateAttrs([AttributeMarker.Styles, 'content', '"TEMPLATE"', 'color', 'red']);
+
+        // Directive 1
+        activateHostBindings(1);
+        ɵɵstyleProp('color', 'white');
+        expectTStylingKeys('style').toEqual([
+          // Host Binding 0 + 1
+          ['', 'color', 'color', 'blue', 'content', '"middle"', 'width', '100px'], 'both',
+          // RESIDUAL
+          ['color', 'red', 'content', '"TEMPLATE"']
+        ]);
+        expectStyle(div).toEqual({content: '"TEMPLATE"', color: 'red', width: '100px'});
+
       });
     });
   });
@@ -355,4 +488,97 @@ function expectStyle(element: HTMLElement) {
 
 function expectClass(element: HTMLElement) {
   return expect(getElementClasses(element));
+}
+
+function givenTemplateAttrs(tAttrs: TAttributes) {
+  const tNode = getTNode();
+  tNode.attrs = tAttrs;
+  applyTAttributes(tAttrs);
+}
+
+function getTNode() {
+  return getLView()[TVIEW].firstChild !;
+}
+
+function getTData() {
+  return getLView()[TVIEW].data;
+}
+
+class MockDir {}
+
+function givenDirectiveAttrs(tAttrs: TAttributes[]) {
+  const tNode = getTNode();
+  const tData = getTData();
+  const directives: TDirectiveDefs = tNode.directives = [0];
+  for (let i = 0; i < tAttrs.length; i++) {
+    const tAttr = tAttrs[i];
+    const directiveDef = ɵɵdefineDirective({type: MockDir, hostAttrs: tAttr}) as DirectiveDef<any>;
+    applyTAttributes(directiveDef.hostAttrs);
+    tData[getTDataIndexFromDirectiveIndex(i)] = directiveDef;
+    directives.push(directiveDef);
+  }
+}
+
+function applyTAttributes(attrs: TAttributes | null) {
+  if (attrs === null) return;
+  const div: HTMLElement = getLView()[HEADER_OFFSET];
+  let mode: AttributeMarker = AttributeMarker.ImplicitAttributes;
+  for (let i = 0; i < attrs.length; i++) {
+    const item = attrs[i];
+    if (typeof item === 'number') {
+      mode = item;
+    } else if (typeof item === 'string') {
+      if (mode == AttributeMarker.ImplicitAttributes) {
+        div.setAttribute(item, attrs[++i] as string);
+      } else if (mode == AttributeMarker.Classes) {
+        div.classList.add(item);
+      } else if (mode == AttributeMarker.Styles) {
+        div.style.setProperty(item, attrs[++i] as string);
+      }
+    }
+  }
+}
+
+function activateHostBindings(directiveIndex: number) {
+  const bindingRootIndex = getBindingRootIndexFromDirectiveIndex(directiveIndex);
+  const currentDirectiveIndex = getTDataIndexFromDirectiveIndex(directiveIndex);
+  setBindingRootForHostBindings(bindingRootIndex, currentDirectiveIndex);
+}
+
+function getBindingRootIndexFromDirectiveIndex(index: number) {
+  // For simplicity assume that each directive has 10 vars.
+  // We need to offset 1 for template, and 1 for expando.
+  return HEADER_OFFSET + (index + 2) * 10;
+}
+
+function getTDataIndexFromDirectiveIndex(index: number) {
+  return HEADER_OFFSET + index + 10;  // offset to give template bindings space.
+}
+
+function expectTStylingKeys(styling: 'style' | 'class') {
+  const tNode = getTNode();
+  const tData = getTData();
+  const isClassBased = styling === 'class';
+  const headIndex = getTStylingRangePrev(isClassBased ? tNode.classBindings : tNode.styleBindings);
+  const tStylingKeys: (string | (null | string)[] | null)[] = [];
+  let index = headIndex;
+  let prevIndex = index;
+  // rewind to beginning of list.
+  while ((prevIndex = getTStylingRangePrev(tData[index + 1] as TStylingRange)) !== 0) {
+    index = prevIndex;
+  }
+
+  // insert into array.
+  while (index !== 0) {
+    const tStylingKey = tData[index] as TStylingKey;
+    const prevDup = getTStylingRangePrevDuplicate(tData[index + 1] as TStylingRange);
+    const nextDup = getTStylingRangeNextDuplicate(tData[index + 1] as TStylingRange);
+    tStylingKeys.push(tStylingKey as string[] | string | null);
+    tStylingKeys.push(prevDup ? (nextDup ? 'both' : 'prev') : (nextDup ? 'next' : ''));
+    index = getTStylingRangeNext(tData[index + 1] as TStylingRange);
+  }
+  tStylingKeys.push(
+      (isClassBased ? tNode.residualClasses : tNode.residualStyles) as null | string[]);
+
+  return expect(tStylingKeys);
 }
