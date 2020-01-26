@@ -15,11 +15,13 @@
     </mat-expansion-panel-header>
 
     <mat-form-field>
-      <input matInput placeholder="First name">
+      <mat-label>First name</mat-label>
+      <input matInput>
     </mat-form-field>
 
     <mat-form-field>
-      <input matInput type="number" min="1" placeholder="Age">
+      <mat-label>Age</mat-label>
+      <input matInput type="number" min="1">
     </mat-form-field>
 
   </mat-expansion-panel>
@@ -36,7 +38,8 @@
     </mat-expansion-panel-header>
 
     <mat-form-field>
-      <input matInput placeholder="Country">
+      <mat-label>Country</mat-label>
+      <input matInput>
     </mat-form-field>
   </mat-expansion-panel>
 
@@ -52,7 +55,8 @@
     </mat-expansion-panel-header>
 
     <mat-form-field>
-      <input matInput placeholder="Date" [matDatepicker]="picker" (focus)="picker.open()" readonly>
+      <mat-label>Date</mat-label>
+      <input matInput [matDatepicker]="picker" (focus)="picker.open()" readonly>
     </mat-form-field>
     <mat-datepicker #picker></mat-datepicker>
   </mat-expansion-panel>

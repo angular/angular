@@ -11,10 +11,12 @@
     <mat-sidenav-content [formGroup]="options">
       <p><mat-checkbox formControlName="fixed">Fixed</mat-checkbox></p>
       <p><mat-form-field>
-        <input matInput type="number" formControlName="top" placeholder="Top gap">
+        <mat-label>Top gap</mat-label>
+        <input matInput type="number" formControlName="top">
       </mat-form-field></p>
       <p><mat-form-field>
-        <input matInput type="number" formControlName="bottom" placeholder="Bottom gap">
+        <mat-label>Bottom gap</mat-label>
+        <input matInput type="number" formControlName="bottom">
       </mat-form-field></p>
       <p><button mat-button (click)="sidenav.toggle()">Toggle</button></p>
     </mat-sidenav-content>
@@ -23,4 +25,4 @@
   <mat-toolbar class="example-footer">Footer</mat-toolbar>
 </ng-container>
 
-<div *ngIf="!shouldRun">Please open on Stackblitz to see result</div>
+<div *ngIf="!shouldRun">Please open on StackBlitz to see result</div>

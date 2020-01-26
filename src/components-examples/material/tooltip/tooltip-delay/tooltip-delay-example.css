@@ -1,4 +1,4 @@
-.example-user-input {
-  display: block;
-  width: 150px;
+.mat-form-field + .mat-form-field,
+.mat-raised-button {
+  margin-left: 8px;
 }

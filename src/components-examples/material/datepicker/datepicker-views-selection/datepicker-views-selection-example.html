@@ -1,5 +1,6 @@
 <mat-form-field>
-  <input matInput [matDatepicker]="dp" placeholder="Month and Year" [formControl]="date">
+  <mat-label>Month and Year</mat-label>
+  <input matInput [matDatepicker]="dp" [formControl]="date">
   <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
   <mat-datepicker #dp
                   startView="multi-year"

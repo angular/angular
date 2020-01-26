@@ -1,9 +1,11 @@
 <mat-form-field>
-  <input matInput value="Disco party!" placeholder="Message" #message>
+  <mat-label>Message</mat-label>
+  <input matInput value="Disco party!" #message>
 </mat-form-field>
 
 <mat-form-field>
-  <input matInput value="Dance" placeholder="Action" #action>
+  <mat-label>Action</mat-label>
+  <input matInput value="Dance" #action>
 </mat-form-field>
 
-<button mat-button (click)="openSnackBar(message.value, action.value)">Show snack-bar</button>
+<button mat-stroked-button (click)="openSnackBar(message.value, action.value)">Show snack-bar</button>

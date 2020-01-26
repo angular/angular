@@ -9,7 +9,8 @@
   <mat-tree-node *matTreeNodeDef="let node; when: hasNoContent" matTreeNodePadding>
     <button mat-icon-button disabled></button>
     <mat-form-field>
-      <input matInput #itemValue placeholder="New item...">
+      <mat-label>New item...</mat-label>
+      <input matInput #itemValue placeholder="Ex. Lettuce">
     </mat-form-field>
     <button mat-button (click)="saveNode(node, itemValue.value)">Save</button>
   </mat-tree-node>

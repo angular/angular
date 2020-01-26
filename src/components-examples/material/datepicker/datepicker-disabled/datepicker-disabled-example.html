@@ -1,6 +1,7 @@
 <p>
   <mat-form-field>
-    <input matInput [matDatepicker]="dp1" placeholder="Completely disabled" disabled>
+    <mat-label>Completely disabled</mat-label>
+    <input matInput [matDatepicker]="dp1" disabled>
     <mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
     <mat-datepicker #dp1></mat-datepicker>
   </mat-form-field>
@@ -8,7 +9,8 @@
 
 <p>
   <mat-form-field>
-    <input matInput [matDatepicker]="dp2" placeholder="Popup disabled">
+    <mat-label>Popup disabled</mat-label>
+    <input matInput [matDatepicker]="dp2">
     <mat-datepicker-toggle matSuffix [for]="dp2" disabled></mat-datepicker-toggle>
     <mat-datepicker #dp2></mat-datepicker>
   </mat-form-field>
@@ -16,7 +18,8 @@
 
 <p>
   <mat-form-field>
-    <input matInput [matDatepicker]="dp3" placeholder="Input disabled" disabled>
+    <mat-label>Input disabled</mat-label>
+    <input matInput [matDatepicker]="dp3" disabled>
     <mat-datepicker-toggle matSuffix [for]="dp3"></mat-datepicker-toggle>
     <mat-datepicker #dp3 disabled="false"></mat-datepicker>
   </mat-form-field>

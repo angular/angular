@@ -1,5 +1,5 @@
 .example-h2 {
-  margin: 10px;
+  margin: 0 8px 16px;
 }
 
 .example-section {
@@ -10,7 +10,7 @@
 }
 
 .example-margin {
-  margin: 10px;
+  margin: 8px;
 }
 
 .mat-slider-horizontal {
@@ -19,4 +19,12 @@
 
 .mat-slider-vertical {
   height: 300px;
+}
+
+.mat-card + .mat-card {
+  margin-top: 8px;
+}
+
+.example-result-card h2 {
+  margin: 0 8px;
 }

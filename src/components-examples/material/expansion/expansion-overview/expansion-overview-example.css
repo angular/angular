@@ -1,1 +1,3 @@
-/** No CSS for this example */
+.mat-form-field + .mat-form-field {
+  margin-left: 8px;
+}

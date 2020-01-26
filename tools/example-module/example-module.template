@@ -10,6 +10,7 @@
  ******************************************************************************/
 
 import {NgModule} from '@angular/core';
+import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
 
 ${exampleImports}
 
@@ -26,9 +27,14 @@ export const EXAMPLE_MODULES = ${exampleModules};
 
 export const EXAMPLE_LIST = [${exampleList}];
 
+// Default MatFormField appearance to 'fill' as that is the new recommended approach and the
+// `legacy` and `standard` appearances are scheduled for deprecation in version 10.
 @NgModule({
   imports: EXAMPLE_MODULES,
   exports: EXAMPLE_MODULES,
+  providers: [
+    { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'fill' } },
+  ],
 })
 export class ExampleModule { }
 

@@ -4,16 +4,20 @@
 
     <section class="example-section">
       <mat-form-field class="example-margin">
-        <input matInput type="number" placeholder="Value" [(ngModel)]="value">
+        <mat-label>Value</mat-label>
+        <input matInput type="number" [(ngModel)]="value">
       </mat-form-field>
       <mat-form-field class="example-margin">
-        <input matInput type="number" placeholder="Min value" [(ngModel)]="min">
+        <mat-label>Min value</mat-label>
+        <input matInput type="number" [(ngModel)]="min">
       </mat-form-field>
       <mat-form-field class="example-margin">
-        <input matInput type="number" placeholder="Max value" [(ngModel)]="max">
+        <mat-label>Max value</mat-label>
+        <input matInput type="number" [(ngModel)]="max">
       </mat-form-field>
       <mat-form-field class="example-margin">
-        <input matInput type="number" placeholder="Step size" [(ngModel)]="step">
+        <mat-label>Step size</mat-label>
+        <input matInput type="number" [(ngModel)]="step">
       </mat-form-field>
     </section>
 
@@ -23,7 +27,8 @@
         Auto ticks
       </mat-checkbox>
       <mat-form-field class="example-margin" *ngIf="showTicks && !autoTicks">
-        <input matInput type="number" placeholder="Tick interval" [(ngModel)]="tickInterval">
+        <mat-label>Tick interval</mat-label>
+        <input matInput type="number" [(ngModel)]="tickInterval">
       </mat-form-field>
     </section>
 
@@ -43,9 +48,9 @@
   </mat-card-content>
 </mat-card>
 
-<mat-card class="result">
+<mat-card class="example-result-card">
   <mat-card-content>
-    <h2 class="example-h2">Result</h2>
+    <h2>Result</h2>
 
     <mat-slider
         class="example-margin"
