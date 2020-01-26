@@ -830,6 +830,21 @@ describe('MatMdcInput with forms', () => {
         .toBe('true', 'Expected aria-invalid to be set to "true".');
     }));
 
+    it('should not reset text-field validity if focus changes for an invalid input',
+        fakeAsync(() => {
+          // Mark the control as touched, so that the form-field displays as invalid.
+          testComponent.formControl.markAsTouched();
+          fixture.detectChanges();
+          flush();
+
+          const wrapperEl = containerEl.querySelector('.mdc-text-field')!;
+          expect(wrapperEl.classList).toContain('mdc-text-field--invalid');
+
+          dispatchFakeEvent(inputEl, 'focus');
+          dispatchFakeEvent(inputEl, 'blur');
+          expect(wrapperEl.classList).toContain('mdc-text-field--invalid');
+    }));
+
     it('should display an error message when the parent form is submitted', fakeAsync(() => {
       expect(testComponent.form.submitted).toBe(false, 'Expected form not to have been submitted');
       expect(testComponent.formControl.invalid).toBe(true, 'Expected form control to be invalid');

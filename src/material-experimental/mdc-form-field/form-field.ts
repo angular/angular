@@ -283,6 +283,12 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
       get: () => this._shouldLabelFloat(),
     });
 
+    // By default, the foundation determines the validity of the text-field from the
+    // specified native input. Since we don't pass a native input to the foundation because
+    // abstract form controls are not necessarily consisting of an input, we handle the
+    // text-field validity through the abstract form-field control state.
+    this._foundation.isValid = () => !this._control.errorState;
+
     // Initial focus state sync. This happens rarely, but we want to account for
     // it in case the form-field control has "focused" set to true on init.
     this._updateFocusState();
