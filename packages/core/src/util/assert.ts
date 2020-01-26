@@ -13,56 +13,62 @@
 import {stringify} from './stringify';
 
 export function assertNumber(actual: any, msg: string) {
-  if (typeof actual != 'number') {
+  if (!(typeof actual === 'number')) {
     throwError(msg, typeof actual, 'number', '===');
   }
 }
 
 export function assertString(actual: any, msg: string) {
-  if (typeof actual != 'string') {
+  if (!(typeof actual === 'string')) {
     throwError(msg, actual === null ? 'null' : typeof actual, 'string', '===');
   }
 }
 
 export function assertEqual<T>(actual: T, expected: T, msg: string) {
-  if (actual != expected) {
+  if (!(actual == expected)) {
     throwError(msg, actual, expected, '==');
   }
 }
 
 export function assertNotEqual<T>(actual: T, expected: T, msg: string) {
-  if (actual == expected) {
+  if (!(actual != expected)) {
     throwError(msg, actual, expected, '!=');
   }
 }
 
 export function assertSame<T>(actual: T, expected: T, msg: string) {
-  if (actual !== expected) {
+  if (!(actual === expected)) {
     throwError(msg, actual, expected, '===');
   }
 }
 
 export function assertNotSame<T>(actual: T, expected: T, msg: string) {
-  if (actual === expected) {
+  if (!(actual !== expected)) {
     throwError(msg, actual, expected, '!==');
   }
 }
 
 export function assertLessThan<T>(actual: T, expected: T, msg: string) {
-  if (actual >= expected) {
+  if (!(actual < expected)) {
     throwError(msg, actual, expected, '<');
   }
 }
 
 export function assertLessThanOrEqual<T>(actual: T, expected: T, msg: string) {
-  if (actual > expected) {
+  if (!(actual <= expected)) {
     throwError(msg, actual, expected, '<=');
   }
 }
 
 export function assertGreaterThan<T>(actual: T, expected: T, msg: string) {
-  if (actual <= expected) {
+  if (!(actual > expected)) {
     throwError(msg, actual, expected, '>');
+  }
+}
+
+export function assertGreaterThanOrEqual<T>(actual: T, expected: T, msg: string) {
+  if (!(actual >= expected)) {
+    throwError(msg, actual, expected, '>=');
   }
 }
 
