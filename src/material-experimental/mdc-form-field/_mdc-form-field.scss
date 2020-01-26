@@ -1,17 +1,40 @@
-@import '@material/textfield/variables.import';
+@use '@material/ripple/mixins' as mdc-ripple;
+
+@import '@material/textfield/mixins.import';
 @import '../mdc-helpers/mdc-helpers';
 @import 'form-field-subscript';
 @import 'form-field-bottom-line';
+@import 'mdc-text-field-theme-variable-refresh';
 
 @mixin mat-form-field-theme-mdc($theme) {
   @include mat-using-mdc-theme($theme) {
-    @include _mat-form-field-subscript-theme();
-    @include _mat-form-field-bottom-line-theme();
+    @include _mdc-text-field-refresh-theme-variables() {
+      @include mdc-text-field-core-styles($query: $mat-theme-styles-query);
+      @include mdc-floating-label-core-styles($query: $mat-theme-styles-query);
+      @include mdc-text-field-core-styles($query: $mat-theme-styles-query);
+      @include _mat-form-field-subscript-theme();
+      @include _mat-form-field-bottom-line-theme();
+
+      // MDC text-field intends to hide the ripples in the outline appearance. The styles for
+      // this collide with other styles from the structure styles. This is because the ripples
+      // are made invisible by using the `mdc-ripple.states-base-color` mixin. The mixin makes the
+      // ripples `transparent` by generating `content: none` instead. This means that the style
+      // will collide with the default `content` for ripple pseudo elements. Depending on how
+      // themes and component styles are inserted, the ripples will not hide properly. To ensure
+      // that the ripples are not rendered in the outline appearance, we copy the mixin call but
+      // increase the specificity.
+      .mat-mdc-text-field-wrapper.mdc-text-field--outlined {
+        @include mdc-ripple.states-base-color(transparent);
+      }
+    }
   }
 }
 
 @mixin mat-form-field-typography-mdc($config) {
   @include mat-using-mdc-typography($config) {
+    @include mdc-text-field-core-styles($query: $mat-typography-styles-query);
+    @include mdc-floating-label-core-styles($query: $mat-typography-styles-query);
+    @include mdc-text-field-core-styles($query: $mat-typography-styles-query);
     @include _mat-form-field-subscript-typography($config);
   }
 }

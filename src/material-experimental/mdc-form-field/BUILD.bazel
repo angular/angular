@@ -32,7 +32,10 @@ ng_module(
 
 sass_library(
     name = "mdc_form_field_scss_lib",
-    srcs = ["_mdc-form-field.scss"],
+    srcs = [
+        "_mdc-form-field.scss",
+        "_mdc-text-field-theme-variable-refresh.scss",
+    ],
     deps = [
         ":form_field_partials",
         "//src/cdk/a11y:a11y_scss_lib",

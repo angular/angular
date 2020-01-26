@@ -1,10 +1,15 @@
-// TODO(devversion): do not import all text-field styles. Use feature targeting once available.
-@import '@material/textfield/mdc-text-field';
+@import '@material/textfield/mixins.import';
+
 @import 'form-field-sizing';
 @import 'form-field-subscript';
 @import 'form-field-bottom-line';
 @import 'mdc-text-field-textarea-overrides';
 @import 'mdc-text-field-structure-overrides';
+
+// Base styles for MDC notched-outline, MDC floating label and MDC text-field.
+@include mdc-notched-outline-core-styles($query: $mat-base-styles-query);
+@include mdc-floating-label-core-styles($query: $mat-base-styles-query);
+@include mdc-text-field-core-styles($query: $mat-base-styles-query);
 
 // MDC text-field overwrites.
 @include _mat-mdc-text-field-textarea-overrides();

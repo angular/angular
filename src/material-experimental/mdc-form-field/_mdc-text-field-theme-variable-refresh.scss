@@ -1,0 +1,63 @@
+@use 'sass:color';
+@use '@material/theme/variables' as theme-variables;
+
+@import '@material/textfield/variables.import';
+
+// Mixin that refreshes the MDC text-field theming variables. This mixin should be used when
+// the base MDC theming variables have been explicitly updated, but the component specific
+// theming-based variables are still based on the old MDC base theming variables. The mixin
+// restores the previous values for the variables to avoid unexpected global side effects.
+@mixin _mdc-text-field-refresh-theme-variables() {
+  $_mdc-text-field-disabled-border-border: $mdc-text-field-disabled-border-border;
+  $mdc-text-field-disabled-border: rgba(theme-variables.prop-value(on-surface), 0.06) !global;
+  $_mdc-text-field-bottom-line-idle: $mdc-text-field-bottom-line-idle;
+  $mdc-text-field-bottom-line-idle: rgba(theme-variables.prop-value(on-surface), 0.42) !global;
+  $_mdc-text-field-label: $mdc-text-field-label;
+  $mdc-text-field-label: rgba(theme-variables.prop-value(on-surface), 0.6) !global;
+  $_mdc-text-field-ink-color: $mdc-text-field-ink-color;
+  $mdc-text-field-ink-color: rgba(theme-variables.prop-value(on-surface), 0.87) !global;
+  $_mdc-text-field-focused-label-color: $mdc-text-field-focused-label-color;
+  $mdc-text-field-focused-label-color: rgba(theme-variables.prop-value(primary), 0.87) !global;
+  $_mdc-text-field-placeholder-ink-color: $mdc-text-field-placeholder-ink-color;
+  $mdc-text-field-placeholder-ink-color: rgba(theme-variables.prop-value(on-surface), 0.54) !global;
+  $_mdc-text-field-disabled-label-color: $mdc-text-field-disabled-label-color;
+  $mdc-text-field-disabled-label-color: rgba(theme-variables.prop-value(on-surface), 0.38) !global;
+  $_mdc-text-field-disabled-ink-color: $mdc-text-field-disabled-ink-color;
+  $mdc-text-field-disabled-ink-color: rgba(theme-variables.prop-value(on-surface), 0.38) !global;
+  $_mdc-text-field-disabled-placeholder-ink-color: $mdc-text-field-disabled-placeholder-ink-color;
+  $mdc-text-field-disabled-placeholder-ink-color:
+      rgba(theme-variables.prop-value(on-surface), 0.38) !global;
+  $_mdc-text-field-background: $mdc-text-field-background;
+  $mdc-text-field-background: color.mix(
+      theme-variables.prop-value(on-surface), theme-variables.prop-value(surface), 4%) !global;
+  $_mdc-text-field-disabled-background: $mdc-text-field-disabled-background;
+  $mdc-text-field-disabled-background: color.mix(
+      theme-variables.prop-value(on-surface), theme-variables.prop-value(surface), 2%) !global;
+  $_mdc-text-field-outlined-idle-border: $mdc-text-field-outlined-idle-border;
+  $mdc-text-field-outlined-idle-border: rgba(theme-variables.prop-value(on-surface), 0.38) !global;
+  $_mdc-text-field-outlined-disabled-border: $mdc-text-field-outlined-disabled-border;
+  $mdc-text-field-outlined-disabled-border:
+      rgba(theme-variables.prop-value(on-surface), 0.06) !global;
+  $_mdc-text-field-outlined-hover-border: $mdc-text-field-outlined-hover-border;
+  $mdc-text-field-outlined-hover-border: rgba(theme-variables.prop-value(on-surface), 0.87) !global;
+
+  // The content will be generated with the refreshed MDC text-field theming variables.
+  @content;
+
+  // Reset all variables to ensure that this mixin does not cause unexpected side effects.
+  $mdc-text-field-disabled-border-border: $_mdc-text-field-disabled-border-border !global;
+  $mdc-text-field-bottom-line-idle: $_mdc-text-field-bottom-line-idle !global;
+  $mdc-text-field-label: $_mdc-text-field-label !global;
+  $mdc-text-field-ink-color: $_mdc-text-field-ink-color !global;
+  $mdc-text-field-focused-label-color: $_mdc-text-field-focused-label-color !global;
+  $mdc-text-field-placeholder-ink-color: $_mdc-text-field-placeholder-ink-color !global;
+  $mdc-text-field-disabled-label-color: $_mdc-text-field-disabled-label-color !global;
+  $mdc-text-field-disabled-ink-color: $_mdc-text-field-disabled-ink-color !global;
+  $mdc-text-field-disabled-placeholder-ink-color:
+      $_mdc-text-field-disabled-placeholder-ink-color !global;
+  $mdc-text-field-background: $_mdc-text-field-background !global;
+  $mdc-text-field-disabled-background: $_mdc-text-field-disabled-background !global;
+  $mdc-text-field-outlined-idle-border: $_mdc-text-field-outlined-idle-border !global;
+  $mdc-text-field-outlined-disabled-border: $_mdc-text-field-outlined-disabled-border !global;
+  $mdc-text-field-outlined-hover-border: $_mdc-text-field-outlined-hover-border !global;
+}
