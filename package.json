@@ -41,6 +41,7 @@
     "@angular-devkit/schematics": "9.0.0-rc.8",
     "@angular/bazel": "file:./tools/npm/@angular_bazel",
     "@babel/core": "^7.6.4",
+    "@babel/generator": "^7.6.4",
     "@bazel/jasmine": "1.1.0",
     "@bazel/karma": "1.1.0",
     "@bazel/protractor": "1.1.0",

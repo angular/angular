@@ -11,6 +11,8 @@ ts_library(
         "//packages/compiler",
         "//packages/localize",
         "//packages/localize/src/tools",
+        "@npm//@babel/core",
+        "@npm//@babel/generator",
         "@npm//@babel/template",
         "@npm//@babel/types",
         "@npm//@types/babel__core",
