@@ -407,7 +407,7 @@ describe('TNode styling linked list', () => {
 
     it('should mark duplicate on static fields', () => {
       const tNode = createTNode(null !, null !, TNodeType.Element, 0, '', null);
-      tNode.styles = 'color: blue;';
+      tNode.residualStyles = ['color', 'blue'] as any;
       const tData: TData = [null, null];
       insertTStylingBinding(tData, tNode, 'width', 2, false, false);
       expectPriorityOrder(tData, tNode, false).toEqual([
@@ -419,14 +419,14 @@ describe('TNode styling linked list', () => {
       expectPriorityOrder(tData, tNode, false).toEqual([
         //            PREV,  NEXT
         [2, 'width', false, false],
-        [4, 'color', true, false],
+        [4, 'color', false, true],
       ]);
 
       insertTStylingBinding(tData, tNode, null, 6, false, false);
       expectPriorityOrder(tData, tNode, false).toEqual([
         //            PREV,  NEXT
         [2, 'width', false, true],
-        [4, 'color', true, true],
+        [4, 'color', false, true],
         [6, null, true, false],
       ]);
     });

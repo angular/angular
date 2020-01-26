@@ -1642,7 +1642,7 @@ describe('styling', () => {
             fixture.detectChanges();
 
             expectStyle(element).toEqual({
-              'width': '777px',
+              'width': '200px',
               'color': 'red',
               'font-size': '99px',
             });
@@ -1659,7 +1659,8 @@ describe('styling', () => {
   onlyInIvy('ivy resolves styling across directives, components and templates in unison')
       .it('should only apply each styling property once per CD across templates, components, directives',
           () => {
-            @Directive({selector: '[dir-that-sets-styling]'})
+            @Directive(
+                {selector: '[dir-that-sets-styling]', host: {'style': 'width:0px; height:0px'}})
             class DirThatSetsStyling {
               @HostBinding('style') public map: any = {width: '999px', height: '999px'};
             }
@@ -1667,7 +1668,6 @@ describe('styling', () => {
             @Component({
               template: `
                 <div #dir
-                  style="width:0px; height:0px"
                   [style.width]="width"
                   [style.height]="height"
                   [style]="map"
@@ -2987,7 +2987,7 @@ describe('styling', () => {
             @Component({
               template: `
           <my-comp-with-styling
-            style="height:1px; width:1px"
+            style="height:1px; width:2px"
             my-dir-with-styling
             [style.height]="myHeight"
             [style]="myStyles">
@@ -3015,21 +3015,45 @@ describe('styling', () => {
             comp.myStyles = {};
             comp.myHeight = undefined;
             fixture.detectChanges();
-            expect(elm.style.width).toEqual('200px');
-            expect(elm.style.height).toEqual('205px');
-
-            comp.dir.myStyles = {};
-            comp.dir.myHeight = undefined;
-            fixture.detectChanges();
-            expect(elm.style.width).toEqual('300px');
-            expect(elm.style.height).toEqual('305px');
+            expect(elm.style.width).toEqual('2px');
+            expect(elm.style.height).toEqual('1px');
 
             comp.comp.myStyles = {};
             comp.comp.myHeight = undefined;
             fixture.detectChanges();
-            expect(elm.style.width).toEqual('1px');
+            expect(elm.style.width).toEqual('2px');
+            expect(elm.style.height).toEqual('1px');
+
+            comp.dir.myStyles = {};
+            comp.dir.myHeight = undefined;
+            fixture.detectChanges();
+            expect(elm.style.width).toEqual('2px');
             expect(elm.style.height).toEqual('1px');
           });
+
+  onlyInIvy('Prioritization works in Ivy only')
+      .it('should prioritize directive static bindings over components', () => {
+        @Component({selector: 'my-comp-with-styling', host: {style: 'color: blue'}, template: ''})
+        class MyCompWithStyling {
+        }
+
+        @Directive({selector: '[my-dir-with-styling]', host: {style: 'color: red'}})
+        class MyDirWithStyling {
+        }
+
+        @Component({template: `<my-comp-with-styling my-dir-with-styling></my-comp-with-styling>`})
+        class MyComp {
+        }
+
+        TestBed.configureTestingModule(
+            {declarations: [MyComp, MyCompWithStyling, MyDirWithStyling]});
+        const fixture = TestBed.createComponent(MyComp);
+        const elm = fixture.nativeElement.querySelector('my-comp-with-styling') !;
+
+        fixture.detectChanges();
+        expect(elm.style.color).toEqual('red');
+      });
+
 
   it('should combine host class.foo bindings from multiple directives', () => {
 

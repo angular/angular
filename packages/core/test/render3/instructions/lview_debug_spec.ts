@@ -12,6 +12,7 @@ import {TNodeType} from '@angular/core/src/render3/interfaces/node';
 import {LView, TView, TViewType} from '@angular/core/src/render3/interfaces/view';
 import {enterView, leaveView} from '@angular/core/src/render3/state';
 import {insertTStylingBinding} from '@angular/core/src/render3/styling/style_binding_list';
+import {ArrayMap} from '@angular/core/src/util/array_utils';
 
 
 describe('lView_debug', () => {
@@ -35,19 +36,19 @@ describe('lView_debug', () => {
       });
 
       it('should decode static styling', () => {
-        tNode.styles = 'color: blue';
-        tNode.classes = 'STATIC';
-        expect(tNode.styleBindings_).toEqual(['color: blue']);
-        expect(tNode.classBindings_).toEqual(['STATIC']);
+        tNode.residualStyles = ['color', 'blue'] as ArrayMap<any>;
+        tNode.residualClasses = ['STATIC', true] as ArrayMap<any>;
+        expect(tNode.styleBindings_).toEqual([['color', 'blue'] as ArrayMap<any>]);
+        expect(tNode.classBindings_).toEqual([['STATIC', true] as ArrayMap<any>]);
       });
 
       it('should decode no-template property binding', () => {
-        tNode.classes = 'STATIC';
+        tNode.residualClasses = ['STATIC', true] as ArrayMap<any>;
         insertTStylingBinding(tView.data, tNode, 'CLASS', 2, true, true);
         insertTStylingBinding(tView.data, tNode, 'color', 4, true, false);
 
         expect(tNode.styleBindings_).toEqual([
-          null, {
+          {
             index: 4,
             key: 'color',
             isTemplate: false,
@@ -55,10 +56,11 @@ describe('lView_debug', () => {
             nextDuplicate: false,
             prevIndex: 0,
             nextIndex: 0,
-          }
+          },
+          null
         ]);
         expect(tNode.classBindings_).toEqual([
-          'STATIC', {
+          {
             index: 2,
             key: 'CLASS',
             isTemplate: false,
@@ -66,17 +68,18 @@ describe('lView_debug', () => {
             nextDuplicate: false,
             prevIndex: 0,
             nextIndex: 0,
-          }
+          },
+          ['STATIC', true] as ArrayMap<any>
         ]);
       });
 
       it('should decode template and directive property binding', () => {
-        tNode.classes = 'STATIC';
+        tNode.residualClasses = ['STATIC', true] as ArrayMap<any>;
         insertTStylingBinding(tView.data, tNode, 'CLASS', 2, false, true);
         insertTStylingBinding(tView.data, tNode, 'color', 4, false, false);
 
         expect(tNode.styleBindings_).toEqual([
-          null, {
+          {
             index: 4,
             key: 'color',
             isTemplate: true,
@@ -84,10 +87,11 @@ describe('lView_debug', () => {
             nextDuplicate: false,
             prevIndex: 0,
             nextIndex: 0,
-          }
+          },
+          null
         ]);
         expect(tNode.classBindings_).toEqual([
-          'STATIC', {
+          {
             index: 2,
             key: 'CLASS',
             isTemplate: true,
@@ -95,14 +99,15 @@ describe('lView_debug', () => {
             nextDuplicate: false,
             prevIndex: 0,
             nextIndex: 0,
-          }
+          },
+          ['STATIC', true] as ArrayMap<any>
         ]);
 
         insertTStylingBinding(tView.data, tNode, null, 6, true, true);
         insertTStylingBinding(tView.data, tNode, null, 8, true, false);
 
         expect(tNode.styleBindings_).toEqual([
-          null, {
+          {
             index: 8,
             key: null,
             isTemplate: false,
@@ -119,14 +124,15 @@ describe('lView_debug', () => {
             nextDuplicate: false,
             prevIndex: 8,
             nextIndex: 0,
-          }
+          },
+          null
         ]);
         expect(tNode.classBindings_).toEqual([
-          'STATIC', {
+          {
             index: 6,
             key: null,
             isTemplate: false,
-            prevDuplicate: true,
+            prevDuplicate: false,
             nextDuplicate: true,
             prevIndex: 0,
             nextIndex: 2,
@@ -139,7 +145,8 @@ describe('lView_debug', () => {
             nextDuplicate: false,
             prevIndex: 6,
             nextIndex: 0,
-          }
+          },
+          ['STATIC', true] as ArrayMap<any>
         ]);
       });
     });

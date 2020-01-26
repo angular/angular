@@ -6,8 +6,20 @@
 * found in the LICENSE file at https://angular.io/license
 */
 
+import {ArrayMap} from '../../util/array_utils';
+import {assertNumber, assertNumberInRange} from '../../util/assert';
+
 /**
  * Value stored in the `TData` which is needed to re-concatenate the styling.
+ *
+ * See: `TStylingKeyPrimitive` and `TStylingStatic`
+ */
+export type TStylingKey = TStylingKeyPrimitive | TStylingStatic;
+
+
+/**
+ * The primitive portion (`TStylingStatic` removed) of the value stored in the `TData` which is
+ * needed to re-concatenate the styling.
  *
  * - `string`: Stores the property name. Used with `ɵɵstyleProp`/`ɵɵclassProp` instruction.
  * - `null`: Represents map, so there is no name. Used with `ɵɵstyleMap`/`ɵɵclassMap`.
@@ -15,7 +27,69 @@
  *   is combined with directive which shadows its input `@Input('class')`. That way the binding
  *   should not participate in the styling resolution.
  */
-export type TStylingKey = string | null | false;
+export type TStylingKeyPrimitive = string | null | false;
+
+/**
+ * Store the static values for the styling binding.
+ *
+ * The `TStylingStatic` is just `ArrayMap` where key `""` (stored at location 0) contains the
+ * `TStylingKey` (stored at location 1). In other words this wraps the `TStylingKey` such that the
+ * `""` contains the wrapped value.
+ *
+ * When instructions are resolving styling they may need to look forward or backwards in the linked
+ * list to resolve the value. For this reason we have to make sure that he linked list also contains
+ * the static values. However the list only has space for one item per styling instruction. For this
+ * reason we store the static values here as part of the `TStylingKey`. This means that the
+ * resolution function when looking for a value needs to first look at the binding value, and than
+ * at `TStylingKey` (if it exists).
+ *
+ * Imagine we have:
+ *
+ * ```
+ * <div class="TEMPLATE" my-dir>
+ *
+ * @Directive({
+ *   host: {
+ *     class: 'DIR',
+ *     '[class.dynamic]': 'exp' // ɵɵclassProp('dynamic', ctx.exp);
+ *   }
+ * })
+ * ```
+ *
+ * In the above case the linked list will contain one item:
+ *
+ * ```
+ *   // assume binding location: 10 for `ɵɵclassProp('dynamic', ctx.exp);`
+ *   tData[10] = <TStylingStatic>[
+ *     '': 'dynamic', // This is the wrapped value of `TStylingKey`
+ *     'DIR': true,   // This is the default static value of directive binding.
+ *   ];
+ *   tData[10 + 1] = 0; // We don't have prev/next.
+ *
+ *   lView[10] = undefined;     // assume `ctx.exp` is `undefined`
+ *   lView[10 + 1] = undefined; // Just normalized `lView[10]`
+ * ```
+ *
+ * So when the function is resolving styling value, it first needs to look into the linked list
+ * (there is none) and than into the static `TStylingStatic` too see if there is a default value for
+ * `dynamic` (there is not). Therefore it is safe to remove it.
+ *
+ * If setting `true` case:
+ * ```
+ *   lView[10] = true;     // assume `ctx.exp` is `true`
+ *   lView[10 + 1] = true; // Just normalized `lView[10]`
+ * ```
+ * So when the function is resolving styling value, it first needs to look into the linked list
+ * (there is none) and than into `TNode.residualClass` (TNode.residualStyle) which contains
+ * ```
+ *   tNode.residualClass = [
+ *     'TEMPLATE': true,
+ *   ];
+ * ```
+ *
+ * This means that it is safe to add class.
+ */
+export interface TStylingStatic extends ArrayMap<any> {}
 
 /**
  * This is a branded number which contains previous and next index.
@@ -52,14 +126,17 @@ export interface TStylingRange { __brand__: 'TStylingRange'; }
  */
 export const enum StylingRange {
   /// Number of bits to shift for the previous pointer
-  PREV_SHIFT = 18,
+  PREV_SHIFT = 17,
   /// Previous pointer mask.
-  PREV_MASK = 0xFFFC0000,
+  PREV_MASK = 0xFFFE0000,
 
   /// Number of bits to shift for the next pointer
   NEXT_SHIFT = 2,
   /// Next pointer mask.
-  NEXT_MASK = 0x0003FFC,
+  NEXT_MASK = 0x001FFFC,
+
+  // Mask to remove nagative bit. (interpret number as positive)
+  UNSIGNED_MASK = 0x7FFF,
 
   /**
    * This bit is set if the previous bindings contains a binding which could possibly cause a
@@ -80,49 +157,62 @@ export const enum StylingRange {
 
 
 export function toTStylingRange(prev: number, next: number): TStylingRange {
+  ngDevMode && assertNumberInRange(prev, 0, StylingRange.UNSIGNED_MASK);
+  ngDevMode && assertNumberInRange(next, 0, StylingRange.UNSIGNED_MASK);
   return (prev << StylingRange.PREV_SHIFT | next << StylingRange.NEXT_SHIFT) as any;
 }
 
 export function getTStylingRangePrev(tStylingRange: TStylingRange): number {
-  return (tStylingRange as any as number) >> StylingRange.PREV_SHIFT;
+  ngDevMode && assertNumber(tStylingRange, 'expected number');
+  return ((tStylingRange as any as number) >> StylingRange.PREV_SHIFT) & StylingRange.UNSIGNED_MASK;
 }
 
 export function getTStylingRangePrevDuplicate(tStylingRange: TStylingRange): boolean {
+  ngDevMode && assertNumber(tStylingRange, 'expected number');
   return ((tStylingRange as any as number) & StylingRange.PREV_DUPLICATE) ==
       StylingRange.PREV_DUPLICATE;
 }
 
 export function setTStylingRangePrev(
     tStylingRange: TStylingRange, previous: number): TStylingRange {
+  ngDevMode && assertNumber(tStylingRange, 'expected number');
+  ngDevMode && assertNumberInRange(previous, 0, StylingRange.UNSIGNED_MASK);
   return (
       ((tStylingRange as any as number) & ~StylingRange.PREV_MASK) |
       (previous << StylingRange.PREV_SHIFT)) as any;
 }
 
 export function setTStylingRangePrevDuplicate(tStylingRange: TStylingRange): TStylingRange {
+  ngDevMode && assertNumber(tStylingRange, 'expected number');
   return ((tStylingRange as any as number) | StylingRange.PREV_DUPLICATE) as any;
 }
 
 export function getTStylingRangeNext(tStylingRange: TStylingRange): number {
+  ngDevMode && assertNumber(tStylingRange, 'expected number');
   return ((tStylingRange as any as number) & StylingRange.NEXT_MASK) >> StylingRange.NEXT_SHIFT;
 }
 
 export function setTStylingRangeNext(tStylingRange: TStylingRange, next: number): TStylingRange {
+  ngDevMode && assertNumber(tStylingRange, 'expected number');
+  ngDevMode && assertNumberInRange(next, 0, StylingRange.UNSIGNED_MASK);
   return (
       ((tStylingRange as any as number) & ~StylingRange.NEXT_MASK) |  //
       next << StylingRange.NEXT_SHIFT) as any;
 }
 
 export function getTStylingRangeNextDuplicate(tStylingRange: TStylingRange): boolean {
+  ngDevMode && assertNumber(tStylingRange, 'expected number');
   return ((tStylingRange as any as number) & StylingRange.NEXT_DUPLICATE) ===
       StylingRange.NEXT_DUPLICATE;
 }
 
 export function setTStylingRangeNextDuplicate(tStylingRange: TStylingRange): TStylingRange {
+  ngDevMode && assertNumber(tStylingRange, 'expected number');
   return ((tStylingRange as any as number) | StylingRange.NEXT_DUPLICATE) as any;
 }
 
 export function getTStylingRangeTail(tStylingRange: TStylingRange): number {
+  ngDevMode && assertNumber(tStylingRange, 'expected number');
   const next = getTStylingRangeNext(tStylingRange);
   return next === 0 ? getTStylingRangePrev(tStylingRange) : next;
 }

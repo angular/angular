@@ -6,13 +6,14 @@
 * found in the LICENSE file at https://angular.io/license
 */
 
-import {assertEqual} from '../../util/assert';
+import {ArrayMap, arrayMapIndexOf} from '../../util/array_utils';
+import {assertDataInRange, assertEqual, assertNotEqual} from '../../util/assert';
 import {assertFirstUpdatePass} from '../assert';
 import {TNode} from '../interfaces/node';
-import {TStylingKey, TStylingRange, getTStylingRangeNext, getTStylingRangePrev, setTStylingRangeNext, setTStylingRangeNextDuplicate, setTStylingRangePrev, setTStylingRangePrevDuplicate, toTStylingRange} from '../interfaces/styling';
+import {TStylingKey, TStylingKeyPrimitive, TStylingRange, getTStylingRangeNext, getTStylingRangePrev, setTStylingRangeNext, setTStylingRangeNextDuplicate, setTStylingRangePrev, setTStylingRangePrevDuplicate, toTStylingRange} from '../interfaces/styling';
 import {TData, TVIEW} from '../interfaces/view';
 import {getLView} from '../state';
-import {getLastParsedKey, parseClassName, parseClassNameNext, parseStyle, parseStyleNext} from './styling_parser';
+
 
 
 /**
@@ -191,14 +192,28 @@ let __unused_const_as_closure_does_not_like_standalone_comment_blocks__: undefin
  *                       `tNode.classBindings` should be used (or `tNode.styleBindings` otherwise.)
  */
 export function insertTStylingBinding(
-    tData: TData, tNode: TNode, tStylingKey: TStylingKey, index: number, isHostBinding: boolean,
-    isClassBinding: boolean): void {
+    tData: TData, tNode: TNode, tStylingKeyWithStatic: TStylingKey, index: number,
+    isHostBinding: boolean, isClassBinding: boolean): void {
   ngDevMode && assertFirstUpdatePass(getLView()[TVIEW]);
   let tBindings = isClassBinding ? tNode.classBindings : tNode.styleBindings;
   let tmplHead = getTStylingRangePrev(tBindings);
   let tmplTail = getTStylingRangeNext(tBindings);
 
-  tData[index] = tStylingKey;
+  tData[index] = tStylingKeyWithStatic;
+  let isKeyDuplicateOfStatic = false;
+  let tStylingKey: TStylingKeyPrimitive;
+  if (Array.isArray(tStylingKeyWithStatic)) {
+    // We are case when the `TStylingKey` contains static fields as well.
+    const staticArrayMap = tStylingKeyWithStatic as ArrayMap<any>;
+    tStylingKey = staticArrayMap[1];  // unwrap.
+    // We need to check if our key is present in the static so that we can mark it as duplicate.
+    if (tStylingKey === null || arrayMapIndexOf(staticArrayMap, tStylingKey as string) > 0) {
+      // tStylingKey is present in the statics, need to mark it as duplicate.
+      isKeyDuplicateOfStatic = true;
+    }
+  } else {
+    tStylingKey = tStylingKeyWithStatic;
+  }
   if (isHostBinding) {
     // We are inserting host bindings
 
@@ -248,10 +263,12 @@ export function insertTStylingBinding(
 
   // Now we need to update / compute the duplicates.
   // Starting with our location search towards head (least priority)
-  markDuplicates(
-      tData, tStylingKey, index, (isClassBinding ? tNode.classes : tNode.styles) || '', true,
-      isClassBinding);
-  markDuplicates(tData, tStylingKey, index, '', false, isClassBinding);
+  if (isKeyDuplicateOfStatic) {
+    tData[index + 1] = setTStylingRangePrevDuplicate(tData[index + 1] as TStylingRange);
+  }
+  markDuplicates(tData, tStylingKey, index, true, isClassBinding);
+  markDuplicates(tData, tStylingKey, index, false, isClassBinding);
+  markDuplicateOfResidualStyling(tNode, tStylingKey, tData, index, isClassBinding);
 
   tBindings = toTStylingRange(tmplHead, tmplTail);
   if (isClassBinding) {
@@ -260,6 +277,27 @@ export function insertTStylingBinding(
     tNode.styleBindings = tBindings;
   }
 }
+
+/**
+ * Look into the residual styling to see if the current `tStylingKey` is duplicate of residual.
+ *
+ * @param tNode `TNode` where the residual is stored.
+ * @param tStylingKey `TStylingKey` to store.
+ * @param tData `TData` associated with the current `LView`.
+ * @param index location of where `tStyleValue` should be stored (and linked into list.)
+ * @param isClassBinding True if the associated `tStylingKey` as a `class` styling.
+ *                       `tNode.classBindings` should be used (or `tNode.styleBindings` otherwise.)
+ */
+function markDuplicateOfResidualStyling(
+    tNode: TNode, tStylingKey: TStylingKey, tData: TData, index: number, isClassBinding: boolean) {
+  const residual = isClassBinding ? tNode.residualClasses : tNode.residualStyles;
+  if (residual != null /* or undefined */ && typeof tStylingKey == 'string' &&
+      arrayMapIndexOf(residual, tStylingKey) >= 0) {
+    // We have duplicate in the residual so mark ourselves as duplicate.
+    tData[index + 1] = setTStylingRangeNextDuplicate(tData[index + 1] as TStylingRange);
+  }
+}
+
 
 /**
  * Marks `TStyleValue`s as duplicates if another style binding in the list has the same
@@ -309,14 +347,16 @@ export function insertTStylingBinding(
  * NOTE: Once `[style]` (Map) is added into the system all things are mapped as duplicates.
  * NOTE: We use `style` as example, but same logic is applied to `class`es as well.
  *
- * @param tData
- * @param tStylingKey
- * @param index
- * @param staticValues
- * @param isPrevDir
+ * @param tData `TData` where the linked list is stored.
+ * @param tStylingKey `TStylingKeyPrimitive` which contains the value to compare to other keys in
+ *        the linked list.
+ * @param index Starting location in the linked list to search from
+ * @param isPrevDir Direction.
+ *        - `true` for previous (lower priority);
+ *        - `false` for next (higher priority).
  */
 function markDuplicates(
-    tData: TData, tStylingKey: TStylingKey, index: number, staticValues: string, isPrevDir: boolean,
+    tData: TData, tStylingKey: TStylingKeyPrimitive, index: number, isPrevDir: boolean,
     isClassBinding: boolean) {
   const tStylingAtIndex = tData[index + 1] as TStylingRange;
   const isMap = tStylingKey === null;
@@ -324,14 +364,15 @@ function markDuplicates(
       isPrevDir ? getTStylingRangePrev(tStylingAtIndex) : getTStylingRangeNext(tStylingAtIndex);
   let foundDuplicate = false;
   // We keep iterating as long as we have a cursor
-  // AND either: We found what we are looking for, or we are a map in which case we have to
-  // continue searching even after we find what we were looking for since we are a wild card
-  // and everything needs to be flipped to duplicate.
+  // AND either:
+  // - we found what we are looking for, OR
+  // - we are a map in which case we have to continue searching even after we find what we were
+  //   looking for since we are a wild card and everything needs to be flipped to duplicate.
   while (cursor !== 0 && (foundDuplicate === false || isMap)) {
+    ngDevMode && assertDataInRange(tData, cursor);
     const tStylingValueAtCursor = tData[cursor] as TStylingKey;
     const tStyleRangeAtCursor = tData[cursor + 1] as TStylingRange;
-    if (tStylingValueAtCursor === null || tStylingKey == null ||
-        tStylingValueAtCursor === tStylingKey) {
+    if (isStylingMatch(tStylingValueAtCursor, tStylingKey)) {
       foundDuplicate = true;
       tData[cursor + 1] = isPrevDir ? setTStylingRangeNextDuplicate(tStyleRangeAtCursor) :
                                       setTStylingRangePrevDuplicate(tStyleRangeAtCursor);
@@ -339,31 +380,47 @@ function markDuplicates(
     cursor = isPrevDir ? getTStylingRangePrev(tStyleRangeAtCursor) :
                          getTStylingRangeNext(tStyleRangeAtCursor);
   }
-  // We also need to process the static values.
-  if (staticValues !== '' &&  // If we have static values to search
-      !foundDuplicate         // If we have duplicate don't bother since we are already marked as
-                              // duplicate
-      ) {
-    if (isMap) {
-      // if we are a Map (and we have statics) we must assume duplicate
-      foundDuplicate = true;
-    } else if (staticValues != null) {
-      // If we found non-map then we iterate over its keys to determine if any of them match ours
-      // If we find a match than we mark it as duplicate.
-      for (let i = isClassBinding ? parseClassName(staticValues) : parseStyle(staticValues);  //
-           i >= 0;                                                                            //
-           i = isClassBinding ? parseClassNameNext(staticValues, i) :
-                                parseStyleNext(staticValues, i)) {
-        if (getLastParsedKey(staticValues) === tStylingKey) {
-          foundDuplicate = true;
-          break;
-        }
-      }
-    }
-  }
   if (foundDuplicate) {
     // if we found a duplicate, than mark ourselves.
     tData[index + 1] = isPrevDir ? setTStylingRangePrevDuplicate(tStylingAtIndex) :
                                    setTStylingRangeNextDuplicate(tStylingAtIndex);
   }
+}
+
+/**
+ * Determines if two `TStylingKey`s are a match.
+ *
+ * When computing weather a binding contains a duplicate, we need to compare if the instruction
+ * `TStylingKey` has a match.
+ *
+ * Here are examples of `TStylingKey`s which match given `tStylingKeyCursor` is:
+ * - `color`
+ *    - `color`    // Match another color
+ *    - `null`     // That means that `tStylingKey` is a `classMap`/`styleMap` instruction
+ *    - `['', 'color', 'other', true]` // wrapped `color` so match
+ *    - `['', null, 'other', true]`       // wrapped `null` so match
+ *    - `['', 'width', 'color', 'value']` // wrapped static value contains a match on `'color'`
+ * - `null`       // `tStylingKeyCursor` always match as it is `classMap`/`styleMap` instruction
+ *
+ * @param tStylingKeyCursor
+ * @param tStylingKey
+ */
+function isStylingMatch(tStylingKeyCursor: TStylingKey, tStylingKey: TStylingKeyPrimitive) {
+  ngDevMode &&
+      assertNotEqual(
+          Array.isArray(tStylingKey), true, 'Expected that \'tStylingKey\' has been unwrapped');
+  if (tStylingKeyCursor === null ||  // If the cursor is `null` it means that we have map at that
+                                     // location so we must assume that we have a match.
+      tStylingKey == null ||  // If `tStylingKey` is `null` then it is a map therefor assume that it
+                              // contains a match.
+      (Array.isArray(tStylingKeyCursor) ? tStylingKeyCursor[1] : tStylingKeyCursor) ===
+          tStylingKey  // If the keys match explicitly than we are a match.
+      ) {
+    return true;
+  } else if (Array.isArray(tStylingKeyCursor) && typeof tStylingKey === 'string') {
+    // if we did not find a match, but `tStylingKeyCursor` is `ArrayMap` that means cursor has
+    // statics and we need to check those as well.
+    return arrayMapIndexOf(tStylingKeyCursor, tStylingKey) >= 0;  // see if we are matching the key
+  }
+  return false;
 }

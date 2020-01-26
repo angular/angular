@@ -10,18 +10,19 @@ import {SafeValue, unwrapSafeValue} from '../../sanitization/bypass';
 import {stylePropNeedsSanitization, ɵɵsanitizeStyle} from '../../sanitization/sanitization';
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {ArrayMap, arrayMapGet, arrayMapSet} from '../../util/array_utils';
-import {assertDefined, assertEqual, assertLessThan, throwError} from '../../util/assert';
+import {assertDefined, assertEqual, assertGreaterThanOrEqual, assertLessThan, assertNotEqual, assertNotSame, throwError} from '../../util/assert';
 import {EMPTY_ARRAY} from '../../util/empty';
 import {concatStringsWithSpace, stringify} from '../../util/stringify';
 import {assertFirstUpdatePass} from '../assert';
 import {bindingUpdated} from '../bindings';
-import {AttributeMarker, TAttributes, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
+import {DirectiveDef} from '../interfaces/definition';
+import {AttributeMarker, DirectiveDefs, TAttributes, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement, Renderer3} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {TStylingKey, TStylingRange, getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate} from '../interfaces/styling';
 import {HEADER_OFFSET, LView, RENDERER, TData, TVIEW, TView} from '../interfaces/view';
 import {applyStyling} from '../node_manipulation';
-import {getCurrentStyleSanitizer, getLView, getSelectedIndex, incrementBindingIndex, setCurrentStyleSanitizer} from '../state';
+import {getCurrentDirectiveIndex, getCurrentStyleSanitizer, getLView, getSelectedIndex, incrementBindingIndex, setCurrentStyleSanitizer} from '../state';
 import {insertTStylingBinding} from '../styling/style_binding_list';
 import {getLastParsedKey, getLastParsedValue, parseClassName, parseClassNameNext, parseStyle, parseStyleNext} from '../styling/styling_parser';
 import {NO_CHANGE} from '../tokens';
@@ -239,6 +240,14 @@ export function checkStylingMap(
     // if so as not to read unnecessarily.
     const tNode = tView.data[getSelectedIndex() + HEADER_OFFSET] as TNode;
     if (hasStylingInputShadow(tNode, isClassBased) && !isInHostBindings(tView, bindingIndex)) {
+      if (ngDevMode) {
+        // verify that if we are shadowing then `TData` is appropriately marked so that we skip
+        // processing this binding in styling resolution.
+        const tStylingKey = tView.data[bindingIndex];
+        assertEqual(
+            Array.isArray(tStylingKey) ? tStylingKey[1] : tStylingKey, false,
+            'Styling linked list shadow input should be marked as \'false\'');
+      }
       // VE does not concatenate the static portion like we are doing here.
       // Instead VE just ignores the static completely if dynamic binding is present.
       // Because of locality we have already set the static portion because we don't know if there
@@ -305,8 +314,214 @@ function stylingPropertyFirstUpdatePass(
       // We turn this into a noop by setting the key to `false`
       tStylingKey = false;
     }
+    tStylingKey = wrapInStaticStylingKey(tData, tNode, tStylingKey, isClassBased);
     insertTStylingBinding(tData, tNode, tStylingKey, bindingIndex, isHostBindings, isClassBased);
   }
+}
+
+/**
+ * Adds static styling information to the binding if applicable.
+ *
+ * The linked list of styles not only stores the list and keys, but also stores static styling
+ * information on some of the keys. This function determines if the key should contain the styling
+ * information and computes it.
+ *
+ * See `TStylingStatic` for more details.
+ *
+ * @param tData `TData` where the linked list is stored.
+ * @param tNode `TNode` for which the styling is being computed.
+ * @param stylingKey `TStylingKeyPrimitive` which may need to be wrapped into `TStylingKey`
+ * @param isClassBased `true` if `class` (`false` if `style`)
+ */
+export function wrapInStaticStylingKey(
+    tData: TData, tNode: TNode, stylingKey: TStylingKey, isClassBased: boolean): TStylingKey {
+  const hostDirectiveDef = getHostDirectiveDef(tData);
+  let residual = isClassBased ? tNode.residualClasses : tNode.residualStyles;
+  if (hostDirectiveDef === null) {
+    // We are in template node.
+    // If template node already had styling instruction then it has already collected the static
+    // styling and there is no need to collect them again. We know that we are the first styling
+    // instruction because the `TNode.*Bindings` points to 0 (nothing has been inserted yet).
+    const isFirstStylingInstructionInTemplate =
+        (isClassBased ? tNode.classBindings : tNode.styleBindings) as any as number === 0;
+    if (isFirstStylingInstructionInTemplate) {
+      // It would be nice to be able to get the statics from `mergeAttrs`, however, at this point
+      // they are already merged and it would not be possible to figure which property belongs where
+      // in the priority.
+      stylingKey = collectStylingFromDirectives(null, tData, tNode, stylingKey, isClassBased);
+      stylingKey = collectStylingFromTAttrs(stylingKey, tNode.attrs, isClassBased);
+      // We know that if we have styling binding in template we can't have residual.
+      residual = null;
+    }
+  } else {
+    // We are in host binding node and there was no binding instruction in template node.
+    // This means that we need to compute the residual.
+    const directives = tNode.directives;
+    const isFirstStylingInstructionInHostBinding = directives !== null &&
+        directives[directives[DirectiveDefs.STYLING_CURSOR]] !== hostDirectiveDef;
+    if (isFirstStylingInstructionInHostBinding) {
+      stylingKey =
+          collectStylingFromDirectives(hostDirectiveDef, tData, tNode, stylingKey, isClassBased);
+      if (residual === null) {
+        // - If `null` than either:
+        //    - Template styling instruction already ran and it has consumed the static
+        //      styling into its `TStylingKey` and so there is no need to update residual. Instead
+        //      we need to update the `TStylingKey` associated with the first template node
+        //      instruction. OR
+        //    - Some other styling instruction ran and determined that there are no residuals
+        let templateStylingKey = getTemplateHeadTStylingKey(tData, tNode, isClassBased);
+        if (templateStylingKey !== undefined && Array.isArray(templateStylingKey)) {
+          // Only recompute if `templateStylingKey` had static values. (If no static value found
+          // then there is nothing to do since this operation can only produce less static keys, not
+          // more.)
+          templateStylingKey = collectStylingFromDirectives(
+              null, tData, tNode, templateStylingKey[1] /* unwrap previous statics */,
+              isClassBased);
+          templateStylingKey =
+              collectStylingFromTAttrs(templateStylingKey, tNode.attrs, isClassBased);
+          setTemplateHeadTStylingKey(tData, tNode, isClassBased, templateStylingKey);
+        }
+      } else {
+        // We only need to recompute residual if it is not `null`.
+        // - If existing residual (implies there was no template styling). This means that some of
+        //   the statics may have moved from the residual to the `stylingKey` and so we have to
+        //   recompute.
+        // - If `undefined` this is the first time we are running.
+        residual = collectResidual(tNode, isClassBased);
+      }
+    }
+  }
+  if (residual !== undefined) {
+    isClassBased ? (tNode.residualClasses = residual) : (tNode.residualStyles = residual);
+  }
+  return stylingKey;
+}
+
+/**
+ * Retrieve the `TStylingKey` for the template styling instruction.
+ *
+ * This is needed since `hostBinding` styling instructions are inserted after the template
+ * instruction. While the template instruction needs to update the residual in `TNode` the
+ * `hostBinding` instructions need to update the `TStylingKey` of the template instruction because
+ * the template instruction is downstream from the `hostBindings` instructions.
+ *
+ * @param tData `TData` where the linked list is stored.
+ * @param tNode `TNode` for which the styling is being computed.
+ * @param isClassBased `true` if `class` (`false` if `style`)
+ * @return `TStylingKey` if found or `undefined` if not found.
+ */
+function getTemplateHeadTStylingKey(tData: TData, tNode: TNode, isClassBased: boolean): TStylingKey|
+    undefined {
+  const bindings = isClassBased ? tNode.classBindings : tNode.styleBindings;
+  if (getTStylingRangeNext(bindings) === 0) {
+    // There does not seem to be a styling instruction in the `template`.
+    return undefined;
+  }
+  return tData[getTStylingRangePrev(bindings)] as TStylingKey;
+}
+
+function setTemplateHeadTStylingKey(
+    tData: TData, tNode: TNode, isClassBased: boolean, tStylingKey: TStylingKey): void {
+  const bindings = isClassBased ? tNode.classBindings : tNode.styleBindings;
+  ngDevMode && assertNotEqual(
+                   getTStylingRangeNext(bindings), 0,
+                   'Expecting to have at least one template styling binding.');
+  tData[getTStylingRangePrev(bindings)] = tStylingKey;
+}
+
+function collectResidual(tNode: TNode, isClassBased: boolean): ArrayMap<any>|null {
+  let residual: ArrayMap<any>|null|undefined = undefined;
+  const directives = tNode.directives;
+  if (directives) {
+    for (let i = directives[DirectiveDefs.STYLING_CURSOR] + 1; i < directives.length; i++) {
+      const attrs = (directives[i] as DirectiveDef<any>).hostAttrs;
+      residual = collectStylingFromTAttrs(residual, attrs, isClassBased) as ArrayMap<any>| null;
+    }
+  }
+  return collectStylingFromTAttrs(residual, tNode.attrs, isClassBased) as ArrayMap<any>| null;
+}
+
+/**
+ * Collect the static styling information with lower priority than `hostDirectiveDef`.
+ *
+ * (This is opposite of residual styling.)
+ *
+ * @param hostDirectiveDef `DirectiveDef` for which we want to collect lower priority static
+ *        styling. (Or `null` if template styling)
+ * @param tData `TData` where the linked list is stored.
+ * @param tNode `TNode` for which the styling is being computed.
+ * @param stylingKey Existing `TStylingKey` to update or wrap.
+ * @param isClassBased `true` if `class` (`false` if `style`)
+ */
+function collectStylingFromDirectives(
+    hostDirectiveDef: DirectiveDef<any>| null, tData: TData, tNode: TNode, stylingKey: TStylingKey,
+    isClassBased: boolean): TStylingKey {
+  const directives = tNode.directives;
+  if (directives != null) {
+    ngDevMode && hostDirectiveDef &&
+        assertGreaterThanOrEqual(
+            directives.indexOf(hostDirectiveDef, directives[DirectiveDefs.STYLING_CURSOR]), 0,
+            'Expecting that the current directive is in the directive list');
+    // We need to loop because there can be directives which have `hostAttrs` but don't have
+    // `hostBindings` so this loop catches up up to the current directive..
+    let currentDirective: DirectiveDef<any>|null = null;
+    let index = directives[DirectiveDefs.STYLING_CURSOR];
+    while (index + 1 < directives.length) {
+      index++;
+      currentDirective = directives[index] as DirectiveDef<any>;
+      ngDevMode && assertDefined(currentDirective, 'expected to be defined');
+      stylingKey = collectStylingFromTAttrs(stylingKey, currentDirective.hostAttrs, isClassBased);
+      if (currentDirective === hostDirectiveDef) break;
+    }
+    if (hostDirectiveDef !== null) {
+      // we only advance the styling cursor if we are collecting data from host bindings.
+      // Template executes before host bindings and so if we would update the index,
+      // host bindings would not get their statics.
+      directives[DirectiveDefs.STYLING_CURSOR] = index;
+    }
+  }
+  return stylingKey;
+}
+
+/**
+ * Convert `TAttrs` into `TStylingStatic`.
+ *
+ * @param stylingKey existing `TStylingKey` to update or wrap.
+ * @param attrs `TAttributes` to process.
+ * @param isClassBased `true` if `class` (`false` if `style`)
+ */
+function collectStylingFromTAttrs(
+    stylingKey: TStylingKey | undefined, attrs: TAttributes | null,
+    isClassBased: boolean): TStylingKey {
+  const desiredMarker = isClassBased ? AttributeMarker.Classes : AttributeMarker.Styles;
+  let currentMarker = AttributeMarker.ImplicitAttributes;
+  if (attrs !== null) {
+    for (let i = 0; i < attrs.length; i++) {
+      const item = attrs[i] as number | string;
+      if (typeof item === 'number') {
+        currentMarker = item;
+      } else {
+        if (currentMarker === desiredMarker) {
+          if (!Array.isArray(stylingKey)) {
+            stylingKey = stylingKey === undefined ? [] : ['', stylingKey] as any;
+          }
+          arrayMapSet(stylingKey as ArrayMap<any>, item, isClassBased ? true : attrs[++i]);
+        }
+      }
+    }
+  }
+  return stylingKey === undefined ? null : stylingKey;
+}
+
+/**
+ * Retrieve the current `DirectiveDef` which is active when `hostBindings` style instruction is
+ * being executed (or `null` if we are in `template`.)
+ *
+ * @param tData Current `TData` where the `DirectiveDef` will be looked up at.
+ */
+export function getHostDirectiveDef(tData: TData): DirectiveDef<any>|null {
+  const currentDirectiveIndex = getCurrentDirectiveIndex();
+  return currentDirectiveIndex === -1 ? null : tData[currentDirectiveIndex] as DirectiveDef<any>;
 }
 
 /**
@@ -468,7 +683,7 @@ function updateStyling(
   const tData = tView.data;
   const tRange = tData[bindingIndex + 1] as TStylingRange;
   const higherPriorityValue = getTStylingRangeNextDuplicate(tRange) ?
-      findStylingValue(tData, null, lView, prop, getTStylingRangeNext(tRange), isClassBased) :
+      findStylingValue(tData, tNode, lView, prop, getTStylingRangeNext(tRange), isClassBased) :
       undefined;
   if (!isStylingValuePresent(higherPriorityValue)) {
     // We don't have a next duplicate, or we did not find a duplicate value.
@@ -476,8 +691,7 @@ function updateStyling(
       // We should delete current value or restore to lower priority value.
       if (getTStylingRangePrevDuplicate(tRange)) {
         // We have a possible prev duplicate, let's retrieve it.
-        value =
-            findStylingValue(tData, tNode, lView, prop, getTStylingRangePrev(tRange), isClassBased);
+        value = findStylingValue(tData, null, lView, prop, bindingIndex, isClassBased);
       }
     }
     const rNode = getNativeByIndex(getSelectedIndex(), lView) as RElement;
@@ -505,9 +719,9 @@ function updateStyling(
  *
  * @param tData `TData` used for traversing the priority.
  * @param tNode `TNode` to use for resolving static styling. Also controls search direction.
- *   - `TNode` search previous and quit as soon as `isStylingValuePresent(value)` is true.
- *      If no value found consult `tNode.styleMap`/`tNode.classMap` for default value.
- *   - `null` search next and go all the way to end. Return last value where
+ *   - `TNode` search next and quit as soon as `isStylingValuePresent(value)` is true.
+ *      If no value found consult `tNode.residualStyle`/`tNode.residualClass` for default value.
+ *   - `null` search prev and go all the way to end. Return last value where
  *     `isStylingValuePresent(value)` is true.
  * @param lView `LView` used for retrieving the actual values.
  * @param prop Property which we are interested in.
@@ -519,29 +733,30 @@ function findStylingValue(
     isClassBased: boolean): any {
   let value: any = undefined;
   while (index > 0) {
-    const key = tData[index] as TStylingKey;
-    const currentValue = key === null ? arrayMapGet(lView[index + 1], prop) :
-                                        key === prop ? lView[index + 1] : undefined;
+    const rawKey = tData[index] as TStylingKey;
+    const containsStatics = Array.isArray(rawKey);
+    // Unwrap the key if we contain static values.
+    const key = containsStatics ? (rawKey as string[])[1] : rawKey;
+    let currentValue = key === null ? arrayMapGet(lView[index + 1], prop) :
+                                      key === prop ? lView[index + 1] : undefined;
+    if (containsStatics && !isStylingValuePresent(currentValue)) {
+      currentValue = arrayMapGet(rawKey as ArrayMap<any>, prop);
+    }
     if (isStylingValuePresent(currentValue)) {
       value = currentValue;
-      if (tNode !== null) {
+      if (tNode === null) {
         return value;
       }
     }
     const tRange = tData[index + 1] as TStylingRange;
-    index = tNode !== null ? getTStylingRangePrev(tRange) : getTStylingRangeNext(tRange);
+    index = tNode === null ? getTStylingRangePrev(tRange) : getTStylingRangeNext(tRange);
   }
   if (tNode !== null) {
-    // in case where we are going in previous direction AND we did not find anything, we need to
-    // consult static styling
-    let staticArrayMap = isClassBased ? tNode.classesMap : tNode.stylesMap;
-    if (staticArrayMap === undefined) {
-      // This is the first time we are here, and we need to initialize it.
-      initializeStylingStaticArrayMap(tNode);
-      staticArrayMap = isClassBased ? tNode.classesMap : tNode.stylesMap;
-    }
-    if (staticArrayMap !== null) {
-      value = arrayMapGet(staticArrayMap !, prop);
+    // in case where we are going in next direction AND we did not find anything, we need to
+    // consult residual styling
+    let residual = isClassBased ? tNode.residualClasses : tNode.residualStyles;
+    if (residual != null /** OR residual !=== undefined */) {
+      value = arrayMapGet(residual !, prop);
     }
   }
   return value;
@@ -571,8 +786,8 @@ function isStylingValuePresent(value: any): boolean {
  * @param tNode `TNode` to initialize.
  */
 export function initializeStylingStaticArrayMap(tNode: TNode) {
-  ngDevMode && assertEqual(tNode.classesMap, undefined, 'Already initialized!');
-  ngDevMode && assertEqual(tNode.stylesMap, undefined, 'Already initialized!');
+  ngDevMode && assertEqual(tNode.residualClasses, undefined, 'Already initialized!');
+  ngDevMode && assertEqual(tNode.residualStyles, undefined, 'Already initialized!');
   let styleMap: ArrayMap<any>|null = null;
   let classMap: ArrayMap<any>|null = null;
   const mergeAttrs = tNode.mergedAttrs || EMPTY_ARRAY as TAttributes;
@@ -589,8 +804,8 @@ export function initializeStylingStaticArrayMap(tNode: TNode) {
       arrayMapSet(styleMap !, item as string, mergeAttrs[++i] as string);
     }
   }
-  tNode.classesMap = classMap;
-  tNode.stylesMap = styleMap;
+  tNode.residualClasses = classMap;
+  tNode.residualStyles = styleMap;
 }
 
 /**

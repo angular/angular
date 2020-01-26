@@ -15,7 +15,7 @@ import {initNgDevMode} from '../../util/ng_dev_mode';
 import {ACTIVE_INDEX, ActiveIndexFlag, CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS, NATIVE} from '../interfaces/container';
 import {DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, TIcu} from '../interfaces/i18n';
-import {PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TViewNode} from '../interfaces/node';
+import {PropertyAliases, TConstants, TContainerNode, TDirectiveDefs, TElementNode, TNode as ITNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TViewNode} from '../interfaces/node';
 import {SelectorFlags} from '../interfaces/projection';
 import {TQueries} from '../interfaces/query';
 import {RComment, RElement, RNode} from '../interfaces/renderer';
@@ -176,11 +176,12 @@ class TNode implements ITNode {
       public parent: TElementNode|TContainerNode|null,                               //
       public projection: number|(ITNode|RNode[])[]|null,                             //
       public styles: string|null,                                                    //
-      public stylesMap: ArrayMap<any>|undefined|null,                                //
+      public residualStyles: ArrayMap<any>|undefined|null,                           //
       public classes: string|null,                                                   //
-      public classesMap: ArrayMap<any>|undefined|null,                               //
+      public residualClasses: ArrayMap<any>|undefined|null,                          //
       public classBindings: TStylingRange,                                           //
       public styleBindings: TStylingRange,                                           //
+      public directives: TDirectiveDefs|null,                                        //
       ) {}
 
   get type_(): string {
@@ -240,9 +241,7 @@ class TNode implements ITNode {
 export const TNodeDebug = TNode;
 export type TNodeDebug = TNode;
 
-export interface DebugStyleBindings extends Array<DebugStyleBinding|string|null> {
-  [0]: string|null;
-}
+export interface DebugStyleBindings extends Array<ArrayMap<any>|DebugStyleBinding|string|null> {}
 export interface DebugStyleBinding {
   key: TStylingKey;
   index: number;
@@ -276,7 +275,7 @@ function toDebugStyleBinding(tNode: TNode, isClassBased: boolean): DebugStyleBin
     if (cursor === prev) isTemplate = false;
     cursor = getTStylingRangePrev(itemRange);
   }
-  bindings.unshift(isClassBased ? tNode.classes : tNode.styles);
+  bindings.push((isClassBased ? tNode.residualClasses : tNode.residualStyles) || null);
   return bindings;
 }
 
