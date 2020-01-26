@@ -65,12 +65,23 @@ test --test_output=errors
 ################################
 # Temporary Settings for Ivy   #
 ################################
-# To determine if the compiler used should be Ivy instead of ViewEngine, one can use `--config=ivy`
-# on any bazel target. This is a temporary flag until codebase is permanently switched to Ivy.
-build --define=angular_ivy_enabled=False
 
-build:view-engine --define=angular_ivy_enabled=False
-build:ivy --define=angular_ivy_enabled=True
+# Specifies the default configuration too be used if neither --config=ivy or --config=view-engine is specified.
+build --config=view-engine
+
+# this way of setting the default causes warnings:
+#     $ bazel test --config=ivy //packages/common/...
+#     WARNING: option '--build_tag_filters' was expanded to from both option '--config=view-engine' (source /usr/local/google/home/iminar/Development/angular/.bazelrc) and option '--config=ivy' (source command line options)
+#     WARNING: option '--test_tag_filters' was expanded to from both option '--config=view-engine' (source /usr/local/google/home/iminar/Development/angular/.bazelrc) and option '--config=ivy' (source command line options)
+#     INFO: Analyzed 33 targets (1 packages loaded, 145 targets configured).
+#
+# we can work around it by duplicating the options:
+# build --define=angular_ivy_enabled=False --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only
+#
+# can this be done without the duplication?
+
+build:view-engine --define=angular_ivy_enabled=False --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only
+build:ivy --define=angular_ivy_enabled=True --build_tag_filters=-no-ivy-aot --test_tag_filters=-no-ivy-aot,-fixme-ivy-aot
 
 ##################################
 # Remote Build Execution support #
