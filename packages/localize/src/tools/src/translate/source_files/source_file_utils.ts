@@ -328,3 +328,9 @@ export class BabelParseError extends Error {
 export function isBabelParseError(e: any): e is BabelParseError {
   return e.type === 'BabelParseError';
 }
+
+export function buildCodeFrameError(path: NodePath, e: BabelParseError): string {
+  const filename = path.hub.file.opts.filename || '(unknown file)';
+  const message = path.hub.file.buildCodeFrameError(e.node, e.message).message;
+  return `${filename}: ${message}`;
+}
