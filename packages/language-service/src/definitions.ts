@@ -61,7 +61,7 @@ export function getDefinitionAndBoundSpan(
       // two of the same definition:
       //    [(ngModel)]="prop"
       //                 ^^^^  -- one definition for the property binding, one for the event binding
-      // To prune duplicate definitions, tag definitions with unique location signatures and prune
+      // To prune duplicate definitions, tag definitions with unique location signatures and ignore
       // definitions whose locations have already been seen.
       const signature = `${textSpan.start}:${textSpan.length}@${fileName}`;
       if (seen.has(signature)) continue;
