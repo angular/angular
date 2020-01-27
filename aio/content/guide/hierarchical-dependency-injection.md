@@ -749,8 +749,8 @@ for brevity:
 
 //...Omitting previous examples. The following applies to this section.
 
-Content projection: This is coming from content. Doesn't get to see
-puppy because the puppy is declared inside the view only.
+Content projection: The following is coming from content. It doesn't 
+get to see the puppy because the puppy is declared inside the view only.
 
 Emoji from FlowerService: 🌻
 Emoji from AnimalService: 🐳
