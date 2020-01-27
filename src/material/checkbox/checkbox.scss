@@ -275,6 +275,15 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
   ._mat-animation-noopable & {
     transition: none;
   }
+
+  // `.mat-checkbox` here is redundant, but we need it to increase the specificity so that
+  // these styles don't get overwritten by the `background-color` from the theme.
+  .mat-checkbox & {
+    @include cdk-high-contrast {
+      // Needs to be removed because it hides the checkbox outline.
+      background: none;
+    }
+  }
 }
 
 .mat-checkbox-persistent-ripple {
@@ -318,6 +327,12 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
     dashoffset: $_mat-checkbox-mark-path-length;
     dasharray: $_mat-checkbox-mark-path-length;
     width: $_mat-checkbox-mark-stroke-size;
+  }
+
+  @include cdk-high-contrast(black-on-white) {
+    // In the checkbox theme this `stroke` has !important which ends up overriding the browser's
+    // automatic color inversion so we need to re-invert it ourselves for black-on-white.
+    stroke: #000 !important;
   }
 }
 
@@ -393,6 +408,10 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
 
 .mat-checkbox-disabled {
   cursor: default;
+
+  @include cdk-high-contrast {
+    opacity: 0.5;
+  }
 }
 
 .mat-checkbox-anim {
