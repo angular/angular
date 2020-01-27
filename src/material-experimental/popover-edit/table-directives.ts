@@ -16,15 +16,16 @@ import {
 } from '@angular/cdk-experimental/popover-edit';
 
 const POPOVER_EDIT_HOST_BINDINGS = {
-  'tabIndex': '0',
+  '[attr.tabindex]': 'disabled ? null : 0',
   'class': 'mat-popover-edit-cell',
-  '[attr.aria-haspopup]': 'true',
+  '[attr.aria-haspopup]': '!disabled',
 };
 
 const POPOVER_EDIT_INPUTS = [
   'template: matPopoverEdit',
   'context: matPopoverEditContext',
   'colspan: matPopoverEditColspan',
+  'disabled: matPopoverEditDisabled',
 ];
 
 const EDIT_PANE_CLASS = 'mat-edit-pane';

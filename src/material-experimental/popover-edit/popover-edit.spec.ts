@@ -50,7 +50,11 @@ const CELL_TEMPLATE = `
     </span>
     `;
 
-const POPOVER_EDIT_DIRECTIVE_NAME = `[matPopoverEdit]="nameEdit" [matPopoverEditColspan]="colspan"`;
+const POPOVER_EDIT_DIRECTIVE_NAME = `
+    [matPopoverEdit]="nameEdit"
+    [matPopoverEditColspan]="colspan"
+    [matPopoverEditDisabled]="nameEditDisabled"
+    `;
 
 const POPOVER_EDIT_DIRECTIVE_WEIGHT = `[matPopoverEdit]="weightEdit" matPopoverEditTabOut`;
 
@@ -65,6 +69,7 @@ abstract class BaseTestComponent {
 
   preservedValues = new FormValueContainer<PeriodicElement, {'name': string}>();
 
+  nameEditDisabled = false;
   ignoreSubmitUnlessValid = true;
   clickOutBehavior: PopoverEditClickOutBehavior = 'close';
   colspan: CdkPopoverEditColspan = {};
@@ -308,9 +313,7 @@ describe('Material Popover Edit', () => {
           expect(component.hoverContentStateForRow(rows.length - 1))
               .toBe(HoverContentState.FOCUSABLE);
         }));
-      });
 
-      describe('triggering edit', () => {
         it('shows and hides on-hover content only after a delay', fakeAsync(() => {
           const [row0, row1] = component.getRows();
           row0.dispatchEvent(new Event('mouseover', {bubbles: true}));
@@ -410,10 +413,34 @@ describe('Material Popover Edit', () => {
           expect(component.lensIsOpen()).toBe(true);
           clearLeftoverTimers();
         }));
+
+        it('does not trigger edit when disabled', fakeAsync(() => {
+          component.nameEditDisabled = true;
+          fixture.detectChanges();
+
+          // Uses Enter to open the lens.
+          component.openLens();
+
+          expect(component.lensIsOpen()).toBe(false);
+          clearLeftoverTimers();
+        }));
       });
 
       describe('focus manipulation', () => {
         const getRowCells = () => component.getRows().map(getCells);
+
+        describe('tabindex', () => {
+          it('sets tabindex to 0 on editable cells', () => {
+            expect(component.getEditCell().getAttribute('tabindex')).toBe('0');
+          });
+
+          it('unsets tabindex to 0 on disabled cells', () => {
+            component.nameEditDisabled = true;
+            fixture.detectChanges();
+
+            expect(component.getEditCell().hasAttribute('tabindex')).toBe(false);
+          });
+        });
 
         describe('arrow keys', () => {
           const dispatchKey = (cell: HTMLElement, keyCode: number) =>

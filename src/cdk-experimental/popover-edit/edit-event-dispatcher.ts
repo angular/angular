@@ -47,7 +47,7 @@ export const enum HoverContentState {
  */
 @Injectable()
 export class EditEventDispatcher {
-  /** A subject that indicates which table cell is currently editing. */
+  /** A subject that indicates which table cell is currently editing (unless it is disabled). */
   readonly editing = new Subject<Element|null>();
 
   /** A subject that indicates which table row is currently hovered. */
@@ -61,6 +61,13 @@ export class EditEventDispatcher {
 
   /** A subject that emits mouse move events from the table indicating the targeted row. */
   readonly mouseMove = new Subject<Element|null>();
+
+  // TODO: Use WeakSet once IE11 support is dropped.
+  /**
+   * Tracks the currently disabled editable cells - edit calls will be ignored
+   * for these cells.
+   */
+  readonly disabledCells = new WeakMap<Element, boolean>();
 
   /** The EditRef for the currently active edit lens (if any). */
   get editRef(): EditRef<any>|null {
@@ -81,9 +88,14 @@ export class EditEventDispatcher {
     this._distinctUntilChanged as MonoTypeOperatorFunction<Element|null>,
   );
 
+  readonly editingAndEnabled = this.editing.pipe(
+      filter(cell => cell == null || !this.disabledCells.has(cell)),
+      share(),
+  );
+
   /** An observable that emits the row containing focus or an active edit. */
   readonly editingOrFocused = combineLatest([
-      this.editing.pipe(
+      this.editingAndEnabled.pipe(
           map(cell => closest(cell, ROW_SELECTOR)),
           this._startWithNull,
       ),
@@ -126,7 +138,7 @@ export class EditEventDispatcher {
       share(),
   );
 
-  private readonly _editingDistinct = this.editing.pipe(
+  private readonly _editingAndEnabledDistinct = this.editingAndEnabled.pipe(
       distinctUntilChanged(),
       this._enterZone(),
       share(),
@@ -138,7 +150,7 @@ export class EditEventDispatcher {
   private _lastSeenRowHoverOrFocus: Observable<HoverContentState>|null = null;
 
   constructor(private readonly _ngZone: NgZone) {
-    this._editingDistinct.subscribe(cell => {
+    this._editingAndEnabledDistinct.subscribe(cell => {
       this._currentlyEditing = cell;
     });
   }
@@ -150,7 +162,7 @@ export class EditEventDispatcher {
   editingCell(element: Element|EventTarget): Observable<boolean> {
     let cell: Element|null = null;
 
-    return this._editingDistinct.pipe(
+    return this._editingAndEnabledDistinct.pipe(
         map(editCell => editCell === (cell || (cell = closest(element, CELL_SELECTOR)))),
         this._distinctUntilChanged as MonoTypeOperatorFunction<boolean>,
     );

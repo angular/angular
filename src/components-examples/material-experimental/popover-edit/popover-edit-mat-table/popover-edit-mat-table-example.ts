@@ -78,6 +78,8 @@ export class PopoverEditMatTableExample {
       ['position', 'name', 'type', 'weight', 'symbol', 'fantasyCounterpart'];
   dataSource = new ExampleDataSource();
 
+  nameEditEnabled = true;
+
   readonly TYPES = TYPES;
   readonly FANTASY_ELEMENTS = FANTASY_ELEMENTS;
 
