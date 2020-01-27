@@ -35,7 +35,7 @@
 #  aikidave - Dave Shevitz
 #  alan-agius4 - Alan Agius
 #  alxhub - Alex Rickabaugh
-#  andrewkushnir - Andrew Kushnir
+#  AndrewKushnir - Andrew Kushnir
 #  andrewseguin - Andrew Seguin
 #  atscott - Andrew Scott
 #  clydin - Charles Lyding
@@ -46,11 +46,11 @@
 #  filipesilva - Filipe Silva
 #  gkalpak - Georgios Kalpakas
 #  gregmagolan - Greg Magolan
-#  igorminar - Igor Minar
+#  IgorMinar - Igor Minar
 #  jbogarthyde - Judy Bogart
 #  jelbourn - Jeremy Elbourn
-#  jialipassion - Jia Li
-#  joostk - Joost Koehoorn
+#  JiaLiPassion - Jia Li
+#  JoostK - Joost Koehoorn
 #  josephperrott - Joey Perrott
 #  juleskremer - Jules Kremer
 #  kapunahelewong - Kapunahele Wong
@@ -74,7 +74,7 @@
 # =========================================================
 # @angular/framework-global-approvers
 # =========================================================
-# igorminar
+# IgorMinar
 # josephperrott
 # kara
 # mhevery
@@ -325,7 +325,7 @@ groups:
     reviewers:
       users:
         - alxhub
-        - igorminar
+        - IgorMinar
       teams:
         - ~framework-global-approvers
         - ~framework-global-approvers-for-docs-only-changes
@@ -461,7 +461,7 @@ groups:
       users:
         - alxhub
         - gkalpak
-        - igorminar
+        - IgorMinar
       teams:
         - ~framework-global-approvers
         - ~framework-global-approvers-for-docs-only-changes
@@ -511,7 +511,7 @@ groups:
     reviewers:
       users:
         - kara
-        - igorminar
+        - IgorMinar
         - pkozlowski-opensource
       teams:
         - ~framework-global-approvers
@@ -567,7 +567,7 @@ groups:
             ])
     reviewers:
       users:
-        - igorminar
+        - IgorMinar
         - mhevery
       teams:
         - ~framework-global-approvers
@@ -586,7 +586,7 @@ groups:
     reviewers:
       users:
         - kyliau
-        - igorminar
+        - IgorMinar
         - mgechev
       teams:
         - ~framework-global-approvers
@@ -603,7 +603,7 @@ groups:
           ])
     reviewers:
       users:
-        - jialipassion
+        - JiaLiPassion
         - mhevery
       teams:
         - ~framework-global-approvers
@@ -636,7 +636,7 @@ groups:
           ])
     reviewers:
       users:
-        - igorminar
+        - IgorMinar
         - josephperrott
         - kara
         - mhevery
@@ -667,7 +667,7 @@ groups:
     reviewers:
       users:
         - gkalpak
-        - igorminar
+        - IgorMinar
         - petebacondarwin
       teams:
         - ~framework-global-approvers
@@ -699,7 +699,7 @@ groups:
     reviewers:
       users:
         - aikidave
-        - igorminar
+        - IgorMinar
         - stephenfluin
       teams:
         - ~framework-global-approvers
@@ -762,7 +762,7 @@ groups:
     reviewers:
       users:
         - alan-agius4
-        - igorminar
+        - IgorMinar
         - mgechev
       teams:
         - ~framework-global-approvers
@@ -782,7 +782,7 @@ groups:
     reviewers:
       users:
         - alan-agius4
-        - igorminar
+        - IgorMinar
         - mgechev
       teams:
         - ~framework-global-approvers
@@ -804,7 +804,7 @@ groups:
     reviewers:
       users:
         - alan-agius4
-        - igorminar
+        - IgorMinar
         - mgechev
       teams:
         - ~framework-global-approvers
@@ -825,7 +825,7 @@ groups:
           ])
     reviewers:
       users:
-        - igorminar
+        - IgorMinar
         - stephenfluin
       teams:
         - ~framework-global-approvers
@@ -874,7 +874,7 @@ groups:
         - devversion
         - filipesilva
         - gkalpak
-        - igorminar
+        - IgorMinar
         - josephperrott
       teams:
         - ~framework-global-approvers
@@ -913,7 +913,7 @@ groups:
           ])
     reviewers:
       users:
-        - igorminar
+        - IgorMinar
       teams:
         - ~framework-global-approvers
 
@@ -930,7 +930,7 @@ groups:
         ])
     reviewers:
       users:
-        - igorminar
+        - IgorMinar
         - kara
       teams:
         - ~framework-global-approvers
@@ -947,7 +947,7 @@ groups:
           ])
     reviewers:
       users:
-        - igorminar
+        - IgorMinar
       teams:
         - ~framework-global-approvers
 
@@ -984,6 +984,6 @@ groups:
       - len(groups.active) == 0
     reviewers:
       users:
-        - igorminar
+        - IgorMinar
       teams:
         - ~framework-global-approvers
