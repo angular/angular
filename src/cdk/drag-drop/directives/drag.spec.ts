@@ -1224,6 +1224,18 @@ describe('CdkDrag', () => {
       expect(dragElement.style.transform).toBeFalsy();
     }));
 
+    it('should not be able to drag the element if the handle is disabled before init',
+      fakeAsync(() => {
+        const fixture = createComponent(StandaloneDraggableWithPreDisabledHandle);
+        fixture.detectChanges();
+        const dragElement = fixture.componentInstance.dragElement.nativeElement;
+        const handle = fixture.componentInstance.handleElement.nativeElement;
+
+        expect(dragElement.style.transform).toBeFalsy();
+        dragElementViaMouse(fixture, handle, 50, 100);
+        expect(dragElement.style.transform).toBeFalsy();
+      }));
+
     it('should not be able to drag using the handle if the element is disabled', fakeAsync(() => {
       const fixture = createComponent(StandaloneDraggableWithHandle);
       fixture.detectChanges();
@@ -4707,6 +4719,25 @@ class StandaloneDraggableWithHandle {
   @ViewChild('handleElement') handleElement: ElementRef<HTMLElement>;
   @ViewChild(CdkDrag) dragInstance: CdkDrag;
   @ViewChild(CdkDragHandle) handleInstance: CdkDragHandle;
+}
+
+@Component({
+  template: `
+    <div #dragElement cdkDrag
+      style="width: 100px; height: 100px; background: red; position: relative">
+      <div
+        #handleElement
+        cdkDragHandle
+        [cdkDragHandleDisabled]="disableHandle"
+        style="width: 10px; height: 10px; background: green;"></div>
+    </div>
+  `
+})
+class StandaloneDraggableWithPreDisabledHandle {
+  @ViewChild('dragElement', {static: false}) dragElement: ElementRef<HTMLElement>;
+  @ViewChild('handleElement', {static: false}) handleElement: ElementRef<HTMLElement>;
+  @ViewChild(CdkDrag, {static: false}) dragInstance: CdkDrag;
+  disableHandle = true;
 }
 
 @Component({
