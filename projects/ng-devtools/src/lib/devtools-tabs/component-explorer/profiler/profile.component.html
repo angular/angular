@@ -1,0 +1,34 @@
+<div class="profiler-wrapper">
+  <menu>
+    <span *ngIf="state === 'idle'" (click)="startRecording()" class="start-recording-button"></span>
+    <span *ngIf="state === 'recording'" (click)="stopRecording()" class="recording-button"></span>
+    <span *ngIf="state === 'visualizing'" (click)="discardRecording()" class="discard-button">&#10060;</span>
+  </menu>
+  <div id="profiler-content-wrapper">
+    <p class="instructions" [class.hidden]="state !== 'idle'">
+      <span>Click the record button <span class="start-recording-button"></span> to start a new recording.</span>
+    </p>
+    <p class="recording" [class.hidden]="state !== 'recording'">
+      <ng-recording-modal></ng-recording-modal>
+    </p>
+    <p class="visualization" [class.hidden]="state !== 'visualizing'">
+
+      <label>
+        Select view:
+        <mat-form-field>
+          <mat-select [(ngModel)]="visualState">
+            <mat-option value="aggregated">Aggregated</mat-option>
+            <mat-option value="timeline">Timeline</mat-option>
+            <mat-option value="time-travel">Time-Travel</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </label>
+
+      <ng-recording-timeline [class.hidden]="visualState !== 'aggregated' && visualState !== 'timeline'"
+                             [view]="visualState"
+                             [records]="stream">
+      </ng-recording-timeline>
+      <ng-time-travel [stream]="stream" [class.hidden]="visualState !== 'time-travel'"></ng-time-travel>
+    </p>
+  </div>
+</div>

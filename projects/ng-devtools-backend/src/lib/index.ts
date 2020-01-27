@@ -1,0 +1,103 @@
+import { MessageBus, Events, DirectiveID, ElementID, DirectivesProperties } from 'protocol';
+import { ComponentInspector } from './component-inspector';
+import { serializeComponentState } from './state-serializer';
+import {
+  queryComponentTree,
+  ComponentTreeNode,
+  getDirectiveForest,
+  trimComponents,
+  getLatestComponentState,
+} from './component-tree';
+import { onChangeDetection } from './change-detection-tracker';
+import { start as startProfiling, stop as stopProfiling } from './recording';
+
+const getAngularVersion = () => {
+  const el = document.querySelector('[ng-version]');
+  if (!el) {
+    return false;
+  }
+  return el.getAttribute('ng-version');
+};
+
+const checkForAngular = (messageBus: MessageBus<Events>, attempt = 0) => {
+  const ngVersion = getAngularVersion();
+  const hasAngular = !!ngVersion;
+  if (hasAngular) {
+    messageBus.emit('ngAvailability', [{ version: ngVersion.toString() }]);
+    return;
+  }
+  if (attempt > 10) {
+    messageBus.emit('ngAvailability', [{ version: undefined }]);
+    return;
+  }
+  setTimeout(() => checkForAngular(messageBus, attempt + 1), 500);
+};
+
+// Might be problematic if there are many directives with the same
+// name on this node which is quite unlikely.
+const serializeNodeDirectiveProperties = (node: ComponentTreeNode) => {
+  const result: DirectivesProperties = {};
+  node.directives.forEach(dir => {
+    result[dir.name] = {
+      props: serializeComponentState(dir.instance),
+    };
+  });
+  if (node.component) {
+    result[node.component.name] = {
+      props: serializeComponentState(node.component.instance),
+    };
+  }
+  return result;
+};
+
+const inspector = new ComponentInspector();
+
+const startInspecting = () => inspector.startInspecting();
+const stopInspecting = () => inspector.stopInspecting();
+
+export const initialize = (messageBus: MessageBus<Events>) => {
+  onChangeDetection(() => messageBus.emit('componentTreeDirty'));
+
+  messageBus.on('getLatestComponentExplorerView', query => {
+    messageBus.emit('latestComponentExplorerView', [
+      {
+        forest: trimComponents(getDirectiveForest()),
+        properties: getLatestComponentState(query),
+      },
+    ]);
+  });
+
+  messageBus.on('startProfiling', startProfiling);
+  messageBus.on('stopProfiling', () => {
+    messageBus.emit('profilerResults', [stopProfiling()]);
+  });
+
+  messageBus.on('queryNgAvailability', () => checkForAngular(messageBus));
+  messageBus.on('inspectorStart', startInspecting);
+  messageBus.on('inspectorEnd', stopInspecting);
+
+  messageBus.on('getElementDirectivesProperties', (id: ElementID) => {
+    const node = queryComponentTree(id);
+    if (node) {
+      messageBus.emit('elementDirectivesProperties', [serializeNodeDirectiveProperties(node)]);
+    } else {
+      messageBus.emit('elementDirectivesProperties', [{}]);
+    }
+  });
+
+  messageBus.on('getNestedProperties', (id: DirectiveID, propPath: string[]) => {
+    const node = queryComponentTree(id.element);
+    if (node) {
+      let current = (id.directive === undefined ? node.component : node.directives[id.directive]).instance;
+      for (const prop of propPath) {
+        current = current[prop];
+        if (!current) {
+          console.error('Cannot access the properties', propPath, 'of', node);
+        }
+      }
+      messageBus.emit('nestedProperties', [id, { props: serializeComponentState(current) }, propPath]);
+    } else {
+      messageBus.emit('nestedProperties', [id, { props: {} }, propPath]);
+    }
+  });
+};

@@ -1,0 +1,17 @@
+@import '../../../../../../../node_modules/@angular/cdk/overlay-prebuilt.css';
+
+:host {
+  overflow: hidden;
+  display: block;
+  width: 100%;
+  height: calc(100% + 24px);
+}
+
+#recorder-wrapper {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+}

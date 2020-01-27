@@ -1,0 +1,53 @@
+:host,
+.network-canvas{
+  height: 100%;
+  width: 100%;
+  display: block;
+}
+
+.controls {
+  position: absolute;
+  top: 0px;
+  left: 340px
+}
+
+/deep/ .vis-network {
+  outline: none;
+}
+
+.timestamp {
+  font-weight: 300;
+  position: absolute;
+  top: 25px;
+  left: 340px;
+}
+
+.side-panel {
+  width: 250px;
+  border-left: 1px solid #ccc;
+  height: 100%;
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  background-color: #fff;
+}
+
+.side-panel header {
+  background-color: #eee;
+  padding: 0 5px;
+  border-bottom: 1px solid #ccc;
+  color: hsla(0, 0%, 32%, 1);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  line-height: 22px;
+  font-size: 12px;
+}
+
+.side-panel section {
+  height: calc(100% - 40px - 23px);
+  width: calc(100% - 20px); /* removing the padding */
+  overflow: auto;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  padding: 10px;
+}

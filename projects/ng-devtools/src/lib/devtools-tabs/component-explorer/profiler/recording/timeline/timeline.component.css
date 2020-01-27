@@ -1,0 +1,29 @@
+:host {
+  font-size: 12px;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.controls {
+  position: absolute;
+  top: 0;
+  left: 300px;
+  white-space: nowrap;
+}
+
+.warning-no {
+  color: green;
+}
+
+.warning-low {
+  color: orange;
+}
+
+.warning-mid {
+  color: darkorange;
+}
+
+.warning-high {
+  color: red;
+}

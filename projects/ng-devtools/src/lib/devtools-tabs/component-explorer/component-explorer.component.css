@@ -1,0 +1,35 @@
+:host {
+  display: flex;
+  height: 100%;
+  justify-content: space-between;
+}
+
+ng-property-view, .property-wrapper {
+  overflow: auto;
+}
+
+ng-property-view {
+  width: 100%;
+}
+
+.property-wrapper {
+  height: 100%;
+  width: 350px;
+  border-left: 1px solid #ccc;
+}
+
+.explorer-panel {
+  /*max-height: 100%;*/
+}
+
+.explorer-panel header {
+  background-color: #eee;
+  padding: 0 5px;
+  border-bottom: 1px solid #ccc;
+  color: hsla(0, 0%, 32%, 1);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  line-height: 22px;
+  font-size: 12px;
+}

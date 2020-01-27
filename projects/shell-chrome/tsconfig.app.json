@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../out-tsc/app",
+    "types": ["chrome"]
+  },
+  "files": [
+    "src/main.ts",
+    "src/devtools.ts",
+    "src/polyfills.ts",
+    "src/app/backend.ts",
+    "src/app/background.ts",
+    "src/app/content-script.ts",
+  ],
+  "include": [
+    "src/**/*.d.ts"
+  ]
+}
