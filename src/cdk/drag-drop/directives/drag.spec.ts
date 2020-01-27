@@ -3560,6 +3560,57 @@ describe('CdkDrag', () => {
       expect(list.lockAxis).toBe('y');
     }));
 
+    it('should disable scroll snapping while the user is dragging', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+      const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+      const styles: any = fixture.componentInstance.dropInstance.element.nativeElement.style;
+
+      // This test only applies to browsers that support scroll snapping.
+      if (!('scrollSnapType' in styles) && !('msScrollSnapType' in styles)) {
+        return;
+      }
+
+      expect(styles.scrollSnapType || styles.msScrollSnapType).toBeFalsy();
+
+      startDraggingViaMouse(fixture, item);
+
+      expect(styles.scrollSnapType || styles.msScrollSnapType).toBe('none');
+
+      dispatchMouseEvent(document, 'mouseup');
+      fixture.detectChanges();
+      flush();
+      fixture.detectChanges();
+
+      expect(styles.scrollSnapType || styles.msScrollSnapType).toBeFalsy();
+    }));
+
+    it('should restore the previous inline scroll snap value', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+      const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+      const styles: any = fixture.componentInstance.dropInstance.element.nativeElement.style;
+
+      // This test only applies to browsers that support scroll snapping.
+      if (!('scrollSnapType' in styles) && !('msScrollSnapType' in styles)) {
+        return;
+      }
+
+      styles.scrollSnapType = styles.msScrollSnapType = 'block';
+      expect(styles.scrollSnapType || styles.msScrollSnapType).toBe('block');
+
+      startDraggingViaMouse(fixture, item);
+
+      expect(styles.scrollSnapType || styles.msScrollSnapType).toBe('none');
+
+      dispatchMouseEvent(document, 'mouseup');
+      fixture.detectChanges();
+      flush();
+      fixture.detectChanges();
+
+      expect(styles.scrollSnapType || styles.msScrollSnapType).toBe('block');
+    }));
+
   });
 
   describe('in a connected drop container', () => {
