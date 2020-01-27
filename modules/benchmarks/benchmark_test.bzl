@@ -17,7 +17,13 @@ def benchmark_test(name, server, tags = [], **kwargs):
         on_prepare = "//modules/benchmarks:start-server.js",
         server = server,
         # Benchmark targets should not run on CI by default.
-        tags = tags + ["manual"],
-        test_suite_tags = ["manual"],
+        tags = tags + [
+            "manual",
+            "no-remote-exec",
+        ],
+        test_suite_tags = [
+            "manual",
+            "no-remote-exec",
+        ],
         **kwargs
     )
