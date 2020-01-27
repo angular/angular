@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, Attribute, BoundDirectivePropertyAst, BoundEventAst, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, RecursiveTemplateAstVisitor, SelectorMatcher, StaticSymbol, TemplateAst, TemplateAstPath, templateVisitAll, tokenReference} from '@angular/compiler';
+import {Attribute, BoundDirectivePropertyAst, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, RecursiveTemplateAstVisitor, SelectorMatcher, StaticSymbol, TemplateAst, TemplateAstPath, templateVisitAll, tokenReference} from '@angular/compiler';
 import * as tss from 'typescript/lib/tsserverlibrary';
+
 import {AstResult} from './common';
 import {getExpressionScope} from './expression_diagnostics';
 import {getExpressionSymbol} from './expressions';
 import {Definition, DirectiveKind, Span, Symbol} from './types';
-import {diagnosticInfoFromTemplateInfo, findTemplateAstAt, getPathToNodeAtPosition, inSpan, isNarrower, offsetSpan, spanOf} from './utils';
+import {diagnosticInfoFromTemplateInfo, findOutputBinding, findTemplateAstAt, getPathToNodeAtPosition, inSpan, invertMap, isNarrower, offsetSpan, spanOf} from './utils';
 
 export interface SymbolInfo {
   symbol: Symbol;
@@ -284,32 +285,6 @@ function findInputBinding(info: AstResult, name: string, directiveAst: Directive
       return classSymbol.members().get(fieldName);
     }
   }
-}
-
-function findOutputBinding(info: AstResult, path: TemplateAstPath, binding: BoundEventAst): Symbol|
-    undefined {
-  const element = path.first(ElementAst);
-  if (element) {
-    for (const directive of element.directives) {
-      const invertedOutputs = invertMap(directive.directive.outputs);
-      const fieldName = invertedOutputs[binding.name];
-      if (fieldName) {
-        const classSymbol = info.template.query.getTypeSymbol(directive.directive.type.reference);
-        if (classSymbol) {
-          return classSymbol.members().get(fieldName);
-        }
-      }
-    }
-  }
-}
-
-function invertMap(obj: {[name: string]: string}): {[name: string]: string} {
-  const result: {[name: string]: string} = {};
-  for (const name of Object.keys(obj)) {
-    const v = obj[name];
-    result[v] = name;
-  }
-  return result;
 }
 
 /**
