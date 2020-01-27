@@ -284,7 +284,7 @@ For more information see [Workspace Configuration](guide/workspace-config).
 
 Let’s create a simple `angular.json` file that puts target configurations into context.
 
-We can publish the builder to npm (see [Publishing your Library](https://angular.io/guide/creating-libraries#publishing-your-library)), and install it using the following command:
+We can publish the builder to npm (see [Publishing your Library](guide/creating-libraries#publishing-your-library)), and install it using the following command:
 
 <code-example language="sh">
 
@@ -340,7 +340,7 @@ We need to update the `angular.json` file to add a target for this builder to th
 
 * We'll add a new target section to the "architect" object for our project.
 
-* The target named "touch" uses our builder, which we published to `@example/command-runner`. (See [Publishing your Library](https://angular.io/guide/creating-libraries#publishing-your-library))
+* The target named "touch" uses our builder, which we published to `@example/command-runner`. (See [Publishing your Library](guide/creating-libraries#publishing-your-library))
 
 * The options object provides default values for the two inputs that we defined; `command`, which is the Unix command to execute, and `args`, an array that contains the file to operate on.
 

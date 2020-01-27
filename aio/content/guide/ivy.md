@@ -41,6 +41,8 @@ Ivy applications can be built with libraries that were created with the View Eng
 This compatibility is provided by a tool known as the Angular compatibility compiler (`ngcc`).
 CLI commands run `ngcc` as needed when performing an Angular build.
 
+For more information on how to publish libraries see [Publishing your Library](guide/creating-libraries#publishing-your-library).
+
 {@a speeding-up-ngcc-compilation}
 ### Speeding up ngcc compilation
 
