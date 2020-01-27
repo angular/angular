@@ -14,11 +14,9 @@
  * here and use these for our interceptor logic.
  */
 
-declare global {
-  // tslint:disable-next-line:variable-name
-  const Zone: {current: any}|undefined;
+declare interface Zone {
+  current: any;
 }
-
-export type Zone = Object;
-export type ZoneDelegate = Object;
-export type HasTaskState = {microTask: boolean, macroTask: boolean};
+declare const Zone: Zone | undefined;
+declare type ZoneDelegate = Object;
+declare type HasTaskState = {microTask: boolean, macroTask: boolean};

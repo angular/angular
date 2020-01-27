@@ -8,7 +8,6 @@
 
 import {BehaviorSubject, Observable} from 'rxjs';
 import {ProxyZone, ProxyZoneStatic} from './proxy-zone-types';
-import {HasTaskState, Zone, ZoneDelegate} from './zone-types';
 
 /** Current state of the intercepted zone. */
 export interface TaskState {
