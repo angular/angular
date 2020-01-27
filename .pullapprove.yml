@@ -695,8 +695,9 @@ groups:
           'aio/content/marketing/**',
           'aio/content/images/bios/**',
           'aio/content/images/marketing/**',
-          'aio/content/navigation.json',
-          'aio/content/license.md'
+          'aio/content/file-not-found.md',
+          'aio/content/license.md',
+          'aio/content/navigation.json'
           ])
     reviewers:
       users:
@@ -771,6 +772,7 @@ groups:
     conditions:
       - >
         contains_any_globs(files, [
+          'aio/content/cli/**',
           'aio/content/guide/typescript-configuration.md',
           'aio/content/examples/setup/**',
           'aio/content/guide/build.md',
@@ -847,6 +849,7 @@ groups:
         contains_any_globs(files, [
           'aio/*',
           'aio/aio-builds-setup/**',
+          'aio/content/cli-src/**',
           'aio/content/examples/*',
           'aio/scripts/**',
           'aio/src/**',
