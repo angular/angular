@@ -1,145 +1,95 @@
 {
-  "rulesDirectory": [
-    "tools/tslint",
-    "node_modules/@angular/dev-infra-private/tslint-rules",
-    "node_modules/vrsource-tslint-rules/rules",
-    "node_modules/tslint-eslint-rules/dist/rules",
-    "node_modules/tslint-no-toplevel-property-access/rules"
-  ],
+  "extends": "tslint:recommended",
   "rules": {
-    // The first rule needs to be `ts-node-loader` which sets up `ts-node` within TSLint so
-    // that rules written in TypeScript can be loaded without needing to be transpiled.
-    "ts-node-loader": true,
-    // Custom rules written in TypeScript.
-    "require-internal-with-underscore": true,
-    "no-implicit-override-abstract": true,
-    "validate-import-for-esm-cjs-interop": [true, {
-      // The following CommonJS modules have type definitions that suggest the existence of
-      // named exports. This is not true at runtime when imported from an ES module (because
-      // the ESM interop only exposes statically-discoverable named exports). Instead
-      // default imports should be used to ensure compatibility with both ESM or CommonJS.
-      "noNamedExports": ["typescript", "minimist", "magic-string", "semver", "yargs", "glob", "cluster", "convert-source-map"],
-      // The following CommonJS modules appear to have a default export available (due to the `esModuleInterop` flag),
-      // but at runtime with CJS (e.g. for devmode output/tests) there is no default export as these modules set
-      // `__esModule`. This does not match with what happens in ESM NodeJS runtime where NodeJS exposes
-      // `module.exports` as `export default`. Instead, named exports should be used for compat with CJS/ESM.
-      "noDefaultExport": [],
-      // List of modules which are incompatible and should never be imported at all.
-      "incompatibleModules": {
-        // `@babel/core` and `@babel/types` suggest named exports which do not exist at runtime within ESM
-        // (as these named exports are not statically discoverable by NodeJS). At the same time, these modules
-        // set `__esModule` and the default import does not exist for CJS at runtime (e.g. breaking tests).
-        "@babel/core": "This module is incompatible with the ESM/CJS interop. Use the custom interop file.",
-        "@babel/types": "This module is incompatible with the ESM/CJS interop. Use the custom interop file and import the `types` namespace."
-      }
-    }],
-    "eofline": true,
-    "file-header": [
+    "array-type": false,
+    "arrow-parens": false,
+    "deprecation": {
+      "severity": "warning"
+    },
+    "component-class-suffix": true,
+    "contextual-lifecycle": true,
+    "directive-class-suffix": true,
+    "directive-selector": [
+      true,
+      "attribute",
+      "app",
+      "camelCase"
+    ],
+    "component-selector": [
+      true,
+      "element",
+      "app",
+      "kebab-case"
+    ],
+    "import-blacklist": [
+      true,
+      "rxjs/Rx"
+    ],
+    "interface-name": false,
+    "max-classes-per-file": false,
+    "max-line-length": [
+      true,
+      140
+    ],
+    "member-access": false,
+    "member-ordering": [
       true,
       {
-        "match": "Copyright Google LLC",
-        "allow-single-line-comments": false
+        "order": [
+          "static-field",
+          "instance-field",
+          "static-method",
+          "instance-method"
+        ]
       }
     ],
+    "no-consecutive-blank-lines": false,
     "no-console": [
       true,
-      "log"
+      "debug",
+      "info",
+      "time",
+      "timeEnd",
+      "trace"
     ],
-    "no-construct": true,
-    "no-duplicate-imports": true,
-    "no-duplicate-variable": true,
-    "no-var-keyword": true,
-    "prefer-literal": [
+    "no-empty": false,
+    "no-inferrable-types": [
       true,
-      "object"
+      "ignore-params"
     ],
-    "no-toplevel-property-access": [
+    "no-non-null-assertion": true,
+    "no-redundant-jsdoc": true,
+    "no-switch-case-fall-through": true,
+    "no-var-requires": false,
+    "object-literal-key-quotes": [
       true,
-      "packages/animations/src/",
-      "packages/animations/browser/",
-      "packages/common/src/",
-      "packages/core/src/",
-      "packages/elements/src/",
-      "packages/forms/src/",
-      "packages/platform-browser/src/",
-      "packages/router/src/"
+      "as-needed"
     ],
-    "semicolon": [
-      true
+    "object-literal-sort-keys": false,
+    "ordered-imports": false,
+    "quotemark": [
+      true,
+      "single"
     ],
     "variable-name": [
       true,
-      "ban-keywords"
+      "allow-leading-underscore"
     ],
-    "no-inner-declarations": [
-      true,
-      "function"
-    ],
-    "no-debugger": true,
-    "ban": [
-      true,
-      {"name": "fdescribe", "message": "Don't keep jasmine focus methods."},
-      {"name": "fit", "message": "Don't keep jasmine focus methods."}
-    ]
+    "trailing-comma": false,
+    "no-conflicting-lifecycle": true,
+    "no-host-metadata-property": true,
+    "no-input-rename": true,
+    "no-inputs-metadata-property": true,
+    "no-output-native": true,
+    "no-output-on-prefix": true,
+    "no-output-rename": true,
+    "no-outputs-metadata-property": true,
+    "template-banana-in-box": true,
+    "template-no-negated-async": true,
+    "use-lifecycle-interface": true,
+    "use-pipe-transform-interface": true
   },
-  "jsRules": {
-    // The first rule needs to be `ts-node-loader` which sets up `ts-node` within TSLint so
-    // that rules written in TypeScript can be loaded without needing to be transpiled.
-    "ts-node-loader": true,
-    // Custom rules written in TypeScript.
-    "require-internal-with-underscore": true,
-
-    "eofline": true,
-    "file-header": [
-      true,
-      {
-        "match": "Copyright Google LLC",
-        "allow-single-line-comments": false
-      }
-    ],
-    "no-console": [
-      true,
-      "log"
-    ],
-    "no-duplicate-imports": true,
-    "no-duplicate-variable": true,
-    "semicolon": [
-      true
-    ],
-    "variable-name": [
-      true,
-      "ban-keywords"
-    ],
-    "no-inner-declarations": [
-      true,
-      "function"
-    ],
-    "ban": [
-      true,
-      {"name": "fdescribe", "message": "Don't keep jasmine focus methods."},
-      {"name": "fit", "message": "Don't keep jasmine focus methods."}
-    ]
-  },
-  "linterOptions": {
-    "exclude": [
-      "**/node_modules/**/*",
-      // Ignore AIO and integration tests.
-      "./aio/**/*",
-      "./integration/**/*",
-      // Ignore output directories
-      "./built/**/*",
-      "./dist/**/*",
-      "./bazel-out/**/*",
-      // Ignore special files
-      "**/*.externs.js",
-      // Ignore test files
-      "./packages/compiler-cli/test/compliance/test_cases/**/*",
-      "./packages/localize/**/test_files/**/*",
-      "./tools/public_api_guard/**/*.d.ts",
-      "./modules/benchmarks_external/**/*",
-      // Ignore zone.js directory
-      // TODO(JiaLiPassion): add zone.js back later
-      "./packages/zone.js/**/*"
-    ]
-  }
+  "rulesDirectory": [
+    "codelyzer"
+  ]
 }

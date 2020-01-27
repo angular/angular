@@ -1,0 +1,28 @@
+<mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+  <mat-tree-node
+    [class.selected]="isSelected(node)"
+    (click)="select(node)"
+    *matTreeNodeDef="let node"
+    matTreeNodePaddingIndent="20"
+    matTreeNodePadding
+  >
+    <button mat-icon-button disabled></button>
+    <span class="element-name">{{ node.name }}</span>
+    <span *ngIf="node.directives" class="dir-names">[{{ node.directives }}]</span>
+  </mat-tree-node>
+  <mat-tree-node
+    [class.selected]="isSelected(node)"
+    (click)="select(node)"
+    *matTreeNodeDef="let node; when: hasChild"
+    matTreeNodePaddingIndent="20"
+    matTreeNodePadding
+  >
+    <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.name">
+      <mat-icon class="mat-icon-rtl-mirror">
+        {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
+      </mat-icon>
+    </button>
+    <span class="element-name">{{ node.name }}</span>
+    <span *ngIf="node.directives" class="dir-names">[{{ node.directives }}]</span>
+  </mat-tree-node>
+</mat-tree>

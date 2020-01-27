@@ -1,0 +1,24 @@
+<div class="controls">
+  Timeline:&nbsp;
+  <mat-slider [step]="1" min="0" [max]="timeline.length - 1" value="0" (input)="update()"></mat-slider>
+  <button mat-stroked-button (click)="move(-1)"><</button><button mat-stroked-button (click)="move(1)">></button>
+</div>
+
+<h3 class="timestamp">{{ currentFrame.timestamp / 1000 | number }} seconds from the start</h3>
+
+<div
+  class="network-canvas"
+  [visNetwork]="visNetwork"
+  [visNetworkData]="visNetworkData"
+  [visNetworkOptions]="visNetworkOptions"
+  (initialized)="onInitialize()"
+></div>
+
+<div class="side-panel" *ngIf="selectedEntry">
+  <header>{{ selectedEntry.name }} details</header>
+  <section class="entry-statistics">
+    <div *ngIf="selectedEntry.duration"><label>Change detection:</label> {{ selectedEntry.duration | number }}ms.</div>
+    <hr *ngIf="showSeparator()" />
+    <ng-property-view [data]="selectedEntry.instanceState.props"></ng-property-view>
+  </section>
+</div>

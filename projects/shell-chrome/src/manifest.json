@@ -1,0 +1,40 @@
+{
+  "manifest_version": 2,
+  "short_name": "Angular DevTools",
+  "name": "Angular Developer Tools",
+  "description": "Extends the Developer Tools, adding tools for debugging and profiling Angular applications.",
+  "version": "0.0.0",
+  "version_name": "0.0.0",
+
+  "minimum_chrome_version": "50",
+
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+
+  "icons": {
+    "16": "favicon.ico"
+  },
+
+  "browser_action": {
+    "default_popup": "popup.html"
+  },
+
+  "devtools_page": "devtools.html",
+
+  "web_accessible_resources": [
+    "backend.js",
+    "runtime.js",
+    "devtools.html"
+  ],
+
+  "background": {
+    "scripts": ["background.js", "runtime.js"],
+    "persistent": false
+  },
+
+  "permissions": [
+    "tabs",
+    "http://*/*",
+    "https://*/*",
+    "file:///*"
+  ]
+}

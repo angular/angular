@@ -1,0 +1,72 @@
+:host,
+.profiler-wrapper {
+  font-size: 12px;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+label {
+  margin-left: 15px;
+}
+
+.instructions {
+  text-align: center;
+}
+
+.start-recording-button,
+.recording-button {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 6px;
+  background-color: #6e6e6e;
+  position: relative;
+  top: 2px;
+  margin-left: 3px;
+  margin-right: 3px;
+}
+
+.discard-button {
+  margin-left: 9px;
+}
+
+.recording-button {
+  background-color: #c7291c;
+  box-shadow: 0px 0px 3px #c7291c;
+}
+
+.instructions .start-recording-button {
+  top: 2px;
+}
+
+menu .start-recording-button,
+menu .recording-button {
+  top: 5px;
+  left: 3px;
+}
+
+menu {
+  background-color: #f3f3f3;
+  border-bottom: 1px solid #d0d0d0;
+  height: 23px;
+  margin: 0;
+  padding: 0;
+}
+
+#profiler-content-wrapper {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.recording,
+.visualization,
+#profiler-content-wrapper {
+  margin: 0;
+  height: calc(100% - 24px);
+}
+
+.hidden {
+  display: none;
+}

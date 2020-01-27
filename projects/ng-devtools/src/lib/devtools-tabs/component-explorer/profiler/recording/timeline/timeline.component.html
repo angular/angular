@@ -1,0 +1,22 @@
+<div class="controls" *ngIf="view === 'timeline'">
+  <mat-slider
+    [max]="timeline.timeline.length - 1"
+    [min]="1"
+    [(ngModel)]="currentView"
+    (change)="updateView($event)"
+  ></mat-slider>
+  &nbsp;
+  <button mat-stroked-button (click)="move(-1)"><</button><button mat-stroked-button (click)="move(1)">></button>
+  &nbsp;
+  <label
+    [class.warning-no]="recordsView.timeSpent < 16"
+    [class.warning-low]="recordsView.timeSpent >= 16"
+    [class.warning-mid]="recordsView.timeSpent >= 32"
+    [class.warning-high]="recordsView.timeSpent >= 64"
+  >Total time spent: {{ recordsView.timeSpent | number }}ms.</label
+  >
+  &nbsp;
+  <label *ngIf="recordsView.source">Source: {{ recordsView.source }}</label>
+</div>
+
+<ng-recording-visualizer [sidebarDisabled]="view === 'timeline'" [bars]="recordsView.app"></ng-recording-visualizer>

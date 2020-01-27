@@ -1,0 +1,10 @@
+<div class="devtools-wrapper noselect" *ngIf="angularExists === true">
+  <ng-devtools-tabs [messageBus]="messageBus"></ng-devtools-tabs>
+</div>
+<div *ngIf="angularExists === false">
+  Not an Angular app
+</div>
+<div *ngIf="angularExists === null">
+  Initializing...
+</div>
+

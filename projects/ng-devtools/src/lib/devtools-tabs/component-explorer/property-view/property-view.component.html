@@ -1,0 +1,26 @@
+<mat-tree class="property-list" [dataSource]="dataSource" [treeControl]="treeControl">
+  <mat-tree-node
+    matTreeNodePaddingIndent="14"
+    [class.disabled]="!node.prop.descriptor.editable"
+    *matTreeNodeDef="let node"
+    matTreeNodePadding
+  >
+        <span class="name non-expandable">{{ node.prop.name }}</span
+        >:&nbsp;
+    <span class="value">{{ node.prop.descriptor.preview }}</span>
+  </mat-tree-node>
+  <mat-tree-node
+    matTreeNodePaddingIndent="14"
+    [class.disabled]="!node.prop.descriptor.editable"
+    *matTreeNodeDef="let node; when: hasChild"
+    matTreeNodePadding
+  >
+    <span class="arrow" (click)="toggle(node)"> {{ treeControl.isExpanded(node) ? '▼' : '►' }} </span>&nbsp;<span
+    class="name"
+  >{{ node.prop.name }}</span
+  >:&nbsp;
+    <span class="value">
+          {{ treeControl.isExpanded(node) ? '' : node.prop.descriptor.preview }}
+        </span>
+  </mat-tree-node>
+</mat-tree>

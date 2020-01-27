@@ -1,0 +1,12 @@
+<ng-component-tree (selectNode)="handleNodeSelection($event)" [forest]="forest"> </ng-component-tree>
+<div *ngIf="currentSelectedElement" class="property-wrapper">
+  <div *ngFor="let data of directivesData | keyvalue; trackBy: nameTracking" class="explorer-panel">
+    <header>Properties of {{ data.key }}</header>
+    <ng-property-view
+      [entityID]="getEntityID(data.key)"
+      [messageBus]="messageBus"
+      [name]="data.key"
+      [data]="data.value.props"
+    ></ng-property-view>
+  </div>
+</div>
