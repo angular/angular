@@ -2,6 +2,7 @@ export declare const MAT_SLIDER_VALUE_ACCESSOR: any;
 
 export declare class MatSlider extends _MatSliderMixinBase implements ControlValueAccessor, OnDestroy, CanDisable, CanColor, OnInit, HasTabIndex {
     _animationMode?: string | undefined;
+    protected _document?: Document;
     get _invertAxis(): boolean;
     _isActive: boolean;
     get _isMinValue(): boolean;
@@ -45,7 +46,8 @@ export declare class MatSlider extends _MatSliderMixinBase implements ControlVal
     readonly valueChange: EventEmitter<number | null>;
     get vertical(): boolean;
     set vertical(value: boolean);
-    constructor(elementRef: ElementRef, _focusMonitor: FocusMonitor, _changeDetectorRef: ChangeDetectorRef, _dir: Directionality, tabIndex: string, _animationMode?: string | undefined, _ngZone?: NgZone | undefined);
+    constructor(elementRef: ElementRef, _focusMonitor: FocusMonitor, _changeDetectorRef: ChangeDetectorRef, _dir: Directionality, tabIndex: string, _animationMode?: string | undefined, _ngZone?: NgZone | undefined,
+    document?: any);
     _onBlur(): void;
     _onFocus(): void;
     _onKeydown(event: KeyboardEvent): void;

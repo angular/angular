@@ -57,6 +57,7 @@ import {
 } from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {normalizePassiveListenerOptions} from '@angular/cdk/platform';
+import {DOCUMENT} from '@angular/common';
 import {Subscription} from 'rxjs';
 
 const activeEventOptions = normalizePassiveListenerOptions({passive: false});
@@ -488,6 +489,9 @@ export class MatSlider extends _MatSliderMixinBase
   /** Keeps track of the last pointer event that was captured by the slider. */
   private _lastPointerEvent: MouseEvent | TouchEvent | null;
 
+  /** Used to subscribe to global move and end events */
+  protected _document?: Document;
+
   constructor(elementRef: ElementRef,
               private _focusMonitor: FocusMonitor,
               private _changeDetectorRef: ChangeDetectorRef,
@@ -496,8 +500,12 @@ export class MatSlider extends _MatSliderMixinBase
               // @breaking-change 8.0.0 `_animationMode` parameter to be made required.
               @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string,
               // @breaking-change 9.0.0 `_ngZone` parameter to be made required.
-              private _ngZone?: NgZone) {
+              private _ngZone?: NgZone,
+              /** @breaking-change 11.0.0 make document required */
+              @Optional() @Inject(DOCUMENT) document?: any) {
     super(elementRef);
+
+    this._document = document;
 
     this.tabIndex = parseInt(tabIndex) || 0;
 
@@ -696,8 +704,8 @@ export class MatSlider extends _MatSliderMixinBase
    * as they're swiping across the screen.
    */
   private _bindGlobalEvents(triggerEvent: TouchEvent | MouseEvent) {
-    if (typeof document !== 'undefined' && document) {
-      const body = document.body;
+    if (typeof this._document !== 'undefined' && this._document) {
+      const body = this._document.body;
       const isTouch = isTouchEvent(triggerEvent);
       const moveEventName = isTouch ? 'touchmove' : 'mousemove';
       const endEventName = isTouch ? 'touchend' : 'mouseup';
@@ -715,8 +723,8 @@ export class MatSlider extends _MatSliderMixinBase
 
   /** Removes any global event listeners that we may have added. */
   private _removeGlobalEvents() {
-    if (typeof document !== 'undefined' && document) {
-      const body = document.body;
+    if (typeof this._document !== 'undefined' && this._document) {
+      const body = this._document.body;
       body.removeEventListener('mousemove', this._pointerMove, activeEventOptions);
       body.removeEventListener('mouseup', this._pointerUp, activeEventOptions);
       body.removeEventListener('touchmove', this._pointerMove, activeEventOptions);
