@@ -1913,7 +1913,8 @@ describe('CdkDrag', () => {
             (boolean | AddEventListenerOptions | undefined)?
           ]) {
             document.addEventListener(...args);
-          }
+          },
+          createComment: (text: string) => document.createComment(text)
         };
         const fixture = createComponent(DraggableInDropZone, [{
           provide: DOCUMENT,
@@ -4556,6 +4557,31 @@ describe('CdkDrag', () => {
           isPointerOverContainer: true,
           distance: {x: jasmine.any(Number), y: jasmine.any(Number)}
         });
+      }));
+
+      it('should not throw if its next sibling is removed while dragging', fakeAsync(() => {
+        const fixture = createComponent(ConnectedDropZonesWithSingleItems);
+        fixture.detectChanges();
+
+        const items = fixture.componentInstance.dragItems.toArray();
+        const item = items[0];
+        const nextSibling = items[1].element.nativeElement;
+        const extraSibling = document.createElement('div');
+        const targetRect = nextSibling.getBoundingClientRect();
+
+        // Manually insert an element after the node to simulate an external package.
+        nextSibling.parentNode!.insertBefore(extraSibling, nextSibling);
+
+        dragElementViaMouse(fixture, item.element.nativeElement,
+          targetRect.left + 1, targetRect.top + 1);
+
+        // Remove the extra node after the element was dropped, but before the animation is over.
+        extraSibling.parentNode!.removeChild(extraSibling);
+
+        expect(() => {
+          flush();
+          fixture.detectChanges();
+        }).not.toThrow();
       }));
 
   });

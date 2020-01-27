@@ -93,10 +93,10 @@ export class DragRef<T = any> {
   private _pickupPositionOnPage: Point;
 
   /**
-   * Reference to the element that comes after the draggable in the DOM, at the time
-   * it was picked up. Used for restoring its initial position when it's dropped.
+   * Anchor node used to save the place in the DOM where the element was
+   * picked up so that it can be restored at the end of the drag sequence.
    */
-  private _nextSibling: Node | null;
+  private _anchor: Comment;
 
   /**
    * CSS `transform` applied to the element when it isn't being dragged. We need a
@@ -380,9 +380,10 @@ export class DragRef<T = any> {
     if (this.isDragging()) {
       // Since we move out the element to the end of the body while it's being
       // dragged, we have to make sure that it's removed if it gets destroyed.
-      removeElement(this._rootElement);
+      removeNode(this._rootElement);
     }
 
+    removeNode(this._anchor);
     this._destroyPreview();
     this._destroyPlaceholder();
     this._dragDropRegistry.removeDragItem(this);
@@ -400,7 +401,7 @@ export class DragRef<T = any> {
     this._dropContainer = undefined;
     this._resizeSubscription.unsubscribe();
     this._boundaryElement = this._rootElement = this._placeholderTemplate =
-        this._previewTemplate = this._nextSibling = null!;
+        this._previewTemplate = this._anchor = null!;
   }
 
   /** Checks whether the element is currently being dragged. */
@@ -487,7 +488,7 @@ export class DragRef<T = any> {
   /** Destroys the preview element and its ViewRef. */
   private _destroyPreview() {
     if (this._preview) {
-      removeElement(this._preview);
+      removeNode(this._preview);
     }
 
     if (this._previewRef) {
@@ -500,7 +501,7 @@ export class DragRef<T = any> {
   /** Destroys the placeholder element and its ViewRef. */
   private _destroyPlaceholder() {
     if (this._placeholder) {
-      removeElement(this._placeholder);
+      removeNode(this._placeholder);
     }
 
     if (this._placeholderRef) {
@@ -681,19 +682,19 @@ export class DragRef<T = any> {
 
     if (this._dropContainer) {
       const element = this._rootElement;
-
-      // Grab the `nextSibling` before the preview and placeholder
-      // have been created so we don't get the preview by accident.
-      this._nextSibling = element.nextSibling;
-
+      const parent = element.parentNode!;
       const preview = this._preview = this._createPreviewElement();
       const placeholder = this._placeholder = this._createPlaceholderElement();
+      const anchor = this._anchor = this._anchor || this._document.createComment('');
+
+      // Insert an anchor node so that we can restore the element's position in the DOM.
+      parent.insertBefore(anchor, element);
 
       // We move the element out at the end of the body and we make it hidden, because keeping it in
       // place will throw off the consumer's `:last-child` selectors. We can't remove the element
       // from the DOM completely, because iOS will stop firing all subsequent events in the chain.
       element.style.display = 'none';
-      this._document.body.appendChild(element.parentNode!.replaceChild(placeholder, element));
+      this._document.body.appendChild(parent.replaceChild(placeholder, element));
       getPreviewInsertionPoint(this._document).appendChild(preview);
       this._dropContainer.start();
     }
@@ -776,12 +777,7 @@ export class DragRef<T = any> {
     // can throw off `NgFor` which does smart diffing and re-creates elements only when necessary,
     // while moving the existing elements in all other cases.
     this._rootElement.style.display = '';
-
-    if (this._nextSibling) {
-      this._nextSibling.parentNode!.insertBefore(this._rootElement, this._nextSibling);
-    } else {
-      coerceElement(this._initialContainer.element).appendChild(this._rootElement);
-    }
+    this._anchor.parentNode!.replaceChild(this._rootElement, this._anchor);
 
     this._destroyPreview();
     this._destroyPlaceholder();
@@ -1239,12 +1235,12 @@ function clamp(value: number, min: number, max: number) {
 }
 
 /**
- * Helper to remove an element from the DOM and to do all the necessary null checks.
- * @param element Element to be removed.
+ * Helper to remove a node from the DOM and to do all the necessary null checks.
+ * @param node Node to be removed.
  */
-function removeElement(element: HTMLElement | null) {
-  if (element && element.parentNode) {
-    element.parentNode.removeChild(element);
+function removeNode(node: Node | null) {
+  if (node && node.parentNode) {
+    node.parentNode.removeChild(node);
   }
 }
 
