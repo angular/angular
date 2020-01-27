@@ -22,10 +22,10 @@ version: 2.1
 # **NOTE 1 **: If you change the cache key prefix, also sync the cache_key_fallback to match.
 # **NOTE 2 **: Keep the static part of the cache key as prefix to enable correct fallbacks.
 # See https://circleci.com/docs/2.0/caching/#restoring-cache for how prefixes work in CircleCI.
-var_3: &cache_key v3-angular-node-12.14.1-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}-{{ checksum "aio/yarn.lock" }}
-var_4: &cache_key_fallback v3-angular-node-12.14.1-
-var_3_win: &cache_key_win v5-angular-win-node-12.0-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}-{{ checksum "aio/yarn.lock" }}
-var_4_win: &cache_key_win_fallback v5-angular-win-node-12.0-
+var_3: &cache_key v3-angular-node-12-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}-{{ checksum "aio/yarn.lock" }}
+var_4: &cache_key_fallback v3-angular-node-12-
+var_3_win: &cache_key_win v5-angular-win-node-12-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}-{{ checksum "aio/yarn.lock" }}
+var_4_win: &cache_key_win_fallback v5-angular-win-node-12-
 
 # Cache key for the `components-repo-unit-tests` job. **Note** when updating the SHA in the
 # cache keys also update the SHA for the "COMPONENTS_REPO_COMMIT" environment variable.
@@ -109,7 +109,7 @@ executors:
       # - Node 12
       # - yarn 1.17
       # - Python 3 3.7.4
-      image: windows-server-2019-vs2019:stable
+      image: windows-server-2019-vs2019:201908-02
 
 # Command Definitions
 # https://circleci.com/docs/2.0/reusing-config/#authoring-reusable-commands

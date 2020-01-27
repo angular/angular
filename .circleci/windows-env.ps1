@@ -39,7 +39,7 @@ openssl aes-256-cbc -d -in .circleci\gcp_token -md md5 -out "$env:APPDATA\gcloud
 copy .circleci\bazel.windows.rc ${Env:USERPROFILE}\.bazelrc
 
 ####################################################################################################
-# Install version of specific version of node.
+# Install specific version of node.
 ####################################################################################################
 choco install nodejs --version 12.14.1 --no-progress
 
