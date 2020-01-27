@@ -60,19 +60,16 @@ describe('definitions', () => {
     expect(textSpan).toEqual(marker);
     expect(definitions).toBeDefined();
 
-    // There are exactly two, indentical definitions here, corresponding to the "name" on the
-    // property and event bindings of the two-way binding. The two-way binding is effectively
-    // syntactic sugar for `[ngModel]="name" (ngModel)="name=$event"`.
-    expect(definitions !.length).toBe(2);
-    for (const def of definitions !) {
-      expect(def.fileName).toBe(PARSING_CASES);
-      expect(def.name).toBe('title');
-      expect(def.kind).toBe('property');
+    expect(definitions !.length).toBe(1);
+    const def = definitions ![0];
 
-      const fileContent = mockHost.readFile(def.fileName);
-      expect(fileContent !.substring(def.textSpan.start, def.textSpan.start + def.textSpan.length))
-          .toEqual(`title = 'Some title';`);
-    }
+    expect(def.fileName).toBe(PARSING_CASES);
+    expect(def.name).toBe('title');
+    expect(def.kind).toBe('property');
+
+    const fileContent = mockHost.readFile(def.fileName);
+    expect(fileContent !.substring(def.textSpan.start, def.textSpan.start + def.textSpan.length))
+        .toEqual(`title = 'Some title';`);
   });
 
   it('should be able to find a method from a call', () => {

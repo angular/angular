@@ -39,6 +39,7 @@ export function getDefinitionAndBoundSpan(
     return;
   }
 
+  const seen = new Set<string>();
   const definitions: ts.DefinitionInfo[] = [];
   for (const symbolInfo of symbols) {
     const {symbol} = symbolInfo;
@@ -53,16 +54,28 @@ export function getDefinitionAndBoundSpan(
     const containerKind =
         container ? container.kind as ts.ScriptElementKind : ts.ScriptElementKind.unknown;
     const containerName = container ? container.name : '';
-    definitions.push(...locations.map((location) => {
-      return {
+
+    for (const {fileName, span} of locations) {
+      const textSpan = ngSpanToTsTextSpan(span);
+      // In cases like two-way bindings, a request for the definitions of an expression may return
+      // two of the same definition:
+      //    [(ngModel)]="prop"
+      //                 ^^^^  -- one definition for the property binding, one for the event binding
+      // To prune duplicate definitions, tag definitions with unique location signatures and ignore
+      // definitions whose locations have already been seen.
+      const signature = `${textSpan.start}:${textSpan.length}@${fileName}`;
+      if (seen.has(signature)) continue;
+
+      definitions.push({
         kind: kind as ts.ScriptElementKind,
         name,
         containerKind,
         containerName,
-        textSpan: ngSpanToTsTextSpan(location.span),
-        fileName: location.fileName,
-      };
-    }));
+        textSpan: ngSpanToTsTextSpan(span),
+        fileName: fileName,
+      });
+      seen.add(signature);
+    }
   }
 
   return {
