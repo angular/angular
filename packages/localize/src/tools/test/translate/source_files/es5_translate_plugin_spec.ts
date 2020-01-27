@@ -140,7 +140,7 @@ describe('makeEs5Plugin', () => {
          expect(diagnostics.hasErrors).toBe(true);
          expect(diagnostics.messages[0]).toEqual({
            type: 'error',
-           message: '`$localize` called without any arguments.\n' +
+           message: '/app/dist/test.js: `$localize` called without any arguments.\n' +
                '> 1 | $localize()\n' +
                '    | ^^^^^^^^^^^',
          });
@@ -156,7 +156,7 @@ describe('makeEs5Plugin', () => {
          expect(diagnostics.hasErrors).toBe(true);
          expect(diagnostics.messages[0]).toEqual({
            type: 'error',
-           message: 'Unexpected argument to `$localize` (expected an array).\n' +
+           message: '/app/dist/test.js: Unexpected argument to `$localize` (expected an array).\n' +
                '> 1 | $localize(...x)\n' +
                '    |           ^^^^',
          });
@@ -172,7 +172,8 @@ describe('makeEs5Plugin', () => {
          expect(diagnostics.hasErrors).toBe(true);
          expect(diagnostics.messages[0]).toEqual({
            type: 'error',
-           message: 'Unexpected messageParts for `$localize` (expected an array of strings).\n' +
+           message:
+               '/app/dist/test.js: Unexpected messageParts for `$localize` (expected an array of strings).\n' +
                '> 1 | $localize(null, [])\n' +
                '    |           ^^^^',
          });
@@ -189,7 +190,7 @@ describe('makeEs5Plugin', () => {
          expect(diagnostics.messages[0]).toEqual({
            type: 'error',
            message:
-               'Unexpected `raw` argument to the "makeTemplateObject()" function (expected an expression).\n' +
+               '/app/dist/test.js: Unexpected `raw` argument to the "makeTemplateObject()" function (expected an expression).\n' +
                '> 1 | $localize(__makeTemplateObject([], ...[]))\n' +
                '    |                                    ^^^^^',
          });
@@ -206,7 +207,7 @@ describe('makeEs5Plugin', () => {
          expect(diagnostics.messages[0]).toEqual({
            type: 'error',
            message:
-               'Unexpected `cooked` argument to the "makeTemplateObject()" function (expected an expression).\n' +
+               '/app/dist/test.js: Unexpected `cooked` argument to the "makeTemplateObject()" function (expected an expression).\n' +
                '> 1 | $localize(__makeTemplateObject(...[], []))\n' +
                '    |                                ^^^^^',
          });
@@ -222,7 +223,8 @@ describe('makeEs5Plugin', () => {
          expect(diagnostics.hasErrors).toBe(true);
          expect(diagnostics.messages[0]).toEqual({
            type: 'error',
-           message: 'Unexpected messageParts for `$localize` (expected an array of strings).\n' +
+           message:
+               '/app/dist/test.js: Unexpected messageParts for `$localize` (expected an array of strings).\n' +
                '> 1 | $localize(__makeTemplateObject(["a", 12, "b"], ["a", "12", "b"]))\n' +
                '    |                                ^^^^^^^^^^^^^^',
          });
@@ -238,7 +240,8 @@ describe('makeEs5Plugin', () => {
          expect(diagnostics.hasErrors).toBe(true);
          expect(diagnostics.messages[0]).toEqual({
            type: 'error',
-           message: 'Unexpected messageParts for `$localize` (expected an array of strings).\n' +
+           message:
+               '/app/dist/test.js: Unexpected messageParts for `$localize` (expected an array of strings).\n' +
                '> 1 | $localize(__makeTemplateObject(["a", "12", "b"], ["a", 12, "b"]))\n' +
                '    |                                                  ^^^^^^^^^^^^^^',
          });
@@ -255,7 +258,7 @@ describe('makeEs5Plugin', () => {
          expect(diagnostics.messages[0]).toEqual({
            type: 'error',
            message:
-               'Invalid substitutions for `$localize` (expected all substitution arguments to be expressions).\n' +
+               '/app/dist/test.js: Invalid substitutions for `$localize` (expected all substitution arguments to be expressions).\n' +
                '> 1 | $localize(__makeTemplateObject(["a", "b"], ["a", "b"]), ...[])\n' +
                '    |                                                         ^^^^^',
          });
