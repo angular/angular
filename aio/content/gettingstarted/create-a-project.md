@@ -1,4 +1,4 @@
-# Create  a project with `ng new`
+# Create a project with `ng new`
 
 ```
 ng new <project name>
