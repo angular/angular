@@ -9,6 +9,7 @@
 import {Injectable, Inject, OnDestroy} from '@angular/core';
 import {OverlayContainer} from './overlay-container';
 import {DOCUMENT} from '@angular/common';
+import {Platform} from '@angular/cdk/platform';
 
 
 /**
@@ -23,8 +24,14 @@ export class FullscreenOverlayContainer extends OverlayContainer implements OnDe
   private _fullScreenEventName: string | undefined;
   private _fullScreenListener: () => void;
 
-  constructor(@Inject(DOCUMENT) _document: any) {
-    super(_document);
+  constructor(
+    @Inject(DOCUMENT) _document: any,
+    /**
+     * @deprecated `platform` parameter to become required.
+     * @breaking-change 10.0.0
+     */
+    platform?: Platform) {
+    super(_document, platform);
   }
 
   ngOnDestroy() {

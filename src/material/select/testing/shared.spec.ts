@@ -226,13 +226,11 @@ function getActiveElementId() {
         <mat-option *ngFor="let state of states" [value]="state.code">{{ state.name }}</mat-option>
       </mat-select>
     </mat-form-field>
-
     <mat-form-field>
       <mat-select multiple id="multiple-selection">
         <mat-option *ngFor="let state of states" [value]="state.code">{{ state.name }}</mat-option>
       </mat-select>
     </mat-form-field>
-
     <mat-form-field>
       <mat-select id="grouped">
         <mat-optgroup *ngFor="let group of stateGroups" [label]="group.name">
@@ -242,7 +240,6 @@ function getActiveElementId() {
         </mat-optgroup>
       </mat-select>
     </mat-form-field>
-
     <mat-form-field>
       <mat-select [formControl]="formControl" id="with-form-control">
         <mat-option *ngFor="let state of states" [value]="state.code">{{ state.name }}</mat-option>
@@ -283,4 +280,3 @@ class SelectHarnessTest {
     }
   ];
 }
-
