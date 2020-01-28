@@ -12,6 +12,7 @@ export {defaultIterableDiffers as ɵdefaultIterableDiffers, defaultKeyValueDiffe
 export {devModeEqual as ɵdevModeEqual, isListLikeIterable as ɵisListLikeIterable} from './change_detection/change_detection_util';
 export {ChangeDetectorStatus as ɵChangeDetectorStatus, isDefaultChangeDetectionStrategy as ɵisDefaultChangeDetectionStrategy} from './change_detection/constants';
 export {Console as ɵConsole} from './console';
+export {getDebugNodeR2 as ɵgetDebugNodeR2} from './debug/debug_node';
 export {inject, setCurrentInjector as ɵsetCurrentInjector, ɵɵinject} from './di/injector_compatibility';
 export {getInjectableDef as ɵgetInjectableDef, ɵɵInjectableDef, ɵɵInjectorDef} from './di/interface/defs';
 export {INJECTOR_SCOPE as ɵINJECTOR_SCOPE} from './di/scope';

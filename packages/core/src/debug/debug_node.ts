@@ -727,6 +727,18 @@ export function getDebugNode__POST_R3__(nativeNode: any): DebugNode|null {
  */
 export const getDebugNode: (nativeNode: any) => DebugNode | null = getDebugNode__PRE_R3__;
 
+
+export function getDebugNodeR2__PRE_R3__(nativeNode: any): DebugNode|null {
+  return getDebugNode__PRE_R3__(nativeNode);
+}
+
+export function getDebugNodeR2__POST_R3__(_nativeNode: any): DebugNode|null {
+  return null;
+}
+
+export const getDebugNodeR2: (nativeNode: any) => DebugNode | null = getDebugNodeR2__PRE_R3__;
+
+
 export function getAllDebugNodes(): DebugNode[] {
   return Array.from(_nativeNodeToDebugNode.values());
 }
