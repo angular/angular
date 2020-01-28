@@ -240,6 +240,14 @@ export function checkStylingMap(
     // if so as not to read unnecessarily.
     const tNode = tView.data[getSelectedIndex() + HEADER_OFFSET] as TNode;
     if (hasStylingInputShadow(tNode, isClassBased) && !isInHostBindings(tView, bindingIndex)) {
+      if (ngDevMode) {
+        // verify that if we are shadowing then `TData` is appropriately marked so that we skip
+        // processing this binding in styling resolution.
+        const tStylingKey = tView.data[bindingIndex];
+        assertEqual(
+            Array.isArray(tStylingKey) ? tStylingKey[1] : tStylingKey, false,
+            'Styling linked list shadow input should be marked as \'false\'');
+      }
       // VE does not concatenate the static portion like we are doing here.
       // Instead VE just ignores the static completely if dynamic binding is present.
       // Because of locality we have already set the static portion because we don't know if there
@@ -500,7 +508,7 @@ function collectStylingFromTAttrs(
       }
     }
   }
-  return stylingKey || null;
+  return stylingKey === undefined ? null : stylingKey;
 }
 
 /**
