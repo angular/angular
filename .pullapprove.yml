@@ -774,7 +774,7 @@ groups:
   # =========================================================
   #  Docs: CLI
   # =========================================================
-  docs-libraries:
+  docs-cli:
     conditions:
       - >
         contains_any_globs(files, [
@@ -792,7 +792,7 @@ groups:
           ])
     reviewers:
       users:
-        - alan-agius4
+        - clydin
         - IgorMinar
         - mgechev
       teams:
