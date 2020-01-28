@@ -183,6 +183,8 @@ runInEachFileSystem(() => {
         expect(() => lockFile.create())
             .toThrowError(
                 `ngcc is already running at process with id 188.\n` +
+                `If you are running multiple builds in parallel then you should pre-process your node_modules via the command line ngcc tool before starting the builds;\n` +
+                `See https://v9.angular.io/guide/ivy#speeding-up-ngcc-compilation.\n` +
                 `(If you are sure no ngcc process is running then you should delete the lockfile at ${lockFile.lockFilePath}.)`);
       });
     });
