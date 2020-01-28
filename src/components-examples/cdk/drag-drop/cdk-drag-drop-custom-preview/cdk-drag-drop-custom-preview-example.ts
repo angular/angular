@@ -43,6 +43,10 @@ export class CdkDragDropCustomPreviewExample {
     {
       title: 'Episode VIII - The Last Jedi',
       poster: 'https://upload.wikimedia.org/wikipedia/en/7/7f/Star_Wars_The_Last_Jedi.jpg'
+    },
+    {
+      title: 'Episode IX – The Rise of Skywalker',
+      poster: 'https://upload.wikimedia.org/wikipedia/en/a/af/Star_Wars_The_Rise_of_Skywalker_poster.jpg'
     }
   ];
   // tslint:enable:max-line-length
