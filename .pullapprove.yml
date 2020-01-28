@@ -95,9 +95,16 @@ version: 3
 github_api_version: "shadow-cat-preview"
 
 pullapprove_conditions:
-  - condition: "'WIP' not in title and 'PR state: WIP' not in labels and not draft"
+  - condition: "'WIP' not in title"
     unmet_status: pending
     explanation: "Waiting to send reviews as PR is WIP"
+  - condition: "'PR state: WIP' not in labels"
+    unmet_status: pending
+    explanation: "Waiting to send reviews as PR is WIP"
+  - condition: "not draft"
+    unmet_status: pending
+    explanation: "Waiting to send reviews as PR is in draft"
+
 
 groups:
   # =========================================================
