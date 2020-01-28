@@ -125,14 +125,17 @@ export interface TStylingRange { __brand__: 'TStylingRange'; }
  */
 export const enum StylingRange {
   /// Number of bits to shift for the previous pointer
-  PREV_SHIFT = 18,
+  PREV_SHIFT = 17,
   /// Previous pointer mask.
   PREV_MASK = 0xFFFC0000,
 
   /// Number of bits to shift for the next pointer
   NEXT_SHIFT = 2,
   /// Next pointer mask.
-  NEXT_MASK = 0x0003FFC,
+  NEXT_MASK = 0x001FFFC,
+
+  // Mask to remove nagative bit. (interpret number as positive)
+  UNSIGNED_MASK = 0x7FFF,
 
   /**
    * This bit is set if the previous bindings contains a binding which could possibly cause a
@@ -158,7 +161,7 @@ export function toTStylingRange(prev: number, next: number): TStylingRange {
 
 export function getTStylingRangePrev(tStylingRange: TStylingRange): number {
   ngDevMode && assertNumber(tStylingRange, 'expected number');
-  return (tStylingRange as any as number) >> StylingRange.PREV_SHIFT;
+  return ((tStylingRange as any as number) >> StylingRange.PREV_SHIFT) & StylingRange.UNSIGNED_MASK;
 }
 
 export function getTStylingRangePrevDuplicate(tStylingRange: TStylingRange): boolean {

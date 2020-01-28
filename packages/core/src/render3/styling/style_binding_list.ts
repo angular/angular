@@ -7,12 +7,13 @@
 */
 
 import {ArrayMap, arrayMapIndexOf} from '../../util/array_utils';
-import {assertEqual, assertNotEqual} from '../../util/assert';
+import {assertDataInRange, assertEqual, assertNotEqual} from '../../util/assert';
 import {assertFirstUpdatePass} from '../assert';
 import {TNode} from '../interfaces/node';
 import {TStylingKey, TStylingKeyPrimitive, TStylingRange, getTStylingRangeNext, getTStylingRangePrev, setTStylingRangeNext, setTStylingRangeNextDuplicate, setTStylingRangePrev, setTStylingRangePrevDuplicate, toTStylingRange} from '../interfaces/styling';
 import {TData, TVIEW} from '../interfaces/view';
 import {getLView} from '../state';
+
 
 
 /**
@@ -368,6 +369,7 @@ function markDuplicates(
   // - we are a map in which case we have to continue searching even after we find what we were
   //   looking for since we are a wild card and everything needs to be flipped to duplicate.
   while (cursor !== 0 && (foundDuplicate === false || isMap)) {
+    ngDevMode && assertDataInRange(tData, cursor);
     const tStylingValueAtCursor = tData[cursor] as TStylingKey;
     const tStyleRangeAtCursor = tData[cursor + 1] as TStylingRange;
     if (isStylingMatch(tStylingValueAtCursor, tStylingKey)) {
