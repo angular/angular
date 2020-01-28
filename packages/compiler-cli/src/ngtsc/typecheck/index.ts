@@ -10,4 +10,5 @@ export * from './src/api';
 export {TypeCheckContext} from './src/context';
 export {TemplateDiagnostic, isTemplateDiagnostic} from './src/diagnostics';
 export {TypeCheckProgramHost} from './src/host';
+export {TypeCheckShimGenerator} from './src/shim';
 export {typeCheckFilePath} from './src/type_check_file';

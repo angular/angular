@@ -9,16 +9,8 @@
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
+import {ShimGenerator} from '../../shims/api';
 
-import {ShimGenerator} from './api';
-
-/**
- * A `ShimGenerator` which adds a type-checking file to the `ts.Program`.
- *
- * This is a requirement for performant template type-checking, as TypeScript will only reuse
- * information in the main program when creating the type-checking program if the set of files in
- * each are exactly the same. Thus, the main program also needs the synthetic type-checking file.
- */
 export class TypeCheckShimGenerator implements ShimGenerator {
   constructor(private typeCheckFile: AbsoluteFsPath) {}
 
