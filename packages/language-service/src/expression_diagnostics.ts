@@ -10,11 +10,9 @@ import {AST, AstPath, Attribute, BoundDirectivePropertyAst, BoundElementProperty
 import * as ts from 'typescript';
 
 import {AstType, ExpressionDiagnosticsContext, TypeDiagnostic} from './expression_type';
-// TODO: This introduces a circular dependency between locate_symbol and expression_diagnostics.
-import {findOutputBinding} from './locate_symbol';
 import {BuiltinType, Definition, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from './symbols';
 import {Diagnostic} from './types';
-import {getPathToNodeAtPosition} from './utils';
+import {findOutputBinding, getPathToNodeAtPosition} from './utils';
 
 export interface DiagnosticTemplateInfo {
   fileName?: string;
