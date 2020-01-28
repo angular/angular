@@ -5,6 +5,9 @@
 ####################################################################################
 #
 #  Configuration of code ownership and review approvals for the angular/angular repo.
+#
+#  More info: https://docs.pullapprove.com/
+#
 # =========================================================
 #  General rules / philosophy
 # =========================================================
@@ -73,6 +76,8 @@
 # =========================================================
 # @angular/framework-global-approvers
 # =========================================================
+#  Used for approving minor changes, large-scale refactorings, and in emergency situations.
+#
 # IgorMinar
 # josephperrott
 # kara
@@ -81,9 +86,11 @@
 # =========================================================
 # @angular/framework-global-approvers-for-docs-only-changes
 # =========================================================
+#  Used for approving minor documentation-only changes that don't require engineering review.
+#
 # aikidave
-# kapunahelewong
 # gkalpak
+# kapunahelewong
 # petebacondarwin
 
 
@@ -162,7 +169,7 @@ groups:
     conditions:
       - >
         contains_any_globs(files, [
-          'packages/compiler-cli/ngcc/*'
+          'packages/compiler-cli/ngcc/**'
           ])
     reviewers:
       users:
@@ -298,7 +305,7 @@ groups:
           'aio/content/images/guide/structural-directives/**',
           'aio/content/guide/user-input.md',
           'aio/content/examples/user-input/**',
-          'aio/content/images/guide/user-input/*'
+          'aio/content/images/guide/user-input/**'
           ])
     reviewers:
       users:
@@ -324,7 +331,7 @@ groups:
           'packages/examples/http/**',
           'aio/content/guide/http.md',
           'aio/content/examples/http/**',
-          'aio/content/images/guide/http/*'
+          'aio/content/images/guide/http/**'
           ])
     reviewers:
       users:
@@ -379,7 +386,7 @@ groups:
           'aio/content/images/guide/dynamic-form/**',
           'aio/content/guide/reactive-forms.md',
           'aio/content/examples/reactive-forms/**',
-          'aio/content/images/guide/reactive-forms/*'
+          'aio/content/images/guide/reactive-forms/**'
           ])
     reviewers:
       users:
@@ -411,7 +418,7 @@ groups:
           'packages/compiler-cli/src/extract_i18n.ts',
           'packages/localize/**',
           'aio/content/guide/i18n.md',
-          'aio/content/examples/i18n/*'
+          'aio/content/examples/i18n/**'
           ])
     reviewers:
       users:
@@ -432,7 +439,7 @@ groups:
         contains_any_globs(files, [
           'packages/platform-server/**',
           'aio/content/guide/universal.md',
-          'aio/content/examples/universal/*'
+          'aio/content/examples/universal/**'
           ])
     reviewers:
       users:
@@ -454,7 +461,7 @@ groups:
           'packages/examples/router/**',
           'aio/content/guide/router.md',
           'aio/content/examples/router/**',
-          'aio/content/images/guide/router/*'
+          'aio/content/images/guide/router/**'
           ])
     reviewers:
       users:
@@ -480,7 +487,7 @@ groups:
           'aio/content/guide/service-worker-config.md',
           'aio/content/guide/service-worker-devops.md',
           'aio/content/guide/service-worker-intro.md',
-          'aio/content/images/guide/service-worker/*'
+          'aio/content/images/guide/service-worker/**'
           ])
     reviewers:
       users:
@@ -512,7 +519,7 @@ groups:
           'aio/content/guide/upgrade-performance.md',
           'aio/content/guide/upgrade-setup.md',
           'aio/content/guide/ajs-quick-reference.md',
-          'aio/content/examples/ajs-quick-reference/*'
+          'aio/content/examples/ajs-quick-reference/**'
           ])
     reviewers:
       users:
@@ -530,15 +537,15 @@ groups:
     conditions:
       - >
         contains_any_globs(files, [
-          'testing/**',
+          '**/testing/**',
           'aio/content/guide/testing.md',
           'aio/content/examples/testing/**',
-          'aio/content/images/guide/testing/*'
+          'aio/content/images/guide/testing/**'
           ])
     reviewers:
       users:
-        - kara
         - IgorMinar
+        - kara
         - pkozlowski-opensource
       teams:
         - ~framework-global-approvers
@@ -558,7 +565,7 @@ groups:
           'packages/platform-browser/src/security/**',
           'aio/content/guide/security.md',
           'aio/content/examples/security/**',
-          'aio/content/images/guide/security/*'
+          'aio/content/images/guide/security/**'
           ])
     reviewers:
       users:
@@ -581,9 +588,9 @@ groups:
           ])
     reviewers:
       users:
-        - kyliau
         - IgorMinar
         - josephperrott
+        - kyliau
       teams:
         - ~framework-global-approvers
         - ~framework-global-approvers-for-docs-only-changes
@@ -598,8 +605,8 @@ groups:
         contains_any_globs(files, [
           'packages/language-service/**',
           'aio/content/guide/language-service.md',
-          'aio/content/images/guide/language-service/*'
-        ])
+          'aio/content/images/guide/language-service/**'
+          ])
     reviewers:
       users:
         - kyliau
@@ -650,7 +657,7 @@ groups:
     conditions:
       - >
         contains_any_globs(files, [
-          'integration/*'
+          'integration/**'
           ])
     reviewers:
       users:
@@ -660,7 +667,6 @@ groups:
         - mhevery
       teams:
         - ~framework-global-approvers
-        - ~framework-global-approvers-for-docs-only-changes
 
 
   # =========================================================
@@ -684,7 +690,7 @@ groups:
           'aio/content/examples/getting-started-v0/**',
           'aio/content/examples/getting-started/**',
           'aio/content/start/**',
-          'aio/content/images/guide/start/*'
+          'aio/content/images/guide/start/**'
           ])
     reviewers:
       users:
@@ -733,7 +739,7 @@ groups:
           'aio/content/guide/practical-observable-usage.md',
           'aio/content/examples/practical-observable-usage/**',
           'aio/content/guide/rx-library.md',
-          'aio/content/examples/rx-library/*'
+          'aio/content/examples/rx-library/**'
           ])
     reviewers:
       users:
@@ -782,17 +788,18 @@ groups:
     conditions:
       - >
         contains_any_globs(files, [
-            'aio/content/guide/typescript-configuration.md',
-            'aio/content/examples/setup/**',
-            'aio/content/guide/build.md',
-            'aio/content/images/guide/build/**',
-            'aio/content/guide/cli-builder.md',
-            'aio/content/guide/deployment.md',
-            'aio/content/images/guide/deployment/**',
-            'aio/content/guide/file-structure.md',
-            'aio/content/guide/ivy.md',
-            'aio/content/guide/web-worker.md'
-            'aio/content/guide/workspace-config.md',
+          'aio/content/guide/typescript-configuration.md',
+          'aio/content/examples/setup/**',
+          'aio/content/guide/build.md',
+          'aio/content/images/guide/build/**',
+          'aio/content/guide/cli-builder.md',
+          'aio/content/examples/cli-builder/**',
+          'aio/content/guide/deployment.md',
+          'aio/content/images/guide/deployment/**',
+          'aio/content/guide/file-structure.md',
+          'aio/content/guide/ivy.md',
+          'aio/content/guide/web-worker.md'
+          'aio/content/guide/workspace-config.md',
           ])
     reviewers:
       users:
@@ -866,7 +873,7 @@ groups:
           'aio/content/examples/docs-style-guide/**',
           'aio/content/images/guide/docs-style-guide/**',
           'aio/content/guide/visual-studio-2015.md',
-          'aio/content/examples/visual-studio-2015/*'
+          'aio/content/examples/visual-studio-2015/**'
           ])
     reviewers:
       users:
@@ -913,8 +920,8 @@ groups:
           'tools/validate-commit-message/**',
           'tools/yarn/**',
           'tools/*',
-          '*.bzl',
-          '*.BAZEL'
+          '**/*.bzl',
+          '**/*.BAZEL'
           ])
     reviewers:
       users:
@@ -934,7 +941,7 @@ groups:
     conditions:
       - >
         contains_any_globs(files, [
-          'tools/material-ci/*'
+          'tools/components-repo-ci/**'
           ])
     reviewers:
       users:
@@ -976,7 +983,7 @@ groups:
         contains_any_globs(files, [
           'aio/scripts/_payload-limits.json',
           'integration/_payload-limits.json'
-        ])
+          ])
     reviewers:
       users:
         - IgorMinar
