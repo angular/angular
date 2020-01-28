@@ -239,6 +239,12 @@ export interface BootstrapOptions {
    * the change detection will only be trigged once.
    */
   ngZoneEventCoalescing?: boolean;
+
+  /**
+   * Optionally specify an array of ZoneSpecs, and those ZoneSpecs
+   * will be forked in the NgZone instance.
+   */
+  additionalZoneSpecKeys?: string[];
 }
 
 /**
@@ -290,7 +296,8 @@ export class PlatformRef {
     // pass that as parent to the NgModuleFactory.
     const ngZoneOption = options ? options.ngZone : undefined;
     const ngZoneEventCoalescing = (options && options.ngZoneEventCoalescing) || false;
-    const ngZone = getNgZone(ngZoneOption, ngZoneEventCoalescing);
+    const ngZone =
+        getNgZone(ngZoneOption, ngZoneEventCoalescing, options && options.additionalZoneSpecKeys);
     const providers: StaticProvider[] = [{provide: NgZone, useValue: ngZone}];
     // Attention: Don't use ApplicationRef.run here,
     // as we want to be sure that all possible constructor calls are inside `ngZone.run`!
@@ -387,7 +394,8 @@ export class PlatformRef {
 }
 
 function getNgZone(
-    ngZoneOption: NgZone | 'zone.js' | 'noop' | undefined, ngZoneEventCoalescing: boolean): NgZone {
+    ngZoneOption: NgZone | 'zone.js' | 'noop' | undefined, ngZoneEventCoalescing: boolean,
+    additionalZoneSpecKeys: string[] | undefined): NgZone {
   let ngZone: NgZone;
 
   if (ngZoneOption === 'noop') {
@@ -395,7 +403,7 @@ function getNgZone(
   } else {
     ngZone = (ngZoneOption === 'zone.js' ? undefined : ngZoneOption) || new NgZone({
                enableLongStackTrace: isDevMode(),
-               shouldCoalesceEventChangeDetection: ngZoneEventCoalescing
+               shouldCoalesceEventChangeDetection: ngZoneEventCoalescing, additionalZoneSpecKeys
              });
   }
   return ngZone;

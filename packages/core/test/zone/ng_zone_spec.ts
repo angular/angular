@@ -169,6 +169,70 @@ function runNgZoneNoLog(fn: () => any) {
            });
          }), testTimeout);
     });
+
+    describe('additionalZoneSpecKeys', () => {
+      const zoneSpec1: ZoneSpec = {name: 'zoneSpec1'};
+      const zoneSpec2: ZoneSpec = {name: 'zoneSpec2'};
+      (Zone as any)['zoneSpec1'] = zoneSpec1;
+      (Zone as any)['zoneSpec2'] = zoneSpec2;
+      const additionalZoneSpecKeys = ['zoneSpec1', 'zoneSpec2'];
+
+      (Zone as any)['TaskTrackingZoneSpecInstance'] = new (Zone as any)['TaskTrackingZoneSpec']();
+      const builtInZoneSpecs = ['TaskTrackingZoneSpecInstance', 'longStackTraceZoneSpec'];
+
+      const testDatas: {
+        testName: string,
+        disableLongStackTrace?: boolean,
+        additionalZoneSpecKeys?: string[],
+        expectedZones: string[]
+      }[] =
+          [
+            {
+              testName: 'should support undefined additional zone specs',
+              expectedZones: ['long-stack-trace', 'TaskTrackingZone']
+            },
+            {
+              testName: 'should support empty additional zone specs',
+              additionalZoneSpecKeys: [],
+              expectedZones: ['long-stack-trace', 'TaskTrackingZone']
+            },
+            {
+              testName: 'should support valid additional zone specs',
+              additionalZoneSpecKeys,
+              expectedZones: ['long-stack-trace', 'TaskTrackingZone', 'zoneSpec1', 'zoneSpec2']
+            },
+            {
+              testName: 'should support ignore duplicate zone specs',
+              additionalZoneSpecKeys: additionalZoneSpecKeys.concat(builtInZoneSpecs),
+              expectedZones: ['long-stack-trace', 'TaskTrackingZone', 'zoneSpec1', 'zoneSpec2']
+            },
+            {
+              testName: 'should not break enableLongStackTrace flag',
+              disableLongStackTrace: true,
+              additionalZoneSpecKeys: additionalZoneSpecKeys.concat(builtInZoneSpecs),
+              expectedZones: ['TaskTrackingZone', 'zoneSpec1', 'zoneSpec2']
+            },
+          ];
+
+      testDatas.forEach(testData => {
+        it(testData.testName, () => {
+          const ngZone = new NgZone({
+            enableLongStackTrace: !testData.disableLongStackTrace,
+            additionalZoneSpecKeys: testData.additionalZoneSpecKeys
+          });
+          ngZone.run(() => {
+            const currentZones: string[] = [];
+            let zone: Zone|null = Zone.current;
+            while (zone) {
+              currentZones.push(zone.name);
+              zone = zone.parent;
+            }
+            expect(currentZones.sort())
+                .toEqual(testData.expectedZones.concat(['angular', 'ProxyZone', '<root>']).sort());
+          });
+        });
+      });
+    });
   });
 
   describe('NoopNgZone', () => {
