@@ -13,7 +13,7 @@ import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecorato
 import {CycleAnalyzer, ImportGraph} from '../../cycles';
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {ReferenceGraph, checkForPrivateExports} from '../../entry_point';
-import {LogicalFileSystem, getSourceFileOrError} from '../../file_system';
+import {AbsoluteFsPath, LogicalFileSystem, getSourceFileOrError} from '../../file_system';
 import {AbsoluteModuleStrategy, AliasStrategy, AliasingHost, DefaultImportTracker, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, PrivateExportAliasingHost, R3SymbolsImportRewriter, Reference, ReferenceEmitStrategy, ReferenceEmitter, RelativePathStrategy, UnifiedModulesAliasingHost, UnifiedModulesStrategy} from '../../imports';
 import {IncrementalDriver} from '../../incremental';
 import {IndexedComponent, IndexingContext, generateAnalysis} from '../../indexer';
@@ -90,7 +90,6 @@ export class NgCompiler {
   private diagnostics: ts.Diagnostic[]|null = null;
 
   private closureCompilerEnabled: boolean;
-  private typeCheckFile: ts.SourceFile;
   private nextProgram: ts.Program;
   private entryPoint: ts.SourceFile|null;
   private moduleResolver: ModuleResolver;
@@ -116,7 +115,6 @@ export class NgCompiler {
     this.entryPoint =
         host.entryPoint !== null ? getSourceFileOrNull(tsProgram, host.entryPoint) : null;
 
-    this.typeCheckFile = getSourceFileOrError(tsProgram, host.typeCheckFile);
     const moduleResolutionCache = ts.createModuleResolutionCache(
         this.host.getCurrentDirectory(), fileName => this.host.getCanonicalFileName(fileName));
     this.moduleResolver =
@@ -145,13 +143,17 @@ export class NgCompiler {
     }
     setIncrementalDriver(tsProgram, this.incrementalDriver);
 
+    const fileNameToFile = (fileName: AbsoluteFsPath) => getSourceFileOrError(tsProgram, fileName);
+
+    const typeCheckFiles = host.typeCheckFiles.map(fileNameToFile);
+
     this.ignoreForDiagnostics = new Set([
-      this.typeCheckFile,
-      ...host.factoryFiles.map(fileName => getSourceFileOrError(tsProgram, fileName)),
-      ...host.summaryFiles.map(fileName => getSourceFileOrError(tsProgram, fileName)),
+      ...typeCheckFiles,
+      ...host.factoryFiles.map(fileNameToFile),
+      ...host.summaryFiles.map(fileNameToFile),
     ]);
 
-    this.ignoreForEmit = new Set([this.typeCheckFile]);
+    this.ignoreForEmit = new Set(typeCheckFiles);
   }
 
   /**
@@ -482,7 +484,8 @@ export class NgCompiler {
     // Execute the typeCheck phase of each decorator in the program.
     const prepSpan = this.perfRecorder.start('typeCheckPrep');
     const ctx = new TypeCheckContext(
-        typeCheckingConfig, compilation.refEmitter !, compilation.reflector, host.typeCheckFile);
+        typeCheckingConfig, compilation.refEmitter !, compilation.reflector,
+        host.typeCheckShimHost);
     compilation.traitCompiler.typeCheck(ctx);
     this.perfRecorder.stop(prepSpan);
 
@@ -491,6 +494,10 @@ export class NgCompiler {
     const {diagnostics, program} =
         ctx.calculateTemplateDiagnostics(this.tsProgram, this.host, this.options);
     this.perfRecorder.stop(typeCheckSpan);
+
+    // Inform the incremental build system that type-checking was completed successfully. This makes
+    // type-check information from this build available to the next build.
+    this.incrementalDriver.recordSuccessfulTypeChecking(ctx);
     setIncrementalDriver(program, this.incrementalDriver);
     this.nextProgram = program;
 
@@ -537,6 +544,29 @@ export class NgCompiler {
           // pipe's name may have changed.
           depGraph.addTransitiveDependency(file, pipe.ref.node.getSourceFile());
         }
+
+        // Components depend on the entire export scope. In addition to transitive dependencies on
+        // all directives/pipes in the export scope, they also depend on every NgModule in the
+        // scope, as changes to a module may add new directives/pipes to the scope.
+        for (const depModule of scope.ngModules) {
+          // There is a correctness issue here. To be correct, this should be a transitive
+          // dependency on the depModule file, since the depModule's exports might change via one of
+          // its dependencies, even if depModule's file itself doesn't change. However, doing this
+          // would also trigger recompilation if a non-exported component or directive changed,
+          // which causes performance issues for rebuilds.
+          //
+          // Given the rebuild issue is an edge case, currently we err on the side of performance
+          // instead of correctness. A correct and performant design would distinguish between
+          // changes to the depModule which affect its export scope and changes which do not, and
+          // only add a dependency for the former. This concept is currently in development.
+          //
+          // TODO(alxhub): fix correctness issue by understanding the semantics of the dependency.
+          depGraph.addDependency(file, depModule.getSourceFile());
+        }
+      } else {
+        // Directives (not components) and pipes only depend on the NgModule which directly declares
+        // them.
+        depGraph.addDependency(file, ngModuleFile);
       }
     }
     this.perfRecorder.stop(recordSpan);

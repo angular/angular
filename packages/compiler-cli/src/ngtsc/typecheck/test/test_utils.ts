@@ -9,7 +9,7 @@
 import {CssSelector, ParseSourceFile, ParseSourceSpan, R3TargetBinder, SchemaMetadata, SelectorMatcher, TmplAstElement, TmplAstReference, Type, parseTemplate} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath, LogicalFileSystem, absoluteFrom} from '../../file_system';
+import {AbsoluteFsPath, LogicalFileSystem, absoluteFrom, absoluteFromSourceFile} from '../../file_system';
 import {TestFile} from '../../file_system/testing';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
@@ -20,6 +20,7 @@ import {TypeCheckContext} from '../src/context';
 import {DomSchemaChecker} from '../src/dom';
 import {Environment} from '../src/environment';
 import {OutOfBandDiagnosticRecorder} from '../src/oob';
+import {TypeCheckShimGenerator, TypeCheckShimHost} from '../src/shim';
 import {generateTypeCheckBlock} from '../src/type_check_block';
 
 export function typescriptLibDts(): TestFile {
@@ -239,14 +240,14 @@ export function typecheck(
     template: string, source: string, declarations: TestDeclaration[] = [],
     additionalSources: {name: AbsoluteFsPath; contents: string}[] = [],
     config: Partial<TypeCheckingConfig> = {}, opts: ts.CompilerOptions = {}): ts.Diagnostic[] {
-  const typeCheckFilePath = absoluteFrom('/_typecheck_.ts');
+  const shimHost = new TestShimHost();
   const files = [
     typescriptLibDts(),
     angularCoreDts(),
     angularAnimationsDts(),
     // Add the typecheck file to the program, as the typecheck program is created with the
     // assumption that the typecheck file was already a root file in the original program.
-    {name: typeCheckFilePath, contents: 'export const TYPECHECK = true;'},
+    {name: shimHost.shim, contents: 'export const TYPECHECK = true;'},
     {name: absoluteFrom('/main.ts'), contents: source},
     ...additionalSources,
   ];
@@ -264,8 +265,8 @@ export function typecheck(
         program, checker, moduleResolver, new TypeScriptReflectionHost(checker)),
     new LogicalProjectStrategy(reflectionHost, logicalFs),
   ]);
-  const ctx = new TypeCheckContext(
-      {...ALL_ENABLED_CONFIG, ...config}, emitter, reflectionHost, typeCheckFilePath);
+  const ctx =
+      new TypeCheckContext({...ALL_ENABLED_CONFIG, ...config}, emitter, reflectionHost, shimHost);
 
   const templateUrl = 'synthetic.html';
   const templateFile = new ParseSourceFile(template, templateUrl);
@@ -343,6 +344,18 @@ export function getClass(sf: ts.SourceFile, name: string): ClassDeclaration<ts.C
     }
   }
   throw new Error(`Class ${name} not found in file`);
+}
+
+export class TestShimHost implements TypeCheckShimHost {
+  readonly shim = absoluteFrom('/_typecheck_.ts');
+
+  getShimPathFor(file: AbsoluteFsPath): AbsoluteFsPath|null {
+    return file !== this.shim ? this.shim : null;
+  }
+
+  getShimPaths(): readonly AbsoluteFsPath[] { return [this.shim]; }
+
+  isShim(sf: ts.SourceFile): boolean { return absoluteFromSourceFile(sf) === this.shim; }
 }
 
 class FakeEnvironment /* implements Environment */ {

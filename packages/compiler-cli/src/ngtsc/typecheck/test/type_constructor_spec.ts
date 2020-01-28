@@ -14,7 +14,7 @@ import {getDeclaration, makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
 import {TypeCheckContext} from '../src/context';
 import {TypeCheckFile} from '../src/type_check_file';
-import {ALL_ENABLED_CONFIG} from './test_utils';
+import {ALL_ENABLED_CONFIG, TestShimHost} from './test_utils';
 
 runInEachFileSystem(() => {
   describe('ngtsc typechecking', () => {
@@ -73,7 +73,7 @@ TestClass.ngTypeCtor({value: 'test'});
           new LogicalProjectStrategy(reflectionHost, logicalFs),
         ]);
         const ctx =
-            new TypeCheckContext(ALL_ENABLED_CONFIG, emitter, reflectionHost, _('/_typecheck_.ts'));
+            new TypeCheckContext(ALL_ENABLED_CONFIG, emitter, reflectionHost, new TestShimHost());
         const TestClass =
             getDeclaration(program, _('/main.ts'), 'TestClass', isNamedClassDeclaration);
         ctx.addInlineTypeCtor(
@@ -109,7 +109,7 @@ TestClass.ngTypeCtor({value: 'test'});
           new LogicalProjectStrategy(reflectionHost, logicalFs),
         ]);
         const ctx =
-            new TypeCheckContext(ALL_ENABLED_CONFIG, emitter, reflectionHost, _('/_typecheck_.ts'));
+            new TypeCheckContext(ALL_ENABLED_CONFIG, emitter, reflectionHost, new TestShimHost());
         const TestClass =
             getDeclaration(program, _('/main.ts'), 'TestClass', isNamedClassDeclaration);
         ctx.addInlineTypeCtor(
@@ -151,7 +151,7 @@ TestClass.ngTypeCtor({value: 'test'});
           new LogicalProjectStrategy(reflectionHost, logicalFs),
         ]);
         const ctx =
-            new TypeCheckContext(ALL_ENABLED_CONFIG, emitter, reflectionHost, _('/_typecheck_.ts'));
+            new TypeCheckContext(ALL_ENABLED_CONFIG, emitter, reflectionHost, new TestShimHost());
         const TestClass =
             getDeclaration(program, _('/main.ts'), 'TestClass', isNamedClassDeclaration);
         ctx.addInlineTypeCtor(

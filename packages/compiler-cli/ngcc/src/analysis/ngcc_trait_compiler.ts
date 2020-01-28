@@ -80,6 +80,7 @@ export class NgccTraitCompiler extends TraitCompiler {
   }
 }
 
-class NoIncrementalBuild implements IncrementalBuild<any> {
+class NoIncrementalBuild implements IncrementalBuild<any, any> {
+  priorTypeCheckingFor(sf: ts.SourceFile): any|null { return null; }
   priorWorkFor(sf: ts.SourceFile): any[]|null { return null; }
 }

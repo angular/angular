@@ -44,7 +44,7 @@ runInEachFileSystem(() => {
         strictTemplates: true,
       };
       const baseHost = new NgtscCompilerHost(getFileSystem(), options);
-      const host = NgCompilerHost.wrap(baseHost, [COMPONENT], options);
+      const host = NgCompilerHost.wrap(baseHost, [COMPONENT], options, null);
       const program = ts.createProgram({host, options, rootNames: host.inputFiles});
       const compiler = new NgCompiler(host, options, program);
 

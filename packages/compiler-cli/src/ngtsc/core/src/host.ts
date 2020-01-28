@@ -10,12 +10,14 @@ import * as ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {FlatIndexGenerator, findFlatIndexEntryPoint} from '../../entry_point';
-import {AbsoluteFsPath, resolve} from '../../file_system';
-import {FactoryGenerator, FactoryTracker, ShimGenerator, SummaryGenerator} from '../../shims';
-import {TypeCheckShimGenerator, typeCheckFilePath} from '../../typecheck';
+import {AbsoluteFsPath, absoluteFromSourceFile, resolve} from '../../file_system';
+import {FactoryGenerator, FactoryTracker, SummaryGenerator} from '../../shims';
+import {ShimGenerator} from '../../shims/api';
+import {TypeCheckShimGenerator, TypeCheckShimHost} from '../../typecheck';
 import {normalizeSeparators} from '../../util/src/path';
 import {getRootDirs} from '../../util/src/typescript';
 import {ExtendedTsCompilerHost, NgCompilerOptions, UnifiedModulesHost} from '../api';
+
 
 // A persistent source of bugs in CompilerHost delegation has been the addition by TS of new,
 // optional methods on ts.CompilerHost. Since these methods are optional, it's not a type error that
@@ -96,21 +98,25 @@ export class NgCompilerHost extends DelegatingCompilerHost implements
 
   readonly inputFiles: ReadonlyArray<string>;
   readonly rootDirs: ReadonlyArray<AbsoluteFsPath>;
-  readonly typeCheckFile: AbsoluteFsPath;
+  readonly typeCheckFiles: ReadonlyArray<AbsoluteFsPath>;
   readonly factoryFiles: AbsoluteFsPath[];
   readonly summaryFiles: AbsoluteFsPath[];
+
+  readonly typeCheckShimHost: TypeCheckShimHost;
 
   constructor(
       delegate: ExtendedTsCompilerHost, inputFiles: ReadonlyArray<string>,
       rootDirs: ReadonlyArray<AbsoluteFsPath>, private shims: ShimGenerator[],
-      entryPoint: AbsoluteFsPath|null, typeCheckFile: AbsoluteFsPath,
-      factoryFiles: AbsoluteFsPath[], summaryFiles: AbsoluteFsPath[],
-      factoryTracker: FactoryTracker|null, diagnostics: ts.Diagnostic[]) {
+      entryPoint: AbsoluteFsPath|null, typeCheckShimHost: TypeCheckShimHost,
+      typeCheckFiles: ReadonlyArray<AbsoluteFsPath>, factoryFiles: AbsoluteFsPath[],
+      summaryFiles: AbsoluteFsPath[], factoryTracker: FactoryTracker|null,
+      diagnostics: ts.Diagnostic[]) {
     super(delegate);
 
+    this.typeCheckShimHost = typeCheckShimHost;
     this.factoryTracker = factoryTracker;
     this.entryPoint = entryPoint;
-    this.typeCheckFile = typeCheckFile;
+    this.typeCheckFiles = typeCheckFiles;
     this.factoryFiles = factoryFiles;
     this.summaryFiles = summaryFiles;
     this.diagnostics = diagnostics;
@@ -123,8 +129,8 @@ export class NgCompilerHost extends DelegatingCompilerHost implements
    * of TypeScript and Angular compiler options.
    */
   static wrap(
-      delegate: ts.CompilerHost, inputFiles: ReadonlyArray<string>,
-      options: NgCompilerOptions): NgCompilerHost {
+      delegate: ts.CompilerHost, inputFiles: ReadonlyArray<string>, options: NgCompilerOptions,
+      oldProgram: ts.Program|null): NgCompilerHost {
     // TODO(alxhub): remove the fallback to allowEmptyCodegenFiles after verifying that the rest of
     // our build tooling is no longer relying on it.
     const allowEmptyCodegenFiles = options.allowEmptyCodegenFiles || false;
@@ -175,9 +181,10 @@ export class NgCompilerHost extends DelegatingCompilerHost implements
 
     const rootDirs = getRootDirs(delegate, options as ts.CompilerOptions);
 
-    const typeCheckFile = typeCheckFilePath(rootDirs);
-    generators.push(new TypeCheckShimGenerator(typeCheckFile));
-    rootFiles.push(typeCheckFile);
+    const typeCheckFileShim = TypeCheckShimGenerator.forRootFiles(normalizedInputFiles, oldProgram);
+    generators.push(typeCheckFileShim);
+    rootFiles.push(...typeCheckFileShim.getShimPaths());
+
 
     let diagnostics: ts.Diagnostic[] = [];
 
@@ -213,8 +220,8 @@ export class NgCompilerHost extends DelegatingCompilerHost implements
     }
 
     return new NgCompilerHost(
-        delegate, rootFiles, rootDirs, generators, entryPoint, typeCheckFile, factoryFiles,
-        summaryFiles, factoryTracker, diagnostics);
+        delegate, rootFiles, rootDirs, generators, entryPoint, typeCheckFileShim,
+        typeCheckFileShim.getShimPaths(), factoryFiles, summaryFiles, factoryTracker, diagnostics);
   }
 
   getSourceFile(

@@ -14,7 +14,7 @@ import {IncrementalBuild} from '../../incremental/api';
 import {IndexingContext} from '../../indexer';
 import {PerfRecorder} from '../../perf';
 import {ClassDeclaration, Decorator, ReflectionHost} from '../../reflection';
-import {TypeCheckContext} from '../../typecheck';
+import {FinalTypeCheckingForFile, TypeCheckContext} from '../../typecheck';
 import {getSourceFile, isExported} from '../../util/src/typescript';
 
 import {AnalysisOutput, CompileResult, DecoratorHandler, HandlerFlags, HandlerPrecedence, ResolveResult} from './api';
@@ -87,7 +87,7 @@ export class TraitCompiler {
   constructor(
       private handlers: DecoratorHandler<unknown, unknown, unknown>[],
       private reflector: ReflectionHost, private perf: PerfRecorder,
-      private incrementalBuild: IncrementalBuild<ClassRecord>,
+      private incrementalBuild: IncrementalBuild<ClassRecord, FinalTypeCheckingForFile>,
       private compileNonExportedClasses: boolean, private dtsTransforms: DtsTransformRegistry) {
     for (const handler of handlers) {
       this.handlersByName.set(handler.name, handler);
@@ -420,15 +420,47 @@ export class TraitCompiler {
   }
 
   typeCheck(ctx: TypeCheckContext): void {
+    // Iteration is performed through classes, but adopting previous type-checking results is a
+    // per-file operation. It's thus necessary to track which `ts.SourceFile`s have been processed
+    // to avoid checking or adopting them twice.
+    const isAdopted = new Map<ts.SourceFile, boolean>();
     for (const clazz of this.classes.keys()) {
-      const record = this.classes.get(clazz) !;
-      for (const trait of record.traits) {
-        if (trait.state !== TraitState.RESOLVED) {
-          continue;
-        } else if (trait.handler.typeCheck === undefined) {
-          continue;
+      const sf = clazz.getSourceFile();
+
+      // Whether this class should be analyzed and a new template type-checking record generated.
+      let shouldAnalyze: boolean;
+
+      // Attempt to potentially reuse the records from the class.
+      if (!isAdopted.has(sf)) {
+        // It might be possible to adopt records from this file.
+        const priorRecord = this.incrementalBuild.priorTypeCheckingFor(sf);
+        if (priorRecord !== null) {
+          // The file has previous type-checking work which can be adopted by this build.
+          ctx.adopt(sf, priorRecord);
+          isAdopted.set(sf, true);
+
+          shouldAnalyze = false;
+        } else {
+          // The file doesn't have previous work to be adopted, and needs to be re-analyzed.
+          isAdopted.set(sf, false);
+          shouldAnalyze = true;
         }
-        trait.handler.typeCheck(ctx, clazz, trait.analysis, trait.resolution);
+      } else {
+        shouldAnalyze = !isAdopted.get(sf) !;
+      }
+
+      if (shouldAnalyze) {
+        // Template type-check this class if needed.
+        const record = this.classes.get(clazz) !;
+        for (const trait of record.traits) {
+          if (trait.state !== TraitState.RESOLVED) {
+            continue;
+          } else if (trait.handler.typeCheck === undefined) {
+            continue;
+          }
+
+          trait.handler.typeCheck(ctx, clazz, trait.analysis, trait.resolution);
+        }
       }
     }
   }

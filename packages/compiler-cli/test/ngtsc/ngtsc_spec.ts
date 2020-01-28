@@ -2020,6 +2020,8 @@ runInEachFileSystem(os => {
           [`a/app.ts`, `a/b/c/${resource}`, `/a/b/c/${resource}`],
       ];
 
+      beforeEach(() => env.tsconfig({rootDir: absoluteFrom('/')}));
+
       testsForResource('style.css').forEach((test) => {
         const [compLoc, styleLoc, styleRef] = test;
         it(`should handle ${styleRef}`, () => {

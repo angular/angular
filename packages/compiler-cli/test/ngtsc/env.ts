@@ -164,7 +164,7 @@ export class NgtscTestEnvironment {
     };
     if (extraRootDirs !== undefined) {
       tsconfig.compilerOptions = {
-        rootDirs: ['.', ...extraRootDirs],
+        rootDirs: [absoluteFrom('/'), ...extraRootDirs],
       };
     }
     this.write('tsconfig.json', JSON.stringify(tsconfig, null, 2));

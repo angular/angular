@@ -80,8 +80,3 @@ export class TypeCheckFile extends Environment {
 
   getPreludeStatements(): ts.Statement[] { return []; }
 }
-
-export function typeCheckFilePath(rootDirs: AbsoluteFsPath[]): AbsoluteFsPath {
-  const shortest = rootDirs.concat([]).sort((a, b) => a.length - b.length)[0];
-  return join(shortest, '__ng_typecheck__.ts');
-}

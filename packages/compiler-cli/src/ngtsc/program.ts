@@ -60,6 +60,7 @@ export class NgtscProgram implements api.Program {
     if (!options.disableTypeScriptVersionCheck) {
       verifySupportedTypeScriptVersion();
     }
+    const reuseProgram = oldProgram && oldProgram.reuseTsProgram;
 
     if (options.tracePerformance !== undefined) {
       this.perfTracker = PerfTracker.zeroedToNow();
@@ -67,9 +68,8 @@ export class NgtscProgram implements api.Program {
     }
     this.closureCompilerEnabled = !!options.annotateForClosureCompiler;
 
-    this.host = NgCompilerHost.wrap(delegateHost, rootNames, options);
+    this.host = NgCompilerHost.wrap(delegateHost, rootNames, options, reuseProgram || null);
 
-    const reuseProgram = oldProgram && oldProgram.reuseTsProgram;
     this.tsProgram = ts.createProgram(this.host.inputFiles, options, this.host, reuseProgram);
     this.reuseTsProgram = this.tsProgram;
 

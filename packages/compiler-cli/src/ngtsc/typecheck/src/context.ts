@@ -9,7 +9,7 @@
 import {BoundTarget, ParseSourceFile, SchemaMetadata} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath} from '../../file_system';
+import {absoluteFromSourceFile, getSourceFileOrError} from '../../file_system';
 import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
@@ -20,11 +20,11 @@ import {DomSchemaChecker, RegistryDomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {TypeCheckProgramHost} from './host';
 import {OutOfBandDiagnosticRecorder, OutOfBandDiagnosticRecorderImpl} from './oob';
+import {TypeCheckShimHost} from './shim';
 import {TemplateSourceManager} from './source';
 import {generateTypeCheckBlock, requiresInlineTypeCheckBlock} from './type_check_block';
 import {TypeCheckFile} from './type_check_file';
 import {generateInlineTypeCtor, requiresInlineTypeCtor} from './type_constructor';
-
 
 
 /**
@@ -35,13 +35,11 @@ import {generateInlineTypeCtor, requiresInlineTypeCtor} from './type_constructor
  * checking code.
  */
 export class TypeCheckContext {
-  private typeCheckFile: TypeCheckFile;
+  private files = new Map<ts.SourceFile, TypeCheckingForFile>();
 
   constructor(
       private config: TypeCheckingConfig, private refEmitter: ReferenceEmitter,
-      private reflector: ReflectionHost, typeCheckFilePath: AbsoluteFsPath) {
-    this.typeCheckFile = new TypeCheckFile(typeCheckFilePath, config, refEmitter, reflector);
-  }
+      private reflector: ReflectionHost, private shimHost: TypeCheckShimHost) {}
 
   /**
    * A `Map` of `ts.SourceFile`s that the context has seen to the operations (additions of methods
@@ -55,11 +53,22 @@ export class TypeCheckContext {
    */
   private typeCtorPending = new Set<ts.ClassDeclaration>();
 
-  private sourceManager = new TemplateSourceManager();
+  /**
+   * Attempt to reuse results from a particular source file.
+   */
+  adopt(sf: ts.SourceFile, record: FinalTypeCheckingForFile): void { this.files.set(sf, record); }
 
-  private domSchemaChecker = new RegistryDomSchemaChecker(this.sourceManager);
+  recordFor(sf: ts.SourceFile): FinalTypeCheckingForFile|null {
+    if (!this.files.has(sf)) {
+      return null;
+    }
+    const file = this.files.get(sf) !;
+    if (file.type !== 'final' || file.hasInlineBlocks) {
+      return null;
+    }
 
-  private oobRecorder = new OutOfBandDiagnosticRecorderImpl(this.sourceManager);
+    return file;
+  }
 
   /**
    * Record a template for the given component `node`, with a `SelectorMatcher` for directive
@@ -75,7 +84,34 @@ export class TypeCheckContext {
       pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
       schemas: SchemaMetadata[], sourceMapping: TemplateSourceMapping,
       file: ParseSourceFile): void {
-    const id = this.sourceManager.captureSource(sourceMapping, file);
+    const sf = ref.node.getSourceFile();
+    let record: PendingTypeCheckingForFile;
+    if (!this.files.has(sf)) {
+      const shimPath = this.shimHost.getShimPathFor(absoluteFromSourceFile(sf));
+      if (shimPath === null) {
+        throw new Error(`AssertionError: no typechecking shim found for ${sf.fileName}`);
+      }
+      const sourceManager = new TemplateSourceManager();
+      record = {
+        type: 'pending',
+        sourceManager,
+        file: new TypeCheckFile(shimPath, this.config, this.refEmitter, this.reflector),
+        hasInlineBlocks: false,
+        domSchemaChecker: new RegistryDomSchemaChecker(sourceManager),
+        oobDiagnosticRecorder: new OutOfBandDiagnosticRecorderImpl(sourceManager),
+      };
+      this.files.set(sf, record);
+    } else {
+      const rec = this.files.get(sf) !;
+      if (rec.type === 'final') {
+        throw new Error(
+            `AssertionError: cannot add type-checking code for template of ${ref.debugName} (${sf.fileName}) to reused type-checking file ${rec.file.fileName}.`);
+      }
+
+      record = rec;
+    }
+
+    const id = record.sourceManager.captureSource(sourceMapping, file);
     // Get all of the directives used in the template and record type constructors for all of them.
     for (const dir of boundTarget.getUsedDirectives()) {
       const dirRef = dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
@@ -95,6 +131,7 @@ export class TypeCheckContext {
           },
           coercedInputFields: dir.coercedInputFields,
         });
+        record.hasInlineBlocks = true;
       }
     }
 
@@ -102,11 +139,13 @@ export class TypeCheckContext {
     if (requiresInlineTypeCheckBlock(ref.node)) {
       // This class didn't meet the requirements for external type checking, so generate an inline
       // TCB for the class.
-      this.addInlineTypeCheckBlock(ref, tcbMetadata);
+      this.addInlineTypeCheckBlock(
+          ref, tcbMetadata, record.domSchemaChecker, record.oobDiagnosticRecorder);
+      record.hasInlineBlocks = true;
     } else {
       // The class can be type-checked externally as normal.
-      this.typeCheckFile.addTypeCheckBlock(
-          ref, tcbMetadata, this.domSchemaChecker, this.oobRecorder);
+      record.file.addTypeCheckBlock(
+          ref, tcbMetadata, record.domSchemaChecker, record.oobDiagnosticRecorder);
     }
   }
 
@@ -184,19 +223,45 @@ export class TypeCheckContext {
     diagnostics: ts.Diagnostic[],
     program: ts.Program,
   } {
-    const typeCheckSf = this.typeCheckFile.render();
     // First, build the map of original source files.
     const sfMap = new Map<string, ts.SourceFile>();
-    const interestingFiles: ts.SourceFile[] = [typeCheckSf];
+
+    const diagnostics: ts.Diagnostic[] = [];
+
     for (const originalSf of originalProgram.getSourceFiles()) {
+      // Skip template type-checking shims.
+      if (this.shimHost.isShim(originalSf)) {
+        continue;
+      }
+
       const sf = this.transform(originalSf);
       sfMap.set(sf.fileName, sf);
-      if (!sf.isDeclarationFile && this.opMap.has(originalSf)) {
-        interestingFiles.push(sf);
+
+      if (this.files.has(originalSf)) {
+        const record = this.files.get(originalSf) !;
+        if (record.type === 'pending') {
+          // Finalize the type-checking code for originalSf by producing the type-checking
+          // `ts.SourceFile`.
+          const ttcSf = record.file.render();
+          sfMap.set(ttcSf.fileName, ttcSf);
+
+          this.files.set(originalSf, {
+            type: 'final',
+            sourceManager: record.sourceManager,
+            file: ttcSf,
+            diagnostics: [
+              ...record.domSchemaChecker.diagnostics, ...record.oobDiagnosticRecorder.diagnostics
+            ],
+            hasInlineBlocks: record.hasInlineBlocks,
+          });
+          diagnostics.push(
+              ...record.domSchemaChecker.diagnostics, ...record.oobDiagnosticRecorder.diagnostics);
+        } else {
+          diagnostics.push(...record.diagnostics);
+        }
       }
     }
 
-    sfMap.set(typeCheckSf.fileName, typeCheckSf);
 
     const typeCheckProgram = ts.createProgram({
       host: new TypeCheckProgramHost(sfMap, originalHost),
@@ -205,25 +270,32 @@ export class TypeCheckContext {
       rootNames: originalProgram.getRootFileNames(),
     });
 
-    const diagnostics: ts.Diagnostic[] = [];
-    const collectDiagnostics = (diags: readonly ts.Diagnostic[]): void => {
-      for (const diagnostic of diags) {
-        if (shouldReportDiagnostic(diagnostic)) {
-          const translated = translateDiagnostic(diagnostic, this.sourceManager);
+    for (const sf of this.files.keys()) {
+      const record = this.files.get(sf) !;
+      if (record.type !== 'final') {
+        throw new Error(`AssertionError: file ${sf.fileName} does not have finalized TTC`);
+      }
 
-          if (translated !== null) {
-            diagnostics.push(translated);
-          }
+      const diags: ts.Diagnostic[] = [];
+      diags.push(...typeCheckProgram.getSemanticDiagnostics(record.file));
+      if (record.hasInlineBlocks) {
+        // `sf` is the user program file, which has been modified to include inline blocks in the
+        // `typeCheckProgram`. Get the modified version for diagnostics.
+        const ttcSf = getSourceFileOrError(typeCheckProgram, absoluteFromSourceFile(sf));
+        diags.push(...typeCheckProgram.getSemanticDiagnostics(ttcSf));
+      }
+
+      for (const diagnostic of diags) {
+        if (!shouldReportDiagnostic(diagnostic)) {
+          continue;
+        }
+
+        const translated = translateDiagnostic(diagnostic, record.sourceManager);
+        if (translated !== null) {
+          diagnostics.push(translated);
         }
       }
-    };
-
-    for (const sf of interestingFiles) {
-      collectDiagnostics(typeCheckProgram.getSemanticDiagnostics(sf));
     }
-
-    diagnostics.push(...this.domSchemaChecker.diagnostics);
-    diagnostics.push(...this.oobRecorder.diagnostics);
 
     return {
       diagnostics,
@@ -232,15 +304,16 @@ export class TypeCheckContext {
   }
 
   private addInlineTypeCheckBlock(
-      ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
-      tcbMeta: TypeCheckBlockMetadata): void {
+      ref: Reference<ClassDeclaration<ts.ClassDeclaration>>, tcbMeta: TypeCheckBlockMetadata,
+      domSchemaChecker: DomSchemaChecker,
+      oobDiagnosticRecorder: OutOfBandDiagnosticRecorder): void {
     const sf = ref.node.getSourceFile();
     if (!this.opMap.has(sf)) {
       this.opMap.set(sf, []);
     }
     const ops = this.opMap.get(sf) !;
     ops.push(new TcbOp(
-        ref, tcbMeta, this.config, this.reflector, this.domSchemaChecker, this.oobRecorder));
+        ref, tcbMeta, this.config, this.reflector, domSchemaChecker, oobDiagnosticRecorder));
   }
 }
 
@@ -330,4 +403,83 @@ function splitStringAtPoints(str: string, points: number[]): string[] {
   }
   splits.push(str.substring(start));
   return splits;
+}
+
+/**
+ * Template type-checking context for a particular input `ts.SourceFile` and all of its components.
+ *
+ * This can exist in two states: an in-progress context which supports the addition of more
+ * templates to check, and a completed context with template type-checking code rendered into a
+ * `ts.SourceFile`.
+ */
+type TypeCheckingForFile = PendingTypeCheckingForFile | FinalTypeCheckingForFile;
+
+interface BaseTypeCheckingForFile {
+  type: 'pending'|'final';
+
+  /**
+   * Tracks source mappings for type-checking code generates for this particular file.
+   */
+  sourceManager: TemplateSourceManager;
+
+  /**
+   * Whether any of the type-checking code for this file required the use of inline blocks in other
+   * files. It's currently not possible to reuse type-checking operations that required inline
+   * blocks.
+   */
+  hasInlineBlocks: boolean;
+}
+
+/**
+ * Template type-checking context for a particular input `ts.SourceFile` which hasn't yet been
+ * rendered into a `ts.SourceFile` to check.
+ */
+interface PendingTypeCheckingForFile extends BaseTypeCheckingForFile {
+  type: 'pending';
+
+  /**
+   * `TypeCheckFile` into which type-checking code can be written.
+   */
+  file: TypeCheckFile;
+
+  /**
+   * Schema checker in use during generation of type-checking code.
+   *
+   * Generation produces DOM schema checking diagnostics as a side-effect, which are recorded here.
+   */
+  domSchemaChecker: DomSchemaChecker;
+
+  /**
+   * Diagnostic recorder in use during generation of type-checking code.
+   *
+   * Generation produces out-of-band diagnostics as a side-effect, which are recorded here.
+   */
+  oobDiagnosticRecorder: OutOfBandDiagnosticRecorder;
+}
+
+/**
+ * Template type-checking context for a particular input `ts.SourceFile` which has been "finalized".
+ * Type-checking code for this file has been rendered into a `ts.SourceFile` of its own, and any
+ * diagnostics gathered during generation have been recorded.
+ *
+ * This context can be inherited from a previous compilation into the subsequent incremental
+ * compilation, and the type-checking code for a particular file re-used.
+ */
+export interface FinalTypeCheckingForFile extends BaseTypeCheckingForFile {
+  type: 'final';
+
+  /**
+   * `ts.SourceFile` which contains code generated to type-check the input file.
+   */
+  file: ts.SourceFile;
+
+  /**
+   * Diagnostics gathered during the generation of type-checking code for the input file.
+   *
+   * Some diagnostics, like DOM schema errors, are produced during the generation of type-checking
+   * code, not when that code is checked by TypeScript afterwards. These diagnostics are recorded
+   * here, so that if the generated `ts.SourceFile` is reused in a future compilation, the
+   * generation diagnostics can be re-shown as well.
+   */
+  diagnostics: ReadonlyArray<ts.Diagnostic>;
 }

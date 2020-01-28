@@ -10,6 +10,7 @@ import * as ts from 'typescript';
 
 import {AbsoluteFsPath, absoluteFrom} from '../../file_system';
 import {ClassRecord, TraitCompiler} from '../../transform';
+import {FinalTypeCheckingForFile, TypeCheckContext} from '../../typecheck';
 import {IncrementalBuild} from '../api';
 
 import {FileDependencyGraph} from './dependency_tracking';
@@ -17,7 +18,7 @@ import {FileDependencyGraph} from './dependency_tracking';
 /**
  * Drives an incremental build, by tracking changes and determining which files need to be emitted.
  */
-export class IncrementalDriver implements IncrementalBuild<ClassRecord> {
+export class IncrementalDriver implements IncrementalBuild<ClassRecord, FinalTypeCheckingForFile> {
   /**
    * State of the current build.
    *
@@ -180,18 +181,36 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord> {
       }
     }
 
+    // Extract the type-checking context from the last good build. This is the one which will be
+    // used for incremental type-checking in this build.
+    let priorTypeCheckingContext: TypeCheckContext|null = null;
+    if (this.state.lastGood !== null) {
+      priorTypeCheckingContext = this.state.lastGood.typeCheckingContext;
+    }
+
     // Update the state to an `AnalyzedBuildState`.
     this.state = {
       kind: BuildStateKind.Analyzed,
       pendingEmit,
+      priorTypeCheckingContext,
 
       // Since this compilation was successfully analyzed, update the "last good" artifacts to the
       // ones from the current compilation.
       lastGood: {
         depGraph: this.depGraph,
-        traitCompiler: traitCompiler,
+        traitCompiler,
+        // No type-checking context from this build is yet available.
+        typeCheckingContext: null,
       }
     };
+  }
+
+  recordSuccessfulTypeChecking(context: TypeCheckContext): void {
+    if (this.state.kind !== BuildStateKind.Analyzed) {
+      throw new Error(`AssertionError: buidl reported as type-checked before analyzed`);
+    }
+
+    this.state.lastGood.typeCheckingContext = context;
   }
 
   recordSuccessfulEmit(sf: ts.SourceFile): void { this.state.pendingEmit.delete(sf.fileName); }
@@ -208,6 +227,21 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord> {
     } else {
       // Prior work might exist, and if it does then it's usable!
       return this.state.lastGood.traitCompiler.recordsFor(sf);
+    }
+  }
+
+  priorTypeCheckingFor(sf: ts.SourceFile): FinalTypeCheckingForFile|null {
+    if (this.state.kind !== BuildStateKind.Analyzed) {
+      return null;
+    } else if (this.state.priorTypeCheckingContext === null) {
+      return null;
+    } else if (this.logicalChanges === null || this.logicalChanges.has(sf.fileName)) {
+      // Prior type-checking might exist, but would be stale as the file in question has logically
+      // changed.
+      return null;
+    } else {
+      // Prior type-checking might exist, and if it does then it's usable!
+      return this.state.priorTypeCheckingContext.recordFor(sf);
     }
   }
 }
@@ -249,21 +283,28 @@ interface BaseBuildState {
   /**
    * Specific aspects of the last compilation which successfully completed analysis, if any.
    */
-  lastGood: {
-    /**
-     * The dependency graph from the last successfully analyzed build.
-     *
-     * This is used to determine the logical impact of physical file changes.
-     */
-    depGraph: FileDependencyGraph;
+  lastGood: LastGoodBuildState|null;
+}
 
-    /**
-     * The `TraitCompiler` from the last successfully analyzed build.
-     *
-     * This is used to extract "prior work" which might be reusable in this compilation.
-     */
-    traitCompiler: TraitCompiler;
-  }|null;
+interface LastGoodBuildState {
+  /**
+   * The dependency graph from the last successfully analyzed build.
+   *
+   * This is used to determine the logical impact of physical file changes.
+   */
+  depGraph: FileDependencyGraph;
+
+  /**
+   * The `TraitCompiler` from the last successfully analyzed build.
+   *
+   * This is used to extract "prior work" which might be reusable in this compilation.
+   */
+  traitCompiler: TraitCompiler;
+
+  /**
+   * The template type-checking `Context` from the last successfully analyzed build.
+   */
+  typeCheckingContext: TypeCheckContext|null;
 }
 
 /**
@@ -302,6 +343,10 @@ interface AnalyzedBuildState extends BaseBuildState {
    * analyzed build.
    */
   pendingEmit: Set<string>;
+
+  priorTypeCheckingContext: TypeCheckContext|null;
+
+  lastGood: LastGoodBuildState;
 }
 
 function tsOnlyFiles(program: ts.Program): ReadonlyArray<ts.SourceFile> {

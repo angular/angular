@@ -277,6 +277,11 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
       return null;
     }
 
+    // Modules which contributed to the compilation scope of this module.
+    const compilationModules = new Set<ClassDeclaration>([ngModule.ref.node]);
+    // Modules which contributed to the export scope of this module.
+    const exportedModules = new Set<ClassDeclaration>([ngModule.ref.node]);
+
     // Errors produced during computation of the scope are recorded here. At the end, if this array
     // isn't empty then `undefined` will be cached and returned to indicate this scope is invalid.
     const diagnostics: ts.Diagnostic[] = [];
@@ -351,6 +356,9 @@ Either remove it from the NgModule's declarations, or add an appropriate Angular
       for (const pipe of importScope.exported.pipes) {
         compilationPipes.set(pipe.ref.node, pipe);
       }
+      for (const importedModule of importScope.exported.ngModules) {
+        compilationModules.add(importedModule);
+      }
     }
 
     // 3) process exports.
@@ -375,6 +383,9 @@ Either remove it from the NgModule's declarations, or add an appropriate Angular
         for (const pipe of importScope.exported.pipes) {
           exportPipes.set(pipe.ref.node, pipe);
         }
+        for (const exportedModule of importScope.exported.ngModules) {
+          exportedModules.add(exportedModule);
+        }
       } else if (compilationDirectives.has(decl.node)) {
         // decl is a directive or component in the compilation scope of this NgModule.
         const directive = compilationDirectives.get(decl.node) !;
@@ -398,6 +409,7 @@ Either remove it from the NgModule's declarations, or add an appropriate Angular
     const exported = {
       directives: Array.from(exportDirectives.values()),
       pipes: Array.from(exportPipes.values()),
+      ngModules: Array.from(exportedModules),
     };
 
     const reexports = this.getReexports(ngModule, ref, declared, exported, diagnostics);
@@ -420,6 +432,7 @@ Either remove it from the NgModule's declarations, or add an appropriate Angular
       compilation: {
         directives: Array.from(compilationDirectives.values()),
         pipes: Array.from(compilationPipes.values()),
+        ngModules: Array.from(compilationModules),
       },
       exported,
       reexports,
