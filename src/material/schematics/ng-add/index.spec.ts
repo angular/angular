@@ -387,4 +387,27 @@ describe('ng-add schematic', () => {
       expect(buffer.toString()).toContain('<body class="one mat-typography two">');
     });
   });
+
+  it('should not add the global typography class if the user did not opt into it', async () => {
+    appTree.overwrite('projects/material/src/index.html', `
+      <html>
+        <head></head>
+        <body class="one two"></body>
+      </html>
+    `);
+
+    const tree = await runner.runSchematicAsync('ng-add-setup-project', {
+      typography: false
+    }, appTree).toPromise();
+
+    const workspace = getWorkspace(tree);
+    const project = getProjectFromWorkspace(workspace);
+    const indexFiles = getProjectIndexFiles(project);
+    expect(indexFiles.length).toBe(1);
+
+    indexFiles.forEach(indexPath => {
+      const buffer = tree.read(indexPath)!;
+      expect(buffer.toString()).toContain('<body class="one two">');
+    });
+  });
 });

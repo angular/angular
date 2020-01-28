@@ -57,7 +57,9 @@ export function addTypographyClass(options: Schema): (host: Tree) => Tree {
       throw new SchematicsException('No project index HTML file could be found.');
     }
 
-    projectIndexFiles.forEach(indexFilePath => addBodyClass(host, indexFilePath, 'mat-typography'));
+    if (options.typography) {
+      projectIndexFiles.forEach(path => addBodyClass(host, path, 'mat-typography'));
+    }
 
     return host;
   };
