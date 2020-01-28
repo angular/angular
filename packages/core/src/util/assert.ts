@@ -18,6 +18,12 @@ export function assertNumber(actual: any, msg: string) {
   }
 }
 
+export function assertNumberInRange(actual: any, minInclusive: number, maxInclusive: number) {
+  assertNumber(actual, 'Expected a number');
+  assertLessThanOrEqual(actual, maxInclusive, 'Expected number to be less than or equal to');
+  assertGreaterThanOrEqual(actual, minInclusive, 'Expected number to be greater than or equal to');
+}
+
 export function assertString(actual: any, msg: string) {
   if (!(typeof actual === 'string')) {
     throwError(msg, actual === null ? 'null' : typeof actual, 'string', '===');

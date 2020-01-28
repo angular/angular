@@ -346,8 +346,10 @@ export interface TNode {
    */
   mergedAttrs: TAttributes|null;
 
+  // TODO(misko): pre discussion with Kara, it seems that we don't need `directives` since the same
+  // information is already present in the TData. Maybe worth refactoring.
   /**
-   * Stores the directives associated with the current TNode (along with style cursor.)
+   * Stores the directive defs matched on the current TNode (along with style cursor.)
    */
   directives: TDirectiveDefs|null;
 
@@ -509,7 +511,7 @@ export interface TNode {
    * @Directive({
    *   host: {
    *     style: 'color: lowest; ',
-   *     '[class.color]': 'exp' // ɵɵstyleProp('color', ctx.exp);
+   *     '[styles.color]': 'exp' // ɵɵstyleProp('color', ctx.exp);
    *   }
    * })
    * ```
@@ -819,10 +821,16 @@ export function hasStyleInput(tNode: TNode) {
 export const enum DirectiveDefs {
   /// Location where the STYLING_CURSOR is stored.
   STYLING_CURSOR = 0,
-  // Initial value for the `STYLING_CURSOR`
-  INITIAL_STYLING_CURSOR_VALUE = 0,
   /// Header offset from which iterating over `DirectiveDefs` should start.
   HEADER_OFFSET = 1
+}
+
+/**
+ * Constant enums for initial values in the `TDirectiveDefs`
+ */
+export const enum DirectiveDefsValues {
+  // Initial value for the `STYLING_CURSOR`
+  INITIAL_STYLING_CURSOR_VALUE = 0,
 }
 
 /**

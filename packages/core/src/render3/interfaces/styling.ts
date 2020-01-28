@@ -7,7 +7,7 @@
 */
 
 import {ArrayMap} from '../../util/array_utils';
-import {assertNumber} from '../../util/assert';
+import {assertNumber, assertNumberInRange} from '../../util/assert';
 
 /**
  * Value stored in the `TData` which is needed to re-concatenate the styling.
@@ -33,14 +33,15 @@ export type TStylingKeyPrimitive = string | null | false;
  * Store the static values for the styling binding.
  *
  * The `TStylingStatic` is just `ArrayMap` where key `""` (stored at location 0) contains the
- * `TStylingKey` (stored at location 1). Another words this wraps the `TStylingKey` such that the
+ * `TStylingKey` (stored at location 1). In other words this wraps the `TStylingKey` such that the
  * `""` contains the wrapped value.
  *
  * When instructions are resolving styling they may need to look forward or backwards in the linked
- * list to resolve the value. Into that linked list we need to insert static values as well. However
- * the list only has space one item per styling instruction. For this reason we store the static
- * values here as part of the `TStylingKey`. This means that the resolution function when looking
- * for a value needs to first look at the binding value, and than at `TStylingKey` (if it exists).
+ * list to resolve the value. For this reason we have to make sure that he linked list also contains
+ * the static values. However the list only has space for one item per styling instruction. For this
+ * reason we store the static values here as part of the `TStylingKey`. This means that the
+ * resolution function when looking for a value needs to first look at the binding value, and than
+ * at `TStylingKey` (if it exists).
  *
  * Imagine we have:
  *
@@ -156,6 +157,8 @@ export const enum StylingRange {
 
 
 export function toTStylingRange(prev: number, next: number): TStylingRange {
+  ngDevMode && assertNumberInRange(prev, 0, StylingRange.UNSIGNED_MASK);
+  ngDevMode && assertNumberInRange(next, 0, StylingRange.UNSIGNED_MASK);
   return (prev << StylingRange.PREV_SHIFT | next << StylingRange.NEXT_SHIFT) as any;
 }
 
