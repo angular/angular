@@ -9,7 +9,7 @@ For a sample app using the app-wide singleton service that this page describes, 
 
 There are two ways to make a service a singleton in Angular:
 
-* Declare `root` for the value of the `@Injectable()` `providedIn` property
+* Set the `providedIn` property of the `@Injectable()` to `"root"`.
 * Include the service in the `AppModule` or in a module that is only imported by the `AppModule`
 
 
