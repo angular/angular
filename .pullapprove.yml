@@ -179,14 +179,10 @@ groups:
       - >
         contains_any_globs(files, [
           'packages/compiler-cli/src/ngtools/**',
-          'aio/content/guide/cli-builder.md',
-          'aio/content/guide/ivy.md',
-          'aio/content/guide/web-worker.md'
           ])
     reviewers:
       users:
         - filipesilva
-        - mgechev
       teams:
         - ~framework-global-approvers
         - ~framework-global-approvers-for-docs-only-changes
@@ -584,7 +580,6 @@ groups:
         - kyliau
         - IgorMinar
         - josephperrott
-        - mgechev
       teams:
         - ~framework-global-approvers
         - ~framework-global-approvers-for-docs-only-changes
@@ -777,7 +772,7 @@ groups:
 
 
   # =========================================================
-  #  Docs: CLI Integration
+  #  Docs: CLI
   # =========================================================
   docs-libraries:
     conditions:
@@ -787,9 +782,12 @@ groups:
             'aio/content/examples/setup/**',
             'aio/content/guide/build.md',
             'aio/content/images/guide/build/**',
+            'aio/content/guide/cli-builder.md',
             'aio/content/guide/deployment.md',
             'aio/content/images/guide/deployment/**',
             'aio/content/guide/file-structure.md',
+            'aio/content/guide/ivy.md',
+            'aio/content/guide/web-worker.md'
             'aio/content/guide/workspace-config.md',
           ])
     reviewers:
