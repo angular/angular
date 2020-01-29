@@ -339,7 +339,10 @@ export function incrementBindingIndex(count: number): number {
  * Bindings inside the host template are 0 index. But because we don't know ahead of time
  * how many host bindings we have we can't pre-compute them. For this reason they are all
  * 0 index and we just shift the root so that they match next available location in the LView.
- * @param bindingRootIndex
+ *
+ * @param bindingRootIndex Root index for `hostBindings`
+ * @param currentDirectiveIndex `TData[currentDirectiveIndex]` will point to the current directive
+ *        whose `hostBindings` are being processed.
  */
 export function setBindingRootForHostBindings(
     bindingRootIndex: number, currentDirectiveIndex: number) {

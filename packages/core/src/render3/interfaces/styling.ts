@@ -128,7 +128,7 @@ export const enum StylingRange {
   /// Number of bits to shift for the previous pointer
   PREV_SHIFT = 17,
   /// Previous pointer mask.
-  PREV_MASK = 0xFFFC0000,
+  PREV_MASK = 0xFFFE0000,
 
   /// Number of bits to shift for the next pointer
   NEXT_SHIFT = 2,
@@ -176,7 +176,7 @@ export function getTStylingRangePrevDuplicate(tStylingRange: TStylingRange): boo
 export function setTStylingRangePrev(
     tStylingRange: TStylingRange, previous: number): TStylingRange {
   ngDevMode && assertNumber(tStylingRange, 'expected number');
-  ngDevMode && assertNumber(previous, 'expected number');
+  ngDevMode && assertNumberInRange(previous, 0, StylingRange.UNSIGNED_MASK);
   return (
       ((tStylingRange as any as number) & ~StylingRange.PREV_MASK) |
       (previous << StylingRange.PREV_SHIFT)) as any;
@@ -194,7 +194,7 @@ export function getTStylingRangeNext(tStylingRange: TStylingRange): number {
 
 export function setTStylingRangeNext(tStylingRange: TStylingRange, next: number): TStylingRange {
   ngDevMode && assertNumber(tStylingRange, 'expected number');
-  ngDevMode && assertNumber(next, 'expected number');
+  ngDevMode && assertNumberInRange(next, 0, StylingRange.UNSIGNED_MASK);
   return (
       ((tStylingRange as any as number) & ~StylingRange.NEXT_MASK) |  //
       next << StylingRange.NEXT_SHIFT) as any;

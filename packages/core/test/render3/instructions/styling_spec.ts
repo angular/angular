@@ -10,7 +10,7 @@ import {DirectiveDef} from '@angular/core/src/render3';
 import {ɵɵdefineDirective} from '@angular/core/src/render3/definition';
 import {classStringParser, initializeStylingStaticArrayMap, styleStringParser, toStylingArrayMap, ɵɵclassProp, ɵɵstyleMap, ɵɵstyleProp, ɵɵstyleSanitizer} from '@angular/core/src/render3/instructions/styling';
 import {AttributeMarker, TAttributes, TDirectiveDefs} from '@angular/core/src/render3/interfaces/node';
-import {StylingRange, TStylingKey, TStylingRange, getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate, toTStylingRange} from '@angular/core/src/render3/interfaces/styling';
+import {StylingRange, TStylingKey, TStylingRange, getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate, setTStylingRangeNext, setTStylingRangePrev, toTStylingRange} from '@angular/core/src/render3/interfaces/styling';
 import {HEADER_OFFSET, TVIEW} from '@angular/core/src/render3/interfaces/view';
 import {getLView, leaveView, setBindingRootForHostBindings} from '@angular/core/src/render3/state';
 import {getNativeByIndex} from '@angular/core/src/render3/util/view_utils';
@@ -498,6 +498,20 @@ describe('styling', () => {
       const range = toTStylingRange(MAX_VALUE, MAX_VALUE);
       expect(getTStylingRangePrev(range)).toEqual(MAX_VALUE);
       expect(getTStylingRangeNext(range)).toEqual(MAX_VALUE);
+    });
+
+    it('should correctly increment', () => {
+      let range = toTStylingRange(0, 0);
+      for (let i = 0; i <= MAX_VALUE; i++) {
+        range = setTStylingRangeNext(range, i);
+        range = setTStylingRangePrev(range, i);
+        expect(getTStylingRangeNext(range)).toEqual(i);
+        expect(getTStylingRangePrev(range)).toEqual(i);
+        if (i == 10) {
+          // Skip the boring stuff in the middle.
+          i = MAX_VALUE - 10;
+        }
+      }
     });
   });
 });
