@@ -38,9 +38,9 @@
 
 // Imports
 const util = require('util');
-const https = require('https');
 const child_process = require('child_process');
 const exec = util.promisify(child_process.exec);
+const getRefsAndShasForTarget = require('./utils/get-refs-and-shas-for-target');
 
 // CLI validation
 if (process.argv.length != 4) {
@@ -59,51 +59,42 @@ _main(...process.argv.slice(2)).catch(err => {
 
 // Helpers
 async function _main(repository, prNumber) {
-  console.log(`Getting refs and SHAs for PR ${prNumber} on ${repository}.`);
-  const target = await determineTargetRefAndSha(repository, prNumber);
-  console.log(`Fetching target branch: ${target.baseRef}.`);
-  await exec(`git fetch origin ${target.baseRef}`);
 
-  // The sha of the latest commit on the target branch.
-  const {stdout: shaOfTargetBranchLatest} = await exec(`git rev-parse origin/${target.baseRef}`);
-  // The sha of the latest commit on the PR.
-  const {stdout: shaOfPRLatest} = await exec(`git rev-parse HEAD`);
-  // The first common SHA in the history of the target branch and the latest commit in the PR.
-  const {stdout: commonAncestorSha} =
-      await exec(`git merge-base origin/${target.baseRef} ${shaOfPRLatest}`);
+  const target = await getRefsAndShasForTarget(prNumber);
 
   // Log known refs and shas
   console.log(`--------------------------------`);
-  console.log(`    Target Branch:                   ${target.baseRef}`);
-  console.log(`    Latest Commit for Target Branch: ${shaOfTargetBranchLatest.trim()}`);
-  console.log(`    Latest Commit for PR:            ${shaOfPRLatest.trim()}`);
-  console.log(`    First Common Ancestor SHA:       ${commonAncestorSha.trim()}`);
+  console.log(`    Target Branch:                   ${target.base.ref}`);
+  console.log(`    Latest Commit for Target Branch: ${target.latestShaOfTargetBranch}`);
+  console.log(`    Latest Commit for PR:            ${target.latestShaOfPrBranch}`);
+  console.log(`    First Common Ancestor SHA:       ${target.commonAncestorSha}`);
   console.log(`--------------------------------`);
   console.log();
 
 
+
   // Get the count of commits between the latest commit from origin and the common ancestor SHA.
   const {stdout: commitCount} =
-      await exec(`git rev-list --count origin/${target.baseRef}...${commonAncestorSha.trim()}`);
+      await exec(`git rev-list --count origin/${target.base.ref}...${target.commonAncestorSha}`);
   console.log(`Checking ${commitCount.trim()} commits for changes in the CircleCI config file.`);
 
   // Check if the files changed between the latest commit from origin and the common ancestor SHA
   // includes the CircleCI config.
   const {stdout: circleCIConfigChanged} = await exec(
-      `git diff --name-only origin/${target.baseRef} ${commonAncestorSha.trim()} -- .circleci/config.yml`);
+      `git diff --name-only origin/${target.base.ref} ${target.commonAncestorSha} -- .circleci/config.yml`);
 
   if (!!circleCIConfigChanged) {
     throw Error(`
-        CircleCI config on ${target.baseRef} has been modified since commit ${commonAncestorSha.slice(0, 7)},
+        CircleCI config on ${target.base.ref} has been modified since commit ${target.commonAncestorSha.slice(0, 7)},
         which this PR is based on.
 
-        Please rebase the PR on ${target.baseRef} after fetching from upstream.
+        Please rebase the PR on ${target.base.ref} after fetching from upstream.
 
         Rebase instructions for PR Author, please run the following commands:
 
-          git fetch upstream ${target.baseRef};
-          git checkout ${target.headRef};
-          git rebase upstream/${target.baseRef};
+          git fetch upstream ${target.base.ref};
+          git checkout ${target.head.ref};
+          git rebase upstream/${target.base.ref};
           git push --force-with-lease;
         `);
   } else {
@@ -112,61 +103,8 @@ async function _main(repository, prNumber) {
   console.log();
 
   // Rebase the PR.
-  console.log(`Rebasing current branch on ${target.baseRef}.`);
-  await exec(`git rebase origin/${target.baseRef}`);
+  console.log(`Rebasing current branch on ${target.base.ref}.`);
+  await exec(`git rebase origin/${target.base.ref}`);
   console.log('Rebase successful.');
-
 }
 
-async function requestDataFromGithub(url) {
-  // GitHub requires a user agent: https://developer.github.com/v3/#user-agent-required
-  const options = {headers: {'User-Agent': 'angular'}};
-
-  return new Promise((resolve, reject) => {
-    https
-        .get(
-            url, options,
-            (res) => {
-              const {statusCode} = res;
-              const contentType = res.headers['content-type'];
-              let rawData = '';
-
-              res.on('data', (chunk) => { rawData += chunk; });
-              res.on('end', () => {
-                let error;
-                if (statusCode !== 200) {
-                  error = new Error(
-                      `Request Failed.\nStatus Code: ${statusCode}.\nResponse: ${rawData}`);
-                } else if (!/^application\/json/.test(contentType)) {
-                  error = new Error(
-                      'Invalid content-type.\n' +
-                      `Expected application/json but received ${contentType}`);
-                }
-
-                if (error) {
-                  reject(error);
-                  return;
-                }
-
-                try {
-                  resolve(JSON.parse(rawData));
-                } catch (e) {
-                  reject(e);
-                }
-              });
-            })
-        .on('error', (e) => { reject(e); });
-  });
-}
-
-async function determineTargetRefAndSha(repository, prNumber) {
-  const pullsUrl = `https://api.github.com/repos/${repository}/pulls/${prNumber}`;
-
-  const result = await requestDataFromGithub(pullsUrl);
-  return {
-    baseRef: result.base.ref,
-    baseSha: result.base.sha,
-    headRef: result.head.ref,
-    headSha: result.head.sha,
-  };
-}
