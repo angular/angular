@@ -93,7 +93,7 @@ describe('host bindings', () => {
        *   - That executes a **different template**, that has host bindings
        *     - this executes `setHostBindings`
        *     - Inside of `setHostBindings` we are currently updating the selected index **global
-       *       state** via `setActiveHostElement`.
+       *       state** via `setSelectedIndex`.
        * 3. We attempt to update the next property in the **original template**.
        *  - But the selected index has been altered, and we get errors.
        */

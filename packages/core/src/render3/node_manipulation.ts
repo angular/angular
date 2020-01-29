@@ -915,14 +915,15 @@ function applyContainer(
  * @param isClassBased `true` if it should be written to `class` (`false` to write to `style`)
  * @param rNode The Node to write to.
  * @param prop Property to write to. This would be the class/style name.
- * @param value Value to wiret. If `null`/`undefined`/`false` this is consider a remove (set/add
- * otherwise).
+ * @param value Value to write. If `null`/`undefined`/`false` this is considered a remove (set/add
+ *        otherwise).
  */
 export function applyStyling(
     renderer: Renderer3, isClassBased: boolean, rNode: RElement, prop: string, value: any) {
   const isProcedural = isProceduralRenderer(renderer);
   if (isClassBased) {
-    if (!value) {  // We actually want JS falseness here
+    // We actually want JS true/false here because any truthy value should add the class
+    if (!value) {
       ngDevMode && ngDevMode.rendererRemoveClass++;
       if (isProcedural) {
         (renderer as Renderer2).removeClass(rNode, prop);
@@ -942,7 +943,7 @@ export function applyStyling(
     // TODO(misko): Can't import RendererStyleFlags2.DashCase as it causes imports to be resolved in
     // different order which causes failures. Using direct constant as workaround for now.
     const flags = prop.indexOf('-') == -1 ? undefined : 2 /* RendererStyleFlags2.DashCase */;
-    if (value === null || value === undefined) {
+    if (value == null /** || value === undefined */) {
       ngDevMode && ngDevMode.rendererRemoveStyle++;
       if (isProcedural) {
         (renderer as Renderer2).removeStyle(rNode, prop, flags);

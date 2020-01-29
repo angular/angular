@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ArrayMap} from '../../util/array_utils';
+import {KeyValueArray} from '../../util/array_utils';
 import {TStylingRange} from '../interfaces/styling';
 
 import {DirectiveDef} from './definition';
@@ -498,7 +498,7 @@ export interface TNode {
   styles: string|null;
 
   /**
-   * An `ArrayMap` version of residual `styles`.
+   * A `KeyValueArray` version of residual `styles`.
    *
    * When there are styling instructions than each instruction stores the static styling
    * which is of lower priority than itself. This means that there may be a higher priority styling
@@ -522,9 +522,9 @@ export interface TNode {
    *
    * - `undefined': not initialized.
    * - `null`: initialized but `styles` is `null`
-   * - `ArrayMap`: parsed version of `styles`.
+   * - `KeyValueArray`: parsed version of `styles`.
    */
-  residualStyles: ArrayMap<any>|undefined|null;
+  residualStyles: KeyValueArray<any>|undefined|null;
 
   /**
    * A collection of all class static values for an element.
@@ -536,15 +536,15 @@ export interface TNode {
   classes: string|null;
 
   /**
-   * An `ArrayMap` version of residual `classes`.
+   * A `KeyValueArray` version of residual `classes`.
    *
    * Same as `TNode.residualStyles` but for classes.
    *
    * - `undefined': not initialized.
    * - `null`: initialized but `classes` is `null`
-   * - `ArrayMap`: parsed version of `S`.
+   * - `KeyValueArray`: parsed version of `classes`.
    */
-  residualClasses: ArrayMap<any>|undefined|null;
+  residualClasses: KeyValueArray<any>|undefined|null;
 
   /**
    * Stores the head/tail index of the class bindings.

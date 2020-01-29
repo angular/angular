@@ -23,7 +23,7 @@ import {PlayerHandler} from './interfaces/player';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3, isProceduralRenderer} from './interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, RootContext, RootContextFlags, TVIEW, TViewType} from './interfaces/view';
 import {writeDirectClass, writeDirectStyle} from './node_manipulation';
-import {enterView, getPreviousOrParentTNode, leaveView, setActiveHostElement} from './state';
+import {enterView, getPreviousOrParentTNode, leaveView, setSelectedIndex} from './state';
 import {computeStaticStyling} from './styling/static_styling';
 import {setUpAttributes} from './util/attrs_utils';
 import {publishDefaultGlobalUtils} from './util/global_utils';
@@ -239,7 +239,7 @@ export function createRootComponent<T>(
   if (tView.firstCreatePass &&
       (componentDef.hostBindings !== null || componentDef.hostAttrs !== null)) {
     const elementIndex = rootTNode.index - HEADER_OFFSET;
-    setActiveHostElement(elementIndex);
+    setSelectedIndex(elementIndex);
 
     const rootTView = rootLView[TVIEW];
     addHostBindingsToExpandoInstructions(rootTView, componentDef);

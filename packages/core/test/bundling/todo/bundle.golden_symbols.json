@@ -345,15 +345,6 @@
     "name": "arrayInsert2"
   },
   {
-    "name": "arrayMapGet"
-  },
-  {
-    "name": "arrayMapIndexOf"
-  },
-  {
-    "name": "arrayMapSet"
-  },
-  {
     "name": "assertTemplate"
   },
   {
@@ -394,9 +385,6 @@
   },
   {
     "name": "cleanUpView"
-  },
-  {
-    "name": "clearActiveHostElement"
   },
   {
     "name": "collectNativeNodes"
@@ -903,6 +891,15 @@
     "name": "iterateListLike"
   },
   {
+    "name": "keyValueArrayGet"
+  },
+  {
+    "name": "keyValueArrayIndexOf"
+  },
+  {
+    "name": "keyValueArraySet"
+  },
+  {
     "name": "leaveDI"
   },
   {
@@ -1080,9 +1077,6 @@
     "name": "selectIndexInternal"
   },
   {
-    "name": "setActiveHostElement"
-  },
-  {
     "name": "setBindingIndex"
   },
   {
@@ -1155,7 +1149,7 @@
     "name": "stringifyForError"
   },
   {
-    "name": "stylingPropertyFirstUpdatePass"
+    "name": "stylingFirstUpdatePass"
   },
   {
     "name": "syncViewWithBlueprint"
