@@ -39,6 +39,15 @@
   fill: #2a76e4;
 }
 
+#app-angular-version {
+  position: absolute;
+  top: 20px;
+  right: 10px;
+  font-size: 11px;
+  font-weight: bold;
+  color: #5128a5;
+}
+
 /deep/ .mat-tab-body-wrapper {
   height: calc(100% - 49px); /* 100% - header */
 }

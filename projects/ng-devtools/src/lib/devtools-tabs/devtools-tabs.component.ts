@@ -10,6 +10,7 @@ import { ComponentExplorerComponent } from './component-explorer/component-explo
 })
 export class DevToolsTabsComponent {
   @Input() messageBus: MessageBus<Events>;
+  @Input() angularVersion: string | undefined = undefined;
   @ViewChild(MatTabGroup) tabGroup: MatTabGroup;
   @ViewChild(ComponentExplorerComponent) componentExplorer: ComponentExplorerComponent;
 

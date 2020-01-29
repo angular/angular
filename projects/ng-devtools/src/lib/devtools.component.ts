@@ -9,6 +9,7 @@ import { interval } from 'rxjs';
 })
 export class DevToolsComponent implements OnInit, OnDestroy {
   angularExists: boolean | null = null;
+  angularVersion: string | undefined = undefined;
   @Input() messageBus: MessageBus<Events>;
 
   private _interval$ = interval(500).subscribe(() => this.messageBus.emit('queryNgAvailability'));
@@ -18,6 +19,7 @@ export class DevToolsComponent implements OnInit, OnDestroy {
 
     this.messageBus.once('ngAvailability', ({ version }) => {
       this.angularExists = !!version;
+      this.angularVersion = version;
       this._interval$.unsubscribe();
     });
   }

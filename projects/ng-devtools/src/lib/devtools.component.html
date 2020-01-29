@@ -1,6 +1,6 @@
 <ng-container *ngIf="angularExists === true; else errorOrLoad">
   <div class="devtools-wrapper noselect">
-    <ng-devtools-tabs [messageBus]="messageBus"></ng-devtools-tabs>
+    <ng-devtools-tabs [messageBus]="messageBus" [angularVersion]="angularVersion"></ng-devtools-tabs>
   </div>
 </ng-container>
 <ng-template #errorOrLoad>
