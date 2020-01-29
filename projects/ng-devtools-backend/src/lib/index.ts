@@ -11,7 +11,7 @@ import {
 import { onChangeDetection } from './change-detection-tracker';
 import { start as startProfiling, stop as stopProfiling } from './recording';
 
-const getAngularVersion = () => {
+const getAngularVersion = (): string | null | boolean => {
   const el = document.querySelector('[ng-version]');
   if (!el) {
     return false;
@@ -19,7 +19,7 @@ const getAngularVersion = () => {
   return el.getAttribute('ng-version');
 };
 
-const checkForAngular = (messageBus: MessageBus<Events>, attempt = 0) => {
+const checkForAngular = (messageBus: MessageBus<Events>, attempt = 0): void => {
   const ngVersion = getAngularVersion();
   const hasAngular = !!ngVersion;
   if (hasAngular) {
@@ -35,7 +35,7 @@ const checkForAngular = (messageBus: MessageBus<Events>, attempt = 0) => {
 
 // Might be problematic if there are many directives with the same
 // name on this node which is quite unlikely.
-const serializeNodeDirectiveProperties = (node: ComponentTreeNode) => {
+const serializeNodeDirectiveProperties = (node: ComponentTreeNode): DirectivesProperties => {
   const result: DirectivesProperties = {};
   node.directives.forEach(dir => {
     result[dir.name] = {
@@ -50,7 +50,7 @@ const serializeNodeDirectiveProperties = (node: ComponentTreeNode) => {
   return result;
 };
 
-const inspector = new ComponentInspector();
+const inspector: ComponentInspector = new ComponentInspector();
 
 const startInspecting = () => inspector.startInspecting();
 const stopInspecting = () => inspector.stopInspecting();

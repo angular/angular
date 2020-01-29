@@ -10,7 +10,7 @@ const port = chrome.runtime.connect({
   name: 'content-script'
 });
 
-const handleDisconnect = () => {
+const handleDisconnect = (): void => {
   console.log('Background disconnected');
   localMessageBus.emit('shutdown');
   localMessageBus.destroy();
@@ -23,7 +23,7 @@ port.onDisconnect.addListener(handleDisconnect);
 const localMessageBus = new SamePageMessageBus('angular-devtools-content-script', 'angular-devtools-backend');
 const chromeMessageBus = new ChromeMessageBus(port);
 
-const handshakeWithBackend = () => {
+const handshakeWithBackend = (): void => {
   console.log('Sending init to backend');
   localMessageBus.emit('handshake');
 };

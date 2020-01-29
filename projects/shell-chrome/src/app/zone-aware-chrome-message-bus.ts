@@ -9,13 +9,13 @@ export class ZoneAwareChromeMessageBus extends MessageBus<Events> {
     this._bus = new ChromeMessageBus(port);
   }
 
-  on<E extends keyof Events>(topic: E, cb: Events[E]) {
+  on<E extends keyof Events>(topic: E, cb: Events[E]): void {
     this._bus.on(topic, function() {
       this._ngZone.run(() => cb.apply(null, arguments));
     }.bind(this));
   }
 
-  once<E extends keyof Events>(topic: E, cb: Events[E]) {
+  once<E extends keyof Events>(topic: E, cb: Events[E]): void {
     this._bus.once(topic, function() {
       this._ngZone.run(() => cb.apply(null, arguments));
     }.bind(this));

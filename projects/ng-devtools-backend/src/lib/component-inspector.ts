@@ -8,7 +8,7 @@ export class ComponentInspector {
     this.bindMethods();
   }
 
-  startInspecting() {
+  startInspecting(): void {
     window.addEventListener('mouseover', this.elementMouseOver, true);
     window.addEventListener('mouseout', this.cancelEvent, true);
     window.addEventListener('mouseenter', this.cancelEvent, true);
@@ -20,7 +20,7 @@ export class ComponentInspector {
   /**
    * Removes event listeners
    */
-  stopInspecting() {
+  stopInspecting(): void {
     window.removeEventListener('mouseover', this.elementMouseOver, true);
     window.removeEventListener('mouseout', this.cancelEvent, true);
     window.removeEventListener('mouseenter', this.cancelEvent, true);
@@ -31,7 +31,7 @@ export class ComponentInspector {
     unHighlight();
   }
 
-  elementMouseOver(e: MouseEvent) {
+  elementMouseOver(e: MouseEvent): void {
     this.cancelEvent(e);
 
     const el = e.target as HTMLElement;
@@ -45,12 +45,12 @@ export class ComponentInspector {
     }
   }
 
-  cancelEvent(e: MouseEvent) {
+  cancelEvent(e: MouseEvent): void {
     e.stopImmediatePropagation();
     e.preventDefault();
   }
 
-  bindMethods() {
+  bindMethods(): void {
     this.startInspecting = this.startInspecting.bind(this);
     this.stopInspecting = this.stopInspecting.bind(this);
     this.elementMouseOver = this.elementMouseOver.bind(this);

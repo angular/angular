@@ -15,7 +15,7 @@ export class DevToolsTabsComponent {
 
   inspectorRunning = false;
 
-  toggleInspector() {
+  toggleInspector(): void {
     this.inspectorRunning = !this.inspectorRunning;
     if (this.inspectorRunning) {
       this.messageBus.emit('inspectorStart');
@@ -25,7 +25,7 @@ export class DevToolsTabsComponent {
     }
   }
 
-  refresh() {
+  refresh(): void {
     this.componentExplorer.refresh();
   }
 }

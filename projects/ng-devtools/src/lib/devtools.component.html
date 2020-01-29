@@ -1,10 +1,18 @@
-<div class="devtools-wrapper noselect" *ngIf="angularExists === true">
-  <ng-devtools-tabs [messageBus]="messageBus"></ng-devtools-tabs>
-</div>
-<div *ngIf="angularExists === false">
-  Not an Angular app
-</div>
-<div *ngIf="angularExists === null">
-  Initializing...
-</div>
+<ng-container *ngIf="angularExists === true; else errorOrLoad">
+  <div class="devtools-wrapper noselect">
+    <ng-devtools-tabs [messageBus]="messageBus"></ng-devtools-tabs>
+  </div>
+</ng-container>
+<ng-template #errorOrLoad>
+  <ng-container *ngIf="angularExists === false; else load">
+    <div>
+      Not an Angular app
+    </div>
+  </ng-container>
+  <ng-template #load>
+    <div *ngIf="angularExists === null">
+      Initializing...
+    </div>
+  </ng-template>
+</ng-template>
 

@@ -1,4 +1,4 @@
-import { Descriptor, Node } from 'protocol';
+import { Node } from 'protocol';
 import { DataSource, CollectionViewer } from '@angular/cdk/collections';
 import { BehaviorSubject, Observable, merge, of } from 'rxjs';
 import { MatTreeFlattener } from '@angular/material/tree';
@@ -57,15 +57,15 @@ export class ComponentDataSource extends DataSource<FlatNode> {
     super();
   }
 
-  get data() {
+  get data(): FlatNode[] {
     return this._flattenedData.value;
   }
 
-  get data$() {
+  get data$(): BehaviorSubject<IndexedNode[]> {
     return this._data;
   }
 
-  update(forest: Node[]) {
+  update(forest: Node[]): void {
     if (!forest) {
       return;
     }

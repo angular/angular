@@ -1,5 +1,5 @@
 import { Component, Input, ViewChildren, QueryList, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { RecordingComponent } from './recording.component';
+import { RecordingComponent } from './recording/recording.component';
 import { MessageBus, Events, AppRecord } from 'protocol';
 
 type State = 'idle' | 'recording' | 'visualizing';

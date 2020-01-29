@@ -2,7 +2,7 @@ import { Descriptor, PropType, NestedProp } from 'protocol';
 
 const ignoreList = new Set(['__ngContext__', '__ngSimpleChanges__']);
 
-const commonTypes = {
+const commonTypes: object = {
   boolean: PropType.Boolean,
   bigint: PropType.BigInt,
   function: PropType.Function,
@@ -11,9 +11,9 @@ const commonTypes = {
   symbol: PropType.Symbol,
 };
 
-const maxLevel = 1;
+const MAX_LEVEL = 1;
 
-const getDescriptorPreview = (type: PropType, prop: any) => {
+const getDescriptorPreview = (type: PropType, prop: any): string => {
   switch (type) {
     case PropType.Array:
       return `Array(${prop.length})`;
@@ -29,7 +29,7 @@ const getDescriptorPreview = (type: PropType, prop: any) => {
     case PropType.Null:
       return 'null';
     case PropType.Number:
-      return parseInt(prop, 10);
+      return parseInt(prop, 10).toString();
     case PropType.Object:
       return Object.keys(prop).length > 0 ? '{...}' : '{}';
     case PropType.Symbol:
@@ -42,7 +42,7 @@ const getDescriptorPreview = (type: PropType, prop: any) => {
   return '';
 };
 
-const getPropType = (prop: any) => {
+const getPropType = (prop: any): PropType => {
   if (prop === undefined) {
     return PropType.Undefined;
   }
@@ -69,14 +69,14 @@ const getPropType = (prop: any) => {
   return PropType.Unknown;
 };
 
-const truncate = (str: string, max = 20) => {
+const truncate = (str: string, max = 20): string => {
   if (str.length > max) {
     return str.substr(0, max) + '...';
   }
   return str;
 };
 
-const serializeShallowProperty = (prop: any) => {
+const serializeShallowProperty = (prop: any): Descriptor => {
   const type = getPropType(prop);
   switch (type) {
     case PropType.BigInt:
@@ -131,9 +131,9 @@ export const nestedSerializer = (
   serializableInstance: any,
   nodes: NestedProp[],
   currentLevel = 0,
-  level = maxLevel
-) => {
-  const type = getPropType(serializableInstance);
+  level = MAX_LEVEL
+): Descriptor => {
+  const type: PropType = getPropType(serializableInstance);
   if (currentLevel < level) {
     return levelSerializer(
       serializableInstance,
@@ -188,7 +188,7 @@ export const levelSerializer = (
   serializableInstance: any,
   _: string | number | undefined = undefined,
   currentLevel = 0,
-  level = maxLevel,
+  level = MAX_LEVEL,
   continuation = levelSerializer
 ): Descriptor => {
   const type = getPropType(serializableInstance);
@@ -237,8 +237,8 @@ export const levelSerializer = (
   }
 };
 
-export const serializeComponentState = (instance: object, levels = maxLevel) => {
-  const result: { [key: string]: Descriptor } = {};
+export const serializeComponentState = (instance: object, levels = MAX_LEVEL): { [key: string]: Descriptor } => {
+  const result = {};
   for (const prop in instance) {
     if (instance.hasOwnProperty(prop) && !ignoreList.has(prop)) {
       result[prop] = levelSerializer(instance[prop], null, 0, levels);
@@ -247,8 +247,8 @@ export const serializeComponentState = (instance: object, levels = maxLevel) => 
   return result;
 };
 
-export const deeplySerializeSelectedProperties = (instance: any, props: NestedProp[]) => {
-  const result: { [name: string]: Descriptor } = {};
+export const deeplySerializeSelectedProperties = (instance: any, props: NestedProp[]): { [name: string]: Descriptor } => {
+  const result = {};
   Object.keys(instance).forEach(propName => {
     if (ignoreList.has(propName)) {
       return;

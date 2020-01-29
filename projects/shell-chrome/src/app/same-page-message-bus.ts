@@ -9,8 +9,8 @@ export class SamePageMessageBus extends MessageBus<Events> {
     super();
   }
 
-  onAny(cb: AnyEventCallback<Events>) {
-    const listener = (e: MessageEvent) => {
+  onAny(cb: AnyEventCallback<Events>): () => void {
+    const listener = (e: MessageEvent): void => {
       if (e.source !== window || !e.data || !e.data.topic || e.data.source !== this._destination) {
         return;
       }
@@ -24,8 +24,8 @@ export class SamePageMessageBus extends MessageBus<Events> {
     };
   }
 
-  on<E extends keyof Events>(topic: E, cb: Events[E]) {
-    const listener = (e: MessageEvent) => {
+  on<E extends keyof Events>(topic: E, cb: Events[E]): () => void {
+    const listener = (e: MessageEvent): void => {
       if (e.source !== window || !e.data || e.data.source !== this._destination || !e.data.topic) {
         return;
       }
@@ -41,8 +41,8 @@ export class SamePageMessageBus extends MessageBus<Events> {
     };
   }
 
-  once<E extends keyof Events>(topic: E, cb: Events[E]) {
-    const listener = (e: MessageEvent) => {
+  once<E extends keyof Events>(topic: E, cb: Events[E]): void {
+    const listener = (e: MessageEvent): void => {
       if (e.source !== window || !e.data || e.data.source !== this._destination || !e.data.topic) {
         return;
       }
@@ -66,7 +66,7 @@ export class SamePageMessageBus extends MessageBus<Events> {
     );
   }
 
-  destroy() {
+  destroy(): void {
     this._listeners.forEach(l => window.removeEventListener('message', l));
     this._listeners = [];
   }

@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { AppTreeLevel, ComponentEntry } from '../timeline/format-records';
 
-const min = [249, 225, 225];
-const max = [223, 113, 109];
+const MIN = [249, 225, 225];
+const MAX = [223, 113, 109];
 
 @Component({
   selector: 'ng-recording-visualizer',
@@ -34,7 +34,7 @@ export class RecordingVisualizerComponent {
     });
   }
 
-  getWidth(profile: ComponentEntry, bar: AppTreeLevel) {
+  getWidth(profile: ComponentEntry, bar: AppTreeLevel): number {
     if (bar.length === 1) {
       return 100;
     }
@@ -45,14 +45,14 @@ export class RecordingVisualizerComponent {
     return 100 * (profile.duration / rowSum);
   }
 
-  getColor(profile: ComponentEntry) {
+  getColor(profile: ComponentEntry): string {
     const abs = this._maxDuration - this._minDuration;
     const val = this._maxDuration - profile.duration;
     let ratio = val / abs;
     if (isNaN(ratio)) {
       ratio = 1;
     }
-    return `rgb(${max[0] + (min[0] - max[0]) * ratio}, ${max[1] + (min[1] - max[1]) * ratio}, ${max[2] +
-      (min[2] - max[2]) * ratio})`;
+    return `rgb(${MAX[0] + (MIN[0] - MAX[0]) * ratio}, ${MAX[1] + (MIN[1] - MAX[1]) * ratio}, ${MAX[2] +
+      (MIN[2] - MAX[2]) * ratio})`;
   }
 }

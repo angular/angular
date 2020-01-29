@@ -4,6 +4,7 @@ import { FlatTreeControl, CdkTree } from '@angular/cdk/tree';
 import { FlatNode, ComponentDataSource } from './component-data-source';
 
 import scrollIntoViewIfNeeded from 'scroll-into-view-if-needed';
+import { isChildOf, parentCollapsed } from './component-tree-utils';
 
 @Component({
   selector: 'ng-component-tree',
@@ -11,9 +12,18 @@ import scrollIntoViewIfNeeded from 'scroll-into-view-if-needed';
   styleUrls: ['./component-tree.component.css'],
 })
 export class ComponentTreeComponent {
+  @Input() set forest(forest: Node[]) {
+    this.dataSource.update(forest);
+    if (!this._initialized && forest && forest.length) {
+      this.treeControl.expandAll();
+      this._initialized = true;
+    }
+  }
+
   @Output() selectNode = new EventEmitter();
 
   @ViewChild(CdkTree) tree: CdkTree<any>;
+
 
   selectedNode: FlatNode | null = null;
   treeControl = new FlatTreeControl<FlatNode>(
@@ -28,7 +38,7 @@ export class ComponentTreeComponent {
 
   constructor(private _host: ElementRef) {}
 
-  select(node: FlatNode) {
+  select(node: FlatNode): void {
     this.selectNode.emit(node.original);
     this.selectedNode = node;
 
@@ -46,16 +56,8 @@ export class ComponentTreeComponent {
     }, 0);
   }
 
-  @Input() set forest(forest: Node[]) {
-    this.dataSource.update(forest);
-    if (!this._initialized && forest && forest.length) {
-      this.treeControl.expandAll();
-      this._initialized = true;
-    }
-  }
-
   @HostListener('document:keydown.ArrowUp', ['$event'])
-  navigateUp(evnt: KeyboardEvent) {
+  navigateUp(evnt: KeyboardEvent): void {
     if (!this.selectedNode) {
       return;
     }
@@ -78,7 +80,7 @@ export class ComponentTreeComponent {
   }
 
   @HostListener('document:keydown.ArrowDown', ['$event'])
-  navigateDown(evnt: KeyboardEvent) {
+  navigateDown(evnt: KeyboardEvent): void {
     if (!this.selectedNode) {
       return;
     }
@@ -104,7 +106,7 @@ export class ComponentTreeComponent {
   }
 
   @HostListener('document:keydown.ArrowLeft', ['$event'])
-  collapseCurrent(evnt: KeyboardEvent) {
+  collapseCurrent(evnt: KeyboardEvent): void {
     if (!this.selectedNode) {
       return;
     }
@@ -113,7 +115,7 @@ export class ComponentTreeComponent {
   }
 
   @HostListener('document:keydown.ArrowRight', ['$event'])
-  expandCurrent(evnt: KeyboardEvent) {
+  expandCurrent(evnt: KeyboardEvent): void {
     if (!this.selectedNode) {
       return;
     }
@@ -121,7 +123,7 @@ export class ComponentTreeComponent {
     evnt.preventDefault();
   }
 
-  isSelected(node: FlatNode) {
+  isSelected(node: FlatNode): boolean {
     if (!this.selectedNode) {
       return false;
     }
@@ -129,24 +131,3 @@ export class ComponentTreeComponent {
   }
 }
 
-const isChildOf = (childId: number[], parentId: number[]) => {
-  if (childId.length <= parentId.length) {
-    return false;
-  }
-  for (let i = 0; i < parentId.length; i++) {
-    if (childId[i] !== parentId[i]) {
-      return false;
-    }
-  }
-  return true;
-};
-
-const parentCollapsed = (nodeIdx: number, all: FlatNode[], treeControl: FlatTreeControl<FlatNode>) => {
-  const node = all[nodeIdx];
-  for (let i = nodeIdx - 1; i >= 0; i--) {
-    if (isChildOf(node.id, all[i].id) && !treeControl.isExpanded(all[i])) {
-      return true;
-    }
-  }
-  return false;
-};

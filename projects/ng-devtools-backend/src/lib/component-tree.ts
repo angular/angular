@@ -24,8 +24,8 @@ export interface ComponentTreeNode extends Node<DirectiveInstanceType, Component
   children: ComponentTreeNode[];
 }
 
-export const getLatestComponentState = (query: ComponentExplorerViewQuery) => {
-  let result: DirectivesProperties | undefined;
+export const getLatestComponentState = (query: ComponentExplorerViewQuery): DirectivesProperties | undefined => {
+  let result;
   if (query.selectedElement && query.expandedProperties) {
     const node = queryComponentTree(query.selectedElement);
     if (!node) {
@@ -58,7 +58,7 @@ export const getLatestComponentState = (query: ComponentExplorerViewQuery) => {
 // Here we drop properties to prepare the tree for serialization.
 // We don't need the component instance, so we just traverse the tree
 // and leave the component name.
-export const trimComponents = (roots: ComponentTreeNode[]) => {
+export const trimComponents = (roots: ComponentTreeNode[]): ComponentTreeNode[] => {
   return roots.map(node => {
     return {
       element: node.element,
@@ -73,10 +73,10 @@ export const trimComponents = (roots: ComponentTreeNode[]) => {
   });
 };
 
-export const getDirectiveForest = (root = document.documentElement) =>
+export const getDirectiveForest = (root = document.documentElement): ComponentTreeNode[] =>
   buildDirectiveForest(root, { element: '__ROOT__', component: null, directives: [], children: [] }, true);
 
-export const getComponentForest = (root = document.documentElement) =>
+export const getComponentForest = (root = document.documentElement): ComponentTreeNode[] =>
   buildDirectiveForest(root, { element: '__ROOT__', component: null, directives: [], children: [] }, false);
 
 const buildDirectiveForest = (

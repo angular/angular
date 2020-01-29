@@ -1,14 +1,11 @@
 import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { panelDevTools } from '../panel-devtools';
-import { ChromeMessageBus } from './chrome-message-bus';
 import { MessageBus, Events } from 'protocol';
 import { ZoneAwareChromeMessageBus } from './zone-aware-chrome-message-bus';
 
 @Component({
   selector: 'app-root',
-  template: `
-    <ng-devtools *ngIf="messageBus" [messageBus]="messageBus"></ng-devtools>
-  `,
+  templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
@@ -16,7 +13,7 @@ export class AppComponent implements OnInit {
 
   constructor(private _cd: ChangeDetectorRef, private _ngZone: NgZone) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     console.log('Initializing the devtools');
 
     const cleanup = () => {

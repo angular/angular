@@ -1,7 +1,8 @@
 import { Component, Input } from '@angular/core';
-import { Descriptor, MessageBus, Events, DirectiveID, NestedProp, PropType } from 'protocol';
+import { Descriptor, MessageBus, Events, DirectiveID, NestedProp } from 'protocol';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { PropertyDataSource, FlatNode } from './property-data-source';
+import { getExpandedDirectiveProperties } from './property-expanded-directive-properties';
 
 @Component({
   selector: `ng-property-view`,
@@ -29,7 +30,7 @@ export class PropertyViewComponent {
 
   hasChild = (_: number, node: FlatNode) => node.expandable;
 
-  toggle(node: FlatNode) {
+  toggle(node: FlatNode): void {
     if (this.treeControl.isExpanded(node)) {
       this.treeControl.collapse(node);
       return;
@@ -37,7 +38,7 @@ export class PropertyViewComponent {
     this.expand(node);
   }
 
-  expand(node: FlatNode) {
+  expand(node: FlatNode): void {
     const { prop } = node;
     if (!prop.descriptor.expandable) {
       return;
@@ -45,42 +46,7 @@ export class PropertyViewComponent {
     this.treeControl.expand(node);
   }
 
-  getExpandedProperties() {
+  getExpandedProperties(): NestedProp[] {
     return getExpandedDirectiveProperties(this.dataSource.data);
   }
 }
-
-const getExpandedDirectiveProperties = (data: FlatNode[]): NestedProp[] => {
-  const getChildren = (prop: Descriptor) => {
-    if ((prop.type === PropType.Object || prop.type === PropType.Array) && prop.value) {
-      return Object.keys(prop.value).map(k => {
-        return {
-          name: prop.type === PropType.Array ? parseInt(k, 10) : k,
-          children: getChildren(prop.value[k]),
-        };
-      });
-    }
-    return [];
-  };
-
-  const getExpandedProperties = (props: { [name: string]: Descriptor }) => {
-    return Object.keys(props).map(name => {
-      return {
-        name,
-        children: getChildren(props[name]),
-      };
-    });
-  };
-
-  const parents: {[name: string]: Descriptor} = {};
-
-  for (const node of data) {
-    let prop = node.prop;
-    while (prop.parent) {
-      prop = prop.parent;
-    }
-    parents[prop.name] = prop.descriptor;
-  }
-
-  return getExpandedProperties(parents);
-};
