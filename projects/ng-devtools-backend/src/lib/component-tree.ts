@@ -64,8 +64,8 @@ export const trimComponents = (roots: ComponentTreeNode[]): ComponentTreeNode[] 
       element: node.element,
       component: node.component
         ? {
-            name: node.component.name,
-          }
+          name: node.component.name,
+        }
         : null,
       directives: node.directives.map(d => ({ name: d.name })),
       children: trimComponents(node.children),
@@ -114,11 +114,15 @@ const buildDirectiveForest = (
     component: null,
     children: [],
   };
+
   if (cmp) {
     current.component = {
       instance: cmp,
-      name: getComponentName(cmp),
+      // name: getComponentName(cmp),
+      name: node.tagName.toLowerCase()
     };
+  } else {
+    current.element = node.tagName.toLowerCase();
   }
   tree.children.push(current);
   Array.from(node.children).forEach(c => buildDirectiveForest(c, current, getDirectives));
