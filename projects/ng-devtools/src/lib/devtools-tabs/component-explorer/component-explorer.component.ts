@@ -34,13 +34,8 @@ export class ComponentExplorerComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.messageBus.on('elementDirectivesProperties', (data: DirectivesProperties) => {
-      this.directivesData = data;
-    });
-    this.messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
-      this.forest = view.forest;
-      this.directivesData = view.properties;
-    });
+    this.subscribeToEvents();
+
 
     // Only one refresh per 50ms.
     let buffering = false;
@@ -55,6 +50,24 @@ export class ComponentExplorerComponent implements OnInit {
       }, 50);
     });
     this.refresh();
+  }
+
+  subscribeToEvents(): void {
+    this.subscribeToElementDirectives();
+    this.subscribeToLatestComponentExplorer();
+  }
+
+  subscribeToElementDirectives(): void {
+    this.messageBus.on('elementDirectivesProperties', (data: DirectivesProperties) => {
+      this.directivesData = data;
+    });
+  }
+
+  subscribeToLatestComponentExplorer(): void {
+    this.messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
+      this.forest = view.forest;
+      this.directivesData = view.properties;
+    });
   }
 
   refresh(): void {
