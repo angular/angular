@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 import { DevToolsTabsComponent } from './devtools-tabs.component';
 
@@ -8,7 +9,7 @@ import { ProfilerModule } from './component-explorer/profiler/profiler.module';
 
 @NgModule({
   declarations: [DevToolsTabsComponent],
-  imports: [MatTabsModule, ComponentExplorerModule, ProfilerModule],
+  imports: [MatTabsModule, ComponentExplorerModule, ProfilerModule, CommonModule],
   exports: [DevToolsTabsComponent]
 })
 export class DevToolsTabModule {}
