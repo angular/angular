@@ -37,10 +37,10 @@ module.exports = (gulp) => async () => {
 
     const commitsByLine = result.trim().split(/\n/).filter(line => line != '');
 
-    console.log(`Examining ${commitsByLine.length} commit(s) between ${baseBranch} and HEAD`);
+    console.log(`Examining ${commitsByLine.length} commit(s) between ${target.base.ref} and HEAD`);
 
     if (commitsByLine.length == 0) {
-      console.log(`There are zero new commits between ${baseBranch} and HEAD`);
+      console.log(`There are zero new commits between ${target.base.ref} and HEAD`);
     }
 
     const disallowSquashCommits = true;
