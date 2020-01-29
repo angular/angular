@@ -41,7 +41,7 @@ export class ComponentTreeObserver {
     private _onCreation: CreationCallback,
     private _onChangeDetection: ChangeDetectionCallback,
     private _onDestroy: DestroyCallback
-  ) {}
+  ) { }
 
   initialize() {
     this._mutationObserver.observe(document, {
@@ -216,10 +216,10 @@ export class ComponentTreeObserver {
     const declarations = componentMetadata(cmp);
     const original = declarations.template;
     const self = this;
-    if (declarations.tView.template.patched) {
+    if (original.patched) {
       return;
     }
-    declarations.tView.template = function(_, component: any) {
+    declarations.tView.template = function (_, component: any) {
       const start = performance.now();
       original.apply(this, arguments);
       if (self._createdComponents.has(component)) {
