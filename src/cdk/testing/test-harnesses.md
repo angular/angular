@@ -141,20 +141,20 @@ Calls to `getHarness` and `getAllHarnesses` can either take `ComponentHarness` s
 for a button that has some particular text, etc). The
 [details of `HarnessPredicate`](#filtering-harness-instances-with-harnesspredicate) are discussed in
 the [API for component harness authors](#api-for-component-harness-authors); harness authors should
-provide convenience methods on their `ComponentHarness` subclass to facilitate creation of
+provide convenience methods on their `ComponentHarness` subclass to facilitate the creation of
 `HarnessPredicate` instances. However, if the harness author's API is not sufficient, they can be
 created manually.
 
 #### Working with asynchronous component harness methods
 
-In order to support both unit and end-to-end tests, and to insulate tests against changes in
+To support both unit and end-to-end tests, and to insulate tests against changes in
 asynchronous behavior, almost all harness methods are asynchronous and return a `Promise`;
 therefore, the Angular team recommends using 
 [ES2017 `async`/`await` syntax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function)
 to improve the test readability.
 
 Note that `await` statements block the execution of your test until the associated `Promise`
-resolves. When reading multiple properties off a harness it may not be necessary to block on the
+resolves. When reading multiple properties of a harness it may not be necessary to block on the
 first before asking for the next, in these cases use `Promise.all` to parallelize.
 
 For example, consider the following example of reading both the `checked` and `indeterminate` state
@@ -184,7 +184,7 @@ common components for a large Angular application.
 The abstract `ComponentHarness` class is the base class for all component harnesses. To create a
 custom component harness, extend `ComponentHarness` and implement the static property
 `hostSelector`. The `hostSelector` property identifies elements in the DOM that match this harness
-subclass. In most cases the `hostSelector` should be the same as the `selector` of the corresponding
+subclass. In most cases, the `hostSelector` should be the same as the `selector` of the corresponding
 `Component` or `Directive`. For example, consider a simple popup component:
 
 ```ts
@@ -285,7 +285,7 @@ unless its an element the component consumer defines directly (e.g. the host ele
 `TestElement` instances for internal elements leads users to depend on a component's internal DOM
 structure.
 
-Instead, provide more narrow-focused methods for particular actions the end user will
+Instead, provide more narrow-focused methods for particular actions the end-user will
 take or particular state they may want to check. For example, `MyPopupHarness` could provide methods
 like `toggle` and `isOpen`:
 
@@ -322,7 +322,7 @@ earlier has an alternate signature that can be used for locating sub-harnesses r
 | `locatorForOptional<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T>): () => Promise<T \| null>` | Creates a function that returns a `Promise` for the first harness matching the given harness type when called. If no matching harness is found, the `Promise` is resolved with `null`. |
 | `locatorForAll<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T>): () => Promise<T[]>` | Creates a function that returns a `Promise` for a list of all harnesses matching the given harness type when called. |
 
-For example consider a menu build using the popup shown above:
+For example, consider a menu build using the popup shown above:
 
 ```ts
 @Component({
@@ -498,10 +498,8 @@ class MyPopupHarness extends ComponentHarness {
 
 #### Accessing elements outside of the component's host element
 
-There are times when a component harness might need to access elements outside of it's corresponding
-component's host element. A good example of this is components that use the
-[CDK overlay](https://material.angular.io/cdk/overlay/overview). The CDK overlay creates an element
-that is attached directly to the body, outside of the component's host element. In this case,
+There are times when a component harness might need to access elements outside of its corresponding
+component's host element. Components that use [CDK overlay](https://material.angular.io/cdk/overlay/overview) serve as examples of this. The CDK overlay creates an element that is attached directly to the body, outside of the component's host element. In this case,
 `ComponentHarness` provides a method that can be used to get a `LocatorFactory` for the root element
 of the document. The `LocatorFactory` supports most of the same APIs as the `ComponentHarness` base
 class, and can then be used to query relative to the document's root element.
@@ -537,8 +535,8 @@ subsequent `NgZone` stabilization before animation events are fully flushed. In 
 needed, the `ComponentHarness` offers a `forceStabilize()` method that can be called to do the
 second round.
 
-Additionally some components may intentionally schedule tasks _outside_ of `NgZone`, this is
-typically accomplished by using `NgZone.runOutsideAngular`. In this case the corresponding harness
+Additionally, some components may intentionally schedule tasks _outside_ of `NgZone`, this is
+typically accomplished by using `NgZone.runOutsideAngular`. In this case, the corresponding harness
 may need to explicitly wait for tasks outside `NgZone`, as this does not happen automatically.
 `ComponentHarness` offers a method called `waitForTasksOutsideAngular` for this purpose.
 
@@ -560,7 +558,7 @@ The first step in adding support for a new testing environment is to create a `T
 implementation. The `TestElement` interface serves as an environment-agnostic representation of a
 DOM element; it lets harnesses interact with DOM elements regardless of the underlying environment.
 Because some environments don't support interacting with DOM elements synchronously
-(e.g. webdriver), all of `TestElement` methods are asynchronous, returning a `Promise` with the
+(e.g. webdriver), all of the `TestElement` methods are asynchronous, returning a `Promise` with the
 result of the operation.
 
 | Method | Description |
@@ -599,7 +597,7 @@ Test authors use `HarnessEnvironemnt` to create component harness instances for 
 
 `HarnessEnvironment` is an abstract class that must be extended to create a concrete subclass for
 the new environment. When supporting a new test environment, you must create a `HarnessEnvironment`
-subclass that add concrete implementations for all abstract members.
+subclass that adds concrete implementations for all abstract members.
 
 You will notice that `HarnessEnvironment` has a generic type parameter: `HarnessEnvironment<E>`.
 This parameter, `E`, represents the raw element type of the environment. For example, this parameter
