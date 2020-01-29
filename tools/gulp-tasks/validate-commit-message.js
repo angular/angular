@@ -10,25 +10,54 @@
 // tslint:disable:no-console
 module.exports = (gulp) => async() => {
   try {
-    if (process.env['CI'] === 'true' && process.env['CI_PULL_REQUEST'] === 'false') {
-      console.info(
-          `Since valid commit messages are enforced by PR linting on CI,\n` +
-          `we do not need to validate commit messages on CI runs on upstream branches.\n\n` +
-          `Skipping validate-commit-message check`);
-      process.exit();
-    }
     const validateCommitMessage = require('../validate-commit-message');
     const shelljs = require('shelljs');
     const getRefsAndShasForTarget = require('../utils/get-refs-and-shas-for-target');
 
-    shelljs.set('-e');  // Break on error.
 
-    const target = await getRefsAndShasForTarget(process.env['CIRCLE_PR_NUMBER']);
+    let target = {};
+    if (process.env['CI'] === 'true') {
+      // Validation of commit messages on CI
+      if (process.env['CI_PULL_REQUEST'] === 'false') {
+        console.info(
+            `Since valid commit messages are enforced by PR linting on CI,\n` +
+            `we do not need to validate commit messages on CI runs on upstream branches.\n\n` +
+            `Skipping validate-commit-message check`);
+        process.exit();
+      }
+      target = await getRefsAndShasForTarget(process.env['CIRCLE_PR_NUMBER']);
+    } else {
+      // Validation of commit messages locally
+      const baseRef = 'master';
+      const {stdout: headRef} = shelljs.exec(
+          'git branch 2> /dev/null | sed -e \'/^[^*]/d\' -e \'s/* \(.*\)/\1/\'', {silent: true});
+      const {stdout: baseSha} = shelljs.exec(`git rev-parse origin/master`, {silent: true});
+      const {stdout: headSha} = shelljs.exec(`git rev-parse HEAD`, {silent: true});
+      const {stdout: commonAncestorSha} =
+          shelljs.exec(`git merge-base origin/master ${headSha}`, {silent: true});
+      target = {
+        base: {
+          ref: baseRef,
+          sha: baseSha,
+        },
+        head: {
+          ref: headRef.trim(),
+          sha: headSha.trim(),
+        },
+        commonAncestorSha: commonAncestorSha.trim(),
+        latestShaOfTargetBranch: baseSha.trim(),
+        latestShaOfPrBranch: headSha.trim(),
+      };
+    }
+
+
+    shelljs.set('-e');  // Break on error.
 
     // We need to fetch origin explicitly because it might be stale.
     // I couldn't find a reliable way to do this without fetch.
     const result = shelljs.exec(
-        `git log --reverse --format=%s ${target.commonAncestorSha}..${target.latestShaOfPrBranch}`);
+        `git log --reverse --format=%s ${target.commonAncestorSha}..${target.latestShaOfPrBranch}`,
+        {silent: true});
 
     if (result.code) {
       throw new Error(`Failed to fetch commits: ${result.stderr}`);
