@@ -73,17 +73,17 @@ module.exports = async function getRefsAndShasForTarget(prNumber) {
 
   const output = {
     base: {
-      ref: result.base.ref.trim(),
-      sha: result.base.sha.trim(),
+      ref: result.base.ref,
+      sha: result.base.sha,
     },
     head: {
-      ref: result.head.ref.trim(),
-      sha: result.head.sha.trim(),
+      ref: result.head.ref,
+      sha: result.head.sha,
     },
     commonAncestorSha: commonAncestorSha.trim(),
     latestShaOfTargetBranch: latestShaOfTargetBranch.trim(),
     latestShaOfPrBranch: latestShaOfPrBranch.trim(),
-  }
+  };
 
   return output;
-}
+};

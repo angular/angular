@@ -10,10 +10,10 @@
 // tslint:disable:no-console
 module.exports = (gulp) => async() => {
   try {
-    if (process.env['CIRCLECI'] === 'true' && !process.env['CIRCLE_PR_NUMBER']) {
+    if (process.env['CI'] === 'true' && process.env['CI_PULL_REQUEST'] === 'false') {
       console.info(
-          `Since commit messages are validated as part of the PR review process,\n` +
-          `we do not need to commit messages on CI runs on upstream branches.\n\n` +
+          `Since valid commit messages are enforced by PR linting on CI,\n` +
+          `we do not need to validate commit messages on CI runs on upstream branches.\n\n` +
           `Skipping validate-commit-message check`);
       process.exit();
     }
