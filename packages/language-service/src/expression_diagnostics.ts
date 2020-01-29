@@ -292,16 +292,12 @@ class ExpressionDiagnosticsVisitor extends RecursiveTemplateAstVisitor {
     if (directive && ast.value) {
       const context = this.info.query.getTemplateContext(directive.type.reference) !;
       if (context && !context.has(ast.value)) {
-        if (ast.value === '$implicit') {
-          this.reportError(
-              `The template context of '${directive.type.reference.name}' does not define an implicit value.\n` +
-                  `If the context type is a base type, consider refining it to a more specific type.`,
-              spanOf(ast.sourceSpan));
-        } else {
-          this.reportError(
-              `The template context of '${directive.type.reference.name}' does not define a member called '${ast.value}'`,
-              spanOf(ast.sourceSpan));
-        }
+        const missingMember =
+            ast.value === '$implicit' ? 'an implicit value' : `a member called '${ast.value}'`;
+        this.reportDiagnostic(
+            `The template context of '${directive.type.reference.name}' does not define ${missingMember}.\n` +
+                `If the context type is a base type or 'any', consider refining it to a more specific type.`,
+            spanOf(ast.sourceSpan), ts.DiagnosticCategory.Suggestion);
       }
     }
   }
@@ -353,11 +349,9 @@ class ExpressionDiagnosticsVisitor extends RecursiveTemplateAstVisitor {
 
   private pop() { this.path.pop(); }
 
-  private reportError(message: string, span: Span|undefined) {
-    if (span) {
-      this.diagnostics.push(
-          {span: offsetSpan(span, this.info.offset), kind: ts.DiagnosticCategory.Error, message});
-    }
+  private reportDiagnostic(
+      message: string, span: Span, kind: ts.DiagnosticCategory = ts.DiagnosticCategory.Error) {
+    this.diagnostics.push({span: offsetSpan(span, this.info.offset), kind, message});
   }
 }
 
