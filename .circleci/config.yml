@@ -623,6 +623,8 @@ jobs:
             git checkout --force origin/$CI_STABLE_BRANCH -- aio/ .yarn/ .yarnrc
         # Overwrite yarn again to use the version from the checked out branch.
       - overwrite_yarn
+        # Since we check out `aio/package.json` from the stable branch, ignore yarn's engines check.
+      - run: yarn config set ignore-engines true
       - run:
           name: Run tests against https://angular.io/
           command: ./aio/scripts/test-production.sh https://angular.io/ $CI_AIO_MIN_PWA_SCORE
