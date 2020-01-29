@@ -108,7 +108,7 @@
     "minimist": "1.2.0",
     "node-uuid": "1.4.8",
     "nodejs-websocket": "^1.7.2",
-    "protractor": "^5.4.2",
+    "protractor": "6.0.0",
     "reflect-metadata": "^0.1.3",
     "requirejs": "^2.3.6",
     "rollup": "~1.25.0",
