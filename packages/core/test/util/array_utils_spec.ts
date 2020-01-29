@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ArrayMap, arrayIndexOfSorted, arrayInsert, arrayInsert2, arrayInsertSorted, arrayMapDelete, arrayMapGet, arrayMapIndexOf, arrayMapSet, arrayRemoveSorted, arraySplice, flatten} from '../../src/util/array_utils';
+import {KeyValueArray, arrayIndexOfSorted, arrayInsert, arrayInsert2, arrayInsertSorted, arrayRemoveSorted, arraySplice, flatten, keyValueArrayDelete, keyValueArrayGet, keyValueArrayIndexOf, keyValueArraySet} from '../../src/util/array_utils';
 
 describe('array_utils', () => {
 
@@ -140,38 +140,38 @@ describe('array_utils', () => {
     });
   });
 
-  describe('ArrayMap', () => {
+  describe('KeyValueArray', () => {
     it('should support basic operations', () => {
-      const map: ArrayMap<number> = [] as any;
+      const map: KeyValueArray<number> = [] as any;
 
-      expect(arrayMapIndexOf(map, 'A')).toEqual(~0);
+      expect(keyValueArrayIndexOf(map, 'A')).toEqual(~0);
 
-      expect(arrayMapSet(map, 'B', 1)).toEqual(0);
+      expect(keyValueArraySet(map, 'B', 1)).toEqual(0);
       expect(map).toEqual(['B', 1]);
-      expect(arrayMapIndexOf(map, 'B')).toEqual(0);
+      expect(keyValueArrayIndexOf(map, 'B')).toEqual(0);
 
-      expect(arrayMapSet(map, 'A', 0)).toEqual(0);
+      expect(keyValueArraySet(map, 'A', 0)).toEqual(0);
       expect(map).toEqual(['A', 0, 'B', 1]);
-      expect(arrayMapIndexOf(map, 'B')).toEqual(2);
-      expect(arrayMapIndexOf(map, 'AA')).toEqual(~2);
+      expect(keyValueArrayIndexOf(map, 'B')).toEqual(2);
+      expect(keyValueArrayIndexOf(map, 'AA')).toEqual(~2);
 
-      expect(arrayMapSet(map, 'C', 2)).toEqual(4);
+      expect(keyValueArraySet(map, 'C', 2)).toEqual(4);
       expect(map).toEqual(['A', 0, 'B', 1, 'C', 2]);
 
-      expect(arrayMapGet(map, 'A')).toEqual(0);
-      expect(arrayMapGet(map, 'B')).toEqual(1);
-      expect(arrayMapGet(map, 'C')).toEqual(2);
-      expect(arrayMapGet(map, 'AA')).toEqual(undefined);
+      expect(keyValueArrayGet(map, 'A')).toEqual(0);
+      expect(keyValueArrayGet(map, 'B')).toEqual(1);
+      expect(keyValueArrayGet(map, 'C')).toEqual(2);
+      expect(keyValueArrayGet(map, 'AA')).toEqual(undefined);
 
-      expect(arrayMapSet(map, 'B', -1)).toEqual(2);
+      expect(keyValueArraySet(map, 'B', -1)).toEqual(2);
       expect(map).toEqual(['A', 0, 'B', -1, 'C', 2]);
 
-      expect(arrayMapDelete(map, 'AA')).toEqual(~2);
-      expect(arrayMapDelete(map, 'B')).toEqual(2);
+      expect(keyValueArrayDelete(map, 'AA')).toEqual(~2);
+      expect(keyValueArrayDelete(map, 'B')).toEqual(2);
       expect(map).toEqual(['A', 0, 'C', 2]);
-      expect(arrayMapDelete(map, 'A')).toEqual(0);
+      expect(keyValueArrayDelete(map, 'A')).toEqual(0);
       expect(map).toEqual(['C', 2]);
-      expect(arrayMapDelete(map, 'C')).toEqual(0);
+      expect(keyValueArrayDelete(map, 'C')).toEqual(0);
       expect(map).toEqual([]);
     });
   });

@@ -8,7 +8,7 @@
 
 import {DirectiveDef} from '@angular/core/src/render3';
 import {ɵɵdefineDirective} from '@angular/core/src/render3/definition';
-import {classStringParser, initializeStylingStaticArrayMap, styleStringParser, toStylingArrayMap, ɵɵclassProp, ɵɵstyleMap, ɵɵstyleProp, ɵɵstyleSanitizer} from '@angular/core/src/render3/instructions/styling';
+import {classStringParser, styleStringParser, toStylingKeyValueArray, ɵɵclassProp, ɵɵstyleMap, ɵɵstyleProp, ɵɵstyleSanitizer} from '@angular/core/src/render3/instructions/styling';
 import {AttributeMarker, TAttributes, TDirectiveDefs} from '@angular/core/src/render3/interfaces/node';
 import {StylingRange, TStylingKey, TStylingRange, getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate, setTStylingRangeNext, setTStylingRangePrev, toTStylingRange} from '@angular/core/src/render3/interfaces/styling';
 import {HEADER_OFFSET, TVIEW} from '@angular/core/src/render3/interfaces/view';
@@ -16,7 +16,7 @@ import {getLView, leaveView, setBindingRootForHostBindings} from '@angular/core/
 import {getNativeByIndex} from '@angular/core/src/render3/util/view_utils';
 import {bypassSanitizationTrustStyle} from '@angular/core/src/sanitization/bypass';
 import {ɵɵsanitizeStyle} from '@angular/core/src/sanitization/sanitization';
-import {arrayMapSet} from '@angular/core/src/util/array_utils';
+import {keyValueArraySet} from '@angular/core/src/util/array_utils';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {getElementClasses, getElementStyles} from '@angular/core/testing/src/styling';
 import {expect} from '@angular/core/testing/src/testing_internal';
@@ -268,31 +268,6 @@ describe('styling', () => {
         expect(div.style.getPropertyValue('background')).toContain('url("javascript:/trusted")');
       });
     });
-
-    describe('populateStylingStaticArrayMap', () => {
-      it('should initialize to null if no mergedAttrs', () => {
-        const tNode = getLView()[TVIEW].firstChild !;
-        expect(tNode.residualStyles).toEqual(undefined);
-        expect(tNode.residualClasses).toEqual(undefined);
-        initializeStylingStaticArrayMap(tNode);
-        expect(tNode.residualStyles).toEqual(null);
-        expect(tNode.residualClasses).toEqual(null);
-      });
-
-      it('should initialize from mergeAttrs', () => {
-        const tNode = getLView()[TVIEW].firstChild !;
-        expect(tNode.residualStyles).toEqual(undefined);
-        expect(tNode.residualClasses).toEqual(undefined);
-        tNode.mergedAttrs = [
-          'ignore', 'value',                                     //
-          AttributeMarker.Classes, 'foo', 'bar',                 //
-          AttributeMarker.Styles, 'width', '0', 'color', 'red',  //
-        ];
-        initializeStylingStaticArrayMap(tNode);
-        expect(tNode.residualClasses).toEqual(['bar', true, 'foo', true] as any);
-        expect(tNode.residualStyles).toEqual(['color', 'red', 'width', '0'] as any);
-      });
-    });
   });
 
   describe('static', () => {
@@ -428,53 +403,54 @@ describe('styling', () => {
 
   describe('toStylingArray', () => {
     describe('falsy', () => {
-      it('should return empty ArrayMap', () => {
-        expect(toStylingArrayMap(arrayMapSet, null !, '')).toEqual([] as any);
-        expect(toStylingArrayMap(arrayMapSet, null !, null)).toEqual([] as any);
-        expect(toStylingArrayMap(arrayMapSet, null !, undefined)).toEqual([] as any);
-        expect(toStylingArrayMap(arrayMapSet, null !, [])).toEqual([] as any);
-        expect(toStylingArrayMap(arrayMapSet, null !, {})).toEqual([] as any);
+      it('should return empty KeyValueArray', () => {
+        expect(toStylingKeyValueArray(keyValueArraySet, null !, '')).toEqual([] as any);
+        expect(toStylingKeyValueArray(keyValueArraySet, null !, null)).toEqual([] as any);
+        expect(toStylingKeyValueArray(keyValueArraySet, null !, undefined)).toEqual([] as any);
+        expect(toStylingKeyValueArray(keyValueArraySet, null !, [])).toEqual([] as any);
+        expect(toStylingKeyValueArray(keyValueArraySet, null !, {})).toEqual([] as any);
       });
       describe('string', () => {
         it('should parse classes', () => {
-          expect(toStylingArrayMap(arrayMapSet, classStringParser, '  ')).toEqual([] as any);
-          expect(toStylingArrayMap(arrayMapSet, classStringParser, ' X A ')).toEqual([
+          expect(toStylingKeyValueArray(keyValueArraySet, classStringParser, '  ')).toEqual([
+          ] as any);
+          expect(toStylingKeyValueArray(keyValueArraySet, classStringParser, ' X A ')).toEqual([
             'A', true, 'X', true
           ] as any);
         });
         it('should parse styles', () => {
-          expect(toStylingArrayMap(arrayMapSet, styleStringParser, '  ')).toEqual([] as any);
-          expect(toStylingArrayMap(arrayMapSet, styleStringParser, 'B:b;A:a')).toEqual([
+          expect(toStylingKeyValueArray(keyValueArraySet, styleStringParser, '  ')).toEqual([
+          ] as any);
+          expect(toStylingKeyValueArray(keyValueArraySet, styleStringParser, 'B:b;A:a')).toEqual([
             'A', 'a', 'B', 'b'
           ] as any);
         });
       });
       describe('array', () => {
         it('should parse', () => {
-          expect(toStylingArrayMap(arrayMapSet, null !, ['X', 'A'])).toEqual([
+          expect(toStylingKeyValueArray(keyValueArraySet, null !, ['X', 'A'])).toEqual([
             'A', true, 'X', true
           ] as any);
         });
       });
       describe('object', () => {
         it('should parse', () => {
-          expect(toStylingArrayMap(arrayMapSet, null !, {X: 'x', A: 'a'})).toEqual([
+          expect(toStylingKeyValueArray(keyValueArraySet, null !, {X: 'x', A: 'a'})).toEqual([
             'A', 'a', 'X', 'x'
           ] as any);
         });
       });
       describe('Map', () => {
         it('should parse', () => {
-          expect(toStylingArrayMap(
-                     arrayMapSet, null !, new Map<string, string>([['X', 'x'], ['A', 'a']])))
+          expect(toStylingKeyValueArray(
+                     keyValueArraySet, null !, new Map<string, string>([['X', 'x'], ['A', 'a']])))
               .toEqual(['A', 'a', 'X', 'x'] as any);
         });
       });
       describe('Iterable', () => {
         it('should parse', () => {
-          expect(toStylingArrayMap(arrayMapSet, null !, new Set<string>(['X', 'A']))).toEqual([
-            'A', true, 'X', true
-          ] as any);
+          expect(toStylingKeyValueArray(keyValueArraySet, null !, new Set<string>(['X', 'A'])))
+              .toEqual(['A', true, 'X', true] as any);
         });
       });
     });

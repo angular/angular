@@ -241,21 +241,6 @@ export function getLView(): LView {
 }
 
 /**
- * Sets the active directive host element and resets the directive id value
- * (when the provided elementIndex value has changed).
- *
- * @param elementIndex the element index value for the host element where
- *                     the directive/component instance lives
- */
-export function setActiveHostElement(elementIndex: number) {
-  setSelectedIndex(elementIndex);
-}
-
-export function clearActiveHostElement() {
-  setSelectedIndex(-1);
-}
-
-/**
  * Restores `contextViewData` to the given OpaqueViewState instance.
  *
  * Used in conjunction with the getCurrentView() instruction to save a snapshot
@@ -561,12 +546,4 @@ export function getCurrentStyleSanitizer() {
   // `NodeStyleDebug` hence we return `null`. This should be fixed
   const lFrame = instructionState.lFrame;
   return lFrame === null ? null : lFrame.currentSanitizer;
-}
-
-/**
- * Used for encoding both Class and Style index into `LFrame.stylingBindingChanged`.
- */
-const enum BindingChanged {
-  CLASS_SHIFT = 16,
-  STYLE_MASK = 0xFFFF,
 }
