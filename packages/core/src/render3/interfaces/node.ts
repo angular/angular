@@ -489,7 +489,7 @@ export interface TNode {
   projection: (TNode|RNode[])[]|number|null;
 
   /**
-   * A collection of all style bindings and/or static style values for an element.
+   * A collection of all style static values for an element.
    *
    * This field will be populated if and when:
    *
@@ -527,7 +527,7 @@ export interface TNode {
   residualStyles: ArrayMap<any>|undefined|null;
 
   /**
-   * A collection of all class bindings and/or static class values for an element.
+   * A collection of all class static values for an element.
    *
    * This field will be populated if and when:
    *
