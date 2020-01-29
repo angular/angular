@@ -18,7 +18,7 @@ const getChangeDetectionSource = () => {
   return zone.currentTask.source;
 };
 
-export const start = () => {
+export const start = (): void => {
   if (inProgress) {
     throw new Error('Recording already in progress');
   }
@@ -80,7 +80,7 @@ export const start = () => {
   observer.initialize();
 };
 
-export const stop = () => {
+export const stop = (): AppRecord[] => {
   observer.destroy();
   // We want to garbage collect the records;
   const temp = records;

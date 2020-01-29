@@ -2,7 +2,8 @@ import { getDirectiveForest, ComponentTreeNode } from './component-tree';
 import { runOutsideAngular, componentMetadata, patchTemplate } from './utils';
 
 let hookInitialized = false;
-export const onChangeDetection = (callback: () => void) => {
+
+export const onChangeDetection = (callback: () => void): void => {
   if (hookInitialized) {
     return;
   }
@@ -13,7 +14,7 @@ export const onChangeDetection = (callback: () => void) => {
 
 // We patch the component tView template function reference
 // to detect when the change detection has completed and notify the client.
-const listenAndNotifyOnUpdates = (roots: ComponentTreeNode[], callback: () => void) => {
+const listenAndNotifyOnUpdates = (roots: ComponentTreeNode[], callback: () => void): void => {
   roots.forEach(root => {
     const { component } = root;
     if (!component) {

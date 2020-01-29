@@ -13,18 +13,16 @@ export class DevToolsComponent implements OnInit, OnDestroy {
 
   private _interval$ = interval(500).subscribe(() => this.messageBus.emit('queryNgAvailability'));
 
-  ngOnInit() {
+  ngOnInit(): void {
     console.log('Initialized the devtools UI');
 
     this.messageBus.once('ngAvailability', ({ version }) => {
-      if (version) {
-        this.angularExists = true;
-      }
+      this.angularExists = !!version;
       this._interval$.unsubscribe();
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this._interval$.unsubscribe();
   }
 }

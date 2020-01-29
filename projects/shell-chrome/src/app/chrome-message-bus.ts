@@ -1,5 +1,6 @@
 import { MessageBus, Events, Parameters } from 'protocol';
 
+// Todo: check if this is used anywhere? If not decide whether or not to keep it.
 export type Callback = (
   message: any,
   sender: chrome.runtime.MessageSender,
@@ -26,8 +27,8 @@ export class ChromeMessageBus extends MessageBus<Events> {
     });
   }
 
-  onAny(cb: AnyEventCallback<Events>) {
-    const listener = (msg: ChromeMessage<Events, keyof Events>) => {
+  onAny(cb: AnyEventCallback<Events>): () => void {
+    const listener = (msg: ChromeMessage<Events, keyof Events>): void => {
       console.log('Received message', msg);
       cb(msg.topic, msg.args);
     };
@@ -39,8 +40,8 @@ export class ChromeMessageBus extends MessageBus<Events> {
     };
   }
 
-  on<E extends keyof Events>(topic: E, cb: Events[E]) {
-    const listener = (msg: ChromeMessage<Events, keyof Events>) => {
+  on<E extends keyof Events>(topic: E, cb: Events[E]): () => void {
+    const listener = (msg: ChromeMessage<Events, keyof Events>): void => {
       console.log('Received message', msg);
       if (msg.topic === topic) {
         cb.apply(null, msg.args);
@@ -54,7 +55,7 @@ export class ChromeMessageBus extends MessageBus<Events> {
     };
   }
 
-  once<E extends keyof Events>(topic: E, cb: Events[E]) {
+  once<E extends keyof Events>(topic: E, cb: Events[E]): void {
     const listener = (msg: ChromeMessage<Events, keyof Events>) => {
       if (msg.topic === topic) {
         cb.apply(null, msg.args);
@@ -75,7 +76,7 @@ export class ChromeMessageBus extends MessageBus<Events> {
     });
   }
 
-  destroy() {
+  destroy(): void {
     this._listeners.forEach(l => window.removeEventListener('message', l));
     this._listeners = [];
   }

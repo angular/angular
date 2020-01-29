@@ -7,8 +7,9 @@ import { FormsModule } from '@angular/forms';
 
 import { ProfilerComponent } from './profiler.component';
 import { TimeTravelModule } from './time-travel/time-travel.module';
-import { RecordingComponent, RecordingDialogComponent } from './recording.component';
+import { RecordingComponent} from './recording/recording.component';
 import { TimelineModule } from './recording/timeline/timeline.module';
+import { RecordingDialogComponent } from './recording/recording-dialog/recording-dialog.component';
 
 @NgModule({
   declarations: [ProfilerComponent, RecordingComponent, RecordingDialogComponent],

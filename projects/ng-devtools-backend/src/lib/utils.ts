@@ -1,4 +1,4 @@
-export const runOutsideAngular = (f: () => any) => {
+export const runOutsideAngular = (f: () => any): void => {
   const w = window as any;
   if (!w.Zone || w.Zone.current._name !== 'angular') {
     return;
@@ -20,3 +20,4 @@ export const patchTemplate = (instance: any, fn: () => void) => {
 
   return original;
 };
+

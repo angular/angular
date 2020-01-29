@@ -5,7 +5,7 @@ let overlayContent;
 
 declare const ng: any;
 
-function init() {
+function init(): void {
   if (overlay) {
     return;
   }
@@ -42,14 +42,14 @@ export const findComponentAndHost = (el: HTMLElement) => {
   return { component: null, host: null };
 };
 
-export const getComponentName = (cmp: Type<unknown>) => {
+export const getComponentName = (cmp: Type<unknown>): string | null => {
   if (cmp) {
     return cmp.constructor.name;
   }
   return null;
 };
 
-export const highlight = (el: HTMLElement) => {
+export const highlight = (el: HTMLElement): void => {
   const cmp = findComponentAndHost(el).component;
   const rect = getComponentRect(el);
 
@@ -71,13 +71,13 @@ export const highlight = (el: HTMLElement) => {
   }
 };
 
-export function unHighlight() {
+export function unHighlight(): void {
   if (overlay && overlay.parentNode) {
     document.body.removeChild(overlay);
   }
 }
 
-export function inDoc(node) {
+export function inDoc(node): boolean {
   if (!node) {
     return false;
   }
@@ -86,14 +86,14 @@ export function inDoc(node) {
   return doc === node || doc === parent || !!(parent && parent.nodeType === 1 && doc.contains(parent));
 }
 
-export function getComponentRect(el: HTMLElement) {
+export function getComponentRect(el: HTMLElement): DOMRect | ClientRect {
   if (!inDoc(el)) {
     return;
   }
   return el.getBoundingClientRect();
 }
 
-function showOverlay({ width = 0, height = 0, top = 0, left = 0 }, content = []) {
+function showOverlay({ width = 0, height = 0, top = 0, left = 0 }, content = []): void {
   overlay.style.width = ~~width + 'px';
   overlay.style.height = ~~height + 'px';
   overlay.style.top = ~~top + 'px';

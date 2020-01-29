@@ -37,6 +37,7 @@ export class TimelineComponent {
     return this.profileRecords.aggregated;
   }
 
+
   updateView($event: MatSliderChange) {
     if ($event.value === undefined || $event.value > this.profileRecords.timeline.length) {
       return;
@@ -45,7 +46,7 @@ export class TimelineComponent {
     this.slider.value = this.currentView;
   }
 
-  move(number: number) {
+  move(number: number): void {
     const newVal = this.currentView + number;
     if (newVal > 0 && newVal < this.profileRecords.timeline.length) {
       this.currentView = newVal;

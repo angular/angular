@@ -6,7 +6,7 @@ import {
   DirectivesProperties,
   DirectiveID,
   ComponentExplorerViewQuery,
-  ComponentExplorerView,
+  ComponentExplorerView, ComponentExplorerViewProperties,
 } from 'protocol';
 import { IndexedNode } from './component-tree/index-forest';
 import { PropertyViewComponent } from './property-view/property-view.component';
@@ -28,12 +28,12 @@ export class ComponentExplorerComponent implements OnInit {
   currentSelectedElement: IndexedNode;
   forest: Node[];
 
-  handleNodeSelection(node: IndexedNode) {
+  handleNodeSelection(node: IndexedNode): void {
     this.currentSelectedElement = node;
     this.messageBus.emit('getElementDirectivesProperties', [node.id]);
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.messageBus.on('elementDirectivesProperties', (data: DirectivesProperties) => {
       this.directivesData = data;
     });
@@ -57,11 +57,11 @@ export class ComponentExplorerComponent implements OnInit {
     this.refresh();
   }
 
-  refresh() {
+  refresh(): void {
     this.messageBus.emit('getLatestComponentExplorerView', [this._constructViewQuery()]);
   }
 
-  getEntityID(name: string) {
+  getEntityID(name: string): DirectiveID {
     const idx: DirectiveID = {
       element: this.currentSelectedElement.id,
     };
@@ -73,7 +73,7 @@ export class ComponentExplorerComponent implements OnInit {
     return idx;
   }
 
-  nameTracking(_: number, item: {key: string}) {
+  nameTracking(_: number, item: {key: string}): string {
     return item.key;
   }
 
@@ -91,7 +91,7 @@ export class ComponentExplorerComponent implements OnInit {
     };
   }
 
-  private _latestDirectiveData() {
+  private _latestDirectiveData(): ComponentExplorerViewProperties {
     const result = {};
     this.propertyViews.toArray().forEach(view => {
       result[view.name] = view.getExpandedProperties();

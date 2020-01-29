@@ -20,7 +20,7 @@ export interface TimelineView {
   timeline: AppEntry[];
 }
 
-const processRecord = (record: ComponentRecord, bars: AppEntry) => {
+const processRecord = (record: ComponentRecord, bars: AppEntry): void => {
   const idx = record.id.length - 1;
   bars.app[idx] = bars.app[idx] || [];
   bars.timeSpent += record.duration;
