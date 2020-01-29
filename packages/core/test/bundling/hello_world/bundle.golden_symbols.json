@@ -165,9 +165,6 @@
     "name": "callHooks"
   },
   {
-    "name": "clearActiveHostElement"
-  },
-  {
     "name": "computeStaticStyling"
   },
   {
@@ -445,9 +442,6 @@
   },
   {
     "name": "selectIndexInternal"
-  },
-  {
-    "name": "setActiveHostElement"
   },
   {
     "name": "setBindingIndex"

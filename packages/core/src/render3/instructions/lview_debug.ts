@@ -8,7 +8,7 @@
 
 import {AttributeMarker, ComponentTemplate} from '..';
 import {SchemaMetadata} from '../../core';
-import {ArrayMap} from '../../util/array_utils';
+import {KeyValueArray} from '../../util/array_utils';
 import {assertDefined} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
 import {initNgDevMode} from '../../util/ng_dev_mode';
@@ -176,9 +176,9 @@ class TNode implements ITNode {
       public parent: TElementNode|TContainerNode|null,                               //
       public projection: number|(ITNode|RNode[])[]|null,                             //
       public styles: string|null,                                                    //
-      public residualStyles: ArrayMap<any>|undefined|null,                           //
+      public residualStyles: KeyValueArray<any>|undefined|null,                      //
       public classes: string|null,                                                   //
-      public residualClasses: ArrayMap<any>|undefined|null,                          //
+      public residualClasses: KeyValueArray<any>|undefined|null,                     //
       public classBindings: TStylingRange,                                           //
       public styleBindings: TStylingRange,                                           //
       public directives: TDirectiveDefs|null,                                        //
@@ -241,7 +241,8 @@ class TNode implements ITNode {
 export const TNodeDebug = TNode;
 export type TNodeDebug = TNode;
 
-export interface DebugStyleBindings extends Array<ArrayMap<any>|DebugStyleBinding|string|null> {}
+export interface DebugStyleBindings extends
+    Array<KeyValueArray<any>|DebugStyleBinding|string|null> {}
 export interface DebugStyleBinding {
   key: TStylingKey;
   index: number;

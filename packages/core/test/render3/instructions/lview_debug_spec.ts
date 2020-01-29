@@ -12,7 +12,7 @@ import {TNodeType} from '@angular/core/src/render3/interfaces/node';
 import {LView, TView, TViewType} from '@angular/core/src/render3/interfaces/view';
 import {enterView, leaveView} from '@angular/core/src/render3/state';
 import {insertTStylingBinding} from '@angular/core/src/render3/styling/style_binding_list';
-import {ArrayMap} from '@angular/core/src/util/array_utils';
+import {KeyValueArray} from '@angular/core/src/util/array_utils';
 
 
 describe('lView_debug', () => {
@@ -36,14 +36,14 @@ describe('lView_debug', () => {
       });
 
       it('should decode static styling', () => {
-        tNode.residualStyles = ['color', 'blue'] as ArrayMap<any>;
-        tNode.residualClasses = ['STATIC', true] as ArrayMap<any>;
-        expect(tNode.styleBindings_).toEqual([['color', 'blue'] as ArrayMap<any>]);
-        expect(tNode.classBindings_).toEqual([['STATIC', true] as ArrayMap<any>]);
+        tNode.residualStyles = ['color', 'blue'] as KeyValueArray<any>;
+        tNode.residualClasses = ['STATIC', true] as KeyValueArray<any>;
+        expect(tNode.styleBindings_).toEqual([['color', 'blue'] as KeyValueArray<any>]);
+        expect(tNode.classBindings_).toEqual([['STATIC', true] as KeyValueArray<any>]);
       });
 
       it('should decode no-template property binding', () => {
-        tNode.residualClasses = ['STATIC', true] as ArrayMap<any>;
+        tNode.residualClasses = ['STATIC', true] as KeyValueArray<any>;
         insertTStylingBinding(tView.data, tNode, 'CLASS', 2, true, true);
         insertTStylingBinding(tView.data, tNode, 'color', 4, true, false);
 
@@ -69,12 +69,12 @@ describe('lView_debug', () => {
             prevIndex: 0,
             nextIndex: 0,
           },
-          ['STATIC', true] as ArrayMap<any>
+          ['STATIC', true] as KeyValueArray<any>
         ]);
       });
 
       it('should decode template and directive property binding', () => {
-        tNode.residualClasses = ['STATIC', true] as ArrayMap<any>;
+        tNode.residualClasses = ['STATIC', true] as KeyValueArray<any>;
         insertTStylingBinding(tView.data, tNode, 'CLASS', 2, false, true);
         insertTStylingBinding(tView.data, tNode, 'color', 4, false, false);
 
@@ -100,7 +100,7 @@ describe('lView_debug', () => {
             prevIndex: 0,
             nextIndex: 0,
           },
-          ['STATIC', true] as ArrayMap<any>
+          ['STATIC', true] as KeyValueArray<any>
         ]);
 
         insertTStylingBinding(tView.data, tNode, null, 6, true, true);
@@ -146,7 +146,7 @@ describe('lView_debug', () => {
             prevIndex: 6,
             nextIndex: 0,
           },
-          ['STATIC', true] as ArrayMap<any>
+          ['STATIC', true] as KeyValueArray<any>
         ]);
       });
     });

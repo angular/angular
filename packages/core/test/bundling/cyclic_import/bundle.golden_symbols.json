@@ -186,9 +186,6 @@
     "name": "classIndexOf"
   },
   {
-    "name": "clearActiveHostElement"
-  },
-  {
     "name": "computeStaticStyling"
   },
   {
@@ -571,9 +568,6 @@
   },
   {
     "name": "selectIndexInternal"
-  },
-  {
-    "name": "setActiveHostElement"
   },
   {
     "name": "setBindingIndex"
