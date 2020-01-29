@@ -31,7 +31,7 @@ module.exports = (gulp) => () => {
     // We need to fetch origin explicitly because it might be stale.
     // I couldn't find a reliable way to do this without fetch.
     const result = shelljs.exec(
-        `git fetch origin ${baseBranch} && git log --reverse --format=%s origin/${baseBranch}..HEAD | grep -v "#34769"`);
+        `git fetch origin ${baseBranch} && git log --reverse --format=%s origin/${baseBranch}..HEAD`);
 
     if (result.code) {
       throw new Error(`Failed to fetch commits: ${result.stderr}`);
