@@ -8,19 +8,18 @@
 
 
 // tslint:disable:no-console
-module.exports = (gulp) => async () => {
+module.exports = (gulp) => async() => {
   try {
     if (process.env['CIRCLECI'] === 'true' && !process.env['CIRCLE_PR_NUMBER']) {
       console.info(
-        `Since commit messages are validated as part of the PR review process,\n` +
-        `we do not need to commit messages on CI runs on upstream branches.\n\n` +
-        `Skipping validate-commit-message check`
-        )
+          `Since commit messages are validated as part of the PR review process,\n` +
+          `we do not need to commit messages on CI runs on upstream branches.\n\n` +
+          `Skipping validate-commit-message check`);
       process.exit();
     }
     const validateCommitMessage = require('../validate-commit-message');
     const shelljs = require('shelljs');
-    const getRefsAndShasForTarget = require('../utils/get-refs-and-shas-for-target')
+    const getRefsAndShasForTarget = require('../utils/get-refs-and-shas-for-target');
 
     shelljs.set('-e');  // Break on error.
 

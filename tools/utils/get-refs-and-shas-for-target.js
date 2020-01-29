@@ -68,18 +68,19 @@ module.exports = async function getRefsAndShasForTarget(prNumber) {
   const {stdout: commonAncestorSha} =
       await exec(`git merge-base origin/${result.base.ref} ${latestShaOfPrBranch}`);
 
-  return {
+  const output = {
     base: {
       ref: result.base.ref.trim(),
       sha: result.base.sha.trim(),
     },
     head: {
       ref: result.head.ref.trim(),
-      sha: result.head.sha.trim()
+      sha: result.head.sha.trim(),
     },
     commonAncestorSha: commonAncestorSha.trim(),
     latestShaOfTargetBranch: latestShaOfTargetBranch.trim(),
     latestShaOfPrBranch: latestShaOfPrBranch.trim(),
   }
 
+  return output;
 }
