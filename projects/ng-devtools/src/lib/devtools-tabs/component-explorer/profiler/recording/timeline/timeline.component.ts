@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, ViewChild } from '@angular/core';
 import { AppEntry, formatRecords, TimelineView } from './format-records';
 import { MatSlider, MatSliderChange } from '@angular/material/slider';
 import { AppRecord } from 'protocol';
@@ -6,17 +6,18 @@ import { AppRecord } from 'protocol';
 @Component({
   selector: 'ng-recording-timeline',
   templateUrl: './timeline.component.html',
-  styleUrls: ['./timeline.component.css']
+  styleUrls: ['./timeline.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TimelineComponent {
   @Input() set records(data: AppRecord[]) {
-    this.timeline = formatRecords(data);
+    this.profileRecords = formatRecords(data);
   }
 
   @Input() view: 'aggregated' | 'timeline' = 'aggregated';
   @ViewChild(MatSlider) slider: MatSlider;
 
-  timeline: TimelineView = {
+  profileRecords: TimelineView = {
     aggregated: {
       app: [],
       timeSpent: 0,
@@ -27,14 +28,17 @@ export class TimelineComponent {
   currentView = 1;
 
   get recordsView(): AppEntry {
+    console.log('hit');
     if (this.view === 'timeline') {
-      return this.timeline.timeline[this.currentView];
+      // null coalesce to aggregated if no data was recorded since aggregated will be empty, whereas
+      // timeline will not even exist
+      return this.profileRecords.timeline[this.currentView] || this.profileRecords.aggregated;
     }
-    return this.timeline.aggregated;
+    return this.profileRecords.aggregated;
   }
 
   updateView($event: MatSliderChange) {
-    if ($event.value === undefined || $event.value > this.timeline.timeline.length) {
+    if ($event.value === undefined || $event.value > this.profileRecords.timeline.length) {
       return;
     }
     this.currentView = $event.value;
@@ -43,7 +47,7 @@ export class TimelineComponent {
 
   move(number: number) {
     const newVal = this.currentView + number;
-    if (newVal > 0 && newVal < this.timeline.timeline.length) {
+    if (newVal > 0 && newVal < this.profileRecords.timeline.length) {
       this.currentView = newVal;
       this.slider.value = this.currentView;
     }

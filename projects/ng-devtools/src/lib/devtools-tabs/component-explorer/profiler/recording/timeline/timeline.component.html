@@ -1,6 +1,6 @@
 <div class="controls" *ngIf="view === 'timeline'">
   <mat-slider
-    [max]="timeline.timeline.length - 1"
+    [max]="profileRecords.timeline.length - 1"
     [min]="1"
     [(ngModel)]="currentView"
     (change)="updateView($event)"
