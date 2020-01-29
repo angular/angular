@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+// This script uses `console` to print messages to the user.
+// tslint:disable:no-console
+
 const https = require('https');
 const util = require('util');
 const child_process = require('child_process');
