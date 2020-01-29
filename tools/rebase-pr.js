@@ -107,4 +107,3 @@ async function _main(repository, prNumber) {
   await exec(`git rebase origin/${target.base.ref}`);
   console.log('Rebase successful.');
 }
-
