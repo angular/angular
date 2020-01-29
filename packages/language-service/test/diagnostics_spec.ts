@@ -258,11 +258,11 @@ describe('diagnostics', () => {
       const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
       expect(diags.length).toBe(1);
       const {messageText, start, length, category} = diags[0];
-      expect(category).toBe(ts.DiagnosticCategory.Warning);
+      expect(category).toBe(ts.DiagnosticCategory.Suggestion);
       expect(messageText)
           .toBe(
               `The template context of 'CounterDirective' does not define an implicit value.\n` +
-                  `If the context type is a base type, consider refining it to a more specific type.`, );
+                  `If the context type is a base type or 'any', consider refining it to a more specific type.`, );
 
       const span = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'emb');
       expect(start).toBe(span.start);
@@ -276,11 +276,11 @@ describe('diagnostics', () => {
       const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
       expect(diags.length).toBe(1);
       const {messageText, start, length, category} = diags[0];
-      expect(category).toBe(ts.DiagnosticCategory.Warning);
+      expect(category).toBe(ts.DiagnosticCategory.Suggestion);
       expect(messageText)
           .toBe(
               `The template context of 'NgForOf' does not define a member called 'even_1'.\n` +
-              `If the context type is a base type, consider refining it to a more specific type.`);
+              `If the context type is a base type or 'any', consider refining it to a more specific type.`);
 
       const span = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'emb');
       expect(start).toBe(span.start);
