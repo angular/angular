@@ -3031,6 +3031,30 @@ describe('styling', () => {
             expect(elm.style.height).toEqual('1px');
           });
 
+  onlyInIvy('Prioritization works in Ivy only')
+      .it('should prioritize directive static bindings over components', () => {
+        @Component({selector: 'my-comp-with-styling', host: {style: 'color: blue'}, template: ''})
+        class MyCompWithStyling {
+        }
+
+        @Directive({selector: '[my-dir-with-styling]', host: {style: 'color: red'}})
+        class MyDirWithStyling {
+        }
+
+        @Component({template: `<my-comp-with-styling my-dir-with-styling></my-comp-with-styling>`})
+        class MyComp {
+        }
+
+        TestBed.configureTestingModule(
+            {declarations: [MyComp, MyCompWithStyling, MyDirWithStyling]});
+        const fixture = TestBed.createComponent(MyComp);
+        const elm = fixture.nativeElement.querySelector('my-comp-with-styling') !;
+
+        fixture.detectChanges();
+        expect(elm.style.color).toEqual('red');
+      });
+
+
   it('should combine host class.foo bindings from multiple directives', () => {
 
     @Directive({

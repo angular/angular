@@ -390,6 +390,18 @@ function markDuplicates(
 /**
  * Determines if two `TStylingKey`s are a match.
  *
+ * When computing weather a binding contains a duplicate, we need to compare if the instruction
+ * `TStylingKey` has a match.
+ *
+ * Here are examples of `TStylingKey`s which match given `tStylingKeyCursor` is:
+ * - `color`
+ *    - `color`    // Match another color
+ *    - `null`     // That means that `tStylingKey` is a `classMap`/`styleMap` instruction
+ *    - `['', 'color', 'other', true]` // wrapped `color` so match
+ *    - `['', null, 'other', true]`       // wrapped `null` so match
+ *    - `['', 'width', 'color', 'value']` // wrapped static value contains a match on `'color'`
+ * - `null`       // `tStylingKeyCursor` always match as it is `classMap`/`styleMap` instruction
+ *
  * @param tStylingKeyCursor
  * @param tStylingKey
  */
@@ -399,7 +411,8 @@ function isStylingMatch(tStylingKeyCursor: TStylingKey, tStylingKey: TStylingKey
           Array.isArray(tStylingKey), true, 'Expected that \'tStylingKey\' has been unwrapped');
   if (tStylingKeyCursor === null ||  // If the cursor is `null` it means that we have map at that
                                      // location so we must assume that we have a match.
-      tStylingKey == null ||         // If we are `null` then we are a map and must assume match.
+      tStylingKey == null ||  // If `tStylingKey` is `null` then it is a map therefor assume that it
+                              // contains a match.
       (Array.isArray(tStylingKeyCursor) ? tStylingKeyCursor[1] : tStylingKeyCursor) ===
           tStylingKey  // If the keys match explicitly than we are a match.
       ) {

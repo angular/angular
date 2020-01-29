@@ -338,20 +338,23 @@ export function wrapInStaticStylingKey(
   const hostDirectiveDef = getHostDirectiveDef(tData);
   let residual = isClassBased ? tNode.residualClasses : tNode.residualStyles;
   if (hostDirectiveDef === null) {
-    // We are in template.
-    // If template already had styling instruction than it has already collected the static
+    // We are in template node.
+    // If template node already had styling instruction then it has already collected the static
     // styling and there is no need to collect them again. We know that we are the first styling
     // instruction because the `TNode.*Bindings` points to 0 (nothing has been inserted yet).
     const isFirstStylingInstructionInTemplate =
         (isClassBased ? tNode.classBindings : tNode.styleBindings) as any as number === 0;
     if (isFirstStylingInstructionInTemplate) {
+      // It would be nice to be able to get the statics from `mergeAttrs`, however, at this point
+      // they are already merged and it would not be possible to figure which property belongs where
+      // in the priority.
       stylingKey = collectStylingFromDirectives(null, tData, tNode, stylingKey, isClassBased);
       stylingKey = collectStylingFromTAttrs(stylingKey, tNode.attrs, isClassBased);
       // We know that if we have styling binding in template we can't have residual.
       residual = null;
     }
   } else {
-    // We are in host binding and there is no template binding in front of us.
+    // We are in host binding node and there was no binding instruction in template node.
     // This means that we need to compute the residual.
     const directives = tNode.directives;
     const isFirstStylingInstructionInHostBinding = directives !== null &&
@@ -360,11 +363,11 @@ export function wrapInStaticStylingKey(
       stylingKey =
           collectStylingFromDirectives(hostDirectiveDef, tData, tNode, stylingKey, isClassBased);
       if (residual === null) {
-        // We only need to recompute residual if it is `null`.
         // - If `null` than either:
         //    - Template styling instruction already ran and it has consumed the static
         //      styling into its `TStylingKey` and so there is no need to update residual. Instead
-        //      we need to update the static styling of the template styling instruction. OR
+        //      we need to update the `TStylingKey` associated with the first template node
+        //      instruction. OR
         //    - Some other styling instruction ran and determined that there are no residuals
         let templateStylingKey = getTemplateHeadTStylingKey(tData, tNode, isClassBased);
         if (templateStylingKey !== undefined && Array.isArray(templateStylingKey)) {
@@ -435,8 +438,7 @@ function collectResidual(tNode: TNode, isClassBased: boolean): ArrayMap<any>|nul
       residual = collectStylingFromTAttrs(residual, attrs, isClassBased) as ArrayMap<any>| null;
     }
   }
-  residual = collectStylingFromTAttrs(residual, tNode.attrs, isClassBased) as ArrayMap<any>| null;
-  return residual;
+  return collectStylingFromTAttrs(residual, tNode.attrs, isClassBased) as ArrayMap<any>| null;
 }
 
 /**

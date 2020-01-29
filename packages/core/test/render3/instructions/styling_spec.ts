@@ -10,7 +10,7 @@ import {DirectiveDef} from '@angular/core/src/render3';
 import {ɵɵdefineDirective} from '@angular/core/src/render3/definition';
 import {classStringParser, initializeStylingStaticArrayMap, styleStringParser, toStylingArrayMap, ɵɵclassProp, ɵɵstyleMap, ɵɵstyleProp, ɵɵstyleSanitizer} from '@angular/core/src/render3/instructions/styling';
 import {AttributeMarker, TAttributes, TDirectiveDefs} from '@angular/core/src/render3/interfaces/node';
-import {TStylingKey, TStylingRange, getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate} from '@angular/core/src/render3/interfaces/styling';
+import {StylingRange, TStylingKey, TStylingRange, getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate, toTStylingRange} from '@angular/core/src/render3/interfaces/styling';
 import {HEADER_OFFSET, TVIEW} from '@angular/core/src/render3/interfaces/view';
 import {getLView, leaveView, setBindingRootForHostBindings} from '@angular/core/src/render3/state';
 import {getNativeByIndex} from '@angular/core/src/render3/util/view_utils';
@@ -477,6 +477,27 @@ describe('styling', () => {
           ] as any);
         });
       });
+    });
+  });
+
+
+  describe('TStylingRange', () => {
+    const MAX_VALUE = StylingRange.UNSIGNED_MASK;
+
+    it('should throw on negative values', () => {
+      expect(() => toTStylingRange(0, -1)).toThrow();
+      expect(() => toTStylingRange(-1, 0)).toThrow();
+    });
+
+    it('should throw on overflow', () => {
+      expect(() => toTStylingRange(0, MAX_VALUE + 1)).toThrow();
+      expect(() => toTStylingRange(MAX_VALUE + 1, 0)).toThrow();
+    });
+
+    it('should retrieve the same value which went in just below overflow', () => {
+      const range = toTStylingRange(MAX_VALUE, MAX_VALUE);
+      expect(getTStylingRangePrev(range)).toEqual(MAX_VALUE);
+      expect(getTStylingRangeNext(range)).toEqual(MAX_VALUE);
     });
   });
 });
