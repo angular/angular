@@ -1,12 +1,10 @@
 @import '@material/chips/mixins.import';
 @import '../../material/core/style/layout-common';
-@import '../../material/core/style/noop-animation';
 @import '../../cdk/a11y/a11y';
 @import '../mdc-helpers/mdc-helpers';
 
 @include mdc-chip-without-ripple($query: $mat-base-styles-query);
 @include mdc-chip-set-core-styles($query: $mat-base-styles-query);
-@include _noop-animation;
 
 .mat-mdc-chip {
   // MDC uses a pointer cursor
@@ -15,6 +13,14 @@
   overflow: hidden;
   // Required for the ripple to clip properly in Safari.
   transform: translateZ(0);
+
+  &._mat-animation-noopable {
+    // MDC's chip removal works by toggling a class on the chip, waiting for its transitions
+    // to finish and emitting the remove event at the end. The problem is that if our animations
+    // were disabled via the `NoopAnimationsModule`, the element won't have a transition and
+    // `transitionend` won't fire. We work around the issue by assigning a very short transition.
+    transition-duration: 1ms;
+  }
 
   @include cdk-high-contrast {
     outline: solid 1px;
