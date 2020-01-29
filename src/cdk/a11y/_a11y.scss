@@ -18,16 +18,39 @@
   }
 }
 
-// Applies styles for users in high contrast mode. Note that this only applies
-// to Microsoft browsers. Chrome can be included by checking for the `html[hc]`
-// attribute, however Chrome handles high contrast differently.
-//
-// @param target Which kind of high contrast setting to target. Defaults to `active`, can be
-//    `white-on-black` or `black-on-white`.
-@mixin cdk-high-contrast($target: active) {
+/// Emits the mixin's content nested under `$selector-context` if `$selector-context`
+/// is non-empty.
+/// @param selector-context The selector under which to nest the mixin's content.
+@mixin _cdk-optionally-nest-content($selector-context) {
+  @if ($selector-context == '') {
+    @content;
+  }
+  @else {
+    #{$selector-context} {
+      @content;
+    }
+  }
+}
+
+/// Applies styles for users in high contrast mode. Note that this only applies
+/// to Microsoft browsers. Chrome can be included by checking for the `html[hc]`
+/// attribute, however Chrome handles high contrast differently.
+///
+/// @param target Which kind of high contrast setting to target. Defaults to `active`, can be
+///    `white-on-black` or `black-on-white`.
+/// @param encapsulation Whether to emit styles for view encapsulation. Values are:
+///     * `on` - works for `Emulated`, `Native`, and `ShadowDom`
+///     * `off` - works for `None`
+///     * `any` - works for all encapsulation modes by emitting the CSS twice (default).
+@mixin cdk-high-contrast($target: active, $encapsulation: 'any') {
   @if ($target != 'active' and $target != 'black-on-white' and $target != 'white-on-black') {
     @error 'Unknown cdk-high-contrast value "#{$target}" provided. ' +
            'Allowed values are "active", "black-on-white", and "white-on-black"';
+  }
+
+  @if ($encapsulation != 'on' and $encapsulation != 'off' and $encapsulation != 'any') {
+    @error 'Unknown cdk-high-contrast encapsulation "#{$encapsulation}" provided. ' +
+           'Allowed values are "on", "off", and "any"';
   }
 
   // If the selector context has multiple parts, such as `.section, .region`, just doing
@@ -35,12 +58,18 @@
   // context. We address this by nesting the selector context under .cdk-high-contrast.
   @at-root {
     $selector-context: #{&};
-    .cdk-high-contrast-#{$target} {
-      @if ($selector-context == '') {
-        @content;
+
+    @if ($encapsulation != 'on') {
+      .cdk-high-contrast-#{$target} {
+        @include _cdk-optionally-nest-content($selector-context) {
+          @content;
+        }
       }
-      @else {
-        #{$selector-context} {
+    }
+
+    @if ($encapsulation != 'off') {
+      .cdk-high-contrast-#{$target} :host {
+        @include _cdk-optionally-nest-content($selector-context) {
           @content;
         }
       }
