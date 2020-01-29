@@ -16,7 +16,7 @@ import {getLView, leaveView, setBindingRootForHostBindings} from '@angular/core/
 import {getNativeByIndex} from '@angular/core/src/render3/util/view_utils';
 import {bypassSanitizationTrustStyle} from '@angular/core/src/sanitization/bypass';
 import {ɵɵsanitizeStyle} from '@angular/core/src/sanitization/sanitization';
-import {arrayMapSet} from '@angular/core/src/util/array_utils';
+import {keyValueArraySet} from '@angular/core/src/util/array_utils';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {getElementClasses, getElementStyles} from '@angular/core/testing/src/styling';
 import {expect} from '@angular/core/testing/src/testing_internal';
@@ -403,37 +403,37 @@ describe('styling', () => {
 
   describe('toStylingArray', () => {
     describe('falsy', () => {
-      it('should return empty ArrayMap', () => {
-        expect(toStylingArrayMap(arrayMapSet, null !, '')).toEqual([] as any);
-        expect(toStylingArrayMap(arrayMapSet, null !, null)).toEqual([] as any);
-        expect(toStylingArrayMap(arrayMapSet, null !, undefined)).toEqual([] as any);
-        expect(toStylingArrayMap(arrayMapSet, null !, [])).toEqual([] as any);
-        expect(toStylingArrayMap(arrayMapSet, null !, {})).toEqual([] as any);
+      it('should return empty KeyValueArray', () => {
+        expect(toStylingArrayMap(keyValueArraySet, null !, '')).toEqual([] as any);
+        expect(toStylingArrayMap(keyValueArraySet, null !, null)).toEqual([] as any);
+        expect(toStylingArrayMap(keyValueArraySet, null !, undefined)).toEqual([] as any);
+        expect(toStylingArrayMap(keyValueArraySet, null !, [])).toEqual([] as any);
+        expect(toStylingArrayMap(keyValueArraySet, null !, {})).toEqual([] as any);
       });
       describe('string', () => {
         it('should parse classes', () => {
-          expect(toStylingArrayMap(arrayMapSet, classStringParser, '  ')).toEqual([] as any);
-          expect(toStylingArrayMap(arrayMapSet, classStringParser, ' X A ')).toEqual([
+          expect(toStylingArrayMap(keyValueArraySet, classStringParser, '  ')).toEqual([] as any);
+          expect(toStylingArrayMap(keyValueArraySet, classStringParser, ' X A ')).toEqual([
             'A', true, 'X', true
           ] as any);
         });
         it('should parse styles', () => {
-          expect(toStylingArrayMap(arrayMapSet, styleStringParser, '  ')).toEqual([] as any);
-          expect(toStylingArrayMap(arrayMapSet, styleStringParser, 'B:b;A:a')).toEqual([
+          expect(toStylingArrayMap(keyValueArraySet, styleStringParser, '  ')).toEqual([] as any);
+          expect(toStylingArrayMap(keyValueArraySet, styleStringParser, 'B:b;A:a')).toEqual([
             'A', 'a', 'B', 'b'
           ] as any);
         });
       });
       describe('array', () => {
         it('should parse', () => {
-          expect(toStylingArrayMap(arrayMapSet, null !, ['X', 'A'])).toEqual([
+          expect(toStylingArrayMap(keyValueArraySet, null !, ['X', 'A'])).toEqual([
             'A', true, 'X', true
           ] as any);
         });
       });
       describe('object', () => {
         it('should parse', () => {
-          expect(toStylingArrayMap(arrayMapSet, null !, {X: 'x', A: 'a'})).toEqual([
+          expect(toStylingArrayMap(keyValueArraySet, null !, {X: 'x', A: 'a'})).toEqual([
             'A', 'a', 'X', 'x'
           ] as any);
         });
@@ -441,13 +441,13 @@ describe('styling', () => {
       describe('Map', () => {
         it('should parse', () => {
           expect(toStylingArrayMap(
-                     arrayMapSet, null !, new Map<string, string>([['X', 'x'], ['A', 'a']])))
+                     keyValueArraySet, null !, new Map<string, string>([['X', 'x'], ['A', 'a']])))
               .toEqual(['A', 'a', 'X', 'x'] as any);
         });
       });
       describe('Iterable', () => {
         it('should parse', () => {
-          expect(toStylingArrayMap(arrayMapSet, null !, new Set<string>(['X', 'A']))).toEqual([
+          expect(toStylingArrayMap(keyValueArraySet, null !, new Set<string>(['X', 'A']))).toEqual([
             'A', true, 'X', true
           ] as any);
         });

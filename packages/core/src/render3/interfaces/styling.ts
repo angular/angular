@@ -6,7 +6,7 @@
 * found in the LICENSE file at https://angular.io/license
 */
 
-import {ArrayMap} from '../../util/array_utils';
+import {KeyValueArray} from '../../util/array_utils';
 import {assertNumber, assertNumberInRange} from '../../util/assert';
 
 /**
@@ -32,7 +32,7 @@ export type TStylingKeyPrimitive = string | null | false;
 /**
  * Store the static values for the styling binding.
  *
- * The `TStylingStatic` is just `ArrayMap` where key `""` (stored at location 0) contains the
+ * The `TStylingStatic` is just `KeyValueArray` where key `""` (stored at location 0) contains the
  * `TStylingKey` (stored at location 1). In other words this wraps the `TStylingKey` such that the
  * `""` contains the wrapped value.
  *
@@ -89,7 +89,7 @@ export type TStylingKeyPrimitive = string | null | false;
  *
  * This means that it is safe to add class.
  */
-export interface TStylingStatic extends ArrayMap<any> {}
+export interface TStylingStatic extends KeyValueArray<any> {}
 
 /**
  * This is a branded number which contains previous and next index.

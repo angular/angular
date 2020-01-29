@@ -6,7 +6,7 @@
 * found in the LICENSE file at https://angular.io/license
 */
 
-import {ArrayMap, arrayMapIndexOf} from '../../util/array_utils';
+import {KeyValueArray, keyValueArrayIndexOf} from '../../util/array_utils';
 import {assertDataInRange, assertEqual, assertNotEqual} from '../../util/assert';
 import {assertFirstUpdatePass} from '../assert';
 import {TNode} from '../interfaces/node';
@@ -204,10 +204,10 @@ export function insertTStylingBinding(
   let tStylingKey: TStylingKeyPrimitive;
   if (Array.isArray(tStylingKeyWithStatic)) {
     // We are case when the `TStylingKey` contains static fields as well.
-    const staticArrayMap = tStylingKeyWithStatic as ArrayMap<any>;
+    const staticArrayMap = tStylingKeyWithStatic as KeyValueArray<any>;
     tStylingKey = staticArrayMap[1];  // unwrap.
     // We need to check if our key is present in the static so that we can mark it as duplicate.
-    if (tStylingKey === null || arrayMapIndexOf(staticArrayMap, tStylingKey as string) > 0) {
+    if (tStylingKey === null || keyValueArrayIndexOf(staticArrayMap, tStylingKey as string) > 0) {
       // tStylingKey is present in the statics, need to mark it as duplicate.
       isKeyDuplicateOfStatic = true;
     }
@@ -292,7 +292,7 @@ function markDuplicateOfResidualStyling(
     tNode: TNode, tStylingKey: TStylingKey, tData: TData, index: number, isClassBinding: boolean) {
   const residual = isClassBinding ? tNode.residualClasses : tNode.residualStyles;
   if (residual != null /* or undefined */ && typeof tStylingKey == 'string' &&
-      arrayMapIndexOf(residual, tStylingKey) >= 0) {
+      keyValueArrayIndexOf(residual, tStylingKey) >= 0) {
     // We have duplicate in the residual so mark ourselves as duplicate.
     tData[index + 1] = setTStylingRangeNextDuplicate(tData[index + 1] as TStylingRange);
   }
@@ -418,9 +418,10 @@ function isStylingMatch(tStylingKeyCursor: TStylingKey, tStylingKey: TStylingKey
       ) {
     return true;
   } else if (Array.isArray(tStylingKeyCursor) && typeof tStylingKey === 'string') {
-    // if we did not find a match, but `tStylingKeyCursor` is `ArrayMap` that means cursor has
+    // if we did not find a match, but `tStylingKeyCursor` is `KeyValueArray` that means cursor has
     // statics and we need to check those as well.
-    return arrayMapIndexOf(tStylingKeyCursor, tStylingKey) >= 0;  // see if we are matching the key
+    return keyValueArrayIndexOf(tStylingKeyCursor, tStylingKey) >=
+        0;  // see if we are matching the key
   }
   return false;
 }

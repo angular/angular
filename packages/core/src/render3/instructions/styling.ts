@@ -9,7 +9,7 @@
 import {SafeValue, unwrapSafeValue} from '../../sanitization/bypass';
 import {stylePropNeedsSanitization, ɵɵsanitizeStyle} from '../../sanitization/sanitization';
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
-import {ArrayMap, arrayMapGet, arrayMapSet} from '../../util/array_utils';
+import {KeyValueArray, keyValueArrayGet, keyValueArraySet} from '../../util/array_utils';
 import {assertDefined, assertEqual, assertGreaterThanOrEqual, assertLessThan, assertNotEqual, assertNotSame, throwError} from '../../util/assert';
 import {EMPTY_ARRAY} from '../../util/empty';
 import {concatStringsWithSpace, stringify} from '../../util/stringify';
@@ -127,17 +127,17 @@ export function ɵɵstyleMap(
 
 
 /**
- * Parse text as style and add values to ArrayMap.
+ * Parse text as style and add values to KeyValueArray.
  *
  * This code is pulled out to a separate function so that it can be tree shaken away if it is not
  * needed. It is only referenced from `ɵɵstyleMap`.
  *
- * @param arrayMap ArrayMap to add parsed values to.
+ * @param keyValueArray KeyValueArray to add parsed values to.
  * @param text text to parse.
  */
-export function styleStringParser(arrayMap: ArrayMap<any>, text: string): void {
+export function styleStringParser(keyValueArray: KeyValueArray<any>, text: string): void {
   for (let i = parseStyle(text); i >= 0; i = parseStyleNext(text, i)) {
-    styleArrayMapSet(arrayMap, getLastParsedKey(text), getLastParsedValue(text));
+    styleArrayMapSet(keyValueArray, getLastParsedKey(text), getLastParsedValue(text));
   }
 }
 
@@ -163,21 +163,21 @@ export function styleStringParser(arrayMap: ArrayMap<any>, text: string): void {
 export function ɵɵclassMap(
     classes: {[className: string]: boolean | undefined | null} |
     Map<string, boolean|undefined|null>| Set<string>| string[] | string | undefined | null): void {
-  checkStylingMap(arrayMapSet, classStringParser, classes, true);
+  checkStylingMap(keyValueArraySet, classStringParser, classes, true);
 }
 
 /**
- * Parse text as class and add values to ArrayMap.
+ * Parse text as class and add values to KeyValueArray.
  *
  * This code is pulled out to a separate function so that it can be tree shaken away if it is not
  * needed. It is only referenced from `ɵɵclassMap`.
  *
- * @param arrayMap ArrayMap to add parsed values to.
+ * @param keyValueArray KeyValueArray to add parsed values to.
  * @param text text to parse.
  */
-export function classStringParser(arrayMap: ArrayMap<any>, text: string): void {
+export function classStringParser(keyValueArray: KeyValueArray<any>, text: string): void {
   for (let i = parseClassName(text); i >= 0; i = parseClassNameNext(text, i)) {
-    arrayMapSet(arrayMap, getLastParsedKey(text), true);
+    keyValueArraySet(keyValueArray, getLastParsedKey(text), true);
   }
 }
 
@@ -221,17 +221,18 @@ export function checkStylingProperty(
 /**
  * Common code between `ɵɵclassMap` and `ɵɵstyleMap`.
  *
- * @param arrayMapSet (See `arrayMapSet` in "util/array_utils") Gets passed in as a function so that
+ * @param keyValueArraySet (See `keyValueArraySet` in "util/array_utils") Gets passed in as a
+ * function so that
  *        `style` can pass in version which does sanitization. This is done for tree shaking
  *        purposes.
- * @param stringParser Parser used to pares `value` if `string`. (Passed in as `style` and `class`
+ * @param stringParser Parser used to parse `value` if `string`. (Passed in as `style` and `class`
  *        have different parsers.)
  * @param value bound value from application
  * @param isClassBased `true` if `class` change (`false` if `style`)
  */
 export function checkStylingMap(
-    arrayMapSet: (arrayMap: ArrayMap<any>, key: string, value: any) => void,
-    stringParser: (styleArrayMap: ArrayMap<any>, text: string) => void, value: any|NO_CHANGE,
+    keyValueArraySet: (keyValueArray: KeyValueArray<any>, key: string, value: any) => void,
+    stringParser: (styleArrayMap: KeyValueArray<any>, text: string) => void, value: any|NO_CHANGE,
     isClassBased: boolean): void {
   const lView = getLView();
   const tView = lView[TVIEW];
@@ -272,7 +273,7 @@ export function checkStylingMap(
     } else {
       updateStylingMap(
           tView, tNode, lView, lView[RENDERER], lView[bindingIndex + 1],
-          lView[bindingIndex + 1] = toStylingArrayMap(arrayMapSet, stringParser, value),
+          lView[bindingIndex + 1] = toStylingArrayMap(keyValueArraySet, stringParser, value),
           isClassBased, bindingIndex);
     }
   }
@@ -432,16 +433,17 @@ function setTemplateHeadTStylingKey(
   tData[getTStylingRangePrev(bindings)] = tStylingKey;
 }
 
-function collectResidual(tNode: TNode, isClassBased: boolean): ArrayMap<any>|null {
-  let residual: ArrayMap<any>|null|undefined = undefined;
+function collectResidual(tNode: TNode, isClassBased: boolean): KeyValueArray<any>|null {
+  let residual: KeyValueArray<any>|null|undefined = undefined;
   const directives = tNode.directives;
   if (directives) {
     for (let i = directives[DirectiveDefs.STYLING_CURSOR] + 1; i < directives.length; i++) {
       const attrs = (directives[i] as DirectiveDef<any>).hostAttrs;
-      residual = collectStylingFromTAttrs(residual, attrs, isClassBased) as ArrayMap<any>| null;
+      residual =
+          collectStylingFromTAttrs(residual, attrs, isClassBased) as KeyValueArray<any>| null;
     }
   }
-  return collectStylingFromTAttrs(residual, tNode.attrs, isClassBased) as ArrayMap<any>| null;
+  return collectStylingFromTAttrs(residual, tNode.attrs, isClassBased) as KeyValueArray<any>| null;
 }
 
 /**
@@ -508,7 +510,8 @@ function collectStylingFromTAttrs(
           if (!Array.isArray(stylingKey)) {
             stylingKey = stylingKey === undefined ? [] : ['', stylingKey] as any;
           }
-          arrayMapSet(stylingKey as ArrayMap<any>, item, isClassBased ? true : attrs[++i]);
+          keyValueArraySet(
+              stylingKey as KeyValueArray<any>, item, isClassBased ? true : attrs[++i]);
         }
       }
     }
@@ -528,50 +531,53 @@ export function getHostDirectiveDef(tData: TData): DirectiveDef<any>|null {
 }
 
 /**
- * Convert user input to `ArrayMap`.
+ * Convert user input to `KeyValueArray`.
  *
  * This function takes user input which could be `string`, Object literal, or iterable and converts
- * it into a consistent representation. The output of this is `ArrayMap` (which is an array where
+ * it into a consistent representation. The output of this is `KeyValueArray` (which is an array
+ * where
  * even indexes contain keys and odd indexes contain values for those keys).
  *
- * The advantage of converting to `ArrayMap` is that we can perform diff in an input independent
+ * The advantage of converting to `KeyValueArray` is that we can perform diff in an input
+ * independent
  * way.
  * (ie we can compare `foo bar` to `['bar', 'baz'] and determine a set of changes which need to be
  * applied)
  *
- * The fact that `ArrayMap` is sorted is very important because it allows us to compute the
+ * The fact that `KeyValueArray` is sorted is very important because it allows us to compute the
  * difference in linear fashion without the need to allocate any additional data.
  *
  * For example if we kept this as a `Map` we would have to iterate over previous `Map` to determine
  * which values need to be deleted, over the new `Map` to determine additions, and we would have to
  * keep additional `Map` to keep track of duplicates or items which have not yet been visited.
  *
- * @param arrayMapSet (See `arrayMapSet` in "util/array_utils") Gets passed in as a function so that
+ * @param keyValueArraySet (See `keyValueArraySet` in "util/array_utils") Gets passed in as a
+ * function so that
  *        `style` can pass in version which does sanitization. This is done for tree shaking
  *        purposes.
  * @param stringParser The parser is passed in so that it will be tree shakable. See
  *        `styleStringParser` and `classStringParser`
- * @param value The value to parse/convert to `ArrayMap`
+ * @param value The value to parse/convert to `KeyValueArray`
  */
 export function toStylingArrayMap(
-    arrayMapSet: (arrayMap: ArrayMap<any>, key: string, value: any) => void,
-    stringParser: (styleArrayMap: ArrayMap<any>, text: string) => void, value: string|string[]|
-    {[key: string]: any}|Map<any, any>|Set<any>|null|undefined): ArrayMap<any> {
+    keyValueArraySet: (keyValueArray: KeyValueArray<any>, key: string, value: any) => void,
+    stringParser: (styleArrayMap: KeyValueArray<any>, text: string) => void, value: string|string[]|
+    {[key: string]: any}|Map<any, any>|Set<any>|null|undefined): KeyValueArray<any> {
   if (value == null /*|| value === undefined */ || value === '') return EMPTY_ARRAY as any;
-  const styleArrayMap: ArrayMap<any> = [] as any;
+  const styleArrayMap: KeyValueArray<any> = [] as any;
   if (Array.isArray(value)) {
     for (let i = 0; i < value.length; i++) {
-      arrayMapSet(styleArrayMap, value[i], true);
+      keyValueArraySet(styleArrayMap, value[i], true);
     }
   } else if (typeof value === 'object') {
     if (value instanceof Map) {
-      value.forEach((v, k) => arrayMapSet(styleArrayMap, k, v));
+      value.forEach((v, k) => keyValueArraySet(styleArrayMap, k, v));
     } else if (value instanceof Set) {
-      value.forEach((k) => arrayMapSet(styleArrayMap, k, true));
+      value.forEach((k) => keyValueArraySet(styleArrayMap, k, true));
     } else {
       for (const key in value) {
         if (value.hasOwnProperty(key)) {
-          arrayMapSet(styleArrayMap, key, value[key]);
+          keyValueArraySet(styleArrayMap, key, value[key]);
         }
       }
     }
@@ -586,17 +592,17 @@ export function toStylingArrayMap(
 /**
  * Set a `value` for a `key` taking style sanitization into account.
  *
- * See: `arrayMapSet` for details
+ * See: `keyValueArraySet` for details
  *
- * @param arrayMap ArrayMap to add to.
+ * @param keyValueArray KeyValueArray to add to.
  * @param key Style key to add. (This key will be checked if it needs sanitization)
  * @param value The value to set (If key needs sanitization it will be sanitized)
  */
-function styleArrayMapSet(arrayMap: ArrayMap<any>, key: string, value: any) {
+function styleArrayMapSet(keyValueArray: KeyValueArray<any>, key: string, value: any) {
   if (stylePropNeedsSanitization(key)) {
     value = ɵɵsanitizeStyle(value);
   }
-  arrayMapSet(arrayMap, key, value);
+  keyValueArraySet(keyValueArray, key, value);
 }
 
 /**
@@ -605,23 +611,24 @@ function styleArrayMapSet(arrayMap: ArrayMap<any>, key: string, value: any) {
  * Map based styling could be anything which contains more than one binding. For example `string`,
  * `Map`, `Set` or object literal. Dealing with all of these types would complicate the logic so
  * instead this function expects that the complex input is first converted into normalized
- * `ArrayMap`. The advantage of normalization is that we get the values sorted, which makes it very
+ * `KeyValueArray`. The advantage of normalization is that we get the values sorted, which makes it
+ * very
  * cheap to compute deltas between the previous and current value.
  *
  * @param tView Associated `TView.data` contains the linked list of binding priorities.
  * @param tNode `TNode` where the binding is located.
  * @param lView `LView` contains the values associated with other styling binding at this `TNode`.
  * @param renderer Renderer to use if any updates.
- * @param oldArrayMap Previous value represented as `ArrayMap`
- * @param newArrayMap Current value represented as `ArrayMap`
+ * @param oldArrayMap Previous value represented as `KeyValueArray`
+ * @param newArrayMap Current value represented as `KeyValueArray`
  * @param isClassBased `true` if `class` (`false` if `style`)
  * @param bindingIndex Binding index of the binding.
  */
 function updateStylingMap(
-    tView: TView, tNode: TNode, lView: LView, renderer: Renderer3, oldArrayMap: ArrayMap<any>,
-    newArrayMap: ArrayMap<any>, isClassBased: boolean, bindingIndex: number) {
-  if (oldArrayMap as ArrayMap<any>| NO_CHANGE === NO_CHANGE) {
-    // On first execution the oldArrayMap is NO_CHANGE => treat it as empty ArrayMap.
+    tView: TView, tNode: TNode, lView: LView, renderer: Renderer3, oldArrayMap: KeyValueArray<any>,
+    newArrayMap: KeyValueArray<any>, isClassBased: boolean, bindingIndex: number) {
+  if (oldArrayMap as KeyValueArray<any>| NO_CHANGE === NO_CHANGE) {
+    // On first execution the oldArrayMap is NO_CHANGE => treat it as empty KeyValueArray.
     oldArrayMap = EMPTY_ARRAY as any;
   }
   let oldIndex = 0;
@@ -645,7 +652,7 @@ function updateStylingMap(
       }
     } else if (newKey === null || oldKey !== null && oldKey < newKey !) {
       // DELETE: oldKey key is missing or we did not find the oldKey in the newValue
-      // (because the arrayMap is sorted and `newKey` is found later alphabetically).
+      // (because the keyValueArray is sorted and `newKey` is found later alphabetically).
       // `"background" < "color"` so we need to delete `"background"` because it is not found in the
       // new array.
       oldIndex += 2;
@@ -726,7 +733,8 @@ function updateStyling(
  * NOTE: The styling stores two values.
  * 1. The raw value which came from the application is stored at `index + 0` location. (This value
  *    is used for dirty checking).
- * 2. The normalized value (converted to `ArrayMap` if map and sanitized) is stored at `index + 1`.
+ * 2. The normalized value (converted to `KeyValueArray` if map and sanitized) is stored at `index +
+ * 1`.
  *    The advantage of storing the sanitized value is that once the value is written we don't need
  *    to worry about sanitizing it later or keeping track of the sanitizer.
  *
@@ -744,6 +752,11 @@ function updateStyling(
 function findStylingValue(
     tData: TData, tNode: TNode | null, lView: LView, prop: string, index: number,
     isClassBased: boolean): any {
+  // `TNode` to use for resolving static styling. Also controls search direction.
+  //   - `TNode` search next and quit as soon as `isStylingValuePresent(value)` is true.
+  //      If no value found consult `tNode.residualStyle`/`tNode.residualClass` for default value.
+  //   - `null` search prev and go all the way to end. Return last value where
+  //     `isStylingValuePresent(value)` is true.
   const isPrevDirection = tNode === null;
   let value: any = undefined;
   while (index > 0) {
@@ -751,10 +764,10 @@ function findStylingValue(
     const containsStatics = Array.isArray(rawKey);
     // Unwrap the key if we contain static values.
     const key = containsStatics ? (rawKey as string[])[1] : rawKey;
-    let currentValue = key === null ? arrayMapGet(lView[index + 1], prop) :
+    let currentValue = key === null ? keyValueArrayGet(lView[index + 1], prop) :
                                       key === prop ? lView[index + 1] : undefined;
     if (containsStatics && !isStylingValuePresent(currentValue)) {
-      currentValue = arrayMapGet(rawKey as ArrayMap<any>, prop);
+      currentValue = keyValueArrayGet(rawKey as KeyValueArray<any>, prop);
     }
     if (isStylingValuePresent(currentValue)) {
       value = currentValue;
@@ -770,7 +783,7 @@ function findStylingValue(
     // consult residual styling
     let residual = isClassBased ? tNode.residualClasses : tNode.residualStyles;
     if (residual != null /** OR residual !=== undefined */) {
-      value = arrayMapGet(residual !, prop);
+      value = keyValueArrayGet(residual !, prop);
     }
   }
   return value;

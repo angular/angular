@@ -240,10 +240,6 @@ export function getLView(): LView {
   return lFrame === null ? null ! : lFrame.lView;
 }
 
-export function clearActiveHostElement() {
-  setSelectedIndex(-1);
-}
-
 /**
  * Restores `contextViewData` to the given OpaqueViewState instance.
  *
@@ -550,12 +546,4 @@ export function getCurrentStyleSanitizer() {
   // `NodeStyleDebug` hence we return `null`. This should be fixed
   const lFrame = instructionState.lFrame;
   return lFrame === null ? null : lFrame.currentSanitizer;
-}
-
-/**
- * Used for encoding both Class and Style index into `LFrame.stylingBindingChanged`.
- */
-const enum BindingChanged {
-  CLASS_SHIFT = 16,
-  STYLE_MASK = 0xFFFF,
 }
