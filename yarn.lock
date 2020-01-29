@@ -11275,10 +11275,10 @@ try-require@^1.0.0:
   resolved "https://registry.yarnpkg.com/try-require/-/try-require-1.2.1.tgz#34489a2cac0c09c1cc10ed91ba011594d4333be2"
   integrity sha1-NEiaLKwMCcHMEO2RugEVlNQzO+I=
 
-ts-api-guardian@^0.4.6:
-  version "0.4.6"
-  resolved "https://registry.yarnpkg.com/ts-api-guardian/-/ts-api-guardian-0.4.6.tgz#ebd9a700b40de6ca4dbc5c468e322fe86476b6db"
-  integrity sha512-V+AVEe4HCi3j0mKrvSBNZN6zoY0eIw2r9vcWrqu4vhGlpASgPTSwuPHtxctx4qMBH5ieyqO6rf1LrQfsr8s5tw==
+ts-api-guardian@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/ts-api-guardian/-/ts-api-guardian-0.5.0.tgz#1b63546dfd61581054802bdc8d5915ceebcc2c35"
+  integrity sha512-BjVlb23FUqWU+wmdHkLdaHcllU+v/Cca26sY40bCkM15BCF2yc17daOm+UXyvxQ9NndPM/40m+X+GLyDkrE9tA==
   dependencies:
     chalk "^2.3.1"
     diff "^3.5.0"

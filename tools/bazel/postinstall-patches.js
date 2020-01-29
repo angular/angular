@@ -9,8 +9,8 @@ const path = require('path');
 const fs = require('fs');
 
 /**
- * Version of the post install patch. Needs to be incremented when patches
- * have been added or removed.
+ * Version of the post install patch. Needs to be incremented when
+ * existing patches or edits have been modified.
  */
 const PATCH_VERSION = 2;
 
@@ -36,10 +36,6 @@ try {
   // try/catch needed for this the material CI tests to work in angular/repo
   applyPatch(path.join(__dirname, './angular_bazel_rules_nodejs_1.0.0.patch'));
 } catch (_) {}
-
-// Temporary patch for ts-api-guardian to be compatible with rules_nodejs 1.0.0.
-// TODO: a new ts-api-guardian release is needed.
-applyPatch(path.join(__dirname, './ts_api_guardian_rules_nodejs_1.0.0.patch'));
 
 // Workaround for https://github.com/angular/angular/issues/30586. It's not possible to
 // enable tsickle decorator processing without enabling import rewriting to closure.
