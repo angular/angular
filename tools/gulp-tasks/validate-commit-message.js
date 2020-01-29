@@ -8,7 +8,7 @@
 
 
 // tslint:disable:no-console
-module.exports = (gulp) => () => {
+module.exports = (gulp) => async () => {
   try {
     if (process.env['CIRCLECI'] === 'true' && !process.env['CIRCLE_PR_NUMBER']) {
       console.info(
@@ -20,26 +20,16 @@ module.exports = (gulp) => () => {
     }
     const validateCommitMessage = require('../validate-commit-message');
     const shelljs = require('shelljs');
+    const getRefsAndShasForTarget = require('../utils/get-refs-and-shas-for-target')
 
     shelljs.set('-e');  // Break on error.
 
-    let baseBranch = 'master';
-    const currentVersion = require('semver').parse(require('../../package.json').version);
-    const baseHead =
-        shelljs
-            .exec(`git ls-remote --heads origin ${currentVersion.major}.${currentVersion.minor}.*`)
-            .trim()
-            .split('\n')
-            .pop();
-    if (baseHead) {
-      const match = /refs\/heads\/(.+)/.exec(baseHead);
-      baseBranch = match && match[1] || baseBranch;
-    }
+    const target = await getRefsAndShasForTarget(process.env['CIRCLE_PR_NUMBER']);
 
     // We need to fetch origin explicitly because it might be stale.
     // I couldn't find a reliable way to do this without fetch.
     const result = shelljs.exec(
-        `git fetch origin ${baseBranch} && git log --reverse --format=%s origin/${baseBranch}..HEAD | grep -v "#34769"`);
+        `git log --reverse --format=%s ${target.commonAncestorSha}..${target.latestShaOfPrBranch}`);
 
     if (result.code) {
       throw new Error(`Failed to fetch commits: ${result.stderr}`);
