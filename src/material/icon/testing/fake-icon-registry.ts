@@ -83,6 +83,12 @@ export class FakeMatIconRegistry implements PublicApi<MatIconRegistry>, OnDestro
   private _generateEmptySvg(): SVGElement {
     const emptySvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     emptySvg.classList.add('fake-testing-svg');
+    // Emulate real icon characteristics from `MatIconRegistry` so size remains consistent in tests.
+    emptySvg.setAttribute('fit', '');
+    emptySvg.setAttribute('height', '100%');
+    emptySvg.setAttribute('width', '100%');
+    emptySvg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    emptySvg.setAttribute('focusable', 'false');
     return emptySvg;
   }
 }
