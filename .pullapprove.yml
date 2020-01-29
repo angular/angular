@@ -183,23 +183,6 @@ groups:
 
 
   # =========================================================
-  #  Framework: Compiler + CLI integration
-  # =========================================================
-  fw-cli-integration:
-    conditions:
-      - >
-        contains_any_globs(files, [
-          'packages/compiler-cli/src/ngtools/**',
-          ])
-    reviewers:
-      users:
-        - filipesilva
-      teams:
-        - ~framework-global-approvers
-        - ~framework-global-approvers-for-docs-only-changes
-
-
-  # =========================================================
   #  Framework: Core
   # =========================================================
   fw-core:
@@ -893,24 +876,29 @@ groups:
       - >
         contains_any_globs(files, [
           '*',
-          '.buildkite/**',
           '.circleci/**',
           '.devcontainer/**',
           '.github/**',
           '.vscode/**',
+          '.yarn/**',
           'docs/BAZEL.md',
           'packages/*',
           'packages/examples/test-utils/**',
           'packages/private/**',
           'scripts/**',
           'third_party/**',
+          'tools/brotli-cli/**',
+          'tools/browsers/**',
           'tools/build/**',
+          'tools/circular_dependency_test/**',
           'tools/gulp-tasks/**',
+          'tools/ng_rollup_bundle/**',
           'tools/ngcontainer/**',
           'tools/npm/**',
-          'tools/public_api_guard/BUILD',
+          'tools/public_api_guard/BUILD.bazel',
           'tools/public_api_guard/public_api_guard.bzl',
           'tools/rxjs/**',
+          'tools/saucelabs/**',
           'tools/size-tracking/**',
           'tools/source-map-test/**',
           'tools/symbol-extractor/**',
@@ -921,7 +909,7 @@ groups:
           'tools/yarn/**',
           'tools/*',
           '**/*.bzl',
-          '**/*.BAZEL'
+          '**/*.bazel'
           ])
     reviewers:
       users:
