@@ -12,9 +12,8 @@ set +x -eu -o pipefail
   cd "$aioDir"
 
   # Install dependencies.
-  # (Since this script may run on different branches (e.g. stable), ignore the engines check.)
   echo -e "\nInstalling dependencies in '$aioDir'...\n-----"
-  yarn install --frozen-lockfile --ignore-engines --non-interactive
+  yarn install --frozen-lockfile --non-interactive
   yarn update-webdriver
 
   # Run checks for target URL.
