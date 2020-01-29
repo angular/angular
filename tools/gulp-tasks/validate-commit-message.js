@@ -8,38 +8,27 @@
 
 
 // tslint:disable:no-console
-module.exports = (gulp) => () => {
+module.exports = (gulp) => async() => {
   try {
-    if (process.env['CIRCLECI'] === 'true' && !process.env['CIRCLE_PR_NUMBER']) {
+    if (process.env['CI'] === 'true' && process.env['CI_PULL_REQUEST'] === 'false') {
       console.info(
-        `Since commit messages are validated as part of the PR review process,\n` +
-        `we do not need to commit messages on CI runs on upstream branches.\n\n` +
-        `Skipping validate-commit-message check`
-        )
+          `Since valid commit messages are enforced by PR linting on CI,\n` +
+          `we do not need to validate commit messages on CI runs on upstream branches.\n\n` +
+          `Skipping validate-commit-message check`);
       process.exit();
     }
     const validateCommitMessage = require('../validate-commit-message');
     const shelljs = require('shelljs');
+    const getRefsAndShasForTarget = require('../utils/get-refs-and-shas-for-target');
 
     shelljs.set('-e');  // Break on error.
 
-    let baseBranch = 'master';
-    const currentVersion = require('semver').parse(require('../../package.json').version);
-    const baseHead =
-        shelljs
-            .exec(`git ls-remote --heads origin ${currentVersion.major}.${currentVersion.minor}.*`)
-            .trim()
-            .split('\n')
-            .pop();
-    if (baseHead) {
-      const match = /refs\/heads\/(.+)/.exec(baseHead);
-      baseBranch = match && match[1] || baseBranch;
-    }
+    const target = await getRefsAndShasForTarget(process.env['CIRCLE_PR_NUMBER']);
 
     // We need to fetch origin explicitly because it might be stale.
     // I couldn't find a reliable way to do this without fetch.
     const result = shelljs.exec(
-        `git fetch origin ${baseBranch} && git log --reverse --format=%s origin/${baseBranch}..HEAD`);
+        `git log --reverse --format=%s ${target.commonAncestorSha}..${target.latestShaOfPrBranch}`);
 
     if (result.code) {
       throw new Error(`Failed to fetch commits: ${result.stderr}`);
@@ -47,10 +36,10 @@ module.exports = (gulp) => () => {
 
     const commitsByLine = result.trim().split(/\n/).filter(line => line != '');
 
-    console.log(`Examining ${commitsByLine.length} commit(s) between ${baseBranch} and HEAD`);
+    console.log(`Examining ${commitsByLine.length} commit(s) between ${target.base.ref} and HEAD`);
 
     if (commitsByLine.length == 0) {
-      console.log(`There are zero new commits between ${baseBranch} and HEAD`);
+      console.log(`There are zero new commits between ${target.base.ref} and HEAD`);
     }
 
     const disallowSquashCommits = true;
