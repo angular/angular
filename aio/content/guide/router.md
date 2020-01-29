@@ -3584,7 +3584,7 @@ Generate a `CrisisDetailResolver` service file within the `Crisis Center` featur
 Take the relevant parts of the crisis retrieval logic in `CrisisDetailComponent.ngOnInit`
 and move them into the `CrisisDetailResolverService`.
 Import the `Crisis` model, `CrisisService`, and the `Router`
-so you can navigate elsewhere if you can't fetch the crisis.
+so you can navigate elsewhere if you can't fetch the `Crisis`.
 
 Be explicit. Implement the `Resolve` interface with a type of `Crisis`.
 
