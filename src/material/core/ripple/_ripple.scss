@@ -13,6 +13,15 @@ $mat-ripple-color-opacity: 0.1;
     // By default, every ripple container should have position: relative in favor of creating an
     // easy API for developers using the MatRipple directive.
     position: relative;
+
+    // Promote containers that have ripples to a new layer. We want to target `:not(:empty)`,
+    // because we don't want all ripple containers to have their own layer since they're used in a
+    // lot of places and the layer is only relevant while animating. Note that ideally we'd use
+    // the `contain` property here (see #13175), because `:empty` can be broken by having extra
+    // text inside the element, but it isn't very well supported yet.
+    &:not(:empty) {
+      transform: translateZ(0);
+    }
   }
 
   .mat-ripple.mat-ripple-unbounded {
