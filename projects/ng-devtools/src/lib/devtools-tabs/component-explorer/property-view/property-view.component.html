@@ -15,12 +15,14 @@
     *matTreeNodeDef="let node; when: hasChild"
     matTreeNodePadding
   >
-    <span class="arrow" (click)="toggle(node)"> {{ treeControl.isExpanded(node) ? '▼' : '►' }} </span>&nbsp;<span
-    class="name"
-  >{{ node.prop.name }}</span
-  >:&nbsp;
+    <div (click)="toggle(node)">
+      <span class="arrow"> {{ treeControl.isExpanded(node) ? '▼' : '►' }} </span>&nbsp;<span
+      class="name"
+    >{{ node.prop.name }}</span
+    >:&nbsp;
     <span class="value">
           {{ treeControl.isExpanded(node) ? '' : node.prop.descriptor.preview }}
         </span>
+    </div>
   </mat-tree-node>
 </mat-tree>
