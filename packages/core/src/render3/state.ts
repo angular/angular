@@ -240,17 +240,6 @@ export function getLView(): LView {
   return lFrame === null ? null ! : lFrame.lView;
 }
 
-/**
- * Sets the active directive host element and resets the directive id value
- * (when the provided elementIndex value has changed).
- *
- * @param elementIndex the element index value for the host element where
- *                     the directive/component instance lives
- */
-export function setActiveHostElement(elementIndex: number) {
-  setSelectedIndex(elementIndex);
-}
-
 export function clearActiveHostElement() {
   setSelectedIndex(-1);
 }

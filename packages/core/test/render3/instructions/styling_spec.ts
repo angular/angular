@@ -268,31 +268,6 @@ describe('styling', () => {
         expect(div.style.getPropertyValue('background')).toContain('url("javascript:/trusted")');
       });
     });
-
-    describe('populateStylingStaticArrayMap', () => {
-      it('should initialize to null if no mergedAttrs', () => {
-        const tNode = getLView()[TVIEW].firstChild !;
-        expect(tNode.residualStyles).toEqual(undefined);
-        expect(tNode.residualClasses).toEqual(undefined);
-        initializeStylingStaticArrayMap(tNode);
-        expect(tNode.residualStyles).toEqual(null);
-        expect(tNode.residualClasses).toEqual(null);
-      });
-
-      it('should initialize from mergeAttrs', () => {
-        const tNode = getLView()[TVIEW].firstChild !;
-        expect(tNode.residualStyles).toEqual(undefined);
-        expect(tNode.residualClasses).toEqual(undefined);
-        tNode.mergedAttrs = [
-          'ignore', 'value',                                     //
-          AttributeMarker.Classes, 'foo', 'bar',                 //
-          AttributeMarker.Styles, 'width', '0', 'color', 'red',  //
-        ];
-        initializeStylingStaticArrayMap(tNode);
-        expect(tNode.residualClasses).toEqual(['bar', true, 'foo', true] as any);
-        expect(tNode.residualStyles).toEqual(['color', 'red', 'width', '0'] as any);
-      });
-    });
   });
 
   describe('static', () => {

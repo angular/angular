@@ -573,7 +573,7 @@
     "name": "selectIndexInternal"
   },
   {
-    "name": "setActiveHostElement"
+    "name": "setSelectedIndex"
   },
   {
     "name": "setBindingIndex"

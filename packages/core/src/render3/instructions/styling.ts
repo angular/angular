@@ -130,7 +130,7 @@ export function ɵɵstyleMap(
  * Parse text as style and add values to ArrayMap.
  *
  * This code is pulled out to a separate function so that it can be tree shaken away if it is not
- * needed. It is only reference from `ɵɵstyleMap`.
+ * needed. It is only referenced from `ɵɵstyleMap`.
  *
  * @param arrayMap ArrayMap to add parsed values to.
  * @param text text to parse.
@@ -170,7 +170,7 @@ export function ɵɵclassMap(
  * Parse text as class and add values to ArrayMap.
  *
  * This code is pulled out to a separate function so that it can be tree shaken away if it is not
- * needed. It is only reference from `ɵɵclassMap`.
+ * needed. It is only referenced from `ɵɵclassMap`.
  *
  * @param arrayMap ArrayMap to add parsed values to.
  * @param text text to parse.
@@ -199,7 +199,7 @@ export function checkStylingProperty(
   // 2. one for the intermittent-value / TStylingRange
   const bindingIndex = incrementBindingIndex(2);
   if (tView.firstUpdatePass) {
-    stylingPropertyFirstUpdatePass(tView, prop, bindingIndex, isClassBased);
+    stylingFirstUpdatePass(tView, prop, bindingIndex, isClassBased);
   }
   if (value !== NO_CHANGE && bindingUpdated(lView, bindingIndex, value)) {
     // This is a work around. Once PR#34480 lands the sanitizer is passed explicitly and this line
@@ -219,12 +219,16 @@ export function checkStylingProperty(
 }
 
 /**
-* Common code between `ɵɵclassMap` and `ɵɵstyleMap`.
-*
-* @param tStylingMapKey See `STYLE_MAP_STYLING_KEY` and `CLASS_MAP_STYLING_KEY`.
-* @param value binding value.
-* @param isClassBased `true` if `class` change (`false` if `style`)
-*/
+ * Common code between `ɵɵclassMap` and `ɵɵstyleMap`.
+ *
+ * @param arrayMapSet (See `arrayMapSet` in "util/array_utils") Gets passed in as a function so that
+ *        `style` can pass in version which does sanitization. This is done for tree shaking
+ *        purposes.
+ * @param stringParser Parser used to pares `value` if `string`. (Passed in as `style` and `class`
+ *        have different parsers.)
+ * @param value bound value from application
+ * @param isClassBased `true` if `class` change (`false` if `style`)
+ */
 export function checkStylingMap(
     arrayMapSet: (arrayMap: ArrayMap<any>, key: string, value: any) => void,
     stringParser: (styleArrayMap: ArrayMap<any>, text: string) => void, value: any|NO_CHANGE,
@@ -233,7 +237,7 @@ export function checkStylingMap(
   const tView = lView[TVIEW];
   const bindingIndex = incrementBindingIndex(2);
   if (tView.firstUpdatePass) {
-    stylingPropertyFirstUpdatePass(tView, null, bindingIndex, isClassBased);
+    stylingFirstUpdatePass(tView, null, bindingIndex, isClassBased);
   }
   if (value !== NO_CHANGE && bindingUpdated(lView, bindingIndex, value)) {
     // `getSelectedIndex()` should be here (rather than in instruction) so that it is guarded by the
@@ -252,8 +256,8 @@ export function checkStylingMap(
       // Instead VE just ignores the static completely if dynamic binding is present.
       // Because of locality we have already set the static portion because we don't know if there
       // is a dynamic portion until later. If we would ignore the static portion it would look like
-      // tha the binding has removed it. This would confuse `[ngStyle]`/`[ngClass]` to do the wrong
-      // thing as it would think tha the static portion was removed. For this reason we
+      // the binding has removed it. This would confuse `[ngStyle]`/`[ngClass]` to do the wrong
+      // thing as it would think that the static portion was removed. For this reason we
       // concatenate it so that `[ngStyle]`/`[ngClass]`  can continue to work on changed.
       let staticPrefix = isClassBased ? tNode.classes : tNode.styles;
       ngDevMode && isClassBased === false && staticPrefix !== null &&
@@ -290,12 +294,11 @@ function isInHostBindings(tView: TView, bindingIndex: number): boolean {
 * using `insertTStylingBinding`.
 *
 * @param tView `TView` where the binding linked list will be stored.
-* @param prop Property/key of the binding.
-* @param suffix Optional suffix or Sanitization function.
+* @param tStylingKey Property/key of the binding.
 * @param bindingIndex Index of binding associated with the `prop`
 * @param isClassBased `true` if `class` change (`false` if `style`)
 */
-function stylingPropertyFirstUpdatePass(
+function stylingFirstUpdatePass(
     tView: TView, tStylingKey: TStylingKey, bindingIndex: number, isClassBased: boolean): void {
   ngDevMode && assertFirstUpdatePass(tView);
   const tData = tView.data;
@@ -531,7 +534,8 @@ export function getHostDirectiveDef(tData: TData): DirectiveDef<any>|null {
  * it into a consistent representation. The output of this is `ArrayMap` (which is an array where
  * even indexes contain keys and odd indexes contain values for those keys).
  *
- * The advantage of converting to `ArrayMap` is that we can perform diff in a input independent way.
+ * The advantage of converting to `ArrayMap` is that we can perform diff in an input independent
+ * way.
  * (ie we can compare `foo bar` to `['bar', 'baz'] and determine a set of changes which need to be
  * applied)
  *
@@ -539,9 +543,12 @@ export function getHostDirectiveDef(tData: TData): DirectiveDef<any>|null {
  * difference in linear fashion without the need to allocate any additional data.
  *
  * For example if we kept this as a `Map` we would have to iterate over previous `Map` to determine
- * which values need to be delete, over the new `Map` to determine additions, and we would have to
+ * which values need to be deleted, over the new `Map` to determine additions, and we would have to
  * keep additional `Map` to keep track of duplicates or items which have not yet been visited.
  *
+ * @param arrayMapSet (See `arrayMapSet` in "util/array_utils") Gets passed in as a function so that
+ *        `style` can pass in version which does sanitization. This is done for tree shaking
+ *        purposes.
  * @param stringParser The parser is passed in so that it will be tree shakable. See
  *        `styleStringParser` and `classStringParser`
  * @param value The value to parse/convert to `ArrayMap`
@@ -550,7 +557,7 @@ export function toStylingArrayMap(
     arrayMapSet: (arrayMap: ArrayMap<any>, key: string, value: any) => void,
     stringParser: (styleArrayMap: ArrayMap<any>, text: string) => void, value: string|string[]|
     {[key: string]: any}|Map<any, any>|Set<any>|null|undefined): ArrayMap<any> {
-  if (value === null || value === undefined || value === '') return EMPTY_ARRAY as any;
+  if (value == null /*|| value === undefined */ || value === '') return EMPTY_ARRAY as any;
   const styleArrayMap: ArrayMap<any> = [] as any;
   if (Array.isArray(value)) {
     for (let i = 0; i < value.length; i++) {
@@ -571,7 +578,7 @@ export function toStylingArrayMap(
   } else if (typeof value === 'string') {
     stringParser(styleArrayMap, value);
   } else {
-    ngDevMode && throwError('Unsupported styling type ' + typeof value);
+    ngDevMode && throwError('Unsupported styling type ' + typeof value + ': ' + value);
   }
   return styleArrayMap;
 }
@@ -614,7 +621,7 @@ function updateStylingMap(
     tView: TView, tNode: TNode, lView: LView, renderer: Renderer3, oldArrayMap: ArrayMap<any>,
     newArrayMap: ArrayMap<any>, isClassBased: boolean, bindingIndex: number) {
   if (oldArrayMap as ArrayMap<any>| NO_CHANGE === NO_CHANGE) {
-    // ON first execution the oldArrayMap is NO_CHANGE => treat is as empty ArrayMap.
+    // On first execution the oldArrayMap is NO_CHANGE => treat it as empty ArrayMap.
     oldArrayMap = EMPTY_ARRAY as any;
   }
   let oldIndex = 0;
@@ -637,11 +644,16 @@ function updateStylingMap(
         setValue = newValue;
       }
     } else if (newKey === null || oldKey !== null && oldKey < newKey !) {
-      // DELETE: oldKey key is missing or we did not find the oldKey in the newValue.
+      // DELETE: oldKey key is missing or we did not find the oldKey in the newValue
+      // (because the arrayMap is sorted and `newKey` is found later alphabetically).
+      // `"background" < "color"` so we need to delete `"background"` because it is not found in the
+      // new array.
       oldIndex += 2;
       setKey = oldKey;
     } else {
-      // CREATE: newKey is less than oldKey (or no oldKey) => we have new key.
+      // CREATE: newKey's is earlier alphabetically than oldKey's (or no oldKey) => we have new key.
+      // `"color" > "background"` so we need to add `color` because it is in new array but not in
+      // old array.
       ngDevMode && assertDefined(newKey, 'Expecting to have a valid key');
       newIndex += 2;
       setKey = newKey;
@@ -668,7 +680,7 @@ function updateStylingMap(
  * @param lView `LView` contains the values associated with other styling binding at this `TNode`.
  * @param renderer Renderer to use if any updates.
  * @param prop Either style property name or a class name.
- * @param value Either style vale for `prop` or `true`/`false` if `prop` is class.
+ * @param value Either style value for `prop` or `true`/`false` if `prop` is class.
  * @param isClassBased `true` if `class` (`false` if `style`)
  * @param bindingIndex Binding index of the binding.
  */
@@ -700,15 +712,16 @@ function updateStyling(
 }
 
 /**
- * Search for styling value with higher priority which is overwriting current value.
+ * Search for styling value with higher priority which is overwriting current value, or a
+ * value of lower priority to which we should fall back if the value is `undefined`.
  *
- * When value is being applied at a location related values need to be consulted.
+ * When value is being applied at a location, related values need to be consulted.
  * - If there is a higher priority binding, we should be using that one instead.
  *   For example `<div  [style]="{color:exp1}" [style.color]="exp2">` change to `exp1`
  *   requires that we check `exp2` to see if it is set to value other than `undefined`.
  * - If there is a lower priority binding and we are changing to `undefined`
  *   For example `<div  [style]="{color:exp1}" [style.color]="exp2">` change to `exp2` to
- *   `undefined` requires that we check `exp` (and static values) and use that as new value.
+ *   `undefined` requires that we check `exp1` (and static values) and use that as new value.
  *
  * NOTE: The styling stores two values.
  * 1. The raw value which came from the application is stored at `index + 0` location. (This value
@@ -731,6 +744,7 @@ function updateStyling(
 function findStylingValue(
     tData: TData, tNode: TNode | null, lView: LView, prop: string, index: number,
     isClassBased: boolean): any {
+  const isPrevDirection = tNode === null;
   let value: any = undefined;
   while (index > 0) {
     const rawKey = tData[index] as TStylingKey;
@@ -744,12 +758,12 @@ function findStylingValue(
     }
     if (isStylingValuePresent(currentValue)) {
       value = currentValue;
-      if (tNode === null) {
+      if (isPrevDirection) {
         return value;
       }
     }
     const tRange = tData[index + 1] as TStylingRange;
-    index = tNode === null ? getTStylingRangePrev(tRange) : getTStylingRangeNext(tRange);
+    index = isPrevDirection ? getTStylingRangePrev(tRange) : getTStylingRangeNext(tRange);
   }
   if (tNode !== null) {
     // in case where we are going in next direction AND we did not find anything, we need to
@@ -777,38 +791,6 @@ function isStylingValuePresent(value: any): boolean {
 }
 
 /**
- * Lazily computes `tNode.classesMap`/`tNode.stylesMap`.
- *
- * This code is here because we don't want to included it in `elementStart` as it would make hello
- * world bigger even if no styling would be present. Instead we initialize the values here so that
- * tree shaking will only bring it in if styling is present.
- *
- * @param tNode `TNode` to initialize.
- */
-export function initializeStylingStaticArrayMap(tNode: TNode) {
-  ngDevMode && assertEqual(tNode.residualClasses, undefined, 'Already initialized!');
-  ngDevMode && assertEqual(tNode.residualStyles, undefined, 'Already initialized!');
-  let styleMap: ArrayMap<any>|null = null;
-  let classMap: ArrayMap<any>|null = null;
-  const mergeAttrs = tNode.mergedAttrs || EMPTY_ARRAY as TAttributes;
-  let mode: AttributeMarker = AttributeMarker.ImplicitAttributes;
-  for (let i = 0; i < mergeAttrs.length; i++) {
-    let item = mergeAttrs[i];
-    if (typeof item === 'number') {
-      mode = item;
-    } else if (mode === AttributeMarker.Classes) {
-      classMap = classMap || [] as any;
-      arrayMapSet(classMap !, item as string, true);
-    } else if (mode === AttributeMarker.Styles) {
-      styleMap = styleMap || [] as any;
-      arrayMapSet(styleMap !, item as string, mergeAttrs[++i] as string);
-    }
-  }
-  tNode.residualClasses = classMap;
-  tNode.residualStyles = styleMap;
-}
-
-/**
  * Sanitizes or adds suffix to the value.
  *
  * If value is `null`/`undefined` no suffix is added
@@ -818,7 +800,7 @@ export function initializeStylingStaticArrayMap(tNode: TNode) {
 function normalizeAndApplySuffixOrSanitizer(
     value: any, suffixOrSanitizer: SanitizerFn | string | undefined | null): string|null|undefined|
     boolean {
-  if (value === null || value === undefined) {
+  if (value == null /** || value === undefined */) {
     // do nothing
   } else if (typeof suffixOrSanitizer === 'function') {
     // sanitize the value.
