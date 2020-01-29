@@ -122,7 +122,7 @@ export function ɵɵclassProp(
 export function ɵɵstyleMap(
     styles: {[styleName: string]: any} | Map<string, string|number|null|undefined>| string |
     undefined | null): void {
-  checkStylingMap(styleArrayMapSet, styleStringParser, styles, false);
+  checkStylingMap(styleKeyValueArraySet, styleStringParser, styles, false);
 }
 
 
@@ -137,7 +137,7 @@ export function ɵɵstyleMap(
  */
 export function styleStringParser(keyValueArray: KeyValueArray<any>, text: string): void {
   for (let i = parseStyle(text); i >= 0; i = parseStyleNext(text, i)) {
-    styleArrayMapSet(keyValueArray, getLastParsedKey(text), getLastParsedValue(text));
+    styleKeyValueArraySet(keyValueArray, getLastParsedKey(text), getLastParsedValue(text));
   }
 }
 
@@ -232,8 +232,8 @@ export function checkStylingProperty(
  */
 export function checkStylingMap(
     keyValueArraySet: (keyValueArray: KeyValueArray<any>, key: string, value: any) => void,
-    stringParser: (styleArrayMap: KeyValueArray<any>, text: string) => void, value: any|NO_CHANGE,
-    isClassBased: boolean): void {
+    stringParser: (styleKeyValueArray: KeyValueArray<any>, text: string) => void,
+    value: any|NO_CHANGE, isClassBased: boolean): void {
   const lView = getLView();
   const tView = lView[TVIEW];
   const bindingIndex = incrementBindingIndex(2);
@@ -273,7 +273,7 @@ export function checkStylingMap(
     } else {
       updateStylingMap(
           tView, tNode, lView, lView[RENDERER], lView[bindingIndex + 1],
-          lView[bindingIndex + 1] = toStylingArrayMap(keyValueArraySet, stringParser, value),
+          lView[bindingIndex + 1] = toStylingKeyValueArray(keyValueArraySet, stringParser, value),
           isClassBased, bindingIndex);
     }
   }
@@ -559,34 +559,34 @@ export function getHostDirectiveDef(tData: TData): DirectiveDef<any>|null {
  *        `styleStringParser` and `classStringParser`
  * @param value The value to parse/convert to `KeyValueArray`
  */
-export function toStylingArrayMap(
+export function toStylingKeyValueArray(
     keyValueArraySet: (keyValueArray: KeyValueArray<any>, key: string, value: any) => void,
-    stringParser: (styleArrayMap: KeyValueArray<any>, text: string) => void, value: string|string[]|
-    {[key: string]: any}|Map<any, any>|Set<any>|null|undefined): KeyValueArray<any> {
+    stringParser: (styleKeyValueArray: KeyValueArray<any>, text: string) => void, value: string|
+    string[]|{[key: string]: any}|Map<any, any>|Set<any>|null|undefined): KeyValueArray<any> {
   if (value == null /*|| value === undefined */ || value === '') return EMPTY_ARRAY as any;
-  const styleArrayMap: KeyValueArray<any> = [] as any;
+  const styleKeyValueArray: KeyValueArray<any> = [] as any;
   if (Array.isArray(value)) {
     for (let i = 0; i < value.length; i++) {
-      keyValueArraySet(styleArrayMap, value[i], true);
+      keyValueArraySet(styleKeyValueArray, value[i], true);
     }
   } else if (typeof value === 'object') {
     if (value instanceof Map) {
-      value.forEach((v, k) => keyValueArraySet(styleArrayMap, k, v));
+      value.forEach((v, k) => keyValueArraySet(styleKeyValueArray, k, v));
     } else if (value instanceof Set) {
-      value.forEach((k) => keyValueArraySet(styleArrayMap, k, true));
+      value.forEach((k) => keyValueArraySet(styleKeyValueArray, k, true));
     } else {
       for (const key in value) {
         if (value.hasOwnProperty(key)) {
-          keyValueArraySet(styleArrayMap, key, value[key]);
+          keyValueArraySet(styleKeyValueArray, key, value[key]);
         }
       }
     }
   } else if (typeof value === 'string') {
-    stringParser(styleArrayMap, value);
+    stringParser(styleKeyValueArray, value);
   } else {
     ngDevMode && throwError('Unsupported styling type ' + typeof value + ': ' + value);
   }
-  return styleArrayMap;
+  return styleKeyValueArray;
 }
 
 /**
@@ -598,7 +598,7 @@ export function toStylingArrayMap(
  * @param key Style key to add. (This key will be checked if it needs sanitization)
  * @param value The value to set (If key needs sanitization it will be sanitized)
  */
-function styleArrayMapSet(keyValueArray: KeyValueArray<any>, key: string, value: any) {
+function styleKeyValueArraySet(keyValueArray: KeyValueArray<any>, key: string, value: any) {
   if (stylePropNeedsSanitization(key)) {
     value = ɵɵsanitizeStyle(value);
   }
@@ -619,27 +619,30 @@ function styleArrayMapSet(keyValueArray: KeyValueArray<any>, key: string, value:
  * @param tNode `TNode` where the binding is located.
  * @param lView `LView` contains the values associated with other styling binding at this `TNode`.
  * @param renderer Renderer to use if any updates.
- * @param oldArrayMap Previous value represented as `KeyValueArray`
- * @param newArrayMap Current value represented as `KeyValueArray`
+ * @param oldKeyValueArray Previous value represented as `KeyValueArray`
+ * @param newKeyValueArray Current value represented as `KeyValueArray`
  * @param isClassBased `true` if `class` (`false` if `style`)
  * @param bindingIndex Binding index of the binding.
  */
 function updateStylingMap(
-    tView: TView, tNode: TNode, lView: LView, renderer: Renderer3, oldArrayMap: KeyValueArray<any>,
-    newArrayMap: KeyValueArray<any>, isClassBased: boolean, bindingIndex: number) {
-  if (oldArrayMap as KeyValueArray<any>| NO_CHANGE === NO_CHANGE) {
-    // On first execution the oldArrayMap is NO_CHANGE => treat it as empty KeyValueArray.
-    oldArrayMap = EMPTY_ARRAY as any;
+    tView: TView, tNode: TNode, lView: LView, renderer: Renderer3,
+    oldKeyValueArray: KeyValueArray<any>, newKeyValueArray: KeyValueArray<any>,
+    isClassBased: boolean, bindingIndex: number) {
+  if (oldKeyValueArray as KeyValueArray<any>| NO_CHANGE === NO_CHANGE) {
+    // On first execution the oldKeyValueArray is NO_CHANGE => treat it as empty KeyValueArray.
+    oldKeyValueArray = EMPTY_ARRAY as any;
   }
   let oldIndex = 0;
   let newIndex = 0;
-  let oldKey: string|null = 0 < oldArrayMap.length ? oldArrayMap[0] : null;
-  let newKey: string|null = 0 < newArrayMap.length ? newArrayMap[0] : null;
+  let oldKey: string|null = 0 < oldKeyValueArray.length ? oldKeyValueArray[0] : null;
+  let newKey: string|null = 0 < newKeyValueArray.length ? newKeyValueArray[0] : null;
   while (oldKey !== null || newKey !== null) {
     ngDevMode && assertLessThan(oldIndex, 999, 'Are we stuck in infinite loop?');
     ngDevMode && assertLessThan(newIndex, 999, 'Are we stuck in infinite loop?');
-    const oldValue = oldIndex < oldArrayMap.length ? oldArrayMap[oldIndex + 1] : undefined;
-    const newValue = newIndex < newArrayMap.length ? newArrayMap[newIndex + 1] : undefined;
+    const oldValue =
+        oldIndex < oldKeyValueArray.length ? oldKeyValueArray[oldIndex + 1] : undefined;
+    const newValue =
+        newIndex < newKeyValueArray.length ? newKeyValueArray[newIndex + 1] : undefined;
     let setKey: string|null = null;
     let setValue: any = undefined;
     if (oldKey === newKey) {
@@ -669,8 +672,8 @@ function updateStylingMap(
     if (setKey !== null) {
       updateStyling(tView, tNode, lView, renderer, setKey, setValue, isClassBased, bindingIndex);
     }
-    oldKey = oldIndex < oldArrayMap.length ? oldArrayMap[oldIndex] : null;
-    newKey = newIndex < newArrayMap.length ? newArrayMap[newIndex] : null;
+    oldKey = oldIndex < oldKeyValueArray.length ? oldKeyValueArray[oldIndex] : null;
+    newKey = newIndex < newKeyValueArray.length ? newKeyValueArray[newIndex] : null;
   }
 }
 

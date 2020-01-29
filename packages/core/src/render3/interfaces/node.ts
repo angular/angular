@@ -498,7 +498,7 @@ export interface TNode {
   styles: string|null;
 
   /**
-   * An `KeyValueArray` version of residual `styles`.
+   * A `KeyValueArray` version of residual `styles`.
    *
    * When there are styling instructions than each instruction stores the static styling
    * which is of lower priority than itself. This means that there may be a higher priority styling
@@ -536,13 +536,13 @@ export interface TNode {
   classes: string|null;
 
   /**
-   * An `KeyValueArray` version of residual `classes`.
+   * A `KeyValueArray` version of residual `classes`.
    *
    * Same as `TNode.residualStyles` but for classes.
    *
    * - `undefined': not initialized.
    * - `null`: initialized but `classes` is `null`
-   * - `KeyValueArray`: parsed version of `S`.
+   * - `KeyValueArray`: parsed version of `classes`.
    */
   residualClasses: KeyValueArray<any>|undefined|null;
 

@@ -204,10 +204,11 @@ export function insertTStylingBinding(
   let tStylingKey: TStylingKeyPrimitive;
   if (Array.isArray(tStylingKeyWithStatic)) {
     // We are case when the `TStylingKey` contains static fields as well.
-    const staticArrayMap = tStylingKeyWithStatic as KeyValueArray<any>;
-    tStylingKey = staticArrayMap[1];  // unwrap.
+    const staticKeyValueArray = tStylingKeyWithStatic as KeyValueArray<any>;
+    tStylingKey = staticKeyValueArray[1];  // unwrap.
     // We need to check if our key is present in the static so that we can mark it as duplicate.
-    if (tStylingKey === null || keyValueArrayIndexOf(staticArrayMap, tStylingKey as string) > 0) {
+    if (tStylingKey === null ||
+        keyValueArrayIndexOf(staticKeyValueArray, tStylingKey as string) > 0) {
       // tStylingKey is present in the statics, need to mark it as duplicate.
       isKeyDuplicateOfStatic = true;
     }

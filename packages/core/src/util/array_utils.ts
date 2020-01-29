@@ -105,8 +105,6 @@ export function arraySplice(array: any[], index: number, count: number): void {
  * removed. This causes memory pressure and slows down code when most of the time we don't
  * care about the deleted items array.
  *
- * https://jsperf.com/fast-array-splice (About 20x faster)
- *
  * @param array Array to splice.
  * @param index Index in array where the `value` should be added.
  * @param value Value to add to array.
@@ -128,8 +126,6 @@ export function arrayInsert(array: any[], index: number, value: any): void {
  * `Array.splice()` is not fast because it has to allocate an array for the elements which were
  * removed. This causes memory pressure and slows down code when most of the time we don't
  * care about the deleted items array.
- *
- * https://jsperf.com/fast-array-splice (About 20x faster)
  *
  * @param array Array to splice.
  * @param index Index in array where the `value` should be added.

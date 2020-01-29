@@ -8,7 +8,7 @@
 
 import {DirectiveDef} from '@angular/core/src/render3';
 import {ɵɵdefineDirective} from '@angular/core/src/render3/definition';
-import {classStringParser, initializeStylingStaticArrayMap, styleStringParser, toStylingArrayMap, ɵɵclassProp, ɵɵstyleMap, ɵɵstyleProp, ɵɵstyleSanitizer} from '@angular/core/src/render3/instructions/styling';
+import {classStringParser, styleStringParser, toStylingKeyValueArray, ɵɵclassProp, ɵɵstyleMap, ɵɵstyleProp, ɵɵstyleSanitizer} from '@angular/core/src/render3/instructions/styling';
 import {AttributeMarker, TAttributes, TDirectiveDefs} from '@angular/core/src/render3/interfaces/node';
 import {StylingRange, TStylingKey, TStylingRange, getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate, setTStylingRangeNext, setTStylingRangePrev, toTStylingRange} from '@angular/core/src/render3/interfaces/styling';
 import {HEADER_OFFSET, TVIEW} from '@angular/core/src/render3/interfaces/view';
@@ -404,52 +404,53 @@ describe('styling', () => {
   describe('toStylingArray', () => {
     describe('falsy', () => {
       it('should return empty KeyValueArray', () => {
-        expect(toStylingArrayMap(keyValueArraySet, null !, '')).toEqual([] as any);
-        expect(toStylingArrayMap(keyValueArraySet, null !, null)).toEqual([] as any);
-        expect(toStylingArrayMap(keyValueArraySet, null !, undefined)).toEqual([] as any);
-        expect(toStylingArrayMap(keyValueArraySet, null !, [])).toEqual([] as any);
-        expect(toStylingArrayMap(keyValueArraySet, null !, {})).toEqual([] as any);
+        expect(toStylingKeyValueArray(keyValueArraySet, null !, '')).toEqual([] as any);
+        expect(toStylingKeyValueArray(keyValueArraySet, null !, null)).toEqual([] as any);
+        expect(toStylingKeyValueArray(keyValueArraySet, null !, undefined)).toEqual([] as any);
+        expect(toStylingKeyValueArray(keyValueArraySet, null !, [])).toEqual([] as any);
+        expect(toStylingKeyValueArray(keyValueArraySet, null !, {})).toEqual([] as any);
       });
       describe('string', () => {
         it('should parse classes', () => {
-          expect(toStylingArrayMap(keyValueArraySet, classStringParser, '  ')).toEqual([] as any);
-          expect(toStylingArrayMap(keyValueArraySet, classStringParser, ' X A ')).toEqual([
+          expect(toStylingKeyValueArray(keyValueArraySet, classStringParser, '  ')).toEqual([
+          ] as any);
+          expect(toStylingKeyValueArray(keyValueArraySet, classStringParser, ' X A ')).toEqual([
             'A', true, 'X', true
           ] as any);
         });
         it('should parse styles', () => {
-          expect(toStylingArrayMap(keyValueArraySet, styleStringParser, '  ')).toEqual([] as any);
-          expect(toStylingArrayMap(keyValueArraySet, styleStringParser, 'B:b;A:a')).toEqual([
+          expect(toStylingKeyValueArray(keyValueArraySet, styleStringParser, '  ')).toEqual([
+          ] as any);
+          expect(toStylingKeyValueArray(keyValueArraySet, styleStringParser, 'B:b;A:a')).toEqual([
             'A', 'a', 'B', 'b'
           ] as any);
         });
       });
       describe('array', () => {
         it('should parse', () => {
-          expect(toStylingArrayMap(keyValueArraySet, null !, ['X', 'A'])).toEqual([
+          expect(toStylingKeyValueArray(keyValueArraySet, null !, ['X', 'A'])).toEqual([
             'A', true, 'X', true
           ] as any);
         });
       });
       describe('object', () => {
         it('should parse', () => {
-          expect(toStylingArrayMap(keyValueArraySet, null !, {X: 'x', A: 'a'})).toEqual([
+          expect(toStylingKeyValueArray(keyValueArraySet, null !, {X: 'x', A: 'a'})).toEqual([
             'A', 'a', 'X', 'x'
           ] as any);
         });
       });
       describe('Map', () => {
         it('should parse', () => {
-          expect(toStylingArrayMap(
+          expect(toStylingKeyValueArray(
                      keyValueArraySet, null !, new Map<string, string>([['X', 'x'], ['A', 'a']])))
               .toEqual(['A', 'a', 'X', 'x'] as any);
         });
       });
       describe('Iterable', () => {
         it('should parse', () => {
-          expect(toStylingArrayMap(keyValueArraySet, null !, new Set<string>(['X', 'A']))).toEqual([
-            'A', true, 'X', true
-          ] as any);
+          expect(toStylingKeyValueArray(keyValueArraySet, null !, new Set<string>(['X', 'A'])))
+              .toEqual(['A', true, 'X', true] as any);
         });
       });
     });
