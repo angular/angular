@@ -29,7 +29,7 @@
     }
   }
 
-  @include cdk-high-contrast {
+  @include cdk-high-contrast(active, off) {
     $high-contrast-border-width: 1px;
 
     // Add a margin to offset the border that we're adding to active option, in order
@@ -69,7 +69,7 @@
   pointer-events: none;
 
   // Prevents the ripple from completely covering the option in high contrast mode.
-  @include cdk-high-contrast {
+  @include cdk-high-contrast(active, off) {
     opacity: 0.5;
   }
 }

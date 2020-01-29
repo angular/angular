@@ -22,7 +22,7 @@ $mat-form-field-standard-padding-top: 0.75em !default;
   .mat-form-field-underline {
     height: $mat-form-field-standard-underline-height;
 
-    @include cdk-high-contrast {
+    @include cdk-high-contrast(active, off) {
       height: 0;
       border-top: solid $mat-form-field-standard-underline-height;
     }
@@ -33,7 +33,7 @@ $mat-form-field-standard-padding-top: 0.75em !default;
     bottom: 0;
     height: $height;
 
-    @include cdk-high-contrast {
+    @include cdk-high-contrast(active, off) {
       height: 0;
       border-top: $height;
     }
@@ -43,7 +43,7 @@ $mat-form-field-standard-padding-top: 0.75em !default;
     background-position: 0;
     background-color: transparent;
 
-    @include cdk-high-contrast {
+    @include cdk-high-contrast(active, off) {
       border-top-style: dotted;
       border-top-width: 2px;
     }

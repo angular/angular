@@ -217,7 +217,7 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
 }
 
 /** Custom styling to make the slide-toggle usable in high contrast mode. */
-@include cdk-high-contrast {
+@include cdk-high-contrast(active, off) {
   .mat-slide-toggle-thumb,
   .mat-slide-toggle-bar {
     border: 1px solid;

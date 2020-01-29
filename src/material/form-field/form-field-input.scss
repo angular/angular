@@ -181,7 +181,7 @@ select.mat-input-element {
     // as the background, however this causes it blend in because we've reset the `background`
     // above. We have to add a more specific selector in order to ensure that it gets the
     // `color` from our theme instead.
-    @include cdk-high-contrast {
+    @include cdk-high-contrast(active, off) {
       .mat-focused & {
         color: inherit;
       }

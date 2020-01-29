@@ -82,7 +82,7 @@ $mat-chip-remove-size: 18px;
     }
   }
 
-  @include cdk-high-contrast {
+  @include cdk-high-contrast(active, off) {
     outline: solid 1px;
 
     &:focus {

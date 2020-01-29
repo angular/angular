@@ -32,7 +32,7 @@ $mat-progress-bar-piece-animation-duration: 250ms !default;
     // during the background scroll animation.
     width: calc(100% + 10px);
 
-    @include cdk-high-contrast {
+    @include cdk-high-contrast(active, off) {
       display: none;
     }
   }
@@ -43,7 +43,7 @@ $mat-progress-bar-piece-animation-duration: 250ms !default;
     transform-origin: top left;
     transition: transform $mat-progress-bar-piece-animation-duration ease;
 
-    @include cdk-high-contrast {
+    @include cdk-high-contrast(active, off) {
       border-top: solid 5px;
       opacity: 0.5;
     }
@@ -61,7 +61,7 @@ $mat-progress-bar-piece-animation-duration: 250ms !default;
     transform-origin: top left;
     transition: transform $mat-progress-bar-piece-animation-duration ease;
 
-    @include cdk-high-contrast {
+    @include cdk-high-contrast(active, off) {
       border-top: solid $mat-progress-bar-height;
     }
   }

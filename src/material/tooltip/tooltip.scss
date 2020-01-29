@@ -25,7 +25,7 @@ $mat-tooltip-handset-margin: 24px;
   overflow: hidden;
   text-overflow: ellipsis;
 
-  @include cdk-high-contrast {
+  @include cdk-high-contrast(active, off) {
     outline: solid 1px;
   }
 }

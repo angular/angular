@@ -20,7 +20,7 @@ $mat-button-toggle-legacy-border-radius: 2px !default;
   border-radius: $mat-button-toggle-legacy-border-radius;
   -webkit-tap-highlight-color: transparent;
 
-  @include cdk-high-contrast {
+  @include cdk-high-contrast(active, off) {
     outline: solid 1px;
   }
 }
@@ -29,7 +29,7 @@ $mat-button-toggle-legacy-border-radius: 2px !default;
 .mat-button-toggle-group-appearance-standard {
   border-radius: $mat-button-toggle-standard-border-radius;
 
-  @include cdk-high-contrast {
+  @include cdk-high-contrast(active, off) {
     outline: 0;
   }
 }
@@ -58,7 +58,7 @@ $mat-button-toggle-legacy-border-radius: 2px !default;
       opacity: 1;
 
       // In high contrast mode `opacity: 1` will show the overlay as solid so we fall back 0.5.
-      @include cdk-high-contrast {
+      @include cdk-high-contrast(active, off) {
         opacity: 0.5;
       }
     }
@@ -78,7 +78,7 @@ $mat-button-toggle-legacy-border-radius: 2px !default;
   &.cdk-keyboard-focused:not(.mat-button-toggle-disabled) .mat-button-toggle-focus-overlay {
     opacity: 0.12;
 
-    @include cdk-high-contrast {
+    @include cdk-high-contrast(active, off) {
       opacity: 0.5;
     }
   }
@@ -128,14 +128,14 @@ $mat-button-toggle-legacy-border-radius: 2px !default;
     // Changing the background color for the selected item won't be visible in high contrast mode.
     // We fall back to using the overlay to draw a brighter, semi-transparent tint on top instead.
     // It uses a border, because the browser will render it using a brighter color.
-    @include cdk-high-contrast {
+    @include cdk-high-contrast(active, off) {
       opacity: 0.5;
       height: 0;
     }
   }
 }
 
-@include cdk-high-contrast {
+@include cdk-high-contrast(active, off) {
   .mat-button-toggle-checked {
     &.mat-button-toggle-appearance-standard .mat-button-toggle-focus-overlay {
       border-bottom: solid $mat-button-toggle-standard-height;

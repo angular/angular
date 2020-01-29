@@ -16,7 +16,7 @@ $mat-card-default-padding: 16px !default;
 // Add styles to the root card to have an outline in high-contrast mode.
 // TODO(jelbourn): file bug for MDC supporting high-contrast mode on `.mdc-card`.
 .mat-mdc-card {
-  @include cdk-high-contrast {
+  @include cdk-high-contrast(active, off) {
     outline: solid 1px;
   }
 }

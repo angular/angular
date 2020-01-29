@@ -23,7 +23,7 @@
   // The CDK positioning uses flexbox to anchor the element, whereas MDC uses `position: absolute`.
   position: static;
 
-  @include cdk-high-contrast {
+  @include cdk-high-contrast(active, off) {
     outline: solid 1px;
   }
 }
@@ -75,7 +75,7 @@
     }
   }
 
-  @include cdk-high-contrast {
+  @include cdk-high-contrast(active, off) {
     &.cdk-program-focused,
     &.cdk-keyboard-focused,
     &-highlighted {

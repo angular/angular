@@ -85,7 +85,7 @@ $mat-radio-ripple-radius: 20px;
   .mat-radio-checked & {
     transform: scale(0.5);
 
-    @include cdk-high-contrast {
+    @include cdk-high-contrast(active, off) {
       // Since we use a background color to render the circle, it won't be
       // displayed in high contrast mode. Use a border as a fallback.
       border: solid $mat-radio-size / 2;
@@ -183,7 +183,7 @@ $mat-radio-ripple-radius: 20px;
   left: 50%;
 }
 
-@include cdk-high-contrast {
+@include cdk-high-contrast(active, off) {
   .mat-radio-disabled {
     opacity: 0.5;
   }

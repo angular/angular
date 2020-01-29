@@ -19,7 +19,7 @@ $mat-snack-bar-spacing-margin-handset: 8px !default;
   min-height: $mat-snack-bar-min-height;
   transform-origin: center;
 
-  @include cdk-high-contrast {
+  @include cdk-high-contrast(active, off) {
     border: solid 1px;
   }
 }

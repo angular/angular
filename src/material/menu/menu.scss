@@ -28,7 +28,7 @@ $mat-menu-submenu-indicator-size: 10px !default;
     pointer-events: none;
   }
 
-  @include cdk-high-contrast {
+  @include cdk-high-contrast(active, off) {
     outline: solid 1px;
   }
 }
@@ -53,7 +53,7 @@ $mat-menu-submenu-indicator-size: 10px !default;
     pointer-events: none;
   }
 
-  @include cdk-high-contrast {
+  @include cdk-high-contrast(active, off) {
     &.cdk-program-focused,
     &.cdk-keyboard-focused,
     &-highlighted {

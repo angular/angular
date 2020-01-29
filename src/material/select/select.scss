@@ -97,7 +97,7 @@ $mat-select-placeholder-arrow-space: 2 * ($mat-select-arrow-size + $mat-select-a
   min-width: 100%; // prevents some animation twitching and test inconsistencies in IE11
   border-radius: 4px;
 
-  @include cdk-high-contrast {
+  @include cdk-high-contrast(active, off) {
     outline: solid 1px;
   }
 }

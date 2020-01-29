@@ -26,7 +26,7 @@ $mat-slider-horizontal-margin: 8px !default;
   width: auto;
   min-width: $mat-slider-min-size - (2 * $mat-slider-horizontal-margin);
 
-  @include cdk-high-contrast {
+  @include cdk-high-contrast(active, off) {
     // The slider track isn't visible in high contrast mode so we work
     // around it by setting an outline and removing the height to make it look solid.
     .mdc-slider__track-container {

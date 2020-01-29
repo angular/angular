@@ -37,7 +37,7 @@ $mat-ripple-color-opacity: 0.1;
     transform: scale(0);
 
     // In high contrast mode the ripple is opaque, causing it to obstruct the content.
-    @include cdk-high-contrast {
+    @include cdk-high-contrast(active, off) {
       display: none;
     }
   }

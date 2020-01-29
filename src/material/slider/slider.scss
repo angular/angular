@@ -143,7 +143,7 @@ $mat-slider-focus-ring-size: 30px !default;
               border-radius  $swift-ease-out-duration $swift-ease-out-timing-function,
               background-color  $swift-ease-out-duration $swift-ease-out-timing-function;
 
-  @include cdk-high-contrast {
+  @include cdk-high-contrast(active, off) {
     outline: solid 1px;
   }
 }
@@ -303,7 +303,7 @@ $mat-slider-focus-ring-size: 30px !default;
     height: $mat-slider-track-thickness;
     width: 100%;
 
-    @include cdk-high-contrast {
+    @include cdk-high-contrast(active, off) {
       height: 0;
       outline: solid $mat-slider-track-thickness;
       top: $mat-slider-track-thickness / 2;
@@ -343,7 +343,7 @@ $mat-slider-focus-ring-size: 30px !default;
       transform: rotate(45deg);
     }
 
-    @include cdk-high-contrast {
+    @include cdk-high-contrast(active, off) {
       .mat-slider-thumb-label,
       .mat-slider-thumb-label-text {
         transform: none;
@@ -393,7 +393,7 @@ $mat-slider-focus-ring-size: 30px !default;
     width: $mat-slider-track-thickness;
     height: 100%;
 
-    @include cdk-high-contrast {
+    @include cdk-high-contrast(active, off) {
       width: 0;
       outline: solid $mat-slider-track-thickness;
       left: $mat-slider-track-thickness / 2;

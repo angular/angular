@@ -17,7 +17,7 @@ $mat-bottom-sheet-container-horizontal-padding: 16px !default;
   max-height: 80vh;
   overflow: auto;
 
-  @include cdk-high-contrast {
+  @include cdk-high-contrast(active, off) {
     outline: 1px solid;
   }
 }

@@ -24,7 +24,7 @@ $mat-dialog-button-margin: 8px !default;
   min-height: inherit;
   max-height: inherit;
 
-  @include cdk-high-contrast {
+  @include cdk-high-contrast(active, off) {
     outline: solid 1px;
   }
 }

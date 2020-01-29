@@ -38,7 +38,7 @@ $mat-form-field-legacy-underline-height: 1px !default;
   .mat-form-field-underline {
     height: $mat-form-field-legacy-underline-height;
 
-    @include cdk-high-contrast {
+    @include cdk-high-contrast(active, off) {
       height: 0;
       border-top: solid $mat-form-field-legacy-underline-height;
     }
@@ -53,7 +53,7 @@ $mat-form-field-legacy-underline-height: 1px !default;
     // the desired form-field ripple height. See: angular/components#6351
     overflow: hidden;
 
-    @include cdk-high-contrast {
+    @include cdk-high-contrast(active, off) {
       height: 0;
       border-top: solid $height;
     }
@@ -63,7 +63,7 @@ $mat-form-field-legacy-underline-height: 1px !default;
     background-position: 0;
     background-color: transparent;
 
-    @include cdk-high-contrast {
+    @include cdk-high-contrast(active, off) {
       border-top-style: dotted;
       border-top-width: 2px;
     }

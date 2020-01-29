@@ -22,7 +22,7 @@
     transition-duration: 1ms;
   }
 
-  @include cdk-high-contrast {
+  @include cdk-high-contrast(active, off) {
     outline: solid 1px;
 
     &:focus {
@@ -79,7 +79,7 @@ input.mat-mdc-chip-input {
 }
 
 .mdc-chip__checkmark-path {
-  @include cdk-high-contrast(black-on-white) {
+  @include cdk-high-contrast(black-on-white, off) {
     // SVG colors won't be changed in high contrast mode and since the checkmark is white
     // by default, it'll blend in with the background in black-on-white mode. Override the color
     // to ensure that it's visible. We need !important, because the theme styles are very specific.
