@@ -13,6 +13,7 @@ import {DtsDependencyHost} from '../../src/dependencies/dts_dependency_host';
 import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
 import {TargetedEntryPointFinder} from '../../src/entry_point_finder/targeted_entry_point_finder';
+import {NGCC_VERSION} from '../../src/packages/build_marker';
 import {NgccConfiguration} from '../../src/packages/configuration';
 import {EntryPoint} from '../../src/packages/entry_point';
 import {PathMappings} from '../../src/utils';
@@ -227,32 +228,252 @@ runInEachFileSystem(() => {
         ]);
       });
 
-      function createPackage(
-          basePath: AbsoluteFsPath, packageName: string, deps: string[] = []): TestFile[] {
-        return [
-          {
-            name: _Abs(`${basePath}/${packageName}/package.json`),
-            contents: JSON.stringify({
-              typings: `./${packageName}.d.ts`,
-              fesm2015: `./fesm2015/${packageName}.js`,
-            })
-          },
-          {
-            name: _Abs(`${basePath}/${packageName}/${packageName}.metadata.json`),
-            contents: 'metadata info'
-          },
-          {
-            name: _Abs(`${basePath}/${packageName}/fesm2015/${packageName}.js`),
-            contents: deps.map((dep, i) => `import * as i${i} from '${dep}';`).join('\n'),
-          },
-        ];
-      }
-
       function dumpEntryPointPaths(
           basePath: AbsoluteFsPath, entryPoints: EntryPoint[]): [string, string][] {
         return entryPoints.map(x => [relative(basePath, x.package), relative(basePath, x.path)]);
       }
 
     });
+
+    describe('targetNeedsProcessingOrCleaning()', () => {
+      it('should return false if there is no entry-point', () => {
+        const targetPath = _Abs('/no_packages/node_modules/should_not_be_found');
+        fs.ensureDir(targetPath);
+        const finder = new TargetedEntryPointFinder(
+            fs, config, logger, resolver, _Abs('/no_packages/node_modules'), targetPath, undefined);
+        expect(finder.targetNeedsProcessingOrCleaning(['fesm2015'], true)).toBe(false);
+      });
+
+      it('should return false if the target path is not a valid entry-point', () => {
+        const targetPath = _Abs('/no_valid_entry_points/node_modules/some_package');
+        loadTestFiles([
+          {
+            name: _Abs('/no_valid_entry_points/node_modules/some_package/package.json'),
+            contents: '{}'
+          },
+        ]);
+        const finder = new TargetedEntryPointFinder(
+            fs, config, logger, resolver, _Abs('/no_valid_entry_points/node_modules'), targetPath,
+            undefined);
+        expect(finder.targetNeedsProcessingOrCleaning(['fesm2015'], true)).toBe(false);
+      });
+
+      it('should false if the target path has no typings', () => {
+        const targetPath = _Abs('/no_valid_entry_points/node_modules/some_package');
+        loadTestFiles([
+          {
+            name: _Abs('/no_valid_entry_points/node_modules/some_package/package.json'),
+            contents: '{"fesm2015": "./index.js"}'
+          },
+          {
+            name:
+                _Abs('/no_valid_entry_points/node_modules/some_package/some_package.metadata.json'),
+            contents: 'metadata info'
+          },
+          {
+            name: _Abs('/no_valid_entry_points/node_modules/some_package/index.js'),
+            contents: 'export class MyClass {}'
+          },
+        ]);
+        const finder = new TargetedEntryPointFinder(
+            fs, config, logger, resolver, _Abs('/no_valid_entry_points/node_modules'), targetPath,
+            undefined);
+        expect(finder.targetNeedsProcessingOrCleaning(['fesm2015'], true)).toBe(false);
+      });
+
+      it('should false if the target path is not compiled by Angular - i.e has no metadata file',
+         () => {
+           const targetPath = _Abs('/no_valid_entry_points/node_modules/some_package');
+           loadTestFiles([
+             {
+               name: _Abs('/no_valid_entry_points/node_modules/some_package/package.json'),
+               contents: '{"typings": "./index.d.ts", "fesm2015": "./index.js"}'
+             },
+             {
+               name: _Abs('/no_valid_entry_points/node_modules/some_package/index.d.ts'),
+               contents: 'export declare class MyClass {}'
+             },
+             {
+               name: _Abs('/no_valid_entry_points/node_modules/some_package/index.js'),
+               contents: 'export class MyClass {}'
+             },
+           ]);
+           const finder = new TargetedEntryPointFinder(
+               fs, config, logger, resolver, _Abs('/no_valid_entry_points/node_modules'),
+               targetPath, undefined);
+           expect(finder.targetNeedsProcessingOrCleaning(['fesm2015'], true)).toBe(false);
+         });
+
+      describe('[compileAllFormats: true]', () => {
+        it('should return true if none of the properties to consider have been processed', () => {
+          const basePath = _Abs('/sub_entry_points/node_modules');
+          const targetPath = _Abs('/sub_entry_points/node_modules/common/http/testing');
+          loadTestFiles([
+            ...createPackage(fs.resolve(basePath, ''), 'common'),
+            ...createPackage(fs.resolve(basePath, 'common'), 'http', ['common']),
+            ...createPackage(
+                fs.resolve(basePath, 'common/http'), 'testing', ['common/http', 'common/testing']),
+            ...createPackage(fs.resolve(basePath, 'common'), 'testing', ['common']),
+          ]);
+          const finder = new TargetedEntryPointFinder(
+              fs, config, logger, resolver, basePath, targetPath, undefined);
+          expect(finder.targetNeedsProcessingOrCleaning(['fesm2015', 'esm5'], true)).toBe(true);
+        });
+
+        it('should return true if at least one of the properties to consider has not been processed',
+           () => {
+             const basePath = _Abs('/sub_entry_points/node_modules');
+             const targetPath = _Abs('/sub_entry_points/node_modules/common/http/testing');
+             loadTestFiles([
+               ...createPackage(fs.resolve(basePath, ''), 'common'),
+               ...createPackage(fs.resolve(basePath, 'common'), 'http', ['common']),
+               ...createPackage(
+                   fs.resolve(basePath, 'common/http'), 'testing',
+                   ['common/http', 'common/testing']),
+               ...createPackage(fs.resolve(basePath, 'common'), 'testing', ['common']),
+             ]);
+
+             // Add a build marker to the package.json
+             const packageJsonPath = _Abs(`${targetPath}/package.json`);
+             const packageJson = JSON.parse(fs.readFile(packageJsonPath));
+             packageJson.__processed_by_ivy_ngcc__ = {
+               esm5: NGCC_VERSION,
+             };
+             fs.writeFile(packageJsonPath, JSON.stringify(packageJson));
+
+             const finder = new TargetedEntryPointFinder(
+                 fs, config, logger, resolver, basePath, targetPath, undefined);
+             expect(finder.targetNeedsProcessingOrCleaning(['fesm2015', 'esm5'], true)).toBe(true);
+           });
+
+        it('should return false if all of the properties to consider have been processed', () => {
+          const basePath = _Abs('/sub_entry_points/node_modules');
+          const targetPath = _Abs('/sub_entry_points/node_modules/common/http/testing');
+          loadTestFiles([
+            ...createPackage(fs.resolve(basePath, ''), 'common'),
+            ...createPackage(fs.resolve(basePath, 'common'), 'http', ['common']),
+            ...createPackage(
+                fs.resolve(basePath, 'common/http'), 'testing', ['common/http', 'common/testing']),
+            ...createPackage(fs.resolve(basePath, 'common'), 'testing', ['common']),
+          ]);
+
+          // Add build markers to the package.json
+          const packageJsonPath = _Abs(`${targetPath}/package.json`);
+          const packageJson = JSON.parse(fs.readFile(packageJsonPath));
+          packageJson.__processed_by_ivy_ngcc__ = {
+            fesm2015: NGCC_VERSION,
+            esm5: NGCC_VERSION,
+            main: NGCC_VERSION,
+          };
+          fs.writeFile(packageJsonPath, JSON.stringify(packageJson));
+
+          const finder = new TargetedEntryPointFinder(
+              fs, config, logger, resolver, basePath, targetPath, undefined);
+          expect(finder.targetNeedsProcessingOrCleaning(['fesm2015', 'esm5'], true)).toBe(false);
+        });
+      });
+
+      describe('[compileAllFormats: false]', () => {
+        it('should return true if none of the properties to consider have been processed', () => {
+          const basePath = _Abs('/sub_entry_points/node_modules');
+          const targetPath = _Abs('/sub_entry_points/node_modules/common/http/testing');
+          loadTestFiles([
+            ...createPackage(fs.resolve(basePath, ''), 'common'),
+            ...createPackage(fs.resolve(basePath, 'common'), 'http', ['common']),
+            ...createPackage(
+                fs.resolve(basePath, 'common/http'), 'testing', ['common/http', 'common/testing']),
+            ...createPackage(fs.resolve(basePath, 'common'), 'testing', ['common']),
+          ]);
+
+          const finder = new TargetedEntryPointFinder(
+              fs, config, logger, resolver, basePath, targetPath, undefined);
+          expect(finder.targetNeedsProcessingOrCleaning(['fesm2015', 'esm5'], false)).toBe(true);
+        });
+
+        it('should return true if the first of the properties to consider that is in the package.json has not been processed',
+           () => {
+             const basePath = _Abs('/sub_entry_points/node_modules');
+             const targetPath = _Abs('/sub_entry_points/node_modules/common/http/testing');
+             loadTestFiles([
+               ...createPackage(fs.resolve(basePath, ''), 'common'),
+               ...createPackage(fs.resolve(basePath, 'common'), 'http', ['common']),
+               ...createPackage(
+                   fs.resolve(basePath, 'common/http'), 'testing',
+                   ['common/http', 'common/testing']),
+               ...createPackage(fs.resolve(basePath, 'common'), 'testing', ['common']),
+             ]);
+
+             // Add build markers to the package.json
+             const packageJsonPath = _Abs(`${targetPath}/package.json`);
+             const packageJson = JSON.parse(fs.readFile(packageJsonPath));
+             packageJson.__processed_by_ivy_ngcc__ = {
+               esm5: NGCC_VERSION,
+             };
+             fs.writeFile(packageJsonPath, JSON.stringify(packageJson));
+
+             const finder = new TargetedEntryPointFinder(
+                 fs, config, logger, resolver, basePath, targetPath, undefined);
+             expect(finder.targetNeedsProcessingOrCleaning(['fesm2015', 'esm5'], false)).toBe(true);
+           });
+
+        it('should return false if the first of the properties to consider (that actually appear in the package.json) has been processed',
+           () => {
+             const basePath = _Abs('/sub_entry_points/node_modules');
+             const targetPath = _Abs('/sub_entry_points/node_modules/common/http/testing');
+             loadTestFiles([
+               ...createPackage(fs.resolve(basePath, ''), 'common'),
+               ...createPackage(fs.resolve(basePath, 'common'), 'http', ['common']),
+               ...createPackage(
+                   fs.resolve(basePath, 'common/http'), 'testing',
+                   ['common/http', 'common/testing']),
+               ...createPackage(fs.resolve(basePath, 'common'), 'testing', ['common']),
+             ]);
+
+             // Add build markers to the package.json
+             const packageJsonPath = _Abs(`${targetPath}/package.json`);
+             const packageJson = JSON.parse(fs.readFile(packageJsonPath));
+             packageJson.__processed_by_ivy_ngcc__ = {
+               fesm2015: NGCC_VERSION,
+             };
+             fs.writeFile(packageJsonPath, JSON.stringify(packageJson));
+
+             const finder = new TargetedEntryPointFinder(
+                 fs, config, logger, resolver, basePath, targetPath, undefined);
+             expect(finder.targetNeedsProcessingOrCleaning(['fesm2015', 'esm5'], false))
+                 .toBe(false);
+           });
+      });
+    });
+
+    function createPackage(
+        basePath: AbsoluteFsPath, packageName: string, deps: string[] = []): TestFile[] {
+      return [
+        {
+          name: _Abs(`${basePath}/${packageName}/package.json`),
+          contents: JSON.stringify({
+            typings: `./${packageName}.d.ts`,
+            fesm2015: `./fesm2015/${packageName}.js`,
+            esm5: `./esm5/${packageName}.js`,
+            main: `./common/${packageName}.js`,
+          })
+        },
+        {
+          name: _Abs(`${basePath}/${packageName}/${packageName}.metadata.json`),
+          contents: 'metadata info'
+        },
+        {
+          name: _Abs(`${basePath}/${packageName}/fesm2015/${packageName}.js`),
+          contents: deps.map((dep, i) => `import * as i${i} from '${dep}';`).join('\n'),
+        },
+        {
+          name: _Abs(`${basePath}/${packageName}/esm5/${packageName}.js`),
+          contents: deps.map((dep, i) => `import * as i${i} from '${dep}';`).join('\n'),
+        },
+        {
+          name: _Abs(`${basePath}/${packageName}/commonjs/${packageName}.js`),
+          contents: deps.map((dep, i) => `var i${i} = require('${dep}');`).join('\n'),
+        },
+      ];
+    }
   });
 });
