@@ -69,6 +69,7 @@
     "@types/semver": "^6.0.2",
     "@types/shelljs": "^0.8.6",
     "@types/systemjs": "0.19.32",
+    "@types/yaml": "^1.2.0",
     "@types/yargs": "^11.1.1",
     "@webcomponents/custom-elements": "^1.0.4",
     "angular": "npm:angular@1.7",
@@ -104,6 +105,7 @@
     "karma-sourcemap-loader": "^0.3.7",
     "magic-string": "^0.25.0",
     "materialize-css": "1.0.0",
+    "minimatch": "^3.0.4",
     "minimist": "1.2.0",
     "node-uuid": "1.4.8",
     "nodejs-websocket": "^1.7.2",
@@ -127,6 +129,7 @@
     "tslint": "5.7.0",
     "typescript": "~3.7.4",
     "xhr2": "0.1.4",
+    "yaml": "^1.7.2",
     "yargs": "13.1.0"
   },
   "// 2": "devDependencies are not used under Bazel. Many can be removed after test.sh is deleted.",
