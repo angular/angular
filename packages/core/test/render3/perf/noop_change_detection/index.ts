@@ -20,7 +20,7 @@ const refreshTime = noopChangeDetection('refresh');
 // run change detection in the update mode
 console.profile('noop_change_detection');
 while (refreshTime()) {
-  refreshView(rootLView, rootTView, null, null);
+  refreshView(rootTView, rootLView, null, null);
 }
 console.profileEnd();
 

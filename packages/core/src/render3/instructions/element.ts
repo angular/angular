@@ -16,7 +16,7 @@ import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild, writeDirectClass, writeDirectStyle} from '../node_manipulation';
-import {decreaseElementDepthCount, getBindingIndex, getElementDepthCount, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, increaseElementDepthCount, setIsNotParent, setPreviousOrParentTNode} from '../state';
+import {decreaseElementDepthCount, getBindingIndex, getElementDepthCount, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getTView, increaseElementDepthCount, setIsNotParent, setPreviousOrParentTNode} from '../state';
 import {computeStaticStyling} from '../styling/static_styling';
 import {setUpAttributes} from '../util/attrs_utils';
 import {getConstant} from '../util/view_utils';
@@ -36,7 +36,7 @@ function elementStartFirstCreatePass(
 
   const hasDirectives =
       resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
-  ngDevMode && warnAboutUnknownElement(lView, native, tNode, hasDirectives);
+  ngDevMode && warnAboutUnknownElement(tView, lView, native, tNode, hasDirectives);
 
   if (tNode.mergedAttrs !== null) {
     computeStaticStyling(tNode, tNode.mergedAttrs);
@@ -66,7 +66,7 @@ function elementStartFirstCreatePass(
 export function ɵɵelementStart(
     index: number, name: string, attrsIndex?: number | null, localRefsIndex?: number): void {
   const lView = getLView();
-  const tView = lView[TVIEW];
+  const tView = getTView();
   const adjustedIndex = HEADER_OFFSET + index;
 
   ngDevMode && assertEqual(
@@ -96,7 +96,7 @@ export function ɵɵelementStart(
     writeDirectStyle(renderer, native, styles);
   }
 
-  appendChild(native, tNode, lView);
+  appendChild(tView, lView, native, tNode);
 
   // any immediate children of a component or template container must be pre-emptively
   // monkey-patched with the component view data so that the element can be inspected
@@ -135,11 +135,10 @@ export function ɵɵelementEnd(): void {
   const tNode = previousOrParentTNode;
   ngDevMode && assertNodeType(tNode, TNodeType.Element);
 
-  const lView = getLView();
-  const tView = lView[TVIEW];
 
   decreaseElementDepthCount();
 
+  const tView = getTView();
   if (tView.firstCreatePass) {
     registerPostOrderHooks(tView, previousOrParentTNode);
     if (isContentQueryHost(previousOrParentTNode)) {
@@ -148,11 +147,11 @@ export function ɵɵelementEnd(): void {
   }
 
   if (tNode.classes !== null && hasClassInput(tNode)) {
-    setDirectiveInputsWhichShadowsStyling(tNode, lView, tNode.classes, true);
+    setDirectiveInputsWhichShadowsStyling(tView, tNode, getLView(), tNode.classes, true);
   }
 
   if (tNode.styles !== null && hasStyleInput(tNode)) {
-    setDirectiveInputsWhichShadowsStyling(tNode, lView, tNode.styles, false);
+    setDirectiveInputsWhichShadowsStyling(tView, tNode, getLView(), tNode.styles, false);
   }
 }
 
@@ -173,8 +172,8 @@ export function ɵɵelement(
 }
 
 function warnAboutUnknownElement(
-    hostView: LView, element: RElement, tNode: TNode, hasDirectives: boolean): void {
-  const schemas = hostView[TVIEW].schemas;
+    tView: TView, lView: LView, element: RElement, tNode: TNode, hasDirectives: boolean): void {
+  const schemas = tView.schemas;
 
   // If `schemas` is set to `null`, that's an indication that this Component was compiled in AOT
   // mode where this check happens at compile time. In JIT mode, `schemas` is always present and
@@ -197,7 +196,7 @@ function warnAboutUnknownElement(
         (typeof customElements !== 'undefined' && tagName.indexOf('-') > -1 &&
          !customElements.get(tagName));
 
-    if (isUnknown && !matchingSchemas(hostView, tagName)) {
+    if (isUnknown && !matchingSchemas(tView, lView, tagName)) {
       let warning = `'${tagName}' is not a known element:\n`;
       warning +=
           `1. If '${tagName}' is an Angular component, then verify that it is part of this module.\n`;

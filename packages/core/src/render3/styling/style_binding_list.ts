@@ -11,9 +11,8 @@ import {assertDataInRange, assertEqual, assertNotEqual} from '../../util/assert'
 import {assertFirstUpdatePass} from '../assert';
 import {TNode} from '../interfaces/node';
 import {TStylingKey, TStylingKeyPrimitive, TStylingRange, getTStylingRangeNext, getTStylingRangePrev, setTStylingRangeNext, setTStylingRangeNextDuplicate, setTStylingRangePrev, setTStylingRangePrevDuplicate, toTStylingRange} from '../interfaces/styling';
-import {TData, TVIEW} from '../interfaces/view';
-import {getLView} from '../state';
-
+import {TData} from '../interfaces/view';
+import {getTView} from '../state';
 
 
 /**
@@ -194,7 +193,7 @@ let __unused_const_as_closure_does_not_like_standalone_comment_blocks__: undefin
 export function insertTStylingBinding(
     tData: TData, tNode: TNode, tStylingKeyWithStatic: TStylingKey, index: number,
     isHostBinding: boolean, isClassBinding: boolean): void {
-  ngDevMode && assertFirstUpdatePass(getLView()[TVIEW]);
+  ngDevMode && assertFirstUpdatePass(getTView());
   let tBindings = isClassBinding ? tNode.classBindings : tNode.styleBindings;
   let tmplHead = getTStylingRangePrev(tBindings);
   let tmplTail = getTStylingRangeNext(tBindings);

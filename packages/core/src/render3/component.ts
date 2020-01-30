@@ -144,9 +144,9 @@ export function renderComponent<T>(
         componentView, componentDef, rootView, rootContext, opts.hostFeatures || null);
 
     // create mode pass
-    renderView(rootView, rootTView, null);
+    renderView(rootTView, rootView, null);
     // update mode pass
-    refreshView(rootView, rootTView, null, null);
+    refreshView(rootTView, rootView, null, null);
 
   } finally {
     leaveView();

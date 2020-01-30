@@ -8,7 +8,7 @@
 
 import {assertDefined} from '../../util/assert';
 import {getComponentViewByInstance} from '../context_discovery';
-import {CONTEXT, RootContext, RootContextFlags} from '../interfaces/view';
+import {CONTEXT, RootContext, RootContextFlags, TVIEW} from '../interfaces/view';
 import {getRootView} from '../util/view_traversal_utils';
 import {detectChangesInternal, markViewDirty, scheduleTick, tickRootContext} from './shared';
 
@@ -21,7 +21,7 @@ import {detectChangesInternal, markViewDirty, scheduleTick, tickRootContext} fro
  */
 export function detectChanges(component: {}): void {
   const view = getComponentViewByInstance(component);
-  detectChangesInternal(view, component);
+  detectChangesInternal(view[TVIEW], view, component);
 }
 
 /**

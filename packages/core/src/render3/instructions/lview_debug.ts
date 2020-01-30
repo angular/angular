@@ -507,7 +507,7 @@ export function readLViewValue(value: any): LView|null {
 export class I18NDebugItem {
   [key: string]: any;
 
-  get tNode() { return getTNode(this.nodeIndex, this._lView); }
+  get tNode() { return getTNode(this._lView[TVIEW], this.nodeIndex); }
 
   constructor(
       public __raw_opCode: any, private _lView: LView, public nodeIndex: number,

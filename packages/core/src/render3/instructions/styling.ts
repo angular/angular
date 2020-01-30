@@ -20,16 +20,14 @@ import {AttributeMarker, TAttributes, TNode, TNodeFlags, TNodeType} from '../int
 import {RElement, Renderer3} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {TStylingKey, TStylingRange, getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate} from '../interfaces/styling';
-import {HEADER_OFFSET, LView, RENDERER, TData, TVIEW, TView} from '../interfaces/view';
+import {HEADER_OFFSET, LView, RENDERER, TData, TView} from '../interfaces/view';
 import {applyStyling} from '../node_manipulation';
-import {getCurrentDirectiveIndex, getCurrentStyleSanitizer, getLView, getSelectedIndex, incrementBindingIndex, setCurrentStyleSanitizer} from '../state';
+import {getCurrentDirectiveIndex, getCurrentStyleSanitizer, getLView, getSelectedIndex, getTView, incrementBindingIndex, setCurrentStyleSanitizer} from '../state';
 import {insertTStylingBinding} from '../styling/style_binding_list';
 import {getLastParsedKey, getLastParsedValue, parseClassName, parseClassNameNext, parseStyle, parseStyleNext} from '../styling/styling_parser';
 import {NO_CHANGE} from '../tokens';
 import {getNativeByIndex} from '../util/view_utils';
-
 import {setDirectiveInputsWhichShadowsStyling} from './property';
-
 
 
 /**
@@ -195,7 +193,7 @@ export function checkStylingProperty(
     prop: string, value: any | NO_CHANGE,
     suffixOrSanitizer: SanitizerFn | string | undefined | null, isClassBased: boolean): void {
   const lView = getLView();
-  const tView = lView[TVIEW];
+  const tView = getTView();
   // Styling instructions use 2 slots per binding.
   // 1. one for the value / TStylingKey
   // 2. one for the intermittent-value / TStylingRange
@@ -236,12 +234,12 @@ export function checkStylingMap(
     keyValueArraySet: (keyValueArray: KeyValueArray<any>, key: string, value: any) => void,
     stringParser: (styleKeyValueArray: KeyValueArray<any>, text: string) => void,
     value: any|NO_CHANGE, isClassBased: boolean): void {
-  const lView = getLView();
-  const tView = lView[TVIEW];
+  const tView = getTView();
   const bindingIndex = incrementBindingIndex(2);
   if (tView.firstUpdatePass) {
     stylingFirstUpdatePass(tView, null, bindingIndex, isClassBased);
   }
+  const lView = getLView();
   if (value !== NO_CHANGE && bindingUpdated(lView, bindingIndex, value)) {
     // `getSelectedIndex()` should be here (rather than in instruction) so that it is guarded by the
     // if so as not to read unnecessarily.
@@ -271,7 +269,7 @@ export function checkStylingMap(
       }
       // Given `<div [style] my-dir>` such that `my-dir` has `@Input('style')`.
       // This takes over the `[style]` binding. (Same for `[class]`)
-      setDirectiveInputsWhichShadowsStyling(tNode, lView, value, isClassBased);
+      setDirectiveInputsWhichShadowsStyling(tView, tNode, lView, value, isClassBased);
     } else {
       updateStylingMap(
           tView, tNode, lView, lView[RENDERER], lView[bindingIndex + 1],

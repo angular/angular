@@ -8,8 +8,8 @@
 import {bindingUpdated} from '../bindings';
 import {TNode} from '../interfaces/node';
 import {SanitizerFn} from '../interfaces/sanitization';
-import {LView, TVIEW} from '../interfaces/view';
-import {getLView, getSelectedIndex, nextBindingIndex} from '../state';
+import {LView, TView} from '../interfaces/view';
+import {getLView, getSelectedIndex, getTView, nextBindingIndex} from '../state';
 import {elementPropertyInternal, setInputsForProperty, storePropertyBindingMetadata} from './shared';
 
 
@@ -37,8 +37,9 @@ export function ɵɵproperty<T>(
   const bindingIndex = nextBindingIndex();
   if (bindingUpdated(lView, bindingIndex, value)) {
     const nodeIndex = getSelectedIndex();
-    elementPropertyInternal(lView, nodeIndex, propName, value, sanitizer);
-    ngDevMode && storePropertyBindingMetadata(lView[TVIEW].data, nodeIndex, propName, bindingIndex);
+    const tView = getTView();
+    elementPropertyInternal(tView, lView, nodeIndex, propName, value, sanitizer);
+    ngDevMode && storePropertyBindingMetadata(tView.data, nodeIndex, propName, bindingIndex);
   }
   return ɵɵproperty;
 }
@@ -48,10 +49,10 @@ export function ɵɵproperty<T>(
  * directive input.
  */
 export function setDirectiveInputsWhichShadowsStyling(
-    tNode: TNode, lView: LView, value: any, isClassBased: boolean) {
+    tView: TView, tNode: TNode, lView: LView, value: any, isClassBased: boolean) {
   const inputs = tNode.inputs !;
   const property = isClassBased ? 'class' : 'style';
   // We support both 'class' and `className` hence the fallback.
   const stylingInputs = inputs[property] || (isClassBased && inputs['className']);
-  setInputsForProperty(lView, stylingInputs, property, value);
+  setInputsForProperty(tView, lView, stylingInputs, property, value);
 }

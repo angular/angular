@@ -167,7 +167,7 @@ const refreshTime = duplicateStyleAndClassBindingsBenchmark('refresh');
 // run change detection in the update mode
 console.profile('duplicate_style_and_class_bindings_refresh');
 while (refreshTime()) {
-  refreshView(rootLView, rootTView, null, null);
+  refreshView(rootTView, rootLView, null, null);
 }
 console.profileEnd();
 

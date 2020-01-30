@@ -32,7 +32,7 @@ import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveT
 import {DirectiveDefList, DirectiveDefListOrFactory, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeDefList, PipeDefListOrFactory, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
 import {PlayerHandler} from '../../src/render3/interfaces/player';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, RendererFactory3, RendererStyleFlags3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
-import {HEADER_OFFSET, LView, LViewFlags, TViewType, T_HOST} from '../../src/render3/interfaces/view';
+import {HEADER_OFFSET, LView, LViewFlags, TVIEW, TViewType, T_HOST} from '../../src/render3/interfaces/view';
 import {destroyLView} from '../../src/render3/node_manipulation';
 import {getRootView} from '../../src/render3/util/view_traversal_utils';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
@@ -139,7 +139,7 @@ export class TemplateFixture extends BaseFixture {
 
   destroy(): void {
     this.containerElement.removeChild(this.hostElement);
-    destroyLView(this.hostView);
+    destroyLView(this.hostView[TVIEW], this.hostView);
   }
 }
 
@@ -190,7 +190,8 @@ export class ComponentFixture<T> extends BaseFixture {
       this.containerElement.removeChild(this.hostElement);
     }
 
-    destroyLView(getRootView(this.component));
+    const rootLView = getRootView(this.component);
+    destroyLView(rootLView[TVIEW], rootLView);
   }
 }
 
@@ -279,7 +280,7 @@ export function renderTemplate<T>(
         hostLView, componentTView, context, LViewFlags.CheckAlways, hostNode, hostTNode,
         providedRendererFactory, renderer, sanitizer);
   }
-  renderComponentOrTemplate(componentView, templateFn, context);
+  renderComponentOrTemplate(componentView[TVIEW], componentView, templateFn, context);
   return componentView;
 }
 

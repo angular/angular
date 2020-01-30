@@ -78,7 +78,7 @@ const refreshTime = styleBindingBenchmark('refresh');
 // run change detection in the update mode
 console.profile('style_binding_refresh');
 while (refreshTime()) {
-  refreshView(rootLView, rootTView, null, null);
+  refreshView(rootTView, rootLView, null, null);
 }
 console.profileEnd();
 

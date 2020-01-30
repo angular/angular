@@ -99,7 +99,7 @@ const refreshTime = interpolationRefresh('refresh');
 // run change detection in the update mode
 console.profile('interpolation_refresh');
 while (refreshTime()) {
-  refreshView(rootLView, rootTView, null, null);
+  refreshView(rootTView, rootLView, null, null);
 }
 console.profileEnd();
 

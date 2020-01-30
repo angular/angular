@@ -18,7 +18,7 @@ import {NodeInjectorFactory} from './interfaces/injector';
 import {TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNodeProviderIndexes} from './interfaces/node';
 import {isComponentDef} from './interfaces/type_checks';
 import {LView, TData, TVIEW, TView} from './interfaces/view';
-import {getLView, getPreviousOrParentTNode} from './state';
+import {getLView, getPreviousOrParentTNode, getTView} from './state';
 
 
 
@@ -42,8 +42,7 @@ import {getLView, getPreviousOrParentTNode} from './state';
  */
 export function providersResolver<T>(
     def: DirectiveDef<T>, providers: Provider[], viewProviders: Provider[]): void {
-  const lView = getLView();
-  const tView: TView = lView[TVIEW];
+  const tView = getTView();
   if (tView.firstCreatePass) {
     const isComponent = isComponentDef(def);
 
@@ -71,8 +70,8 @@ function resolveProvider(
           provider[i], tInjectables, lInjectablesBlueprint, isComponent, isViewProvider);
     }
   } else {
+    const tView = getTView();
     const lView = getLView();
-    const tView = lView[TVIEW];
     let token: any = isTypeProvider(provider) ? provider : resolveForwardRef(provider.provide);
     let providerFactory: () => any = providerToFactory(provider);
 
