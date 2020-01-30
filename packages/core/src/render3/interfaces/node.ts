@@ -303,14 +303,14 @@ export interface TNode {
    *
    * Valid values are:
    * - `-1` No `hostBindings` instruction has executed.
-   * - `directiveStart <= directiveStyling < directiveEnd`: Points to the `DirectiveDef` of the
+   * - `directiveStart <= directiveStylingLast < directiveEnd`: Points to the `DirectiveDef` of the
    *   last styling instruction which executed in the `hostBindings`.
    *
    * This data is needed so that styling instructions know which static styling data needs to be
    * collected from the `DirectiveDef.hostAttrs`. A styling instruction needs to collect all data
    * since last styling instruction.
    */
-  directiveStyling: number;
+  directiveStylingLast: number;
 
   /**
    * Stores indexes of property bindings. This field is only set in the ngDevMode and holds indexes

@@ -159,7 +159,7 @@ class TNode implements ITNode {
       public injectorIndex: number,                                                  //
       public directiveStart: number,                                                 //
       public directiveEnd: number,                                                   //
-      public directiveStyling: number,                                               //
+      public directiveStylingLast: number,                                           //
       public propertyBindings: number[]|null,                                        //
       public flags: TNodeFlags,                                                      //
       public providerIndexes: TNodeProviderIndexes,                                  //

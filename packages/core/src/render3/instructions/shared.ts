@@ -837,7 +837,7 @@ export function createTNode(
                        injectorIndex: injectorIndex,
                        directiveStart: -1,
                        directiveEnd: -1,
-                       directiveStyling: -1,
+                       directiveStylingLast: -1,
                        propertyBindings: null,
                        flags: 0,
                        providerIndexes: 0,
