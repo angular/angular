@@ -27,43 +27,41 @@
 
 <hr />
 
-<h2>Class binding</h2>
+<h2>Styling precedence</h2>
 
-<!-- #docregion add-class -->
-<h3>Bind to a specific class</h3>
+<!-- #docregion basic-specificity -->
+<h3>Basic specificity</h3>
 
-<div class="item clearance" [class.special]="isSpecial">This class binding is special.</div>
-<!-- #enddocregion add-class -->
+<!-- The `class.special` binding will override any value for the `special` class in `classExpr`.  -->
+<div [class.special]="isSpecial" [class]="classExpr">Some text.</div>
 
-<!-- #docregion bind-syntax -->
+<!-- The `style.color` binding will override any value for the `color` property in `styleExpr`.  -->
+<div [style.color]="color" [style]="styleExpr">Some text.</div>
+<!-- #enddocregion basic-specificity -->
 
-<h3>Using the bind- syntax:</h3>
+<!-- #docregion source-specificity -->
+<h3>Source specificity</h3>
 
-<div bind-class.special="isSpecial">This class binding is special too.</div>
-<!-- #enddocregion bind-syntax -->
+<!-- The `class.special` template binding will override any host binding to the `special` class set by `dirWithClassBinding` or `comp-with-host-binding`.-->
+<comp-with-host-binding [class.special]="isSpecial" dirWithClassBinding>Some text.</comp-with-host-binding>
 
-<!-- #docregion direct-class-binding -->
-<h3>Bind to multiple classes</h3>
+<!-- The `style.color` template binding will override any host binding to the `color` property set by `dirWithStyleBinding` or `comp-with-host-binding`. -->
+<comp-with-host-binding [style.color]="color" dirWithStyleBinding>Some text.</comp-with-host-binding>
+<!-- #enddocregion source-specificity -->
 
-<div [class]="someClasses">Add multiple classes</div>
-<!-- #enddocregion direct-class-binding -->
+<!-- #docregion dynamic-priority -->
+<h3>Dynamic vs static</h3>
 
-<hr />
+<!-- If `classExpr` has a value for the `special` class, this value will override the `class="special"` below -->
+<div class="special" [class]="classExpr">Some text.</div>
 
-<h2>Style binding</h2>
+<!-- If `styleExpr` has a value for the `color` property, this value will override the `style="color: blue"` below -->
+<div style="color: blue" [style]="styleExpr">Some text.</div>
 
-<!-- #docregion style-binding-->
-<button [style.color]="isSpecial ? 'red': 'green'">Red</button>
-<button [style.background-color]="canSave ? 'cyan': 'grey'" >Save</button>
-<!-- #enddocregion style-binding -->
+<!-- #enddocregion dynamic-priority -->
 
-<!-- #docregion style-binding-condition-->
-<button [style.font-size.em]="isSpecial ? 3 : 1" >Big</button>
-<button [style.font-size.%]="!isSpecial ? 150 : 50" >Small</button>
-<!-- #enddocregion style-binding-condition-->
+<!-- #docregion style-delegation -->
+<comp-with-host-binding dirWithHostBinding></comp-with-host-binding>
+<!-- #enddocregion style-delegation -->
 
-<!-- #docregion direct-style-binding -->
-<h3>Bind to multiple styles</h3>
 
-<div style="color: blue" [style]="styleExpr">Add multiple styles</div>
-<!-- #enddocregion direct-style-binding -->

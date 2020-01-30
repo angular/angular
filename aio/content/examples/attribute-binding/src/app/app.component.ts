@@ -9,8 +9,7 @@ export class AppComponent {
   actionName = 'Go for it';
   isSpecial = true;
   canSave = true;
-  someClasses = 'foo bar';
-  classExpr = 'special foo';
+  classExpr = 'special clearance';
   styleExpr = 'color: red';
   color = 'blue';
 }
