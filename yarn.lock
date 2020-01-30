@@ -1126,10 +1126,10 @@
   dependencies:
     tmp "0.1.0"
 
-"@bazel/protractor@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@bazel/protractor/-/protractor-1.1.0.tgz#0adf7c76a73ee437e0ba223662d98ba2f1a3356d"
-  integrity sha512-k1Oqt0FMmnxk4lJZ4vA/CHOWcMKWuCr85Ljlq0hZrxfDokuxwGBMAUZgTQIh5KkvRnAo0utYRESMhWed8H2DpA==
+"@bazel/protractor@1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@bazel/protractor/-/protractor-1.2.0.tgz#db6848a72fd8e5a80279d451a54a7fd8cdecc523"
+  integrity sha512-X+ahKakCfHRQW/76YqGcGCRDNI38QcUKCJ49V21hvON984iluLnQ4m5kRU1KKdESbj3vQ6BJs2b/LFFKRQXrfA==
 
 "@bazel/rollup@1.1.0":
   version "1.1.0"
@@ -1711,9 +1711,9 @@
   integrity sha512-tHdDdGUBKTbiLLwf5mF78EP35F31UZekG+GRNowl8G5rMQoupAT4qWn/7AaGOvmaqvROdqC3Io/hP1ZyO58QkA==
 
 "@types/selenium-webdriver@^3.0.0":
-  version "3.0.14"
-  resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-3.0.14.tgz#0b20a2370e6b1b8322c9c3dfcaa409e6c7c0c0a9"
-  integrity sha512-4GbNCDs98uHCT/OMv40qQC/OpoPbYn9XdXeTiFwHBBFO6eJhYEPUu2zDKirXSbHlvDV8oZ9l8EQ+HrEx/YS9DQ==
+  version "3.0.16"
+  resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-3.0.16.tgz#50a4755f8e33edacd9c406729e9b930d2451902a"
+  integrity sha512-lMC2G0ItF2xv4UCiwbJGbnJlIuUixHrioOhNGHSCsYCJ8l4t9hMCUimCytvFv7qy6AfSzRxhRHoGa+UqaqwyeA==
 
 "@types/semver@^6.0.2":
   version "6.0.2"
@@ -2007,10 +2007,15 @@ add-stream@^1.0.0:
   resolved "https://registry.yarnpkg.com/add-stream/-/add-stream-1.0.0.tgz#6a7990437ca736d5e1288db92bd3266d5f5cb2aa"
   integrity sha1-anmQQ3ynNtXhKI25K9MmbV9csqo=
 
-adm-zip@0.4.11, adm-zip@^0.4.9, adm-zip@~0.4.3, adm-zip@~0.4.x:
+adm-zip@0.4.11, adm-zip@~0.4.3, adm-zip@~0.4.x:
   version "0.4.11"
   resolved "https://registry.yarnpkg.com/adm-zip/-/adm-zip-0.4.11.tgz#2aa54c84c4b01a9d0fb89bb11982a51f13e3d62a"
   integrity sha512-L8vcjDTCOIJk7wFvmlEUN7AsSb8T+2JrdP7KINBjzr24TJ5Mwj590sLu3BC7zNZowvJWa/JtPmD8eJCzdtDWjA==
+
+adm-zip@^0.4.9:
+  version "0.4.13"
+  resolved "https://registry.yarnpkg.com/adm-zip/-/adm-zip-0.4.13.tgz#597e2f8cc3672151e1307d3e95cddbc75672314a"
+  integrity sha512-fERNJX8sOXfel6qCBCMPvZLzENBEhZTzKqg6vrOW5pvoEaQuJhRU4ndTAh6lHOxn1I6jnz2NHra56ZODM751uw==
 
 after@0.8.2:
   version "0.8.2"
@@ -11887,9 +11892,9 @@ protoduck@^5.0.1:
     genfun "^5.0.0"
 
 protractor@^5.4.2:
-  version "5.4.2"
-  resolved "https://registry.yarnpkg.com/protractor/-/protractor-5.4.2.tgz#329efe37f48b2141ab9467799be2d4d12eb48c13"
-  integrity sha512-zlIj64Cr6IOWP7RwxVeD8O4UskLYPoyIcg0HboWJL9T79F1F0VWtKkGTr/9GN6BKL+/Q/GmM7C9kFVCfDbP5sA==
+  version "5.4.3"
+  resolved "https://registry.yarnpkg.com/protractor/-/protractor-5.4.3.tgz#35f050741e404a45868618ea648745d89af31683"
+  integrity sha512-7pMAolv8Ah1yJIqaorDTzACtn3gk7BamVKPTeO5lqIGOrfosjPgXFx/z1dqSI+m5EeZc2GMJHPr5DYlodujDNA==
   dependencies:
     "@types/q" "^0.0.32"
     "@types/selenium-webdriver" "^3.0.0"
@@ -12724,7 +12729,7 @@ rgba-regex@^1.0.0:
   resolved "https://registry.yarnpkg.com/rgba-regex/-/rgba-regex-1.0.0.tgz#43374e2e2ca0968b0ef1523460b7d730ff22eeb3"
   integrity sha1-QzdOLiyglosO8VI0YLfXMP8i7rM=
 
-rimraf@2, rimraf@^2.5.2, rimraf@^2.6.0:
+rimraf@2, rimraf@^2.6.0:
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-2.6.2.tgz#2ed8150d24a16ea8651e6d6ef0f47c4158ce7a36"
   integrity sha512-lreewLK/BlghmxtfH36YYVg1i8IAce4TI7oao75I1g245+6BctqTVQiBP3YUJ9C6DQOXJmkYR9X9fCLtCOJc5w==
@@ -12738,7 +12743,7 @@ rimraf@3.0.0:
   dependencies:
     glob "^7.1.3"
 
-rimraf@^2.2.8, rimraf@^2.6.3, rimraf@^2.7.1:
+rimraf@^2.2.8, rimraf@^2.5.2, rimraf@^2.6.3, rimraf@^2.7.1:
   version "2.7.1"
   resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-2.7.1.tgz#35797f13a7fdadc566142c29d4f07ccad483e3ec"
   integrity sha512-uWjbaKIK3T1OSVptzX7Nl6PvQ3qAGtKEtVRjRuazjfL3Bx5eI409VZSqgND+4UNnmzLVdPj9FqFJNPqBZFve4w==
