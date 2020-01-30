@@ -1,3 +1,34 @@
+<a name="9.0.0-rc.12"></a>
+# [9.0.0-rc.12](https://github.com/angular/angular/compare/9.0.0-rc.11...9.0.0-rc.12) (2020-01-30)
+
+
+### Bug Fixes
+
+* **ivy:** catch FatalDiagnosticError thrown from preanalysis phase ([#34801](https://github.com/angular/angular/issues/34801)) ([c0e73e0](https://github.com/angular/angular/commit/c0e73e0))
+* **ivy:** ensure `DebugNode`/`DebugElement` are tree-shakeable in Ivy ([#35003](https://github.com/angular/angular/issues/35003)) ([23c0147](https://github.com/angular/angular/commit/23c0147)), closes [#30130](https://github.com/angular/angular/issues/30130)
+* **ivy:** ensure multi providers in ModuleWithProviders are not duplicated ([#34914](https://github.com/angular/angular/issues/34914)) ([4975f89](https://github.com/angular/angular/commit/4975f89))
+* **ivy:** update ViewContainerRef to get the correct parentInjector ([#35013](https://github.com/angular/angular/issues/35013)) ([eaa4a5a](https://github.com/angular/angular/commit/eaa4a5a))
+* **language-service:** prune duplicate returned definitions ([#34995](https://github.com/angular/angular/issues/34995)) ([71f5417](https://github.com/angular/angular/commit/71f5417)), closes [/github.com/angular/angular/pull/34847#discussion_r371006680](https://github.com//github.com/angular/angular/pull/34847/issues/discussion_r371006680)
+* **language-service:** remove repeated symbol definitions for structural directive ([#34847](https://github.com/angular/angular/issues/34847)) ([35916d3](https://github.com/angular/angular/commit/35916d3))
+* **language-service:** warn, not error, on missing context members ([#35036](https://github.com/angular/angular/issues/35036)) ([0e76821](https://github.com/angular/angular/commit/0e76821))
+* **localize:** re-enable filename in code-frame error messages ([#34994](https://github.com/angular/angular/issues/34994)) ([c7c7b20](https://github.com/angular/angular/commit/c7c7b20)), closes [/github.com/angular/angular/pull/34974/files#r371034476](https://github.com//github.com/angular/angular/pull/34974/files/issues/r371034476)
+* **ngcc:** improve lockfile error message ([#35001](https://github.com/angular/angular/issues/35001)) ([1d31c81](https://github.com/angular/angular/commit/1d31c81)), closes [#35000](https://github.com/angular/angular/issues/35000)
+
+
+### Features
+
+* **ivy:** Change static priority resolution to be same level as directive it belongs to ([#34938](https://github.com/angular/angular/issues/34938)) ([19c4895](https://github.com/angular/angular/commit/19c4895))
+* **language-service:** completions for output $event properties in ([#34570](https://github.com/angular/angular/issues/34570)) ([2a53727](https://github.com/angular/angular/commit/2a53727))
+* **language-service:** provide completion for $event variable ([#34570](https://github.com/angular/angular/issues/34570)) ([c246787](https://github.com/angular/angular/commit/c246787))
+* **language-service:** provide hover for microsyntax in structural directive ([#34847](https://github.com/angular/angular/issues/34847)) ([baf4a63](https://github.com/angular/angular/commit/baf4a63))
+
+
+### Performance Improvements
+
+* **ivy:** remove unused argument in hostBindings function ([#34969](https://github.com/angular/angular/issues/34969)) ([71a3c72](https://github.com/angular/angular/commit/71a3c72))
+
+
+
 <a name="9.0.0-rc.11"></a>
 # [9.0.0-rc.11](https://github.com/angular/angular/compare/9.0.0-rc.10...9.0.0-rc.11) (2020-01-24)
 
