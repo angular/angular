@@ -61,3 +61,9 @@
 <button [style.font-size.em]="isSpecial ? 3 : 1" >Big</button>
 <button [style.font-size.%]="!isSpecial ? 150 : 50" >Small</button>
 <!-- #enddocregion style-binding-condition-->
+
+<!-- #docregion direct-style-binding -->
+<h3>Bind to multiple styles</h3>
+
+<div style="color: blue" [style]="styleExpr">Add multiple styles</div>
+<!-- #enddocregion direct-style-binding -->

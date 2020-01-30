@@ -935,7 +935,14 @@ Updating the property without changing object identity will have no effect.
 
 ### Style binding
 
-You can set inline styles with a **style binding**.
+Here's how to set the style attribute without a binding in plain HTML:
+
+```html
+<!-- standard style attribute setting -->
+<div style="color: blue">Item clearance special</div>
+```
+
+You can set styles dynamically with a **style binding**.
 
 Style binding syntax resembles property binding.
 Instead of an element property between brackets, start with the prefix `style`,
@@ -948,9 +955,6 @@ The following example conditionally sets the font size in  “em” and “%” 
 
 <code-example path="attribute-binding/src/app/app.component.html" region="style-binding-condition" header="src/app/app.component.html"></code-example>
 
-This technique is suitable for setting a single style, but consider
-the [`NgStyle`](guide/template-syntax#ngStyle) directive when setting several inline styles at the same time.
-
 <div class="alert is-helpful">
 
 Note that a _style property_ name can be written in either
@@ -958,6 +962,20 @@ Note that a _style property_ name can be written in either
 [camelCase](guide/glossary#camelcase), such as `fontSize`.
 
 </div>
+
+If there are multiple styles you'd like to toggle, you can bind to the `[style]` property directly.
+Binding to `[style]` is additive, so it shouldn't overwrite other style bindings or static styles unless the same style property is duplicated.
+
+<code-example path="attribute-binding/src/app/app.component.html" region="direct-style-binding" header="src/app/app.component.html"></code-example>
+
+The expression attached to the `[style]` binding is most often a string list of styles like `"width: 100px; height: 100px;"`. 
+
+You can also format the expression as an object with style names as the keys and style values as the values, like `{width: '100px', height: '100px'}`. 
+It's important to note that with object format, the identity of the object must change for the styles to be updated.
+Updating the property without changing object identity will have no effect.
+
+*This is true for Angular version 9 and later. For Angular version 8, see <a href="http://v8.angular.io/guide/template-syntax#style-binding">v8.angular.io</a>
+
 
 <hr/>
 
