@@ -7,9 +7,8 @@
  */
 import {assertDataInRange, assertGreaterThan} from '../../util/assert';
 import {executeCheckHooks, executeInitAndCheckHooks} from '../hooks';
-import {FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, TVIEW} from '../interfaces/view';
-import {getCheckNoChangesMode, getLView, getSelectedIndex, setSelectedIndex} from '../state';
-
+import {FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, TView} from '../interfaces/view';
+import {getCheckNoChangesMode, getLView, getSelectedIndex, getTView, setSelectedIndex} from '../state';
 
 
 /**
@@ -37,7 +36,7 @@ import {getCheckNoChangesMode, getLView, getSelectedIndex, setSelectedIndex} fro
   */
 export function ɵɵadvance(delta: number): void {
   ngDevMode && assertGreaterThan(delta, 0, 'Can only advance forward');
-  selectIndexInternal(getLView(), getSelectedIndex() + delta, getCheckNoChangesMode());
+  selectIndexInternal(getTView(), getLView(), getSelectedIndex() + delta, getCheckNoChangesMode());
 }
 
 /**
@@ -47,10 +46,11 @@ export function ɵɵadvance(delta: number): void {
  */
 export function ɵɵselect(index: number): void {
   // TODO(misko): Remove this function as it is no longer being used.
-  selectIndexInternal(getLView(), index, getCheckNoChangesMode());
+  selectIndexInternal(getTView(), getLView(), index, getCheckNoChangesMode());
 }
 
-export function selectIndexInternal(lView: LView, index: number, checkNoChangesMode: boolean) {
+export function selectIndexInternal(
+    tView: TView, lView: LView, index: number, checkNoChangesMode: boolean) {
   ngDevMode && assertGreaterThan(index, -1, 'Invalid index');
   ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
 
@@ -60,12 +60,12 @@ export function selectIndexInternal(lView: LView, index: number, checkNoChangesM
     const hooksInitPhaseCompleted =
         (lView[FLAGS] & LViewFlags.InitPhaseStateMask) === InitPhaseState.InitPhaseCompleted;
     if (hooksInitPhaseCompleted) {
-      const preOrderCheckHooks = lView[TVIEW].preOrderCheckHooks;
+      const preOrderCheckHooks = tView.preOrderCheckHooks;
       if (preOrderCheckHooks !== null) {
         executeCheckHooks(lView, preOrderCheckHooks, index);
       }
     } else {
-      const preOrderHooks = lView[TVIEW].preOrderHooks;
+      const preOrderHooks = tView.preOrderHooks;
       if (preOrderHooks !== null) {
         executeInitAndCheckHooks(lView, preOrderHooks, InitPhaseState.OnInitHooksToBeRun, index);
       }

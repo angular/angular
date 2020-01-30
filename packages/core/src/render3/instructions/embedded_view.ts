@@ -14,7 +14,7 @@ import {TContainerNode, TNodeType} from '../interfaces/node';
 import {CONTEXT, LView, LViewFlags, PARENT, TVIEW, TView, TViewType, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {insertView, removeView} from '../node_manipulation';
-import {enterView, getIsParent, getLView, getPreviousOrParentTNode, leaveView, setIsParent, setPreviousOrParentTNode} from '../state';
+import {enterView, getIsParent, getLView, getPreviousOrParentTNode, getTView, leaveView, setIsParent, setPreviousOrParentTNode} from '../state';
 import {getLContainerActiveIndex, isCreationMode} from '../util/view_utils';
 
 import {assignTViewNodeToLView, createLView, createTView, refreshView, renderView} from './shared';
@@ -58,7 +58,8 @@ export function ɵɵembeddedViewStart(viewBlockId: number, decls: number, vars: 
   if (lContainer) {
     if (isCreationMode(viewToRender)) {
       // it is a new view, insert it into collection of views for a given container
-      insertView(viewToRender, lContainer, getLContainerActiveIndex(lContainer));
+      insertView(
+          viewToRender[TVIEW], viewToRender, lContainer, getLContainerActiveIndex(lContainer));
     }
     lContainer[ACTIVE_INDEX] += ActiveIndexFlag.INCREMENT;
   }
@@ -128,14 +129,14 @@ function scanForView(lContainer: LContainer, startIdx: number, viewBlockId: numb
  */
 export function ɵɵembeddedViewEnd(): void {
   const lView = getLView();
-  const tView = lView[TVIEW];
+  const tView = getTView();
   const viewHost = lView[T_HOST];
   const context = lView[CONTEXT];
 
   if (isCreationMode(lView)) {
-    renderView(lView, tView, context);  // creation mode pass
+    renderView(tView, lView, context);  // creation mode pass
   }
-  refreshView(lView, tView, tView.template, context);  // update mode pass
+  refreshView(tView, lView, tView.template, context);  // update mode pass
 
   const lContainer = lView[PARENT] as LContainer;
   ngDevMode && assertLContainerOrUndefined(lContainer);

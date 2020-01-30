@@ -11,10 +11,10 @@ import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
 import {TAttributes, TElementContainerNode, TNodeType} from '../interfaces/node';
 import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
-import {HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST} from '../interfaces/view';
+import {HEADER_OFFSET, LView, RENDERER, TView, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
-import {getBindingIndex, getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from '../state';
+import {getBindingIndex, getIsParent, getLView, getPreviousOrParentTNode, getTView, setIsNotParent, setPreviousOrParentTNode} from '../state';
 import {computeStaticStyling} from '../styling/static_styling';
 import {getConstant} from '../util/view_utils';
 
@@ -63,7 +63,7 @@ function elementContainerStartFirstCreatePass(
 export function ɵɵelementContainerStart(
     index: number, attrsIndex?: number | null, localRefsIndex?: number): void {
   const lView = getLView();
-  const tView = lView[TVIEW];
+  const tView = getTView();
   const adjustedIndex = index + HEADER_OFFSET;
 
   ngDevMode && assertDataInRange(lView, adjustedIndex);
@@ -79,7 +79,7 @@ export function ɵɵelementContainerStart(
   ngDevMode && ngDevMode.rendererCreateComment++;
   const native = lView[adjustedIndex] =
       lView[RENDERER].createComment(ngDevMode ? 'ng-container' : '');
-  appendChild(native, tNode, lView);
+  appendChild(tView, lView, native, tNode);
   attachPatchData(native, lView);
 
   if (isDirectiveHost(tNode)) {
@@ -99,8 +99,7 @@ export function ɵɵelementContainerStart(
  */
 export function ɵɵelementContainerEnd(): void {
   let previousOrParentTNode = getPreviousOrParentTNode();
-  const lView = getLView();
-  const tView = lView[TVIEW];
+  const tView = getTView();
   if (getIsParent()) {
     setIsNotParent();
   } else {

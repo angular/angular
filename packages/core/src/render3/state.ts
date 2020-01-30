@@ -10,7 +10,7 @@ import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 import {assertDefined} from '../util/assert';
 import {assertLViewOrUndefined} from './assert';
 import {TNode} from './interfaces/node';
-import {CONTEXT, DECLARATION_VIEW, LView, OpaqueViewState, TVIEW} from './interfaces/view';
+import {CONTEXT, DECLARATION_VIEW, LView, OpaqueViewState, TVIEW, TView} from './interfaces/view';
 
 
 /**
@@ -38,6 +38,14 @@ interface LFrame {
    * any local variables that need to be stored between invocations.
    */
   lView: LView;
+
+  /**
+   * Current `TView` associated with the `LFrame.lView`.
+   *
+   * One can get `TView` from `lFrame[TVIEW]` however because it is so common it makes sense to
+   * store it in `LFrame` for perf reasons.
+   */
+  tView: TView;
 
   /**
    * Used to set the parent property when nodes are created and track query results.
@@ -229,15 +237,17 @@ export function ɵɵdisableBindings(): void {
 }
 
 /**
- * Return the current LView.
- *
- * The return value can be `null` if the method is called outside of template. This can happen if
- * directive is instantiated by module injector (rather than by node injector.)
+ * Return the current `LView`.
  */
 export function getLView(): LView {
-  // TODO(misko): the return value should be `LView|null` but doing so breaks a lot of code.
-  const lFrame = instructionState.lFrame;
-  return lFrame === null ? null ! : lFrame.lView;
+  return instructionState.lFrame.lView;
+}
+
+/**
+ * Return the current `TView`.
+ */
+export function getTView(): TView {
+  return instructionState.lFrame.tView;
 }
 
 /**
@@ -293,8 +303,7 @@ export function getBindingRoot() {
   const lFrame = instructionState.lFrame;
   let index = lFrame.bindingRootIndex;
   if (index === -1) {
-    const lView = lFrame.lView;
-    index = lFrame.bindingRootIndex = lView[TVIEW].bindingStartIndex;
+    index = lFrame.bindingRootIndex = lFrame.tView.bindingStartIndex;
   }
   return index;
 }
@@ -402,10 +411,12 @@ export const leaveDI = leaveView;
 export function enterView(newView: LView, tNode: TNode | null): void {
   ngDevMode && assertLViewOrUndefined(newView);
   const newLFrame = allocLFrame();
+  const tView = newView[TVIEW];
   instructionState.lFrame = newLFrame;
   newLFrame.previousOrParentTNode = tNode !;
   newLFrame.isParent = true;
   newLFrame.lView = newView;
+  newLFrame.tView = tView;
   newLFrame.selectedIndex = 0;
   newLFrame.contextLView = newView !;
   newLFrame.elementDepthCount = 0;
@@ -413,7 +424,7 @@ export function enterView(newView: LView, tNode: TNode | null): void {
   newLFrame.currentNamespace = null;
   newLFrame.currentSanitizer = null;
   newLFrame.bindingRootIndex = -1;
-  newLFrame.bindingIndex = newView === null ? -1 : newView[TVIEW].bindingStartIndex;
+  newLFrame.bindingIndex = tView.bindingStartIndex;
   newLFrame.currentQueryIndex = 0;
 }
 
@@ -432,6 +443,7 @@ function createLFrame(parent: LFrame | null): LFrame {
     previousOrParentTNode: null !,  //
     isParent: true,                 //
     lView: null !,                  //
+    tView: null !,                  //
     selectedIndex: 0,               //
     contextLView: null !,           //
     elementDepthCount: 0,           //

@@ -8,10 +8,10 @@
 import {newArray} from '../../util/array_utils';
 import {TAttributes, TElementNode, TNode, TNodeType} from '../interfaces/node';
 import {ProjectionSlots} from '../interfaces/projection';
-import {DECLARATION_COMPONENT_VIEW, TVIEW, T_HOST} from '../interfaces/view';
+import {DECLARATION_COMPONENT_VIEW, T_HOST} from '../interfaces/view';
 import {applyProjection} from '../node_manipulation';
 import {getProjectAsAttrValue, isNodeMatchingSelectorList, isSelectorInSelectorList} from '../node_selector_matcher';
-import {getLView, setIsNotParent} from '../state';
+import {getLView, getTView, setIsNotParent} from '../state';
 import {getOrCreateTNode} from './shared';
 
 
@@ -123,8 +123,9 @@ export function setDelayProjection(value: boolean) {
 export function ɵɵprojection(
     nodeIndex: number, selectorIndex: number = 0, attrs?: TAttributes): void {
   const lView = getLView();
-  const tProjectionNode = getOrCreateTNode(
-      lView[TVIEW], lView[T_HOST], nodeIndex, TNodeType.Projection, null, attrs || null);
+  const tView = getTView();
+  const tProjectionNode =
+      getOrCreateTNode(tView, lView[T_HOST], nodeIndex, TNodeType.Projection, null, attrs || null);
 
   // We can't use viewData[HOST_NODE] because projection nodes can be nested in embedded views.
   if (tProjectionNode.projection === null) tProjectionNode.projection = selectorIndex;
@@ -135,6 +136,6 @@ export function ɵɵprojection(
   // We might need to delay the projection of nodes if they are in the middle of an i18n block
   if (!delayProjection) {
     // re-distribution of projectable nodes is stored on a component's view level
-    applyProjection(lView, tProjectionNode);
+    applyProjection(tView, lView, tProjectionNode);
   }
 }

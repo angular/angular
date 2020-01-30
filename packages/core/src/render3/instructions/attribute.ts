@@ -7,9 +7,7 @@
  */
 import {bindingUpdated} from '../bindings';
 import {SanitizerFn} from '../interfaces/sanitization';
-import {TVIEW} from '../interfaces/view';
-import {getLView, getSelectedIndex, nextBindingIndex} from '../state';
-
+import {getLView, getSelectedIndex, getTView, nextBindingIndex} from '../state';
 import {elementAttributeInternal, storePropertyBindingMetadata} from './shared';
 
 
@@ -34,9 +32,9 @@ export function ɵɵattribute(
   const bindingIndex = nextBindingIndex();
   if (bindingUpdated(lView, bindingIndex, value)) {
     const nodeIndex = getSelectedIndex();
-    elementAttributeInternal(nodeIndex, name, value, lView, sanitizer, namespace);
-    ngDevMode &&
-        storePropertyBindingMetadata(lView[TVIEW].data, nodeIndex, 'attr.' + name, bindingIndex);
+    const tView = getTView();
+    elementAttributeInternal(nodeIndex, name, value, tView, lView, sanitizer, namespace);
+    ngDevMode && storePropertyBindingMetadata(tView.data, nodeIndex, 'attr.' + name, bindingIndex);
   }
   return ɵɵattribute;
 }
