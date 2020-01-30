@@ -9,7 +9,7 @@
 import {DirectiveDef} from '@angular/core/src/render3';
 import {ɵɵdefineDirective} from '@angular/core/src/render3/definition';
 import {classStringParser, styleStringParser, toStylingKeyValueArray, ɵɵclassProp, ɵɵstyleMap, ɵɵstyleProp, ɵɵstyleSanitizer} from '@angular/core/src/render3/instructions/styling';
-import {AttributeMarker, TAttributes, TDirectiveDefs} from '@angular/core/src/render3/interfaces/node';
+import {AttributeMarker, TAttributes} from '@angular/core/src/render3/interfaces/node';
 import {StylingRange, TStylingKey, TStylingRange, getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate, setTStylingRangeNext, setTStylingRangePrev, toTStylingRange} from '@angular/core/src/render3/interfaces/styling';
 import {HEADER_OFFSET, TVIEW} from '@angular/core/src/render3/interfaces/view';
 import {getLView, leaveView, setBindingRootForHostBindings} from '@angular/core/src/render3/state';
@@ -520,13 +520,13 @@ class MockDir {}
 function givenDirectiveAttrs(tAttrs: TAttributes[]) {
   const tNode = getTNode();
   const tData = getTData();
-  const directives: TDirectiveDefs = tNode.directives = [0];
+  tNode.directiveStart = getTDataIndexFromDirectiveIndex(0);
+  tNode.directiveEnd = getTDataIndexFromDirectiveIndex(tAttrs.length);
   for (let i = 0; i < tAttrs.length; i++) {
     const tAttr = tAttrs[i];
     const directiveDef = ɵɵdefineDirective({type: MockDir, hostAttrs: tAttr}) as DirectiveDef<any>;
     applyTAttributes(directiveDef.hostAttrs);
     tData[getTDataIndexFromDirectiveIndex(i)] = directiveDef;
-    directives.push(directiveDef);
   }
 }
 
