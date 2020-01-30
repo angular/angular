@@ -8,8 +8,9 @@
 import {AbsoluteFsPath, FileSystem, PathSegment, join, relative, relativeFrom} from '../../../src/ngtsc/file_system';
 import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver';
 import {Logger} from '../logging/logger';
+import {hasBeenProcessed} from '../packages/build_marker';
 import {NgccConfiguration} from '../packages/configuration';
-import {EntryPoint, getEntryPointInfo} from '../packages/entry_point';
+import {EntryPoint, EntryPointJsonProperty, getEntryPointInfo} from '../packages/entry_point';
 import {PathMappings} from '../utils';
 import {EntryPointFinder} from './interface';
 import {getBasePaths} from './utils';
@@ -37,8 +38,42 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
       this.processNextPath();
     }
     const targetEntryPoint = this.unsortedEntryPoints.get(this.targetPath);
-    return this.resolver.sortEntryPointsByDependency(
+    const entryPoints = this.resolver.sortEntryPointsByDependency(
         Array.from(this.unsortedEntryPoints.values()), targetEntryPoint);
+
+    const invalidTarget =
+        entryPoints.invalidEntryPoints.find(i => i.entryPoint.path === this.targetPath);
+    if (invalidTarget !== undefined) {
+      throw new Error(
+          `The target entry-point "${invalidTarget.entryPoint.name}" has missing dependencies:\n` +
+          invalidTarget.missingDependencies.map(dep => ` - ${dep}\n`).join(''));
+    }
+    return entryPoints;
+  }
+
+  hasProcessedTargetEntryPoint(
+      propertiesToConsider: EntryPointJsonProperty[], compileAllFormats: boolean): boolean {
+    const entryPoint = this.getEntryPoint(this.targetPath);
+    if (entryPoint === null || !entryPoint.compiledByAngular) {
+      return true;
+    }
+
+    for (const property of propertiesToConsider) {
+      if (entryPoint.packageJson[property]) {
+        // Here is a property that should be processed
+        if (!hasBeenProcessed(entryPoint.packageJson, property)) {
+          // `hasBeenProcessed()` may return `null`, which means that this entry-point package needs
+          // cleaning and therefore needs to be processed.
+          return false;
+        }
+        if (!compileAllFormats) {
+          // It has been processed and we only need one, so we are done.
+          return true;
+        }
+      }
+    }
+    // All formats need to be compiled and there were none that were not,
+    return true;
   }
 
   private processNextPath(): void {
