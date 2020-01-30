@@ -72,7 +72,7 @@ ts_api_guardian_test(
     actual = "angular/packages/compiler-cli/src/ngtsc/diagnostics/src/code.d.ts",
     data = [
         ":error_code.d.ts",
-        "//packages/compiler-cli/src/ngtsc/diagnostics:diagnostics",
+        "//packages/compiler-cli/src/ngtsc/diagnostics",
     ],
     golden = "angular/tools/public_api_guard/error_code.d.ts",
 )
