@@ -65,7 +65,7 @@ export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void =>
 };
 
 //
-// Generator Helpers
+// Subscribe Helpers
 //
 
 const getAngularVersion = (): string | null | boolean => {
