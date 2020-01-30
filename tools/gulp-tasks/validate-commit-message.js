@@ -14,6 +14,9 @@ module.exports = (gulp) => async() => {
     const shelljs = require('shelljs');
     const getRefsAndShasForTarget = require('../utils/get-refs-and-shas-for-target');
 
+    // Break on error.
+    shelljs.set('-e');
+
 
     let target = {};
     if (process.env['CI'] === 'true') {
@@ -25,36 +28,30 @@ module.exports = (gulp) => async() => {
             `Skipping validate-commit-message check`);
         process.exit();
       }
-      target = await getRefsAndShasForTarget(process.env['CIRCLE_PR_NUMBER']);
+      target = await getRefsAndShasForTarget(process.env['CI_PULL_REQUEST']);
     } else {
       // Validation of commit messages locally
       const baseRef = 'master';
-      const {stdout: headRef} = shelljs.exec(
-          'git branch 2> /dev/null | sed -e \'/^[^*]/d\' -e \'s/* \(.*\)/\1/\'', {silent: true});
-      const {stdout: baseSha} = shelljs.exec(`git rev-parse origin/master`, {silent: true});
-      const {stdout: headSha} = shelljs.exec(`git rev-parse HEAD`, {silent: true});
-      const {stdout: commonAncestorSha} =
-          shelljs.exec(`git merge-base origin/master ${headSha}`, {silent: true});
+      const headRef = shelljs.exec('git symbolic-ref --short HEAD', {silent: true}).trim();
+      const baseSha = shelljs.exec(`git rev-parse origin/master`, {silent: true}).trim();
+      const headSha = shelljs.exec(`git rev-parse HEAD`, {silent: true}).trim();
+      const commonAncestorSha =
+          shelljs.exec(`git merge-base origin/master ${headSha}`, {silent: true}).trim();
       target = {
         base: {
           ref: baseRef,
           sha: baseSha,
         },
         head: {
-          ref: headRef.trim(),
-          sha: headSha.trim(),
+          ref: headRef,
+          sha: headSha,
         },
-        commonAncestorSha: commonAncestorSha.trim(),
-        latestShaOfTargetBranch: baseSha.trim(),
-        latestShaOfPrBranch: headSha.trim(),
+        commonAncestorSha: commonAncestorSha,
+        latestShaOfTargetBranch: baseSha,
+        latestShaOfPrBranch: headSha,
       };
     }
 
-
-    shelljs.set('-e');  // Break on error.
-
-    // We need to fetch origin explicitly because it might be stale.
-    // I couldn't find a reliable way to do this without fetch.
     const result = shelljs.exec(
         `git log --reverse --format=%s ${target.commonAncestorSha}..${target.latestShaOfPrBranch}`,
         {silent: true});
