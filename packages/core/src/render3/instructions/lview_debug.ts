@@ -15,7 +15,7 @@ import {initNgDevMode} from '../../util/ng_dev_mode';
 import {ACTIVE_INDEX, ActiveIndexFlag, CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS, NATIVE} from '../interfaces/container';
 import {DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, TIcu} from '../interfaces/i18n';
-import {PropertyAliases, TConstants, TContainerNode, TDirectiveDefs, TElementNode, TNode as ITNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TViewNode} from '../interfaces/node';
+import {PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TViewNode} from '../interfaces/node';
 import {SelectorFlags} from '../interfaces/projection';
 import {TQueries} from '../interfaces/query';
 import {RComment, RElement, RNode} from '../interfaces/renderer';
@@ -159,6 +159,7 @@ class TNode implements ITNode {
       public injectorIndex: number,                                                  //
       public directiveStart: number,                                                 //
       public directiveEnd: number,                                                   //
+      public directiveStylingLast: number,                                           //
       public propertyBindings: number[]|null,                                        //
       public flags: TNodeFlags,                                                      //
       public providerIndexes: TNodeProviderIndexes,                                  //
@@ -181,7 +182,6 @@ class TNode implements ITNode {
       public residualClasses: KeyValueArray<any>|undefined|null,                     //
       public classBindings: TStylingRange,                                           //
       public styleBindings: TStylingRange,                                           //
-      public directives: TDirectiveDefs|null,                                        //
       ) {}
 
   get type_(): string {
