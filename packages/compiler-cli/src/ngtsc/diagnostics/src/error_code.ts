@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/**
+ * @publicApi
+ */
 export enum ErrorCode {
   DECORATOR_ARG_NOT_LITERAL = 1001,
   DECORATOR_ARITY_WRONG = 1002,
@@ -125,6 +128,9 @@ export enum ErrorCode {
   INJECTABLE_DUPLICATE_PROV = 9001,
 }
 
+/**
+ * @internal
+ */
 export function ngErrorCode(code: ErrorCode): number {
   return parseInt('-99' + code);
 }
