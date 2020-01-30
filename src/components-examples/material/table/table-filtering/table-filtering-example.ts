@@ -33,7 +33,8 @@ export class TableFilteringExample {
   displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
   dataSource = new MatTableDataSource(ELEMENT_DATA);
 
-  applyFilter(filterValue: string) {
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 }

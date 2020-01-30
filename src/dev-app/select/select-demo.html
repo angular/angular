@@ -398,7 +398,7 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
       <mat-card-content>
         <mat-form-field>
           <mat-label>Starter pokemon</mat-label>
-          <mat-select (change)="latestChangeEvent = $event">
+          <mat-select (selectionChange)="latestChangeEvent = $event">
             <mat-option *ngFor="let creature of pokemon" [value]="creature.value">{{ creature.viewValue }}</mat-option>
           </mat-select>
         </mat-form-field>

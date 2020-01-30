@@ -11,7 +11,7 @@
 <h4>Basic native select with initial value</h4>
 <mat-form-field>
   <mat-label>Favorite Car</mat-label>
-  <select matNativeControl (change)="selectedCar = $event.target.value">
+  <select matNativeControl (change)="selectCar($event)">
     <option value=""></option>
     <option *ngFor="let option of cars" [value]="option.value"
             [selected]="selectedCar === option.value">{{ option.viewValue }}</option>

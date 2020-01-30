@@ -31,4 +31,8 @@ export class SelectInitialValueExample {
   ];
   selectedFood = this.foods[2].value;
   selectedCar = this.cars[0].value;
+
+  selectCar(event: Event) {
+    this.selectedCar = (event.target as HTMLSelectElement).value;
+  }
 }

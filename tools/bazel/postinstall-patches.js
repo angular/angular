@@ -12,7 +12,7 @@ const fs = require('fs');
  * Version of the post install patch. Needs to be incremented when
  * existing patches or edits have been modified.
  */
-const PATCH_VERSION = 2;
+const PATCH_VERSION = 3;
 
 /** Path to the project directory. */
 const projectDir = path.join(__dirname, '../..');
@@ -114,9 +114,7 @@ searchAndReplace(`[formatProperty + "_ivy_ngcc"]`, '[formatProperty]',
 
 // Workaround for https://github.com/angular/angular/issues/33452:
 searchAndReplace(/angular_compiler_options = {/, `$&
-        "strictTemplates": True,
-        "strictDomLocalRefTypes ": False,
-        "strictDomEventTypes": False,`, 'node_modules/@angular/bazel/src/ng_module.bzl');
+        "strictTemplates": True,`, 'node_modules/@angular/bazel/src/ng_module.bzl');
 
 // More info in https://github.com/angular/angular/pull/33786
 shelljs.rm('-rf', [
