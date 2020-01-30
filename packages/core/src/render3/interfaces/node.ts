@@ -295,6 +295,24 @@ export interface TNode {
   directiveEnd: number;
 
   /**
+   * Stores the last directive which had a styling instruction.
+   *
+   * Initial value of this is `-1` which means that no `hostBindings` styling instruction has
+   * executed. As `hostBindings` instructions execute they set the value to the index of the
+   * `DirectiveDef` which contained the last `hostBindings` styling instruction.
+   *
+   * Valid values are:
+   * - `-1` No `hostBindings` instruction has executed.
+   * - `directiveStart <= directiveStylingLast < directiveEnd`: Points to the `DirectiveDef` of the
+   *   last styling instruction which executed in the `hostBindings`.
+   *
+   * This data is needed so that styling instructions know which static styling data needs to be
+   * collected from the `DirectiveDef.hostAttrs`. A styling instruction needs to collect all data
+   * since last styling instruction.
+   */
+  directiveStylingLast: number;
+
+  /**
    * Stores indexes of property bindings. This field is only set in the ngDevMode and holds indexes
    * of property bindings so TestBed can get bound property metadata for a given node.
    */
@@ -345,13 +363,6 @@ export interface TNode {
    * - Template `TNode.attrs` associated with the current `TNode`.
    */
   mergedAttrs: TAttributes|null;
-
-  // TODO(misko): pre discussion with Kara, it seems that we don't need `directives` since the same
-  // information is already present in the TData. Maybe worth refactoring.
-  /**
-   * Stores the directive defs matched on the current TNode (along with style cursor.)
-   */
-  directives: TDirectiveDefs|null;
 
   /**
    * A set of local names under which a given element is exported in a template and
@@ -813,55 +824,4 @@ export function hasClassInput(tNode: TNode) {
  */
 export function hasStyleInput(tNode: TNode) {
   return (tNode.flags & TNodeFlags.hasStyleInput) !== 0;
-}
-
-/**
- * Constant enums for accessing data in the `TDirectiveDefs`
- */
-export const enum DirectiveDefs {
-  /// Location where the STYLING_CURSOR is stored.
-  STYLING_CURSOR = 0,
-  /// Header offset from which iterating over `DirectiveDefs` should start.
-  HEADER_OFFSET = 1
-}
-
-/**
- * Constant enums for initial values in the `TDirectiveDefs`
- */
-export const enum DirectiveDefsValues {
-  // Initial value for the `STYLING_CURSOR`
-  INITIAL_STYLING_CURSOR_VALUE = 0,
-}
-
-/**
- * Stores `DirectiveDefs` associated with the current `TNode` as well as styling cursor.
- */
-export interface TDirectiveDefs extends Array<number|DirectiveDef<any>> {
-  /**
-   * As styling instructions (`ɵɵstyleProp`/`ɵɵclassProp`/`ɵɵstyleMap`/`ɵɵclassMap`) are executing
-   * they also need to get a hold of the `DirectiveDef.hostAttrs` and so that they know what
-   * static styling values to use. The styling instructions need this information so that they can
-   * lazily create `TStylingStatic`.
-   *
-   * When styling is executing it can get a hold of its `DirectiveDefs` but that alone is not
-   * sufficient for two reasons:
-   * 1. Styling instruction needs to coalesce other directives which came before it and which have
-   *    static value but may not have a styling instruction to attach the static values to.
-   * 2. There may be more than one styling instruction per `hostBindings` and only the first
-   *    styling instruction should create the `TStylingStatic`.
-   *
-   * The algorithm for doing this is:
-   * - look up the current `DirectiveDef` associated with the current instruction.
-   * - If `STYLING_CURSOR === 0 || tDirectiveDefs[stylingCursor] !== currentDirectiveDef` than
-   *   create `TStylingStatic` and:
-   *   - iterate over `TDirectiveDefs[++stylingCursor]` and insert them into the `TStylingStatic`
-   *     until you reach `DirectiveDef` associated with the current instruction.
-   * - If new `TStylingStatic` was created, recompute the residual styling values.
-   *
-   * The above algorithm will ensure that the styling instructions consume static styling values
-   * associated until a given instruction. After consuming instructions, it is always important to
-   * clear the residual (See `TNode.residualClass`/`TNode.residualStyle`), since this may be the
-   * last styling instruction, and we need to lazily recreate the residual value on as needed basis.
-   */
-  [DirectiveDefs.STYLING_CURSOR]: number;
 }

@@ -10,13 +10,13 @@ import {SafeValue, unwrapSafeValue} from '../../sanitization/bypass';
 import {stylePropNeedsSanitization, ɵɵsanitizeStyle} from '../../sanitization/sanitization';
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {KeyValueArray, keyValueArrayGet, keyValueArraySet} from '../../util/array_utils';
-import {assertDefined, assertEqual, assertGreaterThanOrEqual, assertLessThan, assertNotEqual, assertNotSame, throwError} from '../../util/assert';
+import {assertDefined, assertEqual, assertLessThan, assertNotEqual, throwError} from '../../util/assert';
 import {EMPTY_ARRAY} from '../../util/empty';
 import {concatStringsWithSpace, stringify} from '../../util/stringify';
 import {assertFirstUpdatePass} from '../assert';
 import {bindingUpdated} from '../bindings';
 import {DirectiveDef} from '../interfaces/definition';
-import {AttributeMarker, DirectiveDefs, TAttributes, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
+import {AttributeMarker, TAttributes, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement, Renderer3} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {TStylingKey, TStylingRange, getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate} from '../interfaces/styling';
@@ -27,7 +27,9 @@ import {insertTStylingBinding} from '../styling/style_binding_list';
 import {getLastParsedKey, getLastParsedValue, parseClassName, parseClassNameNext, parseStyle, parseStyleNext} from '../styling/styling_parser';
 import {NO_CHANGE} from '../tokens';
 import {getNativeByIndex} from '../util/view_utils';
+
 import {setDirectiveInputsWhichShadowsStyling} from './property';
+
 
 
 /**
@@ -360,9 +362,9 @@ export function wrapInStaticStylingKey(
   } else {
     // We are in host binding node and there was no binding instruction in template node.
     // This means that we need to compute the residual.
-    const directives = tNode.directives;
-    const isFirstStylingInstructionInHostBinding = directives !== null &&
-        directives[directives[DirectiveDefs.STYLING_CURSOR]] !== hostDirectiveDef;
+    const directiveStylingLast = tNode.directiveStylingLast;
+    const isFirstStylingInstructionInHostBinding =
+        directiveStylingLast === -1 || tData[directiveStylingLast] !== hostDirectiveDef;
     if (isFirstStylingInstructionInHostBinding) {
       stylingKey =
           collectStylingFromDirectives(hostDirectiveDef, tData, tNode, stylingKey, isClassBased);
@@ -391,7 +393,7 @@ export function wrapInStaticStylingKey(
         //   the statics may have moved from the residual to the `stylingKey` and so we have to
         //   recompute.
         // - If `undefined` this is the first time we are running.
-        residual = collectResidual(tNode, isClassBased);
+        residual = collectResidual(tData, tNode, isClassBased);
       }
     }
   }
@@ -424,6 +426,58 @@ function getTemplateHeadTStylingKey(tData: TData, tNode: TNode, isClassBased: bo
   return tData[getTStylingRangePrev(bindings)] as TStylingKey;
 }
 
+/**
+ * Update the `TStylingKey` of the first template instruction in `TNode`.
+ *
+ * Logically `hostBindings` styling instructions are of lower priority than that of the template.
+ * However, they execute after the template styling instructions. This means that they get inserted
+ * in front of the template styling instructions.
+ *
+ * If we have a template styling instruction and a new `hostBindings` styling instruction is
+ * executed it means that it may need to steal static fields from the template instruction. This
+ * method allows us to update the first template instruction `TStylingKey` with a new value.
+ *
+ * Assume:
+ * ```
+ * <div my-dir style="color: red" [style.color]="tmplExp"></div>
+ *
+ * @Directive({
+ *   host: {
+ *     'style': 'width: 100px',
+ *     '[style.color]': 'dirExp',
+ *   }
+ * })
+ * class MyDir {}
+ * ```
+ *
+ * when `[style.color]="tmplExp"` executes it creates this data structure.
+ * ```
+ *  ['', 'color', 'color', 'red', 'width', '100px'],
+ * ```
+ *
+ * The reason for this is that the template instruction does not know if there are styling
+ * instructions and must assume that there are none and must collect all of the static styling.
+ * (both
+ * `color' and 'width`)
+ *
+ * When `'[style.color]': 'dirExp',` executes we need to insert a new data into the linked list.
+ * ```
+ *  ['', 'color', 'width', '100px'],  // newly inserted
+ *  ['', 'color', 'color', 'red', 'width', '100px'], // this is wrong
+ * ```
+ *
+ * Notice that the template statics is now wrong as it incorrectly contains `width` so we need to
+ * update it like so:
+ * ```
+ *  ['', 'color', 'width', '100px'],
+ *  ['', 'color', 'color', 'red'],    // UPDATE
+ * ```
+ *
+ * @param tData `TData` where the linked list is stored.
+ * @param tNode `TNode` for which the styling is being computed.
+ * @param isClassBased `true` if `class` (`false` if `style`)
+ * @param tStylingKey New `TStylingKey` which is replacing the old one.
+ */
 function setTemplateHeadTStylingKey(
     tData: TData, tNode: TNode, isClassBased: boolean, tStylingKey: TStylingKey): void {
   const bindings = isClassBased ? tNode.classBindings : tNode.styleBindings;
@@ -433,15 +487,29 @@ function setTemplateHeadTStylingKey(
   tData[getTStylingRangePrev(bindings)] = tStylingKey;
 }
 
-function collectResidual(tNode: TNode, isClassBased: boolean): KeyValueArray<any>|null {
+/**
+ * Collect all static values after the current `TNode.directiveStylingLast` index.
+ *
+ * Collect the remaining styling information which has not yet been collected by an existing
+ * styling instruction.
+ *
+ * @param tData `TData` where the `DirectiveDefs` are stored.
+ * @param tNode `TNode` which contains the directive range.
+ * @param isClassBased `true` if `class` (`false` if `style`)
+ */
+function collectResidual(tData: TData, tNode: TNode, isClassBased: boolean): KeyValueArray<any>|
+    null {
   let residual: KeyValueArray<any>|null|undefined = undefined;
-  const directives = tNode.directives;
-  if (directives) {
-    for (let i = directives[DirectiveDefs.STYLING_CURSOR] + 1; i < directives.length; i++) {
-      const attrs = (directives[i] as DirectiveDef<any>).hostAttrs;
-      residual =
-          collectStylingFromTAttrs(residual, attrs, isClassBased) as KeyValueArray<any>| null;
-    }
+  const directiveEnd = tNode.directiveEnd;
+  ngDevMode &&
+      assertNotEqual(
+          tNode.directiveStylingLast, -1,
+          'By the time this function gets called at least one hostBindings-node styling instruction must have executed.');
+  // We add `1 + tNode.directiveStart` because we need to skip the current directive (as we are
+  // collecting things after the last `hostBindings` directive which had a styling instruction.)
+  for (let i = 1 + tNode.directiveStylingLast; i < directiveEnd; i++) {
+    const attrs = (tData[i] as DirectiveDef<any>).hostAttrs;
+    residual = collectStylingFromTAttrs(residual, attrs, isClassBased) as KeyValueArray<any>| null;
   }
   return collectStylingFromTAttrs(residual, tNode.attrs, isClassBased) as KeyValueArray<any>| null;
 }
@@ -461,29 +529,28 @@ function collectResidual(tNode: TNode, isClassBased: boolean): KeyValueArray<any
 function collectStylingFromDirectives(
     hostDirectiveDef: DirectiveDef<any>| null, tData: TData, tNode: TNode, stylingKey: TStylingKey,
     isClassBased: boolean): TStylingKey {
-  const directives = tNode.directives;
-  if (directives != null) {
-    ngDevMode && hostDirectiveDef &&
-        assertGreaterThanOrEqual(
-            directives.indexOf(hostDirectiveDef, directives[DirectiveDefs.STYLING_CURSOR]), 0,
-            'Expecting that the current directive is in the directive list');
-    // We need to loop because there can be directives which have `hostAttrs` but don't have
-    // `hostBindings` so this loop catches up up to the current directive..
-    let currentDirective: DirectiveDef<any>|null = null;
-    let index = directives[DirectiveDefs.STYLING_CURSOR];
-    while (index + 1 < directives.length) {
-      index++;
-      currentDirective = directives[index] as DirectiveDef<any>;
-      ngDevMode && assertDefined(currentDirective, 'expected to be defined');
-      stylingKey = collectStylingFromTAttrs(stylingKey, currentDirective.hostAttrs, isClassBased);
-      if (currentDirective === hostDirectiveDef) break;
-    }
-    if (hostDirectiveDef !== null) {
-      // we only advance the styling cursor if we are collecting data from host bindings.
-      // Template executes before host bindings and so if we would update the index,
-      // host bindings would not get their statics.
-      directives[DirectiveDefs.STYLING_CURSOR] = index;
-    }
+  // We need to loop because there can be directives which have `hostAttrs` but don't have
+  // `hostBindings` so this loop catches up to the current directive..
+  let currentDirective: DirectiveDef<any>|null = null;
+  const directiveEnd = tNode.directiveEnd;
+  let directiveStylingLast = tNode.directiveStylingLast;
+  if (directiveStylingLast === -1) {
+    directiveStylingLast = tNode.directiveStart;
+  } else {
+    directiveStylingLast++;
+  }
+  while (directiveStylingLast < directiveEnd) {
+    currentDirective = tData[directiveStylingLast] as DirectiveDef<any>;
+    ngDevMode && assertDefined(currentDirective, 'expected to be defined');
+    stylingKey = collectStylingFromTAttrs(stylingKey, currentDirective.hostAttrs, isClassBased);
+    if (currentDirective === hostDirectiveDef) break;
+    directiveStylingLast++;
+  }
+  if (hostDirectiveDef !== null) {
+    // we only advance the styling cursor if we are collecting data from host bindings.
+    // Template executes before host bindings and so if we would update the index,
+    // host bindings would not get their statics.
+    tNode.directiveStylingLast = directiveStylingLast;
   }
   return stylingKey;
 }
