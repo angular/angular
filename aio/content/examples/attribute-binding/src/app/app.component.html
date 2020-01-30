@@ -45,7 +45,7 @@
 <!-- #docregion direct-class-binding -->
 <h3>Bind to multiple classes</h3>
 
-<div [class]="someClasses">Add multiple classes</div>
+<div [class]="classExpr">Add multiple classes</div>
 <!-- #enddocregion direct-class-binding -->
 
 <hr />
@@ -67,3 +67,44 @@
 
 <div style="color: blue" [style]="styleExpr">Add multiple styles</div>
 <!-- #enddocregion direct-style-binding -->
+
+<hr />
+
+<h2>Priority Order</h2>
+
+<!-- #docregion basic-specificity -->
+<h3>Basic specificity</h3>
+
+<!-- The `class.special` binding will override any value for the `special` class in `classExpr`.  -->
+<div [class.special]="isSpecial" [class]="classExpr">Some text.</div>
+
+<!-- The `style.color` binding will override any value for the `color` property in `styleExpr`.  -->
+<div [style.color]="color" [style]="styleExpr">Some text.</div>
+<!-- #enddocregion basic-specificity -->
+
+<!-- #docregion source-specificity -->
+<h3>Source specificity</h3>
+
+<!-- The `class.special` template binding will override any host binding to the `special` class set by `dirWithClassBinding` or `comp-with-host-binding`.-->
+<comp-with-host-binding [class.special]="isSpecial" dirWithClassBinding>Some text.</comp-with-host-binding>
+
+<!-- The `style.color` template binding will override any host binding to the `color` property set by `dirWithStyleBinding` or `comp-with-host-binding`. -->
+<comp-with-host-binding [style.color]="color" dirWithStyleBinding>Some text.</comp-with-host-binding>
+<!-- #enddocregion source-specificity -->
+
+<!-- #docregion dynamic-priority -->
+<h3>Dynamic vs static</h3>
+
+<!-- If `classExpr` has a value for the `special` class, this value will override the `class="special"` below -->
+<div class="special" [class]="classExpr">Some text.</div>
+
+<!-- If `styleExpr` has a value for the `color` property, this value will override the `style="color: blue"` below -->
+<div style="color: blue" [style]="styleExpr">Some text.</div>
+
+<!-- #enddocregion dynamic-priority -->
+
+<!-- #docregion style-delegation -->
+<comp-with-host-binding dirWithHostBinding></comp-with-host-binding>
+<!-- #enddocregion style-delegation -->
+
+

@@ -929,6 +929,8 @@ In this case, Angular will add a class only if its associated value is truthy.
 It's important to note that with object format, the identity of the object must change for the class list to be updated.
 Updating the property without changing object identity will have no effect.
 
+If there are multiple bindings to the same class name, conflicts are resolved using [styling priority order](#styling-priority).
+
 *This is true for Angular version 9 and later. For Angular version 8, see <a href="http://v8.angular.io/guide/template-syntax#class-binding">v8.angular.io</a>
 
 <hr/>
@@ -973,6 +975,8 @@ The expression attached to the `[style]` binding is most often a string list of 
 You can also format the expression as an object with style names as the keys and style values as the values, like `{width: '100px', height: '100px'}`. 
 It's important to note that with object format, the identity of the object must change for the styles to be updated.
 Updating the property without changing object identity will have no effect.
+
+If there are multiple bindings to the same style property, conflicts are resolved using [styling priority order](#styling-priority).
 
 *This is true for Angular version 9 and later. For Angular version 8, see <a href="http://v8.angular.io/guide/template-syntax#style-binding">v8.angular.io</a>
 
@@ -2183,3 +2187,63 @@ Add the following code to your `svg.component.svg` file:
 
 Here you can see the use of a `click()` event binding and the property binding syntax
 (`[attr.fill]="fillColor"`).
+
+## Appendix
+
+{@a styling-priority}
+### Styling Priority Order
+
+When there are multiple bindings to the same class name or style property, Angular uses priority order to resolve conflicts and determine which classes or styles are ultimately applied to the element.
+
+The more specific a style is, the higher its priority. 
+A general `[class]` binding will have lower priority than a binding to a specific class (e.g. `[class.foo]`), and a general `[style]` binding will have lower priority than a binding to a specific style (e.g. `[style.bar]`).
+
+<code-example path="attribute-binding/src/app/app.component.html" region="basic-specificity" header="src/app/app.component.html"></code-example>
+
+Specificity rules also apply when it comes to bindings that come from different sources. 
+It's possible for a node to have bindings on the template itself, from host bindings on matched directives, and from host bindings on matched components.
+
+Template bindings are the most specific because they apply to only one node at a time, so they have the highest priority.
+
+Directive host bindings are considered less specific because directives can be used in multiple locations, so they have a lower priority than template bindings.
+
+Directives often augment component behavior, so host bindings from components have the lowest priority. 
+
+<code-example path="attribute-binding/src/app/app.component.html" region="source-specificity" header="src/app/app.component.html"></code-example>
+
+Dynamic styles also take precedence over static styles. 
+
+In the following case, `class` and `[class]` have similar specificity, but the `[class]` binding will have higher priority because it is dynamic.
+
+<code-example path="attribute-binding/src/app/app.component.html" region="dynamic-priority" header="src/app/app.component.html"></code-example>
+
+Below is a full priority list, ranked from highest (top) to lowest (bottom):
+
+* Template bindings
+  * Property binding (e.g. `<div [class.foo]="hasFoo">`)
+  * Map binding (e.g. `<div [class]="classExpr">`)
+  * Static value (e.g. `<div class="foo">`)
+  
+* Directive host bindings
+  * Property binding (e.g. `host: {'[class.foo]': 'hasFoo'}`)
+  * Map binding (e.g. `host: {'[class]': 'classExpr'}`)
+  * Static value (e.g. `host: {'class': 'foo'}`)
+  
+* Component host bindings
+  * Property binding (e.g. `host: {'[class.foo]': 'hasFoo'}`)
+  * Map binding (e.g. `host: {'[class]': 'classExpr'}`)
+  * Static value (e.g. `host: {'class': 'foo'}`)
+
+{@a styling-delegation}
+### Delegating to lower priority styles
+
+It is possible for higher priority styles to "delegate" to lower priority styles using `undefined` values.
+Whereas setting a style property to `null` will ensure the style is removed, setting it to `undefined` will cause Angular to fall back to the next-highest priority binding to that style.
+
+For example, let's say there is the following template: 
+
+<code-example path="attribute-binding/src/app/app.component.html" region="style-delegation" header="src/app/app.component.html"></code-example>
+
+And let's say `dirWithHostBinding` and `comp-with-host-binding` both have a `[style.width]` host binding.
+In that case, if `dirWithHostBinding` sets its binding to `undefined`, the `width` property will fall back to the value of the `comp-with-host-binding` host binding.
+However, if `dirWithHostBinding` sets its binding to `null`, the `width` property will be removed entirely.

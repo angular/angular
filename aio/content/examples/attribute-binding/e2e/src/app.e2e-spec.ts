@@ -25,11 +25,12 @@ describe('Attribute binding example', function () {
   });
 
   it('should display a blue div with a red border', function () {
-    expect(element.all(by.css('div')).get(4).getCssValue('border')).toEqual('2px solid rgb(212, 30, 46)');
+    expect(element.all(by.css('div')).get(3).getCssValue('border')).toEqual('2px solid rgb(212, 30, 46)');
   });
 
-  it('should display a div with replaced classes', function () {
-    expect(element.all(by.css('div')).get(5).getAttribute('class')).toEqual('new-class');
+  it('should display a div with many classes', function () {
+    expect(element.all(by.css('div')).get(3).getAttribute('class')).toContain('special');
+    expect(element.all(by.css('div')).get(3).getAttribute('class')).toContain('clearance');
   });
 
   it('should display four buttons', function() {
