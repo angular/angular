@@ -68,5 +68,3 @@ For simple updates, the CLI command [`ng update`](cli/update) is all you need. W
 * Update command reference: [Angular CLI `ng update` command reference](cli/update)
 
 * Versioning, release, support, and deprecation practices: [Angular versioning and releases](guide/releases "Angular versioning and releases")
-
-* Release schedule: [Angular versioning and releases](guide/releases#schedule "Angular versioning and releases")
