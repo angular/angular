@@ -8,8 +8,9 @@ import { Component } from '@angular/core';
 export class AppComponent {
   actionName = 'Go for it';
   isSpecial = true;
-  itemClearance = true;
-  resetClasses = 'new-class';
   canSave = true;
-
+  someClasses = 'foo bar';
+  classExpr = 'special foo';
+  styleExpr = 'color: red';
+  color = 'blue';
 }

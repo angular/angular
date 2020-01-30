@@ -895,7 +895,7 @@ Instead, you'd use property binding and write it like this:
 Add and remove CSS class names from an element's `class` attribute with
 a **class binding**.
 
-Here's how to set the attribute without binding in plain HTML:
+Here's how to set the attribute without a binding in plain HTML:
 
 ```html
 <!-- standard class attribute setting -->
@@ -903,27 +903,33 @@ Here's how to set the attribute without binding in plain HTML:
 ```
 
 Class binding syntax resembles property binding, but instead of an element property between brackets, start with the prefix `class`,
-optionally followed by a dot (`.`) and the name of a CSS class: `[class.class-name]`.
-
-You can replace that with a binding to a string of the desired class names; this is an all-or-nothing, replacement binding.
-
-
- <code-example path="attribute-binding/src/app/app.component.html" region="class-override" header="src/app/app.component.html"></code-example>
-
-You can also add a class to an element without overwriting the classes already on the element:
-
- <code-example path="attribute-binding/src/app/app.component.html" region="add-class" header="src/app/app.component.html"></code-example>
-
-Finally, you can bind to a specific class name.
+optionally followed by a dot (`.`) and the name of a CSS class: `[class.class-name]`. 
 Angular adds the class when the template expression evaluates to truthy.
 It removes the class when the expression is falsy.
+ 
+Binding to a specific class is additive, so it won't overwrite other class bindings or static classes unless the class names are duplicated.
 
-<code-example path="attribute-binding/src/app/app.component.html" region="is-special" header="src/app/app.component.html"></code-example>
+In the example below, the final class list for the `<div>` will be `"item clearance special"` if `isSpecial` is truthy, and only `"item clearance"` if it is falsy.
 
-While this technique is suitable for toggling a single class name,
-consider the [`NgClass`](guide/template-syntax#ngClass) directive when
-managing multiple class names at the same time.
+<code-example path="attribute-binding/src/app/app.component.html" region="add-class" header="src/app/app.component.html"></code-example> 
 
+You can also use the alternative class binding syntax that replaces square brackets with the `bind-` keyword:
+
+<code-example path="attribute-binding/src/app/app.component.html" region="bind-syntax" header="src/app/app.component.html"></code-example> 
+
+If there are multiple classes you'd like to toggle, you can bind to the `[class]` property directly.
+Binding to `[class]` is additive, so it shouldn't overwrite other class bindings or static classes unless the class names are duplicated*.
+
+<code-example path="attribute-binding/src/app/app.component.html" region="direct-class-binding" header="src/app/app.component.html"></code-example>
+
+The expression attached to the `[class]` binding is most often a string list of class names like `"clearance special"`. 
+
+You can also format the expression as an object with class names as the keys and truthy/falsy expressions as the values, like `{clearance: true, special: false}`. 
+In this case, Angular will add a class only if its associated value is truthy.
+It's important to note that with object format, the identity of the object must change for the class list to be updated.
+Updating the property without changing object identity will have no effect.
+
+*This is true for Angular version 9 and later. For Angular version 8, see <a href="http://v8.angular.io/guide/template-syntax#class-binding">v8.angular.io</a>
 
 <hr/>
 

@@ -29,26 +29,24 @@
 
 <h2>Class binding</h2>
 
-<!-- #docregion is-special -->
-<h3>toggle the "special" class on/off with a property:</h3>
-<div [class.special]="isSpecial">The class binding is special.</div>
-
-<h3>binding to class.special overrides the class attribute:</h3>
-<div class="special" [class.special]="!isSpecial">This one is not so special.</div>
-
-<h3>Using the bind- syntax:</h3>
-<div bind-class.special="isSpecial">This class binding is special too.</div>
-<!-- #enddocregion is-special -->
-
 <!-- #docregion add-class -->
-<h3>Add a class:</h3>
-<div class="item clearance special" [class.item-clearance]="itemClearance">Add another class</div>
+<h3>Bind to a specific class</h3>
+
+<div class="item clearance" [class.special]="isSpecial">This class binding is special.</div>
 <!-- #enddocregion add-class -->
 
-<!-- #docregion class-override -->
-<h3>Overwrite all existing classes with a new class:</h3>
-<div class="item clearance special" [attr.class]="resetClasses">Reset all classes at once</div>
-<!-- #enddocregion class-override -->
+<!-- #docregion bind-syntax -->
+
+<h3>Using the bind- syntax:</h3>
+
+<div bind-class.special="isSpecial">This class binding is special too.</div>
+<!-- #enddocregion bind-syntax -->
+
+<!-- #docregion direct-class-binding -->
+<h3>Bind to multiple classes</h3>
+
+<div [class]="someClasses">Add multiple classes</div>
+<!-- #enddocregion direct-class-binding -->
 
 <hr />
 
