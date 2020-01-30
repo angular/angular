@@ -13,7 +13,7 @@ import {ExtendedTsCompilerHost} from '../../core/api';
 import {AbsoluteFsPath, PathSegment, join} from '../../file_system';
 import {getRootDirs} from '../../util/src/typescript';
 
-const CSS_PREPROCESSOR_EXT = /(\.scss|\.less|\.styl)$/;
+const CSS_PREPROCESSOR_EXT = /(\.scss|\.sass|\.less|\.styl)$/;
 
 /**
  * `ResourceLoader` which delegates to a `CompilerHost` resource loading method.

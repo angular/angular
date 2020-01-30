@@ -20,7 +20,7 @@ import {DTS, GENERATED_FILES, isInRootDir, relativeToRootDirs} from './util';
 
 const NODE_MODULES_PACKAGE_NAME = /node_modules\/((\w|-|\.)+|(@(\w|-|\.)+\/(\w|-|\.)+))/;
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
-const CSS_PREPROCESSOR_EXT = /(\.scss|\.less|\.styl)$/;
+const CSS_PREPROCESSOR_EXT = /(\.scss|\.sass|\.less|\.styl)$/;
 
 let wrapHostForTest: ((host: ts.CompilerHost) => ts.CompilerHost)|null = null;
 
