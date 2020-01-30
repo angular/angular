@@ -4,5 +4,8 @@ module.exports = {
     background: 'projects/shell-chrome/src/app/background.ts',
     backend: 'projects/shell-chrome/src/app/backend.ts',
     devtools: 'projects/shell-chrome/src/devtools.ts',
+  },
+  output: {
+    jsonpFunction: '___ngDevToolsRuntime'
   }
 };

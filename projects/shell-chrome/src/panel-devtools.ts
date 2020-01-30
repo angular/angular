@@ -1,7 +1,7 @@
 let reloadFns: ((url: string) => void)[] = [];
 export const panelDevTools = {
   injectBackend(cb?: () => void) {
-    injectScripts(['backend.js'], cb);
+    injectScripts(['backend.js', 'runtime.js'], cb);
   },
 
   onReload(reloadFn: (url: string) => void) {
