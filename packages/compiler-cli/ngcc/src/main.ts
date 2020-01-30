@@ -16,12 +16,13 @@ import {replaceTsWithNgInErrors} from '../../src/ngtsc/diagnostics';
 import {AbsoluteFsPath, FileSystem, absoluteFrom, dirname, getFileSystem, resolve} from '../../src/ngtsc/file_system';
 
 import {CommonJsDependencyHost} from './dependencies/commonjs_dependency_host';
-import {DependencyResolver, InvalidEntryPoint, PartiallyOrderedEntryPoints, SortedEntryPointsInfo} from './dependencies/dependency_resolver';
+import {DependencyResolver, InvalidEntryPoint} from './dependencies/dependency_resolver';
 import {DtsDependencyHost} from './dependencies/dts_dependency_host';
 import {EsmDependencyHost} from './dependencies/esm_dependency_host';
 import {ModuleResolver} from './dependencies/module_resolver';
 import {UmdDependencyHost} from './dependencies/umd_dependency_host';
 import {DirectoryWalkerEntryPointFinder} from './entry_point_finder/directory_walker_entry_point_finder';
+import {EntryPointFinder} from './entry_point_finder/interface';
 import {TargetedEntryPointFinder} from './entry_point_finder/targeted_entry_point_finder';
 import {AnalyzeEntryPointsFn, CreateCompileFn, Executor, PartiallyOrderedTasks, Task, TaskProcessingOutcome, TaskQueue} from './execution/api';
 import {ClusterExecutor} from './execution/cluster/executor';
@@ -147,16 +148,19 @@ export function mainNgcc(
   // NOTE: Avoid eagerly instantiating anything that might not be used when running sync/async or in
   //       master/worker process.
   const fileSystem = getFileSystem();
-
+  const absBasePath = absoluteFrom(basePath);
+  const config = new NgccConfiguration(fileSystem, dirname(absBasePath));
+  const dependencyResolver = getDependencyResolver(fileSystem, logger, pathMappings);
 
   // Bail out early if the work is already done.
   const supportedPropertiesToConsider = ensureSupportedProperties(propertiesToConsider);
   const absoluteTargetEntryPointPath =
-      targetEntryPointPath !== undefined ? resolve(basePath, targetEntryPointPath) : undefined;
-  if (absoluteTargetEntryPointPath !== undefined &&
-      hasProcessedTargetEntryPoint(
-          fileSystem, absoluteTargetEntryPointPath, supportedPropertiesToConsider,
-          compileAllFormats)) {
+      targetEntryPointPath !== undefined ? resolve(basePath, targetEntryPointPath) : null;
+  const finder = getEntryPointFinder(
+      fileSystem, logger, dependencyResolver, config, absBasePath, absoluteTargetEntryPointPath,
+      pathMappings);
+  if (finder instanceof TargetedEntryPointFinder &&
+      !finder.targetNeedsProcessingOrCleaning(supportedPropertiesToConsider, compileAllFormats)) {
     logger.debug('The target entry-point has already been processed');
     return;
   }
@@ -172,34 +176,15 @@ export function mainNgcc(
     logger.debug('Analyzing entry-points...');
     const startTime = Date.now();
 
-    const moduleResolver = new ModuleResolver(fileSystem, pathMappings);
-    const esmDependencyHost = new EsmDependencyHost(fileSystem, moduleResolver);
-    const umdDependencyHost = new UmdDependencyHost(fileSystem, moduleResolver);
-    const commonJsDependencyHost = new CommonJsDependencyHost(fileSystem, moduleResolver);
-    const dtsDependencyHost = new DtsDependencyHost(fileSystem, pathMappings);
-    const dependencyResolver = new DependencyResolver(
-        fileSystem, logger, {
-          esm5: esmDependencyHost,
-          esm2015: esmDependencyHost,
-          umd: umdDependencyHost,
-          commonjs: commonJsDependencyHost
-        },
-        dtsDependencyHost);
-
-    const absBasePath = absoluteFrom(basePath);
-    const config = new NgccConfiguration(fileSystem, dirname(absBasePath));
-    let entryPointInfo = getEntryPoints(
-        fileSystem, pkgJsonUpdater, logger, dependencyResolver, config, absBasePath,
-        absoluteTargetEntryPointPath, pathMappings);
-
+    let entryPointInfo = finder.findEntryPoints();
     const cleaned = cleanOutdatedPackages(fileSystem, entryPointInfo.entryPoints);
     if (cleaned) {
       // If we had to clean up one or more packages then we must read in the entry-points again.
-      entryPointInfo = getEntryPoints(
-          fileSystem, pkgJsonUpdater, logger, dependencyResolver, config, absBasePath,
-          absoluteTargetEntryPointPath, pathMappings);
+      entryPointInfo = finder.findEntryPoints();
     }
-    const {entryPoints, graph} = entryPointInfo;
+
+    const {entryPoints, invalidEntryPoints, graph} = entryPointInfo;
+    logInvalidEntryPoints(logger, invalidEntryPoints);
 
     const unprocessableEntryPointPaths: string[] = [];
     // The tasks are partially ordered by virtue of the entry-points being partially ordered too.
@@ -364,77 +349,35 @@ function getExecutor(
   }
 }
 
-function getEntryPoints(
-    fs: FileSystem, pkgJsonUpdater: PackageJsonUpdater, logger: Logger,
-    resolver: DependencyResolver, config: NgccConfiguration, basePath: AbsoluteFsPath,
-    targetEntryPointPath: AbsoluteFsPath | undefined, pathMappings: PathMappings |
-        undefined): {entryPoints: PartiallyOrderedEntryPoints, graph: DepGraph<EntryPoint>} {
-  const {entryPoints, invalidEntryPoints, graph} = (targetEntryPointPath !== undefined) ?
-      getTargetedEntryPoints(
-          fs, pkgJsonUpdater, logger, resolver, config, basePath, targetEntryPointPath,
-          pathMappings) :
-      getAllEntryPoints(fs, config, logger, resolver, basePath, pathMappings);
-  logInvalidEntryPoints(logger, invalidEntryPoints);
-  return {entryPoints, graph};
+function getDependencyResolver(
+    fileSystem: FileSystem, logger: Logger,
+    pathMappings: PathMappings | undefined): DependencyResolver {
+  const moduleResolver = new ModuleResolver(fileSystem, pathMappings);
+  const esmDependencyHost = new EsmDependencyHost(fileSystem, moduleResolver);
+  const umdDependencyHost = new UmdDependencyHost(fileSystem, moduleResolver);
+  const commonJsDependencyHost = new CommonJsDependencyHost(fileSystem, moduleResolver);
+  const dtsDependencyHost = new DtsDependencyHost(fileSystem, pathMappings);
+  return new DependencyResolver(
+      fileSystem, logger, {
+        esm5: esmDependencyHost,
+        esm2015: esmDependencyHost,
+        umd: umdDependencyHost,
+        commonjs: commonJsDependencyHost
+      },
+      dtsDependencyHost);
 }
 
-function getTargetedEntryPoints(
-    fs: FileSystem, pkgJsonUpdater: PackageJsonUpdater, logger: Logger,
-    resolver: DependencyResolver, config: NgccConfiguration, basePath: AbsoluteFsPath,
-    absoluteTargetEntryPointPath: AbsoluteFsPath,
-    pathMappings: PathMappings | undefined): SortedEntryPointsInfo {
-  const finder = new TargetedEntryPointFinder(
-      fs, config, logger, resolver, basePath, absoluteTargetEntryPointPath, pathMappings);
-  const entryPointInfo = finder.findEntryPoints();
-  const invalidTarget = entryPointInfo.invalidEntryPoints.find(
-      i => i.entryPoint.path === absoluteTargetEntryPointPath);
-  if (invalidTarget !== undefined) {
-    throw new Error(
-        `The target entry-point "${invalidTarget.entryPoint.name}" has missing dependencies:\n` +
-        invalidTarget.missingDependencies.map(dep => ` - ${dep}\n`).join(''));
+function getEntryPointFinder(
+    fs: FileSystem, logger: Logger, resolver: DependencyResolver, config: NgccConfiguration,
+    basePath: AbsoluteFsPath, absoluteTargetEntryPointPath: AbsoluteFsPath | null,
+    pathMappings: PathMappings | undefined): EntryPointFinder {
+  if (absoluteTargetEntryPointPath !== null) {
+    return new TargetedEntryPointFinder(
+        fs, config, logger, resolver, basePath, absoluteTargetEntryPointPath, pathMappings);
+  } else {
+    return new DirectoryWalkerEntryPointFinder(
+        fs, config, logger, resolver, basePath, pathMappings);
   }
-  if (entryPointInfo.entryPoints.length === 0) {
-    markNonAngularPackageAsProcessed(fs, pkgJsonUpdater, absoluteTargetEntryPointPath);
-  }
-  return entryPointInfo;
-}
-
-function getAllEntryPoints(
-    fs: FileSystem, config: NgccConfiguration, logger: Logger, resolver: DependencyResolver,
-    basePath: AbsoluteFsPath, pathMappings: PathMappings | undefined): SortedEntryPointsInfo {
-  const finder =
-      new DirectoryWalkerEntryPointFinder(fs, config, logger, resolver, basePath, pathMappings);
-  return finder.findEntryPoints();
-}
-
-function hasProcessedTargetEntryPoint(
-    fs: FileSystem, targetPath: AbsoluteFsPath, propertiesToConsider: string[],
-    compileAllFormats: boolean) {
-  const packageJsonPath = resolve(targetPath, 'package.json');
-  // It might be that this target is configured in which case its package.json might not exist.
-  if (!fs.exists(packageJsonPath)) {
-    return false;
-  }
-  const packageJson = JSON.parse(fs.readFile(packageJsonPath));
-
-  for (const property of propertiesToConsider) {
-    if (packageJson[property]) {
-      // Here is a property that should be processed
-      if (hasBeenProcessed(packageJson, property as EntryPointJsonProperty)) {
-        if (!compileAllFormats) {
-          // It has been processed and we only need one, so we are done.
-          return true;
-        }
-      } else {
-        // It has not been processed but we need all of them, so we are done.
-        return false;
-      }
-    }
-  }
-  // Either all formats need to be compiled and there were none that were unprocessed,
-  // Or only the one matching format needs to be compiled but there was at least one matching
-  // property before the first processed format that was unprocessed.
-  return true;
 }
 
 /**
