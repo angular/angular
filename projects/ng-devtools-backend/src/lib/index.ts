@@ -1,6 +1,6 @@
 import { MessageBus, Events } from 'protocol';
-import { generateEvents } from './event-generators';
+import { subscribeToClientEvents } from './client-event-subscribers';
 
 export const initialize = (messageBus: MessageBus<Events>) => {
-  generateEvents(messageBus);
+  subscribeToClientEvents(messageBus);
 };
