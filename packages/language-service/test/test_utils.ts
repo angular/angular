@@ -135,7 +135,7 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     this.scriptNames.push(fileName);
   }
 
-  overrideOptions(options: Partial<ts.CompilerOptions>) {
+  setCompilerOptions(options: Partial<ts.CompilerOptions>) {
     this.options = {...this.options, ...options};
     this.projectVersion++;
   }

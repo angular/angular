@@ -454,7 +454,7 @@ describe('diagnostics', () => {
       export class AppComponent {
         something: 'foo' | 'bar';
       }`);
-    mockHost.overrideOptions({
+    mockHost.setCompilerOptions({
       strict: false,  // TODO: this test fails in strict mode
     });
     const tsDiags = tsLS.getSemanticDiagnostics(APP_COMPONENT);
@@ -473,7 +473,7 @@ describe('diagnostics', () => {
       export class AppComponent {
         something: 123 | 456;
       }`);
-    mockHost.overrideOptions({
+    mockHost.setCompilerOptions({
       strict: false,  // TODO: This test fails in strict mode
     });
     const tsDiags = tsLS.getSemanticDiagnostics(APP_COMPONENT);
@@ -511,7 +511,7 @@ describe('diagnostics', () => {
       export class AppComponent {
         something = 'foo';
       }`);
-    mockHost.overrideOptions({
+    mockHost.setCompilerOptions({
       strict: false,  // TODO: This test fails in strict mode
     });
     const tsDiags = tsLS.getSemanticDiagnostics(APP_COMPONENT);
@@ -654,7 +654,7 @@ describe('diagnostics', () => {
 
   // Issue #15885
   it('should be able to remove null and undefined from a type', () => {
-    mockHost.overrideOptions({
+    mockHost.setCompilerOptions({
       strictNullChecks: true,
     });
     mockHost.override(APP_COMPONENT, `
@@ -699,7 +699,7 @@ describe('diagnostics', () => {
         onSubmit(form: NgForm) {}
       }`);
     mockHost.addScript('/other/files/app/server.ts', 'export class Server {}');
-    mockHost.overrideOptions({
+    mockHost.setCompilerOptions({
       baseUrl: '/other/files',
     });
     const tsDiags = tsLS.getSemanticDiagnostics(APP_COMPONENT);

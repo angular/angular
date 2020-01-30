@@ -12,7 +12,7 @@ import {createLanguageService} from './language_service';
 import {TypeScriptServiceHost} from './typescript_host';
 
 export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
-  const {languageService: tsLS, languageServiceHost: tsLSHost, config} = info;
+  const {languageService: tsLS, languageServiceHost: tsLSHost, config, project} = info;
   // This plugin could operate under two different modes:
   // 1. TS + Angular
   //    Plugin augments TS language service to provide additional Angular
@@ -25,6 +25,15 @@ export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
   const angularOnly = config ? config.angularOnly === true : false;
   const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
   const ngLS = createLanguageService(ngLSHost);
+
+  // Under strict mode, the language service fails to typecheck nullable
+  // Symbols that have already verified to be non-null. To work around this
+  // issue, always use non-strict mode internally.
+  // See https://github.com/angular/vscode-ng-language-service/issues/589
+  project.setCompilerOptions({
+    ...project.getCompilationSettings(),
+    strict: false,
+  });
 
   function getCompletionsAtPosition(
       fileName: string, position: number,

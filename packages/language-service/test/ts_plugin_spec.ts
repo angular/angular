@@ -13,15 +13,7 @@ import {CompletionKind} from '../src/types';
 
 import {MockTypescriptHost} from './test_utils';
 
-const mockProject = {
-  projectService: {
-    logger: {
-      info() {},
-      hasLevel: () => false,
-    },
-  },
-  hasRoots: () => true,
-} as any;
+const TEST_TEMPLATE = '/app/test.ng';
 
 describe('plugin', () => {
   const mockHost = new MockTypescriptHost(['/app/main.ts']);
@@ -30,7 +22,7 @@ describe('plugin', () => {
   const plugin = create({
     languageService: tsLS,
     languageServiceHost: mockHost,
-    project: mockProject,
+    project: mockHost as any,
     serverHost: {} as any,
     config: {},
   });
@@ -79,7 +71,7 @@ describe('plugin', () => {
   it('should respect paths configuration', () => {
     const SHARED_MODULE = '/app/foo/bar/shared.ts';
     const MY_COMPONENT = '/app/my.component.ts';
-    mockHost.overrideOptions({
+    mockHost.setCompilerOptions({
       baseUrl: '/app',
       paths: {'bar/*': ['foo/bar/*']},
     });
@@ -135,7 +127,7 @@ describe(`with config 'angularOnly = true`, () => {
   const plugin = create({
     languageService: tsLS,
     languageServiceHost: mockHost,
-    project: mockProject,
+    project: mockHost as any,
     serverHost: {} as any,
     config: {
       angularOnly: true,
@@ -164,5 +156,17 @@ describe(`with config 'angularOnly = true`, () => {
       const diags = plugin.getSemanticDiagnostics(fileName);
       expect(diags).toEqual([]);
     }
+  });
+
+  it('should always set compilerOptions.strict = false', () => {
+    // The test below would fail if strict = true
+    mockHost.override(TEST_TEMPLATE, `
+      <!-- method call -->
+      {{optional && optional.toLowerCase()}}
+      <!-- property read -->
+      {{optional && optional.length}}
+    `);
+    const ngDiags = plugin.getSemanticDiagnostics(TEST_TEMPLATE);
+    expect(ngDiags).toEqual([]);
   });
 });
