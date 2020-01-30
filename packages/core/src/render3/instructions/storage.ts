@@ -5,14 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {HEADER_OFFSET, TVIEW} from '../interfaces/view';
-import {getContextLView, getLView} from '../state';
+import {HEADER_OFFSET} from '../interfaces/view';
+import {getContextLView, getLView, getTView} from '../state';
 import {load} from '../util/view_utils';
 
 /** Store a value in the `data` at a given `index`. */
 export function store<T>(index: number, value: T): void {
   const lView = getLView();
-  const tView = lView[TVIEW];
+  const tView = getTView();
   // We don't store any static data for local variables, so the first time
   // we see the template, we should store as null to avoid a sparse array
   const adjustedIndex = index + HEADER_OFFSET;

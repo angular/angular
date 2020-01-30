@@ -9,8 +9,7 @@
 import {concatStringsWithSpace} from '../../util/stringify';
 import {assertFirstCreatePass} from '../assert';
 import {AttributeMarker, TAttributes, TNode} from '../interfaces/node';
-import {TVIEW} from '../interfaces/view';
-import {getLView} from '../state';
+import {getTView} from '../state';
 
 /**
  * Compute the static styling (class/style) from `TAttributes`.
@@ -21,8 +20,8 @@ import {getLView} from '../state';
  * @param attrs `TAttributes` containing the styling information.
  */
 export function computeStaticStyling(tNode: TNode, attrs: TAttributes): void {
-  ngDevMode && assertFirstCreatePass(
-                   getLView()[TVIEW], 'Expecting to be called in first template pass only');
+  ngDevMode &&
+      assertFirstCreatePass(getTView(), 'Expecting to be called in first template pass only');
   let styles: string|null = tNode.styles;
   let classes: string|null = tNode.classes;
   let mode: AttributeMarker|0 = 0;
