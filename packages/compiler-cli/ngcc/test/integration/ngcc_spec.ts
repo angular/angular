@@ -480,22 +480,50 @@ runInEachFileSystem(() => {
         expect(loadPackage('@angular/common/testing').__processed_by_ivy_ngcc__).toBeUndefined();
       });
 
-      it('should mark a non-Angular package target as processed', () => {
+      it('should not mark a non-Angular package as processed if it is the target', () => {
         mainNgcc({basePath: '/node_modules', targetEntryPointPath: 'test-package'});
 
-        // `test-package` has no Angular but is marked as processed.
-        expect(loadPackage('test-package').__processed_by_ivy_ngcc__).toEqual({
+        // * `test-package` has no Angular and is not marked as processed.
+        expect(loadPackage('test-package').__processed_by_ivy_ngcc__).toBeUndefined();
+
+        // * `core` is a dependency of `test-package`, but it is also not processed, since
+        // `test-package` was not processed.
+        expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toBeUndefined();
+      });
+
+      it('should not mark a non-Angular package as processed if it is a dependency', () => {
+        // `test-package-user` is a valid Angular package that depends upon `test-package`.
+        loadTestFiles([
+          {
+            name: _('/node_modules/test-package-user/package.json'),
+            contents:
+                '{"name": "test-package-user", "es2015": "./index.js", "typings": "./index.d.ts"}'
+          },
+          {
+            name: _('/node_modules/test-package-user/index.js'),
+            contents: 'import * as x from \'test-package\';'
+          },
+          {
+            name: _('/node_modules/test-package-user/index.d.ts'),
+            contents: 'import * as x from \'test-package\';'
+          },
+          {name: _('/node_modules/test-package-user/index.metadata.json'), contents: 'DUMMY DATA'},
+        ]);
+
+        mainNgcc({basePath: '/node_modules', targetEntryPointPath: 'test-package-user'});
+
+        // * `test-package-user` is processed because it is compiled by Angular
+        expect(loadPackage('test-package-user').__processed_by_ivy_ngcc__).toEqual({
           es2015: '0.0.0-PLACEHOLDER',
-          esm2015: '0.0.0-PLACEHOLDER',
-          esm5: '0.0.0-PLACEHOLDER',
-          fesm2015: '0.0.0-PLACEHOLDER',
-          fesm5: '0.0.0-PLACEHOLDER',
-          main: '0.0.0-PLACEHOLDER',
-          module: '0.0.0-PLACEHOLDER',
+          typings: '0.0.0-PLACEHOLDER',
         });
 
-        // * `core` is a dependency of `test-package`, but it is not processed, since test-package
-        // was not processed.
+        // * `test-package` is a dependency of `test-package-user` but has not been compiled by
+        // Angular, and so is not marked as processed
+        expect(loadPackage('test-package').__processed_by_ivy_ngcc__).toBeUndefined();
+
+        // * `core` is a dependency of `test-package`, but it is not processed, because
+        // `test-package` was not processed.
         expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toBeUndefined();
       });
 
