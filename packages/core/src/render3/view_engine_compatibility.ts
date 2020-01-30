@@ -25,7 +25,7 @@ import {ActiveIndexFlag, CONTAINER_HEADER_OFFSET, LContainer, VIEW_REFS} from '.
 import {TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {RComment, RElement, isProceduralRenderer} from './interfaces/renderer';
 import {isComponentHost, isLContainer, isLView, isRootView} from './interfaces/type_checks';
-import {DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, LView, LViewFlags, PARENT, QUERIES, RENDERER, TView, T_HOST} from './interfaces/view';
+import {DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, LView, LViewFlags, PARENT, QUERIES, RENDERER, TVIEW, TView, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {addRemoveViewFromContainer, appendChild, detachView, getBeforeNodeForView, insertView, nativeInsertBefore, nativeNextSibling, nativeParentNode, removeView} from './node_manipulation';
 import {getParentInjectorTNode} from './node_util';
@@ -104,23 +104,23 @@ export function createTemplateRef<T>(
 
       createEmbeddedView(context: T): viewEngine_EmbeddedViewRef<T> {
         const embeddedTView = this._declarationTContainer.tViews as TView;
-        const lView = createLView(
+        const embeddedLView = createLView(
             this._declarationView, embeddedTView, context, LViewFlags.CheckAlways, null,
             embeddedTView.node);
 
         const declarationLContainer = this._declarationView[this._declarationTContainer.index];
         ngDevMode && assertLContainer(declarationLContainer);
-        lView[DECLARATION_LCONTAINER] = declarationLContainer;
+        embeddedLView[DECLARATION_LCONTAINER] = declarationLContainer;
 
         const declarationViewLQueries = this._declarationView[QUERIES];
         if (declarationViewLQueries !== null) {
-          lView[QUERIES] = declarationViewLQueries.createEmbeddedView(embeddedTView);
+          embeddedLView[QUERIES] = declarationViewLQueries.createEmbeddedView(embeddedTView);
         }
 
-        renderView(lView, embeddedTView, context);
+        renderView(embeddedTView, embeddedLView, context);
 
-        const viewRef = new ViewRef<T>(lView);
-        viewRef._tViewNode = lView[T_HOST] as TViewNode;
+        const viewRef = new ViewRef<T>(embeddedLView);
+        viewRef._tViewNode = embeddedLView[T_HOST] as TViewNode;
         return viewRef;
       }
     };
@@ -238,6 +238,7 @@ export function createContainerRef(
 
       insert(viewRef: viewEngine_ViewRef, index?: number): viewEngine_ViewRef {
         const lView = (viewRef as ViewRef<any>)._lView !;
+        const tView = lView[TVIEW];
 
         if (viewRef.destroyed) {
           throw new Error('Cannot insert a destroyed View in a ViewContainer!');
@@ -274,10 +275,10 @@ export function createContainerRef(
         }
 
         const adjustedIdx = this._adjustIndex(index);
-        insertView(lView, this._lContainer, adjustedIdx);
+        insertView(tView, lView, this._lContainer, adjustedIdx);
 
         const beforeNode = getBeforeNodeForView(adjustedIdx, this._lContainer);
-        addRemoveViewFromContainer(lView, true, beforeNode);
+        addRemoveViewFromContainer(tView, lView, true, beforeNode);
 
         (viewRef as ViewRef<any>).attachToViewContainerRef(this);
         addToArray(this._lContainer[VIEW_REFS] !, adjustedIdx, viewRef);
@@ -367,7 +368,7 @@ export function createContainerRef(
         nativeInsertBefore(
             renderer, parentOfHostNative !, commentNode, nativeNextSibling(renderer, hostNative));
       } else {
-        appendChild(commentNode, hostTNode, hostView);
+        appendChild(hostView[TVIEW], hostView, commentNode, hostTNode);
       }
     }
 

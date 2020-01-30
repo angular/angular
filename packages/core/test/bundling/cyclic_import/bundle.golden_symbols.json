@@ -387,6 +387,9 @@
     "name": "getSelectedIndex"
   },
   {
+    "name": "getTView"
+  },
+  {
     "name": "growHostVarsSpace"
   },
   {

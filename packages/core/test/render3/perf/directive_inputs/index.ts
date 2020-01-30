@@ -61,7 +61,7 @@ const updateTime = directiveInputs('update');
 console.profile('directive_inputs');
 while (updateTime()) {
   ctx.counter++;
-  refreshView(rootLView, rootTView, null, null);
+  refreshView(rootTView, rootLView, null, null);
 }
 console.profileEnd();
 

@@ -14,7 +14,7 @@ import {store} from './instructions/all';
 import {PipeDef, PipeDefList} from './interfaces/definition';
 import {HEADER_OFFSET, LView, TVIEW} from './interfaces/view';
 import {pureFunction1Internal, pureFunction2Internal, pureFunction3Internal, pureFunction4Internal, pureFunctionVInternal} from './pure_function';
-import {getBindingIndex, getBindingRoot, getLView} from './state';
+import {getBindingIndex, getBindingRoot, getLView, getTView} from './state';
 import {NO_CHANGE} from './tokens';
 import {load} from './util/view_utils';
 
@@ -30,7 +30,7 @@ import {load} from './util/view_utils';
  * @codeGenApi
  */
 export function ɵɵpipe(index: number, pipeName: string): any {
-  const tView = getLView()[TVIEW];
+  const tView = getTView();
   let pipeDef: PipeDef<any>;
   const adjustedIndex = index + HEADER_OFFSET;
 
@@ -46,7 +46,7 @@ export function ɵɵpipe(index: number, pipeName: string): any {
 
   const pipeFactory = pipeDef.factory || (pipeDef.factory = getFactoryDef(pipeDef.type, true));
   const pipeInstance = pipeFactory();
-  store(index, pipeInstance);
+  store(tView, getLView(), index, pipeInstance);
   return pipeInstance;
 }
 

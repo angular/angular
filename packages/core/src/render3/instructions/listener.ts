@@ -13,12 +13,11 @@ import {EMPTY_OBJ} from '../empty';
 import {PropertyAliasValue, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {GlobalTargetResolver, RElement, Renderer3, isProceduralRenderer} from '../interfaces/renderer';
 import {isDirectiveHost} from '../interfaces/type_checks';
-import {CLEANUP, FLAGS, LView, LViewFlags, RENDERER, TVIEW} from '../interfaces/view';
+import {CLEANUP, FLAGS, LView, LViewFlags, RENDERER, TView} from '../interfaces/view';
 import {assertNodeOfPossibleTypes} from '../node_assert';
-import {getLView, getPreviousOrParentTNode} from '../state';
+import {getLView, getPreviousOrParentTNode, getTView} from '../state';
 import {getComponentLViewByIndex, getNativeByTNode, unwrapRNode} from '../util/view_utils';
-
-import {getCleanup, handleError, loadComponentRenderer, markViewDirty} from './shared';
+import {getLCleanup, handleError, loadComponentRenderer, markViewDirty} from './shared';
 
 
 
@@ -40,9 +39,10 @@ export function ɵɵlistener(
     eventName: string, listenerFn: (e?: any) => any, useCapture = false,
     eventTargetResolver?: GlobalTargetResolver): typeof ɵɵlistener {
   const lView = getLView();
+  const tView = getTView();
   const tNode = getPreviousOrParentTNode();
   listenerInternal(
-      lView, lView[RENDERER], tNode, eventName, listenerFn, useCapture, eventTargetResolver);
+      tView, lView, lView[RENDERER], tNode, eventName, listenerFn, useCapture, eventTargetResolver);
   return ɵɵlistener;
 }
 
@@ -70,10 +70,12 @@ export function ɵɵlistener(
 export function ɵɵcomponentHostSyntheticListener(
     eventName: string, listenerFn: (e?: any) => any, useCapture = false,
     eventTargetResolver?: GlobalTargetResolver): typeof ɵɵcomponentHostSyntheticListener {
-  const lView = getLView();
   const tNode = getPreviousOrParentTNode();
+  const lView = getLView();
   const renderer = loadComponentRenderer(tNode, lView);
-  listenerInternal(lView, renderer, tNode, eventName, listenerFn, useCapture, eventTargetResolver);
+  const tView = getTView();
+  listenerInternal(
+      tView, lView, renderer, tNode, eventName, listenerFn, useCapture, eventTargetResolver);
   return ɵɵcomponentHostSyntheticListener;
 }
 
@@ -83,8 +85,7 @@ export function ɵɵcomponentHostSyntheticListener(
  * are registered for a given element.
  */
 function findExistingListener(
-    lView: LView, eventName: string, tNodeIdx: number): ((e?: any) => any)|null {
-  const tView = lView[TVIEW];
+    tView: TView, lView: LView, eventName: string, tNodeIdx: number): ((e?: any) => any)|null {
   const tCleanup = tView.cleanup;
   if (tCleanup != null) {
     for (let i = 0; i < tCleanup.length - 1; i += 2) {
@@ -111,10 +112,9 @@ function findExistingListener(
 }
 
 function listenerInternal(
-    lView: LView, renderer: Renderer3, tNode: TNode, eventName: string,
+    tView: TView, lView: LView, renderer: Renderer3, tNode: TNode, eventName: string,
     listenerFn: (e?: any) => any, useCapture = false,
     eventTargetResolver?: GlobalTargetResolver): void {
-  const tView = lView[TVIEW];
   const isTNodeDirectiveHost = isDirectiveHost(tNode);
   const firstCreatePass = tView.firstCreatePass;
   const tCleanup: false|any[] = firstCreatePass && (tView.cleanup || (tView.cleanup = []));
@@ -122,7 +122,7 @@ function listenerInternal(
   // When the ɵɵlistener instruction was generated and is executed we know that there is either a
   // native listener or a directive output on this element. As such we we know that we will have to
   // register a listener and store its cleanup function on LView.
-  const lCleanup = getCleanup(lView);
+  const lCleanup = getLCleanup(lView);
 
   ngDevMode && assertNodeOfPossibleTypes(
                    tNode, TNodeType.Element, TNodeType.Container, TNodeType.ElementContainer);
@@ -160,7 +160,7 @@ function listenerInternal(
       // matching on a given node as we can't register multiple event handlers for the same event in
       // a template (this would mean having duplicate attributes).
       if (!eventTargetResolver && isTNodeDirectiveHost) {
-        existingListener = findExistingListener(lView, eventName, tNode.index);
+        existingListener = findExistingListener(tView, lView, eventName, tNode.index);
       }
       if (existingListener !== null) {
         // Attach a new listener to coalesced listeners list, maintaining the order in which
