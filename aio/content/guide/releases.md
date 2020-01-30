@@ -72,6 +72,12 @@ The next version of the documentation is available at [next.angular.io](https://
 
 We work toward a regular schedule of releases, so that you can plan and coordinate your updates with the continuing evolution of Angular.
 
+<div class="alert is-helpful">
+
+Disclaimer: Dates are offered as general guidance and will be adjusted by us when necessary to ensure delivery of a high-quality platform. 
+
+</div>
+
 In general, you can expect the following release cycle:
 
 * A major release every 6 months
@@ -81,27 +87,6 @@ In general, you can expect the following release cycle:
 * A patch release almost every week
 
 This cadence of releases gives you access to new features as soon as they are ready, while maintaining the stability and reliability of the platform for production users.
-
-
-
-{@a schedule}
-## Release schedule
-
-<div class="alert is-helpful">
-
-Disclaimer: The dates are offered as general guidance and may be adjusted by us when necessary to ensure delivery of a high-quality platform.
-
-</div>
-
-The following table contains our current target release dates for the next two major versions of Angular:
-
- Date                   | Stable Release | Compatibility
- ---------------------- | -------------- | -------------
- October/November 2019  | 9.0.0          | ^8.0.0
- May 2020               | 10.0.0         | ^9.0.0
-
- Compatibility note: The primary goal of the backward compatibility promise is to ensure that changes in the core framework and tooling don't break the existing ecosystem of components and applications and don't put undue upgrade/migration burden on Angular application and component authors.
-
 
 
 
@@ -142,7 +127,7 @@ To help ensure that you have sufficient time and a clear path to update, this is
 * **Announcement:** We announce deprecated APIs and features in the [change log](https://github.com/angular/angular/blob/master/CHANGELOG.md "Angular change log"). Deprecated APIs appear in the [documentation](api?status=deprecated) with ~~strikethrough.~~ When we announce a deprecation, we also announce a recommended update path. For convenience,  [Deprecations](guide/deprecations) contains a summary of deprecated APIs and features.
 
 
-* **Deprecation period:** When an API or a feature is deprecated, it will still be present in the [next two major releases](#schedule). After that, deprecated APIs and features will be candidates for removal. A deprecation can be announced in any release, but the removal of a deprecated API or feature will happen only in major release. Until a deprecated API or feature is removed, it will be maintained according to the LTS support policy, meaning that only critical and security issues will be fixed.
+* **Deprecation period:** When an API or a feature is deprecated, it will still be present in the next two major releases. After that, deprecated APIs and features will be candidates for removal. A deprecation can be announced in any release, but the removal of a deprecated API or feature will happen only in major release. Until a deprecated API or feature is removed, it will be maintained according to the LTS support policy, meaning that only critical and security issues will be fixed.
 
 
 * **npm dependencies:** We only make npm dependency updates that require changes to your apps in a major release.
