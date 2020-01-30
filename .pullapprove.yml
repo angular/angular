@@ -67,7 +67,7 @@
 #  petebacondarwin - Pete Bacon Darwin
 #  pkozlowski-opensource - Pawel Kozlowski
 #  robwormald - Rob Wormald
-#  stephenfluin - Stephen Fluin
+#  StephenFluin - Stephen Fluin
 
 
 ####################################################################################
@@ -679,7 +679,7 @@ groups:
       users:
         - aikidave
         - IgorMinar
-        - stephenfluin
+        - StephenFluin
       teams:
         - ~framework-global-approvers
         - ~framework-global-approvers-for-docs-only-changes
@@ -702,7 +702,7 @@ groups:
     reviewers:
       users:
         - IgorMinar
-        - stephenfluin
+        - StephenFluin
       teams:
         - ~framework-global-approvers
         - ~framework-global-approvers-for-docs-only-changes
