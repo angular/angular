@@ -34,8 +34,7 @@ export class ComponentExplorerComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.subscribeToEvents();
-
+    this.subscribeToBackendEvents();
 
     // Only one refresh per 50ms.
     let buffering = false;
@@ -52,18 +51,10 @@ export class ComponentExplorerComponent implements OnInit {
     this.refresh();
   }
 
-  subscribeToEvents(): void {
-    this.subscribeToElementDirectives();
-    this.subscribeToLatestComponentExplorer();
-  }
-
-  subscribeToElementDirectives(): void {
+  subscribeToBackendEvents(): void {
     this.messageBus.on('elementDirectivesProperties', (data: DirectivesProperties) => {
       this.directivesData = data;
     });
-  }
-
-  subscribeToLatestComponentExplorer(): void {
     this.messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
       this.forest = view.forest;
       this.directivesData = view.properties;

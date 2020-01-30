@@ -16,15 +16,9 @@ const inspector: ComponentInspector = new ComponentInspector();
 const startInspecting = () => inspector.startInspecting();
 const stopInspecting = () => inspector.stopInspecting();
 
-export const generateEvents = (messageBus: MessageBus<Events>) => {
-  eventGenerators.forEach(eventGenerator => eventGenerator(messageBus));
-};
-
-const generateChangeDetectionEvents = (messageBus: MessageBus<Events>) => {
+export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void => {
   onChangeDetection(() => messageBus.emit('componentTreeDirty'));
-};
 
-const generateComponentExplorerEvents = (messageBus: MessageBus<Events>): void => {
   messageBus.on('getLatestComponentExplorerView', query => {
     messageBus.emit('latestComponentExplorerView', [
       {
@@ -33,25 +27,17 @@ const generateComponentExplorerEvents = (messageBus: MessageBus<Events>): void =
       },
     ]);
   });
-};
 
-const generateNgAvailabilityEvents = (messageBus: MessageBus<Events>) => {
   messageBus.on('queryNgAvailability', () => checkForAngular(messageBus));
-};
 
-const generateProfileEvents = (messageBus: MessageBus<Events>) => {
   messageBus.on('startProfiling', startProfiling);
   messageBus.on('stopProfiling', () => {
     messageBus.emit('profilerResults', [stopProfiling()]);
   });
-};
 
-const generateInspectEvents = (messageBus: MessageBus<Events>) => {
   messageBus.on('inspectorStart', startInspecting);
   messageBus.on('inspectorEnd', stopInspecting);
-};
 
-const generateElementDirectivePropertiesEvents = (messageBus: MessageBus<Events>) => {
   messageBus.on('getElementDirectivesProperties', (id: ElementID) => {
     const node = queryComponentTree(id);
     if (node) {
@@ -60,9 +46,7 @@ const generateElementDirectivePropertiesEvents = (messageBus: MessageBus<Events>
       messageBus.emit('elementDirectivesProperties', [{}]);
     }
   });
-};
 
-const generateNestedPropertiesEvents = (messageBus: MessageBus<Events>) => {
   messageBus.on('getNestedProperties', (id: DirectiveID, propPath: string[]) => {
     const node = queryComponentTree(id.element);
     if (node) {
@@ -79,16 +63,6 @@ const generateNestedPropertiesEvents = (messageBus: MessageBus<Events>) => {
     }
   });
 };
-
-const eventGenerators = [
-  generateChangeDetectionEvents,
-  generateComponentExplorerEvents,
-  generateProfileEvents,
-  generateNgAvailabilityEvents,
-  generateInspectEvents,
-  generateElementDirectivePropertiesEvents,
-  generateNestedPropertiesEvents
-];
 
 //
 // Generator Helpers
