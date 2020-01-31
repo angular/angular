@@ -10,9 +10,7 @@
 const parseYaml = require('yaml').parse;
 const readFileSync = require('fs').readFileSync;
 const Minimatch = require('minimatch').Minimatch;
-const exec = require('shelljs').exec;
-const set = require('shelljs').set;
-const cd = require('shelljs').cd;
+const {exec, set, cd} = require('shelljs');
 const path = require('path');
 
 // Exit early on shelljs errors
@@ -24,9 +22,9 @@ const ANGULAR_PROJECT_DIR = path.resolve(__dirname, '../..');
 cd(ANGULAR_PROJECT_DIR);
 
 // Whether to log verbosely
-const VERBOSE_MODE = !!process.argv.find(arg => arg === `-v`);
+const VERBOSE_MODE = process.argv.includes('-v');
 // Full path to PullApprove config file
-const PULL_APPROVE_YAML_PATH = path.resolve(__dirname, '../../.pullapprove.yml');
+const PULL_APPROVE_YAML_PATH = path.resolve(ANGULAR_PROJECT_DIR, '.pullapprove.yml');
 // All relative path file names in the git repo, this is retrieved using git rather
 // that a glob so that we only get files that are checked in, ignoring things like
 // node_modules, .bazelrc.user, etc
@@ -44,44 +42,40 @@ if (!ALL_FILES.length) {
 /** Gets the glob matching information from each group's condition. */
 function getGlobMatcherFromConditions(groupName, condition) {
   const trimmedCondition = condition.trim();
-  // If the condition doesn't start with contains_any_globs, no
-  // globs should be evaluated.
-  if (!trimmedCondition.startsWith('contains_any_globs')) {
-    return [];
+  // If the condition should be starts with contains_any_globs, evaluate all of the globs
+  if (trimmedCondition.startsWith('contains_any_globs')) {
+    return trimmedCondition.split('\n')
+        .map((glob) => {
+          const match = glob.match(/'(.*)'/);
+          return match && match[1];
+        })
+        .filter(globString => !!globString)
+        .map(globString => ({
+               group: groupName,
+               glob: globString,
+               matcher: new Minimatch(globString, {dot: true}),
+               matchCount: 0,
+             }));
   }
-  return trimmedCondition.split('\n')
-      .slice(1, -1)
-      .map((glob) => {
-        const match = glob.match(/'(.*)'/);
-        return match && match[1];
-      })
-      .filter(globString => !!globString)
-      .map(globString => ({
-             group: groupName,
-             glob: globString,
-             matcher: new Minimatch(globString, {dot: true}),
-             matchCount: 0,
-           }));
+  return [];
 }
 
 /** Create logs for each review group. */
 function logGroups(groups) {
-  Array.from(groups.entries())
-      .sort((a, b) => { return a[0] > b[0] ? 1 : -1; })
-      .forEach(([groupName, globs]) => {
-        console.groupCollapsed(groupName);
-        Array.from(globs.values())
-            .sort((a, b) => b.matchCount - a.matchCount)
-            .forEach(glob => console.log(`${glob.glob} - ${glob.matchCount}`));
-        console.groupEnd();
-      });
+  Array.from(groups.entries()).sort().forEach(([groupName, globs]) => {
+    console.groupCollapsed(groupName);
+    Array.from(globs.values())
+        .sort((a, b) => b.matchCount - a.matchCount)
+        .forEach(glob => console.log(`${glob.glob} - ${glob.matchCount}`));
+    console.groupEnd();
+  });
 }
 
 /** Logs a header within a text drawn box. */
 function logHeader(...params) {
   const totalWidth = 80;
   const fillWidth = totalWidth - 2;
-  const headerText = [...params].join(' ').substr(0, fillWidth);
+  const headerText = params.join(' ').substr(0, fillWidth);
   const leftSpace = Math.ceil((fillWidth - headerText.length) / 2);
   const rightSpace = fillWidth - leftSpace - headerText.length;
   const fill = (count, content) => content.repeat(count);
@@ -110,7 +104,7 @@ function runVerification(files) {
 
   // Get all of the globs from the PullApprove group conditions.
   Object.entries(parsedPullApproveGroups).map(([groupName, group]) => {
-    for (let condition of group.conditions) {
+    for (const condition of group.conditions) {
       ALL_GLOBS.push(...getGlobMatcherFromConditions(groupName, condition));
     }
   });
@@ -140,12 +134,12 @@ function runVerification(files) {
    */
   logHeader('Result');
   if (verificationSucceeded) {
+    console.log('PullApprove verification succeeded!');
+  } else {
     console.log(`PullApprove verification failed.\n`);
     console.log(`Please update '.pullapprove.yml' to ensure that all necessary`);
     console.log(`files/directories have owners and all patterns that appear in`);
     console.log(`the file correspond to actual files/directories in the repo.`);
-  } else {
-    console.log('PullApprove verification succeeded!');
   }
   /**
    * File by file Summary
