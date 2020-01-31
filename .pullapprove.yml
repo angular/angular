@@ -551,7 +551,6 @@ groups:
         - pkozlowski-opensource
       teams:
         - ~framework-global-approvers
-        - ~framework-global-approvers-for-docs-only-changes
 
   # =========================================================
   #  Framework: Playground
@@ -568,8 +567,6 @@ groups:
         - kara
       teams:
         - ~framework-global-approvers
-        - ~framework-global-approvers-for-docs-only-changes
-
   # =========================================================
   #  Framework: Security
   # =========================================================
@@ -896,10 +893,7 @@ groups:
           'aio/content/examples/docs-style-guide/**',
           'aio/content/images/guide/docs-style-guide/**',
           'aio/content/guide/visual-studio-2015.md',
-          'aio/content/examples/visual-studio-2015/**',
-          'packages/examples/README.md',
-          'packages/examples/index.html',
-          'packages/examples/tsconfig-e2e.json'
+          'aio/content/examples/visual-studio-2015/**'
           ])
     reviewers:
       users:
@@ -941,6 +935,7 @@ groups:
           'packages/*',
           'packages/examples/test-utils/**',
           'packages/private/**',
+          'packages/examples/*',
           'scripts/**',
           'third_party/**',
           'tools/brotli-cli/**',
