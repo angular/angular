@@ -12,6 +12,7 @@ import '../zone-spec/proxy';
 import '../zone-spec/sync-test';
 import '../jasmine/jasmine';
 import '../jest/jest';
+import '../mocha/mocha';
 import './async-testing';
 import './fake-async';
 import './promise-testing';
