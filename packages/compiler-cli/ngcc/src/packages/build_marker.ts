@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, basename, dirname, isRoot} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {PackageJsonUpdater} from '../writing/package_json_updater';
 import {EntryPointPackageJson, PackageJsonFormatProperties} from './entry_point';
 
@@ -14,33 +14,15 @@ export const NGCC_VERSION = '0.0.0-PLACEHOLDER';
 /**
  * Check whether ngcc has already processed a given entry-point format.
  *
- * The entry-point is defined by the package.json contents provided.
- * The format is defined by the provided property name of the path to the bundle in the package.json
- *
  * @param packageJson The parsed contents of the package.json file for the entry-point.
  * @param format The entry-point format property in the package.json to check.
- * @returns true if the entry-point and format have already been processed with this ngcc version.
- * @throws Error if the `packageJson` property is not an object.
- * @throws Error if the entry-point has already been processed with a different ngcc version.
+ * @returns true if the `format` in the entry-point has already been processed by this ngcc version,
+ * false otherwise.
  */
 export function hasBeenProcessed(
-    packageJson: EntryPointPackageJson, format: PackageJsonFormatProperties,
-    entryPointPath: AbsoluteFsPath): boolean {
-  if (!packageJson.__processed_by_ivy_ngcc__) {
-    return false;
-  }
-  if (Object.keys(packageJson.__processed_by_ivy_ngcc__)
-          .some(property => packageJson.__processed_by_ivy_ngcc__ ![property] !== NGCC_VERSION)) {
-    let nodeModulesFolderPath = entryPointPath;
-    while (!isRoot(nodeModulesFolderPath) && basename(nodeModulesFolderPath) !== 'node_modules') {
-      nodeModulesFolderPath = dirname(nodeModulesFolderPath);
-    }
-    throw new Error(
-        `The ngcc compiler has changed since the last ngcc build.\n` +
-        `Please remove "${isRoot(nodeModulesFolderPath) ? entryPointPath : nodeModulesFolderPath}" and try again.`);
-  }
-
-  return packageJson.__processed_by_ivy_ngcc__[format] === NGCC_VERSION;
+    packageJson: EntryPointPackageJson, format: PackageJsonFormatProperties): boolean {
+  return packageJson.__processed_by_ivy_ngcc__ !== undefined &&
+      packageJson.__processed_by_ivy_ngcc__[format] === NGCC_VERSION;
 }
 
 /**
