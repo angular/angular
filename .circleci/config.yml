@@ -420,10 +420,6 @@ jobs:
       - run: ./aio/aio-builds-setup/scripts/test.sh
 
   test_docs_examples:
-    parameters:
-      ivy:
-        type: boolean
-        default: false
     executor:
       # Needed because the example e2e tests depend on Chrome.
       name: browsers-executor
@@ -434,19 +430,10 @@ jobs:
       - init_environment
         # Install aio
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
-      - when:
-          condition: << parameters.ivy >>
-          steps:
-              # Rename the Ivy packages dist folder to "dist/packages-dist" as the AIO
-              # package installer picks up the locally built packages from that location.
-              # *Note*: We could also adjust the packages installer, but given we won't have
-              # two different folders of Angular distributions in the future, we should keep
-              # the packages installer unchanged.
-            - run: mv dist/packages-dist-ivy-aot dist/packages-dist
         # Run examples tests. The "CIRCLE_NODE_INDEX" will be set if "parallelism" is enabled.
         # Since the parallelism is set to "5", there will be five parallel CircleCI containers.
         # with either "0", "1", etc as node index. This can be passed to the "--shard" argument.
-      - run: yarn --cwd aio example-e2e --setup --local <<# parameters.ivy >>--ivy<</ parameters.ivy >> --cliSpecsConcurrency=5 --shard=${CIRCLE_NODE_INDEX}/${CIRCLE_NODE_TOTAL} --retry 2
+      - run: yarn --cwd aio example-e2e --setup --local --cliSpecsConcurrency=5 --shard=${CIRCLE_NODE_INDEX}/${CIRCLE_NODE_TOTAL} --retry 2
 
   # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
   aio_preview:
@@ -831,11 +818,6 @@ workflows:
       - test_docs_examples:
           requires:
             - build-npm-packages
-      - test_docs_examples:
-          name: test_docs_examples_ivy
-          ivy: true
-          requires:
-            - build-ivy-npm-packages
       - aio_preview:
           # Only run on PR builds. (There can be no previews for non-PR builds.)
           <<: *only_on_pull_requests
@@ -865,7 +847,6 @@ workflows:
             - test_aio_local
             - test_aio_local_viewengine
             - test_docs_examples
-            - test_docs_examples_ivy
             # Get the artifacts to publish from the build-packages-dist job
             # since the publishing script expects the legacy outputs layout.
             - build-npm-packages
