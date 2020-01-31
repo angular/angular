@@ -198,7 +198,7 @@ export function mainNgcc(
 
     for (const entryPoint of entryPoints) {
       const packageJson = entryPoint.packageJson;
-      const hasProcessedTypings = hasBeenProcessed(packageJson, 'typings', entryPoint.path);
+      const hasProcessedTypings = hasBeenProcessed(packageJson, 'typings');
       const {propertiesToProcess, equivalentPropertiesMap} =
           getPropertiesToProcess(packageJson, supportedPropertiesToConsider, compileAllFormats);
       let processDts = !hasProcessedTypings;
@@ -263,7 +263,7 @@ export function mainNgcc(
       }
 
       // The format-path which the property maps to is already processed - nothing to do.
-      if (hasBeenProcessed(packageJson, formatProperty, entryPoint.path)) {
+      if (hasBeenProcessed(packageJson, formatProperty)) {
         logger.debug(`Skipping ${entryPoint.name} : ${formatProperty} (already compiled).`);
         onTaskCompleted(task, TaskProcessingOutcome.AlreadyProcessed);
         return;
@@ -411,7 +411,7 @@ function hasProcessedTargetEntryPoint(
   for (const property of propertiesToConsider) {
     if (packageJson[property]) {
       // Here is a property that should be processed
-      if (hasBeenProcessed(packageJson, property as EntryPointJsonProperty, targetPath)) {
+      if (hasBeenProcessed(packageJson, property as EntryPointJsonProperty)) {
         if (!compileAllFormats) {
           // It has been processed and we only need one, so we are done.
           return true;
