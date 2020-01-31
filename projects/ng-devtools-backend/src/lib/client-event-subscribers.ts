@@ -50,11 +50,7 @@ export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void =>
 
   messageBus.on('setSelectedComponent', (id: ElementID) => {
     const node = queryComponentTree(id, getForestWithNativeElements);
-    // If message bus implements a getWindow function, use that window as the reference for setConsoleReference().
-    // This is done so that if the dev tools are communicating with an iframe, the variable $ng0
-    // is set at the parent window of that iframe instead of the iframe window.
-    const bus = (messageBus as any);
-    setConsoleReference(typeof bus.getWindow === 'function' ? bus.getWindow() : window, node);
+    setConsoleReference(node);
   });
 
   messageBus.on('getNestedProperties', (id: DirectiveID, propPath: string[]) => {
