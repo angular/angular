@@ -150,18 +150,18 @@ runInEachFileSystem(() => {
       it(`should be able to process spread operator inside objects for ${target} format`, () => {
         compileIntoApf(
             'test-package', {
-              '/index.ts': `        
+              '/index.ts': `
                 import {Directive, Input, NgModule} from '@angular/core';
-      
+
                 const a = { '[class.a]': 'true' };
                 const b = { '[class.b]': 'true' };
-      
+
                 @Directive({
                   selector: '[foo]',
                   host: {...a, ...b, '[class.c]': 'false'}
                 })
                 export class FooDirective {}
-      
+
                 @NgModule({
                   declarations: [FooDirective],
                 })
@@ -590,7 +590,6 @@ runInEachFileSystem(() => {
          });
     });
 
-
     function markPropertiesAsProcessed(packagePath: string, properties: EntryPointJsonProperty[]) {
       const basePath = _('/node_modules');
       const targetPackageJsonPath = join(basePath, packagePath, 'package.json');
@@ -598,6 +597,49 @@ runInEachFileSystem(() => {
       markAsProcessed(
           pkgJsonUpdater, targetPackage, targetPackageJsonPath, ['typings', ...properties]);
     }
+
+    it('should clean up outdated artifacts', () => {
+      compileIntoFlatEs5Package('test-package', {
+        'index.ts': `
+        import {Directive} from '@angular/core';
+
+        @Directive({selector: '[foo]'})
+        export class FooDirective {
+        }
+      `,
+      });
+      mainNgcc({
+        basePath: '/node_modules',
+        propertiesToConsider: ['main'],
+        logger: new MockLogger(),
+      });
+
+      // Now hack the files to look like it was processed by an outdated version of ngcc
+      const packageJson = loadPackage('test-package', _('/node_modules'));
+      packageJson.__processed_by_ivy_ngcc__ !.typings = '8.0.0';
+      packageJson.main_ivy_ngcc = '__ivy_ngcc__/main.js';
+      fs.writeFile(_('/node_modules/test-package/package.json'), JSON.stringify(packageJson));
+      fs.writeFile(_('/node_modules/test-package/x.js'), 'processed content');
+      fs.writeFile(_('/node_modules/test-package/x.js.__ivy_ngcc_bak'), 'original content');
+      fs.ensureDir(_('/node_modules/test-package/__ivy_ngcc__/foo'));
+
+      // Now run ngcc again to see that it cleans out the outdated artifacts
+      mainNgcc({
+        basePath: '/node_modules',
+        propertiesToConsider: ['main'],
+        logger: new MockLogger(),
+      });
+      const newPackageJson = loadPackage('test-package', _('/node_modules'));
+      expect(newPackageJson.__processed_by_ivy_ngcc__).toEqual({
+        main: '0.0.0-PLACEHOLDER',
+        typings: '0.0.0-PLACEHOLDER',
+      });
+      expect(newPackageJson.main_ivy_ngcc).toBeUndefined();
+      expect(fs.exists(_('/node_modules/test-package/x.js'))).toBe(true);
+      expect(fs.exists(_('/node_modules/test-package/x.js.__ivy_ngcc_bak'))).toBe(false);
+      expect(fs.readFile(_('/node_modules/test-package/x.js'))).toEqual('original content');
+      expect(fs.exists(_('/node_modules/test-package/__ivy_ngcc__'))).toBe(false);
+    });
 
 
     describe('with propertiesToConsider', () => {
