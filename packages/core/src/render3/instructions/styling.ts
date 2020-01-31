@@ -501,9 +501,13 @@ function collectResidual(tData: TData, tNode: TNode, isClassBased: boolean): Key
     null {
   let residual: KeyValueArray<any>|null|undefined = undefined;
   const directiveEnd = tNode.directiveEnd;
-  let directiveStylingLast = tNode.directiveStylingLast;
-  directiveStylingLast = directiveStylingLast === -1 ? tNode.directiveStart : directiveStylingLast;
-  for (let i = 1 + directiveStylingLast; i < directiveEnd; i++) {
+  ngDevMode &&
+      assertNotEqual(
+          tNode.directiveStylingLast, -1,
+          'By the time this function gets called at least one hostBindings-node styling instruction must have executed.');
+  // We add `1 + tNode.directiveStart` because we need to skip the current directive (as we are
+  // collecting things after the last `hostBindings` directive which had a styling instruction.)
+  for (let i = 1 + tNode.directiveStylingLast; i < directiveEnd; i++) {
     const attrs = (tData[i] as DirectiveDef<any>).hostAttrs;
     residual = collectStylingFromTAttrs(residual, attrs, isClassBased) as KeyValueArray<any>| null;
   }
