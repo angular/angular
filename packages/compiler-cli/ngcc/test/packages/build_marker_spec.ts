@@ -218,7 +218,8 @@ runInEachFileSystem(() => {
     describe('cleanPackageJson()', () => {
       it('should not touch the object if there is no build marker', () => {
         const packageJson: EntryPointPackageJson = {name: 'test-package'};
-        cleanPackageJson(packageJson);
+        const result = cleanPackageJson(packageJson);
+        expect(result).toBe(false);
         expect(packageJson).toEqual({name: 'test-package'});
       });
 
@@ -227,7 +228,8 @@ runInEachFileSystem(() => {
           name: 'test-package',
           __processed_by_ivy_ngcc__: {'fesm2015': '8.0.0'}
         };
-        cleanPackageJson(packageJson);
+        const result = cleanPackageJson(packageJson);
+        expect(result).toBe(true);
         expect(packageJson).toEqual({name: 'test-package'});
       });
 
@@ -238,7 +240,8 @@ runInEachFileSystem(() => {
           fesm2015: 'index.js',
           fesm2015_ivy_ngcc: '__ivy_ngcc__/index.js'
         };
-        cleanPackageJson(packageJson);
+        const result = cleanPackageJson(packageJson);
+        expect(result).toBe(true);
         expect(packageJson).toEqual({name: 'test-package', fesm2015: 'index.js'});
       });
 
@@ -248,7 +251,8 @@ runInEachFileSystem(() => {
           __processed_by_ivy_ngcc__: {'fesm2015': '8.0.0'},
           scripts: {prepublishOnly: 'added by ngcc', test: 'do testing'},
         };
-        cleanPackageJson(packageJson);
+        const result = cleanPackageJson(packageJson);
+        expect(result).toBe(true);
         expect(packageJson).toEqual({
           name: 'test-package',
           scripts: {test: 'do testing'},
@@ -266,7 +270,8 @@ runInEachFileSystem(() => {
                test: 'do testing'
              },
            };
-           cleanPackageJson(packageJson);
+           const result = cleanPackageJson(packageJson);
+           expect(result).toBe(true);
            expect(packageJson).toEqual({
              name: 'test-package',
              scripts: {prepublishOnly: 'original', test: 'do testing'},
@@ -282,7 +287,8 @@ runInEachFileSystem(() => {
             test: 'do testing'
           },
         };
-        cleanPackageJson(packageJson);
+        const result = cleanPackageJson(packageJson);
+        expect(result).toBe(false);
         expect(packageJson).toEqual({
           name: 'test-package',
           scripts: {

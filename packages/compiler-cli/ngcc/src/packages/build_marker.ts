@@ -26,8 +26,9 @@ export function needsCleaning(packageJson: EntryPointPackageJson): boolean {
 /**
  * Clean an build marker artifacts from the given `packageJson` object.
  * @param packageJson The parsed contents of the package.json to modify
+ * @returns true if the package was modified during cleaning
  */
-export function cleanPackageJson(packageJson: EntryPointPackageJson): void {
+export function cleanPackageJson(packageJson: EntryPointPackageJson): boolean {
   if (packageJson.__processed_by_ivy_ngcc__ !== undefined) {
     // Remove the actual marker
     delete packageJson.__processed_by_ivy_ngcc__;
@@ -47,7 +48,9 @@ export function cleanPackageJson(packageJson: EntryPointPackageJson): void {
         delete scripts.prepublishOnly__ivy_ngcc_bak;
       }
     }
+    return true;
   }
+  return false;
 }
 
 /**
