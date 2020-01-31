@@ -52,8 +52,4 @@ export class ZoneUnawareIFrameMessageBus extends MessageBus<Events> {
   destroy() {
     this._delegate.destroy();
   }
-
-  getWindow(): Window {
-    return this._delegate.getWindow();
-  }
 }
