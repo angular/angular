@@ -88,6 +88,17 @@ export class CachedFileSystem implements FileSystem {
     }
   }
 
+  removeDeep(path: AbsoluteFsPath): void {
+    this.delegate.removeDeep(path);
+    // Clear out all children of this directory from the exists cache.
+    for (const p of this.existsCache.keys()) {
+      if (p.startsWith(path)) {
+        this.existsCache.set(path, false);
+      }
+    }
+  }
+
+
   lstat(path: AbsoluteFsPath): FileStats {
     const stat = this.delegate.lstat(path);
     // if the `path` does not exist then `lstat` will thrown an error.

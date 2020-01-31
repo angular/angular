@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as realFs from 'fs';
+import * as fsExtra from 'fs-extra';
 import {absoluteFrom, dirname, relativeFrom, setFileSystem} from '../src/helpers';
 import {NodeJSFileSystem} from '../src/node_js_file_system';
 import {AbsoluteFsPath} from '../src/types';
@@ -146,6 +147,14 @@ describe('NodeJSFileSystem', () => {
       fs.ensureDir(xyzPath);
       expect(existsCalls).toEqual([xyzPath, xyPath, xPath]);
       expect(mkdirCalls).toEqual([xPath, xyPath, xyzPath]);
+    });
+
+    describe('removeDeep()', () => {
+      it('should delegate to fsExtra.remove()', () => {
+        const spy = spyOn(fsExtra, 'removeSync');
+        fs.removeDeep(abcPath);
+        expect(spy).toHaveBeenCalledWith(abcPath);
+      });
     });
 
     it('should not fail if a directory (that did not exist before) does exist when trying to create it',

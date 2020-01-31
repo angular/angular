@@ -7,6 +7,7 @@
  */
 /// <reference types="node" />
 import * as fs from 'fs';
+import * as fsExtra from 'fs-extra';
 import * as p from 'path';
 import {absoluteFrom, relativeFrom} from './helpers';
 import {AbsoluteFsPath, FileStats, FileSystem, PathSegment, PathString} from './types';
@@ -40,6 +41,7 @@ export class NodeJSFileSystem implements FileSystem {
       this.safeMkdir(parents.pop() !);
     }
   }
+  removeDeep(path: AbsoluteFsPath): void { fsExtra.removeSync(path); }
   isCaseSensitive(): boolean {
     if (this._caseSensitive === undefined) {
       this._caseSensitive = this.exists(togglePathCase(__filename));

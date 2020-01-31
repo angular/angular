@@ -9,7 +9,9 @@ ts_library(
     ]),
     deps = [
         "//packages:types",
+        "@npm//@types/fs-extra",
         "@npm//@types/node",
+        "@npm//fs-extra",
         "@npm//typescript",
     ],
 )
