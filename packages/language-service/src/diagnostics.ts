@@ -228,25 +228,3 @@ export function ngDiagnosticToTsDiagnostic(
     source: 'ng',
   };
 }
-
-/**
- * Return elements filtered by unique span.
- * @param elements
- */
-export function uniqueBySpan<T extends{span: ng.Span}>(elements: T[]): T[] {
-  const result: T[] = [];
-  const map = new Map<number, Set<number>>();
-  for (const element of elements) {
-    const {span} = element;
-    let set = map.get(span.start);
-    if (!set) {
-      set = new Set();
-      map.set(span.start, set);
-    }
-    if (!set.has(span.end)) {
-      set.add(span.end);
-      result.push(element);
-    }
-  }
-  return result;
-}
