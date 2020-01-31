@@ -103,6 +103,8 @@ export class MatChipSet extends _MatChipSetMixinBase implements AfterContentInit
     removeFocusFromChipAtIndex: () => {},
     isRTL: () => !!this._dir && this._dir.value === 'rtl',
     getChipListCount: () => this._chips.length,
+    // TODO(mmalerba): Implement using LiveAnnouncer.
+    announceMessage: () => {},
   };
 
   /** The aria-describedby attribute on the chip list for improved a11y. */
@@ -232,7 +234,11 @@ export class MatChipSet extends _MatChipSetMixinBase implements AfterContentInit
   /** Subscribes to chip removal events. */
   private _listenToChipsRemove() {
     this._chipRemoveSubscription = this.chipRemoveChanges.subscribe((event: MatChipEvent) => {
-       this._chipSetFoundation.handleChipRemoval(event.chip.id);
+       this._chipSetFoundation.handleChipRemoval({
+         chipId: event.chip.id,
+         // TODO(mmalerba): Add removal message.
+         removedAnnouncement: null,
+       });
     });
   }
 
@@ -254,7 +260,7 @@ export class MatChipSet extends _MatChipSetMixinBase implements AfterContentInit
   /** Subscribes to chip interaction events. */
   private _listenToChipsInteraction() {
     this._chipInteractionSubscription = this.chipInteractionChanges.subscribe((id: string) => {
-      this._chipSetFoundation.handleChipInteraction(id);
+      this._chipSetFoundation.handleChipInteraction({chipId: id});
     });
   }
 
@@ -307,4 +313,3 @@ export class MatChipSet extends _MatChipSetMixinBase implements AfterContentInit
 
   static ngAcceptInputType_disabled: BooleanInput;
 }
-

@@ -309,6 +309,7 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
     // so they will never be called
     getRootBoundingClientRect: () => this._elementRef.nativeElement.getBoundingClientRect(),
     getCheckmarkBoundingClientRect: () => null,
+    getAttribute: (attr) => this._elementRef.nativeElement.getAttribute(attr),
  };
 
  constructor(
