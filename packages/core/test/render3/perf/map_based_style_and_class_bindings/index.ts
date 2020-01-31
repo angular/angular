@@ -78,7 +78,7 @@ function testTemplate(rf: RenderFlags, ctx: any) {
 }
 
 
-const rootLView = setupRootViewWithEmbeddedViews(testTemplate, 11, 10, 1000);
+const rootLView = setupRootViewWithEmbeddedViews(testTemplate, 11, 40, 1000);
 const rootTView = rootLView[TVIEW];
 
 // scenario to benchmark
