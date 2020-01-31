@@ -26,8 +26,8 @@ const benchmarks: Benchmark[] = [];
 
 function benchmark(
     name: string, template: ComponentTemplate<any>, baselineTemplate: ComponentTemplate<any>) {
-  const ivyHarness = setupTestHarness(template, 1, 1, 1000, context, consts);
-  const baseHarness = setupTestHarness(baselineTemplate, 1, 1, 1000, context, consts);
+  const ivyHarness = setupTestHarness(template, 1, 4, 1000, context, consts);
+  const baseHarness = setupTestHarness(baselineTemplate, 1, 4, 1000, context, consts);
 
   if (PROFILE_CREATE) {
     const benchmark = createBenchmark('class binding[create]: ' + name);
