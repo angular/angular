@@ -10,7 +10,7 @@ import * as tss from 'typescript/lib/tsserverlibrary';
 
 import {getTemplateCompletions} from './completions';
 import {getDefinitionAndBoundSpan, getTsDefinitionAndBoundSpan} from './definitions';
-import {getDeclarationDiagnostics, getTemplateDiagnostics, ngDiagnosticToTsDiagnostic, uniqueBySpan} from './diagnostics';
+import {getDeclarationDiagnostics, getTemplateDiagnostics, ngDiagnosticToTsDiagnostic} from './diagnostics';
 import {getTemplateHover, getTsHover} from './hover';
 import * as ng from './types';
 import {TypeScriptServiceHost} from './typescript_host';
@@ -29,23 +29,22 @@ class LanguageServiceImpl implements ng.LanguageService {
 
   getSemanticDiagnostics(fileName: string): tss.Diagnostic[] {
     const analyzedModules = this.host.getAnalyzedModules();  // same role as 'synchronizeHostData'
-    const results: ng.Diagnostic[] = [];
-    const templates = this.host.getTemplates(fileName);
+    const ngDiagnostics: ng.Diagnostic[] = [];
 
+    const templates = this.host.getTemplates(fileName);
     for (const template of templates) {
       const ast = this.host.getTemplateAst(template);
       if (ast) {
-        results.push(...getTemplateDiagnostics(ast));
+        ngDiagnostics.push(...getTemplateDiagnostics(ast));
       }
     }
 
     const declarations = this.host.getDeclarations(fileName);
-    if (declarations && declarations.length) {
-      results.push(...getDeclarationDiagnostics(declarations, analyzedModules, this.host));
-    }
+    ngDiagnostics.push(...getDeclarationDiagnostics(declarations, analyzedModules, this.host));
 
     const sourceFile = fileName.endsWith('.ts') ? this.host.getSourceFile(fileName) : undefined;
-    return uniqueBySpan(results).map(d => ngDiagnosticToTsDiagnostic(d, sourceFile));
+    const tsDiagnostics = ngDiagnostics.map(d => ngDiagnosticToTsDiagnostic(d, sourceFile));
+    return [...tss.sortAndDeduplicateDiagnostics(tsDiagnostics)];
   }
 
   getCompletionsAtPosition(
