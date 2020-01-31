@@ -1,3 +1,45 @@
+# 9.0.0-rc.9 "uranium-surfboard" (2020-01-31)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **a11y:** make cdk-high-contrast work w/ emulated view encapsulation ([#18152](https://github.com/angular/components/issues/18152)) ([aff21e8](https://github.com/angular/components/commit/aff21e8)) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  reduce amount of generated high contrast styles ([#18332](https://github.com/angular/components/issues/18332)) ([b119472](https://github.com/angular/components/commit/b119472)) |
+| bug fix |  **checkbox:** outline not visible when checked in high contrast mode ([#18048](https://github.com/angular/components/issues/18048)) ([75a7681](https://github.com/angular/components/commit/75a7681)) |
+| bug fix |  **chips:** set aria-required on chip input ([#18098](https://github.com/angular/components/issues/18098)) ([05d072a](https://github.com/angular/components/commit/05d072a)), closes [#18049](https://github.com/angular/components/issues/18049) |
+| bug fix |  **datepicker:** able to focus disabled datepicker toggle while disabled via click ([#18231](https://github.com/angular/components/issues/18231)) ([9086a4b](https://github.com/angular/components/commit/9086a4b)) |
+| bug fix |  **drag-drop:** error if next sibling is removed after drag sequence has started ([#18230](https://github.com/angular/components/issues/18230)) ([7a167a2](https://github.com/angular/components/commit/7a167a2)), closes [#18205](https://github.com/angular/components/issues/18205) |
+| bug fix |  **drag-drop:** not picking up initial disabled state of handle ([#16643](https://github.com/angular/components/issues/16643)) ([3b28d33](https://github.com/angular/components/commit/3b28d33)), closes [#16642](https://github.com/angular/components/issues/16642) |
+| bug fix |  **drag-drop:** prevent dragging selected text with the mouse ([#18103](https://github.com/angular/components/issues/18103)) ([fbbac37](https://github.com/angular/components/commit/fbbac37)) |
+| bug fix |  **expansion:** unable to toggle disabled panel via methods ([#18181](https://github.com/angular/components/issues/18181)) ([796db4d](https://github.com/angular/components/commit/796db4d)), closes [#18171](https://github.com/angular/components/issues/18171) |
+| bug fix |  **input:** input harness not matching `matNativeControl` ([#18221](https://github.com/angular/components/issues/18221)) ([f0d3a6b](https://github.com/angular/components/commit/f0d3a6b)) |
+| bug fix |  **overlay:** don't reset global overlay alignment when width is 100% and there's a maxWidth ([#17842](https://github.com/angular/components/issues/17842)) ([37d0191](https://github.com/angular/components/commit/37d0191)), closes [#17841](https://github.com/angular/components/issues/17841) |
+| bug fix |  **overlay:** only clear duplicate containers from different platform ([#17006](https://github.com/angular/components/issues/17006)) ([67d27fd](https://github.com/angular/components/commit/67d27fd)), closes [#16851](https://github.com/angular/components/issues/16851) |
+| bug fix |  **schematics:** global typography class always being added ([#18315](https://github.com/angular/components/issues/18315)) ([2b83a0a](https://github.com/angular/components/commit/2b83a0a)), closes [#17602](https://github.com/angular/components/issues/17602) [#16776](https://github.com/angular/components/issues/16776) |
+| bug fix |  **tabs:** better high contrast indication on supported browsers ([#18160](https://github.com/angular/components/issues/18160)) ([01b31de](https://github.com/angular/components/commit/01b31de)) |
+| bug fix |  **tabs:** don't start auto-scroll when right clicking on buttons ([#18033](https://github.com/angular/components/issues/18033)) ([ca9b204](https://github.com/angular/components/commit/ca9b204)) |
+
+### youtube-player
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  memory leak if player is destroyed before it is done initializing ([#18046](https://github.com/angular/components/issues/18046)) ([6b3a271](https://github.com/angular/components/commit/6b3a271)) |
+| bug fix |  not picking up static startSeconds and endSeconds ([#18214](https://github.com/angular/components/issues/18214)) ([8ea430f](https://github.com/angular/components/commit/8ea430f)), closes [#18212](https://github.com/angular/components/issues/18212) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  errors with latest MDC canary version ([#18173](https://github.com/angular/components/issues/18173)) ([5d13491](https://github.com/angular/components/commit/5d13491)) |
+| bug fix |  mdc-theming and mdc-typography files not published ([#18251](https://github.com/angular/components/issues/18251)) ([77a25eb](https://github.com/angular/components/commit/77a25eb)) |
+
+
 # 9.0.0-rc.8 "stone-stallion" (2020-01-16)
 
 ### material
