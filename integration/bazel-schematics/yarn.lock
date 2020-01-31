@@ -2,18 +2,18 @@
 # yarn lockfile v1
 
 
-"@angular-devkit/architect@0.900.0-rc.3":
-  version "0.900.0-rc.3"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/architect/-/architect-0.900.0-rc.3.tgz#e01d0296153624d6ef073650484d0d8063bb2a42"
-  integrity sha512-QVD/iL3CxG6nNFveYN7NhsNLir/SmgVGrsPt7FtKJq2tWxmBEsU3d3zYGYNtFNv/WshHZ7K6UFg+VsRpqnQTtQ==
+"@angular-devkit/architect@0.900.0-rc.11":
+  version "0.900.0-rc.11"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/architect/-/architect-0.900.0-rc.11.tgz#e9f3e5e372d467a220027cf53231b88e8e857fbc"
+  integrity sha512-rRbq4ipppnY4FvVo89Cv+yC7rlt1/VFE/jaB77Ra2tI6zVlFWCTjnMzuc9TYz/3jK1ssThzgEA2sebPDmjH47w==
   dependencies:
-    "@angular-devkit/core" "9.0.0-rc.3"
+    "@angular-devkit/core" "9.0.0-rc.11"
     rxjs "6.5.3"
 
-"@angular-devkit/core@9.0.0-rc.3":
-  version "9.0.0-rc.3"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-9.0.0-rc.3.tgz#42703073d0f83eee9b319d59d5f61ef407f0ff13"
-  integrity sha512-x9x4yj0HMzg8rAIgxEPrefjMXB0GOlgzzbHxgcB+qxIP/feASzhnB28OyXSCa4Sgv3er3Jd5wzV/P3QYHKLeoQ==
+"@angular-devkit/core@9.0.0-rc.11":
+  version "9.0.0-rc.11"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-9.0.0-rc.11.tgz#9e69545eb21284a573ad78e4c33003f2ea25afd5"
+  integrity sha512-ki7Sln+mQdCctJNBalzy70tiFn2hOCY2Yyte8B0xKWVHnofZySvG+ANzoLgodnKFOBH18AQy35FhgzZM++N9tQ==
   dependencies:
     ajv "6.10.2"
     fast-json-stable-stringify "2.0.0"
@@ -21,12 +21,12 @@
     rxjs "6.5.3"
     source-map "0.7.3"
 
-"@angular-devkit/schematics@9.0.0-rc.3":
-  version "9.0.0-rc.3"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/schematics/-/schematics-9.0.0-rc.3.tgz#3c3177098251a003a9e1c0ab4f65e055fea7d941"
-  integrity sha512-fxwhzE8i1zNs+f4wjpFJfwLE9FIJGYvmDCdXjh5eBA4rPBx8tIrGYXaCZgOrVVkrpO+1bNgrqCaC/lFm4jY8oA==
+"@angular-devkit/schematics@9.0.0-rc.11":
+  version "9.0.0-rc.11"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/schematics/-/schematics-9.0.0-rc.11.tgz#e0d4d271d8d783ebf05eced576262f20e6c3562c"
+  integrity sha512-aJqOLzsoAkVj3AVTf1ehH2hA9wHHz1+7TTtfqI+Yx+S3jFyvGmnKrNBCKtMuIV5JdEHiXmhhuGbNBHwRFWpOow==
   dependencies:
-    "@angular-devkit/core" "9.0.0-rc.3"
+    "@angular-devkit/core" "9.0.0-rc.11"
     ora "4.0.2"
     rxjs "6.5.3"
 
@@ -35,16 +35,16 @@
   dependencies:
     "@microsoft/api-extractor" "^7.3.9"
     shelljs "0.8.2"
-    tsickle "^0.37.1"
+    tsickle "^0.38.0"
 
 "@angular/cli@file:../../node_modules/@angular/cli":
-  version "9.0.0-rc.3"
+  version "9.0.0-rc.11"
   dependencies:
-    "@angular-devkit/architect" "0.900.0-rc.3"
-    "@angular-devkit/core" "9.0.0-rc.3"
-    "@angular-devkit/schematics" "9.0.0-rc.3"
-    "@schematics/angular" "9.0.0-rc.3"
-    "@schematics/update" "0.900.0-rc.3"
+    "@angular-devkit/architect" "0.900.0-rc.11"
+    "@angular-devkit/core" "9.0.0-rc.11"
+    "@angular-devkit/schematics" "9.0.0-rc.11"
+    "@schematics/angular" "9.0.0-rc.11"
+    "@schematics/update" "0.900.0-rc.11"
     "@yarnpkg/lockfile" "1.1.0"
     ansi-colors "4.1.1"
     debug "^4.1.1"
@@ -61,29 +61,29 @@
     universal-analytics "^0.4.20"
     uuid "^3.3.2"
 
-"@bazel/bazel-darwin_x64@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@bazel/bazel-darwin_x64/-/bazel-darwin_x64-1.1.0.tgz#9402ecadfaf0383bc366ef5b37b933e0d0e804fc"
-  integrity sha512-/dnpkjqnl2Qrcy+qFerOe+lV9QZ2HoUHtTplQgRxa+OH8AtQ7mcopdJ9/3Y10GqgT2Kp+AR6G99R59/Si+BOMg==
+"@bazel/bazel-darwin_x64@2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-darwin_x64/-/bazel-darwin_x64-2.0.0.tgz#bd678069216dd470c6816a22c405f21e7f048038"
+  integrity sha512-I/pP+B+2xfY0g+OEpEcVnk8rizuC761pAzBOQjP3b+gz3AzeRgm05CpcSY7tfPIppMSYoy3uTZJ1XlwgUg7IQQ==
 
-"@bazel/bazel-linux_x64@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@bazel/bazel-linux_x64/-/bazel-linux_x64-1.1.0.tgz#98d75240e3e9ff5ba14fa48d6241d5d741e89926"
-  integrity sha512-yDR1URphRQTkXYjl4U2NLmbGR8ar8imhytK3txZZqlPf5pfWI/7wa7gSg0H4VbRRLIGAy/nD2eXZpgSj1eUiqA==
+"@bazel/bazel-linux_x64@2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-linux_x64/-/bazel-linux_x64-2.0.0.tgz#2c76e3301e9178a90ec3ad00649e89b953eda0b7"
+  integrity sha512-iOr45G+511IbP7e+ISriG97WpfCAVXekTrTgL5mGg3NDBFCVNs350VquHAvmlXAoP5+IEug2pCOlkdEl4bLl8g==
 
-"@bazel/bazel-win32_x64@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@bazel/bazel-win32_x64/-/bazel-win32_x64-1.1.0.tgz#e9c80a8c6495834ee7fc6184c425284d1151ac38"
-  integrity sha512-mj3ujcifKO+hjAjHvLoutYxzs90YWuc/fYJuVaEQrk4YFrRW5g70OpjN74zzBHRstObOjSZ3cOj+HDB19SIFKw==
+"@bazel/bazel-win32_x64@2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-win32_x64/-/bazel-win32_x64-2.0.0.tgz#f12ac0738d2eac0fd255f099776194807cedfe50"
+  integrity sha512-5qs2qoa/paG/YYEM0yvrwuJIShoPVK2FX+Oz9jEWAQJsmU4drHA9Aq+gbBOirEFLmvYhleZ9XORCwu/5uAo8vA==
 
 "@bazel/bazel@file:../../node_modules/@bazel/bazel":
-  version "1.1.0"
+  version "2.0.0"
   dependencies:
     "@bazel/hide-bazel-files" latest
   optionalDependencies:
-    "@bazel/bazel-darwin_x64" "1.1.0"
-    "@bazel/bazel-linux_x64" "1.1.0"
-    "@bazel/bazel-win32_x64" "1.1.0"
+    "@bazel/bazel-darwin_x64" "2.0.0"
+    "@bazel/bazel-linux_x64" "2.0.0"
+    "@bazel/bazel-win32_x64" "2.0.0"
 
 "@bazel/hide-bazel-files@latest":
   version "0.37.1"
@@ -143,21 +143,21 @@
   resolved "https://registry.yarnpkg.com/@microsoft/tsdoc/-/tsdoc-0.12.14.tgz#0e0810a0a174e50e22dfe8edb30599840712f22d"
   integrity sha512-518yewjSga1jLdiLrcmpMFlaba5P+50b0TWNFUpC+SL9Yzf0kMi57qw+bMl+rQ08cGqH1vLx4eg9YFUbZXgZ0Q==
 
-"@schematics/angular@9.0.0-rc.3":
-  version "9.0.0-rc.3"
-  resolved "https://registry.yarnpkg.com/@schematics/angular/-/angular-9.0.0-rc.3.tgz#804fc0a360109298ec694d77bdaadcd3652cf094"
-  integrity sha512-HIOlaReZFGQpjoLxGqDpNbw0UDg306KrPTDZ8eI0lSEAz6KKY3CsMWSGZ57cKRfw5PJYIybbpWeIvGsXq6i7uQ==
+"@schematics/angular@9.0.0-rc.11":
+  version "9.0.0-rc.11"
+  resolved "https://registry.yarnpkg.com/@schematics/angular/-/angular-9.0.0-rc.11.tgz#d544c0d4e7b3dd59ed56be5183e038ebe06a165e"
+  integrity sha512-9InC+F71KiPXE0jl7Ow4iPFJ2AZZDbfTM6yWZoYLk3hzTCohAZZciBl00Tfyu2uerGshx8akbJMLySjXtf+q0g==
   dependencies:
-    "@angular-devkit/core" "9.0.0-rc.3"
-    "@angular-devkit/schematics" "9.0.0-rc.3"
+    "@angular-devkit/core" "9.0.0-rc.11"
+    "@angular-devkit/schematics" "9.0.0-rc.11"
 
-"@schematics/update@0.900.0-rc.3":
-  version "0.900.0-rc.3"
-  resolved "https://registry.yarnpkg.com/@schematics/update/-/update-0.900.0-rc.3.tgz#b33b1d006fd76b6fc7a19ab3c84251d6ffc7fb9b"
-  integrity sha512-+CFVwY3hLE54ZOjf1Big+49XW92Aiu7+wgU/kXnKhAGx7HtM4jflfMMtMJq2IjmBfr3+ObjwETSBQkWv4RtGYw==
+"@schematics/update@0.900.0-rc.11":
+  version "0.900.0-rc.11"
+  resolved "https://registry.yarnpkg.com/@schematics/update/-/update-0.900.0-rc.11.tgz#d22df30f13a6f38970b759db61ad84d3f9b03a78"
+  integrity sha512-nV0oCPzzd0vi2Exo1910rWXwz/RnMc4zF9FxSOCZzsIv+AkwIehhL815OKyjUSCzU9+IM0/o1LKkPPrSWK7QEA==
   dependencies:
-    "@angular-devkit/core" "9.0.0-rc.3"
-    "@angular-devkit/schematics" "9.0.0-rc.3"
+    "@angular-devkit/core" "9.0.0-rc.11"
+    "@angular-devkit/schematics" "9.0.0-rc.11"
     "@yarnpkg/lockfile" "1.1.0"
     ini "1.3.5"
     npm-package-arg "^7.0.0"
@@ -1912,10 +1912,10 @@ tough-cookie@~2.4.3:
     psl "^1.1.24"
     punycode "^1.4.1"
 
-tsickle@^0.37.1:
-  version "0.37.1"
-  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.37.1.tgz#2f8a87c1b15766e866457bd06fb6c0e0d84eed09"
-  integrity sha512-0GwgOJEnsmRsrONXCvcbAWY0CvdqF3UugPVoupUpA8Ul0qCPTuqqq0ou/hLqtKZOyyulzCP6MYRjb9/J1g9bJg==
+tsickle@^0.38.0:
+  version "0.38.0"
+  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.38.0.tgz#89f5952c9bb3ba0b36dc384975e23cf90e584822"
+  integrity sha512-k7kI6afBuLd2jIrj9JR8lKhEkp99sFVRKQbHeaHQkdvDaH5AvzwqA/qX+aNj28OfuAsWryOKAZoXm24l7JelEw==
 
 tslib@^1.9.0:
   version "1.9.3"
