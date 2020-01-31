@@ -390,7 +390,7 @@ describe('InteractivityChecker', () => {
 
         appendElements([objectEl]);
 
-        // This is a hack to create an empty contentDocument for the frame element.
+        // This creates an empty contentDocument for the frame element.
         objectEl.type = 'text/html';
         objectEl.contentDocument!.body.appendChild(button);
 

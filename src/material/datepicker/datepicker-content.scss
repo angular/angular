@@ -33,12 +33,12 @@ $mat-datepicker-touch-max-height: 788px;
 
 .mat-datepicker-content-touch {
   display: block;
-  // make sure the dialog scrolls rather than being cropped on ludicrously small screens
+  // Make sure the dialog scrolls rather than being cropped on ludicrously small screens
   max-height: 80vh;
   overflow: auto;
 
-  // TODO(mmalerba): hack to offset the padding of the dialog. Can be removed when we switch away
-  // from using dialog.
+  // Offsets the padding of the dialog.
+  // TODO(mmalerba): Remove when we switch away from using dialog.
   margin: -24px;
 
   .mat-calendar {

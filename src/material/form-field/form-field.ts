@@ -251,8 +251,8 @@ export class MatFormField extends _MatFormFieldMixinBase
   @ContentChild(MatFormFieldControl) _controlNonStatic: MatFormFieldControl<any>;
   @ContentChild(MatFormFieldControl, {static: true}) _controlStatic: MatFormFieldControl<any>;
   get _control() {
-    // TODO(crisbeto): we need this hacky workaround in order to support both Ivy
-    // and ViewEngine. We should clean this up once Ivy is the default renderer.
+    // TODO(crisbeto): we need this workaround in order to support both Ivy and ViewEngine.
+    //  We should clean this up once Ivy is the default renderer.
     return this._explicitFormFieldControl || this._controlNonStatic || this._controlStatic;
   }
   set _control(value) {
