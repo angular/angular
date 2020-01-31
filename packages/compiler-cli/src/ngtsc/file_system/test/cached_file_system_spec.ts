@@ -287,7 +287,7 @@ describe('CachedFileSystem', () => {
       existsSpy.calls.reset();
 
       fs.removeDeep(abcPath);
-      expect(fs.exists(abcPath)).toBeFalsy()
+      expect(fs.exists(abcPath)).toBeFalsy();
       expect(existsSpy).not.toHaveBeenCalled();
     });
   });
