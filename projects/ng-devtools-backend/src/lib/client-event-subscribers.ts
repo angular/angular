@@ -20,54 +20,70 @@ const stopInspecting = () => inspector.stopInspecting();
 export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void => {
   onChangeDetection(() => messageBus.emit('componentTreeDirty'));
 
-  messageBus.on('getLatestComponentExplorerView', query => {
-    messageBus.emit('latestComponentExplorerView', [
-      {
-        forest: trimComponents(getDirectiveForest()),
-        properties: getLatestComponentState(query),
-      },
-    ]);
-  });
+  messageBus.on('getLatestComponentExplorerView', getLatestComponentExplorerViewCallback(messageBus));
 
-  messageBus.on('queryNgAvailability', () => checkForAngular(messageBus));
+  messageBus.on('queryNgAvailability', checkForAngularCallback(messageBus));
 
   messageBus.on('startProfiling', startProfiling);
-  messageBus.on('stopProfiling', () => {
-    messageBus.emit('profilerResults', [stopProfiling()]);
-  });
+  messageBus.on('stopProfiling', stopProfilingCallback(messageBus));
 
   messageBus.on('inspectorStart', startInspecting);
   messageBus.on('inspectorEnd', stopInspecting);
 
-  messageBus.on('getElementDirectivesProperties', (id: ElementID) => {
-    const node = queryComponentTree(id);
-    if (node) {
-      messageBus.emit('elementDirectivesProperties', [serializeNodeDirectiveProperties(node)]);
-    } else {
-      messageBus.emit('elementDirectivesProperties', [{}]);
-    }
-  });
+  messageBus.on('getElementDirectivesProperties', getElementDirectivesPropertiesCallback(messageBus));
 
-  messageBus.on('setSelectedComponent', (id: ElementID) => {
-    const node = queryComponentTree(id, getForestWithNativeElements);
-    setConsoleReference(node);
-  });
+  messageBus.on('setSelectedComponent', selectedComponentCallback);
 
-  messageBus.on('getNestedProperties', (id: DirectiveID, propPath: string[]) => {
-    const node = queryComponentTree(id.element);
-    if (node) {
-      let current = (id.directive === undefined ? node.component : node.directives[id.directive]).instance;
-      for (const prop of propPath) {
-        current = current[prop];
-        if (!current) {
-          console.error('Cannot access the properties', propPath, 'of', node);
-        }
+  messageBus.on('getNestedProperties', getNestedPropertiesCallback(messageBus));
+};
+
+//
+// Callback Definitions
+//
+
+const getLatestComponentExplorerViewCallback = (messageBus: MessageBus<Events>) => query => {
+  messageBus.emit('latestComponentExplorerView', [
+    {
+      forest: trimComponents(getDirectiveForest()),
+      properties: getLatestComponentState(query),
+    },
+  ]);
+};
+
+const checkForAngularCallback = (messageBus: MessageBus<Events>) => () => checkForAngular(messageBus);
+
+const stopProfilingCallback = (messageBus: MessageBus<Events>) => () => {
+  messageBus.emit('profilerResults', [stopProfiling()]);
+};
+
+const getElementDirectivesPropertiesCallback = (messageBus: MessageBus<Events>) => (id: ElementID) => {
+  const node = queryComponentTree(id);
+  if (node) {
+    messageBus.emit('elementDirectivesProperties', [serializeNodeDirectiveProperties(node)]);
+  } else {
+    messageBus.emit('elementDirectivesProperties', [{}]);
+  }
+};
+
+const selectedComponentCallback = (id: ElementID) => {
+  const node = queryComponentTree(id, getForestWithNativeElements);
+  setConsoleReference(node);
+};
+
+const getNestedPropertiesCallback = (messageBus: MessageBus<Events>) => (id: DirectiveID, propPath: string[]) => {
+  const node = queryComponentTree(id.element);
+  if (node) {
+    let current = (id.directive === undefined ? node.component : node.directives[id.directive]).instance;
+    for (const prop of propPath) {
+      current = current[prop];
+      if (!current) {
+        console.error('Cannot access the properties', propPath, 'of', node);
       }
-      messageBus.emit('nestedProperties', [id, { props: serializeComponentState(current) }, propPath]);
-    } else {
-      messageBus.emit('nestedProperties', [id, { props: {} }, propPath]);
     }
-  });
+    messageBus.emit('nestedProperties', [id, { props: serializeComponentState(current) }, propPath]);
+  } else {
+    messageBus.emit('nestedProperties', [id, { props: {} }, propPath]);
+  }
 };
 
 //
