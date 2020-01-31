@@ -209,7 +209,7 @@ runInEachFileSystem(() => {
             .toBe(false);
       });
 
-      it('should return false no formats have been compiled', () => {
+      it('should return false if no formats have been compiled', () => {
         expect(needsCleaning({name: 'test', __processed_by_ivy_ngcc__: {}})).toBe(false);
         expect(needsCleaning({name: 'test'})).toBe(false);
       });
