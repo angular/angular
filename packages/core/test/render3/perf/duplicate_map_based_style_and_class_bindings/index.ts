@@ -149,7 +149,7 @@ function dirThatSetsFooClassesHostBindings(rf: RenderFlags, ctx: any) {
 }
 
 const rootLView = setupRootViewWithEmbeddedViews(
-    testTemplate, 11, 10, 1000, null,
+    testTemplate, 11, 40, 1000, null,
     [
       ['dir-that-sets-width', '', 'dir-that-sets-foo-class', ''],
     ],
