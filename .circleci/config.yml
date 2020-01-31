@@ -120,6 +120,25 @@ commands:
       - attach_workspace:
           at: *workspace_location
 
+  # Install shared libs used by Chrome that is either provisioned by
+  # rules_webtesting or by puppeteer. These are now needed in all containers
+  # as the webdriver-manager update script which is run in the root postinstall
+  # now starts puppeteer's Chrome in headless to check its version so the correct
+  # chromedriver is downloaded. See `/scripts/webdriver-manager-update.js`.
+  install_chrome_libs:
+    description: Install shared Chrome libs
+    steps:
+      - run:
+          name: Install shared Chrome libs
+          command: |
+            sudo apt-get update
+            # Install GTK+ graphical user interface (libgtk-3-0), advanced linux sound architecture (libasound2)
+            # and network security service libraries (libnss3) & X11 Screen Saver extension library (libssx1)
+            # which are dependendies of chrome & needed for karma & protractor headless chrome tests.
+            # This is a very small install which takes around 7s in comparing to using the full
+            # circleci/node:x.x.x-browsers image.
+            sudo apt-get -y install libgtk-3-0 libasound2 libnss3 libxss1
+
   # Initializes the CI environment by setting up common environment variables.
   init_environment:
     description: Initializing environment (setting up variables)
@@ -542,6 +561,7 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
+      - install_chrome_libs
       # Runs the integration tests in parallel across multiple CircleCI container instances. The
       # amount of container nodes for this job is controlled by the "parallelism" option.
       - run: ./integration/run_tests.sh ${CIRCLE_NODE_INDEX} ${CIRCLE_NODE_TOTAL}
