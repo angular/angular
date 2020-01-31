@@ -8,11 +8,13 @@
 
 'use strict';
 
-((context: any) => {
-  const Mocha = context.Mocha;
+Zone.__load_patch('mocha', (global: any, Zone: ZoneType) => {
+  const Mocha = global.Mocha;
 
   if (typeof Mocha === 'undefined') {
-    throw new Error('Missing Mocha.js');
+    // return if Mocha is not available, because now zone-testing
+    // will load mocha patch with jasmine/jest patch
+    return;
   }
 
   if (typeof Zone === 'undefined') {
@@ -97,42 +99,42 @@
     return modifyArguments(args, syncTest, asyncTest);
   }
 
-  context.describe = context.suite = Mocha.describe = function() {
+  global.describe = global.suite = Mocha.describe = function() {
     return mochaOriginal.describe.apply(this, wrapDescribeInZone(arguments));
   };
 
-  context.xdescribe = context.suite.skip = Mocha.describe.skip = function() {
+  global.xdescribe = global.suite.skip = Mocha.describe.skip = function() {
     return mochaOriginal.describe.skip.apply(this, wrapDescribeInZone(arguments));
   };
 
-  context.describe.only = context.suite.only = Mocha.describe.only = function() {
+  global.describe.only = global.suite.only = Mocha.describe.only = function() {
     return mochaOriginal.describe.only.apply(this, wrapDescribeInZone(arguments));
   };
 
-  context.it = context.specify = context.test =
+  global.it = global.specify = global.test =
       Mocha.it = function() { return mochaOriginal.it.apply(this, wrapTestInZone(arguments)); };
 
-  context.xit = context.xspecify = Mocha.it.skip = function() {
+  global.xit = global.xspecify = Mocha.it.skip = function() {
     return mochaOriginal.it.skip.apply(this, wrapTestInZone(arguments));
   };
 
-  context.it.only = context.test.only = Mocha.it.only = function() {
+  global.it.only = global.test.only = Mocha.it.only = function() {
     return mochaOriginal.it.only.apply(this, wrapTestInZone(arguments));
   };
 
-  context.after = context.suiteTeardown = Mocha.after = function() {
+  global.after = global.suiteTeardown = Mocha.after = function() {
     return mochaOriginal.after.apply(this, wrapSuiteInZone(arguments));
   };
 
-  context.afterEach = context.teardown = Mocha.afterEach = function() {
+  global.afterEach = global.teardown = Mocha.afterEach = function() {
     return mochaOriginal.afterEach.apply(this, wrapTestInZone(arguments));
   };
 
-  context.before = context.suiteSetup = Mocha.before = function() {
+  global.before = global.suiteSetup = Mocha.before = function() {
     return mochaOriginal.before.apply(this, wrapSuiteInZone(arguments));
   };
 
-  context.beforeEach = context.setup = Mocha.beforeEach = function() {
+  global.beforeEach = global.setup = Mocha.beforeEach = function() {
     return mochaOriginal.beforeEach.apply(this, wrapTestInZone(arguments));
   };
 
@@ -158,4 +160,4 @@
       return originalRun.call(this, fn);
     };
   })(Mocha.Runner.prototype.runTest, Mocha.Runner.prototype.run);
-})(typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || global);
+});
