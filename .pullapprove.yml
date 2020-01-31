@@ -534,6 +534,7 @@ groups:
         - ~framework-global-approvers
         - ~framework-global-approvers-for-docs-only-changes
 
+
   # =========================================================
   #  Framework: Benchmarks
   # =========================================================
@@ -552,6 +553,7 @@ groups:
       teams:
         - ~framework-global-approvers
 
+
   # =========================================================
   #  Framework: Playground
   # =========================================================
@@ -559,7 +561,7 @@ groups:
     conditions:
       - >
         contains_any_globs(files, [
-          'modules/playground/**',
+          'modules/playground/**'
           ])
     reviewers:
       users:
@@ -567,6 +569,8 @@ groups:
         - kara
       teams:
         - ~framework-global-approvers
+
+
   # =========================================================
   #  Framework: Security
   # =========================================================
@@ -946,9 +950,9 @@ groups:
           'tools/ng_rollup_bundle/**',
           'tools/ngcontainer/**',
           'tools/npm/**',
-          'tools/pullapprove/**',
           'tools/public_api_guard/BUILD.bazel',
           'tools/public_api_guard/public_api_guard.bzl',
+          'tools/pullapprove/**',
           'tools/rxjs/**',
           'tools/saucelabs/**',
           'tools/size-tracking/**',
