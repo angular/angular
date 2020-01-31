@@ -12,8 +12,8 @@ export const patchTemplate = (instance: any, fn: () => void) => {
   const metadata = componentMetadata(instance);
   const original = metadata.template;
 
-  metadata.tView.template = metadata.template = (...args) => {
-    const result = original(...args);
+  metadata.tView.template = metadata.template = function() {
+    const result = original.apply(this, arguments);
     fn();
     return result;
   };

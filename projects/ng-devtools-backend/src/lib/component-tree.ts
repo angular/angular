@@ -24,6 +24,11 @@ export interface ComponentTreeNode extends Node<DirectiveInstanceType, Component
   children: ComponentTreeNode[];
 }
 
+export interface DirectiveForestBuilderOptions {
+  getDirectives?: boolean;
+  includeNativeElement?: boolean;
+}
+
 export const getLatestComponentState = (query: ComponentExplorerViewQuery): DirectivesProperties | undefined => {
   let result;
   if (query.selectedElement && query.expandedProperties) {
@@ -86,7 +91,7 @@ export const getComponentForest = (root = document.documentElement): ComponentTr
 const buildDirectiveForest = (
   node: Element,
   tree: ComponentTreeNode | undefined,
-  options: { [option: string]: boolean } = {}
+  options: DirectiveForestBuilderOptions = {}
 ): ComponentTreeNode[] => {
   if (!node) {
     return [tree];
