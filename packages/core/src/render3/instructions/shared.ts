@@ -807,7 +807,7 @@ export function createTNode(
                          injectorIndex,  // injectorIndex: number
                          -1,             // directiveStart: number
                          -1,             // directiveEnd: number
-                         -1,             // directiveStyle: number
+                         -1,             // directiveStylingLast: number
                          null,           // propertyBindings: number[]|null
                          0,              // flags: TNodeFlags
                          0,              // providerIndexes: TNodeProviderIndexes

@@ -298,8 +298,8 @@ export interface TNode {
    * Stores the last directive which had a styling instruction.
    *
    * Initial value of this is `-1` which means that no `hostBindings` styling instruction has
-   * executed. As `hostBindings` instructions execute they set the value to the `DirectiveDef` which
-   * contained the last `hostBindings` instruction.
+   * executed. As `hostBindings` instructions execute they set the value to the index of the
+   * `DirectiveDef` which contained the last `hostBindings` styling instruction.
    *
    * Valid values are:
    * - `-1` No `hostBindings` instruction has executed.

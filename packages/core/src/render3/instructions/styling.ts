@@ -460,7 +460,7 @@ function getTemplateHeadTStylingKey(tData: TData, tNode: TNode, isClassBased: bo
  * (both
  * `color' and 'width`)
  *
- * When `'[style.color]': 'dirExp',` executes we need to insert a new data int the linked list.
+ * When `'[style.color]': 'dirExp',` executes we need to insert a new data into the linked list.
  * ```
  *  ['', 'color', 'width', '100px'],  // newly inserted
  *  ['', 'color', 'color', 'red', 'width', '100px'], // this is wrong
@@ -490,7 +490,7 @@ function setTemplateHeadTStylingKey(
 /**
  * Collect all static values after the current `TNode.directiveStylingLast` index.
  *
- * Collect the remaining styling information which have not yet been collected by an existing
+ * Collect the remaining styling information which has not yet been collected by an existing
  * styling instruction.
  *
  * @param tData `TData` where the `DirectiveDefs` are stored.
