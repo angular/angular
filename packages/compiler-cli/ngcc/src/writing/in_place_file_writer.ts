@@ -12,6 +12,7 @@ import {EntryPointBundle} from '../packages/entry_point_bundle';
 import {FileToWrite} from '../rendering/utils';
 import {FileWriter} from './file_writer';
 
+export const NGCC_BACKUP_EXTENSION = '.__ivy_ngcc_bak';
 /**
  * This FileWriter overwrites the transformed file, in-place, while creating
  * a back-up of the original file with an extra `.__ivy_ngcc_bak` extension.
@@ -27,7 +28,7 @@ export class InPlaceFileWriter implements FileWriter {
 
   protected writeFileAndBackup(file: FileToWrite): void {
     this.fs.ensureDir(dirname(file.path));
-    const backPath = absoluteFrom(`${file.path}.__ivy_ngcc_bak`);
+    const backPath = absoluteFrom(`${file.path}${NGCC_BACKUP_EXTENSION}`);
     if (this.fs.exists(backPath)) {
       throw new Error(
           `Tried to overwrite ${backPath} with an ngcc back up file, which is disallowed.`);
