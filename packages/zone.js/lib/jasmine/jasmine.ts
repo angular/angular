@@ -9,6 +9,7 @@
 /// <reference types="jasmine"/>
 
 'use strict';
+declare let jest: any;
 ((_global: any) => {
   const __extends = function(d: any, b: any) {
     for (const p in b)
@@ -19,6 +20,11 @@
   // Patch jasmine's describe/it/beforeEach/afterEach functions so test code always runs
   // in a testZone (ProxyZone). (See: angular/zone.js#91 & angular/angular#10503)
   if (!Zone) throw new Error('Missing: zone.js');
+  if (typeof jest !== 'undefined') {
+    // return if jasmine is a light implementation inside jest
+    // in this case, we are running inside jest not jasmine
+    return;
+  }
   if (typeof jasmine == 'undefined') throw new Error('Missing: jasmine.js');
   if ((jasmine as any)['__zone_patch__'])
     throw new Error(`'jasmine' has already been patched with 'Zone'.`);
@@ -285,7 +291,6 @@
       // This is the zone which will be used for running individual tests.
       // It will be a proxy zone, so that the tests function can retroactively install
       // different zones.
-      // Example:
       //   - In beforeEach() do childZone = Zone.current.fork(...);
       //   - In it() try to do fakeAsync(). The issue is that because the beforeEach forked the
       //     zone outside of fakeAsync it will be able to escape the fakeAsync rules.
