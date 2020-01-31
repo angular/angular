@@ -88,6 +88,12 @@ export class CachedFileSystem implements FileSystem {
     }
   }
 
+  removeDir(path: AbsoluteFsPath): void {
+    this.delegate.removeDir(path);
+    this.existsCache.set(path, false);
+  }
+
+
   lstat(path: AbsoluteFsPath): FileStats {
     const stat = this.delegate.lstat(path);
     // if the `path` does not exist then `lstat` will thrown an error.
