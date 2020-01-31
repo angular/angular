@@ -94,7 +94,7 @@ export interface Directive {
    * - `[attribute]`: Select by attribute name.
    * - `[attribute=value]`: Select by attribute name and value.
    * - `:not(sub_selector)`: Select only if the element does not match the `sub_selector`.
-   * - `selector1, selector2`: Select if either `selector1` or `selector2` matches.
+   * - `[selector1], [selector2]`: Select if either `selector1` or `selector2` matches.
    *
    * Angular only allows directives to apply on CSS selectors that do not cross
    * element boundaries.
