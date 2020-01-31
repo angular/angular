@@ -197,19 +197,19 @@ runInEachFileSystem(() => {
     });
 
     describe('needsCleaning()', () => {
-      it('should return true if any format has been compiled with a different version.', () => {
+      it('should return true if any format has been compiled with a different version', () => {
         expect(needsCleaning({
           name: 'test',
           __processed_by_ivy_ngcc__: {'fesm2015': '8.0.0', 'esm5': NGCC_VERSION}
         })).toBe(true);
       });
 
-      it('should return false if all formats have been compiled with the current version.', () => {
+      it('should return false if all formats have been compiled with the current version', () => {
         expect(needsCleaning({name: 'test', __processed_by_ivy_ngcc__: {'fesm2015': NGCC_VERSION}}))
             .toBe(false);
       });
 
-      it('should return false no formats have been compiled.', () => {
+      it('should return false no formats have been compiled', () => {
         expect(needsCleaning({name: 'test', __processed_by_ivy_ngcc__: {}})).toBe(false);
         expect(needsCleaning({name: 'test'})).toBe(false);
       });
@@ -278,7 +278,7 @@ runInEachFileSystem(() => {
            });
          });
 
-      it('should not touch the scripts if there was not processed marker', () => {
+      it('should not touch the scripts if there was no processed marker', () => {
         const packageJson: EntryPointPackageJson = {
           name: 'test-package',
           scripts: {

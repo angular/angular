@@ -19,12 +19,12 @@ export const NGCC_VERSION = '0.0.0-PLACEHOLDER';
  * @param packageJson The parsed contents of the package.json for the entry-point
  */
 export function needsCleaning(packageJson: EntryPointPackageJson): boolean {
-  return Object.keys(packageJson.__processed_by_ivy_ngcc__ || {})
-      .some(property => packageJson.__processed_by_ivy_ngcc__ ![property] !== NGCC_VERSION);
+  return Object.values(packageJson.__processed_by_ivy_ngcc__ || {})
+      .some(value => value !== NGCC_VERSION);
 }
 
 /**
- * Clean an build marker artifacts from the given `packageJson` object.
+ * Clean any build marker artifacts from the given `packageJson` object.
  * @param packageJson The parsed contents of the package.json to modify
  * @returns true if the package was modified during cleaning
  */
