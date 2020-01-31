@@ -9,7 +9,7 @@
 import {AST, AstPath, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, CompileDirectiveSummary, CompileTypeMetadata, DirectiveAst, ElementAst, EmbeddedTemplateAst, Node, ParseSourceSpan, RecursiveTemplateAstVisitor, ReferenceAst, TemplateAst, TemplateAstPath, VariableAst, identifierName, templateVisitAll, tokenReference} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {AstType, ExpressionDiagnosticsContext, TypeDiagnostic} from './expression_type';
+import {AstType} from './expression_type';
 import {BuiltinType, Definition, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from './symbols';
 import {Diagnostic} from './types';
 import {findOutputBinding, getPathToNodeAtPosition} from './utils';
@@ -28,14 +28,6 @@ export function getTemplateExpressionDiagnostics(info: DiagnosticTemplateInfo): 
       info, (path: TemplateAstPath) => getExpressionScope(info, path));
   templateVisitAll(visitor, info.templateAst);
   return visitor.diagnostics;
-}
-
-export function getExpressionDiagnostics(
-    scope: SymbolTable, ast: AST, query: SymbolQuery,
-    context: ExpressionDiagnosticsContext = {}): TypeDiagnostic[] {
-  const analyzer = new AstType(scope, query, context);
-  analyzer.getDiagnostics(ast);
-  return analyzer.diagnostics;
 }
 
 function getReferences(info: DiagnosticTemplateInfo): SymbolDeclaration[] {
@@ -334,15 +326,14 @@ class ExpressionDiagnosticsVisitor extends RecursiveTemplateAstVisitor {
     return ast.sourceSpan.start.offset;
   }
 
-  private diagnoseExpression(ast: AST, offset: number, includeEvent: boolean) {
-    const scope = this.getExpressionScope(this.path, includeEvent);
-    this.diagnostics.push(...getExpressionDiagnostics(scope, ast, this.info.query, {
-                            event: includeEvent
-                          }).map(d => ({
-                                   span: offsetSpan(d.ast.span, offset + this.info.offset),
-                                   kind: d.kind,
-                                   message: d.message
-                                 })));
+  private diagnoseExpression(ast: AST, offset: number, event: boolean) {
+    const scope = this.getExpressionScope(this.path, event);
+    const analyzer = new AstType(scope, this.info.query, {event});
+    for (const {message, span, kind} of analyzer.getDiagnostics(ast)) {
+      span.start += offset;
+      span.end += offset;
+      this.reportDiagnostic(message as string, span, kind);
+    }
   }
 
   private push(ast: TemplateAst) { this.path.push(ast); }
@@ -351,7 +342,9 @@ class ExpressionDiagnosticsVisitor extends RecursiveTemplateAstVisitor {
 
   private reportDiagnostic(
       message: string, span: Span, kind: ts.DiagnosticCategory = ts.DiagnosticCategory.Error) {
-    this.diagnostics.push({span: offsetSpan(span, this.info.offset), kind, message});
+    span.start += this.info.offset;
+    span.end += this.info.offset;
+    this.diagnostics.push({kind, span, message});
   }
 }
 
@@ -364,10 +357,6 @@ function hasTemplateReference(type: CompileTypeMetadata): boolean {
     }
   }
   return false;
-}
-
-function offsetSpan(span: Span, amount: number): Span {
-  return {start: span.start + amount, end: span.end + amount};
 }
 
 function spanOf(sourceSpan: ParseSourceSpan): Span {
