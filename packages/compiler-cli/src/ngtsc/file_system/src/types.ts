@@ -49,7 +49,7 @@ export interface FileSystem {
   copyFile(from: AbsoluteFsPath, to: AbsoluteFsPath): void;
   moveFile(from: AbsoluteFsPath, to: AbsoluteFsPath): void;
   ensureDir(path: AbsoluteFsPath): void;
-  removeDir(path: AbsoluteFsPath): void;
+  removeDeep(path: AbsoluteFsPath): void;
   isCaseSensitive(): boolean;
   isRoot(path: AbsoluteFsPath): boolean;
   isRooted(path: string): boolean;

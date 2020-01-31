@@ -273,19 +273,21 @@ describe('CachedFileSystem', () => {
     });
   });
 
-  describe('removeDir()', () => {
+  describe('removeDeep()', () => {
     it('should call delegate', () => {
-      const spy = spyOn(delegate, 'removeDir');
-      fs.removeDir(abcPath);
+      const spy = spyOn(delegate, 'removeDeep');
+      fs.removeDeep(abcPath);
       expect(spy).toHaveBeenCalledWith(abcPath);
     });
 
     it('should update the exists cache', () => {
-      spyOn(delegate, 'removeDir');
-      const existsSpy = spyOn(delegate, 'exists');
+      spyOn(delegate, 'removeDeep');
+      const existsSpy = spyOn(delegate, 'exists').and.returnValue(true);
+      expect(fs.exists(abcPath)).toBe(true);
+      existsSpy.calls.reset();
 
-      fs.removeDir(abcPath);
-      expect(fs.exists(abcPath)).toBe(false);
+      fs.removeDeep(abcPath);
+      expect(fs.exists(abcPath)).toBeFalsy()
       expect(existsSpy).not.toHaveBeenCalled();
     });
   });

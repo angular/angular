@@ -131,17 +131,13 @@ export abstract class MockFileSystem implements FileSystem {
     }
   }
 
-  removeDir(path: AbsoluteFsPath): void {
+  removeDeep(path: AbsoluteFsPath): void {
     const [folderPath, basename] = this.splitIntoFolderAndFile(path);
     const {entity} = this.findFromPath(folderPath);
     if (entity === null || !isFolder(entity)) {
       throw new MockFileSystemError(
           'ENOENT', path,
           `Unable to remove folder "${path}". The containing folder does not exist.`);
-    }
-    if (!isFolder(entity[basename])) {
-      throw new MockFileSystemError(
-          'ENOTDIR', path, `Unable to remove "${path}" - it is not a directory.`);
     }
     delete entity[basename];
   }

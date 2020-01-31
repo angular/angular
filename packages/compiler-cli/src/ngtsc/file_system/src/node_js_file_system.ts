@@ -41,7 +41,7 @@ export class NodeJSFileSystem implements FileSystem {
       this.safeMkdir(parents.pop() !);
     }
   }
-  removeDir(path: AbsoluteFsPath): void { fsExtra.removeSync(path); }
+  removeDeep(path: AbsoluteFsPath): void { fsExtra.removeSync(path); }
   isCaseSensitive(): boolean {
     if (this._caseSensitive === undefined) {
       this._caseSensitive = this.exists(togglePathCase(__filename));

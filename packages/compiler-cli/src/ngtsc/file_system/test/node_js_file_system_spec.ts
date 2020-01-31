@@ -149,10 +149,10 @@ describe('NodeJSFileSystem', () => {
       expect(mkdirCalls).toEqual([xPath, xyPath, xyzPath]);
     });
 
-    describe('removeDir()', () => {
+    describe('removeDeep()', () => {
       it('should delegate to fsExtra.remove()', () => {
         const spy = spyOn(fsExtra, 'removeSync');
-        fs.removeDir(abcPath);
+        fs.removeDeep(abcPath);
         expect(spy).toHaveBeenCalledWith(abcPath);
       });
     });

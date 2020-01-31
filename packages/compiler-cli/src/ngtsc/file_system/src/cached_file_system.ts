@@ -88,9 +88,14 @@ export class CachedFileSystem implements FileSystem {
     }
   }
 
-  removeDir(path: AbsoluteFsPath): void {
-    this.delegate.removeDir(path);
-    this.existsCache.set(path, false);
+  removeDeep(path: AbsoluteFsPath): void {
+    this.delegate.removeDeep(path);
+    // Clear out all children of this directory from the exists cache.
+    for (const p of this.existsCache.keys()) {
+      if (p.startsWith(path)) {
+        this.existsCache.set(path, false);
+      }
+    }
   }
 
 
