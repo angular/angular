@@ -66,8 +66,12 @@ export class IFrameMessageBus extends MessageBus<Events> {
     );
   }
 
-  destroy() {
+  destroy(): void {
     this._listeners.forEach(l => window.removeEventListener('message', l));
     this._listeners = [];
+  }
+
+  getWindow(): Window {
+    return this._docWindow;
   }
 }

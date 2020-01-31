@@ -2,7 +2,7 @@ import { DirectiveID, DirectivesProperties, ElementID, Events, MessageBus } from
 import { onChangeDetection } from './change-detection-tracker';
 import {
   ComponentTreeNode,
-  getDirectiveForest,
+  getDirectiveForest, getForestWithNativeElements,
   getLatestComponentState,
   queryComponentTree,
   trimComponents,
@@ -10,6 +10,7 @@ import {
 import { start as startProfiling, stop as stopProfiling } from './recording';
 import { serializeComponentState } from './state-serializer';
 import { ComponentInspector } from './component-inspector';
+import { setConsoleReference } from './selected-component';
 
 const inspector: ComponentInspector = new ComponentInspector();
 
@@ -45,6 +46,15 @@ export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void =>
     } else {
       messageBus.emit('elementDirectivesProperties', [{}]);
     }
+  });
+
+  messageBus.on('setSelectedComponent', (id: ElementID) => {
+    const node = queryComponentTree(id, getForestWithNativeElements);
+    // If message bus implements a getWindow function, use that window as the reference for setConsoleReference().
+    // This is done so that if the dev tools are communicating with an iframe, the variable $ng0
+    // is set at the parent window of that iframe instead of the iframe window.
+    const bus = (messageBus as any);
+    setConsoleReference(typeof bus.getWindow === 'function' ? bus.getWindow() : window, node);
   });
 
   messageBus.on('getNestedProperties', (id: DirectiveID, propPath: string[]) => {
