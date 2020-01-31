@@ -727,7 +727,7 @@ jobs:
           command: node scripts/ci/update-deps-to-dist-packages.js ${COMPONENTS_REPO_TMP_DIR}/package.json dist/packages-dist/
       - run:
           name: "Running `angular/components` unit tests"
-          command: ./scripts/ci/run_angular_components_unit_tests.sh | exit 0
+          command: ./scripts/ci/run_angular_components_unit_tests.sh
 
   test_zonejs:
     executor:
