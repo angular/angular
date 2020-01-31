@@ -536,6 +536,42 @@ groups:
 
 
   # =========================================================
+  #  Framework: Benchmarks
+  # =========================================================
+  fw-benchmarks:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'modules/benchmarks_external/**',
+          'modules/benchmarks/**'
+          ])
+    reviewers:
+      users:
+        - IgorMinar
+        - kara
+        - pkozlowski-opensource
+      teams:
+        - ~framework-global-approvers
+
+
+  # =========================================================
+  #  Framework: Playground
+  # =========================================================
+  fw-playground:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'modules/playground/**'
+          ])
+    reviewers:
+      users:
+        - IgorMinar
+        - kara
+      teams:
+        - ~framework-global-approvers
+
+
+  # =========================================================
   #  Framework: Security
   # =========================================================
   fw-security:
@@ -557,7 +593,6 @@ groups:
       teams:
         - ~framework-global-approvers
         - ~framework-global-approvers-for-docs-only-changes
-
 
   # =========================================================
   #  Bazel
@@ -718,6 +753,7 @@ groups:
           'aio/content/guide/observables.md',
           'aio/content/examples/observables/**',
           'aio/content/guide/comparing-observables.md',
+          'aio/content/examples/comparing-observables/**',
           'aio/content/guide/observables-in-angular.md',
           'aio/content/examples/observables-in-angular/**',
           'aio/content/guide/practical-observable-usage.md',
@@ -740,6 +776,8 @@ groups:
     conditions:
       - >
         contains_any_globs(files, [
+          'docs/PUBLIC_API.md',
+          'docs/RELEASE_SCHEDULE.md',
           'aio/content/guide/npm-packages.md',
           'aio/content/guide/browser-support.md',
           'aio/content/guide/releases.md',
@@ -885,9 +923,23 @@ groups:
           '.vscode/**',
           '.yarn/**',
           'docs/BAZEL.md',
+          'docs/CARETAKER.md',
+          'docs/COMMITTER.md',
+          'docs/DEBUG.md',
+          'docs/DEBUG_COMPONENTS_REPO_IVY.md',
+          'docs/DEVELOPER.md',
+          'docs/GITHUB_PROCESS.md',
+          'docs/PR_REVIEW.md',
+          'docs/SAVED_REPLIES.md',
+          'docs/TOOLS.md',
+          'docs/TRIAGE_AND_LABELS.md',
+          'modules/e2e_util/e2e_util.ts',
+          'modules/e2e_util/perf_util.ts',
+          'modules/*',
           'packages/*',
           'packages/examples/test-utils/**',
           'packages/private/**',
+          'packages/examples/*',
           'scripts/**',
           'third_party/**',
           'tools/brotli-cli/**',
@@ -900,6 +952,7 @@ groups:
           'tools/npm/**',
           'tools/public_api_guard/BUILD.bazel',
           'tools/public_api_guard/public_api_guard.bzl',
+          'tools/pullapprove/**',
           'tools/rxjs/**',
           'tools/saucelabs/**',
           'tools/size-tracking/**',
@@ -953,6 +1006,7 @@ groups:
       - >
         contains_any_globs(files, [
           'tools/public_api_guard/**',
+          'docs/NAMING.md',
           'aio/content/guide/glossary.md',
           'aio/content/guide/styleguide.md',
           'aio/content/examples/styleguide/**',
