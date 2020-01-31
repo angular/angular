@@ -132,46 +132,46 @@
           "title": "Tour of Heroes App",
           "tooltip": "The Tour of Heroes app is used as a reference point in many Angular examples.",
           "children": [
-          {
-            "url": "tutorial",
-            "title": "Introduction",
-            "tooltip": "Introduction to the Tour of Heroes tutorial"
-          },
-          {
-            "url": "tutorial/toh-pt0",
-            "title": "The Application Shell",
-            "tooltip": "Creating the application shell"
-          },
-          {
-            "url": "tutorial/toh-pt1",
-            "title": "1. The Hero Editor",
-            "tooltip": "Part 1: Build a simple hero editor"
-          },
-          {
-            "url": "tutorial/toh-pt2",
-            "title": "2. Display a List",
-            "tooltip": "Part 2: Build a master/detail page with a list of heroes."
-          },
-          {
-            "url": "tutorial/toh-pt3",
-            "title": "3. Create a Feature Component",
-            "tooltip": "Part 3: Refactor the master/detail views into separate components."
-          },
-          {
-            "url": "tutorial/toh-pt4",
-            "title": "4. Add Services",
-            "tooltip": "Part 4: Create a reusable service to manage hero data."
-          },
-          {
-            "url": "tutorial/toh-pt5",
-            "title": "5. Add In-app Navigation",
-            "tooltip": "Part 5: Add the Angular router and navigate among the views."
-          },
-          {
-            "url": "tutorial/toh-pt6",
-            "title": "6. Get Data from a Server",
-            "tooltip": "Part 6: Use HTTP to retrieve and save hero data."
-          }
+            {
+              "url": "tutorial",
+              "title": "Introduction",
+              "tooltip": "Introduction to the Tour of Heroes tutorial"
+            },
+            {
+              "url": "tutorial/toh-pt0",
+              "title": "The Application Shell",
+              "tooltip": "Creating the application shell"
+            },
+            {
+              "url": "tutorial/toh-pt1",
+              "title": "1. The Hero Editor",
+              "tooltip": "Part 1: Build a simple hero editor"
+            },
+            {
+              "url": "tutorial/toh-pt2",
+              "title": "2. Display a List",
+              "tooltip": "Part 2: Build a master/detail page with a list of heroes."
+            },
+            {
+              "url": "tutorial/toh-pt3",
+              "title": "3. Create a Feature Component",
+              "tooltip": "Part 3: Refactor the master/detail views into separate components."
+            },
+            {
+              "url": "tutorial/toh-pt4",
+              "title": "4. Add Services",
+              "tooltip": "Part 4: Create a reusable service to manage hero data."
+            },
+            {
+              "url": "tutorial/toh-pt5",
+              "title": "5. Add In-app Navigation",
+              "tooltip": "Part 5: Add the Angular router and navigate among the views."
+            },
+            {
+              "url": "tutorial/toh-pt6",
+              "title": "6. Get Data from a Server",
+              "tooltip": "Part 6: Use HTTP to retrieve and save hero data."
+            }
           ]
         },
         {
@@ -704,9 +704,45 @@
           "tooltip": "Angular versioning, release, support, and deprecation policies and practices."
         },
         {
-          "url": "guide/updating-to-version-9",
           "title": "Updating to Version 9",
-          "tooltip": "Support for updating your application from version 8 to 9."
+          "tooltip": "Support for updating your application from version 8 to 9.",
+          "children": [
+            {
+              "url": "guide/updating-to-version-9",
+              "title": "General Version 9 update Guide",
+              "tooltip": "Everything you need to know for updating your application from version 8 to 9."
+            },
+            {
+              "url": "guide/migration-renderer",
+              "title": "Renderer to Renderer2 migration",
+              "tooltip": "Migration from the deprecated Renderer API to the newer Renderer2 API."
+            },
+            {
+              "url": "guide/migration-dynamic-flag",
+              "title": "Dynamic queries flag migration",
+              "tooltip": "In @ViewChild() and @ContentChild() version 9, default value kept static: false."
+            },
+            {
+              "url": "guide/migration-injectable",
+              "title": "Migration @Injectable() decorators",
+              "tooltip": "Migration for missing @Injectable() decorators and incomplete provider definitions"
+            },
+            {
+              "url": "guide/migration-localize",
+              "title": "$localize Global Import Migration",
+              "tooltip": "Adds an import statement for @angular/localize to polyfills.ts"
+            },
+            {
+              "url": "guide/migration-module-with-providers",
+              "title": "ModuleWithProviders Migration",
+              "tooltip": "Added a generic type to any ModuleWithProviders usages that are missing the generic"
+            },
+            {
+              "url": "guide/migration-undecorated-classes",
+              "title": "@Directive()/@Component() decorator migration",
+              "tooltip": "@Directive()/@Component() migration to the lastest version."
+            }
+          ]
         },
         {
           "url": "guide/deprecations",
