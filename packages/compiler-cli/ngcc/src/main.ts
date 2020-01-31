@@ -38,11 +38,11 @@ import {EntryPoint, EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FOR
 import {makeEntryPointBundle} from './packages/entry_point_bundle';
 import {Transformer} from './packages/transformer';
 import {PathMappings} from './utils';
+import {cleanOutdatedPackages} from './writing/cleaning/package_cleaner';
 import {FileWriter} from './writing/file_writer';
 import {InPlaceFileWriter} from './writing/in_place_file_writer';
 import {NewEntryPointFileWriter} from './writing/new_entry_point_file_writer';
 import {DirectPackageJsonUpdater, PackageJsonUpdater} from './writing/package_json_updater';
-
 
 /**
  * The options to configure the ngcc compiler for synchronous execution.
@@ -188,9 +188,18 @@ export function mainNgcc(
 
     const absBasePath = absoluteFrom(basePath);
     const config = new NgccConfiguration(fileSystem, dirname(absBasePath));
-    const {entryPoints, graph} = getEntryPoints(
+    let entryPointInfo = getEntryPoints(
         fileSystem, pkgJsonUpdater, logger, dependencyResolver, config, absBasePath,
         absoluteTargetEntryPointPath, pathMappings);
+
+    const cleaned = cleanOutdatedPackages(fileSystem, entryPointInfo.entryPoints);
+    if (cleaned) {
+      // If we had to clean up one or more packages then we must read in the entry-points again.
+      entryPointInfo = getEntryPoints(
+          fileSystem, pkgJsonUpdater, logger, dependencyResolver, config, absBasePath,
+          absoluteTargetEntryPointPath, pathMappings);
+    }
+    const {entryPoints, graph} = entryPointInfo;
 
     const unprocessableEntryPointPaths: string[] = [];
     // The tasks are partially ordered by virtue of the entry-points being partially ordered too.
