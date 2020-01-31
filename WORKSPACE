@@ -40,9 +40,6 @@ node_repositories(
     },
     node_version = "12.14.1",
     package_json = ["//:package.json"],
-    # Label needs to explicitly specify the current workspace name because otherwise Bazel does
-    # not provide all needed data (like "workspace_root") to the repository context.
-    vendored_yarn = "@angular//:third_party/github.com/yarnpkg/yarn/releases/download/v1.21.1",
 )
 
 yarn_install(
