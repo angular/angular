@@ -125,8 +125,6 @@ export type AsyncNgccOptions = Omit<SyncNgccOptions, 'async'>& {async: true};
  */
 export type NgccOptions = AsyncNgccOptions | SyncNgccOptions;
 
-const EMPTY_GRAPH = new DepGraph<EntryPoint>();
-
 /**
  * This is the main entry-point into ngcc (aNGular Compatibility Compiler).
  *
