@@ -11,6 +11,7 @@ export interface Node<DirType = DirectiveType, CmpType = ComponentType> {
   directives: DirType[];
   component: CmpType | null;
   children: Node[];
+  nativeElement?: () => Element;
 }
 
 export enum PropType {
@@ -121,6 +122,8 @@ export interface Events {
   elementDirectivesProperties: (data: DirectivesProperties) => void;
   getNestedProperties: (id: DirectiveID, path: string[]) => void;
   nestedProperties: (id: DirectiveID, data: Properties, path: string[]) => void;
+
+  setSelectedComponent: (id: ElementID) => void;
 
   componentTreeDirty: () => void;
   getLatestComponentExplorerView: (query: ComponentExplorerViewQuery) => void;

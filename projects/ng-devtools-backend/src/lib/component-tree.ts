@@ -69,26 +69,30 @@ export const trimComponents = (roots: ComponentTreeNode[]): ComponentTreeNode[] 
         : null,
       directives: node.directives.map(d => ({ name: d.name })),
       children: trimComponents(node.children),
+      nativeElement: node.nativeElement
     } as ComponentTreeNode;
   });
 };
 
+export const getForestWithNativeElements = (root = document.documentElement): ComponentTreeNode[] =>
+  buildDirectiveForest(root, { element: '__ROOT__', component: null, directives: [], children: [] }, { getDirectives: true, includeNativeElement: true});
+
 export const getDirectiveForest = (root = document.documentElement): ComponentTreeNode[] =>
-  buildDirectiveForest(root, { element: '__ROOT__', component: null, directives: [], children: [] }, true);
+  buildDirectiveForest(root, { element: '__ROOT__', component: null, directives: [], children: [] }, { getDirectives: true});
 
 export const getComponentForest = (root = document.documentElement): ComponentTreeNode[] =>
-  buildDirectiveForest(root, { element: '__ROOT__', component: null, directives: [], children: [] }, false);
+  buildDirectiveForest(root, { element: '__ROOT__', component: null, directives: [], children: [] });
 
 const buildDirectiveForest = (
   node: Element,
   tree: ComponentTreeNode | undefined,
-  getDirectives: boolean
+  options: { [option: string]: boolean } = {}
 ): ComponentTreeNode[] => {
   if (!node) {
     return [tree];
   }
   let dirs = [];
-  if (tree.element !== '__ROOT__' && getDirectives) {
+  if (tree.element !== '__ROOT__' && options.getDirectives) {
     // Need to make sure we're in a component tree
     // otherwise, ng.getDirectives will throw without
     // a root node.
@@ -100,7 +104,7 @@ const buildDirectiveForest = (
   }
   const cmp = ng.getComponent(node);
   if (!cmp && !dirs.length) {
-    Array.from(node.children).forEach(c => buildDirectiveForest(c, tree, getDirectives));
+    Array.from(node.children).forEach(c => buildDirectiveForest(c, tree, options));
     return tree.children;
   }
   const current: ComponentTreeNode = {
@@ -115,6 +119,10 @@ const buildDirectiveForest = (
     children: [],
   };
 
+  if (options.includeNativeElement) {
+    current.nativeElement = () => node;
+  }
+
   if (cmp) {
     current.component = {
       instance: cmp,
@@ -125,17 +133,17 @@ const buildDirectiveForest = (
     current.element = node.tagName.toLowerCase();
   }
   tree.children.push(current);
-  Array.from(node.children).forEach(c => buildDirectiveForest(c, current, getDirectives));
+  Array.from(node.children).forEach(c => buildDirectiveForest(c, current, options));
   return tree.children;
 };
 
 // Based on an ElementID we return a specific component node.
 // If we can't find any, we return null.
-export const queryComponentTree = (id: ElementID): ComponentTreeNode | null => {
+export const queryComponentTree = (id: ElementID, treeGenerator: (root?: HTMLElement) => ComponentTreeNode[] = getDirectiveForest): ComponentTreeNode | null => {
   if (!id.length) {
     return null;
   }
-  let forest = getDirectiveForest();
+  let forest = treeGenerator();
   let node: null | ComponentTreeNode = null;
   for (const i of id) {
     node = forest[i];

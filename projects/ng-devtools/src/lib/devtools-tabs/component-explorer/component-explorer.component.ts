@@ -31,6 +31,7 @@ export class ComponentExplorerComponent implements OnInit {
   handleNodeSelection(node: IndexedNode): void {
     this.currentSelectedElement = node;
     this.messageBus.emit('getElementDirectivesProperties', [node.id]);
+    this.messageBus.emit('setSelectedComponent', [node.id]);
   }
 
   ngOnInit(): void {
