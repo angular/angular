@@ -74,7 +74,6 @@ export const trimComponents = (roots: ComponentTreeNode[]): ComponentTreeNode[] 
         : null,
       directives: node.directives.map(d => ({ name: d.name })),
       children: trimComponents(node.children),
-      nativeElement: node.nativeElement
     } as ComponentTreeNode;
   });
 };
