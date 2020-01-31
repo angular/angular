@@ -44,7 +44,7 @@ export class NgccDirectoryCleaner implements CleaningStrategy {
   canClean(path: AbsoluteFsPath, basename: PathSegment): boolean {
     return basename === NGCC_DIRECTORY && isLocalDirectory(this.fs, path);
   }
-  clean(path: AbsoluteFsPath, _basename: PathSegment): void { this.fs.removeDir(path); }
+  clean(path: AbsoluteFsPath, _basename: PathSegment): void { this.fs.removeDeep(path); }
 }
 
 /**
