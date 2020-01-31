@@ -11,6 +11,7 @@ import '../zone-spec/long-stack-trace';
 import '../zone-spec/proxy';
 import '../zone-spec/sync-test';
 import '../jasmine/jasmine';
+import '../jest/jest';
 import './async-testing';
 import './fake-async';
 import './promise-testing';

@@ -742,6 +742,7 @@ jobs:
              cp dist/bin/packages/zone.js/npm_package/dist/zone-mix.js ./packages/zone.js/test/extra/ &&
              cp dist/bin/packages/zone.js/npm_package/dist/zone-patch-electron.js ./packages/zone.js/test/extra/ &&
              yarn --cwd packages/zone.js electrontest
+      - run: yarn --cwd packages/zone.js jesttest
 
   # Windows jobs
   # Docs: https://circleci.com/docs/2.0/hello-world-windows/
