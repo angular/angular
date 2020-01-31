@@ -15,7 +15,8 @@ import {FileToWrite} from '../rendering/utils';
 import {InPlaceFileWriter} from './in_place_file_writer';
 import {PackageJsonUpdater} from './package_json_updater';
 
-const NGCC_DIRECTORY = '__ivy_ngcc__';
+export const NGCC_DIRECTORY = '__ivy_ngcc__';
+export const NGCC_PROPERTY_EXTENSION = '_ivy_ngcc';
 
 /**
  * This FileWriter creates a copy of the original entry-point, then writes the transformed
@@ -93,7 +94,8 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
             `(${formatProperties.join(', ')}) map to more than one format-path.`);
       }
 
-      update.addChange([`${formatProperty}_ivy_ngcc`], newFormatPath, {before: formatProperty});
+      update.addChange(
+          [`${formatProperty}${NGCC_PROPERTY_EXTENSION}`], newFormatPath, {before: formatProperty});
     }
 
     update.writeChanges(packageJsonPath, packageJson);
