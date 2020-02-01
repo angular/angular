@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstPath, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, Element, ElementAst, HtmlAstPath, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ReferenceAst, TagContentType, TemplateBinding, Text, getHtmlTagDefinition} from '@angular/compiler';
+import {AST, AstPath, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, CompileDirectiveSummary, Element, ElementAst, HtmlAstPath, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ReferenceAst, TagContentType, TemplateBinding, Text, getHtmlTagDefinition} from '@angular/compiler';
 import {$$, $_, isAsciiLetter, isDigit} from '@angular/compiler/src/chars';
 
 import {AstResult} from './common';
@@ -15,7 +15,7 @@ import {getExpressionCompletions} from './expressions';
 import {attributeNames, elementNames, eventNames, propertyNames} from './html_info';
 import {InlineTemplate} from './template';
 import * as ng from './types';
-import {diagnosticInfoFromTemplateInfo, findTemplateAstAt, getPathToNodeAtPosition, getSelectors, hasTemplateReference, inSpan, spanOf} from './utils';
+import {diagnosticInfoFromTemplateInfo, findTemplateAstAt, getPathToNodeAtPosition, getSelectorByName, getSelectors, hasTemplateReference, inSpan, spanOf} from './utils';
 
 const HIDDEN_HTML_ELEMENTS: ReadonlySet<string> =
     new Set(['html', 'script', 'noscript', 'base', 'body', 'title', 'head', 'link']);
@@ -457,14 +457,30 @@ class ExpressionVisitor extends NullTemplateVisitor {
           ast.name, ast.value, ast.sourceSpan.toString(), ast.sourceSpan.start.offset);
       // Find where the cursor is relative to the start of the attribute value.
       const valueRelativePosition = this.position - ast.sourceSpan.start.offset;
-      // Find the template binding that contains the position.
-      const binding = templateBindings.find(b => inSpan(valueRelativePosition, b.span));
 
-      if (!binding) {
+      const key = ast.name.substring(1);  // remove leading asterisk
+
+      // Find the selector - eg ngFor, ngIf, etc
+      const selectorInfo = getSelectors(this.info);
+      const selector = getSelectorByName(key, selectorInfo.selectors);
+
+      if (!selector) {
         return;
       }
 
-      this.microSyntaxInAttributeValue(ast, binding);
+      const directiveMetadata = selectorInfo.map.get(selector) !;
+
+      // Find the template binding that contains the position.
+      const binding = templateBindings.find(b => inSpan(valueRelativePosition, b.span));
+      if (!binding) {
+        // '*ngFor="let item of items; | ;"'
+        //                             ^------ cursor
+        this.addTemplateContextCompletions(directiveMetadata);
+        this.addDirectiveInputCompletions(ast, directiveMetadata);
+        return;
+      }
+
+      this.microSyntaxInAttributeValue(ast, binding, directiveMetadata);
     } else {
       const expressionAst = this.info.expressionParser.parseBinding(
           ast.value, ast.sourceSpan.toString(), ast.sourceSpan.start.offset);
@@ -528,59 +544,104 @@ class ExpressionVisitor extends NullTemplateVisitor {
    *
    * @param attr descriptor for attribute name and value pair
    * @param binding template binding for the expression in the attribute
+   * @param directiveMetadata CompileDirectiveSummary
    */
-  private microSyntaxInAttributeValue(attr: AttrAst, binding: TemplateBinding) {
-    const key = attr.name.substring(1);  // remove leading asterisk
-
-    // Find the selector - eg ngFor, ngIf, etc
-    const selectorInfo = getSelectors(this.info);
-    const selector = selectorInfo.selectors.find(s => {
-      // attributes are listed in (attribute, value) pairs
-      for (let i = 0; i < s.attrs.length; i += 2) {
-        if (s.attrs[i] === key) {
-          return true;
-        }
-      }
-    });
-
-    if (!selector) {
-      return;
-    }
-
+  private microSyntaxInAttributeValue(
+      attr: AttrAst, binding: TemplateBinding, directiveMetadata: CompileDirectiveSummary) {
     const valueRelativePosition = this.position - attr.sourceSpan.start.offset;
 
+    const bindingSource = attr.value.substring(binding.span.start, binding.span.end).trim();
+    const endOfSyntax = valueRelativePosition > binding.span.start + bindingSource.length;
+
     if (binding.keyIsVar) {
-      const equalLocation = attr.value.indexOf('=');
-      if (equalLocation > 0 && valueRelativePosition > equalLocation) {
-        // We are after the '=' in a let clause. The valid values here are the members of the
-        // template reference's type parameter.
-        const directiveMetadata = selectorInfo.map.get(selector);
-        if (directiveMetadata) {
-          const contextTable =
-              this.info.template.query.getTemplateContext(directiveMetadata.type.reference);
-          if (contextTable) {
-            // This adds symbols like $implicit, index, count, etc.
-            this.addSymbolsToCompletions(contextTable.values());
-            return;
+      const equalLocation = bindingSource.indexOf('=');
+      const asLocation = bindingSource.indexOf(' as ');
+      if (equalLocation > 0 && valueRelativePosition > equalLocation + binding.span.start ||
+          (asLocation > 0 && asLocation + binding.span.start >= valueRelativePosition)) {
+        // We are after the '=' or before the 'as' in a let clause. The valid values here are the
+        // members of the directive's template context.
+        this.addTemplateContextCompletions(directiveMetadata);
+      } else if (binding.key && binding.name === '$implicit' && endOfSyntax) {
+        // '*ngFor="let x |;'
+        //                ^------ cursor
+        // We are at the end of the binding span,
+        // so provide template context and directive input property in here.
+        this.addTemplateContextCompletions(directiveMetadata);
+        this.addDirectiveInputCompletions(attr, directiveMetadata);
+        return;
+      }
+    } else {
+      // '*ngFor="let x of item; trackBy| ;"'
+      //                                ^------ cursor
+      // The binding expression should be null,
+      // but the expression here exist and 'binding.expression.span' is {start:0, end: 0}.
+      const expressionExists =
+          binding.expression && binding.expression.span.end > binding.expression.span.start;
+
+      // '*ngFor="let item of items;"'
+      // The 'of' has no span, so get it here.
+      const bindingKeySpan: ng.Span = {
+        start: binding.span.start,
+        end: binding.span.start + binding.key.length - attr.name.length
+      };
+      if (inSpan(valueRelativePosition, bindingKeySpan)) {
+        if (!expressionExists) {
+          // '*ngFor="let item; o| ;"'
+          //                     ^------ cursor
+          // We should provide both template context and directive input here,
+          // maybe the user want to input 'of items' or 'odd as i'.
+          this.addTemplateContextCompletions(directiveMetadata);
+        }
+        // '*ngFor="let item of items; trackBy|: myTrack;"'
+        //                                    ^------ cursor
+        this.addDirectiveInputCompletions(attr, directiveMetadata);
+      } else if (expressionExists) {
+        if (inSpan(valueRelativePosition, binding.expression !.ast.span)) {
+          if (endOfSyntax) {
+            // '*ngFor="let item of items |;"'
+            //                            ^------ cursor
+            // We are at the end of the binding span,
+            // so provide template context and directive input property in here.
+            this.addTemplateContextCompletions(directiveMetadata);
+            this.addDirectiveInputCompletions(attr, directiveMetadata);
+          } else {
+            this.processExpressionCompletions(binding.expression !.ast);
           }
+        }
+      } else {
+        if (attr.value.substring(valueRelativePosition, binding.span.end).indexOf(':') === -1) {
+          // '*ngFor="let item of items; trackBy: |;"'
+          //                                      ^------ cursor
+          this.addSymbolsToCompletions(this.getExpressionScope().values());
         }
       }
     }
+  }
 
-    if (binding.expression && inSpan(valueRelativePosition, binding.expression.ast.span)) {
-      this.processExpressionCompletions(binding.expression.ast);
-      return;
+  // Add the structural directive's template context (e.g. 'ngFor' has 'index', 'odd', etc.) to
+  // completions.
+  private addTemplateContextCompletions(directiveMetadata: CompileDirectiveSummary) {
+    const contextTable =
+        this.info.template.query.getTemplateContext(directiveMetadata.type.reference);
+    if (contextTable) {
+      // This adds symbols like $implicit, index, count, etc.
+      this.addSymbolsToCompletions(contextTable.values());
     }
+  }
 
-    // If the expression is incomplete, for example *ngFor="let x of |"
-    // binding.expression is null. We could still try to provide suggestions
-    // by looking for symbols that are in scope.
-    const KW_OF = ' of ';
-    const ofLocation = attr.value.indexOf(KW_OF);
-    if (ofLocation > 0 && valueRelativePosition >= ofLocation + KW_OF.length) {
-      const expressionAst = this.info.expressionParser.parseBinding(
-          attr.value, attr.sourceSpan.toString(), attr.sourceSpan.start.offset);
-      this.processExpressionCompletions(expressionAst);
+  // Add the structural directive's input property (e.g. 'ngFor' has 'of', 'trackBy', etc.) to
+  // completions.
+  private addDirectiveInputCompletions(attr: AttrAst, directiveMetadata: CompileDirectiveSummary) {
+    const key = attr.name.substring(1);
+    for (const input of Object.values(directiveMetadata.inputs)) {
+      const unprefixedInput = input.substring(key.length);
+      // For 'ngIf', it has 'ngIf', 'ngIfThen', 'ngIfElse', so remove the 'ngIf' here.
+      if (unprefixedInput) {
+        // remove the prefix (e.g. ngForTrackBy -> trackBy).
+        const inputName = unprefixedInput[0].toLowerCase() + unprefixedInput.substring(1);
+        this.completions.set(
+            inputName, {name: inputName, sortText: inputName, kind: ng.CompletionKind.PROPERTY});
+      }
     }
   }
 }
