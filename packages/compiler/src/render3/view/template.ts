@@ -69,13 +69,14 @@ export function prepareEventListenerParameters(
         Supported list of global targets: ${Array.from(GLOBAL_TARGET_RESOLVERS.keys())}.`);
   }
 
+  const eventArgumentName = '$event';
+  const implicitReceiverAccesses = new Set<string>();
   const implicitReceiverExpr = (scope === null || scope.bindingLevel === 0) ?
       o.variable(CONTEXT_NAME) :
       scope.getOrCreateSharedContextVar(0);
   const bindingExpr = convertActionBinding(
       scope, implicitReceiverExpr, handler, 'b', () => error('Unexpected interpolation'),
-      eventAst.handlerSpan);
-
+      eventAst.handlerSpan, implicitReceiverAccesses);
   const statements = [];
   if (scope) {
     statements.push(...scope.restoreViewStatement());
@@ -86,9 +87,13 @@ export function prepareEventListenerParameters(
   const eventName: string =
       type === ParsedEventType.Animation ? prepareSyntheticListenerName(name, phase !) : name;
   const fnName = handlerName && sanitizeIdentifier(handlerName);
-  const fnArgs = [new o.FnParam('$event', o.DYNAMIC_TYPE)];
-  const handlerFn = o.fn(fnArgs, statements, o.INFERRED_TYPE, null, fnName);
+  const fnArgs: o.FnParam[] = [];
 
+  if (implicitReceiverAccesses.has(eventArgumentName)) {
+    fnArgs.push(new o.FnParam(eventArgumentName, o.DYNAMIC_TYPE));
+  }
+
+  const handlerFn = o.fn(fnArgs, statements, o.INFERRED_TYPE, null, fnName);
   const params: o.Expression[] = [o.literal(eventName), handlerFn];
   if (target) {
     params.push(
