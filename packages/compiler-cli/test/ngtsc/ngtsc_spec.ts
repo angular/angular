@@ -2212,7 +2212,7 @@ runInEachFileSystem(os => {
       const hostBindingsFn = `
       hostBindings: function FooCmp_HostBindings(rf, ctx) {
         if (rf & 1) {
-          i0.ɵɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick(); })("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onDocumentClick($event.target); }, false, i0.ɵɵresolveDocument)("scroll", function FooCmp_scroll_HostBindingHandler($event) { return ctx.onWindowScroll(); }, false, i0.ɵɵresolveWindow);
+          i0.ɵɵlistener("click", function FooCmp_click_HostBindingHandler() { return ctx.onClick(); })("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onDocumentClick($event.target); }, false, i0.ɵɵresolveDocument)("scroll", function FooCmp_scroll_HostBindingHandler() { return ctx.onWindowScroll(); }, false, i0.ɵɵresolveWindow);
         }
       }
     `;
@@ -2343,7 +2343,7 @@ runInEachFileSystem(os => {
       hostVars: 4,
       hostBindings: function FooCmp_HostBindings(rf, ctx) {
         if (rf & 1) {
-          i0.ɵɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick($event); })("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onBodyClick($event); }, false, i0.ɵɵresolveBody)("change", function FooCmp_change_HostBindingHandler($event) { return ctx.onChange(ctx.arg1, ctx.arg2, ctx.arg3); });
+          i0.ɵɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick($event); })("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onBodyClick($event); }, false, i0.ɵɵresolveBody)("change", function FooCmp_change_HostBindingHandler() { return ctx.onChange(ctx.arg1, ctx.arg2, ctx.arg3); });
         }
         if (rf & 2) {
           i0.ɵɵhostProperty("prop", ctx.bar);
@@ -2411,7 +2411,7 @@ runInEachFileSystem(os => {
           selector: '[test]',
         })
         class Dir {
-          @HostListener('change', ['arg'])
+          @HostListener('change', ['$event', 'arg'])
           onChange(event: any, arg: any): void {}
         }
     `);
@@ -2421,7 +2421,7 @@ runInEachFileSystem(os => {
       const hostBindingsFn = `
       hostBindings: function Dir_HostBindings(rf, ctx) {
         if (rf & 1) {
-          i0.ɵɵlistener("change", function Dir_change_HostBindingHandler($event) { return ctx.onChange(ctx.arg); });
+          i0.ɵɵlistener("change", function Dir_change_HostBindingHandler($event) { return ctx.onChange($event, ctx.arg); });
         }
       }
     `;
