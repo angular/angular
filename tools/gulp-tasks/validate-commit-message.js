@@ -22,6 +22,9 @@ module.exports = (gulp) => async() => {
     if (process.env['CI'] === 'true') {
       // Validation of commit messages on CI
       if (process.env['CI_PULL_REQUEST'] === 'false') {
+        // Skip commit message validation on CI for non-PR branches as we are not testing new
+        // unreviewed commits.  By enforcing correctness on the incoming changes in the PR
+        // branches, we are able to render this check unnecessary on non-PR branches.
         console.info(
             `Since valid commit messages are enforced by PR linting on CI,\n` +
             `we do not need to validate commit messages on CI runs on upstream branches.\n\n` +
