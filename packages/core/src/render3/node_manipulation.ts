@@ -130,6 +130,7 @@ export function createTextNode(value: string, renderer: Renderer3): RText {
  * to propagate deeply into the nested containers to remove all elements in the
  * views beneath it.
  *
+ * @param tView The current `TView'
  * @param lView The view from which elements should be added or removed
  * @param insertMode Whether or not elements should be added (if false, removing)
  * @param beforeNode The node before which elements should be added, if insert mode
@@ -152,6 +153,7 @@ export function addRemoveViewFromContainer(
 /**
  * Detach a `LView` from the DOM by detaching its nodes.
  *
+ * @param tView The current `TView'
  * @param lView the `LView` to be detached.
  */
 export function renderDetachView(tView: TView, lView: LView) {
@@ -214,6 +216,7 @@ export function destroyViewTree(rootView: LView): void {
  * root node of another view (in that case, the view's elements will be added when
  * the container's parent view is added later).
  *
+ * @param tView The current `TView'
  * @param lView The view to insert
  * @param lContainer The container into which the view should be inserted
  * @param index Which index in the container to insert the child view into
@@ -354,6 +357,7 @@ export function removeView(lContainer: LContainer, removeIndex: number) {
  * A standalone function which destroys an LView,
  * conducting cleanup (e.g. removing listeners, calling onDestroys).
  *
+ * @param tView The current `TView'
  * @param lView The view to be destroyed.
  */
 export function destroyLView(tView: TView, lView: LView) {
@@ -648,18 +652,19 @@ function getNativeAnchorNode(parentTNode: TNode, lView: LView): RNode|null {
  *
  * The element insertion might be delayed {@link canInsertNativeNode}.
  *
+ * @param tView The current `TView'
+ * @param lView The current LView
  * @param childEl The native child (or children) that should be appended
  * @param childTNode The TNode of the child element
- * @param currentView The current LView
  * @returns Whether or not the child was appended
  */
 export function appendChild(
-    tView: TView, currentView: LView, childEl: RNode | RNode[], childTNode: TNode): void {
-  const renderParent = getRenderParent(tView, childTNode, currentView);
+    tView: TView, lView: LView, childEl: RNode | RNode[], childTNode: TNode): void {
+  const renderParent = getRenderParent(tView, childTNode, lView);
   if (renderParent != null) {
-    const renderer = currentView[RENDERER];
-    const parentTNode: TNode = childTNode.parent || currentView[T_HOST] !;
-    const anchorNode = getNativeAnchorNode(parentTNode, currentView);
+    const renderer = lView[RENDERER];
+    const parentTNode: TNode = childTNode.parent || lView[T_HOST] !;
+    const anchorNode = getNativeAnchorNode(parentTNode, lView);
     if (Array.isArray(childEl)) {
       for (let i = 0; i < childEl.length; i++) {
         nativeAppendOrInsertBefore(renderer, renderParent, childEl[i], anchorNode);
@@ -800,9 +805,10 @@ function applyNodes(
  * As you can see this is a very recursive problem. Yes recursion is not most efficient but the
  * code is complicated enough that trying to implemented with recursion becomes unmaintainable.
  *
+ * @param tView The current `TView'
+ * @param lView The LView which needs to be inserted, detached, destroyed.
  * @param renderer Renderer to use
  * @param action action to perform (insert, detach, destroy)
- * @param lView The LView which needs to be inserted, detached, destroyed.
  * @param renderParent parent DOM element for insertion/removal.
  * @param beforeNode Before which node the insertions should happen.
  */

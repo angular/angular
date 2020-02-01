@@ -34,8 +34,7 @@ export function ɵɵattribute(
     const nodeIndex = getSelectedIndex();
     const tView = getTView();
     elementAttributeInternal(nodeIndex, name, value, tView, lView, sanitizer, namespace);
-    ngDevMode &&
-        storePropertyBindingMetadata(getTView().data, nodeIndex, 'attr.' + name, bindingIndex);
+    ngDevMode && storePropertyBindingMetadata(tView.data, nodeIndex, 'attr.' + name, bindingIndex);
   }
   return ɵɵattribute;
 }

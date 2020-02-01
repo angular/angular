@@ -174,7 +174,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       const componentView = createRootComponentView(
           hostRNode, this.componentDef, rootLView, rendererFactory, hostRenderer, addVersion, null);
 
-      tElementNode = getTNode(0, rootLView[TVIEW]) as TElementNode;
+      tElementNode = getTNode(rootLView[TVIEW], 0) as TElementNode;
 
       if (projectableNodes) {
         // projectable nodes can be passed as array of arrays or an array of iterables (ngUpgrade

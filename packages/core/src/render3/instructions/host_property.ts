@@ -33,7 +33,7 @@ export function ɵɵhostProperty<T>(
     const nodeIndex = getSelectedIndex();
     const tView = getTView();
     elementPropertyInternal(tView, lView, nodeIndex, propName, value, sanitizer, true);
-    ngDevMode && storePropertyBindingMetadata(getTView().data, nodeIndex, propName, bindingIndex);
+    ngDevMode && storePropertyBindingMetadata(tView.data, nodeIndex, propName, bindingIndex);
   }
   return ɵɵhostProperty;
 }

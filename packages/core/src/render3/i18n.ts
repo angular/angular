@@ -688,7 +688,7 @@ function i18nEndFirstPass(tView: TView, lView: LView) {
       removeNode(tView, lView, index, /* markAsDetached */ true);
     }
     // Check if an element has any local refs and skip them
-    const tNode = getTNode(index, tView);
+    const tNode = getTNode(tView, index);
     if (tNode && (tNode.type === TNodeType.Element || tNode.type === TNodeType.ElementContainer) &&
         tNode.localNames !== null) {
       // Divide by 2 to get the number of local refs,
@@ -747,7 +747,7 @@ function readCreateOpCodes(
             // top-level node and we should use the host node instead
             destinationTNode = lView[T_HOST] !;
           } else {
-            destinationTNode = getTNode(destinationNodeIndex, tView);
+            destinationTNode = getTNode(tView, destinationNodeIndex);
           }
           ngDevMode &&
               assertDefined(
@@ -760,14 +760,14 @@ function readCreateOpCodes(
           const nodeIndex = opCode >>> I18nMutateOpCode.SHIFT_REF;
           visitedNodes.push(nodeIndex);
           previousTNode = currentTNode;
-          currentTNode = getTNode(nodeIndex, tView);
+          currentTNode = getTNode(tView, nodeIndex);
           if (currentTNode) {
             setPreviousOrParentTNode(currentTNode, currentTNode.type === TNodeType.Element);
           }
           break;
         case I18nMutateOpCode.ElementEnd:
           const elementIndex = opCode >>> I18nMutateOpCode.SHIFT_REF;
-          previousTNode = currentTNode = getTNode(elementIndex, tView);
+          previousTNode = currentTNode = getTNode(tView, elementIndex);
           setPreviousOrParentTNode(currentTNode, false);
           break;
         case I18nMutateOpCode.Attr:
@@ -861,7 +861,7 @@ function readUpdateOpCodes(
               case I18nUpdateOpCode.IcuSwitch:
                 tIcuIndex = updateOpCodes[++j] as number;
                 tIcu = icus ![tIcuIndex];
-                icuTNode = getTNode(nodeIndex, tView) as TIcuContainerNode;
+                icuTNode = getTNode(tView, nodeIndex) as TIcuContainerNode;
                 // If there is an active case, delete the old nodes
                 if (icuTNode.activeCaseIndex !== null) {
                   const removeCodes = tIcu.remove[icuTNode.activeCaseIndex];
@@ -879,7 +879,7 @@ function readUpdateOpCodes(
                         const nestedIcuNodeIndex =
                             removeCodes[k + 1] as number >>> I18nMutateOpCode.SHIFT_REF;
                         const nestedIcuTNode =
-                            getTNode(nestedIcuNodeIndex, tView) as TIcuContainerNode;
+                            getTNode(tView, nestedIcuNodeIndex) as TIcuContainerNode;
                         const activeIndex = nestedIcuTNode.activeCaseIndex;
                         if (activeIndex !== null) {
                           const nestedIcuTIndex = removeOpCode >>> I18nMutateOpCode.SHIFT_REF;
@@ -903,7 +903,7 @@ function readUpdateOpCodes(
               case I18nUpdateOpCode.IcuUpdate:
                 tIcuIndex = updateOpCodes[++j] as number;
                 tIcu = icus ![tIcuIndex];
-                icuTNode = getTNode(nodeIndex, tView) as TIcuContainerNode;
+                icuTNode = getTNode(tView, nodeIndex) as TIcuContainerNode;
                 if (icuTNode.activeCaseIndex !== null) {
                   readUpdateOpCodes(
                       tIcu.update[icuTNode.activeCaseIndex], icus, bindingsStartIndex, changeMask,
@@ -920,7 +920,7 @@ function readUpdateOpCodes(
 }
 
 function removeNode(tView: TView, lView: LView, index: number, markAsDetached: boolean) {
-  const removedPhTNode = getTNode(index, tView);
+  const removedPhTNode = getTNode(tView, index);
   const removedPhRNode = getNativeByIndex(index, lView);
   if (removedPhRNode) {
     nativeRemoveNode(lView[RENDERER], removedPhRNode);
@@ -1014,7 +1014,7 @@ function i18nAttributesFirstPass(lView: LView, tView: TView, index: number, valu
                 generateBindingUpdateOpCodes(value, previousElementIndex, attrName), updateOpCodes);
           }
         } else {
-          const tNode = getTNode(previousElementIndex, tView);
+          const tNode = getTNode(tView, previousElementIndex);
           // Set attributes for Elements only, for other types (like ElementContainer),
           // only set inputs below
           if (tNode.type === TNodeType.Element) {

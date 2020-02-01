@@ -46,7 +46,7 @@ export function ɵɵpipe(index: number, pipeName: string): any {
 
   const pipeFactory = pipeDef.factory || (pipeDef.factory = getFactoryDef(pipeDef.type, true));
   const pipeInstance = pipeFactory();
-  store(index, pipeInstance);
+  store(tView, getLView(), index, pipeInstance);
   return pipeInstance;
 }
 

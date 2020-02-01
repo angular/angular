@@ -289,10 +289,11 @@ export function assignTViewNodeToLView(
  * i18nApply() or ComponentFactory.create), we need to adjust the blueprint for future
  * template passes.
  *
- * @param view The LView containing the blueprint to adjust
+ * @param tView `TView` associated with `LView`
+ * @param view The `LView` containing the blueprint to adjust
  * @param numSlotsToAlloc The number of slots to alloc in the LView, should be >0
  */
-export function allocExpando(tView: TView, view: LView, numSlotsToAlloc: number) {
+export function allocExpando(tView: TView, lView: LView, numSlotsToAlloc: number) {
   ngDevMode && assertGreaterThan(
                    numSlotsToAlloc, 0, 'The number of slots to alloc should be greater than 0');
   if (numSlotsToAlloc > 0) {
@@ -300,7 +301,7 @@ export function allocExpando(tView: TView, view: LView, numSlotsToAlloc: number)
       for (let i = 0; i < numSlotsToAlloc; i++) {
         tView.blueprint.push(null);
         tView.data.push(null);
-        view.push(null);
+        lView.push(null);
       }
 
       // We should only increment the expando start index if there aren't already directives
@@ -762,7 +763,7 @@ export function storeCleanupWithContext(
   const lCleanup = getLCleanup(lView);
   lCleanup.push(context);
 
-  if (getTView().firstCreatePass) {
+  if (tView.firstCreatePass) {
     getTViewCleanup(tView).push(cleanupFn, lCleanup.length - 1);
   }
 }
@@ -778,7 +779,7 @@ export function storeCleanupWithContext(
 export function storeCleanupFn(tView: TView, lView: LView, cleanupFn: Function): void {
   getLCleanup(lView).push(cleanupFn);
 
-  if (getTView().firstCreatePass) {
+  if (tView.firstCreatePass) {
     getTViewCleanup(tView).push(lView[CLEANUP] !.length - 1, null);
   }
 }
@@ -945,7 +946,7 @@ export function elementPropertyInternal<T>(
     loadRendererFn?: ((tNode: TNode, lView: LView) => Renderer3) | null): void {
   ngDevMode && assertNotSame(value, NO_CHANGE as any, 'Incoming value should never be NO_CHANGE.');
   const element = getNativeByIndex(index, lView) as RElement | RComment;
-  const tNode = getTNode(index, tView);
+  const tNode = getTNode(tView, index);
   let inputData = tNode.inputs;
   let dataValue: PropertyAliasValue|undefined;
   if (!nativeOnly && inputData != null && (dataValue = inputData[propName])) {
@@ -1449,7 +1450,7 @@ export function elementAttributeInternal(
                                      element.removeAttribute(name);
   } else {
     ngDevMode && ngDevMode.rendererSetAttribute++;
-    const tNode = getTNode(index, tView);
+    const tNode = getTNode(tView, index);
     const strValue =
         sanitizer == null ? renderStringify(value) : sanitizer(value, tNode.tagName || '', name);
 
@@ -1702,6 +1703,7 @@ function renderComponent(hostLView: LView, componentHostIdx: number) {
  * Note that embedded views inside ngFor loops will never be out of sync because these views
  * are processed as soon as they are created.
  *
+ * @param tView The current TView
  * @param lView The view to sync
  */
 function syncViewWithBlueprint(tView: TView, lView: LView) {
@@ -1946,9 +1948,10 @@ export function handleError(lView: LView, error: any): void {
 /**
  * Set the inputs of directives at the current node to corresponding value.
  *
+ * @param tView The current TView
  * @param lView the `LView` which contains the directives.
  * @param inputs mapping between the public "input" name and privately-known,
- * possibly minified, property names to write to.
+ *        possibly minified, property names to write to.
  * @param value Value to set.
  */
 export function setInputsForProperty(

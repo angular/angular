@@ -36,7 +36,7 @@ function elementStartFirstCreatePass(
 
   const hasDirectives =
       resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
-  ngDevMode && warnAboutUnknownElement(lView, native, tNode, hasDirectives);
+  ngDevMode && warnAboutUnknownElement(tView, lView, native, tNode, hasDirectives);
 
   if (tNode.mergedAttrs !== null) {
     computeStaticStyling(tNode, tNode.mergedAttrs);
@@ -172,8 +172,7 @@ export function ɵɵelement(
 }
 
 function warnAboutUnknownElement(
-    lView: LView, element: RElement, tNode: TNode, hasDirectives: boolean): void {
-  const tView = lView[TVIEW];
+    tView: TView, lView: LView, element: RElement, tNode: TNode, hasDirectives: boolean): void {
   const schemas = tView.schemas;
 
   // If `schemas` is set to `null`, that's an indication that this Component was compiled in AOT

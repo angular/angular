@@ -387,7 +387,7 @@ export function getDebugNode(element: Element): DebugNode|null {
     // this means that value in the lView is a component with its own
     // data. In this situation the TNode is not accessed at the same spot.
     const tNode = isLView(valueInLView) ? (valueInLView[T_HOST] as TNode) :
-                                          getTNode(nodeIndex - HEADER_OFFSET, lView[TVIEW]);
+                                          getTNode(lView[TVIEW], nodeIndex - HEADER_OFFSET);
     debugNode = buildDebugNode(tNode, lView, nodeIndex);
   }
 

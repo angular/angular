@@ -117,7 +117,7 @@ export function getNativeByTNodeOrNull(tNode: TNode, lView: LView): RNode|null {
 }
 
 
-export function getTNode(index: number, tView: TView): TNode {
+export function getTNode(tView: TView, index: number): TNode {
   ngDevMode && assertGreaterThan(index, -1, 'wrong index for TNode');
   ngDevMode && assertLessThan(index, tView.data.length, 'wrong index for TNode');
   return tView.data[index + HEADER_OFFSET] as TNode;

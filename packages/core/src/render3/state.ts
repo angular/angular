@@ -238,9 +238,6 @@ export function ɵɵdisableBindings(): void {
 
 /**
  * Return the current `LView`.
- *
- * The return value can be `null` if the method is called outside of template. This can happen if
- * directive is instantiated by module injector (rather than by node injector.)
  */
 export function getLView(): LView {
   return instructionState.lFrame.lView;
@@ -248,9 +245,6 @@ export function getLView(): LView {
 
 /**
  * Return the current `TView`.
- *
- * The return value can be `null` if the method is called outside of template. This can happen if
- * directive is instantiated by module injector (rather than by node injector.)
  */
 export function getTView(): TView {
   return instructionState.lFrame.tView;
