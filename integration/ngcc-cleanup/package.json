@@ -1,0 +1,52 @@
+{
+  "name": "cli-hello-world",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build --prod",
+    "//pretest": "repro from #35095 which ngcc-es the project with an older version of the compiler before ngcc-ing with the latest version",
+    "pretest": "ng version && yarn ~~downgrade-to-9.0.0-rc.12 && yarn build && yarn ~~rollback-downgrade",
+    "test": "ng test && yarn e2e --configuration=ci && yarn e2e --configuration=ci-production",
+    "lint": "ng lint",
+    "e2e": "ng e2e",
+    "postinstall": "webdriver-manager update --gecko=false --standalone=false $CI_CHROMEDRIVER_VERSION_ARG && ngcc --properties es2015 --create-ivy-entry-points",
+    "~~downgrade-to-9.0.0-rc.12": "yarn add @angular/{animations,common,compiler,core,forms,platform-browser,platform-browser-dynamic,router,compiler-cli,language-service}@9.0.0-rc.12",
+    "~~rollback-downgrade": "git checkout ./package.json ./yarn.lock && yarn install && ng version"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "file:../../dist/packages-dist/animations",
+    "@angular/common": "file:../../dist/packages-dist/common",
+    "@angular/compiler": "file:../../dist/packages-dist/compiler",
+    "@angular/core": "file:../../dist/packages-dist/core",
+    "@angular/forms": "file:../../dist/packages-dist/forms",
+    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
+    "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
+    "@angular/router": "file:../../dist/packages-dist/router",
+    "rxjs": "file:../../node_modules/rxjs",
+    "tslib": "file:../../node_modules/tslib",
+    "zone.js": "file:../../dist/zone.js-dist/zone.js"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "file:../../node_modules/@angular-devkit/build-angular",
+    "@angular/cli": "file:../../node_modules/@angular/cli",
+    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
+    "@angular/language-service": "file:../../dist/packages-dist/language-service",
+    "@types/jasmine": "3.4.6",
+    "@types/jasminewd2": "2.0.8",
+    "@types/node": "file:../../node_modules/@types/node",
+    "codelyzer": "5.2.0",
+    "jasmine-core": "3.5.0",
+    "jasmine-spec-reporter": "4.2.1",
+    "karma": "4.3.0",
+    "karma-chrome-launcher": "3.1.0",
+    "karma-coverage-istanbul-reporter": "2.1.0",
+    "karma-jasmine": "2.0.1",
+    "karma-jasmine-html-reporter": "1.4.2",
+    "protractor": "file:../../node_modules/protractor",
+    "ts-node": "8.3.0",
+    "tslint": "5.18.0",
+    "typescript": "file:../../node_modules/typescript"
+  }
+}
