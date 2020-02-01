@@ -4,6 +4,7 @@ import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 
 import { AppComponent } from './app.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 // adding this code to detect issues like https://github.com/angular/angular-cli/issues/10322
 registerLocaleData(localeFr);
@@ -13,7 +14,8 @@ registerLocaleData(localeFr);
     AppComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    BrowserAnimationsModule
   ],
   providers: [{ provide: LOCALE_ID, useValue: 'fr' }],
   bootstrap: [AppComponent]

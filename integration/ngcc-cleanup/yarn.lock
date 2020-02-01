@@ -115,10 +115,15 @@
     ora "4.0.2"
     rxjs "6.5.3"
 
-"@angular/animations@9.0.0-rc.12":
-  version "9.0.0-rc.12"
-  resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-9.0.0-rc.12.tgz#13e4c594f71aac5c3457342cea0f363b048cc4e6"
-  integrity sha512-fsTxlCptaVlwGD8B2H3ke2bRLKzSDCMwEWxf9O/rjQhUSaIVRMGMTTy8rW8OvxF2ysZatU+ademROxBaUsO/sw==
+"@angular/animations@file:../../dist/packages-dist/animations":
+  version "9.0.0-rc.1"
+
+"@angular/cdk@~9.0.0-rc.9":
+  version "9.0.0-rc.9"
+  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-9.0.0-rc.9.tgz#73392d3b6748aa03a89fe937e67adf15b3eeb88f"
+  integrity sha512-Ly1pZLjtOtDKW3pyiVHjRqzK5pzhyrCTb11Po1FTHWJ8usDRA7XuLYZZ9D/VVOxmiWoExkFJfnJbIEXqVgqSAA==
+  optionalDependencies:
+    parse5 "^5.0.0"
 
 "@angular/cli@file:../../node_modules/@angular/cli":
   version "9.0.0-rc.11"
@@ -144,20 +149,17 @@
     universal-analytics "^0.4.20"
     uuid "^3.3.2"
 
-"@angular/common@9.0.0-rc.12":
-  version "9.0.0-rc.12"
-  resolved "https://registry.yarnpkg.com/@angular/common/-/common-9.0.0-rc.12.tgz#21fcbc7bc9ce94cbdedc0f5aa9713c35311afba8"
-  integrity sha512-bSNwXjaSH52slnTVqNEAXz0H+VCBLjc5Qzq4e0Urfr4qacE6kKD0dYnXZH/iGeaZHL/kw0nl8c0Pe1WCzoF3kg==
+"@angular/common@file:../../dist/packages-dist/common":
+  version "9.0.0-rc.1"
 
-"@angular/compiler-cli@9.0.0-rc.12":
-  version "9.0.0-rc.12"
-  resolved "https://registry.yarnpkg.com/@angular/compiler-cli/-/compiler-cli-9.0.0-rc.12.tgz#11787006ba26a8aaef2ad3e09f0b94047ab6b1b8"
-  integrity sha512-vA/UpUWttJALXnmE+eJ0x2LAi+Gm5P3l1uj0gdoK14OyARUWhm+Oc0Dj8e5mXpy/pIVrsL4S/FL4tsNUSGynBQ==
+"@angular/compiler-cli@file:../../dist/packages-dist/compiler-cli":
+  version "9.0.0-rc.1"
   dependencies:
     canonical-path "1.0.0"
     chokidar "^3.0.0"
     convert-source-map "^1.5.1"
     dependency-graph "^0.7.2"
+    fs-extra "4.0.2"
     magic-string "^0.25.0"
     minimist "^1.2.0"
     reflect-metadata "^0.1.2"
@@ -165,40 +167,31 @@
     source-map "^0.6.1"
     yargs "13.1.0"
 
-"@angular/compiler@9.0.0-rc.12":
-  version "9.0.0-rc.12"
-  resolved "https://registry.yarnpkg.com/@angular/compiler/-/compiler-9.0.0-rc.12.tgz#d2a2f3b180daf697316b4bfcd8a838e36b6760da"
-  integrity sha512-mX9VavzWr1b4URP/M287I73ibgL+T+eU7xZg56FEvUYa7km9W6jmM2xomvaumPlwGtZfw2HKPCgSimOIA6eP8Q==
+"@angular/compiler@file:../../dist/packages-dist/compiler":
+  version "9.0.0-rc.1"
 
-"@angular/core@9.0.0-rc.12":
-  version "9.0.0-rc.12"
-  resolved "https://registry.yarnpkg.com/@angular/core/-/core-9.0.0-rc.12.tgz#c0eb402910ff4c6f50eeb8e9a539c0c90aff36b8"
-  integrity sha512-MRPk98VHIJqpHoeHBtYtXGoGs+T1DpRAUpSzl7mprdKgfBKoFhtgsrNNj3JSD1XYLPamSH7vrKYBsP+E0xu88Q==
+"@angular/core@file:../../dist/packages-dist/core":
+  version "9.0.0-rc.1"
 
-"@angular/forms@9.0.0-rc.12":
-  version "9.0.0-rc.12"
-  resolved "https://registry.yarnpkg.com/@angular/forms/-/forms-9.0.0-rc.12.tgz#004b4597970784e19bcde8433f23a999a75127c2"
-  integrity sha512-n4ch/2NJf4MS+oybQ77tQFMS6/3Gjx8PqzFxRf0rXuNEKbs/5Nd+KxKuPV5jbKJTFDA+PLXdmq0Kb+l2h/LAMA==
+"@angular/forms@file:../../dist/packages-dist/forms":
+  version "9.0.0-rc.1"
 
-"@angular/language-service@9.0.0-rc.12":
-  version "9.0.0-rc.12"
-  resolved "https://registry.yarnpkg.com/@angular/language-service/-/language-service-9.0.0-rc.12.tgz#73722a5f676047e47704eee7d7119a0c2539df6c"
-  integrity sha512-acqLnmL4/AcpSp09u/PUzMQ6KNlusrBzOA3AKGuc4j75/eB2AWUwb7iTR9VFxdY20quH2G1JiG5mBMxeHxGSLg==
+"@angular/language-service@file:../../dist/packages-dist/language-service":
+  version "9.0.0-rc.1"
 
-"@angular/platform-browser-dynamic@9.0.0-rc.12":
-  version "9.0.0-rc.12"
-  resolved "https://registry.yarnpkg.com/@angular/platform-browser-dynamic/-/platform-browser-dynamic-9.0.0-rc.12.tgz#44e6ec249daa3f97ff366f3110996c598d2a6fe4"
-  integrity sha512-dI9fjeXQUvY/MQpMvsbx0nyGL0VPPtad0xUH/VqN4qzuYTGs7U6wtCxcjfAM4lNDdZ2rZ4hpm6db6tJJ7mo42w==
+"@angular/material@9.0.0-rc.9":
+  version "9.0.0-rc.9"
+  resolved "https://registry.yarnpkg.com/@angular/material/-/material-9.0.0-rc.9.tgz#b90a154adc981a8ff8860266b233a48e3235341f"
+  integrity sha512-BOLPNW2xuy34VB87VelXXe3Tv8YzUvrLWMjXi+3/31NTy8LWBZsBFVePdGBAw6yHacjwhLiHulK3TeR2mIqrUA==
 
-"@angular/platform-browser@9.0.0-rc.12":
-  version "9.0.0-rc.12"
-  resolved "https://registry.yarnpkg.com/@angular/platform-browser/-/platform-browser-9.0.0-rc.12.tgz#dae2ba271da9e77398d0ff503a1397219b678268"
-  integrity sha512-Un+p/8tDp4GlfRhc+uUlsT4pfDRWJk3ndQ+MmpTWV0FFQUnomtRiips/rVkFUbghDzKLHnStmfHG+qyrSjknCw==
+"@angular/platform-browser-dynamic@file:../../dist/packages-dist/platform-browser-dynamic":
+  version "9.0.0-rc.1"
 
-"@angular/router@9.0.0-rc.12":
-  version "9.0.0-rc.12"
-  resolved "https://registry.yarnpkg.com/@angular/router/-/router-9.0.0-rc.12.tgz#62b09436ca331a9171f9df34fec34e2f8a055330"
-  integrity sha512-8rJm/NKiU6Rpj+KtY9NedJNFJgN85r107y5LtClCJ3QMzOuoG5y6UYaba7jZfKFzOMiK11yQmKj63LMNz4wEjQ==
+"@angular/platform-browser@file:../../dist/packages-dist/platform-browser":
+  version "9.0.0-rc.1"
+
+"@angular/router@file:../../dist/packages-dist/router":
+  version "9.0.0-rc.1"
 
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.5.5":
   version "7.5.5"
@@ -4011,6 +4004,15 @@ from2@^2.1.0:
     inherits "^2.0.1"
     readable-stream "^2.0.0"
 
+fs-extra@4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-4.0.2.tgz#f91704c53d1b461f893452b0c307d9997647ab6b"
+  integrity sha1-+RcExT0bRh+JNFKwwwfZmXZHq2s=
+  dependencies:
+    graceful-fs "^4.1.2"
+    jsonfile "^4.0.0"
+    universalify "^0.1.0"
+
 fs-extra@^7.0.1:
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-7.0.1.tgz#4f189c44aa123b895f722804f55ea23eadc348e9"
@@ -6807,6 +6809,11 @@ parse5@4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/parse5/-/parse5-4.0.0.tgz#6d78656e3da8d78b4ec0b906f7c08ef1dfe3f608"
   integrity sha512-VrZ7eOd3T1Fk4XWNXMgiGBK/z0MG48BWG2uQNU4I72fkQuKUTZpl+u9k+CxEG0twMVzSmXEEz12z5Fnw1jIQFA==
+
+parse5@^5.0.0:
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/parse5/-/parse5-5.1.1.tgz#f68e4e5ba1852ac2cadc00f4555fff6c2abb6178"
+  integrity sha512-ugq4DFI0Ptb+WWjAdOK16+u/nHfiIrcE+sh8kZMaM0WllQKLI9rOUq6c2b7cwPkXdzfQESqvoqK6ug7U/Yyzug==
 
 parseqs@0.0.5:
   version "0.0.5"
