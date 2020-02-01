@@ -6,7 +6,7 @@
     "start": "ng serve",
     "build": "ng build --prod",
     "//pretest": "repro from #35095 which ngcc-es the project with an older version of the compiler before ngcc-ing with the latest version",
-    "pretest": "ng version && yarn ~~downgrade-to-9.0.0-rc.12 && yarn build && yarn ~~rollback-downgrade",
+    "pretest": "ng version && yarn ~~downgrade-to-9.0.0-rc.12 && yarn ng build && yarn ~~rollback-downgrade",
     "test": "ng test && yarn e2e --configuration=ci && yarn e2e --configuration=ci-production",
     "lint": "ng lint",
     "e2e": "ng e2e",
