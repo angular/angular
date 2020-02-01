@@ -54,7 +54,7 @@ describe('compiler compliance: template', () => {
         if (rf & 1) {
           const $s$ = $i0$.ɵɵgetCurrentView();
           $i0$.ɵɵelementStart(0, "div", 2);
-          $i0$.ɵɵlistener("click", function MyComponent_ul_0_li_1_div_1_Template_div_click_0_listener($event){
+          $i0$.ɵɵlistener("click", function MyComponent_ul_0_li_1_div_1_Template_div_click_0_listener(){
             $i0$.ɵɵrestoreView($s$);
             const $inner$ = ctx.$implicit;
             const $middle$ = $i0$.ɵɵnextContext().$implicit;
@@ -146,7 +146,7 @@ describe('compiler compliance: template', () => {
           if (rf & 1) {
             const $s$ = $r3$.ɵɵgetCurrentView();
             $r3$.ɵɵelementStart(0, "div", 1);
-            $r3$.ɵɵlistener("click", function MyComponent_div_0_Template_div_click_0_listener($event) {
+            $r3$.ɵɵlistener("click", function MyComponent_div_0_Template_div_click_0_listener() {
               $r3$.ɵɵrestoreView($s$);
               const $d$ = ctx.$implicit;
               const $i$ = ctx.index;
@@ -201,7 +201,7 @@ describe('compiler compliance: template', () => {
         if (rf & 1) {
           const $_r2$ = i0.ɵɵgetCurrentView();
           $r3$.ɵɵelementStart(0, "div", 2);
-          $r3$.ɵɵlistener("click", function MyComponent_div_0_Template_div_click_0_listener($event) {
+          $r3$.ɵɵlistener("click", function MyComponent_div_0_Template_div_click_0_listener() {
             i0.ɵɵrestoreView($_r2$);
             const $ctx_r1$ = i0.ɵɵnextContext();
             return $ctx_r1$.greet($ctx_r1$);
