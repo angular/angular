@@ -93,6 +93,30 @@ def ts_devserver(**kwargs):
         **kwargs
     )
 
+# Add missing @npm deps that correspond to @types/foo and @types/foo__bar.
+# These deps are not strictly needed for the ts_library target but they may
+# be needed at runtime by any downstream targets that execute the js output.
+def _missing_npm_deps(name, deps):
+    missing_deps = []
+    ignore_pkg_names = [
+        "@npm//@types/node",
+        "@npm//@types/events",
+        "@npm//@types/jasminewd2",
+    ]
+    for dep in deps:
+        if dep not in ignore_pkg_names:
+            if dep.startswith("@npm//@types/"):
+                pkg_name = dep[len("@npm//@types/"):]
+                scoped_index = pkg_name.find("__")
+                if scoped_index != -1:
+                    # Resolve @foo/bar scoped package name from @npm//@types/foo__bar types dep
+                    pkg_name = "@%s/%s" % (pkg_name[:scoped_index], pkg_name[scoped_index + 2:])
+                pkg_name = "@npm//%s" % pkg_name
+                if pkg_name not in deps:
+                    print("Adding missing dep %s to target //%s:%s since it depends on types %s" % (pkg_name, native.package_name(), name, dep))
+                    missing_deps.append(pkg_name)
+    return missing_deps
+
 def ts_library(name, tsconfig = None, testonly = False, deps = [], module_name = None, **kwargs):
     """Default values for ts_library"""
     deps = deps + ["@npm//tslib"]
@@ -106,6 +130,8 @@ def ts_library(name, tsconfig = None, testonly = False, deps = [], module_name =
 
     if not module_name:
         module_name = _default_module_name(testonly)
+
+    deps.extend(_missing_npm_deps(name, deps))
 
     _ts_library(
         name = name,
@@ -142,6 +168,9 @@ def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps 
         module_name = _default_module_name(testonly)
     if not entry_point:
         entry_point = "public_api.ts"
+
+    deps.extend(_missing_npm_deps(name, deps))
+
     _ng_module(
         name = name,
         flat_module_out_file = name,
