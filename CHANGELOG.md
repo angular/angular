@@ -1,3 +1,21 @@
+<a name="9.0.0-rc.13"></a>
+# [9.0.0-rc.13](https://github.com/angular/angular/compare/9.0.0-rc.12...9.0.0-rc.13) (2020-02-01)
+
+
+### Bug Fixes
+
+* **compiler-cli:** add `sass` as a valid css preprocessor extension ([#35052](https://github.com/angular/angular/issues/35052)) ([7f96fbb](https://github.com/angular/angular/commit/7f96fbb))
+* should also allow subclass Promise without Symbol.species ([#34533](https://github.com/angular/angular/issues/34533)) ([0de632a](https://github.com/angular/angular/commit/0de632a))
+* **common:** http/testing expectOne lists the received requests if no matches ([#27005](https://github.com/angular/angular/issues/27005)) ([c7f0c01](https://github.com/angular/angular/commit/c7f0c01)), closes [#18013](https://github.com/angular/angular/issues/18013)
+* **common:** remove extra & in http params ([#34896](https://github.com/angular/angular/issues/34896)) ([bd8605a](https://github.com/angular/angular/commit/bd8605a))
+
+
+### Features
+
+* **ngcc:** automatically clean outdated ngcc artifacts ([#35079](https://github.com/angular/angular/issues/35079)) ([ae0df83](https://github.com/angular/angular/commit/ae0df83)), closes [#35082](https://github.com/angular/angular/issues/35082)
+
+
+
 <a name="9.0.0-rc.12"></a>
 # [9.0.0-rc.12](https://github.com/angular/angular/compare/9.0.0-rc.11...9.0.0-rc.12) (2020-01-30)
 
