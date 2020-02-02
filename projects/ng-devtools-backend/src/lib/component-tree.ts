@@ -32,7 +32,7 @@ export interface DirectiveForestBuilderOptions {
 export const getLatestComponentState = (query: ComponentExplorerViewQuery): DirectivesProperties | undefined => {
   let result;
   if (query.selectedElement && query.expandedProperties) {
-    const node = queryComponentTree(query.selectedElement, getDirectiveForest());
+    const node = queryComponentForest(query.selectedElement, getDirectiveForest());
     if (!node) {
       return undefined;
     }
@@ -143,7 +143,7 @@ const buildDirectiveForest = (
 
 // Based on an ElementID we return a specific component node.
 // If we can't find any, we return null.
-export const queryComponentTree = (id: ElementID, forest: ComponentTreeNode[]): ComponentTreeNode | null => {
+export const queryComponentForest = (id: ElementID, forest: ComponentTreeNode[]): ComponentTreeNode | null => {
   if (!id.length) {
     return null;
   }
