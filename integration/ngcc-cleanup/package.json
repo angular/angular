@@ -11,7 +11,7 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "postinstall": "webdriver-manager update --gecko=false --standalone=false $CI_CHROMEDRIVER_VERSION_ARG && ngcc --properties es2015 --create-ivy-entry-points",
-    "~~downgrade-to-9.0.0-rc.12": "yarn add @angular/{animations,common,compiler,core,forms,platform-browser,platform-browser-dynamic,router,compiler-cli,language-service}@9.0.0-rc.12",
+    "~~downgrade-to-9.0.0-rc.12": "yarn add @angular/animations@9.0.0-rc.12 @angular/common@9.0.0-rc.12 @angular/compiler@9.0.0-rc.12 @angular/core@9.0.0-rc.12 @angular/forms@9.0.0-rc.12 @angular/platform-browser@9.0.0-rc.12 @angular/platform-browser-dynamic@9.0.0-rc.12 @angular/router@9.0.0-rc.12 @angular/compiler-cli@9.0.0-rc.12 @angular/language-service@9.0.0-rc.12",
     "~~rollback-downgrade": "git checkout ./package.json ./yarn.lock && yarn install && ng version"
   },
   "private": true,
