@@ -11,7 +11,7 @@ export interface Node<DirType = DirectiveType, CmpType = ComponentType> {
   directives: DirType[];
   component: CmpType | null;
   children: Node[];
-  nativeElement?: () => Element;
+  nativeElement?: Element;
 }
 
 export enum PropType {

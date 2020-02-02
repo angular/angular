@@ -32,7 +32,7 @@ export interface DirectiveForestBuilderOptions {
 export const getLatestComponentState = (query: ComponentExplorerViewQuery): DirectivesProperties | undefined => {
   let result;
   if (query.selectedElement && query.expandedProperties) {
-    const node = queryComponentTree(query.selectedElement);
+    const node = queryComponentTree(query.selectedElement, getDirectiveForest());
     if (!node) {
       return undefined;
     }
@@ -82,7 +82,7 @@ export const getForestWithNativeElements = (root = document.documentElement): Co
   buildDirectiveForest(root, { element: '__ROOT__', component: null, directives: [], children: [] }, { getDirectives: true, includeNativeElement: true});
 
 export const getDirectiveForest = (root = document.documentElement): ComponentTreeNode[] =>
-  buildDirectiveForest(root, { element: '__ROOT__', component: null, directives: [], children: [] }, { getDirectives: true});
+  buildDirectiveForest(root, { element: '__ROOT__', component: null, directives: [], children: [] }, { getDirectives: true });
 
 export const getComponentForest = (root = document.documentElement): ComponentTreeNode[] =>
   buildDirectiveForest(root, { element: '__ROOT__', component: null, directives: [], children: [] });
@@ -120,11 +120,11 @@ const buildDirectiveForest = (
       } as DirectiveInstanceType;
     }),
     component: null,
-    children: [],
+    children: []
   };
 
   if (options.includeNativeElement) {
-    current.nativeElement = () => node;
+    current.nativeElement = node;
   }
 
   if (cmp) {
@@ -143,11 +143,10 @@ const buildDirectiveForest = (
 
 // Based on an ElementID we return a specific component node.
 // If we can't find any, we return null.
-export const queryComponentTree = (id: ElementID, treeGenerator: (root?: HTMLElement) => ComponentTreeNode[] = getDirectiveForest): ComponentTreeNode | null => {
+export const queryComponentTree = (id: ElementID, forest: ComponentTreeNode[]): ComponentTreeNode | null => {
   if (!id.length) {
     return null;
   }
-  let forest = treeGenerator();
   let node: null | ComponentTreeNode = null;
   for (const i of id) {
     node = forest[i];
