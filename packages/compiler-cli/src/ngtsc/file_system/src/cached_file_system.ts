@@ -72,12 +72,16 @@ export class CachedFileSystem implements FileSystem {
 
   moveFile(from: AbsoluteFsPath, to: AbsoluteFsPath): void {
     this.delegate.moveFile(from, to);
+
     this.existsCache.set(from, false);
+    this.existsCache.set(to, true);
+
     if (this.readFileCache.has(from)) {
       this.readFileCache.set(to, this.readFileCache.get(from));
       this.readFileCache.delete(from);
+    } else {
+      this.readFileCache.delete(to);
     }
-    this.existsCache.set(to, true);
   }
 
   ensureDir(path: AbsoluteFsPath): void {
@@ -90,10 +94,18 @@ export class CachedFileSystem implements FileSystem {
 
   removeDeep(path: AbsoluteFsPath): void {
     this.delegate.removeDeep(path);
-    // Clear out all children of this directory from the exists cache.
+
+    // Clear out this directory and all its children from the `exists` cache.
     for (const p of this.existsCache.keys()) {
       if (p.startsWith(path)) {
-        this.existsCache.set(path, false);
+        this.existsCache.set(p, false);
+      }
+    }
+
+    // Clear out this directory and all its children from the `readFile` cache.
+    for (const p of this.readFileCache.keys()) {
+      if (p.startsWith(path)) {
+        this.readFileCache.delete(p);
       }
     }
   }
