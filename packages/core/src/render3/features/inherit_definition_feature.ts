@@ -7,11 +7,10 @@
  */
 
 import {Type, Writable} from '../../interface/type';
-import {assertEqual} from '../../util/assert';
 import {fillProperties} from '../../util/property';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
 import {ComponentDef, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, HostBindingsFunction, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
-import {AttributeMarker, TAttributes} from '../interfaces/node';
+import {TAttributes} from '../interfaces/node';
 import {isComponentDef} from '../interfaces/type_checks';
 import {mergeHostAttrs} from '../util/attrs_utils';
 
@@ -70,6 +69,11 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>| Comp
         fillProperties(definition.inputs, superDef.inputs);
         fillProperties(definition.declaredInputs, superDef.declaredInputs);
         fillProperties(definition.outputs, superDef.outputs);
+
+        // Merge developer-defined data
+        (superDef as ComponentDef<any>).data &&
+            inheritData(
+                (definition as ComponentDef<any>).data, (superDef as ComponentDef<any>).data);
 
         // Inherit hooks
         // Assume super class inheritance feature has already run.
@@ -179,4 +183,9 @@ function inheritHostBindings(
   } else {
     definition.hostBindings = superHostBindings;
   }
+}
+
+function inheritData(defData: {[kind: string]: any}, superData: {[kind: string]: any}) {
+  superData.animation &&
+      (defData.animation = (defData.animation || []).concat(superData.animation));
 }

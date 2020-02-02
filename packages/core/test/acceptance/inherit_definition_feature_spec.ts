@@ -6,11 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {state, style, trigger} from '@angular/animations';
 import {Component, ContentChildren, Directive, EventEmitter, HostBinding, HostListener, Input, OnChanges, Output, QueryList, ViewChildren} from '@angular/core';
 import {ivyEnabled} from '@angular/core/src/ivy_switch';
 import {getDirectiveDef} from '@angular/core/src/render3/definition';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {onlyInIvy} from '@angular/private/testing';
 
 describe('inheritance', () => {
@@ -3516,6 +3518,110 @@ describe('inheritance', () => {
       });
     });
 
+    describe('animations', () => {
+      onlyInIvy('View Engine does not provide this check')
+          .it('should work with inherited host bindings', () => {
+            @Directive({
+              selector: '[super-dir]',
+              host: {
+                '[@animation1]': 'colorExp',
+              },
+            })
+            class SuperDirective {
+              colorExp = 'color';
+            }
+
+            class BareClass extends SuperDirective {}
+
+            @Component({
+              selector: 'my-comp',
+              template: `<h3>my-comp</h3>`,
+              animations: [trigger(
+                  'animation1',
+                  [
+                    state('color', style({color: 'red'})),
+                  ])],
+            })
+            class MyComponent extends BareClass {
+            }
+
+            @Component({template: `<my-comp>app</my-comp>`})
+            class App {
+            }
+
+            TestBed.configureTestingModule({
+              declarations: [App, MyComponent, SuperDirective],
+              imports: [NoopAnimationsModule],
+            });
+            const fixture = TestBed.createComponent(App);
+            fixture.detectChanges();
+            const queryResult = fixture.debugElement.query(By.css('my-comp'));
+
+            expect(queryResult.nativeElement.style.color).toBe('red');
+          });
+      onlyInIvy('View Engine does not provide this check')
+          .it('should work with composed host bindings', () => {
+            @Directive({
+              selector: '[super-dir]',
+              host: {
+                '[@animation1]': 'colorExp',
+                '[@animation2]': 'opacityExp',
+              },
+            })
+            class SuperDirective {
+              colorExp = 'color';
+              opacityExp = 'opacity';
+            }
+
+            class BareClass extends SuperDirective {}
+
+            @Component({
+              selector: 'my-comp',
+              template: `<h3>my-comp</h3>`,
+              host: {
+                '[@animation1]': 'colorExp',
+                '[@animation3]': 'bgExp',
+              },
+              animations: [
+                trigger(
+                    'animation1',
+                    [
+                      state('color', style({color: 'blue'})),
+                    ]),
+                trigger(
+                    'animation2',
+                    [
+                      state('opacity', style({opacity: '0.5'})),
+                    ]),
+                trigger(
+                    'animation3',
+                    [
+                      state('bg', style({backgroundColor: 'green'})),
+                    ]),
+              ],
+            })
+            class MyComponent extends BareClass {
+              bgExp = 'bg';
+            }
+
+            @Component({template: `<my-comp>app</my-comp>`})
+            class App {
+            }
+
+            TestBed.configureTestingModule({
+              declarations: [App, MyComponent, SuperDirective],
+              imports: [NoopAnimationsModule],
+            });
+            const fixture = TestBed.createComponent(App);
+            fixture.detectChanges();
+            const queryResult = fixture.debugElement.query(By.css('my-comp'));
+
+            expect(queryResult.nativeElement.style.color).toBe('blue');
+            expect(queryResult.nativeElement.style.opacity).toBe('0.5');
+            expect(queryResult.nativeElement.style.backgroundColor).toBe('green');
+          });
+    });
+
     describe('host bindings (style related)', () => {
       // TODO: sub and super HostBinding same property but different bindings
       // TODO: sub and super HostBinding same binding on two different properties
@@ -4129,6 +4235,115 @@ describe('inheritance', () => {
         const app = fixture.componentInstance;
 
         expect(app.foo).toBe('test');
+      });
+    });
+
+    describe('animations', () => {
+      onlyInIvy('View Engine does not provide this check').it('should inherit animations', () => {
+        @Component({
+          selector: 'super-comp',
+          template: `<h1>super-comp</h1>`,
+          host: {
+            '[@animation]': 'colorExp',
+          },
+          animations: [trigger(
+              'animation',
+              [
+                state('color', style({color: 'red'})),
+              ])],
+        })
+        class SuperComponent {
+          colorExp = 'color';
+        }
+
+        @Component({
+          selector: 'my-comp',
+          template: `<h2>my-comp</h2>`,
+        })
+        class MyComponent extends SuperComponent {
+        }
+
+        @Component({template: `<my-comp>app</my-comp>`})
+        class App {
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [App, MyComponent, SuperComponent],
+          imports: [NoopAnimationsModule],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const queryResult = fixture.debugElement.query(By.css('my-comp'));
+
+        expect(queryResult.nativeElement.style.color).toBe('red');
+      });
+
+      onlyInIvy('View Engine does not provide this check').it('should compose animations', () => {
+        @Component({
+          selector: 'super-comp',
+          template: `<h1>super-comp</h1>`,
+          host: {
+            '[@animation1]': 'colorExp',
+            '[@animation2]': 'opacityExp',
+          },
+          animations: [
+            trigger(
+                'animation1',
+                [
+                  state('color', style({color: 'red'})),
+                ]),
+            trigger(
+                'animation2',
+                [
+                  state('opacity', style({opacity: '0.5'})),
+                ]),
+          ],
+        })
+        class SuperComponent {
+          colorExp = 'color';
+          opacityExp = 'opacity';
+        }
+
+        @Component({
+          selector: 'my-comp',
+          template: `<h2>my-comp</h2>`,
+          host: {
+            '[@animation1]': 'colorExp',
+            '[@animation3]': 'bgExp',
+          },
+          animations: [
+            trigger(
+                'animation1',
+                [
+                  state('color', style({color: 'blue'})),
+                ]),
+            trigger(
+                'animation3',
+                [
+                  state('bg', style({backgroundColor: 'green'})),
+                ]),
+          ],
+        })
+        class MyComponent extends SuperComponent {
+          colorExp = 'color';
+          bgExp = 'bg';
+        }
+
+        @Component({template: `<my-comp>app</my-comp>`})
+        class App {
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [App, MyComponent, SuperComponent],
+          imports: [NoopAnimationsModule],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const queryResult = fixture.debugElement.query(By.css('my-comp'));
+
+        expect(queryResult.nativeElement.style.color).toBe('blue');
+        expect(queryResult.nativeElement.style.opacity).toBe('0.5');
+        expect(queryResult.nativeElement.style.backgroundColor).toBe('green');
       });
     });
 
@@ -4819,6 +5034,116 @@ describe('inheritance', () => {
       });
     });
 
+    describe('animations', () => {
+      onlyInIvy('View Engine does not provide this check')
+          .it('should inherit animations across multiple inheritance levels', () => {
+            @Component({
+              selector: 'super-comp',
+              template: `<h1>super-comp</h1>`,
+              host: {
+                '[@animation]': 'colorExp',
+              },
+              animations: [trigger(
+                  'animation',
+                  [
+                    state('color', style({color: 'red'})),
+                  ])],
+            })
+            class SuperComponent {
+              colorExp = 'color';
+            }
+
+            class BareClass extends SuperComponent {}
+
+            @Component({selector: 'my-comp', template: `<h3>my-comp</h3>`})
+            class MyComponent extends BareClass {
+            }
+
+            @Component({template: `<my-comp>app</my-comp>`})
+            class App {
+            }
+
+            TestBed.configureTestingModule({
+              declarations: [App, MyComponent, SuperComponent],
+              imports: [NoopAnimationsModule],
+            });
+            const fixture = TestBed.createComponent(App);
+            fixture.detectChanges();
+            const queryResult = fixture.debugElement.query(By.css('my-comp'));
+
+            expect(queryResult.nativeElement.style.color).toBe('red');
+          });
+
+      onlyInIvy('View Engine does not provide this check')
+          .it('should compose animations across multiple inheritance levels', () => {
+            @Component({
+              selector: 'super-comp',
+              template: `<h1>super-comp</h1>`,
+              host: {
+                '[@animation1]': 'colorExp',
+                '[@animation2]': 'opacityExp',
+              },
+              animations: [
+                trigger(
+                    'animation1',
+                    [
+                      state('color', style({color: 'red'})),
+                    ]),
+                trigger(
+                    'animation2',
+                    [
+                      state('opacity', style({opacity: '0.5'})),
+                    ]),
+              ],
+            })
+            class SuperComponent {
+              colorExp = 'color';
+              opacityExp = 'opacity';
+            }
+
+            class BareClass extends SuperComponent {}
+
+            @Component({
+              selector: 'my-comp',
+              template: `<h3>my-comp</h3>`,
+              host: {
+                '[@animation1]': 'colorExp',
+                '[@animation3]': 'bgExp',
+              },
+              animations: [
+                trigger(
+                    'animation1',
+                    [
+                      state('color', style({color: 'blue'})),
+                    ]),
+                trigger(
+                    'animation3',
+                    [
+                      state('bg', style({backgroundColor: 'green'})),
+                    ]),
+              ],
+            })
+            class MyComponent extends BareClass {
+              bgExp = 'bg';
+            }
+
+            @Component({template: `<my-comp>app</my-comp>`})
+            class App {
+            }
+
+            TestBed.configureTestingModule({
+              declarations: [App, MyComponent, SuperComponent],
+              imports: [NoopAnimationsModule],
+            });
+            const fixture = TestBed.createComponent(App);
+            fixture.detectChanges();
+            const queryResult = fixture.debugElement.query(By.css('my-comp'));
+
+            expect(queryResult.nativeElement.style.color).toBe('blue');
+            expect(queryResult.nativeElement.style.opacity).toBe('0.5');
+            expect(queryResult.nativeElement.style.backgroundColor).toBe('green');
+          });
+    });
     describe('host bindings (style related)', () => {
       // TODO: sub and super HostBinding same property but different bindings
       // TODO: sub and super HostBinding same binding on two different properties
