@@ -3,7 +3,7 @@
 # Do not immediately exit on error to allow the `assertSucceeded` function to handle the error.
 #
 # NOTE:
-# Each statement should be followed by an `assertSucceeded`/`assertFailed` or `exit 1` statement.
+# Each statement should be followed by an `assert*` or `exit 1` statement.
 set +e -x
 
 PATH=$PATH:$(npm bin)
@@ -18,6 +18,26 @@ function assertFailed {
 function assertSucceeded {
   if [[ $? -ne 0 ]]; then
     echo "FAIL: $1";
+    exit 1;
+  fi
+}
+
+function assertEquals {
+  local value1=$1;
+  local value2=$2;
+
+  if [[ "$value1" != "$value2" ]]; then
+    echo "FAIL: Expected '$value1' to equal '$value2'."
+    exit 1;
+  fi
+}
+
+function assertNotEquals {
+  local value1=$1;
+  local value2=$2;
+
+  if [[ "$value1" == "$value2" ]]; then
+    echo "FAIL: Expected '$value1' not to equal '$value2'."
     exit 1;
   fi
 }
@@ -140,6 +160,27 @@ assertSucceeded "Expected 'ngcc' to log 'Compiling'."
   assertSucceeded "Expected 'ngcc' to not add trailing commas to factory function parameters in UMD."
 
 
+# Can it correctly clean up and re-compile when dependencies are already compiled by a different version?
+  readonly actualNgccVersion=`node --print "require('@angular/compiler-cli/package.json').version"`
+  readonly mockNgccVersion="3.0.0"
+
+  # Mock the ngcc version marker on a package to make it appear as if it is compiled by a different ngcc version.
+  node mock-ngcc-version-marker @angular/material/button $mockNgccVersion
+  assertSucceeded "Expected to successfully mock the 'ngcc' version marker in '@angular/material/button'."
+  assertEquals $mockNgccVersion `node --print "require('@angular/material/button/package.json').__processed_by_ivy_ngcc__.main"`
+  assertEquals 1 `cat node_modules/@angular/material/button/button.d.ts | grep 'import \* as ɵngcc0' | wc -l`
+
+  # Re-compile packages (which requires cleaning up those compiled by a different ngcc version).
+  # (Use sync mode to ensure all tasks share the same `CachedFileSystem` instance.)
+  ngcc --no-async --properties main
+  assertSucceeded "Expected 'ngcc' to successfully re-compile the packages."
+
+  # Ensure previously compiled packages were correctly cleaned up (i.e. no multiple
+  # `import ... ɵngcc0` statements) and re-compiled by the current ngcc version.
+  assertEquals $actualNgccVersion `node --print "require('@angular/material/button/package.json').__processed_by_ivy_ngcc__.main"`
+  assertEquals 1 `cat node_modules/@angular/material/button/button.d.ts | grep 'import \* as ɵngcc0' | wc -l`
+
+
 # Can it compile `@angular/platform-server` in UMD + typings without errors?
 # (The CLI prefers the `main` property (which maps to UMD) over `module` when compiling `@angular/platform-server`.
 # See https://github.com/angular/angular-cli/blob/e36853338/packages/angular_devkit/build_angular/src/angular-cli-files/models/webpack-configs/server.ts#L34)
@@ -150,6 +191,7 @@ assertSucceeded "Expected 'ngcc' to log 'Compiling'."
 
   ngcc --properties main --target @angular/platform-server
   assertSucceeded "Expected 'ngcc' to successfully compile '@angular/platform-server' (main)."
+
 
 # Can it be safely run again (as a noop)?
 # And check that it logged skipping compilation as expected

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {CachedFileSystem} from '../src/cached_file_system';
-import {absoluteFrom, setFileSystem} from '../src/helpers';
+import {absoluteFrom, join, setFileSystem} from '../src/helpers';
 import {NodeJSFileSystem} from '../src/node_js_file_system';
 import {AbsoluteFsPath, FileSystem} from '../src/types';
 
@@ -236,7 +236,7 @@ describe('CachedFileSystem', () => {
       expect(readFileSpy).toHaveBeenCalledWith(abcPath);
     });
 
-    it('should update the `to` "readFile" cache', () => {
+    it('should update the `to` "readFile" cache (if `from` was cached)', () => {
       spyOn(delegate, 'moveFile');
       const readFileSpy = spyOn(delegate, 'readFile');
 
@@ -251,6 +251,24 @@ describe('CachedFileSystem', () => {
       // Show that the cache was hit for the xyz file
       expect(fs.readFile(xyzPath)).toEqual('abc content');
       expect(readFileSpy).not.toHaveBeenCalled();
+    });
+
+    it('should delete the `to` "readFile" cache (if `from` was not cached)', () => {
+      spyOn(delegate, 'moveFile');
+      const readFileSpy = spyOn(delegate, 'readFile');
+
+      // Fill the xyz "readFile" cache
+      readFileSpy.and.returnValue('xyz content');
+      fs.readFile(xyzPath);
+      readFileSpy.calls.reset();
+
+      // Move the file
+      fs.moveFile(abcPath, xyzPath);
+
+      // Show that the cache was not hit for the xyz file
+      readFileSpy.and.returnValue('abc content');
+      expect(fs.readFile(xyzPath)).toBe('abc content');
+      expect(readFileSpy).toHaveBeenCalledWith(xyzPath);
     });
   });
 
@@ -281,14 +299,41 @@ describe('CachedFileSystem', () => {
     });
 
     it('should update the exists cache', () => {
+      spyOn(delegate, 'writeFile');
       spyOn(delegate, 'removeDeep');
       const existsSpy = spyOn(delegate, 'exists').and.returnValue(true);
       expect(fs.exists(abcPath)).toBe(true);
       existsSpy.calls.reset();
 
+      // Create a file inside `/a/b/c`.
+      const abcdPath = join(abcPath, 'd');
+      fs.writeFile(abcdPath, 'content');
+      expect(fs.exists(abcdPath)).toBe(true);
+      expect(existsSpy).not.toHaveBeenCalled();
+
+      // Remove the `/a/b/c` directory and ensure it is removed from cache (along with its content).
       fs.removeDeep(abcPath);
       expect(fs.exists(abcPath)).toBeFalsy();
+      expect(fs.exists(abcdPath)).toBeFalsy();
       expect(existsSpy).not.toHaveBeenCalled();
+    });
+
+    it('should update the readFile cache', () => {
+      spyOn(delegate, 'writeFile');
+      spyOn(delegate, 'removeDeep');
+      spyOn(delegate, 'lstat').and.throwError('ENOENT: no such file or directory');
+      const readFileSpy = spyOn(delegate, 'readFile');
+
+      // Create a file inside `/a/b/c`.
+      const abcdPath = join(abcPath, 'd');
+      fs.writeFile(abcdPath, 'content from cache');
+      expect(fs.readFile(abcdPath)).toBe('content from cache');
+      expect(readFileSpy).not.toHaveBeenCalled();
+
+      // Remove the `/a/b/c` directory and ensure it is removed from cache (along with its content).
+      fs.removeDeep(abcPath);
+      expect(() => fs.readFile(abcdPath)).toThrowError('ENOENT: no such file or directory');
+      expect(() => fs.readFile(abcPath)).toThrowError('ENOENT: no such file or directory');
     });
   });
 });
