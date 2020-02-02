@@ -57,7 +57,7 @@ const stopProfilingCallback = (messageBus: MessageBus<Events>) => () => {
 };
 
 const getElementDirectivesPropertiesCallback = (messageBus: MessageBus<Events>) => (id: ElementID) => {
-  const node = queryComponentTree(id);
+  const node = queryComponentTree(id, getDirectiveForest());
   if (node) {
     messageBus.emit('elementDirectivesProperties', [serializeNodeDirectiveProperties(node)]);
   } else {
@@ -66,12 +66,12 @@ const getElementDirectivesPropertiesCallback = (messageBus: MessageBus<Events>) 
 };
 
 const selectedComponentCallback = (id: ElementID) => {
-  const node = queryComponentTree(id, getForestWithNativeElements);
+  const node = queryComponentTree(id, getForestWithNativeElements());
   setConsoleReference(node);
 };
 
 const getNestedPropertiesCallback = (messageBus: MessageBus<Events>) => (id: DirectiveID, propPath: string[]) => {
-  const node = queryComponentTree(id.element);
+  const node = queryComponentTree(id.element, getDirectiveForest());
   if (node) {
     let current = (id.directive === undefined ? node.component : node.directives[id.directive]).instance;
     for (const prop of propPath) {
