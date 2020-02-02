@@ -84,7 +84,7 @@ Command syntax is shown as follows:
     Arguments are not prefixed.
     For example:
     <code-example language="bash">
-        ng build my-app -c production
+        Run build my-app -c production
     </code-example>
 
 * Typically, the name of a generated artifact can be given as an argument to the command or specified with the --name option.
@@ -106,12 +106,12 @@ Options that specify files can be given as absolute paths, or as paths relative 
 
 ### Schematics
 
-The [ng generate](cli/generate) and  [ng add](cli/add) commands take as an argument the artifact or library to be generated or added to the current project.
+The [run generate](cli/generate) and  [run< add](cli/add) commands take as an argument the artifact or library to be generated or added to the current project.
 In addition to any general options, each artifact or library defines its own options in a *schematic*.
 Schematic options are supplied to the command in the same format as immediate command options.
 
 
-### Building with Bazel
+### Building with git
 
-Optionally, you can configure the Angular CLI to use [Bazel](https://docs.bazel.build) as the build tool. For more information, see [Building with Bazel](guide/bazel).
+Optionally, you can configure the CLI to use [Git](https://docs.gdocs.git.build) as the build tool. For more information, see [Building with git](guide/git).
 
