@@ -12,6 +12,7 @@ import * as ts from 'typescript';
 import {AstType, ExpressionDiagnosticsContext, TypeDiagnostic} from './expression_type';
 import {BuiltinType, Definition, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from './symbols';
 import {Diagnostic} from './types';
+import {getDOMEventSymbol} from './typescript_symbols';
 import {findOutputBinding, getPathToNodeAtPosition} from './utils';
 
 export interface DiagnosticTemplateInfo {
@@ -201,25 +202,28 @@ function getEventDeclaration(
     return;
   }
 
-  const genericEvent: SymbolDeclaration = {
-    name: '$event',
-    kind: 'variable',
-    type: info.query.getBuiltinType(BuiltinType.Any),
-  };
-
   const outputSymbol = findOutputBinding(event, path, info.query);
-  if (!outputSymbol) {
-    // The `$event` variable doesn't belong to an output, so its type can't be refined.
-    // TODO: type `$event` variables in bindings to DOM events.
-    return genericEvent;
+  let eventType: Symbol = info.query.getBuiltinType(BuiltinType.Any);
+  if (outputSymbol) {
+    // The event belongs to an output and its type is wrapped in a generic, like EventEmitter<T> or
+    // Observable<T>.
+    const ta = outputSymbol.typeArguments();
+    if (ta && ta.length === 1) {
+      eventType = ta[0];
+    }
+  } else {
+    // The `$event` variable doesn't belong to an output, but it may belong to a DOM event.
+    const domEvent = getDOMEventSymbol(event.name);
+    if (domEvent) {
+      eventType = domEvent;
+    }
   }
 
-  // The raw event type is wrapped in a generic, like EventEmitter<T> or Observable<T>.
-  const ta = outputSymbol.typeArguments();
-  if (!ta || ta.length !== 1) return genericEvent;
-  const eventType = ta[0];
-
-  return {...genericEvent, type: eventType};
+  return {
+    name: '$event',
+    kind: 'variable',
+    type: eventType,
+  };
 }
 
 /**

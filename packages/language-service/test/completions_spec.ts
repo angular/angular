@@ -752,15 +752,6 @@ describe('completions', () => {
       const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
       expectContain(completions, CompletionKind.VARIABLE, ['$event']);
     });
-  });
-
-  describe('$event completions', () => {
-    it('should suggest $event in event bindings', () => {
-      mockHost.override(TEST_TEMPLATE, `<div (click)="myClick(~{cursor});"></div>`);
-      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
-      const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
-      expectContain(completions, CompletionKind.VARIABLE, ['$event']);
-    });
 
     it('should suggest $event completions in output bindings', () => {
       mockHost.override(TEST_TEMPLATE, `<div string-model (modelChange)="$event.~{cursor}"></div>`);
@@ -768,6 +759,14 @@ describe('completions', () => {
       const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
       // Expect string properties
       expectContain(completions, CompletionKind.METHOD, ['charAt', 'substring']);
+    });
+
+    it('should suggest $event completions in bindings targeting DOM events', () => {
+      mockHost.override(TEST_TEMPLATE, `<div (click)="$event.~{cursor}"></div>`);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+      const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
+      // Expect 'MouseEvent' properties
+      expectContain(completions, CompletionKind.PROPERTY, ['altKey', 'screenX']);
     });
   });
 });

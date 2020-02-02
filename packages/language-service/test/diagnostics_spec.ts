@@ -333,7 +333,7 @@ describe('diagnostics', () => {
       expect(length).toBe(keyword.length);
     });
 
-    it('should reject invalid properties on an event type', () => {
+    it('should reject invalid properties on an output event type', () => {
       const content = mockHost.override(
           TEST_TEMPLATE, '<div string-model (modelChange)="$event.notSubstring()"></div>');
       const diagnostics = ngLS.getSemanticDiagnostics(TEST_TEMPLATE) !;
@@ -342,6 +342,16 @@ describe('diagnostics', () => {
       expect(messageText).toBe(`Unknown method 'notSubstring'`);
       expect(start).toBe(content.indexOf('$event'));
       expect(length).toBe('$event.notSubstring()'.length);
+    });
+
+    it('should reject invalid properties on a DOM event type', () => {
+      const content = mockHost.override(TEST_TEMPLATE, '<div (click)="$event.notAMethod()"></div>');
+      const diagnostics = ngLS.getSemanticDiagnostics(TEST_TEMPLATE) !;
+      expect(diagnostics.length).toBe(1);
+      const {messageText, start, length} = diagnostics[0];
+      expect(messageText).toBe(`Unknown method 'notAMethod'`);
+      expect(start).toBe(content.indexOf('$event'));
+      expect(length).toBe('$event.notAMethod()'.length);
     });
   });
 

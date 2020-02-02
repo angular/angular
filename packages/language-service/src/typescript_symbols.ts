@@ -11,6 +11,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {BuiltinType, DeclarationKind, Definition, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from './symbols';
+import {TypeContext, getDOMEventType} from './ty';
 
 // In TypeScript 2.1 these flags moved
 // These helpers work for both 2.0 and 2.1.
@@ -24,12 +25,6 @@ const isReferenceType = (ts as any).ObjectFlags ?
          !!(type.flags & (ts as any).TypeFlags.Object &&
             (type as any).objectFlags & (ts as any).ObjectFlags.Reference)) :
     ((type: ts.Type) => !!(type.flags & (ts as any).TypeFlags.Reference));
-
-interface TypeContext {
-  node: ts.Node;
-  program: ts.Program;
-  checker: ts.TypeChecker;
-}
 
 export function getSymbolQuery(
     program: ts.Program, checker: ts.TypeChecker, source: ts.SourceFile,
@@ -78,6 +73,17 @@ export function getPipesTable(
     source: ts.SourceFile, program: ts.Program, checker: ts.TypeChecker,
     pipes: CompilePipeSummary[]): SymbolTable {
   return new PipesTable(pipes, {program, checker, node: source});
+}
+
+/**
+ * Returns the TypeScript event symbol corresponding to a DOM event name. If no DOM event of the
+ * specified name exists, the generic `Event` type is returned.
+ * @param eventName DOM event name
+ * @return Symbol of TS type corresponding to the DOM event.
+ */
+export function getDOMEventSymbol(eventName: string): Symbol|undefined {
+  const event = getDOMEventType(eventName);
+  return event && new TypeWrapper(event.type, event.context);
 }
 
 class TypeScriptSymbolQuery implements SymbolQuery {
