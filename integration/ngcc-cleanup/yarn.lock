@@ -118,7 +118,7 @@
 "@angular/animations@file:../../dist/packages-dist/animations":
   version "9.0.0-rc.1"
 
-"@angular/cdk@~9.0.0-rc.9":
+"@angular/cdk@9.0.0-rc.9":
   version "9.0.0-rc.9"
   resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-9.0.0-rc.9.tgz#73392d3b6748aa03a89fe937e67adf15b3eeb88f"
   integrity sha512-Ly1pZLjtOtDKW3pyiVHjRqzK5pzhyrCTb11Po1FTHWJ8usDRA7XuLYZZ9D/VVOxmiWoExkFJfnJbIEXqVgqSAA==
