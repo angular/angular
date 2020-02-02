@@ -12,6 +12,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
+import { MyDashboardComponent } from './my-dashboard/my-dashboard.component';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatCardModule } from '@angular/material/card';
+import { MatMenuModule } from '@angular/material/menu';
 
 // adding this code to detect issues like https://github.com/angular/angular-cli/issues/10322
 registerLocaleData(localeFr);
@@ -19,7 +23,8 @@ registerLocaleData(localeFr);
 @NgModule({
   declarations: [
     AppComponent,
-    MyNavigationComponent
+    MyNavigationComponent,
+    MyDashboardComponent
   ],
   imports: [
     BrowserModule,
@@ -29,7 +34,10 @@ registerLocaleData(localeFr);
     MatButtonModule,
     MatSidenavModule,
     MatIconModule,
-    MatListModule
+    MatListModule,
+    MatGridListModule,
+    MatCardModule,
+    MatMenuModule
   ],
   providers: [{ provide: LOCALE_ID, useValue: 'fr' }],
   bootstrap: [AppComponent]
