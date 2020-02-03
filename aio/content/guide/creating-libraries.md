@@ -48,7 +48,7 @@ You can build, test, and lint the project with CLI commands:
 </code-example>
 
 Notice that the configured builder for the project is different from the default builder for app projects.
-This builder, among other things, ensures that the library is always built with the [AoT compiler](guide/aot-compiler), without the need to specify the `--prod` flag.
+This builder, among other things, ensures that the library is always built with the [AOT compiler](guide/aot-compiler), without the need to specify the `--prod` flag.
 
 To make library code reusable you must define a public API for it. This "user layer" defines what is available to consumers of your library. A user of your library should be able to access public functionality (such as NgModules, service providers and general utility functions) through a single import path.
 
