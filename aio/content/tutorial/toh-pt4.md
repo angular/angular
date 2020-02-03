@@ -1,4 +1,4 @@
-# Create services
+# Add services
 
 The Tour of Heroes `HeroesComponent` is currently getting and displaying fake data.
 
