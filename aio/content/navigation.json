@@ -135,17 +135,17 @@
           {
             "url": "tutorial",
             "title": "Introduction",
-            "tooltip": "Introduction to the Tour of Heroes tutorial"
+            "tooltip": "Introduction to the Tour of Heroes app and tutorial"
           },
           {
             "url": "tutorial/toh-pt0",
-            "title": "The Application Shell",
+            "title": "Create a Project",
             "tooltip": "Creating the application shell"
           },
           {
             "url": "tutorial/toh-pt1",
             "title": "1. The Hero Editor",
-            "tooltip": "Part 1: Build a simple hero editor"
+            "tooltip": "Part 1: Build a simple editor"
           },
           {
             "url": "tutorial/toh-pt2",
