@@ -13,7 +13,7 @@ import * as cluster from 'cluster';
 import {Logger} from '../../logging/logger';
 import {PackageJsonUpdater} from '../../writing/package_json_updater';
 import {AnalyzeEntryPointsFn, CreateCompileFn, Executor} from '../api';
-import {LockFile} from '../lock_file';
+import {LockFileAsync} from '../lock_file';
 
 import {ClusterMaster} from './master';
 import {ClusterWorker} from './worker';
@@ -26,7 +26,7 @@ import {ClusterWorker} from './worker';
 export class ClusterExecutor implements Executor {
   constructor(
       private workerCount: number, private logger: Logger,
-      private pkgJsonUpdater: PackageJsonUpdater, private lockFile: LockFile) {}
+      private pkgJsonUpdater: PackageJsonUpdater, private lockFile: LockFileAsync) {}
 
   async execute(analyzeEntryPoints: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn):
       Promise<void> {

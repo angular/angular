@@ -10,47 +10,56 @@ import {Logger} from '../logging/logger';
 import {PackageJsonUpdater} from '../writing/package_json_updater';
 
 import {AnalyzeEntryPointsFn, CreateCompileFn, Executor} from './api';
-import {LockFile} from './lock_file';
+import {LockFileAsync, LockFileSync} from './lock_file';
 import {onTaskCompleted} from './utils';
 
+export abstract class SingleProcessorExecutorBase {
+  constructor(private logger: Logger, private pkgJsonUpdater: PackageJsonUpdater) {}
+
+  doExecute(analyzeEntryPoints: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn):
+      void|Promise<void> {
+    this.logger.debug(`Running ngcc on ${this.constructor.name}.`);
+
+    const taskQueue = analyzeEntryPoints();
+    const compile =
+        createCompileFn((task, outcome) => onTaskCompleted(this.pkgJsonUpdater, task, outcome));
+
+    // Process all tasks.
+    this.logger.debug('Processing tasks...');
+    const startTime = Date.now();
+
+    while (!taskQueue.allTasksCompleted) {
+      const task = taskQueue.getNextTask() !;
+      compile(task);
+      taskQueue.markTaskCompleted(task);
+    }
+
+    const duration = Math.round((Date.now() - startTime) / 1000);
+    this.logger.debug(`Processed tasks in ${duration}s.`);
+  }
+}
 
 /**
  * An `Executor` that processes all tasks serially and completes synchronously.
  */
-export class SingleProcessExecutor implements Executor {
-  constructor(
-      private logger: Logger, private pkgJsonUpdater: PackageJsonUpdater,
-      private lockFile: LockFile) {}
-
+export class SingleProcessExecutorSync extends SingleProcessorExecutorBase implements Executor {
+  constructor(logger: Logger, pkgJsonUpdater: PackageJsonUpdater, private lockfile: LockFileSync) {
+    super(logger, pkgJsonUpdater);
+  }
   execute(analyzeEntryPoints: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn): void {
-    this.lockFile.lock(() => {
-      this.logger.debug(`Running ngcc on ${this.constructor.name}.`);
-
-      const taskQueue = analyzeEntryPoints();
-      const compile =
-          createCompileFn((task, outcome) => onTaskCompleted(this.pkgJsonUpdater, task, outcome));
-
-      // Process all tasks.
-      this.logger.debug('Processing tasks...');
-      const startTime = Date.now();
-
-      while (!taskQueue.allTasksCompleted) {
-        const task = taskQueue.getNextTask() !;
-        compile(task);
-        taskQueue.markTaskCompleted(task);
-      }
-
-      const duration = Math.round((Date.now() - startTime) / 1000);
-      this.logger.debug(`Processed tasks in ${duration}s.`);
-    });
+    this.lockfile.lock(() => this.doExecute(analyzeEntryPoints, createCompileFn));
   }
 }
 
 /**
  * An `Executor` that processes all tasks serially, but still completes asynchronously.
  */
-export class AsyncSingleProcessExecutor extends SingleProcessExecutor {
-  async execute(...args: Parameters<Executor['execute']>): Promise<void> {
-    return super.execute(...args);
+export class SingleProcessExecutorAsync extends SingleProcessorExecutorBase implements Executor {
+  constructor(logger: Logger, pkgJsonUpdater: PackageJsonUpdater, private lockfile: LockFileAsync) {
+    super(logger, pkgJsonUpdater);
+  }
+  async execute(analyzeEntryPoints: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn):
+      Promise<void> {
+    await this.lockfile.lock(async() => this.doExecute(analyzeEntryPoints, createCompileFn));
   }
 }
