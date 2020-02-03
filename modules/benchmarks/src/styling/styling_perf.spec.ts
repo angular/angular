@@ -28,7 +28,7 @@ const SCENARIOS = [
 describe('styling benchmark spec', () => {
   afterEach(verifyNoBrowserErrors);
 
-  it('should render and interact to update and detect changes', async () => {
+  it('should render and interact to update and detect changes', async() => {
     openBrowser({url: '/', ignoreBrowserSynchronization: true});
     create();
     const items = element.all(by.css('styling-bindings button'));
@@ -38,7 +38,7 @@ describe('styling benchmark spec', () => {
     expect(await items.first().getAttribute('title')).toBe('baz');
   });
 
-  it('should render and run noop change detection', async () => {
+  it('should render and run noop change detection', async() => {
     openBrowser({url: '/', ignoreBrowserSynchronization: true});
     create();
     const items = element.all(by.css('styling-bindings button'));
