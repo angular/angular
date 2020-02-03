@@ -107,7 +107,7 @@ Use the `query()` method to find and animate elements within the current host co
 
 Let's assume that we are routing from the *Home => About*.
 
-<code-example path="animations/src/app/animations.ts" header="src/app/animations.ts" region="query" language="typescript"></code-example>
+<code-example path="animations/src/app/animations.ts" header="src/app/animations.ts (Continuation from above)" region="query" language="typescript"></code-example>
 
 The animation code does the following after styling the views:
 
