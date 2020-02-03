@@ -16,8 +16,8 @@ import {ResolvedValue, ResolvedValueArray} from './result';
 
 
 /**
- * Instance of the `Object.assign` builtin function. Used for evaluating
- * the "__assign" TypeScript helper.
+ * Instance of the known `Object.assign` built-in function. Used for evaluating
+ * the `__assign` TypeScript helper.
  */
 const objectAssignBuiltinFn = new ObjectAssignBuiltinFn();
 
