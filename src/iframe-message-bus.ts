@@ -48,7 +48,7 @@ export class IFrameMessageBus extends MessageBus<Events> {
       }
       if (e.data.topic === topic) {
         cb.apply(null, e.data.args);
-        window.addEventListener('message', listener);
+        window.removeEventListener('message', listener);
       }
     };
     window.addEventListener('message', listener);
