@@ -869,10 +869,9 @@ workflows:
             - build-npm-packages
             - build-ivy-npm-packages
             - legacy-unit-tests-saucelabs
-      # FIXME - uncomment this job once https://github.com/angular/components/pull/18355 lands
-      # - components-repo-unit-tests:
-      #     requires:
-      #       - build-npm-packages
+      - components-repo-unit-tests:
+          requires:
+            - build-npm-packages
       - test_zonejs:
           requires:
             - setup
