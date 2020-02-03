@@ -3300,21 +3300,23 @@ describe('styling', () => {
 
           @Component({template: `<my-cmp *ngFor="let i of [1,2]" host-styling></my-cmp>`})
           class MyApp {
-            // On first pass of `ngFor` everything works.
-            // On second pass the styling has already created the data structures. As a result when
+            // When the first view in the list gets CD-ed, everything works.
+            // When the second view gets CD-ed, the styling has already created the data structures
+            // in the `TView`. As a result when
             // `[class.foo]` runs it already knows that `[class]` is a duplicate and hence it
             // should check with it. While the resolution is happening it reads the value of the
             // `[class]`, however `[class]` has not yet executed and therefore it does not have
-            // normalized value. The result is that the assertions fails as it expects an
+            // normalized value in its `LView`. The result is that the assertions fails as it
+            // expects an
             // `KeyValueArray`.
           }
 
           TestBed.configureTestingModule({declarations: [MyApp, MyCmp, HostStylingsDir]});
           const fixture = TestBed.createComponent(MyApp);
-          fixture.detectChanges();
           expect(() => fixture.detectChanges()).not.toThrow();
           const [cmp1, cmp2] = fixture.nativeElement.querySelectorAll('my-cmp');
-          expect(cmp1.outerHTML).toEqual(cmp2.outerHTML);
+          expectClass(cmp1).toEqual({foo: true, bar: true});
+          expectClass(cmp2).toEqual({foo: true, bar: true});
         });
   });
 });

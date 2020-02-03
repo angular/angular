@@ -834,17 +834,19 @@ function findStylingValue(
     const containsStatics = Array.isArray(rawKey);
     // Unwrap the key if we contain static values.
     const key = containsStatics ? (rawKey as string[])[1] : rawKey;
+    const isStylingMap = key === null;
     let valueAtLViewIndex = lView[index + 1];
     if (valueAtLViewIndex === NO_CHANGE) {
       // In firstUpdatePass the styling instructions create a linked list of styling.
-      // On subsequent passes it is possible for a styling instruction try to read a binding which
+      // On subsequent passes it is possible for a styling instruction to try to read a binding
+      // which
       // has not yet executed. In that case we will find `NO_CHANGE` and we should assume that
       // we have `undefined` (or empty array in case of styling-map instruction) instead. This
       // allows the resolution to apply the value (which may later be overwritten when the
       // binding actually executes.)
-      valueAtLViewIndex = key === null ? EMPTY_ARRAY : undefined;
+      valueAtLViewIndex = isStylingMap ? EMPTY_ARRAY : undefined;
     }
-    let currentValue = key === null ? keyValueArrayGet(valueAtLViewIndex, prop) :
+    let currentValue = isStylingMap ? keyValueArrayGet(valueAtLViewIndex, prop) :
                                       key === prop ? valueAtLViewIndex : undefined;
     if (containsStatics && !isStylingValuePresent(currentValue)) {
       currentValue = keyValueArrayGet(rawKey as KeyValueArray<any>, prop);
