@@ -236,7 +236,7 @@ export declare class NgIf<T = unknown> {
     set ngIfThen(templateRef: TemplateRef<NgIfContext<T>> | null);
     constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<NgIfContext<T>>);
     static ngTemplateGuard_ngIf: 'binding';
-    static ngTemplateContextGuard<T>(dir: NgIf<T>, ctx: any): ctx is NgIfContext<T>;
+    static ngTemplateContextGuard<T>(dir: NgIf<T>, ctx: any): ctx is NgIfContext<NonNullable<T>>;
 }
 
 export declare class NgIfContext<T = unknown> {
