@@ -3273,6 +3273,50 @@ describe('styling', () => {
 
     expect(logs).toEqual([]);
   });
+
+  describe('regression', () => {
+    onlyInIvy('styling priority resolution is Ivy only feature.')
+        .it('should allow lookahead binding on second pass #35118', () => {
+          @Component({
+            selector: 'my-cmp',
+            template: ``,
+            host: {
+              '[class.foo]': 'hostClass',
+            }
+          })
+          class MyCmp {
+            hostClass = true;
+          }
+
+          @Directive({
+            selector: '[host-styling]',
+            host: {
+              '[class]': 'hostClass',
+            }
+          })
+          class HostStylingsDir {
+            hostClass = {'bar': true};
+          }
+
+          @Component({template: `<my-cmp *ngFor="let i of [1,2]" host-styling></my-cmp>`})
+          class MyApp {
+            // On first pass of `ngFor` everything works.
+            // On second pass the styling has already created the data structures. As a result when
+            // `[class.foo]` runs it already knows that `[class]` is a duplicate and hence it
+            // should check with it. While the resolution is happening it reads the value of the
+            // `[class]`, however `[class]` has not yet executed and therefore it does not have
+            // normalized value. The result is that the assertions fails as it expects an
+            // `KeyValueArray`.
+          }
+
+          TestBed.configureTestingModule({declarations: [MyApp, MyCmp, HostStylingsDir]});
+          const fixture = TestBed.createComponent(MyApp);
+          fixture.detectChanges();
+          expect(() => fixture.detectChanges()).not.toThrow();
+          const [cmp1, cmp2] = fixture.nativeElement.querySelectorAll('my-cmp');
+          expect(cmp1.outerHTML).toEqual(cmp2.outerHTML);
+        });
+  });
 });
 
 function assertStyleCounters(countForSet: number, countForRemove: number) {
