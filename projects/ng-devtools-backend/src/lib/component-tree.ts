@@ -29,7 +29,7 @@ export interface DirectiveForestBuilderOptions {
 }
 
 export const getLatestComponentState = (query: ComponentExplorerViewQuery): DirectivesProperties | undefined => {
-  let result;
+  let result: DirectivesProperties | undefined;
   if (query.selectedElement && query.expandedProperties) {
     const node = queryComponentForest(query.selectedElement, getDirectiveForest());
     if (!node) {
