@@ -8,23 +8,23 @@
 
 /// <reference types="node" />
 
-import {SingleProcessExecutor} from '../../src/execution/single_process_executor';
+import {SingleProcessExecutorSync} from '../../src/execution/single_process_executor';
 import {SerialTaskQueue} from '../../src/execution/task_selection/serial_task_queue';
 import {PackageJsonUpdater} from '../../src/writing/package_json_updater';
-import {MockLockFile} from '../helpers/mock_lock_file';
+import {MockLockFileSync} from '../helpers/mock_lock_file';
 import {MockLogger} from '../helpers/mock_logger';
 
 
 describe('SingleProcessExecutor', () => {
   let mockLogger: MockLogger;
-  let mockLockFile: MockLockFile;
-  let executor: SingleProcessExecutor;
+  let mockLockFile: MockLockFileSync;
+  let executor: SingleProcessExecutorSync;
 
   beforeEach(() => {
     mockLogger = new MockLogger();
-    mockLockFile = new MockLockFile();
-    executor =
-        new SingleProcessExecutor(mockLogger, null as unknown as PackageJsonUpdater, mockLockFile);
+    mockLockFile = new MockLockFileSync();
+    executor = new SingleProcessExecutorSync(
+        mockLogger, null as unknown as PackageJsonUpdater, mockLockFile);
   });
 
   describe('execute()', () => {
@@ -63,11 +63,11 @@ describe('SingleProcessExecutor', () => {
     });
 
     it('should not call `analyzeEntryPoints` if Lockfile.create() fails', () => {
-      const lockFile = new MockLockFile({throwOnCreate: true});
+      const lockFile = new MockLockFileSync({throwOnCreate: true});
       const analyzeFn: () => any = () => { lockFile.log.push('analyzeFn'); };
       const anyFn: () => any = () => undefined;
-      executor =
-          new SingleProcessExecutor(mockLogger, null as unknown as PackageJsonUpdater, lockFile);
+      executor = new SingleProcessExecutorSync(
+          mockLogger, null as unknown as PackageJsonUpdater, lockFile);
       let error = '';
       try {
         executor.execute(analyzeFn, anyFn);
@@ -81,9 +81,9 @@ describe('SingleProcessExecutor', () => {
     it('should fail if Lockfile.remove() fails', () => {
       const noTasks = () => new SerialTaskQueue([] as any);
       const anyFn: () => any = () => undefined;
-      const lockFile = new MockLockFile({throwOnRemove: true});
-      executor =
-          new SingleProcessExecutor(mockLogger, null as unknown as PackageJsonUpdater, lockFile);
+      const lockFile = new MockLockFileSync({throwOnRemove: true});
+      executor = new SingleProcessExecutorSync(
+          mockLogger, null as unknown as PackageJsonUpdater, lockFile);
       let error = '';
       try {
         executor.execute(noTasks, anyFn);

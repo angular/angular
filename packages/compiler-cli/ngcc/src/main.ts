@@ -27,8 +27,8 @@ import {TargetedEntryPointFinder} from './entry_point_finder/targeted_entry_poin
 import {AnalyzeEntryPointsFn, CreateCompileFn, Executor, PartiallyOrderedTasks, Task, TaskProcessingOutcome, TaskQueue} from './execution/api';
 import {ClusterExecutor} from './execution/cluster/executor';
 import {ClusterPackageJsonUpdater} from './execution/cluster/package_json_updater';
-import {LockFile} from './execution/lock_file';
-import {AsyncSingleProcessExecutor, SingleProcessExecutor} from './execution/single_process_executor';
+import {LockFileAsync, LockFileSync} from './execution/lock_file';
+import {SingleProcessExecutorAsync, SingleProcessExecutorSync} from './execution/single_process_executor';
 import {ParallelTaskQueue} from './execution/task_selection/parallel_task_queue';
 import {SerialTaskQueue} from './execution/task_selection/serial_task_queue';
 import {ConsoleLogger, LogLevel} from './logging/console_logger';
@@ -290,7 +290,7 @@ export function mainNgcc(
   };
 
   // The executor for actually planning and getting the work done.
-  const executor = getExecutor(async, inParallel, logger, pkgJsonUpdater, new LockFile(fileSystem));
+  const executor = getExecutor(async, inParallel, logger, pkgJsonUpdater, fileSystem);
 
   return executor.execute(analyzeEntryPoints, createCompileFn);
 }
@@ -336,16 +336,21 @@ function getTaskQueue(
 
 function getExecutor(
     async: boolean, inParallel: boolean, logger: Logger, pkgJsonUpdater: PackageJsonUpdater,
-    lockFile: LockFile): Executor {
-  if (inParallel) {
-    // Execute in parallel (which implies async).
-    // Use up to 8 CPU cores for workers, always reserving one for master.
-    const workerCount = Math.min(8, os.cpus().length - 1);
-    return new ClusterExecutor(workerCount, logger, pkgJsonUpdater, lockFile);
+    fileSystem: FileSystem): Executor {
+  if (async) {
+    // Execute asynchronously (either serially or in parallel)
+    const lockFile = new LockFileAsync(fileSystem, logger, 500, 50);
+    if (inParallel) {
+      // Execute in parallel. Use up to 8 CPU cores for workers, always reserving one for master.
+      const workerCount = Math.min(8, os.cpus().length - 1);
+      return new ClusterExecutor(workerCount, logger, pkgJsonUpdater, lockFile);
+    } else {
+      // Execute serially, on a single thread (async).
+      return new SingleProcessExecutorAsync(logger, pkgJsonUpdater, lockFile);
+    }
   } else {
-    // Execute serially, on a single thread (either sync or async).
-    return async ? new AsyncSingleProcessExecutor(logger, pkgJsonUpdater, lockFile) :
-                   new SingleProcessExecutor(logger, pkgJsonUpdater, lockFile);
+    // Execute serially, on a single thread (sync).
+    return new SingleProcessExecutorSync(logger, pkgJsonUpdater, new LockFileSync(fileSystem));
   }
 }
 
