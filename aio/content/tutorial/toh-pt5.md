@@ -1,4 +1,4 @@
-# Add in-app navigation (routing)
+# Add in-app navigation with routing
 
 There are new requirements for the Tour of Heroes app:
 
