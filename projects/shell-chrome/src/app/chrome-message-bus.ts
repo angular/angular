@@ -1,12 +1,5 @@
 import { MessageBus, Events, Parameters } from 'protocol';
 
-// Todo: check if this is used anywhere? If not decide whether or not to keep it.
-export type Callback = (
-  message: any,
-  sender: chrome.runtime.MessageSender,
-  sendResponse: (response?: any) => void
-) => void;
-
 interface ChromeMessage<T, K extends keyof T> {
   topic: K;
   args: Parameters<T[K]>;
