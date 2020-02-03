@@ -141,7 +141,7 @@ class MyLazyAngularModule {
 const ng2BootstrapFn = (extraProviders: StaticProvider[]) =>
     platformBrowserDynamic(extraProviders).bootstrapModule(MyLazyAngularModule);
 // #enddocregion
-// (We are using the dynamic browser platform, as this example has not been compiled AoT.)
+// (We are using the dynamic browser platform, as this example has not been compiled AOT.)
 
 
 // #docregion basic-how-to

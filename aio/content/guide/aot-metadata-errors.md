@@ -518,7 +518,7 @@ const raw = String.raw`A tagged template ${expression} string`;
 [`String.raw()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/raw)
 is a _tag function_ native to JavaScript ES2015.
 
-The AoT compiler does not support tagged template expressions; avoid them in metadata expressions.
+The AOT compiler does not support tagged template expressions; avoid them in metadata expressions.
 
 <hr>
 
