@@ -51,29 +51,28 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
     return entryPoints;
   }
 
-  hasProcessedTargetEntryPoint(
+  targetNeedsProcessingOrCleaning(
       propertiesToConsider: EntryPointJsonProperty[], compileAllFormats: boolean): boolean {
     const entryPoint = this.getEntryPoint(this.targetPath);
     if (entryPoint === null || !entryPoint.compiledByAngular) {
-      return true;
+      return false;
     }
 
     for (const property of propertiesToConsider) {
       if (entryPoint.packageJson[property]) {
-        // Here is a property that should be processed
+        // Here is a property that should be processed.
         if (!hasBeenProcessed(entryPoint.packageJson, property)) {
-          // `hasBeenProcessed()` may return `null`, which means that this entry-point package needs
-          // cleaning and therefore needs to be processed.
-          return false;
+          return true;
         }
         if (!compileAllFormats) {
-          // It has been processed and we only need one, so we are done.
-          return true;
+          // This property has been processed, and we only need one.
+          return false;
         }
       }
     }
-    // All formats need to be compiled and there were none that were not,
-    return true;
+    // All `propertiesToConsider` that appear in this entry-point have been processed.
+    // In other word, there were no properties that need processing.
+    return false;
   }
 
   private processNextPath(): void {

@@ -235,16 +235,16 @@ runInEachFileSystem(() => {
 
     });
 
-    describe('hasProcessedTargetEntryPoint()', () => {
-      it('should return true if there is no entry-point', () => {
+    describe('targetNeedsProcessingOrCleaning()', () => {
+      it('should return false if there is no entry-point', () => {
         const targetPath = _Abs('/no_packages/node_modules/should_not_be_found');
         fs.ensureDir(_Abs('/no_packages/node_modules/should_not_be_found'));
         const finder = new TargetedEntryPointFinder(
             fs, config, logger, resolver, _Abs('/no_packages/node_modules'), targetPath, undefined);
-        expect(finder.hasProcessedTargetEntryPoint(['fesm2015'], true)).toBe(true);
+        expect(finder.targetNeedsProcessingOrCleaning(['fesm2015'], true)).toBe(false);
       });
 
-      it('should return true if the target path is not a valid entry-point', () => {
+      it('should return false if the target path is not a valid entry-point', () => {
         const targetPath = _Abs('/no_valid_entry_points/node_modules/some_package');
         loadTestFiles([
           {
@@ -255,10 +255,10 @@ runInEachFileSystem(() => {
         const finder = new TargetedEntryPointFinder(
             fs, config, logger, resolver, _Abs('/no_valid_entry_points/node_modules'), targetPath,
             undefined);
-        expect(finder.hasProcessedTargetEntryPoint(['fesm2015'], true)).toBe(true);
+        expect(finder.targetNeedsProcessingOrCleaning(['fesm2015'], true)).toBe(false);
       });
 
-      it('should true if the target path has no typings', () => {
+      it('should false if the target path has no typings', () => {
         const targetPath = _Abs('/no_valid_entry_points/node_modules/some_package');
         loadTestFiles([
           {
@@ -278,10 +278,10 @@ runInEachFileSystem(() => {
         const finder = new TargetedEntryPointFinder(
             fs, config, logger, resolver, _Abs('/no_valid_entry_points/node_modules'), targetPath,
             undefined);
-        expect(finder.hasProcessedTargetEntryPoint(['fesm2015'], true)).toBe(true);
+        expect(finder.targetNeedsProcessingOrCleaning(['fesm2015'], true)).toBe(false);
       });
 
-      it('should true if the target path is not compiled by Angular - i.e has no metadata file',
+      it('should false if the target path is not compiled by Angular - i.e has no metadata file',
          () => {
            const targetPath = _Abs('/no_valid_entry_points/node_modules/some_package');
            loadTestFiles([
@@ -301,11 +301,11 @@ runInEachFileSystem(() => {
            const finder = new TargetedEntryPointFinder(
                fs, config, logger, resolver, _Abs('/no_valid_entry_points/node_modules'),
                targetPath, undefined);
-           expect(finder.hasProcessedTargetEntryPoint(['fesm2015'], true)).toBe(true);
+           expect(finder.targetNeedsProcessingOrCleaning(['fesm2015'], true)).toBe(false);
          });
 
       describe('[compileAllFormats: true]', () => {
-        it('should return false if none of the properties to consider have been processed', () => {
+        it('should return true if none of the properties to consider have been processed', () => {
           const basePath = _Abs('/sub_entry_points/node_modules');
           const targetPath = _Abs('/sub_entry_points/node_modules/common/http/testing');
           loadTestFiles([
@@ -318,10 +318,10 @@ runInEachFileSystem(() => {
           const finder = new TargetedEntryPointFinder(
               fs, config, logger, resolver, _Abs('/sub_entry_points/node_modules'), targetPath,
               undefined);
-          expect(finder.hasProcessedTargetEntryPoint(['fesm2015', 'esm5'], true)).toEqual(false);
+          expect(finder.targetNeedsProcessingOrCleaning(['fesm2015', 'esm5'], true)).toBe(true);
         });
 
-        it('should return false if at least one of the properties to consider has not been processed',
+        it('should return true if at least one of the properties to consider has not been processed',
            () => {
              const basePath = _Abs('/sub_entry_points/node_modules');
              const targetPath = _Abs('/sub_entry_points/node_modules/common/http/testing');
@@ -345,10 +345,10 @@ runInEachFileSystem(() => {
              const finder = new TargetedEntryPointFinder(
                  fs, config, logger, resolver, _Abs('/sub_entry_points/node_modules'), targetPath,
                  undefined);
-             expect(finder.hasProcessedTargetEntryPoint(['fesm2015', 'esm5'], true)).toEqual(false);
+             expect(finder.targetNeedsProcessingOrCleaning(['fesm2015', 'esm5'], true)).toBe(true);
            });
 
-        it('should return true if all of the properties to consider have been processed', () => {
+        it('should return false if all of the properties to consider have been processed', () => {
           const basePath = _Abs('/sub_entry_points/node_modules');
           const targetPath = _Abs('/sub_entry_points/node_modules/common/http/testing');
           loadTestFiles([
@@ -372,12 +372,12 @@ runInEachFileSystem(() => {
           const finder = new TargetedEntryPointFinder(
               fs, config, logger, resolver, _Abs('/sub_entry_points/node_modules'), targetPath,
               undefined);
-          expect(finder.hasProcessedTargetEntryPoint(['fesm2015', 'esm5'], true)).toEqual(true);
+          expect(finder.targetNeedsProcessingOrCleaning(['fesm2015', 'esm5'], true)).toBe(false);
         });
       });
 
       describe('[compileAllFormats: false]', () => {
-        it('should return false if none of the properties to consider have been processed', () => {
+        it('should return true if none of the properties to consider have been processed', () => {
           const basePath = _Abs('/sub_entry_points/node_modules');
           const targetPath = _Abs('/sub_entry_points/node_modules/common/http/testing');
           loadTestFiles([
@@ -391,10 +391,10 @@ runInEachFileSystem(() => {
           const finder = new TargetedEntryPointFinder(
               fs, config, logger, resolver, _Abs('/sub_entry_points/node_modules'), targetPath,
               undefined);
-          expect(finder.hasProcessedTargetEntryPoint(['fesm2015', 'esm5'], false)).toEqual(false);
+          expect(finder.targetNeedsProcessingOrCleaning(['fesm2015', 'esm5'], false)).toBe(true);
         });
 
-        it('should return false if the first of the properties to consider that is in the package.json has not been processed',
+        it('should return true if the first of the properties to consider that is in the package.json has not been processed',
            () => {
              const basePath = _Abs('/sub_entry_points/node_modules');
              const targetPath = _Abs('/sub_entry_points/node_modules/common/http/testing');
@@ -418,11 +418,10 @@ runInEachFileSystem(() => {
              const finder = new TargetedEntryPointFinder(
                  fs, config, logger, resolver, _Abs('/sub_entry_points/node_modules'), targetPath,
                  undefined);
-             expect(finder.hasProcessedTargetEntryPoint(['fesm2015', 'esm5'], false))
-                 .toEqual(false);
+             expect(finder.targetNeedsProcessingOrCleaning(['fesm2015', 'esm5'], false)).toBe(true);
            });
 
-        it('should return true if the first of the properties to consider that is in the package.json has been processed',
+        it('should return true if the first of the properties to consider (that actually appear in the package.json) has been processed',
            () => {
              const basePath = _Abs('/sub_entry_points/node_modules');
              const targetPath = _Abs('/sub_entry_points/node_modules/common/http/testing');
@@ -446,7 +445,7 @@ runInEachFileSystem(() => {
              const finder = new TargetedEntryPointFinder(
                  fs, config, logger, resolver, _Abs('/sub_entry_points/node_modules'), targetPath,
                  undefined);
-             expect(finder.hasProcessedTargetEntryPoint(['fesm2015', 'esm5'], true)).toEqual(false);
+             expect(finder.targetNeedsProcessingOrCleaning(['fesm2015', 'esm5'], true)).toBe(true);
            });
       });
     });

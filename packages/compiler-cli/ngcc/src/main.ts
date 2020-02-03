@@ -160,7 +160,7 @@ export function mainNgcc(
       fileSystem, logger, dependencyResolver, config, absBasePath, absoluteTargetEntryPointPath,
       pathMappings);
   if (finder instanceof TargetedEntryPointFinder &&
-      finder.hasProcessedTargetEntryPoint(supportedPropertiesToConsider, compileAllFormats)) {
+      !finder.targetNeedsProcessingOrCleaning(supportedPropertiesToConsider, compileAllFormats)) {
     logger.debug('The target entry-point has already been processed');
     return;
   }
@@ -176,29 +176,13 @@ export function mainNgcc(
     logger.debug('Analyzing entry-points...');
     const startTime = Date.now();
 
-    const moduleResolver = new ModuleResolver(fileSystem, pathMappings);
-    const esmDependencyHost = new EsmDependencyHost(fileSystem, moduleResolver);
-    const umdDependencyHost = new UmdDependencyHost(fileSystem, moduleResolver);
-    const commonJsDependencyHost = new CommonJsDependencyHost(fileSystem, moduleResolver);
-    const dtsDependencyHost = new DtsDependencyHost(fileSystem, pathMappings);
-    const dependencyResolver = new DependencyResolver(
-        fileSystem, logger, {
-          esm5: esmDependencyHost,
-          esm2015: esmDependencyHost,
-          umd: umdDependencyHost,
-          commonjs: commonJsDependencyHost
-        },
-        dtsDependencyHost);
-
-    const absBasePath = absoluteFrom(basePath);
-    const config = new NgccConfiguration(fileSystem, dirname(absBasePath));
     let entryPointInfo = finder.findEntryPoints();
-
     const cleaned = cleanOutdatedPackages(fileSystem, entryPointInfo.entryPoints);
     if (cleaned) {
       // If we had to clean up one or more packages then we must read in the entry-points again.
       entryPointInfo = finder.findEntryPoints();
     }
+
     const {entryPoints, invalidEntryPoints, graph} = entryPointInfo;
     logInvalidEntryPoints(logger, invalidEntryPoints);
     if (entryPoints.length === 0 && absoluteTargetEntryPointPath !== null) {
@@ -384,32 +368,6 @@ function getDependencyResolver(
         commonjs: commonJsDependencyHost
       },
       dtsDependencyHost);
-}
-
-function hasProcessedTargetEntryPoint(
-    fs: FileSystem, targetPath: AbsoluteFsPath, propertiesToConsider: string[],
-    compileAllFormats: boolean) {
-  const packageJsonPath = resolve(targetPath, 'package.json');
-  // It might be that this target is configured in which case its package.json might not exist.
-  if (!fs.exists(packageJsonPath)) {
-    return false;
-  }
-  const packageJson = JSON.parse(fs.readFile(packageJsonPath));
-
-  for (const property of propertiesToConsider) {
-    if (packageJson[property]) {
-      // Here is a property that should be processed
-      if (hasBeenProcessed(packageJson, property as EntryPointJsonProperty)) {
-        if (!compileAllFormats) {
-          // It has been processed and we only need one, so we are done.
-          return true;
-        }
-      } else {
-        // It has not been processed but we need all of them, so we are done.
-        return false;
-      }
-    }
-  }
 }
 
 function getEntryPointFinder(

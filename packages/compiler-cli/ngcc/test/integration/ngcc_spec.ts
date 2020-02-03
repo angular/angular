@@ -492,8 +492,7 @@ runInEachFileSystem(() => {
       });
 
       it('should not mark a non-Angular package as processed if it is a dependency', () => {
-        // a package that depends upon test-package, which no metadata.json file so not compiled by
-        // Angular.
+        // `test-package-user` is a valid Angular package that depends upon test-package.
         loadTestFiles([
           {
             name: _('/node_modules/test-package-user/package.json'),
@@ -513,16 +512,18 @@ runInEachFileSystem(() => {
 
         mainNgcc({basePath: '/node_modules', targetEntryPointPath: 'test-package-user'});
 
+        // * `test-package-user` is processed because it is compiled by Angular
         expect(loadPackage('test-package-user').__processed_by_ivy_ngcc__).toEqual({
           es2015: '0.0.0-PLACEHOLDER',
           typings: '0.0.0-PLACEHOLDER',
         });
 
-        // * `test-package` has no Angular but is marked as processed.
+        // * `test-package` is a dependency of `test-package-user` but has not been compiled by
+        // Angular, and so is not marked as processed
         expect(loadPackage('test-package').__processed_by_ivy_ngcc__).toBeUndefined();
 
-        // * `core` is a dependency of `test-package`, but it is not processed, since test-package
-        // was not processed.
+        // * `core` is a dependency of `test-package`, but it is not processed, because
+        // `test-package` was not processed.
         expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toBeUndefined();
       });
 
