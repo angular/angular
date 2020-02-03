@@ -1,6 +1,6 @@
-# Updating to Angular version 9
+# Updating to Angular Version 9
 
-This guide contains everything you need to know about updating to the next Angular version.
+This guide contains information related to updating to version 9 of Angular.
 
 ## Updating CLI Apps
 
