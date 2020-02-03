@@ -14,7 +14,7 @@ import {ClusterExecutor} from '../../../src/execution/cluster/executor';
 import {ClusterMaster} from '../../../src/execution/cluster/master';
 import {ClusterWorker} from '../../../src/execution/cluster/worker';
 import {PackageJsonUpdater} from '../../../src/writing/package_json_updater';
-import {MockLockFile} from '../../helpers/mock_lock_file';
+import {MockLockFileAsync} from '../../helpers/mock_lock_file';
 import {MockLogger} from '../../helpers/mock_logger';
 import {mockProperty} from '../../helpers/spy_utils';
 
@@ -24,7 +24,7 @@ describe('ClusterExecutor', () => {
   let masterRunSpy: jasmine.Spy;
   let workerRunSpy: jasmine.Spy;
   let mockLogger: MockLogger;
-  let mockLockFile: MockLockFile;
+  let mockLockFile: MockLockFileAsync;
   let executor: ClusterExecutor;
 
   beforeEach(() => {
@@ -34,7 +34,7 @@ describe('ClusterExecutor', () => {
                        .and.returnValue(Promise.resolve('CusterWorker#run()'));
 
     mockLogger = new MockLogger();
-    mockLockFile = new MockLockFile();
+    mockLockFile = new MockLockFileAsync();
     executor =
         new ClusterExecutor(42, mockLogger, null as unknown as PackageJsonUpdater, mockLockFile);
   });
@@ -43,9 +43,9 @@ describe('ClusterExecutor', () => {
     describe('(on cluster master)', () => {
       beforeEach(() => runAsClusterMaster(true));
 
-      it('should log debug info about the executor', () => {
+      it('should log debug info about the executor', async() => {
         const anyFn: () => any = () => undefined;
-        executor.execute(anyFn, anyFn);
+        await executor.execute(anyFn, anyFn);
 
         expect(mockLogger.logs.debug).toEqual([
           ['Running ngcc on ClusterExecutor (using 42 worker processes).'],
@@ -88,7 +88,7 @@ describe('ClusterExecutor', () => {
 
       it('should not call master runner if Lockfile.create() fails', async() => {
         const anyFn: () => any = () => undefined;
-        const lockFile = new MockLockFile({throwOnCreate: true});
+        const lockFile = new MockLockFileAsync({throwOnCreate: true});
         executor =
             new ClusterExecutor(42, mockLogger, null as unknown as PackageJsonUpdater, lockFile);
         let error = '';
@@ -104,7 +104,7 @@ describe('ClusterExecutor', () => {
 
       it('should fail if Lockfile.remove() fails', async() => {
         const anyFn: () => any = () => undefined;
-        const lockFile = new MockLockFile({throwOnRemove: true});
+        const lockFile = new MockLockFileAsync({throwOnRemove: true});
         executor =
             new ClusterExecutor(42, mockLogger, null as unknown as PackageJsonUpdater, lockFile);
         let error = '';
@@ -122,9 +122,9 @@ describe('ClusterExecutor', () => {
     describe('(on cluster worker)', () => {
       beforeEach(() => runAsClusterMaster(false));
 
-      it('should not log debug info about the executor', () => {
+      it('should not log debug info about the executor', async() => {
         const anyFn: () => any = () => undefined;
-        executor.execute(anyFn, anyFn);
+        await executor.execute(anyFn, anyFn);
 
         expect(mockLogger.logs.debug).toEqual([]);
       });
