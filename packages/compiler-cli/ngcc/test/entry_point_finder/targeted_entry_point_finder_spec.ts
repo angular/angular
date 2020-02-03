@@ -238,7 +238,7 @@ runInEachFileSystem(() => {
     describe('targetNeedsProcessingOrCleaning()', () => {
       it('should return false if there is no entry-point', () => {
         const targetPath = _Abs('/no_packages/node_modules/should_not_be_found');
-        fs.ensureDir(_Abs('/no_packages/node_modules/should_not_be_found'));
+        fs.ensureDir(targetPath);
         const finder = new TargetedEntryPointFinder(
             fs, config, logger, resolver, _Abs('/no_packages/node_modules'), targetPath, undefined);
         expect(finder.targetNeedsProcessingOrCleaning(['fesm2015'], true)).toBe(false);
@@ -316,8 +316,7 @@ runInEachFileSystem(() => {
             ...createPackage(fs.resolve(basePath, 'common'), 'testing', ['common']),
           ]);
           const finder = new TargetedEntryPointFinder(
-              fs, config, logger, resolver, _Abs('/sub_entry_points/node_modules'), targetPath,
-              undefined);
+              fs, config, logger, resolver, basePath, targetPath, undefined);
           expect(finder.targetNeedsProcessingOrCleaning(['fesm2015', 'esm5'], true)).toBe(true);
         });
 
@@ -343,8 +342,7 @@ runInEachFileSystem(() => {
              fs.writeFile(packageJsonPath, JSON.stringify(packageJson));
 
              const finder = new TargetedEntryPointFinder(
-                 fs, config, logger, resolver, _Abs('/sub_entry_points/node_modules'), targetPath,
-                 undefined);
+                 fs, config, logger, resolver, basePath, targetPath, undefined);
              expect(finder.targetNeedsProcessingOrCleaning(['fesm2015', 'esm5'], true)).toBe(true);
            });
 
@@ -370,8 +368,7 @@ runInEachFileSystem(() => {
           fs.writeFile(packageJsonPath, JSON.stringify(packageJson));
 
           const finder = new TargetedEntryPointFinder(
-              fs, config, logger, resolver, _Abs('/sub_entry_points/node_modules'), targetPath,
-              undefined);
+              fs, config, logger, resolver, basePath, targetPath, undefined);
           expect(finder.targetNeedsProcessingOrCleaning(['fesm2015', 'esm5'], true)).toBe(false);
         });
       });
@@ -389,8 +386,7 @@ runInEachFileSystem(() => {
           ]);
 
           const finder = new TargetedEntryPointFinder(
-              fs, config, logger, resolver, _Abs('/sub_entry_points/node_modules'), targetPath,
-              undefined);
+              fs, config, logger, resolver, basePath, targetPath, undefined);
           expect(finder.targetNeedsProcessingOrCleaning(['fesm2015', 'esm5'], false)).toBe(true);
         });
 
@@ -416,12 +412,11 @@ runInEachFileSystem(() => {
              fs.writeFile(packageJsonPath, JSON.stringify(packageJson));
 
              const finder = new TargetedEntryPointFinder(
-                 fs, config, logger, resolver, _Abs('/sub_entry_points/node_modules'), targetPath,
-                 undefined);
+                 fs, config, logger, resolver, basePath, targetPath, undefined);
              expect(finder.targetNeedsProcessingOrCleaning(['fesm2015', 'esm5'], false)).toBe(true);
            });
 
-        it('should return true if the first of the properties to consider (that actually appear in the package.json) has been processed',
+        it('should return false if the first of the properties to consider (that actually appear in the package.json) has been processed',
            () => {
              const basePath = _Abs('/sub_entry_points/node_modules');
              const targetPath = _Abs('/sub_entry_points/node_modules/common/http/testing');
@@ -443,9 +438,9 @@ runInEachFileSystem(() => {
              fs.writeFile(packageJsonPath, JSON.stringify(packageJson));
 
              const finder = new TargetedEntryPointFinder(
-                 fs, config, logger, resolver, _Abs('/sub_entry_points/node_modules'), targetPath,
-                 undefined);
-             expect(finder.targetNeedsProcessingOrCleaning(['fesm2015', 'esm5'], true)).toBe(true);
+                 fs, config, logger, resolver, basePath, targetPath, undefined);
+             expect(finder.targetNeedsProcessingOrCleaning(['fesm2015', 'esm5'], false))
+                 .toBe(false);
            });
       });
     });

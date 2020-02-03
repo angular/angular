@@ -487,12 +487,12 @@ runInEachFileSystem(() => {
         expect(loadPackage('test-package').__processed_by_ivy_ngcc__).toBeUndefined();
 
         // * `core` is a dependency of `test-package`, but it is also not processed, since
-        // test-package was not processed.
+        // `test-package` was not processed.
         expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toBeUndefined();
       });
 
       it('should not mark a non-Angular package as processed if it is a dependency', () => {
-        // `test-package-user` is a valid Angular package that depends upon test-package.
+        // `test-package-user` is a valid Angular package that depends upon `test-package`.
         loadTestFiles([
           {
             name: _('/node_modules/test-package-user/package.json'),

@@ -185,9 +185,6 @@ export function mainNgcc(
 
     const {entryPoints, invalidEntryPoints, graph} = entryPointInfo;
     logInvalidEntryPoints(logger, invalidEntryPoints);
-    if (entryPoints.length === 0 && absoluteTargetEntryPointPath !== null) {
-      markNonAngularPackageAsProcessed(fileSystem, pkgJsonUpdater, absoluteTargetEntryPointPath);
-    }
 
     const unprocessableEntryPointPaths: string[] = [];
     // The tasks are partially ordered by virtue of the entry-points being partially ordered too.

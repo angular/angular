@@ -71,7 +71,7 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
       }
     }
     // All `propertiesToConsider` that appear in this entry-point have been processed.
-    // In other word, there were no properties that need processing.
+    // In other words, there were no properties that need processing.
     return false;
   }
 
