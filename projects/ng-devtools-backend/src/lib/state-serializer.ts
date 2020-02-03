@@ -2,7 +2,7 @@ import { Descriptor, PropType, NestedProp } from 'protocol';
 
 const ignoreList = new Set(['__ngContext__', '__ngSimpleChanges__']);
 
-const commonTypes: object = {
+const commonTypes = {
   boolean: PropType.Boolean,
   bigint: PropType.BigInt,
   function: PropType.Function,
