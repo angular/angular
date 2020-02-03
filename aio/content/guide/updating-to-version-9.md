@@ -25,7 +25,7 @@ If you're curious about the specific migrations being run by the CLI, see the [a
 Users who only built with JIT before may see new type errors.
 See our [template type-checking guide](guide/template-typecheck) for more information and debugging tips.
 
-- Typescript 3.4 and 3.5 are no longer supported. Please update to Typescript 3.6.
+- Typescript 3.4 and 3.5 are no longer supported. Please update to Typescript 3.7.
 
 - `tslib` is now listed as a peer dependency rather than a direct dependency. If you are not using the CLI, you must manually install `tslib`, using `yarn add tslib` or `npm install tslib --save`.
 
