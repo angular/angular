@@ -2,10 +2,10 @@ import { DirectiveID, DirectivesProperties, ElementID, Events, MessageBus } from
 import { onChangeDetection } from './change-detection-tracker';
 import {
   ComponentTreeNode,
-  getDirectiveForest, getForestWithNativeElements,
+  getDirectiveForest,
   getLatestComponentState,
   queryComponentForest,
-  trimComponents,
+  prepareForestForSerialization,
 } from './component-tree';
 import { start as startProfiling, stop as stopProfiling } from './recording';
 import { serializeComponentState } from './state-serializer';
@@ -44,7 +44,7 @@ export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void =>
 const getLatestComponentExplorerViewCallback = (messageBus: MessageBus<Events>) => query => {
   messageBus.emit('latestComponentExplorerView', [
     {
-      forest: trimComponents(getDirectiveForest()),
+      forest: prepareForestForSerialization(getDirectiveForest()),
       properties: getLatestComponentState(query),
     },
   ]);
@@ -66,7 +66,7 @@ const getElementDirectivesPropertiesCallback = (messageBus: MessageBus<Events>) 
 };
 
 const selectedComponentCallback = (id: ElementID) => {
-  const node = queryComponentForest(id, getForestWithNativeElements());
+  const node = queryComponentForest(id, getDirectiveForest());
   setConsoleReference(node);
 };
 
