@@ -594,23 +594,23 @@
           "hidden": true
         },
         {
-          "title": "AoT Compiler",
+          "title": "AOT Compiler",
           "tooltip": "Understanding ahead-of-time compilation.",
           "children": [
             {
               "url": "guide/aot-compiler",
               "title": "Ahead-of-Time Compilation",
-              "tooltip": "Learn why and how to use the Ahead-of-Time (AoT) compiler."
+              "tooltip": "Learn why and how to use the Ahead-of-Time (AOT) compiler."
             },
             {
               "url": "guide/angular-compiler-options",
               "title": "Angular Compiler Options",
-              "tooltip": "Configuring AoT compilation."
+              "tooltip": "Configuring AOT compilation."
            },
            {
               "url": "guide/aot-metadata-errors",
-              "title": "AoT Metadata Errors",
-              "tooltip": "Troubleshooting AoT compilation."
+              "title": "AOT Metadata Errors",
+              "tooltip": "Troubleshooting AOT compilation."
            },
            {
             "url": "guide/template-typecheck",
