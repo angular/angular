@@ -112,7 +112,7 @@ class ExampleZipper {
       '!**/npm-debug.log',
       '!**/example-config.json',
       '!**/wallaby.js',
-      // AoT related files
+      // AOT related files
       '!**/aot/**/*.*',
       '!**/*-aot.*'
     ];
