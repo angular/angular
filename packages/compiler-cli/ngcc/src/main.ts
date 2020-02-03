@@ -380,22 +380,6 @@ function getEntryPointFinder(
   }
 }
 
-/**
- * If we get here, then the requested entry-point did not contain anything compiled by
- * the old Angular compiler. Therefore there is nothing for ngcc to do.
- * So mark all formats in this entry-point as processed so that clients of ngcc can avoid
- * triggering ngcc for this entry-point in the future.
- */
-function markNonAngularPackageAsProcessed(
-    fs: FileSystem, pkgJsonUpdater: PackageJsonUpdater, path: AbsoluteFsPath) {
-  const packageJsonPath = resolve(path, 'package.json');
-  const packageJson = JSON.parse(fs.readFile(packageJsonPath));
-
-  // Note: We are marking all supported properties as processed, even if they don't exist in the
-  //       `package.json` file. While this is redundant, it is also harmless.
-  markAsProcessed(pkgJsonUpdater, packageJson, packageJsonPath, SUPPORTED_FORMAT_PROPERTIES);
-}
-
 function logInvalidEntryPoints(logger: Logger, invalidEntryPoints: InvalidEntryPoint[]): void {
   invalidEntryPoints.forEach(invalidEntryPoint => {
     logger.debug(
