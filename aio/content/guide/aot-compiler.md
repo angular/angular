@@ -6,7 +6,7 @@ The Angular [ahead-of-time (AOT) compiler](guide/glossary#aot) converts your Ang
 
 This guide explains how to specify metadata and apply available compiler options to compile your applications efficiently using the AOT compiler.
 
-<div class="alert is-helpful"
+<div class="alert is-helpful">
 
   <a href="https://www.youtube.com/watch?v=kW9cJsvcsGo">Watch compiler author Tobias Bosch explain the Angular compiler</a> at AngularConnect 2016.
 
