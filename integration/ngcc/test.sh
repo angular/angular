@@ -161,14 +161,18 @@ assertSucceeded "Expected 'ngcc' to log 'Compiling'."
 
 
 # Can it correctly clean up and re-compile when dependencies are already compiled by a different version?
-# (Use sync mode to ensure all tasks share the same `CachedFileSystem` instance.)
-  assertNotEquals "1.3.3.7" `node --print "require('@angular/material/button/package.json').__processed_by_ivy_ngcc__.main"`
+  # Ensure packages are compiled by a version of ngcc that is different than the one we will set below.
+  assertNotEquals 3.0.0 `node --print "require('@angular/material/button/package.json').__processed_by_ivy_ngcc__.main"`
   assertEquals 1 `cat node_modules/@angular/material/button/button.d.ts | grep 'import \* as ɵngcc0' | wc -l`
 
-  node mock-ngcc-version "1.3.3.7"
-  ngcc --no-async --properties main
+  # Mock ngcc version to be different than the current one and re-compile packages.
+  # (Use sync mode to ensure all tasks share the same `CachedFileSystem` instance.)
+  node mock-ngcc-version 3.0.0 && ngcc --no-async --properties main
+  assertSucceeded "Expected 'ngcc' to successfully re-compile the packages."
 
-  assertEquals "1.3.3.7" `node --print "require('@angular/material/button/package.json').__processed_by_ivy_ngcc__.main"`
+  # Ensure packages were correctly cleaned up (i.e. no multiple `import ... ɵngcc0` statements) and
+  # re-compiled by the mocked version.
+  assertEquals 3.0.0 `node --print "require('@angular/material/button/package.json').__processed_by_ivy_ngcc__.main"`
   assertEquals 1 `cat node_modules/@angular/material/button/button.d.ts | grep 'import \* as ɵngcc0' | wc -l`
 
 

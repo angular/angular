@@ -9,10 +9,6 @@
 /**
  * **Usage:**
  * ```sh
- * node mock-ngcc-version
- *
- * # or
- *
  * node mock-ngcc-version <mock-version>
  * ```
  *
@@ -27,21 +23,28 @@
  */
 
 const {readFileSync, writeFileSync} = require('fs');
+const {basename} = require('path');
 
-const mockVersion = process.argv[2] || 'MOCK.VERSION';
+const mockVersion = process.argv[2];
 const buildMarkerPath = require.resolve('@angular/compiler-cli/ngcc/src/packages/build_marker');
 const buildMarkerVersionRe = /\bNGCC_VERSION = '([^']+)';/;
 
-const oldContent = readFileSync(buildMarkerPath, 'utf8');
-const oldVersionMatch = buildMarkerVersionRe.exec(oldContent);
+if (!mockVersion) {
+  throw new Error(
+      'Missing required mock-version argument.\n' +
+      `Usage: node ${basename(__filename)} <mock-version>\n`);
+}
 
-if (oldVersionMatch === null) {
+const originalContent = readFileSync(buildMarkerPath, 'utf8');
+const originalVersionMatch = buildMarkerVersionRe.exec(originalContent);
+
+if (originalVersionMatch === null) {
   throw new Error(`Failed to find version (${buildMarkerVersionRe}) in '${buildMarkerPath}'.`);
 }
 
-const [oldVersionAssignment, oldVersion] = oldVersionMatch;
-const newVersionAssignment = oldVersionAssignment.replace(oldVersion, mockVersion);
-const newContent = oldContent.replace(oldVersionAssignment, newVersionAssignment);
+const [originalVersionAssignment, originalVersion] = originalVersionMatch;
+const updatedVersionAssignment = originalVersionAssignment.replace(originalVersion, mockVersion);
+const updatedContent = originalContent.replace(originalVersionAssignment, updatedVersionAssignment);
 
-writeFileSync(buildMarkerPath, newContent);
-console.log(`Successfully mocked ngcc version: ${oldVersion} --> ${mockVersion}`);
+writeFileSync(buildMarkerPath, updatedContent);
+console.log(`Successfully mocked ngcc version: ${originalVersion} --> ${mockVersion}`);
