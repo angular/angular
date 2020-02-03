@@ -164,7 +164,7 @@ assertSucceeded "Expected 'ngcc' to log 'Compiling'."
   readonly actualNgccVersion=`node --print "require('@angular/compiler-cli/package.json').version"`
   readonly mockNgccVersion="3.0.0"
 
-  # Mock the ngcc version marker on a package make it appear as if compiled by a different ngcc version.
+  # Mock the ngcc version marker on a package to make it appear as if it is compiled by a different ngcc version.
   node mock-ngcc-version-marker @angular/material/button $mockNgccVersion
   assertSucceeded "Expected to successfully mock the 'ngcc' version marker in '@angular/material/button'."
   assertEquals $mockNgccVersion `node --print "require('@angular/material/button/package.json').__processed_by_ivy_ngcc__.main"`
@@ -177,7 +177,7 @@ assertSucceeded "Expected 'ngcc' to log 'Compiling'."
 
   # Ensure previously compiled packages were correctly cleaned up (i.e. no multiple
   # `import ... ɵngcc0` statements) and re-compiled by the current ngcc version.
-  assertNotEquals $actualNgccVersion `node --print "require('@angular/material/button/package.json').__processed_by_ivy_ngcc__.main"`
+  assertEquals $actualNgccVersion `node --print "require('@angular/material/button/package.json').__processed_by_ivy_ngcc__.main"`
   assertEquals 1 `cat node_modules/@angular/material/button/button.d.ts | grep 'import \* as ɵngcc0' | wc -l`
 
 

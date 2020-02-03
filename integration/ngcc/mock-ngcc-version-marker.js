@@ -16,8 +16,8 @@
  * ```
  *
  * Ngcc marks entry-points as processed by adding marker properties in their `package.json`. It uses
- * a version as marker in order to be able to distinguish entry-points processed by a different ngcc
- * version (e.g. an older version after an update) and perform the necessary clean-up.
+ * a version as a marker in order to be able to distinguish entry-points processed by a different
+ * ngcc version (e.g. an older version after an update) and perform the necessary clean-up.
  *
  * This script replaces the ngcc version marker in an entry-point's `package.json` to make it appear
  * as if it were processed by a different version of ngcc. This allows testing the clean-up logic
