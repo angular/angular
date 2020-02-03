@@ -12,7 +12,7 @@ import { serializeComponentState } from './state-serializer';
 import { ComponentInspector } from './component-inspector';
 import { setConsoleReference } from './selected-component';
 
-const inspector: ComponentInspector = new ComponentInspector();
+const inspector = new ComponentInspector();
 
 const startInspecting = () => inspector.startInspecting();
 const stopInspecting = () => inspector.stopInspecting();
