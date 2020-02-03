@@ -1703,7 +1703,7 @@ function renderComponent(hostLView: LView, componentHostIdx: number) {
  * Note that embedded views inside ngFor loops will never be out of sync because these views
  * are processed as soon as they are created.
  *
- * @param tView The current TView
+ * @param tView The `TView` that contains the blueprint for syncing
  * @param lView The view to sync
  */
 function syncViewWithBlueprint(tView: TView, lView: LView) {

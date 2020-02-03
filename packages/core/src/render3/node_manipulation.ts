@@ -130,7 +130,7 @@ export function createTextNode(value: string, renderer: Renderer3): RText {
  * to propagate deeply into the nested containers to remove all elements in the
  * views beneath it.
  *
- * @param tView The current `TView'
+ * @param tView The `TView' of the `LView` from which elements should be added or removed
  * @param lView The view from which elements should be added or removed
  * @param insertMode Whether or not elements should be added (if false, removing)
  * @param beforeNode The node before which elements should be added, if insert mode
@@ -153,7 +153,7 @@ export function addRemoveViewFromContainer(
 /**
  * Detach a `LView` from the DOM by detaching its nodes.
  *
- * @param tView The current `TView'
+ * @param tView The `TView' of the `LView` to be detached
  * @param lView the `LView` to be detached.
  */
 export function renderDetachView(tView: TView, lView: LView) {
@@ -216,7 +216,7 @@ export function destroyViewTree(rootView: LView): void {
  * root node of another view (in that case, the view's elements will be added when
  * the container's parent view is added later).
  *
- * @param tView The current `TView'
+ * @param tView The `TView' of the `LView` to insert
  * @param lView The view to insert
  * @param lContainer The container into which the view should be inserted
  * @param index Which index in the container to insert the child view into
@@ -355,9 +355,9 @@ export function removeView(lContainer: LContainer, removeIndex: number) {
 
 /**
  * A standalone function which destroys an LView,
- * conducting cleanup (e.g. removing listeners, calling onDestroys).
+ * conducting clean up (e.g. removing listeners, calling onDestroys).
  *
- * @param tView The current `TView'
+ * @param tView The `TView' of the `LView` to be destroyed
  * @param lView The view to be destroyed.
  */
 export function destroyLView(tView: TView, lView: LView) {
@@ -402,7 +402,7 @@ export function getParentState(lViewOrLContainer: LView | LContainer, rootView: 
  * listeners. Listeners are removed as the last step so events delivered in the onDestroys hooks
  * can be propagated to @Output listeners.
  *
- * @param tView `TView` for the `LView` to cleanup.
+ * @param tView `TView` for the `LView` to clean up.
  * @param lView The LView to clean up
  */
 function cleanUpView(tView: TView, lView: LView): void {
@@ -652,7 +652,7 @@ function getNativeAnchorNode(parentTNode: TNode, lView: LView): RNode|null {
  *
  * The element insertion might be delayed {@link canInsertNativeNode}.
  *
- * @param tView The current `TView'
+ * @param tView The `TView' to be appended
  * @param lView The current LView
  * @param childEl The native child (or children) that should be appended
  * @param childTNode The TNode of the child element
@@ -805,7 +805,7 @@ function applyNodes(
  * As you can see this is a very recursive problem. Yes recursion is not most efficient but the
  * code is complicated enough that trying to implemented with recursion becomes unmaintainable.
  *
- * @param tView The current `TView'
+ * @param tView The `TView' which needs to be inserted, detached, destroyed
  * @param lView The LView which needs to be inserted, detached, destroyed.
  * @param renderer Renderer to use
  * @param action action to perform (insert, detach, destroy)
@@ -826,7 +826,8 @@ function applyView(
  * Inserting a projection requires us to locate the projected nodes from the parent component. The
  * complication is that those nodes themselves could be re-projected from their parent component.
  *
- * @param lView The LView which needs to be inserted, detached, destroyed.
+ * @param tView The `TView` of `LView` which needs to be inserted, detached, destroyed
+ * @param lView The `LView` which needs to be inserted, detached, destroyed.
  * @param tProjectionNode node to project
  */
 export function applyProjection(tView: TView, lView: LView, tProjectionNode: TProjectionNode) {
