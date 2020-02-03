@@ -1,7 +1,7 @@
 # Next steps: tools and techniques
 
-After you understand the basic Angular building blocks, you can begin to learn more
-about the features and tools that are available to help you develop and deliver Angular applications.
+After you understand the basic Angular building blocks, you can learn more
+about the features and tools that can help you develop and deliver Angular applications.
 
 * Work through the [Tour of Heroes](tutorial/index) tutorial to get a feel for how to fit the basic building blocks together to create a well-designed application.
 
