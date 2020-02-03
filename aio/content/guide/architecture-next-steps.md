@@ -3,7 +3,7 @@
 After you understand the basic Angular building blocks, you can begin to learn more
 about the features and tools that are available to help you develop and deliver Angular applications.
 
-* Work through the [Tour of Heros](tutorial/index) tutorial to get a feel for how to fit the basic building blocks together to create a well-designed application.
+* Work through the [Tour of Heroes](tutorial/index) tutorial to get a feel for how to fit the basic building blocks together to create a well-designed application.
 
 * Check out the [Glossary](guide/glossary) to understand Angular-specific terms and usage.
 
@@ -29,7 +29,7 @@ Additional pages and sections describe some basic programming techniques for Ang
 
 * [Angular elements](guide/elements): How to package components as *custom elements* using Web Components, a web standard for defining new HTML elements in a framework-agnostic way.
 
-* [Forms](guide/forms-overview): Support complex data entry scenarios with HTML-based validation and dirty checking.
+* [Forms](guide/forms-overview): Support complex data entry scenarios with HTML-based input validation.
 
 * [Animations](guide/animations): Use Angular's animation library to animate component behavior
 without deep knowledge of animation techniques or CSS.
