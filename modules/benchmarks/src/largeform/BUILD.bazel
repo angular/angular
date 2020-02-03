@@ -20,7 +20,6 @@ ts_library(
     tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
     deps = [
         "//modules/e2e_util",
-        "@npm//@types/jasminewd2",
         "@npm//protractor",
     ],
 )

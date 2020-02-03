@@ -14,16 +14,16 @@ describe('largeform benchmark', () => {
 
   afterEach(verifyNoBrowserErrors);
 
-  it('should work for ng2', () => {
+  it('should work for ng2', async () => {
     openBrowser({
       url: '/',
       params: [{name: 'copies', value: 1}],
       ignoreBrowserSynchronization: true,
     });
-    $('#createDom').click();
-    expect(element.all(By.css('input[name=value0]')).get(0).getAttribute('value'))
+    await $('#createDom').click();
+    expect(await element.all(By.css('input[name=value0]')).get(0).getAttribute('value'))
         .toBe('someValue0');
-    $('#destroyDom').click();
-    expect(element.all(By.css('input[name=value0]')).count()).toBe(0);
+    await $('#destroyDom').click();
+    expect(await element.all(By.css('input[name=value0]')).count()).toBe(0);
   });
 });

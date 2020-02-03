@@ -28,24 +28,24 @@ const SCENARIOS = [
 describe('styling benchmark spec', () => {
   afterEach(verifyNoBrowserErrors);
 
-  it('should render and interact to update and detect changes', () => {
+  it('should render and interact to update and detect changes', async () => {
     openBrowser({url: '/', ignoreBrowserSynchronization: true});
     create();
     const items = element.all(by.css('styling-bindings button'));
-    expect(items.count()).toBe(2000);
-    expect(items.first().getAttribute('title')).toBe('bar');
+    expect(await items.count()).toBe(2000);
+    expect(await items.first().getAttribute('title')).toBe('bar');
     update();
-    expect(items.first().getAttribute('title')).toBe('baz');
+    expect(await items.first().getAttribute('title')).toBe('baz');
   });
 
-  it('should render and run noop change detection', () => {
+  it('should render and run noop change detection', async () => {
     openBrowser({url: '/', ignoreBrowserSynchronization: true});
     create();
     const items = element.all(by.css('styling-bindings button'));
-    expect(items.count()).toBe(2000);
-    expect(items.first().getAttribute('title')).toBe('bar');
+    expect(await items.count()).toBe(2000);
+    expect(await items.first().getAttribute('title')).toBe('bar');
     detectChanges();
-    expect(items.first().getAttribute('title')).toBe('bar');
+    expect(await items.first().getAttribute('title')).toBe('bar');
   });
 
   // Create benchmarks for each possible test scenario.
