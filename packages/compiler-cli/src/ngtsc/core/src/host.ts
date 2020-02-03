@@ -97,17 +97,22 @@ export class NgCompilerHost extends DelegatingCompilerHost implements
   readonly inputFiles: ReadonlyArray<string>;
   readonly rootDirs: ReadonlyArray<AbsoluteFsPath>;
   readonly typeCheckFile: AbsoluteFsPath;
+  readonly factoryFiles: AbsoluteFsPath[];
+  readonly summaryFiles: AbsoluteFsPath[];
 
   constructor(
       delegate: ExtendedTsCompilerHost, inputFiles: ReadonlyArray<string>,
       rootDirs: ReadonlyArray<AbsoluteFsPath>, private shims: ShimGenerator[],
       entryPoint: AbsoluteFsPath|null, typeCheckFile: AbsoluteFsPath,
+      factoryFiles: AbsoluteFsPath[], summaryFiles: AbsoluteFsPath[],
       factoryTracker: FactoryTracker|null, diagnostics: ts.Diagnostic[]) {
     super(delegate);
 
     this.factoryTracker = factoryTracker;
     this.entryPoint = entryPoint;
     this.typeCheckFile = typeCheckFile;
+    this.factoryFiles = factoryFiles;
+    this.summaryFiles = summaryFiles;
     this.diagnostics = diagnostics;
     this.inputFiles = inputFiles;
     this.rootDirs = rootDirs;
@@ -136,31 +141,36 @@ export class NgCompilerHost extends DelegatingCompilerHost implements
 
     const generators: ShimGenerator[] = [];
     let summaryGenerator: SummaryGenerator|null = null;
+    let summaryFiles: AbsoluteFsPath[];
 
     if (shouldGenerateSummaryShims) {
       // Summary generation.
       summaryGenerator = SummaryGenerator.forRootFiles(normalizedInputFiles);
       generators.push(summaryGenerator);
+      summaryFiles = summaryGenerator.getSummaryFileNames();
+    } else {
+      summaryFiles = [];
     }
 
     let factoryTracker: FactoryTracker|null = null;
+    let factoryFiles: AbsoluteFsPath[];
     if (shouldGenerateFactoryShims) {
       // Factory generation.
       const factoryGenerator = FactoryGenerator.forRootFiles(normalizedInputFiles);
       const factoryFileMap = factoryGenerator.factoryFileMap;
 
-      const factoryFileNames = Array.from(factoryFileMap.keys());
-      rootFiles.push(...factoryFileNames);
+      factoryFiles = Array.from(factoryFileMap.keys());
+      rootFiles.push(...factoryFiles);
       generators.push(factoryGenerator);
 
       factoryTracker = new FactoryTracker(factoryGenerator);
+    } else {
+      factoryFiles = [];
     }
 
     // Done separately to preserve the order of factory files before summary files in rootFiles.
     // TODO(alxhub): validate that this is necessary.
-    if (summaryGenerator !== null) {
-      rootFiles.push(...summaryGenerator.getSummaryFileNames());
-    }
+    rootFiles.push(...summaryFiles);
 
 
     const rootDirs = getRootDirs(delegate, options as ts.CompilerOptions);
@@ -203,8 +213,8 @@ export class NgCompilerHost extends DelegatingCompilerHost implements
     }
 
     return new NgCompilerHost(
-        delegate, rootFiles, rootDirs, generators, entryPoint, typeCheckFile, factoryTracker,
-        diagnostics);
+        delegate, rootFiles, rootDirs, generators, entryPoint, typeCheckFile, factoryFiles,
+        summaryFiles, factoryTracker, diagnostics);
   }
 
   getSourceFile(

@@ -22,9 +22,11 @@ const STRIP_NG_FACTORY = /(.*)NgFactory$/;
  * class of an input ts.SourceFile.
  */
 export class FactoryGenerator implements ShimGenerator {
-  private constructor(private map: Map<string, string>) {}
+  private constructor(private map: Map<AbsoluteFsPath, AbsoluteFsPath>) {}
 
-  get factoryFileMap(): Map<string, string> { return this.map; }
+  get factoryFileMap(): Map<AbsoluteFsPath, AbsoluteFsPath> { return this.map; }
+
+  get factoryFileNames(): AbsoluteFsPath[] { return Array.from(this.map.keys()); }
 
   recognize(fileName: AbsoluteFsPath): boolean { return this.map.has(fileName); }
 
@@ -101,7 +103,7 @@ export class FactoryGenerator implements ShimGenerator {
   }
 
   static forRootFiles(files: ReadonlyArray<AbsoluteFsPath>): FactoryGenerator {
-    const map = new Map<AbsoluteFsPath, string>();
+    const map = new Map<AbsoluteFsPath, AbsoluteFsPath>();
     files.filter(sourceFile => isNonDeclarationTsPath(sourceFile))
         .forEach(
             sourceFile =>

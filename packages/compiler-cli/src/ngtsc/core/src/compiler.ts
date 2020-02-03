@@ -97,6 +97,8 @@ export class NgCompiler {
   private resourceManager: HostResourceLoader;
   private cycleAnalyzer: CycleAnalyzer;
   readonly incrementalDriver: IncrementalDriver;
+  readonly ignoreForDiagnostics: Set<ts.SourceFile>;
+  readonly ignoreForEmit: Set<ts.SourceFile>;
 
   constructor(
       private host: NgCompilerHost, private options: NgCompilerOptions,
@@ -142,6 +144,14 @@ export class NgCompiler {
       }
     }
     setIncrementalDriver(tsProgram, this.incrementalDriver);
+
+    this.ignoreForDiagnostics = new Set([
+      this.typeCheckFile,
+      ...host.factoryFiles.map(fileName => getSourceFileOrError(tsProgram, fileName)),
+      ...host.summaryFiles.map(fileName => getSourceFileOrError(tsProgram, fileName)),
+    ]);
+
+    this.ignoreForEmit = new Set([this.typeCheckFile]);
   }
 
   /**
@@ -285,7 +295,6 @@ export class NgCompiler {
    */
   prepareEmit(): {
     transformers: ts.CustomTransformers,
-    ignoreFiles: Set<ts.SourceFile>,
   } {
     const compilation = this.ensureAnalyzed();
 
@@ -321,9 +330,7 @@ export class NgCompiler {
     }
     before.push(ivySwitchTransform);
 
-    const ignoreFiles = new Set<ts.SourceFile>([this.typeCheckFile]);
-
-    return {transformers: {before, afterDeclarations} as ts.CustomTransformers, ignoreFiles};
+    return {transformers: {before, afterDeclarations} as ts.CustomTransformers};
   }
 
   /**
