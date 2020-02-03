@@ -18,7 +18,7 @@ import {ArrayConcatBuiltinFn, ArraySliceBuiltinFn} from './builtin';
 import {DynamicValue} from './dynamic';
 import {ForeignFunctionResolver} from './interface';
 import {resolveKnownDeclaration} from './known_declaration';
-import {BuiltinFn, EnumValue, ResolvedModule, ResolvedValue, ResolvedValueArray, ResolvedValueMap} from './result';
+import {EnumValue, KnownFn, ResolvedModule, ResolvedValue, ResolvedValueArray, ResolvedValueMap} from './result';
 import {evaluateTsHelperInline} from './ts_helpers';
 
 
@@ -404,7 +404,7 @@ export class StaticInterpreter {
     }
 
     // If the call refers to a builtin function, attempt to evaluate the function.
-    if (lhs instanceof BuiltinFn) {
+    if (lhs instanceof KnownFn) {
       return lhs.evaluate(node, this.evaluateFunctionArguments(node, context));
     }
 

@@ -9,9 +9,9 @@
 import * as ts from 'typescript';
 
 import {DynamicValue} from './dynamic';
-import {BuiltinFn, ResolvedValue, ResolvedValueArray} from './result';
+import {KnownFn, ResolvedValue, ResolvedValueArray} from './result';
 
-export class ArraySliceBuiltinFn extends BuiltinFn {
+export class ArraySliceBuiltinFn extends KnownFn {
   constructor(private lhs: ResolvedValueArray) { super(); }
 
   evaluate(node: ts.CallExpression, args: ResolvedValueArray): ResolvedValue {
@@ -23,7 +23,7 @@ export class ArraySliceBuiltinFn extends BuiltinFn {
   }
 }
 
-export class ArrayConcatBuiltinFn extends BuiltinFn {
+export class ArrayConcatBuiltinFn extends KnownFn {
   constructor(private lhs: ResolvedValueArray) { super(); }
 
   evaluate(node: ts.CallExpression, args: ResolvedValueArray): ResolvedValue {
@@ -41,7 +41,7 @@ export class ArrayConcatBuiltinFn extends BuiltinFn {
   }
 }
 
-export class ObjectAssignBuiltinFn extends BuiltinFn {
+export class ObjectAssignBuiltinFn extends KnownFn {
   evaluate(node: ts.CallExpression, args: ResolvedValueArray): ResolvedValue {
     if (args.length === 0) {
       return DynamicValue.fromUnsupportedSyntax(node);

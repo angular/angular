@@ -22,7 +22,7 @@ import {DynamicValue} from './dynamic';
  * available statically.
  */
 export type ResolvedValue = number | boolean | string | null | undefined | Reference | EnumValue |
-    ResolvedValueArray | ResolvedValueMap | ResolvedModule | BuiltinFn | DynamicValue<unknown>;
+    ResolvedValueArray | ResolvedValueMap | ResolvedModule | KnownFn | DynamicValue<unknown>;
 
 /**
  * An array of `ResolvedValue`s.
@@ -76,8 +76,10 @@ export class EnumValue {
 }
 
 /**
- * An implementation of a builtin function, such as `Array.prototype.slice`.
+ * An implementation of a known function that can be statically evaluated.
+ * It could be a built-in function or method (such as `Array.prototype.slice`) or a TypeScript
+ * helper (such as `__spread`).
  */
-export abstract class BuiltinFn {
+export abstract class KnownFn {
   abstract evaluate(node: ts.CallExpression, args: ResolvedValueArray): ResolvedValue;
 }
