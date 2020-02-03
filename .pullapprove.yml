@@ -979,26 +979,6 @@ groups:
 
 
   # =========================================================
-  #  Material CI
-  # =========================================================
-  material-ci:
-    conditions:
-      - >
-        contains_any_globs(files, [
-          'tools/components-repo-ci/**'
-          ])
-    reviewers:
-      users:
-        - alxhub
-        - AndrewKushnir
-        - kara
-        - mhevery
-        - pkozlowski-opensource
-      teams:
-        - ~framework-global-approvers
-
-
-  # =========================================================
   #  Public API
   # =========================================================
   public-api:
