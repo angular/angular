@@ -1641,7 +1641,8 @@ function refreshTransplantedViews(lContainer: LContainer, declaredComponentLView
       // should automatically mark a view as dirty.
       const insertionComponentIsOnPush =
           (insertedComponentLView[FLAGS] & LViewFlags.CheckAlways) === 0;
-      if (insertionComponentIsOnPush) {
+      const insertionComponentDirty = insertedComponentLView[FLAGS] & LViewFlags.Dirty;
+      if (insertionComponentIsOnPush && !insertionComponentDirty) {
         // Here we know that the template has been transplanted across components and is
         // on-push (not just moved within a component). If the insertion is marked dirty, then
         // there is no need to CD here as we will do it again later when we get to insertion

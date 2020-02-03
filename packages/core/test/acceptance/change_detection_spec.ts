@@ -1318,7 +1318,8 @@ describe('change detection', () => {
 
       insertComp.changeDetectorRef.markForCheck();
       fixture.detectChanges(false);
-      expect(log).toEqual(ivyEnabled ? ['Declare', 'Insert'] : ['Insert']);
+      // Only checked with insertion because insertion is dirty.
+      expect(log).toEqual(['Insert']);
       log.length = 0;
       expect(trim(fixture.nativeElement.textContent))
           .toEqual('DeclareComp(Angular) InsertComp(Hi) Hi Angular!');
