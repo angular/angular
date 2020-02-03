@@ -88,13 +88,43 @@ export class NgtscProgram implements api.Program {
   getTsSyntacticDiagnostics(
       sourceFile?: ts.SourceFile|undefined,
       cancellationToken?: ts.CancellationToken|undefined): readonly ts.Diagnostic[] {
-    return this.tsProgram.getSyntacticDiagnostics(sourceFile, cancellationToken);
+    const ignoredFiles = this.compiler.ignoreForDiagnostics;
+    if (sourceFile !== undefined) {
+      if (ignoredFiles.has(sourceFile)) {
+        return [];
+      }
+
+      return this.tsProgram.getSyntacticDiagnostics(sourceFile, cancellationToken);
+    } else {
+      const diagnostics: ts.Diagnostic[] = [];
+      for (const sf of this.tsProgram.getSourceFiles()) {
+        if (!ignoredFiles.has(sf)) {
+          diagnostics.push(...this.tsProgram.getSyntacticDiagnostics(sf, cancellationToken));
+        }
+      }
+      return diagnostics;
+    }
   }
 
   getTsSemanticDiagnostics(
       sourceFile?: ts.SourceFile|undefined,
       cancellationToken?: ts.CancellationToken|undefined): readonly ts.Diagnostic[] {
-    return this.tsProgram.getSemanticDiagnostics(sourceFile, cancellationToken);
+    const ignoredFiles = this.compiler.ignoreForDiagnostics;
+    if (sourceFile !== undefined) {
+      if (ignoredFiles.has(sourceFile)) {
+        return [];
+      }
+
+      return this.tsProgram.getSemanticDiagnostics(sourceFile, cancellationToken);
+    } else {
+      const diagnostics: ts.Diagnostic[] = [];
+      for (const sf of this.tsProgram.getSourceFiles()) {
+        if (!ignoredFiles.has(sf)) {
+          diagnostics.push(...this.tsProgram.getSemanticDiagnostics(sf, cancellationToken));
+        }
+      }
+      return diagnostics;
+    }
   }
 
   getNgOptionDiagnostics(cancellationToken?: ts.CancellationToken|
@@ -144,7 +174,8 @@ export class NgtscProgram implements api.Program {
     emitCallback?: api.TsEmitCallback | undefined;
     mergeEmitResultsCallback?: api.TsMergeEmitResultsCallback | undefined;
   }|undefined): ts.EmitResult {
-    const {transformers, ignoreFiles} = this.compiler.prepareEmit();
+    const {transformers} = this.compiler.prepareEmit();
+    const ignoreFiles = this.compiler.ignoreForEmit;
     const emitCallback = opts && opts.emitCallback || defaultEmitCallback;
 
     const writeFile: ts.WriteFileCallback =
