@@ -8,11 +8,12 @@
 
 import {CommonModule, DOCUMENT} from '@angular/common';
 import {computeMsgId} from '@angular/compiler';
-import {Compiler, Component, ComponentFactoryResolver, Directive, DoCheck, ElementRef, EmbeddedViewRef, ErrorHandler, NO_ERRORS_SCHEMA, NgModule, OnInit, Pipe, PipeTransform, QueryList, RendererFactory2, RendererType2, Sanitizer, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {Compiler, Component, ComponentFactoryResolver, Directive, DoCheck, ElementRef, EmbeddedViewRef, ErrorHandler, NO_ERRORS_SCHEMA, NgModule, OnInit, Pipe, PipeTransform, QueryList, Renderer2, RendererFactory2, RendererType2, Sanitizer, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, ɵsetDocument} from '@angular/core';
 import {Input} from '@angular/core/src/metadata';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed, TestComponentRenderer} from '@angular/core/testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
+import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 import {By, DomSanitizer} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
@@ -161,7 +162,7 @@ describe('ViewContainerRef', () => {
       expect(fixture.debugElement.nativeElement.innerHTML).toContain('Hello');
     });
 
-    isBrowser && describe('element namespaces', () => {
+    describe('element namespaces', () => {
       function runTestWithSelectors(svgSelector: string, mathMLSelector: string) {
         it('should be set correctly for host elements of dynamically created components', () => {
           @Component({
@@ -181,6 +182,9 @@ describe('ViewContainerRef', () => {
           @NgModule({
             entryComponents: [SvgComp, MathMLComp],
             declarations: [SvgComp, MathMLComp],
+            // View Engine doesn't have MathML tags listed in `DomElementSchemaRegistry`, thus
+            // throwing "unknown element" error (':math:matrix' is not a known element). Ignore
+            // these errors by adding `NO_ERRORS_SCHEMA` to this NgModule.
             schemas: [NO_ERRORS_SCHEMA],
           })
           class RootModule {
@@ -207,9 +211,22 @@ describe('ViewContainerRef', () => {
             }
           }
 
+          function _document(): any {
+            // Tell Ivy about the global document
+            ɵsetDocument(document);
+            return document;
+          }
+
           TestBed.configureTestingModule({
             declarations: [TestComp],
             imports: [RootModule],
+            providers: [
+              {provide: DOCUMENT, useFactory: _document, deps: []},
+              // TODO(FW-811): switch back to default server renderer (i.e. remove the line below)
+              // once it starts to support Ivy namespace format (URIs) correctly. For now, use
+              // `DomRenderer` that supports Ivy namespace format.
+              {provide: RendererFactory2, useClass: DomRendererFactory2}
+            ],
           });
           const fixture = TestBed.createComponent(TestComp);
           fixture.detectChanges();
