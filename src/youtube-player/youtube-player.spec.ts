@@ -274,6 +274,80 @@ describe('YoutubePlayer', () => {
       testComponent.youtubePlayer.getVideoEmbedCode();
       expect(playerSpy.getVideoEmbedCode).toHaveBeenCalled();
     });
+
+    it('should play on init if playVideo was called before the API has loaded', () => {
+      testComponent.youtubePlayer.playVideo();
+      expect(testComponent.youtubePlayer.getPlayerState()).toBe(YT.PlayerState.PLAYING);
+
+      events.onReady({target: playerSpy});
+
+      expect(playerSpy.playVideo).toHaveBeenCalled();
+    });
+
+    it('should pause on init if pauseVideo was called before the API has loaded', () => {
+      testComponent.youtubePlayer.pauseVideo();
+      expect(testComponent.youtubePlayer.getPlayerState()).toBe(YT.PlayerState.PAUSED);
+
+      events.onReady({target: playerSpy});
+
+      expect(playerSpy.pauseVideo).toHaveBeenCalled();
+    });
+
+    it('should stop on init if stopVideo was called before the API has loaded', () => {
+      testComponent.youtubePlayer.stopVideo();
+      expect(testComponent.youtubePlayer.getPlayerState()).toBe(YT.PlayerState.CUED);
+
+      events.onReady({target: playerSpy});
+
+      expect(playerSpy.stopVideo).toHaveBeenCalled();
+    });
+
+    it('should set the playback rate on init if setPlaybackRate was called before ' +
+      'the API has loaded', () => {
+        testComponent.youtubePlayer.setPlaybackRate(1337);
+        expect(testComponent.youtubePlayer.getPlaybackRate()).toBe(1337);
+
+        events.onReady({target: playerSpy});
+
+        expect(playerSpy.setPlaybackRate).toHaveBeenCalledWith(1337);
+      });
+
+    it('should set the volume on init if setVolume was called before the API has loaded', () => {
+      testComponent.youtubePlayer.setVolume(37);
+      expect(testComponent.youtubePlayer.getVolume()).toBe(37);
+
+      events.onReady({target: playerSpy});
+
+      expect(playerSpy.setVolume).toHaveBeenCalledWith(37);
+    });
+
+    it('should mute on init if mute was called before the API has loaded', () => {
+      testComponent.youtubePlayer.mute();
+      expect(testComponent.youtubePlayer.isMuted()).toBe(true);
+
+      events.onReady({target: playerSpy});
+
+      expect(playerSpy.mute).toHaveBeenCalled();
+    });
+
+    it('should unmute on init if umMute was called before the API has loaded', () => {
+      testComponent.youtubePlayer.unMute();
+      expect(testComponent.youtubePlayer.isMuted()).toBe(false);
+
+      events.onReady({target: playerSpy});
+
+      expect(playerSpy.unMute).toHaveBeenCalled();
+    });
+
+    it('should seek on init if seekTo was called before the API has loaded', () => {
+      testComponent.youtubePlayer.seekTo(1337, true);
+      expect(testComponent.youtubePlayer.getCurrentTime()).toBe(1337);
+
+      events.onReady({target: playerSpy});
+
+      expect(playerSpy.seekTo).toHaveBeenCalledWith(1337, true);
+    });
+
   });
 
   describe('API loaded asynchronously', () => {

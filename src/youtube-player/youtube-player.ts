@@ -78,6 +78,18 @@ interface Player extends YT.Player {
 type UninitializedPlayer = Pick<Player, 'videoId' | 'destroy' | 'addEventListener'>;
 
 /**
+ * Object used to store the state of the player if the
+ * user tries to interact with the API before it has been loaded.
+ */
+interface PendingPlayerState {
+  playbackState?: YT.PlayerState.PLAYING | YT.PlayerState.PAUSED | YT.PlayerState.CUED;
+  playbackRate?: number;
+  volume?: number;
+  muted?: boolean;
+  seek?: {seconds: number, allowSeekAhead: boolean};
+}
+
+/**
  * Angular component that renders a YouTube player via the YouTube player
  * iframe API.
  * @see https://developers.google.com/youtube/iframe_api_reference
@@ -160,6 +172,7 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
   private _destroyed = new Subject<void>();
   private _player: Player | undefined;
   private _existingApiReadyCallback: (() => void) | undefined;
+  private _pendingPlayerState: PendingPlayerState | undefined;
 
   constructor(
     private _ngZone: NgZone,
@@ -218,7 +231,15 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
       }), takeUntil(this._destroyed), publish());
 
     // Set up side effects to bind inputs to the player.
-    playerObs.subscribe(player => this._player = player);
+    playerObs.subscribe(player => {
+      this._player = player;
+
+      if (player && this._pendingPlayerState) {
+        this._initializePlayer(player, this._pendingPlayerState);
+      }
+
+      this._pendingPlayerState = undefined;
+    });
 
     bindSizeToPlayer(playerObs, this._width, this._height);
 
@@ -289,6 +310,8 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
   playVideo() {
     if (this._player) {
       this._player.playVideo();
+    } else {
+      this._getPendingState().playbackState = YT.PlayerState.PLAYING;
     }
   }
 
@@ -296,6 +319,8 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
   pauseVideo() {
     if (this._player) {
       this._player.pauseVideo();
+    } else {
+      this._getPendingState().playbackState = YT.PlayerState.PAUSED;
     }
   }
 
@@ -303,6 +328,9 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
   stopVideo() {
     if (this._player) {
       this._player.stopVideo();
+    } else {
+      // It seems like YouTube sets the player to CUED when it's stopped.
+      this._getPendingState().playbackState = YT.PlayerState.CUED;
     }
   }
 
@@ -310,6 +338,8 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
   seekTo(seconds: number, allowSeekAhead: boolean) {
     if (this._player) {
       this._player.seekTo(seconds, allowSeekAhead);
+    } else {
+      this._getPendingState().seek = {seconds, allowSeekAhead};
     }
   }
 
@@ -317,6 +347,8 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
   mute() {
     if (this._player) {
       this._player.mute();
+    } else {
+      this._getPendingState().muted = true;
     }
   }
 
@@ -324,36 +356,66 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
   unMute() {
     if (this._player) {
       this._player.unMute();
+    } else {
+      this._getPendingState().muted = false;
     }
   }
 
   /** See https://developers.google.com/youtube/iframe_api_reference#isMuted */
   isMuted(): boolean {
-    return !this._player || this._player.isMuted();
+    if (this._player) {
+      return this._player.isMuted();
+    }
+
+    if (this._pendingPlayerState) {
+      return !!this._pendingPlayerState.muted;
+    }
+
+    return false;
   }
 
   /** See https://developers.google.com/youtube/iframe_api_reference#setVolume */
   setVolume(volume: number) {
     if (this._player) {
       this._player.setVolume(volume);
+    } else {
+      this._getPendingState().volume = volume;
     }
   }
 
   /** See https://developers.google.com/youtube/iframe_api_reference#getVolume */
   getVolume(): number {
-    return this._player ? this._player.getVolume() : 0;
+    if (this._player) {
+      return this._player.getVolume();
+    }
+
+    if (this._pendingPlayerState && this._pendingPlayerState.volume != null) {
+      return this._pendingPlayerState.volume;
+    }
+
+    return 0;
   }
 
   /** See https://developers.google.com/youtube/iframe_api_reference#setPlaybackRate */
   setPlaybackRate(playbackRate: number) {
     if (this._player) {
       return this._player.setPlaybackRate(playbackRate);
+    } else {
+      this._getPendingState().playbackRate = playbackRate;
     }
   }
 
   /** See https://developers.google.com/youtube/iframe_api_reference#getPlaybackRate */
   getPlaybackRate(): number {
-    return this._player ? this._player.getPlaybackRate() : 0;
+    if (this._player) {
+      return this._player.getPlaybackRate();
+    }
+
+    if (this._pendingPlayerState && this._pendingPlayerState.playbackRate != null) {
+      return this._pendingPlayerState.playbackRate;
+    }
+
+    return 0;
   }
 
   /** See https://developers.google.com/youtube/iframe_api_reference#getAvailablePlaybackRates */
@@ -372,12 +434,28 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
       return undefined;
     }
 
-    return this._player ? this._player.getPlayerState() : YT.PlayerState.UNSTARTED;
+    if (this._player) {
+      return this._player.getPlayerState();
+    }
+
+    if (this._pendingPlayerState && this._pendingPlayerState.playbackState != null) {
+      return this._pendingPlayerState.playbackState;
+    }
+
+    return YT.PlayerState.UNSTARTED;
   }
 
   /** See https://developers.google.com/youtube/iframe_api_reference#getCurrentTime */
   getCurrentTime(): number {
-    return this._player ? this._player.getCurrentTime() : 0;
+    if (this._player) {
+      return this._player.getCurrentTime();
+    }
+
+    if (this._pendingPlayerState && this._pendingPlayerState.seek) {
+      return this._pendingPlayerState.seek.seconds;
+    }
+
+    return 0;
   }
 
   /** See https://developers.google.com/youtube/iframe_api_reference#getPlaybackQuality */
@@ -403,6 +481,42 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
   /** See https://developers.google.com/youtube/iframe_api_reference#getVideoEmbedCode */
   getVideoEmbedCode(): string {
     return this._player ? this._player.getVideoEmbedCode() : '';
+  }
+
+  /** Gets an object that should be used to store the temporary API state. */
+  private _getPendingState(): PendingPlayerState {
+    if (!this._pendingPlayerState) {
+      this._pendingPlayerState = {};
+    }
+
+    return this._pendingPlayerState;
+  }
+
+  /** Initializes a player from a temporary state. */
+  private _initializePlayer(player: YT.Player, state: PendingPlayerState): void {
+    const {playbackState, playbackRate, volume, muted, seek} = state;
+
+    switch (playbackState) {
+      case YT.PlayerState.PLAYING: player.playVideo(); break;
+      case YT.PlayerState.PAUSED: player.pauseVideo(); break;
+      case YT.PlayerState.CUED: player.stopVideo(); break;
+    }
+
+    if (playbackRate != null) {
+      player.setPlaybackRate(playbackRate);
+    }
+
+    if (volume != null) {
+      player.setVolume(volume);
+    }
+
+    if (muted != null) {
+      muted ? player.mute() : player.unMute();
+    }
+
+    if (seek != null) {
+      player.seekTo(seek.seconds, seek.allowSeekAhead);
+    }
   }
 }
 
