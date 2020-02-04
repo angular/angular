@@ -3,6 +3,7 @@
   height: 100%;
   overflow: auto;
 }
+
 :host /deep/ .mat-tree-node .mat-icon {
   font-size: 12px;
   width: 16px;
@@ -22,7 +23,7 @@
   font-size: 11px;
 }
 
-:host /deep/ mat-tree-node > button {
+:host /deep/ mat-tree-node>button {
   outline: none;
   border: 0;
   background: transparent;
@@ -91,4 +92,20 @@
 .up-down-buttons {
   width: 20%;
   display: flex;
+}
+
+.parent-nodes {
+  background-color: #ddd;
+  padding: 2px;
+  bottom: 0px;
+  position: fixed;
+  width: 100%;
+}
+
+.btn-node {
+  font-size: 11px;
+  margin: 0px;
+  padding-left: 5px;
+  padding-right: 5px;
+  line-height: 20px;
 }
