@@ -1,3 +1,19 @@
+<a name="9.0.0-rc.14"></a>
+# [9.0.0-rc.14](https://github.com/angular/angular/compare/9.0.0-rc.13...9.0.0-rc.14) (2020-02-03)
+
+
+### Bug Fixes
+
+* **ivy:** host-styling throws assert exception inside *ngFor ([#35133](https://github.com/angular/angular/issues/35133)) ([31e9873](https://github.com/angular/angular/commit/31e9873)), closes [#35118](https://github.com/angular/angular/issues/35118)
+* **ngcc:** correctly invalidate cache when moving/removing files/directories ([#35106](https://github.com/angular/angular/issues/35106)) ([22357d4](https://github.com/angular/angular/commit/22357d4)), closes [/github.com/angular/angular/blob/4d36b2f6e/packages/compiler-cli/ngcc/src/writing/cleaning/cleaning_strategies.ts#L54](https://github.com//github.com/angular/angular/blob/4d36b2f6e/packages/compiler-cli/ngcc/src/writing/cleaning/cleaning_strategies.ts/issues/L54) [/github.com/angular/angular/blob/4d36b2f6e/packages/compiler-cli/ngcc/src/writing/cleaning/cleaning_strategies.ts#L61](https://github.com//github.com/angular/angular/blob/4d36b2f6e/packages/compiler-cli/ngcc/src/writing/cleaning/cleaning_strategies.ts/issues/L61) [#35095](https://github.com/angular/angular/issues/35095)
+* **ngcc:** do not lock if the target is not compiled by Angular ([#35057](https://github.com/angular/angular/issues/35057)) ([c30c518](https://github.com/angular/angular/commit/c30c518)), closes [#35000](https://github.com/angular/angular/issues/35000)
+
+
+### Features
+
+* performance improvement for eventListeners ([#34613](https://github.com/angular/angular/issues/34613)) ([d21b7a4](https://github.com/angular/angular/commit/d21b7a4))
+
+
 <a name="9.0.0-rc.13"></a>
 # [9.0.0-rc.13](https://github.com/angular/angular/compare/9.0.0-rc.12...9.0.0-rc.13) (2020-02-01)
 
