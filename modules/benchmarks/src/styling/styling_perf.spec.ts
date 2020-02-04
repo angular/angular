@@ -51,34 +51,34 @@ describe('styling benchmark spec', () => {
   // Create benchmarks for each possible test scenario.
   SCENARIOS.forEach(({optionIndex, id}) => {
     describe(id, () => {
-      it('should run create benchmark', done => {
-        runStylingBenchmark(`styling.${id}.create`, {
+      it('should run create benchmark', async() => {
+        await runStylingBenchmark(`styling.${id}.create`, {
           work: () => create(),
           prepare: () => {
             selectScenario(optionIndex);
             destroy();
           },
-        }).then(done, done.fail);
+        });
       });
 
-      it('should run update benchmark', done => {
-        runStylingBenchmark(`styling.${id}.update`, {
+      it('should run update benchmark', async() => {
+        await runStylingBenchmark(`styling.${id}.update`, {
           work: () => update(),
           prepare: () => {
             selectScenario(optionIndex);
             create();
           },
-        }).then(done, done.fail);
+        });
       });
 
-      it('should run detect changes benchmark', done => {
-        runStylingBenchmark(`styling.${id}.noop_cd`, {
+      it('should run detect changes benchmark', async() => {
+        await runStylingBenchmark(`styling.${id}.noop_cd`, {
           work: () => detectChanges(),
           prepare: () => {
             selectScenario(optionIndex);
             create();
           },
-        }).then(done, done.fail);
+        });
       });
     });
   });

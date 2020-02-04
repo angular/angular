@@ -53,13 +53,13 @@ describe('js-web-frameworks benchmark perf', () => {
 
   [Create1KWorker, Delete1KWorker, UpdateWorker, SwapWorker].forEach((worker) => {
     describe(worker.id, () => {
-      it(`should run benchmark for ${testPackageName}`, done => {
+      it(`should run benchmark for ${testPackageName}`, async() => {
         runTableBenchmark({
           id: `js-web-frameworks.${testPackageName}.${worker.id}`,
           url: '/',
           ignoreBrowserSynchronization: true,
           worker: worker
-        }).then(done, done.fail);
+        });
       });
     });
   });

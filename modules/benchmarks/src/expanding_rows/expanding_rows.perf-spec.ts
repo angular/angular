@@ -11,7 +11,7 @@ import {runBenchmark} from '../../../e2e_util/perf_util';
 
 describe('benchmarks', () => {
 
-  it('should work for create', done => {
+  it('should work for create', async() => {
     browser.rootEl = '#root';
     runBenchmark({
       id: 'create',
@@ -20,7 +20,7 @@ describe('benchmarks', () => {
       params: [],
       prepare: () => $('#reset').click(),
       work: () => $('#init').click()
-    }).then(done, done.fail);
+    });
   });
 
 });

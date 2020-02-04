@@ -11,7 +11,7 @@ import {$} from 'protractor';
 import {openTreeBenchmark} from './test_utils';
 
 describe('tree benchmark', () => {
-  it('should work for createDestroy', () => {
+  it('should work for createDestroy', async() => {
     openTreeBenchmark();
     $('#createDom').click();
     expect($('#root').getText()).toContain('1');
@@ -19,7 +19,7 @@ describe('tree benchmark', () => {
     expect($('#root').getText() as any).toEqual('');
   });
 
-  it('should work for update', () => {
+  it('should work for update', async() => {
     openTreeBenchmark();
     $('#createDom').click();
     $('#createDom').click();

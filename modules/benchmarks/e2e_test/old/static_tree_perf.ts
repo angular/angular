@@ -15,34 +15,34 @@ describe('ng2 static tree benchmark', function() {
 
   afterEach(verifyNoBrowserErrors);
 
-  it('should log the ng stats', function(done) {
+  it('should log the ng stats', async() => {
     runClickBenchmark({
       url: URL,
       buttons: ['#ng2DestroyDom', '#ng2CreateDom'],
       id: 'ng2.static.tree.create.plain',
       params: []
-    }).then(done, done.fail);
+    });
   });
 
-  it('should log the ng stats (update)', function(done) {
+  it('should log the ng stats (update)', async() => {
     runClickBenchmark(
         {url: URL, buttons: ['#ng2CreateDom'], id: 'ng2.static.tree.update', params: []})
-        .then(done, done.fail);
+        ;
   });
 
-  it('should log the baseline stats', function(done) {
+  it('should log the baseline stats', async() => {
     runClickBenchmark({
       url: URL,
       buttons: ['#baselineDestroyDom', '#baselineCreateDom'],
       id: 'baseline.static.tree.create',
       params: []
-    }).then(done, done.fail);
+    });
   });
 
-  it('should log the baseline stats (update)', function(done) {
+  it('should log the baseline stats (update)', async() => {
     runClickBenchmark(
         {url: URL, buttons: ['#baselineCreateDom'], id: 'baseline.static.tree.update', params: []})
-        .then(done, done.fail);
+        ;
   });
 
 });

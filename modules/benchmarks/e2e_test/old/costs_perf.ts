@@ -18,30 +18,30 @@ describe('ng2 cost benchmark', function() {
 
   afterEach(verifyNoBrowserErrors);
 
-  it('should log stats for baseline (plain components)', function(done) {
+  it('should log stats for baseline (plain components)', async() => {
     runClickBenchmark({
       url: URL,
       buttons: ['#reset', '#createPlainComponents'],
       id: 'ng2.costs.baseline',
       params: [{name: 'size', value: benchmarkSize, scale: 'linear'}]
-    }).then(done, done.fail);
+    });
   });
 
-  it('should log stats for components with decorators', function(done) {
+  it('should log stats for components with decorators', async() => {
     runClickBenchmark({
       url: URL,
       buttons: ['#reset', '#createComponentsWithDirectives'],
       id: 'ng2.costs.decorators',
       params: [{name: 'size', value: benchmarkSize, scale: 'linear'}]
-    }).then(done, done.fail);
+    });
   });
 
-  it('should log stats for dynamic components', function(done) {
+  it('should log stats for dynamic components', async() => {
     runClickBenchmark({
       url: URL,
       buttons: ['#reset', '#createDynamicComponents'],
       id: 'ng2.costs.dynamic',
       params: [{name: 'size', value: benchmarkSize, scale: 'linear'}]
-    }).then(done, done.fail);
+    });
   });
 });

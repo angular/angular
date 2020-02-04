@@ -15,7 +15,7 @@ describe('ng2 naive infinite scroll benchmark', function() {
 
   afterEach(verifyNoBrowserErrors);
 
-  it('should not throw errors', function() {
+  it('should not throw errors', async() => {
     browser.get(URL);
     const expectedRowCount = 18;
     const expectedCellsPerRow = 27;
