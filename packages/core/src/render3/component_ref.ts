@@ -19,6 +19,7 @@ import {RendererFactory2} from '../render/api';
 import {Sanitizer} from '../sanitization/sanitizer';
 import {VERSION} from '../version';
 import {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '../view/provider';
+
 import {assertComponentType} from './assert';
 import {LifecycleHooksFeature, createRootComponent, createRootComponentView, createRootContext} from './component';
 import {getComponentDef} from './definition';
@@ -28,6 +29,7 @@ import {ComponentDef} from './interfaces/definition';
 import {TContainerNode, TElementContainerNode, TElementNode} from './interfaces/node';
 import {RNode, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {LView, LViewFlags, TVIEW, TViewType} from './interfaces/view';
+import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
 import {stringifyCSSSelectorList} from './node_selector_matcher';
 import {enterView, leaveView} from './state';
 import {defaultScheduler} from './util/misc_utils';
@@ -57,6 +59,11 @@ function toRefArray(map: {[key: string]: string}): {propName: string; templateNa
     }
   }
   return array;
+}
+
+function getNamespace(elementName: string): string|null {
+  const name = elementName.toLowerCase();
+  return name === 'svg' ? SVG_NAMESPACE : (name === 'math' ? MATH_ML_NAMESPACE : null);
 }
 
 /**
@@ -132,14 +139,14 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     const sanitizer = rootViewInjector.get(Sanitizer, null);
 
     const hostRenderer = rendererFactory.createRenderer(null, this.componentDef);
+    // Determine a tag name used for creating host elements when this component is created
+    // dynamically. Default to 'div' if this component did not specify any tag name in its selector.
+    const elementName = this.componentDef.selectors[0][0] as string || 'div';
     const hostRNode = rootSelectorOrNode ?
         locateHostElement(hostRenderer, rootSelectorOrNode, this.componentDef.encapsulation) :
-        // Determine a tag name used for creating host elements when this component is created
-        // dynamically. Default to 'div' if this component did not specify any tag name in its
-        // selector.
         elementCreate(
-            this.componentDef.selectors[0][0] as string || 'div',
-            rendererFactory.createRenderer(null, this.componentDef), null);
+            elementName, rendererFactory.createRenderer(null, this.componentDef),
+            getNamespace(elementName));
 
     const rootFlags = this.componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :
                                                  LViewFlags.CheckAlways | LViewFlags.IsRoot;
