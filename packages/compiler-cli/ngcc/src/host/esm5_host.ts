@@ -41,8 +41,6 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @param clazz a `ClassDeclaration` representing the class over which to reflect.
    */
   hasBaseClass(clazz: ClassDeclaration): boolean {
-    if (super.hasBaseClass(clazz)) return true;
-
     const classSymbol = this.getClassSymbol(clazz);
     if (classSymbol === undefined) {
       return false;
@@ -58,11 +56,6 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
   }
 
   getBaseClassExpression(clazz: ClassDeclaration): ts.Expression|null {
-    const superBaseClassIdentifier = super.getBaseClassExpression(clazz);
-    if (superBaseClassIdentifier) {
-      return superBaseClassIdentifier;
-    }
-
     const classSymbol = this.getClassSymbol(clazz);
     if (classSymbol === undefined) {
       return null;

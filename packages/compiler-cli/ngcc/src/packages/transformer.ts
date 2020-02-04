@@ -8,6 +8,7 @@
 import * as ts from 'typescript';
 
 import {FileSystem} from '../../../src/ngtsc/file_system';
+import {TypeScriptReflectionHost} from '../../../src/ngtsc/reflection';
 import {DecorationAnalyzer} from '../analysis/decoration_analyzer';
 import {ModuleWithProvidersAnalyses, ModuleWithProvidersAnalyzer} from '../analysis/module_with_providers_analyzer';
 import {NgccReferencesRegistry} from '../analysis/ngcc_references_registry';
@@ -15,6 +16,7 @@ import {ExportInfo, PrivateDeclarationsAnalyzer} from '../analysis/private_decla
 import {SwitchMarkerAnalyses, SwitchMarkerAnalyzer} from '../analysis/switch_marker_analyzer';
 import {CompiledFile} from '../analysis/types';
 import {CommonJsReflectionHost} from '../host/commonjs_host';
+import {DelegatingReflectionHost} from '../host/delegating_host';
 import {Esm2015ReflectionHost} from '../host/esm2015_host';
 import {Esm5ReflectionHost} from '../host/esm5_host';
 import {NgccReflectionHost} from '../host/ngcc_host';
@@ -69,7 +71,9 @@ export class Transformer {
    * @returns information about the files that were transformed.
    */
   transform(bundle: EntryPointBundle): TransformResult {
-    const reflectionHost = this.getHost(bundle);
+    const ngccReflectionHost = this.getHost(bundle);
+    const tsReflectionHost = new TypeScriptReflectionHost(bundle.src.program.getTypeChecker());
+    const reflectionHost = new DelegatingReflectionHost(tsReflectionHost, ngccReflectionHost);
 
     // Parse and analyze the files.
     const {decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
@@ -81,7 +85,7 @@ export class Transformer {
     }
 
     // Transform the source files and source maps.
-    const srcFormatter = this.getRenderingFormatter(reflectionHost, bundle);
+    const srcFormatter = this.getRenderingFormatter(ngccReflectionHost, bundle);
 
     const renderer = new Renderer(reflectionHost, srcFormatter, this.fs, this.logger, bundle);
     let renderedFiles = renderer.renderProgram(

@@ -34,11 +34,6 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
   }
 
   getImportOfIdentifier(id: ts.Identifier): Import|null {
-    const superImport = super.getImportOfIdentifier(id);
-    if (superImport !== null) {
-      return superImport;
-    }
-
     const requireCall = this.findCommonJsImport(id);
     if (requireCall === null) {
       return null;
@@ -47,8 +42,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
   }
 
   getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
-    return (!id.getSourceFile().isDeclarationFile && this.getCommonJsImportedDeclaration(id)) ||
-        super.getDeclarationOfIdentifier(id);
+    return this.getCommonJsImportedDeclaration(id) || super.getDeclarationOfIdentifier(id);
   }
 
   getExportsOfModule(module: ts.Node): Map<string, Declaration>|null {
