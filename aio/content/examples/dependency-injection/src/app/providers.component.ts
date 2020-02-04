@@ -247,7 +247,7 @@ let some_message = 'Hello from the injected logger';
 export class Provider10Component implements OnInit {
   log: string;
   // #docregion provider-10-ctor
-  constructor(@Optional() private logger: Logger) {
+  constructor(@Optional() private logger?: Logger) {
     if (this.logger) {
       this.logger.log(some_message);
     }

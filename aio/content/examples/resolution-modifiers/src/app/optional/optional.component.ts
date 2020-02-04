@@ -9,7 +9,7 @@ import { OptionalService } from '../optional.service';
 
 // #docregion optional-component
 export class OptionalComponent {
-  constructor(@Optional() public optional: OptionalService) {}
+  constructor(@Optional() public optional?: OptionalService) {}
 }
 // #enddocregion optional-component
 
