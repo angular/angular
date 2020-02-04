@@ -248,7 +248,7 @@ export class TestViewProvidersComponent {
 export class ExternalTemplateComponent implements OnInit {
   serviceValue: string;
 
-  constructor(@Optional() private service: ValueService) {  }
+  constructor(@Optional() private service?: ValueService) {  }
 
   ngOnInit() {
     if (this.service) { this.serviceValue = this.service.getValue(); }
