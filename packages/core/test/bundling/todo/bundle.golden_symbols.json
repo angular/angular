@@ -564,9 +564,6 @@
     "name": "getCheckNoChangesMode"
   },
   {
-    "name": "getCleanup"
-  },
-  {
     "name": "getClosureSafeProperty"
   },
   {
@@ -625,6 +622,9 @@
   },
   {
     "name": "getIsParent"
+  },
+  {
+    "name": "getLCleanup"
   },
   {
     "name": "getLContainer"
@@ -721,6 +721,9 @@
   },
   {
     "name": "getTStylingRangePrevDuplicate"
+  },
+  {
+    "name": "getTView"
   },
   {
     "name": "getTViewCleanup"
