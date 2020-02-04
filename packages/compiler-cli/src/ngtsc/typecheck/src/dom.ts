@@ -9,7 +9,7 @@
 import {DomElementSchemaRegistry, ParseSourceSpan, SchemaMetadata, TmplAstElement} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {ErrorCode} from '../../diagnostics';
+import {ErrorCode, ngErrorCode} from '../../diagnostics';
 
 import {TemplateId} from './api';
 import {TemplateSourceResolver, makeTemplateDiagnostic} from './diagnostics';
@@ -92,7 +92,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
 
       const diag = makeTemplateDiagnostic(
           mapping, element.sourceSpan, ts.DiagnosticCategory.Error,
-          ErrorCode.SCHEMA_INVALID_ELEMENT, errorMsg);
+          ngErrorCode(ErrorCode.SCHEMA_INVALID_ELEMENT), errorMsg);
       this._diagnostics.push(diag);
     }
   }
@@ -117,7 +117,8 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
       }
 
       const diag = makeTemplateDiagnostic(
-          mapping, span, ts.DiagnosticCategory.Error, ErrorCode.SCHEMA_INVALID_ATTRIBUTE, errorMsg);
+          mapping, span, ts.DiagnosticCategory.Error,
+          ngErrorCode(ErrorCode.SCHEMA_INVALID_ATTRIBUTE), errorMsg);
       this._diagnostics.push(diag);
     }
   }

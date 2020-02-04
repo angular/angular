@@ -135,6 +135,8 @@ export declare class AnimationEvent {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(diags[0].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
+      // The reported error code should be in the TS error space, not a -99 "NG" code.
+      expect(diags[0].code).toBeGreaterThan(0);
     });
 
     it('should support inputs and outputs with names that are not JavaScript identifiers', () => {
