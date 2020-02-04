@@ -23,7 +23,7 @@ describe('ng2 largetable benchmark', function() {
   // 'interpolationFilter'
 
   ['interpolation', 'interpolationAttr', 'interpolationFn'].forEach(function(benchmarkType) {
-    it('should log the ng stats with: ' + benchmarkType, function(done) {
+    it('should log the ng stats with: ' + benchmarkType, async() => {
       runClickBenchmark({
         url: URL,
         buttons: ['#ng2DestroyDom', '#ng2CreateDom'],
@@ -32,11 +32,11 @@ describe('ng2 largetable benchmark', function() {
           {name: 'rows', value: 20, scale: 'sqrt'}, {name: 'columns', value: 20, scale: 'sqrt'},
           {name: 'benchmarkType', value: benchmarkType}
         ]
-      }).then(done, done.fail);
+      });
     });
   });
 
-  it('should log the baseline stats', function(done) {
+  it('should log the baseline stats', async() => {
     runClickBenchmark({
       url: URL,
       buttons: ['#baselineDestroyDom', '#baselineCreateDom'],
@@ -45,7 +45,7 @@ describe('ng2 largetable benchmark', function() {
         {name: 'rows', value: 100, scale: 'sqrt'}, {name: 'columns', value: 20, scale: 'sqrt'},
         {name: 'benchmarkType', value: 'baseline'}
       ]
-    }).then(done, done.fail);
+    });
   });
 
 });

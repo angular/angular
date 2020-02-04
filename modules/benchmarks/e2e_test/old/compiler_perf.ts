@@ -15,7 +15,7 @@ describe('ng2 compiler benchmark', function() {
 
   afterEach(verifyNoBrowserErrors);
 
-  it('should log withBindings stats', function(done) {
+  it('should log withBindings stats', async() => {
     browser.sleep(1000);
     runBenchmark({
       url: URL,
@@ -25,10 +25,10 @@ describe('ng2 compiler benchmark', function() {
         browser.executeScript('document.querySelector("#compileWithBindings").click()');
         browser.sleep(500);
       }
-    }).then(done, done.fail);
+    });
   });
 
-  it('should log noBindings stats', function(done) {
+  it('should log noBindings stats', async() => {
     browser.sleep(1000);
     runBenchmark({
       url: URL,
@@ -38,7 +38,7 @@ describe('ng2 compiler benchmark', function() {
         browser.executeScript('document.querySelector("#compileNoBindings").click()');
         browser.sleep(500);
       }
-    }).then(done, done.fail);
+    });
   });
 
 });
