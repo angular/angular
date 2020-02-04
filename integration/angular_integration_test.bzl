@@ -119,6 +119,8 @@ def _angular_integration_test(pinned_npm_packages = [], **kwargs):
             # Integration do not work inside of a sandbox as they may run host applications such
             # as chrome (which is run by ng) that require access to files outside of the sandbox.
             "no-sandbox",
+            # Remote doesn't work as it needs network access right now
+            "no-remote-exec",
         ],
         data = kwargs.pop("data", []) + [
             # We need the yarn_bin & yarn_files available at runtime
