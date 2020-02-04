@@ -33,11 +33,6 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
   }
 
   getImportOfIdentifier(id: ts.Identifier): Import|null {
-    const superImport = super.getImportOfIdentifier(id);
-    if (superImport !== null) {
-      return superImport;
-    }
-
     // Is `id` a namespaced property access, e.g. `Directive` in `core.Directive`?
     // If so capture the symbol of the namespace, e.g. `core`.
     const nsIdentifier = findNamespaceOfIdentifier(id);
@@ -47,8 +42,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
   }
 
   getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
-    return (!id.getSourceFile().isDeclarationFile && this.getUmdImportedDeclaration(id)) ||
-        super.getDeclarationOfIdentifier(id);
+    return this.getUmdImportedDeclaration(id) || super.getDeclarationOfIdentifier(id);
   }
 
   getExportsOfModule(module: ts.Node): Map<string, Declaration>|null {
