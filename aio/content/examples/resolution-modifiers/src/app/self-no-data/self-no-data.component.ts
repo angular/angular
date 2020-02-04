@@ -8,7 +8,7 @@ import { LeafService } from '../leaf.service';
   styleUrls: ['./self-no-data.component.css']
 })
 export class SelfNoDataComponent {
-  constructor(@Self() @Optional() public leaf: LeafService) { }
+  constructor(@Self() @Optional() public leaf?: LeafService) { }
 }
 
 // #enddocregion self-no-data-component

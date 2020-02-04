@@ -11,7 +11,7 @@ import { FlowerService } from '../flower.service';
 })
 export class HostComponent {
   // use @Host() in the constructor when injecting the service
-  constructor(@Host() @Optional() public flower: FlowerService) { }
+  constructor(@Host() @Optional() public flower?: FlowerService) { }
 
 }
 // #enddocregion host-component

@@ -320,7 +320,7 @@ Use `@SkipSelf()` with `@Optional()` to prevent an error if the value is `null`.
 
 ``` ts
 class Person {
-  constructor(@Optional() @SkipSelf() parent: Person) {}
+  constructor(@Optional() @SkipSelf() parent?: Person) {}
 }
 ```
 
