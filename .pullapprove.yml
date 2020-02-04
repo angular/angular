@@ -953,6 +953,7 @@ groups:
           'tools/ng_rollup_bundle/**',
           'tools/ngcontainer/**',
           'tools/npm/**',
+          'tools/npm_integration_test/**',
           'tools/public_api_guard/BUILD.bazel',
           'tools/public_api_guard/public_api_guard.bzl',
           'tools/pullapprove/**',

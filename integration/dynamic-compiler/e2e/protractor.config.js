@@ -13,7 +13,8 @@ exports.config = {
     }
   },
   directConnect: true,
-  baseUrl: 'http://localhost:8080/',
+  // Port comes from lite-server config `/e2e/browser.config.json` `"port": 4201`
+  baseUrl: 'http://localhost:4201/',
   framework: 'jasmine',
   useAllAngular2AppRoots: true
 };

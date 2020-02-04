@@ -65,6 +65,35 @@ $ ./integration/run_tests.sh
 The test runner will first re-build any stale npm packages, then `cd` into each subdirectory to
 execute the test.
 
+## Running integration tests under Bazel
+
+The PR https://github.com/angular/angular/pull/33927 added the ability to run integration tests with Bazel. These tests can be resource intensive so it is recommended to limit the number of concurrent test jobs with the `--local_test_jobs` bazel flag.
+
+Locally, if Bazel uses all of your cores to run the maximum number of integration tests in parallel then this can lead to test timeouts and flakes and freeze up your machine while these tests are running. You can limit the number of concurrent local integration tests that run with:
+
+```
+yarn bazel test --local_test_jobs=<N> //integration/...
+```
+
+Set a reasonable `local_test_jobs` limit for your local machine to prevent full cpu utilization during local development test runs.
+
+To avoid having to specify this command line flag, you may want to include it in your `.bazelrc.user` file:
+
+```
+test --local_test_jobs=<N>
+```
+
+The downside of this is that this will apply to all tests and not just the resource intensive integration tests.
+
+### Bazel-in-bazel integration tests
+
+Two of the integration tests that run Bazel-in-Bazel are particularly resource intensive and are tagged "manual" and "exclusive". To run these tests use,
+
+```
+yarn bazel test //integration:bazel_test
+yarn bazel test //integration:bazel-schematics_test
+```
+
 ## Browser tests
 
 For integration tests we use the puppeteer provisioned version of Chrome. For both Karma and Protractor tests we set a number of browser testing flags. To avoid duplication, they will be listed and explained here and the code will reference this file for more information.

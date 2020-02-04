@@ -184,6 +184,9 @@ assertSucceeded "Expected 'ngcc' to log 'Compiling'."
 # Can it compile `@angular/platform-server` in UMD + typings without errors?
 # (The CLI prefers the `main` property (which maps to UMD) over `module` when compiling `@angular/platform-server`.
 # See https://github.com/angular/angular-cli/blob/e36853338/packages/angular_devkit/build_angular/src/angular-cli-files/models/webpack-configs/server.ts#L34)
+  if [[ -z "$cache" ]]; then
+    cache=".yarn_local_cache"
+  fi
   rm -rf node_modules/@angular/platform-server && \
     yarn install --cache-folder $cache --check-files && \
     test -d node_modules/@angular/platform-server

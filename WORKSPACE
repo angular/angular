@@ -43,8 +43,11 @@ node_repositories(
     package_json = ["//:package.json"],
 )
 
+load("//integration:angular_integration_test.bzl", "npm_package_archives")
+
 yarn_install(
     name = "npm",
+    manual_build_file_contents = npm_package_archives(),
     package_json = "//:package.json",
     yarn_lock = "//:yarn.lock",
 )
