@@ -160,6 +160,81 @@ describe('ViewContainerRef', () => {
       fixture.detectChanges();
       expect(fixture.debugElement.nativeElement.innerHTML).toContain('Hello');
     });
+
+    isBrowser && describe('element namespaces', () => {
+      function runTestWithSelectors(svgSelector: string, mathMLSelector: string) {
+        it('should be set correctly for host elements of dynamically created components', () => {
+          @Component({
+            selector: svgSelector,
+            template: '<svg><g></g></svg>',
+          })
+          class SvgComp {
+          }
+
+          @Component({
+            selector: mathMLSelector,
+            template: '<math><matrix></matrix></math>',
+          })
+          class MathMLComp {
+          }
+
+          @NgModule({
+            entryComponents: [SvgComp, MathMLComp],
+            declarations: [SvgComp, MathMLComp],
+            schemas: [NO_ERRORS_SCHEMA],
+          })
+          class RootModule {
+          }
+
+          @Component({
+            template: `
+              <ng-container #svg></ng-container>
+              <ng-container #mathml></ng-container>
+            `
+          })
+          class TestComp {
+            @ViewChild('svg', {read: ViewContainerRef}) svgVCRef !: ViewContainerRef;
+            @ViewChild('mathml', {read: ViewContainerRef}) mathMLVCRef !: ViewContainerRef;
+
+            constructor(public cfr: ComponentFactoryResolver) {}
+
+            createDynamicComponents() {
+              const svgFactory = this.cfr.resolveComponentFactory(SvgComp);
+              this.svgVCRef.createComponent(svgFactory);
+
+              const mathMLFactory = this.cfr.resolveComponentFactory(MathMLComp);
+              this.mathMLVCRef.createComponent(mathMLFactory);
+            }
+          }
+
+          TestBed.configureTestingModule({
+            declarations: [TestComp],
+            imports: [RootModule],
+          });
+          const fixture = TestBed.createComponent(TestComp);
+          fixture.detectChanges();
+
+          fixture.componentInstance.createDynamicComponents();
+          fixture.detectChanges();
+
+          expect(fixture.nativeElement.querySelector('svg').namespaceURI)
+              .toEqual('http://www.w3.org/2000/svg');
+
+          // View Engine doesn't set MathML namespace, since it's not present in the list of
+          // known namespaces here:
+          // https://github.com/angular/angular/blob/master/packages/platform-browser/src/dom/dom_renderer.ts#L14
+          if (ivyEnabled) {
+            expect(fixture.nativeElement.querySelector('math').namespaceURI)
+                .toEqual('http://www.w3.org/1998/MathML/');
+          }
+        });
+      }
+
+      runTestWithSelectors('svg[some-attr]', 'math[some-attr]');
+
+      // Also test with selector that has element name in uppercase
+      runTestWithSelectors('SVG[some-attr]', 'MATH[some-attr]');
+    });
   });
 
   describe('insert', () => {
