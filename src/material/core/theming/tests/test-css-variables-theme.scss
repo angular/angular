@@ -1,4 +1,4 @@
-@import './all-theme';
+@import '../all-theme';
 
 // Recursively replaces all of the values inside a Sass map with a different value.
 @function replace-all-values($palette, $replacement) {

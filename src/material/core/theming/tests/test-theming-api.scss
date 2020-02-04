@@ -1,0 +1,179 @@
+@import '../all-theme';
+
+// A new way to configure themes has been introduced. This Sass file ensures that the theming
+// API is backwards compatible, so that the old pattern for configuring themes can be still
+// used. The Sass compilation of this file will fail if one of the tests/assertions fails.
+
+$primary: mat-palette($mat-blue);
+$accent: mat-palette($mat-grey);
+$warn: mat-palette($mat-indigo);
+$default-warn: mat-palette($mat-red);
+
+// Asserts that a given value matches the expected value. If not, an error is
+// thrown with the given error message.
+@mixin assert($value, $expected, $error-msg) {
+  @if $value != $expected {
+    @error 'Expected "#{$value}" to be "#{$expected}". #{$error-msg}';
+  }
+}
+
+// Asserts that the specified color configuration is configured properly.
+@mixin assert-color-config($config, $primary, $accent, $warn, $is-dark) {
+  $color: map_get($config, color);
+  @include assert(map_get($color, primary), $primary,
+      'Primary palette does not match expected palette.');
+  @include assert(map_get($color, accent), $accent,
+      'Accent palette does not match expected palette.');
+  @include assert(map_get($color, warn), $warn,
+      'Warn palette does not match expected palette.');
+  @include assert(map_get($color, is-dark), $is-dark,
+      'Expected color config `is-dark` to be: #{$is-dark}');
+}
+
+$legacy-light-theme: mat-light-theme($primary, $accent, $warn);
+$legacy-dark-theme: mat-dark-theme($primary, $accent, $warn);
+$legacy-light-theme-default-warn: mat-light-theme($primary, $accent);
+$legacy-dark-theme-default-warn: mat-dark-theme($primary, $accent);
+
+$new-api-light-theme: mat-light-theme((
+  color: (primary: $primary, accent: $accent, warn: $warn)
+));
+$new-api-dark-theme: mat-dark-theme((
+  color: (primary: $primary, accent: $accent, warn: $warn)
+));
+$new-api-light-theme-default-warn: mat-light-theme((
+  color: (primary: $primary, accent: $accent)
+));
+$new-api-dark-theme-default-warn: mat-dark-theme((
+  color: (primary: $primary, accent: $accent)
+));
+
+$light-theme-only-density: mat-light-theme((density: -3));
+$dark-theme-only-density: mat-dark-theme((density: -3));
+
+$typography-config: mat-typography-config();
+$light-theme-only-typography: mat-light-theme((typography: $typography-config));
+$dark-theme-only-typography: mat-dark-theme((typography: $typography-config));
+
+// Test which ensures that constructed themes by default do not set configurations
+// for the individual parts of the theming system (color, density, typography).
+@mixin test-default-theming-system-configs() {
+  $themes: ($legacy-light-theme, $legacy-dark-theme, $new-api-light-theme, $new-api-dark-theme);
+  @each $theme in $themes {
+    @include assert(map_has_key($theme, color), true,
+      'Expected color to be explicitly configured.');
+    @include assert(map_has_key($theme, typography), false,
+      'Expected typography to be not explicitly configured.');
+    @include assert(map_has_key($theme, density), false,
+      'Expected density to be not explicitly configured.');
+  }
+  @include assert(map_has_key($light-theme-only-density, color), false,
+      'Expected color to be not explicitly configured.');
+  @include assert(map_has_key($dark-theme-only-density, color), false,
+      'Expected color to be not explicitly configured.');
+}
+
+// Test which ensures that constructed themes have the proper color configurations
+// as specified in the `mat-light-theme` and `mat-dark-theme` functions.
+@mixin test-create-color-config() {
+  @include assert-color-config($legacy-light-theme, $primary, $accent, $warn, false);
+  @include assert-color-config($legacy-dark-theme, $primary, $accent, $warn, true);
+  @include assert-color-config($legacy-light-theme-default-warn, $primary, $accent,
+    $default-warn, false);
+  @include assert-color-config($legacy-dark-theme-default-warn, $primary, $accent,
+    $default-warn, true);
+  @include assert-color-config($new-api-light-theme, $primary, $accent, $warn, false);
+  @include assert-color-config($new-api-dark-theme, $primary, $accent, $warn, true);
+  @include assert-color-config($new-api-light-theme-default-warn, $primary, $accent,
+    $default-warn, false);
+  @include assert-color-config($new-api-dark-theme-default-warn, $primary, $accent,
+    $default-warn, true);
+}
+
+// Test which ensures that constructed themes pass through the specified
+// density and typography configurations.
+@mixin test-density-typography-config-pass-through() {
+  @include assert(map_get($light-theme-only-density, density), -3,
+    'Expected density config to be included in theme.');
+  @include assert(map_get($dark-theme-only-density, density), -3,
+    'Expected density config to be included in theme.');
+  @include assert(map_get($light-theme-only-typography, typography), $typography-config,
+    'Expected typography config to be included in theme.');
+  @include assert(map_get($dark-theme-only-typography, typography), $typography-config,
+    'Expected typography config to be included in theme.');
+}
+
+// Test which ensures that color configurations can be properly read from
+// theme objects passed to individual component theme mixins.
+@mixin test-get-color-config() {
+  $color-config: map_get($legacy-light-theme, color);
+  $no-color-light-theme: mat-light-theme((color: null));
+  $no-color-dark-theme: mat-dark-theme((color: null));
+  @include assert(mat-get-color-config($color-config), $color-config,
+      'Expected that passing a color config to a theme will work for backwards compatibility.');
+  @include assert(mat-get-color-config($legacy-light-theme), $color-config,
+      'Expected that a color config can be read from a theme object.');
+  @include assert(mat-get-color-config($light-theme-only-density), null,
+      'Expected that by default, no color configuration is used.');
+  @include assert(mat-get-color-config($no-color-light-theme), null,
+      'Expected that no color configuration can be explicitly specified.');
+  @include assert(mat-get-color-config($no-color-dark-theme), null,
+    'Expected that no color configuration can be explicitly specified.');
+}
+
+// Test which ensures that density configurations can be properly read from
+// theme objects passed to individual component theme mixins.
+@mixin test-get-density-config() {
+  $density-config: map_get($light-theme-only-density, density);
+  $no-density-light-theme: mat-light-theme((density: null));
+  $no-density-dark-theme: mat-dark-theme((density: null));
+  @include assert(mat-get-density-config($light-theme-only-density), -3,
+    'Expected that a density config can be read from a theme object.');
+  @include assert(mat-get-density-config($light-theme-only-typography), 0,
+    'Expected that by default, the density system will be configured.');
+  @include assert(mat-get-density-config($no-density-light-theme), null,
+    'Expected that no density configuration can be explicitly specified.');
+  @include assert(mat-get-density-config($no-density-dark-theme), null,
+    'Expected that no density configuration can be explicitly specified.');
+}
+
+// Test which ensures that typography configurations can be properly read from
+// theme objects passed to individual component theme mixins.
+@mixin test-get-typography-config() {
+  $no-typography-light-theme: mat-light-theme((density: null));
+  $no-typography-dark-theme: mat-dark-theme((density: null));
+  @include assert(mat-get-typography-config($light-theme-only-typography), $typography-config,
+    'Expected that a typography config can be read from a theme object.');
+  @include assert(mat-get-typography-config($legacy-light-theme), null,
+    'Expected that by default, no typography configuration is used.');
+  @include assert(mat-get-typography-config($no-typography-light-theme), null,
+    'Expected that no typography configuration can be explicitly specified.');
+  @include assert(mat-get-typography-config($no-typography-dark-theme), null,
+    'Expected that no typography configuration can be explicitly specified.');
+}
+
+// Test which ensures that all Angular Material theme mixins accept a theme
+// object without throwing any exception.
+@mixin test-theme-mixins-successful-compilation() {
+  @include angular-material-theme($legacy-light-theme);
+  @include angular-material-theme($legacy-light-theme-default-warn);
+  @include angular-material-theme($legacy-dark-theme);
+  @include angular-material-theme($legacy-dark-theme-default-warn);
+  @include angular-material-theme($new-api-light-theme);
+  @include angular-material-theme($new-api-light-theme-default-warn);
+  @include angular-material-theme($new-api-dark-theme);
+  @include angular-material-theme($new-api-dark-theme-default-warn);
+  @include angular-material-theme($light-theme-only-density);
+  @include angular-material-theme($dark-theme-only-density);
+  @include angular-material-theme($light-theme-only-typography);
+  @include angular-material-theme($dark-theme-only-typography);
+}
+
+// Include all tests. Sass will throw if one of the tests fails.
+@include test-create-color-config();
+@include test-default-theming-system-configs();
+@include test-density-typography-config-pass-through();
+@include test-theme-mixins-successful-compilation();
+@include test-get-color-config();
+@include test-get-density-config();
+@include test-get-typography-config();

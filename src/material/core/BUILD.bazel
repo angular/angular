@@ -138,11 +138,3 @@ filegroup(
     name = "source-files",
     srcs = glob(["**/*.ts"]),
 )
-
-# Test theme used to ensure that our themes will compile using CSS variables in the palettes.
-sass_binary(
-    name = "test-css-variables-theme",
-    testonly = True,
-    src = "theming/test-css-variables-theme.scss",
-    deps = [":theming_scss_lib"],
-)

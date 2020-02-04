@@ -19,32 +19,25 @@
   @include cdk-text-field();
 }
 
-// Mixin that renders all of the core styles that depend on the theme.
-@mixin mat-core-theme($theme) {
-  $color: mat-get-color-config($theme);
-  @include mat-ripple-theme($theme);
-  @include mat-option-theme($theme);
-  @include mat-optgroup-theme($theme);
-  @include mat-pseudo-checkbox-theme($theme);
+@mixin mat-core-color($config) {
+  // Wrapper element that provides the theme background when the user's content isn't
+  // inside of a `mat-sidenav-container`. Note that we need to exclude the ampersand
+  // selector in case the mixin is included at the top level.
+  .mat-app-background#{if(&, ', &.mat-app-background', '')} {
+    $background: map-get($config, background);
+    $foreground: map-get($config, foreground);
+
+    background-color: mat-color($background, background);
+    color: mat-color($foreground, text);
+  }
 
   // Provides external CSS classes for each elevation value. Each CSS class is formatted as
   // `mat-elevation-z$zValue` where `$zValue` corresponds to the z-space to which the element is
   // elevated.
   @for $zValue from 0 through 24 {
     .#{$_mat-elevation-prefix}#{$zValue} {
-      @include _mat-theme-elevation($zValue, $color);
+      @include _mat-theme-elevation($zValue, $config);
     }
-  }
-
-  // Wrapper element that provides the theme background when the user's content isn't
-  // inside of a `mat-sidenav-container`. Note that we need to exclude the ampersand
-  // selector in case the mixin is included at the top level.
-  .mat-app-background#{if(&, ', &.mat-app-background', '')} {
-    $background: map-get($color, background);
-    $foreground: map-get($color, foreground);
-
-    background-color: mat-color($background, background);
-    color: mat-color($foreground, text);
   }
 
   // Marker that is used to determine whether the user has added a theme to their page.
@@ -52,5 +45,18 @@
     .mat-theme-loaded-marker {
       display: none;
     }
+  }
+}
+
+// Mixin that renders all of the core styles that depend on the theme.
+@mixin mat-core-theme($theme) {
+  @include mat-ripple-theme($theme);
+  @include mat-option-theme($theme);
+  @include mat-optgroup-theme($theme);
+  @include mat-pseudo-checkbox-theme($theme);
+
+  $color: mat-get-color-config($theme);
+  @if $color != null {
+    @include mat-core-color($color);
   }
 }

@@ -7,6 +7,7 @@
 @import '../../card/card-theme';
 @import '../../checkbox/checkbox-theme';
 @import '../../chips/chips-theme';
+@import '../../divider/divider-theme';
 @import '../../table/table-theme';
 @import '../../datepicker/datepicker-theme';
 @import '../../dialog/dialog-theme';
@@ -51,6 +52,7 @@
   @include mat-card-typography($config);
   @include mat-checkbox-typography($config);
   @include mat-chips-typography($config);
+  @include mat-divider-typography($config);
   @include mat-table-typography($config);
   @include mat-datepicker-typography($config);
   @include mat-dialog-typography($config);

@@ -67,7 +67,7 @@
 // Validates the specified theme by ensuring that the optional color config defines
 // a primary, accent and warn palette. Returns the theme if no failures were found.
 @function _mat-validate-theme($theme) {
-  @if map_has_key($theme, color) {
+  @if map_get($theme, color) {
     $color: map_get($theme, color);
     @if not map_get($color, primary) {
       @error 'Theme does not define a valid "primary" palette.';
@@ -80,6 +80,16 @@
     }
   }
   @return $theme;
+}
+
+// Whether the specified object is a color configuration. This function is needed for backwards
+// compatibility of individual component theme mixins, because developers could pass in a color
+// configuration instead of a theme container object to a theme mixin.
+@function _mat-is-color-config($config) {
+  @return map_has_key($config, primary) and
+          map_has_key($config, accent) and map_has_key($config, warn) and
+          map_has_key($config, is-dark) and map_has_key($config, foreground) and
+          map_has_key($config, background);
 }
 
 // Creates a light-themed color configuration from the specified
@@ -176,11 +186,15 @@
   @return _mat-validate-theme($result);
 }
 
-// Needed for backwards compatibility. If the passed `$theme` variable is not a
-// overall theme configuration, we use it as color config.
-@function mat-get-color-config($theme, $default: $theme) {
+@function mat-get-color-config($theme, $default: null) {
   @if map_has_key($theme, color) {
     @return map_get($theme, color);
+  }
+  // Before we introduced the new pattern for construcing a theme, developers passed the color
+  // configuration to the theme mixins. This can be still the case if developers construct a
+  // theme manually and pass it to a theme. We support this for backwards compatibility.
+  @if _mat-is-color-config($theme) {
+    @return $theme;
   }
   @return $default;
 }

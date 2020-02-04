@@ -1,0 +1,22 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "sass_binary")
+
+# Test theme used to ensure that our themes will compile using CSS variables in
+# the palettes.
+sass_binary(
+    name = "test-css-variables-theme",
+    testonly = True,
+    src = "test-css-variables-theme.scss",
+    deps = ["//src/material/core:theming_scss_lib"],
+)
+
+# Sass binary which is used to ensure that our themes will compile with the legacy and new
+# pattern for configuring themes. For more information on the legacy and new pattern, inspect
+# the `mat-light-theme` and `mat-dark-theme` theming functions.
+sass_binary(
+    name = "test-theming-api",
+    testonly = True,
+    src = "test-theming-api.scss",
+    deps = ["//src/material/core:theming_scss_lib"],
+)

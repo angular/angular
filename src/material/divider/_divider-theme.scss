@@ -14,6 +14,8 @@
   }
 }
 
+@mixin mat-divider-typography($config) {}
+
 @mixin _mat-divider-density($density-scale) {}
 
 @mixin mat-divider-theme($theme) {
