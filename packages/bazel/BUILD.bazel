@@ -25,7 +25,7 @@ pkg_npm(
     tags = ["release-with-framework"],
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
-    visibility = ["//visibility:private"],
+    visibility = ["//integration:__pkg__"],
     deps = [
         "//packages/bazel/src/api-extractor:lib",
         "//packages/bazel/src/builders",

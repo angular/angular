@@ -41,4 +41,4 @@ app.get('/favicon.ico', (req, res) => { res.send(''); });
 app.get('/helloworld', render(HelloWorldServerModuleNgFactory, helloworld));
 app.get('/transferstate', render(TransferStateServerModuleNgFactory, transferstate));
 
-app.listen(9876, function() { console.log('Server listening on port 9876!'); });
+app.listen(4206, function() { console.log('Server listening on port 4206!'); });
