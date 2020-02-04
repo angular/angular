@@ -1958,14 +1958,7 @@ async@1.5.2, async@1.x, async@^1.3.0, async@^1.5.2:
   resolved "https://registry.yarnpkg.com/async/-/async-1.5.2.tgz#ec6a61ae56480c0c3cb241c95618e20892f9672a"
   integrity sha1-7GphrlZIDAw8skHJVhjiCJL5Zyo=
 
-async@^2.1.2, async@^2.3.0, async@^2.5.0:
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/async/-/async-2.6.1.tgz#b245a23ca71930044ec53fa46aa00a3e87c6a610"
-  integrity sha512-fNEiL2+AZt6AlAw/29Cr0UDe4sRAHCpEHh54WMz+Bb7QfNcFw4h3loofyJpLeQs4Yx7yuqu/2dLgM5hKOs6HlQ==
-  dependencies:
-    lodash "^4.17.10"
-
-async@^2.6.2, async@^2.6.3:
+async@^2.1.2, async@^2.3.0, async@^2.6.2, async@^2.6.3:
   version "2.6.3"
   resolved "https://registry.yarnpkg.com/async/-/async-2.6.3.tgz#d72625e2344a3656e3a3ad4fa749fa83299d82ff"
   integrity sha512-zflvls11DCy+dQWzTW2dzuilv8Z5X/pjfmZOWba6TNIVDm+2UDaJmXSOXlasHKfNBs8oo3M0aT50fDEWfKZjXg==
@@ -3031,7 +3024,7 @@ commander@^2.13.0, commander@^2.15.1, commander@^2.16.0, commander@^2.19.0, comm
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.0.tgz#d58bb2b5c1ee8f87b0d340027e9e94e222c5a422"
   integrity sha512-7j2y+40w61zy6YC2iRNpUe/NwhNyoXrYpHMrSunaMG64nRnaf96zO/KMQR4OyN/UnE5KLyEBnKHd4aG3rskjpQ==
 
-commander@^2.20.0:
+commander@^2.20.0, commander@~2.20.3:
   version "2.20.3"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.3.tgz#fd485e84c03eb4881c20722ba48035e8531aeb33"
   integrity sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==
@@ -3040,11 +3033,6 @@ commander@^3.0.0:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/commander/-/commander-3.0.2.tgz#6837c3fb677ad9933d1cfba42dd14d5117d6b39e"
   integrity sha512-Gar0ASD4BDyKC4hl4DwHqDrmvjoxWKZigVnAbn5H1owvm4CxCPdb0HQDehwNYMJpla5+M2tPmPARzhtYuwpHow==
-
-commander@~2.17.1:
-  version "2.17.1"
-  resolved "https://registry.yarnpkg.com/commander/-/commander-2.17.1.tgz#bd77ab7de6de94205ceacc72f1716d29f20a77bf"
-  integrity sha512-wPMUt6FnH2yzG95SA6mzjQOEKUU3aLaDEmzs1ti+1E9h+CsrZghRlqEM/EJ4KscsQVG8uNN4uVreUeT8+drlgg==
 
 commondir@^1.0.1:
   version "1.0.1"
@@ -5525,21 +5513,10 @@ gulplog@^1.0.0:
   dependencies:
     glogg "^1.0.0"
 
-handlebars@^4.0.1, handlebars@^4.0.2:
-  version "4.0.12"
-  resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-4.0.12.tgz#2c15c8a96d46da5e266700518ba8cb8d919d5bc5"
-  integrity sha512-RhmTekP+FZL+XNhwS1Wf+bTTZpdLougwt5pcgA1tuz6Jcx0fpH/7z0qd71RKnZHBCxIRBHfBOnio4gViPemNzA==
-  dependencies:
-    async "^2.5.0"
-    optimist "^0.6.1"
-    source-map "^0.6.1"
-  optionalDependencies:
-    uglify-js "^3.1.4"
-
-handlebars@^4.0.3:
-  version "4.1.2"
-  resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-4.1.2.tgz#b6b37c1ced0306b221e094fc7aca3ec23b131b67"
-  integrity sha512-nvfrjqvt9xQ8Z/w0ijewdD/vvWDTOweBUm96NTr66Wfvo1mJenBLwcYmPs3TIBP5ruzYGD7Hx/DaM9RmhroGPw==
+handlebars@^4.0.1, handlebars@^4.0.2, handlebars@^4.0.3:
+  version "4.7.2"
+  resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-4.7.2.tgz#01127b3840156a0927058779482031afe0e730d7"
+  integrity sha512-4PwqDL2laXtTWZghzzCtunQUTLbo31pcCJrd/B/9JP8XbhVzpS5ZXuKqlOzsd1rtcaLo4KqAn8nl8mkknS4MHw==
   dependencies:
     neo-async "^2.6.0"
     optimist "^0.6.1"
@@ -11438,11 +11415,11 @@ ua-parser-js@0.7.17:
   integrity sha512-uRdSdu1oA1rncCQL7sCj8vSyZkgtL7faaw9Tc9rZ3mGgraQ7+Pdx7w5mnOSF3gw9ZNG6oc+KXfkon3bKuROm0g==
 
 uglify-js@^3.1.4:
-  version "3.4.9"
-  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.4.9.tgz#af02f180c1207d76432e473ed24a28f4a782bae3"
-  integrity sha512-8CJsbKOtEbnJsTyv6LE6m6ZKniqMiFWmm9sRbopbkGs3gMPPfd3Fh8iIA4Ykv5MgaTbqHr4BaoGLJLZNhsrW1Q==
+  version "3.7.7"
+  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.7.7.tgz#21e52c7dccda80a53bf7cde69628a7e511aec9c9"
+  integrity sha512-FeSU+hi7ULYy6mn8PKio/tXsdSXN35lm4KgV2asx00kzrLU9Pi3oAslcJT70Jdj7PHX29gGUPOT6+lXGBbemhA==
   dependencies:
-    commander "~2.17.1"
+    commander "~2.20.3"
     source-map "~0.6.1"
 
 ultron@~1.1.0:
