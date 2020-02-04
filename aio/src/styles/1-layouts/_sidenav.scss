@@ -177,6 +177,16 @@ button.vertical-menu-item {
   margin: 0;
   padding-left: 32px;
   text-transform: none;
+
+  &.expanded .mat-icon,
+  .level-3.expanded .mat-icon {
+    @include rotate(90deg);
+  }
+
+  &:not(.expanded) .mat-icon,
+  .level-3:not(.expanded) .mat-icon {
+    @include rotate(0deg);
+  }
 }
 
 .level-3 {
