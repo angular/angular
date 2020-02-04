@@ -8,12 +8,12 @@
 
 import {CommonModule, DOCUMENT} from '@angular/common';
 import {computeMsgId} from '@angular/compiler';
-import {Compiler, Component, ComponentFactoryResolver, Directive, DoCheck, ElementRef, EmbeddedViewRef, ErrorHandler, NO_ERRORS_SCHEMA, NgModule, OnInit, Pipe, PipeTransform, QueryList, RendererFactory2, RendererType2, Sanitizer, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {Compiler, Component, ComponentFactoryResolver, Directive, DoCheck, ElementRef, EmbeddedViewRef, ErrorHandler, NO_ERRORS_SCHEMA, NgModule, OnInit, Pipe, PipeTransform, QueryList, Renderer2, RendererFactory2, RendererType2, Sanitizer, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, ɵsetDocument} from '@angular/core';
 import {Input} from '@angular/core/src/metadata';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed, TestComponentRenderer} from '@angular/core/testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
-import {By, DomSanitizer} from '@angular/platform-browser';
+import {By, DomSanitizer, ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
@@ -159,6 +159,97 @@ describe('ViewContainerRef', () => {
       fixture.componentInstance.createComponent();
       fixture.detectChanges();
       expect(fixture.debugElement.nativeElement.innerHTML).toContain('Hello');
+    });
+
+    describe('element namespaces', () => {
+      function runTestWithSelectors(svgSelector: string, mathMLSelector: string) {
+        it('should be set correctly for host elements of dynamically created components', () => {
+          @Component({
+            selector: svgSelector,
+            template: '<svg><g></g></svg>',
+          })
+          class SvgComp {
+          }
+
+          @Component({
+            selector: mathMLSelector,
+            template: '<math><matrix></matrix></math>',
+          })
+          class MathMLComp {
+          }
+
+          @NgModule({
+            entryComponents: [SvgComp, MathMLComp],
+            declarations: [SvgComp, MathMLComp],
+            // View Engine doesn't have MathML tags listed in `DomElementSchemaRegistry`, thus
+            // throwing "unknown element" error (':math:matrix' is not a known element). Ignore
+            // these errors by adding `NO_ERRORS_SCHEMA` to this NgModule.
+            schemas: [NO_ERRORS_SCHEMA],
+          })
+          class RootModule {
+          }
+
+          @Component({
+            template: `
+              <ng-container #svg></ng-container>
+              <ng-container #mathml></ng-container>
+            `
+          })
+          class TestComp {
+            @ViewChild('svg', {read: ViewContainerRef}) svgVCRef !: ViewContainerRef;
+            @ViewChild('mathml', {read: ViewContainerRef}) mathMLVCRef !: ViewContainerRef;
+
+            constructor(public cfr: ComponentFactoryResolver) {}
+
+            createDynamicComponents() {
+              const svgFactory = this.cfr.resolveComponentFactory(SvgComp);
+              this.svgVCRef.createComponent(svgFactory);
+
+              const mathMLFactory = this.cfr.resolveComponentFactory(MathMLComp);
+              this.mathMLVCRef.createComponent(mathMLFactory);
+            }
+          }
+
+          function _document(): any {
+            // Tell Ivy about the global document
+            ɵsetDocument(document);
+            return document;
+          }
+
+          TestBed.configureTestingModule({
+            declarations: [TestComp],
+            imports: [RootModule],
+            providers: [
+              {provide: DOCUMENT, useFactory: _document, deps: []},
+              // TODO(FW-811): switch back to default server renderer (i.e. remove the line below)
+              // once it starts to support Ivy namespace format (URIs) correctly. For now, use
+              // `DomRenderer` that supports Ivy namespace format.
+              {provide: RendererFactory2, useClass: DomRendererFactory2}
+            ],
+          });
+          const fixture = TestBed.createComponent(TestComp);
+          fixture.detectChanges();
+
+          fixture.componentInstance.createDynamicComponents();
+          fixture.detectChanges();
+
+          expect(fixture.nativeElement.querySelector('svg').namespaceURI)
+              .toEqual('http://www.w3.org/2000/svg');
+
+          // View Engine doesn't set MathML namespace, since it's not present in the list of
+          // known namespaces here:
+          // https://github.com/angular/angular/blob/master/packages/platform-browser/src/dom/dom_renderer.ts#L14
+          if (ivyEnabled) {
+            expect(fixture.nativeElement.querySelector('math').namespaceURI)
+                .toEqual('http://www.w3.org/1998/MathML/');
+          }
+        });
+      }
+
+      runTestWithSelectors('svg[some-attr]', 'math[some-attr]');
+
+      // Also test with selector that has element name in uppercase
+      runTestWithSelectors('SVG[some-attr]', 'MATH[some-attr]');
     });
   });
 
