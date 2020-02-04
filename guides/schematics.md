@@ -72,7 +72,7 @@ a toolbar with the app name and a responsive side nav based on Material
 breakpoints.
 
 ```
-ng generate @angular/material:nav <component-name>
+ng generate @angular/material:navigation <component-name>
 ```
 
 #### Table schematic

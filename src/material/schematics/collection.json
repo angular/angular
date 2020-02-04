@@ -30,11 +30,11 @@
       "aliases": ["material-table"]
     },
     // Creates toolbar and navigation components
-    "nav": {
+    "navigation": {
       "description": "Create a component with a responsive sidenav for navigation",
-      "factory": "./ng-generate/nav/index",
-      "schema": "./ng-generate/nav/schema.json",
-      "aliases": ["material-nav", "materialNav"]
+      "factory": "./ng-generate/navigation/index",
+      "schema": "./ng-generate/navigation/schema.json",
+      "aliases": ["material-nav", "materialNav", "nav"]
     },
     // Create a file tree component
     "tree": {
