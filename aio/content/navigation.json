@@ -761,7 +761,7 @@
             {
               "url": "guide/migration-undecorated-classes",
               "title": "@Directive()/@Component() decorator migration",
-              "tooltip": "@Directive()/@Component() migration to the lastest version."
+              "tooltip": "@Directive()/@Component() migration to the latest version."
             }
           ]
         }
