@@ -6,3 +6,31 @@
 .noselect {
   user-select: none;
 }
+
+.initializing {
+  margin: auto;
+  width: 125px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.initializing .loading {
+  background: url("./images/angular.svg");
+  border-radius: 50%;
+  width: 125px;
+  height: 125px;
+  float: left;
+  text-align: center;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse
+{
+  0% {
+    box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 35px rgba(0, 0, 0, 0);
+  }
+}
