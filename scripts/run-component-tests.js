@@ -76,7 +76,8 @@ shelljs.exec(`yarn -s ${bazelBinary} ${bazelAction} ${testLabels.join(' ')}`);
 function getBazelPackageOfComponentName(name) {
   // Before guessing any Bazel package, we test if the name contains the
   // package name already. If so, we just use that for Bazel package.
-  const targetName = convertPathToBazelLabel(name);
+  const targetName = convertPathToBazelLabel(name) ||
+                     convertPathToBazelLabel(path.join(packagesDir, name));
   if (targetName !== null) {
     return targetName;
   }
@@ -89,8 +90,9 @@ function getBazelPackageOfComponentName(name) {
       return guessTargetName;
     }
   }
-  throw Error(chalk.red(`Could not find test target for specified component: ` +
+  console.error(chalk.red(`Could not find test target for specified component: ` +
     `${chalk.yellow(name)}. Looked in packages: ${orderedGuessPackages.join(', ')}`));
+  process.exit(1);
 }
 
 /** Converts a path to a Bazel label. */
