@@ -11,6 +11,7 @@ import {assertDefined} from '../util/assert';
 import {assertLViewOrUndefined} from './assert';
 import {TNode} from './interfaces/node';
 import {CONTEXT, DECLARATION_VIEW, LView, OpaqueViewState, TVIEW, TView} from './interfaces/view';
+import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
 
 
 /**
@@ -511,7 +512,7 @@ export function setSelectedIndex(index: number) {
  * @codeGenApi
  */
 export function ɵɵnamespaceSVG() {
-  instructionState.lFrame.currentNamespace = 'http://www.w3.org/2000/svg';
+  instructionState.lFrame.currentNamespace = SVG_NAMESPACE;
 }
 
 /**
@@ -520,7 +521,7 @@ export function ɵɵnamespaceSVG() {
  * @codeGenApi
  */
 export function ɵɵnamespaceMathML() {
-  instructionState.lFrame.currentNamespace = 'http://www.w3.org/1998/MathML/';
+  instructionState.lFrame.currentNamespace = MATH_ML_NAMESPACE;
 }
 
 /**
