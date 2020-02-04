@@ -10,6 +10,7 @@
   margin: 0;
   border-radius: $border-radius;
   overflow: hidden;
+  position: relative;
   transition: margin 225ms $mat-fast-out-slow-in-timing-function,
       mat-elevation-transition-property-value();
 
