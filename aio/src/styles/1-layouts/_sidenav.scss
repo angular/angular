@@ -185,6 +185,7 @@ button.vertical-menu-item {
   @include font-size(14);
   margin: 0;
   padding-left: 40px;
+  text-transform: none;
 }
 
 aio-nav-menu.top-menu {

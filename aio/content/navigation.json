@@ -718,7 +718,7 @@
               "tooltip": "Details to help you make sure your application is compatible with Ivy."
             },
             {
-              "title": "Additional migration details",
+              "title": "Optional migration details",
               "tooltip": "Optional migration details regarding updating to version 9.",
               "children": [
                 {
