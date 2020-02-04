@@ -8,15 +8,15 @@ import {
   ComponentExplorerViewQuery,
   ComponentExplorerView, ComponentExplorerViewProperties,
 } from 'protocol';
-import { IndexedNode } from './component-tree/index-forest';
+import { IndexedNode } from './directive-forest/index-forest';
 import { PropertyViewComponent } from './property-view/property-view.component';
 
 @Component({
-  selector: 'ng-component-explorer',
-  templateUrl: './component-explorer.component.html',
-  styleUrls: ['./component-explorer.component.css'],
+  selector: 'ng-directive-explorer',
+  templateUrl: './directive-explorer.component.html',
+  styleUrls: ['./directive-explorer.component.css'],
 })
-export class ComponentExplorerComponent implements OnInit {
+export class DirectiveExplorerComponent implements OnInit {
   @Input() messageBus: MessageBus<Events>;
 
   @ViewChildren(PropertyViewComponent) propertyViews: QueryList<PropertyViewComponent>;

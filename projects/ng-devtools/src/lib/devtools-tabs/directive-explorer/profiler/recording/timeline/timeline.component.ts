@@ -28,7 +28,6 @@ export class TimelineComponent {
   currentView = 1;
 
   get recordsView(): AppEntry {
-    console.log('hit');
     if (this.view === 'timeline') {
       // null coalesce to aggregated if no data was recorded since aggregated will be empty, whereas
       // timeline will not even exist

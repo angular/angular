@@ -1,5 +1,5 @@
 <ng-container *ngIf="angularExists === true; else errorOrLoad">
-  <div class="devtools-wrapper noselect">
+  <div class="devtools-wrapper noselect" [@enterAnimation]>
     <ng-devtools-tabs [messageBus]="messageBus" [angularVersion]="angularVersion"></ng-devtools-tabs>
   </div>
 </ng-container>
@@ -10,8 +10,9 @@
     </div>
   </ng-container>
   <ng-template #load>
-    <div *ngIf="angularExists === null">
-      Initializing...
+    <div class="initializing" *ngIf="angularExists === null">
+      <div class="loading">
+      </div>
     </div>
   </ng-template>
 </ng-template>

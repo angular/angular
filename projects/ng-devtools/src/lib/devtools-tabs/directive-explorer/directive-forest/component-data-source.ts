@@ -65,6 +65,10 @@ export class ComponentDataSource extends DataSource<FlatNode> {
     return this._data;
   }
 
+  get expandedDataValues() {
+    return this._expandedData.value;
+  }
+
   update(forest: Node[]): void {
     if (!forest) {
       return;
