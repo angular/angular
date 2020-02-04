@@ -10,7 +10,17 @@ import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {NodePackageInstallTask, RunSchematicTask} from '@angular-devkit/schematics/tasks';
 import {addPackageToPackageJson, getPackageVersionFromPackageJson} from './package-config';
 import {Schema} from './schema';
-import {materialVersion, requiredAngularVersionRange} from './version-names';
+
+/**
+ * Version range that will be used for the Angular CDK and Angular Material if this
+ * schematic has been run outside of the CLI `ng add` command. In those cases, there
+ * can be no dependency on `@angular/material` in the `package.json` file, and we need
+ * to manually insert the dependency based on the build version placeholder.
+ *
+ * Note that the fallback version range does not use caret, but tilde because that is
+ * the default for Angular framework dependencies in CLI projects.
+ */
+const fallbackMaterialVersionRange = `~0.0.0-PLACEHOLDER`;
 
 /**
  * Schematic factory entry-point for the `ng-add` schematic. The ng-add schematic will be
@@ -25,13 +35,20 @@ export default function(options: Schema): Rule {
     // of the CLI project. This tag should be preferred because all Angular dependencies should
     // have the same version tag if possible.
     const ngCoreVersionTag = getPackageVersionFromPackageJson(host, '@angular/core');
-    const angularDependencyVersion = ngCoreVersionTag || requiredAngularVersionRange;
+    const materialVersionRange = getPackageVersionFromPackageJson(host, '@angular/material');
+    const angularDependencyVersion = ngCoreVersionTag || `0.0.0-NG`;
 
-    // In order to align the Material and CDK version with other Angular dependencies that
-    // are setup by "@schematics/angular", we use tilde instead of caret. This is default for
-    // Angular dependencies in new CLI projects.
-    addPackageToPackageJson(host, '@angular/cdk', `~${materialVersion}`);
-    addPackageToPackageJson(host, '@angular/material', `~${materialVersion}`);
+    // The CLI inserts `@angular/material` into the `package.json` before this schematic runs.
+    // This means that we do not need to insert Angular Material into `package.json` files again.
+    // In some cases though, it could happen that this schematic runs outside of the CLI `ng add`
+    // command, or Material is only listed a dev dependency. If that is the case, we insert a
+    // version based on the current build version (substituted version placeholder).
+    if (materialVersionRange === null) {
+      addPackageToPackageJson(host, '@angular/material', fallbackMaterialVersionRange);
+    }
+
+    addPackageToPackageJson(
+        host, '@angular/cdk', materialVersionRange || fallbackMaterialVersionRange);
     addPackageToPackageJson(host, '@angular/forms', angularDependencyVersion);
     addPackageToPackageJson(host, '@angular/animations', angularDependencyVersion);
 
