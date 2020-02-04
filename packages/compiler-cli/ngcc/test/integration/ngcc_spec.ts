@@ -249,6 +249,70 @@ runInEachFileSystem(() => {
       expect(jsContents).not.toMatch(/\bconst \w+\s*=/);
     });
 
+    it('should be able to reflect into external libraries', () => {
+      compileIntoApf('lib', {
+        '/index.ts': `
+          export * from './constants';
+          export * from './module';
+        `,
+        '/constants.ts': `
+          export const selectorA = '[selector-a]';
+
+          export class Selectors {
+            static readonly B = '[selector-b]';
+          }
+        `,
+        '/module.ts': `
+          import {NgModule, ModuleWithProviders} from '@angular/core';
+
+          @NgModule()
+          export class MyOtherModule {}
+
+          export class MyModule {
+            static forRoot(): ModuleWithProviders<MyOtherModule> {
+              return {ngModule: MyOtherModule};
+            }
+          }
+        `
+      });
+
+      compileIntoFlatEs5Package('test-package', {
+        '/index.ts': `
+          import {Directive, Input, NgModule} from '@angular/core';
+          import * as lib from 'lib';
+
+          @Directive({
+            selector: lib.selectorA,
+          })
+          export class DirectiveA {
+          }
+
+          @Directive({
+            selector: lib.Selectors.B,
+          })
+          export class DirectiveB {
+          }
+
+          @NgModule({
+            imports: [lib.MyModule.forRoot()],
+            declarations: [DirectiveA, DirectiveB],
+          })
+          export class FooModule {}
+        `,
+      });
+
+      mainNgcc({
+        basePath: '/node_modules',
+        targetEntryPointPath: 'test-package',
+        propertiesToConsider: ['module'],
+      });
+
+      const jsContents = fs.readFile(_(`/node_modules/test-package/index.js`));
+      expect(jsContents).toContain('"selector-a"');
+      expect(jsContents).toContain('"selector-b"');
+      expect(jsContents).toContain('imports: [ɵngcc1.MyOtherModule]');
+    });
+
     it('should add ɵfac but not duplicate ɵprov properties on injectables', () => {
       compileIntoFlatEs5Package('test-package', {
         '/index.ts': `

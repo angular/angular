@@ -1607,30 +1607,6 @@ exports.ExternalModule = ExternalModule;
           expect(importOfIdent).toEqual({name: 'a', from: './file_a'});
         });
 
-        it('should find the import of an identifier in a declaration file', () => {
-          loadTestFiles([
-            {
-              name: _('/index.d.ts'),
-              contents: `
-                import {MyClass} from './myclass.d.ts';
-                export declare const a: MyClass;`
-            },
-            {
-              name: _('/myclass.d.ts'),
-              contents: `export declare class MyClass {}`,
-            }
-          ]);
-          const bundle = makeTestBundleProgram(_('/index.d.ts'));
-          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
-          const variableNode =
-              getDeclaration(bundle.program, _('/index.d.ts'), 'a', isNamedVariableDeclaration);
-          const identifier =
-              ((variableNode.type as ts.TypeReferenceNode).typeName as ts.Identifier);
-
-          const importOfIdent = host.getImportOfIdentifier(identifier !);
-          expect(importOfIdent).toEqual({name: 'MyClass', from: './myclass.d.ts'});
-        });
-
         it('should return null if the identifier was not imported', () => {
           loadTestFiles(IMPORTS_FILES);
           const bundle = makeTestBundleProgram(_('/index.js'));
@@ -1815,39 +1791,6 @@ exports.ExternalModule = ExternalModule;
           const importOfIdent = host.getDeclarationOfIdentifier(identifier !) !;
           expect(importOfIdent.viaModule).toBe('lib');
         });
-
-        it('should return the correct declaration of an identifier imported in a typings file',
-           () => {
-             const files = [
-               {
-                 name: _('/node_modules/test-package/index.d.ts'),
-                 contents: `
-                   import {SubModule} from 'sub_module';
-                   export const x = SubModule;
-                 `,
-               },
-               {
-                 name: _('/node_modules/sub_module/index.d.ts'),
-                 contents: 'export class SubModule {}',
-               }
-             ];
-             loadTestFiles(files);
-             const bundle = makeTestBundleProgram(files[0].name);
-             const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
-             const expectedDeclaration = getDeclaration(
-                 bundle.program, files[1].name, 'SubModule', isNamedClassDeclaration);
-             const x =
-                 getDeclaration(bundle.program, files[0].name, 'x', isNamedVariableDeclaration);
-             if (x.initializer === undefined || !ts.isIdentifier(x.initializer)) {
-               return fail('Expected constant `x` to have an identifer as an initializer.');
-             }
-             const decl = host.getDeclarationOfIdentifier(x.initializer);
-             if (decl === null) {
-               return fail('Expected to find a declaration for ' + x.initializer.getText());
-             }
-             expect(decl.viaModule).toEqual('sub_module');
-             expect(decl.node).toBe(expectedDeclaration);
-           });
 
         it('should recognize TypeScript helpers (as function declarations)', () => {
           const file: TestFile = {
