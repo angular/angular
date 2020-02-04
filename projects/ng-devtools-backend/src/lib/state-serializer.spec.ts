@@ -72,7 +72,7 @@ describe('nestedSerializer', () => {
           value: 1,
           editable: true,
           expandable: false,
-          preview: 1,
+          preview: '1',
         },
         nested: {
           type: 9,
@@ -96,7 +96,7 @@ describe('nestedSerializer', () => {
           value: 1,
           editable: true,
           expandable: false,
-          preview: 1,
+          preview: '1',
         },
         nested: {
           type: 9,
