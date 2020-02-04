@@ -285,8 +285,24 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
+      - install_chrome_libs
       - run:
           command: yarn bazel test //... --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only
+          no_output_timeout: 20m
+
+  test_integration_bazel:
+    executor:
+      # Needed because the //integration:bazel-schematics_test test expect Chrome to be installed
+      name: browsers-executor
+      resource_class: xlarge
+    steps:
+      - custom_attach_workspace
+      - init_environment
+      - run:
+          # Run "exclusive" and "manual" bazel-in-bazel integration tests in their own CI job
+          # as they take 8m+ to execute and with bazel running inside bazel they are too
+          # memory intensive to be run in parallel with other tests so are tagged as "exclusive"
+          command: yarn bazel test //integration:bazel_test //integration:bazel-schematics_test
           no_output_timeout: 20m
 
   # Temporary job to test what will happen when we flip the Ivy flag to true
@@ -297,6 +313,7 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
+      - install_chrome_libs
       # We need to explicitly specify the --symlink_prefix option because otherwise we would
       # not be able to easily find the output bin directory when uploading artifacts for size
       # measurements.
@@ -561,7 +578,7 @@ jobs:
       # of memory. Together with the system under test, this can exhaust the RAM
       # on a 4G worker so we use a larger machine here too.
       resource_class: xlarge
-    parallelism: 4
+    parallelism: 3
     steps:
       - custom_attach_workspace
       - init_environment
@@ -804,6 +821,9 @@ workflows:
           requires:
             - setup
       - test:
+          requires:
+            - setup
+      - test_integration_bazel:
           requires:
             - setup
       - test_ivy_aot:

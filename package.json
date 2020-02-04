@@ -35,6 +35,7 @@
   "// 1": "dependencies are used locally and by bazel",
   "dependencies": {
     "@angular-devkit/architect": "0.900.3",
+    "@angular-devkit/build-angular": "0.900.3",
     "@angular-devkit/build-optimizer": "0.900.3",
     "@angular-devkit/core": "9.0.3",
     "@angular-devkit/schematics": "9.0.3",
@@ -134,7 +135,6 @@
   "// 2": "devDependencies are not used under Bazel. Many can be removed after test.sh is deleted.",
   "// 3": "when updating @bazel/bazel version you also need to update the RBE settings in .bazelrc (see https://github.com/angular/angular/pull/27935)",
   "devDependencies": {
-    "@angular-devkit/build-angular": "0.900.3",
     "@angular/cli": "9.0.3",
     "@bazel/bazel": "2.1.0",
     "@bazel/buildifier": "^0.29.0",
