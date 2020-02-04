@@ -716,6 +716,42 @@
               "url": "guide/ivy-compatibility",
               "title": "Ivy Compatibility Guide",
               "tooltip": "Details to help you make sure your application is compatible with Ivy."
+            },
+            {
+              "title": "Optional v9 migration details",
+              "tooltip": "Optional migration details regarding updating to version 9.",
+              "children": [
+                {
+                  "url": "guide/migration-renderer",
+                  "title": "Renderer to Renderer2",
+                  "tooltip": "Migration from the deprecated Renderer API to the newer Renderer2 API."
+                },
+                {
+                  "url": "guide/migration-dynamic-flag",
+                  "title": "Dynamic Queries Flag",
+                  "tooltip": "In @ViewChild() and @ContentChild() version 9, default value kept static: false."
+                },
+                {
+                  "url": "guide/migration-injectable",
+                  "title": "Migration @Injectable() Decorators",
+                  "tooltip": "Migration for missing @Injectable() decorators and incomplete provider definitions"
+                },
+                {
+                  "url": "guide/migration-localize",
+                  "title": "$localize Global Import",
+                  "tooltip": "Adds an import statement for @angular/localize to polyfills.ts"
+                },
+                {
+                  "url": "guide/migration-module-with-providers",
+                  "title": "ModuleWithProviders",
+                  "tooltip": "Added a generic type to any ModuleWithProviders usages that are missing the generic"
+                },
+                {
+                  "url": "guide/migration-undecorated-classes",
+                  "title": "@Directive()/@Component() decorator migration",
+                  "tooltip": "@Directive()/@Component() migration to the latest version."
+                }
+              ]
             }
           ]
         },
@@ -728,42 +764,6 @@
           "url": "guide/ivy",
           "title": "Angular Ivy",
           "tooltip": "About the Angular Ivy compilation and rendering pipeline."
-        },
-        {
-          "title": "Optional v9 migration details",
-          "tooltip": "Optional migration details regarding updating to version 9.",
-          "children": [
-            {
-              "url": "guide/migration-renderer",
-              "title": "Renderer to Renderer2",
-              "tooltip": "Migration from the deprecated Renderer API to the newer Renderer2 API."
-            },
-            {
-              "url": "guide/migration-dynamic-flag",
-              "title": "Dynamic Queries Flag",
-              "tooltip": "In @ViewChild() and @ContentChild() version 9, default value kept static: false."
-            },
-            {
-              "url": "guide/migration-injectable",
-              "title": "Migration @Injectable() Decorators",
-              "tooltip": "Migration for missing @Injectable() decorators and incomplete provider definitions"
-            },
-            {
-              "url": "guide/migration-localize",
-              "title": "$localize Global Import",
-              "tooltip": "Adds an import statement for @angular/localize to polyfills.ts"
-            },
-            {
-              "url": "guide/migration-module-with-providers",
-              "title": "ModuleWithProviders",
-              "tooltip": "Added a generic type to any ModuleWithProviders usages that are missing the generic"
-            },
-            {
-              "url": "guide/migration-undecorated-classes",
-              "title": "@Directive()/@Component() decorator migration",
-              "tooltip": "@Directive()/@Component() migration to the latest version."
-            }
-          ]
         }
       ]
     },

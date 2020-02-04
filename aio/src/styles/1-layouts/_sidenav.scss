@@ -185,7 +185,16 @@ button.vertical-menu-item {
   @include font-size(14);
   margin: 0;
   padding-left: 40px;
-  // text-transform: none;
+  text-transform: none;
+}
+
+.level-4 {
+  color: $mediumgray;
+  font-family: $main-font;
+  @include font-size(14);
+  margin: 0;
+  padding-left: 48px;
+  text-transform: none;
 }
 
 aio-nav-menu.top-menu {
