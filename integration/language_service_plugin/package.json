@@ -6,6 +6,7 @@
   "dependencies": {
     "@angular/core": "file:../../dist/packages-dist/core",
     "@angular/language-service": "file:../../dist/packages-dist/language-service",
+    "@types/jasmine": "file:../../node_modules/@types/jasmine",
     "@types/node": "file:../../node_modules/@types/node",
     "jasmine": "file:../../node_modules/jasmine",
     "typescript": "file:../../node_modules/typescript"

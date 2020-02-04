@@ -28,7 +28,9 @@ pkg_npm(
     ],
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
-    visibility = ["//visibility:private"],
+    visibility = [
+        "//integration:__pkg__",
+    ],
     deps = [
         ":language-service",
         # min bundle is not used at the moment; omit from package to speed up build
