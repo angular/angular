@@ -73,16 +73,8 @@ sass_binary(
         "external/npm/node_modules",
     ],
     deps = [
-        "//src/material-experimental/mdc-button:mdc_button_scss_lib",
-        "//src/material-experimental/mdc-card:mdc_card_scss_lib",
-        "//src/material-experimental/mdc-checkbox:mdc_checkbox_scss_lib",
-        "//src/material-experimental/mdc-chips:mdc_chips_scss_lib",
-        "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
-        "//src/material-experimental/mdc-menu:mdc_menu_scss_lib",
-        "//src/material-experimental/mdc-progress-bar:mdc_progress_bar_scss_lib",
-        "//src/material-experimental/mdc-radio:mdc_radio_scss_lib",
-        "//src/material-experimental/mdc-slide-toggle:mdc_slide_toggle_scss_lib",
-        "//src/material-experimental/mdc-tabs:mdc_tabs_scss_lib",
+        "//src/material-experimental/mdc-theming:all_themes",
+        "//src/material-experimental/mdc-typography:all_typography",
         "//src/material/core:theming_scss_lib",
     ],
 )
