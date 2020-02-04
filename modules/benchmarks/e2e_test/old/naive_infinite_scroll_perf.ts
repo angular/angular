@@ -16,7 +16,7 @@ describe('ng2 naive infinite scroll benchmark', function() {
   afterEach(verifyNoBrowserErrors);
 
   [1, 2, 4].forEach(function(appSize) {
-    it('should run scroll benchmark and collect stats for appSize = ' + appSize, function(done) {
+    it('should run scroll benchmark and collect stats for appSize = ' + appSize, async() => {
       runBenchmark({
         url: URL,
         id: 'ng2.naive_infinite_scroll',
@@ -31,7 +31,7 @@ describe('ng2 naive infinite scroll benchmark', function() {
           {name: 'appSize', value: appSize}, {name: 'iterationCount', value: 20, scale: 'linear'},
           {name: 'scrollIncrement', value: 40}
         ]
-      }).then(done, done.fail);
+      });
     });
   });
 

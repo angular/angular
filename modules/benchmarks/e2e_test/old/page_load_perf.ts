@@ -16,7 +16,7 @@ describe('ng2 largetable benchmark', function() {
   afterEach(verifyNoBrowserErrors);
 
 
-  it('should log the load time', function(done) {
+  it('should log the load time', async() => {
     runner
         .sample({
           id: 'loadTime',

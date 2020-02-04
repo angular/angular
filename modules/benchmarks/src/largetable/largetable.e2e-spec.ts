@@ -13,17 +13,17 @@ import {openBrowser, verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
 describe('largetable benchmark', () => {
   afterEach(verifyNoBrowserErrors);
 
-  it(`should render the table`, () => {
+  it(`should render the table`, async() => {
     openBrowser({
       url: '',
       ignoreBrowserSynchronization: true,
       params: [{name: 'cols', value: 5}, {name: 'rows', value: 5}],
     });
-    $('#createDom').click();
+    await $('#createDom').click();
     expect($('#root').getText()).toContain('0/0');
-    $('#createDom').click();
+    await $('#createDom').click();
     expect($('#root').getText()).toContain('A/A');
-    $('#destroyDom').click();
+    await $('#destroyDom').click();
     expect($('#root').getText() as any).toEqual('');
   });
 });
