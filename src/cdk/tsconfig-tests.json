@@ -20,7 +20,8 @@
   },
   "include": [
     "**/index.ts",
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "**/*.d.ts"
   ],
   "exclude": [
     "testing/protractor/**.ts",
