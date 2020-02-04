@@ -15,7 +15,7 @@ describe('ng2 di benchmark', function() {
 
   afterEach(verifyNoBrowserErrors);
 
-  it('should log the stats for getByToken', function(done) {
+  it('should log the stats for getByToken', async() => {
     runClickBenchmark({
       url: URL,
       buttons: ['#getByToken'],
@@ -23,10 +23,10 @@ describe('ng2 di benchmark', function() {
       params: [{name: 'iterations', value: 20000, scale: 'linear'}],
       microMetrics: {'injectAvg': 'avg time for injection (in ms)'},
       waitForAngular2: false
-    }).then(done, done.fail);
+    });
   });
 
-  it('should log the stats for getByKey', function(done) {
+  it('should log the stats for getByKey', async() => {
     runClickBenchmark({
       url: URL,
       buttons: ['#getByKey'],
@@ -34,10 +34,10 @@ describe('ng2 di benchmark', function() {
       params: [{name: 'iterations', value: 20000, scale: 'linear'}],
       microMetrics: {'injectAvg': 'avg time for injection (in ms)'},
       waitForAngular2: false
-    }).then(done, done.fail);
+    });
   });
 
-  it('should log the stats for getChild', function(done) {
+  it('should log the stats for getChild', async() => {
     runClickBenchmark({
       url: URL,
       buttons: ['#getChild'],
@@ -45,10 +45,10 @@ describe('ng2 di benchmark', function() {
       params: [{name: 'iterations', value: 20000, scale: 'linear'}],
       microMetrics: {'injectAvg': 'avg time for getChild (in ms)'},
       waitForAngular2: false
-    }).then(done, done.fail);
+    });
   });
 
-  it('should log the stats for instantiate', function(done) {
+  it('should log the stats for instantiate', async() => {
     runClickBenchmark({
       url: URL,
       buttons: ['#instantiate'],
@@ -56,14 +56,14 @@ describe('ng2 di benchmark', function() {
       params: [{name: 'iterations', value: 10000, scale: 'linear'}],
       microMetrics: {'injectAvg': 'avg time for instantiate (in ms)'},
       waitForAngular2: false
-    }).then(done, done.fail);
+    });
   });
 
   /**
    * This benchmark measures the cost of creating a new injector with a mix
    * of binding types: Type, unresolved, unflattened.
    */
-  it('should log the stats for createVariety', function(done) {
+  it('should log the stats for createVariety', async() => {
     runClickBenchmark({
       url: URL,
       buttons: ['#createVariety'],
@@ -71,13 +71,13 @@ describe('ng2 di benchmark', function() {
       params: [{name: 'iterations', value: 10000, scale: 'linear'}],
       microMetrics: {'injectAvg': 'avg time for createVariety (in ms)'},
       waitForAngular2: false
-    }).then(done, done.fail);
+    });
   });
 
   /**
    * Same as 'createVariety' benchmark but operates on fully resolved bindings.
    */
-  it('should log the stats for createVarietyResolved', function(done) {
+  it('should log the stats for createVarietyResolved', async() => {
     runClickBenchmark({
       url: URL,
       buttons: ['#createVarietyResolved'],
@@ -85,7 +85,7 @@ describe('ng2 di benchmark', function() {
       params: [{name: 'iterations', value: 10000, scale: 'linear'}],
       microMetrics: {'injectAvg': 'avg time for createVarietyResolved (in ms)'},
       waitForAngular2: false
-    }).then(done, done.fail);
+    });
   });
 
 });

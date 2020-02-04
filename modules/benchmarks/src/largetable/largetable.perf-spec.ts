@@ -48,13 +48,13 @@ describe('largetable benchmark perf', () => {
 
   [CreateOnlyWorker, CreateAndDestroyWorker, UpdateWorker].forEach((worker) => {
     describe(worker.id, () => {
-      it(`should run benchmark for ${testPackageName}`, done => {
+      it(`should run benchmark for ${testPackageName}`, async() => {
         runTableBenchmark({
           id: `largeTable.${testPackageName}.${worker.id}`,
           url: '/',
           ignoreBrowserSynchronization: true,
           worker: worker
-        }).then(done, done.fail);
+        });
       });
     });
   });

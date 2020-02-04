@@ -15,34 +15,34 @@ describe('ng2 selector benchmark', function() {
 
   afterEach(verifyNoBrowserErrors);
 
-  it('should log parse stats', function(done) {
+  it('should log parse stats', async() => {
     runClickBenchmark({
       url: URL,
       buttons: ['#parse'],
       id: 'ng2.selector.parse',
       params: [{name: 'selectors', value: 10000, scale: 'linear'}],
       waitForAngular2: false
-    }).then(done, done.fail);
+    });
   });
 
-  it('should log addSelectable stats', function(done) {
+  it('should log addSelectable stats', async() => {
     runClickBenchmark({
       url: URL,
       buttons: ['#addSelectable'],
       id: 'ng2.selector.addSelectable',
       params: [{name: 'selectors', value: 10000, scale: 'linear'}],
       waitForAngular2: false
-    }).then(done, done.fail);
+    });
   });
 
-  it('should log match stats', function(done) {
+  it('should log match stats', async() => {
     runClickBenchmark({
       url: URL,
       buttons: ['#match'],
       id: 'ng2.selector.match',
       params: [{name: 'selectors', value: 10000, scale: 'linear'}],
       waitForAngular2: false
-    }).then(done, done.fail);
+    });
   });
 
 });
