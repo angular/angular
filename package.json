@@ -7,7 +7,11 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "test:backend": "ng test ng-devtools-backend --watch=false",
+    "test:devtools": "ng test ng-devtools --watch=false",
+    "test:shell": "ng test shell-dev --watch=false",
+    "test:ci": "npm run test:backend && npm run test:devtools && npm run test:shell"
   },
   "private": true,
   "dependencies": {
