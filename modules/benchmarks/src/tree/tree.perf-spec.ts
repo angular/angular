@@ -41,6 +41,9 @@ describe('tree benchmark perf', () => {
   });
 
   it('should work for update', async() => {
-    runTreeBenchmark({id: 'update', work: () => $('#createDom').click()});
+    runTreeBenchmark({
+      id: 'update',
+      work: () => $('#createDom').click(),
+    });
   });
 });
