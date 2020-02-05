@@ -52,7 +52,6 @@ function patchProtractorConf() {
 
 function testBazel() {
   # Set up
-  bazel version
   ng version
   rm -rf demo
   # Create project

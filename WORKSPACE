@@ -12,23 +12,10 @@ http_archive(
     urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/1.4.1/rules_nodejs-1.4.1.tar.gz"],
 )
 
-# Check the bazel version and download npm dependencies
-load("@build_bazel_rules_nodejs//:index.bzl", "check_bazel_version", "check_rules_nodejs_version", "node_repositories", "yarn_install")
-
-# Bazel version must be at least the following version because:
-#   - 0.26.0 managed_directories feature added which is required for nodejs rules 0.30.0
-#   - 0.27.0 has a fix for managed_directories after `rm -rf node_modules`
-#   - 2.1.0 feature added to honor .bazelignore in external repositories
-check_bazel_version(
-    message = """
-You no longer need to install Bazel on your machine.
-Angular has a dependency on the @bazel/bazel package which supplies it.
-Try running `yarn bazel` instead.
-    (If you did run that, check that you've got a fresh `yarn install`)
-
-""",
-    minimum_bazel_version = "2.1.0",
-)
+# Check the rules_nodejs version and download npm dependencies
+# Note: bazel (version 2 and after) will check the .bazelversion file so we don't need to
+# assert on that.
+load("@build_bazel_rules_nodejs//:index.bzl", "check_rules_nodejs_version", "node_repositories", "yarn_install")
 
 check_rules_nodejs_version(minimum_version_string = "1.4.1")
 
