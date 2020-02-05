@@ -102,6 +102,10 @@ pkg_web(
 history_server(
     name = "prodserver",
     data = [":prodapp"],
+    args = [
+        "--port",
+        "4200",
+    ],
     templated_args = ["src/prodapp"],
 )
 
