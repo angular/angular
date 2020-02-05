@@ -116,7 +116,7 @@ filegroup(
 
 ts_devserver(
     name = "devserver",
-    additional_root_paths = ["src/_"],
+    additional_root_paths = ["project/src/_"],
     port = 4200,
     entry_module = "project/src/main.dev",
     serving_path = "/bundle.min.js",
