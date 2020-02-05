@@ -7,9 +7,9 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {CUSTOM_ELEMENTS_SCHEMA, Component, NO_ERRORS_SCHEMA, NgModule, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelement as element} from '@angular/core';
-
+import {CUSTOM_ELEMENTS_SCHEMA, Component, Injectable, NO_ERRORS_SCHEMA, NgModule, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelement as element} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
 describe('NgModule', () => {
@@ -75,6 +75,25 @@ describe('NgModule', () => {
         TestBed.createComponent(TestCmp2);
       }).not.toThrow();
     });
+  });
+
+  it('initializes the module imports before the module itself', () => {
+    @Injectable()
+    class Service {
+      initializations: string[] = [];
+    }
+    @NgModule({providers: [Service]})
+    class RoutesModule {
+      constructor(service: Service) { service.initializations.push('RoutesModule'); }
+    }
+
+    @NgModule({imports: [RoutesModule]})
+    class AppModule {
+      constructor(service: Service) { service.initializations.push('AppModule'); }
+    }
+
+    TestBed.configureTestingModule({imports: [AppModule]});
+    expect(TestBed.inject(Service).initializations).toEqual(['RoutesModule', 'AppModule']);
   });
 
   describe('schemas', () => {
