@@ -912,6 +912,9 @@
     "name": "leaveView"
   },
   {
+    "name": "leaveViewLight"
+  },
+  {
     "name": "listenerInternal"
   },
   {

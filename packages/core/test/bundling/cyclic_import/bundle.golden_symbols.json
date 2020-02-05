@@ -486,6 +486,9 @@
     "name": "leaveView"
   },
   {
+    "name": "leaveViewLight"
+  },
+  {
     "name": "locateHostElement"
   },
   {
