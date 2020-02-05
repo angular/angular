@@ -24,6 +24,7 @@ ts_library(
     name = "perf_lib",
     testonly = 1,
     srcs = ["expanding_rows.perf-spec.ts"],
+    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
     deps = [
         "//modules/e2e_util",
         "@npm//protractor",

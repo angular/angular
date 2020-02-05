@@ -11,7 +11,7 @@ import {runTreeBenchmark} from './test_utils';
 
 describe('tree benchmark perf', () => {
   it('should work for createOnly', async() => {
-    runTreeBenchmark({
+    await runTreeBenchmark({
       // This cannot be called "createOnly" because the actual destroy benchmark
       // has the "createOnly" id already. See: https://github.com/angular/angular/pull/21503
       id: 'createOnlyForReal',
@@ -21,7 +21,7 @@ describe('tree benchmark perf', () => {
   });
 
   it('should work for destroy', async() => {
-    runTreeBenchmark({
+    await runTreeBenchmark({
       // This is actually a benchmark for destroying the dom, but it has been accidentally
       // named "createOnly". See https://github.com/angular/angular/pull/21503.
       id: 'createOnly',
@@ -31,7 +31,7 @@ describe('tree benchmark perf', () => {
   });
 
   it('should work for createDestroy', async() => {
-    runTreeBenchmark({
+    await runTreeBenchmark({
       id: 'createDestroy',
       work: () => {
         $('#destroyDom').click();
@@ -41,7 +41,7 @@ describe('tree benchmark perf', () => {
   });
 
   it('should work for update', async() => {
-    runTreeBenchmark({
+    await runTreeBenchmark({
       id: 'update',
       work: () => $('#createDom').click(),
     });

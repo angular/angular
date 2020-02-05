@@ -13,7 +13,7 @@ describe('class bindings perf', () => {
 
   it('should work for update', async() => {
     browser.rootEl = '#root';
-    runBenchmark({
+    await runBenchmark({
       id: 'create',
       url: '',
       ignoreBrowserSynchronization: true,
@@ -25,7 +25,7 @@ describe('class bindings perf', () => {
 
   it('should work for update', async() => {
     browser.rootEl = '#root';
-    runBenchmark({
+    await runBenchmark({
       id: 'update',
       url: '',
       ignoreBrowserSynchronization: true,
