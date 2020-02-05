@@ -30,7 +30,10 @@ var CIconfiguration = {
   'Android4.4': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'Android5': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'Android6': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  'Android7': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
+  // Temporary disabled due to SauceLab timeout.
+  // https://angular-team.atlassian.net/browse/FW-1821
+  // 'Android7': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
+  'Android7': {unitTest: {target: null, required: false}, e2e: {target: null, required: true}},
   'Safari7': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
   'Safari8': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
   'Safari9': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
