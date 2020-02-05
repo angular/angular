@@ -81,7 +81,7 @@ const resolvedPromise = (() => Promise.resolve(null))();
  *
  * Since version 4, Angular automatically adds the `novalidate` attribute on any `<form>` whenever
  * the `FormModule` or the `ReactiveFormModule` is imported. Therefore you can omit it in your code.
- * If you want to use explicitly native validation with Angular forms, you can add the
+ * If you want to use explicitly the native validation with Angular forms, you can add the
  * `ngNativeValidate` attribute to the form.
  *
  * ```html
