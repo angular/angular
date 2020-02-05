@@ -17,7 +17,7 @@
     "@angular/platform-browser": "file:../../node_modules/@angular/platform-browser",
     "@angular/platform-browser-dynamic": "file:../../node_modules/@angular/platform-browser-dynamic",
     "@angular/router": "file:../../node_modules/@angular/router",
-    "@bazel/bazel": "file:../../node_modules/@bazel/bazel",
+    "@bazel/bazelisk": "file:../../node_modules/@bazel/bazelisk",
     "@types/node": "file:../../node_modules/@types/node",
     "patch-package": "^6.2.1",
     "protractor": "file:../../node_modules/protractor",

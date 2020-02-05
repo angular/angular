@@ -26,7 +26,7 @@ NPM_PACKAGE_ARCHIVES = [
     "webdriver-manager",
     "@angular/cli",
     "@angular-devkit/build-angular",
-    "@bazel/bazel",
+    "@bazel/bazelisk",
     "@types/jasmine",
     "@types/jasminewd2",
     "@types/node",

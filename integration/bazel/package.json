@@ -22,7 +22,6 @@
     "@angular/bazel": "file:../../dist/packages-dist/bazel",
     "@angular/compiler": "file:../../dist/packages-dist/compiler",
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
-    "@bazel/bazel": "file:../../node_modules/@bazel/bazel",
     "@bazel/karma": "1.4.0",
     "@bazel/protractor": "1.4.0",
     "@bazel/rollup": "1.4.0",
@@ -46,7 +45,7 @@
     "typescript": "3.7.4"
   },
   "scripts": {
-    "test": "bazel build ... --noshow_progress && bazel test ...",
+    "test": "bazelisk build ... --noshow_progress && bazelisk test ...",
     "postinstall": "ngcc"
   }
 }
