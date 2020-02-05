@@ -4,7 +4,8 @@
   justify-content: space-between;
 }
 
-ng-property-view, .property-wrapper {
+ng-property-view,
+.property-wrapper {
   overflow: auto;
 }
 
@@ -30,6 +31,6 @@ ng-property-view {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  line-height: 22px;
+  line-height: 25px;
   font-size: 12px;
 }

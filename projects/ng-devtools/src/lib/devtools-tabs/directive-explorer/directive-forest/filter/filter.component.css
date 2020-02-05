@@ -1,25 +1,29 @@
 .filter {
-  display: flex
+  display: flex;
+  padding-left: 4px;
+  border-bottom: 1px solid #dddddd;
 }
 
-.filter .icon {
-  width: 20px;
-  height: 20px;
-  margin: auto 12px;
+.filter .icon-outer {
+  vertical-align: middle;
+  display: flex;
+}
+
+.filter .icon-outer .icon {
+  width: 16px;
+  height: 16px;
+  margin: auto;
   opacity: 0.7;
 }
 
 .filter .filter-input {
   border: none;
-  background: rgba(0, 0, 0, 0.003);
-  box-shadow: inset 0 -2px 1px rgba(0, 0, 0, 0.03);
   width: 100%;
-  font-size: 20px;
+  font-size: 12px;
   font-family: inherit;
   font-weight: inherit;
   color: inherit;
-  line-height: 1.4em;
-  padding: 12px 6px;
+  padding: 5px;
 }
 
 .up-down-buttons {
@@ -27,8 +31,12 @@
 }
 
 .up-down-buttons button {
-  width: 50px;
-  height: 50px;
+  width: 25px;
+  height: 25px;
+}
+
+:host /deep/ .up-down-buttons .mat-icon-button {
+  line-height: 25px;
 }
 
 :host /deep/ .up-down-buttons button mat-icon {
