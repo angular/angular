@@ -54,7 +54,7 @@ describe('js-web-frameworks benchmark perf', () => {
   [Create1KWorker, Delete1KWorker, UpdateWorker, SwapWorker].forEach((worker) => {
     describe(worker.id, () => {
       it(`should run benchmark for ${testPackageName}`, async() => {
-        runTableBenchmark({
+        await runTableBenchmark({
           id: `js-web-frameworks.${testPackageName}.${worker.id}`,
           url: '/',
           ignoreBrowserSynchronization: true,

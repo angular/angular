@@ -5,6 +5,7 @@ package(default_visibility = ["//visibility:public"])
 ts_library(
     name = "util_lib",
     srcs = ["util.ts"],
+    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
     deps = ["//modules/benchmarks/src:util_lib"],
 )
 
@@ -12,6 +13,7 @@ ts_library(
     name = "test_utils_lib",
     testonly = 1,
     srcs = ["test_utils.ts"],
+    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
     deps = [
         "//modules/e2e_util",
         "@npm//protractor",
@@ -22,6 +24,7 @@ ts_library(
     name = "perf_tests_lib",
     testonly = 1,
     srcs = ["tree.perf-spec.ts"],
+    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
     deps = [
         ":test_utils_lib",
         "@npm//protractor",
@@ -32,6 +35,7 @@ ts_library(
     name = "e2e_tests_lib",
     testonly = 1,
     srcs = ["tree.e2e-spec.ts"],
+    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
     deps = [
         ":test_utils_lib",
         "@npm//protractor",
@@ -42,6 +46,7 @@ ts_library(
     name = "detect_changes_perf_tests_lib",
     testonly = 1,
     srcs = ["tree_detect_changes.perf-spec.ts"],
+    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
     deps = [
         ":test_utils_lib",
         "@npm//protractor",
@@ -52,6 +57,7 @@ ts_library(
     name = "detect_changes_e2e_tests_lib",
     testonly = 1,
     srcs = ["tree_detect_changes.e2e-spec.ts"],
+    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
     deps = [
         ":test_utils_lib",
         "@npm//protractor",
