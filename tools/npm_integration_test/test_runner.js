@@ -17,6 +17,9 @@ const VERBOSE_LOGS = !!process.env['VERBOSE_LOGS'];
 // Set to true if you want the /tmp folder created to persist after running `bazel test`
 const KEEP_TMP = false;
 
+// bazelisk requires a $HOME environment variable for its cache
+process.env['HOME'] = tmp.dirSync({keep: KEEP_TMP, unsafeCleanup: !KEEP_TMP}).name;
+
 function fail(...m) {
   console.error();
   console.error(`[${path.basename(__filename)}]`);

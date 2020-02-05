@@ -195,10 +195,11 @@ commands:
             - *cache_key_win_fallback
       # Reinstall to get windows binaries.
       - run: yarn install --frozen-lockfile --non-interactive
-      # Install @bazel/bazel globally and use that for the first run.
+      # Install @bazel/bazelisk globally and use that for the first run.
       # Workaround for https://github.com/bazelbuild/rules_nodejs/issues/894
-      - run: yarn global add @bazel/bazel@$env:BAZEL_VERSION
-      - run: bazel info
+      # NB: the issue was for @bazel/bazel but the same problem applies to @bazel/bazelisk
+      - run: yarn global add @bazel/bazelisk@$env:BAZELISK_VERSION
+      - run: bazelisk info
 
   notify_webhook_on_fail:
     description: Notify a webhook about failure
