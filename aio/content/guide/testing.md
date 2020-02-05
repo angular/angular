@@ -620,8 +620,8 @@ It also generates an initial test file for the component, `banner-external.compo
 
 <div class="alert is-helpful">
 
-Because `compileComponents` is asynchronous, it uses 
-the [`async`](api/core/testing/async) utility 
+Because `compileComponents` is asynchronous, it uses
+the [`async`](api/core/testing/async) utility
 function imported from `@angular/core/testing`.
 
 Please refer to the [async](#async) section for more details.
@@ -1261,19 +1261,19 @@ XHR calls within a test are rare, but if you need to call XHR, see [`async()`](#
 
 #### The _tick()_ function
 
-You do have to call `tick()` to advance the (virtual) clock.
+You do have to call [tick()](api/core/testing/tick) to advance the (virtual) clock.
 
-Calling `tick()` simulates the passage of time until all pending asynchronous activities finish.
+Calling [tick()](api/core/testing/tick) simulates the passage of time until all pending asynchronous activities finish.
 In this case, it waits for the error handler's `setTimeout()`.
 
-The `tick()` function accepts milliseconds as a parameter (defaults to 0 if not provided). The parameter represents how much the virtual clock advances. For example, if you have a `setTimeout(fn, 100)` in a `fakeAsync()` test, you need to use tick(100) to trigger the fn callback.
+The [tick()](api/core/testing/tick) function accepts milliseconds as a parameter (defaults to 0 if not provided). The parameter represents how much the virtual clock advances. For example, if you have a `setTimeout(fn, 100)` in a `fakeAsync()` test, you need to use tick(100) to trigger the fn callback.
 
 <code-example
   path="testing/src/app/demo/async-helper.spec.ts"
   region="fake-async-test-tick">
 </code-example>
 
-The `tick()` function is one of the Angular testing utilities that you import with `TestBed`.
+The [tick()](api/core/testing/tick) function is one of the Angular testing utilities that you import with `TestBed`.
 It's a companion to `fakeAsync()` and you can only call it within a `fakeAsync()` body.
 
 #### Comparing dates inside fakeAsync()
@@ -1422,7 +1422,7 @@ in the real world.
 Notice that the quote element displays the placeholder value (`'...'`) after `ngOnInit()`.
 The first quote hasn't arrived yet.
 
-To flush the first quote from the observable, you call `tick()`.
+To flush the first quote from the observable, you call [tick()](api/core/testing/tick).
 Then call `detectChanges()` to tell Angular to update the screen.
 
 Then you can assert that the quote element displays the expected text.
@@ -1468,7 +1468,7 @@ When using an `intervalTimer()` such as `setInterval()` in `async()`, remember t
 #### _whenStable_
 
 The test must wait for the `getQuote()` observable to emit the next quote.
-Instead of calling `tick()`, it calls `fixture.whenStable()`.
+Instead of calling [tick()](api/core/testing/tick), it calls `fixture.whenStable()`.
 
 The `fixture.whenStable()` returns a promise that resolves when the JavaScript engine's
 task queue becomes empty.
@@ -1577,7 +1577,7 @@ you tell the `TestScheduler` to _flush_ its queue of prepared tasks like this.
   path="testing/src/app/twain/twain.component.marbles.spec.ts"
   region="test-scheduler-flush"></code-example>
 
-This step serves a purpose analogous to `tick()` and `whenStable()` in the
+This step serves a purpose analogous to [tick()](api/core/testing/tick) and `whenStable()` in the
 earlier `fakeAsync()` and `async()` examples.
 The balance of the test is the same as those examples.
 
@@ -1589,7 +1589,7 @@ Here's the marble testing version of the `getQuote()` error test.
   path="testing/src/app/twain/twain.component.marbles.spec.ts"
   region="error-test"></code-example>
 
-It's still an async test, calling `fakeAsync()` and `tick()`, because the component itself
+It's still an async test, calling `fakeAsync()` and [tick()](api/core/testing/tick), because the component itself
 calls `setTimeout()` when processing errors.
 
 Look at the marble observable definition.
