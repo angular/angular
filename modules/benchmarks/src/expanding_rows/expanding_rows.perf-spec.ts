@@ -13,7 +13,7 @@ describe('benchmarks', () => {
 
   it('should work for create', async() => {
     browser.rootEl = '#root';
-    runBenchmark({
+    await runBenchmark({
       id: 'create',
       url: '',
       ignoreBrowserSynchronization: true,

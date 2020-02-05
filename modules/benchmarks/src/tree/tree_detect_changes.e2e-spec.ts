@@ -13,7 +13,7 @@ import {openTreeBenchmark} from './test_utils';
 describe('tree benchmark detect changes', () => {
   it('should work for detectChanges', async() => {
     openTreeBenchmark();
-    $('#detectChanges').click();
+    await $('#detectChanges').click();
     expect($('#numberOfChecks').getText()).toContain('10');
   });
 });
