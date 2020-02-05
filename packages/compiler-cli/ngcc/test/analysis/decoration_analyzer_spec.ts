@@ -11,7 +11,7 @@ import {FatalDiagnosticError, makeDiagnostic} from '../../../src/ngtsc/diagnosti
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection';
-import {DecoratorHandler, DetectResult} from '../../../src/ngtsc/transform';
+import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../../src/ngtsc/transform';
 import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
@@ -21,8 +21,8 @@ import {Migration, MigrationHost} from '../../src/migrations/migration';
 import {MockLogger} from '../helpers/mock_logger';
 import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils';
 
-type DecoratorHandlerWithResolve = DecoratorHandler<any, any>& {
-  resolve: NonNullable<DecoratorHandler<any, any>['resolve']>;
+type DecoratorHandlerWithResolve = DecoratorHandler<unknown, unknown, unknown>& {
+  resolve: NonNullable<DecoratorHandler<unknown, unknown, unknown>['resolve']>;
 };
 
 runInEachFileSystem(() => {
@@ -40,16 +40,17 @@ runInEachFileSystem(() => {
       let result: DecorationAnalyses;
 
       // Helpers
-      const createTestHandler = () => {
+      const createTestHandler = (options: {analyzeError: boolean, resolveError: boolean}) => {
         const handler = jasmine.createSpyObj<DecoratorHandlerWithResolve>('TestDecoratorHandler', [
           'detect',
           'analyze',
+          'register',
           'resolve',
           'compile',
         ]);
         // Only detect the Component and Directive decorators
         handler.detect.and.callFake(
-            (node: ts.Declaration, decorators: Decorator[] | null): DetectResult<any>|
+            (node: ts.Declaration, decorators: Decorator[] | null): DetectResult<unknown>|
                 undefined => {
               const className = (node as any).name.text;
               if (decorators === null) {
@@ -67,6 +68,7 @@ runInEachFileSystem(() => {
               } else {
                 return {
                   metadata,
+                  decorator: metadata,
                   trigger: metadata.node,
                 };
               }
@@ -74,13 +76,20 @@ runInEachFileSystem(() => {
         // The "test" analysis is an object with the name of the decorator being analyzed
         handler.analyze.and.callFake((decl: ts.Declaration, dec: Decorator) => {
           logs.push(`analyze: ${(decl as any).name.text}@${dec.name}`);
-          return {analysis: {decoratorName: dec.name}, diagnostics: undefined};
+          return {
+            analysis: {decoratorName: dec.name},
+            diagnostics: options.analyzeError ? [makeDiagnostic(9999, decl, 'analyze diagnostic')] :
+                                                undefined
+          };
         });
         // The "test" resolution is just setting `resolved: true` on the analysis
         handler.resolve.and.callFake((decl: ts.Declaration, analysis: any) => {
           logs.push(`resolve: ${(decl as any).name.text}@${analysis.decoratorName}`);
           analysis.resolved = true;
-          return {};
+          return {
+            diagnostics: options.resolveError ? [makeDiagnostic(9998, decl, 'resolve diagnostic')] :
+                                                undefined
+          };
         });
         // The "test" compilation result is just the name of the decorator being compiled
         // (suffixed with `(compiled)`)
@@ -92,7 +101,10 @@ runInEachFileSystem(() => {
         return handler;
       };
 
-      function setUpAnalyzer(testFiles: TestFile[]) {
+      function setUpAnalyzer(
+          testFiles: TestFile[],
+          options: {analyzeError: boolean,
+                    resolveError: boolean} = {analyzeError: false, resolveError: false}) {
         logs = [];
         loadTestFiles(testFiles);
         loadFakeCore(getFileSystem());
@@ -100,15 +112,16 @@ runInEachFileSystem(() => {
         const bundle = makeTestEntryPointBundle('test-package', 'esm2015', false, rootFiles);
         program = bundle.src.program;
 
-        const reflectionHost =
-            new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+        const reflectionHost = new Esm2015ReflectionHost(new MockLogger(), false, bundle.src);
         const referencesRegistry = new NgccReferencesRegistry(reflectionHost);
         diagnosticLogs = [];
         const analyzer = new DecorationAnalyzer(
             getFileSystem(), bundle, reflectionHost, referencesRegistry,
             (error) => diagnosticLogs.push(error));
-        testHandler = createTestHandler();
-        analyzer.handlers = [testHandler];
+        testHandler = createTestHandler(options);
+
+        // Replace the default handlers with the test handler in the original array of handlers
+        analyzer.handlers.splice(0, analyzer.handlers.length, testHandler);
         migrationLogs = [];
         const migration1 = new MockMigration('migration1', migrationLogs);
         const migration2 = new MockMigration('migration2', migrationLogs);
@@ -199,10 +212,10 @@ runInEachFileSystem(() => {
         it('should call `apply()` on each migration for each class', () => {
           expect(migrationLogs).toEqual([
             'migration1:MyComponent',
-            'migration2:MyComponent',
             'migration1:MyDirective',
-            'migration2:MyDirective',
             'migration1:MyOtherComponent',
+            'migration2:MyComponent',
+            'migration2:MyDirective',
             'migration2:MyOtherComponent',
           ]);
         });
@@ -361,6 +374,75 @@ runInEachFileSystem(() => {
           expect(diagnosticLogs.length).toEqual(2);
           expect(diagnosticLogs[0]).toEqual(jasmine.objectContaining({code: -999999}));
           expect(diagnosticLogs[1]).toEqual(jasmine.objectContaining({code: -996666}));
+        });
+
+        it('should report analyze diagnostics to the `diagnosticHandler` callback', () => {
+          const analyzer = setUpAnalyzer(
+              [
+                {
+                  name: _('/node_modules/test-package/index.js'),
+                  contents: `
+                  import {Component, Directive, Injectable} from '@angular/core';
+                  export class MyComponent {}
+                  MyComponent.decorators = [{type: Component}];
+                `,
+                },
+              ],
+              {analyzeError: true, resolveError: true});
+          analyzer.analyzeProgram();
+          expect(diagnosticLogs.length).toEqual(1);
+          expect(diagnosticLogs[0]).toEqual(jasmine.objectContaining({code: -999999}));
+          expect(testHandler.analyze).toHaveBeenCalled();
+          expect(testHandler.register).not.toHaveBeenCalled();
+          expect(testHandler.resolve).not.toHaveBeenCalled();
+          expect(testHandler.compile).not.toHaveBeenCalled();
+        });
+
+        it('should report resolve diagnostics to the `diagnosticHandler` callback', () => {
+          const analyzer = setUpAnalyzer(
+              [
+                {
+                  name: _('/node_modules/test-package/index.js'),
+                  contents: `
+                  import {Component, Directive, Injectable} from '@angular/core';
+                  export class MyComponent {}
+                  MyComponent.decorators = [{type: Component}];
+                `,
+                },
+              ],
+              {analyzeError: false, resolveError: true});
+          analyzer.analyzeProgram();
+          expect(diagnosticLogs.length).toEqual(1);
+          expect(diagnosticLogs[0]).toEqual(jasmine.objectContaining({code: -999998}));
+          expect(testHandler.analyze).toHaveBeenCalled();
+          expect(testHandler.register).toHaveBeenCalled();
+          expect(testHandler.resolve).toHaveBeenCalled();
+          expect(testHandler.compile).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('declaration files', () => {
+        it('should not run decorator handlers against declaration files', () => {
+          class FakeDecoratorHandler implements DecoratorHandler<{}|null, unknown, unknown> {
+            name = 'FakeDecoratorHandler';
+            precedence = HandlerPrecedence.PRIMARY;
+
+            detect(): undefined { throw new Error('detect should not have been called'); }
+            analyze(): AnalysisOutput<unknown> {
+              throw new Error('analyze should not have been called');
+            }
+            compile(): CompileResult { throw new Error('compile should not have been called'); }
+          }
+
+          const analyzer = setUpAnalyzer([{
+            name: _('/node_modules/test-package/index.d.ts'),
+            contents: 'export declare class SomeDirective {}',
+          }]);
+
+          // Replace the default handlers with the test handler in the original array of handlers
+          analyzer.handlers.splice(0, analyzer.handlers.length, new FakeDecoratorHandler());
+          result = analyzer.analyzeProgram();
+          expect(result.size).toBe(0);
         });
       });
     });

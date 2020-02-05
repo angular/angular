@@ -330,6 +330,12 @@ import {el} from '@angular/platform-browser/testing/src/browser_util';
       expect(cssSelector.toString()).toEqual('[attrname=attrvalue]');
     });
 
+    it('should detect #some-value syntax and treat as attribute', () => {
+      const cssSelector = CssSelector.parse('#some-value')[0];
+      expect(cssSelector.attrs).toEqual(['id', 'some-value']);
+      expect(cssSelector.toString()).toEqual('[id=some-value]');
+    });
+
     it('should detect attr values with single quotes', () => {
       const cssSelector = CssSelector.parse('[attrname=\'attrvalue\']')[0];
       expect(cssSelector.attrs).toEqual(['attrname', 'attrvalue']);
@@ -381,7 +387,7 @@ import {el} from '@angular/platform-browser/testing/src/browser_util';
     it('should throw when nested :not', () => {
       expect(() => {
         CssSelector.parse('sometag:not(:not([attrname=attrvalue].someclass))')[0];
-      }).toThrowError('Nesting :not is not allowed in a selector');
+      }).toThrowError('Nesting :not in a selector is not allowed');
     });
 
     it('should throw when multiple selectors in :not', () => {

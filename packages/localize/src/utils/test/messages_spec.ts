@@ -9,7 +9,7 @@ import {findEndOfBlock, makeTemplateObject, parseMessage, parseMetadata, splitBl
 
 describe('messages utils', () => {
   describe('parseMessage', () => {
-    it('should use the message-id parsed from the metadata if available', () => {
+    it('should use the custom id parsed from the metadata if available', () => {
       const message = parseMessage(
           makeTemplateObject(
               [':@@custom-message-id:a', ':one:b', ':two:c'],
@@ -41,6 +41,32 @@ describe('messages utils', () => {
       expect(message3.messageId).not.toEqual(message1.messageId);
     });
 
+    it('should capture legacy ids if available', () => {
+      const message1 = parseMessage(
+          makeTemplateObject(
+              [':␟legacy-1␟legacy-2␟legacy-3:a', ':one:b', ':two:c'],
+              [':␟legacy-1␟legacy-2␟legacy-3:a', ':one:b', ':two:c']),
+          [1, 2]);
+      expect(message1.messageId).toEqual('8865273085679272414');
+      expect(message1.legacyIds).toEqual(['legacy-1', 'legacy-2', 'legacy-3']);
+
+      const message2 = parseMessage(
+          makeTemplateObject(
+              [':@@custom-message-id␟legacy-message-id:a', ':one:b', ':two:c'],
+              [':@@custom-message-id␟legacy-message-id:a', ':one:b', ':two:c']),
+          [1, 2]);
+      expect(message2.messageId).toEqual('custom-message-id');
+      expect(message2.legacyIds).toEqual(['legacy-message-id']);
+
+      const message3 = parseMessage(
+          makeTemplateObject(
+              [':@@custom-message-id:a', ':one:b', ':two:c'],
+              [':@@custom-message-id:a', ':one:b', ':two:c']),
+          [1, 2]);
+      expect(message3.messageId).toEqual('custom-message-id');
+      expect(message3.legacyIds).toEqual([]);
+    });
+
     it('should infer placeholder names if not given', () => {
       const parts1 = ['a', 'b', 'c'];
       const message1 = parseMessage(makeTemplateObject(parts1, parts1), [1, 2]);
@@ -59,12 +85,6 @@ describe('messages utils', () => {
       const message = parseMessage(
           makeTemplateObject(['a', ':one:b', ':two:c'], ['a', '\\:one:b', '\\:two:c']), [1, 2]);
       expect(message.messageId).toEqual('2623373088949454037');
-    });
-
-    it('should handle raw values that are empty (from synthesized AST)', () => {
-      const message =
-          parseMessage(makeTemplateObject(['a', ':one:b', ':two:c'], ['', '', '']), [1, 2]);
-      expect(message.messageId).toEqual('8865273085679272414');
     });
 
     it('should extract the meaning, description and placeholder names', () => {
@@ -128,10 +148,6 @@ describe('messages utils', () => {
                  ':block with escaped : in it:abc def', ':block with escaped \\: in it:abc def'))
           .toEqual({text: 'abc def', block: 'block with escaped : in it'});
     });
-
-    it('should handle the empty raw part', () => {
-      expect(splitBlock(':block info:abc def', '')).toEqual({text: 'abc def', block: 'block info'});
-    });
   });
 
   describe('findEndOfBlock()', () => {
@@ -157,31 +173,108 @@ describe('messages utils', () => {
 
   describe('parseMetadata()', () => {
     it('should return just the text if there is no block', () => {
-      expect(parseMetadata('abc def', 'abc def'))
-          .toEqual({text: 'abc def', meaning: undefined, description: undefined, id: undefined});
+      expect(parseMetadata('abc def', 'abc def')).toEqual({
+        text: 'abc def',
+        meaning: undefined,
+        description: undefined,
+        id: undefined,
+        legacyIds: []
+      });
     });
 
     it('should extract the metadata if provided', () => {
-      expect(parseMetadata(':description:abc def', ':description:abc def'))
-          .toEqual(
-              {text: 'abc def', description: 'description', meaning: undefined, id: undefined});
-      expect(parseMetadata(':meaning|:abc def', ':meaning|:abc def'))
-          .toEqual({text: 'abc def', description: undefined, meaning: 'meaning', id: undefined});
-      expect(parseMetadata(':@@message-id:abc def', ':@@message-id:abc def'))
-          .toEqual({text: 'abc def', description: undefined, meaning: undefined, id: 'message-id'});
+      expect(parseMetadata(':description:abc def', ':description:abc def')).toEqual({
+        text: 'abc def',
+        description: 'description',
+        meaning: undefined,
+        id: undefined,
+        legacyIds: []
+      });
+      expect(parseMetadata(':meaning|:abc def', ':meaning|:abc def')).toEqual({
+        text: 'abc def',
+        description: undefined,
+        meaning: 'meaning',
+        id: undefined,
+        legacyIds: []
+      });
+      expect(parseMetadata(':@@message-id:abc def', ':@@message-id:abc def')).toEqual({
+        text: 'abc def',
+        description: undefined,
+        meaning: undefined,
+        id: 'message-id',
+        legacyIds: []
+      });
       expect(parseMetadata(':meaning|description:abc def', ':meaning|description:abc def'))
-          .toEqual(
-              {text: 'abc def', description: 'description', meaning: 'meaning', id: undefined});
+          .toEqual({
+            text: 'abc def',
+            description: 'description',
+            meaning: 'meaning',
+            id: undefined,
+            legacyIds: []
+          });
       expect(parseMetadata(':description@@message-id:abc def', ':description@@message-id:abc def'))
-          .toEqual(
-              {text: 'abc def', description: 'description', meaning: undefined, id: 'message-id'});
+          .toEqual({
+            text: 'abc def',
+            description: 'description',
+            meaning: undefined,
+            id: 'message-id',
+            legacyIds: []
+          });
       expect(parseMetadata(':meaning|@@message-id:abc def', ':meaning|@@message-id:abc def'))
-          .toEqual({text: 'abc def', description: undefined, meaning: 'meaning', id: 'message-id'});
+          .toEqual({
+            text: 'abc def',
+            description: undefined,
+            meaning: 'meaning',
+            id: 'message-id',
+            legacyIds: []
+          });
+      expect(parseMetadata(
+                 ':description@@message-id␟legacy-1␟legacy-2␟legacy-3:abc def',
+                 ':description@@message-id␟legacy-1␟legacy-2␟legacy-3:abc def'))
+          .toEqual({
+            text: 'abc def',
+            description: 'description',
+            meaning: undefined,
+            id: 'message-id',
+            legacyIds: ['legacy-1', 'legacy-2', 'legacy-3']
+          });
+      expect(parseMetadata(
+                 ':meaning|@@message-id␟legacy-message-id:abc def',
+                 ':meaning|@@message-id␟legacy-message-id:abc def'))
+          .toEqual({
+            text: 'abc def',
+            description: undefined,
+            meaning: 'meaning',
+            id: 'message-id',
+            legacyIds: ['legacy-message-id']
+          });
+      expect(parseMetadata(
+                 ':meaning|␟legacy-message-id:abc def', ':meaning|␟legacy-message-id:abc def'))
+          .toEqual({
+            text: 'abc def',
+            description: undefined,
+            meaning: 'meaning',
+            id: undefined,
+            legacyIds: ['legacy-message-id']
+          });
+
+      expect(parseMetadata(':␟legacy-message-id:abc def', ':␟legacy-message-id:abc def')).toEqual({
+        text: 'abc def',
+        description: undefined,
+        meaning: undefined,
+        id: undefined,
+        legacyIds: ['legacy-message-id']
+      });
     });
 
     it('should handle an empty block if there is one', () => {
-      expect(parseMetadata('::abc def', '::abc def'))
-          .toEqual({text: 'abc def', meaning: undefined, description: undefined, id: undefined});
+      expect(parseMetadata('::abc def', '::abc def')).toEqual({
+        text: 'abc def',
+        meaning: undefined,
+        description: undefined,
+        id: undefined,
+        legacyIds: []
+      });
     });
 
     it('should handle escaped block markers', () => {
@@ -190,14 +283,9 @@ describe('messages utils', () => {
             text: ':part of the message:abc def',
             meaning: undefined,
             description: undefined,
-            id: undefined
+            id: undefined,
+            legacyIds: []
           });
-    });
-
-    it('should handle the empty raw part', () => {
-      expect(parseMetadata(':description:abc def', ''))
-          .toEqual(
-              {text: 'abc def', meaning: undefined, description: 'description', id: undefined});
     });
   });
 });

@@ -7,23 +7,20 @@
  */
 
 import {Reference} from '../../imports';
-import {ClassDeclaration} from '../../reflection';
+import {ClassDeclaration, ReflectionHost} from '../../reflection';
 
 import {DirectiveMeta, MetadataReader, MetadataRegistry, NgModuleMeta, PipeMeta} from './api';
+import {hasInjectableFields} from './util';
 
 /**
  * A registry of directive, pipe, and module metadata for types defined in the current compilation
  * unit, which supports both reading and registering.
  */
 export class LocalMetadataRegistry implements MetadataRegistry, MetadataReader {
-  private abstractDirectives = new Set<ClassDeclaration>();
   private directives = new Map<ClassDeclaration, DirectiveMeta>();
   private ngModules = new Map<ClassDeclaration, NgModuleMeta>();
   private pipes = new Map<ClassDeclaration, PipeMeta>();
 
-  isAbstractDirective(ref: Reference<ClassDeclaration>): boolean {
-    return this.abstractDirectives.has(ref.node);
-  }
   getDirectiveMetadata(ref: Reference<ClassDeclaration>): DirectiveMeta|null {
     return this.directives.has(ref.node) ? this.directives.get(ref.node) ! : null;
   }
@@ -34,7 +31,6 @@ export class LocalMetadataRegistry implements MetadataRegistry, MetadataReader {
     return this.pipes.has(ref.node) ? this.pipes.get(ref.node) ! : null;
   }
 
-  registerAbstractDirective(clazz: ClassDeclaration): void { this.abstractDirectives.add(clazz); }
   registerDirectiveMetadata(meta: DirectiveMeta): void { this.directives.set(meta.ref.node, meta); }
   registerNgModuleMetadata(meta: NgModuleMeta): void { this.ngModules.set(meta.ref.node, meta); }
   registerPipeMetadata(meta: PipeMeta): void { this.pipes.set(meta.ref.node, meta); }
@@ -45,12 +41,6 @@ export class LocalMetadataRegistry implements MetadataRegistry, MetadataReader {
  */
 export class CompoundMetadataRegistry implements MetadataRegistry {
   constructor(private registries: MetadataRegistry[]) {}
-
-  registerAbstractDirective(clazz: ClassDeclaration) {
-    for (const registry of this.registries) {
-      registry.registerAbstractDirective(clazz);
-    }
-  }
 
   registerDirectiveMetadata(meta: DirectiveMeta): void {
     for (const registry of this.registries) {
@@ -68,5 +58,24 @@ export class CompoundMetadataRegistry implements MetadataRegistry {
     for (const registry of this.registries) {
       registry.registerPipeMetadata(meta);
     }
+  }
+}
+
+/**
+ * Registry that keeps track of classes that can be constructed via dependency injection (e.g.
+ * injectables, directives, pipes).
+ */
+export class InjectableClassRegistry {
+  private classes = new Set<ClassDeclaration>();
+
+  constructor(private host: ReflectionHost) {}
+
+  registerInjectable(declaration: ClassDeclaration): void { this.classes.add(declaration); }
+
+  isInjectable(declaration: ClassDeclaration): boolean {
+    // Figure out whether the class is injectable based on the registered classes, otherwise
+    // fall back to looking at its members since we might not have been able register the class
+    // if it was compiled already.
+    return this.classes.has(declaration) || hasInjectableFields(declaration, this.host);
   }
 }

@@ -19,7 +19,6 @@
 
 // Pattern matching all Render3 property names.
 const R3_DEF_NAME_PATTERN = [
-  'ngBaseDef',
   'ɵcmp',
   'ɵdir',
   'ɵprov',

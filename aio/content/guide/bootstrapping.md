@@ -7,7 +7,7 @@ A basic understanding of the following:
 
 <hr />
 
-An NgModule describes how the application parts fit together.
+An `NgModule` describes how the application parts fit together.
 Every application has at least one Angular module, the _root_ module
 that you bootstrap to launch the application.
 By convention, it is usually called `AppModule`.
@@ -109,7 +109,7 @@ The following example, named `ItemDirective` is the default directive structure 
 <code-example path="bootstrapping/src/app/item.directive.ts" region="directive" header="src/app/item.directive.ts"></code-example>
 
 The key point here is that you have to export it so you can import it elsewhere. Next, import it
-into the NgModule, in this example `app.module.ts`, with a JavaScript import statement:
+into the `NgModule`, in this example `app.module.ts`, with a JavaScript import statement:
 
 <code-example path="bootstrapping/src/app/app.module.ts" region="directive-import" header="src/app/app.module.ts"></code-example>
 

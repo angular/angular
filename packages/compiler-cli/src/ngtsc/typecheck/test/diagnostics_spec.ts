@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TestFile, runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import * as ts from 'typescript';
+
+import {TestFile, runInEachFileSystem} from '../../file_system/testing';
+import {TypeCheckingConfig} from '../src/api';
 
 import {TestDeclaration, ngForDeclaration, ngForDts, typecheck} from './test_utils';
 
@@ -41,7 +43,7 @@ runInEachFileSystem(() => {
           `<div *ngFor="let person of persons; let idx=index">{{ render(idx) }}</div>`, `
         class TestComponent {
           persons: {}[];
-          
+
           render(input: string): string { return input; }
         }`,
           [ngForDeclaration()], [ngForDts()]);
@@ -56,7 +58,7 @@ runInEachFileSystem(() => {
           `<div *ngFor="let person of persons;">{{ render(person.namme) }}</div>`, `
         class TestComponent {
           persons: any;
-          
+
           render(input: string): string { return input; }
         }`,
           [ngForDeclaration()], [ngForDts()]);
@@ -154,6 +156,25 @@ runInEachFileSystem(() => {
       ]);
     });
 
+    it('checks text attributes that are consumed by bindings with literal string types', () => {
+      const messages = diagnose(
+          `<div dir mode="drak"></div><div dir mode="light"></div>`, `
+        class Dir {
+          mode: 'dark'|'light';
+        }
+        class TestComponent {}`,
+          [{
+            type: 'directive',
+            name: 'Dir',
+            selector: '[dir]',
+            inputs: {'mode': 'mode'},
+          }]);
+
+      expect(messages).toEqual([
+        `synthetic.html(1, 10): Type '"drak"' is not assignable to type '"dark" | "light"'.`,
+      ]);
+    });
+
     it('produces diagnostics for pipes', () => {
       const messages = diagnose(
           `<div>{{ person.name | pipe:person.age:1 }}</div>`, `
@@ -170,6 +191,46 @@ runInEachFileSystem(() => {
 
       expect(messages).toEqual([
         `synthetic.html(1, 28): Argument of type 'number' is not assignable to parameter of type 'string'.`,
+      ]);
+    });
+
+    it('does not repeat diagnostics for errors within LHS of safe-navigation operator', () => {
+      const messages = diagnose(`{{ personn?.name }} {{ personn?.getName() }}`, `
+         class TestComponent {
+           person: {
+             name: string;
+             getName: () => string;
+           } | null;
+         }`);
+
+      expect(messages).toEqual([
+        `synthetic.html(1, 4): Property 'personn' does not exist on type 'TestComponent'. Did you mean 'person'?`,
+        `synthetic.html(1, 24): Property 'personn' does not exist on type 'TestComponent'. Did you mean 'person'?`,
+      ]);
+    });
+
+    it('does not repeat diagnostics for errors used in template guard expressions', () => {
+      const messages = diagnose(
+          `<div *guard="personn.name"></div>`, `
+          class GuardDir {
+            static ngTemplateGuard_guard: 'binding';
+          }
+
+          class TestComponent {
+            person: {
+              name: string;
+            };
+          }`,
+          [{
+            type: 'directive',
+            name: 'GuardDir',
+            selector: '[guard]',
+            inputs: {'guard': 'guard'},
+            ngTemplateGuards: [{inputName: 'guard', type: 'binding'}]
+          }]);
+
+      expect(messages).toEqual([
+        `synthetic.html(1, 14): Property 'personn' does not exist on type 'TestComponent'. Did you mean 'person'?`,
       ]);
     });
 
@@ -239,6 +300,21 @@ runInEachFileSystem(() => {
 
         expect(messages).toEqual([]);
       });
+
+      // https://github.com/angular/angular/issues/33528
+      it('should not produce a diagnostic for implicit any return types', () => {
+        const messages = diagnose(
+            `<div (click)="state = null"></div>`, `
+          class TestComponent {
+            state: any;
+          }`,
+            // Disable strict DOM event checking and strict null checks, to infer an any return type
+            // that would be implicit if the handler function would not have an explicit return
+            // type.
+            [], [], {checkTypeOfDomEvents: false}, {strictNullChecks: false});
+
+        expect(messages).toEqual([]);
+      });
     });
 
     describe('strict null checks', () => {
@@ -277,7 +353,7 @@ runInEachFileSystem(() => {
 <div>
   <img [src]="srcc"
        [height]="heihgt">
-</div>    
+</div>
 `,
           `
 class TestComponent {
@@ -295,8 +371,9 @@ class TestComponent {
 
 function diagnose(
     template: string, source: string, declarations?: TestDeclaration[],
-    additionalSources: TestFile[] = []): string[] {
-  const diagnostics = typecheck(template, source, declarations, additionalSources);
+    additionalSources: TestFile[] = [], config?: Partial<TypeCheckingConfig>,
+    options?: ts.CompilerOptions): string[] {
+  const diagnostics = typecheck(template, source, declarations, additionalSources, config, options);
   return diagnostics.map(diag => {
     const text =
         typeof diag.messageText === 'string' ? diag.messageText : diag.messageText.messageText;

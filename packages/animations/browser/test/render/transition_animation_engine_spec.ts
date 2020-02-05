@@ -142,6 +142,40 @@ const DEFAULT_NAMESPACE_ID = 'id';
                       .duration)
                .toEqual(1234);
          });
+
+      it('should clear child node data when a parent node with leave transition is removed', () => {
+        const engine = makeEngine();
+        const child = document.createElement('div');
+        const parentTrigger = trigger('parent', [
+          transition(':leave', [style({height: '0px'}), animate(1000, style({height: '100px'}))])
+        ]);
+        const childTrigger = trigger(
+            'child',
+            [transition(':enter', [style({opacity: '0'}), animate(1000, style({opacity: '1'}))])]);
+
+        registerTrigger(element, engine, parentTrigger);
+        registerTrigger(child, engine, childTrigger);
+
+        element.appendChild(child);
+        engine.insertNode(DEFAULT_NAMESPACE_ID, child, element, true);
+
+        setProperty(element, engine, 'parent', 'value');
+        setProperty(child, engine, 'child', 'visible');
+        engine.flush();
+
+        expect(engine.statesByElement.has(element))
+            .toBe(true, 'Expected parent data to be defined.');
+        expect(engine.statesByElement.has(child)).toBe(true, 'Expected child data to be defined.');
+
+        engine.removeNode(DEFAULT_NAMESPACE_ID, element, true, true);
+        engine.flush();
+        engine.players[0].finish();
+
+        expect(engine.statesByElement.has(element))
+            .toBe(false, 'Expected parent data to be cleared.');
+        expect(engine.statesByElement.has(child)).toBe(false, 'Expected child data to be cleared.');
+      });
+
     });
 
     describe('event listeners', () => {

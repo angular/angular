@@ -40,7 +40,7 @@ import {compViewDef, createAndGetRootNodes} from './helper';
       });
 
       it('should add debug information to the renderer', () => {
-        const someContext = new Object();
+        const someContext = {};
         const {view, rootNodes} = createAndGetRootNodes(
             compViewDef([anchorDef(NodeFlags.None, null, null, 0)]), someContext);
         expect(getDebugNode(rootNodes[0]) !.nativeNode).toBe(asElementData(view, 0).renderElement);

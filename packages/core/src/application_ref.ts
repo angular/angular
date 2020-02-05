@@ -26,7 +26,6 @@ import {ComponentFactoryBoundToModule, ComponentFactoryResolver} from './linker/
 import {InternalNgModuleRef, NgModuleFactory, NgModuleRef} from './linker/ng_module_factory';
 import {InternalViewRef, ViewRef} from './linker/view_ref';
 import {isComponentResourceResolutionQueueEmpty, resolveComponentResources} from './metadata/resource_loading';
-import {WtfScopeFn, wtfCreateScope, wtfLeave} from './profile/profile';
 import {assertNgModuleType} from './render3/assert';
 import {ComponentFactory as R3ComponentFactory} from './render3/component_ref';
 import {setLocaleId} from './render3/i18n';
@@ -219,6 +218,27 @@ export interface BootstrapOptions {
    * - `noop` - Use `NoopNgZone` which does nothing.
    */
   ngZone?: NgZone|'zone.js'|'noop';
+
+  /**
+   * Optionally specify coalescing event change detections or not.
+   * Consider the following case.
+   *
+   * <div (click)="doSomething()">
+   *   <button (click)="doSomethingElse()"></button>
+   * </div>
+   *
+   * When button is clicked, because of the event bubbling, both
+   * event handlers will be called and 2 change detections will be
+   * triggered. We can colesce such kind of events to only trigger
+   * change detection only once.
+   *
+   * By default, this option will be false. So the events will not be
+   * coalesced and the change detection will be triggered multiple times.
+   * And if this option be set to true, the change detection will be
+   * triggered async by scheduling a animation frame. So in the case above,
+   * the change detection will only be trigged once.
+   */
+  ngZoneEventCoalescing?: boolean;
 }
 
 /**
@@ -269,7 +289,8 @@ export class PlatformRef {
     // So we create a mini parent injector that just contains the new NgZone and
     // pass that as parent to the NgModuleFactory.
     const ngZoneOption = options ? options.ngZone : undefined;
-    const ngZone = getNgZone(ngZoneOption);
+    const ngZoneEventCoalescing = (options && options.ngZoneEventCoalescing) || false;
+    const ngZone = getNgZone(ngZoneOption, ngZoneEventCoalescing);
     const providers: StaticProvider[] = [{provide: NgZone, useValue: ngZone}];
     // Attention: Don't use ApplicationRef.run here,
     // as we want to be sure that all possible constructor calls are inside `ngZone.run`!
@@ -281,11 +302,6 @@ export class PlatformRef {
       if (!exceptionHandler) {
         throw new Error('No ErrorHandler. Is platform module (BrowserModule) included?');
       }
-      // If the `LOCALE_ID` provider is defined at bootstrap we set the value for runtime i18n (ivy)
-      if (ivyEnabled) {
-        const localeId = moduleRef.injector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
-        setLocaleId(localeId || DEFAULT_LOCALE_ID);
-      }
       moduleRef.onDestroy(() => remove(this._modules, moduleRef));
       ngZone !.runOutsideAngular(
           () => ngZone !.onError.subscribe(
@@ -294,6 +310,11 @@ export class PlatformRef {
         const initStatus: ApplicationInitStatus = moduleRef.injector.get(ApplicationInitStatus);
         initStatus.runInitializers();
         return initStatus.donePromise.then(() => {
+          if (ivyEnabled) {
+            // If the `LOCALE_ID` provider is defined at bootstrap then we set the value for ivy
+            const localeId = moduleRef.injector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
+            setLocaleId(localeId || DEFAULT_LOCALE_ID);
+          }
           this._moduleDoBootstrap(moduleRef);
           return moduleRef;
         });
@@ -365,14 +386,17 @@ export class PlatformRef {
   get destroyed() { return this._destroyed; }
 }
 
-function getNgZone(ngZoneOption?: NgZone | 'zone.js' | 'noop'): NgZone {
+function getNgZone(
+    ngZoneOption: NgZone | 'zone.js' | 'noop' | undefined, ngZoneEventCoalescing: boolean): NgZone {
   let ngZone: NgZone;
 
   if (ngZoneOption === 'noop') {
     ngZone = new NoopNgZone();
   } else {
-    ngZone = (ngZoneOption === 'zone.js' ? undefined : ngZoneOption) ||
-        new NgZone({enableLongStackTrace: isDevMode()});
+    ngZone = (ngZoneOption === 'zone.js' ? undefined : ngZoneOption) || new NgZone({
+               enableLongStackTrace: isDevMode(),
+               shouldCoalesceEventChangeDetection: ngZoneEventCoalescing
+             });
   }
   return ngZone;
 }
@@ -502,7 +526,6 @@ function optionsReducer<T extends Object>(dst: any, objs: T | T[]): T {
 @Injectable()
 export class ApplicationRef {
   /** @internal */
-  static _tickScope: WtfScopeFn = wtfCreateScope('ApplicationRef#tick()');
   private _bootstrapListeners: ((compRef: ComponentRef<any>) => void)[] = [];
   private _views: InternalViewRef[] = [];
   private _runningTick: boolean = false;
@@ -653,7 +676,6 @@ export class ApplicationRef {
       throw new Error('ApplicationRef.tick is called recursively');
     }
 
-    const scope = ApplicationRef._tickScope();
     try {
       this._runningTick = true;
       for (let view of this._views) {
@@ -669,7 +691,6 @@ export class ApplicationRef {
       this._zone.runOutsideAngular(() => this._exceptionHandler.handleError(e));
     } finally {
       this._runningTick = false;
-      wtfLeave(scope);
     }
   }
 

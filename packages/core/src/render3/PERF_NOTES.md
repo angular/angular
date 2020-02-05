@@ -97,24 +97,24 @@ Here is an example of code which breaks the inlining and a way to fix it.
 ```
 export function i18nStart(index: number, message: string, subTemplateIndex?: number): void {
   const tView = getTView();
-  if (tView.firstTemplatePass && tView.data[index + HEADER_OFFSET] === null) {
+  if (tView.firstCreatePass && tView.data[index + HEADER_OFFSET] === null) {
     // LOTS OF CODE HERE WHICH PREVENTS INLINING.
   }
 }
 ```
 
-Notice that the above function almost never runs because `tView.firstTemplatePass` is usually false.
+Notice that the above function almost never runs because `tView.firstCreatePass` is usually false.
 The application would benefit from inlining, but the large code inside `if` prevents it.
 Simple refactoring will fix it.
 
 ```
 export function i18nStart(index: number, message: string, subTemplateIndex?: number): void {
   const tView = getTView();
-  if (tView.firstTemplatePass && tView.data[index + HEADER_OFFSET] === null) {
-    i18nStartFirstTemplatePass(tView, index, message, subTemplateIndex)
+  if (tView.firstCreatePass && tView.data[index + HEADER_OFFSET] === null) {
+    i18nStartfirstCreatePass(tView, index, message, subTemplateIndex)
   }
 }
-export function i18nStartFirstTemplatePass(tView: TView, index: number, message: string, subTemplateIndex?: number): void {
+export function i18nStartfirstCreatePass(tView: TView, index: number, message: string, subTemplateIndex?: number): void {
   // LOTS OF CODE HERE WHICH PREVENTS INLINING.
 }
 ```

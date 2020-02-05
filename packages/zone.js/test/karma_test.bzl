@@ -14,19 +14,15 @@ def karma_test_prepare(name, env_srcs, env_deps, env_entry_point, test_srcs, tes
         entry_point = env_entry_point,
         deps = [
             ":" + name + "_env",
+            "@npm//rollup-plugin-commonjs",
+            "@npm//rollup-plugin-node-resolve",
         ],
-    )
-    native.filegroup(
-        name = name + "_env_rollup.es5",
-        testonly = True,
-        srcs = [":" + name + "_env_rollup"],
-        output_group = "umd",
     )
     native.genrule(
         name = name + "_env_trim_map",
         testonly = True,
         srcs = [
-            ":" + name + "_env_rollup.es5",
+            ":" + name + "_env_rollup.umd",
         ],
         outs = [
             name + "_env_rollup_trim_map.js",
@@ -45,24 +41,18 @@ def karma_test_prepare(name, env_srcs, env_deps, env_entry_point, test_srcs, tes
         name = name + "_rollup",
         testonly = True,
         entry_point = test_entry_point,
-        globals = {
-            "electron": "electron",
-        },
+        config_file = "//packages/zone.js:rollup-es5.config.js",
         deps = [
             ":" + name + "_test",
+            "@npm//rollup-plugin-commonjs",
+            "@npm//rollup-plugin-node-resolve",
         ],
-    )
-    native.filegroup(
-        name = name + "_rollup.es5",
-        testonly = True,
-        srcs = [":" + name + "_rollup"],
-        output_group = "umd",
     )
     native.genrule(
         name = name + "_trim_map",
         testonly = True,
         srcs = [
-            ":" + name + "_rollup.es5",
+            ":" + name + "_rollup.umd",
         ],
         outs = [
             name + "_rollup_trim_map.js",
@@ -101,6 +91,7 @@ def karma_test(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, 
                             ":" + name + "_env_trim_map",
                         ] + bootstrap +
                         _karma_test_required_dist_files,
+            browsers = ["//tools/browsers:chromium"],
             static_files = [
                 ":assets/sample.json",
                 ":assets/worker.js",
@@ -123,6 +114,7 @@ def karma_test(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, 
                     ":" + name + "_env_trim_map",
                     "//packages/zone.js/dist:zone-testing-bundle-dist-test",
                 ] + _karma_test_required_dist_files,
+                browsers = ["//tools/browsers:chromium"],
                 config_file = "//:karma-js.conf.js",
                 configuration_env_vars = ["KARMA_WEB_TEST_MODE"],
                 data = [
@@ -135,7 +127,7 @@ def karma_test(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, 
                     ":assets/import.html",
                 ],
                 tags = ["zone_karma_test"],
-                # Visible to //:test_web_all target
+                # Visible to //:saucelabs_unit_tests_poc target
                 visibility = ["//:__pkg__"],
                 runtime_deps = [
                     "@npm//karma-browserstack-launcher",

@@ -6,4 +6,5 @@ aio/node_modules
 aio/tools/examples/shared/node_modules
 integration/bazel
 integration/bazel-schematics/demo
+integration/platform-server/node_modules
 packages/bazel/node_modules

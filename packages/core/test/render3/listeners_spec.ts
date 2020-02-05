@@ -77,8 +77,7 @@ describe('event listeners', () => {
           ɵɵtext(0, 'Some text');
         }
       },
-      hostBindings: function HostListenerDir_HostBindings(
-          rf: RenderFlags, ctx: any, elIndex: number) {
+      hostBindings: function HostListenerDir_HostBindings(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           ɵɵlistener('custom', function() {
             return ctx.onDocumentCustomEvent();
@@ -102,13 +101,11 @@ describe('event listeners', () => {
     static ɵdir = ɵɵdefineDirective({
       type: GlobalHostListenerDir,
       selectors: [['', 'hostListenerDir', '']],
-      hostBindings: function HostListenerDir_HostBindings(
-          rf: RenderFlags, ctx: any, elIndex: number) {
+      hostBindings: function HostListenerDir_HostBindings(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           ɵɵlistener('custom', function() {
             return ctx.onDocumentCustomEvent();
-          }, false, ɵɵresolveDocument as GlobalTargetResolver);
-          ɵɵlistener('click', function() {
+          }, false, ɵɵresolveDocument as GlobalTargetResolver)('click', function() {
             return ctx.onBodyClick();
           }, false, ɵɵresolveBody as GlobalTargetResolver);
         }
@@ -538,8 +535,7 @@ describe('event listeners', () => {
             ɵɵtext(0, 'Some text');
           }
         },
-        hostBindings: function HostListenerDir_HostBindings(
-            rf: RenderFlags, ctx: any, elIndex: number) {
+        hostBindings: function HostListenerDir_HostBindings(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             ɵɵlistener('click', function() { return ctx.onClick(); });
           }
@@ -582,8 +578,7 @@ describe('event listeners', () => {
       static ɵdir = ɵɵdefineDirective({
         type: HostListenerDir,
         selectors: [['', 'hostListenerDir', '']],
-        hostBindings: function HostListenerDir_HostBindings(
-            rf: RenderFlags, ctx: any, elIndex: number) {
+        hostBindings: function HostListenerDir_HostBindings(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             ɵɵlistener('click', function() { return ctx.onClick(); });
           }
@@ -917,10 +912,11 @@ describe('event listeners', () => {
         selectors: [['app']],
         decls: 3,
         vars: 0,
+        consts: [['comp', '']],
         template: (rf: RenderFlags, ctx: App) => {
           if (rf & RenderFlags.Create) {
             const state = ɵɵgetCurrentView();
-            ɵɵelement(0, 'comp', null, ['comp', '']);
+            ɵɵelement(0, 'comp', null, 0);
             ɵɵelementStart(2, 'button');
             {
               ɵɵlistener('click', function() {

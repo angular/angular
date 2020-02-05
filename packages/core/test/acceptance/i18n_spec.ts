@@ -8,9 +8,9 @@
 // Make the `$localize()` global function available to the compiled templates, and the direct calls
 // below. This would normally be done inside the application `polyfills.ts` file.
 import '@angular/localize/init';
-import {registerLocaleData} from '@angular/common';
+import {CommonModule, registerLocaleData} from '@angular/common';
 import localeRo from '@angular/common/locales/ro';
-import {Component, ContentChild, ContentChildren, Directive, HostBinding, Input, LOCALE_ID, QueryList, TemplateRef, Type, ViewChild, ViewContainerRef, Pipe, PipeTransform} from '@angular/core';
+import {Component, ContentChild, ElementRef, ContentChildren, Directive, HostBinding, Input, LOCALE_ID, QueryList, TemplateRef, Type, ViewChild, ViewContainerRef, Pipe, PipeTransform, NO_ERRORS_SCHEMA} from '@angular/core';
 import {setDelayProjection} from '@angular/core/src/render3/instructions/projection';
 import {TestBed} from '@angular/core/testing';
 import {loadTranslations, clearTranslations} from '@angular/localize';
@@ -18,11 +18,18 @@ import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {onlyInIvy} from '@angular/private/testing';
 import {computeMsgId} from '@angular/compiler';
+import {BehaviorSubject} from 'rxjs';
 
 
 onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
   beforeEach(() => {
-    TestBed.configureTestingModule({declarations: [AppComp, DirectiveWithTplRef, UppercasePipe]});
+    TestBed.configureTestingModule({
+      declarations: [AppComp, DirectiveWithTplRef, UppercasePipe],
+      // In some of the tests we use made-up tag names for better readability, however they'll
+      // cause validation errors. Add the `NO_ERRORS_SCHEMA` so that we don't have to declare
+      // dummy components for each one of them.
+      schemas: [NO_ERRORS_SCHEMA],
+    });
   });
 
   afterEach(() => {
@@ -285,6 +292,43 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
     element.click();
     expect(instance.clicks).toBe(1);
+  });
+
+  it('should support local refs inside i18n block', () => {
+    loadTranslations({
+      [computeMsgId(
+          '{$START_TAG_NG_CONTAINER} One {$CLOSE_TAG_NG_CONTAINER}' +
+          '{$START_TAG_DIV} Two {$CLOSE_TAG_DIV}' +
+          '{$START_TAG_SPAN} Three {$CLOSE_TAG_SPAN}')]:
+          '{$START_TAG_NG_CONTAINER} Une {$CLOSE_TAG_NG_CONTAINER}' +
+          '{$START_TAG_DIV} Deux {$CLOSE_TAG_DIV}' +
+          '{$START_TAG_SPAN} Trois {$CLOSE_TAG_SPAN}'
+    });
+    const fixture = initWithTemplate(AppComp, `
+      <div i18n>
+        <ng-container #localRefA> One </ng-container>
+        <div #localRefB> Two </div>
+        <span #localRefC> Three </span>
+      </div>
+    `);
+    expect(fixture.nativeElement.textContent).toBe(' Une  Deux  Trois ');
+  });
+
+  it('should handle local refs correctly in case an element is removed in translation', () => {
+    loadTranslations({
+      [computeMsgId(
+          '{$START_TAG_NG_CONTAINER} One {$CLOSE_TAG_NG_CONTAINER}' +
+          '{$START_TAG_DIV} Two {$CLOSE_TAG_DIV}' +
+          '{$START_TAG_SPAN} Three {$CLOSE_TAG_SPAN}')]: '{$START_TAG_DIV} Deux {$CLOSE_TAG_DIV}'
+    });
+    const fixture = initWithTemplate(AppComp, `
+      <div i18n>
+        <ng-container #localRefA> One </ng-container>
+        <div #localRefB> Two </div>
+        <span #localRefC> Three </span>
+      </div>
+    `);
+    expect(fixture.nativeElement.textContent).toBe(' Deux ');
   });
 
   describe('ng-container and ng-template support', () => {
@@ -1051,6 +1095,145 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       fixture.detectChanges();
       expect(fixture.debugElement.nativeElement.innerHTML).toContain('plus d\'un');
     });
+
+    it('should support ICUs without "other" cases', () => {
+      loadTranslations({
+        idA: '{VAR_SELECT, select, 1 {un (select)} 2 {deux (select)}}',
+        idB: '{VAR_PLURAL, plural, =1 {un (plural)} =2 {deux (plural)}}',
+      });
+
+      @Component({
+        selector: 'app',
+        template: `
+          <div i18n="@@idA">{count, select, 1 {one (select)} 2 {two (select)}}</div> -
+          <div i18n="@@idB">{count, plural, =1 {one (plural)} =2 {two (plural)}}</div>
+        `
+      })
+      class AppComponent {
+        count = 1;
+      }
+
+      TestBed.configureTestingModule({declarations: [AppComponent]});
+
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('un (select) - un (plural)');
+
+      fixture.componentInstance.count = 3;
+      fixture.detectChanges();
+      // there is no ICU case for count=3
+      expect(fixture.nativeElement.textContent.trim()).toBe('-');
+
+      fixture.componentInstance.count = 4;
+      fixture.detectChanges();
+      // there is no ICU case for count=4, making sure content is still empty
+      expect(fixture.nativeElement.textContent.trim()).toBe('-');
+
+      fixture.componentInstance.count = 2;
+      fixture.detectChanges();
+      // check switching to an existing case after processing an ICU without matching case
+      expect(fixture.nativeElement.textContent.trim()).toBe('deux (select) - deux (plural)');
+
+      fixture.componentInstance.count = 1;
+      fixture.detectChanges();
+      // check that we can go back to the first ICU case
+      expect(fixture.nativeElement.textContent).toBe('un (select) - un (plural)');
+    });
+
+    it('should support nested ICUs without "other" cases', () => {
+      loadTranslations({
+        idA: '{VAR_SELECT_1, select, A {{VAR_SELECT, select, ' +
+            '1 {un (select)} 2 {deux (select)}}} other {}}',
+        idB: '{VAR_SELECT, select, A {{VAR_PLURAL, plural, ' +
+            '=1 {un (plural)} =2 {deux (plural)}}} other {}}',
+      });
+
+      @Component({
+        selector: 'app',
+        template: `
+          <div i18n="@@idA">{
+            type, select,
+              A {{count, select, 1 {one (select)} 2 {two (select)}}}
+              other {}
+          }</div> -
+          <div i18n="@@idB">{
+            type, select,
+              A {{count, plural, =1 {one (plural)} =2 {two (plural)}}}
+              other {}
+          }</div>
+        `
+      })
+      class AppComponent {
+        type = 'A';
+        count = 1;
+      }
+
+      TestBed.configureTestingModule({declarations: [AppComponent]});
+
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('un (select) - un (plural)');
+
+      fixture.componentInstance.count = 3;
+      fixture.detectChanges();
+      // there is no case for count=3 in nested ICU
+      expect(fixture.nativeElement.textContent.trim()).toBe('-');
+
+      fixture.componentInstance.count = 4;
+      fixture.detectChanges();
+      // there is no case for count=4 in nested ICU, making sure content is still empty
+      expect(fixture.nativeElement.textContent.trim()).toBe('-');
+
+      fixture.componentInstance.count = 2;
+      fixture.detectChanges();
+      // check switching to an existing case after processing nested ICU without matching case
+      expect(fixture.nativeElement.textContent.trim()).toBe('deux (select) - deux (plural)');
+
+      fixture.componentInstance.count = 1;
+      fixture.detectChanges();
+      // check that we can go back to the first case in nested ICU
+      expect(fixture.nativeElement.textContent).toBe('un (select) - un (plural)');
+
+      fixture.componentInstance.type = 'B';
+      fixture.detectChanges();
+      // check that nested ICU is removed if root ICU case has changed
+      expect(fixture.nativeElement.textContent.trim()).toBe('-');
+    });
+
+    it('should support ICUs with pipes', () => {
+      loadTranslations({
+        idA: '{VAR_SELECT, select, 1 {{INTERPOLATION} article} 2 {deux articles}}',
+      });
+
+      @Component({
+        selector: 'app',
+        template: `
+          <div i18n="@@idA">{count$ | async, select, 1 {{{count$ | async}} item} 2 {two items}}</div>
+        `
+      })
+      class AppComponent {
+        count$ = new BehaviorSubject<number>(1);
+      }
+
+      TestBed.configureTestingModule({
+        imports: [CommonModule],
+        declarations: [AppComponent],
+      });
+
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('1 article');
+
+      fixture.componentInstance.count$.next(3);
+      fixture.detectChanges();
+      // there is no ICU case for count=3, expecting empty content
+      expect(fixture.nativeElement.textContent.trim()).toBe('');
+
+      fixture.componentInstance.count$.next(2);
+      fixture.detectChanges();
+      // checking the second ICU case
+      expect(fixture.nativeElement.textContent.trim()).toBe('deux articles');
+    });
   });
 
   describe('should support attributes', () => {
@@ -1225,6 +1408,33 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       expect(comp.attributes['messagetext']).toBe('Bonjour');
       expect(comp.attributes['ng-reflect-message-text']).toBe('Bonjour');
     });
+
+    it('should support i18n attributes on <ng-container> elements', () => {
+      loadTranslations({[computeMsgId('Hello', 'meaning')]: 'Bonjour'});
+
+      @Directive({selector: '[mydir]'})
+      class Dir {
+        @Input() mydir: string = '';
+      }
+
+      @Component({
+        selector: 'my-cmp',
+        template: `
+          <ng-container i18n-mydir="meaning|description" mydir="Hello"></ng-container>
+        `,
+      })
+      class Cmp {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [Cmp, Dir],
+      });
+      const fixture = TestBed.createComponent(Cmp);
+      fixture.detectChanges();
+
+      const dir = fixture.debugElement.childNodes[0].injector.get(Dir);
+      expect(dir.mydir).toEqual('Bonjour');
+    });
   });
 
   it('should work with directives and host bindings', () => {
@@ -1241,13 +1451,13 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     @Component({
       selector: `my-app`,
       template: `
-      <div i18n test i18n-title title="start {{exp1}} middle {{exp2}} end">
+      <div i18n test i18n-title title="start {{exp1}} middle {{exp2}} end" outer>
          trad: {exp1, plural,
               =0 {no <b title="none">emails</b>!}
               =1 {one <i>email</i>}
               other {{{exp1}} emails}
          }
-      </div><div test></div>`
+      </div><div test inner></div>`
     })
     class MyApp {
       exp1 = 1;
@@ -1266,19 +1476,27 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
     const fixture = TestBed.createComponent(MyApp);
     fixture.detectChanges();
-    expect(fixture.nativeElement.innerHTML)
-        .toEqual(
-            `<div test="" title="début 2 milieu 1 fin" class="foo"> traduction: un <i>email</i><!--ICU 20--> ` +
-            `</div><div test="" class="foo"></div>`);
+
+    const outerDiv: HTMLElement = fixture.nativeElement.querySelector('div[outer]');
+    const innerDiv: HTMLElement = fixture.nativeElement.querySelector('div[inner]');
+
+    // Note that ideally we'd just compare the innerHTML here, but different browsers return
+    // the order of attributes differently. E.g. most browsers preserve the declaration order,
+    // but IE does not.
+    expect(outerDiv.getAttribute('title')).toBe('début 2 milieu 1 fin');
+    expect(outerDiv.getAttribute('class')).toBe('foo');
+    expect(outerDiv.textContent !.trim()).toBe('traduction: un email');
+    expect(innerDiv.getAttribute('class')).toBe('foo');
 
     directiveInstances.forEach(instance => instance.klass = 'bar');
     fixture.componentRef.instance.exp1 = 2;
     fixture.componentRef.instance.exp2 = 3;
     fixture.detectChanges();
-    expect(fixture.nativeElement.innerHTML)
-        .toEqual(
-            `<div test="" title="début 3 milieu 2 fin" class="bar"> traduction: 2 emails<!--ICU 20--> ` +
-            `</div><div test="" class="bar"></div>`);
+
+    expect(outerDiv.getAttribute('title')).toBe('début 3 milieu 2 fin');
+    expect(outerDiv.getAttribute('class')).toBe('bar');
+    expect(outerDiv.textContent !.trim()).toBe('traduction: 2 emails');
+    expect(innerDiv.getAttribute('class')).toBe('bar');
   });
 
   it('should handle i18n attribute with directive inputs', () => {
@@ -1797,6 +2015,55 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
   });
 
+  it('should reflect lifecycle hook changes in text interpolations in i18n block', () => {
+    @Directive({selector: 'input'})
+    class InputsDir {
+      constructor(private elementRef: ElementRef) {}
+      ngOnInit() { this.elementRef.nativeElement.value = 'value set in Directive.ngOnInit'; }
+    }
+
+    @Component({
+      template: `
+        <input #myinput>
+        <div i18n>{{myinput.value}}</div>
+      `
+    })
+    class App {
+    }
+
+    TestBed.configureTestingModule({declarations: [App, InputsDir]});
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('value set in Directive.ngOnInit');
+  });
+
+  it('should reflect lifecycle hook changes in text interpolations in i18n attributes', () => {
+    @Directive({selector: 'input'})
+    class InputsDir {
+      constructor(private elementRef: ElementRef) {}
+      ngOnInit() { this.elementRef.nativeElement.value = 'value set in Directive.ngOnInit'; }
+    }
+
+    @Component({
+      template: `
+        <input #myinput>
+        <div i18n-title title="{{myinput.value}}"></div>
+      `
+    })
+    class App {
+    }
+
+    TestBed.configureTestingModule({declarations: [App, InputsDir]});
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('div').title)
+        .toContain('value set in Directive.ngOnInit');
+  });
+
   it('should not alloc expando slots when there is no new variable to create', () => {
     loadTranslations({
       [computeMsgId('{$START_TAG_DIV} Some content {$CLOSE_TAG_DIV}')]:
@@ -1823,9 +2090,15 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
     const fixture = TestBed.createComponent(ContentElementDialog);
     fixture.detectChanges();
+
+    // Remove the reflect attribute, because the attribute order in innerHTML
+    // isn't guaranteed in different browsers so it could throw off our assertions.
+    const button = fixture.nativeElement.querySelector('button');
+    button.removeAttribute('ng-reflect-dialog-result');
+
     expect(fixture.nativeElement.innerHTML).toEqual(`<div dialog=""><!--bindings={
   "ng-reflect-ng-if": "false"
-}--></div><button ng-reflect-dialog-result="true" title="Close dialog">Button label</button>`);
+}--></div><button title="Close dialog">Button label</button>`);
   });
 });
 

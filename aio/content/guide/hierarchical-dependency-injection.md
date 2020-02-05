@@ -108,11 +108,9 @@ The following diagram represents the relationship between the
 `root` `ModuleInjector` and its parent injectors as the
 previous paragraphs describe.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/dependency-injection/injectors.svg" alt="NullInjector, ModuleInjector, root injector">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/dependency-injection/injectors.svg" alt="NullInjector, ModuleInjector, root injector">
+</div>
 
 While the name `root` is a special alias, other `ModuleInjector`s
 don't have aliases. You have the option to create `ModuleInjector`s
@@ -245,7 +243,7 @@ By default, Angular always starts at the current `Injector` and keeps
 searching all the way up. Modifiers allow you to change the starting
 (self) or ending location.
 
-Additionally, you can combine all of the modifiers except `@Host()` and `@Self()` and of course `@Skipself()` and `@Self()`.
+Additionally, you can combine all of the modifiers except `@Host()` and `@Self()` and of course `@SkipSelf()` and `@Self()`.
 
 {@a optional}
 
@@ -366,7 +364,7 @@ templates in separate files. For the purposes of understanding
 how the injection system works, it is useful to look at them
 from the point of view of a combined logical tree. The term
 logical distinguishes it from the render tree (your application
-DOM tree). To mark the locations of  where the component
+DOM tree). To mark the locations of where the component
 templates are located, this guide uses the `<#VIEW>`
 pseudo element, which doesn't actually exist in the render tree
 and is present for mental model purposes only.
@@ -517,7 +515,7 @@ In the logical tree, this would be represented as follows:
 </app-root>
 ```
 
-When `<app-root>` requests the `FlowerService`, it is  the injector's job
+When `<app-root>` requests the `FlowerService`, it is the injector's job
 to resolve the `FlowerService` token. The resolution of the token happens
 in two phases:
 
@@ -564,7 +562,7 @@ The next step is to add a binding to the `ChildComponent` template.
 </code-example>
 
 To render the new values, add `<app-child>` to the bottom of
-the`AppComponent` template so the view also displays the sunflower:
+the `AppComponent` template so the view also displays the sunflower:
 
 ```
 Child Component
@@ -604,7 +602,7 @@ finds the `FlowerService` and never sees the 🌺 (red hibiscus).
 
 Use the `viewProviders` array as another way to provide services in the
 `@Component()` decorator. Using `viewProviders` makes services
-visibile in the `<#VIEW>`.
+visible in the `<#VIEW>`.
 
 <div class="is-helpful alert">
 
@@ -1098,12 +1096,9 @@ Each tax return component has the following characteristics:
 * Can change a tax return without affecting a return in another component.
 * Has the ability to save the changes to its tax return or cancel them.
 
-
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/dependency-injection/hid-heroes-anim.gif" alt="Heroes in action">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/dependency-injection/hid-heroes-anim.gif" alt="Heroes in action">
+</div>
 
 Suppose that the `HeroTaxReturnComponent` had logic to manage and restore changes.
 That would be a pretty easy task for a simple hero tax return.
@@ -1172,11 +1167,9 @@ that have special capabilities suitable for whatever is going on in component (B
 Component (B) is the parent of another component (C) that defines its own, even _more specialized_ provider for `CarService`.
 
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/dependency-injection/car-components.png" alt="car components">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/dependency-injection/car-components.png" alt="car components">
+</div>
 
 Behind the scenes, each component sets up its own injector with zero, one, or more providers defined for that component itself.
 
@@ -1185,11 +1178,9 @@ its injector produces an instance of `Car` resolved by injector (C) with an `Eng
 `Tires` resolved by the root injector (A).
 
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/dependency-injection/injector-tree.png" alt="car injector tree">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/dependency-injection/injector-tree.png" alt="car injector tree">
+</div>
 
 
 <hr />

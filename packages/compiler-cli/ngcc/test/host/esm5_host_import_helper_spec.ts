@@ -9,10 +9,10 @@ import * as ts from 'typescript';
 
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {ClassMemberKind, Import, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
+import {ClassMemberKind, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadFakeCore, loadTestFiles, loadTsLib} from '../../../test/helpers';
-import {Esm5ReflectionHost} from '../../src/host/esm5_host';
+import {Esm5ReflectionHost, getIifeBody} from '../../src/host/esm5_host';
 import {MockLogger} from '../helpers/mock_logger';
 import {convertToDirectTsLibImport, convertToInlineTsLib, makeTestBundleProgram} from '../helpers/utils';
 
@@ -166,6 +166,37 @@ export { SomeDirective };
     export { HttpClientXsrfModule };
     `
         },
+        {
+          name: _('/some_minified_directive.js'),
+          contents: `
+import * as tslib_1 from 'tslib';
+import { Directive } from '@angular/core';
+// Note that the IIFE is not in parentheses
+var SomeDirective = function () {
+    function SomeDirective() {}
+    // Note that the decorator is combined with the return statement
+    return SomeDirective = tslib_1.__decorate([
+        Directive({ selector: '[someDirective]' }),
+    ], SomeDirective);
+}();
+export { SomeDirective };
+`,
+        },
+        {
+          name: _('/some_aliased_directive.js'),
+          contents: `
+import * as tslib_1 from 'tslib';
+import { Directive } from '@angular/core';
+var AliasedDirective$1 = /** @class */ (function () {
+    function AliasedDirective() {}
+    AliasedDirective = tslib_1.__decorate([
+        Directive({ selector: '[someDirective]' }),
+    ], AliasedDirective);
+    return AliasedDirective;
+}());
+export { AliasedDirective$1 };
+`,
+        },
       ];
 
       const DIRECT_IMPORT_FILES = convertToDirectTsLibImport(NAMESPACED_IMPORT_FILES);
@@ -191,52 +222,10 @@ export { SomeDirective };
 
         describe('getDecoratorsOfDeclaration()', () => {
           it('should find the decorators on a class', () => {
-            const {program} = makeTestBundleProgram(_('/some_directive.js'));
-            const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+            const bundle = makeTestBundleProgram(_('/some_directive.js'));
+            const host = new Esm5ReflectionHost(new MockLogger(), false, bundle);
             const classNode = getDeclaration(
-                program, _('/some_directive.js'), 'SomeDirective', isNamedVariableDeclaration);
-            const decorators = host.getDecoratorsOfDeclaration(classNode) !;
-
-            expect(decorators).toBeDefined();
-            expect(decorators.length).toEqual(1);
-
-            const decorator = decorators[0];
-            expect(decorator.name).toEqual('Directive');
-            expect(decorator.identifier.getText()).toEqual('Directive');
-            expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
-            expect(decorator.args !.map(arg => arg.getText())).toEqual([
-              '{ selector: \'[someDirective]\' }',
-            ]);
-          });
-
-          it('should find the decorators on a class when mixing `ctorParameters` and `__decorate`',
-             () => {
-               const {program} = makeTestBundleProgram(_('/some_directive_ctor_parameters.js'));
-               const host =
-                   new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
-               const classNode = getDeclaration(
-                   program, _('/some_directive_ctor_parameters.js'), 'SomeDirective',
-                   isNamedVariableDeclaration);
-               const decorators = host.getDecoratorsOfDeclaration(classNode) !;
-
-               expect(decorators).toBeDefined();
-               expect(decorators.length).toEqual(1);
-
-               const decorator = decorators[0];
-               expect(decorator.name).toEqual('Directive');
-               expect(decorator.identifier.getText()).toEqual('Directive');
-               expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
-               expect(decorator.args !.map(arg => arg.getText())).toEqual([
-                 '{ selector: \'[someDirective]\' }',
-               ]);
-             });
-
-          it('should support decorators being used inside @angular/core', () => {
-            const {program} =
-                makeTestBundleProgram(_('/node_modules/@angular/core/some_directive.js'));
-            const host = new Esm5ReflectionHost(new MockLogger(), true, program.getTypeChecker());
-            const classNode = getDeclaration(
-                program, _('/node_modules/@angular/core/some_directive.js'), 'SomeDirective',
+                bundle.program, _('/some_directive.js'), 'SomeDirective',
                 isNamedVariableDeclaration);
             const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
@@ -245,7 +234,91 @@ export { SomeDirective };
 
             const decorator = decorators[0];
             expect(decorator.name).toEqual('Directive');
-            expect(decorator.identifier.getText()).toEqual('Directive');
+            expect(decorator.identifier !.getText()).toEqual('Directive');
+            expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
+            expect(decorator.args !.map(arg => arg.getText())).toEqual([
+              '{ selector: \'[someDirective]\' }',
+            ]);
+
+          });
+
+          it('should find the decorators on a minified class', () => {
+            const bundle = makeTestBundleProgram(_('/some_minified_directive.js'));
+            const host = new Esm5ReflectionHost(new MockLogger(), false, bundle);
+            const classNode = getDeclaration(
+                bundle.program, _('/some_minified_directive.js'), 'SomeDirective',
+                isNamedVariableDeclaration);
+            const decorators = host.getDecoratorsOfDeclaration(classNode) !;
+
+            expect(decorators).toBeDefined();
+            expect(decorators.length).toEqual(1);
+
+            const decorator = decorators[0];
+            expect(decorator.name).toEqual('Directive');
+            expect(decorator.identifier !.getText()).toEqual('Directive');
+            expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
+            expect(decorator.args !.map(arg => arg.getText())).toEqual([
+              '{ selector: \'[someDirective]\' }',
+            ]);
+
+          });
+
+          it('should find the decorators on an aliased class', () => {
+            const bundle = makeTestBundleProgram(_('/some_aliased_directive.js'));
+            const host = new Esm5ReflectionHost(new MockLogger(), false, bundle);
+            const classNode = getDeclaration(
+                bundle.program, _('/some_aliased_directive.js'), 'AliasedDirective$1',
+                isNamedVariableDeclaration);
+            const decorators = host.getDecoratorsOfDeclaration(classNode) !;
+
+            expect(decorators).toBeDefined();
+            expect(decorators.length).toEqual(1);
+
+            const decorator = decorators[0];
+            expect(decorator.name).toEqual('Directive');
+            expect(decorator.identifier !.getText()).toEqual('Directive');
+            expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
+            expect(decorator.args !.map(arg => arg.getText())).toEqual([
+              '{ selector: \'[someDirective]\' }',
+            ]);
+          });
+
+          it('should find the decorators on a class when mixing `ctorParameters` and `__decorate`',
+             () => {
+               const bundle = makeTestBundleProgram(_('/some_directive_ctor_parameters.js'));
+               const host = new Esm5ReflectionHost(new MockLogger(), false, bundle);
+               const classNode = getDeclaration(
+                   bundle.program, _('/some_directive_ctor_parameters.js'), 'SomeDirective',
+                   isNamedVariableDeclaration);
+               const decorators = host.getDecoratorsOfDeclaration(classNode) !;
+
+               expect(decorators).toBeDefined();
+               expect(decorators.length).toEqual(1);
+
+               const decorator = decorators[0];
+               expect(decorator.name).toEqual('Directive');
+               expect(decorator.identifier !.getText()).toEqual('Directive');
+               expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
+               expect(decorator.args !.map(arg => arg.getText())).toEqual([
+                 '{ selector: \'[someDirective]\' }',
+               ]);
+             });
+
+          it('should support decorators being used inside @angular/core', () => {
+            const bundle =
+                makeTestBundleProgram(_('/node_modules/@angular/core/some_directive.js'));
+            const host = new Esm5ReflectionHost(new MockLogger(), true, bundle);
+            const classNode = getDeclaration(
+                bundle.program, _('/node_modules/@angular/core/some_directive.js'), 'SomeDirective',
+                isNamedVariableDeclaration);
+            const decorators = host.getDecoratorsOfDeclaration(classNode) !;
+
+            expect(decorators).toBeDefined();
+            expect(decorators.length).toEqual(1);
+
+            const decorator = decorators[0];
+            expect(decorator.name).toEqual('Directive');
+            expect(decorator.identifier !.getText()).toEqual('Directive');
             expect(decorator.import).toEqual({name: 'Directive', from: './directives'});
             expect(decorator.args !.map(arg => arg.getText())).toEqual([
               '{ selector: \'[someDirective]\' }',
@@ -253,12 +326,30 @@ export { SomeDirective };
           });
         });
 
+        describe('getClassSymbol()', () => {
+          it('should find a class that has been minified', () => {
+            const bundle = makeTestBundleProgram(_('/some_minified_directive.js'));
+            const host = new Esm5ReflectionHost(new MockLogger(), false, bundle);
+            const classNode = getDeclaration(
+                bundle.program, _('/some_minified_directive.js'), 'SomeDirective',
+                isNamedVariableDeclaration);
+            const innerNode =
+                getIifeBody(classNode) !.statements.find(isNamedFunctionDeclaration) !;
+            const classSymbol = host.getClassSymbol(classNode);
+
+            expect(classSymbol).toBeDefined();
+            expect(classSymbol !.declaration.valueDeclaration).toBe(classNode);
+            expect(classSymbol !.implementation.valueDeclaration).toBe(innerNode);
+          });
+        });
+
         describe('getMembersOfClass()', () => {
           it('should find decorated members on a class', () => {
-            const {program} = makeTestBundleProgram(_('/some_directive.js'));
-            const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+            const bundle = makeTestBundleProgram(_('/some_directive.js'));
+            const host = new Esm5ReflectionHost(new MockLogger(), false, bundle);
             const classNode = getDeclaration(
-                program, _('/some_directive.js'), 'SomeDirective', isNamedVariableDeclaration);
+                bundle.program, _('/some_directive.js'), 'SomeDirective',
+                isNamedVariableDeclaration);
             const members = host.getMembersOfClass(classNode);
 
             const input1 = members.find(member => member.name === 'input1') !;
@@ -274,11 +365,10 @@ export { SomeDirective };
 
           it('should find decorated members on a class when mixing `ctorParameters` and `__decorate`',
              () => {
-               const {program} = makeTestBundleProgram(_('/some_directive_ctor_parameters.js'));
-               const host =
-                   new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+               const bundle = makeTestBundleProgram(_('/some_directive_ctor_parameters.js'));
+               const host = new Esm5ReflectionHost(new MockLogger(), false, bundle);
                const classNode = getDeclaration(
-                   program, _('/some_directive_ctor_parameters.js'), 'SomeDirective',
+                   bundle.program, _('/some_directive_ctor_parameters.js'), 'SomeDirective',
                    isNamedVariableDeclaration);
                const members = host.getMembersOfClass(classNode);
 
@@ -289,10 +379,11 @@ export { SomeDirective };
              });
 
           it('should find non decorated properties on a class', () => {
-            const {program} = makeTestBundleProgram(_('/some_directive.js'));
-            const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+            const bundle = makeTestBundleProgram(_('/some_directive.js'));
+            const host = new Esm5ReflectionHost(new MockLogger(), false, bundle);
             const classNode = getDeclaration(
-                program, _('/some_directive.js'), 'SomeDirective', isNamedVariableDeclaration);
+                bundle.program, _('/some_directive.js'), 'SomeDirective',
+                isNamedVariableDeclaration);
             const members = host.getMembersOfClass(classNode);
 
             const instanceProperty = members.find(member => member.name === 'instanceProperty') !;
@@ -303,10 +394,11 @@ export { SomeDirective };
           });
 
           it('should find static methods on a class', () => {
-            const {program} = makeTestBundleProgram(_('/some_directive.js'));
-            const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+            const bundle = makeTestBundleProgram(_('/some_directive.js'));
+            const host = new Esm5ReflectionHost(new MockLogger(), false, bundle);
             const classNode = getDeclaration(
-                program, _('/some_directive.js'), 'SomeDirective', isNamedVariableDeclaration);
+                bundle.program, _('/some_directive.js'), 'SomeDirective',
+                isNamedVariableDeclaration);
             const members = host.getMembersOfClass(classNode);
 
             const staticMethod = members.find(member => member.name === 'staticMethod') !;
@@ -316,10 +408,11 @@ export { SomeDirective };
           });
 
           it('should find static properties on a class', () => {
-            const {program} = makeTestBundleProgram(_('/some_directive.js'));
-            const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+            const bundle = makeTestBundleProgram(_('/some_directive.js'));
+            const host = new Esm5ReflectionHost(new MockLogger(), false, bundle);
             const classNode = getDeclaration(
-                program, _('/some_directive.js'), 'SomeDirective', isNamedVariableDeclaration);
+                bundle.program, _('/some_directive.js'), 'SomeDirective',
+                isNamedVariableDeclaration);
             const members = host.getMembersOfClass(classNode);
 
             const staticProperty = members.find(member => member.name === 'staticProperty') !;
@@ -330,11 +423,11 @@ export { SomeDirective };
           });
 
           it('should support decorators being used inside @angular/core', () => {
-            const {program} =
+            const bundle =
                 makeTestBundleProgram(_('/node_modules/@angular/core/some_directive.js'));
-            const host = new Esm5ReflectionHost(new MockLogger(), true, program.getTypeChecker());
+            const host = new Esm5ReflectionHost(new MockLogger(), true, bundle);
             const classNode = getDeclaration(
-                program, _('/node_modules/@angular/core/some_directive.js'), 'SomeDirective',
+                bundle.program, _('/node_modules/@angular/core/some_directive.js'), 'SomeDirective',
                 isNamedVariableDeclaration);
             const members = host.getMembersOfClass(classNode);
 
@@ -346,10 +439,11 @@ export { SomeDirective };
         });
         describe('getConstructorParameters', () => {
           it('should find the decorated constructor parameters', () => {
-            const {program} = makeTestBundleProgram(_('/some_directive.js'));
-            const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+            const bundle = makeTestBundleProgram(_('/some_directive.js'));
+            const host = new Esm5ReflectionHost(new MockLogger(), false, bundle);
             const classNode = getDeclaration(
-                program, _('/some_directive.js'), 'SomeDirective', isNamedVariableDeclaration);
+                bundle.program, _('/some_directive.js'), 'SomeDirective',
+                isNamedVariableDeclaration);
             const parameters = host.getConstructorParameters(classNode);
 
             expect(parameters).toBeDefined();
@@ -365,11 +459,10 @@ export { SomeDirective };
 
           it('should find the decorated constructor parameters when mixing `ctorParameters` and `__decorate`',
              () => {
-               const {program} = makeTestBundleProgram(_('/some_directive_ctor_parameters.js'));
-               const host =
-                   new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+               const bundle = makeTestBundleProgram(_('/some_directive_ctor_parameters.js'));
+               const host = new Esm5ReflectionHost(new MockLogger(), false, bundle);
                const classNode = getDeclaration(
-                   program, _('/some_directive_ctor_parameters.js'), 'SomeDirective',
+                   bundle.program, _('/some_directive_ctor_parameters.js'), 'SomeDirective',
                    isNamedVariableDeclaration);
                const parameters = host.getConstructorParameters(classNode);
 
@@ -386,11 +479,11 @@ export { SomeDirective };
 
           describe('(returned parameters `decorators`)', () => {
             it('should have import information on decorators', () => {
-              const {program} = makeTestBundleProgram(_('/some_directive.js'));
-              const host =
-                  new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+              const bundle = makeTestBundleProgram(_('/some_directive.js'));
+              const host = new Esm5ReflectionHost(new MockLogger(), false, bundle);
               const classNode = getDeclaration(
-                  program, _('/some_directive.js'), 'SomeDirective', isNamedVariableDeclaration);
+                  bundle.program, _('/some_directive.js'), 'SomeDirective',
+                  isNamedVariableDeclaration);
               const parameters = host.getConstructorParameters(classNode);
               const decorators = parameters ![2].decorators !;
 
@@ -402,15 +495,15 @@ export { SomeDirective };
 
         describe('findClassSymbols()', () => {
           it('should return an array of all classes in the given source file', () => {
-            const {program} = makeTestBundleProgram(_('/index.js'));
-            const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+            const bundle = makeTestBundleProgram(_('/index.js'));
+            const host = new Esm5ReflectionHost(new MockLogger(), false, bundle);
 
-            const ngModuleFile = getSourceFileOrError(program, _('/ngmodule.js'));
+            const ngModuleFile = getSourceFileOrError(bundle.program, _('/ngmodule.js'));
             const ngModuleClasses = host.findClassSymbols(ngModuleFile);
             expect(ngModuleClasses.length).toEqual(1);
             expect(ngModuleClasses[0].name).toBe('HttpClientXsrfModule');
 
-            const someDirectiveFile = getSourceFileOrError(program, _('/some_directive.js'));
+            const someDirectiveFile = getSourceFileOrError(bundle.program, _('/some_directive.js'));
             const someDirectiveClasses = host.findClassSymbols(someDirectiveFile);
             expect(someDirectiveClasses.length).toEqual(3);
             expect(someDirectiveClasses[0].name).toBe('ViewContainerRef');
@@ -421,17 +514,17 @@ export { SomeDirective };
 
         describe('getDecoratorsOfSymbol()', () => {
           it('should return decorators of class symbol', () => {
-            const {program} = makeTestBundleProgram(_('/index.js'));
-            const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+            const bundle = makeTestBundleProgram(_('/index.js'));
+            const host = new Esm5ReflectionHost(new MockLogger(), false, bundle);
 
-            const ngModuleFile = getSourceFileOrError(program, _('/ngmodule.js'));
+            const ngModuleFile = getSourceFileOrError(bundle.program, _('/ngmodule.js'));
             const ngModuleClasses = host.findClassSymbols(ngModuleFile);
             const ngModuleDecorators = ngModuleClasses.map(s => host.getDecoratorsOfSymbol(s));
 
             expect(ngModuleClasses.length).toEqual(1);
             expect(ngModuleDecorators[0] !.map(d => d.name)).toEqual(['NgModule']);
 
-            const someDirectiveFile = getSourceFileOrError(program, _('/some_directive.js'));
+            const someDirectiveFile = getSourceFileOrError(bundle.program, _('/some_directive.js'));
             const someDirectiveClasses = host.findClassSymbols(someDirectiveFile);
             const someDirectiveDecorators =
                 someDirectiveClasses.map(s => host.getDecoratorsOfSymbol(s));
@@ -445,10 +538,11 @@ export { SomeDirective };
 
         describe('getDeclarationOfIdentifier', () => {
           it('should return the declaration of a locally defined identifier', () => {
-            const {program} = makeTestBundleProgram(_('/some_directive.js'));
-            const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+            const bundle = makeTestBundleProgram(_('/some_directive.js'));
+            const host = new Esm5ReflectionHost(new MockLogger(), false, bundle);
             const classNode = getDeclaration(
-                program, _('/some_directive.js'), 'SomeDirective', isNamedVariableDeclaration);
+                bundle.program, _('/some_directive.js'), 'SomeDirective',
+                isNamedVariableDeclaration);
             const ctrDecorators = host.getConstructorParameters(classNode) !;
             const identifierOfViewContainerRef = (ctrDecorators[0].typeValueReference !as{
                                                    local: true,
@@ -457,7 +551,8 @@ export { SomeDirective };
                                                  }).expression;
 
             const expectedDeclarationNode = getDeclaration(
-                program, _('/some_directive.js'), 'ViewContainerRef', isNamedVariableDeclaration);
+                bundle.program, _('/some_directive.js'), 'ViewContainerRef',
+                isNamedVariableDeclaration);
             const actualDeclaration = host.getDeclarationOfIdentifier(identifierOfViewContainerRef);
             expect(actualDeclaration).not.toBe(null);
             expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
@@ -465,12 +560,13 @@ export { SomeDirective };
           });
 
           it('should return the declaration of an externally defined identifier', () => {
-            const {program} = makeTestBundleProgram(_('/some_directive.js'));
-            const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+            const bundle = makeTestBundleProgram(_('/some_directive.js'));
+            const host = new Esm5ReflectionHost(new MockLogger(), false, bundle);
             const classNode = getDeclaration(
-                program, _('/some_directive.js'), 'SomeDirective', isNamedVariableDeclaration);
+                bundle.program, _('/some_directive.js'), 'SomeDirective',
+                isNamedVariableDeclaration);
             const classDecorators = host.getDecoratorsOfDeclaration(classNode) !;
-            const decoratorNode = classDecorators[0].node;
+            const decoratorNode = classDecorators[0].node !;
 
             const identifierOfDirective =
                 ts.isCallExpression(decoratorNode) && ts.isIdentifier(decoratorNode.expression) ?
@@ -478,7 +574,7 @@ export { SomeDirective };
                 null;
 
             const expectedDeclarationNode = getDeclaration(
-                program, _('/node_modules/@angular/core/index.d.ts'), 'Directive',
+                bundle.program, _('/node_modules/@angular/core/index.d.ts'), 'Directive',
                 isNamedVariableDeclaration);
             const actualDeclaration = host.getDeclarationOfIdentifier(identifierOfDirective !);
             expect(actualDeclaration).not.toBe(null);
@@ -487,10 +583,10 @@ export { SomeDirective };
           });
 
           it('should find the "actual" declaration of an aliased variable identifier', () => {
-            const {program} = makeTestBundleProgram(_('/ngmodule.js'));
-            const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+            const bundle = makeTestBundleProgram(_('/ngmodule.js'));
+            const host = new Esm5ReflectionHost(new MockLogger(), false, bundle);
             const ngModuleRef = findIdentifier(
-                getSourceFileOrError(program, _('/ngmodule.js')), 'HttpClientXsrfModule_1',
+                getSourceFileOrError(bundle.program, _('/ngmodule.js')), 'HttpClientXsrfModule_1',
                 isNgModulePropertyAssignment);
 
             const declaration = host.getDeclarationOfIdentifier(ngModuleRef !);
@@ -500,10 +596,10 @@ export { SomeDirective };
         });
         describe('getVariableValue', () => {
           it('should find the "actual" declaration of an aliased variable identifier', () => {
-            const {program} = makeTestBundleProgram(_('/ngmodule.js'));
-            const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+            const bundle = makeTestBundleProgram(_('/ngmodule.js'));
+            const host = new Esm5ReflectionHost(new MockLogger(), false, bundle);
             const ngModuleRef = findVariableDeclaration(
-                getSourceFileOrError(program, _('/ngmodule.js')), 'HttpClientXsrfModule_1');
+                getSourceFileOrError(bundle.program, _('/ngmodule.js')), 'HttpClientXsrfModule_1');
 
             const value = host.getVariableValue(ngModuleRef !);
             expect(value).not.toBe(null);
@@ -515,21 +611,34 @@ export { SomeDirective };
           });
 
           it('should return undefined if the variable has no assignment', () => {
-            const {program} = makeTestBundleProgram(_('/ngmodule.js'));
-            const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+            const bundle = makeTestBundleProgram(_('/ngmodule.js'));
+            const host = new Esm5ReflectionHost(new MockLogger(), false, bundle);
             const missingValue = findVariableDeclaration(
-                getSourceFileOrError(program, _('/ngmodule.js')), 'missingValue');
+                getSourceFileOrError(bundle.program, _('/ngmodule.js')), 'missingValue');
             const value = host.getVariableValue(missingValue !);
             expect(value).toBe(null);
           });
 
           it('should return null if the variable is not assigned from a call to __decorate', () => {
-            const {program} = makeTestBundleProgram(_('/ngmodule.js'));
-            const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+            const bundle = makeTestBundleProgram(_('/ngmodule.js'));
+            const host = new Esm5ReflectionHost(new MockLogger(), false, bundle);
             const nonDecoratedVar = findVariableDeclaration(
-                getSourceFileOrError(program, _('/ngmodule.js')), 'nonDecoratedVar');
+                getSourceFileOrError(bundle.program, _('/ngmodule.js')), 'nonDecoratedVar');
             const value = host.getVariableValue(nonDecoratedVar !);
             expect(value).toBe(null);
+          });
+        });
+
+        describe('getEndOfClass()', () => {
+          it('should return the last statement related to the class', () => {
+            const bundle = makeTestBundleProgram(_('/ngmodule.js'));
+            const host = new Esm5ReflectionHost(new MockLogger(), false, bundle);
+            const classSymbol =
+                host.findClassSymbols(bundle.program.getSourceFile(_('/ngmodule.js')) !)[0];
+            const endOfClass = host.getEndOfClass(classSymbol);
+            expect(endOfClass.getText())
+                .toMatch(
+                    /HttpClientXsrfModule = HttpClientXsrfModule_1 = .*__decorate.*\(\[\n\s*NgModule\(\{\n\s*providers: \[],\n\s*}\)\n\s*], HttpClientXsrfModule\);/);
           });
         });
       });

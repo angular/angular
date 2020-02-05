@@ -1,4 +1,5 @@
 import {AppPage} from '../app.po';
+import {browser, logging} from 'protractor';
 
 describe('cli-hello-world-ivy App', () => {
   let page: AppPage;
@@ -8,8 +9,20 @@ describe('cli-hello-world-ivy App', () => {
   });
 
   it('should display title',
-     () => { expect(page.getHeading()).toEqual('Hello cli-hello-world-ivy-compat!'); });
+     () => { expect(page.getHeading()).toEqual('Hello cli-hello-world-ivy-i18n!'); });
 
-  it('should display welcome message',
-     () => { expect(page.getParagraph('message')).toEqual('Welcome to the i18n app.'); });
+  it('should display the locale', () => { expect(page.getParagraph('locale')).toEqual('en-US'); });
+
+  it('the date pipe should show the localized month', () => {
+    page.navigateTo();
+    expect(page.getParagraph('date')).toEqual('January');
+  });
+
+  afterEach(async () => {
+    // Assert that there are no errors emitted from the browser
+    const logs = await browser.manage().logs().get(logging.Type.BROWSER);
+    expect(logs).not.toContain(jasmine.objectContaining({
+      level: logging.Level.SEVERE,
+    } as logging.Entry));
+  });
 });

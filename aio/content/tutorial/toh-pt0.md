@@ -1,4 +1,4 @@
-# The Application Shell
+# Create a new project
 
 You begin by creating an initial application using the Angular CLI. Throughout this tutorial, you’ll modify and extend that starter application to create the Tour of Heroes app.
 
@@ -55,7 +55,7 @@ Go to the workspace directory and launch the application.
 The `ng serve` command builds the app, starts the development server,
 watches the source files, and rebuilds the app as you make changes to those files.
 
-The `--open` flag  opens a browser to `http://localhost:4200/`.
+The `--open` flag opens a browser to `http://localhost:4200/`.
 
 </div>
 

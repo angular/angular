@@ -37,7 +37,7 @@ describe('Collector', () => {
       'static-method.ts',         'static-method-call.ts',
       'static-method-with-if.ts', 'static-method-with-default.ts',
       'class-inheritance.ts',     'class-inheritance-parent.ts',
-      'interface-reference.ts'
+      'interface-reference.ts',   'static-type-check-members.ts',
     ]);
     service = ts.createLanguageService(host, documentRegistry);
     program = service.getProgram() !;
@@ -545,6 +545,18 @@ describe('Collector', () => {
     const classData = <ClassMetadata>metadata.metadata['MyModule'];
     expect(classData).toBeDefined();
     expect(classData.statics).toEqual({VALUE: 'Some string'});
+  });
+
+  it('should ignore static type check members without a value', () => {
+    const typeCheckMembers = program.getSourceFile('/static-type-check-members.ts') !;
+    const metadata = collector.getMetadata(typeCheckMembers) !;
+    const classData = <ClassMetadata>metadata.metadata['MyDirective'];
+    expect(classData.statics).toEqual({
+      foo: 'bar',
+      declared: {__symbolic: 'error', message: 'Variable not initialized', line: 3, character: 13},
+      ngTemplateContextGuard: {__symbolic: 'function', parameters: ['dir', 'ctx'], value: true},
+      ngTemplateGuard_value: {__symbolic: 'function', parameters: ['dir', 'expr'], value: true},
+    });
   });
 
   it('should be able to collect a reference to a static field', () => {
@@ -1470,6 +1482,17 @@ const FILES: Directory = {
   'static-field.ts': `
     export class MyModule {
       static VALUE = 'Some string';
+    }
+  `,
+  'static-type-check-members.ts': `
+    export class MyDirective<T> {
+      static foo = 'bar';
+      static declared: string;
+
+      static ngAcceptInputType_disabled: boolean|string;
+      static ngTemplateContextGuard(dir: any, ctx: any): any { return true; };
+      static ngTemplateGuard_declared: 'binding';
+      static ngTemplateGuard_value(dir: any, expr: any): any { return true; };
     }
   `,
   'static-field-reference.ts': `

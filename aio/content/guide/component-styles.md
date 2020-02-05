@@ -1,4 +1,4 @@
-# Component Styles
+# Component styles
 
 Angular applications are styled with standard CSS. That means you can apply
 everything you know about CSS stylesheets, selectors, rules, and media queries
@@ -289,7 +289,7 @@ Choose from the following modes:
 
 * `Emulated` view encapsulation (the default) emulates the behavior of shadow DOM by preprocessing
   (and renaming) the CSS code to effectively scope the CSS to the component's view.
-  For details, see [Appendix 1](guide/component-styles#inspect-generated-css).
+  For details, see [Inspecting generated CSS](guide/component-styles#inspect-generated-css) below.
 
 * `None` means that Angular does no view encapsulation.
   Angular adds the CSS to the global styles.

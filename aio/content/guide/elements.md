@@ -1,4 +1,4 @@
-# Angular Elements Overview
+# Angular elements overview
 
 _Angular elements_ are Angular components packaged as _custom elements_ (also called Web Components), a web standard for defining new HTML elements in a framework-agnostic way.
 
@@ -40,13 +40,11 @@ After you register your configured class with the browser's custom-element regis
 <my-popup message="Use Angular!"></my-popup>
 ```
 
-When your custom element is placed on a page, the browser creates an instance of the registered class and adds it to the DOM. The content is provided by the component's template, which  uses Angular template syntax, and is rendered using the component and DOM data. Input properties in the component correspond to input attributes for the element.
+When your custom element is placed on a page, the browser creates an instance of the registered class and adds it to the DOM. The content is provided by the component's template, which uses Angular template syntax, and is rendered using the component and DOM data. Input properties in the component correspond to input attributes for the element.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/elements/customElement1.png" alt="Custom element in browser" class="left">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/elements/customElement1.png" alt="Custom element in browser" class="left">
+</div>
 
 <hr class="clear">
 
@@ -64,11 +62,9 @@ Use a JavaScript function, `customElements.define()`,  to register the configure
 and its associated custom-element tag with the browser's `CustomElementRegistry`.
 When the browser encounters the tag for the registered element, it uses the constructor to create a custom-element instance.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/elements/createElement.png" alt="Transform a component to a custom element" class="left">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/elements/createElement.png" alt="Transform a component to a custom element" class="left">
+</div>
 
 ### Mapping
 
@@ -107,7 +103,7 @@ The recently-developed [custom elements](https://developer.mozilla.org/en-US/doc
 </tr>
 <tr>
   <td>Firefox</td>
-  <td>Supported natively as of version 63. In older versions: Set the <code>dom.webcomponents.enabled</code> and <code>dom.webcomponents.customelements.enabled</code> preferences to true.</td>
+  <td>Supported natively.</td>
 </tr>
 <tr>
   <td>Edge</td>

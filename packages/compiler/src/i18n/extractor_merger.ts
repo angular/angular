@@ -516,5 +516,5 @@ function _parseMessageMeta(i18n?: string): {meaning: string, description: string
       [meaningAndDesc.slice(0, descIndex), meaningAndDesc.slice(descIndex + 1)] :
       ['', meaningAndDesc];
 
-  return {meaning, description, id};
+  return {meaning, description, id: id.trim()};
 }

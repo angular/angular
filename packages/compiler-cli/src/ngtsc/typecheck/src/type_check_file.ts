@@ -9,13 +9,15 @@ import * as ts from 'typescript';
 
 import {AbsoluteFsPath, join} from '../../file_system';
 import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports';
-import {ClassDeclaration} from '../../reflection';
+import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
 
 import {TypeCheckBlockMetadata, TypeCheckingConfig} from './api';
 import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
+import {OutOfBandDiagnosticRecorder} from './oob';
 import {generateTypeCheckBlock} from './type_check_block';
+
 
 
 /**
@@ -30,17 +32,19 @@ export class TypeCheckFile extends Environment {
   private nextTcbId = 1;
   private tcbStatements: ts.Statement[] = [];
 
-  constructor(private fileName: string, config: TypeCheckingConfig, refEmitter: ReferenceEmitter) {
+  constructor(
+      private fileName: string, config: TypeCheckingConfig, refEmitter: ReferenceEmitter,
+      reflector: ReflectionHost) {
     super(
-        config, new ImportManager(new NoopImportRewriter(), 'i'), refEmitter,
+        config, new ImportManager(new NoopImportRewriter(), 'i'), refEmitter, reflector,
         ts.createSourceFile(fileName, '', ts.ScriptTarget.Latest, true));
   }
 
   addTypeCheckBlock(
       ref: Reference<ClassDeclaration<ts.ClassDeclaration>>, meta: TypeCheckBlockMetadata,
-      domSchemaChecker: DomSchemaChecker): void {
+      domSchemaChecker: DomSchemaChecker, oobRecorder: OutOfBandDiagnosticRecorder): void {
     const fnId = ts.createIdentifier(`_tcb${this.nextTcbId++}`);
-    const fn = generateTypeCheckBlock(this, ref, fnId, meta, domSchemaChecker);
+    const fn = generateTypeCheckBlock(this, ref, fnId, meta, domSchemaChecker, oobRecorder);
     this.tcbStatements.push(fn);
   }
 

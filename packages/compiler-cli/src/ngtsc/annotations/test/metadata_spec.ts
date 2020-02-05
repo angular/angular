@@ -23,7 +23,7 @@ runInEachFileSystem(() => {
     @Component('metadata') class Target {}
     `);
       expect(res).toEqual(
-          `/*@__PURE__*/ i0.ɵsetClassMetadata(Target, [{ type: Component, args: ['metadata'] }], null, null);`);
+          `/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(Target, [{ type: Component, args: ['metadata'] }], null, null); })();`);
     });
 
     it('should convert namespaced decorated class metadata', () => {
@@ -33,7 +33,7 @@ runInEachFileSystem(() => {
     @core.Component('metadata') class Target {}
     `);
       expect(res).toEqual(
-          `/*@__PURE__*/ i0.ɵsetClassMetadata(Target, [{ type: core.Component, args: ['metadata'] }], null, null);`);
+          `/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(Target, [{ type: core.Component, args: ['metadata'] }], null, null); })();`);
     });
 
     it('should convert decorated class constructor parameter metadata', () => {
@@ -64,6 +64,23 @@ runInEachFileSystem(() => {
       expect(res).toContain(`{ foo: [{ type: Input }], bar: [{ type: Input, args: ['value'] }] })`);
     });
 
+    it('should convert decorated field getter/setter metadata', () => {
+      const res = compileAndPrint(`
+    import {Component, Input} from '@angular/core';
+
+    @Component('metadata') class Target {
+      @Input() get foo() { return this._foo; }
+      set foo(value: string) { this._foo = value; }
+      private _foo: string;
+
+      get bar() { return this._bar; }
+      @Input('value') set bar(value: string) { this._bar = value; }
+      private _bar: string;
+    }
+    `);
+      expect(res).toContain(`{ foo: [{ type: Input }], bar: [{ type: Input, args: ['value'] }] })`);
+    });
+
     it('should not convert non-angular decorators to metadata', () => {
       const res = compileAndPrint(`
     declare function NotAComponent(...args: any[]): any;
@@ -86,12 +103,14 @@ runInEachFileSystem(() => {
     `
     };
 
-    const {program} = makeProgram([
-      CORE, {
-        name: _('/index.ts'),
-        contents,
-      }
-    ]);
+    const {program} = makeProgram(
+        [
+          CORE, {
+            name: _('/index.ts'),
+            contents,
+          }
+        ],
+        {target: ts.ScriptTarget.ES2015});
     const host = new TypeScriptReflectionHost(program.getTypeChecker());
     const target = getDeclaration(program, _('/index.ts'), 'Target', ts.isClassDeclaration);
     const call = generateSetClassMetadataCall(target, host, NOOP_DEFAULT_IMPORT_RECORDER, false);
@@ -100,7 +119,8 @@ runInEachFileSystem(() => {
     }
     const sf = getSourceFileOrError(program, _('/index.ts'));
     const im = new ImportManager(new NoopImportRewriter(), 'i');
-    const tsStatement = translateStatement(call, im, NOOP_DEFAULT_IMPORT_RECORDER);
+    const tsStatement =
+        translateStatement(call, im, NOOP_DEFAULT_IMPORT_RECORDER, ts.ScriptTarget.ES2015);
     const res = ts.createPrinter().printNode(ts.EmitHint.Unspecified, tsStatement, sf);
     return res.replace(/\s+/g, ' ');
   }

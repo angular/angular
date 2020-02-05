@@ -9,11 +9,13 @@
 import {DomElementSchemaRegistry, ParseSourceSpan, SchemaMetadata, TmplAstElement} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {ErrorCode} from '../../diagnostics';
+import {ErrorCode, ngErrorCode} from '../../diagnostics';
 
-import {TcbSourceResolver, makeTemplateDiagnostic} from './diagnostics';
+import {TemplateId} from './api';
+import {TemplateSourceResolver, makeTemplateDiagnostic} from './diagnostics';
 
 const REGISTRY = new DomElementSchemaRegistry();
+const REMOVE_XHTML_REGEX = /^:xhtml:/;
 
 /**
  * Checks every non-Angular element/property processed in a template and potentially produces
@@ -66,18 +68,23 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
 
   get diagnostics(): ReadonlyArray<ts.Diagnostic> { return this._diagnostics; }
 
-  constructor(private resolver: TcbSourceResolver) {}
+  constructor(private resolver: TemplateSourceResolver) {}
 
-  checkElement(id: string, element: TmplAstElement, schemas: SchemaMetadata[]): void {
-    if (!REGISTRY.hasElement(element.name, schemas)) {
+  checkElement(id: TemplateId, element: TmplAstElement, schemas: SchemaMetadata[]): void {
+    // HTML elements inside an SVG `foreignObject` are declared in the `xhtml` namespace.
+    // We need to strip it before handing it over to the registry because all HTML tag names
+    // in the registry are without a namespace.
+    const name = element.name.replace(REMOVE_XHTML_REGEX, '');
+
+    if (!REGISTRY.hasElement(name, schemas)) {
       const mapping = this.resolver.getSourceMapping(id);
 
-      let errorMsg = `'${element.name}' is not a known element:\n`;
+      let errorMsg = `'${name}' is not a known element:\n`;
       errorMsg +=
-          `1. If '${element.name}' is an Angular component, then verify that it is part of this module.\n`;
-      if (element.name.indexOf('-') > -1) {
+          `1. If '${name}' is an Angular component, then verify that it is part of this module.\n`;
+      if (name.indexOf('-') > -1) {
         errorMsg +=
-            `2. If '${element.name}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`;
+            `2. If '${name}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`;
       } else {
         errorMsg +=
             `2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
@@ -85,13 +92,13 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
 
       const diag = makeTemplateDiagnostic(
           mapping, element.sourceSpan, ts.DiagnosticCategory.Error,
-          ErrorCode.SCHEMA_INVALID_ELEMENT, errorMsg);
+          ngErrorCode(ErrorCode.SCHEMA_INVALID_ELEMENT), errorMsg);
       this._diagnostics.push(diag);
     }
   }
 
   checkProperty(
-      id: string, element: TmplAstElement, name: string, span: ParseSourceSpan,
+      id: TemplateId, element: TmplAstElement, name: string, span: ParseSourceSpan,
       schemas: SchemaMetadata[]): void {
     if (!REGISTRY.hasProperty(element.name, name, schemas)) {
       const mapping = this.resolver.getSourceMapping(id);
@@ -110,7 +117,8 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
       }
 
       const diag = makeTemplateDiagnostic(
-          mapping, span, ts.DiagnosticCategory.Error, ErrorCode.SCHEMA_INVALID_ATTRIBUTE, errorMsg);
+          mapping, span, ts.DiagnosticCategory.Error,
+          ngErrorCode(ErrorCode.SCHEMA_INVALID_ATTRIBUTE), errorMsg);
       this._diagnostics.push(diag);
     }
   }

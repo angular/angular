@@ -8,7 +8,7 @@
 import {absoluteFrom} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../imports';
-import {DtsMetadataReader, LocalMetadataRegistry} from '../../metadata';
+import {DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
@@ -42,14 +42,17 @@ runInEachFileSystem(() => {
 
       const checker = program.getTypeChecker();
       const reflectionHost = new TestReflectionHost(checker);
-      const evaluator = new PartialEvaluator(reflectionHost, checker);
+      const evaluator = new PartialEvaluator(reflectionHost, checker, /* dependencyTracker */ null);
       const metaReader = new LocalMetadataRegistry();
       const dtsReader = new DtsMetadataReader(checker, reflectionHost);
       const scopeRegistry = new LocalModuleScopeRegistry(
           metaReader, new MetadataDtsModuleScopeResolver(dtsReader, null), new ReferenceEmitter([]),
           null);
+      const injectableRegistry = new InjectableClassRegistry(reflectionHost);
       const handler = new DirectiveDecoratorHandler(
-          reflectionHost, evaluator, scopeRegistry, NOOP_DEFAULT_IMPORT_RECORDER, false);
+          reflectionHost, evaluator, scopeRegistry, scopeRegistry, metaReader,
+          NOOP_DEFAULT_IMPORT_RECORDER, injectableRegistry,
+          /* isCore */ false, /* annotateForClosureCompiler */ false);
 
       const analyzeDirective = (dirName: string) => {
         const DirNode = getDeclaration(program, _('/entry.ts'), dirName, isNamedClassDeclaration);

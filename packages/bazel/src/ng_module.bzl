@@ -26,33 +26,39 @@ load(
 _FLAT_DTS_FILE_SUFFIX = ".bundle.d.ts"
 _R3_SYMBOLS_DTS_FILE = "src/r3_symbols.d.ts"
 
-def compile_strategy(ctx):
-    """Detect which strategy should be used to implement ng_module.
-
-    Depending on the value of the 'compile' define flag, ng_module
-    can be implemented in various ways. This function reads the configuration passed by the user and
-    determines which mode is active.
+def is_ivy_enabled(ctx):
+    """Determine if the ivy compiler should be used to by the ng_module.
 
     Args:
       ctx: skylark rule execution context
 
     Returns:
-      one of 'legacy' or 'aot' depending on the configuration in ctx
+      Boolean, Whether the ivy compiler should be used.
     """
 
-    strategy = "legacy"
-    if "compile" in ctx.var:
-        strategy = ctx.var["compile"]
+    # TODO(josephperott): Remove after ~Feb 2020, to allow local script migrations
+    if "compile" in ctx.var and ctx.workspace_name == "angular":
+        fail(
+            msg = "Setting ViewEngine/Ivy using --define=compile is deprecated, please use " +
+                  "--config=ivy or --config=view-engine instead.",
+            attr = "ng_module",
+        )
+
+    # This attribute is only defined in google's private ng_module rule and not
+    # available externally. For external users, this is effectively a no-op.
+    if hasattr(ctx.attr, "ivy") and ctx.attr.ivy == True:
+        return True
+
+    if ctx.var.get("angular_ivy_enabled", None) == "True":
+        return True
 
     # Enable Angular targets extracted by Kythe Angular indexer to be compiled with the Ivy compiler architecture.
     # TODO(ayazhafiz): remove once Ivy has landed as the default in g3.
     if ctx.var.get("GROK_ELLIPSIS_BUILD", None) != None:
-        strategy = "aot"
+        return True
 
-    if strategy not in ["legacy", "aot"]:
-        fail("Unknown --define=compile value '%s'" % strategy)
-
-    return strategy
+    # Return false to default to ViewEngine compiler
+    return False
 
 def _compiler_name(ctx):
     """Selects a user-visible name depending on the current compilation strategy.
@@ -61,36 +67,12 @@ def _compiler_name(ctx):
       ctx: skylark rule execution context
 
     Returns:
-      the name of the current compiler to be displayed in build output
+      The name of the current compiler to be displayed in build output
     """
 
-    strategy = compile_strategy(ctx)
-    if strategy == "legacy":
-        return "ngc"
-    elif strategy == "aot":
-        return "ngtsc"
-    else:
-        fail("unreachable")
+    return "Ivy" if is_ivy_enabled(ctx) else "ViewEngine"
 
-def _enable_ivy_value(ctx):
-    """Determines the value of the enableIvy option in the generated tsconfig.
-
-    Args:
-      ctx: skylark rule execution context
-
-    Returns:
-      the value of enableIvy that needs to be set in angularCompilerOptions in the generated tsconfig
-    """
-
-    strategy = compile_strategy(ctx)
-    if strategy == "legacy":
-        return False
-    elif strategy == "aot":
-        return True
-    else:
-        fail("unreachable")
-
-def _is_legacy_ngc(ctx):
+def _is_view_engine_enabled(ctx):
     """Determines whether Angular outputs will be produced by the current compilation strategy.
 
     Args:
@@ -101,8 +83,7 @@ def _is_legacy_ngc(ctx):
       factory files), false otherwise
     """
 
-    strategy = compile_strategy(ctx)
-    return strategy == "legacy"
+    return not is_ivy_enabled(ctx)
 
 def _basename_of(ctx, file):
     ext_len = len(".ts")
@@ -129,7 +110,7 @@ def _flat_module_out_file(ctx):
     Returns:
       a basename used for the flat module out (no extension)
     """
-    if hasattr(ctx.attr, "flat_module_out_file") and ctx.attr.flat_module_out_file:
+    if getattr(ctx.attr, "flat_module_out_file", False):
         return ctx.attr.flat_module_out_file
     return "%s_public_index" % ctx.label.name
 
@@ -149,7 +130,7 @@ def _should_produce_dts_bundle(ctx):
     # At the moment we cannot use this with ngtsc compiler since it emits
     # import * as ___ from local modules which is not supported
     # see: https://github.com/Microsoft/web-build-tools/issues/1029
-    return _is_legacy_ngc(ctx) and hasattr(ctx.attr, "bundle_dts") and ctx.attr.bundle_dts
+    return _is_view_engine_enabled(ctx) and getattr(ctx.attr, "bundle_dts", False)
 
 def _should_produce_r3_symbols_bundle(ctx):
     """Should we produce r3_symbols bundle.
@@ -168,7 +149,7 @@ def _should_produce_r3_symbols_bundle(ctx):
     # because ngcc relies on having this file.
     # see: https://github.com/angular/angular/blob/84406e4d6d93b28b23efbb1701bc5ae1084da67b/packages/compiler-cli/src/ngcc/src/packages/entry_point_bundle.ts#L56
     # todo: alan-agius4: remove when ngcc doesn't need this anymore
-    return _is_legacy_ngc(ctx) and ctx.attr.module_name == "@angular/core"
+    return _is_view_engine_enabled(ctx) and ctx.attr.module_name == "@angular/core"
 
 def _should_produce_flat_module_outs(ctx):
     """Should we produce flat module outputs.
@@ -188,7 +169,7 @@ def _should_produce_flat_module_outs(ctx):
 # in the library. Most of these will be produced as empty files but it is
 # unknown, without parsing, which will be empty.
 def _expected_outs(ctx):
-    is_legacy_ngc = _is_legacy_ngc(ctx)
+    is_legacy_ngc = _is_view_engine_enabled(ctx)
 
     devmode_js_files = []
     closure_js_files = []
@@ -208,11 +189,14 @@ def _expected_outs(ctx):
         if short_path.endswith(".ts") and not short_path.endswith(".d.ts"):
             basename = short_path[len(package_prefix):-len(".ts")]
             if (len(factory_basename_set.to_list()) == 0 or basename in factory_basename_set.to_list()):
-                devmode_js = [
-                    ".ngfactory.js",
-                    ".ngsummary.js",
-                    ".js",
-                ]
+                if _generate_ve_shims(ctx):
+                    devmode_js = [
+                        ".ngfactory.js",
+                        ".ngsummary.js",
+                        ".js",
+                    ]
+                else:
+                    devmode_js = [".js"]
 
                 # Only ngc produces .json files, they're not needed in Ivy.
                 if is_legacy_ngc:
@@ -293,9 +277,20 @@ def _expected_outs(ctx):
         i18n_messages = i18n_messages_files,
     )
 
+# Determines if we need to generate View Engine shims (.ngfactory and .ngsummary files)
+def _generate_ve_shims(ctx):
+    # we are checking the workspace name here, because otherwise this would be a breaking change
+    # (the shims used to be on by default)
+    # we can remove this check once angular/components and angular/angular-cli repos no longer depend
+    # on the presence of shims, or if they explicitly opt-in to their generation via ng_modules' generate_ve_shims attr
+    return _is_bazel() and _is_view_engine_enabled(ctx) or (
+        getattr(ctx.attr, "generate_ve_shims", False) == True or ctx.workspace_name != "angular"
+    )
+
 def _ngc_tsconfig(ctx, files, srcs, **kwargs):
+    generate_ve_shims = _generate_ve_shims(ctx)
     outs = _expected_outs(ctx)
-    is_legacy_ngc = _is_legacy_ngc(ctx)
+    is_legacy_ngc = _is_view_engine_enabled(ctx)
     if "devmode_manifest" in kwargs:
         expected_outs = outs.devmode_js + outs.declarations + outs.summaries + outs.metadata
     else:
@@ -305,15 +300,15 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         "enableResourceInlining": ctx.attr.inline_resources,
         "generateCodeForLibraries": False,
         "allowEmptyCodegenFiles": True,
-        "generateNgFactoryShims": True,
-        "generateNgSummaryShims": True,
+        "generateNgFactoryShims": True if generate_ve_shims else False,
+        "generateNgSummaryShims": True if generate_ve_shims else False,
         # Summaries are only enabled if Angular outputs are to be produced.
         "enableSummariesForJit": is_legacy_ngc,
-        "enableIvy": _enable_ivy_value(ctx),
+        "enableIvy": is_ivy_enabled(ctx),
         "fullTemplateTypeCheck": ctx.attr.type_check,
-        # TODO(alxhub/arick): template type-checking for Ivy needs to be tested in g3 before it can
-        # be enabled here.
-        "ivyTemplateTypeCheck": False,
+        # TODO(alxhub/arick): template type-checking in g3 is currently disabled because of
+        # preexisting failures. Reenable once g3 is fixed: FW-1753
+        "ivyTemplateTypeCheck": _is_bazel(),
         # In Google3 we still want to use the symbol factory re-exports in order to
         # not break existing apps inside Google. Unlike Bazel, Google3 does not only
         # enforce strict dependencies of source files, but also for generated files
@@ -399,7 +394,7 @@ def ngc_compile_action(
       the parameters of the compilation which will be used to replay the ngc action for i18N.
     """
 
-    is_legacy_ngc = _is_legacy_ngc(ctx)
+    is_legacy_ngc = _is_view_engine_enabled(ctx)
 
     mnemonic = "AngularTemplateCompile"
     progress_message = "Compiling Angular templates (%s - %s) %s" % (_compiler_name(ctx), compile_mode, label)
@@ -578,12 +573,11 @@ def ng_module_impl(ctx, ts_compile_actions):
       conversion by ts_providers_dict_to_struct
     """
 
-    is_legacy_ngc = _is_legacy_ngc(ctx)
+    is_legacy_ngc = _is_view_engine_enabled(ctx)
 
     providers = ts_compile_actions(
         ctx,
         is_library = True,
-        deps = ctx.attr.deps,
         compile_action = _prodmode_compile_action,
         devmode_compile_action = _devmode_compile_action,
         tsc_wrapped_tsconfig = _ngc_tsconfig,
@@ -619,6 +613,8 @@ def _ng_module_impl(ctx):
     ts_providers = ng_module_impl(ctx, compile_ts)
 
     # Add in new JS providers
+    # See design doc https://docs.google.com/document/d/1ggkY5RqUkVL4aQLYm7esRW978LgX3GUCnQirrk5E1C0/edit#
+    # and issue https://github.com/bazelbuild/rules_nodejs/issues/57 for more details.
     ts_providers["providers"].extend([
         js_named_module_info(
             sources = ts_providers["typescript"]["es5_sources"],
@@ -628,6 +624,9 @@ def _ng_module_impl(ctx):
             sources = ts_providers["typescript"]["es6_sources"],
             deps = ctx.attr.deps,
         ),
+        # TODO: Add remaining shared JS providers from design doc
+        # (JSModuleInfo) and remove legacy "typescript" provider
+        # once it is no longer needed.
     ])
 
     return ts_providers_dict_to_struct(ts_providers)
@@ -766,6 +765,8 @@ NG_MODULE_RULE_ATTRS = dict(dict(COMMON_ATTRIBUTES, **NG_MODULE_ATTRIBUTES), **{
         executable = True,
         cfg = "host",
     ),
+    # Should the rule generate ngfactory and ngsummary shim files?
+    "generate_ve_shims": attr.bool(default = False),
 })
 
 ng_module = rule(

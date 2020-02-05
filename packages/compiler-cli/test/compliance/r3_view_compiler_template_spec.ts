@@ -491,8 +491,6 @@ describe('compiler compliance: template', () => {
     };
 
     const template = `
-      const $t0_refs$ = ["foo", ""];
-
       function MyComponent_ng_template_0_Template(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵɵtext(0, "some-content");
@@ -500,10 +498,10 @@ describe('compiler compliance: template', () => {
       }
 
       // ...
-
+      consts: [["foo", ""]],
       template: function MyComponent_Template(rf, ctx) {
         if (rf & 1) {
-          $i0$.ɵɵtemplate(0, MyComponent_ng_template_0_Template, 1, 0, "ng-template", null, $t0_refs$, $i0$.ɵɵtemplateRefExtractor);
+          $i0$.ɵɵtemplate(0, MyComponent_ng_template_0_Template, 1, 0, "ng-template", null, 0, $i0$.ɵɵtemplateRefExtractor);
         }
       }`;
 
@@ -755,6 +753,31 @@ describe('compiler compliance: template', () => {
 
     const result = compile(files, angularFiles);
 
+    expectEmit(result.source, template, 'Incorrect template');
+  });
+
+  it('should safely nest ternary operations', () => {
+    const files = {
+      app: {
+        'spec.ts': `
+            import {Component, NgModule} from '@angular/core';
+
+            @Component({
+              selector: 'my-component',
+              template: \`
+                {{a?.b ? 1 : 2 }}\`
+            })
+            export class MyComponent {}
+
+            @NgModule({declarations: [MyComponent]})
+            export class MyModule {}
+        `
+      }
+    };
+
+    const template = `i0.ɵɵtextInterpolate1(" ", (ctx.a == null ? null : ctx.a.b) ? 1 : 2, "")`;
+
+    const result = compile(files, angularFiles);
     expectEmit(result.source, template, 'Incorrect template');
   });
 });

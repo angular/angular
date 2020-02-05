@@ -62,12 +62,17 @@ utils
   utils/package.json
   utils/testing.d.ts
 utils.d.ts
+with-ts-library
+  with-ts-library/package.json
+with-ts-library.d.ts
 --- README.md ---
 
 Angular
 =======
 
 The sources for this package are in the main [Angular](https://github.com/angular/angular) repo. Please file issues and pull requests against that repo.
+
+Usage information and reference details can be found in [Angular documentation](https://angular.io/docs).
 
 License: MIT
 
@@ -76,7 +81,7 @@ License: MIT
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -84,7 +89,7 @@ License: MIT
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
     typeof define === 'function' && define.amd ? define('example/portal', ['exports', '@angular/core'], factory) :
     (global = global || self, factory((global.example = global.example || {}, global.example.portal = {}), global.ng.core));
-}(this, function (exports, core) { 'use strict';
+}(this, (function (exports, core) { 'use strict';
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -317,7 +322,7 @@ License: MIT
 
     Object.defineProperty(exports, '__esModule', { value: true });
 
-}));
+})));
 //# sourceMappingURL=example-with-ts-library-portal.umd.js.map
 
 
@@ -325,10 +330,24 @@ License: MIT
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
-!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports,require("@angular/core")):"function"==typeof define&&define.amd?define("example/portal",["exports","@angular/core"],t):t(((e=e||self).example=e.example||{},e.example.portal={}),e.ng.core)}(this,function(e,t){"use strict";
+!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports,require("@angular/core")):"function"==typeof define&&define.amd?define("example/portal",["exports","@angular/core"],t):t(((e=e||self).example=e.example||{},e.example.portal={}),e.ng.core)}(this,(function(e,t){"use strict";
+/*! *****************************************************************************
+    Copyright (c) Microsoft Corporation. All rights reserved.
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+    this file except in compliance with the License. You may obtain a copy of the
+    License at http://www.apache.org/licenses/LICENSE-2.0
+
+    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+    WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+    MERCHANTABLITY OR NON-INFRINGEMENT.
+
+    See the Apache Version 2.0 License for specific language governing permissions
+    and limitations under the License.
+    ***************************************************************************** */
 /**
      * @license
      * Copyright Google Inc. All Rights Reserved.
@@ -336,7 +355,7 @@ License: MIT
      * Use of this source code is governed by an MIT-style license that can be
      * found in the LICENSE file at https://angular.io/license
      */
-var o=function(){return function o(e,t,r,n){var f,l=arguments.length,c=l<3?t:null===n?n=Object.getOwnPropertyDescriptor(t,r):n;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)c=Reflect.decorate(e,t,r,n);else for(var u=e.length-1;u>=0;u--)(f=e[u])&&(c=(l<3?f(c):l>3?f(t,r,c):f(t,r))||c);return l>3&&c&&Object.defineProperty(t,r,c),c}([t.NgModule({})],function e(){})}();
+var o=function r(e,t,o,n){var f,l=arguments.length,c=l<3?t:null===n?n=Object.getOwnPropertyDescriptor(t,o):n;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)c=Reflect.decorate(e,t,o,n);else for(var a=e.length-1;a>=0;a--)(f=e[a])&&(c=(l<3?f(c):l>3?f(t,o,c):f(t,o))||c);return l>3&&c&&Object.defineProperty(t,o,c),c}([t.NgModule({})],(function o(){}));
 /**
      * @license
      * Copyright Google Inc. All Rights Reserved.
@@ -344,13 +363,13 @@ var o=function(){return function o(e,t,r,n){var f,l=arguments.length,c=l<3?t:nul
      * Use of this source code is governed by an MIT-style license that can be
      * found in the LICENSE file at https://angular.io/license
      */
-e.PortalModule=o,e.a=1,Object.defineProperty(e,"__esModule",{value:!0})});
+e.PortalModule=o,e.a=1,Object.defineProperty(e,"__esModule",{value:!0})}));
 
 --- bundles/example-with-ts-library-utils.umd.js ---
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -358,7 +377,7 @@ e.PortalModule=o,e.a=1,Object.defineProperty(e,"__esModule",{value:!0})});
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
     typeof define === 'function' && define.amd ? define('example/utils', ['exports'], factory) :
     (global = global || self, factory((global.example = global.example || {}, global.example.utils = {})));
-}(this, function (exports) { 'use strict';
+}(this, (function (exports) { 'use strict';
 
     /**
      * @license
@@ -383,7 +402,7 @@ e.PortalModule=o,e.a=1,Object.defineProperty(e,"__esModule",{value:!0})});
 
     Object.defineProperty(exports, '__esModule', { value: true });
 
-}));
+})));
 //# sourceMappingURL=example-with-ts-library-utils.umd.js.map
 
 
@@ -391,10 +410,10 @@ e.PortalModule=o,e.a=1,Object.defineProperty(e,"__esModule",{value:!0})});
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
-!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports):"function"==typeof define&&define.amd?define("example/utils",["exports"],t):t(((e=e||self).example=e.example||{},e.example.utils={}))}(this,function(e){"use strict";
+!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports):"function"==typeof define&&define.amd?define("example/utils",["exports"],t):t(((e=e||self).example=e.example||{},e.example.utils={}))}(this,(function(e){"use strict";
 /**
      * @license
      * Copyright Google Inc. All Rights Reserved.
@@ -409,21 +428,21 @@ e.PortalModule=o,e.a=1,Object.defineProperty(e,"__esModule",{value:!0})});
      * Use of this source code is governed by an MIT-style license that can be
      * found in the LICENSE file at https://angular.io/license
      */
-e.dispatchFakeEvent=function t(e,n){e.dispatchEvent(n)},Object.defineProperty(e,"__esModule",{value:!0})});
+e.dispatchFakeEvent=function t(e,n){e.dispatchEvent(n)},Object.defineProperty(e,"__esModule",{value:!0})}));
 
 --- bundles/example-with-ts-library.umd.js ---
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
 
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-	typeof define === 'function' && define.amd ? define('example', ['exports'], factory) :
-	(global = global || self, factory(global.example = {}));
-}(this, function (exports) { 'use strict';
+	typeof define === 'function' && define.amd ? define('example-with-ts-library', ['exports'], factory) :
+	(global = global || self, factory(global.exampleWithTsLibrary = {}));
+}(this, (function (exports) { 'use strict';
 
 	/**
 	 * @license
@@ -438,7 +457,7 @@ e.dispatchFakeEvent=function t(e,n){e.dispatchEvent(n)},Object.defineProperty(e,
 
 	Object.defineProperty(exports, '__esModule', { value: true });
 
-}));
+})));
 //# sourceMappingURL=example-with-ts-library.umd.js.map
 
 
@@ -446,17 +465,17 @@ e.dispatchFakeEvent=function t(e,n){e.dispatchEvent(n)},Object.defineProperty(e,
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
-!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports):"function"==typeof define&&define.amd?define("example",["exports"],t):t((e=e||self).example={})}(this,function(e){"use strict";
+!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports):"function"==typeof define&&define.amd?define("example-with-ts-library",["exports"],t):t((e=e||self).exampleWithTsLibrary={})}(this,(function(e){"use strict";
 /**
 	 * @license
 	 * Copyright Google Inc. All Rights Reserved.
 	 *
 	 * Use of this source code is governed by an MIT-style license that can be
 	 * found in the LICENSE file at https://angular.io/license
-	 */e.VERSION="0.0.0",Object.defineProperty(e,"__esModule",{value:!0})});
+	 */e.VERSION="0.0.0",Object.defineProperty(e,"__esModule",{value:!0})}));
 
 --- esm2015/example.externs.js ---
 
@@ -478,6 +497,7 @@ export const VERSION = '0.0.0';
 
 /**
  * @fileoverview added by tsickle
+ * Generated from: packages/bazel/test/ng_package/example-with-ts-library/portal/index.ts
  * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
@@ -488,12 +508,13 @@ export const VERSION = '0.0.0';
  * found in the LICENSE file at https://angular.io/license
  */
 export { PortalModule, a } from './portal-module';
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS13aXRoLXRzLWxpYnJhcnkvcG9ydGFsL2luZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7O0FBUUEsZ0NBQWMsaUJBQWlCLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vcG9ydGFsLW1vZHVsZSc7XG4iXX0=
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS13aXRoLXRzLWxpYnJhcnkvcG9ydGFsL2luZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7OztBQVFBLGdDQUFjLGlCQUFpQixDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBAbGljZW5zZVxuICogQ29weXJpZ2h0IEdvb2dsZSBJbmMuIEFsbCBSaWdodHMgUmVzZXJ2ZWQuXG4gKlxuICogVXNlIG9mIHRoaXMgc291cmNlIGNvZGUgaXMgZ292ZXJuZWQgYnkgYW4gTUlULXN0eWxlIGxpY2Vuc2UgdGhhdCBjYW4gYmVcbiAqIGZvdW5kIGluIHRoZSBMSUNFTlNFIGZpbGUgYXQgaHR0cHM6Ly9hbmd1bGFyLmlvL2xpY2Vuc2VcbiAqL1xuXG5leHBvcnQgKiBmcm9tICcuL3BvcnRhbC1tb2R1bGUnO1xuIl19
 
 --- esm2015/portal/portal-module.js ---
 
 /**
  * @fileoverview added by tsickle
+ * Generated from: packages/bazel/test/ng_package/example-with-ts-library/portal/portal-module.ts
  * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
@@ -511,7 +532,7 @@ PortalModule.decorators = [
 ];
 /** @type {?} */
 export const a = 1;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicG9ydGFsLW1vZHVsZS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlLXdpdGgtdHMtbGlicmFyeS9wb3J0YWwvcG9ydGFsLW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7OztBQVFBLE9BQU8sRUFBQyxRQUFRLEVBQUMsTUFBTSxlQUFlLENBQUM7QUFHdkMsTUFBTSxPQUFPLFlBQVk7OztZQUR4QixRQUFRLFNBQUMsRUFBRTs7O0FBSVosTUFBTSxPQUFPLENBQUMsR0FBRyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBAbGljZW5zZVxuICogQ29weXJpZ2h0IEdvb2dsZSBJbmMuIEFsbCBSaWdodHMgUmVzZXJ2ZWQuXG4gKlxuICogVXNlIG9mIHRoaXMgc291cmNlIGNvZGUgaXMgZ292ZXJuZWQgYnkgYW4gTUlULXN0eWxlIGxpY2Vuc2UgdGhhdCBjYW4gYmVcbiAqIGZvdW5kIGluIHRoZSBMSUNFTlNFIGZpbGUgYXQgaHR0cHM6Ly9hbmd1bGFyLmlvL2xpY2Vuc2VcbiAqL1xuXG5pbXBvcnQge05nTW9kdWxlfSBmcm9tICdAYW5ndWxhci9jb3JlJztcblxuQE5nTW9kdWxlKHt9KVxuZXhwb3J0IGNsYXNzIFBvcnRhbE1vZHVsZSB7XG59XG5cbmV4cG9ydCBjb25zdCBhID0gMTtcbiJdfQ==
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicG9ydGFsLW1vZHVsZS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlLXdpdGgtdHMtbGlicmFyeS9wb3J0YWwvcG9ydGFsLW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7QUFRQSxPQUFPLEVBQUMsUUFBUSxFQUFDLE1BQU0sZUFBZSxDQUFDO0FBR3ZDLE1BQU0sT0FBTyxZQUFZOzs7WUFEeEIsUUFBUSxTQUFDLEVBQUU7OztBQUlaLE1BQU0sT0FBTyxDQUFDLEdBQUcsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuaW1wb3J0IHtOZ01vZHVsZX0gZnJvbSAnQGFuZ3VsYXIvY29yZSc7XG5cbkBOZ01vZHVsZSh7fSlcbmV4cG9ydCBjbGFzcyBQb3J0YWxNb2R1bGUge1xufVxuXG5leHBvcnQgY29uc3QgYSA9IDE7XG4iXX0=
 
 --- esm2015/portal/portal.externs.js ---
 
@@ -646,7 +667,7 @@ export function dispatchFakeEvent(el, ev) {
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -667,7 +688,7 @@ export { VERSION };
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -675,6 +696,7 @@ import { NgModule } from '@angular/core';
 
 /**
  * @fileoverview added by tsickle
+ * Generated from: packages/bazel/test/ng_package/example-with-ts-library/portal/portal-module.ts
  * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 class PortalModule {
@@ -687,6 +709,7 @@ const a = 1;
 
 /**
  * @fileoverview added by tsickle
+ * Generated from: packages/bazel/test/ng_package/example-with-ts-library/portal/index.ts
  * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
@@ -702,7 +725,7 @@ export { PortalModule, a };
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -733,7 +756,7 @@ export { dispatchFakeEvent };
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -754,7 +777,7 @@ export { VERSION };
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -798,7 +821,7 @@ export { PortalModule, a };
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -909,7 +932,7 @@ export * from './index';
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -963,9 +986,34 @@ export declare function dispatchFakeEvent(el: HTMLElement, ev: Event): void;
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
 
 export * from './utils/index';
+
+
+--- with-ts-library/package.json ---
+
+{
+  "name": "example-with-ts-library",
+  "main": "./bundles/example-with-ts-library.umd.js",
+  "fesm5": "./fesm5/example-with-ts-library.js",
+  "fesm2015": "./fesm2015/example-with-ts-library.js",
+  "esm5": "../esm5/index.js",
+  "esm2015": "../esm2015/index.js",
+  "typings": "../index.d.ts",
+  "module": "./fesm5/example-with-ts-library.js",
+  "es2015": "./fesm2015/example-with-ts-library.js"
+}
+
+--- with-ts-library.d.ts ---
+
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2020 Google LLC. https://angular.io/
+ * License: MIT
+ */
+
+export * from './index';
 

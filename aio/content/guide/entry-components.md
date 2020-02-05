@@ -1,10 +1,10 @@
-# Entry Components
+# Entry components
 
 An entry component is any component that Angular loads imperatively, (which means you’re not referencing it in the template), by type. You specify an entry component by bootstrapping it in an NgModule, or including it in a routing definition.
 
 <div class="alert is-helpful">
 
-To contrast the two types of components, there are components which are included in the template, which are declarative.  Additionally, there are  components which you load imperatively; that is, entry components.
+To contrast the two types of components, there are components which are included in the template, which are declarative. Additionally, there are components which you load imperatively; that is, entry components.
 
 </div>
 

@@ -73,7 +73,7 @@ describe('ng-add schematic', () => {
       message = e.message;
     }
 
-    expect(message).toBe('Could not find package.json');
+    expect(message).toBe('Could not read package.json.');
   });
 
   it('throws if angular.json is not found', async() => {
@@ -104,7 +104,6 @@ describe('ng-add schematic', () => {
     expect(Object.keys(json)).toContain('devDependencies');
     expect(Object.keys(json.dependencies)).toContain(core);
     expect(Object.keys(json.devDependencies)).toContain(bazel);
-    expect(json.dependencies[core]).toBe(json.devDependencies[bazel]);
   });
 
   it('should add @bazel/* dev dependencies', async() => {
@@ -165,7 +164,20 @@ describe('ng-add schematic', () => {
     const content = host.readContent('/package.json');
     const json = JSON.parse(content);
     expect(json.scripts['postinstall'])
-        .toBe('angular rocks; ngc -p ./angular-metadata.tsconfig.json');
+        .toBe('angular rocks; ngcc --properties es2015 browser module main');
+  });
+
+  it('should update ngcc in scripts.postinstall if it already exists', async() => {
+    const packageJson = JSON.parse(host.readContent('/package.json'));
+    packageJson['scripts'] = {
+      postinstall:
+          'ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points',
+    };
+    host.overwrite('/package.json', JSON.stringify(packageJson));
+    host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
+    const content = host.readContent('/package.json');
+    const json = JSON.parse(content);
+    expect(json.scripts['postinstall']).toBe('ngcc --properties es2015 browser module main');
   });
 
   it('should not create Bazel workspace file', async() => {
@@ -260,9 +272,9 @@ describe('ng-add schematic', () => {
       ['~6.3.3', true],
       ['^6.3.3', true],
       ['~6.3.11', true],
-      ['6.4.0', false],
-      ['~6.4.0', false],
-      ['~6.4.1', false],
+      ['6.4.0', true],
+      ['~6.4.0', true],
+      ['~6.4.1', true],
       ['6.5.0', false],
       ['~6.5.0', false],
       ['^6.5.0', false],
@@ -285,7 +297,7 @@ describe('ng-add schematic', () => {
         const content = host.readContent('/package.json');
         const json = JSON.parse(content);
         if (upgrade) {
-          expect(json.dependencies.rxjs).toBe('~6.4.0');
+          expect(json.dependencies.rxjs).toBe('~6.5.3');
         } else {
           expect(json.dependencies.rxjs).toBe(version);
         }
@@ -298,7 +310,7 @@ describe('ng-add schematic', () => {
     expect(host.files).toContain('/package.json');
     const content = host.readContent('/package.json');
     const json = JSON.parse(content);
-    expect(json.scripts.postinstall).toBe('ngc -p ./angular-metadata.tsconfig.json');
+    expect(json.scripts.postinstall).toBe('ngcc --properties es2015 browser module main');
   });
 
   it('should work when run on a minimal project (without test and e2e targets)', async() => {

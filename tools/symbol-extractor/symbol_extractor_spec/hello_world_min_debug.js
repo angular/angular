@@ -240,7 +240,7 @@
         creationMode);
     currentView.creationMode = !1;
     currentView.lifecycleStage = 1;
-    currentView.tView.firstTemplatePass = !1;
+    currentView.tView.firstCreatePass = !1;
     enterView(newView, null);
   }
   function createLView(viewId, renderer, tView, template, context) {
@@ -360,7 +360,7 @@
   function createTView() {
     return {
       data: [],
-      firstTemplatePass: !0,
+      firstCreatePass: !0,
       initHooks: null,
       checkHooks: null,
       contentHooks: null,
@@ -511,7 +511,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
                 function(index, onInit, doCheck, tView) {
-                  if (!0 === tView.firstTemplatePass) {
+                  if (!0 === tView.firstCreatePass) {
                     null != onInit && (tView.initHooks || (tView.initHooks = [])).push(1, onInit);
                     if (null != doCheck) {
                       (tView.initHooks || (tView.initHooks = [])).push(1, doCheck);

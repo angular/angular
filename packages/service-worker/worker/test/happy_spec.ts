@@ -366,6 +366,48 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
       server.assertNoOtherRequests();
     });
 
+    it('initializes the service worker on fetch if it has not yet been initialized', async() => {
+      // Driver is initially uninitialized.
+      expect(driver.initialized).toBeNull();
+      expect(driver['latestHash']).toBeNull();
+
+      // Making a request initializes the driver (fetches assets).
+      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+      expect(driver['latestHash']).toEqual(jasmine.any(String));
+      server.assertSawRequestFor('ngsw.json');
+      server.assertSawRequestFor('/foo.txt');
+      server.assertSawRequestFor('/bar.txt');
+      server.assertSawRequestFor('/redirected.txt');
+
+      // Once initialized, cached resources are served without network requests.
+      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+      expect(await makeRequest(scope, '/bar.txt')).toEqual('this is bar');
+      server.assertNoOtherRequests();
+    });
+
+    it('initializes the service worker on message if it has not yet been initialized', async() => {
+      // Driver is initially uninitialized.
+      expect(driver.initialized).toBeNull();
+      expect(driver['latestHash']).toBeNull();
+
+      // Pushing a message initializes the driver (fetches assets).
+      await scope.handleMessage({action: 'foo'}, 'someClient');
+      expect(driver['latestHash']).toEqual(jasmine.any(String));
+      server.assertSawRequestFor('ngsw.json');
+      server.assertSawRequestFor('/foo.txt');
+      server.assertSawRequestFor('/bar.txt');
+      server.assertSawRequestFor('/redirected.txt');
+
+      // Once initialized, pushed messages are handled without re-initializing.
+      await scope.handleMessage({action: 'bar'}, 'someClient');
+      server.assertNoOtherRequests();
+
+      // Once initialized, cached resources are served without network requests.
+      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+      expect(await makeRequest(scope, '/bar.txt')).toEqual('this is bar');
+      server.assertNoOtherRequests();
+    });
+
     it('handles non-relative URLs', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
@@ -1286,6 +1328,27 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
                    new Error('Can\'t touch this'),
                    'DataGroup(api-static@43).safeCacheResponse(/api-static/bar, status: 200)');
            server.assertSawRequestFor('/api-static/bar');
+         });
+
+      it('keeps serving mutating api requests when failing to write to cache',
+         // sw can invalidate LRU cache entry and try to write to cache storage on mutating request
+         async() => {
+           // Initialize the SW.
+           expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+           await driver.initialized;
+           server.clearRequests();
+
+           // Make the caches unwritable.
+           spyOn(MockCache.prototype, 'put').and.throwError('Can\'t touch this');
+           spyOn(driver.debugger, 'log');
+           expect(await makeRequest(scope, '/api/foo', 'default', {
+             method: 'post'
+           })).toEqual('this is api foo');
+           expect(driver.state).toBe(DriverReadyState.NORMAL);
+           // Since we are swallowing an error here, make sure it is at least properly logged
+           expect(driver.debugger.log)
+               .toHaveBeenCalledWith(new Error('Can\'t touch this'), 'DataGroup(api@42).syncLru()');
+           server.assertSawRequestFor('/api/foo');
          });
 
       it('enters degraded mode when something goes wrong with the latest version', async() => {

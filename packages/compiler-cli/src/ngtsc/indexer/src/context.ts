@@ -13,9 +13,9 @@ import {ClassDeclaration} from '../../reflection';
 export interface ComponentMeta extends DirectiveMeta {
   ref: Reference<ClassDeclaration>;
   /**
-   * Unparsed selector of the directive.
+   * Unparsed selector of the directive, or null if the directive does not have a selector.
    */
-  selector: string;
+  selector: string|null;
 }
 
 /**

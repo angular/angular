@@ -1,4 +1,4 @@
-# Dependency Providers
+# Dependency providers
 
 A dependency [provider](guide/glossary#provider) configures an injector
 with a [DI token](guide/glossary#di-token),
@@ -278,7 +278,7 @@ When you provide multiple sets of routes using [RouterModule.forRoot](api/router
 and [RouterModule.forChild](api/router/RouterModule#forchild) in a single module,
 the [ROUTES](api/router/ROUTES) token combines all the different provided sets of routes into a single value.
 
-<div class="alert is-helpful>
+<div class="alert is-helpful">
 
 Search for [Constants in API documentation](api?type=const) to find more built-in tokens.
 

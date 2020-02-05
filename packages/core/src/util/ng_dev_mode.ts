@@ -29,7 +29,7 @@ declare global {
   const ngDevMode: null|NgDevModePerfCounters;
   interface NgDevModePerfCounters {
     namedConstructors: boolean;
-    firstTemplatePass: number;
+    firstCreatePass: number;
     tNode: number;
     tView: number;
     rendererCreateTextNode: number;
@@ -51,17 +51,6 @@ declare global {
     rendererAppendChild: number;
     rendererInsertBefore: number;
     rendererCreateComment: number;
-    styleMap: number;
-    styleMapCacheMiss: number;
-    classMap: number;
-    classMapCacheMiss: number;
-    styleProp: number;
-    stylePropCacheMiss: number;
-    classProp: number;
-    classPropCacheMiss: number;
-    flushStyling: number;
-    classesApplied: number;
-    stylesApplied: number;
   }
 }
 
@@ -69,7 +58,7 @@ export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
   const locationString = typeof location !== 'undefined' ? location.toString() : '';
   const newCounters: NgDevModePerfCounters = {
     namedConstructors: locationString.indexOf('ngDevMode=namedConstructors') != -1,
-    firstTemplatePass: 0,
+    firstCreatePass: 0,
     tNode: 0,
     tView: 0,
     rendererCreateTextNode: 0,
@@ -91,17 +80,6 @@ export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
     rendererAppendChild: 0,
     rendererInsertBefore: 0,
     rendererCreateComment: 0,
-    styleMap: 0,
-    styleMapCacheMiss: 0,
-    classMap: 0,
-    classMapCacheMiss: 0,
-    styleProp: 0,
-    stylePropCacheMiss: 0,
-    classProp: 0,
-    classPropCacheMiss: 0,
-    flushStyling: 0,
-    classesApplied: 0,
-    stylesApplied: 0,
   };
 
   // Make sure to refer to ngDevMode as ['ngDevMode'] for closure.

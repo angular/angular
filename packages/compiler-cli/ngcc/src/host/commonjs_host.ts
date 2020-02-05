@@ -11,18 +11,26 @@ import {absoluteFrom} from '../../../src/ngtsc/file_system';
 import {Declaration, Import} from '../../../src/ngtsc/reflection';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
-import {isDefined} from '../utils';
+import {FactoryMap, isDefined, stripExtension} from '../utils';
 
+import {ExportDeclaration, ExportStatement, ReexportStatement, RequireCall, findNamespaceOfIdentifier, findRequireCallReference, isExportStatement, isReexportStatement, isRequireCall} from './commonjs_umd_utils';
 import {Esm5ReflectionHost} from './esm5_host';
 import {NgccClassSymbol} from './ngcc_host';
 
 export class CommonJsReflectionHost extends Esm5ReflectionHost {
-  protected commonJsExports = new Map<ts.SourceFile, Map<string, Declaration>|null>();
-  protected topLevelHelperCalls = new Map<string, Map<ts.SourceFile, ts.CallExpression[]>>();
-  constructor(
-      logger: Logger, isCore: boolean, protected program: ts.Program,
-      protected compilerHost: ts.CompilerHost, dts?: BundleProgram|null) {
-    super(logger, isCore, program.getTypeChecker(), dts);
+  protected commonJsExports = new FactoryMap<ts.SourceFile, Map<string, Declaration>|null>(
+      sf => this.computeExportsOfCommonJsModule(sf));
+  protected topLevelHelperCalls =
+      new FactoryMap<string, FactoryMap<ts.SourceFile, ts.CallExpression[]>>(
+          helperName => new FactoryMap<ts.SourceFile, ts.CallExpression[]>(
+              sf => sf.statements.map(stmt => this.getHelperCall(stmt, [helperName]))
+                        .filter(isDefined)));
+  protected program: ts.Program;
+  protected compilerHost: ts.CompilerHost;
+  constructor(logger: Logger, isCore: boolean, src: BundleProgram, dts: BundleProgram|null = null) {
+    super(logger, isCore, src, dts);
+    this.program = src.program;
+    this.compilerHost = src.host;
   }
 
   getImportOfIdentifier(id: ts.Identifier): Import|null {
@@ -43,12 +51,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
   }
 
   getExportsOfModule(module: ts.Node): Map<string, Declaration>|null {
-    return super.getExportsOfModule(module) || this.getCommonJsExports(module.getSourceFile());
-  }
-
-  getCommonJsExports(sourceFile: ts.SourceFile): Map<string, Declaration>|null {
-    return getOrDefault(
-        this.commonJsExports, sourceFile, () => this.computeExportsOfCommonJsModule(sourceFile));
+    return super.getExportsOfModule(module) || this.commonJsExports.get(module.getSourceFile());
   }
 
   /**
@@ -60,17 +63,18 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
    * no helpers are found.
    *
    * @param classSymbol the class whose helper calls we are interested in.
-   * @param helperName the name of the helper (e.g. `__decorate`) whose calls we are interested in.
+   * @param helperNames the names of the helpers (e.g. `__decorate`) whose calls we are interested
+   * in.
    * @returns an array of nodes of calls to the helper with the given name.
    */
-  protected getHelperCallsForClass(classSymbol: NgccClassSymbol, helperName: string):
+  protected getHelperCallsForClass(classSymbol: NgccClassSymbol, helperNames: string[]):
       ts.CallExpression[] {
-    const esm5HelperCalls = super.getHelperCallsForClass(classSymbol, helperName);
+    const esm5HelperCalls = super.getHelperCallsForClass(classSymbol, helperNames);
     if (esm5HelperCalls.length > 0) {
       return esm5HelperCalls;
     } else {
       const sourceFile = classSymbol.declaration.valueDeclaration.getSourceFile();
-      return this.getTopLevelHelperCalls(sourceFile, helperName);
+      return this.getTopLevelHelperCalls(sourceFile, helperNames);
     }
   }
 
@@ -81,22 +85,24 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
    * each class in a file.
    *
    * @param sourceFile the source who may contain helper calls.
-   * @param helperName the name of the helper (e.g. `__decorate`) whose calls we are interested in.
+   * @param helperNames the names of the helpers (e.g. `__decorate`) whose calls we are interested
+   * in.
    * @returns an array of nodes of calls to the helper with the given name.
    */
-  private getTopLevelHelperCalls(sourceFile: ts.SourceFile, helperName: string):
+  private getTopLevelHelperCalls(sourceFile: ts.SourceFile, helperNames: string[]):
       ts.CallExpression[] {
-    const helperCallsMap = getOrDefault(this.topLevelHelperCalls, helperName, () => new Map());
-    return getOrDefault(
-        helperCallsMap, sourceFile,
-        () => sourceFile.statements.map(statement => this.getHelperCall(statement, helperName))
-                  .filter(isDefined));
+    const calls: ts.CallExpression[] = [];
+    helperNames.forEach(helperName => {
+      const helperCallsMap = this.topLevelHelperCalls.get(helperName);
+      calls.push(...helperCallsMap.get(sourceFile));
+    });
+    return calls;
   }
 
   private computeExportsOfCommonJsModule(sourceFile: ts.SourceFile): Map<string, Declaration> {
     const moduleMap = new Map<string, Declaration>();
     for (const statement of this.getModuleStatements(sourceFile)) {
-      if (isCommonJsExportStatement(statement)) {
+      if (isExportStatement(statement)) {
         const exportDeclaration = this.extractCommonJsExportDeclaration(statement);
         moduleMap.set(exportDeclaration.name, exportDeclaration.declaration);
       } else if (isReexportStatement(statement)) {
@@ -109,8 +115,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
     return moduleMap;
   }
 
-  private extractCommonJsExportDeclaration(statement: CommonJsExportStatement):
-      CommonJsExportDeclaration {
+  private extractCommonJsExportDeclaration(statement: ExportStatement): ExportDeclaration {
     const exportExpression = statement.expression.right;
     const declaration = this.getDeclarationOfExpression(exportExpression);
     const name = statement.expression.left.name.text;
@@ -121,6 +126,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
         name,
         declaration: {
           node: null,
+          known: null,
           expression: exportExpression,
           viaModule: null,
         },
@@ -129,25 +135,37 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
   }
 
   private extractCommonJsReexports(statement: ReexportStatement, containingFile: ts.SourceFile):
-      CommonJsExportDeclaration[] {
-    const reexports: CommonJsExportDeclaration[] = [];
-    const requireCall = statement.expression.arguments[0];
+      ExportDeclaration[] {
+    const reexportArg = statement.expression.arguments[0];
+
+    const requireCall = isRequireCall(reexportArg) ?
+        reexportArg :
+        ts.isIdentifier(reexportArg) ? findRequireCallReference(reexportArg, this.checker) : null;
+    if (requireCall === null) {
+      return [];
+    }
+
     const importPath = requireCall.arguments[0].text;
     const importedFile = this.resolveModuleName(importPath, containingFile);
-    if (importedFile !== undefined) {
-      const viaModule = stripExtension(importedFile.fileName);
-      const importedExports = this.getExportsOfModule(importedFile);
-      if (importedExports !== null) {
-        importedExports.forEach((decl, name) => {
-          if (decl.node !== null) {
-            reexports.push({name, declaration: {node: decl.node, viaModule}});
-          } else {
-            reexports.push(
-                {name, declaration: {node: null, expression: decl.expression, viaModule}});
-          }
-        });
-      }
+    if (importedFile === undefined) {
+      return [];
     }
+
+    const importedExports = this.getExportsOfModule(importedFile);
+    if (importedExports === null) {
+      return [];
+    }
+
+    const viaModule = stripExtension(importedFile.fileName);
+    const reexports: ExportDeclaration[] = [];
+    importedExports.forEach((decl, name) => {
+      if (decl.node !== null) {
+        reexports.push({name, declaration: {node: decl.node, known: null, viaModule}});
+      } else {
+        reexports.push(
+            {name, declaration: {node: null, known: null, expression: decl.expression, viaModule}});
+      }
+    });
     return reexports;
   }
 
@@ -155,12 +173,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
     // Is `id` a namespaced property access, e.g. `Directive` in `core.Directive`?
     // If so capture the symbol of the namespace, e.g. `core`.
     const nsIdentifier = findNamespaceOfIdentifier(id);
-    const nsSymbol = nsIdentifier && this.checker.getSymbolAtLocation(nsIdentifier) || null;
-    const nsDeclaration = nsSymbol && nsSymbol.valueDeclaration;
-    const initializer =
-        nsDeclaration && ts.isVariableDeclaration(nsDeclaration) && nsDeclaration.initializer ||
-        null;
-    return initializer && isRequireCall(initializer) ? initializer : null;
+    return nsIdentifier && findRequireCallReference(nsIdentifier, this.checker);
   }
 
   private getCommonJsImportedDeclaration(id: ts.Identifier): Declaration|null {
@@ -175,7 +188,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
     }
 
     const viaModule = !importInfo.from.startsWith('.') ? importInfo.from : null;
-    return {node: importedFile, viaModule};
+    return {node: importedFile, known: null, viaModule};
   }
 
   private resolveModuleName(moduleName: string, containingFile: ts.SourceFile): ts.SourceFile
@@ -193,63 +206,4 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
           this.program.getSourceFile(absoluteFrom(moduleInfo.resolvedModule.resolvedFileName));
     }
   }
-}
-
-type CommonJsExportStatement = ts.ExpressionStatement & {
-  expression:
-      ts.BinaryExpression & {left: ts.PropertyAccessExpression & {expression: ts.Identifier}}
-};
-export function isCommonJsExportStatement(s: ts.Statement): s is CommonJsExportStatement {
-  return ts.isExpressionStatement(s) && ts.isBinaryExpression(s.expression) &&
-      ts.isPropertyAccessExpression(s.expression.left) &&
-      ts.isIdentifier(s.expression.left.expression) &&
-      s.expression.left.expression.text === 'exports';
-}
-
-interface CommonJsExportDeclaration {
-  name: string;
-  declaration: Declaration;
-}
-
-export type RequireCall = ts.CallExpression & {arguments: [ts.StringLiteral]};
-export function isRequireCall(node: ts.Node): node is RequireCall {
-  return ts.isCallExpression(node) && ts.isIdentifier(node.expression) &&
-      node.expression.text === 'require' && node.arguments.length === 1 &&
-      ts.isStringLiteral(node.arguments[0]);
-}
-
-/**
- * If the identifier `id` is the RHS of a property access of the form `namespace.id`
- * and `namespace` is an identifer then return `namespace`, otherwise `null`.
- * @param id The identifier whose namespace we want to find.
- */
-function findNamespaceOfIdentifier(id: ts.Identifier): ts.Identifier|null {
-  return id.parent && ts.isPropertyAccessExpression(id.parent) &&
-          ts.isIdentifier(id.parent.expression) ?
-      id.parent.expression :
-      null;
-}
-
-export function stripParentheses(node: ts.Node): ts.Node {
-  return ts.isParenthesizedExpression(node) ? node.expression : node;
-}
-
-type ReexportStatement = ts.ExpressionStatement & {expression: {arguments: [RequireCall]}};
-function isReexportStatement(statement: ts.Statement): statement is ReexportStatement {
-  return ts.isExpressionStatement(statement) && ts.isCallExpression(statement.expression) &&
-      ts.isIdentifier(statement.expression.expression) &&
-      statement.expression.expression.text === '__export' &&
-      statement.expression.arguments.length === 1 &&
-      isRequireCall(statement.expression.arguments[0]);
-}
-
-function stripExtension(fileName: string): string {
-  return fileName.replace(/\..+$/, '');
-}
-
-function getOrDefault<K, V>(map: Map<K, V>, key: K, factory: (key: K) => V): V {
-  if (!map.has(key)) {
-    map.set(key, factory(key));
-  }
-  return map.get(key) !;
 }

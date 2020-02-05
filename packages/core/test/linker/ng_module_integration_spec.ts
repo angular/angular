@@ -17,7 +17,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {modifiedInIvy, obsoleteInIvy, onlyInIvy} from '@angular/private/testing';
 
 import {InternalNgModuleRef, NgModuleFactory} from '../../src/linker/ng_module_factory';
-import {clearRegisteredModuleState} from '../../src/linker/ng_module_factory_registration';
+import {clearModulesForTest} from '../../src/linker/ng_module_factory_registration';
 import {stringify} from '../../src/util/stringify';
 
 class Engine {}
@@ -252,7 +252,7 @@ function declareTests(config?: {useJit: boolean}) {
 
       onlyInIvy('Unknown property warning logged, instead of throwing an error')
           .it('should error on unknown bound properties on custom elements by default', () => {
-            @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
+            @Component({template: '<div [someUnknownProp]="true"></div>'})
             class ComponentUsingInvalidProperty {
             }
 
@@ -294,7 +294,7 @@ function declareTests(config?: {useJit: boolean}) {
     describe('id', () => {
       const token = 'myid';
 
-      afterEach(() => clearRegisteredModuleState());
+      afterEach(() => clearModulesForTest());
 
       it('should register loaded modules', () => {
         @NgModule({id: token})

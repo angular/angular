@@ -8,7 +8,7 @@
 
 import {CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CssSelector, Node as HtmlAst, ParseError, Parser, TemplateAst} from '@angular/compiler';
 
-import {Diagnostic, TemplateSource} from './types';
+import {TemplateSource} from './types';
 
 export interface AstResult {
   htmlAst: HtmlAst[];
@@ -21,19 +21,7 @@ export interface AstResult {
   template: TemplateSource;
 }
 
-export interface AttrInfo {
-  name: string;
-  input?: boolean;
-  output?: boolean;
-  template?: boolean;
-  fromHtml?: boolean;
-}
-
 export type SelectorInfo = {
   selectors: CssSelector[],
   map: Map<CssSelector, CompileDirectiveSummary>
 };
-
-export function isAstResult(result: AstResult | Diagnostic): result is AstResult {
-  return result.hasOwnProperty('templateAst');
-}

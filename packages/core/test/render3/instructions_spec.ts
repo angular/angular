@@ -7,11 +7,12 @@
  */
 
 import {NgForOfContext} from '@angular/common';
+import {getSortedClassName} from '@angular/core/testing/src/styling';
 
 import {ɵɵdefineComponent} from '../../src/render3/definition';
 import {RenderFlags, ɵɵattribute, ɵɵclassMap, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵproperty, ɵɵselect, ɵɵstyleMap, ɵɵstyleProp, ɵɵstyleSanitizer, ɵɵtemplate, ɵɵtext, ɵɵtextInterpolate1} from '../../src/render3/index';
 import {AttributeMarker} from '../../src/render3/interfaces/node';
-import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl, getSanitizationBypassType, unwrapSafeValue} from '../../src/sanitization/bypass';
+import {SafeValue, bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl, getSanitizationBypassType, unwrapSafeValue} from '../../src/sanitization/bypass';
 import {ɵɵdefaultStyleSanitizer, ɵɵsanitizeHtml, ɵɵsanitizeResourceUrl, ɵɵsanitizeScript, ɵɵsanitizeStyle, ɵɵsanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
 import {SecurityContext} from '../../src/sanitization/security';
@@ -45,7 +46,7 @@ describe('instructions', () => {
       t.update(() => { ɵɵproperty('title', 'World'); });
       expect(t.html).toEqual('<a title="World"></a>');
       expect(ngDevMode).toHaveProperties({
-        firstTemplatePass: 1,
+        firstCreatePass: 1,
         tNode: 2,  // 1 for hostElement + 1 for the template under test
         tView: 2,  // 1 for rootView + 1 for the template view
         rendererCreateElement: 1,
@@ -64,7 +65,7 @@ describe('instructions', () => {
          t.update();
          expect(t.html).toEqual('<a title="Hello"></a>');
          expect(ngDevMode).toHaveProperties({
-           firstTemplatePass: 1,
+           firstCreatePass: 1,
            tNode: 2,  // 1 for hostElement + 1 for the template under test
            tView: 2,  // 1 for rootView + 1 for the template view
            rendererCreateElement: 1,
@@ -83,7 +84,7 @@ describe('instructions', () => {
       expect(div.id).toEqual('test');
       expect(div.title).toEqual('Hello');
       expect(ngDevMode).toHaveProperties({
-        firstTemplatePass: 1,
+        firstCreatePass: 1,
         tNode: 2,  // 1 for div, 1 for host element
         tView: 2,  // 1 for rootView + 1 for the template view
         rendererCreateElement: 1,
@@ -103,7 +104,7 @@ describe('instructions', () => {
       });
       expect(t.html).toEqual('<div title="javascript:true"></div>');
       expect(ngDevMode).toHaveProperties({
-        firstTemplatePass: 1,
+        firstCreatePass: 1,
         tNode: 2,  // 1 for div, 1 for host element
         tView: 2,  // 1 for rootView + 1 for the template view
         rendererCreateElement: 1,
@@ -126,7 +127,7 @@ describe('instructions', () => {
       t.update(() => { ɵɵproperty('title', 'two')('accessKey', 'B'); });
       expect(t.html).toEqual('<div accesskey="B" title="two"></div>');
       expect(ngDevMode).toHaveProperties({
-        firstTemplatePass: 1,
+        firstCreatePass: 1,
         tNode: 2,  // 1 for div, 1 for host element
         tView: 2,  // 1 for rootView + 1 for the template view
         rendererCreateElement: 1,
@@ -137,18 +138,20 @@ describe('instructions', () => {
 
   describe('styleProp', () => {
     it('should automatically sanitize unless a bypass operation is applied', () => {
-      const t = new TemplateFixture(() => { return createDiv(); }, () => {}, 1);
-      t.update(() => {
-        ɵɵstyleSanitizer(ɵɵdefaultStyleSanitizer);
-        ɵɵstyleProp('background-image', 'url("http://server")');
-      });
+      let backgroundImage: string|SafeValue = 'url("http://server")';
+      const t = new TemplateFixture(
+          () => { return createDiv(); },
+          () => {
+            ɵɵstyleSanitizer(ɵɵdefaultStyleSanitizer);
+            ɵɵstyleProp('background-image', backgroundImage);
+          },
+          2, 2);
       // nothing is set because sanitizer suppresses it.
-      expect(t.html).toEqual('<div></div>');
+      expect((t.hostElement.firstChild as HTMLElement).style.getPropertyValue('background-image'))
+          .toEqual('');
 
-      t.update(() => {
-        ɵɵstyleSanitizer(ɵɵdefaultStyleSanitizer);
-        ɵɵstyleProp('background-image', bypassSanitizationTrustStyle('url("http://server2")'));
-      });
+      backgroundImage = bypassSanitizationTrustStyle('url("http://server2")');
+      t.update();
       expect((t.hostElement.firstChild as HTMLElement).style.getPropertyValue('background-image'))
           .toEqual('url("http://server2")');
     });
@@ -160,9 +163,10 @@ describe('instructions', () => {
     function createDivWithStyle() { ɵɵelement(0, 'div', 0); }
 
     it('should add style', () => {
-      const fixture = new TemplateFixture(
-          createDivWithStyle, () => {}, 1, 0, null, null, null, undefined, attrs);
-      fixture.update(() => { ɵɵstyleMap({'background-color': 'red'}); });
+      const fixture = new TemplateFixture(createDivWithStyle, () => {
+        ɵɵstyleMap({'background-color': 'red'});
+      }, 1, 2, null, null, null, undefined, attrs);
+      fixture.update();
       expect(fixture.html).toEqual('<div style="background-color: red; height: 10px;"></div>');
     });
 
@@ -170,21 +174,21 @@ describe('instructions', () => {
       const detectedValues: string[] = [];
       const sanitizerInterceptor =
           new MockSanitizerInterceptor(value => { detectedValues.push(value); });
-      const fixture =
-          createTemplateFixtureWithSanitizer(() => createDiv(), 1, sanitizerInterceptor);
-
-      fixture.update(() => {
-        ɵɵstyleSanitizer(sanitizerInterceptor.getStyleSanitizer());
-        ɵɵstyleMap({
-          'background-image': 'background-image',
-          'background': 'background',
-          'border-image': 'border-image',
-          'list-style': 'list-style',
-          'list-style-image': 'list-style-image',
-          'filter': 'filter',
-          'width': 'width'
-        });
-      });
+      const fixture = new TemplateFixture(
+          () => { return createDiv(); },  //
+          () => {
+            ɵɵstyleSanitizer(sanitizerInterceptor.getStyleSanitizer());
+            ɵɵstyleMap({
+              'background-image': 'background-image',
+              'background': 'background',
+              'border-image': 'border-image',
+              'list-style': 'list-style',
+              'list-style-image': 'list-style-image',
+              'filter': 'filter',
+              'width': 'width'
+            });
+          },
+          1, 2, null, null, sanitizerInterceptor);
 
       const props = detectedValues.sort();
       expect(props).toEqual([
@@ -197,15 +201,17 @@ describe('instructions', () => {
     function createDivWithStyling() { ɵɵelement(0, 'div'); }
 
     it('should add class', () => {
-      const fixture = new TemplateFixture(createDivWithStyling, () => {}, 1);
-      fixture.update(() => { ɵɵclassMap('multiple classes'); });
-      expect(fixture.html).toEqual('<div class="classes multiple"></div>');
+      const fixture = new TemplateFixture(
+          createDivWithStyling, () => { ɵɵclassMap('multiple classes'); }, 1, 2);
+      const div = fixture.containerElement.querySelector('div.multiple') !;
+      expect(getSortedClassName(div)).toEqual('classes multiple');
     });
   });
 
   describe('performance counters', () => {
     it('should create tViews only once for each nested level', () => {
-      function ToDoAppComponent_NgForOf_Template_0(rf: RenderFlags, ctx0: NgForOfContext<any>) {
+      function ToDoAppComponent_NgForOf_Template_0(
+          rf: RenderFlags, ctx0: NgForOfContext<any, any>) {
         if (rf & RenderFlags.Create) {
           ɵɵelementStart(0, 'ul');
           ɵɵtemplate(1, ToDoAppComponent_NgForOf_NgForOf_Template_1, 2, 1, 'li', 0);
@@ -219,7 +225,7 @@ describe('instructions', () => {
       }
 
       function ToDoAppComponent_NgForOf_NgForOf_Template_1(
-          rf: RenderFlags, ctx1: NgForOfContext<any>) {
+          rf: RenderFlags, ctx1: NgForOfContext<any, any>) {
         if (rf & RenderFlags.Create) {
           ɵɵelementStart(0, 'li');
           ɵɵtext(1);
@@ -485,9 +491,4 @@ class MockSanitizerInterceptor {
 function stripStyleWsCharacters(value: string): string {
   // color: blue; => color:blue
   return value.replace(/;/g, '').replace(/:\s+/g, ':');
-}
-
-function createTemplateFixtureWithSanitizer(
-    buildFn: () => any, decls: number, sanitizer: Sanitizer) {
-  return new TemplateFixture(buildFn, () => {}, decls, 0, null, null, sanitizer);
 }

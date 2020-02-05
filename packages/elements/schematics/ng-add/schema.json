@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "id": "SchematicsAngularElementsNgAdd",
+  "title": "Angular Elements Ng Add Schema",
+  "type": "object",
+  "properties": {
+    "project": {
+      "type": "string",
+      "description": "The name of the project.",
+      "$default": {
+        "$source": "projectName"
+      }
+    },
+    "skipPackageJson": {
+      "description": "When true, does not add dependencies to the \"package.json\" file.",
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+  ]
+}

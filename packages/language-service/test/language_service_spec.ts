@@ -14,7 +14,7 @@ import {TypeScriptServiceHost} from '../src/typescript_host';
 import {MockTypescriptHost} from './test_utils';
 
 describe('service without angular', () => {
-  const mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts']);
+  const mockHost = new MockTypescriptHost(['/app/main.ts']);
   const service = ts.createLanguageService(mockHost);
   const ngHost = new TypeScriptServiceHost(mockHost, service);
   const ngService = createLanguageService(ngHost);
@@ -23,19 +23,18 @@ describe('service without angular', () => {
 
   beforeEach(() => { mockHost.reset(); });
 
-  it('should not crash a get template references',
-     () => { expect(() => ngService.getTemplateReferences()).not.toThrow(); });
   it('should not crash a get diagnostics',
-     () => { expect(() => ngService.getDiagnostics(fileName)).not.toThrow(); });
+     () => { expect(() => ngService.getSemanticDiagnostics(fileName)).not.toThrow(); });
 
   it('should not crash a completion',
-     () => { expect(() => ngService.getCompletionsAt(fileName, position)).not.toThrow(); });
+     () => { expect(() => ngService.getCompletionsAtPosition(fileName, position)).not.toThrow(); });
 
-  it('should not crash a get definition',
-     () => { expect(() => ngService.getDefinitionAt(fileName, position)).not.toThrow(); });
+  it('should not crash a get definition', () => {
+    expect(() => ngService.getDefinitionAndBoundSpan(fileName, position)).not.toThrow();
+  });
 
   it('should not crash a hover',
-     () => { expect(() => ngService.getHoverAt(fileName, position)).not.toThrow(); });
+     () => { expect(() => ngService.getQuickInfoAtPosition(fileName, position)).not.toThrow(); });
 
   it('should not crash with an incomplete class', () => {
     mockHost.addCode('\nexport class');

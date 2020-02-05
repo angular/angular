@@ -12,9 +12,9 @@ import {DefinitionKind} from '../constant_pool';
 import * as o from '../output/output_ast';
 import {OutputContext, error} from '../util';
 
-import {R3DependencyMetadata, compileFactoryFromMetadata, compileFactoryFunction, dependenciesFromGlobalMetadata} from './r3_factory';
+import {R3DependencyMetadata, R3FactoryTarget, compileFactoryFunction, dependenciesFromGlobalMetadata} from './r3_factory';
 import {Identifiers as R3} from './r3_identifiers';
-import {typeWithParameters} from './util';
+import {R3Reference, typeWithParameters, wrapReference} from './util';
 
 export interface R3PipeMetadata {
   /**
@@ -25,7 +25,16 @@ export interface R3PipeMetadata {
   /**
    * An expression representing a reference to the pipe itself.
    */
-  type: o.Expression;
+  type: R3Reference;
+
+  /**
+   * An expression representing the pipe being compiled, intended for use within a class definition
+   * itself.
+   *
+   * This can differ from the outer `type` if the class is being compiled by ngcc and is inside an
+   * IIFE structure that uses a different name internally.
+   */
+  internalType: o.Expression;
 
   /**
    * Number of generic type parameters of the type itself.
@@ -55,14 +64,14 @@ export function compilePipeFromMetadata(metadata: R3PipeMetadata) {
   definitionMapValues.push({key: 'name', value: o.literal(metadata.pipeName), quoted: false});
 
   // e.g. `type: MyPipe`
-  definitionMapValues.push({key: 'type', value: metadata.type, quoted: false});
+  definitionMapValues.push({key: 'type', value: metadata.type.value, quoted: false});
 
   // e.g. `pure: true`
   definitionMapValues.push({key: 'pure', value: o.literal(metadata.pure), quoted: false});
 
   const expression = o.importExpr(R3.definePipe).callFn([o.literalMap(definitionMapValues)]);
   const type = new o.ExpressionType(o.importExpr(R3.PipeDefWithMeta, [
-    typeWithParameters(metadata.type, metadata.typeArgumentCount),
+    typeWithParameters(metadata.type.type, metadata.typeArgumentCount),
     new o.ExpressionType(new o.LiteralExpr(metadata.pipeName)),
   ]));
 
@@ -80,17 +89,19 @@ export function compilePipeFromRender2(
     return error(`Cannot resolve the name of ${pipe.type}`);
   }
 
+  const type = outputCtx.importExpr(pipe.type.reference);
   const metadata: R3PipeMetadata = {
     name,
+    type: wrapReference(type),
+    internalType: type,
     pipeName: pipe.name,
-    type: outputCtx.importExpr(pipe.type.reference),
     typeArgumentCount: 0,
     deps: dependenciesFromGlobalMetadata(pipe.type, outputCtx, reflector),
     pure: pipe.pure,
   };
   const res = compilePipeFromMetadata(metadata);
-  const factoryRes =
-      compileFactoryFromMetadata({...metadata, injectFn: R3.directiveInject, isPipe: true});
+  const factoryRes = compileFactoryFunction(
+      {...metadata, injectFn: R3.directiveInject, target: R3FactoryTarget.Pipe});
   const definitionField = outputCtx.constantPool.propertyNameOf(DefinitionKind.Pipe);
   const ngFactoryDefStatement = new o.ClassStmt(
       /* name */ name,

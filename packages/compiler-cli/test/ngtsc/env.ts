@@ -10,7 +10,7 @@ import {CustomTransformers, Program, defaultGatherDiagnostics} from '@angular/co
 import * as api from '@angular/compiler-cli/src/transformers/api';
 import * as ts from 'typescript';
 
-import {createCompilerHost, createProgram} from '../../ngtools2';
+import {createCompilerHost, createProgram} from '../../index';
 import {main, mainDiagnosticsForTest, readNgcCommandLineAndConfiguration} from '../../src/main';
 import {AbsoluteFsPath, FileSystem, NgtscCompilerHost, absoluteFrom, getFileSystem} from '../../src/ngtsc/file_system';
 import {Folder, MockFileSystem} from '../../src/ngtsc/file_system/testing';
@@ -35,7 +35,8 @@ export class NgtscTestEnvironment {
   /**
    * Set up a new testing environment.
    */
-  static setup(files?: Folder): NgtscTestEnvironment {
+  static setup(files?: Folder, workingDir: AbsoluteFsPath = absoluteFrom('/')):
+      NgtscTestEnvironment {
     const fs = getFileSystem();
     if (files !== undefined && fs instanceof MockFileSystem) {
       fs.init(files);
@@ -44,7 +45,8 @@ export class NgtscTestEnvironment {
     const host = new AugmentedCompilerHost(fs);
     setWrapHostForTest(makeWrapHost(host));
 
-    const env = new NgtscTestEnvironment(fs, fs.resolve('/built'), absoluteFrom('/'));
+    const env = new NgtscTestEnvironment(fs, fs.resolve('/built'), workingDir);
+    fs.chdir(workingDir);
 
     env.write(absoluteFrom('/tsconfig-base.json'), `{
       "compilerOptions": {
@@ -52,9 +54,9 @@ export class NgtscTestEnvironment {
         "experimentalDecorators": true,
         "skipLibCheck": true,
         "noImplicitAny": true,
+        "noEmitOnError": true,
         "strictNullChecks": true,
         "outDir": "built",
-        "rootDir": ".",
         "baseUrl": ".",
         "declaration": true,
         "target": "es5",
@@ -198,7 +200,23 @@ export class NgtscTestEnvironment {
    */
   driveDiagnostics(): ReadonlyArray<ts.Diagnostic> {
     // ngtsc only produces ts.Diagnostic messages.
-    return mainDiagnosticsForTest(['-p', this.basePath]) as ts.Diagnostic[];
+    let reuseProgram: {program: Program | undefined}|undefined = undefined;
+    if (this.multiCompileHostExt !== null) {
+      reuseProgram = {
+        program: this.oldProgram || undefined,
+      };
+    }
+
+    const diags = mainDiagnosticsForTest(
+        ['-p', this.basePath], undefined, reuseProgram, this.changedResources);
+
+
+    if (this.multiCompileHostExt !== null) {
+      this.oldProgram = reuseProgram !.program !;
+    }
+
+    // In ngtsc, only `ts.Diagnostic`s are produced.
+    return diags as ReadonlyArray<ts.Diagnostic>;
   }
 
   async driveDiagnosticsAsync(): Promise<ReadonlyArray<ts.Diagnostic>> {
@@ -230,11 +248,30 @@ class AugmentedCompilerHost extends NgtscCompilerHost {
   delegate !: ts.CompilerHost;
 }
 
+const ROOT_PREFIX = 'root/';
+
 class FileNameToModuleNameHost extends AugmentedCompilerHost {
   fileNameToModuleName(importedFilePath: string): string {
     const relativeFilePath = this.fs.relative(this.fs.pwd(), this.fs.resolve(importedFilePath));
     const rootedPath = this.fs.join('root', relativeFilePath);
     return rootedPath.replace(/(\.d)?.ts$/, '');
+  }
+
+  resolveModuleNames(
+      moduleNames: string[], containingFile: string, reusedNames: string[]|undefined,
+      redirectedReference: ts.ResolvedProjectReference|undefined,
+      options: ts.CompilerOptions): (ts.ResolvedModule|undefined)[] {
+    return moduleNames.map(moduleName => {
+      if (moduleName.startsWith(ROOT_PREFIX)) {
+        // Strip the artificially added root prefix.
+        moduleName = '/' + moduleName.substr(ROOT_PREFIX.length);
+      }
+
+      return ts
+          .resolveModuleName(
+              moduleName, containingFile, options, this, /* cache */ undefined, redirectedReference)
+          .resolvedModule;
+    });
   }
 }
 

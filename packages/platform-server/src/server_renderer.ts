@@ -145,7 +145,7 @@ class DefaultServerRenderer2 implements Renderer2 {
   setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
     style = style.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
     const styleMap = _readStyleAttribute(el);
-    styleMap[style] = value || '';
+    styleMap[style] = value == null ? '' : value;
     _writeStyleAttribute(el, styleMap);
   }
 
@@ -276,7 +276,7 @@ function _writeStyleAttribute(element: any, styleMap: {[name: string]: string}) 
   let styleAttrValue = '';
   for (const key in styleMap) {
     const newValue = styleMap[key];
-    if (newValue) {
+    if (newValue != null) {
       styleAttrValue += key + ':' + styleMap[key] + ';';
     }
   }

@@ -19,6 +19,10 @@
     "no-duplicate-variable": true,
     "no-jasmine-focus": true,
     "no-var-keyword": true,
+    "prefer-literal": [
+      true,
+      "object"
+    ],
     "require-internal-with-underscore": true,
     "no-toplevel-property-access": [
       true,

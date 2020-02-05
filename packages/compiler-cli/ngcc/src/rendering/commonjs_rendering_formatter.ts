@@ -11,7 +11,7 @@ import MagicString from 'magic-string';
 import {Reexport} from '../../../src/ngtsc/imports';
 import {Import, ImportManager} from '../../../src/ngtsc/translator';
 import {ExportInfo} from '../analysis/private_declarations_analyzer';
-import {isRequireCall} from '../host/commonjs_host';
+import {isRequireCall} from '../host/commonjs_umd_utils';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {Esm5RenderingFormatter} from './esm5_rendering_formatter';
 import {stripExtension} from './utils';
@@ -30,6 +30,11 @@ export class CommonJsRenderingFormatter extends Esm5RenderingFormatter {
    *  Add the imports below any in situ imports as `require` calls.
    */
   addImports(output: MagicString, imports: Import[], file: ts.SourceFile): void {
+    // Avoid unnecessary work if there are no imports to add.
+    if (imports.length === 0) {
+      return;
+    }
+
     const insertionPoint = this.findEndOfImports(file);
     const renderedImports =
         imports.map(i => `var ${i.qualifier} = require('${i.specifier}');\n`).join('');

@@ -80,11 +80,21 @@ class HtmlAstToIvyAst implements html.Visitor {
   errors: ParseError[] = [];
   styles: string[] = [];
   styleUrls: string[] = [];
+  private inI18nBlock: boolean = false;
 
   constructor(private bindingParser: BindingParser) {}
 
   // HTML visitor
   visitElement(element: html.Element): t.Node|null {
+    const isI18nRootElement = isI18nRootNode(element.i18n);
+    if (isI18nRootElement) {
+      if (this.inI18nBlock) {
+        this.reportError(
+            'Cannot mark an element as translatable inside of a translatable section. Please remove the nested i18n marker.',
+            element.sourceSpan);
+      }
+      this.inI18nBlock = true;
+    }
     const preparsedElement = preparseElement(element);
     if (preparsedElement.type === PreparsedElementType.SCRIPT) {
       return null;
@@ -141,10 +151,15 @@ class HtmlAstToIvyAst implements html.Visitor {
         const templateKey = normalizedName.substring(TEMPLATE_ATTR_PREFIX.length);
 
         const parsedVariables: ParsedVariable[] = [];
-        const absoluteOffset = attribute.valueSpan ? attribute.valueSpan.start.offset :
-                                                     attribute.sourceSpan.start.offset;
+        const absoluteValueOffset = attribute.valueSpan ?
+            attribute.valueSpan.start.offset :
+            // If there is no value span the attribute does not have a value, like `attr` in
+            //`<div attr></div>`. In this case, point to one character beyond the last character of
+            // the attribute name.
+            attribute.sourceSpan.start.offset + attribute.name.length;
+
         this.bindingParser.parseInlineTemplateBinding(
-            templateKey, templateValue, attribute.sourceSpan, absoluteOffset, [],
+            templateKey, templateValue, attribute.sourceSpan, absoluteValueOffset, [],
             templateParsedProperties, parsedVariables);
         templateVariables.push(
             ...parsedVariables.map(v => new t.Variable(v.name, v.value, v.sourceSpan)));
@@ -209,7 +224,7 @@ class HtmlAstToIvyAst implements html.Visitor {
       // For <ng-template>s with structural directives on them, avoid passing i18n information to
       // the wrapping template to prevent unnecessary i18n instructions from being generated. The
       // necessary i18n meta information will be extracted from child elements.
-      const i18n = isTemplateElement && isI18nRootNode(element.i18n) ? undefined : element.i18n;
+      const i18n = isTemplateElement && isI18nRootElement ? undefined : element.i18n;
 
       // TODO(pk): test for this case
       parsedElement = new t.Template(
@@ -217,6 +232,9 @@ class HtmlAstToIvyAst implements html.Visitor {
           hoistedAttrs.outputs, templateAttrs, [parsedElement], [/* no references */],
           templateVariables, element.sourceSpan, element.startSourceSpan, element.endSourceSpan,
           i18n);
+    }
+    if (isI18nRootElement) {
+      this.inI18nBlock = false;
     }
     return parsedElement;
   }

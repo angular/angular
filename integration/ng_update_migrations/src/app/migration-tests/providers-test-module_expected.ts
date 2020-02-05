@@ -11,7 +11,7 @@ export class ComponentProvider2 {}
 @Component({
   template: '',
   viewProviders: [ComponentTypeProvider, [
-    {provide: ComponentDontNeedCase, useExisting: ComponentProvider}]
+    {provide: ComponentDontNeedCase, useClass: ComponentProvider}]
   ],
   providers: [ComponentProvider2]
 })
@@ -26,7 +26,7 @@ export class DirectiveProvider {}
 @Directive({
   selector: 'test-dir',
   providers: [DirectiveTypeProvider, [
-    {provide: DirectiveDontNeedCase, useExisting: DirectiveProvider}]
+    {provide: DirectiveDontNeedCase, useClass: DirectiveProvider}]
   ],
 })
 export class ProvidersTestDirective {}
@@ -41,11 +41,10 @@ class BaseProviderCase {
   constructor(zone: NgZone) {}
 }
 
-@Injectable()
-export class ProvideCase extends BaseProviderCase {}
+export class EmptyProviderLiteralCase {}
 
 @Injectable()
-export class ProviderClass {}
+export class ProviderClass extends BaseProviderCase {}
 
 export class DontNeedCase {}
 
@@ -55,7 +54,7 @@ export class DirectiveCase {}
 @NgModule({
   providers: [
     TypeCase,
-    {provide: ProvideCase},
+    { provide: EmptyProviderLiteralCase, useValue: undefined },
     {provide: DontNeedCase, useValue: 0},
     {provide: DontNeedCase, useFactory: () => null},
     {provide: DontNeedCase, useExisting: TypeCase},
@@ -65,4 +64,3 @@ export class DirectiveCase {}
   declarations: [ProvidersTestDirective, ProvidersTestComponent],
 })
 export class ProvidersTestModule {}
-

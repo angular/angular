@@ -11,8 +11,21 @@ import * as t from '@babel/types';
 import {Diagnostics} from '../../diagnostics';
 
 /**
- * Is the given `expression` an identifier with the correct name
+ * Is the given `expression` the global `$localize` identifier?
+ *
  * @param expression The expression to check.
+ * @param localizeName The configured name of `$localize`.
+ */
+export function isLocalize(
+    expression: NodePath, localizeName: string): expression is NodePath<t.Identifier> {
+  return isNamedIdentifier(expression, localizeName) && isGlobalIdentifier(expression);
+}
+
+/**
+ * Is the given `expression` an identifier with the correct `name`?
+ *
+ * @param expression The expression to check.
+ * @param name The name of the identifier we are looking for.
  */
 export function isNamedIdentifier(
     expression: NodePath, name: string): expression is NodePath<t.Identifier> {
@@ -314,4 +327,10 @@ export class BabelParseError extends Error {
 
 export function isBabelParseError(e: any): e is BabelParseError {
   return e.type === 'BabelParseError';
+}
+
+export function buildCodeFrameError(path: NodePath, e: BabelParseError): string {
+  const filename = path.hub.file.opts.filename || '(unknown file)';
+  const message = path.hub.file.buildCodeFrameError(e.node, e.message).message;
+  return `${filename}: ${message}`;
 }

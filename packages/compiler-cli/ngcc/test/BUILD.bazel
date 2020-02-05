@@ -10,6 +10,7 @@ ts_library(
         exclude = ["integration/**/*.ts"],
     ),
     deps = [
+        "//packages/compiler",
         "//packages/compiler-cli/ngcc",
         "//packages/compiler-cli/ngcc/test/helpers",
         "//packages/compiler-cli/src/ngtsc/diagnostics",
@@ -32,13 +33,12 @@ ts_library(
 
 jasmine_node_test(
     name = "test",
-    bootstrap = ["angular/tools/testing/init_node_no_angular_spec.js"],
+    bootstrap = ["//tools/testing:node_no_angular_es5"],
     data = [
         "//packages/compiler-cli/test/ngtsc/fake_core:npm_package",
     ],
     deps = [
         ":test_lib",
-        "//tools/testing:node_no_angular",
     ],
 )
 
@@ -56,13 +56,14 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/testing",
         "//packages/compiler-cli/test/helpers",
         "@npm//rxjs",
+        "@npm//typescript",
     ],
 )
 
 jasmine_node_test(
     name = "integration",
     timeout = "long",
-    bootstrap = ["angular/tools/testing/init_node_no_angular_spec.js"],
+    bootstrap = ["//tools/testing:node_no_angular_es5"],
     data = [
         "//packages/common:npm_package",
         "//packages/core:npm_package",
@@ -75,7 +76,6 @@ jasmine_node_test(
     ],
     deps = [
         ":integration_lib",
-        "//tools/testing:node_no_angular",
         "@npm//canonical-path",
         "@npm//convert-source-map",
     ],

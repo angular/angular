@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, EventEmitter, Input, Output} from '@angular/core';
+import {Component, Directive, EventEmitter, Input, OnChanges, Output, SimpleChanges, TemplateRef, ViewContainerRef} from '@angular/core';
 
 import {Hero} from './app.component';
 
@@ -44,39 +44,6 @@ export class Pipes {
 export class NoValueAttribute {
 }
 
-
-@Component({
-  template: '<h1 model="~{attribute-binding-model}test"></h1>',
-})
-export class AttributeBinding {
-  test: string = 'test';
-}
-
-@Component({
-  template: '<h1 [model]="~{property-binding-model}test"></h1>',
-})
-export class PropertyBinding {
-  test: string = 'test';
-}
-
-@Component({
-  template: '<h1 (model)="~{event-binding-model}modelChanged()"></h1>',
-})
-export class EventBinding {
-  test: string = 'test';
-
-  modelChanged() {}
-}
-
-@Component({
-  template: `
-    <h1 [(model)]="~{two-way-binding-model}test"></h1>
-    <input ~{two-way-binding-input}></input>`,
-})
-export class TwoWayBinding {
-  test: string = 'test';
-}
-
 @Directive({
   selector: '[string-model]',
 })
@@ -93,51 +60,20 @@ export class NumberModel {
   @Output('outputAlias') modelChange: EventEmitter<number> = new EventEmitter();
 }
 
-@Component({
-  selector: 'foo-component',
-  template: `
-    <div string-model ~{string-marker}="text"></div>
-    <div number-model ~{number-marker}="value"></div>
-  `,
+@Directive({
+  selector: '[hint-model]',
+  inputs: ['hint'],
+  outputs: ['hintChange'],
 })
-export class FooComponent {
-  text: string = 'some text';
-  value: number = 42;
+export class HintModel {
+  hint: string = 'hint';
+  hintChange: EventEmitter<string> = new EventEmitter();
 }
 
 interface Person {
   name: string;
   age: number;
   street: string;
-}
-
-@Component({
-  template: '<div *ngFor="~{for-empty}"></div>',
-})
-export class ForOfEmpty {
-}
-
-@Component({
-  template: '<div *ngFor="let ~{for-let-empty}"></div>',
-})
-export class ForOfLetEmpty {
-}
-
-@Component({
-  template: '<div *ngFor="let i = ~{for-let-i-equal}"></div>',
-})
-export class ForLetIEqual {
-}
-
-@Component({
-  template: `
-    <div *ngFor="~{for-let}let ~{for-person}person ~{for-of}of ~{for-people}people">
-      <span>Name: {{~{for-interp-person}person.~{for-interp-name}name}}</span>
-      <span>Age: {{person.~{for-interp-age}age}}</span>
-    </div>`,
-})
-export class ForUsingComponent {
-  people: Person[] = [];
 }
 
 @Component({
@@ -173,6 +109,27 @@ export class AsyncForUsingComponent {
 export class References {
 }
 
+class CounterDirectiveContext<T> {
+  constructor(public $implicit: T) {}
+}
+
+@Directive({selector: '[counterOf]'})
+export class CounterDirective implements OnChanges {
+  // Object does not have an "$implicit" property.
+  constructor(private container: ViewContainerRef, private template: TemplateRef<Object>) {}
+
+  @Input('counterOf') counter: number = 0;
+  ngOnChanges(_changes: SimpleChanges) {
+    this.container.clear();
+    for (let i = 0; i < this.counter; ++i) {
+      this.container.createEmbeddedView(this.template, new CounterDirectiveContext<number>(i + 1));
+    }
+  }
+}
+
+/**
+ * This Component provides the `test-comp` selector.
+ */
 /*BeginTestComponent*/ @Component({
   selector: 'test-comp',
   template: '<div>Testing: {{name}}</div>',
@@ -186,8 +143,16 @@ export class TestComponent {
   templateUrl: 'test.ng',
 })
 export class TemplateReference {
+  /**
+   * This is the title of the `TemplateReference` Component.
+   */
   title = 'Some title';
   hero: Hero = {id: 1, name: 'Windstorm'};
+  heroes: Hero[] = [this.hero];
+  tupleArray: [string, Hero] = ['test', this.hero];
+  league: Hero[][] = [this.heroes];
+  heroesByName: {[name: string]: Hero} = {};
+  primitiveIndexType: {[name: string]: string} = {};
   anyValue: any;
   myClick(event: any) {}
 }

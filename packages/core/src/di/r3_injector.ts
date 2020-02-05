@@ -461,10 +461,10 @@ function getUndecoratedInjectableFactory(token: Function) {
 
 function providerToRecord(
     provider: SingleProvider, ngModuleType: InjectorType<any>, providers: any[]): Record<any> {
-  let factory: (() => any)|undefined = providerToFactory(provider, ngModuleType, providers);
   if (isValueProvider(provider)) {
     return makeRecord(undefined, provider.useValue);
   } else {
+    const factory: (() => any)|undefined = providerToFactory(provider, ngModuleType, providers);
     return makeRecord(factory, NOT_YET);
   }
 }
@@ -482,10 +482,10 @@ export function providerToFactory(
   } else {
     if (isValueProvider(provider)) {
       factory = () => resolveForwardRef(provider.useValue);
-    } else if (isExistingProvider(provider)) {
-      factory = () => ɵɵinject(resolveForwardRef(provider.useExisting));
     } else if (isFactoryProvider(provider)) {
       factory = () => provider.useFactory(...injectArgs(provider.deps || []));
+    } else if (isExistingProvider(provider)) {
+      factory = () => ɵɵinject(resolveForwardRef(provider.useExisting));
     } else {
       const classRef = resolveForwardRef(
           provider &&

@@ -18,11 +18,8 @@ test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test
 # See https://github.com/bazelbuild/bazel/issues/4603
 build --symlink_prefix=dist/
 
-# Disable watchfs as it causes tests to be flaky on Windows
-# https://github.com/angular/angular/issues/29541
-build --nowatchfs
-
 # Turn off legacy external runfiles
+build --nolegacy_external_runfiles
 run --nolegacy_external_runfiles
 test --nolegacy_external_runfiles
 
@@ -46,6 +43,7 @@ test --incompatible_strict_action_env
 # This command assumes node on the path and is a workaround for
 # https://github.com/bazelbuild/bazel/issues/4802
 build:release --workspace_status_command="node ./tools/bazel_stamp_vars.js"
+build:release --stamp
 
 ###############################
 # Output                      #
@@ -67,24 +65,12 @@ test --test_output=errors
 ################################
 # Temporary Settings for Ivy   #
 ################################
-# to determine if the compiler used should be Ivy or ViewEngine one can use `--define=compile=aot` on
-# any bazel target. This is a temporary flag until codebase is permanently switched to Ivy.
-build --define=compile=legacy
+# To determine if the compiler used should be Ivy instead of ViewEngine, one can use `--config=ivy`
+# on any bazel target. This is a temporary flag until codebase is permanently switched to Ivy.
+build --define=angular_ivy_enabled=False
 
-#######################
-# Remote HTTP Caching #
-#######################
-build --remote_http_cache=https://storage.googleapis.com/angular-team-cache
-build --remote_accept_cached=true
-build --remote_upload_local_results=false
-
-######################################
-# Remote HTTP Caching writes support #
-# Turn on these settings with        #
-#  --config=-http-caching            #
-######################################
-build:remote-http-caching --remote_upload_local_results=true
-build:remote-http-caching --google_default_credentials
+build:view-engine --define=angular_ivy_enabled=False
+build:ivy --define=angular_ivy_enabled=True
 
 ##################################
 # Remote Build Execution support #
@@ -92,13 +78,21 @@ build:remote-http-caching --google_default_credentials
 #  --config=remote               #
 ##################################
 
-# Load default settings for Remote Build Execution.
-import %workspace%/third_party/github.com/bazelbuild/bazel-toolchains/bazelrc/.bazelrc.notoolchain
+# The following --define=EXECUTOR=remote will be able to be removed
+# once https://github.com/bazelbuild/bazel/issues/7254 is fixed
+build:remote --define=EXECUTOR=remote
+
+# Set a higher timeout value, just in case.
+build:remote --remote_timeout=600
 
 # Increase the default number of jobs by 50% because our build has lots of
 # parallelism
 build:remote --jobs=150
 build:remote --google_default_credentials
+
+# Force remote exeuctions to consider the entire run as linux
+build:remote --cpu=k8
+build:remote --host_cpu=k8
 
 # Toolchain and platform related flags
 build:remote --host_javabase=@rbe_ubuntu1604_angular//java:jdk
@@ -116,6 +110,17 @@ build:remote --platforms=//tools:rbe_ubuntu1604-angular
 build:remote --remote_instance_name=projects/internal-200822/instances/default_instance
 build:remote --project_id=internal-200822
 build:remote --remote_cache=remotebuildexecution.googleapis.com
+build:remote --remote_executor=remotebuildexecution.googleapis.com
+
+##################################
+# Saucelabs tests settings       #
+# Turn on these settings with    #
+#  --config=saucelabs            #
+##################################
+
+# For saucelabs tests we don't want to enable flaky test attempts. Karma has its own integrated
+# retry mechanism and we do not want to retry unnecessarily if Karma already tried multiple times.
+test:saucelabs --flaky_test_attempts=1
 
 ###############################
 # NodeJS rules settings
@@ -125,31 +130,6 @@ build:remote --remote_cache=remotebuildexecution.googleapis.com
 # Turn on managed directories feature in Bazel
 # This allows us to avoid installing a second copy of node_modules
 common --experimental_allow_incremental_repository_updates
-
-# This option is changed to true in Bazel 0.27 and exposes a possible
-# regression in Bazel 0.27.0.
-# Error observed is in npm_package target `//packages/common/locales:package`:
-# ```
-# ERROR: /home/circleci/ng/packages/common/locales/BUILD.bazel:13:1: Assembling
-# npm package packages/common/locales/package failed: No usable spawn strategy found
-# for spawn with mnemonic SkylarkAction.  Your --spawn_strategyor --strategy flags
-# are probably too strict. Visit https://github.com/bazelbuild/bazel/issues/7480 for
-# migration advises
-# ```
-# Suspect is https://github.com/bazelbuild/rules_nodejs/blob/master/internal/npm_package/npm_package.bzl#L75-L82:
-# ```
-# execution_requirements = {
-#     # Never schedule this action remotely because it's not computationally expensive.
-#     # It just copies files into a directory; it's not worth copying inputs and outputs to a remote worker.
-#     # Also don't run it in a sandbox, because it resolves an absolute path to the bazel-out directory
-#     # allowing the .pack and .publish runnables to work with no symlink_prefix
-#     # See https://github.com/bazelbuild/rules_nodejs/issues/187
-#     "local": "1",
-# },
-# ```
-build --incompatible_list_based_execution_strategy_selection=false
-test --incompatible_list_based_execution_strategy_selection=false
-run --incompatible_list_based_execution_strategy_selection=false
 
 ####################################################
 # User bazel configuration

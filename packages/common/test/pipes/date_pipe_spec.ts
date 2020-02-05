@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DatePipe, registerLocaleData} from '@angular/common';
+import {DatePipe} from '@angular/common';
 import localeEn from '@angular/common/locales/en';
 import localeEnExtra from '@angular/common/locales/extra/en';
 import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
 import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
+import {ɵunregisterLocaleData, ɵregisterLocaleData} from '@angular/core';
 
 {
   let date: Date;
@@ -18,12 +19,8 @@ import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_refle
     const isoStringWithoutTime = '2015-01-01';
     let pipe: DatePipe;
 
-    // Check the transformation of a date into a pattern
-    function expectDateFormatAs(date: Date | string, pattern: any, output: string): void {
-      expect(pipe.transform(date, pattern)).toEqual(output);
-    }
-
-    beforeAll(() => { registerLocaleData(localeEn, localeEnExtra); });
+    beforeAll(() => ɵregisterLocaleData(localeEn, localeEnExtra));
+    afterAll(() => ɵunregisterLocaleData());
 
     beforeEach(() => {
       date = new Date(2015, 5, 15, 9, 3, 1, 550);

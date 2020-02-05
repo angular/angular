@@ -1,0 +1,1073 @@
+####################################################################################
+####################################################################################
+#                               Angular Code Ownership                             #
+####################################################################################
+####################################################################################
+#
+#  Configuration of code ownership and review approvals for the angular/angular repo.
+#
+#  More info: https://docs.pullapprove.com/
+#
+# =========================================================
+#  General rules / philosophy
+# =========================================================
+#
+#  - We trust that people do the right thing and won't approve changes they don't feel confident reviewing
+#  - We enforce that only approved PRs are merged ensuring that unreviewed code isn't accidentally merged
+#  - We distribute approval rights as much as possible to help us scale better
+#  - Groups have one or two global approvers groups as fallbacks:
+#    - @angular/fw-global-approvers: for approving minor changes, large-scale refactorings, and emergency situations.
+#    - @angular/fw-global-approvers-for-docs-only-changes: for approving minor documentation-only changes that don't require engineering review
+#  - A small number of file groups have very limited number of reviewers because incorrect changes to the files they guard would have serious consequences (e.g. security, public api)
+#
+#  Configuration nuances:
+#
+#  - This configuration works in conjunction with the protected branch settings that require all changes to be made via pull requests with at least one approval.
+#  - This approval can come from an appropriate codeowner, or any repo collaborator (person with write access) if the PR is authored by a codeowner.
+#  - All groups whose pullapprove rules are matched will be required for overall approval.
+#
+#  NOTE:
+#    In the case of emergency, the repo administrators which include the current angular caretaker
+#    can bypass this reviewer approval requirement, this is expected as a last resort and to be
+#    done exceedingly sparingly.
+
+####################################################################################
+#  GitHub usernames
+####################################################################################
+#  aikidave - Dave Shevitz
+#  alan-agius4 - Alan Agius
+#  alxhub - Alex Rickabaugh
+#  AndrewKushnir - Andrew Kushnir
+#  andrewseguin - Andrew Seguin
+#  atscott - Andrew Scott
+#  clydin - Charles Lyding
+#  crisbeto - Kristiyan Kostadinov
+#  dennispbrown - Denny Brown
+#  devversion - Paul Gschwendtner
+#  dgp1130 - Doug Parker
+#  filipesilva - Filipe Silva
+#  gkalpak - Georgios Kalpakas
+#  gregmagolan - Greg Magolan
+#  IgorMinar - Igor Minar
+#  jbogarthyde - Judy Bogart
+#  jelbourn - Jeremy Elbourn
+#  JiaLiPassion - Jia Li
+#  JoostK - Joost Koehoorn
+#  josephperrott - Joey Perrott
+#  juleskremer - Jules Kremer
+#  kapunahelewong - Kapunahele Wong
+#  kara - Kara Erickson
+#  kyliau - Keen Yee Liau
+#  manughub - Manu Murthy
+#  matsko - Matias Niemela
+#  mgechev - Minko Gechev
+#  mhevery - Miško Hevery
+#  michaelprentice - Michael Prentice
+#  mmalerba - Miles Malerba
+#  petebacondarwin - Pete Bacon Darwin
+#  pkozlowski-opensource - Pawel Kozlowski
+#  robwormald - Rob Wormald
+#  StephenFluin - Stephen Fluin
+
+
+####################################################################################
+#  Approval Groups
+####################################################################################
+# =========================================================
+# @angular/framework-global-approvers
+# =========================================================
+#  Used for approving minor changes, large-scale refactorings, and in emergency situations.
+#
+# IgorMinar
+# josephperrott
+# kara
+# mhevery
+#
+# =========================================================
+# @angular/framework-global-approvers-for-docs-only-changes
+# =========================================================
+#  Used for approving minor documentation-only changes that don't require engineering review.
+#
+# aikidave
+# gkalpak
+# kapunahelewong
+# petebacondarwin
+
+
+version: 3
+
+# turn on 'draft' support
+# https://docs.pullapprove.com/config/github-api-version/
+# https://developer.github.com/v3/previews/#draft-pull-requests
+github_api_version: "shadow-cat-preview"
+
+pullapprove_conditions:
+  - condition: "'WIP' not in title"
+    unmet_status: pending
+    explanation: "Waiting to send reviews as PR is WIP"
+  - condition: "'PR state: WIP' not in labels"
+    unmet_status: pending
+    explanation: "Waiting to send reviews as PR is WIP"
+
+
+groups:
+  # =========================================================
+  #  Framework: Animations
+  # =========================================================
+  fw-animations:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'packages/animations/**',
+          'packages/platform-browser/animations/**',
+          'aio/content/guide/animations.md',
+          'aio/content/examples/animations/**',
+          'aio/content/images/guide/animations/**',
+          'aio/content/guide/complex-animation-sequences.md',
+          'aio/content/guide/reusable-animations.md',
+          'aio/content/guide/route-animations.md',
+          'aio/content/guide/transition-and-triggers.md'
+          ])
+    reviewers:
+      users:
+        - matsko
+      teams:
+        - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
+
+
+  # =========================================================
+  #  Framework: Compiler
+  # =========================================================
+  fw-compiler:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'packages/compiler/**',
+          'packages/examples/compiler/**',
+          'packages/compiler-cli/**',
+          'aio/content/guide/angular-compiler-options.md',
+          'aio/content/guide/aot-compiler.md',
+          'aio/content/guide/aot-metadata-errors.md',
+          'aio/content/guide/template-typecheck.md '
+          ])
+    reviewers:
+      users:
+        - alxhub
+        - AndrewKushnir
+        - JoostK
+        - kara
+      teams:
+        - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
+
+
+  # =========================================================
+  #  Framework: Compiler / ngcc
+  # =========================================================
+  fw-ngcc:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'packages/compiler-cli/ngcc/**'
+          ])
+    reviewers:
+      users:
+        - alxhub
+        - gkalpak
+        - JoostK
+        - petebacondarwin
+      teams:
+        - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
+
+
+  # =========================================================
+  #  Framework: Core
+  # =========================================================
+  fw-core:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'packages/core/**',
+          'packages/examples/core/**',
+          'packages/common/**',
+          'packages/platform-browser/**',
+          'packages/examples/platform-browser/**',
+          'packages/platform-browser-dynamic/**',
+          'packages/platform-webworker/**',
+          'packages/platform-webworker-dynamic/**',
+          'packages/examples/common/**',
+          'packages/docs/**',
+          'aio/content/guide/accessibility.md',
+          'aio/content/examples/accessibility/**',
+          'aio/content/guide/architecture-components.md',
+          'aio/content/guide/architecture-modules.md',
+          'aio/content/guide/architecture-next-steps.md',
+          'aio/content/guide/architecture-services.md',
+          'aio/content/guide/architecture.md',
+          'aio/content/examples/architecture/**',
+          'aio/content/images/guide/architecture/**',
+          'aio/content/guide/attribute-directives.md',
+          'aio/content/examples/attribute-directives/**',
+          'aio/content/images/guide/attribute-directives/**',
+          'aio/content/guide/bootstrapping.md',
+          'aio/content/examples/bootstrapping/**',
+          'aio/content/guide/cheatsheet.md',
+          'aio/content/guide/component-interaction.md',
+          'aio/content/examples/component-interaction/**',
+          'aio/content/images/guide/component-interaction/**',
+          'aio/content/guide/component-styles.md',
+          'aio/content/examples/component-styles/**',
+          'aio/content/guide/dependency-injection.md',
+          'aio/content/examples/dependency-injection/**',
+          'aio/content/images/guide/dependency-injection/**',
+          'aio/content/guide/dependency-injection-in-action.md',
+          'aio/content/examples/dependency-injection-in-action/**',
+          'aio/content/images/guide/dependency-injection-in-action/**',
+          'aio/content/guide/dependency-injection-navtree.md',
+          'aio/content/guide/dependency-injection-providers.md',
+          'aio/content/guide/displaying-data.md',
+          'aio/content/examples/displaying-data/**',
+          'aio/content/images/guide/displaying-data/**',
+          'aio/content/guide/dynamic-component-loader.md',
+          'aio/content/examples/dynamic-component-loader/**',
+          'aio/content/images/guide/dynamic-component-loader/**',
+          'aio/content/guide/entry-components.md',
+          'aio/content/guide/feature-modules.md',
+          'aio/content/examples/feature-modules/**',
+          'aio/content/images/guide/feature-modules/**',
+          'aio/content/guide/frequent-ngmodules.md',
+          'aio/content/images/guide/frequent-ngmodules/**',
+          'aio/content/guide/hierarchical-dependency-injection.md',
+          'aio/content/examples/hierarchical-dependency-injection/**',
+          'aio/content/examples/providers-viewproviders/**',
+          'aio/content/examples/resolution-modifiers/**',
+          'aio/content/guide/lazy-loading-ngmodules.md',
+          'aio/content/examples/lazy-loading-ngmodules/**',
+          'aio/content/images/guide/lazy-loading-ngmodules/**',
+          'aio/content/guide/lifecycle-hooks.md',
+          'aio/content/examples/lifecycle-hooks/**',
+          'aio/content/images/guide/lifecycle-hooks/**',
+          'aio/content/examples/ngcontainer/**',
+          'aio/content/guide/ngmodules.md',
+          'aio/content/examples/ngmodules/**',
+          'aio/content/guide/ngmodule-api.md',
+          'aio/content/guide/ngmodule-faq.md',
+          'aio/content/examples/ngmodule-faq/**',
+          'aio/content/guide/ngmodule-vs-jsmodule.md',
+          'aio/content/guide/module-types.md',
+          'aio/content/guide/template-syntax.md',
+          'aio/content/examples/built-in-template-functions/**',
+          'aio/content/examples/event-binding/**',
+          'aio/content/examples/interpolation/**',
+          'aio/content/examples/template-syntax/**',
+          'aio/content/images/guide/template-syntax/**',
+          'aio/content/examples/binding-syntax/**',
+          'aio/content/examples/property-binding/**',
+          'aio/content/examples/attribute-binding/**',
+          'aio/content/examples/two-way-binding/**',
+          'aio/content/examples/built-in-directives/**',
+          'aio/content/images/guide/built-in-directives/**',
+          'aio/content/examples/template-reference-variables/**',
+          'aio/content/examples/inputs-outputs/**',
+          'aio/content/images/guide/inputs-outputs/**',
+          'aio/content/examples/template-expression-operators/**',
+          'aio/content/guide/pipes.md',
+          'aio/content/examples/pipes/**',
+          'aio/content/images/guide/pipes/**',
+          'aio/content/guide/providers.md',
+          'aio/content/examples/providers/**',
+          'aio/content/guide/singleton-services.md',
+          'aio/content/guide/set-document-title.md',
+          'aio/content/examples/set-document-title/**',
+          'aio/content/images/guide/set-document-title/**',
+          'aio/content/guide/sharing-ngmodules.md',
+          'aio/content/guide/structural-directives.md',
+          'aio/content/examples/structural-directives/**',
+          'aio/content/images/guide/structural-directives/**',
+          'aio/content/guide/user-input.md',
+          'aio/content/examples/user-input/**',
+          'aio/content/images/guide/user-input/**'
+          ])
+    reviewers:
+      users:
+        - alxhub
+        - AndrewKushnir
+        - kara
+        - mhevery
+        - pkozlowski-opensource
+      teams:
+        - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
+
+
+  # =========================================================
+  #  Framework: Http
+  # =========================================================
+  fw-http:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'packages/common/http/**',
+          'packages/http/**',
+          'packages/examples/http/**',
+          'aio/content/guide/http.md',
+          'aio/content/examples/http/**',
+          'aio/content/images/guide/http/**'
+          ])
+    reviewers:
+      users:
+        - alxhub
+        - IgorMinar
+      teams:
+        - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
+
+
+  # =========================================================
+  #  Framework: Elements
+  # =========================================================
+  fw-elements:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'packages/elements/**',
+          'aio/content/examples/elements/**',
+          'aio/content/images/guide/elements/**',
+          'aio/content/guide/elements.md'
+          ])
+    reviewers:
+      users:
+        - andrewseguin
+        - gkalpak
+      teams:
+        - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
+
+
+  # =========================================================
+  #  Framework: Forms
+  # =========================================================
+  fw-forms:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'packages/forms/**',
+          'packages/examples/forms/**',
+          'aio/content/guide/forms.md',
+          'aio/content/examples/forms/**',
+          'aio/content/images/guide/forms/**',
+          'aio/content/guide/forms-overview.md',
+          'aio/content/examples/forms-overview/**',
+          'aio/content/images/guide/forms-overview/**',
+          'aio/content/guide/form-validation.md',
+          'aio/content/examples/form-validation/**',
+          'aio/content/images/guide/form-validation/**',
+          'aio/content/guide/dynamic-form.md',
+          'aio/content/examples/dynamic-form/**',
+          'aio/content/images/guide/dynamic-form/**',
+          'aio/content/guide/reactive-forms.md',
+          'aio/content/examples/reactive-forms/**',
+          'aio/content/images/guide/reactive-forms/**'
+          ])
+    reviewers:
+      users:
+        - AndrewKushnir
+      teams:
+        - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
+
+
+  # =========================================================
+  #  Framework: i18n
+  # =========================================================
+  fw-i18n:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'packages/core/src/i18n/**',
+          'packages/core/src/render3/i18n.ts',
+          'packages/core/src/render3/i18n.md',
+          'packages/core/src/render3/interfaces/i18n.ts',
+          'packages/common/locales/**',
+          'packages/common/src/i18n/**',
+          'packages/common/src/pipes/date_pipe.ts',
+          'packages/common/src/pipes/i18n_plural_pipe.ts',
+          'packages/common/src/pipes/i18n_select_pipe.ts',
+          'packages/common/src/pipes/number_pipe.ts',
+          'packages/compiler/src/i18n/**',
+          'packages/compiler/src/render3/view/i18n/**',
+          'packages/compiler-cli/src/extract_i18n.ts',
+          'packages/localize/**',
+          'aio/content/guide/i18n.md',
+          'aio/content/examples/i18n/**'
+          ])
+    reviewers:
+      users:
+        - AndrewKushnir
+        - mhevery
+        - petebacondarwin
+      teams:
+        - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
+
+
+  # =========================================================
+  #  Framework: Platform Server
+  # =========================================================
+  fw-platform-server:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'packages/platform-server/**',
+          'aio/content/guide/universal.md',
+          'aio/content/examples/universal/**'
+          ])
+    reviewers:
+      users:
+        - alxhub
+        - kyliau
+      teams:
+        - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
+
+
+  # =========================================================
+  #  Framework: Router
+  # =========================================================
+  fw-router:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'packages/router/**',
+          'packages/examples/router/**',
+          'aio/content/guide/router.md',
+          'aio/content/examples/router/**',
+          'aio/content/images/guide/router/**'
+          ])
+    reviewers:
+      users:
+        - atscott
+      teams:
+        - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
+
+
+  # =========================================================
+  #  Framework: Service Worker
+  # =========================================================
+  fw-server-worker:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'packages/service-worker/**',
+          'packages/examples/service-worker/**',
+          'aio/content/guide/service-worker-getting-started.md',
+          'aio/content/examples/service-worker-getting-started/**',
+          'aio/content/guide/app-shell.md',
+          'aio/content/guide/service-worker-communications.md',
+          'aio/content/guide/service-worker-config.md',
+          'aio/content/guide/service-worker-devops.md',
+          'aio/content/guide/service-worker-intro.md',
+          'aio/content/images/guide/service-worker/**'
+          ])
+    reviewers:
+      users:
+        - alxhub
+        - gkalpak
+        - IgorMinar
+      teams:
+        - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
+
+
+  # =========================================================
+  #  Framework: Upgrade
+  # =========================================================
+  fw-upgrade:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'packages/upgrade/**',
+          'packages/common/upgrade/**',
+          'packages/examples/upgrade/**',
+          'aio/content/guide/upgrade.md',
+          'aio/content/examples/upgrade-lazy-load-ajs/**',
+          'aio/content/examples/upgrade-module/**',
+          'aio/content/images/guide/upgrade/**',
+          'aio/content/examples/upgrade-phonecat-1-typescript/**',
+          'aio/content/examples/upgrade-phonecat-2-hybrid/**',
+          'aio/content/examples/upgrade-phonecat-3-final/**',
+          'aio/content/guide/upgrade-performance.md',
+          'aio/content/guide/upgrade-setup.md',
+          'aio/content/guide/ajs-quick-reference.md',
+          'aio/content/examples/ajs-quick-reference/**'
+          ])
+    reviewers:
+      users:
+        - gkalpak
+        - petebacondarwin
+      teams:
+        - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
+
+
+  # =========================================================
+  #  Framework: Testing
+  # =========================================================
+  fw-testing:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          '**/testing/**',
+          'aio/content/guide/testing.md',
+          'aio/content/examples/testing/**',
+          'aio/content/images/guide/testing/**'
+          ])
+    reviewers:
+      users:
+        - IgorMinar
+        - kara
+        - pkozlowski-opensource
+      teams:
+        - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
+
+
+  # =========================================================
+  #  Framework: Benchmarks
+  # =========================================================
+  fw-benchmarks:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'modules/benchmarks_external/**',
+          'modules/benchmarks/**'
+          ])
+    reviewers:
+      users:
+        - IgorMinar
+        - kara
+        - pkozlowski-opensource
+      teams:
+        - ~framework-global-approvers
+
+
+  # =========================================================
+  #  Framework: Playground
+  # =========================================================
+  fw-playground:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'modules/playground/**'
+          ])
+    reviewers:
+      users:
+        - IgorMinar
+        - kara
+      teams:
+        - ~framework-global-approvers
+
+
+  # =========================================================
+  #  Framework: Security
+  # =========================================================
+  fw-security:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'packages/core/src/sanitization/**',
+          'packages/core/test/linker/security_integration_spec.ts',
+          'packages/compiler/src/schema/**',
+          'packages/platform-browser/src/security/**',
+          'aio/content/guide/security.md',
+          'aio/content/examples/security/**',
+          'aio/content/images/guide/security/**'
+          ])
+    reviewers:
+      users:
+        - IgorMinar
+        - mhevery
+      teams:
+        - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
+
+  # =========================================================
+  #  Bazel
+  # =========================================================
+  bazel:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'packages/bazel/**',
+          'aio/content/guide/bazel.md'
+          ])
+    reviewers:
+      users:
+        - IgorMinar
+        - josephperrott
+        - kyliau
+      teams:
+        - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
+
+
+  # =========================================================
+  #  Language Service
+  # =========================================================
+  language-service:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'packages/language-service/**',
+          'aio/content/guide/language-service.md',
+          'aio/content/images/guide/language-service/**'
+          ])
+    reviewers:
+      users:
+        - kyliau
+      teams:
+        - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
+
+
+  # =========================================================
+  #  zone.js
+  # =========================================================
+  zone-js:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'packages/zone.js/**'
+          ])
+    reviewers:
+      users:
+        - JiaLiPassion
+        - mhevery
+      teams:
+        - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
+
+
+  # =========================================================
+  #  Benchpress
+  # =========================================================
+  benchpress:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'packages/benchpress/**'
+          ])
+    reviewers:
+      users:
+        - alxhub
+      teams:
+        - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
+
+
+  # =========================================================
+  #  Integration Tests
+  # =========================================================
+  integration-tests:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'integration/**'
+          ])
+    reviewers:
+      users:
+        - IgorMinar
+        - josephperrott
+        - kara
+        - mhevery
+      teams:
+        - ~framework-global-approvers
+
+
+  # =========================================================
+  #  Docs: Gettings Started & Tutorial
+  # =========================================================
+  docs-getting-started-and-tutorial:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'aio/content/guide/setup-local.md',
+          'aio/content/images/guide/setup-local/**',
+          'aio/content/tutorial/**',
+          'aio/content/images/guide/toh/**',
+          'aio/content/examples/toh-pt0/**',
+          'aio/content/examples/toh-pt1/**',
+          'aio/content/examples/toh-pt2/**',
+          'aio/content/examples/toh-pt3/**',
+          'aio/content/examples/toh-pt4/**',
+          'aio/content/examples/toh-pt5/**',
+          'aio/content/examples/toh-pt6/**',
+          'aio/content/examples/getting-started-v0/**',
+          'aio/content/examples/getting-started/**',
+          'aio/content/start/**',
+          'aio/content/images/guide/start/**'
+          ])
+    reviewers:
+      users:
+        - aikidave
+        - IgorMinar
+        - StephenFluin
+      teams:
+        - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
+
+
+  # =========================================================
+  #  Docs: Marketing
+  # =========================================================
+  docs-marketing:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'aio/content/marketing/**',
+          'aio/content/images/bios/**',
+          'aio/content/images/marketing/**',
+          'aio/content/file-not-found.md',
+          'aio/content/license.md',
+          'aio/content/navigation.json'
+          ])
+    reviewers:
+      users:
+        - IgorMinar
+        - StephenFluin
+      teams:
+        - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
+
+
+  # =========================================================
+  #  Docs: Observables
+  # =========================================================
+  docs-observables:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'aio/content/guide/observables.md',
+          'aio/content/examples/observables/**',
+          'aio/content/guide/comparing-observables.md',
+          'aio/content/examples/comparing-observables/**',
+          'aio/content/guide/observables-in-angular.md',
+          'aio/content/examples/observables-in-angular/**',
+          'aio/content/guide/practical-observable-usage.md',
+          'aio/content/examples/practical-observable-usage/**',
+          'aio/content/guide/rx-library.md',
+          'aio/content/examples/rx-library/**'
+          ])
+    reviewers:
+      users:
+        - alxhub
+      teams:
+        - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
+
+
+  # =========================================================
+  #  Docs: Packaging, Tooling, Releasing
+  # =========================================================
+  docs-packaging-and-releasing:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'docs/PUBLIC_API.md',
+          'docs/RELEASE_SCHEDULE.md',
+          'aio/content/guide/npm-packages.md',
+          'aio/content/guide/browser-support.md',
+          'aio/content/guide/releases.md',
+          'aio/content/guide/updating.md',
+          'aio/content/guide/deprecations.md',
+          'aio/content/guide/migration-renderer.md',
+          'aio/content/guide/migration-undecorated-classes.md',
+          'aio/content/guide/migration-dynamic-flag.md',
+          'aio/content/guide/migration-injectable.md',
+          'aio/content/guide/migration-localize.md',
+          'aio/content/guide/migration-module-with-providers.md',
+          'aio/content/guide/static-query-migration.md',
+          'aio/content/guide/updating-to-version-9.md',
+          'aio/content/guide/ivy-compatibility.md',
+          'aio/content/guide/ivy-compatibility-examples.md'
+          ])
+    reviewers:
+      users:
+        - IgorMinar
+        - kara
+      teams:
+        - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
+
+
+  # =========================================================
+  #  Docs: CLI
+  # =========================================================
+  docs-cli:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'aio/content/cli/**',
+          'aio/content/guide/typescript-configuration.md',
+          'aio/content/examples/setup/**',
+          'aio/content/guide/build.md',
+          'aio/content/images/guide/build/**',
+          'aio/content/guide/cli-builder.md',
+          'aio/content/examples/cli-builder/**',
+          'aio/content/guide/deployment.md',
+          'aio/content/images/guide/deployment/**',
+          'aio/content/guide/file-structure.md',
+          'aio/content/guide/ivy.md',
+          'aio/content/guide/web-worker.md'
+          'aio/content/guide/workspace-config.md',
+          ])
+    reviewers:
+      users:
+        - clydin
+        - IgorMinar
+        - mgechev
+      teams:
+        - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
+
+
+  # =========================================================
+  #  Docs: CLI Libraries
+  # =========================================================
+  docs-libraries:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'aio/content/guide/creating-libraries.md',
+          'aio/content/guide/libraries.md',
+          'aio/content/guide/using-libraries.md'
+          ])
+    reviewers:
+      users:
+        - alan-agius4
+        - IgorMinar
+        - mgechev
+      teams:
+        - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
+
+
+  # =========================================================
+  #  Docs: Schematics
+  # =========================================================
+  docs-schematics:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'aio/content/guide/schematics.md',
+          'aio/content/guide/schematics-authoring.md',
+          'aio/content/guide/schematics-for-libraries.md',
+          'aio/content/images/guide/schematics/**',
+          'aio/content/examples/schematics-for-libraries/**'
+          ])
+    reviewers:
+      users:
+        - alan-agius4
+        - IgorMinar
+        - mgechev
+      teams:
+        - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
+
+
+  # =========================================================
+  #  Docs-infra
+  # =========================================================
+  docs-infra:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'aio/*',
+          'aio/aio-builds-setup/**',
+          'aio/content/cli-src/**',
+          'aio/content/examples/*',
+          'aio/scripts/**',
+          'aio/src/**',
+          'aio/tests/**',
+          'aio/tools/**',
+          'aio/content/guide/docs-style-guide.md',
+          'aio/content/examples/docs-style-guide/**',
+          'aio/content/images/guide/docs-style-guide/**',
+          'aio/content/guide/visual-studio-2015.md',
+          'aio/content/examples/visual-studio-2015/**'
+          ])
+    reviewers:
+      users:
+        - gkalpak
+        - IgorMinar
+        - petebacondarwin
+      teams:
+        - ~framework-global-approvers
+        - ~framework-global-approvers-for-docs-only-changes
+
+
+  # =========================================================
+  #  Dev-infra
+  # =========================================================
+  dev-infra:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          '*',
+          '.circleci/**',
+          '.devcontainer/**',
+          '.github/**',
+          '.vscode/**',
+          '.yarn/**',
+          'docs/BAZEL.md',
+          'docs/CARETAKER.md',
+          'docs/COMMITTER.md',
+          'docs/DEBUG.md',
+          'docs/DEBUG_COMPONENTS_REPO_IVY.md',
+          'docs/DEVELOPER.md',
+          'docs/GITHUB_PROCESS.md',
+          'docs/PR_REVIEW.md',
+          'docs/SAVED_REPLIES.md',
+          'docs/TOOLS.md',
+          'docs/TRIAGE_AND_LABELS.md',
+          'modules/e2e_util/e2e_util.ts',
+          'modules/e2e_util/perf_util.ts',
+          'modules/*',
+          'packages/*',
+          'packages/examples/test-utils/**',
+          'packages/private/**',
+          'packages/examples/*',
+          'scripts/**',
+          'third_party/**',
+          'tools/brotli-cli/**',
+          'tools/browsers/**',
+          'tools/build/**',
+          'tools/circular_dependency_test/**',
+          'tools/gulp-tasks/**',
+          'tools/ng_rollup_bundle/**',
+          'tools/ngcontainer/**',
+          'tools/npm/**',
+          'tools/public_api_guard/BUILD.bazel',
+          'tools/public_api_guard/public_api_guard.bzl',
+          'tools/pullapprove/**',
+          'tools/rxjs/**',
+          'tools/saucelabs/**',
+          'tools/size-tracking/**',
+          'tools/source-map-test/**',
+          'tools/symbol-extractor/**',
+          'tools/testing/**',
+          'tools/ts-api-guardian/**',
+          'tools/tslint/**',
+          'tools/validate-commit-message/**',
+          'tools/yarn/**',
+          'tools/*',
+          '**/*.bzl',
+          '**/*.bazel'
+          ])
+    reviewers:
+      users:
+        - devversion
+        - filipesilva
+        - gkalpak
+        - IgorMinar
+        - josephperrott
+      teams:
+        - ~framework-global-approvers
+
+
+  # =========================================================
+  #  Material CI
+  # =========================================================
+  material-ci:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'tools/components-repo-ci/**'
+          ])
+    reviewers:
+      users:
+        - alxhub
+        - AndrewKushnir
+        - kara
+        - mhevery
+        - pkozlowski-opensource
+      teams:
+        - ~framework-global-approvers
+
+
+  # =========================================================
+  #  Public API
+  # =========================================================
+  public-api:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'tools/public_api_guard/**',
+          'docs/NAMING.md',
+          'aio/content/guide/glossary.md',
+          'aio/content/guide/styleguide.md',
+          'aio/content/examples/styleguide/**',
+          'aio/content/images/guide/styleguide/*'
+          ])
+    reviewers:
+      users:
+        - IgorMinar
+      teams:
+        - ~framework-global-approvers
+
+
+  # ================================================
+  #  Size tracking
+  # ================================================
+  size-tracking:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'aio/scripts/_payload-limits.json',
+          'integration/_payload-limits.json'
+          ])
+    reviewers:
+      users:
+        - IgorMinar
+        - kara
+      teams:
+        - ~framework-global-approvers
+
+
+####################################################################################
+#  Special Cases
+####################################################################################
+
+  # =========================================================
+  #  Code Ownership
+  # =========================================================
+  code-ownership:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          '.pullapprove.yml'
+          ])
+    reviewers:
+      users:
+        - IgorMinar
+      teams:
+        - ~framework-global-approvers
+
+
+  # ====================================================
+  #  Catch all for if no groups match the code change
+  # ====================================================
+  fallback:
+    conditions:
+      # Groups which are found to have matching conditions are `active`
+      # according to PullApprove. If no groups are matched and considered
+      # active, we still want to have a review occur.
+      - len(groups.active) == 0
+    reviewers:
+      users:
+        - IgorMinar
+      teams:
+        - ~framework-global-approvers

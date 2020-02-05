@@ -57,6 +57,27 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            expect(form.valid).toBe(false);
          }));
 
+      it('should report properties which are written outside of template bindings', async() => {
+        // For example ngModel writes to `checked` property programmatically
+        // (template does not contain binding to `checked` explicitly)
+        // https://github.com/angular/angular/issues/33695
+        @Component({
+          selector: 'app-root',
+          template: `<input type="radio" value="one" [(ngModel)]="active"/>`
+        })
+        class AppComponent {
+          active = 'one';
+        }
+        TestBed.configureTestingModule({imports: [FormsModule], declarations: [AppComponent]});
+        const fixture = TestBed.createComponent(AppComponent);
+        // We need the Await as `ngModel` writes data asynchronously into the DOM
+        await fixture.detectChanges();
+        const input = fixture.debugElement.query(By.css('input'));
+        expect(input.properties.checked).toBe(true);
+        expect(input.nativeElement.checked).toBe(true);
+      });
+
+
       it('should add novalidate by default to form element', fakeAsync(() => {
            const fixture = initTest(NgModelForm);
 

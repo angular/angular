@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertEqual} from '../util/assert';
-
 
 export const enum BypassType {
   Url = 'URL',
@@ -87,9 +85,11 @@ class SafeResourceUrlImpl extends SafeValueImpl implements SafeResourceUrl {
   getTypeName() { return BypassType.ResourceUrl; }
 }
 
-export function unwrapSafeValue(value: string | SafeValue): string {
-  return value instanceof SafeValueImpl ? value.changingThisBreaksApplicationSecurity :
-                                          value as string;
+export function unwrapSafeValue(value: SafeValue): string;
+export function unwrapSafeValue<T>(value: T): T;
+export function unwrapSafeValue<T>(value: T | SafeValue): T {
+  return value instanceof SafeValueImpl ? value.changingThisBreaksApplicationSecurity as any as T :
+                                          value as any as T;
 }
 
 

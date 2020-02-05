@@ -190,14 +190,22 @@ export function ɵɵdefineInjector(options: {factory: () => any, providers?: any
  * @param type A type which may have its own (non-inherited) `ɵprov`.
  */
 export function getInjectableDef<T>(type: any): ɵɵInjectableDef<T>|null {
-  const def = (type[NG_PROV_DEF] || type[NG_INJECTABLE_DEF]) as ɵɵInjectableDef<T>;
-  // The definition read above may come from a base class. `hasOwnProperty` is not sufficient to
-  // distinguish this case, as in older browsers (e.g. IE10) static property inheritance is
-  // implemented by copying the properties.
-  //
-  // Instead, the ɵprov's token is compared to the type, and if they don't match then the
-  // property was not defined directly on the type itself, and was likely inherited. The definition
-  // is only returned if the type matches the def.token.
+  return getOwnDefinition(type, type[NG_PROV_DEF]) ||
+      getOwnDefinition(type, type[NG_INJECTABLE_DEF]);
+}
+
+/**
+ * Return `def` only if it is defined directly on `type` and is not inherited from a base
+ * class of `type`.
+ *
+ * The function `Object.hasOwnProperty` is not sufficient to distinguish this case because in older
+ * browsers (e.g. IE10) static property inheritance is implemented by copying the properties.
+ *
+ * Instead, the definition's `token` is compared to the `type`, and if they don't match then the
+ * property was not defined directly on the type itself, and was likely inherited. The definition
+ * is only returned if the `type` matches the `def.token`.
+ */
+function getOwnDefinition<T>(type: any, def: ɵɵInjectableDef<T>): ɵɵInjectableDef<T>|null {
   return def && def.token === type ? def : null;
 }
 
@@ -210,17 +218,37 @@ export function getInjectableDef<T>(type: any): ɵɵInjectableDef<T>|null {
  * `ɵprov` on an ancestor only.
  */
 export function getInheritedInjectableDef<T>(type: any): ɵɵInjectableDef<T>|null {
-  const def = type && (type[NG_PROV_DEF] || type[NG_INJECTABLE_DEF]);
+  // See `jit/injectable.ts#compileInjectable` for context on NG_PROV_DEF_FALLBACK.
+  const def = type && (type[NG_PROV_DEF] || type[NG_INJECTABLE_DEF] ||
+                       (type[NG_PROV_DEF_FALLBACK] && type[NG_PROV_DEF_FALLBACK]()));
+
   if (def) {
+    const typeName = getTypeName(type);
     // TODO(FW-1307): Re-add ngDevMode when closure can handle it
     // ngDevMode &&
     console.warn(
-        `DEPRECATED: DI is instantiating a token "${type.name}" that inherits its @Injectable decorator but does not provide one itself.\n` +
-        `This will become an error in v10. Please add @Injectable() to the "${type.name}" class.`);
+        `DEPRECATED: DI is instantiating a token "${typeName}" that inherits its @Injectable decorator but does not provide one itself.\n` +
+        `This will become an error in v10. Please add @Injectable() to the "${typeName}" class.`);
     return def;
   } else {
     return null;
   }
+}
+
+/** Gets the name of a type, accounting for some cross-browser differences. */
+function getTypeName(type: any): string {
+  // `Function.prototype.name` behaves differently between IE and other browsers. In most browsers
+  // it'll always return the name of the function itself, no matter how many other functions it
+  // inherits from. On IE the function doesn't have its own `name` property, but it takes it from
+  // the lowest level in the prototype chain. E.g. if we have `class Foo extends Parent` most
+  // browsers will evaluate `Foo.name` to `Foo` while IE will return `Parent`. We work around
+  // the issue by converting the function to a string and parsing its name out that way via a regex.
+  if (type.hasOwnProperty('name')) {
+    return type.name;
+  }
+
+  const match = ('' + type).match(/^function\s*([^\s(]+)/);
+  return match === null ? '' : match[1];
 }
 
 /**
@@ -236,6 +264,14 @@ export function getInjectorDef<T>(type: any): ɵɵInjectorDef<T>|null {
 
 export const NG_PROV_DEF = getClosureSafeProperty({ɵprov: getClosureSafeProperty});
 export const NG_INJ_DEF = getClosureSafeProperty({ɵinj: getClosureSafeProperty});
+
+// On IE10 properties defined via `defineProperty` won't be inherited by child classes,
+// which will break inheriting the injectable definition from a grandparent through an
+// undecorated parent class. We work around it by defining a fallback method which will be
+// used to retrieve the definition. This should only be a problem in JIT mode, because in
+// AOT TypeScript seems to have a workaround for static properties. When inheriting from an
+// undecorated parent is no longer supported in v10, this can safely be removed.
+export const NG_PROV_DEF_FALLBACK = getClosureSafeProperty({ɵprovFallback: getClosureSafeProperty});
 
 // We need to keep these around so we can read off old defs if new defs are unavailable
 export const NG_INJECTABLE_DEF = getClosureSafeProperty({ngInjectableDef: getClosureSafeProperty});

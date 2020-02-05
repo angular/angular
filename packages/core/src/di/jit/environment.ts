@@ -8,7 +8,7 @@
 
 import {Type} from '../../interface/type';
 import {isForwardRef, resolveForwardRef} from '../forward_ref';
-import {ɵɵinject} from '../injector_compatibility';
+import {ɵɵinject, ɵɵinvalidFactoryDep} from '../injector_compatibility';
 import {getInjectableDef, getInjectorDef, ɵɵdefineInjectable, ɵɵdefineInjector} from '../interface/defs';
 
 
@@ -23,6 +23,7 @@ export const angularCoreDiEnv: {[name: string]: Function} = {
   'ɵɵdefineInjector': ɵɵdefineInjector,
   'ɵɵinject': ɵɵinject,
   'ɵɵgetFactoryOf': getFactoryOf,
+  'ɵɵinvalidFactoryDep': ɵɵinvalidFactoryDep,
 };
 
 function getFactoryOf<T>(type: Type<any>): ((type?: Type<T>) => T)|null {

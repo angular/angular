@@ -253,20 +253,21 @@ describe('NgPackagesInstaller', () => {
     };
 
     it('should build the local packages, when not on Windows', () => {
-      const buildScript = path.join(ngRootDir, 'scripts/build-packages-dist.sh');
+      const buildScript = path.join(ngRootDir, 'scripts/build-packages-dist.js');
+      const buildCmd = `"${process.execPath}" "${buildScript}"`;
 
       buildDistPackagesOnPlatform('linux');
-      expect(shelljs.exec).toHaveBeenCalledWith(buildScript);
+      expect(shelljs.exec).toHaveBeenCalledWith(buildCmd);
 
       shelljs.exec.calls.reset();
 
       buildDistPackagesOnPlatform('darwin');
-      expect(shelljs.exec).toHaveBeenCalledWith(buildScript);
+      expect(shelljs.exec).toHaveBeenCalledWith(buildCmd);
 
       shelljs.exec.calls.reset();
 
       buildDistPackagesOnPlatform('anythingButWindows :(');
-      expect(shelljs.exec).toHaveBeenCalledWith(buildScript);
+      expect(shelljs.exec).toHaveBeenCalledWith(buildCmd);
 
       // Ensure that the script does actually exist (e.g. it was not renamed/moved).
       fs.existsSync.and.callThrough();
@@ -358,6 +359,82 @@ describe('NgPackagesInstaller', () => {
       installer.debug = true;
       installer._log('bar');
       expect(console.info).toHaveBeenCalledWith('  [NgPackagesInstaller]: bar');
+    });
+  });
+
+  describe('_overwritePackageVersion()', () => {
+    it('should do nothing if the specified package is not a dependency', () => {
+      const pkgConfig = {name: '@scope/missing', version: 'local-version'};
+      const lockFile = {
+        [`${pkgConfig.name}@project-range`]: {version: 'project-version'},
+      };
+      let projectConfig;
+
+      // No `dependencies`/`devDependencies` at all.
+      projectConfig = {};
+      installer._overwritePackageVersion(pkgConfig.name, pkgConfig, projectConfig, lockFile);
+      expect(pkgConfig.version).toBe('local-version');
+
+      // Not listed in `dependencies`/`devDependencies`.
+      projectConfig = {
+        dependencies: {otherPackage: 'foo'},
+        devDependencies: {yetAnotherPackage: 'bar'},
+      };
+      installer._overwritePackageVersion(pkgConfig.name, pkgConfig, projectConfig, lockFile);
+      expect(pkgConfig.version).toBe('local-version');
+    });
+
+    it('should do nothing if the specified package cannot be found in the lockfile', () => {
+      const pkgConfig = {name: '@scope/missing', version: 'local-version'};
+      const projectConfig = {
+        dependencies: {[pkgConfig.name]: 'project-range'},
+      };
+      let lockFile;
+
+      // Package missing from lockfile.
+      lockFile = {
+        'otherPackage@someRange': {version: 'some-version'},
+      };
+      installer._overwritePackageVersion(pkgConfig.name, pkgConfig, projectConfig, lockFile);
+      expect(pkgConfig.version).toBe('local-version');
+
+      // Package present in lockfile, but for a different version range.
+      lockFile = {
+        [`${pkgConfig.name}@other-range`]: {version: 'project-version'},
+      };
+      installer._overwritePackageVersion(pkgConfig.name, pkgConfig, projectConfig, lockFile);
+      expect(pkgConfig.version).toBe('local-version');
+    });
+
+    it('should overwrite the package version if it is a dependency and found in the lockfile', () => {
+      const pkgConfig = {name: '@scope/found', version: 'local-version'};
+      const lockFile = {
+        [`${pkgConfig.name}@project-range-prod`]: {version: 'project-version-prod'},
+        [`${pkgConfig.name}@project-range-dev`]: {version: 'project-version-dev'},
+      };
+      let projectConfig;
+
+      // Package in `dependencies`.
+      projectConfig = {
+        dependencies: {[pkgConfig.name]: 'project-range-prod'},
+      };
+      installer._overwritePackageVersion(pkgConfig.name, pkgConfig, projectConfig, lockFile);
+      expect(pkgConfig.version).toBe('project-version-prod+locally-overwritten-by-ngPackagesInstaller');
+
+      // // Package in `devDependencies`.
+      projectConfig = {
+        devDependencies: {[pkgConfig.name]: 'project-range-dev'},
+      };
+      installer._overwritePackageVersion(pkgConfig.name, pkgConfig, projectConfig, lockFile);
+      expect(pkgConfig.version).toBe('project-version-dev+locally-overwritten-by-ngPackagesInstaller');
+
+      // // Package in both `dependencies` and `devDependencies` (the former takes precedence).
+      projectConfig = {
+        devDependencies: {[pkgConfig.name]: 'project-range-dev'},
+        dependencies: {[pkgConfig.name]: 'project-range-prod'},
+      };
+      installer._overwritePackageVersion(pkgConfig.name, pkgConfig, projectConfig, lockFile);
+      expect(pkgConfig.version).toBe('project-version-prod+locally-overwritten-by-ngPackagesInstaller');
     });
   });
 

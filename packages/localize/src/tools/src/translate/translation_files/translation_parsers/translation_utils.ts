@@ -27,6 +27,9 @@ export function parseInnerRange(element: Element): Node[] {
   const xml = xmlParser.parse(
       element.sourceSpan.start.file.content, element.sourceSpan.start.file.url,
       {tokenizeExpansionForms: true, range: getInnerRange(element)});
+  if (xml.errors.length) {
+    throw xml.errors.map(e => new TranslationParseError(e.span, e.msg).toString()).join('\n');
+  }
   return xml.rootNodes;
 }
 

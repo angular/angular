@@ -125,10 +125,16 @@ export function compileNgModuleDefs(
               exports: flatten(ngModule.exports || EMPTY_ARRAY)
                            .map(resolveForwardRef)
                            .map(expandModuleWithProviders),
-              emitInline: true,
               schemas: ngModule.schemas ? flatten(ngModule.schemas) : null,
               id: ngModule.id || null,
             });
+        // Set `schemas` on ngModuleDef to an empty array in JIT mode to indicate that runtime
+        // should verify that there are no unknown elements in a template. In AOT mode, that check
+        // happens at compile time and `schemas` information is not present on Component and Module
+        // defs after compilation (so the check doesn't happen the second time at runtime).
+        if (!ngModuleDef.schemas) {
+          ngModuleDef.schemas = [];
+        }
       }
       return ngModuleDef;
     }
@@ -421,19 +427,25 @@ export function patchComponentDefWithScope<C>(
 /**
  * Compute the pair of transitive scopes (compilation scope and exported scope) for a given module.
  *
- * This operation is memoized and the result is cached on the module's definition. It can be called
- * on modules with components that have not fully compiled yet, but the result should not be used
- * until they have.
+ * By default this operation is memoized and the result is cached on the module's definition. You
+ * can avoid memoization and previously stored results (if available) by providing the second
+ * argument with the `true` value (forcing transitive scopes recalculation).
+ *
+ * This function can be called on modules with components that have not fully compiled yet, but the
+ * result should not be used until they have.
+ *
+ * @param moduleType module that transitive scope should be calculated for.
+ * @param forceRecalc flag that indicates whether previously calculated and memoized values should
+ * be ignored and transitive scope to be fully recalculated.
  */
 export function transitiveScopesFor<T>(
-    moduleType: Type<T>,
-    processNgModuleFn?: (ngModule: NgModuleType) => void): NgModuleTransitiveScopes {
+    moduleType: Type<T>, forceRecalc: boolean = false): NgModuleTransitiveScopes {
   if (!isNgModule(moduleType)) {
     throw new Error(`${moduleType.name} does not have a module def (ɵmod property)`);
   }
   const def = getNgModuleDef(moduleType) !;
 
-  if (def.transitiveCompileScopes !== null) {
+  if (!forceRecalc && def.transitiveCompileScopes !== null) {
     return def.transitiveCompileScopes;
   }
 
@@ -472,13 +484,9 @@ export function transitiveScopesFor<T>(
       throw new Error(`Importing ${importedType.name} which does not have a ɵmod property`);
     }
 
-    if (processNgModuleFn) {
-      processNgModuleFn(importedType as NgModuleType);
-    }
-
     // When this module imports another, the imported module's exported directives and pipes are
     // added to the compilation scope of this module.
-    const importedScope = transitiveScopesFor(importedType, processNgModuleFn);
+    const importedScope = transitiveScopesFor(importedType, forceRecalc);
     importedScope.exported.directives.forEach(entry => scopes.compilation.directives.add(entry));
     importedScope.exported.pipes.forEach(entry => scopes.compilation.pipes.add(entry));
   });
@@ -497,7 +505,7 @@ export function transitiveScopesFor<T>(
     if (isNgModule(exportedType)) {
       // When this module exports another, the exported module's exported directives and pipes are
       // added to both the compilation and exported scopes of this module.
-      const exportedScope = transitiveScopesFor(exportedType, processNgModuleFn);
+      const exportedScope = transitiveScopesFor(exportedType, forceRecalc);
       exportedScope.exported.directives.forEach(entry => {
         scopes.compilation.directives.add(entry);
         scopes.exported.directives.add(entry);
@@ -513,7 +521,9 @@ export function transitiveScopesFor<T>(
     }
   });
 
-  def.transitiveCompileScopes = scopes;
+  if (!forceRecalc) {
+    def.transitiveCompileScopes = scopes;
+  }
   return scopes;
 }
 

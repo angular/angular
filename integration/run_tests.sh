@@ -9,6 +9,7 @@ cd "$(dirname "$0")"
 
 # basedir is the workspace root
 readonly basedir=$(pwd)/..
+readonly bazel_bin=$(yarn bin)/bazel
 
 # When running on the CI, we track the payload size of various integration output files. Also
 # we shard tests across multiple CI job instances. The script needs to be run with a shard index
@@ -23,12 +24,12 @@ if $CI; then
   # Determines the tests that need to be run for this shard index.
   TEST_DIRS=$(node ./get-sharded-tests.js --shardIndex ${SHARD_INDEX} --maxShards ${MAX_SHARDS})
 
-  # NB: we don't run build-packages-dist.sh because we expect that it was done
+  # NB: we don't run build-packages-dist.js because we expect that it was done
   # by an earlier job in the CircleCI workflow.
 else
   # Not on CircleCI so let's build the packages-dist directory.
   # This should be fast on incremental re-build.
-  ${basedir}/scripts/build-packages-dist.sh
+  node ${basedir}/scripts/build-packages-dist.js
 
   # If we aren't running on CircleCI, we do not shard tests because this would be the job of
   # Bazel eventually. For now, we just run all tests sequentially when running locally.
@@ -37,7 +38,7 @@ fi
 
 # Workaround https://github.com/yarnpkg/yarn/issues/2165
 # Yarn will cache file://dist URIs and not update Angular code
-readonly cache=.yarn_local_cache
+export readonly cache=.yarn_local_cache
 function rm_cache {
   rm -rf $cache
 }
@@ -54,6 +55,11 @@ for testDir in ${TEST_DIRS}; do
     cd $testDir
     rm -rf dist
 
+    # Ensure the versions of (non-local) dependencies are exact versions (not version ranges) and
+    # in-sync between `package.json` and the lockfile.
+    # (NOTE: This must be run before `yarn install`, which updates the lockfile.)
+    node ../check-dependencies .
+
     yarn install --cache-folder ../$cache
     yarn test || exit 1
 
@@ -63,7 +69,7 @@ for testDir in ${TEST_DIRS}; do
         yarn build
       fi
 
-      trackPayloadSize "$testDir" "dist/*.js" true false "${basedir}/integration/_payload-limits.json"
+      trackPayloadSize "$testDir" "dist/*.js" true "${basedir}/integration/_payload-limits.json"
     fi
 
     # remove the temporary node modules directory to keep the source folder clean.
@@ -71,6 +77,6 @@ for testDir in ${TEST_DIRS}; do
   )
 done
 
-if $CI; then
-  trackPayloadSize "umd" "../dist/packages-dist/*/bundles/*.umd.min.js" false false
+if $CI && [[ "$SHARD_INDEX" == "0" ]]; then
+  trackPayloadSize "umd" "../dist/packages-dist/*/bundles/*.umd.min.js" false
 fi

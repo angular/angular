@@ -8,25 +8,25 @@
 
 import * as ts from 'typescript';
 
-import {ClassDeclaration} from '../../reflection';
+import {ClassDeclaration, ReflectionHost} from '../../reflection';
 
-import {TypeCheckingConfig, TypeCtorMetadata} from './api';
-import {checkIfGenericTypesAreUnbound} from './ts_util';
+import {TypeCtorMetadata} from './api';
+import {TypeParameterEmitter} from './type_parameter_emitter';
 
 export function generateTypeCtorDeclarationFn(
-    node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCtorMetadata,
-    nodeTypeRef: ts.Identifier | ts.QualifiedName, config: TypeCheckingConfig): ts.Statement {
-  if (requiresInlineTypeCtor(node)) {
+    node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCtorMetadata, nodeTypeRef: ts.EntityName,
+    typeParams: ts.TypeParameterDeclaration[] | undefined,
+    reflector: ReflectionHost): ts.Statement {
+  if (requiresInlineTypeCtor(node, reflector)) {
     throw new Error(`${node.name.text} requires an inline type constructor`);
   }
 
-  const rawTypeArgs =
-      node.typeParameters !== undefined ? generateGenericArgs(node.typeParameters) : undefined;
-  const rawType: ts.TypeNode = ts.createTypeReferenceNode(nodeTypeRef, rawTypeArgs);
+  const rawTypeArgs = typeParams !== undefined ? generateGenericArgs(typeParams) : undefined;
+  const rawType = ts.createTypeReferenceNode(nodeTypeRef, rawTypeArgs);
 
   const initParam = constructTypeCtorParameter(node, meta, rawType);
 
-  const typeParameters = typeParametersWithDefaultTypes(node.typeParameters);
+  const typeParameters = typeParametersWithDefaultTypes(typeParams);
 
   if (meta.body) {
     const fnType = ts.createFunctionTypeNode(
@@ -97,7 +97,7 @@ export function generateInlineTypeCtor(
   // `FooDirective<T extends Bar>`, its rawType would be `FooDirective<T>`.
   const rawTypeArgs =
       node.typeParameters !== undefined ? generateGenericArgs(node.typeParameters) : undefined;
-  const rawType: ts.TypeNode = ts.createTypeReferenceNode(node.name, rawTypeArgs);
+  const rawType = ts.createTypeReferenceNode(node.name, rawTypeArgs);
 
   const initParam = constructTypeCtorParameter(node, meta, rawType);
 
@@ -126,7 +126,7 @@ export function generateInlineTypeCtor(
 
 function constructTypeCtorParameter(
     node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCtorMetadata,
-    rawType: ts.TypeNode): ts.ParameterDeclaration {
+    rawType: ts.TypeReferenceNode): ts.ParameterDeclaration {
   // initType is the type of 'init', the single argument to the type constructor method.
   // If the Directive has any inputs, its initType will be:
   //
@@ -136,19 +136,41 @@ function constructTypeCtorParameter(
   // directive will be inferred.
   //
   // In the special case there are no inputs, initType is set to {}.
-  let initType: ts.TypeNode;
+  let initType: ts.TypeNode|null = null;
 
   const keys: string[] = meta.fields.inputs;
-  if (keys.length === 0) {
-    // Special case - no inputs, outputs, or other fields which could influence the result type.
-    initType = ts.createTypeLiteralNode([]);
-  } else {
+  const plainKeys: ts.LiteralTypeNode[] = [];
+  const coercedKeys: ts.PropertySignature[] = [];
+  for (const key of keys) {
+    if (!meta.coercedInputFields.has(key)) {
+      plainKeys.push(ts.createLiteralTypeNode(ts.createStringLiteral(key)));
+    } else {
+      coercedKeys.push(ts.createPropertySignature(
+          /* modifiers */ undefined,
+          /* name */ key,
+          /* questionToken */ undefined,
+          /* type */ ts.createTypeQueryNode(
+              ts.createQualifiedName(rawType.typeName, `ngAcceptInputType_${key}`)),
+          /* initializer */ undefined));
+    }
+  }
+  if (plainKeys.length > 0) {
     // Construct a union of all the field names.
-    const keyTypeUnion = ts.createUnionTypeNode(
-        keys.map(key => ts.createLiteralTypeNode(ts.createStringLiteral(key))));
+    const keyTypeUnion = ts.createUnionTypeNode(plainKeys);
 
     // Construct the Pick<rawType, keyTypeUnion>.
     initType = ts.createTypeReferenceNode('Pick', [rawType, keyTypeUnion]);
+  }
+  if (coercedKeys.length > 0) {
+    const coercedLiteral = ts.createTypeLiteralNode(coercedKeys);
+
+    initType =
+        initType !== null ? ts.createUnionTypeNode([initType, coercedLiteral]) : coercedLiteral;
+  }
+
+  if (initType === null) {
+    // Special case - no inputs, outputs, or other fields which could influence the result type.
+    initType = ts.createTypeLiteralNode([]);
   }
 
   // Create the 'init' parameter itself.
@@ -166,9 +188,17 @@ function generateGenericArgs(params: ReadonlyArray<ts.TypeParameterDeclaration>)
   return params.map(param => ts.createTypeReferenceNode(param.name, undefined));
 }
 
-export function requiresInlineTypeCtor(node: ClassDeclaration<ts.ClassDeclaration>): boolean {
-  // The class requires an inline type constructor if it has constrained (bound) generics.
-  return !checkIfGenericTypesAreUnbound(node);
+export function requiresInlineTypeCtor(
+    node: ClassDeclaration<ts.ClassDeclaration>, host: ReflectionHost): boolean {
+  // The class requires an inline type constructor if it has generic type bounds that can not be
+  // emitted into a different context.
+  return !checkIfGenericTypeBoundsAreContextFree(node, host);
+}
+
+function checkIfGenericTypeBoundsAreContextFree(
+    node: ClassDeclaration<ts.ClassDeclaration>, reflector: ReflectionHost): boolean {
+  // Generic type parameters are considered context free if they can be emitted into any context.
+  return new TypeParameterEmitter(node.typeParameters, reflector).canEmit();
 }
 
 /**

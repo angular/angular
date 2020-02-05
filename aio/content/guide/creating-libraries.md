@@ -1,4 +1,4 @@
-﻿# Creating Libraries
+﻿# Creating libraries
 
 You can create and publish new libraries to extend Angular functionality. If you find that you need to solve the same problem in more than one app (or want to share your solution with other developers), you have a candidate for a library.
 
@@ -47,8 +47,8 @@ You can build, test, and lint the project with CLI commands:
  ng lint my-lib
 </code-example>
 
-Notice that the configured builder for the  project is different from the default builder for app projects.
-This builder, among other things, ensures that the library is always built with the [AoT compiler](guide/aot-compiler), without the need to specify the `--prod` flag.
+Notice that the configured builder for the project is different from the default builder for app projects.
+This builder, among other things, ensures that the library is always built with the [AOT compiler](guide/aot-compiler), without the need to specify the `--prod` flag.
 
 To make library code reusable you must define a public API for it. This "user layer" defines what is available to consumers of your library. A user of your library should be able to access public functionality (such as NgModules, service providers and general utility functions) through a single import path.
 
@@ -109,11 +109,10 @@ To learn more, see [Schematics Overview](guide/schematics) and [Schematics for
 
 ## Publishing your library
 
-Use the Angular CLI and the npm package manager to build and publish your library as an npm package.
-Libraries are built in [AoT mode](guide/aot-compiler) by default, so you do not need to specify the `-prod` flag when building for publication.
+Use the Angular CLI and the npm package manager to build and publish your library as an npm package. It is not recommended to publish Ivy libraries to NPM repositories. Before publishing a library to NPM, build it using the `--prod` flag which will use the older compiler and runtime known as View Engine instead of Ivy.
 
 <code-example language="bash">
-ng build my-lib
+ng build my-lib --prod
 cd dist/my-lib
 npm publish
 </code-example>
@@ -181,7 +180,7 @@ For instance, if you clone your git repository and run `npm install`, your edito
 <div class="alert is-helpful">
 
 When you import something from a library in an Angular app, Angular looks for a mapping between the library name and a location on disk.
-When you install a library package, the mapping is in the `node_modules` folder. When you build your own library, it has to find the mapping  in your `tsconfig` paths.
+When you install a library package, the mapping is in the `node_modules` folder. When you build your own library, it has to find the mapping in your `tsconfig` paths.
 
 Generating a library with the Angular CLI automatically adds its path to the `tsconfig` file.
 The Angular CLI uses the `tsconfig` paths to tell the build system where to find the library.
@@ -204,7 +203,7 @@ ng build my-lib --watch
 
 The CLI `build` command uses a different builder and invokes a different build tool for libraries than it does for applications.
 
-* The  build system for apps, `@angular-devkit/build-angular`, is based on `webpack`, and is included in all new Angular CLI projects.
+* The build system for apps, `@angular-devkit/build-angular`, is based on `webpack`, and is included in all new Angular CLI projects.
 * The build system for libraries is based on `ng-packagr`. It is only added to your dependencies when you add a library using `ng generate library my-lib`.
 
 The two build systems support different things, and even where they support the same things, they do those things differently.

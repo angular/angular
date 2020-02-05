@@ -3,9 +3,6 @@
     "name": "ACTIVE_INDEX"
   },
   {
-    "name": "BINDING_INDEX"
-  },
-  {
     "name": "BLOOM_MASK"
   },
   {
@@ -27,7 +24,13 @@
     "name": "ChangeDetectionStrategy"
   },
   {
+    "name": "DECLARATION_COMPONENT_VIEW"
+  },
+  {
     "name": "DECLARATION_VIEW"
+  },
+  {
+    "name": "DOCUMENT"
   },
   {
     "name": "DepComponent"
@@ -55,6 +58,9 @@
   },
   {
     "name": "MONKEY_PATCH_KEY_NAME"
+  },
+  {
+    "name": "MOVED_VIEWS"
   },
   {
     "name": "Module"
@@ -108,9 +114,6 @@
     "name": "RENDERER_FACTORY"
   },
   {
-    "name": "RendererStyleFlags3"
-  },
-  {
     "name": "SANITIZER"
   },
   {
@@ -150,13 +153,13 @@
     "name": "addComponentLogic"
   },
   {
-    "name": "addItemToStylingMap"
+    "name": "addHostBindingsToExpandoInstructions"
   },
   {
     "name": "addToViewTree"
   },
   {
-    "name": "allocStylingMapArray"
+    "name": "allocLFrame"
   },
   {
     "name": "appendChild"
@@ -180,10 +183,19 @@
     "name": "callHooks"
   },
   {
-    "name": "concatString"
+    "name": "classIndexOf"
+  },
+  {
+    "name": "computeStaticStyling"
+  },
+  {
+    "name": "concatStringsWithSpace"
   },
   {
     "name": "createDirectivesInstances"
+  },
+  {
+    "name": "createLFrame"
   },
   {
     "name": "createLView"
@@ -228,13 +240,19 @@
     "name": "elementCreate"
   },
   {
+    "name": "elementStartFirstCreatePass"
+  },
+  {
+    "name": "enterDI"
+  },
+  {
+    "name": "enterView"
+  },
+  {
     "name": "executeCheckHooks"
   },
   {
     "name": "executeContentQueries"
-  },
-  {
-    "name": "executeElementExitFn"
   },
   {
     "name": "executeInitAndCheckHooks"
@@ -255,7 +273,7 @@
     "name": "findAttrIndexInNode"
   },
   {
-    "name": "findDirectiveMatches"
+    "name": "findDirectiveDefMatches"
   },
   {
     "name": "generateExpandoInstructionBlock"
@@ -285,10 +303,16 @@
     "name": "getComponentLViewByIndex"
   },
   {
+    "name": "getConstant"
+  },
+  {
     "name": "getContainerRenderParent"
   },
   {
     "name": "getDirectiveDef"
+  },
+  {
+    "name": "getDocument"
   },
   {
     "name": "getElementDepthCount"
@@ -297,10 +321,7 @@
     "name": "getFactoryDef"
   },
   {
-    "name": "getHostNative"
-  },
-  {
-    "name": "getInitialStylingValue"
+    "name": "getFirstNativeNode"
   },
   {
     "name": "getInjectorIndex"
@@ -318,12 +339,6 @@
     "name": "getLViewParent"
   },
   {
-    "name": "getMapProp"
-  },
-  {
-    "name": "getMapValue"
-  },
-  {
     "name": "getNameOnlyMarkerIndex"
   },
   {
@@ -336,19 +351,16 @@
     "name": "getNativeByTNode"
   },
   {
-    "name": "getNativeByTNodeOrNull"
-  },
-  {
     "name": "getNodeInjectable"
   },
   {
     "name": "getOrCreateNodeInjectorForNode"
   },
   {
-    "name": "getOrCreateTNode"
+    "name": "getOrCreateTComponentView"
   },
   {
-    "name": "getOrCreateTView"
+    "name": "getOrCreateTNode"
   },
   {
     "name": "getParentInjectorIndex"
@@ -375,10 +387,10 @@
     "name": "getSelectedIndex"
   },
   {
-    "name": "getStylingMapArray"
+    "name": "getTView"
   },
   {
-    "name": "hasActiveElementFlag"
+    "name": "growHostVarsSpace"
   },
   {
     "name": "hasClassInput"
@@ -399,13 +411,10 @@
     "name": "increaseElementDepthCount"
   },
   {
-    "name": "incrementActiveDirectiveId"
-  },
-  {
     "name": "incrementInitPhaseFlags"
   },
   {
-    "name": "initNodeFlags"
+    "name": "initTNodeFlags"
   },
   {
     "name": "initializeInputAndOutputAliases"
@@ -471,13 +480,10 @@
     "name": "isProceduralRenderer"
   },
   {
-    "name": "isRootView"
+    "name": "leaveDI"
   },
   {
-    "name": "isStylingContext"
-  },
-  {
-    "name": "isStylingValueDefined"
+    "name": "leaveView"
   },
   {
     "name": "locateHostElement"
@@ -489,7 +495,10 @@
     "name": "matchTemplateAttribute"
   },
   {
-    "name": "namespaceHTMLInternal"
+    "name": "mergeHostAttribute"
+  },
+  {
+    "name": "mergeHostAttrs"
   },
   {
     "name": "nativeAppendChild"
@@ -510,12 +519,6 @@
     "name": "noSideEffects"
   },
   {
-    "name": "postProcessBaseDirective"
-  },
-  {
-    "name": "postProcessDirective"
-  },
-  {
     "name": "refreshChildComponents"
   },
   {
@@ -528,10 +531,10 @@
     "name": "refreshDynamicEmbeddedViews"
   },
   {
-    "name": "refreshView"
+    "name": "refreshTransplantedViews"
   },
   {
-    "name": "registerInitialStylingOnTNode"
+    "name": "refreshView"
   },
   {
     "name": "registerPostOrderHooks"
@@ -549,19 +552,10 @@
     "name": "renderComponent"
   },
   {
-    "name": "renderInitialStyling"
-  },
-  {
     "name": "renderStringify"
   },
   {
-    "name": "renderStylingMap"
-  },
-  {
     "name": "renderView"
-  },
-  {
-    "name": "resetComponentState"
   },
   {
     "name": "resetPreOrderHookFlags"
@@ -576,37 +570,22 @@
     "name": "saveResolvedLocalsInData"
   },
   {
-    "name": "selectClassBasedInputName"
-  },
-  {
     "name": "selectIndexInternal"
   },
   {
-    "name": "selectView"
+    "name": "setBindingIndex"
   },
   {
-    "name": "setActiveHostElement"
-  },
-  {
-    "name": "setBindingRoot"
-  },
-  {
-    "name": "setClass"
-  },
-  {
-    "name": "setCurrentDirectiveDef"
+    "name": "setBindingRootForHostBindings"
   },
   {
     "name": "setCurrentQueryIndex"
   },
   {
-    "name": "setCurrentStyleSanitizer"
+    "name": "setDirectiveInputsWhichShadowsStyling"
   },
   {
-    "name": "setDirectiveStylingInput"
-  },
-  {
-    "name": "setHostBindings"
+    "name": "setHostBindingsByExecutingExpandoInstructions"
   },
   {
     "name": "setIncludeViewProviders"
@@ -624,28 +603,16 @@
     "name": "setIsNotParent"
   },
   {
-    "name": "setMapValue"
-  },
-  {
     "name": "setPreviousOrParentTNode"
   },
   {
     "name": "setSelectedIndex"
   },
   {
-    "name": "setStyle"
-  },
-  {
-    "name": "setTNodeAndViewData"
-  },
-  {
     "name": "setUpAttributes"
   },
   {
     "name": "stringifyForError"
-  },
-  {
-    "name": "stylingMapToString"
   },
   {
     "name": "syncViewWithBlueprint"
@@ -657,10 +624,13 @@
     "name": "unwrapRNode"
   },
   {
-    "name": "updateRawValueOnContext"
+    "name": "viewAttachedToChangeDetector"
   },
   {
-    "name": "viewAttachedToChangeDetector"
+    "name": "writeDirectClass"
+  },
+  {
+    "name": "writeDirectStyle"
   },
   {
     "name": "ɵɵdefineComponent"

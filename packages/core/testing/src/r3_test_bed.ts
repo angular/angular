@@ -35,7 +35,6 @@ import {MetadataOverride} from './metadata_override';
 import {TestBed} from './test_bed';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBedStatic, TestComponentRenderer, TestModuleMetadata} from './test_bed_common';
 import {R3TestBedCompiler} from './r3_test_bed_compiler';
-import {clearRegisteredModuleState} from '../../src/linker/ng_module_factory_registration';
 
 let _nextRootElementId = 0;
 
@@ -352,6 +351,10 @@ export class TestBedRender3 implements TestBed {
     return fixture;
   }
 
+  /**
+   * @internal strip this from published d.ts files due to
+   * https://github.com/microsoft/TypeScript/issues/36216
+   */
   private get compiler(): R3TestBedCompiler {
     if (this._compiler === null) {
       throw new Error(`Need to call TestBed.initTestEnvironment() first`);
@@ -359,6 +362,10 @@ export class TestBedRender3 implements TestBed {
     return this._compiler;
   }
 
+  /**
+   * @internal strip this from published d.ts files due to
+   * https://github.com/microsoft/TypeScript/issues/36216
+   */
   private get testModuleRef(): NgModuleRef<any> {
     if (this._testModuleRef === null) {
       this._testModuleRef = this.compiler.finalize();

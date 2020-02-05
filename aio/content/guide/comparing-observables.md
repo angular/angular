@@ -21,48 +21,47 @@ Observables are often compared to promises. Here are some key differences:
 
 * Observables are not executed until a consumer subscribes. The `subscribe()` executes the defined behavior once, and it can be called again. Each subscription has its own computation. Resubscription causes recomputation of values.
 
-<code-example hideCopy>
-// declare a publishing operation
-new Observable((observer) => { subscriber_fn });
-// initiate execution
-observable.subscribe(() => {
-      // observer handles notifications
-    });
-</code-example>
+  <code-example 
+    path="comparing-observables/src/observables.ts" 
+    header="src/observables.ts (observable)" 
+    region="observable">
+  </code-example>
 
 * Promises execute immediately, and just once. The computation of the result is initiated when the promise is created. There is no way to restart work. All `then` clauses (subscriptions) share the same computation.
 
-<code-example hideCopy>
-// initiate execution
-new Promise((resolve, reject) => { executer_fn });
-// handle return value
-promise.then((value) => {
-      // handle result here
-    });
-</code-example>
+  <code-example 
+    path="comparing-observables/src/promises.ts" 
+    header="src/promises.ts (promise)"
+    region="promise">
+  </code-example>
 
 ### Chaining
 
 * Observables differentiate between transformation function such as a map and subscription. Only subscription activates the subscriber function to start computing the values.
 
-
-<code-example hideCopy>observable.pipe(map((v) => 2*v));</code-example>
-
+  <code-example 
+    path="comparing-observables/src/observables.ts" 
+    header="src/observables.ts (chain)" 
+    region="chain">
+  </code-example>
 
 * Promises do not differentiate between the last `.then` clauses (equivalent to subscription) and intermediate `.then` clauses (equivalent to map).
 
-
-<code-example hideCopy>promise.then((v) => 2*v);</code-example>
-
+  <code-example 
+    path="comparing-observables/src/promises.ts"
+    header="src/promises.ts (chain)" 
+    region="chain">
+  </code-example>
 
 ### Cancellation
 
 * Observable subscriptions are cancellable. Unsubscribing removes the listener from receiving further values, and notifies the subscriber function to cancel work.
 
-<code-example hideCopy>
-const sub = obs.subscribe(...);
-sub.unsubscribe();
-</code-example>
+  <code-example 
+    path="comparing-observables/src/observables.ts" 
+    header="src/observables.ts (unsubcribe)" 
+    region="unsubscribe">
+  </code-example>
 
 * Promises are not cancellable.
 
@@ -70,19 +69,19 @@ sub.unsubscribe();
 
 * Observable execution errors are delivered to the subscriber's error handler, and the subscriber automatically unsubscribes from the observable.
 
-<code-example hideCopy>
-obs.subscribe(() => {
-  throw Error('my error');
-});
-</code-example>
+  <code-example 
+    path="comparing-observables/src/observables.ts" 
+    header="src/observables.ts (error)"
+    region="error">
+  </code-example>
 
 * Promises push errors to the child promises.
 
-<code-example hideCopy>
-promise.then(() => {
-      throw Error('my error');
-});
-</code-example>
+  <code-example 
+    path="comparing-observables/src/promises.ts" 
+    header="src/promises.ts (error)"
+    region="error">
+  </code-example>
 
 ### Cheat sheet
 
@@ -100,14 +99,16 @@ The following code snippets illustrate how the same kind of operation is defined
     <tr>
       <td>Creation</td>
       <td>
-        <pre>new Observable((observer) => {
-    observer.next(123);
-  });</pre>
+        <pre>
+new Observable((observer) => {
+  observer.next(123);
+});</pre>
       </td>
       <td>
-        <pre>new Promise((resolve, reject) => {
-    resolve(123);
-  });</pre>
+        <pre>
+new Promise((resolve, reject) => {
+  resolve(123);
+});</pre>
       </td>
     </tr>
     <tr>
@@ -118,14 +119,16 @@ The following code snippets illustrate how the same kind of operation is defined
     <tr>
       <td>Subscribe</td>
       <td>
-        <pre>sub = obs.subscribe((value) => {
-    console.log(value)
-  });</pre>
+        <pre>
+sub = obs.subscribe((value) => {
+  console.log(value)
+});</pre>
       </td>
       <td>
-        <pre>promise.then((value) => {
-    console.log(value);
-  });</pre>
+        <pre>
+promise.then((value) => {
+  console.log(value);
+});</pre>
       </td>
     </tr>
     <tr>
@@ -165,7 +168,6 @@ subscription.unsubscribe();</pre>
 <pre>function handler(e) {
   console.log(‘Clicked’, e);
 }
-
 // Setup & begin listening
 button.addEventListener(‘click’, handler);
 // Stop listening
@@ -314,6 +316,3 @@ An observable produces values over time. An array is created as a static set of 
     </td>
   </tr>
 </table>
-
-
-

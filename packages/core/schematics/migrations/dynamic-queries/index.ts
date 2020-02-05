@@ -27,12 +27,6 @@ export default function(): Rule {
     const basePath = process.cwd();
     const allPaths = [...buildPaths, ...testPaths];
 
-    ctx.logger.info('------ Dynamic queries migration ------');
-    ctx.logger.info('As of Angular 9, the "static" flag defaults to false and is no ');
-    ctx.logger.info('longer required for your view and content queries. ');
-    ctx.logger.info('Read more about this in the dedicated guide: ');
-    ctx.logger.info('https://v9.angular.io/guide/migration-dynamic-flag');
-
     if (!allPaths.length) {
       throw new SchematicsException(
           'Could not find any tsconfig file. Cannot migrate dynamic queries.');

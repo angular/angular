@@ -78,7 +78,7 @@ function testTemplate(rf: RenderFlags, ctx: any) {
 }
 
 
-const rootLView = setupRootViewWithEmbeddedViews(testTemplate, 11, 10, 1000);
+const rootLView = setupRootViewWithEmbeddedViews(testTemplate, 11, 40, 1000);
 const rootTView = rootLView[TVIEW];
 
 // scenario to benchmark
@@ -88,7 +88,7 @@ const refreshTime = styleAndClassBindingMapBenchmark('refresh');
 // run change detection in the update mode
 console.profile('style_and_class_map_binding_refresh');
 while (refreshTime()) {
-  refreshView(rootLView, rootTView, null, null);
+  refreshView(rootTView, rootLView, null, null);
 }
 console.profileEnd();
 

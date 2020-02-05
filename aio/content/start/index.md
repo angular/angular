@@ -2,44 +2,36 @@
 
 Welcome to Angular!
 
-This tutorial introduces you to the essentials of Angular by walking you through building a simple e-commerce site with a catalog, shopping cart, and check-out form. It uses the [StackBlitz](https://stackblitz.com/ "StackBlitz website") online development environment so you can get started right away.
-
-
-<div class="alert is-helpful">
-
-This guide uses the StackBlitz Generator to show you a ready-made, simple application that you can examine and play with interactively. In actual development you will typically use the [Angular CLI](guide/glossary#command-line-interface-cli), a powerful command-line tool that lets you generate and modify applications. For more information, see the [CLI Overview](cli).
-
-</div>
+This tutorial introduces you to the essentials of Angular by walking you through a simple e-commerce site with a catalog, shopping cart, and check-out form.
+To help you get started right away, this guide uses a simple ready-made application that you can examine and play with interactively.
 
 <div class="callout is-helpful">
 <header>New to web development?</header>
 
 
- There are many resources to complement the Angular docs. Mozilla's MDN docs include both [HTML](https://developer.mozilla.org/en-US/docs/Learn/HTML "Learning HTML: Guides and tutorials") and [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript "JavaScript") introductions. [TypeScript's docs](https://www.typescriptlang.org/docs/home.html "TypeScript documentation") include a 5-minute tutorial. Various online course platforms, such as [Udemy](http://www.udemy.com "Udemy online courses") and [Codecademy](https://www.codecademy.com/ "Codeacademy online courses"), also cover web development basics.
-
+ There are many resources to complement the Angular docs. Mozilla's MDN docs include both [HTML](https://developer.mozilla.org/en-US/docs/Learn/HTML "Learning HTML: Guides and tutorials") and [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript "JavaScript") introductions. [TypeScript's docs](https://www.typescriptlang.org/docs/home.html "TypeScript documentation") include a 5-minute tutorial. Various online course platforms, such as [Udemy](http://www.udemy.com "Udemy online courses") and [Codecademy](https://www.codecademy.com/ "Codecademy online courses"), also cover web development basics.
 
 </div>
-
 
 
 {@a new-project}
 ## Create a new project
 
 <h4>
-<live-example name="getting-started-v0" noDownload>Click here to create a new project in StackBlitz.</live-example>
+<live-example name="getting-started-v0" noDownload>Click here to create the ready-made sample project in StackBlitz.</live-example>
 </h4>
 
-StackBlitz creates a starter Angular app with a top
-bar&mdash;containing the store name and
-checkout icon&mdash;and the title for a product list.
+<div class="lightbox">
+  <img src="generated/images/guide/start/new-app-all.gif" alt="Starter online store app">
+</div>
 
+* The preview pane on the right shows the starting state of the sample Angular app.
+It defines a frame with a top bar (containing the store name and checkout icon) and the title for a product list (which will be populated and dynamically updated with data from the application).
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/start/new-app.png" alt="Starter online store app">
-  </div>
-</figure>
+* The project pane on the left shows the source files that make up the application, including all of the infrastructure and configuration files. The currently selected file shows up in the editor pane in the middle.
 
+Before going into the source structure, the next section shows how to fill out the HTML *template* for the product list, using the provided sample data.
+This should give you an idea how easy it is to modify and update the page dynamically.
 
 <div class="callout is-helpful">
 <header>StackBlitz tips</header>
@@ -58,8 +50,22 @@ expect, save and then click the refresh button.
 * StackBlitz is continually improving, so there may be
 slight differences in generated code, but the app's
 behavior will be the same.
+* When you generate the StackBlitz example apps that
+accompany the tutorials, StackBlitz creates the starter
+files and mock data for you. The files you'll use throughout
+the tutorials are in the `src` folder of the StackBlitz
+example apps.
 
 </div>
+
+<div class="alert is-helpful">
+
+If you go directly to the [StackBlitz online development environment](https://stackblitz.com/) and choose to [start a new Angular workspace](https://stackblitz.com/fork/angular), you get a generic stub application, rather than this [illustrative sample](#new-project). Once you have been introduced to the basic concepts here, this can be helpful for working interactively while you are learning Angular.
+
+In actual development you will typically use the [Angular CLI](guide/glossary#command-line-interface-cli), a powerful command-line tool that lets you generate and modify applications. For more information, see the [CLI Overview](cli).
+
+</div>
+
 
 {@a template-syntax}
 ## Template syntax
@@ -69,12 +75,11 @@ This section introduces template syntax by enhancing the "Products" area.
 
 <div class="alert is-helpful">
 
-To help you get going, the following steps use predefined product data and methods from the `product-list.component.ts` file.
+To help you get going, the following steps use predefined product data from the `products.ts` file (already created in StackBlitz example) and methods from the `product-list.component.ts` file.
 
 </div>
 
-1. In the `product-list` folder, open the template
-file `product-list.component.html`.
+1. In the `product-list` folder, open the template file `product-list.component.html`.
 
 1. Modify the product list template to display a list of product names.
 
@@ -98,11 +103,9 @@ file `product-list.component.html`.
 
       The preview pane immediately updates to display the name of each product in the list.
 
-      <figure class="lightbox">
-        <div class="card">
-          <img src="generated/images/guide/start/template-syntax-product-names.png" alt="Product names added to list">
-        </div>
-      </figure>
+      <div class="lightbox">
+        <img src="generated/images/guide/start/template-syntax-product-names.png" alt="Product names added to list">
+      </div>
 
 1. To make each product name a link to product details, add the `<a>` element and set its title to be the product's name by using the property binding `[ ]` syntax, as follows:
 
@@ -116,46 +119,38 @@ file `product-list.component.html`.
     property value as text; property binding `[ ]` lets you
     use the property value in a template expression.
 
-    <figure class="lightbox">
-      <div class="card">
-        <img src="generated/images/guide/start/template-syntax-product-anchor.png" alt="Product name anchor text is product name property">
-      </div>
-    </figure>
+    <div class="lightbox">
+      <img src="generated/images/guide/start/template-syntax-product-anchor.png" alt="Product name anchor text is product name property">
+    </div>
 
 
-1. Add the product descriptions. On the `<p>` element, use an `*ngIf` directive so that Angular only creates the `<p>` element if the current product has a description.
+4. Add the product descriptions. On the `<p>` element, use an `*ngIf` directive so that Angular only creates the `<p>` element if the current product has a description.
 
     <code-example path="getting-started/src/app/product-list/product-list.component.3.html" header="src/app/product-list/product-list.component.html">
     </code-example>
 
     The app now displays the name and description of each product in the list. Notice that the final product does not have a description paragraph. Because the product's description property is empty, Angular doesn't create the `<p>` element&mdash;including the word "Description".
 
-    <figure class="lightbox">
-      <div class="card">
+    <div class="lightbox">
       <img src="generated/images/guide/start/template-syntax-product-description.png" alt="Product descriptions added to list">
-      </div>
-    </figure>
+    </div>
 
-1. Add a button so users can share a product with friends. Bind the button's `click` event to the `share()` method (in `product-list.component.ts`). Event binding uses a set of parentheses, `( )`, around the event, as in the following `<button>` element:
+5. Add a button so users can share a product with friends. Bind the button's `click` event to the `share()` method (in `product-list.component.ts`). Event binding uses a set of parentheses, `( )`, around the event, as in the following `<button>` element:
 
     <code-example path="getting-started/src/app/product-list/product-list.component.4.html" header="src/app/product-list/product-list.component.html">
     </code-example>
 
     Each product now has a "Share" button:
 
-    <figure class="lightbox">
-      <div class="card">
+    <div class="lightbox">
       <img src="generated/images/guide/start/template-syntax-product-share-button.png" alt="Share button added for each product">
-      </div>
-    </figure>
+    </div>
 
     Test the "Share" button:
 
-    <figure class="lightbox">
-      <div class="card">
+    <div class="lightbox">
       <img src="generated/images/guide/start/template-syntax-product-share-alert.png" alt="Alert box indicating product has been shared">
-      </div>
-    </figure>
+    </div>
 
 The app now has a product list and sharing feature.
 In the process, you've learned to use five common features of Angular's template syntax:
@@ -210,11 +205,9 @@ An Angular application comprises a tree of components, in which each Angular com
 
 Currently, the example app has three components:
 
-<figure class="lightbox">
-  <div class="card">
+<div class="lightbox">
   <img src="generated/images/guide/start/app-components.png" alt="Online store with three components">
-  </div>
-</figure>
+</div>
 
 * `app-root` (orange box) is the application shell. This is the first component to load and the parent of all other components. You can think of it as the base page.
 * `app-top-bar` (blue background) is the store name and checkout button.
@@ -242,11 +235,9 @@ The next step is to create a new alert feature that takes a product as an input.
 
     1. Right click on the `app` folder and use the `Angular Generator` to generate a new component named `product-alerts`.
 
-        <figure class="lightbox">
-          <div class="card">
+        <div class="lightbox">
           <img src="generated/images/guide/start/generate-component.png" alt="StackBlitz command to generate component">
-          </div>
-        </figure>
+        </div>
 
         The generator creates starter files for all three parts of the component:
         * `product-alerts.component.ts`
@@ -269,11 +260,11 @@ The next step is to create a new alert feature that takes a product as an input.
 
     1. Import `Input` from `@angular/core`.
 
-        <code-example path="getting-started/src/app/product-alerts/product-alerts.component.1.ts" region="imports" header="src/app/product-list/product-alerts.component.ts"></code-example>
+        <code-example path="getting-started/src/app/product-alerts/product-alerts.component.1.ts" region="imports" header="src/app/product-alerts/product-alerts.component.ts"></code-example>
 
     1. In the `ProductAlertsComponent` class definition, define a property named `product` with an `@Input()` decorator. The `@Input()` decorator indicates that the property value passes in from the component's parent, the product list component.
 
-        <code-example path="getting-started/src/app/product-alerts/product-alerts.component.1.ts" region="input-decorator" header="src/app/product-list/product-alerts.component.ts"></code-example>
+        <code-example path="getting-started/src/app/product-alerts/product-alerts.component.1.ts" region="input-decorator" header="src/app/product-alerts/product-alerts.component.ts"></code-example>
 
 1. Define the view for the new product alert component.
 
@@ -285,7 +276,7 @@ The next step is to create a new alert feature that takes a product as an input.
 
     1. Open `product-list.component.html`.
 
-    1. To include the new component, use its selector, `app-product-alert`, as you would an HTML element.
+    1. To include the new component, use its selector, `app-product-alerts`, as you would an HTML element.
 
     1. Pass the current product as input to the component using property binding.
 
@@ -293,11 +284,9 @@ The next step is to create a new alert feature that takes a product as an input.
 
 The new product alert component takes a product as input from the product list. With that input, it shows or hides the "Notify Me" button, based on the price of the product. The Phone XL price is over $700, so the "Notify Me" button appears on that product.
 
-<figure class="lightbox">
-  <div class="card">
+<div class="lightbox">
   <img src="generated/images/guide/start/product-alert-button.png" alt="Product alert button added to products over $700">
-  </div>
-</figure>
+</div>
 
 <div class="alert is-helpful">
 
@@ -322,6 +311,13 @@ To make the "Notify Me" button work, you need to configure two things:
 
 1. In the component class, define a property named `notify` with an `@Output()` decorator and an instance of `EventEmitter()`. This allows the product alert component to emit an event when the value of the notify property changes.
 
+<div class="alert is-helpful">
+
+  When the Angular CLI generates a new component, it includes an empty constructor, the `OnInit` interface, and the `ngOnInit()` method.
+  Since the following example isn't using them, they are omitted here for brevity.
+
+</div>
+
     <code-example path="getting-started/src/app/product-alerts/product-alerts.component.ts" header="src/app/product-alerts/product-alerts.component.ts" region="input-output"></code-example>
 
 1. In the product alert template, `product-alerts.component.html`, update the "Notify Me" button with an event binding to call the `notify.emit()` method.
@@ -340,11 +336,9 @@ To make the "Notify Me" button work, you need to configure two things:
 
 1. Try the "Notify Me" button:
 
-    <figure class="lightbox">
-      <div class="card">
+    <div class="lightbox">
       <img src="generated/images/guide/start/product-alert-notification.png" alt="Product alert notification confirmation dialog">
-      </div>
-    </figure>
+    </div>
 
 
 <div class="alert is-helpful">
@@ -366,4 +360,3 @@ You've also learned how the component class and template interact, and how compo
 To continue exploring Angular, choose either of the following options:
 * [Continue to the "Routing" section](start/routing "Getting Started: Routing") to create a product details page that can be accessed by clicking a product name and that has its own URL pattern.
 * [Skip ahead to the "Deployment" section](start/deployment "Getting Started: Deployment") to move to local development, or deploy your app to Firebase or your own server.
-

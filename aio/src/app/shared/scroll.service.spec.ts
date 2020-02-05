@@ -7,6 +7,13 @@ import { fakeAsync, tick } from '@angular/core/testing';
 import { ScrollService, topMargin } from './scroll.service';
 
 describe('ScrollService', () => {
+  const scrollServiceInstances: ScrollService[] = [];
+  const createScrollService = (...args: ConstructorParameters<typeof ScrollService>) => {
+    const instance = new ScrollService(...args);
+    scrollServiceInstances.push(instance);
+    return instance;
+  };
+
   const topOfPageElem = {} as Element;
   let injector: ReflectiveInjector;
   let document: MockDocument;
@@ -36,7 +43,11 @@ describe('ScrollService', () => {
 
   beforeEach(() => {
     injector = ReflectiveInjector.resolveAndCreate([
-        ScrollService,
+        {
+          provide: ScrollService,
+          useFactory: createScrollService,
+          deps: [DOCUMENT, PlatformLocation, ViewportScroller, Location],
+        },
         { provide: Location, useClass: SpyLocation },
         { provide: DOCUMENT, useClass: MockDocument },
         { provide: PlatformLocation, useClass: MockPlatformLocation },
@@ -51,7 +62,10 @@ describe('ScrollService', () => {
     spyOn(window, 'scrollBy');
   });
 
-  afterEach(() => scrollService.ngOnDestroy());
+  afterEach(() => {
+    scrollServiceInstances.forEach(instance => instance.ngOnDestroy());
+    window.sessionStorage.clear();
+  });
 
   it('should debounce `updateScrollPositonInHistory()`', fakeAsync(() => {
     const updateScrollPositionInHistorySpy = spyOn(scrollService, 'updateScrollPositionInHistory');
@@ -67,31 +81,36 @@ describe('ScrollService', () => {
     expect(updateScrollPositionInHistorySpy).toHaveBeenCalledTimes(1);
   }));
 
-  it('should stop updating scroll position once destroyed', fakeAsync(() => {
-    const updateScrollPositionInHistorySpy = spyOn(scrollService, 'updateScrollPositionInHistory');
-
-    window.dispatchEvent(new Event('scroll'));
-    tick(250);
-    expect(updateScrollPositionInHistorySpy).toHaveBeenCalledTimes(1);
-
-    window.dispatchEvent(new Event('scroll'));
-    tick(250);
-    expect(updateScrollPositionInHistorySpy).toHaveBeenCalledTimes(2);
-
-    updateScrollPositionInHistorySpy.calls.reset();
-    scrollService.ngOnDestroy();
-
-    window.dispatchEvent(new Event('scroll'));
-    tick(250);
-    expect(updateScrollPositionInHistorySpy).not.toHaveBeenCalled();
-  }));
-
   it('should set `scrollRestoration` to `manual` if supported', () => {
     if (scrollService.supportManualScrollRestoration) {
       expect(window.history.scrollRestoration).toBe('manual');
     } else {
       expect(window.history.scrollRestoration).toBeUndefined();
     }
+  });
+
+  it('should not break when cookies are disabled in the browser', () => {
+    expect(() => {
+      const originalSessionStorage = Object.getOwnPropertyDescriptor(window, 'sessionStorage')!;
+
+      try {
+        // Simulate `window.sessionStorage` being inaccessible, when cookies are disabled.
+        Object.defineProperty(window, 'sessionStorage', {
+          get() { throw new Error('The operation is insecure'); },
+        });
+
+        const platformLoc = platformLocation as PlatformLocation;
+        const service = createScrollService(document, platformLoc, viewportScrollerStub, location);
+
+        service.updateScrollLocationHref();
+        expect(service.getStoredScrollLocationHref()).toBeNull();
+
+        service.removeStoredScrollInfo();
+        expect(service.getStoredScrollPosition()).toBeNull();
+      } finally {
+        Object.defineProperty(window, 'sessionStorage', originalSessionStorage);
+      }
+    }).not.toThrow();
   });
 
   describe('#topOffset', () => {
@@ -405,5 +424,59 @@ describe('ScrollService', () => {
       expect(scrollSpy).not.toHaveBeenCalled();
       expect(scrollToTopSpy).not.toHaveBeenCalled();
     }));
+  });
+
+  describe('once destroyed', () => {
+    it('should stop updating scroll position', fakeAsync(() => {
+      const updateScrollPositionInHistorySpy =
+          spyOn(scrollService, 'updateScrollPositionInHistory');
+
+      window.dispatchEvent(new Event('scroll'));
+      tick(250);
+      expect(updateScrollPositionInHistorySpy).toHaveBeenCalledTimes(1);
+
+      window.dispatchEvent(new Event('scroll'));
+      tick(250);
+      expect(updateScrollPositionInHistorySpy).toHaveBeenCalledTimes(2);
+
+      updateScrollPositionInHistorySpy.calls.reset();
+      scrollService.ngOnDestroy();
+
+      window.dispatchEvent(new Event('scroll'));
+      tick(250);
+      expect(updateScrollPositionInHistorySpy).not.toHaveBeenCalled();
+    }));
+
+    it('should stop updating the stored location href', () => {
+      const updateScrollLocationHrefSpy = spyOn(scrollService, 'updateScrollLocationHref');
+
+      window.dispatchEvent(new Event('beforeunload'));
+      expect(updateScrollLocationHrefSpy).toHaveBeenCalledTimes(1);
+
+      window.dispatchEvent(new Event('beforeunload'));
+      expect(updateScrollLocationHrefSpy).toHaveBeenCalledTimes(2);
+
+      updateScrollLocationHrefSpy.calls.reset();
+      scrollService.ngOnDestroy();
+
+      window.dispatchEvent(new Event('beforeunload'));
+      expect(updateScrollLocationHrefSpy).not.toHaveBeenCalled();
+    });
+
+    it('should stop scrolling on `hashchange` events', () => {
+      const scrollToPositionSpy = spyOn(scrollService, 'scrollToPosition');
+
+      location.simulateHashChange('foo');
+      expect(scrollToPositionSpy).toHaveBeenCalledTimes(1);
+
+      location.simulateHashChange('bar');
+      expect(scrollToPositionSpy).toHaveBeenCalledTimes(2);
+
+      scrollToPositionSpy.calls.reset();
+      scrollService.ngOnDestroy();
+
+      location.simulateHashChange('baz');
+      expect(scrollToPositionSpy).not.toHaveBeenCalled();
+    });
   });
 });

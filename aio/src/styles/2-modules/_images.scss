@@ -32,7 +32,7 @@
     }
   }
 
-  figure {
+  .lightbox {
     margin: 0;
     margin-top: 14px;
     margin-bottom: 14px;
@@ -45,24 +45,19 @@
     justify-content: center;
     box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, .2);
     margin: 16px 0;
+    background-color: $lightboxgray;
+    width: 100%;
+    display: flex;
+    justify-content: center;
 
-    &.lightbox {
-      background-color: $lightboxgray;
-      width: 100%;
-      display: flex;
-      justify-content: center;
-    }
-
-    div.card {
+    img {
+      max-width: 100%;
+      height: auto;
+      padding: 8px;
+      margin: auto;
       box-shadow: 0 2px 2px rgba(10, 16, 20, 0.24), 0 0 2px rgba(10, 16, 20, 0.12);
       border-radius: 4px;
-      padding: 8px;
       background-color: $white;
-
-      img {
-        max-width: 100%;
-        height: auto;
-      }
     }
   }
 }

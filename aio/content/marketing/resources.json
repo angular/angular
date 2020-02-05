@@ -110,6 +110,12 @@
       "Data Libraries": {
         "order": 3,
         "resources": {
+          "rx-web":{
+            "desc":"RxWeb Reactive Form Validators provides all types of complex, conditional, cross field, and dynamic validation on validator-based reactive forms, model-based reactive forms, and template driven forms.",
+            "rev": true,
+            "title": "RxWeb Reactive Form Validators",
+            "url": "https://www.rxweb.io"
+          },
           "-KLIzHDRfiB3d7W7vk-e": {
             "desc": "Reactive Extensions for Angular",
             "rev": true,
@@ -189,7 +195,7 @@
             "url": "https://www.genuitec.com/products/angular-ide"
           },
           "amexio-canvas": {
-             "desc": "Amexio Canvas is Drag and Drop Environment to create Fully Responsive Web and Smart Device HTML5/Angular Apps. Code will be auto generated and hot deployed by the Canvas for live testing. Out of the box 50+ Material Design Theme support. Commit your code to GitHub public or private repository.",
+            "desc": "Amexio Canvas is Drag and Drop Environment to create Fully Responsive Web and Smart Device HTML5/Angular Apps. Code will be auto generated and hot deployed by the Canvas for live testing. Out of the box 50+ Material Design Theme support. Commit your code to GitHub public or private repository.",
             "rev": true,
             "title": "Amexio Canvas Web Based Drag and Drop IDE by MetaMagic",
             "url": "https://amexio.tech/"
@@ -272,7 +278,7 @@
       "UI Components": {
         "order": 4,
         "resources": {
-           "AngularUIToolkit": {
+          "AngularUIToolkit": {
             "desc": "Angular UI Toolkit: 115 professionally maintained UI components ranging from a robust grid to charts and more. Try for free & build Angular apps faster.",
             "rev": true,
             "title": "Angular UI Toolkit",
@@ -395,6 +401,12 @@
             "title": "ag-Grid",
             "url": "https://www.ag-grid.com/best-angular-2-data-grid/"
           },
+          "angular-slickgrid": {
+            "desc": "Angular-SlickGrid is a wrapper of the lightning fast & customizable SlickGrid datagrid library with Bootstrap 3,4 themes",
+            "rev": true,
+            "title": "Angular-Slickgrid",
+            "url": "https://github.com/ghiscoding/Angular-Slickgrid"
+          },
           "fancygrid": {
             "desc": "Angular grid library with charts integration and server communication for Enterprise.",
             "rev": true,
@@ -414,7 +426,7 @@
             "url": "https://www.jqwidgets.com/angular/"
           },
           "amexio": {
-            "desc": "Amexio (Angular MetaMagic EXtensions for Inputs and Outputs)  is a rich set of Angular components powered by Bootstrap for Responsive Design. UI Components include Standard Form Components, Data Grids, Tree Grids, Tabs etc. Open Source (Apache 2 License) & Free and backed by MetaMagic Global Inc",
+            "desc": "Amexio is a rich set of Angular components powered by HTML5 & CSS3 for Responsive Web Design and 80+ built-in Material Design Themes. Amexio has 3 Editions, Standard, Enterprise and Creative. Std Edition consists of basic UI Components which include Grid, Tabs, Form Inputs and so on. While Enterprise Edition consists of components like Calendar, Tree Tabs, Social Media Logins (Facebook, GitHub, Twitter and so on) and Creative Edition is focused building elegant and beautiful websites. With more than 200+ components/features. All the editions are open-sourced and free, based on Apache 2 License.",
             "rev": true,
             "title": "Amexio - Angular Extensions",
             "url": "http://www.amexio.tech/",
@@ -471,10 +483,10 @@
             "url": "https://angular.carbondesignsystem.com/"
           },
           "jigsaw": {
-            "desc": "Jigsaw provides a set of web components based on Angular. It is supporting the development of all applications of Big Data Product of ZTE (http://www.zte.com.cn).",
+            "desc": "Jigsaw provides a set of web components based on Angular. It is supporting the development of all applications of Big Data Product of ZTE (https://www.zte.com.cn).",
             "rev": true,
             "title": "Awade Jigsaw (Chinese)",
-            "url": "http://rdk.zte.com.cn/components"
+            "url": "https://jigsaw-zte.gitee.io"
           }
         }
       }
@@ -554,12 +566,24 @@
             "rev": true,
             "title": "Architecting Angular Applications with NGRX",
             "url": "https://www.packtpub.com/web-development/architecting-angular-applications-redux"
+          },
+          "dwa": {
+            "desc": "Practical journey with Angular framework, ES6, TypeScript, webpack and Angular CLI.",
+            "rev": true,
+            "title": "Developing with Angular",
+            "url": "https://leanpub.com/developing-with-angular"
           }
         }
       },
       "Online Training": {
         "order": 3,
         "resources": {
+          "angular-dyma": {
+            "desc": "Learn Angular and all its ecosystem (Material, Flex-layout, Ngrx and more) from scratch.",
+            "rev": true,
+            "title": "Dyma (French)",
+            "url": "https://dyma.fr/angular"
+          },
           "-KLIBoTWXMiBcvG0dAM6": {
             "desc": "This course introduces you to the essentials of this \"superheroic\" framework, including declarative templates, two-way data binding, and dependency injection.",
             "rev": true,

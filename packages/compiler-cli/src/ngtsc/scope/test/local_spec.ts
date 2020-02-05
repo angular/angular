@@ -13,7 +13,7 @@ import {CompoundMetadataRegistry, DirectiveMeta, LocalMetadataRegistry, Metadata
 import {ClassDeclaration} from '../../reflection';
 import {ScopeData} from '../src/api';
 import {DtsModuleScopeResolver} from '../src/dependency';
-import {LocalModuleScopeRegistry} from '../src/local';
+import {LocalModuleScope, LocalModuleScopeRegistry} from '../src/local';
 
 function registerFakeRefs(registry: MetadataRegistry):
     {[name: string]: Reference<ClassDeclaration>} {
@@ -53,9 +53,10 @@ describe('LocalModuleScopeRegistry', () => {
       declarations: [Dir1, Dir2, Pipe1],
       exports: [Dir1, Pipe1],
       schemas: [],
+      rawDeclarations: null,
     });
 
-    const scope = scopeRegistry.getScopeOfModule(Module.node) !;
+    const scope = scopeRegistry.getScopeOfModule(Module.node) as LocalModuleScope;
     expect(scopeToRefs(scope.compilation)).toEqual([Dir1, Dir2, Pipe1]);
     expect(scopeToRefs(scope.exported)).toEqual([Dir1, Pipe1]);
   });
@@ -69,6 +70,7 @@ describe('LocalModuleScopeRegistry', () => {
       declarations: [DirA],
       exports: [],
       schemas: [],
+      rawDeclarations: null,
     });
     metaRegistry.registerNgModuleMetadata({
       ref: new Reference(ModuleB.node),
@@ -76,6 +78,7 @@ describe('LocalModuleScopeRegistry', () => {
       declarations: [DirB],
       imports: [],
       schemas: [],
+      rawDeclarations: null,
     });
     metaRegistry.registerNgModuleMetadata({
       ref: new Reference(ModuleC.node),
@@ -83,9 +86,10 @@ describe('LocalModuleScopeRegistry', () => {
       exports: [DirCE],
       imports: [],
       schemas: [],
+      rawDeclarations: null,
     });
 
-    const scopeA = scopeRegistry.getScopeOfModule(ModuleA.node) !;
+    const scopeA = scopeRegistry.getScopeOfModule(ModuleA.node) as LocalModuleScope;
     expect(scopeToRefs(scopeA.compilation)).toEqual([DirA, DirB, DirCE]);
     expect(scopeToRefs(scopeA.exported)).toEqual([]);
   });
@@ -99,6 +103,7 @@ describe('LocalModuleScopeRegistry', () => {
       imports: [],
       declarations: [],
       schemas: [],
+      rawDeclarations: null,
     });
     metaRegistry.registerNgModuleMetadata({
       ref: new Reference(ModuleB.node),
@@ -106,9 +111,10 @@ describe('LocalModuleScopeRegistry', () => {
       exports: [Dir],
       imports: [],
       schemas: [],
+      rawDeclarations: null,
     });
 
-    const scopeA = scopeRegistry.getScopeOfModule(ModuleA.node) !;
+    const scopeA = scopeRegistry.getScopeOfModule(ModuleA.node) as LocalModuleScope;
     expect(scopeToRefs(scopeA.compilation)).toEqual([]);
     expect(scopeToRefs(scopeA.exported)).toEqual([Dir]);
   });
@@ -122,6 +128,7 @@ describe('LocalModuleScopeRegistry', () => {
       imports: [ModuleB, ModuleC],
       exports: [DirA, DirA, DirB, ModuleB],
       schemas: [],
+      rawDeclarations: null,
     });
     metaRegistry.registerNgModuleMetadata({
       ref: new Reference(ModuleB.node),
@@ -129,6 +136,7 @@ describe('LocalModuleScopeRegistry', () => {
       imports: [],
       exports: [DirB],
       schemas: [],
+      rawDeclarations: null,
     });
     metaRegistry.registerNgModuleMetadata({
       ref: new Reference(ModuleC.node),
@@ -136,9 +144,10 @@ describe('LocalModuleScopeRegistry', () => {
       imports: [],
       exports: [ModuleB],
       schemas: [],
+      rawDeclarations: null,
     });
 
-    const scope = scopeRegistry.getScopeOfModule(ModuleA.node) !;
+    const scope = scopeRegistry.getScopeOfModule(ModuleA.node) as LocalModuleScope;
     expect(scopeToRefs(scope.compilation)).toEqual([DirA, DirB]);
     expect(scopeToRefs(scope.exported)).toEqual([DirA, DirB]);
   });
@@ -159,9 +168,10 @@ describe('LocalModuleScopeRegistry', () => {
       imports: [],
       declarations: [DirInModule],
       schemas: [],
+      rawDeclarations: null,
     });
 
-    const scope = scopeRegistry.getScopeOfModule(Module.node) !;
+    const scope = scopeRegistry.getScopeOfModule(Module.node) as LocalModuleScope;
     expect(scope.compilation.directives[0].ref.getIdentityIn(idSf)).toBe(id);
   });
 
@@ -174,6 +184,7 @@ describe('LocalModuleScopeRegistry', () => {
       imports: [ModuleB],
       declarations: [],
       schemas: [],
+      rawDeclarations: null,
     });
     metaRegistry.registerNgModuleMetadata({
       ref: new Reference(ModuleB.node),
@@ -181,9 +192,10 @@ describe('LocalModuleScopeRegistry', () => {
       exports: [Dir],
       imports: [],
       schemas: [],
+      rawDeclarations: null,
     });
 
-    const scopeA = scopeRegistry.getScopeOfModule(ModuleA.node) !;
+    const scopeA = scopeRegistry.getScopeOfModule(ModuleA.node) as LocalModuleScope;
     expect(scopeToRefs(scopeA.exported)).toEqual([Dir]);
   });
 
@@ -196,6 +208,7 @@ describe('LocalModuleScopeRegistry', () => {
       imports: [],
       declarations: [],
       schemas: [],
+      rawDeclarations: null,
     });
     metaRegistry.registerNgModuleMetadata({
       ref: new Reference(ModuleB.node),
@@ -203,9 +216,10 @@ describe('LocalModuleScopeRegistry', () => {
       exports: [Dir],
       imports: [],
       schemas: [],
+      rawDeclarations: null,
     });
 
-    expect(scopeRegistry.getScopeOfModule(ModuleA.node)).toBe(null);
+    expect(scopeRegistry.getScopeOfModule(ModuleA.node)).toBe('error');
 
     // ModuleA should have associated diagnostics as it exports `Dir` without declaring it.
     expect(scopeRegistry.getDiagnosticsOfModule(ModuleA.node)).not.toBeNull();
@@ -228,6 +242,7 @@ function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
     queries: [],
     hasNgTemplateContextGuard: false,
     ngTemplateGuards: [],
+    coercedInputFields: new Set<string>(),
     baseClass: null,
   };
 }

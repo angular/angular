@@ -52,6 +52,17 @@ if (require.main === module) {
                 'The Angular CLI does this already, so it is safe to use this option if the project is being built via the CLI.',
             type: 'boolean',
           })
+          .option('legacy-message-ids', {
+            describe: 'Render `$localize` messages with legacy format ids.\n' +
+                'The default value is `true`. Only set this to `false` if you do not want legacy message ids to\n' +
+                'be rendered. For example, if you are not using legacy message ids in your translation files\n' +
+                'AND are not doing compile-time inlining of translations, in which case the extra message ids\n' +
+                'would add unwanted size to the final source bundle.\n' +
+                'It is safe to leave this set to true if you are doing compile-time inlining because the extra\n' +
+                'legacy message ids will all be stripped during translation.',
+            type: 'boolean',
+            default: true,
+          })
           .option('async', {
             describe:
                 'Whether to compile asynchronously. This is enabled by default as it allows compilations to be parallelized.\n' +
@@ -81,6 +92,7 @@ if (require.main === module) {
   const compileAllFormats = !options['first-only'];
   const createNewEntryPointFormats = options['create-ivy-entry-points'];
   const logLevel = options['l'] as keyof typeof LogLevel | undefined;
+  const enableI18nLegacyMessageIdFormat = options['legacy-message-ids'];
 
   (async() => {
     try {
@@ -93,6 +105,7 @@ if (require.main === module) {
         compileAllFormats,
         createNewEntryPointFormats,
         logger,
+        enableI18nLegacyMessageIdFormat,
         async: options['async'],
       });
 

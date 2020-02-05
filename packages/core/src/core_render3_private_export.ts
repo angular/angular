@@ -18,7 +18,6 @@ export {
   ɵɵattributeInterpolate7,
   ɵɵattributeInterpolate8,
   ɵɵattributeInterpolateV,
-  ɵɵdefineBase,
   ɵɵdefineComponent,
   ɵɵdefineDirective,
   ɵɵdefinePipe,
@@ -34,12 +33,14 @@ export {
   ɵɵdirectiveInject,
   ɵɵinjectAttribute,
   ɵɵinjectPipeChangeDetectorRef,
+  ɵɵinvalidFactory,
   ɵɵgetFactoryOf,
   ɵɵgetInheritedFactory,
   ɵɵsetComponentScope,
   ɵɵsetNgModuleScope,
   ɵɵtemplateRefExtractor,
   ɵɵProvidersFeature,
+  ɵɵCopyDefinitionFeature,
   ɵɵInheritDefinitionFeature,
   ɵɵNgOnChangesFeature,
   LifecycleHooksFeature as ɵLifecycleHooksFeature,
@@ -116,7 +117,6 @@ export {
   ɵɵreference,
   ɵɵenableBindings,
   ɵɵdisableBindings,
-  ɵɵallocHostVars,
   ɵɵelementContainerStart,
   ɵɵelementContainerEnd,
   ɵɵelementContainer,
@@ -143,7 +143,6 @@ export {
   ɵɵstylePropInterpolate8,
   ɵɵstylePropInterpolateV,
   ɵɵclassProp,
-  ɵɵelementHostAttrs,
 
   ɵɵselect,
   ɵɵadvance,
@@ -151,7 +150,6 @@ export {
   ɵɵembeddedViewEnd,
   store as ɵstore,
   ɵɵpipe,
-  ɵɵBaseDef,
   ComponentDef as ɵComponentDef,
   ɵɵComponentDefWithMeta,
   ɵɵFactoryDef,
@@ -225,7 +223,6 @@ export {
   NG_DIR_DEF as ɵNG_DIR_DEF,
   NG_PIPE_DEF as ɵNG_PIPE_DEF,
   NG_MOD_DEF as ɵNG_MOD_DEF,
-  NG_BASE_DEF as ɵNG_BASE_DEF
 } from './render3/fields';
 
 export {
@@ -243,6 +240,10 @@ export {
 export {
   LContext as ɵLContext,
 } from './render3/interfaces/context';
+
+export {
+  setDocument as ɵsetDocument
+} from './render3/interfaces/document';
 
 // we reexport these symbols just so that they are retained during the dead code elimination
 // performed by rollup while it's creating fesm files.

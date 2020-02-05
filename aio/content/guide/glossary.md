@@ -144,6 +144,23 @@ For example, "convert_link_mode".
 * UPPER_UNDERSCORE_CASE (or UPPER_SNAKE_CASE, or SCREAMING_SNAKE_CASE): Traditional for constants (acceptable, but prefer camelCase).
 Upper snake case uses words in all capital letters connected with underscores. For example, "FIX_ME".
 
+{@a change-detection}
+
+## change detection
+
+The mechanism by which the Angular framework synchronizes the state of an application's UI with the state of the data.
+The change detector checks the current state of the data model whenever it runs, and maintains it as the previous state to compare on the next iteration.
+
+As the application logic updates component data, values that are bound to DOM properties in the view can change.
+The change detector is responsible for updating the view to reflect the current data model.
+Similarly, the user can interact with the UI, causing events that change the state of the data model.
+These events can trigger change detection.
+
+Using the default ("CheckAlways") change-detection strategy, the change detector goes through the [view hierarchy](#view-tree) on each VM turn to check every [data-bound property](#data-binding) in the template. In the first phase, it compares the current state of the dependent data with the previous state, and collects changes.
+In the second phase, it updates the page DOM to reflect any new data values.
+
+If you set the `OnPush` ("CheckOnce") change-detection strategy, the change detector runs only when [explicitly invoked] (api/core/ChangeDetectorRef), or when it is triggered by an `Input` reference change or event handler. This typically improves performance. For more information, see [Optimize Angular's change detection](https://web.dev/faster-angular-change-detection/).
+
 {@a class-decorator}
 
 ## class decorator
@@ -286,6 +303,14 @@ Learn more in [Dependency Injection in Angular](guide/dependency-injection).
 
 A lookup token associated with a dependency [provider](#provider), for use with the [dependency injection](#di) system.
 
+{@a differential-loading}
+
+## differential loading
+
+A build technique that creates two bundles for an application. One smaller bundle is for modern browsers. A second, larger bundle allows the application to run correctly in older browsers (such as IE11) that do not support all modern browser APIs.
+
+For more information, see the [Deployment](guide/deployment#differential-loading) guide.
+
 
 {@a directive}
 {@a directives}
@@ -350,7 +375,7 @@ To learn more, see [Browser Support](guide/browser-support).
 ## element
 
 Angular defines an `ElementRef` class to wrap render-specific native UI elements.
-In most cases, this allows you to use Angular templates and  data binding to access DOM elements
+In most cases, this allows you to use Angular templates and data binding to access DOM elements
 without reference to the native element.
 
 The documentation generally refers to *elements* (`ElementRef` instances), as distinct from  *DOM elements*
@@ -461,6 +486,15 @@ or displayed between element tags, as in this example.
 
 Read more about [interpolation](guide/template-syntax#interpolation) in [Template Syntax](guide/template-syntax).
 
+{@a ivy}
+
+## Ivy
+
+Ivy is the code name for Angular's [next-generation compilation and rendering pipeline](https://blog.angular.io/a-plan-for-version-8-0-and-ivy-b3318dfc19f7).
+With the version 9 release of Angular, the new compiler and runtime instructions are used by default instead of the older compiler and runtime, known as [View Engine](#ve).
+
+See [Angular Ivy](guide/ivy).
+
 
 {@a J}
 
@@ -554,6 +588,14 @@ Compare to [NgModule](#ngmodule).
 
 
 {@a N}
+
+{@a ngcc}
+
+## ngcc
+
+Angular compatability compiler.
+If you build your app using [Ivy](#ivy), but it depends on libraries have not been compiled with Ivy, the CLI uses `ngcc` to automatically update the dependent libraries to use Ivy.
+
 
 {@a ngmodule}
 
@@ -934,11 +976,18 @@ You can change the structure of elements by inserting, moving, or removing neste
 
 View hierarchies can be loaded and unloaded dynamically as the user navigates through the application, typically under the control of a [router](#router).
 
+{@a ve}
+
+## View Engine
+
+The compilation and rendering pipeline used by Angular before version 9. Compare [Ivy](#ivy).
+
+
 {@a view-tree}
 
 ## view hierarchy
 
-A tree of related views that can be acted on as a unit. The root view is a component's *host view*.  A host view can be the root of a tree of *embedded views*, collected in a *view container* (`ViewContainerRef`) attached to an anchor element in the hosting component. The view hierarchy is a key part of Angular change detection.
+A tree of related views that can be acted on as a unit. The root view is a component's *host view*. A host view can be the root of a tree of *embedded views*, collected in a *view container* (`ViewContainerRef`) attached to an anchor element in the hosting component. The view hierarchy is a key part of Angular [change detection](#change-detection).
 
 The view hierarchy doesn't imply a component hierarchy. Views that are embedded in the context of a particular hierarchy can be host views of other components. Those components can be in the same NgModule as the hosting component, or belong to other NgModules.
 

@@ -5,10 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {StylingMapArray, TStylingContext} from '../interfaces/styling';
+import {KeyValueArray} from '../../util/array_utils';
+import {TStylingRange} from '../interfaces/styling';
+
+import {DirectiveDef} from './definition';
 import {CssSelector} from './projection';
 import {RNode} from './renderer';
 import {LView, TView} from './view';
+
 
 
 /**
@@ -45,38 +49,38 @@ export const enum TNodeType {
  * Corresponds to the TNode.flags property.
  */
 export const enum TNodeFlags {
-  /** This bit is set if the node is a host for any directive (including a component) */
-  isDirectiveHost = 0b000000001,
+  /** Bit #1 - This bit is set if the node is a host for any directive (including a component) */
+  isDirectiveHost = 0x1,
 
   /**
-   * This bit is set if the node is a host for a component. Setting this bit implies that the
-   * isDirectiveHost bit is set as well. */
-  isComponentHost = 0b000000010,
+   * Bit #2 - This bit is set if the node is a host for a component.
+   *
+   * Setting this bit implies that the `isDirectiveHost` bit is set as well.
+   * */
+  isComponentHost = 0x2,
 
-  /** This bit is set if the node has been projected */
-  isProjected = 0b000000100,
+  /** Bit #3 - This bit is set if the node has been projected */
+  isProjected = 0x4,
 
-  /** This bit is set if any directive on this node has content queries */
-  hasContentQuery = 0b000001000,
+  /** Bit #4 - This bit is set if any directive on this node has content queries */
+  hasContentQuery = 0x8,
 
-  /** This bit is set if the node has any "class" inputs */
-  hasClassInput = 0b000010000,
+  /** Bit #5 - This bit is set if the node has any "class" inputs */
+  hasClassInput = 0x10,
 
-  /** This bit is set if the node has any "style" inputs */
-  hasStyleInput = 0b000100000,
+  /** Bit #6 - This bit is set if the node has any "style" inputs */
+  hasStyleInput = 0x20,
 
-  /** This bit is set if the node has initial styling */
-  hasInitialStyling = 0b001000000,
-
-  /** This bit is set if the node has been detached by i18n */
-  isDetached = 0b010000000,
+  /** Bit #7 This bit is set if the node has been detached by i18n */
+  isDetached = 0x40,
 
   /**
-   * This bit is set if the node has directives with host bindings. This flags allows us to guard
-   * host-binding logic and invoke it only on nodes that actually have directives with host
-   * bindings.
+   * Bit #8 - This bit is set if the node has directives with host bindings.
+   *
+   * This flags allows us to guard host-binding logic and invoke it only on nodes
+   * that actually have directives with host bindings.
    */
-  hasHostBindings = 0b100000000,
+  hasHostBindings = 0x80,
 }
 
 /**
@@ -96,6 +100,15 @@ export const enum TNodeProviderIndexes {
  * items are not regular attributes and the processing should be adapted accordingly.
  */
 export const enum AttributeMarker {
+  /**
+   * An implicit marker which indicates that the value in the array are of `attributeKey`,
+   * `attributeValue` format.
+   *
+   * NOTE: This is implicit as it is the type when no marker is present in array. We indicate that
+   * it should not be present at runtime by the negative number.
+   */
+  ImplicitAttributes = -1,
+
   /**
    * Marker indicates that the following 3 values in the attributes array are:
    * namespaceUri, attributeName, attributeValue
@@ -225,6 +238,13 @@ export const enum AttributeMarker {
 export type TAttributes = (string | AttributeMarker | CssSelector)[];
 
 /**
+ * Constants that are associated with a view. Includes:
+ * - Attribute arrays.
+ * - Local definition arrays.
+ */
+export type TConstants = (TAttributes | string)[];
+
+/**
  * Binding data (flyweight) for a particular node that is shared between all templates
  * of a specific type.
  *
@@ -275,6 +295,24 @@ export interface TNode {
   directiveEnd: number;
 
   /**
+   * Stores the last directive which had a styling instruction.
+   *
+   * Initial value of this is `-1` which means that no `hostBindings` styling instruction has
+   * executed. As `hostBindings` instructions execute they set the value to the index of the
+   * `DirectiveDef` which contained the last `hostBindings` styling instruction.
+   *
+   * Valid values are:
+   * - `-1` No `hostBindings` instruction has executed.
+   * - `directiveStart <= directiveStylingLast < directiveEnd`: Points to the `DirectiveDef` of the
+   *   last styling instruction which executed in the `hostBindings`.
+   *
+   * This data is needed so that styling instructions know which static styling data needs to be
+   * collected from the `DirectiveDef.hostAttrs`. A styling instruction needs to collect all data
+   * since last styling instruction.
+   */
+  directiveStylingLast: number;
+
+  /**
    * Stores indexes of property bindings. This field is only set in the ngDevMode and holds indexes
    * of property bindings so TestBed can get bound property metadata for a given node.
    */
@@ -314,6 +352,19 @@ export interface TNode {
   attrs: TAttributes|null;
 
   /**
+   * Same as `TNode.attrs` but contains merged data across all directive host bindings.
+   *
+   * We need to keep `attrs` as unmerged so that it can be used for attribute selectors.
+   * We merge attrs here so that it can be used in a performant way for initial rendering.
+   *
+   * The `attrs` are merged in first pass in following order:
+   * - Component's `hostAttrs`
+   * - Directives' `hostAttrs`
+   * - Template `TNode.attrs` associated with the current `TNode`.
+   */
+  mergedAttrs: TAttributes|null;
+
+  /**
    * A set of local names under which a given element is exported in a template and
    * visible to queries. An entry in this array can be created for different reasons:
    * - an element itself is referenced, ex.: `<div #foo>`
@@ -336,20 +387,16 @@ export interface TNode {
   initialInputs: InitialInputData|null|undefined;
 
   /**
-   * Input data for all directives on this node.
-   *
-   * - `undefined` means that the prop has not been initialized yet,
-   * - `null` means that the prop has been initialized but no inputs have been found.
+   * Input data for all directives on this node. `null` means that there are no directives with
+   * inputs on this node.
    */
-  inputs: PropertyAliases|null|undefined;
+  inputs: PropertyAliases|null;
 
   /**
-   * Output data for all directives on this node.
-   *
-   * - `undefined` means that the prop has not been initialized yet,
-   * - `null` means that the prop has been initialized but no outputs have been found.
+   * Output data for all directives on this node. `null` means that there are no directives with
+   * outputs on this node.
    */
-  outputs: PropertyAliases|null|undefined;
+  outputs: PropertyAliases|null;
 
   /**
    * The TView or TViews attached to this node.
@@ -453,44 +500,92 @@ export interface TNode {
   projection: (TNode|RNode[])[]|number|null;
 
   /**
-   * A collection of all style bindings and/or static style values for an element.
+   * A collection of all style static values for an element.
    *
    * This field will be populated if and when:
    *
    * - There are one or more initial styles on an element (e.g. `<div style="width:200px">`)
-   * - There are one or more style bindings on an element (e.g. `<div [style.width]="w">`)
-   *
-   * If and when there are only initial styles (no bindings) then an instance of `StylingMapArray`
-   * will be used here. Otherwise an instance of `TStylingContext` will be created when there
-   * are one or more style bindings on an element.
-   *
-   * During element creation this value is likely to be populated with an instance of
-   * `StylingMapArray` and only when the bindings are evaluated (which happens during
-   * update mode) then it will be converted to a `TStylingContext` if any style bindings
-   * are encountered. If and when this happens then the existing `StylingMapArray` value
-   * will be placed into the initial styling slot in the newly created `TStylingContext`.
    */
-  styles: StylingMapArray|TStylingContext|null;
+  styles: string|null;
 
   /**
-   * A collection of all class bindings and/or static class values for an element.
+   * A `KeyValueArray` version of residual `styles`.
+   *
+   * When there are styling instructions than each instruction stores the static styling
+   * which is of lower priority than itself. This means that there may be a higher priority styling
+   * than the instruction.
+   *
+   * Imagine:
+   * ```
+   * <div style="color: highest;" my-dir>
+   *
+   * @Directive({
+   *   host: {
+   *     style: 'color: lowest; ',
+   *     '[styles.color]': 'exp' // ɵɵstyleProp('color', ctx.exp);
+   *   }
+   * })
+   * ```
+   *
+   * In the above case:
+   * - `color: lowest` is stored with `ɵɵstyleProp('color', ctx.exp);` instruction
+   * -  `color: highest` is the residual and is stored here.
+   *
+   * - `undefined': not initialized.
+   * - `null`: initialized but `styles` is `null`
+   * - `KeyValueArray`: parsed version of `styles`.
+   */
+  residualStyles: KeyValueArray<any>|undefined|null;
+
+  /**
+   * A collection of all class static values for an element.
    *
    * This field will be populated if and when:
    *
    * - There are one or more initial classes on an element (e.g. `<div class="one two three">`)
-   * - There are one or more class bindings on an element (e.g. `<div [class.foo]="f">`)
-   *
-   * If and when there are only initial classes (no bindings) then an instance of `StylingMapArray`
-   * will be used here. Otherwise an instance of `TStylingContext` will be created when there
-   * are one or more class bindings on an element.
-   *
-   * During element creation this value is likely to be populated with an instance of
-   * `StylingMapArray` and only when the bindings are evaluated (which happens during
-   * update mode) then it will be converted to a `TStylingContext` if any class bindings
-   * are encountered. If and when this happens then the existing `StylingMapArray` value
-   * will be placed into the initial styling slot in the newly created `TStylingContext`.
    */
-  classes: StylingMapArray|TStylingContext|null;
+  classes: string|null;
+
+  /**
+   * A `KeyValueArray` version of residual `classes`.
+   *
+   * Same as `TNode.residualStyles` but for classes.
+   *
+   * - `undefined': not initialized.
+   * - `null`: initialized but `classes` is `null`
+   * - `KeyValueArray`: parsed version of `classes`.
+   */
+  residualClasses: KeyValueArray<any>|undefined|null;
+
+  /**
+   * Stores the head/tail index of the class bindings.
+   *
+   * - If no bindings, the head and tail will both be 0.
+   * - If there are template bindings, stores the head/tail of the class bindings in the template.
+   * - If no template bindings but there are host bindings, the head value will point to the last
+   *   host binding for "class" (not the head of the linked list), tail will be 0.
+   *
+   * See: `style_binding_list.ts` for details.
+   *
+   * This is used by `insertTStylingBinding` to know where the next styling binding should be
+   * inserted so that they can be sorted in priority order.
+   */
+  classBindings: TStylingRange;
+
+  /**
+   * Stores the head/tail index of the class bindings.
+   *
+   * - If no bindings, the head and tail will both be 0.
+   * - If there are template bindings, stores the head/tail of the style bindings in the template.
+   * - If no template bindings but there are host bindings, the head value will point to the last
+   *   host binding for "style" (not the head of the linked list), tail will be 0.
+   *
+   * See: `style_binding_list.ts` for details.
+   *
+   * This is used by `insertTStylingBinding` to know where the next styling binding should be
+   * inserted so that they can be sorted in priority order.
+   */
+  styleBindings: TStylingRange;
 }
 
 /** Static data for an element  */
@@ -603,6 +698,11 @@ export interface TProjectionNode extends TNode {
 }
 
 /**
+ * A union type representing all TNode types that can host a directive.
+ */
+export type TDirectiveHostNode = TElementNode | TContainerNode | TElementContainerNode;
+
+/**
  * This mapping is necessary so we can set input properties and output listeners
  * properly at runtime when property names are minified or aliased.
  *
@@ -621,10 +721,9 @@ export type PropertyAliases = {
  * Store the runtime input or output names for all the directives.
  *
  * i+0: directive instance index
- * i+1: publicName
- * i+2: privateName
+ * i+1: privateName
  *
- * e.g. [0, 'change', 'change-minified']
+ * e.g. [0, 'change-minified']
  */
 export type PropertyAliasValue = (number | string)[];
 
@@ -676,3 +775,53 @@ export type TNodeWithLocalRefs = TContainerNode | TElementNode | TElementContain
  * - `<ng-template #tplRef>` - `tplRef` should point to the `TemplateRef` instance;
  */
 export type LocalRefExtractor = (tNode: TNodeWithLocalRefs, currentView: LView) => any;
+
+/**
+ * Returns `true` if the `TNode` has a directive which has `@Input()` for `class` binding.
+ *
+ * ```
+ * <div my-dir [class]="exp"></div>
+ * ```
+ * and
+ * ```
+ * @Directive({
+ * })
+ * class MyDirective {
+ *   @Input()
+ *   class: string;
+ * }
+ * ```
+ *
+ * In the above case it is necessary to write the reconciled styling information into the
+ * directive's input.
+ *
+ * @param tNode
+ */
+export function hasClassInput(tNode: TNode) {
+  return (tNode.flags & TNodeFlags.hasClassInput) !== 0;
+}
+
+/**
+ * Returns `true` if the `TNode` has a directive which has `@Input()` for `style` binding.
+ *
+ * ```
+ * <div my-dir [style]="exp"></div>
+ * ```
+ * and
+ * ```
+ * @Directive({
+ * })
+ * class MyDirective {
+ *   @Input()
+ *   class: string;
+ * }
+ * ```
+ *
+ * In the above case it is necessary to write the reconciled styling information into the
+ * directive's input.
+ *
+ * @param tNode
+ */
+export function hasStyleInput(tNode: TNode) {
+  return (tNode.flags & TNodeFlags.hasStyleInput) !== 0;
+}

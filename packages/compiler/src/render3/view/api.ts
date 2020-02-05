@@ -12,6 +12,7 @@ import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
 import * as t from '../r3_ast';
 import {R3DependencyMetadata} from '../r3_factory';
+import {R3Reference} from '../util';
 
 
 /**
@@ -26,7 +27,16 @@ export interface R3DirectiveMetadata {
   /**
    * An expression representing a reference to the directive itself.
    */
-  type: o.Expression;
+  type: R3Reference;
+
+  /**
+   * An expression representing a reference to the directive being compiled, intended for use within
+   * a class definition itself.
+   *
+   * This can differ from the outer `type` if the class is being compiled by ngcc and is inside
+   * an IIFE structure that uses a different name internally.
+   */
+  internalType: o.Expression;
 
   /**
    * Number of generic type parameters of the type itself.
@@ -41,7 +51,7 @@ export interface R3DirectiveMetadata {
   /**
    * Dependencies of the directive's constructor.
    */
-  deps: R3DependencyMetadata[]|null;
+  deps: R3DependencyMetadata[]|'invalid'|null;
 
   /**
    * Unparsed selector of the directive, or `null` if there was no selector.
@@ -89,6 +99,11 @@ export interface R3DirectiveMetadata {
    * Whether or not the component or directive inherits from another class
    */
   usesInheritance: boolean;
+
+  /**
+   * Whether or not the component or directive inherits its entire decorator from its base class.
+   */
+  fullInheritance: boolean;
 
   /**
    * Reference name under which to export the directive's type in a template,

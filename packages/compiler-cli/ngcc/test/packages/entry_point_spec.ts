@@ -184,6 +184,26 @@ runInEachFileSystem(() => {
       expect(entryPoint).toBe(null);
     });
 
+    it('should return null if the typings or types field is not a string in the package.json',
+       () => {
+         loadTestFiles([
+           {
+             name: _('/project/node_modules/some_package/typings_array/package.json'),
+             contents: createPackageJson('typings_array', {typingsIsArray: true})
+           },
+           {
+             name: _(
+                 '/project/node_modules/some_package/typings_array/missing_typings.metadata.json'),
+             contents: 'some meta data'
+           },
+         ]);
+         const config = new NgccConfiguration(fs, _('/project'));
+         const entryPoint = getEntryPointInfo(
+             fs, config, new MockLogger(), SOME_PACKAGE,
+             _('/project/node_modules/some_package/typings_array'));
+         expect(entryPoint).toBe(null);
+       });
+
     for (let prop of SUPPORTED_FORMAT_PROPERTIES) {
       // Ignore the UMD format
       if (prop === 'main') continue;
@@ -279,7 +299,7 @@ runInEachFileSystem(() => {
       loadTestFiles([
         {
           name: _('/project/node_modules/some_package/types_rather_than_typings/package.json'),
-          contents: createPackageJson('types_rather_than_typings', {}, 'types')
+          contents: createPackageJson('types_rather_than_typings', {typingsProp: 'types'})
         },
         {
           name: _(
@@ -443,11 +463,12 @@ runInEachFileSystem(() => {
   });
 
   function createPackageJson(
-      packageName: string, {excludes}: {excludes?: string[]} = {},
-      typingsProp: string = 'typings'): string {
+      packageName: string,
+      {excludes, typingsProp = 'typings', typingsIsArray}:
+          {excludes?: string[], typingsProp?: string, typingsIsArray?: boolean} = {}): string {
     const packageJson: any = {
       name: `some_package/${packageName}`,
-      [typingsProp]: `./${packageName}.d.ts`,
+      [typingsProp]: typingsIsArray ? [`./${packageName}.d.ts`] : `./${packageName}.d.ts`,
       fesm2015: `./fesm2015/${packageName}.js`,
       esm2015: `./esm2015/${packageName}.js`,
       es2015: `./es2015/${packageName}.js`,

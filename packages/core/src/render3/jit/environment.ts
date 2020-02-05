@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵɵinject} from '../../di/injector_compatibility';
+import {ɵɵinject, ɵɵinvalidFactoryDep} from '../../di/injector_compatibility';
 import {ɵɵdefineInjectable, ɵɵdefineInjector} from '../../di/interface/defs';
 import * as sanitization from '../../sanitization/sanitization';
 import * as r3 from '../index';
@@ -30,7 +30,6 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵattributeInterpolate7': r3.ɵɵattributeInterpolate7,
        'ɵɵattributeInterpolate8': r3.ɵɵattributeInterpolate8,
        'ɵɵattributeInterpolateV': r3.ɵɵattributeInterpolateV,
-       'ɵɵdefineBase': r3.ɵɵdefineBase,
        'ɵɵdefineComponent': r3.ɵɵdefineComponent,
        'ɵɵdefineDirective': r3.ɵɵdefineDirective,
        'ɵɵdefineInjectable': ɵɵdefineInjectable,
@@ -42,10 +41,13 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵgetInheritedFactory': r3.ɵɵgetInheritedFactory,
        'ɵɵinject': ɵɵinject,
        'ɵɵinjectAttribute': r3.ɵɵinjectAttribute,
+       'ɵɵinvalidFactory': r3.ɵɵinvalidFactory,
+       'ɵɵinvalidFactoryDep': ɵɵinvalidFactoryDep,
        'ɵɵinjectPipeChangeDetectorRef': r3.ɵɵinjectPipeChangeDetectorRef,
        'ɵɵtemplateRefExtractor': r3.ɵɵtemplateRefExtractor,
        'ɵɵNgOnChangesFeature': r3.ɵɵNgOnChangesFeature,
        'ɵɵProvidersFeature': r3.ɵɵProvidersFeature,
+       'ɵɵCopyDefinitionFeature': r3.ɵɵCopyDefinitionFeature,
        'ɵɵInheritDefinitionFeature': r3.ɵɵInheritDefinitionFeature,
        'ɵɵcontainer': r3.ɵɵcontainer,
        'ɵɵnextContext': r3.ɵɵnextContext,
@@ -56,7 +58,6 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵnamespaceSVG': r3.ɵɵnamespaceSVG,
        'ɵɵenableBindings': r3.ɵɵenableBindings,
        'ɵɵdisableBindings': r3.ɵɵdisableBindings,
-       'ɵɵallocHostVars': r3.ɵɵallocHostVars,
        'ɵɵelementStart': r3.ɵɵelementStart,
        'ɵɵelementEnd': r3.ɵɵelementEnd,
        'ɵɵelement': r3.ɵɵelement,
@@ -105,7 +106,6 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵloadQuery': r3.ɵɵloadQuery,
        'ɵɵcontentQuery': r3.ɵɵcontentQuery,
        'ɵɵreference': r3.ɵɵreference,
-       'ɵɵelementHostAttrs': r3.ɵɵelementHostAttrs,
        'ɵɵclassMap': r3.ɵɵclassMap,
        'ɵɵclassMapInterpolate1': r3.ɵɵclassMapInterpolate1,
        'ɵɵclassMapInterpolate2': r3.ɵɵclassMapInterpolate2,

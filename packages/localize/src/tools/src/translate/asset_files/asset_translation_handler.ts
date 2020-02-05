@@ -10,8 +10,6 @@ import {FileUtils} from '../../file_utils';
 import {OutputPathFn} from '../output_path';
 import {TranslationBundle, TranslationHandler} from '../translator';
 
-
-
 /**
  * Translate an asset file by simply copying it to the appropriate translation output paths.
  */

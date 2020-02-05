@@ -12,25 +12,25 @@ import {DynamicValue} from './dynamic';
 import {BuiltinFn, ResolvedValue, ResolvedValueArray} from './result';
 
 export class ArraySliceBuiltinFn extends BuiltinFn {
-  constructor(private node: ts.Node, private lhs: ResolvedValueArray) { super(); }
+  constructor(private lhs: ResolvedValueArray) { super(); }
 
-  evaluate(args: ResolvedValueArray): ResolvedValue {
+  evaluate(node: ts.CallExpression, args: ResolvedValueArray): ResolvedValue {
     if (args.length === 0) {
       return this.lhs;
     } else {
-      return DynamicValue.fromUnknown(this.node);
+      return DynamicValue.fromUnknown(node);
     }
   }
 }
 
 export class ArrayConcatBuiltinFn extends BuiltinFn {
-  constructor(private node: ts.Node, private lhs: ResolvedValueArray) { super(); }
+  constructor(private lhs: ResolvedValueArray) { super(); }
 
-  evaluate(args: ResolvedValueArray): ResolvedValue {
+  evaluate(node: ts.CallExpression, args: ResolvedValueArray): ResolvedValue {
     const result: ResolvedValueArray = [...this.lhs];
     for (const arg of args) {
       if (arg instanceof DynamicValue) {
-        result.push(DynamicValue.fromDynamicInput(this.node, arg));
+        result.push(DynamicValue.fromDynamicInput(node, arg));
       } else if (Array.isArray(arg)) {
         result.push(...arg);
       } else {
@@ -38,5 +38,25 @@ export class ArrayConcatBuiltinFn extends BuiltinFn {
       }
     }
     return result;
+  }
+}
+
+export class ObjectAssignBuiltinFn extends BuiltinFn {
+  evaluate(node: ts.CallExpression, args: ResolvedValueArray): ResolvedValue {
+    if (args.length === 0) {
+      return DynamicValue.fromUnsupportedSyntax(node);
+    }
+    for (const arg of args) {
+      if (arg instanceof DynamicValue) {
+        return DynamicValue.fromDynamicInput(node, arg);
+      } else if (!(arg instanceof Map)) {
+        return DynamicValue.fromUnsupportedSyntax(node);
+      }
+    }
+    const [target, ...sources] = args as Map<string, ResolvedValue>[];
+    for (const source of sources) {
+      source.forEach((value, key) => target.set(key, value));
+    }
+    return target;
   }
 }

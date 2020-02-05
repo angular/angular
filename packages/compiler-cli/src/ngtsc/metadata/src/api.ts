@@ -7,9 +7,11 @@
  */
 
 import {DirectiveMeta as T2DirectiveMeta, SchemaMetadata} from '@angular/compiler';
+import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
+
 
 /**
  * Metadata collected for an `NgModule`.
@@ -20,6 +22,14 @@ export interface NgModuleMeta {
   imports: Reference<ClassDeclaration>[];
   exports: Reference<ClassDeclaration>[];
   schemas: SchemaMetadata[];
+
+  /**
+   * The raw `ts.Expression` which gave rise to `declarations`, if one exists.
+   *
+   * If this is `null`, then either no declarations exist, or no expression was available (likely
+   * because the module came from a .d.ts file).
+   */
+  rawDeclarations: ts.Expression|null;
 }
 
 /**
@@ -28,12 +38,13 @@ export interface NgModuleMeta {
 export interface DirectiveMeta extends T2DirectiveMeta {
   ref: Reference<ClassDeclaration>;
   /**
-   * Unparsed selector of the directive.
+   * Unparsed selector of the directive, or null if the directive does not have a selector.
    */
-  selector: string;
+  selector: string|null;
   queries: string[];
   ngTemplateGuards: TemplateGuardMeta[];
   hasNgTemplateContextGuard: boolean;
+  coercedInputFields: Set<string>;
 
   /**
    * A `Reference` to the base class for the directive, if one was detected.
@@ -76,7 +87,6 @@ export interface PipeMeta {
  * or a registry.
  */
 export interface MetadataReader {
-  isAbstractDirective(node: Reference<ClassDeclaration>): boolean;
   getDirectiveMetadata(node: Reference<ClassDeclaration>): DirectiveMeta|null;
   getNgModuleMetadata(node: Reference<ClassDeclaration>): NgModuleMeta|null;
   getPipeMetadata(node: Reference<ClassDeclaration>): PipeMeta|null;
@@ -86,7 +96,6 @@ export interface MetadataReader {
  * Registers new metadata for directives, pipes, and modules.
  */
 export interface MetadataRegistry {
-  registerAbstractDirective(clazz: ClassDeclaration): void;
   registerDirectiveMetadata(meta: DirectiveMeta): void;
   registerNgModuleMetadata(meta: NgModuleMeta): void;
   registerPipeMetadata(meta: PipeMeta): void;

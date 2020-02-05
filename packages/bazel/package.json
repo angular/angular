@@ -15,7 +15,7 @@
   "bazelBin": {
     "ngc-wrapped": {
       "additionalAttributes": {
-        "configuration_env_vars": "[\"compile\"]"
+        "configuration_env_vars": "[\"angular_ivy_enabled\"]"
       }
     }
   },
@@ -28,15 +28,22 @@
   "dependencies": {
     "@microsoft/api-extractor": "^7.3.9",
     "shelljs": "0.8.2",
-    "tsickle": "^0.37.0"
+    "tsickle": "^0.38.0"
   },
   "peerDependencies": {
     "@angular/compiler-cli": "0.0.0-PLACEHOLDER",
-    "@bazel/typescript": "0.*",
-    "typescript": ">=3.6 <3.7"
+    "@bazel/typescript": ">=1.0.0",
+    "terser": "^4.3.1",
+    "typescript": ">=3.6 <3.8",
+    "rollup": ">=1.20.0",
+    "rollup-plugin-commonjs": ">=9.0.0",
+    "rollup-plugin-node-resolve": ">=4.2.0",
+    "rollup-plugin-sourcemaps": ">=0.4.0"
   },
-  "devDependencies": {
-
+  "peerDependenciesMeta": {
+    "terser": {
+      "optional": true
+    }
   },
   "repository": {
     "type": "git",
@@ -44,7 +51,13 @@
   },
   "builders": "./src/builders/builders.json",
   "schematics": "./src/schematics/collection.json",
+  "ng-add": {
+    "save": "devDependencies"
+  },
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
+  },
+  "publishConfig":{
+    "registry":"https://wombat-dressing-room.appspot.com"
   }
 }

@@ -8,15 +8,15 @@
 
 /**
  * The goal here is to make sure that the browser DOM API is the Renderer.
- * We do this by defining a subset of DOM API to be the renderer and than
- * use that time for rendering.
+ * We do this by defining a subset of DOM API to be the renderer and then
+ * use that at runtime for rendering.
  *
  * At runtime we can then use the DOM api directly, in server or web-worker
  * it will be easy to implement such API.
  */
 
 import {RendererStyleFlags2, RendererType2} from '../../render/api';
-
+import {getDocument} from './document';
 
 // TODO: cleanup once the code is merged in angular/angular
 export enum RendererStyleFlags3 {
@@ -75,7 +75,7 @@ export interface ProceduralRenderer3 {
   appendChild(parent: RElement, newChild: RNode): void;
   insertBefore(parent: RNode, newChild: RNode, refChild: RNode|null): void;
   removeChild(parent: RElement, oldChild: RNode, isHostElement?: boolean): void;
-  selectRootElement(selectorOrNode: string|any): RElement;
+  selectRootElement(selectorOrNode: string|any, preserveContent?: boolean): RElement;
 
   parentNode(node: RNode): RElement|null;
   nextSibling(node: RNode): RNode|null;
@@ -105,7 +105,7 @@ export interface RendererFactory3 {
 
 export const domRendererFactory3: RendererFactory3 = {
   createRenderer: (hostElement: RElement | null, rendererType: RendererType2 | null):
-                      Renderer3 => { return document;}
+                      Renderer3 => { return getDocument();}
 };
 
 /** Subset of API needed for appending elements and text nodes. */
@@ -155,6 +155,7 @@ export interface RElement extends RNode {
   style: RCssStyleDeclaration;
   classList: RDomTokenList;
   className: string;
+  textContent: string|null;
   setAttribute(name: string, value: string): void;
   removeAttribute(name: string): void;
   setAttributeNS(namespaceURI: string, qualifiedName: string, value: string): void;

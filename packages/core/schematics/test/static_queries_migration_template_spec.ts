@@ -100,8 +100,8 @@ describe('static-queries migration with template strategy', () => {
     host.sync.write(normalize(filePath), virtualFs.stringToFileBuffer(contents));
   }
 
-  async function runMigration() {
-    await runner.runSchematicAsync('migration-v8-static-queries', {}, tree).toPromise();
+  function runMigration() {
+    return runner.runSchematicAsync('migration-v8-static-queries', {}, tree).toPromise();
   }
 
   describe('ViewChild', () => {
@@ -533,13 +533,13 @@ describe('static-queries migration with template strategy', () => {
                read?: any;
              }): any;
            }
-         
+
            export declare const ViewChild: ViewChildDecorator;
          `);
 
          writeFile('/index.ts', `
            import {NgModule, Component, ViewChild} from '@angular/core';
-           
+
            @Component({
              template: '<ng-template><p #myRef></p></ng-template>'
            })
@@ -551,7 +551,7 @@ describe('static-queries migration with template strategy', () => {
          writeFile('/my-module.ts', `
            import {NgModule} from '@angular/core';
            import {MyComp} from './index';
-           
+
            @NgModule({declarations: [MyComp]})
            export class MyModule {}
          `);
@@ -568,7 +568,7 @@ describe('static-queries migration with template strategy', () => {
        async() => {
          writeFile('/index.ts', `
            import {NgModule, Component, ViewChild} from '@angular/core';
-           
+
            @Component({
              template: '<p #myRef>{{myVar.hello()}}</p>'
            })
@@ -576,7 +576,7 @@ describe('static-queries migration with template strategy', () => {
              // This causes a type checking exception as the template
              // tries to call a function called "hello()" on this variable.
              myVar: boolean = false;
-             
+
              @ViewChild('myRef') query: any;
            }
          `);
@@ -584,7 +584,7 @@ describe('static-queries migration with template strategy', () => {
          writeFile('/my-module.ts', `
            import {NgModule} from '@angular/core';
            import {MyComp} from './index';
-           
+
            @NgModule({declarations: [MyComp]})
            export class MyModule {}
          `);
@@ -599,7 +599,7 @@ describe('static-queries migration with template strategy', () => {
     it('should notify user if project has syntax errors which can affect analysis', async() => {
       writeFile('/index.ts', `
         import {Component, ViewChild} from '@angular/core';
-        
+
         @Component({
           template: '<p #myRef></p>'
         })
@@ -608,7 +608,7 @@ describe('static-queries migration with template strategy', () => {
         }
       `);
 
-      writeFile('/file-with-syntax-error.ts', `     
+      writeFile('/file-with-syntax-error.ts', `
         export classX ClassWithSyntaxError {
           // ...
         }
@@ -617,7 +617,7 @@ describe('static-queries migration with template strategy', () => {
       writeFile('/my-module.ts', `
         import {NgModule} from '@angular/core';
         import {MyComp} from './index';
-        
+
         @NgModule({declarations: [MyComp]})
         export class MyModule {}
       `);
@@ -716,7 +716,7 @@ describe('static-queries migration with template strategy', () => {
     it('should add a todo if query options cannot be migrated inline', async() => {
       writeFile('/index.ts', `
         import {Component, NgModule, ViewChild} from '@angular/core';
-        
+
         const myOptionsVar = {};
 
         @Component({template: '<p #myRef></p>'})

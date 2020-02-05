@@ -19,6 +19,7 @@ export class ScrollService implements OnDestroy {
   private _topOffset: number | null;
   private _topOfPageElement: Element;
   private onDestroy = new Subject<void>();
+  private storage: Storage;
 
   // The scroll position which has to be restored, after a `popstate` event.
   poppedStateScrollPosition: ScrollPosition | null = null;
@@ -49,6 +50,21 @@ export class ScrollService implements OnDestroy {
       private platformLocation: PlatformLocation,
       private viewportScroller: ViewportScroller,
       private location: Location) {
+    try {
+      this.storage = window.sessionStorage;
+    } catch {
+      // When cookies are disabled in the browser, even trying to access
+      // `window.sessionStorage` throws an error. Use a no-op storage.
+      this.storage = {
+        length: 0,
+        clear: () => undefined,
+        getItem: () => null,
+        key: () => null,
+        removeItem: () => undefined,
+        setItem: () => undefined
+      };
+    }
+
     // On resize, the toolbar might change height, so "invalidate" the top offset.
     fromEvent(window, 'resize')
         .pipe(takeUntil(this.onDestroy))
@@ -62,13 +78,14 @@ export class ScrollService implements OnDestroy {
         .pipe(takeUntil(this.onDestroy))
         .subscribe(() => this.updateScrollLocationHref());
 
-    // Change scroll restoration strategy to `manual` if it's supported
+    // Change scroll restoration strategy to `manual` if it's supported.
     if (this.supportManualScrollRestoration) {
       history.scrollRestoration = 'manual';
-      // we have to detect forward and back navigation thanks to popState event
-      this.location.subscribe((event: ScrollPositionPopStateEvent) => {
-        // the type is `hashchange` when the fragment identifier of the URL has changed. It allows us to go to position
-        // just before a click on an anchor
+
+      // We have to detect forward and back navigation thanks to popState event.
+      const locationSubscription = this.location.subscribe((event: ScrollPositionPopStateEvent) => {
+        // The type is `hashchange` when the fragment identifier of the URL has changed. It allows
+        // us to go to position just before a click on an anchor.
         if (event.type === 'hashchange') {
           this.scrollToPosition();
         } else {
@@ -80,6 +97,8 @@ export class ScrollService implements OnDestroy {
           this.poppedStateScrollPosition = event.state ? event.state.scrollPosition : null;
         }
       });
+
+      this.onDestroy.subscribe(() => locationSubscription.unsubscribe());
     }
 
     // If this was not a reload, discard the stored scroll info.
@@ -180,7 +199,7 @@ export class ScrollService implements OnDestroy {
   }
 
   updateScrollLocationHref(): void {
-    window.sessionStorage.setItem('scrollLocationHref', window.location.href);
+    this.storage.setItem('scrollLocationHref', window.location.href);
   }
 
   /**
@@ -190,17 +209,17 @@ export class ScrollService implements OnDestroy {
     if (this.supportManualScrollRestoration) {
       const currentScrollPosition = this.viewportScroller.getScrollPosition();
       this.location.replaceState(this.location.path(true), undefined, {scrollPosition: currentScrollPosition});
-      window.sessionStorage.setItem('scrollPosition', currentScrollPosition.join(','));
+      this.storage.setItem('scrollPosition', currentScrollPosition.join(','));
     }
   }
 
   getStoredScrollLocationHref(): string | null {
-    const href = window.sessionStorage.getItem('scrollLocationHref');
+    const href = this.storage.getItem('scrollLocationHref');
     return href || null;
   }
 
   getStoredScrollPosition(): ScrollPosition | null {
-    const position = window.sessionStorage.getItem('scrollPosition');
+    const position = this.storage.getItem('scrollPosition');
     if (!position) { return null; }
 
     const [x, y] = position.split(',');
@@ -208,8 +227,8 @@ export class ScrollService implements OnDestroy {
   }
 
   removeStoredScrollInfo() {
-    window.sessionStorage.removeItem('scrollLocationHref');
-    window.sessionStorage.removeItem('scrollPosition');
+    this.storage.removeItem('scrollLocationHref');
+    this.storage.removeItem('scrollPosition');
   }
 
   /**

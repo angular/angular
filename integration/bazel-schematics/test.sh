@@ -32,7 +32,6 @@ function testBazel() {
   rm -rf demo
   # Create project
   ng new demo --collection=@angular/bazel --routing --skip-git --skip-install --style=scss
-  node ./disable-ivy.js
   cd demo
   installLocalPackages
   ng generate component widget --style=css
@@ -53,7 +52,7 @@ function testNonBazel() {
   # disable CLI's version check (if version is 0.0.0, then no version check happens)
   yarn --cwd node_modules/@angular/cli version --new-version 0.0.0 --no-git-tag-version
   # re-add build-angular
-  yarn add --dev @angular-devkit/build-angular@0.900.0-next.11
+  yarn add --dev file:../../../node_modules/@angular-devkit/build-angular
   yarn webdriver-manager update --gecko=false --standalone=false ${CI_CHROMEDRIVER_VERSION_ARG:---versions.chrome 2.45}
   ng build --progress=false
   ng test --progress=false --watch=false

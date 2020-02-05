@@ -1,7 +1,7 @@
-# Angular Documentation Style Guide
+# Angular documentation style guide
 <!-- formerly Authors Style Guide -->
 
-This Style Guide is for anyone who contributes to the Angular documentation (this site).
+This style guide is for anyone who contributes to the Angular documentation (this site).
 These guidelines should be followed by all authors.
 Deviations must be approved by a documentation editor.
 
@@ -37,7 +37,7 @@ Angular docs are written in Markdown, with custom extensions for this site. Corr
 
 * **Angular coding style:** Coding style for example apps and code snippets.
 Code examples are encouraged for demonstrating how to apply the concepts and features discussed.
-Angular has a custom framework that enables authors to include code snippets directly from example apps  that are automatically tested as part of doc builds.
+Angular has a custom framework that enables authors to include code snippets directly from example apps that are automatically tested as part of doc builds.
 To contribute example code, you must understand Angular itself and the custom framework for Angular doc examples.
 
 For each aspect of style, the following table explains where to find the primary guidelines and what this Angular Documentation Style Guide offers.
@@ -139,24 +139,26 @@ The title should appear at the top of the physical page.
 Begin the title with the markdown `#` character. Alternatively, you can write the equivalent `<h1>`.
 
 ```html
-  # Authors Style Guide
+  # Angular documentation style guide
 ```
 
 **Only one title (`<h1>`) per document!**
 
-Title text should be in "Title Case", which means that you use capital letters to start the first words and all _principal_ words. Use lower case letters for _secondary_ words such as "in", "of", and "the".
+Title text should be in "Sentence case", which means the first word is capitalized and all other words are lower case (unless they are technical terms that are always capitalized, like "Angular").
 
 ```html
-  # The Meat of the Matter
+  # Deprecation policy in Angular
 ```
 
 **Always follow the title with at least one blank line.**
+
+Note that the corresponding left-nav TOC text should be in "title case", which means that you use capital letters to start the first words and all principal words. Use lower case letters for secondary words such as "in", "of", and "the". The TOC title can also be shortened to fit in the column.
 
 ## Sections
 
 A typical document is divided into sections.
 
-All section heading text should be in "Sentence case", which means the first word is capitalized and all other words are lower case.
+All heading text should be in "Sentence case", which means the first word is capitalized and all other words are lower case.
 
 **Always follow the section heading with at least one blank line.**
 
@@ -1244,19 +1246,20 @@ Images should be specified in an `<img>` tag.
 
 For accessibility, always set the `alt` attribute with a meaningful description of the image.
 
-You should nest the `<img>` tag within a `<figure>` tag, which styles the image within a drop-shadow frame. You'll need the editor's permission to skip the `<figure>` tag.
+You should nest the `<img>` tag within a `<div class="lightbox">` tag, which styles the image within a drop-shadow frame. You'll need the editor's permission to skip the `lightbox` class on its `div` encapsulation.
 
 Here's a conforming example
 
-<figure>
-  <img src="generated/images/guide/docs-style-guide/flying-hero.png" alt="flying hero">
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/docs-style-guide/flying-hero.png"
+    alt="flying hero">
+</div>
 
 ```html
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/docs-style-guide/flying-hero.png"
-       alt="flying hero">
-</figure>
+    alt="flying hero">
+</div>
 ```
 
 _Note that the HTML image element does not have a closing tag._
@@ -1267,17 +1270,19 @@ The doc generator reads the image dimensions from the file and adds width and he
 
 Here's the "flying hero" at a more reasonable scale.
 
-<figure>
- <img src="generated/images/guide/docs-style-guide/flying-hero.png" alt="flying Angular hero" width="200">
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/docs-style-guide/flying-hero.png"
+    alt="flying Angular hero"
+    width="200">
+</div>
 
 ```html
 
-<figure>
- <img src="generated/images/guide/docs-style-guide/flying-hero.png"
-   alt="flying Angular hero"
-   width="200">
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/docs-style-guide/flying-hero.png"
+    alt="flying Angular hero"
+    width="200">
+</div>
 ```
 
 Wide images can be a problem. Most browsers try to rescale the image but wide images may overflow the document in certain viewports.
@@ -1285,9 +1290,9 @@ Wide images can be a problem. Most browsers try to rescale the image but wide im
 **Do not set a width greater than 700px**. If you wish to display a larger image, provide a link to the actual image that the user can click on to see the full size image separately as in this example of `source-map-explorer` output from the "Ahead-of-time Compilation" guide:
 
 <a href="generated/images/guide/docs-style-guide/toh-pt6-bundle.png" title="Click to view larger image">
-  <figure>
+  <div class="lightbox">
     <img src="generated/images/guide/docs-style-guide/toh-pt6-bundle-700w.png" alt="toh-pt6-bundle" width="300px">
-  </figure>
+  </div>
 </a>
 
 <h3 class="no-toc">Image compression</h3>

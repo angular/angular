@@ -1,0 +1,1 @@
+Provides infrastructure for cross-platform rendering of animations in a browser.

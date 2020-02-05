@@ -12,9 +12,9 @@ import * as path from 'path';
 import * as ts from 'typescript';
 import {formatDiagnostics} from '../../src/perform_compile';
 import {CompilerHost, EmitFlags, LazyRoute} from '../../src/transformers/api';
-import {checkVersion, createSrcToOutPathMapper} from '../../src/transformers/program';
+import {createSrcToOutPathMapper} from '../../src/transformers/program';
 import {StructureIsReused, tsStructureIsReused} from '../../src/transformers/util';
-import {TestSupport, expectNoDiagnosticsInProgram, setup} from '../test_support';
+import {TestSupport, expectNoDiagnosticsInProgram, setup, stripAnsi} from '../test_support';
 
 describe('ng program', () => {
   let testSupport: TestSupport;
@@ -986,11 +986,11 @@ describe('ng program', () => {
         {rootNames: [path.resolve(testSupport.basePath, 'src/main.ts')], options, host});
     const errorDiags =
         program1.emit().diagnostics.filter(d => d.category === ts.DiagnosticCategory.Error);
-    expect(formatDiagnostics(errorDiags))
-        .toContain(`src/main.ts(5,13): error TS2322: Type '1' is not assignable to type 'string'.`);
-    expect(formatDiagnostics(errorDiags))
+    expect(stripAnsi(formatDiagnostics(errorDiags)))
+        .toContain(`src/main.ts:5:13 - error TS2322: Type '1' is not assignable to type 'string'.`);
+    expect(stripAnsi(formatDiagnostics(errorDiags)))
         .toContain(
-            `src/main.html(1,1): error TS100: Property 'nonExistent' does not exist on type 'MyComp'.`);
+            `src/main.html:1:1 - error TS100: Property 'nonExistent' does not exist on type 'MyComp'.`);
   });
 
   it('should not report emit errors with noEmitOnError=false', () => {
@@ -1114,36 +1114,6 @@ describe('ng program', () => {
          expect(structuralErrors[0].messageText)
              .toContain('Function expressions are not supported');
        });
-  });
-
-  describe('checkVersion', () => {
-    const MIN_TS_VERSION = '2.7.2';
-    const MAX_TS_VERSION = '2.8.0';
-
-    const versionError = (version: string) =>
-        `The Angular Compiler requires TypeScript >=${MIN_TS_VERSION} and <${MAX_TS_VERSION} but ${version} was found instead.`;
-
-    it('should not throw when a supported TypeScript version is used', () => {
-      expect(() => checkVersion('2.7.2', MIN_TS_VERSION, MAX_TS_VERSION, undefined)).not.toThrow();
-      expect(() => checkVersion('2.7.2', MIN_TS_VERSION, MAX_TS_VERSION, false)).not.toThrow();
-      expect(() => checkVersion('2.7.2', MIN_TS_VERSION, MAX_TS_VERSION, true)).not.toThrow();
-    });
-
-    it('should handle a TypeScript version < the minimum supported one', () => {
-      expect(() => checkVersion('2.4.1', MIN_TS_VERSION, MAX_TS_VERSION, undefined))
-          .toThrowError(versionError('2.4.1'));
-      expect(() => checkVersion('2.4.1', MIN_TS_VERSION, MAX_TS_VERSION, false))
-          .toThrowError(versionError('2.4.1'));
-      expect(() => checkVersion('2.4.1', MIN_TS_VERSION, MAX_TS_VERSION, true)).not.toThrow();
-    });
-
-    it('should handle a TypeScript version > the maximum supported one', () => {
-      expect(() => checkVersion('2.9.0', MIN_TS_VERSION, MAX_TS_VERSION, undefined))
-          .toThrowError(versionError('2.9.0'));
-      expect(() => checkVersion('2.9.0', MIN_TS_VERSION, MAX_TS_VERSION, false))
-          .toThrowError(versionError('2.9.0'));
-      expect(() => checkVersion('2.9.0', MIN_TS_VERSION, MAX_TS_VERSION, true)).not.toThrow();
-    });
   });
 
 });

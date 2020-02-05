@@ -10,25 +10,25 @@ import {isForwardRef, resolveForwardRef} from '../di/forward_ref';
 import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
 import {injectRootLimpMode, setInjectImplementation} from '../di/injector_compatibility';
-import {getInjectableDef, getInjectorDef} from '../di/interface/defs';
+import {getInjectorDef} from '../di/interface/defs';
 import {InjectFlags} from '../di/interface/injector';
 import {Type} from '../interface/type';
 import {assertDefined, assertEqual} from '../util/assert';
 
+import {assertDirectiveDef} from './assert';
 import {getFactoryDef} from './definition';
 import {NG_ELEMENT_ID, NG_FACTORY_DEF} from './fields';
+import {registerPreOrderHooks} from './hooks';
 import {DirectiveDef, FactoryFn} from './interfaces/definition';
 import {NO_PARENT_INJECTOR, NodeInjectorFactory, PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags, TNODE, isFactory} from './interfaces/injector';
-import {AttributeMarker, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType} from './interfaces/node';
+import {AttributeMarker, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeProviderIndexes, TNodeType} from './interfaces/node';
 import {isComponentDef, isComponentHost} from './interfaces/type_checks';
-import {DECLARATION_VIEW, INJECTOR, LView, TData, TVIEW, TView, T_HOST} from './interfaces/view';
+import {DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, INJECTOR, LView, TData, TVIEW, TView, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
-import {getLView, getPreviousOrParentTNode, setTNodeAndViewData} from './state';
+import {enterDI, leaveDI} from './state';
 import {isNameOnlyAttributeMarker} from './util/attrs_utils';
 import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from './util/injector_utils';
 import {stringifyForError} from './util/misc_utils';
-import {getInitialStylingValue} from './util/styling_utils';
-import {findComponentView} from './util/view_traversal_utils';
 
 
 
@@ -97,7 +97,7 @@ let nextNgElementId = 0;
  */
 export function bloomAdd(
     injectorIndex: number, tView: TView, type: Type<any>| InjectionToken<any>| string): void {
-  ngDevMode && assertEqual(tView.firstTemplatePass, true, 'expected firstTemplatePass to be true');
+  ngDevMode && assertEqual(tView.firstCreatePass, true, 'expected firstCreatePass to be true');
   let id: number|undefined =
       typeof type !== 'string' ? (type as any)[NG_ELEMENT_ID] : type.charCodeAt(0) || 0;
 
@@ -147,7 +147,7 @@ export function getOrCreateNodeInjectorForNode(
   }
 
   const tView = hostView[TVIEW];
-  if (tView.firstTemplatePass) {
+  if (tView.firstCreatePass) {
     tNode.injectorIndex = hostView.length;
     insertBloom(tView.data, tNode);  // foundation for node bloom
     insertBloom(hostView, null);     // foundation for cumulative bloom
@@ -268,10 +268,10 @@ export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): str
                    tNode, TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer);
   ngDevMode && assertDefined(tNode, 'expecting tNode');
   if (attrNameToInject === 'class') {
-    return getInitialStylingValue(tNode.classes);
+    return tNode.classes;
   }
   if (attrNameToInject === 'style') {
-    return getInitialStylingValue(tNode.styles);
+    return tNode.styles;
   }
 
   const attrs = tNode.attrs;
@@ -326,17 +326,14 @@ export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): str
  * @returns the value from the injector, `null` when not found, or `notFoundValue` if provided
  */
 export function getOrCreateInjectable<T>(
-    tNode: TElementNode | TContainerNode | TElementContainerNode | null, lView: LView,
-    token: Type<T>| InjectionToken<T>, flags: InjectFlags = InjectFlags.Default,
-    notFoundValue?: any): T|null {
-  if (tNode) {
+    tNode: TDirectiveHostNode | null, lView: LView, token: Type<T>| InjectionToken<T>,
+    flags: InjectFlags = InjectFlags.Default, notFoundValue?: any): T|null {
+  if (tNode !== null) {
     const bloomHash = bloomHashBitOrFactory(token);
     // If the ID stored here is a function, this is a special object like ElementRef or TemplateRef
     // so just call the factory function to create it.
     if (typeof bloomHash === 'function') {
-      const savePreviousOrParentTNode = getPreviousOrParentTNode();
-      const saveLView = getLView();
-      setTNodeAndViewData(tNode, lView);
+      enterDI(lView, tNode);
       try {
         const value = bloomHash();
         if (value == null && !(flags & InjectFlags.Optional)) {
@@ -345,7 +342,7 @@ export function getOrCreateInjectable<T>(
           return value;
         }
       } finally {
-        setTNodeAndViewData(savePreviousOrParentTNode, saveLView);
+        leaveDI();
       }
     } else if (typeof bloomHash == 'number') {
       if (bloomHash === -1) {
@@ -361,7 +358,7 @@ export function getOrCreateInjectable<T>(
       let injectorIndex = getInjectorIndex(tNode, lView);
       let parentLocation: RelativeInjectorLocation = NO_PARENT_INJECTOR;
       let hostTElementNode: TNode|null =
-          flags & InjectFlags.Host ? findComponentView(lView)[T_HOST] : null;
+          flags & InjectFlags.Host ? lView[DECLARATION_COMPONENT_VIEW][T_HOST] : null;
 
       // If we should skip this injector, or if there is no injector on this node, start by
       // searching
@@ -475,7 +472,7 @@ function searchTokensOnInjector<T>(
   const injectableIdx = locateDirectiveOrProvider(
       tNode, currentTView, token, canAccessViewProviders, isHostSpecialCase);
   if (injectableIdx !== null) {
-    return getNodeInjectable(currentTView.data, lView, injectableIdx, tNode as TElementNode);
+    return getNodeInjectable(lView, currentTView, injectableIdx, tNode as TElementNode);
   } else {
     return NOT_FOUND;
   }
@@ -523,15 +520,16 @@ export function locateDirectiveOrProvider<T>(
 }
 
 /**
-* Retrieve or instantiate the injectable from the `lData` at particular `index`.
+* Retrieve or instantiate the injectable from the `LView` at particular `index`.
 *
 * This function checks to see if the value has already been instantiated and if so returns the
 * cached `injectable`. Otherwise if it detects that the value is still a factory it
 * instantiates the `injectable` and caches the value.
 */
 export function getNodeInjectable(
-    tData: TData, lData: LView, index: number, tNode: TElementNode): any {
-  let value = lData[index];
+    lView: LView, tView: TView, index: number, tNode: TDirectiveHostNode): any {
+  let value = lView[index];
+  const tData = tView.data;
   if (isFactory(value)) {
     const factory: NodeInjectorFactory = value;
     if (factory.resolving) {
@@ -543,16 +541,24 @@ export function getNodeInjectable(
     if (factory.injectImpl) {
       previousInjectImplementation = setInjectImplementation(factory.injectImpl);
     }
-    const savePreviousOrParentTNode = getPreviousOrParentTNode();
-    const saveLView = getLView();
-    setTNodeAndViewData(tNode, lData);
+    enterDI(lView, tNode);
     try {
-      value = lData[index] = factory.factory(undefined, tData, lData, tNode);
+      value = lView[index] = factory.factory(undefined, tData, lView, tNode);
+      // This code path is hit for both directives and providers.
+      // For perf reasons, we want to avoid searching for hooks on providers.
+      // It does no harm to try (the hooks just won't exist), but the extra
+      // checks are unnecessary and this is a hot path. So we check to see
+      // if the index of the dependency is in the directive range for this
+      // tNode. If it's not, we know it's a provider and skip hook registration.
+      if (tView.firstCreatePass && index >= tNode.directiveStart) {
+        ngDevMode && assertDirectiveDef(tData[index]);
+        registerPreOrderHooks(index, tData[index] as DirectiveDef<any>, tView);
+      }
     } finally {
       if (factory.injectImpl) setInjectImplementation(previousInjectImplementation);
       setIncludeViewProviders(previousIncludeViewProviders);
       factory.resolving = false;
-      setTNodeAndViewData(savePreviousOrParentTNode, saveLView);
+      leaveDI();
     }
   }
   return value;

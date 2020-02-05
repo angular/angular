@@ -9,9 +9,20 @@ ts_library(
 )
 
 ts_library(
-    name = "perf_lib",
+    name = "perf_tests_lib",
     testonly = 1,
-    srcs = ["largetable_perf.spec.ts"],
+    srcs = ["largetable.perf-spec.ts"],
+    deps = [
+        "//modules/e2e_util",
+        "@npm//protractor",
+    ],
+)
+
+ts_library(
+    name = "e2e_tests_lib",
+    testonly = 1,
+    srcs = ["largetable.e2e-spec.ts"],
+    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
     deps = [
         "//modules/e2e_util",
         "@npm//protractor",

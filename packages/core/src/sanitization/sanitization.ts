@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {getDocument} from '../render3/interfaces/document';
 import {SANITIZER} from '../render3/interfaces/view';
 import {getLView} from '../render3/state';
 import {renderStringify} from '../render3/util/misc_utils';
@@ -14,7 +15,7 @@ import {BypassType, allowSanitizationBypassAndThrow, unwrapSafeValue} from './by
 import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer';
 import {Sanitizer} from './sanitizer';
 import {SecurityContext} from './security';
-import {StyleSanitizeFn, StyleSanitizeMode, _sanitizeStyle as _sanitizeStyle} from './style_sanitizer';
+import {StyleSanitizeFn, StyleSanitizeMode, _sanitizeStyle} from './style_sanitizer';
 import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
 
 
@@ -42,7 +43,7 @@ export function ɵɵsanitizeHtml(unsafeHtml: any): string {
   if (allowSanitizationBypassAndThrow(unsafeHtml, BypassType.Html)) {
     return unwrapSafeValue(unsafeHtml);
   }
-  return _sanitizeHtml(document, renderStringify(unsafeHtml));
+  return _sanitizeHtml(getDocument(), renderStringify(unsafeHtml));
 }
 
 /**
@@ -186,20 +187,32 @@ export function ɵɵsanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string, prop: 
  */
 export const ɵɵdefaultStyleSanitizer =
     (function(prop: string, value: string|null, mode?: StyleSanitizeMode): string | boolean | null {
+      if (value === undefined && mode === undefined) {
+        // This is a workaround for the fact that `StyleSanitizeFn` should not exist once PR#34480
+        // lands. For now the `StyleSanitizeFn` and should act like `(value: any) => string` as a
+        // work around.
+        return ɵɵsanitizeStyle(prop);
+      }
       mode = mode || StyleSanitizeMode.ValidateAndSanitize;
       let doSanitizeValue = true;
       if (mode & StyleSanitizeMode.ValidateProperty) {
-        doSanitizeValue = prop === 'background-image' || prop === 'background' ||
-            prop === 'border-image' || prop === 'filter' || prop === 'list-style' ||
-            prop === 'list-style-image' || prop === 'clip-path';
+        doSanitizeValue = stylePropNeedsSanitization(prop);
       }
 
       if (mode & StyleSanitizeMode.SanitizeOnly) {
-        return doSanitizeValue ? ɵɵsanitizeStyle(value) : value;
+        return doSanitizeValue ? ɵɵsanitizeStyle(value) : unwrapSafeValue(value);
       } else {
         return doSanitizeValue;
       }
     } as StyleSanitizeFn);
+
+export function stylePropNeedsSanitization(prop: string): boolean {
+  return prop === 'background-image' || prop === 'backgroundImage' || prop === 'background' ||
+      prop === 'border-image' || prop === 'borderImage' || prop === 'border-image-source' ||
+      prop === 'borderImageSource' || prop === 'filter' || prop === 'list-style' ||
+      prop === 'listStyle' || prop === 'list-style-image' || prop === 'listStyleImage' ||
+      prop === 'clip-path' || prop === 'clipPath';
+}
 
 export function validateAgainstEventProperties(name: string) {
   if (name.toLowerCase().startsWith('on')) {

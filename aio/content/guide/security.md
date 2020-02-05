@@ -118,11 +118,9 @@ Angular recognizes the value as unsafe and automatically sanitizes it, which rem
 tag but keeps safe content such as the `<b>` element.
 
 
-<figure class="lightbox">
-  <div class="card">
-    <img src='generated/images/guide/security/binding-inner-html.png' alt='A screenshot showing interpolated and bound HTML values'>
-  </div>
-</figure>
+<div class="lightbox">
+  <img src='generated/images/guide/security/binding-inner-html.png' alt='A screenshot showing interpolated and bound HTML values'>
+</div>
 
 
 ### Direct use of the DOM APIs and explicit sanitization calls
@@ -211,11 +209,9 @@ this, mark the URL value as a trusted URL using the `bypassSecurityTrustUrl` cal
 
 
 
-<figure class="lightbox">
-  <div class="card">
-    <img src='generated/images/guide/security/bypass-security-component.png' alt='A screenshot showing an alert box created from a trusted URL'>
-  </div>
-</figure>
+<div class="lightbox">
+  <img src='generated/images/guide/security/bypass-security-component.png' alt='A screenshot showing an alert box created from a trusted URL'>
+</div>
 
 
 
@@ -280,7 +276,7 @@ This technique is effective because all browsers implement the _same origin poli
 on which cookies are set can read the cookies from that site and set custom headers on requests to that site.
 That means only your application can read this cookie token and set the custom header. The malicious code on `evil.com` can't.
 
-Angular's `HttpClient` has built-in support for the client-side half of this technique. Read about it more in the [HttpClient guide](/guide/http).
+Angular's `HttpClient` has built-in support for the client-side half of this technique. Read about it more in the [HttpClient guide](/guide/http#security-xsrf-protection).
 
 For information about CSRF at the Open Web Application Security Project (OWASP), see
 <a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29">Cross-Site Request Forgery (CSRF)</a> and

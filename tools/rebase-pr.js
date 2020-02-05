@@ -38,9 +38,9 @@
 
 // Imports
 const util = require('util');
-const https = require('https');
 const child_process = require('child_process');
 const exec = util.promisify(child_process.exec);
+const getRefsAndShasForTarget = require('./utils/get-refs-and-shas-for-target');
 
 // CLI validation
 if (process.argv.length != 4) {
@@ -59,55 +59,51 @@ _main(...process.argv.slice(2)).catch(err => {
 
 // Helpers
 async function _main(repository, prNumber) {
-  console.log(`Determining target branch for PR ${prNumber} on ${repository}.`);
-  const targetBranch = await determineTargetBranch(repository, prNumber);
-  console.log(`Target branch is ${targetBranch}.`);
-  await exec(`git fetch origin ${targetBranch}`);
-  console.log(`Rebasing current branch on ${targetBranch}.`);
-  await exec(`git rebase origin/${targetBranch}`);
+
+  const target = await getRefsAndShasForTarget(prNumber);
+
+  // Log known refs and shas
+  console.log(`--------------------------------`);
+  console.log(`    Target Branch:                   ${target.base.ref}`);
+  console.log(`    Latest Commit for Target Branch: ${target.latestShaOfTargetBranch}`);
+  console.log(`    Latest Commit for PR:            ${target.latestShaOfPrBranch}`);
+  console.log(`    First Common Ancestor SHA:       ${target.commonAncestorSha}`);
+  console.log(`--------------------------------`);
+  console.log();
+
+
+
+  // Get the count of commits between the latest commit from origin and the common ancestor SHA.
+  const {stdout: commitCount} =
+      await exec(`git rev-list --count origin/${target.base.ref}...${target.commonAncestorSha}`);
+  console.log(`Checking ${commitCount.trim()} commits for changes in the CircleCI config file.`);
+
+  // Check if the files changed between the latest commit from origin and the common ancestor SHA
+  // includes the CircleCI config.
+  const {stdout: circleCIConfigChanged} = await exec(
+      `git diff --name-only origin/${target.base.ref} ${target.commonAncestorSha} -- .circleci/config.yml`);
+
+  if (!!circleCIConfigChanged) {
+    throw Error(`
+        CircleCI config on ${target.base.ref} has been modified since commit ${target.commonAncestorSha.slice(0, 7)},
+        which this PR is based on.
+
+        Please rebase the PR on ${target.base.ref} after fetching from upstream.
+
+        Rebase instructions for PR Author, please run the following commands:
+
+          git fetch upstream ${target.base.ref};
+          git checkout ${target.head.ref};
+          git rebase upstream/${target.base.ref};
+          git push --force-with-lease;
+        `);
+  } else {
+    console.log('No change found in the CircleCI config file, continuing.');
+  }
+  console.log();
+
+  // Rebase the PR.
+  console.log(`Rebasing current branch on ${target.base.ref}.`);
+  await exec(`git rebase origin/${target.base.ref}`);
   console.log('Rebase successful.');
-}
-
-function determineTargetBranch(repository, prNumber) {
-  const pullsUrl = `https://api.github.com/repos/${repository}/pulls/${prNumber}`;
-  // GitHub requires a user agent: https://developer.github.com/v3/#user-agent-required
-  const options = {headers: {'User-Agent': repository}};
-
-  return new Promise((resolve, reject) => {
-    https
-        .get(
-            pullsUrl, options,
-            (res) => {
-              const {statusCode} = res;
-              const contentType = res.headers['content-type'];
-              let rawData = '';
-
-              res.on('data', (chunk) => { rawData += chunk; });
-              res.on('end', () => {
-
-                let error;
-                if (statusCode !== 200) {
-                  error = new Error(
-                      `Request Failed.\nStatus Code: ${statusCode}.\nResponse: ${rawData}`);
-                } else if (!/^application\/json/.test(contentType)) {
-                  error = new Error(
-                      'Invalid content-type.\n' +
-                      `Expected application/json but received ${contentType}`);
-                }
-
-                if (error) {
-                  reject(error);
-                  return;
-                }
-
-                try {
-                  const parsedData = JSON.parse(rawData);
-                  resolve(parsedData['base']['ref']);
-                } catch (e) {
-                  reject(e);
-                }
-              });
-            })
-        .on('error', (e) => { reject(e); });
-  });
 }

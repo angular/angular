@@ -34,14 +34,32 @@ export abstract class MockFileSystem implements FileSystem {
     }
   }
 
-  writeFile(path: AbsoluteFsPath, data: string): void {
+  writeFile(path: AbsoluteFsPath, data: string, exclusive: boolean = false): void {
     const [folderPath, basename] = this.splitIntoFolderAndFile(path);
     const {entity} = this.findFromPath(folderPath);
     if (entity === null || !isFolder(entity)) {
       throw new MockFileSystemError(
           'ENOENT', path, `Unable to write file "${path}". The containing folder does not exist.`);
     }
+    if (exclusive && entity[basename] !== undefined) {
+      throw new MockFileSystemError(
+          'EEXIST', path, `Unable to exclusively write file "${path}". The file already exists.`);
+    }
     entity[basename] = data;
+  }
+
+  removeFile(path: AbsoluteFsPath): void {
+    const [folderPath, basename] = this.splitIntoFolderAndFile(path);
+    const {entity} = this.findFromPath(folderPath);
+    if (entity === null || !isFolder(entity)) {
+      throw new MockFileSystemError(
+          'ENOENT', path, `Unable to remove file "${path}". The containing folder does not exist.`);
+    }
+    if (isFolder(entity[basename])) {
+      throw new MockFileSystemError(
+          'EISDIR', path, `Unable to remove file "${path}". The path to remove is a folder.`);
+    }
+    delete entity[basename];
   }
 
   symlink(target: AbsoluteFsPath, path: AbsoluteFsPath): void {
@@ -113,6 +131,17 @@ export abstract class MockFileSystem implements FileSystem {
     }
   }
 
+  removeDeep(path: AbsoluteFsPath): void {
+    const [folderPath, basename] = this.splitIntoFolderAndFile(path);
+    const {entity} = this.findFromPath(folderPath);
+    if (entity === null || !isFolder(entity)) {
+      throw new MockFileSystemError(
+          'ENOENT', path,
+          `Unable to remove folder "${path}". The containing folder does not exist.`);
+    }
+    delete entity[basename];
+  }
+
   isRoot(path: AbsoluteFsPath): boolean { return this.dirname(path) === path; }
 
   extname(path: AbsoluteFsPath|PathSegment): string {
@@ -132,7 +161,36 @@ export abstract class MockFileSystem implements FileSystem {
 
   pwd(): AbsoluteFsPath { return this._cwd; }
 
-  getDefaultLibLocation(): AbsoluteFsPath { return this.resolve('node_modules/typescript/lib'); }
+  chdir(path: AbsoluteFsPath): void { this._cwd = this.normalize(path); }
+
+  getDefaultLibLocation(): AbsoluteFsPath {
+    // Mimic the node module resolution algorithm and start in the current directory, then look
+    // progressively further up the tree until reaching the FS root.
+    // E.g. if the current directory is /foo/bar, look in /foo/bar/node_modules, then
+    // /foo/node_modules, then /node_modules.
+
+    let path = 'node_modules/typescript/lib';
+    let resolvedPath = this.resolve(path);
+
+    // Construct a path for the top-level node_modules to identify the stopping point.
+    const topLevelNodeModules = this.resolve('/' + path);
+
+    while (resolvedPath !== topLevelNodeModules) {
+      if (this.exists(resolvedPath)) {
+        return resolvedPath;
+      }
+
+      // Not here, look one level higher.
+      path = '../' + path;
+      resolvedPath = this.resolve(path);
+    }
+
+    // The loop exits before checking the existence of /node_modules/typescript at the top level.
+    // This is intentional - if no /node_modules/typescript exists anywhere in the tree, there's
+    // nothing this function can do about it, and TS may error later if it looks for a lib.d.ts file
+    // within this directory. It might be okay, though, if TS never checks for one.
+    return topLevelNodeModules;
+  }
 
   abstract resolve(...paths: string[]): AbsoluteFsPath;
   abstract dirname<T extends string>(file: T): T;

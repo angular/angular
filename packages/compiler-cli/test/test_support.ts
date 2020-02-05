@@ -171,3 +171,9 @@ export function expectNoDiagnosticsInProgram(options: ng.CompilerOptions, p: ng.
 export function normalizeSeparators(path: string): string {
   return path.replace(/\\/g, '/');
 }
+
+const STRIP_ANSI = /\x1B\x5B\d+m/g;
+
+export function stripAnsi(diags: string): string {
+  return diags.replace(STRIP_ANSI, '');
+}

@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectorRef} from '../../change_detection/change_detector_ref';
-import {CompilerFacade, R3DependencyMetadataFacade, getCompilerFacade} from '../../compiler/compiler_facade';
+import {CompilerFacade, R3DependencyMetadataFacade, R3ResolvedDependencyType, getCompilerFacade} from '../../compiler/compiler_facade';
 import {Type} from '../../interface/type';
 import {ReflectionCapabilities} from '../../reflection/reflection_capabilities';
 import {Attribute, Host, Inject, Optional, Self, SkipSelf} from '../metadata';
@@ -42,22 +42,23 @@ function reflectDependency(compiler: CompilerFacade, dep: any | any[]): R3Depend
     meta.token = token;
   }
 
-  if (Array.isArray(dep)) {
-    if (dep.length === 0) {
-      throw new Error('Dependency array must have arguments.');
-    }
+  if (Array.isArray(dep) && dep.length > 0) {
     for (let j = 0; j < dep.length; j++) {
       const param = dep[j];
       if (param === undefined) {
         // param may be undefined if type of dep is not set by ngtsc
         continue;
-      } else if (param instanceof Optional || param.__proto__.ngMetadataName === 'Optional') {
+      }
+
+      const proto = Object.getPrototypeOf(param);
+
+      if (param instanceof Optional || proto.ngMetadataName === 'Optional') {
         meta.optional = true;
-      } else if (param instanceof SkipSelf || param.__proto__.ngMetadataName === 'SkipSelf') {
+      } else if (param instanceof SkipSelf || proto.ngMetadataName === 'SkipSelf') {
         meta.skipSelf = true;
-      } else if (param instanceof Self || param.__proto__.ngMetadataName === 'Self') {
+      } else if (param instanceof Self || proto.ngMetadataName === 'Self') {
         meta.self = true;
-      } else if (param instanceof Host || param.__proto__.ngMetadataName === 'Host') {
+      } else if (param instanceof Host || proto.ngMetadataName === 'Host') {
         meta.host = true;
       } else if (param instanceof Inject) {
         meta.token = param.token;
@@ -74,6 +75,9 @@ function reflectDependency(compiler: CompilerFacade, dep: any | any[]): R3Depend
         setTokenAndResolvedType(param);
       }
     }
+  } else if (dep === undefined || (Array.isArray(dep) && dep.length === 0)) {
+    meta.token = undefined;
+    meta.resolved = R3ResolvedDependencyType.Invalid;
   } else {
     setTokenAndResolvedType(dep);
   }

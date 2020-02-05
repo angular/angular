@@ -1,6 +1,6 @@
 {@a top}
 
-# Set the Document Title
+# Set the document title
 
 Your app should be able to make the browser title bar say whatever you want it to say.
 This cookbook explains how to do it.
@@ -25,8 +25,8 @@ That's dirty and undermines your chances of running the app outside of a browser
 <div class="alert is-helpful">
 
   Running your app outside a browser means that you can take advantage of server-side
-  pre-rendering for near-instant first app render times and for SEO.  It means you could run from
-  inside a Web Worker to improve your app's responsiveness by using multiple threads.  And it
+  pre-rendering for near-instant first app render times and for SEO. It means you could run from
+  inside a Web Worker to improve your app's responsiveness by using multiple threads. And it
   means that you could run your app inside Electron.js or Windows Universal to deliver it to the desktop.
 
 </div>
@@ -47,11 +47,9 @@ You can inject the `Title` service into the root `AppComponent` and expose a bin
 
 Bind that method to three anchor tags and voilà!
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/set-document-title/set-title-anim.gif" alt="Set title">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/set-document-title/set-title-anim.gif" alt="Set title">
+</div>
 
 Here's the complete solution:
 
@@ -74,4 +72,3 @@ If you bootstrap your application into a different platform,
 you'll have to provide a different `Title` service that understands
 the concept of a "document title" for that specific platform.
 Ideally, the application itself neither knows nor cares about the runtime environment.
-

@@ -13,6 +13,7 @@ import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 import {absoluteFrom} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {LazyRoute} from '../../src/ngtsc/routing';
+import {restoreTypeScriptVersionForTesting, setTypeScriptVersionForTesting} from '../../src/typescript_support';
 import {loadStandardTestFiles} from '../helpers/src/mock_file_loading';
 
 import {NgtscTestEnvironment} from './env';
@@ -166,7 +167,7 @@ runInEachFileSystem(os => {
       expect(jsContents).toContain('factory: function Service_Factory(t) { var r = null; if (t) {');
       expect(jsContents).toContain('return new (t || Service)(i0.ɵɵinject(Dep));');
       expect(jsContents)
-          .toContain('(r = (function (dep) { return new Service(dep); })(i0.ɵɵinject(Dep)));');
+          .toContain('r = (function (dep) { return new Service(dep); })(i0.ɵɵinject(Dep));');
       expect(jsContents).toContain('return r; }, providedIn: \'root\' });');
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
@@ -189,6 +190,76 @@ runInEachFileSystem(os => {
       env.driveMain();
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('inject(Dep, 8)');
+    });
+
+    it('should compile @Injectable with constructor overloads', () => {
+      env.write('test.ts', `
+      import {Injectable, Optional} from '@angular/core';
+
+      @Injectable()
+      class Dep {}
+
+      @Injectable()
+      class OptionalDep {}
+
+      @Injectable()
+      class Service {
+        constructor(dep: Dep);
+
+        constructor(dep: Dep, @Optional() optionalDep?: OptionalDep) {}
+      }
+    `);
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+
+      expect(jsContents)
+          .toContain(
+              `Service.ɵfac = function Service_Factory(t) { ` +
+              `return new (t || Service)(i0.ɵɵinject(Dep), i0.ɵɵinject(OptionalDep, 8)); };`);
+    });
+
+    it('should compile Directives without errors', () => {
+      env.write('test.ts', `
+        import {Directive} from '@angular/core';
+
+        @Directive({selector: '[dir]'})
+        export class TestDir {}
+      `);
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('TestDir.ɵdir = i0.ɵɵdefineDirective');
+      expect(jsContents).toContain('TestDir.ɵfac = function');
+      expect(jsContents).not.toContain('__decorate');
+
+      const dtsContents = env.getContents('test.d.ts');
+      expect(dtsContents)
+          .toContain(
+              'static ɵdir: i0.ɵɵDirectiveDefWithMeta<TestDir, "[dir]", never, {}, {}, never>');
+      expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<TestDir>');
+    });
+
+    it('should compile abstract Directives without errors', () => {
+      env.write('test.ts', `
+        import {Directive} from '@angular/core';
+
+        @Directive()
+        export class TestDir {}
+      `);
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('TestDir.ɵdir = i0.ɵɵdefineDirective');
+      expect(jsContents).toContain('TestDir.ɵfac = function');
+      expect(jsContents).not.toContain('__decorate');
+
+      const dtsContents = env.getContents('test.d.ts');
+      expect(dtsContents)
+          .toContain(
+              'static ɵdir: i0.ɵɵDirectiveDefWithMeta<TestDir, never, never, {}, {}, never>');
+      expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<TestDir>');
     });
 
     it('should compile Components (inline template) without errors', () => {
@@ -292,25 +363,170 @@ runInEachFileSystem(os => {
     // are valid for the real OS. When on non-Windows systems it doesn't like paths
     // that start with `C:`.
     if (os !== 'Windows' || platform() === 'win32') {
-      it('should add @nocollapse to static fields when closure annotations are requested', () => {
-        env.tsconfig({
-          'annotateForClosureCompiler': true,
+      describe('when closure annotations are requested', () => {
+
+        it('should add @nocollapse to static fields', () => {
+          env.tsconfig({
+            'annotateForClosureCompiler': true,
+          });
+          env.write('test.ts', `
+            import {Component} from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              templateUrl: './dir/test.html',
+            })
+            export class TestCmp {}
+          `);
+          env.write('dir/test.html', '<p>Hello World</p>');
+
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+          expect(jsContents).toContain('/** @nocollapse */ TestCmp.ɵcmp');
         });
-        env.write('test.ts', `
-        import {Component} from '@angular/core';
 
-        @Component({
-          selector: 'test-cmp',
-          templateUrl: './dir/test.html',
-        })
-        export class TestCmp {}
-    `);
-        env.write('dir/test.html', '<p>Hello World</p>');
+        /**
+         * The following set of tests verify that after Tsickle run we do not have cases which
+         * trigger automatic semicolon insertion, which breaks the code. In order to avoid the
+         * problem, we wrap all function expressions in certain fields ("providers" and
+         * "viewProviders") in parentheses. More info on Tsickle processing related to this case can
+         * be found here:
+         * https://github.com/angular/tsickle/blob/d7974262571c8a17d684e5ba07680e1b1993afdd/src/jsdoc_transformer.ts#L1021
+         */
+        describe('wrap functions in certain fields in parentheses', () => {
+          const providers = `
+            [{
+              provide: 'token-a',
+              useFactory: (service: Service) => {
+                return () => service.id;
+              }
+            }, {
+              provide: 'token-b',
+              useFactory: function(service: Service) {
+                return function() {
+                  return service.id;
+                }
+              }
+            }]
+          `;
 
-        env.driveMain();
+          const service = `
+              export class Service {
+                id: string = 'service-id';
+              }
+            `;
 
-        const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain('/** @nocollapse */ TestCmp.ɵcmp');
+          const verifyOutput = (jsContents: string) => {
+            // verify that there is no pattern that triggers automatic semicolon insertion
+            // by checking that there are no return statements not wrapped in parentheses
+            expect(trim(jsContents)).not.toContain(trim(`
+              return /**
+              * @return {?}
+              */
+            `));
+            expect(trim(jsContents)).toContain(trim(`
+              [{
+                  provide: 'token-a',
+                  useFactory: (function (service) {
+                      return (/**
+                      * @return {?}
+                      */
+                      function () { return service.id; });
+                  })
+              }, {
+                  provide: 'token-b',
+                  useFactory: (function (service) {
+                      return (/**
+                      * @return {?}
+                      */
+                      function () {
+                          return service.id;
+                      });
+                  })
+              }]
+            `));
+          };
+
+          it('should wrap functions in "providers" list in NgModule', () => {
+            env.tsconfig({
+              'annotateForClosureCompiler': true,
+            });
+            env.write('service.ts', service);
+            env.write('test.ts', `
+              import {NgModule} from '@angular/core';
+              import {Service} from './service';
+
+              @NgModule({
+                providers: ${providers}
+              })
+              export class SomeModule {}
+            `);
+
+            env.driveMain();
+            verifyOutput(env.getContents('test.js'));
+          });
+
+          it('should wrap functions in "providers" list in Component', () => {
+            env.tsconfig({
+              'annotateForClosureCompiler': true,
+            });
+            env.write('service.ts', service);
+            env.write('test.ts', `
+              import {Component} from '@angular/core';
+              import {Service} from './service';
+
+              @Component({
+                template: '...',
+                providers: ${providers}
+              })
+              export class SomeComponent {}
+            `);
+
+            env.driveMain();
+            verifyOutput(env.getContents('test.js'));
+          });
+
+          it('should wrap functions in "viewProviders" list in Component', () => {
+            env.tsconfig({
+              'annotateForClosureCompiler': true,
+            });
+            env.write('service.ts', service);
+            env.write('test.ts', `
+              import {Component} from '@angular/core';
+              import {Service} from './service';
+
+              @Component({
+                template: '...',
+                viewProviders: ${providers}
+              })
+              export class SomeComponent {}
+            `);
+
+            env.driveMain();
+            verifyOutput(env.getContents('test.js'));
+          });
+
+          it('should wrap functions in "providers" list in Directive', () => {
+            env.tsconfig({
+              'annotateForClosureCompiler': true,
+            });
+            env.write('service.ts', service);
+            env.write('test.ts', `
+              import {Directive} from '@angular/core';
+              import {Service} from './service';
+
+              @Directive({
+                providers: ${providers}
+              })
+              export class SomeDirective {}
+            `);
+
+            env.driveMain();
+            verifyOutput(env.getContents('test.js'));
+          });
+        });
+
       });
     }
 
@@ -371,7 +587,7 @@ runInEachFileSystem(os => {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('TestBase.ngBaseDef = i0.ɵɵdefineBase');
+      expect(jsContents).toContain('TestBase.ɵdir = i0.ɵɵdefineDirective');
       expect(jsContents).toContain('TestComponent.ɵcmp = i0.ɵɵdefineComponent');
       expect(jsContents).toContain('TestDirective.ɵdir = i0.ɵɵdefineDirective');
       expect(jsContents).toContain('TestPipe.ɵpipe = i0.ɵɵdefinePipe');
@@ -458,7 +674,7 @@ runInEachFileSystem(os => {
       expect(jsContents).toContain('background-color: blue');
     });
 
-    it('should include generic type for ngBaseDef declarations', () => {
+    it('should include generic type for undecorated class declarations', () => {
       env.write('test.ts', `
         import {Component, Input, NgModule} from '@angular/core';
 
@@ -470,10 +686,13 @@ runInEachFileSystem(os => {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('i0.ɵɵdefineBase({ inputs: { input: "input" } });');
+      expect(jsContents)
+          .toContain('i0.ɵɵdefineDirective({ type: TestBase, inputs: { input: "input" } });');
 
       const dtsContents = env.getContents('test.d.ts');
-      expect(dtsContents).toContain('static ngBaseDef: i0.ɵɵBaseDef<TestBase>');
+      expect(dtsContents)
+          .toContain(
+              `static ɵdir: i0.ɵɵDirectiveDefWithMeta<TestBase, never, never, { "input": "input"; }, {}, never>;`);
     });
 
     it('should compile NgModules without errors', () => {
@@ -500,7 +719,7 @@ runInEachFileSystem(os => {
           .toContain('i0.ɵɵdefineNgModule({ type: TestModule, bootstrap: [TestCmp] });');
       expect(jsContents)
           .toContain(
-              '/*@__PURE__*/ i0.ɵɵsetNgModuleScope(TestModule, { declarations: [TestCmp] });');
+              'function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(TestModule, { declarations: [TestCmp] }); })();');
       expect(jsContents)
           .toContain(
               'i0.ɵɵdefineInjector({ factory: ' +
@@ -1059,7 +1278,7 @@ runInEachFileSystem(os => {
         }));
         env.write('index.ts', `
           import {Directive} from '@angular/core';
-          
+
           @Directive()
           export class BaseClass {}
         `);
@@ -1070,10 +1289,10 @@ runInEachFileSystem(os => {
         env.write('index.ts', `
           import {NgModule, Directive} from '@angular/core';
           import {BaseClass} from 'lib1_built';
-          
+
           @Directive({selector: 'my-dir'})
           export class MyDirective extends BaseClass {}
-          
+
           @NgModule({declarations: [MyDirective]})
           export class AppModule {}
         `);
@@ -1291,7 +1510,7 @@ runInEachFileSystem(os => {
              env.write('test.ts', `
             import {Injectable} from '@angular/core';
 
-            @Injectable()
+            @Injectable({providedIn: 'root'})
             export class Test {
               constructor(private notInjectable: string) {}
             }
@@ -1319,7 +1538,75 @@ runInEachFileSystem(os => {
 
              env.driveMain();
              const jsContents = env.getContents('test.js');
-             expect(jsContents).toMatch(/function Test_Factory\(t\) { throw new Error\(/ms);
+             expect(jsContents)
+                 .toMatch(/function Test_Factory\(t\) { i0\.ɵɵinvalidFactory\(\)/ms);
+           });
+
+        it('should not give a compile-time error if an invalid @Injectable is used with useFactory',
+           () => {
+             env.tsconfig({strictInjectionParameters: true});
+             env.write('test.ts', `
+               import {Injectable} from '@angular/core';
+
+               @Injectable({
+                 providedIn: 'root',
+                 useFactory: () => '42',
+               })
+               export class Test {
+                 constructor(private notInjectable: string) {}
+               }
+             `);
+
+             env.driveMain();
+             const jsContents = env.getContents('test.js');
+             expect(jsContents)
+                 .toMatch(/function Test_Factory\(t\) { i0\.ɵɵinvalidFactory\(\)/ms);
+           });
+
+        it('should not give a compile-time error if an invalid @Injectable is used with useExisting',
+           () => {
+             env.tsconfig({strictInjectionParameters: true});
+             env.write('test.ts', `
+               import {Injectable} from '@angular/core';
+
+               export class MyService {}
+
+               @Injectable({
+                 providedIn: 'root',
+                 useExisting: MyService,
+               })
+               export class Test {
+                 constructor(private notInjectable: string) {}
+               }
+             `);
+
+             env.driveMain();
+             const jsContents = env.getContents('test.js');
+             expect(jsContents)
+                 .toMatch(/function Test_Factory\(t\) { i0\.ɵɵinvalidFactory\(\)/ms);
+           });
+
+        it('should not give a compile-time error if an invalid @Injectable is used with useClass',
+           () => {
+             env.tsconfig({strictInjectionParameters: true});
+             env.write('test.ts', `
+               import {Injectable} from '@angular/core';
+
+               export class MyService {}
+
+               @Injectable({
+                 providedIn: 'root',
+                 useClass: MyService,
+               })
+               export class Test {
+                 constructor(private notInjectable: string) {}
+               }
+             `);
+
+             env.driveMain();
+             const jsContents = env.getContents('test.js');
+             expect(jsContents)
+                 .toMatch(/function Test_Factory\(t\) { i0\.ɵɵinvalidFactory\(\)/ms);
            });
       });
 
@@ -1337,7 +1624,8 @@ runInEachFileSystem(os => {
 
           env.driveMain();
           const jsContents = env.getContents('test.js');
-          expect(jsContents).toContain('Test.ɵfac = function Test_Factory(t) { throw new Error(');
+          expect(jsContents)
+              .toContain('Test.ɵfac = function Test_Factory(t) { i0.ɵɵinvalidFactory()');
         });
 
         it('should compile an @Injectable provided in the root on a class with a non-injectable constructor',
@@ -1354,10 +1642,67 @@ runInEachFileSystem(os => {
              env.driveMain();
              const jsContents = env.getContents('test.js');
              expect(jsContents)
-                 .toContain('Test.ɵfac = function Test_Factory(t) { throw new Error(');
+                 .toContain('Test.ɵfac = function Test_Factory(t) { i0.ɵɵinvalidFactory()');
            });
 
       });
+    });
+
+    describe('compiling invalid @Directives', () => {
+      describe('directives with a selector', () => {
+        it('should give a compile-time error if an invalid constructor is used', () => {
+          env.tsconfig({strictInjectionParameters: true});
+          env.write('test.ts', `
+            import {Directive} from '@angular/core';
+
+            @Directive({selector: 'app-test'})
+            export class Test {
+              constructor(private notInjectable: string) {}
+            }
+          `);
+
+          const errors = env.driveDiagnostics();
+          expect(errors.length).toBe(1);
+          expect(errors[0].messageText).toContain('No suitable injection token for parameter');
+        });
+      });
+
+      describe('abstract directives', () => {
+        it('should generate a factory function that throws', () => {
+          env.tsconfig({strictInjectionParameters: false});
+          env.write('test.ts', `
+          import {Directive} from '@angular/core';
+
+          @Directive()
+          export class Test {
+            constructor(private notInjectable: string) {}
+          }
+        `);
+
+          env.driveMain();
+          const jsContents = env.getContents('test.js');
+          expect(jsContents)
+              .toContain('Test.ɵfac = function Test_Factory(t) { i0.ɵɵinvalidFactory()');
+        });
+      });
+
+      it('should generate a factory function that throws, even under strictInjectionParameters',
+         () => {
+           env.tsconfig({strictInjectionParameters: true});
+           env.write('test.ts', `
+        import {Directive} from '@angular/core';
+
+        @Directive()
+        export class Test {
+          constructor(private notInjectable: string) {}
+        }
+      `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+           expect(jsContents)
+               .toContain('Test.ɵfac = function Test_Factory(t) { i0.ɵɵinvalidFactory()');
+         });
     });
 
     describe('templateUrl and styleUrls processing', () => {
@@ -1562,6 +1907,41 @@ runInEachFileSystem(os => {
             .toContain(
                 'i0.ɵɵNgModuleDefWithMeta<TestModule, never, [typeof i1.InternalRouterModule], never>');
       });
+
+      it('should extract the generic type if it is provided as qualified type name from another package',
+         () => {
+           env.write(`test.ts`, `
+            import {NgModule} from '@angular/core';
+            import {RouterModule} from 'router';
+
+            @NgModule({imports: [RouterModule.forRoot()]})
+            export class TestModule {}`);
+
+           env.write('node_modules/router/index.d.ts', `
+            import {ModuleWithProviders} from '@angular/core';
+            import * as router2 from 'router2';
+
+            declare export class RouterModule {
+              static forRoot(): ModuleWithProviders<router2.Router2Module>;
+            }`);
+
+           env.write('node_modules/router2/index.d.ts', `
+            import {ɵɵNgModuleDefWithMeta} from '@angular/core';
+            export declare class Router2Module {
+              static ɵmod: ɵɵNgModuleDefWithMeta<Router2Module, never, never, never>;
+            }`);
+
+           env.driveMain();
+
+           const jsContents = env.getContents('test.js');
+           expect(jsContents).toContain('imports: [[RouterModule.forRoot()]]');
+
+           const dtsContents = env.getContents('test.d.ts');
+           expect(dtsContents).toContain(`import * as i1 from "router2";`);
+           expect(dtsContents)
+               .toContain(
+                   'i0.ɵɵNgModuleDefWithMeta<TestModule, never, [typeof i1.Router2Module], never>');
+         });
 
       it('should not reference a constant with a ModuleWithProviders value in module def imports',
          () => {
@@ -1830,11 +2210,9 @@ runInEachFileSystem(os => {
       env.driveMain();
       const jsContents = env.getContents('test.js');
       const hostBindingsFn = `
-      hostBindings: function FooCmp_HostBindings(rf, ctx, elIndex) {
+      hostBindings: function FooCmp_HostBindings(rf, ctx) {
         if (rf & 1) {
-          i0.ɵɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick(); });
-          i0.ɵɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onDocumentClick($event.target); }, false, i0.ɵɵresolveDocument);
-          i0.ɵɵlistener("scroll", function FooCmp_scroll_HostBindingHandler($event) { return ctx.onWindowScroll(); }, false, i0.ɵɵresolveWindow);
+          i0.ɵɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick(); })("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onDocumentClick($event.target); }, false, i0.ɵɵresolveDocument)("scroll", function FooCmp_scroll_HostBindingHandler($event) { return ctx.onWindowScroll(); }, false, i0.ɵɵresolveWindow);
         }
       }
     `;
@@ -1872,29 +2250,67 @@ runInEachFileSystem(os => {
           }
         })
         class FooCmp {}
-    `);
+      `);
       const errors = env.driveDiagnostics();
       expect(trim(errors[0].messageText as string))
           .toContain('Cannot have a pipe in an action expression');
     });
 
-    it('should throw in case pipes are used in host bindings', () => {
+    it('should throw in case pipes are used in host bindings (defined as `value | pipe`)', () => {
       env.write(`test.ts`, `
-        import {Component} from '@angular/core';
+            import {Component} from '@angular/core';
 
-        @Component({
-          selector: 'test',
-          template: '...',
-          host: {
-            '[id]': 'id | myPipe'
-          }
-        })
-        class FooCmp {}
-    `);
+            @Component({
+              selector: 'test',
+              template: '...',
+              host: {
+                '[id]': 'id | myPipe'
+              }
+            })
+            class FooCmp {}
+         `);
       const errors = env.driveDiagnostics();
       expect(trim(errors[0].messageText as string))
           .toContain('Host binding expression cannot contain pipes');
     });
+
+    it('should throw in case pipes are used in host bindings (defined as `!(value | pipe)`)',
+       () => {
+         env.write(`test.ts`, `
+            import {Component} from '@angular/core';
+
+            @Component({
+              selector: 'test',
+              template: '...',
+              host: {
+                '[id]': '!(id | myPipe)'
+              }
+            })
+            class FooCmp {}
+         `);
+         const errors = env.driveDiagnostics();
+         expect(trim(errors[0].messageText as string))
+             .toContain('Host binding expression cannot contain pipes');
+       });
+
+    it('should throw in case pipes are used in host bindings (defined as `(value | pipe) === X`)',
+       () => {
+         env.write(`test.ts`, `
+            import {Component} from '@angular/core';
+
+            @Component({
+              selector: 'test',
+              template: '...',
+              host: {
+                '[id]': '(id | myPipe) === true'
+              }
+            })
+            class FooCmp {}
+         `);
+         const errors = env.driveDiagnostics();
+         expect(trim(errors[0].messageText as string))
+             .toContain('Host binding expression cannot contain pipes');
+       });
 
     it('should generate host bindings for directives', () => {
       env.write(`test.ts`, `
@@ -1924,12 +2340,10 @@ runInEachFileSystem(os => {
       env.driveMain();
       const jsContents = env.getContents('test.js');
       const hostBindingsFn = `
-      hostBindings: function FooCmp_HostBindings(rf, ctx, elIndex) {
+      hostVars: 4,
+      hostBindings: function FooCmp_HostBindings(rf, ctx) {
         if (rf & 1) {
-          i0.ɵɵallocHostVars(3);
-          i0.ɵɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick($event); });
-          i0.ɵɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onBodyClick($event); }, false, i0.ɵɵresolveBody);
-          i0.ɵɵlistener("change", function FooCmp_change_HostBindingHandler($event) { return ctx.onChange(ctx.arg1, ctx.arg2, ctx.arg3); });
+          i0.ɵɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick($event); })("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onBodyClick($event); }, false, i0.ɵɵresolveBody)("change", function FooCmp_change_HostBindingHandler($event) { return ctx.onChange(ctx.arg1, ctx.arg2, ctx.arg3); });
         }
         if (rf & 2) {
           i0.ɵɵhostProperty("prop", ctx.bar);
@@ -1962,7 +2376,7 @@ runInEachFileSystem(os => {
     `);
       env.driveMain();
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('i0.ɵɵelementHostAttrs(["test", test])');
+      expect(jsContents).toContain('hostAttrs: ["test", test]');
     });
 
     it('should accept enum values as host bindings', () => {
@@ -2005,7 +2419,7 @@ runInEachFileSystem(os => {
       env.driveMain();
       const jsContents = env.getContents('test.js');
       const hostBindingsFn = `
-      hostBindings: function Dir_HostBindings(rf, ctx, elIndex) {
+      hostBindings: function Dir_HostBindings(rf, ctx) {
         if (rf & 1) {
           i0.ɵɵlistener("change", function Dir_change_HostBindingHandler($event) { return ctx.onChange(ctx.arg); });
         }
@@ -2104,82 +2518,23 @@ runInEachFileSystem(os => {
       expect(jsContents).not.toContain('MSG_EXTERNAL_');
     });
 
-    it('should render legacy id when `enableI18nLegacyMessageIdFormat` is not false and `i18nInFormat` is set to "xlf"',
-       () => {
-         env.tsconfig({i18nInFormat: 'xlf'});
-         env.write(`test.ts`, `
+    it('should render legacy ids when `enableI18nLegacyMessageIdFormat` is not false', () => {
+      env.tsconfig({});
+      env.write(`test.ts`, `
         import {Component} from '@angular/core';
         @Component({
           selector: 'test',
           template: '<div i18n>Some text</div>'
         })
         class FooCmp {}`);
-         env.driveMain();
-         const jsContents = env.getContents('test.js');
-         expect(jsContents).toContain(':@@5dbba0a3da8dff890e20cf76eb075d58900fbcd3:Some text');
-       });
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents)
+          .toContain(
+              '":\\u241F5dbba0a3da8dff890e20cf76eb075d58900fbcd3\\u241F8321000940098097247:Some text"');
+    });
 
-    it('should render legacy id when `enableI18nLegacyMessageIdFormat` is not false and `i18nInFormat` is set to "xliff"',
-       () => {
-         env.tsconfig({i18nInFormat: 'xliff'});
-         env.write(`test.ts`, `
-        import {Component} from '@angular/core';
-        @Component({
-          selector: 'test',
-          template: '<div i18n>Some text</div>'
-        })
-        class FooCmp {}`);
-         env.driveMain();
-         const jsContents = env.getContents('test.js');
-         expect(jsContents).toContain(':@@5dbba0a3da8dff890e20cf76eb075d58900fbcd3:Some text');
-       });
-
-    it('should render legacy id when `enableI18nLegacyMessageIdFormat` is not false and `i18nInFormat` is set to "xlf2"',
-       () => {
-         env.tsconfig({i18nInFormat: 'xlf2'});
-         env.write(`test.ts`, `
-        import {Component} from '@angular/core';
-        @Component({
-          selector: 'test',
-          template: '<div i18n>Some text</div>'
-        })
-        class FooCmp {}`);
-         env.driveMain();
-         const jsContents = env.getContents('test.js');
-         expect(jsContents).toContain(':@@8321000940098097247:Some text');
-       });
-
-    it('should render legacy id when `enableI18nLegacyMessageIdFormat` is not false and `i18nInFormat` is set to "xliff2"',
-       () => {
-         env.tsconfig({i18nInFormat: 'xliff2'});
-         env.write(`test.ts`, `
-        import {Component} from '@angular/core';
-        @Component({
-          selector: 'test',
-          template: '<div i18n>Some text</div>'
-        })
-        class FooCmp {}`);
-         env.driveMain();
-         const jsContents = env.getContents('test.js');
-         expect(jsContents).toContain(':@@8321000940098097247:Some text');
-       });
-
-    it('should render legacy id when `enableI18nLegacyMessageIdFormat` is not false and `i18nInFormat` is set to "xmb"',
-       () => {
-         env.tsconfig({i18nInFormat: 'xmb'});
-         env.write(`test.ts`, `
-        import {Component} from '@angular/core';
-        @Component({
-          selector: 'test',
-          template: '<div i18n>Some text</div>'
-        })
-        class FooCmp {}`);
-         env.driveMain();
-         const jsContents = env.getContents('test.js');
-         expect(jsContents).toContain(':@@8321000940098097247:Some text');
-       });
-
-    it('should render custom id even if `enableI18nLegacyMessageIdFormat` is not false and `i18nInFormat` is set',
+    it('should render custom id and legacy ids if `enableI18nLegacyMessageIdFormat` is not false',
        () => {
          env.tsconfig({i18nFormatIn: 'xlf'});
          env.write(`test.ts`, `
@@ -2191,25 +2546,28 @@ runInEachFileSystem(os => {
         class FooCmp {}`);
          env.driveMain();
          const jsContents = env.getContents('test.js');
-         expect(jsContents).toContain(':@@custom:Some text');
+         expect(jsContents)
+             .toContain(
+                 ':@@custom\\u241F5dbba0a3da8dff890e20cf76eb075d58900fbcd3\\u241F8321000940098097247:Some text');
        });
 
-    it('should not render legacy id when `enableI18nLegacyMessageIdFormat` is set to false', () => {
-      env.tsconfig({enableI18nLegacyMessageIdFormat: false, i18nInFormat: 'xmb'});
-      env.write(`test.ts`, `
+    it('should not render legacy ids when `enableI18nLegacyMessageIdFormat` is set to false',
+       () => {
+         env.tsconfig({enableI18nLegacyMessageIdFormat: false, i18nInFormat: 'xmb'});
+         env.write(`test.ts`, `
      import {Component} from '@angular/core';
      @Component({
        selector: 'test',
        template: '<div i18n>Some text</div>'
      })
      class FooCmp {}`);
-      env.driveMain();
-      const jsContents = env.getContents('test.js');
-      // Note that the colon would only be there if there is an id attached to the string.
-      expect(jsContents).not.toContain(':Some text');
-    });
+         env.driveMain();
+         const jsContents = env.getContents('test.js');
+         // Note that the colon would only be there if there is an id attached to the string.
+         expect(jsContents).not.toContain(':Some text');
+       });
 
-    it('should also render legacy id for ICUs when normal messages are using legacy ids', () => {
+    it('should also render legacy ids for ICUs when normal messages are using legacy ids', () => {
       env.tsconfig({i18nInFormat: 'xliff'});
       env.write(`test.ts`, `
      import {Component} from '@angular/core';
@@ -2222,8 +2580,10 @@ runInEachFileSystem(os => {
       const jsContents = env.getContents('test.js');
       expect(jsContents)
           .toContain(
-              ':@@720ba589d043a0497ac721ff972f41db0c919efb:{VAR_PLURAL, plural, 10 {ten} other {other}}');
-      expect(jsContents).toContain(':@@custom:Some text');
+              ':\\u241F720ba589d043a0497ac721ff972f41db0c919efb\\u241F3221232817843005870:{VAR_PLURAL, plural, 10 {ten} other {other}}');
+      expect(jsContents)
+          .toContain(
+              ':@@custom\\u241Fdcb6170595f5d548a3d00937e87d11858f51ad04\\u241F7419139165339437596:Some text');
     });
 
     it('@Component\'s `interpolation` should override default interpolation config', () => {
@@ -2444,7 +2804,7 @@ runInEachFileSystem(os => {
 
         env.write('test.ts', `/** I am a top-level comment. */
           import {NgModule} from '@angular/core';
-  
+
           @NgModule({})
           export class TestModule {}
       `);
@@ -2463,7 +2823,7 @@ runInEachFileSystem(os => {
 
         env.write('my-module.ts', `
           import {NgModule} from '@angular/core';
-  
+
           @NgModule({})
           export class MyModule {}
       `);
@@ -2476,7 +2836,7 @@ runInEachFileSystem(os => {
 
         env.write('test.ts', `
           import {NgModule} from '@angular/core';
-  
+
           @NgModule({})
           export class TestModule {}
       `);
@@ -2502,9 +2862,9 @@ runInEachFileSystem(os => {
       it('should generate a summary stub for decorated classes in the input file only', () => {
         env.write('test.ts', `
           import {Injectable, NgModule} from '@angular/core';
-  
+
           export class NotAModule {}
-  
+
           @NgModule({})
           export class TestModule {}
       `);
@@ -2518,10 +2878,10 @@ runInEachFileSystem(os => {
       it('should generate a summary stub for classes exported via exports', () => {
         env.write('test.ts', `
           import {Injectable, NgModule} from '@angular/core';
-  
+
           @NgModule({})
           class NotDirectlyExported {}
-  
+
           export {NotDirectlyExported};
       `);
 
@@ -2599,6 +2959,9 @@ runInEachFileSystem(os => {
       env.write(`test.ts`, `
         import {Directive} from '@angular/core';
 
+        @Directive({
+          selector: '[base]',
+        })
         class Base {}
 
         @Directive({
@@ -2643,6 +3006,59 @@ runInEachFileSystem(os => {
          const jsContents = env.getContents('test.js');
          expect(jsContents).toContain('directives: function () { return [CmpB]; }');
        });
+
+    it('should wrap setClassMetadata in an iife', () => {
+      env.write('test.ts', `
+        import {Injectable} from '@angular/core';
+
+        @Injectable({providedIn: 'root'})
+        export class Service {}
+      `);
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js').replace(/\s+/g, ' ');
+      expect(jsContents)
+          .toContain(
+              `/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(Service, [{ type: Injectable, args: [{ providedIn: 'root' }] }], null, null); })();`);
+    });
+
+    it('should not include `schemas` in component and module defs', () => {
+      env.write('test.ts', `
+        import {Component, NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
+
+        @Component({
+          selector: 'comp',
+          template: '<custom-el></custom-el>',
+          schemas: [NO_ERRORS_SCHEMA],
+        })
+        class MyComp {}
+
+        @NgModule({
+          declarations: [MyComp],
+          schemas: [NO_ERRORS_SCHEMA],
+        })
+        class MyModule {}
+      `);
+
+      env.driveMain();
+      const jsContents = trim(env.getContents('test.js'));
+      expect(jsContents).toContain(trim(`
+        MyComp.ɵcmp = i0.ɵɵdefineComponent({
+          type: MyComp,
+          selectors: [["comp"]],
+          decls: 1,
+          vars: 0,
+          template: function MyComp_Template(rf, ctx) {
+            if (rf & 1) {
+              i0.ɵɵelement(0, "custom-el");
+            }
+          },
+          encapsulation: 2
+        });
+      `));
+      expect(jsContents)
+          .toContain(trim('MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });'));
+    });
 
     it('should emit setClassMetadata calls for all types', () => {
       env.write('test.ts', `
@@ -2928,6 +3344,24 @@ runInEachFileSystem(os => {
       });
     });
 
+    describe('local refs', () => {
+      it('should not generate an error when a local ref is unresolved' +
+             ' (outside of template type-checking)',
+         () => {
+
+           env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '<div #ref="unknownTarget"></div>',
+          })
+          export class TestCmp {}
+        `);
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(0);
+         });
+    });
+
     describe('multiple local refs', () => {
       const getComponentScript = (template: string): string => `
       import {Component, Directive, NgModule} from '@angular/core';
@@ -3115,6 +3549,54 @@ runInEachFileSystem(os => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
         expect(jsContents).toMatch(/directives: \[i1\.ExternalDir\]/);
+      });
+    });
+
+    // Run checks that are present in preanalysis phase in both sync and async mode, to make sure
+    // the error messages are consistently thrown from `analyzeSync` and `analyzeAsync` functions.
+    ['sync', 'async'].forEach(mode => {
+      describe(`preanalysis phase checks [${mode}]`, () => {
+        let driveDiagnostics: () => Promise<ReadonlyArray<ts.Diagnostic>>;
+        beforeEach(() => {
+          if (mode === 'async') {
+            env.enablePreloading();
+            driveDiagnostics = () => env.driveDiagnosticsAsync();
+          } else {
+            driveDiagnostics = () => Promise.resolve(env.driveDiagnostics());
+          }
+        });
+
+        it('should throw if @Component is missing a template', async() => {
+          env.write('test.ts', `
+            import {Component} from '@angular/core';
+
+            @Component({
+              selector: 'test',
+            })
+            export class TestCmp {}
+          `);
+
+          const diags = await driveDiagnostics();
+          expect(diags[0].messageText).toBe('component is missing a template');
+          expect(diags[0].file !.fileName).toBe(absoluteFrom('/test.ts'));
+        });
+
+        it('should throw if `styleUrls` is defined incorrectly in @Component', async() => {
+          env.write('test.ts', `
+            import {Component} from '@angular/core';
+
+            @Component({
+              selector: 'test',
+              template: '...',
+              styleUrls: '...'
+            })
+            export class TestCmp {}
+          `);
+
+          const diags = await driveDiagnostics();
+          expect(diags[0].messageText).toBe('styleUrls must be an array of strings');
+          expect(diags[0].file !.fileName).toBe(absoluteFrom('/test.ts'));
+        });
       });
     });
 
@@ -3426,7 +3908,7 @@ runInEachFileSystem(os => {
       it('should not re-export a directive that\'s not exported from the NgModule', () => {
         env.write('dir.ts', `
              import {Directive} from '@angular/core';
-   
+
              @Directive({
                selector: 'dir',
              })
@@ -3435,7 +3917,7 @@ runInEachFileSystem(os => {
         env.write('module.ts', `
              import {NgModule} from '@angular/core';
              import {Dir} from './dir';
-   
+
              @NgModule({
                declarations: [Dir],
                exports: [],
@@ -3484,11 +3966,11 @@ runInEachFileSystem(os => {
       it('should not re-export a directive from an exported, external NgModule', () => {
         env.write(`node_modules/external/index.d.ts`, `
           import {ɵɵDirectiveDefWithMeta, ɵɵNgModuleDefWithMeta} from '@angular/core';
-  
+
           export declare class ExternalDir {
             static ɵdir: ɵɵDirectiveDefWithMeta<ExternalDir, '[test]', never, never, never, never>;
           }
-  
+
           export declare class ExternalModule {
             static ɵmod: ɵɵNgModuleDefWithMeta<ExternalModule, [typeof ExternalDir], never, [typeof ExternalDir]>;
           }
@@ -3548,7 +4030,7 @@ runInEachFileSystem(os => {
          () => {
            env.write('dir.ts', `
              import {Directive} from '@angular/core';
-   
+
              @Directive({
                selector: 'dir',
              })
@@ -3556,7 +4038,7 @@ runInEachFileSystem(os => {
            `);
            env.write('dir2.ts', `
              import {Directive} from '@angular/core';
-   
+
              @Directive({
                selector: 'dir',
              })
@@ -3566,7 +4048,7 @@ runInEachFileSystem(os => {
              import {NgModule} from '@angular/core';
              import {Dir} from './dir';
              import {Dir as Dir2} from './dir2';
-   
+
              @NgModule({
                declarations: [Dir, Dir2],
                exports: [Dir, Dir2],
@@ -3584,7 +4066,7 @@ runInEachFileSystem(os => {
       it('should choose a re-exported symbol if one is present', () => {
         env.write(`node_modules/external/dir.d.ts`, `
           import {ɵɵDirectiveDefWithMeta} from '@angular/core';
-  
+
           export declare class ExternalDir {
             static ɵdir: ɵɵDirectiveDefWithMeta<ExternalDir, '[test]', never, never, never, never>;
           }
@@ -3592,23 +4074,23 @@ runInEachFileSystem(os => {
         env.write('node_modules/external/module.d.ts', `
           import {ɵɵNgModuleDefWithMeta} from '@angular/core';
           import {ExternalDir} from './dir';
-  
+
           export declare class ExternalModule {
             static ɵmod: ɵɵNgModuleDefWithMeta<ExternalModule, [typeof ExternalDir], never, [typeof ExternalDir]>;
           }
-  
+
           export {ExternalDir as ɵngExportɵExternalModuleɵExternalDir};
         `);
         env.write('test.ts', `
           import {Component, Directive, NgModule} from '@angular/core';
           import {ExternalModule} from 'external/module';
-  
+
           @Component({
             selector: 'test-cmp',
             template: '<div test></div>',
           })
           class Cmp {}
-  
+
           @NgModule({
             declarations: [Cmp],
             imports: [ExternalModule],
@@ -3828,10 +4310,8 @@ runInEachFileSystem(os => {
            env.driveMain();
            const jsContents = env.getContents('test.js');
            const hostBindingsFn = `
-        hostBindings: function UnsafeAttrsDirective_HostBindings(rf, ctx, elIndex) {
-          if (rf & 1) {
-            i0.ɵɵallocHostVars(6);
-          }
+        hostVars: 6,
+        hostBindings: function UnsafeAttrsDirective_HostBindings(rf, ctx) {
           if (rf & 2) {
             i0.ɵɵattribute("href", ctx.attrHref, i0.ɵɵsanitizeUrlOrResourceUrl)("src", ctx.attrSrc, i0.ɵɵsanitizeUrlOrResourceUrl)("action", ctx.attrAction, i0.ɵɵsanitizeUrl)("profile", ctx.attrProfile, i0.ɵɵsanitizeResourceUrl)("innerHTML", ctx.attrInnerHTML, i0.ɵɵsanitizeHtml)("title", ctx.attrSafeTitle);
           }
@@ -3878,10 +4358,8 @@ runInEachFileSystem(os => {
            env.driveMain();
            const jsContents = env.getContents('test.js');
            const hostBindingsFn = `
-        hostBindings: function UnsafePropsDirective_HostBindings(rf, ctx, elIndex) {
-          if (rf & 1) {
-            i0.ɵɵallocHostVars(6);
-          }
+        hostVars: 6,
+        hostBindings: function UnsafePropsDirective_HostBindings(rf, ctx) {
           if (rf & 2) {
             i0.ɵɵhostProperty("href", ctx.propHref, i0.ɵɵsanitizeUrlOrResourceUrl)("src", ctx.propSrc, i0.ɵɵsanitizeUrlOrResourceUrl)("action", ctx.propAction, i0.ɵɵsanitizeUrl)("profile", ctx.propProfile, i0.ɵɵsanitizeResourceUrl)("innerHTML", ctx.propInnerHTML, i0.ɵɵsanitizeHtml)("title", ctx.propSafeTitle);
           }
@@ -3913,10 +4391,8 @@ runInEachFileSystem(os => {
            env.driveMain();
            const jsContents = env.getContents('test.js');
            const hostBindingsFn = `
-        hostBindings: function FooCmp_HostBindings(rf, ctx, elIndex) {
-          if (rf & 1) {
-            i0.ɵɵallocHostVars(6);
-          }
+        hostVars: 6,
+        hostBindings: function FooCmp_HostBindings(rf, ctx) {
           if (rf & 2) {
             i0.ɵɵhostProperty("src", ctx.srcProp)("href", ctx.hrefProp)("title", ctx.titleProp);
             i0.ɵɵattribute("src", ctx.srcAttr)("href", ctx.hrefAttr)("title", ctx.titleAttr);
@@ -4722,6 +5198,287 @@ export const Foo = Foo__PRE_R3__;
       });
     });
 
+    describe('disableTypeScriptVersionCheck', () => {
+      afterEach(() => restoreTypeScriptVersionForTesting());
+
+      it('produces an error when not supported and version check is enabled', () => {
+        setTypeScriptVersionForTesting('3.4.0');
+        env.tsconfig({disableTypeScriptVersionCheck: false});
+        env.write('empty.ts', '');
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain('but 3.4.0 was found instead');
+      });
+
+      it('does not produce an error when supported and version check is enabled', () => {
+        env.tsconfig({disableTypeScriptVersionCheck: false});
+        env.write('empty.ts', '');
+
+        // The TypeScript version is not overwritten, so the version
+        // that is actually used should be supported
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('does not produce an error when not supported but version check is disabled', () => {
+        setTypeScriptVersionForTesting('3.4.0');
+        env.tsconfig({disableTypeScriptVersionCheck: true});
+        env.write('empty.ts', '');
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('produces an error when not supported using default configuration', () => {
+        setTypeScriptVersionForTesting('3.4.0');
+        env.write('empty.ts', '');
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain('but 3.4.0 was found instead');
+      });
+    });
+
+    describe('inherited directives', () => {
+      beforeEach(() => {
+        env.write('local.ts', `
+          import {Component, Directive, ElementRef} from '@angular/core';
+
+          export class BasePlain {}
+
+          export class BasePlainWithBlankConstructor {
+            constructor() {}
+          }
+
+          export class BasePlainWithConstructorParameters {
+            constructor(elementRef: ElementRef) {}
+          }
+
+          @Component({
+            selector: 'base-cmp',
+            template: 'BaseCmp',
+          })
+          export class BaseCmp {}
+
+          @Directive({
+            selector: '[base]',
+          })
+          export class BaseDir {}
+        `);
+
+        env.write('lib.d.ts', `
+          import {ɵɵComponentDefWithMeta, ɵɵDirectiveDefWithMeta, ElementRef} from '@angular/core';
+
+          export declare class BasePlain {}
+
+          export declare class BasePlainWithBlankConstructor {
+            constructor() {}
+          }
+
+          export declare class BasePlainWithConstructorParameters {
+            constructor(elementRef: ElementRef) {}
+          }
+
+          export declare class BaseCmp {
+            static ɵcmp: ɵɵComponentDefWithMeta<BaseCmp, "base-cmp", never, {}, {}, never>
+          }
+
+          export declare class BaseDir {
+            static ɵdir: ɵɵDirectiveDefWithMeta<BaseDir, '[base]', never, never, never, never>;
+          }
+        `);
+      });
+
+      it('should not error when inheriting a constructor from a decorated directive class', () => {
+        env.tsconfig();
+        env.write('test.ts', `
+          import {Directive, Component} from '@angular/core';
+          import {BaseDir, BaseCmp} from './local';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir extends BaseDir {}
+
+          @Component({
+            selector: 'test-cmp',
+            template: 'TestCmp',
+          })
+          export class Cmp extends BaseCmp {}
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should not error when inheriting a constructor without parameters', () => {
+        env.tsconfig();
+        env.write('test.ts', `
+          import {Directive, Component} from '@angular/core';
+          import {BasePlainWithBlankConstructor} from './local';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir extends BasePlainWithBlankConstructor {}
+
+          @Component({
+            selector: 'test-cmp',
+            template: 'TestCmp',
+          })
+          export class Cmp extends BasePlainWithBlankConstructor {}
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should not error when inheriting from a class without a constructor', () => {
+        env.tsconfig();
+        env.write('test.ts', `
+          import {Directive, Component} from '@angular/core';
+          import {BasePlain} from './local';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir extends BasePlain {}
+
+          @Component({
+            selector: 'test-cmp',
+            template: 'TestCmp',
+          })
+          export class Cmp extends BasePlain {}
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should error when inheriting a constructor from an undecorated class', () => {
+        env.tsconfig();
+        env.write('test.ts', `
+          import {Directive, Component} from '@angular/core';
+          import {BasePlainWithConstructorParameters} from './local';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir extends BasePlainWithConstructorParameters {}
+
+          @Component({
+            selector: 'test-cmp',
+            template: 'TestCmp',
+          })
+          export class Cmp extends BasePlainWithConstructorParameters {}
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+        expect(diags[0].messageText).toContain('Dir');
+        expect(diags[0].messageText).toContain('BasePlainWithConstructorParameters');
+        expect(diags[1].messageText).toContain('Cmp');
+        expect(diags[1].messageText).toContain('BasePlainWithConstructorParameters');
+      });
+
+      it('should error when inheriting a constructor from undecorated grand super class', () => {
+        env.tsconfig();
+        env.write('test.ts', `
+          import {Directive, Component} from '@angular/core';
+          import {BasePlainWithConstructorParameters} from './local';
+
+          class Parent extends BasePlainWithConstructorParameters {}
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir extends Parent {}
+
+          @Component({
+            selector: 'test-cmp',
+            template: 'TestCmp',
+          })
+          export class Cmp extends Parent {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+        expect(diags[0].messageText).toContain('Dir');
+        expect(diags[0].messageText).toContain('BasePlainWithConstructorParameters');
+        expect(diags[1].messageText).toContain('Cmp');
+        expect(diags[1].messageText).toContain('BasePlainWithConstructorParameters');
+      });
+
+      it('should error when inheriting a constructor from undecorated grand grand super class',
+         () => {
+           env.tsconfig();
+           env.write('test.ts', `
+              import {Directive, Component} from '@angular/core';
+              import {BasePlainWithConstructorParameters} from './local';
+
+              class GrandParent extends BasePlainWithConstructorParameters {}
+
+              class Parent extends GrandParent {}
+
+              @Directive({
+                selector: '[dir]',
+              })
+              export class Dir extends Parent {}
+
+              @Component({
+                selector: 'test-cmp',
+                template: 'TestCmp',
+              })
+              export class Cmp extends Parent {}
+            `);
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(2);
+           expect(diags[0].messageText).toContain('Dir');
+           expect(diags[0].messageText).toContain('BasePlainWithConstructorParameters');
+           expect(diags[1].messageText).toContain('Cmp');
+           expect(diags[1].messageText).toContain('BasePlainWithConstructorParameters');
+         });
+
+      it('should not error when inheriting a constructor from decorated directive or component classes in a .d.ts file',
+         () => {
+           env.tsconfig();
+           env.write('test.ts', `
+              import {Component, Directive} from '@angular/core';
+              import {BaseDir, BaseCmp} from './lib';
+
+              @Directive({
+                selector: '[dir]',
+              })
+              export class Dir extends BaseDir {}
+
+              @Component({
+                selector: 'test-cmp',
+                template: 'TestCmp',
+              })
+              export class Cmp extends BaseCmp {}
+           `);
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(0);
+         });
+
+      it('should error when inheriting a constructor from an undecorated class in a .d.ts file',
+         () => {
+           env.tsconfig();
+           env.write('test.ts', `
+              import {Directive} from '@angular/core';
+
+              import {BasePlainWithConstructorParameters} from './lib';
+
+              @Directive({
+                selector: '[dir]',
+              })
+              export class Dir extends BasePlainWithConstructorParameters {}
+            `);
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(1);
+           expect(diags[0].messageText).toContain('Dir');
+           expect(diags[0].messageText).toContain('Base');
+         });
+    });
+
     describe('inline resources', () => {
       it('should process inline <style> tags', () => {
         env.write('test.ts', `
@@ -4730,13 +5487,16 @@ export const Foo = Foo__PRE_R3__;
         @Component({
           selector: 'test',
           template: '<style>h1 {font-size: larger}</style>',
+          styles: ['h2 {width: 10px}']
         })
         export class TestCmp {}
       `);
 
         env.driveMain();
         const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain('styles: ["h1[_ngcontent-%COMP%] {font-size: larger}"]');
+        expect(jsContents)
+            .toContain(
+                'styles: ["h2[_ngcontent-%COMP%] {width: 10px}", "h1[_ngcontent-%COMP%] {font-size: larger}"]');
       });
 
       it('should process inline <link> tags', () => {
@@ -4756,6 +5516,388 @@ export const Foo = Foo__PRE_R3__;
         expect(jsContents).toContain('styles: ["h1[_ngcontent-%COMP%] {font-size: larger}"]');
       });
     });
+
+    describe('non-exported classes', () => {
+      beforeEach(() => env.tsconfig({compileNonExportedClasses: false}));
+
+      it('should not emit directive definitions for non-exported classes if configured', () => {
+        env.write('test.ts', `
+          import {Directive} from '@angular/core';
+
+          @Directive({
+            selector: '[test]'
+          })
+          class TestDirective {}
+        `);
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).not.toContain('defineDirective(');
+        expect(jsContents).toContain('Directive({');
+      });
+
+      it('should not emit component definitions for non-exported classes if configured', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test',
+            template: 'hello'
+          })
+          class TestComponent {}
+        `);
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).not.toContain('defineComponent(');
+        expect(jsContents).toContain('Component({');
+      });
+
+      it('should not emit module definitions for non-exported classes if configured', () => {
+        env.write('test.ts', `
+          import {NgModule} from '@angular/core';
+
+          @NgModule({
+            declarations: []
+          })
+          class TestModule {}
+        `);
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).not.toContain('defineNgModule(');
+        expect(jsContents).toContain('NgModule({');
+      });
+    });
+
+    describe('undecorated providers', () => {
+      it('should error when an undecorated class, with a non-trivial constructor, is provided directly in a module',
+         () => {
+           env.write('test.ts', `
+            import {NgModule, NgZone} from '@angular/core';
+
+            class NotAService {
+              constructor(ngZone: NgZone) {}
+            }
+
+            @NgModule({
+              providers: [NotAService]
+            })
+            export class SomeModule {}
+          `);
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(1);
+           expect(diags[0].messageText).toContain('cannot be created via dependency injection');
+         });
+
+      it('should error when an undecorated class is provided via useClass', () => {
+        env.write('test.ts', `
+          import {NgModule, Injectable, NgZone} from '@angular/core';
+
+          @Injectable({providedIn: 'root'})
+          class Service {}
+
+          class NotAService {
+            constructor(ngZone: NgZone) {}
+          }
+
+          @NgModule({
+            providers: [{provide: Service, useClass: NotAService}]
+          })
+          export class SomeModule {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain('cannot be created via dependency injection');
+      });
+
+      it('should not error when an undecorated class is provided via useClass with deps', () => {
+        env.write('test.ts', `
+          import {NgModule, Injectable, NgZone} from '@angular/core';
+
+          @Injectable({providedIn: 'root'})
+          class Service {}
+
+          class NotAService {
+            constructor(ngZone: NgZone) {}
+          }
+
+          @NgModule({
+            providers: [{provide: Service, useClass: NotAService, deps: [NgZone]}]
+          })
+          export class SomeModule {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should error when an undecorated class is provided via an array', () => {
+        env.write('test.ts', `
+          import {NgModule, Injectable, NgZone} from '@angular/core';
+
+          @Injectable({providedIn: 'root'})
+          class Service {}
+
+          class NotAService {
+            constructor(ngZone: NgZone) {}
+          }
+
+          @NgModule({
+            providers: [Service, [NotAService]]
+          })
+          export class SomeModule {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain('cannot be created via dependency injection');
+      });
+
+      it('should error when an undecorated class is provided to a directive', () => {
+        env.write('test.ts', `
+          import {NgModule, Directive, NgZone} from '@angular/core';
+
+          class NotAService {
+            constructor(ngZone: NgZone) {}
+          }
+
+          @Directive({
+            selector: '[some-dir]',
+            providers: [NotAService]
+          })
+          class SomeDirective {}
+
+          @NgModule({
+            declarations: [SomeDirective]
+          })
+          export class SomeModule {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain('cannot be created via dependency injection');
+      });
+
+      it('should error when an undecorated class is provided to a component', () => {
+        env.write('test.ts', `
+          import {NgModule, Component, NgZone} from '@angular/core';
+
+          class NotAService {
+            constructor(ngZone: NgZone) {}
+          }
+
+          @Component({
+            selector: 'some-comp',
+            template: '',
+            providers: [NotAService]
+          })
+          class SomeComponent {}
+
+          @NgModule({
+            declarations: [SomeComponent]
+          })
+          export class SomeModule {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain('cannot be created via dependency injection');
+      });
+
+      it('should error when an undecorated class is provided to a component via viewProviders',
+         () => {
+           env.write('test.ts', `
+          import {NgModule, Component, NgZone} from '@angular/core';
+
+          class NotAService {
+            constructor(ngZone: NgZone) {}
+          }
+
+          @Component({
+            selector: 'some-comp',
+            template: '',
+            viewProviders: [NotAService]
+          })
+          class SomeComponent {}
+
+          @NgModule({
+            declarations: [SomeComponent]
+          })
+          export class SomeModule {}
+        `);
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(1);
+           expect(diags[0].messageText).toContain('cannot be created via dependency injection');
+         });
+
+      it('should not error when a class with a factory is provided', () => {
+        env.write('test.ts', `
+          import {NgModule, Pipe} from '@angular/core';
+
+          @Pipe({
+            name: 'some-pipe'
+          })
+          class SomePipe {}
+
+          @NgModule({
+            declarations: [SomePipe],
+            providers: [SomePipe]
+          })
+          export class SomeModule {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should not error when an NgModule is provided', () => {
+        env.write('test.ts', `
+          import {Injectable, NgModule} from '@angular/core';
+
+          @Injectable()
+          export class Service {}
+
+          @NgModule({
+          })
+          class SomeModule {
+            constructor(dep: Service) {}
+          }
+
+          @NgModule({
+            providers: [SomeModule],
+          })
+          export class Module {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should not error when an undecorated class from a declaration file is provided', () => {
+        env.write('node_modules/@angular/core/testing/index.d.ts', `
+          export declare class Testability {
+          }
+        `);
+        env.write('test.ts', `
+          import {NgModule} from '@angular/core';
+          import {Testability} from '@angular/core/testing';
+
+          @NgModule({
+            providers: [Testability]
+          })
+          export class SomeModule {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should not error when an undecorated class without a constructor from a declaration file is provided via useClass',
+         () => {
+           env.write('node_modules/@angular/core/testing/index.d.ts', `
+            export declare class Testability {
+            }
+          `);
+           env.write('test.ts', `
+            import {NgModule, Injectable} from '@angular/core';
+            import {Testability} from '@angular/core/testing';
+
+            @Injectable()
+            class TestingService {}
+
+            @NgModule({
+              providers: [{provide: TestingService, useClass: Testability}]
+            })
+            export class SomeModule {}
+          `);
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(0);
+         });
+
+      it('should not error if the undecorated class does not have a constructor or the constructor is blank',
+         () => {
+           env.write('test.ts', `
+          import {NgModule, NgZone} from '@angular/core';
+
+          class NoConstructorService {
+          }
+
+          class BlankConstructorService {
+          }
+
+          @NgModule({
+            providers: [NoConstructorService, BlankConstructorService]
+          })
+          export class SomeModule {}
+        `);
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(0);
+         });
+
+      it('should error when an undecorated class with a non-trivial constructor in a declaration file is provided via useClass',
+         () => {
+           env.write('node_modules/@angular/core/testing/index.d.ts', `
+            export declare class NgZone {}
+
+            export declare class Testability {
+              constructor(ngZone: NgZone) {}
+            }
+          `);
+           env.write('test.ts', `
+            import {NgModule, Injectable} from '@angular/core';
+            import {Testability} from '@angular/core/testing';
+
+            @Injectable()
+            class TestingService {}
+
+            @NgModule({
+              providers: [{provide: TestingService, useClass: Testability}]
+            })
+            export class SomeModule {}
+          `);
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(1);
+           expect(diags[0].messageText).toContain('cannot be created via dependency injection');
+         });
+
+      it('should not error when an class with a factory definition and a non-trivial constructor in a declaration file is provided via useClass',
+         () => {
+           env.write('node_modules/@angular/core/testing/index.d.ts', `
+            import * as i0 from '@angular/core';
+
+            export declare class NgZone {}
+
+            export declare class Testability {
+              static ɵfac: i0.ɵɵFactoryDef<Testability>;
+              constructor(ngZone: NgZone) {}
+            }
+          `);
+           env.write('test.ts', `
+            import {NgModule, Injectable} from '@angular/core';
+            import {Testability} from '@angular/core/testing';
+
+            @Injectable()
+            class TestingService {}
+
+            @NgModule({
+              providers: [{provide: TestingService, useClass: Testability}]
+            })
+            export class SomeModule {}
+          `);
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(0);
+         });
+
+    });
+
   });
 
   function expectTokenAtPosition<T extends ts.Node>(

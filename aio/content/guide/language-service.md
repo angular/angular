@@ -25,11 +25,9 @@ contextual possibilities and hints as you type.
 This example shows autocomplete in an interpolation. As you type it out,
 you can hit tab to complete.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/language-service/language-completion.gif" alt="autocompletion">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/language-service/language-completion.gif" alt="autocompletion">
+</div>
 
 There are also completions within elements. Any elements you have as a component selector will
 show up in the completion list.
@@ -39,22 +37,18 @@ show up in the completion list.
 The Angular Language Service can forewarn you of mistakes in your code.
 In this example, Angular doesn't know what `orders` is or where it comes from.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/language-service/language-error.gif" alt="error checking">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/language-service/language-error.gif" alt="error checking">
+</div>
 
 ### Quick info and navigation
 
 The quick-info feature allows you to hover to see where components, directives, modules, and so on come from.
 You can then click "Go to definition" or press F12 to go directly to the definition.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/language-service/language-navigation.gif" alt="navigation">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/language-service/language-navigation.gif" alt="navigation">
+</div>
 
 
 ## Angular Language Service in your editor

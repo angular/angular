@@ -1,4 +1,4 @@
-# Lazy Loading Feature Modules
+# Lazy-loading feature modules
 
 ## High level view
 
@@ -29,6 +29,13 @@ generates a file called `app-routing.module.ts`, which is one of
 the files you need for setting up lazy loading for your feature module.
 Navigate into the project by issuing the command `cd customer-app`.
 
+<div class="alert is-helpful">
+
+The `--routing` option requires Angular/CLI version 8.1 or higher.
+See [Keeping Up to Date](guide/updating).
+
+</div>
+
 ## Create a feature module with routing
 
 Next, you’ll need a feature module with a component to route to.
@@ -43,11 +50,10 @@ This creates a `customers` folder with the new lazy-loadable module `CustomersMo
 Because the new module is meant to be lazy-loaded, the command does NOT add a reference to the new feature module in the application's root module file, `app.module.ts`.
 Instead, it adds the declared route, `customers` to the `routes` array declared in the module provided as the `--module` option.
 
-<code-example language="typescript" header="src/app/app-routing.module.ts">
-const routes: Routes = [
-    { path: 'customers',
-      loadChildren: () => import('./customers/customers.module').then(m => m.CustomersModule) }
-    ];
+<code-example
+  header="src/app/app-routing.module.ts"
+  path="lazy-loading-ngmodules/src/app/app-routing.module.ts"
+  region="routes-customers">
 </code-example>
 
 Notice that the lazy-loading syntax uses `loadChildren` followed by a function that uses the browser's built-in `import('...')` syntax for dynamic imports.
@@ -64,13 +70,10 @@ ng generate module orders --route orders --module app.module
 This creates a new folder called `orders` containing the `OrdersModule` and `OrdersRoutingModule`, along with the new `OrdersComponent` source files.
 The `orders` route, specified with the `--route` option, is added to the `routes` array inside the `app-routing.module.ts` file, using the lazy-loading syntax.
 
-<code-example language="typescript" header="src/app/app-routing.module.ts">
-const routes: Routes = [
-    { path: 'customers',
-      loadChildren: () => import('./customers/customers.module').then(m => m.CustomersModule) },
-    { path: 'orders',
-      loadChildren: () => import('./orders/orders.module').then(m => m.OrdersModule) }
-    ];
+<code-example
+  header="src/app/app-routing.module.ts"
+  path="lazy-loading-ngmodules/src/app/app-routing.module.ts"
+  region="routes-customers-orders">
 </code-example>
 
 ## Set up the UI
@@ -91,11 +94,9 @@ ng serve
 
 Then go to `localhost:4200` where you should see “customer-app” and three buttons.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/lazy-loading-ngmodules/three-buttons.png" width="300" alt="three buttons in the browser">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/lazy-loading-ngmodules/three-buttons.png" width="300" alt="three buttons in the browser">
+</div>
 
 These buttons work, because the CLI automatically added the routes to the feature modules to the `routes` array in `app.module.ts`.
 
@@ -123,7 +124,7 @@ The `customers.module.ts` file imports the `customers-routing.module.ts` and `cu
 
 The `app-routing.module.ts` then imports the feature module, `customers.module.ts` using JavaScript's dynamic import.
 
-The feature-specific route definition file—`customers-routing.module.ts`—imports its own feature component defined in the `customers.componen.ts` file, along with the other JavaScript import statements. It then maps the empty path to the `CustomersComponent`.
+The feature-specific route definition file `customers-routing.module.ts` imports its own feature component defined in the `customers.component.ts` file, along with the other JavaScript import statements. It then maps the empty path to the `CustomersComponent`.
 
 <code-example path="lazy-loading-ngmodules/src/app/customers/customers-routing.module.ts" id="customers-routing.module.ts" region="customers-routing-module" header="src/app/customers/customers-routing.module.ts"></code-example>
 
@@ -137,30 +138,24 @@ The other feature module's routing module is configured similarly.
 
 You can check to see that a module is indeed being lazy loaded with the Chrome developer tools. In Chrome, open the dev tools by pressing `Cmd+Option+i` on a Mac or `Ctrl+Shift+j` on a PC and go to the Network Tab.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/lazy-loading-ngmodules/network-tab.png" width="600" alt="lazy loaded modules diagram">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/lazy-loading-ngmodules/network-tab.png" width="600" alt="lazy loaded modules diagram">
+</div>
 
 
 Click on the Orders or Customers button. If you see a chunk appear, everything is wired up properly and the feature module is being lazy loaded. A chunk should appear for Orders and for Customers but will only appear once for each.
 
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/lazy-loading-ngmodules/chunk-arrow.png" width="600" alt="lazy loaded modules diagram">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/lazy-loading-ngmodules/chunk-arrow.png" width="600" alt="lazy loaded modules diagram">
+</div>
 
 
 To see it again, or to test after working in the project, clear everything out by clicking the circle with a line through it in the upper left of the Network Tab:
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/lazy-loading-ngmodules/clear.gif" width="200" alt="lazy loaded modules diagram">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/lazy-loading-ngmodules/clear.gif" width="200" alt="lazy loaded modules diagram">
+</div>
 
 
 Then reload with `Cmd+r` or `Ctrl+r`, depending on your platform.

@@ -8,16 +8,17 @@
 
 import {assertDefined, assertEqual} from '../../util/assert';
 import {assertLContainerOrUndefined} from '../assert';
-import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
+import {ACTIVE_INDEX, ActiveIndexFlag, CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {RenderFlags} from '../interfaces/definition';
 import {TContainerNode, TNodeType} from '../interfaces/node';
-import {CONTEXT, LView, LViewFlags, PARENT, TVIEW, TView, T_HOST} from '../interfaces/view';
+import {CONTEXT, LView, LViewFlags, PARENT, TVIEW, TView, TViewType, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {insertView, removeView} from '../node_manipulation';
-import {getIsParent, getLView, getPreviousOrParentTNode, selectView, setIsParent, setPreviousOrParentTNode} from '../state';
-import {isCreationMode} from '../util/view_utils';
+import {enterView, getIsParent, getLView, getPreviousOrParentTNode, getTView, leaveView, setIsParent, setPreviousOrParentTNode} from '../state';
+import {getLContainerActiveIndex, isCreationMode} from '../util/view_utils';
 
 import {assignTViewNodeToLView, createLView, createTView, refreshView, renderView} from './shared';
+
 
 
 /**
@@ -38,11 +39,11 @@ export function ɵɵembeddedViewStart(viewBlockId: number, decls: number, vars: 
   const lContainer = lView[containerTNode.index] as LContainer;
 
   ngDevMode && assertNodeType(containerTNode, TNodeType.Container);
-  let viewToRender = scanForView(lContainer, lContainer[ACTIVE_INDEX] !, viewBlockId);
+  let viewToRender = scanForView(lContainer, getLContainerActiveIndex(lContainer), viewBlockId);
 
   if (viewToRender) {
     setIsParent();
-    selectView(viewToRender, viewToRender[TVIEW].node);
+    enterView(viewToRender, viewToRender[TVIEW].node);
   } else {
     // When we create a new LView, we always reset the state of the instructions.
     viewToRender = createLView(
@@ -52,14 +53,15 @@ export function ɵɵembeddedViewStart(viewBlockId: number, decls: number, vars: 
     const tParentNode = getIsParent() ? previousOrParentTNode :
                                         previousOrParentTNode && previousOrParentTNode.parent;
     assignTViewNodeToLView(viewToRender[TVIEW], tParentNode, viewBlockId, viewToRender);
-    selectView(viewToRender, viewToRender[TVIEW].node);
+    enterView(viewToRender, viewToRender[TVIEW].node);
   }
   if (lContainer) {
     if (isCreationMode(viewToRender)) {
       // it is a new view, insert it into collection of views for a given container
-      insertView(viewToRender, lContainer, lContainer[ACTIVE_INDEX] !);
+      insertView(
+          viewToRender[TVIEW], viewToRender, lContainer, getLContainerActiveIndex(lContainer));
     }
-    lContainer[ACTIVE_INDEX] !++;
+    lContainer[ACTIVE_INDEX] += ActiveIndexFlag.INCREMENT;
   }
   return isCreationMode(viewToRender) ? RenderFlags.Create | RenderFlags.Update :
                                         RenderFlags.Update;
@@ -87,8 +89,8 @@ function getOrCreateEmbeddedTView(
   ngDevMode && assertEqual(Array.isArray(containerTViews), true, 'TViews should be in an array');
   if (viewIndex >= containerTViews.length || containerTViews[viewIndex] == null) {
     containerTViews[viewIndex] = createTView(
-        viewIndex, null, decls, vars, tView.directiveRegistry, tView.pipeRegistry, null, null,
-        tView.consts);
+        TViewType.Embedded, viewIndex, null, decls, vars, tView.directiveRegistry,
+        tView.pipeRegistry, null, null, tView.consts);
   }
   return containerTViews[viewIndex];
 }
@@ -127,17 +129,17 @@ function scanForView(lContainer: LContainer, startIdx: number, viewBlockId: numb
  */
 export function ɵɵembeddedViewEnd(): void {
   const lView = getLView();
-  const tView = lView[TVIEW];
+  const tView = getTView();
   const viewHost = lView[T_HOST];
   const context = lView[CONTEXT];
 
   if (isCreationMode(lView)) {
-    renderView(lView, tView, context);  // creation mode pass
+    renderView(tView, lView, context);  // creation mode pass
   }
-  refreshView(lView, tView, tView.template, context);  // update mode pass
+  refreshView(tView, lView, tView.template, context);  // update mode pass
 
   const lContainer = lView[PARENT] as LContainer;
   ngDevMode && assertLContainerOrUndefined(lContainer);
-  selectView(lContainer[PARENT] !, null);
+  leaveView();
   setPreviousOrParentTNode(viewHost !, false);
 }

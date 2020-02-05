@@ -294,7 +294,8 @@ export abstract class AbstractControl {
 
   /**
    * A multicasting observable that emits an event every time the value of the control changes, in
-   * the UI or programmatically.
+   * the UI or programmatically. It also emits an event each time you call enable() or disable()
+   * without passing along {emitEvent: false} as a function argument.
    */
   // TODO(issue/24571): remove '!'.
   public readonly valueChanges !: Observable<any>;
@@ -370,7 +371,7 @@ export abstract class AbstractControl {
    * @see `markAsPristine()`
    *
    * @param opts Configuration options that determine how the control propagates changes
-   * and emits events events after marking is applied.
+   * and emits events after marking is applied.
    * * `onlySelf`: When true, mark only this control. When false or not supplied,
    * marks all direct ancestors. Default is false.
    */

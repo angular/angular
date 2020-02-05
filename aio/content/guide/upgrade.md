@@ -266,11 +266,9 @@ everything work seamlessly:
   When you register a downgraded service, you must explicitly specify a *string token* that you want to
   use in AngularJS.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/upgrade/injectors.png" alt="The two injectors in a hybrid application">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/upgrade/injectors.png" alt="The two injectors in a hybrid application">
+</div>
 
 #### Components and the DOM
 
@@ -304,11 +302,9 @@ ways:
     bridges the related concepts of AngularJS transclusion and Angular content
     projection together.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/upgrade/dom.png" alt="DOM element ownership in a hybrid application">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/upgrade/dom.png" alt="DOM element ownership in a hybrid application">
+</div>
 
 Whenever you use a component that belongs to the other framework, a
 switch between framework boundaries occurs. However, that switch only
@@ -351,11 +347,9 @@ AngularJS and Angular approaches. Here's what happens:
   every turn of the Angular zone. This also triggers AngularJS change
   detection after every event.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/upgrade/change_detection.png" alt="Change detection in a hybrid application">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/upgrade/change_detection.png" alt="Change detection in a hybrid application">
+</div>
 
 In practice, you do not need to call `$apply()`,
 regardless of whether it is in AngularJS or Angular. The
@@ -938,7 +932,7 @@ The `useHash` property defaults to `false`, and the `hashPrefix` defaults to an 
 
 ```ts
 LocationUpgradeModule.config({
-  useHash: true
+  useHash: true,
   hashPrefix: '!'
 })
 ```
@@ -968,7 +962,7 @@ Once you introduce the Angular Router, using the Angular Router triggers navigat
 
 You can take advantage of Ahead-of-time (AOT) compilation on hybrid apps just like on any other
 Angular application.
-The setup for an hybrid app is mostly the same as described in
+The setup for a hybrid app is mostly the same as described in
 [the Ahead-of-time Compilation chapter](guide/aot-compiler)
 save for differences in `index.html` and `main-aot.ts`
 
@@ -1506,7 +1500,7 @@ This is something you'll do to all components as you upgrade them. Simultaneousl
 with the AngularJS to Angular upgrade you're also migrating code from scripts to modules.
 
 At this point, you can switch the two components to use the new service
-instead of the old one.  While you `$inject` it as the downgraded `phone` factory,
+instead of the old one. While you `$inject` it as the downgraded `phone` factory,
 it's really an instance of the `Phone` class and you annotate its type accordingly:
 
 <code-example path="upgrade-phonecat-2-hybrid/app/phone-list/phone-list.component.ajs.ts" header="app/phone-list/phone-list.component.ts">

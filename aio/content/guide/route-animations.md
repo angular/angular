@@ -25,11 +25,9 @@ Let's illustrate a router transition animation by navigating between two routes,
 
 </br>
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/animations/route-animation.gif" alt="Animations in action" width="440">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/animations/route-animation.gif" alt="Animations in action" width="440">
+</div>
 
 ## Route configuration
 
@@ -65,11 +63,11 @@ The `<router-outlet>` container has an attribute directive that contains data ab
 
 <code-example path="animations/src/app/app.component.html" header="src/app/app.component.html" region="route-animations-outlet"></code-example>
 
-`AppComponent` defines a method that can detect when a view changes. The method assigns an animation state value to the animation trigger (`@routeAnimation`) based on the route configuration `data` property value.  Here's an example of an `AppComponent` method that detects when a route change happens.
+`AppComponent` defines a method that can detect when a view changes. The method assigns an animation state value to the animation trigger (`@routeAnimation`) based on the route configuration `data` property value. Here's an example of an `AppComponent` method that detects when a route change happens.
 
 <code-example path="animations/src/app/app.component.ts" header="src/app/app.component.ts" region="prepare-router-outlet" language="typescript"></code-example>
 
-Here, the `prepareRoute()` method takes the value of the output directive (established through `#outlet="outlet"`) and returns a string value representing the state of the animation based on the custom data of the current active route. You can use this data to control which transition to execute for each route.
+Here, the `prepareRoute()` method takes the value of the outlet directive (established through `#outlet="outlet"`) and returns a string value representing the state of the animation based on the custom data of the current active route. You can use this data to control which transition to execute for each route.
 
 ## Animation definition
 

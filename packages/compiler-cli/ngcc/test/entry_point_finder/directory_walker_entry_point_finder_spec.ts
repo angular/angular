@@ -9,6 +9,7 @@ import {AbsoluteFsPath, FileSystem, absoluteFrom, getFileSystem, relative} from 
 import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {DependencyResolver} from '../../src/dependencies/dependency_resolver';
+import {DtsDependencyHost} from '../../src/dependencies/dts_dependency_host';
 import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
 import {DirectoryWalkerEntryPointFinder} from '../../src/entry_point_finder/directory_walker_entry_point_finder';
@@ -29,8 +30,9 @@ runInEachFileSystem(() => {
       fs = getFileSystem();
       _Abs = absoluteFrom;
       logger = new MockLogger();
-      resolver = new DependencyResolver(
-          fs, logger, {esm2015: new EsmDependencyHost(fs, new ModuleResolver(fs))});
+      const srcHost = new EsmDependencyHost(fs, new ModuleResolver(fs));
+      const dtsHost = new DtsDependencyHost(fs);
+      resolver = new DependencyResolver(fs, logger, {esm2015: srcHost}, dtsHost);
       config = new NgccConfiguration(fs, _Abs('/'));
     });
 
@@ -152,8 +154,9 @@ runInEachFileSystem(() => {
           ...createPackage(_Abs('/path_mapped/dist/pkg2/node_modules'), 'pkg4'),
           ...createPackage(_Abs('/path_mapped/dist/lib/pkg3'), 'test'),
         ]);
-        resolver = new DependencyResolver(
-            fs, logger, {esm2015: new EsmDependencyHost(fs, new ModuleResolver(fs, pathMappings))});
+        const srcHost = new EsmDependencyHost(fs, new ModuleResolver(fs, pathMappings));
+        const dtsHost = new DtsDependencyHost(fs, pathMappings);
+        resolver = new DependencyResolver(fs, logger, {esm2015: srcHost}, dtsHost);
         const finder = new DirectoryWalkerEntryPointFinder(
             fs, config, logger, resolver, basePath, pathMappings);
         const {entryPoints} = finder.findEntryPoints();
@@ -179,8 +182,9 @@ runInEachFileSystem(() => {
           ...createPackage(_Abs('/path_mapped/node_modules'), 'test', []),
           ...createPackage(_Abs('/path_mapped/dist'), 'pkg2'),
         ]);
-        resolver = new DependencyResolver(
-            fs, logger, {esm2015: new EsmDependencyHost(fs, new ModuleResolver(fs, pathMappings))});
+        const srcHost = new EsmDependencyHost(fs, new ModuleResolver(fs, pathMappings));
+        const dtsHost = new DtsDependencyHost(fs, pathMappings);
+        resolver = new DependencyResolver(fs, logger, {esm2015: srcHost}, dtsHost);
         const finder = new DirectoryWalkerEntryPointFinder(
             fs, config, logger, resolver, basePath, pathMappings);
         const {entryPoints} = finder.findEntryPoints();

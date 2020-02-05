@@ -8,7 +8,6 @@
  */
 
 import './ng_dev_mode';
-import {global} from './global';
 
 /**
  * THIS FILE CONTAINS CODE WHICH SHOULD BE TREE SHAKEN AND NEVER CALLED FROM PRODUCTION CODE!!!

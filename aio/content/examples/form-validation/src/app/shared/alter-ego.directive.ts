@@ -7,7 +7,7 @@ import {
 } from '@angular/forms';
 import { catchError, map } from 'rxjs/operators';
 import { HeroesService } from './heroes.service';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 // #docregion async-validator
 @Injectable({ providedIn: 'root' })
@@ -19,7 +19,7 @@ export class UniqueAlterEgoValidator implements AsyncValidator {
   ): Promise<ValidationErrors | null> | Observable<ValidationErrors | null> {
     return this.heroesService.isAlterEgoTaken(ctrl.value).pipe(
       map(isTaken => (isTaken ? { uniqueAlterEgo: true } : null)),
-      catchError(() => null)
+      catchError(() => of(null))
     );
   }
 }

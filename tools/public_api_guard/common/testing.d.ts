@@ -19,15 +19,15 @@ export declare class MockLocationStrategy extends LocationStrategy {
 }
 
 export declare class MockPlatformLocation implements PlatformLocation {
-    readonly hash: string;
-    readonly hostname: string;
-    readonly href: string;
-    readonly pathname: string;
-    readonly port: string;
-    readonly protocol: string;
-    readonly search: string;
-    readonly state: unknown;
-    readonly url: string;
+    get hash(): string;
+    get hostname(): string;
+    get href(): string;
+    get pathname(): string;
+    get port(): string;
+    get protocol(): string;
+    get search(): string;
+    get state(): unknown;
+    get url(): string;
     constructor(config?: MockPlatformLocationConfig);
     back(): void;
     forward(): void;

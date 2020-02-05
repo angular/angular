@@ -68,7 +68,7 @@ export class ImportGraph {
           stmt.moduleSpecifier !== undefined && ts.isStringLiteral(stmt.moduleSpecifier)) {
         // Resolve the module to a file, and check whether that file is in the ts.Program.
         const moduleName = stmt.moduleSpecifier.text;
-        const moduleFile = this.resolver.resolveModuleName(moduleName, sf);
+        const moduleFile = this.resolver.resolveModule(moduleName, sf.fileName);
         if (moduleFile !== null && isLocalFile(moduleFile)) {
           // Record this local import.
           imports.add(moduleFile);

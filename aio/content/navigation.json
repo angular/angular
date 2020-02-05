@@ -98,58 +98,12 @@
       "tooltip": "The fundamentals of Angular",
       "children": [
         {
-          "title": "Tour of Heroes App",
-          "tooltip": "The Tour of Heroes app is used as a reference point in many Angular examples.",
-          "children": [
-          {
-            "url": "tutorial",
-            "title": "Introduction",
-            "tooltip": "Introduction to the Tour of Heroes tutorial"
-          },
-          {
-            "url": "tutorial/toh-pt0",
-            "title": "The Application Shell",
-            "tooltip": "Creating the application shell"
-          },
-          {
-            "url": "tutorial/toh-pt1",
-            "title": "1. The Hero Editor",
-            "tooltip": "Part 1: Build a simple hero editor"
-          },
-          {
-            "url": "tutorial/toh-pt2",
-            "title": "2. Displaying a List",
-            "tooltip": "Part 2: Build a master/detail page with a list of heroes."
-          },
-          {
-            "url": "tutorial/toh-pt3",
-            "title": "3. Master/Detail Components",
-            "tooltip": "Part 3: Refactor the master/detail view into separate components."
-          },
-          {
-            "url": "tutorial/toh-pt4",
-            "title": "4. Services",
-            "tooltip": "Part 4: Create a reusable service to manage hero data."
-          },
-          {
-            "url": "tutorial/toh-pt5",
-            "title": "5. Routing",
-            "tooltip": "Part 5: Add the Angular router and navigate among the views."
-          },
-          {
-            "url": "tutorial/toh-pt6",
-            "title": "6. HTTP",
-            "tooltip": "Part 6: Use HTTP to retrieve and save hero data."
-          }
-          ]
-        },
-        {
-          "title": "Architecture",
-          "tooltip": "The basic building blocks of Angular applications.",
+          "title": "Angular Concepts",
+          "tooltip": "Introduction to basic concepts for Angular applications.",
           "children": [
             {
               "url": "guide/architecture",
-              "title": "Architecture Overview",
+              "title": "Intro to Basic Concepts",
               "tooltip": "Basic building blocks of Angular applications."
             },
             {
@@ -172,6 +126,52 @@
               "title": "Next Steps",
               "tooltip": "Beyond the basics."
             }
+          ]
+        },
+        {
+          "title": "Tour of Heroes App",
+          "tooltip": "The Tour of Heroes app is used as a reference point in many Angular examples.",
+          "children": [
+          {
+            "url": "tutorial",
+            "title": "Introduction",
+            "tooltip": "Introduction to the Tour of Heroes tutorial"
+          },
+          {
+            "url": "tutorial/toh-pt0",
+            "title": "The Application Shell",
+            "tooltip": "Creating the application shell"
+          },
+          {
+            "url": "tutorial/toh-pt1",
+            "title": "1. The Hero Editor",
+            "tooltip": "Part 1: Build a simple hero editor"
+          },
+          {
+            "url": "tutorial/toh-pt2",
+            "title": "2. Display a List",
+            "tooltip": "Part 2: Build a master/detail page with a list of heroes."
+          },
+          {
+            "url": "tutorial/toh-pt3",
+            "title": "3. Create a Feature Component",
+            "tooltip": "Part 3: Refactor the master/detail views into separate components."
+          },
+          {
+            "url": "tutorial/toh-pt4",
+            "title": "4. Add Services",
+            "tooltip": "Part 4: Create a reusable service to manage hero data."
+          },
+          {
+            "url": "tutorial/toh-pt5",
+            "title": "5. Add In-app Navigation",
+            "tooltip": "Part 5: Add the Angular router and navigate among the views."
+          },
+          {
+            "url": "tutorial/toh-pt6",
+            "title": "6. Get Data from a Server",
+            "tooltip": "Part 6: Use HTTP to retrieve and save hero data."
+          }
           ]
         },
         {
@@ -298,11 +298,6 @@
           ]
         },
         {
-          "url": "guide/bootstrapping",
-          "title": "Bootstrapping",
-          "tooltip": "Tell Angular how to construct and bootstrap the app in the root \"AppModule\"."
-        },
-        {
           "title": "NgModules",
           "tooltip": "NgModules.",
           "children": [
@@ -315,6 +310,11 @@
               "url": "guide/ngmodule-vs-jsmodule",
               "title": "JS Modules vs NgModules",
               "tooltip": "Differentiate between JavaScript modules and NgModules."
+            },
+            {
+              "url": "guide/bootstrapping",
+              "title": "App Root NgModule",
+              "tooltip": "Tell Angular how to construct and bootstrap the app in the root \"AppModule\"."
             },
             {
               "url": "guide/frequent-ngmodules",
@@ -577,11 +577,6 @@
           "tooltip": "Using builders to customize Angular CLI."
         },
         {
-          "url": "guide/ivy",
-          "title": "Angular Ivy",
-          "tooltip": "Opting out of Angular Ivy with Angular CLI."
-        },
-        {
           "url": "guide/web-worker",
           "title": "Web Workers",
           "tooltip": "Using Web Workers with Angular CLI."
@@ -599,24 +594,29 @@
           "hidden": true
         },
         {
-          "title": "AoT Compiler",
+          "title": "AOT Compiler",
           "tooltip": "Understanding ahead-of-time compilation.",
           "children": [
             {
               "url": "guide/aot-compiler",
               "title": "Ahead-of-Time Compilation",
-              "tooltip": "Learn why and how to use the Ahead-of-Time (AoT) compiler."
+              "tooltip": "Learn why and how to use the Ahead-of-Time (AOT) compiler."
             },
             {
               "url": "guide/angular-compiler-options",
               "title": "Angular Compiler Options",
-              "tooltip": "Configuring AoT compilation."
+              "tooltip": "Configuring AOT compilation."
            },
            {
               "url": "guide/aot-metadata-errors",
-              "title": "AoT Metadata Errors",
-              "tooltip": "Troubleshooting AoT compilation."
-           }
+              "title": "AOT Metadata Errors",
+              "tooltip": "Troubleshooting AOT compilation."
+           },
+           {
+            "url": "guide/template-typecheck",
+            "title": "Template Type-checking",
+            "tooltip": "Template type-checking in Angular."
+         }
         ]
       },
         {
@@ -712,6 +712,11 @@
           "url": "guide/deprecations",
           "title": "Deprecations",
           "tooltip": "Summary of Angular APIs and features that are deprecated."
+        },
+        {
+          "url": "guide/ivy",
+          "title": "Angular Ivy",
+          "tooltip": "About the Angular Ivy compilation and rendering pipeline."
         }
       ]
     },
@@ -749,11 +754,6 @@
           "title": "Usage Analytics",
           "tooltip": "For administrators, guide to gathering usage analytics from your users.",
           "url": "cli/usage-analytics-gathering"
-        },
-        {
-          "title": "ngcc",
-          "tooltip": "Description of the Angular Compatibility Compiler.",
-          "url": "guide/ngcc"
         }
       ]
     },

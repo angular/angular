@@ -9,6 +9,13 @@
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
+      "i18n": {
+        "sourceLocale": "en-US",
+        "locales": {
+          "fr": "src/locale/messages.fr.xlf",
+          "de": "src/locale/messages.de.xlf"
+        }
+      },
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
@@ -26,12 +33,10 @@
               "src/styles.css"
             ],
             "scripts": [],
-            "progress": false
+            "progress": false,
+            "i18nMissingTranslation": "error"
           },
           "configurations": {
-            "view-engine": {
-              "tsConfig": "tsconfig.view-engine.json"
-            },
             "production": {
               "fileReplacements": [
                 {
@@ -61,17 +66,13 @@
                 }
               ]
             },
-            "translated-legacy": {
-              "tsConfig": "tsconfig.legacy.json",
-              "optimization": true,
-              "outputHashing": "all",
-              "sourceMap": false,
-              "extractCss": true,
-              "namedChunks": false,
-              "aot": true,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true
+            "fr": {
+              "localize": ["fr"],
+              "deleteOutputPath": false
+            },
+            "de": {
+              "localize": ["de"],
+              "deleteOutputPath": false
             }
           }
         },
@@ -84,21 +85,19 @@
             "production": {
               "browserTarget": "cli-hello-world-ivy-i18n:build:production"
             },
-            "ci": {
-              "progress": false
+            "fr": {
+              "browserTarget": "cli-hello-world-ivy-i18n:build:production,fr"
             },
-            "ci-production": {
-              "browserTarget": "cli-hello-world-ivy-i18n:build:production",
-              "progress": false
+            "de": {
+              "browserTarget": "cli-hello-world-ivy-i18n:build:production,de"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "cli-hello-world-ivy-i18n:build:view-engine",
-            "outputPath": "../tmp/legacy-locales/",
-            "outFile": "messages.legacy.xlf"
+            "browserTarget": "cli-hello-world-ivy-i18n:build",
+            "outputPath": "src/locale"
           }
         },
         "test": {
@@ -136,35 +135,23 @@
         "e2e": {
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
-            "protractorConfig": "e2e/runtime/protractor.conf.js",
+            "protractorConfig": "e2e/protractor.conf.js",
             "devServerTarget": "cli-hello-world-ivy-i18n:serve",
-            "webdriverUpdate": false
+            "webdriverUpdate": false,
+            "specs": ["./en/app.e2e-spec.ts"]
           },
           "configurations": {
             "production": {
-              "devServerTarget": "cli-hello-world-ivy-i18n:serve:production"
+              "devServerTarget": "cli-hello-world-ivy-i18n:serve:production",
+              "protractorConfig": "e2e/protractor.conf.js"
             },
-            "ci": {
-              "devServerTarget": "cli-hello-world-ivy-i18n:serve:ci"
+            "fr": {
+              "devServerTarget": "cli-hello-world-ivy-i18n:serve:fr",
+              "specs": ["./fr/app.e2e-spec.ts"]
             },
-            "ci-production": {
-              "devServerTarget": "cli-hello-world-ivy-i18n:serve:ci-production"
-            },
-            "translated-legacy": {
-              "devServerTarget": "",
-              "protractorConfig": "e2e/legacy/protractor.conf.js"
-            },
-            "translated-en": {
-              "devServerTarget": "",
-              "protractorConfig": "e2e/en/protractor.conf.js"
-            },
-            "translated-fr": {
-              "devServerTarget": "",
-              "protractorConfig": "e2e/fr/protractor.conf.js"
-            },
-            "translated-de": {
-              "devServerTarget": "",
-              "protractorConfig": "e2e/de/protractor.conf.js"
+            "de": {
+             "devServerTarget": "cli-hello-world-ivy-i18n:serve:de",
+              "specs": ["./de/app.e2e-spec.ts"]
             }
           }
         }

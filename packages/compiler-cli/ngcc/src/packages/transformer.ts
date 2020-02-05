@@ -83,7 +83,7 @@ export class Transformer {
     // Transform the source files and source maps.
     const srcFormatter = this.getRenderingFormatter(reflectionHost, bundle);
 
-    const renderer = new Renderer(srcFormatter, this.fs, this.logger, bundle);
+    const renderer = new Renderer(reflectionHost, srcFormatter, this.fs, this.logger, bundle);
     let renderedFiles = renderer.renderProgram(
         decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
 
@@ -100,18 +100,15 @@ export class Transformer {
   }
 
   getHost(bundle: EntryPointBundle): NgccReflectionHost {
-    const typeChecker = bundle.src.program.getTypeChecker();
     switch (bundle.format) {
       case 'esm2015':
-        return new Esm2015ReflectionHost(this.logger, bundle.isCore, typeChecker, bundle.dts);
+        return new Esm2015ReflectionHost(this.logger, bundle.isCore, bundle.src, bundle.dts);
       case 'esm5':
-        return new Esm5ReflectionHost(this.logger, bundle.isCore, typeChecker, bundle.dts);
+        return new Esm5ReflectionHost(this.logger, bundle.isCore, bundle.src, bundle.dts);
       case 'umd':
-        return new UmdReflectionHost(
-            this.logger, bundle.isCore, bundle.src.program, bundle.src.host, bundle.dts);
+        return new UmdReflectionHost(this.logger, bundle.isCore, bundle.src, bundle.dts);
       case 'commonjs':
-        return new CommonJsReflectionHost(
-            this.logger, bundle.isCore, bundle.src.program, bundle.src.host, bundle.dts);
+        return new CommonJsReflectionHost(this.logger, bundle.isCore, bundle.src, bundle.dts);
       default:
         throw new Error(`Reflection host for "${bundle.format}" not yet implemented.`);
     }
@@ -149,7 +146,7 @@ export class Transformer {
     const decorationAnalyses = decorationAnalyzer.analyzeProgram();
 
     const moduleWithProvidersAnalyzer =
-        bundle.dts && new ModuleWithProvidersAnalyzer(reflectionHost, referencesRegistry);
+        new ModuleWithProvidersAnalyzer(reflectionHost, referencesRegistry, bundle.dts !== null);
     const moduleWithProvidersAnalyses = moduleWithProvidersAnalyzer &&
         moduleWithProvidersAnalyzer.analyzeProgram(bundle.src.program);
 

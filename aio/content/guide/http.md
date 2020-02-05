@@ -170,7 +170,7 @@ As you can see, the response object has a `body` property of the correct type.
 
 ### Making a JSONP request
 
-Apps can use the the `HttpClient` to make [JSONP](https://en.wikipedia.org/wiki/JSONP) requests across domains when the server doesn't support [CORS protocol](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS).
+Apps can use the `HttpClient` to make [JSONP](https://en.wikipedia.org/wiki/JSONP) requests across domains when the server doesn't support [CORS protocol](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS).
 
 Angular JSONP requests return an `Observable`.
 Follow the pattern for subscribing to observables and use the RxJS `map` operator to transform the response before using the [async pipe](api/common/AsyncPipe) to manage the results.
@@ -816,7 +816,7 @@ import {HttpParams} from "@angular/common/http";
 If there is a search term, the code constructs an options object with an HTML URL-encoded search parameter.
 If the term were "foo", the GET request URL would be `api/heroes?name=foo`.
 
-The `HttpParams` are immutable so you'll have to save the returned value of the `.set()` method in order  to update the options.
+The `HttpParams` are immutable so you'll have to save the returned value of the `.set()` method in order to update the options.
 
 #### Use `fromString` to create HttpParams
 
@@ -951,7 +951,7 @@ by returning an observable of simulated events.
 
 ## Security: XSRF protection
 
-[Cross-Site Request Forgery (XSRF)](https://en.wikipedia.org/wiki/Cross-site_request_forgery) is an attack technique by which the attacker can trick an authenticated user into unknowingly executing actions on your website.
+[Cross-Site Request Forgery (XSRF or CSRF)](https://en.wikipedia.org/wiki/Cross-site_request_forgery) is an attack technique by which the attacker can trick an authenticated user into unknowingly executing actions on your website.
 `HttpClient` supports a [common mechanism](https://en.wikipedia.org/wiki/Cross-site_request_forgery#Cookie-to-Header_Token) used to prevent XSRF attacks.
 When performing HTTP requests, an interceptor reads a token from a cookie, by default `XSRF-TOKEN`, and sets it as an HTTP header, `X-XSRF-TOKEN`.
 Since only code that runs on your domain could read the cookie, the backend can be certain that the HTTP request came from your client application and not an attacker.
@@ -988,7 +988,7 @@ use `HttpClientXsrfModule.withOptions()` to override the defaults.
 ## Testing HTTP requests
 
 As for any external dependency, you must mock the HTTP backend so your tests can simulate interaction with a remote server.
-The `@angular/common/http/testing` library makes it straightforward to set up such mocking .
+The `@angular/common/http/testing` library makes it straightforward to set up such mocking.
 
 Angular's HTTP testing library is designed for a pattern of testing in which the app executes code and makes requests first.
 The test then expects that certain requests have or have not been made,

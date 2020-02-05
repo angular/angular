@@ -160,9 +160,65 @@ runInEachFileSystem(() => {
       expect(written).toContain('/bar_directive.js');
       expect(written).toContain('/bar_component.js');
       expect(written).toContain('/bar_module.js');
-      expect(written).not.toContain('/foo_component.js');
+      expect(written).toContain('/foo_component.js');
       expect(written).not.toContain('/foo_pipe.js');
       expect(written).not.toContain('/foo_module.js');
+    });
+
+    // https://github.com/angular/angular/issues/32416
+    it('should rebuild full NgModule scope when a dependency of a declaration has changed', () => {
+      env.write('component1.ts', `
+        import {Component} from '@angular/core';
+        import {SELECTOR} from './dep';
+  
+        @Component({selector: SELECTOR, template: 'cmp'})
+        export class Cmp1 {}
+      `);
+      env.write('component2.ts', `
+        import {Component} from '@angular/core';
+  
+        @Component({selector: 'cmp2', template: 'cmp2'})
+        export class Cmp2 {}
+      `);
+      env.write('dep.ts', `
+        export const SELECTOR = 'cmp';
+      `);
+      env.write('directive.ts', `
+        import {Directive} from '@angular/core';
+  
+        @Directive({selector: 'dir'})
+        export class Dir {}
+      `);
+      env.write('pipe.ts', `
+        import {Pipe} from '@angular/core';
+  
+        @Pipe({name: 'myPipe'})
+        export class MyPipe {}
+      `);
+      env.write('module.ts', `
+        import {NgModule} from '@angular/core';
+        import {Cmp1} from './component1';
+        import {Cmp2} from './component2';
+        import {Dir} from './directive';
+        import {MyPipe} from './pipe';
+  
+        @NgModule({declarations: [Cmp1, Cmp2, Dir, MyPipe]})
+        export class Mod {}
+      `);
+      env.driveMain();
+
+      // Pretend a change was made to 'dep'. Since this may affect the NgModule scope, like it does
+      // here if the selector is updated, all components in the module scope need to be recompiled.
+      env.flushWrittenFileTracking();
+      env.invalidateCachedFile('dep.ts');
+      env.driveMain();
+      const written = env.getFilesWrittenSinceLastFlush();
+      expect(written).not.toContain('/directive.js');
+      expect(written).not.toContain('/pipe.js');
+      expect(written).toContain('/component1.js');
+      expect(written).toContain('/component2.js');
+      expect(written).toContain('/dep.js');
+      expect(written).toContain('/module.js');
     });
 
     it('should rebuild components where their NgModule declared dependencies have changed', () => {
@@ -195,7 +251,73 @@ runInEachFileSystem(() => {
       expect(written).toContain('/foo_module.js');
     });
 
-    it('should rebuild only a Component (but with the correct CompilationScope) if its template has changed',
+    it('should rebuild a component if removed from an NgModule', () => {
+      // This test consists of a component with a dependency (the directive DepDir) provided via an
+      // NgModule. Initially this configuration is built, then the component is removed from its
+      // module (which removes DepDir from the component's scope) and a rebuild is performed.
+      // The compiler should re-emit the component without DepDir in its scope.
+      //
+      // This is a tricky scenario due to the backwards dependency arrow from a component to its
+      // module.
+      env.write('dep.ts', `
+        import {Directive, NgModule} from '@angular/core';
+
+        @Directive({selector: '[dep]'})
+        export class DepDir {}
+
+        @NgModule({
+          declarations: [DepDir],
+          exports: [DepDir],
+        })
+        export class DepModule {}
+      `);
+
+      env.write('cmp.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test-cmp',
+          template: '<div dep></div>',
+        })
+        export class Cmp {}
+      `);
+
+      env.write('module.ts', `
+        import {NgModule} from '@angular/core';
+        import {Cmp} from './cmp';
+        import {DepModule} from './dep';
+
+        @NgModule({
+          declarations: [Cmp],
+          imports: [DepModule],
+        })
+        export class Module {}
+      `);
+
+      env.driveMain();
+      env.flushWrittenFileTracking();
+
+      // Remove the component from the module and recompile.
+      env.write('module.ts', `
+        import {NgModule} from '@angular/core';
+        import {DepModule} from './dep';
+
+        @NgModule({
+          declarations: [],
+          imports: [DepModule],
+        })
+        export class Module {}
+      `);
+
+      env.driveMain();
+
+      // After removing the component from the module, it should have been re-emitted without DepDir
+      // in its scope.
+      expect(env.getFilesWrittenSinceLastFlush()).toContain('/cmp.js');
+      expect(env.getContents('cmp.js')).not.toContain('DepDir');
+    });
+
+    it('should rebuild only a Component (but with the correct CompilationScope) and its module if its template has changed',
        () => {
          setupFooBarProgram(env);
 
@@ -206,7 +328,9 @@ runInEachFileSystem(() => {
          const written = env.getFilesWrittenSinceLastFlush();
          expect(written).not.toContain('/bar_directive.js');
          expect(written).toContain('/bar_component.js');
-         expect(written).not.toContain('/bar_module.js');
+         // /bar_module.js should also be re-emitted, because remote scoping of BarComponent might
+         // have been affected.
+         expect(written).toContain('/bar_module.js');
          expect(written).not.toContain('/foo_component.js');
          expect(written).not.toContain('/foo_pipe.js');
          expect(written).not.toContain('/foo_module.js');

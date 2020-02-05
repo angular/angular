@@ -352,14 +352,55 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
            detectChangesAndExpectClassName('init baz');
          }));
     });
+
+    describe('prevent regressions', () => {
+
+      // https://github.com/angular/angular/issues/34336
+      it('should not write to the native node unless the bound expression has changed', () => {
+        fixture = createTestComponent(`<div [ngClass]="{'color-red': condition}"></div>`);
+        detectChangesAndExpectClassName('color-red');
+
+        // Overwrite CSS classes so that we can check if ngClass performed DOM manipulation to
+        // update it
+        fixture.debugElement.children[0].nativeElement.className = '';
+        // Assert that the DOM node still has the same value after change detection
+        detectChangesAndExpectClassName('');
+
+        fixture.componentInstance.condition = false;
+        fixture.detectChanges();
+        fixture.componentInstance.condition = true;
+        detectChangesAndExpectClassName('color-red');
+      });
+
+      it('should allow classes with trailing and leading spaces in [ngClass]', () => {
+        @Component({
+          template: `
+            <div leading-space [ngClass]="{' foo': applyClasses}"></div>
+            <div trailing-space [ngClass]="{'foo ': applyClasses}"></div>
+          `
+        })
+        class Cmp {
+          applyClasses = true;
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+        const fixture = TestBed.createComponent(Cmp);
+        fixture.detectChanges();
+
+        const leading = fixture.nativeElement.querySelector('[leading-space]');
+        const trailing = fixture.nativeElement.querySelector('[trailing-space]');
+        expect(leading.className).toBe('foo');
+        expect(trailing.className).toBe('foo');
+      });
+
+    });
   });
 }
 
 @Component({selector: 'test-cmp', template: ''})
 class TestComponent {
   condition: boolean = true;
-  // TODO(issue/24571): remove '!'.
-  items !: any[];
+  items: any[]|undefined;
   arrExpr: string[] = ['foo'];
   setExpr: Set<string> = new Set<string>();
   objExpr: {[klass: string]: any}|null = {'foo': true, 'bar': false};

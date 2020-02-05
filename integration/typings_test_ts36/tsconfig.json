@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "strict": true,
+    "skipLibCheck": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "module": "commonjs",
@@ -15,7 +17,6 @@
       "es2015.promise"
     ],
     "types": [],
-    "strictNullChecks": true
   },
   "files": [
     "include-all.ts",

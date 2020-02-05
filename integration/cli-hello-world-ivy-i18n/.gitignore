@@ -7,6 +7,9 @@
 # Only exists if Bazel was run
 /bazel-out
 
+# extracted i18n messages
+src/locale
+
 # dependencies
 /node_modules
 
@@ -44,3 +47,6 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# Don't accidentally commit locale translates
+src/locales

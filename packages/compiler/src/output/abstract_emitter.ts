@@ -7,8 +7,6 @@
  */
 
 import {ParseSourceSpan} from '../parse_util';
-import {serializeI18nHead, serializeI18nTemplatePart} from '../render3/view/i18n/meta';
-
 import * as o from './output_ast';
 import {SourceMapGenerator} from './source_map';
 
@@ -38,6 +36,10 @@ export class EmitterVisitorContext {
 
   constructor(private _indent: number) { this._lines = [new _EmittedLine(_indent)]; }
 
+  /**
+   * @internal strip this from published d.ts files due to
+   * https://github.com/microsoft/TypeScript/issues/36216
+   */
   private get _currentLine(): _EmittedLine { return this._lines[this._lines.length - 1]; }
 
   println(from?: {sourceSpan: ParseSourceSpan | null}|null, lastPart: string = ''): void {
@@ -171,6 +173,10 @@ export class EmitterVisitorContext {
     return null;
   }
 
+  /**
+   * @internal strip this from published d.ts files due to
+   * https://github.com/microsoft/TypeScript/issues/36216
+   */
   private get sourceLines(): _EmittedLine[] {
     if (this._lines.length && this._lines[this._lines.length - 1].parts.length === 0) {
       return this._lines.slice(0, -1);
@@ -363,14 +369,12 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   }
 
   visitLocalizedString(ast: o.LocalizedString, ctx: EmitterVisitorContext): any {
-    const head = serializeI18nHead(ast.metaBlock, ast.messageParts[0]);
-    ctx.print(ast, '$localize `' + escapeBackticks(head));
+    const head = ast.serializeI18nHead();
+    ctx.print(ast, '$localize `' + head.raw);
     for (let i = 1; i < ast.messageParts.length; i++) {
       ctx.print(ast, '${');
       ast.expressions[i - 1].visitExpression(this, ctx);
-      ctx.print(
-          ast,
-          `}${escapeBackticks(serializeI18nTemplatePart(ast.placeHolderNames[i - 1], ast.messageParts[i]))}`);
+      ctx.print(ast, `}${ast.serializeI18nTemplatePart(i).raw}`);
     }
     ctx.print(ast, '`');
     return null;
@@ -559,8 +563,4 @@ function _createIndent(count: number): string {
     res += _INDENT_WITH;
   }
   return res;
-}
-
-function escapeBackticks(str: string): string {
-  return str.replace(/`/g, '\\`');
 }

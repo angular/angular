@@ -23,6 +23,15 @@ export class TemplateBindingParseResult {
       public errors: ParserError[]) {}
 }
 
+const defaultInterpolateRegExp = _createInterpolateRegExp(DEFAULT_INTERPOLATION_CONFIG);
+function _getInterpolateRegExp(config: InterpolationConfig): RegExp {
+  if (config === DEFAULT_INTERPOLATION_CONFIG) {
+    return defaultInterpolateRegExp;
+  } else {
+    return _createInterpolateRegExp(config);
+  }
+}
+
 function _createInterpolateRegExp(config: InterpolationConfig): RegExp {
   const pattern = escapeRegExp(config.start) + '([\\s\\S]*?)' + escapeRegExp(config.end);
   return new RegExp(pattern, 'g');
@@ -32,6 +41,8 @@ export class Parser {
   private errors: ParserError[] = [];
 
   constructor(private _lexer: Lexer) {}
+
+  simpleExpressionChecker = SimpleExpressionChecker;
 
   parseAction(
       input: string, location: any, absoluteOffset: number,
@@ -53,11 +64,17 @@ export class Parser {
     return new ASTWithSource(ast, input, location, absoluteOffset, this.errors);
   }
 
+  private checkSimpleExpression(ast: AST): string[] {
+    const checker = new this.simpleExpressionChecker();
+    ast.visit(checker);
+    return checker.errors;
+  }
+
   parseSimpleBinding(
       input: string, location: string, absoluteOffset: number,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource {
     const ast = this._parseBindingAst(input, location, absoluteOffset, interpolationConfig);
-    const errors = SimpleExpressionChecker.check(ast);
+    const errors = this.checkSimpleExpression(ast);
     if (errors.length > 0) {
       this._reportError(
           `Host binding expression cannot contain ${errors.join(' ')}`, input, location);
@@ -138,7 +155,7 @@ export class Parser {
       input: string, location: string,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): SplitInterpolation
       |null {
-    const regexp = _createInterpolateRegExp(interpolationConfig);
+    const regexp = _getInterpolateRegExp(interpolationConfig);
     const parts = input.split(regexp);
     if (parts.length <= 1) {
       return null;
@@ -163,7 +180,7 @@ export class Parser {
             'Blank expressions are not allowed in interpolated strings', input,
             `at column ${this._findInterpolationErrorColumn(parts, i, interpolationConfig)} in`,
             location);
-        expressions.push('$implict');
+        expressions.push('$implicit');
         offsets.push(offset);
       }
     }
@@ -201,7 +218,7 @@ export class Parser {
 
   private _checkNoInterpolation(
       input: string, location: any, interpolationConfig: InterpolationConfig): void {
-    const regexp = _createInterpolateRegExp(interpolationConfig);
+    const regexp = _getInterpolateRegExp(interpolationConfig);
     const parts = input.split(regexp);
     if (parts.length > 1) {
       this._reportError(
@@ -223,6 +240,10 @@ export class Parser {
 
     return errLocation.length;
   }
+}
+
+export class IvyParser extends Parser {
+  simpleExpressionChecker = IvySimpleExpressionChecker;  //
 }
 
 export class _ParseAST {
@@ -348,13 +369,16 @@ export class _ParseAST {
       }
 
       do {
+        const nameStart = this.inputIndex;
         const name = this.expectIdentifierOrKeyword();
+        const nameSpan = this.sourceSpan(nameStart);
         const args: AST[] = [];
         while (this.optionalCharacter(chars.$COLON)) {
           args.push(this.parseExpression());
         }
         const {start} = result.span;
-        result = new BindingPipe(this.span(start), this.sourceSpan(start), result, name, args);
+        result =
+            new BindingPipe(this.span(start), this.sourceSpan(start), result, name, args, nameSpan);
       } while (this.optionalOperator('|'));
     }
 
@@ -752,7 +776,7 @@ export class _ParseAST {
         const ast = this.parsePipe();
         const source = this.input.substring(start - this.offset, this.inputIndex - this.offset);
         expression =
-            new ASTWithSource(ast, source, this.location, this.absoluteOffset, this.errors);
+            new ASTWithSource(ast, source, this.location, this.absoluteOffset + start, this.errors);
       }
 
       bindings.push(new TemplateBinding(
@@ -813,12 +837,6 @@ export class _ParseAST {
 }
 
 class SimpleExpressionChecker implements AstVisitor {
-  static check(ast: AST): string[] {
-    const s = new SimpleExpressionChecker();
-    ast.visit(s);
-    return s.errors;
-  }
-
   errors: string[] = [];
 
   visitImplicitReceiver(ast: ImplicitReceiver, context: any) {}
@@ -862,4 +880,20 @@ class SimpleExpressionChecker implements AstVisitor {
   visitChain(ast: Chain, context: any) {}
 
   visitQuote(ast: Quote, context: any) {}
+}
+
+/**
+ * This class extends SimpleExpressionChecker used in View Engine and performs more strict checks to
+ * make sure host bindings do not contain pipes. In View Engine, having pipes in host bindings is
+ * not supported as well, but in some cases (like `!(value | async)`) the error is not triggered at
+ * compile time. In order to preserve View Engine behavior, more strict checks are introduced for
+ * Ivy mode only.
+ */
+class IvySimpleExpressionChecker extends SimpleExpressionChecker {
+  visitBinary(ast: Binary, context: any) {
+    ast.left.visit(this);
+    ast.right.visit(this);
+  }
+
+  visitPrefixNot(ast: PrefixNot, context: any) { ast.expression.visit(this); }
 }

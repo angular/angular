@@ -57,9 +57,9 @@ Though you can provide services by lazy loading modules, not all services can be
 
 Another way to limit provider scope is by adding the service you want to limit to the component’s
 `providers` array. Component providers and NgModule providers are independent of each other. This
-method is helpful for when you want to eagerly load a module that needs a service all to itself.
+method is helpful when you want to eagerly load a module that needs a service all to itself.
 Providing a service in the component limits the service only to that component (other components in
-the same module can’t access it.)
+the same module can’t access it).
 
 <code-example path="providers/src/app/app.component.ts" region="component-providers" header="src/app/app.component.ts"></code-example>
 

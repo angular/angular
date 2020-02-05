@@ -8,12 +8,12 @@
 
 import {assertDataInRange, assertDefined, assertDomNode, assertGreaterThan, assertLessThan} from '../../util/assert';
 import {assertTNodeForLView} from '../assert';
-import {LContainer, TYPE} from '../interfaces/container';
+import {ACTIVE_INDEX, ActiveIndexFlag, LContainer, TYPE} from '../interfaces/container';
 import {LContext, MONKEY_PATCH_KEY_NAME} from '../interfaces/context';
-import {TNode} from '../interfaces/node';
+import {TConstants, TNode} from '../interfaces/node';
 import {RNode, isProceduralRenderer} from '../interfaces/renderer';
 import {isLContainer, isLView} from '../interfaces/type_checks';
-import {FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, PARENT, PREORDER_HOOK_FLAGS, RENDERER, TData, TVIEW} from '../interfaces/view';
+import {FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, PARENT, PREORDER_HOOK_FLAGS, RENDERER, TData, TView} from '../interfaces/view';
 
 
 
@@ -117,10 +117,10 @@ export function getNativeByTNodeOrNull(tNode: TNode, lView: LView): RNode|null {
 }
 
 
-export function getTNode(index: number, view: LView): TNode {
+export function getTNode(tView: TView, index: number): TNode {
   ngDevMode && assertGreaterThan(index, -1, 'wrong index for TNode');
-  ngDevMode && assertLessThan(index, view[TVIEW].data.length, 'wrong index for TNode');
-  return view[TVIEW].data[index + HEADER_OFFSET] as TNode;
+  ngDevMode && assertLessThan(index, tView.data.length, 'wrong index for TNode');
+  return tView.data[index + HEADER_OFFSET] as TNode;
 }
 
 /** Retrieves a value from any `LView` or `TData`. */
@@ -175,10 +175,24 @@ export function viewAttachedToContainer(view: LView): boolean {
   return isLContainer(view[PARENT]);
 }
 
+/** Returns a constant from `TConstants` instance. */
+export function getConstant<T>(consts: TConstants | null, index: number | null | undefined): T|
+    null {
+  return consts === null || index == null ? null : consts[index] as unknown as T;
+}
+
 /**
  * Resets the pre-order hook flags of the view.
  * @param lView the LView on which the flags are reset
  */
 export function resetPreOrderHookFlags(lView: LView) {
   lView[PREORDER_HOOK_FLAGS] = 0;
+}
+
+export function getLContainerActiveIndex(lContainer: LContainer) {
+  return lContainer[ACTIVE_INDEX] >> ActiveIndexFlag.SHIFT;
+}
+
+export function setLContainerActiveIndex(lContainer: LContainer, index: number) {
+  lContainer[ACTIVE_INDEX] = index << ActiveIndexFlag.SHIFT;
 }

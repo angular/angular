@@ -5,12 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {getLView, getSelectedIndex} from '../state';
 
+import {getLView,} from '../state';
 import {interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV} from './interpolation';
-import {TsickleIssue1009} from './shared';
-import {stylePropInternal} from './styling';
-
+import {checkStylingProperty} from './styling';
 
 
 /**
@@ -41,10 +39,10 @@ import {stylePropInternal} from './styling';
  */
 export function ɵɵstylePropInterpolate1(
     prop: string, prefix: string, v0: any, suffix: string,
-    valueSuffix?: string | null): TsickleIssue1009 {
+    valueSuffix?: string | null): typeof ɵɵstylePropInterpolate1 {
   const lView = getLView();
   const interpolatedValue = interpolation1(lView, prefix, v0, suffix);
-  stylePropInternal(getSelectedIndex(), prop, interpolatedValue as string, valueSuffix);
+  checkStylingProperty(prop, interpolatedValue, valueSuffix, false);
   return ɵɵstylePropInterpolate1;
 }
 
@@ -78,10 +76,10 @@ export function ɵɵstylePropInterpolate1(
  */
 export function ɵɵstylePropInterpolate2(
     prop: string, prefix: string, v0: any, i0: string, v1: any, suffix: string,
-    valueSuffix?: string | null): TsickleIssue1009 {
+    valueSuffix?: string | null): typeof ɵɵstylePropInterpolate2 {
   const lView = getLView();
   const interpolatedValue = interpolation2(lView, prefix, v0, i0, v1, suffix);
-  stylePropInternal(getSelectedIndex(), prop, interpolatedValue as string, valueSuffix);
+  checkStylingProperty(prop, interpolatedValue, valueSuffix, false);
   return ɵɵstylePropInterpolate2;
 }
 
@@ -117,10 +115,10 @@ export function ɵɵstylePropInterpolate2(
  */
 export function ɵɵstylePropInterpolate3(
     prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, suffix: string,
-    valueSuffix?: string | null): TsickleIssue1009 {
+    valueSuffix?: string | null): typeof ɵɵstylePropInterpolate3 {
   const lView = getLView();
   const interpolatedValue = interpolation3(lView, prefix, v0, i0, v1, i1, v2, suffix);
-  stylePropInternal(getSelectedIndex(), prop, interpolatedValue as string, valueSuffix);
+  checkStylingProperty(prop, interpolatedValue, valueSuffix, false);
   return ɵɵstylePropInterpolate3;
 }
 
@@ -158,10 +156,10 @@ export function ɵɵstylePropInterpolate3(
  */
 export function ɵɵstylePropInterpolate4(
     prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
-    v3: any, suffix: string, valueSuffix?: string | null): TsickleIssue1009 {
+    v3: any, suffix: string, valueSuffix?: string | null): typeof ɵɵstylePropInterpolate4 {
   const lView = getLView();
   const interpolatedValue = interpolation4(lView, prefix, v0, i0, v1, i1, v2, i2, v3, suffix);
-  stylePropInternal(getSelectedIndex(), prop, interpolatedValue as string, valueSuffix);
+  checkStylingProperty(prop, interpolatedValue, valueSuffix, false);
   return ɵɵstylePropInterpolate4;
 }
 
@@ -201,11 +199,12 @@ export function ɵɵstylePropInterpolate4(
  */
 export function ɵɵstylePropInterpolate5(
     prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
-    v3: any, i3: string, v4: any, suffix: string, valueSuffix?: string | null): TsickleIssue1009 {
+    v3: any, i3: string, v4: any, suffix: string,
+    valueSuffix?: string | null): typeof ɵɵstylePropInterpolate5 {
   const lView = getLView();
   const interpolatedValue =
       interpolation5(lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, suffix);
-  stylePropInternal(getSelectedIndex(), prop, interpolatedValue as string, valueSuffix);
+  checkStylingProperty(prop, interpolatedValue, valueSuffix, false);
   return ɵɵstylePropInterpolate5;
 }
 
@@ -248,11 +247,11 @@ export function ɵɵstylePropInterpolate5(
 export function ɵɵstylePropInterpolate6(
     prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string,
-    valueSuffix?: string | null): TsickleIssue1009 {
+    valueSuffix?: string | null): typeof ɵɵstylePropInterpolate6 {
   const lView = getLView();
   const interpolatedValue =
       interpolation6(lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, suffix);
-  stylePropInternal(getSelectedIndex(), prop, interpolatedValue as string, valueSuffix);
+  checkStylingProperty(prop, interpolatedValue, valueSuffix, false);
   return ɵɵstylePropInterpolate6;
 }
 
@@ -298,11 +297,11 @@ export function ɵɵstylePropInterpolate6(
 export function ɵɵstylePropInterpolate7(
     prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string,
-    valueSuffix?: string | null): TsickleIssue1009 {
+    valueSuffix?: string | null): typeof ɵɵstylePropInterpolate7 {
   const lView = getLView();
   const interpolatedValue =
       interpolation7(lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, suffix);
-  stylePropInternal(getSelectedIndex(), prop, interpolatedValue as string, valueSuffix);
+  checkStylingProperty(prop, interpolatedValue, valueSuffix, false);
   return ɵɵstylePropInterpolate7;
 }
 
@@ -350,11 +349,11 @@ export function ɵɵstylePropInterpolate7(
 export function ɵɵstylePropInterpolate8(
     prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any,
-    suffix: string, valueSuffix?: string | null): TsickleIssue1009 {
+    suffix: string, valueSuffix?: string | null): typeof ɵɵstylePropInterpolate8 {
   const lView = getLView();
   const interpolatedValue = interpolation8(
       lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, i6, v7, suffix);
-  stylePropInternal(getSelectedIndex(), prop, interpolatedValue as string, valueSuffix);
+  checkStylingProperty(prop, interpolatedValue, valueSuffix, false);
   return ɵɵstylePropInterpolate8;
 }
 
@@ -389,9 +388,9 @@ export function ɵɵstylePropInterpolate8(
  * @codeGenApi
  */
 export function ɵɵstylePropInterpolateV(
-    prop: string, values: any[], valueSuffix?: string | null): TsickleIssue1009 {
+    prop: string, values: any[], valueSuffix?: string | null): typeof ɵɵstylePropInterpolateV {
   const lView = getLView();
   const interpolatedValue = interpolationV(lView, values);
-  stylePropInternal(getSelectedIndex(), prop, interpolatedValue as string, valueSuffix);
+  checkStylingProperty(prop, interpolatedValue, valueSuffix, false);
   return ɵɵstylePropInterpolateV;
 }

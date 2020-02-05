@@ -12,222 +12,266 @@
       {
         "name": "anchor",
         "kind": "method",
-        "sortText": "anchor"
+        "sortText": "anchor",
+        "insertText": "anchor()"
       },
       {
         "name": "big",
         "kind": "method",
-        "sortText": "big"
+        "sortText": "big",
+        "insertText": "big()"
       },
       {
         "name": "blink",
         "kind": "method",
-        "sortText": "blink"
+        "sortText": "blink",
+        "insertText": "blink()"
       },
       {
         "name": "bold",
         "kind": "method",
-        "sortText": "bold"
+        "sortText": "bold",
+        "insertText": "bold()"
       },
       {
         "name": "charAt",
         "kind": "method",
-        "sortText": "charAt"
+        "sortText": "charAt",
+        "insertText": "charAt()"
       },
       {
         "name": "charCodeAt",
         "kind": "method",
-        "sortText": "charCodeAt"
+        "sortText": "charCodeAt",
+        "insertText": "charCodeAt()"
       },
       {
         "name": "codePointAt",
         "kind": "method",
-        "sortText": "codePointAt"
+        "sortText": "codePointAt",
+        "insertText": "codePointAt()"
       },
       {
         "name": "concat",
         "kind": "method",
-        "sortText": "concat"
+        "sortText": "concat",
+        "insertText": "concat()"
       },
       {
         "name": "endsWith",
         "kind": "method",
-        "sortText": "endsWith"
+        "sortText": "endsWith",
+        "insertText": "endsWith()"
       },
       {
         "name": "fixed",
         "kind": "method",
-        "sortText": "fixed"
+        "sortText": "fixed",
+        "insertText": "fixed()"
       },
       {
         "name": "fontcolor",
         "kind": "method",
-        "sortText": "fontcolor"
+        "sortText": "fontcolor",
+        "insertText": "fontcolor()"
       },
       {
         "name": "fontsize",
         "kind": "method",
-        "sortText": "fontsize"
+        "sortText": "fontsize",
+        "insertText": "fontsize()"
       },
       {
         "name": "includes",
         "kind": "method",
-        "sortText": "includes"
+        "sortText": "includes",
+        "insertText": "includes()"
       },
       {
         "name": "indexOf",
         "kind": "method",
-        "sortText": "indexOf"
+        "sortText": "indexOf",
+        "insertText": "indexOf()"
       },
       {
         "name": "italics",
         "kind": "method",
-        "sortText": "italics"
+        "sortText": "italics",
+        "insertText": "italics()"
       },
       {
         "name": "lastIndexOf",
         "kind": "method",
-        "sortText": "lastIndexOf"
+        "sortText": "lastIndexOf",
+        "insertText": "lastIndexOf()"
       },
       {
         "name": "length",
         "kind": "property",
-        "sortText": "length"
+        "sortText": "length",
+        "insertText": "length"
       },
       {
         "name": "link",
         "kind": "method",
-        "sortText": "link"
+        "sortText": "link",
+        "insertText": "link()"
       },
       {
         "name": "localeCompare",
         "kind": "method",
-        "sortText": "localeCompare"
+        "sortText": "localeCompare",
+        "insertText": "localeCompare()"
       },
       {
         "name": "match",
         "kind": "method",
-        "sortText": "match"
+        "sortText": "match",
+        "insertText": "match()"
       },
       {
         "name": "normalize",
         "kind": "method",
-        "sortText": "normalize"
+        "sortText": "normalize",
+        "insertText": "normalize()"
       },
       {
         "name": "padEnd",
         "kind": "method",
-        "sortText": "padEnd"
+        "sortText": "padEnd",
+        "insertText": "padEnd()"
       },
       {
         "name": "padStart",
         "kind": "method",
-        "sortText": "padStart"
+        "sortText": "padStart",
+        "insertText": "padStart()"
       },
       {
         "name": "repeat",
         "kind": "method",
-        "sortText": "repeat"
+        "sortText": "repeat",
+        "insertText": "repeat()"
       },
       {
         "name": "replace",
         "kind": "method",
-        "sortText": "replace"
+        "sortText": "replace",
+        "insertText": "replace()"
       },
       {
         "name": "search",
         "kind": "method",
-        "sortText": "search"
+        "sortText": "search",
+        "insertText": "search()"
       },
       {
         "name": "slice",
         "kind": "method",
-        "sortText": "slice"
+        "sortText": "slice",
+        "insertText": "slice()"
       },
       {
         "name": "small",
         "kind": "method",
-        "sortText": "small"
+        "sortText": "small",
+        "insertText": "small()"
       },
       {
         "name": "split",
         "kind": "method",
-        "sortText": "split"
+        "sortText": "split",
+        "insertText": "split()"
       },
       {
         "name": "startsWith",
         "kind": "method",
-        "sortText": "startsWith"
+        "sortText": "startsWith",
+        "insertText": "startsWith()"
       },
       {
         "name": "strike",
         "kind": "method",
-        "sortText": "strike"
+        "sortText": "strike",
+        "insertText": "strike()"
       },
       {
         "name": "sub",
         "kind": "method",
-        "sortText": "sub"
+        "sortText": "sub",
+        "insertText": "sub()"
       },
       {
         "name": "substr",
         "kind": "method",
-        "sortText": "substr"
+        "sortText": "substr",
+        "insertText": "substr()"
       },
       {
         "name": "substring",
         "kind": "method",
-        "sortText": "substring"
+        "sortText": "substring",
+        "insertText": "substring()"
       },
       {
         "name": "sup",
         "kind": "method",
-        "sortText": "sup"
+        "sortText": "sup",
+        "insertText": "sup()"
       },
       {
         "name": "toLocaleLowerCase",
         "kind": "method",
-        "sortText": "toLocaleLowerCase"
+        "sortText": "toLocaleLowerCase",
+        "insertText": "toLocaleLowerCase()"
       },
       {
         "name": "toLocaleUpperCase",
         "kind": "method",
-        "sortText": "toLocaleUpperCase"
+        "sortText": "toLocaleUpperCase",
+        "insertText": "toLocaleUpperCase()"
       },
       {
         "name": "toLowerCase",
         "kind": "method",
-        "sortText": "toLowerCase"
+        "sortText": "toLowerCase",
+        "insertText": "toLowerCase()"
       },
       {
         "name": "toString",
         "kind": "method",
-        "sortText": "toString"
+        "sortText": "toString",
+        "insertText": "toString()"
       },
       {
         "name": "toUpperCase",
         "kind": "method",
-        "sortText": "toUpperCase"
+        "sortText": "toUpperCase",
+        "insertText": "toUpperCase()"
       },
       {
         "name": "trim",
         "kind": "method",
-        "sortText": "trim"
+        "sortText": "trim",
+        "insertText": "trim()"
       },
       {
         "name": "trimLeft",
         "kind": "method",
-        "sortText": "trimLeft"
+        "sortText": "trimLeft",
+        "insertText": "trimLeft()"
       },
       {
         "name": "trimRight",
         "kind": "method",
-        "sortText": "trimRight"
+        "sortText": "trimRight",
+        "insertText": "trimRight()"
       },
       {
         "name": "valueOf",
         "kind": "method",
-        "sortText": "valueOf"
+        "sortText": "valueOf",
+        "insertText": "valueOf()"
       }
     ]
   }

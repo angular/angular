@@ -20,8 +20,8 @@ import {ARG_TYPE_VALUES, callMostRecentEventListenerHandler, checkNodeInlineOrDy
  * We map addEventListener to the Zones internal name. This is because we want to be fast
  * and bypass the zone bookkeeping. We know that we can do the bookkeeping faster.
  */
-const addEventListener = '__zone_symbol__addEventListener' as 'addEventListener';
-const removeEventListener = '__zone_symbol__removeEventListener' as 'removeEventListener';
+const addEventListener = 'addEventListener';
+const removeEventListener = 'removeEventListener';
 
 {
   describe(`View Elements`, () => {
@@ -62,7 +62,7 @@ const removeEventListener = '__zone_symbol__removeEventListener' as 'removeEvent
       });
 
       it('should add debug information to the renderer', () => {
-        const someContext = new Object();
+        const someContext = {};
         const {view, rootNodes} = createAndGetRootNodes(
             compViewDef([elementDef(0, NodeFlags.None, null, null, 0, 'div')]), someContext);
         expect(getDebugNode(rootNodes[0]) !.nativeNode).toBe(asElementData(view, 0).renderElement);

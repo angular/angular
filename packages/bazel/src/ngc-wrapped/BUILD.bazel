@@ -1,4 +1,4 @@
-load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 load("@npm_bazel_typescript//:index.bzl", "ts_library")
 
 ts_library(
@@ -29,7 +29,7 @@ ts_library(
 
 nodejs_binary(
     name = "ngc-wrapped",
-    configuration_env_vars = ["compile"],
+    configuration_env_vars = ["angular_ivy_enabled"],
     data = [
         ":ngc_lib",
         "//packages/bazel/third_party/github.com/bazelbuild/bazel/src/main/protobuf:worker_protocol.proto",

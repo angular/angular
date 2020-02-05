@@ -1,5 +1,4 @@
-load("@npm_bazel_protractor//:index.bzl", "protractor_web_test_suite")
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults.bzl", "protractor_web_test_suite", "ts_library")
 
 def example_test(name, srcs, server, data = [], **kwargs):
     ts_library(

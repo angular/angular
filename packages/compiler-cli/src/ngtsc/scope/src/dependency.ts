@@ -123,9 +123,11 @@ export class MetadataDtsModuleScopeResolver implements DtsModuleScopeResolver {
       throw new Error(`Exported value ${exportRef.debugName} was not a directive, pipe, or module`);
     }
 
-    return {
+    const exportScope: ExportScope = {
       exported: {directives, pipes},
     };
+    this.cache.set(clazz, exportScope);
+    return exportScope;
   }
 
   private maybeAlias<T extends DirectiveMeta|PipeMeta>(

@@ -8,8 +8,9 @@
 import {AbsoluteFsPath, FileSystem, PathSegment, join, relative, relativeFrom} from '../../../src/ngtsc/file_system';
 import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver';
 import {Logger} from '../logging/logger';
+import {hasBeenProcessed} from '../packages/build_marker';
 import {NgccConfiguration} from '../packages/configuration';
-import {EntryPoint, getEntryPointInfo} from '../packages/entry_point';
+import {EntryPoint, EntryPointJsonProperty, getEntryPointInfo} from '../packages/entry_point';
 import {PathMappings} from '../utils';
 import {EntryPointFinder} from './interface';
 import {getBasePaths} from './utils';
@@ -37,8 +38,41 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
       this.processNextPath();
     }
     const targetEntryPoint = this.unsortedEntryPoints.get(this.targetPath);
-    return this.resolver.sortEntryPointsByDependency(
+    const entryPoints = this.resolver.sortEntryPointsByDependency(
         Array.from(this.unsortedEntryPoints.values()), targetEntryPoint);
+
+    const invalidTarget =
+        entryPoints.invalidEntryPoints.find(i => i.entryPoint.path === this.targetPath);
+    if (invalidTarget !== undefined) {
+      throw new Error(
+          `The target entry-point "${invalidTarget.entryPoint.name}" has missing dependencies:\n` +
+          invalidTarget.missingDependencies.map(dep => ` - ${dep}\n`).join(''));
+    }
+    return entryPoints;
+  }
+
+  targetNeedsProcessingOrCleaning(
+      propertiesToConsider: EntryPointJsonProperty[], compileAllFormats: boolean): boolean {
+    const entryPoint = this.getEntryPoint(this.targetPath);
+    if (entryPoint === null || !entryPoint.compiledByAngular) {
+      return false;
+    }
+
+    for (const property of propertiesToConsider) {
+      if (entryPoint.packageJson[property]) {
+        // Here is a property that should be processed.
+        if (!hasBeenProcessed(entryPoint.packageJson, property)) {
+          return true;
+        }
+        if (!compileAllFormats) {
+          // This property has been processed, and we only need one.
+          return false;
+        }
+      }
+    }
+    // All `propertiesToConsider` that appear in this entry-point have been processed.
+    // In other words, there were no properties that need processing.
+    return false;
   }
 
   private processNextPath(): void {

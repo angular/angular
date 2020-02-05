@@ -193,14 +193,13 @@ describe('compiler compliance: listen()', () => {
     };
 
     const MyComponentDefinition = `
-        const $e2_refs$ = ["user", ""];
         …
         MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
           type: MyComponent,
           selectors: [["my-component"]],
           decls: 4,
           vars: 0,
-          consts: [[${AttributeMarker.Bindings}, "click"]],
+          consts: [[${AttributeMarker.Bindings}, "click"], ["user", ""]],
           template:  function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
               const $s$ = $r3$.ɵɵgetCurrentView();
@@ -212,7 +211,7 @@ describe('compiler compliance: listen()', () => {
                 });
                 $r3$.ɵɵtext(1, "Save");
               $r3$.ɵɵelementEnd();
-              $r3$.ɵɵelement(2, "input", null, $e2_refs$);
+              $r3$.ɵɵelement(2, "input", null, 1);
             }
           },
           encapsulation: 2
@@ -229,5 +228,120 @@ describe('compiler compliance: listen()', () => {
     expectEmit(source, MyComponentDefinition, 'Incorrect MyComponent.ɵcmp');
     expectEmit(source, MyComponentFactory, 'Incorrect MyComponent.ɵfac');
   });
+
+  it('should chain multiple listeners on the same element', () => {
+    const files = {
+      app: {
+        'spec.ts': `
+            import {Component, NgModule} from '@angular/core';
+
+            @Component({
+              selector: 'my-component',
+              template: \`<div (click)="click()" (change)="change()"></div>\`
+            })
+            export class MyComponent {
+            }
+
+            @NgModule({declarations: [MyComponent]})
+            export class MyModule {}
+          `
+      }
+    };
+
+    const template = `
+        …
+        consts: [[${AttributeMarker.Bindings}, "click", "change"]],
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵɵelementStart(0, "div", 0);
+            $r3$.ɵɵlistener("click", function MyComponent_Template_div_click_0_listener($event) {
+              return ctx.click();
+            })("change", function MyComponent_Template_div_change_0_listener($event) {
+              return ctx.change();
+            });
+            $r3$.ɵɵelementEnd();
+          }
+        }
+        `;
+
+    const result = compile(files, angularFiles);
+    expectEmit(result.source, template, 'Incorrect template');
+  });
+
+  it('should chain multiple listeners across elements', () => {
+    const files = {
+      app: {
+        'spec.ts': `
+            import {Component, NgModule} from '@angular/core';
+
+            @Component({
+              selector: 'my-component',
+              template: \`
+                <div (click)="click()" (change)="change()"></div>
+                <some-comp (update)="update()" (delete)="delete()"></some-comp>
+              \`
+            })
+            export class MyComponent {
+            }
+
+            @NgModule({declarations: [MyComponent]})
+            export class MyModule {}
+          `
+      }
+    };
+
+    const template = `
+        …
+        consts: [[${AttributeMarker.Bindings}, "click", "change"], [${AttributeMarker.Bindings}, "update", "delete"]],
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵɵelementStart(0, "div", 0);
+            $r3$.ɵɵlistener("click", function MyComponent_Template_div_click_0_listener($event) { return ctx.click(); })("change", function MyComponent_Template_div_change_0_listener($event) { return ctx.change(); });
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelementStart(1, "some-comp", 1);
+            $r3$.ɵɵlistener("update", function MyComponent_Template_some_comp_update_1_listener($event) { return ctx.update(); })("delete", function MyComponent_Template_some_comp_delete_1_listener($event) { return ctx.delete(); });
+            $r3$.ɵɵelementEnd();
+          }
+        }
+        `;
+
+    const result = compile(files, angularFiles);
+    expectEmit(result.source, template, 'Incorrect template');
+  });
+
+  it('should chain multiple listeners on the same template', () => {
+    const files = {
+      app: {
+        'spec.ts': `
+            import {Component, NgModule} from '@angular/core';
+
+            @Component({
+              selector: 'my-component',
+              template: \`<ng-template (click)="click()" (change)="change()"></ng-template>\`
+            })
+            export class MyComponent {
+            }
+
+            @NgModule({declarations: [MyComponent]})
+            export class MyModule {}
+          `
+      }
+    };
+
+    const template = `
+        …
+        consts: [[${AttributeMarker.Bindings}, "click", "change"]],
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵɵtemplate(0, MyComponent_ng_template_0_Template, 0, 0, "ng-template", 0);
+            $r3$.ɵɵlistener("click", function MyComponent_Template_ng_template_click_0_listener($event) { return ctx.click(); })("change", function MyComponent_Template_ng_template_change_0_listener($event) { return ctx.change(); });
+          }
+        }
+        `;
+
+    const result = compile(files, angularFiles);
+    expectEmit(result.source, template, 'Incorrect template');
+  });
+
 
 });

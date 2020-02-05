@@ -68,7 +68,23 @@ export function assertLView(value: any) {
   assertEqual(isLView(value), true, 'Expecting LView');
 }
 
-export function assertFirstTemplatePass(tView: TView, errMessage?: string) {
+export function assertFirstCreatePass(tView: TView, errMessage?: string) {
   assertEqual(
-      tView.firstTemplatePass, true, errMessage || 'Should only be called in first template pass.');
+      tView.firstCreatePass, true, errMessage || 'Should only be called in first create pass.');
+}
+
+export function assertFirstUpdatePass(tView: TView, errMessage?: string) {
+  assertEqual(
+      tView.firstUpdatePass, true, errMessage || 'Should only be called in first update pass.');
+}
+
+/**
+ * This is a basic sanity check that an object is probably a directive def. DirectiveDef is
+ * an interface, so we can't do a direct instanceof check.
+ */
+export function assertDirectiveDef(obj: any) {
+  if (obj.type === undefined || obj.selectors == undefined || obj.inputs === undefined) {
+    throwError(
+        `Expected a DirectiveDef/ComponentDef and this object does not seem to have the expected shape.`);
+  }
 }

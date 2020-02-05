@@ -1,7 +1,7 @@
 # BEGIN-INTERNAL
-load("@build_bazel_rules_nodejs//:defs.bzl", "npm_package")
-load("@npm_bazel_jasmine//:index.bzl", "jasmine_node_test")
+load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
 load("@npm_bazel_typescript//:index.bzl", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test")
 
 ts_library(
     name = "lib",
@@ -29,7 +29,7 @@ genrule(
     cmd = "cp $< $@",
 )
 
-npm_package(
+pkg_npm(
     name = "ts-api-guardian",
     srcs = [
         "BUILD.bazel",
@@ -38,7 +38,7 @@ npm_package(
         "index.bzl",
         "package.json",
     ],
-    replacements = {
+    substitutions = {
         "@angular//tools/ts-api-guardian:bin": "@npm_ts_api_guardian//:bin",
         "@angular//tools/ts-api-guardian:lib": "@npm//ts-api-guardian",
         "angular/tools/ts-api-guardian/": "npm_ts_api_guardian/",
@@ -55,7 +55,10 @@ npm_package(
 ts_library(
     name = "test_lib",
     testonly = True,
-    srcs = glob(["test/*.ts"]),
+    srcs = glob(
+        ["test/*.ts"],
+        exclude = ["test/bootstrap.ts"],
+    ),
     tsconfig = "//tools:tsconfig-test",
     deps = [
         ":lib",
@@ -68,17 +71,36 @@ ts_library(
     ],
 )
 
+ts_library(
+    name = "bootstrap",
+    testonly = True,
+    srcs = ["test/bootstrap.ts"],
+    tsconfig = "//tools:tsconfig-test",
+    deps = ["@npm//@types/node"],
+)
+
+# Select the es5 .js output of the ts_library :boostrap target
+# with `output_group = "es5_sources"` for use in the jasmine_node_test
+# below. This exposes an internal detail of ts_library that is not ideal.
+# TODO(gregmagolan): clean this up by using tsc() in this case rather than ts_library
+filegroup(
+    name = "bootstrap_es5",
+    testonly = True,
+    srcs = [":bootstrap"],
+    output_group = "es5_sources",
+)
+
 jasmine_node_test(
     name = "tests",
-    srcs = [":test_lib"],
-    bootstrap = ["angular/tools/ts-api-guardian/test/bootstrap.js"],
+    srcs = [
+        ":test_lib",
+    ],
+    bootstrap = [":bootstrap_es5"],
     data = glob([
         "test/fixtures/*.ts",
         "test/fixtures/*.patch",
     ]) + [
         ":ts-api-guardian",
-        # TODO: remove this once the boostrap.js workaround has been removed.
-        ":package.json",
     ],
 )
 # END-INTERNAL

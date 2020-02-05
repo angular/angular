@@ -5,182 +5,201 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ErrorCode} from '../../../src/ngtsc/diagnostics';
-import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection';
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../../src/ngtsc/transform';
+
+import * as ts from 'typescript';
+
+import {makeDiagnostic} from '../../../src/ngtsc/diagnostics';
+import {absoluteFrom} from '../../../src/ngtsc/file_system';
+import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {ClassDeclaration, Decorator, isNamedClassDeclaration} from '../../../src/ngtsc/reflection';
+import {getDeclaration} from '../../../src/ngtsc/testing';
+import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, TraitState} from '../../../src/ngtsc/transform';
+import {loadTestFiles} from '../../../test/helpers';
 import {DefaultMigrationHost} from '../../src/analysis/migration_host';
-import {AnalyzedClass, AnalyzedFile} from '../../src/analysis/types';
-import {NgccClassSymbol} from '../../src/host/ngcc_host';
+import {NgccTraitCompiler} from '../../src/analysis/ngcc_trait_compiler';
+import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
+import {createComponentDecorator} from '../../src/migrations/utils';
+import {EntryPointBundle} from '../../src/packages/entry_point_bundle';
+import {MockLogger} from '../helpers/mock_logger';
+import {makeTestEntryPointBundle} from '../helpers/utils';
 
-describe('DefaultMigrationHost', () => {
-  describe('injectSyntheticDecorator()', () => {
-    const mockHost: any = {
-      getClassSymbol: (node: any): NgccClassSymbol | undefined => {
-        const symbol = { valueDeclaration: node, name: node.name.text } as any;
-        return {
-          name: node.name.text,
-          declaration: symbol,
-          implementation: symbol,
-        };
-      },
-    };
-    const mockMetadata: any = {};
-    const mockEvaluator: any = {};
-    const mockClazz: any = {
-      name: {text: 'MockClazz'},
-      getSourceFile: () => { fileName: 'test-file.js'; },
-    };
-    const mockDecorator: any = {name: 'MockDecorator'};
-
-    it('should call `detect()` on each of the provided handlers', () => {
-      const log: string[] = [];
-      const handler1 = new TestHandler('handler1', log);
-      const handler2 = new TestHandler('handler2', log);
-      const host =
-          new DefaultMigrationHost(mockHost, mockMetadata, mockEvaluator, [handler1, handler2], []);
-      host.injectSyntheticDecorator(mockClazz, mockDecorator);
-      expect(log).toEqual([
-        `handler1:detect:MockClazz:MockDecorator`,
-        `handler2:detect:MockClazz:MockDecorator`,
-      ]);
-    });
-
-    it('should call `analyze()` on each of the provided handlers whose `detect()` call returns a result',
-       () => {
-         const log: string[] = [];
-         const handler1 = new TestHandler('handler1', log);
-         const handler2 = new AlwaysDetectHandler('handler2', log);
-         const handler3 = new TestHandler('handler3', log);
-         const host = new DefaultMigrationHost(
-             mockHost, mockMetadata, mockEvaluator, [handler1, handler2, handler3], []);
-         host.injectSyntheticDecorator(mockClazz, mockDecorator);
-         expect(log).toEqual([
-           `handler1:detect:MockClazz:MockDecorator`,
-           `handler2:detect:MockClazz:MockDecorator`,
-           `handler3:detect:MockClazz:MockDecorator`,
-           'handler2:analyze:MockClazz',
-         ]);
-       });
-
-    it('should add a newly `AnalyzedFile` to the `analyzedFiles` object', () => {
-      const log: string[] = [];
-      const handler = new AlwaysDetectHandler('handler', log);
-      const analyzedFiles: AnalyzedFile[] = [];
-      const host =
-          new DefaultMigrationHost(mockHost, mockMetadata, mockEvaluator, [handler], analyzedFiles);
-      host.injectSyntheticDecorator(mockClazz, mockDecorator);
-      expect(analyzedFiles.length).toEqual(1);
-      expect(analyzedFiles[0].analyzedClasses.length).toEqual(1);
-      expect(analyzedFiles[0].analyzedClasses[0].name).toEqual('MockClazz');
-    });
-
-    it('should add a newly `AnalyzedClass` to an existing `AnalyzedFile` object', () => {
-      const DUMMY_CLASS_1: any = {};
-      const DUMMY_CLASS_2: any = {};
-      const log: string[] = [];
-      const handler = new AlwaysDetectHandler('handler', log);
-      const analyzedFiles: AnalyzedFile[] = [{
-        sourceFile: mockClazz.getSourceFile(),
-        analyzedClasses: [DUMMY_CLASS_1, DUMMY_CLASS_2],
-      }];
-      const host =
-          new DefaultMigrationHost(mockHost, mockMetadata, mockEvaluator, [handler], analyzedFiles);
-      host.injectSyntheticDecorator(mockClazz, mockDecorator);
-      expect(analyzedFiles.length).toEqual(1);
-      expect(analyzedFiles[0].analyzedClasses.length).toEqual(3);
-      expect(analyzedFiles[0].analyzedClasses[2].name).toEqual('MockClazz');
-    });
-
-    it('should add a new decorator into an already existing `AnalyzedClass`', () => {
-      const analyzedClass: AnalyzedClass = {
-        name: 'MockClazz',
-        declaration: mockClazz,
-        matches: [],
-        decorators: null,
+runInEachFileSystem(() => {
+  describe('DefaultMigrationHost', () => {
+    let _: typeof absoluteFrom;
+    let mockMetadata: any = {};
+    let mockEvaluator: any = {};
+    let mockClazz: any;
+    let injectedDecorator: any = {name: 'InjectedDecorator'};
+    beforeEach(() => {
+      _ = absoluteFrom;
+      const mockSourceFile: any = {
+        fileName: _('/node_modules/some-package/entry-point/test-file.js'),
       };
-      const log: string[] = [];
-      const handler = new AlwaysDetectHandler('handler', log);
-      const analyzedFiles: AnalyzedFile[] = [{
-        sourceFile: mockClazz.getSourceFile(),
-        analyzedClasses: [analyzedClass],
-      }];
-      const host =
-          new DefaultMigrationHost(mockHost, mockMetadata, mockEvaluator, [handler], analyzedFiles);
-      host.injectSyntheticDecorator(mockClazz, mockDecorator);
-      expect(analyzedFiles.length).toEqual(1);
-      expect(analyzedFiles[0].analyzedClasses.length).toEqual(1);
-      expect(analyzedFiles[0].analyzedClasses[0]).toBe(analyzedClass);
-      expect(analyzedClass.decorators !.length).toEqual(1);
-      expect(analyzedClass.decorators ![0].name).toEqual('MockDecorator');
+      mockClazz = {
+        name: {text: 'MockClazz'},
+        getSourceFile: () => mockSourceFile,
+        getStart: () => 0,
+        getWidth: () => 0,
+      };
     });
 
-    it('should merge a new decorator into pre-existing decorators an already existing `AnalyzedClass`',
-       () => {
-         const analyzedClass: AnalyzedClass = {
-           name: 'MockClazz',
-           declaration: mockClazz,
-           matches: [],
-           decorators: [{name: 'OtherDecorator'} as Decorator],
-         };
-         const log: string[] = [];
-         const handler = new AlwaysDetectHandler('handler', log);
-         const analyzedFiles: AnalyzedFile[] = [{
-           sourceFile: mockClazz.getSourceFile(),
-           analyzedClasses: [analyzedClass],
-         }];
-         const host = new DefaultMigrationHost(
-             mockHost, mockMetadata, mockEvaluator, [handler], analyzedFiles);
-         host.injectSyntheticDecorator(mockClazz, mockDecorator);
-         expect(analyzedFiles.length).toEqual(1);
-         expect(analyzedFiles[0].analyzedClasses.length).toEqual(1);
-         expect(analyzedFiles[0].analyzedClasses[0]).toBe(analyzedClass);
-         expect(analyzedClass.decorators !.length).toEqual(2);
-         expect(analyzedClass.decorators ![1].name).toEqual('MockDecorator');
-       });
+    function createMigrationHost({entryPoint, handlers}: {
+      entryPoint: EntryPointBundle; handlers: DecoratorHandler<unknown, unknown, unknown>[]
+    }) {
+      const reflectionHost = new Esm2015ReflectionHost(new MockLogger(), false, entryPoint.src);
+      const compiler = new NgccTraitCompiler(handlers, reflectionHost);
+      const host = new DefaultMigrationHost(
+          reflectionHost, mockMetadata, mockEvaluator, compiler, entryPoint.entryPoint.path);
+      return {compiler, host};
+    }
 
-    it('should throw an error if the injected decorator already exists', () => {
-      const analyzedClass: AnalyzedClass = {
-        name: 'MockClazz',
-        declaration: mockClazz,
-        matches: [],
-        decorators: [{name: 'MockDecorator'} as Decorator],
-      };
-      const log: string[] = [];
-      const handler = new AlwaysDetectHandler('handler', log);
-      const analyzedFiles: AnalyzedFile[] = [{
-        sourceFile: mockClazz.getSourceFile(),
-        analyzedClasses: [analyzedClass],
-      }];
-      const host =
-          new DefaultMigrationHost(mockHost, mockMetadata, mockEvaluator, [handler], analyzedFiles);
-      expect(() => host.injectSyntheticDecorator(mockClazz, mockDecorator))
-          .toThrow(
-              jasmine.objectContaining({code: ErrorCode.NGCC_MIGRATION_DECORATOR_INJECTION_ERROR}));
+    describe('injectSyntheticDecorator()', () => {
+      it('should add the injected decorator into the compilation', () => {
+        const handler = new DetectDecoratorHandler('InjectedDecorator', HandlerPrecedence.WEAK);
+        loadTestFiles([{name: _('/node_modules/test/index.js'), contents: ``}]);
+        const entryPoint =
+            makeTestEntryPointBundle('test', 'esm2015', false, [_('/node_modules/test/index.js')]);
+        const {host, compiler} = createMigrationHost({entryPoint, handlers: [handler]});
+        host.injectSyntheticDecorator(mockClazz, injectedDecorator);
+
+        const record = compiler.recordFor(mockClazz) !;
+        expect(record).toBeDefined();
+        expect(record.traits.length).toBe(1);
+        expect(record.traits[0].detected.decorator).toBe(injectedDecorator);
+      });
+
+      it('should mention the migration that failed in the diagnostics message', () => {
+        const handler = new DiagnosticProducingHandler();
+        loadTestFiles([{name: _('/node_modules/test/index.js'), contents: ``}]);
+        const entryPoint =
+            makeTestEntryPointBundle('test', 'esm2015', false, [_('/node_modules/test/index.js')]);
+        const {host, compiler} = createMigrationHost({entryPoint, handlers: [handler]});
+        const decorator = createComponentDecorator(mockClazz, {selector: 'comp', exportAs: null});
+        host.injectSyntheticDecorator(mockClazz, decorator);
+
+        const record = compiler.recordFor(mockClazz) !;
+        const migratedTrait = record.traits[0];
+        if (migratedTrait.state !== TraitState.ERRORED) {
+          return fail('Expected migrated class trait to be in an error state');
+        }
+
+        expect(migratedTrait.diagnostics.length).toBe(1);
+        expect(ts.flattenDiagnosticMessageText(migratedTrait.diagnostics[0].messageText, '\n'))
+            .toEqual(
+                `test diagnostic\n` +
+                `  Occurs for @Component decorator inserted by an automatic migration\n` +
+                `  @Component({ template: "", selector: "comp" })`);
+      });
+    });
+
+
+
+    describe('getAllDecorators', () => {
+      it('should include injected decorators', () => {
+        const directiveHandler = new DetectDecoratorHandler('Directive', HandlerPrecedence.WEAK);
+        const injectedHandler =
+            new DetectDecoratorHandler('InjectedDecorator', HandlerPrecedence.WEAK);
+        loadTestFiles([{
+          name: _('/node_modules/test/index.js'),
+          contents: `
+            import {Directive} from '@angular/core';
+
+            export class MyClass {};
+            MyClass.decorators = [{ type: Directive }];
+          `
+        }]);
+        const entryPoint =
+            makeTestEntryPointBundle('test', 'esm2015', false, [_('/node_modules/test/index.js')]);
+        const {host, compiler} =
+            createMigrationHost({entryPoint, handlers: [directiveHandler, injectedHandler]});
+        const myClass = getDeclaration(
+            entryPoint.src.program, _('/node_modules/test/index.js'), 'MyClass',
+            isNamedClassDeclaration);
+
+        compiler.analyzeFile(entryPoint.src.file);
+
+        host.injectSyntheticDecorator(myClass, injectedDecorator);
+
+        const decorators = host.getAllDecorators(myClass) !;
+        expect(decorators.length).toBe(2);
+        expect(decorators[0].name).toBe('Directive');
+        expect(decorators[1].name).toBe('InjectedDecorator');
+      });
+    });
+
+    describe('isInScope', () => {
+      it('should be true for nodes within the entry-point', () => {
+        loadTestFiles([
+          {name: _('/node_modules/test/index.js'), contents: `export * from './internal';`},
+          {name: _('/node_modules/test/internal.js'), contents: `export class InternalClass {}`},
+        ]);
+        const entryPoint =
+            makeTestEntryPointBundle('test', 'esm2015', false, [_('/node_modules/test/index.js')]);
+        const {host} = createMigrationHost({entryPoint, handlers: []});
+        const internalClass = getDeclaration(
+            entryPoint.src.program, _('/node_modules/test/internal.js'), 'InternalClass',
+            isNamedClassDeclaration);
+
+        expect(host.isInScope(internalClass)).toBe(true);
+      });
+
+      it('should be false for nodes outside the entry-point', () => {
+        loadTestFiles([
+          {name: _('/node_modules/external/index.js'), contents: `export class ExternalClass {}`},
+          {
+            name: _('/node_modules/test/index.js'),
+            contents: `
+              export {ExternalClass} from 'external';
+              export class InternalClass {}
+            `
+          },
+        ]);
+        const entryPoint =
+            makeTestEntryPointBundle('test', 'esm2015', false, [_('/node_modules/test/index.js')]);
+        const {host} = createMigrationHost({entryPoint, handlers: []});
+        const externalClass = getDeclaration(
+            entryPoint.src.program, _('/node_modules/external/index.js'), 'ExternalClass',
+            isNamedClassDeclaration);
+
+        expect(host.isInScope(externalClass)).toBe(false);
+      });
     });
   });
 });
 
-class TestHandler implements DecoratorHandler<any, any> {
-  constructor(protected name: string, protected log: string[]) {}
+class DetectDecoratorHandler implements DecoratorHandler<unknown, unknown, unknown> {
+  readonly name = DetectDecoratorHandler.name;
 
-  precedence = HandlerPrecedence.PRIMARY;
-  detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<any>|undefined {
-    this.log.push(`${this.name}:detect:${node.name.text}:${decorators !.map(d => d.name)}`);
-    return undefined;
+  constructor(private decorator: string, readonly precedence: HandlerPrecedence) {}
+
+  detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<unknown>|undefined {
+    if (decorators === null) {
+      return undefined;
+    }
+    const decorator = decorators.find(decorator => decorator.name === this.decorator);
+    if (decorator === undefined) {
+      return undefined;
+    }
+    return {trigger: node, decorator, metadata: {}};
   }
-  analyze(node: ClassDeclaration): AnalysisOutput<any> {
-    this.log.push(this.name + ':analyze:' + node.name.text);
-    return {};
-  }
-  compile(node: ClassDeclaration): CompileResult|CompileResult[] {
-    this.log.push(this.name + ':compile:' + node.name.text);
-    return [];
-  }
+
+  analyze(node: ClassDeclaration): AnalysisOutput<unknown> { return {}; }
+
+  compile(node: ClassDeclaration): CompileResult|CompileResult[] { return []; }
 }
 
-class AlwaysDetectHandler extends TestHandler {
-  detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<any>|undefined {
-    super.detect(node, decorators);
-    return {trigger: node, metadata: {}};
+class DiagnosticProducingHandler implements DecoratorHandler<unknown, unknown, unknown> {
+  readonly name = DiagnosticProducingHandler.name;
+  readonly precedence = HandlerPrecedence.PRIMARY;
+
+  detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<unknown>|undefined {
+    const decorator = decorators !== null ? decorators[0] : null;
+    return {trigger: node, decorator, metadata: {}};
   }
+
+  analyze(node: ClassDeclaration): AnalysisOutput<any> {
+    return {diagnostics: [makeDiagnostic(9999, node, 'test diagnostic')]};
+  }
+
+  compile(node: ClassDeclaration): CompileResult|CompileResult[] { return []; }
 }
