@@ -289,10 +289,6 @@ export class R3Injector {
       return false;
     }
 
-    // Track the InjectorType and add a provider for it.
-    this.injectorDefTypes.add(defType);
-    this.records.set(defType, makeRecord(def.factory, NOT_YET));
-
     // Add providers in the same way that @NgModule resolution did:
 
     // First, include providers from any imports.
@@ -330,6 +326,10 @@ export class R3Injector {
         }
       }
     }
+    // Track the InjectorType and add a provider for it. It's important that this is done after the
+    // def's imports.
+    this.injectorDefTypes.add(defType);
+    this.records.set(defType, makeRecord(def.factory, NOT_YET));
 
     // Next, include providers listed on the definition itself.
     const defProviders = def.providers;
