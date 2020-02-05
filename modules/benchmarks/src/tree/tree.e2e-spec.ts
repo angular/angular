@@ -13,16 +13,16 @@ import {openTreeBenchmark} from './test_utils';
 describe('tree benchmark', () => {
   it('should work for createDestroy', async() => {
     openTreeBenchmark();
-    $('#createDom').click();
+    await $('#createDom').click();
     expect($('#root').getText()).toContain('1');
-    $('#destroyDom').click();
-    expect($('#root').getText() as any).toEqual('');
+    await $('#destroyDom').click();
+    expect(await $('#root').getText()).toEqual('');
   });
 
   it('should work for update', async() => {
     openTreeBenchmark();
-    $('#createDom').click();
-    $('#createDom').click();
+    await $('#createDom').click();
+    await $('#createDom').click();
     expect($('#root').getText()).toContain('A');
   });
 });

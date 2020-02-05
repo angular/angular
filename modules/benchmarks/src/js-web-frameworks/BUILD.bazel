@@ -6,6 +6,7 @@ ts_library(
     name = "perf_lib",
     testonly = True,
     srcs = ["js-web-frameworks.perf-spec.ts"],
+    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
     deps = [
         "//modules/e2e_util",
         "@npm//protractor",
