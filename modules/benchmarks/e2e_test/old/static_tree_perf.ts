@@ -25,9 +25,12 @@ describe('ng2 static tree benchmark', function() {
   });
 
   it('should log the ng stats (update)', async() => {
-    runClickBenchmark(
-        {url: URL, buttons: ['#ng2CreateDom'], id: 'ng2.static.tree.update', params: []})
-        ;
+    runClickBenchmark({
+      url: URL,
+      buttons: ['#ng2CreateDom'],
+      id: 'ng2.static.tree.update',
+      params: [],
+    });
   });
 
   it('should log the baseline stats', async() => {
@@ -41,8 +44,7 @@ describe('ng2 static tree benchmark', function() {
 
   it('should log the baseline stats (update)', async() => {
     runClickBenchmark(
-        {url: URL, buttons: ['#baselineCreateDom'], id: 'baseline.static.tree.update', params: []})
-        ;
+        {url: URL, buttons: ['#baselineCreateDom'], id: 'baseline.static.tree.update', params: []});
   });
 
 });
