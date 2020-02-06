@@ -70,7 +70,8 @@ export interface Injectable {
    * - 'root' : The application-level injector in most apps.
    * - 'platform' : A special singleton platform injector shared by all
    * applications on the page.
-   * - 'any' : The NgModule injector that receives the resolution.
+   * - 'any' : Provides a unique instance in every module (including lazy modules) that injects the
+   * token.
    *
    */
   providedIn?: Type<any>|'root'|'platform'|'any'|null;
