@@ -154,6 +154,7 @@ export class TemplateReference {
   heroesByName: {[name: string]: Hero} = {};
   primitiveIndexType: {[name: string]: string} = {};
   anyValue: any;
+  optional?: string;
   myClick(event: any) {}
 }
 

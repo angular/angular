@@ -339,7 +339,9 @@ describe('diagnostics', () => {
       const diagnostics = ngLS.getSemanticDiagnostics(TEST_TEMPLATE) !;
       expect(diagnostics.length).toBe(1);
       const {messageText, start, length} = diagnostics[0];
-      expect(messageText).toBe(`Unknown method 'notSubstring'`);
+      expect(messageText)
+          .toBe(
+              `Identifier 'notSubstring' is not defined. 'string' does not contain such a member`);
       expect(start).toBe(content.indexOf('$event'));
       expect(length).toBe('$event.notSubstring()'.length);
     });
@@ -884,5 +886,68 @@ describe('diagnostics', () => {
     expect(tsDiags).toEqual([]);
     const ngDiags = ngLS.getSemanticDiagnostics(fileName);
     expect(ngDiags).toEqual([]);
+  });
+
+  it('should suggest ? or ! operator if method receiver is nullable', () => {
+    const content = mockHost.override(TEST_TEMPLATE, `{{optional && optional.toLowerCase()}}`);
+    const ngDiags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
+    expect(ngDiags.length).toBe(1);
+    const {start, length, messageText, category} = ngDiags[0];
+    expect(messageText)
+        .toBe(
+            `'optional' is possibly undefined. ` +
+            `Consider using the safe navigation operator (optional?.toLowerCase) ` +
+            `or non-null assertion operator (optional!.toLowerCase).`);
+    expect(category).toBe(ts.DiagnosticCategory.Suggestion);
+    expect(content.substring(start !, start ! + length !)).toBe('optional.toLowerCase()');
+
+  });
+
+  it('should suggest ? or ! operator if property receiver is nullable', () => {
+    const content = mockHost.override(TEST_TEMPLATE, `{{optional && optional.length}}`);
+    const ngDiags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
+    expect(ngDiags.length).toBe(1);
+    const {start, length, messageText, category} = ngDiags[0];
+    expect(messageText)
+        .toBe(
+            `'optional' is possibly undefined. ` +
+            `Consider using the safe navigation operator (optional?.length) ` +
+            `or non-null assertion operator (optional!.length).`);
+    expect(category).toBe(ts.DiagnosticCategory.Suggestion);
+    expect(content.substring(start !, start ! + length !)).toBe('optional.length');
+  });
+
+  it('should report error if method is not found on non-nullable receiver', () => {
+    const expressions = [
+      'optional?.someMethod()',
+      'optional!.someMethod()',
+    ];
+    for (const expression of expressions) {
+      const content = mockHost.override(TEST_TEMPLATE, `{{${expression}}}`);
+      const ngDiags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
+      expect(ngDiags.length).toBe(1);
+      const {start, length, messageText, category} = ngDiags[0];
+      expect(messageText)
+          .toBe(`Identifier 'someMethod' is not defined. 'string' does not contain such a member`);
+      expect(category).toBe(ts.DiagnosticCategory.Error);
+      expect(content.substring(start !, start ! + length !)).toBe(expression);
+    }
+  });
+
+  it('should report error if property is not found on non-nullable receiver', () => {
+    const expressions = [
+      'optional?.someProp',
+      'optional!.someProp',
+    ];
+    for (const expression of expressions) {
+      const content = mockHost.override(TEST_TEMPLATE, `{{${expression}}}`);
+      const ngDiags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
+      expect(ngDiags.length).toBe(1);
+      const {start, length, messageText, category} = ngDiags[0];
+      expect(messageText)
+          .toBe(`Identifier 'someProp' is not defined. 'string' does not contain such a member`);
+      expect(category).toBe(ts.DiagnosticCategory.Error);
+      expect(content.substring(start !, start ! + length !)).toBe(expression);
+    }
   });
 });

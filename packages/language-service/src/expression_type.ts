@@ -366,22 +366,19 @@ export class AstType implements AstVisitor {
     if (this.isAny(receiverType)) {
       return this.anyType;
     }
-
-    // The type of a method is the selected methods result type.
-    const method = receiverType.members().get(ast.name);
-    if (!method) {
-      this.reportDiagnostic(`Unknown method '${ast.name}'`, ast);
-      return this.anyType;
-    }
-    if (!method.type) {
+    const methodType = this.resolvePropertyRead(receiverType, ast);
+    if (!methodType) {
       this.reportDiagnostic(`Could not find a type for '${ast.name}'`, ast);
       return this.anyType;
     }
-    if (!method.type.callable) {
+    if (this.isAny(methodType)) {
+      return this.anyType;
+    }
+    if (!methodType.callable) {
       this.reportDiagnostic(`Member '${ast.name}' is not callable`, ast);
       return this.anyType;
     }
-    const signature = method.type.selectSignature(ast.args.map(arg => this.getType(arg)));
+    const signature = methodType.selectSignature(ast.args.map(arg => this.getType(arg)));
     if (!signature) {
       this.reportDiagnostic(`Unable to resolve signature for call of method ${ast.name}`, ast);
       return this.anyType;
@@ -393,34 +390,33 @@ export class AstType implements AstVisitor {
     if (this.isAny(receiverType)) {
       return this.anyType;
     }
-
     // The type of a property read is the seelcted member's type.
     const member = receiverType.members().get(ast.name);
     if (!member) {
-      let receiverInfo = receiverType.name;
-      if (receiverInfo == '$implicit') {
-        receiverInfo =
-            'The component declaration, template variable declarations, and element references do';
-      } else if (receiverType.nullable) {
-        return this.reportDiagnostic(`The expression might be null`, ast.receiver);
+      if (receiverType.name === '$implicit') {
+        this.reportDiagnostic(
+            `Identifier '${ast.name}' is not defined. ` +
+                `The component declaration, template variable declarations, and element references do not contain such a member`,
+            ast);
+      } else if (receiverType.nullable && ast.receiver instanceof PropertyRead) {
+        const receiver = ast.receiver.name;
+        this.reportDiagnostic(
+            `'${receiver}' is possibly undefined. Consider using the safe navigation operator (${receiver}?.${ast.name}) ` +
+                `or non-null assertion operator (${receiver}!.${ast.name}).`,
+            ast, ts.DiagnosticCategory.Suggestion);
       } else {
-        receiverInfo = `'${receiverInfo}' does`;
+        this.reportDiagnostic(
+            `Identifier '${ast.name}' is not defined. '${receiverType.name}' does not contain such a member`,
+            ast);
       }
-      this.reportDiagnostic(
-          `Identifier '${ast.name}' is not defined. ${receiverInfo} not contain such a member`,
-          ast);
       return this.anyType;
     }
     if (!member.public) {
-      let receiverInfo = receiverType.name;
-      if (receiverInfo == '$implicit') {
-        receiverInfo = 'the component';
-      } else {
-        receiverInfo = `'${receiverInfo}'`;
-      }
       this.reportDiagnostic(
-          `Identifier '${ast.name}' refers to a private member of ${receiverInfo}`, ast,
-          ts.DiagnosticCategory.Warning);
+          `Identifier '${ast.name}' refers to a private member of ${receiverType.name === '$implicit' ? 'the component' : `
+      '${receiverType.name}'
+          `}`,
+          ast, ts.DiagnosticCategory.Warning);
     }
     return member.type;
   }
@@ -430,7 +426,7 @@ export class AstType implements AstVisitor {
   }
 
   private isAny(symbol: Symbol): boolean {
-    return !symbol || this.query.getTypeKind(symbol) == BuiltinType.Any ||
+    return !symbol || this.query.getTypeKind(symbol) === BuiltinType.Any ||
         (!!symbol.type && this.isAny(symbol.type));
   }
 }
