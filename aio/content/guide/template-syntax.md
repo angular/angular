@@ -1004,7 +1004,7 @@ If there are multiple styles you'd like to toggle, you can bind to the `[style]`
 The expression attached to the `[style]` binding is most often a string list of styles like `"width: 100px; height: 100px;"`. 
 
 You can also format the expression as an object with style names as the keys and style values as the values, like `{width: '100px', height: '100px'}`. 
-It's important to note that with object format, the identity of the object must change for the styles to be updated.
+It's important to note that with any object-like expression (`object`, `Array`, `Map`, `Set`, etc), the identity of the object must change for the class list to be updated.
 Updating the property without changing object identity will have no effect.
 
 If there are multiple bindings to the same style property, conflicts are resolved using [styling precedence rules](#styling-precedence).
