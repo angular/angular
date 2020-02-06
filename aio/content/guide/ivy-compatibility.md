@@ -17,8 +17,8 @@ If you're still seeing the errors, they are not specific to Ivy. In this case, y
 
 If the errors are gone, switch back to Ivy by removing the changes to the `tsconfig.json` and review the list of expected changes below.
 
-{@a size-debugging}
-### Size Debugging
+{@a payload-size-debugging}
+### Payload size debugging
 
 If you notice that the size of your application's main bundle has increased with Ivy, you may want to check the following:
 
