@@ -240,6 +240,59 @@ export declare class AnimationEvent {
       expect(diags[2].messageText).toEqual(`Property 'focused' does not exist on type 'TestCmp'.`);
     });
 
+    // https://github.com/angular/angular/issues/35073
+    it('ngIf should narrow on output types', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write('test.ts', `
+        import {CommonModule} from '@angular/common';
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '<div *ngIf="person" (click)="handleEvent(person.name)"></div>',
+        })
+        class TestCmp {
+          person?: { name: string; };
+          handleEvent(name: string) {}
+        }
+
+        @NgModule({
+          imports: [CommonModule],
+          declarations: [TestCmp],
+        })
+        class Module {}
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('ngIf should narrow on output types across multiple guards', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write('test.ts', `
+        import {CommonModule} from '@angular/common';
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '<div *ngIf="person"><div *ngIf="person.name" (click)="handleEvent(person.name)"></div></div>',
+        })
+        class TestCmp {
+          person?: { name?: string; };
+          handleEvent(name: string) {}
+        }
+
+        @NgModule({
+          imports: [CommonModule],
+          declarations: [TestCmp],
+        })
+        class Module {}
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
     describe('strictInputTypes', () => {
       beforeEach(() => {
         env.write('test.ts', `
