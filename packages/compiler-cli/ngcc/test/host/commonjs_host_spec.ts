@@ -9,7 +9,7 @@ import * as ts from 'typescript';
 
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {ClassMemberKind, CtorParameter, InlineDeclaration, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
+import {ClassMemberKind, CtorParameter, InlineDeclaration, KnownDeclaration, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
 import {CommonJsReflectionHost} from '../../src/host/commonjs_host';
@@ -1660,6 +1660,32 @@ exports.ExternalModule = ExternalModule;
       });
 
       describe('getDeclarationOfIdentifier', () => {
+        // Helpers
+        const createTestForTsHelper =
+            (program: ts.Program, host: CommonJsReflectionHost, srcFile: TestFile,
+             getHelperDeclaration: (name: string) => ts.Declaration) =>
+                (varName: string, helperName: string, knownAs: KnownDeclaration,
+                 viaModule: string | null = null) => {
+                  const node =
+                      getDeclaration(program, srcFile.name, varName, ts.isVariableDeclaration);
+                  const helperIdentifier = getIdentifierFromCallExpression(node);
+                  const helperDeclaration = host.getDeclarationOfIdentifier(helperIdentifier);
+
+                  expect(helperDeclaration).toEqual({
+                    known: knownAs,
+                    node: getHelperDeclaration(helperName), viaModule,
+                  });
+                };
+
+        const getIdentifierFromCallExpression = (decl: ts.VariableDeclaration) => {
+          if (decl.initializer !== undefined && ts.isCallExpression(decl.initializer)) {
+            const expr = decl.initializer.expression;
+            if (ts.isIdentifier(expr)) return expr;
+            if (ts.isPropertyAccessExpression(expr)) return expr.name;
+          }
+          throw new Error(`Unable to extract identifier from declaration '${decl.getText()}'.`);
+        };
+
         it('should return the declaration of a locally defined identifier', () => {
           loadTestFiles([SOME_DIRECTIVE_FILE]);
           const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
@@ -1819,6 +1845,150 @@ exports.ExternalModule = ExternalModule;
              expect(decl.viaModule).toEqual('sub_module');
              expect(decl.node).toBe(expectedDeclaration);
            });
+
+        it('should recognize TypeScript helpers (as function declarations)', () => {
+          const file: TestFile = {
+            name: _('/test.js'),
+            contents: `
+              function __assign(t, ...sources) { /* ... */ }
+              function __spread(...args) { /* ... */ }
+              function __spreadArrays(...args) { /* ... */ }
+
+              var a = __assign({foo: 'bar'}, {baz: 'qux'});
+              var b = __spread(['foo', 'bar'], ['baz', 'qux']);
+              var c = __spreadArrays(['foo', 'bar'], ['baz', 'qux']);
+            `,
+          };
+          loadTestFiles([file]);
+          const bundle = makeTestBundleProgram(file.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
+
+          const testForHelper = createTestForTsHelper(
+              bundle.program, host, file,
+              helperName =>
+                  getDeclaration(bundle.program, file.name, helperName, ts.isFunctionDeclaration));
+
+          testForHelper('a', '__assign', KnownDeclaration.TsHelperAssign);
+          testForHelper('b', '__spread', KnownDeclaration.TsHelperSpread);
+          testForHelper('c', '__spreadArrays', KnownDeclaration.TsHelperSpreadArrays);
+        });
+
+        it('should recognize suffixed TypeScript helpers (as function declarations)', () => {
+          const file: TestFile = {
+            name: _('/test.js'),
+            contents: `
+              function __assign$1(t, ...sources) { /* ... */ }
+              function __spread$2(...args) { /* ... */ }
+              function __spreadArrays$3(...args) { /* ... */ }
+
+              var a = __assign$1({foo: 'bar'}, {baz: 'qux'});
+              var b = __spread$2(['foo', 'bar'], ['baz', 'qux']);
+              var c = __spreadArrays$3(['foo', 'bar'], ['baz', 'qux']);
+            `,
+          };
+          loadTestFiles([file]);
+          const bundle = makeTestBundleProgram(file.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
+
+          const testForHelper = createTestForTsHelper(
+              bundle.program, host, file,
+              helperName =>
+                  getDeclaration(bundle.program, file.name, helperName, ts.isFunctionDeclaration));
+
+          testForHelper('a', '__assign$1', KnownDeclaration.TsHelperAssign);
+          testForHelper('b', '__spread$2', KnownDeclaration.TsHelperSpread);
+          testForHelper('c', '__spreadArrays$3', KnownDeclaration.TsHelperSpreadArrays);
+        });
+
+        it('should recognize TypeScript helpers (as variable declarations)', () => {
+          const file: TestFile = {
+            name: _('/test.js'),
+            contents: `
+              var __assign = (this && this.__assign) || function (t, ...sources) { /* ... */ }
+              var __spread = (this && this.__spread) || function (...args) { /* ... */ }
+              var __spreadArrays = (this && this.__spreadArrays) || function (...args) { /* ... */ }
+
+              var a = __assign({foo: 'bar'}, {baz: 'qux'});
+              var b = __spread(['foo', 'bar'], ['baz', 'qux']);
+              var c = __spreadArrays(['foo', 'bar'], ['baz', 'qux']);
+            `,
+          };
+          loadTestFiles([file]);
+          const bundle = makeTestBundleProgram(file.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
+
+          const testForHelper = createTestForTsHelper(
+              bundle.program, host, file,
+              helperName =>
+                  getDeclaration(bundle.program, file.name, helperName, ts.isVariableDeclaration));
+
+          testForHelper('a', '__assign', KnownDeclaration.TsHelperAssign);
+          testForHelper('b', '__spread', KnownDeclaration.TsHelperSpread);
+          testForHelper('c', '__spreadArrays', KnownDeclaration.TsHelperSpreadArrays);
+        });
+
+        it('should recognize suffixed TypeScript helpers (as variable declarations)', () => {
+          const file: TestFile = {
+            name: _('/test.js'),
+            contents: `
+              var __assign$1 = (this && this.__assign$1) || function (t, ...sources) { /* ... */ }
+              var __spread$2 = (this && this.__spread$2) || function (...args) { /* ... */ }
+              var __spreadArrays$3 = (this && this.__spreadArrays$3) || function (...args) { /* ... */ }
+
+              var a = __assign$1({foo: 'bar'}, {baz: 'qux'});
+              var b = __spread$2(['foo', 'bar'], ['baz', 'qux']);
+              var c = __spreadArrays$3(['foo', 'bar'], ['baz', 'qux']);
+            `,
+          };
+          loadTestFiles([file]);
+          const bundle = makeTestBundleProgram(file.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
+
+          const testForHelper = createTestForTsHelper(
+              bundle.program, host, file,
+              helperName =>
+                  getDeclaration(bundle.program, file.name, helperName, ts.isVariableDeclaration));
+
+          testForHelper('a', '__assign$1', KnownDeclaration.TsHelperAssign);
+          testForHelper('b', '__spread$2', KnownDeclaration.TsHelperSpread);
+          testForHelper('c', '__spreadArrays$3', KnownDeclaration.TsHelperSpreadArrays);
+        });
+
+        it('should recognize imported TypeScript helpers', () => {
+          const files: TestFile[] = [
+            {
+              name: _('/test.js'),
+              contents: `
+                var tslib_1 = require('tslib');
+
+                var a = tslib_1.__assign({foo: 'bar'}, {baz: 'qux'});
+                var b = tslib_1.__spread(['foo', 'bar'], ['baz', 'qux']);
+                var c = tslib_1.__spreadArrays(['foo', 'bar'], ['baz', 'qux']);
+              `,
+            },
+            {
+              name: _('/node_modules/tslib/index.d.ts'),
+              contents: `
+                export declare function __assign(t: any, ...sources: any[]): any;
+                export declare function __spread(...args: any[][]): any[];
+                export declare function __spreadArrays(...args: any[][]): any[];
+              `,
+            },
+          ];
+          loadTestFiles(files);
+
+          const [testFile, tslibFile] = files;
+          const bundle = makeTestBundleProgram(testFile.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
+          const tslibSourceFile = getSourceFileOrError(bundle.program, tslibFile.name);
+
+          const testForHelper =
+              createTestForTsHelper(bundle.program, host, testFile, () => tslibSourceFile);
+
+          testForHelper('a', '__assign', KnownDeclaration.TsHelperAssign, 'tslib');
+          testForHelper('b', '__spread', KnownDeclaration.TsHelperSpread, 'tslib');
+          testForHelper('c', '__spreadArrays', KnownDeclaration.TsHelperSpreadArrays, 'tslib');
+        });
       });
 
       describe('getExportsOfModule()', () => {
@@ -1917,6 +2087,31 @@ exports.ExternalModule = ExternalModule;
           expect(decl).not.toBeUndefined();
           expect(decl.node).toBeNull();
           expect(decl.expression).toBeDefined();
+        });
+
+        it('should recognize declarations of known TypeScript helpers', () => {
+          const tslib = {
+            name: _('/tslib.d.ts'),
+            contents: `
+              export declare function __assign(t: any, ...sources: any[]): any;
+              export declare function __spread(...args: any[][]): any[];
+              export declare function __spreadArrays(...args: any[][]): any[];
+              export declare function __unknownHelper(...args: any[]): any;
+            `,
+          };
+          loadTestFiles([tslib]);
+          const bundle = makeTestBundleProgram(tslib.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
+          const sf = getSourceFileOrError(bundle.program, tslib.name);
+          const exportDeclarations = host.getExportsOfModule(sf) !;
+
+          expect([...exportDeclarations].map(([exportName, {known}]) => [exportName, known]))
+              .toEqual([
+                ['__assign', KnownDeclaration.TsHelperAssign],
+                ['__spread', KnownDeclaration.TsHelperSpread],
+                ['__spreadArrays', KnownDeclaration.TsHelperSpreadArrays],
+                ['__unknownHelper', null],
+              ]);
         });
       });
 

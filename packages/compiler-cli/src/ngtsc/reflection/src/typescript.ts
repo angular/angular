@@ -164,7 +164,6 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     return {
       node,
       body: node.body !== undefined ? Array.from(node.body.statements) : null,
-      helper: null,
       parameters: node.parameters.map(param => {
         const name = parameterName(param.name);
         const initializer = param.initializer || null;
@@ -266,10 +265,8 @@ export class TypeScriptReflectionHost implements ReflectionHost {
 
   /**
    * Resolve a `ts.Symbol` to its declaration, keeping track of the `viaModule` along the way.
-   *
-   * @internal
    */
-  private getDeclarationOfSymbol(symbol: ts.Symbol, originalId: ts.Identifier|null): Declaration
+  protected getDeclarationOfSymbol(symbol: ts.Symbol, originalId: ts.Identifier|null): Declaration
       |null {
     // If the symbol points to a ShorthandPropertyAssignment, resolve it.
     let valueDeclaration: ts.Declaration|undefined = undefined;
