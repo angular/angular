@@ -167,6 +167,16 @@ module.exports = function(config) {
     conf.browserStack.tunnelIdentifier = tunnelIdentifier;
   }
 
+  // For SauceLabs jobs, we set up a domain which resolves to the machine which launched
+  // the tunnel. We do this because devices are sometimes not able to properly resolve
+  // `localhost` or `127.0.0.1` through the SauceLabs tunnel. Using a domain that does not
+  // resolve to anything on SauceLabs VMs ensures that such requests are always resolved through
+  // the tunnel, and resolve to the actual tunnel host machine (commonly the CircleCI VMs).
+  // More context can be found in: https://github.com/angular/angular/pull/35171.
+  if (process.env.SAUCE_LOCALHOST_ALIAS_DOMAIN) {
+    conf.hostname = process.env.SAUCE_LOCALHOST_ALIAS_DOMAIN;
+  }
+
   if (process.env.KARMA_WEB_TEST_MODE) {
     // KARMA_WEB_TEST_MODE is used to setup karma to run in
     // SauceLabs or Browserstack

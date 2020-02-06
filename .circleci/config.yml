@@ -150,6 +150,27 @@ commands:
             git config --global url."ssh://git@github.com".insteadOf "https://github.com" || true
             git config --global gc.auto 0 || true
 
+  init_saucelabs_environment:
+    description: Sets up a domain that resolves to the local host.
+    steps:
+      - run:
+          name: Preparing environment for running tests on Saucelabs.
+          command: |
+            # For SauceLabs jobs, we set up a domain which resolves to the machine which launched
+            # the tunnel. We do this because devices are sometimes not able to properly resolve
+            # `localhost` or `127.0.0.1` through the SauceLabs tunnel. Using a domain that does not
+            # resolve to anything on SauceLabs VMs ensures that such requests are always resolved
+            # through the tunnel, and resolve to the actual tunnel host machine (i.e. the CircleCI VM).
+            # More context can be found in: https://github.com/angular/angular/pull/35171.
+            setPublicVar SAUCE_LOCALHOST_ALIAS_DOMAIN "angular-ci.local"
+            setSecretVar SAUCE_ACCESS_KEY $(echo $SAUCE_ACCESS_KEY | rev)
+      - run:
+          # Sets up a local domain in the machine's host file that resolves to the local
+          # host. This domain is helpful in Saucelabs tests where devices are not able to
+          # properly resolve `localhost` or `127.0.0.1` through the sauce-connect tunnel.
+          name: Setting up alias domain for local host.
+          command: echo "127.0.0.1 $SAUCE_LOCALHOST_ALIAS_DOMAIN" | sudo tee -a /etc/hosts
+
   # Normally this would be an individual job instead of a command.
   # But startup and setup time for each invidual windows job are high enough to discourage
   # many small jobs, so instead we use a command for setup unless the gain becomes significant.
@@ -313,9 +334,7 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
-      - run:
-          name: Preparing environment for running tests on Saucelabs.
-          command: setSecretVar SAUCE_ACCESS_KEY $(echo $SAUCE_ACCESS_KEY | rev)
+      - init_saucelabs_environment
       - run:
           name: Run Bazel tests on Saucelabs
           # See /tools/saucelabs/README.md for more info
@@ -337,9 +356,7 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
-      - run:
-          name: Preparing environment for running tests on Saucelabs.
-          command: setSecretVar SAUCE_ACCESS_KEY $(echo $SAUCE_ACCESS_KEY | rev)
+      - init_saucelabs_environment
       - run:
           name: Run Bazel tests on Saucelabs
           # See /tools/saucelabs/README.md for more info
@@ -659,11 +676,7 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
-      - run:
-          name: Preparing environment for running tests on Saucelabs.
-          command: |
-            setPublicVar KARMA_JS_BROWSERS $(node -e 'console.log(require("./browser-providers.conf").sauceAliases.CI_REQUIRED.join(","))')
-            setSecretVar SAUCE_ACCESS_KEY $(echo $SAUCE_ACCESS_KEY | rev)
+      - init_saucelabs_environment
       - run:
           name: Starting Saucelabs tunnel service
           command: ./tools/saucelabs/sauce-service.sh run
@@ -675,7 +688,11 @@ jobs:
           # Waiting on ready ensures that we don't run tests too early without Saucelabs not being ready.
           name: Waiting for Saucelabs tunnel to connect
           command: ./tools/saucelabs/sauce-service.sh ready-wait
-      - run: yarn karma start ./karma-js.conf.js --single-run --browsers=${KARMA_JS_BROWSERS}
+      - run:
+          name: Running tests on Saucelabs.
+          command: |
+            browsers=$(node -e 'console.log(require("./browser-providers.conf").sauceAliases.CI_REQUIRED.join(","))')
+            yarn karma start ./karma-js.conf.js --single-run --browsers=${browsers}
       - run:
           name: Stop Saucelabs tunnel service
           command: ./tools/saucelabs/sauce-service.sh stop
