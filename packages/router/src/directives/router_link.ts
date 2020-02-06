@@ -126,12 +126,12 @@ export class RouterLink {
   // TODO(issue/24571): remove '!'.
   @Input() replaceUrl !: boolean;
   @Input() state?: {[k: string]: any};
-  private commands: any[] = [];
+  protected commands: any[] = [];
   // TODO(issue/24571): remove '!'.
-  private preserve !: boolean;
+  protected preserve !: boolean;
 
   constructor(
-      private router: Router, private route: ActivatedRoute,
+      protected router: Router, protected route: ActivatedRoute,
       @Attribute('tabindex') tabIndex: string, renderer: Renderer2, el: ElementRef) {
     if (tabIndex == null) {
       renderer.setAttribute(el.nativeElement, 'tabindex', '0');
@@ -208,18 +208,18 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   // TODO(issue/24571): remove '!'.
   @Input() replaceUrl !: boolean;
   @Input() state?: {[k: string]: any};
-  private commands: any[] = [];
-  private subscription: Subscription;
+  protected commands: any[] = [];
+  protected subscription: Subscription;
   // TODO(issue/24571): remove '!'.
-  private preserve !: boolean;
+  protected preserve !: boolean;
 
   // the url displayed on the anchor element.
   // TODO(issue/24571): remove '!'.
   @HostBinding() href !: string;
 
   constructor(
-      private router: Router, private route: ActivatedRoute,
-      private locationStrategy: LocationStrategy) {
+      protected router: Router, protected route: ActivatedRoute,
+      protected locationStrategy: LocationStrategy) {
     this.subscription = router.events.subscribe((s: Event) => {
       if (s instanceof NavigationEnd) {
         this.updateTargetUrlAndHref();
@@ -266,7 +266,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
     return false;
   }
 
-  private updateTargetUrlAndHref(): void {
+  protected updateTargetUrlAndHref(): void {
     this.href = this.locationStrategy.prepareExternalUrl(this.router.serializeUrl(this.urlTree));
   }
 
