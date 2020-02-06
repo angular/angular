@@ -27,6 +27,8 @@ If the errors are gone, switch back to Ivy by removing the changes to the `tscon
 
 * Unbound inputs for directives (e.g. name in `<my-comp name="">`) are now set upon creation of the view, before change detection runs (previously, all inputs were set during change detection).
 
+* Static attributes set directly in the HTML of a template will override any conflicting host attributes set by directives or components (previously, static host attributes set by directives / components would override static template attributes if conflicting).
+
 {@a less-common-changes}
 ### Less common changes
 
