@@ -17,6 +17,20 @@ If you're still seeing the errors, they are not specific to Ivy. In this case, y
 
 If the errors are gone, switch back to Ivy by removing the changes to the `tsconfig.json` and review the list of expected changes below.
 
+{@a payload-size-debugging}
+### Payload size debugging
+
+If you notice that the size of your application's main bundle has increased with Ivy, you may want to check the following:
+
+1. Verify that the components and `NgModules` that you want to be lazy loaded are only imported in lazy modules.
+Anything that you import outside lazy modules can end up in the main bundle. 
+See more details in the original issue [here](https://github.com/angular/angular-cli/issues/16146#issuecomment-557559287). 
+
+1. Check that imported libraries have been marked side-effect-free.
+If your app imports from shared libraries that are meant to be free from side effects, add "sideEffects": false to their `package.json`. 
+This will ensure that the libraries will be properly tree-shaken if they are imported but not directly referenced.
+See more details in the original issue [here](https://github.com/angular/angular-cli/issues/16799#issuecomment-580912090).
+
 
 {@a common-changes}
 ### Changes you may see
