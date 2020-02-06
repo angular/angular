@@ -8,8 +8,8 @@ This guide explains how to specify metadata and apply available compiler options
 
 <div class="alert is-helpful">
 
-    <a href="https://www.youtube.com/watch?v=kW9cJsvcsGo">Watch compiler author Tobias Bosch explain the Angular compiler</a> at AngularConnect 2016.
-    
+  <a href="https://www.youtube.com/watch?v=kW9cJsvcsGo">Watch compiler author Tobias Bosch explain the Angular compiler</a> at AngularConnect 2016.
+
 </div>
 
 {@a why-aot}
