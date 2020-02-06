@@ -947,8 +947,8 @@ If there are multiple bindings to the same class name, conflicts are resolved us
     <td><code>true</code>, <code>false</code></td>
   </tr>
   <tr>
-    <td rowspan=5>Multi-class binding</td>
-    <td rowspan=5><code>[class]="classExpr"</code></td>
+    <td rowspan=3>Multi-class binding</td>
+    <td rowspan=3><code>[class]="classExpr"</code></td>
     <td><code>string</code></td>
     <td><code>"my-class-1 my-class-2 my-class-3"</code></td>
   </tr>
@@ -957,16 +957,8 @@ If there are multiple bindings to the same class name, conflicts are resolved us
     <td><code>{foo: true, bar: false}</code></td>
   </tr>
   <tr>
-    <td><code>Map</code><<code>string, boolean | undefined | null</code>></code></td>
-    <td><code>new Map([['foo', true]])</code></td>
-  </tr>
-  <tr>
     <td><code>Array</code><<code>string</code>></td>
     <td><code>['foo', 'bar']</code></td>
-  </tr>
-  <tr>
-    <td><code>Set</code><<code>string</code>> </code></td>
-    <td><code>new Set(['foo', 'bar'])</code></td>
   </tr>
 </table>
 
@@ -1050,8 +1042,8 @@ If there are multiple bindings to the same style property, conflicts are resolve
     <td><code>100</code></td>
   </tr>
     <tr>
-    <td rowspan=5>Multi-style binding</td>
-    <td rowspan=5><code>[style]="styleExpr"</code></td>
+    <td rowspan=3>Multi-style binding</td>
+    <td rowspan=3><code>[style]="styleExpr"</code></td>
     <td><code>string</code></td>
     <td><code>"width: 100px; height: 100px"</code></td>
   </tr>
@@ -1060,16 +1052,8 @@ If there are multiple bindings to the same style property, conflicts are resolve
     <td><code>{width: '100px', height: '100px'}</code></td>
   </tr>
   <tr>
-      <td><code>Map</code><<code>string, string | undefined | null</code>></code></td>
-      <td><code>new Map([['width', '100px']])</code></td>
-   </tr>
-  <tr>
     <td><code>Array</code><<code>string</code>></td>
     <td><code>['width', '100px']</code></td>
-  </tr>
-  <tr>
-    <td><code>Set</code><<code>string</code>> </code></td>
-    <td><code>new Set(['width', '100px'])</code></td>
   </tr>
 </table>
 
