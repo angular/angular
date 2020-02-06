@@ -11,11 +11,11 @@ import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {Reference} from '../../imports';
 import {DependencyTracker} from '../../incremental/api';
-import {FunctionDefinition, TsHelperFn, TypeScriptReflectionHost} from '../../reflection';
+import {Declaration, KnownDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
 import {DynamicValue} from '../src/dynamic';
 import {PartialEvaluator} from '../src/interface';
-import {EnumValue} from '../src/result';
+import {EnumValue, ResolvedValue} from '../src/result';
 
 import {evaluate, firstArgFfr, makeEvaluator, makeExpression, owningModuleOf} from './utils';
 
@@ -538,69 +538,209 @@ runInEachFileSystem(() => {
       expect((value.node as ts.CallExpression).expression.getText()).toBe('foo');
     });
 
-    it('should evaluate TypeScript __spread helper', () => {
-      const {checker, expression} = makeExpression(
-          `
-        import * as tslib from 'tslib';
-        const a = [1];
-        const b = [2, 3];
-      `,
-          'tslib.__spread(a, b)', [
-            {
-              name: _('/node_modules/tslib/index.d.ts'),
-              contents: `
-          export declare function __spread(...args: any[][]): any[];
-        `
-            },
-          ]);
-      const reflectionHost = new TsLibAwareReflectionHost(checker);
-      const evaluator = new PartialEvaluator(reflectionHost, checker, null);
-      const value = evaluator.evaluate(expression);
-      expect(value).toEqual([1, 2, 3]);
+    describe('(with imported TypeScript helpers)', () => {
+      // Helpers
+      const evaluateExpression = <T extends ResolvedValue>(code: string, expr: string) => {
+        const {checker, expression} = makeExpression(code, expr, [
+          {
+            name: _('/node_modules/tslib/index.d.ts'),
+            contents: `
+              export declare function __assign(t: any, ...sources: any[]): any;
+              export declare function __spread(...args: any[][]): any[];
+              export declare function __spreadArrays(...args: any[][]): any[];
+            `,
+          },
+        ]);
+
+        const reflectionHost = new TsLibAwareReflectionHost(checker);
+        const evaluator = new PartialEvaluator(reflectionHost, checker, null);
+
+        return evaluator.evaluate(expression) as T;
+      };
+
+      it('should evaluate `__assign()` (named import)', () => {
+        const map: Map<string, boolean> = evaluateExpression(
+            `
+              import {__assign} from 'tslib';
+              const a = {a: true};
+              const b = {b: true};
+            `,
+            '__assign(a, b)');
+
+        expect([...map]).toEqual([
+          ['a', true],
+          ['b', true],
+        ]);
+      });
+
+      it('should evaluate `__assign()` (star import)', () => {
+        const map: Map<string, boolean> = evaluateExpression(
+            `
+              import * as tslib from 'tslib';
+              const a = {a: true};
+              const b = {b: true};
+            `,
+            'tslib.__assign(a, b)');
+
+        expect([...map]).toEqual([
+          ['a', true],
+          ['b', true],
+        ]);
+      });
+
+      it('should evaluate `__spread()` (named import)', () => {
+        const arr: number[] = evaluateExpression(
+            `
+              import {__spread} from 'tslib';
+              const a = [1];
+              const b = [2, 3];
+            `,
+            '__spread(a, b)');
+
+        expect(arr).toEqual([1, 2, 3]);
+      });
+
+      it('should evaluate `__spread()` (star import)', () => {
+        const arr: number[] = evaluateExpression(
+            `
+              import * as tslib from 'tslib';
+              const a = [1];
+              const b = [2, 3];
+            `,
+            'tslib.__spread(a, b)');
+
+        expect(arr).toEqual([1, 2, 3]);
+      });
+
+      it('should evaluate `__spreadArrays()` (named import)', () => {
+        const arr: number[] = evaluateExpression(
+            `
+              import {__spreadArrays} from 'tslib';
+              const a = [4];
+              const b = [5, 6];
+            `,
+            '__spreadArrays(a, b)');
+
+        expect(arr).toEqual([4, 5, 6]);
+      });
+
+      it('should evaluate `__spreadArrays()` (star import)', () => {
+        const arr: number[] = evaluateExpression(
+            `
+              import * as tslib from 'tslib';
+              const a = [4];
+              const b = [5, 6];
+            `,
+            'tslib.__spreadArrays(a, b)');
+
+        expect(arr).toEqual([4, 5, 6]);
+      });
     });
 
-    it('should evaluate TypeScript __spreadArrays helper', () => {
-      const {checker, expression} = makeExpression(
-          `
-        import * as tslib from 'tslib';
-        const a = [1];
-        const b = [2, 3];
-      `,
-          'tslib.__spreadArrays(a, b)', [
-            {
-              name: _('/node_modules/tslib/index.d.ts'),
-              contents: `
-          export declare function __spreadArrays(...args: any[][]): any[];
-        `
-            },
-          ]);
-      const reflectionHost = new TsLibAwareReflectionHost(checker);
-      const evaluator = new PartialEvaluator(reflectionHost, checker, null);
-      const value = evaluator.evaluate(expression);
-      expect(value).toEqual([1, 2, 3]);
+    describe('(with emitted TypeScript helpers as functions)', () => {
+      // Helpers
+      const evaluateExpression = <T extends ResolvedValue>(code: string, expr: string) => {
+        const helpers = `
+          function __assign(t, ...sources) { /* ... */ }
+          function __spread(...args) { /* ... */ }
+          function __spreadArrays(...args) { /* ... */ }
+        `;
+        const {checker, expression} = makeExpression(helpers + code, expr);
+
+        const reflectionHost = new TsLibAwareReflectionHost(checker);
+        const evaluator = new PartialEvaluator(reflectionHost, checker, null);
+
+        return evaluator.evaluate(expression) as T;
+      };
+
+      it('should evaluate `__assign()`', () => {
+        const map: Map<string, boolean> = evaluateExpression(
+            `
+              const a = {a: true};
+              const b = {b: true};
+            `,
+            '__assign(a, b)');
+
+        expect([...map]).toEqual([
+          ['a', true],
+          ['b', true],
+        ]);
+      });
+
+      it('should evaluate `__spread()`', () => {
+        const arr: number[] = evaluateExpression(
+            `
+              const a = [1];
+              const b = [2, 3];
+            `,
+            '__spread(a, b)');
+
+        expect(arr).toEqual([1, 2, 3]);
+      });
+
+      it('should evaluate `__spreadArrays()`', () => {
+        const arr: number[] = evaluateExpression(
+            `
+              const a = [4];
+              const b = [5, 6];
+            `,
+            '__spreadArrays(a, b)');
+
+        expect(arr).toEqual([4, 5, 6]);
+      });
     });
 
-    it('should evaluate TypeScript __assign helper', () => {
-      const {checker, expression} = makeExpression(
-          `
-        import * as tslib from 'tslib';
-        const a = {a: true};
-        const b = {b: true};
-      `,
-          'tslib.__assign(a, b)', [
-            {
-              name: _('/node_modules/tslib/index.d.ts'),
-              contents: `
-          export declare function __assign(...args: object[]): object;
-        `
-            },
-          ]);
-      const reflectionHost = new TsLibAwareReflectionHost(checker);
-      const evaluator = new PartialEvaluator(reflectionHost, checker, null);
-      const map = evaluator.evaluate(expression) as Map<string, boolean>;
-      const obj: {[key: string]: boolean} = {};
-      map.forEach((value, key) => obj[key] = value);
-      expect(obj).toEqual({a: true, b: true});
+    describe('(with emitted TypeScript helpers as variables)', () => {
+      // Helpers
+      const evaluateExpression = <T extends ResolvedValue>(code: string, expr: string) => {
+        const helpers = `
+          var __assign = (this && this.__assign) || function (t, ...sources) { /* ... */ }
+          var __spread = (this && this.__spread) || function (...args) { /* ... */ }
+          var __spreadArrays = (this && this.__spreadArrays) || function (...args) { /* ... */ }
+        `;
+        const {checker, expression} = makeExpression(helpers + code, expr);
+
+        const reflectionHost = new TsLibAwareReflectionHost(checker);
+        const evaluator = new PartialEvaluator(reflectionHost, checker, null);
+
+        return evaluator.evaluate(expression) as T;
+      };
+
+      it('should evaluate `__assign()`', () => {
+        const map: Map<string, boolean> = evaluateExpression(
+            `
+              const a = {a: true};
+              const b = {b: true};
+            `,
+            '__assign(a, b)');
+
+        expect([...map]).toEqual([
+          ['a', true],
+          ['b', true],
+        ]);
+      });
+
+      it('should evaluate `__spread()`', () => {
+        const arr: number[] = evaluateExpression(
+            `
+              const a = [1];
+              const b = [2, 3];
+            `,
+            '__spread(a, b)');
+
+        expect(arr).toEqual([1, 2, 3]);
+      });
+
+      it('should evaluate `__spreadArrays()`', () => {
+        const arr: number[] = evaluateExpression(
+            `
+              const a = [4];
+              const b = [5, 6];
+            `,
+            '__spreadArrays(a, b)');
+
+        expect(arr).toEqual([4, 5, 6]);
+      });
     });
 
     describe('(visited file tracking)', () => {
@@ -665,36 +805,52 @@ runInEachFileSystem(() => {
   });
 
   /**
-   * Customizes the resolution of functions to recognize functions from tslib. Such functions are
-   * not handled specially in the default TypeScript host, as only ngcc's ES5 host will have special
-   * powers to recognize functions from tslib.
+   * Customizes the resolution of module exports and identifier declarations to recognize known
+   * helper functions from `tslib`. Such functions are not handled specially in the default
+   * TypeScript host, as only ngcc's ES5 hosts will have special powers to recognize such functions.
    */
   class TsLibAwareReflectionHost extends TypeScriptReflectionHost {
-    getDefinitionOfFunction(node: ts.Node): FunctionDefinition|null {
-      if (ts.isFunctionDeclaration(node)) {
-        const helper = getTsHelperFn(node);
-        if (helper !== null) {
-          return {
-            node,
-            body: null, helper,
-            parameters: [],
-          };
-        }
+    getExportsOfModule(node: ts.Node): Map<string, Declaration>|null {
+      const map = super.getExportsOfModule(node);
+
+      if (map !== null) {
+        map.forEach(decl => decl.known = decl.known || (decl.node && getTsHelperFn(decl.node)));
       }
-      return super.getDefinitionOfFunction(node);
+
+      return map;
+    }
+
+    getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
+      const superDeclaration = super.getDeclarationOfIdentifier(id);
+
+      if (superDeclaration === null || superDeclaration.node === null) {
+        return superDeclaration;
+      }
+
+      const tsHelperFn = getTsHelperFn(superDeclaration.node);
+      if (tsHelperFn !== null) {
+        return {
+          known: tsHelperFn,
+          node: id,
+          viaModule: null,
+        };
+      }
+
+      return superDeclaration;
     }
   }
 
-  function getTsHelperFn(node: ts.FunctionDeclaration): TsHelperFn|null {
-    const name = node.name !== undefined && ts.isIdentifier(node.name) && node.name.text;
+  function getTsHelperFn(node: ts.Declaration): KnownDeclaration|null {
+    const id = (node as ts.Declaration & {name?: ts.Identifier}).name || null;
+    const name = id && id.text;
 
     switch (name) {
       case '__assign':
-        return TsHelperFn.Assign;
+        return KnownDeclaration.TsHelperAssign;
       case '__spread':
-        return TsHelperFn.Spread;
+        return KnownDeclaration.TsHelperSpread;
       case '__spreadArrays':
-        return TsHelperFn.SpreadArrays;
+        return KnownDeclaration.TsHelperSpreadArrays;
       default:
         return null;
     }

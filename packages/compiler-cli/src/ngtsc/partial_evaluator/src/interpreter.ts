@@ -19,7 +19,6 @@ import {DynamicValue} from './dynamic';
 import {ForeignFunctionResolver} from './interface';
 import {resolveKnownDeclaration} from './known_declaration';
 import {EnumValue, KnownFn, ResolvedModule, ResolvedValue, ResolvedValueArray, ResolvedValueMap} from './result';
-import {evaluateTsHelperInline} from './ts_helpers';
 
 
 
@@ -333,6 +332,10 @@ export class StaticInterpreter {
     }
 
     return new ResolvedModule(declarations, decl => {
+      if (decl.known !== null) {
+        return resolveKnownDeclaration(decl.known);
+      }
+
       const declContext = {
           ...context, ...joinModuleContext(context, node, decl),
       };
@@ -415,12 +418,6 @@ export class StaticInterpreter {
     const fn = this.host.getDefinitionOfFunction(lhs.node);
     if (fn === null) {
       return DynamicValue.fromInvalidExpressionType(node.expression, lhs);
-    }
-
-    // If the function corresponds with a tslib helper function, evaluate it with custom logic.
-    if (fn.helper !== null) {
-      const args = this.evaluateFunctionArguments(node, context);
-      return evaluateTsHelperInline(fn.helper, node, args);
     }
 
     if (!isFunctionOrMethodReference(lhs)) {
