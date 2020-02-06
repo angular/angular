@@ -11,7 +11,7 @@ import {absoluteFrom} from '../../../src/ngtsc/file_system';
 import {Declaration, Import} from '../../../src/ngtsc/reflection';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
-import {FactoryMap, isDefined, stripExtension} from '../utils';
+import {FactoryMap, getTsHelperFnFromIdentifier, isDefined, stripExtension} from '../utils';
 
 import {ExportDeclaration, ExportStatement, ReexportStatement, RequireCall, findNamespaceOfIdentifier, findRequireCallReference, isExportStatement, isReexportStatement, isRequireCall} from './commonjs_umd_utils';
 import {Esm5ReflectionHost} from './esm5_host';
@@ -189,7 +189,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
     }
 
     const viaModule = !importInfo.from.startsWith('.') ? importInfo.from : null;
-    return {node: importedFile, known: null, viaModule};
+    return {node: importedFile, known: getTsHelperFnFromIdentifier(id), viaModule};
   }
 
   private resolveModuleName(moduleName: string, containingFile: ts.SourceFile): ts.SourceFile

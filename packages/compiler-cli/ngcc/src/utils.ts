@@ -7,6 +7,7 @@
  */
 import * as ts from 'typescript';
 import {AbsoluteFsPath, FileSystem, absoluteFrom} from '../../src/ngtsc/file_system';
+import {KnownDeclaration} from '../../src/ngtsc/reflection';
 
 /**
  * A list (`Array`) of partially ordered `T` items.
@@ -130,6 +131,40 @@ export function resolveFileWithPostfixes(
     }
   }
   return null;
+}
+
+/**
+ * Determine whether a function declaration corresponds with a TypeScript helper function, returning
+ * its kind if so or null if the declaration does not seem to correspond with such a helper.
+ */
+export function getTsHelperFnFromDeclaration(decl: ts.Declaration): KnownDeclaration|null {
+  if (!ts.isFunctionDeclaration(decl) && !ts.isVariableDeclaration(decl)) {
+    return null;
+  }
+
+  if (decl.name === undefined || !ts.isIdentifier(decl.name)) {
+    return null;
+  }
+
+  return getTsHelperFnFromIdentifier(decl.name);
+}
+
+/**
+ * Determine whether an identifier corresponds with a TypeScript helper function (based on its
+ * name), returning its kind if so or null if the identifier does not seem to correspond with such a
+ * helper.
+ */
+export function getTsHelperFnFromIdentifier(id: ts.Identifier): KnownDeclaration|null {
+  switch (stripDollarSuffix(id.text)) {
+    case '__assign':
+      return KnownDeclaration.TsHelperAssign;
+    case '__spread':
+      return KnownDeclaration.TsHelperSpread;
+    case '__spreadArrays':
+      return KnownDeclaration.TsHelperSpreadArrays;
+    default:
+      return null;
+  }
 }
 
 /**

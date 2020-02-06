@@ -147,46 +147,79 @@ runInEachFileSystem(() => {
     });
 
     ['esm5', 'esm2015'].forEach(target => {
-      it(`should be able to process spread operator inside objects for ${target} format`, () => {
-        compileIntoApf(
-            'test-package', {
-              '/index.ts': `
-                import {Directive, Input, NgModule} from '@angular/core';
+      it(`should be able to process spread operator inside objects for ${target} format (imported helpers)`,
+         () => {
+           compileIntoApf(
+               'test-package', {
+                 '/index.ts': `
+                  import {Directive, Input, NgModule} from '@angular/core';
 
-                const a = { '[class.a]': 'true' };
-                const b = { '[class.b]': 'true' };
+                  const a = { '[class.a]': 'true' };
+                  const b = { '[class.b]': 'true' };
 
-                @Directive({
-                  selector: '[foo]',
-                  host: {...a, ...b, '[class.c]': 'false'}
-                })
-                export class FooDirective {}
+                  @Directive({
+                    selector: '[foo]',
+                    host: {...a, ...b, '[class.c]': 'false'}
+                  })
+                  export class FooDirective {}
 
-                @NgModule({
-                  declarations: [FooDirective],
-                })
-                export class FooModule {}
-              `,
-            },
-            {importHelpers: true});
+                  @NgModule({
+                    declarations: [FooDirective],
+                  })
+                  export class FooModule {}
+                `,
+               },
+               {importHelpers: true, noEmitHelpers: true});
 
-        // TODO: add test with import helpers disabled. This currently won't work because
-        // inlined TS helper functions are not detected. For more details, see PR:
-        // https://github.com/angular/angular/pull/34169
-        fs.writeFile(
-            _('/node_modules/tslib/index.d.ts'),
-            `export declare function __assign(...args: object[]): object;`);
+           fs.writeFile(
+               _('/node_modules/tslib/index.d.ts'),
+               `export declare function __assign(...args: object[]): object;`);
 
-        mainNgcc({
-          basePath: '/node_modules',
-          targetEntryPointPath: 'test-package',
-          propertiesToConsider: [target],
-        });
+           mainNgcc({
+             basePath: '/node_modules',
+             targetEntryPointPath: 'test-package',
+             propertiesToConsider: [target],
+           });
 
-        const jsContents = fs.readFile(_(`/node_modules/test-package/${target}/src/index.js`))
-                               .replace(/\s+/g, ' ');
-        expect(jsContents).toContain('ngcc0.ɵɵclassProp("a", true)("b", true)("c", false)');
-      });
+           const jsContents = fs.readFile(_(`/node_modules/test-package/${target}/src/index.js`))
+                                  .replace(/\s+/g, ' ');
+           expect(jsContents).toContain('ngcc0.ɵɵclassProp("a", true)("b", true)("c", false)');
+         });
+
+      it(`should be able to process emitted spread operator inside objects for ${target} format (emitted helpers)`,
+         () => {
+           compileIntoApf(
+               'test-package', {
+                 '/index.ts': `
+                    import {Directive, Input, NgModule} from '@angular/core';
+
+                    const a = { '[class.a]': 'true' };
+                    const b = { '[class.b]': 'true' };
+
+                    @Directive({
+                      selector: '[foo]',
+                      host: {...a, ...b, '[class.c]': 'false'}
+                    })
+                    export class FooDirective {}
+
+                    @NgModule({
+                      declarations: [FooDirective],
+                    })
+                    export class FooModule {}
+                  `,
+               },
+               {importHelpers: false, noEmitHelpers: false});
+
+           mainNgcc({
+             basePath: '/node_modules',
+             targetEntryPointPath: 'test-package',
+             propertiesToConsider: [target],
+           });
+
+           const jsContents = fs.readFile(_(`/node_modules/test-package/${target}/src/index.js`))
+                                  .replace(/\s+/g, ' ');
+           expect(jsContents).toContain('ngcc0.ɵɵclassProp("a", true)("b", true)("c", false)');
+         });
     });
 
     it('should not add `const` in ES5 generated code', () => {
