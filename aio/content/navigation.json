@@ -873,6 +873,10 @@
   ],
   "docVersions": [
     {
+      "title": "v8",
+      "url": "https://v8.angular.io/"
+    },
+    {
       "title": "v7",
       "url": "https://v7.angular.io/"
     },
