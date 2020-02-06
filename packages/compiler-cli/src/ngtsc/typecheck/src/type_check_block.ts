@@ -51,7 +51,7 @@ export function generateTypeCheckBlock(
     oobRecorder: OutOfBandDiagnosticRecorder): ts.FunctionDeclaration {
   const tcb = new Context(
       env, domSchemaChecker, oobRecorder, meta.id, meta.boundTarget, meta.pipes, meta.schemas);
-  const scope = Scope.forNodes(tcb, null, tcb.boundTarget.target.template !);
+  const scope = Scope.forNodes(tcb, null, tcb.boundTarget.target.template !, /* guard */ null);
   const ctxRawType = env.referenceType(ref);
   if (!ts.isTypeReferenceNode(ctxRawType)) {
     throw new Error(
@@ -182,10 +182,6 @@ class TcbTemplateBodyOp extends TcbOp {
     super();
   }
   execute(): null {
-    // Create a new Scope for the template. This constructs the list of operations for the template
-    // children, as well as tracks bindings within the template.
-    const tmplScope = Scope.forNodes(this.tcb, this.scope, this.template);
-
     // An `if` will be constructed, within which the template's children will be type checked. The
     // `if` is used for two reasons: it creates a new syntactic scope, isolating variables declared
     // in the template's TCB from the outer context, and it allows any directives on the templates
@@ -249,7 +245,7 @@ class TcbTemplateBodyOp extends TcbOp {
     }
 
     // By default the guard is simply `true`.
-    let guard: ts.Expression = ts.createTrue();
+    let guard: ts.Expression|null = null;
 
     // If there are any guards from directives, use them instead.
     if (directiveGuards.length > 0) {
@@ -261,12 +257,19 @@ class TcbTemplateBodyOp extends TcbOp {
           directiveGuards.pop() !);
     }
 
-    // Construct the `if` block for the template with the generated guard expression. The body of
-    // the `if` block is created by rendering the template's `Scope.
-    const tmplIf = ts.createIf(
-        /* expression */ guard,
-        /* thenStatement */ ts.createBlock(tmplScope.render()));
-    this.scope.addStatement(tmplIf);
+    // Create a new Scope for the template. This constructs the list of operations for the template
+    // children, as well as tracks bindings within the template.
+    const tmplScope = Scope.forNodes(this.tcb, this.scope, this.template, guard);
+
+    // Render the template's `Scope` into a block.
+    let tmplBlock: ts.Statement = ts.createBlock(tmplScope.render());
+    if (guard !== null) {
+      // The scope has a guard that needs to be applied, so wrap the template block into an `if`
+      // statement containing the guard expression.
+      tmplBlock = ts.createIf(/* expression */ guard, /* thenStatement */ tmplBlock);
+    }
+    this.scope.addStatement(tmplBlock);
+
     return null;
   }
 }
@@ -663,7 +666,9 @@ class Scope {
    */
   private statements: ts.Statement[] = [];
 
-  private constructor(private tcb: Context, private parent: Scope|null = null) {}
+  private constructor(
+      private tcb: Context, private parent: Scope|null = null,
+      private guard: ts.Expression|null = null) {}
 
   /**
    * Constructs a `Scope` given either a `TmplAstTemplate` or a list of `TmplAstNode`s.
@@ -673,10 +678,12 @@ class Scope {
    * `Scope`.
    * @param templateOrNodes either a `TmplAstTemplate` representing the template for which to
    * calculate the `Scope`, or a list of nodes if no outer template object is available.
+   * @param guard an expression that is applied to this scope for type narrowing purposes.
    */
   static forNodes(
-      tcb: Context, parent: Scope|null, templateOrNodes: TmplAstTemplate|(TmplAstNode[])): Scope {
-    const scope = new Scope(tcb, parent);
+      tcb: Context, parent: Scope|null, templateOrNodes: TmplAstTemplate|(TmplAstNode[]),
+      guard: ts.Expression|null): Scope {
+    const scope = new Scope(tcb, parent, guard);
 
     let children: TmplAstNode[];
 
@@ -742,6 +749,32 @@ class Scope {
       this.executeOp(i);
     }
     return this.statements;
+  }
+
+  /**
+   * Returns an expression of all template guards that apply to this scope, including those of
+   * parent scopes. If no guards have been applied, null is returned.
+   */
+  guards(): ts.Expression|null {
+    let parentGuards: ts.Expression|null = null;
+    if (this.parent !== null) {
+      // Start with the guards from the parent scope, if present.
+      parentGuards = this.parent.guards();
+    }
+
+    if (this.guard === null) {
+      // This scope does not have a guard, so return the parent's guards as is.
+      return parentGuards;
+    } else if (parentGuards === null) {
+      // There's no guards from the parent scope, so this scope's guard represents all available
+      // guards.
+      return this.guard;
+    } else {
+      // Both the parent scope and this scope provide a guard, so create a combination of the two.
+      // It is important that the parent guard is used as left operand, given that it may provide
+      // narrowing that is required for this scope's guard to be valid.
+      return ts.createBinary(parentGuards, ts.SyntaxKind.AmpersandAmpersandToken, this.guard);
+    }
   }
 
   private resolveLocal(
@@ -1279,7 +1312,7 @@ const enum EventParamType {
  */
 function tcbCreateEventHandler(
     event: TmplAstBoundEvent, tcb: Context, scope: Scope,
-    eventType: EventParamType | ts.TypeNode): ts.ArrowFunction {
+    eventType: EventParamType | ts.TypeNode): ts.Expression {
   const handler = tcbEventHandlerExpression(event.handler, tcb, scope);
 
   let eventParamType: ts.TypeNode|undefined;
@@ -1291,6 +1324,16 @@ function tcbCreateEventHandler(
     eventParamType = eventType;
   }
 
+  // Obtain all guards that have been applied to the scope and its parents, as they have to be
+  // repeated within the handler function for their narrowing to be in effect within the handler.
+  const guards = scope.guards();
+
+  let body: ts.Statement = ts.createExpressionStatement(handler);
+  if (guards !== null) {
+    // Wrap the body in an `if` statement containing all guards that have to be applied.
+    body = ts.createIf(guards, body);
+  }
+
   const eventParam = ts.createParameter(
       /* decorators */ undefined,
       /* modifiers */ undefined,
@@ -1298,13 +1341,15 @@ function tcbCreateEventHandler(
       /* name */ EVENT_PARAMETER,
       /* questionToken */ undefined,
       /* type */ eventParamType);
-  return ts.createArrowFunction(
+
+  return ts.createFunctionExpression(
       /* modifier */ undefined,
+      /* asteriskToken */ undefined,
+      /* name */ undefined,
       /* typeParameters */ undefined,
       /* parameters */[eventParam],
       /* type */ ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
-      /* equalsGreaterThanToken*/ undefined,
-      /* body */ handler);
+      /* body */ ts.createBlock([body]));
 }
 
 /**
