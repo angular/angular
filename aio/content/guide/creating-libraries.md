@@ -221,7 +221,7 @@ TypeScript path mappings should *not* point to the library source `.ts` files.
 ### Managing library assets with ng-packagr
 
 Starting with version 9.x of the [ng-packagr](https://github.com/ng-packagr/ng-packagr/blob/master/README.md) tool, you can configure the tool to automatically copy assets into your library package as part of the build process.
-You can use this feature when your library needs to publish optional theming files, Sass mixins, or documentation (like a change log).
+You can use this feature when your library needs to publish optional theming files, Sass mixins, or documentation (like a changelog).
 
 * Learn how to [copy assets into your library as part of the build](https://github.com/ng-packagr/ng-packagr/blob/master/docs/copy-assets.md).
 
