@@ -1083,7 +1083,7 @@ This release contains various API docs improvements.
 
 
 <a name="8.0.0"></a>
-# [8.0.0](https://github.com/angular/angular/compare/8.0.0-rc.5...8.0.0) (2019-05-28)
+# [8.0.0](https://github.com/angular/angular/compare/7.2.0...8.0.0) (2019-05-28)
 
 
 ### Features
@@ -1120,6 +1120,26 @@ This release contains various API docs improvements.
 * **bazel:** Hide Bazel files in Bazel builder ([#29110](https://github.com/angular/angular/issues/29110)) ([7060d90](https://github.com/angular/angular/commit/7060d90))
 * **forms:** clear (remove all) components from a FormArray ([#28918](https://github.com/angular/angular/issues/28918)) ([a68b1a1](https://github.com/angular/angular/commit/a68b1a1)), closes [#18531](https://github.com/angular/angular/issues/18531)
 * **platform-server:** wait on returned `BEFORE_APP_SERIALIZED` promises ([#29120](https://github.com/angular/angular/issues/29120)) ([7102ea8](https://github.com/angular/angular/commit/7102ea8))
+* **common:** add ability to watch for AngularJS URL updates through `onUrlChange` hook ([#30466](https://github.com/angular/angular/issues/30466)) ([8022d36](https://github.com/angular/angular/commit/8022d36))
+* **common:** stricter types for SlicePipe ([#30156](https://github.com/angular/angular/issues/30156)) ([722b2fa](https://github.com/angular/angular/commit/722b2fa))
+* add support for TypeScript 3.3 (and drop older versions) ([#29004](https://github.com/angular/angular/issues/29004)) ([75748d6](https://github.com/angular/angular/commit/75748d6))
+* **core:** update schematic to migrate to explicit query timing ([#28983](https://github.com/angular/angular/issues/28983)) ([6215799](https://github.com/angular/angular/commit/6215799))
+* **service-worker:** add JSON schema for service worker config ([#27859](https://github.com/angular/angular/issues/27859)) ([3bee0f6](https://github.com/angular/angular/commit/3bee0f6)), closes [#19847](https://github.com/angular/angular/issues/19847)
+* **bazel:** add ts_config extending support for ng_module ([#21883](https://github.com/angular/angular/issues/21883)) ([edb6c2d](https://github.com/angular/angular/commit/edb6c2d))
+* upgrade domino to v2.1.2 ([#28767](https://github.com/angular/angular/issues/28767)) ([fdca001](https://github.com/angular/angular/commit/fdca001))
+* **compiler-cli:** make enableIvy ngtsc/true equivalent ([#28616](https://github.com/angular/angular/issues/28616)) ([1923c2f](https://github.com/angular/angular/commit/1923c2f))
+* **core:** allow users to define timing of ViewChild/ContentChild queries ([#28810](https://github.com/angular/angular/issues/28810)) ([19afb79](https://github.com/angular/angular/commit/19afb79))
+* **router:** add hash-based navigation option to setUpLocationSync ([#28609](https://github.com/angular/angular/issues/28609)) ([71d0eeb](https://github.com/angular/angular/commit/71d0eeb)), closes [#24429](https://github.com/angular/angular/issues/24429) [#21995](https://github.com/angular/angular/issues/21995)
+* optionally save complete performance log in chrome benchpress tests ([#27551](https://github.com/angular/angular/issues/27551)) ([d42f32c](https://github.com/angular/angular/commit/d42f32c))
+* **bazel:** add dts bundler as action to ng_module ([#28588](https://github.com/angular/angular/issues/28588)) ([3d39100](https://github.com/angular/angular/commit/3d39100))
+* **compiler:** support tokenizing a sub-section of an input string ([#28055](https://github.com/angular/angular/issues/28055)) ([eeb560a](https://github.com/angular/angular/commit/eeb560a))
+* **compiler:** support tokenizing escaped strings ([#28055](https://github.com/angular/angular/issues/28055)) ([2424184](https://github.com/angular/angular/commit/2424184))
+* **compiler-cli:** no longer re-export external symbols by default ([#28633](https://github.com/angular/angular/issues/28633)) ([91b7152](https://github.com/angular/angular/commit/91b7152)), closes [#28594](https://github.com/angular/angular/issues/28594) [#25644](https://github.com/angular/angular/issues/25644) [#25644](https://github.com/angular/angular/issues/25644)
+* **compiler-cli:** expose ngtsc as a TscPlugin ([#28435](https://github.com/angular/angular/issues/28435)) ([a227c52](https://github.com/angular/angular/commit/a227c52))
+* **bazel:** Add support for SASS ([#28167](https://github.com/angular/angular/issues/28167)) ([f59f18c](https://github.com/angular/angular/commit/f59f18c))
+* **compiler-cli:** resolve generated Sass/Less files to .css inputs ([#28166](https://github.com/angular/angular/issues/28166)) ([a58fd21](https://github.com/angular/angular/commit/a58fd21))
+* **forms:** add `markAllAsTouched()` to `AbstractControl` ([#26812](https://github.com/angular/angular/issues/26812)) ([45bf911](https://github.com/angular/angular/commit/45bf911)), closes [#19400](https://github.com/angular/angular/issues/19400)
+* **forms:** export NumberValueAccessor & RangeValueAccessor directives ([#27743](https://github.com/angular/angular/issues/27743)) ([ac15717](https://github.com/angular/angular/commit/ac15717))
 
 
 ### Bug Fixes
@@ -1206,13 +1226,100 @@ This release contains various API docs improvements.
 * **bazel:** add missing binary path for api-extractor ([#29202](https://github.com/angular/angular/issues/29202)) ([df354d1](https://github.com/angular/angular/commit/df354d1))
 * **bazel:** ng build should produce prod bundle ([#29136](https://github.com/angular/angular/issues/29136)) ([14ce8a9](https://github.com/angular/angular/commit/14ce8a9))
 * **compiler:** ensure template is updated if an output is transformed ([#29041](https://github.com/angular/angular/issues/29041)) ([c7e4931](https://github.com/angular/angular/commit/c7e4931))
+* **animations:** ensure `position` and `display` styles are handled outside of keyframes/web-animations ([#28911](https://github.com/angular/angular/issues/28911)) ([a6ae759](https://github.com/angular/angular/commit/a6ae759)), closes [#24923](https://github.com/angular/angular/issues/24923) [#25635](https://github.com/angular/angular/issues/25635)
+* **bazel:** add favicon to web package ([#29017](https://github.com/angular/angular/issues/29017)) ([5fdf24e](https://github.com/angular/angular/commit/5fdf24e))
+* **bazel:** Add SHA256 for rules_sass ([#28994](https://github.com/angular/angular/issues/28994)) ([dc33519](https://github.com/angular/angular/commit/dc33519))
+* **bazel:** api extractor don't generate tsdoc metadata ([#29023](https://github.com/angular/angular/issues/29023)) ([b5629d9](https://github.com/angular/angular/commit/b5629d9))
+* **bazel:** ng serve should always watch ([#29032](https://github.com/angular/angular/issues/29032)) ([c532646](https://github.com/angular/angular/commit/c532646))
+* **platform-server:** update minimum domino version to latest released ([#28893](https://github.com/angular/angular/issues/28893)) ([79e2ca0](https://github.com/angular/angular/commit/79e2ca0))
+* **router:** removed obsolete TODO comment ([#29085](https://github.com/angular/angular/issues/29085)) ([72ecc45](https://github.com/angular/angular/commit/72ecc45))
+* **service-worker:** detect new version even if files are identical to an old one ([#26006](https://github.com/angular/angular/issues/26006)) ([586234b](https://github.com/angular/angular/commit/586234b)), closes [#24338](https://github.com/angular/angular/issues/24338)
+* **service-worker:** ignore passive mixed content requests ([#25994](https://github.com/angular/angular/issues/25994)) ([48214e2](https://github.com/angular/angular/commit/48214e2)), closes [/github.com/angular/angular/issues/23012#issuecomment-376430187](https://github.com//github.com/angular/angular/issues/23012/issues/issuecomment-376430187) [#23012](https://github.com/angular/angular/issues/23012)
+* **bazel:** Pin browsers for schematics ([#28913](https://github.com/angular/angular/issues/28913)) ([1145bdb](https://github.com/angular/angular/commit/1145bdb))
+* **bazel:** rxjs_umd_modules should always be present ([#28881](https://github.com/angular/angular/issues/28881)) ([9ae14db](https://github.com/angular/angular/commit/9ae14db))
+* **compiler:** use correct variable in invalid function ([#28656](https://github.com/angular/angular/issues/28656)) ([f75acbd](https://github.com/angular/angular/commit/f75acbd))
+* **core:** traverse and sanitize content of unsafe elements ([#28804](https://github.com/angular/angular/issues/28804)) ([262ba67](https://github.com/angular/angular/commit/262ba67)), closes [#25879](https://github.com/angular/angular/issues/25879) [#25879](https://github.com/angular/angular/issues/25879) [#26007](https://github.com/angular/angular/issues/26007) [#28427](https://github.com/angular/angular/issues/28427)
+* **language-service:** Fix completions for input/output with alias ([#28904](https://github.com/angular/angular/issues/28904)) ([ad4a9bf](https://github.com/angular/angular/commit/ad4a9bf)), closes [#27959](https://github.com/angular/angular/issues/27959)
+* **bazel:** Add postinstall step to generate summaries ([#28850](https://github.com/angular/angular/issues/28850)) ([96b597c](https://github.com/angular/angular/commit/96b597c))
+* **bazel:** Schematics should upgrade rxjs to 6.4.0 ([#28841](https://github.com/angular/angular/issues/28841)) ([2d80419](https://github.com/angular/angular/commit/2d80419))
+* **compiler-cli:** incorrect bundled metadata for static class member call expressions ([#28762](https://github.com/angular/angular/issues/28762)) ([4131715](https://github.com/angular/angular/commit/4131715)), closes [/github.com/angular/angular/blob/master/packages/core/src/change_detection/differs/keyvalue_differs.ts#L121](https://github.com//github.com/angular/angular/blob/master/packages/core/src/change_detection/differs/keyvalue_differs.ts/issues/L121) [#28741](https://github.com/angular/angular/issues/28741)
+* **bazel:** Install angular repo before yarn_install ([#28670](https://github.com/angular/angular/issues/28670)) ([49fb8c3](https://github.com/angular/angular/commit/49fb8c3))
+* **bazel:** Turn on strict action env ([#28675](https://github.com/angular/angular/issues/28675)) ([2ea030c](https://github.com/angular/angular/commit/2ea030c))
+* **compiler:** ensure that event handlers have the correct source spans ([#28055](https://github.com/angular/angular/issues/28055)) ([cffd862](https://github.com/angular/angular/commit/cffd862))
+* **compiler:** fix two existing expression transformer issues ([#28523](https://github.com/angular/angular/issues/28523)) ([09af7ea](https://github.com/angular/angular/commit/09af7ea))
+* **compiler:** markup lexer should not capture quotes in attribute value ([#28055](https://github.com/angular/angular/issues/28055)) ([c0dac18](https://github.com/angular/angular/commit/c0dac18))
+* **compiler:** support `sourceMappingURL` comments that have trailing lines ([#28055](https://github.com/angular/angular/issues/28055)) ([0d6fdec](https://github.com/angular/angular/commit/0d6fdec))
+* **compiler-cli:** don't throw when listing lazy routes for an entry route ([#28372](https://github.com/angular/angular/issues/28372)) ([2caa419](https://github.com/angular/angular/commit/2caa419))
+* **core:** improve global variable detection ([#28679](https://github.com/angular/angular/issues/28679)) ([77eee42](https://github.com/angular/angular/commit/77eee42)), closes [#16545](https://github.com/angular/angular/issues/16545)
+* **core:** use the correct generated URL for JIT compiled components ([#28055](https://github.com/angular/angular/issues/28055)) ([4f46bfb](https://github.com/angular/angular/commit/4f46bfb))
+* **core:** use the correct template URL in render3 JIT compilation ([#28055](https://github.com/angular/angular/issues/28055)) ([a5ea55a](https://github.com/angular/angular/commit/a5ea55a))
+* **forms:** mark form as pristine before emitting value and status change events ([#28395](https://github.com/angular/angular/issues/28395)) ([1df3aef](https://github.com/angular/angular/commit/1df3aef)), closes [#28130](https://github.com/angular/angular/issues/28130)
+* **router:** redirect to root url when returned as UrlTree from guard ([#28271](https://github.com/angular/angular/issues/28271)) ([50732e1](https://github.com/angular/angular/commit/50732e1)), closes [#27845](https://github.com/angular/angular/issues/27845)
+* **router:** set href when routerLink is used on an 'area' element ([#28441](https://github.com/angular/angular/issues/28441)) ([ed0cf7e](https://github.com/angular/angular/commit/ed0cf7e)), closes [#28401](https://github.com/angular/angular/issues/28401)
+* **bazel:** Bazel builder resolves with require.resolve() ([#28478](https://github.com/angular/angular/issues/28478)) ([36902e2](https://github.com/angular/angular/commit/36902e2))
+* **bazel:** fix integration test for bazel-schematics ([#28460](https://github.com/angular/angular/issues/28460)) ([b1e099b](https://github.com/angular/angular/commit/b1e099b))
+* **compiler-cli:** base synthetic filepaths on input filepath ([#28453](https://github.com/angular/angular/issues/28453)) ([7219639](https://github.com/angular/angular/commit/7219639))
+* **compiler-cli:** diagnostics should respect "newLine" compiler option ([#28352](https://github.com/angular/angular/issues/28352)) ([4aa189d](https://github.com/angular/angular/commit/4aa189d))
+* **core:** remove createInjector() from public API ([#28509](https://github.com/angular/angular/issues/28509)) ([f2621db](https://github.com/angular/angular/commit/f2621db))
+* **bazel:** also pass afterDeclarations transformers to emitWithTsickle ([#28342](https://github.com/angular/angular/issues/28342)) ([70e426b](https://github.com/angular/angular/commit/70e426b))
+* **forms:** don't override form group's dirty state when disabling controls ([#24591](https://github.com/angular/angular/issues/24591)) ([ef67282](https://github.com/angular/angular/commit/ef67282))
+* **bazel:** increase node memory limit for ng_module rule to prevent OOM for big modules ([#28237](https://github.com/angular/angular/issues/28237)) ([73616ab](https://github.com/angular/angular/commit/73616ab))
+* **router:** `skipLocationChange` with named outlets ([#28300](https://github.com/angular/angular/issues/28300)) ([50df897](https://github.com/angular/angular/commit/50df897)), closes [#27680](https://github.com/angular/angular/issues/27680) [#28200](https://github.com/angular/angular/issues/28200)
+* **bazel:** Add [@bazel](https://github.com/bazel)/bazel to dev deps ([#28032](https://github.com/angular/angular/issues/28032)) ([5a0deb8](https://github.com/angular/angular/commit/5a0deb8))
+* **bazel:** Add /bazel-out to .gitignore ([#27874](https://github.com/angular/angular/issues/27874)) ([b05baa5](https://github.com/angular/angular/commit/b05baa5))
+* **bazel:** Add ibazel to deps of Bazel project ([#28090](https://github.com/angular/angular/issues/28090)) ([605f450](https://github.com/angular/angular/commit/605f450))
+* **bazel:** Bazel schematics should add router package ([#28141](https://github.com/angular/angular/issues/28141)) ([06e5bf1](https://github.com/angular/angular/commit/06e5bf1))
+* **bazel:** flat module misses AMD module name on windows ([#27839](https://github.com/angular/angular/issues/27839)) ([935ce63](https://github.com/angular/angular/commit/935ce63))
+* **bazel:** incorrectly always uses ngc-wrapped from "npm" workspace ([#28137](https://github.com/angular/angular/issues/28137)) ([d12db4e](https://github.com/angular/angular/commit/d12db4e))
+* **bazel:** ng_package creates invalid typings reexport on windows ([#27829](https://github.com/angular/angular/issues/27829)) ([4caf654](https://github.com/angular/angular/commit/4caf654))
+* **bazel:** packager not properly removing amd directives on windows ([#27829](https://github.com/angular/angular/issues/27829)) ([8473d68](https://github.com/angular/angular/commit/8473d68))
+* **bazel:** protractor rule does not run spec files with underscore ([#28022](https://github.com/angular/angular/issues/28022)) ([65e72e9](https://github.com/angular/angular/commit/65e72e9))
+* **bazel:** protractor utils cannot start server on windows ([#27915](https://github.com/angular/angular/issues/27915)) ([9de9c8a](https://github.com/angular/angular/commit/9de9c8a))
+* **bazel:** replay compilation uses wrong compiler for building esm5 ([#28053](https://github.com/angular/angular/issues/28053)) ([cd04513](https://github.com/angular/angular/commit/cd04513))
+* **bazel:** ts_web_test_suite now properly includes init_browser_spec.js ([#27965](https://github.com/angular/angular/issues/27965)) ([ce51dfb](https://github.com/angular/angular/commit/ce51dfb))
+* **service-worker:** navigation urls backwards compatibility ([#27244](https://github.com/angular/angular/issues/27244)) ([d49d1e7](https://github.com/angular/angular/commit/d49d1e7))
+
+
+### Performance Improvements
+
+* pngcrush all pngs ([#28479](https://github.com/angular/angular/issues/28479)) ([ec6e730](https://github.com/angular/angular/commit/ec6e730)), closes [#18243](https://github.com/angular/angular/issues/18243)
+* **core:** be more consistent about typeof checks ([#28400](https://github.com/angular/angular/issues/28400)) ([9af18c2](https://github.com/angular/angular/commit/9af18c2))
+* **platform-server:** use shared `DomElementSchemaRegistry` instance ([#28150](https://github.com/angular/angular/issues/28150)) ([#28151](https://github.com/angular/angular/issues/28151)) ([ce3a746](https://github.com/angular/angular/commit/ce3a746))
+
+
+### Reverts
+
+* "ci: use image based cache for windows BuildKite ([#27990](https://github.com/angular/angular/issues/27990))" ([#28160](https://github.com/angular/angular/issues/28160)) ([7bdf3fe](https://github.com/angular/angular/commit/7bdf3fe))
 
 
 ### DEPRECATIONS
 
 * **core:** deprecate integration with the Web Tracing Framework (WTF) ([#30642](https://github.com/angular/angular/issues/30642)) ([b408445](https://github.com/angular/angular/commit/b408445))
 * **platform-webworker:** deprecate platform-webworker ([#30642](https://github.com/angular/angular/issues/30642)) ([361f181](https://github.com/angular/angular/commit/361f181))
+* `TestBed.get()` has two signatures, one which is typed and another which accepts and returns `any`. The signature for `any` is deprecated; all usage of `TestBed.get()` should go through the typed API. This mainly affects string tokens
+(which aren't supported) and abstract class tokens.
 
+Before:
+
+```ts
+TestBed.configureTestingModule({
+  providers: [{provide: "stringToken", useValue: new Service()}],
+});
+
+let service = TestBed.get("stringToken"); // type any
+```
+
+After:
+
+```ts
+const SERVICE_TOKEN = new InjectionToken<Service>("SERVICE_TOKEN");
+
+TestBed.configureTestingModule({
+  providers: [{provide: SERVICE_TOKEN, useValue: new Service()}],
+});
+
+let service = TestBed.get(SERVICE_TOKEN); // type Service
+```
 
 ### BREAKING CHANGES
 
@@ -1281,89 +1388,6 @@ For details on how to migrate, please refer to [the deprecations guide](https://
   Please update your TypeScript version to 3.4, as version 3.3 is also not supported.
 
 
-  <a name="8.0.0-rc.5"></a>
-# [8.0.0-rc.5](https://github.com/angular/angular/compare/8.0.0-rc.4...8.0.0-rc.5) (2019-05-24)
-
-
-### Bug Fixes
-
-* **bazel:** allow ts_library interop with list-typed inputs ([#30600](https://github.com/angular/angular/issues/30600)) ([bf38df4](https://github.com/angular/angular/commit/bf38df4))
-* **bazel:** Disable sandbox on Mac OS ([#30460](https://github.com/angular/angular/issues/30460)) ([3de26a8](https://github.com/angular/angular/commit/3de26a8))
-* **bazel:** ng test should run specific ts_web_test_suite ([#30526](https://github.com/angular/angular/issues/30526)) ([8bc4da8](https://github.com/angular/angular/commit/8bc4da8))
-* **core:** remove deprecated `TestBed.deprecatedOverrideProvider` API ([#30576](https://github.com/angular/angular/issues/30576)) ([5a46f94](https://github.com/angular/angular/commit/5a46f94))
-* **core:** require 'static' flag on queries in typings ([#30641](https://github.com/angular/angular/issues/30641)) ([c8af830](https://github.com/angular/angular/commit/c8af830))
-* **core:** temporarily remove [@deprecated](https://github.com/deprecated) jsdoc tag for a TextBed.get overload ([#30514](https://github.com/angular/angular/issues/30514)) ([561e01d](https://github.com/angular/angular/commit/561e01d)), closes [#29290](https://github.com/angular/angular/issues/29290) [#29905](https://github.com/angular/angular/issues/29905)
-* **router:** type cast correctly for IE 11 bug breaking URL Unification when comparing objects ([#30464](https://github.com/angular/angular/issues/30464)) ([32daa93](https://github.com/angular/angular/commit/32daa93))
-
-
-### Features
-
-* **common:** add ability to watch for AngularJS URL updates through `onUrlChange` hook ([#30466](https://github.com/angular/angular/issues/30466)) ([8022d36](https://github.com/angular/angular/commit/8022d36))
-* **common:** stricter types for SlicePipe ([#30156](https://github.com/angular/angular/issues/30156)) ([722b2fa](https://github.com/angular/angular/commit/722b2fa))
-
-
-### DEPRECATIONS
-
-* **core:** deprecate integration with the Web Tracing Framework (WTF) ([#30642](https://github.com/angular/angular/issues/30642)) ([b408445](https://github.com/angular/angular/commit/b408445))
-* **platform-webworker:** deprecate platform-webworker ([#30642](https://github.com/angular/angular/issues/30642)) ([361f181](https://github.com/angular/angular/commit/361f181))
-
-
-### BREAKING CHANGES
-
-* **core:** In Angular version 8, it's required that all @ViewChild and @ContentChild
-queries have a 'static' flag specifying whether the query is 'static' or
-'dynamic'. The compiler previously sorted queries automatically, but in
-8.0 developers are required to explicitly specify which behavior is wanted.
-This is a temporary requirement as part of a migration; see
-https://v8.angular.io/guide/static-query-migration for more details.
-
-@ViewChildren and @ContentChildren queries are always dynamic, and so are
-unaffected.
-
-
-
-<a name="8.0.0-rc.4"></a>
-# [8.0.0-rc.4](https://github.com/angular/angular/compare/8.0.0-rc.3...8.0.0-rc.4) (2019-05-15)
-
-
-### Bug Fixes
-
-* **bazel:** Directly spawn native Bazel binary ([#30306](https://github.com/angular/angular/issues/30306)) ([d1fcc2b](https://github.com/angular/angular/commit/d1fcc2b))
-* **bazel:** pass correct arguments to http_server in Windows ([#30346](https://github.com/angular/angular/issues/30346)) ([71eba45](https://github.com/angular/angular/commit/71eba45)), closes [#29785](https://github.com/angular/angular/issues/29785)
-* **bazel:** Use existing npm/yarn lock files ([#30438](https://github.com/angular/angular/issues/30438)) ([3136d9f](https://github.com/angular/angular/commit/3136d9f))
-* **compiler:** ensure strict mode when evaluating in JIT ([#30122](https://github.com/angular/angular/issues/30122)) ([192f108](https://github.com/angular/angular/commit/192f108))
-* **core:** migrations not always migrating all files ([#30269](https://github.com/angular/angular/issues/30269)) ([e8ceae1](https://github.com/angular/angular/commit/e8ceae1))
-* **core:** static-query migration errors not printed properly ([#30458](https://github.com/angular/angular/issues/30458)) ([fde3f46](https://github.com/angular/angular/commit/fde3f46))
-* **core:** static-query migration fails with default parameter values ([#30269](https://github.com/angular/angular/issues/30269)) ([c3246e6](https://github.com/angular/angular/commit/c3246e6))
-* **core:** static-query migration should gracefully exit if AOT compiler throws ([#30269](https://github.com/angular/angular/issues/30269)) ([a71d8a8](https://github.com/angular/angular/commit/a71d8a8))
-* **core:** static-query migration should handle queries on accessors ([#30327](https://github.com/angular/angular/issues/30327)) ([dd299f9](https://github.com/angular/angular/commit/dd299f9))
-* **core:** static-query migration should not fallback to test strategy ([#30458](https://github.com/angular/angular/issues/30458)) ([0fa48e8](https://github.com/angular/angular/commit/0fa48e8))
-* **core:** static-query migration should not prompt if no queries are used ([#30254](https://github.com/angular/angular/issues/30254)) ([12fb639](https://github.com/angular/angular/commit/12fb639))
-* **core:** static-query usage migration strategy should detect ambiguous query usage ([#30215](https://github.com/angular/angular/issues/30215)) ([e295c6a](https://github.com/angular/angular/commit/e295c6a))
-* **router:** ensure navigations start with the current URL value incase redirect is skipped ([#30344](https://github.com/angular/angular/issues/30344)) ([9b88920](https://github.com/angular/angular/commit/9b88920)), closes [#30340](https://github.com/angular/angular/issues/30340) [#30160](https://github.com/angular/angular/issues/30160)
-* **router:** IE 11 bug can break URL unification when comparing objects ([#30393](https://github.com/angular/angular/issues/30393)) ([c383491](https://github.com/angular/angular/commit/c383491))
-
-
-### Features
-
-* **bazel:** use rbe_autoconfig() and new container. ([#29336](https://github.com/angular/angular/issues/29336)) ([e562acc](https://github.com/angular/angular/commit/e562acc))
-
-
-
-<a name="8.0.0-rc.3"></a>
-# [8.0.0-rc.3](https://github.com/angular/angular/compare/8.0.0-rc.2...8.0.0-rc.3) (2019-05-07)
-
-
-### Bug Fixes
-
-* **bazel:** Bump ibazel to 0.10.1 for windows fixes ([#30196](https://github.com/angular/angular/issues/30196)) ([9f68c35](https://github.com/angular/angular/commit/9f68c35))
-* **compiler-cli:** log ngcc skipping messages as debug instead of info ([#30232](https://github.com/angular/angular/issues/30232)) ([548b003](https://github.com/angular/angular/commit/548b003))
-* **core:** fix interpolate identifier in AOT ([#30243](https://github.com/angular/angular/issues/30243)) ([3fe3a84](https://github.com/angular/angular/commit/3fe3a84))
-* **router:** ensure `history.state` is set in `eager` update mode ([#30154](https://github.com/angular/angular/issues/30154)) ([9720227](https://github.com/angular/angular/commit/9720227))
-* **router:** fix a problem with router not responding to back button ([#30160](https://github.com/angular/angular/issues/30160)) ([132f01c](https://github.com/angular/angular/commit/132f01c))
-
-
-
 
 <a name="7.2.15"></a>
 ## [7.2.15](https://github.com/angular/angular/compare/7.2.14...7.2.15) (2019-05-07)
@@ -1374,154 +1398,6 @@ unaffected.
 * **upgrade:** do not break if `onMicrotaskEmpty` emits while a `$digest` is in progress ([#29794](https://github.com/angular/angular/issues/29794)) ([#30107](https://github.com/angular/angular/issues/30107)) ([1084c19](https://github.com/angular/angular/commit/1084c19)), closes [#24680](https://github.com/angular/angular/issues/24680) [/github.com/angular/angular/blob/78146c189/packages/core/src/util/ng_dev_mode.ts#L12](https://github.com//github.com/angular/angular/blob/78146c189/packages/core/src/util/ng_dev_mode.ts/issues/L12) [#24680](https://github.com/angular/angular/issues/24680)
 
 
-
-<a name="8.0.0-rc.2"></a>
-# [8.0.0-rc.2](https://github.com/angular/angular/compare/8.0.0-rc.1...8.0.0-rc.2) (2019-04-29)
-
-
-### Bug Fixes
-
-* **language-service:** Remove tsserverlibrary from rollup globals ([#30123](https://github.com/angular/angular/issues/30123)) ([b706800](https://github.com/angular/angular/commit/b706800))
-* disable injectable-pipe migration ([#30180](https://github.com/angular/angular/issues/30180)) ([4b2fcfd](https://github.com/angular/angular/commit/4b2fcfd))
-
-
-
-<a name="8.0.0-rc.1"></a>
-# [8.0.0-rc.1](https://github.com/angular/angular/compare/8.0.0-rc.0...8.0.0-rc.1) (2019-04-26)
-
-
-### Bug Fixes
-
-* **bazel:** Exclude common/upgrade* in metadata.tsconfig.json ([#30133](https://github.com/angular/angular/issues/30133)) ([6711f22](https://github.com/angular/angular/commit/6711f22))
-* **bazel:** update peerDep ranges ([#30155](https://github.com/angular/angular/issues/30155)) ([6067583](https://github.com/angular/angular/commit/6067583))
-
-
-
-<a name="8.0.0-rc.0"></a>
-# [8.0.0-rc.0](https://github.com/angular/angular/compare/8.0.0-beta.14...8.0.0-rc.0) (2019-04-25)
-
-
-### Bug Fixes
-
-* **bazel:** make name param in ng add optional ([#30074](https://github.com/angular/angular/issues/30074)) ([0b5f480](https://github.com/angular/angular/commit/0b5f480))
-* **bazel:** Make sure only single copy of `@angular/bazel` is installed ([#30072](https://github.com/angular/angular/issues/30072)) ([2905bf5](https://github.com/angular/angular/commit/2905bf5))
-* **bazel:** transitive npm deps in ng_module ([#30065](https://github.com/angular/angular/issues/30065)) ([61365a9](https://github.com/angular/angular/commit/61365a9))
-* **common:** add upgrade sub-package to ng_package rule for @angular/common ([#30117](https://github.com/angular/angular/issues/30117)) ([6de4cbd](https://github.com/angular/angular/commit/6de4cbd)), closes [#30055](https://github.com/angular/angular/issues/30055) [#30116](https://github.com/angular/angular/issues/30116)
-* **common:** adjust MockPlatformLocation to set state to new object ([#30055](https://github.com/angular/angular/issues/30055)) ([825efa8](https://github.com/angular/angular/commit/825efa8))
-* **compiler:** Fix compiler crash due to isSkipSelf of null ([#30075](https://github.com/angular/angular/issues/30075)) ([28fd5ab](https://github.com/angular/angular/commit/28fd5ab))
-* **upgrade:** do not break if `onMicrotaskEmpty` emits while a `$digest` is in progress ([#29794](https://github.com/angular/angular/issues/29794)) ([0ddf2e7](https://github.com/angular/angular/commit/0ddf2e7)), closes [#24680](https://github.com/angular/angular/issues/24680) [/github.com/angular/angular/blob/78146c189/packages/core/src/util/ng_dev_mode.ts#L12](https://github.com//github.com/angular/angular/blob/78146c189/packages/core/src/util/ng_dev_mode.ts/issues/L12) [#24680](https://github.com/angular/angular/issues/24680)
-
-
-### Features
-
-* **common:** add @angular/common/upgrade package for $location-related APIs ([#30055](https://github.com/angular/angular/issues/30055)) ([152d99e](https://github.com/angular/angular/commit/152d99e))
-* **common:** add ability to retrieve the state from Location service ([#30055](https://github.com/angular/angular/issues/30055)) ([b44b143](https://github.com/angular/angular/commit/b44b143))
-* **common:** add ability to track all location changes ([#30055](https://github.com/angular/angular/issues/30055)) ([3a9cf3f](https://github.com/angular/angular/commit/3a9cf3f))
-* **common:** add APIs to read component pieces of URL ([#30055](https://github.com/angular/angular/issues/30055)) ([b635fe8](https://github.com/angular/angular/commit/b635fe8))
-* **common:** add MockPlatformLocation to enable more robust testing of Location services ([#30055](https://github.com/angular/angular/issues/30055)) ([d0672c2](https://github.com/angular/angular/commit/d0672c2))
-* **common:** add UrlCodec type for use with upgrade applications ([#30055](https://github.com/angular/angular/issues/30055)) ([ec455e1](https://github.com/angular/angular/commit/ec455e1))
-* **common:** provide replacement for AngularJS $location service ([#30055](https://github.com/angular/angular/issues/30055)) ([4277600](https://github.com/angular/angular/commit/4277600))
-* remove deprecated DOCUMENT token from platform-browser ([#28117](https://github.com/angular/angular/issues/28117)) ([3a9d247](https://github.com/angular/angular/commit/3a9d247))
-* **compiler:** support skipping leading trivia in template source-maps ([#30095](https://github.com/angular/angular/issues/30095)) ([304a12f](https://github.com/angular/angular/commit/304a12f))
-* **core:** add missing ARIA attributes to html sanitizer ([#29685](https://github.com/angular/angular/issues/29685)) ([909557d](https://github.com/angular/angular/commit/909557d)), closes [#26815](https://github.com/angular/angular/issues/26815)
-* **router:** deprecate loadChildren:string ([#30073](https://github.com/angular/angular/issues/30073)) ([c61df39](https://github.com/angular/angular/commit/c61df39))
-* **service-worker:** allow configuring when the SW is registered ([#21842](https://github.com/angular/angular/issues/21842)) ([4cfba58](https://github.com/angular/angular/commit/4cfba58)), closes [#20970](https://github.com/angular/angular/issues/20970)
-* **service-worker:** expose `SwRegistrationOptions` token to allow runtime config ([#21842](https://github.com/angular/angular/issues/21842)) ([39c0152](https://github.com/angular/angular/commit/39c0152))
-* **service-worker:** support bypassing SW with specific header/query param ([#30010](https://github.com/angular/angular/issues/30010)) ([6200732](https://github.com/angular/angular/commit/6200732)), closes [#21191](https://github.com/angular/angular/issues/21191)
-
-
-### BREAKING CHANGES
-
-* **bazel:** ng_module now depends on a minimum of build_bazel_rules_nodejs 0.27.12
-
-
-
-<a name="8.0.0-beta.14"></a>
-# [8.0.0-beta.14](https://github.com/angular/angular/compare/8.0.0-beta.13...8.0.0-beta.14) (2019-04-23)
-
-
-### Bug Fixes
-
-* **bazel:** do not typecheck core schematic files ([#29876](https://github.com/angular/angular/issues/29876)) ([2ba799d](https://github.com/angular/angular/commit/2ba799d))
-* **bazel:** restore ng build --prod ([#30005](https://github.com/angular/angular/issues/30005)) ([96a8289](https://github.com/angular/angular/commit/96a8289))
-* **common:** prevent repeated application of HttpParams mutations ([#29045](https://github.com/angular/angular/issues/29045)) ([8e8e89a](https://github.com/angular/angular/commit/8e8e89a)), closes [#20430](https://github.com/angular/angular/issues/20430)
-* **common:** async pipe will properly check when it recieves an NaN value from an observable ([#22305](https://github.com/angular/angular/issues/22305)) ([3f6bf6d](https://github.com/angular/angular/commit/3f6bf6d)), closes [#15721](https://github.com/angular/angular/issues/15721)
-* **core:** don't include a local `EventListener` in typings ([#29809](https://github.com/angular/angular/issues/29809)) ([4bde40f](https://github.com/angular/angular/commit/4bde40f)), closes [/github.com/angular/angular/blob/303eae918d997070a36b523ddc97e018f622c258/packages/core/src/debug/debug_node.ts#L32](https://github.com//github.com/angular/angular/blob/303eae918d997070a36b523ddc97e018f622c258/packages/core/src/debug/debug_node.ts/issues/L32) [#29806](https://github.com/angular/angular/issues/29806)
-* **core:** use shakeable global definitions ([#29929](https://github.com/angular/angular/issues/29929)) ([e5905bb](https://github.com/angular/angular/commit/e5905bb)), closes [/github.com/angular/angular-cli/blob/5fc1f2499cbe57f9a95e4b0dfced130eb3a8046d/packages/angular_devkit/build_angular/src/angular-cli-files/models/webpack-configs/common.ts#L279-L282](https://github.com//github.com/angular/angular-cli/blob/5fc1f2499cbe57f9a95e4b0dfced130eb3a8046d/packages/angular_devkit/build_angular/src/angular-cli-files/models/webpack-configs/common.ts/issues/L279-L282)
-* **language-service:** Use proper types instead of any ([#29942](https://github.com/angular/angular/issues/29942)) ([1a56cd5](https://github.com/angular/angular/commit/1a56cd5))
-
-
-### Features
-
-* **compiler-cli:** export tooling definitions ([#29929](https://github.com/angular/angular/issues/29929)) ([e1f51ea](https://github.com/angular/angular/commit/e1f51ea))
-* **compiler-cli:** lower some exported expressions ([#30038](https://github.com/angular/angular/issues/30038)) ([8e73f9b](https://github.com/angular/angular/commit/8e73f9b))
-* **core:** add schematics to move deprecated DOCUMENT import ([#29950](https://github.com/angular/angular/issues/29950)) ([645e305](https://github.com/angular/angular/commit/645e305))
-
-
-
-<a name="8.0.0-beta.13"></a>
-# [8.0.0-beta.13](https://github.com/angular/angular/compare/8.0.0-beta.12...8.0.0-beta.13) (2019-04-16)
-
-
-### Bug Fixes
-
-* **bazel:** Install packages after `ng add` when invoked independently ([#29852](https://github.com/angular/angular/issues/29852)) ([bd2ce9c](https://github.com/angular/angular/commit/bd2ce9c))
-* **compiler-cli:** pass config path to ts.parseJsonConfigFileContent ([#29872](https://github.com/angular/angular/issues/29872)) ([86a3f90](https://github.com/angular/angular/commit/86a3f90)), closes [/github.com/Microsoft/TypeScript/blob/025d82633915b67003ea38ba40b9239a19721c13/src/compiler/emitter.ts#L56-L57](https://github.com//github.com/Microsoft/TypeScript/blob/025d82633915b67003ea38ba40b9239a19721c13/src/compiler/emitter.ts/issues/L56-L57)
-* **router:** support non-NgFactory promise in loadChildren typings ([#29832](https://github.com/angular/angular/issues/29832)) ([2bfb6a0](https://github.com/angular/angular/commit/2bfb6a0))
-
-
-
-<a name="8.0.0-beta.12"></a>
-# [8.0.0-beta.12](https://github.com/angular/angular/compare/8.0.0-beta.11...8.0.0-beta.12) (2019-04-13)
-
-
-### Bug Fixes
-
-* **bazel:** add configuration_env_vars = ["compile"] to generated [@npm](https://github.com/npm)//@angular/bazel/bin:ngc-wrapped nodejs_binary ([#29694](https://github.com/angular/angular/issues/29694)) ([2e66ddf](https://github.com/angular/angular/commit/2e66ddf))
-* **bazel:** docs formatting ([#29817](https://github.com/angular/angular/issues/29817)) ([cc2e4b6](https://github.com/angular/angular/commit/cc2e4b6))
-* **bazel:** remove karma-jasmine from ts_web_test_suite ([#29695](https://github.com/angular/angular/issues/29695)) ([2bd9214](https://github.com/angular/angular/commit/2bd9214))
-* **bazel:** support running ng-add on minimal applications ([#29681](https://github.com/angular/angular/issues/29681)) ([9810c6c](https://github.com/angular/angular/commit/9810c6c)), closes [#29680](https://github.com/angular/angular/issues/29680)
-* **common:** add `@Injectable()` to common pipes ([#29834](https://github.com/angular/angular/issues/29834)) ([387fbb8](https://github.com/angular/angular/commit/387fbb8))
-* **compiler-cli:** ensure LogicalProjectPaths always start with a slash ([#29627](https://github.com/angular/angular/issues/29627)) ([e02684e](https://github.com/angular/angular/commit/e02684e))
-* **core:** add missing migration to npm package ([#29705](https://github.com/angular/angular/issues/29705)) ([96b76dc](https://github.com/angular/angular/commit/96b76dc))
-* **core:** call ngOnDestroy for tree-shakeable providers ([#28943](https://github.com/angular/angular/issues/28943)) ([30b0442](https://github.com/angular/angular/commit/30b0442)), closes [#28927](https://github.com/angular/angular/issues/28927)
-* **core:** Deprecate TestBed.get(...):any ([#29290](https://github.com/angular/angular/issues/29290)) ([609024f](https://github.com/angular/angular/commit/609024f)), closes [#13785](https://github.com/angular/angular/issues/13785) [#26491](https://github.com/angular/angular/issues/26491)
-* **core:** resolve ts compile issues due to lenient tsconfig ([#29843](https://github.com/angular/angular/issues/29843)) ([54058ba](https://github.com/angular/angular/commit/54058ba))
-* **platform-browser:** insert APP_ID in styles, contentAttr and hostAttr ([#17745](https://github.com/angular/angular/issues/17745)) ([712d60e](https://github.com/angular/angular/commit/712d60e))
-
-
-### Features
-
-* **bazel:** update the build to use the new architect api ([#29720](https://github.com/angular/angular/issues/29720)) ([902a53a](https://github.com/angular/angular/commit/902a53a))
-
-
-### DEPRECATIONS
-
-* `TestBed.get()` has two signatures, one which is typed and another which accepts and returns `any`. The signature for `any` is deprecated; all usage of `TestBed.get()` should go through the typed API. This mainly affects string tokens
-(which aren't supported) and abstract class tokens.
-
-Before:
-
-```ts
-TestBed.configureTestingModule({
-  providers: [{provide: "stringToken", useValue: new Service()}],
-});
-
-let service = TestBed.get("stringToken"); // type any
-```
-
-After:
-
-```ts
-const SERVICE_TOKEN = new InjectionToken<Service>("SERVICE_TOKEN");
-
-TestBed.configureTestingModule({
-  providers: [{provide: SERVICE_TOKEN, useValue: new Service()}],
-});
-
-let service = TestBed.get(SERVICE_TOKEN); // type Service
-```
-
 <a name="7.2.13"></a>
 ## [7.2.13](https://github.com/angular/angular/compare/7.2.12...7.2.13) (2019-04-12)
 
@@ -1530,37 +1406,6 @@ let service = TestBed.get(SERVICE_TOKEN); // type Service
 
 * **bazel:** use //:tsconfig.json as the default for ng_module ([#29670](https://github.com/angular/angular/issues/29670)) ([#29711](https://github.com/angular/angular/issues/29711)) ([9e33dc3](https://github.com/angular/angular/commit/9e33dc3))
 * **platform-browser:** insert APP_ID in styles, contentAttr and hostAttr ([#17745](https://github.com/angular/angular/issues/17745)) ([ca14509](https://github.com/angular/angular/commit/ca14509))
-
-
-
-<a name="8.0.0-beta.11"></a>
-# [8.0.0-beta.11](https://github.com/angular/angular/compare/8.0.0-beta.10...8.0.0-beta.11) (2019-04-03)
-
-
-### Bug Fixes
-
-* **bazel:** Update schematics to support routing ([#29548](https://github.com/angular/angular/issues/29548)) ([401b8ee](https://github.com/angular/angular/commit/401b8ee))
-* **bazel:** use //:tsconfig.json as the default for ng_module ([#29670](https://github.com/angular/angular/issues/29670)) ([b14537a](https://github.com/angular/angular/commit/b14537a))
-* **compiler-cli:** ngcc - cope with processing entry-points multiple times ([#29657](https://github.com/angular/angular/issues/29657)) ([6b39c9c](https://github.com/angular/angular/commit/6b39c9c))
-* **core:** static-query schematic should detect static queries in getters. ([#29609](https://github.com/angular/angular/issues/29609)) ([33016b8](https://github.com/angular/angular/commit/33016b8))
-
-
-### build
-
-* **bazel:** update to nodejs rules 0.27.8 ([#29508](https://github.com/angular/angular/issues/29508)) ([d9162a8](https://github.com/angular/angular/commit/d9162a8))
-
-
-### Features
-
-* remove @angular/http dependency from @angular/platform-server ([#29408](https://github.com/angular/angular/issues/29408)) ([9745f55](https://github.com/angular/angular/commit/9745f55))
-* **compiler-cli:** ngcc - make logging more configurable ([#29591](https://github.com/angular/angular/issues/29591)) ([8d3d75e](https://github.com/angular/angular/commit/8d3d75e))
-* **core:** Add "AbstractType<T>" interface ([#29295](https://github.com/angular/angular/issues/29295)) ([afd4a4e](https://github.com/angular/angular/commit/afd4a4e)), closes [#26491](https://github.com/angular/angular/issues/26491)
-* **core:** template-var-assignment update schematic ([#29608](https://github.com/angular/angular/issues/29608)) ([7c8f4e3](https://github.com/angular/angular/commit/7c8f4e3))
-
-
-### BREAKING CHANGES
-
-* **bazel:** @bazel/typescript is now a peerDependency of @angular/bazel so user's of @angular/bazel must add @bazel/typescript to their package.json
 
 
 
@@ -1574,83 +1419,10 @@ let service = TestBed.get(SERVICE_TOKEN); // type Service
 * **router:** adjust setting navigationTransition when a new navigation cancels an existing one ([#29636](https://github.com/angular/angular/issues/29636)) ([e884c0c](https://github.com/angular/angular/commit/e884c0c)), closes [#29389](https://github.com/angular/angular/issues/29389) [#29590](https://github.com/angular/angular/issues/29590)
 
 
-
-<a name="8.0.0-beta.10"></a>
-# [8.0.0-beta.10](https://github.com/angular/angular/compare/8.0.0-beta.9...8.0.0-beta.10) (2019-03-26)
-
-
-### Bug Fixes
-
-* **bazel:** allow ng_module users to set createExternalSymbolFactoryReexports ([#29459](https://github.com/angular/angular/issues/29459)) ([21be0fb](https://github.com/angular/angular/commit/21be0fb))
-* **bazel:** workaround problem reading summary files from node_modules ([#29459](https://github.com/angular/angular/issues/29459)) ([769d960](https://github.com/angular/angular/commit/769d960))
-* **compiler:** inherit param types when class has a constructor which takes no declared parameters and delegates up ([#29232](https://github.com/angular/angular/issues/29232)) ([0007564](https://github.com/angular/angular/commit/0007564))
-* **core:** parse incorrect ML open tag as text ([#29328](https://github.com/angular/angular/issues/29328)) ([dafbbf8](https://github.com/angular/angular/commit/dafbbf8)), closes [#29231](https://github.com/angular/angular/issues/29231)
-* **core:** static-query schematic should detect queries in "ngDoCheck" and "ngOnChanges" ([#29492](https://github.com/angular/angular/issues/29492)) ([09fab58](https://github.com/angular/angular/commit/09fab58))
-* **router:** support NgFactory promise in loadChildren typings ([#29392](https://github.com/angular/angular/issues/29392)) ([26a8c59](https://github.com/angular/angular/commit/26a8c59))
-
-
-### Features
-
-* **bazel:** Upgrade rules_nodejs and rules_sass ([#29388](https://github.com/angular/angular/issues/29388)) ([d6d081e](https://github.com/angular/angular/commit/d6d081e))
-* **service-worker:** support multiple apps on different subpaths of a domain ([#27080](https://github.com/angular/angular/issues/27080)) ([e721c08](https://github.com/angular/angular/commit/e721c08)), closes [#21388](https://github.com/angular/angular/issues/21388)
-
-
-
 <a name="7.2.11"></a>
 ## [7.2.11](https://github.com/angular/angular/compare/7.2.10...7.2.11) (2019-03-26)
 
 This release contains various API docs improvements.
-
-
-
-<a name="8.0.0-beta.9"></a>
-# [8.0.0-beta.9](https://github.com/angular/angular/compare/8.0.0-beta.8...8.0.0-beta.9) (2019-03-20)
-
-
-### Bug Fixes
-
-* **bazel:** correct regexp test for self-references in metadata ([#29346](https://github.com/angular/angular/issues/29346)) ([9d090cb](https://github.com/angular/angular/commit/9d090cb))
-* **bazel:** don't produce self-references in metadata ([#29317](https://github.com/angular/angular/issues/29317)) ([3facdeb](https://github.com/angular/angular/commit/3facdeb)), closes [#29315](https://github.com/angular/angular/issues/29315)
-* **bazel:** fix strict null checks compile error in packages/bazel/src/schematics/ng-add/index.ts ([#29282](https://github.com/angular/angular/issues/29282)) ([9a7f560](https://github.com/angular/angular/commit/9a7f560))
-* **bazel:** Remove @angular/upgrade from dev dependencies ([#29319](https://github.com/angular/angular/issues/29319)) ([1db8bf3](https://github.com/angular/angular/commit/1db8bf3))
-* **bazel:** Support new e2e project layout ([#29318](https://github.com/angular/angular/issues/29318)) ([8ef690c](https://github.com/angular/angular/commit/8ef690c))
-* **bazel:** turn off pure call tree shaking for ng_package ([#29210](https://github.com/angular/angular/issues/29210)) ([4990b93](https://github.com/angular/angular/commit/4990b93))
-* **compiler-cli:** incorrect metadata bundle for multiple unnamed re-exports ([#29360](https://github.com/angular/angular/issues/29360)) ([105cfaf](https://github.com/angular/angular/commit/105cfaf)), closes [/github.com/angular/material2/blob/master/tools/package-tools/build-release.ts#L78-L85](https://github.com//github.com/angular/material2/blob/master/tools/package-tools/build-release.ts/issues/L78-L85)
-* **core:** don't wrap `<tr>` and `<col>` elements into a required parent ([#29219](https://github.com/angular/angular/issues/29219)) ([f2dc32e](https://github.com/angular/angular/commit/f2dc32e))
-* **core:** parse incorrect ML open tag as text ([#29328](https://github.com/angular/angular/issues/29328)) ([4605df8](https://github.com/angular/angular/commit/4605df8)), closes [#29231](https://github.com/angular/angular/issues/29231)
-
-
-### Features
-
-* add support for TypeScript 3.3 (and drop older versions) ([#29004](https://github.com/angular/angular/issues/29004)) ([75748d6](https://github.com/angular/angular/commit/75748d6))
-
-
-### BREAKING CHANGES
-
-* **core:** Certain elements (like `<tr>` or `<col>`) require parent elements to be of a certain type by the HTML specification
-(ex. `<tr>` can only be inside `<tbody>` / `<thead>`). Before this change Angular template parser was auto-correcting
-"invalid" HTML using the following rules:
-- `<tr>` would be wrapped in `<tbody>` if not inside `<tbody>`, `<tfoot>` or `<thead>`;
-- `<col>` would be wrapped in `<colgroup>` if not inside `<colgroup>`.
-
-This mechanism of automatic wrapping / auto-correcting was problematic for several reasons:
-- it is non-obvious and arbitrary (ex. there are more HTML elements that have rules for parent type);
-- it is incorrect for cases where `<tr>` / `<col>` are at the root of a component's content, ex.:
-
-```html
-<projecting-tr-inside-tbody>
-  <tr>...</tr>
-</projecting-tr-inside-tbody>
-```
-
-In the above example the `<projecting-tr-inside-tbody>` component could be "surprised" to see additional
-`<tbody>` elements inserted by Angular HTML parser.
-
-
-* TypeScript 3.1 and 3.2 are no longer supported.
-
-Please update your TypeScript version to 3.3
-
 
 
 <a name="7.2.10"></a>
@@ -1662,55 +1434,10 @@ Please update your TypeScript version to 3.3
 * **compiler-cli:** incorrect metadata bundle for multiple unnamed re-exports ([#29360](https://github.com/angular/angular/issues/29360)) ([cf8d934](https://github.com/angular/angular/commit/cf8d934)), closes [github.com/angular/material2/blob/master/tools/package-tools/build-release.ts#L78-L85](https://github.com/angular/material2/blob/master/tools/package-tools/build-release.ts#L78-L85)
 
 
-
-<a name="8.0.0-beta.8"></a>
-# [8.0.0-beta.8](https://github.com/angular/angular/compare/8.0.0-beta.7...8.0.0-beta.8) (2019-03-12)
-
-
-### Bug Fixes
-
-* **bazel:** add missing binary path for api-extractor ([#29202](https://github.com/angular/angular/issues/29202)) ([df354d1](https://github.com/angular/angular/commit/df354d1))
-* **bazel:** ng build should produce prod bundle ([#29136](https://github.com/angular/angular/issues/29136)) ([14ce8a9](https://github.com/angular/angular/commit/14ce8a9))
-* **compiler:** ensure template is updated if an output is transformed ([#29041](https://github.com/angular/angular/issues/29041)) ([c7e4931](https://github.com/angular/angular/commit/c7e4931))
-
-
-### Features
-
-* **bazel:** Eject Bazel ([#29167](https://github.com/angular/angular/issues/29167)) ([36a1550](https://github.com/angular/angular/commit/36a1550))
-* **bazel:** Hide Bazel files in Bazel builder ([#29110](https://github.com/angular/angular/issues/29110)) ([7060d90](https://github.com/angular/angular/commit/7060d90))
-* **forms:** clear (remove all) components from a FormArray ([#28918](https://github.com/angular/angular/issues/28918)) ([a68b1a1](https://github.com/angular/angular/commit/a68b1a1)), closes [#18531](https://github.com/angular/angular/issues/18531)
-* **platform-server:** wait on returned BEFORE_APP_SERIALIZED promises ([#29120](https://github.com/angular/angular/issues/29120)) ([7102ea8](https://github.com/angular/angular/commit/7102ea8))
-
-
-
 <a name="7.2.9"></a>
 ## [7.2.9](https://github.com/angular/angular/compare/7.2.8...7.2.9) (2019-03-12)
 
 This release contains various API docs improvements.
-
-
-<a name="8.0.0-beta.7"></a>
-# [8.0.0-beta.7](https://github.com/angular/angular/compare/8.0.0-beta.6...8.0.0-beta.7) (2019-03-06)
-
-
-### Bug Fixes
-
-* **animations:** ensure `position` and `display` styles are handled outside of keyframes/web-animations ([#28911](https://github.com/angular/angular/issues/28911)) ([a6ae759](https://github.com/angular/angular/commit/a6ae759)), closes [#24923](https://github.com/angular/angular/issues/24923) [#25635](https://github.com/angular/angular/issues/25635)
-* **bazel:** add favicon to web package ([#29017](https://github.com/angular/angular/issues/29017)) ([5fdf24e](https://github.com/angular/angular/commit/5fdf24e))
-* **bazel:** Add SHA256 for rules_sass ([#28994](https://github.com/angular/angular/issues/28994)) ([dc33519](https://github.com/angular/angular/commit/dc33519))
-* **bazel:** api extractor don't generate tsdoc metadata ([#29023](https://github.com/angular/angular/issues/29023)) ([b5629d9](https://github.com/angular/angular/commit/b5629d9))
-* **bazel:** ng serve should always watch ([#29032](https://github.com/angular/angular/issues/29032)) ([c532646](https://github.com/angular/angular/commit/c532646))
-* **platform-server:** update minimum domino version to latest released ([#28893](https://github.com/angular/angular/issues/28893)) ([79e2ca0](https://github.com/angular/angular/commit/79e2ca0))
-* **router:** removed obsolete TODO comment ([#29085](https://github.com/angular/angular/issues/29085)) ([72ecc45](https://github.com/angular/angular/commit/72ecc45))
-* **service-worker:** detect new version even if files are identical to an old one ([#26006](https://github.com/angular/angular/issues/26006)) ([586234b](https://github.com/angular/angular/commit/586234b)), closes [#24338](https://github.com/angular/angular/issues/24338)
-* **service-worker:** ignore passive mixed content requests ([#25994](https://github.com/angular/angular/issues/25994)) ([48214e2](https://github.com/angular/angular/commit/48214e2)), closes [/github.com/angular/angular/issues/23012#issuecomment-376430187](https://github.com//github.com/angular/angular/issues/23012/issues/issuecomment-376430187) [#23012](https://github.com/angular/angular/issues/23012)
-
-
-### Features
-
-* **core:** update schematic to migrate to explicit query timing ([#28983](https://github.com/angular/angular/issues/28983)) ([6215799](https://github.com/angular/angular/commit/6215799))
-* **service-worker:** add JSON schema for service worker config ([#27859](https://github.com/angular/angular/issues/27859)) ([3bee0f6](https://github.com/angular/angular/commit/3bee0f6)), closes [#19847](https://github.com/angular/angular/issues/19847)
-
 
 
 <a name="7.2.8"></a>
@@ -1725,26 +1452,6 @@ This release contains various API docs improvements.
 * **service-worker:** ignore passive mixed content requests ([#25994](https://github.com/angular/angular/issues/25994)) ([b598e88](https://github.com/angular/angular/commit/b598e88)), closes [/github.com/angular/angular/issues/23012#issuecomment-376430187](https://github.com//github.com/angular/angular/issues/23012/issues/issuecomment-376430187) [#23012](https://github.com/angular/angular/issues/23012)
 
 
-
-<a name="8.0.0-beta.6"></a>
-# [8.0.0-beta.6](https://github.com/angular/angular/compare/8.0.0-beta.5...8.0.0-beta.6) (2019-02-27)
-
-
-### Bug Fixes
-
-* **bazel:** Pin browsers for schematics ([#28913](https://github.com/angular/angular/issues/28913)) ([1145bdb](https://github.com/angular/angular/commit/1145bdb))
-* **bazel:** rxjs_umd_modules should always be present ([#28881](https://github.com/angular/angular/issues/28881)) ([9ae14db](https://github.com/angular/angular/commit/9ae14db))
-* **compiler:** use correct variable in invalid function ([#28656](https://github.com/angular/angular/issues/28656)) ([f75acbd](https://github.com/angular/angular/commit/f75acbd))
-* **core:** traverse and sanitize content of unsafe elements ([#28804](https://github.com/angular/angular/issues/28804)) ([262ba67](https://github.com/angular/angular/commit/262ba67)), closes [#25879](https://github.com/angular/angular/issues/25879) [#25879](https://github.com/angular/angular/issues/25879) [#26007](https://github.com/angular/angular/issues/26007) [#28427](https://github.com/angular/angular/issues/28427)
-* **language-service:** Fix completions for input/output with alias ([#28904](https://github.com/angular/angular/issues/28904)) ([ad4a9bf](https://github.com/angular/angular/commit/ad4a9bf)), closes [#27959](https://github.com/angular/angular/issues/27959)
-
-
-### Features
-
-* **bazel:** add ts_config extending support for ng_module ([#21883](https://github.com/angular/angular/issues/21883)) ([edb6c2d](https://github.com/angular/angular/commit/edb6c2d))
-
-
-
 <a name="7.2.7"></a>
 ## [7.2.7](https://github.com/angular/angular/compare/7.2.6...7.2.7) (2019-02-27)
 
@@ -1755,25 +1462,6 @@ This release contains various API docs improvements.
 * **core:** traverse and sanitize content of unsafe elements ([#28804](https://github.com/angular/angular/issues/28804)) ([fdcf877](https://github.com/angular/angular/commit/fdcf877)), closes [#25879](https://github.com/angular/angular/issues/25879) [#25879](https://github.com/angular/angular/issues/25879) [#26007](https://github.com/angular/angular/issues/26007) [#28427](https://github.com/angular/angular/issues/28427)
 * **language-service:** Fix completions for input/output with alias ([#28904](https://github.com/angular/angular/issues/28904)) ([d0018e6](https://github.com/angular/angular/commit/d0018e6)), closes [#27959](https://github.com/angular/angular/issues/27959)
 
-<a name="8.0.0-beta.5"></a>
-# [8.0.0-beta.5](https://github.com/angular/angular/compare/8.0.0-beta.4...8.0.0-beta.5) (2019-02-20)
-
-
-### Bug Fixes
-
-* **bazel:** Add postinstall step to generate summaries ([#28850](https://github.com/angular/angular/issues/28850)) ([96b597c](https://github.com/angular/angular/commit/96b597c))
-* **bazel:** Schematics should upgrade rxjs to 6.4.0 ([#28841](https://github.com/angular/angular/issues/28841)) ([2d80419](https://github.com/angular/angular/commit/2d80419))
-* **compiler-cli:** incorrect bundled metadata for static class member call expressions ([#28762](https://github.com/angular/angular/issues/28762)) ([4131715](https://github.com/angular/angular/commit/4131715)), closes [/github.com/angular/angular/blob/master/packages/core/src/change_detection/differs/keyvalue_differs.ts#L121](https://github.com//github.com/angular/angular/blob/master/packages/core/src/change_detection/differs/keyvalue_differs.ts/issues/L121) [#28741](https://github.com/angular/angular/issues/28741)
-
-
-### Features
-
-* upgrade domino to v2.1.2 ([#28767](https://github.com/angular/angular/issues/28767)) ([fdca001](https://github.com/angular/angular/commit/fdca001))
-* **compiler-cli:** make enableIvy ngtsc/true equivalent ([#28616](https://github.com/angular/angular/issues/28616)) ([1923c2f](https://github.com/angular/angular/commit/1923c2f))
-* **core:** allow users to define timing of ViewChild/ContentChild queries ([#28810](https://github.com/angular/angular/issues/28810)) ([19afb79](https://github.com/angular/angular/commit/19afb79))
-* **router:** add hash-based navigation option to setUpLocationSync ([#28609](https://github.com/angular/angular/issues/28609)) ([71d0eeb](https://github.com/angular/angular/commit/71d0eeb)), closes [#24429](https://github.com/angular/angular/issues/24429) [#21995](https://github.com/angular/angular/issues/21995)
-
-
 
 <a name="7.2.6"></a>
 ## [7.2.6](https://github.com/angular/angular/compare/7.2.5...7.2.6) (2019-02-20)
@@ -1782,38 +1470,6 @@ This release contains various API docs improvements.
 ### Bug Fixes
 
 * **compiler-cli:** incorrect bundled metadata for static class member call expressions ([#28762](https://github.com/angular/angular/issues/28762)) ([ab69c31](https://github.com/angular/angular/commit/ab69c31)), closes [/github.com/angular/angular/blob/master/packages/core/src/change_detection/differs/keyvalue_differs.ts#L121](https://github.com//github.com/angular/angular/blob/master/packages/core/src/change_detection/differs/keyvalue_differs.ts/issues/L121) [#28741](https://github.com/angular/angular/issues/28741)
-
-
-
-<a name="8.0.0-beta.4"></a>
-# [8.0.0-beta.4](https://github.com/angular/angular/compare/8.0.0-beta.3...8.0.0-beta.4) (2019-02-15)
-
-
-### Bug Fixes
-
-* **bazel:** Install angular repo before yarn_install ([#28670](https://github.com/angular/angular/issues/28670)) ([49fb8c3](https://github.com/angular/angular/commit/49fb8c3))
-* **bazel:** Turn on strict action env ([#28675](https://github.com/angular/angular/issues/28675)) ([2ea030c](https://github.com/angular/angular/commit/2ea030c))
-* **compiler:** ensure that event handlers have the correct source spans ([#28055](https://github.com/angular/angular/issues/28055)) ([cffd862](https://github.com/angular/angular/commit/cffd862))
-* **compiler:** fix two existing expression transformer issues ([#28523](https://github.com/angular/angular/issues/28523)) ([09af7ea](https://github.com/angular/angular/commit/09af7ea))
-* **compiler:** markup lexer should not capture quotes in attribute value ([#28055](https://github.com/angular/angular/issues/28055)) ([c0dac18](https://github.com/angular/angular/commit/c0dac18))
-* **compiler:** support `sourceMappingURL` comments that have trailing lines ([#28055](https://github.com/angular/angular/issues/28055)) ([0d6fdec](https://github.com/angular/angular/commit/0d6fdec))
-* **compiler-cli:** don't throw when listing lazy routes for an entry route ([#28372](https://github.com/angular/angular/issues/28372)) ([2caa419](https://github.com/angular/angular/commit/2caa419))
-* **core:** improve global variable detection ([#28679](https://github.com/angular/angular/issues/28679)) ([77eee42](https://github.com/angular/angular/commit/77eee42)), closes [#16545](https://github.com/angular/angular/issues/16545)
-* **core:** use the correct generated URL for JIT compiled components ([#28055](https://github.com/angular/angular/issues/28055)) ([4f46bfb](https://github.com/angular/angular/commit/4f46bfb))
-* **core:** use the correct template URL in render3 JIT compilation ([#28055](https://github.com/angular/angular/issues/28055)) ([a5ea55a](https://github.com/angular/angular/commit/a5ea55a))
-* **forms:** mark form as pristine before emitting value and status change events ([#28395](https://github.com/angular/angular/issues/28395)) ([1df3aef](https://github.com/angular/angular/commit/1df3aef)), closes [#28130](https://github.com/angular/angular/issues/28130)
-* **router:** redirect to root url when returned as UrlTree from guard ([#28271](https://github.com/angular/angular/issues/28271)) ([50732e1](https://github.com/angular/angular/commit/50732e1)), closes [#27845](https://github.com/angular/angular/issues/27845)
-* **router:** set href when routerLink is used on an 'area' element ([#28441](https://github.com/angular/angular/issues/28441)) ([ed0cf7e](https://github.com/angular/angular/commit/ed0cf7e)), closes [#28401](https://github.com/angular/angular/issues/28401)
-
-
-### Features
-
-* optionally save complete performance log in chrome benchpress tests ([#27551](https://github.com/angular/angular/issues/27551)) ([d42f32c](https://github.com/angular/angular/commit/d42f32c))
-* **bazel:** add dts bundler as action to ng_module ([#28588](https://github.com/angular/angular/issues/28588)) ([3d39100](https://github.com/angular/angular/commit/3d39100))
-* **compiler:** support tokenizing a sub-section of an input string ([#28055](https://github.com/angular/angular/issues/28055)) ([eeb560a](https://github.com/angular/angular/commit/eeb560a))
-* **compiler:** support tokenizing escaped strings ([#28055](https://github.com/angular/angular/issues/28055)) ([2424184](https://github.com/angular/angular/commit/2424184))
-* **compiler-cli:** no longer re-export external symbols by default ([#28633](https://github.com/angular/angular/issues/28633)) ([91b7152](https://github.com/angular/angular/commit/91b7152)), closes [#28594](https://github.com/angular/angular/issues/28594) [#25644](https://github.com/angular/angular/issues/25644) [#25644](https://github.com/angular/angular/issues/25644)
-
 
 
 <a name="7.2.5"></a>
@@ -1836,26 +1492,6 @@ This release contains various API docs improvements.
   [#28401](https://github.com/angular/angular/issues/28401)
 
 
-
-<a name="8.0.0-beta.3"></a>
-# [8.0.0-beta.3](https://github.com/angular/angular/compare/8.0.0-beta.2...8.0.0-beta.3) (2019-02-06)
-
-
-### Bug Fixes
-
-* **bazel:** Bazel builder resolves with require.resolve() ([#28478](https://github.com/angular/angular/issues/28478)) ([36902e2](https://github.com/angular/angular/commit/36902e2))
-* **bazel:** fix integration test for bazel-schematics ([#28460](https://github.com/angular/angular/issues/28460)) ([b1e099b](https://github.com/angular/angular/commit/b1e099b))
-* **compiler-cli:** base synthetic filepaths on input filepath ([#28453](https://github.com/angular/angular/issues/28453)) ([7219639](https://github.com/angular/angular/commit/7219639))
-* **compiler-cli:** diagnostics should respect "newLine" compiler option ([#28352](https://github.com/angular/angular/issues/28352)) ([4aa189d](https://github.com/angular/angular/commit/4aa189d))
-* **core:** remove createInjector() from public API ([#28509](https://github.com/angular/angular/issues/28509)) ([f2621db](https://github.com/angular/angular/commit/f2621db))
-
-
-### Performance Improvements
-
-* pngcrush all pngs ([#28479](https://github.com/angular/angular/issues/28479)) ([ec6e730](https://github.com/angular/angular/commit/ec6e730)), closes [#18243](https://github.com/angular/angular/issues/18243)
-
-
-
 <a name="7.2.4"></a>
 ## [7.2.4](https://github.com/angular/angular/compare/7.2.3...7.2.4) (2019-02-06)
 
@@ -1869,28 +1505,6 @@ This release contains various API docs improvements.
 ### Performance Improvements
 
 * pngcrush all pngs ([#28479](https://github.com/angular/angular/issues/28479)) ([1a25144](https://github.com/angular/angular/commit/1a25144)), closes [#18243](https://github.com/angular/angular/issues/18243)
-
-
-
-<a name="8.0.0-beta.2"></a>
-# [8.0.0-beta.2](https://github.com/angular/angular/compare/8.0.0-beta.1...8.0.0-beta.2) (2019-01-30)
-
-
-### Bug Fixes
-
-* **bazel:** also pass afterDeclarations transformers to emitWithTsickle ([#28342](https://github.com/angular/angular/issues/28342)) ([70e426b](https://github.com/angular/angular/commit/70e426b))
-* **forms:** don't override form group's dirty state when disabling controls ([#24591](https://github.com/angular/angular/issues/24591)) ([ef67282](https://github.com/angular/angular/commit/ef67282))
-
-
-### Features
-
-* **compiler-cli:** expose ngtsc as a TscPlugin ([#28435](https://github.com/angular/angular/issues/28435)) ([a227c52](https://github.com/angular/angular/commit/a227c52))
-
-
-### Performance Improvements
-
-* **core:** be more consistent about typeof checks ([#28400](https://github.com/angular/angular/issues/28400)) ([9af18c2](https://github.com/angular/angular/commit/9af18c2))
-
 
 
 <a name="7.2.3"></a>
@@ -1908,30 +1522,6 @@ This release contains various API docs improvements.
 ### Performance Improvements
 
 * yarn version upgrade ([#28360](https://github.com/angular/angular/issues/28360)) ([cc1b2a5](https://github.com/angular/angular/commit/cc1b2a5))
-
-
-
-<a name="8.0.0-beta.1"></a>
-# [8.0.0-beta.1](https://github.com/angular/angular/compare/8.0.0-beta.0...8.0.0-beta.1) (2019-01-22)
-
-
-### Bug Fixes
-
-* **bazel:** increase node memory limit for ng_module rule to prevent OOM for big modules ([#28237](https://github.com/angular/angular/issues/28237)) ([73616ab](https://github.com/angular/angular/commit/73616ab))
-* **router:** `skipLocationChange` with named outlets ([#28300](https://github.com/angular/angular/issues/28300)) ([50df897](https://github.com/angular/angular/commit/50df897)), closes [#27680](https://github.com/angular/angular/issues/27680) [#28200](https://github.com/angular/angular/issues/28200)
-
-
-### Features
-
-* **bazel:** Add support for SASS ([#28167](https://github.com/angular/angular/issues/28167)) ([f59f18c](https://github.com/angular/angular/commit/f59f18c))
-* **compiler-cli:** resolve generated Sass/Less files to .css inputs ([#28166](https://github.com/angular/angular/issues/28166)) ([a58fd21](https://github.com/angular/angular/commit/a58fd21))
-* **forms:** add `markAllAsTouched()` to `AbstractControl` ([#26812](https://github.com/angular/angular/issues/26812)) ([45bf911](https://github.com/angular/angular/commit/45bf911)), closes [#19400](https://github.com/angular/angular/issues/19400)
-
-
-### Reverts
-
-* "ci: use image based cache for windows BuildKite ([#27990](https://github.com/angular/angular/issues/27990))" ([#28160](https://github.com/angular/angular/issues/28160)) ([7bdf3fe](https://github.com/angular/angular/commit/7bdf3fe))
-
 
 
 <a name="7.2.2"></a>
@@ -1957,29 +1547,14 @@ This release contains various API docs improvements.
 
 ### Bug Fixes
 
-* **bazel:** Add [@bazel](https://github.com/bazel)/bazel to dev deps ([#28032](https://github.com/angular/angular/issues/28032)) ([5a0deb8](https://github.com/angular/angular/commit/5a0deb8))
-* **bazel:** Add /bazel-out to .gitignore ([#27874](https://github.com/angular/angular/issues/27874)) ([b05baa5](https://github.com/angular/angular/commit/b05baa5))
-* **bazel:** Add ibazel to deps of Bazel project ([#28090](https://github.com/angular/angular/issues/28090)) ([605f450](https://github.com/angular/angular/commit/605f450))
-* **bazel:** Bazel schematics should add router package ([#28141](https://github.com/angular/angular/issues/28141)) ([06e5bf1](https://github.com/angular/angular/commit/06e5bf1))
-* **bazel:** flat module misses AMD module name on windows ([#27839](https://github.com/angular/angular/issues/27839)) ([935ce63](https://github.com/angular/angular/commit/935ce63))
-* **bazel:** incorrectly always uses ngc-wrapped from "npm" workspace ([#28137](https://github.com/angular/angular/issues/28137)) ([d12db4e](https://github.com/angular/angular/commit/d12db4e))
-* **bazel:** ng_package creates invalid typings reexport on windows ([#27829](https://github.com/angular/angular/issues/27829)) ([4caf654](https://github.com/angular/angular/commit/4caf654))
-* **bazel:** packager not properly removing amd directives on windows ([#27829](https://github.com/angular/angular/issues/27829)) ([8473d68](https://github.com/angular/angular/commit/8473d68))
-* **bazel:** protractor rule does not run spec files with underscore ([#28022](https://github.com/angular/angular/issues/28022)) ([65e72e9](https://github.com/angular/angular/commit/65e72e9))
-* **bazel:** protractor utils cannot start server on windows ([#27915](https://github.com/angular/angular/issues/27915)) ([9de9c8a](https://github.com/angular/angular/commit/9de9c8a))
-* **bazel:** replay compilation uses wrong compiler for building esm5 ([#28053](https://github.com/angular/angular/issues/28053)) ([cd04513](https://github.com/angular/angular/commit/cd04513))
-* **bazel:** ts_web_test_suite now properly includes init_browser_spec.js ([#27965](https://github.com/angular/angular/issues/27965)) ([ce51dfb](https://github.com/angular/angular/commit/ce51dfb))
-* **service-worker:** navigation urls backwards compatibility ([#27244](https://github.com/angular/angular/issues/27244)) ([d49d1e7](https://github.com/angular/angular/commit/d49d1e7))
 
 
 ### Features
 
-* **forms:** export NumberValueAccessor & RangeValueAccessor directives ([#27743](https://github.com/angular/angular/issues/27743)) ([ac15717](https://github.com/angular/angular/commit/ac15717))
 
 
 ### Performance Improvements
 
-* **platform-server:** use shared `DomElementSchemaRegistry` instance ([#28150](https://github.com/angular/angular/issues/28150)) ([#28151](https://github.com/angular/angular/issues/28151)) ([ce3a746](https://github.com/angular/angular/commit/ce3a746))
 
 
 
