@@ -1,8 +1,7 @@
 // #docregion
-import { Component }        from '@angular/core';
-import { Router,
-         NavigationExtras } from '@angular/router';
-import { AuthService }      from '../auth.service';
+import { Component } from '@angular/core';
+import { NavigationExtras, Router } from '@angular/router';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-login',
@@ -28,7 +27,13 @@ export class LoginComponent {
       if (this.authService.isLoggedIn) {
         // Get the redirect URL from our auth service
         // If no redirect has been set, use the default
-        let redirect = this.authService.redirectUrl ? this.router.parseUrl(this.authService.redirectUrl) : '/admin';
+        let redirectUrl = this.authService.redirectUrl || '/admin';
+
+        // If the redirectUrl contains an aux outlet name /admin(popup:compose)
+        // Then get rid of that and just take the first part of the Url.
+        if (redirectUrl.indexOf('(') !== -1) {
+          redirectUrl = redirectUrl.split('(')[0];
+        }
 
         // #docregion preserve
         // Set our navigation extras object
@@ -39,7 +44,7 @@ export class LoginComponent {
         };
 
         // Redirect the user
-        this.router.navigateByUrl(redirect, navigationExtras);
+        this.router.navigate([redirectUrl], navigationExtras);
         // #enddocregion preserve
       }
     });
