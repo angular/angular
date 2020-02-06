@@ -1,3 +1,15 @@
+<a name="9.0.0"></a>
+# [9.0.0](https://github.com/angular/angular/compare/9.0.0-rc.14...9.0.0) (2020-02-06)
+
+
+### Bug Fixes
+
+* **benchpress:** formatted spec files ([#35127](https://github.com/angular/angular/issues/35127)) ([63868df](https://github.com/angular/angular/commit/63868df))
+* **ivy:** recompile on template change in ngc watch mode on Windows ([#34015](https://github.com/angular/angular/issues/34015)) ([a5c9cd7](https://github.com/angular/angular/commit/a5c9cd7)), closes [#32869](https://github.com/angular/angular/issues/32869)
+* **ivy:** support emitting a reference to interface declarations ([#34849](https://github.com/angular/angular/issues/34849)) ([ad9ec52](https://github.com/angular/angular/commit/ad9ec52)), closes [#34021](https://github.com/angular/angular/issues/34021) [#34837](https://github.com/angular/angular/issues/34837)
+* **ivy:** template type-check errors from TS should not use NG error codes ([#35146](https://github.com/angular/angular/issues/35146)) ([cf3071f](https://github.com/angular/angular/commit/cf3071f))
+
+
 <a name="9.0.0-rc.14"></a>
 # [9.0.0-rc.14](https://github.com/angular/angular/compare/9.0.0-rc.13...9.0.0-rc.14) (2020-02-03)
 
