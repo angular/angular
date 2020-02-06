@@ -130,7 +130,7 @@ service-setup-command() {
     @fail "sc binary not found at ${SAUCE_CONNECT}"
   fi
 
-  echo "{ \"SAUCE_USERNAME\": \"${SAUCE_USERNAME}\", \"SAUCE_ACCESS_KEY\": \"${SAUCE_ACCESS_KEY}\", \"SAUCE_TUNNEL_IDENTIFIER\": \"${SAUCE_TUNNEL_IDENTIFIER}\" }" > ${SAUCE_PARAMS_JSON_FILE}
+  echo "{ \"SAUCE_USERNAME\": \"${SAUCE_USERNAME}\", \"SAUCE_ACCESS_KEY\": \"${SAUCE_ACCESS_KEY}\", \"SAUCE_TUNNEL_IDENTIFIER\": \"${SAUCE_TUNNEL_IDENTIFIER}\", \"SAUCE_LOCALHOST_ALIAS_DOMAIN\": \"${SAUCE_LOCALHOST_ALIAS_DOMAIN}\" }" > ${SAUCE_PARAMS_JSON_FILE}
 
   # Command arguments that will be passed to sauce-connect.
   # By default we disable SSL bumping for all requests. This is because SSL bumping is
@@ -147,6 +147,16 @@ service-setup-command() {
     "--user ${SAUCE_USERNAME}"
     # Don't add the --api-key here so we don't echo it out in service-pre-start
   )
+
+  if [[ -n "${SAUCE_LOCALHOST_ALIAS_DOMAIN}" ]]; then
+    # Ensures that requests to the localhost alias domain are always resolved through the tunnel.
+    # This environment variable is usually configured on CI, and refers to a domain that has been
+    # locally configured in the current machine's hosts file (e.g. `/etc/hosts`). The domain should
+    # resolve to the current machine in Saucelabs VMs, so we need to ensure that it is resolved
+    # through the tunnel we going to create.
+    sauce_args+=("--tunnel-domains ${SAUCE_LOCALHOST_ALIAS_DOMAIN}")
+  fi
+
   @echo "Sauce connect will be started with:"
   echo "  ${SAUCE_CONNECT} ${sauce_args[@]}"
   SERVICE_COMMAND="${SAUCE_CONNECT} ${sauce_args[@]} --api-key ${SAUCE_ACCESS_KEY}"
@@ -296,7 +306,7 @@ service-post-stop() {
       fi
       @wait_for "Waiting for start file" "${SERVICE_START_FILE}"
       ${SERVICE_COMMAND}
-    ) >>"${SERVICE_LOG_FILE}" 2>&1 
+    ) >>"${SERVICE_LOG_FILE}" 2>&1
   ) &
   echo $! >"${SERVICE_PID_FILE}"
 
