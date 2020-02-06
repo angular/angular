@@ -12,12 +12,16 @@ export class DevToolsTabsComponent {
   @Input() messageBus: MessageBus<Events>;
   @Input() angularVersion: string | undefined = undefined;
   @ViewChild(MatTabGroup) tabGroup: MatTabGroup;
-  @ViewChild(DirectiveExplorerComponent) componentExplorer: DirectiveExplorerComponent;
+  @ViewChild(DirectiveExplorerComponent) directiveExplorer: DirectiveExplorerComponent;
 
   inspectorRunning = false;
 
   toggleInspector(): void {
-    this.inspectorRunning = !this.inspectorRunning;
+    this.toggleInspectorState();
+    this.emitInspectorEvent();
+  }
+
+  emitInspectorEvent(): void {
     if (this.inspectorRunning) {
       this.messageBus.emit('inspectorStart');
       this.tabGroup.selectedIndex = 0;
@@ -26,7 +30,11 @@ export class DevToolsTabsComponent {
     }
   }
 
+  toggleInspectorState(): void {
+    this.inspectorRunning = !this.inspectorRunning;
+  }
+
   refresh(): void {
-    this.componentExplorer.refresh();
+    this.directiveExplorer.refresh();
   }
 }
