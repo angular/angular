@@ -789,7 +789,7 @@ runInEachFileSystem(() => {
         {
           selector: 'consumer',
           declaration: declConsumer,
-          inputs: {
+          outputs: {
             'bound': 'boundValue',
           }
         },

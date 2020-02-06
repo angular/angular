@@ -40,19 +40,18 @@ export function getComponentDeclaration(componentStr: string, className: string)
  */
 export function getBoundTemplate(
     template: string, options: ParseTemplateOptions = {},
-    components: Array<
-        {selector: string, declaration: ClassDeclaration, inputs?: {[property: string]: string}}> =
+    components: Array<Partial<ComponentMeta>&{selector: string, declaration: ClassDeclaration}> =
         []): BoundTarget<ComponentMeta> {
   const matcher = new SelectorMatcher<ComponentMeta>();
-  components.forEach(({selector, declaration, inputs}) => {
+  components.forEach(({selector, declaration, isComponent, inputs, outputs, exportAs}) => {
     matcher.addSelectables(CssSelector.parse(selector), {
       ref: new Reference(declaration),
       selector,
       name: declaration.name.getText(),
-      isComponent: true,
+      isComponent: isComponent || true,
       inputs: inputs || {},
-      outputs: {},
-      exportAs: null,
+      outputs: outputs || {},
+      exportAs: exportAs || null,
     });
   });
   const binder = new R3TargetBinder(matcher);
