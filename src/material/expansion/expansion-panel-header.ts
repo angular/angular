@@ -48,7 +48,7 @@ import {MatAccordionTogglePosition} from './accordion-base';
     matExpansionAnimations.expansionHeaderHeight
   ],
   host: {
-    'class': 'mat-expansion-panel-header mat-focus-indicator',
+    'class': 'mat-expansion-panel-header',
     'role': 'button',
     '[attr.id]': 'panel._headerId',
     '[attr.tabindex]': 'disabled ? -1 : 0',

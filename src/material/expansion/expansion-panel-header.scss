@@ -5,9 +5,6 @@
   padding: 0 24px;
   border-radius: inherit;
 
-  // Required for focus indicator.
-  position: relative;
-
   &:focus,
   &:hover {
     outline: none;
