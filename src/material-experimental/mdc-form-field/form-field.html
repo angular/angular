@@ -3,7 +3,7 @@
      read if it comes before the control in the DOM. -->
   <label matFormFieldFloatingLabel [floating]="_shouldLabelFloat()"
          *ngIf="_hasFloatingLabel()"
-         (cdkObserveContent)="_rerenderOutlineNotch()"
+         (cdkObserveContent)="_refreshOutlineNotchWidth()"
          [cdkObserveContentDisabled]="!_hasOutline()"
          [id]="_labelId"
          [attr.for]="_control.id"
@@ -26,7 +26,9 @@
      [class.mdc-text-field--invalid]="_control.errorState"
      (click)="_control.onContainerClick && _control.onContainerClick($event)">
   <div class="mat-mdc-form-field-flex">
-    <div matFormFieldNotchedOutline *ngIf="_hasOutline()">
+    <div *ngIf="_hasOutline()" matFormFieldNotchedOutline
+         [matFormFieldNotchedOutlineOpen]="_shouldLabelFloat()"
+         [matFormFieldNotchedOutlineWidth]="_outlineNotchWidth">
       <ng-template [ngIf]="!_forceDisplayInfixLabel()">
         <ng-template [ngTemplateOutlet]="labelTemplate"></ng-template>
       </ng-template>

@@ -42,7 +42,11 @@ import {
   MatFormFieldControl,
 } from '@angular/material/form-field';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
-import {MDCTextFieldAdapter, MDCTextFieldFoundation} from '@material/textfield';
+import {
+  MDCTextFieldAdapter,
+  MDCTextFieldFoundation,
+  numbers as mdcTextFieldNumbers
+} from '@material/textfield';
 import {merge, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {MatError} from './directives/error';
@@ -197,6 +201,9 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
   /** State of the mat-hint and mat-error animations. */
   _subscriptAnimationState: string = '';
 
+  /** Width of the outline notch. */
+  _outlineNotchWidth: number;
+
   /** Gets the current form field control */
   get _control(): MatFormFieldControl<any> {
     return this._explicitFormFieldControl || this._formFieldControl;
@@ -229,16 +236,24 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
     // TODO(devversion): explore options on how to integrate label shaking.
     shakeLabel: () => {},
 
-    getLabelWidth: () => this._floatingLabel ? this._floatingLabel.getWidth() : 0,
-    notchOutline: labelWidth => this._notchedOutline && this._notchedOutline.notch(labelWidth),
-    closeOutline: () => this._notchedOutline && this._notchedOutline.closeNotch(),
+    // MDC by default updates the notched-outline whenever the text-field receives focus, or
+    // is being blurred. It also computes the label width every time the notch is opened or
+    // closed. This works fine in the standard MDC text-field, but not in Angular where the
+    // floating label could change through interpolation. We want to be able to update the
+    // notched outline whenever the label content changes. Additionally, relying on focus or
+    // blur to open and close the notch does not work for us since abstract form-field controls
+    // have the ability to control the floating label state (i.e. `shouldLabelFloat`), and we
+    // want to update the notch whenever the `_shouldLabelFloat()` value changes.
+    getLabelWidth: () => 0,
+    notchOutline: () => {},
+    closeOutline: () => {},
 
     activateLineRipple: () => this._lineRipple && this._lineRipple.activate(),
     deactivateLineRipple: () => this._lineRipple && this._lineRipple.deactivate(),
 
     // The foundation tries to register events on the input. This is not matching
     // our concept of abstract form field controls. We handle each event manually
-    // in "ngDoCheck" based on the form-field control state. The following events
+    // in "stateChanges" based on the form-field control state. The following events
     // need to be handled: focus, blur. We do not handle the "input" event since
     // that one is only needed for the text-field character count, which we do
     // not implement as part of the form-field, but should be implemented manually
@@ -310,8 +325,9 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
     // Initial focus state sync. This happens rarely, but we want to account for
     // it in case the form-field control has "focused" set to true on init.
     this._updateFocusState();
-    // Initial notch update since we overwrote the "shouldFloat" getter.
-    this._rerenderOutlineNotch();
+    // Initial notch width update. This is needed in case the text-field label floats
+    // on initialization, and renders inside of the notched outline.
+    this._refreshOutlineNotchWidth();
     // Enable animations now. This ensures we don't animate on initial render.
     this._subscriptAnimationState = 'enter';
   }
@@ -462,12 +478,6 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
       .subscribe(() => this._needsOutlineLabelOffsetUpdateOnStable = true);
   }
 
-  _rerenderOutlineNotch() {
-    if (this._floatingLabel && this._hasOutline()) {
-      this._foundation.notchOutline(this._shouldLabelFloat());
-    }
-  }
-
   /** Whether the floating label should always float or not. */
   _shouldAlwaysFloat() {
     return this.floatLabel === 'always';
@@ -486,7 +496,7 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
    * the label is part of the infix, the label cannot overflow the prefix content.
    */
   _forceDisplayInfixLabel() {
-    return !this._platform.isBrowser && this._prefixContainer && !this._shouldLabelFloat();
+    return !this._platform.isBrowser && this._prefixChildren.length && !this._shouldLabelFloat();
   }
 
   _hasFloatingLabel() {
@@ -507,6 +517,17 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
   _getDisplayedMessages(): 'error' | 'hint' {
     return (this._errorChildren && this._errorChildren.length > 0 &&
       this._control.errorState) ? 'error' : 'hint';
+  }
+
+  /** Refreshes the width of the outline-notch, if present. */
+  _refreshOutlineNotchWidth() {
+    if (!this._hasOutline() || !this._floatingLabel) {
+      return;
+    }
+    // The outline notch should be based on the label width, but needs to respect the scaling
+    // applied to the label if it actively floats. Since the label always floats when the notch
+    // is open, the MDC text-field floating label scaling is respected in notch width calculation.
+    this._outlineNotchWidth = this._floatingLabel.getWidth() * mdcTextFieldNumbers.LABEL_SCALE;
   }
 
   /** Does any extra processing that is required when handling the hints. */

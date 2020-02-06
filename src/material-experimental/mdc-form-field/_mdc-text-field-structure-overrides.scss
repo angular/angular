@@ -100,7 +100,8 @@
   // the horizontal adjustment for the label is applied through inline styles, and we want to
   // make sure that the label can still float as expected. It should be okay using `!important`
   // because it's unlikely that developers commonly overwrite the floating label transform.
-  .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mdc-floating-label--float-above {
+  .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mdc-notched-outline--upgraded
+  .mdc-floating-label--float-above {
     // This transform has been extracted from the MDC text-field styles. We can't access it
     // through a variable because MDC generates this label transform through a mixin.
     transform: translateY(-$mdc-text-field-outlined-label-position-y) scale(0.75) !important;
