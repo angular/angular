@@ -27,50 +27,7 @@
 
 <hr />
 
-<h2>Class binding</h2>
-
-<!-- #docregion add-class -->
-<h3>Bind to a specific class</h3>
-
-<div class="item clearance" [class.special]="isSpecial">This class binding is special.</div>
-<!-- #enddocregion add-class -->
-
-<!-- #docregion bind-syntax -->
-
-<h3>Using the bind- syntax:</h3>
-
-<div bind-class.special="isSpecial">This class binding is special too.</div>
-<!-- #enddocregion bind-syntax -->
-
-<!-- #docregion direct-class-binding -->
-<h3>Bind to multiple classes</h3>
-
-<div [class]="classExpr">Add multiple classes</div>
-<!-- #enddocregion direct-class-binding -->
-
-<hr />
-
-<h2>Style binding</h2>
-
-<!-- #docregion style-binding-->
-<button [style.color]="isSpecial ? 'red': 'green'">Red</button>
-<button [style.background-color]="canSave ? 'cyan': 'grey'" >Save</button>
-<!-- #enddocregion style-binding -->
-
-<!-- #docregion style-binding-condition-->
-<button [style.font-size.em]="isSpecial ? 3 : 1" >Big</button>
-<button [style.font-size.%]="!isSpecial ? 150 : 50" >Small</button>
-<!-- #enddocregion style-binding-condition-->
-
-<!-- #docregion direct-style-binding -->
-<h3>Bind to multiple styles</h3>
-
-<div style="color: blue" [style]="styleExpr">Add multiple styles</div>
-<!-- #enddocregion direct-style-binding -->
-
-<hr />
-
-<h2>Priority Order</h2>
+<h2>Styling precedence</h2>
 
 <!-- #docregion basic-specificity -->
 <h3>Basic specificity</h3>

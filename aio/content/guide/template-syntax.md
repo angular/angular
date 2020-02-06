@@ -892,70 +892,105 @@ Instead, you'd use property binding and write it like this:
 
 ### Class binding
 
-Add and remove CSS class names from an element's `class` attribute with
-a **class binding**.
-
-Here's how to set the attribute without a binding in plain HTML:
+Here's how to set the `class` attribute without a binding in plain HTML:
 
 ```html
 <!-- standard class attribute setting -->
-<div class="item clearance special">Item clearance special</div>
+<div class="foo bar">Some text</div>
 ```
 
-Class binding syntax resembles property binding, but instead of an element property between brackets, start with the prefix `class`,
-optionally followed by a dot (`.`) and the name of a CSS class: `[class.class-name]`. 
-Angular adds the class when the template expression evaluates to truthy.
-It removes the class when the expression is falsy.
- 
-Binding to a specific class is additive, so it won't overwrite other class bindings or static classes unless the class names are duplicated.
+You can also add and remove CSS class names from an element's `class` attribute with a **class binding**.
 
-In the example below, the final class list for the `<div>` will be `"item clearance special"` if `isSpecial` is truthy, and only `"item clearance"` if it is falsy.
+To create a single class binding, start with the prefix `class` followed by a dot (`.`) and the name of the CSS class (for example, `[class.foo]="hasFoo"`). 
+Angular adds the class when the bound expression is truthy, and it removes the class when the expression is falsy (with the exception of `undefined`, see [styling delegation](#styling-delegation)).
 
-<code-example path="attribute-binding/src/app/app.component.html" region="add-class" header="src/app/app.component.html"></code-example> 
+To create a binding to multiple classes, use a generic `[class]` binding without the dot (for example, `[class]="classExpr"`).
+The expression can be a space-delimited string of class names, or you can format it as an object with class names as the keys and truthy/falsy expressions as the values. 
+With object format, Angular will add a class only if its associated value is truthy. 
 
-You can also use the alternative class binding syntax that replaces square brackets with the `bind-` keyword:
-
-<code-example path="attribute-binding/src/app/app.component.html" region="bind-syntax" header="src/app/app.component.html"></code-example> 
-
-If there are multiple classes you'd like to toggle, you can bind to the `[class]` property directly.
-Binding to `[class]` is additive, so it shouldn't overwrite other class bindings or static classes unless the class names are duplicated*.
-
-<code-example path="attribute-binding/src/app/app.component.html" region="direct-class-binding" header="src/app/app.component.html"></code-example>
-
-The expression attached to the `[class]` binding is most often a string list of class names like `"clearance special"`. 
-
-You can also format the expression as an object with class names as the keys and truthy/falsy expressions as the values, like `{clearance: true, special: false}`. 
-In this case, Angular will add a class only if its associated value is truthy.
-It's important to note that with object format, the identity of the object must change for the class list to be updated.
+It's important to note that with any object-like expression (`object`, `Array`, `Map`, `Set`, etc), the identity of the object must change for the class list to be updated.
 Updating the property without changing object identity will have no effect.
 
-If there are multiple bindings to the same class name, conflicts are resolved using [styling priority order](#styling-priority).
+If there are multiple bindings to the same class name, conflicts are resolved using [styling precedence](#styling-precedence).
 
-*This is true for Angular version 9 and later. For Angular version 8, see <a href="http://v8.angular.io/guide/template-syntax#class-binding">v8.angular.io</a>
+<style>
+  td, th {vertical-align: top}
+</style>
+
+<table width="100%">
+  <col width="15%">
+  </col>
+  <col width="20%">
+  </col>
+  <col width="35%">
+  </col>
+  <col width="30%">
+  </col>
+  <tr>
+    <th>
+      Binding Type
+    </th>
+    <th>
+      Syntax
+    </th>
+    <th>
+      Input Type
+    </th>
+    <th>
+      Example Input Values
+    </th>
+  </tr>
+  <tr>
+    <td>Single class binding</td>
+    <td><code>[class.foo]="hasFoo"</code></td>
+    <td><code>boolean | undefined | null</code></td>
+    <td><code>true</code>, <code>false</code></td>
+  </tr>
+  <tr>
+    <td rowspan=5>Multi-class binding</td>
+    <td rowspan=5><code>[class]="classExpr"</code></td>
+    <td><code>string</code></td>
+    <td><code>"my-class-1 my-class-2 my-class-3"</code></td>
+  </tr>
+  <tr>
+    <td><code>{[key: string]: boolean | undefined | null}</code></td>
+    <td><code>{foo: true, bar: false}</code></td>
+  </tr>
+  <tr>
+    <td><code>Map</code><<code>string, boolean | undefined | null</code>></code></td>
+    <td><code>new Map([['foo', true]])</code></td>
+  </tr>
+  <tr>
+    <td><code>Array</code><<code>string</code>></td>
+    <td><code>['foo', 'bar']</code></td>
+  </tr>
+  <tr>
+    <td><code>Set</code><<code>string</code>> </code></td>
+    <td><code>new Set(['foo', 'bar'])</code></td>
+  </tr>
+</table>
+
+
+The [NgClass](#ngclass) directive can be used as an alternative to direct `[class]` bindings. 
+However, using the above class binding syntax without `NgClass` is preferred because due to improvements in class binding in Angular, `NgClass` no longer provides significant value, and might eventually be removed in the future.
+
 
 <hr/>
 
 ### Style binding
 
-Here's how to set the style attribute without a binding in plain HTML:
+Here's how to set the `style` attribute without a binding in plain HTML:
 
 ```html
 <!-- standard style attribute setting -->
-<div style="color: blue">Item clearance special</div>
+<div style="color: blue">Some text</div>
 ```
 
-You can set styles dynamically with a **style binding**.
+You can also set styles dynamically with a **style binding**.
 
-Style binding syntax resembles property binding.
-Instead of an element property between brackets, start with the prefix `style`,
-followed by a dot (`.`) and the name of a CSS style property: `[style.style-property]`.
-
-<code-example path="attribute-binding/src/app/app.component.html" region="style-binding" header="src/app/app.component.html"></code-example>
-
-Some style binding styles have a unit extension.
-The following example conditionally sets the font size in  “em” and “%” units.
-
-<code-example path="attribute-binding/src/app/app.component.html" region="style-binding-condition" header="src/app/app.component.html"></code-example>
+To create a single style binding, start with the prefix `style` followed by a dot (`.`) and the name of the CSS style property (for example, `[style.width]="width"`). 
+The property will be set to the value of the bound expression, which is normally a string.
+Optionally, you can add a unit extension like `em` or `%`, which requires a number type.
 
 <div class="alert is-helpful">
 
@@ -965,23 +1000,147 @@ Note that a _style property_ name can be written in either
 
 </div>
 
-If there are multiple styles you'd like to toggle, you can bind to the `[style]` property directly.
-Binding to `[style]` is additive, so it shouldn't overwrite other style bindings or static styles unless the same style property is duplicated.
-
-<code-example path="attribute-binding/src/app/app.component.html" region="direct-style-binding" header="src/app/app.component.html"></code-example>
-
+If there are multiple styles you'd like to toggle, you can bind to the `[style]` property directly without the dot (for example, `[style]="styleExpr"`).
 The expression attached to the `[style]` binding is most often a string list of styles like `"width: 100px; height: 100px;"`. 
 
 You can also format the expression as an object with style names as the keys and style values as the values, like `{width: '100px', height: '100px'}`. 
 It's important to note that with object format, the identity of the object must change for the styles to be updated.
 Updating the property without changing object identity will have no effect.
 
-If there are multiple bindings to the same style property, conflicts are resolved using [styling priority order](#styling-priority).
+If there are multiple bindings to the same style property, conflicts are resolved using [styling precedence rules](#styling-precedence).
 
-*This is true for Angular version 9 and later. For Angular version 8, see <a href="http://v8.angular.io/guide/template-syntax#style-binding">v8.angular.io</a>
+<style>
+  td, th {vertical-align: top}
+</style>
+
+<table width="100%">
+  <col width="15%">
+  </col>
+  <col width="20%">
+  </col>
+  <col width="35%">
+  </col>
+  <col width="30%">
+  </col>
+  <tr>
+    <th>
+      Binding Type
+    </th>
+    <th>
+      Syntax
+    </th>
+    <th>
+      Input Type
+    </th>
+    <th>
+      Example Input Values
+    </th>
+  </tr>
+  <tr>
+    <td>Single style binding</td>
+    <td><code>[style.width]="width"</code></td>
+    <td><code>string | undefined | null</code></td>
+    <td><code>"100px"</code></td>
+  </tr>
+  <tr>
+  <tr>
+    <td>Single style binding with units</td>
+    <td><code>[style.width.px]="width"</code></td>
+    <td><code>number | undefined | null</code></td>
+    <td><code>100</code></td>
+  </tr>
+    <tr>
+    <td rowspan=5>Multi-style binding</td>
+    <td rowspan=5><code>[style]="styleExpr"</code></td>
+    <td><code>string</code></td>
+    <td><code>"width: 100px; height: 100px"</code></td>
+  </tr>
+  <tr>
+    <td><code>{[key: string]: string | undefined | null}</code></td>
+    <td><code>{width: '100px', height: '100px'}</code></td>
+  </tr>
+  <tr>
+      <td><code>Map</code><<code>string, string | undefined | null</code>></code></td>
+      <td><code>new Map([['width', '100px']])</code></td>
+   </tr>
+  <tr>
+    <td><code>Array</code><<code>string</code>></td>
+    <td><code>['width', '100px']</code></td>
+  </tr>
+  <tr>
+    <td><code>Set</code><<code>string</code>> </code></td>
+    <td><code>new Set(['width', '100px'])</code></td>
+  </tr>
+</table>
+
+The [NgStyle](#ngstyle) directive can be used as an alternative to direct `[style]` bindings. 
+However, using the above style binding syntax without `NgStyle` is preferred because due to improvements in style binding in Angular, `NgStyle` no longer provides significant value, and might eventually be removed in the future.
 
 
 <hr/>
+
+{@a styling-precedence}
+### Styling Precedence
+
+A single HTML element can have its CSS class list and style values bound to a multiple sources (for example, host bindings from multiple directives).
+
+When there are multiple bindings to the same class name or style property, Angular uses a set of precedence rules to resolve conflicts and determine which classes or styles are ultimately applied to the element.
+
+<div class="alert is-helpful">
+<h4>Styling precedence (highest to lowest)</h4>
+
+1. Template bindings
+    1. Property binding (for example, `<div [class.foo]="hasFoo">` or `<div [style.color]="color">`)
+    1. Map binding (for example, `<div [class]="classExpr">` or `<div [style]="styleExpr">`)
+    1. Static value (for example, `<div class="foo">` or `<div style="color: blue">`) 
+1. Directive host bindings
+    1. Property binding (for example, `host: {'[class.foo]': 'hasFoo'}` or `host: {'[style.color]': 'color'}`)
+    1. Map binding (for example, `host: {'[class]': 'classExpr'}` or `host: {'[style]': 'styleExpr'}`)
+    1. Static value (for example, `host: {'class': 'foo'}` or `host: {'style': 'color: blue'}`)    
+1. Component host bindings
+    1. Property binding (for example, `host: {'[class.foo]': 'hasFoo'}` or `host: {'[style.color]': 'color'}`)
+    1. Map binding (for example, `host: {'[class]': 'classExpr'}` or `host: {'[style]': 'styleExpr'}`)
+    1. Static value (for example, `host: {'class': 'foo'}` or `host: {'style': 'color: blue'}`)    
+
+</div>
+
+The more specific a class or style binding is, the higher its precedence.
+
+A binding to a specific class (for example, `[class.foo]`) will take precedence over a generic `[class]` binding, and a binding to a specific style (for example, `[style.bar]`) will take precedence over a generic `[style]` binding.
+
+<code-example path="attribute-binding/src/app/app.component.html" region="basic-specificity" header="src/app/app.component.html"></code-example>
+
+Specificity rules also apply when it comes to bindings that originate from different sources. 
+It's possible for an element to have bindings in the template where it's declared, from host bindings on matched directives, and from host bindings on matched components.
+
+Template bindings are the most specific because they apply to the element directly and exclusively, so they have the highest precedence.
+
+Directive host bindings are considered less specific because directives can be used in multiple locations, so they have a lower precedence than template bindings.
+
+Directives often augment component behavior, so host bindings from components have the lowest precedence. 
+
+<code-example path="attribute-binding/src/app/app.component.html" region="source-specificity" header="src/app/app.component.html"></code-example>
+
+In addition, bindings take precedence over static attributes. 
+
+In the following case, `class` and `[class]` have similar specificity, but the `[class]` binding will take precedence because it is dynamic.
+
+<code-example path="attribute-binding/src/app/app.component.html" region="dynamic-priority" header="src/app/app.component.html"></code-example>
+
+{@a styling-delegation}
+### Delegating to styles with lower precedence
+
+It is possible for higher precedence styles to "delegate" to lower precedence styles using `undefined` values.
+Whereas setting a style property to `null` ensures the style is removed, setting it to `undefined` will cause Angular to fall back to the next-highest precedence binding to that style.
+
+For example, consider the following template: 
+
+<code-example path="attribute-binding/src/app/app.component.html" region="style-delegation" header="src/app/app.component.html"></code-example>
+
+Imagine that the `dirWithHostBinding` directive and the `comp-with-host-binding` component both have a `[style.width]` host binding.
+In that case, if `dirWithHostBinding` sets its binding to `undefined`, the `width` property will fall back to the value of the `comp-with-host-binding` host binding.
+However, if `dirWithHostBinding` sets its binding to `null`, the `width` property will be removed entirely.
+
 
 {@a event-binding}
 
@@ -2187,63 +2346,3 @@ Add the following code to your `svg.component.svg` file:
 
 Here you can see the use of a `click()` event binding and the property binding syntax
 (`[attr.fill]="fillColor"`).
-
-## Appendix
-
-{@a styling-priority}
-### Styling Priority Order
-
-When there are multiple bindings to the same class name or style property, Angular uses priority order to resolve conflicts and determine which classes or styles are ultimately applied to the element.
-
-The more specific a style is, the higher its priority. 
-A general `[class]` binding will have lower priority than a binding to a specific class (e.g. `[class.foo]`), and a general `[style]` binding will have lower priority than a binding to a specific style (e.g. `[style.bar]`).
-
-<code-example path="attribute-binding/src/app/app.component.html" region="basic-specificity" header="src/app/app.component.html"></code-example>
-
-Specificity rules also apply when it comes to bindings that come from different sources. 
-It's possible for a node to have bindings on the template itself, from host bindings on matched directives, and from host bindings on matched components.
-
-Template bindings are the most specific because they apply to only one node at a time, so they have the highest priority.
-
-Directive host bindings are considered less specific because directives can be used in multiple locations, so they have a lower priority than template bindings.
-
-Directives often augment component behavior, so host bindings from components have the lowest priority. 
-
-<code-example path="attribute-binding/src/app/app.component.html" region="source-specificity" header="src/app/app.component.html"></code-example>
-
-Dynamic styles also take precedence over static styles. 
-
-In the following case, `class` and `[class]` have similar specificity, but the `[class]` binding will have higher priority because it is dynamic.
-
-<code-example path="attribute-binding/src/app/app.component.html" region="dynamic-priority" header="src/app/app.component.html"></code-example>
-
-Below is a full priority list, ranked from highest (top) to lowest (bottom):
-
-* Template bindings
-  * Property binding (e.g. `<div [class.foo]="hasFoo">`)
-  * Map binding (e.g. `<div [class]="classExpr">`)
-  * Static value (e.g. `<div class="foo">`)
-  
-* Directive host bindings
-  * Property binding (e.g. `host: {'[class.foo]': 'hasFoo'}`)
-  * Map binding (e.g. `host: {'[class]': 'classExpr'}`)
-  * Static value (e.g. `host: {'class': 'foo'}`)
-  
-* Component host bindings
-  * Property binding (e.g. `host: {'[class.foo]': 'hasFoo'}`)
-  * Map binding (e.g. `host: {'[class]': 'classExpr'}`)
-  * Static value (e.g. `host: {'class': 'foo'}`)
-
-{@a styling-delegation}
-### Delegating to lower priority styles
-
-It is possible for higher priority styles to "delegate" to lower priority styles using `undefined` values.
-Whereas setting a style property to `null` will ensure the style is removed, setting it to `undefined` will cause Angular to fall back to the next-highest priority binding to that style.
-
-For example, let's say there is the following template: 
-
-<code-example path="attribute-binding/src/app/app.component.html" region="style-delegation" header="src/app/app.component.html"></code-example>
-
-And let's say `dirWithHostBinding` and `comp-with-host-binding` both have a `[style.width]` host binding.
-In that case, if `dirWithHostBinding` sets its binding to `undefined`, the `width` property will fall back to the value of the `comp-with-host-binding` host binding.
-However, if `dirWithHostBinding` sets its binding to `null`, the `width` property will be removed entirely.
