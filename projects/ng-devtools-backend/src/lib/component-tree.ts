@@ -11,6 +11,7 @@ import {
   DirectivesProperties,
 } from 'protocol';
 import { getComponentName } from './highlighter';
+import { IndexedNode } from './recording/observer';
 
 export interface DirectiveInstanceType extends DirectiveType {
   instance: any;
@@ -68,8 +69,8 @@ export const prepareForestForSerialization = (roots: ComponentTreeNode[]): Compo
       element: node.element,
       component: node.component
         ? {
-          name: node.component.name,
-        }
+            name: node.component.name,
+          }
         : null,
       directives: node.directives.map(d => ({ name: d.name })),
       children: prepareForestForSerialization(node.children),
@@ -78,7 +79,11 @@ export const prepareForestForSerialization = (roots: ComponentTreeNode[]): Compo
 };
 
 export const getDirectiveForest = (root = document.documentElement): ComponentTreeNode[] =>
-  buildDirectiveForest(root, { element: '__ROOT__', component: null, directives: [], children: [] }, { getDirectives: true });
+  buildDirectiveForest(
+    root,
+    { element: '__ROOT__', component: null, directives: [], children: [] },
+    { getDirectives: true }
+  );
 
 export const getComponentForest = (root = document.documentElement): ComponentTreeNode[] =>
   buildDirectiveForest(root, { element: '__ROOT__', component: null, directives: [], children: [] });
@@ -117,14 +122,14 @@ const buildDirectiveForest = (
     }),
     component: null,
     children: [],
-    nativeElement: node
+    nativeElement: node,
   };
 
   if (cmp) {
     current.component = {
       instance: cmp,
       // name: getComponentName(cmp),
-      name: node.tagName.toLowerCase()
+      name: node.tagName.toLowerCase(),
     };
   } else {
     current.element = node.tagName.toLowerCase();
@@ -149,4 +154,34 @@ export const queryComponentForest = (id: ElementID, forest: ComponentTreeNode[])
     forest = node.children;
   }
   return node;
+};
+
+export const findNodeInForest = (id: ElementID, forest: ComponentTreeNode[]): HTMLElement | null => {
+  const foundComponent: ComponentTreeNode = queryComponentForest(id, forest);
+  return foundComponent ? (foundComponent.nativeElement as HTMLElement) : null;
+};
+
+export const getIndexForNativeElementInForest = (
+  nativeElement: HTMLElement,
+  forest: IndexedNode[]
+): ElementID | null => {
+  let foundElementId: ElementID = findElementIDFromNativeElementInForest(forest, nativeElement);
+  return foundElementId || null;
+};
+
+const findElementIDFromNativeElementInForest = (
+  forest: IndexedNode[],
+  nativeElement: HTMLElement
+): ElementID | null => {
+  for (let i = 0; i < forest.length; i++) {
+    if (forest[i].nativeElement === nativeElement) {
+      return forest[i].id;
+    }
+  }
+  for (let i = 0; i < forest.length; i++) {
+    if (forest[i].children.length) {
+      return findElementIDFromNativeElementInForest(forest[i].children, nativeElement);
+    }
+  }
+  return null;
 };

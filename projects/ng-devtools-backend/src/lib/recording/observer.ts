@@ -294,6 +294,7 @@ const indexTree = (node: ComponentNode, idx: number, parentId = []): IndexedNode
     component: node.component,
     directives: node.directives.map((d, i) => ({ name: d.name })),
     children: node.children.map((n, i) => indexTree(n, i, id)),
+    nativeElement: node.nativeElement,
   } as IndexedNode;
 };
 

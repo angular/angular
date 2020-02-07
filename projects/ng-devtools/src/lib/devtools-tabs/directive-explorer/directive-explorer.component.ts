@@ -6,7 +6,7 @@ import {
   DirectivesProperties,
   DirectiveID,
   ComponentExplorerViewQuery,
-  ComponentExplorerView, ComponentExplorerViewProperties,
+  ComponentExplorerView, ComponentExplorerViewProperties, ElementID,
 } from 'protocol';
 import { IndexedNode } from './directive-forest/index-forest';
 import { PropertyViewComponent } from './property-view/property-view.component';
@@ -27,6 +27,7 @@ export class DirectiveExplorerComponent implements OnInit {
   directivesData: DirectivesProperties | null = null;
   currentSelectedElement: IndexedNode;
   forest: Node[];
+  highlightIDinTreeFromElement: ElementID | null = null;
 
   handleNodeSelection(node: IndexedNode): void {
     this.currentSelectedElement = node;
@@ -59,6 +60,12 @@ export class DirectiveExplorerComponent implements OnInit {
     this.messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
       this.forest = view.forest;
       this.directivesData = view.properties;
+    });
+    this.messageBus.on('highlightComponentInTreeFromElement', (id: ElementID) => {
+      this.highlightIDinTreeFromElement = id;
+    });
+    this.messageBus.on('removeHighlightFromComponentTree', () => {
+      this.highlightIDinTreeFromElement = null;
     });
   }
 
@@ -102,6 +109,14 @@ export class DirectiveExplorerComponent implements OnInit {
       result[view.name] = view.getExpandedProperties();
     });
     return result;
+  }
+
+  handleHighlightFromComponent(id: ElementID) {
+    this.messageBus.emit('highlightElementFromComponentTree', [id]);
+  }
+
+  handleUnhighlightFromComponent(id: ElementID | null) {
+    this.messageBus.emit('removeHighlightFromElement');
   }
 }
 

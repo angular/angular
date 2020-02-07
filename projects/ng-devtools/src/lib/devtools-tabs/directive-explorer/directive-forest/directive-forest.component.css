@@ -34,7 +34,7 @@
   background-color: #f3f3f3;
 }
 
-:host /deep/ mat-tree-node.selected {
+:host /deep/ mat-tree-node.selected, :host /deep/ mat-tree-node.highlighted {
   background-color: #dadada;
 }
 

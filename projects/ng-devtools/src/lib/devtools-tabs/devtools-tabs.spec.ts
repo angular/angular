@@ -1,15 +1,19 @@
 import { DevToolsTabsComponent } from './devtools-tabs.component';
-import { TestBed } from '@angular/core/testing';
-
+import { DevToolsTabModule } from './devtools-tabs.module';
+import { TestBed, async } from '@angular/core/testing';
 
 describe('DevtoolsTabsComponent', () => {
   let messageBusMock;
   let comp: DevToolsTabsComponent;
 
-  beforeEach(() => {
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      declarations: [DevToolsTabsComponent],
+      imports: [DevToolsTabModule],
+    }).compileComponents();
     comp = TestBed.createComponent(DevToolsTabsComponent).componentInstance;
     messageBusMock = jasmine.createSpyObj('messageBus', ['on', 'once', 'emit', 'destroy']);
-  });
+  }));
 
   it('should create instance from class', () => {
     expect(comp).toBeTruthy();

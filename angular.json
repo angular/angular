@@ -264,7 +264,8 @@
           "options": {
             "main": "projects/ng-devtools/src/test.ts",
             "tsConfig": "projects/ng-devtools/tsconfig.spec.json",
-            "karmaConfig": "projects/ng-devtools/karma.conf.js"
+            "karmaConfig": "projects/ng-devtools/karma.conf.js",
+            "codeCoverage": true
           }
         },
         "lint": {
@@ -299,7 +300,8 @@
           "options": {
             "main": "projects/ng-devtools-backend/src/test.ts",
             "tsConfig": "projects/ng-devtools-backend/tsconfig.spec.json",
-            "karmaConfig": "projects/ng-devtools-backend/karma.conf.js"
+            "karmaConfig": "projects/ng-devtools-backend/karma.conf.js",
+            "codeCoverage": true
           }
         },
         "lint": {

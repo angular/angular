@@ -8,7 +8,7 @@ describe('TodoAppComponent', () => {
       declarations: [
         AppComponent
       ],
-      imports: [RouterTestingModule],
+      imports: [RouterTestingModule]
     }).compileComponents();
   }));
 
