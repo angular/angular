@@ -42,7 +42,9 @@ Please consider what kind of change it is:
 
 * For a **Major Feature**, first open an issue and outline your proposal so that it can be
 discussed. This will also allow us to better coordinate our efforts, prevent duplication of work,
-and help you to craft the change so that it is successfully accepted into the project.
+and help you to craft the change so that it is successfully accepted into the project. **Note**:
+Adding a new topic to the documentation, or significantly re-writing a topic, counts as a major
+feature.
 * **Small Features** can be crafted and directly [submitted as a Pull Request](#submit-pr).
 
 ## <a name="submit"></a> Submission Guidelines
