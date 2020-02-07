@@ -82,3 +82,9 @@ Please note that these constants are not meant to be used by 3rd party library o
 * `DebugElement.classes` returns `undefined` for classes that were added and then subsequently removed (previously, classes added and later removed would have a value of `false`).
 
 * If selecting the native `<option>` element in a `<select>` where the `<option>`s are created via `*ngFor`, use the `[selected]` property of an `<option>` instead of binding to the `[value]` property of the `<select>` element (previously, you could bind to either.) [details](guide/ivy-compatibility-examples#select-value-binding)
+
+* Embedded views (such as ones created by `*ngFor`) are now inserted in front of anchor DOM comment node (e.g. `<!--ng-for-of-->`) rather than behind it as was the case previously.
+In most cases this does not have any impact on rendered DOM.
+In some cases (such as animations delaying the removal of an embedded view) any new embedded views will be inserted after the embedded view being animated away.
+This difference only last while the animation is active, and might alter the visual appearance of the animation.
+Once the animation is finished the resulting rendered DOM is identical to that rendered with View Engine.
