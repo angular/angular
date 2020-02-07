@@ -19,10 +19,7 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "aot": true,
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ],
+            "assets": ["src/favicon.ico", "src/assets"],
             "styles": [
               "src/styles.css",
               "node_modules/todomvc-common/base.css",
@@ -85,27 +82,16 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ],
-            "styles": [
-              "src/styles.css"
-            ],
+            "assets": ["src/favicon.ico", "src/assets"],
+            "styles": ["src/styles.css"],
             "scripts": []
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "tsconfig.app.json",
-              "tsconfig.spec.json",
-              "e2e/tsconfig.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "tsConfig": ["tsconfig.app.json", "tsconfig.spec.json", "e2e/tsconfig.json"],
+            "exclude": ["**/node_modules/**"]
           }
         },
         "e2e": {
@@ -149,9 +135,7 @@
               "projects/shell-chrome/src/manifest.json",
               "projects/shell-chrome/src/devtools.html"
             ],
-            "styles": [
-              "projects/shell-chrome/src/styles.scss"
-            ],
+            "styles": ["projects/shell-chrome/src/styles.scss"],
             "scripts": []
           },
           "configurations": {
@@ -204,13 +188,8 @@
             "polyfills": "projects/shell-chrome/src/polyfills.ts",
             "tsConfig": "projects/shell-chrome/tsconfig.spec.json",
             "karmaConfig": "projects/shell-chrome/karma.conf.js",
-            "assets": [
-              "projects/shell-chrome/src/favicon.ico",
-              "projects/shell-chrome/src/assets"
-            ],
-            "styles": [
-              "projects/shell-chrome/src/styles.scss"
-            ],
+            "assets": ["projects/shell-chrome/src/favicon.ico", "projects/shell-chrome/src/assets"],
+            "styles": ["projects/shell-chrome/src/styles.scss"],
             "scripts": []
           }
         },
@@ -222,9 +201,7 @@
               "projects/shell-chrome/tsconfig.spec.json",
               "projects/shell-chrome/e2e/tsconfig.json"
             ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "exclude": ["**/node_modules/**"]
           }
         },
         "e2e": {
@@ -271,13 +248,8 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "projects/ng-devtools/tsconfig.lib.json",
-              "projects/ng-devtools/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "tsConfig": ["projects/ng-devtools/tsconfig.lib.json", "projects/ng-devtools/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**"]
           }
         }
       }
@@ -311,9 +283,7 @@
               "projects/ng-devtools-backend/tsconfig.lib.json",
               "projects/ng-devtools-backend/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "exclude": ["**/node_modules/**"]
           }
         }
       }
@@ -347,13 +317,8 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "projects/protocol/tsconfig.lib.json",
-              "projects/protocol/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "tsConfig": ["projects/protocol/tsconfig.lib.json", "projects/protocol/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**"]
           }
         }
       }

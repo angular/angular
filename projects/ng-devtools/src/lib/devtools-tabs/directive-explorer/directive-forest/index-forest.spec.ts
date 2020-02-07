@@ -12,16 +12,19 @@ describe('indexForest', () => {
           element: 'Parent1',
           directives: [],
           component: {
-            name: 'Cmp1'
+            name: 'Cmp1',
           },
           children: [
             {
               element: 'Child1_1',
-              directives: [{
-                name: 'Dir1'
-              }, {
-                name: 'Dir2'
-              }],
+              directives: [
+                {
+                  name: 'Dir1',
+                },
+                {
+                  name: 'Dir2',
+                },
+              ],
               component: null,
               children: [],
             },
@@ -29,7 +32,7 @@ describe('indexForest', () => {
               element: 'Child1_2',
               directives: [],
               component: {
-                name: 'Cmp2'
+                name: 'Cmp2',
               },
               children: [],
             },
@@ -42,19 +45,24 @@ describe('indexForest', () => {
           children: [
             {
               element: 'Child2_1',
-              directives: [{
-                name: 'Dir3'
-              }],
+              directives: [
+                {
+                  name: 'Dir3',
+                },
+              ],
               component: null,
               children: [],
             },
             {
               element: 'Child2_2',
-              directives: [{
-                name: 'Dir4'
-              }, {
-                name: 'Dir5'
-              }],
+              directives: [
+                {
+                  name: 'Dir4',
+                },
+                {
+                  name: 'Dir5',
+                },
+              ],
               component: null,
               children: [],
             },
@@ -67,17 +75,20 @@ describe('indexForest', () => {
         directives: [],
         id: [0],
         component: {
-          name: 'Cmp1'
+          name: 'Cmp1',
         },
         children: [
           {
             element: 'Child1_1',
             id: [0, 0],
-            directives: [{
-              name: 'Dir1'
-            }, {
-              name: 'Dir2'
-            }],
+            directives: [
+              {
+                name: 'Dir1',
+              },
+              {
+                name: 'Dir2',
+              },
+            ],
             component: null,
             children: [],
           },
@@ -86,7 +97,7 @@ describe('indexForest', () => {
             directives: [],
             id: [0, 1],
             component: {
-              name: 'Cmp2'
+              name: 'Cmp2',
             },
             children: [],
           },
@@ -101,20 +112,25 @@ describe('indexForest', () => {
           {
             element: 'Child2_1',
             id: [1, 0],
-            directives: [{
-              name: 'Dir3',
-            }],
+            directives: [
+              {
+                name: 'Dir3',
+              },
+            ],
             component: null,
             children: [],
           },
           {
             element: 'Child2_2',
             id: [1, 1],
-            directives: [{
-              name: 'Dir4',
-            }, {
-              name: 'Dir5',
-            }],
+            directives: [
+              {
+                name: 'Dir4',
+              },
+              {
+                name: 'Dir5',
+              },
+            ],
             component: null,
             children: [],
           },

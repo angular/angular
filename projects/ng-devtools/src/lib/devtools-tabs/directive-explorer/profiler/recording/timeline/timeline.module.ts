@@ -9,6 +9,6 @@ import { FormsModule } from '@angular/forms';
 @NgModule({
   declarations: [TimelineComponent],
   imports: [CommonModule, FormsModule, RecordingVisualizerModule, MatSliderModule, MatButtonModule],
-  exports: [TimelineComponent]
+  exports: [TimelineComponent],
 })
 export class TimelineModule {}

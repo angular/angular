@@ -41,7 +41,7 @@ export class ComponentTreeObserver {
     private _onCreation: CreationCallback,
     private _onChangeDetection: ChangeDetectionCallback,
     private _onDestroy: DestroyCallback
-  ) { }
+  ) {}
 
   initialize() {
     this._mutationObserver.observe(document, {
@@ -156,7 +156,7 @@ export class ComponentTreeObserver {
     const treeNode: TreeNode = {
       parent: parentTreeNode,
       children: [],
-      component: cmp
+      component: cmp,
     };
     siblingsArray.splice(childIdx, 0, treeNode);
     this._currentComponentID.set(cmp, parentID.concat([childIdx]));
@@ -219,7 +219,7 @@ export class ComponentTreeObserver {
     if (original.patched) {
       return;
     }
-    declarations.tView.template = function (_, component: any) {
+    declarations.tView.template = function(_, component: any) {
       const start = performance.now();
       original.apply(this, arguments);
       if (self._createdComponents.has(component)) {
@@ -246,7 +246,7 @@ export class ComponentTreeObserver {
         const node = {
           component: root.component.instance,
           parent,
-          children: []
+          children: [],
         };
         this._componentTreeNode.set(root.component.instance, node);
         if (parent) {

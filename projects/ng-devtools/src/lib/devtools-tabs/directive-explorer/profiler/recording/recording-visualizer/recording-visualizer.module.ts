@@ -5,6 +5,6 @@ import { CommonModule } from '@angular/common';
 @NgModule({
   declarations: [RecordingVisualizerComponent],
   imports: [CommonModule],
-  exports: [RecordingVisualizerComponent]
+  exports: [RecordingVisualizerComponent],
 })
 export class RecordingVisualizerModule {}

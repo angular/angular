@@ -56,13 +56,15 @@ export const formatRecords = (records: AppRecord[]): TimelineView => {
     aggregated: {
       app: [],
       timeSpent: 0,
-      source: ''
+      source: '',
     },
-    timeline: [{
-      app: [],
-      timeSpent: 0,
-      source: ''
-    }]
+    timeline: [
+      {
+        app: [],
+        timeSpent: 0,
+        source: '',
+      },
+    ],
   };
   let currentSnapshot = -1;
   for (const record of records) {
@@ -71,7 +73,7 @@ export const formatRecords = (records: AppRecord[]): TimelineView => {
       result.timeline.push({
         app: [],
         timeSpent: 0,
-        source: record.source
+        source: record.source,
       });
     }
     if (record.recordType === 'component') {

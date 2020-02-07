@@ -6,17 +6,14 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ChromeApplicationOperations } from './chrome-application-operations';
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
-  imports: [
-    BrowserAnimationsModule,
-    DevToolsModule
-  ],
+  declarations: [AppComponent],
+  imports: [BrowserAnimationsModule, DevToolsModule],
   bootstrap: [AppComponent],
-  providers: [{
-    provide: ApplicationOperations,
-    useClass: ChromeApplicationOperations
-  }]
+  providers: [
+    {
+      provide: ApplicationOperations,
+      useClass: ChromeApplicationOperations,
+    },
+  ],
 })
-export class AppModule { }
+export class AppModule {}

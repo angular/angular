@@ -7,7 +7,7 @@ let backendInitialized = false;
 console.log('Content script executing');
 
 const port = chrome.runtime.connect({
-  name: 'content-script'
+  name: 'content-script',
 });
 
 const handleDisconnect = (): void => {

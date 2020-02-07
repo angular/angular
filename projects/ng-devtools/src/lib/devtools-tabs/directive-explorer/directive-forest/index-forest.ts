@@ -1,6 +1,5 @@
 import { Node, ElementID } from 'protocol';
 
-
 export interface IndexedNode extends Node {
   id: ElementID;
   children: IndexedNode[];
@@ -13,7 +12,7 @@ const indexTree = (node: Node, idx: number, parentId = []): IndexedNode => {
     element: node.element,
     component: node.component,
     directives: node.directives.map((d, i) => ({ name: d.name })),
-    children: node.children.map((n, i) => indexTree(n, i, id))
+    children: node.children.map((n, i) => indexTree(n, i, id)),
   } as IndexedNode;
 };
 

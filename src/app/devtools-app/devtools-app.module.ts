@@ -15,7 +15,7 @@ import { DevToolsComponent } from './devtools-app.component';
       {
         path: '',
         component: DevToolsComponent,
-        pathMatch: 'full'
+        pathMatch: 'full',
       },
     ]),
   ],

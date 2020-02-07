@@ -48,7 +48,7 @@ export interface Properties {
 
 export type ElementID = number[];
 
-export interface DirectiveID  {
+export interface DirectiveID {
   element: ElementID;
   directive?: number;
 }
@@ -75,7 +75,7 @@ export interface ComponentExplorerView {
 export enum ComponentEventType {
   Create,
   Destroy,
-  ChangeDetection
+  ChangeDetection,
 }
 
 export interface ComponentRecord {
@@ -90,7 +90,7 @@ export interface ComponentRecord {
 
 export enum LifeCycleEventType {
   ChangeDetectionStart,
-  ChangeDetectionEnd
+  ChangeDetectionEnd,
 }
 
 export interface AppEndChangeDetection {
@@ -113,7 +113,7 @@ export interface Events {
   shutdown: () => void;
   syn: () => void;
   queryNgAvailability: () => void;
-  ngAvailability: (config: { version: string | undefined | boolean, prodMode: boolean }) => void;
+  ngAvailability: (config: { version: string | undefined | boolean; prodMode: boolean }) => void;
 
   inspectorStart: () => void;
   inspectorEnd: () => void;

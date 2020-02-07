@@ -8,14 +8,14 @@ import { DemoApplicationOperations } from '../demo-application-operations';
 describe('AppComponent (Demo Todo App)', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        AppComponent
-      ],
+      declarations: [AppComponent],
       imports: [RouterTestingModule],
-      providers: [{
-        provide: ApplicationOperations,
-        useClass: DemoApplicationOperations
-      }],
+      providers: [
+        {
+          provide: ApplicationOperations,
+          useClass: DemoApplicationOperations,
+        },
+      ],
     }).compileComponents();
   }));
 

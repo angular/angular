@@ -60,7 +60,7 @@ export class SamePageMessageBus extends MessageBus<Events> {
       {
         source: this._source,
         topic,
-        args
+        args,
       },
       '*'
     );

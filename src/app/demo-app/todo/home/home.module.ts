@@ -7,12 +7,17 @@ import { TooltipDirective } from './todos/todo/tooltip.directive';
 import { CommonModule } from '@angular/common';
 
 @NgModule({
-  imports: [CommonModule, RouterModule.forChild([{
-    path: '',
-    component: TodosComponent,
-    pathMatch: 'full'
-  }])],
+  imports: [
+    CommonModule,
+    RouterModule.forChild([
+      {
+        path: '',
+        component: TodosComponent,
+        pathMatch: 'full',
+      },
+    ]),
+  ],
   declarations: [TodosComponent, TodoComponent, TodosFilter, TooltipDirective],
-  exports: [TodosComponent]
+  exports: [TodosComponent],
 })
 export class HomeModule {}

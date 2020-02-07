@@ -6,7 +6,7 @@ import { ZoneAwareChromeMessageBus } from './zone-aware-chrome-message-bus';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
   messageBus: MessageBus<Events> | null;
@@ -27,7 +27,7 @@ export class AppComponent implements OnInit {
     const initialize = () => {
       console.log('Initialize the port');
       const port = chrome.runtime.connect({
-        name: '' + chrome.devtools.inspectedWindow.tabId
+        name: '' + chrome.devtools.inspectedWindow.tabId,
       });
       this.messageBus = new ZoneAwareChromeMessageBus(port, this._ngZone);
       panelDevTools.injectBackend();

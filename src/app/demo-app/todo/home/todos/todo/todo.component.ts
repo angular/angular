@@ -9,8 +9,8 @@ import { Todo } from '../../models/todo';
       .destroy {
         cursor: pointer;
       }
-    `
-  ]
+    `,
+  ],
 })
 export class TodoComponent {
   @Input() todo: Todo;

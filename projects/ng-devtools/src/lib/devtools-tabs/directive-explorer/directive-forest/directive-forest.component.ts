@@ -24,13 +24,10 @@ import { FilterComponent } from './filter/filter.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('simpleFade', [
-      transition(':enter', [
-        style({ opacity: 0 }),
-        animate(75, style({ opacity: 1 }))
-      ]),
-      transition(':leave', [
-        animate(75, style({ opacity: 0 }))
-      ])])]
+      transition(':enter', [style({ opacity: 0 }), animate(75, style({ opacity: 1 }))]),
+      transition(':leave', [animate(75, style({ opacity: 0 }))]),
+    ]),
+  ],
 })
 export class DirectiveForestComponent {
   @Input() set forest(forest: Node[]) {
@@ -66,7 +63,7 @@ export class DirectiveForestComponent {
 
   hasChild = (_: number, node: FlatNode) => node.expandable;
 
-  constructor(private _host: ElementRef) { }
+  constructor(private _host: ElementRef) {}
 
   handleSelect(node: FlatNode): void {
     const matchedTree: FlatNode[] = this._findMatchedNodes();
@@ -99,7 +96,7 @@ export class DirectiveForestComponent {
       if (nodes.length > 0) {
         nodeId = nodes[nodes.length - 1].id.concat(index);
       }
-      const selectedNode = this.dataSource.data.find((item) => item.id.toString() === nodeId.toString());
+      const selectedNode = this.dataSource.data.find(item => item.id.toString() === nodeId.toString());
       nodes.push(selectedNode);
       return nodes;
     }, []);
@@ -213,7 +210,7 @@ export class DirectiveForestComponent {
     const matchedTree: FlatNode[] = this._findMatchedNodes();
     this.currentlyMatchedIndex = (this.currentlyMatchedIndex + 1) % matchedTree.length;
     const nodeToSelect = matchedTree[this.currentlyMatchedIndex];
-    const nodeIsVisible = this.dataSource.expandedDataValues.find((node) => node === nodeToSelect);
+    const nodeIsVisible = this.dataSource.expandedDataValues.find(node => node === nodeToSelect);
     if (!nodeIsVisible) {
       this.expandParents(nodeToSelect);
     }
@@ -226,7 +223,7 @@ export class DirectiveForestComponent {
     const matchedTree: FlatNode[] = this._findMatchedNodes();
     this.currentlyMatchedIndex = (this.currentlyMatchedIndex - 1 + matchedTree.length) % matchedTree.length;
     const nodeToSelect = matchedTree[this.currentlyMatchedIndex];
-    const nodeIsVisible = this.dataSource.expandedDataValues.find((node) => node === nodeToSelect);
+    const nodeIsVisible = this.dataSource.expandedDataValues.find(node => node === nodeToSelect);
     if (!nodeIsVisible) {
       this.expandParents(nodeToSelect);
     }
@@ -238,8 +235,9 @@ export class DirectiveForestComponent {
   expandParents(nodeToExpand: FlatNode): void {
     if (nodeToExpand) {
       // Todo: implement optimized array equals method
-      const parentNode = this.dataSource.data.find(node =>
-        node.id.toString() === nodeToExpand.id.slice(0, nodeToExpand.id.length - 1).toString());
+      const parentNode = this.dataSource.data.find(
+        node => node.id.toString() === nodeToExpand.id.slice(0, nodeToExpand.id.length - 1).toString()
+      );
       this.treeControl.expand(parentNode);
       this.expandParents(parentNode);
     }

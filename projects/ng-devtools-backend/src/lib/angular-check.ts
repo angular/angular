@@ -13,7 +13,12 @@ export const appIsAngular = (): boolean => {
 };
 
 export const appIsSupportedAngularVersion = (): boolean => {
-  return appIsAngular() && +getAngularVersion().toString().split('.')[0] >= 9;
+  return (
+    appIsAngular() &&
+    +getAngularVersion()
+      .toString()
+      .split('.')[0] >= 9
+  );
 };
 
 const appHasGlobalNgDebugObject = (): boolean => {

@@ -7,8 +7,7 @@ describe('DevtoolsTabsComponent', () => {
   beforeEach(() => {
     comp = new DevToolsTabsComponent();
     messageBusMock = jasmine.createSpyObj('messageBus', ['on', 'once', 'emit', 'destroy']);
-    }
-  );
+  });
 
   it('should create instance from class', () => {
     expect(comp).toBeTruthy();

@@ -7,14 +7,14 @@ import { DemoApplicationOperations } from '../../../demo-application-operations'
 describe('TodoAppComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        AppComponent
-      ],
+      declarations: [AppComponent],
       imports: [RouterTestingModule],
-      providers: [{
-        provide: ApplicationOperations,
-        useClass: DemoApplicationOperations
-      }],
+      providers: [
+        {
+          provide: ApplicationOperations,
+          useClass: DemoApplicationOperations,
+        },
+      ],
     }).compileComponents();
   }));
 
@@ -23,5 +23,4 @@ describe('TodoAppComponent', () => {
     const app = fixture.debugElement.componentInstance;
     expect(app).toBeTruthy();
   });
-
 });

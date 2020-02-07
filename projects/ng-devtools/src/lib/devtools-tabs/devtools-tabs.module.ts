@@ -11,6 +11,6 @@ import { ProfilerModule } from './directive-explorer/profiler/profiler.module';
 @NgModule({
   declarations: [DevToolsTabsComponent],
   imports: [MatTabsModule, MatIconModule, DirectiveExplorerModule, ProfilerModule, CommonModule],
-  exports: [DevToolsTabsComponent]
+  exports: [DevToolsTabsComponent],
 })
-export class DevToolsTabModule { }
+export class DevToolsTabModule {}

@@ -11,7 +11,7 @@ import { interval, Observable, range, Subscription, zip } from 'rxjs';
 @Component({
   selector: 'ng-time-travel',
   templateUrl: './time-travel.component.html',
-  styleUrls: ['./time-travel.component.css']
+  styleUrls: ['./time-travel.component.css'],
 })
 export class TimeTravelComponent implements OnDestroy {
   timeline: Timeline = [];
@@ -31,8 +31,8 @@ export class TimeTravelComponent implements OnDestroy {
       hierarchical: {
         enabled: true,
         levelSeparation: 50,
-        nodeSpacing: 200
-      }
+        nodeSpacing: 200,
+      },
     },
     nodes: {
       shape: 'box',
@@ -40,11 +40,11 @@ export class TimeTravelComponent implements OnDestroy {
         top: 8,
         bottom: 8,
         left: 10,
-        right: 10
+        right: 10,
       },
       shapeProperties: {
-        borderRadius: 2
-      }
+        borderRadius: 2,
+      },
     },
   };
 
@@ -80,10 +80,7 @@ export class TimeTravelComponent implements OnDestroy {
   }
 
   createPlayLoopObservable(): Observable<[number, number]> {
-    return zip(
-      range(0, this.timeline.length - this.slider.value),
-      interval(300),
-    );
+    return zip(range(0, this.timeline.length - this.slider.value), interval(300));
   }
 
   play(): void {
@@ -173,7 +170,7 @@ export class TimeTravelComponent implements OnDestroy {
       if (parentId) {
         this.edges.add({
           from: parentId,
-          to: id
+          to: id,
         });
       }
 
@@ -206,6 +203,6 @@ export class TimeTravelComponent implements OnDestroy {
   }
 
   private _reachedEndOfTimeLine(): boolean {
-    return (this.timeline.length - 1) - this.slider.value === 0;
+    return this.timeline.length - 1 - this.slider.value === 0;
   }
 }

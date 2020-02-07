@@ -1,16 +1,16 @@
 import { Directive, HostListener } from '@angular/core';
 
 @Directive({
-  selector: '[appTooltip]'
+  selector: '[appTooltip]',
 })
 export class TooltipDirective {
   visible = false;
   nested = {
     child: {
       grandchild: {
-        prop: 1
-      }
-    }
+        prop: 1,
+      },
+    },
   };
 
   @HostListener('click')
