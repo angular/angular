@@ -7,7 +7,8 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e",
+    "e2e": "ng serve & wait-on http://localhost:4200 && $(npm bin)/cypress run",
+    "e2e:watch": "ng serve & wait-on http://localhost:4200 && $(npm bin)/cypress open",
     "test:backend": "ng test ng-devtools-backend --watch=false",
     "test:devtools": "ng test ng-devtools --watch=false",
     "test:shell": "ng test shell-dev --watch=false",
@@ -25,6 +26,7 @@
     "@angular/platform-browser": "~9.0.0-rc.6",
     "@angular/platform-browser-dynamic": "~9.0.0-rc.6",
     "@angular/router": "~9.0.0-rc.6",
+    "@bahmutov/add-typescript-to-cypress": "^2.1.2",
     "clone-deep": "^4.0.1",
     "ngx-vis": "^3.0.2",
     "rxjs": "~6.5.3",
@@ -44,6 +46,9 @@
     "@types/jasmine": "~3.5.0",
     "@types/jasminewd2": "~2.0.3",
     "codelyzer": "^5.1.2",
+    "cypress": "^3.8.3",
+    "cypress-browser-extension-plugin": "^0.1.0",
+    "cypress-iframe": "^1.0.1",
     "jasmine-core": "~3.5.0",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "~4.3.0",
@@ -60,6 +65,7 @@
     "ts-node": "~8.3.0",
     "tsickle": "^0.35.0",
     "tslint": "~5.18.0",
-    "typescript": "~3.6.4"
+    "typescript": "~3.6.4",
+    "wait-on": "^4.0.0"
   }
 }
