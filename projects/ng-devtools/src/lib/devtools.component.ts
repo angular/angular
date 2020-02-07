@@ -24,7 +24,8 @@ import { animate, style, transition, trigger } from '@angular/animations';
 })
 export class DevToolsComponent implements OnInit, OnDestroy {
   angularExists: boolean | null = null;
-  angularVersion: string | undefined = undefined;
+  angularVersion: string | boolean | undefined = undefined;
+  prodMode: boolean;
   @Input() messageBus: MessageBus<Events>;
 
   private _interval$ = interval(500).subscribe(() => this.messageBus.emit('queryNgAvailability'));
@@ -32,11 +33,20 @@ export class DevToolsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     console.log('Initialized the devtools UI');
 
-    this.messageBus.once('ngAvailability', ({ version }) => {
+    this.messageBus.once('ngAvailability', ({ version, prodMode }) => {
       this.angularExists = !!version;
       this.angularVersion = version;
+      this.prodMode = prodMode;
       this._interval$.unsubscribe();
     });
+  }
+
+  majorAngularVersion(): number {
+    return +this.angularVersion.toString().split('.')[0];
+  }
+
+  get supportedVersion(): boolean {
+    return this.majorAngularVersion() >= 9 && !this.prodMode;
   }
 
   ngOnDestroy(): void {
