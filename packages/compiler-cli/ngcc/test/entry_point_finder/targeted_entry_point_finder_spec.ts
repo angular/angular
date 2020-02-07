@@ -203,6 +203,31 @@ runInEachFileSystem(() => {
         ]);
       });
 
+      it('should correctly compute the packagePath of secondary entry-points via pathMappings',
+         () => {
+           const basePath = _Abs('/path_mapped/node_modules');
+           const targetPath = _Abs('/path_mapped/dist/primary/secondary');
+           const pathMappings: PathMappings = {
+             baseUrl: '/path_mapped/dist',
+             paths: {'libs': ['primary'], 'extras': ['primary/*']}
+           };
+           loadTestFiles([
+             ...createPackage(_Abs('/path_mapped/dist'), 'primary'),
+             ...createPackage(_Abs('/path_mapped/dist/primary'), 'secondary'),
+           ]);
+           const srcHost = new EsmDependencyHost(fs, new ModuleResolver(fs, pathMappings));
+           const dtsHost = new DtsDependencyHost(fs, pathMappings);
+           resolver = new DependencyResolver(fs, logger, {esm2015: srcHost}, dtsHost);
+           const finder = new TargetedEntryPointFinder(
+               fs, config, logger, resolver, basePath, targetPath, pathMappings);
+           const {entryPoints} = finder.findEntryPoints();
+           expect(entryPoints.length).toEqual(1);
+           const entryPoint = entryPoints[0];
+           expect(entryPoint.name).toEqual('secondary');
+           expect(entryPoint.path).toEqual(_Abs('/path_mapped/dist/primary/secondary'));
+           expect(entryPoint.package).toEqual(_Abs('/path_mapped/dist/primary'));
+         });
+
       it('should handle pathMappings that map to files or non-existent directories', () => {
         const basePath = _Abs('/path_mapped/node_modules');
         const targetPath = _Abs('/path_mapped/node_modules/test');
@@ -451,6 +476,7 @@ runInEachFileSystem(() => {
         {
           name: _Abs(`${basePath}/${packageName}/package.json`),
           contents: JSON.stringify({
+            name: packageName,
             typings: `./${packageName}.d.ts`,
             fesm2015: `./fesm2015/${packageName}.js`,
             esm5: `./esm5/${packageName}.js`,
