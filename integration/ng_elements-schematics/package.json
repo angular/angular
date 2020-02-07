@@ -1,0 +1,13 @@
+{
+  "name": "elements-schematics",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@angular/elements": "file:../../dist/packages-dist/elements",
+    "@angular/cli": "file:../../node_modules/@angular/cli"
+  },
+  "scripts": {
+    "test": "./test.sh"
+  }
+}
