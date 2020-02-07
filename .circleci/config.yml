@@ -858,6 +858,14 @@ workflows:
       - test_aio_preview:
           requires:
             - aio_preview
+      ## ==> TEMP TEMP DO NO MERGE
+      - aio_monitoring_stable:
+          requires:
+            - setup
+      - aio_monitoring_next:
+          requires:
+            - setup
+      ## TEMP TEMP DO NO MERGE <==
       - integration_test:
           requires:
             - build-npm-packages
