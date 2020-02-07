@@ -1,5 +1,5 @@
 import { getDirectiveForest, ComponentTreeNode } from './component-tree';
-import { runOutsideAngular, componentMetadata, patchTemplate } from './utils';
+import { runOutsideAngular, patchTemplate } from './utils';
 
 let hookInitialized = false;
 

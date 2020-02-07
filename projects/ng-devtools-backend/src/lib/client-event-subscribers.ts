@@ -11,6 +11,7 @@ import { start as startProfiling, stop as stopProfiling } from './recording';
 import { serializeComponentState } from './state-serializer';
 import { ComponentInspector } from './component-inspector';
 import { setConsoleReference } from './selected-component';
+import { getAngularVersion, appIsAngularInProdMode, appIsAngularInDevMode, appIsSupportedAngularVersion } from './angular-check';
 
 const inspector = new ComponentInspector();
 
@@ -18,8 +19,6 @@ const startInspecting = () => inspector.startInspecting();
 const stopInspecting = () => inspector.stopInspecting();
 
 export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void => {
-  onChangeDetection(() => messageBus.emit('componentTreeDirty'));
-
   messageBus.on('getLatestComponentExplorerView', getLatestComponentExplorerViewCallback(messageBus));
 
   messageBus.on('queryNgAvailability', checkForAngularCallback(messageBus));
@@ -35,6 +34,16 @@ export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void =>
   messageBus.on('setSelectedComponent', selectedComponentCallback);
 
   messageBus.on('getNestedProperties', getNestedPropertiesCallback(messageBus));
+
+  initChangeDetection(messageBus);
+};
+
+const initChangeDetection = (messageBus: MessageBus<Events>) => {
+  if (appIsAngularInDevMode() && appIsSupportedAngularVersion()) {
+      onChangeDetection(() => messageBus.emit('componentTreeDirty'));
+  } else {
+    messageBus.emit('ngAvailability', [{ version: getAngularVersion(), prodMode: appIsAngularInProdMode() }]);
+  }
 };
 
 //
@@ -90,23 +99,15 @@ const getNestedPropertiesCallback = (messageBus: MessageBus<Events>) => (id: Dir
 // Subscribe Helpers
 //
 
-const getAngularVersion = (): string | null | boolean => {
-  const el = document.querySelector('[ng-version]');
-  if (!el) {
-    return false;
-  }
-  return el.getAttribute('ng-version');
-};
-
 const checkForAngular = (messageBus: MessageBus<Events>, attempt = 0): void => {
   const ngVersion = getAngularVersion();
   const hasAngular = !!ngVersion;
   if (hasAngular) {
-    messageBus.emit('ngAvailability', [{ version: ngVersion.toString() }]);
+    messageBus.emit('ngAvailability', [{ version: ngVersion.toString(), prodMode: false }]);
     return;
   }
   if (attempt > 10) {
-    messageBus.emit('ngAvailability', [{ version: undefined }]);
+    messageBus.emit('ngAvailability', [{ version: undefined, prodMode: false }]);
     return;
   }
   setTimeout(() => checkForAngular(messageBus, attempt + 1), 500);

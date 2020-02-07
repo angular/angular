@@ -1,7 +1,21 @@
 <ng-container *ngIf="angularExists === true; else errorOrLoad">
-  <div class="devtools-wrapper noselect" [@enterAnimation]>
-    <ng-devtools-tabs [messageBus]="messageBus" [angularVersion]="angularVersion"></ng-devtools-tabs>
-  </div>
+  <ng-container *ngIf="supportedVersion; else notSupported">
+    <div class="devtools-wrapper noselect" [@enterAnimation]>
+      <ng-devtools-tabs [messageBus]="messageBus" [angularVersion]="angularVersion"></ng-devtools-tabs>
+    </div>
+  </ng-container>
+  <ng-template #notSupported>
+    <ng-container *ngIf="prodMode; else versionTooLow">
+      <div>
+        Angular Devtools only supports dev mode.
+      </div>
+    </ng-container>
+    <ng-template #versionTooLow>
+      <div>
+        Angular Devtools only supports Angular versions 9 and above.
+      </div>
+    </ng-template>
+  </ng-template>
 </ng-container>
 <ng-template #errorOrLoad>
   <ng-container *ngIf="angularExists === false; else load">
@@ -11,8 +25,7 @@
   </ng-container>
   <ng-template #load>
     <div class="initializing" *ngIf="angularExists === null">
-      <div class="loading">
-      </div>
+      <div class="loading"></div>
     </div>
   </ng-template>
 </ng-template>

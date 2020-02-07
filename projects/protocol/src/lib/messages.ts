@@ -113,7 +113,7 @@ export interface Events {
   shutdown: () => void;
   syn: () => void;
   queryNgAvailability: () => void;
-  ngAvailability: (config: { version: string | undefined }) => void;
+  ngAvailability: (config: { version: string | undefined | boolean, prodMode: boolean }) => void;
 
   inspectorStart: () => void;
   inspectorEnd: () => void;
