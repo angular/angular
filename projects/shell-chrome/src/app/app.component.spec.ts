@@ -7,14 +7,14 @@ describe('AppComponent', () => {
   beforeEach(async(() => {
     const applicationOperationsSPy = jasmine.createSpyObj('messageBus', ['viewSource']);
     TestBed.configureTestingModule({
-      declarations: [
-        AppComponent
-      ],
+      declarations: [AppComponent],
       imports: [RouterTestingModule],
-      providers: [{
-        provide: ApplicationOperations,
-        useClass: applicationOperationsSPy
-      }],
+      providers: [
+        {
+          provide: ApplicationOperations,
+          useClass: applicationOperationsSPy,
+        },
+      ],
     }).compileComponents();
   }));
 

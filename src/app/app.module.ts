@@ -8,21 +8,26 @@ import { ApplicationOperations } from 'ng-devtools';
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserAnimationsModule, RouterModule.forRoot([
+  imports: [
+    BrowserAnimationsModule,
+    RouterModule.forRoot([
+      {
+        path: '',
+        loadChildren: () => import('./devtools-app/devtools-app.module').then(m => m.DevToolsModule),
+        pathMatch: 'full',
+      },
+      {
+        path: 'demo-app',
+        loadChildren: () => import('./demo-app/demo-app.module').then(m => m.DemoAppModule),
+      },
+    ]),
+  ],
+  providers: [
     {
-      path: '',
-      loadChildren: () => import('./devtools-app/devtools-app.module').then(m => m.DevToolsModule),
-      pathMatch: 'full'
+      provide: ApplicationOperations,
+      useClass: DemoApplicationOperations,
     },
-    {
-      path: 'demo-app',
-      loadChildren: () => import('./demo-app/demo-app.module').then(m => m.DemoAppModule)
-    }
-  ])],
-  providers: [{
-    provide: ApplicationOperations,
-    useClass: DemoApplicationOperations
-  }],
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

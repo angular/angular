@@ -1,12 +1,4 @@
-import {
-  Component,
-  Input,
-  EventEmitter,
-  Output,
-  ChangeDetectorRef,
-  OnInit,
-  OnDestroy
-} from '@angular/core';
+import { Component, Input, EventEmitter, Output, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
 import { Todo } from '../models/todo';
 import { TodoFilter } from './todos.pipe';
 
@@ -19,7 +11,7 @@ const fib = (n: number) => {
 
 @Component({
   templateUrl: 'todos.component.html',
-  selector: 'app-todos'
+  selector: 'app-todos',
 })
 export class TodosComponent implements OnInit, OnDestroy {
   todos: Todo[] = [
@@ -40,10 +32,7 @@ export class TodosComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     if (typeof window !== 'undefined') {
-      window.addEventListener(
-        'hashchange',
-        (this.hashListener = () => this.cdRef.markForCheck())
-      );
+      window.addEventListener('hashchange', (this.hashListener = () => this.cdRef.markForCheck()));
     }
   }
 
@@ -59,7 +48,7 @@ export class TodosComponent implements OnInit, OnDestroy {
 
   get filterValue(): TodoFilter {
     if (typeof window !== 'undefined') {
-      return window.location.hash.replace(/^#\//, '') as TodoFilter || TodoFilter.All;
+      return (window.location.hash.replace(/^#\//, '') as TodoFilter) || TodoFilter.All;
     }
     return TodoFilter.All;
   }
@@ -69,9 +58,7 @@ export class TodosComponent implements OnInit, OnDestroy {
   }
 
   clearCompleted() {
-    (this.todos || [])
-      .filter(t => t.completed)
-      .forEach(t => this.delete.emit(t));
+    (this.todos || []).filter(t => t.completed).forEach(t => this.delete.emit(t));
   }
 
   addTodo(input: HTMLInputElement) {

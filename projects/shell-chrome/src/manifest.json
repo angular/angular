@@ -20,21 +20,12 @@
 
   "devtools_page": "devtools.html",
 
-  "web_accessible_resources": [
-    "backend.js",
-    "runtime.js",
-    "devtools.html"
-  ],
+  "web_accessible_resources": ["backend.js", "runtime.js", "devtools.html"],
 
   "background": {
     "scripts": ["background.js", "runtime.js"],
     "persistent": false
   },
 
-  "permissions": [
-    "tabs",
-    "http://*/*",
-    "https://*/*",
-    "file:///*"
-  ]
+  "permissions": ["tabs", "http://*/*", "https://*/*", "file:///*"]
 }

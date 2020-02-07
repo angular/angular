@@ -6,7 +6,9 @@ import {
   DirectivesProperties,
   DirectiveID,
   ComponentExplorerViewQuery,
-  ComponentExplorerView, ComponentExplorerViewProperties, ElementID,
+  ComponentExplorerView,
+  ComponentExplorerViewProperties,
+  ElementID,
 } from 'protocol';
 import { IndexedNode } from './directive-forest/index-forest';
 import { PropertyViewComponent } from './property-view/property-view.component';
@@ -88,7 +90,7 @@ export class DirectiveExplorerComponent implements OnInit {
     return idx;
   }
 
-  nameTracking(_: number, item: {key: string}): string {
+  nameTracking(_: number, item: { key: string }): string {
     return item.key;
   }
 
@@ -126,4 +128,3 @@ export class DirectiveExplorerComponent implements OnInit {
     this.messageBus.emit('removeHighlightFromElement');
   }
 }
-

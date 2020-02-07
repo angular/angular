@@ -60,7 +60,7 @@ export class IFrameMessageBus extends MessageBus<Events> {
       {
         source: this._source,
         topic,
-        args
+        args,
       },
       '*'
     );

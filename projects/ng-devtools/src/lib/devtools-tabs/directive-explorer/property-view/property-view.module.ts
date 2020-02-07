@@ -6,6 +6,6 @@ import { MatTreeModule } from '@angular/material/tree';
 @NgModule({
   declarations: [PropertyViewComponent],
   imports: [MatTreeModule, CommonModule],
-  exports: [PropertyViewComponent]
+  exports: [PropertyViewComponent],
 })
 export class PropertyViewModule {}

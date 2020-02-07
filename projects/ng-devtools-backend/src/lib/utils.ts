@@ -20,4 +20,3 @@ export const patchTemplate = (instance: any, fn: () => void) => {
 
   return original;
 };
-

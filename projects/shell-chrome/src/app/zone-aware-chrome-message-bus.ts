@@ -10,15 +10,21 @@ export class ZoneAwareChromeMessageBus extends MessageBus<Events> {
   }
 
   on<E extends keyof Events>(topic: E, cb: Events[E]): void {
-    this._bus.on(topic, function() {
-      this._ngZone.run(() => cb.apply(null, arguments));
-    }.bind(this));
+    this._bus.on(
+      topic,
+      function() {
+        this._ngZone.run(() => cb.apply(null, arguments));
+      }.bind(this)
+    );
   }
 
   once<E extends keyof Events>(topic: E, cb: Events[E]): void {
-    this._bus.once(topic, function() {
-      this._ngZone.run(() => cb.apply(null, arguments));
-    }.bind(this));
+    this._bus.once(
+      topic,
+      function() {
+        this._ngZone.run(() => cb.apply(null, arguments));
+      }.bind(this)
+    );
   }
 
   emit<E extends keyof Events>(topic: E, args?: Parameters<Events[E]>): void {

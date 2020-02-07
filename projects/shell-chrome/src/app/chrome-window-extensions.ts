@@ -29,5 +29,5 @@ const chromeWindowExtensions = {
     } else {
       console.error('This component has no instance and therefore no constructor');
     }
-  }
+  },
 };

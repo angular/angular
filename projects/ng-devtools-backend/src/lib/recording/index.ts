@@ -4,7 +4,6 @@ import { AppRecord, ComponentEventType, LifeCycleEventType } from 'protocol';
 import { serializeComponentState } from '../state-serializer';
 import { runOutsideAngular } from '../utils';
 
-
 let records: AppRecord[] = [];
 let observer: ComponentTreeObserver;
 let inProgress = false;
@@ -42,7 +41,7 @@ export const start = (): void => {
           timestamp: Date.now(),
           recordType: 'lifecycle',
           event: LifeCycleEventType.ChangeDetectionStart,
-          source: getChangeDetectionSource()
+          source: getChangeDetectionSource(),
         });
         runOutsideAngular(() => {
           setTimeout(() => {
@@ -50,7 +49,7 @@ export const start = (): void => {
             records.push({
               timestamp: Date.now(),
               recordType: 'lifecycle',
-              event: LifeCycleEventType.ChangeDetectionEnd
+              event: LifeCycleEventType.ChangeDetectionEnd,
             });
           });
         });

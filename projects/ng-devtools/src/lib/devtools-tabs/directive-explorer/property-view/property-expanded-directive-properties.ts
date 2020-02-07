@@ -23,7 +23,7 @@ export const getExpandedDirectiveProperties = (data: FlatNode[]): NestedProp[] =
     });
   };
 
-  const parents: {[name: string]: Descriptor} = {};
+  const parents: { [name: string]: Descriptor } = {};
 
   for (const node of data) {
     let prop = node.prop;

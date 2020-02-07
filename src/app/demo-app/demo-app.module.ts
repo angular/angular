@@ -19,7 +19,7 @@ import { ZoneUnawareIFrameMessageBus } from 'src/zone-unaware-iframe-message-bus
             path: '',
             loadChildren: () => import('./todo/app.module').then(m => m.AppModule),
           },
-        ]
+        ],
       },
     ]),
   ],

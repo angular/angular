@@ -3,7 +3,7 @@ import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@
 @Component({
   selector: 'ng-filter',
   templateUrl: './filter.component.html',
-  styleUrls: ['./filter.component.css']
+  styleUrls: ['./filter.component.css'],
 })
 export class FilterComponent {
   @Output() filter: EventEmitter<string> = new EventEmitter<string>();

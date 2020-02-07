@@ -7,7 +7,7 @@ import { AppRecord } from 'protocol';
   selector: 'ng-recording-timeline',
   templateUrl: './timeline.component.html',
   styleUrls: ['./timeline.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimelineComponent {
   @Input() set records(data: AppRecord[]) {
@@ -21,9 +21,9 @@ export class TimelineComponent {
     aggregated: {
       app: [],
       timeSpent: 0,
-      source: ''
+      source: '',
     },
-    timeline: []
+    timeline: [],
   };
   currentView = 1;
 
@@ -35,7 +35,6 @@ export class TimelineComponent {
     }
     return this.profileRecords.aggregated;
   }
-
 
   updateView($event: MatSliderChange) {
     if ($event.value === undefined || $event.value > this.profileRecords.timeline.length) {

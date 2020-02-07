@@ -6,6 +6,6 @@ module.exports = {
     devtools: 'projects/shell-chrome/src/devtools.ts',
   },
   output: {
-    jsonpFunction: '___ngDevToolsRuntime'
-  }
+    jsonpFunction: '___ngDevToolsRuntime',
+  },
 };

@@ -165,7 +165,7 @@ export const getIndexForNativeElementInForest = (
   nativeElement: HTMLElement,
   forest: IndexedNode[]
 ): ElementID | null => {
-  let foundElementId: ElementID = findElementIDFromNativeElementInForest(forest, nativeElement);
+  const foundElementId: ElementID = findElementIDFromNativeElementInForest(forest, nativeElement);
   return foundElementId || null;
 };
 

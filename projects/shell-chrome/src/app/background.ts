@@ -1,8 +1,8 @@
-const ports: { [tab: string]:
-  {
-    'content-script': chrome.runtime.Port,
-    devtools: chrome.runtime.Port
-  }
+const ports: {
+  [tab: string]: {
+    'content-script': chrome.runtime.Port;
+    devtools: chrome.runtime.Port;
+  };
 } = {};
 
 chrome.runtime.onConnect.addListener(port => {

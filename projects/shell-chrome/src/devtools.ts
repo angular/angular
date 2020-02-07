@@ -1,5 +1,1 @@
-chrome.devtools.panels.create(
-  'Angular',
-  'favicon.ico',
-  'index.html'
-);
+chrome.devtools.panels.create('Angular', 'favicon.ico', 'index.html');

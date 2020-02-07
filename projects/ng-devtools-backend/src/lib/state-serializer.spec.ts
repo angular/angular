@@ -137,13 +137,16 @@ describe('nestedSerializer', () => {
   });
 
   it('should handle deletions even of the query asks for such props', () => {
-    const result = nestedSerializer(dir2, [{
-      name: 'one',
-      children: []
-    }, {
-      name: 'nested',
-      children: []
-    }]);
+    const result = nestedSerializer(dir2, [
+      {
+        name: 'one',
+        children: [],
+      },
+      {
+        name: 'nested',
+        children: [],
+      },
+    ]);
     expect(result).toEqual({
       type: 9,
       value: {

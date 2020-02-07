@@ -247,7 +247,10 @@ export const serializeComponentState = (instance: object, levels = MAX_LEVEL): {
   return result;
 };
 
-export const deeplySerializeSelectedProperties = (instance: any, props: NestedProp[]): { [name: string]: Descriptor } => {
+export const deeplySerializeSelectedProperties = (
+  instance: any,
+  props: NestedProp[]
+): { [name: string]: Descriptor } => {
   const result = {};
   Object.keys(instance).forEach(propName => {
     if (ignoreList.has(propName)) {

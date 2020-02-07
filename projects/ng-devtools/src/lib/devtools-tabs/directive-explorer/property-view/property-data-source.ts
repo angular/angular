@@ -106,17 +106,14 @@ export class PropertyDataSource extends DataSource<FlatNode> {
     });
     this._subscriptions.push(s);
 
-    const changes = [
-      collectionViewer.viewChange,
-      this._treeControl.expansionModel.changed,
-      this._data
-    ];
+    const changes = [collectionViewer.viewChange, this._treeControl.expansionModel.changed, this._data];
 
-    return merge(...changes).pipe(map(() => {
-      this._expandedData.next(
-        this.treeFlattener.expandFlattenedNodes(this.data, this._treeControl));
-      return this._expandedData.value;
-    }));
+    return merge(...changes).pipe(
+      map(() => {
+        this._expandedData.next(this.treeFlattener.expandFlattenedNodes(this.data, this._treeControl));
+        return this._expandedData.value;
+      })
+    );
   }
 
   disconnect() {
@@ -155,7 +152,7 @@ export class PropertyDataSource extends DataSource<FlatNode> {
       this._treeControl.expand(node);
       const props = this._arrayify(data.props, node.prop);
       const flatNodes = this.treeFlattener.flattenNodes(props);
-      flatNodes.forEach(f => (f.level += (node.level + 1)));
+      flatNodes.forEach(f => (f.level += node.level + 1));
       this.data.splice(index + 1, 0, ...flatNodes);
       this._data.next(this.data);
     });
