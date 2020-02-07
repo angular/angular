@@ -121,10 +121,7 @@ commands:
           at: *workspace_location
 
   # Install shared libs used by Chrome that is either provisioned by
-  # rules_webtesting or by puppeteer. These are now needed in all containers
-  # as the webdriver-manager update script which is run in the root postinstall
-  # now starts puppeteer's Chrome in headless to check its version so the correct
-  # chromedriver is downloaded. See `/scripts/webdriver-manager-update.js`.
+  # rules_webtesting or by puppeteer.
   install_chrome_libs:
     description: Install shared Chrome libs
     steps:
@@ -368,11 +365,11 @@ jobs:
           no_output_timeout: 20m
 
   test_aio:
-    # Needed because the AIO tests and the PWA score test depend on Chrome being available.
-    executor: browsers-executor
+    executor: default-executor
     steps:
       - custom_attach_workspace
       - init_environment
+      - install_chrome_libs
         # Compile dependencies to ivy
         # Running `ngcc` here (instead of implicitly via `ng build`) allows us to take advantage of
         # the parallel, async mode speed-up (~20-25s on CI).
@@ -395,11 +392,11 @@ jobs:
       - run: yarn --cwd aio redirects-test
 
   deploy_aio:
-    # Needed because before deploying the deploy-production script runs the PWA score tests.
-    executor: browsers-executor
+    executor: default-executor
     steps:
       - custom_attach_workspace
       - init_environment
+      - install_chrome_libs
         # Deploy angular.io to production (if necessary)
       - run: setPublicVar_CI_STABLE_BRANCH
       - run: yarn --cwd aio deploy-production
@@ -409,11 +406,11 @@ jobs:
       viewengine:
         type: boolean
         default: false
-    # Needed because the AIO tests and the PWA score test depend on Chrome being available.
-    executor: browsers-executor
+    executor: default-executor
     steps:
       - custom_attach_workspace
       - init_environment
+      - install_chrome_libs
         # Build aio (with local Angular packages)
       - run: yarn --cwd aio build-local<<# parameters.viewengine >>-with-viewengine<</ parameters.viewengine >>-ci
         # Run unit tests
@@ -484,11 +481,11 @@ jobs:
 
   # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
   test_aio_preview:
-    # Needed because the test-preview script runs e2e tests and the PWA score test with Chrome.
-    executor: browsers-executor
+    executor: default-executor
     steps:
       - custom_attach_workspace
       - init_environment
+      - install_chrome_libs
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
       - run:
           name: Wait for preview and run tests
@@ -551,7 +548,8 @@ jobs:
   # See comments inside the integration/run_tests.sh script.
   integration_test:
     executor:
-      # Needed because the integration tests expect Chrome to be installed (e.g cli-hello-world)
+      # Needed because the integration/bazel-schematics test expects Chrome to be installed
+      # TODO(gregmagolan): remove the dependency on local chrome from that test
       name: browsers-executor
       # Note: we run Bazel in one of the integration tests, and it can consume >2G
       # of memory. Together with the system under test, this can exhaust the RAM
@@ -561,7 +559,6 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
-      - install_chrome_libs
       # Runs the integration tests in parallel across multiple CircleCI container instances. The
       # amount of container nodes for this job is controlled by the "parallelism" option.
       - run: ./integration/run_tests.sh ${CIRCLE_NODE_INDEX} ${CIRCLE_NODE_TOTAL}
@@ -652,12 +649,11 @@ jobs:
           webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
 
   aio_monitoring_next:
-    # This job needs Chrome to be globally installed because the tests run with Protractor
-    # which does not load the browser through the Bazel webtesting rules.
-    executor: browsers-executor
+    executor: default-executor
     steps:
       - custom_attach_workspace
       - init_environment
+      - install_chrome_libs
       - run:
           name: Run tests against https://next.angular.io/
           command: ./aio/scripts/test-production.sh https://next.angular.io/ $CI_AIO_MIN_PWA_SCORE
