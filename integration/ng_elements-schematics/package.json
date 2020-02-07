@@ -1,13 +1,16 @@
 {
   "name": "elements-schematics",
   "version": "1.0.0",
-  "main": "index.js",
   "license": "MIT",
   "devDependencies": {
     "@angular/elements": "file:../../dist/packages-dist/elements",
-    "@angular/cli": "file:../../node_modules/@angular/cli"
+    "@angular/cli": "file:../../node_modules/@angular/cli",
+    "@types/node": "file:../../node_modules/@types/node",
+    "typescript": "file:../../node_modules/typescript"
   },
   "scripts": {
-    "test": "./test.sh"
+    "build": "tsc -p tsconfig.json",
+    "build-dist": "node ../../scripts/build-packages-dist.js && yarn install --check-files",
+    "test": "yarn build && node test.js"
   }
 }
