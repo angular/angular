@@ -293,13 +293,13 @@
 <h2>Material Table</h2>
 
 <mat-table [dataSource]="tableDataSource">
-  <ng-container cdkColumnDef="userId">
-    <mat-header-cell *cdkHeaderCellDef>ID</mat-header-cell>
-    <mat-cell *cdkCellDef="let row"> {{row.userId}} </mat-cell>
+  <ng-container matColumnDef="userId">
+    <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
+    <mat-cell *matCellDef="let row"> {{row.userId}} </mat-cell>
   </ng-container>
 
-  <mat-header-row *cdkHeaderRowDef="tableColumns"></mat-header-row>
-  <mat-row *cdkRowDef="let row; columns: tableColumns;"></mat-row>
+  <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: tableColumns;"></mat-row>
 </mat-table>
 
 <h2>Native table with sticky header and footer</h2>
