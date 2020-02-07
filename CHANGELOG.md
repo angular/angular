@@ -9,6 +9,7 @@ To learn about the release highlights and our CLI-powered automated update workf
 #### Dependency updates
 @angular/core now requires:
 - RxJS 6.5
+
 @angular/compiler-cli now requires:
 - TypeScript 3.6 or 3.7
 
