@@ -4,6 +4,7 @@
  * Script that simplifies the workflow of running unit tests for a component
  * using Bazel. Here are a few examples:
  *
+ *   node ./scripts/run-component-tests all               | Runs tests for all components
  *   node ./scripts/run-component-tests button            | Runs Material button tests
  *   node ./scripts/run-component-tests overlay           | Runs CDK overlay tests
  *   node ./scripts/run-component-tests src/cdk/a11y      | Runs CDK a11y tests
@@ -43,31 +44,48 @@ const {_: components, local, firefox, watch} = minimist(args, {
   default: {watch: true},
 });
 
-// Exit if no component has been specified.
-if (!components.length) {
-  console.error(chalk.red(
-      'No component specified. Specify a component name, or pass a ' +
-      'path to the component directory.'));
-  process.exit(1);
-}
+// Whether tests for all components should be run.
+const all = components.length === 1 && components[0] === 'all';
 
 // We can only run a single target with "--local". Running multiple targets within the
 // same Karma server is not possible since each test target runs isolated from the others.
-if (local && components.length > 1) {
+if (local && (components.length > 1 || all)) {
   console.error(chalk.red(
       'Unable to run multiple components tests in local mode. ' +
       'Only one component at a time can be run with "--local"'));
   process.exit(1);
 }
 
-const bazelBinary = watch ? 'ibazel' : 'bazel';
-const bazelAction = local ? 'run' : 'test';
+const bazelBinary = `yarn -s ${watch ? 'ibazel' : 'bazel'}`;
 const testTargetName =
     `unit_tests_${local ? 'local' : firefox ? 'firefox-local' : 'chromium-local'}`;
+
+// If `all` has been specified as component, we run tests for all components
+// in the repository. The `--firefox` flag can be still specified.
+if (all) {
+  shelljs.exec(
+      `${bazelBinary} test //src/... --test_tag_filters=-e2e,-browser:${testTargetName} ` +
+      `--build_tag_filters=-browser:${testTargetName} --build_tests_only`);
+  return;
+}
+
+// Exit if no component has been specified.
+if (!components.length) {
+  console.error(chalk.red(
+      'No component specified. Please either specify individual components, or pass "all" ' +
+      'in order to run tests for all components.'));
+  console.info(chalk.yellow('Below are a few examples of how the script can be run:'));
+  console.info(chalk.yellow(` - yarn test all`));
+  console.info(chalk.yellow(` - yarn test cdk/overlay material/stepper`));
+  console.info(chalk.yellow(` - yarn test button toolbar`));
+  process.exit(1);
+}
+
+const bazelAction = local ? 'run' : 'test';
 const testLabels = components.map(t => `${getBazelPackageOfComponentName(t)}:${testTargetName}`);
 
 // Runs Bazel for the determined test labels.
-shelljs.exec(`yarn -s ${bazelBinary} ${bazelAction} ${testLabels.join(' ')}`);
+shelljs.exec(`${bazelBinary} ${bazelAction} ${testLabels.join(' ')}`);
 
 /**
  * Gets the Bazel package label for the specified component name. Throws if
