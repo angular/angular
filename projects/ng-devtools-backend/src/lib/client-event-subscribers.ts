@@ -9,14 +9,15 @@ import {
 } from './component-tree';
 import { start as startProfiling, stop as stopProfiling } from './recording';
 import { serializeComponentState } from './state-serializer';
-import { ComponentInspector } from './component-inspector';
+import { ComponentInspector, ComponentInspectorOptions } from './component-inspector';
 import { setConsoleReference } from './selected-component';
-import { getAngularVersion, appIsAngularInProdMode, appIsAngularInDevMode, appIsSupportedAngularVersion } from './angular-check';
-
-const inspector = new ComponentInspector();
-
-const startInspecting = () => inspector.startInspecting();
-const stopInspecting = () => inspector.stopInspecting();
+import { unHighlight } from './highlighter';
+import {
+  getAngularVersion,
+  appIsAngularInProdMode,
+  appIsAngularInDevMode,
+  appIsSupportedAngularVersion,
+} from './angular-check';
 
 export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void => {
   messageBus.on('getLatestComponentExplorerView', getLatestComponentExplorerViewCallback(messageBus));
@@ -26,21 +27,20 @@ export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void =>
   messageBus.on('startProfiling', startProfiling);
   messageBus.on('stopProfiling', stopProfilingCallback(messageBus));
 
-  messageBus.on('inspectorStart', startInspecting);
-  messageBus.on('inspectorEnd', stopInspecting);
-
   messageBus.on('getElementDirectivesProperties', getElementDirectivesPropertiesCallback(messageBus));
 
   messageBus.on('setSelectedComponent', selectedComponentCallback);
 
   messageBus.on('getNestedProperties', getNestedPropertiesCallback(messageBus));
 
+  setupInspector(messageBus);
+
   initChangeDetection(messageBus);
 };
 
 const initChangeDetection = (messageBus: MessageBus<Events>) => {
   if (appIsAngularInDevMode() && appIsSupportedAngularVersion()) {
-      onChangeDetection(() => messageBus.emit('componentTreeDirty'));
+    onChangeDetection(() => messageBus.emit('componentTreeDirty'));
   } else {
     messageBus.emit('ngAvailability', [{ version: getAngularVersion(), prodMode: appIsAngularInProdMode() }]);
   }
@@ -128,4 +128,24 @@ const serializeNodeDirectiveProperties = (node: ComponentTreeNode): DirectivesPr
     };
   }
   return result;
+};
+
+const setupInspector = (messageBus: MessageBus<Events>) => {
+  const onComponentEnter = (id: ElementID) => {
+    messageBus.emit('highlightComponentInTreeFromElement', [id]);
+  };
+  const onComponentLeave = () => {
+    messageBus.emit('removeHighlightFromComponentTree');
+  };
+
+  const inspectorOptions: ComponentInspectorOptions = { onComponentEnter, onComponentLeave };
+  const inspector = new ComponentInspector(inspectorOptions);
+
+  messageBus.on('inspectorStart', inspector.startInspecting);
+  messageBus.on('inspectorEnd', inspector.stopInspecting);
+
+  messageBus.on('highlightElementFromComponentTree', (id: ElementID) => {
+    inspector.highlightById(id);
+  });
+  messageBus.on('removeHighlightFromElement', unHighlight);
 };

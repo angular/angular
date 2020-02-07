@@ -2,15 +2,30 @@
   (prevMatched)="prevMatched()">
 </ng-filter>
 <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
-  <mat-tree-node [ngClass]="{ matched: isMatched(node), selected: isSelected(node) }" (click)="handleSelect(node)"
-    *matTreeNodeDef="let node" matTreeNodePaddingIndent="20" matTreeNodePadding [@simpleFade]="node.level?1:0">
+  <mat-tree-node
+    [ngClass]="{ matched: isMatched(node), selected: isSelected(node), highlighted: isHighlighted(node) }"
+    (click)="handleSelect(node)"
+    (mouseenter)="highlightNode(node.id)"
+    (mouseleave)="removeHighlight()"
+    *matTreeNodeDef="let node"
+    matTreeNodePaddingIndent="20"
+    matTreeNodePadding
+    [@simpleFade]="node.level?1:0"
+  >
     <button disabled></button>
     <span class="element-name">{{ node.name }}</span>
     <span *ngIf="node.directives" class="dir-names">[{{ node.directives }}]</span>
   </mat-tree-node>
-  <mat-tree-node [ngClass]="{ matched: isMatched(node), selected: isSelected(node) }" (click)="handleSelect(node)"
-    *matTreeNodeDef="let node; when: hasChild" matTreeNodePaddingIndent="20" matTreeNodePadding
-    [@simpleFade]="node.level?1:0">
+  <mat-tree-node
+    [ngClass]="{ matched: isMatched(node), selected: isSelected(node), highlighted: isHighlighted(node) }"
+    (click)="handleSelect(node)"
+    (mouseenter)="highlightNode(node.id)"
+    (mouseleave)="removeHighlight()"
+    *matTreeNodeDef="let node; when: hasChild"
+    matTreeNodePaddingIndent="20"
+    matTreeNodePadding
+    [@simpleFade]="node.level?1:0"
+  >
     <button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.name">
       <mat-icon class="mat-icon-rtl-mirror">
         {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}

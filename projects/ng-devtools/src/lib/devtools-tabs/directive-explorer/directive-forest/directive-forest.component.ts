@@ -40,8 +40,11 @@ export class DirectiveForestComponent {
       this._initialized = true;
     }
   }
+  @Input() highlightIDinTreeFromElement: ElementID | null = null;
 
   @Output() selectNode = new EventEmitter();
+  @Output() highlightFromComponent = new EventEmitter<ElementID>();
+  @Output() unhighlightFromComponent = new EventEmitter<null>();
 
   @ViewChild(CdkTree) tree: CdkTree<any>;
 
@@ -241,5 +244,16 @@ export class DirectiveForestComponent {
       this.expandParents(parentNode);
     }
   }
-}
 
+  highlightNode(id: ElementID): void {
+    this.highlightFromComponent.emit(id);
+  }
+
+  removeHighlight(): void {
+    this.unhighlightFromComponent.emit();
+  }
+
+  isHighlighted(node: FlatNode): boolean {
+    return !!this.highlightIDinTreeFromElement && this.highlightIDinTreeFromElement.join(',') === node.id.join(',');
+  }
+}
