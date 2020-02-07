@@ -110,17 +110,27 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
       if (entryPointPath.startsWith(basePath)) {
         let packagePath = basePath;
         const segments = this.splitPath(relative(basePath, entryPointPath));
-
-        // Start the search at the last nested `node_modules` folder if the relative
-        // `entryPointPath` contains one or more.
         let nodeModulesIndex = segments.lastIndexOf(relativeFrom('node_modules'));
+
+        // If there are no `node_modules` in the relative path between the `basePath` and the
+        // `entryPointPath` then just try the `basePath` as the `packagePath`.
+        // (This can be the case with path-mapped entry-points.)
+        if (nodeModulesIndex === -1) {
+          if (this.fs.exists(join(packagePath, 'package.json'))) {
+            return packagePath;
+          }
+        }
+
+        // Start the search at the deepest nested `node_modules` folder that is below the `basePath`
+        // but above the `entryPointPath`, if there are any.
         while (nodeModulesIndex >= 0) {
           packagePath = join(packagePath, segments.shift() !);
           nodeModulesIndex--;
         }
 
-        // Note that we skip the first `packagePath` and start looking from the first folder below
-        // it because that will be the `node_modules` folder.
+        // Note that we start at the folder below the current candidate `packagePath` because the
+        // initial candidate `packagePath` is either a `node_modules` folder or the `basePath` with
+        // no `package.json`.
         for (const segment of segments) {
           packagePath = join(packagePath, segment);
           if (this.fs.exists(join(packagePath, 'package.json'))) {
@@ -128,9 +138,9 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
           }
         }
 
-        // If we got here then we couldn't find a `packagePath` for the current `basePath` but since
-        // `basePath`s are guaranteed not to be a sub-directory each other then no other `basePath`
-        // will match either.
+        // If we got here then we couldn't find a `packagePath` for the current `basePath`.
+        // Since `basePath`s are guaranteed not to be a sub-directory of each other then no other
+        // `basePath` will match either.
         break;
       }
     }
