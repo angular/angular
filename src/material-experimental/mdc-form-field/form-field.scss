@@ -7,9 +7,10 @@
 @import 'mdc-text-field-structure-overrides';
 
 // Base styles for MDC notched-outline, MDC floating label and MDC text-field.
-@include mdc-notched-outline-core-styles($query: $mat-base-styles-query);
-@include mdc-floating-label-core-styles($query: $mat-base-styles-query);
-@include mdc-text-field-core-styles($query: $mat-base-styles-query);
+@include mdc-notched-outline-core-styles($query: $mat-base-styles-without-animation-query);
+@include mdc-floating-label-core-styles($query: $mat-base-styles-without-animation-query);
+@include mdc-text-field-core-styles($query: $mat-base-styles-without-animation-query);
+@include mdc-line-ripple-core-styles($query: $mat-base-styles-without-animation-query);
 
 // MDC text-field overwrites.
 @include _mat-mdc-text-field-textarea-overrides();
@@ -51,4 +52,13 @@
   // default vertical space as text-field inputs (with respect to the vertical padding).
   min-height: $mdc-text-field-height;
   box-sizing: border-box;
+}
+
+// In order to make it possible for developers to disable animations for form-fields,
+// we only activate the animation styles if animations are not explicitly disabled.
+.mat-mdc-form-field:not(.mat-form-field-no-animations) {
+  @include mdc-notched-outline-core-styles($query: animation);
+  @include mdc-floating-label-core-styles($query: animation);
+  @include mdc-text-field-core-styles($query: animation);
+  @include mdc-line-ripple-core-styles($query: animation);
 }

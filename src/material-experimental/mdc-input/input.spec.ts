@@ -33,7 +33,7 @@ import {
   ShowOnDirtyErrorStateMatcher,
 } from '@angular/material/core';
 import {By} from '@angular/platform-browser';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MAT_INPUT_VALUE_ACCESSOR, MatInput, MatInputModule} from './index';
 
 describe('MatMdcInput without forms', () => {
@@ -399,6 +399,15 @@ describe('MatMdcInput without forms', () => {
       .toBe(true, `Expected form field to look disabled after property is set.`);
     expect(selectEl.disabled).toBe(true);
   }));
+
+  it('should add a class to the form-field if animations are disabled', () => {
+    configureTestingModule(MatInputWithId, {animations: false});
+    const fixture = TestBed.createComponent(MatInputWithId);
+    fixture.detectChanges();
+
+    const formFieldEl = fixture.nativeElement.querySelector('.mat-mdc-form-field');
+    expect(formFieldEl.classList).toContain('mat-form-field-no-animations');
+  });
 
   it('should add a class to the form field if it has a native select', fakeAsync(() => {
     const fixture = createComponent(MatInputSelect);
@@ -1139,16 +1148,15 @@ describe('MatFormField default options', () => {
 
 });
 
-function createComponent<T>(component: Type<T>,
-                            providers: Provider[] = [],
-                            imports: any[] = [],
-                            declarations: any[] = []): ComponentFixture<T> {
+function configureTestingModule(component: Type<any>, options:
+    {providers?: Provider[], imports?: any[], declarations?: any[], animations?: boolean} = {}) {
+  const {providers = [], imports = [], declarations = [], animations = true} = options;
   TestBed.configureTestingModule({
     imports: [
       FormsModule,
       MatFormFieldModule,
       MatInputModule,
-      BrowserAnimationsModule,
+      animations ? BrowserAnimationsModule : NoopAnimationsModule,
       PlatformModule,
       ReactiveFormsModule,
       ...imports
@@ -1163,7 +1171,13 @@ function createComponent<T>(component: Type<T>,
       ...providers
     ],
   }).compileComponents();
+}
 
+function createComponent<T>(component: Type<T>,
+                            providers: Provider[] = [],
+                            imports: any[] = [],
+                            declarations: any[] = []): ComponentFixture<T> {
+  configureTestingModule(component, {providers, imports, declarations});
   return TestBed.createComponent<T>(component);
 }
 
