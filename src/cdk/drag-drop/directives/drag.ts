@@ -206,6 +206,17 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
       this._assignDefaults(config);
     }
 
+    // Note that usually the container is assigned when the drop list is picks up the item, but in
+    // some cases (mainly transplanted views with OnPush, see #18341) we may end up in a situation
+    // where there are no items on the first change detection pass, but the items get picked up as
+    // soon as the user triggers another pass by dragging. This is a problem, because the item would
+    // have to switch from standalone mode to drag mode in the middle of the dragging sequence which
+    // is too late since the two modes save different kinds of information. We work around it by
+    // assigning the drop container both from here and the list.
+    if (dropContainer) {
+      this._dragRef._withDropContainer(dropContainer._dropListRef);
+    }
+
     this._syncInputs(this._dragRef);
     this._handleEvents(this._dragRef);
   }
