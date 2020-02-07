@@ -5,12 +5,16 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {animate, AnimationEvent, state, style, transition, trigger} from '@angular/animations';
+import {AnimationDriver} from '@angular/animations/browser';
+import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {CommonModule} from '@angular/common';
 import {Component, ContentChild, Directive, ElementRef, EventEmitter, HostBinding, HostListener, Input, NgModule, OnInit, Output, Pipe, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {Inject} from '@angular/core/src/di';
 import {TVIEW} from '@angular/core/src/render3/interfaces/view';
 import {getLView} from '@angular/core/src/render3/state';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
-import {TestBed} from '@angular/core/testing';
+import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
@@ -2017,4 +2021,218 @@ describe('acceptance integration tests', () => {
               assertAttrValues(elements[2], 'post-update-pass');
             });
   });
+
+  describe('animations', () => {
+    it('should apply triggers for a list of items when they are sorted and reSorted',
+       fakeAsync(() => {
+         interface Item {
+           value: any;
+           id: number;
+         }
+
+         @Component({
+           template: `
+          <div *ngIf="showWarningMessage; else listOfItems">
+            Nooo!
+          </div>
+
+          <ng-template #listOfItems>
+            <animation-comp *ngFor="let item of items; trackBy: itemTrackFn">
+              {{ item.value }}
+            </animation-comp>
+          </ng-template>
+        `
+         })
+         class Cmp {
+           showWarningMessage = false;
+
+           items: Item[] = [
+             {value: 1, id: 1},
+             {value: 2, id: 2},
+             {value: 3, id: 3},
+             {value: 4, id: 4},
+             {value: 5, id: 5},
+           ];
+
+           itemTrackFn(value: Item) {
+             return value.id;
+           }
+         }
+
+         @Component({
+           selector: 'animation-comp',
+           animations: [
+             trigger(
+                 'host',
+                 [
+                   state('void', style({height: '0px'})),
+                   transition(
+                       '* => *',
+                       [
+                         animate('1s'),
+                       ]),
+                 ]),
+           ],
+           template: `
+                  <ng-content></ng-content>
+                `
+         })
+         class AnimationComp {
+           @HostBinding('@host') public hostState = '';
+
+           @HostListener('@host.start', ['$event'])
+           onLeaveStart(event: AnimationEvent) {
+             // we just want to register the listener
+           }
+         }
+
+         TestBed.configureTestingModule({
+           declarations: [Cmp, AnimationComp],
+           providers: [{provide: AnimationDriver, useClass: MockAnimationDriver}],
+         });
+         const fixture = TestBed.createComponent(Cmp);
+         fixture.detectChanges();
+
+         let elements = queryAll(fixture.nativeElement, 'animation-comp');
+         expect(elements.length).toEqual(5);
+         expect(elements.map(e => e.textContent?.trim())).toEqual(['1', '2', '3', '4', '5']);
+
+         const items = fixture.componentInstance.items;
+         arraySwap(items, 2, 0);  // 3 2 1 4 5
+         arraySwap(items, 2, 1);  // 3 1 2 4 5
+         const first = items.shift()!;
+         items.push(first);  // 1 2 4 5 3
+         fixture.detectChanges();
+
+         elements = queryAll(fixture.nativeElement, 'animation-comp');
+         expect(elements.length).toEqual(5);
+         expect(elements.map(e => e.textContent?.trim())).toEqual(['1', '2', '4', '5', '3']);
+         completeAnimations();
+
+         fixture.componentInstance.showWarningMessage = true;
+         fixture.detectChanges();
+         completeAnimations();
+
+         elements = queryAll(fixture.nativeElement, 'animation-comp');
+         expect(elements.length).toEqual(0);
+         expect(fixture.nativeElement.textContent.trim()).toEqual('Nooo!');
+
+         fixture.componentInstance.showWarningMessage = false;
+         fixture.detectChanges();
+
+         elements = queryAll(fixture.nativeElement, 'animation-comp');
+         expect(elements.length).toEqual(5);
+       }));
+
+    it('should insert and remove views in the correct order when animations are present',
+       fakeAsync(() => {
+         @Component({
+           animations: [
+             trigger('root', [transition('* => *', [])]),
+             trigger('outer', [transition('* => *', [])]),
+             trigger('inner', [transition('* => *', [])]),
+           ],
+           template: `
+          <div *ngIf="showRoot" (@root.start)="track('root', $event)" @root>
+            <div *ngIf="showIfContents; else innerCompList" (@outer.start)="track('outer', $event)" @outer>
+              Nooo!
+            </div>
+
+            <ng-template #innerCompList>
+              <inner-comp *ngFor="let item of items; trackBy: itemTrackFn" (@inner.start)="track('inner', $event)" @inner>
+                {{ item.value }}
+              </inner-comp>
+            </ng-template>
+          </div>
+        `
+         })
+         class Cmp {
+           showRoot = true;
+           showIfContents = true;
+           items = [1];
+           log: string[] = [];
+
+           track(name: string, event: AnimationEvent) {
+             this.log.push(name);
+           }
+         }
+
+         @Component({
+           selector: 'inner-comp',
+           animations: [
+             trigger('host', [transition('* => *', [])]),
+           ],
+           template: `
+                  <ng-content></ng-content>
+                `
+         })
+         class InnerComp {
+           @HostBinding('@host') public hostState = '';
+
+           constructor(@Inject(Cmp) private parent: Cmp) {}
+
+           @HostListener('@host.start', ['$event'])
+           onLeaveStart(event: AnimationEvent) {
+             this.parent.log.push('host');
+           }
+         }
+
+         TestBed.configureTestingModule({
+           declarations: [Cmp, InnerComp],
+           providers: [{provide: AnimationDriver, useClass: MockAnimationDriver}],
+         });
+         const fixture = TestBed.createComponent(Cmp);
+         fixture.detectChanges();
+         completeAnimations();
+
+         const comp = fixture.componentInstance;
+         expect(comp.log).toEqual([
+           'root',   // insertion of the inner-comp content
+           'outer',  // insertion of the default ngIf
+         ]);
+
+         comp.log = [];
+         comp.showIfContents = false;
+         fixture.detectChanges();
+         completeAnimations();
+
+         expect(comp.log).toEqual([
+           'host',   // insertion of the inner-comp content
+           'outer',  // insertion of the template into the ngIf
+           'inner'   // insertion of the inner comp element
+         ]);
+
+         comp.log = [];
+         comp.showRoot = false;
+         fixture.detectChanges();
+         completeAnimations();
+
+         expect(comp.log).toEqual([
+           'root',  // removal the root div container
+           'host',  // removal of the inner-comp content
+           'inner'  // removal of the inner comp element
+         ]);
+       }));
+  });
 });
+
+function completeAnimations() {
+  flushMicrotasks();
+  const log = MockAnimationDriver.log as MockAnimationPlayer[];
+  log.forEach(player => player.finish());
+  flushMicrotasks();
+}
+
+function arraySwap(arr: any[], indexA: number, indexB: number): void {
+  const item = arr[indexA];
+  arr[indexA] = arr[indexB];
+  arr[indexB] = item;
+}
+
+/**
+ * Queries the provided `root` element for sub elements by the selector and casts the result as an
+ * array of elements
+ */
+function queryAll(root: HTMLElement, selector: string): HTMLElement[] {
+  return Array.from(root.querySelectorAll(selector));
+}

@@ -370,7 +370,11 @@ export class AnimationTransitionNamespace {
 
   prepareLeaveAnimationListeners(element: any) {
     const listeners = this._elementListeners.get(element);
-    if (listeners) {
+    const elementStates = this._engine.statesByElement.get(element);
+
+    // if this statement fails then it means that the element was picked up
+    // by an earlier flush (or there are no listeners at all to track the leave).
+    if (listeners && elementStates) {
       const visitedTriggers = new Set<string>();
       listeners.forEach(listener => {
         const triggerName = listener.name;
@@ -379,7 +383,6 @@ export class AnimationTransitionNamespace {
 
         const trigger = this._triggers[triggerName];
         const transition = trigger.fallbackTransition;
-        const elementStates = this._engine.statesByElement.get(element)!;
         const fromState = elementStates[triggerName] || DEFAULT_STATE_VALUE;
         const toState = new StateValue(VOID_VALUE);
         const player = new TransitionAnimationPlayer(this.id, triggerName, element);
@@ -400,7 +403,6 @@ export class AnimationTransitionNamespace {
 
   removeNode(element: any, context: any): void {
     const engine = this._engine;
-
     if (element.childElementCount) {
       this._signalRemovalForInnerTriggers(element, context);
     }
