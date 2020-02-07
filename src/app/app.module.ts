@@ -3,6 +3,8 @@ import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DemoApplicationOperations } from '../demo-application-operations';
+import { ApplicationOperations } from 'ng-devtools';
 
 @NgModule({
   declarations: [AppComponent],
@@ -17,7 +19,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
       loadChildren: () => import('./demo-app/demo-app.module').then(m => m.DemoAppModule)
     }
   ])],
-  providers: [],
+  providers: [{
+    provide: ApplicationOperations,
+    useClass: DemoApplicationOperations
+  }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

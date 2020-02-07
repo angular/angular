@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { DemoAppComponent } from './demo-app.component';
 import { RouterModule } from '@angular/router';
 
-import { initialize } from 'ng-devtools-backend';
+import { initializeMessageBus } from 'ng-devtools-backend';
 import { ZippyComponent } from './zippy/zippy.component';
 import { ZoneUnawareIFrameMessageBus } from 'src/zone-unaware-iframe-message-bus';
 
@@ -26,4 +26,4 @@ import { ZoneUnawareIFrameMessageBus } from 'src/zone-unaware-iframe-message-bus
 })
 export class DemoAppModule {}
 
-initialize(new ZoneUnawareIFrameMessageBus('angular-devtools-backend', 'angular-devtools', window.parent));
+initializeMessageBus(new ZoneUnawareIFrameMessageBus('angular-devtools-backend', 'angular-devtools', window.parent));

@@ -1,5 +1,7 @@
-import { initialize } from 'ng-devtools-backend';
+import { initializeMessageBus } from 'ng-devtools-backend';
 import { SamePageMessageBus } from './same-page-message-bus';
+import { initializeExtendedWindowOperations } from './chrome-window-extensions';
+
 
 const messageBus = new SamePageMessageBus('angular-devtools-backend', 'angular-devtools-content-script');
 
@@ -11,5 +13,6 @@ messageBus.on('handshake', () => {
     return;
   }
   initialized = true;
-  initialize(messageBus);
+  initializeMessageBus(messageBus);
+  initializeExtendedWindowOperations();
 });

@@ -185,3 +185,8 @@ const findElementIDFromNativeElementInForest = (
   }
   return null;
 };
+
+export const findNodeFromSerializedPathId = (serializedId: string) => {
+  const id: number[] = serializedId.split(',').map(index => parseInt(index, 10));
+  return queryComponentForest(id, getDirectiveForest());
+};
