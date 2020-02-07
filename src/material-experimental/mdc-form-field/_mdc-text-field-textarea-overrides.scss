@@ -25,6 +25,10 @@
     margin: 0;
     padding: 0;
     border: none;
+
+    // By default IE always renders scrollbars on textarea.
+    // This brings it in line with other browsers.
+    overflow: auto;
   }
 
   // By default, MDC aligns the label using percentage. This will be overwritten based
