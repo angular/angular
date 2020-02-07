@@ -24,6 +24,7 @@
   font-weight: inherit;
   color: inherit;
   padding: 5px;
+  outline: none;
 }
 
 .up-down-buttons {
@@ -31,8 +32,8 @@
 }
 
 .up-down-buttons button {
-  width: 25px;
-  height: 25px;
+  width: 24px;
+  height: 24px;
 }
 
 :host /deep/ .up-down-buttons .mat-icon-button {
