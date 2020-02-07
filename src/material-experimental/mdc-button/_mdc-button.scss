@@ -173,7 +173,8 @@ $mat-button-state-target: '.mdc-button__ripple';
 @mixin mat-fab-theme-mdc($theme) {
   @include mat-using-mdc-theme($theme) {
     .mat-mdc-fab, .mat-mdc-mini-fab {
-      @include mdc-states($query: $mat-theme-styles-query);
+      @include mdc-states(
+          $query: $mat-theme-styles-query, $ripple-target: $mat-button-state-target);
 
       &.mat-unthemed {
         @include mdc-states-base-color(
@@ -227,11 +228,12 @@ $mat-button-state-target: '.mdc-button__ripple';
 @mixin mat-icon-button-theme-mdc($theme) {
   @include mat-using-mdc-theme($theme) {
     .mat-mdc-icon-button {
-      @include mdc-states($query: $mat-theme-styles-query);
+      @include mdc-states(
+          $query: $mat-theme-styles-query, $ripple-target: $mat-button-state-target);
 
       &.mat-unthemed {
         @include mdc-states-base-color(
-          $mdc-theme-surface, $query: $mat-theme-styles-query,
+          $mdc-theme-on-surface, $query: $mat-theme-styles-query,
           $ripple-target: $mat-button-state-target);
         @include mdc-icon-button-ink-color($mdc-theme-on-surface, $query: $mat-theme-styles-query);
       }
