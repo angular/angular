@@ -37,6 +37,7 @@ export class MdcInputDemo {
   prefixSuffixAppearance: MatFormFieldAppearance = 'fill';
   placeholderTestControl = new FormControl('', Validators.required);
   options: string[] = ['One', 'Two', 'Three'];
+  showSecondPrefix = false;
 
   name: string;
   errorMessageExample1: string;

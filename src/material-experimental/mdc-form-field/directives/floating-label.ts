@@ -24,7 +24,6 @@ import {MDCFloatingLabel} from '@material/floating-label';
   },
 })
 export class MatFormFieldFloatingLabel extends MDCFloatingLabel implements OnDestroy {
-
   @Input()
   get floating() { return this._floating; }
   set floating(shouldFloat: boolean) {
@@ -35,11 +34,16 @@ export class MatFormFieldFloatingLabel extends MDCFloatingLabel implements OnDes
   }
   private _floating = false;
 
-  constructor(elementRef: ElementRef) {
-    super(elementRef.nativeElement);
+  constructor(private _elementRef: ElementRef) {
+    super(_elementRef.nativeElement);
   }
 
   ngOnDestroy() {
     this.destroy();
+  }
+
+  /** Gets the HTML element for the floating label. */
+  get element(): HTMLElement {
+    return this._elementRef.nativeElement;
   }
 }

@@ -26,20 +26,20 @@
      [class.mdc-text-field--invalid]="_control.errorState"
      (click)="_control.onContainerClick && _control.onContainerClick($event)">
   <div class="mat-mdc-form-field-flex">
-    <div class="mat-mdc-form-field-prefix" *ngIf="_prefixChildren.length">
+    <div matFormFieldNotchedOutline *ngIf="_hasOutline()">
+      <ng-template [ngIf]="!_forceDisplayInfixLabel()">
+        <ng-template [ngTemplateOutlet]="labelTemplate"></ng-template>
+      </ng-template>
+    </div>
+
+    <div class="mat-mdc-form-field-prefix" *ngIf="_prefixChildren.length" #prefixContainer>
       <ng-content select="[matPrefix]"></ng-content>
     </div>
 
     <div class="mat-mdc-form-field-infix">
-      <!-- For non outline appearance. -->
-      <ng-template [ngIf]="!_hasOutline()">
+      <ng-template [ngIf]="!_hasOutline() || _forceDisplayInfixLabel()">
         <ng-template [ngTemplateOutlet]="labelTemplate"></ng-template>
       </ng-template>
-
-      <!-- For outline appearance where MDC expects the label to be wrapped. -->
-      <div matFormFieldNotchedOutline *ngIf="_hasOutline()">
-        <ng-template [ngTemplateOutlet]="labelTemplate"></ng-template>
-      </div>
 
       <ng-content></ng-content>
     </div>

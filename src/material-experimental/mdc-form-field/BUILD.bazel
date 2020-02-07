@@ -18,6 +18,7 @@ ng_module(
     assets = [":form_field_scss"] + glob(["**/*.html"]),
     module_name = "@angular/material-experimental/mdc-form-field",
     deps = [
+        "//src/cdk/bidi",
         "//src/cdk/observers",
         "//src/cdk/platform",
         "//src/material/core",

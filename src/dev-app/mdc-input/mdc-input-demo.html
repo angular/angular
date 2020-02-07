@@ -128,6 +128,14 @@
       <span matSuffix>.00</span>
     </mat-form-field>
 
+    <h4>Text (always outline)</h4>
+    <mat-form-field appearance="outline" class="demo-text-align-end">
+      <mat-label>Amount</mat-label>
+      <input matInput>
+      <span matPrefix>$&nbsp;</span>
+      <span matSuffix>.00</span>
+    </mat-form-field>
+
     <h4>Icons</h4>
     <mat-form-field [appearance]="prefixSuffixAppearance">
       <mat-label>Amount</mat-label>
@@ -640,14 +648,31 @@
           <mat-label>Tab 1 input</mat-label>
           <input matInput value="test">
         </mat-form-field>
+
+        <mat-form-field appearance="outline" class="demo-text-align-end">
+          <mat-label>Amount</mat-label>
+          <input matInput>
+          <span matPrefix>$&nbsp;</span>
+          <span matSuffix>.00</span>
+        </mat-form-field>
       </mat-tab>
       <mat-tab label="Tab 2">
         <mat-form-field appearance="outline">
           <mat-label>Tab 2 input</mat-label>
           <input matInput value="test">
         </mat-form-field>
+
+        <mat-form-field appearance="outline" class="demo-text-align-end">
+          <mat-label>Amount</mat-label>
+          <input matInput>
+          <span matPrefix>$&nbsp;</span>
+          <span matPrefix *ngIf="showSecondPrefix">!&nbsp;</span>
+          <span matSuffix>.00</span>
+        </mat-form-field>
       </mat-tab>
     </mat-tab-group>
+
+    <button (click)="showSecondPrefix = !showSecondPrefix">Toggle second prefix.</button>
   </mat-card-content>
 </mat-card>
 
