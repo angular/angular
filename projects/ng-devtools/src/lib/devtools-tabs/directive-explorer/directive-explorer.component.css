@@ -34,3 +34,20 @@ ng-property-view {
   line-height: 25px;
   font-size: 12px;
 }
+
+.property-wrapper .element-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 40px;
+}
+
+.property-wrapper .element-header .component-name {
+  margin-left: 8px;
+  font-weight: 400;
+}
+
+.property-wrapper .element-header .element-name {
+  margin-left: 8px;
+  font-weight: 300;
+}

@@ -3,14 +3,15 @@ import { ComponentExplorerViewQuery } from 'protocol';
 import { IndexedNode } from './directive-forest/index-forest';
 import SpyObj = jasmine.SpyObj;
 import Spy = jasmine.Spy;
-import { TestBed } from '@angular/core/testing';
 
 describe('DirectiveExplorerComponent', () => {
   let messageBusMock;
   let comp: DirectiveExplorerComponent;
+  let applicationOperationsSpy;
 
   beforeEach(() => {
-    comp = TestBed.createComponent(DirectiveExplorerComponent).componentInstance;
+    applicationOperationsSpy = jasmine.createSpyObj('messageBus', ['viewSource']);
+    comp = new DirectiveExplorerComponent(applicationOperationsSpy);
     messageBusMock = jasmine.createSpyObj('messageBus', ['on', 'once', 'emit', 'destroy']);
     comp.messageBus = messageBusMock;
   });
