@@ -126,8 +126,7 @@ export class InjectableDecoratorHandler implements
 
 /**
  * Read metadata from the `@Injectable` decorator and produce the `IvyInjectableMetadata`, the
- * input
- * metadata needed to run `compileIvyInjectable`.
+ * input metadata needed to run `compileIvyInjectable`.
  *
  * A `null` return value indicates this is @Injectable has invalid data.
  */
@@ -157,7 +156,9 @@ function extractInjectableMetadata(
     // transport references from one location to another. This is the problem that lowering
     // used to solve - if this restriction proves too undesirable we can re-implement lowering.
     if (!ts.isObjectLiteralExpression(metaNode)) {
-      throw new Error(`In Ivy, decorator metadata must be inline.`);
+      throw new FatalDiagnosticError(
+          ErrorCode.DECORATOR_ARG_NOT_LITERAL, metaNode,
+          `@Injectable argument must be an object literal`);
     }
 
     // Resolve the fields of the literal into a map of field name to expression.
@@ -173,7 +174,7 @@ function extractInjectableMetadata(
       if (!ts.isArrayLiteralExpression(depsExpr)) {
         throw new FatalDiagnosticError(
             ErrorCode.VALUE_NOT_LITERAL, depsExpr,
-            `In Ivy, deps metadata must be an inline array.`);
+            `@Injectable deps metadata must be an inline array`);
       }
       userDeps = depsExpr.elements.map(dep => getDep(dep, reflector));
     }
