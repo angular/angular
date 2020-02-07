@@ -14,6 +14,11 @@ exports.config = {
   suite: 'full',
   capabilities: {
     browserName: 'chrome',
+    chromeOptions: process.env['CI'] ? {
+      binary: require('puppeteer').executablePath(),
+      // See /integration/README.md#browser-tests for more info on these args
+      args: ['--no-sandbox', '--headless', '--disable-gpu', '--disable-dev-shm-usage', '--hide-scrollbars', '--mute-audio']
+    } : {},
   },
   directConnect: true,
   framework: 'jasmine',
