@@ -1,19 +1,53 @@
 @use '@material/ripple/mixins' as mdc-ripple;
 
+@import '@material/theme/variables.import';
 @import '@material/textfield/mixins.import';
 @import '../mdc-helpers/mdc-helpers';
 @import 'form-field-subscript';
 @import 'form-field-bottom-line';
 @import 'mdc-text-field-theme-variable-refresh';
 
+// Mixin that overwrites the default MDC text-field color styles to be based on
+// the given theme palette. The MDC text-field is styled using `primary` by default.
+@mixin _mdc-text-field-color-styles($palette-name, $query: $mat-theme-styles-query) {
+  $_mdc-text-field-focused-label-color: $mdc-text-field-focused-label-color;
+  $mdc-text-field-focused-label-color: rgba(mdc-theme-prop-value($palette-name), 0.87) !global;
+
+  @include mdc-text-field-caret-color($palette-name, $query);
+  @include mdc-text-field-line-ripple-color($palette-name, $query);
+
+  .mdc-text-field--focused {
+    @include mdc-text-field-focused_($query);
+
+  }
+  .mdc-text-field--invalid {
+    @include mdc-text-field-invalid_($query);
+  }
+
+  .mdc-text-field--outlined {
+    @include mdc-text-field-focused-outline-color($palette-name, $query);
+  }
+
+  $mdc-text-field-focused-label-color: $_mdc-text-field-focused-label-color !global;
+}
+
 @mixin mat-form-field-theme-mdc($theme) {
   @include mat-using-mdc-theme($theme) {
     @include _mdc-text-field-refresh-theme-variables() {
       @include mdc-text-field-core-styles($query: $mat-theme-styles-query);
       @include mdc-floating-label-core-styles($query: $mat-theme-styles-query);
-      @include mdc-text-field-core-styles($query: $mat-theme-styles-query);
+      @include mdc-notched-outline-core-styles($query: $mat-base-styles-query);
+      @include mdc-line-ripple-core-styles($query: $mat-theme-styles-query);
       @include _mat-form-field-subscript-theme();
       @include _mat-form-field-bottom-line-theme();
+
+      .mat-mdc-form-field.mat-accent {
+        @include _mdc-text-field-color-styles(secondary);
+      }
+
+      .mat-mdc-form-field.mat-warn {
+        @include _mdc-text-field-color-styles(error);
+      }
 
       // MDC text-field intends to hide the ripples in the outline appearance. The styles for
       // this collide with other styles from the structure styles. This is because the ripples

@@ -12,7 +12,7 @@ import {
   FloatLabelType,
   MatFormFieldAppearance
 } from '@angular/material-experimental/mdc-form-field';
-import {ErrorStateMatcher} from '@angular/material/core';
+import {ErrorStateMatcher, ThemePalette} from '@angular/material/core';
 
 let max = 5;
 
@@ -25,8 +25,8 @@ const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA
   styleUrls: ['mdc-input-demo.css'],
 })
 export class MdcInputDemo {
+  color: ThemePalette = 'primary';
   floatingLabel: FloatLabelType = 'auto';
-  color: boolean;
   requiredField: boolean;
   disableTextarea: boolean;
   hideRequiredMarker: boolean;

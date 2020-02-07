@@ -538,14 +538,14 @@
 <mat-card class="demo-card demo-basic">
   <mat-toolbar color="primary">Appearance</mat-toolbar>
   <mat-card-content>
-    <mat-form-field appearance="fill">
+    <mat-form-field appearance="fill" [color]="color">
       <mat-label>Fill appearance</mat-label>
       <input matInput [(ngModel)]="fillAppearance" required>
       <mat-error>This field is required</mat-error>
       <mat-hint>Please type something here</mat-hint>
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" [color]="color">
       <mat-label>Outline appearance</mat-label>
       <input matInput [(ngModel)]="outlineAppearance" required>
       <mat-error>This field is required</mat-error>
@@ -554,7 +554,7 @@
 
     <table style="width: 100%" cellspacing="0"><tr>
       <td>
-        <mat-form-field appearance="fill" style="width: 100%">
+        <mat-form-field appearance="fill" [color]="color" style="width: 100%">
           <mat-label>Fill appearance</mat-label>
           <input matInput [(ngModel)]="fillAppearance" required>
           <mat-error>This field is required</mat-error>
@@ -562,7 +562,7 @@
         </mat-form-field>
       </td>
       <td>
-        <mat-form-field appearance="outline" style="width: 100%">
+        <mat-form-field appearance="outline" [color]="color" style="width: 100%">
           <mat-label>Outline appearance</mat-label>
           <input matInput [(ngModel)]="outlineAppearance" required>
           <mat-error>This field is required</mat-error>
@@ -570,6 +570,12 @@
         </mat-form-field>
       </td>
     </tr></table>
+
+    <mat-button-toggle-group [(ngModel)]="color">
+      <mat-button-toggle value="primary">Primary</mat-button-toggle>
+      <mat-button-toggle value="accent">Accent</mat-button-toggle>
+      <mat-button-toggle value="warn">Warn</mat-button-toggle>
+    </mat-button-toggle-group>
   </mat-card-content>
 </mat-card>
 

@@ -53,12 +53,3 @@
   min-height: $mdc-text-field-height;
   box-sizing: border-box;
 }
-
-// In order to make it possible for developers to disable animations for form-fields,
-// we only activate the animation styles if animations are not explicitly disabled.
-.mat-mdc-form-field:not(.mat-form-field-no-animations) {
-  @include mdc-notched-outline-core-styles($query: animation);
-  @include mdc-floating-label-core-styles($query: animation);
-  @include mdc-text-field-core-styles($query: animation);
-  @include mdc-line-ripple-core-styles($query: animation);
-}
