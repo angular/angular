@@ -1333,70 +1333,362 @@ runInEachFileSystem(os => {
       });
     });
 
-    it('should throw error if content queries share a property with inputs', () => {
-      env.tsconfig({});
-      env.write('test.ts', `
-        import {Component, ContentChild, Input} from '@angular/core';
+    describe('error handling', () => {
+      function verifyThrownError(errorCode: ErrorCode, errorMessage: string) {
+        const errors = env.driveDiagnostics();
+        expect(errors.length).toBe(1);
+        const {code, messageText} = errors[0];
+        expect(code).toBe(ngErrorCode(errorCode));
+        expect(trim(messageText as string)).toContain(errorMessage);
+      }
 
-        @Component({
-          selector: 'test-cmp',
-          template: '<ng-content></ng-content>'
-        })
-        export class TestCmp {
-          @Input() @ContentChild('foo') foo: any;
-        }
-      `);
+      it('should throw if invalid arguments are provided in @NgModule', () => {
+        env.tsconfig({});
+        env.write('test.ts', `
+          import {NgModule} from '@angular/core';
 
-      const errors = env.driveDiagnostics();
-      const {code, messageText} = errors[0];
-      expect(code).toBe(ngErrorCode(ErrorCode.DECORATOR_COLLISION));
-      expect(trim(messageText as string))
-          .toContain('Cannot combine @Input decorators with query decorators');
-    });
+          @NgModule('invalidNgModuleArgumentType')
+          export class MyModule {}
+        `);
+        verifyThrownError(
+            ErrorCode.DECORATOR_ARG_NOT_LITERAL, '@NgModule argument must be an object literal');
+      });
 
-    it('should throw error if multiple query decorators are used on the same field', () => {
-      env.tsconfig({});
-      env.write('test.ts', `
-        import {Component, ContentChild} from '@angular/core';
+      it('should throw if multiple query decorators are used on the same field', () => {
+        env.tsconfig({});
+        env.write('test.ts', `
+          import {Component, ContentChild} from '@angular/core';
 
-        @Component({
-          selector: 'test-cmp',
-          template: '...'
-        })
-        export class TestCmp {
-          @ContentChild('bar', {static: true})
-          @ContentChild('foo')
-          foo: any;
-        }
-      `);
+          @Component({
+            selector: 'test-cmp',
+            template: '...'
+          })
+          export class TestCmp {
+            @ContentChild('bar', {static: true})
+            @ContentChild('foo')
+            foo: any;
+          }
+        `);
+        verifyThrownError(
+            ErrorCode.DECORATOR_COLLISION,
+            'Cannot have multiple query decorators on the same class member');
+      });
 
-      const errors = env.driveDiagnostics();
-      const {code, messageText} = errors[0];
-      expect(code).toBe(ngErrorCode(ErrorCode.DECORATOR_COLLISION));
-      expect(trim(messageText as string))
-          .toContain('Cannot have multiple query decorators on the same class member');
-    });
+      ['ViewChild', 'ViewChildren', 'ContentChild', 'ContentChildren'].forEach(decorator => {
+        it(`should throw if @Input and @${decorator} decorators are applied to the same property`,
+           () => {
+             env.tsconfig({});
+             env.write('test.ts', `
+              import {Component, ${decorator}, Input} from '@angular/core';
 
-    it('should throw error if query decorators are used on non property-type member', () => {
-      env.tsconfig({});
-      env.write('test.ts', `
-        import {Component, ContentChild} from '@angular/core';
+              @Component({
+                selector: 'test-cmp',
+                template: '<ng-content></ng-content>'
+              })
+              export class TestCmp {
+                @Input() @${decorator}('foo') foo: any;
+              }
+            `);
+             verifyThrownError(
+                 ErrorCode.DECORATOR_COLLISION,
+                 'Cannot combine @Input decorators with query decorators');
+           });
 
-        @Component({
-          selector: 'test-cmp',
-          template: '...'
-        })
-        export class TestCmp {
-          @ContentChild('foo')
-          private someFn() {}
-        }
-      `);
+        it(`should throw if invalid options are provided in ${decorator}`, () => {
+          env.tsconfig({});
+          env.write('test.ts', `
+            import {Component, ${decorator}, Input} from '@angular/core';
 
-      const errors = env.driveDiagnostics();
-      const {code, messageText} = errors[0];
-      expect(code).toBe(ngErrorCode(ErrorCode.DECORATOR_UNEXPECTED));
-      expect(trim(messageText as string))
-          .toContain('Query decorator must go on a property-type member');
+            @Component({
+              selector: 'test-cmp',
+              template: '...'
+            })
+            export class TestCmp {
+              @${decorator}('foo', 'invalidOptionsArgumentType') foo: any;
+            }
+          `);
+          verifyThrownError(
+              ErrorCode.DECORATOR_ARG_NOT_LITERAL,
+              `@${decorator} options must be an object literal`);
+        });
+
+        it(`should throw if @${decorator} is used on non property-type member`, () => {
+          env.tsconfig({});
+          env.write('test.ts', `
+            import {Component, ${decorator}} from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              template: '...'
+            })
+            export class TestCmp {
+              @${decorator}('foo')
+              private someFn() {}
+            }
+          `);
+          verifyThrownError(
+              ErrorCode.DECORATOR_UNEXPECTED, 'Query decorator must go on a property-type member');
+        });
+
+        it(`should throw error if @${decorator} has too many arguments`, () => {
+          env.tsconfig({});
+          env.write('test.ts', `
+            import {Component, ${decorator}} from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              template: '...'
+            })
+            export class TestCmp {
+              @${decorator}('foo', {}, 'invalid-extra-arg') foo: any;
+            }
+          `);
+          verifyThrownError(
+              ErrorCode.DECORATOR_ARITY_WRONG, `@${decorator} has too many arguments`);
+        });
+
+        it(`should throw error if @${decorator} predicate argument has wrong type`, () => {
+          env.tsconfig({});
+          env.write('test.ts', `
+            import {Component, ${decorator}} from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              template: '...'
+            })
+            export class TestCmp {
+              @${decorator}({'invalid-predicate-type': true}) foo: any;
+            }
+          `);
+          verifyThrownError(
+              ErrorCode.VALUE_HAS_WRONG_TYPE, `@${decorator} predicate cannot be interpreted`);
+        });
+
+        it(`should throw error if one of @${decorator}'s predicate has wrong type`, () => {
+          env.tsconfig({});
+          env.write('test.ts', `
+            import {Component, ${decorator}} from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              template: '...'
+            })
+            export class TestCmp {
+              @${decorator}(['predicate-a', {'invalid-predicate-type': true}]) foo: any;
+            }
+          `);
+          verifyThrownError(
+              ErrorCode.VALUE_HAS_WRONG_TYPE,
+              `Failed to resolve @${decorator} predicate at position 1 to a string`);
+        });
+      });
+
+      ['inputs', 'outputs'].forEach(field => {
+        it(`should throw error if @Directive.${field} has wrong type`, () => {
+          env.tsconfig({});
+          env.write('test.ts', `
+            import {Directive} from '@angular/core';
+
+            @Directive({
+              selector: 'test-dir',
+              ${field}: 'invalid-field-type',
+            })
+            export class TestDir {}
+          `);
+          verifyThrownError(
+              ErrorCode.VALUE_HAS_WRONG_TYPE,
+              `Failed to resolve @Directive.${field} to a string array`);
+        });
+      });
+
+      ['ContentChild', 'ContentChildren'].forEach(decorator => {
+        it(`should throw if \`descendants\` field of @${decorator}'s options argument has wrong type`,
+           () => {
+             env.tsconfig({});
+             env.write('test.ts', `
+              import {Component, ContentChild} from '@angular/core';
+
+              @Component({
+                selector: 'test-cmp',
+                template: '...'
+              })
+              export class TestCmp {
+                @ContentChild('foo', {descendants: 'invalid'}) foo: any;
+              }
+            `);
+             verifyThrownError(
+                 ErrorCode.VALUE_HAS_WRONG_TYPE,
+                 '@ContentChild options.descendants must be a boolean');
+           });
+      });
+
+      ['Input', 'Output'].forEach(decorator => {
+        it(`should throw error if @${decorator} decorator argument has unsupported type`, () => {
+          env.tsconfig({});
+          env.write('test.ts', `
+            import {Component, ${decorator}} from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              template: '...'
+            })
+            export class TestCmp {
+              @${decorator}(['invalid-arg-type']) foo: any;
+            }
+          `);
+          verifyThrownError(
+              ErrorCode.VALUE_HAS_WRONG_TYPE,
+              `@${decorator} decorator argument must resolve to a string`);
+        });
+
+        it(`should throw error if @${decorator} decorator has too many arguments`, () => {
+          env.tsconfig({});
+          env.write('test.ts', `
+            import {Component, ${decorator}} from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              template: '...'
+            })
+            export class TestCmp {
+              @${decorator}('name', 'invalid-extra-arg') foo: any;
+            }
+          `);
+          verifyThrownError(
+              ErrorCode.DECORATOR_ARITY_WRONG,
+              `@${decorator} can have at most one argument, got 2 argument(s)`);
+        });
+      });
+
+      it('should throw error if @HostBinding decorator argument has unsupported type', () => {
+        env.tsconfig({});
+        env.write('test.ts', `
+          import {Component, HostBinding} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '...'
+          })
+          export class TestCmp {
+            @HostBinding(['invalid-arg-type']) foo: any;
+          }
+        `);
+        verifyThrownError(
+            ErrorCode.VALUE_HAS_WRONG_TYPE, `@HostBinding's argument must be a string`);
+      });
+
+      it('should throw error if @HostBinding decorator has too many arguments', () => {
+        env.tsconfig({});
+        env.write('test.ts', `
+          import {Component, HostBinding} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '...'
+          })
+          export class TestCmp {
+            @HostBinding('name', 'invalid-extra-arg') foo: any;
+          }
+        `);
+        verifyThrownError(
+            ErrorCode.DECORATOR_ARITY_WRONG, '@HostBinding can have at most one argument');
+      });
+
+      it('should throw error if @Directive.host field has wrong type', () => {
+        env.tsconfig({});
+        env.write('test.ts', `
+          import {Directive} from '@angular/core';
+
+          @Directive({
+            selector: 'test-dir',
+            host: 'invalid-host-type'
+          })
+          export class TestDir {}
+        `);
+        verifyThrownError(
+            ErrorCode.VALUE_HAS_WRONG_TYPE, 'Decorator host metadata must be an object');
+      });
+
+      it('should throw error if @Directive.host field is an object with values that have wrong types',
+         () => {
+           env.tsconfig({});
+           env.write('test.ts', `
+              import {Directive} from '@angular/core';
+
+              @Directive({
+                selector: 'test-dir',
+                host: {'key': ['invalid-host-value']}
+              })
+              export class TestDir {}
+            `);
+           verifyThrownError(
+               ErrorCode.VALUE_HAS_WRONG_TYPE,
+               'Decorator host metadata must be a string -> string object, but found unparseable value');
+         });
+
+      it('should throw error if @Directive.queries field has wrong type', () => {
+        env.tsconfig({});
+        env.write('test.ts', `
+          import {Directive} from '@angular/core';
+
+          @Directive({
+            selector: 'test-dir',
+            queries: 'invalid-queries-type'
+          })
+          export class TestDir {}
+        `);
+        verifyThrownError(
+            ErrorCode.VALUE_HAS_WRONG_TYPE, 'Decorator queries metadata must be an object');
+      });
+
+      it('should throw error if @Directive.queries object has incorrect values', () => {
+        env.tsconfig({});
+        env.write('test.ts', `
+          import {Directive} from '@angular/core';
+
+          @Directive({
+            selector: 'test-dir',
+            queries: {
+              myViewQuery: 'invalid-query-type'
+            }
+          })
+          export class TestDir {}
+        `);
+        verifyThrownError(
+            ErrorCode.VALUE_HAS_WRONG_TYPE,
+            'Decorator query metadata must be an instance of a query type');
+      });
+
+      it('should throw error if @Directive.queries object has incorrect values (refs to other decorators)',
+         () => {
+           env.tsconfig({});
+           env.write('test.ts', `
+              import {Directive, Input} from '@angular/core';
+
+              @Directive({
+                selector: 'test-dir',
+                queries: {
+                  myViewQuery: new Input()
+                }
+              })
+              export class TestDir {}
+            `);
+           verifyThrownError(
+               ErrorCode.VALUE_HAS_WRONG_TYPE,
+               'Decorator query metadata must be an instance of a query type');
+         });
+
+      it('should throw error if @Injectable has incorrect argument', () => {
+        env.tsconfig({});
+        env.write('test.ts', `
+          import {Injectable} from '@angular/core';
+
+          @Injectable('invalid')
+          export class TestProvider {}
+        `);
+        verifyThrownError(
+            ErrorCode.DECORATOR_ARG_NOT_LITERAL, '@Injectable argument must be an object literal');
+      });
     });
 
     describe('multiple decorators on classes', () => {
