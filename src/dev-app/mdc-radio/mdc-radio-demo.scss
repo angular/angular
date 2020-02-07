@@ -1,1 +1,13 @@
-// TODO: copy in demo styles from existing mat-radio demo.
+.demo-button {
+  margin: 8px;
+  text-transform: uppercase;
+}
+
+.demo-section {
+  margin: 8px;
+  padding: 16px;
+
+  .mat-radio-button {
+    margin: 8px;
+  }
+}

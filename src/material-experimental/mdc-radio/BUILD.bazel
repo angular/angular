@@ -1,10 +1,10 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//src/e2e-app:test_suite.bzl", "e2e_test_suite")
 load(
     "//tools:defaults.bzl",
-    "ng_e2e_test_library",
     "ng_module",
+    "ng_test_library",
+    "ng_web_test_suite",
     "sass_binary",
     "sass_library",
 )
@@ -18,7 +18,12 @@ ng_module(
     assets = [":radio_scss"] + glob(["**/*.html"]),
     module_name = "@angular/material-experimental/mdc-radio",
     deps = [
+        "//src/cdk/a11y",
+        "//src/cdk/coercion",
+        "//src/cdk/collections",
         "//src/material/core",
+        "//src/material/radio",
+        "@npm//@angular/forms",
         "@npm//@material/radio",
     ],
 )
@@ -44,18 +49,32 @@ sass_binary(
     ],
 )
 
-ng_e2e_test_library(
-    name = "e2e_test_sources",
-    srcs = glob(["**/*.e2e.spec.ts"]),
+###########
+# Testing
+###########
+
+ng_test_library(
+    name = "radio_tests_lib",
+    srcs = glob(
+        ["**/*.spec.ts"],
+        exclude = ["**/*.e2e.spec.ts"],
+    ),
     deps = [
-        "//src/cdk/testing/private/e2e",
+        ":mdc-radio",
+        "//src/cdk/testing/private",
+        "@npm//@angular/forms",
+        "@npm//@angular/platform-browser",
+        "@npm//@material/radio",
     ],
 )
 
-e2e_test_suite(
-    name = "e2e_tests",
+ng_web_test_suite(
+    name = "unit_tests",
+    static_files = [
+        "@npm//:node_modules/@material/radio/dist/mdc.radio.js",
+    ],
     deps = [
-        ":e2e_test_sources",
-        "//src/cdk/testing/private/e2e",
+        ":radio_tests_lib",
+        "//src/material-experimental:mdc_require_config.js",
     ],
 )

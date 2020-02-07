@@ -6,6 +6,7 @@ export declare const MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR: any;
 
 export declare class MatRadioButton extends _MatRadioButtonMixinBase implements OnInit, AfterViewInit, OnDestroy, CanDisableRipple, HasTabIndex {
     _animationMode?: string | undefined;
+    protected _changeDetector: ChangeDetectorRef;
     _inputElement: ElementRef<HTMLInputElement>;
     ariaDescribedby: string;
     ariaLabel: string;
@@ -32,6 +33,7 @@ export declare class MatRadioButton extends _MatRadioButtonMixinBase implements 
     _markForCheck(): void;
     _onInputChange(event: Event): void;
     _onInputClick(event: Event): void;
+    protected _setDisabled(value: boolean): void;
     focus(options?: FocusOptions): void;
     ngAfterViewInit(): void;
     ngOnDestroy(): void;

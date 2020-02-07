@@ -1,12 +1,34 @@
-<div class="mdc-form-field">
+<div class="mdc-form-field" #formField
+     [class.mdc-form-field--align-end]="labelPosition == 'before'">
   <div class="mdc-radio" [ngClass]="_classes">
-    <input class="mdc-radio__native-control" type="radio" [id]="inputId" [disabled]="disabled">
+    <input #input class="mdc-radio__native-control" type="radio"
+           [id]="inputId"
+           [checked]="checked"
+           [disabled]="disabled"
+           [tabIndex]="tabIndex"
+           [attr.name]="name"
+           [attr.value]="value"
+           [required]="required"
+           [attr.aria-label]="ariaLabel"
+           [attr.aria-labelledby]="ariaLabelledby"
+           [attr.aria-describedby]="ariaDescribedby"
+           (change)="_onInputChange($event)"
+           (click)="_onInputClick($event)">
     <div class="mdc-radio__background">
       <div class="mdc-radio__outer-circle"></div>
       <div class="mdc-radio__inner-circle"></div>
     </div>
+    <div class="mdc-radio__ripple"></div>
+    <div mat-ripple class="mat-radio-ripple"
+         [matRippleTrigger]="formField"
+         [matRippleDisabled]="_isRippleDisabled()"
+         [matRippleCentered]="true"
+         [matRippleRadius]="20"
+         [matRippleAnimation]="{enterDuration: 150}">
+      <div class="mat-ripple-element mat-radio-persistent-ripple"></div>
+    </div>
   </div>
-  <label [for]="inputId" #label>
+  <label [for]="inputId">
     <ng-content></ng-content>
   </label>
 </div>

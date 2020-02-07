@@ -1,13 +1,38 @@
 @import '../mdc-helpers/mdc-helpers';
+@import '@material/radio/mixins';
+@import '@material/radio/variables';
 
 @mixin mat-radio-theme-mdc($theme) {
+  // Save original values of MDC global variables. We need to save these so we can restore the
+  // variables to their original values and prevent unintended side effects from using this mixin.
+  $orig-mdc-radio-baseline-theme-color: $mdc-radio-baseline-theme-color;
+
   @include mat-using-mdc-theme($theme) {
-    // TODO: MDC theme styles here.
+    $mdc-radio-baseline-theme-color: primary !global;
+
+    .mat-mdc-radio-button {
+      &.mat-primary {
+        @include mdc-radio-without-ripple($query: $mat-theme-styles-query);
+      }
+
+      &.mat-accent {
+        $mdc-radio-baseline-theme-color: secondary !global;
+        @include mdc-radio-without-ripple($query: $mat-theme-styles-query);
+      }
+
+      &.mat-warn {
+        $mdc-radio-baseline-theme-color: error !global;
+        @include mdc-radio-without-ripple($query: $mat-theme-styles-query);
+      }
+    }
   }
+
+  // Restore original values of MDC global variables.
+  $mdc-radio-baseline-theme-color: $orig-mdc-radio-baseline-theme-color !global;
 }
 
 @mixin mat-radio-typography-mdc($config) {
   @include mat-using-mdc-typography($config) {
-    // TODO: MDC typography styles here.
+    @include mdc-radio-without-ripple($query: $mat-typography-styles-query);
   }
 }

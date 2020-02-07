@@ -14,4 +14,14 @@ import {Component} from '@angular/core';
   styleUrls: ['mdc-radio-demo.css'],
 })
 export class MdcRadioDemo {
+  isAlignEnd: boolean = false;
+  isDisabled: boolean = false;
+  isRequired: boolean = false;
+  favoriteSeason: string = 'Autumn';
+  seasonOptions = [
+    'Winter',
+    'Spring',
+    'Summer',
+    'Autumn',
+  ];
 }

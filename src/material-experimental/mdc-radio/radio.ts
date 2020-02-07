@@ -7,78 +7,143 @@
  */
 
 import {
-  ChangeDetectionStrategy,
-  Component,
-  ViewEncapsulation,
-  Input,
-  OnDestroy,
   AfterViewInit,
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
+  Component,
+  ContentChildren,
+  Directive,
+  ElementRef,
+  forwardRef,
+  Inject,
+  OnDestroy,
+  Optional,
+  QueryList,
+  ViewEncapsulation,
 } from '@angular/core';
-import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {MDCRadioAdapter, MDCRadioFoundation} from '@material/radio';
+import {
+  MAT_RADIO_DEFAULT_OPTIONS,
+  MatRadioButton as BaseMatRadioButton,
+  MatRadioDefaultOptions,
+  MatRadioGroup as BaseMatRadioGroup,
+} from '@angular/material/radio';
+import {FocusMonitor} from '@angular/cdk/a11y';
+import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
+import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
+import {NG_VALUE_ACCESSOR} from '@angular/forms';
 
-// Increasing integer for generating unique ids for radio components.
-let nextUniqueId = 0;
+// Re-export symbols used by the base Material radio component so that users do not need to depend
+// on both packages.
+export {MatRadioChange, MAT_RADIO_DEFAULT_OPTIONS} from '@angular/material/radio';
+
+/**
+ * Provider Expression that allows mat-radio-group to register as a ControlValueAccessor. This
+ * allows it to support [(ngModel)] and ngControl.
+ * @docs-private
+ */
+export const MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR: any = {
+  provide: NG_VALUE_ACCESSOR,
+  useExisting: forwardRef(() => MatRadioGroup),
+  multi: true
+};
+
+
+/**
+ * A group of radio buttons. May contain one or more `<mat-radio-button>` elements.
+ */
+@Directive({
+  selector: 'mat-radio-group',
+  exportAs: 'matRadioGroup',
+  providers: [MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR],
+  host: {
+    'role': 'radiogroup',
+    'class': 'mat-mdc-radio-group',
+    '[class.mat-radio-group]': 'false',
+  },
+})
+export class MatRadioGroup extends BaseMatRadioGroup {
+  /** Child radio buttons. */
+  @ContentChildren(forwardRef(() => MatRadioButton), { descendants: true })
+      _radios: QueryList<BaseMatRadioButton>;
+}
 
 @Component({
   selector: 'mat-radio-button',
   templateUrl: 'radio.html',
   styleUrls: ['radio.css'],
   host: {
-    'class': 'mat-mdc-radio',
+    'class': 'mat-mdc-radio-button',
+    // Ivy will inherit the mat-radio-button class from the parent class, but we do not want
+    // this to be applied in the MDC component. Set this explicitly to false so it is not applied.
+    '[class.mat-radio-button]': 'false',
     '[attr.id]': 'id',
+    '[class.mat-primary]': 'color === "primary"',
+    '[class.mat-accent]': 'color === "accent"',
+    '[class.mat-warn]': 'color === "warn"',
+    '[attr.tabindex]': '-1',
+    '[attr.aria-label]': 'null',
+    '[attr.aria-labelledby]': 'null',
+    '[attr.aria-describedby]': 'null',
+    // Note: under normal conditions focus shouldn't land on this element, however it may be
+    // programmatically set, for example inside of a focus trap, in this case we want to forward
+    // the focus to the native element.
+    '(focus)': '_inputElement.nativeElement.focus()',
   },
+  inputs: ['disableRipple', 'tabIndex'],
   exportAs: 'matRadioButton',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatRadioButton implements AfterViewInit, OnDestroy {
-
-  private _uniqueId: string = `mat-radio-${++nextUniqueId}`;
+export class MatRadioButton extends BaseMatRadioButton implements AfterViewInit, OnDestroy {
 
   private _radioAdapter: MDCRadioAdapter = {
     addClass: (className: string) => this._setClass(className, true),
     removeClass: (className: string) => this._setClass(className, false),
     setNativeControlDisabled: (disabled: boolean) => {
-      this._disabled = disabled;
-      this._changeDetectorRef.markForCheck();
+      if (this.disabled !== disabled) {
+        this.disabled = disabled;
+        this._changeDetector.markForCheck();
+      }
     },
   };
 
   _radioFoundation = new MDCRadioFoundation(this._radioAdapter);
   _classes: {[key: string]: boolean} = {};
 
-  /** The unique ID for the radio button. */
-  @Input() id: string = this._uniqueId;
-
-  /** Whether the radio button is disabled. */
-  @Input()
-  get disabled(): boolean {
-    return this._disabled;
+  constructor(@Optional() radioGroup: MatRadioGroup,
+              elementRef: ElementRef,
+              _changeDetector: ChangeDetectorRef,
+              _focusMonitor: FocusMonitor,
+              _radioDispatcher: UniqueSelectionDispatcher,
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) _animationMode?: string,
+              @Optional() @Inject(MAT_RADIO_DEFAULT_OPTIONS)
+              _providerOverride?: MatRadioDefaultOptions) {
+    super(radioGroup, elementRef, _changeDetector, _focusMonitor,
+        _radioDispatcher, _animationMode, _providerOverride);
   }
-  set disabled(disabled: boolean) {
-    this._radioFoundation.setDisabled(coerceBooleanProperty(disabled));
-  }
-  private _disabled = false;
-
-  constructor(private _changeDetectorRef: ChangeDetectorRef) {}
-
-  /** ID of the native input element inside `<mat-radio-button>` */
-  get inputId(): string { return `${this.id || this._uniqueId}-input`; }
 
   ngAfterViewInit() {
+    super.ngAfterViewInit();
     this._radioFoundation.init();
   }
 
   ngOnDestroy() {
+    super.ngOnDestroy();
     this._radioFoundation.destroy();
   }
 
   private _setClass(cssClass: string, active: boolean) {
     this._classes = {...this._classes, [cssClass]: active};
-    this._changeDetectorRef.markForCheck();
+    this._changeDetector.markForCheck();
   }
 
-  static ngAcceptInputType_disabled: BooleanInput;
+  /**
+   * Overrides the parent function so that the foundation can be set with the current disabled
+   * state.
+   */
+  protected _setDisabled(value: boolean) {
+    super._setDisabled(value);
+    this._radioFoundation.setDisabled(this.disabled);
+  }
 }
