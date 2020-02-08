@@ -1,5 +1,6 @@
 <ng-directive-forest
   (selectNode)="handleNodeSelection($event)"
+  (selectDomElement)="handleSelectDomElement($event)"
   (highlightFromComponent)="handleHighlightFromComponent($event)"
   (unhighlightFromComponent)="handleUnhighlightFromComponent($event)"
   [forest]="forest"

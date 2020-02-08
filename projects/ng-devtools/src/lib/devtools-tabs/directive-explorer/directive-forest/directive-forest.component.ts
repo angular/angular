@@ -40,6 +40,7 @@ export class DirectiveForestComponent {
   @Input() highlightIDinTreeFromElement: ElementID | null = null;
 
   @Output() selectNode = new EventEmitter();
+  @Output() selectDomElement = new EventEmitter();
   @Output() highlightFromComponent = new EventEmitter<ElementID>();
   @Output() unhighlightFromComponent = new EventEmitter<null>();
 
@@ -69,6 +70,10 @@ export class DirectiveForestComponent {
     const matchedTree: FlatNode[] = this._findMatchedNodes();
     this.currentlyMatchedIndex = matchedTree.findIndex(matchedNode => matchedNode.id === node.id);
     this.select(node);
+  }
+
+  handleSelectDomElement(node: FlatNode): void {
+    this.selectDomElement.emit(node.original);
   }
 
   select(node: FlatNode): void {

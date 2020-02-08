@@ -5,6 +5,7 @@
   <mat-tree-node
     [ngClass]="{ matched: isMatched(node), selected: isSelected(node), highlighted: isHighlighted(node) }"
     (click)="handleSelect(node)"
+    (dblclick)="handleSelectDomElement(node)"
     (mouseenter)="highlightNode(node.id)"
     (mouseleave)="removeHighlight()"
     *matTreeNodeDef="let node"
@@ -19,6 +20,7 @@
   <mat-tree-node
     [ngClass]="{ matched: isMatched(node), selected: isSelected(node), highlighted: isHighlighted(node) }"
     (click)="handleSelect(node)"
+    (dblclick)="handleSelectDomElement(node)"
     (mouseenter)="highlightNode(node.id)"
     (mouseleave)="removeHighlight()"
     *matTreeNodeDef="let node; when: hasChild"

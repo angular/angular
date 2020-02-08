@@ -7,4 +7,10 @@ export class ChromeApplicationOperations extends ApplicationOperations {
       chrome.devtools.inspectedWindow.eval(`inspect(inspectedApplication.findConstructorByPathId('${id}'))`);
     }
   }
+
+  selectDomElement(id: number[]): void {
+    if (chrome.devtools) {
+      chrome.devtools.inspectedWindow.eval(`inspect(inspectedApplication.findDomElementByPathId('${id}'))`);
+    }
+  }
 }
