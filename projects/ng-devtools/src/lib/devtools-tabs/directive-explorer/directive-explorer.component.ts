@@ -98,6 +98,10 @@ export class DirectiveExplorerComponent implements OnInit {
     this._appOperations.viewSource(this.currentSelectedElement.id);
   }
 
+  handleSelectDomElement(node: IndexedNode): void {
+    this._appOperations.selectDomElement(node.id);
+  }
+
   private _constructViewQuery(): ComponentExplorerViewQuery {
     if (!this.currentSelectedElement) {
       return { selectedElement: null, expandedProperties: null };

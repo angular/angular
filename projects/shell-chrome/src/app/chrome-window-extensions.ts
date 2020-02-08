@@ -30,4 +30,12 @@ const chromeWindowExtensions = {
       console.error('This component has no instance and therefore no constructor');
     }
   },
+  findDomElementByPathId: (serializedId: string): Element => {
+    const node = findNodeFromSerializedPathId(serializedId);
+    if (node === null) {
+      console.error(`Cannot find element associated with node ${serializedId}`);
+      return null;
+    }
+    return node.nativeElement;
+  }
 };
