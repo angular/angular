@@ -17,14 +17,14 @@ const ngPackages = [
   'elements',
   'compiler-cli',
   'language-service',
-].map(p => `"@angular/${p}@file:${pwd}/../../../dist/packages-dist/${p}"`);
+].map(p => `"@angular/${p}@file:${pwd}/../../dist/packages-dist/${p}"`);
 
 // Keep typescript, tslib, and @types/node versions in sync with the ones used in this repo
 const nodePackages = [
   '@types/node',
   'tslib',
   'typescript',
-].map(p => `"${p}@file:${pwd}/../../../node_modules/${p}"`);
+].map(p => `"${p}@file:${pwd}/../../node_modules/${p}"`);
 
 const packages = [
   ...ngPackages,
