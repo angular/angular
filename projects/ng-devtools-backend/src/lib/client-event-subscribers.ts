@@ -20,6 +20,8 @@ import {
 } from './angular-check';
 
 export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void => {
+  messageBus.on('shutdown', shutdownCallback(messageBus));
+
   messageBus.on('getLatestComponentExplorerView', getLatestComponentExplorerViewCallback(messageBus));
 
   messageBus.on('queryNgAvailability', checkForAngularCallback(messageBus));
@@ -36,6 +38,10 @@ export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void =>
   setupInspector(messageBus);
 
   initChangeDetection(messageBus);
+};
+
+const shutdownCallback = (messageBus: MessageBus<Events>) => () => {
+  messageBus.destroy();
 };
 
 const initChangeDetection = (messageBus: MessageBus<Events>) => {
