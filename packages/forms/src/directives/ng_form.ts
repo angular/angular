@@ -79,15 +79,6 @@ const resolvedPromise = (() => Promise.resolve(null))();
  *
  * {@example forms/ts/simpleForm/simple_form_example.ts region='Component'}
  *
- * Since version 4, Angular automatically adds the `novalidate` attribute on any `<form>` whenever
- * the `FormModule` or the `ReactiveFormModule` is imported, therefore you can omit it in your code.
- * If you want to use explicitly native validation with Angular forms, you can add the
- * `ngNativeValidate` attribute to the form.
- *
- * ```html
- * <form ngNativeValidate></form>
- * ```
- *
  * ### Setting the update options
  *
  * The following example shows you how to change the "updateOn" option from its default using
@@ -96,6 +87,20 @@ const resolvedPromise = (() => Promise.resolve(null))();
  * ```html
  * <form [ngFormOptions]="{updateOn: 'blur'}">
  *    <input name="one" ngModel>  <!-- this ngModel will update on blur -->
+ * </form>
+ * ```
+ *
+ * ### Native DOM validation UI
+ *
+ * In order to prevent the native DOM form validation UI from interfering with Angular's form
+ * validation, Angular automatically adds the `novalidate` attribute on any `<form>` whenever
+ * `FormModule` or `ReactiveFormModule` are imported into the application.
+ * If you want to explicitly enable native DOM validation UI with Angular forms, you can add the
+ * `ngNativeValidate` attribute to the `<form>` element:
+ *
+ * ```html
+ * <form ngNativeValidate>
+ *   ...
  * </form>
  * ```
  *
