@@ -21,6 +21,7 @@ export interface DiagnosticTemplateInfo {
   members: SymbolTable;
   htmlAst: Node[];
   templateAst: TemplateAst[];
+  source: string;
 }
 
 export function getTemplateExpressionDiagnostics(info: DiagnosticTemplateInfo): ng.Diagnostic[] {
@@ -103,7 +104,7 @@ function getVarDeclarations(
           // that have been declared so far are also in scope.
           info.query.createSymbolTable(results),
         ]);
-        symbol = refinedVariableType(variable.value, symbolsInScope, info.query, current);
+        symbol = refinedVariableType(variable.value, symbolsInScope, info, current);
       }
       results.push({
         name: variable.name,
@@ -143,11 +144,11 @@ function getVariableTypeFromDirectiveContext(
  * case for `ngFor` and `ngIf`. If resolution fails, return the `any` type.
  * @param value variable value name
  * @param mergedTable symbol table for all variables in scope
- * @param query
+ * @param info available template information
  * @param templateElement
  */
 function refinedVariableType(
-    value: string, mergedTable: SymbolTable, query: SymbolQuery,
+    value: string, mergedTable: SymbolTable, info: DiagnosticTemplateInfo,
     templateElement: EmbeddedTemplateAst): Symbol {
   if (value === '$implicit') {
     // Special case: ngFor directive
@@ -159,9 +160,10 @@ function refinedVariableType(
       const ngForOfBinding = ngForDirective.inputs.find(i => i.directiveName == 'ngForOf');
       if (ngForOfBinding) {
         // Check if there is a known type for the ngFor binding.
-        const bindingType = new AstType(mergedTable, query, {}).getType(ngForOfBinding.value);
+        const bindingType =
+            new AstType(mergedTable, info.query, {}, info.source).getType(ngForOfBinding.value);
         if (bindingType) {
-          const result = query.getElementType(bindingType);
+          const result = info.query.getElementType(bindingType);
           if (result) {
             return result;
           }
@@ -184,7 +186,8 @@ function refinedVariableType(
       const ngIfBinding = ngIfDirective.inputs.find(i => i.directiveName === 'ngIf');
       if (ngIfBinding) {
         // Check if there is a known type bound to the ngIf input.
-        const bindingType = new AstType(mergedTable, query, {}).getType(ngIfBinding.value);
+        const bindingType =
+            new AstType(mergedTable, info.query, {}, info.source).getType(ngIfBinding.value);
         if (bindingType) {
           return bindingType;
         }
@@ -193,7 +196,7 @@ function refinedVariableType(
   }
 
   // We can't do better, return any
-  return query.getBuiltinType(BuiltinType.Any);
+  return info.query.getBuiltinType(BuiltinType.Any);
 }
 
 function getEventDeclaration(
@@ -338,9 +341,9 @@ class ExpressionDiagnosticsVisitor extends RecursiveTemplateAstVisitor {
     return ast.sourceSpan.start.offset;
   }
 
-  private diagnoseExpression(ast: AST, offset: number, event: boolean) {
-    const scope = this.getExpressionScope(this.path, event);
-    const analyzer = new AstType(scope, this.info.query, {event});
+  private diagnoseExpression(ast: AST, offset: number, inEvent: boolean) {
+    const scope = this.getExpressionScope(this.path, inEvent);
+    const analyzer = new AstType(scope, this.info.query, {inEvent}, this.info.source);
     for (const diagnostic of analyzer.getDiagnostics(ast)) {
       diagnostic.span = this.absSpan(diagnostic.span, offset);
       this.diagnostics.push(diagnostic);

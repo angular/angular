@@ -97,7 +97,8 @@ export function diagnosticInfoFromTemplateInfo(info: AstResult): DiagnosticTempl
     query: info.template.query,
     members: info.template.members,
     htmlAst: info.htmlAst,
-    templateAst: info.templateAst
+    templateAst: info.templateAst,
+    source: info.template.source,
   };
 }
 

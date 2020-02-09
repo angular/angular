@@ -220,7 +220,10 @@ function signaturesOf(type: ts.Type, context: TypeContext): Signature[] {
 
 function selectSignature(type: ts.Type, context: TypeContext, types: Symbol[]): Signature|
     undefined {
-  // TODO: Do a better job of selecting the right signature.
+  // TODO: Do a better job of selecting the right signature. TypeScript does not currently support a
+  // Type Relationship API (see https://github.com/angular/vscode-ng-language-service/issues/143).
+  // Consider creating a TypeCheckBlock host in the language service that may also act as a
+  // scratchpad for type comparisons.
   const signatures = type.getCallSignatures();
   return signatures.length ? new SignatureWrapper(signatures[0], context) : undefined;
 }
