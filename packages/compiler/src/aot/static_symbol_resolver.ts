@@ -313,9 +313,9 @@ export class StaticSymbolResolver {
             }
           });
         } else {
-          // handle the symbols via export * directives.
+          // Handle the symbols loaded by 'export *' directives.
           const resolvedModule = this.resolveModule(moduleExport.from, filePath);
-          if (resolvedModule) {
+          if (resolvedModule && resolvedModule !== filePath) {
             const nestedExports = this.getSymbolsOf(resolvedModule);
             nestedExports.forEach((targetSymbol) => {
               const sourceSymbol = this.getStaticSymbol(filePath, targetSymbol.name);
