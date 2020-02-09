@@ -40,6 +40,7 @@ export function getTemplateDiagnostics(ast: AstResult): ng.Diagnostic[] {
     offset: template.span.start,
     query: template.query,
     members: template.members,
+    source: ast.template.source,
   });
 }
 

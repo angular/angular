@@ -58,7 +58,7 @@ export const Diagnostic: Record<DiagnosticName, DiagnosticMessage> = {
   },
 
   call_target_not_callable: {
-    message: 'Call target is not callable',
+    message: `Call target '%1' has non-callable type '%2'.`,
     kind: 'Error',
   },
 

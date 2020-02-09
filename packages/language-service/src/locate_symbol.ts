@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, Attribute, BoundDirectivePropertyAst, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, ExpressionBinding, RecursiveTemplateAstVisitor, SelectorMatcher, StaticSymbol, TemplateAst, TemplateAstPath, VariableBinding, templateVisitAll, tokenReference} from '@angular/compiler';
+import {AST, Attribute, BoundDirectivePropertyAst, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, RecursiveTemplateAstVisitor, SelectorMatcher, StaticSymbol, TemplateAst, TemplateAstPath, VariableBinding, templateVisitAll, tokenReference} from '@angular/compiler';
 import * as tss from 'typescript/lib/tsserverlibrary';
 
 import {AstResult} from './common';
@@ -73,7 +73,7 @@ function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult):
         } else {
           const dinfo = diagnosticInfoFromTemplateInfo(info);
           const scope = getExpressionScope(dinfo, path);
-          result = getExpressionSymbol(scope, ast, templatePosition, info.template.query);
+          result = getExpressionSymbol(scope, ast, templatePosition, info.template);
         }
         if (result) {
           symbol = result.symbol;
@@ -149,8 +149,7 @@ function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult):
           if (inSpan(expressionPosition, ast.value.span)) {
             const dinfo = diagnosticInfoFromTemplateInfo(info);
             const scope = getExpressionScope(dinfo, path);
-            const result =
-                getExpressionSymbol(scope, ast.value, templatePosition, info.template.query);
+            const result = getExpressionSymbol(scope, ast.value, templatePosition, info.template);
             if (result) {
               symbol = result.symbol;
               span = offsetSpan(result.span, ast.sourceSpan.start.offset);
@@ -217,7 +216,7 @@ function getSymbolInMicrosyntax(info: AstResult, path: TemplateAstPath, attribut
     if (inSpan(path.position, tb.value?.ast.sourceSpan)) {
       const dinfo = diagnosticInfoFromTemplateInfo(info);
       const scope = getExpressionScope(dinfo, path);
-      result = getExpressionSymbol(scope, tb.value !, path.position, info.template.query);
+      result = getExpressionSymbol(scope, tb.value !, path.position, info.template);
     } else if (inSpan(path.position, tb.sourceSpan)) {
       const template = path.first(EmbeddedTemplateAst);
       if (template) {

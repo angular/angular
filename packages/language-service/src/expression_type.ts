@@ -12,7 +12,7 @@ import {Diagnostic, createDiagnostic} from './diagnostic_messages';
 import {BuiltinType, Signature, Symbol, SymbolQuery, SymbolTable} from './symbols';
 import * as ng from './types';
 
-export interface ExpressionDiagnosticsContext { event?: boolean; }
+export interface ExpressionDiagnosticsContext { inEvent?: boolean; }
 
 // AstType calculatetype of the ast given AST element.
 export class AstType implements AstVisitor {
@@ -20,13 +20,13 @@ export class AstType implements AstVisitor {
 
   constructor(
       private scope: SymbolTable, private query: SymbolQuery,
-      private context: ExpressionDiagnosticsContext) {}
+      private context: ExpressionDiagnosticsContext, private source: string) {}
 
   getType(ast: AST): Symbol { return ast.visit(this); }
 
   getDiagnostics(ast: AST): ng.Diagnostic[] {
     const type: Symbol = ast.visit(this);
-    if (this.context.event && type.callable) {
+    if (this.context.inEvent && type.callable) {
       this.diagnostics.push(
           createDiagnostic(ast.span, Diagnostic.callable_expression_expected_method_call));
     }
@@ -206,14 +206,16 @@ export class AstType implements AstVisitor {
     const args = ast.args.map(arg => this.getType(arg));
     const target = this.getType(ast.target !);
     if (!target || !target.callable) {
-      this.diagnostics.push(createDiagnostic(ast.span, Diagnostic.call_target_not_callable));
+      this.diagnostics.push(createDiagnostic(
+          ast.span, Diagnostic.call_target_not_callable, this.sourceOf(ast.target !), target.name));
       return this.anyType;
     }
     const signature = target.selectSignature(args);
     if (signature) {
       return signature.result;
     }
-    // TODO: Consider a better error message here.
+    // TODO: Consider a better error message here. See `typescript_symbols#selectSignature` for more
+    // details.
     this.diagnostics.push(
         createDiagnostic(ast.span, Diagnostic.unable_to_resolve_compatible_call_signature));
     return this.anyType;
@@ -358,6 +360,15 @@ export class AstType implements AstVisitor {
 
   visitSafePropertyRead(ast: SafePropertyRead) {
     return this.resolvePropertyRead(this.query.getNonNullableType(this.getType(ast.receiver)), ast);
+  }
+
+  /**
+   * Gets the source of an expession AST.
+   * The AST's sourceSpan is relative to the start of the template source code, which is contained
+   * at this.source.
+   */
+  private sourceOf(ast: AST): string {
+    return this.source.substring(ast.sourceSpan.start, ast.sourceSpan.end);
   }
 
   private _anyType: Symbol|undefined;

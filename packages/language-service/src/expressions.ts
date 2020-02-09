@@ -8,8 +8,7 @@
 
 import {AST, ASTWithSource, AstPath as AstPathBase, RecursiveAstVisitor} from '@angular/compiler';
 import {AstType} from './expression_type';
-
-import {BuiltinType, Span, Symbol, SymbolQuery, SymbolTable} from './types';
+import {BuiltinType, Span, Symbol, SymbolTable, TemplateSource} from './types';
 import {inSpan} from './utils';
 
 type AstPath = AstPathBase<AST>;
@@ -38,13 +37,16 @@ function findAstAt(ast: AST, position: number, excludeEmpty: boolean = false): A
 }
 
 export function getExpressionCompletions(
-    scope: SymbolTable, ast: AST, position: number, query: SymbolQuery): Symbol[]|undefined {
+    scope: SymbolTable, ast: AST, position: number, templateInfo: TemplateSource): Symbol[]|
+    undefined {
   const path = findAstAt(ast, position);
   if (path.empty) return undefined;
   const tail = path.tail !;
   let result: SymbolTable|undefined = scope;
 
-  function getType(ast: AST): Symbol { return new AstType(scope, query, {}).getType(ast); }
+  function getType(ast: AST): Symbol {
+    return new AstType(scope, templateInfo.query, {}, templateInfo.source).getType(ast);
+  }
 
   // If the completion request is in a not in a pipe or property access then the global scope
   // (that is the scope of the implicit receiver) is the right scope as the user is typing the
@@ -66,7 +68,7 @@ export function getExpressionCompletions(
       if (position >= ast.exp.span.end &&
           (!ast.args || !ast.args.length || position < (<AST>ast.args[0]).span.start)) {
         // We are in a position a pipe name is expected.
-        result = query.getPipes();
+        result = templateInfo.query.getPipes();
       }
     },
     visitPrefixNot(ast) {},
@@ -81,7 +83,7 @@ export function getExpressionCompletions(
     },
     visitQuote(ast) {
       // For a quote, return the members of any (if there are any).
-      result = query.getBuiltinType(BuiltinType.Any).members();
+      result = templateInfo.query.getBuiltinType(BuiltinType.Any).members();
     },
     visitSafeMethodCall(ast) {
       const receiverType = getType(ast.receiver);
@@ -106,12 +108,14 @@ export function getExpressionCompletions(
  */
 export function getExpressionSymbol(
     scope: SymbolTable, ast: AST, position: number,
-    query: SymbolQuery): {symbol: Symbol, span: Span}|undefined {
+    templateInfo: TemplateSource): {symbol: Symbol, span: Span}|undefined {
   const path = findAstAt(ast, position, /* excludeEmpty */ true);
   if (path.empty) return undefined;
   const tail = path.tail !;
 
-  function getType(ast: AST): Symbol { return new AstType(scope, query, {}).getType(ast); }
+  function getType(ast: AST): Symbol {
+    return new AstType(scope, templateInfo.query, {}, templateInfo.source).getType(ast);
+  }
 
   let symbol: Symbol|undefined = undefined;
   let span: Span|undefined = undefined;
@@ -139,7 +143,7 @@ export function getExpressionSymbol(
     visitPipe(ast) {
       if (inSpan(position, ast.nameSpan, /* exclusive */ true)) {
         // We are in a position a pipe name is expected.
-        const pipes = query.getPipes();
+        const pipes = templateInfo.query.getPipes();
         symbol = pipes.get(ast.name);
 
         // `nameSpan` is an absolute span, but the span expected by the result of this method is

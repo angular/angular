@@ -492,7 +492,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
   visitBoundText(ast: BoundTextAst) {
     if (inSpan(this.position, ast.value.sourceSpan)) {
       const completions = getExpressionCompletions(
-          this.getExpressionScope(), ast.value, this.position, this.info.template.query);
+          this.getExpressionScope(), ast.value, this.position, this.info.template);
       if (completions) {
         this.addSymbolsToCompletions(completions);
       }
@@ -501,7 +501,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
 
   private processExpressionCompletions(value: AST) {
     const symbols = getExpressionCompletions(
-        this.getExpressionScope(), value, this.position, this.info.template.query);
+        this.getExpressionScope(), value, this.position, this.info.template);
     if (symbols) {
       this.addSymbolsToCompletions(symbols);
     }
