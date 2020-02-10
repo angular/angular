@@ -35,7 +35,8 @@ const packages = [
 ].join(' ');
 
 // Clean up previously run test
-rm('-rf', `${__dirname}/demo`);
+cd(__dirname);
+rm('-rf', `demo`);
 
 // Set up demo project
 exec('ng version');
