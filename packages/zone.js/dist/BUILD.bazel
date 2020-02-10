@@ -12,10 +12,25 @@ genrule(
 )
 
 genrule(
-    name = "zone_d_ts",
+    name = "zone_js_d_ts",
     srcs = ["//packages/zone.js/lib:zone_d_ts"],
     outs = ["zone.js.d.ts"],
     cmd = "cp $< $@",
+)
+
+genrule(
+    name = "zone_extensions_d_ts",
+    srcs = ["//packages/zone.js/lib:zone.api.extensions.ts"],
+    outs = ["zone.api.extensions.ts"],
+    cmd = "cp $< $@",
+)
+
+filegroup(
+    name = "zone_d_ts",
+    srcs = [
+        ":zone_extensions_d_ts",
+        ":zone_js_d_ts",
+    ],
 )
 
 zone_rollup_bundle(
