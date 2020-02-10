@@ -54,17 +54,13 @@ See [Keeping Up-to-Date](guide/updating "Updating your projects") for more infor
 {@a previews}
 ### Preview releases
 
-We let you preview what's coming by providing Beta releases and Release Candidates (`rc`) for each major and minor release:
+We let you preview what's coming by providing "Next" and Release Candidates (`rc`) pre-releases for each major and minor release:
 
-<!--
-* **Next:** The release that is under active development. The next release is indicated by a release tag appended with the  `next` identifier, such as  `8.1.0-next.0`. For the next version of the documentation, see [next.angular.io](https://next.angular.io).
--->
+* **Next:** The release that is under active development and testing. The next release is indicated by a release tag appended with the  `-next` identifier, such as  `8.1.0-next.0`.
 
-* **Beta:** A release that is under active development and testing. A Beta release is indicated by a release tag appended with the  `beta` identifier, such as  `8.0.0-beta.0`.
+* **Release candidate:** A release that is feature complete and in final testing. A release candidate is indicated by a release tag appended with the `-rc` identifier, such as version `8.1.0-rc.0`.
 
-* **Release candidate:** A release that is feature complete and in final testing. A release candidate is indicated by a release tag appended with the `rc` identifier, such as version `8.1.0-rc`.
-
-The next version of the documentation is available at [next.angular.io](https://next.angular.io). This includes any documentation for Beta or Release Candidate features and APIs.
+The latest `next` or `rc` pre-release version of the documentation is available at [next.angular.io](https://next.angular.io).
 
 
 {@a frequency}
@@ -74,7 +70,7 @@ We work toward a regular schedule of releases, so that you can plan and coordina
 
 <div class="alert is-helpful">
 
-Disclaimer: Dates are offered as general guidance and will be adjusted by us when necessary to ensure delivery of a high-quality platform. 
+Disclaimer: Dates are offered as general guidance and will be adjusted by us when necessary to ensure delivery of a high-quality platform.
 
 </div>
 
@@ -84,9 +80,9 @@ In general, you can expect the following release cycle:
 
 * 1-3 minor releases for each major release
 
-* A patch release almost every week
+* A patch release and pre-release (`next` or `rc`) build almost every week
 
-This cadence of releases gives you access to new features as soon as they are ready, while maintaining the stability and reliability of the platform for production users.
+This cadence of releases gives eager developers access to new features as soon as they are fully developed and pass through our code review and integration testing processes, while maintaining the stability and reliability of the platform for production users that prefer to receive features after they have been validated by Google and other developers that use the pre-release builds.
 
 
 
