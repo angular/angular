@@ -55,7 +55,6 @@ export class IFrameMessageBus extends MessageBus<Events> {
   }
 
   emit<E extends keyof Events>(topic: E, args?: Parameters<Events[E]>): void {
-    console.log('@@ Sending message', topic, args);
     this._docWindow.postMessage(
       {
         source: this._source,

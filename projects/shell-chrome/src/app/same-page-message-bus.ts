@@ -55,7 +55,6 @@ export class SamePageMessageBus extends MessageBus<Events> {
   }
 
   emit<E extends keyof Events>(topic: E, args?: Parameters<Events[E]>): void {
-    console.log('@@ Sending message', topic, args);
     window.postMessage(
       {
         source: this._source,

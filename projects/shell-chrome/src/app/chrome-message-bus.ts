@@ -22,7 +22,6 @@ export class ChromeMessageBus extends MessageBus<Events> {
 
   onAny(cb: AnyEventCallback<Events>): () => void {
     const listener = (msg: ChromeMessage<Events, keyof Events>): void => {
-      console.log('Received message', msg);
       cb(msg.topic, msg.args);
     };
     this._port.onMessage.addListener(listener);
@@ -35,7 +34,6 @@ export class ChromeMessageBus extends MessageBus<Events> {
 
   on<E extends keyof Events>(topic: E, cb: Events[E]): () => void {
     const listener = (msg: ChromeMessage<Events, keyof Events>): void => {
-      console.log('Received message', msg);
       if (msg.topic === topic) {
         cb.apply(null, msg.args);
       }
@@ -59,7 +57,6 @@ export class ChromeMessageBus extends MessageBus<Events> {
   }
 
   emit<E extends keyof Events>(topic: E, args?: Parameters<Events[E]>): void {
-    console.log('@@ Sending message', topic, args);
     if (this._disconnected) {
       return;
     }

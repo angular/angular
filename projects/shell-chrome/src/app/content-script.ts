@@ -29,12 +29,10 @@ const handshakeWithBackend = (): void => {
 };
 
 chromeMessageBus.onAny((topic, args) => {
-  console.log('Forwarding message from background to backend', topic);
   localMessageBus.emit(topic, args);
 });
 
 localMessageBus.onAny((topic, args) => {
-  console.log('Forwarding message from backend to background', topic);
   backendInitialized = true;
   chromeMessageBus.emit(topic, args);
 });
