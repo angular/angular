@@ -99,7 +99,8 @@ describe('hover', () => {
   });
 
   it('should be able to find a reference to a directive', () => {
-    const content = mockHost.override(TEST_TEMPLATE, `<div string-model~{cursor}></div>`);
+    const content =
+        mockHost.override(TEST_TEMPLATE, `<div><div string-model~{cursor}></div></div>`);
     const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
     const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
     expect(quickInfo).toBeDefined();
