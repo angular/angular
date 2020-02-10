@@ -123,8 +123,8 @@ function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult):
         },
         visitElementProperty(ast) { attributeValueSymbol(ast.value); },
         visitAttr(ast) {
-          const element = path.head;
-          if (!element || !(element instanceof ElementAst)) return;
+          const element = path.first(ElementAst);
+          if (!element) return;
           // Create a mapping of all directives applied to the element from their selectors.
           const matcher = new SelectorMatcher<DirectiveAst>();
           for (const dir of element.directives) {
