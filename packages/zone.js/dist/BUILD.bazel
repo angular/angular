@@ -25,9 +25,17 @@ genrule(
     cmd = "cp $< $@",
 )
 
+genrule(
+    name = "zone_configurations_d_ts",
+    srcs = ["//packages/zone.js/lib:zone.configurations.api.ts"],
+    outs = ["zone.configurations.api.ts"],
+    cmd = "cp $< $@",
+)
+
 filegroup(
     name = "zone_d_ts",
     srcs = [
+        ":zone_configurations_d_ts",
         ":zone_extensions_d_ts",
         ":zone_js_d_ts",
     ],
