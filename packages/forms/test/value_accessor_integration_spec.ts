@@ -64,7 +64,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
       fixture.detectChanges();
 
       const input = fixture.debugElement.query(By.css('input'));
-      form.valueChanges.subscribe({next: (value) => { throw 'Should not happen'; }});
+      form.valueChanges.subscribe({next: (value) => { throw new Error('Should not happen'); }});
       input.nativeElement.value = 'updatedValue';
 
       dispatchEvent(input.nativeElement, 'change');
@@ -481,7 +481,8 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
         const assertOptionElementSelectedState = (selectedStates: boolean[]): void => {
           const options = fixture.debugElement.queryAll(By.css('option'));
           if (options.length !== selectedStates.length) {
-            throw 'the selected state values to assert does not match the number of options';
+            throw new Error(
+                'the selected state values to assert does not match the number of options');
           }
           for (let i = 0; i < selectedStates.length; i++) {
             expect(options[i].nativeElement.selected).toBe(selectedStates[i]);
@@ -1056,6 +1057,38 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
              expect(fixture.componentInstance.control.status).toEqual('DISABLED');
            });
 
+        describe('should support custom accessors with setDisabledState - formControlName', () => {
+          let fixture: ComponentFixture<CvaWithDisabledStateForm>;
+
+          beforeEach(() => { fixture = initTest(CvaWithDisabledStateForm, CvaWithDisabledState); });
+
+          it('sets the disabled state when the control is initally disabled', () => {
+            fixture.componentInstance.form = new FormGroup({
+              'login': new FormControl({value: 'aa', disabled: true}),
+            });
+            fixture.detectChanges();
+
+            expect(fixture.componentInstance.form.status).toEqual('DISABLED');
+            expect(fixture.componentInstance.form.get('login') !.status).toEqual('DISABLED');
+            expect(fixture.debugElement.query(By.directive(CvaWithDisabledState))
+                       .nativeElement.textContent)
+                .toEqual('DISABLED');
+          });
+
+          it('sets the enabled state when the control is initally enabled', () => {
+            fixture.componentInstance.form = new FormGroup({
+              'login': new FormControl({value: 'aa', disabled: false}),
+            });
+            fixture.detectChanges();
+
+            expect(fixture.componentInstance.form.status).toEqual('VALID');
+            expect(fixture.componentInstance.form.get('login') !.status).toEqual('VALID');
+            expect(fixture.debugElement.query(By.directive(CvaWithDisabledState))
+                       .nativeElement.textContent)
+                .toEqual('ENABLED');
+          });
+        });
+
         it('should populate control in ngOnInit when injecting NgControl', () => {
           const fixture = initTest(MyInputForm, MyInput);
           fixture.componentInstance.form = new FormGroup({'login': new FormControl('aa')});
@@ -1363,6 +1396,27 @@ class WrappedValue implements ControlValueAccessor {
   validate(c: AbstractControl) { return c.value === 'expected' ? null : {'err': true}; }
 }
 
+@Component({
+  selector: 'cva-with-disabled-state',
+  template: `{{disabled ? 'DISABLED' : 'ENABLED'}}`,
+  providers: [
+    {provide: NG_VALUE_ACCESSOR, multi: true, useExisting: CvaWithDisabledState},
+  ]
+})
+class CvaWithDisabledState implements ControlValueAccessor {
+  // TODO(issue/24571): remove '!'.
+
+  disabled !: boolean;
+  onChange !: Function;
+
+  writeValue(value: any) {}
+
+  registerOnChange(fn: (value: any) => void) {}
+  registerOnTouched(fn: any) {}
+
+  setDisabledState(disabled: boolean) { this.disabled = disabled; }
+}
+
 @Component({selector: 'my-input', template: ''})
 export class MyInput implements ControlValueAccessor {
   @Output('input') onInput = new EventEmitter();
@@ -1405,6 +1459,18 @@ export class MyInputForm {
     </div>`
 })
 class WrappedValueForm {
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
+}
+
+@Component({
+  selector: 'wrapped-value-form',
+  template: `
+    <div [formGroup]="form">
+      <cva-with-disabled-state formControlName="login"></cva-with-disabled-state>
+    </div>`
+})
+class CvaWithDisabledStateForm {
   // TODO(issue/24571): remove '!'.
   form !: FormGroup;
 }
