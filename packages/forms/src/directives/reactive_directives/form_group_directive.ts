@@ -78,7 +78,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
    * @description
    * Emits an event when the form submission has been triggered.
    */
-  @Output() ngSubmit = new EventEmitter();
+  @Output() ngSubmit = new EventEmitter<unknown>();
 
   constructor(
       @Optional() @Self() @Inject(NG_VALIDATORS) private _validators: any[],
@@ -210,7 +210,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
    * @param value The new value for the directive's control.
    */
   updateModel(dir: FormControlName, value: any): void {
-    const ctrl  = <FormControl>this.form.get(dir.path);
+    const ctrl = <FormControl>this.form.get(dir.path);
     ctrl.setValue(value);
   }
 
