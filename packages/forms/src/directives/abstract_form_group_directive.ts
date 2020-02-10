@@ -82,7 +82,9 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
    * @description
    * The path to this group from the top-level directive.
    */
-  get path(): string[] { return controlPath(this.name, this._parent); }
+  get path(): string[] {
+    return controlPath(this.name == null ? this.name : this.name.toString(), this._parent);
+  }
 
   /**
    * @description

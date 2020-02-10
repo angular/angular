@@ -4,14 +4,14 @@ The Angular Framework, Angular CLI, and components used by Angular applications 
 
 You can download and install these npm packages by using the [npm CLI client](https://docs.npmjs.com/cli/install), which is installed with and runs as a [Node.js®](https://nodejs.org "Nodejs.org") application. By default, the Angular CLI uses the npm client.
 
-Alternatively, you can use the [yarn client](https://yarnpkg.com/) for downloading and installing npm packages. 
+Alternatively, you can use the [yarn client](https://yarnpkg.com/) for downloading and installing npm packages.
 
 
 <div class="alert is-helpful">
 
 See [Local Environment Setup](guide/setup-local "Setting up for Local Development") for information about the required versions and installation of `Node.js` and `npm`.
 
-If you already have projects running on your machine that use other versions of Node.js and npm, consider using [nvm](https://github.com/creationix/nvm) to manage the multiple versions of Node.js and npm. 
+If you already have projects running on your machine that use other versions of Node.js and npm, consider using [nvm](https://github.com/creationix/nvm) to manage the multiple versions of Node.js and npm.
 
 </div>
 
@@ -20,12 +20,12 @@ If you already have projects running on your machine that use other versions of 
 
 Both `npm` and `yarn` install the packages that are identified in a [`package.json`](https://docs.npmjs.com/files/package.json) file.
 
-The CLI command `ng new` creates a `package.json` file when it creates the new workspace. 
-This `package.json` is used by all projects in the workspace, including the initial app project that is  created by the CLI when it creates the workspace.   
+The CLI command `ng new` creates a `package.json` file when it creates the new workspace.
+This `package.json` is used by all projects in the workspace, including the initial app project that is created by the CLI when it creates the workspace.
 
 Initially, this `package.json` includes _a starter set of packages_, some of which are required by Angular and others that support common application scenarios.
-You add packages to `package.json` as your application evolves. 
-You may even remove some. 
+You add packages to `package.json` as your application evolves.
+You may even remove some.
 
 The `package.json` is organized into two groups of packages:
 
@@ -35,14 +35,14 @@ The `package.json` is organized into two groups of packages:
 <div class="alert is-helpful">
 
 **Library developers:** By default, the CLI command [`ng generate library`](cli/generate) creates a `package.json` for the new library. That `package.json` is used when publishing the library to npm.
-For more information, see the CLI wiki page [Library Support](https://github.com/angular/angular-cli/wiki/stories-create-library). 
+For more information, see the CLI wiki page [Library Support](https://github.com/angular/angular-cli/wiki/stories-create-library).
 </div>
 
 
 {@a dependencies}
 ## Dependencies
 
-The packages listed in the `dependencies` section of `package.json` are essential to *running* applications. 
+The packages listed in the `dependencies` section of `package.json` are essential to *running* applications.
 
 The `dependencies` section of `package.json` contains:
 
@@ -58,7 +58,7 @@ To add a new dependency, use the [`ng add`](cli/add) command.
 ### Angular packages
 
 The following Angular packages are included as dependencies in the default `package.json` file for a new Angular workspace.
-For a complete list of Angular packages, see the [API reference](http://angular.io/api?type=package). 
+For a complete list of Angular packages, see the [API reference](http://angular.io/api?type=package).
 
 Package name                               | Description
 ----------------------------------------   | --------------------------------------------------
@@ -75,13 +75,13 @@ Package name                               | Description
 {@a support-packages}
 ### Support packages
 
-The following support packages are included as dependencies in the default `package.json` file for a new Angular workspace. 
+The following support packages are included as dependencies in the default `package.json` file for a new Angular workspace.
 
 
 Package name                               | Description
 ----------------------------------------   | --------------------------------------------------
-[**rxjs**](https://github.com/ReactiveX/rxjs) | Many Angular APIs return [_observables_](guide/glossary#observable). RxJS is an implementation of the proposed [Observables specification](https://github.com/tc39/proposal-observable) currently before the [TC39](https://www.ecma-international.org/memento/tc39-m.htm) committee, which determines standards for the JavaScript language.
-[**zone.js**](https://github.com/angular/zone.js) | Angular relies on zone.js to run Angular's change detection processes when native JavaScript operations raise events.  Zone.js is an implementation of a [specification](https://gist.github.com/mhevery/63fdcdf7c65886051d55) currently before the [TC39](http://www.ecma-international.org/memento/TC39.htm) committee that determines standards for the JavaScript language.
+[**rxjs**](https://github.com/ReactiveX/rxjs) | Many Angular APIs return [_observables_](guide/glossary#observable). RxJS is an implementation of the proposed [Observables specification](https://github.com/tc39/proposal-observable) currently before the [TC39](https://www.ecma-international.org/memento/tc39.htm) committee, which determines standards for the JavaScript language.
+[**zone.js**](https://github.com/angular/zone.js) | Angular relies on zone.js to run Angular's change detection processes when native JavaScript operations raise events. Zone.js is an implementation of a [specification](https://gist.github.com/mhevery/63fdcdf7c65886051d55) currently before the [TC39](https://www.ecma-international.org/memento/tc39.htm) committee that determines standards for the JavaScript language.
 
 
 {@a polyfills}
@@ -90,10 +90,10 @@ Package name                               | Description
 Many browsers lack native support for some features in the latest HTML standards,
 features that Angular requires.
 [_Polyfills_](https://en.wikipedia.org/wiki/Polyfill_(programming)) can emulate the missing features.
-The [Browser Support](guide/browser-support) guide explains which browsers need polyfills and 
+The [Browser Support](guide/browser-support) guide explains which browsers need polyfills and
 how you can add them.
 
-The `package.json` for a new Angular workspace installs the [core-js](https://github.com/zloirock/core-js) package, 
+The `package.json` for a new Angular workspace installs the [core-js](https://github.com/zloirock/core-js) package,
 which polyfills missing features for several popular browser.
 
 
@@ -106,14 +106,14 @@ The packages listed in the `devDependencies` section of `package.json` help you 
 To add a new `devDependency`, use either one of the following commands:
 
 <code-example language="sh" class="code-shell">
-  npm install --dev &lt;package-name&gt;
+  npm install --save-dev &lt;package-name&gt;
 </code-example>
 
 <code-example language="sh" class="code-shell">
   yarn add --dev &lt;package-name&gt;
 </code-example>
 
-The following `devDependencies` are provided in the default `package.json` file for a new Angular workspace. 
+The following `devDependencies` are provided in the default `package.json` file for a new Angular workspace.
 
 
 Package name                               | Description
@@ -134,7 +134,7 @@ Package name                               | Description
 
 ## Related information
 
- For information about how the Angular CLI handles packages see the following guides: 
- 
+ For information about how the Angular CLI handles packages see the following guides:
+
  * [Building and serving](guide/build) describes how packages come together to create a development build.
  * [Deployment](guide/deployment) describes how packages come together to create a production build.

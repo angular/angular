@@ -1,18 +1,26 @@
+<<<<<<< HEAD
 <!--
 # The Ahead-of-Time (AOT) Compiler
 -->
 # Ahead-of-Time (AOT) 컴파일러
+=======
+# Ahead-of-time (AOT) compilation
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 An Angular application consists mainly of components and their HTML templates. Because the components and templates provided by Angular cannot be understood by the browser directly, Angular applications require a compilation process before they can run in a browser.
 
-The Angular Ahead-of-Time (AOT) compiler converts your Angular HTML and TypeScript code into efficient JavaScript code during the build phase _before_ the browser downloads and runs that code. Compiling your application during the build process provides a faster rendering in the browser.
+The Angular [ahead-of-time (AOT) compiler](guide/glossary#aot) converts your Angular HTML and TypeScript code into efficient JavaScript code during the build phase _before_ the browser downloads and runs that code. Compiling your application during the build process provides a faster rendering in the browser.
 
 This guide explains how to specify metadata and apply available compiler options to compile your applications efficiently using the AOT compiler.
 -->
 Angular 애플리케이션은 크게 컴포넌트와 컴포넌트 HTML 템플릿으로 구성됩니다. 그런데 이 컴포넌트와 템플릿은 브라우저가 바로 이해할 수 없기 때문에 Angular 애플리케이션은 브라우저에서 실행되기 전에 컴파일되어야 합니다.
 
+<<<<<<< HEAD
 Angular Ahead-of-Time (AOT) 컴파일러를 사용하면 Angular 문법이 사용된 HTML과 TypeScript 코드를 JavaScript 코드로 변환할 수 있습니다. 이 때 애플리케이션은 브라우저가 다운받아 실행하기 전에 미리 컴파일되기 때문에 브라우저가 직접 처리하고 렌더링하는 시간을 줄일 수 있습니다.
+=======
+<div class="alert is-helpful">
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 이 문서는 애플리케이션을 AOT 컴파일러로 컴파일 할 때 메타데이터를 어떻게 지정해야 하는지, 컴파일러에 사용할 수 있는 옵션은 어떤 것들이 있는지 설명합니다.
 
@@ -25,18 +33,48 @@ Angular Ahead-of-Time (AOT) 컴파일러를 사용하면 Angular 문법이 사�
 
 </div>
 
+{@a why-aot}
+
+Here are some reasons you might want to use AOT.
+
+* *Faster rendering*
+   With AOT, the browser downloads a pre-compiled version of the application.
+   The browser loads executable code so it can render the application immediately, without waiting to compile the app first.
+
+* *Fewer asynchronous requests*
+   The compiler _inlines_ external HTML templates and CSS style sheets within the application JavaScript,
+   eliminating separate ajax requests for those source files.
+
+* *Smaller Angular framework download size*
+   There's no need to download the Angular compiler if the app is already compiled.
+   The compiler is roughly half of Angular itself, so omitting it dramatically reduces the application payload.
+
+* *Detect template errors earlier*
+   The AOT compiler detects and reports template binding errors during the build step
+   before users can see them.
+
+* *Better security*
+   AOT compiles HTML templates and components into JavaScript files long before they are served to the client.
+   With no templates to read and no risky client-side HTML or JavaScript evaluation,
+   there are fewer opportunities for injection attacks.
+
 {@a overview}
 
+<<<<<<< HEAD
 <!--
 ## Angular compilation
 -->
 ## Angular의 컴파일
+=======
+## Choosing a compiler
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 Angular offers two ways to compile your application:
 -->
 Angular는 두 종류의 컴파일 방식을 제공합니다:
 
+<<<<<<< HEAD
 <!--
 1. **_Just-in-Time_ (JIT)**, which compiles your app in the browser at runtime.
 1. **_Ahead-of-Time_ (AOT)**, which compiles your app at build time.
@@ -48,6 +86,12 @@ Angular는 두 종류의 컴파일 방식을 제공합니다:
 JIT compilation is the default when you run the [`ng build`](cli/build) (build only) or [`ng serve`](cli/serve)  (build and serve locally) CLI commands: 
 -->
 Angular CLI로 [`ng build`](cli/build) 명령이나 [`ng serve`](cli/serve) 명령을 실행하면 기본적으로 JIT 컴파일러가 실행됩니다:
+=======
+* **_Just-in-Time_ (JIT)**, which compiles your app in the browser at runtime.
+* **_Ahead-of-Time_ (AOT)**, which compiles your app at build time.
+
+JIT compilation is the default when you run the [`ng build`](cli/build) (build only) or [`ng serve`](cli/serve)  (build and serve locally) CLI commands:
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <code-example language="sh" class="code-shell">
   ng build
@@ -79,6 +123,7 @@ See the [CLI command reference](cli) and [Building and serving Angular apps](gui
 
 </div>
 
+<<<<<<< HEAD
 {@a why-aot}
 
 <!--
@@ -175,6 +220,13 @@ Angular 메타데이터는 Angular가 실행시점에 애플리케이션 클래�
 그래서 Angular **AOT 컴파일러**는 애플리케이션 코드에 있는 **메타데이터**를 추출해서 Angular가 처리할 수 있도록 변환합니다.
 
 클래스에 사용하는 `@Component()` 데코레이터나 클래스 멤버에 사용하는 `@Input()` 데코레이터가 이런 용도로 사용되는 메타데이터입니다.
+=======
+## How AOT works
+
+The Angular AOT compiler extracts **metadata** to interpret the parts of the application that Angular is supposed to manage.
+You can specify the metadata explicitly in **decorators** such as `@Component()` and `@Input()`, or implicitly in the constructor declarations of the decorated classes.
+The metadata tells Angular how to construct instances of your application classes and interact with them at runtime.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 In the following example, the `@Component()` metadata object and the class constructor tell Angular how to create and display an instance of `TypicalComponent`.
@@ -199,16 +251,34 @@ When it needs to create a `TypicalComponent` instance, Angular calls the factory
 이 코드를 Angular 컴파일러가 처리하면 메타데이터를 추출해서 `TypicalComponent`에 대한 _팩토리_ 를 만듭니다.
 그러면 `TypicalComponent`의 인스턴스가 필요한 시점에 Angular가 팩토리를 실행해서 인스턴스를 생성하며, 이렇게 생성된 인스턴스를 의존성으로 주입합니다.
 
+<<<<<<< HEAD
 <!--
 ## Metadata restrictions
 -->
 ## 메타데이터의 제약사항
+=======
+### Compilation phases
+
+There are three phases of AOT compilation.
+* Phase 1 is *code analysis*.
+   In this phase, the TypeScript compiler and  *AOT collector* create a representation of the source. The collector does not attempt to interpret the metadata it collects. It represents the metadata as best it can and records errors when it detects a metadata syntax violation.
+
+* Phase 2 is *code generation*.
+    In this phase, the compiler's `StaticReflector` interprets the metadata collected in phase 1, performs additional validation of the metadata, and throws an error if it detects a metadata restriction violation.
+
+* Phase 3 is *template type checking*.
+   In this optional phase, the Angular *template compiler* uses the TypeScript compiler to validate the binding expressions in templates. You can enable this phase explicitly by setting the `fullTemplateTypeCheck` configuration option; see [Angular compiler options](guide/angular-compiler-options).
+
+
+### Metadata restrictions
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 You write metadata in a _subset_ of TypeScript that must conform to the following general constraints:
 -->
 메타데이터는 TypeScript의 _하위 집합(subset)_ 이며 보통 다음과 같은 제약사항이 있습니다:
 
+<<<<<<< HEAD
 <!--
 1. Limit [expression syntax](#expression-syntax) to the supported subset of JavaScript.
 2. Only reference exported symbols after [code folding](#folding).
@@ -242,8 +312,30 @@ AOT 컴파일러의 동작은 두 단계로 나누어 보는 것이 이해하기
 
 <!--
 The TypeScript compiler does some of the analytic work of the first phase. It emits the `.d.ts` _type definition files_ with type information that the AOT compiler needs to generate application code.
+=======
+* Limit [expression syntax](#expression-syntax) to the supported subset of JavaScript.
+* Only reference exported symbols after [code folding](#code-folding).
+* Only call [functions supported](#supported-functions) by the compiler.
+* Decorated and data-bound class members must be public.
 
-At the same time, the AOT **_collector_** analyzes the metadata recorded in the Angular decorators and outputs metadata information in **`.metadata.json`** files, one per `.d.ts` file.
+For additional guidelines and instructions on preparing an application for AOT compilation, see [Angular: Writing AOT-friendly applications](https://medium.com/sparkles-blog/angular-writing-aot-friendly-applications-7b64c8afbe3f).
+
+<div class="alert is-helpful">
+
+Errors in AOT compilation commonly occur because of metadata that does not conform to the compiler's requirements (as described more fully below).
+For help in understanding and resolving these problems, see [AOT Metadata Errors](guide/aot-metadata-errors).
+
+</div>
+
+### Configuring AOT compilation
+
+You can provide options in the `tsconfig.json` [TypeScript configuration file](guide/typescript-configuration) that control the compilation process. See [Angular compiler options](guide/angular-compiler-options) for a complete list of available options.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+
+## Phase 1: Code analysis
+
+The TypeScript compiler does some of the analytic work of the first phase. It emits the `.d.ts` _type definition files_ with type information that the AOT compiler needs to generate application code.
+At the same time, the AOT **collector** analyzes the metadata recorded in the Angular decorators and outputs metadata information in **`.metadata.json`** files, one per `.d.ts` file.
 
 You can think of `.metadata.json` as a diagram of the overall structure of a decorator's metadata, represented as an [abstract syntax tree (AST)](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
 -->
@@ -264,6 +356,7 @@ Angular가 생성하는 [schema.ts](https://github.com/angular/angular/blob/mast
 </div>
 
 {@a expression-syntax}
+<<<<<<< HEAD
 <!--
 ### Expression syntax
 -->
@@ -271,6 +364,11 @@ Angular가 생성하는 [schema.ts](https://github.com/angular/angular/blob/mast
 
 <!--
 The _collector_ only understands a subset of JavaScript.
+=======
+### Expression syntax limitations
+
+The AOT collector only understands a subset of JavaScript.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 Define metadata objects with the following limited syntax:
 -->
 Angular _콜렉터(collector)_ 는 JavaScript의 하위집합이며 JavaScript 문법 중 일부만 처리할 수 있습니다.
@@ -430,6 +528,7 @@ Angular _콜렉터(collector)_ 는 JavaScript의 하위집합이며 JavaScript �
 </table>
 
 
+<<<<<<< HEAD
 <!--
 If an expression uses unsupported syntax, the _collector_ writes an error node to the `.metadata.json` file. The compiler later reports the error if it needs that
 piece of metadata to generate the application code.
@@ -442,6 +541,14 @@ piece of metadata to generate the application code.
  If you want `ngc` to report syntax errors immediately rather than produce a `.metadata.json` file with errors, set the `strictMetadataEmit` option in `tsconfig`.
 -->
 `.metadata.json` 파일에 에러를 출력하는 대신 `ngc`에서 직접 문법 에러가 발생하게 하려면 `tsconfig` 옵션에 `strictMetadataEmit` 옵션을 다음과 같이 설정하세요.
+=======
+If an expression uses unsupported syntax, the collector writes an error node to the `.metadata.json` file.
+The compiler later reports the error if it needs that piece of metadata to generate the application code.
+
+<div class="alert is-helpful">
+
+ If you want `ngc` to report syntax errors immediately rather than produce a `.metadata.json` file with errors, set the `strictMetadataEmit` option in the TypeScript configuration file, `tsconfig.json`.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 ```
   "angularCompilerOptions": {
@@ -482,6 +589,7 @@ Consider the following component decorator:
 })
 ```
 
+<<<<<<< HEAD
 <!--
 The AOT _collector_ does not support the arrow function, `() => new Server()`, in a metadata expression.
 It generates an error node in place of the function.
@@ -490,6 +598,10 @@ It generates an error node in place of the function.
 그러면 이 코드는 제대로 변환되지 못하고 에러 노드로 처리됩니다.
 
 <!--
+=======
+The AOT collector does not support the arrow function, `() => new Server()`, in a metadata expression.
+It generates an error node in place of the function.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 When the compiler later interprets this node, it reports an error that invites you to turn the arrow function into an _exported function_.
 -->
 그리고 이후에 컴파일러가 이 노드를 처리할 때 에러가 발생하기 때문에, 이 화살표 함수는 _export가 사용된 함수_ 로 변경되어야 합니다.
@@ -510,6 +622,7 @@ export function serverFactory() {
 })
 ```
 
+<<<<<<< HEAD
 <!--
 Beginning in version 5, the compiler automatically performs this rewriting while emitting the `.js` file.
 -->
@@ -545,9 +658,19 @@ The compiler can only resolve references to **_exported_** symbols.
 Fortunately, the _collector_ enables limited use of non-exported symbols through _folding_.
 
 The _collector_ may be able to evaluate an expression during collection and record the result in the `.metadata.json` instead of the original expression.
+=======
+In version 5 and later, the compiler automatically performs this rewriting while emitting the `.js` file.
 
-For example, the _collector_ can evaluate the expression `1 + 2 + 3 + 4` and replace it with the result, `10`.
+{@a exported-symbols}
+{@a code-folding}
+### Code folding
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
+The compiler can only resolve references to **_exported_** symbols.
+The collector, however, can evaluate an expression during collection and record the result in the `.metadata.json`, rather than the original expression.
+This allows you to make limited use of non-exported symbols within expressions.
+
+For example, the collector can evaluate the expression `1 + 2 + 3 + 4` and replace it with the result, `10`.
 This process is called _folding_. An expression that can be reduced in this manner is _foldable_.
 -->
 AOT 컴파일러는 **_export_** 키워드가 사용된 심볼만 참조할 수 있습니다.
@@ -560,9 +683,13 @@ _콜렉터_ 는 콜렉션 단계에서 표현식을 평가하고 그 결과를 `
 이 과정을 _폴딩(folding)_ 이라고 합니다. 그리고 이 과정이 적용될 수 있는 코드를 _폴딩할 수 있는(foldable)_ 코드라고 합니다.
 
 {@a var-declaration}
+<<<<<<< HEAD
 <!--
 The collector can evaluate references to
 module-local `const` declarations and initialized `var` and `let` declarations, effectively removing them from the `.metadata.json` file.
+=======
+The collector can evaluate references to module-local `const` declarations and initialized `var` and `let` declarations, effectively removing them from the `.metadata.json` file.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 Consider the following component definition:
 -->
@@ -584,8 +711,7 @@ export class HeroComponent {
 
 <!--
 The compiler could not refer to the `template` constant because it isn't exported.
-
-But the _collector_ can _fold_ the `template` constant into the metadata definition by inlining its contents.
+The collector, however, can fold the `template` constant into the metadata definition by in-lining its contents.
 The effect is the same as if you had written:
 -->
 컴파일러는 이 코드에 선언된 `template` 변수를 참조할 수 없습니다. 왜냐하면 이 변수에 `export` 키워드가 사용되지 않았기 때문입니다.
@@ -623,22 +749,33 @@ export class HeroComponent {
   @Input() hero: Hero;
 }
 ```
+<<<<<<< HEAD
 <!--
 The _collector_ reduces this expression to its equivalent _folded_ string:
 -->
 이 코드의 템플릿을 _콜렉터_ 가 처리하고 나면 다음과 같이 _폴딩 된_ 문자열로 변환됩니다:
+=======
 
-`'<div>{{hero.name}}</div><div>{{hero.title}}</div>'`.
+The collector reduces this expression to its equivalent _folded_ string:
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+
+```
+'<div>{{hero.name}}</div><div>{{hero.title}}</div>'
+```
 
 <!--
 #### Foldable syntax
 -->
 #### 폴딩할 수 있는 문법
 
+<<<<<<< HEAD
 <!--
 The following table describes which expressions the _collector_ can and cannot fold:
 -->
 _콜렉터_ 가 폴딩할 수 있는 문법에는 어떤 것들이 있는지 확인해 보세요:
+=======
+The following table describes which expressions the collector can and cannot fold:
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <style>
   td, th {vertical-align: top}
@@ -652,11 +789,11 @@ _콜렉터_ 가 폴딩할 수 있는 문법에는 어떤 것들이 있는지 확
   </tr>
   <tr>
     <td>Literal object </td>
-    <td>Yes</td>
+    <td>yes</td>
   </tr>
   <tr>
     <td>Literal array  </td>
-    <td>Yes</td>
+    <td>yes</td>
   </tr>
   <tr>
     <td>Spread in literal array</td>
@@ -813,23 +950,33 @@ If an expression is not foldable, the collector writes it to `.metadata.json` as
 -->
 ## 2단계: 코드 생성
 
+<<<<<<< HEAD
 <!--
 The _collector_ makes no attempt to understand the metadata that it collects and outputs to `.metadata.json`. It represents the metadata as best it can and records errors when it detects a metadata syntax violation.
 -->
 _콜렉터_ 는 메타데이터를 이해하는 것이 아니라 메타데이터를 찾아서 `.metadata.json`에 모으는 역할만 합니다. 그리고 이 과정에서 메타데이터에 사용된 문법에 오류가 있는지도 검사합니다.
 
 <!--
+=======
+The collector makes no attempt to understand the metadata that it collects and outputs to `.metadata.json`.
+It represents the metadata as best it can and records errors when it detects a metadata syntax violation.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 It's the compiler's job to interpret the `.metadata.json` in the code generation phase.
 -->
 `.mdtadata.json` 파일을 해석해서 코드를 생성하는 것은 컴파일러의 역할입니다.
 
+<<<<<<< HEAD
 <!--
 The compiler understands all syntax forms that the _collector_ supports, but it may reject _syntactically_ correct metadata if the _semantics_ violate compiler rules.
+=======
+The compiler understands all syntax forms that the collector supports, but it may reject _syntactically_ correct metadata if the _semantics_ violate compiler rules.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+
+### Public symbols
 
 The compiler can only reference _exported symbols_.
 
-Decorated component class members must be public. You cannot make an `@Input()` property private or protected.
-
+<<<<<<< HEAD
 Data bound properties must also be public.
 -->
 컴파일러는 _콜렉터_ 가 처리할 수 있었던 문법을 모두 처리할 수 있지만, 콜렉터와 다르게 메타데이터가 _문법적으로_ 컴파일 규칙에 어긋나면 에러를 발생시킵니다.
@@ -837,6 +984,10 @@ Data bound properties must also be public.
 컴파일러는 _export 키워드가 사용된 심볼_ 만 참조할 수 있습니다.
 
 컴포넌트 클래스 멤버에 데코레이터가 사용되면 이 멤버는 반드시 public이어야 합니다. private 프로퍼티에는 `@Input()` 데코레이터를 사용할 수 없습니다.
+=======
+* Decorated component class members must be public. You cannot make an `@Input()` property private or protected.
+* Data bound properties must also be public.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 데이터 바인딩으로 연결된 프로퍼티도 반드시 public이어야 합니다.
 
@@ -864,6 +1015,7 @@ export class AppComponent {
 ```
 
 {@a supported-functions}
+<<<<<<< HEAD
 <!--
 Most importantly, the compiler only generates code to create instances of certain classes, support certain decorators, and call certain functions from the following lists.
 -->
@@ -889,93 +1041,29 @@ AOT 컴파일러는 `@angular/core`의 `InjectionToken`으로 등록된 클래�
 The compiler only supports metadata for these Angular decorators.
 -->
 컴파일러는 다음 목록에 해당하는 Angular 데코레이터만 지원합니다.
+=======
 
-<style>
-  td, th {vertical-align: top}
-</style>
+### Supported classes and functions
 
-<table>
-  <tr>
-    <th>Decorator</th>
-    <th>Module</th>
-  </tr>
-    <tr>
-    <td><code>Attribute</code></td>
-    <td><code>@angular/core</code></td>
-  </tr>
-  <tr>
-    <td><code>Component</code></td>
-    <td><code>@angular/core</code></td>
-  </tr>
-  <tr>
-    <td><code>ContentChild</code></td>
-    <td><code>@angular/core</code></td>
-  </tr>
-  <tr>
-    <td><code>ContentChildren</code></td>
-    <td><code>@angular/core</code></td>
-  </tr>
-  <tr>
-    <td><code>Directive</code></td>
-    <td><code>@angular/core</code></td>
-  </tr>
-  <tr>
-    <td><code>Host</code></td>
-    <td><code>@angular/core</code></td>
-  </tr>
-  <tr>
-    <td><code>HostBinding</code></td>
-    <td><code>@angular/core</code></td>
-  </tr>
-  <tr>
-    <td><code>HostListner</code></td>
-    <td><code>@angular/core</code></td>
-  </tr>
-  <tr>
-    <td><code>Inject</code></td>
-    <td><code>@angular/core</code></td>
-  </tr>
-  <tr>
-    <td><code>Injectable</code></td>
-    <td><code>@angular/core</code></td>
-  </tr>
-  <tr>
-    <td><code>Input</code></td>
-    <td><code>@angular/core</code></td>
-  </tr>
-  <tr>
-    <td><code>NgModule</code></td>
-    <td><code>@angular/core</code></td>
-  </tr>
-  <tr>
-    <td><code>Optional</code></td>
-    <td><code>@angular/core</code></td>
-  </tr>
-  <tr>
-    <td><code>Output</code></td>
-    <td><code>@angular/core</code></td>
-  </tr>
-  <tr>
-    <td><code>Pipe</code></td>
-    <td><code>@angular/core</code></td>
-  </tr>
-  <tr>
-    <td><code>Self</code></td>
-    <td><code>@angular/core</code></td>
-  </tr>
-  <tr>
-    <td><code>SkipSelf</code></td>
-    <td><code>@angular/core</code></td>
-  </tr>
-  <tr>
-    <td><code>ViewChild</code></td>
-    <td><code>@angular/core</code></td>
-  </tr>
+The collector can represent a function call or object creation with `new` as long as the syntax is valid.
+The compiler, however, can later refuse to generate a call to a _particular_ function or creation of a _particular_ object.
 
-  </table>
+The compiler can only create instances of certain classes, supports only core decorators, and only supports calls to macros (functions or static methods) that return expressions.
+* New instances
 
+   The compiler only allows metadata that create instances of the class `InjectionToken` from `@angular/core`.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
+* Supported decorators
 
+   The compiler only supports metadata for the [Angular decorators in the `@angular/core` module](api/core#decorators).
+
+* Function calls
+
+   Factory functions must be exported, named functions.
+   The AOT compiler does not support lambda expressions ("arrow functions") for factory functions.
+
+<<<<<<< HEAD
 <!--
 ### Macro-functions and macro-static methods
 -->
@@ -984,6 +1072,13 @@ The compiler only supports metadata for these Angular decorators.
 <!--
 The compiler also supports _macros_ in the form of functions or static
 methods that return an expression.
+=======
+{@a function-calls}
+### Functions and static method calls
+
+The collector accepts any function or static method that contains a single `return` statement.
+The compiler, however, only supports macros in the form of functions or static methods that return an *expression*.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 For example, consider the following function:
 -->
@@ -1025,6 +1120,7 @@ The compiler treats this usage as if you had written:
 })
 export class TypicalModule {}
 ```
+<<<<<<< HEAD
 
 <!--
 The collector is simplistic in its determination of what qualifies as a macro
@@ -1033,6 +1129,8 @@ function; it can only contain a single `return` statement.
 콜렉터가 처리할 수 있는 매크로 함수의 기준은 단순합니다. 함수가 `return` 키워드로 무언가를 반환하기만 하면 됩니다.
 
 <!--
+=======
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 The Angular [`RouterModule`](api/router/RouterModule) exports two macro static methods, `forRoot` and `forChild`, to help declare root and child routes.
 Review the [source code](https://github.com/angular/angular/blob/master/packages/router/src/router_module.ts#L139 "RouterModule.forRoot source code")
 for these methods to see how macros can simplify configuration of complex [NgModules](guide/ngmodules).
@@ -1047,13 +1145,21 @@ Angular [`RouterModule`](api/router/RouterModule)가 제공하는 메소드 중 
 -->
 ### 메타데이터 재구축
 
+<<<<<<< HEAD
 <!--
 The compiler treats object literals containing the fields `useClass`, `useValue`, `useFactory`, and `data` specially. The compiler converts the expression initializing one of these fields into an exported variable, which replaces the expression. This process of rewriting these expressions removes all the restrictions on what can be in them because
+=======
+The compiler treats object literals containing the fields `useClass`, `useValue`, `useFactory`, and `data` specially, converting the expression initializing one of these fields into an exported variable that replaces the expression.
+This process of rewriting these expressions removes all the restrictions on what can be in them because
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 the compiler doesn't need to know the expression's value&mdash;it just needs to be able to generate a reference to the value.
 -->
 AOT 컴파일러는 메타데이터에 사용된 `useClass`, `useValue`, `useFactory`에 사용된 객체 리터럴과 `data` 프로퍼티를 처리해서 각각 `export`로 지정된 변수로 변환합니다. 컴파일러는 이 필드에 사용된 표현식 자체를 알 필요는 없습니다. 단순하게 결과만 참조하면 됩니다.
 
+<<<<<<< HEAD
 <!--
+=======
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 You might write something like:
 -->
 다음과 같은 코드가 있다고 합시다:
@@ -1071,7 +1177,6 @@ export class TypicalModule {}
 
 <!--
 Without rewriting, this would be invalid because lambdas are not supported and `TypicalServer` is not exported.
-
 To allow this, the compiler automatically rewrites this to something like:
 -->
 메타데이터 재구축 과정이 없다면 이 코드는 처리되지 않습니다. 왜나하면 AOT 컴파일러는 람다 함수를 지원하지 않으며, `TypicalServer` 클래스도 `export`로 지정되지 않았기 때문입니다.
@@ -1091,6 +1196,7 @@ export const ɵ0 = () => new TypicalServer();
 export class TypicalModule {}
 ```
 
+<<<<<<< HEAD
 <!--
 This allows the compiler to generate a reference to `ɵ0` in the
 factory without having to know what the value of `ɵ0` contains.
@@ -1682,18 +1788,37 @@ export function someValueFactory() {
   ]
   ...
 </code-example>
+=======
+This allows the compiler to generate a reference to `ɵ0` in the factory without having to know what the value of `ɵ0` contains.
 
-<hr>
+The compiler does the rewriting during the emit of the `.js` file.
+It does not, however, rewrite the `.d.ts` file, so TypeScript doesn't recognize it as being an export. and it does not interfere with the ES module's exported API.
 
-{@a destructured-variable-not-supported}
-<h3 class="no-toc">Destructured variable or constant not supported</h3>
 
-<div class="alert is-helpful">
+{@a binding-expression-validation}
+## Phase 3: Template type checking
 
-_Referencing an exported destructured variable or constant is not supported by the template compiler. Consider simplifying this to avoid destructuring._
+One of the Angular compiler's most helpful features is the ability to type-check expressions within templates, and catch any errors before they cause crashes at runtime.
+In the template type-checking phase, the Angular template compiler uses the TypeScript compiler to validate the binding expressions in templates.
+
+Enable this phase explicitly by adding the compiler option `"fullTemplateTypeCheck"` in the `"angularCompilerOptions"` of the project's `tsconfig.json`
+(see [Angular Compiler Options](guide/angular-compiler-options)).
+
+<div class="alert is-helpful>
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+
+In [Angular Ivy](guide/ivy), the template type checker has been completely rewritten to be more capable as well as stricter, meaning it can catch a variety of new errors that the previous type checker would not detect.
+
+As a result, templates that previously compiled under View Engine can fail type checking under Ivy. This can happen because Ivy's stricter checking catches genuine errors, or because application code is not typed correctly, or because the application uses libraries in which typings are inaccurate or not specific enough.
+
+This stricter type checking is not enabled by default in version 9, but can be enabled by setting the `strictTemplates` configuration option.
+We do expect to make strict type checking the default in the future.
+
+<!-- For more information about type-checking options, and about improvements to template type checking in version 9 and above, see [Template type checking](guide/template-type-checking). -->
 
 </div>
 
+<<<<<<< HEAD
 <!--
 The compiler does not support references to variables assigned by [destructuring](https://www.typescriptlang.org/docs/handbook/variable-declarations.html#destructuring).
 
@@ -2054,6 +2179,15 @@ Chuck: After reviewing your PR comment I'm still at a loss. See [comment there](
 다음과 같은 컴포넌트가 있다고 합시다:
 
   ```typescript
+=======
+Template validation produces error messages when a type error is detected in a template binding
+expression, similar to how type errors are reported by the TypeScript compiler against code in a `.ts`
+file.
+
+For example, consider the following component:
+
+```typescript
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
   @Component({
     selector: 'my-component',
     template: '{{person.addresss.street}}'
@@ -2061,17 +2195,22 @@ Chuck: After reviewing your PR comment I'm still at a loss. See [comment there](
   class MyComponent {
     person?: Person;
   }
-  ```
+```
 
+<<<<<<< HEAD
 <!--
   This will produce the following error:
 -->
 이 컴포넌트의 템플릿에서 발생하는 에러는 다음과 같이 표시됩니다:
+=======
+This produces the following error:
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
-  ```
+```
   my.component.ts.MyComponent.html(1,1): : Property 'addresss' does not exist on type 'Person'. Did you mean 'address'?
-  ```
+ ```
 
+<<<<<<< HEAD
 <!--
   The file name reported in the error message, `my.component.ts.MyComponent.html`, is a synthetic file
   generated by the template compiler that holds contents of the `MyComponent` class template.
@@ -2113,8 +2252,30 @@ Chuck: After reviewing your PR comment I'm still at a loss. See [comment there](
 템플릿 표현식에 사용된 `ngIf`는 TypeScript 코드에 사용하는 `if`와 마찬가지로 타입을 구체화하는 역할을 합니다.
 그래서 위에서 살펴본 템플릿에서 발생하는 `Object is possibly 'undefined'` 에러는 아래 코드에서 발생하지 않습니다.
 템플릿에 사용된 문자열 바인딩 문법은 `person` 변수가 초기화된 이후에만 동작하기 때문입니다:
+=======
+The file name reported in the error message, `my.component.ts.MyComponent.html`, is a synthetic file
+generated by the template compiler that holds contents of the `MyComponent` class template.
+The compiler never writes this file to disk.
+The line and column numbers are relative to the template string in the `@Component` annotation of the class, `MyComponent` in this case.
+If a component uses `templateUrl` instead of `template`, the errors are reported in the HTML file referenced by the `templateUrl` instead of a synthetic file.
 
-  ```typescript
+The error location is the beginning of the text node that contains the interpolation expression with the error.
+If the error is in an attribute binding such as `[value]="person.address.street"`, the error
+location is the location of the attribute that contains the error.
+
+The validation uses the TypeScript type checker and the options supplied to the TypeScript compiler to control how detailed the type validation is.
+For example, if the `strictTypeChecks` is specified, the error
+```my.component.ts.MyComponent.html(1,1): : Object is possibly 'undefined'```
+is reported as well as the above error message.
+
+### Type narrowing
+
+The expression used in an `ngIf` directive is used to narrow type unions in the Angular
+template compiler, the same way the `if` expression does in TypeScript.
+For example, to avoid `Object is possibly 'undefined'` error in the template above, modify it to only emit the interpolation if the value of `person` is initialized as shown below:
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+
+```typescript
   @Component({
     selector: 'my-component',
     template: '<span *ngIf="person"> {{person.addresss.street}} </span>'
@@ -2122,8 +2283,9 @@ Chuck: After reviewing your PR comment I'm still at a loss. See [comment there](
   class MyComponent {
     person?: Person;
   }
-  ```
+```
 
+<<<<<<< HEAD
 <!--
   Using `*ngIf` allows the TypeScript compiler to infer that the `person` used in the
   binding expression will never be `undefined`.
@@ -2143,11 +2305,19 @@ Chuck: After reviewing your PR comment I'm still at a loss. See [comment there](
 -->
 `*ngIf`와 비슷한 역할을 하는 디렉티브를 만들어서 활용할 수도 있는데, 이런 디렉티브를 사용하면 템플릿 컴파일러가 템플릿을 처리할 때 좀 더 많은 정보를 제공할 수 있습니다.
 `*ngIf` 디렉티브의 정적 멤버 중에는 이런 것이 있습니다:
+=======
+Using `*ngIf` allows the TypeScript compiler to infer that the `person` used in the binding expression will never be `undefined`.
 
-  ```typescript
+#### Custom `ngIf` like directives
+
+Directives that behave like `*ngIf` can declare that they want the same treatment by including a static member marker that is a signal to the template compiler to treat them like `*ngIf`. This static member for `*ngIf` is:
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+
+```typescript
     public static ngIfUseIfTypeGuard: void;
-  ```
+```
 
+<<<<<<< HEAD
 <!--
   This declares that the input property `ngIf` of the `NgIf` directive should be treated as a
   guard to the use of its template, implying that the template will only be instantiated if
@@ -2179,8 +2349,19 @@ Chuck: After reviewing your PR comment I'm still at a loss. See [comment there](
 하지만 TypeScript나 템플릿 컴파일러는 이 정보를 알 수 없기 때문에 `address` 프로퍼티에 대해 `Object is possibly 'undefined'` 에러가 발생할 수 있습니다.
 이 경우에 `address!.street`라는 표현식을 사용하면 `address`가 null이 아닐 때만 `street` 프로퍼티를 참조하라는 정보를 추가로 제공할 수 있습니다.
 
+=======
+This declares that the input property `ngIf` of the `NgIf` directive should be treated as a guard to the use of its template, implying that the template will only be instantiated if the `ngIf` input property is true.
 
-  ```typescript
+
+### Non-null type assertion operator
+
+Use the [non-null type assertion operator](guide/template-syntax#non-null-assertion-operator) to suppress the `Object is possibly 'undefined'` error when it is inconvenient to use `*ngIf` or when some constraint in the component ensures that the expression is always non-null when the binding expression is interpolated.
+
+In the following example, the `person` and `address` properties are always set together, implying that `address` is always non-null if `person` is non-null.
+There is no convenient way to describe this constraint to TypeScript and the template compiler, but the error is suppressed in the example by using `address!.street`.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+
+```typescript
   @Component({
     selector: 'my-component',
     template: '<span *ngIf="person"> {{person.name}} lives on {{address!.street}} </span>'
@@ -2194,8 +2375,9 @@ Chuck: After reviewing your PR comment I'm still at a loss. See [comment there](
       this.address = address;
     }
   }
-  ```
+```
 
+<<<<<<< HEAD
 <!--
   The non-null assertion operator should be used sparingly as refactoring of the component
   might break this constraint.
@@ -2206,8 +2388,13 @@ Chuck: After reviewing your PR comment I'm still at a loss. See [comment there](
 다만 null 방지 연산자는 `ngIf` 디렉티브가 제공하는 타입 제약을 무시할 수 있기 때문에 남용하면 안됩니다.
 
 위와 같은 코드라면 null 방지 연산자를 사용하는 대신 `*ngIf` 조건에 `address`를 넣는 것이 더 좋습니다.
+=======
+The non-null assertion operator should be used sparingly as refactoring of the component might break this constraint.
 
-  ```typescript
+In this example it is recommended to include the checking of `address` in the `*ngIf` as shown below:
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+
+```typescript
   @Component({
     selector: 'my-component',
     template: '<span *ngIf="person && address"> {{person.name}} lives on {{address.street}} </span>'
@@ -2221,6 +2408,7 @@ Chuck: After reviewing your PR comment I'm still at a loss. See [comment there](
       this.address = address;
     }
   }
+<<<<<<< HEAD
   ```
 
 <!--
@@ -2628,3 +2816,6 @@ rules.
 
 이 옵션은 Bazel 빌드 룰에 파일 이름을 반드시 지정해야 하거나 Bazel 빌드 룰이 추적하는 파일의 의존성을 간단하게 작성하고 싶을 때 사용합니다.
 하지만 Bazel 빌드 룰 이외에서는 `true` 값을 사용하지 않는 것을 권장합니다.
+=======
+```
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072

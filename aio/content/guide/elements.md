@@ -1,7 +1,11 @@
+<<<<<<< HEAD
 <!--
 # Angular Elements Overview
 -->
 # Angular Elements 개요
+=======
+# Angular elements overview
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 _Angular elements_ are Angular components packaged as _custom elements_ (also called Web Components), a web standard for defining new HTML elements in a framework-agnostic way.
@@ -86,16 +90,18 @@ After you register your configured class with the browser's custom-element regis
 <my-popup message="Use Angular!"></my-popup>
 ```
 
+<<<<<<< HEAD
 <!--
 When your custom element is placed on a page, the browser creates an instance of the registered class and adds it to the DOM. The content is provided by the component's template, which  uses Angular template syntax, and is rendered using the component and DOM data. Input properties in the component correspond to input attributes for the element.
 -->
 커스텀 엘리먼트가 페이지에 추가되면 브라우저는 이 커스텀 엘리먼트의 클래스가 등록되었는지 확인하고 인스턴스를 생성해서 DOM에 추가합니다. 이 엘리먼트의 뷰는 Angular 템플릿 문법으로 작성한 컴포넌트 템플릿을 바탕으로 구성되며, 컴포넌트 클래스나 DOM의 데이터를 활용해서 렌더링됩니다. 그리고 컴포넌트의 입력 프로퍼티는 엘리먼트의 입력 어트리뷰트와 연결됩니다.
+=======
+When your custom element is placed on a page, the browser creates an instance of the registered class and adds it to the DOM. The content is provided by the component's template, which uses Angular template syntax, and is rendered using the component and DOM data. Input properties in the component correspond to input attributes for the element.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
-<figure>
-
-<img src="generated/images/guide/elements/customElement1.png" alt="Custom element in browser" class="left">
-
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/elements/customElement1.png" alt="Custom element in browser" class="left">
+</div>
 
 <hr class="clear">
 
@@ -126,11 +132,9 @@ When the browser encounters the tag for the registered element, it uses the cons
 그리고 JavaScript 함수인 `customElements.define()`를 사용해야 하며, 관련된 커스텀 엘리먼트 태그도 브라우저의 `CustomElementRegistry`에 등록해야 합니다.
 브라우저는 여기에 등록된 방법으로 커스텀 엘리먼트의 인스턴스를 생성합니다.
 
-<figure>
-
-<img src="generated/images/guide/elements/createElement.png" alt="Transform a component to a custom element" class="left">
-
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/elements/createElement.png" alt="Transform a component to a custom element" class="left">
+</div>
 
 <!--
 ### Mapping
@@ -204,10 +208,14 @@ The recently-developed [custom elements](https://developer.mozilla.org/en-US/doc
 </tr>
 <tr>
   <td>Firefox</td>
+<<<<<<< HEAD
   <!--
   <td>Supported natively as of version 63. In older versions: Set the <code>dom.webcomponents.enabled</code> and <code>dom.webcomponents.customelements.enabled</code> preferences to true.</td>
   -->
   <td>63 버전부터 네이티브로 지원합니다. 이전 버전에서는 <code>dom.webcomponents.enabled</code> 와 <code>dom.webcomponents.customelements.enabled</code> 를 <code>true</code>로 지정해야 합니다.</td>
+=======
+  <td>Supported natively.</td>
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 </tr>
 <tr>
   <td>Edge</td>
@@ -316,10 +324,14 @@ Generic DOM APIs, such as `document.createElement()` or `document.querySelector(
 -->
 `document.createElement()`나 `document.querySelector()`와 같은 표준 DOM API는 전달하는 인자에 따라 반환하는 엘리먼트 타입이 다릅니다. 예를 들면 `document.createElement('a')`를 사용하면 `HTMLAnchorElement`가 반환되며, TypeScript에 이 타입을 사용해야 `href` 프로퍼티가 있다는 것을 알 수 있습니다. 비슷하게 `document.createElement('div')`를 사용하면 `HTMLDivElement`가 반환되며, TypeScript에 이 타입을 사용하면 `href` 프로퍼티가 없다는 것을 의미합니다.
 
+<<<<<<< HEAD
 <!--
 When called with unknown elements, such as a custom element name (`popup-element` in our example), the methods will return a generic type, such as `HTMLELement`, since TypeScript can't infer the correct type of the returned element.
 -->
 그래서 예제에 사용했던 것처럼 `popup-element`와 같은 커스텀 엘리먼트를 사용하면 일반적인 `HTMLElement` 타입을 받을 수 밖에 없기 때문에 TypeScript에 이 커스텀 엘리먼트를 제대로 사용할 수 없습니다.
+=======
+When called with unknown elements, such as a custom element name (`popup-element` in our example), the methods will return a generic type, such as `HTMLElement`, since TypeScript can't infer the correct type of the returned element.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 Custom elements created with Angular extend `NgElement` (which in turn extends `HTMLElement`). Additionally, these custom elements will have a property for each input of the corresponding component. For example, our `popup-element` will have a `message` property of type `string`.
@@ -363,10 +375,14 @@ This is a good way to quickly get TypeScript features, such as type checking and
 -->
 커스텀 엘리먼트를 TypeScript로 처리하거나 타입 체크, 코드 자동완성 기능을 사용하는 것만이라면 이것으로도 충분합니다. 하지만 이 방식을 반복해서 사용한다면 약간 귀찮을 수도 있습니다.
 
+<<<<<<< HEAD
 <!--
 An alternative way, that only requires defining each custom element's type once, is augmenting the `HTMLELementTagNameMap`, which TypeScript uses to infer the type of a returned element based on its tag name (for DOM methods such as `document.createElement()`, `document.querySelector()`, etc.):
 -->
 타입을 한번만 지정해놓고 여러곳에서 사용하려면 TypeScript에서 제공하는 `HTMLElementTagNameMap`를 사용하는 것이 좋습니다. 이 인터페이스를 사용하면 `document.createElement()`나 `document.querySelector()`와 같은 DOM 메소드를 사용할 때 태그 이름을 확인하고 정확한 엘리먼트 타입을 가져올 수 있습니다:
+=======
+An alternative way, that only requires defining each custom element's type once, is augmenting the `HTMLElementTagNameMap`, which TypeScript uses to infer the type of a returned element based on its tag name (for DOM methods such as `document.createElement()`, `document.querySelector()`, etc.):
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 ```ts
 declare global {

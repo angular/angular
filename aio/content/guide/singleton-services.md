@@ -3,6 +3,7 @@
 -->
 # 싱글턴 서비스 (Singleton services)
 
+<<<<<<< HEAD
 <!--
 #### Prerequisites:
 -->
@@ -15,6 +16,9 @@
 다음 내용을 먼저 이해하고 이 문서를 보는 것이 좋습니다.
 * [부트스트랩](guide/bootstrapping)
 * [프로바이더](guide/providers)
+=======
+A singleton service is a service for which only one instance exists in an app.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 For a sample app using the app-wide singleton service that this page describes, see the
@@ -22,9 +26,12 @@ For a sample app using the app-wide singleton service that this page describes, 
 -->
 이 문서에서는 앱 전역에서 싱글턴으로 동작하는 서비스를 만들어봅니다. 이 문서에서 다루는 모든 예제 코드는 <live-example name="ngmodules"></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
+<<<<<<< HEAD
 <hr />
 
 <!--
+=======
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 ## Providing a singleton service
 -->
 ## 싱글턴 서비스 생성하기
@@ -49,7 +56,7 @@ Angular에서 서비스를 싱글턴으로 사용하는 방법은 두 가지가 
 Beginning with Angular 6.0, the preferred way to create a singleton service is to set `providedIn` to `root` on the service's `@Injectable()` decorator. This tells Angular
 to provide the service in the application root.
 
-<code-example path="providers/src/app/user.service.0.ts"  header="src/app/user.service.ts" linenums="false"> </code-example>
+<code-example path="providers/src/app/user.service.0.ts"  header="src/app/user.service.ts"></code-example>
 
 For more detailed information on services, see the [Services](tutorial/toh-pt4) chapter of the
 [Tour of Heroes tutorial](tutorial).
@@ -87,7 +94,7 @@ There are multiple ways to prevent this:
 
 <div class="alert is-helpful">
 
-**Note:** There are two example apps where you can see this scenario; the more advanced <live-example noDownload>NgModules live example</live-example>, which contains `forRoot()` and `forChild()` in the routing modules and the `GreetingModule`, and the simpler <live-example name="lazy-loading-ngmodules" noDownload>Lazy Loading live example</live-example>. For an introductory explanation see the [Lazy Loading Feature Modules](guide/lazy-loading-ngmodules) guide.
+**Note:** There are two example apps where you can see this scenario; the more advanced <live-example noDownload name="ngmodules">NgModules live example</live-example>, which contains `forRoot()` and `forChild()` in the routing modules and the `GreetingModule`, and the simpler <live-example name="lazy-loading-ngmodules" noDownload>Lazy Loading live example</live-example>. For an introductory explanation see the [Lazy Loading Feature Modules](guide/lazy-loading-ngmodules) guide.
 
 </div>
 
@@ -99,7 +106,7 @@ with `providers` and child modules without `providers`.
 1. Create a static method `forRoot()` on the module.
 2. Place the providers into the `forRoot()` method.
 
-<code-example path="ngmodules/src/app/greeting/greeting.module.ts" region="for-root" header="src/app/greeting/greeting.module.ts" linenums="false"> </code-example>
+<code-example path="ngmodules/src/app/greeting/greeting.module.ts" region="for-root" header="src/app/greeting/greeting.module.ts"></code-example>
 
 
 {@a forRoot-router}
@@ -164,21 +171,23 @@ extends the greeting `UserService`. If a `UserServiceConfig` exists, the `UserSe
 -->
 아래 예제에서 `@Optional`로 주입되는 `UserServiceConfig` 객체는 `UserService`의 환경을 설정하는 용도로 사용됩니다. 그래서 `UserServiceConfig` 객체가 존재하면 이 객체로 전달받은 사용자의 이름으로 `UserService`를 설정할 수 있습니다.
 
+<<<<<<< HEAD
 <!--
 <code-example path="ngmodules/src/app/greeting/user.service.ts" region="ctor" header="src/app/greeting/user.service.ts (constructor)" linenums="false">
 -->
 <code-example path="ngmodules/src/app/greeting/user.service.ts" region="ctor" header="src/app/greeting/user.service.ts (생성자)" linenums="false">
 
 </code-example>
+=======
+<code-example path="ngmodules/src/app/greeting/user.service.ts" region="ctor" header="src/app/greeting/user.service.ts (constructor)"></code-example>
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 Here's `forRoot()` that takes a `UserServiceConfig` object:
 -->
 그리고 `UserServiceConfig` 객체를 활용하는 `forRoot()` 함수는 다음과 같이 정의합니다.
 
-<code-example path="ngmodules/src/app/greeting/greeting.module.ts" region="for-root" header="src/app/greeting/greeting.module.ts (forRoot)" linenums="false">
-
-</code-example>
+<code-example path="ngmodules/src/app/greeting/greeting.module.ts" region="for-root" header="src/app/greeting/greeting.module.ts (forRoot)"></code-example>
 
 <!--
 Lastly, call it within the `imports` list of the `AppModule`. In the following
@@ -188,9 +197,7 @@ snippet, other parts of the file are left out. For the complete file, see the <l
 Lastly, call it within the `imports` list of the `AppModule`.
 In the following snippet, other parts of the file are left out. For the complete file, see the <live-example name="ngmodules"></live-example>, or continue to the next section of this document.
 
-<code-example path="ngmodules/src/app/app.module.ts" region="import-for-root" header="src/app/app.module.ts (imports)" linenums="false">
-
-</code-example>
+<code-example path="ngmodules/src/app/app.module.ts" region="import-for-root" header="src/app/app.module.ts (imports)"></code-example>
 
 <!--
 The app displays "Miss Marple" as the user instead of the default "Sherlock Holmes".
@@ -221,9 +228,7 @@ To guard against a lazy loaded module re-importing `GreetingModule`, add the fol
 -->
 그래서 지연로딩하는 모듈이 `GreetingModule`을 중복로드하는 것을 방지하려면 `GreetingModule` 생성자를 다음과 같이 작성하면 됩니다.
 
-<code-example path="ngmodules/src/app/greeting/greeting.module.ts" region="ctor" header="src/app/greeting/greeting.module.ts" linenums="false">
-
-</code-example>
+<code-example path="ngmodules/src/app/greeting/greeting.module.ts" region="ctor" header="src/app/greeting/greeting.module.ts"></code-example>
 
 <!--
 The constructor tells Angular to inject the `GreetingModule` into itself.
@@ -263,7 +268,7 @@ Here are the two files in their entirety for reference:
 -->
 설명한 내용을 코드로 확인해 보세요.
 
-<code-tabs linenums="false">
+<code-tabs>
  <code-pane header="app.module.ts" path="ngmodules/src/app/app.module.ts">
  </code-pane>
  <code-pane header="greeting.module.ts" region="whole-greeting-module" path="ngmodules/src/app/greeting/greeting.module.ts">

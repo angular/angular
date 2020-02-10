@@ -15,6 +15,7 @@ export type CallExpressionDecorator = ts.Decorator & {
 
 export interface NgDecorator {
   name: string;
+  moduleName: string;
   node: CallExpressionDecorator;
   importNode: ts.ImportDeclaration;
 }
@@ -30,6 +31,7 @@ export function getAngularDecorators(
       .map(({node, importData}) => ({
              node: node as CallExpressionDecorator,
              name: importData !.name,
+             moduleName: importData !.importModule,
              importNode: importData !.node
            }));
 }

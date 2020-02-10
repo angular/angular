@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵgetDOM as getDOM} from '@angular/common';
 import {Injectable} from '@angular/core';
-import {ɵgetDOM as getDOM} from '@angular/platform-browser';
 import {Observable, Observer} from 'rxjs';
 import {ResponseOptions} from '../base_response_options';
 import {ContentType, ReadyState, RequestMethod, ResponseContentType, ResponseType} from '../enums';

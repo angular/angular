@@ -198,7 +198,8 @@ export class AngularJSUrlCodec implements UrlCodec {
   // https://github.com/angular/angular.js/blob/864c7f0/src/ng/urlUtils.js#L60
   parse(url: string, base?: string) {
     try {
-      const parsed = new URL(url, base);
+      // Safari 12 throws an error when the URL constructor is called with an undefined base.
+      const parsed = !base ? new URL(url) : new URL(url, base);
       return {
         href: parsed.href,
         protocol: parsed.protocol ? parsed.protocol.replace(/:$/, '') : '',
@@ -222,12 +223,10 @@ function _stripIndexHtml(url: string): string {
 /**
  * Tries to decode the URI component without throwing an exception.
  *
- * @private
  * @param str value potential URI component to check.
- * @returns {boolean} True if `value` can be decoded
- * with the decodeURIComponent function.
+ * @returns the decoded URI if it can be decoded or else `undefined`.
  */
-function tryDecodeURIComponent(value: string) {
+function tryDecodeURIComponent(value: string): string|undefined {
   try {
     return decodeURIComponent(value);
   } catch (e) {
@@ -240,7 +239,6 @@ function tryDecodeURIComponent(value: string) {
 /**
  * Parses an escaped url query string into key-value pairs. Logic taken from
  * https://github.com/angular/angular.js/blob/864c7f0/src/Angular.js#L1382
- * @returns {Object.<string,boolean|Array>}
  */
 function parseKeyValue(keyValue: string): {[k: string]: unknown} {
   const obj: {[k: string]: unknown} = {};

@@ -5,27 +5,31 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import * as ts from 'typescript';
 
+import {absoluteFrom} from '../../file_system';
+import {TestFile} from '../../file_system/testing';
 import {Reference} from '../../imports';
+import {DependencyTracker} from '../../incremental/api';
 import {TypeScriptReflectionHost} from '../../reflection';
-import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
-import {DependencyTracker, ForeignFunctionResolver, PartialEvaluator} from '../src/interface';
+import {getDeclaration, makeProgram} from '../../testing';
+import {ForeignFunctionResolver, PartialEvaluator} from '../src/interface';
 import {ResolvedValue} from '../src/result';
 
-export function makeExpression(
-    code: string, expr: string, supportingFiles: {name: string, contents: string}[] = []): {
+export function makeExpression(code: string, expr: string, supportingFiles: TestFile[] = []): {
   expression: ts.Expression,
   host: ts.CompilerHost,
   checker: ts.TypeChecker,
   program: ts.Program,
   options: ts.CompilerOptions
 } {
-  const {program, options, host} = makeProgram(
-      [{name: 'entry.ts', contents: `${code}; const target$ = ${expr};`}, ...supportingFiles]);
+  const {program, options, host} = makeProgram([
+    {name: absoluteFrom('/entry.ts'), contents: `${code}; const target$ = ${expr};`},
+    ...supportingFiles
+  ]);
   const checker = program.getTypeChecker();
-  const decl = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
+  const decl =
+      getDeclaration(program, absoluteFrom('/entry.ts'), 'target$', ts.isVariableDeclaration);
   return {
     expression: decl.initializer !,
     host,
@@ -38,11 +42,11 @@ export function makeExpression(
 export function makeEvaluator(
     checker: ts.TypeChecker, tracker?: DependencyTracker): PartialEvaluator {
   const reflectionHost = new TypeScriptReflectionHost(checker);
-  return new PartialEvaluator(reflectionHost, checker, tracker);
+  return new PartialEvaluator(reflectionHost, checker, tracker !== undefined ? tracker : null);
 }
 
 export function evaluate<T extends ResolvedValue>(
-    code: string, expr: string, supportingFiles: {name: string, contents: string}[] = [],
+    code: string, expr: string, supportingFiles: TestFile[] = [],
     foreignFunctionResolver?: ForeignFunctionResolver): T {
   const {expression, checker} = makeExpression(code, expr, supportingFiles);
   const evaluator = makeEvaluator(checker);

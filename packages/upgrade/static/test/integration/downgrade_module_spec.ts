@@ -1166,8 +1166,8 @@ withEachNg1Version(() => {
              constructor(injector: Injector) {
                const originalGet = injector.get;
                injector.get = function(token: any) {
-                 if (token === NgZone) ++getNgZoneCount;
-                 return originalGet.apply(injector, arguments);
+                 if (arguments[0] === NgZone) ++getNgZoneCount;
+                 return originalGet.apply(injector, arguments as any);
                };
              }
              ngDoBootstrap() {}
@@ -1192,9 +1192,9 @@ withEachNg1Version(() => {
 
            const injector = ($injector.get(LAZY_MODULE_REF) as LazyModuleRef).injector !;
            const injectorGet = injector.get;
-           spyOn(injector, 'get').and.callFake((...args: any[]) => {
-             expect(args[0]).not.toBe(NgZone);
-             return injectorGet.apply(injector, args);
+           spyOn(injector, 'get').and.callFake((...args: [any, any?]) => {
+          expect(args[0]).not.toBe(NgZone);
+          return injectorGet.apply(injector, args);
            });
 
            expect(element.textContent).toBe('Count: 1 | In the zone: true');

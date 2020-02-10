@@ -13,7 +13,8 @@ const detectTask = Zone.current.scheduleMacroTask('detectTask', noop, undefined,
 const originalTransitionTo = detectTask.constructor.prototype._transitionTo;
 // patch _transitionTo of ZoneTask to add log for test
 const logTransitionTo: Function = function(
-    toState: TaskState, fromState1: TaskState, fromState2?: TaskState) {
+    this: Task&{_state: TaskState}, toState: TaskState, fromState1: TaskState,
+    fromState2?: TaskState) {
   log.push({
     zone: Zone.current.name,
     taskZone: this.zone && this.zone.name,
@@ -24,7 +25,7 @@ const logTransitionTo: Function = function(
 };
 
 function testFnWithLoggedTransitionTo(testFn: Function) {
-  return function() {
+  return function(this: unknown) {
     detectTask.constructor.prototype._transitionTo = logTransitionTo;
     testFn.apply(this, arguments);
     detectTask.constructor.prototype._transitionTo = originalTransitionTo;

@@ -3,16 +3,24 @@
 -->
 # Bazel로 빌드하기
 
+<<<<<<< HEAD
 <!--
 This guide explains how to build and test Angular apps with Bazel. 
 -->
 이 문서는 Angular 앱을 Bazel로 빌드하고 테스트하는 방법에 대해 다룹니다.
+=======
+This guide explains how to build and test Angular apps with Bazel.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 
 <div class="alert is-helpful">
 
+<<<<<<< HEAD
 <!--
 This guide assumes you are already familiar with developing and building Angular applications using the [CLI](cli). 
+=======
+This guide assumes you are already familiar with developing and building Angular applications using the [CLI](cli).
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 It describes features which are part of Angular Labs, and are not considered a stable, supported API.
 -->
@@ -58,8 +66,12 @@ then create the new application with
 ng new --collection=@angular/bazel
 ```
 
+<<<<<<< HEAD
 <!--
 Now when you use Angular CLI build commands such as `ng build` and `ng serve`, 
+=======
+Now when you use Angular CLI build commands such as `ng build` and `ng serve`,
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 Bazel is used behind the scenes.
 Outputs from Bazel appear in the `dist/bin` folder.
 
@@ -82,6 +94,7 @@ Bazel로 빌드된 결과물은 `dist/bin` 폴더에 생성됩니다.
 If you need to opt-out from using Bazel, you can restore the backup files:
 
 - `/angular.json.bak` replaces `/angular.json`
+<<<<<<< HEAD
 - `/tsconfig.json.bak` replaces `/tsconfig.json`
 -->
 Bazel을 사용하다가 비활성화하려면 Bazel을 활성화할 때 생성된 백업 파일을 복구하면 됩니다:
@@ -89,6 +102,8 @@ Bazel을 사용하다가 비활성화하려면 Bazel을 활성화할 때 생성�
 - `/angular.json.bak` 파일을 `/angular.json` 파일로 복구합니다.
 - `/tsconfig.json.bak` 파일을 `/tsconfig.json` 파일로 복구합니다.
 
+=======
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 ## Advanced configuration
@@ -116,6 +131,7 @@ You can manually adjust the Bazel configuration to:
 * customize the build steps
 * parallellize the build for scale and incrementality
 
+<<<<<<< HEAD
 Create the initial Bazel configuration files by running the following command: 
 -->
 Bazel 환경설정은 다음과 같은 경우에 수동으로 변경합니다:
@@ -124,6 +140,9 @@ Bazel 환경설정은 다음과 같은 경우에 수동으로 변경합니다:
 * 빌드를 병렬로 실행하거나 증분 빌드하려고 할 때
 
 다음 명령을 실행하면 기본 Bazel 환경설정 파일을 생성할 수 있습니다:
+=======
+Create the initial Bazel configuration files by running the following command:
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 ```sh
 ng build --leaveBazelFilesOnDisk
@@ -135,7 +154,7 @@ Now you'll find new files in the Angular workspace:
 * `/WORKSPACE` tells Bazel how to download external dependencies.
 * `/BUILD.bazel` and `/src/BUILD.bazel` tell Bazel about your source code.
 
-You can find a full-featured example with custom Bazel configurations at http://github.com/angular/angular-bazel-example.
+You can find a full-featured example with custom Bazel configurations at https://github.com/bazelbuild/rules_nodejs/tree/master/examples/angular.
 
 Documentation for using Bazel for frontend projects is linked from https://docs.bazel.build/versions/master/bazel-and-javascript.html.
 -->
@@ -225,6 +244,7 @@ Rules are used in `BUILD.bazel` files, which are markers for the packages in you
 
 In the `BUILD.bazel` file, each rule must first be imported, using the `load` statement. Then the rule is called with some attributes, and the result of calling the rule is that you've declared to Bazel how it can derive some outputs given some inputs and dependencies. Then later, when you run a `bazel` command line, Bazel loads all the rules you've declared to determine an absolute ordering of what needs to be run. Note that only the rules needed to produce the requested output will actually be executed.
 
+<<<<<<< HEAD
 A list of common rules for frontend development is documented in the README at https://github.com/bazelbuild/rules_nodejs/. 
 -->
 룰(Rule)은 Bazel 플러그인과 비슷하다고 볼 수 있습니다. Google의 Angular 팀이 직접 관리하는 이 문서에서 Bazel 룰에 대해 자세하게 알아봅시다.
@@ -235,3 +255,6 @@ A list of common rules for frontend development is documented in the README at h
 커맨드라인에서 `bazel`을 실행하면 Bazel 빌더는 모든 룰을 로드하고 이 룰을 실행되는 순서에 맞게 정렬합니다. 이 때 실제로 결과물을 생성하는데 필요하지 않은 룰은 실행되지 않고 제외됩니다.
 
 프론트엔드 개발에 사용하는 룰 목록을 확인하려면 https://github.com/bazelbuild/rules_nodejs/ 에서 제공하는 README 문서를 참고하세요.
+=======
+A list of common rules for frontend development is documented in the README at https://github.com/bazelbuild/rules_nodejs/.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072

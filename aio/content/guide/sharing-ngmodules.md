@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!--
 # Sharing Modules
 -->
@@ -23,6 +24,9 @@ A basic understanding of the following:
 <!--* Components (#TBD) We don’t have a page just on the concept of components, but I think one would be helpful for beginners.-->
 
 <hr>
+=======
+# Sharing modules
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 Creating shared modules allows you to organize and streamline your code. You can put commonly
@@ -82,10 +86,14 @@ having to import it directly into the `@NgModule` decorator.
 -->
 `SharedModule`의 컴포넌트에 `[(ngModel)]`이 사용되지 않아서 실제로는 `SharedModule`이 `FormsModule`을 로드할 필요가 없더라도, `imports` 목록에 등록되어 있기 때문에 `SharedModule`은 `FormsModule`을 모듈 외부로 공개합니다. 그러면 `SharedModule`을 로드하는 다른 모듈은 `FormsModule`을 따로 로드하지 않아도 이 모듈을 사용할 수 있습니다.
 
+<<<<<<< HEAD
 <!--
 ### Using components vs services from other modules.
 -->
 ## 다른 모듈의 컴포넌트 사용하기 vs 서비스 사용하기
+=======
+### Using components vs services from other modules
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 There is an important distinction between using another module's component and

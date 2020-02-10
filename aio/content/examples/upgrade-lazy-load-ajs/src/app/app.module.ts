@@ -19,7 +19,6 @@ import { App404Component } from './app404/app404.component';
     BrowserModule,
     AppRoutingModule
   ],
-  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

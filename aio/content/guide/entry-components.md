@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!--
 # Entry Components
 -->
@@ -16,6 +17,9 @@ A basic understanding of the following concepts:
 * [부트스트랩](guide/bootstrapping)
 
 <hr />
+=======
+# Entry components
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 An entry component is any component that Angular loads imperatively, (which means you’re not referencing it in the template), by type. You specify an entry component by bootstrapping it in an NgModule, or including it in a routing definition.
@@ -24,10 +28,14 @@ An entry component is any component that Angular loads imperatively, (which mean
 
 <div class="alert is-helpful">
 
+<<<<<<< HEAD
 <!--
 To contrast the two types of components, there are components which are included in the template, which are declarative.  Additionally, there are  components which you load imperatively; that is, entry components.
 -->
 컴포넌트는 용도에 따라 두 종류로 구분할 수 있습니다. 하나는 템플릿에서 셀렉터로 사용하는 컴포넌트이며, 다른 하나는 모듈에서 명시적으로 지정하는 진입 컴포넌트입니다.
+=======
+To contrast the two types of components, there are components which are included in the template, which are declarative. Additionally, there are components which you load imperatively; that is, entry components.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 </div>
 

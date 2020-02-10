@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "npm_package", "ts_library")
+load("//tools:defaults.bzl", "pkg_npm", "ts_library")
 load("@npm_bazel_typescript//:index.bzl", "ts_config")
 
 ts_config(
@@ -23,34 +23,24 @@ ts_library(
     tsconfig = ":tsconfig",
     deps = [
         "//packages/compiler",
-        "//packages/compiler-cli/src/ngtsc/annotations",
-        "//packages/compiler-cli/src/ngtsc/cycles",
+        "//packages/compiler-cli/src/ngtsc/core",
+        "//packages/compiler-cli/src/ngtsc/core:api",
         "//packages/compiler-cli/src/ngtsc/diagnostics",
-        "//packages/compiler-cli/src/ngtsc/entry_point",
-        "//packages/compiler-cli/src/ngtsc/imports",
-        "//packages/compiler-cli/src/ngtsc/incremental",
+        "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/indexer",
-        "//packages/compiler-cli/src/ngtsc/metadata",
-        "//packages/compiler-cli/src/ngtsc/partial_evaluator",
-        "//packages/compiler-cli/src/ngtsc/path",
         "//packages/compiler-cli/src/ngtsc/perf",
-        "//packages/compiler-cli/src/ngtsc/reflection",
-        "//packages/compiler-cli/src/ngtsc/routing",
-        "//packages/compiler-cli/src/ngtsc/scope",
-        "//packages/compiler-cli/src/ngtsc/shims",
-        "//packages/compiler-cli/src/ngtsc/switch",
-        "//packages/compiler-cli/src/ngtsc/transform",
-        "//packages/compiler-cli/src/ngtsc/typecheck",
-        "//packages/compiler-cli/src/ngtsc/util",
         "@npm//@bazel/typescript",
-        "@npm//@types",
+        "@npm//@types/chokidar",
+        "@npm//@types/node",
+        "@npm//fs-extra",
+        "@npm//minimist",
         "@npm//reflect-metadata",
         "@npm//tsickle",
         "@npm//typescript",
     ],
 )
 
-npm_package(
+pkg_npm(
     name = "npm_package",
     srcs = [
         "package.json",

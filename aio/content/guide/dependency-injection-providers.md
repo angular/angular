@@ -1,7 +1,11 @@
+<<<<<<< HEAD
 <!--
 # Dependency Providers
 -->
 # 의존성 프로바이더 (Dependency Providers)
+=======
+# Dependency providers
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 A dependency [provider](guide/glossary#provider) configures an injector
@@ -123,16 +127,14 @@ This logger gets the user from an injected `UserService` instance.
 `EvenBetterLogger`는 로그를 출력할 때 사용자의 이름도 함께 출력하는 클래스입니다.
 그리고 이 때 출력하는 사용자의 이름은 `UserService`를 주입 받아서 참조합니다.
 
-<code-example path="dependency-injection/src/app/providers.component.ts" region="EvenBetterLogger"  linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/providers.component.ts" region="EvenBetterLogger"></code-example>
 
 <!--
 The injector needs providers for both this new logging service and its dependent `UserService`. Configure this alternative logger with the `useClass` provider-definition key, like `BetterLogger`. The following array specifies both providers in the `providers` metadata option of the parent module or component.
 -->
 이제 인젝터에는 `EventBetterLogger`와 `UserService`의 프로바이더가 모두 등록되어야 합니다. 이 때 `useClass` 프로바이더-정의 키를 사용하면 어떤 클래스의 프로바이더를 다른 클래스로 지정할 수 있습니다. 아래 코드는 부모 모듈이나 컴포넌트의 `providers` 메타데이터 옵션에 사용한 예제 코드입니다.
 
-<code-example path="dependency-injection/src/app/providers.component.ts" region="providers-5"  linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/providers.component.ts" region="providers-5"></code-example>
 
 {@a aliased-class-providers}
 
@@ -163,16 +165,14 @@ If you try to alias `OldLogger` to `NewLogger` with `useClass`, you end up with 
 -->
 프로바이더에 `useClass`를 사용하면 `OldLogger`를 `NewLogger`로 대체하는 것이 아니라 `NewLogger` 인스턴스를 두 개로 나누는 방식으로 등록됩니다.
 
-<code-example path="dependency-injection/src/app/providers.component.ts" region="providers-6a" linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/providers.component.ts" region="providers-6a"></code-example>
 
 <!--
 To make sure there is only one instance of `NewLogger`, alias `OldLogger` with the `useExisting` option.
 -->
 `NewLogger`의 인스턴스를 하나로 유지하려면 `oldLogger` 토큰에 `useExisting` 옵션을 사용해야 합니다.
 
-<code-example path="dependency-injection/src/app/providers.component.ts" region="providers-6b" linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/providers.component.ts" region="providers-6b"></code-example>
 
 {@a value-provider}
 
@@ -193,16 +193,14 @@ The following code defines a variable that creates such an object to play the lo
 
 아래 코드는 `Logger`와 모양이 같은 객체를 정의하는 코드입니다.
 
-<code-example path="dependency-injection/src/app/providers.component.ts" region="silent-logger"  linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/providers.component.ts" region="silent-logger"></code-example>
 
 <!--
 The following provider object uses the `useValue` key to associate the variable with the `Logger` token.
 -->
 그리고 이 객체를 `Logger` 토큰에 등록하려면 `useValue` 옵션을 사용하면 됩니다.
 
-<code-example path="dependency-injection/src/app/providers.component.ts" region="providers-7" linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/providers.component.ts" region="providers-7"></code-example>
 
 {@a non-class-dependencies}
 
@@ -225,8 +223,7 @@ They can be object literals, as shown in the following example.
 
 애플리케이션 제목이나 웹 API 엔드포인트 주소와 같이 여러 상수를 객체로 만들어서 사용하는 경우를 생각해 봅시다. 이 때 의존성 객체는 클래스 인스턴스인 것보다는 다음과 같이 객체 리터럴로 정의하는 경우가 일반적입니다.
 
-<code-example path="dependency-injection/src/app/app.config.ts" region="config" header="src/app/app.config.ts (excerpt)" linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/app.config.ts" region="config" header="src/app/app.config.ts (excerpt)"></code-example>
 
 {@a interface-not-valid-token}
 
@@ -244,11 +241,9 @@ In TypeScript, an interface is a design-time artifact, and doesn't have a runtim
 하지만 아쉽게도 TypeScript 인터페이스는 토큰으로 사용할 수 없습니다:
 인터페이스는 개발 단계에만 사용되는 개념이기 때문에 실행되는 시점에는 존재하지 않습니다. 따라서 의존성 주입에 사용하는 토큰으로 사용할 수 없습니다.
 
-<code-example path="dependency-injection/src/app/providers.component.ts" region="providers-9-interface"  linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/providers.component.ts" region="providers-9-interface"></code-example>
 
-<code-example path="dependency-injection/src/app/providers.component.ts" region="provider-9-ctor-interface"  linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/providers.component.ts" region="provider-9-ctor-interface"></code-example>
 
 <div class="alert is-helpful">
 
@@ -278,8 +273,7 @@ The following example shows how to define such a token.
 그리고 클래스가 아닌 의존성 객체는 `InjectionToken` 객체를 정의하는 방법으로도 프로바이더를 등록할 수 있습니다.
 토큰은 다음과 같이 정의합니다.
 
-<code-example path="dependency-injection/src/app/app.config.ts" region="token" header="src/app/app.config.ts" linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/app.config.ts" region="token" header="src/app/app.config.ts"></code-example>
 
 <!--
 The type parameter, while optional, conveys the dependency's type to developers and tooling.
@@ -292,8 +286,7 @@ Register the dependency provider using the `InjectionToken` object:
 -->
 이렇게 정의한 `InjectionToken`은 다음과 같이 인젝터에 등록합니다:
 
-<code-example path="dependency-injection/src/app/providers.component.ts" region="providers-9"  linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/providers.component.ts" region="providers-9"></code-example>
 
 <!--
 Now you can inject the configuration object into any constructor that needs it, with
@@ -301,8 +294,7 @@ the help of an `@Inject()` parameter decorator.
 -->
 이 의존성 토큰은 생성자에서 `@Inject()` 인자 데코레이터를 사용하면 주입받을 수 있습니다.
 
-<code-example path="dependency-injection/src/app/app.component.2.ts" region="ctor" header="src/app/app.component.ts" linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/app.component.2.ts" region="ctor" header="src/app/app.component.ts"></code-example>
 
 <div class="alert is-helpful">
 
@@ -366,8 +358,7 @@ To resolve this, we give the `HeroService` constructor a boolean flag to control
 
 그래서 이런 경우에 `HeroService`의 생성자에 `boolean` 플래그를 사용해서 비밀 히어로의 명단을 화면에 표시할지, 표시하지 않을지 결정하려고 합니다.
 
-<code-example path="dependency-injection/src/app/heroes/hero.service.ts" region="internals" header="src/app/heroes/hero.service.ts (excerpt)" linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/heroes/hero.service.ts" region="internals" header="src/app/heroes/hero.service.ts (excerpt)"></code-example>
 
 <!--
 You can inject `Logger`, but you can't inject the  `isAuthorized` flag. Instead, you can use a factory provider to create a new logger instance for `HeroService`.
@@ -378,8 +369,7 @@ A factory provider needs a factory function.
 
 팩토리 프로바이더는 팩토리 함수를 사용합니다.
 
-<code-example path="dependency-injection/src/app/heroes/hero.service.provider.ts" region="factory" header="src/app/heroes/hero.service.provider.ts (excerpt)" linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/heroes/hero.service.provider.ts" region="factory" header="src/app/heroes/hero.service.provider.ts (excerpt)"></code-example>
 
 <!--
 Although `HeroService` has no access to `UserService`, the factory function does.
@@ -389,8 +379,7 @@ and let the injector pass them along to the factory function.
 이 코드에서 `HeroService`는 `UserService`에 직접 접근할 수 없지만, 팩토리 함수는 접근할 수 있습니다.
 그러면 이 팩토리 함수가 동작하기 위한 의존성을 다음과 같이 지정해야 합니다.
 
-<code-example path="dependency-injection/src/app/heroes/hero.service.provider.ts" region="provider" header="src/app/heroes/hero.service.provider.ts (excerpt)" linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/heroes/hero.service.provider.ts" region="provider" header="src/app/heroes/hero.service.provider.ts (excerpt)"></code-example>
 
 <!--
 * The `useFactory` field tells Angular that the provider is a factory function whose implementation is `heroServiceFactory`.
@@ -546,7 +535,7 @@ The following example of non-tree-shakable providers in Angular configures a ser
 -->
 다음 코드처럼 NgModule의 인젝터에 등록된 서비스 프로바이더는 트리 셰이킹의 대상이 아닙니다.
 
-<code-example path="dependency-injection/src/app/tree-shaking/service-and-module.ts"  header="src/app/tree-shaking/service-and-modules.ts" linenums="false"> </code-example>
+<code-example path="dependency-injection/src/app/tree-shaking/service-and-module.ts"  header="src/app/tree-shaking/service-and-modules.ts"></code-example>
 
 <!--
 You can then import this module into your application module
@@ -555,7 +544,7 @@ as in the following example.
 -->
 이 모듈은 애플리케이션에 사용되는 서비스 프로바이더를 모아두기 위해 정의한 것이기 때문에, 애플리케이션 최상위 모듈에 다음과 같이 로드되어야 합니다.
 
-<code-example path="dependency-injection/src/app/tree-shaking/app.module.ts"  header="src/app/tree-shaking/app.modules.ts" linenums="false"> </code-example>
+<code-example path="dependency-injection/src/app/tree-shaking/app.module.ts"  header="src/app/tree-shaking/app.modules.ts"></code-example>
 
 <!--
 When `ngc` runs, it compiles `AppModule` into a module factory, which contains definitions for all the providers declared in all the modules it includes. At runtime, this factory becomes an injector that instantiates these services.
@@ -580,14 +569,14 @@ The following example shows the tree-shakable equivalent to the `ServiceModule` 
 
 그래서 위에서 살펴봤던 `ServiceModule` 예제의 `Service` 클래스를 트리 셰이킹할 수 있도록 변형하면 다음과 같이 작성할 수 있습니다.
 
-<code-example path="dependency-injection/src/app/tree-shaking/service.ts"  header="src/app/tree-shaking/service.ts" linenums="false"> </code-example>
+<code-example path="dependency-injection/src/app/tree-shaking/service.ts"  header="src/app/tree-shaking/service.ts"></code-example>
 
 <!--
 The service can be instantiated by configuring a factory function, as in the following example.
 -->
 이 서비스는 팩토리 함수로 인스턴스를 생성해서 등록할 수도 있습니다.
 
-<code-example path="dependency-injection/src/app/tree-shaking/service.0.ts"  header="src/app/tree-shaking/service.0.ts" linenums="false"> </code-example>
+<code-example path="dependency-injection/src/app/tree-shaking/service.0.ts"  header="src/app/tree-shaking/service.0.ts"></code-example>
 
 <div class="alert is-helpful">
 

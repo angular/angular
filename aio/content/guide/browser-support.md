@@ -69,16 +69,16 @@ Angular는 대부분의 브라우저를 지원합니다. 좀 더 자세하게 �
       최근 2개 메이저 버전
     </td>
   </tr>
-  <tr> 
+  <tr>
     <td>
       IE
     </td>
     <td>
-      11<br>10<br>9
+      11, 10, 9 ("compatibility view" mode not supported)
     </td>
   </tr>
  <tr>
-   <tr> 
+   <tr>
     <td>
       IE Mobile
     </td>
@@ -109,16 +109,16 @@ Angular는 대부분의 브라우저를 지원합니다. 좀 더 자세하게 �
       -->
       최근 2개 메이저 버전
     </td>
-  </tr> 
+  </tr>
   <tr>
     <td>
       Android
     </td>
 
     <td>
-      Nougat (7.0)<br>Marshmallow (6.0)<br>Lollipop (5.0, 5.1)<br>KitKat (4.4)
+      X (10.0), Pie (9.0), Oreo (8.0), Nougat (7.0)
     </td>
-  </tr> 
+  </tr>
 
 </table>
 
@@ -133,9 +133,12 @@ Angular는 <a href="https://saucelabs.com/">SauceLabs</a>와 <a href="https://ww
 
 </div>
 
+<<<<<<< HEAD
 {@a polyfills}
 
 <!--
+=======
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 ## Polyfills
 -->
 ## 폴리필 (Polyfills)
@@ -143,11 +146,14 @@ Angular는 <a href="https://saucelabs.com/">SauceLabs</a>와 <a href="https://ww
 <!--
 Angular is built on the latest standards of the web platform.
 Targeting such a wide range of browsers is challenging because they do not support all features of modern browsers.
+<<<<<<< HEAD
 -->
 Angular는 최신 웹 플랫폼 표준을 준수하며 만들어졌습니다.
 하지만 최신 브라우저들이 대부분 지원하는 기능을 제대로 지원하지 않는 일부 브라우저에서는 Angular 애플리케이션의 기능 중 일부가 제대로 동작하지 않을 수 있습니다.
 
 <!--
+=======
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 You compensate by loading polyfill scripts ("polyfills") for the browsers that you must support.
 The [table below](#polyfill-libs) identifies most of the polyfills you might need.
 -->
@@ -167,6 +173,7 @@ Note that polyfills cannot magically transform an old, slow browser into a moder
 
 </div>
 
+<<<<<<< HEAD
 <!--
 ## Enabling polyfills
 -->
@@ -179,10 +186,28 @@ the CLI created with your project.
 [Angular CLI](https://github.com/angular/angular-cli/wiki)를 사용해서 프로젝트를 생성했다면 Angular CLI가 자동으로 만든 `src/polyfills.ts` 파일을 사용해서 폴리필을 적용할 수 있습니다.
 
 <!--
+=======
+In Angular CLI version 8 and higher, applications are built using *differential loading*, a strategy where the CLI builds two separate bundles as part of your deployed application.
+
+* The first bundle contains modern ES2015 syntax, takes advantage of built-in support in modern browsers, ships less polyfills, and results in a smaller bundle size.
+
+* The second bundle contains code in the old ES5 syntax, along with all necessary polyfills. This results in a larger bundle size, but supports older browsers.
+
+This strategy allows you to continue to build your web application to support multiple browsers, but only load the necessary code that the browser needs.
+For more information about how this works, see [Differential Loading](guide/deployment#differential-loading) in the [Deployment guide](guide/deployment).
+
+## Enabling polyfills with CLI projects
+
+The [Angular CLI](cli) provides support for polyfills.
+If you are not using the CLI to create your projects, see [Polyfill instructions for non-CLI users](#non-cli).
+
+When you create a project with the `ng new` command, a `src/polyfills.ts` configuration file is created as part of your project folder.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 This file incorporates the mandatory and many of the optional polyfills as JavaScript `import` statements.
 -->
 이 파일에는 JavaScript `import` 키워드와 같이 필수로 사용해야 하는 폴리필이나 선택적으로 사용할 수 있는 폴리필이 다양하게 정의되어 있습니다.
 
+<<<<<<< HEAD
 <!--
 The npm packages for the _mandatory_ polyfills (such as `zone.js`) were installed automatically for you when you created your project and their corresponding `import` statements are ready to go. You probably won't touch these.
 -->
@@ -194,15 +219,22 @@ For example, [if you need the web animations polyfill](http://caniuse.com/#feat=
 -->
 하지만 추가 폴리필을 적용하려면 이 폴리필을 npm 패키지로 설치해야 합니다.
 예를 들어 [웹 애니메이션 폴리필](http://caniuse.com/#feat=web-animation)을 적용하려면 `npm`이나 `yarn`으로 다음 명령을 실행하면 됩니다.
+=======
+* The npm packages for the [_mandatory_ polyfills](#polyfill-libs) (such as `zone.js`) are installed automatically for you when you create your project with `ng new`, and their corresponding `import` statements are already enabled in the `src/polyfills.ts` configuration file.
+
+* If you need an _optional_ polyfill, you must install its npm package, then uncomment or create the corresponding import statement in the `src/polyfills.ts` configuration file.
+
+For example, if you need the optional [web animations polyfill](http://caniuse.com/#feat=web-animation), you could install it with `npm`, using the following command (or the `yarn` equivalent):
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 <code-example language="sh" class="code-shell">
-  # note that the web-animations-js polyfill is only here as an example
-  # it isn't a strict requirement of Angular anymore (more below)
+  # install the optional web animations polyfill
   npm install --save web-animations-js
 </code-example>
 -->
 
+<<<<<<< HEAD
 <code-example language="sh" class="code-shell">
   # web-animation-js 폴리필은 이 예제에서만 사용합니다.
   # Angular 애플리케이션에 꼭 필요한 것은 아닙니다.
@@ -213,6 +245,10 @@ For example, [if you need the web animations polyfill](http://caniuse.com/#feat=
 Then open the `polyfills.ts` file and un-comment the corresponding `import` statement as in the following example:
 -->
 그리고 `polyfills.ts` 파일을 열어서 해당 `import` 구문에 지정된 주석을 해제합니다:
+=======
+You can then add the import statement in the `src/polyfills.ts` file.
+For many polyfills, you can simply un-comment the corresponding `import` statement in the file, as in the following example.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 <code-example header="src/polyfills.ts">
@@ -231,6 +267,7 @@ Then open the `polyfills.ts` file and un-comment the corresponding `import` stat
   import 'web-animations-js';  // `npm install --save web-animations-js` 명령을 실행한 후에 동작합니다.
 </code-example>
 
+<<<<<<< HEAD
 <!--
 If you can't find the polyfill you want in `polyfills.ts`,
 add it yourself, following the same pattern:
@@ -252,6 +289,10 @@ Non-CLI users should follow the instructions [below](#non-cli).
 Angular CLI를 사용하지 않는 사용자는 [아래](#non-cli)에서 설명하는 방법으로 적용할 수 있습니다.
 
 </div>
+=======
+If the polyfill you want is not already in `polyfills.ts` file, add the `import` statement by hand.
+
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 {@a polyfill-libs}
 
@@ -260,11 +301,14 @@ Angular CLI를 사용하지 않는 사용자는 [아래](#non-cli)에서 설명�
 -->
 ### 필수 폴리필
 
+<<<<<<< HEAD
 <!--
 These are the polyfills required to run an Angular application on each supported browser:
 -->
 다음 브라우저에서 Angular 애플리케이션을 실행하려면 반드시 폴리필을 적용해야 합니다:
 
+=======
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 <table>
 
   <tr style="vertical-align: top">
@@ -288,15 +332,20 @@ These are the polyfills required to run an Angular application on each supported
   <tr style="vertical-align: top">
 
     <td>
-      Chrome, Firefox, Edge, Safari 9+
+      Chrome, Firefox, Edge, <br>
+      Safari, Android, IE 10+
     </td>
 
     <td>
 
+<<<<<<< HEAD
       <!--
       [ES7/reflect](guide/browser-support#core-es7-reflect) (JIT only)
       -->
       [ES7/reflect](guide/browser-support#core-es7-reflect) (JIT인 경우만)
+=======
+      [ES2015](guide/browser-support#core-es6)
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
     </td>
 
@@ -305,26 +354,12 @@ These are the polyfills required to run an Angular application on each supported
   <tr style="vertical-align: top">
 
     <td>
-      Safari 7 & 8, IE10 & 11, Android 4.1+
+      IE 9
     </td>
 
     <td>
 
-      [ES6](guide/browser-support#core-es6)
-
-    </td>
-
-  </tr>
-
-  <tr style="vertical-align: top">
-
-    <td>
-      IE9
-    </td>
-
-    <td>
-
-      [ES6<br>classList](guide/browser-support#classlist)
+      ES2015<br>[classList](guide/browser-support#classlist)
 
     </td>
 
@@ -343,6 +378,7 @@ Some features of Angular may require additional polyfills.
 -->
 Angular 기능 중 일부는 폴리필을 추가로 적용해야 하는 것이 있습니다.
 
+<<<<<<< HEAD
 <!--
 For example, the animations library relies on the standard web animation API, which is only available in Chrome and Firefox today.
 (note that the dependency of web-animations-js in Angular is only necessary if `AnimationBuilder` is used.)
@@ -356,6 +392,8 @@ Here are the features which may require additional polyfills:
 다음 기능을 사용하려면 폴리필을 함께 적용해야 합니다:
 
 
+=======
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 <table>
 
   <tr style="vertical-align: top">
@@ -387,6 +425,7 @@ Here are the features which may require additional polyfills:
 
     <td>
 
+<<<<<<< HEAD
       <!--
       [JIT compilation](guide/aot-compiler).
 
@@ -425,6 +464,10 @@ Here are the features which may require additional polyfills:
       -->
       [애니메이션](guide/animations)
       <br>애플리케이션에서 `Animation Builder`를 사용할 때만 필요합니다--표준 애니메이션을 사용할 때는 필요없습니다.
+=======
+      [AnimationBuilder](api/animations/AnimationBuilder).
+      (Standard animation support does not require polyfills.)
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
     </td>
 
@@ -438,6 +481,7 @@ Here are the features which may require additional polyfills:
     </td>
 
     <td>
+<<<<<<< HEAD
       <!--
       <p>If AnimationBuilder is used then the polyfill will enable scrubbing
       support for IE/Edge and Safari (Chrome and Firefox support this natively).</p>
@@ -478,6 +522,11 @@ Here are the features which may require additional polyfills:
       All but Chrome, Firefox, Edge, IE11 and Safari 10
       -->
       Chrome, Firefox, Edge, IE11, Safari 10을 제외하면 모두 필요합니다.
+=======
+      <p>If AnimationBuilder is used, enables scrubbing
+      support for IE/Edge and Safari.
+      (Chrome and Firefox support this natively).</p>
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
     </td>
 
   </tr>
@@ -486,12 +535,16 @@ Here are the features which may require additional polyfills:
 
     <td>
 
+<<<<<<< HEAD
        <!--
        [NgClass](api/common/NgClass) 
        
        on SVG elements
        -->
        SVG 엘리먼트에 적용하는 [NgClass](api/common/NgClass) 
+=======
+       [NgClass](api/common/NgClass) on SVG elements
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
     </td>
 
     <td>
@@ -501,7 +554,7 @@ Here are the features which may require additional polyfills:
     </td>
 
     <td>
-      IE10, IE11
+      IE 10, IE 11
     </td>
 
   </tr>
@@ -510,12 +563,16 @@ Here are the features which may require additional polyfills:
 
     <td>
 
+<<<<<<< HEAD
       <!--
       [Http](guide/http) 
       
       when sending and receiving binary data
       -->
       [Http](guide/http)를 사용해서 바이너리 데이터를 보내거나 받을 때
+=======
+      [Http](guide/http) when sending and receiving binary data
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
     </td>
 
     <td>
@@ -538,9 +595,8 @@ Here are the features which may require additional polyfills:
 
     <td>
 
-      [Router](guide/router) 
-      
-      when using [hash-based routing](guide/router#appendix-locationstrategy-and-browser-url-styles)
+      [Router](guide/router) when using
+      [hash-based routing](guide/router#appendix-locationstrategy-and-browser-url-styles)
     </td>
 
     <td>
@@ -558,6 +614,7 @@ Here are the features which may require additional polyfills:
 </table>
 
 
+<<<<<<< HEAD
 <!--
 ### Suggested polyfills ##
 -->
@@ -567,6 +624,12 @@ Here are the features which may require additional polyfills:
 Below are the polyfills which are used to test the framework itself. They are a good starting point for an application.
 -->
 다음 폴리필은 Angular 프레임워크가 개발될 때 사용된 것들입니다. 애플리케이션을 개발할 때 사용하는 것도 고려해 보세요.
+=======
+
+### Suggested polyfills
+
+The following polyfills are used to test the framework itself. They are a good starting point for an application.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 
 <table>
@@ -600,24 +663,6 @@ Below are the polyfills which are used to test the framework itself. They are a 
 
     <td>
 
-      <a id='core-es7-reflect' href="https://github.com/zloirock/core-js/tree/v2/fn/reflect">ES7/reflect</a>
-
-    </td>
-
-    <td>
-      MIT
-    </td>
-
-    <td>
-      0.5KB
-    </td>
-
-  </tr>
-
-  <tr>
-
-    <td>
-
       <a id='core-es7-array' href="https://github.com/zloirock/core-js/tree/v2/fn/array">ES7/array</a>
 
     </td>
@@ -636,7 +681,7 @@ Below are the polyfills which are used to test the framework itself. They are a 
 
     <td>
 
-      <a id='core-es6' href="https://github.com/zloirock/core-js">ES6</a>
+      <a id='core-es6' href="https://github.com/zloirock/core-js">ES2015</a>
 
     </td>
 
@@ -768,11 +813,15 @@ computed with the <a href="http://closure-compiler.appspot.com/home">closure com
 
 {@a non-cli}
 
+<<<<<<< HEAD
 <!--
+=======
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 ## Polyfills for non-CLI users
 -->
 ## Angular CLI를 사용하지 않는 경우에 필요한 폴리필
 
+<<<<<<< HEAD
 <!--
 If you are not using the CLI, you should add your polyfill scripts directly to the host web page (`index.html`), perhaps like this.
 -->
@@ -781,6 +830,14 @@ If you are not using the CLI, you should add your polyfill scripts directly to t
 <!--
 <code-example header="src/index.html">
   &lt;!-- pre-zone polyfills --&gt;
+=======
+If you are not using the CLI, add your polyfill scripts directly to the host web page (`index.html`).
+
+For example:
+
+<code-example header="src/index.html" language="html">
+  &lt;!-- pre-zone polyfills -->
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
   &lt;script src="node_modules/core-js/client/shim.min.js">&lt;/script>
   &lt;script src="node_modules/web-animations-js/web-animations.min.js">&lt;/script>
   &lt;script>
@@ -791,7 +848,7 @@ If you are not using the CLI, you should add your polyfill scripts directly to t
      */
     // __Zone_disable_requestAnimationFrame = true; // disable patch requestAnimationFrame
     // __Zone_disable_on_property = true; // disable patch onProperty such as onclick
-    // __zone_symbol__BLACK_LISTED_EVENTS = ['scroll', 'mousemove']; // disable patch specified eventNames
+    // __zone_symbol__UNPATCHED_EVENTS = ['scroll', 'mousemove']; // disable patch specified eventNames
 
     /*
      * in IE/Edge developer tools, the addEventListener will also be wrapped by zone.js

@@ -298,7 +298,8 @@ class ComplexItem {
       });
 
       describe('forEachOperation', () => {
-        function stringifyItemChange(record: any, p: number, c: number, originalIndex: number) {
+        function stringifyItemChange(
+            record: any, p: number | null, c: number | null, originalIndex: number) {
           const suffix = originalIndex == null ? '' : ' [o=' + originalIndex + ']';
           const value = record.item;
           if (record.currentIndex == null) {
@@ -311,11 +312,13 @@ class ComplexItem {
         }
 
         function modifyArrayUsingOperation(
-            arr: number[], endData: any[], prev: number, next: number) {
+            arr: number[], endData: any[], prev: number | null, next: number | null) {
           let value: number = null !;
           if (prev == null) {
-            value = endData[next];
-            arr.splice(next, 0, value);
+            // "next" index is guaranteed to be set since the previous index is
+            // not defined and therefore a new entry is added.
+            value = endData[next !];
+            arr.splice(next !, 0, value);
           } else if (next == null) {
             value = arr[prev];
             arr.splice(prev, 1);
@@ -336,7 +339,7 @@ class ComplexItem {
              differ = differ.diff(endData) !;
 
              const operations: string[] = [];
-             differ.forEachOperation((item: any, prev: number, next: number) => {
+             differ.forEachOperation((item: any, prev: number | null, next: number | null) => {
                const value = modifyArrayUsingOperation(startData, endData, prev, next);
                operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
              });
@@ -359,7 +362,7 @@ class ComplexItem {
              differ = differ.diff(endData) !;
 
              const operations: string[] = [];
-             differ.forEachOperation((item: any, prev: number, next: number) => {
+             differ.forEachOperation((item: any, prev: number | null, next: number | null) => {
                modifyArrayUsingOperation(startData, endData, prev, next);
                operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
              });
@@ -379,7 +382,7 @@ class ComplexItem {
           differ = differ.diff(endData) !;
 
           const operations: string[] = [];
-          differ.forEachOperation((item: any, prev: number, next: number) => {
+          differ.forEachOperation((item: any, prev: number | null, next: number | null) => {
             modifyArrayUsingOperation(startData, endData, prev, next);
             operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
           });
@@ -400,7 +403,7 @@ class ComplexItem {
           differ = differ.diff(endData) !;
 
           const operations: string[] = [];
-          differ.forEachOperation((item: any, prev: number, next: number) => {
+          differ.forEachOperation((item: any, prev: number | null, next: number | null) => {
             modifyArrayUsingOperation(startData, endData, prev, next);
             operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
           });
@@ -421,7 +424,7 @@ class ComplexItem {
           differ = differ.diff(endData) !;
 
           const operations: string[] = [];
-          differ.forEachOperation((item: any, prev: number, next: number) => {
+          differ.forEachOperation((item: any, prev: number | null, next: number | null) => {
             modifyArrayUsingOperation(startData, endData, prev, next);
             operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
           });
@@ -447,7 +450,7 @@ class ComplexItem {
              differ = differ.diff(endData) !;
 
              const operations: string[] = [];
-             differ.forEachOperation((item: any, prev: number, next: number) => {
+             differ.forEachOperation((item: any, prev: number | null, next: number | null) => {
                const value = modifyArrayUsingOperation(startData, endData, prev, next);
                operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
              });

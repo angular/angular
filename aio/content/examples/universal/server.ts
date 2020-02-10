@@ -1,24 +1,33 @@
-// These are important and needed before anything else
 import 'zone.js/dist/zone-node';
-import 'reflect-metadata';
 
-import { enableProdMode } from '@angular/core';
-
+import { ngExpressEngine } from '@nguniversal/express-engine';
 import * as express from 'express';
 import { join } from 'path';
 
-// Faster server renders w/ Prod mode (dev mode never needed)
-enableProdMode();
+import { AppServerModule } from './src/main.server';
+import { APP_BASE_HREF } from '@angular/common';
 
-// Express server
-const app = express();
+// The Express app is exported so that it can be used by serverless Functions.
+export function app() {
+  const server = express();
+  const distFolder = join(process.cwd(), 'dist/express-engine-ivy/browser');
 
-const PORT = process.env.PORT || 4000;
-const DIST_FOLDER = join(process.cwd(), 'dist');
+  // #docregion ngExpressEngine
+  server.engine('html', ngExpressEngine({
+    bootstrap: AppServerModule,
+  }));
+  // #enddocregion ngExpressEngine
+  server.set('view engine', 'html');
+  server.set('views', distFolder);
 
-// * NOTE :: leave this as require() since this file is built Dynamically from webpack
-const { AppServerModuleNgFactory, LAZY_MODULE_MAP } = require('./dist/server/main');
+  // #docregion data-request
+  // TODO: implement data requests securely
+  server.get('/api/*', (req, res) => {
+    res.status(404).send('data requests are not supported');
+  });
+  // #enddocregion data-request
 
+<<<<<<< HEAD
 // Express Engine
 import { ngExpressEngine } from '@nguniversal/express-engine';
 // Import module map for lazy loading
@@ -59,3 +68,42 @@ app.get('*', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Node server listening on http://localhost:${PORT}`);
 });
+=======
+  // #docregion static
+  // Serve static files from /browser
+  server.get('*.*', express.static(distFolder, {
+    maxAge: '1y'
+  }));
+  // #enddocregion static
+
+  // #docregion navigation-request
+  // All regular routes use the Universal engine
+  server.get('*', (req, res) => {
+    res.render('index', { req, providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }] });
+  });
+  // #enddocregion navigation-request
+
+  return server;
+}
+
+function run() {
+  const port = process.env.PORT || 4000;
+
+  // Start up the Node server
+  const server = app();
+  server.listen(port, () => {
+    console.log(`Node Express server listening on http://localhost:${port}`);
+  });
+}
+
+// Webpack will replace 'require' with '__webpack_require__'
+// '__non_webpack_require__' is a proxy to Node 'require'
+// The below code is to ensure that the server is run only when not requiring the bundle.
+declare const __non_webpack_require__: NodeRequire;
+const mainModule = __non_webpack_require__.main;
+if (mainModule && mainModule.filename === __filename) {
+  run();
+}
+
+export * from './src/main.server';
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072

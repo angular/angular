@@ -13,19 +13,28 @@ let server;
 
 const localFolder = __dirname;
 
+function writeNotFound(res) {
+  res.writeHead(404, {'Content-Type': 'text/html'});
+  res.end('<h1>404, Not Found!</h1>');
+}
+
 function requestHandler(req, res) {
   if (req.url === '/close') {
     res.end('server closing');
     setTimeout(() => { process.exit(0); }, 1000);
   } else {
-    const file = localFolder + req.url;
+    const file = path.resolve(localFolder, req.url);
+    if (!file.startsWith(localFolder + '/')) {
+      writeNotFound(res);
+      return;
+    }
 
     fs.readFile(file, function(err, contents) {
       if (!err) {
         res.end(contents);
       } else {
-        res.writeHead(404, {'Content-Type': 'text/html'});
-        res.end('<h1>404, Not Found!</h1>');
+        writeNotFound(res);
+        return;
       };
     });
   };

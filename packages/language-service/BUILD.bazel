@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "npm_package", "ts_library")
+load("//tools:defaults.bzl", "pkg_npm", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -20,7 +20,7 @@ ts_library(
     ],
 )
 
-npm_package(
+pkg_npm(
     name = "npm_package",
     srcs = ["package.json"],
     tags = [
@@ -31,6 +31,7 @@ npm_package(
     visibility = ["//visibility:private"],
     deps = [
         ":language-service",
-        "//packages/language-service/bundles:language-service",
+        # min bundle is not used at the moment; omit from package to speed up build
+        "//packages/language-service/bundles:language-service.umd.js",
     ],
 )

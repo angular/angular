@@ -12,7 +12,7 @@ import { QuestionControlService }    from './question-control.service';
 })
 export class DynamicFormComponent implements OnInit {
 
-  @Input() questions: QuestionBase<any>[] = [];
+  @Input() questions: QuestionBase<string>[] = [];
   form: FormGroup;
   payLoad = '';
 
@@ -23,6 +23,6 @@ export class DynamicFormComponent implements OnInit {
   }
 
   onSubmit() {
-    this.payLoad = JSON.stringify(this.form.value);
+    this.payLoad = JSON.stringify(this.form.getRawValue());
   }
 }

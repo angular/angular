@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BASE_HREF, DOCUMENT, Location} from '@angular/common';
+import {APP_BASE_HREF, DOCUMENT, Location, ɵgetDOM as getDOM} from '@angular/common';
 import {ApplicationRef, CUSTOM_ELEMENTS_SCHEMA, Component, NgModule, destroyPlatform} from '@angular/core';
 import {inject} from '@angular/core/testing';
-import {BrowserModule, ɵgetDOM as getDOM} from '@angular/platform-browser';
+import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {NavigationEnd, Resolve, Router, RouterModule} from '@angular/router';
 import {filter, first} from 'rxjs/operators';
@@ -42,15 +42,15 @@ describe('bootstrap', () => {
 
     const el1 = getDOM().createElement('test-app', doc);
     const el2 = getDOM().createElement('test-app2', doc);
-    getDOM().appendChild(doc.body, el1);
-    getDOM().appendChild(doc.body, el2);
+    doc.body.appendChild(el1);
+    doc.body.appendChild(el2);
 
     log = [];
     testProviders = [{provide: APP_BASE_HREF, useValue: ''}];
   }));
 
   afterEach(inject([DOCUMENT], (doc: any) => {
-    const oldRoots = getDOM().querySelectorAll(doc, 'test-app,test-app2');
+    const oldRoots = doc.querySelectorAll('test-app,test-app2');
     for (let i = 0; i < oldRoots.length; i++) {
       getDOM().remove(oldRoots[i]);
     }
@@ -118,7 +118,7 @@ describe('bootstrap', () => {
        }
 
        platformBrowserDynamic([]).bootstrapModule(TestModule).then(res => {
-         const router = res.injector.get(Router);
+         const router: Router = res.injector.get(Router);
          expect(router.routerState.snapshot.root.firstChild).toBeNull();
          // ResolveEnd has not been emitted yet because bootstrap returned too early
          expect(log).toEqual([

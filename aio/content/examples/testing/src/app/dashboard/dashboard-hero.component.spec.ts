@@ -20,7 +20,7 @@ describe('DashboardHeroComponent class only', () => {
     const hero: Hero = { id: 42, name: 'Test' };
     comp.hero = hero;
 
-    comp.selected.subscribe(selectedHero => expect(selectedHero).toBe(hero));
+    comp.selected.subscribe((selectedHero: Hero) => expect(selectedHero).toBe(hero));
     comp.click();
   });
   // #enddocregion class-only
@@ -95,7 +95,7 @@ describe('DashboardHeroComponent when tested directly', () => {
   // #docregion click-test-3
   it('should raise selected event when clicked (click helper)', () => {
     let selectedHero: Hero;
-    comp.selected.subscribe(hero => selectedHero = hero);
+    comp.selected.subscribe((hero: Hero) => selectedHero = hero);
 
     click(heroDe); // DebugElement로 클릭 헬퍼를 실행합니다.
     click(heroEl); // 네이티브 엘리먼트로 클릭 헬퍼를 실행합니다.

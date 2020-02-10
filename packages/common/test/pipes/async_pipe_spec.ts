@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncPipe} from '@angular/common';
+import {AsyncPipe, ɵgetDOM as getDOM} from '@angular/common';
 import {EventEmitter, WrappedValue} from '@angular/core';
 import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
 import {SpyChangeDetectorRef} from '../spies';
@@ -115,7 +114,7 @@ import {SpyChangeDetectorRef} from '../spies';
     });
 
     describe('Promise', () => {
-      const message = new Object();
+      const message = {};
       let pipe: AsyncPipe;
       let resolve: (result: any) => void;
       let reject: (error: any) => void;

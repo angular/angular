@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵgetDOM as getDOM} from '@angular/common';
 import {Component, Directive, Type, forwardRef} from '@angular/core';
 import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/testing';
-import {AbstractControl, AsyncValidator, COMPOSITION_BUFFER_MODE, FormControl, FormsModule, NG_ASYNC_VALIDATORS, NgForm, NgFormSelectorWarning, NgModel} from '@angular/forms';
+import {AbstractControl, AsyncValidator, COMPOSITION_BUFFER_MODE, FormControl, FormsModule, NG_ASYNC_VALIDATORS, NgForm, NgModel} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
+import {dispatchEvent, sortedClassList} from '@angular/platform-browser/testing/src/browser_util';
 import {merge} from 'rxjs';
 
 import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integration_spec';
@@ -56,6 +56,27 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            expect(form.value).toEqual({name: 'Nancy'});
            expect(form.valid).toBe(false);
          }));
+
+      it('should report properties which are written outside of template bindings', async() => {
+        // For example ngModel writes to `checked` property programmatically
+        // (template does not contain binding to `checked` explicitly)
+        // https://github.com/angular/angular/issues/33695
+        @Component({
+          selector: 'app-root',
+          template: `<input type="radio" value="one" [(ngModel)]="active"/>`
+        })
+        class AppComponent {
+          active = 'one';
+        }
+        TestBed.configureTestingModule({imports: [FormsModule], declarations: [AppComponent]});
+        const fixture = TestBed.createComponent(AppComponent);
+        // We need the Await as `ngModel` writes data asynchronously into the DOM
+        await fixture.detectChanges();
+        const input = fixture.debugElement.query(By.css('input'));
+        expect(input.properties.checked).toBe(true);
+        expect(input.nativeElement.checked).toBe(true);
+      });
+
 
       it('should add novalidate by default to form element', fakeAsync(() => {
            const fixture = initTest(NgModelForm);
@@ -1630,61 +1651,6 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
          }));
     });
 
-    describe('ngForm deprecation warnings', () => {
-      let warnSpy: jasmine.Spy;
-
-      @Component({selector: 'ng-form-deprecated', template: `<ngForm></ngForm><ngForm></ngForm>`})
-      class ngFormDeprecated {
-      }
-
-      beforeEach(() => {
-        (NgFormSelectorWarning as any)._ngFormWarning = false;
-
-        warnSpy = spyOn(console, 'warn');
-      });
-
-      describe(`when using the deprecated 'ngForm' selector`, () => {
-        it(`should only warn once when global provider is provided with "once"`, () => {
-          TestBed.configureTestingModule({
-            declarations: [ngFormDeprecated],
-            imports: [FormsModule.withConfig({warnOnDeprecatedNgFormSelector: 'once'})]
-          });
-          TestBed.createComponent(ngFormDeprecated);
-          expect(warnSpy).toHaveBeenCalledTimes(1);
-          expect(warnSpy.calls.mostRecent().args[0])
-              .toMatch(/It looks like you're using 'ngForm'/gi);
-        });
-
-        it(`should only warn once by default`, () => {
-          initTest(ngFormDeprecated);
-          expect(warnSpy).toHaveBeenCalledTimes(1);
-          expect(warnSpy.calls.mostRecent().args[0])
-              .toMatch(/It looks like you're using 'ngForm'/gi);
-        });
-
-        it(`should not warn when global provider is provided with "never"`, () => {
-          TestBed.configureTestingModule({
-            declarations: [ngFormDeprecated],
-            imports: [FormsModule.withConfig({warnOnDeprecatedNgFormSelector: 'never'})]
-          });
-          TestBed.createComponent(ngFormDeprecated);
-          expect(warnSpy).not.toHaveBeenCalled();
-        });
-
-        it(`should only warn for each instance when global provider is provided with "always"`,
-           () => {
-             TestBed.configureTestingModule({
-               declarations: [ngFormDeprecated],
-               imports: [FormsModule.withConfig({warnOnDeprecatedNgFormSelector: 'always'})]
-             });
-
-             TestBed.createComponent(ngFormDeprecated);
-             expect(warnSpy).toHaveBeenCalledTimes(2);
-             expect(warnSpy.calls.mostRecent().args[0])
-                 .toMatch(/It looks like you're using 'ngForm'/gi);
-           });
-      });
-    });
   });
 }
 
@@ -1923,10 +1889,4 @@ class NgModelChangesForm {
 })
 class NgModelChangeState {
   onNgModelChange = () => {};
-}
-
-function sortedClassList(el: HTMLElement) {
-  const l = getDOM().classList(el);
-  l.sort();
-  return l;
 }

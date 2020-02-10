@@ -10,7 +10,7 @@ import {NgModuleFactory, ɵisObservable as isObservable, ɵisPromise as isPromis
 import {Observable, from, of } from 'rxjs';
 import {concatAll, last as lastValue, map} from 'rxjs/operators';
 
-import {PRIMARY_OUTLET} from '../shared';
+import {PRIMARY_OUTLET, Params} from '../shared';
 
 export function shallowEqualArrays(a: any[], b: any[]): boolean {
   if (a.length !== b.length) return false;
@@ -20,7 +20,7 @@ export function shallowEqualArrays(a: any[], b: any[]): boolean {
   return true;
 }
 
-export function shallowEqual(a: {[x: string]: any}, b: {[x: string]: any}): boolean {
+export function shallowEqual(a: Params, b: Params): boolean {
   // Casting Object.keys return values to include `undefined` as there are some cases
   // in IE 11 where this can happen. Cannot provide a test because the behavior only
   // exists in certain circumstances in IE 11, therefore doing this cast ensures the
@@ -33,11 +33,23 @@ export function shallowEqual(a: {[x: string]: any}, b: {[x: string]: any}): bool
   let key: string;
   for (let i = 0; i < k1.length; i++) {
     key = k1[i];
-    if (a[key] !== b[key]) {
+    if (!equalArraysOrString(a[key], b[key])) {
       return false;
     }
   }
   return true;
+}
+
+/**
+ * Test equality for arrays of strings or a string.
+ */
+export function equalArraysOrString(a: string | string[], b: string | string[]) {
+  if (Array.isArray(a) && Array.isArray(b)) {
+    if (a.length != b.length) return false;
+    return a.every(aItem => b.indexOf(aItem) > -1);
+  } else {
+    return a === b;
+  }
 }
 
 /**
@@ -88,11 +100,14 @@ export function waitForMap<A, B>(
     }
   });
 
-  // Closure compiler has problem with using spread operator here. So just using Array.concat.
-  return of .apply(null, waitHead.concat(waitTail)).pipe(concatAll(), lastValue(), map(() => res));
+  // Closure compiler has problem with using spread operator here. So we use "Array.concat".
+  // Note that we also need to cast the new promise because TypeScript cannot infer the type
+  // when calling the "of" function through "Function.apply"
+  return (of .apply(null, waitHead.concat(waitTail)) as Observable<Observable<B>>)
+      .pipe(concatAll(), lastValue(), map(() => res));
 }
 
-export function wrapIntoObservable<T>(value: T | NgModuleFactory<T>| Promise<T>| Observable<T>) {
+export function wrapIntoObservable<T>(value: T | Promise<T>| Observable<T>): Observable<T> {
   if (isObservable(value)) {
     return value;
   }

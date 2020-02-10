@@ -1,7 +1,11 @@
+<<<<<<< HEAD
 <!--
 # Master/Detail Components
 -->
 # 컴포넌트 구조
+=======
+# Create a feature component
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 At the moment, the `HeroesComponent` displays both the list of heroes and the selected hero's details.
@@ -88,9 +92,7 @@ When you're done, the `HeroDetailComponent` template should look like this:
 
 그러면 `HeroDetailComponent`의 템플릿이 다음과 같이 작성될 것입니다:
 
-<code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.html" header="src/app/hero-detail/hero-detail.component.html" linenums="false">
-
-</code-example>
+<code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.html" header="src/app/hero-detail/hero-detail.component.html"></code-example>
 
 <!--
 ### Add the `@Input()` hero property
@@ -131,19 +133,22 @@ Amend the `@angular/core` import statement to include the `Input` symbol.
 -->
 `@angular/core` 패키지에서 `Input` 심볼을 로드합니다.
 
+<<<<<<< HEAD
 <!--
 <code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.ts" region="import-input" header="src/app/hero-detail/hero-detail.component.ts (import Input)" linenums="false">
 -->
 <code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.ts" region="import-input" header="src/app/hero-detail/hero-detail.component.ts (Input 로드하기)" linenums="false">
 </code-example>
+=======
+<code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.ts" region="import-input" header="src/app/hero-detail/hero-detail.component.ts (import Input)"></code-example>
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 Add a `hero` property, preceded by the `@Input()` decorator.
 -->
 그리고 `@Input()` 데코레이터와 함께 `hero` 프로퍼티를 선언합니다.
 
-<code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.ts" region="input-hero"  linenums="false">
-</code-example>
+<code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.ts" header="src/app/hero-detail/hero-detail.component.ts" region="input-hero"></code-example>
 
 <!--
 That's the only change you should make to the `HeroDetailComponent` class.
@@ -228,8 +233,7 @@ The revised `HeroesComponent` template should look like this:
 이렇게 수정하고 나면 `HeroesComponent` 템플릿 코드는 다음과 같이 변경됩니다:
 
 <code-example path="toh-pt3/src/app/heroes/heroes.component.html"
-  header="heroes.component.html" linenums="false">
-</code-example>
+  header="heroes.component.html"></code-example>
 
 <!--
 The browser refreshes and the app starts working again as it did before.

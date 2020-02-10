@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!--
 # Lazy Loading Feature Modules
 -->
@@ -29,6 +30,9 @@ For the final sample app with two lazy loaded modules that this page describes, 
 이 문서에서는 지연 로딩되는 모듈 2개를 만들어 봅니다. 이 문서에서 설명하는 예제 코드는 <live-example></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
 <hr>
+=======
+# Lazy-loading feature modules
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 ## High level view
@@ -39,10 +43,12 @@ For the final sample app with two lazy loaded modules that this page describes, 
 By default, NgModules are eagerly loaded, which means that as soon as the app loads, so do all the NgModules, whether or not they are immediately necessary. For large apps with lots of routes, consider lazy loading&mdash;a design pattern that loads NgModules as needed. Lazy loading helps keep initial
 bundle sizes smaller, which in turn helps decrease load times.
 
-There are three main steps to setting up a lazy loaded feature module:
+For the final sample app with two lazy-loaded modules that this page describes, see the
+<live-example></live-example>.
 
-1. Create the feature module.
-1. Create the feature module’s routing module.
+There are two main steps to setting up a lazy-loaded feature module:
+
+1. Create the feature module with the CLI, using the `--route` flag.
 1. Configure the routes.
 -->
 By default, NgModules are eagerly loaded, which means that as soon as the app loads, so do all the NgModules, whether or not they are immediately necessary. For large apps with lots of routes, consider lazy loading&mdash;a design pattern that loads NgModules as needed. Lazy loading helps keep initial
@@ -61,16 +67,16 @@ bundle sizes smaller, which in turn helps decrease load times.
 
 <!--
 If you don’t already have an app, you can follow the steps below to
-create one with the CLI. If you do already have an app, skip to
+create one with the CLI. If you already have an app, skip to
 [Configure the routes](#config-routes). Enter the following command
 where `customer-app` is the name of your app:
 -->
 아직 프로젝트를 만들지 않았다면 Angular CLI를 사용해서 새로운 애플리케이션을 생성합니다. 이미 있는 앱을 활용하려면 [라우터 설정하기](#config-routes) 부분으로 넘어가세요.
 애플리케이션은 다음 명령을 실행해서 생성합니다:
 
-```sh
+<code-example language="bash">
 ng new customer-app --routing
-```
+</code-example>
 
 <!--
 This creates an app called `customer-app` and the `--routing` flag
@@ -81,6 +87,7 @@ Navigate into the project by issuing the command `cd customer-app`.
 이 명령을 실행하면 `customer-app` 이라는 이름으로 애플리케이션이 생성되는데, 이 때 옵션으로 `--routing` 플래그를 설정했기 때문에 `app-routing.module.ts` 파일이 함께 생성됩니다. 이 파일은 기능 모듈을 지연 로딩하도록 설정할 때 사용합니다.
 애플리케이션이 생성되고 나면 `cd customer-app` 명령을 실행해서 프로젝트 폴더로 이동합니다.
 
+<<<<<<< HEAD
 <!--
 ## Create a feature module with routing
 -->
@@ -123,11 +130,25 @@ Angular CLI로 모듈을 생성하면 `CustomersModule`의 `import` 구문에 �
 In order to see the module being lazy loaded in the browser, create a component to render some HTML when the app loads `CustomersModule`. At the command line, enter the following:
 -->
 브라우저에서 모듈이 지연 로딩 되는 것을 확인하려면 `CustomersModule`이 로드되었을 때 화면에 표시할 컴포넌트가 필요합니다. 다음 명령을 실행해서 컴포넌트를 생성합니다:
+=======
+<div class="alert is-helpful">
 
-```sh
-ng generate component customers/customer-list
-```
+The `--routing` option requires Angular/CLI version 8.1 or higher.
+See [Keeping Up to Date](guide/updating).
 
+</div>
+
+## Create a feature module with routing
+
+Next, you’ll need a feature module with a component to route to.
+To make one, enter the following command in the terminal, where `customers` is the name of the feature module. The path for loading the `customers` feature modules is also `customers` because it is specified with the `--route` option:
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+
+<code-example language="bash">
+ng generate module customers --route customers --module app.module
+</code-example>
+
+<<<<<<< HEAD
 <!--
 This creates a folder inside of `customers` called `customer-list`
 with the four files that make up the component.
@@ -152,11 +173,27 @@ Just like with the routing module, the CLI imports the
 For another place to route to, create a second feature module with routing:
 -->
 라우팅 동작을 위해 모듈을 하나 더 만듭니다:
+=======
+This creates a `customers` folder with the new lazy-loadable module `CustomersModule` defined in the `customers.module.ts` file. The command automatically declares the `CustomersComponent` inside the new feature module.
 
-```sh
-ng generate module orders --routing
-```
+Because the new module is meant to be lazy-loaded, the command does NOT add a reference to the new feature module in the application's root module file, `app.module.ts`.
+Instead, it adds the declared route, `customers` to the `routes` array declared in the module provided as the `--module` option.
 
+<code-example
+  header="src/app/app-routing.module.ts"
+  path="lazy-loading-ngmodules/src/app/app-routing.module.ts"
+  region="routes-customers">
+</code-example>
+
+Notice that the lazy-loading syntax uses `loadChildren` followed by a function that uses the browser's built-in `import('...')` syntax for dynamic imports.
+The import path is the relative path to the module.
+
+### Add another feature module
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+
+Use the same command to create a second lazy-loaded feature module with routing, along with its stub component.
+
+<<<<<<< HEAD
 <!--
 This makes a new folder called `orders` containing an `OrdersModule` and an `OrdersRoutingModule`.
 -->
@@ -166,47 +203,62 @@ This makes a new folder called `orders` containing an `OrdersModule` and an `Ord
 Now, just like with the `CustomersModule`, give it some content:
 -->
 그리고 `CustomersModule`과 마찬가지로, 이 모듈에도 화면에 표시할 컴포넌트를 생성합니다:
+=======
+<code-example language="bash">
+ng generate module orders --route orders --module app.module
+</code-example>
 
-```sh
-ng generate component orders/order-list
-```
+This creates a new folder called `orders` containing the `OrdersModule` and `OrdersRoutingModule`, along with the new `OrdersComponent` source files.
+The `orders` route, specified with the `--route` option, is added to the `routes` array inside the `app-routing.module.ts` file, using the lazy-loading syntax.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+
+<code-example
+  header="src/app/app-routing.module.ts"
+  path="lazy-loading-ngmodules/src/app/app-routing.module.ts"
+  region="routes-customers-orders">
+</code-example>
 
 <!--
 ## Set up the UI
 -->
 ## 화면 구성하기
 
+<<<<<<< HEAD
 <!--
 Though you can type the URL into the address bar, a nav
 is easier for the user and more common. Replace the default
 placeholder markup in `app.component.html` with a custom nav
+=======
+Though you can type the URL into the address bar, a navigation UI is easier for the user and more common.
+Replace the default placeholder markup in `app.component.html` with a custom nav
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 so you can easily navigate to your modules in the browser:
 -->
 주소표시줄에 URL을 입력해도 원하는 모듈로 이동할 수 있지만, 좀 더 편하게 사용하기 위해 `app.component.html` 파일에 버튼을 추가해 봅시다. 이 파일의 내용을 다음과 같이 작성합니다:
 
-<code-example path="lazy-loading-ngmodules/src/app/app.component.html" region="app-component-template" header="src/app/app.component.html" linenums="false">
-
-</code-example>
-
+<code-example path="lazy-loading-ngmodules/src/app/app.component.html" header="app.component.html" region="app-component-template" header="src/app/app.component.html"></code-example>
 
 <!--
 To see your app in the browser so far, enter the following command in the terminal window:
 -->
 그리고 애플리케이션을 브라우저에 실행하기 위해 다음 명령을 실행합니다:
 
-```sh
+<code-example language="bash">
 ng serve
+<<<<<<< HEAD
 ```
 
 <!--
 Then go to `localhost:4200` where you should see “app works!” and three buttons.
 -->
 이제 브라우저를 실행하고 `localhost:4200`으로 이동하면 "app works!" 메시지와 함께 버튼이 3개 표시되는 것을 확인할 수 있습니다.
+=======
+</code-example>
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
-<figure>
- <img src="generated/images/guide/lazy-loading-ngmodules/three-buttons.png" width="300" alt="three buttons in the browser">
-</figure>
+Then go to `localhost:4200` where you should see “customer-app” and three buttons.
 
+<<<<<<< HEAD
 <!--
 To make the buttons work, you need to configure the routing modules.
 -->
@@ -252,22 +304,47 @@ In `AppRoutingModule`, update the `routes` array with the following:
 The import statements stay the same. The first two paths are the routes to the `CustomersModule` and the `OrdersModule` respectively. Notice that the lazy loading syntax uses `loadChildren` followed by a function that uses the browser's built-in `import('...')` syntax for dynamic imports. The import path is the relative path to the module.
 -->
 이 파일의 다른 부분은 그대로 둡니다. 라우터 설정을 지정한 것을 보면, 배열의 첫번째 항목은 `CustomersModule`로 라우팅하도록 지정했고, 두번째 항목은 `OrdersModule`로 라우팅하도록 지정했습니다. 이 때 지연 로딩하는 모듈은 `loadChildren` 프로퍼티로 지정하며, 브라우저의 빌트인 `import('...')` 문법으로 동적로딩 합니다. 이 때 모듈은 상대주소로 지정합니다.
+=======
+<div class="lightbox">
+  <img src="generated/images/guide/lazy-loading-ngmodules/three-buttons.png" width="300" alt="three buttons in the browser">
+</div>
+
+These buttons work, because the CLI automatically added the routes to the feature modules to the `routes` array in `app.module.ts`.
+
+{@a config-routes}
+
+## Imports and route configuration
+
+The CLI automatically added each feature module to the routes map at the application level.
+Finish this off by adding the default route. In the `app-routing.module.ts` file, update the `routes` array with the following:
+
+<code-example path="lazy-loading-ngmodules/src/app/app-routing.module.ts" id="app-routing.module.ts" region="const-routes" header="src/app/app-routing.module.ts"></code-example>
+
+The first two paths are the routes to the `CustomersModule` and the `OrdersModule`.
+The final entry defines a default route. The empty path matches everything that doesn't match an earlier path.
+
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 ### Inside the feature module
 -->
 ## 기능 모듈의 라우팅
 
+<<<<<<< HEAD
 <!--
 Next, take a look at `customers.module.ts`. If you’re using the CLI and following the steps outlined in this page, you don’t have to do anything here. The feature module is like a connector between the `AppRoutingModule` and the feature routing module. The `AppRoutingModule` imports the feature module, `CustomersModule`, and `CustomersModule` in turn imports the `CustomersRoutingModule`.
 -->
 다음으로 `customers.module.ts` 파일을 확인하는데, 지금까지 단계를 Angular CLI를 활용하면서 그대로 따라왔다면 추가로 수정할 내용은 없습니다. 기능 모듈 자체는 `AppRoutingModule`과 기능 모듈 안에 있는 라우팅 모듈을 연결하는 역할만 합니다. 그래서 `AppRoutingModule`이 기능 모듈인 `CustomersModule`을 로드하면, `CustomersModule`이 다시 `CustomerRoutingModule`을 로드합니다.
+=======
+Next, take a look at the `customers.module.ts` file. If you’re using the CLI and following the steps outlined in this page, you don’t have to do anything here.
 
-<code-example path="lazy-loading-ngmodules/src/app/customers/customers.module.ts" region="customers-module" header="src/app/customers/customers.module.ts" linenums="false">
+<code-example path="lazy-loading-ngmodules/src/app/customers/customers.module.ts" id="customers.module.ts" region="customers-module" header="src/app/customers/customers.module.ts"></code-example>
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
-</code-example>
+The `customers.module.ts` file imports the `customers-routing.module.ts` and `customers.component.ts` files. `CustomersRoutingModule` is listed in the `@NgModule` `imports` array giving `CustomersModule` access to its own routing module. `CustomersComponent` is in the `declarations` array, which means `CustomersComponent` belongs to the `CustomersModule`.
 
 
+<<<<<<< HEAD
 <!--
 The `customers.module.ts` file imports the `CustomersRoutingModule` and `CustomerListComponent` so the `CustomersModule` class can have access to them. `CustomersRoutingModule` is then listed in the `@NgModule` `imports` array giving `CustomersModule` access to its own routing module, and `CustomerListComponent` is in the `declarations` array, which means `CustomerListComponent` belongs to the `CustomersModule`.
 -->
@@ -305,6 +382,19 @@ Repeat this last step of importing the `OrdersListComponent` and configuring the
 Now, if you view the app in the browser, the three buttons take you to each module.
 -->
 이제 브라우저에서 앱을 실행해보면 이전에 만들었던 버튼 3개가 모두 동작하는 것을 확인할 수 있습니다.
+=======
+The `app-routing.module.ts` then imports the feature module, `customers.module.ts` using JavaScript's dynamic import.
+
+The feature-specific route definition file `customers-routing.module.ts` imports its own feature component defined in the `customers.component.ts` file, along with the other JavaScript import statements. It then maps the empty path to the `CustomersComponent`.
+
+<code-example path="lazy-loading-ngmodules/src/app/customers/customers-routing.module.ts" id="customers-routing.module.ts" region="customers-routing-module" header="src/app/customers/customers-routing.module.ts"></code-example>
+
+The `path` here is set to an empty string because the path in `AppRoutingModule` is already set to `customers`, so this route in the `CustomersRoutingModule`, is already within the `customers` context. Every route in this routing module is a child route.
+
+The other feature module's routing module is configured similarly.
+
+<code-example path="lazy-loading-ngmodules/src/app/orders/orders-routing.module.ts" id="orders-routing.module.ts" region="orders-routing-module-detail" header="src/app/orders/orders-routing.module.ts (excerpt)"></code-example>
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 ## Confirm it’s working
@@ -316,27 +406,33 @@ You can check to see that a module is indeed being lazy loaded with the Chrome d
 -->
 Chrome 개발자 도구를 활용하면 모듈이 정말 지연 로딩되었는지 확인할 수 있습니다. Chrome 브라우저에서 개발자 도구를 열고 네트워크 탭으로 이동합니다. Mac에서는 `Cmd+Option+i`, Windows에서는 `Ctrl+Shift+j`를 누르면 됩니다.
 
-<figure>
- <img src="generated/images/guide/lazy-loading-ngmodules/network-tab.png" width="600" alt="lazy loaded modules diagram">
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/lazy-loading-ngmodules/network-tab.png" width="600" alt="lazy loaded modules diagram">
+</div>
 
+<<<<<<< HEAD
 <!--
 Click on the Orders or Customers button. If you see a chunk appear, you’ve wired everything up properly and the feature module is being lazy loaded. A chunk should appear for Orders and for Customers but will only appear once for each.
 -->
 그리고 이제 Orders나 Customers 버튼을 클릭해 봅시다. 그러면 애플리케이션 패키지 파일과 별개의 청크(chunk) 파일로 패키징된 지연 로딩 모듈이 로드되는 것을 확인할 수 있습니다. 이 파일은 `OrdersModule`이나 `CustomersModule`에 접근할 때 한 번씩만 로드됩니다.
+=======
 
-<figure>
- <img src="generated/images/guide/lazy-loading-ngmodules/chunk-arrow.png" width="600" alt="lazy loaded modules diagram">
-</figure>
+Click on the Orders or Customers button. If you see a chunk appear, everything is wired up properly and the feature module is being lazy loaded. A chunk should appear for Orders and for Customers but will only appear once for each.
+
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+
+<div class="lightbox">
+  <img src="generated/images/guide/lazy-loading-ngmodules/chunk-arrow.png" width="600" alt="lazy loaded modules diagram">
+</div>
 
 <!--
 To see it again, or to test after working in the project, clear everything out by clicking the circle with a line through it in the upper left of the Network Tab:
 -->
 이 과정을 다시 확인하려면 브라우저에 애플리케이션을 다시 실행해야 합니다. 먼저, 네트워크 탭에서 Clear 버튼을 눌러서 네트워크 기록을 초기화합니다:
 
-<figure>
- <img src="generated/images/guide/lazy-loading-ngmodules/clear.gif" width="200" alt="lazy loaded modules diagram">
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/lazy-loading-ngmodules/clear.gif" width="200" alt="lazy loaded modules diagram">
+</div>
 
 <!--
 Then reload with `Cmd+r` or `Ctrl+r`, depending on your platform.
@@ -348,6 +444,7 @@ Then reload with `Cmd+r` or `Ctrl+r`, depending on your platform.
 -->
 ## `forRoot()`와 `forChild()`
 
+<<<<<<< HEAD
 <!--
 You might have noticed that the CLI adds `RouterModule.forRoot(routes)` to the `app-routing.module.ts` `imports` array. This lets Angular know that this module,
 `AppRoutingModule`, is a routing module and `forRoot()` specifies that this is the root
@@ -364,6 +461,19 @@ knows that the route list is only responsible for providing additional routes an
 이와 다르게, 기능 모듈에 만든 라우팅 모듈은 `RouterModule.forChild(routes)`로 지정되어 있습니다. `forChild()` 함수를 사용하면 이 라우팅 모듈이 최상위 모듈의 자식 라우터로 동작한다는 것을 의미하며, 동시에 어떤 기능 모듈 안에 포함된다는 것으로 판단합니다. `forChild()` 함수는 여러번 사용해도 문제 없습니다.
 
 <!--
+=======
+You might have noticed that the CLI adds `RouterModule.forRoot(routes)` to the `AppRoutingModule` `imports` array.
+This lets Angular know that the `AppRoutingModule` is a routing module and `forRoot()` specifies that this is the root routing module.
+It configures all the routes you pass to it, gives you access to the router directives, and registers the `Router` service.
+Use `forRoot()` only once in the application, inside the `AppRoutingModule`.
+
+The CLI also adds `RouterModule.forChild(routes)` to feature routing modules.
+This way, Angular knows that the route list is only responsible for providing additional routes and is intended for feature modules.
+You can use `forChild()` in multiple modules.
+
+The `forRoot()` method takes care of the *global* injector configuration for the Router.
+The `forChild()` method has no injector configuration. It uses directives such as `RouterOutlet` and `RouterLink`.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 For more information, see the [`forRoot()` pattern](guide/singleton-services#forRoot) section of the [Singleton Services](guide/singleton-services) guide.
 -->
 더 자세한 내용은 [싱글턴 서비스](guide/singleton-services) 가이드 문서의 [`forRoot()` 패턴](guide/singleton-services#forRoot) 섹션을 참고하세요.
@@ -380,8 +490,13 @@ You may also be interested in the following:
 * [Routing and Navigation](guide/router).
 * [Providers](guide/providers).
 * [Types of Feature Modules](guide/module-types).
+<<<<<<< HEAD
 -->
 다음 내용에 대해서도 더 확인해 보세요:
 * [라우팅, 네비게이션](guide/router)
 * [프로바이더](guide/providers)
 * [기능 모듈의 종류](guide/module-types)
+=======
+* [Route-level code-splitting in Angular](https://web.dev/route-level-code-splitting-in-angular/)
+* [Route preloading strategies in Angular](https://web.dev/route-preloading-in-angular/)
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072

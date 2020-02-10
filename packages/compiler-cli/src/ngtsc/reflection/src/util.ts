@@ -7,21 +7,19 @@
  */
 
 import * as ts from 'typescript';
-
 import {ClassDeclaration} from './host';
 
-
 export function isNamedClassDeclaration(node: ts.Node):
-    node is ClassDeclaration<ts.ClassDeclaration>&{name: ts.Identifier} {
+    node is ClassDeclaration<ts.ClassDeclaration> {
   return ts.isClassDeclaration(node) && (node.name !== undefined);
 }
 
 export function isNamedFunctionDeclaration(node: ts.Node):
-    node is ClassDeclaration<ts.FunctionDeclaration>&{name: ts.Identifier} {
+    node is ClassDeclaration<ts.FunctionDeclaration> {
   return ts.isFunctionDeclaration(node) && (node.name !== undefined);
 }
 
 export function isNamedVariableDeclaration(node: ts.Node):
-    node is ClassDeclaration<ts.VariableDeclaration>&{name: ts.Identifier} {
+    node is ClassDeclaration<ts.VariableDeclaration> {
   return ts.isVariableDeclaration(node) && (node.name !== undefined);
 }

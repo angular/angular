@@ -1,7 +1,11 @@
+<<<<<<< HEAD
 <!--
 # Structural Directives
 -->
 # 구조 디렉티브 (Structural Directives)
+=======
+# Structural directives
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <style>
   h4 {font-size: 17px !important; text-transform: none !important;}
@@ -53,9 +57,7 @@ An asterisk (*) precedes the directive attribute name as in this example.
 구조 디렉티브가 사용된 것은 확인하기 쉽습니다.
 이 디렉티브는 아래 예제처럼 별표(`*`)로 시작하는 어트리뷰트 이름으로 적용합니다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngif)" region="ngif">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (ngif)" region="ngif"></code-example>
 
 
 <!--
@@ -84,9 +86,7 @@ Here's an example of them in a template:
 Angular의 기본 구조 디렉티브 중 가장 많이 사용하는 것은 [NgIf](guide/template-syntax#ngIf), [NgFor](guide/template-syntax#ngFor), [NgSwitch...](guide/template-syntax#ngSwitch) 이렇게 3가지 입니다. 각각은 [_템플릿 문법_](guide/template-syntax) 문서에서 자세하게 다루며, 예제도 함께 확인할 수 있습니다.
 이 문서에서는 예제와 함께 간단하게만 알아봅시다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (built-in)" region="built-in">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (built-in)" region="built-in"></code-example>
 
 
 <!--
@@ -180,9 +180,7 @@ It takes a boolean expression and makes an entire chunk of the DOM appear or dis
 구조 디렉티브 중에서 `NgIf`는 가장 간단하며 이해하기도 쉽습니다.
 이 디렉티브는 표현식의 결과에 따라 DOM 조각을 추가하거나 제거합니다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngif-true)" region="ngif-true">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (ngif-true)" region="ngif-true"></code-example>
 
 
 <!--
@@ -192,9 +190,9 @@ Confirm that fact using browser developer tools to inspect the DOM.
 `ngIf` 디렉티브는 CSS처럼 엘리먼트를 숨기는 것이 아닙니다. 이 디렉티브가 `false` 조건으로 동작하면 DOM에서 엘리먼트를 완전히 제거합니다.
 그래서 브라우저 개발자 도구로 DOM을 직접 보면 다음과 같이 처리되는 것을 확인할 수 있습니다.
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/structural-directives/element-not-in-dom.png' alt="ngIf=false element not in DOM">
-</figure>
+</div>
 
 
 <!--
@@ -222,9 +220,7 @@ A directive could hide the unwanted paragraph instead by setting its `display` s
 -->
 디렉티브가 화면에 보일 필요가 없으면 `display` 스타일을 `none`으로 지정해서 감추는 방법도 있습니다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (display-none)" region="display-none">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (display-none)" region="display-none"></code-example>
 
 
 <!--
@@ -232,9 +228,9 @@ While invisible, the element remains in the DOM.
 -->
 하지만 이 경우에 엘리먼트는 DOM에 여전히 존재합니다.
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/structural-directives/element-display-in-dom.png' alt="hidden element still in DOM">
-</figure>
+</div>
 
 
 <!--
@@ -303,9 +299,7 @@ Here is `*ngIf` displaying the hero's name if `hero` exists.
 -->
 아래 코드는 `hero` 프로퍼티에 객체가 할당되었을 때 히어로의 이름을 표시하는 예제입니다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (asterisk)" region="asterisk">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (asterisk)" region="asterisk"></code-example>
 
 
 <!--
@@ -315,9 +309,7 @@ Internally, Angular translates the `*ngIf` _attribute_ into a `<ng-template>` _e
 별표는 복잡한 문법을 단순하게 표현하는 문법 테크닉입니다.
 Angular가 `*ngIf` _어트리뷰트_ 를 내부적으로 처리할 때는 `ngIf` 디렉티브가 적용된 호스트 엘리먼트를 감싸도록 `<ng-template>` _엘리먼트_ 를 구성합니다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngif-template)" region="ngif-template">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (ngif-template)" region="ngif-template"></code-example>
 
 
 <!--
@@ -332,9 +324,9 @@ The first form is not actually rendered, only the finished product ends up in th
 -->
 DOM에는 원래 엘리먼트 대신 변환된 엘리먼트가 적용됩니다.
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/structural-directives/hero-div-in-dom.png' alt="hero div in DOM">
-</figure>
+</div>
 
 
 <!--
@@ -366,9 +358,7 @@ Here's a full-featured application of `NgFor`, written both ways:
 -->
 `NgFor` 디렉티브의 기능이 다양하게 활용된 예제를 확인해 봅시다:
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (inside-ngfor)" region="inside-ngfor">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (inside-ngfor)" region="inside-ngfor"></code-example>
 
 
 <!--
@@ -401,10 +391,15 @@ In this example, the `[ngClass]="odd"` stays on the `<div>`.
 
 {@a microsyntax}
 
+<<<<<<< HEAD
 <!--
 ### Microsyntax
 -->
 ### 세부 문법(microsyntax)
+=======
+
+## Microsyntax
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 The Angular microsyntax lets you configure a directive in a compact, friendly string.
@@ -416,16 +411,22 @@ The microsyntax parser translates that string into attributes on the `<ng-templa
 <!--
 * The `let` keyword declares a [_template input variable_](guide/structural-directives#template-input-variable)
 that you reference within the template. The input variables in this example are `hero`, `i`, and `odd`.
-The parser translates `let hero`, `let i`, and `let odd` into variables named,
+The parser translates `let hero`, `let i`, and `let odd` into variables named
 `let-hero`, `let-i`, and `let-odd`.
 -->
 * `let` 키워드는 [_템플릿 입력 변수_](guide/structural-directives#템플릿-입력-변수)를 선언합니다. 이 변수는 템플릿 안에서 참조할 수 있으며, `hero`나 `i`, `odd` 등이 템플릿 변수에 해당합니다.
 문자열에 있던 `let hero`, `let i`, `let odd`를 파서가 처리하고 나면 `let-hero`, `let-i`, `let-odd`와 같은 이름으로 변경됩니다.
 
+<<<<<<< HEAD
 <!--
 * The microsyntax parser takes `of` and `trackBy`, title-cases them (`of` -> `Of`, `trackBy` -> `TrackBy`),
 and prefixes them with the directive's attribute name (`ngFor`), yielding the names `ngForOf` and `ngForTrackBy`.
 Those are the names of two `NgFor` _input properties_ .
+=======
+* The microsyntax parser title-cases all directives and prefixes them with the directive's
+attribute name, such as `ngFor`. For example, the `ngFor` input properties,
+`of` and `trackBy`, become `ngForOf` and `ngForTrackBy`, respectively.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 That's how the directive learns that the list is `heroes` and the track-by function is `trackById`.
 -->
 * 세부 문법 파서가 `ngFor`와 함께 사용된 `of`와 `trackBy`를 확인하면, `ngFor`를 `ngForOf`나 `ngForTrackBy`로 변환합니다.
@@ -433,10 +434,15 @@ That's how the directive learns that the list is `heroes` and the track-by funct
 
 <!--
 * As the `NgFor` directive loops through the list, it sets and resets properties of its own _context_ object.
+<<<<<<< HEAD
 These properties include `index` and `odd` and a special property named `$implicit`.
 -->
 * `NgFor` 디렉티브가 배열을 순회할 때 각 싸이클마다 `NgFor` 컨텍스트에만 적용되는 프로퍼티가 있습니다.
 `index`나 `odd`, `$implicit`가 이런 프로퍼티에 해당됩니다.
+=======
+These properties can include, but aren't limited to, `index`, `odd`, and a special property
+named `$implicit`.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 * The `let-i` and `let-odd` variables were defined as `let i=index` and `let odd=odd`.
@@ -448,17 +454,22 @@ Angular sets them to the current value of the context's `index` and `odd` proper
 <!--
 * The context property for `let-hero` wasn't specified.
 Its intended source is implicit.
-Angular sets `let-hero` to the value of the context's `$implicit` property
+Angular sets `let-hero` to the value of the context's `$implicit` property,
 which `NgFor` has initialized with the hero for the current iteration.
 -->
 * 하지만 `let-hero` 변수는 소스 코드에 따로 선언되며 외부에서는 확인할 수 없습니다. 좀 더 자세하게 설명하면, `let-hero` 변수는 컨텍스트의 `$implicit` 프로퍼티 안에 선언되며, 현재 순회하는 배열에 맞게 Angular가 값을 할당합니다.
 
+<<<<<<< HEAD
 <!--
 * The [API guide](api/common/NgForOf "API: NgFor")
+=======
+* The [`NgFor` API guide](api/common/NgForOf "API: NgFor")
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 describes additional `NgFor` directive properties and context properties.
 -->
 * `NgFor`의 프로퍼티와 컨텍스트 프로퍼티는 [API 문서](api/common/NgForOf "API: NgFor")에서 확인해 보세요.
 
+<<<<<<< HEAD
 <!--
 * `NgFor` is implemented by the `NgForOf` directive. Read more about additional `NgForOf` directive properties and context properties [NgForOf API reference](api/common/NgForOf).
 -->
@@ -466,13 +477,149 @@ describes additional `NgFor` directive properties and context properties.
 
 <!--
 These microsyntax mechanisms are available to you when you write your own structural directives.
+=======
+* The `NgForOf` directive implements `NgFor`. Read more about additional `NgForOf` directive properties and context properties in the [NgForOf API reference](api/common/NgForOf).
+
+### Writing your own structural directives
+
+These microsyntax mechanisms are also available to you when you write your own structural directives.
+For example, microsyntax in Angular allows you to write `<div *ngFor="let item of items">{{item}}</div>`
+instead of `<ng-template ngFor let-item [ngForOf]="items"><div>{{item}}</div></ng-template>`.
+The following sections provide detailed information on constraints, grammar,
+and translation of microsyntax.
+
+### Constraints
+
+Microsyntax must meet the following requirements:
+
+- It must be known ahead of time so that IDEs can parse it without knowing the underlying semantics of the directive or what directives are present.
+- It must translate to key-value attributes in the DOM.
+
+### Grammar
+
+When you write your own structural directives, use the following grammar:
+
+```
+*:prefix="( :let | :expression ) (';' | ',')? ( :let | :as | :keyExp )*"
+```
+
+The following tables describe each portion of the microsyntax grammar.
+
+<!-- What should I put in the table headers? -->
+
+<table>
+  <tr>
+    <th></th>
+    <th></th>
+  </tr>
+  <tr>
+    <td><code>prefix</code></td>
+    <td>HTML attribute key</td>
+  </tr>
+  <tr>
+    <td><code>key</code></td>
+    <td>HTML attribute key</td>
+  </tr>
+  <tr>
+    <td><code>local</code></td>
+    <td>local variable name used in the template</td>
+  </tr>
+  <tr>
+    <td><code>export</code></td>
+    <td>value exported by the directive under a given name</td>
+  </tr>
+  <tr>
+    <td><code>expression</code></td>
+    <td>standard Angular expression</td>
+  </tr>
+</table>
+
+<!-- The items in this table seem different. Is there another name for how we should describe them? -->
+<table>
+  <tr>
+    <th></th>
+  </tr>
+  <tr>
+    <td colspan="3"><code>keyExp = :key ":"? :expression ("as" :local)? ";"? </code></td>
+  </tr>
+  <tr>
+    <td colspan="3"><code>let = "let" :local "=" :export ";"?</code></td>
+  </tr>
+  <tr>
+    <td colspan="3"><code>as = :export "as" :local ";"?</code></td>
+  </tr>
+</table>
+
+
+### Translation
+
+A microsyntax is translated to the normal binding syntax as follows:
+
+<!-- What to put in the table headers below? Are these correct?-->
+<table>
+  <tr>
+    <th>Microsyntax</th>
+    <th>Translation</th>
+  </tr>
+  <tr>
+    <td><code>prefix</code> and naked <code>expression</code></td>
+    <td><code>[prefix]="expression"</code></td>
+  </tr>
+  <tr>
+    <td><code>keyExp</code></td>
+    <td><code>[prefixKey] "expression"
+    (let-prefixKey="export")</code>
+    <br />
+    Notice that the <code>prefix</code>
+    is added to the <code>key</code>
+    </td>
+  </tr>
+  <tr>
+    <td><code>let</code></td>
+    <td><code>let-local="export"</code></td>
+  </tr>
+</table>
+
+### Microsyntax examples
+
+The following table demonstrates how Angular desugars microsyntax.
+
+<table>
+  <tr>
+    <th>Microsyntax</th>
+    <th>Desugared</th>
+  </tr>
+  <tr>
+    <td><code>*ngFor="let item of [1,2,3]"</code></td>
+    <td><code>&lt;ng-template ngFor let-item [ngForOf]="[1,2,3]"&gt;</code></td>
+  </tr>
+  <tr>
+    <td><code>*ngFor="let item of [1,2,3] as items; trackBy: myTrack; index as i"</code></td>
+    <td><code>&lt;ng-template ngFor let-item [ngForOf]="[1,2,3]" let-items="ngForOf" [ngForTrackBy]="myTrack" let-i="index"&gt;</code>
+    </td>
+  </tr>
+  <tr>
+    <td><code>*ngIf="exp"</code></td>
+    <td><code>&lt;ng-template [ngIf]="exp"&gt;</code></td>
+  </tr>
+  <tr>
+    <td><code>*ngIf="exp as value"</code></td>
+    <td><code>&lt;ng-template [ngIf]="exp" let-value="ngIf"&gt;</code></td>
+  </tr>
+</table>
+
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 Studying the
 [source code for `NgIf`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_if.ts "Source: NgIf")
 and [`NgForOf`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_for_of.ts "Source: NgForOf")
 is a great way to learn more.
+<<<<<<< HEAD
 -->
 세부 문법은 커스텀 구조 디렉티브를 구현할 때도 활용할 수 있습니다.
 [`NgIf`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_if.ts "Source: NgIf")나 [`NgForOf`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_for_of.ts "Source: NgForOf")의 소스 코드를 분석해 보는 것도 큰 도움이 될 것입니다.
+=======
+
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 {@a template-input-variable}
 
@@ -481,10 +628,15 @@ is a great way to learn more.
 -->
 {@a 템플릿-입력-변수}
 
+<<<<<<< HEAD
 <!--
 ### Template input variable
 -->
 ### 템플릿 입력 변수 (Template input variable)
+=======
+
+## Template input variable
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 A _template input variable_ is a variable whose value you can reference _within_ a single instance of the template.
@@ -526,10 +678,15 @@ variable as the `hero` declared as `#hero`.
 {@a one-per-element}
 {@a one-structural-directive-per-host-element}
 
+<<<<<<< HEAD
 <!--
 ### One structural directive per host element
 -->
 ### 구조 디렉티브는 호스트 엘리먼트에 하나만
+=======
+
+## One structural directive per host element
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 Someday you'll want to repeat a block of HTML but only when a particular condition is true.
@@ -580,9 +737,7 @@ Here's an example.
 -->
 예제를 확인해 봅시다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngswitch)" region="ngswitch">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (ngswitch)" region="ngswitch"></code-example>
 
 
 <!--
@@ -630,9 +785,7 @@ can be desugared into the `<ng-template>` element form.
 -->
 다른 구조 디렉티브와 마찬가지로, `NgSwitchCase`와 `NgSwitchDefault`도 Angular가 렌더링할 때는 `<ng-template>` 엘리먼트로 변환됩니다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngswitch-template)" region="ngswitch-template">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (ngswitch-template)" region="ngswitch-template"></code-example>
 
 
 
@@ -685,9 +838,7 @@ That's the fate of the middle "Hip!" in the phrase "Hip! Hip! Hooray!".
 구조 디렉티브를 하나도 사용하지 않고 엘리먼트를 `<ng-template>`으로 감싸기만 하면, 이 엘리먼트는 화면에 표시되지 않습니다.
 그래서 다음 "Hip! Hip! Hooray!" 문단들 중 두 번째 문단인 "Hip!"은 표시되지 않습니다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (template-tag)" region="template-tag">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (template-tag)" region="template-tag"></code-example>
 
 
 <!--
@@ -695,9 +846,9 @@ Angular erases the middle "Hip!", leaving the cheer a bit less enthusiastic.
 -->
 Angular는 두 번째 문단을 제거하면서 개발자가 보기에는 의미없어 보이는 주석을 남깁니다.
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/structural-directives/template-rendering.png' alt="template tag rendering">
-</figure>
+</div>
 
 
 <!--
@@ -724,9 +875,7 @@ The list element (`<li>`) is a typical host element of an `NgFor` repeater.
 구조 디렉티브의 호스트 엘리먼트는 보통 엘리먼트 하나입니다.
 예를 들어 리스트 엘리먼트(`<li>`)에 `NgFor`를 사용한다면 다음과 같이 구현할 수 있습니다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngfor-li)" region="ngfor-li">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (ngfor-li)" region="ngfor-li"></code-example>
 
 
 <!--
@@ -736,9 +885,7 @@ such as a `<div>`, and attach the directive to that wrapper.
 하지만 호스트 엘리먼트가 하나가 아닌 경우가 있습니다.
 이런 경우라면 네이티브 HTML인 `<div>`로 엘리먼트를 감싸고 이 `<div>`에 디렉티브를 적용해도 됩니다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngif)" region="ngif">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (ngif)" region="ngif"></code-example>
 
 
 <!--
@@ -757,9 +904,7 @@ For example, suppose you have the following paragraph layout.
 엘리먼트를 묶으면 이 엘리먼트가 템플릿의 어떤 자리에 위치하는지에 따라서 CSS 스타일이 잘못 지정되거나 레이아웃 자체가 틀어질 수 있습니다.
 예를 들어 다음과 같은 문단이 있다고 합시다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngif-span)" region="ngif-span">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (ngif-span)" region="ngif-span"></code-example>
 
 
 <!--
@@ -767,9 +912,7 @@ You also have a CSS style rule that happens to apply to a `<span>` within a `<p>
 -->
 그리고 전역 CSS 스타일에는 `<p>` 안에 있는 `<span>`에 다음과 같은 스타일을 지정하고 있다고 합시다.
 
-<code-example path="structural-directives/src/app/app.component.css" linenums="false" header="src/app/app.component.css (p-span)" region="p-span">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.css" header="src/app/app.component.css (p-span)" region="p-span"></code-example>
 
 
 <!--
@@ -777,9 +920,9 @@ The constructed paragraph renders strangely.
 -->
 그러면 다음과 같은 결과물이 표시되지만, 약간 이상합니다.
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/structural-directives/bad-paragraph.png' alt="spanned paragraph with bad style">
-</figure>
+</div>
 
 
 <!--
@@ -801,9 +944,7 @@ When you try this,
 -->
 다음 코드를 봅시다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (select-span)" region="select-span">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (select-span)" region="select-span"></code-example>
 
 
 <!--
@@ -811,9 +952,9 @@ the drop down is empty.
 -->
 이 코드를 실행해보면 드롭다운의 내용이 비어있는 것을 확인할 수 있습니다.
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/structural-directives/bad-select.png' alt="spanned options don't work">
-</figure>
+</div>
 
 
 <!--
@@ -837,9 +978,7 @@ Here's the conditional paragraph again, this time using `<ng-container>`.
 -->
 `ngIf`를 사용하는 `<p>` 엘리먼트를 생각해 봅시다. 이 엘리먼트는 `<ng-container>`를 사용합니다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngif-ngcontainer)" region="ngif-ngcontainer">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (ngif-ngcontainer)" region="ngif-ngcontainer"></code-example>
 
 
 <!--
@@ -847,9 +986,9 @@ It renders properly.
 -->
 이 코드는 제대로 렌더링 됩니다.
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/structural-directives/good-paragraph.png' alt="ngcontainer paragraph with proper style">
-</figure>
+</div>
 
 
 <!--
@@ -857,9 +996,7 @@ Now conditionally exclude a _select_ `<option>` with `<ng-container>`.
 -->
 그리고 이번에는 `<select>`태그 안에 있는 `<option>` 엘리먼트를 배열에 따라 반복하고 표시 조건도 지정하는 용도로 `<ng-container>`를 사용해 봅시다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (select-ngcontainer)" region="select-ngcontainer">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (select-ngcontainer)" region="select-ngcontainer"></code-example>
 
 
 <!--
@@ -867,9 +1004,9 @@ The drop down works properly.
 -->
 그러면 드롭다운도 제대로 동작합니다.
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/structural-directives/select-ngcontainer-anim.gif' alt="ngcontainer options work properly">
-</figure>
+</div>
 
 <div class="alert is-helpful">
 
@@ -921,9 +1058,7 @@ that does the opposite of `NgIf`.
 이번에는 `NgIf`의 반대 기능을 하는 `UnlessDirective`를 만들어 봅니다.
 `NgIf`가 조건이 `true`일 때 템플릿 내용을 화면에 표시한다면, `UnlessDirective`는 조건이 ***false***일 때 템플릿 내용을 화면에 표시할 것입니다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (appUnless-1)" region="appUnless-1">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (appUnless-1)" region="appUnless-1"></code-example>
 
 
 <!--
@@ -951,9 +1086,7 @@ Here's how you might begin:
 
 이렇게 작성하면 다음과 비슷한 코드가 될 것입니다:
 
-<code-example path="structural-directives/src/app/unless.directive.ts" linenums="false" header="src/app/unless.directive.ts (skeleton)" region="skeleton">
-
-</code-example>
+<code-example path="structural-directives/src/app/unless.directive.ts" header="src/app/unless.directive.ts (skeleton)" region="skeleton"></code-example>
 
 
 <!--
@@ -1009,9 +1142,7 @@ You inject both in the directive constructor as private variables of the class.
 -->
 두 객체를 클래스에서 참조할 수 있도록 디렉티브 생성자에 두 심볼을 의존성으로 주입합니다.
 
-<code-example path="structural-directives/src/app/unless.directive.ts" linenums="false" header="src/app/unless.directive.ts (ctor)" region="ctor">
-
-</code-example>
+<code-example path="structural-directives/src/app/unless.directive.ts" header="src/app/unless.directive.ts (ctor)" region="ctor"></code-example>
 
 
 <!--
@@ -1038,9 +1169,7 @@ Read about `@Input` in the [_Template Syntax_](guide/template-syntax#inputs-outp
 
 
 
-<code-example path="structural-directives/src/app/unless.directive.ts" linenums="false" header="src/app/unless.directive.ts (set)" region="set">
-
-</code-example>
+<code-example path="structural-directives/src/app/unless.directive.ts" header="src/app/unless.directive.ts (set)" region="set"></code-example>
 
 
 <!--
@@ -1068,9 +1197,7 @@ The completed directive code looks like this:
 
 그러면 다음과 같은 코드가 됩니다:
 
-<code-example path="structural-directives/src/app/unless.directive.ts" linenums="false" header="src/app/unless.directive.ts (excerpt)" region="no-docs">
-
-</code-example>
+<code-example path="structural-directives/src/app/unless.directive.ts" header="src/app/unless.directive.ts (excerpt)" region="no-docs"></code-example>
 
 
 <!--
@@ -1082,9 +1209,7 @@ Then create some HTML to try it.
 
 그러고 HTML에 이 디렉티브를 적용해 봅니다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (appUnless)" region="appUnless">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (appUnless)" region="appUnless"></code-example>
 
 
 <!--
@@ -1094,9 +1219,9 @@ When the `condition` is truthy, the top (A) paragraph is removed and the bottom 
 `condition` 값이 거짓으로 평가되면 (A) 문단이 화면에 표시되고 (B) 문단은 화면에 표시되지 않습니다.
 그리고 `condition` 값이 참으로 평가되면 (A) 문단이 화면에 표시되지 않고 (B) 문단이 화면에 표시됩니다.
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/structural-directives/unless-anim.gif' alt="UnlessDirective in action">
-</figure>
+</div>
 
 
 <!--

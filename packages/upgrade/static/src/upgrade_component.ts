@@ -33,7 +33,7 @@ class Bindings {
  * A helper class that allows an AngularJS component to be used from Angular.
  *
  * *Part of the [upgrade/static](api?query=upgrade%2Fstatic)
- * library for hybrid upgrade apps that support AoT compilation.*
+ * library for hybrid upgrade apps that support AOT compilation.*
  *
  * This helper class should be used as a base class for creating Angular directives
  * that wrap AngularJS components that need to be "upgraded".
@@ -53,7 +53,7 @@ class Bindings {
  *
  * In this example you can see that we must derive from the `UpgradeComponent`
  * base class but also provide an {@link Directive `@Directive`} decorator. This is
- * because the AoT compiler requires that this information is statically available at
+ * because the AOT compiler requires that this information is statically available at
  * compile time.
  *
  * Note that we must do the following:
@@ -168,8 +168,8 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
     // Linking
     const link = this.directive.link;
-    const preLink = (typeof link == 'object') && (link as IDirectivePrePost).pre;
-    const postLink = (typeof link == 'object') ? (link as IDirectivePrePost).post : link;
+    const preLink = typeof link == 'object' && link.pre;
+    const postLink = typeof link == 'object' ? link.post : link;
     const attrs: IAttributes = NOT_SUPPORTED;
     const transcludeFn: ITranscludeFunction = NOT_SUPPORTED;
     if (preLink) {
@@ -229,7 +229,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
           `Binding definitions on scope and controller at the same time is not supported.`);
     }
 
-    const context = (btcIsObject) ? directive.bindToController : directive.scope;
+    const context = btcIsObject ? directive.bindToController : directive.scope;
     const bindings = new Bindings();
 
     if (typeof context == 'object') {

@@ -1,9 +1,12 @@
 package(default_visibility = ["//visibility:public"])
 
+load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
+load("@npm//history-server:index.bzl", "history_server")
+load("@npm//html-insert-assets:index.bzl", "html_insert_assets")
 load("@npm_angular_bazel//:index.bzl", "ng_module")
-load("@npm_bazel_karma//:index.bzl", "ts_web_test_suite")
-load("@build_bazel_rules_nodejs//:defs.bzl", "rollup_bundle", "history_server")
-load("@build_bazel_rules_nodejs//internal/web_package:web_package.bzl", "web_package")
+load("@npm_bazel_karma//:index.bzl", "karma_web_test_suite")
+load("@npm_bazel_rollup//:index.bzl", "rollup_bundle")
+load("@npm_bazel_terser//:index.bzl", "terser_minified")
 load("@npm_bazel_typescript//:index.bzl", "ts_devserver", "ts_library")
 load("@io_bazel_rules_sass//:defs.bzl", "multi_sass_binary", "sass_binary")
 
@@ -36,6 +39,7 @@ ng_module(
       "**/*.css",
       "**/*.html",
     ]) + ([":styles"] if len(glob(["**/*.scss"])) else []),
+    generate_ve_shims = True,
     deps = [
         "@npm//@angular/core",
         "@npm//@angular/platform-browser",
@@ -47,31 +51,61 @@ ng_module(
 
 rollup_bundle(
     name = "bundle",
+    config_file = "rollup.config.js",
     entry_point = ":main.prod.ts",
     deps = [
         "//src",
-        "@npm//@angular/router",
-        "@npm//rxjs",
+        "@npm//rollup-plugin-commonjs",
+        "@npm//rollup-plugin-node-resolve",
     ],
 )
 
-web_package(
-    name = "prodapp",
-    assets = [
-        # do not sort
-        "@npm//node_modules/zone.js:dist/zone.min.js",
-        ":bundle.min.js",
-        ":global_stylesheet",
+terser_minified(
+    name = "bundle.min",
+    src = ":bundle",
+)
+
+html_insert_assets(
+    name = "asset_injected_index_html",
+    outs = ["_/index.html"],
+    args = [
+        "--html",
+        "$(execpath :index.html)",
+        "--out",
+        "$@",
+        "--roots",
+        "$(RULEDIR)",
+        "--assets",
+        "$(execpath :global_stylesheet.css)",
+        "$(execpath @npm//:node_modules/zone.js/dist/zone.min.js)",
+        "bundle.min.js",
     ],
     data = [
+        ":index.html",
+        ":global_stylesheet.css",
+        "@npm//:node_modules/zone.js/dist/zone.min.js",
+    ],
+)
+
+pkg_web(
+    name = "prodapp",
+    additional_root_paths = ["src/_"],
+    srcs = [
+        "@npm//:node_modules/zone.js/dist/zone.min.js",
+        ":bundle.min",
+        ":global_stylesheet",
+        ":asset_injected_index_html",
         "favicon.ico",
     ],
-    index_html = "index.html",
 )
 
 history_server(
     name = "prodserver",
     data = [":prodapp"],
+    args = [
+        "--port",
+        "4200",
+    ],
     templated_args = ["src/prodapp"],
 )
 
@@ -79,28 +113,27 @@ filegroup(
     name = "rxjs_umd_modules",
     srcs = [
         # do not sort
-        "@npm//node_modules/rxjs:bundles/rxjs.umd.js",
+        "@npm//:node_modules/rxjs/bundles/rxjs.umd.js",
         ":rxjs_shims.js",
     ],
 )
 
 ts_devserver(
     name = "devserver",
+    additional_root_paths = ["project/src/_"],
     port = 4200,
     entry_module = "project/src/main.dev",
     serving_path = "/bundle.min.js",
     scripts = [
-        "@npm//node_modules/tslib:tslib.js",
+        "@npm//:node_modules/tslib/tslib.js",
         ":rxjs_umd_modules",
     ],
     static_files = [
-        "@npm//node_modules/zone.js:dist/zone.min.js",
+        "@npm//:node_modules/zone.js/dist/zone.min.js",
         ":global_stylesheet",
-    ],
-    data = [
+        ":asset_injected_index_html",
         "favicon.ico",
     ],
-    index_html = "index.html",
     deps = [":src"],
 )
 
@@ -129,25 +162,25 @@ ts_library(
     ],
 )
 
-ts_web_test_suite(
+karma_web_test_suite(
     name = "test",
     srcs = [
-        "@npm//node_modules/tslib:tslib.js",
+        "@npm//:node_modules/tslib/tslib.js",
     ],
     runtime_deps = [
         ":initialize_testbed",
     ],
     # do not sort
     bootstrap = [
-        "@npm//node_modules/zone.js:dist/zone-testing-bundle.js",
-        "@npm//node_modules/reflect-metadata:Reflect.js",
+        "@npm//:node_modules/zone.js/dist/zone-testing-bundle.js",
+        "@npm//:node_modules/reflect-metadata/Reflect.js",
     ],
     browsers = [
         "@io_bazel_rules_webtesting//browsers:chromium-local",
     ],
+    tags = ["native"],
     deps = [
         ":rxjs_umd_modules",
         ":test_lib",
-        "@npm//karma-jasmine",
     ],
 )

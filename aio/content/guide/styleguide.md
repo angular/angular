@@ -1,7 +1,15 @@
+<<<<<<< HEAD
 <!--
 # Style Guide
 -->
 # 코딩 스타일 가이드
+=======
+# Angular coding style guide
+
+Looking for an opinionated guide to Angular syntax, conventions, and application structure?
+Step right in!
+This style guide presents preferred conventions and, as importantly, explains why.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 {@a toc}
 
@@ -1186,10 +1194,14 @@ As always, strive for consistency.
 
 <!--
 **Do** use a custom prefix for a component selector.
+<<<<<<< HEAD
 For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the prefix `admin` represents an admin feature area.
 -->
 컴포넌트 셀렉터에는 커스텀 접두사를 **사용하세요.**
 예를 들어 프로젝트 이름이 **T**our **o**f **H**eroes 라면 `toh`를 접두사로 사용할 수 있으며, 관리자용 기능이 구현되어 있는 곳에서는 `admin`을 접두사로 사용할 수 있습니다.
+=======
+For example, the prefix `toh` represents **T**our **o**f **H**eroes and the prefix `admin` represents an admin feature area.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 </div>
 
@@ -1427,8 +1439,16 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 <!--
 **Do** use consistent names for all pipes, named after their feature.
+<<<<<<< HEAD
 -->
 커스텀 파이프를 구현한 클래스에는 `Pipe` 접미사를 **붙이고,** 이 파일에는 `.pipe` 타입을 **명시하세요.**
+=======
+The pipe class name should use [UpperCamelCase](guide/glossary#case-types)
+(the general convention for class names),
+and the corresponding `name` string should use *lowerCamelCase*.
+The `name` string cannot use hyphens ("dash-case" or "kebab-case").
+
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 </div>
 
@@ -2122,8 +2142,14 @@ keep the **F**lattest structure you can, and
 
 <div class="s-why-last">
 
+<<<<<<< HEAD
 <!--
 **Why?** LIFT Provides a consistent structure that scales well, is modular, and makes it easier to increase developer efficiency by finding code quickly.
+=======
+
+
+**Why?** LIFT provides a consistent structure that scales well, is modular, and makes it easier to increase developer efficiency by finding code quickly.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 To confirm your intuition about a particular structure, ask:
 _can I quickly open and start work in all of the related files for this feature_?
 -->
@@ -2149,10 +2175,17 @@ _이 기능을 수정하려면 어디에 있는 파일을 열어야 원하는 �
 
 <div class="s-rule do">
 
+<<<<<<< HEAD
 <!--
 **Do** make locating code intuitive, simple and fast.
 -->
 코드는 직관적으로 떠오르는 위치에 두세요. 그게 간단하고 빠릅니다.
+=======
+
+
+**Do** make locating code intuitive, simple, and fast.
+
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 </div>
 
@@ -3568,9 +3601,14 @@ Angular는 앞으로 HTML 템플릿에도 이 기능을 지원할 수 있도록 
 
 <!--
 **Why?** If you ever need to rename the property or event name associated with
+<<<<<<< HEAD
 `@Input` or `@Output`, you can modify it in a single place.
 -->
 **왜?** 클래스 프로퍼티에 입출력 데코레이터를 지정하면, 이 프로퍼티 이름을 다른 이름으로 바인딩 받거나 이벤트 이름을 다르게 지정할 때도 관련된 내용을 한 곳에서 모두 수정할 수 있습니다.
+=======
+`@Input()` or `@Output()`, you can modify it in a single place.
+
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 </div>
 
@@ -4399,7 +4437,7 @@ Compare with the less preferred `host` metadata alternative.
 
 </div>
 
-<code-example path="dependency-injection/src/app/tree-shaking/service.ts" header="src/app/treeshaking/service.ts" linenums="false"> </code-example>
+<code-example path="dependency-injection/src/app/tree-shaking/service.ts" header="src/app/treeshaking/service.ts"></code-example>
 
 
 

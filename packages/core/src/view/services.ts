@@ -8,14 +8,13 @@
 
 import {DebugElement__PRE_R3__, DebugEventListener, DebugNode__PRE_R3__, getDebugNode, indexDebugNode, removeDebugNodeFromIndex} from '../debug/debug_node';
 import {Injector} from '../di';
-import {InjectableType} from '../di/injectable';
-import {getInjectableDef, ɵɵInjectableDef} from '../di/interface/defs';
+import {InjectableType, getInjectableDef, ɵɵInjectableDef} from '../di/interface/defs';
 import {ErrorHandler} from '../error_handler';
 import {Type} from '../interface/type';
 import {ComponentFactory} from '../linker/component_factory';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '../render/api';
-import {Sanitizer} from '../sanitization/security';
+import {Sanitizer} from '../sanitization/sanitizer';
 import {isDevMode} from '../util/is_dev_mode';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../util/ng_reflect';
 
@@ -688,7 +687,11 @@ export class DebugRenderer2 implements Renderer2 {
   constructor(private delegate: Renderer2) { this.data = this.delegate.data; }
 
   destroyNode(node: any) {
-    removeDebugNodeFromIndex(getDebugNode(node) !);
+    const debugNode = getDebugNode(node) !;
+    removeDebugNodeFromIndex(debugNode);
+    if (debugNode instanceof DebugNode__PRE_R3__) {
+      debugNode.listeners.length = 0;
+    }
     if (this.delegate.destroyNode) {
       this.delegate.destroyNode(node);
     }

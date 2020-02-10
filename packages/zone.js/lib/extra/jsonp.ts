@@ -42,7 +42,7 @@ Zone.__load_patch('jsonp', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
           configurable: true,
           enumerable: true,
           get: function() {
-            return function() {
+            return function(this: unknown) {
               const task = global[api.symbol('jsonpTask')];
               const target = this ? this : global;
               const delegate = global[api.symbol(`jsonp${methodName}callback`)];

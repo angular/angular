@@ -1,18 +1,26 @@
+<<<<<<< HEAD
 <!--
 # Lifecycle Hooks
 -->
 # 라이프싸이클 후킹
+=======
+# Lifecycle hooks
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 A component has a lifecycle managed by Angular.
 -->
 컴포넌트는 Angular가 관리하는 라이프싸이클을 따릅니다.
 
+<<<<<<< HEAD
 <!--
 Angular creates it, renders it, creates and renders its children,
 checks it when its data-bound properties change, and destroys it before removing it from the DOM.
 -->
 컴포넌트는 Angular가 생성하고, 렌더링하며, 자식 컴포넌트를 순차적으로 생성하고 생성하고 렌더링합니다.
+=======
+Angular creates and renders components along with their children, checks when their data-bound properties change, and destroys them before removing them from the DOM.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 Angular offers **lifecycle hooks**
@@ -49,7 +57,7 @@ that Angular calls shortly after creating the component:
 각각의 인터페이스에는 `ng` 접두사가 붙는 라이프싸이클 후킹 메소드가 정의되어 있습니다.
 예를 들면, `OnInit` 인터페이스에는 `ngOnInit()` 메소드가 정의되어 있으며, 이 메소드를 구현하면 Angular가 컴포넌트를 생성한 후에 실행되는 시점을 가로챌 수 있습니다.
 
-<code-example path="lifecycle-hooks/src/app/peek-a-boo.component.ts" region="ngOnInit" header="peek-a-boo.component.ts (excerpt)" linenums="false"></code-example>
+<code-example path="lifecycle-hooks/src/app/peek-a-boo.component.ts" region="ngOnInit" header="peek-a-boo.component.ts (excerpt)"></code-example>
 
 <!--
 No directive or component will implement all of the lifecycle hooks.
@@ -470,9 +478,9 @@ This snapshot reflects the state of the log after the user clicked the *Create..
 -->
 사용자가 *Create...* 버튼을 클릭한 시점부터 *Destroy...* 버튼을 클릭하는 시점까지 출력하는 로그는 아래 그림으로 확인할 수 있습니다.
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/lifecycle-hooks/peek-a-boo.png" alt="Peek-a-boo">
-</figure>
+</div>
 
 <!--
 The sequence of log messages follows the prescribed hook calling order:
@@ -555,7 +563,7 @@ that log messages to the parent via an injected `LoggerService`.
 -->
 스파이 디렉티브는 간단합니다. 이 디렉티브는 `ngOnInit()` 함수와 `ngOnDestroy()` 후킹 함수를 구현하고 의존성으로 주입되는 `LoggerService`를 활용해서 브라우저에 로그를 출력합니다.
 
-<code-example path="lifecycle-hooks/src/app/spy.directive.ts" region="spy-directive" header="src/app/spy.directive.ts" linenums="false"></code-example>
+<code-example path="lifecycle-hooks/src/app/spy.directive.ts" region="spy-directive" header="src/app/spy.directive.ts"></code-example>
 
 <!--
 You can apply the spy to any native or component element and it'll be initialized and destroyed
@@ -565,7 +573,7 @@ Here it is attached to the repeated hero `<div>`:
 이 디렉티브는 네이티브 엘리먼트나 커스텀 컴포넌트 어느곳에라도 적용할 수 있으며, 이 디렉티브가 적용된 엘리먼트가 생성될 때 함께 생성되고 엘리먼트가 종료될 때 이 디렉티브도 함께 종료됩니다.
 `*ngFor`로 반복되는 `<div>`에는 다음과 같이 적용할 수 있습니다:
 
-<code-example path="lifecycle-hooks/src/app/spy.component.html" region="template" header="src/app/spy.component.html" linenums="false"></code-example>
+<code-example path="lifecycle-hooks/src/app/spy.component.html" region="template" header="src/app/spy.component.html"></code-example>
 
 <!--
 Each spy's birth and death marks the birth and death of the attached hero `<div>`
@@ -574,9 +582,9 @@ with an entry in the *Hook Log* as seen here:
 각 스파이 디렉티브가 생성되고 종료되는 시점은 이 디렉티브가 적용된 `<div>` 엘리먼트가 생성되고 종료되는 시점과 같습니다.
 이 내용을 로그로 확인해 보세요:
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/lifecycle-hooks/spy-directive.gif' alt="Spy Directive">
-</figure>
+</div>
 
 <!--
 Adding a hero results in a new hero `<div>`. The spy's `ngOnInit()` logs that event.
@@ -718,7 +726,7 @@ This example monitors the `OnChanges` hook.
 컴포넌트나 디렉티브의 ***입력 프로퍼티*** 값이 변경될 때마다 Angular는 `ngOnChanges()` 메소드를 실행합니다.
 `OnChanges` 후킹 함수를 활용하는 간단한 방법은 다음과 같습니다.
 
-<code-example path="lifecycle-hooks/src/app/on-changes.component.ts" region="ng-on-changes" header="on-changes.component.ts (excerpt)" linenums="false"></code-example>
+<code-example path="lifecycle-hooks/src/app/on-changes.component.ts" region="ng-on-changes" header="on-changes.component.ts (excerpt)"></code-example>
 
 <!--
 The `ngOnChanges()` method takes an object that maps each changed property name to a
@@ -733,7 +741,7 @@ The example component, `OnChangesComponent`, has two input properties: `hero` an
 -->
 이번에 예제로 만드는 `OnChangesComponent`에는 `hero`와 `power`라는 입력 프로퍼티가 2개 있습니다.
 
-<code-example path="lifecycle-hooks/src/app/on-changes.component.ts" region="inputs" header="src/app/on-changes.component.ts" linenums="false"></code-example>
+<code-example path="lifecycle-hooks/src/app/on-changes.component.ts" region="inputs" header="src/app/on-changes.component.ts"></code-example>
 
 <!--
 The host `OnChangesParentComponent` binds to them like this:
@@ -747,9 +755,9 @@ Here's the sample in action as the user makes changes.
 -->
 그리고 사용자가 문자열을 입력하면 다음과 같은 로그를 확인할 수 있습니다.
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/lifecycle-hooks/on-changes-anim.gif' alt="OnChanges">
-</figure>
+</div>
 
 <!--
 The log entries appear as the string value of the *power* property changes.
@@ -797,7 +805,7 @@ The *DoCheck* sample extends the *OnChanges* sample with the following `ngDoChec
 -->
 이번에 살펴볼 *DoCheck* 예제는 *OnChanges* 예제에서 살펴봤던 `ngDoCheck()` 후킹 함수를 확장한 것입니다:
 
-<code-example path="lifecycle-hooks/src/app/do-check.component.ts" region="ng-do-check" header="DoCheckComponent (ngDoCheck)" linenums="false"></code-example>
+<code-example path="lifecycle-hooks/src/app/do-check.component.ts" region="ng-do-check" header="DoCheckComponent (ngDoCheck)"></code-example>
 
 <!--
 This code inspects certain _values of interest_, capturing and comparing their current state against previous values.
@@ -807,9 +815,9 @@ so you can see how often `DoCheck` is called. The results are illuminating:
 예제 코드가 조금 복잡해 보이지만, 이 예제는 이전값과 현재값을 비교해서 값이 변경되었는지 검사하는 코드입니다.
 이 코드는 `DoCheck` 인터페이스에 의해 `ngDoCheck()` 함수가 실행될 때마다 `hero`와 `power`의 값을 비교하고, 값이 변경된 것으로 확인되면 로그를 출력합니다. 그림으로 결과를 확인해 보세요:
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/lifecycle-hooks/do-check-anim.gif' alt="DoCheck">
-</figure>
+</div>
 
 <!--
 While the `ngDoCheck()` hook can detect when the hero's `name` has changed, it has a frightful cost.
@@ -846,14 +854,14 @@ Here's a child view that displays a hero's name in an `<input>`:
 -->
 자식 컴포넌트에서 `<input>` 엘리먼트에 히어로의 이름을 받는다고 합시다:
 
-<code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="child-view" header="ChildComponent" linenums="false"></code-example>
+<code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="child-view" header="ChildComponent"></code-example>
 
 <!--
 The `AfterViewComponent` displays this child view *within its template*:
 -->
 그리고 `AfterViewComponent`는 *이 컴포넌트의 템플릿에* 자식 컴포넌트 뷰를 표시합니다:
 
-<code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="template" header="AfterViewComponent (template)" linenums="false"></code-example>
+<code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="template" header="AfterViewComponent (template)"></code-example>
 
 <!--
 The following hooks take action based on changing values *within the child view*,
@@ -862,7 +870,7 @@ which can only be reached by querying for the child view via the property decora
 -->
 마지막으로 다음 코드는 *자식 컴포넌트 뷰*가 변경될 때마다 [@ViewChild](api/core/ViewChild)로 지정된 프로퍼티를 통해 자식 컴포넌트에 있는 `hero` 객체를 가져와서 동작을 수행할 수 있는 예제 코드입니다.
 
-<code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="hooks" header="AfterViewComponent (class excerpts)" linenums="false"></code-example>
+<code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="hooks" header="AfterViewComponent (class excerpts)"></code-example>
 
 {@a wait-a-tick}
 
@@ -876,7 +884,7 @@ The `doSomething()` method updates the screen when the hero name exceeds 10 char
 -->
 `doSomething()` 메소드는 히어로의 이름이 10글자를 넘어가면 화면에 에러 메시지를 표시합니다.
 
-<code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="do-something" header="AfterViewComponent (doSomething)" linenums="false"></code-example>
+<code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="do-something" header="AfterViewComponent (doSomething)"></code-example>
 
 <!--
 Why does the `doSomething()` method wait a tick before updating `comment`?
@@ -903,9 +911,9 @@ Here's *AfterView* in action:
 -->
 *AfterView* 후킹 인터페이스가 어떻게 동작하는지 확인해 보세요:
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/lifecycle-hooks/after-view-anim.gif' alt="AfterView">
-</figure>
+</div>
 
 <!--
 Notice that Angular frequently calls `AfterViewChecked()`, often when there are no changes of interest.
@@ -955,7 +963,7 @@ the `AfterContentComponent`'s parent. Here's the parent's template:
 이전 예제에서 템플릿에 자식 컴포넌트의 뷰를 직접 표시했던 대신, 이번 예제는 `AfterContentComponent`의 부모 컴포넌트에서 컨텐츠를 받아옵니다.
 부모 컴포넌트의 템플릿은 이렇습니다:
 
-<code-example path="lifecycle-hooks/src/app/after-content.component.ts" region="parent-template" header="AfterContentParentComponent (template excerpt)" linenums="false"></code-example>
+<code-example path="lifecycle-hooks/src/app/after-content.component.ts" region="parent-template" header="AfterContentParentComponent (template excerpt)"></code-example>
 
 <!--
 Notice that the `<app-child>` tag is tucked between the `<after-content>` tags.
@@ -970,7 +978,7 @@ Now look at the component's template:
 -->
 그리고 `AfterContentComponent` 컴포넌트의 템플릿은 다음과 같이 구성했습니다:
 
-<code-example path="lifecycle-hooks/src/app/after-content.component.ts" region="template" header="AfterContentComponent (template)" linenums="false"></code-example>
+<code-example path="lifecycle-hooks/src/app/after-content.component.ts" region="template" header="AfterContentComponent (template)"></code-example>
 
 <!--
 The `<ng-content>` tag is a *placeholder* for the external content.
@@ -980,9 +988,9 @@ In this case, the projected content is the `<app-child>` from the parent.
 `<ng-content>` 태그는 외부 컨텐츠가 *들어갈 위치*를 지정하는 태그입니다.
 Angular가 이 태그를 확인하면 컴포넌트 외부에서 전달되는 컨텐츠를 이 위치에 표시하며, 이 예제에서 부모 컴포넌트가 자식 컴포넌트로 전달하는 컨텐츠는 `<my-child>` 엘리먼트입니다.
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/lifecycle-hooks/projected-child-view.png' alt="Projected Content">
-</figure>
+</div>
 
 <div class="alert is-helpful">
 
@@ -1032,7 +1040,7 @@ which can only be reached by querying for them via the property decorated with
 -->
 *AfterContent* 후킹은 *자식 컴포넌트에 반영된 컨텐츠가* 변경되는 것과 관계가 있으며, 이 컨텐츠 내용을 직접 할용하려면 [@ContentChild](api/core/ContentChild) 데코레이터를 사용해야 합니다.
 
-<code-example path="lifecycle-hooks/src/app/after-content.component.ts" region="hooks" header="AfterContentComponent (class excerpts)" linenums="false"></code-example>
+<code-example path="lifecycle-hooks/src/app/after-content.component.ts" region="hooks" header="AfterContentComponent (class excerpts)"></code-example>
 
 {@a no-unidirectional-flow-worries}
 

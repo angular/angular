@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 // #docplaster
-import {Component, Directive, ElementRef, EventEmitter, Inject, Injectable, Injector, Input, NgModule, Output} from '@angular/core';
+import {Component, Directive, ElementRef, EventEmitter, Injectable, Injector, Input, NgModule, Output} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {UpgradeComponent, UpgradeModule, downgradeComponent, downgradeInjectable} from '@angular/upgrade/static';
@@ -176,6 +176,6 @@ ng1AppModule.component('exampleApp', {
 
 // #docregion bootstrap-ng2
 // We bootstrap the Angular module as we would do in a normal Angular app.
-// (We are using the dynamic browser platform as this example has not been compiled AoT.)
+// (We are using the dynamic browser platform as this example has not been compiled AOT.)
 platformBrowserDynamic().bootstrapModule(Ng2AppModule);
 // #enddocregion

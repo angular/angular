@@ -12,14 +12,20 @@ ts_library(
     name = "types",
     srcs = glob(["*.ts"]),
     deps = [
+        "//packages/zone.js/lib:zone_d_ts",
         "@npm//@types/hammerjs",
-        "@npm//zone.js",
     ],
 )
 
 ts_config(
     name = "tsconfig-test",
     src = "tsconfig-test.json",
+    deps = [":tsconfig-build.json"],
+)
+
+ts_config(
+    name = "tsconfig-build-no-strict",
+    src = "tsconfig-build-no-strict.json",
     deps = [":tsconfig-build.json"],
 )
 

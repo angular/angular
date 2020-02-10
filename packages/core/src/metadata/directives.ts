@@ -24,8 +24,9 @@ import {ViewEncapsulation} from './view';
  */
 export interface DirectiveDecorator {
   /**
-   * Marks a class as an Angular directive. You can define your own
-   * directives to attach custom behavior to elements in the DOM.
+   * Decorator that marks a class as an Angular directive.
+   * You can define your own directives to attach custom behavior to elements in the DOM.
+   *
    * The options provide configuration metadata that determines
    * how the directive should be processed, instantiated and used at
    * runtime.
@@ -37,7 +38,7 @@ export interface DirectiveDecorator {
    * @usageNotes
    * To define a directive, mark the class with the decorator and provide metadata.
    *
-   * ```
+   * ```ts
    * import {Directive} from '@angular/core';
    *
    * @Directive({
@@ -58,7 +59,7 @@ export interface DirectiveDecorator {
    * a directive imported from another module.
    * List the directive class in the `declarations` field of an NgModule.
    *
-   * ```
+   * ```ts
    * declarations: [
    *  AppComponent,
    *  MyDirective
@@ -67,12 +68,12 @@ export interface DirectiveDecorator {
    *
    * @Annotation
    */
-  (obj: Directive): TypeDecorator;
+  (obj?: Directive): TypeDecorator;
 
   /**
    * See the `Directive` decorator.
    */
-  new (obj: Directive): Directive;
+  new (obj?: Directive): Directive;
 }
 
 /**
@@ -122,9 +123,8 @@ export interface Directive {
    * - `bindingProperty` specifies the DOM property where the value is read from.
    *
    * When `bindingProperty` is not provided, it is assumed to be equal to `directiveProperty`.
-   * @usageNotes
    *
-   * ### Example
+   * @usageNotes
    *
    * The following example creates a component with two data-bound properties.
    *
@@ -140,7 +140,7 @@ export interface Directive {
    * class BankAccount {
    *   bankName: string;
    *   id: string;
-   *
+   * }
    * ```
    *
    */
@@ -160,21 +160,28 @@ export interface Directive {
    *
    * @usageNotes
    *
-   * ### Example
-   *
    * ```typescript
-   * @Directive({
+   * @Component({
    *   selector: 'child-dir',
-   *   exportAs: 'child'
+   *   outputs: [ 'bankNameChange' ]
+   *   template: `<input (input)="bankNameChange.emit($event.target.value)" />`
    * })
    * class ChildDir {
+   *  bankNameChange: EventEmitter<string> = new EventEmitter<string>();
    * }
    *
    * @Component({
    *   selector: 'main',
-   *   template: `<child-dir #c="child"></child-dir>`
+   *   template: `
+   *     {{ bankName }} <child-dir (bankNameChange)="onBankNameChange($event)"></child-dir>
+   *   `
    * })
    * class MainComponent {
+   *  bankName: string;
+   *
+   *   onBankNameChange(bankName: string) {
+   *     this.bankName = bankName;
+   *   }
    * }
    * ```
    *
@@ -193,9 +200,7 @@ export interface Directive {
    *
    * @usageNotes
    *
-   * ### Simple Example
-   *
-   * ```
+   * ```ts
    * @Directive({
    *   selector: 'child-dir',
    *   exportAs: 'child'
@@ -222,12 +227,10 @@ export interface Directive {
    *
    * @usageNotes
    *
-   * ### Example
-   *
    * The following example shows how queries are defined
    * and when their results are available in lifecycle hooks:
    *
-   * ```
+   * ```ts
    * @Component({
    *   selector: 'someDir',
    *   queries: {
@@ -329,8 +332,7 @@ export interface ComponentDecorator {
    * The following example creates a component with two data-bound properties,
    * specified by the `inputs` value.
    *
-   * <code-example path="core/ts/metadata/directives.ts" region="component-input">
-   * </code-example>
+   * <code-example path="core/ts/metadata/directives.ts" region="component-input"></code-example>
    *
    *
    * ### Setting component outputs
@@ -345,7 +347,7 @@ export interface ComponentDecorator {
    * The following simple example injects a class into a component
    * using the view provider specified in component metadata:
    *
-   * ```
+   * ```ts
    * class Greeter {
    *    greet(name:string) {
    *      return 'Hello ' + name + '!';
@@ -386,13 +388,13 @@ export interface ComponentDecorator {
    * * Trims all whitespaces at the beginning and the end of a template.
    * * Removes whitespace-only text nodes. For example,
    *
-   * ```
+   * ```html
    * <button>Action 1</button>  <button>Action 2</button>
    * ```
    *
    * becomes:
    *
-   * ```
+   * ```html
    * <button>Action 1</button><button>Action 2</button>
    * ```
    *
@@ -540,6 +542,7 @@ export interface Component extends Directive {
    * this component. For each component listed here,
    * Angular creates a {@link ComponentFactory} and stores it in the
    * {@link ComponentFactoryResolver}.
+   * @deprecated Since 9.0.0. With Ivy, this property is no longer necessary.
    */
   entryComponents?: Array<Type<any>|any[]>;
 
@@ -587,6 +590,8 @@ export interface PipeDecorator {
    * to a template. To make it a member of an NgModule,
    * list it in the `declarations` field of the `NgModule` metadata.
    *
+   * @see [Style Guide: Pipe Names](guide/styleguide#02-09)
+   *
    */
   (obj: Pipe): TypeDecorator;
 
@@ -604,7 +609,8 @@ export interface PipeDecorator {
 export interface Pipe {
   /**
    * The pipe name to use in template bindings.
-   *
+   * Typically uses [lowerCamelCase](guide/glossary#case-types)
+   * because the name cannot contain hyphens.
    */
   name: string;
 
@@ -676,6 +682,8 @@ export interface InputDecorator {
   * })
   * class App {}
   * ```
+  *
+  * @see [Input and Output properties](guide/template-syntax#input-and-output-properties)
   */
   (bindingPropertyName?: string): any;
   new (bindingPropertyName?: string): any;
@@ -718,6 +726,8 @@ export interface OutputDecorator {
   * name of the bound property is used for output binding.
   *
   * See `Input` decorator for an example of providing a binding name.
+  *
+  * @see [Input and Output properties](guide/template-syntax#input-and-output-properties)
   *
   */
   (bindingPropertyName?: string): any;
@@ -825,7 +835,7 @@ export interface HostListenerDecorator {
  */
 export interface HostListener {
   /**
-   * The CSS event to listen for.
+   * The DOM event to listen for.
    */
   eventName?: string;
   /**
@@ -835,9 +845,10 @@ export interface HostListener {
 }
 
 /**
- * Binds a CSS event to a host listener and supplies configuration metadata.
+ * Decorator that binds a DOM event to a host listener and supplies configuration metadata.
  * Angular invokes the supplied handler method when the host element emits the specified event,
  * and updates the bound element with the result.
+ *
  * If the handler method returns false, applies `preventDefault` on the bound element.
  *
  * @usageNotes
@@ -845,7 +856,7 @@ export interface HostListener {
  * The following example declares a directive
  * that attaches a click listener to a button and counts clicks.
  *
- * ```
+ * ```ts
  * @Directive({selector: 'button[counting]'})
  * class CountClicks {
  *   numberOfClicks = 0;
@@ -861,6 +872,29 @@ export interface HostListener {
  *   template: '<button counting>Increment</button>',
  * })
  * class App {}
+ *
+ * ```
+ *
+ * The following example registers another DOM event handler that listens for key-press events.
+ * ``` ts
+ * import { HostListener, Component } from "@angular/core";
+ *
+ * @Component({
+ *   selector: 'app',
+ *   template: `<h1>Hello, you have pressed keys {{counter}} number of times!</h1> Press any key to
+ * increment the counter.
+ *   <button (click)="resetCounter()">Reset Counter</button>`
+ * })
+ * class AppComponent {
+ *   counter = 0;
+ *   @HostListener('window:keydown', ['$event'])
+ *   handleKeyDown(event: KeyboardEvent) {
+ *     this.counter++;
+ *   }
+ *   resetCounter() {
+ *     this.counter = 0;
+ *   }
+ * }
  * ```
  *
  * @Annotation

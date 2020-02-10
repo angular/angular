@@ -11,7 +11,6 @@ import {AfterViewInit, Component, Directive, Input, QueryList, ViewChildren} fro
 
 @Directive({selector: 'pane'})
 export class Pane {
-  // TODO(issue/24571): remove '!'.
   @Input() id !: string;
 }
 
@@ -21,14 +20,13 @@ export class Pane {
     <pane id="1"></pane>
     <pane id="2"></pane>
     <pane id="3" *ngIf="shouldShow"></pane>
-    
+
     <button (click)="show()">Show 3</button>
-       
-    <div>panes: {{serializedPanes}}</div> 
+
+    <div>panes: {{serializedPanes}}</div>
   `,
 })
 export class ViewChildrenComp implements AfterViewInit {
-  // TODO(issue/24571): remove '!'.
   @ViewChildren(Pane) panes !: QueryList<Pane>;
   serializedPanes: string = '';
 

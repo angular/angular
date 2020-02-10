@@ -11,7 +11,7 @@ import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnCh
 import {Subscription} from 'rxjs';
 
 import {QueryParamsHandling} from '../config';
-import {NavigationEnd, RouterEvent} from '../events';
+import {Event, NavigationEnd} from '../events';
 import {Router} from '../router';
 import {ActivatedRoute} from '../router_state';
 import {UrlTree} from '../url_tree';
@@ -220,7 +220,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   constructor(
       private router: Router, private route: ActivatedRoute,
       private locationStrategy: LocationStrategy) {
-    this.subscription = router.events.subscribe((s: RouterEvent) => {
+    this.subscription = router.events.subscribe((s: Event) => {
       if (s instanceof NavigationEnd) {
         this.updateTargetUrlAndHref();
       }

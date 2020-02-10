@@ -32,7 +32,7 @@ describe('Router', () => {
     beforeEach(() => { TestBed.configureTestingModule({imports: [RouterTestingModule]}); });
 
     it('should copy config to avoid mutations of user-provided objects', () => {
-      const r: Router = TestBed.get(Router);
+      const r: Router = TestBed.inject(Router);
       const configs: Routes = [{
         path: 'a',
         component: TestComponent,
@@ -66,7 +66,7 @@ describe('Router', () => {
     beforeEach(() => { TestBed.configureTestingModule({imports: [RouterTestingModule]}); });
 
     it('should not change root route when updating the root component', () => {
-      const r: Router = TestBed.get(Router);
+      const r: Router = TestBed.inject(Router);
       const root = r.routerState.root;
 
       (r as any).resetRootComponentType(NewRootComponent);
@@ -158,10 +158,15 @@ describe('Router', () => {
             createActivatedRouteSnapshot({component: 'child', routeConfig: {path: 'child'}});
         const futureState = new (RouterStateSnapshot as any)(
             'url', new TreeNode(empty.root, [new TreeNode(childSnapshot, [])]));
+        // Since we only test the guards, we don't need to provide a full navigation
+        // transition object with all properties set.
+        const testTransition = {
+          guards: getAllRouteGuards(futureState, empty, new ChildrenOutletContexts())
+        } as NavigationTransition;
 
-        of ({guards: getAllRouteGuards(futureState, empty, new ChildrenOutletContexts())})
-            .pipe(checkGuardsOperator(TestBed, (evt) => { events.push(evt); }))
-            .subscribe((x) => result = !!x.guardsResult, (e) => { throw e; });
+        of (testTransition).pipe(checkGuardsOperator(TestBed, (evt) => {
+                             events.push(evt);
+                           })).subscribe((x) => result = !!x.guardsResult, (e) => { throw e; });
 
         expect(result).toBe(true);
         expect(events.length).toEqual(2);
@@ -192,10 +197,15 @@ describe('Router', () => {
                 empty.root, [new TreeNode(childSnapshot, [
                   new TreeNode(grandchildSnapshot, [new TreeNode(greatGrandchildSnapshot, [])])
                 ])]));
+        // Since we only test the guards, we don't need to provide a full navigation
+        // transition object with all properties set.
+        const testTransition = {
+          guards: getAllRouteGuards(futureState, empty, new ChildrenOutletContexts())
+        } as NavigationTransition;
 
-        of ({guards: getAllRouteGuards(futureState, empty, new ChildrenOutletContexts())})
-            .pipe(checkGuardsOperator(TestBed, (evt) => { events.push(evt); }))
-            .subscribe((x) => result = !!x.guardsResult, (e) => { throw e; });
+        of (testTransition).pipe(checkGuardsOperator(TestBed, (evt) => {
+                             events.push(evt);
+                           })).subscribe((x) => result = !!x.guardsResult, (e) => { throw e; });
 
         expect(result).toBe(true);
         expect(events.length).toEqual(6);
@@ -224,10 +234,15 @@ describe('Router', () => {
             'url',
             new TreeNode(
                 empty.root, [new TreeNode(childSnapshot, [new TreeNode(grandchildSnapshot, [])])]));
+        // Since we only test the guards, we don't need to provide a full navigation
+        // transition object with all properties set.
+        const testTransition = {
+          guards: getAllRouteGuards(futureState, currentState, new ChildrenOutletContexts())
+        } as NavigationTransition;
 
-        of ({guards: getAllRouteGuards(futureState, currentState, new ChildrenOutletContexts())})
-            .pipe(checkGuardsOperator(TestBed, (evt) => { events.push(evt); }))
-            .subscribe((x) => result = !!x.guardsResult, (e) => { throw e; });
+        of (testTransition).pipe(checkGuardsOperator(TestBed, (evt) => {
+                             events.push(evt);
+                           })).subscribe((x) => result = !!x.guardsResult, (e) => { throw e; });
 
         expect(result).toBe(true);
         expect(events.length).toEqual(2);
@@ -269,10 +284,15 @@ describe('Router', () => {
                       new TreeNode(
                           greatGrandchildSnapshot, [new TreeNode(greatGreatGrandchildSnapshot, [])])
                     ])])]));
+        // Since we only test the guards, we don't need to provide a full navigation
+        // transition object with all properties set.
+        const testTransition = {
+          guards: getAllRouteGuards(futureState, currentState, new ChildrenOutletContexts())
+        } as NavigationTransition;
 
-        of ({guards: getAllRouteGuards(futureState, currentState, new ChildrenOutletContexts())})
-            .pipe(checkGuardsOperator(TestBed, (evt) => { events.push(evt); }))
-            .subscribe((x) => result = !!x.guardsResult, (e) => { throw e; });
+        of (testTransition).pipe(checkGuardsOperator(TestBed, (evt) => {
+                             events.push(evt);
+                           })).subscribe((x) => result = !!x.guardsResult, (e) => { throw e; });
 
         expect(result).toBe(true);
         expect(events.length).toEqual(4);
@@ -658,9 +678,11 @@ describe('Router', () => {
 
 function checkResolveData(
     future: RouterStateSnapshot, curr: RouterStateSnapshot, injector: any, check: any): void {
+  // Since we only test the guards and their resolve data function, we don't need to provide
+  // a full navigation transition object with all properties set.
   of ({
     guards: getAllRouteGuards(future, curr, new ChildrenOutletContexts())
-  } as Partial<NavigationTransition>)
+  } as NavigationTransition)
       .pipe(resolveDataOperator('emptyOnly', injector))
       .subscribe(check, (e) => { throw e; });
 }
@@ -668,9 +690,11 @@ function checkResolveData(
 function checkGuards(
     future: RouterStateSnapshot, curr: RouterStateSnapshot, injector: any,
     check: (result: boolean | UrlTree) => void): void {
+  // Since we only test the guards, we don't need to provide a full navigation
+  // transition object with all properties set.
   of ({
     guards: getAllRouteGuards(future, curr, new ChildrenOutletContexts())
-  } as Partial<NavigationTransition>)
+  } as NavigationTransition)
       .pipe(checkGuardsOperator(injector))
       .subscribe({
         next(t) {

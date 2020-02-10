@@ -24,9 +24,15 @@ describe('WelcomeComponent (class only)', () => {
         { provide: UserService, useClass: MockUserService }
       ]
     });
+<<<<<<< HEAD
     // TestBed를 사용해서 컴포넌트 인스턴스와 서비스 인스턴스를 참조합니다.
     comp = TestBed.get(WelcomeComponent);
     userService = TestBed.get(UserService);
+=======
+    // inject both the component and the dependent service.
+    comp = TestBed.inject(WelcomeComponent);
+    userService = TestBed.inject(UserService);
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
   });
   // #enddocregion class-only-before-each
 
@@ -92,8 +98,13 @@ describe('WelcomeComponent', () => {
     componentUserService = userService;
     // #docregion setup
     // #docregion inject-from-testbed
+<<<<<<< HEAD
     // 최상위 인젝터에서 UserService를 가져옵니다.
     userService = TestBed.get(UserService);
+=======
+    // UserService from the root injector
+    userService = TestBed.inject(UserService);
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
     // #enddocregion inject-from-testbed
 
     // 클래스 이름으로 CSS 셀렉터를 사용해서 "welcome" 엘리먼트를 가져옵니다.

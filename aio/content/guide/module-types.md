@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 <!--
 # Types of Feature Modules
@@ -21,6 +22,9 @@ A basic understanding of the following concepts:
 * [자주 사용하는 NgModule](guide/frequent-ngmodules).
 
 <hr>
+=======
+# Types of feature modules
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 There are five general categories of feature modules which

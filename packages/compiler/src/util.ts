@@ -168,7 +168,7 @@ export function stringify(token: any): string {
     return token;
   }
 
-  if (token instanceof Array) {
+  if (Array.isArray(token)) {
     return '[' + token.map(stringify).join(', ') + ']';
   }
 
@@ -253,3 +253,13 @@ const __global = typeof global !== 'undefined' && global;
 // should be __global in that case.
 const _global: {[name: string]: any} = __global || __window || __self;
 export {_global as global};
+
+export function newArray<T = any>(size: number): T[];
+export function newArray<T>(size: number, value: T): T[];
+export function newArray<T>(size: number, value?: T): T[] {
+  const list: T[] = [];
+  for (let i = 0; i < size; i++) {
+    list.push(value !);
+  }
+  return list;
+}

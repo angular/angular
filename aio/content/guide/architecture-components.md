@@ -24,17 +24,23 @@ The class interacts with the view through an API of properties and methods.
 -->
 뷰에서 사용할 애플리케이션 로직은 컴포넌트에 정의하며, 뷰는 클래스의 프로퍼티와 메소드를 활용해서 클래스와 상호작용 합니다.
 
+<<<<<<< HEAD
 <!--
 For example, `HeroListComponent` has a `heroes` property that holds an array of heroes. 
 Its `selectHero()` method sets a `selectedHero` property when the user clicks to choose a hero from that list. 
 The component acquires the heroes from a service, which is a TypeScript [parameter property](http://www.typescriptlang.org/docs/handbook/classes.html#parameter-properties) on the constructor. 
+=======
+For example, `HeroListComponent` has a `heroes` property that holds an array of heroes.
+Its `selectHero()` method sets a `selectedHero` property when the user clicks to choose a hero from that list.
+The component acquires the heroes from a service, which is a TypeScript [parameter property](http://www.typescriptlang.org/docs/handbook/classes.html#parameter-properties) on the constructor.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 The service is provided to the component through the dependency injection system.
 -->
 예를 들면 `HeroListComponent`는 히어로의 목록을 받아서 저장하도록 `heroes` 프로퍼티를 선언할 수 있습니다.
 이 프로퍼티에 저장된 목록은 화면에 표시되며,  사용자가 화면에서 히어로 목록 중 하나를 클릭했을 때 `selectHero()` 메소드가 `selectedHero` 프로퍼티를 갱신하도록 구현할 수 있습니다.
 컴포넌트는 생성자에 TypeScript [인자 프로퍼티(parameter property)](http://www.typescriptlang.org/docs/handbook/classes.html#parameter-properties)를 지정해서 서비스를 의존성으로 주입받을 수 있으며, 히어로 데이터는 이 서비스를 통해 가져옵니다.
 
-<code-example path="architecture/src/app/hero-list.component.ts" linenums="false" header="src/app/hero-list.component.ts (class)" region="class"></code-example>
+<code-example path="architecture/src/app/hero-list.component.ts" header="src/app/hero-list.component.ts (class)" region="class"></code-example>
 
 <!--
 Angular creates, updates, and destroys components as the user moves through the application. Your app can take action at each moment in this lifecycle through optional [lifecycle hooks](guide/lifecycle-hooks), like `ngOnInit()`.
@@ -71,15 +77,19 @@ Here's an example of basic metadata for `HeroListComponent`.
 -->
 `HeroListComponent`에 사용된 메타데이터를 간단하게 살펴봅시다:
 
-<code-example path="architecture/src/app/hero-list.component.ts" linenums="false" header="src/app/hero-list.component.ts (metadata)" region="metadata"></code-example>
+<code-example path="architecture/src/app/hero-list.component.ts" header="src/app/hero-list.component.ts (metadata)" region="metadata"></code-example>
 
 <!--
 This example shows some of the most useful `@Component` configuration options:
 -->
 이 예제에 사용된 `@Component` 데코레이터의 메타데이터는 다른 컴포넌트에서도 많이 사용합니다:
 
+<<<<<<< HEAD
 <!--
 * `selector`: A CSS selector that tells Angular to create and insert an instance of this component wherever it finds the corresponding tag in template HTML. For example, if an app's  HTML contains `<app-hero-list></app-hero-list>`, then
+=======
+* `selector`: A CSS selector that tells Angular to create and insert an instance of this component wherever it finds the corresponding tag in template HTML. For example, if an app's HTML contains `<app-hero-list></app-hero-list>`, then
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 Angular inserts an instance of the `HeroListComponent` view between those tags.
 -->
 * `selector`: 컴포넌트 인스턴스가 DOM 트리의 어떤 자리에 위치할지 CSS 셀렉터로 지정합니다. 위 코드에서는 HTML 문서의 `<app-hero-list></app-hero-list>`라고 작성한 위치에 `HeroListComponent`의 인스턴스가 생성되며, 이 엘리먼트가 `HeroListComponent`의 뷰로 대체됩니다.
@@ -89,10 +99,14 @@ Angular inserts an instance of the `HeroListComponent` view between those tags.
 -->
 * `templateUrl`: 컴포넌트의 HTML 템플릿을 외부 파일에 정의할 때, 이 템플릿 파일의 위치를 지정합니다. 템플릿을 인라인으로 구성하려면 이 프로퍼티 대신 `template` 프로퍼티를 사용하면 됩니다. 템플릿은 컴포넌트의 *호스트 뷰* 를 정의합니다.
 
+<<<<<<< HEAD
 <!--
 * `providers`: An array of [providers](guide/glossary#provider) for services that the component requires. In the example, this tells Angular how to provide the `HeroService` instance that the component's constructor uses to get the list of heroes to display.  
 -->
 * `providers`: 컴포넌트가 생성될 때 의존성으로 주입되는 서비스의 [프로바이더](guide/glossary#provider)를 지정합니다. 위 코드에서는 화면에 표시할 히어로의 목록을 가져오기 위해 생성자에서 `HeroService`를 의존성으로 주입받는데, 이 `HeroService`의 인스턴스를 어떻게 받아올지 지정합니다.
+=======
+* `providers`: An array of [providers](guide/glossary#provider) for services that the component requires. In the example, this tells Angular how to provide the `HeroService` instance that the component's constructor uses to get the list of heroes to display.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 
 <!--
@@ -115,12 +129,18 @@ Views are typically arranged hierarchically, allowing you to modify or show and 
 -->
 뷰는 보통 계층적으로 구성하며, 개발자가 원하는 대로 일부 영역만 조작하거나 화면에서 숨기거나 보이게 할 수 있습니다. 그리고 템플릿은 컴포넌트의 최상위 뷰인 *호스트 뷰* 에서 시작하기 때문에, 이 뷰 안에서 *또다른 뷰 계층* 을 구성하거나 다른 컴포넌트의 뷰를 포함시킬 수도 있습니다.
 
+<<<<<<< HEAD
 <figure>
 <!--
 <img src="generated/images/guide/architecture/component-tree.png" alt="Component tree" class="left">
 -->
 <img src="generated/images/guide/architecture/component-tree.png" alt="컴포넌트 트리" class="left">
 </figure>
+=======
+<div class="lightbox">
+  <img src="generated/images/guide/architecture/component-tree.png" alt="Component tree" class="left">
+</div>
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 A view hierarchy can include views from components in the same NgModule, but it also can (and often does) include views from components that are defined in different NgModules.
@@ -152,7 +172,7 @@ This template uses typical HTML elements like `<h2>` and  `<p>`, and also includ
 <!--
 * The `*ngFor` directive tells Angular to iterate over a list.
 * `{{hero.name}}`, `(click)`, and `[hero]` bind program data to and from the DOM, responding to user input. See more about [data binding](#data-binding) below.
-* The `<app-hero-detail>` tag in the example is an element that represents a new component, `HeroDetailComponent`.  
+* The `<app-hero-detail>` tag in the example is an element that represents a new component, `HeroDetailComponent`.
 `HeroDetailComponent` (code not shown) defines the hero-detail child view of `HeroListComponent`.
 Notice how custom components like this mix seamlessly with native HTML in the same layouts.
 -->
@@ -183,19 +203,25 @@ The following diagram shows the four forms of data binding markup. Each form has
 -->
 4가지 종류의 데이터 바인딩이 동작하는 방식은 아래 그림으로 확인할 수 있습니다.
 
+<<<<<<< HEAD
 <figure>
 <!--
 <img src="generated/images/guide/architecture/databinding.png" alt="Data Binding" class="left">
 -->
 <img src="generated/images/guide/architecture/databinding.png" alt="데이터 바인딩" class="left">
 </figure>
+=======
+<div class="lightbox">
+  <img src="generated/images/guide/architecture/databinding.png" alt="Data Binding" class="left">
+</div>
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 This example from the `HeroListComponent` template uses three of these forms.
 -->
 그리고 아래 `HeroListComponent` 템플릿에는 3가지 종류의 데이터 바인딩이 사용되었습니다.
 
-<code-example path="architecture/src/app/hero-list.component.1.html" linenums="false" header="src/app/hero-list.component.html (binding)" region="binding"></code-example>
+<code-example path="architecture/src/app/hero-list.component.1.html" header="src/app/hero-list.component.html (binding)" region="binding"></code-example>
 
 <!--
 * The `{{hero.name}}` [*interpolation*](guide/displaying-data#interpolation)
@@ -214,15 +240,20 @@ displays the component's `hero.name` property value within the `<li>` element.
 -->
 * `(click)` 과 같이 [*이벤트 바인딩*](guide/user-input#click) 하면 사용자가 히어로의 이름을 클릭했을 때 컴포넌트의 `selectHero` 메소드를 실행합니다.
 
+<<<<<<< HEAD
 <!--
 Two-way data binding (used mainly in [template-driven forms](guide/forms)) 
 combines property and event binding in a single notation. 
+=======
+Two-way data binding (used mainly in [template-driven forms](guide/forms))
+combines property and event binding in a single notation.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 Here's an example from the `HeroDetailComponent` template that uses two-way data binding with the `ngModel` directive.
 -->
 [템플릿 기반의 폼](guide/forms)에서 많이 사용하는 양방향 데이터 바인딩은 프로퍼티 바인딩과 이벤트 바인딩을 합쳐놓은 문법입니다.
 `HeroDetailComponent`의 템플릿에 히어로의 이름을 양방향 바인딩한다면 `noModel` 디렉티브를 사용해서 다음과 같이 구현할 수 있습니다.
 
-<code-example path="architecture/src/app/hero-detail.component.html" linenums="false" header="src/app/hero-detail.component.html (ngModel)" region="ngModel"></code-example>
+<code-example path="architecture/src/app/hero-detail.component.html" header="src/app/hero-detail.component.html (ngModel)" region="ngModel"></code-example>
 
 <!--
 In two-way binding, a data property value flows to the input box from the component as with property binding.
@@ -238,24 +269,36 @@ from the root of the application component tree through all child components.
 -->
 이 과정은 JavaScript 이벤트 싸이클이 실행될 때마다 애플리케이션 최상위 컴포넌트부터 트리를 따라 자식 컴포넌트를 순회하면서 Angular가 자동으로 처리합니다.
 
+<<<<<<< HEAD
 <figure>
 <!--
   <img src="generated/images/guide/architecture/component-databinding.png" alt="Data Binding" class="left">
 -->
   <img src="generated/images/guide/architecture/component-databinding.png" alt="데이터 바인딩" class="left">
 </figure>
+=======
+<div class="lightbox">
+  <img src="generated/images/guide/architecture/component-databinding.png" alt="Data Binding" class="left">
+</div>
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 Data binding plays an important role in communication between a template and its component, and is also important for communication between parent and child components.
 -->
 데이터 바인딩은 템플릿과 컴포넌트 사이에 데이터를 주고 받을 때 사용하며, 부모 컴포넌트와 자식 컴포넌트 사이에 데이터를 주고 받을 때도 사용하기 때문에 아주 중요합니다.
 
+<<<<<<< HEAD
 <figure>
 <!--
   <img src="generated/images/guide/architecture/parent-child-binding.png" alt="Parent/Child binding" class="left">
 -->
   <img src="generated/images/guide/architecture/parent-child-binding.png" alt="부모/자식 바인딩" class="left">
 </figure>
+=======
+<div class="lightbox">
+  <img src="generated/images/guide/architecture/parent-child-binding.png" alt="Parent/Child binding" class="left">
+</div>
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 ### Pipes
@@ -328,13 +371,17 @@ Angular의 템플릿은 *동적*입니다. 템플릿이 렌더링 될 때 *디�
 <!--
 A component is technically a directive.
 However, components are so distinctive and central to Angular applications that Angular
-defines the `@Component()` decorator, which extends the `@Directive()` decorator with 
+defines the `@Component()` decorator, which extends the `@Directive()` decorator with
 template-oriented features.
 -->
 컴포넌트도 문법적으로는 디렉티브의 한 종류입니다. 하지만 컴포넌트는 Angular 애플리케이션의 구성요소로써 중요한 역할을 하기 때문에, `@Directive()` 데코레이터에 템플릿 관련 기능을 추가한 `@Component()` 데코레이터를 대신 사용합니다.
 
+<<<<<<< HEAD
 <!--
 In addition to components, there are two other kinds of directives:  *structural* and *attribute*. 
+=======
+In addition to components, there are two other kinds of directives:  *structural* and *attribute*.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 Angular defines a number of directives of both kinds, and you can define your own using the  `@Directive()` decorator.
 -->
 컴포넌트의 일반적인 내용 외에, 디렉티브는 *구조* 디렉티브와 *어트리뷰트* 디렉티브로 나뉘어 집니다.
@@ -350,13 +397,17 @@ Just as for components, the metadata for a directive associates the decorated cl
 -->
 #### 구조 디렉티브
 
+<<<<<<< HEAD
 <!--
 *Structural directives* alter layout by adding, removing, and replacing elements in the DOM. 
+=======
+*Structural directives* alter layout by adding, removing, and replacing elements in the DOM.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 The example template uses two built-in structural directives to add application logic to how the view is rendered.
 -->
 구조 디렉티브는 DOM 엘리먼트를 추가하거나 제거, 치환하는 용도로 사용합니다. Angular에서 제공하는 구조 디렉티브를 템플릿에 사용하는 예제 코드를 확인해 보세요:
 
-<code-example path="architecture/src/app/hero-list.component.1.html" linenums="false" header="src/app/hero-list.component.html (structural)" region="structural"></code-example>
+<code-example path="architecture/src/app/hero-list.component.1.html" header="src/app/hero-list.component.html (structural)" region="structural"></code-example>
 
 <!--
 * [`*ngFor`](guide/displaying-data#ngFor) is an iterative; it tells Angular to stamp out one `<li>` per hero in the `heroes` list.
@@ -382,7 +433,7 @@ The `ngModel` directive, which implements two-way data binding, is an example of
 -->
 `ngModel` 디렉티브는 양방향 바인딩에 사용되며, 어트리뷰트 디렉티브의 한 종류입니다. `ngModel` 디렉티브는 일반적으로 `<input>`과 같은 입력 필드의 동작을 변형시켜 컴포넌트 프로퍼티의 값을 화면에 표시하거나 값이 변경되는 이벤트에 반응합니다.
 
-<code-example path="architecture/src/app/hero-detail.component.html" linenums="false" header="src/app/hero-detail.component.html (ngModel)" region="ngModel"></code-example>
+<code-example path="architecture/src/app/hero-detail.component.html" header="src/app/hero-detail.component.html (ngModel)" region="ngModel"></code-example>
 
 <!--
 Angular has more pre-defined directives that either alter the layout structure

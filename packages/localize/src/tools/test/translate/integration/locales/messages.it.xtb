@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE translationbundle [<!ELEMENT translationbundle (translation)*>
+  <!ATTLIST translationbundle lang CDATA #REQUIRED>
+
+  <!ELEMENT translation (#PCDATA|ph)*>
+  <!ATTLIST translation id CDATA #REQUIRED>
+
+  <!ELEMENT ph EMPTY>
+  <!ATTLIST ph name CDATA #REQUIRED>
+]>
+<translationbundle lang="it">
+  <translation id="3291030485717846467">Ciao, <ph name="PH"/>!</translation>
+</translationbundle>

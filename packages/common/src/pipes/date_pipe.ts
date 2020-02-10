@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
+import {Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
 import {formatDate} from '../i18n/format_date';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
@@ -150,7 +150,6 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  * @publicApi
  */
 // clang-format on
-@Injectable()
 @Pipe({name: 'date', pure: true})
 export class DatePipe implements PipeTransform {
   constructor(@Inject(LOCALE_ID) private locale: string) {}
@@ -161,8 +160,8 @@ export class DatePipe implements PipeTransform {
    * @param format The date/time components to include, using predefined options or a
    * custom format string.
    * @param timezone A timezone offset (such as `'+0430'`), or a standard
-   * UTC/GMT or continental US timezone abbreviation. Default is
-   * the local system timezone of the end-user's machine.
+   * UTC/GMT or continental US timezone abbreviation.
+   * When not supplied, uses the end-user's local system timezone.
    * @param locale A locale code for the locale format rules to use.
    * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
    * See [Setting your app locale](guide/i18n#setting-up-the-locale-of-your-app).

@@ -52,7 +52,7 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
    */
   function fakeAsync(fn: Function): (...args: any[]) => any {
     // Not using an arrow function to preserve context passed from call site
-    return function(...args: any[]) {
+    return function(this: unknown, ...args: any[]) {
       const proxyZoneSpec = ProxyZoneSpec.assertPresent();
       if (Zone.current.get('FakeAsyncTestZoneSpec')) {
         throw new Error('fakeAsync() calls can not be nested');

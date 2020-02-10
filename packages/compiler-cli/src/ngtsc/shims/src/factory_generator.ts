@@ -5,15 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-import * as path from 'path';
 import * as ts from 'typescript';
 
+import {AbsoluteFsPath, absoluteFrom, basename} from '../../file_system';
 import {ImportRewriter} from '../../imports';
-import {AbsoluteFsPath} from '../../path/src/types';
 import {isNonDeclarationTsPath} from '../../util/src/typescript';
 
-import {ShimGenerator} from './host';
+import {ShimGenerator} from './api';
 import {generatedModuleName} from './util';
 
 const TS_DTS_SUFFIX = /(\.d)?\.ts$/;
@@ -24,9 +22,11 @@ const STRIP_NG_FACTORY = /(.*)NgFactory$/;
  * class of an input ts.SourceFile.
  */
 export class FactoryGenerator implements ShimGenerator {
-  private constructor(private map: Map<string, string>) {}
+  private constructor(private map: Map<AbsoluteFsPath, AbsoluteFsPath>) {}
 
-  get factoryFileMap(): Map<string, string> { return this.map; }
+  get factoryFileMap(): Map<AbsoluteFsPath, AbsoluteFsPath> { return this.map; }
+
+  get factoryFileNames(): AbsoluteFsPath[] { return Array.from(this.map.keys()); }
 
   recognize(fileName: AbsoluteFsPath): boolean { return this.map.has(fileName); }
 
@@ -38,8 +38,7 @@ export class FactoryGenerator implements ShimGenerator {
       return null;
     }
 
-    const relativePathToSource =
-        './' + path.posix.basename(original.fileName).replace(TS_DTS_SUFFIX, '');
+    const relativePathToSource = './' + basename(original.fileName).replace(TS_DTS_SUFFIX, '');
     // Collect a list of classes that need to have factory types emitted for them. This list is
     // overly broad as at this point the ts.TypeChecker hasn't been created, and can't be used to
     // semantically understand which decorated types are actually decorated with Angular decorators.
@@ -62,8 +61,12 @@ export class FactoryGenerator implements ShimGenerator {
     let comment: string = '';
     if (original.statements.length > 0) {
       const firstStatement = original.statements[0];
-      if (firstStatement.getLeadingTriviaWidth() > 0) {
-        comment = firstStatement.getFullText().substr(0, firstStatement.getLeadingTriviaWidth());
+      // Must pass SourceFile to getLeadingTriviaWidth() and getFullText(), otherwise it'll try to
+      // get SourceFile by recursively looking up the parent of the Node and fail,
+      // because parent is undefined.
+      const leadingTriviaWidth = firstStatement.getLeadingTriviaWidth(original);
+      if (leadingTriviaWidth > 0) {
+        comment = firstStatement.getFullText(original).substr(0, leadingTriviaWidth);
       }
     }
 
@@ -100,12 +103,11 @@ export class FactoryGenerator implements ShimGenerator {
   }
 
   static forRootFiles(files: ReadonlyArray<AbsoluteFsPath>): FactoryGenerator {
-    const map = new Map<AbsoluteFsPath, string>();
+    const map = new Map<AbsoluteFsPath, AbsoluteFsPath>();
     files.filter(sourceFile => isNonDeclarationTsPath(sourceFile))
         .forEach(
-            sourceFile => map.set(
-                AbsoluteFsPath.fromUnchecked(sourceFile.replace(/\.ts$/, '.ngfactory.ts')),
-                sourceFile));
+            sourceFile =>
+                map.set(absoluteFrom(sourceFile.replace(/\.ts$/, '.ngfactory.ts')), sourceFile));
     return new FactoryGenerator(map);
   }
 }

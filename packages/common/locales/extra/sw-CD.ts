@@ -14,12 +14,12 @@ const u = undefined;
 export default [
   [
     ['usiku', 'mchana', 'alfajiri', 'asubuhi', 'mchana', 'jioni', 'usiku'],
-    ['saa sita za usiku', 'saa sita za mchana', 'alfajiri', 'asubuhi', 'mchana', 'jioni', 'usiku'],
-    u
+    ['saa sita za usiku', 'adhuhuri', 'alfajiri', 'asubuhi', 'mchana', 'jioni', 'usiku'],
+    ['saa sita za usiku', 'saa sita za mchana', 'alfajiri', 'asubuhi', 'mchana', 'jioni', 'usiku']
   ],
   [
     ['saa sita za usiku', 'saa sita za mchana', 'alfajiri', 'asubuhi', 'mchana', 'jioni', 'usiku'],
-    ['saa sita za usiku', 'saa sita za mchana', 'alfajiri', 'asubuhi', 'alasiri', 'jioni', 'usiku'],
+    ['saa sita za usiku', 'adhuhuri', 'alfajiri', 'asubuhi', 'alasiri', 'jioni', 'usiku'],
     ['saa sita za usiku', 'saa sita za mchana', 'alfajiri', 'asubuhi', 'mchana', 'jioni', 'usiku']
   ],
   [

@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵgetDOM as getDOM} from '@angular/common';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomEventsPlugin} from '@angular/platform-browser/src/dom/events/dom_events';
 import {EventManager, EventManagerPlugin} from '@angular/platform-browser/src/dom/events/event_manager';
-import {el} from '../../../testing/src/browser_util';
+import {createMouseEvent, el} from '../../../testing/src/browser_util';
 
 (function() {
   if (isNode) return;
@@ -20,11 +20,10 @@ import {el} from '../../../testing/src/browser_util';
   let zone: NgZone;
 
   describe('EventManager', () => {
-
     beforeEach(() => {
       doc = getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
       zone = new NgZone({});
-      domEventPlugin = new DomEventsPlugin(doc, zone, null);
+      domEventPlugin = new DomEventsPlugin(doc);
     });
 
     it('should delegate event bindings to plugins that are passed in from the most generic one to the most specific one',
@@ -61,10 +60,10 @@ import {el} from '../../../testing/src/browser_util';
     it('events are caught when fired from a child', () => {
       const element = el('<div><div></div></div>');
       // Workaround for https://bugs.webkit.org/show_bug.cgi?id=122755
-      getDOM().appendChild(doc.body, element);
+      doc.body.appendChild(element);
 
-      const child = getDOM().firstChild(element);
-      const dispatchedEvent = getDOM().createMouseEvent('click');
+      const child = element.firstChild as Element;
+      const dispatchedEvent = createMouseEvent('click');
       let receivedEvent: any /** TODO #9100 */ = null;
       const handler = (e: any /** TODO #9100 */) => { receivedEvent = e; };
       const manager = new EventManager([domEventPlugin], new FakeNgZone());
@@ -76,8 +75,8 @@ import {el} from '../../../testing/src/browser_util';
 
     it('should add and remove global event listeners', () => {
       const element = el('<div><div></div></div>');
-      getDOM().appendChild(doc.body, element);
-      const dispatchedEvent = getDOM().createMouseEvent('click');
+      doc.body.appendChild(element);
+      const dispatchedEvent = createMouseEvent('click');
       let receivedEvent: any /** TODO #9100 */ = null;
       const handler = (e: any /** TODO #9100 */) => { receivedEvent = e; };
       const manager = new EventManager([domEventPlugin], new FakeNgZone());
@@ -96,8 +95,8 @@ import {el} from '../../../testing/src/browser_util';
       const Zone = (window as any)['Zone'];
 
       const element = el('<div><div></div></div>');
-      getDOM().appendChild(doc.body, element);
-      const dispatchedEvent = getDOM().createMouseEvent('click');
+      doc.body.appendChild(element);
+      const dispatchedEvent = createMouseEvent('click');
       let receivedEvent: any /** TODO #9100 */ = null;
       let receivedZone: any = null;
       const handler = (e: any /** TODO #9100 */) => {
@@ -122,8 +121,8 @@ import {el} from '../../../testing/src/browser_util';
       const Zone = (window as any)['Zone'];
 
       const element = el('<div><div></div></div>');
-      getDOM().appendChild(doc.body, element);
-      const dispatchedEvent = getDOM().createMouseEvent('click');
+      doc.body.appendChild(element);
+      const dispatchedEvent = createMouseEvent('click');
       let receivedEvents: any[] /** TODO #9100 */ = [];
       let receivedZones: any[] = [];
       const handler1 = (e: any /** TODO #9100 */) => {
@@ -157,8 +156,8 @@ import {el} from '../../../testing/src/browser_util';
       const Zone = (window as any)['Zone'];
 
       const element = el('<div><div></div></div>');
-      getDOM().appendChild(doc.body, element);
-      const dispatchedEvent = getDOM().createMouseEvent('click');
+      doc.body.appendChild(element);
+      const dispatchedEvent = createMouseEvent('click');
       let receivedEvents: any[] /** TODO #9100 */ = [];
       let receivedZones: any[] = [];
       const handler1 = (e: any /** TODO #9100 */) => {
@@ -193,8 +192,8 @@ import {el} from '../../../testing/src/browser_util';
       const Zone = (window as any)['Zone'];
 
       const element = el('<div><div></div></div>');
-      getDOM().appendChild(doc.body, element);
-      const dispatchedEvent = getDOM().createMouseEvent('click');
+      doc.body.appendChild(element);
+      const dispatchedEvent = createMouseEvent('click');
       let receivedEvents: any[] /** TODO #9100 */ = [];
       let receivedZones: any[] = [];
       let remover1: any = null;
@@ -229,8 +228,8 @@ import {el} from '../../../testing/src/browser_util';
       const Zone = (window as any)['Zone'];
 
       const element = el('<div><div></div></div>');
-      getDOM().appendChild(doc.body, element);
-      const dispatchedEvent = getDOM().createMouseEvent('click');
+      doc.body.appendChild(element);
+      const dispatchedEvent = createMouseEvent('click');
       let receivedEvents: any[] /** TODO #9100 */ = [];
       let receivedZones: any[] = [];
       const handler = (e: any /** TODO #9100 */) => {
@@ -260,8 +259,8 @@ import {el} from '../../../testing/src/browser_util';
       const Zone = (window as any)['Zone'];
 
       const element = el('<div><div></div></div>');
-      getDOM().appendChild(doc.body, element);
-      const dispatchedEvent = getDOM().createMouseEvent('click');
+      doc.body.appendChild(element);
+      const dispatchedEvent = createMouseEvent('click');
       let receivedEvents: any[] /** TODO #9100 */ = [];
       let receivedZones: any[] = [];
       const handler1 = (e: any /** TODO #9100 */) => {
@@ -296,11 +295,11 @@ import {el} from '../../../testing/src/browser_util';
       expect(receivedEvents).toEqual([]);
     });
 
-    it('should run blockListedEvents handler outside of ngZone', () => {
+    it('should run blackListedEvents handler outside of ngZone', () => {
       const Zone = (window as any)['Zone'];
       const element = el('<div><div></div></div>');
-      getDOM().appendChild(doc.body, element);
-      const dispatchedEvent = getDOM().createMouseEvent('scroll');
+      doc.body.appendChild(element);
+      const dispatchedEvent = createMouseEvent('scroll');
       let receivedEvent: any /** TODO #9100 */ = null;
       let receivedZone: any = null;
       const handler = (e: any /** TODO #9100 */) => {
@@ -312,12 +311,44 @@ import {el} from '../../../testing/src/browser_util';
       let remover = manager.addEventListener(element, 'scroll', handler);
       getDOM().dispatchEvent(element, dispatchedEvent);
       expect(receivedEvent).toBe(dispatchedEvent);
-      expect(receivedZone.name).toBe(Zone.root.name);
+      expect(receivedZone.name).not.toEqual('angular');
 
       receivedEvent = null;
       remover && remover();
       getDOM().dispatchEvent(element, dispatchedEvent);
       expect(receivedEvent).toBe(null);
+    });
+
+    it('should only trigger one Change detection when bubbling', (done: DoneFn) => {
+      doc = getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
+      zone = new NgZone({shouldCoalesceEventChangeDetection: true});
+      domEventPlugin = new DomEventsPlugin(doc);
+      const element = el('<div></div>');
+      const child = el('<div></div>');
+      element.appendChild(child);
+      doc.body.appendChild(element);
+      const dispatchedEvent = createMouseEvent('click');
+      let receivedEvents: any = [];
+      let stables: any = [];
+      const handler = (e: any) => { receivedEvents.push(e); };
+      const manager = new EventManager([domEventPlugin], zone);
+      let removerChild: any;
+      let removerParent: any;
+
+      zone.run(() => {
+        removerChild = manager.addEventListener(child, 'click', handler);
+        removerParent = manager.addEventListener(element, 'click', handler);
+      });
+      zone.onStable.subscribe((isStable: any) => { stables.push(isStable); });
+      getDOM().dispatchEvent(child, dispatchedEvent);
+      requestAnimationFrame(() => {
+        expect(receivedEvents.length).toBe(2);
+        expect(stables.length).toBe(1);
+
+        removerChild && removerChild();
+        removerParent && removerParent();
+        done();
+      });
     });
   });
 })();
@@ -332,12 +363,12 @@ class FakeEventManagerPlugin extends EventManagerPlugin {
 
   addEventListener(element: any, eventName: string, handler: Function) {
     this.eventHandler[eventName] = handler;
-    return () => { delete (this.eventHandler[eventName]); };
+    return () => { delete this.eventHandler[eventName]; };
   }
 }
 
 class FakeNgZone extends NgZone {
-  constructor() { super({enableLongStackTrace: false}); }
+  constructor() { super({enableLongStackTrace: false, shouldCoalesceEventChangeDetection: true}); }
   run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T { return fn(); }
   runOutsideAngular(fn: Function) { return fn(); }
 }

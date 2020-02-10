@@ -128,10 +128,41 @@
       "tooltip": "Angular 기초 지식",
       "children": [
         {
+          "title": "Angular Concepts",
+          "tooltip": "Introduction to basic concepts for Angular applications.",
+          "children": [
+            {
+              "url": "guide/architecture",
+              "title": "Intro to Basic Concepts",
+              "tooltip": "Basic building blocks of Angular applications."
+            },
+            {
+              "url": "guide/architecture-modules",
+              "title": "Intro to Modules",
+              "tooltip": "About NgModules."
+            },
+            {
+              "url": "guide/architecture-components",
+              "title": "Intro to Components",
+              "tooltip": "About Components, Templates, and Views."
+            },
+            {
+              "url": "guide/architecture-services",
+              "title": "Intro to Services and DI",
+              "tooltip": "About services and dependency injection."
+            },
+            {
+              "url": "guide/architecture-next-steps",
+              "title": "Next Steps",
+              "tooltip": "Beyond the basics."
+            }
+          ]
+        },
+        {
           "title!": "Tour of Heroes App",
           "title": "히어로들의 여행 앱",
           "tooltip!": "The Tour of Heroes app is used as a reference point in many Angular examples.",
-          "tooltip": "히어로들의 여행 앱을 자세하게 살펴보면서 Angular에 대해 알아봅시다.",
+	  "tooltip": "히어로들의 여행 앱을 자세하게 살펴보면서 Angular에 대해 알아봅시다.",
           "children": [
           {
             "url": "tutorial",
@@ -156,88 +187,46 @@
           },
           {
             "url": "tutorial/toh-pt2",
-            "title!": "2. Displaying a List",
+            "title!": "2. Display a List",
             "title": "2. 목록 표시하기",
-            "tooltip!": "Part 2: Build a master/detail page with a list of heroes.",
+            "tooltip": "Part 2: Build a master/detail page with a list of heroes.",
             "tooltip": "2단계: 히어로의 목록을 표시하는 마스터/상세정보 페이지를 만들어 봅시다."
           },
           {
             "url": "tutorial/toh-pt3",
-            "title!": "3. Master/Detail Components",
-            "title": "3. 마스터/상세정보 컴포넌트",
-            "tooltip!": "Part 3: Refactor the master/detail view into separate components.",
+            "title!": "3. Create a Feature Component",
+            "title": "3. 컴포넌트 만들기",
+            "tooltip!": "Part 3: Refactor the master/detail views into separate components.",
             "tooltip": "3단계: 마스터/상세정보 화면을 개별 컴포넌트로 리팩토링해 봅시다."
           },
           {
             "url": "tutorial/toh-pt4",
-            "title!": "4. Services",
-            "title": "4. 서비스",
+            "title!": "4. Add Services",
+            "title": "4. 서비스 추가하기",
             "tooltip!": "Part 4: Create a reusable service to manage hero data.",
             "tooltip": "4단계: 히어로 데이터를 처리하는 로직은 재사용할 수 있게 서비스로 만들어 봅시다."
           },
           {
             "url": "tutorial/toh-pt5",
-            "title!": "5. Routing",
-            "title": "5. 라우팅",
+            "title!": "5. Add In-app Navigation",
+            "title": "5. 인앱 네비게이션 추가하기",
             "tooltip!": "Part 5: Add the Angular router and navigate among the views.",
-            "tooltip": "5단계: Angular 라우터를 추가하고 화면을 전환해 봅시다."
+            "tooltip": ": Angular 라우터를 추가하고 화면을 전환해 봅시다."
           },
           {
             "url": "tutorial/toh-pt6",
-            "title": "6. HTTP",
+            "title!": "6. Get Data from a Server",
+            "title": "6. 서버에서 데이터 받아오기",
             "tooltip!": "Part 6: Use HTTP to retrieve and save hero data.",
             "tooltip": "6단계: HTTP 통신으로 히어로 데이터를 가져오고 저장해 봅시다."
           }
           ]
         },
         {
-          "title!": "Architecture",
-          "title": "아키텍처",
-          "tooltip!": "The basic building blocks of Angular applications.",
-          "tooltip": "Angular 애플리케이션을 구성하는 기본 요소에 대해 알아봅시다.",
-          "children": [
-            {
-              "url": "guide/architecture",
-              "title!": "Architecture Overview",
-              "title": "개요",
-              "tooltip!": "Basic building blocks of Angular applications.",
-              "tooltip": "Angular 애플리케이션을 구성하는 기본 요소"
-            },
-            {
-              "url": "guide/architecture-modules",
-              "title!": "Intro to Modules",
-              "title": "모듈",
-              "tooltip!": "About NgModules.",
-              "tooltip": "NgModule 소개"
-            },
-            {
-              "url": "guide/architecture-components",
-              "title!": "Intro to Components",
-              "title": "컴포넌트",
-              "tooltip!": "About Components, Templates, and Views.",
-              "tooltip": "컴포넌트, 템플릿, 뷰"
-            },
-            {
-              "url": "guide/architecture-services",
-              "title!": "Intro to Services and DI",
-              "title": "서비스, 의존성 주입",
-              "tooltip!": "About services and dependency injection.",
-              "tooltip": "서비스와 의존성 주입"
-            },
-            {
-              "url": "guide/architecture-next-steps",
-              "title!": "Next Steps",
-              "title": "다음 단계",
-              "tooltip!": "Beyond the basics.",
-              "tooltip": "심화"
-            }
-          ]
-        },
-        {
           "title!": "Components & Templates",
-	        "title": "컴포넌트 & 템플릿",
+          "title": "컴포넌트 & 템플릿",
           "tooltip!": "Building dynamic views with data binding",
-          "tooltip": "데이터 바인딩으로 뷰를 동적으로 구성해 보세요.",
+          "tooltip": "데이터 바인딩을 활용해서 살아 움직이는 뷰 만들기",
           "children": [
             {
               "url": "guide/displaying-data",
@@ -282,17 +271,16 @@
 	            "tooltip": "CSS 스타일을 추가해서 컴포넌트를 꾸밀 수 있습니다."
             },
             {
-              "url": "guide/elements",
-              "title": "Angular Elements",
-              "tooltip!": "Convert components to Custom Elements.",
-              "tooltip": "컴포넌트를 커스텀 엘리먼트로 활용하세요."
-            },
-            {
               "url": "guide/dynamic-component-loader",
               "title!": "Dynamic Components",
-	            "title": "동적 컴포넌트",
+              "title": "동적 컴포넌트",
               "tooltip!": "Load components dynamically.",
               "tooltip": "컴포넌트를 동적으로 불러올 수 있습니다."
+            },
+            {
+              "url": "guide/elements",
+              "title": "Angular Elements",
+              "tooltip": "Convert components to Custom Elements."
             },
             {
               "url": "guide/attribute-directives",
@@ -399,15 +387,8 @@
           ]
         },
         {
-          "url": "guide/bootstrapping",
-          "title!": "Bootstrapping",
-          "title": "부트스트랩",
-          "tooltip!": "Tell Angular how to construct and bootstrap the app in the root \"AppModule\".",
-          "tooltip": "Angular가 \"AppModule\"을 어떻게 구성하고 실행하는지 알아봅니다."
-        },
-        {
-          "title": "NgModule",
-          "tooltip": "NgModule",
+          "title": "NgModules",
+          "tooltip": "NgModules.",
           "children": [
             {
               "url": "guide/ngmodules",
@@ -422,6 +403,11 @@
               "title": "JS 모듈 vs NgModule",
               "tooltip!": "Differentiate between JavaScript modules and NgModules.",
               "tooltip": "JavaScript 모듈과 NgModule의 차이점을 알아봅니다."
+            },
+            {
+              "url": "guide/bootstrapping",
+              "title": "App Root NgModule",
+              "tooltip": "Tell Angular how to construct and bootstrap the app in the root \"AppModule\"."
             },
             {
               "url": "guide/frequent-ngmodules",
@@ -613,9 +599,14 @@
           "tooltip": "Translate the app's template text into multiple languages."
         },
         {
-          "!title": "Service Workers & PWA",
+          "url": "guide/accessibility",
+          "title": "Accessibility",
+          "tooltip": "Design apps to be accessible to all users."
+        },
+        {
+          "title!": "Service Workers & PWA",
           "title": "서비스 워커 & PWA",
-          "!tooltip": "Angular service workers: Controlling caching of application resources.",
+          "tooltip!": "Angular service workers: Controlling caching of application resources.",
           "tooltip": "Angular 서비스 워커: 애플리케이션 리소스를 캐싱할 수 있습니다.",
           "children": [
             {
@@ -675,6 +666,12 @@
           "tooltip!": "Incrementally upgrade an AngularJS application to Angular.",
           "tooltip": "AngularJS 애플리케이션을 Angular로 업그레이드 하세요.",
           "children": [
+            {
+              "url": "guide/upgrade-setup",
+              "title": "Setup for Upgrading from AngularJS",
+              "tooltip": "Use code from the Angular QuickStart seed as part of upgrading from AngularJS.",
+              "hidden": true
+            },
             {
               "url": "guide/upgrade",
               "title!": "Upgrading Instructions",
@@ -764,12 +761,6 @@
           "tooltip": "빌더를 사용해서 Angular CLI를 커스터마이징 해보세요."
         },
         {
-          "url": "guide/ivy",
-          "title": "Angular Ivy",
-          "tooltip!": "Opting into Angular Ivy with Angular CLI.",
-          "tooltip": "Angular CLI를 사용해서 Angular Ivy를 도입해 보세요."
-        },
-        {
           "url": "guide/web-worker",
           "title!": "Web Workers",
           "title": "웹 워커",
@@ -785,18 +776,39 @@
       "tooltip": "빌드, 테스트, 배포 과정에 대해 설명합니다.",
       "children": [
         {
-          "url": "guide/setup",
+          "url": "guide/upgrade-setup",
           "title": "Upgrade setup",
           "tooltip": "How to set up the Angular QuickStart seed in the context of upgrading from AngularJS.",
           "hidden": true
         },
         {
-          "url": "guide/aot-compiler",
-          "!title": "Ahead-of-Time Compilation",
-          "title": "AOT 컴파일러",
-          "!tooltip": "Learn why and how to use the Ahead-of-Time (AOT) compiler.",
-          "tooltip": "AOT 컴파일러를 사용하는 이유와 활용 방법에 대해 안내합니다."
-        },
+          "title": "AOT Compiler",
+          "tooltip": "Understanding ahead-of-time compilation.",
+          "children": [
+            {
+              "url": "guide/aot-compiler",
+              "title!": "Ahead-of-Time Compilation",
+              "title": "Ahead-of-time 컴파일러",
+              "tooltip!": "Learn why and how to use the Ahead-of-Time (AOT) compiler.",
+              "tooltip": "AOT 컴파일러를 사용하는 이유와 활용 방법에 대해 안내합니다."
+            },
+            {
+              "url": "guide/angular-compiler-options",
+              "title": "Angular Compiler Options",
+              "tooltip": "Configuring AOT compilation."
+           },
+           {
+              "url": "guide/aot-metadata-errors",
+              "title": "AOT Metadata Errors",
+              "tooltip": "Troubleshooting AOT compilation."
+           },
+           {
+            "url": "guide/template-typecheck",
+            "title": "Template Type-checking",
+            "tooltip": "Template type-checking in Angular."
+         }
+        ]
+      },
         {
           "url": "guide/build",
           "!title": "Building & Serving",
@@ -912,11 +924,21 @@
           "tooltip": "Angular 버전 정책, 릴리즈 주기, 지원 정책, 지원 중단 정책에 대해 안내합니다."
         },
         {
+          "url": "guide/updating-to-version-9",
+          "title": "Updating to Version 9",
+          "tooltip": "Support for updating your application from version 8 to 9."
+        },
+        {
           "url": "guide/deprecations",
           "title!": "Deprecations",
           "title": "지원 중단 기능",
-          "tooltip!": "Summary of Angular APIs and features that are deprecated.",
+          "tooltip": "Summary of Angular APIs and features that are deprecated.",
           "tooltip": "지원이 중단되는 Angular API와 기능에 대해 알아봅시다."
+        },
+        {
+          "url": "guide/ivy",
+          "title": "Angular Ivy",
+          "tooltip": "About the Angular Ivy compilation and rendering pipeline."
         }
       ]
     },
@@ -1091,12 +1113,12 @@
       "title": "다른 언어",
       "children": [
         {
-          "title": "English",
-          "url": "https://angular.io/"
+          "title": "简体中文版",
+          "url": "https://angular.cn/"
         },
         {
-          "title": "中文版",
-          "url": "https://angular.cn/"
+          "title": "正體中文版",
+          "url": "https://angular.tw/"
         },
         {
           "title": "日本語版",
@@ -1110,6 +1132,10 @@
     }
   ],
   "docVersions": [
+    {
+      "title": "v8",
+      "url": "https://v8.angular.io/"
+    },
     {
       "title": "v7",
       "url": "https://v7.angular.io/"

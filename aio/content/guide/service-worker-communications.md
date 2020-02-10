@@ -56,7 +56,7 @@ The two update events, `available` and `activated`, are `Observable` properties 
 -->
 업데이트와 관련된 이벤트 중 `available` 이벤트와 `activated` 이벤트는 `SwUpdate`의 프로퍼티로 제공되며, 모두 `Observable` 타입입니다:
 
-<code-example path="service-worker-getting-started/src/app/log-update.service.ts" linenums="false" header="log-update.service.ts" region="sw-update"> </code-example>
+<code-example path="service-worker-getting-started/src/app/log-update.service.ts" header="log-update.service.ts" region="sw-update"></code-example>
 
 <!--
 You can use these events to notify the user of a pending update or to refresh their pages when the code they are running is out of date.
@@ -75,7 +75,11 @@ Do this with the `checkForUpdate()` method:
 -->
 서버에 새로운 애플리케이션이 배포되었는지 서비스 워커가 확인하게 할 수 있습니다. 이 동작은 사이트를 업데이트하는 주기에 따라 매번 실행되게 할 수도 있고, 일정 주기로 실행하게 할 수도 있습니다.
 
+<<<<<<< HEAD
 새로운 앱 버전이 있는지 확인하려면 `checkForUpdate()` 메소드를 실행하면 됩니다:
+=======
+<code-example path="service-worker-getting-started/src/app/check-for-update.service.ts" header="check-for-update.service.ts"></code-example>
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <code-example path="service-worker-getting-started/src/app/check-for-update.service.ts" linenums="false" header="check-for-update.service.ts"> </code-example>
 
@@ -96,6 +100,7 @@ You can avoid that by waiting for the app to stabilize first, before starting to
 (as shown in the example above).
 
 Note that this is true for any kind of polling done by your application.
+<<<<<<< HEAD
 Check the {@link ApplicationRef#isStable isStable} documentation for more information. 
 -->
 서비스 워커가 애플리케이션 초기 렌더링에 영향을 주지 않으려면 `ServiceWorkerModule`은 애플리케이션이 안정화된 이후에 로드되고 실행되어야 합니다.
@@ -105,6 +110,9 @@ Check the {@link ApplicationRef#isStable isStable} documentation for more inform
 
 애플리케이션에서 사용하는 폴링 로직은 모두 이런 방식으로 작성되어야 합니다.
 더 자세한 내용은 {@link ApplicationRef#isStable isStable} 문서를 참고하세요.
+=======
+Check the {@link ApplicationRef#isStable isStable} documentation for more information.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 </div>
 
@@ -118,7 +126,7 @@ If the current tab needs to be updated to the latest app version immediately, it
 -->
 현재 탭에서 실행하고 있는 앱을 최신 버전으로 즉시 전환하려면 `activateUpdate()` 메소드를 실행하면 됩니다:
 
-<code-example path="service-worker-getting-started/src/app/prompt-update.service.ts" linenums="false" header="prompt-update.service.ts" region="sw-activate"> </code-example>
+<code-example path="service-worker-getting-started/src/app/prompt-update.service.ts" header="prompt-update.service.ts" region="sw-activate"></code-example>
 
 <!--
 Doing this could break lazy-loading into currently running apps, especially if the lazy-loaded chunks use filenames with hashes, which change every version.

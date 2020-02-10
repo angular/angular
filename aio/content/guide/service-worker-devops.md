@@ -335,6 +335,9 @@ There are two possible degraded states:
 clean copy of the latest known version of the app. Older cached
 versions are safe to use, so existing tabs continue to run from
 cache, but new loads of the app will be served from the network.
+The service worker will try to recover from this state when a new
+version of the application is detected and installed (that is,
+when a new `ngsw.json` is available).
 
 * `SAFE_MODE`: the service worker cannot guarantee the safety of
 using cached data. Either an unexpected error occurred or all
@@ -350,7 +353,16 @@ error that caused the service worker to enter the degraded state.
 
 * `EXISTING_CLIENTS_ONLY`: 클라이언트에 저장된 서비스 워커가 최신버전이 아니라는 것을 의미합니다. 이미 캐싱된 버전의 앱은 사용하는 데에 문제가 없고, 이미 탭에서 실행되고 있는 앱도 계속 사용할 수 있지만, 새로운 탭에서 실행되는 앱은 네트워크로 직접 받아오는 최신 버전으로 실행될 것입니다.
 
+<<<<<<< HEAD
 * `SAFE_MODE`: 서비스 워커가 캐싱된 데이터의 안전성을 보장할 수 없는 상태를 의미합니다. 다르게 표현하면, 캐싱된 앱을 실행하다가 에러가 발생했거나 캐싱된 앱 버전 자체가 유효하지 않은 상태를 의미합니다. 앱에서 주고받는 모든 트래픽은 캐싱된 앱이 아니라 네트워크를 통해 전송되며, 서비스 워커의 실행은 최소화됩니다.
+=======
+Both states are temporary; they are saved only for the lifetime of the [ServiceWorker
+instance](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerGlobalScope).
+The browser sometimes terminates an idle service worker to conserve memory and
+processor power, and creates a new service worker instance in response to
+network events. The new instance starts in the `NORMAL` mode, regardless of the
+state of the previous instance.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 비정상 상태로 앱을 실행한 후에 디버깅 페이지에 접속하면 현재 앱에서 발생한 문제들을 화면에서 확인할 수 있습니다.
 
@@ -532,11 +544,32 @@ the past on your site.
 -->
 `@angular/service-worker` NPM 패키지에는 `safety-worker.js` 라는 작은 스크립트 파일이 하나 존재하는데, 이 파일은 브라우저에서 서비스 워커를 제거하는 용도로 사용됩니다. 이 스크립트 파일을 실행하면 클라이언트 페이지에 이미 설치된 서비스 워커를 안전하게 제거할 수 있습니다.
 
+<<<<<<< HEAD
 하지만 이 서비스 워커는 개발자가 브라우저에 직접 등록할 수 없습니다. 왜냐하면 `index.html` 파일에서 다른 서비스 워커를 등록하면 다른 서비스 워커가 이전에 캐싱했던 내용을 확인할 수 없기 때문입니다. `safety-worker.js` 파일은 브라우저에서 제거하려는 서비스 워커 스크립트의 URL 대신 사용하도록 지정해야 하며, 이전에 동작하던 서비스 워커가 완전히 제거될 때까지 유지되어야 합니다. 다르게 표현하면, 서비스 워커를 완벽하게 제거하려면 이전에 가리키던 서비스 워커 파일의 URL 대신 `safety-worker.js` 파일을 계속 가리켜야 합니다.
 
 이 스크립트를 사용하면 `@angular/service-worker`가 등록한 서비스 워커와 다른 방식으로 사이트에 등록된 서비스 워커도 모두 비활성화할 수 있습니다.
 
 <!--
+=======
+### Changing your app's location
+
+It is important to note that service workers don't work behind redirect. You 
+may have already encountered the error `The script resource is behind a redirect, which is disallowed`.
+
+This can be a problem if you have to change your app's location. If you setup 
+a redirect from the old location (for example `example.com`) to the new 
+location (for example `www.example.com`) the worker will stop working. 
+Also, the redirect won't even trigger for users who are loading the site 
+entirely from Service Worker. The old worker (registered at `example.com`)
+ tries to update and sends requests to the old location `example.com` which 
+ get redirected to the new location `www.example.com` and create the error 
+`The script resource is behind a redirect, which is disallowed`.
+
+To remedy this, you may need to kill the old worker using one of the above
+techniques ([Fail-safe](#fail-safe) or [Safety Worker](#safety-worker)).
+
+
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 ## More on Angular service workers
 -->
 ## 더 알아보기

@@ -92,7 +92,7 @@ describe('NotificationComponent', () => {
   it('should update localStorage key when dismiss is called', () => {
     configTestingModule();
     createComponent();
-    const setItemSpy: jasmine.Spy = TestBed.get(WindowToken).localStorage.setItem;
+    const setItemSpy: jasmine.Spy = (TestBed.inject(WindowToken) as MockWindow).localStorage.setItem;
     component.dismiss();
     expect(setItemSpy).toHaveBeenCalledWith('aio-notification/survey-january-2018', 'hide');
   });
@@ -105,7 +105,7 @@ describe('NotificationComponent', () => {
 
   it('should not show the notification if the there is a "hide" flag in localStorage', () => {
     configTestingModule();
-    const getItemSpy: jasmine.Spy = TestBed.get(WindowToken).localStorage.getItem;
+    const getItemSpy: jasmine.Spy = (TestBed.inject(WindowToken) as MockWindow).localStorage.getItem;
     getItemSpy.and.returnValue('hide');
     createComponent();
     expect(getItemSpy).toHaveBeenCalledWith('aio-notification/survey-january-2018');

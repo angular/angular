@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ASTWithSource, AstVisitor, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '@angular/compiler';
+import {AST, ASTWithSource, AstVisitor, Binary, BindingPipe, Chain, Conditional, EmptyExpr, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {TypeCheckingConfig} from './api';
+import {addParseSpanInfo, ignoreDiagnostics, wrapForDiagnostics} from './diagnostics';
 
-const NULL_AS_ANY =
+export const NULL_AS_ANY =
     ts.createAsExpression(ts.createNull(), ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
 const UNDEFINED = ts.createIdentifier('undefined');
 
@@ -40,7 +41,7 @@ const BINARY_OPS = new Map<string, ts.SyntaxKind>([
  * AST.
  */
 export function astToTypescript(
-    ast: AST, maybeResolve: (ast: AST) => ts.Expression | null,
+    ast: AST, maybeResolve: (ast: AST) => (ts.Expression | null),
     config: TypeCheckingConfig): ts.Expression {
   const translator = new AstTranslator(maybeResolve, config);
   return translator.translate(ast);
@@ -48,7 +49,7 @@ export function astToTypescript(
 
 class AstTranslator implements AstVisitor {
   constructor(
-      private maybeResolve: (ast: AST) => ts.Expression | null,
+      private maybeResolve: (ast: AST) => (ts.Expression | null),
       private config: TypeCheckingConfig) {}
 
   translate(ast: AST): ts.Expression {
@@ -56,6 +57,11 @@ class AstTranslator implements AstVisitor {
     // which would prevent any custom resolution through `maybeResolve` for that node.
     if (ast instanceof ASTWithSource) {
       ast = ast.ast;
+    }
+
+    // The `EmptyExpr` doesn't have a dedicated method on `AstVisitor`, so it's special cased here.
+    if (ast instanceof EmptyExpr) {
+      return UNDEFINED;
     }
 
     // First attempt to let any custom resolution logic provide a translation for the given node.
@@ -68,25 +74,40 @@ class AstTranslator implements AstVisitor {
   }
 
   visitBinary(ast: Binary): ts.Expression {
-    const lhs = this.translate(ast.left);
-    const rhs = this.translate(ast.right);
+    const lhs = wrapForDiagnostics(this.translate(ast.left));
+    const rhs = wrapForDiagnostics(this.translate(ast.right));
     const op = BINARY_OPS.get(ast.operation);
     if (op === undefined) {
       throw new Error(`Unsupported Binary.operation: ${ast.operation}`);
     }
-    return ts.createBinary(lhs, op as any, rhs);
+    const node = ts.createBinary(lhs, op as any, rhs);
+    addParseSpanInfo(node, ast.sourceSpan);
+    return node;
   }
 
-  visitChain(ast: Chain): never { throw new Error('Method not implemented.'); }
+  visitChain(ast: Chain): ts.Expression {
+    const elements = ast.expressions.map(expr => this.translate(expr));
+    const node = wrapForDiagnostics(ts.createCommaList(elements));
+    addParseSpanInfo(node, ast.sourceSpan);
+    return node;
+  }
 
   visitConditional(ast: Conditional): ts.Expression {
     const condExpr = this.translate(ast.condition);
     const trueExpr = this.translate(ast.trueExp);
     const falseExpr = this.translate(ast.falseExp);
-    return ts.createParen(ts.createConditional(condExpr, trueExpr, falseExpr));
+    const node = ts.createParen(ts.createConditional(condExpr, trueExpr, falseExpr));
+    addParseSpanInfo(node, ast.sourceSpan);
+    return node;
   }
 
-  visitFunctionCall(ast: FunctionCall): never { throw new Error('Method not implemented.'); }
+  visitFunctionCall(ast: FunctionCall): ts.Expression {
+    const receiver = wrapForDiagnostics(this.translate(ast.target !));
+    const args = ast.args.map(expr => this.translate(expr));
+    const node = ts.createCall(receiver, undefined, args);
+    addParseSpanInfo(node, ast.sourceSpan);
+    return node;
+  }
 
   visitImplicitReceiver(ast: ImplicitReceiver): never {
     throw new Error('Method not implemented.');
@@ -102,16 +123,29 @@ class AstTranslator implements AstVisitor {
   }
 
   visitKeyedRead(ast: KeyedRead): ts.Expression {
-    const receiver = this.translate(ast.obj);
+    const receiver = wrapForDiagnostics(this.translate(ast.obj));
     const key = this.translate(ast.key);
-    return ts.createElementAccess(receiver, key);
+    const node = ts.createElementAccess(receiver, key);
+    addParseSpanInfo(node, ast.sourceSpan);
+    return node;
   }
 
-  visitKeyedWrite(ast: KeyedWrite): never { throw new Error('Method not implemented.'); }
+  visitKeyedWrite(ast: KeyedWrite): ts.Expression {
+    const receiver = wrapForDiagnostics(this.translate(ast.obj));
+    const left = ts.createElementAccess(receiver, this.translate(ast.key));
+    // TODO(joost): annotate `left` with the span of the element access, which is not currently
+    //  available on `ast`.
+    const right = this.translate(ast.value);
+    const node = wrapForDiagnostics(ts.createBinary(left, ts.SyntaxKind.EqualsToken, right));
+    addParseSpanInfo(node, ast.sourceSpan);
+    return node;
+  }
 
   visitLiteralArray(ast: LiteralArray): ts.Expression {
     const elements = ast.expressions.map(expr => this.translate(expr));
-    return ts.createArrayLiteral(elements);
+    const node = ts.createArrayLiteral(elements);
+    addParseSpanInfo(node, ast.sourceSpan);
+    return node;
   }
 
   visitLiteralMap(ast: LiteralMap): ts.Expression {
@@ -119,57 +153,84 @@ class AstTranslator implements AstVisitor {
       const value = this.translate(ast.values[idx]);
       return ts.createPropertyAssignment(ts.createStringLiteral(key), value);
     });
-    return ts.createObjectLiteral(properties, true);
+    const node = ts.createObjectLiteral(properties, true);
+    addParseSpanInfo(node, ast.sourceSpan);
+    return node;
   }
 
   visitLiteralPrimitive(ast: LiteralPrimitive): ts.Expression {
+    let node: ts.Expression;
     if (ast.value === undefined) {
-      return ts.createIdentifier('undefined');
+      node = ts.createIdentifier('undefined');
     } else if (ast.value === null) {
-      return ts.createNull();
+      node = ts.createNull();
     } else {
-      return ts.createLiteral(ast.value);
+      node = ts.createLiteral(ast.value);
     }
+    addParseSpanInfo(node, ast.sourceSpan);
+    return node;
   }
 
   visitMethodCall(ast: MethodCall): ts.Expression {
-    const receiver = this.translate(ast.receiver);
+    const receiver = wrapForDiagnostics(this.translate(ast.receiver));
     const method = ts.createPropertyAccess(receiver, ast.name);
     const args = ast.args.map(expr => this.translate(expr));
-    return ts.createCall(method, undefined, args);
+    const node = ts.createCall(method, undefined, args);
+    addParseSpanInfo(node, ast.sourceSpan);
+    return node;
   }
 
   visitNonNullAssert(ast: NonNullAssert): ts.Expression {
-    const expr = this.translate(ast.expression);
-    return ts.createNonNullExpression(expr);
+    const expr = wrapForDiagnostics(this.translate(ast.expression));
+    const node = ts.createNonNullExpression(expr);
+    addParseSpanInfo(node, ast.sourceSpan);
+    return node;
   }
 
   visitPipe(ast: BindingPipe): never { throw new Error('Method not implemented.'); }
 
   visitPrefixNot(ast: PrefixNot): ts.Expression {
-    return ts.createLogicalNot(this.translate(ast.expression));
+    const expression = wrapForDiagnostics(this.translate(ast.expression));
+    const node = ts.createLogicalNot(expression);
+    addParseSpanInfo(node, ast.sourceSpan);
+    return node;
   }
 
   visitPropertyRead(ast: PropertyRead): ts.Expression {
     // This is a normal property read - convert the receiver to an expression and emit the correct
     // TypeScript expression to read the property.
-    const receiver = this.translate(ast.receiver);
-    return ts.createPropertyAccess(receiver, ast.name);
+    const receiver = wrapForDiagnostics(this.translate(ast.receiver));
+    const node = ts.createPropertyAccess(receiver, ast.name);
+    addParseSpanInfo(node, ast.sourceSpan);
+    return node;
   }
 
-  visitPropertyWrite(ast: PropertyWrite): never { throw new Error('Method not implemented.'); }
+  visitPropertyWrite(ast: PropertyWrite): ts.Expression {
+    const receiver = wrapForDiagnostics(this.translate(ast.receiver));
+    const left = ts.createPropertyAccess(receiver, ast.name);
+    // TODO(joost): annotate `left` with the span of the property access, which is not currently
+    //  available on `ast`.
+    const right = this.translate(ast.value);
+    const node = wrapForDiagnostics(ts.createBinary(left, ts.SyntaxKind.EqualsToken, right));
+    addParseSpanInfo(node, ast.sourceSpan);
+    return node;
+  }
 
   visitQuote(ast: Quote): never { throw new Error('Method not implemented.'); }
 
   visitSafeMethodCall(ast: SafeMethodCall): ts.Expression {
     // See the comment in SafePropertyRead above for an explanation of the need for the non-null
     // assertion here.
-    const receiver = this.translate(ast.receiver);
+    const receiver = wrapForDiagnostics(this.translate(ast.receiver));
+    const guard = ts.getMutableClone(receiver);
+    ignoreDiagnostics(guard);
     const method = ts.createPropertyAccess(ts.createNonNullExpression(receiver), ast.name);
     const args = ast.args.map(expr => this.translate(expr));
     const expr = ts.createCall(method, undefined, args);
     const whenNull = this.config.strictSafeNavigationTypes ? UNDEFINED : NULL_AS_ANY;
-    return safeTernary(receiver, expr, whenNull);
+    const node = safeTernary(guard, expr, whenNull);
+    addParseSpanInfo(node, ast.sourceSpan);
+    return node;
   }
 
   visitSafePropertyRead(ast: SafePropertyRead): ts.Expression {
@@ -177,10 +238,14 @@ class AstTranslator implements AstVisitor {
     // whenNull is either of type 'any' or or 'undefined' depending on strictness. The non-null
     // assertion is necessary because in practice 'a' may be a method call expression, which won't
     // have a narrowed type when repeated in the ternary true branch.
-    const receiver = this.translate(ast.receiver);
+    const receiver = wrapForDiagnostics(this.translate(ast.receiver));
+    const guard = ts.getMutableClone(receiver);
+    ignoreDiagnostics(guard);
     const expr = ts.createPropertyAccess(ts.createNonNullExpression(receiver), ast.name);
     const whenNull = this.config.strictSafeNavigationTypes ? UNDEFINED : NULL_AS_ANY;
-    return safeTernary(receiver, expr, whenNull);
+    const node = safeTernary(guard, expr, whenNull);
+    addParseSpanInfo(node, ast.sourceSpan);
+    return node;
   }
 }
 

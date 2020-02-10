@@ -5,11 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-
-
 import {CompileReflector} from '../compile_reflector';
-
 import * as o from './output_ast';
 import {debugOutputAstAsTypeScript} from './ts_emitter';
 
@@ -38,8 +34,8 @@ class _ExecutionContext {
   exports: string[] = [];
 
   constructor(
-      public parent: _ExecutionContext|null, public instance: any, public className: string|null,
-      public vars: Map<string, any>) {}
+      public parent: _ExecutionContext|null, public instance: Object|null,
+      public className: string|null, public vars: Map<string, any>) {}
 
   createChildWihtLocalVars(): _ExecutionContext {
     return new _ExecutionContext(this, this.instance, this.className, new Map<string, any>());
@@ -79,9 +75,9 @@ function createDynamicClass(
 
   const ctorParamNames = _classStmt.constructorMethod.params.map(param => param.name);
   // Note: use `function` instead of arrow function to capture `this`
-  const ctor = function(...args: any[]) {
+  const ctor = function(this: Object, ...args: any[]) {
     const instanceCtx = new _ExecutionContext(_ctx, this, _classStmt.name, _ctx.vars);
-    _classStmt.fields.forEach((field) => { this[field.name] = undefined; });
+    _classStmt.fields.forEach((field) => { (this as any)[field.name] = undefined; });
     _executeFunctionStatements(
         ctorParamNames, args, _classStmt.constructorMethod.body, instanceCtx, _visitor);
   };
@@ -125,7 +121,7 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
     if (ast.builtin != null) {
       switch (ast.builtin) {
         case o.BuiltinVar.Super:
-          return ctx.instance.__proto__;
+          return Object.getPrototypeOf(ctx.instance);
         case o.BuiltinVar.This:
           return ctx.instance;
         case o.BuiltinVar.CatchError:
@@ -188,7 +184,7 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
     const args = this.visitAllExpressions(stmt.args, ctx);
     const fnExpr = stmt.fn;
     if (fnExpr instanceof o.ReadVarExpr && fnExpr.builtin === o.BuiltinVar.Super) {
-      ctx.instance.constructor.prototype.constructor.apply(ctx.instance, args);
+      ctx.instance !.constructor.prototype.constructor.apply(ctx.instance, args);
       return null;
     } else {
       const fn = stmt.fn.visitExpression(this, ctx);
@@ -239,6 +235,7 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
     return new clazz(...args);
   }
   visitLiteralExpr(ast: o.LiteralExpr, ctx: _ExecutionContext): any { return ast.value; }
+  visitLocalizedString(ast: o.LocalizedString, context: any): any { return null; }
   visitExternalExpr(ast: o.ExternalExpr, ctx: _ExecutionContext): any {
     return this.reflector.resolveExternalReference(ast.value);
   }

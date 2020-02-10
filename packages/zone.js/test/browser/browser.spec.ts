@@ -245,7 +245,7 @@ describe('Zone', function() {
             Zone.current.fork({name: 'test1'}).run(() => { testTarget.dispatchEvent('prop3'); });
           });
 
-          it('window onclick should be in zone',
+          it('window onmousedown should be in zone',
              ifEnvSupports(canPatchOnProperty(window, 'onmousedown'), function() {
                zone.run(function() { window.onmousedown = eventListenerSpy; });
 
@@ -254,6 +254,10 @@ describe('Zone', function() {
                expect(hookSpy).toHaveBeenCalled();
                expect(eventListenerSpy).toHaveBeenCalled();
                window.removeEventListener('mousedown', eventListenerSpy);
+               expect((window as any)[zoneSymbol('ON_PROPERTYmousedown')])
+                   .toEqual(eventListenerSpy);
+               window.onmousedown = null;
+               expect(!!(window as any)[zoneSymbol('ON_PROPERTYmousedown')]).toBeFalsy();
              }));
 
           it('window onresize should be patched',
@@ -264,9 +268,12 @@ describe('Zone', function() {
                innerResizeProp();
                expect(eventListenerSpy).toHaveBeenCalled();
                window.removeEventListener('resize', eventListenerSpy);
+               expect((window as any)[zoneSymbol('ON_PROPERTYresize')]).toEqual(eventListenerSpy);
+               window.onresize = null;
+               expect(!!(window as any)[zoneSymbol('ON_PROPERTYresize')]).toBeFalsy();
              }));
 
-          it('document onclick should be in zone',
+          it('document onmousedown should be in zone',
              ifEnvSupports(canPatchOnProperty(Document.prototype, 'onmousedown'), function() {
                zone.run(function() { document.onmousedown = eventListenerSpy; });
 
@@ -275,74 +282,78 @@ describe('Zone', function() {
                expect(hookSpy).toHaveBeenCalled();
                expect(eventListenerSpy).toHaveBeenCalled();
                document.removeEventListener('mousedown', eventListenerSpy);
+               expect((document as any)[zoneSymbol('ON_PROPERTYmousedown')])
+                   .toEqual(eventListenerSpy);
+               document.onmousedown = null;
+               expect(!!(document as any)[zoneSymbol('ON_PROPERTYmousedown')]).toBeFalsy();
              }));
 
           // TODO: JiaLiPassion, need to find out why the test bundle is not `use strict`.
           xit('event handler with null context should use event.target',
-             ifEnvSupports(canPatchOnProperty(Document.prototype, 'onmousedown'), function() {
-               const ieVer = getIEVersion();
-               if (ieVer && ieVer === 9) {
-                 // in ie9, this is window object even we call func.apply(undefined)
-                 return;
-               }
-               const logs: string[] = [];
-               const EventTarget = (window as any)['EventTarget'];
-               let oriAddEventListener = EventTarget && EventTarget.prototype ?
-                   (EventTarget.prototype as any)[zoneSymbol('addEventListener')] :
-                   (HTMLSpanElement.prototype as any)[zoneSymbol('addEventListener')];
+              ifEnvSupports(canPatchOnProperty(Document.prototype, 'onmousedown'), function() {
+                const ieVer = getIEVersion();
+                if (ieVer && ieVer === 9) {
+                  // in ie9, this is window object even we call func.apply(undefined)
+                  return;
+                }
+                const logs: string[] = [];
+                const EventTarget = (window as any)['EventTarget'];
+                let oriAddEventListener = EventTarget && EventTarget.prototype ?
+                    (EventTarget.prototype as any)[zoneSymbol('addEventListener')] :
+                    (HTMLSpanElement.prototype as any)[zoneSymbol('addEventListener')];
 
-               if (!oriAddEventListener) {
-                 // no patched addEventListener found
-                 return;
-               }
-               let handler1: Function;
-               let handler2: Function;
+                if (!oriAddEventListener) {
+                  // no patched addEventListener found
+                  return;
+                }
+                let handler1: Function;
+                let handler2: Function;
 
-               const listener = function() { logs.push('listener1'); };
+                const listener = function() { logs.push('listener1'); };
 
-               const listener1 = function() { logs.push('listener2'); };
+                const listener1 = function() { logs.push('listener2'); };
 
-               HTMLSpanElement.prototype.addEventListener = function(
-                   eventName: string, callback: any) {
-                 if (eventName === 'click') {
-                   handler1 = callback;
-                 } else if (eventName === 'mousedown') {
-                   handler2 = callback;
-                 }
-                 return oriAddEventListener.apply(this, arguments);
-               };
+                HTMLSpanElement.prototype.addEventListener = function(
+                    eventName: string, callback: any) {
+                  if (eventName === 'click') {
+                    handler1 = callback;
+                  } else if (eventName === 'mousedown') {
+                    handler2 = callback;
+                  }
+                  return oriAddEventListener.apply(this, arguments);
+                };
 
-               (HTMLSpanElement.prototype as any)[zoneSymbol('addEventListener')] = null;
+                (HTMLSpanElement.prototype as any)[zoneSymbol('addEventListener')] = null;
 
-               patchEventTarget(window, [HTMLSpanElement.prototype]);
+                patchEventTarget(window, [HTMLSpanElement.prototype]);
 
-               const span = document.createElement('span');
-               document.body.appendChild(span);
+                const span = document.createElement('span');
+                document.body.appendChild(span);
 
-               zone.run(function() {
-                 span.addEventListener('click', listener);
-                 span.onmousedown = listener1;
-               });
+                zone.run(function() {
+                  span.addEventListener('click', listener);
+                  span.onmousedown = listener1;
+                });
 
-               expect(handler1 !).toBe(handler2 !);
+                expect(handler1 !).toBe(handler2 !);
 
-               handler1 !.apply(null, [{type: 'click', target: span}]);
+                handler1 !.apply(null, [{type: 'click', target: span}]);
 
-               handler2 !.apply(null, [{type: 'mousedown', target: span}]);
+                handler2 !.apply(null, [{type: 'mousedown', target: span}]);
 
-               expect(hookSpy).toHaveBeenCalled();
-               expect(logs).toEqual(['listener1', 'listener2']);
-               document.body.removeChild(span);
-               if (EventTarget) {
-                 (EventTarget.prototype as any)[zoneSymbol('addEventListener')] =
-                     oriAddEventListener;
-               } else {
-                 (HTMLSpanElement.prototype as any)[zoneSymbol('addEventListener')] =
-                     oriAddEventListener;
-               }
-             }));
+                expect(hookSpy).toHaveBeenCalled();
+                expect(logs).toEqual(['listener1', 'listener2']);
+                document.body.removeChild(span);
+                if (EventTarget) {
+                  (EventTarget.prototype as any)[zoneSymbol('addEventListener')] =
+                      oriAddEventListener;
+                } else {
+                  (HTMLSpanElement.prototype as any)[zoneSymbol('addEventListener')] =
+                      oriAddEventListener;
+                }
+              }));
 
-          it('SVGElement onclick should be in zone',
+          it('SVGElement onmousedown should be in zone',
              ifEnvSupports(
                  canPatchOnProperty(SVGElement && SVGElement.prototype, 'onmousedown'), function() {
                    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -1921,15 +1932,20 @@ describe('Zone', function() {
         const listener2 = function() { logs.push('listener2'); };
         const listener3 = {handleEvent: function(event: Event) { logs.push('listener3'); }};
         const listener4 = function() { logs.push('listener4'); };
+        const listener5 = function() { logs.push('listener5'); };
 
         button.addEventListener('mouseover', listener1);
         button.addEventListener('mouseover', listener2);
         button.addEventListener('mouseover', listener3);
         button.addEventListener('click', listener4);
+        button.onmouseover = listener5;
+        expect((button as any)[Zone.__symbol__('ON_PROPERTYmouseover')]).toEqual(listener5);
 
         (button as any).removeAllListeners('mouseover');
-        const listeners = (button as any).eventListeners('mouseove');
+        const listeners = (button as any).eventListeners('mouseover');
         expect(listeners.length).toBe(0);
+        expect((button as any)[Zone.__symbol__('ON_PROPERTYmouseover')]).toBeNull();
+        expect(!!button.onmouseover).toBeFalsy();
 
         const mouseEvent = document.createEvent('Event');
         mouseEvent.initEvent('mouseover', true, true);
@@ -1957,7 +1973,7 @@ describe('Zone', function() {
            button.addEventListener('click', listener4, true);
 
            (button as any).removeAllListeners('mouseover');
-           const listeners = (button as any).eventListeners('mouseove');
+           const listeners = (button as any).eventListeners('mouseover');
            expect(listeners.length).toBe(0);
 
            const mouseEvent = document.createEvent('Event');
@@ -2007,15 +2023,20 @@ describe('Zone', function() {
         const listener2 = function() { logs.push('listener2'); };
         const listener3 = {handleEvent: function(event: Event) { logs.push('listener3'); }};
         const listener4 = function() { logs.push('listener4'); };
+        const listener5 = function() { logs.push('listener5'); };
 
         button.addEventListener('mouseover', listener1);
         button.addEventListener('mouseover', listener2);
         button.addEventListener('mouseover', listener3);
         button.addEventListener('click', listener4);
+        button.onmouseover = listener5;
+        expect((button as any)[Zone.__symbol__('ON_PROPERTYmouseover')]).toEqual(listener5);
 
         (button as any).removeAllListeners();
         const listeners = (button as any).eventListeners('mouseover');
         expect(listeners.length).toBe(0);
+        expect((button as any)[Zone.__symbol__('ON_PROPERTYmouseover')]).toBeNull();
+        expect(!!button.onmouseover).toBeFalsy();
 
         const mouseEvent = document.createEvent('Event');
         mouseEvent.initEvent('mouseover', true, true);
@@ -2360,4 +2381,131 @@ describe('Zone', function() {
              }));
     });
   });
+
+
+  describe(
+      'pointer event in IE',
+      ifEnvSupports(
+          () => { return getIEVersion() === 11; },
+          () => {
+            const pointerEventsMap: {[key: string]: string} = {
+              'MSPointerCancel': 'pointercancel',
+              'MSPointerDown': 'pointerdown',
+              'MSPointerEnter': 'pointerenter',
+              'MSPointerHover': 'pointerhover',
+              'MSPointerLeave': 'pointerleave',
+              'MSPointerMove': 'pointermove',
+              'MSPointerOut': 'pointerout',
+              'MSPointerOver': 'pointerover',
+              'MSPointerUp': 'pointerup'
+            };
+
+            let div: HTMLDivElement;
+            beforeEach(() => {
+              div = document.createElement('div');
+              document.body.appendChild(div);
+            });
+            afterEach(() => { document.body.removeChild(div); });
+            Object.keys(pointerEventsMap).forEach(key => {
+              it(`${key} and ${pointerEventsMap[key]} should both be triggered`, (done: DoneFn) => {
+                const logs: string[] = [];
+                div.addEventListener(key, (event: any) => {
+                  expect(event.type).toEqual(pointerEventsMap[key]);
+                  logs.push(`${key} triggered`);
+                });
+                div.addEventListener(pointerEventsMap[key], (event: any) => {
+                  expect(event.type).toEqual(pointerEventsMap[key]);
+                  logs.push(`${pointerEventsMap[key]} triggered`);
+                });
+                const evt1 = document.createEvent('Event');
+                evt1.initEvent(key, true, true);
+                div.dispatchEvent(evt1);
+
+                setTimeout(() => {
+                  expect(logs).toEqual([`${key} triggered`, `${pointerEventsMap[key]} triggered`]);
+                });
+
+                const evt2 = document.createEvent('Event');
+                evt2.initEvent(pointerEventsMap[key], true, true);
+                div.dispatchEvent(evt2);
+
+                setTimeout(() => {
+                  expect(logs).toEqual([`${key} triggered`, `${pointerEventsMap[key]} triggered`]);
+                });
+
+                setTimeout(done);
+              });
+
+              it(`${key} and ${
+            pointerEventsMap[key]} with same listener should not be triggered twice`,
+                 (done: DoneFn) => {
+                   const logs: string[] = [];
+                   const listener = function(event: any) {
+                     expect(event.type).toEqual(pointerEventsMap[key]);
+                     logs.push(`${key} triggered`);
+                   };
+                   div.addEventListener(key, listener);
+                   div.addEventListener(pointerEventsMap[key], listener);
+
+                   const evt1 = document.createEvent('Event');
+                   evt1.initEvent(key, true, true);
+                   div.dispatchEvent(evt1);
+
+                   setTimeout(() => { expect(logs).toEqual([`${key} triggered`]); });
+
+                   const evt2 = document.createEvent('Event');
+                   evt2.initEvent(pointerEventsMap[key], true, true);
+                   div.dispatchEvent(evt2);
+
+                   setTimeout(
+                       () => { expect(logs).toEqual([`${pointerEventsMap[key]} triggered`]); });
+
+                   setTimeout(done);
+                 });
+
+              it(`${key} and ${
+            pointerEventsMap
+            [key]} should be able to be removed with removeEventListener`,
+                 (done: DoneFn) => {
+                   const logs: string[] = [];
+                   const listener1 = function(event: any) { logs.push(`${key} triggered`); };
+                   const listener2 = function(event: any) {
+                     logs.push(`${pointerEventsMap[key]} triggered`);
+                   };
+                   div.addEventListener(key, listener1);
+                   div.addEventListener(pointerEventsMap[key], listener2);
+
+                   div.removeEventListener(key, listener1);
+                   div.removeEventListener(key, listener2);
+
+                   const evt1 = document.createEvent('Event');
+                   evt1.initEvent(key, true, true);
+                   div.dispatchEvent(evt1);
+
+                   setTimeout(() => { expect(logs).toEqual([]); });
+
+                   const evt2 = document.createEvent('Event');
+                   evt2.initEvent(pointerEventsMap[key], true, true);
+                   div.dispatchEvent(evt2);
+
+                   setTimeout(() => { expect(logs).toEqual([]); });
+
+                   div.addEventListener(key, listener1);
+                   div.addEventListener(pointerEventsMap[key], listener2);
+
+                   div.removeEventListener(pointerEventsMap[key], listener1);
+                   div.removeEventListener(pointerEventsMap[key], listener2);
+
+                   div.dispatchEvent(evt1);
+
+                   setTimeout(() => { expect(logs).toEqual([]); });
+
+                   div.dispatchEvent(evt2);
+
+                   setTimeout(() => { expect(logs).toEqual([]); });
+
+                   setTimeout(done);
+                 });
+            });
+          }));
 });

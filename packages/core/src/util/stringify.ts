@@ -11,7 +11,7 @@ export function stringify(token: any): string {
     return token;
   }
 
-  if (token instanceof Array) {
+  if (Array.isArray(token)) {
     return '[' + token.map(stringify).join(', ') + ']';
   }
 
@@ -35,4 +35,18 @@ export function stringify(token: any): string {
 
   const newLineIndex = res.indexOf('\n');
   return newLineIndex === -1 ? res : res.substring(0, newLineIndex);
+}
+
+/**
+ * Concatenates two strings with separator, allocating new strings only when necessary.
+ *
+ * @param before before string.
+ * @param separator separator string.
+ * @param after after string.
+ * @returns concatenated string.
+ */
+export function concatStringsWithSpace(before: string | null, after: string | null): string {
+  return (before == null || before === '') ?
+      (after === null ? '' : after) :
+      ((after == null || after === '') ? before : before + ' ' + after);
 }

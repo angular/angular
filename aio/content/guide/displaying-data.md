@@ -1,7 +1,11 @@
+<<<<<<< HEAD
 <!--
 # Displaying Data
 -->
 # 데이터 표시하기
+=======
+# Displaying data
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 You can display data by binding controls in an HTML template to properties of an Angular component.
@@ -20,6 +24,7 @@ The final UI looks like this:
 -->
 최종 결과물로 다음과 같은 화면을 만들 것입니다:
 
+<<<<<<< HEAD
 
 <figure>
   <!--
@@ -27,6 +32,11 @@ The final UI looks like this:
   -->
   <img src="generated/images/guide/displaying-data/final.png" alt="최종 화면">
 </figure>
+=======
+<div class="lightbox">
+  <img src="generated/images/guide/displaying-data/final.png" alt="Final UI">
+</div>
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <div class="alert is-helpful">
 
@@ -57,10 +67,14 @@ With interpolation, you put the property name in the view template, enclosed in 
 문자열 바인딩(interpolation)을 사용하는 것입니다.
 문자열 바인딩은 프로퍼티 이름을 이중 중괄호로 감싸서 뷰 템플릿에 `{{myHero}}` 와 같은 형태로 넣는 방법입니다.
 
+<<<<<<< HEAD
 <!--
 Use the CLI command [`ng new displaying-data`](cli/new) to create a workspace and app named `displaying-data`. 
 -->
 워크스페이스를 생성하면서 `displaying-data`라는 이름으로 앱을 생성하기 위해 [`ng new displaying-data`](cli/new) 명령을 실행합니다.
+=======
+Use the CLI command [`ng new displaying-data`](cli/new) to create a workspace and app named `displaying-data`.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 Delete the <code>app.component.html</code> file. It is not needed for this example.
@@ -78,9 +92,7 @@ When you're done, it should look like this:
 화면에 히어로의 이름을 표시하도록 <code>app.component.ts</code> 파일을 다음과 같이 작성합니다:
 
 
-<code-example path="displaying-data/src/app/app.component.1.ts" header="src/app/app.component.ts">
-
-</code-example>
+<code-example path="displaying-data/src/app/app.component.1.ts" header="src/app/app.component.ts"></code-example>
 
 
 
@@ -96,9 +108,7 @@ interpolation:
 그리고 두 프로퍼티 값을 화면에 표시하도록 다음과 같이 템플릿에 문자열 바인딩 합니다:
 
 
-<code-example path="displaying-data/src/app/app.component.1.ts" linenums="false" header="src/app/app.component.ts (template)" region="template">
-
-</code-example>
+<code-example path="displaying-data/src/app/app.component.1.ts" header="src/app/app.component.ts (template)" region="template"></code-example>
 
 
 
@@ -149,9 +159,7 @@ That element is a placeholder in the body of your `index.html` file:
 `@Component` 데코레이터에 지정된 메타데이터를 보면 `selector` 항목에 `<app-root>` 가 지정되어 있고,
 `index.html` 파일에는 `<app-root>` 가 다음과 같이 작성되어 있습니다:
 
-<code-example path="displaying-data/src/index.html" linenums="false" header="src/index.html (body)" region="body">
-
-</code-example>
+<code-example path="displaying-data/src/index.html" header="src/index.html (body)" region="body"></code-example>
 
 
 <!--
@@ -167,6 +175,7 @@ Now run the app. It should display the title and hero name:
 -->
 여기까지 작성하고 애플리케이션을 시작하면, 페이지 제목과 히어로 이름이 다음과 같이 표시됩니다:
 
+<<<<<<< HEAD
 <figure>
   <!--
   <img src="generated/images/guide/displaying-data/title-and-hero.png" alt="Title and Hero">
@@ -176,6 +185,12 @@ Now run the app. It should display the title and hero name:
 
 
 <!--
+=======
+<div class="lightbox">
+  <img src="generated/images/guide/displaying-data/title-and-hero.png" alt="Title and Hero">
+</div>
+
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 The next few sections review some of the coding choices in the app.
 -->
 
@@ -209,8 +224,12 @@ In either style, the template data bindings have the same access to the componen
 둘 중 어떤 스타일이든, 템플릿에 데이터를 바인딩하는 방법은 같습니다.
 
 <div class="alert is-helpful">
+<<<<<<< HEAD
   
   <!--
+=======
+
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
   By default, the Angular CLI command [`ng generate component`](cli/generate) generates components with a template file. You can override that with:
   -->
 
@@ -235,9 +254,7 @@ Although this example uses variable assignment to initialize the components, you
 위에서 본 예제 코드에서는 컴포넌트 클래스에 변수를 선언하면서 변수값을 할당했지만, 변수 초기값은 생성자에서 할 수도 있습니다.
 
 
-<code-example path="displaying-data/src/app/app-ctor.component.1.ts" linenums="false" region="class">
-
-</code-example>
+<code-example path="displaying-data/src/app/app-ctor.component.1.ts" region="class"></code-example>
 
 
 <!--
@@ -258,9 +275,7 @@ To display a list of heroes, begin by adding an array of hero names to the compo
 히어로의 목록을 표시하려면 먼저 컴포넌트에 배열을 정의해야 합니다. `myHero` 배열을 만들고, 이 배열에 히어로들의 이름을 할당합시다.
 
 
-<code-example path="displaying-data/src/app/app.component.2.ts" linenums="false" header="src/app/app.component.ts (class)" region="class">
-
-</code-example>
+<code-example path="displaying-data/src/app/app.component.2.ts" header="src/app/app.component.ts (class)" region="class"></code-example>
 
 
 <!--
@@ -270,9 +285,7 @@ each item in the `heroes` list.
 그리고 Angular에서 제공하는 `ngFor` 디렉티브를 사용하면 `heroes` 배열의 각 항목을 화면에 표시할 수 있습니다.
 
 
-<code-example path="displaying-data/src/app/app.component.2.ts" linenums="false" header="src/app/app.component.ts (template)" region="template">
-
-</code-example>
+<code-example path="displaying-data/src/app/app.component.2.ts" header="src/app/app.component.ts (template)" region="template"></code-example>
 
 
 <!--
@@ -285,9 +298,7 @@ It marks that `<li>` element (and its children) as the "repeater template":
 이 디렉티브를 아래 예제처럼 `<li>` 엘리먼트에 사용하면 `<li>` 엘리먼트와 그 하위 엘리먼트를 반복할 수 있습니다.
 
 
-<code-example path="displaying-data/src/app/app.component.2.ts" linenums="false" header="src/app/app.component.ts (li)" region="li">
-
-</code-example>
+<code-example path="displaying-data/src/app/app.component.2.ts" header="src/app/app.component.ts (li)" region="li"></code-example>
 
 
 
@@ -339,6 +350,7 @@ Now the heroes appear in an unordered list.
 -->
 여기까지 작성하면 이제 히어로의 목록이 화면에 표시됩니다.
 
+<<<<<<< HEAD
 
 <figure>
   <!--
@@ -349,6 +361,13 @@ Now the heroes appear in an unordered list.
 
 
 <!--
+=======
+<div class="lightbox">
+  <img src="generated/images/guide/displaying-data/hero-names-list.png" alt="After ngfor">
+</div>
+
+
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 ## Creating a class for the data
 -->
 ## 데이터 클래스 정의하기
@@ -383,9 +402,7 @@ With the following code:
 -->
 그리고 클래스 코드는 다음과 같이 작성합니다.
 
-<code-example path="displaying-data/src/app/hero.ts" linenums="false" header="src/app/hero.ts">
-
-</code-example>
+<code-example path="displaying-data/src/app/hero.ts" header="src/app/hero.ts"></code-example>
 
 
 <!--
@@ -406,9 +423,7 @@ Consider the first parameter:
 생성자에 사용된 첫번째 인자를 봅시다:
 
 
-<code-example path="displaying-data/src/app/hero.ts" linenums="false" header="src/app/hero.ts (id)" region="id">
-
-</code-example>
+<code-example path="displaying-data/src/app/hero.ts" header="src/app/hero.ts (id)" region="id"></code-example>
 
 
 <!--
@@ -437,9 +452,7 @@ of `Hero` objects:
 이제 `AppComponent.heroes` 프로퍼티를 `Hero` 객체 타입으로 다시 정의합니다.
 
 
-<code-example path="displaying-data/src/app/app.component.3.ts" linenums="false" header="src/app/app.component.ts (heroes)" region="heroes">
-
-</code-example>
+<code-example path="displaying-data/src/app/app.component.3.ts" header="src/app/app.component.ts (heroes)" region="heroes"></code-example>
 
 
 <!--
@@ -451,9 +464,7 @@ Fix that to display only the hero's `name` property.
 히어로 객체에는 `id` 프로퍼티와 `name` 프로퍼티가 있지만, 지금은 `name` 프로퍼티만 화면에 표시합시다.
 
 
-<code-example path="displaying-data/src/app/app.component.3.ts" linenums="false" header="src/app/app.component.ts (template)" region="template">
-
-</code-example>
+<code-example path="displaying-data/src/app/app.component.3.ts" header="src/app/app.component.ts (template)" region="template"></code-example>
 
 
 <!--
@@ -485,9 +496,7 @@ To see it in action, add the following paragraph at the bottom of the template:
 Angular에서 제공하는 `ngIf` 디렉티브는 _참/거짓으로 평가되는_ 조건에 따라 엘리먼트를 DOM에 추가하거나 제거합니다.
 `ngIf` 의 동작을 확인하기 위해 템플릿에 다음과 같은 코드를 작성합시다.
 
-<code-example path="displaying-data/src/app/app.component.ts" linenums="false" header="src/app/app.component.ts (message)" region="message">
-
-</code-example>
+<code-example path="displaying-data/src/app/app.component.ts" header="src/app/app.component.ts (message)" region="message"></code-example>
 
 
 <div class="alert is-important">
@@ -583,4 +592,3 @@ Here's the final code:
   </code-pane>
 
 </code-tabs>
-

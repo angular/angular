@@ -23,9 +23,9 @@
     "angular-in-memory-web-api": "^0.8.0",
     "core-js": "^2.5.4",
     "rxjs": "^6.5.1",
-    "tslib": "^1.9.0",
+    "tslib": "^1.10.0",
     "web-animations-js": "^2.3.1",
-    "zone.js": "~0.9.1"
+    "zone.js": "~0.10.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.800.0",
@@ -37,7 +37,7 @@
     "@types/node": "~8.9.4",
     "codelyzer": "~5.0.0",
     "jasmine-core": "~2.99.1",
-    "jasmine-marbles": "^0.5.0",
+    "jasmine-marbles": "^0.6.0",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "~4.1.0",
     "karma-chrome-launcher": "~2.2.0",

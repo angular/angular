@@ -20,6 +20,12 @@ import {HttpEvent, HttpResponse} from './response';
 /**
  * Constructs an instance of `HttpRequestOptions<T>` from a source `HttpMethodOptions` and
  * the given `body`. This function clones the object and adds the body.
+ *
+ * Note that the `responseType` *options* value is a String that identifies the
+ * single data type of the response.
+ * A single overload version of the method handles each response type.
+ * The value of `responseType` cannot be a union, as the combined signature could imply.
+ *
  */
 function addBody<T>(
     options: {
@@ -46,14 +52,15 @@ export type HttpObserve = 'body' | 'events' | 'response';
 
 /**
  * Performs HTTP requests.
- *
- * `HttpClient` is available as an injectable class, with methods to perform HTTP requests.
+ * This service is available as an injectable class, with methods to perform HTTP requests.
  * Each request method has multiple signatures, and the return type varies based on
  * the signature that is called (mainly the values of `observe` and `responseType`).
  *
- *
- * @see [HTTP Guide](guide/http)
- *
+ * Note that the `responseType` *options* value is a String that identifies the
+ * single data type of the response.
+ * A single overload version of the method handles each response type.
+ * The value of `responseType` cannot be a union, as the combined signature could imply.
+
  *
  * @usageNotes
  * Sample HTTP requests for the [Tour of Heroes](/tutorial/toh-pt0) application.
@@ -75,7 +82,6 @@ export type HttpObserve = 'body' | 'events' | 'response';
  * }
  * ```
  *
- *
  * ### PATCH Example
  * ```
  * // PATCH one of the heroes' name
@@ -84,7 +90,9 @@ export type HttpObserve = 'body' | 'events' | 'response';
  *  return this.httpClient.patch(url, {name: heroName}, httpOptions)
  *    .pipe(catchError(this.handleError('patchHero')));
  * }
-* ```
+ * ```
+ *
+ * @see [HTTP Guide](guide/http)
  *
  * @publicApi
  */
@@ -449,7 +457,7 @@ export class HttpClient {
     if (first instanceof HttpRequest) {
       // It is. The other arguments must be undefined (per the signatures) and can be
       // ignored.
-      req = first as HttpRequest<any>;
+      req = first;
     } else {
       // It's a string, so it represents a URL. Construct a request based on it,
       // and incorporate the remaining arguments (assuming `GET` unless a method is
@@ -1790,7 +1798,7 @@ export class HttpClient {
   }): Observable<Blob>;
 
   /**
-   * Constructs a `PATCH` request that interprets the body as as a text string and
+   * Constructs a `PATCH` request that interprets the body as a text string and
    * returns the response as a string value.
    *
    * @param url The endpoint URL.
@@ -2058,7 +2066,7 @@ export class HttpClient {
   }
 
   /**
-   * Constructs a `POST` request that interprets the body as an as an `ArrayBuffer` and returns
+   * Constructs a `POST` request that interprets the body as an `ArrayBuffer` and returns
    * an `ArrayBuffer`.
    *
    * @param url The endpoint URL.

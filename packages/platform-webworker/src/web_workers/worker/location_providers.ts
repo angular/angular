@@ -7,7 +7,7 @@
  */
 
 import {LOCATION_INITIALIZED, PlatformLocation} from '@angular/common';
-import {APP_INITIALIZER, InjectionToken, NgZone} from '@angular/core';
+import {APP_INITIALIZER, NgZone, StaticProvider} from '@angular/core';
 
 import {WebWorkerPlatformLocation} from './platform_location';
 
@@ -19,8 +19,8 @@ import {WebWorkerPlatformLocation} from './platform_location';
  * @publicApi
  * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
  */
-export const WORKER_APP_LOCATION_PROVIDERS = [
-  {provide: PlatformLocation, useClass: WebWorkerPlatformLocation}, {
+export const WORKER_APP_LOCATION_PROVIDERS: StaticProvider[] = [
+  { provide: PlatformLocation, useClass: WebWorkerPlatformLocation} as any as StaticProvider, {
     provide: APP_INITIALIZER,
     useFactory: appInitFnFactory,
     multi: true,

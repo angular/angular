@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { SearchResult, SearchResults, SearchArea } from 'app/search/interfaces';
 
 /**
@@ -14,7 +14,7 @@ export class SearchResultsComponent implements OnChanges {
    * The results to display
    */
   @Input()
-  searchResults: SearchResults;
+  searchResults: SearchResults | null = null;
 
   /**
    * Emitted when the user selects a search result
@@ -27,7 +27,7 @@ export class SearchResultsComponent implements OnChanges {
   readonly topLevelFolders = ['guide', 'tutorial'];
   searchAreas: SearchArea[] = [];
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges() {
     this.searchAreas = this.processSearchResults(this.searchResults);
   }
 
@@ -39,7 +39,7 @@ export class SearchResultsComponent implements OnChanges {
   }
 
   // Map the search results into groups by area
-  private processSearchResults(search: SearchResults) {
+  private processSearchResults(search: SearchResults | null) {
     if (!search) {
       return [];
     }

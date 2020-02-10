@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵgetDOM as getDOM} from '@angular/common';
 import {SecurityContext} from '@angular/core';
 import {ArgumentType, BindingFlags, NodeCheckFn, NodeFlags, Services, ViewData, anchorDef, asElementData, attachEmbeddedView, detachEmbeddedView, directiveDef, elementDef, moveEmbeddedView, rootRenderNodes} from '@angular/core/src/view/index';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedView} from './helper';
 
@@ -16,8 +16,8 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
   describe(`Embedded Views`, () => {
 
     it('should create embedded views with the right context', () => {
-      const parentContext = new Object();
-      const childContext = new Object();
+      const parentContext = {};
+      const childContext = {};
 
       const {view: parentView} = createAndGetRootNodes(
           compViewDef([
@@ -53,17 +53,17 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
       attachEmbeddedView(parentView, viewContainerData, 1, childView1);
 
       // 2 anchors + 2 elements
-      const rootChildren = getDOM().childNodes(rootNodes[0]);
+      const rootChildren = rootNodes[0].childNodes;
       expect(rootChildren.length).toBe(4);
-      expect(getDOM().getAttribute(rootChildren[1], 'name')).toBe('child0');
-      expect(getDOM().getAttribute(rootChildren[2], 'name')).toBe('child1');
+      expect(rootChildren[1].getAttribute('name')).toBe('child0');
+      expect(rootChildren[2].getAttribute('name')).toBe('child1');
 
       rf.begin !();
       detachEmbeddedView(viewContainerData, 1);
       detachEmbeddedView(viewContainerData, 0);
       rf.end !();
 
-      expect(getDOM().childNodes(rootNodes[0]).length).toBe(2);
+      expect(rootNodes[0].childNodes.length).toBe(2);
     });
 
     it('should move embedded views', () => {
@@ -88,10 +88,10 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
 
       expect(viewContainerData.viewContainer !._embeddedViews).toEqual([childView1, childView0]);
       // 2 anchors + 2 elements
-      const rootChildren = getDOM().childNodes(rootNodes[0]);
+      const rootChildren = rootNodes[0].childNodes;
       expect(rootChildren.length).toBe(4);
-      expect(getDOM().getAttribute(rootChildren[1], 'name')).toBe('child1');
-      expect(getDOM().getAttribute(rootChildren[2], 'name')).toBe('child0');
+      expect(rootChildren[1].getAttribute('name')).toBe('child1');
+      expect(rootChildren[2].getAttribute('name')).toBe('child0');
     });
 
     it('should include embedded views in root nodes', () => {
@@ -107,8 +107,8 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
 
       const rootNodes = rootRenderNodes(parentView);
       expect(rootNodes.length).toBe(3);
-      expect(getDOM().getAttribute(rootNodes[1], 'name')).toBe('child0');
-      expect(getDOM().getAttribute(rootNodes[2], 'name')).toBe('after');
+      expect(rootNodes[1].getAttribute('name')).toBe('child0');
+      expect(rootNodes[2].getAttribute('name')).toBe('after');
     });
 
     it('should dirty check embedded views', () => {

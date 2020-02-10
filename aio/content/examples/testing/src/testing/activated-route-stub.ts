@@ -24,6 +24,6 @@ export class ActivatedRouteStub {
   /** paramMap 옵저버블로 데이터를 전달합니다. */
   setParamMap(params?: Params) {
     this.subject.next(convertToParamMap(params));
-  };
+  }
 }
 // #enddocregion activated-route-stub

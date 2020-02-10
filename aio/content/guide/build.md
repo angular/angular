@@ -15,6 +15,7 @@ This page discusses build-specific configuration options for Angular projects.
 -->
 ## 애플리케이션 개발환경 구성하기
 
+<<<<<<< HEAD
 <!--
 You can define different named build configurations for your project, such as *stage* and *production*, with different defaults. 
 
@@ -36,15 +37,25 @@ The following figure shows how a project has multiple build targets, which can b
 <figure>
   <img src="generated/images/guide/build/build-config-targets.gif" alt="빌드 대상/환경 설정">
 </figure>
+=======
+You can define different named build configurations for your project, such as *stage* and *production*, with different defaults.
+
+Each named configuration can have defaults for any of the options that apply to the various [builder targets](guide/glossary#target), such as `build`, `serve`, and `test`. The [Angular CLI](cli) `build`, `serve`, and `test` commands can then replace files with appropriate versions for your intended target environment.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 ### Configure environment-specific defaults
 -->
 ### 환경설정 기본값 지정하기
 
+<<<<<<< HEAD
 <!--
 A project's `src/environments/` folder contains the base configuration file, `environment.ts`, which provides a default environment. 
 You can add override defaults for additional environments, such as production and staging, in target-specific configuration files. 
+=======
+A project's `src/environments/` folder contains the base configuration file, `environment.ts`, which provides a default environment.
+You can add override defaults for additional environments, such as production and staging, in target-specific configuration files.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 For example:
 -->
@@ -80,9 +91,14 @@ export const environment = {
 };
 ```
 
+<<<<<<< HEAD
 <!--
 The `build` command uses this as the build target when no environment is specified. 
 You can add further variables, either as additional properties on the environment object, or as separate objects. 
+=======
+The `build` command uses this as the build target when no environment is specified.
+You can add further variables, either as additional properties on the environment object, or as separate objects.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 For example, the following adds a default for a variable to the default environment:
 -->
 빌드 환경을 따로 지정하지 않은 상태로 `build` 명령을 실행하면 `environment.ts` 파일이 기본으로 사용됩니다.
@@ -96,8 +112,12 @@ export const environment = {
 };
 ```
 
+<<<<<<< HEAD
 <!--
 You can add target-specific configuration files, such as `environment.prod.ts`. 
+=======
+You can add target-specific configuration files, such as `environment.prod.ts`.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 The following sets content sets default values for the production build target:
 -->
 그리고 `environment.prod.ts` 파일에는 해당 환경에 맞는 설정값을 지정할 수 있습니다.
@@ -191,12 +211,16 @@ export class AppComponent {
 -->
 ## 빌드 환경에 맞게 환경설정 파일 교체하기
 
+<<<<<<< HEAD
 <!--
 The main CLI configuration file, `angular.json`, contains a `fileReplacements` section in the configuration for each build target, which allows you to replace any file with a target-specific version of that file. 
+=======
+The main CLI configuration file, `angular.json`, contains a `fileReplacements` section in the configuration for each build target, which allows you to replace any file with a target-specific version of that file.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 This is useful for including target-specific code or variables in a build that targets a specific environment, such as production or staging.
 
-By default no files are replaced. 
-You can add file replacements for specific build targets. 
+By default no files are replaced.
+You can add file replacements for specific build targets.
 For example:
 -->
 Angular CLI 환경설정 파일인 `angular.json` 파일에는 각 빌드 환경마다 `fileReplacements` 섹션이 존재하는데, 이 값을 설정하면 해당 빌드 환경에 해당하는 파일로 환경설정 파일을 교체할 수 있습니다.
@@ -240,8 +264,12 @@ You can add additional configurations as required. To add a staging environment,
 }
 ```
 
+<<<<<<< HEAD
 <!--
 You can add more configuration options to this target environment as well. 
+=======
+You can add more configuration options to this target environment as well.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 Any option that your build supports can be overridden in a build target configuration.
 
 To build using the staging configuration, run the following command:
@@ -277,7 +305,9 @@ You can also configure the `serve` command to use the targeted build configurati
 ```
 
 {@a size-budgets}
+{@a configure-size-budgets}
 
+<<<<<<< HEAD
 <!--
 ## Configure size budgets
 -->
@@ -293,6 +323,14 @@ Define your size boundaries in the CLI configuration file, `angular.json`, in a 
 이 때 이 애플리케이션이 빌드된 결과물의 크기를 일정 수준으로 정해놓고, 기준 용량을 넘어가면 경고를 표시하거나 에러를 표시하게 할 수 있습니다.
 
 이 기준값은 Angular CLI 설정파일인 `angular.json` 파일의 각 [환경 설정](#app-environments) 안에 `budgets` 섹션으로 지정합니다.
+=======
+## Configuring size budgets
+
+As applications grow in functionality, they also grow in size.
+The CLI allows you to set size thresholds in your configuration to ensure that parts of your application stay within size boundaries that you define.
+
+Define your size boundaries in the CLI configuration file, `angular.json`, in a `budgets` section for each [configured environment](#app-environments).
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 ```
 {
@@ -306,9 +344,14 @@ Define your size boundaries in the CLI configuration file, `angular.json`, in a 
 }
 ```
 
+<<<<<<< HEAD
 <!--
 You can specify size budgets for the entire app, and for particular parts. 
 Each budget entry configures a budget of a given type. 
+=======
+You can specify size budgets for the entire app, and for particular parts.
+Each budget entry configures a budget of a given type.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 Specify size values in the following formats:
 
 * 123 or 123b: Size in bytes
@@ -345,23 +388,26 @@ Each budget entry is a JSON object with the following properties:
 
   <tr>
     <td>type</td>
-    <td>The type of budget. One of:
+    <td>
 
-        * bundle - The size of a specific bundle.
-        * initial - The initial size of the app.
-        * allScript - The size of all scripts.
-        * all - The size of the entire app.
-        * anyScript - The size of any one script.
-        * any - The size of any file.
-        
+    The type of budget. One of:
+
+* `bundle` - The size of a specific bundle.
+* `initial` - The initial size of the app.
+* `allScript` - The size of all scripts.
+* `all` - The size of the entire app.
+* `anyComponentStyle` - This size of any one component stylesheet.
+* `anyScript` - The size of any one script.
+* `any` - The size of any file.
+
     </td>
   </tr>
    <tr>
     <td>name</td>
     <td>
-    
+
     The name of the bundle (for `type=bundle`).
-    
+
     </td>
   </tr>
   <tr>
@@ -462,13 +508,17 @@ Each budget entry is a JSON object with the following properties:
 -->
 ## 브라우저 호환성 설정하기
 
+<<<<<<< HEAD
 <!--
 The CLI uses [Autoprefixer](https://github.com/postcss/autoprefixer) to ensure compatibility with different browser and browser versions. 
+=======
+The CLI uses [Autoprefixer](https://github.com/postcss/autoprefixer) to ensure compatibility with different browser and browser versions.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 You may find it necessary to target specific browsers or exclude certain browser versions from your build.
 
-Internally, Autoprefixer relies on a library called [Browserslist](https://github.com/browserslist/browserslist) to figure out which browsers to support with prefixing. 
-Browserlist looks for configuration options in a `browserslist` property of the package configuration file, or in a configuration file named `.browserslistrc`. 
-Autoprefixer looks for the `browserslist` configuration when it prefixes your CSS. 
+Internally, Autoprefixer relies on a library called [Browserslist](https://github.com/browserslist/browserslist) to figure out which browsers to support with prefixing.
+Browserlist looks for configuration options in a `browserslist` property of the package configuration file, or in a configuration file named `.browserslistrc`.
+Autoprefixer looks for the `browserslist` configuration when it prefixes your CSS.
 
 * You can tell Autoprefixer what browsers to target by adding a browserslist property to the package configuration file, `package.json`:
 -->
@@ -511,6 +561,7 @@ See the [browserslist repo](https://github.com/browserslist/browserslist) for mo
 -->
 지원할 브라우저와 브라우저 버전을 지정하는 방법은 [browserslist GitHub 레파지토리](https://github.com/browserslist/browserslist)를 참고하세요.
 
+<<<<<<< HEAD
 <div class="alert is-helpful">
 <!--
 Backward compatibility
@@ -521,6 +572,11 @@ Lighthouse 호환성 설정
 
 PWA 앱을 대상으로 [Lighthouse](https://developers.google.com/web/tools/lighthouse/)를 사용해서 프로젝트를 점검하려면 `package.json` 파일에 다음 내용을 추가해야 합니다.
 이 설정은 [이전 버전의 CSS Flexbox](https://developers.google.com/web/tools/lighthouse/audits/old-flexbox)를 지원하지 않겠다는 것을 의미합니다.
+=======
+### Backward compatibility with Lighthouse
+
+If you want to produce a progressive web app and are using [Lighthouse](https://developers.google.com/web/tools/lighthouse/) to grade the project, add the following `browserslist` entry to your `package.json` file, in order to eliminate the [old flexbox](https://developers.google.com/web/tools/lighthouse/audits/old-flexbox) prefixes:
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 ```
 "browserslist": [
@@ -530,7 +586,23 @@ PWA 앱을 대상으로 [Lighthouse](https://developers.google.com/web/tools/lig
 ]
 ```
 
-</div>
+### Backward compatibility with CSS grid
+
+CSS grid layout support in Autoprefixer, which was previously on by default, is off by default in Angular 8 and higher.
+
+To use CSS grid with IE10/11, you must explicitly enable it using the `autoplace` option.
+To do this, add the following to the top of the global styles file (or within a specific css selector scope):
+
+```
+/* autoprefixer grid: autoplace /
+```
+or
+```
+/ autoprefixer grid: no-autoplace */
+```
+
+For more information, see [Autoprefixer documentation](https://autoprefixer.github.io/).
+
 
 {@a proxy}
 
@@ -539,16 +611,24 @@ PWA 앱을 대상으로 [Lighthouse](https://developers.google.com/web/tools/lig
 -->
 ## 백엔드 서버 프록시 설정하기
 
+<<<<<<< HEAD
 <!--
 You can use the [proxying support](https://webpack.js.org/configuration/dev-server/#devserver-proxy) in the `webpack` dev server to divert certain URLs to a backend server, by passing a file to the `--proxy-config` build option.
+=======
+You can use the [proxying support](https://webpack.js.org/configuration/dev-server/#devserverproxy) in the `webpack` dev server to divert certain URLs to a backend server, by passing a file to the `--proxy-config` build option.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 For example, to divert all calls for `http://localhost:4200/api` to a server running on `http://localhost:3000/api`, take the following steps.
 -->
 Angular CLI가 제공하는 개발 서버는 `webpack` 개발 서버를 사용하기 때문에 특정 백엔드 주소로 향하는 HTTP 요청에 대해 프록시를 설정할 수 있습니다.
 이 프록시 설정은 빌드할 때 `--proxy-config` 옵션을 사용하거나 `angular.json` 파일에 지정해 두는 방식으로 사용합니다.
 예를 들어 `http://localhost:4200/api`로 요청하는 모든 HTTP 요청을 `http://localhost:3000/api`로 보내려면 다음과 같이 설정합니다.
 
+<<<<<<< HEAD
 <!--
 1. Create a file `proxy.conf.json` in the projects `src/` folder, in the same directory as `package.json`.
+=======
+1. Create a file `proxy.conf.json` in your project's `src/` folder.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 1. Add the following content to the new proxy file:
 -->
@@ -579,11 +659,18 @@ Angular CLI가 제공하는 개발 서버는 `webpack` 개발 서버를 사용�
     ...
     ```
 
+<<<<<<< HEAD
 1. `ng serve` 명령을 실행해서 이 프록시 설정으로 개발 서버를 실행합니다.
 
 <!--
 You can edit the proxy configuration file to add configuration options; some examples are given below. 
 For a description of all options, see [webpack DevServer documentation](https://webpack.js.org/configuration/dev-server/#devserver-proxy).
+=======
+1. To run the dev server with this proxy configuration, call `ng serve`.
+
+You can edit the proxy configuration file to add configuration options; some examples are given below.
+For a description of all options, see [webpack DevServer documentation](https://webpack.js.org/configuration/dev-server/#devserverproxy).
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 Note that if you edit the proxy configuration file, you must relaunch the `ng serve` process to make your changes effective.
 -->
@@ -597,8 +684,12 @@ Note that if you edit the proxy configuration file, you must relaunch the `ng se
 -->
 ### 요청하는 URL 주소 변경하기
 
+<<<<<<< HEAD
 <!--
 The `pathRewrite` proxy configuration option lets you rewrite the URL path at run time. 
+=======
+The `pathRewrite` proxy configuration option lets you rewrite the URL path at run time.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 For example, you can specify the following `pathRewrite` value to the proxy configuration to remove "api" from the end of a path.
 -->
 프록시 설정 옵션 중 `pathRewrite` 옵션을 사용하면 애플리케이션이 실행되면서 요청하는 URL 주소를 다른 주소로 변경할 수 있습니다.
@@ -662,8 +753,12 @@ Proxy log levels are `info` (the default), `debug`, `warn`, `error`, and `silent
 -->
 ### 특정 주소에 대해 프록시 설정하기
 
+<<<<<<< HEAD
 <!--
 You can  proxy multiple entries to the same target by defining the configuration in JavaScript.
+=======
+You can proxy multiple entries to the same target by defining the configuration in JavaScript.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 Set the proxy configuration file to `proxy.conf.js` (instead of `proxy.conf.json`), and specify configuration files as in the following example.
 -->
@@ -742,8 +837,12 @@ module.exports = PROXY_CONFIG;
 -->
 ### 사내 프록시 활용하기
 
+<<<<<<< HEAD
 <!--
 If you work behind a corporate proxy, the cannot directly proxy calls to any URL outside your local network. 
+=======
+If you work behind a corporate proxy, the backend cannot directly proxy calls to any URL outside your local network.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 In this case, you can configure the backend proxy to redirect calls through your corporate proxy using an agent:
 -->
 개발환경에 사내용 프록시를 사용한다면 로컬 네트워크에서 회사 외부 URL로 직접 프록시 요청을 보낼 수 없습니다.
@@ -786,4 +885,3 @@ function setupForCorporateProxy(proxyConfig) {
 
 module.exports = setupForCorporateProxy(proxyConfig);
 ```
-

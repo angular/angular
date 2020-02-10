@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # NgModule FAQs
 
 <!--
@@ -12,6 +13,9 @@ A basic understanding of the following concepts:
 * [NgModule](guide/ngmodules)
 
 <hr />
+=======
+# NgModule FAQ
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 NgModules help organize an application into cohesive blocks of functionality.
@@ -901,8 +905,7 @@ Here is a custom constructor for an NgModule called `GreetingModule`.
 그리고 `BrowserModule`과 같은 모듈은 이 문제를 방지하는 로직을 따로 마련하기도 했습니다.
 `BrowserModule`이 로드되기 전에 `GreetingModule`이 이미 로드되었다면, 이 모듈은 다음과 같은 로직으로 에러를 발생시킵니다.
 
-<code-example path="ngmodules/src/app/greeting/greeting.module.ts" region="ctor" header="src/app/greeting/greeting.module.ts (Constructor)" linenums="false">
-</code-example>
+<code-example path="ngmodules/src/app/greeting/greeting.module.ts" region="ctor" header="src/app/greeting/greeting.module.ts (Constructor)"></code-example>
 
 <hr/>
 

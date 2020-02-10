@@ -16,8 +16,6 @@ import {MockRequest} from '../testing/fetch';
 import {MockFileSystemBuilder, MockServerStateBuilder, tmpHashTableForFs} from '../testing/mock';
 import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
 
-import {async_beforeEach, async_fit, async_it} from './async';
-
 (function() {
   // Skip environments that don't support the minimum APIs needed to run the SW tests.
   if (!SwTestHarness.envIsSupported()) {
@@ -36,6 +34,9 @@ import {async_beforeEach, async_fit, async_it} from './async';
           .addFile('/lazy/unchanged2.txt', 'this is unchanged (2)')
           .addUnhashedFile('/unhashed/a.txt', 'this is unhashed', {'Cache-Control': 'max-age=10'})
           .addUnhashedFile('/unhashed/b.txt', 'this is unhashed b', {'Cache-Control': 'no-cache'})
+          .addUnhashedFile('/api/foo', 'this is api foo', {'Cache-Control': 'no-cache'})
+          .addUnhashedFile(
+              '/api-static/bar', 'this is static api bar', {'Cache-Control': 'no-cache'})
           .build();
 
   const distUpdate =
@@ -54,7 +55,10 @@ import {async_beforeEach, async_fit, async_it} from './async';
           .addUnhashedFile('/ignored/dir/file2', 'this is not handled by the SW either')
           .build();
 
-  const brokenFs = new MockFileSystemBuilder().addFile('/foo.txt', 'this is foo').build();
+  const brokenFs = new MockFileSystemBuilder()
+                       .addFile('/foo.txt', 'this is foo (broken)')
+                       .addFile('/bar.txt', 'this is bar (broken)')
+                       .build();
 
   const brokenManifest: Manifest = {
     configVersion: 1,
@@ -72,6 +76,35 @@ import {async_beforeEach, async_fit, async_it} from './async';
     dataGroups: [],
     navigationUrls: processNavigationUrls(''),
     hashTable: tmpHashTableForFs(brokenFs, {'/foo.txt': true}),
+  };
+
+  const brokenLazyManifest: Manifest = {
+    configVersion: 1,
+    timestamp: 1234567890123,
+    index: '/foo.txt',
+    assetGroups: [
+      {
+        name: 'assets',
+        installMode: 'prefetch',
+        updateMode: 'prefetch',
+        urls: [
+          '/foo.txt',
+        ],
+        patterns: [],
+      },
+      {
+        name: 'lazy-assets',
+        installMode: 'lazy',
+        updateMode: 'lazy',
+        urls: [
+          '/bar.txt',
+        ],
+        patterns: [],
+      },
+    ],
+    dataGroups: [],
+    navigationUrls: processNavigationUrls(''),
+    hashTable: tmpHashTableForFs(brokenFs, {'/bar.txt': true}),
   };
 
   // Manifest without navigation urls to test backward compatibility with
@@ -142,9 +175,19 @@ import {async_beforeEach, async_fit, async_it} from './async';
         version: 42,
         maxAge: 3600000,
         maxSize: 100,
-        strategy: 'performance',
+        strategy: 'freshness',
         patterns: [
           '/api/.*',
+        ],
+      },
+      {
+        name: 'api-static',
+        version: 43,
+        maxAge: 3600000,
+        maxSize: 100,
+        strategy: 'performance',
+        patterns: [
+          '/api-static/.*',
         ],
       },
     ],
@@ -228,6 +271,11 @@ import {async_beforeEach, async_fit, async_it} from './async';
   const brokenServer =
       new MockServerStateBuilder().withStaticFiles(brokenFs).withManifest(brokenManifest).build();
 
+  const brokenLazyServer = new MockServerStateBuilder()
+                               .withStaticFiles(brokenFs)
+                               .withManifest(brokenLazyManifest)
+                               .build();
+
   const server404 = new MockServerStateBuilder().withStaticFiles(dist).build();
 
   const manifestHash = sha1(JSON.stringify(manifest));
@@ -248,19 +296,19 @@ import {async_beforeEach, async_fit, async_it} from './async';
       driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
     });
 
-    async_it('activates without waiting', async() => {
+    it('activates without waiting', async() => {
       const skippedWaiting = await scope.startup(true);
       expect(skippedWaiting).toBe(true);
     });
 
-    async_it('claims all clients, after activation', async() => {
+    it('claims all clients, after activation', async() => {
       const claimSpy = spyOn(scope.clients, 'claim');
 
       await scope.startup(true);
       expect(claimSpy).toHaveBeenCalledTimes(1);
     });
 
-    async_it('cleans up old `@angular/service-worker` caches, after activation', async() => {
+    it('cleans up old `@angular/service-worker` caches, after activation', async() => {
       const claimSpy = spyOn(scope.clients, 'claim');
       const cleanupOldSwCachesSpy = spyOn(driver, 'cleanupOldSwCaches');
 
@@ -274,24 +322,23 @@ import {async_beforeEach, async_fit, async_it} from './async';
       expect(claimSpy).toHaveBeenCalledBefore(cleanupOldSwCachesSpy);
     });
 
-    async_it(
-        'does not blow up if cleaning up old `@angular/service-worker` caches fails', async() => {
-          spyOn(driver, 'cleanupOldSwCaches').and.callFake(() => Promise.reject('Ooops'));
+    it('does not blow up if cleaning up old `@angular/service-worker` caches fails', async() => {
+      spyOn(driver, 'cleanupOldSwCaches').and.callFake(() => Promise.reject('Ooops'));
 
-          // Automatically advance time to trigger idle tasks as they are added.
-          scope.autoAdvanceTime = true;
-          await scope.startup(true);
-          await scope.resolveSelfMessages();
-          scope.autoAdvanceTime = false;
+      // Automatically advance time to trigger idle tasks as they are added.
+      scope.autoAdvanceTime = true;
+      await scope.startup(true);
+      await scope.resolveSelfMessages();
+      scope.autoAdvanceTime = false;
 
-          server.clearRequests();
+      server.clearRequests();
 
-          expect(driver.state).toBe(DriverReadyState.NORMAL);
-          expect(await makeRequest(scope, '/foo.txt')).toBe('this is foo');
-          server.assertNoOtherRequests();
-        });
+      expect(driver.state).toBe(DriverReadyState.NORMAL);
+      expect(await makeRequest(scope, '/foo.txt')).toBe('this is foo');
+      server.assertNoOtherRequests();
+    });
 
-    async_it('initializes prefetched content correctly, after activation', async() => {
+    it('initializes prefetched content correctly, after activation', async() => {
       // Automatically advance time to trigger idle tasks as they are added.
       scope.autoAdvanceTime = true;
       await scope.startup(true);
@@ -307,7 +354,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
       server.assertNoOtherRequests();
     });
 
-    async_it('initializes prefetched content correctly, after a request kicks it off', async() => {
+    it('initializes prefetched content correctly, after a request kicks it off', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
       server.assertSawRequestFor('ngsw.json');
@@ -319,7 +366,49 @@ import {async_beforeEach, async_fit, async_it} from './async';
       server.assertNoOtherRequests();
     });
 
-    async_it('handles non-relative URLs', async() => {
+    it('initializes the service worker on fetch if it has not yet been initialized', async() => {
+      // Driver is initially uninitialized.
+      expect(driver.initialized).toBeNull();
+      expect(driver['latestHash']).toBeNull();
+
+      // Making a request initializes the driver (fetches assets).
+      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+      expect(driver['latestHash']).toEqual(jasmine.any(String));
+      server.assertSawRequestFor('ngsw.json');
+      server.assertSawRequestFor('/foo.txt');
+      server.assertSawRequestFor('/bar.txt');
+      server.assertSawRequestFor('/redirected.txt');
+
+      // Once initialized, cached resources are served without network requests.
+      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+      expect(await makeRequest(scope, '/bar.txt')).toEqual('this is bar');
+      server.assertNoOtherRequests();
+    });
+
+    it('initializes the service worker on message if it has not yet been initialized', async() => {
+      // Driver is initially uninitialized.
+      expect(driver.initialized).toBeNull();
+      expect(driver['latestHash']).toBeNull();
+
+      // Pushing a message initializes the driver (fetches assets).
+      await scope.handleMessage({action: 'foo'}, 'someClient');
+      expect(driver['latestHash']).toEqual(jasmine.any(String));
+      server.assertSawRequestFor('ngsw.json');
+      server.assertSawRequestFor('/foo.txt');
+      server.assertSawRequestFor('/bar.txt');
+      server.assertSawRequestFor('/redirected.txt');
+
+      // Once initialized, pushed messages are handled without re-initializing.
+      await scope.handleMessage({action: 'bar'}, 'someClient');
+      server.assertNoOtherRequests();
+
+      // Once initialized, cached resources are served without network requests.
+      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+      expect(await makeRequest(scope, '/bar.txt')).toEqual('this is bar');
+      server.assertNoOtherRequests();
+    });
+
+    it('handles non-relative URLs', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
       server.clearRequests();
@@ -327,7 +416,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
       server.assertNoOtherRequests();
     });
 
-    async_it('handles actual errors from the browser', async() => {
+    it('handles actual errors from the browser', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
       server.clearRequests();
@@ -339,7 +428,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
       expect(res.statusText).toEqual('Gateway Timeout');
     });
 
-    async_it('handles redirected responses', async() => {
+    it('handles redirected responses', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
       server.clearRequests();
@@ -347,7 +436,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
       server.assertNoOtherRequests();
     });
 
-    async_it('caches lazy content on-request', async() => {
+    it('caches lazy content on-request', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
       server.clearRequests();
@@ -361,7 +450,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
       server.assertNoOtherRequests();
     });
 
-    async_it('updates to new content when requested', async() => {
+    it('updates to new content when requested', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
 
@@ -394,7 +483,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
       serverUpdate.assertNoOtherRequests();
     });
 
-    async_it('detects new version even if only `manifest.timestamp` is different', async() => {
+    it('detects new version even if only `manifest.timestamp` is different', async() => {
       expect(await makeRequest(scope, '/foo.txt', 'newClient')).toEqual('this is foo');
       await driver.initialized;
 
@@ -407,7 +496,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
       expect(await makeRequest(scope, '/foo.txt', 'newestClient')).toEqual('this is foo');
     });
 
-    async_it('updates a specific client to new content on request', async() => {
+    it('updates a specific client to new content on request', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
 
@@ -435,16 +524,10 @@ import {async_beforeEach, async_fit, async_it} from './async';
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo v2');
     });
 
-    async_it('handles empty client ID', async() => {
-      const navRequest = (url: string, clientId: string | null) =>
-          makeRequest(scope, url, clientId, {
-            headers: {Accept: 'text/plain, text/html, text/css'},
-            mode: 'navigate',
-          });
-
+    it('handles empty client ID', async() => {
       // Initialize the SW.
-      expect(await navRequest('/foo/file1', '')).toEqual('this is foo');
-      expect(await navRequest('/bar/file2', null)).toEqual('this is foo');
+      expect(await makeNavigationRequest(scope, '/foo/file1', '')).toEqual('this is foo');
+      expect(await makeNavigationRequest(scope, '/bar/file2', null)).toEqual('this is foo');
       await driver.initialized;
 
       // Update to a new version.
@@ -452,11 +535,11 @@ import {async_beforeEach, async_fit, async_it} from './async';
       expect(await driver.checkForUpdate()).toEqual(true);
 
       // Correctly handle navigation requests, even if `clientId` is null/empty.
-      expect(await navRequest('/foo/file1', '')).toEqual('this is foo v2');
-      expect(await navRequest('/bar/file2', null)).toEqual('this is foo v2');
+      expect(await makeNavigationRequest(scope, '/foo/file1', '')).toEqual('this is foo v2');
+      expect(await makeNavigationRequest(scope, '/bar/file2', null)).toEqual('this is foo v2');
     });
 
-    async_it('checks for updates on restart', async() => {
+    it('checks for updates on restart', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
 
@@ -478,14 +561,12 @@ import {async_beforeEach, async_fit, async_it} from './async';
       serverUpdate.assertNoOtherRequests();
     });
 
-    async_it('checks for updates on navigation', async() => {
+    it('checks for updates on navigation', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
       server.clearRequests();
 
-      expect(await makeRequest(scope, '/foo.txt', 'default', {
-        mode: 'navigate',
-      })).toEqual('this is foo');
+      expect(await makeNavigationRequest(scope, '/foo.txt')).toEqual('this is foo');
 
       scope.advance(12000);
       await driver.idle.empty;
@@ -493,18 +574,14 @@ import {async_beforeEach, async_fit, async_it} from './async';
       server.assertSawRequestFor('ngsw.json');
     });
 
-    async_it('does not make concurrent checks for updates on navigation', async() => {
+    it('does not make concurrent checks for updates on navigation', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
       server.clearRequests();
 
-      expect(await makeRequest(scope, '/foo.txt', 'default', {
-        mode: 'navigate',
-      })).toEqual('this is foo');
+      expect(await makeNavigationRequest(scope, '/foo.txt')).toEqual('this is foo');
 
-      expect(await makeRequest(scope, '/foo.txt', 'default', {
-        mode: 'navigate',
-      })).toEqual('this is foo');
+      expect(await makeNavigationRequest(scope, '/foo.txt')).toEqual('this is foo');
 
       scope.advance(12000);
       await driver.idle.empty;
@@ -513,7 +590,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
       server.assertNoOtherRequests();
     });
 
-    async_it('preserves multiple client assignments across restarts', async() => {
+    it('preserves multiple client assignments across restarts', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
 
@@ -533,7 +610,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
       serverUpdate.assertNoOtherRequests();
     });
 
-    async_it('updates when refreshed', async() => {
+    it('updates when refreshed', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
 
@@ -543,12 +620,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
       expect(await driver.checkForUpdate()).toEqual(true);
       serverUpdate.clearRequests();
 
-      expect(await makeRequest(scope, '/file1', 'default', {
-        headers: {
-          'Accept': 'text/plain, text/html, text/css',
-        },
-        mode: 'navigate',
-      })).toEqual('this is foo v2');
+      expect(await makeNavigationRequest(scope, '/file1')).toEqual('this is foo v2');
 
       expect(client.messages).toEqual([
         {
@@ -565,7 +637,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
       serverUpdate.assertNoOtherRequests();
     });
 
-    async_it('cleans up properly when manually requested', async() => {
+    it('cleans up properly when manually requested', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
 
@@ -585,7 +657,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
       serverUpdate.assertNoOtherRequests();
     });
 
-    async_it('cleans up properly on restart', async() => {
+    it('cleans up properly on restart', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
 
@@ -616,7 +688,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
       expect(hasOriginalCaches).toEqual(false);
     });
 
-    async_it('shows notifications for push notifications', async() => {
+    it('shows notifications for push notifications', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
       await scope.handlePush({
@@ -640,7 +712,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
       }]);
     });
 
-    async_it('broadcasts notification click events with action', async() => {
+    it('broadcasts notification click events with action', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
       await scope.handleClick(
@@ -653,7 +725,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
       expect(message.data.notification.body).toEqual('Test body with action');
     });
 
-    async_it('broadcasts notification click events without action', async() => {
+    it('broadcasts notification click events without action', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
       await scope.handleClick(
@@ -666,7 +738,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
       expect(message.data.notification.body).toEqual('Test body without action');
     });
 
-    async_it('prefetches updates to lazy cache when set', async() => {
+    it('prefetches updates to lazy cache when set', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
 
@@ -711,14 +783,14 @@ import {async_beforeEach, async_fit, async_it} from './async';
       serverUpdate.assertNoOtherRequests();
     });
 
-    async_it('should bypass serviceworker on ngsw-bypass parameter', async() => {
+    it('should bypass serviceworker on ngsw-bypass parameter', async() => {
       await makeRequest(scope, '/foo.txt', undefined, {headers: {'ngsw-bypass': 'true'}});
       server.assertNoRequestFor('/foo.txt');
 
       await makeRequest(scope, '/foo.txt', undefined, {headers: {'ngsw-bypass': 'anything'}});
       server.assertNoRequestFor('/foo.txt');
 
-      await makeRequest(scope, '/foo.txt', undefined, {headers: {'ngsw-bypass': null}});
+      await makeRequest(scope, '/foo.txt', undefined, {headers: {'ngsw-bypass': null !}});
       server.assertNoRequestFor('/foo.txt');
 
       await makeRequest(scope, '/foo.txt', undefined, {headers: {'NGSW-bypass': 'upperCASE'}});
@@ -779,7 +851,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
 
     });
 
-    async_it('unregisters when manifest 404s', async() => {
+    it('unregisters when manifest 404s', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
 
@@ -789,7 +861,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
       expect(await scope.caches.keys()).toEqual([]);
     });
 
-    async_it('does not unregister or change state when offline (i.e. manifest 504s)', async() => {
+    it('does not unregister or change state when offline (i.e. manifest 504s)', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
       server.online = false;
@@ -812,6 +884,9 @@ import {async_beforeEach, async_fit, async_it} from './async';
            `ngsw:${baseHref}:42:data:dynamic:api:cache`,
            `ngsw:${baseHref}:db:ngsw:${baseHref}:42:data:dynamic:api:lru`,
            `ngsw:${baseHref}:db:ngsw:${baseHref}:42:data:dynamic:api:age`,
+           `ngsw:${baseHref}:43:data:dynamic:api-static:cache`,
+           `ngsw:${baseHref}:db:ngsw:${baseHref}:43:data:dynamic:api-static:lru`,
+           `ngsw:${baseHref}:db:ngsw:${baseHref}:43:data:dynamic:api-static:age`,
       ];
 
       const getClientAssignments = async(sw: SwTestHarness, baseHref: string) => {
@@ -834,7 +909,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
         return newScope;
       };
 
-      async_it('includes the SW scope in all cache names', async() => {
+      it('includes the SW scope in all cache names', async() => {
         // Default SW with scope `/`.
         await makeRequest(scope, '/foo.txt');
         await driver.initialized;
@@ -851,7 +926,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
         expect(fooCacheNames.every(name => name.includes('/foo/'))).toBe(true);
       });
 
-      async_it('does not affect caches from other scopes', async() => {
+      it('does not affect caches from other scopes', async() => {
         // Create SW with scope `/foo/`.
         const fooScope = await initializeSwFor('/foo/');
         const fooAssignments = await getClientAssignments(fooScope, '/foo/');
@@ -874,7 +949,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
         expect(fooAssignments2).toEqual({_foo_: manifestHash});
       });
 
-      async_it('updates existing caches for same scope', async() => {
+      it('updates existing caches for same scope', async() => {
         // Create SW with scope `/foo/`.
         const fooScope = await initializeSwFor('/foo/');
         await makeRequest(fooScope, '/foo.txt', '_bar_');
@@ -910,27 +985,27 @@ import {async_beforeEach, async_fit, async_it} from './async';
     });
 
     describe('unhashed requests', () => {
-      async_beforeEach(async() => {
+      beforeEach(async() => {
         expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
         await driver.initialized;
         server.clearRequests();
       });
 
-      async_it('are cached appropriately', async() => {
+      it('are cached appropriately', async() => {
         expect(await makeRequest(scope, '/unhashed/a.txt')).toEqual('this is unhashed');
         server.assertSawRequestFor('/unhashed/a.txt');
         expect(await makeRequest(scope, '/unhashed/a.txt')).toEqual('this is unhashed');
         server.assertNoOtherRequests();
       });
 
-      async_it(`doesn't error when 'Cache-Control' is 'no-cache'`, async() => {
+      it(`doesn't error when 'Cache-Control' is 'no-cache'`, async() => {
         expect(await makeRequest(scope, '/unhashed/b.txt')).toEqual('this is unhashed b');
         server.assertSawRequestFor('/unhashed/b.txt');
         expect(await makeRequest(scope, '/unhashed/b.txt')).toEqual('this is unhashed b');
         server.assertNoOtherRequests();
       });
 
-      async_it('avoid opaque responses', async() => {
+      it('avoid opaque responses', async() => {
         expect(await makeRequest(scope, '/unhashed/a.txt', 'default', {
           credentials: 'include'
         })).toEqual('this is unhashed');
@@ -939,7 +1014,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
         server.assertNoOtherRequests();
       });
 
-      async_it('expire according to Cache-Control headers', async() => {
+      it('expire according to Cache-Control headers', async() => {
         expect(await makeRequest(scope, '/unhashed/a.txt')).toEqual('this is unhashed');
         server.clearRequests();
 
@@ -962,7 +1037,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
         server.assertNoOtherRequests();
       });
 
-      async_it('survive serialization', async() => {
+      it('survive serialization', async() => {
         expect(await makeRequest(scope, '/unhashed/a.txt')).toEqual('this is unhashed');
         server.clearRequests();
 
@@ -985,7 +1060,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
         server.assertNoRequestFor('/unhashed/a.txt');
       });
 
-      async_it('get carried over during updates', async() => {
+      it('get carried over during updates', async() => {
         expect(await makeRequest(scope, '/unhashed/a.txt')).toEqual('this is unhashed');
         server.clearRequests();
 
@@ -1015,33 +1090,31 @@ import {async_beforeEach, async_fit, async_it} from './async';
     });
 
     describe('routing', () => {
-      const navRequest = (url: string, init = {}) => makeRequest(scope, url, undefined, {
-        headers: {Accept: 'text/plain, text/html, text/css'},
-        mode: 'navigate', ...init,
-      });
+      const navRequest = (url: string, init = {}) =>
+          makeNavigationRequest(scope, url, undefined, init);
 
-      async_beforeEach(async() => {
+      beforeEach(async() => {
         expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
         await driver.initialized;
         server.clearRequests();
       });
 
-      async_it('redirects to index on a route-like request', async() => {
+      it('redirects to index on a route-like request', async() => {
         expect(await navRequest('/baz')).toEqual('this is foo');
         server.assertNoOtherRequests();
       });
 
-      async_it('redirects to index on a request to the origin URL request', async() => {
+      it('redirects to index on a request to the origin URL request', async() => {
         expect(await navRequest('http://localhost/')).toEqual('this is foo');
         server.assertNoOtherRequests();
       });
 
-      async_it('does not redirect to index on a non-navigation request', async() => {
+      it('does not redirect to index on a non-navigation request', async() => {
         expect(await navRequest('/baz', {mode: undefined})).toBeNull();
         server.assertSawRequestFor('/baz');
       });
 
-      async_it('does not redirect to index on a request that does not accept HTML', async() => {
+      it('does not redirect to index on a request that does not accept HTML', async() => {
         expect(await navRequest('/baz', {headers: {}})).toBeNull();
         server.assertSawRequestFor('/baz');
 
@@ -1049,7 +1122,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
         server.assertSawRequestFor('/qux');
       });
 
-      async_it('does not redirect to index on a request with an extension', async() => {
+      it('does not redirect to index on a request with an extension', async() => {
         expect(await navRequest('/baz.html')).toBeNull();
         server.assertSawRequestFor('/baz.html');
 
@@ -1058,7 +1131,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
         server.assertNoOtherRequests();
       });
 
-      async_it('does not redirect to index if the URL contains `__`', async() => {
+      it('does not redirect to index if the URL contains `__`', async() => {
         expect(await navRequest('/baz/x__x')).toBeNull();
         server.assertSawRequestFor('/baz/x__x');
 
@@ -1073,13 +1146,13 @@ import {async_beforeEach, async_fit, async_it} from './async';
       });
 
       describe('(with custom `navigationUrls`)', () => {
-        async_beforeEach(async() => {
+        beforeEach(async() => {
           scope.updateServerState(serverUpdate);
           await driver.checkForUpdate();
           serverUpdate.clearRequests();
         });
 
-        async_it('redirects to index on a request that matches any positive pattern', async() => {
+        it('redirects to index on a request that matches any positive pattern', async() => {
           expect(await navRequest('/foo/file0')).toBeNull();
           serverUpdate.assertSawRequestFor('/foo/file0');
 
@@ -1090,21 +1163,19 @@ import {async_beforeEach, async_fit, async_it} from './async';
           serverUpdate.assertNoOtherRequests();
         });
 
-        async_it(
-            'does not redirect to index on a request that matches any negative pattern',
-            async() => {
-              expect(await navRequest('/ignored/file1')).toBe('this is not handled by the SW');
-              serverUpdate.assertSawRequestFor('/ignored/file1');
+        it('does not redirect to index on a request that matches any negative pattern', async() => {
+          expect(await navRequest('/ignored/file1')).toBe('this is not handled by the SW');
+          serverUpdate.assertSawRequestFor('/ignored/file1');
 
-              expect(await navRequest('/ignored/dir/file2'))
-                  .toBe('this is not handled by the SW either');
-              serverUpdate.assertSawRequestFor('/ignored/dir/file2');
+          expect(await navRequest('/ignored/dir/file2'))
+              .toBe('this is not handled by the SW either');
+          serverUpdate.assertSawRequestFor('/ignored/dir/file2');
 
-              expect(await navRequest('/ignored/directory/file2')).toBe('this is foo v2');
-              serverUpdate.assertNoOtherRequests();
-            });
+          expect(await navRequest('/ignored/directory/file2')).toBe('this is foo v2');
+          serverUpdate.assertNoOtherRequests();
+        });
 
-        async_it('strips URL query before checking `navigationUrls`', async() => {
+        it('strips URL query before checking `navigationUrls`', async() => {
           expect(await navRequest('/foo/file1?query=/a/b')).toBe('this is foo v2');
           serverUpdate.assertNoOtherRequests();
 
@@ -1117,7 +1188,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
           serverUpdate.assertSawRequestFor('/ignored/dir/file2');
         });
 
-        async_it('strips registration scope before checking `navigationUrls`', async() => {
+        it('strips registration scope before checking `navigationUrls`', async() => {
           expect(await navRequest('http://localhost/ignored/file1'))
               .toBe('this is not handled by the SW');
           serverUpdate.assertSawRequestFor('/ignored/file1');
@@ -1126,7 +1197,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
     });
 
     describe('cleanupOldSwCaches()', () => {
-      async_it('should delete the correct caches', async() => {
+      it('should delete the correct caches', async() => {
         const oldSwCacheNames = [
           // Example cache names from the beta versions of `@angular/service-worker`.
           'ngsw:active',
@@ -1152,7 +1223,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
         expect(await scope.caches.keys()).toEqual(otherCacheNames);
       });
 
-      async_it('should delete other caches even if deleting one of them fails', async() => {
+      it('should delete other caches even if deleting one of them fails', async() => {
         const oldSwCacheNames = ['ngsw:active', 'ngsw:staged', 'ngsw:manifest:a1b2c3:super:duper'];
         const deleteSpy = spyOn(scope.caches, 'delete')
                               .and.callFake(
@@ -1169,15 +1240,15 @@ import {async_beforeEach, async_fit, async_it} from './async';
     });
 
     describe('bugs', () => {
-      async_it('does not crash with bad index hash', async() => {
+      it('does not crash with bad index hash', async() => {
         scope = new SwTestHarnessBuilder().withServerState(brokenServer).build();
         (scope.registration as any).scope = 'http://site.com';
         driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
 
-        expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+        expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo (broken)');
       });
 
-      async_it('enters degraded mode when update has a bad index', async() => {
+      it('enters degraded mode when update has a bad index', async() => {
         expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
         await driver.initialized;
         server.clearRequests();
@@ -1195,7 +1266,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
         expect(driver.state).toEqual(DriverReadyState.EXISTING_CLIENTS_ONLY);
       });
 
-      async_it('enters degraded mode when failing to write to cache', async() => {
+      it('enters degraded mode when failing to write to cache', async() => {
         // Initialize the SW.
         await makeRequest(scope, '/foo.txt');
         await driver.initialized;
@@ -1217,7 +1288,125 @@ import {async_beforeEach, async_fit, async_it} from './async';
         server.assertSawRequestFor('/foo.txt');
       });
 
-      async_it('ignores invalid `only-if-cached` requests ', async() => {
+      it('keeps serving api requests with freshness strategy when failing to write to cache',
+         async() => {
+           // Initialize the SW.
+           expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+           await driver.initialized;
+           server.clearRequests();
+
+           // Make the caches unwritable.
+           spyOn(MockCache.prototype, 'put').and.throwError('Can\'t touch this');
+           spyOn(driver.debugger, 'log');
+
+           expect(await makeRequest(scope, '/api/foo')).toEqual('this is api foo');
+           expect(driver.state).toBe(DriverReadyState.NORMAL);
+           // Since we are swallowing an error here, make sure it is at least properly logged
+           expect(driver.debugger.log)
+               .toHaveBeenCalledWith(
+                   new Error('Can\'t touch this'),
+                   'DataGroup(api@42).safeCacheResponse(/api/foo, status: 200)');
+           server.assertSawRequestFor('/api/foo');
+         });
+
+      it('keeps serving api requests with performance strategy when failing to write to cache',
+         async() => {
+           // Initialize the SW.
+           expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+           await driver.initialized;
+           server.clearRequests();
+
+           // Make the caches unwritable.
+           spyOn(MockCache.prototype, 'put').and.throwError('Can\'t touch this');
+           spyOn(driver.debugger, 'log');
+
+           expect(await makeRequest(scope, '/api-static/bar')).toEqual('this is static api bar');
+           expect(driver.state).toBe(DriverReadyState.NORMAL);
+           // Since we are swallowing an error here, make sure it is at least properly logged
+           expect(driver.debugger.log)
+               .toHaveBeenCalledWith(
+                   new Error('Can\'t touch this'),
+                   'DataGroup(api-static@43).safeCacheResponse(/api-static/bar, status: 200)');
+           server.assertSawRequestFor('/api-static/bar');
+         });
+
+      it('keeps serving mutating api requests when failing to write to cache',
+         // sw can invalidate LRU cache entry and try to write to cache storage on mutating request
+         async() => {
+           // Initialize the SW.
+           expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+           await driver.initialized;
+           server.clearRequests();
+
+           // Make the caches unwritable.
+           spyOn(MockCache.prototype, 'put').and.throwError('Can\'t touch this');
+           spyOn(driver.debugger, 'log');
+           expect(await makeRequest(scope, '/api/foo', 'default', {
+             method: 'post'
+           })).toEqual('this is api foo');
+           expect(driver.state).toBe(DriverReadyState.NORMAL);
+           // Since we are swallowing an error here, make sure it is at least properly logged
+           expect(driver.debugger.log)
+               .toHaveBeenCalledWith(new Error('Can\'t touch this'), 'DataGroup(api@42).syncLru()');
+           server.assertSawRequestFor('/api/foo');
+         });
+
+      it('enters degraded mode when something goes wrong with the latest version', async() => {
+        await driver.initialized;
+
+        // Two clients on initial version.
+        expect(await makeRequest(scope, '/foo.txt', 'client1')).toBe('this is foo');
+        expect(await makeRequest(scope, '/foo.txt', 'client2')).toBe('this is foo');
+
+        // Install a broken version (`bar.txt` has invalid hash).
+        scope.updateServerState(brokenLazyServer);
+        await driver.checkForUpdate();
+
+        // Update `client1` but not `client2`.
+        await makeNavigationRequest(scope, '/', 'client1');
+        server.clearRequests();
+        brokenLazyServer.clearRequests();
+
+        expect(await makeRequest(scope, '/foo.txt', 'client1')).toBe('this is foo (broken)');
+        expect(await makeRequest(scope, '/foo.txt', 'client2')).toBe('this is foo');
+        server.assertNoOtherRequests();
+        brokenLazyServer.assertNoOtherRequests();
+
+        // Trying to fetch `bar.txt` (which has an invalid hash) should invalidate the latest
+        // version, enter degraded mode and "forget" clients that are on that version (i.e.
+        // `client1`).
+        expect(await makeRequest(scope, '/bar.txt', 'client1')).toBe('this is bar (broken)');
+        expect(driver.state).toBe(DriverReadyState.EXISTING_CLIENTS_ONLY);
+        brokenLazyServer.sawRequestFor('/bar.txt');
+        brokenLazyServer.clearRequests();
+
+        // `client1` should not be served from the network.
+        expect(await makeRequest(scope, '/foo.txt', 'client1')).toBe('this is foo (broken)');
+        brokenLazyServer.sawRequestFor('/foo.txt');
+
+        // `client2` should still be served from the old version (since it never updated).
+        expect(await makeRequest(scope, '/foo.txt', 'client2')).toBe('this is foo');
+        server.assertNoOtherRequests();
+        brokenLazyServer.assertNoOtherRequests();
+      });
+
+      it('recovers from degraded `EXISTING_CLIENTS_ONLY` mode as soon as there is a valid update',
+         async() => {
+           await driver.initialized;
+           expect(driver.state).toBe(DriverReadyState.NORMAL);
+
+           // Install a broken version.
+           scope.updateServerState(brokenServer);
+           await driver.checkForUpdate();
+           expect(driver.state).toBe(DriverReadyState.EXISTING_CLIENTS_ONLY);
+
+           // Install a good version.
+           scope.updateServerState(serverUpdate);
+           await driver.checkForUpdate();
+           expect(driver.state).toBe(DriverReadyState.NORMAL);
+         });
+
+      it('ignores invalid `only-if-cached` requests ', async() => {
         const requestFoo = (cache: RequestCache | 'only-if-cached', mode: RequestMode) =>
             makeRequest(scope, '/foo.txt', undefined, {cache, mode});
 
@@ -1226,7 +1415,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
         expect(await requestFoo('only-if-cached', 'no-cors')).toBeNull();
       });
 
-      async_it('ignores passive mixed content requests ', async() => {
+      it('ignores passive mixed content requests ', async() => {
         const scopeFetchSpy = spyOn(scope, 'fetch').and.callThrough();
         const getRequestUrls = () => scopeFetchSpy.calls.allArgs().map(args => args[0].url);
 
@@ -1258,7 +1447,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
         expect(requestUrls2).toContain(httpsRequestUrl);
       });
 
-      describe('Backwards compatibility with v5', () => {
+      describe('backwards compatibility with v5', () => {
         beforeEach(() => {
           const serverV5 = new MockServerStateBuilder()
                                .withStaticFiles(dist)
@@ -1270,27 +1459,38 @@ import {async_beforeEach, async_fit, async_it} from './async';
         });
 
         // Test this bug: https://github.com/angular/angular/issues/27209
-        async_it(
-            'Fill previous versions of manifests with default navigation urls for backwards compatibility',
-            async() => {
-              expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
-              await driver.initialized;
-              scope.updateServerState(serverUpdate);
-              expect(await driver.checkForUpdate()).toEqual(true);
-            });
+        it('fills previous versions of manifests with default navigation urls for backwards compatibility',
+           async() => {
+             expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+             await driver.initialized;
+             scope.updateServerState(serverUpdate);
+             expect(await driver.checkForUpdate()).toEqual(true);
+           });
       });
     });
   });
 })();
 
 async function makeRequest(
-    scope: SwTestHarness, url: string, clientId: string | null = 'default',
-    init?: Object): Promise<string|null> {
-  const [resPromise, done] = scope.handleFetch(new MockRequest(url, init), clientId);
-  await done;
-  const res = await resPromise;
-  if (res !== undefined && res.ok) {
-    return res.text();
-  }
-  return null;
-}
+    scope: SwTestHarness, url: string, clientId: string | null = 'default', init?: Object):
+    Promise<string|null> {
+      const [resPromise, done] = scope.handleFetch(new MockRequest(url, init), clientId);
+      await done;
+      const res = await resPromise;
+      if (res !== undefined && res.ok) {
+        return res.text();
+      }
+      return null;
+    }
+
+function makeNavigationRequest(
+    scope: SwTestHarness, url: string, clientId?: string | null, init: Object = {}):
+    Promise<string|null> {
+      return makeRequest(scope, url, clientId, {
+        headers: {
+          Accept: 'text/plain, text/html, text/css',
+          ...(init as any).headers,
+        },
+        mode: 'navigate', ...init,
+      });
+    }

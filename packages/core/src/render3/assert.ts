@@ -10,14 +10,18 @@ import {assertDefined, assertEqual, throwError} from '../util/assert';
 
 import {getComponentDef, getNgModuleDef} from './definition';
 import {TNode} from './interfaces/node';
-import {LView} from './interfaces/view';
-import {isLContainer, isLView} from './util/view_utils';
+import {isLContainer, isLView} from './interfaces/type_checks';
+import {LView, TVIEW, TView} from './interfaces/view';
 
+export function assertTNodeForLView(tNode: TNode, lView: LView) {
+  tNode.hasOwnProperty('tView_') && assertEqual(
+                                        (tNode as any as{tView_: TView}).tView_, lView[TVIEW],
+                                        'This TNode does not belong to this LView.');
+}
 
 export function assertComponentType(
     actual: any,
-    msg: string =
-        'Type passed in is not ComponentType, it does not have \'ngComponentDef\' property.') {
+    msg: string = 'Type passed in is not ComponentType, it does not have \'ɵcmp\' property.') {
   if (!getComponentDef(actual)) {
     throwError(msg);
   }
@@ -25,8 +29,7 @@ export function assertComponentType(
 
 export function assertNgModuleType(
     actual: any,
-    msg: string =
-        'Type passed in is not NgModuleType, it does not have \'ngModuleDef\' property.') {
+    msg: string = 'Type passed in is not NgModuleType, it does not have \'ɵmod\' property.') {
   if (!getNgModuleDef(actual)) {
     throwError(msg);
   }
@@ -63,4 +66,25 @@ export function assertLViewOrUndefined(value: any): void {
 export function assertLView(value: any) {
   assertDefined(value, 'LView must be defined');
   assertEqual(isLView(value), true, 'Expecting LView');
+}
+
+export function assertFirstCreatePass(tView: TView, errMessage?: string) {
+  assertEqual(
+      tView.firstCreatePass, true, errMessage || 'Should only be called in first create pass.');
+}
+
+export function assertFirstUpdatePass(tView: TView, errMessage?: string) {
+  assertEqual(
+      tView.firstUpdatePass, true, errMessage || 'Should only be called in first update pass.');
+}
+
+/**
+ * This is a basic sanity check that an object is probably a directive def. DirectiveDef is
+ * an interface, so we can't do a direct instanceof check.
+ */
+export function assertDirectiveDef(obj: any) {
+  if (obj.type === undefined || obj.selectors == undefined || obj.inputs === undefined) {
+    throwError(
+        `Expected a DirectiveDef/ComponentDef and this object does not seem to have the expected shape.`);
+  }
 }

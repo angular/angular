@@ -8,29 +8,52 @@
 
 import '../util/ng_dev_mode';
 
-import {assertDefined, assertNotEqual} from '../util/assert';
+import {assertDefined, assertEqual, assertNotEqual} from '../util/assert';
 
 import {AttributeMarker, TAttributes, TNode, TNodeType, unusedValueExportToPlacateAjd as unused1} from './interfaces/node';
 import {CssSelector, CssSelectorList, SelectorFlags, unusedValueExportToPlacateAjd as unused2} from './interfaces/projection';
-import {getInitialClassNameValue} from './styling/class_and_style_bindings';
+import {classIndexOf} from './styling/class_differ';
 import {isNameOnlyAttributeMarker} from './util/attrs_utils';
 
 const unusedValueToPlacateAjd = unused1 + unused2;
 
 const NG_TEMPLATE_SELECTOR = 'ng-template';
 
-function isCssClassMatching(nodeClassAttrVal: string, cssClassToMatch: string): boolean {
-  const nodeClassesLen = nodeClassAttrVal.length;
-  const matchIndex = nodeClassAttrVal !.indexOf(cssClassToMatch);
-  const matchEndIdx = matchIndex + cssClassToMatch.length;
-  if (matchIndex === -1                                                  // no match
-      || (matchIndex > 0 && nodeClassAttrVal ![matchIndex - 1] !== ' ')  // no space before
-      ||
-      (matchEndIdx < nodeClassesLen && nodeClassAttrVal ![matchEndIdx] !== ' '))  // no space after
-  {
-    return false;
+/**
+ * Search the `TAttributes` to see if it contains `cssClassToMatch` (case insensitive)
+ *
+ * @param attrs `TAttributes` to search through.
+ * @param cssClassToMatch class to match (lowercase)
+ * @param isProjectionMode Whether or not class matching should look into the attribute `class` in
+ *    addition to the `AttributeMarker.Classes`.
+ */
+function isCssClassMatching(
+    attrs: TAttributes, cssClassToMatch: string, isProjectionMode: boolean): boolean {
+  // TODO(misko): The fact that this function needs to know about `isProjectionMode` seems suspect.
+  // It is strange to me that sometimes the class information comes in form of `class` attribute
+  // and sometimes in form of `AttributeMarker.Classes`. Some investigation is needed to determine
+  // if that is the right behavior.
+  ngDevMode &&
+      assertEqual(
+          cssClassToMatch, cssClassToMatch.toLowerCase(), 'Class name expected to be lowercase.');
+  let i = 0;
+  while (i < attrs.length) {
+    let item = attrs[i++];
+    if (isProjectionMode && item === 'class') {
+      item = attrs[i] as string;
+      if (classIndexOf(item.toLowerCase(), cssClassToMatch, 0) !== -1) {
+        return true;
+      }
+    } else if (item === AttributeMarker.Classes) {
+      // We found the classes section. Start searching for the class.
+      while (i < attrs.length && typeof(item = attrs[i++]) == 'string') {
+        // while we have strings
+        if (item.toLowerCase() === cssClassToMatch) return true;
+      }
+      return false;
+    }
   }
-  return true;
+  return false;
 }
 
 /**
@@ -78,7 +101,7 @@ export function isNodeMatchingSelector(
     const current = selector[i];
     if (typeof current === 'number') {
       // If we finish processing a :not selector and it hasn't failed, return false
-      if (!skipToNextSelector && !isPositive(mode) && !isPositive(current as number)) {
+      if (!skipToNextSelector && !isPositive(mode) && !isPositive(current)) {
         return false;
       }
       // If we are skipping to the next :not() and this mode flag is positive,
@@ -103,8 +126,8 @@ export function isNodeMatchingSelector(
 
       // special case for matching against classes when a tNode has been instantiated with
       // class and style values as separate attribute values (e.g. ['title', CLASS, 'foo'])
-      if ((mode & SelectorFlags.CLASS) && tNode.stylingTemplate) {
-        if (!isCssClassMatching(readClassValueFromTNode(tNode), selectorAttrValue as string)) {
+      if ((mode & SelectorFlags.CLASS) && tNode.attrs !== null) {
+        if (!isCssClassMatching(tNode.attrs, selectorAttrValue as string, isProjectionMode)) {
           if (isPositive(mode)) return false;
           skipToNextSelector = true;
         }
@@ -131,12 +154,15 @@ export function isNodeMatchingSelector(
           ngDevMode && assertNotEqual(
                            nodeAttrs[attrIndexInNode], AttributeMarker.NamespaceURI,
                            'We do not match directives on namespaced attributes');
-          nodeAttrValue = nodeAttrs[attrIndexInNode + 1] as string;
+          // we lowercase the attribute value to be able to match
+          // selectors without case-sensitivity
+          // (selectors are already in lowercase when generated)
+          nodeAttrValue = (nodeAttrs[attrIndexInNode + 1] as string).toLowerCase();
         }
 
         const compareAgainstClassName = mode & SelectorFlags.CLASS ? nodeAttrValue : null;
         if (compareAgainstClassName &&
-                !isCssClassMatching(compareAgainstClassName, selectorAttrValue as string) ||
+                classIndexOf(compareAgainstClassName, selectorAttrValue as string, 0) !== -1 ||
             mode & SelectorFlags.ATTRIBUTE && selectorAttrValue !== nodeAttrValue) {
           if (isPositive(mode)) return false;
           skipToNextSelector = true;
@@ -150,16 +176,6 @@ export function isNodeMatchingSelector(
 
 function isPositive(mode: SelectorFlags): boolean {
   return (mode & SelectorFlags.NOT) === 0;
-}
-
-function readClassValueFromTNode(tNode: TNode): string {
-  // comparing against CSS class values is complex because the compiler doesn't place them as
-  // regular attributes when an element is created. Instead, the classes (and styles for
-  // that matter) are placed in a special styling context that is used for resolving all
-  // class/style values across static attributes, [style]/[class] and [style.prop]/[class.name]
-  // bindings. Therefore if and when the styling context exists then the class values are to be
-  // extracted by the context helper code below...
-  return tNode.stylingTemplate ? getInitialClassNameValue(tNode.stylingTemplate) : '';
 }
 
 /**
@@ -207,7 +223,8 @@ function findAttrIndexInNode(
       } else if (
           maybeAttrName === AttributeMarker.Bindings || maybeAttrName === AttributeMarker.I18n) {
         bindingsMode = true;
-      } else if (maybeAttrName === AttributeMarker.Classes) {
+      } else if (
+          maybeAttrName === AttributeMarker.Classes || maybeAttrName === AttributeMarker.Styles) {
         let value = attrs[++i];
         // We should skip classes here because we have a separate mechanism for
         // matching classes in projection mode.
@@ -298,4 +315,77 @@ export function isSelectorInSelectorList(selector: CssSelector, list: CssSelecto
     return true;
   }
   return false;
+}
+
+function maybeWrapInNotSelector(isNegativeMode: boolean, chunk: string): string {
+  return isNegativeMode ? ':not(' + chunk.trim() + ')' : chunk;
+}
+
+function stringifyCSSSelector(selector: CssSelector): string {
+  let result = selector[0] as string;
+  let i = 1;
+  let mode = SelectorFlags.ATTRIBUTE;
+  let currentChunk = '';
+  let isNegativeMode = false;
+  while (i < selector.length) {
+    let valueOrMarker = selector[i];
+    if (typeof valueOrMarker === 'string') {
+      if (mode & SelectorFlags.ATTRIBUTE) {
+        const attrValue = selector[++i] as string;
+        currentChunk +=
+            '[' + valueOrMarker + (attrValue.length > 0 ? '="' + attrValue + '"' : '') + ']';
+      } else if (mode & SelectorFlags.CLASS) {
+        currentChunk += '.' + valueOrMarker;
+      } else if (mode & SelectorFlags.ELEMENT) {
+        currentChunk += ' ' + valueOrMarker;
+      }
+    } else {
+      //
+      // Append current chunk to the final result in case we come across SelectorFlag, which
+      // indicates that the previous section of a selector is over. We need to accumulate content
+      // between flags to make sure we wrap the chunk later in :not() selector if needed, e.g.
+      // ```
+      //  ['', Flags.CLASS, '.classA', Flags.CLASS | Flags.NOT, '.classB', '.classC']
+      // ```
+      // should be transformed to `.classA :not(.classB .classC)`.
+      //
+      // Note: for negative selector part, we accumulate content between flags until we find the
+      // next negative flag. This is needed to support a case where `:not()` rule contains more than
+      // one chunk, e.g. the following selector:
+      // ```
+      //  ['', Flags.ELEMENT | Flags.NOT, 'p', Flags.CLASS, 'foo', Flags.CLASS | Flags.NOT, 'bar']
+      // ```
+      // should be stringified to `:not(p.foo) :not(.bar)`
+      //
+      if (currentChunk !== '' && !isPositive(valueOrMarker)) {
+        result += maybeWrapInNotSelector(isNegativeMode, currentChunk);
+        currentChunk = '';
+      }
+      mode = valueOrMarker;
+      // According to CssSelector spec, once we come across `SelectorFlags.NOT` flag, the negative
+      // mode is maintained for remaining chunks of a selector.
+      isNegativeMode = isNegativeMode || !isPositive(mode);
+    }
+    i++;
+  }
+  if (currentChunk !== '') {
+    result += maybeWrapInNotSelector(isNegativeMode, currentChunk);
+  }
+  return result;
+}
+
+/**
+ * Generates string representation of CSS selector in parsed form.
+ *
+ * ComponentDef and DirectiveDef are generated with the selector in parsed form to avoid doing
+ * additional parsing at runtime (for example, for directive matching). However in some cases (for
+ * example, while bootstrapping a component), a string version of the selector is required to query
+ * for the host element on the page. This function takes the parsed form of a selector and returns
+ * its string representation.
+ *
+ * @param selectorList selector in parsed form
+ * @returns string representation of a given selector
+ */
+export function stringifyCSSSelectorList(selectorList: CssSelectorList): string {
+  return selectorList.map(stringifyCSSSelector).join(',');
 }

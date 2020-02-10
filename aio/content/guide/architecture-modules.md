@@ -59,7 +59,7 @@ Here's a simple root NgModule definition.
 -->
 최상위 NgModule을 간단하게 만들면 다음처럼 구현할 수 있습니다:
 
-<code-example path="architecture/src/app/mini-app.ts" region="module" header="src/app/app.module.ts" linenums="false"></code-example>
+<code-example path="architecture/src/app/mini-app.ts" region="module" header="src/app/app.module.ts"></code-example>
 
 <div class="alert is-helpful">
 
@@ -80,6 +80,7 @@ NgModules provide a *compilation context* for their components. A root NgModule 
 -->
 NgModule은 컴포넌트가 *컴파일되는 시점의 컨텍스트*를 제공합니다. 최상위 NgModule은 생성하는 컴포넌트가 최상위 컴포넌트를 하나지만, 다른 NgModule은 컴포넌트를 여러개 갖고 있을 수도 있고, 이 컴포넌트들은 라우터나 템플릿의 동작에 따라 뷰에 로드됩니다. 모듈에 속한 컴포넌트는 그 NgModule에서 제공하는 컴파일 컨텍스트를 사용합니다.
 
+<<<<<<< HEAD
 <figure>
 
 <!--
@@ -88,6 +89,11 @@ NgModule은 컴포넌트가 *컴파일되는 시점의 컨텍스트*를 제공�
 <img src="generated/images/guide/architecture/compilation-context.png" alt="컴포넌트 컴파일 컨텍스트" class="left">
 
 </figure>
+=======
+<div class="lightbox">
+  <img src="generated/images/guide/architecture/compilation-context.png" alt="Component compilation context" class="left">
+</div>
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <br class="clear">
 
@@ -96,6 +102,7 @@ A component and its template together define a *view*. A component can contain a
 -->
 컴포넌트는 템플릿과 함께 *뷰* 를 정의합니다. 컴포넌트는 *뷰 계층* 을 구성할 수도 있고, 이 뷰 계층을 활용하면 복잡한 화면에서 일부 엘리먼트만 추가하거나 제거할 수 있고 갱신을 할 수도 있습니다. 뷰 계층은 다른 NgModule에 정의된 컴포넌트와 조합할 수도 있습니다. 서드파티 UI 라이브러리를 사용하는 것이 이 경우에 해당됩니다.
 
+<<<<<<< HEAD
 <figure>
 
 <!--
@@ -104,6 +111,11 @@ A component and its template together define a *view*. A component can contain a
 <img src="generated/images/guide/architecture/view-hierarchy.png" alt="뷰 계층" class="left">
 
 </figure>
+=======
+<div class="lightbox">
+  <img src="generated/images/guide/architecture/view-hierarchy.png" alt="View hierarchy" class="left">
+</div>
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <br class="clear">
 
@@ -137,9 +149,9 @@ Other JavaScript modules use *import statements* to access public objects from o
 JavaScript에서는 각각의 *파일* 이 하나의 모듈이며, 이 파일에 정의된 모든 객체가 이 모듈 안에 속한다고 할 수 있습니다.
 그리고 모듈 안에 있는 객체를 외부로 공개하려면 `export` 키워드를 사용하며, 다른 JavaScript 모듈에서는 *import 구문*을 사용해서 이 객체에 접근할 수 있습니다.
 
-<code-example path="architecture/src/app/app.module.ts" region="imports" linenums="false"></code-example>
+<code-example path="architecture/src/app/app.module.ts" region="imports"></code-example>
 
-<code-example path="architecture/src/app/app.module.ts" region="export" linenums="false"></code-example>
+<code-example path="architecture/src/app/app.module.ts" region="export"></code-example>
 
 <div class="alert is-helpful">
 <!--
@@ -170,7 +182,7 @@ For example, import Angular's `Component` decorator from the `@angular/core` lib
 -->
 예를 들어, Angular의 `@angular/core` 라이브러리에 있는 `Component` 데코레이터는 다음과 같이 사용합니다:
 
-<code-example path="architecture/src/app/app.component.ts" region="import" linenums="false"></code-example>
+<code-example path="architecture/src/app/app.component.ts" region="import"></code-example>
 
 <!--
 You also import NgModules from Angular *libraries* using JavaScript import statements.
@@ -179,7 +191,7 @@ For example, the following code imports the `BrowserModule` NgModule from the `p
 그리고 Angular에서 제공하는 NgModule도 비슷한 방법으로 불러와서 사용합니다:
 예를 들면, 다음 코드는 `platform-browser` 라이브러리에서 `BrowserModule` NgModule을 로드하는 코드입니다.
 
-<code-example path="architecture/src/app/mini-app.ts" region="import-browser-module" linenums="false"></code-example>
+<code-example path="architecture/src/app/mini-app.ts" region="import-browser-module"></code-example>
 
 <!--
 In the example of the simple root module above, the application module needs material from within
@@ -187,7 +199,7 @@ In the example of the simple root module above, the application module needs mat
 -->
 위에서 살펴본 최상위 모듈 예제처럼, Angular 모듈은 `BrowserModule` 안에 정의되어 있는 객체를 사용합니다. 이 객체에 접근하려면 `@NgModule` 메타데이터의 `imports` 프로퍼티를 다음과 같이 사용하면 됩니다.
 
-<code-example path="architecture/src/app/mini-app.ts" region="ngmodule-imports" linenums="false"></code-example>
+<code-example path="architecture/src/app/mini-app.ts" region="ngmodule-imports"></code-example>
 
 <!--
 In this way you're using the Angular and JavaScript module systems *together*. Although it's easy to confuse the two systems, which share the common vocabulary of "imports" and "exports", you will become familiar with the different contexts in which they are used.

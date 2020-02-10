@@ -6,57 +6,225 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgAnalyzedModules, StaticSymbol} from '@angular/compiler';
-import {AstResult} from './common';
-import {Declarations, Diagnostic, DiagnosticKind, DiagnosticMessageChain, Diagnostics, Span, TemplateSource} from './types';
+import {NgAnalyzedModules} from '@angular/compiler';
+import * as path from 'path';
+import * as ts from 'typescript';
 
-export interface AstProvider {
-  getTemplateAst(template: TemplateSource, fileName: string): AstResult;
+import {AstResult} from './common';
+import {getTemplateExpressionDiagnostics} from './expression_diagnostics';
+import * as ng from './types';
+import {TypeScriptServiceHost} from './typescript_host';
+import {findPropertyValueOfType, findTightestNode, offsetSpan, spanOf} from './utils';
+
+
+/**
+ * Return diagnostic information for the parsed AST of the template.
+ * @param ast contains HTML and template AST
+ */
+export function getTemplateDiagnostics(ast: AstResult): ng.Diagnostic[] {
+  const {parseErrors, templateAst, htmlAst, template} = ast;
+  if (parseErrors && parseErrors.length) {
+    return parseErrors.map(e => {
+      return {
+        kind: ts.DiagnosticCategory.Error,
+        span: offsetSpan(spanOf(e.span), template.span.start),
+        message: e.msg,
+      };
+    });
+  }
+  return getTemplateExpressionDiagnostics({
+    templateAst: templateAst,
+    htmlAst: htmlAst,
+    offset: template.span.start,
+    query: template.query,
+    members: template.members,
+  });
 }
 
-export function getDeclarationDiagnostics(
-    declarations: Declarations, modules: NgAnalyzedModules): Diagnostics {
-  const results: Diagnostics = [];
+/**
+ * Generate an error message that indicates a directive is not part of any
+ * NgModule.
+ * @param name class name
+ * @param isComponent true if directive is an Angular Component
+ */
+function missingDirective(name: string, isComponent: boolean) {
+  const type = isComponent ? 'Component' : 'Directive';
+  return `${type} '${name}' is not included in a module and will not be ` +
+      'available inside a template. Consider adding it to a NgModule declaration.';
+}
 
-  let directives: Set<StaticSymbol>|undefined = undefined;
-  for (const declaration of declarations) {
-    const report = (message: string | DiagnosticMessageChain, span?: Span) => {
-      results.push(<Diagnostic>{
-        kind: DiagnosticKind.Error,
-        span: span || declaration.declarationSpan, message
-      });
-    };
-    for (const error of declaration.errors) {
-      report(error.message, error.span);
+/**
+ * Performs a variety diagnostics on directive declarations.
+ *
+ * @param declarations Angular directive declarations
+ * @param modules NgModules in the project
+ * @param host TypeScript service host used to perform TypeScript queries
+ * @return diagnosed errors, if any
+ */
+export function getDeclarationDiagnostics(
+    declarations: ng.Declaration[], modules: NgAnalyzedModules,
+    host: Readonly<TypeScriptServiceHost>): ng.Diagnostic[] {
+  const directives = new Set<ng.StaticSymbol>();
+  for (const ngModule of modules.ngModules) {
+    for (const directive of ngModule.declaredDirectives) {
+      directives.add(directive.reference);
     }
-    if (declaration.metadata) {
-      if (declaration.metadata.isComponent) {
-        if (!modules.ngModuleByPipeOrDirective.has(declaration.type)) {
-          report(
-              `Component '${declaration.type.name}' is not included in a module and will not be available inside a template. Consider adding it to a NgModule declaration`);
-        }
-        const {template, templateUrl} = declaration.metadata.template !;
-        if (template === null && !templateUrl) {
-          report(`Component '${declaration.type.name}' must have a template or templateUrl`);
-        } else if (template && templateUrl) {
-          report(
-              `Component '${declaration.type.name}' must not have both template and templateUrl`);
-        }
-      } else {
-        if (!directives) {
-          directives = new Set();
-          modules.ngModules.forEach(module => {
-            module.declaredDirectives.forEach(
-                directive => { directives !.add(directive.reference); });
+  }
+
+  const results: ng.Diagnostic[] = [];
+
+  for (const declaration of declarations) {
+    const {errors, metadata, type, declarationSpan} = declaration;
+
+    const sf = host.getSourceFile(type.filePath);
+    if (!sf) {
+      host.error(`directive ${type.name} exists but has no source file`);
+      return [];
+    }
+    // TypeScript identifier of the directive declaration annotation (e.g. "Component" or
+    // "Directive") on a directive class.
+    const directiveIdentifier = findTightestNode(sf, declarationSpan.start);
+    if (!directiveIdentifier) {
+      host.error(`directive ${type.name} exists but has no identifier`);
+      return [];
+    }
+
+    for (const error of errors) {
+      results.push({
+        kind: ts.DiagnosticCategory.Error,
+        message: error.message,
+        span: error.span,
+      });
+    }
+    if (metadata.isComponent) {
+      if (!modules.ngModuleByPipeOrDirective.has(declaration.type)) {
+        results.push({
+          kind: ts.DiagnosticCategory.Suggestion,
+          message: missingDirective(type.name, metadata.isComponent),
+          span: declarationSpan,
+        });
+      }
+      const {template, templateUrl, styleUrls} = metadata.template !;
+      if (template === null && !templateUrl) {
+        results.push({
+          kind: ts.DiagnosticCategory.Error,
+          message: `Component '${type.name}' must have a template or templateUrl`,
+          span: declarationSpan,
+        });
+      } else if (templateUrl) {
+        if (template) {
+          results.push({
+            kind: ts.DiagnosticCategory.Error,
+            message: `Component '${type.name}' must not have both template and templateUrl`,
+            span: declarationSpan,
           });
         }
-        if (!directives.has(declaration.type)) {
-          report(
-              `Directive '${declaration.type.name}' is not included in a module and will not be available inside a template. Consider adding it to a NgModule declaration`);
+
+        // Find templateUrl value from the directive call expression, which is the parent of the
+        // directive identifier.
+        //
+        // TODO: We should create an enum of the various properties a directive can have to use
+        // instead of string literals. We can then perform a mass migration of all literal usages.
+        const templateUrlNode = findPropertyValueOfType(
+            directiveIdentifier.parent, 'templateUrl', ts.isLiteralExpression);
+        if (!templateUrlNode) {
+          host.error(`templateUrl ${templateUrl} exists but its TypeScript node doesn't`);
+          return [];
         }
+
+        results.push(...validateUrls([templateUrlNode], host.tsLsHost));
       }
+
+      if (styleUrls.length > 0) {
+        // Find styleUrls value from the directive call expression, which is the parent of the
+        // directive identifier.
+        const styleUrlsNode = findPropertyValueOfType(
+            directiveIdentifier.parent, 'styleUrls', ts.isArrayLiteralExpression);
+        if (!styleUrlsNode) {
+          host.error(`styleUrls property exists but its TypeScript node doesn't'`);
+          return [];
+        }
+
+        results.push(...validateUrls(styleUrlsNode.elements, host.tsLsHost));
+      }
+    } else if (!directives.has(declaration.type)) {
+      results.push({
+        kind: ts.DiagnosticCategory.Suggestion,
+        message: missingDirective(type.name, metadata.isComponent),
+        span: declarationSpan,
+      });
     }
   }
 
   return results;
+}
+
+/**
+ * Checks that URLs on a directive point to a valid file.
+ * Note that this diagnostic check may require a filesystem hit, and thus may be slower than other
+ * checks.
+ *
+ * @param urls urls to check for validity
+ * @param tsLsHost TS LS host used for querying filesystem information
+ * @return diagnosed url errors, if any
+ */
+function validateUrls(
+    urls: ArrayLike<ts.Expression>, tsLsHost: Readonly<ts.LanguageServiceHost>): ng.Diagnostic[] {
+  if (!tsLsHost.fileExists) {
+    return [];
+  }
+
+  const allErrors: ng.Diagnostic[] = [];
+  // TODO(ayazhafiz): most of this logic can be unified with the logic in
+  // definitions.ts#getUrlFromProperty. Create a utility function to be used by both.
+  for (let i = 0; i < urls.length; ++i) {
+    const urlNode = urls[i];
+    if (!ts.isStringLiteralLike(urlNode)) {
+      // If a non-string value is assigned to a URL node (like `templateUrl`), a type error will be
+      // picked up by the TS Language Server.
+      continue;
+    }
+    const curPath = urlNode.getSourceFile().fileName;
+    const url = path.join(path.dirname(curPath), urlNode.text);
+    if (tsLsHost.fileExists(url)) continue;
+
+    allErrors.push({
+      kind: ts.DiagnosticCategory.Error,
+      message: `URL does not point to a valid file`,
+      // Exclude opening and closing quotes in the url span.
+      span: {start: urlNode.getStart() + 1, end: urlNode.end - 1},
+    });
+  }
+  return allErrors;
+}
+
+/**
+ * Return a recursive data structure that chains diagnostic messages.
+ * @param chain
+ */
+function chainDiagnostics(chain: ng.DiagnosticMessageChain): ts.DiagnosticMessageChain {
+  return {
+    messageText: chain.message,
+    category: ts.DiagnosticCategory.Error,
+    code: 0,
+    next: chain.next ? chain.next.map(chainDiagnostics) : undefined
+  };
+}
+
+/**
+ * Convert ng.Diagnostic to ts.Diagnostic.
+ * @param d diagnostic
+ * @param file
+ */
+export function ngDiagnosticToTsDiagnostic(
+    d: ng.Diagnostic, file: ts.SourceFile | undefined): ts.Diagnostic {
+  return {
+    file,
+    start: d.span.start,
+    length: d.span.end - d.span.start,
+    messageText: typeof d.message === 'string' ? d.message : chainDiagnostics(d.message),
+    category: d.kind,
+    code: 0,
+    source: 'ng',
+  };
 }

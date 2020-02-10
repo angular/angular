@@ -1,7 +1,11 @@
+<<<<<<< HEAD
 <!--
 # TypeScript Configuration
 -->
 # TypeScript 설정
+=======
+# TypeScript configuration
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 TypeScript is a primary language for Angular application development.
@@ -10,11 +14,16 @@ It is a superset of JavaScript with design-time support for type safety and tool
 Angular 애플리케이션을 개발할 때 가장 많이 사용하는 언어는 TypeScript입니다.
 TypeScript는 JavaScript의 슈퍼셋이며 정적 타입을 도입하면서 더 많은 정보를 개발자에게 제공합니다.
 
+<<<<<<< HEAD
 <!--
 Browsers can't execute TypeScript directly. Typescript must be "transpiled" into JavaScript using the *tsc* compiler,
 which requires some configuration.
 -->
 하지만 브라우저에서 TypeScript를 직접 실행할 수는 없습니다. TypeScript 반드시 *tsc* 컴파일러를 통해 JavaScript로 *트랜스파일(transpiled)*되어야 합니다. 그리고 이 때 몇가지 옵션을 지정해야 합니다.
+=======
+Browsers can't execute TypeScript directly.
+Typescript must be "transpiled" into JavaScript using the *tsc* compiler, which requires some configuration.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 This page covers some aspects of TypeScript configuration and the TypeScript environment
@@ -33,7 +42,9 @@ that are important to Angular developers, including details about the following 
 
 {@a tsconfig}
 
+## TypeScript configuration
 
+<<<<<<< HEAD
 
 ## *tsconfig.json*
 
@@ -47,6 +58,14 @@ guide the compiler as it generates JavaScript files.
 
 
 <!--
+=======
+A TypeScript configuration file called `tsconfig.json` guides the compiler as it generates JavaScript files for a project.
+This file contains options and flags that are essential for Angular applications.
+Typically, the file is found at the [root level of the workspace](guide/file-structure).
+
+<div class="alert is-helpful">
+
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 For details about `tsconfig.json`, see the official
 [TypeScript wiki](http://www.typescriptlang.org/docs/handbook/tsconfig-json.html).
 -->
@@ -54,33 +73,53 @@ For details about `tsconfig.json`, see the official
 
 </div>
 
+<<<<<<< HEAD
 
 <!--
 The [Setup](guide/setup) guide uses the following `tsconfig.json`:
 -->
 [로컬 개발환경 설정하기](guide/setup) 문서에서 만든 `tsconfig.json` 파일은 다음과 같은 내용입니다:
+=======
+The initial `tsconfig.json` for an Angular app typically looks like the following example.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <code-example lang="json" header="tsconfig.json" linenums="false">
-  {
-    "compilerOptions": {
-      "target": "es5",
-      "module": "commonjs",
-      "moduleResolution": "node",
-      "sourceMap": true,
-      "emitDecoratorMetadata": true,
-      "experimentalDecorators": true,
-      "lib": [ "es2015", "dom" ],
-      "noImplicitAny": true,
-      "suppressImplicitAnyIndexErrors": true
-    }
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "declaration": false,
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "target": "es2015",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "lib": [
+      "es2018",
+      "dom"
+    ]
+  },
+  "angularCompilerOptions": {
+    "fullTemplateTypeCheck": true,
+    "strictInjectionParameters": true
   }
+}
 </code-example>
 
+<<<<<<< HEAD
 <!--
 This file contains options and flags that are essential for Angular applications.
 -->
 이 파일에 정의된 옵션과 플래그들은 Angular 애플리케이션을 개발할 때 꼭 필요한 내용들입니다.
 
+=======
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 {@a noImplicitAny}
 
@@ -104,8 +143,11 @@ the compiler silently defaults the type to `any`. That's what is meant by *impli
 -->
 `noImplicitAny` 플래그 값이 `false` (기본값)로 설정되면 타입이 지정되지 않은 변수에 TypeScript의 타입 추론 기능이 동작하며, 최종적으로 타입을 추론하지 못한 변수를 `any` 타입으로 처리합니다. 그래서 이 플래그는 *implicit `any`*를 의미한다고도 볼 수 있습니다.
 
+<<<<<<< HEAD
 <!--
 The documentation setup sets the `noImplicitAny` flag to `true`.
+=======
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 When the `noImplicitAny` flag is `true` and the TypeScript compiler cannot infer
 the type, it still generates the JavaScript files, but it also **reports an error**.
 Many seasoned developers prefer this stricter setting because type checking catches more
@@ -128,24 +170,35 @@ You can suppress them with the following additional flag:
 `noImplicitAny` 플래그 값이 `true`이면 *추론 인덱스 에러(implicit index errors)*가 발생할 수도 있습니다.
 이 에러는 대부분의 개발자들이 귀찮다고 생각하는 에러이기 때문에, 이 에러는 다음 플래그를 추가로 설정해서 무시할 수 있습니다:
 
-<code-example format=".">
-  "suppressImplicitAnyIndexErrors":true
+<code-example>
+
+  "suppressImplicitAnyIndexErrors": true
 
 </code-example>
 
-
+<<<<<<< HEAD
 <!--
 The documentation setup sets this flag to `true` as well.
 -->
 이 문서에서는 `suppressImplicitAnyIndexErrors` 플래그의 값도 `true`로 지정합니다.
+=======
+<div class="alert is-helpful">
 
+For more information about how the TypeScript configuration affects compilation, see [Angular Compiler Options](guide/angular-compiler-options) and [Template Type Checking](guide/template-typecheck).
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+
+</div>
 
 {@a typings}
 
+## TypeScript typings
 
+<<<<<<< HEAD
 
 ## TypeScript Typings
 <!--
+=======
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 Many JavaScript libraries, such as jQuery, the Jasmine testing library, and Angular,
 extend the JavaScript environment with features and syntax
 that the TypeScript compiler doesn't recognize natively.
@@ -172,11 +225,20 @@ The `node_modules/@angular/core/` folder of any Angular application contains sev
 Angular도 이런 경우에 해당됩니다.
 `node_modules/@angulalr/core/` 폴더만 봐도 Angular에 대한 타입 정의 파일이 여러개 정의되어 있습니다.
 
+<<<<<<< HEAD
 <!--
 **You don't need to do anything to get *typings* files for library packages that include `d.ts` files.
 Angular packages include them already.**
 -->
 **패키지에서 `d.ts` 파일을 제공한다면 *타입 정의 파일*을 따로 추가할 필요가 없습니다.**
+=======
+<div class="alert is-helpful">
+
+You don't need to do anything to get *typings* files for library packages that include `d.ts` files.
+Angular packages include them already.
+
+</div>
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 ### lib.d.ts
 
@@ -191,6 +253,7 @@ like `Promise` if the target is `es6`.
 -->
 TypeScript 컴파일에 사용하는 `--target` 옵션에 따라 타입 정의 파일이 _추가로_ 생성될 수도 있습니다. `--target` 옵션이 `es6`라면 `Promise`에 대한 타입 정의가 추가되는 식입니다.
 
+<<<<<<< HEAD
 <!--
 Since the QuickStart is targeting `es5`, you can override the
 list of declaration files to be included:
@@ -207,13 +270,22 @@ list of declaration files to be included:
 Thanks to that, you have all the `es6` typings even when targeting `es5`.
 -->
 그러면 `es5` 문법으로 컴파일되는 프로젝트에도 `es6` 문법을 모두 사용할 수 있습니다.
+=======
+By default, the target is `es2015`. If you are targeting `es5`, you still have newer type declarations due to the list of declaration files included:
+
+<code-example path="getting-started/tsconfig.0.json" header="tsconfig.json (lib excerpt)" region="lib"></code-example>
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 ### Installable typings files
+<<<<<<< HEAD
 -->
 ### 타입정의 파일 설치하기
 
 <!--
+=======
+
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 Many libraries&mdash;jQuery, Jasmine, and Lodash among them&mdash;do *not* include `d.ts` files in their npm packages.
 Fortunately, either their authors or community contributors have created separate `d.ts` files for these libraries and
 published them in well-known locations.
@@ -228,6 +300,7 @@ and Typescript, starting at 2.0, automatically recognizes them.
 -->
 이런 타입 정의 파일은 TypeScript 2.0부터 [`@types/*` 로 시작하는 패키지](http://www.typescriptlang.org/docs/handbook/declaration-files/consumption.html)로 제공되며, `npm`으로 설치하면 자동으로 인식됩니다.
 
+<<<<<<< HEAD
 <!--
 For instance, to install typings for `jasmine` you could do `npm install @types/jasmine --save-dev`.
 -->
@@ -250,6 +323,9 @@ QuickStart identifies two *typings*, or `d.ts`, files:
 QuickStart doesn't require these typings but many of the samples do.
 -->
 이런 방식은 이 웹사이트에서 다루는 다른 예제들에도 같은 방식으로 사용됩니다.
+=======
+For instance, to install typings for `jasmine` you run `npm install @types/jasmine --save-dev`.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 
 {@a target}
@@ -257,9 +333,13 @@ QuickStart doesn't require these typings but many of the samples do.
 
 ### *target*
 
+<<<<<<< HEAD
 <!--
 By default, the target is `es5`, you can configure the target to `es6` if you only want to deploy the application to
 es6 compatible browser. But if you configure the target to `es6` in some old browser such as `IE`, `Syntax Error` will be thrown.
 -->
 Angular CLI가 생성한 프로젝트의 기본 타겟은 `es5`지만, es6 문법을 지원하는 브라우저에서만 실행한다면 `es6`로 변경할 수도 있습니다.
 다만, `es6`로 바꾸고 애플리케이션을 배포한 후에 `IE`와 같은 예전 브라우저로 애플리케이션을 실행하면 `Syntax Error` 에러가 발생할 수 있습니다.
+=======
+By default, the target is `es2015`, which is supported only in modern browsers. You can configure the target to `es5` to specifically support legacy browsers. [Differential loading](guide/deployment#differential-loading) is also provided by the Angular CLI to support modern, and legacy browsers with separate bundles.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072

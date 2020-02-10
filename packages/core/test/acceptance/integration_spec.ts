@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {CommonModule} from '@angular/common';
-import {Component, ContentChild, Directive, ElementRef, EventEmitter, HostBinding, HostListener, Input, OnInit, Output, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {Component, ContentChild, Directive, ElementRef, EventEmitter, HostBinding, HostListener, Input, NgModule, OnInit, Output, Pipe, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {TVIEW} from '@angular/core/src/render3/interfaces/view';
+import {getLView} from '@angular/core/src/render3/state';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {onlyInIvy} from '@angular/private/testing';
+import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
 describe('acceptance integration tests', () => {
   function stripHtmlComments(str: string) { return str.replace(/<!--[\s\S]*?-->/g, ''); }
@@ -243,7 +245,7 @@ describe('acceptance integration tests', () => {
 
       @Component({template: '<div><ng-container dir></ng-container></div>'})
       class App {
-        @ViewChild(TestDirective, {static: false}) testDirective !: TestDirective;
+        @ViewChild(TestDirective) testDirective !: TestDirective;
       }
 
       TestBed.configureTestingModule({declarations: [App, TestDirective]});
@@ -273,7 +275,7 @@ describe('acceptance integration tests', () => {
             '<ng-container dir [contentTpl]="content"><ng-template #content>Content</ng-template></ng-container>'
       })
       class App {
-        @ViewChild(TestDirective, {static: false}) testDirective !: TestDirective;
+        @ViewChild(TestDirective) testDirective !: TestDirective;
       }
 
       TestBed.configureTestingModule({declarations: [App, TestDirective]});
@@ -303,7 +305,7 @@ describe('acceptance integration tests', () => {
 
       @Component({template: '<ng-container><ng-template dir>Content</ng-template></ng-container>'})
       class App {
-        @ViewChild(TestDirective, {static: false}) testDirective !: TestDirective;
+        @ViewChild(TestDirective) testDirective !: TestDirective;
       }
 
       TestBed.configureTestingModule({declarations: [App, TestDirective]});
@@ -608,7 +610,7 @@ describe('acceptance integration tests', () => {
 
       @Component({template: '<todo></todo>'})
       class App {
-        @ViewChild(TodoComponentHostBinding, {static: false})
+        @ViewChild(TodoComponentHostBinding)
         todoComponentHostBinding !: TodoComponentHostBinding;
       }
 
@@ -844,7 +846,7 @@ describe('acceptance integration tests', () => {
 
         @Component({template: '<div hostBindingDir></div>'})
         class App {
-          @ViewChild(HostBindingDir, {static: false}) hostBindingDir !: HostBindingDir;
+          @ViewChild(HostBindingDir) hostBindingDir !: HostBindingDir;
         }
 
         TestBed.configureTestingModule({declarations: [App, HostBindingDir]});
@@ -1012,7 +1014,7 @@ describe('acceptance integration tests', () => {
           `
         })
         class App {
-          @ViewChild(StructuralComp, {static: false}) structuralComp !: StructuralComp;
+          @ViewChild(StructuralComp) structuralComp !: StructuralComp;
           value: any;
         }
 
@@ -1030,7 +1032,7 @@ describe('acceptance integration tests', () => {
 
         fixture.componentInstance.value = false;
         fixture.detectChanges();
-        expect(structuralCompEl.getAttribute('class')).toEqual('');
+        expect(structuralCompEl.getAttribute('class')).toBeFalsy();
       });
 
       @Directive({selector: '[DirWithClass]'})
@@ -1043,17 +1045,17 @@ describe('acceptance integration tests', () => {
 
       @Directive({selector: '[DirWithStyle]'})
       class DirWithStyleDirective {
-        public stylesVal: string = '';
+        public stylesVal: any = '';
 
         @Input()
-        set style(value: string) { this.stylesVal = value; }
+        set style(value: any) { this.stylesVal = value; }
       }
 
       it('should delegate initial classes to a [class] input binding if present on a directive on the same element',
          () => {
            @Component({template: '<div class="apple orange banana" DirWithClass></div>'})
            class App {
-             @ViewChild(DirWithClassDirective, {static: false})
+             @ViewChild(DirWithClassDirective)
              mockClassDirective !: DirWithClassDirective;
            }
 
@@ -1061,15 +1063,17 @@ describe('acceptance integration tests', () => {
            const fixture = TestBed.createComponent(App);
            fixture.detectChanges();
 
-           expect(fixture.componentInstance.mockClassDirective.classesVal)
-               .toEqual('apple orange banana');
+           // the initial values always get sorted in non VE code
+           // but there is no sorting guarantee within VE code
+           expect(fixture.componentInstance.mockClassDirective.classesVal.split(/\s+/).sort())
+               .toEqual(['apple', 'banana', 'orange']);
          });
 
       it('should delegate initial styles to a [style] input binding if present on a directive on the same element',
          () => {
-           @Component({template: '<div style="width:100px;height:200px" DirWithStyle></div>'})
+           @Component({template: '<div style="width: 100px; height: 200px" DirWithStyle></div>'})
            class App {
-             @ViewChild(DirWithStyleDirective, {static: false})
+             @ViewChild(DirWithStyleDirective)
              mockStyleDirective !: DirWithStyleDirective;
            }
 
@@ -1080,15 +1084,15 @@ describe('acceptance integration tests', () => {
            const styles = fixture.componentInstance.mockStyleDirective.stylesVal;
 
            // Use `toContain` since Ivy and ViewEngine have some slight differences in formatting.
-           expect(styles).toContain('width:100px');
-           expect(styles).toContain('height:200px');
+           expect(styles).toContain('width: 100px');
+           expect(styles).toContain('height: 200px');
          });
 
       it('should update `[class]` and bindings in the provided directive if the input is matched',
          () => {
            @Component({template: '<div DirWithClass [class]="value"></div>'})
            class App {
-             @ViewChild(DirWithClassDirective, {static: false})
+             @ViewChild(DirWithClassDirective)
              mockClassDirective !: DirWithClassDirective;
              value = '';
            }
@@ -1107,7 +1111,7 @@ describe('acceptance integration tests', () => {
               () => {
                 @Component({template: '<div DirWithStyle [style]="value"></div>'})
                 class App {
-                  @ViewChild(DirWithStyleDirective, {static: false})
+                  @ViewChild(DirWithStyleDirective)
                   mockStyleDirective !: DirWithStyleDirective;
                   value !: {[key: string]: string};
                 }
@@ -1118,7 +1122,7 @@ describe('acceptance integration tests', () => {
                 fixture.detectChanges();
 
                 expect(fixture.componentInstance.mockStyleDirective.stylesVal)
-                    .toEqual('width:200px;height:500px');
+                    .toEqual({width: '200px', height: '500px'});
               });
 
       onlyInIvy('Style binding merging works differently in Ivy')
@@ -1173,18 +1177,18 @@ describe('acceptance integration tests', () => {
                   }
                 })
                 class DirWithSingleStylingBindings {
-                  width: null|string = null;
-                  height: null|string = null;
+                  width: string|null|undefined = undefined;
+                  height: string|null|undefined = undefined;
                   activateXYZClass: boolean = false;
                 }
 
                 @Component({
                   template: `
-              <div DirWithSingleStylingBindings class="abc" style="width:100px; height:200px"></div>
+              <div DirWithSingleStylingBindings class="abc" style="width:100px;"></div>
             `
                 })
                 class App {
-                  @ViewChild(DirWithSingleStylingBindings, {static: false})
+                  @ViewChild(DirWithSingleStylingBindings)
                   dirInstance !: DirWithSingleStylingBindings;
                 }
 
@@ -1194,7 +1198,7 @@ describe('acceptance integration tests', () => {
                 const dirInstance = fixture.componentInstance.dirInstance;
                 const target: HTMLDivElement = fixture.nativeElement.querySelector('div');
                 expect(target.style.getPropertyValue('width')).toEqual('100px');
-                expect(target.style.getPropertyValue('height')).toEqual('200px');
+                expect(target.style.getPropertyValue('height')).toEqual('');
                 expect(target.classList.contains('abc')).toBeTruthy();
                 expect(target.classList.contains('def')).toBeTruthy();
                 expect(target.classList.contains('xyz')).toBeFalsy();
@@ -1204,18 +1208,18 @@ describe('acceptance integration tests', () => {
                 dirInstance.activateXYZClass = true;
                 fixture.detectChanges();
 
-                expect(target.style.getPropertyValue('width')).toEqual('444px');
+                expect(target.style.getPropertyValue('width')).toEqual('100px');
                 expect(target.style.getPropertyValue('height')).toEqual('999px');
                 expect(target.classList.contains('abc')).toBeTruthy();
                 expect(target.classList.contains('def')).toBeTruthy();
                 expect(target.classList.contains('xyz')).toBeTruthy();
 
-                dirInstance.width = null;
-                dirInstance.height = null;
+                dirInstance.width = undefined;
+                dirInstance.height = undefined;
                 fixture.detectChanges();
 
                 expect(target.style.getPropertyValue('width')).toEqual('100px');
-                expect(target.style.getPropertyValue('height')).toEqual('200px');
+                expect(target.style.getPropertyValue('height')).toEqual('');
                 expect(target.classList.contains('abc')).toBeTruthy();
                 expect(target.classList.contains('def')).toBeTruthy();
                 expect(target.classList.contains('xyz')).toBeTruthy();
@@ -1226,7 +1230,7 @@ describe('acceptance integration tests', () => {
               () => {
                 @Directive({selector: '[Dir1WithStyle]', host: {'[style.width]': 'width'}})
                 class Dir1WithStyle {
-                  width: null|string = null;
+                  width: null|string|undefined = undefined;
                 }
 
                 @Directive({
@@ -1234,18 +1238,18 @@ describe('acceptance integration tests', () => {
                   host: {'style': 'width: 111px', '[style.width]': 'width'}
                 })
                 class Dir2WithStyle {
-                  width: null|string = null;
+                  width: null|string|undefined = undefined;
                 }
 
                 @Component(
                     {template: '<div Dir1WithStyle Dir2WithStyle [style.width]="width"></div>'})
                 class App {
-                  @ViewChild(Dir1WithStyle, {static: false}) dir1Instance !: Dir1WithStyle;
-                  @ViewChild(Dir2WithStyle, {static: false}) dir2Instance !: Dir2WithStyle;
-                  width: string|null = null;
+                  @ViewChild(Dir1WithStyle) dir1Instance !: Dir1WithStyle;
+                  @ViewChild(Dir2WithStyle) dir2Instance !: Dir2WithStyle;
+                  width: string|null|undefined = undefined;
                 }
 
-                TestBed.configureTestingModule({declarations: [App, Dir1WithStyle, Dir2WithStyle]});
+                TestBed.configureTestingModule({declarations: [App, Dir2WithStyle, Dir1WithStyle]});
                 const fixture = TestBed.createComponent(App);
                 fixture.detectChanges();
                 const {dir1Instance, dir2Instance} = fixture.componentInstance;
@@ -1259,15 +1263,15 @@ describe('acceptance integration tests', () => {
                 fixture.detectChanges();
                 expect(target.style.getPropertyValue('width')).toEqual('999px');
 
-                fixture.componentInstance.width = null;
+                fixture.componentInstance.width = undefined;
                 fixture.detectChanges();
                 expect(target.style.getPropertyValue('width')).toEqual('222px');
 
-                dir1Instance.width = null;
+                dir1Instance.width = undefined;
                 fixture.detectChanges();
                 expect(target.style.getPropertyValue('width')).toEqual('333px');
 
-                dir2Instance.width = null;
+                dir2Instance.width = undefined;
                 fixture.detectChanges();
                 expect(target.style.getPropertyValue('width')).toEqual('111px');
 
@@ -1305,14 +1309,14 @@ describe('acceptance integration tests', () => {
                       '<div Dir1WithStyling Dir2WithStyling [style]="stylesExp" [class]="classesExp"></div>'
                 })
                 class App {
-                  @ViewChild(Dir1WithStyling, {static: false}) dir1Instance !: Dir1WithStyling;
-                  @ViewChild(Dir2WithStyling, {static: false}) dir2Instance !: Dir2WithStyling;
+                  @ViewChild(Dir1WithStyling) dir1Instance !: Dir1WithStyling;
+                  @ViewChild(Dir2WithStyling) dir2Instance !: Dir2WithStyling;
                   stylesExp: any = {};
                   classesExp: any = {};
                 }
 
                 TestBed.configureTestingModule(
-                    {declarations: [App, Dir1WithStyling, Dir2WithStyling]});
+                    {declarations: [App, Dir2WithStyling, Dir1WithStyling]});
                 const fixture = TestBed.createComponent(App);
                 fixture.detectChanges();
                 const {dir1Instance, dir2Instance} = fixture.componentInstance;
@@ -1321,7 +1325,7 @@ describe('acceptance integration tests', () => {
                 expect(target.style.getPropertyValue('width')).toEqual('111px');
 
                 const compInstance = fixture.componentInstance;
-                compInstance.stylesExp = {width: '999px', height: null};
+                compInstance.stylesExp = {width: '999px', height: undefined};
                 compInstance.classesExp = {one: true, two: false};
                 dir1Instance.stylesExp = {width: '222px'};
                 dir1Instance.classesExp = {two: true, three: false};
@@ -1399,6 +1403,114 @@ describe('acceptance integration tests', () => {
 
       expect(target.classList.contains('-fred-36-')).toBeTruthy();
     });
+  });
+
+  describe('NgModule assertions', () => {
+    it('should throw with descriptive error message when a module imports itself', () => {
+      @Component({template: ''})
+      class FixtureComponent {
+      }
+
+      @NgModule({imports: [SomeModule], declarations: [FixtureComponent]})
+      class SomeModule {
+      }
+      expect(() => {
+        TestBed.configureTestingModule({imports: [SomeModule]}).createComponent(FixtureComponent);
+      }).toThrowError(`'SomeModule' module can't import itself`);
+    });
+
+    it('should throw with descriptive error message when a directive is passed to imports', () => {
+      @Component({template: ''})
+      class SomeComponent {
+      }
+
+      @NgModule({imports: [SomeComponent]})
+      class ModuleWithImportedComponent {
+      }
+      expect(() => {
+        TestBed.configureTestingModule({imports: [ModuleWithImportedComponent]})
+            .createComponent(SomeComponent);
+      })
+          .toThrowError(
+              // The ViewEngine error has a typo, whereas the Ivy one fixes it.
+              /^Unexpected directive 'SomeComponent' imported by the module 'ModuleWithImportedComponent'\. Please add (a|an) @NgModule annotation\.$/);
+    });
+
+    it('should throw with descriptive error message when a pipe is passed to imports', () => {
+      @Component({template: ''})
+      class FixtureComponent {
+      }
+      @Pipe({name: 'somePipe'})
+      class SomePipe {
+      }
+      @NgModule({imports: [SomePipe], declarations: [FixtureComponent]})
+      class ModuleWithImportedPipe {
+      }
+      expect(() => {
+        TestBed.configureTestingModule({imports: [ModuleWithImportedPipe]})
+            .createComponent(FixtureComponent);
+      })
+          .toThrowError(
+              // The ViewEngine error has a typo, whereas the Ivy one fixes it.
+              /^Unexpected pipe 'SomePipe' imported by the module 'ModuleWithImportedPipe'\. Please add (a|an) @NgModule annotation\.$/);
+    });
+
+    it('should throw with descriptive error message when a module is passed to declarations', () => {
+      @Component({template: ''})
+      class FixtureComponent {
+      }
+      @NgModule({})
+      class SomeModule {
+      }
+      @NgModule({declarations: [SomeModule, FixtureComponent]})
+      class ModuleWithDeclaredModule {
+      }
+
+      // The error is almost the same in Ivy and ViewEngine, however since Ivy's
+      // message is more correct it doesn't make sense to align it ViewEngine.
+      const expectedErrorMessage = ivyEnabled ?
+          `Unexpected value 'SomeModule' declared by the module 'ModuleWithDeclaredModule'. Please add a @Pipe/@Directive/@Component annotation.` :
+          `Unexpected module 'SomeModule' declared by the module 'ModuleWithDeclaredModule'. Please add a @Pipe/@Directive/@Component annotation.`;
+
+      expect(() => {
+        TestBed.configureTestingModule({imports: [ModuleWithDeclaredModule]})
+            .createComponent(FixtureComponent);
+      }).toThrowError(expectedErrorMessage);
+    });
+
+    it('should throw with descriptive error message when a declaration is missing annotation', () => {
+      @Component({template: ''})
+      class FixtureComponent {
+      }
+      class SomeClass {}
+      @NgModule({declarations: [SomeClass, FixtureComponent]})
+      class SomeModule {
+      }
+      expect(() => {
+        TestBed.configureTestingModule({imports: [SomeModule]}).createComponent(FixtureComponent);
+      })
+          .toThrowError(
+              `Unexpected value 'SomeClass' declared by the module 'SomeModule'. Please add a @Pipe/@Directive/@Component annotation.`);
+    });
+
+    it('should throw with descriptive error message when an imported module is missing annotation',
+       () => {
+         @Component({template: ''})
+         class FixtureComponent {
+         }
+         class SomeModule {}
+         @NgModule({imports: [SomeModule], declarations: [FixtureComponent]})
+         class ModuleWithImportedModule {
+         }
+         expect(() => {
+           TestBed.configureTestingModule({imports: [ModuleWithImportedModule]})
+               .createComponent(FixtureComponent);
+         })
+             .toThrowError(
+                 // The ViewEngine error has a typo, whereas the Ivy one fixes it.
+                 /^Unexpected value 'SomeModule' imported by the module 'ModuleWithImportedModule'\. Please add (a|an) @NgModule annotation\.$/);
+       });
+
   });
 
   it('should only call inherited host listeners once', () => {
@@ -1737,4 +1849,127 @@ describe('acceptance integration tests', () => {
     expect(clicks).toBe(1);
   });
 
+  it('should not mask errors thrown during lifecycle hooks', () => {
+    @Directive({
+      selector: '[dir]',
+      inputs: ['dir'],
+    })
+    class Dir {
+      get dir(): any { return null; }
+
+      set dir(value: any) { throw new Error('this error is expected'); }
+    }
+
+    @Component({
+      template: '<div [dir]="3"></div>',
+    })
+    class Cmp {
+      ngAfterViewInit(): void {
+        // This lifecycle hook should never run, since attempting to bind to Dir's input will throw
+        // an error. If the runtime continues to run lifecycle hooks after that error, then it will
+        // execute this hook and throw this error, which will mask the real problem. This test
+        // verifies this don't happen.
+        throw new Error('this error is unexpected');
+      }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [Cmp, Dir],
+    });
+    const fixture = TestBed.createComponent(Cmp);
+    expect(() => fixture.detectChanges()).toThrowError('this error is expected');
+  });
+
+  describe('tView.firstUpdatePass', () => {
+    function isFirstUpdatePass() {
+      const lView = getLView();
+      const tView = lView[TVIEW];
+      return tView.firstUpdatePass;
+    }
+
+    function assertAttrValues(element: Element, value: string) {
+      expect(element.getAttribute('data-comp')).toEqual(value);
+      expect(element.getAttribute('data-dir')).toEqual(value);
+    }
+
+    onlyInIvy('tView instances are ivy-specific')
+        .it('should be marked with `firstUpdatePass` up until the template and host bindings are evaluated',
+            () => {
+              @Directive({
+                selector: '[dir]',
+              })
+              class Dir {
+                @HostBinding('attr.data-dir')
+                get text() {
+                  return isFirstUpdatePass() ? 'first-update-pass' : 'post-update-pass';
+                }
+              }
+
+              @Component({
+                template: '<div [attr.data-comp]="text" dir></div>',
+              })
+              class Cmp {
+                get text() {
+                  return isFirstUpdatePass() ? 'first-update-pass' : 'post-update-pass';
+                }
+              }
+
+              TestBed.configureTestingModule({
+                declarations: [Cmp, Dir],
+              });
+              const fixture = TestBed.createComponent(Cmp);
+              fixture.detectChanges(false);
+              const element = fixture.nativeElement.querySelector('div') !;
+
+              assertAttrValues(element, 'first-update-pass');
+
+              fixture.detectChanges(false);
+
+              assertAttrValues(element, 'post-update-pass');
+            });
+
+    onlyInIvy('tView instances are ivy-specific')
+        .it('tView.firstUpdatePass should be applied immediately after the first embedded view is processed',
+            () => {
+              @Directive({
+                selector: '[dir]',
+              })
+              class Dir {
+                @HostBinding('attr.data-dir')
+                get text() {
+                  return isFirstUpdatePass() ? 'first-update-pass' : 'post-update-pass';
+                }
+              }
+
+              @Component({
+                template: `
+          <div *ngFor="let item of items" dir [attr.data-comp]="text">
+            ...
+          </div>
+        `
+              })
+              class Cmp {
+                items = [1, 2, 3];
+                get text() {
+                  return isFirstUpdatePass() ? 'first-update-pass' : 'post-update-pass';
+                }
+              }
+
+              TestBed.configureTestingModule({
+                declarations: [Cmp, Dir],
+              });
+              const fixture = TestBed.createComponent(Cmp);
+              fixture.detectChanges(false);
+
+              const elements = fixture.nativeElement.querySelectorAll('div');
+              assertAttrValues(elements[0], 'first-update-pass');
+              assertAttrValues(elements[1], 'post-update-pass');
+              assertAttrValues(elements[2], 'post-update-pass');
+
+              fixture.detectChanges(false);
+              assertAttrValues(elements[0], 'post-update-pass');
+              assertAttrValues(elements[1], 'post-update-pass');
+              assertAttrValues(elements[2], 'post-update-pass');
+            });
+  });
 });

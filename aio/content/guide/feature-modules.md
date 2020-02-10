@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!--
 # Feature Modules
 -->
@@ -16,6 +17,11 @@ A basic understanding of the following:
 * [Frequently Used Modules](guide/frequent-ngmodules).
 -->
 #### 사전 지식
+=======
+# Feature modules
+
+Feature modules are NgModules for the purpose of organizing code.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 다음 내용을 먼저 이해하고 이 문서를 보는 것이 좋습니다:
 * [부트스트랩](guide/bootstrapping)
@@ -119,8 +125,7 @@ This generates a folder for the new component within the customer-dashboard fold
 -->
 그러면 customer-dashboard 모듈 폴더 안에 새 컴포넌트 폴더가 생성되고, `CustomDashboardComponent`가 해당 모듈에 자동으로 추가됩니다:
 
-<code-example path="feature-modules/src/app/customer-dashboard/customer-dashboard.module.ts" region="customer-dashboard-component" header="src/app/customer-dashboard/customer-dashboard.module.ts" linenums="false">
-</code-example>
+<code-example path="feature-modules/src/app/customer-dashboard/customer-dashboard.module.ts" region="customer-dashboard-component" header="src/app/customer-dashboard/customer-dashboard.module.ts"></code-example>
 
 
 <!--
@@ -138,8 +143,7 @@ To incorporate the feature module into your app, you have to let the root module
 -->
 애플리케이션에서 기능 모듈을 사용하려면, 이 기능 모듈을 앱 모듈인 `app.module.ts`에 추가해야 합니다. `customer-dashboard.module.ts` 파일을 다시 보면 가장 아래에 `CustomerDashboardModule` 클래스를 `export` 로 지정한 것을 확인할 수 있습니다. 이제 이 클래스는 다른 모듈에서 참조할 수 있으며, `AppModule`의 `imports` 배열에 이 모듈을 추가하면 됩니다:
 
-<code-example path="feature-modules/src/app/app.module.ts" region="app-module" header="src/app/app.module.ts" linenums="false">
-</code-example>
+<code-example path="feature-modules/src/app/app.module.ts" region="app-module" header="src/app/app.module.ts"></code-example>
 
 <!--
 Now the `AppModule` knows about the feature module. If you were to add any service providers to the feature module, `AppModule` would know about those too, as would any other feature modules. However, NgModules don’t expose their components.
@@ -156,8 +160,7 @@ When the CLI generated the `CustomerDashboardComponent` for the feature module, 
 -->
 Angular CLI로 만든  `CustomerDashboardComponent`의 템플릿 파일인 `customer-dashboard.component.html`에는 다음과 같이 마크업이 구성되어 있습니다:
 
-<code-example path="feature-modules/src/app/customer-dashboard/customer-dashboard/customer-dashboard.component.html" region="feature-template" header="src/app/customer-dashboard/customer-dashboard/customer-dashboard.component.html" linenums="false">
-</code-example>
+<code-example path="feature-modules/src/app/customer-dashboard/customer-dashboard/customer-dashboard.component.html" region="feature-template" header="src/app/customer-dashboard/customer-dashboard/customer-dashboard.component.html"></code-example>
 
 
 <!--
@@ -166,8 +169,7 @@ To see this HTML in the `AppComponent`, you first have to export the `CustomerDa
 이 컴포넌트를 `AppComponent`의 템플릿에 추가하려면, 먼저 `CustomerDashboardComponent`를 모듈 외부로 공개해야 합니다.
 `customer-dashboard.module.ts` 파일의 `declarations` 배열 밑에 `exports` 배열을 추가하고 이 배열에 `CustomerDashboardComponent`를 추가합니다:
 
-<code-example path="feature-modules/src/app/customer-dashboard/customer-dashboard.module.ts" region="component-exports" header="src/app/customer-dashboard/customer-dashboard.module.ts" linenums="false">
-</code-example>
+<code-example path="feature-modules/src/app/customer-dashboard/customer-dashboard.module.ts" region="component-exports" header="src/app/customer-dashboard/customer-dashboard.module.ts"></code-example>
 
 
 <!--
@@ -175,17 +177,23 @@ Next, in the `AppComponent`, `app.component.html`, add the tag `<app-customer-da
 -->
 그리고 `AppComponent`의 템플릿인 `app.component.html` 파일에 `<app-customer-dashboard>` 태그를 추가합니다:
 
-<code-example path="feature-modules/src/app/app.component.html" region="app-component-template" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="feature-modules/src/app/app.component.html" region="app-component-template" header="src/app/app.component.html"></code-example>
 
 <!--
 Now, in addition to the title that renders by default, the `CustomerDashboardComponent` template renders too:
+<<<<<<< HEAD
 -->
 이제 애플리케이션을 실행해보면 `CustomerDashboardComponent`가 렌더링되는 것을 확인할 수 있습니다:
 
 <figure>
  <img src="generated/images/guide/feature-modules/feature-module.png" alt="feature module component">
 </figure>
+=======
+
+<div class="lightbox">
+  <img src="generated/images/guide/feature-modules/feature-module.png" alt="feature module component">
+</div>
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <hr />
 

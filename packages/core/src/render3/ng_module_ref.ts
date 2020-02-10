@@ -24,7 +24,7 @@ import {getNgLocaleIdDef, getNgModuleDef} from './definition';
 import {setLocaleId} from './i18n';
 import {maybeUnwrapFn} from './util/misc_utils';
 
-export interface NgModuleType<T = any> extends Type<T> { ngModuleDef: NgModuleDef<T>; }
+export interface NgModuleType<T = any> extends Type<T> { ɵmod: NgModuleDef<T>; }
 
 const COMPONENT_FACTORY_RESOLVER: StaticProvider = {
   provide: viewEngine_ComponentFactoryResolver,

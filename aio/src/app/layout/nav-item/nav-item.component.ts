@@ -10,7 +10,7 @@ export class NavItemComponent implements OnChanges {
   @Input() level = 1;
   @Input() node: NavigationNode;
   @Input() isParentExpanded = true;
-  @Input() selectedNodes: NavigationNode[];
+  @Input() selectedNodes: NavigationNode[] | undefined;
 
   isExpanded = false;
   isSelected = false;

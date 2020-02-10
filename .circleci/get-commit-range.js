@@ -10,6 +10,13 @@
  * format of the `CIRCLE_COMPARE_URL` environment variable, or by retrieving the equivalent of
  * `CIRCLE_COMPARE_URL` for jobs that are part of a rerun workflow and extracting it from there.
  *
+ * > !!! WARNING !!!
+ * > !!
+ * > !! When [CircleCI Pipelines](https://circleci.com/docs/2.0/build-processing) is enabled, the
+ * > !! `CIRCLE_COMPARE_URL` environment variable is not available at all and this script does not
+ * > !! work.
+ * > !!!!!!!!!!!!!!!
+ *
  * **Context:**
  * CircleCI sets the `CIRCLE_COMPARE_URL` environment variable (from which we can extract the commit
  * range) on push builds (a.k.a. non-PR, non-scheduled builds). Yet, when a workflow is rerun
@@ -21,7 +28,7 @@
  * (undocumented) fact that the workspace ID happens to be the same as the workflow ID that first
  * created it.
  *
- * For example, for a job on push build workflow, the CircleCI API will return data that look like:
+ * For example, for a job on push build workflows, the CircleCI API will return data that look like:
  * ```js
  * {
  *   compare: 'THE_COMPARE_URL_WE_ARE_LOOKING_FOR',

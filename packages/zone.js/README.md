@@ -2,7 +2,7 @@
 
 [![CDNJS](https://img.shields.io/cdnjs/v/zone.js.svg)](https://cdnjs.com/libraries/zone.js)
 
-Implements _Zones_ for JavaScript, inspired by [Dart](https://www.dartlang.org/articles/zones/).
+Implements _Zones_ for JavaScript, inspired by [Dart](https://dart.dev/articles/archive/zones).
 
 > If you're using zone.js via unpkg (i.e. using `https://unpkg.com/zone.js`)
 > and you're using any of the following libraries, make sure you import them first

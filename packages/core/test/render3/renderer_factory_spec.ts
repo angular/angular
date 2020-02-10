@@ -26,11 +26,12 @@ describe('renderer factory lifecycle', () => {
   rendererFactory.end = () => logs.push('end');
 
   class SomeComponent {
-    static ngComponentDef = ɵɵdefineComponent({
+    static ɵfac = () => new SomeComponent;
+    static ɵcmp = ɵɵdefineComponent({
       type: SomeComponent,
       encapsulation: ViewEncapsulation.None,
       selectors: [['some-component']],
-      consts: 1,
+      decls: 1,
       vars: 0,
       template: function(rf: RenderFlags, ctx: SomeComponent) {
         if (rf & RenderFlags.Create) {
@@ -40,22 +41,21 @@ describe('renderer factory lifecycle', () => {
         if (rf & RenderFlags.Update) {
           logs.push('component update');
         }
-      },
-      factory: () => new SomeComponent
+      }
     });
   }
 
   class SomeComponentWhichThrows {
-    static ngComponentDef = ɵɵdefineComponent({
+    static ɵfac = () => new SomeComponentWhichThrows;
+    static ɵcmp = ɵɵdefineComponent({
       type: SomeComponentWhichThrows,
       encapsulation: ViewEncapsulation.None,
       selectors: [['some-component-with-Error']],
-      consts: 0,
+      decls: 0,
       vars: 0,
       template: function(rf: RenderFlags, ctx: SomeComponentWhichThrows) {
         throw(new Error('SomeComponentWhichThrows threw'));
-      },
-      factory: () => new SomeComponentWhichThrows
+      }
     });
   }
 
@@ -150,18 +150,18 @@ describe('Renderer2 destruction hooks', () => {
 
   it('should call renderer.destroy for each component destroyed', () => {
     class SimpleComponent {
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new SimpleComponent;
+      static ɵcmp = ɵɵdefineComponent({
         type: SimpleComponent,
         encapsulation: ViewEncapsulation.None,
         selectors: [['simple']],
-        consts: 1,
+        decls: 1,
         vars: 0,
         template: function(rf: RenderFlags, ctx: SimpleComponent) {
           if (rf & RenderFlags.Create) {
             ɵɵelement(0, 'span');
           }
         },
-        factory: () => new SimpleComponent,
       });
     }
 

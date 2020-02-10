@@ -5,13 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
+/// <reference types="node" />
 import * as ng from '@angular/compiler-cli';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import * as ts from 'typescript';
-
 import {TestSupport, expectNoDiagnostics, setup} from '../test_support';
 
 type MockFiles = {
@@ -54,7 +53,7 @@ describe('ng type checker', () => {
     if (!diagnostics || !diagnostics.length) {
       throw new Error('Expected a diagnostic error message');
     } else {
-      const matches: (d: ng.Diagnostic) => boolean = typeof message === 'string' ?
+      const matches: (d: ng.Diagnostic | ts.Diagnostic) => boolean = typeof message === 'string' ?
           d => ng.isNgDiagnostic(d)&& d.messageText == message :
           d => ng.isNgDiagnostic(d) && message.test(d.messageText);
       const matchingDiagnostics = diagnostics.filter(matches) as ng.Diagnostic[];
@@ -771,12 +770,6 @@ describe('ng type checker', () => {
       rejectOnlyWithFullTemplateTypeCheck(
           '<div>{{"hello" | aPipe}}</div>',
           `Argument of type '"hello"' is not assignable to parameter of type 'number'.`, '0:5');
-    });
-    it('should report an index into a map expression', () => {
-      rejectOnlyWithFullTemplateTypeCheck(
-          '<div>{{ {a: 1}[name] }}</div>',
-          `Element implicitly has an 'any' type because type '{ a: number; }' has no index signature.`,
-          '0:5');
     });
     it('should report an invalid property on an exportAs directive', () => {
       rejectOnlyWithFullTemplateTypeCheck(

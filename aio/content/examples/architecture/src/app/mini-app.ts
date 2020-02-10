@@ -12,7 +12,7 @@ import { Component } from '@angular/core';
 // #enddocregion import-core-component
 
 @Component({
- selector: 'my-app',
+ selector: 'app-root',
  template: 'Welcome to Angular'
 })
 export class AppComponent {

@@ -12,9 +12,9 @@ import {mapLiteral} from '../output/map_util';
 import * as o from '../output/output_ast';
 import {OutputContext} from '../util';
 
-import {R3DependencyMetadata, compileFactoryFunction} from './r3_factory';
+import {R3DependencyMetadata, R3FactoryTarget, compileFactoryFunction} from './r3_factory';
 import {Identifiers as R3} from './r3_identifiers';
-import {R3Reference, convertMetaToOutput, mapToMapExpression} from './util';
+import {R3Reference, convertMetaToOutput, jitOnlyGuardedExpression, mapToMapExpression} from './util';
 
 export interface R3NgModuleDef {
   expression: o.Expression;
@@ -23,13 +23,31 @@ export interface R3NgModuleDef {
 }
 
 /**
- * Metadata required by the module compiler to generate a `ngModuleDef` for a type.
+ * Metadata required by the module compiler to generate a module def (`ɵmod`) for a type.
  */
 export interface R3NgModuleMetadata {
   /**
    * An expression representing the module type being compiled.
    */
-  type: o.Expression;
+  type: R3Reference;
+
+  /**
+   * An expression representing the module type being compiled, intended for use within a class
+   * definition itself.
+   *
+   * This can differ from the outer `type` if the class is being compiled by ngcc and is inside
+   * an IIFE structure that uses a different name internally.
+   */
+  internalType: o.Expression;
+
+  /**
+   * An expression intended for use by statements that are adjacent (i.e. tightly coupled) to but
+   * not internal to a class definition.
+   *
+   * This can differ from the outer `type` if the class is being compiled by ngcc and is inside
+   * an IIFE structure that uses a different name internally.
+   */
+  adjacentType: o.Expression;
 
   /**
    * An array of expressions representing the bootstrap components specified by the module.
@@ -77,6 +95,7 @@ export interface R3NgModuleMetadata {
  */
 export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
   const {
+    internalType,
     type: moduleType,
     bootstrap,
     declarations,
@@ -90,7 +109,7 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
 
   const additionalStatements: o.Statement[] = [];
   const definitionMap = {
-    type: moduleType
+    type: internalType
   } as{
     type: o.Expression,
     bootstrap: o.Expression,
@@ -141,7 +160,7 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
 
   const expression = o.importExpr(R3.defineNgModule).callFn([mapToMapExpression(definitionMap)]);
   const type = new o.ExpressionType(o.importExpr(R3.NgModuleDefWithMeta, [
-    new o.ExpressionType(moduleType), tupleTypeOf(declarations), tupleTypeOf(imports),
+    new o.ExpressionType(moduleType.type), tupleTypeOf(declarations), tupleTypeOf(imports),
     tupleTypeOf(exports)
   ]));
 
@@ -156,7 +175,7 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
  * symbols to become tree-shakeable.
  */
 function generateSetNgModuleScopeCall(meta: R3NgModuleMetadata): o.Statement|null {
-  const {type: moduleType, declarations, imports, exports, containsForwardDecls} = meta;
+  const {adjacentType: moduleType, declarations, imports, exports, containsForwardDecls} = meta;
 
   const scopeMap = {} as{
     declarations: o.Expression,
@@ -180,13 +199,25 @@ function generateSetNgModuleScopeCall(meta: R3NgModuleMetadata): o.Statement|nul
     return null;
   }
 
+  // setNgModuleScope(...)
   const fnCall = new o.InvokeFunctionExpr(
       /* fn */ o.importExpr(R3.setNgModuleScope),
-      /* args */[moduleType, mapToMapExpression(scopeMap)],
-      /* type */ undefined,
-      /* sourceSpan */ undefined,
-      /* pure */ true);
-  return fnCall.toStmt();
+      /* args */[moduleType, mapToMapExpression(scopeMap)]);
+
+  // (ngJitMode guard) && setNgModuleScope(...)
+  const guardedCall = jitOnlyGuardedExpression(fnCall);
+
+  // function() { (ngJitMode guard) && setNgModuleScope(...); }
+  const iife = new o.FunctionExpr(
+      /* params */[],
+      /* statements */[guardedCall.toStmt()]);
+
+  // (function() { (ngJitMode guard) && setNgModuleScope(...); })()
+  const iifeCall = new o.InvokeFunctionExpr(
+      /* fn */ iife,
+      /* args */[]);
+
+  return iifeCall.toStmt();
 }
 
 export interface R3InjectorDef {
@@ -197,7 +228,8 @@ export interface R3InjectorDef {
 
 export interface R3InjectorMetadata {
   name: string;
-  type: o.Expression;
+  type: R3Reference;
+  internalType: o.Expression;
   deps: R3DependencyMetadata[]|null;
   providers: o.Expression|null;
   imports: o.Expression[];
@@ -207,8 +239,11 @@ export function compileInjector(meta: R3InjectorMetadata): R3InjectorDef {
   const result = compileFactoryFunction({
     name: meta.name,
     type: meta.type,
+    internalType: meta.internalType,
+    typeArgumentCount: 0,
     deps: meta.deps,
     injectFn: R3.inject,
+    target: R3FactoryTarget.NgModule,
   });
   const definitionMap = {
     factory: result.factory,
@@ -224,7 +259,7 @@ export function compileInjector(meta: R3InjectorMetadata): R3InjectorDef {
 
   const expression = o.importExpr(R3.defineInjector).callFn([mapToMapExpression(definitionMap)]);
   const type =
-      new o.ExpressionType(o.importExpr(R3.InjectorDef, [new o.ExpressionType(meta.type)]));
+      new o.ExpressionType(o.importExpr(R3.InjectorDef, [new o.ExpressionType(meta.type.type)]));
   return {expression, type, statements: result.statements};
 }
 
@@ -250,7 +285,7 @@ export function compileNgModuleFromRender2(
       /* name */ className,
       /* parent */ null,
       /* fields */[new o.ClassField(
-          /* name */ 'ngInjectorDef',
+          /* name */ 'ɵinj',
           /* type */ o.INFERRED_TYPE,
           /* modifiers */[o.StmtModifier.Static],
           /* initializer */ injectorDef, )],
@@ -260,7 +295,7 @@ export function compileNgModuleFromRender2(
 }
 
 function accessExportScope(module: o.Expression): o.Expression {
-  const selectorScope = new o.ReadPropExpr(module, 'ngModuleDef');
+  const selectorScope = new o.ReadPropExpr(module, 'ɵmod');
   return new o.ReadPropExpr(selectorScope, 'exported');
 }
 

@@ -1,7 +1,11 @@
+<<<<<<< HEAD
 <!--
 # Angular Versioning and Releases 
 -->
 # Angular의 버전 정책과 릴리즈 정책
+=======
+# Angular versioning and releases
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 We recognize that you need stability from the Angular framework. Stability ensures that reusable components and libraries, tutorials, tools, and learned practices don't become obsolete unexpectedly. Stability is essential for the ecosystem around Angular to thrive.
@@ -38,17 +42,21 @@ The practices described in this document apply to Angular 2.0 and later. If you 
 -->
 ## Angular의 버전 정책
 
+<<<<<<< HEAD
 <!--
 Angular version numbers indicate the level of changes that are introduced by the release. This use of [semantic versioning](https://semver.org/ "Semantic Versioning Specification") helps you understand the potential impact of updating to a new version. 
+=======
+Angular version numbers indicate the level of changes that are introduced by the release. This use of [semantic versioning](https://semver.org/ "Semantic Versioning Specification") helps you understand the potential impact of updating to a new version.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
-Angular version numbers have three parts: `major.minor.patch`. For example, version 7.2.11 indicates major version 7, minor version 2, and patch level 11. 
+Angular version numbers have three parts: `major.minor.patch`. For example, version 7.2.11 indicates major version 7, minor version 2, and patch level 11.
 
-The version number is incremented based on the level of change included in the release. 
+The version number is incremented based on the level of change included in the release.
 
-* **Major releases** contain significant new features, some but minimal developer assistance is expected during the update. When updating to a new major release, you may need to run update scripts, refactor code, run additional tests, and learn new APIs. 
+* **Major releases** contain significant new features, some but minimal developer assistance is expected during the update. When updating to a new major release, you may need to run update scripts, refactor code, run additional tests, and learn new APIs.
 
 
-* **Minor releases** contain new smaller features. Minor releases are fully backward-compatible; no developer assistance is expected during update, but you can optionally modify your apps and libraries to begin using new APIs, features, and capabilities that were added in the release. We update peer dependencies in minor versions by expanding the supported versions, but we do not require projects to update these dependencies. 
+* **Minor releases** contain new smaller features. Minor releases are fully backward-compatible; no developer assistance is expected during update, but you can optionally modify your apps and libraries to begin using new APIs, features, and capabilities that were added in the release. We update peer dependencies in minor versions by expanding the supported versions, but we do not require projects to update these dependencies.
 
 
 * **Patch releases** are low risk, bug fix releases. No developer assistance is expected during update.
@@ -65,6 +73,11 @@ Angular의 버전은 `메이저.마이너.패치` 3단계로 구분할 수 있�
 
 * 큰 변동 없이 버그가 수정되면 **패치 릴리즈** 버전이 올라갑니다. 이 경우에는 새로운 버전으로 업데이트하더라도 신경쓸 것은 거의 없습니다.
 
+<div class="alert is-helpful">
+
+**Note:** As of Angular version 7, the major versions of Angular core and the CLI are aligned. This means that in order to use the CLI as you develop an Angular app, the version of `@angular/core` and the CLI need to be the same.
+
+</div>
 
 {@a updating}
 <!--
@@ -78,9 +91,10 @@ In alignment with the versioning scheme described above, we commit to support th
 * If you are updating within the **same major version,** then you can skip any intermediate versions and update directly to the targeted version. For example, you can update directly from 7.0.0 to 7.2.11.
 
 
-* If you are updating from **one major version to another,** then we recommend that you **don't skip major versions.** Follow the instructions to incrementally update to the next major version, testing and validating at each step. For example, if you want to update from version 6.x.x to version 8.x.x, we recommend that you update to the latest 7.x.x release first. After successfully updating to 7.x.x, you can then update to 8.x.x. 
+* If you are updating from **one major version to another,** then we recommend that you **don't skip major versions.** Follow the instructions to incrementally update to the next major version, testing and validating at each step. For example, if you want to update from version 6.x.x to version 8.x.x, we recommend that you update to the latest 7.x.x release first. After successfully updating to 7.x.x, you can then update to 8.x.x.
 
 
+<<<<<<< HEAD
 See [Keeping Up-to-Date](guide/updating "Updating your projects") for more information about updating your Angular projects to the most recent version. 
 -->
 Angular의 버전은 위에서 설명한 정책으로 올라갑니다. 그래서 다음과 같이 업데이트 하는 경우를 생각해 볼 수 있습니다:
@@ -90,6 +104,9 @@ Angular의 버전은 위에서 설명한 정책으로 올라갑니다. 그래서
 * **메이저 버전이 변경되는 경우에는** 중간에 있는 메이저 버전을 **건너뛰지 않는 것을 권장합니다.** 이 경우에는 메이저 버전을 하나씩 올리면서 애플리케이션을 충분히 테스트해야 합니다. 예를 들어 6.x.x 버전에서 8.x.x 버전으로 올리고 싶다면, 8.x.x 버전으로 바로 올리지 말고 7.x.x 버전을 먼저 올려보는 것을 권장합니다. 7.x.x 버전으로 올린 후에 문제가 없다면 그 다음에 8.x.x 버전으로 올리는 것이 좋습니다.
 
 Angular 프로젝트를 최신버전으로 유지하는 것에 대해 자세하게 알아보려면 [최신 버전 적용하기](guide/updating "Updating your projects") 문서를 참고하세요.
+=======
+See [Keeping Up-to-Date](guide/updating "Updating your projects") for more information about updating your Angular projects to the most recent version.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 
 {@a previews}
@@ -98,15 +115,20 @@ Angular 프로젝트를 최신버전으로 유지하는 것에 대해 자세하�
 -->
 ### 시험판 릴리즈
 
+<<<<<<< HEAD
 <!--
 We let you preview what's coming by providing Beta releases and Release Candidates (`rc`) for each major and minor release: 
 -->
 메이저 버전과 마이너 버전이 릴리즈되기 전에는 베타 버전이나 배포 준비 버전(Release Candidates, `rc`)이 제공됩니다.
+=======
+We let you preview what's coming by providing Beta releases and Release Candidates (`rc`) for each major and minor release:
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
-<!-- 
-* **Next:** The release that is under active development. The next release is indicated by a release tag appended with the  `next` identifier, such as  `8.1.0-next.0`. For the next version of the documentation, see [next.angular.io](https://next.angular.io). 
+<!--
+* **Next:** The release that is under active development. The next release is indicated by a release tag appended with the  `next` identifier, such as  `8.1.0-next.0`. For the next version of the documentation, see [next.angular.io](https://next.angular.io).
 -->
 
+<<<<<<< HEAD
 <!--
 * **Beta:** A release that is under active development and testing. A Beta release is indicated by a release tag appended with the  `beta` identifier, such as  `8.0.0-beta.0`. 
 
@@ -115,6 +137,13 @@ We let you preview what's coming by providing Beta releases and Release Candidat
 The next version of the documentation is available at [next.angular.io](https://next.angular.io). This includes any documentation for Beta or Release Candidate features and APIs. 
 -->
 * **베타 버전:** 아직 개발중이거나 테스트중인 릴리즈 버전을 의미합니다. 베타 릴리즈는 목표로 하는 버전 뒤에 `beta`라는 문자열이 더 붙어서 `8.0.0-beta.0`과 같이 표기합니다.
+=======
+* **Beta:** A release that is under active development and testing. A Beta release is indicated by a release tag appended with the  `beta` identifier, such as  `8.0.0-beta.0`.
+
+* **Release candidate:** A release that is feature complete and in final testing. A release candidate is indicated by a release tag appended with the `rc` identifier, such as version `8.1.0-rc`.
+
+The next version of the documentation is available at [next.angular.io](https://next.angular.io). This includes any documentation for Beta or Release Candidate features and APIs.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 * **배포 준비 버전:** 해당 버전에 추가하려는 기능이 모두 개발되어 최종 테스트 단계에 있는 릴리즈 버전을 의미합니다. 배포 준비 버전은 목표로 하는 버전 뒤에 `rc`라는 문자열이 붙어서 `8.1.0-rc`와 같이 표기합니다.
 
@@ -128,6 +157,12 @@ The next version of the documentation is available at [next.angular.io](https://
 
 <!--
 We work toward a regular schedule of releases, so that you can plan and coordinate your updates with the continuing evolution of Angular.
+
+<div class="alert is-helpful">
+
+Disclaimer: Dates are offered as general guidance and will be adjusted by us when necessary to ensure delivery of a high-quality platform. 
+
+</div>
 
 In general, you can expect the following release cycle:
 
@@ -153,6 +188,7 @@ Angular는 릴리즈 버전의 안정성을 보장하기 위해 메이저 릴리
 새로 추가되는 기능은 새로운 메이저 버전이 안정되는 동안 베타 버전을 통해 미리 확인해 볼 수 있습니다.
 
 
+<<<<<<< HEAD
 {@a schedule}
 <!--
 ## Release schedule
@@ -189,6 +225,8 @@ Angular의 메이저 릴리즈 중 앞으로 있을 2개의 메이저 버전은 
 
 
 
+=======
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 {@a lts}
 {@a support}
 <!--
@@ -196,20 +234,25 @@ Angular의 메이저 릴리즈 중 앞으로 있을 2개의 메이저 버전은 
 -->
 ## 관리 정책과 일정
 
+<<<<<<< HEAD
 <!--
 All of our major releases are supported for 18 months. 
+=======
+All of our major releases are supported for 18 months.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 * 6 months of *active support*, during which regularly-scheduled updates and patches are released.
 
-* 12 months of *long-term support (LTS)*, during which only critical fixes and security patches are released. 
+* 12 months of *long-term support (LTS)*, during which only critical fixes and security patches are released.
 
-The following table provides the status for Angular versions under support. 
+The following table provides the status for Angular versions under support.
 
 
 Version | Status | Released     | Active Ends  | LTS Ends
-------- | ------ | ------------ | ------------ | ------------ 
+------- | ------ | ------------ | ------------ | ------------
 ^8.0.0  | Active | May 28, 2019 | Nov 28, 2019 | Nov 28, 2020
 ^7.0.0  | LTS    | Oct 18, 2018 | Apr 18, 2019 | Apr 18, 2020
+<<<<<<< HEAD
 ^6.0.0  | LTS    | May 3, 2018  | Nov 3, 2018  | Nov 3, 2019
 
 Angular versions ^4.0.0 and ^5.0.0 are no longer under support. 
@@ -229,6 +272,10 @@ Angular versions ^4.0.0 and ^5.0.0 are no longer under support.
 ^6.0.0  | LTS    | 2018. 5. 3  | 2018. 11. 3  | 2019. 11. 3
 
 Angular ^4.0.0 버전과 ^5.0.0 버전에 대한 지원은 종료되었습니다.
+=======
+
+Angular versions ^4.0.0, ^5.0.0 and ^6.0.0 are no longer under support.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 {@a deprecation}
 {@a deprecation-practices}
@@ -238,24 +285,28 @@ Angular ^4.0.0 버전과 ^5.0.0 버전에 대한 지원은 종료되었습니다
 -->
 ## 지원이 중단되는 기능
 
+<<<<<<< HEAD
 <!--
 Sometimes &quot;breaking changes&quot;, such as the removal of support for select APIs and features, are necessary to innovate and stay current with new best practices, changing dependencies, or changes in the (web) platform itself. 
+=======
+Sometimes &quot;breaking changes&quot;, such as the removal of support for select APIs and features, are necessary to innovate and stay current with new best practices, changing dependencies, or changes in the (web) platform itself.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 To make these transitions as easy as possible, we make these commitments to you:
 
-* We work hard to minimize the number of breaking changes and to provide migration tools when possible. 
+* We work hard to minimize the number of breaking changes and to provide migration tools when possible.
 
 * We follow the deprecation policy described here, so you have time to update your apps to the latest APIs and best practices.
 
 To help ensure that you have sufficient time and a clear path to update, this is our deprecation policy:
 
-* **Announcement:** We announce deprecated APIs and features in the [change log](https://github.com/angular/angular/blob/master/CHANGELOG.md "Angular change log"). Deprecated APIs appear in the [documentation](api?status=deprecated) with ~~strikethrough.~~ When we announce a deprecation, we also announce a recommended update path. For convenience,  [Deprecations](guide/deprecations) contains a summary of deprecated APIs and features. 
+* **Announcement:** We announce deprecated APIs and features in the [change log](https://github.com/angular/angular/blob/master/CHANGELOG.md "Angular change log"). Deprecated APIs appear in the [documentation](api?status=deprecated) with ~~strikethrough.~~ When we announce a deprecation, we also announce a recommended update path. For convenience,  [Deprecations](guide/deprecations) contains a summary of deprecated APIs and features.
 
 
-* **Deprecation period:** When an API or a feature is deprecated, it will still be present in the [next two major releases](#schedule). After that, deprecated APIs and features will be candidates for removal. A deprecation can be announced in any release, but the removal of a deprecated API or feature will happen only in major release. Until a deprecated API or feature is removed, it will be maintained according to the LTS support policy, meaning that only critical and security issues will be fixed. 
+* **Deprecation period:** When an API or a feature is deprecated, it will still be present in the next two major releases. After that, deprecated APIs and features will be candidates for removal. A deprecation can be announced in any release, but the removal of a deprecated API or feature will happen only in major release. Until a deprecated API or feature is removed, it will be maintained according to the LTS support policy, meaning that only critical and security issues will be fixed.
 
 
-* **npm dependencies:** We only make npm dependency updates that require changes to your apps in a major release. 
+* **npm dependencies:** We only make npm dependency updates that require changes to your apps in a major release.
 In minor releases, we update peer dependencies by expanding the supported versions, but we do not require projects to update these dependencies until a future major version. This means that during minor Angular releases, npm dependency updates within Angular applications and libraries are optional.
 -->
 API나 기능이 크게 변하는(breaking changes) 릴리즈를 사용하려면 코드를 수정하거나, 의존성 패키지를 변경해야 할 수도 있고, 플랫폼 자체를 바꿔야 할 수도 있습니다.

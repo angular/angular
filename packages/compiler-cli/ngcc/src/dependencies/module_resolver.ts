@@ -5,10 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-import {AbsoluteFsPath} from '../../../src/ngtsc/path';
-import {FileSystem} from '../file_system/file_system';
-import {PathMappings, isRelativePath} from '../utils';
+import {AbsoluteFsPath, FileSystem, absoluteFrom, dirname, isRoot, join, resolve} from '../../../src/ngtsc/file_system';
+import {PathMappings, isRelativePath, resolveFileWithPostfixes} from '../utils';
 
 /**
  * This is a very cut-down implementation of the TypeScript module resolution strategy.
@@ -26,8 +24,8 @@ import {PathMappings, isRelativePath} from '../utils';
 export class ModuleResolver {
   private pathMappings: ProcessedPathMapping[];
 
-  constructor(private fs: FileSystem, pathMappings?: PathMappings, private relativeExtensions = [
-    '.js', '/index.js'
+  constructor(private fs: FileSystem, pathMappings?: PathMappings, readonly relativeExtensions = [
+    '', '.js', '/index.js'
   ]) {
     this.pathMappings = pathMappings ? this.processPathMappings(pathMappings) : [];
   }
@@ -55,7 +53,7 @@ export class ModuleResolver {
    * Convert the `pathMappings` into a collection of `PathMapper` functions.
    */
   private processPathMappings(pathMappings: PathMappings): ProcessedPathMapping[] {
-    const baseUrl = AbsoluteFsPath.from(pathMappings.baseUrl);
+    const baseUrl = absoluteFrom(pathMappings.baseUrl);
     return Object.keys(pathMappings.paths).map(pathPattern => {
       const matcher = splitOnStar(pathPattern);
       const templates = pathMappings.paths[pathPattern].map(splitOnStar);
@@ -71,9 +69,8 @@ export class ModuleResolver {
    * If neither of these files exist then the method returns `null`.
    */
   private resolveAsRelativePath(moduleName: string, fromPath: AbsoluteFsPath): ResolvedModule|null {
-    const resolvedPath = this.resolvePath(
-        AbsoluteFsPath.resolve(AbsoluteFsPath.dirname(fromPath), moduleName),
-        this.relativeExtensions);
+    const resolvedPath = resolveFileWithPostfixes(
+        this.fs, resolve(dirname(fromPath), moduleName), this.relativeExtensions);
     return resolvedPath && new ResolvedRelativeModule(resolvedPath);
   }
 
@@ -94,14 +91,13 @@ export class ModuleResolver {
       const packagePath = this.findPackagePath(fromPath);
       if (packagePath !== null) {
         for (const mappedPath of mappedPaths) {
-          const isRelative =
-              mappedPath.startsWith(packagePath) && !mappedPath.includes('node_modules');
-          if (isRelative) {
-            return this.resolveAsRelativePath(mappedPath, fromPath);
-          } else if (this.isEntryPoint(mappedPath)) {
+          if (this.isEntryPoint(mappedPath)) {
             return new ResolvedExternalModule(mappedPath);
-          } else if (this.resolveAsRelativePath(mappedPath, fromPath)) {
-            return new ResolvedDeepImport(mappedPath);
+          }
+          const nonEntryPointImport = this.resolveAsRelativePath(mappedPath, fromPath);
+          if (nonEntryPointImport !== null) {
+            return isRelativeImport(packagePath, mappedPath) ? nonEntryPointImport :
+                                                               new ResolvedDeepImport(mappedPath);
           }
         }
       }
@@ -118,13 +114,13 @@ export class ModuleResolver {
    */
   private resolveAsEntryPoint(moduleName: string, fromPath: AbsoluteFsPath): ResolvedModule|null {
     let folder = fromPath;
-    while (!AbsoluteFsPath.isRoot(folder)) {
-      folder = AbsoluteFsPath.dirname(folder);
+    while (!isRoot(folder)) {
+      folder = dirname(folder);
       if (folder.endsWith('node_modules')) {
         // Skip up if the folder already ends in node_modules
-        folder = AbsoluteFsPath.dirname(folder);
+        folder = dirname(folder);
       }
-      const modulePath = AbsoluteFsPath.resolve(folder, 'node_modules', moduleName);
+      const modulePath = resolve(folder, 'node_modules', moduleName);
       if (this.isEntryPoint(modulePath)) {
         return new ResolvedExternalModule(modulePath);
       } else if (this.resolveAsRelativePath(modulePath, fromPath)) {
@@ -134,20 +130,6 @@ export class ModuleResolver {
     return null;
   }
 
-  /**
-   * Attempt to resolve a `path` to a file by appending the provided `postFixes`
-   * to the `path` and checking if the file exists on disk.
-   * @returns An absolute path to the first matching existing file, or `null` if none exist.
-   */
-  private resolvePath(path: AbsoluteFsPath, postFixes: string[]): AbsoluteFsPath|null {
-    for (const postFix of postFixes) {
-      const testPath = AbsoluteFsPath.fromUnchecked(path + postFix);
-      if (this.fs.exists(testPath)) {
-        return testPath;
-      }
-    }
-    return null;
-  }
 
   /**
    * Can we consider the given path as an entry-point to a package?
@@ -155,7 +137,7 @@ export class ModuleResolver {
    * This is achieved by checking for the existence of `${modulePath}/package.json`.
    */
   private isEntryPoint(modulePath: AbsoluteFsPath): boolean {
-    return this.fs.exists(AbsoluteFsPath.join(modulePath, 'package.json'));
+    return this.fs.exists(join(modulePath, 'package.json'));
   }
 
   /**
@@ -190,7 +172,9 @@ export class ModuleResolver {
       }
     }
 
-    return (bestMapping && bestMatch) ? this.computeMappedTemplates(bestMapping, bestMatch) : [];
+    return (bestMapping !== undefined && bestMatch !== undefined) ?
+        this.computeMappedTemplates(bestMapping, bestMatch) :
+        [];
   }
 
   /**
@@ -203,10 +187,13 @@ export class ModuleResolver {
    */
   private matchMapping(path: string, mapping: ProcessedPathMapping): string|null {
     const {prefix, postfix, hasWildcard} = mapping.matcher;
-    if (path.startsWith(prefix) && path.endsWith(postfix)) {
-      return hasWildcard ? path.substring(prefix.length, path.length - postfix.length) : '';
+    if (hasWildcard) {
+      return (path.startsWith(prefix) && path.endsWith(postfix)) ?
+          path.substring(prefix.length, path.length - postfix.length) :
+          null;
+    } else {
+      return (path === prefix) ? '' : null;
     }
-    return null;
   }
 
   /**
@@ -215,8 +202,7 @@ export class ModuleResolver {
    */
   private computeMappedTemplates(mapping: ProcessedPathMapping, match: string) {
     return mapping.templates.map(
-        template =>
-            AbsoluteFsPath.resolve(mapping.baseUrl, template.prefix + match + template.postfix));
+        template => resolve(mapping.baseUrl, template.prefix + match + template.postfix));
   }
 
   /**
@@ -225,9 +211,9 @@ export class ModuleResolver {
    */
   private findPackagePath(path: AbsoluteFsPath): AbsoluteFsPath|null {
     let folder = path;
-    while (!AbsoluteFsPath.isRoot(folder)) {
-      folder = AbsoluteFsPath.dirname(folder);
-      if (this.fs.exists(AbsoluteFsPath.join(folder, 'package.json'))) {
+    while (!isRoot(folder)) {
+      folder = dirname(folder);
+      if (this.fs.exists(join(folder, 'package.json'))) {
         return folder;
       }
     }
@@ -277,4 +263,8 @@ interface PathMappingPattern {
   prefix: string;
   postfix: string;
   hasWildcard: boolean;
+}
+
+function isRelativeImport(from: AbsoluteFsPath, to: AbsoluteFsPath) {
+  return to.startsWith(from) && !to.includes('node_modules');
 }

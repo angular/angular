@@ -1,7 +1,11 @@
+<<<<<<< HEAD
 <!--
 # Deprecated APIs and Features
 -->
 # 지원이 중단된 기능
+=======
+# Deprecated APIs and features
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 Angular strives to balance innovation and stability.
@@ -48,8 +52,10 @@ v5 - v8
 v6 - v9
 v7 - v10
 v8 - v11
+v9 - v12
 -->
 
+<<<<<<< HEAD
 <!--
 | Area | API or Feature | May be removed in |
 | ---- | -------------- | ----------------- |
@@ -103,6 +109,37 @@ v8 - v11
 | `@angular/core` | [`defineInjectable`](#core) | v11 |
 | `@angular/router` | [`loadChildren` 라우팅 규칙](#loadChildren) | v11 |
 | `@angular/router` | [`ActivatedRoute` params와 `queryParams` 프로퍼티](#activatedroute-props) | 확정되지 않음 |
+=======
+
+| Area                          | API or Feature                                                                | May be removed in |
+| ----------------------------- | ---------------------------------------------------------------------------   | ----------------- |
+| `@angular/common`             | [`ReflectiveInjector`](#reflectiveinjector)                                   | <!--v8--> v10 |
+| `@angular/common`             | [`CurrencyPipe` - `DEFAULT_CURRENCY_CODE`](api/common/CurrencyPipe#currency-code-deprecation) | <!--v9--> v11 |
+| `@angular/core`               | [`CollectionChangeRecord`](#core)                                             | <!--v7--> v10 |
+| `@angular/core`               | [`DefaultIterableDiffer`](#core)                                              | <!--v7--> v10 |
+| `@angular/core`               | [`ReflectiveKey`](#core)                                                      | <!--v8--> v10 |
+| `@angular/core`               | [`RenderComponentType`](#core)                                                | <!--v7--> v10 |
+| `@angular/core`               | [`ViewEncapsulation.Native`](#core)                                           | <!--v6--> v10 |
+| `@angular/core`               | [`ModuleWithProviders` without a generic](#moduleWithProviders)               | <!--v9--> v10 |
+| `@angular/core`               | [Undecorated base classes that use Angular features](#undecorated-base-classes) | <!--v9--> v10 |
+| `@angular/forms`              | [`ngModel` with reactive forms](#ngmodel-reactive)                            | <!--v6--> v10 |
+| `@angular/router`             | [`preserveQueryParams`](#router)                                              | <!--v7--> v10 |
+| `@angular/upgrade`            | [`@angular/upgrade`](#upgrade)                                                | <!--v8--> v10 |
+| `@angular/upgrade`            | [`getAngularLib`](#upgrade-static)                                            | <!--v8--> v10 |
+| `@angular/upgrade`            | [`setAngularLib`](#upgrade-static)                                            | <!--v8--> v10 |
+| `@angular/platform-webworker` | [All entry points](api/platform-webworker)                                    | <!--v8--> v10 |
+| template syntax               | [`<template`>](#template-tag)                                                 | <!--v7--> v10 |
+| polyfills                     | [reflect-metadata](#reflect-metadata)                                         | <!--v8--> v10 |
+| npm package format            | [`esm5` and `fesm5` entry-points in @angular/* npm packages](guide/deprecations#esm5-fesm5) | <!-- v9 --> v10 |
+| `@angular/core`               | [`defineInjectable`](#core)                                                   | <!--v8--> v11 |
+| `@angular/core`               | [`entryComponents`](api/core/NgModule#entryComponents)                        | <!--v9--> v11 |
+| `@angular/core`               | [`ANALYZE_FOR_ENTRY_COMPONENTS`](api/core/ANALYZE_FOR_ENTRY_COMPONENTS)       | <!--v9--> v11 |
+| `@angular/router`             | [`loadChildren` string syntax](#loadChildren)                                 | <!--v9--> v11 |
+| `@angular/core/testing`       | [`TestBed.get`](#testing)                                                     | <!--v9--> v12 |
+| `@angular/router`             | [`ActivatedRoute` params and `queryParams` properties](#activatedroute-props) | unspecified |
+| template syntax               | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector)            | <!--v7--> unspecified |
+
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 
 
@@ -127,11 +164,10 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 
 </div>
 
-
-
 {@a common}
 ### @angular/common
 
+<<<<<<< HEAD
 
 <!--
 | API | Replacement | Deprecation announced | Notes |
@@ -149,6 +185,12 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
  | [`DeprecatedDatePipe`](api/common/DeprecatedDatePipe) | [`DatePipe`](api/common/DatePipe) | v5  | [Pipes](#i18n-pipes) 참고 |
  | [`DeprecatedDecimalPipe`](api/common/DeprecatedDecimalPipe) | [`DecimalPipe`](api/common/DecimalPipe) | v5  | [Pipes](#i18n-pipes) 참고 |
  | [`DeprecatedPercentPipe`](api/common/DeprecatedPercentPipe) | [`PercentPipe`](api/common/PercentPipe) | v5 | [Pipes](#i18n-pipes) 참고 |
+=======
+| API                                                                                           | Replacement                                         | Deprecation announced | Notes |
+| --------------------------------------------------------------------------------------------- | --------------------------------------------------- | --------------------- | ----- |
+| [`CurrencyPipe` - `DEFAULT_CURRENCY_CODE`](api/common/CurrencyPipe#currency-code-deprecation) | `{provide: DEFAULT_CURRENCY_CODE, useValue: 'USD'}` | v9                    | From v11 the default code will be extracted from the locale data given by `LOCAL_ID`, rather than `USD`. |
+
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 {@a core}
 ### @angular/core
@@ -158,13 +200,10 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 | --- | ----------- | --------------------- | ----- |
 | [`CollectionChangeRecord`](api/core/CollectionChangeRecord) | [`IterableChangeRecord`](api/core/IterableChangeRecord) | v4 | none |
 | [`DefaultIterableDiffer`](api/core/DefaultIterableDiffer) | n/a | v4 | Not part of public API. |
-| [`defineInjectable`](api/core/defineInjectable) | `ɵɵdefineInjectable` | v8 | Used only in generated code. No source code should depend on this API. |
 | [`ReflectiveInjector`](api/core/ReflectiveInjector) | [`Injector.create`](api/core/Injector#create)  | v5 | See [`ReflectiveInjector`](#reflectiveinjector) |
 | [`ReflectiveKey`](api/core/ReflectiveKey) | none | v5 | none |
-| [`RenderComponentType`](api/core/RenderComponentType) | [`RendererType2`](api/core/RendererType2) and  [`Renderer2`](api/core/Renderer2) | v4 | none |
-| [`Renderer`](api/core/Renderer) | [`Renderer2`](api/core/Renderer2) | v4 | none |
-| [`RootRenderer`](api/core/RootRenderer) | [`RendererFactory2`](api/core/RendererFactory2) | v4 | none |
 | [`ViewEncapsulation.Native`](api/core/ViewEncapsulation#Native) | [`ViewEncapsulation.ShadowDom`](api/core/ViewEncapsulation#ShadowDom) | v6 | Use the native encapsulation mechanism of the renderer. See [view.ts](https://github.com/angular/angular/blob/3e992e18ebf51d6036818f26c3d77b52d3ec48eb/packages/core/src/metadata/view.ts#L32).
+<<<<<<< HEAD
 | [`WtfScopeFn`](api/core/WtfScopeFn) | none | v8 | See [Web Tracing Framework](#wtf) |
 | [`wtfCreateScope`](api/core/wtfCreateScope) | none | v8 | See [Web Tracing Framework](#wtf) |
 | [`wtfStartTimeRange`](api/core/wtfStartTimeRange) | none | v8 | See [Web Tracing Framework](#wtf) |
@@ -187,6 +226,26 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 | [`wtfStartTimeRange`](api/core/wtfStartTimeRange) | 없음 | v8 | [Web Tracing Framework](#wtf) 참고 |
 | [`wtfEndTimeRange`](api/core/wtfEndTimeRange) | 없음 | v8 | [Web Tracing Framework](#wtf) 참고 |
 | [`wtfLeave`](api/core/wtfLeave) | 없음 | v8 | [Web Tracing Framework](#wtf) 참고 |
+=======
+| [`defineInjectable`](api/core/defineInjectable) | `ɵɵdefineInjectable` | v8 | Used only in generated code. No source code should depend on this API. |
+| [`entryComponents`](api/core/NgModule#entryComponents) | none | v9 | See [`entryComponents`](#entryComponents) |
+| [`ANALYZE_FOR_ENTRY_COMPONENTS`](api/core/ANALYZE_FOR_ENTRY_COMPONENTS) | none | v9 | See [`ANALYZE_FOR_ENTRY_COMPONENTS`](#entryComponents) |
+| `ModuleWithProviders` without a generic |  `ModuleWithProviders` with a generic             | v9 | See [`ModuleWithProviders` section](#moduleWithProviders) |
+| Undecorated base classes that use Angular features | Base classes with `@Directive()` decorator that use Angular features | v9 | See [undecorated base classes section](#undecorated-base-classes) |
+
+
+
+
+
+
+{@a testing}
+### @angular/core/testing
+
+| API | Replacement | Deprecation announced | Notes |
+| --- | ----------- | --------------------- | ----- |
+| [`TestBed.get`](api/core/testing/TestBed#get) | [`TestBed.inject`](api/core/testing/TestBed#inject) | v9 | Same behavior, but type safe. |
+
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 {@a forms}
 ### @angular/forms
@@ -194,11 +253,15 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 <!--
 | API | Replacement | Deprecation announced | Notes |
 | --- | ----------- | --------------------- | ----- |
+<<<<<<< HEAD
 | [`NgFormSelectorWarning`](api/forms/NgFormSelectorWarning) | n/a | v6 | See [ngForm](#ngform). |
 -->
 | API | 대체 기능 | 지원 중단 발표 | 참고 |
 | --- | ----------- | --------------------- | ----- |
 | [`NgFormSelectorWarning`](api/forms/NgFormSelectorWarning) | 해당 없음 | v6 | [ngForm](#ngform) 참고 |
+=======
+| [`ngModel` with reactive forms](#ngmodel-reactive) | See [FormControlDirective usage notes](api/forms/FormControlDirective#use-with-ngmodel) | v6 | none |
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 {@a router}
 ### @angular/router
@@ -280,10 +343,15 @@ This section lists all of the currently-deprecated features, which includes temp
 -->
 ### 웹 트레이싱 프레임워크 지원
 
+<<<<<<< HEAD
 <!--
 Angular previously has supported an integration with the Web Tracing Framework (WTF) for performance testing of Angular applications. This integration has not been maintained and likely does not work for the majority of Angular applications today. As a result, we are deprecating the integration in Angular version 8.
 -->
 Angular는 이전까지 Angular 애플리케이션의 성능을 측정할 때 사용하기 위해 웹 트레이싱 프레임워크(Web Tracing Framework, WTF)를 지원했습니다. 하지만 이 프레임워크는 더이상 유지보수되지 않아 최신버전의 Angular 애플리케이션에는 동작하지 않기 때문에 Angular 8 버전부터 지원이 중단되었습니다.
+=======
+Angular previously has supported an integration with the [Web Tracing Framework (WTF)](https://google.github.io/tracing-framework/) for performance testing of Angular applications. This integration has not been maintained and defunct. As a result, the integration was deprecated in Angular version 8 and due to no evidence of any existing usage removed in version 9.
+
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 {@a deep-component-style-selector}
 <!--
@@ -307,6 +375,7 @@ For more information, see [/deep/, >>>, and ::ng-deep](guide/component-styles#de
 -->
 ### &lt;template&gt; 태그
 
+<<<<<<< HEAD
 <!--
 The `<template>` tag was deprecated in v4 to avoid colliding with the DOM's element of the same name (such as when using web components). Use `<ng-template>` instead. For more information, see the [Ahead-of-Time Compilation](guide/aot-compiler#enablelegacytemplate) guide.
 -->
@@ -347,6 +416,10 @@ Replacement:
 The [`NgFormSelectorWarning`](api/forms/NgFormSelectorWarning) directive is solely used to display warnings when the deprecated `ngForm` selector is used.
 -->
 `ngForm` 셀렉터가 사용되었을 때 경고 메시지를 표시하려면 [`NgFormSelectorWarning`](api/forms/NgFormSelectorWarning) 디렉티브를 사용하는 것도 좋습니다.
+=======
+The `<template>` tag was deprecated in v4 to avoid colliding with the DOM's element of the same name (such as when using web components). Use `<ng-template>` instead. For more information, see the [Ahead-of-Time Compilation](guide/angular-compiler-options#enablelegacytemplate) guide.
+
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 
 {@a ngmodel-reactive}
@@ -364,6 +437,7 @@ For more information, see the usage notes for [`FormControlDirective`](api/forms
 
 자세한 내용은 [`FormControlDirective`](api/forms/FormControlDirective#use-with-ngmodel)와 [`FormControlName`](api/forms/FormControlName#use-with-ngmodel) 문서를 참고하세요.
 
+<<<<<<< HEAD
 {@a sw-versionedfiles}
 <!--
 ### Service worker versionedFiles
@@ -379,6 +453,8 @@ For more information, see [Service Worker Configuration](guide/service-worker-co
 
 더 자세한 내용은 [서비스 워커 환경설정](guide/service-worker-config#assetgroups) 문서를 참고하세요.
 
+=======
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 {@a reflectiveinjector}
 ### ReflectiveInjector
 
@@ -404,6 +480,7 @@ After:
 Injector.create({providers});
 ```
 
+<<<<<<< HEAD
 {@a i18n-pipes}
 <!--
 ### Pipes using Intl API
@@ -431,6 +508,8 @@ Angular 4.3 버전에는 이를 대비해서 숫자, 날짜, 통화 파이프가
 
 참고: 지금은 지원이 중단될 예정인 파이프를 사용하더라도 조만간 새로운 방식으로 변경해야 합니다. 이 API들은 Angular 9 버전부터 완전히 제거될 것입니다.
 
+=======
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 {@a loadChildren}
 <!--
 ### loadChildren string syntax
@@ -560,10 +639,14 @@ Angular 프로젝트를 운영용으로 빌드하더라도 폴리필이 사용�
 -->
 ### `@ViewChild()`, `@ContentChild()` 정적 평가
 
+<<<<<<< HEAD
 <!--
 See our [dedicated migration guide for static queries](guide/static-query-migration).
 -->
 [정적 쿼리 적용 가이드 문서](guide/static-query-migration)를 참고하세요.
+=======
+See the [dedicated migration guide for static queries](guide/static-query-migration).
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 {@a contentchild-input-together}
 <!--
@@ -615,6 +698,62 @@ However, in practice, Angular simply ignores two-way bindings to template variab
 <option *ngFor="let optionName of options" [value]="optionName"></option>
 ```
 
+{@a undecorated-base-classes}
+### Undecorated base classes using Angular features
+
+As of version 9, it's deprecated to have an undecorated base class that:
+
+- uses Angular features
+- is extended by a directive or component
+
+Angular lifecycle hooks or any of the following Angular field decorators are considered Angular features:
+
+- `@Input()`
+- `@Output()`
+- `@HostBinding()`
+- `@HostListener()`
+- `@ViewChild()` / `@ViewChildren()`
+- `@ContentChild()` / `@ContentChildren()`
+
+For example, the following case is deprecated because the base class uses `@Input()` and does not have a class-level decorator:
+
+```ts
+class Base {
+  @Input()
+  foo: string;
+}
+
+@Directive(...)
+class Dir extends Base {
+  ngOnChanges(): void {
+    // notified when bindings to [foo] are updated
+  }
+}
+```
+
+In a future version of Angular, this code will start to throw an error.
+To fix this example, add a selectorless `@Directive()` decorator to the base class:
+
+```ts
+@Directive()
+class Base {
+  @Input()
+  foo: string;
+}
+
+@Directive(...)
+class Dir extends Base {
+  ngOnChanges(): void {
+    // notified when bindings to [foo] are updated
+  }
+}
+```
+
+In version 9, the CLI has an automated migration that will update your code for you when `ng update` is run.
+See [the dedicated migration guide](guide/migration-undecorated-classes) for more information about the change and more examples.
+
+
+
 {@a binding-to-innertext}
 <!--
 ### Binding to `innerText` in `platform-server`
@@ -642,10 +781,14 @@ All of the `wtf*` APIs are deprecated and will be removed in a future version.
 `wtf`로 시작하는 모든 API는 앞으로 배포될 버전에 모두 지원이 중단됩니다.
 
 {@a webworker-apps}
+<<<<<<< HEAD
 <!--
 ### Running Angular applications in platform-webworker 
 -->
 ### Angular 애플리케이션을 platform-webworker로 동작시키기
+=======
+### Running Angular applications in platform-webworker
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 The `@angular/platform-*` packages enable Angular to be run in different contexts. For examples,
@@ -660,7 +803,7 @@ worker is not the best strategy for most applications.
 
 Going forward, we will focus our efforts related to web workers around their primary use case of
 offloading CPU-intensive, non-critical work needed for initial rendering (such as in-memory search
-and image processing). Learn more in the 
+and image processing). Learn more in the
 [guide to Using Web Workers with the Angular CLI](guide/web-worker).
 
 As of Angular version 8, all  `platform-webworker` APIs are deprecated.
@@ -676,6 +819,7 @@ This includes both packages: `@angular/platform-webworker` and
 그래서 Angular 8 버전부터는 `platform-webworker` API의 지원이 중단됩니다.
 `@angular/platform-webworker`, `@angular/platform-webworker-dynamic` 모두 해당됩니다.
 
+<<<<<<< HEAD
 {@a removed}
 <!--
 ## Removed APIs
@@ -702,6 +846,132 @@ The following APIs have been removed starting with version 8.0.0:
 | `@angular/platform-browser` | [`DOCUMENT`](https://v7.angular.io/api/platform-browser/DOCUMENT) | [`@angular/common`가 제공하던 `DOCUMENT`](https://v7.angular.io/api/common/DOCUMENT) | 8 버전에서 [`ng update`](cli/update) 를 실행하면 자동으로 변경됩니다.  |
 | `@angular/core/testing` | [`TestBed.deprecatedOverrideProvider()`](https://v7.angular.io/api/core/testing/TestBed#deprecatedoverrideprovider) | [`TestBed.overrideProvider()`](api/core/testing/TestBed#overrideprovider) | 없음 |
 | `@angular/core/testing` | [`TestBedStatic.deprecatedOverrideProvider()`](https://v7.angular.io/api/core/testing/TestBedStatic#deprecatedoverrideprovider) | [`TestBedStatic.overrideProvider()`](api/core/testing/TestBedStatic#overrideprovider) | 없음 |
+=======
+{@a entryComponents}
+### `entryComponents` and `ANALYZE_FOR_ENTRY_COMPONENTS` no longer required
+Previously, the `entryComponents` array in the `NgModule` definition was used to tell the compiler which components would be created and inserted dynamically. With Ivy, this isn't a requirement anymore and the `entryComponents` array can be removed from existing module declarations. The same applies to the `ANALYZE_FOR_ENTRY_COMPONENTS` injection token.
+
+{@a moduleWithProviders}
+### `ModuleWithProviders` type without a generic
+
+Some Angular libraries, such as `@angular/router` and `@ngrx/store`, implement APIs that return a type called `ModuleWithProviders` (typically via a method named `forRoot()`).
+This type represents an `NgModule` along with additional providers.
+Angular version 9 deprecates use of `ModuleWithProviders` without an explicitly generic type, where the generic type refers to the type of the `NgModule`.
+In a future version of Angular, the generic will no longer be optional.
+
+
+If you're using the CLI, `ng update` should [migrate your code automatically](guide/migration-module-with-providers).
+If you're not using the CLI, you can add any missing generic types to your application manually.
+For example:
+
+**Before**
+```ts
+@NgModule({...})
+export class MyModule {
+  static forRoot(config: SomeConfig): ModuleWithProviders {
+    return {
+      ngModule: SomeModule,
+      providers: [
+        {provide: SomeConfig, useValue: config}
+      ]
+    };
+  }
+}
+```
+
+**After**
+
+```ts
+@NgModule({...})
+export class MyModule {
+  static forRoot(config: SomeConfig): ModuleWithProviders<SomeModule> {
+    return {
+      ngModule: SomeModule,
+      providers: [
+        {provide: SomeConfig, useValue: config }
+      ]
+    };
+  }
+}
+```
+
+{@a esm5-fesm5}
+### `esm5` and `fesm5` code formats in @angular/* npm packages
+
+As of Angular v8, the CLI primarily consumes the `fesm2015` variant of the code distributed via `@angular/*` npm packages.
+This renders the `esm5` and `fesm5` distributions obsolete and unnecessary, adding bloat to the package size and slowing down npm installations.
+
+The future removal of this distribution will have no impact on CLI users, unless they modified their build configuration to explicitly consume these code distributions.
+
+Any application still relying on the `esm5` and `fesm5` as the input to its build system will need to ensure that the build pipeline is capable of accepting JavaScript code conforming to ECMAScript 2015 (ES2015) language specification.
+
+Note that this change doesn't make existing libraries distributed in this format incompatible with the Angular CLI.
+The CLI will fall back and consume libraries in less desirable formats if others are not available.
+However, we do recommend that libraries ship their code in ES2015 format in order to make builds faster and build output smaller.
+
+In practical terms, the `package.json` of all `@angular` packages will change in the following way:
+
+**Before**:
+```
+{
+  "name": "@angular/core",
+  "version": "9.0.0",
+  "main": "./bundles/core.umd.js",
+  "module": "./fesm5/core.js",
+  "es2015": "./fesm2015/core.js",
+  "esm5": "./esm5/core.js",
+  "esm2015": "./esm2015/core.js",
+  "fesm5": "./fesm5/core.js",
+  "fesm2015": "./fesm2015/core.js",
+  ...
+}
+```
+
+**After**:
+```
+{
+  "name": "@angular/core",
+  "version": "10.0.0",
+  "main": "./bundles/core.umd.js",
+  "module": "./fesm2015/core.js",
+  "es2015": "./fesm2015/core.js",
+  "esm2015": "./esm2015/core.js",
+  "fesm2015": "./fesm2015/core.js",
+  ...
+}
+```
+
+For more information about the npm package format, see the [Angular Package Format spec](https://goo.gl/jB3GVv).
+
+
+
+{@a removed}
+## Removed APIs
+
+The following APIs have been removed starting with version 9.0.0*:
+
+| Package          | API            | Replacement | Notes |
+| ---------------- | -------------- | ----------- | ----- |
+| `@angular/core`  | [`Renderer`](https://v8.angular.io/api/core/Renderer) | [`Renderer2`](https://angular.io/api/core/Renderer2) | [Migration guide](guide/migration-renderer) |
+| `@angular/core`  | [`RootRenderer`](https://v8.angular.io/api/core/RootRenderer) | [`RendererFactory2`](https://angular.io/api/core/RendererFactory2) | none |
+| `@angular/core`  | [`RenderComponentType`](https://v8.angular.io/api/core/RenderComponentType) | [`RendererType2`](https://angular.io/api/core/RendererType2) | none |
+| `@angular/core`  | [`WtfScopeFn`](https://v8.angular.io/api/core/WtfScopeFn) | none | v8 | See [Web Tracing Framework](#wtf) |
+| `@angular/core`  | [`wtfCreateScope`](https://v8.angular.io/api/core/wtfCreateScope) | none | v8 | See [Web Tracing Framework](#wtf) |
+| `@angular/core`  | [`wtfStartTimeRange`](https://v8.angular.io/api/core/wtfStartTimeRange) | none | v8 | See [Web Tracing Framework](#wtf) |
+| `@angular/core`  | [`wtfEndTimeRange`](https://v8.angular.io/api/core/wtfEndTimeRange) | none | v8 | See [Web Tracing Framework](#wtf) |
+| `@angular/core`  | [`wtfLeave`](https://v8.angular.io/api/core/wtfLeave) | none | v8 | See [Web Tracing Framework](#wtf) |
+| `@angular/common` | `DeprecatedI18NPipesModule` | [`CommonModule`](api/common/CommonModule#pipes) | none |
+| `@angular/common` | `DeprecatedCurrencyPipe` | [`CurrencyPipe`](api/common/CurrencyPipe) | none |
+| `@angular/common` | `DeprecatedDatePipe`     | [`DatePipe`](api/common/DatePipe) | none |
+| `@angular/common` | `DeprecatedDecimalPipe` | [`DecimalPipe`](api/common/DecimalPipe) | none |
+| `@angular/common` | `DeprecatedPercentPipe` | [`PercentPipe`](api/common/PercentPipe) | none |
+| `@angular/forms` | [`NgFormSelectorWarning`](https://v8.angular.io/api/forms/NgFormSelectorWarning) | none | none |
+| `@angular/forms` | `ngForm` element selector | `ng-form` element selector | none |
+| `@angular/service-worker` | `versionedFiles` | `files` | In the service worker configuration file `ngsw-config.json`, replace `versionedFiles` with `files`. See [Service Worker Configuration](guide/service-worker-config#assetgroups). |
+
+*To see APIs removed in version 8, check out this guide on the [version 8 docs site](https://v8.angular.io/guide/deprecations#removed).
+
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!-- The following anchor is used by redirects from the removed API pages. Do not change or remove. -->
 {@a http}
@@ -776,6 +1046,7 @@ HTTP 응답이나 인터셉터로 받은 반환값의 타입을 지정할 수도
 | --------------------- | ------------------------------------------- |
 | `MockBackend` | [`HttpTestingController`](/api/common/http/testing/HttpTestingController) |
 | `MockConnection` | [`HttpTestingController`](/api/common/http/testing/HttpTestingController) |
+<<<<<<< HEAD
 -->
 | `@angular/http` | `@angular/common/http` 패키지에서 비슷한 역할 |
 | ------------- | ------------------------------------------- |
@@ -813,3 +1084,5 @@ HTTP 응답이나 인터셉터로 받은 반환값의 타입을 지정할 수도
 | --------------------- | ------------------------------------------- |
 | `MockBackend` | [`HttpTestingController`](/api/common/http/testing/HttpTestingController) |
 | `MockConnection` | [`HttpTestingController`](/api/common/http/testing/HttpTestingController) |
+=======
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072

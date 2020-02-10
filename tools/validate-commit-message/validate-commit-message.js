@@ -16,55 +16,85 @@
 
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
-const configPath = path.resolve(__dirname, './commit-message.json');
-const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-const PATTERN = /^(\w+)(?:\(([^)]+)\))?\: (.+)$/;
-const FIXUP_SQUASH = /^(fixup|squash)\! /i;
-const REVERT = /^revert:? /i;
+const config = require('./commit-message.json');
+const FIXUP_PREFIX_RE = /^fixup! /i;
+const SQUASH_PREFIX_RE = /^squash! /i;
+const REVERT_PREFIX_RE = /^revert:? /i;
 
-module.exports = function(commitSubject) {
-  const subject = commitSubject.replace(FIXUP_SQUASH, '');
-
-  if (subject.match(REVERT)) {
+module.exports = (commitHeader, disallowSquash, nonFixupCommitHeaders) => {
+  if (REVERT_PREFIX_RE.test(commitHeader)) {
     return true;
   }
 
-  if (subject.length > config['maxLength']) {
-    error(`The commit message is longer than ${config['maxLength']} characters`, commitSubject);
+  const {header, type, scope, isFixup, isSquash} = parseCommitHeader(commitHeader);
+
+  if (isSquash && disallowSquash) {
+    error('The commit must be manually squashed into the target commit', commitHeader);
     return false;
   }
 
-  const match = PATTERN.exec(subject);
-  if (!match) {
-    error(
-        `The commit message does not match the format of '<type>(<scope>): <subject>' OR 'Revert: "type(<scope>): <subject>"'`,
-        commitSubject);
+  // If it is a fixup commit and `nonFixupCommitHeaders` is not empty, we only care to check whether
+  // there is a corresponding non-fixup commit (i.e. a commit whose header is identical to this
+  // commit's header after stripping the `fixup! ` prefix).
+  if (isFixup && nonFixupCommitHeaders) {
+    if (!nonFixupCommitHeaders.includes(header)) {
+      error(
+          'Unable to find match for fixup commit among prior commits: ' +
+              (nonFixupCommitHeaders.map(x => `\n      ${x}`).join('') || '-'),
+          commitHeader);
+      return false;
+    }
+
+    return true;
+  }
+
+  if (header.length > config.maxLength) {
+    error(`The commit message header is longer than ${config.maxLength} characters`, commitHeader);
     return false;
   }
 
-  const type = match[1];
-  if (config['types'].indexOf(type) === -1) {
+  if (!type) {
+    const format = '<type>(<scope>): <subject>';
     error(
-        `${type} is not an allowed type.\n => TYPES: ${config['types'].join(', ')}`, commitSubject);
+        `The commit message header does not match the format of '${format}' or 'Revert: "${format}"'`,
+        commitHeader);
     return false;
   }
 
-  const scope = match[2];
+  if (!config.types.includes(type)) {
+    error(`'${type}' is not an allowed type.\n => TYPES: ${config.types.join(', ')}`, commitHeader);
+    return false;
+  }
 
-  if (scope && !config['scopes'].includes(scope)) {
+  if (scope && !config.scopes.includes(scope)) {
     error(
-        `"${scope}" is not an allowed scope.\n => SCOPES: ${config['scopes'].join(', ')}`,
-        commitSubject);
+        `'${scope}' is not an allowed scope.\n => SCOPES: ${config.scopes.join(', ')}`,
+        commitHeader);
     return false;
   }
 
   return true;
 };
 
-function error(errorMessage, commitMessage) {
-  console.error(`INVALID COMMIT MSG: "${commitMessage}"\n => ERROR: ${errorMessage}`);
+module.exports.FIXUP_PREFIX_RE = FIXUP_PREFIX_RE;
+module.exports.config = config;
+
+// Helpers
+function error(errorMessage, commitHeader) {
+  console.error(`INVALID COMMIT MSG: ${commitHeader}\n => ERROR: ${errorMessage}`);
 }
 
-module.exports.config = config;
+function parseCommitHeader(header) {
+  const isFixup = FIXUP_PREFIX_RE.test(header);
+  const isSquash = SQUASH_PREFIX_RE.test(header);
+  header = header.replace(FIXUP_PREFIX_RE, '').replace(SQUASH_PREFIX_RE, '');
+
+  const match = /^(\w+)(?:\(([^)]+)\))?\: (.+)$/.exec(header) || [];
+
+  return {
+    header,
+    type: match[1],
+    scope: match[2],
+    subject: match[3], isFixup, isSquash,
+  };
+}

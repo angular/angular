@@ -3,6 +3,7 @@
 -->
 # 프로바이더 (Providers)
 
+<<<<<<< HEAD
 <!--
 #### Prerequisites:
 -->
@@ -13,6 +14,9 @@
 -->
 * [부트스트랩](guide/bootstrapping)
 * [자주 사용하는 NgModule](guide/frequent-ngmodules)
+=======
+A provider is an instruction to the [Dependency Injection](/guide/dependency-injection) system on how to obtain a value for a dependency. Most of the time, these dependencies are services that you create and provide.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 For the final sample app using the provider that this page describes,
@@ -20,6 +24,7 @@ see the <live-example></live-example>.
 -->
 이 가이드에서 다루는 예제의 최종 코드는 <live-example></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
+<<<<<<< HEAD
 <hr>
 
 <!--
@@ -28,6 +33,8 @@ A provider is an instruction to the DI system on how to obtain a value for a dep
 프로바이더는 의존성 주입에 사용되는 객체를 가져오는 방법을 지정한 것입니다. 이 때 의존성으로 주입되는 객체는 일반적으로 서비스입니다.
 
 <!--
+=======
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 ## Providing a service
 -->
 ## 서비스 생성하기
@@ -46,7 +53,7 @@ This command creates the following `UserService` skeleton:
 -->
 그러면 `UserService`가 다음과 같이 생성됩니다:
 
-<code-example path="providers/src/app/user.service.0.ts"  header="src/app/user.service.ts" linenums="false"> </code-example>
+<code-example path="providers/src/app/user.service.0.ts"  header="src/app/user.service.ts"></code-example>
 
 <!--
 You can now inject `UserService` anywhere in your application.
@@ -82,14 +89,14 @@ It's also possible to specify that a service should be provided in a particular 
 -->
 특정 `@NgModule`에 포함되도록 서비스를 등록할 수도 있습니다. 예를 들어 `UserModule`을 로드하지 않은 상태에서는 `UserService`를 사용할 수 없도록 하려면, 코드를 다음과 같이 작성하면 됩니다:
 
-<code-example path="providers/src/app/user.service.1.ts"  header="src/app/user.service.ts" linenums="false">  </code-example>
+<code-example path="providers/src/app/user.service.1.ts"  header="src/app/user.service.ts"></code-example>
 
 <!--
 The example above shows the preferred way to provide a service in a module. This method is preferred because it enables tree-shaking of the service if nothing injects it. If it's not possible to specify in the service which module should provide it, you can also declare a provider for the service within the module:
 -->
 이 방법을 사용하면 실제로 사용되지 않는 서비스는 트리 셰이킹으로 제거되기 때문에 애플리케이션을 배포할 때도 좋습니다. 서비스가 포함될 모듈을 지정하는 방법을 사용할 수 없다면, 반대로 모듈 안에 서비스 프로바이더를 등록하는 방법도 있습니다:
 
-<code-example path="providers/src/app/user.module.ts"  header="src/app/user.module.ts" linenums="false">  </code-example>
+<code-example path="providers/src/app/user.module.ts"  header="src/app/user.module.ts"></code-example>
 
 <!--
 ## Limiting provider scope by lazy loading modules
@@ -131,14 +138,17 @@ Though you can provide services by lazy loading modules, not all services can be
 <!--
 Another way to limit provider scope is by adding the service you want to limit to the component’s
 `providers` array. Component providers and NgModule providers are independent of each other. This
-method is helpful for when you want to eagerly load a module that needs a service all to itself.
+method is helpful when you want to eagerly load a module that needs a service all to itself.
 Providing a service in the component limits the service only to that component (other components in
+<<<<<<< HEAD
 the same module can’t access it.)
 -->
 프로바이더의 범위는 컴포넌트 안으로 제한할 수도 있는데, 이 때 컴포넌트 메타데이터의 `providers` 배열을 사용합니다. 그러면 NgModule의 프로바이더와는 별개로 컴포넌트 프로바이더가 의존성 객체를 생성합니다. 이 방법은 컴포넌트마다 서비스 인스턴스를 별개로 사용하는 경우에 활용하면 좋습니다. 서비스의 인스턴스가 각각 생성되면 컴포넌트에서 이 서비스를 사용해 어떤 동작을 하더라도 다른 컴포넌트는 영향을 받지 않습니다.
+=======
+the same module can’t access it).
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
-<code-example path="providers/src/app/app.component.ts" region="component-providers" header="src/app/app.component.ts" linenums="false">
-</code-example>
+<code-example path="providers/src/app/app.component.ts" region="component-providers" header="src/app/app.component.ts"></code-example>
 
 <!--
 ## Providing services in modules vs. components

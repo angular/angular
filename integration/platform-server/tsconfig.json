@@ -1,7 +1,8 @@
 {
   "angularCompilerOptions": {
     "annotationsAs": "static fields",
-    "annotateForClosureCompiler": true
+    "annotateForClosureCompiler": true,
+    "enableIvy": false,
   },
 
   "compilerOptions": {

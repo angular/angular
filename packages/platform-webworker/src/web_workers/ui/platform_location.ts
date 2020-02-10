@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LocationChangeListener} from '@angular/common';
+import {LocationChangeListener, ɵBrowserPlatformLocation as BrowserPlatformLocation} from '@angular/common';
 import {EventEmitter, Injectable} from '@angular/core';
-import {ɵBrowserPlatformLocation as BrowserPlatformLocation} from '@angular/platform-browser';
 import {MessageBus} from '../shared/message_bus';
 import {ROUTER_CHANNEL} from '../shared/messaging_api';
 import {LocationType, Serializer, SerializerTypes} from '../shared/serializer';

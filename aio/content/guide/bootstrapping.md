@@ -16,8 +16,12 @@ A basic understanding of the following:
 
 <hr />
 
+<<<<<<< HEAD
 <!--
 An NgModule describes how the application parts fit together.
+=======
+An `NgModule` describes how the application parts fit together.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 Every application has at least one Angular module, the _root_ module
 that you bootstrap to launch the application.
 By convention, it is usually called `AppModule`.
@@ -205,26 +209,27 @@ The following example, named `ItemDirective` is the default directive structure 
 `item.directive.ts` 파일에 `ItemDirective`를 정의해 봅시다.
 Angular CLI로 디렉티브를 생성하면 디렉티브의 기본 구조가 다음과 같이 구성됩니다:
 
-<code-example path="bootstrapping/src/app/item.directive.ts" region="directive" header="src/app/item.directive.ts" linenums="false">
-</code-example>
+<code-example path="bootstrapping/src/app/item.directive.ts" region="directive" header="src/app/item.directive.ts"></code-example>
 
 <!--
 The key point here is that you have to export it so you can import it elsewhere. Next, import it
+<<<<<<< HEAD
 into the NgModule, in this example `app.module.ts`, with a JavaScript import statement:
 -->
 이 파일에서 중요한 점은, 이 클래스가 `export` 키워드로 지정되었기 때문에 다른 모듈이 이 클래스를 참조할 수 있다는 것입니다.
 따라서, 앱 모듈을 정의하는 `app.module.ts` 파일에서는 다음과 같이 로드할 수 있습니다:
+=======
+into the `NgModule`, in this example `app.module.ts`, with a JavaScript import statement:
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
-<code-example path="bootstrapping/src/app/app.module.ts" region="directive-import" header="src/app/app.module.ts" linenums="false">
-</code-example>
+<code-example path="bootstrapping/src/app/app.module.ts" region="directive-import" header="src/app/app.module.ts"></code-example>
 
 <!--
 And in the same file, add it to the `@NgModule` `declarations` array:
 -->
 이렇게 불러온 디렉티브를 `@NgModule`의 `declarations` 배열에 추가합니다:
 
-<code-example path="bootstrapping/src/app/app.module.ts" region="declarations" header="src/app/app.module.ts" linenums="false">
-</code-example>
+<code-example path="bootstrapping/src/app/app.module.ts" region="declarations" header="src/app/app.module.ts"></code-example>
 
 <!--
 Now you could use your `ItemDirective` in a component. This example uses `AppModule`, but you'd do it the same way for a feature module. For more about directives, see [Attribute Directives](guide/attribute-directives) and [Structural Directives](guide/structural-directives). You'd also use the same technique for [pipes](guide/pipes) and components.

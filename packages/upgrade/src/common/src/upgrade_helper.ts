@@ -71,13 +71,13 @@ export class UpgradeHelper {
   }
 
   static getTemplate(
-      $injector: IInjectorService, directive: IDirective, fetchRemoteTemplate = false): string
-      |Promise<string> {
+      $injector: IInjectorService, directive: IDirective, fetchRemoteTemplate = false,
+      $element?: IAugmentedJQuery): string|Promise<string> {
     if (directive.template !== undefined) {
-      return getOrCall<string>(directive.template);
+      return getOrCall<string>(directive.template, $element);
     } else if (directive.templateUrl) {
       const $templateCache = $injector.get($TEMPLATE_CACHE) as ITemplateCacheService;
-      const url = getOrCall<string>(directive.templateUrl);
+      const url = getOrCall<string>(directive.templateUrl, $element);
       const template = $templateCache.get(url);
 
       if (template !== undefined) {
@@ -114,7 +114,8 @@ export class UpgradeHelper {
 
   compileTemplate(template?: string): ILinkFn {
     if (template === undefined) {
-      template = UpgradeHelper.getTemplate(this.$injector, this.directive) as string;
+      template =
+          UpgradeHelper.getTemplate(this.$injector, this.directive, false, this.$element) as string;
     }
 
     return this.compileHtml(template);
@@ -304,8 +305,8 @@ export class UpgradeHelper {
   }
 }
 
-function getOrCall<T>(property: T | Function): T {
-  return isFunction(property) ? property() : property;
+function getOrCall<T>(property: T | Function, ...args: any[]): T {
+  return isFunction(property) ? property(...args) : property;
 }
 
 // NOTE: Only works for `typeof T !== 'object'`.

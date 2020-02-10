@@ -145,13 +145,15 @@ export function relativeToRootDirs(filePath: string, rootDirs: string[]): string
 }
 
 export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, bazelOpts, files,
-                         inputs, expectedOuts, gatherDiagnostics}: {
+                         inputs, expectedOuts, gatherDiagnostics, bazelHost}: {
   allDepsCompiledWithBazel?: boolean,
   compilerOpts: ng.CompilerOptions,
   tsHost: ts.CompilerHost, inputs?: {[path: string]: string},
   bazelOpts: BazelOptions,
   files: string[],
-  expectedOuts: string[], gatherDiagnostics?: (program: ng.Program) => ng.Diagnostics
+  expectedOuts: string[],
+  gatherDiagnostics?: (program: ng.Program) => ng.Diagnostics,
+  bazelHost?: CompilerHost,
 }): {diagnostics: ng.Diagnostics, program: ng.Program} {
   let fileLoader: FileLoader;
 
@@ -182,15 +184,10 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
   }
 
   // Detect from compilerOpts whether the entrypoint is being invoked in Ivy mode.
-  const isInIvyMode = compilerOpts.enableIvy === 'ngtsc' || compilerOpts.enableIvy === 'tsc';
+  const isInIvyMode = compilerOpts.enableIvy === 'ngtsc';
 
   // Disable downleveling and Closure annotation if in Ivy mode.
   if (isInIvyMode) {
-    // In pass-through mode for TypeScript, we want to turn off decorator transpilation entirely.
-    // This causes ngc to be have exactly like tsc.
-    if (compilerOpts.enableIvy === 'tsc') {
-      compilerOpts.annotateForClosureCompiler = false;
-    }
     compilerOpts.annotationsAs = 'decorators';
   }
 
@@ -202,16 +199,15 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
     throw new Error(`Couldn't find bazel bin in the rootDirs: ${compilerOpts.rootDirs}`);
   }
 
-  const writtenExpectedOuts = expectedOuts.map(p => p.replace(/\\/g, '/'));
+  const expectedOutsSet = new Set(expectedOuts.map(p => p.replace(/\\/g, '/')));
 
   const originalWriteFile = tsHost.writeFile.bind(tsHost);
   tsHost.writeFile =
       (fileName: string, content: string, writeByteOrderMark: boolean,
        onError?: (message: string) => void, sourceFiles?: ts.SourceFile[]) => {
         const relative = relativeToRootDirs(fileName.replace(/\\/g, '/'), [compilerOpts.rootDir]);
-        const expectedIdx = writtenExpectedOuts.findIndex(o => o === relative);
-        if (expectedIdx >= 0) {
-          writtenExpectedOuts.splice(expectedIdx, 1);
+        if (expectedOutsSet.has(relative)) {
+          expectedOutsSet.delete(relative);
           originalWriteFile(fileName, content, writeByteOrderMark, onError, sourceFiles);
         }
       };
@@ -244,8 +240,10 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
         moduleName, containingFile, compilerOptions, generatedFileModuleResolverHost);
   }
 
-  const bazelHost = new CompilerHost(
-      files, compilerOpts, bazelOpts, tsHost, fileLoader, generatedFileModuleResolver);
+  if (!bazelHost) {
+    bazelHost = new CompilerHost(
+        files, compilerOpts, bazelOpts, tsHost, fileLoader, generatedFileModuleResolver);
+  }
 
   // Also need to disable decorator downleveling in the BazelHost in Ivy mode.
   if (isInIvyMode) {
@@ -253,7 +251,10 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
   }
 
   // Prevent tsickle adding any types at all if we don't want closure compiler annotations.
-  bazelHost.transformTypesToClosure = compilerOpts.annotateForClosureCompiler;
+  if (compilerOpts.annotateForClosureCompiler) {
+    bazelHost.transformTypesToClosure = true;
+    bazelHost.transformDecorators = true;
+  }
   const origBazelHostFileExist = bazelHost.fileExists;
   bazelHost.fileExists = (fileName: string) => {
     if (NGC_ASSETS.test(fileName)) {
@@ -423,8 +424,10 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
     fs.writeFileSync(bazelOpts.tsickleExternsPath, externs);
   }
 
-  for (let i = 0; i < writtenExpectedOuts.length; i++) {
-    originalWriteFile(writtenExpectedOuts[i], '', false);
+  // There might be some expected output files that are not written by the
+  // compiler. In this case, just write an empty file.
+  for (const fileName of expectedOutsSet) {
+    originalWriteFile(fileName, '', false);
   }
 
   return {program, diagnostics};

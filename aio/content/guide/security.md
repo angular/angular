@@ -174,9 +174,7 @@ content, and once by binding it to the `innerHTML` property of an element:
 -->
 아래 템플릿 코드에서 `htmlSnippet`는 엘리먼트의 내용에 문자열 바인딩되면서 한 번, 엘리먼트의 `innerHTML` 프로퍼티에 바인딩되면서 한 번 실행됩니다:
 
-<code-example path="security/src/app/inner-html-binding.component.html" header="src/app/inner-html-binding.component.html">
-
-</code-example>
+<code-example path="security/src/app/inner-html-binding.component.html" header="src/app/inner-html-binding.component.html"></code-example>
 
 
 <!--
@@ -193,12 +191,16 @@ HTML 코드를 그대로 사용하려면 이 코드는 `innerHTML`과 같은 HTM
 하지만 이 코드를 아무 처리없이 바인딩하는 것은 공격자가 XSS 취약점을 사용하도록 하는 것과 같습니다.
 예를 들어 `htmlSnippet`의 내용 안에 `<script>` 태그가 포함되어 있다고 합시다:
 
+<<<<<<< HEAD
 <!--
 <code-example path="security/src/app/inner-html-binding.component.ts" linenums="false" header="src/app/inner-html-binding.component.ts (class)" region="class">
 -->
 <code-example path="security/src/app/inner-html-binding.component.ts" linenums="false" header="src/app/inner-html-binding.component.ts (클래스)" region="class">
 
 </code-example>
+=======
+<code-example path="security/src/app/inner-html-binding.component.ts" header="src/app/inner-html-binding.component.ts (class)" region="class"></code-example>
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 
 <!--
@@ -208,9 +210,9 @@ tag but keeps safe content such as the `<b>` element.
 Angular는 이 코드에서 `<script>`와 같이 위험한 부분을 자동으로 제거하지만 `<b>` 엘리먼트와 같이 안전한 코드는 그대로 둡니다.
 
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/security/binding-inner-html.png' alt='A screenshot showing interpolated and bound HTML values'>
-</figure>
+</div>
 
 
 <!--
@@ -338,9 +340,7 @@ your intended use of the value. Imagine that the following template needs to bin
 코드를 안전한 것으로 간주하려면 해당 컨텍스트에 어울리는 메소드를 실행해야 합니다.
 아래 템플릿 코드에서는 URL을 바인딩하는 부분이 있는데 이 URL에 `javaScript:alert(...)`과 같은 코드가 사용된다고 합시다.
 
-<code-example path="security/src/app/bypass-security.component.html" linenums="false" header="src/app/bypass-security.component.html (URL)" region="URL">
-
-</code-example>
+<code-example path="security/src/app/bypass-security.component.html" header="src/app/bypass-security.component.html (URL)" region="URL"></code-example>
 
 
 <!--
@@ -351,15 +351,13 @@ this, mark the URL value as a trusted URL using the `bypassSecurityTrustUrl` cal
 일반적으로 Angular는 URL을 대상으로 안전성 검사를 실행하기 때문에 `javascript:alert(...)`과 같이 위험한 코드는 자동으로 제거되며, 개발모드라면 콘솔에 경고 메시지가 출력됩니다.
 하지만 이 동작을 우회하려면 `bypassSecurityTrustUrl`을 실행해서 URL로 사용되는 코드가 안전하다는 것으로 체크하면 됩니다.
 
-<code-example path="security/src/app/bypass-security.component.ts" linenums="false" header="src/app/bypass-security.component.ts (trust-url)" region="trust-url">
-
-</code-example>
+<code-example path="security/src/app/bypass-security.component.ts" header="src/app/bypass-security.component.ts (trust-url)" region="trust-url"></code-example>
 
 
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/security/bypass-security-component.png' alt='A screenshot showing an alert box created from a trusted URL'>
-</figure>
+</div>
 
 
 <!--
@@ -377,15 +375,11 @@ Angular to allow binding into `<iframe src>`:
 이 때 사용자가 입력하는 영상의 URL이 언제나 안전하다고 생각하면 이 코드를 안전한 값으로 처리하는 메소드를 정의하고, 이 메소드가 처리한 URL을 `<iframe src>`에 활용할 수 있습니다.
 
 
-<code-example path="security/src/app/bypass-security.component.html" linenums="false" header="src/app/bypass-security.component.html (iframe)" region="iframe">
-
-</code-example>
+<code-example path="security/src/app/bypass-security.component.html" header="src/app/bypass-security.component.html (iframe)" region="iframe"></code-example>
 
 
 
-<code-example path="security/src/app/bypass-security.component.ts" linenums="false" header="src/app/bypass-security.component.ts (trust-video-url)" region="trust-video-url">
-
-</code-example>
+<code-example path="security/src/app/bypass-security.component.ts" header="src/app/bypass-security.component.ts (trust-video-url)" region="trust-video-url"></code-example>
 
 
 
@@ -457,7 +451,7 @@ This technique is effective because all browsers implement the _same origin poli
 on which cookies are set can read the cookies from that site and set custom headers on requests to that site.
 That means only your application can read this cookie token and set the custom header. The malicious code on `evil.com` can't.
 
-Angular's `HttpClient` has built-in support for the client-side half of this technique. Read about it more in the [HttpClient guide](/guide/http).
+Angular's `HttpClient` has built-in support for the client-side half of this technique. Read about it more in the [HttpClient guide](/guide/http#security-xsrf-protection).
 
 For information about CSRF at the Open Web Application Security Project (OWASP), see
 <a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29">Cross-Site Request Forgery (CSRF)</a> and

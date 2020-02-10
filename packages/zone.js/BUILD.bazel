@@ -1,8 +1,10 @@
-load("@build_bazel_rules_nodejs//:defs.bzl", "npm_package")
+load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
 load("//packages/zone.js:bundles.bzl", "ES2015_BUNDLES", "ES5_BUNDLES", "ES5_GLOBAL_BUNDLES")
 
 exports_files([
     "tsconfig.json",
+    "rollup-es5.config.js",
+    "rollup-es5_global-es2015.config.js",
 ])
 
 genrule(
@@ -19,14 +21,14 @@ genrule(
     cmd = "(echo '/**\n @license' && cat $< && echo '*/') > $@",
 )
 
-npm_package(
+pkg_npm(
     name = "npm_package",
     srcs = [
         "CHANGELOG.md",
         "README.md",
         "package.json",
     ],
-    visibility = ["//packages/zone.js/test:__pkg__"],
+    visibility = ["//visibility:public"],
     deps = [
         ":LICENSE.wrapped",
         ":LICENSE_copy",

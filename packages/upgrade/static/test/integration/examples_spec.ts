@@ -23,7 +23,8 @@ withEachNg1Version(() => {
     beforeEach(() => destroyPlatform());
     afterEach(() => destroyPlatform());
 
-    it('should have AngularJS loaded', () => expect(angular.version.major).toBe(1));
+    it('should have AngularJS loaded',
+       () => expect(angular.getAngularJSGlobal().version.major).toBe(1));
 
     it('should verify UpgradeAdapter example', async(() => {
 

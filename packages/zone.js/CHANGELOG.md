@@ -1,3 +1,44 @@
+<a name="0.10.2"></a>
+## [0.10.2](https://github.com/angular/angular/compare/zone.js-0.10.1...zone.js-0.10.2) (2019-08-13)
+
+
+### Features
+
+* **zone.js:** support Promise.allSettled ([#31849](https://github.com/angular/angular/issues/31849)) ([96cbcd6](https://github.com/angular/angular/commit/96cbcd6))
+
+
+
+<a name="0.10.1"></a>
+## [0.10.1](https://github.com/angular/angular/compare/zone.js-0.10.0...zone.js-0.10.1) (2019-08-02)
+
+
+### Bug Fixes
+
+* **zone.js:** don't rely on global node typings outside of node/ directory ([#31783](https://github.com/angular/angular/issues/31783)) ([5c9a896](https://github.com/angular/angular/commit/5c9a896))
+* **zone.js:** should expose some other internal intefaces ([#31866](https://github.com/angular/angular/issues/31866)) ([f5c605b](https://github.com/angular/angular/commit/f5c605b))
+
+
+
+<a name="0.10.0"></a>
+# [0.10.0](https://github.com/angular/angular/compare/7b3bcc2...174770e) (2019-07-26)
+
+
+### Bug Fixes
+
+* **zone.js:** __load_patch and __symbol__ should be in zone_extern for closure compiler ([#31350](https://github.com/angular/angular/issues/31350)) ([6b51ed2](https://github.com/angular/angular/commit/6b51ed2))
+* **zone.js:** don't fire unhandledrejection if Zone handled error ([#31718](https://github.com/angular/angular/issues/31718)) ([c7542a1](https://github.com/angular/angular/commit/c7542a1)), closes [#31701](https://github.com/angular/angular/issues/31701)
+* **zone.js:** don't wrap uncaught promise error. ([#31443](https://github.com/angular/angular/issues/31443)) ([2bb9a65](https://github.com/angular/angular/commit/2bb9a65)), closes [#27840](https://github.com/angular/angular/issues/27840)
+* **zone.js:** fix zone for Jasmine 3.3. ([#31497](https://github.com/angular/angular/issues/31497)) ([c4c340a](https://github.com/angular/angular/commit/c4c340a))
+* **zone.js:** handle MSPointer event correctly ([#31722](https://github.com/angular/angular/issues/31722)) ([2c402d5](https://github.com/angular/angular/commit/2c402d5)), closes [#31699](https://github.com/angular/angular/issues/31699)
+* **zone.js:** handle new api of electron 4 ([#31669](https://github.com/angular/angular/issues/31669)) ([a445826](https://github.com/angular/angular/commit/a445826)), closes [#31668](https://github.com/angular/angular/issues/31668)
+* **zone.js:** hook should set correct current zone ([#31642](https://github.com/angular/angular/issues/31642)) ([17b32b5](https://github.com/angular/angular/commit/17b32b5)), closes [#31641](https://github.com/angular/angular/issues/31641)
+* **zone.js:** move property patch to legacy ([#31660](https://github.com/angular/angular/issues/31660)) ([716af10](https://github.com/angular/angular/commit/716af10)), closes [#31659](https://github.com/angular/angular/issues/31659)
+* **zone.js:** patch shadydom ([#31717](https://github.com/angular/angular/issues/31717)) ([35a025f](https://github.com/angular/angular/commit/35a025f)), closes [#31686](https://github.com/angular/angular/issues/31686)
+* **zone.js:** restore definition of global ([#31453](https://github.com/angular/angular/issues/31453)) ([e6f1b04](https://github.com/angular/angular/commit/e6f1b04)), closes [/github.com/angular/zone.js/commit/71b93711806000d7788e79451478e20d6086aa8a#diff-dd469785fca8680a5b33b1e81c5cfd91R1420](https://github.com//github.com/angular/zone.js/commit/71b93711806000d7788e79451478e20d6086aa8a/issues/diff-dd469785fca8680a5b33b1e81c5cfd91R1420)
+* **zone.js:** should remove on symbol property after removeAllListeners ([#31644](https://github.com/angular/angular/issues/31644)) ([a182714](https://github.com/angular/angular/commit/a182714)), closes [#31643](https://github.com/angular/angular/issues/31643)
+* **zone.js:** update dart zone link ([#31646](https://github.com/angular/angular/issues/31646)) ([7f7033b](https://github.com/angular/angular/commit/7f7033b)), closes [#31645](https://github.com/angular/angular/issues/31645)
+* **zone.js:** zone-mix should import correct browser module ([#31628](https://github.com/angular/angular/issues/31628)) ([87ce4e9](https://github.com/angular/angular/commit/87ce4e9)), closes [#31626](https://github.com/angular/angular/issues/31626)
+
 <a name="0.9.1"></a>
 ## [0.9.1](https://github.com/angular/zone.js/compare/v0.9.0...0.9.1) (2019-04-30)
 
@@ -44,7 +85,7 @@
 
 * **env:** change BLACK_LISTED_EVENTS to DISABLE_EVENTS ([9c65d25](https://github.com/angular/zone.js/commit/9c65d25))
 
-### Build 
+### Build
 
 * **build:** build zone-evergreen.js in es2015, add terser minify support ([2ad936b](https://github.com/angular/zone.js/commit/2ad936b))
 * **build:** upgrade to pass jasmine 3.3 test ([82dfd75](https://github.com/angular/zone.js/commit/82dfd75))

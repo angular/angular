@@ -12,15 +12,15 @@
 
 {%- macro renderMembers(doc) -%}
   {%- for member in doc.staticProperties %}{% if not member.internal %}
-  <a class="code-anchor" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
+  <a class="code-anchor{% if member.deprecated %} deprecated-api-item{% endif %}" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
   {% for member in doc.staticMethods %}{% if not member.internal %}
-  <a class="code-anchor" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
+  <a class="code-anchor{% if member.deprecated %} deprecated-api-item{% endif %}" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
   {% if doc.constructorDoc and not doc.constructorDoc.internal %}
-  <a class="code-anchor" href="{$ doc.path $}#{$ doc.constructorDoc.anchor | urlencode $}">{$ renderMemberSyntax(doc.constructorDoc, 1) $}</a>{% endif -%}
+  <a class="code-anchor{% if member.deprecated %} deprecated-api-item{% endif %}" href="{$ doc.path $}#{$ doc.constructorDoc.anchor | urlencode $}">{$ renderMemberSyntax(doc.constructorDoc, 1) $}</a>{% endif -%}
   {% for member in doc.properties %}{% if not member.internal %}
-  <a class="code-anchor" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
+  <a class="code-anchor{% if member.deprecated %} deprecated-api-item{% endif %}" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
   {% for member in doc.methods %}{% if not member.internal %}
-  <a class="code-anchor" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
+  <a class="code-anchor{% if member.deprecated %} deprecated-api-item{% endif %}" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
 
   {%- for ancestor in doc.extendsClauses %}{% if ancestor.doc %}
 
@@ -46,7 +46,7 @@
     {$ overload.shortDescription | marked $}
   </div>{% endif %}
 
-  <code-example language="ts" hideCopy="true" linenums="false" class="no-box api-heading">{$ renderMemberSyntax(overload) $}</code-example>
+  <code-example language="ts" hideCopy="true" class="no-box api-heading{% if overload.deprecated %} deprecated-api-item{% endif %}">{$ renderMemberSyntax(overload) $}</code-example>
 
   {% if overload.deprecated !== undefined %}
   <div class="deprecated">
@@ -205,12 +205,12 @@
       <tr class="{$ propertyClass $}">
         <td>
           <a id="{$ property.anchor $}"></a>
-          <code>{$ renderMemberSyntax(property) $}</code>
+          <code class="{% if property.deprecated %} deprecated-api-item{% endif %}">{$ renderMemberSyntax(property) $}</code>
         </td>
         <td>
-          {%- if (property.isGetAccessor or property.isReadonly) and not property.isSetAccessor %}<span class='read-only-property'>Read-only.</span>{% endif %}
-          {%- if property.isSetAccessor and not property.isGetAccessor %}<span class='write-only-property'>Write-only.</span>{% endif %}
-          {% if property.constructorParamDoc %} <span class='from-constructor'>Declared in constructor.</span>{% endif %}
+          {%- if (property.isGetAccessor or property.isReadonly) and not property.isSetAccessor %}<span class='read-only-property'>Read-Only</span>{% endif %}
+          {%- if property.isSetAccessor and not property.isGetAccessor %}<span class='write-only-property'>Write-Only</span>{% endif %}
+          {% if property.constructorParamDoc %} <span class='from-constructor'>Declared in Constructor</span>{% endif %}
           {% if property.shortDescription %}{$ property.shortDescription | marked $}{% endif %}
           {$ (property.description or property.constructorParamDoc.description) | marked $}
           {%- if property.see.length %}

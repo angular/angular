@@ -14,7 +14,6 @@ import {MessageBundle} from '../i18n/message_bundle';
 import {Identifiers, createTokenForExternalReference} from '../identifiers';
 import {InjectableCompiler} from '../injectable_compiler';
 import {CompileMetadataResolver} from '../metadata_resolver';
-import * as html from '../ml_parser/ast';
 import {HtmlParser} from '../ml_parser/html_parser';
 import {removeWhitespaces} from '../ml_parser/html_whitespaces';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
@@ -32,7 +31,7 @@ import {SummaryResolver} from '../summary_resolver';
 import {BindingParser} from '../template_parser/binding_parser';
 import {TemplateAst} from '../template_parser/template_ast';
 import {TemplateParser} from '../template_parser/template_parser';
-import {OutputContext, ValueVisitor, error, syntaxError, visitValue} from '../util';
+import {OutputContext, ValueVisitor, error, newArray, syntaxError, visitValue} from '../util';
 import {TypeCheckCompiler} from '../view_compiler/type_check_compiler';
 import {ViewCompileResult, ViewCompiler} from '../view_compiler/view_compiler';
 
@@ -690,7 +689,7 @@ export class AotCompiler {
           const suppliedTypeParams = typeParams || [];
           const missingTypeParamsCount = arity - suppliedTypeParams.length;
           const allTypeParams =
-              suppliedTypeParams.concat(new Array(missingTypeParamsCount).fill(o.DYNAMIC_TYPE));
+              suppliedTypeParams.concat(newArray(missingTypeParamsCount, o.DYNAMIC_TYPE));
           return members.reduce(
               (expr, memberName) => expr.prop(memberName),
               <o.Expression>o.importExpr(
@@ -797,6 +796,7 @@ export interface NgAnalyzedFileWithInjectables {
 export interface NgAnalyzedFile {
   fileName: string;
   directives: StaticSymbol[];
+  abstractDirectives: StaticSymbol[];
   pipes: StaticSymbol[];
   ngModules: CompileNgModuleMetadata[];
   injectables: CompileInjectableMetadata[];
@@ -857,18 +857,20 @@ function _analyzeFilesIncludingNonProgramFiles(
 export function analyzeFile(
     host: NgAnalyzeModulesHost, staticSymbolResolver: StaticSymbolResolver,
     metadataResolver: CompileMetadataResolver, fileName: string): NgAnalyzedFile {
+  const abstractDirectives: StaticSymbol[] = [];
   const directives: StaticSymbol[] = [];
   const pipes: StaticSymbol[] = [];
   const injectables: CompileInjectableMetadata[] = [];
   const ngModules: CompileNgModuleMetadata[] = [];
   const hasDecorators = staticSymbolResolver.hasDecorators(fileName);
   let exportsNonSourceFiles = false;
+  const isDeclarationFile = fileName.endsWith('.d.ts');
   // Don't analyze .d.ts files that have no decorators as a shortcut
   // to speed up the analysis. This prevents us from
   // resolving the references in these files.
   // Note: exportsNonSourceFiles is only needed when compiling with summaries,
   // which is not the case when .d.ts files are treated as input files.
-  if (!fileName.endsWith('.d.ts') || hasDecorators) {
+  if (!isDeclarationFile || hasDecorators) {
     staticSymbolResolver.getSymbolsOf(fileName).forEach((symbol) => {
       const resolvedSymbol = staticSymbolResolver.resolveSymbol(symbol);
       const symbolMeta = resolvedSymbol.metadata;
@@ -879,7 +881,19 @@ export function analyzeFile(
       if (symbolMeta.__symbolic === 'class') {
         if (metadataResolver.isDirective(symbol)) {
           isNgSymbol = true;
-          directives.push(symbol);
+          // This directive either has a selector or doesn't. Selector-less directives get tracked
+          // in abstractDirectives, not directives. The compiler doesn't deal with selector-less
+          // directives at all, really, other than to persist their metadata. This is done so that
+          // apps will have an easier time migrating to Ivy, which requires the selector-less
+          // annotations to be applied.
+          if (!metadataResolver.isAbstractDirective(symbol)) {
+            // The directive is an ordinary directive.
+            directives.push(symbol);
+          } else {
+            // The directive has no selector and is an "abstract" directive, so track it
+            // accordingly.
+            abstractDirectives.push(symbol);
+          }
         } else if (metadataResolver.isPipe(symbol)) {
           isNgSymbol = true;
           pipes.push(symbol);
@@ -904,7 +918,8 @@ export function analyzeFile(
     });
   }
   return {
-      fileName, directives, pipes, ngModules, injectables, exportsNonSourceFiles,
+      fileName,  directives,  abstractDirectives,    pipes,
+      ngModules, injectables, exportsNonSourceFiles,
   };
 }
 

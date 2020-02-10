@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!--
 # Architecture overview
 -->
@@ -19,6 +20,18 @@ Angular 애플리케이션의 구성 요소 중 가장 중요한 것은 *컴포�
 * Components define *views*, which are sets of screen elements that Angular can choose among and modify according to your program logic and data. 
 -->
 * 컴포넌트는 *뷰*를 정의하는데, 화면에 어떤 엘리먼트가 어떤 데이터를 표시할지 지정합니다.
+=======
+# Introduction to Angular concepts
+
+Angular is a platform and framework for building single-page client applications in HTML and TypeScript.
+Angular is written in TypeScript.
+It implements core and optional functionality as a set of TypeScript libraries that you import into your apps.
+
+The architecture of an Angular application relies on certain fundamental concepts.
+The basic building blocks are *NgModules*, which provide a compilation context for *components*. NgModules collect related code into functional sets; an Angular app is defined by a set of NgModules. An app always has at least a *root module* that enables bootstrapping, and typically has many more *feature modules*.
+
+* Components define *views*, which are sets of screen elements that Angular can choose among and modify according to your program logic and data.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 * Components use *services*, which provide specific functionality not directly related to views. Service providers can be *injected* into components as *dependencies*, making your code modular, reusable, and efficient.
@@ -45,7 +58,16 @@ An app's components typically define many views, arranged hierarchically. Angula
 -->
 Angular 애플리케이션에서는 여러가지 뷰를 계층으로 구성합니다. 그리고 `Router` 서비스를 사용하면 이 뷰들을 전환하면서 페이지를 이동할 수 있습니다. 라우터 서비스는 브라우저의 페이지 전환 로직을 활용하면서 정교하게 동작합니다.
 
+<<<<<<< HEAD
 <!--
+=======
+<div class="alert is-helpful>
+
+  See the [Angular Glossary](guide/glossary) for basic definitions of important Angular terms and usage.
+
+</div>
+
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 ## Modules
 -->
 ## 모듈
@@ -134,8 +156,12 @@ Before a view is displayed, Angular evaluates the directives and resolves the bi
 -->
 Angular는 뷰가 화면에 표시되기 전에 템플릿에 사용된 디렉티브와 바인딩 문법을 모두 체크해서 HTML 엘리먼트와 DOM을 변형합니다. 이 때 애플리케이션 데이터나 로직이 템플릿에 반영됩니다. Angular는 *양방향 데이터 바인딩*도 지원합니다. 이 바인딩 방식을 사용하면 애플리케이션 데이터를 템플릿에 반영할 뿐만 아니라 사용자의 행동에 의해 DOM이 변경되었을 때 애플리케이션 데이터를 다시 갱신할 수도 있습니다.
 
+<<<<<<< HEAD
 <!--
 Your templates can use *pipes* to improve the user experience by transforming values for display. 
+=======
+Your templates can use *pipes* to improve the user experience by transforming values for display.
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 For example, use pipes to display dates and currency values that are appropriate for a user's locale.
 Angular provides predefined pipes for common transformations, and you can also define your own pipes.
 -->
@@ -242,12 +268,18 @@ You've learned the basics about the main building blocks of an Angular applicati
 -->
 지금까지 Angular 애플리케이션을 구성하는 기본 요소에 대해 알아봤습니다. 아래 다이어그램을 보면서 지금까지 다뤘던 내용을 다시 한 번 확인해 보세요.
 
+<<<<<<< HEAD
 <figure>
   <!--
   <img src="generated/images/guide/architecture/overview2.png" alt="overview">
   -->
   <img src="generated/images/guide/architecture/overview2.png" alt="개요">
 </figure>
+=======
+<div class="lightbox">
+  <img src="generated/images/guide/architecture/overview2.png" alt="overview">
+</div>
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 * Together, a component and template define an Angular view.

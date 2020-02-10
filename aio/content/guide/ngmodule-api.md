@@ -1,5 +1,6 @@
 # NgModule API
 
+<<<<<<< HEAD
 <!--
 #### Prerequisites
 -->
@@ -22,6 +23,8 @@ A basic understanding of the following concepts:
 ## `@NgModule`의 목적
 
 <!--
+=======
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 At a high level, NgModules are a way to organize Angular apps
 and they accomplish this through the metadata in the `@NgModule`
 decorator.

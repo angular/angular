@@ -1,7 +1,11 @@
+<<<<<<< HEAD
 <!--
 # Dynamic Forms
 -->
 # 동적 폼 (Dynamic Forms)
+=======
+# Dynamic forms
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 {@a top}
 
@@ -126,9 +130,7 @@ via the `type` property.
 
 `TextboxQuestion`은 HTML5 타입으로 제공하는 일반 텍스트, 이메일, url과 대응됩니다.
 
-<code-example path="dynamic-form/src/app/question-textbox.ts" header="src/app/question-textbox.ts" linenums="false">
-
-</code-example>
+<code-example path="dynamic-form/src/app/question-textbox.ts" header="src/app/question-textbox.ts"></code-example>
 
 
 <!--
@@ -137,9 +139,7 @@ via the `type` property.
 그리고 `DropdownQuestion`은 셀렉트 박스로 받는 질문과 대응됩니다.
 
 
-<code-example path="dynamic-form/src/app/question-dropdown.ts" header="src/app/question-dropdown.ts" linenums="false">
-
-</code-example>
+<code-example path="dynamic-form/src/app/question-dropdown.ts" header="src/app/question-dropdown.ts"></code-example>
 
 
 <!--
@@ -150,9 +150,7 @@ allows you to specify default values and validation rules.
 다음은 질문 객체를 `FormGroup`으로 변환하는 `QuestionControlService`를 간단하게 만들어 봅시다.
 이 서비스의 프로토타입은 질문 모델을 받아서 폼 그룹으로 변환하는데, 이 때 기본값과 유효성 검사도 함께 적용할 수 있습니다.
 
-<code-example path="dynamic-form/src/app/question-control.service.ts" header="src/app/question-control.service.ts" linenums="false">
-
-</code-example>
+<code-example path="dynamic-form/src/app/question-control.service.ts" header="src/app/question-control.service.ts"></code-example>
 
 {@a form-component}
 
@@ -217,8 +215,12 @@ The `ngSwitch` determines which type of question to display.
 지금은 질문의 종류가 두 가지 타입 뿐이지만, 필요하다면 얼마든지 확장할 수 있습니다.
 각각의 타입은 템플릿에서 `ngSwitch`로 분기됩니다.
 
+<<<<<<< HEAD
 <!--
 In both components  you're relying on Angular's **formGroup** to connect the template HTML to the
+=======
+In both components you're relying on Angular's **formGroup** to connect the template HTML to the
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 underlying control objects, populated from the question model with display and validation rules.
 -->
 예제에서 사용하는 두 컴포넌트는 모두 Angular **formGroup**을 사용해서 템플릿 HTML과 폼 컨트롤 객체를 연결하고, 이 때 질문 모델에 있는 값을 화면에 표시하고 유효성 검사도 함께 적용합니다.
@@ -313,10 +315,9 @@ The final form looks like this:
 -->
 최종 코드는 다음과 같이 동작합니다:
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/dynamic-form/dynamic-form.png" alt="Dynamic-Form">
-</figure>
-
+</div>
 
 <!--
 [Back to top](guide/dynamic-form#top)

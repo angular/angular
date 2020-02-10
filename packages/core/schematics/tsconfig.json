@@ -1,14 +1,13 @@
 {
   "compilerOptions": {
     "noImplicitReturns": true,
-    "noImplicitAny": true,
     "noFallthroughCasesInSwitch": true,
-    "strictNullChecks": true,
-    "strictPropertyInitialization": true,
+    "strict": true,
     "lib": ["es2015"],
     "types": [],
     "baseUrl": ".",
     "paths": {
+      "@angular/core": ["../"],
       "@angular/compiler": ["../../compiler"],
       "@angular/compiler/*": ["../../compiler/*"],
       "@angular/compiler-cli": ["../../compiler-cli"],
