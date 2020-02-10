@@ -33,7 +33,7 @@ Later, the [Forms](start/forms "Getting Started: Forms") part of
 this tutorial guides you through accessing this cart service
 from the page where the user checks out.
 
-Later, the [Forms](start/forms "Getting Started: Forms") part of this tutorial guides you through accessing this cart service from the page where the user checks out.
+
 
 </div>
 
