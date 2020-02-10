@@ -267,7 +267,7 @@ export function mainNgcc(
           fileSystem, entryPoint, formatPath, isCore, format, processDts, pathMappings, true,
           enableI18nLegacyMessageIdFormat);
 
-      logger.info(`Compiling ${entryPoint.name} : ${formatProperty} as ${format}`);
+      logger.debug(`Compiling ${entryPoint.name} : ${formatProperty} as ${format}`);
 
       const result = transformer.transform(bundle);
       if (result.success) {
