@@ -43,7 +43,7 @@ import {
 } from '@angular/material/form-field';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {MDCTextFieldAdapter, MDCTextFieldFoundation} from '@material/textfield';
-import {Subject} from 'rxjs';
+import {merge, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {MatError} from './directives/error';
 import {MatFormFieldFloatingLabel} from './directives/floating-label';
@@ -320,6 +320,7 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
     this._assertFormFieldControl();
     this._initializeControl();
     this._initializeSubscript();
+    this._initializePrefixAndSuffix();
     this._initializeOutlineLabelOffsetSubscriptions();
   }
 
@@ -379,6 +380,15 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
     }
   }
 
+  /** Initializes the prefix and suffix containers. */
+  private _initializePrefixAndSuffix() {
+    // Mark the form-field as dirty whenever the prefix or suffix children change. This
+    // is necessary because we conditionally display the prefix/suffix containers based
+    // on whether there is projected content.
+    merge(this._prefixChildren.changes, this._suffixChildren.changes)
+      .subscribe(() => this._changeDetectorRef.markForCheck());
+  }
+
   /**
    * Initializes the subscript by validating hints and synchronizing "aria-describedby" ids
    * with the custom form-field control. Also subscribes to hint and error changes in order
@@ -434,7 +444,7 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
    */
   private _initializeOutlineLabelOffsetSubscriptions() {
     // Whenever the prefix changes, schedule an update of the label offset.
-    this._prefixChildren.changes.pipe(takeUntil(this._destroyed))
+    this._prefixChildren.changes
       .subscribe(() => this._needsOutlineLabelOffsetUpdateOnStable = true);
 
     // Note that we have to run outside of the `NgZone` explicitly, in order to avoid
@@ -572,8 +582,14 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
    * incorporate the horizontal offset into their default text-field styles.
    */
   private _updateOutlineLabelOffset() {
-    if (!this._platform.isBrowser || !this._hasOutline() || !this._prefixContainer ||
-        !this._floatingLabel) {
+    if (!this._platform.isBrowser || !this._hasOutline() || !this._floatingLabel) {
+      return;
+    }
+    const floatingLabel = this._floatingLabel.element;
+    // If no prefix is displayed, reset the outline label offset from potential
+    // previous label offset updates.
+    if (!this._prefixContainer) {
+      floatingLabel.style.transform = '';
       return;
     }
     // If the form-field is not attached to the DOM yet (e.g. in a tab), we defer
@@ -582,8 +598,6 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
       this._needsOutlineLabelOffsetUpdateOnStable = true;
       return;
     }
-
-    const floatingLabel = this._floatingLabel.element;
     const prefixContainer = this._prefixContainer.nativeElement as HTMLElement;
     // If the directionality is RTL, the x-axis transform needs to be inverted. This
     // is because `transformX` does not change based on the page directionality.

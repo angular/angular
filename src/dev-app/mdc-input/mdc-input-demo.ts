@@ -38,6 +38,7 @@ export class MdcInputDemo {
   placeholderTestControl = new FormControl('', Validators.required);
   options: string[] = ['One', 'Two', 'Three'];
   showSecondPrefix = false;
+  showPrefix = true;
 
   name: string;
   errorMessageExample1: string;
