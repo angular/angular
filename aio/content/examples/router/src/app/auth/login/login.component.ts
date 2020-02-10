@@ -25,15 +25,9 @@ export class LoginComponent {
     this.authService.login().subscribe(() => {
       this.setMessage();
       if (this.authService.isLoggedIn) {
-        // Get the redirect URL from our auth service
-        // If no redirect has been set, use the default
-        let redirectUrl = this.authService.redirectUrl || '/admin';
-
-        // If the redirectUrl contains an aux outlet name /admin(popup:compose)
-        // Then get rid of that and just take the first part of the Url.
-        if (redirectUrl.indexOf('(') !== -1) {
-          redirectUrl = redirectUrl.split('(')[0];
-        }
+        // Usually you would use the redirect URL from the auth service.
+        // However to keep the example simple, we will always redirect to `/admin`.
+        const redirectUrl = '/admin';
 
         // #docregion preserve
         // Set our navigation extras object
