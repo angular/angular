@@ -1917,10 +1917,6 @@ runInEachFileSystem(() => {
               `,
              },
              {
-               name: _('/node_modules/packages.json'),
-               contents: '{ "typings: "index.d.ts" }',
-             },
-             {
                name: _('/node_modules/sub_module/index.d.ts'),
                contents: `export class SubModule {}`,
              }
@@ -1929,7 +1925,7 @@ runInEachFileSystem(() => {
            const bundle = makeTestBundleProgram(FILES[0].name);
            const host = new UmdReflectionHost(new MockLogger(), false, bundle);
            const expectedDeclaration =
-               getDeclaration(bundle.program, FILES[2].name, 'SubModule', isNamedClassDeclaration);
+               getDeclaration(bundle.program, FILES[1].name, 'SubModule', isNamedClassDeclaration);
            const x = getDeclaration(bundle.program, FILES[0].name, 'x', isNamedVariableDeclaration);
            if (x.initializer === undefined || !ts.isIdentifier(x.initializer)) {
              return fail('Expected constant `x` to have an identifer as an initializer.');

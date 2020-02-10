@@ -47,7 +47,8 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
   }
 
   getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
-    return this.getCommonJsImportedDeclaration(id) || super.getDeclarationOfIdentifier(id);
+    return (!id.getSourceFile().isDeclarationFile && this.getCommonJsImportedDeclaration(id)) ||
+        super.getDeclarationOfIdentifier(id);
   }
 
   getExportsOfModule(module: ts.Node): Map<string, Declaration>|null {
