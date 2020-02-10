@@ -22,9 +22,9 @@ const trim = (input: string): string => input.replace(/\s+/g, ' ').trim();
 
 const varRegExp = (name: string): RegExp => new RegExp(`var \\w+ = \\[\"${name}\"\\];`);
 
-const viewQueryRegExp = (descend: boolean, ref?: string): RegExp => {
+const viewQueryRegExp = (predicate: string, descend: boolean, ref?: string): RegExp => {
   const maybeRef = ref ? `, ${ref}` : ``;
-  return new RegExp(`i0\\.ɵɵviewQuery\\(\\w+, ${descend}${maybeRef}\\)`);
+  return new RegExp(`i0\\.ɵɵviewQuery\\(${predicate}, ${descend}${maybeRef}\\)`);
 };
 
 const contentQueryRegExp = (predicate: string, descend: boolean, ref?: string): RegExp => {
@@ -2396,7 +2396,7 @@ runInEachFileSystem(os => {
       // match `i0.ɵɵcontentQuery(dirIndex, _c1, true, TemplateRef)`
       expect(jsContents).toMatch(contentQueryRegExp('\\w+', true, 'TemplateRef'));
       // match `i0.ɵɵviewQuery(_c2, true, null)`
-      expect(jsContents).toMatch(viewQueryRegExp(true));
+      expect(jsContents).toMatch(viewQueryRegExp('\\w+', true));
     });
 
     it('should generate queries for directives', () => {
@@ -2430,7 +2430,7 @@ runInEachFileSystem(os => {
       // match `i0.ɵɵviewQuery(_c2, true)`
       // Note that while ViewQuery doesn't necessarily make sense on a directive, because it doesn't
       // have a view, we still need to handle it because a component could extend the directive.
-      expect(jsContents).toMatch(viewQueryRegExp(true));
+      expect(jsContents).toMatch(viewQueryRegExp('\\w+', true));
     });
 
     it('should handle queries that use forwardRef', () => {
@@ -2459,6 +2459,30 @@ runInEachFileSystem(os => {
       // match `i0.ɵɵcontentQuery(dirIndex, _c0, true, null)`
       expect(jsContents).toContain('_c0 = ["parens"];');
       expect(jsContents).toMatch(contentQueryRegExp('_c0', true));
+    });
+
+    it('should handle queries that use an InjectionToken', () => {
+      env.write(`test.ts`, `
+        import {Component, ContentChild, InjectionToken, ViewChild} from '@angular/core';
+
+        const TOKEN = new InjectionToken('token');
+
+        @Component({
+          selector: 'test',
+          template: '<div></div>',
+        })
+        class FooCmp {
+          @ViewChild(TOKEN as any) viewChild: any;
+          @ContentChild(TOKEN as any) contentChild: any;
+        }
+      `);
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      // match `i0.ɵɵviewQuery(TOKEN, true, null)`
+      expect(jsContents).toMatch(viewQueryRegExp('TOKEN', true));
+      // match `i0.ɵɵcontentQuery(dirIndex, TOKEN, true, null)`
+      expect(jsContents).toMatch(contentQueryRegExp('TOKEN', true));
     });
 
     it('should compile expressions that write keys', () => {

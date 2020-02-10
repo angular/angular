@@ -341,7 +341,8 @@ export function extractQueryMetadata(
 
   // Extract the predicate
   let predicate: Expression|string[]|null = null;
-  if (arg instanceof Reference) {
+  if (arg instanceof Reference || arg instanceof DynamicValue) {
+    // References and predicates that could not be evaluated statically are emitted as is.
     predicate = new WrappedNodeExpr(node);
   } else if (typeof arg === 'string') {
     predicate = [arg];

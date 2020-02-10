@@ -57,6 +57,10 @@ export class ɵNgModuleFactory<T> {
   constructor(public clazz: T) {}
 }
 
+export class InjectionToken<T> {
+  constructor(description: string) {}
+}
+
 export function forwardRef<T>(fn: () => T): T {
   return fn();
 }
