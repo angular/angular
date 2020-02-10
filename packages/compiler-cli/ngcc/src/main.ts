@@ -28,7 +28,7 @@ import {AnalyzeEntryPointsFn, CreateCompileFn, Executor, PartiallyOrderedTasks, 
 import {ClusterExecutor} from './execution/cluster/executor';
 import {ClusterPackageJsonUpdater} from './execution/cluster/package_json_updater';
 import {LockFileAsync, LockFileSync} from './execution/lock_file';
-import {AsyncSingleProcessExecutor, SingleProcessExecutor} from './execution/single_process_executor';
+import {SingleProcessExecutorAsync, SingleProcessExecutorSync} from './execution/single_process_executor';
 import {ParallelTaskQueue} from './execution/task_selection/parallel_task_queue';
 import {SerialTaskQueue} from './execution/task_selection/serial_task_queue';
 import {ConsoleLogger, LogLevel} from './logging/console_logger';
@@ -346,11 +346,11 @@ function getExecutor(
       return new ClusterExecutor(workerCount, logger, pkgJsonUpdater, lockFile);
     } else {
       // Execute serially, on a single thread (async).
-      return new AsyncSingleProcessExecutor(logger, pkgJsonUpdater, lockFile);
+      return new SingleProcessExecutorAsync(logger, pkgJsonUpdater, lockFile);
     }
   } else {
     // Execute serially, on a single thread (sync).
-    return new SingleProcessExecutor(logger, pkgJsonUpdater, new LockFileSync(fileSystem));
+    return new SingleProcessExecutorSync(logger, pkgJsonUpdater, new LockFileSync(fileSystem));
   }
 }
 

@@ -7,7 +7,7 @@
  */
 import * as process from 'process';
 
-import {FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
+import {CachedFileSystem, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {LockFileAsync, LockFileBase, LockFileSync} from '../../src/execution/lock_file';
 import {MockLogger} from '../helpers/mock_logger';
@@ -223,7 +223,7 @@ runInEachFileSystem(() => {
     class LockFileUnderTest extends LockFileAsync {
       log: string[] = [];
       constructor(
-          fs: FileSystem, retryDelay = 100, retryAttempts = 2, private handleSignals = false) {
+          fs: FileSystem, retryDelay = 100, retryAttempts = 10, private handleSignals = false) {
         super(fs, new MockLogger(), retryDelay, retryAttempts);
         fs.ensureDir(fs.dirname(this.lockFilePath));
       }
@@ -326,8 +326,38 @@ runInEachFileSystem(() => {
         // The lock is now waiting on the lockfile becoming free, so no `fn()` in the log.
         expect(lockFile.log).toEqual(['create()']);
         expect(lockFile.getLogger().logs.info).toEqual([[
-          'Another process, with id 188, is currently running ngcc.\nWaiting up to 0.2s for it to finish.'
+          'Another process, with id 188, is currently running ngcc.\nWaiting up to 1s for it to finish.'
         ]]);
+        fs.removeFile(lockFile.lockFilePath);
+        // The lockfile has been removed, so we can create our own lockfile, call `fn()` and then
+        // remove the lockfile.
+        await promise;
+        expect(lockFile.log).toEqual(['create()', 'fn()', 'remove()']);
+      });
+
+      it('should extend the retry timeout if the other process locking the file changes', async() => {
+        // Use a cached file system to test that we are invalidating it correctly
+        const rawFs = getFileSystem();
+        const fs = new CachedFileSystem(rawFs);
+        const lockFile = new LockFileUnderTest(fs);
+        fs.writeFile(lockFile.lockFilePath, '188');
+        const promise = lockFile.lock(async() => lockFile.log.push('fn()'));
+        // The lock is now waiting on the lockfile becoming free, so no `fn()` in the log.
+        expect(lockFile.log).toEqual(['create()']);
+        expect(lockFile.getLogger().logs.info).toEqual([[
+          'Another process, with id 188, is currently running ngcc.\nWaiting up to 1s for it to finish.'
+        ]]);
+        // We need to write to the rawFs to ensure that we don't update the cache at this point
+        rawFs.writeFile(lockFile.lockFilePath, '444');
+        await new Promise(resolve => setTimeout(resolve, 250));
+        expect(lockFile.getLogger().logs.info).toEqual([
+          [
+            'Another process, with id 188, is currently running ngcc.\nWaiting up to 1s for it to finish.'
+          ],
+          [
+            'Another process, with id 444, is currently running ngcc.\nWaiting up to 1s for it to finish.'
+          ]
+        ]);
         fs.removeFile(lockFile.lockFilePath);
         // The lockfile has been removed, so we can create our own lockfile, call `fn()` and then
         // remove the lockfile.
@@ -338,7 +368,7 @@ runInEachFileSystem(() => {
       it('should error if another process does not release the lockfile before this times out',
          async() => {
            const fs = getFileSystem();
-           const lockFile = new LockFileUnderTest(fs);
+           const lockFile = new LockFileUnderTest(fs, 100, 2);
            fs.writeFile(lockFile.lockFilePath, '188');
            const promise = lockFile.lock(async() => lockFile.log.push('fn()'));
            // The lock is now waiting on the lockfile becoming free, so no `fn()` in the log.

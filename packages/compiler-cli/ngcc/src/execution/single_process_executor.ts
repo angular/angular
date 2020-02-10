@@ -13,7 +13,7 @@ import {AnalyzeEntryPointsFn, CreateCompileFn, Executor} from './api';
 import {LockFileAsync, LockFileSync} from './lock_file';
 import {onTaskCompleted} from './utils';
 
-export class SerialExecutorBase {
+export abstract class SingleProcessorExecutorBase {
   constructor(private logger: Logger, private pkgJsonUpdater: PackageJsonUpdater) {}
 
   doExecute(analyzeEntryPoints: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn):
@@ -42,7 +42,7 @@ export class SerialExecutorBase {
 /**
  * An `Executor` that processes all tasks serially and completes synchronously.
  */
-export class SingleProcessExecutor extends SerialExecutorBase implements Executor {
+export class SingleProcessExecutorSync extends SingleProcessorExecutorBase implements Executor {
   constructor(logger: Logger, pkgJsonUpdater: PackageJsonUpdater, private lockfile: LockFileSync) {
     super(logger, pkgJsonUpdater);
   }
@@ -54,7 +54,7 @@ export class SingleProcessExecutor extends SerialExecutorBase implements Executo
 /**
  * An `Executor` that processes all tasks serially, but still completes asynchronously.
  */
-export class AsyncSingleProcessExecutor extends SerialExecutorBase implements Executor {
+export class SingleProcessExecutorAsync extends SingleProcessorExecutorBase implements Executor {
   constructor(logger: Logger, pkgJsonUpdater: PackageJsonUpdater, private lockfile: LockFileAsync) {
     super(logger, pkgJsonUpdater);
   }

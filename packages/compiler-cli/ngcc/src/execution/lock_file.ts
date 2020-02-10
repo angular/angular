@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as process from 'process';
-import {FileSystem} from '../../../src/ngtsc/file_system';
+
+import {CachedFileSystem, FileSystem} from '../../../src/ngtsc/file_system';
 import {Logger} from '../logging/logger';
 
 export abstract class LockFileBase {
@@ -35,6 +36,11 @@ export abstract class LockFileBase {
    */
   protected readLockFile(): string {
     try {
+      if (this.fs instanceof CachedFileSystem) {
+        // This file is "volatile", it might be changed by an external process,
+        // so we cannot rely upon the cached value when reading it.
+        this.fs.invalidateCaches(this.lockFilePath);
+      }
       return this.fs.readFile(this.lockFilePath);
     } catch {
       return '{unknown}';
@@ -143,7 +149,10 @@ export class LockFileSync extends LockFileBase {
  * when being called in an asynchronous context.
  *
  * * When ngcc starts executing, it creates a file in the `compiler-cli/ngcc` folder.
- * * If it finds one is already there then it fails with a suitable error message.
+ * * If it finds one is already there then it pauses and waits for the file to be removed by the
+ *   other process. If the file is not removed within a set timeout period given by
+ *   `retryDelay*retryAttempts` an error is thrown with a suitable error message.
+ * * If the process locking the file changes, then we restart the timeout.
  * * When ngcc completes executing, it removes the file so that future ngcc executions can start.
  */
 export class LockFileAsync extends LockFileBase {
@@ -164,6 +173,7 @@ export class LockFileAsync extends LockFileBase {
   }
 
   protected async create() {
+    let pid: string = '';
     for (let attempts = 0; attempts < this.retryAttempts; attempts++) {
       try {
         return this.writeLockFile();
@@ -171,8 +181,13 @@ export class LockFileAsync extends LockFileBase {
         if (e.code !== 'EEXIST') {
           throw e;
         }
+        const newPid = this.readLockFile();
+        if (newPid !== pid) {
+          // The process locking the file has changed, so restart the timeout
+          attempts = 0;
+          pid = newPid;
+        }
         if (attempts === 0) {
-          const pid = this.readLockFile();
           this.logger.info(
               `Another process, with id ${pid}, is currently running ngcc.\n` +
               `Waiting up to ${this.retryDelay*this.retryAttempts/1000}s for it to finish.`);
@@ -182,7 +197,6 @@ export class LockFileAsync extends LockFileBase {
       }
     }
     // If we fall out of the loop then we ran out of rety attempts
-    const pid = this.readLockFile();
     throw new Error(
         `Timed out waiting ${this.retryAttempts * this.retryDelay/1000}s for another ngcc process, with id ${pid}, to complete.\n` +
         `(If you are sure no ngcc process is running then you should delete the lockfile at ${this.lockFilePath}.)`);
