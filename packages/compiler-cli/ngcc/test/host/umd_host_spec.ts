@@ -1919,6 +1919,63 @@ runInEachFileSystem(() => {
             ]);
       });
 
+      it('should handle wildcard re-exports of other modules (with emitted helpers)', () => {
+        loadFakeCore(getFileSystem());
+        loadTestFiles(EXPORTS_FILES);
+        const bundle = makeTestBundleProgram(_('/index.js'));
+        const host = new UmdReflectionHost(new MockLogger(), false, bundle);
+        const file = getSourceFileOrError(bundle.program, _('/wildcard_reexports.js'));
+        const exportDeclarations = host.getExportsOfModule(file);
+        expect(exportDeclarations).not.toBe(null);
+        expect(Array.from(exportDeclarations !.entries())
+                   .map(entry => [entry[0], entry[1].node !.getText(), entry[1].viaModule]))
+            .toEqual([
+              ['Directive', `Directive: FnWithArg<(clazz: any) => any>`, _('/b_module')],
+              ['a', `a = 'a'`, _('/b_module')],
+              ['b', `b = a_module.a`, _('/b_module')],
+              ['c', `a = 'a'`, _('/b_module')],
+              ['d', `b = a_module.a`, _('/b_module')],
+              ['e', `e = 'e'`, _('/b_module')],
+              ['DirectiveX', `Directive: FnWithArg<(clazz: any) => any>`, _('/b_module')],
+              [
+                'SomeClass',
+                `SomeClass = (function() {\n    function SomeClass() {}\n    return SomeClass;\n  }())`,
+                _('/b_module')
+              ],
+              ['xtra1', `xtra1 = 'xtra1'`, _('/xtra_module')],
+              ['xtra2', `xtra2 = 'xtra2'`, _('/xtra_module')],
+            ]);
+      });
+
+      it('should handle wildcard re-exports of other modules (with imported helpers)', () => {
+        loadFakeCore(getFileSystem());
+        loadTestFiles(EXPORTS_FILES);
+        const bundle = makeTestBundleProgram(_('/index.js'));
+        const host = new UmdReflectionHost(new MockLogger(), false, bundle);
+        const file =
+            getSourceFileOrError(bundle.program, _('/wildcard_reexports_imported_helpers.js'));
+        const exportDeclarations = host.getExportsOfModule(file);
+        expect(exportDeclarations).not.toBe(null);
+        expect(Array.from(exportDeclarations !.entries())
+                   .map(entry => [entry[0], entry[1].node !.getText(), entry[1].viaModule]))
+            .toEqual([
+              ['Directive', `Directive: FnWithArg<(clazz: any) => any>`, _('/b_module')],
+              ['a', `a = 'a'`, _('/b_module')],
+              ['b', `b = a_module.a`, _('/b_module')],
+              ['c', `a = 'a'`, _('/b_module')],
+              ['d', `b = a_module.a`, _('/b_module')],
+              ['e', `e = 'e'`, _('/b_module')],
+              ['DirectiveX', `Directive: FnWithArg<(clazz: any) => any>`, _('/b_module')],
+              [
+                'SomeClass',
+                `SomeClass = (function() {\n    function SomeClass() {}\n    return SomeClass;\n  }())`,
+                _('/b_module')
+              ],
+              ['xtra1', `xtra1 = 'xtra1'`, _('/xtra_module')],
+              ['xtra2', `xtra2 = 'xtra2'`, _('/xtra_module')],
+            ]);
+      });
+
       it('should handle inline exports', () => {
         loadFakeCore(getFileSystem());
         loadTestFiles([INLINE_EXPORT_FILE]);
@@ -1932,17 +1989,6 @@ runInEachFileSystem(() => {
         expect(decl.node).toBeNull();
         expect(decl.expression).toBeDefined();
       });
-
-      // Currently we do not support UMD versions of `export * from 'x';`
-      // because it gets compiled to something like:
-      //
-      //     __export(m) {
-      //       for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-      //     }
-      //     __export(x);
-      //
-      // So far all UMD formatted entry-points are flat so this should not occur.
-      // If it does later then we should implement parsing.
     });
 
     describe('getClassSymbol()', () => {
