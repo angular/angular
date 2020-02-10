@@ -2461,6 +2461,27 @@ runInEachFileSystem(os => {
       expect(jsContents).toMatch(contentQueryRegExp('_c0', true));
     });
 
+    it('should handle queries that use an InjectionToken', () => {
+      env.write(`test.ts`, `
+        import {Component, ContentChild, InjectionToken} from '@angular/core';
+
+        const TOKEN = new InjectionToken('token');
+
+        @Component({
+          selector: 'test',
+          template: '<div></div>',
+        })
+        class FooCmp {
+          @ContentChild(TOKEN as any) child: any;
+        }
+      `);
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      // match `i0.ɵɵcontentQuery(dirIndex, _c0, true, null)`
+      expect(jsContents).toMatch(contentQueryRegExp('TOKEN', true));
+    });
+
     it('should compile expressions that write keys', () => {
       env.write(`test.ts`, `
         import {Component, ContentChild, TemplateRef, ViewContainerRef, forwardRef} from '@angular/core';
