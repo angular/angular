@@ -90,6 +90,39 @@ describe('CachedFileSystem', () => {
     });
   });
 
+  describe('invalidateCaches()', () => {
+    it('should use the delegate for `readFile()` if the path for the cached file has been invalidated',
+       () => {
+         spyOn(delegate, 'lstat').and.returnValue({isSymbolicLink: () => false});
+         const spy = spyOn(delegate, 'readFile').and.returnValue('Some contents');
+         fs.readFile(abcPath);  // Call once to fill the cache
+         spy.calls.reset();
+
+         expect(fs.readFile(abcPath)).toBe('Some contents');
+         expect(spy).not.toHaveBeenCalled();
+
+         fs.invalidateCaches(abcPath);
+
+         expect(fs.readFile(abcPath)).toBe('Some contents');
+         expect(spy).toHaveBeenCalledWith(abcPath);
+       });
+
+    it('should use the delegate `exists()` if the path for the cached file has been invalidated',
+       () => {
+         const spy = spyOn(delegate, 'exists').and.returnValue(true);
+         fs.exists(abcPath);  // Call once to fill the cache
+         spy.calls.reset();
+
+         expect(fs.exists(abcPath)).toBe(true);
+         expect(spy).not.toHaveBeenCalled();
+
+         fs.invalidateCaches(abcPath);
+
+         expect(fs.exists(abcPath)).toBe(true);
+         expect(spy).toHaveBeenCalledWith(abcPath);
+       });
+  });
+
   describe('writeFile()', () => {
     it('should call delegate', () => {
       const spy = spyOn(delegate, 'writeFile');
