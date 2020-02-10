@@ -28,6 +28,11 @@ export class CachedFileSystem implements FileSystem {
     return this.existsCache.get(path) !;
   }
 
+  invalidateCaches(path: AbsoluteFsPath) {
+    this.readFileCache.delete(path);
+    this.existsCache.delete(path);
+  }
+
   readFile(path: AbsoluteFsPath): string {
     if (!this.readFileCache.has(path)) {
       try {
