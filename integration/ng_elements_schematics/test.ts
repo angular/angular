@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import {cd, exec, set, rm} from 'shelljs';
+import {cd, exec, rm, set} from 'shelljs';
 
 // Fail on first error
 set('-e');
@@ -8,6 +8,7 @@ set('-e');
 // Install Angular packages that are built locally from HEAD.
 // This also gets around the bug whereby yarn caches local `file://` urls.
 // See https://github.com/yarnpkg/yarn/issues/2165
+// The below packages are all required in a default CLI project.
 const ngPackages = [
   'animations',
   'core',
@@ -34,7 +35,7 @@ const packages = [
 ].join(' ');
 
 // Clean up previously run test
-rm('-rf', 'demo');
+rm('-rf', `${__dirname}/demo`);
 
 // Set up demo project
 exec('ng version');
