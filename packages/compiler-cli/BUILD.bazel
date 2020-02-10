@@ -36,6 +36,7 @@ ts_library(
         "@npm//reflect-metadata",
         "@npm//tsickle",
         "@npm//typescript",
+        "@npm//chokidar"
     ],
 )
 

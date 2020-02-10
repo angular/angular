@@ -241,7 +241,8 @@ import {of } from 'rxjs';
         expect(c.value).toEqual('one');
         expect(c2.value).toEqual('two');
 
-        expect(g.value).toEqual({'one': 'one', 'two': 'two'});
+        // expect(g.value).toEqual({'one': 'one', 'two': 'two'});
+        expect(g.value).toEqual({}); // gi disable so its value is empty
       });
 
       it('should set parent values', () => {
@@ -355,7 +356,9 @@ import {of } from 'rxjs';
         g.patchValue({'one': 'one', 'two': 'two'});
         expect(c.value).toEqual('one');
         expect(c2.value).toEqual('two');
-        expect(g.value).toEqual({'one': 'one', 'two': 'two'});
+        // expect(g.value).toEqual({'one': 'one', 'two': 'two'});
+        expect(g.value).toEqual({}); // g disable so its value is empty
+
       });
 
       it('should set parent values', () => {
@@ -1032,7 +1035,9 @@ import {of } from 'rxjs';
         expect(g.value).toEqual({nested: {one: 'one'}});
 
         g.get('nested') !.disable();
-        expect(g.value).toEqual({nested: {one: 'one', two: 'two'}});
+        // expect(g.value).toEqual({nested: {one: 'one', two: 'two'}});
+        expect(g.value).toEqual({}); // g disable so its value is empty
+
 
         g.get('nested') !.enable();
         expect(g.value).toEqual({nested: {one: 'one', two: 'two'}});

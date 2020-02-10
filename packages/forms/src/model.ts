@@ -1567,7 +1567,7 @@ export class FormGroup extends AbstractControl {
   _reduceValue() {
     return this._reduceChildren(
         {}, (acc: {[k: string]: AbstractControl}, control: AbstractControl, name: string) => {
-          if (control.enabled || this.disabled) {
+          if (control.enabled) {
             acc[name] = control.value;
           }
           return acc;

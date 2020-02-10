@@ -962,7 +962,9 @@ import {FormArray} from '@angular/forms/src/model';
         expect(g.value).toEqual({'two': 'two'});
 
         c2.disable();
-        expect(g.value).toEqual({'one': 'one', 'two': 'two'});
+        // expect(g.value).toEqual({'one': 'one', 'two': 'two'});
+        expect(g.value).toEqual({}); // c and c2 are disable so g.value is empty
+
 
         c.enable();
         expect(g.value).toEqual({'one': 'one'});
