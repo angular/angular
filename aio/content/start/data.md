@@ -234,7 +234,7 @@ This section shows you how to use the HTTP client to retrieve shipping prices fr
 
 ### Predefined shipping data
 
-The app StackBlitz generates for this guide comes with predefined shipping data in `assets/shipping.json`.
+The application that StackBlitz generates for this guide comes with predefined shipping data in `assets/shipping.json`.
 Use this data to add shipping prices for items in the cart.
 
 <code-example header="src/assets/shipping.json" path="getting-started/src/assets/shipping.json">
@@ -314,7 +314,7 @@ Now that your app can retrieve shipping data, create a shipping component and  t
 
     There's no link to the new shipping component yet, but you can see its template in the preview pane by entering the URL its route specifies. The URL has the pattern: `https://getting-started.stackblitz.io/shipping` where the `getting-started.stackblitz.io` part may be different for your StackBlitz project.
 
-1. Modify the shipping component so it uses the cart service to retrieve shipping data via HTTP from the `shipping.json` file.
+1. Modify the shipping component so that it uses the cart service to retrieve shipping data via HTTP from the `shipping.json` file.
 
     1. Import the cart service.
 
