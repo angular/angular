@@ -15,11 +15,11 @@
     "test:shell": "ng test shell-dev --watch=false",
     "test:ci": "npm run test:backend && npm run test:devtools && npm run test:shell",
     "prettier": "prettier --write \"{,!(node_modules|dist|build|coverage)/**/}*.{js,jsx,ts,tsx,json}\"",
-    "pre-commit": "npm run prettier"
+    "prettier:fix": "pretty-quick --staged"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn pre-commit"
+      "pre-commit": "yarn prettier:fix"
     }
   },
   "private": true,
@@ -37,6 +37,7 @@
     "@bahmutov/add-typescript-to-cypress": "^2.1.2",
     "clone-deep": "^4.0.1",
     "ngx-vis": "^3.0.3",
+    "pretty-quick": "^2.0.1",
     "rxjs": "~6.5.3",
     "scroll-into-view-if-needed": "^2.2.22",
     "tslib": "^1.10.0",
