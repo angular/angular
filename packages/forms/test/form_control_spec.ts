@@ -580,6 +580,29 @@ import {FormArray} from '@angular/forms/src/model';
       });
     });
 
+    describe('setUpdateMethod', () => {
+      let c: FormControl;
+      beforeEach(() => {
+        c = new FormControl('a value');
+      });
+
+      it('should initialize updateOn property to change', () => {
+        expect(c.updateOn).toBe('change');
+      });
+      
+      it('should set updateOn property to blur', () => {
+        c.setUpdateMethod('blur');
+        expect(c.updateOn).toBe('blur');
+      });
+      
+      it('should set updateOn property to change', () => {
+        c.setUpdateMethod('blur');
+        c.setUpdateMethod('change');
+        expect(c.updateOn).toBe('change');
+      });
+
+    });
+
     describe('reset()', () => {
       let c: FormControl;
 

@@ -883,6 +883,10 @@ export abstract class AbstractControl {
     }
   }
 
+  setUpdateMethod(event: FormHooks): void {
+    this._updateOn = event; 
+  }
+
   /**
    * Check to see if parent has been marked artificially dirty.
    *
