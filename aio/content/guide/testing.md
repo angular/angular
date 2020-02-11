@@ -3582,13 +3582,13 @@ The Angular `By` class has three static methods for common predicates:
 
 <hr>
 
-{@a faq}
+{@a useful-tips}
 
-## Frequently Asked Questions
+## Useful tips
 
 {@a q-spec-file-location}
 
-#### Why put spec file next to the file it tests?
+#### Place your spec file next to the file it tests
 
 It's a good idea to put unit test spec files in the same folder
 as the application source code files that they test:
@@ -3599,11 +3599,9 @@ as the application source code files that they test:
 - When you move the source (inevitable), you remember to move the test.
 - When you rename the source file (inevitable), you remember to rename the test file.
 
-<hr>
-
 {@a q-specs-in-test-folder}
 
-#### When would I put specs in a test folder?
+#### Place your spec files in a test folder
 
 Application integration specs can test the interactions of multiple parts
 spread across folders and modules.
@@ -3615,15 +3613,17 @@ It's often better to create an appropriate folder for them in the `tests` direct
 Of course specs that test the test helpers belong in the `test` folder,
 next to their corresponding helper files.
 
-{@a q-e2e}
+{@a q-kiss}
 
-#### Why not rely on E2E tests of DOM integration?
+#### Keep it simple
 
-The component DOM tests described in this guide often require extensive setup and
-advanced techniques whereas the [unit tests](#component-class-testing)
-are comparatively simple.
+[Component class testing](#component-class-testing) should be kept very clean and simple.
+It should test only a single unit. On a first glance, you should be able to understand 
+what the test is testing. If it's doing more, then it doesn't belong here.
 
-#### Why not defer DOM integration tests to end-to-end (E2E) testing?
+{@a q-end-to-end}
+
+#### Use E2E (end-to-end) to test more than a single unit
 
 E2E tests are great for high-level validation of the entire system.
 But they can't give you the comprehensive test coverage that you'd expect from unit tests.
