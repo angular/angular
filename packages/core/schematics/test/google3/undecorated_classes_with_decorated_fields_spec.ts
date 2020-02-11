@@ -64,7 +64,7 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
 
     expect(failures.length).toBe(1);
     expect(failures[0])
-        .toBe('Classes with decorated fields must have an Angular decorator as well.');
+        .toBe('Class needs to be decorated with "@Directive()" because it uses Angular features.');
   });
 
   it(`should add an import for Directive if there isn't one already`, () => {
@@ -95,6 +95,27 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
 
     runTSLint(true);
     expect(getFile('/index.ts')).toContain(`import { Directive, Input } from '@angular/core';`);
+  });
+
+  it('should not generate conflicting imports there is a different `Directive` symbol', async() => {
+    writeFile('/index.ts', `
+      import { HostBinding } from '@angular/core';
+      
+      export class Directive {
+        // Simulates a scenario where a library defines a class named "Directive".
+        // We don't want to generate a conflicting import.
+      }
+
+      export class MyLibrarySharedBaseClass {
+        @HostBinding('class.active') isActive: boolean;
+      }
+    `);
+
+    runTSLint(true);
+    const fileContent = getFile('/index.ts');
+    expect(fileContent)
+        .toContain(`import { HostBinding, Directive as Directive_1 } from '@angular/core';`);
+    expect(fileContent).toMatch(/@Directive_1\(\)\s+export class MyLibrarySharedBaseClass/);
   });
 
   it('should add @Directive to undecorated classes that have @Input', () => {
@@ -229,4 +250,35 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
     expect(getFile('/index.ts')).toContain(`@Directive()\nexport class Base {`);
   });
 
+  it('should add @Directive to undecorated derived classes of a migrated class', async() => {
+    writeFile('/index.ts', `
+      import { Input, Directive, NgModule } from '@angular/core';
+
+      export class Base {
+        @Input() isActive: boolean;
+      }
+      
+      export class DerivedA extends Base {}
+      export class DerivedB extends DerivedA {}
+      export class DerivedC extends DerivedB {}
+      
+      @Directive({selector: 'my-comp'})
+      export class MyComp extends DerivedC {}
+      
+      export class MyCompWrapped extends MyComp {}
+      
+      @NgModule({declarations: [MyComp, MyCompWrapped]})
+      export class AppModule {} 
+    `);
+
+    runTSLint(true);
+    const fileContent = getFile('/index.ts');
+    expect(fileContent).toContain(`import { Input, Directive, NgModule } from '@angular/core';`);
+    expect(fileContent).toMatch(/@Directive\(\)\s+export class Base/);
+    expect(fileContent).toMatch(/@Directive\(\)\s+export class DerivedA/);
+    expect(fileContent).toMatch(/@Directive\(\)\s+export class DerivedB/);
+    expect(fileContent).toMatch(/@Directive\(\)\s+export class DerivedC/);
+    expect(fileContent).toMatch(/}\s+@Directive\(\{selector: 'my-comp'}\)\s+export class MyComp/);
+    expect(fileContent).toMatch(/}\s+export class MyCompWrapped/);
+  });
 });
