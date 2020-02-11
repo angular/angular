@@ -8,7 +8,12 @@
 
 import {dirname, resolve} from 'path';
 import * as ts from 'typescript';
-import {UpdateRecorder} from './update_recorder';
+
+/** Update recorder for managing imports. */
+export interface ImportManagerUpdateRecorder {
+  addNewImport(start: number, importText: string): void;
+  updateExistingImport(namedBindings: ts.NamedImports, newNamedBindings: string): void;
+}
 
 /**
  * Import manager that can be used to add TypeScript imports to given source
@@ -33,7 +38,7 @@ export class ImportManager {
   }[] = [];
 
   constructor(
-      private getUpdateRecorder: (sf: ts.SourceFile) => UpdateRecorder,
+      private getUpdateRecorder: (sf: ts.SourceFile) => ImportManagerUpdateRecorder,
       private printer: ts.Printer) {}
 
   /**
