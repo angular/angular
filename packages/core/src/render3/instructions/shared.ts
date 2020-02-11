@@ -36,7 +36,7 @@ import {NO_CHANGE} from '../tokens';
 import {isAnimationProp, mergeHostAttrs} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER, renderStringify, stringifyForError} from '../util/misc_utils';
 import {getLViewParent} from '../util/view_traversal_utils';
-import {getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isCreationMode, readPatchedLView, resetPreOrderHookFlags, viewAttachedToChangeDetector} from '../util/view_utils';
+import {getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isCreationMode, readPatchedLView, resetPreOrderHookFlags, unwrapLView, viewAttachedToChangeDetector} from '../util/view_utils';
 
 import {selectIndexInternal} from './advance';
 import {LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeDebug, TNodeInitialInputs, TNodeLocalNames, TViewComponents, TViewConstructor, attachLContainerDebug, attachLViewDebug, cloneToLViewFromTViewBlueprint, cloneToTViewData} from './lview_debug';
@@ -1934,7 +1934,7 @@ function getTViewCleanup(tView: TView): any[] {
  * instead of the current renderer (see the componentSyntheticHost* instructions).
  */
 export function loadComponentRenderer(tNode: TNode, lView: LView): Renderer3 {
-  const componentLView = lView[tNode.index] as LView;
+  const componentLView = unwrapLView(lView[tNode.index]) !;
   return componentLView[RENDERER];
 }
 
