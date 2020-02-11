@@ -94,6 +94,27 @@ var customLaunchers = {
     version: '7.1',
     device: 'Android GoogleAPI Emulator'
   },
+  'SL_ANDROID8': {
+    base: 'SauceLabs',
+    browserName: 'Chrome',
+    platform: 'Android',
+    version: '8.0',
+    device: 'Android GoogleAPI Emulator'
+  },
+  'SL_ANDROID9': {
+    base: 'SauceLabs',
+    browserName: 'Chrome',
+    platform: 'Android',
+    version: '9.0',
+    device: 'Android GoogleAPI Emulator'
+  },
+  'SL_ANDROID10': {
+    base: 'SauceLabs',
+    browserName: 'Chrome',
+    platform: 'Android',
+    version: '10.0',
+    device: 'Android GoogleAPI Emulator'
+  },
 
   'BS_CHROME': {base: 'BrowserStack', browser: 'chrome', os: 'OS X', os_version: 'Yosemite'},
   'BS_FIREFOX': {base: 'BrowserStack', browser: 'firefox', os: 'Windows', os_version: '10'},
