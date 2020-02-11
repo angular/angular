@@ -31,11 +31,12 @@
 }
 
 :host /deep/ mat-tree-node:hover {
-  background-color: #f3f3f3;
+  background-color: #d4e7ff;
+  cursor: pointer;
 }
 
 :host /deep/ mat-tree-node.selected, :host /deep/ mat-tree-node.highlighted {
-  background-color: #dadada;
+  background-color: #92bdff;
 }
 
 :host /deep/ mat-tree-node.matched {
@@ -58,6 +59,7 @@
 
 :host /deep/ mat-tree-node {
   transition: background-color 100ms;
+  border-radius: 8px;
 }
 
 .dir-names {
