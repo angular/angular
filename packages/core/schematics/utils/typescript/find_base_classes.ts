@@ -7,7 +7,7 @@
  */
 
 import * as ts from 'typescript';
-import {getBaseTypeIdentifiers} from '../../utils/typescript/class_declaration';
+import {getBaseTypeIdentifiers} from './class_declaration';
 
 /** Gets all base class declarations of the specified class declaration. */
 export function findBaseClassDeclarations(node: ts.ClassDeclaration, typeChecker: ts.TypeChecker) {
