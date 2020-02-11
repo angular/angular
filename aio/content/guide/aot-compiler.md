@@ -570,7 +570,7 @@ In the template type-checking phase, the Angular template compiler uses the Type
 Enable this phase explicitly by adding the compiler option `"fullTemplateTypeCheck"` in the `"angularCompilerOptions"` of the project's `tsconfig.json`
 (see [Angular Compiler Options](guide/angular-compiler-options)).
 
-<div class="alert is-helpful>
+<div class="alert is-helpful">
 
 In [Angular Ivy](guide/ivy), the template type checker has been completely rewritten to be more capable as well as stricter, meaning it can catch a variety of new errors that the previous type checker would not detect.
 

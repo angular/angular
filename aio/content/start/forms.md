@@ -40,7 +40,7 @@ of the constructor.
 
 1. For the checkout process, users need to submit their name and address. When they submit their order, the form should reset and the cart should clear.
 
-    1. In `cart.component.ts`, define an `onSubmit()` method to process the form. Use the `CartService` `clearCart()` method to empty the cart items and reset the form after it is submission. In a real-world app, this method would also submit the data to an external server. The entire cart component class is as follows:
+    1. In `cart.component.ts`, define an `onSubmit()` method to process the form. Use the `CartService` `clearCart()` method to empty the cart items and reset the form after its submission. In a real-world app, this method would also submit the data to an external server. The entire cart component class is as follows:
 
     <code-example header="src/app/cart/cart.component.ts" path="getting-started/src/app/cart/cart.component.ts">
     </code-example>
