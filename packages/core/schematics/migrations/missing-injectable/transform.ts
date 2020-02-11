@@ -11,12 +11,13 @@ import {DynamicValue, ResolvedValue} from '@angular/compiler-cli/src/ngtsc/parti
 import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import * as ts from 'typescript';
 
+import {ImportManager} from '../../utils/import_manager';
 import {getAngularDecorators} from '../../utils/ng_decorators';
 
 import {ResolvedDirective, ResolvedNgModule} from './definition_collector';
-import {ImportManager} from './import_manager';
 import {ProviderLiteral, ProvidersEvaluator} from './providers_evaluator';
 import {UpdateRecorder} from './update_recorder';
+
 
 
 /** Name of decorators which imply that a given class does not need to be migrated. */

@@ -11,6 +11,7 @@ import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluato
 import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
 import * as ts from 'typescript';
 
+import {ImportManager} from '../../utils/import_manager';
 import {getAngularDecorators} from '../../utils/ng_decorators';
 import {hasExplicitConstructor} from '../../utils/typescript/class_declaration';
 import {findBaseClassDeclarations} from '../../utils/typescript/find_base_classes';
@@ -18,7 +19,6 @@ import {getImportOfIdentifier} from '../../utils/typescript/imports';
 
 import {UnexpectedMetadataValueError, convertDirectiveMetadataToExpression} from './decorator_rewrite/convert_directive_metadata';
 import {DecoratorRewriter} from './decorator_rewrite/decorator_rewriter';
-import {ImportManager} from './import_manager';
 import {hasDirectiveDecorator, hasInjectableDecorator} from './ng_declaration_collector';
 import {UpdateRecorder} from './update_recorder';
 
