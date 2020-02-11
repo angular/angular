@@ -1,5 +1,5 @@
-import { Node as ComponentNode, ElementID } from 'protocol';
-import { DirectiveInstanceType, ComponentInstanceType, getComponentForest } from '../component-tree';
+import { ElementID, Node as ComponentNode } from 'protocol';
+import { ComponentInstanceType, ComponentTreeNode, DirectiveInstanceType, getComponentForest } from '../component-tree';
 import { componentMetadata } from '../utils';
 
 export type CreationCallback = (component: RecorderComponent) => void;
@@ -43,7 +43,7 @@ export class ComponentTreeObserver {
     private _onDestroy: DestroyCallback
   ) {}
 
-  initialize() {
+  initialize(): void {
     this._mutationObserver.observe(document, {
       subtree: true,
       childList: true,
@@ -69,68 +69,64 @@ export class ComponentTreeObserver {
     }
   }
 
-  private _onMutation(mutations: MutationRecord[]) {
-    mutations.forEach(v => {
-      v.addedNodes.forEach(node => {
-        const component = ng.getComponent(node);
-        if (component) {
-          this._elementComponent.set(node, component);
-          this._observeComponent(component);
-
-          let current = node;
-          let parent = null;
-          while (current.parentElement) {
-            current = current.parentElement;
-            const parentComponent = ng.getComponent(current);
-            if (parentComponent) {
-              parent = parentComponent;
-              break;
-            }
-          }
-          this._updateInsertionID(component, parent);
-          this._createdComponents.add(component);
-
-          this._onCreation({
-            component,
-            id: this._currentComponentID.get(component),
-          });
-
-          if (this._lastChangeDetection.has(component)) {
-            this._onChangeDetection(
-              {
-                component,
-                id: this._currentComponentID.get(component),
-              },
-              this._lastChangeDetection.get(component)
-            );
-            this._lastChangeDetection.delete(component);
-          }
-        }
-      });
-
-      v.removedNodes.forEach(node => {
-        const component = this._elementComponent.get(node);
-        if (component) {
-          this._elementComponent.delete(node);
-          this._updateDeletionID(component);
-          this._onDestroy({
-            component,
-            id: this._currentComponentID.get(component),
-          });
-        }
-      });
+  private _onMutation(mutations: MutationRecord[]): void {
+    mutations.forEach((v: MutationRecord) => {
+      v.addedNodes.forEach(node => this._onAddedNodesMutation(node));
+      v.removedNodes.forEach(node => this._onDeletedNodesMutation(node));
     });
   }
 
-  private _updateInsertionID(cmp: any, parent: any) {
-    const updateNestedNodeIds = (p: TreeNode, level: number) => {
-      p.children.forEach(c => {
-        const id = this._currentComponentID.get(c.component);
-        id[level] = id[level] + 1;
-        updateNestedNodeIds(c, level);
-      });
-    };
+  private _onAddedNodesMutation(node: Node): void {
+    const component = ng.getComponent(node);
+    if (component) {
+      this._elementComponent.set(node, component);
 
+      this._observeComponent(component);
+
+      const parentComponent = getParentComponentFromDomNode(node);
+      this._updateInsertionID(component, parentComponent);
+
+      this._createdComponents.add(component);
+
+      this._fireCreationCallback(component);
+
+      if (this._lastChangeDetection.has(component)) {
+        this._fireChangeDetectionCallback(component);
+        this._lastChangeDetection.delete(component);
+      }
+    }
+  }
+
+  private _fireCreationCallback(component): void {
+    const id = this._currentComponentID.get(component);
+    this._onCreation({ component, id });
+  }
+
+  private _fireChangeDetectionCallback(component): void {
+    this._onChangeDetection(
+      {
+        component,
+        id: this._currentComponentID.get(component),
+      },
+      this._lastChangeDetection.get(component)
+    );
+  }
+
+  private _onDeletedNodesMutation(node: Node): void {
+    const component = this._elementComponent.get(node);
+    if (component) {
+      this._elementComponent.delete(node);
+      this._updateDeletionID(component);
+      this._fireDestroyCallback(component);
+    }
+  }
+
+  private _fireDestroyCallback(component): void {
+    const id = this._currentComponentID.get(component);
+    this._onDestroy({ component, id });
+  }
+
+  private _updateInsertionID(cmp: any, parent: any): void {
     let parentTreeNode = null;
     let parentID = [];
     let childIdx = 0;
@@ -166,18 +162,11 @@ export class ComponentTreeObserver {
       const sibling = siblingsArray[i];
       const siblingId = this._currentComponentID.get(sibling.component);
       siblingId[siblingId.length - 1] = siblingId[siblingId.length - 1] + 1;
-      updateNestedNodeIds(sibling, siblingId.length - 1);
+      this._updateNestedNodeIds(sibling, siblingId.length - 1, 1);
     }
   }
 
-  private _updateDeletionID(cmp: any) {
-    const updateNestedNodeIds = (p: TreeNode, level: number) => {
-      p.children.forEach(c => {
-        const id = this._currentComponentID.get(c.component);
-        id[level] = id[level] - 1;
-        updateNestedNodeIds(c, level);
-      });
-    };
+  private _updateDeletionID(cmp: any): void {
     const node = this._componentTreeNode.get(cmp);
     const parent = node.parent;
     let childrenArray = this._forest;
@@ -193,11 +182,19 @@ export class ComponentTreeObserver {
       const siblingId = this._currentComponentID.get(sibling);
       // We removed the sibling node, so we need to decrease the position
       siblingId[siblingId.length - 1] = siblingId[siblingId.length - 1] - 1;
-      updateNestedNodeIds(childrenArray[i], siblingId.length - 1);
+      this._updateNestedNodeIds(childrenArray[i], siblingId.length - 1, -1);
     }
   }
 
-  private _initializeChangeDetectionObserver(root: Element = document.documentElement) {
+  private _updateNestedNodeIds(p: TreeNode, level: number, incrementBy: number): void {
+    p.children.forEach(c => {
+      const id = this._currentComponentID.get(c.component);
+      id[level] = id[level] + incrementBy;
+      this._updateNestedNodeIds(c, level, incrementBy);
+    });
+  }
+
+  private _initializeChangeDetectionObserver(root: Element = document.documentElement): void {
     if (!(root instanceof HTMLElement)) {
       return;
     }
@@ -212,7 +209,7 @@ export class ComponentTreeObserver {
     }
   }
 
-  private _observeComponent(cmp: any) {
+  private _observeComponent(cmp: any): void {
     const declarations = componentMetadata(cmp);
     const original = declarations.template;
     const self = this;
@@ -238,43 +235,40 @@ export class ComponentTreeObserver {
     this._patched.set(cmp, original);
   }
 
-  private _indexTree() {
+  private _indexTree(): void {
     const componentForest = indexForest(getComponentForest(document.documentElement));
-    const setIndexes = (root: IndexedNode, parent: TreeNode | null) => {
-      if (root.component) {
-        this._createdComponents.add(root.component.instance);
-        const node = {
-          component: root.component.instance,
-          parent,
-          children: [],
-        };
-        this._componentTreeNode.set(root.component.instance, node);
-        if (parent) {
-          parent.children.push(node);
-        } else {
-          this._forest.push(node);
-        }
-        parent = node;
-        this._currentComponentID.set(root.component.instance, root.id);
-      }
-      root.children.forEach(c => setIndexes(c, parent));
-    };
-    componentForest.forEach(r => setIndexes(r, null));
+    componentForest.forEach(root => this._setIndexes(root));
   }
 
-  private _createOriginalTree() {
-    const forest = getComponentForest();
-
-    const setIndexes = (root: IndexedNode) => {
-      if (root.component) {
-        this._onCreation({
-          component: root.component.instance,
-          id: this._currentComponentID.get(root.component.instance),
-        });
+  private _setIndexes(root: IndexedNode, parent: TreeNode | null = null): void {
+    if (root.component) {
+      this._createdComponents.add(root.component.instance);
+      const node = {
+        component: root.component.instance,
+        parent,
+        children: [],
+      };
+      this._componentTreeNode.set(root.component.instance, node);
+      if (parent) {
+        parent.children.push(node);
+      } else {
+        this._forest.push(node);
       }
-      root.children.forEach(setIndexes);
-    };
-    forest.forEach(setIndexes);
+      parent = node;
+      this._currentComponentID.set(root.component.instance, root.id);
+    }
+    root.children.forEach(child => this._setIndexes(child, parent));
+  }
+
+  private _createOriginalTree(): void {
+    getComponentForest().forEach(root => this._fireInitialTreeCallbacks(root));
+  }
+
+  private _fireInitialTreeCallbacks(root: ComponentTreeNode) {
+    if (root.component) {
+      this._fireCreationCallback(root.component.instance);
+    }
+    root.children.forEach(child => this._fireInitialTreeCallbacks(child));
   }
 }
 
@@ -292,10 +286,24 @@ const indexTree = (node: ComponentNode, idx: number, parentId = []): IndexedNode
     id,
     element: node.element,
     component: node.component,
-    directives: node.directives.map((d, i) => ({ name: d.name })),
+    directives: node.directives.map(d => ({ name: d.name })),
     children: node.children.map((n, i) => indexTree(n, i, id)),
     nativeElement: node.nativeElement,
   } as IndexedNode;
 };
 
-export const indexForest = (forest: ComponentNode[]) => forest.map((n, i) => indexTree(n, i));
+const getParentComponentFromDomNode = (node: Node) => {
+  let current = node;
+  let parent = null;
+  while (current.parentElement) {
+    current = current.parentElement;
+    const parentComponent = ng.getComponent(current);
+    if (parentComponent) {
+      parent = parentComponent;
+      break;
+    }
+  }
+  return parent;
+};
+
+export const indexForest = (forest: ComponentNode[]): IndexedNode[] => forest.map((n, i) => indexTree(n, i));
