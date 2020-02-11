@@ -31,7 +31,7 @@ export const TVIEW = 1;
 export const FLAGS = 2;
 export const PARENT = 3;
 export const NEXT = 4;
-export const QUERIES = 5;
+export const CONTAINS_ALWAYS_COUNT = 5;
 export const T_HOST = 6;
 export const CLEANUP = 7;
 export const CONTEXT = 8;
@@ -45,7 +45,7 @@ export const DECLARATION_VIEW = 15;
 export const DECLARATION_COMPONENT_VIEW = 16;
 export const DECLARATION_LCONTAINER = 17;
 export const PREORDER_HOOK_FLAGS = 18;
-export const CONTAINS_ALWAYS_COUNT = 19;
+export const QUERIES = 19;
 /** Size of LView's header. Necessary to adjust for it when setting slots.  */
 export const HEADER_OFFSET = 20;
 
@@ -290,7 +290,7 @@ export interface LView extends Array<any> {
 /** Flags associated with an LView (saved in LView[FLAGS]) */
 export const enum LViewFlags {
   /** The state of the init phase on the first 2 bits */
-  InitPhaseStateIncrementer = 0b1,
+  InitPhaseStateIncrementor = 0b1,
   InitPhaseStateMask = 0b11,
 
   /**
@@ -350,7 +350,7 @@ export const enum LViewFlags {
   /**
    * Index of the current init phase on last 22 bits
    */
-  IndexWithinInitPhaseIncrementer = 1 << 13,
+  IndexWithinInitPhaseIncrementor = 1 << 13,
   IndexWithinInitPhaseShift = 13,
   IndexWithinInitPhaseReset = (1 << 14) - 1,
 }

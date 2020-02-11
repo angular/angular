@@ -10,8 +10,8 @@ import {ViewRef} from '../../linker/view_ref';
 
 import {TNode} from './node';
 import {RComment, RElement} from './renderer';
+import {CONTAINS_ALWAYS_COUNT, HOST, LView, NEXT, PARENT, T_HOST} from './view';
 
-import {HOST, LView, NEXT, PARENT, T_HOST} from './view';
 
 
 /**
@@ -27,17 +27,16 @@ export const TYPE = 1;
  */
 export const ACTIVE_INDEX = 2;
 
-// PARENT and NEXT are indices 3 and 4
+// PARENT, NEXT, CONTAINS_ALWAYS_COUNT are indices 3, 4, and 5
 // As we already have these constants in LView, we don't need to re-create them.
-
-export const MOVED_VIEWS = 5;
 
 // T_HOST is index 6
 // We already have this constants in LView, we don't need to re-create it.
 
 export const NATIVE = 7;
 export const VIEW_REFS = 8;
-export const CONTAINS_ALWAYS_COUNT = 9;
+export const MOVED_VIEWS = 9;
+
 
 /**
  * Size of LContainer's header. Represents the index after which all views in the
@@ -133,6 +132,8 @@ export interface LContainer extends Array<any> {
    */
   [NEXT]: LView|LContainer|null;
 
+  [CONTAINS_ALWAYS_COUNT]: number;
+
   /**
    * A collection of views created based on the underlying `<ng-template>` element but inserted into
    * a different `LContainer`. We need to track views created from a given declaration point since
@@ -155,8 +156,6 @@ export interface LContainer extends Array<any> {
    * This is lazily initialized by `ViewContainerRef` when the first view is inserted.
    */
   [VIEW_REFS]: ViewRef[]|null;
-
-  [CONTAINS_ALWAYS_COUNT]: number;
 }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency

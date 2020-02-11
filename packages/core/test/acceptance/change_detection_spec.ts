@@ -1614,6 +1614,46 @@ describe('change detection', () => {
       });
       // TODO(atscott): Test for backwards referenced CheckAlways transplanted views?
     });
+
+    it('shielded CheckAlways transplanted views', () => {
+      @Component({
+        selector: 'check-always-insertion',
+        template: `<ng-container [ngTemplateOutlet]="template"></ng-container>`
+      })
+      class CheckAlwaysInsertion {
+        @Input() template !: TemplateRef<{}>;
+      }
+
+      @Component({
+        selector: 'on-push-insertion-host',
+        template: `<check-always-insertion [template]="template"></check-always-insertion>`,
+        changeDetection: ChangeDetectionStrategy.OnPush
+      })
+      class OnPushInsertionHost {
+        @Input() template !: TemplateRef<{}>;
+      }
+
+      @Component({
+        template: `
+      <ng-template #template>{{value}}</ng-template>
+      <on-push-insertion-host [template]="template"></on-push-insertion-host>
+      `
+      })
+      class CheckAlwaysDeclaration {
+        value = 'initial';
+      }
+
+      const fixture =
+          TestBed
+              .configureTestingModule({
+                declarations: [CheckAlwaysDeclaration, CheckAlwaysInsertion, OnPushInsertionHost]
+              })
+              .createComponent(CheckAlwaysDeclaration);
+      fixture.detectChanges();
+      fixture.componentInstance.value = 'new';
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toEqual('new');
+    });
   });
 
   describe('OnPush markForCheck in lifecycle hooks', () => {
