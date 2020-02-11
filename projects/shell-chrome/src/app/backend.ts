@@ -7,7 +7,6 @@ const messageBus = new SamePageMessageBus('angular-devtools-backend', 'angular-d
 let initialized = false;
 messageBus.on('handshake', () => {
   console.log('Received init');
-  messageBus.emit('syn');
   if (initialized) {
     return;
   }

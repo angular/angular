@@ -37,8 +37,6 @@ localMessageBus.onAny((topic, args) => {
   chromeMessageBus.emit(topic, args);
 });
 
-handshakeWithBackend();
-
 if (!backendInitialized) {
   const retry = () => {
     if (backendInitialized || backgroundDisconnected) {
