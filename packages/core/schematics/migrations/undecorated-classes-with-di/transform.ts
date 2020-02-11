@@ -13,11 +13,11 @@ import * as ts from 'typescript';
 
 import {getAngularDecorators} from '../../utils/ng_decorators';
 import {hasExplicitConstructor} from '../../utils/typescript/class_declaration';
+import {findBaseClassDeclarations} from '../../utils/typescript/find_base_classes';
 import {getImportOfIdentifier} from '../../utils/typescript/imports';
 
 import {UnexpectedMetadataValueError, convertDirectiveMetadataToExpression} from './decorator_rewrite/convert_directive_metadata';
 import {DecoratorRewriter} from './decorator_rewrite/decorator_rewriter';
-import {findBaseClassDeclarations} from './find_base_classes';
 import {ImportManager} from './import_manager';
 import {hasDirectiveDecorator, hasInjectableDecorator} from './ng_declaration_collector';
 import {UpdateRecorder} from './update_recorder';
