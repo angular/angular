@@ -166,7 +166,8 @@ $mat-form-field-default-infix-width: 180px !default;
   // with their top at x.6 would disappear, but ones with there top at x.7 were fine). The exact
   // fractions that caused problems seemed to depend on the screen resolution and zoom level. We
   // experimentally discovered that adding a very slight scale factor fixes the issue.
-  transform: scaleY(1.0001);
+  // `scale3d` must be used rather than `scaleY`, as `scaleY` causes a jitter effect in Chrome.
+  transform: scale3d(1, 1.0001, 1);
 }
 
 .mat-form-field-ripple {
