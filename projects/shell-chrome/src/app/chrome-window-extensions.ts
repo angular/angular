@@ -37,5 +37,5 @@ const chromeWindowExtensions = {
       return null;
     }
     return node.nativeElement;
-  }
+  },
 };

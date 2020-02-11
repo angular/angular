@@ -33,6 +33,9 @@ ng-property-view {
   overflow: hidden;
   line-height: 25px;
   font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .property-wrapper .element-header {

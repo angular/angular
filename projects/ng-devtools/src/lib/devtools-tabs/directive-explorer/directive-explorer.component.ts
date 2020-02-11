@@ -9,10 +9,12 @@ import {
   ComponentExplorerView,
   ComponentExplorerViewProperties,
   ElementID,
+  Properties,
 } from 'protocol';
 import { IndexedNode } from './directive-forest/index-forest';
 import { PropertyViewComponent } from './property-view/property-view.component';
 import { ApplicationOperations } from '../../application-operations';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'ng-directive-explorer',
@@ -32,7 +34,7 @@ export class DirectiveExplorerComponent implements OnInit {
   forest: Node[];
   highlightIDinTreeFromElement: ElementID | null = null;
 
-  constructor(private _appOperations: ApplicationOperations) {}
+  constructor(private _appOperations: ApplicationOperations, private _snackBar: MatSnackBar) {}
 
   ngOnInit(): void {
     this.subscribeToBackendEvents();
@@ -124,6 +126,19 @@ export class DirectiveExplorerComponent implements OnInit {
     return result;
   }
 
+  copyPropData(propData: Properties): void {
+    const handler = (e: ClipboardEvent) => {
+      e.clipboardData.setData('text/plain', JSON.stringify(cleanPropDataForCopying(propData)));
+      e.preventDefault();
+      document.removeEventListener('copy', handler);
+      this._snackBar.open('Copied to clipboard!', '', {
+        duration: 1000,
+      });
+    };
+    document.addEventListener('copy', handler);
+    document.execCommand('copy');
+  }
+
   handleHighlightFromComponent(id: ElementID) {
     this.messageBus.emit('highlightElementFromComponentTree', [id]);
   }
@@ -132,3 +147,15 @@ export class DirectiveExplorerComponent implements OnInit {
     this.messageBus.emit('removeHighlightFromElement');
   }
 }
+
+const cleanPropDataForCopying = (propData: Properties, cleanedPropData = {}): object => {
+  Object.keys(propData).forEach(key => {
+    if (typeof propData[key].value === 'object') {
+      cleanedPropData[key] = {};
+      cleanPropDataForCopying(propData[key].value, cleanedPropData[key]);
+    } else {
+      cleanedPropData[key] = propData[key].value || propData[key].preview;
+    }
+  });
+  return cleanedPropData;
+};
