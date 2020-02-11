@@ -405,10 +405,12 @@ describe('AppComponent', () => {
       // Older docs versions have an href
       it('should navigate when change to a version with a url', async () => {
         await setupSelectorForTesting();
+        locationService.urlSubject.next('new-page');
         const versionWithUrlIndex = component.docVersions.findIndex(v => !!v.url);
         const versionWithUrl = component.docVersions[versionWithUrlIndex];
+        const versionWithUrlAndPage = `${versionWithUrl.url}new-page`;
         selectElement.triggerEventHandler('change', { option: versionWithUrl, index: versionWithUrlIndex});
-        expect(locationService.go).toHaveBeenCalledWith(versionWithUrl.url);
+        expect(locationService.go).toHaveBeenCalledWith(versionWithUrlAndPage);
       });
 
       it('should not navigate when change to a version without a url', async () => {
