@@ -465,9 +465,13 @@ function _executeAsyncValidators(control: AbstractControl, validators: AsyncVali
 }
 
 function _mergeErrors(arrayOfErrors: ValidationErrors[]): ValidationErrors|null {
-  const res: {[key: string]: any} =
-      arrayOfErrors.reduce((res: ValidationErrors | null, errors: ValidationErrors | null) => {
-        return errors != null ? {...res !, ...errors} : res !;
-      }, {});
+  let res: {[key: string]: any} = {};
+
+  // Not using Array.reduce here due to a Chrome 80 bug
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=1049982
+  arrayOfErrors.forEach((errors: ValidationErrors | null) => {
+    res = errors != null ? {...res !, ...errors} : res !;
+  });
+
   return Object.keys(res).length === 0 ? null : res;
 }
