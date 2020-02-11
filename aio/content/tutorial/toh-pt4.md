@@ -53,7 +53,6 @@ when the user clicks a hero.
 1. `HeroService`가 메시지를 보낼 때 사용합니다.
 2. 이 메시지는 `MessagesComponent`가 화면에 표시합니다.
 
-<<<<<<< HEAD
 <!--
 ## Create the `HeroService`
 -->
@@ -140,32 +139,6 @@ Add a `getHeroes` method to return the _mock heroes_.
 -->
 ## `HeroService` 등록하기
 
-<<<<<<< HEAD
-<!--
-You must make the `HeroService` available to the dependency injection system 
-before Angular can _inject_ it into the `HeroesComponent`, 
-as you will do [below](#inject). You do this by registering a _provider_. A provider is something that can create or deliver a service; in this case, it instantiates the `HeroService` class to provide the service.
-
-Now, you need to make sure that the `HeroService` is registered as the provider of this service. 
-You are registering it with an _injector_, which is the object that is responsible for choosing and injecting the provider where it is required. 
--->
-`HeroService`를 의존성 주입 시스템에 사용하려면 Angular가 이 서비스를 `HeroesComponent`에 [_주입_](#inject) 할 수 있어야 합니다.
-그리고 서비스를 의존성으로 주입하려면 이 서비스에 대한 _프로바이더 (provider)_ 를 등록해야 합니다.
-프로바이더는 서비스의 인스턴스를 생성하거나 어딘가에서 가져오는 역할을 합니다.
-이 예제에서는 프로바이더가 `HeroService` 클래스의 인스턴스를 생성합니다.
-
-그래서 `HeroService`는 프로바이더를 사용해서 등록해야 합니다.
-프로바이더는 서비스를 _인젝터_ 에 등록하는데, 인젝터는 요청받은 객체를 확인하고 요청받은 곳에 의존성으로 주입하는 역할을 합니다.
-
-<!--
-By default, the Angular CLI command `ng generate service` registers a provider with the _root injector_ for your service by including provider metadata in the `@Injectable` decorator. 
-
-If you look at the `@Injectable()` statement right before the `HeroService` class definition, you can see that the `providedIn` metadata value is 'root':    
--->
-기본적으로 Angular CLI로 `ng generate service` 명령을 실행하면 새로 만드는 서비스를 _최상위 인젝터_ 에 등록하도록 `@Injectable()` 데코레이터가 생성됩니다.
-
-그래서 방금 전에 만들었던 `HeroService` 클래스에 사용된 `@Injectable()` 구문을 살펴보면 `providedIn` 메타데이터의 값이 `root`로 지정된 것을 확인할 수 있습니다:
-=======
 You must make the `HeroService` available to the dependency injection system
 before Angular can _inject_ it into the `HeroesComponent` by registering a _provider_. A provider is something that can create or deliver a service; in this case, it instantiates the `HeroService` class to provide the service.
 
@@ -174,7 +147,6 @@ with the _injector_, which is the object that is responsible for choosing
 and injecting the provider where the app requires it.
 
 By default, the Angular CLI command `ng generate service` registers a provider with the _root injector_ for your service by including provider metadata, that is `providedIn: 'root'` in the `@Injectable()` decorator.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 ```
 @Injectable({
@@ -182,17 +154,12 @@ By default, the Angular CLI command `ng generate service` registers a provider w
 })
 ```
 
-<<<<<<< HEAD
 <!--
-When you provide the service at the root level, Angular creates a single, shared instance of `HeroService` and injects into any class that asks for it. 
-Registering the provider in the `@Injectable` metadata also allows Angular to optimize an app by removing the service if it turns out not to be used after all. 
+When you provide the service at the root level, Angular creates a single, shared instance of `HeroService` and injects into any class that asks for it.
+Registering the provider in the `@Injectable` metadata also allows Angular to optimize an app by removing the service if it turns out not to be used after all.
 -->
 서비스가 최상위 인젝터에 등록되면 Angular는 `HeroService`의 인스턴스를 하나만 생성하며, 이 클래스가 주입되는 모든 곳에서 같은 인스턴스를 공유합니다.
 그리고 `@Injectable()` 데코레이터는 이 데코레이터가 등록된 클래스가 실제로 사용되지 않으면 이 클래스를 최종 빌드 결과물에서 제거하는 대상으로 등록하는 역할도 합니다.
-=======
-When you provide the service at the root level, Angular creates a single, shared instance of `HeroService` and injects into any class that asks for it.
-Registering the provider in the `@Injectable` metadata also allows Angular to optimize an app by removing the service if it turns out not to be used after all.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <div class="alert is-helpful">
 
@@ -212,15 +179,11 @@ The `HeroService` is now ready to plug into the `HeroesComponent`.
 
 <div class="alert is-important">
 
-<<<<<<< HEAD
 <!--
-This is an interim code sample that will allow you to provide and use the `HeroService`.  At this point, the code will differ from the `HeroService` in the ["final code review"](#final-code-review).
+This is an interim code sample that will allow you to provide and use the `HeroService`. At this point, the code will differ from the `HeroService` in the ["final code review"](#final-code-review).
 -->
 지금까지 작성한 코드는 `HeroService`를 프로바이더로 등록하기 위한 임시 코드입니다.
 [최종코드 리뷰](#final-code-review)와는 조금 다릅니다.
-=======
-This is an interim code sample that will allow you to provide and use the `HeroService`. At this point, the code will differ from the `HeroService` in the ["final code review"](#final-code-review).
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 </div>
 
@@ -272,22 +235,16 @@ Add a private `heroService` parameter of type `HeroService` to the constructor.
 The parameter simultaneously defines a private `heroService` property and identifies it as a `HeroService` injection site.
 
 When Angular creates a `HeroesComponent`, the [Dependency Injection](guide/dependency-injection) system
-<<<<<<< HEAD
-sets the `heroService` parameter to the singleton instance of `HeroService`. 
+sets the `heroService` parameter to the singleton instance of `HeroService`.
 -->
 이렇게 작성하면 `heroService` 인자를 클래스 프로퍼티로 선언하면서 `HeroService` 타입의 의존성 객체가 주입되기를 요청한다는 것을 의미합니다.
 
 그러면 Angular가 `HeroesComponent`를 생성할 때 [의존성 주입](guide/dependency-injection) 시스템이 `HeroService`의 인스턴스를 찾아서 `heroService` 라는 인자로 전달할 것입니다.
 
 <!--
-### Add _getHeroes()_
--->
-### _getHeroes()_ 추가하기
-=======
-sets the `heroService` parameter to the singleton instance of `HeroService`.
-
 ### Add `getHeroes()`
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+### `getHeroes()` 추가하기
 
 <!--
 Create a function to retrieve the heroes from the service.
@@ -299,14 +256,10 @@ Create a function to retrieve the heroes from the service.
 
 {@a oninit}
 
-<<<<<<< HEAD
 <!--
-### Call it in `ngOnInit`
--->
-### `ngOnInit`에서 서비스 호출하기
-=======
 ### Call it in `ngOnInit()`
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+### `ngOnInit()`에서 서비스 호출하기
 
 <!--
 While you could call `getHeroes()` in the constructor, that's not the best practice.
@@ -316,8 +269,7 @@ The constructor shouldn't _do anything_.
 It certainly shouldn't call a function that makes HTTP requests to a remote server as a _real_ data service would.
 
 Instead, call `getHeroes()` inside the [*ngOnInit lifecycle hook*](guide/lifecycle-hooks) and
-<<<<<<< HEAD
-let Angular call `ngOnInit` at an appropriate time _after_ constructing a `HeroesComponent` instance.
+let Angular call `ngOnInit()` at an appropriate time _after_ constructing a `HeroesComponent` instance.
 -->
 서비스에 구현한 `getHeroes()` 함수는 컴포넌트 클래스에서도 호출할 수 있지만, 이 방법은 최선이 아닙니다.
 
@@ -326,10 +278,7 @@ let Angular call `ngOnInit` at an appropriate time _after_ constructing a `Heroe
 리모트 서버로 HTTP 요청을 보내는 로직도 물론 들어가지 않는 것이 좋습니다.
 
 `getHeroes()` 함수는 [*ngOnInit 라이프싸이클 후킹 함수*](guide/lifecycle-hooks)에서 실행하는 것이 좋습니다.
-`ngOnInit` 함수는 Angular가 `HeroesComponent`의 인스턴스를 생성한 _직후에_ 실행되는 함수입니다.
-=======
-let Angular call `ngOnInit()` at an appropriate time _after_ constructing a `HeroesComponent` instance.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+`ngOnInit()` 함수는 Angular가 `HeroesComponent`의 인스턴스를 생성한 _직후에_ 실행되는 함수입니다.
 
 <code-example path="toh-pt4/src/app/heroes/heroes.component.ts" header="src/app/heroes/heroes.component.ts" region="ng-on-init">
 </code-example>
@@ -339,12 +288,8 @@ let Angular call `ngOnInit()` at an appropriate time _after_ constructing a `Her
 -->
 ### 동작 확인하기
 
-<<<<<<< HEAD
 <!--
-After the browser refreshes, the app should run as before, 
-=======
 After the browser refreshes, the app should run as before,
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 showing a list of heroes and a hero detail view when you click on a hero name.
 -->
 브라우저가 갱신되고 나면 앱이 이전과 동일하게 동작할 것입니다.
@@ -393,19 +338,15 @@ and [`HttpClient.get()` returns an `Observable`](guide/http).
 -->
 이런 경우에는 `HeroService.getHeroes()` 함수가 _비동기로 동작해야_ 합니다.
 
-<<<<<<< HEAD
 비동기 동작은 콜백 함수를 사용해서 처리할 수 있습니다. `Promise`를 반환하도록 처리할 수도 있습니다. 그리고 `Observable`을 반환할 수도 있습니다.
 
 이 튜토리얼에서는 `HeroService.getHeroes()` 함수가 `Observable`을 반환하도록 구현해 봅시다.
 Angular가 제공하는 [`HttpClient.get` 메소드는 `Observable`을 반환하기 때문에](guide/http) 이렇게 구현하는 것이 가장 자연스럽습니다.
 
 <!--
-### Observable _HeroService_
--->
-### 옵저버블 _HeroService_
-=======
 ### Observable `HeroService`
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+### 옵저버블 `HeroService`
 
 <!--
 `Observable` is one of the key classes in the [RxJS library](http://reactivex.io/rxjs/).
@@ -420,25 +361,17 @@ Open the `HeroService` file and import the `Observable` and `of` symbols from Rx
 [이후에 HTTP에 대해서 알아볼 때](tutorial/toh-pt6) Angular의 `HttpClient` 클래스가 제공하는 메소드는 모두 RxJS가 제공하는 `Observable` 타입을 반환한다는 것을 다시 한 번 살펴볼 것입니다.
 이 튜토리얼에서는 리모트 서버를 사용하지 않고 RxJS의 `of()` 함수로 데이터를 즉시 반환해 봅시다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="toh-pt4/src/app/hero.service.ts" 
-header="src/app/hero.service.ts (Observable imports)" region="import-observable">
--->
-<code-example path="toh-pt4/src/app/hero.service.ts" 
-header="src/app/hero.service.ts (Observable 로드하기)" region="import-observable">
-</code-example>
-
-<!--
-Replace the `getHeroes` method with this one.
--->
-`getHeroes` 메소드를 다음과 같이 수정합니다.
-=======
 <code-example path="toh-pt4/src/app/hero.service.ts" header="src/app/hero.service.ts (Observable imports)" region="import-observable">
 </code-example>
+-->
+<code-example path="toh-pt4/src/app/hero.service.ts" header="src/app/hero.service.ts (Observable 로드하기)" region="import-observable">
+</code-example>
 
+<!--
 Replace the `getHeroes()` method with the following:
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+`getHeroes()` 메소드를 다음과 같이 수정합니다:
 
 <code-example path="toh-pt4/src/app/hero.service.ts" header="src/app/hero.service.ts" region="getHeroes-1"></code-example>
 
@@ -456,14 +389,10 @@ In the [HTTP tutorial](tutorial/toh-pt6), you'll call `HttpClient.get<Hero[]>()`
 
 </div>
 
-<<<<<<< HEAD
 <!--
-### Subscribe in _HeroesComponent_
--->
-### _HeroesComponent_ 에서 옵저버블 구독하기
-=======
 ### Subscribe in `HeroesComponent`
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+### `HeroesComponent` 에서 옵저버블 구독하기
 
 <!--
 The `HeroService.getHeroes` method used to return a `Hero[]`.
@@ -483,12 +412,8 @@ Find the `getHeroes` method and replace it with the following code
 
 <code-tabs>
 
-<<<<<<< HEAD
   <!--
-  <code-pane header="heroes.component.ts (Observable)" 
-=======
   <code-pane header="heroes.component.ts (Observable)"
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
     path="toh-pt4/src/app/heroes/heroes.component.ts" region="getHeroes">
   </code-pane>
   -->
@@ -496,12 +421,8 @@ Find the `getHeroes` method and replace it with the following code
     path="toh-pt4/src/app/heroes/heroes.component.ts" region="getHeroes">
   </code-pane>
 
-<<<<<<< HEAD
   <!--
-  <code-pane header="heroes.component.ts (Original)" 
-=======
   <code-pane header="heroes.component.ts (Original)"
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
     path="toh-pt4/src/app/heroes/heroes.component.1.ts" region="getHeroes">
   </code-pane>
   -->
@@ -546,14 +467,13 @@ the `HeroService` requests heroes from the server.
 -->
 ## 메시지 표시하기
 
-<<<<<<< HEAD
 <!--
-In this section you will 
+This section guides you through the following:
 
-* add a `MessagesComponent` that displays app messages at the bottom of the screen.
-* create an injectable, app-wide `MessageService` for sending messages to be displayed
-* inject `MessageService` into the `HeroService`
-* display a message when `HeroService` fetches heroes successfully.
+* adding a `MessagesComponent` that displays app messages at the bottom of the screen
+* creating an injectable, app-wide `MessageService` for sending messages to be displayed
+* injecting `MessageService` into the `HeroService`
+* displaying a message when `HeroService` fetches heroes successfully
 -->
 이번 섹션에서는 다음 내용에 대해 다룹니다.
 
@@ -563,19 +483,9 @@ In this section you will
 * `HeroService`가 서버에서 가져온 히어로 데이터를 화면에 표시해 봅니다.
 
 <!--
-### Create _MessagesComponent_
--->
-### _MessagesComponent_ 생성하기
-=======
-This section guides you through the following:
-
-* adding a `MessagesComponent` that displays app messages at the bottom of the screen
-* creating an injectable, app-wide `MessageService` for sending messages to be displayed
-* injecting `MessageService` into the `HeroService`
-* displaying a message when `HeroService` fetches heroes successfully
-
 ### Create `MessagesComponent`
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+### `MessagesComponent` 생성하기
 
 <!--
 Use the CLI to create the `MessagesComponent`.
@@ -589,15 +499,11 @@ Angular CLI로 다음 명령을 실행해서 `MessagesComponent`를 생성합니
 <!--
 The CLI creates the component files in the `src/app/messages` folder and declares the `MessagesComponent` in `AppModule`.
 
-<<<<<<< HEAD
-Modify the `AppComponent` template to display the generated `MessagesComponent`
+Modify the `AppComponent` template to display the generated `MessagesComponent`.
 -->
 그러면 Angular CLI가 `src/app/messages` 폴더에 컴포넌트 파일들을 생성하고 `AppModule`에 `MessagesComponent`를 자동으로 등록할 것입니다.
 
 이렇게 만든 `MessagesComponent`를 화면에 표시하기 위해 `AppComponent` 템플릿을 다음과 같이 수정합니다.
-=======
-Modify the `AppComponent` template to display the generated `MessagesComponent`.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <code-example
   header = "src/app/app.component.html"
@@ -609,21 +515,15 @@ You should see the default paragraph from `MessagesComponent` at the bottom of t
 -->
 브라우저가 갱신되면 화면 아래쪽에 `MessagesComponent`가 표시되는 것을 확인할 수 있습니다.
 
-<<<<<<< HEAD
 <!--
-### Create the _MessageService_
+### Create the `MessageService`
 -->
-### _MessageService_ 생성하기
+### `MessageService` 생성하기
 
 <!--
-Use the CLI to create the `MessageService` in `src/app`. 
+Use the CLI to create the `MessageService` in `src/app`.
 -->
 `src/app` 폴더에서 Angular CLI로 다음 명령을 실행해서 `MessageService`를 생성합니다.
-=======
-### Create the `MessageService`
-
-Use the CLI to create the `MessageService` in `src/app`.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <code-example language="sh" class="code-shell">
   ng generate service message
@@ -648,14 +548,10 @@ The service exposes its cache of `messages` and two methods: one to `add()` a me
 -->
 ### `HeroService`에 의존성으로 주입하기
 
-<<<<<<< HEAD
 <!--
-Re-open the `HeroService` and import the `MessageService`.
+In `HeroService`, import the `MessageService`.
 -->
 `HeroService` 파일을 다시 열고 `MessageService`를 로드합니다.
-=======
-In `HeroService`, import the `MessageService`.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 <code-example
@@ -695,14 +591,10 @@ you inject the `MessageService` into the `HeroService` which is injected into th
 -->
 ### `HeroService`에서 메시지 보내기
 
-<<<<<<< HEAD
 <!--
-Modify the `getHeroes` method to send a message when the heroes are fetched.
--->
-`getHeroes` 메소드에서 히어로 데이터를 받아온 뒤에 메시지를 보내도록 다음과 같이 수정합니다.
-=======
 Modify the `getHeroes()` method to send a message when the heroes are fetched.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+`getHeroes()` 메소드에서 히어로 데이터를 받아온 뒤에 메시지를 보내도록 다음과 같이 수정합니다.
 
 <code-example path="toh-pt4/src/app/hero.service.ts" header="src/app/hero.service.ts" region="getHeroes">
 </code-example>
@@ -712,12 +604,8 @@ Modify the `getHeroes()` method to send a message when the heroes are fetched.
 -->
 ### `HeroService`에서 받은 메시지 표시하기
 
-<<<<<<< HEAD
 <!--
-The `MessagesComponent` should display all messages, 
-=======
 The `MessagesComponent` should display all messages,
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 including the message sent by the `HeroService` when it fetches heroes.
 
 Open `MessagesComponent` and import the `MessageService`.
@@ -726,18 +614,10 @@ Open `MessagesComponent` and import the `MessageService`.
 
 `MessagesComponent`를 열어서 `MessageService`를 로드합니다.
 
-<<<<<<< HEAD
 <!--
-<code-example
-  header = "/src/app/messages/messages.component.ts (import MessageService)"
-  path="toh-pt4/src/app/messages/messages.component.ts" region="import-message-service">
--->
-<code-example
-  header = "/src/app/messages/messages.component.ts (MessageService 로드하기)"
-  path="toh-pt4/src/app/messages/messages.component.ts" region="import-message-service">
-=======
 <code-example header="src/app/messages/messages.component.ts (import MessageService)" path="toh-pt4/src/app/messages/messages.component.ts" region="import-message-service">
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example header="src/app/messages/messages.component.ts (MessageService 로드하기)" path="toh-pt4/src/app/messages/messages.component.ts" region="import-message-service">
 </code-example>
 
 <!--
@@ -751,14 +631,10 @@ when it creates the `MessagesComponent`.
 <code-example path="toh-pt4/src/app/messages/messages.component.ts" header="src/app/messages/messages.component.ts" region="ctor">
 </code-example>
 
-<<<<<<< HEAD
 <!--
-The `messageService` property **must be public** because you're about to bind to it in the template.
+The `messageService` property **must be public** because you're going to bind to it in the template.
 -->
 이 때 `messageService` 프로퍼티는 템플릿에 바인딩되기 때문에 반드시 **public으로 선언되어야** 합니다.
-=======
-The `messageService` property **must be public** because you're going to bind to it in the template.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <div class="alert is-important">
 
@@ -769,14 +645,10 @@ Angular에서는 _public_ 으로 선언된 컴포넌트 프로퍼티만 바인�
 
 </div>
 
-<<<<<<< HEAD
 <!--
-### Bind to the _MessageService_
--->
-### _MessageService_ 바인딩하기
-=======
 ### Bind to the `MessageService`
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+### `MessageService` 바인딩하기
 
 <!--
 Replace the CLI-generated `MessagesComponent` template with the following.
@@ -822,20 +694,9 @@ path="toh-pt4/src/app/heroes/heroes.component.ts">
 </code-example>
 
 The browser refreshes and the page displays the list of heroes.
-<<<<<<< HEAD
-Scroll to the bottom to see the message from the `HeroService` in the message area.
-Click the "clear" button and the message area disappears.
--->
-[최종코드 리뷰](#final-code-review)에서 확인할 수 있듯이, `messages.component.css` 파일에 컴포넌트 CSS 스타일을 지정하면 메시지를 좀 더 보기좋게 표시할 수 있습니다.
-
-브라우저가 갱신되면 화면에 히어로의 목록이 표시됩니다.
-이 화면에서 스크롤을 아래쪽으로 내리면 `HeroService`에서 보낸 메시지를 확인할 수 있습니다.
-그리고 "clear" 버튼을 클릭하면 메시지가 모두 지워지는 것도 확인할 수 있습니다.
-=======
 Refresh the browser to see the list of heroes, and scroll to the bottom to see the
 messages from the HeroService. Each time you click a hero, a new message appears to record
 the selection. Use the "clear" button to clear the message history.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 {@a final-code-review}
 
