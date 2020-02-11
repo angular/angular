@@ -78,8 +78,7 @@ export class UndecoratedClassesWithDecoratedFieldsTransform {
       for (const {node: baseClass} of findBaseClassDeclarations(node, this.typeChecker)) {
         // If the undecorated class inherits from a decorated directive, skip the current class.
         // We do this because undecorated classes which inherit from directives/components are
-        // handled as part of the the `undecorated-classes-with-di` migration which copies
-        // inherited metadata.
+        // handled in the `undecorated-classes-with-di` migration which copies inherited metadata.
         if (decoratedDirectives.has(baseClass)) {
           break;
         } else if (undecoratedDirectives.has(baseClass)) {
