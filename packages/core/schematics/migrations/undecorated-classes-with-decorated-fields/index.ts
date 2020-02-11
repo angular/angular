@@ -6,21 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
+import {Rule, SchematicsException, Tree,} from '@angular-devkit/schematics';
 import {dirname, relative} from 'path';
 import * as ts from 'typescript';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {createMigrationCompilerHost} from '../../utils/typescript/compiler_host';
 import {parseTsconfigFile} from '../../utils/typescript/parse_tsconfig';
-import {FALLBACK_DECORATOR, addImport, getNamedImports, getUndecoratedClassesWithDecoratedFields, hasNamedImport} from './utils';
-
+import {UpdateRecorder} from './update_recorder';
+import {UndecoratedClassesWithDecoratedFieldsTransform} from './transform';
 
 /**
  * Migration that adds an Angular decorator to classes that have Angular field decorators.
  * https://hackmd.io/vuQfavzfRG6KUCtU7oK_EA
  */
 export default function(): Rule {
-  return (tree: Tree, context: SchematicContext) => {
+  return (tree: Tree) => {
     const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
     const allPaths = [...buildPaths, ...testPaths];
@@ -41,39 +41,49 @@ function runUndecoratedClassesMigration(tree: Tree, tsconfigPath: string, basePa
   const host = createMigrationCompilerHost(tree, parsed.options, basePath);
   const program = ts.createProgram(parsed.fileNames, parsed.options, host);
   const typeChecker = program.getTypeChecker();
-  const printer = ts.createPrinter();
   const sourceFiles = program.getSourceFiles().filter(
       file => !file.isDeclarationFile && !program.isSourceFileFromExternalLibrary(file));
+  const updateRecorders = new Map<ts.SourceFile, UpdateRecorder>();
+  const transform =
+      new UndecoratedClassesWithDecoratedFieldsTransform(typeChecker, getUpdateRecorder);
 
-  sourceFiles.forEach(sourceFile => {
-    const classes = getUndecoratedClassesWithDecoratedFields(sourceFile, typeChecker);
+  // Migrate all source files in the project.
+  transform.migrate(sourceFiles);
 
-    if (classes.length === 0) {
-      return;
+  // Record the changes collected in the import manager.
+  transform.recordChanges();
+
+  // Walk through each update recorder and commit the update. We need to commit the
+  // updates in batches per source file as there can be only one recorder per source
+  // file in order to avoid shifted character offsets.
+  updateRecorders.forEach(recorder => recorder.commitUpdate());
+
+  /** Gets the update recorder for the specified source file. */
+  function getUpdateRecorder(sourceFile: ts.SourceFile): UpdateRecorder {
+    if (updateRecorders.has(sourceFile)) {
+      return updateRecorders.get(sourceFile) !;
     }
-
-    const update = tree.beginUpdate(relative(basePath, sourceFile.fileName));
-
-    classes.forEach((current, index) => {
-      // If it's the first class that we're processing in this file, add `Directive` to the imports.
-      if (index === 0 && !hasNamedImport(current.importDeclaration, FALLBACK_DECORATOR)) {
-        const namedImports = getNamedImports(current.importDeclaration);
-
-        if (namedImports) {
-          update.remove(namedImports.getStart(), namedImports.getWidth());
-          update.insertRight(
-              namedImports.getStart(),
-              printer.printNode(
-                  ts.EmitHint.Unspecified, addImport(namedImports, FALLBACK_DECORATOR),
-                  sourceFile));
-        }
-      }
-
-      // We don't need to go through the AST to insert the decorator, because the change
-      // is pretty basic. Also this has a better chance of preserving the user's formatting.
-      update.insertLeft(current.classDeclaration.getStart(), `@${FALLBACK_DECORATOR}()\n`);
-    });
-
-    tree.commitUpdate(update);
-  });
+    const treeRecorder = tree.beginUpdate(relative(basePath, sourceFile.fileName));
+    const recorder: UpdateRecorder = {
+      addClassDecorator(node: ts.ClassDeclaration, text: string) {
+        // New imports should be inserted at the left while decorators should be inserted
+        // at the right in order to ensure that imports are inserted before the decorator
+        // if the start position of import and decorator is the source file start.
+        treeRecorder.insertRight(node.getStart(), `${text}\n`);
+      },
+      addNewImport(start: number, importText: string) {
+        // New imports should be inserted at the left while decorators should be inserted
+        // at the right in order to ensure that imports are inserted before the decorator
+        // if the start position of import and decorator is the source file start.
+        treeRecorder.insertLeft(start, importText);
+      },
+      updateExistingImport(namedBindings: ts.NamedImports, newNamedBindings: string) {
+        treeRecorder.remove(namedBindings.getStart(), namedBindings.getWidth());
+        treeRecorder.insertRight(namedBindings.getStart(), newNamedBindings);
+      },
+      commitUpdate() { tree.commitUpdate(treeRecorder); }
+    };
+    updateRecorders.set(sourceFile, recorder);
+    return recorder;
+  }
 }

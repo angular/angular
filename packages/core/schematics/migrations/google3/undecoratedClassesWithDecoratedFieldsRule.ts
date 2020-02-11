@@ -6,12 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Replacement, RuleFailure, Rules} from 'tslint';
+import {RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
-
-import {FALLBACK_DECORATOR, addImport, getNamedImports, getUndecoratedClassesWithDecoratedFields, hasNamedImport} from '../undecorated-classes-with-decorated-fields/utils';
-
-
+import {TslintUpdateRecorder} from '../undecorated-classes-with-decorated-fields/google3/tslint_update_recorder';
+import {UndecoratedClassesWithDecoratedFieldsTransform} from '../undecorated-classes-with-decorated-fields/transform';
 
 /**
  * TSLint rule that adds an Angular decorator to classes that have Angular field decorators.
@@ -20,37 +18,32 @@ import {FALLBACK_DECORATOR, addImport, getNamedImports, getUndecoratedClassesWit
 export class Rule extends Rules.TypedRule {
   applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
     const typeChecker = program.getTypeChecker();
-    const printer = ts.createPrinter();
-    const classes = getUndecoratedClassesWithDecoratedFields(sourceFile, typeChecker);
+    const ruleName = this.ruleName;
+    const sourceFiles = program.getSourceFiles().filter(
+        s => !s.isDeclarationFile && !program.isSourceFileFromExternalLibrary(s));
+    const updateRecorders = new Map<ts.SourceFile, TslintUpdateRecorder>();
+    const transform =
+        new UndecoratedClassesWithDecoratedFieldsTransform(typeChecker, getUpdateRecorder);
 
-    return classes.map((current, index) => {
-      const {classDeclaration: declaration, importDeclaration} = current;
-      const name = declaration.name;
+    // Migrate all source files in the project.
+    transform.migrate(sourceFiles);
 
-      // Set the class identifier node (if available) as the failing node so IDEs don't highlight
-      // the entire class with red. This is similar to how errors are shown for classes in other
-      // cases like an interface not being implemented correctly.
-      const start = (name || declaration).getStart();
-      const end = (name || declaration).getEnd();
-      const fixes = [Replacement.appendText(declaration.getStart(), `@${FALLBACK_DECORATOR}()\n`)];
+    // Record the changes collected in the import manager.
+    transform.recordChanges();
 
-      // If it's the first class that we're processing in this file, add `Directive` to the imports.
-      if (index === 0 && !hasNamedImport(importDeclaration, FALLBACK_DECORATOR)) {
-        const namedImports = getNamedImports(importDeclaration);
+    if (updateRecorders.has(sourceFile)) {
+      return updateRecorders.get(sourceFile) !.failures;
+    }
+    return [];
 
-        if (namedImports) {
-          fixes.push(new Replacement(
-              namedImports.getStart(), namedImports.getWidth(),
-              printer.printNode(
-                  ts.EmitHint.Unspecified, addImport(namedImports, FALLBACK_DECORATOR),
-                  sourceFile)));
-        }
+    /** Gets the update recorder for the specified source file. */
+    function getUpdateRecorder(sourceFile: ts.SourceFile): TslintUpdateRecorder {
+      if (updateRecorders.has(sourceFile)) {
+        return updateRecorders.get(sourceFile) !;
       }
-
-      return new RuleFailure(
-          sourceFile, start, end,
-          'Classes with decorated fields must have an Angular decorator as well.',
-          'undecorated-classes-with-decorated-fields', fixes);
-    });
+      const recorder = new TslintUpdateRecorder(ruleName, sourceFile);
+      updateRecorders.set(sourceFile, recorder);
+      return recorder;
+    }
   }
 }

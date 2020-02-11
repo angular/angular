@@ -7,6 +7,7 @@ ts_library(
     visibility = [
         "//packages/core/schematics:__pkg__",
         "//packages/core/schematics/migrations/google3:__pkg__",
+        "//packages/core/schematics/migrations/undecorated-classes-with-decorated-fields/google3:__pkg__",
         "//packages/core/schematics/test:__pkg__",
     ],
     deps = [
