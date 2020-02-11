@@ -52,17 +52,21 @@ function _find(control: AbstractControl, path: Array<string|number>| string, del
   }
   if (Array.isArray(path) && path.length === 0) return null;
 
-  return path.reduce((v: AbstractControl | null, name) => {
-    if (v instanceof FormGroup) {
-      return v.controls.hasOwnProperty(name as string) ? v.controls[name] : null;
+  // Not using Array.reduce here due to a Chrome 80 bug
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=1049982
+  let controlToFind: AbstractControl|null = control;
+  path.forEach((name: string | number) => {
+    if (controlToFind instanceof FormGroup) {
+      controlToFind = controlToFind.controls.hasOwnProperty(name as string) ?
+          controlToFind.controls[name] :
+          null;
+    } else if (controlToFind instanceof FormArray) {
+      controlToFind = controlToFind.at(<number>name) || null;
+    } else {
+      controlToFind = null;
     }
-
-    if (v instanceof FormArray) {
-      return v.at(<number>name) || null;
-    }
-
-    return null;
-  }, control);
+  });
+  return controlToFind;
 }
 
 function coerceToValidator(
