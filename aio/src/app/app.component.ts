@@ -77,6 +77,8 @@ export class AppComponent implements OnInit {
 
   versionInfo: VersionInfo;
 
+  private currentUrl: string;
+
   get isOpened() { return this.isSideBySide && this.isSideNavDoc; }
   get mode() { return this.isSideBySide ? 'side' : 'over'; }
 
@@ -188,6 +190,8 @@ export class AppComponent implements OnInit {
       this.navigationService.currentNodes,   // ...needed to determine `sidenav` state
     ]).pipe(first())
       .subscribe(() => this.updateShell());
+
+    this.locationService.currentUrl.subscribe(url => this.currentUrl = url);
   }
 
   onDocReady() {
@@ -231,7 +235,7 @@ export class AppComponent implements OnInit {
   onDocVersionChange(versionIndex: number) {
     const version = this.docVersions[versionIndex];
     if (version.url) {
-      this.locationService.go(version.url);
+      this.locationService.go(`${version.url}${this.currentUrl}`);
     }
   }
 
