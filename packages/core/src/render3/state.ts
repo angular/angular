@@ -270,9 +270,9 @@ export function getPreviousOrParentTNode(): TNode {
   return instructionState.lFrame.previousOrParentTNode;
 }
 
-export function setPreviousOrParentTNode(tNode: TNode, _isParent: boolean) {
+export function setPreviousOrParentTNode(tNode: TNode, isParent: boolean) {
   instructionState.lFrame.previousOrParentTNode = tNode;
-  instructionState.lFrame.isParent = _isParent;
+  instructionState.lFrame.isParent = isParent;
 }
 
 export function getIsParent(): boolean {

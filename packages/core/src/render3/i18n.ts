@@ -390,11 +390,19 @@ function i18nStartFirstPass(
   parentIndexStack[parentIndexPointer] = parentIndex;
   const createOpCodes: I18nMutateOpCodes = [];
   // If the previous node wasn't the direct parent then we have a translation without top level
-  // element and we need to keep a reference of the previous element if there is one
+  // element and we need to keep a reference of the previous element if there is one. We should also
+  // keep track whether an element was a parent node or not, so that the logic that consumes
+  // the generated `I18nMutateOpCode`s can leverage this information to properly set TNode state
+  // (whether it's a parent or sibling).
   if (index > 0 && previousOrParentTNode !== parentTNode) {
+    let previousTNodeIndex = previousOrParentTNode.index - HEADER_OFFSET;
+    // If current TNode is a sibling node, encode it using a negative index. This information is
+    // required when the `Select` action is processed (see the `readCreateOpCodes` function).
+    if (!getIsParent()) {
+      previousTNodeIndex = ~previousTNodeIndex;
+    }
     // Create an OpCode to select the previous TNode
-    createOpCodes.push(
-        previousOrParentTNode.index << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select);
+    createOpCodes.push(previousTNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select);
   }
   const updateOpCodes: I18nUpdateOpCodes = [];
   const icuExpressions: TIcu[] = [];
@@ -414,12 +422,16 @@ function i18nStartFirstPass(
         }
       } else {
         const phIndex = parseInt(value.substr(1), 10);
-        // The value represents a placeholder that we move to the designated index
+        const isElement = value.charAt(0) === TagType.ELEMENT;
+        // The value represents a placeholder that we move to the designated index.
+        // Note: positive indicies indicate that a TNode with a given index should also be marked as
+        // parent while executing `Select` instruction.
         createOpCodes.push(
-            phIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
+            (isElement ? phIndex : ~phIndex) << I18nMutateOpCode.SHIFT_REF |
+                I18nMutateOpCode.Select,
             parentIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild);
 
-        if (value.charAt(0) === TagType.ELEMENT) {
+        if (isElement) {
           parentIndexStack[++parentIndexPointer] = parentIndex = phIndex;
         }
       }
@@ -757,12 +769,15 @@ function readCreateOpCodes(
               appendI18nNode(tView, currentTNode !, destinationTNode, previousTNode, lView);
           break;
         case I18nMutateOpCode.Select:
-          const nodeIndex = opCode >>> I18nMutateOpCode.SHIFT_REF;
+          // Negative indicies indicate that a given TNode is a sibling node, not a parent node
+          // (see `i18nStartFirstPass` for additional information).
+          const isParent = opCode >= 0;
+          const nodeIndex = (isParent ? opCode : ~opCode) >>> I18nMutateOpCode.SHIFT_REF;
           visitedNodes.push(nodeIndex);
           previousTNode = currentTNode;
           currentTNode = getTNode(tView, nodeIndex);
           if (currentTNode) {
-            setPreviousOrParentTNode(currentTNode, currentTNode.type === TNodeType.Element);
+            setPreviousOrParentTNode(currentTNode, isParent);
           }
           break;
         case I18nMutateOpCode.ElementEnd:

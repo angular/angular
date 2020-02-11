@@ -530,6 +530,36 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       expect(element).toHaveText('autre');
     });
 
+    it('with no root node and text surrounding ICU', () => {
+      loadTranslations({
+        [computeMsgId('{VAR_SELECT, select, 10 {Ten} 20 {Twenty} other {Other}}')]:
+            '{VAR_SELECT, select, 10 {Dix} 20 {Vingt} other {Autre}}'
+      });
+      const fixture = initWithTemplate(AppComp, `
+        ICU start -->
+        {count, select, 10 {Ten} 20 {Twenty} other {Other}}
+        <-- ICU end
+      `);
+
+      const element = fixture.nativeElement;
+      expect(element.textContent).toContain('ICU start --> Autre <-- ICU end');
+    });
+
+    it('with no root node and text and DOM nodes surrounding ICU', () => {
+      loadTranslations({
+        [computeMsgId('{VAR_SELECT, select, 10 {Ten} 20 {Twenty} other {Other}}')]:
+            '{VAR_SELECT, select, 10 {Dix} 20 {Vingt} other {Autre}}'
+      });
+      const fixture = initWithTemplate(AppComp, `
+        <span>ICU start --> </span>
+        {count, select, 10 {Ten} 20 {Twenty} other {Other}}
+        <-- ICU end
+      `);
+
+      const element = fixture.nativeElement;
+      expect(element.textContent).toContain('ICU start --> Autre <-- ICU end');
+    });
+
     it('with no i18n tag', () => {
       loadTranslations({
         [computeMsgId('{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}')]:
@@ -2099,6 +2129,73 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     expect(fixture.nativeElement.innerHTML).toEqual(`<div dialog=""><!--bindings={
   "ng-reflect-ng-if": "false"
 }--></div><button title="Close dialog">Button label</button>`);
+  });
+
+  describe('ngTemplateOutlet', () => {
+    it('should work with i18n content that includes elements', () => {
+      loadTranslations({
+        [computeMsgId('{$START_TAG_SPAN}A{$CLOSE_TAG_SPAN} B ')]:
+            '{$START_TAG_SPAN}a{$CLOSE_TAG_SPAN} b',
+      });
+
+      const fixture = initWithTemplate(AppComp, `
+        <ng-container *ngTemplateOutlet="tmpl"></ng-container>
+        <ng-template #tmpl i18n>
+          <span>A</span> B
+        </ng-template>
+      `);
+      expect(fixture.nativeElement.textContent).toContain('a b');
+    });
+
+    it('should work with i18n content that includes other templates (*ngIf)', () => {
+      loadTranslations({
+        [computeMsgId('{$START_TAG_SPAN}A{$CLOSE_TAG_SPAN} B ')]:
+            '{$START_TAG_SPAN}a{$CLOSE_TAG_SPAN} b',
+      });
+
+      const fixture = initWithTemplate(AppComp, `
+        <ng-container *ngTemplateOutlet="tmpl"></ng-container>
+        <ng-template #tmpl i18n>
+          <span *ngIf="visible">A</span> B
+        </ng-template>
+      `);
+      expect(fixture.nativeElement.textContent).toContain('a b');
+    });
+
+    it('should work with i18n content that includes projection', () => {
+      loadTranslations({
+        [computeMsgId('{$START_TAG_NG_CONTENT}{$CLOSE_TAG_NG_CONTENT} B ')]:
+            '{$START_TAG_NG_CONTENT}{$CLOSE_TAG_NG_CONTENT} b',
+      });
+
+      @Component({
+        selector: 'projector',
+        template: `
+          <ng-container *ngTemplateOutlet="tmpl"></ng-container>
+          <ng-template #tmpl i18n>
+            <ng-content></ng-content> B
+          </ng-template>
+        `
+      })
+      class Projector {
+      }
+
+      @Component({
+        selector: 'app',
+        template: `
+          <projector>a</projector>
+        `
+      })
+      class AppComponent {
+      }
+
+      TestBed.configureTestingModule({declarations: [AppComponent, Projector]});
+
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toContain('a b');
+    });
   });
 });
 
