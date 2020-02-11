@@ -111,7 +111,6 @@ export type AppRecord = ComponentRecord | AppStartChangeDetection | AppEndChange
 export interface Events {
   handshake: () => void;
   shutdown: () => void;
-  syn: () => void;
   queryNgAvailability: () => void;
   ngAvailability: (config: { version: string | undefined | boolean; prodMode: boolean }) => void;
 
