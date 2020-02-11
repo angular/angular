@@ -39,10 +39,10 @@ export class CartComponent implements OnInit {
   // #enddocregion props-services
   onSubmit(customerData) {
     // Process checkout data here
-    console.warn('Your order has been submitted', customerData);
-
     this.items = this.cartService.clearCart();
     this.checkoutForm.reset();
+
+    console.warn('Your order has been submitted', customerData);
   }
 // #docregion props-services, inject-form-builder, checkout-form, checkout-form-group
 }

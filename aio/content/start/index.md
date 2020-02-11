@@ -92,7 +92,7 @@ To help you get going, the following steps use predefined product data from the 
 
       <div class="alert is-helpful">
 
-      `*ngFor` is a "structural directive". Structural directives shape or reshape the DOM's structure, typically by adding, removing, and manipulating the elements to which they are attached. Any directive with an asterisk, `*`, is a structural directive.
+      `*ngFor` is a "structural directive". Structural directives shape or reshape the DOM's structure, typically by adding, removing, and manipulating the elements to which they are attached. Directives with an asterisk, `*`, are structural directives.
 
       </div>
 
