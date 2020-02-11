@@ -1,4 +1,4 @@
-import {DOWN_ARROW, SPACE, ENTER, UP_ARROW, HOME, END, A, D} from '@angular/cdk/keycodes';
+import {DOWN_ARROW, SPACE, ENTER, UP_ARROW, HOME, END, A, D, TAB} from '@angular/cdk/keycodes';
 import {
   createKeyboardEvent,
   dispatchFakeEvent,
@@ -290,6 +290,49 @@ describe('MatSelectionList without forms', () => {
 
       expect(selectionModel.selected.length).toBe(0);
     });
+
+    it('should focus the first option when the list takes focus for the first time', () => {
+      spyOn(listOptions[0].componentInstance, 'focus').and.callThrough();
+
+      const manager = selectionList.componentInstance._keyManager;
+      expect(manager.activeItemIndex).toBe(-1);
+
+      dispatchFakeEvent(selectionList.nativeElement, 'focus');
+      fixture.detectChanges();
+
+      expect(manager.activeItemIndex).toBe(0);
+      expect(listOptions[0].componentInstance.focus).toHaveBeenCalled();
+    });
+
+    it('should focus the previously focused option when the list takes focus a second time', () => {
+      spyOn(listOptions[1].componentInstance, 'focus').and.callThrough();
+
+      const manager = selectionList.componentInstance._keyManager;
+      expect(manager.activeItemIndex).toBe(-1);
+
+      // Focus and blur the option to move the active item index. This option is now the previously
+      // focused option.
+      listOptions[1].componentInstance._handleFocus();
+      listOptions[1].componentInstance._handleBlur();
+
+      dispatchFakeEvent(selectionList.nativeElement, 'focus');
+      fixture.detectChanges();
+
+      expect(manager.activeItemIndex).toBe(1);
+      expect(listOptions[1].componentInstance.focus).toHaveBeenCalled();
+    });
+
+    it('should allow focus to escape when tabbing away', fakeAsync(() => {
+      selectionList.componentInstance._keyManager.onKeydown(createKeyboardEvent('keydown', TAB));
+
+      expect(selectionList.componentInstance._tabIndex)
+          .toBe(-1, 'Expected tabIndex to be set to -1 temporarily.');
+
+      tick();
+
+      expect(selectionList.componentInstance._tabIndex)
+          .toBe(0, 'Expected tabIndex to be reset back to 0');
+    }));
 
     it('should restore focus if active option is destroyed', () => {
       const manager = selectionList.componentInstance._keyManager;
@@ -687,49 +730,6 @@ describe('MatSelectionList without forms', () => {
       let optionEl = listItemEl.injector.get<MatListOption>(MatListOption);
       let selectedOptions = selectionList.componentInstance.selectedOptions;
       expect(selectedOptions.isSelected(optionEl)).toBeTruthy();
-    });
-  });
-
-  describe('with tabindex', () => {
-
-    beforeEach(async(() => {
-      TestBed.configureTestingModule({
-        imports: [MatListModule],
-        declarations: [
-          SelectionListWithTabindexAttr,
-          SelectionListWithTabindexBinding,
-        ]
-      });
-
-      TestBed.compileComponents();
-    }));
-
-    it('should properly handle native tabindex attribute', () => {
-      const fixture = TestBed.createComponent(SelectionListWithTabindexAttr);
-      const selectionList = fixture.debugElement.query(By.directive(MatSelectionList))!;
-
-      expect(selectionList.componentInstance.tabIndex)
-        .toBe(5, 'Expected the selection-list tabindex to be set to the attribute value.');
-    });
-
-    it('should support changing the tabIndex through binding', () => {
-      const fixture = TestBed.createComponent(SelectionListWithTabindexBinding);
-      const selectionList = fixture.debugElement.query(By.directive(MatSelectionList))!;
-
-      expect(selectionList.componentInstance.tabIndex)
-        .toBe(0, 'Expected the tabIndex to be set to "0" by default.');
-
-      fixture.componentInstance.tabIndex = 3;
-      fixture.detectChanges();
-
-      expect(selectionList.componentInstance.tabIndex)
-        .toBe(3, 'Expected the tabIndex to updated through binding.');
-
-      fixture.componentInstance.disabled = true;
-      fixture.detectChanges();
-
-      expect(selectionList.componentInstance.tabIndex)
-        .toBe(3, 'Expected the tabIndex to be still set to "3".');
     });
   });
 
@@ -1142,6 +1142,16 @@ describe('MatSelectionList with forms', () => {
       expect(listOptions.map(option => option.selected)).toEqual([true, true, true, false, false]);
     }));
 
+    it('should only be in the tab order if it has options', () => {
+      expect(selectionListDebug.componentInstance.options.length > 0).toBe(true);
+      expect(selectionListDebug.nativeElement.tabIndex).toBe(0);
+
+      fixture.componentInstance.options = [];
+      fixture.detectChanges();
+
+      expect(selectionListDebug.nativeElement.tabIndex).toBe(-1);
+    });
+
   });
 
   describe('and formControl', () => {
@@ -1436,19 +1446,6 @@ class SelectionListWithSelectedOptionAndValue {
     </mat-list-option>
   </mat-selection-list>`})
 class SelectionListWithOnlyOneOption {
-}
-
-@Component({
-  template: `<mat-selection-list tabindex="5"></mat-selection-list>`
-})
-class SelectionListWithTabindexAttr {}
-
-@Component({
-  template: `<mat-selection-list [tabIndex]="tabIndex" [disabled]="disabled"></mat-selection-list>`
-})
-class SelectionListWithTabindexBinding {
-  tabIndex: number;
-  disabled: boolean;
 }
 
 @Component({

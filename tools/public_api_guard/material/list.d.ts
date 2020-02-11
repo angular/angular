@@ -99,6 +99,7 @@ export declare class MatNavList extends _MatListMixinBase implements CanDisable,
 export declare class MatSelectionList extends _MatSelectionListMixinBase implements CanDisableRipple, AfterContentInit, ControlValueAccessor, OnDestroy, OnChanges {
     _keyManager: FocusKeyManager<MatListOption>;
     _onTouched: () => void;
+    _tabIndex: number;
     _value: string[] | null;
     color: ThemePalette;
     compareWith: (o1: any, o2: any) => boolean;
@@ -110,9 +111,10 @@ export declare class MatSelectionList extends _MatSelectionListMixinBase impleme
     selectedOptions: SelectionModel<MatListOption>;
     readonly selectionChange: EventEmitter<MatSelectionListChange>;
     tabIndex: number;
-    constructor(_element: ElementRef<HTMLElement>, tabIndex: string);
+    constructor(_element: ElementRef<HTMLElement>, tabIndex: string, _changeDetector: ChangeDetectorRef);
     _emitChangeEvent(option: MatListOption): void;
     _keydown(event: KeyboardEvent): void;
+    _onFocus(): void;
     _removeOptionFromList(option: MatListOption): MatListOption | null;
     _reportValueChange(): void;
     _setFocusedOption(option: MatListOption): void;
