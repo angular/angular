@@ -40,24 +40,33 @@ if (!ALL_FILES.length) {
 }
 
 /** Gets the glob matching information from each group's condition. */
-function getGlobMatcherFromConditions(groupName, condition) {
+function getGlobMatchersFromConditions(groupName, condition) {
   const trimmedCondition = condition.trim();
+  const globMatchers = [];
+  const badConditionLines = [];
+
   // If the condition should be starts with contains_any_globs, evaluate all of the globs
   if (trimmedCondition.startsWith('contains_any_globs')) {
-    return trimmedCondition.split('\n')
-        .map((glob) => {
-          const match = glob.match(/'(.*)'/);
-          return match && match[1];
+    trimmedCondition.split('\n')
+        .slice(1, -1)
+        .map(glob => {
+          const trimmedGlob = glob.trim();
+          const match = trimmedGlob.match(/^'([^']+)',?$/);
+          if (!match) {
+            badConditionLines.push(trimmedGlob);
+            return;
+          }
+          return match[1];
         })
         .filter(globString => !!globString)
-        .map(globString => ({
-               group: groupName,
-               glob: globString,
-               matcher: new Minimatch(globString, {dot: true}),
-               matchCount: 0,
-             }));
+        .forEach(globString => globMatchers.push({
+          group: groupName,
+          glob: globString,
+          matcher: new Minimatch(globString, {dot: true}),
+          matchCount: 0,
+        }));
   }
-  return [];
+  return [globMatchers, badConditionLines];
 }
 
 /** Create logs for each review group. */
@@ -88,7 +97,7 @@ function logHeader(...params) {
 /** Runs the pull approve verification check on provided files. */
 function runVerification(files) {
   // All of the globs created for each group's conditions.
-  const ALL_GLOBS = [];
+  const allGlobs = [];
   // The pull approve config file.
   const pullApprove = readFileSync(PULL_APPROVE_YAML_PATH, {encoding: 'utf8'});
   // All of the PullApprove groups, parsed from the PullApprove yaml file.
@@ -101,23 +110,47 @@ function runVerification(files) {
   const matchedGroups = new Map();
   // All PullApprove groups which did not match at least one file.
   const unmatchedGroups = new Map();
+  // All condition lines which were not able to be correctly parsed, by group.
+  const badConditionLinesByGroup = new Map();
+  // Total number of condition lines which were not able to be correctly parsed.
+  let badConditionLineCount = 0;
 
   // Get all of the globs from the PullApprove group conditions.
   Object.entries(parsedPullApproveGroups).map(([groupName, group]) => {
     for (const condition of group.conditions) {
-      ALL_GLOBS.push(...getGlobMatcherFromConditions(groupName, condition));
+      const [matchers, badConditions] = getGlobMatchersFromConditions(groupName, condition);
+      if (badConditions.length) {
+        badConditionLinesByGroup.set(groupName, badConditions);
+        badConditionLineCount += badConditions.length;
+      }
+      allGlobs.push(...matchers);
     }
   });
 
+  if (badConditionLineCount) {
+    console.log(`Discovered ${badConditionLineCount} parsing errors in PullApprove conditions`);
+    console.log(`Attempted parsing using: /^'([^']+)',?$/`);
+    console.log();
+    console.log(`Unable to properly parse the following line(s) by group:`);
+    for (const [groupName, badConditionLines] of badConditionLinesByGroup.entries()) {
+      console.log(`- ${groupName}:`);
+      badConditionLines.forEach(line => console.log(`    ${line}`));
+    }
+    console.log();
+    console.log(
+        `Please correct the invalid conditions, before PullApprove verification can be completed`);
+    process.exit(1);
+  }
+
   // Check each file for if it is matched by a PullApprove condition.
   for (let file of files) {
-    const matched = ALL_GLOBS.filter(glob => glob.matcher.match(file));
+    const matched = allGlobs.filter(glob => glob.matcher.match(file));
     matched.length ? matchedFiles.add(file) : unmatchedFiles.add(file);
     matched.forEach(glob => glob.matchCount++);
   }
 
   // Add each glob for each group to a map either matched or unmatched.
-  ALL_GLOBS.forEach(glob => {
+  allGlobs.forEach(glob => {
     const groups = glob.matchCount ? matchedGroups : unmatchedGroups;
     const globs = groups.get(glob.group) || new Map();
     // Set the globs map in the groups map
