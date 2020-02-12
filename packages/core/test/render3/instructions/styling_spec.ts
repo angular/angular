@@ -440,19 +440,6 @@ describe('styling', () => {
           ] as any);
         });
       });
-      describe('Map', () => {
-        it('should parse', () => {
-          expect(toStylingKeyValueArray(
-                     keyValueArraySet, null !, new Map<string, string>([['X', 'x'], ['A', 'a']])))
-              .toEqual(['A', 'a', 'X', 'x'] as any);
-        });
-      });
-      describe('Iterable', () => {
-        it('should parse', () => {
-          expect(toStylingKeyValueArray(keyValueArraySet, null !, new Set<string>(['X', 'A'])))
-              .toEqual(['A', true, 'X', true] as any);
-        });
-      });
     });
   });
 
