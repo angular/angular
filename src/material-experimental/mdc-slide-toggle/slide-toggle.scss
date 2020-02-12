@@ -16,11 +16,16 @@
   // The ripple needs extra specificity so the base ripple styling doesn't override its `position`.
   .mat-mdc-slide-toggle-ripple, .mdc-switch__thumb-underlay::after {
     @include mat-fill;
-
+    border-radius: 50%;
     // Disable pointer events for the ripple container so that it doesn't eat the mouse events meant
     // for the input. Pointer events can be safely disabled because the ripple trigger element is
     // the host element.
     pointer-events: none;
+    // Fixes the ripples not clipping to the border radius on Safari. Uses `:not(:empty)`
+    // in order to avoid creating extra layers when there aren't any ripples.
+    &:not(:empty) {
+      transform: translateZ(0);
+    }
   }
 
   // The MDC switch styles related to the hover state are intertwined with the MDC ripple styles.
