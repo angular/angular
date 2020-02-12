@@ -5,7 +5,7 @@
  * deployed to the currently configured Firebase project.
  */
 
-const {exec, set, cd, cp, rm} = require('shelljs');
+const {exec, set, cd, cp, rm, chmod} = require('shelljs');
 const {join} = require('path');
 
 // ShellJS should throw if any command fails.
@@ -36,6 +36,11 @@ rm('-Rf', distPath);
 // path. This is necessary because the Firebase CLI does not support deployment
 // of a public folder outside of the "firebase.json" file.
 cp('-R', webPackagePath, distPath);
+
+// Bazel by default marks output files as `readonly` to ensure hermeticity. Since we moved
+// these files out of the `bazel-bin` directory, we should make them writable. This is necessary
+// so that subsequent runs of this script can delete old contents from the deployment dist folder.
+chmod('-R', 'u+w', distPath);
 
 // Run the Firebase CLI to deploy the hosting target.
 exec(`yarn -s firebase deploy --only hosting`);
