@@ -1758,6 +1758,37 @@ describe('Integration', () => {
          expect(location.path()).toEqual('/team/22');
        })));
 
+    it('should support skipping navigation for anchor router links',
+       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         const fixture = TestBed.createComponent(RootCmp);
+         advance(fixture);
+
+         router.resetConfig([{path: 'team/:id', component: NoNavCmp}]);
+
+         router.navigateByUrl('/team/22');
+         advance(fixture);
+         expect(location.path()).toEqual('/team/22');
+         expect(fixture.nativeElement).toHaveText('team 22');
+
+         const teamCmp = fixture.debugElement.childNodes[1].componentInstance;
+
+         teamCmp.routerLink = ['/team/0'];
+         advance(fixture);
+         const anchor = fixture.debugElement.query(By.css('a')).nativeElement;
+         anchor.click();
+         advance(fixture);
+         expect(fixture.nativeElement).toHaveText('team 22');
+         expect(location.path()).toEqual('/team/22');
+
+         teamCmp.routerLink = ['/team/1'];
+         advance(fixture);
+         const button = fixture.debugElement.query(By.css('button')).nativeElement;
+         button.click();
+         advance(fixture);
+         expect(fixture.nativeElement).toHaveText('team 22');
+         expect(location.path()).toEqual('/team/22');
+       })));
+
     it('should support string router links', fakeAsync(inject([Router], (router: Router) => {
          const fixture = createRoot(router, RootCmp);
 
@@ -5002,6 +5033,28 @@ class TeamCmp {
 }
 
 @Component({
+  selector: 'no-nav-cmp',
+  template: `team {{id | async}}` +
+      `<router-outlet></router-outlet>` +
+      `<a [routerLink]="routerLink" disableNavigation></a>` +
+      `<button [routerLink]="routerLink" disableNavigation></button>`
+})
+class NoNavCmp {
+  id: Observable<string>;
+  recordedParams: Params[] = [];
+  snapshotParams: Params[] = [];
+  routerLink = ['.'];
+
+  constructor(public route: ActivatedRoute) {
+    this.id = route.params.pipe(map((p: any) => p['id']));
+    route.params.forEach(p => {
+      this.recordedParams.push(p);
+      this.snapshotParams.push(route.snapshot.params);
+    });
+  }
+}
+
+@Component({
   selector: 'two-outlets-cmp',
   template: `[ <router-outlet></router-outlet>, aux: <router-outlet name="aux"></router-outlet> ]`
 })
@@ -5147,6 +5200,7 @@ class LazyComponent {
     SimpleCmp,
     TwoOutletsCmp,
     TeamCmp,
+    NoNavCmp,
     UserCmp,
     StringLinkCmp,
     DummyLinkCmp,
@@ -5177,6 +5231,7 @@ class LazyComponent {
     SimpleCmp,
     TwoOutletsCmp,
     TeamCmp,
+    NoNavCmp,
     UserCmp,
     StringLinkCmp,
     DummyLinkCmp,
@@ -5208,6 +5263,7 @@ class LazyComponent {
     BlankCmp,
     SimpleCmp,
     TeamCmp,
+    NoNavCmp,
     TwoOutletsCmp,
     UserCmp,
     StringLinkCmp,

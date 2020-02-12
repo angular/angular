@@ -372,6 +372,7 @@ export declare class RouterEvent {
 }
 
 export declare class RouterLink {
+    disableNavigation: boolean;
     fragment: string;
     preserveFragment: boolean;
     /** @deprecated */ set preserveQueryParams(value: boolean);
@@ -405,6 +406,7 @@ export declare class RouterLinkActive implements OnChanges, OnDestroy, AfterCont
 }
 
 export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
+    disableNavigation: boolean;
     fragment: string;
     href: string;
     preserveFragment: boolean;

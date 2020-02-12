@@ -124,6 +124,8 @@ export class RouterLink {
   // TODO(issue/24571): remove '!'.
   @Input() skipLocationChange !: boolean;
   // TODO(issue/24571): remove '!'.
+  @Input() disableNavigation !: boolean;
+  // TODO(issue/24571): remove '!'.
   @Input() replaceUrl !: boolean;
   @Input() state?: {[k: string]: any};
   private commands: any[] = [];
@@ -160,6 +162,10 @@ export class RouterLink {
 
   @HostListener('click')
   onClick(): boolean {
+    if (attrBoolValue(this.disableNavigation)) {
+      return true;
+    }
+
     const extras = {
       skipLocationChange: attrBoolValue(this.skipLocationChange),
       replaceUrl: attrBoolValue(this.replaceUrl),
@@ -206,6 +212,8 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   // TODO(issue/24571): remove '!'.
   @Input() skipLocationChange !: boolean;
   // TODO(issue/24571): remove '!'.
+  @Input() disableNavigation !: boolean;
+  // TODO(issue/24571): remove '!'.
   @Input() replaceUrl !: boolean;
   @Input() state?: {[k: string]: any};
   private commands: any[] = [];
@@ -249,6 +257,10 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
 
   @HostListener('click', ['$event.button', '$event.ctrlKey', '$event.metaKey', '$event.shiftKey'])
   onClick(button: number, ctrlKey: boolean, metaKey: boolean, shiftKey: boolean): boolean {
+    if (attrBoolValue(this.disableNavigation)) {
+      return false;
+    }
+
     if (button !== 0 || ctrlKey || metaKey || shiftKey) {
       return true;
     }
