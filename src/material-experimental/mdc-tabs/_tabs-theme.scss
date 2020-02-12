@@ -2,6 +2,7 @@
 @import '@material/tab-indicator/mixins.import';
 @import '@material/tab/mixins.import';
 @import '@material/tab/variables.import';
+@import '@material/tab-bar/mixins.import';
 @import '../mdc-helpers/mdc-helpers';
 
 @mixin mat-mdc-tabs-color($config) {
@@ -98,7 +99,11 @@
   }
 }
 
-@mixin mat-mdc-tabs-density($density-scale) {}
+@mixin mat-mdc-tabs-density($density-scale) {
+  .mat-mdc-tab-header {
+    @include mdc-tab-bar-density($density-scale);
+  }
+}
 
 @mixin mat-mdc-tabs-theme($theme) {
   $color: mat-get-color-config($theme);
