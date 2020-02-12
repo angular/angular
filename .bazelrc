@@ -119,5 +119,4 @@ try-import .bazelrc.user
 
 # TODO: check if we can enable these deprecations.
 build --incompatible_new_actions_api=false
-build --incompatible_depset_is_not_iterable=false
 build --incompatible_no_support_tools_in_action_inputs=false

@@ -3,7 +3,7 @@ load("//src/cdk:config.bzl", "CDK_ENTRYPOINTS")
 load("//src/cdk-experimental:config.bzl", "CDK_EXPERIMENTAL_ENTRYPOINTS")
 load("//src/material:config.bzl", "MATERIAL_ENTRYPOINTS", "MATERIAL_TESTING_ENTRYPOINTS")
 load("//src/material-experimental:config.bzl", "MATERIAL_EXPERIMENTAL_ENTRYPOINTS")
-load("//tools/bazel:expand_template.bzl", "expand_template")
+load("//tools:expand_template.bzl", "expand_template")
 
 """
   Macro that builds a SystemJS configuration for all packages and entry-points
