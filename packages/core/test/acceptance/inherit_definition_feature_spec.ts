@@ -6,11 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {state, style, trigger} from '@angular/animations';
 import {Component, ContentChildren, Directive, EventEmitter, HostBinding, HostListener, Input, OnChanges, Output, QueryList, ViewChildren} from '@angular/core';
 import {ivyEnabled} from '@angular/core/src/ivy_switch';
 import {getDirectiveDef} from '@angular/core/src/render3/definition';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {onlyInIvy} from '@angular/private/testing';
 
 describe('inheritance', () => {
@@ -3829,6 +3831,44 @@ describe('inheritance', () => {
         expect(fired).toEqual([
           'super destroy',
         ]);
+      });
+
+      it('should work with host bindings and animations', () => {
+        @Component({
+          selector: 'my-comp',
+          template: `<h3>my-comp</h3>`,
+          host: {
+            '[@animation1]': 'colorExp',
+            '[@animation2]': 'opacityExp',
+            '[@animation3]': 'bgExp',
+          },
+          animations: [
+            trigger('animation1', [state('color', style({color: 'blue'}))]),
+            trigger('animation2', [state('opacity', style({opacity: '0.5'}))]),
+            trigger('animation3', [state('bg', style({backgroundColor: 'green'}))]),
+          ],
+        })
+        class MyComponent {
+          bgExp = 'bg';
+          colorExp = 'color';
+          opacityExp = 'opacity';
+        }
+
+        @Component({template: `<my-comp></my-comp>`})
+        class App {
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [App, MyComponent],
+          imports: [NoopAnimationsModule],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const queryResult = fixture.debugElement.query(By.css('my-comp'));
+
+        expect(queryResult.nativeElement.style.color).toBe('blue');
+        expect(queryResult.nativeElement.style.opacity).toBe('0.5');
+        expect(queryResult.nativeElement.style.backgroundColor).toBe('green');
       });
 
       it('ngAfterContentInit', () => {
