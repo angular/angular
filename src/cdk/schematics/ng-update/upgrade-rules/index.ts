@@ -8,10 +8,14 @@
 
 import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
+import {WorkspaceProject} from '@schematics/angular/utility/workspace-models';
 
 import {MigrationRuleType, runMigrationRules} from '../../update-tool';
 import {TargetVersion} from '../../update-tool/target-version';
-import {getProjectTsConfigPaths} from '../../utils/project-tsconfig-paths';
+import {
+  getTargetTsconfigPath,
+  getWorkspaceConfigGracefully
+} from '../../utils/project-tsconfig-paths';
 import {RuleUpgradeData} from '../upgrade-data';
 
 import {AttributeSelectorsRule} from './attribute-selectors-rule';
@@ -44,8 +48,8 @@ export const cdkMigrationRules: MigrationRuleType<RuleUpgradeData>[] = [
 
 type NullableMigrationRule = MigrationRuleType<RuleUpgradeData|null>;
 
-type PostMigrationFn = (context: SchematicContext, targetVersion: TargetVersion,
-                        hasFailure: boolean) => void;
+type PostMigrationFn =
+    (context: SchematicContext, targetVersion: TargetVersion, hasFailure: boolean) => void;
 
 /**
  * Creates a Angular schematic rule that runs the upgrade for the
@@ -56,12 +60,10 @@ export function createUpgradeRule(
     onMigrationCompleteFn?: PostMigrationFn): Rule {
   return async (tree: Tree, context: SchematicContext) => {
     const logger = context.logger;
-    const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
+    const workspace = getWorkspaceConfigGracefully(tree);
 
-    if (!buildPaths.length && !testPaths.length) {
-      // We don't want to throw here because it would mean that other migrations in the
-      // pipeline don't run either. Rather print an error message.
-      logger.error('Could not find any TypeScript project in the CLI workspace configuration.');
+    if (workspace === null) {
+      logger.error('Could not find workspace configuration file.');
       return;
     }
 
@@ -69,22 +71,36 @@ export function createUpgradeRule(
     // necessary because multiple TypeScript projects can contain the same source file and
     // we don't want to check these again, as this would result in duplicated failure messages.
     const analyzedFiles = new Set<string>();
+    const projectNames = Object.keys(workspace.projects);
     const rules = [...cdkMigrationRules, ...extraRules];
     let hasRuleFailures = false;
 
-    const runMigration = (tsconfigPath: string, isTestTarget: boolean) => {
-      const result = runMigrationRules(
-          tree, context.logger, tsconfigPath, isTestTarget, targetVersion,
-          rules, upgradeData, analyzedFiles);
+    const runMigration =
+        (project: WorkspaceProject, tsconfigPath: string, isTestTarget: boolean) => {
+          const result = runMigrationRules(
+              project, tree, context.logger, tsconfigPath, isTestTarget, targetVersion, rules,
+              upgradeData, analyzedFiles);
+          hasRuleFailures = hasRuleFailures || result.hasFailures;
+        };
 
-      hasRuleFailures = hasRuleFailures || result.hasFailures;
-    };
+    for (const projectName of projectNames) {
+      const project = workspace.projects[projectName];
+      const buildTsconfigPath = getTargetTsconfigPath(project, 'build');
+      const testTsconfigPath = getTargetTsconfigPath(project, 'test');
 
-    buildPaths.forEach(p => runMigration(p, false));
-    testPaths.forEach(p => runMigration(p, true));
+      if (!buildTsconfigPath && !testTsconfigPath) {
+        logger.warn(`Could not find TypeScript project for project: ${projectName}`);
+        continue;
+      }
+      if (buildTsconfigPath !== null) {
+        runMigration(project, buildTsconfigPath, false);
+      }
+      if (testTsconfigPath !== null) {
+        runMigration(project, testTsconfigPath, true);
+      }
+    }
 
     let runPackageManager = false;
-
     // Run the global post migration static members for all migration rules.
     rules.forEach(rule => {
       const actionResult = rule.globalPostMigration(tree, context);

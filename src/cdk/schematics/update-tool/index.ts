@@ -8,8 +8,9 @@
 
 import {logging, normalize} from '@angular-devkit/core';
 import {Tree, UpdateRecorder} from '@angular-devkit/schematics';
+import {WorkspaceProject} from '@schematics/angular/utility/workspace-models';
 import {sync as globSync} from 'glob';
-import {dirname, relative} from 'path';
+import {dirname, join, relative} from 'path';
 import * as ts from 'typescript';
 
 import {ComponentResourceCollector} from './component-resource-collector';
@@ -18,19 +19,20 @@ import {TargetVersion} from './target-version';
 import {parseTsconfigFile} from './utils/parse-tsconfig';
 
 export type Constructor<T> = (new (...args: any[]) => T);
-export type MigrationRuleType<T> = Constructor<MigrationRule<T>>
-    & {[m in keyof typeof MigrationRule]: (typeof MigrationRule)[m]};
+export type MigrationRuleType<T> =
+    Constructor<MigrationRule<T>>&{[m in keyof typeof MigrationRule]: (typeof MigrationRule)[m]};
 
 
 export function runMigrationRules<T>(
-    tree: Tree, logger: logging.LoggerApi, tsconfigPath: string, isTestTarget: boolean,
-    targetVersion: TargetVersion, ruleTypes: MigrationRuleType<T>[], upgradeData: T,
-    analyzedFiles: Set<string>): {hasFailures: boolean} {
+    project: WorkspaceProject, tree: Tree, logger: logging.LoggerApi, tsconfigPath: string,
+    isTestTarget: boolean, targetVersion: TargetVersion, ruleTypes: MigrationRuleType<T>[],
+    upgradeData: T, analyzedFiles: Set<string>): {hasFailures: boolean} {
   // The CLI uses the working directory as the base directory for the
   // virtual file system tree.
   const basePath = process.cwd();
   const parsed = parseTsconfigFile(tsconfigPath, dirname(tsconfigPath));
   const host = ts.createCompilerHost(parsed.options, true);
+  const projectFsPath = join(basePath, project.root);
 
   // We need to overwrite the host "readFile" method, as we want the TypeScript
   // program to be based on the file contents in the virtual file tree.
@@ -94,8 +96,9 @@ export function runMigrationRules<T>(
   // In some applications, developers will have global stylesheets which are not specified in any
   // Angular component. Therefore we glob up all CSS and SCSS files outside of node_modules and
   // dist. The files will be read by the individual stylesheet rules and checked.
-  // TODO(devversion): double-check if we can solve this in a more elegant way.
-  globSync('!(node_modules|dist)/**/*.+(css|scss)', {absolute: true, cwd: basePath})
+  // TODO: rework this to collect external/global stylesheets from the workspace config. COMP-280.
+  globSync(
+      '!(node_modules|dist)/**/*.+(css|scss)', {absolute: true, cwd: projectFsPath, nodir: true})
       .filter(filePath => !resourceCollector.resolvedStylesheets.some(s => s.filePath === filePath))
       .forEach(filePath => {
         const stylesheet = resourceCollector.resolveExternalStylesheet(filePath, null);

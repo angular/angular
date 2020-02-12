@@ -14,6 +14,7 @@ describe('global stylesheets migration', () => {
     // be picked up by the update-tool.
     writeFile(testStylesheetPath,
         readFileSync(require.resolve('./global-stylesheets-test.scss'), 'utf8'));
+    writeFile('/projects/cdk-testing/third_party/materialize.css/bundle.css', '');
 
     await runFixers();
 
@@ -21,6 +22,29 @@ describe('global stylesheets migration', () => {
     // stylesheet would not match the expected output.
     expect(appTree.readContent(testStylesheetPath))
         .toBe(`[cdkPortalOutlet] {\n  color: red;\n}\n`);
+
+    removeTempDir();
+  });
+
+  it('should not check stylesheets outside of project target', async () => {
+    const {runFixers, writeFile, removeTempDir, appTree} = await createTestCaseSetup(
+      'migration-v6', migrationCollection, []);
+    const subProjectStylesheet = '[cdkPortalHost] {\n  color: red;\n}\n';
+
+    writeFile('/sub_project/node_modules/materialize.css/package.json', '');
+    writeFile('/sub_project/assets/test.css', subProjectStylesheet);
+
+    let error: any = null;
+    try {
+      await runFixers()
+    } catch (e) {
+      error = e;
+    }
+
+    expect(error).toBeNull();
+    // if the external stylesheet that is not of a project target would have been checked
+    // by accident, the stylesheet would differ from the original file content.
+    expect(appTree.readContent('/sub_project/assets/test.css')).toBe(subProjectStylesheet);
 
     removeTempDir();
   });
