@@ -1,11 +1,7 @@
-<<<<<<< HEAD
 <!--
-# Form Validation
+# Form validation
 -->
 # 폼 유효성 검사
-=======
-# Form validation
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 Improve overall data quality by validating user input for accuracy and completeness.
@@ -439,11 +435,7 @@ Next, to provide better user experience, we show an appropriate error message wh
 -->
 그 다음에는 좀 더 편한 사용성을 제공하기 위해 에러 메시지를 폼에 표시해 봅시다.
 
-<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.html" region="cross-validation-error-message" header="reactive/hero-form-template.component.html" linenums="false">
-</code-example>
-=======
 <code-example path="form-validation/src/app/reactive/hero-form-reactive.component.html" region="cross-validation-error-message" header="reactive/hero-form-template.component.html"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 Note that we check if:
@@ -467,25 +459,16 @@ First we must create a directive that will wrap the validator function. We provi
 
 <!--
 Next, we have to add the directive to the html template. Since the validator must be registered at the highest level in the form, we put the directive on the `form` tag.
-<<<<<<< HEAD
 -->
 그 다음에는 이렇게 만든 디렉티브를 HTML 템플릿에 적용해야 합니다. 이 우효성 검사기는 폼의 최상위 계층에 적용되어야 하기 때문에 `form` 태그에 이 디렉티브를 지정합니다.
-<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="cross-validation-register-validator" header="template/hero-form-template.component.html" linenums="false">
-</code-example>
-=======
+
 <code-example path="form-validation/src/app/template/hero-form-template.component.html" region="cross-validation-register-validator" header="template/hero-form-template.component.html"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 To provide better user experience, we show an appropriate error message when the form is invalid.
-<<<<<<< HEAD
 -->
 그리고 좀더 나은 사용성을 위해 폼 유효성 검사가 실패했을 때 에러 메시지를 표시해 줍니다.
-<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="cross-validation-error-message" header="template/hero-form-template.component.html" linenums="false">
-</code-example>
-=======
 <code-example path="form-validation/src/app/template/hero-form-template.component.html" region="cross-validation-error-message" header="template/hero-form-template.component.html"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 Note that we check if:
