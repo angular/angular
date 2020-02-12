@@ -528,8 +528,10 @@ workflows:
           filters: *ignore_presubmit_branch_filter
       - tests_local_browsers:
           filters: *ignore_presubmit_branch_filter
-      - tests_browserstack:
-          filters: *ignore_presubmit_branch_filter
+      # TODO(devversion): temporarily disabled until BrowserStack fixes an issue
+      # where Safari browsers cannot be launched due to a missing `device'.
+      #- tests_browserstack:
+      #    filters: *ignore_presubmit_branch_filter
       - tests_saucelabs:
           filters: *ignore_presubmit_branch_filter
       - e2e_tests:
