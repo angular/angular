@@ -12,10 +12,19 @@
     [class.warning-no]="recordsView.timeSpent < 16"
     [class.warning-low]="recordsView.timeSpent >= 16"
     [class.warning-mid]="recordsView.timeSpent >= 32"
+    [class.warning-high]="recordsView.timeSpent >= 64">
+  Time spent: {{ recordsView.timeSpent | number }} ms
+  </label>
+
+  <label
+    [class.warning-no]="recordsView.timeSpent < 16"
+    [class.warning-low]="recordsView.timeSpent >= 16"
+    [class.warning-mid]="recordsView.timeSpent >= 32"
     [class.warning-high]="recordsView.timeSpent >= 64"
-  >Total time spent: {{ recordsView.timeSpent | number }}ms.</label
-  >
-  &nbsp;
+    *ngIf="frameRate(recordsView.timeSpent) < 64">
+  Frame rate: {{ frameRate(recordsView.timeSpent) }} fps
+  </label>
+
   <label *ngIf="recordsView.source">Source: {{ recordsView.source }}</label>
 </div>
 
