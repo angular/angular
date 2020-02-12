@@ -361,19 +361,18 @@ describe('Query API', () => {
          expect(comp.children.length).toBe(1);
        });
 
-    onlyInIvy(
-        'Shallow queries don\'t cross ng-container boundaries in ivy (ng-container is treated as a regular element')
-        .it('should not cross ng-container boundaries with shallow queries', () => {
-          const template = `<needs-content-children-shallow>
+
+    it('should not cross ng-container boundaries with shallow queries', () => {
+      const template = `<needs-content-children-shallow>
                           <ng-container>
                             <div #q></div>
                           </ng-container>
                         </needs-content-children-shallow>`;
-          const view = createTestCmpAndDetectChanges(MyComp0, template);
+      const view = createTestCmpAndDetectChanges(MyComp0, template);
 
-          const comp = view.debugElement.children[0].injector.get(NeedsContentChildrenShallow);
-          expect(comp.children.length).toBe(0);
-        });
+      const comp = view.debugElement.children[0].injector.get(NeedsContentChildrenShallow);
+      expect(comp.children.length).toBe(1);
+    });
 
     it('should contain the first descendant content child templateRef', () => {
       const template = '<needs-content-child-template-ref-app>' +
