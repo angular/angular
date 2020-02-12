@@ -44,7 +44,11 @@
   }
 }
 
-@mixin mat-mdc-radio-density($density-scale) {}
+@mixin mat-mdc-radio-density($density-scale) {
+  .mat-mdc-radio-button .mdc-radio {
+    @include mdc-radio-density($density-scale);
+  }
+}
 
 @mixin mat-mdc-radio-theme($theme) {
   $color: mat-get-color-config($theme);

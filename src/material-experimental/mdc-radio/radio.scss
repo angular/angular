@@ -3,6 +3,7 @@
 @import '@material/form-field/mixins.import';
 @import '../mdc-helpers/mdc-helpers';
 @import '../../cdk/a11y/a11y';
+@import '../../material/core/style/layout-common';
 
 @include mdc-radio-without-ripple($query: $mat-base-styles-query);
 @include mdc-form-field-core-styles($query: $mat-base-styles-query);
@@ -10,13 +11,10 @@
 // This is necessary because we do not depend on MDC's ripple, but have our own that should be
 // positioned correctly. This can be removed once we start using MDC's ripple implementation.
 .mat-mdc-radio-button .mat-radio-ripple {
-  position: absolute;
-  left: calc(50% - #{$mdc-radio-icon-size});
-  top: calc(50% - #{$mdc-radio-icon-size});
-  height: $mdc-radio-icon-size * 2;
-  width: $mdc-radio-icon-size * 2;
-  z-index: 1;
+  @include mat-fill;
+
   pointer-events: none;
+  border-radius: 50%;
 
   .mat-ripple-element:not(.mat-radio-persistent-ripple) {
     opacity: $mdc-radio-ripple-opacity;
