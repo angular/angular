@@ -99,7 +99,7 @@
     "@angular/platform-browser-dynamic": "9.0.0",
     "@angular/router": "9.0.0",
     "@angular/service-worker": "9.0.0",
-    "@webcomponents/custom-elements": "^1.2.0",
+    "@webcomponents/custom-elements": "1.2.1",
     "rxjs": "^6.5.3",
     "tslib": "^1.10.0",
     "zone.js": "~0.10.2"
