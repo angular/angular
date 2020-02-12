@@ -47,7 +47,11 @@
   }
 }
 
-@mixin mat-mdc-table-density($density-scale) {}
+@mixin mat-mdc-table-density($density-scale) {
+  .mat-mdc-table {
+    @include mdc-data-table-density($density-scale);
+  }
+}
 
 @mixin mat-mdc-table-theme($theme) {
   $color: mat-get-color-config($theme);
