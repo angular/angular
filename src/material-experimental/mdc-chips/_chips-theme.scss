@@ -61,7 +61,11 @@
   }
 }
 
-@mixin mat-mdc-chips-density($density-scale) {}
+@mixin mat-mdc-chips-density($density-scale) {
+  .mat-mdc-chip {
+    @include mdc-chip-density($density-scale);
+  }
+}
 
 @mixin mat-mdc-chips-theme($theme) {
   $color: mat-get-color-config($theme);
