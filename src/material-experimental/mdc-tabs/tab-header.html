@@ -11,11 +11,14 @@
   <div class="mat-mdc-tab-header-pagination-chevron"></div>
 </div>
 
-<div class="mat-mdc-tab-label-container" #tabListContainer (keydown)="_handleKeydown($event)">
+<div
+  class="mat-mdc-tab-label-container"
+  #tabListContainer
+  (keydown)="_handleKeydown($event)"
+  [class._mat-animation-noopable]="_animationMode === 'NoopAnimations'">
   <div
     #tabList
     class="mat-mdc-tab-list"
-    [class._mat-animation-noopable]="_animationMode === 'NoopAnimations'"
     role="tablist"
     (cdkObserveContent)="_onContentChanges()">
     <div class="mat-mdc-tab-labels">

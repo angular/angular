@@ -58,6 +58,7 @@ import {takeUntil} from 'rxjs/operators';
     '[class.mat-primary]': 'color !== "warn" && color !== "accent"',
     '[class.mat-accent]': 'color === "accent"',
     '[class.mat-warn]': 'color === "warn"',
+    '[class._mat-animation-noopable]' : '_animationMode === "NoopAnimations"',
   },
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
