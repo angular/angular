@@ -3582,7 +3582,7 @@ The Angular `By` class has three static methods for common predicates:
 
 <hr>
 
-{@a faq}
+{@a useful-tips}
 
 ## Useful tips
 
@@ -3615,15 +3615,15 @@ next to their corresponding helper files.
 
 {@a q-kiss}
 
-#### Keep it simple - Don't overcomplicate things
+#### Keep it simple
 
 [Component class testing](#component-class-testing) should be kept very clean and simple.
 It should test only a single unit. On a first glance, you should be able to understand 
 what the test is testing. If it's doing more, then it doesn't belong here.
 
-{@a q-kiss}
+{@a q-end-to-end}
 
-#### Use E2E to test more than single unit
+#### Use E2E (end-to-end) to test more than a single unit
 
 E2E tests are great for high-level validation of the entire system.
 But they can't give you the comprehensive test coverage that you'd expect from unit tests.
