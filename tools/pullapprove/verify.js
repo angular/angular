@@ -16,6 +16,9 @@ const path = require('path');
 // Exit early on shelljs errors
 set('-e');
 
+// Regex Matcher for contains_any_globs conditions
+const CONTAINS_ANY_GLOBS_REGEX = /^'([^']+)',?$/;
+
 // Full path of the angular project directory
 const ANGULAR_PROJECT_DIR = path.resolve(__dirname, '../..');
 // Change to the Angular project directory
@@ -40,18 +43,18 @@ if (!ALL_FILES.length) {
 }
 
 /** Gets the glob matching information from each group's condition. */
-function getGlobMatchersFromConditions(groupName, condition) {
+function getGlobMatchersFromCondition(groupName, condition) {
   const trimmedCondition = condition.trim();
   const globMatchers = [];
   const badConditionLines = [];
 
-  // If the condition should be starts with contains_any_globs, evaluate all of the globs
+  // If the condition starts with contains_any_globs, evaluate all of the globs
   if (trimmedCondition.startsWith('contains_any_globs')) {
     trimmedCondition.split('\n')
         .slice(1, -1)
         .map(glob => {
           const trimmedGlob = glob.trim();
-          const match = trimmedGlob.match(/^'([^']+)',?$/);
+          const match = trimmedGlob.match(CONTAINS_ANY_GLOBS_REGEX);
           if (!match) {
             badConditionLines.push(trimmedGlob);
             return;
@@ -118,7 +121,7 @@ function runVerification(files) {
   // Get all of the globs from the PullApprove group conditions.
   Object.entries(parsedPullApproveGroups).map(([groupName, group]) => {
     for (const condition of group.conditions) {
-      const [matchers, badConditions] = getGlobMatchersFromConditions(groupName, condition);
+      const [matchers, badConditions] = getGlobMatchersFromCondition(groupName, condition);
       if (badConditions.length) {
         badConditionLinesByGroup.set(groupName, badConditions);
         badConditionLineCount += badConditions.length;
@@ -129,7 +132,7 @@ function runVerification(files) {
 
   if (badConditionLineCount) {
     console.log(`Discovered ${badConditionLineCount} parsing errors in PullApprove conditions`);
-    console.log(`Attempted parsing using: /^'([^']+)',?$/`);
+    console.log(`Attempted parsing using: ${CONTAINS_ANY_GLOBS_REGEX}`);
     console.log();
     console.log(`Unable to properly parse the following line(s) by group:`);
     for (const [groupName, badConditionLines] of badConditionLinesByGroup.entries()) {
