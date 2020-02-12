@@ -188,7 +188,23 @@ class TQuery_ implements TQuery {
 
   private isApplyingToNode(tNode: TNode): boolean {
     if (this._appliesToNextNode && this.metadata.descendants === false) {
-      return this._declarationNodeIndex === (tNode.parent ? tNode.parent.index : -1);
+      const declarationNodeIdx = this._declarationNodeIndex;
+      let parent = tNode.parent;
+      // Determine if a given TNode is a "direct" child of a node on which a content query was
+      // declared (only direct children of query's host node can match with the descendants: false
+      // option). There are 3 main use-case / conditions to consider here:
+      // - <needs-target><i #target></i></needs-target>: here <i #target> parent node is a query
+      // host node;
+      // - <needs-target><ng-template [ngIf]="true"><i #target></i></ng-template></needs-target>:
+      // here <i #target> parent node is null;
+      // - <needs-target><ng-container><i #target></i></ng-container></needs-target>: here we need
+      // to go past `<ng-container>` to determine <i #target> parent node (but we shouldn't traverse
+      // up past the query's host node!).
+      while (parent !== null && parent.type === TNodeType.ElementContainer &&
+             parent.index !== declarationNodeIdx) {
+        parent = parent.parent;
+      }
+      return declarationNodeIdx === (parent !== null ? parent.index : -1);
     }
     return this._appliesToNextNode;
   }
