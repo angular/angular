@@ -1401,14 +1401,6 @@
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.1.7.tgz#1b8e33b61a8c09cbe1f85133071baa0dbf9fa71a"
   integrity sha512-2Y8uPt0/jwjhQ6EiluT0XCri1Dbplr0ZxfFXUz+ye13gaqE8u5gL5ppao1JrUYr9cIip5S6MvQzBS7Kke7U9VA==
 
-"@types/chokidar@^1.7.5":
-  version "1.7.5"
-  resolved "https://registry.yarnpkg.com/@types/chokidar/-/chokidar-1.7.5.tgz#1fa78c8803e035bed6d98e6949e514b133b0c9b6"
-  integrity sha512-PDkSRY7KltW3M60hSBlerxI8SFPXsO3AL/aRVsO4Kh9IHRW74Ih75gUuTd/aE4LSSFqypb10UIX3QzOJwBQMGQ==
-  dependencies:
-    "@types/events" "*"
-    "@types/node" "*"
-
 "@types/color-name@^1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@types/color-name/-/color-name-1.1.1.tgz#1c1261bbeaa10a8055bbc5d8ab84b7b2afc846a0"
