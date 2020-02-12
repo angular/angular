@@ -27,7 +27,7 @@ setPublicVar CI_CHROMEDRIVER_VERSION_ARG "--versions.chrome 79.0.3945.130";
 setPublicVar CI_COMMIT "$CIRCLE_SHA1";
 # `CI_COMMIT_RANGE` is only used on push builds (a.k.a. non-PR, non-scheduled builds and rerun
 # workflows of such builds).
-setPublicVar CI_COMMIT_RANGE "`[[ ${CIRCLE_PR_NUMBER:-false} != false ]] && echo "" || echo "$CIRCLE_GIT_BASE_REVISION..$CIRCLE_GIT_REVISION"`";
+setPublicVar CI_COMMIT_RANGE "$CIRCLE_GIT_BASE_REVISION..$CIRCLE_GIT_REVISION";
 setPublicVar CI_PULL_REQUEST "${CIRCLE_PR_NUMBER:-false}";
 setPublicVar CI_REPO_NAME "$CIRCLE_PROJECT_REPONAME";
 setPublicVar CI_REPO_OWNER "$CIRCLE_PROJECT_USERNAME";
