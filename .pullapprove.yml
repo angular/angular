@@ -964,6 +964,7 @@ groups:
           'tools/testing/**',
           'tools/ts-api-guardian/**',
           'tools/tslint/**',
+          'tools/utils/**',
           'tools/validate-commit-message/**',
           'tools/yarn/**',
           'tools/*',
