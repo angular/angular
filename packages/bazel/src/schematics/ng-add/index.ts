@@ -38,7 +38,7 @@ function addDevDependenciesToPackageJson(options: Schema) {
     // TODO: use a Record<string, string> when the tsc lib setting allows us
     const devDependencies: [string, string][] = [
       ['@angular/bazel', angularCore.version],
-      ['@bazel/bazel', '2.0.0'],
+      ['@bazel/bazel', '2.1.0'],
       ['@bazel/ibazel', '0.11.1'],
       ['@bazel/karma', '1.3.0'],
       ['@bazel/protractor', '1.3.0'],
