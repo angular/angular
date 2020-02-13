@@ -262,7 +262,13 @@ function runE2eTestsCLI(appDir, outputFile, bufferOutput, port) {
   const config = loadExampleConfig(appDir);
   const commands = config.e2e || [{
     cmd: 'yarn',
-    args: ['e2e', '--prod', '--no-webdriver-update', `--port=${port || DEFAULT_CLI_EXAMPLE_PORT}`]
+    args: [
+      'e2e',
+      '--prod',
+      '--protractor-config=e2e/protractor-puppeteer.conf.js',
+      '--no-webdriver-update',
+      '--port={PORT}',
+    ],
   }];
   let bufferedOutput = `\n\n============== AIO example output for: ${appDir}\n\n`;
 

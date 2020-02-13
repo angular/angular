@@ -112,6 +112,7 @@ class ExampleZipper {
       '!**/npm-debug.log',
       '!**/example-config.json',
       '!**/wallaby.js',
+      '!e2e/protractor-puppeteer.conf.js',
       // AOT related files
       '!**/aot/**/*.*',
       '!**/*-aot.*'
