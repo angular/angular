@@ -4,13 +4,7 @@ import { Todo } from '../../models/todo';
 @Component({
   templateUrl: 'todo.component.html',
   selector: 'app-todo',
-  styles: [
-    `
-      .destroy {
-        cursor: pointer;
-      }
-    `,
-  ],
+  styleUrls: ['./todo.component.css'],
 })
 export class TodoComponent {
   @Input() todo: Todo;
@@ -19,18 +13,18 @@ export class TodoComponent {
 
   editMode = false;
 
-  toggle() {
+  toggle(): void {
     this.todo.completed = !this.todo.completed;
     this.update.emit(this.todo);
   }
 
-  completeEdit(label: string) {
+  completeEdit(label: string): void {
     this.todo.label = label;
     this.editMode = false;
     this.update.emit(this.todo);
   }
 
-  enableEditMode() {
+  enableEditMode(): void {
     this.editMode = true;
   }
 }
