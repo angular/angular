@@ -446,13 +446,13 @@ jobs:
         type: boolean
         default: false
     executor:
-      # Needed because the example e2e tests depend on Chrome.
-      name: browsers-executor
+      name: default-executor
       resource_class: xlarge
     parallelism: 5
     steps:
       - custom_attach_workspace
       - init_environment
+      - install_chrome_libs
         # Install aio
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
       - when:
