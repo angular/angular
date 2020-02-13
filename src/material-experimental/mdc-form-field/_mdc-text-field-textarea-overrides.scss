@@ -30,12 +30,4 @@
     // This brings it in line with other browsers.
     overflow: auto;
   }
-
-  // By default, MDC aligns the label using percentage. This will be overwritten based
-  // on whether a textarea is used. This is not possible in our implementation of the
-  // form-field because we do not know what type of form-field control is set up. Hence
-  // we always use a fixed position for the label. This does not have any implications.
-  .mat-mdc-text-field-wrapper .mdc-floating-label {
-    top: $mat-form-field-baseline;
-  }
 }
