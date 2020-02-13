@@ -64,7 +64,7 @@ export type UrlMatchResult = {
  * @publicApi
  */
 export type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route: Route) =>
-    UrlMatchResult;
+    UrlMatchResult | null;
 
 /**
  *
