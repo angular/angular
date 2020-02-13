@@ -53,7 +53,9 @@ function testNonBazel() {
   yarn --cwd node_modules/@angular/cli version --new-version 0.0.0 --no-git-tag-version
   # re-add build-angular
   yarn add --dev file:../../../node_modules/@angular-devkit/build-angular
-  yarn webdriver-manager update --gecko=false --standalone=false ${CI_CHROMEDRIVER_VERSION_ARG:---versions.chrome 2.45}
+  # TODO: Find a way to use the Chrome version provided by `puppeteer` as the rest of the
+  #       integration projects. See https://github.com/angular/angular/pull/35049 for details.
+  yarn webdriver-manager update --gecko=false --standalone=false --versions.chrome=79.0.3945.130;
   ng build --progress=false
   ng test --progress=false --watch=false
   ng e2e --configuration=production --webdriver-update=false

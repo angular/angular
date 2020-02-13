@@ -19,11 +19,6 @@ setPublicVar CI_AIO_MIN_PWA_SCORE "95";
 # This is the branch being built; e.g. `pull/12345` for PR builds.
 setPublicVar CI_BRANCH "$CIRCLE_BRANCH";
 setPublicVar CI_BUILD_URL "$CIRCLE_BUILD_URL";
-# ChromeDriver version compatible with the Chrome version included in the docker image used in
-# `.circleci/config.yml`. See http://chromedriver.chromium.org/downloads for a list of versions.
-# This variable is intended to be passed as an arg to the `webdriver-manager update` command (e.g.
-# `"postinstall": "webdriver-manager update $CI_CHROMEDRIVER_VERSION_ARG"`).
-setPublicVar CI_CHROMEDRIVER_VERSION_ARG "--versions.chrome 79.0.3945.130";
 setPublicVar CI_COMMIT "$CIRCLE_SHA1";
 # `CI_COMMIT_RANGE` is only used on push builds (a.k.a. non-PR, non-scheduled builds and rerun
 # workflows of such builds).
