@@ -36,7 +36,7 @@
     @include _mdc-text-field-refresh-theme-variables() {
       @include mdc-text-field-without-ripple($query: $mat-theme-styles-query);
       @include mdc-floating-label-core-styles($query: $mat-theme-styles-query);
-      @include mdc-notched-outline-core-styles($query: $mat-base-styles-query);
+      @include mdc-notched-outline-core-styles($query: $mat-theme-styles-query);
       @include mdc-line-ripple-core-styles($query: $mat-theme-styles-query);
       @include _mat-form-field-subscript-theme();
       @include _mat-form-field-focus-overlay-theme();
@@ -56,7 +56,8 @@
   @include mat-using-mdc-typography($config) {
     @include mdc-text-field-without-ripple($query: $mat-typography-styles-query);
     @include mdc-floating-label-core-styles($query: $mat-typography-styles-query);
-    @include mdc-text-field-core-styles($query: $mat-typography-styles-query);
+    @include mdc-notched-outline-core-styles($query: $mat-typography-styles-query);
+    @include mdc-line-ripple-core-styles($query: $mat-typography-styles-query);
     @include _mat-form-field-subscript-typography($config);
   }
 }
