@@ -14,7 +14,7 @@ export class TooltipDirective {
   };
 
   @HostListener('click')
-  handleClick() {
+  handleClick(): void {
     this.visible = !this.visible;
     if (this.visible) {
       (this as any).extraProp = true;

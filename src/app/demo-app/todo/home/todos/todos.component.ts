@@ -23,13 +23,13 @@ export class TodosComponent implements OnInit, OnDestroy {
 
   constructor(private cdRef: ChangeDetectorRef) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     if (typeof window !== 'undefined') {
       window.addEventListener('hashchange', (this.hashListener = () => this.cdRef.markForCheck()));
     }
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (typeof window !== 'undefined') {
       window.removeEventListener('hashchange', this.hashListener);
     }
@@ -42,15 +42,15 @@ export class TodosComponent implements OnInit, OnDestroy {
     return TodoFilter.All;
   }
 
-  get itemsLeft() {
+  get itemsLeft(): number {
     return (this.todos || []).filter(t => !t.completed).length;
   }
 
-  clearCompleted() {
+  clearCompleted(): void {
     (this.todos || []).filter(t => t.completed).forEach(t => this.delete.emit(t));
   }
 
-  addTodo(input: HTMLInputElement) {
+  addTodo(input: HTMLInputElement): void {
     const todo = {
       completed: false,
       label: input.value,
@@ -60,13 +60,13 @@ export class TodosComponent implements OnInit, OnDestroy {
     input.value = '';
   }
 
-  onChange(todo: Todo) {
+  onChange(todo: Todo): void {
     if (!todo.id) {
       return;
     }
   }
 
-  onDelete(todo: Todo) {
+  onDelete(todo: Todo): void {
     if (!todo.id) {
       return;
     }
