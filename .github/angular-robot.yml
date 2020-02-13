@@ -60,8 +60,7 @@ merge:
       - "ci/circleci: lint"
       - "ci/circleci: bazel_build"
       - "ci/circleci: tests_local_browsers"
-      # TODO(devversion): temporarily disabled until Browserstack tests are re-enabled.
-      # - "ci/circleci: tests_browserstack"
+      - "ci/circleci: tests_browserstack"
       - "ci/circleci: tests_saucelabs"
       - "ci/circleci: build_release_packages"
 
