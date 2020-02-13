@@ -58,7 +58,7 @@ describe('getTsHelperFnFromDeclaration()', () => {
   const createVariableDeclaration = (varName: string) =>
       ts.createVariableDeclaration(varName, undefined, undefined);
 
-  it('should recongize the `__assign` helper as function declaration', () => {
+  it('should recognize the `__assign` helper as function declaration', () => {
     const decl1 = createFunctionDeclaration('__assign');
     const decl2 = createFunctionDeclaration('__assign$42');
 
@@ -66,7 +66,7 @@ describe('getTsHelperFnFromDeclaration()', () => {
     expect(getTsHelperFnFromDeclaration(decl2)).toBe(KnownDeclaration.TsHelperAssign);
   });
 
-  it('should recongize the `__assign` helper as variable declaration', () => {
+  it('should recognize the `__assign` helper as variable declaration', () => {
     const decl1 = createVariableDeclaration('__assign');
     const decl2 = createVariableDeclaration('__assign$42');
 
@@ -74,7 +74,7 @@ describe('getTsHelperFnFromDeclaration()', () => {
     expect(getTsHelperFnFromDeclaration(decl2)).toBe(KnownDeclaration.TsHelperAssign);
   });
 
-  it('should recongize the `__spread` helper as function declaration', () => {
+  it('should recognize the `__spread` helper as function declaration', () => {
     const decl1 = createFunctionDeclaration('__spread');
     const decl2 = createFunctionDeclaration('__spread$42');
 
@@ -82,7 +82,7 @@ describe('getTsHelperFnFromDeclaration()', () => {
     expect(getTsHelperFnFromDeclaration(decl2)).toBe(KnownDeclaration.TsHelperSpread);
   });
 
-  it('should recongize the `__spread` helper as variable declaration', () => {
+  it('should recognize the `__spread` helper as variable declaration', () => {
     const decl1 = createVariableDeclaration('__spread');
     const decl2 = createVariableDeclaration('__spread$42');
 
@@ -90,7 +90,7 @@ describe('getTsHelperFnFromDeclaration()', () => {
     expect(getTsHelperFnFromDeclaration(decl2)).toBe(KnownDeclaration.TsHelperSpread);
   });
 
-  it('should recongize the `__spreadArrays` helper as function declaration', () => {
+  it('should recognize the `__spreadArrays` helper as function declaration', () => {
     const decl1 = createFunctionDeclaration('__spreadArrays');
     const decl2 = createFunctionDeclaration('__spreadArrays$42');
 
@@ -98,7 +98,7 @@ describe('getTsHelperFnFromDeclaration()', () => {
     expect(getTsHelperFnFromDeclaration(decl2)).toBe(KnownDeclaration.TsHelperSpreadArrays);
   });
 
-  it('should recongize the `__spreadArrays` helper as variable declaration', () => {
+  it('should recognize the `__spreadArrays` helper as variable declaration', () => {
     const decl1 = createVariableDeclaration('__spreadArrays');
     const decl2 = createVariableDeclaration('__spreadArrays$42');
 
@@ -132,7 +132,7 @@ describe('getTsHelperFnFromDeclaration()', () => {
 });
 
 describe('getTsHelperFnFromIdentifier()', () => {
-  it('should recongize the `__assign` helper', () => {
+  it('should recognize the `__assign` helper', () => {
     const id1 = ts.createIdentifier('__assign');
     const id2 = ts.createIdentifier('__assign$42');
 
@@ -140,7 +140,7 @@ describe('getTsHelperFnFromIdentifier()', () => {
     expect(getTsHelperFnFromIdentifier(id2)).toBe(KnownDeclaration.TsHelperAssign);
   });
 
-  it('should recongize the `__spread` helper', () => {
+  it('should recognize the `__spread` helper', () => {
     const id1 = ts.createIdentifier('__spread');
     const id2 = ts.createIdentifier('__spread$42');
 
@@ -148,7 +148,7 @@ describe('getTsHelperFnFromIdentifier()', () => {
     expect(getTsHelperFnFromIdentifier(id2)).toBe(KnownDeclaration.TsHelperSpread);
   });
 
-  it('should recongize the `__spreadArrays` helper', () => {
+  it('should recognize the `__spreadArrays` helper', () => {
     const id1 = ts.createIdentifier('__spreadArrays');
     const id2 = ts.createIdentifier('__spreadArrays$42');
 
