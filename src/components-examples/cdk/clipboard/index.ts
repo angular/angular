@@ -11,6 +11,7 @@ const EXAMPLES = [CdkClipboardOverviewExample];
   imports: [ClipboardModule, FormsModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
+  entryComponents: EXAMPLES,
 })
 export class CdkClipboardExamplesModule {
 }

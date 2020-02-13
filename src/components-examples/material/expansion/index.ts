@@ -31,6 +31,8 @@ const EXAMPLES = [
     MatInputModule,
   ],
   declarations: EXAMPLES,
+  exports: EXAMPLES,
+  entryComponents: EXAMPLES,
 })
 export class ExpansionExamplesModule {
 }

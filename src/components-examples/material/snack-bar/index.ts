@@ -34,7 +34,7 @@ const EXAMPLES = [
   ],
   declarations: [...EXAMPLES, PizzaPartyComponent],
   exports: EXAMPLES,
-  entryComponents: [PizzaPartyComponent],
+  entryComponents: [...EXAMPLES, PizzaPartyComponent],
 })
 export class SnackBarExamplesModule {
 }

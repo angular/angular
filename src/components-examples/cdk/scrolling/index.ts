@@ -46,11 +46,10 @@ const EXAMPLES = [
 ];
 
 @NgModule({
-  imports: [
-    ScrollingModule,
-  ],
+  imports: [ScrollingModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
+  entryComponents: EXAMPLES,
 })
 export class CdkScrollingExamplesModule {
 }

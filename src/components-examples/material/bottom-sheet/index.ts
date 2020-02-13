@@ -25,7 +25,7 @@ const EXAMPLES = [
   ],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: [BottomSheetOverviewExampleSheet],
+  entryComponents: EXAMPLES,
 })
 export class BottomSheetExamplesModule {
 }

@@ -59,6 +59,7 @@ const EXAMPLES = [
   ],
   declarations: [...EXAMPLES, MyTelInput],
   exports: EXAMPLES,
+  entryComponents: EXAMPLES,
 })
 export class FormFieldExamplesModule {
 }

@@ -50,12 +50,7 @@ const EXAMPLES = [
   ],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: [
-    DialogContentExampleDialog,
-    DialogDataExampleDialog,
-    DialogElementsExampleDialog,
-    DialogOverviewExampleDialog,
-  ]
+  entryComponents: EXAMPLES,
 })
 export class DialogExamplesModule {
 }

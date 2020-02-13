@@ -13,12 +13,10 @@ const EXAMPLES = [
 ];
 
 @NgModule({
-  imports: [
-    PortalModule,
-  ],
+  imports: [PortalModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: [ComponentPortalExample]
+  entryComponents: EXAMPLES,
 })
 export class CdkPortalExamplesModule {
 }

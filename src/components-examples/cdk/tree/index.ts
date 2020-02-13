@@ -23,6 +23,7 @@ const EXAMPLES = [
   ],
   declarations: EXAMPLES,
   exports: EXAMPLES,
+  entryComponents: EXAMPLES,
 })
 export class CdkTreeExamplesModule {
 }
