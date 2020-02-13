@@ -1647,6 +1647,32 @@ exports.ExternalModule = ExternalModule;
       });
 
       describe('getDeclarationOfIdentifier', () => {
+        // Helpers
+        const createTestForTsHelper =
+            (program: ts.Program, host: CommonJsReflectionHost, srcFile: TestFile,
+             getHelperDeclaration: (name: string) => ts.Declaration) =>
+                (varName: string, helperName: string, knownAs: KnownDeclaration,
+                 viaModule: string | null = null) => {
+                  const node =
+                      getDeclaration(program, srcFile.name, varName, ts.isVariableDeclaration);
+                  const helperIdentifier = getIdentifierFromCallExpression(node);
+                  const helperDeclaration = host.getDeclarationOfIdentifier(helperIdentifier);
+
+                  expect(helperDeclaration).toEqual({
+                    known: knownAs,
+                    node: getHelperDeclaration(helperName), viaModule,
+                  });
+                };
+
+        const getIdentifierFromCallExpression = (decl: ts.VariableDeclaration) => {
+          if ((decl.initializer !== undefined) && ts.isCallExpression(decl.initializer)) {
+            const expr = decl.initializer.expression;
+            if (ts.isIdentifier(expr)) return expr;
+            if (ts.isPropertyAccessExpression(expr)) return expr.name;
+          }
+          throw new Error(`Unable to extract identifier from declaration '${decl.getText()}'.`);
+        };
+
         it('should return the declaration of a locally defined identifier', () => {
           loadTestFiles([SOME_DIRECTIVE_FILE]);
           const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
@@ -1795,21 +1821,10 @@ exports.ExternalModule = ExternalModule;
           const bundle = makeTestBundleProgram(file.name);
           const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
 
-          const testForHelper =
-              (varName: string, helperName: string, knownAs: KnownDeclaration) => {
-                const node =
-                    getDeclaration(bundle.program, file.name, varName, ts.isVariableDeclaration);
-                const helperIdentifier =
-                    (node.initializer as ts.CallExpression).expression as ts.Identifier;
-                const helperDeclaration = host.getDeclarationOfIdentifier(helperIdentifier);
-
-                expect(helperDeclaration).toEqual({
-                  known: knownAs,
-                  node: getDeclaration(
-                      bundle.program, file.name, helperName, ts.isFunctionDeclaration),
-                  viaModule: null,
-                });
-              };
+          const testForHelper = createTestForTsHelper(
+              bundle.program, host, file,
+              helperName =>
+                  getDeclaration(bundle.program, file.name, helperName, ts.isFunctionDeclaration));
 
           testForHelper('a', '__assign', KnownDeclaration.TsHelperAssign);
           testForHelper('b', '__spread', KnownDeclaration.TsHelperSpread);
@@ -1833,21 +1848,10 @@ exports.ExternalModule = ExternalModule;
           const bundle = makeTestBundleProgram(file.name);
           const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
 
-          const testForHelper =
-              (varName: string, helperName: string, knownAs: KnownDeclaration) => {
-                const node =
-                    getDeclaration(bundle.program, file.name, varName, ts.isVariableDeclaration);
-                const helperIdentifier =
-                    (node.initializer as ts.CallExpression).expression as ts.Identifier;
-                const helperDeclaration = host.getDeclarationOfIdentifier(helperIdentifier);
-
-                expect(helperDeclaration).toEqual({
-                  known: knownAs,
-                  node: getDeclaration(
-                      bundle.program, file.name, helperName, ts.isFunctionDeclaration),
-                  viaModule: null,
-                });
-              };
+          const testForHelper = createTestForTsHelper(
+              bundle.program, host, file,
+              helperName =>
+                  getDeclaration(bundle.program, file.name, helperName, ts.isFunctionDeclaration));
 
           testForHelper('a', '__assign$1', KnownDeclaration.TsHelperAssign);
           testForHelper('b', '__spread$2', KnownDeclaration.TsHelperSpread);
@@ -1871,21 +1875,10 @@ exports.ExternalModule = ExternalModule;
           const bundle = makeTestBundleProgram(file.name);
           const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
 
-          const testForHelper =
-              (varName: string, helperName: string, knownAs: KnownDeclaration) => {
-                const node =
-                    getDeclaration(bundle.program, file.name, varName, ts.isVariableDeclaration);
-                const helperIdentifier =
-                    (node.initializer as ts.CallExpression).expression as ts.Identifier;
-                const helperDeclaration = host.getDeclarationOfIdentifier(helperIdentifier);
-
-                expect(helperDeclaration).toEqual({
-                  known: knownAs,
-                  node: getDeclaration(
-                      bundle.program, file.name, helperName, ts.isVariableDeclaration),
-                  viaModule: null,
-                });
-              };
+          const testForHelper = createTestForTsHelper(
+              bundle.program, host, file,
+              helperName =>
+                  getDeclaration(bundle.program, file.name, helperName, ts.isVariableDeclaration));
 
           testForHelper('a', '__assign', KnownDeclaration.TsHelperAssign);
           testForHelper('b', '__spread', KnownDeclaration.TsHelperSpread);
@@ -1909,21 +1902,10 @@ exports.ExternalModule = ExternalModule;
           const bundle = makeTestBundleProgram(file.name);
           const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
 
-          const testForHelper =
-              (varName: string, helperName: string, knownAs: KnownDeclaration) => {
-                const node =
-                    getDeclaration(bundle.program, file.name, varName, ts.isVariableDeclaration);
-                const helperIdentifier =
-                    (node.initializer as ts.CallExpression).expression as ts.Identifier;
-                const helperDeclaration = host.getDeclarationOfIdentifier(helperIdentifier);
-
-                expect(helperDeclaration).toEqual({
-                  known: knownAs,
-                  node: getDeclaration(
-                      bundle.program, file.name, helperName, ts.isVariableDeclaration),
-                  viaModule: null,
-                });
-              };
+          const testForHelper = createTestForTsHelper(
+              bundle.program, host, file,
+              helperName =>
+                  getDeclaration(bundle.program, file.name, helperName, ts.isVariableDeclaration));
 
           testForHelper('a', '__assign$1', KnownDeclaration.TsHelperAssign);
           testForHelper('b', '__spread$2', KnownDeclaration.TsHelperSpread);
@@ -1956,26 +1938,14 @@ exports.ExternalModule = ExternalModule;
           const [testFile, tslibFile] = files;
           const bundle = makeTestBundleProgram(testFile.name);
           const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
+          const tslibSourceFile = getSourceFileOrError(bundle.program, tslibFile.name);
 
           const testForHelper =
-              (varName: string, helperName: string, knownAs: KnownDeclaration) => {
-                const node = getDeclaration(
-                    bundle.program, testFile.name, varName, ts.isVariableDeclaration);
-                const helperIdentifier = ((node.initializer as ts.CallExpression)
-                                              .expression as ts.PropertyAccessExpression)
-                                             .name;
-                const helperDeclaration = host.getDeclarationOfIdentifier(helperIdentifier);
+              createTestForTsHelper(bundle.program, host, testFile, () => tslibSourceFile);
 
-                expect(helperDeclaration).toEqual({
-                  known: knownAs,
-                  node: getSourceFileOrError(bundle.program, tslibFile.name),
-                  viaModule: 'tslib',
-                });
-              };
-
-          testForHelper('a', '__assign', KnownDeclaration.TsHelperAssign);
-          testForHelper('b', '__spread', KnownDeclaration.TsHelperSpread);
-          testForHelper('c', '__spreadArrays', KnownDeclaration.TsHelperSpreadArrays);
+          testForHelper('a', '__assign', KnownDeclaration.TsHelperAssign, 'tslib');
+          testForHelper('b', '__spread', KnownDeclaration.TsHelperSpread, 'tslib');
+          testForHelper('c', '__spreadArrays', KnownDeclaration.TsHelperSpreadArrays, 'tslib');
         });
       });
 

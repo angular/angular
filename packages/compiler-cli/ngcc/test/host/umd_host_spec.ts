@@ -1809,6 +1809,41 @@ runInEachFileSystem(() => {
     });
 
     describe('getDeclarationOfIdentifier', () => {
+      // Helpers
+      const createTestForTsHelper =
+          (host: UmdReflectionHost, factoryFn: ts.FunctionExpression,
+           getHelperDeclaration: (factoryFn: ts.FunctionExpression, name: string) =>
+               ts.Declaration) =>
+              (varName: string, helperName: string, knownAs: KnownDeclaration,
+               viaModule: string | null = null) => {
+                const node = getVariableDeclaration(factoryFn, varName);
+                const helperIdentifier = getIdentifierFromCallExpression(node);
+                const helperDeclaration = host.getDeclarationOfIdentifier(helperIdentifier);
+
+                expect(helperDeclaration).toEqual({
+                  known: knownAs,
+                  node: getHelperDeclaration(factoryFn, helperName), viaModule,
+                });
+              };
+
+      const getFunctionDeclaration = (factoryFn: ts.FunctionExpression, name: string) =>
+          factoryFn.body.statements.filter(ts.isFunctionDeclaration)
+              .find(decl => (decl.name !== undefined) && (decl.name.text === name)) !;
+
+      const getIdentifierFromCallExpression = (decl: ts.VariableDeclaration) => {
+        if ((decl.initializer !== undefined) && ts.isCallExpression(decl.initializer)) {
+          const expr = decl.initializer.expression;
+          if (ts.isIdentifier(expr)) return expr;
+          if (ts.isPropertyAccessExpression(expr)) return expr.name;
+        }
+        throw new Error(`Unable to extract identifier from declaration '${decl.getText()}'.`);
+      };
+
+      const getVariableDeclaration = (factoryFn: ts.FunctionExpression, name: string) =>
+          factoryFn.body.statements.filter(ts.isVariableStatement)
+              .map(stmt => stmt.declarationList.declarations[0])
+              .find(decl => ts.isIdentifier(decl.name) && (decl.name.text === name)) !;
+
       it('should return the declaration of a locally defined identifier', () => {
         loadTestFiles([SOME_DIRECTIVE_FILE]);
         const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
@@ -1910,27 +1945,7 @@ runInEachFileSystem(() => {
         const {factoryFn} = parseStatementForUmdModule(
             getSourceFileOrError(bundle.program, file.name).statements[0]) !;
 
-        const getFunctionDeclaration = (name: string) =>
-            factoryFn.body.statements.filter(ts.isFunctionDeclaration)
-                .find(decl => (decl.name !== undefined) && (decl.name.text === name)) !;
-
-        const getVariableDeclaration = (name: string) =>
-            factoryFn.body.statements.filter(ts.isVariableStatement)
-                .map(stmt => stmt.declarationList.declarations[0])
-                .find(decl => ts.isIdentifier(decl.name) && (decl.name.text === name)) !;
-
-        const testForHelper = (varName: string, helperName: string, knownAs: KnownDeclaration) => {
-          const node = getVariableDeclaration(varName);
-          const helperIdentifier =
-              (node.initializer as ts.CallExpression).expression as ts.Identifier;
-          const helperDeclaration = host.getDeclarationOfIdentifier(helperIdentifier);
-
-          expect(helperDeclaration).toEqual({
-            known: knownAs,
-            node: getFunctionDeclaration(helperName),
-            viaModule: null,
-          });
-        };
+        const testForHelper = createTestForTsHelper(host, factoryFn, getFunctionDeclaration);
 
         testForHelper('a', '__assign', KnownDeclaration.TsHelperAssign);
         testForHelper('b', '__spread', KnownDeclaration.TsHelperSpread);
@@ -1962,27 +1977,7 @@ runInEachFileSystem(() => {
         const {factoryFn} = parseStatementForUmdModule(
             getSourceFileOrError(bundle.program, file.name).statements[0]) !;
 
-        const getFunctionDeclaration = (name: string) =>
-            factoryFn.body.statements.filter(ts.isFunctionDeclaration)
-                .find(decl => (decl.name !== undefined) && (decl.name.text === name)) !;
-
-        const getVariableDeclaration = (name: string) =>
-            factoryFn.body.statements.filter(ts.isVariableStatement)
-                .map(stmt => stmt.declarationList.declarations[0])
-                .find(decl => ts.isIdentifier(decl.name) && (decl.name.text === name)) !;
-
-        const testForHelper = (varName: string, helperName: string, knownAs: KnownDeclaration) => {
-          const node = getVariableDeclaration(varName);
-          const helperIdentifier =
-              (node.initializer as ts.CallExpression).expression as ts.Identifier;
-          const helperDeclaration = host.getDeclarationOfIdentifier(helperIdentifier);
-
-          expect(helperDeclaration).toEqual({
-            known: knownAs,
-            node: getFunctionDeclaration(helperName),
-            viaModule: null,
-          });
-        };
+        const testForHelper = createTestForTsHelper(host, factoryFn, getFunctionDeclaration);
 
         testForHelper('a', '__assign$1', KnownDeclaration.TsHelperAssign);
         testForHelper('b', '__spread$2', KnownDeclaration.TsHelperSpread);
@@ -2014,23 +2009,7 @@ runInEachFileSystem(() => {
         const {factoryFn} = parseStatementForUmdModule(
             getSourceFileOrError(bundle.program, file.name).statements[0]) !;
 
-        const getVariableDeclaration = (name: string) =>
-            factoryFn.body.statements.filter(ts.isVariableStatement)
-                .map(stmt => stmt.declarationList.declarations[0])
-                .find(decl => ts.isIdentifier(decl.name) && (decl.name.text === name)) !;
-
-        const testForHelper = (varName: string, helperName: string, knownAs: KnownDeclaration) => {
-          const node = getVariableDeclaration(varName);
-          const helperIdentifier =
-              (node.initializer as ts.CallExpression).expression as ts.Identifier;
-          const helperDeclaration = host.getDeclarationOfIdentifier(helperIdentifier);
-
-          expect(helperDeclaration).toEqual({
-            known: knownAs,
-            node: getVariableDeclaration(helperName),
-            viaModule: null,
-          });
-        };
+        const testForHelper = createTestForTsHelper(host, factoryFn, getVariableDeclaration);
 
         testForHelper('a', '__assign', KnownDeclaration.TsHelperAssign);
         testForHelper('b', '__spread', KnownDeclaration.TsHelperSpread);
@@ -2062,23 +2041,7 @@ runInEachFileSystem(() => {
         const {factoryFn} = parseStatementForUmdModule(
             getSourceFileOrError(bundle.program, file.name).statements[0]) !;
 
-        const getVariableDeclaration = (name: string) =>
-            factoryFn.body.statements.filter(ts.isVariableStatement)
-                .map(stmt => stmt.declarationList.declarations[0])
-                .find(decl => ts.isIdentifier(decl.name) && (decl.name.text === name)) !;
-
-        const testForHelper = (varName: string, helperName: string, knownAs: KnownDeclaration) => {
-          const node = getVariableDeclaration(varName);
-          const helperIdentifier =
-              (node.initializer as ts.CallExpression).expression as ts.Identifier;
-          const helperDeclaration = host.getDeclarationOfIdentifier(helperIdentifier);
-
-          expect(helperDeclaration).toEqual({
-            known: knownAs,
-            node: getVariableDeclaration(helperName),
-            viaModule: null,
-          });
-        };
+        const testForHelper = createTestForTsHelper(host, factoryFn, getVariableDeclaration);
 
         testForHelper('a', '__assign$1', KnownDeclaration.TsHelperAssign);
         testForHelper('b', '__spread$2', KnownDeclaration.TsHelperSpread);
@@ -2117,29 +2080,13 @@ runInEachFileSystem(() => {
         const host = new UmdReflectionHost(new MockLogger(), false, bundle);
         const {factoryFn} = parseStatementForUmdModule(
             getSourceFileOrError(bundle.program, testFile.name).statements[0]) !;
+        const tslibSourceFile = getSourceFileOrError(bundle.program, tslibFile.name);
 
-        const getVariableDeclaration = (name: string) =>
-            factoryFn.body.statements.filter(ts.isVariableStatement)
-                .map(stmt => stmt.declarationList.declarations[0])
-                .find(decl => ts.isIdentifier(decl.name) && (decl.name.text === name)) !;
+        const testForHelper = createTestForTsHelper(host, factoryFn, () => tslibSourceFile);
 
-        const testForHelper = (varName: string, helperName: string, knownAs: KnownDeclaration) => {
-          const node = getVariableDeclaration(varName);
-          const helperIdentifier =
-              ((node.initializer as ts.CallExpression).expression as ts.PropertyAccessExpression)
-                  .name;
-          const helperDeclaration = host.getDeclarationOfIdentifier(helperIdentifier);
-
-          expect(helperDeclaration).toEqual({
-            known: knownAs,
-            node: getSourceFileOrError(bundle.program, tslibFile.name),
-            viaModule: 'tslib',
-          });
-        };
-
-        testForHelper('a', '__assign', KnownDeclaration.TsHelperAssign);
-        testForHelper('b', '__spread', KnownDeclaration.TsHelperSpread);
-        testForHelper('c', '__spreadArrays', KnownDeclaration.TsHelperSpreadArrays);
+        testForHelper('a', '__assign', KnownDeclaration.TsHelperAssign, 'tslib');
+        testForHelper('b', '__spread', KnownDeclaration.TsHelperSpread, 'tslib');
+        testForHelper('c', '__spreadArrays', KnownDeclaration.TsHelperSpreadArrays, 'tslib');
       });
     });
 
