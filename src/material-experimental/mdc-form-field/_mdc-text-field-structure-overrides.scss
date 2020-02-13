@@ -88,8 +88,9 @@
   // the shifting since there is no padding the label needs to account for. Note that we do not
   // want do this for labels in the notched-outline since MDC keeps those labels relative to
   // the notched outline container, and already applies a specific horizontal spacing which
-  // we do not want to overwrite.
-  .mat-mdc-form-field-infix .mdc-floating-label {
+  // we do not want to overwrite. *Note*: We need to have increased specificity for this
+  // override because the `right` property will be set with higher specificity in RTL mode.
+  .mat-mdc-text-field-wrapper .mat-mdc-form-field-infix .mdc-floating-label {
     left: 0;
     right: 0;
   }
