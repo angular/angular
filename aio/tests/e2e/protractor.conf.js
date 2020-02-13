@@ -14,11 +14,11 @@ exports.config = {
   ],
   capabilities: {
     browserName: 'chrome',
-    chromeOptions: process.env['CI'] ? {
+    chromeOptions: {
       binary: require('puppeteer').executablePath(),
       // See /integration/README.md#browser-tests for more info on these args
-      args: ['--no-sandbox', '--headless', '--disable-gpu', '--disable-dev-shm-usage', '--hide-scrollbars', '--mute-audio']
-    } : {},
+      args: ['--no-sandbox', '--headless', '--disable-gpu', '--disable-dev-shm-usage', '--hide-scrollbars', '--mute-audio'],
+    },
   },
   directConnect: true,
   baseUrl: 'http://localhost:4200/',
