@@ -30,6 +30,10 @@ export const DEV_APP_ROUTES: Routes = [
   {path: 'card', loadChildren: 'card/card-demo-module#CardDemoModule'},
   {path: 'checkbox', loadChildren: 'checkbox/checkbox-demo-module#CheckboxDemoModule'},
   {path: 'chips', loadChildren: 'chips/chips-demo-module#ChipsDemoModule'},
+  {
+    path: 'column-resize',
+    loadChildren: 'column-resize/column-resize-demo-module#ColumnResizeDemoModule'
+  },
   {path: 'datepicker', loadChildren: 'datepicker/datepicker-demo-module#DatepickerDemoModule'},
   {path: 'dialog', loadChildren: 'dialog/dialog-demo-module#DialogDemoModule'},
   {path: 'drawer', loadChildren: 'drawer/drawer-demo-module#DrawerDemoModule'},

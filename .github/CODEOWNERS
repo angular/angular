@@ -91,6 +91,7 @@
 
 # Material experimental package
 /src/material-experimental/*                       @jelbourn
+/src/material-experimental/column-resize/**        @kseamon @andrewseguin
 /src/material-experimental/mdc-autocomplete/**     @crisbeto
 /src/material-experimental/mdc-button/**           @andrewseguin
 /src/material-experimental/mdc-card/**             @mmalerba
@@ -118,6 +119,7 @@
 
 # CDK experimental package
 /src/cdk-experimental/*                            @jelbourn
+/src/cdk-experimental/column-resize/**             @kseamon @andrewseguin
 /src/cdk-experimental/dialog/**                    @jelbourn @crisbeto
 /src/cdk-experimental/popover-edit/**              @kseamon @andrewseguin
 /src/cdk-experimental/scrolling/**                 @mmalerba
@@ -140,6 +142,7 @@
 /src/dev-app/card/**                               @jelbourn
 /src/dev-app/checkbox/**                           @jelbourn @devversion
 /src/dev-app/chips/**                              @jelbourn
+/src/dev-app/column-resize/**                      @kseamon @andrewseguin
 /src/dev-app/connected-overlay/**                  @jelbourn @crisbeto
 /src/dev-app/dataset/**                            @andrewseguin
 /src/dev-app/datepicker/**                         @mmalerba

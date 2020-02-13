@@ -1,0 +1,24 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "column-resize",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    module_name = "@angular/cdk-experimental/column-resize",
+    deps = [
+        "//src/cdk-experimental/popover-edit",
+        "//src/cdk/bidi",
+        "//src/cdk/coercion",
+        "//src/cdk/keycodes",
+        "//src/cdk/overlay",
+        "//src/cdk/portal",
+        "//src/cdk/table",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//rxjs",
+    ],
+)

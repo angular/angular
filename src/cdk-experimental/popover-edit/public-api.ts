@@ -15,5 +15,6 @@ export * from './popover-edit-module';
 export * from './popover-edit-position-strategy-factory';
 export * from './table-directives';
 
+// Private to Angular Components
 export {CELL_SELECTOR as _CELL_SELECTOR} from './constants';
-export {closest as _closest} from './polyfill';
+export {closest as _closest, matches as _matches} from './polyfill';

@@ -1,0 +1,96 @@
+@import '../../material/core/style/variables';
+@import '../../material/core/style/vendor-prefixes';
+@import '../../material/core/theming/palette';
+@import '../../material/core/theming/theming';
+
+@mixin mat-column-resize-theme($theme) {
+  $primary: map-get($theme, primary);
+  $foreground: map-get($theme, foreground);
+
+  $non-resizable-hover-divider: mat-color($foreground, divider);
+  $resizable-hover-divider: mat-color($primary, 200);
+  $resizable-active-divider: mat-color($primary, 500);
+
+  // Required for resizing to work properly.
+  .mat-column-resize-table.cdk-column-resize-with-resized-column {
+    table-layout: fixed;
+  }
+
+  .mat-column-resize-flex {
+    .mat-header-cell,
+    .mat-cell {
+      box-sizing: border-box;
+      min-width: 32px;
+    }
+  }
+
+  .mat-header-cell {
+    position: relative;
+  }
+
+  .mat-resizable {
+    box-sizing: border-box;
+  }
+
+  .mat-header-cell:not(.mat-resizable)::after,
+  .mat-resizable-handle {
+    background: transparent;
+    bottom: 0;
+    position: absolute;
+    top: 0;
+    transition: background $swift-ease-in-duration $swift-ease-in-timing-function;
+    width: 1px;
+  }
+
+  .mat-header-cell:not(.mat-resizable)::after {
+    content: '';
+  }
+
+  .mat-header-cell:not(.mat-resizable)::after,
+  .mat-resizable-handle {
+    right: 0;
+  }
+
+  .mat-column-resize-rtl .mat-header-cell:not(.mat-resizable)::after,
+  .mat-column-resize-rtl .mat-resizable-handle {
+    left: 0;
+    right: auto;
+  }
+
+  .mat-header-row.cdk-column-resize-hover-or-active {
+    .mat-header-cell:not(.mat-resizable)::after {
+      background: $non-resizable-hover-divider;
+    }
+
+    .mat-resizable-handle {
+      background: $resizable-hover-divider;
+    }
+  }
+
+  .mat-resizable.cdk-resizable-overlay-thumb-active > .mat-resizable-handle {
+    opacity: 0;
+    transition: none;
+  }
+
+  .mat-resizable-handle:focus,
+  .mat-header-row.cdk-column-resize-hover-or-active .mat-resizable-handle:focus {
+    background: $resizable-active-divider;
+    outline: none;
+  }
+
+  .mat-column-resize-overlay-thumb {
+    background: transparent;
+    cursor: col-resize;
+    height: 100%;
+    transition: background $swift-ease-in-duration $swift-ease-in-timing-function;
+    @include user-select(none);
+    width: 100%;
+
+    &:active {
+      background: linear-gradient(90deg,
+          transparent, transparent 7px,
+          $resizable-active-divider, $resizable-active-divider 1px,
+          transparent 8px, transparent);
+    }
+  }
+}

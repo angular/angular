@@ -1,4 +1,5 @@
 entryPoints = [
+    "column-resize",
     "mdc-autocomplete",
     "mdc-button",
     "mdc-button/testing",
