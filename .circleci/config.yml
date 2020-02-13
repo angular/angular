@@ -631,12 +631,11 @@ jobs:
       - run: ./scripts/ci/publish-build-artifacts.sh
 
   aio_monitoring_stable:
-    # This job needs Chrome to be globally installed because the tests run with Protractor
-    # which does not load the browser through the Bazel webtesting rules.
-    executor: browsers-executor
+    executor: default-executor
     steps:
       - custom_attach_workspace
       - init_environment
+      - install_chrome_libs
       - run: setPublicVar_CI_STABLE_BRANCH
       - run:
           name: Check out `aio/` and yarn from the stable branch

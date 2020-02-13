@@ -35,10 +35,10 @@ module.exports = function (config) {
       ChromeHeadlessNoSandbox: {
         base: 'ChromeHeadless',
         // See /integration/README.md#browser-tests for more info on these args
-        flags: ['--no-sandbox', '--headless', '--disable-gpu', '--disable-dev-shm-usage', '--hide-scrollbars', '--mute-audio']
-      }
+        flags: ['--no-sandbox', '--headless', '--disable-gpu', '--disable-dev-shm-usage', '--hide-scrollbars', '--mute-audio'],
+      },
     },
-    browsers: [process.env['CI'] ? 'ChromeHeadlessNoSandbox' : 'Chrome'],
+    browsers: ['ChromeHeadlessNoSandbox'],
     browserNoActivityTimeout: 60000,
     singleRun: false,
     restartOnFileChange: true,

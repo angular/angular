@@ -9,8 +9,8 @@
 
 // Mapping of puppeteer releases to their default Chrome version
 // derived from https://github.com/puppeteer/puppeteer/blob/master/docs/api.md.
-// The puppeteer package.json file the Chrome revision such as
-// "chromium_revision": "722234" but this does not map easily to the Chrome
+// The puppeteer package.json file contains the compatible Chrome revision such as
+// "chromium_revision": "722234" but this does not map easily to the Chrome version
 // so we use this mapping here instead.
 module.exports = {
   "2.1.1": "80.0.3987.0",
