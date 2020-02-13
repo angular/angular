@@ -500,7 +500,7 @@ export declare abstract class UrlHandlingStrategy {
     abstract shouldProcessUrl(url: UrlTree): boolean;
 }
 
-export declare type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route: Route) => UrlMatchResult;
+export declare type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route: Route) => UrlMatchResult | null;
 
 export declare type UrlMatchResult = {
     consumed: UrlSegment[];
