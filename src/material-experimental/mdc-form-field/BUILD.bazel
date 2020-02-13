@@ -82,6 +82,7 @@ sass_library(
     name = "form_field_partials",
     srcs = [
         "_form-field-bottom-line.scss",
+        "_form-field-focus-overlay.scss",
         "_form-field-sizing.scss",
         "_form-field-subscript.scss",
         "_mdc-text-field-structure-overrides.scss",
@@ -89,6 +90,7 @@ sass_library(
     ],
     deps = [
         "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
+        "//src/material/core:core_scss_lib",
     ],
 )
 
