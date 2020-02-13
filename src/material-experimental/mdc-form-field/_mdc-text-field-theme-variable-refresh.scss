@@ -10,6 +10,8 @@
 @mixin _mdc-text-field-refresh-theme-variables() {
   $_mdc-text-field-disabled-border-border: $mdc-text-field-disabled-border-border;
   $mdc-text-field-disabled-border: rgba(theme-variables.prop-value(on-surface), 0.06) !global;
+  $_mdc-text-field-bottom-line-hover: $mdc-text-field-bottom-line-hover;
+  $mdc-text-field-bottom-line-hover: rgba(theme-variables.prop-value(on-surface), 0.87) !global;
   $_mdc-text-field-bottom-line-idle: $mdc-text-field-bottom-line-idle;
   $mdc-text-field-bottom-line-idle: rgba(theme-variables.prop-value(on-surface), 0.42) !global;
   $_mdc-text-field-label: $mdc-text-field-label;
@@ -46,6 +48,7 @@
 
   // Reset all variables to ensure that this mixin does not cause unexpected side effects.
   $mdc-text-field-disabled-border-border: $_mdc-text-field-disabled-border-border !global;
+  $mdc-text-field-bottom-line-hover: $_mdc-text-field-bottom-line-hover !global;
   $mdc-text-field-bottom-line-idle: $_mdc-text-field-bottom-line-idle !global;
   $mdc-text-field-label: $_mdc-text-field-label !global;
   $mdc-text-field-ink-color: $_mdc-text-field-ink-color !global;

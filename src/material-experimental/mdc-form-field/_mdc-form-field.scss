@@ -4,7 +4,6 @@
 @import '@material/textfield/mixins.import';
 @import '../mdc-helpers/mdc-helpers';
 @import 'form-field-subscript';
-@import 'form-field-bottom-line';
 @import 'form-field-focus-overlay';
 @import 'mdc-text-field-theme-variable-refresh';
 
@@ -40,7 +39,6 @@
       @include mdc-notched-outline-core-styles($query: $mat-base-styles-query);
       @include mdc-line-ripple-core-styles($query: $mat-theme-styles-query);
       @include _mat-form-field-subscript-theme();
-      @include _mat-form-field-bottom-line-theme();
       @include _mat-form-field-focus-overlay-theme();
 
       .mat-mdc-form-field.mat-accent {

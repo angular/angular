@@ -2,7 +2,6 @@
 
 @import 'form-field-sizing';
 @import 'form-field-subscript';
-@import 'form-field-bottom-line';
 @import 'form-field-focus-overlay';
 @import 'mdc-text-field-textarea-overrides';
 @import 'mdc-text-field-structure-overrides';
@@ -17,9 +16,8 @@
 @include _mat-mdc-text-field-textarea-overrides();
 @include _mat-mdc-text-field-structure-overrides();
 
-// Include the subscript, bottom-line and focus-overlay styles.
+// Include the subscript and focus-overlay styles.
 @include _mat-form-field-subscript();
-@include _mat-form-field-bottom-line();
 @include _mat-form-field-focus-overlay();
 
 // Host element of the form-field. It contains the mdc-text-field wrapper
