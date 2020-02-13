@@ -70,10 +70,14 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>| Comp
         fillProperties(definition.declaredInputs, superDef.declaredInputs);
         fillProperties(definition.outputs, superDef.outputs);
 
-        // Merge developer-defined data
-        (superDef as ComponentDef<any>).data &&
-            inheritData(
-                (definition as ComponentDef<any>).data, (superDef as ComponentDef<any>).data);
+        // Merge animations metadata.
+        // If `superDef` is a Component, the `data` field is present (defaults to an empty object).
+        if (isComponentDef(superDef) && superDef.data.animation) {
+          // If super def is a Component, the `definition` is also a Component, since Directives can
+          // not inherit Components (we throw an error above and cannot reach this code).
+          const defData = (definition as ComponentDef<any>).data;
+          defData.animation = (defData.animation || []).concat(superDef.data.animation);
+        }
 
         // Inherit hooks
         // Assume super class inheritance feature has already run.
@@ -183,9 +187,4 @@ function inheritHostBindings(
   } else {
     definition.hostBindings = superHostBindings;
   }
-}
-
-function inheritData(defData: {[kind: string]: any}, superData: {[kind: string]: any}) {
-  superData.animation &&
-      (defData.animation = (defData.animation || []).concat(superData.animation));
 }
