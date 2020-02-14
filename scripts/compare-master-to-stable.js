@@ -14,9 +14,6 @@
  * This script compares commits in master and patch branches to find the delta between them. This is
  * useful for release reviews, to make sure all the necessary commits were included into the patch
  * branch and there is no discrepancy.
- *
- * For RC period, the following ranges are compared: `9.0.0-rc.0...master` and `9.0.0-rc.0...9.0.x`.
- * For regular patch versions, we compare  `9.1.0...master` and `9.1.0...9.1.x`
  */
 
 const shell = require('shelljs');
@@ -84,18 +81,18 @@ function diff(mapA, mapB) {
   return result;
 }
 
-function calcRangeForVersion(raw) {
-  const isRC = raw.indexOf('rc') > -1;
-  const version = semver(raw);
-  const from = isRC ?                                //
-      raw.replace(/(\d+)$/, '0') :                   // e.g. 9.0.0-rc.15 -> 9.0.0-rc.0
-      `${version.major}.${version.minor}.0`;         // e.g. 9.1.5 -> 9.1.0
-  const to = `${version.major}.${version.minor}.x`;  // e.g. 9.0.x
-  return [from, to];
+function getBranchByTag(tag) {
+  const version = semver(tag);
+  return `${version.major}.${version.minor}.x`;  // e.g. 9.0.x
 }
 
 function getLatestTag(tags) {
-  return tags.filter(semver.valid).map(semver.clean).sort(semver.rcompare)[0];
+  // Exclude Next releases, since we cut them from master, so there is nothing to compare.
+  const isNotNextVersion = version => version.indexOf('-next') === -1;
+  return tags.filter(semver.valid)
+      .filter(isNotNextVersion)
+      .map(semver.clean)
+      .sort(semver.rcompare)[0];
 }
 
 // Main program
@@ -103,20 +100,22 @@ function getLatestTag(tags) {
 const tags = getAsArray('git tag');
 const latestTag = getLatestTag(tags);
 
-const [from, to] = calcRangeForVersion(latestTag);
+const branch = getBranchByTag(latestTag);
 
-const masterCommits = getAsArray(`git log --oneline ${from}...master`);
-const patchCommits = getAsArray(`git log --oneline ${from}...${to}`);
+const masterCommits =
+    getAsArray(`git log --cherry-pick --oneline --right-only ${branch}...upstream/master`);
+const patchCommits =
+    getAsArray(`git log --cherry-pick --oneline --left-only ${branch}...upstream/master`);
 
 const masterMap = toMap(masterCommits);
 const patchMap = toMap(patchCommits);
 
 console.log(`
-Comparing commits in ranges: (${from}...master) and (${from}...${to}).
+Comparing branches "${branch}" and master.
 
 ***** Only in MASTER *****
 ${diff(masterMap, patchMap).join('\n') || 'No extra commits'}
 
-***** Only in PATCH (${to}) *****
+***** Only in PATCH (${branch}) *****
 ${diff(patchMap, masterMap).join('\n') || 'No extra commits'}
 `);
