@@ -1,26 +1,17 @@
 <div class="level-profile-wrapper" [class.split-width]="selectedEntry && !sidebarDisabled">
-  <div class="level-profile" *ngFor="let bar of profilerBars">
-    <div
-      (click)="selectedEntry = profile"
-      [style.background-color]="getColor(profile)"
-      [style.width.%]="getWidth(profile, bar)"
-      [class.selected]="selectedEntry === profile"
-      class="component-profile"
-      *ngFor="let profile of bar"
-    >
-      {{ profile.label }} <span class="duration">({{ profile.duration | number }} ms)</span>
-    </div>
-  </div>
+  <ngx-flamegraph (frameClick)="selectFrame($event)" [data]="profilerBars" [width]="availableWidth" [height]="300">
+  </ngx-flamegraph>
 </div>
+
 <div class="selected-entry" *ngIf="selectedEntry && !sidebarDisabled">
   <header>{{ selectedEntry.label }} details</header>
   <section class="entry-statistics">
     <div><label>Instances:</label> {{ selectedEntry.instances }}</div>
-    <div><label>Change detection:</label> {{ selectedEntry.total - selectedEntry.instances }}</div>
+    <div><label>Change detection:</label> {{ selectedEntry.totalEvents - selectedEntry.instances }}</div>
     <div><label>Duration spent:</label> {{ selectedEntry.duration | number }} ms</div>
     <div>
       <label>Duration per check:</label>
-      {{ selectedEntry.duration / (selectedEntry.total - selectedEntry.instances) | number }} ms
+      {{ selectedEntry.duration / (selectedEntry.totalEvents - selectedEntry.instances) | number }} ms
     </div>
   </section>
 </div>

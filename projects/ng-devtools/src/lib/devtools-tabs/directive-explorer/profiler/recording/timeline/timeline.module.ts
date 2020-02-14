@@ -5,10 +5,18 @@ import { RecordingVisualizerModule } from '../recording-visualizer/recording-vis
 import { MatSliderModule } from '@angular/material/slider';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
+import { NgxFlamegraphModule } from 'ngx-flamegraph';
 
 @NgModule({
   declarations: [TimelineComponent],
-  imports: [CommonModule, FormsModule, RecordingVisualizerModule, MatSliderModule, MatButtonModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RecordingVisualizerModule,
+    MatSliderModule,
+    MatButtonModule,
+    NgxFlamegraphModule,
+  ],
   exports: [TimelineComponent],
 })
 export class TimelineModule {}
