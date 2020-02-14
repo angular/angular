@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, Input, ViewChild } from '@angular/core';
-import { AppEntry, formatRecords, TimelineView } from './format-records';
+import { ChangeDetectionStrategy, Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { AppEntry, FlamegraphNode, formatRecords, formatFlamegraphRecords, TimelineView } from './format-records';
 import { MatSlider, MatSliderChange } from '@angular/material/slider';
 import { AppRecord } from 'protocol';
 
@@ -11,7 +11,7 @@ import { AppRecord } from 'protocol';
 })
 export class TimelineComponent {
   @Input() set records(data: AppRecord[]) {
-    this.profileRecords = formatRecords(data);
+    this.profileRecords = formatFlamegraphRecords(data);
   }
 
   @Input() view: 'aggregated' | 'timeline' = 'aggregated';
@@ -26,6 +26,8 @@ export class TimelineComponent {
     timeline: [],
   };
   currentView = 1;
+
+  constructor(private _el: ElementRef) {}
 
   get recordsView(): AppEntry {
     if (this.view === 'timeline') {
