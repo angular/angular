@@ -220,6 +220,15 @@ export interface TypeCheckingConfig {
    * component will be set to `any` during type-checking.
    */
   useContextGenericType: boolean;
+
+  /**
+   * Whether or not to infer types for object and array literals in the template.
+   *
+   * If this is `true`, then the type of an object or an array literal in the template will be the
+   * same type that TypeScript would infer if the literal appeared in code. If `false`, then such
+   * literals are cast to `any` when declared.
+   */
+  strictLiteralTypes: boolean;
 }
 
 

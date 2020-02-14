@@ -424,6 +424,7 @@ export class NgCompiler {
         checkTypeOfPipes: true,
         strictSafeNavigationTypes: strictTemplates,
         useContextGenericType: strictTemplates,
+        strictLiteralTypes: true,
       };
     } else {
       typeCheckingConfig = {
@@ -442,6 +443,7 @@ export class NgCompiler {
         checkTypeOfPipes: false,
         strictSafeNavigationTypes: false,
         useContextGenericType: false,
+        strictLiteralTypes: false,
       };
     }
 
@@ -472,6 +474,9 @@ export class NgCompiler {
     }
     if (this.options.strictContextGenerics !== undefined) {
       typeCheckingConfig.useContextGenericType = this.options.strictContextGenerics;
+    }
+    if (this.options.strictLiteralTypes !== undefined) {
+      typeCheckingConfig.strictLiteralTypes = this.options.strictLiteralTypes;
     }
 
     // Execute the typeCheck phase of each decorator in the program.

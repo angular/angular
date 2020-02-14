@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 
 import {TypeCheckingConfig} from './api';
 import {addParseSpanInfo, ignoreDiagnostics, wrapForDiagnostics} from './diagnostics';
+import {tsCastToAny} from './ts_util';
 
 export const NULL_AS_ANY =
     ts.createAsExpression(ts.createNull(), ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
@@ -143,7 +144,9 @@ class AstTranslator implements AstVisitor {
 
   visitLiteralArray(ast: LiteralArray): ts.Expression {
     const elements = ast.expressions.map(expr => this.translate(expr));
-    const node = ts.createArrayLiteral(elements);
+    const literal = ts.createArrayLiteral(elements);
+    // If strictLiteralTypes is disabled, array literals are cast to `any`.
+    const node = this.config.strictLiteralTypes ? literal : tsCastToAny(literal);
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
   }
@@ -153,7 +156,9 @@ class AstTranslator implements AstVisitor {
       const value = this.translate(ast.values[idx]);
       return ts.createPropertyAssignment(ts.createStringLiteral(key), value);
     });
-    const node = ts.createObjectLiteral(properties, true);
+    const literal = ts.createObjectLiteral(properties, true);
+    // If strictLiteralTypes is disabled, object literals are cast to `any`.
+    const node = this.config.strictLiteralTypes ? literal : tsCastToAny(literal);
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
   }

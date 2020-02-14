@@ -330,6 +330,7 @@ describe('type check blocks', () => {
       checkTypeOfPipes: true,
       strictSafeNavigationTypes: true,
       useContextGenericType: true,
+      strictLiteralTypes: true,
     };
 
     describe('config.applyTemplateContextGuards', () => {
