@@ -1,16 +1,7 @@
 import { AppRecord, ComponentEventType, ComponentRecord, LifeCycleEventType } from 'protocol';
 
-export interface ComponentEntry {
-  label: string;
-  duration: number;
-  total: number;
-  instances: number;
-}
-
-export type AppTreeLevel = ComponentEntry[];
-
 export interface AppEntry {
-  app: AppTreeLevel[];
+  app: FlamegraphNode[];
   timeSpent: number;
   source: string;
 }
@@ -20,38 +11,47 @@ export interface TimelineView {
   timeline: AppEntry[];
 }
 
-const processRecord = (record: ComponentRecord, bars: AppEntry): void => {
-  const idx = record.id.length - 1;
-  bars.app[idx] = bars.app[idx] || [];
-  bars.timeSpent += record.duration;
-  if (record.event !== ComponentEventType.ChangeDetection && record.event !== ComponentEventType.Create) {
-    return;
+export interface FlamegraphNode {
+  value: number;
+  children: FlamegraphNode[];
+  label: string;
+  duration: number;
+  totalEvents: number;
+  instances: number;
+}
+
+const processFlamegraphRecord = (record: ComponentRecord, result: AppEntry) => {
+  result.timeSpent += record.duration;
+  let current = result.app;
+  for (let i = 0; i < record.id.length - 1; i++) {
+    const position = record.id[i];
+    if (!current[position]) {
+      return;
+    }
+    current = current[position].children;
   }
-  let target = {
-    label: record.component,
-    duration: 0,
-    total: 0,
-    instances: 0,
-  };
-  let found = false;
-  for (const result of bars.app[idx]) {
-    if (result.label === record.component) {
-      target = result;
-      found = true;
-      break;
+  for (const node of current) {
+    if (node && node.label === record.component) {
+      node.value += record.duration;
+      node.duration += record.duration;
+      node.totalEvents++;
+      if (record.event === ComponentEventType.Create) {
+        node.instances++;
+      }
+      return;
     }
   }
-  target.duration += record.duration;
-  target.total++;
-  if (record.event === ComponentEventType.Create) {
-    target.instances++;
-  }
-  if (!found) {
-    bars.app[idx].push(target);
-  }
+  current[record.id[record.id.length - 1]] = {
+    value: record.duration,
+    label: record.component,
+    duration: record.duration,
+    totalEvents: 1,
+    instances: 1,
+    children: [],
+  };
 };
 
-export const formatRecords = (records: AppRecord[]): TimelineView => {
+export const formatRecords = <T>(records: AppRecord[]): TimelineView => {
   const result: TimelineView = {
     aggregated: {
       app: [],
@@ -77,9 +77,13 @@ export const formatRecords = (records: AppRecord[]): TimelineView => {
       });
     }
     if (record.recordType === 'component') {
-      processRecord(record, result.aggregated);
-      processRecord(record, result.timeline[result.timeline.length - 1]);
+      processFlamegraphRecord(record, result.aggregated);
+      processFlamegraphRecord(record, result.timeline[result.timeline.length - 1]);
     }
   }
   return result;
+};
+
+export const formatFlamegraphRecords = (records: AppRecord[]): TimelineView => {
+  return formatRecords(records);
 };

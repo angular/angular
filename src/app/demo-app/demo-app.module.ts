@@ -5,9 +5,10 @@ import { RouterModule } from '@angular/router';
 import { initializeMessageBus } from 'ng-devtools-backend';
 import { ZippyComponent } from './zippy/zippy.component';
 import { ZoneUnawareIFrameMessageBus } from 'src/zone-unaware-iframe-message-bus';
+import { HeavyComponent } from './heavy/heavy.component';
 
 @NgModule({
-  declarations: [DemoAppComponent, ZippyComponent],
+  declarations: [DemoAppComponent, ZippyComponent, HeavyComponent],
   exports: [DemoAppComponent],
   imports: [
     RouterModule.forChild([
