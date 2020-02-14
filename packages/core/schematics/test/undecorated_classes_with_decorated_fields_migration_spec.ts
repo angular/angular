@@ -259,6 +259,39 @@ describe('Undecorated classes with decorated fields migration', () => {
     expect(fileContent).toMatch(/}\s+export class MyCompWrapped/);
   });
 
+  it('should add @Directive to derived undecorated classes of abstract directives', async() => {
+    writeFile('/index.ts', `
+      import { Input, Directive, NgModule } from '@angular/core';
+
+      @Directive()
+      export class Base {
+        // ...
+      }
+      
+      export class DerivedA extends Base {}
+      export class DerivedB extends DerivedA {}
+      export class DerivedC extends DerivedB {}
+      
+      @Directive({selector: 'my-comp'})
+      export class MyComp extends DerivedC {}
+      
+      export class MyCompWrapped extends MyComp {}
+      
+      @NgModule({declarations: [MyComp, MyCompWrapped]})
+      export class AppModule {} 
+    `);
+
+    await runMigration();
+    const fileContent = tree.readContent('/index.ts');
+    expect(fileContent).toContain(`import { Input, Directive, NgModule } from '@angular/core';`);
+    expect(fileContent).toMatch(/core';\s+@Directive\(\)\s+export class Base/);
+    expect(fileContent).toMatch(/@Directive\(\)\s+export class DerivedA/);
+    expect(fileContent).toMatch(/@Directive\(\)\s+export class DerivedB/);
+    expect(fileContent).toMatch(/@Directive\(\)\s+export class DerivedC/);
+    expect(fileContent).toMatch(/}\s+@Directive\(\{selector: 'my-comp'}\)\s+export class MyComp/);
+    expect(fileContent).toMatch(/}\s+export class MyCompWrapped/);
+  });
+
   function writeFile(filePath: string, contents: string) {
     host.sync.write(normalize(filePath), virtualFs.stringToFileBuffer(contents));
   }

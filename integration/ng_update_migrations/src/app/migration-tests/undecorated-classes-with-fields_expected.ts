@@ -1,4 +1,12 @@
-import { Component, ElementRef, HostBinding, HostListener, Input, NgModule, Directive } from '@angular/core';
+import {
+  Component,
+  Directive,
+  ElementRef,
+  HostBinding,
+  HostListener,
+  Input,
+  NgModule
+} from '@angular/core';
 
 export class NonAngularBaseClass {
   greet() {}
@@ -55,3 +63,12 @@ export class WrappedMyComp extends MyComp {}
 
 @NgModule({declarations: [MyComp, WrappedMyComp]})
 export class TestModule {}
+
+@Directive({selector: null})
+export class AbstractDir {}
+
+@Directive()
+export class DerivedAbstractDir extends AbstractDir {}
+
+@Directive()
+export class WrappedDerivedAbstractDir extends DerivedAbstractDir {}
