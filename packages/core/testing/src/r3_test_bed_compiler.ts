@@ -355,8 +355,11 @@ export class R3TestBedCompiler {
             // are present, always re-calculate transitive scopes to have the most up-to-date
             // information available. The `moduleToScope` map avoids repeated re-calculation of
             // scopes for the same module.
-            const forceRecalc = !isTestingModule && this.hasModuleOverrides;
-            moduleToScope.set(moduleType, transitiveScopesFor(realType, forceRecalc));
+            if (!isTestingModule && this.hasModuleOverrides) {
+              this.storeFieldOfDefOnType(moduleType as any, NG_MOD_DEF, 'transitiveCompileScopes');
+              (moduleType as any)[NG_MOD_DEF].transitiveCompileScopes = null;
+            }
+            moduleToScope.set(moduleType, transitiveScopesFor(realType));
           }
           return moduleToScope.get(moduleType) !;
         };
