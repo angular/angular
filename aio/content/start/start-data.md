@@ -1,6 +1,6 @@
-# Managing Data
+# Getting Started with Angular: Managing Data
 
-At the end of [Routing](start/routing "Getting Started: Routing"), the online store application has a product catalog with two views: a product list and product details.
+At the end of [Routing](start/start-routing "Getting Started: Routing"), the online store application has a product catalog with two views: a product list and product details.
 Users can click on a product name from the list to see details in a new view, with a distinct URL, or route.
 
 This page guides you through creating the shopping cart in three phases:
@@ -29,7 +29,7 @@ about products in the cart.
 
 <div class="alert is-helpful">
 
-Later, the [Forms](start/forms "Getting Started: Forms") part of
+Later, the [Forms](start/start-forms "Getting Started: Forms") part of
 this tutorial guides you through accessing this cart service
 from the page where the user checks out.
 
@@ -362,5 +362,5 @@ Now that your app can retrieve shipping data, create a shipping component and  t
 Congratulations! You have an online store application with a product catalog and shopping cart. You can also look up and display shipping prices.
 
 To continue exploring Angular, choose either of the following options:
-* [Continue to the "Forms" section](start/forms "Getting Started: Forms") to finish the app by adding the shopping cart page and a checkout form.
-* [Skip ahead to the "Deployment" section](start/deployment "Getting Started: Deployment") to move to local development, or deploy your app to Firebase or your own server.
+* [Continue to the "Forms" section](start/start-forms "Getting Started: Forms") to finish the app by adding the shopping cart page and a checkout form.
+* [Skip ahead to the "Deployment" section](start/start-deployment "Getting Started: Deployment") to move to local development, or deploy your app to Firebase or your own server.

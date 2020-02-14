@@ -117,7 +117,7 @@ You will see:
   <div class="alert is-helpful">
 
   Getting Started assumes the [StackBlitz](https://stackblitz.com/) online development environment.
-  To learn how to export an app from StackBlitz to your local environment, skip ahead to the [Deployment](start/deployment "Getting Started: Deployment") section.
+  To learn how to export an app from StackBlitz to your local environment, skip ahead to the [Deployment](start/start-deployment "Getting Started: Deployment") section.
 
   </div>
 
