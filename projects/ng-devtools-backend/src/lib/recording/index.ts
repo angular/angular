@@ -13,11 +13,11 @@ export const start = (messageBus: MessageBus<Events>): void => {
     throw new Error('Recording already in progress');
   }
   inProgress = true;
-  observer = new ComponentTreeObserver(
-    (component: RecorderComponent) => {
-      addNewRecord(createRecord({ recorderComponent: component, eventType: ComponentEventType.Create }), messageBus);
+  observer = new ComponentTreeObserver({
+    onCreate(component: RecorderComponent) {
+      records.push(createRecord({ recorderComponent: component, eventType: ComponentEventType.Create }));
     },
-    (component: RecorderComponent, duration: number) => {
+    onChangeDetection(component: RecorderComponent, duration: number) {
       if (!inChangeDetection) {
         inChangeDetection = true;
         records.push(createRecord({ eventType: LifeCycleEventType.ChangeDetectionStart }));
@@ -33,10 +33,10 @@ export const start = (messageBus: MessageBus<Events>): void => {
         messageBus
       );
     },
-    (component: RecorderComponent) => {
-      addNewRecord(createRecord({ recorderComponent: component, eventType: ComponentEventType.Destroy }), messageBus);
-    }
-  );
+    onDestroy(component: RecorderComponent) {
+      records.push(createRecord({ recorderComponent: component, eventType: ComponentEventType.Destroy }));
+    },
+  });
   observer.initialize();
 };
 

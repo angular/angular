@@ -52,7 +52,7 @@ const processFlamegraphRecord = (record: ComponentRecord, result: AppEntry) => {
   };
 };
 
-export const formatRecords = (records: AppRecord[]): TimelineView => {
+export const formatRecords = <T>(records: AppRecord[]): TimelineView => {
   const result: TimelineView = {
     aggregated: {
       app: [],
@@ -83,4 +83,8 @@ export const formatRecords = (records: AppRecord[]): TimelineView => {
     }
   }
   return result;
+};
+
+export const formatFlamegraphRecords = (records: AppRecord[]): TimelineView => {
+  return formatRecords(records);
 };

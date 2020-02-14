@@ -19,6 +19,12 @@ interface TreeNode {
 
 declare const ng: any;
 
+export interface Config {
+  onCreate: CreationCallback;
+  onDestroy: DestroyCallback;
+  onChangeDetection: ChangeDetectionCallback;
+}
+
 /**
  * This is a temporal "polyfill" until we receive more comprehensive framework
  * debugging APIs. This observer checks for new elements added. When it detects
@@ -37,18 +43,16 @@ export class ComponentTreeObserver {
   private _forest: TreeNode[] = [];
   private _componentTreeNode = new Map<any, TreeNode>();
 
-  constructor(
-    private _onCreation: CreationCallback,
-    private _onChangeDetection: ChangeDetectionCallback,
-    private _onDestroy: DestroyCallback
-  ) {}
+  constructor(private _config: Partial<Config>) {}
 
   initialize(): void {
     this._mutationObserver.observe(document, {
       subtree: true,
       childList: true,
     });
-    this._initializeChangeDetectionObserver();
+    if (this._config.onChangeDetection) {
+      this._initializeChangeDetectionObserver();
+    }
     this._indexTree();
     this._createOriginalTree();
   }
@@ -84,7 +88,9 @@ export class ComponentTreeObserver {
     if (component) {
       this._elementComponent.set(node, component);
 
-      this._observeComponent(component);
+      if (this._config.onChangeDetection) {
+        this._observeComponent(component);
+      }
 
       const parentComponent = getParentComponentFromDomNode(node);
       this._updateInsertionID(component, parentComponent);
@@ -102,11 +108,11 @@ export class ComponentTreeObserver {
 
   private _fireCreationCallback(component): void {
     const id = this._currentComponentID.get(component);
-    this._onCreation({ component, id });
+    this._config.onCreate({ component, id });
   }
 
   private _fireChangeDetectionCallback(component): void {
-    this._onChangeDetection(
+    this._config.onChangeDetection(
       {
         component,
         id: this._currentComponentID.get(component),
@@ -126,7 +132,7 @@ export class ComponentTreeObserver {
 
   private _fireDestroyCallback(component): void {
     const id = this._currentComponentID.get(component);
-    this._onDestroy({ component, id });
+    this._config.onDestroy({ component, id });
   }
 
   private _updateInsertionID(cmp: any, parent: any): void {
@@ -223,7 +229,7 @@ export class ComponentTreeObserver {
       const start = performance.now();
       original.apply(this, arguments);
       if (self._createdComponents.has(component)) {
-        self._onChangeDetection(
+        self._config.onChangeDetection(
           {
             component,
             id: self._currentComponentID.get(component),
