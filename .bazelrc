@@ -72,13 +72,6 @@ test --test_output=errors
 build --deleted_packages=integration/bazel,integration/bazel/src,integration/bazel/src/hello-world,integration/bazel/test,integration/bazel/test/e2e
 query --deleted_packages=integration/bazel,integration/bazel/src,integration/bazel/src/hello-world,integration/bazel/test,integration/bazel/test/e2e
 
-# The following environment variables need to be available for certain
-# integration tests such as //integration:cli_hello_world_test
-
-# integration/bazel-schematics uses $CI_CHROMEDRIVER_VERSION_ARG in its postinstall webdriver-manager update
-run --action_env=CI_CHROMEDRIVER_VERSION_ARG
-test --action_env=CI_CHROMEDRIVER_VERSION_ARG
-
 ################################
 # Temporary Settings for Ivy   #
 ################################
