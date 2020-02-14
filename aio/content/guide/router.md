@@ -3302,11 +3302,11 @@ Although it doesn't actually log in, it has what you need for this discussion.
 It has an `isLoggedIn` flag to tell you whether the user is authenticated.
 Its `login` method simulates an API call to an external service by returning an
 observable that resolves successfully after a short pause.
-The `redirectUrl` property will store the attempted URL so you could navigate to it after authenticating.
+The `redirectUrl` property stores the URL that the user wanted to access so you can navigate to it after authentication.
 
 <div class="alert is-helpful">
 
-To keep the stackblitz example simple, we will always redirect an un-authenticated user to `/admin`. 
+To keep things simple, this example redirects unauthenticated users to `/admin`. 
 
 </div>
 
