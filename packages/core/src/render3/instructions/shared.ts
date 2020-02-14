@@ -2021,7 +2021,15 @@ export function loadComponentRenderer(
 export function handleError(lView: LView, error: any): void {
   const injector = lView[INJECTOR];
   const errorHandler = injector ? injector.get(ErrorHandler, null) : null;
-  errorHandler && errorHandler.handleError(error);
+  if (errorHandler !== null) {
+    errorHandler.handleError(error);
+    // tslint:disable-next-line:no-console
+  } else if (typeof console === 'object' && console !== null) {
+    // tslint:disable-next-line:no-console
+    (console.error || console.log)(error);
+  } else {
+    throw error;
+  }
 }
 
 /**

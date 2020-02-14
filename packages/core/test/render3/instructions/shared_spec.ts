@@ -6,13 +6,54 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createLView, createTNode, createTView} from '@angular/core/src/render3/instructions/shared';
+import {ErrorHandler} from '@angular/core/src/core';
+import {createInjector} from '@angular/core/src/di/r3_injector';
+import {Writable} from '@angular/core/src/interface/type';
+import {createLView, createTNode, createTView, handleError} from '@angular/core/src/render3/instructions/shared';
 import {TNodeType} from '@angular/core/src/render3/interfaces/node';
 import {domRendererFactory3} from '@angular/core/src/render3/interfaces/renderer';
-import {HEADER_OFFSET, LViewFlags, TVIEW, TViewType} from '@angular/core/src/render3/interfaces/view';
+import {HEADER_OFFSET, INJECTOR, LView, LViewFlags, TVIEW, TViewType} from '@angular/core/src/render3/interfaces/view';
 import {enterView, getBindingRoot, getLView, setBindingIndex, setSelectedIndex} from '@angular/core/src/render3/state';
+import {global} from '@angular/core/src/util/global';
 
+describe('shared', () => {
+  const savedConsole = global.console;
+  let lView: LView;
+  beforeEach(() => lView = new Array(HEADER_OFFSET) as any);
+  afterEach(() => global.console = savedConsole);
+  describe('handleError', () => {
+    it('should rethrow if no console is present', () => {
+      global.console = undefined;
+      expect(() => handleError(lView, 'MY-ERROR')).toThrow('MY-ERROR');
+    });
 
+    it('should console.log if console.error is not present', () => {
+      global.console = {log: jasmine.createSpy('log')};
+      expect(() => handleError(lView, 'MY-ERROR')).not.toThrow();
+      expect(global.console.log).toHaveBeenCalledWith('MY-ERROR');
+    });
+
+    it('should console.error if no injector', () => {
+      global.console = {error: jasmine.createSpy('log')};
+      expect(() => handleError(lView, 'MY-ERROR')).not.toThrow();
+      expect(global.console.error).toHaveBeenCalledWith('MY-ERROR');
+    });
+
+    it('should console.error if injector but no ErrorHandler', () => {
+      (lView as Writable<LView>)[INJECTOR] = createInjector(null);
+      global.console = {error: jasmine.createSpy('log')};
+      expect(() => handleError(lView, 'MY-ERROR')).not.toThrow();
+      expect(global.console.error).toHaveBeenCalledWith('MY-ERROR');
+    });
+    it('should use ErrorHandler if present in injector', () => {
+      const errorHandler: ErrorHandler = {handleError: jasmine.createSpy('handleError')} as any;
+      (lView as Writable<LView>)[INJECTOR] =
+          createInjector(null, null, [{provide: ErrorHandler, useValue: errorHandler}]);
+      expect(() => handleError(lView, 'MY-ERROR')).not.toThrow();
+      expect(errorHandler.handleError).toHaveBeenCalledWith('MY-ERROR');
+    });
+  });
+});
 
 /**
  * Setups a simple `LView` so that it is possible to do unit tests on instructions.
