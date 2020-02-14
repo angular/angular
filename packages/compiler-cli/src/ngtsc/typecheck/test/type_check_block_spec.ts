@@ -561,15 +561,31 @@ describe('type check blocks', () => {
 
       it('should use undefined for safe navigation operations when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
-        expect(block).toContain('(((ctx).a) != null ? ((ctx).a)!.method() : undefined)');
-        expect(block).toContain('(((ctx).a) != null ? ((ctx).a)!.b : undefined)');
+        expect(block).toContain('((null as any) ? ((ctx).a)!.method() : undefined)');
+        expect(block).toContain('((null as any) ? ((ctx).a)!.b : undefined)');
       });
       it('should use an \'any\' type for safe navigation operations when disabled', () => {
         const DISABLED_CONFIG:
             TypeCheckingConfig = {...BASE_CONFIG, strictSafeNavigationTypes: false};
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
-        expect(block).toContain('(((ctx).a) != null ? ((ctx).a)!.method() : null as any)');
-        expect(block).toContain('(((ctx).a) != null ? ((ctx).a)!.b : null as any)');
+        expect(block).toContain('(((ctx).a)!.method() as any)');
+        expect(block).toContain('(((ctx).a)!.b as any)');
+      });
+    });
+
+    describe('config.strictSafeNavigationTypes (View Engine bug emulation)', () => {
+      const TEMPLATE = `{{a.method()?.b}} {{a()?.method()}}`;
+      it('should check the presence of a property/method on the receiver when enabled', () => {
+        const block = tcb(TEMPLATE, DIRECTIVES);
+        expect(block).toContain('((null as any) ? (((ctx).a).method())!.b : undefined)');
+        expect(block).toContain('((null as any) ? ((ctx).a())!.method() : undefined)');
+      });
+      it('should not check the presence of a property/method on the receiver when disabled', () => {
+        const DISABLED_CONFIG:
+            TypeCheckingConfig = {...BASE_CONFIG, strictSafeNavigationTypes: false};
+        const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
+        expect(block).toContain('((((ctx).a).method()) as any).b');
+        expect(block).toContain('(((ctx).a()) as any).method()');
       });
     });
 
