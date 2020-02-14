@@ -31,8 +31,12 @@ import {NO_CHANGE} from './tokens';
  */
 
 /**
- * If the value hasn't been saved, calls the pure function to store and return the
- * value. If it has been saved, returns the saved value.
+ * Instruction which invokes 0 argument pure function.
+ *
+ * Invoke the `pureFn` only when inputs change. (Since there are no inputs this will only get
+ * invoked once per template.)
+ *
+ * NOTE: This is used with object literals and arrays in the template such as `{{[exp, ...]}}`
  *
  * @param slotOffset the offset from binding root to the reserved slot
  * @param pureFn Function that returns a value
@@ -44,14 +48,19 @@ import {NO_CHANGE} from './tokens';
 export function ɵɵpureFunction0<T>(slotOffset: number, pureFn: () => T, thisArg?: any): T {
   const bindingIndex = getBindingRoot() + slotOffset;
   const lView = getLView();
+  // NOTE: Because this is used with object literals such as `{{ [exp] }}` we don't expect `pureFn`
+  // to throw an exception. For this reason no try-catch is necessary.
   return lView[bindingIndex] === NO_CHANGE ?
       updateBinding(lView, bindingIndex, thisArg ? pureFn.call(thisArg) : pureFn()) :
       getBinding(lView, bindingIndex);
 }
 
 /**
- * If the value of the provided exp has changed, calls the pure function to return
- * an updated value. Or if the value has not changed, returns cached value.
+ * Instruction which invokes 1 argument pure function.
+ *
+ * Invoke the `pureFn` only when inputs change.
+ *
+ * NOTE: This is used with object literals and arrays in the template such as `{{[exp, ...]}}`
  *
  * @param slotOffset the offset from binding root to the reserved slot
  * @param pureFn Function that returns an updated value
@@ -63,12 +72,18 @@ export function ɵɵpureFunction0<T>(slotOffset: number, pureFn: () => T, thisAr
  */
 export function ɵɵpureFunction1(
     slotOffset: number, pureFn: (v: any) => any, exp: any, thisArg?: any): any {
+  // NOTE: Because this is used with object literals such as `{{ [exp] }}` and Pipes, it is possible
+  // for `pureFn` to throw an exception. For this reason try-catch is necessary (in
+  // pureFunction1Internal).
   return pureFunction1Internal(getLView(), getBindingRoot(), slotOffset, pureFn, exp, thisArg);
 }
 
 /**
- * If the value of any provided exp has changed, calls the pure function to return
- * an updated value. Or if no values have changed, returns cached value.
+ * Instruction which invokes 2 argument pure function.
+ *
+ * Invoke the `pureFn` only when inputs change.
+ *
+ * NOTE: This is used with object literals and arrays in the template such as `{{[exp, ...]}}`
  *
  * @param slotOffset the offset from binding root to the reserved slot
  * @param pureFn
@@ -82,13 +97,19 @@ export function ɵɵpureFunction1(
 export function ɵɵpureFunction2(
     slotOffset: number, pureFn: (v1: any, v2: any) => any, exp1: any, exp2: any,
     thisArg?: any): any {
+  // NOTE: Because this is used with object literals such as `{{ [exp] }}` and Pipes, it is possible
+  // for `pureFn` to throw an exception. For this reason try-catch is necessary (in
+  // pureFunction2Internal).
   return pureFunction2Internal(
       getLView(), getBindingRoot(), slotOffset, pureFn, exp1, exp2, thisArg);
 }
 
 /**
- * If the value of any provided exp has changed, calls the pure function to return
- * an updated value. Or if no values have changed, returns cached value.
+ * Instruction which invokes 3 argument pure function.
+ *
+ * Invoke the `pureFn` only when inputs change.
+ *
+ * NOTE: This is used with object literals and arrays in the template such as `{{[exp, ...]}}`
  *
  * @param slotOffset the offset from binding root to the reserved slot
  * @param pureFn
@@ -103,13 +124,19 @@ export function ɵɵpureFunction2(
 export function ɵɵpureFunction3(
     slotOffset: number, pureFn: (v1: any, v2: any, v3: any) => any, exp1: any, exp2: any, exp3: any,
     thisArg?: any): any {
+  // NOTE: Because this is used with object literals such as `{{ [exp] }}` and Pipes, it is possible
+  // for `pureFn` to throw an exception. For this reason try-catch is necessary (in
+  // pureFunction3Internal).
   return pureFunction3Internal(
       getLView(), getBindingRoot(), slotOffset, pureFn, exp1, exp2, exp3, thisArg);
 }
 
 /**
- * If the value of any provided exp has changed, calls the pure function to return
- * an updated value. Or if no values have changed, returns cached value.
+ * Instruction which invokes 4 argument pure function.
+ *
+ * Invoke the `pureFn` only when inputs change.
+ *
+ * NOTE: This is used with object literals and arrays in the template such as `{{[exp, ...]}}`
  *
  * @param slotOffset the offset from binding root to the reserved slot
  * @param pureFn
@@ -125,13 +152,19 @@ export function ɵɵpureFunction3(
 export function ɵɵpureFunction4(
     slotOffset: number, pureFn: (v1: any, v2: any, v3: any, v4: any) => any, exp1: any, exp2: any,
     exp3: any, exp4: any, thisArg?: any): any {
+  // NOTE: Because this is used with object literals such as `{{ [exp] }}` and Pipes, it is possible
+  // for `pureFn` to throw an exception. For this reason try-catch is necessary (in
+  // pureFunction4Internal).
   return pureFunction4Internal(
       getLView(), getBindingRoot(), slotOffset, pureFn, exp1, exp2, exp3, exp4, thisArg);
 }
 
 /**
- * If the value of any provided exp has changed, calls the pure function to return
- * an updated value. Or if no values have changed, returns cached value.
+ * Instruction which invokes 5 argument pure function.
+ *
+ * Invoke the `pureFn` only when inputs change.
+ *
+ * NOTE: This is used with object literals and arrays in the template such as `{{[exp, ...]}}`
  *
  * @param slotOffset the offset from binding root to the reserved slot
  * @param pureFn
@@ -151,6 +184,8 @@ export function ɵɵpureFunction5(
   const bindingIndex = getBindingRoot() + slotOffset;
   const lView = getLView();
   const different = bindingUpdated4(lView, bindingIndex, exp1, exp2, exp3, exp4);
+  // NOTE: Because this is used with object literals such as `{{ [exp] }}` we don't expect `pureFn`
+  // to throw an exception. For this reason no try-catch is necessary.
   return bindingUpdated(lView, bindingIndex + 4, exp5) || different ?
       updateBinding(
           lView, bindingIndex + 5, thisArg ? pureFn.call(thisArg, exp1, exp2, exp3, exp4, exp5) :
@@ -159,8 +194,11 @@ export function ɵɵpureFunction5(
 }
 
 /**
- * If the value of any provided exp has changed, calls the pure function to return
- * an updated value. Or if no values have changed, returns cached value.
+ * Instruction which invokes 6 argument pure function.
+ *
+ * Invoke the `pureFn` only when inputs change.
+ *
+ * NOTE: This is used with object literals and arrays in the template such as `{{[exp, ...]}}`
  *
  * @param slotOffset the offset from binding root to the reserved slot
  * @param pureFn
@@ -181,6 +219,8 @@ export function ɵɵpureFunction6(
   const bindingIndex = getBindingRoot() + slotOffset;
   const lView = getLView();
   const different = bindingUpdated4(lView, bindingIndex, exp1, exp2, exp3, exp4);
+  // NOTE: Because this is used with object literals such as `{{ [exp] }}` we don't expect `pureFn`
+  // to throw an exception. For this reason no try-catch is necessary.
   return bindingUpdated2(lView, bindingIndex + 4, exp5, exp6) || different ?
       updateBinding(
           lView, bindingIndex + 6, thisArg ?
@@ -190,8 +230,12 @@ export function ɵɵpureFunction6(
 }
 
 /**
- * If the value of any provided exp has changed, calls the pure function to return
- * an updated value. Or if no values have changed, returns cached value.
+ * Instruction which invokes 7 argument pure function.
+ *
+ * Invoke the `pureFn` only when inputs change.
+ *
+ * NOTE: This is used with object literals and arrays in the template such as `{{[exp, ...]}}`
+ *
  *
  * @param slotOffset the offset from binding root to the reserved slot
  * @param pureFn
@@ -214,6 +258,8 @@ export function ɵɵpureFunction7(
   const bindingIndex = getBindingRoot() + slotOffset;
   const lView = getLView();
   let different = bindingUpdated4(lView, bindingIndex, exp1, exp2, exp3, exp4);
+  // NOTE: Because this is used with object literals such as `{{ [exp] }}` we don't expect `pureFn`
+  // to throw an exception. For this reason no try-catch is necessary.
   return bindingUpdated3(lView, bindingIndex + 4, exp5, exp6, exp7) || different ?
       updateBinding(
           lView, bindingIndex + 7, thisArg ?
@@ -223,8 +269,11 @@ export function ɵɵpureFunction7(
 }
 
 /**
- * If the value of any provided exp has changed, calls the pure function to return
- * an updated value. Or if no values have changed, returns cached value.
+ * Instruction which invokes 8 argument pure function.
+ *
+ * Invoke the `pureFn` only when inputs change.
+ *
+ * NOTE: This is used with object literals and arrays in the template such as `{{[exp, ...]}}`
  *
  * @param slotOffset the offset from binding root to the reserved slot
  * @param pureFn
@@ -249,6 +298,8 @@ export function ɵɵpureFunction8(
   const bindingIndex = getBindingRoot() + slotOffset;
   const lView = getLView();
   const different = bindingUpdated4(lView, bindingIndex, exp1, exp2, exp3, exp4);
+  // NOTE: Because this is used with object literals such as `{{ [exp] }}` we don't expect `pureFn`
+  // to throw an exception. For this reason no try-catch is necessary.
   return bindingUpdated4(lView, bindingIndex + 4, exp5, exp6, exp7, exp8) || different ?
       updateBinding(
           lView, bindingIndex + 8, thisArg ?
@@ -258,10 +309,12 @@ export function ɵɵpureFunction8(
 }
 
 /**
- * pureFunction instruction that can support any number of bindings.
+ * Instruction which invokes any number argument pure function.
  *
- * If the value of any provided exp has changed, calls the pure function to return
- * an updated value. Or if no values have changed, returns cached value.
+ * Invoke the `pureFn` only when inputs change.
+ *
+ * NOTE: This is used with object literals and arrays in the template such as `{{[exp, ...]}}`
+ *
  *
  * @param slotOffset the offset from binding root to the reserved slot
  * @param pureFn A pure function that takes binding values and builds an object or array
@@ -274,6 +327,8 @@ export function ɵɵpureFunction8(
  */
 export function ɵɵpureFunctionV(
     slotOffset: number, pureFn: (...v: any[]) => any, exps: any[], thisArg?: any): any {
+  // NOTE: Because this is used with object literals such as `{{ [exp] }}` we don't expect `pureFn`
+  // to throw an exception. For this reason no try-catch is necessary.
   return pureFunctionVInternal(getLView(), getBindingRoot(), slotOffset, pureFn, exps, thisArg);
 }
 
@@ -294,9 +349,18 @@ export function pureFunction1Internal(
     lView: LView, bindingRoot: number, slotOffset: number, pureFn: (v: any) => any, exp: any,
     thisArg?: any): any {
   const bindingIndex = bindingRoot + slotOffset;
-  return bindingUpdated(lView, bindingIndex, exp) ?
-      updateBinding(lView, bindingIndex + 1, thisArg ? pureFn.call(thisArg, exp) : pureFn(exp)) :
-      getBinding(lView, bindingIndex + 1);
+  const returnBindingIndex = bindingIndex + 1;
+  let returnValue = undefined;
+  if (bindingUpdated(lView, bindingIndex, exp)) {
+    try {
+      returnValue = thisArg ? pureFn.call(thisArg, exp) : pureFn(exp);
+    } finally {
+      updateBinding(lView, returnBindingIndex, returnValue);
+    }
+  } else {
+    returnValue = getBinding(lView, returnBindingIndex);
+  }
+  return returnValue;
 }
 
 
@@ -317,11 +381,18 @@ export function pureFunction2Internal(
     lView: LView, bindingRoot: number, slotOffset: number, pureFn: (v1: any, v2: any) => any,
     exp1: any, exp2: any, thisArg?: any): any {
   const bindingIndex = bindingRoot + slotOffset;
-  return bindingUpdated2(lView, bindingIndex, exp1, exp2) ?
-      updateBinding(
-          lView, bindingIndex + 2,
-          thisArg ? pureFn.call(thisArg, exp1, exp2) : pureFn(exp1, exp2)) :
-      getBinding(lView, bindingIndex + 2);
+  const returnBindingIndex = bindingIndex + 2;
+  let returnValue = undefined;
+  if (bindingUpdated2(lView, bindingIndex, exp1, exp2)) {
+    try {
+      returnValue = thisArg ? pureFn.call(thisArg, exp1, exp2) : pureFn(exp1, exp2);
+    } finally {
+      updateBinding(lView, returnBindingIndex, returnValue);
+    }
+  } else {
+    returnValue = getBinding(lView, returnBindingIndex);
+  }
+  return returnValue;
 }
 
 /**
@@ -343,11 +414,18 @@ export function pureFunction3Internal(
     pureFn: (v1: any, v2: any, v3: any) => any, exp1: any, exp2: any, exp3: any,
     thisArg?: any): any {
   const bindingIndex = bindingRoot + slotOffset;
-  return bindingUpdated3(lView, bindingIndex, exp1, exp2, exp3) ?
-      updateBinding(
-          lView, bindingIndex + 3,
-          thisArg ? pureFn.call(thisArg, exp1, exp2, exp3) : pureFn(exp1, exp2, exp3)) :
-      getBinding(lView, bindingIndex + 3);
+  const returnBindingIndex = bindingIndex + 3;
+  let returnValue = undefined;
+  if (bindingUpdated3(lView, bindingIndex, exp1, exp2, exp3)) {
+    try {
+      returnValue = thisArg ? pureFn.call(thisArg, exp1, exp2, exp3) : pureFn(exp1, exp2, exp3);
+    } finally {
+      updateBinding(lView, returnBindingIndex, returnValue);
+    }
+  } else {
+    returnValue = getBinding(lView, returnBindingIndex);
+  }
+  return returnValue;
 }
 
 
@@ -372,11 +450,19 @@ export function pureFunction4Internal(
     pureFn: (v1: any, v2: any, v3: any, v4: any) => any, exp1: any, exp2: any, exp3: any, exp4: any,
     thisArg?: any): any {
   const bindingIndex = bindingRoot + slotOffset;
-  return bindingUpdated4(lView, bindingIndex, exp1, exp2, exp3, exp4) ?
-      updateBinding(
-          lView, bindingIndex + 4,
-          thisArg ? pureFn.call(thisArg, exp1, exp2, exp3, exp4) : pureFn(exp1, exp2, exp3, exp4)) :
-      getBinding(lView, bindingIndex + 4);
+  const returnBindingIndex = bindingIndex + 4;
+  let returnValue = undefined;
+  if (bindingUpdated4(lView, bindingIndex, exp1, exp2, exp3, exp4)) {
+    try {
+      returnValue =
+          thisArg ? pureFn.call(thisArg, exp1, exp2, exp3, exp4) : pureFn(exp1, exp2, exp3, exp4);
+    } finally {
+      updateBinding(lView, returnBindingIndex, returnValue);
+    }
+  } else {
+    returnValue = getBinding(lView, returnBindingIndex);
+  }
+  return returnValue;
 }
 
 /**
@@ -402,6 +488,15 @@ export function pureFunctionVInternal(
   for (let i = 0; i < exps.length; i++) {
     bindingUpdated(lView, bindingIndex++, exps[i]) && (different = true);
   }
-  return different ? updateBinding(lView, bindingIndex, pureFn.apply(thisArg, exps)) :
-                     getBinding(lView, bindingIndex);
+  let returnValue = undefined;
+  if (different) {
+    try {
+      returnValue = pureFn.apply(thisArg, exps);
+    } finally {
+      updateBinding(lView, bindingIndex, returnValue);
+    }
+  } else {
+    returnValue = getBinding(lView, bindingIndex);
+  }
+  return returnValue;
 }
