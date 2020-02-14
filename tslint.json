@@ -22,6 +22,7 @@
         "order": ["static-field", "instance-field", "static-method", "instance-method"]
       }
     ],
+    "no-bitwise": false,
     "no-consecutive-blank-lines": false,
     "no-console": [true, "debug", "info", "time", "timeEnd", "trace"],
     "no-empty": false,

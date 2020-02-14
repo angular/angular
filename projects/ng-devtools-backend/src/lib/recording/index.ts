@@ -1,5 +1,5 @@
 import { ComponentTreeObserver, RecorderComponent } from './observer';
-import { AppRecord, ComponentEventType, LifeCycleEventType } from 'protocol';
+import { AppRecord, ComponentEventType, Events, LifeCycleEventType, MessageBus } from 'protocol';
 import { runOutsideAngular } from '../utils';
 import { createRecord } from './record-factory';
 
@@ -8,14 +8,14 @@ let observer: ComponentTreeObserver;
 let inProgress = false;
 let inChangeDetection = false;
 
-export const start = (): void => {
+export const start = (messageBus: MessageBus<Events>): void => {
   if (inProgress) {
     throw new Error('Recording already in progress');
   }
   inProgress = true;
   observer = new ComponentTreeObserver(
     (component: RecorderComponent) => {
-      records.push(createRecord({ recorderComponent: component, eventType: ComponentEventType.Create }));
+      addNewRecord(createRecord({ recorderComponent: component, eventType: ComponentEventType.Create }), messageBus);
     },
     (component: RecorderComponent, duration: number) => {
       if (!inChangeDetection) {
@@ -24,16 +24,17 @@ export const start = (): void => {
         runOutsideAngular(() => {
           setTimeout(() => {
             inChangeDetection = false;
-            records.push(createRecord({ eventType: LifeCycleEventType.ChangeDetectionEnd }));
+            addNewRecord(createRecord({ eventType: LifeCycleEventType.ChangeDetectionEnd }), messageBus);
           });
         });
       }
-      records.push(
-        createRecord({ recorderComponent: component, eventType: ComponentEventType.ChangeDetection, duration })
+      addNewRecord(
+        createRecord({ recorderComponent: component, eventType: ComponentEventType.ChangeDetection, duration }),
+        messageBus
       );
     },
     (component: RecorderComponent) => {
-      records.push(createRecord({ recorderComponent: component, eventType: ComponentEventType.Destroy }));
+      addNewRecord(createRecord({ recorderComponent: component, eventType: ComponentEventType.Destroy }), messageBus);
     }
   );
   observer.initialize();
@@ -46,4 +47,12 @@ export const stop = (): AppRecord[] => {
   records = [];
   inProgress = false;
   return temp;
+};
+
+const addNewRecord = (record: AppRecord, messageBus: MessageBus<Events>) => {
+  records.push(record);
+  if (!inChangeDetection) {
+    messageBus.emit('sendProfilerChunk', [records]);
+    records = [];
+  }
 };

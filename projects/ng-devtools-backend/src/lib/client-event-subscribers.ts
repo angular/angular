@@ -26,7 +26,7 @@ export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void =>
 
   messageBus.on('queryNgAvailability', checkForAngularCallback(messageBus));
 
-  messageBus.on('startProfiling', startProfiling);
+  messageBus.on('startProfiling', startProfilingCallback(messageBus));
   messageBus.on('stopProfiling', stopProfilingCallback(messageBus));
 
   messageBus.on('getElementDirectivesProperties', getElementDirectivesPropertiesCallback(messageBus));
@@ -66,6 +66,8 @@ const getLatestComponentExplorerViewCallback = (messageBus: MessageBus<Events>) 
 };
 
 const checkForAngularCallback = (messageBus: MessageBus<Events>) => () => checkForAngular(messageBus);
+
+const startProfilingCallback = (messageBus: MessageBus<Events>) => () => startProfiling(messageBus);
 
 const stopProfilingCallback = (messageBus: MessageBus<Events>) => () => {
   messageBus.emit('profilerResults', [stopProfiling()]);
