@@ -731,11 +731,11 @@ As you can see here, the `parentItem` in `AppComponent` is a string, which the `
 The previous simple example showed passing in a string. To pass in an object,
 the syntax and thinking are the same.
 
-In this scenario, `ListItemComponent` is nested within `AppComponent` and the `item` property expects an object.
+In this scenario, `ListItemComponent` is nested within `AppComponent` and the `items` property expects an array of objects.
 
 <code-example path="property-binding/src/app/app.component.html" region="pass-object" header="src/app/app.component.html"></code-example>
 
-The `item` property is declared in the `ListItemComponent` with a type of `Item` and decorated with `@Input()`:
+The `items` property is declared in the `ListItemComponent` with a type of `Item` and decorated with `@Input()`:
 
 <code-example path="property-binding/src/app/list-item/list-item.component.ts" region="item-input" header="src/app/list-item.component.ts"></code-example>
 
@@ -748,7 +748,7 @@ specify a different item in `app.component.ts` so that the new item will render:
 
 <code-example path="property-binding/src/app/app.component.ts" region="pass-object" header="src/app.component.ts"></code-example>
 
-You just have to make sure, in this case, that you're supplying an object because that's the type of `item` and is what the nested component, `ListItemComponent`, expects.
+You just have to make sure, in this case, that you're supplying an array of objects because that's the type of `items` and is what the nested component, `ListItemComponent`, expects.
 
 In this example, `AppComponent` specifies a different `item` object
 (`currentItem`) and passes it to the nested `ListItemComponent`. `ListItemComponent` was able to use `currentItem` because it matches what an `Item` object is according to `item.ts`. The `item.ts` file is where
