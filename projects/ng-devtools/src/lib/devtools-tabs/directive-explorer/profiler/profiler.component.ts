@@ -16,30 +16,41 @@ export class ProfilerComponent implements OnInit {
   state: State = 'idle';
   visualState: VisualState = 'aggregated';
   stream: AppRecord[] = [];
+  buffer: AppRecord[][] = [];
 
   @ViewChildren(RecordingComponent) recordingRef: QueryList<RecordingComponent>;
 
-  startRecording() {
+  startRecording(): void {
     this.state = 'recording';
     this.recordingRef.forEach(r => r.start());
     this.messageBus.emit('startProfiling');
   }
 
-  stopRecording() {
+  stopRecording(): void {
     this.state = 'idle';
     this.recordingRef.forEach(r => r.stop());
     this.messageBus.emit('stopProfiling');
   }
 
-  ngOnInit() {
-    this.messageBus.on('profilerResults', results => {
-      this.state = 'visualizing';
-      this.visualState = 'aggregated';
-      this.stream = results;
+  ngOnInit(): void {
+    this.messageBus.on('profilerResults', remainingRecords => {
+      this._profilerFinished(remainingRecords);
+    });
+    this.messageBus.on('sendProfilerChunk', (chunkOfRecords: AppRecord[]) => {
+      this.buffer.push(chunkOfRecords);
     });
   }
 
-  discardRecording() {
+  private _profilerFinished(remainingRecords: AppRecord[]): void {
+    this.state = 'visualizing';
+    this.visualState = 'aggregated';
+
+    const flattenedBuffer = [].concat.apply([], this.buffer);
+    this.stream = [...flattenedBuffer, ...remainingRecords];
+    this.buffer = [];
+  }
+
+  discardRecording(): void {
     this.stream = [];
     this.state = 'idle';
     this.visualState = 'aggregated';
