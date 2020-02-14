@@ -17,11 +17,11 @@ export function isFunctionLikeDeclaration(node: ts.Node): node is ts.FunctionLik
 
 /**
  * Unwraps a given expression TypeScript node. Expressions can be wrapped within multiple
- * parentheses. e.g. "(((({exp}))))()". The function should return the TypeScript node
- * referring to the inner expression. e.g "exp".
+ * parentheses or as expression. e.g. "(((({exp}))))()". The function should return the
+ * TypeScript node referring to the inner expression. e.g "exp".
  */
 export function unwrapExpression(node: ts.Expression | ts.ParenthesizedExpression): ts.Expression {
-  if (ts.isParenthesizedExpression(node)) {
+  if (ts.isParenthesizedExpression(node) || ts.isAsExpression(node)) {
     return unwrapExpression(node.expression);
   } else {
     return node;

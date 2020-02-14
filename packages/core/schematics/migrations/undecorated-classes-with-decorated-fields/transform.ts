@@ -6,17 +6,33 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
+import {TypeScriptReflectionHost, reflectObjectLiteral} from '@angular/compiler-cli/src/ngtsc/reflection';
 import * as ts from 'typescript';
 
 import {ImportManager} from '../../utils/import_manager';
-import {getAngularDecorators} from '../../utils/ng_decorators';
+import {NgDecorator, getAngularDecorators} from '../../utils/ng_decorators';
 import {findBaseClassDeclarations} from '../../utils/typescript/find_base_classes';
+import {unwrapExpression} from '../../utils/typescript/functions';
 
 import {UpdateRecorder} from './update_recorder';
+
+
+/** Analyzed class declaration. */
+interface AnalyzedClass {
+  /** Whether the class is decorated with @Directive or @Component. */
+  isDirectiveOrComponent: boolean;
+  /** Whether the class is an abstract directive. */
+  isAbstractDirective: boolean;
+  /** Whether the class uses any Angular features. */
+  usesAngularFeatures: boolean;
+}
 
 export class UndecoratedClassesWithDecoratedFieldsTransform {
   private printer = ts.createPrinter();
   private importManager = new ImportManager(this.getUpdateRecorder, this.printer);
+  private reflectionHost = new TypeScriptReflectionHost(this.typeChecker);
+  private partialEvaluator = new PartialEvaluator(this.reflectionHost, this.typeChecker, null);
 
   constructor(
       private typeChecker: ts.TypeChecker,
@@ -28,7 +44,7 @@ export class UndecoratedClassesWithDecoratedFieldsTransform {
    * https://hackmd.io/vuQfavzfRG6KUCtU7oK_EA
    */
   migrate(sourceFiles: ts.SourceFile[]) {
-    this._findUndecoratedDirectives(sourceFiles).forEach(node => {
+    this._findUndecoratedAbstractDirectives(sourceFiles).forEach(node => {
       const sourceFile = node.getSourceFile();
       const recorder = this.getUpdateRecorder(sourceFile);
       const directiveExpr =
@@ -42,54 +58,96 @@ export class UndecoratedClassesWithDecoratedFieldsTransform {
   /** Records all changes that were made in the import manager. */
   recordChanges() { this.importManager.recordChanges(); }
 
-  /** Finds undecorated directives in the specified source files. */
-  private _findUndecoratedDirectives(sourceFiles: ts.SourceFile[]) {
-    const typeChecker = this.typeChecker;
-    const undecoratedDirectives = new Set<ts.ClassDeclaration>();
+  /** Finds undecorated abstract directives in the specified source files. */
+  private _findUndecoratedAbstractDirectives(sourceFiles: ts.SourceFile[]) {
+    const result = new Set<ts.ClassDeclaration>();
     const undecoratedClasses = new Set<ts.ClassDeclaration>();
-    const decoratedDirectives = new WeakSet<ts.ClassDeclaration>();
+    const nonAbstractDirectives = new WeakSet<ts.ClassDeclaration>();
+    const abstractDirectives = new WeakSet<ts.ClassDeclaration>();
 
     const visitNode = (node: ts.Node) => {
       node.forEachChild(visitNode);
       if (!ts.isClassDeclaration(node)) {
         return;
       }
-      const ngDecorators = node.decorators && getAngularDecorators(typeChecker, node.decorators);
-      const isDirectiveOrComponent = ngDecorators !== undefined &&
-          ngDecorators.some(({name}) => name === 'Directive' || name === 'Component');
+      const {isDirectiveOrComponent, isAbstractDirective, usesAngularFeatures} =
+          this._analyzeClassDeclaration(node);
       if (isDirectiveOrComponent) {
-        decoratedDirectives.add(node);
-      } else {
-        if (this._hasAngularDecoratedClassMember(node)) {
-          undecoratedDirectives.add(node);
+        if (isAbstractDirective) {
+          abstractDirectives.add(node);
         } else {
-          undecoratedClasses.add(node);
+          nonAbstractDirectives.add(node);
         }
+      } else if (usesAngularFeatures) {
+        abstractDirectives.add(node);
+        result.add(node);
+      } else {
+        undecoratedClasses.add(node);
       }
     };
 
     sourceFiles.forEach(sourceFile => sourceFile.forEachChild(visitNode));
 
-    // We collected all class declarations that use Angular features but are not decorated. For
-    // such undecorated directives, the derived classes also need to be migrated. To achieve this,
-    // we walk through all undecorated classes and mark those which extend from an undecorated
-    // directive as undecorated directive too.
+    // We collected all undecorated class declarations which inherit from abstract directives.
+    // For such abstract directives, the derived classes also need to be migrated.
     undecoratedClasses.forEach(node => {
       for (const {node: baseClass} of findBaseClassDeclarations(node, this.typeChecker)) {
-        // If the undecorated class inherits from a decorated directive, skip the current class.
-        // We do this because undecorated classes which inherit from directives/components are
-        // handled in the `undecorated-classes-with-di` migration which copies inherited metadata.
-        if (decoratedDirectives.has(baseClass)) {
+        // If the undecorated class inherits from a non-abstract directive, skip the current
+        // class. We do this because undecorated classes which inherit metadata from non-abstract
+        // directives are handle in the `undecorated-classes-with-di` migration that copies
+        // inherited metadata into an explicit decorator.
+        if (nonAbstractDirectives.has(baseClass)) {
           break;
-        } else if (undecoratedDirectives.has(baseClass)) {
-          undecoratedDirectives.add(node);
-          undecoratedClasses.delete(node);
+        } else if (abstractDirectives.has(baseClass)) {
+          result.add(node);
           break;
         }
       }
     });
 
-    return undecoratedDirectives;
+    return result;
+  }
+
+  /**
+   * Analyzes the given class declaration by determining whether the class
+   * is a directive, is an abstract directive, or uses Angular features.
+   */
+  private _analyzeClassDeclaration(node: ts.ClassDeclaration): AnalyzedClass {
+    const ngDecorators = node.decorators && getAngularDecorators(this.typeChecker, node.decorators);
+    const usesAngularFeatures = this._hasAngularDecoratedClassMember(node);
+    if (ngDecorators === undefined || ngDecorators.length === 0) {
+      return {isDirectiveOrComponent: false, isAbstractDirective: false, usesAngularFeatures};
+    }
+    const directiveDecorator = ngDecorators.find(({name}) => name === 'Directive');
+    const componentDecorator = ngDecorators.find(({name}) => name === 'Component');
+    const isAbstractDirective =
+        directiveDecorator !== undefined && this._isAbstractDirective(directiveDecorator);
+    return {
+      isDirectiveOrComponent: !!directiveDecorator || !!componentDecorator,
+      isAbstractDirective,
+      usesAngularFeatures,
+    };
+  }
+
+  /**
+  * Checks whether the given decorator resolves to an abstract directive. An directive is
+  * considered "abstract" if there is no selector specified.
+  */
+  private _isAbstractDirective({node}: NgDecorator): boolean {
+    const metadataArgs = node.expression.arguments;
+    if (metadataArgs.length === 0) {
+      return true;
+    }
+    const metadataExpr = unwrapExpression(metadataArgs[0]);
+    if (!ts.isObjectLiteralExpression(metadataExpr)) {
+      return false;
+    }
+    const metadata = reflectObjectLiteral(metadataExpr);
+    if (!metadata.has('selector')) {
+      return false;
+    }
+    const selector = this.partialEvaluator.evaluate(metadata.get('selector') !);
+    return selector == null;
   }
 
   private _hasAngularDecoratedClassMember(node: ts.ClassDeclaration): boolean {
