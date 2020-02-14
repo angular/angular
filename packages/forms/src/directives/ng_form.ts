@@ -55,24 +55,6 @@ const resolvedPromise = (() => Promise.resolve(null))();
  *
  * @usageNotes
  *
- * ### Migrating from deprecated ngForm selector
- *
- * Support for using `ngForm` element selector has been deprecated in Angular v6 and may be removed
- * in Angular v9 or later.
- *
- * This has been deprecated to keep selectors consistent with other core Angular selectors,
- * as element selectors are typically written in kebab-case.
- *
- * Now deprecated:
- * ```html
- * <ngForm #myForm="ngForm">
- * ```
- *
- * After:
- * ```html
- * <ng-form #myForm="ngForm">
- * ```
- *
  * ### Listening for form submission
  *
  * The following example shows how to capture the form values from the "ngSubmit" event.
