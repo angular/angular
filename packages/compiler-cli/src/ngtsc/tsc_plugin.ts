@@ -51,9 +51,7 @@ interface TscPlugin {
 
   getNextProgram(): ts.Program;
 
-  prepareEmit(): {
-    transformers: ts.CustomTransformers,
-  };
+  createTransformers(): ts.CustomTransformers;
 }
 
 /**
@@ -106,5 +104,5 @@ export class NgTscPlugin implements TscPlugin {
 
   getNextProgram(): ts.Program { return this.compiler.getNextProgram(); }
 
-  prepareEmit(): {transformers: ts.CustomTransformers;} { return this.compiler.prepareEmit(); }
+  createTransformers(): ts.CustomTransformers { return this.compiler.prepareEmit().transformers; }
 }
