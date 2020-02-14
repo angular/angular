@@ -889,15 +889,23 @@ describe('TestBed', () => {
               {set: {template: `<span someDirective>{{'hello' | somePipe}}</span>`}});
           TestBed.createComponent(SomeComponent);
 
-          const defBeforeReset = (SomeComponent as any).ɵcmp;
-          expect(defBeforeReset.pipeDefs().length).toEqual(1);
-          expect(defBeforeReset.directiveDefs().length).toEqual(2);  // directive + component
+          const cmpDefBeforeReset = (SomeComponent as any).ɵcmp;
+          expect(cmpDefBeforeReset.pipeDefs().length).toEqual(1);
+          expect(cmpDefBeforeReset.directiveDefs().length).toEqual(2);  // directive + component
+
+          const modDefBeforeReset = (SomeModule as any).ɵmod;
+          const transitiveScope = modDefBeforeReset.transitiveCompileScopes.compilation;
+          expect(transitiveScope.pipes.size).toEqual(1);
+          expect(transitiveScope.directives.size).toEqual(2);
 
           TestBed.resetTestingModule();
 
-          const defAfterReset = (SomeComponent as any).ɵcmp;
-          expect(defAfterReset.pipeDefs).toBe(null);
-          expect(defAfterReset.directiveDefs).toBe(null);
+          const cmpDefAfterReset = (SomeComponent as any).ɵcmp;
+          expect(cmpDefAfterReset.pipeDefs).toBe(null);
+          expect(cmpDefAfterReset.directiveDefs).toBe(null);
+
+          const modDefAfterReset = (SomeModule as any).ɵmod;
+          expect(modDefAfterReset.transitiveCompileScopes).toBe(null);
         });
 
         it('should cleanup ng defs for classes with no ng annotations (in case of inheritance)',
