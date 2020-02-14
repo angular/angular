@@ -1,6 +1,6 @@
-# Forms
+# Getting Started with Angular: Forms
 
-At the end of [Managing Data](start/data "Getting Started: Managing Data"), the online store application has a product catalog and a shopping cart.
+At the end of [Managing Data](start/start-data "Getting Started: Managing Data"), the online store application has a product catalog and a shopping cart.
 
 This section walks you through adding a form-based checkout feature to collect user information as part of checkout.
 
@@ -82,4 +82,4 @@ To confirm submission, open the console where you should see an object containin
 
 Congratulations! You have a complete online store application with a product catalog, a shopping cart, and a checkout function.
 
-[Continue to the "Deployment" section](start/deployment "Getting Started: Deployment") to move to local development, or deploy your app to Firebase or your own server.
+[Continue to the "Deployment" section](start/start-deployment "Getting Started: Deployment") to move to local development, or deploy your app to Firebase or your own server.

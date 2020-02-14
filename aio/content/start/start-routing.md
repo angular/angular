@@ -1,4 +1,4 @@
-# Routing
+# Getting Started with Angular: Routing
 
 At the end of [Your First App](start "Getting Started: Your First App"), the online store application has a basic product catalog.
 The app doesn't have any variable states or navigation.
@@ -73,7 +73,7 @@ The product details component handles the display of each product. The Angular R
         The `ActivatedRoute` is specific to each routed component that the Angular Router loads. It contains information about the
         route, its parameters, and additional data associated with the route.
 
-        By injecting the `ActivatedRoute`, you are configuring the component to use a service. While this part of the Getting Started tutorial uses this syntax briefly, the [Managing Data](start/data "Getting Started: Managing Data") page covers services in more detail.
+        By injecting the `ActivatedRoute`, you are configuring the component to use a service. While this part of the Getting Started tutorial uses this syntax briefly, the [Managing Data](start/start-data "Getting Started: Managing Data") page covers services in more detail.
 
 
 1. In the `ngOnInit()` method, subscribe to route parameters and fetch the product based on the `productId`.
@@ -111,5 +111,5 @@ Congratulations! You have integrated routing into your online store.
 * Users can click on a product name from the list to see details in a new view, with a distinct URL/route.
 
 To continue exploring Angular, choose either of the following options:
-* [Continue to the "Managing Data" section](start/data "Getting Started: Managing Data") to add a shopping cart feature, use a service to manage the cart data and use HTTP to retrieve external data for shipping prices.
-* [Skip ahead to the Deployment section](start/deployment "Getting Started: Deployment") to deploy your app to Firebase or move to local development.
+* [Continue to the "Managing Data" section](start/start-data "Getting Started: Managing Data") to add a shopping cart feature, use a service to manage the cart data and use HTTP to retrieve external data for shipping prices.
+* [Skip ahead to the Deployment section](start/start-deployment "Getting Started: Deployment") to deploy your app to Firebase or move to local development.

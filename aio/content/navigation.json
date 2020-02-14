@@ -67,22 +67,22 @@
           "tooltip": "Introduction to Angular's component model, template syntax, and component communication."
         },
         {
-          "url": "start/routing",
+          "url": "start/start-routing",
           "title": "Routing",
           "tooltip": "Introduction to routing between components using the browser's URL."
         },
         {
-          "url": "start/data",
+          "url": "start/start-data",
           "title": "Managing Data",
           "tooltip": "Introduction to services and accessing external data via HTTP."
         },
         {
-          "url": "start/forms",
+          "url": "start/start-forms",
           "title": "Forms",
           "tooltip": "Learn about fetching and managing data from users with forms."
         },
         {
-          "url": "start/deployment",
+          "url": "start/start-deployment",
           "title": "Deployment",
           "tooltip": "Move to local development, or deploy your application to Firebase or your own server."
         }
