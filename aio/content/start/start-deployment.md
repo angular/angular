@@ -1,4 +1,4 @@
-# Deployment
+# Getting Started with Angular: Deployment
 
 
 To deploy your application, you have to compile it, and then host the JavaScript, CSS, and HTML on a web server. Built Angular applications are very portable and can live in any environment or served by any technology, such as Node, Java, .NET, PHP, and many others.
@@ -6,7 +6,7 @@ To deploy your application, you have to compile it, and then host the JavaScript
 <div class="alert is-helpful">
 
 
-Whether you came here directly from [Your First App](start "Getting Started: Your First App"), or completed the entire online store application through the [Routing](start/routing "Getting Started: Routing"), [Managing Data](start/data "Getting Started: Managing Data"), and [Forms](start/forms "Getting Started: Forms") sections, you have an application that you can deploy by following the instructions in this section.
+Whether you came here directly from [Your First App](start "Getting Started: Your First App"), or completed the entire online store application through the [Routing](start/start-routing "Getting Started: Routing"), [Managing Data](start/start-data "Getting Started: Managing Data"), and [Forms](start/start-forms "Getting Started: Forms") sections, you have an application that you can deploy by following the instructions in this section.
 
 
 </div>
