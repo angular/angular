@@ -187,11 +187,6 @@ angular_integration_test(
 
 angular_integration_test(
     name = "bazel-schematics_test",
-    # integration/bazel-schematics uses $CI_CHROMEDRIVER_VERSION_ARG in its postinstall webdriver-manager update
-    # TODO(gregmagolan): remove that dependency have that test use puppeteer as well
-    configuration_env_vars = [
-        "CI_CHROMEDRIVER_VERSION_ARG",
-    ],
     tags = [
         "exclusive",
         "manual",
