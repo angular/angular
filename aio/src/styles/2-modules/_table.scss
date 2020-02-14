@@ -113,3 +113,15 @@ table {
     }
   }
 }
+
+article[class="events-container"] {
+  & table > tbody > 
+  
+  tr > th:first-child {
+    width: 15%;
+  }
+
+  tr > td:last-child {
+    width: 30%;
+  }
+}
