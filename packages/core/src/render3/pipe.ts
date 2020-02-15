@@ -8,9 +8,10 @@
 
 import {WrappedValue} from '../change_detection/change_detection_util';
 import {PipeTransform} from '../change_detection/pipe_transform';
+import {setInjectImplementation} from '../di/injector_compatibility';
 
 import {getFactoryDef} from './definition';
-import {store} from './instructions/all';
+import {store, ɵɵdirectiveInject} from './instructions/all';
 import {PipeDef, PipeDefList} from './interfaces/definition';
 import {HEADER_OFFSET, LView, TVIEW} from './interfaces/view';
 import {pureFunction1Internal, pureFunction2Internal, pureFunction3Internal, pureFunction4Internal, pureFunctionVInternal} from './pure_function';
@@ -45,7 +46,9 @@ export function ɵɵpipe(index: number, pipeName: string): any {
   }
 
   const pipeFactory = pipeDef.factory || (pipeDef.factory = getFactoryDef(pipeDef.type, true));
+  const previousInjectImplementation = setInjectImplementation(ɵɵdirectiveInject);
   const pipeInstance = pipeFactory();
+  setInjectImplementation(previousInjectImplementation);
   store(tView, getLView(), index, pipeInstance);
   return pipeInstance;
 }
