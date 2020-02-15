@@ -27,6 +27,7 @@ integration/injectable-def/node_modules
 integration/ivy-i18n/node_modules
 integration/language_service_plugin/node_modules
 integration/ng_elements/node_modules
+integration/ng_elements_schematics/node_modules
 integration/ng_update/node_modules
 integration/ng_update_migrations/node_modules
 integration/ngcc/node_modules
@@ -35,6 +36,7 @@ integration/service-worker-schema/node_modules
 integration/side-effects/node_modules
 integration/terser/node_modules
 integration/typings_test_ts36/node_modules
+integration/typings_test_ts37/node_modules
 integration/cli-hello-world/.yarn_local_cache
 integration/cli-hello-world-ivy-compat/.yarn_local_cache
 integration/cli-hello-world-ivy-i18n/.yarn_local_cache
@@ -49,6 +51,7 @@ integration/injectable-def/.yarn_local_cache
 integration/ivy-i18n/.yarn_local_cache
 integration/language_service_plugin/.yarn_local_cache
 integration/ng_elements/.yarn_local_cache
+integration/ng_elements_schematics/.yarn_local_cache
 integration/ng_update/.yarn_local_cache
 integration/ng_update_migrations/.yarn_local_cache
 integration/ngcc/.yarn_local_cache
@@ -57,4 +60,5 @@ integration/service-worker-schema/.yarn_local_cache
 integration/side-effects/.yarn_local_cache
 integration/terser/.yarn_local_cache
 integration/typings_test_ts36/.yarn_local_cache
+integration/typings_test_ts37/.yarn_local_cache
 packages/bazel/node_modules
