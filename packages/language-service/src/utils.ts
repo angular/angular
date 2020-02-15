@@ -56,9 +56,11 @@ export function isNarrower(spanA: Span, spanB: Span): boolean {
   return spanA.start >= spanB.start && spanA.end <= spanB.end;
 }
 
-export function hasTemplateReference(type: CompileTypeMetadata): boolean {
+export function isStructuralDirective(type: CompileTypeMetadata): boolean {
   for (const diDep of type.diDeps) {
-    if (diDep.token && identifierName(diDep.token.identifier) === Identifiers.TemplateRef.name) {
+    const diDepName = identifierName(diDep.token?.identifier);
+    if (diDepName === Identifiers.TemplateRef.name ||
+        diDepName === Identifiers.ViewContainerRef.name) {
       return true;
     }
   }

@@ -15,7 +15,7 @@ import {getExpressionCompletions} from './expressions';
 import {attributeNames, elementNames, eventNames, propertyNames} from './html_info';
 import {InlineTemplate} from './template';
 import * as ng from './types';
-import {diagnosticInfoFromTemplateInfo, findTemplateAstAt, getPathToNodeAtPosition, getSelectors, hasTemplateReference, inSpan, spanOf} from './utils';
+import {diagnosticInfoFromTemplateInfo, findTemplateAstAt, getPathToNodeAtPosition, getSelectors, inSpan, isStructuralDirective, spanOf} from './utils';
 
 const HIDDEN_HTML_ELEMENTS: ReadonlySet<string> =
     new Set(['html', 'script', 'noscript', 'base', 'body', 'title', 'head', 'link']);
@@ -629,11 +629,11 @@ function angularAttributes(info: AstResult, elementName: string): AngularAttribu
       continue;
     }
     const summary = selectorMap.get(selector) !;
-    const isTemplateRef = hasTemplateReference(summary.type);
+    const hasTemplateRef = isStructuralDirective(summary.type);
     // attributes are listed in (attribute, value) pairs
     for (let i = 0; i < selector.attrs.length; i += 2) {
       const attr = selector.attrs[i];
-      if (isTemplateRef) {
+      if (hasTemplateRef) {
         templateRefs.add(attr);
       } else {
         others.add(attr);
