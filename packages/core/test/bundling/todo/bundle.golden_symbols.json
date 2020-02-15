@@ -393,6 +393,9 @@
     "name": "getSelectedIndex"
   },
   {
+    "name": "getSimpleChangesStore"
+  },
+  {
     "name": "getSymbolIterator"
   },
   {
@@ -549,6 +552,9 @@
     "name": "nextNgElementId"
   },
   {
+    "name": "ngOnChangesSetInput"
+  },
+  {
     "name": "noSideEffects"
   },
   {
@@ -568,6 +574,9 @@
   },
   {
     "name": "registerPostOrderHooks"
+  },
+  {
+    "name": "rememberChangeHistoryAndInvokeOnChangesHook"
   },
   {
     "name": "removeFromArray"

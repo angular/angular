@@ -7,6 +7,7 @@
  */
 import {Injector} from '../../di';
 import {ErrorHandler} from '../../error_handler';
+import {DoCheck, OnChanges, OnInit} from '../../interface/lifecycle_hooks';
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../metadata/schema';
 import {ViewEncapsulation} from '../../metadata/view';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
@@ -1166,9 +1167,11 @@ export function resolveDirectives(
         if (def.hostBindings !== null || def.hostAttrs !== null || def.hostVars !== 0)
           tNode.flags |= TNodeFlags.hasHostBindings;
 
+        const lifeCycleHooks: OnChanges&OnInit&DoCheck = def.type.prototype;
         // Only push a node index into the preOrderHooks array if this is the first
         // pre-order hook found on this node.
-        if (!preOrderHooksFound && (def.onChanges || def.onInit || def.doCheck)) {
+        if (!preOrderHooksFound &&
+            (lifeCycleHooks.ngOnChanges || lifeCycleHooks.ngOnInit || lifeCycleHooks.ngDoCheck)) {
           // We will push the actual hook function into this array later during dir instantiation.
           // We cannot do it now because we must ensure hooks are registered in the same
           // order that directives are created (i.e. injection order).
@@ -1176,7 +1179,7 @@ export function resolveDirectives(
           preOrderHooksFound = true;
         }
 
-        if (!preOrderCheckHooksFound && (def.onChanges || def.doCheck)) {
+        if (!preOrderCheckHooksFound && (lifeCycleHooks.ngOnChanges || lifeCycleHooks.ngDoCheck)) {
           (tView.preOrderCheckHooks || (tView.preOrderCheckHooks = []))
               .push(tNode.index - HEADER_OFFSET);
           preOrderCheckHooksFound = true;
