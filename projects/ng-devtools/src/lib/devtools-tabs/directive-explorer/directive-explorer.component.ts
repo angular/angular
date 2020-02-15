@@ -10,6 +10,7 @@ import {
   ComponentExplorerViewProperties,
   ElementID,
   Properties,
+  Descriptor,
 } from 'protocol';
 import { IndexedNode } from './directive-forest/index-forest';
 import { PropertyViewComponent } from './property-view/property-view.component';
@@ -126,7 +127,7 @@ export class DirectiveExplorerComponent implements OnInit {
     return result;
   }
 
-  copyPropData(propData: Properties): void {
+  copyPropData(propData: { [name: string]: Descriptor }): void {
     const handler = (e: ClipboardEvent) => {
       e.clipboardData.setData('text/plain', JSON.stringify(cleanPropDataForCopying(propData)));
       e.preventDefault();
@@ -148,7 +149,7 @@ export class DirectiveExplorerComponent implements OnInit {
   }
 }
 
-const cleanPropDataForCopying = (propData: Properties, cleanedPropData = {}): object => {
+const cleanPropDataForCopying = (propData: { [name: string]: Descriptor }, cleanedPropData = {}): object => {
   Object.keys(propData).forEach(key => {
     if (typeof propData[key].value === 'object') {
       cleanedPropData[key] = {};
