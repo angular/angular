@@ -250,16 +250,6 @@ export interface DirectiveDef<T> {
    */
   readonly factory: FactoryFn<T>|null;
 
-  /* The following are lifecycle hooks for this component */
-  readonly onChanges: (() => void)|null;
-  readonly onInit: (() => void)|null;
-  readonly doCheck: (() => void)|null;
-  readonly afterContentInit: (() => void)|null;
-  readonly afterContentChecked: (() => void)|null;
-  readonly afterViewInit: (() => void)|null;
-  readonly afterViewChecked: (() => void)|null;
-  readonly onDestroy: (() => void)|null;
-
   /**
    * The features applied to this directive
    */
