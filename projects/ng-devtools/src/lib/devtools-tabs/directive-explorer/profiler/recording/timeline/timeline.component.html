@@ -12,8 +12,9 @@
     [class.warning-no]="recordsView.timeSpent < 16"
     [class.warning-low]="recordsView.timeSpent >= 16"
     [class.warning-mid]="recordsView.timeSpent >= 32"
-    [class.warning-high]="recordsView.timeSpent >= 64">
-  Time spent: {{ recordsView.timeSpent | number }} ms
+    [class.warning-high]="recordsView.timeSpent >= 64"
+  >
+    Time spent: {{ recordsView.timeSpent | number }} ms
   </label>
 
   <label
@@ -21,11 +22,12 @@
     [class.warning-low]="recordsView.timeSpent >= 16"
     [class.warning-mid]="recordsView.timeSpent >= 32"
     [class.warning-high]="recordsView.timeSpent >= 64"
-    *ngIf="frameRate(recordsView.timeSpent) < 64">
-  Frame rate: {{ frameRate(recordsView.timeSpent) }} fps
+    *ngIf="frameRate(recordsView.timeSpent) < 64"
+  >
+    Frame rate: {{ frameRate(recordsView.timeSpent) }} fps
   </label>
 
   <label *ngIf="recordsView.source">Source: {{ recordsView.source }}</label>
 </div>
 
-<ng-recording-visualizer [sidebarDisabled]="view === 'timeline'" [bars]="recordsView.app"></ng-recording-visualizer>
+<ng-recording-visualizer [bars]="recordsView.app"></ng-recording-visualizer>

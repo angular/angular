@@ -1,9 +1,15 @@
-<div class="level-profile-wrapper" [class.split-width]="selectedEntry && !sidebarDisabled">
-  <ngx-flamegraph (frameClick)="selectFrame($event)" [data]="profilerBars" [width]="availableWidth" [height]="300">
+<div class="level-profile-wrapper" [class.split-width]="selectedEntry">
+  <ngx-flamegraph
+    (frameClick)="selectFrame($event)"
+    [data]="profilerBars"
+    [width]="availableWidth"
+    [height]="300"
+    siblingLayout="equal"
+  >
   </ngx-flamegraph>
 </div>
 
-<div class="selected-entry" *ngIf="selectedEntry && !sidebarDisabled">
+<div class="selected-entry" *ngIf="selectedEntry">
   <header>{{ selectedEntry.label }} details</header>
   <section class="entry-statistics">
     <div><label>Instances:</label> {{ selectedEntry.instances }}</div>

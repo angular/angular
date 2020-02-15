@@ -11,7 +11,6 @@ export class RecordingVisualizerComponent {
   profilerBars: FlamegraphNode[] = [];
   selectedEntry: FlamegraphNode = null;
 
-  @Input() sidebarDisabled = false;
   @Input() set bars(data: FlamegraphNode[]) {
     this.selectedEntry = null;
     this.profilerBars = data;
