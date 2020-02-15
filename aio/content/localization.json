@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://angular.cn/",
+    "message": "中文文档在这里",
+    "langCodes": [
+      "zh"
+    ]
+  },
+  {
+    "url": "https://angular.jp/",
+    "message": "日本語ドキュメントはこちら",
+    "langCodes": [
+      "ja"
+    ]
+  },
+  {
+    "url": "https://angular.kr/",
+    "message": "한국어 문서가 여기에 있습니다",
+    "langCodes": [
+      "ko"
+    ]
+  }
+]
