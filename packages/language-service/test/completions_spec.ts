@@ -129,6 +129,7 @@ describe('completions', () => {
       'ngSwitchCase',
       'ngSwitchDefault',
       'ngPluralCase',
+      'ngTemplateOutlet',
     ]);
   });
 
