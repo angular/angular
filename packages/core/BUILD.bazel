@@ -27,6 +27,8 @@ ng_package(
     name = "npm_package",
     srcs = glob(["**/*.externs.js"]) + [
         "package.json",
+        "//packages/core/labs:package.json",
+        "//packages/core/labs:README.md",
         "//packages/core/testing:package.json",
     ],
     entry_point = ":index.ts",
@@ -51,6 +53,7 @@ ng_package(
     ],
     deps = [
         ":core",
+        "//packages/core/labs",
         "//packages/core/testing",
     ],
 )

@@ -1,0 +1,11 @@
+{
+  "name": "@angular/core/labs",
+  "typings": "./labs.d.ts",
+  "main": "../bundles/core-labs.umd.js",
+  "module": "../fesm5/labs.js",
+  "es2015": "../fesm2015/labs.js",
+  "esm5": "../esm5/labs/labs.js",
+  "esm2015": "../esm2015/labs/labs.js",
+  "fesm5": "../fesm5/labs.js",
+  "fesm2015": "../fesm2015/labs.js"
+}

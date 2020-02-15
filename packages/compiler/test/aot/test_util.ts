@@ -622,8 +622,17 @@ export function setup(options: {
       // If running under bazel then we get the compiled version of the files from the bazel package
       // output.
       const bundles = new Set([
-        'bundles', 'esm2015', 'esm5', 'testing', 'testing.d.ts', 'testing.metadata.json', 'browser',
-        'browser.d.ts'
+        'bundles',
+        'esm2015',
+        'esm5',
+        'testing',
+        'testing.d.ts',
+        'testing.metadata.json',
+        'browser',
+        'browser.d.ts',
+        'labs',
+        'labs.d.ts',
+        'labs.metadata.json',
       ]);
       const skipDirs = (name: string) => bundles.has(name);
       if (options.compileAngular) {

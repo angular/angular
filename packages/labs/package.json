@@ -1,0 +1,23 @@
+{
+  "name": "@angular/labs",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "Angular - the labs framework",
+  "main": "./bundles/labs.umd.js",
+  "module": "./fesm5/labs.js",
+  "es2015": "./fesm2015/labs.js",
+  "esm5": "./esm5/labs.js",
+  "esm2015": "./esm2015/labs.js",
+  "fesm5": "./fesm5/labs.js",
+  "fesm2015": "./fesm2015/labs.js",
+  "typings": "./labs.d.ts",
+  "author": "angular",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git"
+  },
+  "sideEffects": false,
+  "publishConfig":{
+    "registry":"https://wombat-dressing-room.appspot.com"
+  }
+}

@@ -1,0 +1,88 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ng_module", "ts_library")
+load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "package.json",
+    "README.md",
+])
+
+ng_module(
+    name = "labs",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    module_name = "@angular/core/labs",
+    deps = [
+        "//packages/core",
+        "@npm//@types/node",
+    ],
+)
+
+circular_dependency_test(
+    name = "circular_deps_test",
+    entry_point = "angular/packages/core/labs/index.js",
+    deps = [":labs"],
+)
+
+ts_library(
+    name = "unit_spec_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.unit.spec.ts"],
+    ),
+    deps = [
+        ":labs",
+        "//packages:types",
+        "//packages/core",
+    ],
+)
+
+ts_library(
+    name = "acceptance_spec_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.acceptance.spec.ts"],
+    ),
+    deps = [
+        ":labs",
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+    ],
+)
+
+jasmine_node_test(
+    name = "unit",
+    bootstrap = ["//tools/testing:node_es5"],
+    deps = [
+        ":unit_spec_lib",
+    ],
+)
+
+karma_web_test_suite(
+    name = "unit_web",
+    deps = [
+        ":unit_spec_lib",
+    ],
+)
+
+jasmine_node_test(
+    name = "acceptance",
+    bootstrap = ["//tools/testing:node_es5"],
+    deps = [
+        ":acceptance_spec_lib",
+    ],
+)
+
+karma_web_test_suite(
+    name = "acceptance_web",
+    deps = [
+        ":acceptance_spec_lib",
+    ],
+)

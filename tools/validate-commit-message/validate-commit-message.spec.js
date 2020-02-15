@@ -36,6 +36,7 @@ describe('validate-commit-message.js', () => {
 
     it('should be valid', () => {
       expect(validateMessage('fix(core): something')).toBe(VALID);
+      expect(validateMessage('fix(core/labs): something')).toBe(VALID);
       expect(validateMessage('feat(common): something')).toBe(VALID);
       expect(validateMessage('docs(compiler): something')).toBe(VALID);
       expect(validateMessage('style(http): something')).toBe(VALID);
