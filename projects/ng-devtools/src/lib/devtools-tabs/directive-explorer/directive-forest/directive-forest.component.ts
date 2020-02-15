@@ -31,10 +31,15 @@ import { FilterComponent } from './filter/filter.component';
 })
 export class DirectiveForestComponent {
   @Input() set forest(forest: Node[]) {
-    this.dataSource.update(forest);
+    const newItems = this.dataSource.update(forest);
     if (!this._initialized && forest && forest.length) {
       this.treeControl.expandAll();
       this._initialized = true;
+    }
+    if (newItems && newItems.length) {
+      newItems.forEach(item => {
+        this.treeControl.expand(item);
+      });
     }
   }
   @Input() highlightIDinTreeFromElement: ElementID | null = null;

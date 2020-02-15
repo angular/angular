@@ -6,6 +6,7 @@ import { FlatTreeControl } from '@angular/cdk/tree';
 import { map } from 'rxjs/operators';
 import { DefaultIterableDiffer } from '@angular/core';
 import { IndexedNode, indexForest } from './index-forest';
+import { diff } from '../../diffing';
 
 /** Flat node with expandable and level information */
 export interface FlatNode {
@@ -20,7 +21,7 @@ export interface FlatNode {
 const expandable = (node: IndexedNode) => !!node.children && node.children.length > 0;
 
 const trackBy = (idx: number, item: FlatNode) =>
-  `#${idx}#${item.name}#${item.directives}#${(item.original.children || []).length === 0}`;
+  `#${idx}#${item.name}#${item.directives}#${item.id.join(',')}#${(item.original.children || []).length === 0}`;
 
 export class ComponentDataSource extends DataSource<FlatNode> {
   private _differ = new DefaultIterableDiffer(trackBy);
@@ -69,7 +70,7 @@ export class ComponentDataSource extends DataSource<FlatNode> {
     return this._expandedData.value;
   }
 
-  update(forest: Node[]): void {
+  update(forest: Node[]) {
     if (!forest) {
       return;
     }
@@ -77,23 +78,14 @@ export class ComponentDataSource extends DataSource<FlatNode> {
     const indexedForest = indexForest(forest);
     const flattenedCollection = this._treeFlattener.flattenNodes(indexedForest);
 
-    this._differ.diff(this.data);
-    this._differ.diff(flattenedCollection);
-
-    this._differ.forEachOperation(record => {
-      this.data[record.currentIndex] = record.item;
-    });
-    this._differ.forEachRemovedItem(record => {
-      const idx = this.data.indexOf(record.item);
-      if (idx >= 0) {
-        this.data.splice(idx, 1);
-      }
-    });
+    const newItems = diff(this._differ, this.data, flattenedCollection);
 
     this._treeControl.dataNodes = this.data;
     this._flattenedData.next(this.data);
 
     this._data.next(indexedForest);
+
+    return newItems;
   }
 
   connect(collectionViewer: CollectionViewer): Observable<FlatNode[]> {
