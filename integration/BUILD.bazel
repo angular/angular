@@ -24,8 +24,20 @@ load(":angular_integration_test.bzl", "angular_integration_test")
 # A subset of these tests fail or are not meant to be run with ivy bundles. These are tagged
 # "no-ivy-aot".
 INTEGRATION_TESTS = {
-    "bazel": ["no-ivy-aot"],
-    "bazel-schematics": ["no-ivy-aot"],
+    "bazel": [
+        # Bazel-in-bazel tests are resource intensive and should not be over-parallized
+        # as they will compete for the resources of other parallel tests slowing
+        # everything down. Ask Bazel to allocate multiple CPUs for these tests with "cpu:n" tag.
+        "cpu:3",
+        "no-ivy-aot",
+    ],
+    "bazel-schematics": [
+        # Bazel-in-bazel tests are resource intensive and should not be over-parallized
+        # as they will complete for the resources of other parallel tests slowing
+        # everything down. Ask Bazel to allocate multiple CPUs for these tests with "cpu:n" tag.
+        "cpu:3",
+        "no-ivy-aot",
+    ],
     "cli-hello-world": [],
     "cli-hello-world-ivy-compat": [],
     "cli-hello-world-ivy-i18n": ["no-ivy-aot"],
