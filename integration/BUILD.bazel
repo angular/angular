@@ -20,182 +20,44 @@ load(":angular_integration_test.bzl", "angular_integration_test")
 #   ng_elements                         4205        /e2e/browser.config.json: "port": 4205
 #   platform-server                     4206        /src/server.ts: app.listen(4206,...
 
+# Map of integration tests to tags.
+# A subset of these tests fail or are not meant to be run with ivy bundles. These are tagged
+# "no-ivy-aot".
+INTEGRATION_TESTS = {
+    "bazel": ["no-ivy-aot"],
+    "bazel-schematics": ["no-ivy-aot"],
+    "cli-hello-world": [],
+    "cli-hello-world-ivy-compat": [],
+    "cli-hello-world-ivy-i18n": ["no-ivy-aot"],
+    "cli-hello-world-ivy-minimal": [],
+    "cli-hello-world-lazy": [],
+    "cli-hello-world-lazy-rollup": [],
+    "dynamic-compiler": ["no-ivy-aot"],
+    "hello_world__closure": ["no-ivy-aot"],
+    "i18n": ["no-ivy-aot"],
+    "injectable-def": ["no-ivy-aot"],
+    "ivy-i18n": ["no-ivy-aot"],
+    "language_service_plugin": [],
+    "ng_elements": ["no-ivy-aot"],
+    # TODO: fix ng_elements_schematics with Bazel which was added recently and uses a new pattern
+    # "ng_elements_schematics": ["no-ivy-aot"],
+    "ng_update": [],
+    "ng_update_migrations": ["no-ivy-aot"],
+    "ngcc": ["no-ivy-aot"],
+    "platform-server": ["no-ivy-aot"],
+    "service-worker-schema": [],
+    "side-effects": ["no-ivy-aot"],
+    "terser": [],
+}
+
 [
     angular_integration_test(
         name = test_folder + "_test",
+        tags = INTEGRATION_TESTS[test_folder],
         test_folder = test_folder,
     )
-    for test_folder in [
-        "cli-hello-world",
-        "cli-hello-world-ivy-compat",
-        "cli-hello-world-ivy-minimal",
-        "cli-hello-world-lazy",
-        "cli-hello-world-lazy-rollup",
-        "language_service_plugin",
-        "ng_update",
-        "service-worker-schema",
-        "terser",
-    ]
+    for test_folder in INTEGRATION_TESTS
 ]
-
-# The following tests should not be run with npm packages generated with `--config=ivy`
-[
-    angular_integration_test(
-        name = test_folder + "_test",
-        tags = ["no-ivy-aot"],
-        test_folder = test_folder,
-    )
-    for test_folder in [
-        # `injectable-def` has .ngfactory imports:
-        # ```
-        # FAIL: Expected 'ngcc' to add build marker for 'esm2015' in '@angular/common'.
-        # ```
-        # as it is not expecting the @angular bundles to be generated with `--define=compile=aot`
-        "injectable-def",
-        # `ngcc` fails with:
-        # ```
-        # + ngc -p tsconfig-app.json
-        # src/main.ts(5,34): error TS2307: Cannot find module './app.ngfactory'.
-        # Error during template compile of 'AppModule'
-        #   Function calls are not supported in decorators but 'BrowserModule' was called.
-        # ```
-        "ngcc",
-        # `ng_update_migrations` has golden tests failures such as:
-        # ```
-        # ✘  File "src/app/migration-tests/undecorated-derived-classes.ts" does not match the expected output.
-        # --------------------------------------------
-        # --- src/app/migration-tests/undecorated-derived-classes.ts	Expected content
-        # +++ src/app/migration-tests/undecorated-derived-classes.ts	Actual content
-        # @@ -1,50 +1,19 @@
-        # -import { Directive, NgModule, NgZone, Component } from '@angular/core';
-        # -import { CheckboxControlValueAccessor, NG_VALUE_ACCESSOR, NG_ASYNC_VALIDATORS } from '@angular/forms';
-        # -import { BaseComponentFromOtherFile, hostBindings } from './base-component';
-        # +import {Directive, NgModule, NgZone} from '@angular/core';
-        # +import {CheckboxControlValueAccessor} from '@angular/forms';
-        # +import {BaseComponentFromOtherFile} from './base-component';
-        # ```
-        "ng_update_migrations",
-        # `i18n` has .ngfactory imports:
-        # ```
-        # $ ngc && yarn run closure && concurrently "yarn run serve" "yarn run protractor" --kill-others --success first && npm run test-locale-folder
-        # src/main.ts(2,34): error TS2307: Cannot find module './app.ngfactory'.
-        # Unexpected value 'BrowserModule in /private/var/folders/0l/nj_q9kzj49gdz1w6f5v9tw3h0000gn/T/tmp-58883IJeiUMLGHRRQ/node_modules/@angular/platform-browser/src/browser.d.ts' imported by the module 'AppModule in /private/var/folders/0l/nj_q9kzj49gdz1w6f5v9tw3h0000gn/T/tmp-58883IJeiUMLGHRRQ/src/app.ts'. Please add a @NgModule annotation.
-        # ```
-        "i18n",
-        # `ivy-i18n` fails with:
-        # ```
-        # ERROR in Unexpected value 'BrowserModule in /private/var/folders/0l/nj_q9kzj49gdz1w6f5v9tw3h0000gn/T/tmp-59999cYHm5rQoUk0v/node_modules/@angular/platform-browser/src/browser.d.ts' imported by the module 'AppModule in /private/var/folders/0l/nj_q9kzj49gdz1w6f5v9tw3h0000gn/T/tmp-59999cYHm5rQoUk0v/src/app/app.module.ts'. Please add a @NgModule annotation.
-        # @angular/core/src/i18n/tokens.ts(31,22): Error during template compile of 'LOCALE_ID'
-        # Only initialized variables and constants can be referenced in decorators because the value of this variable is needed by the template compiler.
-        # Can't resolve all parameters for AppComponent in /private/var/folders/0l/nj_q9kzj49gdz1w6f5v9tw3h0000gn/T/tmp-59999cYHm5rQoUk0v/src/app/app.component.ts: (?).
-        # The pipe 'percent' could not be found ("
-        # </div>
-        # <p id="locale">{{ locale }}</p>
-        # <p id="pipe">{{ [ERROR ->]1 | percent }} awesome</p>
-        # <p id="date">{{ jan | date : 'LLLL' }}</p>
-        # <h2>Here are some links to help")
-        # The pipe 'date' could not be found ("
-        # <p id="locale">{{ locale }}</p>
-        # <p id="pipe">{{ 1 | percent }} awesome</p>
-        # <p id="date">{{ [ERROR ->]jan | date : 'LLLL' }}</p>
-        # <h2>Here are some links to help you start: </h2>
-        # <ul>
-        # ")
-        # ```
-        "ivy-i18n",
-        # `cli-hello-world-ivy-i18n` fails with:
-        # ```
-        # ERROR in Unexpected value 'BrowserModule in /private/var/folders/0l/nj_q9kzj49gdz1w6f5v9tw3h0000gn/T/tmp-59695c6NwKC6Djcv4/node_modules/@angular/platform-browser/src/browser.d.ts' imported by the module 'AppModule in /private/var/folders/0l/nj_q9kzj49gdz1w6f5v9tw3h0000gn/T/tmp-59695c6NwKC6Djcv4/src/app/app.module.ts'. Please add a @NgModule annotation.
-        # @angular/core/src/i18n/tokens.ts(31,22): Error during template compile of 'LOCALE_ID'
-        #   Only initialized variables and constants can be referenced in decorators because the value of this variable is needed by the template compiler.
-        # Can't resolve all parameters for AppComponent in /private/var/folders/0l/nj_q9kzj49gdz1w6f5v9tw3h0000gn/T/tmp-59695c6NwKC6Djcv4/src/app/app.component.ts: (?).
-        # The pipe 'percent' could not be found ("1 i18n="some:description"> Hello {{ title }}! </h1>
-        # <p id="locale">{{ locale }}</p>
-        # <p id="pipe">{{ [ERROR ->]1 | percent }} awesome</p>
-        # <p id="date">{{ jan | date : 'LLLL' }}</p>
-        # ")
-        # The pipe 'date' could not be found ("
-        # <p id="locale">{{ locale }}</p>
-        # <p id="pipe">{{ 1 | percent }} awesome</p>
-        # <p id="date">{{ [ERROR ->]jan | date : 'LLLL' }}</p>
-        # ")
-        # ```
-        "cli-hello-world-ivy-i18n",
-        # `dynamic-compiler` has .ngfactory imports:
-        # ```
-        # $ ngc && yarn run closure && concurrently "yarn run serve" "yarn run protractor" --kill-others --success first
-        # src/main.ts(2,34): error TS2307: Cannot find module './app.ngfactory'.
-        # Unexpected value 'BrowserModule in /private/var/folders/0l/nj_q9kzj49gdz1w6f5v9tw3h0000gn/T/tmp-620291x2ZHDyIWIdL/node_modules/@angular/platform-browser/src/browser.d.ts' imported by the module 'AppModule in /private/var/folders/0l/nj_q9kzj49gdz1w6f5v9tw3h0000gn/T/tmp-620291x2ZHDyIWIdL/src/app.ts'. Please add a @NgModule annotation.
-        # ```
-        "dynamic-compiler",
-        # `ng_elements` has .ngfactory imports:
-        # ```
-        # $ ngc && yarn run closure && concurrently "yarn run serve" "yarn run protractor" --kill-others --success first
-        # src/main.ts(2,34): error TS2307: Cannot find module './app.ngfactory'.
-        # Unexpected value 'BrowserModule in /private/var/folders/0l/nj_q9kzj49gdz1w6f5v9tw3h0000gn/T/tmp-620291x2ZHDyIWIdL/node_modules/@angular/platform-browser/src/browser.d.ts' imported by the module 'AppModule in /private/var/folders/0l/nj_q9kzj49gdz1w6f5v9tw3h0000gn/T/tmp-620291x2ZHDyIWIdL/src/app.ts'. Please add a @NgModule annotation.
-        # ```
-        "ng_elements",
-        # `platform-server` has .ngfactory imports:
-        # ```
-        # src/server.ts(15,47): error TS2307: Cannot find module './helloworld/app.server.ngfactory'.
-        # src/server.ts(18,50): error TS2307: Cannot find module './transferstate/app.server.ngfactory'.
-        # src/helloworld/client.ts(13,41): error TS2307: Cannot find module './app.ngfactory'.
-        # src/transferstate/client.ts(13,44): error TS2307: Cannot find module './app.ngfactory'.
-        # Error during template compile of 'HelloWorldModule'
-        #   Function calls are not supported in decorators but 'BrowserModule' was called.
-        # ```
-        "platform-server",
-        # `side-effects` fails on minor differences to snapshots:
-        # ```
-        # The following snapshots have changed:
-        # Index: /private/var/folders/0l/nj_q9kzj49gdz1w6f5v9tw3h0000gn/T/tmp-629425HECGefnB0O7/snapshots/animations-browser/esm5.js
-        # ===================================================================
-        # --- /private/var/folders/0l/nj_q9kzj49gdz1w6f5v9tw3h0000gn/T/tmp-629425HECGefnB0O7/snapshots/animations-browser/esm5.js
-        # +++ /private/var/folders/0l/nj_q9kzj49gdz1w6f5v9tw3h0000gn/T/tmp-629425HECGefnB0O7/snapshots/animations-browser/esm5.js
-        # @@ -1,5 +1,5 @@
-        # -import "tslib";
-        # -
-        # import "@angular/animations";
-        #
-        # import "@angular/core";
-        # +
-        # +import "tslib";
-        # ```
-        "side-effects",
-        # `hello_world__closure` has .ngfactory imports:
-        # ```
-        # $ ngc && yarn run closure && concurrently "yarn run serve" "yarn run protractor" --kill-others --success first
-        # src/main.ts(2,34): error TS2307: Cannot find module './app.ngfactory'.
-        # Unexpected value 'BrowserModule in /private/var/folders/0l/nj_q9kzj49gdz1w6f5v9tw3h0000gn/T/tmp-67554cqUv301iuuwu/node_modules/@angular/platform-browser/src/browser.d.ts' imported by the module 'AppModule in /private/var/folders/0l/nj_q9kzj49gdz1w6f5v9tw3h0000gn/T/tmp-67554cqUv301iuuwu/src/app.ts'. Please add a @NgModule annotation.        # ```
-        "hello_world__closure",
-    ]
-]
-
-# Special cases for bazel-in-bazel tests which are tagged as "exclusive" so that they don't drain
-# all the resources on the machine when run in parallel. Also only run these tests against the
-# ViewEngine generated packages. Since these tests are "exclusive", also tag them as manual as they
-# will be run in separate CI jobs.
-angular_integration_test(
-    name = "bazel_test",
-    tags = [
-        "exclusive",
-        "manual",
-        "no-ivy-aot",
-    ],
-    test_folder = "bazel",
-)
-
-angular_integration_test(
-    name = "bazel-schematics_test",
-    tags = [
-        "exclusive",
-        "manual",
-        "no-ivy-aot",
-        # Don't execute remotely as these test depends on the locally installed Chrome
-        "no-remote-exec",
-    ],
-    test_folder = "bazel-schematics",
-)
 
 # Special case for `typings_test_ts36` test as we want to pin
 # `typescript` at version 3.6.x for that test and not link to the
@@ -204,6 +66,15 @@ angular_integration_test(
     name = "typings_test_ts36_test",
     pinned_npm_packages = ["typescript"],
     test_folder = "typings_test_ts36",
+)
+
+# Special case for `typings_test_ts37` test as we want to pin
+# `typescript` at version 3.7.x for that test and not link to the
+# root @npm//typescript package.
+angular_integration_test(
+    name = "typings_test_ts37_test",
+    pinned_npm_packages = ["typescript"],
+    test_folder = "typings_test_ts37",
 )
 
 # Special case for `hello_world__systemjs_umd` test as we want to pin

@@ -6,7 +6,7 @@
     "experimentalDecorators": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": "../../dist/typings_test_ts37/",
+    "outDir": "./dist/out-tsc",
     "rootDir": ".",
     "target": "es5",
     "lib": [

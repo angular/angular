@@ -298,7 +298,7 @@ jobs:
       # as they require network access for yarn install), this test is running out of memory
       # consistently with the xlarge machine.
       # TODO: switch back to xlarge once integration tests are running on remote-exec
-      resource_class: 2xlarge
+      resource_class: 2xlarge+
     steps:
       - custom_attach_workspace
       - init_environment
@@ -306,21 +306,6 @@ jobs:
       - install_java
       - run:
           command: yarn bazel test //... --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only
-          no_output_timeout: 20m
-
-  test_integration_bazel:
-    executor:
-      # Needed because the //integration:bazel-schematics_test test expect Chrome to be installed
-      name: browsers-executor
-      resource_class: xlarge
-    steps:
-      - custom_attach_workspace
-      - init_environment
-      - run:
-          # Run "exclusive" and "manual" bazel-in-bazel integration tests in their own CI job
-          # as they take 8m+ to execute and with bazel running inside bazel they are too
-          # memory intensive to be run in parallel with other tests so are tagged as "exclusive"
-          command: yarn bazel test //integration:bazel_test //integration:bazel-schematics_test
           no_output_timeout: 20m
 
   # Temporary job to test what will happen when we flip the Ivy flag to true
@@ -840,9 +825,6 @@ workflows:
           requires:
             - setup
       - test:
-          requires:
-            - setup
-      - test_integration_bazel:
           requires:
             - setup
       - test_ivy_aot:
