@@ -22,7 +22,7 @@
   font-size: 11px;
 }
 
-:host /deep/ mat-tree-node>button {
+:host /deep/ mat-tree-node > button {
   outline: none;
   border: 0;
   background: transparent;
@@ -35,7 +35,8 @@
   cursor: pointer;
 }
 
-:host /deep/ mat-tree-node.selected, :host /deep/ mat-tree-node.highlighted {
+:host /deep/ mat-tree-node.selected,
+:host /deep/ mat-tree-node.highlighted {
   background-color: #92bdff;
 }
 
@@ -60,6 +61,8 @@
 :host /deep/ mat-tree-node {
   transition: background-color 100ms;
   border-radius: 8px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .dir-names {
@@ -67,7 +70,7 @@
 }
 
 .filter {
-  display: flex
+  display: flex;
 }
 
 .filter .icon {
