@@ -77,6 +77,9 @@ export class ComponentTreeObserver {
   }
 
   private _onAddedNodesMutation(node: Node): void {
+    if (!(node instanceof HTMLElement)) {
+      return;
+    }
     const component = ng.getComponent(node);
     if (component) {
       this._elementComponent.set(node, component);
