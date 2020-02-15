@@ -5,6 +5,7 @@ import { MatTreeFlattener } from '@angular/material/tree';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { map } from 'rxjs/operators';
 import { DefaultIterableDiffer } from '@angular/core';
+import { diff } from '../../diffing';
 
 const expandable = (prop: Descriptor, messageBus?: MessageBus<Events>) => {
   if (!prop) {
@@ -77,17 +78,9 @@ export class PropertyDataSource extends DataSource<FlatNode> {
 
   update(props: { [prop: string]: Descriptor }) {
     const newData = this.treeFlattener.flattenNodes(this._arrayify(props));
-    this._differ.diff(this.data);
-    this._differ.diff(newData);
-    this._differ.forEachOperation(record => {
-      this.data[record.currentIndex] = record.item;
-    });
-    this._differ.forEachRemovedItem(record => {
-      const idx = this.data.indexOf(record.item);
-      if (idx >= 0) {
-        this.data.splice(idx, 1);
-      }
-    });
+
+    diff(this._differ, this.data, newData);
+
     this._data.next(this.data);
   }
 
