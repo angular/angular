@@ -78,17 +78,6 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>|Compo
           const defData = (definition as ComponentDef<any>).data;
           defData.animation = (defData.animation || []).concat(superDef.data.animation);
         }
-
-        // Inherit hooks
-        // Assume super class inheritance feature has already run.
-        writeableDef.afterContentChecked =
-            writeableDef.afterContentChecked || superDef.afterContentChecked;
-        writeableDef.afterContentInit = definition.afterContentInit || superDef.afterContentInit;
-        writeableDef.afterViewChecked = definition.afterViewChecked || superDef.afterViewChecked;
-        writeableDef.afterViewInit = definition.afterViewInit || superDef.afterViewInit;
-        writeableDef.doCheck = definition.doCheck || superDef.doCheck;
-        writeableDef.onDestroy = definition.onDestroy || superDef.onDestroy;
-        writeableDef.onInit = definition.onInit || superDef.onInit;
       }
 
       // Run parent features

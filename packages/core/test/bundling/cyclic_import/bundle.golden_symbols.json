@@ -201,6 +201,9 @@
     "name": "getPreviousOrParentTNode"
   },
   {
+    "name": "getSimpleChangesStore"
+  },
+  {
     "name": "getTView"
   },
   {
@@ -282,6 +285,9 @@
     "name": "nextNgElementId"
   },
   {
+    "name": "ngOnChangesSetInput"
+  },
+  {
     "name": "noSideEffects"
   },
   {
@@ -292,6 +298,9 @@
   },
   {
     "name": "refreshView"
+  },
+  {
+    "name": "rememberChangeHistoryAndInvokeOnChangesHook"
   },
   {
     "name": "renderComponent"
