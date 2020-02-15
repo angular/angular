@@ -114,14 +114,13 @@ table {
   }
 }
 
-article[class="events-container"] {
-  & table > tbody > 
+.events-container {
   
-  tr > th:first-child {
-    width: 15%;
+  tr > th {
+    width: 33%;
   }
 
-  tr > td:last-child {
-    width: 30%;
+  tr > td {
+    width: 33%;
   }
 }
