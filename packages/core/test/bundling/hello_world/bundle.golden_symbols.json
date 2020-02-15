@@ -138,6 +138,9 @@
     "name": "getPreviousOrParentTNode"
   },
   {
+    "name": "getSimpleChangesStore"
+  },
+  {
     "name": "includeViewProviders"
   },
   {
@@ -177,6 +180,9 @@
     "name": "nextNgElementId"
   },
   {
+    "name": "ngOnChangesSetInput"
+  },
+  {
     "name": "refreshComponent"
   },
   {
@@ -184,6 +190,9 @@
   },
   {
     "name": "refreshView"
+  },
+  {
+    "name": "rememberChangeHistoryAndInvokeOnChangesHook"
   },
   {
     "name": "renderComponent"
