@@ -26,6 +26,7 @@ const processFlamegraphRecord = (record: ComponentRecord, result: AppEntry) => {
   for (let i = 0; i < record.id.length - 1; i++) {
     const position = record.id[i];
     if (!current[position]) {
+      console.error(`Couldn't insert`, record, 'because parent does not exist');
       return;
     }
     current = current[position].children;
@@ -51,7 +52,7 @@ const processFlamegraphRecord = (record: ComponentRecord, result: AppEntry) => {
   };
 };
 
-export const formatRecords = <T>(records: AppRecord[]): TimelineView => {
+export const formatRecords = (records: AppRecord[]): TimelineView => {
   const result: TimelineView = {
     aggregated: {
       app: [],
@@ -82,8 +83,4 @@ export const formatRecords = <T>(records: AppRecord[]): TimelineView => {
     }
   }
   return result;
-};
-
-export const formatFlamegraphRecords = (records: AppRecord[]): TimelineView => {
-  return formatRecords(records);
 };

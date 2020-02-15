@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 
-const calculate = (n: number) => {
+const fib = (n: number) => {
   if (n === 1 || n === 2) {
     return 1;
   }
-  return calculate(n - 1) + calculate(n - 2);
+  return fib(n - 1) + fib(n - 2);
 };
 
 @Component({
@@ -14,6 +14,6 @@ const calculate = (n: number) => {
 })
 export class HeavyComponent {
   calculate() {
-    return calculate(15);
+    return fib(15);
   }
 }

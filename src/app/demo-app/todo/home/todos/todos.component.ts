@@ -1,13 +1,6 @@
-import { Component, Input, EventEmitter, Output, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
+import { Component, EventEmitter, Output, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
 import { Todo } from '../models/todo';
 import { TodoFilter } from './todos.pipe';
-
-const fib = (n: number) => {
-  if (n === 1 || n === 2) {
-    return 1;
-  }
-  return fib(n - 1) + fib(n - 2);
-};
 
 @Component({
   templateUrl: 'todos.component.html',
@@ -40,10 +33,6 @@ export class TodosComponent implements OnInit, OnDestroy {
     if (typeof window !== 'undefined') {
       window.removeEventListener('hashchange', this.hashListener);
     }
-  }
-
-  get slowBinding() {
-    return fib(30);
   }
 
   get filterValue(): TodoFilter {
