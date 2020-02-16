@@ -11,6 +11,16 @@ import {OutputContext, error} from './util';
 
 const CONSTANT_PREFIX = '_c';
 
+/**
+ * `ConstantPool` tries to reuse literal factories when two or more literals are identical.
+ * We determine whether literals are identical by creating a key out of their AST using the
+ * `KeyVisitor`. This constant is used to replace dynamic expressions which can't be safely
+ * converted into a key. E.g. given an expression `{foo: bar()}`, since we don't know what
+ * the result of `bar` will be, we create a key that looks like `{foo: <unknown>}`. Note
+ * that we use a variable, rather than something like `null` in order to avoid collisions.
+ */
+const UNKNOWN_VALUE_KEY = o.variable('<unknown>');
+
 export const enum DefinitionKind {Injector, Directive, Component, Pipe}
 
 /**
@@ -127,16 +137,16 @@ export class ConstantPool {
 
   getLiteralFactory(literal: o.LiteralArrayExpr|o.LiteralMapExpr):
       {literalFactory: o.Expression, literalFactoryArguments: o.Expression[]} {
-    // Create a pure function that builds an array of a mix of constant  and variable expressions
+    // Create a pure function that builds an array of a mix of constant and variable expressions
     if (literal instanceof o.LiteralArrayExpr) {
-      const argumentsForKey = literal.entries.map(e => e.isConstant() ? e : o.literal(null));
+      const argumentsForKey = literal.entries.map(e => e.isConstant() ? e : UNKNOWN_VALUE_KEY);
       const key = this.keyOf(o.literalArr(argumentsForKey));
       return this._getLiteralFactory(key, literal.entries, entries => o.literalArr(entries));
     } else {
       const expressionForKey = o.literalMap(
           literal.entries.map(e => ({
                                 key: e.key,
-                                value: e.value.isConstant() ? e.value : o.literal(null),
+                                value: e.value.isConstant() ? e.value : UNKNOWN_VALUE_KEY,
                                 quoted: e.quoted
                               })));
       const key = this.keyOf(expressionForKey);
