@@ -27,6 +27,7 @@ ts_library(
         "@npm//convert-source-map",
         "@npm//dependency-graph",
         "@npm//magic-string",
+        "@npm//sourcemap-codec",
         "@npm//typescript",
     ],
 )
