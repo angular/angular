@@ -122,6 +122,7 @@
     "shelljs": "^0.8.3",
     "source-map": "^0.6.1",
     "source-map-support": "0.5.9",
+    "sourcemap-codec": "^1.4.8",
     "systemjs": "0.18.10",
     "terser": "^4.4.0",
     "tsickle": "0.38.0",

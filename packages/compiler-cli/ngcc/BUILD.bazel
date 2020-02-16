@@ -35,6 +35,7 @@ ts_library(
         "@npm//magic-string",
         "@npm//semver",
         "@npm//source-map",
+        "@npm//sourcemap-codec",
         "@npm//typescript",
     ],
 )
