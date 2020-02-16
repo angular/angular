@@ -29,7 +29,7 @@ var_4_win: &cache_key_win_fallback v5-angular-win-node-12-
 
 # Cache key for the `components-repo-unit-tests` job. **Note** when updating the SHA in the
 # cache keys also update the SHA for the "COMPONENTS_REPO_COMMIT" environment variable.
-var_5: &components_repo_unit_tests_cache_key v5-angular-components-97a7e2babbccd3dc58e7b3364004e45ed5bd9968
+var_5: &components_repo_unit_tests_cache_key v5-angular-components-2ec7254f88c4865e0de251f74c27e64c9d00d40a
 var_6: &components_repo_unit_tests_cache_key_fallback v5-angular-components-
 
 # Workspace initially persisted by the `setup` job, and then enhanced by `build-npm-packages` and
@@ -120,11 +120,32 @@ commands:
       - attach_workspace:
           at: *workspace_location
 
+  # Install shared libs used by Chrome that is either provisioned by
+  # rules_webtesting or by puppeteer.
+  install_chrome_libs:
+    description: Install shared Chrome libs
+    steps:
+      - run:
+          name: Install shared Chrome libs
+          command: |
+            sudo apt-get update
+            # Install GTK+ graphical user interface (libgtk-3-0), advanced linux sound architecture (libasound2)
+            # and network security service libraries (libnss3) & X11 Screen Saver extension library (libssx1)
+            # which are dependendies of chrome & needed for karma & protractor headless chrome tests.
+            # This is a very small install which takes around 7s in comparing to using the full
+            # circleci/node:x.x.x-browsers image.
+            sudo apt-get -y install libgtk-3-0 libasound2 libnss3 libxss1
+
   # Initializes the CI environment by setting up common environment variables.
   init_environment:
     description: Initializing environment (setting up variables)
     steps:
-      - run: ./.circleci/env.sh
+      - run:
+          name: Set up environment
+          environment:
+              CIRCLE_GIT_BASE_REVISION: << pipeline.git.base_revision >>
+              CIRCLE_GIT_REVISION: << pipeline.git.revision >>
+          command: ./.circleci/env.sh
       - run:
           # Configure git as the CircleCI `checkout` command does.
           # This is needed because we only checkout on the setup job.
@@ -255,6 +276,7 @@ jobs:
               (echo -e "\n.bzl files have lint errors. Please run ''yarn bazel:lint-fix''"; exit 1)'
 
       - run: yarn gulp lint
+      - run: node tools/pullapprove/verify.js
 
   test:
     executor:
@@ -349,11 +371,11 @@ jobs:
           no_output_timeout: 20m
 
   test_aio:
-    # Needed because the AIO tests and the PWA score test depend on Chrome being available.
-    executor: browsers-executor
+    executor: default-executor
     steps:
       - custom_attach_workspace
       - init_environment
+      - install_chrome_libs
         # Compile dependencies to ivy
         # Running `ngcc` here (instead of implicitly via `ng build`) allows us to take advantage of
         # the parallel, async mode speed-up (~20-25s on CI).
@@ -376,11 +398,11 @@ jobs:
       - run: yarn --cwd aio redirects-test
 
   deploy_aio:
-    # Needed because before deploying the deploy-production script runs the PWA score tests.
-    executor: browsers-executor
+    executor: default-executor
     steps:
       - custom_attach_workspace
       - init_environment
+      - install_chrome_libs
         # Deploy angular.io to production (if necessary)
       - run: setPublicVar_CI_STABLE_BRANCH
       - run: yarn --cwd aio deploy-production
@@ -390,11 +412,11 @@ jobs:
       viewengine:
         type: boolean
         default: false
-    # Needed because the AIO tests and the PWA score test depend on Chrome being available.
-    executor: browsers-executor
+    executor: default-executor
     steps:
       - custom_attach_workspace
       - init_environment
+      - install_chrome_libs
         # Build aio (with local Angular packages)
       - run: yarn --cwd aio build-local<<# parameters.viewengine >>-with-viewengine<</ parameters.viewengine >>-ci
         # Run unit tests
@@ -465,11 +487,11 @@ jobs:
 
   # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
   test_aio_preview:
-    # Needed because the test-preview script runs e2e tests and the PWA score test with Chrome.
-    executor: browsers-executor
+    executor: default-executor
     steps:
       - custom_attach_workspace
       - init_environment
+      - install_chrome_libs
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
       - run:
           name: Wait for preview and run tests
@@ -532,7 +554,8 @@ jobs:
   # See comments inside the integration/run_tests.sh script.
   integration_test:
     executor:
-      # Needed because the integration tests expect Chrome to be installed (e.g cli-hello-world)
+      # Needed because the integration/bazel-schematics test expects Chrome to be installed
+      # TODO(gregmagolan): remove the dependency on local chrome from that test
       name: browsers-executor
       # Note: we run Bazel in one of the integration tests, and it can consume >2G
       # of memory. Together with the system under test, this can exhaust the RAM
@@ -632,12 +655,11 @@ jobs:
           webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
 
   aio_monitoring_next:
-    # This job needs Chrome to be globally installed because the tests run with Protractor
-    # which does not load the browser through the Bazel webtesting rules.
-    executor: browsers-executor
+    executor: default-executor
     steps:
       - custom_attach_workspace
       - init_environment
+      - install_chrome_libs
       - run:
           name: Run tests against https://next.angular.io/
           command: ./aio/scripts/test-production.sh https://next.angular.io/ $CI_AIO_MIN_PWA_SCORE
@@ -869,10 +891,9 @@ workflows:
             - build-npm-packages
             - build-ivy-npm-packages
             - legacy-unit-tests-saucelabs
-      # FIXME - uncomment this job once https://github.com/angular/components/pull/18355 lands
-      # - components-repo-unit-tests:
-      #     requires:
-      #       - build-npm-packages
+      - components-repo-unit-tests:
+          requires:
+            - build-npm-packages
       - test_zonejs:
           requires:
             - setup

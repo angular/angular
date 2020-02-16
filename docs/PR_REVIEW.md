@@ -41,7 +41,7 @@ cef93a51b (pr/24623_top) ci: scripts to review PRs locally
 637805a0c (pr/24623_base) docs: update `lowercase` pipe example in "AngularJS to Angular" guide (#24588)
 ```
 
-Knowing `pr/24623_top` and `pr/24623_base` makes it convenient to refer to different SHAs in PR when rebasing or reseting.
+Knowing `pr/24623_top` and `pr/24623_base` makes it convenient to refer to different SHAs in PR when rebasing or resetting.
 
 ### 2. Review PR
 

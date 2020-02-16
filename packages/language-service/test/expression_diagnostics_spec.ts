@@ -144,7 +144,9 @@ describe('expression diagnostics', () => {
     `,
                                                           'Identifier \'nume\' is not defined'));
   it('should reject access to potentially undefined field',
-     () => reject(`<div>{{maybe_person.name.first}}`, 'The expression might be null'));
+     () => reject(
+         `<div>{{maybe_person.name.first}}`,
+         `'maybe_person' is possibly undefined. Consider using the safe navigation operator (maybe_person?.name) or non-null assertion operator (maybe_person!.name).`));
   it('should accept a safe accss to an undefined field',
      () => accept(`<div>{{maybe_person?.name.first}}</div>`));
   it('should accept a type assert to an undefined field',
@@ -183,7 +185,8 @@ describe('expression diagnostics', () => {
      () => accept('<div (click)="click($event)">{{person.name.first}}</div>'));
   it('should reject a misspelled event handler',
      () => reject(
-         '<div (click)="clack($event)">{{person.name.first}}</div>', 'Unknown method \'clack\''));
+         '<div (click)="clack($event)">{{person.name.first}}</div>',
+         `Identifier 'clack' is not defined. The component declaration, template variable declarations, and element references do not contain such a member`));
   it('should reject an uncalled event handler',
      () => reject(
          '<div (click)="click">{{person.name.first}}</div>', 'Unexpected callable expression'));

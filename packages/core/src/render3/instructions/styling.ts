@@ -119,9 +119,7 @@ export function ɵɵclassProp(
  *
  * @codeGenApi
  */
-export function ɵɵstyleMap(
-    styles: {[styleName: string]: any} | Map<string, string|number|null|undefined>| string |
-    undefined | null): void {
+export function ɵɵstyleMap(styles: {[styleName: string]: any} | string | undefined | null): void {
   checkStylingMap(styleKeyValueArraySet, styleStringParser, styles, false);
 }
 
@@ -161,8 +159,7 @@ export function styleStringParser(keyValueArray: KeyValueArray<any>, text: strin
  * @codeGenApi
  */
 export function ɵɵclassMap(
-    classes: {[className: string]: boolean | undefined | null} |
-    Map<string, boolean|undefined|null>| Set<string>| string[] | string | undefined | null): void {
+    classes: {[className: string]: boolean | undefined | null} | string | undefined | null): void {
   checkStylingMap(keyValueArraySet, classStringParser, classes, true);
 }
 
@@ -264,8 +261,9 @@ export function checkStylingMap(
       ngDevMode && isClassBased === false && staticPrefix !== null &&
           assertEqual(
               staticPrefix.endsWith(';'), true, 'Expecting static portion to end with \';\'');
-      if (typeof value === 'string') {
-        value = concatStringsWithSpace(staticPrefix, value as string);
+      if (staticPrefix !== null) {
+        // We want to make sure that falsy values of `value` become empty strings.
+        value = concatStringsWithSpace(staticPrefix, value ? value : '');
       }
       // Given `<div [style] my-dir>` such that `my-dir` has `@Input('style')`.
       // This takes over the `[style]` binding. (Same for `[class]`)
@@ -626,8 +624,8 @@ export function getHostDirectiveDef(tData: TData): DirectiveDef<any>|null {
  */
 export function toStylingKeyValueArray(
     keyValueArraySet: (keyValueArray: KeyValueArray<any>, key: string, value: any) => void,
-    stringParser: (styleKeyValueArray: KeyValueArray<any>, text: string) => void, value: string|
-    string[]|{[key: string]: any}|Map<any, any>|Set<any>|null|undefined): KeyValueArray<any> {
+    stringParser: (styleKeyValueArray: KeyValueArray<any>, text: string) => void,
+    value: string|string[]|{[key: string]: any}|null|undefined): KeyValueArray<any> {
   if (value == null /*|| value === undefined */ || value === '') return EMPTY_ARRAY as any;
   const styleKeyValueArray: KeyValueArray<any> = [] as any;
   if (Array.isArray(value)) {
@@ -635,15 +633,9 @@ export function toStylingKeyValueArray(
       keyValueArraySet(styleKeyValueArray, value[i], true);
     }
   } else if (typeof value === 'object') {
-    if (value instanceof Map) {
-      value.forEach((v, k) => keyValueArraySet(styleKeyValueArray, k, v));
-    } else if (value instanceof Set) {
-      value.forEach((k) => keyValueArraySet(styleKeyValueArray, k, true));
-    } else {
-      for (const key in value) {
-        if (value.hasOwnProperty(key)) {
-          keyValueArraySet(styleKeyValueArray, key, value[key]);
-        }
+    for (const key in value) {
+      if (value.hasOwnProperty(key)) {
+        keyValueArraySet(styleKeyValueArray, key, value[key]);
       }
     }
   } else if (typeof value === 'string') {
@@ -674,11 +666,10 @@ function styleKeyValueArraySet(keyValueArray: KeyValueArray<any>, key: string, v
  * Update map based styling.
  *
  * Map based styling could be anything which contains more than one binding. For example `string`,
- * `Map`, `Set` or object literal. Dealing with all of these types would complicate the logic so
+ * or object literal. Dealing with all of these types would complicate the logic so
  * instead this function expects that the complex input is first converted into normalized
  * `KeyValueArray`. The advantage of normalization is that we get the values sorted, which makes it
- * very
- * cheap to compute deltas between the previous and current value.
+ * very cheap to compute deltas between the previous and current value.
  *
  * @param tView Associated `TView.data` contains the linked list of binding priorities.
  * @param tNode `TNode` where the binding is located.

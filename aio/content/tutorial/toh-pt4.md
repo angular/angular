@@ -1,7 +1,11 @@
+<<<<<<< HEAD
 <!--
 # Create services
 -->
 # 서비스 생성하기
+=======
+# Add services
+>>>>>>> 939e2f76f6c3180e13886357a7dbdf8d562e98f4
 
 <!--
 The Tour of Heroes `HeroesComponent` is currently getting and displaying fake data.
@@ -228,7 +232,7 @@ Add a private `heroService` parameter of type `HeroService` to the constructor.
 -->
 생성자에 `HeroService` 타입의 `heroService` 인자를 선언하고 이 인자를 `private`으로 지정합니다.
 
-<code-example path="toh-pt4/src/app/heroes/heroes.component.ts" header="src/app/heroes/heroes.component.ts" region="ctor">
+<code-example path="toh-pt4/src/app/heroes/heroes.component.1.ts" header="src/app/heroes/heroes.component.ts" region="ctor">
 </code-example>
 
 <!--

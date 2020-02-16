@@ -89,9 +89,12 @@ Later, the [Forms](start/forms "Getting Started: Forms") part of
 this tutorial guides you through accessing this cart service
 from the page where the user checks out.
 
+<<<<<<< HEAD
 Later, the [Forms](start/forms "Getting Started: Forms") part of this tutorial guides you through accessing this cart service from the page where the user checks out.
 >>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
+=======
+>>>>>>> 939e2f76f6c3180e13886357a7dbdf8d562e98f4
 </div>
 
 {@a generate-cart-service}
@@ -585,6 +588,7 @@ This section shows you how to use the HTTP client to retrieve shipping prices fr
 
 <!--
 ### Predefined shipping data
+<<<<<<< HEAD
 -->
 ### 배송 비용 데이터
 
@@ -597,6 +601,10 @@ You'll use this data to add shipping prices for items in the cart.
 이 데이터를 가져와서 장바구니에 담긴 제품의 배송 비용을 표시해 봅시다.
 =======
 The app StackBlitz generates for this guide comes with predefined shipping data in `assets/shipping.json`.
+=======
+
+The application that StackBlitz generates for this guide comes with predefined shipping data in `assets/shipping.json`.
+>>>>>>> 939e2f76f6c3180e13886357a7dbdf8d562e98f4
 Use this data to add shipping prices for items in the cart.
 >>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
@@ -799,7 +807,7 @@ Now that your app can retrieve shipping data, create a shipping component and  t
     There's no link to the new shipping component yet, but you can see its template in the preview pane by entering the URL its route specifies. The URL has the pattern: `https://getting-started.stackblitz.io/shipping` where the `getting-started.stackblitz.io` part may be different for your StackBlitz project.
 >>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
-1. Modify the shipping component so it uses the cart service to retrieve shipping data via HTTP from the `shipping.json` file.
+1. Modify the shipping component so that it uses the cart service to retrieve shipping data via HTTP from the `shipping.json` file.
 
     1. Import the cart service.
 

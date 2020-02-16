@@ -1279,8 +1279,12 @@ and be wary of new or unusual TypeScript features.
 `typeof`나 대괄호 참조는 일반적인 애플리케이션 코드에 얼마든지 사용할 수 있습니다.
 하지만 이 문법들은 Angular 메타데이터 표현식에는 사용할 수 없습니다.
 
+<<<<<<< HEAD
 이 에러를 해결하려면 [컴파일러가 지원하는 표현식 문법](#expression-syntax)으로만 메타데이터를 작성해야 합니다.
 새로 도입되거나 자주 사용하지 않는 TypeScript 문법을 사용할 때 주의하세요.
+=======
+<div class="alert is-helpful">
+>>>>>>> 939e2f76f6c3180e13886357a7dbdf8d562e98f4
 
 <hr>
 

@@ -27,11 +27,7 @@ setPublicVar CI_CHROMEDRIVER_VERSION_ARG "--versions.chrome 79.0.3945.130";
 setPublicVar CI_COMMIT "$CIRCLE_SHA1";
 # `CI_COMMIT_RANGE` is only used on push builds (a.k.a. non-PR, non-scheduled builds and rerun
 # workflows of such builds).
-# NOTE: With [CircleCI Pipelines](https://circleci.com/docs/2.0/build-processing) enabled,
-#       `CIRCLE_COMPARE_URL` is no longer available and the commit range cannot be reliably
-#       detected. Fall back to only considering the last commit (which is accurate in the majority
-#       of cases for push builds).
-setPublicVar CI_COMMIT_RANGE "`[[ ${CIRCLE_PR_NUMBER:-false} != false ]] && echo "" || echo "$CIRCLE_SHA1~1...$CIRCLE_SHA1"`";
+setPublicVar CI_COMMIT_RANGE "$CIRCLE_GIT_BASE_REVISION..$CIRCLE_GIT_REVISION";
 setPublicVar CI_PULL_REQUEST "${CIRCLE_PR_NUMBER:-false}";
 setPublicVar CI_REPO_NAME "$CIRCLE_PROJECT_REPONAME";
 setPublicVar CI_REPO_OWNER "$CIRCLE_PROJECT_USERNAME";
@@ -77,7 +73,7 @@ setPublicVar COMPONENTS_REPO_TMP_DIR "/tmp/angular-components-repo"
 setPublicVar COMPONENTS_REPO_URL "https://github.com/angular/components.git"
 setPublicVar COMPONENTS_REPO_BRANCH "master"
 # **NOTE**: When updating the commit SHA, also update the cache key in the CircleCI `config.yml`.
-setPublicVar COMPONENTS_REPO_COMMIT "97a7e2babbccd3dc58e7b3364004e45ed5bd9968"
+setPublicVar COMPONENTS_REPO_COMMIT "2ec7254f88c4865e0de251f74c27e64c9d00d40a"
 
 
 ####################################################################################################

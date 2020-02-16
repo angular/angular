@@ -316,6 +316,52 @@ describe('styling', () => {
         expect(div2.getAttribute('shadow-class')).toEqual('s2 d2');
       });
 
+  onlyInIvy('shadow bindings include static portion')
+      .it('should bind [class] as input to directive when both static and falsy dynamic values are present',
+          () => {
+            @Component({
+              template: `
+                <div class="s1" [class]="classBinding" dir-shadows-class-input></div>
+              `
+            })
+            class Cmp {
+              classBinding: any = undefined;
+            }
+
+            @Directive({selector: '[dir-shadows-class-input]'})
+            class DirectiveShadowsClassInput {
+              constructor(private elementRef: ElementRef) {}
+              @Input('class')
+              set klass(value: string) {
+                this.elementRef.nativeElement.setAttribute('shadow-class', value);
+              }
+            }
+
+            TestBed.configureTestingModule({declarations: [Cmp, DirectiveShadowsClassInput]});
+            const fixture = TestBed.createComponent(Cmp);
+            fixture.detectChanges();
+
+            const div = fixture.nativeElement.querySelector('div');
+            expect(div.className).toEqual('s1');
+            expect(div.getAttribute('shadow-class')).toEqual('s1');
+
+            fixture.componentInstance.classBinding = null;
+            fixture.detectChanges();
+            expect(div.className).toEqual('s1');
+            expect(div.getAttribute('shadow-class')).toEqual('s1');
+
+            fixture.componentInstance.classBinding = false;
+            fixture.detectChanges();
+            expect(div.className).toEqual('s1');
+            expect(div.getAttribute('shadow-class')).toEqual('s1');
+
+
+            fixture.componentInstance.classBinding = {toString: () => 'd1'};
+            fixture.detectChanges();
+            expect(div.className).toEqual('s1');
+            expect(div.getAttribute('shadow-class')).toEqual('s1 d1');
+          });
+
 
   modifiedInIvy('shadow bindings include static portion')
       .it('should bind [style] as input to directive', () => {
@@ -1113,7 +1159,7 @@ describe('styling', () => {
                     // instruction. We don't think this is worth it, and we are just going to live
                     // with this.
                     );
-            expect(capturedClassBindingValue).toEqual(null);
+            expect(capturedClassBindingValue !).toEqual('static-val');
             expect(capturedMyClassBindingCount).toEqual(1);
             expect(capturedMyClassBindingValue !).toEqual('foo');
 

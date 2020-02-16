@@ -116,6 +116,7 @@ See [Keeping Up-to-Date](guide/updating "Updating your projects") for more infor
 ### 시험판 릴리즈
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 <!--
 We let you preview what's coming by providing Beta releases and Release Candidates (`rc`) for each major and minor release: 
 -->
@@ -123,11 +124,13 @@ We let you preview what's coming by providing Beta releases and Release Candidat
 =======
 We let you preview what's coming by providing Beta releases and Release Candidates (`rc`) for each major and minor release:
 >>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+=======
+We let you preview what's coming by providing "Next" and Release Candidates (`rc`) pre-releases for each major and minor release:
+>>>>>>> 939e2f76f6c3180e13886357a7dbdf8d562e98f4
 
-<!--
-* **Next:** The release that is under active development. The next release is indicated by a release tag appended with the  `next` identifier, such as  `8.1.0-next.0`. For the next version of the documentation, see [next.angular.io](https://next.angular.io).
--->
+* **Next:** The release that is under active development and testing. The next release is indicated by a release tag appended with the  `-next` identifier, such as  `8.1.0-next.0`.
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <!--
 * **Beta:** A release that is under active development and testing. A Beta release is indicated by a release tag appended with the  `beta` identifier, such as  `8.0.0-beta.0`. 
@@ -146,6 +149,11 @@ The next version of the documentation is available at [next.angular.io](https://
 >>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 * **배포 준비 버전:** 해당 버전에 추가하려는 기능이 모두 개발되어 최종 테스트 단계에 있는 릴리즈 버전을 의미합니다. 배포 준비 버전은 목표로 하는 버전 뒤에 `rc`라는 문자열이 붙어서 `8.1.0-rc`와 같이 표기합니다.
+=======
+* **Release candidate:** A release that is feature complete and in final testing. A release candidate is indicated by a release tag appended with the `-rc` identifier, such as version `8.1.0-rc.0`.
+
+The latest `next` or `rc` pre-release version of the documentation is available at [next.angular.io](https://next.angular.io).
+>>>>>>> 939e2f76f6c3180e13886357a7dbdf8d562e98f4
 
 앞으로 릴리즈될 다음 버전에 대한 내용은 [next.angular.io](https://next.angular.io)에서 확인할 수 있습니다. 이 문서에는 베타 버전이나 배포 준비 버전에 대한 내용도 포함되어 있습니다.
 
@@ -160,7 +168,7 @@ We work toward a regular schedule of releases, so that you can plan and coordina
 
 <div class="alert is-helpful">
 
-Disclaimer: Dates are offered as general guidance and will be adjusted by us when necessary to ensure delivery of a high-quality platform. 
+Disclaimer: Dates are offered as general guidance and will be adjusted by us when necessary to ensure delivery of a high-quality platform.
 
 </div>
 
@@ -170,8 +178,9 @@ In general, you can expect the following release cycle:
 
 * 1-3 minor releases for each major release
 
-* A patch release almost every week
+* A patch release and pre-release (`next` or `rc`) build almost every week
 
+<<<<<<< HEAD
 This cadence of releases gives you access to new beta features as soon as they are ready, while maintaining the stability and reliability of the platform for production users.
 -->
 Angular는 일정한 주기로 릴리즈됩니다. 많은 개발자들이 버전 업데이트를 미리 대비해서 Angular의 발전에 함께 하기를 바랍니다.
@@ -215,6 +224,9 @@ The following table contains our current target release dates for the next two m
  Compatibility note: The primary goal of the backward compatibility promise is to ensure that changes in the core framework and tooling don't break the existing ecosystem of components and applications and don't put undue upgrade/migration burden on Angular application and component authors.
 -->
 Angular의 메이저 릴리즈 중 앞으로 있을 2개의 메이저 버전은 다음과 같은 일정으로 배포될 예정입니다:
+=======
+This cadence of releases gives eager developers access to new features as soon as they are fully developed and pass through our code review and integration testing processes, while maintaining the stability and reliability of the platform for production users that prefer to receive features after they have been validated by Google and other developers that use the pre-release builds.
+>>>>>>> 939e2f76f6c3180e13886357a7dbdf8d562e98f4
 
  일자                   | 안전버전 릴리즈 | 호환되는 버전 표기
  ---------------------- | -------------- | -------------

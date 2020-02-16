@@ -6400,8 +6400,9 @@ The Angular `By` class has three static methods for common predicates:
 
 <hr>
 
-{@a faq}
+{@a useful-tips}
 
+<<<<<<< HEAD
 <!--
 ## Frequently Asked Questions
 -->
@@ -6413,6 +6414,13 @@ The Angular `By` class has three static methods for common predicates:
 #### Why put spec file next to the file it tests?
 -->
 #### 스펙 파일은 왜 테스트하는 파일과 함께 둬야 하나요?
+=======
+## Useful tips
+
+{@a q-spec-file-location}
+
+#### Place your spec file next to the file it tests
+>>>>>>> 939e2f76f6c3180e13886357a7dbdf8d562e98f4
 
 <!--
 It's a good idea to put unit test spec files in the same folder
@@ -6433,14 +6441,16 @@ as the application source code files that they test:
 - (불가피하게) 소스 파일의 위치를 옮겨야 한다면, 테스트 파일도 잊지 않고 함께 옮길 수 있습니다.
 - (불가피하게) 소스 파일의 이름을 바꿔야 한다면, 테스트 파일의 이름도 잊지 않고 바꿀 수 있습니다.
 
-<hr>
-
 {@a q-specs-in-test-folder}
 
+<<<<<<< HEAD
 <!--
 #### When would I put specs in a test folder?
 -->
 #### 테스트 파일을 한 폴더에 둬야 하는 경우는 어떤 경우인가요?
+=======
+#### Place your spec files in a test folder
+>>>>>>> 939e2f76f6c3180e13886357a7dbdf8d562e98f4
 
 <!--
 Application integration specs can test the interactions of multiple parts
@@ -6460,8 +6470,11 @@ next to their corresponding helper files.
 
 그러면 자연스럽게 이 테스트 스펙이 사용하는 테스트 헬퍼도 `test` 폴더에 함께 두는 것이 좋습니다.
 
-{@a q-e2e}
+{@a q-kiss}
 
+#### Keep it simple
+
+<<<<<<< HEAD
 <!--
 #### Why not rely on E2E tests of DOM integration?
 
@@ -6474,6 +6487,15 @@ are comparatively simple.
 #### Why not defer DOM integration tests to end-to-end (E2E) testing?
 -->
 #### 엔드-투-엔드(E2E) 테스트할 때 왜 DOM은 테스트하지 않나요?
+=======
+[Component class testing](#component-class-testing) should be kept very clean and simple.
+It should test only a single unit. On a first glance, you should be able to understand 
+what the test is testing. If it's doing more, then it doesn't belong here.
+
+{@a q-end-to-end}
+
+#### Use E2E (end-to-end) to test more than a single unit
+>>>>>>> 939e2f76f6c3180e13886357a7dbdf8d562e98f4
 
 <!--
 E2E tests are great for high-level validation of the entire system.

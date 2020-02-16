@@ -8,8 +8,8 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Fetch rules_nodejs so we can install our npm dependencies
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "6bcef105e75cac3c5f8212e0d0431b6ec1aaa1963e093b0091474ab98ecf29d2",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/1.2.2/rules_nodejs-1.2.2.tar.gz"],
+    sha256 = "b6670f9f43faa66e3009488bbd909bc7bc46a5a9661a33f6bc578068d1837f37",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/1.3.0/rules_nodejs-1.3.0.tar.gz"],
 )
 
 # Check the bazel version and download npm dependencies
@@ -18,6 +18,7 @@ load("@build_bazel_rules_nodejs//:index.bzl", "check_bazel_version", "check_rule
 # Bazel version must be at least the following version because:
 #   - 0.26.0 managed_directories feature added which is required for nodejs rules 0.30.0
 #   - 0.27.0 has a fix for managed_directories after `rm -rf node_modules`
+#   - 2.1.0 feature added to honor .bazelignore in external repositories
 check_bazel_version(
     message = """
 You no longer need to install Bazel on your machine.
@@ -26,10 +27,10 @@ Try running `yarn bazel` instead.
     (If you did run that, check that you've got a fresh `yarn install`)
 
 """,
-    minimum_bazel_version = "2.0.0",
+    minimum_bazel_version = "2.1.0",
 )
 
-check_rules_nodejs_version(minimum_version_string = "1.2.2")
+check_rules_nodejs_version(minimum_version_string = "1.3.0")
 
 # Setup the Node.js toolchain
 node_repositories(

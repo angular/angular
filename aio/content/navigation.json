@@ -168,13 +168,13 @@
             "url": "tutorial",
             "title!": "Introduction",
             "title": "소개",
-            "tooltip!": "Introduction to the Tour of Heroes tutorial",
+            "tooltip!": "Introduction to the Tour of Heroes app and tutorial",
             "tooltip": "히어로들의 여행 튜토리얼 앱에 대해 소개합니다."
           },
           {
             "url": "tutorial/toh-pt0",
-            "title!": "The Application Shell",
-            "title": "애플리케이션 기본 틀",
+            "title!": "Create a Project",
+            "title": "프로젝트 생성하기",
             "tooltip!": "Creating the application shell",
             "tooltip": "애플리케이션 기본 틀을 만들어 봅시다."
           },
@@ -182,8 +182,8 @@
             "url": "tutorial/toh-pt1",
             "title!": "1. The Hero Editor",
             "title": "1. 히어로 편집기",
-            "tooltip!": "Part 1: Build a simple hero editor",
-            "tooltip": "1단계: 간단한 히어로 편집기를 만들어 봅시다."
+            "tooltip!": "Part 1: Build a simple editor",
+            "tooltip": "1단계: 간단한 에디터를 만들어 봅시다."
           },
           {
             "url": "tutorial/toh-pt2",

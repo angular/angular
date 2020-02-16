@@ -108,6 +108,9 @@ pullapprove_conditions:
   - condition: "'PR state: WIP' not in labels"
     unmet_status: pending
     explanation: "Waiting to send reviews as PR is WIP"
+  - condition: "not draft"
+    unmet_status: pending
+    explanation: "Waiting to send reviews as PR is in draft"
 
 
 groups:
@@ -961,6 +964,7 @@ groups:
           'tools/testing/**',
           'tools/ts-api-guardian/**',
           'tools/tslint/**',
+          'tools/utils/**',
           'tools/validate-commit-message/**',
           'tools/yarn/**',
           'tools/*',

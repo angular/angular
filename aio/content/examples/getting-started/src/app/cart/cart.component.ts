@@ -39,10 +39,10 @@ export class CartComponent implements OnInit {
   // #enddocregion props-services
   onSubmit(customerData) {
     // 주문 로직은 여기에 구현합니다.
-    console.warn('Your order has been submitted', customerData);
-
     this.items = this.cartService.clearCart();
     this.checkoutForm.reset();
+
+    console.warn('Your order has been submitted', customerData);
   }
 // #docregion props-services, inject-form-builder, checkout-form, checkout-form-group
 }

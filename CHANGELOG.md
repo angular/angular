@@ -1,3 +1,46 @@
+<a name="9.1.0-next.0"></a>
+## [9.1.0-next.0](https://github.com/angular/angular/compare/9.0.0...9.1.0-next.0) (2020-02-12)
+
+### Bug Fixes
+
+* **bazel:** devserver shows blank page in Windows ([#35159](https://github.com/angular/angular/issues/35159)) ([727f92f](https://github.com/angular/angular/commit/727f92f))
+* **bazel:** spawn prod server using port 4200 ([#35160](https://github.com/angular/angular/issues/35160)) ([829f506](https://github.com/angular/angular/commit/829f506))
+* **bazel:** update ibazel to 0.11.1 ([#35158](https://github.com/angular/angular/issues/35158)) ([4e6d237](https://github.com/angular/angular/commit/4e6d237))
+* **compiler:** report errors for missing binding names ([#34595](https://github.com/angular/angular/issues/34595)) ([d13cab7](https://github.com/angular/angular/commit/d13cab7))
+* **elements:** schematics fail with schema.json not found error ([#35211](https://github.com/angular/angular/issues/35211)) ([94d002b](https://github.com/angular/angular/commit/94d002b)), closes [#35154](https://github.com/angular/angular/issues/35154)
+* **forms:** change Array.reduce usage to Array.forEach ([#35349](https://github.com/angular/angular/issues/35349)) ([554c2cb](https://github.com/angular/angular/commit/554c2cb))
+* **ivy:** ensure module imports are instantiated before the module being declared ([#35172](https://github.com/angular/angular/issues/35172)) ([b6a3a73](https://github.com/angular/angular/commit/b6a3a73))
+* **ivy:** repeat template guards to narrow types in event handlers ([#35193](https://github.com/angular/angular/issues/35193)) ([dea1b96](https://github.com/angular/angular/commit/dea1b96)), closes [#35073](https://github.com/angular/angular/issues/35073)
+* **ivy:** set namespace for host elements of dynamically created components ([#35136](https://github.com/angular/angular/issues/35136)) ([480a4c3](https://github.com/angular/angular/commit/480a4c3))
+* **language-service:** Suggest ? and ! operator on nullable receiver ([#35200](https://github.com/angular/angular/issues/35200)) ([3cc24a9](https://github.com/angular/angular/commit/3cc24a9))
+* **ngcc:** ensure that path-mapped secondary entry-points are processed correctly ([#35227](https://github.com/angular/angular/issues/35227)) ([c3c1140](https://github.com/angular/angular/commit/c3c1140)), closes [#35188](https://github.com/angular/angular/issues/35188)
+
+### Features
+
+* **compiler-cli:** implement NgTscPlugin on top of the NgCompiler API ([#34792](https://github.com/angular/angular/issues/34792)) ([3c69442dbd](https://github.com/angular/angular/commit/3c69442dbd))
+
+
+
+<a name="9.0.1"></a>
+## [9.0.1](https://github.com/angular/angular/compare/9.0.0...9.0.1) (2020-02-12)
+
+
+### Bug Fixes
+
+* **bazel:** devserver shows blank page in Windows ([#35159](https://github.com/angular/angular/issues/35159)) ([727f92f](https://github.com/angular/angular/commit/727f92f))
+* **bazel:** spawn prod server using port 4200 ([#35160](https://github.com/angular/angular/issues/35160)) ([829f506](https://github.com/angular/angular/commit/829f506))
+* **bazel:** update ibazel to 0.11.1 ([#35158](https://github.com/angular/angular/issues/35158)) ([4e6d237](https://github.com/angular/angular/commit/4e6d237))
+* **compiler:** report errors for missing binding names ([#34595](https://github.com/angular/angular/issues/34595)) ([d13cab7](https://github.com/angular/angular/commit/d13cab7))
+* **elements:** schematics fail with schema.json not found error ([#35211](https://github.com/angular/angular/issues/35211)) ([94d002b](https://github.com/angular/angular/commit/94d002b)), closes [#35154](https://github.com/angular/angular/issues/35154)
+* **forms:** change Array.reduce usage to Array.forEach ([#35349](https://github.com/angular/angular/issues/35349)) ([554c2cb](https://github.com/angular/angular/commit/554c2cb))
+* **ivy:** ensure module imports are instantiated before the module being declared ([#35172](https://github.com/angular/angular/issues/35172)) ([b6a3a73](https://github.com/angular/angular/commit/b6a3a73))
+* **ivy:** repeat template guards to narrow types in event handlers ([#35193](https://github.com/angular/angular/issues/35193)) ([dea1b96](https://github.com/angular/angular/commit/dea1b96)), closes [#35073](https://github.com/angular/angular/issues/35073)
+* **ivy:** set namespace for host elements of dynamically created components ([#35136](https://github.com/angular/angular/issues/35136)) ([480a4c3](https://github.com/angular/angular/commit/480a4c3))
+* **language-service:** Suggest ? and ! operator on nullable receiver ([#35200](https://github.com/angular/angular/issues/35200)) ([3cc24a9](https://github.com/angular/angular/commit/3cc24a9))
+* **ngcc:** ensure that path-mapped secondary entry-points are processed correctly ([#35227](https://github.com/angular/angular/issues/35227)) ([c3c1140](https://github.com/angular/angular/commit/c3c1140)), closes [#35188](https://github.com/angular/angular/issues/35188)
+
+
+
 <a name="9.0.0"></a>
 # [9.0.0](https://github.com/angular/angular/compare/8.2.14...9.0.0) (2020-02-06)
 
