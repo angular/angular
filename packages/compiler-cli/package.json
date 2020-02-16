@@ -21,6 +21,7 @@
     "magic-string": "^0.25.0",
     "semver": "^6.3.0",
     "source-map": "^0.6.1",
+    "sourcemap-codec": "^1.4.8",
     "yargs": "13.1.0"
   },
   "peerDependencies": {
@@ -48,7 +49,7 @@
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },
-  "publishConfig":{
-    "registry":"https://wombat-dressing-room.appspot.com"
+  "publishConfig": {
+    "registry": "https://wombat-dressing-room.appspot.com"
   }
 }
