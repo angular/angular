@@ -3128,6 +3128,159 @@ describe('compiler compliance', () => {
       expectEmit(result.source, MyAppDeclaration, 'Invalid component definition');
     });
 
+    it('should not share pure functions between null and object literals', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+
+              @Component({
+                template: \`
+                  <div [dir]="{foo: null}"></div>
+                  <div [dir]="{foo: {}}"></div>
+                \`
+              })
+              export class MyApp {}
+
+              @NgModule({declarations: [MyApp]})
+              export class MyModule {}
+          `
+        }
+      };
+
+      const MyAppDeclaration = `
+        const $c0$ = function () { return { foo: null }; };
+        const $c1$ = function () { return {}; };
+        const $c2$ = function (a0) { return { foo: a0 }; };
+        …
+        MyApp.ɵcmp = $r3$.ɵɵdefineComponent({
+          type: MyApp,
+          selectors: [["ng-component"]],
+          decls: 2,
+          vars: 6,
+          consts: [[${AttributeMarker.Bindings}, "dir"]],
+          template:  function MyApp_Template(rf, ctx) {
+            if (rf & 1) {
+              $r3$.ɵɵelement(0, "div", 0);
+              $r3$.ɵɵelement(1, "div", 0);
+            }
+            if (rf & 2) {
+              $r3$.ɵɵproperty("dir", $r3$.ɵɵpureFunction0(2, $c0$));
+              $r3$.ɵɵadvance(1);
+              $r3$.ɵɵproperty("dir", $r3$.ɵɵpureFunction1(4, $c2$, $r3$.ɵɵpureFunction0(3, $c1$)));
+            }
+          },
+         encapsulation: 2
+        });
+      `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, MyAppDeclaration, 'Invalid component definition');
+    });
+
+    it('should not share pure functions between null and array literals', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+
+              @Component({
+                template: \`
+                  <div [dir]="{foo: null}"></div>
+                  <div [dir]="{foo: []}"></div>
+                \`
+              })
+              export class MyApp {}
+
+              @NgModule({declarations: [MyApp]})
+              export class MyModule {}
+          `
+        }
+      };
+
+      const MyAppDeclaration = `
+        const $c0$ = function () { return { foo: null }; };
+        const $c1$ = function () { return []; };
+        const $c2$ = function (a0) { return { foo: a0 }; };
+        …
+        MyApp.ɵcmp = $r3$.ɵɵdefineComponent({
+          type: MyApp,
+          selectors: [["ng-component"]],
+          decls: 2,
+          vars: 6,
+          consts: [[${AttributeMarker.Bindings}, "dir"]],
+          template:  function MyApp_Template(rf, ctx) {
+            if (rf & 1) {
+              $r3$.ɵɵelement(0, "div", 0);
+              $r3$.ɵɵelement(1, "div", 0);
+            }
+            if (rf & 2) {
+              $r3$.ɵɵproperty("dir", $r3$.ɵɵpureFunction0(2, $c0$));
+              $r3$.ɵɵadvance(1);
+              $r3$.ɵɵproperty("dir", $r3$.ɵɵpureFunction1(4, $c2$, $r3$.ɵɵpureFunction0(3, $c1$)));
+            }
+          },
+         encapsulation: 2
+        });
+      `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, MyAppDeclaration, 'Invalid component definition');
+    });
+
+    it('should not share pure functions between null and function calls', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+
+              @Component({
+                template: \`
+                  <div [dir]="{foo: null}"></div>
+                  <div [dir]="{foo: getFoo()}"></div>
+                \`
+              })
+              export class MyApp {
+                getFoo() {
+                  return 'foo!';
+                }
+              }
+
+              @NgModule({declarations: [MyApp]})
+              export class MyModule {}
+          `
+        }
+      };
+
+      const MyAppDeclaration = `
+        const $c0$ = function () { return { foo: null }; };
+        const $c1$ = function (a0) { return { foo: a0 }; };
+        …
+        MyApp.ɵcmp = $r3$.ɵɵdefineComponent({
+          type: MyApp,
+          selectors: [["ng-component"]],
+          decls: 2,
+          vars: 5,
+          consts: [[${AttributeMarker.Bindings}, "dir"]],
+          template:  function MyApp_Template(rf, ctx) {
+            if (rf & 1) {
+              $r3$.ɵɵelement(0, "div", 0);
+              $r3$.ɵɵelement(1, "div", 0);
+            }
+            if (rf & 2) {
+              $r3$.ɵɵproperty("dir", $r3$.ɵɵpureFunction0(2, $c0$));
+              $r3$.ɵɵadvance(1);
+              $r3$.ɵɵproperty("dir", $r3$.ɵɵpureFunction1(3, $c1$, ctx.getFoo()));
+            }
+          },
+         encapsulation: 2
+        });
+      `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, MyAppDeclaration, 'Invalid component definition');
+    });
+
   });
 
   describe('inherited base classes', () => {
