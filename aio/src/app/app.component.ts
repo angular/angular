@@ -1,18 +1,15 @@
-import { Component, ElementRef, HostBinding, HostListener, OnInit,
-         QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Component, ElementRef, HostBinding, HostListener, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
-
-import { CurrentNodes, NavigationService, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
-import { DocumentService, DocumentContents } from 'app/documents/document.service';
+import { DocumentContents, DocumentService } from 'app/documents/document.service';
+import { NotificationComponent } from 'app/layout/notification/notification.component';
+import { CurrentNodes, NavigationNode, NavigationService, VersionInfo } from 'app/navigation/navigation.service';
+import { SearchResults } from 'app/search/interfaces';
+import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
+import { SearchService } from 'app/search/search.service';
 import { Deployment } from 'app/shared/deployment.service';
 import { LocationService } from 'app/shared/location.service';
-import { NotificationComponent } from 'app/layout/notification/notification.component';
 import { ScrollService } from 'app/shared/scroll.service';
-import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
-import { SearchResults } from 'app/search/interfaces';
-import { SearchService } from 'app/search/search.service';
 import { TocService } from 'app/shared/toc.service';
-
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { first, map } from 'rxjs/operators';
 
@@ -150,27 +147,27 @@ export class AppComponent implements OnInit {
       this.navigationService.versionInfo,
       this.navigationService.navigationViews.pipe(map(views => views['docVersions'])),
     ]).subscribe(([versionInfo, versions]) => {
-        // TODO(pbd): consider whether we can lookup the stable and next versions from the internet
-        const computedVersions: NavigationNode[] = [
-          { title: 'next', url: 'https://next.angular.io' },
-          { title: 'stable', url: 'https://angular.io' },
-        ];
-        if (this.deployment.mode === 'archive') {
-          computedVersions.push({ title: `v${versionInfo.major}` });
-        }
-        this.docVersions = [...computedVersions, ...versions];
+      // TODO(pbd): consider whether we can lookup the stable and next versions from the internet
+      const computedVersions: NavigationNode[] = [
+        { title: 'next', url: 'https://next.angular.io' },
+        { title: 'stable', url: 'https://angular.io' },
+      ];
+      if (this.deployment.mode === 'archive') {
+        computedVersions.push({ title: `v${versionInfo.major}` });
+      }
+      this.docVersions = [...computedVersions, ...versions];
 
-        // Find the current version - eithers title matches the current deployment mode
-        // or its title matches the major version of the current version info
-        this.currentDocVersion = this.docVersions.find(version =>
-          version.title === this.deployment.mode || version.title === `v${versionInfo.major}`)!;
-        this.currentDocVersion.title += ` (v${versionInfo.raw})`;
-      });
+      // Find the current version - eithers title matches the current deployment mode
+      // or its title matches the major version of the current version info
+      this.currentDocVersion = this.docVersions.find(version =>
+        version.title === this.deployment.mode || version.title === `v${versionInfo.major}`)!;
+      this.currentDocVersion.title += ` (v${versionInfo.raw})`;
+    });
 
     this.navigationService.navigationViews.subscribe(views => {
-      this.footerNodes  = views['Footer']  || [];
+      this.footerNodes = views['Footer'] || [];
       this.sideNavNodes = views['SideNav'] || [];
-      this.topMenuNodes = views['TopBar']  || [];
+      this.topMenuNodes = views['TopBar'] || [];
       this.topMenuNarrowNodes = views['TopBarNarrow'] || this.topMenuNodes;
     });
 
@@ -178,7 +175,7 @@ export class AppComponent implements OnInit {
 
     const hasNonEmptyToc = this.tocService.tocList.pipe(map(tocList => tocList.length > 0));
     combineLatest([hasNonEmptyToc, this.showFloatingToc])
-        .subscribe(([hasToc, showFloatingToc]) => this.hasFloatingToc = hasToc && showFloatingToc);
+      .subscribe(([hasToc, showFloatingToc]) => this.hasFloatingToc = hasToc && showFloatingToc);
 
     // Generally, we want to delay updating the shell (e.g. host classes, sidenav state) for the new
     // document, until after the leaving document has been removed (to avoid having the styles for
@@ -267,7 +264,7 @@ export class AppComponent implements OnInit {
     }
 
     // Deal with anchor clicks; climb DOM tree until anchor found (or null)
-    let target: HTMLElement|null = eventTarget;
+    let target: HTMLElement | null = eventTarget;
     while (target && !(target instanceof HTMLAnchorElement)) {
       target = target.parentElement;
     }
@@ -354,9 +351,9 @@ export class AppComponent implements OnInit {
 
       if (headerEl && footerEl) {
         this.tocMaxHeightOffset =
-            headerEl.clientHeight +
-            footerEl.clientHeight +
-            24; //  fudge margin
+          headerEl.clientHeight +
+          footerEl.clientHeight +
+          24; //  fudge margin
       }
     }
 
@@ -410,7 +407,7 @@ export class AppComponent implements OnInit {
     if (key === '/' || keyCode === 191) {
       this.focusSearchBox();
     }
-    if (key === 'Escape' || keyCode === 27 ) {
+    if (key === 'Escape' || keyCode === 27) {
       // escape key
       if (this.showSearchResults) {
         this.hideSearchResults();
