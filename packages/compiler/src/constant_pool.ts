@@ -127,16 +127,17 @@ export class ConstantPool {
 
   getLiteralFactory(literal: o.LiteralArrayExpr|o.LiteralMapExpr):
       {literalFactory: o.Expression, literalFactoryArguments: o.Expression[]} {
-    // Create a pure function that builds an array of a mix of constant  and variable expressions
+    // Create a pure function that builds an array of a mix of constant and variable expressions
     if (literal instanceof o.LiteralArrayExpr) {
-      const argumentsForKey = literal.entries.map(e => e.isConstant() ? e : o.literal(null));
+      const argumentsForKey =
+          literal.entries.map(e => e.isConstant() ? e : o.variable('<unknown>'));
       const key = this.keyOf(o.literalArr(argumentsForKey));
       return this._getLiteralFactory(key, literal.entries, entries => o.literalArr(entries));
     } else {
       const expressionForKey = o.literalMap(
           literal.entries.map(e => ({
                                 key: e.key,
-                                value: e.value.isConstant() ? e.value : o.literal(null),
+                                value: e.value.isConstant() ? e.value : o.variable('<unknown>'),
                                 quoted: e.quoted
                               })));
       const key = this.keyOf(expressionForKey);
