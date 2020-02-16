@@ -68,7 +68,7 @@ Files at the top level of `src/` support testing and running your application. S
 | APP SUPPORT FILES    | PURPOSE |
 | :--------------------- | :------------------------------------------|
 | `app/`                 | Contains the component files in which your application logic and data are defined. See details [below](#app-src). |
-| `assets/`              | Contains image and other asset files to be copied as-is when you build your application. |
+| `assets/`              | Contains image and other asset files to be copied as-it is when you build your application. |
 | `environments/`        | Contains build configuration options for particular target environments. By default there is an unnamed standard development environment and a production ("prod") environment. You can define additional target environment configurations. |
 | `favicon.ico`          | An icon to use for this application in the bookmark bar. |
 | `index.html`           | The main HTML page that is served when someone visits your site. The CLI automatically adds all JavaScript and CSS files when building your app, so you typically don't need to add any `<script>` or` <link>` tags here manually. |
