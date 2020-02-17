@@ -1,6 +1,19 @@
 <ng-template #labelTemplate>
-  <!-- We add aria-owns as a workaround for an issue in JAWS & NVDA where the label isn't
-     read if it comes before the control in the DOM. -->
+  <!--
+    MDC recommends that the text-field is a `<label>` element. This rather complicates the
+    setup because it would require every form-field control to explicitly set `aria-labelledby`.
+    This is because the `<label>` itself contains more than the actual label (e.g. prefix, suffix
+    or other projected content), and screen readers could potentially read out undesired content.
+    Excluding elements from being printed out requires them to be marked with `aria-hidden`, or
+    the form control is set to a scoped element for the label (using `aria-labelledby`). Both of
+    these options seem to complicate the setup because we know exactly what content is rendered
+    as part of the label, and we don't want to spend resources on walking through projected content
+    to set `aria-hidden`. Nor do we want to set `aria-labelledby` on every form control if we could
+    simply link the label to the control using the label `for` attribute.
+
+    *Note*: We add aria-owns as a workaround for an issue in JAWS & NVDA where the label isn't
+    read if it comes before the control in the DOM.
+  -->
   <label matFormFieldFloatingLabel [floating]="_shouldLabelFloat()"
          *ngIf="_hasFloatingLabel()"
          (cdkObserveContent)="_refreshOutlineNotchWidth()"
