@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, BoundDirectivePropertyAst, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, RecursiveTemplateAstVisitor, SelectorMatcher, StaticSymbol, TemplateAst, TemplateAstPath, templateVisitAll, tokenReference} from '@angular/compiler';
+import {AST, Attribute, BoundDirectivePropertyAst, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, RecursiveTemplateAstVisitor, SelectorMatcher, StaticSymbol, TemplateAst, TemplateAstPath, templateVisitAll, tokenReference} from '@angular/compiler';
 import * as tss from 'typescript/lib/tsserverlibrary';
 
 import {AstResult} from './common';
@@ -63,11 +63,18 @@ function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult):
   let symbol: Symbol|undefined;
   let span: Span|undefined;
   let staticSymbol: StaticSymbol|undefined;
-  const attributeValueSymbol = (): boolean => {
+  const attributeValueSymbol = (ast: AST): boolean => {
     const attribute = findAttribute(info, position);
     if (attribute) {
       if (inSpan(templatePosition, spanOf(attribute.valueSpan))) {
-        const result = getSymbolInAttributeValue(info, path, attribute);
+        let result: {symbol: Symbol, span: Span}|undefined;
+        if (attribute.name.startsWith('*')) {
+          result = getSymbolInMicrosyntax(info, path, attribute);
+        } else {
+          const dinfo = diagnosticInfoFromTemplateInfo(info);
+          const scope = getExpressionScope(dinfo, path);
+          result = getExpressionSymbol(scope, ast, templatePosition, info.template.query);
+        }
         if (result) {
           symbol = result.symbol;
           span = offsetSpan(result.span, attribute.valueSpan !.start.offset);
@@ -108,13 +115,13 @@ function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult):
         },
         visitVariable(ast) {},
         visitEvent(ast) {
-          if (!attributeValueSymbol()) {
+          if (!attributeValueSymbol(ast.handler)) {
             symbol = findOutputBinding(ast, path, info.template.query);
             symbol = symbol && new OverrideKindSymbol(symbol, DirectiveKind.EVENT);
             span = spanOf(ast);
           }
         },
-        visitElementProperty(ast) { attributeValueSymbol(); },
+        visitElementProperty(ast) { attributeValueSymbol(ast.value); },
         visitAttr(ast) {
           const element = path.head;
           if (!element || !(element instanceof ElementAst)) return;
@@ -158,7 +165,7 @@ function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult):
           span = spanOf(ast);
         },
         visitDirectiveProperty(ast) {
-          if (!attributeValueSymbol()) {
+          if (!attributeValueSymbol(ast.value)) {
             const directive = findParentOfBinding(info.templateAst, ast, templatePosition);
             const attribute = findAttribute(info, position);
             if (directive && attribute) {
@@ -187,8 +194,8 @@ function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult):
   }
 }
 
-// Get the symbol in attribute value at template position.
-function getSymbolInAttributeValue(info: AstResult, path: TemplateAstPath, attribute: Attribute):
+// Get the symbol in microsyntax at template position.
+function getSymbolInMicrosyntax(info: AstResult, path: TemplateAstPath, attribute: Attribute):
     {symbol: Symbol, span: Span}|undefined {
   if (!attribute.valueSpan) {
     return;

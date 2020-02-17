@@ -39,6 +39,16 @@ describe('hover', () => {
     expect(toText(displayParts)).toBe('(property) MyComponent.name: string');
   });
 
+  it('should be able to find an interpolated value in an attribute', () => {
+    mockHost.override(TEST_TEMPLATE, `<div string-model model="{{«title»}}"></div>`);
+    const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'title');
+    const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+    expect(quickInfo).toBeTruthy();
+    const {textSpan, displayParts} = quickInfo !;
+    expect(textSpan).toEqual(marker);
+    expect(toText(displayParts)).toBe('(property) TemplateReference.title: string');
+  });
+
   it('should be able to find a field in a attribute reference', () => {
     const fileName = mockHost.addCode(`
       @Component({
