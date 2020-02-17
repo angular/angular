@@ -402,10 +402,10 @@ describe('AppComponent', () => {
       // Older docs versions have an href
       it('should navigate when change to a version with a url', async () => {
         await setupSelectorForTesting();
-        locationService.urlSubject.next('new-page');
+        locationService.urlSubject.next('new-page?id=1#section-1');
         const versionWithUrlIndex = component.docVersions.findIndex(v => !!v.url);
         const versionWithUrl = component.docVersions[versionWithUrlIndex];
-        const versionWithUrlAndPage = `${versionWithUrl.url}new-page`;
+        const versionWithUrlAndPage = `${versionWithUrl.url}new-page?id=1#section-1`;
         selectElement.triggerEventHandler('change', { option: versionWithUrl, index: versionWithUrlIndex});
         expect(locationService.go).toHaveBeenCalledWith(versionWithUrlAndPage);
       });
