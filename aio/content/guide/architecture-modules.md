@@ -64,7 +64,7 @@ Here's a simple root NgModule definition.
 <div class="alert is-helpful">
 
 <!--
-   `AppComponent` is included in the `exports` list here for illustration; it isn't actually necessary in this example. A root NgModule has no reason to *export* anything because other modules don't need to *import* the root NgModule.
+  `AppComponent` is included in the `exports` list here for illustration; it isn't actually necessary in this example. A root NgModule has no reason to *export* anything because other modules don't need to *import* the root NgModule.
 -->
    이 코드에서 `exports` 프로퍼티는 이 프로퍼티를 어떻게 사용하는지 설명하기 위해 추가했습니다. 최상위 모듈은 다른 NgModule에서 참조할 일이 없기 때문에 어떤 구성요소라도 *exports* 로 지정할 필요가 없습니다.
 
@@ -80,20 +80,14 @@ NgModules provide a *compilation context* for their components. A root NgModule 
 -->
 NgModule은 컴포넌트가 *컴파일되는 시점의 컨텍스트*를 제공합니다. 최상위 NgModule은 생성하는 컴포넌트가 최상위 컴포넌트를 하나지만, 다른 NgModule은 컴포넌트를 여러개 갖고 있을 수도 있고, 이 컴포넌트들은 라우터나 템플릿의 동작에 따라 뷰에 로드됩니다. 모듈에 속한 컴포넌트는 그 NgModule에서 제공하는 컴파일 컨텍스트를 사용합니다.
 
-<<<<<<< HEAD
-<figure>
-
 <!--
-<img src="generated/images/guide/architecture/compilation-context.png" alt="Component compilation context" class="left">
--->
-<img src="generated/images/guide/architecture/compilation-context.png" alt="컴포넌트 컴파일 컨텍스트" class="left">
-
-</figure>
-=======
 <div class="lightbox">
   <img src="generated/images/guide/architecture/compilation-context.png" alt="Component compilation context" class="left">
 </div>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<div class="lightbox">
+  <img src="generated/images/guide/architecture/compilation-context.png" alt="컴포넌트 컴파일 컨텍스트" class="left">
+</div>
 
 <br class="clear">
 
@@ -102,20 +96,14 @@ A component and its template together define a *view*. A component can contain a
 -->
 컴포넌트는 템플릿과 함께 *뷰* 를 정의합니다. 컴포넌트는 *뷰 계층* 을 구성할 수도 있고, 이 뷰 계층을 활용하면 복잡한 화면에서 일부 엘리먼트만 추가하거나 제거할 수 있고 갱신을 할 수도 있습니다. 뷰 계층은 다른 NgModule에 정의된 컴포넌트와 조합할 수도 있습니다. 서드파티 UI 라이브러리를 사용하는 것이 이 경우에 해당됩니다.
 
-<<<<<<< HEAD
-<figure>
-
 <!--
-<img src="generated/images/guide/architecture/view-hierarchy.png" alt="View hierarchy" class="left">
--->
-<img src="generated/images/guide/architecture/view-hierarchy.png" alt="뷰 계층" class="left">
-
-</figure>
-=======
 <div class="lightbox">
   <img src="generated/images/guide/architecture/view-hierarchy.png" alt="View hierarchy" class="left">
 </div>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<div class="lightbox">
+  <img src="generated/images/guide/architecture/view-hierarchy.png" alt="뷰 계층" class="left">
+</div>
 
 <br class="clear">
 
@@ -126,7 +114,7 @@ When you create a component, it's associated directly with a single view, called
 
 <div class="alert is-helpful">
 <!--
-    **Note:** The hierarchical structure of views is a key factor in the way Angular detects and responds to changes in the DOM and app data. 
+**Note:** The hierarchical structure of views is a key factor in the way Angular detects and responds to changes in the DOM and app data.
 -->
     **참고:** 뷰 계층은 Angular가 DOM이나 앱 데이터가 변할 때 변화를 감지하는 단위가 되기 때문에 효율적으로 구성하는 것이 중요합니다.
 </div>

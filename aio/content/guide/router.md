@@ -1,11 +1,7 @@
-<<<<<<< HEAD
 <!--
-# Routing & Navigation
+# Routing and navigation
 -->
 # 라우팅 & 네비게이션
-=======
-# Routing and navigation
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 The Angular **`Router`** enables navigation from one [view](guide/glossary#view) to the next
@@ -153,16 +149,10 @@ and adds the result to the `AppModule`'s `imports` array.
 다음 예제는 라우팅 규칙을 각각 다른 4가지 방식으로 정의한 예제 코드입니다.
 이 라우팅 규칙들은 라우터 모듈의 `RouterModule.forRoot()` 메소드를 사용해서 `AppModule`의 `imports` 배열에 등록되었습니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/app.module.0.ts" linenums="false" header="src/app/app.module.ts (excerpt)">
--->
-<code-example path="router/src/app/app.module.0.ts" linenums="false" header="src/app/app.module.ts (일부)">
-
-</code-example>
-=======
 <code-example path="router/src/app/app.module.0.ts" header="src/app/app.module.ts (excerpt)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/app.module.0.ts" header="src/app/app.module.ts (일부)"></code-example>
 
 
 
@@ -779,15 +769,12 @@ During each navigation, the `Router` emits navigation events through the `Router
 
       <!--
       An [event](api/router/NavigationCancel) triggered when navigation is canceled.
-<<<<<<< HEAD
+      This can happen when a [Route Guard](#guards) returns false during navigation,
+      or redirects by returning a `UrlTree`.
       This is due to a [Route Guard](#guards) returning false during navigation.
       -->
       네비게이션 동작이 중간에 취소되었을 때 발생하는 [이벤트](api/router/NavigationCancel)입니다.
-      이 이벤트는 [라우터 가드](#guards)가 `false` 값을 반환하는 경우에 발생합니다.
-=======
-      This can happen when a [Route Guard](#guards) returns false during navigation,
-      or redirects by returning a `UrlTree`.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+      이 이벤트는 [라우터 가드](#guards)가 `false` 값을 반환하거나 `UrlTree`를 반환하는 경우에 발생합니다.
 
     </td>
   </tr>
@@ -1369,17 +1356,10 @@ In order to use the Router, you must first register the `RouterModule` from the 
 
 </div>
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/app.module.1.ts" linenums="false" header="src/app/app.module.ts (first-config)" region="first-config">
--->
-<code-example path="router/src/app/app.module.1.ts" linenums="false" header="src/app/app.module.ts (첫번째 설정)" region="first-config">
-
-</code-example>
-=======
-
 <code-example path="router/src/app/app.module.1.ts" header="src/app/app.module.ts (first-config)" region="first-config"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/app.module.1.ts" header="src/app/app.module.ts (첫번째 설정)" region="first-config"></code-example>
 
 <div class="alert is-helpful">
 
@@ -1466,16 +1446,10 @@ To test this feature, add a button with a `RouterLink` to the `HeroListComponent
 -->
 동작을 테스트하기 위해 `HeroListComponent` 템플릿에 `RouterLink`를 사용하는 버튼을 하나 추가하고, 이 버튼의 링크를 `"/sidekicks"`로 지정합니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/hero-list/hero-list.component.1.html" linenums="false" header="src/app/hero-list/hero-list.component.html (excerpt)">
--->
-<code-example path="router/src/app/hero-list/hero-list.component.1.html" linenums="false" header="src/app/hero-list/hero-list.component.html (일부)">
-
-</code-example>
-=======
 <code-example path="router/src/app/hero-list/hero-list.component.1.html" header="src/app/hero-list/hero-list.component.html (excerpt)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/hero-list/hero-list.component.1.html" header="src/app/hero-list/hero-list.component.html (일부)"></code-example>
 
 <!--
 The application will fail if the user clicks that button because you haven't defined a `"/sidekicks"` route yet.
@@ -2446,17 +2420,10 @@ The route to `HeroDetailComponent` has a twist.
 `HeroesRoutingModule`로 돌아가서 라우팅 규칙을 다시 한 번 봅시다.
 `HeroDetailComponent`로 라우팅하는 라우팅 규칙은 다음과 같이 정의되어 있습니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/heroes/heroes-routing.module.1.ts" linenums="false" header="src/app/heroes/heroes-routing.module.ts (excerpt)" region="hero-detail-route">
--->
-<code-example path="router/src/app/heroes/heroes-routing.module.1.ts" linenums="false" header="src/app/heroes/heroes-routing.module.ts (일부)" region="hero-detail-route">
-
-</code-example>
-=======
-
 <code-example path="router/src/app/heroes/heroes-routing.module.1.ts" header="src/app/heroes/heroes-routing.module.ts (excerpt)" region="hero-detail-route"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/heroes/heroes-routing.module.1.ts" header="src/app/heroes/heroes-routing.module.ts (일부)" region="hero-detail-route"></code-example>
 
 
 <!--
@@ -2524,17 +2491,10 @@ Accordingly, the _link parameters array_ has *two* items:  the routing _path_ an
 `HeroDetailComponent`로 이동하고 나면 사용자가 선택한 히어로의 정보가 화면에 표시되어야 합니다.
 그러면 이 정보를 컴포넌트에 전달하기 위해 사용자가 선택한 히어로의 `id`가 컴포넌트로 이동하는 라우팅 경로에 전달되어야 합니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.html" linenums="false" header="src/app/heroes/hero-list/hero-list.component.html (link-parameters-array)" region="link-parameters-array">
--->
-<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.html" linenums="false" header="src/app/heroes/hero-list/hero-list.component.html (링크에 사용된 배열 형태의 인자)" region="link-parameters-array">
-
-</code-example>
-=======
-
 <code-example path="router/src/app/heroes/hero-list/hero-list.component.1.html" header="src/app/heroes/hero-list/hero-list.component.html (link-parameters-array)" region="link-parameters-array"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.html" header="src/app/heroes/hero-list/hero-list.component.html (링크에 사용된 배열 형태의 인자)" region="link-parameters-array"></code-example>
 
 
 <!--
@@ -2572,17 +2532,10 @@ Import the `Router`, `ActivatedRoute`, and `ParamMap` tokens from the router pac
 -->
 라우터 패키지에서 `Router`, `ActivatedRoute`, `ParamMap` 토큰을 로드합니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.1.ts" linenums="false" header="src/app/heroes/hero-detail/hero-detail.component.ts (activated route)" region="imports">
--->
-<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.1.ts" linenums="false" header="src/app/heroes/hero-detail/hero-detail.component.ts (활성화된 라우팅 규칙)" region="imports">
-
-</code-example>
-=======
-
 <code-example path="router/src/app/heroes/hero-detail/hero-detail.component.1.ts" header="src/app/heroes/hero-detail/hero-detail.component.ts (activated route)" region="imports"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.1.ts" header="src/app/heroes/hero-detail/hero-detail.component.ts (활성화된 라우팅 규칙)" region="imports"></code-example>
 
 
 <!--
@@ -2590,17 +2543,11 @@ Import the `switchMap` operator because you need it later to process the `Observ
 -->
 그리고 `Observable` 형태로 제공되는 라우팅 인자를 활용하기 위해 `switchMap` 연산자도 로드합니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.3.ts" linenums="false" header="src/app/heroes/hero-detail/hero-detail.component.ts (switchMap operator import)" region="rxjs-operator-import">
--->
-<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.3.ts" linenums="false" header="src/app/heroes/hero-detail/hero-detail.component.ts (switchMap 연산자 로드)" region="rxjs-operator-import">
-
-</code-example>
-=======
-
 <code-example path="router/src/app/heroes/hero-detail/hero-detail.component.3.ts" header="src/app/heroes/hero-detail/hero-detail.component.ts (switchMap operator import)" region="rxjs-operator-import"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.3.ts" header="src/app/heroes/hero-detail/hero-detail.component.ts (switchMap 연산자 로드)" region="rxjs-operator-import"></code-example>
+
 
 
 
@@ -2612,17 +2559,11 @@ that the component requires and reference them as private variables.
 -->
 일반적으로 컴포넌트에 서비스를 의존성으로 주입하는 로직은 컴포넌트 클래스의 생성자에 작성하며, 이렇게 주입받은 의존성 객체는 `private` 프로퍼티로 선언합니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.3.ts" linenums="false" header="src/app/heroes/hero-detail/hero-detail.component.ts (constructor)" region="ctor">
--->
-<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.3.ts" linenums="false" header="src/app/heroes/hero-detail/hero-detail.component.ts (생성자)" region="ctor">
-
-</code-example>
-=======
-
 <code-example path="router/src/app/heroes/hero-detail/hero-detail.component.3.ts" header="src/app/heroes/hero-detail/hero-detail.component.ts (constructor)" region="ctor"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.3.ts" header="src/app/heroes/hero-detail/hero-detail.component.ts (생성자)" region="ctor"></code-example>
+
 
 <!--
 Later, in the `ngOnInit` method, you use the `ActivatedRoute` service to retrieve the parameters for the route,
@@ -2853,16 +2794,10 @@ It's much simpler to write and read:
 그래서 이 변수를 참조하면 옵저버블을 구독하거나 옵저버블 연산자를 사용하지 않아도 라우팅 변수를 확인할 수 있습니다.
 코드는 이 방식이 더 간단합니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.2.ts" linenums="false" header="src/app/heroes/hero-detail/hero-detail.component.ts (ngOnInit snapshot)" region="snapshot">
--->
-<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.2.ts" linenums="false" header="src/app/heroes/hero-detail/hero-detail.component.ts (ngOnInit 스냅샷)" region="snapshot">
-
-</code-example>
-=======
 <code-example path="router/src/app/heroes/hero-detail/hero-detail.component.2.ts" header="src/app/heroes/hero-detail/hero-detail.component.ts (ngOnInit snapshot)" region="snapshot"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.2.ts" header="src/app/heroes/hero-detail/hero-detail.component.ts (ngOnInit 스냅샷)" region="snapshot"></code-example>
 
 
 
@@ -2903,16 +2838,10 @@ It holds the _path to the `HeroListComponent`_:
 이 때 라우터가 제공하는 `navigate` 메소드에 _링크 변수 배열 (link parameters array)_ 을 전달합니다.
 이 배열에는 _`HeroListComponent`로 돌아가는 경로_ 가 지정되어 있습니다:
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.1.ts" linenums="false" header="src/app/heroes/hero-detail/hero-detail.component.ts (excerpt)" region="gotoHeroes">
--->
-<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.1.ts" linenums="false" header="src/app/heroes/hero-detail/hero-detail.component.ts (일부)" region="gotoHeroes">
-
-</code-example>
-=======
 <code-example path="router/src/app/heroes/hero-detail/hero-detail.component.1.ts" header="src/app/heroes/hero-detail/hero-detail.component.ts (excerpt)" region="gotoHeroes"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.1.ts" header="src/app/heroes/hero-detail/hero-detail.component.ts (일부)" region="gotoHeroes"></code-example>
 
 
 {@a optional-route-parameters}
@@ -2997,17 +2926,11 @@ When navigating to the `HeroDetailComponent` you specified the _required_ `id` o
 -->
 `HeroDetailComponent`로 네비게이션하는 경우에는 원하는 히어로를 구분하기 위해 `id` 라우팅 변수가 _필수 항목_ 입니다. 그래서 네비게이션할 때 [_링크 변수 배열_](#link-parameters-array)을 다음과 같이 지정했습니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.html" linenums="false" header="src/app/heroes/hero-list/hero-list.component.html (link-parameters-array)" region="link-parameters-array">
--->
-<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.html" linenums="false" header="src/app/heroes/hero-list/hero-list.component.html (링크 변수 배열)" region="link-parameters-array">
-
-</code-example>
-=======
-
 <code-example path="router/src/app/heroes/hero-list/hero-list.component.1.html" header="src/app/heroes/hero-list/hero-list.component.html (link-parameters-array)" region="link-parameters-array"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.html" header="src/app/heroes/hero-list/hero-list.component.html (링크 변수 배열)" region="link-parameters-array"></code-example>
+
 
 
 <!--
@@ -3016,17 +2939,11 @@ as a route parameter with an `:id` placeholder token in the route `path`:
 -->
 그러면 이미 라우팅 규칙에 `:id` 토큰이 선언되었기 때문에 라우터는 `id` 값으로 URL을 조합합니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/heroes/heroes-routing.module.1.ts" linenums="false" header="src/app/heroes/heroes-routing.module.ts (hero-detail-route)" region="hero-detail-route">
--->
-<code-example path="router/src/app/heroes/heroes-routing.module.1.ts" linenums="false" header="src/app/heroes/heroes-routing.module.ts (히어로 상세정보로 라우팅하는 규칙)" region="hero-detail-route">
-
-</code-example>
-=======
-
 <code-example path="router/src/app/heroes/heroes-routing.module.1.ts" header="src/app/heroes/heroes-routing.module.ts (hero-detail-route)" region="hero-detail-route"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/heroes/heroes-routing.module.1.ts" header="src/app/heroes/heroes-routing.module.ts (히어로 상세정보로 라우팅하는 규칙)" region="hero-detail-route"></code-example>
+
 
 
 <!--
@@ -3058,16 +2975,10 @@ Here's the revised navigation statement:
 그리고 지금 예제에서는 설명을 위해 실제로 사용하지 않는 라우팅 변수(`foo`)도 객체에 선언했습니다. `HeroListComponent`는 이 변수를 사용하지 않습니다.
 그러면 히어로의 목록을 표시하는 화면으로 이동하는 로직을 다음과 같이 구현할 수 있습니다:
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.3.ts" linenums="false" header="src/app/heroes/hero-detail/hero-detail.component.ts (go to heroes)" region="gotoHeroes">
--->
-<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.3.ts" linenums="false" header="src/app/heroes/hero-detail/hero-detail.component.ts (히어로 목록 화면으로 이동하기)" region="gotoHeroes">
-
-</code-example>
-=======
 <code-example path="router/src/app/heroes/hero-detail/hero-detail.component.3.ts" header="src/app/heroes/hero-detail/hero-detail.component.ts (go to heroes)" region="gotoHeroes"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.3.ts" header="src/app/heroes/hero-detail/hero-detail.component.ts (히어로 목록 화면으로 이동하기)" region="gotoHeroes"></code-example>
 
 
 <!--
@@ -3190,16 +3101,10 @@ Import the `switchMap` operator to perform an operation on the `Observable` of r
 그리고 `switchMap` 연산자와 `Observable` 심볼도 로드합니다.
 
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/heroes/hero-list/hero-list.component.ts" linenums="false" header="src/app/heroes/hero-list/hero-list.component.ts (rxjs imports)" region="rxjs-imports">
--->
-<code-example path="router/src/app/heroes/hero-list/hero-list.component.ts" linenums="false" header="src/app/heroes/hero-list/hero-list.component.ts (rxjs 로드)" region="rxjs-imports">
-
-</code-example>
-=======
 <code-example path="router/src/app/heroes/hero-list/hero-list.component.ts" header="src/app/heroes/hero-list/hero-list.component.ts (rxjs imports)" region="rxjs-imports"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/heroes/hero-list/hero-list.component.ts" header="src/app/heroes/hero-list/hero-list.component.ts (rxjs 로드)" region="rxjs-imports"></code-example>
 
 
 <!--
@@ -3208,16 +3113,10 @@ Then you inject the `ActivatedRoute` in the `HeroListComponent` constructor.
 그리고 나면 `HeroListComponent` 생성자로 `ActivatedRoute`를 주입합니다.
 
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/heroes/hero-list/hero-list.component.ts" linenums="false" header="src/app/heroes/hero-list/hero-list.component.ts (constructor and ngOnInit)" region="ctor">
--->
-<code-example path="router/src/app/heroes/hero-list/hero-list.component.ts" linenums="false" header="src/app/heroes/hero-list/hero-list.component.ts (생성자와 ngOnInit)" region="ctor">
-
-</code-example>
-=======
 <code-example path="router/src/app/heroes/hero-list/hero-list.component.ts" header="src/app/heroes/hero-list/hero-list.component.ts (constructor and ngOnInit)" region="ctor"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/heroes/hero-list/hero-list.component.ts" header="src/app/heroes/hero-list/hero-list.component.ts (생성자와 ngOnInit)" region="ctor"></code-example>
 
 
 <!--
@@ -3286,50 +3185,35 @@ First import the `BrowserAnimationsModule` and add it to the `imports` array:
 
 이번에는 `HeroDetailComponent`로 화면을 전환하면서 [애니메이션](guide/animations)을 적용하는 방법에 대해 알아봅시다.
 
-<<<<<<< HEAD
 먼저 `AppModule` `imports` 배열에 `BrowserAnimationsModule`을 로드합니다.
 
 <!--
-<code-example path="router/src/app/app.module.ts" linenums="false" header="src/app/app.module.ts (animations-module)" region="animations-module">
--->
-<code-example path="router/src/app/app.module.ts" linenums="false" header="src/app/app.module.ts (애니메이션 모듈)" region="animations-module">
-
-</code-example>
-=======
 <code-example path="router/src/app/app.module.ts" header="src/app/app.module.ts (animations-module)" region="animations-module"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/app.module.ts" header="src/app/app.module.ts (애니메이션 모듈)" region="animations-module"></code-example>
+
 
 <!--
 Next, add a `data` object to the routes for `HeroListComponent` and `HeroDetailComponent`. Transitions are based on `states` and you'll use the `animation` data from the route to provide a named animation `state` for the transitions.
 -->
 그리고 `HeroListComponent`와 `HeroDetailComponent`에 해당하는 라우팅 규칙에 `data` 객체를 추가합니다. 이 객체에 `animation` 데이터를 추가하는데, 전환효과는 이 때 지정된 `states`를 기반으로 동작할 것입니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/heroes/heroes-routing.module.2.ts" header="src/app/heroes/heroes-routing.module.ts (animation data)">
+<code-example path="router/src/app/heroes/heroes-routing.module.2.ts" header="src/app/heroes/heroes-routing.module.ts (animation data)"></code-example>
 -->
-<code-example path="router/src/app/heroes/heroes-routing.module.2.ts" header="src/app/heroes/heroes-routing.module.ts (애니메이션 데이터)">
+<code-example path="router/src/app/heroes/heroes-routing.module.2.ts" header="src/app/heroes/heroes-routing.module.ts (애니메이션 데이터)"></code-example>
 
 </code-example>
-=======
-<code-example path="router/src/app/heroes/heroes-routing.module.2.ts" header="src/app/heroes/heroes-routing.module.ts (animation data)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 Create an `animations.ts` file in the root `src/app/` folder. The contents look like this:
 -->
 애플리케이션 최상위 폴더인 `src/app/`에 `animations.ts` 파일을 생성합니다. 그리고 이 파일의 내용을 다음과 같이 작성합니다:
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/animations.ts" linenums="false" header="src/app/animations.ts (excerpt)">
--->
-<code-example path="router/src/app/animations.ts" linenums="false" header="src/app/animations.ts (일부)">
-
-</code-example>
-=======
 <code-example path="router/src/app/animations.ts" header="src/app/animations.ts (excerpt)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/animations.ts" header="src/app/animations.ts (일부)"></code-example>
 
 <!--
 This file does the following:
@@ -3371,34 +3255,22 @@ For the `@routeAnimation` transitions to key off states, you'll need to provide 
 -->
 컴포넌트를 라우팅 할 때 애니메이션을 적용하려면 `RouterOutlet`을 `<div>` 엘리먼트로 한 번 감싸고 이 엘리먼트에 `@routeAnimation` 트리거를 바인딩하면 됩니다.
 
-<<<<<<< HEAD
 `@routeAnimation` 트랜지션을 특정 상태로 설정하려면 `ActivatedRoute`를 사용해서 `data`를 전달하면 됩니다. `RouterOutlet`은 컴포넌트 클래스의 메소드에서 참조하기 위해 `outlet`이라는 템플릿 변수로 지정했습니다.
 
 <!--
-<code-example path="router/src/app/app.component.2.html" linenums="false" header="src/app/app.component.html (router outlet)">
--->
-<code-example path="router/src/app/app.component.2.html" linenums="false" header="src/app/app.component.html (라우팅 영역)">
-
-</code-example>
-=======
 <code-example path="router/src/app/app.component.2.html" header="src/app/app.component.html (router outlet)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/app.component.2.html" header="src/app/app.component.html (라우팅 영역)"></code-example>
 
 <!--
 The `@routeAnimation` property is bound to the `getAnimationData` with the provided `routerOutlet` reference, so you'll need to define that function in the `AppComponent`. The `getAnimationData` function returns the animation property from the `data` provided through the `ActivatedRoute`. The `animation` property matches the `transition` names you used in the `slideInAnimation` defined in `animations.ts`.
 -->
 그리고 `@routerAnimation` 프로퍼티에 `routerOutlet` 객체를 전달하기 위해 `AppComponent`에 `getAnimationData` 함수를 정의합니다. `getAnimationData` 함수는 `ActivatedRoute`로 전달된 `data`에서 애니메이션 프로퍼티 값을 반환합니다. 이렇게 반환된 `animation` 프로퍼티 값은 `animations.ts` 파일의 `slideInAnimation`에 정의된 `transition` 이름과 매칭되면서 애니메이션이 동작합니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/app.component.2.ts" linenums="false" header="src/app/app.component.ts (router outlet)" region="function-binding">
--->
-<code-example path="router/src/app/app.component.2.ts" linenums="false" header="src/app/app.component.ts (라우팅 영역)" region="function-binding">
-
-</code-example>
-=======
 <code-example path="router/src/app/app.component.2.ts" header="src/app/app.component.ts (router outlet)" region="function-binding"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/app.component.2.ts" header="src/app/app.component.ts (라우팅 영역)" region="function-binding"></code-example>
 
 <!--
 When switching between the two routes, the `HeroDetailComponent` and `HeroListComponent` will ease in from the left when routed to and will slide to the right when navigating away.
@@ -3933,17 +3805,11 @@ Here's the complete `crisis-center-routing.module.ts` file with its imports.
 -->
 이 내용이 모두 구성된 `crisis-center-routing.module.ts` 파일의 내용은 다음과 같습니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/crisis-center/crisis-center-routing.module.1.ts" linenums="false" header="src/app/crisis-center/crisis-center-routing.module.ts (excerpt)">
--->
-<code-example path="router/src/app/crisis-center/crisis-center-routing.module.1.ts" linenums="false" header="src/app/crisis-center/crisis-center-routing.module.ts (일부)">
-
-</code-example>
-=======
-
 <code-example path="router/src/app/crisis-center/crisis-center-routing.module.1.ts" header="src/app/crisis-center/crisis-center-routing.module.ts (excerpt)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/crisis-center/crisis-center-routing.module.1.ts" header="src/app/crisis-center/crisis-center-routing.module.ts (일부)"></code-example>
+
 
 
 
@@ -3966,14 +3832,10 @@ _before_ the `AppRoutingModule`:
 
   </code-pane>
 
-<<<<<<< HEAD
   <!--
-  <code-pane path="router/src/app/app.module.4.ts" linenums="false" header="src/app/app.module.ts (import CrisisCenterModule)" region="crisis-center-module">
-  -->
-  <code-pane path="router/src/app/app.module.4.ts" linenums="false" header="src/app/app.module.ts (CrisisCenterModule 로드)" region="crisis-center-module">
-=======
   <code-pane path="router/src/app/app.module.4.ts" header="src/app/app.module.ts (import CrisisCenterModule)" region="crisis-center-module">
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  -->
+  <code-pane path="router/src/app/app.module.4.ts" header="src/app/app.module.ts (CrisisCenterModule 로드)" region="crisis-center-module">
 
   </code-pane>
 
@@ -4102,16 +3964,10 @@ Update the `gotoCrises` method of the `CrisisDetailComponent` to navigate back t
 
 `CrisisDetailComponent`에 정의된 `gotoCrises` 메소드를 수정해서 상대주소를 사용하는 방법으로 *위기대응센터* 화면으로 이동해 봅시다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/crisis-center/crisis-detail/crisis-detail.component.ts" linenums="false" header="src/app/crisis-center/crisis-detail/crisis-detail.component.ts (relative navigation)" region="gotoCrises-navigate">
--->
-<code-example path="router/src/app/crisis-center/crisis-detail/crisis-detail.component.ts" linenums="false" header="src/app/crisis-center/crisis-detail/crisis-detail.component.ts (상대 주소로 이동)" region="gotoCrises-navigate">
-
-</code-example>
-=======
 <code-example path="router/src/app/crisis-center/crisis-detail/crisis-detail.component.ts" header="src/app/crisis-center/crisis-detail/crisis-detail.component.ts (relative navigation)" region="gotoCrises-navigate"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/crisis-center/crisis-detail/crisis-detail.component.ts" header="src/app/crisis-center/crisis-detail/crisis-detail.component.ts (상대주소로 이동하기)" region="gotoCrises-navigate"></code-example>
 
 <!--
 Notice that the path goes up a level using the `../` syntax.
@@ -4264,16 +4120,10 @@ Open the `AppRoutingModule` and add a new `compose` route to the `appRoutes`.
 -->
 `AppRoutingModule`을 열고 `appRoutes`에 `compose` 라우팅 규칙을 추가합니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/app-routing.module.3.ts" linenums="false" header="src/app/app-routing.module.ts (compose route)" region="compose">
--->
-<code-example path="router/src/app/app-routing.module.3.ts" linenums="false" header="src/app/app-routing.module.ts (compose 라우팅 규칙)" region="compose">
-
-</code-example>
-=======
 <code-example path="router/src/app/app-routing.module.3.ts" header="src/app/app-routing.module.ts (compose route)" region="compose"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/app-routing.module.3.ts" header="src/app/app-routing.module.ts (compose 라우팅 규칙)" region="compose"></code-example>
 
 
 <!--
@@ -4291,16 +4141,10 @@ Open the `AppComponent` and add a "Contact" link.
 사용자가 팝업을 열 방법이 필요합니다.
 `AppComponent`를 열고 다음과 같이 "Contact" 링크를 추가합니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/app.component.4.html" linenums="false" header="src/app/app.component.html (contact-link)" region="contact-link">
--->
-<code-example path="router/src/app/app.component.4.html" linenums="false" header="src/app/app.component.html (contact 링크)" region="contact-link">
-
-</code-example>
-=======
 <code-example path="router/src/app/app.component.4.html" header="src/app/app.component.html (contact-link)" region="contact-link"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/app.component.4.html" header="src/app/app.component.html (contact 링크)" region="contact-link"></code-example>
 
 
 <!--
@@ -4819,17 +4663,10 @@ The initial admin routing configuration:
 -->
 관리자 모듈의 초기 라우팅 설정은 다음과 같습니다:
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/admin/admin-routing.module.1.ts" linenums="false" header="src/app/admin/admin-routing.module.ts (admin routing)" region="admin-routes">
--->
-<code-example path="router/src/app/admin/admin-routing.module.1.ts" linenums="false" header="src/app/admin/admin-routing.module.ts (관리자 모듈의 라우팅 규칙)" region="admin-routes">
-
-</code-example>
-=======
-
 <code-example path="router/src/app/admin/admin-routing.module.1.ts" header="src/app/admin/admin-routing.module.ts (admin routing)" region="admin-routes"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/admin/admin-routing.module.1.ts" header="src/app/admin/admin-routing.module.ts (관리자 모듈의 라우팅 규칙)" region="admin-routes"></code-example>
 
 <!--
 Looking at the child route under the `AdminComponent`, there is a `path` and a `children`
@@ -4852,16 +4689,10 @@ to register the admin routes.
 이런 용도로 사용할 때 이 라우팅 규칙에  컴포넌트를 지정할 필요는 없습니다.
 _컴포넌트가 없는_ 라우팅 규칙은 [자식 라우팅 규칙에 적용하는 라우팅 가드](#can-activate-child-guard)를 좀 더 편하게 지정하기 위해 사용합니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/app.module.4.ts" linenums="false" header="src/app/app.module.ts (admin module)" region="admin-module">
--->
-<code-example path="router/src/app/app.module.4.ts" linenums="false" header="src/app/app.module.ts (관리자 모듈)" region="admin-module">
-
-</code-example>
-=======
 <code-example path="router/src/app/app.module.4.ts" header="src/app/app.module.ts (admin module)" region="admin-module"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/app.module.4.ts" header="src/app/app.module.ts (관리자 모듈)" region="admin-module"></code-example>
 
 
 <!--
@@ -4869,17 +4700,11 @@ Add an "Admin" link to the `AppComponent` shell so that users can get to this fe
 -->
 이제 사용자가 관리자 기능에 접근할 수 있도록 `AppComponent`에 "Admin" 링크를 추가합니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/app.component.5.html" linenums="false" header="src/app/app.component.html (template)">
--->
-<code-example path="router/src/app/app.component.5.html" linenums="false" header="src/app/app.component.html (템플릿)">
-
-</code-example>
-=======
-
 <code-example path="router/src/app/app.component.5.html" header="src/app/app.component.html (template)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/app.component.5.html" header="src/app/app.component.html (템플릿)"></code-example>
+
 
 
 
@@ -4924,17 +4749,11 @@ It simply logs to console and `returns` true immediately, allowing navigation to
 이렇게 만든 라우팅 가드는 아직 별다른 동작을 하지 않습니다.
 이 가드는 단순하게 콘솔에 로그를 출력하고 `true`를 바로 반환합니다. 따라서 네비게이션 동작도 그대로 진행됩니다:
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/auth/auth.guard.1.ts" linenums="false" header="src/app/auth/auth.guard.ts (excerpt)">
--->
-<code-example path="router/src/app/auth/auth.guard.1.ts" linenums="false" header="src/app/auth/auth.guard.ts (일부)">
-
-</code-example>
-=======
-
 <code-example path="router/src/app/auth/auth.guard.1.ts" header="src/app/auth/auth.guard.ts (excerpt)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/auth/auth.guard.1.ts" header="src/app/auth/auth.guard.ts (일부)"></code-example>
+
 
 
 <!--
@@ -4943,17 +4762,10 @@ update the admin route with a `canActivate` guard property that references it:
 -->
 이제 `admin-routing.module.ts` 파일을 열고 `AuthGuard` 클래스를 로드한 후에 관리자 페이지에 연결된 라우팅 규칙에 `canActivate` 가드를 다음과 같이 적용합니다:
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/admin/admin-routing.module.2.ts" linenums="false" header="src/app/admin/admin-routing.module.ts (guarded admin route)" region="admin-route">
--->
-<code-example path="router/src/app/admin/admin-routing.module.2.ts" linenums="false" header="src/app/admin/admin-routing.module.ts (관리자 페이지에 라우팅 가드 적용하기)" region="admin-route">
-
-</code-example>
-=======
-
 <code-example path="router/src/app/admin/admin-routing.module.2.ts" header="src/app/admin/admin-routing.module.ts (guarded admin route)" region="admin-route"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/admin/admin-routing.module.2.ts" header="src/app/admin/admin-routing.module.ts (관리자 페이지에 라우팅 가드 적용하기)" region="admin-route"></code-example>
 
 
 <!--
@@ -4986,16 +4798,10 @@ Update the `AuthService` to log in the user:
 -->
 그리고 `AuthService`를 사용해서 사용자가 로그인했는지 확인할 수 있도록 다음과 같이 코드를 작성합니다:
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/auth/auth.service.ts" linenums="false" header="src/app/auth/auth.service.ts (excerpt)">
--->
-<code-example path="router/src/app/auth/auth.service.ts" linenums="false" header="src/app/auth/auth.service.ts (일부)">
-
-</code-example>
-=======
 <code-example path="router/src/app/auth/auth.service.ts" header="src/app/auth/auth.service.ts (excerpt)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/auth/auth.service.ts" header="src/app/auth/auth.service.ts (일부)"></code-example>
 
 
 <!--
@@ -5123,20 +4929,14 @@ This one returns a `boolean`:
 이번에는 `AuthGuard`를 수정해서 `admin` 주소 안쪽에서 페이지가 전환되는 것을 제어해 봅시다.
 `auth.guard.ts` 파일을 열고 라우터 패키지에서 `CanActivateChild` 인터페이스를 로드합니다.
 
-<<<<<<< HEAD
 그리고 `canActivate()` 메소드를 구현했던 것처럼 `canActivateChild()` 메소드를 구현합니다. 이 때 이 함수에는 `ActivatedRouteSnapshot`과 `RouterStateSnapshot`이 인자로 전달됩니다.
 `canActivateChild()` 메소드를 비동기로 실행하려면 `Observable<boolean>`이나 `Promise<boolean>`을 반환하고, 동기 방식으로 실행하려면 `boolean` 타입을 반환하면 됩니다.
 이 예제에서는 `boolean` 타입을 반환합니다:
 
 <!--
-<code-example path="router/src/app/auth/auth.guard.3.ts" linenums="false" header="src/app/auth/auth.guard.ts (excerpt)" region="can-activate-child">
--->
-<code-example path="router/src/app/auth/auth.guard.3.ts" linenums="false" header="src/app/auth/auth.guard.ts (일부)" region="can-activate-child">
-
-</code-example>
-=======
 <code-example path="router/src/app/auth/auth.guard.3.ts" header="src/app/auth/auth.guard.ts (excerpt)" region="can-activate-child"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/auth/auth.guard.3.ts" header="src/app/auth/auth.guard.ts (일부)" region="can-activate-child"></code-example>
 
 
 <!--
@@ -5145,17 +4945,11 @@ instead of adding the `AuthGuard` to each route individually.
 -->
 이제 컴포넌트 없이 선언한 관리자 라우팅 규칙의 자식 라우팅 규칙에 다음과 같이 `AuthGuard`를 적용합니다. 이제 이 컴포넌트의 자식 라우팅 규칙은 모두 라우팅 가드로 보호됩니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/admin/admin-routing.module.3.ts" linenums="false" header="src/app/admin/admin-routing.module.ts (excerpt)" region="can-activate-child">
--->
-<code-example path="router/src/app/admin/admin-routing.module.3.ts" linenums="false" header="src/app/admin/admin-routing.module.ts (일부)" region="can-activate-child">
-
-</code-example>
-=======
-
 <code-example path="router/src/app/admin/admin-routing.module.3.ts" header="src/app/admin/admin-routing.module.ts (excerpt)" region="can-activate-child"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/admin/admin-routing.module.3.ts" header="src/app/admin/admin-routing.module.ts (일부)" region="can-activate-child"></code-example>
+
 
 
 
@@ -5243,19 +5037,14 @@ Both buttons navigate back to the crisis list after save or cancel.
 이 때 `HeroDetailComponent`와는 다르게, 사용자가 변경한 내용을 바로 저장하지 않으려고 합니다.
 이 컴포넌트에서는 사용자가 *Save* 버튼을 클릭했을 때 변경내용을 저장하고, 사용자가 *Cancel* 버튼을 클릭하면 변경사항을 폐기합니다.
 
-<<<<<<< HEAD
 그리고 두 버튼을 클릭하면 모두 이전 페이지인 위기 목록 페이지로 이동합니다.
 
 
 <!--
-<code-example path="router/src/app/crisis-center/crisis-detail/crisis-detail.component.ts" linenums="false" header="src/app/crisis-center/crisis-detail/crisis-detail.component.ts (cancel and save methods)" region="cancel-save">
--->
-<code-example path="router/src/app/crisis-center/crisis-detail/crisis-detail.component.ts" linenums="false" header="src/app/crisis-center/crisis-detail/crisis-detail.component.ts (cancel, save 메소드)" region="cancel-save">
-
-</code-example>
-=======
 <code-example path="router/src/app/crisis-center/crisis-detail/crisis-detail.component.ts" header="src/app/crisis-center/crisis-detail/crisis-detail.component.ts (cancel and save methods)" region="cancel-save"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/crisis-center/crisis-detail/crisis-detail.component.ts" header="src/app/crisis-center/crisis-detail/crisis-detail.component.ts (cancel, save 메소드)" region="cancel-save"></code-example>
+
 
 
 <!--
@@ -5353,17 +5142,10 @@ the component's properties or confirm whether the router should allow navigation
 그러면 이 라우팅 가드의 `canDeactivate()` 메소드는 현재 컴포넌트의 인스턴스와 현재 `ActivatedRoute`, `RouterStateSnapshot`, 필요하다면 더 많은 정보에 접근해야 합니다.
 이 라우팅 가드가 딱 이 컴포넌트에만 사용된다면 이렇게 구현할 수도 있습니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/can-deactivate.guard.1.ts" linenums="false" header="src/app/can-deactivate.guard.ts (component-specific)">
--->
-<code-example path="router/src/app/can-deactivate.guard.1.ts" linenums="false" header="src/app/can-deactivate.guard.ts (특정 컴포넌트를 위한 라우팅 가드)">
-
-</code-example>
-=======
-
 <code-example path="router/src/app/can-deactivate.guard.1.ts" header="src/app/can-deactivate.guard.ts (component-specific)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/can-deactivate.guard.1.ts" header="src/app/can-deactivate.guard.ts (특정 컴포넌트를 위한 라우팅 가드)"></code-example>
 
 
 <!--
@@ -5371,17 +5153,11 @@ Looking back at the `CrisisDetailComponent`, it implements the confirmation work
 -->
 다시 `CrisisDetailComponent`를 보면, 변경되지 않은 내용을 확인하는 로직은 다음과 같이 구현되어 있습니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/crisis-center/crisis-detail/crisis-detail.component.ts" linenums="false" header="src/app/crisis-center/crisis-detail/crisis-detail.component.ts (excerpt)" region="canDeactivate">
--->
-<code-example path="router/src/app/crisis-center/crisis-detail/crisis-detail.component.ts" linenums="false" header="src/app/crisis-center/crisis-detail/crisis-detail.component.ts (일부)" region="canDeactivate">
-
-</code-example>
-=======
-
 <code-example path="router/src/app/crisis-center/crisis-detail/crisis-detail.component.ts" header="src/app/crisis-center/crisis-detail/crisis-detail.component.ts (excerpt)" region="canDeactivate"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/crisis-center/crisis-detail/crisis-detail.component.ts" header="src/app/crisis-center/crisis-detail/crisis-detail.component.ts (일부)" region="canDeactivate"></code-example>
+
 
 
 <!--
@@ -5511,16 +5287,10 @@ Observable completes after retrieving the first value from the Observable return
 그리고 이 라우팅 가드는 옵저버블이 완료되어야 종료됩니다.
 그래서 `take` 연산자에 `1` 인자를 전달해서 이 옵저버블이 `getCrisis` 메소드로부터 데이터를 하나 받으면 옵저버블 자체를 종료하도록 구현했습니다.
 
-<<<<<<< HEAD
 <!--
-If it doesn't return a valid `Crisis`, return an empty `Observable`, canceling the previous in-flight navigation to the `CrisisDetailComponent` and navigate the user back to the `CrisisListComponent`. The update resolver service looks like this:
+If it doesn't return a valid `Crisis`, return an empty `Observable`, canceling the previous in-flight navigation to the `CrisisDetailComponent` and navigate the user back to the `CrisisListComponent`. The updated resolver service looks like this:
 -->
 만약 해당되는 `Crisis` 객체를 반환하지 못해서 `Observable`이 빈 값을 반환하게 되면 `CrisisDetailComponent`로 이동하던 네비게이션 로직이 취소되며 다시 `CrisisListComponent`로 이동합니다. 리졸버 서비스를 이런 로직으로 구현하면 다음과 같이 구현할 수 있습니다:
-
-<code-example path="router/src/app/crisis-center/crisis-detail-resolver.service.ts" header="src/app/crisis-center/crisis-detail-resolver.service.ts">
-=======
-If it doesn't return a valid `Crisis`, return an empty `Observable`, canceling the previous in-flight navigation to the `CrisisDetailComponent` and navigate the user back to the `CrisisListComponent`. The updated resolver service looks like this:
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <code-example path="router/src/app/crisis-center/crisis-detail-resolver.service.ts" header="src/app/crisis-center/crisis-detail-resolver.service.ts"></code-example>
 
@@ -5530,17 +5300,11 @@ and add a `resolve` object to the `CrisisDetailComponent` route configuration.
 -->
 이 리졸버를 `crisis-center-routing.module.ts`에 로드하고 `CrisisDetailComponent` 라우팅 규칙에 `resolve` 객체로 추가합니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/crisis-center/crisis-center-routing.module.4.ts" linenums="false" header="src/app/crisis-center/crisis-center-routing.module.ts (resolver)">
--->
-<code-example path="router/src/app/crisis-center/crisis-center-routing.module.4.ts" linenums="false" header="src/app/crisis-center/crisis-center-routing.module.ts (리졸버)">
-
-</code-example>
-=======
-
 <code-example path="router/src/app/crisis-center/crisis-center-routing.module.4.ts" header="src/app/crisis-center/crisis-center-routing.module.ts (resolver)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/crisis-center/crisis-center-routing.module.4.ts" header="src/app/crisis-center/crisis-center-routing.module.ts (리졸버)"></code-example>
+
 
 
 <!--
@@ -5839,16 +5603,11 @@ The `loadChildren` property takes a function that returns a promise using the br
 The path is the location of the `AdminModule` (relative to the app root).
 After the code is requested and loaded, the `Promise` resolves an object that contains the `NgModule`, in this case the `AdminModule`.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/app-routing.module.5.ts" region="admin-1" header="app-routing.module.ts (load children)">
--->
-<code-example path="router/src/app/app-routing.module.5.ts" region="admin-1" header="app-routing.module.ts (loadChildren)">
-
-</code-example>
-=======
 <code-example path="router/src/app/app-routing.module.5.ts" region="admin-1" header="app-routing.module.ts (load children)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/app-routing.module.5.ts" region="admin-1" header="app-routing.module.ts (children 로드하기)"></code-example>
+
 
 <div class="alert is-important">
 
@@ -5943,16 +5702,10 @@ Then implement `canLoad()` as follows:
 `AuthGuard` 클래스의 `implements` 목록에 이 인터페이스를 추가합니다.
 `canLoad()` 메소드는 다음과 같이 구현합니다:
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/auth/auth.guard.ts" linenums="false" header="src/app/auth/auth.guard.ts (CanLoad guard)" region="canLoad">
--->
-<code-example path="router/src/app/auth/auth.guard.ts" linenums="false" header="src/app/auth/auth.guard.ts (CanLoad 라우팅 가드)" region="canLoad">
-
-</code-example>
-=======
 <code-example path="router/src/app/auth/auth.guard.ts" header="src/app/auth/auth.guard.ts (CanLoad guard)" region="canLoad"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/auth/auth.guard.ts" header="src/app/auth/auth.guard.ts (CanLoad 라우팅 가드)" region="canLoad"></code-example>
 
 
 <!--
@@ -5968,16 +5721,10 @@ The completed admin route looks like this:
 
  이제 `AppRoutingModule`에 `AuthGuard`를 로드하고 이 라우팅 가드를 `admin` 라우팅 규칙의 `canLoad` 배열 프로퍼티에 다음과 같이 추가합니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/app-routing.module.5.ts" region="admin" header="app-routing.module.ts (lazy admin route)">
--->
-<code-example path="router/src/app/app-routing.module.5.ts" region="admin" header="app-routing.module.ts (지연로딩하는 admin 라우팅 규칙)">
-
-</code-example>
-=======
 <code-example path="router/src/app/app-routing.module.5.ts" region="admin" header="app-routing.module.ts (lazy admin route)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/app-routing.module.5.ts" region="admin" header="app-routing.module.ts (지연로딩하는 admin 라우팅 규칙)"></code-example>
 
 
 
@@ -6143,16 +5890,10 @@ Add the `PreloadAllModules` token to the `forRoot()` call:
 `RouterModule.forRoot` 메소드는 두 번째 인자로 라우터 설정 옵션을 받을 수 있는데, `preloadingStrategy`가 여기에 적용할 수 있는 옵션 중 하나입니다.
 `forRoot()` 메소드에 다음과 같이 `PreloadAllModules` 토큰을 추가합니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/app-routing.module.6.ts" linenums="false" header="src/app/app-routing.module.ts (preload all)" region="forRoot">
--->
-<code-example path="router/src/app/app-routing.module.6.ts" linenums="false" header="src/app/app-routing.module.ts (모두 사전로딩)" region="forRoot">
-
-</code-example>
-=======
 <code-example path="router/src/app/app-routing.module.6.ts" header="src/app/app-routing.module.ts (preload all)" region="forRoot"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/app-routing.module.6.ts" header="src/app/app-routing.module.ts (모두 사전로딩)" region="forRoot"></code-example>
 
 
 <!--
@@ -6225,18 +5966,12 @@ Set the `data.preload` flag in the `crisis-center` route in the `AppRoutingModul
 이번 섹션에서는 커스텀 사전로딩 정책을 작성해서 라우팅 규칙의 `data.preload` 플래그가 `true`인 모듈만 사전로딩하도록 구현해 봅시다.
 이전에 살펴봤던 것처럼 라우팅 규칙에는 `data` 프로퍼티를 사용해서 인자를 전달할 수 있습니다.
 
-<<<<<<< HEAD
 `AppRoutingModule`에 정의된 `crisis-center` 라우팅 규칙에 `data.preload` 플래그를 다음과 같이 설정합니다.
 
 <!--
-<code-example path="router/src/app/app-routing.module.ts" linenums="false" header="src/app/app-routing.module.ts (route data preload)" region="preload-v2">
--->
-<code-example path="router/src/app/app-routing.module.ts" linenums="false" header="src/app/app-routing.module.ts (사전로딩 설정)" region="preload-v2">
-
-</code-example>
-=======
 <code-example path="router/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts (route data preload)" region="preload-v2"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts (사전로딩 설정)" region="preload-v2"></code-example>
 
 <!--
 Generate a new `SelectivePreloadingStrategy` service.
@@ -6248,16 +5983,10 @@ Generate a new `SelectivePreloadingStrategy` service.
 </code-example>
 
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/selective-preloading-strategy.service.ts" linenums="false" header="src/app/selective-preloading-strategy.service.ts (excerpt)">
--->
-<code-example path="router/src/app/selective-preloading-strategy.service.ts" linenums="false" header="src/app/selective-preloading-strategy.service.ts (일부)">
-
-</code-example>
-=======
 <code-example path="router/src/app/selective-preloading-strategy.service.ts" header="src/app/selective-preloading-strategy.service.ts (excerpt)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/selective-preloading-strategy.service.ts" header="src/app/selective-preloading-strategy.service.ts (일부)"></code-example>
 
 
 <!--
@@ -6330,16 +6059,11 @@ When you're done it looks like this.
 
 이렇게 작성하면 다음과 같은 코드가 됩니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/admin/admin-dashboard/admin-dashboard.component.ts" linenums="false" header="src/app/admin/admin-dashboard/admin-dashboard.component.ts (preloaded modules)">
--->
-<code-example path="router/src/app/admin/admin-dashboard/admin-dashboard.component.ts" linenums="false" header="src/app/admin/admin-dashboard/admin-dashboard.component.ts (사전로딩하는 모듈 확인하기)">
-
-</code-example>
-=======
 <code-example path="router/src/app/admin/admin-dashboard/admin-dashboard.component.ts" header="src/app/admin/admin-dashboard/admin-dashboard.component.ts (preloaded modules)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/admin/admin-dashboard/admin-dashboard.component.ts" header="src/app/admin/admin-dashboard/admin-dashboard.component.ts (사전로딩하는 모듈)"></code-example>
+
 
 
 <!--
@@ -6382,16 +6106,10 @@ Let's take the `Hero` routes and migrate them to new URLs. The `Router` checks f
 `Router`는 네비게이션 동작을 실행하기 전에 해당 라우팅 규칙에 리다이렉트 설정이 있는지 확인하며, 리다이렉트 설정이 있으면 해당 주소로 이동합니다.
 그래서 `heroes-routing.module`에서 원래 사용하던 주소는 새로운 주소로 리다이렉트하는 설정을 추가해야 합니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/heroes/heroes-routing.module.ts" linenums="false" header="src/app/heroes/heroes-routing.module.ts (heroes redirects)">
--->
-<code-example path="router/src/app/heroes/heroes-routing.module.ts" linenums="false" header="src/app/heroes/heroes-routing.module.ts (heroes 리다이렉트)">
-
-</code-example>
-=======
 <code-example path="router/src/app/heroes/heroes-routing.module.ts" header="src/app/heroes/heroes-routing.module.ts (heroes redirects)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/heroes/heroes-routing.module.ts" header="src/app/heroes/heroes-routing.module.ts (히어로 목록으로 리다이렉트하기)"></code-example>
 
 <!--
 You'll notice two different types of redirects. The first change is from  `/heroes` to `/superheroes` without any parameters. This is a straightforward redirect, unlike the change from `/hero/:id` to `/superhero/:id`, which includes the `:id` route parameter. Router redirects also use powerful pattern matching, so the `Router` inspects the URL and replaces route parameters in the `path` with their appropriate destination. Previously, you navigated to a URL such as `/hero/15` with a route parameter `id` of `15`.
@@ -6427,16 +6145,10 @@ So instead, you'll update the empty path route in `app-routing.module.ts` to red
 하지만 라우터는 한 번에 라우팅 규칙 하나만 처리하기 때문에 이런 리다이렉션은 동작하지 않습니다.
 이 방식은 리다이렉션 체이닝 때문에 발생할 수 있는 무한루프를 방지하기 위한 것이기도 합니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/app-routing.module.ts" linenums="false" header="src/app/app-routing.module.ts (superheroes redirect)">
--->
-<code-example path="router/src/app/app-routing.module.ts" linenums="false" header="src/app/app-routing.module.ts (superheroes 리다이렉트)">
-
-</code-example>
-=======
 <code-example path="router/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts (superheroes redirect)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts (superheroes 리다이렉트)"></code-example>
 
 <!--
 `RouterLink`s aren't tied to route configuration, so you'll need to update the associated router links so they remain active when the new route is active. You'll update the `app.component.ts` template for the `/heroes` routerLink.
@@ -6444,16 +6156,10 @@ So instead, you'll update the empty path route in `app-routing.module.ts` to red
 `RouterLink`는 라우팅 규칙 설정과 직접적으로 연결되지 않기 때문에 변경된 주소로 이동할 수 있도록 라우터 링크의 설정을 수정해야 합니다.
 `app.component.ts` 템플릿에 있는 라우터 링크 중 `/heroes`로 이동하던 라우터 링크를 다음과 같이 변경합니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/app.component.html" linenums="false" header="src/app/app.component.html (superheroes active routerLink)">
--->
-<code-example path="router/src/app/app.component.html" linenums="false" header="src/app/app.component.html (superheroes 라우터 링크)">
-
-</code-example>
-=======
 <code-example path="router/src/app/app.component.html" header="src/app/app.component.html (superheroes active routerLink)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/app.component.html" header="src/app/app.component.html (superheroes 라우터 링크)"></code-example>
 
 <!--
 Update the `goToHeroes()` method in the `hero-detail.component.ts` to navigate back to `/superheroes` with the optional route parameters.
@@ -6620,7 +6326,6 @@ navigates from the root of the application down to the *Dragon Crisis*:
 
 
 If you wanted to, you could redefine the `AppComponent` template with *Crisis Center* routes exclusively:
-<<<<<<< HEAD
 -->
 * 배열의 첫번째 항목은 새로 적용될 부모 라우팅 규칙(`/crisis-center`)을 의미합니다.
 * 부모 라우팅 규칙에 사용되는 라우팅 변수는 없습니다.
@@ -6630,16 +6335,10 @@ If you wanted to, you could redefine the `AppComponent` template with *Crisis Ce
 * 최종 주소는 `/crisis-center/1`이 됩니다.
 
 <!--
-<code-example path="router/src/app/app.component.3.ts" linenums="false" header="src/app/app.component.ts (template)" region="template">
--->
-<code-example path="router/src/app/app.component.3.ts" linenums="false" header="src/app/app.component.ts (템플릿)" region="template">
-
-</code-example>
-=======
-
-
 <code-example path="router/src/app/app.component.3.ts" header="src/app/app.component.ts (template)" region="template"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/app.component.3.ts" header="src/app/app.component.ts (템플릿)" region="template"></code-example>
+
 
 
 <!--
@@ -6697,16 +6396,11 @@ Here's the *Crisis Center* URL in this "HTML5 pushState" style:
 Older browsers send page requests to the server when the location URL changes
 _unless_ the change occurs after a "#" (called the "hash").
 Routers can take advantage of this exception by composing in-application route
-<<<<<<< HEAD
-URLs with hashes.  Here's a "hash URL" that routes to the *Crisis Center*.
+URLs with hashes. Here's a "hash URL" that routes to the *Crisis Center*.
 -->
 하지만 최신 스펙을 제공하지 않는 브라우저는 URL이 변경될 때마다 서버로 새로운 페이지 요청을 보내는데, 이 동작은 해시("#") 이후의 주소가 바뀔 때도 마찬가지입니다.
 그래서 라우터는 이렇게 주소가 바뀌는 동작은 애플리케이션 안에서 라우팅할 수 있도록 예외로 처리합니다.
 *위기대응센터*에 해당하는 URL을 "해시방식의 URL" 스타일로 표현하면 다음과 같습니다:
-=======
-URLs with hashes. Here's a "hash URL" that routes to the *Crisis Center*.
-
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <code-example format="nocode">
   localhost:3002/src/#/crisis-center/
@@ -6901,14 +6595,8 @@ in the `AppModule`.
 -->
 `AppModule`에 등록하는 `RouterModule.forRoot` 메소드에는 두 번째 인자로 옵션을 지정할 수 있는데, 이 객체에 `useHash: true`를 지정하면 `HashLocationStrategy` 방식을 사용할 수 있습니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="router/src/app/app.module.6.ts" linenums="false" header="src/app/app.module.ts (hash URL strategy)">
--->
-<code-example path="router/src/app/app.module.6.ts" linenums="false" header="src/app/app.module.ts (해시 URL 정책)">
-
-</code-example>
-=======
-
 <code-example path="router/src/app/app.module.6.ts" header="src/app/app.module.ts (hash URL strategy)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="router/src/app/app.module.6.ts" header="src/app/app.module.ts (해시 URL 정책)"></code-example>
+

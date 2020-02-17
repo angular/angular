@@ -25,14 +25,10 @@ Angular 애플리케이션을 빌드할 때 애플리케이션 자체의 렌더�
 
 <!--
 You can do this with the following CLI command:
-<<<<<<< HEAD
 -->
 Angular CLI로 다음 명령을 실행하면 애플리케이션을 생성할 수 있습니다:
 
-<code-example format="." language="bash" linenums="false">
-=======
 <code-example language="bash">
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 ng new my-app --routing
 </code-example>
 
@@ -55,18 +51,9 @@ Use the CLI to automatically create the app shell.
 ng generate app-shell
 </code-example>
 
-<<<<<<< HEAD
-<!--
-* `my-app` takes the name of your client application.
-* `server-app` takes the name of the Universal (or server) application.
-=======
 * `client-project` takes the name of your client application.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 After running this command you will notice that the `angular.json` configuration file has been updated to add two new targets, with a few other changes.
--->
-* `my-app`은 클라이언트 애플리케이션의 이름을 의미합니다.
-* `server-app`은 Universal 앱(서버 사이드 앱)의 이름을 의미합니다.
 
 <code-example language="json">
 "server": {
@@ -107,19 +94,14 @@ Use the CLI to build the `app-shell` target.
 ng run my-app:app-shell
 </code-example>
 
-<<<<<<< HEAD
-<!--
-To verify the build output, open `dist/my-app/index.html`. Look for default text `app-shell works!` to show that the app shell route was rendered as part of the output.
--->
-빌드 결과물은 `dist/my-app/index.html` 파일로 확인하면 됩니다. 애플리케이션이 제대로 실행된다면 화면에 `app-shell works!`라는 문구가 표시될 것입니다.
-=======
 Or to use the production configuration.
+
 
 <code-example language="bash">
 ng run my-app:app-shell:production
 </code-example>
 
+<!--
 To verify the build output, open `dist/my-app/index.html`. Look for default text `app-shell works!` to show that the app shell route was rendered as part of the output.
-
-
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+빌드 결과물은 `dist/my-app/index.html` 파일로 확인하면 됩니다. 애플리케이션이 제대로 실행된다면 화면에 `app-shell works!`라는 문구가 표시될 것입니다.
