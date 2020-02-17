@@ -115,12 +115,7 @@ table {
 }
 
 .events-container {
-  
-  tr > th {
-    width: 33%;
-  }
-
-  tr > td {
-    width: 33%;
-  }
+  tr > td, tr > th {
+   width: 33%;
+ }
 }
