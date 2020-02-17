@@ -67,7 +67,7 @@ export const CURRENCIES_EN:
       'ILS': ['₪'],
       'INR': ['₹'],
       'IQD': [undefined, undefined, 0],
-      'IRR': [undefined, undefined, 0],
+      'IRR': [undefined, '﷼', 0 ],
       'ISK': [undefined, 'kr', 0],
       'ITL': [undefined, undefined, 0],
       'JMD': [undefined, '$'],
