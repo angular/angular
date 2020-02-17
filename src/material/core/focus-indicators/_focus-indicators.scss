@@ -79,6 +79,17 @@
   }
 }
 
+// Mixin that applies the border color for the focus indicators.
+@mixin _mat-strong-focus-indicators-border-color($color) {
+  .mat-focus-indicator::before {
+    border-color: $color;
+  }
+}
+
+@mixin mat-strong-focus-indicators-color($config) {
+  @include _mat-strong-focus-indicators-border-color(mat-color(map_get($config, primary)));
+}
+
 /// Mixin that sets the color of the focus indicators.
 ///
 /// @param {color|map} $theme-or-color
@@ -95,10 +106,11 @@
 ///     @include mat-strong-focus-indicators-theme(#f00);
 ///   }
 @mixin mat-strong-focus-indicators-theme($theme-or-color) {
-  .mat-focus-indicator::before {
-    border-color: if(
-      type-of($theme-or-color) == 'map',
-      mat-color(map_get($theme-or-color, primary)),
-      $theme-or-color);
+  @if type-of($theme-or-color) != 'map' {
+    @include _mat-strong-focus-indicators-border-color($theme-or-color);
+  }
+  $color: mat-get-color-config($theme-or-color);
+  @if $color != null {
+    @include mat-strong-focus-indicators-color($color);
   }
 }
