@@ -11,6 +11,8 @@ about the features and tools that can help you develop and deliver Angular appli
 
 ## Application architecture
 
+* The [Components and templates](guide/displaying-data) guide explains how to connect the application data in your [components](guide/glossary#component) to your page-display [templates](guide/glossary#template), to create a complete interactive application.
+
 * The [NgModules](guide/ngmodules) guide provides in-depth information on the modular structure of an Angular application.
 
 * The [Routing and navigation](guide/router) guide provides in-depth information on how to construct applications that allow a user to navigate to different [views](guide/glossary#view) within your single-page app.
