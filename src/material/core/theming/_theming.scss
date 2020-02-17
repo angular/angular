@@ -82,6 +82,31 @@
   @return $theme;
 }
 
+// Creates a backwards compatible theme. Previously in Angular Material, theme objects
+// contained the color configuration directly. With the recent refactoring of the theming
+// system to allow for density and typography configurations, this is no longer the case.
+// To ensure that constructed themes which will be passed to custom theme mixins do not break,
+// we copy the color configuration and put its properties at the top-level of the theme object.
+// Here is an example of a pattern that should still work until it's officially marked as a
+// breaking change:
+//
+//    @mixin my-custom-component-theme($theme) {
+//      .my-comp {
+//        background-color: mat-color(map_get($theme, primary));
+//      }
+//    }
+//
+// Note that the `$theme.primary` key does usually not exist since the color configuration
+// is stored in `$theme.color` which contains a property for `primary`. This method copies
+// the map from `$theme.color` to `$theme` for backwards compatibility.
+@function _mat-create-backwards-compatibility-theme($theme) {
+  @if not map_get($theme, color) {
+    @return $theme;
+  }
+  $color: map_get($theme, color);
+  @return map_merge($theme, $color);
+}
+
 // Whether the specified object is a color configuration. This function is needed for backwards
 // compatibility of individual component theme mixins, because developers could pass in a color
 // configuration instead of a theme container object to a theme mixin.
@@ -134,9 +159,9 @@
   // If the legacy pattern is used, we generate a container object only with a light-themed
   // configuration for the `color` theming part.
   @if $accent != null {
-    @return _mat-validate-theme((
+    @return _mat-create-backwards-compatibility-theme(_mat-validate-theme((
       color: _mat-create-light-color-config($config-or-primary, $accent, $warn),
-    ));
+    )));
   }
   // If the map pattern is used (1), we just pass-through the configurations for individual
   // parts of the theming system, but update the `color` configuration if set. As explained
@@ -149,7 +174,7 @@
     $warn: map_get($color-settings, warn);
     $result: map_merge($result, (color: _mat-create-light-color-config($primary, $accent, $warn)));
   }
-  @return _mat-validate-theme($result);
+  @return _mat-create-backwards-compatibility-theme(_mat-validate-theme($result));
 }
 
 // Creates a container object for a dark theme to be given to individual component theme mixins.
@@ -168,9 +193,9 @@
   // If the legacy pattern is used, we generate a container object only with a dark-themed
   // configuration for the `color` theming part.
   @if $accent != null {
-    @return _mat-validate-theme((
+    @return _mat-create-backwards-compatibility-theme(_mat-validate-theme((
       color: _mat-create-dark-color-config($config-or-primary, $accent, $warn),
-    ));
+    )));
   }
   // If the map pattern is used (1), we just pass-through the configurations for individual
   // parts of the theming system, but update the `color` configuration if set. As explained
@@ -183,7 +208,7 @@
     $warn: map_get($color-settings, warn);
     $result: map_merge($result, (color: _mat-create-dark-color-config($primary, $accent, $warn)));
   }
-  @return _mat-validate-theme($result);
+  @return _mat-create-backwards-compatibility-theme(_mat-validate-theme($result));
 }
 
 @function mat-get-color-config($theme, $default: null) {

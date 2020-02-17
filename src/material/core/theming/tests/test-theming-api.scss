@@ -169,6 +169,39 @@ $dark-theme-only-typography: mat-dark-theme((typography: $typography-config));
   @include angular-material-theme($dark-theme-only-typography);
 }
 
+// Custom theme mixin used by the custom theme backwards compatibility test.
+// This replicates a custom theme that expects legacy theme objects.
+@mixin _my-custom-theme-legacy($theme) {
+  .demo-custom-comp {
+    border-color: mat-color(map_get($theme, primary));
+  }
+}
+
+@mixin _my-custom-theme-new-api-color($config) {
+  .demo-custom-comp {
+    border-color: mat-color(map_get($config, primary));
+  }
+}
+
+// Custom theme mixin used by the custom theme backwards compatibility test.
+@mixin _my-custom-theme-new-api($theme) {
+  $color: mat-get-color-config($theme);
+  @if $color != null {
+    @include _my-custom-theme-new-api-color($color);
+  }
+}
+
+@mixin test-custom-theme-backwards-compatibility() {
+  @include _my-custom-theme-legacy($legacy-light-theme);
+  @include _my-custom-theme-legacy($legacy-dark-theme);
+  @include _my-custom-theme-legacy($new-api-light-theme);
+  @include _my-custom-theme-legacy($new-api-dark-theme);
+  @include _my-custom-theme-new-api($legacy-light-theme);
+  @include _my-custom-theme-new-api($legacy-dark-theme);
+  @include _my-custom-theme-new-api($new-api-light-theme);
+  @include _my-custom-theme-new-api($new-api-dark-theme);
+}
+
 // Include all tests. Sass will throw if one of the tests fails.
 @include test-create-color-config();
 @include test-default-theming-system-configs();
@@ -177,3 +210,4 @@ $dark-theme-only-typography: mat-dark-theme((typography: $typography-config));
 @include test-get-color-config();
 @include test-get-density-config();
 @include test-get-typography-config();
+@include test-custom-theme-backwards-compatibility();
