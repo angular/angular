@@ -175,7 +175,7 @@ export class AppComponent implements OnInit {
 
     const hasNonEmptyToc = this.tocService.tocList.pipe(map(tocList => tocList.length > 0));
     combineLatest([hasNonEmptyToc, this.showFloatingToc])
-      .subscribe(([hasToc, showFloatingToc]) => this.hasFloatingToc = hasToc && showFloatingToc);
+        .subscribe(([hasToc, showFloatingToc]) => this.hasFloatingToc = hasToc && showFloatingToc);
 
     // Generally, we want to delay updating the shell (e.g. host classes, sidenav state) for the new
     // document, until after the leaving document has been removed (to avoid having the styles for
@@ -351,9 +351,9 @@ export class AppComponent implements OnInit {
 
       if (headerEl && footerEl) {
         this.tocMaxHeightOffset =
-          headerEl.clientHeight +
-          footerEl.clientHeight +
-          24; //  fudge margin
+            headerEl.clientHeight +
+            footerEl.clientHeight +
+            24; //  fudge margin
       }
     }
 
