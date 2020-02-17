@@ -3,11 +3,10 @@
 import {EXAMPLE_COMPONENTS} from './example-module';
 
 /**
- * Example data with information about component name, selector, files used in example, and path to
- * examples.
+ * Example data with information about component name, selector, files used in
+ * example, and path to examples.
  */
 export class ExampleData {
-
   /** Description of the example. */
   description: string;
 
@@ -20,31 +19,24 @@ export class ExampleData {
   /** Name of the file that contains the example component. */
   indexFilename: string;
 
-  /**
-   * Name of the example component. For examples with multiple components, this property will
-   * include multiple components that are comma separated (e.g. dialog-overview)
-   */
-  componentName: string;
+  /** Names of the components being used in this example. */
+  componentNames: string[];
 
   constructor(example: string) {
     if (!example || !EXAMPLE_COMPONENTS.hasOwnProperty(example)) {
       return;
     }
 
-    const exampleConfig = EXAMPLE_COMPONENTS[example];
+    const {componentName, additionalFiles, additionalComponents, title} =
+        EXAMPLE_COMPONENTS[example];
+    const exampleName = example.replace(/(?:^\w|\b\w)/g, letter => letter.toUpperCase());
 
     // TODO(tinayuangao): Do not hard-code extensions
     this.exampleFiles = ['html', 'ts', 'css'].map(extension => `${example}-example.${extension}`);
     this.selectorName = this.indexFilename = `${example}-example`;
 
-    if (exampleConfig.additionalFiles) {
-      this.exampleFiles.push(...exampleConfig.additionalFiles);
-    }
-
-    const exampleName = example.replace(/(?:^\w|\b\w)/g, letter => letter.toUpperCase());
-
-    this.description = exampleConfig.title || exampleName.replace(/[\-]+/g, ' ') + ' Example';
-    this.componentName = exampleConfig.selectorName ||
-                          exampleName.replace(/[\-]+/g, '') + 'Example';
+    this.exampleFiles.push(...additionalFiles);
+    this.description = title || exampleName.replace(/[\-]+/g, ' ') + ' Example';
+    this.componentNames = [componentName, ...additionalComponents];
   }
 }

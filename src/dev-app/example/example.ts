@@ -7,9 +7,8 @@
  */
 
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
-import {Component, ElementRef, Injector, Input, OnInit} from '@angular/core';
-import {EXAMPLE_COMPONENTS} from '@angular/components-examples';
-import {createCustomElement} from '@angular/elements';
+import {EXAMPLE_COMPONENTS, loadExampleFactory} from '@angular/components-examples';
+import {Component, Injector, Input, OnInit, ViewContainerRef} from '@angular/core';
 
 @Component({
   selector: 'material-example',
@@ -55,21 +54,12 @@ export class Example implements OnInit {
 
   title: string;
 
-  constructor(private _elementRef: ElementRef<HTMLElement>, private _injector: Injector) { }
+  constructor(private _injector: Injector,
+              private _viewContainerRef: ViewContainerRef) {}
 
-  ngOnInit() {
-    let exampleElementCtor = customElements.get(this.id);
-
-    if (!exampleElementCtor) {
-      exampleElementCtor = createCustomElement(EXAMPLE_COMPONENTS[this.id].component, {
-        injector: this._injector
-      });
-
-      customElements.define(this.id, exampleElementCtor);
-    }
-
-    this._elementRef.nativeElement.appendChild(new exampleElementCtor(this._injector));
-    this.title = EXAMPLE_COMPONENTS[this.id] ? EXAMPLE_COMPONENTS[this.id].title : '';
+  async ngOnInit() {
+    this.title = EXAMPLE_COMPONENTS[this.id].title;
+    this._viewContainerRef.createComponent(await loadExampleFactory(this.id, this._injector));
   }
 
   static ngAcceptInputType_showLabel: BooleanInput;

@@ -1,8 +1,8 @@
 import * as ts from 'typescript';
 
 interface ParsedMetadata {
-  primary: boolean;
-  component: string;
+  isPrimary: boolean;
+  componentName: string;
   title: string;
   templateUrl: string;
   styleUrls: string[];
@@ -16,12 +16,12 @@ interface ParsedMetadataResults {
 /** Parse the AST of the given source file and collect Angular component metadata. */
 export function parseExampleFile(fileName: string, content: string): ParsedMetadataResults {
   const sourceFile = ts.createSourceFile(fileName, content, ts.ScriptTarget.Latest, false);
-  const metas: any[] = [];
+  const metas: ParsedMetadata[] = [];
 
   const visitNode = (node: any): void => {
     if (node.kind === ts.SyntaxKind.ClassDeclaration) {
       const meta: any = {
-        component: node.name.text
+        componentName: node.name.text
       };
 
       if (node.jsDoc && node.jsDoc.length) {
@@ -32,7 +32,7 @@ export function parseExampleFile(fileName: string, content: string): ParsedMetad
               const tagName = tag.tagName.text;
               if (tagName === 'title') {
                 meta.title = tagValue;
-                meta.primary = true;
+                meta.isPrimary = true;
               }
             }
           }
@@ -69,7 +69,7 @@ export function parseExampleFile(fileName: string, content: string): ParsedMetad
   visitNode(sourceFile);
 
   return {
-    primaryComponent: metas.find(m => m.primary),
-    secondaryComponents: metas.filter(m => !m.primary)
+    primaryComponent: metas.find(m => m.isPrimary),
+    secondaryComponents: metas.filter(m => !m.isPrimary)
   };
 }

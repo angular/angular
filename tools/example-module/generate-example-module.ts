@@ -4,69 +4,55 @@ import {parseExampleFile} from './parse-example-file';
 import {parseExampleModuleFile} from './parse-example-module-file';
 
 interface ExampleMetadata {
-  component: string;
+  /** Name of the example component. */
+  componentName: string;
+  /** Path to the source file that declares this example. */
   sourcePath: string;
+  /** Module import that can be used to load this example. */
+  importPath: string;
+  /** Unique id for this example. */
   id: string;
+  /** Title of the example. */
   title: string;
+  /** Additional components for this example. */
   additionalComponents: string[];
+  /** Additional files for this example. */
   additionalFiles: string[];
-  selectorName: string[];
-  importPath: string|null;
+  /** Reference to the module that declares this example. */
+  module: ExampleModule;
 }
 
 interface ExampleModule {
+  /** Path to the package that the module is defined in. */
   packagePath: string;
+  /** Name of the module. */
   name: string;
 }
 
 interface AnalyzedExamples {
   exampleMetadata: ExampleMetadata[];
-  exampleModules: ExampleModule[];
-}
-
-/** Creates an import declaration for the given symbols from the specified file. */
-function createImportDeclaration(relativePath: string, symbols: string[]): string {
-  const posixRelativePath = relativePath.replace(/\\/g, '/').replace('.ts', '');
-  return `import {${symbols.join(',')}} from '@angular/components-examples/${posixRelativePath}';`;
 }
 
 /** Inlines the example module template with the specified parsed data. */
 function inlineExampleModuleTemplate(parsedData: AnalyzedExamples): string {
-  const {exampleMetadata, exampleModules} = parsedData;
-  // TODO(devversion): re-add line-breaks for debugging once the example module has
-  // been re-added to the repository gitignore.
-  // Blocked on https://github.com/angular/angular/issues/30259
-  const exampleImports = [
-    ...exampleMetadata
-      .map(({additionalComponents, component, importPath}) =>
-        createImportDeclaration(importPath!, additionalComponents.concat(component))),
-    ...exampleModules.map(({name, packagePath}) => createImportDeclaration(packagePath, [name])),
-  ].join('\n');
-  const quotePlaceholder = '◬';
-  const exampleList = exampleMetadata.reduce((result, data) => {
-    return result.concat(data.component).concat(data.additionalComponents);
-  }, [] as string[]);
-
+  const {exampleMetadata} = parsedData;
   const exampleComponents = exampleMetadata.reduce((result, data) => {
     result[data.id] = {
       title: data.title,
-      // Since we use JSON.stringify to output the data below, the `component` will be wrapped
-      // in quotes, whereas we want a reference to the class. Add placeholder characters next to
-      // where the quotes will be so that we can strip them away afterwards.
-      component: `${quotePlaceholder}${data.component}${quotePlaceholder}`,
+      componentName: data.componentName,
       additionalFiles: data.additionalFiles,
-      selectorName: data.selectorName.join(', '),
+      additionalComponents: data.additionalComponents,
+      module: {
+        name: data.module.name,
+        importSpecifier: `@angular/components-examples/${data.module.packagePath}`,
+      },
     };
 
     return result;
   }, {} as any);
 
   return fs.readFileSync(require.resolve('./example-module.template'), 'utf8')
-    .replace(/\${exampleImports}/g, exampleImports)
-    .replace(/\${exampleComponents}/g, JSON.stringify(exampleComponents, null, 2))
-    .replace(/\${exampleList}/g, exampleList.join(',\n'))
-    .replace(/\${exampleModules}/g, `[${exampleModules.map(m => m.name).join(',\n')}]`)
-    .replace(new RegExp(`"${quotePlaceholder}|${quotePlaceholder}"`, 'g'), '');
+    .replace(/\${exampleComponents}/g, JSON.stringify(exampleComponents, null, 2));
 }
 
 /** Converts a given camel-cased string to a dash-cased string. */
@@ -80,20 +66,21 @@ function convertToDashCase(name: string): string {
  * Analyzes the examples by parsing the given TypeScript files in order to find
  * individual example modules and example metadata.
  */
-function analyzeExamples(sourceFiles: string[], baseFile: string): AnalyzedExamples {
+function analyzeExamples(sourceFiles: string[], baseDir: string): AnalyzedExamples {
   const exampleMetadata: ExampleMetadata[] = [];
   const exampleModules: ExampleModule[] = [];
 
   for (const sourceFile of sourceFiles) {
-    const relativePath = path.relative(baseFile, sourceFile);
+    const relativePath = path.relative(baseDir, sourceFile).replace(/\\/g, '/');
+    const importPath = relativePath.replace(/\.ts$/, '');
 
     // Collect all individual example modules.
     if (path.basename(sourceFile) === 'index.ts') {
       exampleModules.push(...parseExampleModuleFile(sourceFile).map(name => ({
-        name: name,
+        name,
+        importPath,
         packagePath: path.dirname(relativePath),
       })));
-      continue;
     }
 
     // Avoid parsing non-example files.
@@ -106,38 +93,28 @@ function analyzeExamples(sourceFiles: string[], baseFile: string): AnalyzedExamp
 
     if (primaryComponent) {
       // Generate a unique id for the component by converting the class name to dash-case.
-      const exampleId = convertToDashCase(primaryComponent.component.replace('Example', ''));
+      const exampleId = convertToDashCase(primaryComponent.componentName.replace('Example', ''));
       const example: ExampleMetadata = {
-        sourcePath: path.relative(baseFile, sourceFile),
+        sourcePath: relativePath,
         id: exampleId,
-        component: primaryComponent.component,
+        componentName: primaryComponent.componentName,
         title: primaryComponent.title.trim(),
-        additionalComponents: [],
         additionalFiles: [],
-        selectorName: [],
-        // Import path will be determined later once all example modules have
-        // been analyzed.
-        importPath: null,
+        additionalComponents: [],
+        module: null,
+        importPath,
       };
-
       if (secondaryComponents.length) {
-        example.selectorName.push(example.component);
-
         for (const meta of secondaryComponents) {
-          example.additionalComponents.push(meta.component);
-
+          example.additionalComponents.push(meta.componentName);
           if (meta.templateUrl) {
             example.additionalFiles.push(meta.templateUrl);
           }
-
           if (meta.styleUrls) {
             example.additionalFiles.push(...meta.styleUrls);
           }
-
-          example.selectorName.push(meta.component);
         }
       }
-
       exampleMetadata.push(example);
     } else {
         throw Error(`Could not find a primary example component in ${sourceFile}. ` +
@@ -145,10 +122,8 @@ function analyzeExamples(sourceFiles: string[], baseFile: string): AnalyzedExamp
     }
   }
 
-  // Walk through all collected examples and find their parent example module. This is
-  // necessary as we want to import the examples through the package entry-point. Directly
-  // importing files of secondary entry-points from the primary entry-point is not supported
-  // by the Angular package format.
+  // Walk through all collected examples and find their parent example module. In View Engine,
+  // components cannot be lazy-loaded without the associated module being loaded.
   exampleMetadata.forEach(example => {
     const parentModule = exampleModules
       .find(module => example.sourcePath.startsWith(module.packagePath));
@@ -157,10 +132,10 @@ function analyzeExamples(sourceFiles: string[], baseFile: string): AnalyzedExamp
       throw Error(`Could not determine example module for: ${example.id}`);
     }
 
-    example.importPath = parentModule.packagePath;
+    example.module = parentModule;
   });
 
-  return {exampleMetadata, exampleModules};
+  return {exampleMetadata};
 }
 
 /**
