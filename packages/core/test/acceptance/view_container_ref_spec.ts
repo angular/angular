@@ -308,22 +308,40 @@ describe('ViewContainerRef', () => {
       expect(vcrHostElement.getAttribute('attr-b')).toBe(null);
       expect(vcrHostElement.getAttribute('attr-c')).toBe('');
 
-      // Verify host element for a component created via `factory.createComponent` method
+      // Verify host element for a component created using `factory.createComponent` method when
+      // also passing element selector as an argument
       const factoryHostElement = fixture.nativeElement.querySelector('#factory');
 
-      expect(factoryHostElement.classList.contains('class-a')).toBe(true);
-      // `class-b` should not be present, since it's wrapped in `:not()` selector
-      expect(factoryHostElement.classList.contains('class-b')).toBe(false);
-      expect(factoryHostElement.classList.contains('class-c')).toBe(true);
-      // make sure classes are overridden with ones used in component selector
-      expect(factoryHostElement.classList.contains('class-original')).toBe(false);
+      if (ivyEnabled) {
+        // In Ivy, if selector is passed when component is created, matched host node (found using
+        // this selector) retains all attrs/classes and selector-based attrs/classes should *not* be
+        // added
 
-      // Note: `attr-a` attr is also present on host element, but we update the value with the value
-      // from component selector (i.e. using `[attr-a=a]`)
-      expect(factoryHostElement.getAttribute('attr-a')).toBe('a');
-      // `attr-b` should not be present, since it's wrapped in `:not()` selector
-      expect(factoryHostElement.getAttribute('attr-b')).toBe(null);
-      expect(factoryHostElement.getAttribute('attr-c')).toBe('');
+        //  Verify original attrs and classes are still present
+        expect(factoryHostElement.classList.contains('class-original')).toBe(true);
+        expect(factoryHostElement.getAttribute('attr-a')).toBe('a-original');
+
+        // Make sure selector-based attrs and classes were not added to the host element
+        expect(factoryHostElement.classList.contains('class-a')).toBe(false);
+        expect(factoryHostElement.getAttribute('attr-c')).toBe(null);
+
+      } else {
+        // In View Engine, selector-based attrs/classes are *always* added to the host element
+
+        expect(factoryHostElement.classList.contains('class-a')).toBe(true);
+        // `class-b` should not be present, since it's wrapped in `:not()` selector
+        expect(factoryHostElement.classList.contains('class-b')).toBe(false);
+        expect(factoryHostElement.classList.contains('class-c')).toBe(true);
+        // Make sure classes are overridden with ones used in component selector
+        expect(factoryHostElement.classList.contains('class-original')).toBe(false);
+
+        // Note: `attr-a` attr is also present on host element, but we update the value with the
+        // value from component selector (i.e. using `[attr-a=a]`)
+        expect(factoryHostElement.getAttribute('attr-a')).toBe('a');
+        // `attr-b` should not be present, since it's wrapped in `:not()` selector
+        expect(factoryHostElement.getAttribute('attr-b')).toBe(null);
+        expect(factoryHostElement.getAttribute('attr-c')).toBe('');
+      }
     });
   });
 
