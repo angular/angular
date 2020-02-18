@@ -1,13 +1,11 @@
-# Getting Started with Angular: Deployment
+# Try it: Deployment
 
 
 To deploy your application, you have to compile it, and then host the JavaScript, CSS, and HTML on a web server. Built Angular applications are very portable and can live in any environment or served by any technology, such as Node, Java, .NET, PHP, and many others.
 
 <div class="alert is-helpful">
 
-
-Whether you came here directly from [Your First App](start "Getting Started: Your First App"), or completed the entire online store application through the [Routing](start/start-routing "Getting Started: Routing"), [Managing Data](start/start-data "Getting Started: Managing Data"), and [Forms](start/start-forms "Getting Started: Forms") sections, you have an application that you can deploy by following the instructions in this section.
-
+Whether you came here directly from [Part 1](start "Try it: A basic app"), or completed the entire online store application through the [In-app navigation](start/start-routing "Try it: In-app navigation"), [Manage data](start/start-data "Try it: Manage data"), and [Forms for user input](start/start-forms "Try it: Forms for user input") sections, you have an application that you can deploy by following the instructions in this section.
 
 </div>
 
@@ -81,7 +79,7 @@ Read more about development and distribution of your application in the [Buildin
 
 ## Join the Angular community
 
-You are now an Angular developer! [Share this moment](https://twitter.com/intent/tweet?url=https://angular.io/start&text=I%20just%20finished%20the%20Angular%20Getting%20Started%20Tutorial "Angular on Twitter"), tell us what you thought of this Getting Started, or submit [suggestions for future editions](https://github.com/angular/angular/issues/new/choose "Angular GitHub repository new issue form").
+You are now an Angular developer! [Share this moment](https://twitter.com/intent/tweet?url=https://angular.io/start&text=I%20just%20finished%20the%20Angular%20Getting%20Started%20Tutorial "Angular on Twitter"), tell us what you thought of this get-started exercise, or submit [suggestions for future editions](https://github.com/angular/angular/issues/new/choose "Angular GitHub repository new issue form").
 
 Angular offers many more capabilities, and you now have a foundation that empowers you to build an application and explore those other capabilities:
 
@@ -91,7 +89,3 @@ Angular offers many more capabilities, and you now have a foundation that empowe
 * Angular also has an extensive [network of 3rd-party tools and libraries](https://angular.io/resources "Angular resources list").
 
 Keep current by following the [Angular blog](https://blog.angular.io/ "Angular blog").
-
-
-
-

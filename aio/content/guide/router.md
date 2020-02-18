@@ -1,8 +1,8 @@
-# In-app navigation with routing
+# In-app navigation: routing to views
 
-You want the applications you build to be as fast and responsive as possible.
-In Angular, a common best practice to improve responsiveness is to build _singe-page apps_.
-With single-page apps, your users stay on a single page, but their view of that page changes depending on what the user wants to do.
+In a single-page app, you change what the user sees by showing or hiding portions of the display that correspond to particular components, rather than going out to the server to get a new page.
+As users perform application tasks, they need to move between the different [views](guide/glossary#view "Definition of view") that you have defined.
+To implement this kind of navigation within the single page of your app, you use the Angular **`Router`**.
 
 To handle the navigation from one [view](guide/glossary#view) to the next, you use the Angular _router_.
 The router enables navigation by interpreting a browser URL as an instruction to change the view.

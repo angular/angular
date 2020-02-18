@@ -1,18 +1,18 @@
-# Getting Started with Angular: Managing Data
+# Try it: Manage data
 
-At the end of [Routing](start/start-routing "Getting Started: Routing"), the online store application has a product catalog with two views: a product list and product details.
+At the end of [In-app Navigation](start/start-routing "Try it: In-app Navigation"), the online store application has a product catalog with two views: a product list and product details.
 Users can click on a product name from the list to see details in a new view, with a distinct URL, or route.
 
 This page guides you through creating the shopping cart in three phases:
 
-* Update the product details page to include a "Buy" button, which adds the current product to a list of products that a cart service manages.
+* Update the product details view to include a "Buy" button, which adds the current product to a list of products that a cart service manages.
 * Add a cart component, which displays the items in the cart.
 * Add a shipping component, which retrieves shipping prices for the items in the cart by using Angular's `HttpClient` to retrieve shipping data from a `.json` file.
 
 {@a services}
 ## Services
 
-Services are an integral part of Angular applications. In Angular, a service is an instance of a class that you can make available to any part of your application using Angular's [dependency injection system](guide/glossary#dependency-injection-di "dependency injection definition").
+Services are an integral part of Angular applications. In Angular, a service is an instance of a class that you can make available to any part of your application using Angular's [dependency injection system](guide/glossary#dependency-injection-di "Dependency injection definition").
 
 Services are the place where you share data between parts of your application. For the online store, the cart service is where you store your cart data and methods.
 
@@ -24,28 +24,28 @@ simulate sharing and being notified about product changes.
 They cannot, however, buy products.
 
 In this section, you add a "Buy" button to the product
-details page and set up a cart service to store information
+details view and set up a cart service to store information
 about products in the cart.
 
 <div class="alert is-helpful">
 
-Later, the [Forms](start/start-forms "Getting Started: Forms") part of
-this tutorial guides you through accessing this cart service
-from the page where the user checks out.
+A later part of this tutorial, [Use forms for user input](start/start-forms "Try it: Forms for user input"), guides you through accessing this cart service from the view where the user checks out.
 
 </div>
 
 {@a generate-cart-service}
 ### Define a cart service
 
-1. Generate a cart service.
-
-    1. Right click on the `app` folder, choose `Angular Generator`, and choose `Service`. Name the new service `cart`.
+1. To generate a cart service, right click on the `app` folder, choose `Angular Generator`, and choose `Service`. Name the new service `cart`.
 
         <code-example header="src/app/cart.service.ts" path="getting-started/src/app/cart.service.1.ts"></code-example>
 
-    1. StackBlitz might generate the  `@Injectable()` decorator without the `{ providedIn: 'root' }` statement as above. Instead, the generator provides the cart service in `app.module.ts` by default. For the purposes
-    of this tutorial, either way works. The `@Injectable()` `{ providedIn: 'root' }` syntax allows [tree shaking](/guide/dependency-injection-providers#tree-shakable-providers), which is beyond the scope of this guide.
+    <div class="alert is-helpful>
+
+    The StackBlitz generator might provide the cart service in `app.module.ts` by default. That differs from the example, which uses a bundle-optimization technique, an  `@Injectable()` decorator with the `{ providedIn: 'root' }` statement.
+    For more information about services, see [Introduction to Services and Dependency Injection](guide/architecture-services "Concepts > Intro to Services and DI").
+
+    </div>
 
 1. In the `CartService` class, define an `items` property to store the array of the current products in the cart.
 
@@ -121,18 +121,18 @@ This section walks you through using the cart service to add a product to the ca
     </div>
 
 
-## Create the cart page
+## Create the cart view
 
 At this point, users can put items in the cart by clicking "Buy", but they can't yet see their cart.
 
-Create the cart page in two steps:
+Create the cart view in two steps:
 
-1. Create a cart component and configure routing to the new component. At this point, the cart page will only have default text.
+1. Create a cart component and configure routing to the new component. At this point, the cart view has only default text.
 1. Display the cart items.
 
 ### Set up the component
 
- To create the cart page, begin by following the same steps you did to create the product details component and configure routing for the new component.
+ To create the cart view, begin by following the same steps you did to create the product details component and configure routing for the new component.
 
 1. Generate a cart component, named `cart`.
 
@@ -160,7 +160,7 @@ Create the cart page in two steps:
 1. To see the new cart component, click the "Checkout" button. You can see the "cart works!" default text, and the URL has the pattern `https://getting-started.stackblitz.io/cart`,  where `getting-started.stackblitz.io` may be different for your StackBlitz project.
 
     <div class="lightbox">
-      <img src='generated/images/guide/start/cart-works.png' alt="Display cart page before customizing">
+      <img src='generated/images/guide/start/cart-works.png' alt="Display cart view before customizing">
     </div>
 
 ### Display the cart items
@@ -206,7 +206,7 @@ You can use services to share data across components:
 
 1. Test your cart component.
 
-    1. Click on "My Store" to go to the product list page.
+    1. Click on "My Store" to go to the product list view.
     1. Click on a product name to display its details.
     1. Click "Buy" to add the product to the cart.
     1. Click "Checkout" to see the cart.
@@ -215,7 +215,7 @@ You can use services to share data across components:
   Repeat to add more items to the cart.
 
     <div class="lightbox">
-      <img src='generated/images/guide/start/cart-page-full.png' alt="Cart page with products added">
+      <img src='generated/images/guide/start/cart-page-full.png' alt="Cart view with products added">
     </div>
 
 
@@ -227,7 +227,7 @@ StackBlitz tip: Any time the preview refreshes, the cart is cleared. If you make
 
 <div class="alert is-helpful">
 
-For more information about services, see [Introduction to Services and Dependency Injection](guide/architecture-services "Architecture > Intro to Services and DI").
+For more information about services, see [Introduction to Services and Dependency Injection](guide/architecture-services "Concepts > Intro to Services and DI").
 
 </div>
 
@@ -303,11 +303,11 @@ First, define a `get()` method.
 
 <div class="alert is-helpful">
 
-For more information about Angular's `HttpClient`, see [HttpClient](guide/http "HttpClient guide").
+For more information about Angular's `HttpClient`, see the [Client-Server Interaction](guide/http "Server interaction through HTTP") guide.
 
 </div>
 
-## Define the shipping page
+## Define the shipping view
 
 Now that your app can retrieve shipping data, create a shipping component and  template.
 
@@ -347,7 +347,7 @@ Now that your app can retrieve shipping data, create a shipping component and  t
 
     The `async` pipe returns the latest value from a stream of data and continues to do so for the life of a given component. When Angular destroys that component, the `async` pipe automatically stops. For detailed information about the `async` pipe, see the [AsyncPipe API documentation](/api/common/AsyncPipe).
 
-1. Add a link from the cart page to the shipping page:
+1. Add a link from the cart view to the shipping view:
 
     <code-example header="src/app/cart/cart.component.html" path="getting-started/src/app/cart/cart.component.2.html"></code-example>
 
@@ -371,5 +371,5 @@ Now that your app can retrieve shipping data, create a shipping component and  t
 Congratulations! You have an online store application with a product catalog and shopping cart. You can also look up and display shipping prices.
 
 To continue exploring Angular, choose either of the following options:
-* [Continue to the "Forms" section](start/start-forms "Getting Started: Forms") to finish the app by adding the shopping cart page and a checkout form.
-* [Skip ahead to the "Deployment" section](start/start-deployment "Getting Started: Deployment") to move to local development, or deploy your app to Firebase or your own server.
+* [Continue to the "Forms" section](start/start-forms "Try it: Forms for User Input") to finish the app by adding the shopping cart view and a checkout form.
+* [Skip ahead to the "Deployment" section](start/start-deployment "Try it: Deployment") to move to local development, or deploy your app to Firebase or your own server.
