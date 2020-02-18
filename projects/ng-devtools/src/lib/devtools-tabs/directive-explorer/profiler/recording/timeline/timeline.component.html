@@ -1,4 +1,5 @@
 <div class="controls">
+  <button mat-stroked-button (click)="exportProfile.emit()">Export to JSON</button>
   <mat-slider
     [max]="profileRecords.timeline.length - 1"
     [min]="1"

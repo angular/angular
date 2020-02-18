@@ -1,0 +1,24 @@
+import { Subject } from 'rxjs';
+import { Injectable } from '@angular/core';
+import * as FileSaver from 'file-saver';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class FileApiService {
+  uploadedData: Subject<any> = new Subject();
+
+  publishFileUpload(parentEvent): void {
+    const reader = new FileReader();
+    reader.onload = event => {
+      this.uploadedData.next(JSON.parse((event.target as any).result));
+      (parentEvent.target as any).value = '';
+    };
+    reader.readAsText((parentEvent.target as any).files[0]);
+  }
+
+  saveObjectAsJSON(object): void {
+    const blob = new Blob([JSON.stringify(object)], { type: 'application/json' });
+    FileSaver.saveAs(blob, `${Date.now()}.json`);
+  }
+}
