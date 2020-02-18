@@ -772,7 +772,8 @@ runInEachFileSystem(() => {
           contents: `
           import * as functions from './functions';
           import * as methods from './methods';
-          import * as aliased_class from './aliased_class';
+          import * as outer_aliased_class from './outer_aliased_class';
+          import * as inner_aliased_class from './inner_aliased_class';
           `
         },
         {
@@ -842,7 +843,19 @@ runInEachFileSystem(() => {
     `
         },
         {
-          name: _('/src/aliased_class.js'),
+          name: _('/src/outer_aliased_class.js'),
+          contents: `
+    var AliasedModule = AliasedModule_1 = (function() {
+      function AliasedModule() {}
+      return AliasedModule;
+    }());
+    AliasedModule.forRoot = function() { return { ngModule: AliasedModule_1 }; };
+    export { AliasedModule };
+    var AliasedModule_1;
+    `
+        },
+        {
+          name: _('/src/inner_aliased_class.js'),
           contents: `
     var AliasedModule = (function() {
       function AliasedModule() {}
@@ -2028,6 +2041,34 @@ runInEachFileSystem(() => {
            expect(superGetDeclarationOfIdentifierSpy).toHaveBeenCalledTimes(2);
          });
 
+      it('should return the correct declaration for an outer alias identifier', () => {
+        const PROGRAM_FILE: TestFile = {
+          name: _('/test.js'),
+          contents: `
+               var AliasedClass = AliasedClass_1 = (function () {
+                 function InnerClass() {
+                 }
+                 return InnerClass;
+               }());
+               var AliasedClass_1;
+             `,
+        };
+
+        loadTestFiles([PROGRAM_FILE]);
+        const bundle = makeTestBundleProgram(PROGRAM_FILE.name);
+        const host = new Esm5ReflectionHost(new MockLogger(), false, bundle);
+
+        const expectedDeclaration = getDeclaration(
+            bundle.program, PROGRAM_FILE.name, 'AliasedClass', isNamedVariableDeclaration);
+        // Grab the `AliasedClass_1` identifier (which is an alias for `AliasedClass`).
+        const aliasIdentifier =
+            (expectedDeclaration.initializer as ts.BinaryExpression).left as ts.Identifier;
+        const actualDeclaration = host.getDeclarationOfIdentifier(aliasIdentifier) !;
+
+        expect(aliasIdentifier.getText()).toBe('AliasedClass_1');
+        expect(actualDeclaration.node !.getText()).toBe(expectedDeclaration.getText());
+      });
+
       it('should return the correct outer declaration for an aliased inner class declaration inside an ES5 IIFE',
          () => {
            // Note that the inner class declaration `function FroalaEditorModule() {}` is aliased
@@ -2672,17 +2713,30 @@ runInEachFileSystem(() => {
            ]);
          });
 
+      it('should resolve aliased module references to their original declaration (outer alias)',
+         () => {
+           loadTestFiles(MODULE_WITH_PROVIDERS_PROGRAM);
+           const bundle = makeTestBundleProgram(_('/src/index.js'));
+           const host = new Esm5ReflectionHost(new MockLogger(), false, bundle);
+           const file = getSourceFileOrError(bundle.program, _('/src/outer_aliased_class.js'));
+           const fn = host.getModuleWithProvidersFunctions(file);
+           expect(fn.map(fn => [fn.declaration.getText(), fn.ngModule.node.name.text])).toEqual([
+             ['function() { return { ngModule: AliasedModule_1 }; }', 'AliasedModule'],
+           ]);
+         });
+
       // https://github.com/angular/angular/issues/29078
-      it('should resolve aliased module references to their original declaration', () => {
-        loadTestFiles(MODULE_WITH_PROVIDERS_PROGRAM);
-        const bundle = makeTestBundleProgram(_('/src/index.js'));
-        const host = new Esm5ReflectionHost(new MockLogger(), false, bundle);
-        const file = getSourceFileOrError(bundle.program, _('/src/aliased_class.js'));
-        const fn = host.getModuleWithProvidersFunctions(file);
-        expect(fn.map(fn => [fn.declaration.getText(), fn.ngModule.node.name.text])).toEqual([
-          ['function() { return { ngModule: AliasedModule_1 }; }', 'AliasedModule'],
-        ]);
-      });
+      it('should resolve aliased module references to their original declaration (inner alias)',
+         () => {
+           loadTestFiles(MODULE_WITH_PROVIDERS_PROGRAM);
+           const bundle = makeTestBundleProgram(_('/src/index.js'));
+           const host = new Esm5ReflectionHost(new MockLogger(), false, bundle);
+           const file = getSourceFileOrError(bundle.program, _('/src/inner_aliased_class.js'));
+           const fn = host.getModuleWithProvidersFunctions(file);
+           expect(fn.map(fn => [fn.declaration.getText(), fn.ngModule.node.name.text])).toEqual([
+             ['function() { return { ngModule: AliasedModule_1 }; }', 'AliasedModule'],
+           ]);
+         });
     });
 
     describe('getEndOfClass()', () => {

@@ -295,8 +295,8 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @param checker the TS program TypeChecker
    * @returns the inner function declaration or `undefined` if it is not a "class".
    */
-  protected getInnerFunctionDeclarationFromClassDeclaration(decl: ts.Declaration): ts.FunctionDeclaration
-      |undefined {
+  protected getInnerFunctionDeclarationFromClassDeclaration(decl: ts.Declaration):
+      ts.FunctionDeclaration|undefined {
     // Extract the IIFE body (if any).
     const iifeBody = getIifeBody(decl);
     if (!iifeBody) return undefined;
@@ -605,7 +605,15 @@ export function getIifeBody(declaration: ts.Declaration): ts.Block|undefined {
     return undefined;
   }
 
-  const call = stripParentheses(declaration.initializer);
+  // Recognize a variable declaration of one of the forms:
+  // - `var MyClass = (function () { ... }());`
+  // - `var MyClass = MyClass_1 = (function () { ... }());`
+  let parenthesizedCall = declaration.initializer;
+  while (isAssignment(parenthesizedCall)) {
+    parenthesizedCall = parenthesizedCall.right;
+  }
+
+  const call = stripParentheses(parenthesizedCall);
   if (!ts.isCallExpression(call)) {
     return undefined;
   }
