@@ -23,6 +23,7 @@ import {ComponentType} from '../interfaces/definition';
 import {stringifyForError} from '../util/misc_utils';
 
 import {angularCoreEnv} from './environment';
+import {getJitOptions} from './jit_options';
 import {flushModuleScopingQueueAsMuchAsPossible, patchComponentDefWithScope, transitiveScopesFor} from './module';
 
 
@@ -68,18 +69,34 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           throw new Error(error.join('\n'));
         }
 
+        const jitOptions = getJitOptions();
+        let preserveWhitespaces = metadata.preserveWhitespaces;
+        if (preserveWhitespaces === undefined) {
+          if (jitOptions !== null && jitOptions.preserveWhitespaces !== undefined) {
+            preserveWhitespaces = jitOptions.preserveWhitespaces;
+          } else {
+            preserveWhitespaces = false;
+          }
+        }
+        let encapsulation = metadata.encapsulation;
+        if (encapsulation === undefined) {
+          if (jitOptions !== null && jitOptions.defaultEncapsulation !== undefined) {
+            encapsulation = jitOptions.defaultEncapsulation;
+          } else {
+            encapsulation = ViewEncapsulation.Emulated;
+          }
+        }
+
         const templateUrl = metadata.templateUrl || `ng:///${type.name}/template.html`;
         const meta: R3ComponentMetadataFacade = {
           ...directiveMetadata(type, metadata),
           typeSourceSpan: compiler.createParseSourceSpan('Component', type.name, templateUrl),
-          template: metadata.template || '',
-          preserveWhitespaces: metadata.preserveWhitespaces || false,
+          template: metadata.template || '', preserveWhitespaces,
           styles: metadata.styles || EMPTY_ARRAY,
           animations: metadata.animations,
           directives: [],
           changeDetection: metadata.changeDetection,
-          pipes: new Map(),
-          encapsulation: metadata.encapsulation || ViewEncapsulation.Emulated,
+          pipes: new Map(), encapsulation,
           interpolation: metadata.interpolation,
           viewProviders: metadata.viewProviders || null,
         };

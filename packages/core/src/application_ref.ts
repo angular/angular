@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import './util/ng_jit_mode';
+
 import {Observable, Observer, Subscription, merge} from 'rxjs';
 import {share} from 'rxjs/operators';
 
@@ -29,6 +31,7 @@ import {isComponentResourceResolutionQueueEmpty, resolveComponentResources} from
 import {assertNgModuleType} from './render3/assert';
 import {ComponentFactory as R3ComponentFactory} from './render3/component_ref';
 import {setLocaleId} from './render3/i18n';
+import {setJitOptions} from './render3/jit/jit_options';
 import {NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref';
 import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from './render3/util/global_utils';
 import {Testability, TestabilityRegistry} from './testability/testability';
@@ -56,13 +59,27 @@ export function compileNgModuleFactory__POST_R3__<M>(
     injector: Injector, options: CompilerOptions,
     moduleType: Type<M>): Promise<NgModuleFactory<M>> {
   ngDevMode && assertNgModuleType(moduleType);
+
+  const compilerOptions = injector.get(COMPILER_OPTIONS, []).concat(options);
+
+  if (typeof ngJitMode === 'undefined' || ngJitMode) {
+    // Configure the compiler to use the provided options. This call may fail when multiple modules
+    // are bootstrapped with incompatible options, as a component can only be compiled according to
+    // a single set of options.
+    setJitOptions({
+      defaultEncapsulation:
+          _lastDefined(compilerOptions.map(options => options.defaultEncapsulation)),
+      preserveWhitespaces:
+          _lastDefined(compilerOptions.map(options => options.preserveWhitespaces)),
+    });
+  }
+
   const moduleFactory = new R3NgModuleFactory(moduleType);
 
   if (isComponentResourceResolutionQueueEmpty()) {
     return Promise.resolve(moduleFactory);
   }
 
-  const compilerOptions = injector.get(COMPILER_OPTIONS, []).concat(options);
   const compilerProviders = _mergeArrays(compilerOptions.map(o => o.providers !));
 
   // In case there are no compiler providers, we just return the module factory as
@@ -746,6 +763,15 @@ function remove<T>(list: T[], el: T): void {
   if (index > -1) {
     list.splice(index, 1);
   }
+}
+
+function _lastDefined<T>(args: T[]): T|undefined {
+  for (let i = args.length - 1; i >= 0; i--) {
+    if (args[i] !== undefined) {
+      return args[i];
+    }
+  }
+  return undefined;
 }
 
 function _mergeArrays(parts: any[][]): any[] {
