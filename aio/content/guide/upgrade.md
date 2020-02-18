@@ -1165,8 +1165,16 @@ Install type definitions for the existing libraries that
 you're using but that don't come with prepackaged types: AngularJS, AngularJS Material, and the
 Jasmine unit test framework.
 
+For the PhoneCat app, we can install the necessary type definitions by running the following command:
+
 <code-example format="">
-  npm install @types/jasmine @types/angular @types/angular-animate @types/angular-aria @types/angular-cookies @types/angular-mocks @types/angular-resource @types/angular-route @types/angular-sanitize @types/angular-material --save-dev
+  npm install @types/jasmine @types/angular @types/angular-animate @types/angular-aria @types/angular-cookies @types/angular-mocks @types/angular-resource @types/angular-route @types/angular-sanitize --save-dev
+</code-example>
+
+If you are using AngularJS Material, you can install the type definitions via:
+
+<code-example format="">
+  npm install @types/angular-material --save-dev
 </code-example>
 
 You should also configure the TypeScript compiler with a `tsconfig.json` in the project directory
