@@ -11,7 +11,7 @@ The basic building blocks are *NgModules*, which provide a compilation context f
 
 * Components use *services*, which provide specific functionality not directly related to views. Service providers can be *injected* into components as *dependencies*, making your code modular, reusable, and efficient.
 
-Both components and services are simply classes, with *decorators* that mark their type and provide metadata that tells Angular how to use them.
+Modules, components and services are classes that use *decorators*. These decorators mark their type and provide metadata that tells Angular how to use them.
 
 * The metadata for a component class associates it with a *template* that defines a view. A template combines ordinary HTML with Angular *directives* and *binding markup* that allow Angular to modify the HTML before rendering it for display.
 
