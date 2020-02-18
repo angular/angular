@@ -1162,11 +1162,11 @@ Begin by installing TypeScript to the project.
 </code-example>
 
 Install type definitions for the existing libraries that
-you're using but that don't come with prepackaged types: AngularJS and the
+you're using but that don't come with prepackaged types: AngularJS, AngularJS Material, and the
 Jasmine unit test framework.
 
 <code-example format="">
-  npm install @types/jasmine @types/angular @types/angular-animate @types/angular-cookies @types/angular-mocks @types/angular-resource @types/angular-route @types/angular-sanitize --save-dev
+  npm install @types/jasmine @types/angular @types/angular-animate @types/angular-aria @types/angular-cookies @types/angular-mocks @types/angular-resource @types/angular-route @types/angular-sanitize @types/angular-material --save-dev
 </code-example>
 
 You should also configure the TypeScript compiler with a `tsconfig.json` in the project directory
