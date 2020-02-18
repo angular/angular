@@ -1665,7 +1665,7 @@ exports.ExternalModule = ExternalModule;
                 };
 
         const getIdentifierFromCallExpression = (decl: ts.VariableDeclaration) => {
-          if ((decl.initializer !== undefined) && ts.isCallExpression(decl.initializer)) {
+          if (decl.initializer !== undefined && ts.isCallExpression(decl.initializer)) {
             const expr = decl.initializer.expression;
             if (ts.isIdentifier(expr)) return expr;
             if (ts.isPropertyAccessExpression(expr)) return expr.name;

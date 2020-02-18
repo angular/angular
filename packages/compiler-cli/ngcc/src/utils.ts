@@ -142,7 +142,7 @@ export function getTsHelperFnFromDeclaration(decl: ts.Declaration): KnownDeclara
     return null;
   }
 
-  if ((decl.name === undefined) || !ts.isIdentifier(decl.name)) {
+  if (decl.name === undefined || !ts.isIdentifier(decl.name)) {
     return null;
   }
 

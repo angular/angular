@@ -274,8 +274,8 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
       |null {
     const superDeclaration = super.getDeclarationOfSymbol(symbol, originalId);
 
-    if ((superDeclaration !== null) && (superDeclaration.node !== null) &&
-        (superDeclaration.known === null)) {
+    if (superDeclaration !== null && superDeclaration.node !== null &&
+        superDeclaration.known === null) {
       superDeclaration.known = getTsHelperFnFromDeclaration(superDeclaration.node);
     }
 
