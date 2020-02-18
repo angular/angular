@@ -1,22 +1,20 @@
-# Getting Started with Angular: Routing
+# In-app navigation
 
-At the end of [Your First App](start "Getting Started: Your First App"), the online store application has a basic product catalog.
+At the end of [part 1](start "Get started with a basic Angular app"), the online store application has a basic product catalog.
 The app doesn't have any variable states or navigation.
 There is one URL, and that URL always displays the "My Store" page with a list of products and their descriptions.
 
-This guide shows you how to use the Angular Router to display full product details in separate pages, each with their own URLs.
+This guide shows you how to use Angular [routing](guide/glossary#router "Router definition") to give the user in-app navigation. In a single-page app, instead of loading new pages, you show different components and data to the user based on where the user is in the application.
 
-The Angular [Router](guide/glossary#router "Router definition") enables you to show different components and data to the user based on where the user is in the application.
-The router enables navigation from one view to the next as users perform tasks such as the following:
+The router lets you display full product details in separate [views](guide/glossary#view "View definition"), each with its own URL. Routing enables navigation from one view to the next (within the same page) as users perform tasks such as the following:
 
-* Entering a URL in the address bar to navigate to a corresponding page.
-* Clicking links on the page to navigate to a new page.
+* Entering a URL in the address bar to navigate to a corresponding view.
+* Clicking links on the page to navigate to a new view.
 * Clicking the browser's back and forward buttons to navigate backward and forward through the browser history.
-
 
 ## Registering a route
 
-The app is already set up to use the Angular Router and to use routing to navigate to the product list component you modified earlier. This section shows you how to define a route to show individual product details.
+The app is already set up to use the Angular `Router` and to use routing to navigate to the product list component you modified earlier. This section shows you how to define a route to show individual product details.
 
 1. Generate a new component for product details. Give the component the name `product-details`.
 
@@ -47,7 +45,7 @@ The app is already set up to use the Angular Router and to use routing to naviga
     Notice that the URL in the preview window changes. The final segment is `products/#`  where `#` is the number of the route you clicked.
 
     <div class="lightbox">
-      <img src="generated/images/guide/start/product-details-works.png" alt="Product details page with updated URL">
+      <img src="generated/images/guide/start/product-details-works.png" alt="Product details view with updated URL">
     </div>
 
 
@@ -73,7 +71,7 @@ The product details component handles the display of each product. The Angular R
         The `ActivatedRoute` is specific to each routed component that the Angular Router loads. It contains information about the
         route, its parameters, and additional data associated with the route.
 
-        By injecting the `ActivatedRoute`, you are configuring the component to use a service. While this part of the Getting Started tutorial uses this syntax briefly, the [Managing Data](start/start-data "Getting Started: Managing Data") page covers services in more detail.
+        By injecting the `ActivatedRoute`, you are configuring the component to use a *service*. The [Managing Data](start/start-data "Try it: Managing Data") page covers services in more detail.
 
 
 1. In the `ngOnInit()` method, subscribe to route parameters and fetch the product based on the `productId`.
@@ -98,7 +96,7 @@ Now, when users click on a name in the product list, the router navigates them t
 
 <div class="alert is-helpful">
 
-For more information about the Angular Router, see [Routing & Navigation](guide/router "Routing & Navigation").
+For more information about the Angular Router, see [Routing & Navigation](guide/router "Routing & Navigation guide").
 
 </div>
 
@@ -107,9 +105,9 @@ For more information about the Angular Router, see [Routing & Navigation](guide/
 
 Congratulations! You have integrated routing into your online store.
 
-* Products are linked from the product list page to individual products.
+* Products are linked from the product list view to individual products.
 * Users can click on a product name from the list to see details in a new view, with a distinct URL/route.
 
 To continue exploring Angular, choose either of the following options:
-* [Continue to the "Managing Data" section](start/start-data "Getting Started: Managing Data") to add a shopping cart feature, use a service to manage the cart data and use HTTP to retrieve external data for shipping prices.
-* [Skip ahead to the Deployment section](start/start-deployment "Getting Started: Deployment") to deploy your app to Firebase or move to local development.
+* [Continue to the "Managing Data" section](start/start-data "Try it: Managing Data") to add a shopping cart feature, use a service to manage the cart data and use HTTP to retrieve external data for shipping prices.
+* [Skip ahead to the Deployment section](start/start-deployment "Try it: Deployment") to deploy your app to Firebase or move to local development.
