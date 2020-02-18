@@ -197,6 +197,9 @@ export {
 export {
   compilePipe as ɵcompilePipe,
 } from './render3/jit/pipe';
+export {
+  resetJitOptions as ɵresetJitOptions,
+} from './render3/jit/jit_options';
 
 export {
   NgModuleDef as ɵNgModuleDef,

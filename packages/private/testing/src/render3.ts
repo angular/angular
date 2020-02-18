@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {ɵresetJitOptions as resetJitOptions} from '@angular/core';
 
 /**
 * Wraps a function in a new function which sets up document and HTML for running a test.
@@ -120,3 +121,5 @@ export function cleanupDocument(): void {
 
 if (typeof beforeEach == 'function') beforeEach(ensureDocument);
 if (typeof afterEach == 'function') afterEach(cleanupDocument);
+
+if (typeof afterEach === 'function') afterEach(resetJitOptions);
