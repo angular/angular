@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { AppEntry, formatFlamegraphRecords, TimelineView } from './format-records';
 import { MatSlider, MatSliderChange } from '@angular/material/slider';
 import { ProfilerFrame } from 'protocol';
@@ -13,6 +13,8 @@ export class TimelineComponent {
   @Input() set records(data: ProfilerFrame[]) {
     this.profileRecords = formatFlamegraphRecords(data);
   }
+
+  @Output() exportProfile = new EventEmitter<void>();
 
   @ViewChild(MatSlider) slider: MatSlider;
 

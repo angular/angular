@@ -1,6 +1,7 @@
-import { Component, Input, ViewChildren, QueryList, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, Input, ViewChildren, QueryList, OnInit, OnDestroy } from '@angular/core';
 import { RecordingComponent } from './recording/recording.component';
 import { MessageBus, Events, ProfilerFrame } from 'protocol';
+import { FileApiService } from '../../../file-api-service';
 
 type State = 'idle' | 'recording' | 'visualizing';
 
@@ -9,7 +10,7 @@ type State = 'idle' | 'recording' | 'visualizing';
   templateUrl: './profiler.component.html',
   styleUrls: ['./profiler.component.css'],
 })
-export class ProfilerComponent implements OnInit {
+export class ProfilerComponent implements OnInit, OnDestroy {
   @Input() messageBus: MessageBus<Events>;
 
   state: State = 'idle';
@@ -17,6 +18,8 @@ export class ProfilerComponent implements OnInit {
   buffer: ProfilerFrame[] = [];
 
   @ViewChildren(RecordingComponent) recordingRef: QueryList<RecordingComponent>;
+
+  constructor(private _fileApiService: FileApiService) {}
 
   startRecording(): void {
     this.state = 'recording';
@@ -37,14 +40,32 @@ export class ProfilerComponent implements OnInit {
     this.messageBus.on('sendProfilerChunk', (chunkOfRecords: ProfilerFrame) => {
       this.buffer.push(chunkOfRecords);
     });
+    this._fileApiService.uploadedData.subscribe(importedStream => {
+      this._viewProfilerData(importedStream);
+    });
   }
 
   private _profilerFinished(remainingRecords: ProfilerFrame): void {
-    this.state = 'visualizing';
-
     const flattenedBuffer = [].concat.apply([], this.buffer);
-    this.stream = [...flattenedBuffer, remainingRecords];
+    this._viewProfilerData([...flattenedBuffer, remainingRecords]);
     this.buffer = [];
+  }
+
+  ngOnDestroy(): void {
+    this._fileApiService.uploadedData.unsubscribe();
+  }
+
+  private _viewProfilerData(stream): void {
+    this.state = 'visualizing';
+    this.stream = stream;
+  }
+
+  exportProfilerResults(): void {
+    this._fileApiService.saveObjectAsJSON(this.stream);
+  }
+
+  importProfilerResults(event): void {
+    this._fileApiService.publishFileUpload(event);
   }
 
   discardRecording(): void {

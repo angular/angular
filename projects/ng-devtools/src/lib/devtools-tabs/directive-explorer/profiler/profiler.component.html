@@ -6,13 +6,24 @@
   </menu>
   <div id="profiler-content-wrapper">
     <p class="instructions" [class.hidden]="state !== 'idle'">
-      <span>Click the record button <span class="start-recording-button"></span> to start a new recording.</span>
+      <span
+        >Click the record button <span class="start-recording-button"></span> to start a new recording, or upload a json
+        file containing profiler data
+      </span>
+      <span>
+        <input type="file" (change)="importProfilerResults($event)" placeholder="Upload file" accept=".json" />
+      </span>
     </p>
     <p class="recording" [class.hidden]="state !== 'recording'">
       <ng-recording-modal></ng-recording-modal>
     </p>
     <p class="visualization" [class.hidden]="state !== 'visualizing'">
-      <ng-recording-timeline [class.hidden]="state !== 'visualizing'" [records]="stream"> </ng-recording-timeline>
+      <ng-recording-timeline
+        [class.hidden]="state !== 'visualizing'"
+        [records]="stream"
+        (exportProfile)="exportProfilerResults()"
+      >
+      </ng-recording-timeline>
     </p>
   </div>
 </div>
