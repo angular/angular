@@ -1,11 +1,7 @@
-<<<<<<< HEAD
 <!--
-# Dependency Injection in Angular
+# Dependency injection in Angular
 -->
 # Angular의 의존성 주입
-=======
-# Dependency injection in Angular
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 Dependency injection (DI), is an important application design pattern.
@@ -196,8 +192,7 @@ from the injector of its parent NgModule, or from the `root` injector.
 
 * Learn more about the [different kinds of providers](guide/dependency-injection-providers).
 
-<<<<<<< HEAD
-* Learn more about  how the [injector hierarchy](guide/hierarchical-dependency-injection) works.
+* Learn more about how the [injector hierarchy](guide/hierarchical-dependency-injection) works.
 -->
 현재 계층에서 인젝터가 의존성 객체를 찾지 못하면 부모 인젝터에서 의존성 객체를 찾기 때문에 인젝터는 상속된다고도 할 수 있습니다.
 컴포넌트의 경우에 의존성으로 주입되는 서비스를 컴포넌트 인젝터에서 찾지 못하면 부모 인젝터에서 다시 찾으며, 이 과정은 부모 NgModule을 거쳐 최상위 인젝터에 도달할 때까지 반복됩니다.
@@ -205,9 +200,6 @@ from the injector of its parent NgModule, or from the `root` injector.
 * 프로바이더의 종류에 대해 알아보려면 [의존성 주입 프로바이더](guide/dependency-injection-providers) 문서를 참고하세요.
 
 * 인젝터의 계층에 대해 알아보려면 [인젝터 계층](guide/hierarchical-dependency-injection) 문서를 참고하세요.
-=======
-* Learn more about how the [injector hierarchy](guide/hierarchical-dependency-injection) works.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 </div>
 
@@ -241,15 +233,11 @@ The `@NgModule()` and `@Component()` decorators have the `providers` metadata op
 <!--
 Components are directives, and the `providers` option is inherited from `@Directive()`. You can also configure providers for directives and pipes at the same level as the component.
 
-<<<<<<< HEAD
-Learn more about [where to configure providers](guide/hierarchical-dependency-injection#where-to-register).
+Learn more about [where to configure providers](guide/hierarchical-dependency-injection).
 -->
 컴포넌트도 디렉티브이기 때문에 `@Directive()`에서도 `providers` 옵션을 사용할 수 있으며, 이렇게 등록한 프로바이더도 상속된다고 볼 수 있습니다. 프로바이더는 컴포넌트 계층에 등록하는 것처럼 디렉티브나 파이프 계층에 등록할 수도 있습니다.
 
-자세한 내용은 [프로바이더는 어디에 등록해야 할까](guide/hierarchical-dependency-injection#where-to-register) 문서를 참고하세요.
-=======
-Learn more about [where to configure providers](guide/hierarchical-dependency-injection).
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+자세한 내용은 [프로바이더는 어디에 등록해야 할까](guide/hierarchical-dependency-injection) 문서를 참고하세요.
 
 </div>
 
@@ -406,14 +394,10 @@ The constructor asks for an injected instance of `Logger` and stores it in a pri
 -->
 생성자는 `Logger` 타입의 객체를 의존성으로 주입하도록 요청한 후에 이 인스턴스를 `private` 프로퍼티 `logger`에 할당합니다. 그리고 `getHeroes()` 메소드에서 로그를 출력할 때 이 프로퍼티를 사용합니다.
 
-<<<<<<< HEAD
 <!--
-Notice that the `Logger` service also has the `@Injectable()` decorator, even though it might not need its own dependencies. In fact, the `@Injectable()` decorator is **required  for all services**.
+Notice that the `Logger` service also has the `@Injectable()` decorator, even though it might not need its own dependencies. In fact, the `@Injectable()` decorator is **required for all services**.
 -->
 이 때 `Logger` 서비스에는 의존성 주입이 필요하지 않지만 `@Injectable()` 데코레이터가 사용되었습니다. 실제로 `@Injectable()` 데코레이터는 **모든 서비스에 지정해야** 합니다.
-=======
-Notice that the `Logger` service also has the `@Injectable()` decorator, even though it might not need its own dependencies. In fact, the `@Injectable()` decorator is **required for all services**.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 When Angular creates a class whose constructor has parameters, it looks for type and injection metadata about those parameters so that it can inject the correct service.
@@ -518,12 +502,8 @@ value of `logger` to null.
 
 <div class="alert is-helpful">
 
-<<<<<<< HEAD
 <!--
-`@Inject()` and `@Optional()` are _parameter decorators_.  They alter the way the DI framework provides a dependency, by annotating the dependency parameter on the constructor of the class that requires the dependency.
-=======
 `@Inject()` and `@Optional()` are _parameter decorators_. They alter the way the DI framework provides a dependency, by annotating the dependency parameter on the constructor of the class that requires the dependency.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 Learn more about parameter decorators in [Hierarchical Dependency Injectors](guide/hierarchical-dependency-injection).
 -->
@@ -558,12 +538,3 @@ Angular의 의존성 주입 시스템에 대해 더 자세하게 알아보려면
 * Learn more about [DI tokens and providers](guide/dependency-injection-providers).
 
 * [Dependency Injection in Action](guide/dependency-injection-in-action) is a cookbook for some of the interesting things you can do with DI.
-<<<<<<< HEAD
--->
-* 중첩된 인젝터에 대해 더 알아보려면 [인젝터 계층](guide/hierarchical-dependency-injection) 문서를 참고하세요.
-
-* 의존성 주입 토큰과 프로바이더에 대해 더 알아보려면 [이 문서](guide/dependency-injection-providers)를 참고하세요.
-
-* 의존성 주입을 활용하는 테크닉은 [실전 의존성 주입](guide/dependency-injection-in-action) 문서에서 확인할 수 있습니다.
-=======
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072

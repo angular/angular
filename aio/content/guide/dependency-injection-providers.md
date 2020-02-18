@@ -1,11 +1,7 @@
-<<<<<<< HEAD
 <!--
-# Dependency Providers
+# Dependency providers
 -->
 # 의존성 프로바이더 (Dependency Providers)
-=======
-# Dependency providers
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 A dependency [provider](guide/glossary#provider) configures an injector

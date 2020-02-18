@@ -1,11 +1,7 @@
-<<<<<<< HEAD
 <!--
-# Attribute Directives
+# Attribute directives
 -->
 # 어트리뷰트 디렉티브
-=======
-# Attribute directives
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 An **Attribute** directive changes the appearance or behavior of a DOM element.
@@ -100,14 +96,10 @@ Please note that directives _do not_ support namespaces.
 -->
 디렉티브는 네임스페이스를 지원하지 _않는다는 것을_ 명심하세요.
 
-<<<<<<< HEAD
 <!--
-<code-example path="attribute-directives/src/app/app.component.avoid.html" linenums="false" header="src/app/app.component.avoid.html (unsupported)" region="unsupported"></code-example>
--->
-<code-example path="attribute-directives/src/app/app.component.avoid.html" linenums="false" header="src/app/app.component.avoid.html (지원하지 않는 문법)" region="unsupported"></code-example>
-=======
 <code-example path="attribute-directives/src/app/app.component.avoid.html" header="src/app/app.component.avoid.html (unsupported)" region="unsupported"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="attribute-directives/src/app/app.component.avoid.html" header="src/app/app.component.avoid.html (지원하지 않는 문법)" region="unsupported"></code-example>
 
 <!--
 ### Write the directive code
@@ -291,12 +283,8 @@ Begin by adding `HostListener` to the list of imported symbols.
 
 <code-example path="attribute-directives/src/app/highlight.directive.2.ts" header="src/app/highlight.directive.ts (imports)" region="imports"></code-example>
 
-<<<<<<< HEAD
 <!--
-Then add two eventhandlers that respond when the mouse enters or leaves,
-=======
 Then add two event handlers that respond when the mouse enters or leaves,
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 each adorned by the `HostListener` decorator.
 -->
 그리고 이렇게 불러온 `HostListener` 데코레이터를 사용해서 마우스가 들어오고 나가는 두 이벤트 핸들러를 추가합니다.
@@ -352,13 +340,9 @@ Here's the updated directive in full:
 
 <!--
 Run the app and confirm that the background color appears when
-<<<<<<< HEAD
-the mouse hovers over the `p` and disappears as it moves out.
+the pointer hovers over the paragraph element and disappears as the pointer moves out.
 -->
 이제 애플리케이션을 실행한 후에 마우스가 `<p>` 엘리먼트 위에 올라가면 배경색이 지정되고, 마우스를 밖으로 옮기면 배경색이 해제되는지 확인해 보세요.
-=======
-the pointer hovers over the paragraph element and disappears as the pointer moves out.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <div class="lightbox">
   <img src="generated/images/guide/attribute-directives/highlight-directive-anim.gif" alt="Second Highlight">
@@ -383,13 +367,10 @@ In this section, you give the developer the power to set the highlight color whi
 
 <!--
 Begin by adding `Input` to the list of symbols imported from `@angular/core`.
-<<<<<<< HEAD
 -->
 먼저, `@angular/core` 라이브러리에서 `Input` 심볼을 불러옵니다.
-<code-example path="attribute-directives/src/app/highlight.directive.3.ts" linenums="false" header="src/app/highlight.directive.ts (imports)" region="imports"></code-example>
-=======
+
 <code-example path="attribute-directives/src/app/highlight.directive.3.ts" header="src/app/highlight.directive.ts (imports)" region="imports"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 Add a `highlightColor` property to the directive class like this:
@@ -507,14 +488,10 @@ You get the best of both worlds: the property name you want and the binding synt
 
 <!--
 Now that you're binding via the alias to the `highlightColor`, modify the `onMouseEnter()` method to use that property.
-<<<<<<< HEAD
-If someone neglects to bind to `appHighlightColor`, highlight the host element in red:
+If someone neglects to bind to `appHighlight`, highlight the host element in red:
 -->
 이제 디렉티브 안에서는 `highlightColor` 프로퍼티를 사용하기 때문에 `onMouseEvent()` 메소드가 이 프로퍼티를 사용하도록 수정합니다.
-`appHighlightColor`에 바인딩 하는 값이 없으면 빨간색을 기본값으로 지정하도록 작성했습니다:
-=======
-If someone neglects to bind to `appHighlight`, highlight the host element in red:
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+`appHighlight`에 바인딩 하는 값이 없으면 빨간색을 기본값으로 지정하도록 작성했습니다:
 
 <code-example path="attribute-directives/src/app/highlight.directive.3.ts" header="src/app/highlight.directive.ts (mouse enter)" region="mouse-enter"></code-example>
 

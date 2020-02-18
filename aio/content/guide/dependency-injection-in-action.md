@@ -1,11 +1,7 @@
-<<<<<<< HEAD
 <!--
-# Dependency Injection in Action
+# Dependency injection in action
 -->
 # 실전 의존성 주입
-=======
-# Dependency injection in action
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 This section explores many of the features of dependency injection (DI) in Angular.
@@ -419,14 +415,11 @@ Using a custom provider allows you to provide a concrete implementation for impl
 
 </code-example>
 
-<<<<<<< HEAD
 <!--
-The `factory` function returns the `localStorage` property that is attached to the browser window object. The `Inject` decorator is a constructor parameter used to specify a custom provider of a dependency. This custom provider can now be overridden during testing with a mock API of `localStorage` instead of interactive with real browser APIs.
+The `factory` function returns the `localStorage` property that is attached to the browser window object. The `Inject` decorator is a constructor parameter used to specify a custom provider of a dependency. This custom provider can now be overridden during testing with a mock API of `localStorage` instead of interacting with real browser APIs.
+
 -->
 `factory` 프로퍼티에 지정된 함수는 브라우저의 `window` 객체에서 `localStorage` 프로퍼티를 반환합니다. 그리고 이렇게 만든 커스텀 프로바이더를 생성자의 인자에 주입하기 위해 `@Inject` 데코레이터를 사용했습니다. 이제 커스텀 프로바이더는 기본 환경에서도 동작하지만, 테스트 환경에서 목 API로 `localStorage`를 대체할 때도 사용할 수 있습니다.
-=======
-The `factory` function returns the `localStorage` property that is attached to the browser window object. The `Inject` decorator is a constructor parameter used to specify a custom provider of a dependency. This custom provider can now be overridden during testing with a mock API of `localStorage` instead of interacting with real browser APIs.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 {@a skip}
 
@@ -445,14 +438,10 @@ Providers can also be scoped by injector through constructor parameter decorator
 
 </code-example>
 
-<<<<<<< HEAD
 <!--
-Using the `@Self` decorator, the injector only looks at the component's injector for its providers. The `@SkipSelf` decorator allows you to skip the local injector and look up in the hierarchy to find a provider that satisfies this dependency. The `sessionStorageService` instance interacts with the `BrowserStorageService` using the `sessionStorage` browser API, while the `localStorageService` skips the local injector and uses the root `BrowserStorageService` that uses the `localStorage` browswer API.
+Using the `@Self` decorator, the injector only looks at the component's injector for its providers. The `@SkipSelf` decorator allows you to skip the local injector and look up in the hierarchy to find a provider that satisfies this dependency. The `sessionStorageService` instance interacts with the `BrowserStorageService` using the `sessionStorage` browser API, while the `localStorageService` skips the local injector and uses the root `BrowserStorageService` that uses the `localStorage` browser API.
 -->
 `@Self` 데코레이터가 사용된 의존성 객체는 해당 컴포넌트의 인젝터에 등록된 프로바이더만 참조합니다. 그리고 `@SkipSelf` 데코레이터가 사용된 의존성 객체는 해당 컴포넌트의 인젝터를 건너뛰고 그 위쪽 인젝터부터 의존성 객체를 찾기 시작합니다. 결국 `sessionStorageService`에 할당되는 것은 이 컴포넌트에 등록된 프로바이더에 따라 브라우저 내장 `sessionStorage`가 될 것이며, `localStorageService`는 이 컴포넌트를 건너뛰고 탐색하도록 지정했기 때문에 `BrowserStorageService`에서 제공하는 `localStorage`가 할당될 것입니다.
-=======
-Using the `@Self` decorator, the injector only looks at the component's injector for its providers. The `@SkipSelf` decorator allows you to skip the local injector and look up in the hierarchy to find a provider that satisfies this dependency. The `sessionStorageService` instance interacts with the `BrowserStorageService` using the `sessionStorage` browser API, while the `localStorageService` skips the local injector and uses the root `BrowserStorageService` that uses the `localStorage` browser API.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 {@a component-element}
 
@@ -531,18 +520,12 @@ The following is a typical example.
 그리고 이렇게 선언된 토큰은 Angular가 생성자의 인자에 지정된 타입을 인젝터에서 찾을때 활용됩니다.
 그래서 인젝터에 토큰을 보내면 그 토큰에 해당되는 의존성 객체를 받아올 수 있습니다.
 
-<<<<<<< HEAD
 예제를 보면서 이 내용을 확인해 봅시다.
 
 <!--
-<code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="ctor" header="src/app/hero-bios.component.ts (component constructor injection)" linenums="false">
--->
-<code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="ctor" header="src/app/hero-bios.component.ts (컴포넌트 생성자로 주입되는 의존성 객체)" linenums="false">
-
-</code-example>
-=======
 <code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="ctor" header="src/app/hero-bios.component.ts (component constructor injection)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="ctor" header="src/app/hero-bios.component.ts (컴포넌트 생성자로 주입되는 의존성 객체)"></code-example>
 
 <!--
 Angular asks the injector for the service associated with `LoggerService`
@@ -786,18 +769,14 @@ The `HeroOfTheMonthComponent` constructor's `logger` parameter is typed as `Mini
 -->
 `HeroOfTheMonthComponent`의 생성자 인자 `logger`는 `MinimalLogger` 타입으로 지정되었기 때문에 TypeScript를 지원하는 에디터에서는 `logs`와 `logInfo` 멤버만 보이게 됩니다.
 
-<<<<<<< HEAD
-<figure>
-  <!--
-  <img src="generated/images/guide/dependency-injection-in-action/minimal-logger-intellisense.png" alt="MinimalLogger restricted API">
-  -->
-  <img src="generated/images/guide/dependency-injection-in-action/minimal-logger-intellisense.png" alt="MinimalLogger로 제한된 API">
-</figure>
-=======
+<!--
 <div class="lightbox">
   <img src="generated/images/guide/dependency-injection-in-action/minimal-logger-intellisense.png" alt="MinimalLogger restricted API">
 </div>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<div class="lightbox">
+  <img src="generated/images/guide/dependency-injection-in-action/minimal-logger-intellisense.png" alt="MinimalLogger로 제한된 API">
+</div>
 
 <!--
 Behind the scenes, Angular sets the `logger` parameter to the full service registered under the `LoggingService` token, which happens to be the `DateLoggerService` instance that was [provided above](guide/dependency-injection-in-action#useclass).

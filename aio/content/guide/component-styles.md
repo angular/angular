@@ -1,11 +1,7 @@
-<<<<<<< HEAD
 <!--
-# Component Styles
+# Component styles
 -->
 # 컴포넌트 스타일
-=======
-# Component styles
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 Angular applications are styled with standard CSS. That means you can apply
@@ -523,14 +519,10 @@ Choose from the following modes:
 <!--
 * `Emulated` view encapsulation (the default) emulates the behavior of shadow DOM by preprocessing
   (and renaming) the CSS code to effectively scope the CSS to the component's view.
-<<<<<<< HEAD
-  For details, see [Appendix 1](guide/component-styles#inspect-generated-css).
+  For details, see [Inspecting generated CSS](guide/component-styles#inspect-generated-css) below.
 -->
 * 기본값인 `Emulated` 캡슐화 정책을 사용하면 Angular가 제공하는 섀도우 DOM을 사용하며, CSS 코드를 컴포넌트 뷰에 한정되도록 변경해서 적용합니다.
 좀 더 자세한 내용은 [생성된 css 코드 확인하기](guide/component-styles#생성된-css-코드-확인하기) 섹션을 참고하세요.
-=======
-  For details, see [Inspecting generated CSS](guide/component-styles#inspect-generated-css) below.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 * `None` means that Angular does no view encapsulation.

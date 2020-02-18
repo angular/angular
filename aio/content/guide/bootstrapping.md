@@ -16,17 +16,13 @@ A basic understanding of the following:
 
 <hr />
 
-<<<<<<< HEAD
 <!--
-An NgModule describes how the application parts fit together.
-=======
 An `NgModule` describes how the application parts fit together.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 Every application has at least one Angular module, the _root_ module
 that you bootstrap to launch the application.
 By convention, it is usually called `AppModule`.
 -->
-NgModule은 애플리케이션을 구성하는 단위입니다.
+`NgModule`은 애플리케이션을 구성하는 단위입니다.
 모든 애플리케이션에는 _최상위_ 모듈이 존재하기 때문에 최소한 하나의 모듈을 포함하고 있으며, 애플리케이션은 이 최상위 모듈을 부트스트랩하면서 시작됩니다.
 이 최상위 모듈은 보통 `AppModule`이라고 합니다.
 
@@ -213,14 +209,10 @@ Angular CLI로 디렉티브를 생성하면 디렉티브의 기본 구조가 다
 
 <!--
 The key point here is that you have to export it so you can import it elsewhere. Next, import it
-<<<<<<< HEAD
-into the NgModule, in this example `app.module.ts`, with a JavaScript import statement:
+into the `NgModule`, in this example `app.module.ts`, with a JavaScript import statement:
 -->
 이 파일에서 중요한 점은, 이 클래스가 `export` 키워드로 지정되었기 때문에 다른 모듈이 이 클래스를 참조할 수 있다는 것입니다.
 따라서, 앱 모듈을 정의하는 `app.module.ts` 파일에서는 다음과 같이 로드할 수 있습니다:
-=======
-into the `NgModule`, in this example `app.module.ts`, with a JavaScript import statement:
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <code-example path="bootstrapping/src/app/app.module.ts" region="directive-import" header="src/app/app.module.ts"></code-example>
 

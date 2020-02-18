@@ -1,11 +1,7 @@
-<<<<<<< HEAD
 <!--
-# Component Interaction
+# Component interaction
 -->
 # 컴포넌트 통신
-=======
-# Component interaction
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 {@a top}
 
@@ -181,13 +177,9 @@ Detect and act upon changes to input property values with the `ngOnChanges()` me
 <!--
 You may prefer this approach to the property setter when watching multiple, interacting input properties.
 
-<<<<<<< HEAD
-Learn about `ngOnChanges()` in the [LifeCycle Hooks](guide/lifecycle-hooks) chapter.
+Learn about `ngOnChanges()` in the [Lifecycle Hooks](guide/lifecycle-hooks) chapter.
 -->
 입력 프로퍼티 여러개를 가로채야 한다면 세터를 사용하는 것보다 이 방식이 더 편할 수 있습니다.
-=======
-Learn about `ngOnChanges()` in the [Lifecycle Hooks](guide/lifecycle-hooks) chapter.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 `ngOnChanges()` 함수에 대한 자세한 설명은 [라이프싸이클 후킹](guide/lifecycle-hooks) 문서를 참고하세요.
 
