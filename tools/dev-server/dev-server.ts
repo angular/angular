@@ -27,7 +27,7 @@ export class DevServer {
     port: this.port,
     notify: false,
     ghostMode: false,
-    server: true,
+    server: false,
     middleware: (req, res) => this._bazelMiddleware(req, res),
   };
 
@@ -59,8 +59,19 @@ export class DevServer {
    */
   private _bazelMiddleware(req: http.IncomingMessage, res: http.ServerResponse) {
     if (!req.url) {
-      res.end('No url specified. Error');
+      res.statusCode = 500;
+      res.end('Error: No url specified');
       return;
+    }
+
+    // Detect if the url escapes the server's root path
+    for (const rootPath of this._rootPaths) {
+      const absoluteRootPath = path.resolve(rootPath);
+      const absoluteJoinedPath = path.resolve(path.posix.join(rootPath, getManifestPath(req.url)));
+      if (!absoluteJoinedPath.startsWith(absoluteRootPath)) {
+        res.statusCode = 500;
+        res.end('Error: Detected directory traversal');
+      }
     }
 
     // Implements the HTML history API fallback logic based on the requirements of the
@@ -84,15 +95,19 @@ export class DevServer {
 
   /** Resolves a given URL from the runfiles using the corresponding manifest path. */
   private _resolveUrlFromRunfiles(url: string): string|null {
-    // Remove the leading slash from the URL. Manifest paths never
-    // start with a leading slash.
-    const manifestPath = url.substring(1);
     for (let rootPath of this._rootPaths) {
       try {
-        return require.resolve(path.posix.join(rootPath, manifestPath));
+        return require.resolve(path.posix.join(rootPath, getManifestPath(url)));
       } catch {
       }
     }
     return null;
   }
+}
+
+/** Gets the manifest path for a given url */
+function getManifestPath(url: string) {
+  // Remove the leading slash from the URL. Manifest paths never
+  // start with a leading slash.
+  return url.substring(1);
 }
