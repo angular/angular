@@ -7,7 +7,7 @@
  */
 import * as ts from 'typescript';
 import {AbsoluteFsPath, FileSystem, NgtscCompilerHost} from '../../../src/ngtsc/file_system';
-import {PathMappings} from '../utils';
+import {PathMappings, resolveFileWithPostfixes} from '../utils';
 import {BundleProgram, makeBundleProgram} from './bundle_program';
 import {EntryPoint, EntryPointFormat} from './entry_point';
 import {NgccSourcesCompilerHost} from './ngcc_compiler_host';
@@ -56,16 +56,20 @@ export function makeEntryPointBundle(
   const dtsHost = new NgtscCompilerHost(fs, options);
 
   // Create the bundle programs, as necessary.
-  const absFormatPath = fs.resolve(entryPoint.path, formatPath);
-  const typingsPath = fs.resolve(entryPoint.path, entryPoint.typings);
+  const absFormatPath = resolveFileWithPostfixes(
+      fs, fs.resolve(entryPoint.path, formatPath), ['', '.js', '/index.js']);
+  if (absFormatPath === null) {
+    throw new Error(
+        `The source file ${formatPath} could not be resolved within entry-point ${entryPoint.path}`);
+  }
   const src = makeBundleProgram(
       fs, isCore, entryPoint.package, absFormatPath, 'r3_symbols.js', options, srcHost);
   const additionalDtsFiles = transformDts && mirrorDtsFromSrc ?
-      computePotentialDtsFilesFromJsFiles(fs, src.program, absFormatPath, typingsPath) :
+      computePotentialDtsFilesFromJsFiles(fs, src.program, absFormatPath, entryPoint.typings) :
       [];
   const dts = transformDts ? makeBundleProgram(
-                                 fs, isCore, entryPoint.package, typingsPath, 'r3_symbols.d.ts',
-                                 options, dtsHost, additionalDtsFiles) :
+                                 fs, isCore, entryPoint.package, entryPoint.typings,
+                                 'r3_symbols.d.ts', options, dtsHost, additionalDtsFiles) :
                              null;
   const isFlatCore = isCore && src.r3SymbolsFile === null;
 

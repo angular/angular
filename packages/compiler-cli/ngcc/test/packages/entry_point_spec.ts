@@ -325,6 +325,35 @@ runInEachFileSystem(() => {
       });
     });
 
+    it('should work if the typings path does not have .d.ts extension', () => {
+      loadTestFiles([
+        {
+          name: _('/project/node_modules/some_package/typings_no_extention/package.json'),
+          contents: createPackageJson('typings_no_extention', {typingWithoutExtention: true})
+        },
+        {
+          name: _(
+              '/project/node_modules/some_package/typings_no_extention/typings_no_extention.metadata.json'),
+          contents: 'some meta data'
+        },
+      ]);
+      const config = new NgccConfiguration(fs, _('/project'));
+      const entryPoint = getEntryPointInfo(
+          fs, config, new MockLogger(), SOME_PACKAGE,
+          _('/project/node_modules/some_package/typings_no_extention'));
+      expect(entryPoint).toEqual({
+        name: 'some_package/typings_no_extention',
+        package: SOME_PACKAGE,
+        path: _('/project/node_modules/some_package/typings_no_extention'),
+        typings:
+            _(`/project/node_modules/some_package/typings_no_extention/typings_no_extention.d.ts`),
+        packageJson: loadPackageJson(fs, '/project/node_modules/some_package/typings_no_extention'),
+        compiledByAngular: true,
+        ignoreMissingDependencies: false,
+        generateDeepReexports: false,
+      });
+    });
+
     it('should work with Angular Material style package.json', () => {
       loadTestFiles([
         {
@@ -464,11 +493,17 @@ runInEachFileSystem(() => {
 
   function createPackageJson(
       packageName: string,
-      {excludes, typingsProp = 'typings', typingsIsArray}:
-          {excludes?: string[], typingsProp?: string, typingsIsArray?: boolean} = {}): string {
+      {excludes, typingsProp = 'typings', typingsIsArray, typingWithoutExtention}: {
+        excludes?: string[],
+        typingsProp?: string,
+        typingsIsArray?: boolean,
+        typingWithoutExtention?: boolean
+      } = {}): string {
     const packageJson: any = {
       name: `some_package/${packageName}`,
-      [typingsProp]: typingsIsArray ? [`./${packageName}.d.ts`] : `./${packageName}.d.ts`,
+      [typingsProp]:
+          typingsIsArray ? [`./${packageName}${!typingWithoutExtention ? '.d.ts' : ''}`] :
+                           `./${packageName}${!typingWithoutExtention ? '.d.ts' : ''}`,
       fesm2015: `./fesm2015/${packageName}.js`,
       esm2015: `./esm2015/${packageName}.js`,
       es2015: `./es2015/${packageName}.js`,

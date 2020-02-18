@@ -117,13 +117,20 @@ export function getEntryPointInfo(
   // * a custom config for this entry-point
   const metadataPath = resolve(entryPointPath, typings.replace(/\.d\.ts$/, '') + '.metadata.json');
   const compiledByAngular = entryPointConfig !== undefined || fs.exists(metadataPath);
+  const typingPath = resolveFileWithPostfixes(
+      fs, fs.resolve(entryPointPath, typings), ['', '.d.ts', '/index.d.ts']);
+
+  if (typingPath === null) {
+    throw new Error(
+        `The typings file ${typings} could not be resolved within entry-point ${entryPointPath}`);
+  }
 
   const entryPointInfo: EntryPoint = {
     name: entryPointPackageJson.name,
     packageJson: entryPointPackageJson,
     package: packagePath,
     path: entryPointPath,
-    typings: resolve(entryPointPath, typings), compiledByAngular,
+    typings: typingPath, compiledByAngular,
     ignoreMissingDependencies:
         entryPointConfig !== undefined ? !!entryPointConfig.ignoreMissingDependencies : false,
     generateDeepReexports:

@@ -1549,10 +1549,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       Map<ts.Declaration, ts.Declaration> {
     const declarationMap = new Map<ts.Declaration, ts.Declaration>();
     const dtsDeclarationMap = new Map<string, ts.Declaration>();
-    const rootDts = getRootFileOrFail(dts);
-    this.collectDtsExportedDeclarations(dtsDeclarationMap, rootDts, dts.program.getTypeChecker());
-    const rootSrc = getRootFileOrFail(src);
-    this.collectSrcExportedDeclarations(declarationMap, dtsDeclarationMap, rootSrc);
+    this.collectDtsExportedDeclarations(dtsDeclarationMap, dts.file, dts.program.getTypeChecker());
+    this.collectSrcExportedDeclarations(declarationMap, dtsDeclarationMap, src.file);
     return declarationMap;
   }
 
@@ -2060,14 +2058,6 @@ function getContainingStatement(node: ts.Node): ts.ExpressionStatement|null {
     node = node.parent;
   }
   return node || null;
-}
-
-function getRootFileOrFail(bundle: BundleProgram): ts.SourceFile {
-  const rootFile = bundle.program.getSourceFile(bundle.path);
-  if (rootFile === undefined) {
-    throw new Error(`The given rootPath ${rootFile} is not a file of the program.`);
-  }
-  return rootFile;
 }
 
 function getNonRootPackageFiles(bundle: BundleProgram): ts.SourceFile[] {

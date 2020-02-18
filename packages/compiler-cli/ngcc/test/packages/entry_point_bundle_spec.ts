@@ -287,7 +287,7 @@ runInEachFileSystem(() => {
         name: 'secondary',
         packageJson: {name: 'secondary'},
         package: absoluteFrom('/node_modules/primary'),
-        path: absoluteFrom('/node_modules/primary/secondary'),
+        path: absoluteFrom('/node_modules/primary/esm2015/secondary'),
         typings: absoluteFrom('/node_modules/primary/secondary/index.d.ts'),
         compiledByAngular: true,
         ignoreMissingDependencies: false,
@@ -297,6 +297,30 @@ runInEachFileSystem(() => {
           fs, entryPoint, './index.js', false, 'esm2015', /* transformDts */ true,
           /* pathMappings */ undefined, /* mirrorDtsFromSrc */ true);
       expect(bundle.rootDirs).toEqual([absoluteFrom('/node_modules/primary')]);
+    });
+
+    it('resolve source file path without .js extension in formatPath', () => {
+      setupMockFileSystem();
+      const fs = getFileSystem();
+      const entryPoint: EntryPoint = {
+        name: 'test',
+        packageJson: {name: 'test'},
+        package: absoluteFrom('/node_modules/test'),
+        path: absoluteFrom('/node_modules/test'),
+        typings: absoluteFrom('/node_modules/test/index.d.ts'),
+        compiledByAngular: true,
+        ignoreMissingDependencies: false,
+        generateDeepReexports: false,
+      };
+      // source file path without .js extension
+      const formatPath = './index';
+      const esm5bundle = makeEntryPointBundle(
+          fs, entryPoint, formatPath, false, 'esm2015', /* transformDts */ true,
+          /* pathMappings */ undefined, /* mirrorDtsFromSrc */ false);
+      expect(esm5bundle.src.program.getSourceFiles().map(sf => sf.fileName))
+          .toContain(absoluteFrom('/node_modules/test/index.js'));
+      expect(esm5bundle.dts !.program.getSourceFiles().map(sf => sf.fileName))
+          .toContain(absoluteFrom('/node_modules/test/index.d.ts'));
     });
   });
 });
