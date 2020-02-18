@@ -130,7 +130,7 @@ service-setup-command() {
     @fail "sc binary not found at ${SAUCE_CONNECT}"
   fi
 
-  echo "{ \"SAUCE_USERNAME\": \"${SAUCE_USERNAME}\", \"SAUCE_ACCESS_KEY\": \"${SAUCE_ACCESS_KEY}\", \"SAUCE_TUNNEL_IDENTIFIER\": \"${SAUCE_TUNNEL_IDENTIFIER}\", \"SAUCE_LOCALHOST_ALIAS_DOMAIN\": \"${SAUCE_LOCALHOST_ALIAS_DOMAIN}\" }" > ${SAUCE_PARAMS_JSON_FILE}
+  echo "{ \"SAUCE_USERNAME\": \"${SAUCE_USERNAME}\", \"SAUCE_ACCESS_KEY\": \"${SAUCE_ACCESS_KEY}\", \"SAUCE_TUNNEL_IDENTIFIER\": \"${SAUCE_TUNNEL_IDENTIFIER}\", \"SAUCE_LOCALHOST_ALIAS_DOMAIN\": \"${SAUCE_LOCALHOST_ALIAS_DOMAIN:-}\" }" > ${SAUCE_PARAMS_JSON_FILE}
 
   # Command arguments that will be passed to sauce-connect.
   # By default we disable SSL bumping for all requests. This is because SSL bumping is
@@ -148,7 +148,7 @@ service-setup-command() {
     # Don't add the --api-key here so we don't echo it out in service-pre-start
   )
 
-  if [[ -n "${SAUCE_LOCALHOST_ALIAS_DOMAIN}" ]]; then
+  if [[ -n "${SAUCE_LOCALHOST_ALIAS_DOMAIN:-}" ]]; then
     # Ensures that requests to the localhost alias domain are always resolved through the tunnel.
     # This environment variable is usually configured on CI, and refers to a domain that has been
     # locally configured in the current machine's hosts file (e.g. `/etc/hosts`). The domain should
