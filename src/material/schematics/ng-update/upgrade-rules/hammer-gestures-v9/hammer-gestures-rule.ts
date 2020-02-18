@@ -11,7 +11,7 @@ import {
   normalize as devkitNormalize,
   Path as DevkitPath
 } from '@angular-devkit/core';
-import {SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
+import {SchematicContext, Tree} from '@angular-devkit/schematics';
 import {
   getImportOfIdentifier,
   getProjectIndexFiles,
@@ -27,13 +27,11 @@ import {
   getMetadataField
 } from '@angular/cdk/schematics';
 import {InsertChange} from '@schematics/angular/utility/change';
-import {getWorkspace} from '@schematics/angular/utility/config';
 import {WorkspaceProject} from '@schematics/angular/utility/workspace-models';
 import {readFileSync} from 'fs';
 import {dirname, join, relative} from 'path';
 import * as ts from 'typescript';
 
-import {getProjectFromProgram} from './cli-workspace';
 import {findHammerScriptImportElements} from './find-hammer-script-tags';
 import {findMainModuleExpression} from './find-main-module';
 import {isHammerJsUsedInTemplate} from './hammer-template-check';
@@ -242,8 +240,7 @@ export class HammerGesturesRule extends MigrationRule<null> {
    *   4) Setup the "HammerModule" in the root app module (if not done already).
    */
   private _setupHammerWithCustomEvents() {
-    const project = this._getProjectOrThrow();
-    const sourceRoot = devkitNormalize(project.sourceRoot || project.root);
+    const sourceRoot = devkitNormalize(this.project.sourceRoot || this.project.root);
     const newConfigPath =
         devkitJoin(sourceRoot, this._getAvailableGestureConfigFileName(sourceRoot));
 
@@ -261,8 +258,8 @@ export class HammerGesturesRule extends MigrationRule<null> {
     // Setup the gesture config provider and the "HammerModule" in the root module
     // if not done already. The "HammerModule" is needed in v9 since it enables the
     // Hammer event plugin that was previously enabled by default in v8.
-    this._setupNewGestureConfigInRootModule(project, newConfigPath);
-    this._setupHammerModuleInRootModule(project);
+    this._setupNewGestureConfigInRootModule(newConfigPath);
+    this._setupHammerModuleInRootModule();
   }
 
   /**
@@ -270,11 +267,9 @@ export class HammerGesturesRule extends MigrationRule<null> {
    * references to the deprecated Angular Material gesture config.
    */
   private _setupHammerWithStandardEvents() {
-    const project = this._getProjectOrThrow();
-
     // Setup the HammerModule. The HammerModule enables support for
     // the standard HammerJS events.
-    this._setupHammerModuleInRootModule(project);
+    this._setupHammerModuleInRootModule();
     this._removeMaterialGestureConfigSetup();
   }
 
@@ -285,13 +280,11 @@ export class HammerGesturesRule extends MigrationRule<null> {
    *   3) Remove "hammerjs" from all index HTML files of the current project.
    */
   private _removeHammerSetup() {
-    const project = this._getProjectOrThrow();
-
     this._installImports.forEach(i => this._importManager.deleteImportByDeclaration(i));
 
     this._removeMaterialGestureConfigSetup();
     this._removeHammerModuleReferences();
-    this._removeHammerFromIndexFile(project);
+    this._removeHammerFromIndexFile(this.project);
   }
 
   /**
@@ -645,8 +638,8 @@ export class HammerGesturesRule extends MigrationRule<null> {
   }
 
   /** Sets up the Hammer gesture config in the root module if needed. */
-  private _setupNewGestureConfigInRootModule(project: WorkspaceProject, gestureConfigPath: string) {
-    const mainFilePath = join(this.basePath, getProjectMainFile(project));
+  private _setupNewGestureConfigInRootModule(gestureConfigPath: string) {
+    const mainFilePath = join(this.basePath, getProjectMainFile(this.project));
     const rootModuleSymbol = this._getRootModuleSymbol(mainFilePath);
 
     if (rootModuleSymbol === null) {
@@ -722,8 +715,8 @@ export class HammerGesturesRule extends MigrationRule<null> {
   }
 
   /** Sets up the "HammerModule" in the root module of the project. */
-  private _setupHammerModuleInRootModule(project: WorkspaceProject) {
-    const mainFilePath = join(this.basePath, getProjectMainFile(project));
+  private _setupHammerModuleInRootModule() {
+    const mainFilePath = join(this.basePath, getProjectMainFile(this.project));
     const rootModuleSymbol = this._getRootModuleSymbol(mainFilePath);
 
     if (rootModuleSymbol === null) {
@@ -818,23 +811,6 @@ export class HammerGesturesRule extends MigrationRule<null> {
         filePath: sourceFile.fileName,
       };
     });
-  }
-
-  /**
-   * Gets the project from the current program or throws if no project
-   * could be found.
-   */
-  private _getProjectOrThrow(): WorkspaceProject {
-    const workspace = getWorkspace(this.tree);
-    const project = getProjectFromProgram(workspace, this.program);
-
-    if (!project) {
-      throw new SchematicsException(
-          'Could not find project to perform HammerJS v9 migration. ' +
-          'Please ensure your workspace configuration defines a project.');
-    }
-
-    return project;
   }
 
   /** Global state of whether Hammer is used in any analyzed project target. */

@@ -50,8 +50,8 @@ export function runMigrationRules<T>(
   // Create instances of all specified migration rules.
   for (const ruleCtor of ruleTypes) {
     const rule = new ruleCtor(
-        program, typeChecker, targetVersion, upgradeData, tree, getUpdateRecorder, basePath, logger,
-        isTestTarget, tsconfigPath);
+        project, program, typeChecker, targetVersion, upgradeData, tree, getUpdateRecorder,
+        basePath, logger, isTestTarget, tsconfigPath);
     rule.init();
     if (rule.ruleEnabled) {
       rules.push(rule);

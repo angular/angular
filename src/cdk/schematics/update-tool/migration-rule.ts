@@ -8,6 +8,7 @@
 
 import {logging} from '@angular-devkit/core';
 import {SchematicContext, Tree, UpdateRecorder} from '@angular-devkit/schematics';
+import {WorkspaceProject} from '@schematics/angular/utility/workspace-models';
 import * as ts from 'typescript';
 import {ResolvedResource} from './component-resource-collector';
 import {TargetVersion} from './target-version';
@@ -32,6 +33,8 @@ export class MigrationRule<T> {
   ruleEnabled = true;
 
   constructor(
+      /** Workspace project the migration rule runs against. */
+      public project: WorkspaceProject,
       /** TypeScript program for the migration. */
       public program: ts.Program,
       /** TypeChecker instance for the analysis program. */

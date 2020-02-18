@@ -38,6 +38,24 @@ describe('v9 HammerJS removal', () => {
     `);
   }
 
+  it('should not throw if project tsconfig does not have explicit root file names', async () => {
+    // Generates a second project in the workspace. This is necessary to ensure that the
+    // migration runs logic to determine the correct workspace project.
+    await runner.runExternalSchematicAsync(
+        '@schematics/angular', 'application', {name: 'second-project'}, tree).toPromise();
+    // Overwrite the default tsconfig to not specify any explicit source files. This replicates
+    // the scenario observed in: https://github.com/angular/components/issues/18504.
+    writeFile('/projects/cdk-testing/tsconfig.app.json', JSON.stringify({
+      extends: '../../tsconfig.json',
+      compilerOptions: {
+        outDir: '../../out-tsc/app',
+        types: []
+      }}
+    ));
+    addPackageToPackageJson(tree, 'hammerjs', '0.0.0');
+    await expectAsync(runMigration()).not.toBeRejected();
+  });
+
   describe('hammerjs not used', () => {
     it('should remove hammerjs from "package.json" file', async () => {
       addPackageToPackageJson(tree, 'hammerjs', '0.0.0');
