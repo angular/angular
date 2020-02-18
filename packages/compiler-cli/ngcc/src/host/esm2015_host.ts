@@ -634,7 +634,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     if (!this.preprocessedSourceFiles.has(sourceFile)) {
       this.preprocessedSourceFiles.add(sourceFile);
 
-      for (const statement of sourceFile.statements) {
+      for (const statement of this.getModuleStatements(sourceFile)) {
         this.preprocessStatement(statement);
       }
     }
@@ -660,7 +660,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     const declaration = declarations[0];
     const initializer = declaration.initializer;
     if (!ts.isIdentifier(declaration.name) || !initializer || !isAssignment(initializer) ||
-        !ts.isIdentifier(initializer.left) || !ts.isClassExpression(initializer.right)) {
+        !ts.isIdentifier(initializer.left) || !this.isClass(declaration)) {
       return;
     }
 
