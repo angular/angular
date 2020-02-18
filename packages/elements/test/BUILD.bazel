@@ -42,7 +42,11 @@ karma_web_test_suite(
     bootstrap = [
         ":elements_test_bootstrap_scripts",
     ],
-    # do not sort
+    tags = [
+        # FIXME: timed out in CI
+        "fixme-saucelabs-ivy",
+        "fixme-saucelabs-ve",
+    ],
     deps = [
         ":test_lib",
     ],
