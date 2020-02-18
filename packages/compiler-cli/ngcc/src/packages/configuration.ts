@@ -91,6 +91,19 @@ export const DEFAULT_NGCC_CONFIG: NgccProjectConfig = {
     //   },
     // },
 
+    // The package does not contain any `.metadata.json` files in the root directory but only inside
+    // `dist/`. Without this config, ngcc does not realize this is a ViewEngine-built Angular
+    // package that needs to be compiled to Ivy.
+    'angular2-highcharts': {
+      entryPoints: {
+        '.': {
+          override: {
+            main: './index.js',
+          },
+        },
+      },
+    },
+
     // The `dist/` directory has a duplicate `package.json` pointing to the same files, which (under
     // certain configurations) can causes ngcc to try to process the files twice and fail.
     // Ignore the `dist/` entry-point.
