@@ -16,18 +16,37 @@ export interface TimelineNode {
 
 export interface TimelineFrame {
   timestamp: number;
+  timeLineId?: number;
   roots: TimelineNode[];
 }
 
 export type Timeline = TimelineFrame[];
 
+const idCounter = () => {
+  let count = 0;
+  return {
+    getId: () => count++,
+    resetIdAutoIncrement: () => (count = 0),
+  };
+};
+
+export const { getId, resetIdAutoIncrement } = idCounter();
+
 const buildInitialState = (records: ComponentRecord[]): { initialState: TimelineFrame; consumed: number } => {
   if (!records.length) {
-    return { initialState: { roots: [], timestamp: 0 }, consumed: 0 };
+    return {
+      initialState: {
+        timeLineId: getId(),
+        roots: [],
+        timestamp: 0,
+      },
+      consumed: 0,
+    };
   }
   const initialState: TimelineFrame = {
     timestamp: records[0].timestamp,
     roots: [],
+    timeLineId: getId(),
   };
   let consumed = 0;
   for (const record of records) {
@@ -115,6 +134,7 @@ const applyMutation = (frame: TimelineFrame, record: ComponentRecord): TimelineF
       applyDeletionMutation(frame, record);
       break;
   }
+  frame.timeLineId = getId();
   return frame;
 };
 

@@ -61,6 +61,7 @@ const creations: ComponentRecord[] = [
 const creationResult: Timeline = [
   {
     timestamp: 0,
+    timeLineId: jasmine.any(Number) as any,
     roots: [
       {
         name: 'AppComponent',
@@ -328,7 +329,7 @@ const creationsAndChangeDetectionAndCreationAndCreation: ComponentRecord[] = [
 
 describe('timelineBuilder', () => {
   it('should work with empty profiling data', () => {
-    expect(buildTimeline([])).toEqual([{ roots: [], timestamp: 0 }]);
+    expect(buildTimeline([])).toEqual([{ roots: [], timestamp: 0, timeLineId: jasmine.any(Number) }]);
   });
 
   it('should set the initial state', () => {

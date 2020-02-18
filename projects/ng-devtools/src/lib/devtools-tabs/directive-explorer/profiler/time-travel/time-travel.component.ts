@@ -4,7 +4,14 @@ import uuid from 'uuid';
 import { Options, Edge, DataSet, Data, Node, VisNetworkService } from 'ngx-vis';
 
 import { ComponentRecord } from 'protocol';
-import { Timeline, TimelineNode, buildTimeline, TimelineNodeState, TimelineFrame } from './time-travel-builder';
+import {
+  Timeline,
+  TimelineNode,
+  buildTimeline,
+  TimelineNodeState,
+  TimelineFrame,
+  resetIdAutoIncrement,
+} from './time-travel-builder';
 import { MatSlider } from '@angular/material/slider';
 import { interval, Observable, range, Subscription, zip } from 'rxjs';
 
@@ -58,11 +65,16 @@ export class TimeTravelComponent implements OnDestroy {
   isPlaying = false;
   playLoopSubscription: Subscription;
 
+  private _cachedFrames = new Map<number, { nodes: DataSet<Node>; edges: DataSet<Edge> }>();
+
   constructor(private _visNetworkService: VisNetworkService) {}
 
   @Input() set stream(stream: ComponentRecord[]) {
-    this.timeline = buildTimeline(stream);
-    this._showFrame(this.timeline[0]);
+    if (stream.length === 0) {
+      resetIdAutoIncrement();
+      this._cachedFrames.clear();
+    }
+    this._initStream(stream);
   }
 
   showSeparator(): boolean {
@@ -127,12 +139,17 @@ export class TimeTravelComponent implements OnDestroy {
     this._visNetworkService.off(this.visNetwork, 'click');
   }
 
+  private _initStream(stream: ComponentRecord[]): void {
+    this.timeline = buildTimeline(stream);
+    this._showFrame(this.timeline[0]);
+  }
+
   private _showFrame(frame: TimelineFrame | undefined): void {
     if (!frame) {
       return;
     }
     this._prepareNodesAndEdgesForNewFrame(frame);
-    this._initNodesAndEdges(frame.roots);
+    this._setNodesAndEdges(frame.roots, frame.timeLineId);
     this._updateVisNetworkDataState();
   }
 
@@ -146,6 +163,17 @@ export class TimeTravelComponent implements OnDestroy {
     this.nodes = new DataSet<Node>([]);
     this.edges = new DataSet<Edge>([]);
     this._nodeIdToNodes = new Map<string, TimelineNode>();
+  }
+
+  private _setNodesAndEdges(roots, cacheId): void {
+    if (this._cachedFrames.has(cacheId)) {
+      const { nodes, edges } = this._cachedFrames.get(cacheId);
+      this.nodes = nodes;
+      this.edges = edges;
+    } else {
+      this._initNodesAndEdges(roots);
+      this._cachedFrames.set(cacheId, { nodes: this.nodes, edges: this.edges });
+    }
   }
 
   private _initNodesAndEdges(roots: TimelineNode[], parentId?: string): void {
