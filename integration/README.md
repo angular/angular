@@ -94,6 +94,18 @@ yarn bazel test //integration:bazel_test
 yarn bazel test //integration:bazel-schematics_test
 ```
 
+## Adding a new integration test
+
+When adding a new integration test, follow the steps below to add a bazel test target for the new test.
+
+1. Add new test to `INTEGRATION_TESTS` object in `/integration/BUILD.bazel` (and tag as `"no-ivy-aot"` if not meant to be run against ivy bundles). *NB: if the test requires any special attribute then make a new angular_integration_test target instead.*
+2. If test requires ports and does not support ethereal ports then make sure the port is unique and add it to the "manually configured ports" comment to document which port it is using
+3. Add at least the following two entries `.bazelignore` (as they may contain BUILD files)
+   1. `integration/new_test/node_modules`
+   2. `integration/new_test/.yarn_local_cache`
+4. Add any other untracked folders to `.bazelignore` that may contain `BUILD` files
+5. If there are tracked BUILD files in the integration test folder (`integration/bazel` has these for example) add those folders to the `build --deleted_packages` and `query --deleted_packages` lines in `.bazelrc`
+
 ## Browser tests
 
 For integration tests we use the puppeteer provisioned version of Chrome. For both Karma and Protractor tests we set a number of browser testing flags. To avoid duplication, they will be listed and explained here and the code will reference this file for more information.
