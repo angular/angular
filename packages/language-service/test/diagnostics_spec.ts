@@ -286,6 +286,42 @@ describe('diagnostics', () => {
       expect(start).toBe(span.start);
       expect(length).toBe(span.length);
     });
+
+    it('report an unknown field in $implicit context', () => {
+      mockHost.override(TEST_TEMPLATE, `
+        <div *withContext="let myVar">
+          {{ ~{start-emb}myVar.missingField ~{end-emb}}}
+        </div>
+      `);
+      const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
+      expect(diags.length).toBe(1);
+      const {messageText, start, length, category} = diags[0];
+      expect(category).toBe(ts.DiagnosticCategory.Error);
+      expect(messageText)
+          .toBe(
+              `Identifier 'missingField' is not defined. '{ implicitPerson: Person; }' does not contain such a member`, );
+      const span = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'emb');
+      expect(start).toBe(span.start);
+      expect(length).toBe(span.length);
+    });
+
+    it('report an unknown field in non implicit context', () => {
+      mockHost.override(TEST_TEMPLATE, `
+        <div *withContext="let myVar = nonImplicitPerson">
+          {{ ~{start-emb}myVar.missingField ~{end-emb}}}
+        </div>
+      `);
+      const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
+      expect(diags.length).toBe(1);
+      const {messageText, start, length, category} = diags[0];
+      expect(category).toBe(ts.DiagnosticCategory.Error);
+      expect(messageText)
+          .toBe(
+              `Identifier 'missingField' is not defined. 'Person' does not contain such a member`, );
+      const span = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'emb');
+      expect(start).toBe(span.start);
+      expect(length).toBe(span.length);
+    });
   });
 
   // #17611
