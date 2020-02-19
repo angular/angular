@@ -2502,7 +2502,7 @@ For example, the `crisis-center-routing.module.ts`  helps navigate through the d
 
 
 
-**Avoid** defining long paths in the app module file: `home/crisis-center/crisis-center-list/crisis-list-detail:3`.
+**Avoid** defining long paths in the app module file: `path: home/crisis-center/crisis-center-list/crisis-list-detail:3`.
 
 
 </div>
