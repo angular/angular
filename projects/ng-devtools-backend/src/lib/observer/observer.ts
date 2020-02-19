@@ -209,7 +209,7 @@ export class ComponentTreeObserver {
       if (self._tracker.hasDirective(component)) {
         self._config.onChangeDetection(
           component,
-          this._tracker.getDirectiveID(component),
+          self._tracker.getDirectiveId(component),
           self._tracker.getDirectivePosition(component),
           performance.now() - start
         );

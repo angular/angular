@@ -22,6 +22,22 @@
   font-size: 11px;
 }
 
+@keyframes appear {
+  0% {
+    background-color: #fff;
+  }
+  50% {
+    background-color: #fcd736;
+  }
+  100% {
+    background-color: #fff;
+  }
+}
+
+:host /deep/ .mat-tree-node {
+  animation: appear 0.5s;
+}
+
 :host /deep/ mat-tree-node > button {
   outline: none;
   border: 0;
