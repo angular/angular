@@ -6,18 +6,18 @@ import {
   findNodeInForest,
   getIndexForNativeElementInForest,
 } from '../component-tree';
-import { ElementID } from 'protocol';
-import { indexForest, IndexedNode } from '../recording/observer';
+import { ElementPosition } from 'protocol';
+import { indexForest, IndexedNode } from '../observer/observer';
 
 export interface ComponentInspectorOptions {
-  onComponentEnter: (id: ElementID) => void;
+  onComponentEnter: (position: ElementPosition) => void;
   onComponentLeave: () => void;
 }
 
 export class ComponentInspector {
   private _selectedComponent: { component: Type<unknown>; host: HTMLElement };
-  private _onComponentEnter;
-  private _onComponentLeave;
+  private readonly _onComponentEnter;
+  private readonly _onComponentLeave;
 
   constructor(
     componentOptions: ComponentInspectorOptions = { onComponentEnter: () => {}, onComponentLeave: () => {} }
@@ -62,8 +62,8 @@ export class ComponentInspector {
     if (this._selectedComponent.component) {
       highlight(this._selectedComponent.host);
       const forest: IndexedNode[] = indexForest(getDirectiveForest(document.documentElement, (window as any).ng));
-      const elementId: ElementID = getIndexForNativeElementInForest(this._selectedComponent.host, forest);
-      this._onComponentEnter(elementId);
+      const elementPosition: ElementPosition = getIndexForNativeElementInForest(this._selectedComponent.host, forest);
+      this._onComponentEnter(elementPosition);
     }
   }
 
@@ -80,9 +80,9 @@ export class ComponentInspector {
     this.cancelEvent = this.cancelEvent.bind(this);
   }
 
-  highlightById(id: ElementID): void {
+  highlightByPosition(position: ElementPosition): void {
     const forest: ComponentTreeNode[] = getDirectiveForest(document.documentElement, (window as any).ng);
-    const elementToHighlight: HTMLElement = findNodeInForest(id, forest);
+    const elementToHighlight: HTMLElement = findNodeInForest(position, forest);
     highlight(elementToHighlight);
   }
 }

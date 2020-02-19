@@ -1,10 +1,10 @@
-import { AppRecord, ComponentEventType, ElementID, LifeCycleEventType } from 'protocol';
+import { AppRecord, ComponentEventType, ElementPosition, LifeCycleEventType } from 'protocol';
 import { getComponentName } from '../highlighter';
 import { serializeComponentState } from '../state-serializer/state-serializer';
 
 export interface RecorderComponent {
   component: any;
-  id: ElementID;
+  position: ElementPosition;
 }
 
 export interface RecordFactoryOptions {
@@ -44,7 +44,7 @@ const createComponentEventTypeRecord = (
   const baseComponentEventTypeRecord = {
     recordType: 'component',
     component: getComponentName(recorderComponent.component),
-    id: [...recorderComponent.id],
+    position: [...recorderComponent.position],
     state: { props: serializeComponentState(recorderComponent.component, 1) },
     duration: 0,
   };

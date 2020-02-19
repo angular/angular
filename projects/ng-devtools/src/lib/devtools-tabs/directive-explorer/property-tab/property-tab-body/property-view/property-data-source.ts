@@ -1,11 +1,11 @@
-import { Descriptor, DirectiveID, Events, MessageBus, Properties, PropType } from 'protocol';
+import { Descriptor, DirectivePosition, Events, MessageBus, Properties, PropType } from 'protocol';
 import { CollectionViewer, DataSource, SelectionChange } from '@angular/cdk/collections';
 import { BehaviorSubject, merge, Observable, Subscription } from 'rxjs';
 import { MatTreeFlattener } from '@angular/material/tree';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { map } from 'rxjs/operators';
 import { DefaultIterableDiffer } from '@angular/core';
-import { diff } from '../../diffing';
+import { diff } from '../../../../diffing';
 
 const expandable = (prop: Descriptor, messageBus?: MessageBus<Events>) => {
   if (!prop) {
@@ -65,7 +65,7 @@ export class PropertyDataSource extends DataSource<FlatNode> {
   constructor(
     props: { [prop: string]: Descriptor },
     private _treeControl: FlatTreeControl<FlatNode>,
-    private _entityID: DirectiveID,
+    private _entityPosition: DirectivePosition,
     private _messageBus?: MessageBus<Events>
   ) {
     super();
@@ -135,9 +135,9 @@ export class PropertyDataSource extends DataSource<FlatNode> {
     }
     parentPath = parentPath.reverse();
 
-    this._messageBus.emit('getNestedProperties', [this._entityID, parentPath]);
+    this._messageBus.emit('getNestedProperties', [this._entityPosition, parentPath]);
 
-    this._messageBus.once('nestedProperties', (id: DirectiveID, data: Properties, path: string[]) => {
+    this._messageBus.once('nestedProperties', (position: DirectivePosition, data: Properties, path: string[]) => {
       // if (this._selectedDirectiveID.join(',') !== id.join(',')) {
       //   throw new Error('The directive for which received nested props does not match the selected directive');
       // }

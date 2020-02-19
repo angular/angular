@@ -1,4 +1,4 @@
-import { DirectiveID, DirectivesProperties, ElementID, Events, MessageBus } from 'protocol';
+import { DirectivePosition, DirectivesProperties, ElementPosition, Events, MessageBus } from 'protocol';
 import { onChangeDetection } from './change-detection-tracker';
 import {
   ComponentTreeNode,
@@ -7,7 +7,7 @@ import {
   queryComponentForest,
   prepareForestForSerialization,
 } from './component-tree';
-import { start as startProfiling, stop as stopProfiling } from './recording';
+import { start as startProfiling, stop as stopProfiling } from './observer';
 import { serializeComponentState } from './state-serializer/state-serializer';
 import { ComponentInspector, ComponentInspectorOptions } from './component-inspector/component-inspector';
 import { setConsoleReference } from './selected-component';
@@ -73,8 +73,8 @@ const stopProfilingCallback = (messageBus: MessageBus<Events>) => () => {
   messageBus.emit('profilerResults', [stopProfiling()]);
 };
 
-const getElementDirectivesPropertiesCallback = (messageBus: MessageBus<Events>) => (id: ElementID) => {
-  const node = queryComponentForest(id, getDirectiveForest(document.documentElement, (window as any).ng));
+const getElementDirectivesPropertiesCallback = (messageBus: MessageBus<Events>) => (position: ElementPosition) => {
+  const node = queryComponentForest(position, getDirectiveForest(document.documentElement, (window as any).ng));
   if (node) {
     messageBus.emit('elementDirectivesProperties', [serializeNodeDirectiveProperties(node)]);
   } else {
@@ -82,24 +82,27 @@ const getElementDirectivesPropertiesCallback = (messageBus: MessageBus<Events>) 
   }
 };
 
-const selectedComponentCallback = (id: ElementID) => {
-  const node = queryComponentForest(id, getDirectiveForest(document.documentElement, (window as any).ng));
+const selectedComponentCallback = (position: ElementPosition) => {
+  const node = queryComponentForest(position, getDirectiveForest(document.documentElement, (window as any).ng));
   setConsoleReference(node);
 };
 
-const getNestedPropertiesCallback = (messageBus: MessageBus<Events>) => (id: DirectiveID, propPath: string[]) => {
-  const node = queryComponentForest(id.element, getDirectiveForest(document.documentElement, (window as any).ng));
+const getNestedPropertiesCallback = (messageBus: MessageBus<Events>) => (
+  position: DirectivePosition,
+  propPath: string[]
+) => {
+  const node = queryComponentForest(position.element, getDirectiveForest(document.documentElement, (window as any).ng));
   if (node) {
-    let current = (id.directive === undefined ? node.component : node.directives[id.directive]).instance;
+    let current = (position.directive === undefined ? node.component : node.directives[position.directive]).instance;
     for (const prop of propPath) {
       current = current[prop];
       if (!current) {
         console.error('Cannot access the properties', propPath, 'of', node);
       }
     }
-    messageBus.emit('nestedProperties', [id, { props: serializeComponentState(current) }, propPath]);
+    messageBus.emit('nestedProperties', [position, { props: serializeComponentState(current) }, propPath]);
   } else {
-    messageBus.emit('nestedProperties', [id, { props: {} }, propPath]);
+    messageBus.emit('nestedProperties', [position, { props: {} }, propPath]);
   }
 };
 
@@ -139,8 +142,8 @@ const serializeNodeDirectiveProperties = (node: ComponentTreeNode): DirectivesPr
 };
 
 const setupInspector = (messageBus: MessageBus<Events>) => {
-  const onComponentEnter = (id: ElementID) => {
-    messageBus.emit('highlightComponentInTreeFromElement', [id]);
+  const onComponentEnter = (position: ElementPosition) => {
+    messageBus.emit('highlightComponentInTreeFromElement', [position]);
   };
   const onComponentLeave = () => {
     messageBus.emit('removeHighlightFromComponentTree');
@@ -152,8 +155,8 @@ const setupInspector = (messageBus: MessageBus<Events>) => {
   messageBus.on('inspectorStart', inspector.startInspecting);
   messageBus.on('inspectorEnd', inspector.stopInspecting);
 
-  messageBus.on('highlightElementFromComponentTree', (id: ElementID) => {
-    inspector.highlightById(id);
+  messageBus.on('highlightElementFromComponentTree', (position: ElementPosition) => {
+    inspector.highlightByPosition(position);
   });
   messageBus.on('removeHighlightFromElement', unHighlight);
 };

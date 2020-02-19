@@ -1,4 +1,4 @@
-import { findNodeFromSerializedPathId } from 'ng-devtools-backend';
+import { findNodeFromSerializedPosition } from 'ng-devtools-backend';
 
 declare const ng: any;
 
@@ -17,8 +17,8 @@ const extendWindowOperations = <T>(target, classImpl: T) => {
 };
 
 const chromeWindowExtensions = {
-  findConstructorByPathId: (serializedId: string): Element => {
-    const node = findNodeFromSerializedPathId(serializedId);
+  findConstructorByPosition: (serializedId: string): Element => {
+    const node = findNodeFromSerializedPosition(serializedId);
     if (node === null) {
       console.error(`Cannot find element associated with node ${serializedId}`);
       return null;
@@ -30,8 +30,8 @@ const chromeWindowExtensions = {
       console.error('This component has no instance and therefore no constructor');
     }
   },
-  findDomElementByPathId: (serializedId: string): Element => {
-    const node = findNodeFromSerializedPathId(serializedId);
+  findDomElementByPosition: (serializedId: string): Element => {
+    const node = findNodeFromSerializedPosition(serializedId);
     if (node === null) {
       console.error(`Cannot find element associated with node ${serializedId}`);
       return null;

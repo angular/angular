@@ -1,17 +1,21 @@
-<ng-filter [hasMatched]="hasMatched()" (filter)="handleFilter($event)" (nextMatched)="nextMatched()"
-  (prevMatched)="prevMatched()">
+<ng-filter
+  [hasMatched]="hasMatched()"
+  (filter)="handleFilter($event)"
+  (nextMatched)="nextMatched()"
+  (prevMatched)="prevMatched()"
+>
 </ng-filter>
 <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
   <mat-tree-node
     [ngClass]="{ matched: isMatched(node), selected: isSelected(node), highlighted: isHighlighted(node) }"
     (click)="handleSelect(node)"
     (dblclick)="handleSelectDomElement(node)"
-    (mouseenter)="highlightNode(node.id)"
+    (mouseenter)="highlightNode(node.position)"
     (mouseleave)="removeHighlight()"
     *matTreeNodeDef="let node"
     matTreeNodePaddingIndent="20"
     matTreeNodePadding
-    [@simpleFade]="node.level?1:0"
+    [@simpleFade]="node.level ? 1 : 0"
   >
     <button disabled></button>
     <span class="element-name">{{ node.name }}</span>
@@ -21,12 +25,12 @@
     [ngClass]="{ matched: isMatched(node), selected: isSelected(node), highlighted: isHighlighted(node) }"
     (click)="handleSelect(node)"
     (dblclick)="handleSelectDomElement(node)"
-    (mouseenter)="highlightNode(node.id)"
+    (mouseenter)="highlightNode(node.position)"
     (mouseleave)="removeHighlight()"
     *matTreeNodeDef="let node; when: hasChild"
     matTreeNodePaddingIndent="20"
     matTreeNodePadding
-    [@simpleFade]="node.level?1:0"
+    [@simpleFade]="node.level ? 1 : 0"
   >
     <button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.name">
       <mat-icon class="mat-icon-rtl-mirror">
@@ -39,6 +43,6 @@
 </mat-tree>
 <div class="parent-nodes" *ngIf="parents">
   <button mat-button class="btn-node" *ngFor="let node of parents" (click)="handleSelect(node)">
-    {{node.original.component?.name || node.original.element}}
+    {{ node.original.component?.name || node.original.element }}
   </button>
 </div>

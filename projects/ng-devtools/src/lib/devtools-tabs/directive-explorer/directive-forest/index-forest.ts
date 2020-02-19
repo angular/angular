@@ -1,18 +1,18 @@
-import { Node, ElementID } from 'protocol';
+import { Node, ElementPosition } from 'protocol';
 
 export interface IndexedNode extends Node {
-  id: ElementID;
+  position: ElementPosition;
   children: IndexedNode[];
 }
 
-const indexTree = (node: Node, idx: number, parentId = []): IndexedNode => {
-  const id = parentId.concat([idx]);
+const indexTree = (node: Node, idx: number, parentPosition = []): IndexedNode => {
+  const position = parentPosition.concat([idx]);
   return {
-    id,
+    position,
     element: node.element,
     component: node.component,
     directives: node.directives.map((d, i) => ({ name: d.name })),
-    children: node.children.map((n, i) => indexTree(n, i, id)),
+    children: node.children.map((n, i) => indexTree(n, i, position)),
   } as IndexedNode;
 };
 

@@ -3,4 +3,4 @@
  */
 
 export * from './lib';
-export { findNodeFromSerializedPathId } from './lib/component-tree';
+export { findNodeFromSerializedPosition } from './lib/component-tree';

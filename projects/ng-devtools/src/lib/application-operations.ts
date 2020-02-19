@@ -1,6 +1,6 @@
-import { ElementID } from 'protocol';
+import { ElementPosition } from 'protocol';
 
 export abstract class ApplicationOperations {
-  abstract viewSource(id: ElementID): void;
-  abstract selectDomElement(id: ElementID): void;
+  abstract viewSource(position: ElementPosition): void;
+  abstract selectDomElement(position: ElementPosition): void;
 }
