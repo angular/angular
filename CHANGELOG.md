@@ -1,3 +1,16 @@
+## 9.0.1 "copper-canoe" (2020-02-19)
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **drag-drop:** error when dragging items inside transplanted views with OnPush change detection ([#18356](https://github.com/angular/components/issues/18356)) ([bd68a4f](https://github.com/angular/components/commit/bd68a4f)), closes [#18341](https://github.com/angular/components/issues/18341) |
+| bug fix |  **list:** selection list element should not be focusable ([#18445](https://github.com/angular/components/issues/18445)) ([b61582c](https://github.com/angular/components/commit/b61582c)) |
+| bug fix |  **ng-update:** avoid error if project has folder ending with style extension ([#18454](https://github.com/angular/components/issues/18454)) ([1cb7099](https://github.com/angular/components/commit/1cb7099)), closes [#18434](https://github.com/angular/components/issues/18434) |
+| bug fix |  **ng-update:** better detection for workspace project in v9 hammer migration ([#18525](https://github.com/angular/components/issues/18525)) ([7a2d372](https://github.com/angular/components/commit/7a2d372)), closes [#18504](https://github.com/angular/components/issues/18504) |
+| bug fix |  **slider:** inject document token in constructor ([#18275](https://github.com/angular/components/issues/18275)) ([d8b726d](https://github.com/angular/components/commit/d8b726d)) |
+
+
 # 9.0.0 "tungsten-hombre" (2020-02-06)
 
 # Highlights
