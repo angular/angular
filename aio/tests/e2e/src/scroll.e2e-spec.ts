@@ -40,7 +40,8 @@ describe('site auto-scrolling', () => {
     expect(await page.getScrollTop()).not.toBe(0);
 
     await page.docsMenuLink.click();
-    expect(await page.getScrollTop()).toBe(0);
+    // On some environments (e.g. CI) it takes some time for the page to load (and scroll to top).
+    await browser.wait(async () => await page.getScrollTop() === 0, 1000);
   });
 
   it('should scroll to top when navigating to the same page via a link', async () => {
