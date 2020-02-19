@@ -8,7 +8,7 @@
 import {bindingUpdated} from '../bindings';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {RENDERER} from '../interfaces/view';
-import {getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
+import {getCurrentDirectiveDef, getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 
 import {elementPropertyInternal, loadComponentRenderer, storePropertyBindingMetadata} from './shared';
@@ -42,7 +42,7 @@ export function ɵɵhostProperty<T>(
 
 
 /**
- * Updates a synthetic host binding (e.g. `[@foo]`) on a component.
+ * Updates a synthetic host binding (e.g. `[@foo]`) on a component or directive.
  *
  * This instruction is for compatibility purposes and is designed to ensure that a
  * synthetic host binding (e.g. `@HostBinding('@foo')`) properly gets rendered in
@@ -70,7 +70,8 @@ export function ɵɵupdateSyntheticHostBinding<T>(
   if (bindingUpdated(lView, bindingIndex, value)) {
     const tView = getTView();
     const tNode = getSelectedTNode();
-    const renderer = loadComponentRenderer(tNode, lView);
+    const currentDef = getCurrentDirectiveDef(tView.data);
+    const renderer = loadComponentRenderer(currentDef, tNode, lView);
     elementPropertyInternal(tView, tNode, lView, propName, value, renderer, sanitizer, true);
     ngDevMode && storePropertyBindingMetadata(tView.data, tNode, propName, bindingIndex);
   }

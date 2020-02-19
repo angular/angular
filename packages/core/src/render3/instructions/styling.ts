@@ -22,7 +22,7 @@ import {SanitizerFn} from '../interfaces/sanitization';
 import {getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate, TStylingKey, TStylingRange} from '../interfaces/styling';
 import {HEADER_OFFSET, LView, RENDERER, TData, TView} from '../interfaces/view';
 import {applyStyling} from '../node_manipulation';
-import {getCurrentDirectiveIndex, getCurrentStyleSanitizer, getLView, getSelectedIndex, getTView, incrementBindingIndex, setCurrentStyleSanitizer} from '../state';
+import {getCurrentDirectiveDef, getCurrentStyleSanitizer, getLView, getSelectedIndex, getTView, incrementBindingIndex, setCurrentStyleSanitizer} from '../state';
 import {insertTStylingBinding} from '../styling/style_binding_list';
 import {getLastParsedKey, getLastParsedValue, parseClassName, parseClassNameNext, parseStyle, parseStyleNext} from '../styling/styling_parser';
 import {NO_CHANGE} from '../tokens';
@@ -337,7 +337,7 @@ function stylingFirstUpdatePass(
  */
 export function wrapInStaticStylingKey(
     tData: TData, tNode: TNode, stylingKey: TStylingKey, isClassBased: boolean): TStylingKey {
-  const hostDirectiveDef = getHostDirectiveDef(tData);
+  const hostDirectiveDef = getCurrentDirectiveDef(tData);
   let residual = isClassBased ? tNode.residualClasses : tNode.residualStyles;
   if (hostDirectiveDef === null) {
     // We are in template node.
@@ -581,17 +581,6 @@ function collectStylingFromTAttrs(
     }
   }
   return stylingKey === undefined ? null : stylingKey;
-}
-
-/**
- * Retrieve the current `DirectiveDef` which is active when `hostBindings` style instruction is
- * being executed (or `null` if we are in `template`.)
- *
- * @param tData Current `TData` where the `DirectiveDef` will be looked up at.
- */
-export function getHostDirectiveDef(tData: TData): DirectiveDef<any>|null {
-  const currentDirectiveIndex = getCurrentDirectiveIndex();
-  return currentDirectiveIndex === -1 ? null : tData[currentDirectiveIndex] as DirectiveDef<any>;
 }
 
 /**

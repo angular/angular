@@ -588,6 +588,9 @@
     "name": "getContextLView"
   },
   {
+    "name": "getCurrentDirectiveDef"
+  },
+  {
     "name": "getCurrentDirectiveIndex"
   },
   {
@@ -613,9 +616,6 @@
   },
   {
     "name": "getFirstNativeNode"
-  },
-  {
-    "name": "getHostDirectiveDef"
   },
   {
     "name": "getInjectableDef"
@@ -1099,6 +1099,9 @@
   },
   {
     "name": "setCheckNoChangesMode"
+  },
+  {
+    "name": "setCurrentDirectiveIndex"
   },
   {
     "name": "setCurrentQueryIndex"
