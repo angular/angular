@@ -1,7 +1,11 @@
-import { RecorderComponent } from './observer';
-import { AppRecord, ComponentEventType, LifeCycleEventType } from 'protocol';
+import { AppRecord, ComponentEventType, ElementID, LifeCycleEventType } from 'protocol';
 import { getComponentName } from '../highlighter';
 import { serializeComponentState } from '../state-serializer/state-serializer';
+
+export interface RecorderComponent {
+  component: any;
+  id: ElementID;
+}
 
 export interface RecordFactoryOptions {
   eventType: ComponentEventType | LifeCycleEventType;

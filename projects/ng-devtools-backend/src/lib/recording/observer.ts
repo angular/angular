@@ -2,14 +2,9 @@ import { ElementID, Node as ComponentNode } from 'protocol';
 import { ComponentInstanceType, ComponentTreeNode, DirectiveInstanceType, getComponentForest } from '../component-tree';
 import { componentMetadata } from '../utils';
 
-export type CreationCallback = (component: RecorderComponent) => void;
-export type ChangeDetectionCallback = (component: RecorderComponent, duration: number) => void;
-export type DestroyCallback = (component: RecorderComponent) => void;
-
-export interface RecorderComponent {
-  id: ElementID;
-  component: any;
-}
+export type CreationCallback = (component: any, id: ElementID) => void;
+export type ChangeDetectionCallback = (component: any, id: ElementID, duration: number) => void;
+export type DestroyCallback = (component: any, id: ElementID) => void;
 
 interface TreeNode {
   parent: TreeNode;
@@ -108,15 +103,13 @@ export class ComponentTreeObserver {
 
   private _fireCreationCallback(component): void {
     const id = this._currentComponentID.get(component);
-    this._config.onCreate({ component, id });
+    this._config.onCreate(component, id);
   }
 
   private _fireChangeDetectionCallback(component): void {
     this._config.onChangeDetection(
-      {
-        component,
-        id: this._currentComponentID.get(component),
-      },
+      component,
+      this._currentComponentID.get(component),
       this._lastChangeDetection.get(component)
     );
   }
@@ -132,7 +125,7 @@ export class ComponentTreeObserver {
 
   private _fireDestroyCallback(component): void {
     const id = this._currentComponentID.get(component);
-    this._config.onDestroy({ component, id });
+    this._config.onDestroy(component, id);
   }
 
   private _updateInsertionID(cmp: any, parent: any): void {
@@ -229,13 +222,7 @@ export class ComponentTreeObserver {
       const start = performance.now();
       original.apply(this, arguments);
       if (self._createdComponents.has(component)) {
-        self._config.onChangeDetection(
-          {
-            component,
-            id: self._currentComponentID.get(component),
-          },
-          performance.now() - start
-        );
+        self._config.onChangeDetection(component, self._currentComponentID.get(component), performance.now() - start);
       } else {
         self._lastChangeDetection.set(component, performance.now() - start);
       }
