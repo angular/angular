@@ -1,44 +1,23 @@
-<ng-directive-forest
-  (selectNode)="handleNodeSelection($event)"
-  (selectDomElement)="handleSelectDomElement($event)"
-  (highlightFromComponent)="handleHighlightFromComponent($event)"
-  (unhighlightFromComponent)="handleUnhighlightFromComponent($event)"
-  [forest]="forest"
-  [highlightIDinTreeFromElement]="highlightIDinTreeFromElement"
-></ng-directive-forest>
-<div *ngIf="currentSelectedElement" class="property-wrapper">
-  <div class="element-header">
-    <ng-container *ngIf="currentSelectedElement.component; else currentElementIsDOMElement">
-      <div class="component-name"> {{ currentSelectedElement.component.name }} </div>
-      <button mat-icon-button (click)="viewSource()">
-        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24">
-          <path d="M7.375 16.781l1.25-1.562L4.601 12l4.024-3.219l-1.25-1.562l-5 4a1 1 0 0 0 0 1.562l5 4zm9.25-9.562l-1.25 1.562L19.399 12l-4.024 3.219l1.25 1.562l5-4a1 1 0 0 0 0-1.562l-5-4z" fill="#626262"/>
-          <path d="M14.976 3.216l-4 18l-1.953-.434l4-18z" fill="#626262"/>
-        </svg>
-      </button>
-    </ng-container>
-    <ng-template #currentElementIsDOMElement>
-      <div class="element-name"> {{ currentSelectedElement.element }} </div>
-    </ng-template>
-  </div>
-  <div *ngFor="let data of directivesData | keyvalue; trackBy: nameTracking" class="explorer-panel">
-    <header>
-      Properties of {{ data.key }}
-      <button mat-icon-button (click)="copyPropData(data.value.props)">
-        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true"
-             focusable="false" width="1em" height="1em"
-             preserveAspectRatio="xMidYMid meet" viewBox="0 0 8 8">
-          <path
-            d="M3.5 0c-.28 0-.5.22-.5.5V1h-.75c-.14 0-.25.11-.25.25V2h3v-.75C5 1.11 4.89 1 4.75 1H4V.5c0-.28-.22-.5-.5-.5zM.25 1C.11 1 0 1.11 0 1.25v6.5c0 .14.11.25.25.25h6.5c.14 0 .25-.11.25-.25v-6.5C7 1.11 6.89 1 6.75 1H6v2H1V1H.25z"
-            fill="#626262"/>
-        </svg>
-      </button>
-    </header>
-    <ng-property-view
-      [entityID]="getEntityID(data.key)"
-      [messageBus]="messageBus"
-      [name]="data.key"
-      [data]="data.value.props"
-    ></ng-property-view>
-  </div>
-</div>
+<as-split unit="percent" [direction]="'horizontal'">
+  <as-split-area size="60">
+    <ng-directive-forest
+      (selectNode)="handleNodeSelection($event)"
+      (selectDomElement)="handleSelectDomElement($event)"
+      (highlightFromComponent)="handleHighlightFromComponent($event)"
+      (unhighlightFromComponent)="handleUnhighlightFromComponent($event)"
+      [forest]="forest"
+      [highlightIDinTreeFromElement]="highlightIDinTreeFromElement"
+    ></ng-directive-forest>
+  </as-split-area>
+  <as-split-area size="40">
+    <div class="property-tab-wrapper">
+      <ng-property-tab
+        [messageBus]="messageBus"
+        [currentSelectedElement]="currentSelectedElement"
+        [directivesData]="directivesData"
+        (viewSource)="viewSource()"
+        (copyPropData)="copyPropData($event)"
+      ></ng-property-tab>
+    </div>
+  </as-split-area>
+</as-split>

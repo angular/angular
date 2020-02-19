@@ -1,0 +1,33 @@
+<ng-container *ngIf="currentSelectedElement; else emptyState">
+  <div class="element-header">
+    <ng-container *ngIf="currentSelectedElement.component; else currentElementIsDOMElement">
+      <div class="component-name">{{ currentSelectedElement.component.name }}</div>
+      <button mat-icon-button (click)="viewSource.emit()">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+          aria-hidden="true"
+          focusable="false"
+          width="1em"
+          height="1em"
+          preserveAspectRatio="xMidYMid meet"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M7.375 16.781l1.25-1.562L4.601 12l4.024-3.219l-1.25-1.562l-5 4a1 1 0 0 0 0 1.562l5 4zm9.25-9.562l-1.25 1.562L19.399 12l-4.024 3.219l1.25 1.562l5-4a1 1 0 0 0 0-1.562l-5-4z"
+            fill="#626262"
+          />
+          <path d="M14.976 3.216l-4 18l-1.953-.434l4-18z" fill="#626262" />
+        </svg>
+      </button>
+    </ng-container>
+    <ng-template #currentElementIsDOMElement>
+      <div class="element-name">{{ currentSelectedElement.element }}</div>
+    </ng-template>
+  </div>
+</ng-container>
+<ng-template #emptyState>
+  <div class="element-header">
+    <div class="element-name">No selected Element</div>
+  </div>
+</ng-template>

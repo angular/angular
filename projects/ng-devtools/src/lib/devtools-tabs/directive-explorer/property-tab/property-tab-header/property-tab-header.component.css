@@ -1,0 +1,16 @@
+.element-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 40px;
+}
+
+.element-header .component-name {
+  margin-left: 8px;
+  font-weight: 400;
+}
+
+.element-header .element-name {
+  margin-left: 8px;
+  font-weight: 300;
+}

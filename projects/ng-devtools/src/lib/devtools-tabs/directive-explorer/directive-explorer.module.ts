@@ -5,14 +5,23 @@ import { MatIconModule } from '@angular/material/icon';
 import { DirectiveExplorerComponent } from './directive-explorer.component';
 import { DirectiveForestComponent } from './directive-forest/directive-forest.component';
 import { FilterComponent } from './directive-forest/filter/filter.component';
-import { PropertyViewModule } from './property-view/property-view.module';
 import { MatTreeModule } from '@angular/material/tree';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { PropertyTabModule } from './property-tab/property-tab.module';
+import { AngularSplitModule } from 'angular-split';
 
 @NgModule({
   declarations: [DirectiveExplorerComponent, DirectiveForestComponent, FilterComponent],
   exports: [DirectiveExplorerComponent],
-  imports: [MatTreeModule, MatIconModule, CommonModule, PropertyViewModule, MatButtonModule, MatSnackBarModule],
+  imports: [
+    MatTreeModule,
+    MatIconModule,
+    CommonModule,
+    PropertyTabModule,
+    MatButtonModule,
+    MatSnackBarModule,
+    AngularSplitModule,
+  ],
 })
 export class DirectiveExplorerModule {}

@@ -22,12 +22,6 @@ describe('DirectiveExplorerComponent', () => {
     expect(comp).toBeTruthy();
   });
 
-  it('return value in item for name tracking', () => {
-    const item = { key: 'value' };
-    const value = comp.nameTracking(0, item);
-    expect(value).toBe(item.key);
-  });
-
   it('subscribe to backend events', () => {
     comp.subscribeToBackendEvents();
     expect(comp.messageBus.on).toHaveBeenCalledTimes(4);

@@ -35,6 +35,7 @@
     "@angular/platform-browser-dynamic": "~9.0.0",
     "@angular/router": "~9.0.0",
     "@bahmutov/add-typescript-to-cypress": "^2.1.2",
+    "angular-split": "^3.0.3",
     "clone-deep": "^4.0.1",
     "ngx-vis": "^3.0.3",
     "ngx-flamegraph": "0.0.3",
