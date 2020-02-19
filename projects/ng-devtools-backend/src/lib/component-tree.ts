@@ -9,8 +9,9 @@ import {
   DirectivesProperties,
 } from 'protocol';
 import { getComponentName } from './highlighter';
-import { IndexedNode } from './observer/observer';
 import { DebuggingAPI } from './interfaces';
+import { getDirectiveId } from './dom-observer';
+import { IndexedNode } from './observer/identity-tracker';
 
 export interface DirectiveInstanceType extends DirectiveType {
   instance: any;
@@ -22,10 +23,6 @@ export interface ComponentInstanceType extends ComponentType {
 
 export interface ComponentTreeNode extends Node<DirectiveInstanceType, ComponentInstanceType> {
   children: ComponentTreeNode[];
-}
-
-export interface DirectiveForestBuilderOptions {
-  getDirectives?: boolean;
 }
 
 export const getLatestComponentState = (query: ComponentExplorerViewQuery): DirectivesProperties | undefined => {
@@ -74,36 +71,28 @@ export const prepareForestForSerialization = (roots: ComponentTreeNode[]): Compo
       component: node.component
         ? {
             name: node.component.name,
+            id: node.component.id,
           }
         : null,
-      directives: node.directives.map(d => ({ name: d.name })),
+      directives: node.directives.map(d => ({ name: d.name, id: d.id })),
       children: prepareForestForSerialization(node.children),
     } as ComponentTreeNode;
   });
 };
 
 export const getDirectiveForest = (root: HTMLElement, ngd: DebuggingAPI): ComponentTreeNode[] =>
-  buildDirectiveForest(
-    root,
-    { element: '__ROOT__', component: null, directives: [], children: [] },
-    { getDirectives: true },
-    ngd
-  );
-
-export const getComponentForest = (root: HTMLElement, ngd: DebuggingAPI): ComponentTreeNode[] =>
-  buildDirectiveForest(root, { element: '__ROOT__', component: null, directives: [], children: [] }, {}, ngd);
+  buildDirectiveForest(root, { element: '__ROOT__', component: null, directives: [], children: [] }, ngd);
 
 const buildDirectiveForest = (
   node: Element,
   tree: ComponentTreeNode | undefined,
-  options: DirectiveForestBuilderOptions = {},
   ngd: DebuggingAPI
 ): ComponentTreeNode[] => {
   if (!node) {
     return [tree];
   }
   let dirs = [];
-  if (tree.element !== '__ROOT__' && options.getDirectives) {
+  if (tree.element !== '__ROOT__') {
     // Need to make sure we're in a component tree
     // otherwise, ngd.getDirectives will throw without
     // a root node.
@@ -115,7 +104,7 @@ const buildDirectiveForest = (
   }
   const cmp = ngd.getComponent(node);
   if (!cmp && !dirs.length) {
-    Array.from(node.children).forEach(c => buildDirectiveForest(c, tree, options, ngd));
+    Array.from(node.children).forEach(c => buildDirectiveForest(c, tree, ngd));
     return tree.children;
   }
   const current: ComponentTreeNode = {
@@ -124,6 +113,7 @@ const buildDirectiveForest = (
       return {
         instance: dir,
         name: getComponentName(dir),
+        id: getDirectiveId(dir),
       } as DirectiveInstanceType;
     }),
     component: null,
@@ -134,14 +124,14 @@ const buildDirectiveForest = (
   if (cmp) {
     current.component = {
       instance: cmp,
-      // name: getComponentName(cmp),
       name: node.tagName.toLowerCase(),
+      id: getDirectiveId(cmp),
     };
   } else {
     current.element = node.tagName.toLowerCase();
   }
   tree.children.push(current);
-  Array.from(node.children).forEach(c => buildDirectiveForest(c, current, options, ngd));
+  Array.from(node.children).forEach(c => buildDirectiveForest(c, current, ngd));
   return tree.children;
 };
 

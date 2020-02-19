@@ -7,7 +7,7 @@ import {
   getIndexForNativeElementInForest,
 } from '../component-tree';
 import { ElementPosition } from 'protocol';
-import { indexForest, IndexedNode } from '../observer/observer';
+import { IndexedNode, indexForest } from '../observer/identity-tracker';
 
 export interface ComponentInspectorOptions {
   onComponentEnter: (position: ElementPosition) => void;

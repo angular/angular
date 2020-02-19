@@ -14,10 +14,10 @@ export const start = (messageBus: MessageBus<Events>): void => {
   }
   inProgress = true;
   observer = new ComponentTreeObserver({
-    onCreate(component: any, position: ElementPosition) {
+    onCreate(component: any, id: number, isComponent: boolean, position: ElementPosition) {
       records.push(createRecord({ recorderComponent: { component, position }, eventType: ComponentEventType.Create }));
     },
-    onChangeDetection(component: any, position: ElementPosition, duration: number) {
+    onChangeDetection(component: any, id: number, position: ElementPosition, duration: number) {
       if (!inChangeDetection) {
         inChangeDetection = true;
         records.push(createRecord({ eventType: LifeCycleEventType.ChangeDetectionStart }));
@@ -36,7 +36,7 @@ export const start = (messageBus: MessageBus<Events>): void => {
         })
       );
     },
-    onDestroy(component: any, position: ElementPosition) {
+    onDestroy(component: any, id: number, isComponent: boolean, position: ElementPosition) {
       records.push(createRecord({ recorderComponent: { component, position }, eventType: ComponentEventType.Destroy }));
     },
   });

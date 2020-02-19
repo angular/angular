@@ -20,8 +20,12 @@ export interface FlatNode {
 
 const expandable = (node: IndexedNode) => !!node.children && node.children.length > 0;
 
-const trackBy = (idx: number, item: FlatNode) =>
-  `#${idx}#${item.name}#${item.directives}#${item.position.join(',')}#${(item.original.children || []).length === 0}`;
+const trackBy = (_: number, item: FlatNode) => {
+  if (item.original.component) {
+    return item.original.component.id + '-' + item.original.directives.map(d => d.id).join('-');
+  }
+  return '-' + item.original.directives.map(d => d.id).join('-');
+};
 
 export class ComponentDataSource extends DataSource<FlatNode> {
   private _differ = new DefaultIterableDiffer(trackBy);

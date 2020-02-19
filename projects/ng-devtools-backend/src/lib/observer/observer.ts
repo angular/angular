@@ -1,5 +1,5 @@
-import { ElementPosition, Node as ComponentNode } from 'protocol';
-import { ComponentInstanceType, ComponentTreeNode, DirectiveInstanceType, getComponentForest } from '../component-tree';
+import { ElementPosition } from 'protocol';
+import { ComponentTreeNode, getDirectiveForest } from '../component-tree';
 import { componentMetadata } from '../utils';
 import { IdentityTracker } from './identity-tracker';
 
@@ -13,10 +13,26 @@ export type LifecyleHook =
   | 'ngAfterViewInit'
   | 'ngAfterViewChecked';
 
-export type CreationCallback = (component: any, position: ElementPosition) => void;
-export type LifecycleCallback = (component: any, hook: LifecyleHook, duration: any) => void;
-export type ChangeDetectionCallback = (component: any, position: ElementPosition, duration: number) => void;
-export type DestroyCallback = (component: any, position: ElementPosition) => void;
+export type CreationCallback = (
+  componentOrDirective: any,
+  id: number,
+  isComponent: boolean,
+  position: ElementPosition
+) => void;
+export type LifecycleCallback = (
+  componentOrDirective: any,
+  id: number,
+  isComponent: boolean,
+  hook: LifecyleHook,
+  duration: any
+) => void;
+export type ChangeDetectionCallback = (component: any, id: number, position: ElementPosition, duration: number) => void;
+export type DestroyCallback = (
+  componentOrDirective: any,
+  id: number,
+  isComponent: boolean,
+  position: ElementPosition
+) => void;
 
 declare const ng: any;
 
@@ -43,6 +59,14 @@ export class ComponentTreeObserver {
 
   constructor(private _config: Partial<Config>) {}
 
+  getDirectivePosition(dir: any) {
+    return this._tracker.getDirectivePosition(dir);
+  }
+
+  getDirectiveId(dir: any) {
+    return this._tracker.getDirectiveId(dir);
+  }
+
   initialize(): void {
     this._mutationObserver.observe(document, {
       subtree: true,
@@ -51,7 +75,7 @@ export class ComponentTreeObserver {
     if (this._config.onChangeDetection) {
       this._initializeChangeDetectionObserver();
     }
-    this._indexTree();
+    this._tracker.index();
     this._createOriginalTree();
   }
 
@@ -86,7 +110,7 @@ export class ComponentTreeObserver {
 
       this._tracker.insert(node, component);
 
-      this._fireCreationCallback(component);
+      this._fireCreationCallback(component, true);
 
       if (this._lastChangeDetection.has(component)) {
         this._fireChangeDetectionCallback(component);
@@ -101,19 +125,26 @@ export class ComponentTreeObserver {
     if (directives.length) {
       this._tracker.insert(node, directives);
       directives.forEach(dir => {
-        this._fireCreationCallback(dir);
+        this._fireCreationCallback(dir, false);
       });
     }
   }
 
-  private _fireCreationCallback(component: any): void {
+  private _fireCreationCallback(component: any, isComponent: boolean): void {
+    if (!this._config.onCreate) {
+      return;
+    }
     const position = this._tracker.getDirectivePosition(component);
-    this._config.onCreate(component, position);
+    this._config.onCreate(component, this._tracker.getDirectiveId(component), isComponent, position);
   }
 
-  private _fireChangeDetectionCallback(component): void {
+  private _fireChangeDetectionCallback(component: any): void {
+    if (!this._config.onChangeDetection) {
+      return;
+    }
     this._config.onChangeDetection(
       component,
+      this._tracker.getDirectiveId(component),
       this._tracker.getDirectivePosition(component),
       this._lastChangeDetection.get(component)
     );
@@ -127,7 +158,7 @@ export class ComponentTreeObserver {
     const component = ng.getComponent(node);
     if (component) {
       this._tracker.delete(component);
-      this._fireDestroyCallback(component);
+      this._fireDestroyCallback(component, true);
     }
 
     let directives = [];
@@ -138,14 +169,17 @@ export class ComponentTreeObserver {
     if (directives && directives.length) {
       this._tracker.delete(directives[0]);
       directives.forEach(dir => {
-        this._fireDestroyCallback(dir);
+        this._fireDestroyCallback(dir, false);
       });
     }
   }
 
-  private _fireDestroyCallback(component: any): void {
+  private _fireDestroyCallback(component: any, isComponent: boolean): void {
+    if (!this._config.onDestroy) {
+      return;
+    }
     const position = this._tracker.getDirectivePosition(component);
-    this._config.onDestroy(component, position);
+    this._config.onDestroy(component, this._tracker.getDirectiveId(component), isComponent, position);
   }
 
   private _initializeChangeDetectionObserver(root: Element = document.documentElement): void {
@@ -175,6 +209,7 @@ export class ComponentTreeObserver {
       if (self._tracker.hasDirective(component)) {
         self._config.onChangeDetection(
           component,
+          this._tracker.getDirectiveID(component),
           self._tracker.getDirectivePosition(component),
           performance.now() - start
         );
@@ -186,43 +221,19 @@ export class ComponentTreeObserver {
     this._patched.set(cmp, original);
   }
 
-  private _indexTree(): void {
-    const componentForest = indexForest(getComponentForest(document.documentElement, (window as any).ng));
-    componentForest.forEach(root => this._tracker.index(root));
-  }
-
   private _createOriginalTree(): void {
-    getComponentForest(document.documentElement, (window as any).ng).forEach(root =>
+    getDirectiveForest(document.documentElement, (window as any).ng).forEach(root =>
       this._fireInitialTreeCallbacks(root)
     );
   }
 
   private _fireInitialTreeCallbacks(root: ComponentTreeNode) {
     if (root.component) {
-      this._fireCreationCallback(root.component.instance);
+      this._fireCreationCallback(root.component.instance, true);
     }
+    (root.directives || []).forEach(dir => {
+      this._fireCreationCallback(dir, false);
+    });
     root.children.forEach(child => this._fireInitialTreeCallbacks(child));
   }
 }
-
-export interface IndexedNode extends ComponentNode<DirectiveInstanceType, ComponentInstanceType> {
-  position: ElementPosition;
-  children: IndexedNode[];
-}
-
-const indexTree = (node: ComponentNode, idx: number, parentPosition = []): IndexedNode => {
-  let position = parentPosition;
-  if (node.component) {
-    position = parentPosition.concat([idx]);
-  }
-  return {
-    position,
-    element: node.element,
-    component: node.component,
-    directives: node.directives.map(d => ({ name: d.name })),
-    children: node.children.map((n, i) => indexTree(n, i, position)),
-    nativeElement: node.nativeElement,
-  } as IndexedNode;
-};
-
-export const indexForest = (forest: ComponentNode[]): IndexedNode[] => forest.map((n, i) => indexTree(n, i));
