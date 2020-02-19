@@ -15,7 +15,7 @@ import {GlobalTargetResolver, isProceduralRenderer, RElement, Renderer3} from '.
 import {isDirectiveHost} from '../interfaces/type_checks';
 import {CLEANUP, FLAGS, LView, LViewFlags, RENDERER, TView} from '../interfaces/view';
 import {assertNodeOfPossibleTypes} from '../node_assert';
-import {getLView, getPreviousOrParentTNode, getTView} from '../state';
+import {getCurrentDirectiveDef, getLView, getPreviousOrParentTNode, getTView} from '../state';
 import {getComponentLViewByIndex, getNativeByTNode, unwrapRNode} from '../util/view_utils';
 
 import {getLCleanup, handleError, loadComponentRenderer, markViewDirty} from './shared';
@@ -48,7 +48,7 @@ export function ɵɵlistener(
 }
 
 /**
- * Registers a synthetic host listener (e.g. `(@foo.start)`) on a component.
+ * Registers a synthetic host listener (e.g. `(@foo.start)`) on a component or directive.
  *
  * This instruction is for compatibility purposes and is designed to ensure that a
  * synthetic host listener (e.g. `@HostListener('@foo.start')`) properly gets rendered
@@ -73,8 +73,9 @@ export function ɵɵcomponentHostSyntheticListener(
     eventTargetResolver?: GlobalTargetResolver): typeof ɵɵcomponentHostSyntheticListener {
   const tNode = getPreviousOrParentTNode();
   const lView = getLView();
-  const renderer = loadComponentRenderer(tNode, lView);
   const tView = getTView();
+  const currentDef = getCurrentDirectiveDef(tView.data);
+  const renderer = loadComponentRenderer(currentDef, tNode, lView);
   listenerInternal(
       tView, lView, renderer, tNode, eventName, listenerFn, useCapture, eventTargetResolver);
   return ɵɵcomponentHostSyntheticListener;

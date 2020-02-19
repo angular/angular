@@ -31,7 +31,7 @@ import {isComponentDef, isComponentHost, isContentQueryHost, isLContainer, isRoo
 import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, InitPhaseState, INJECTOR, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, T_HOST, TData, TVIEW, TView, TViewType} from '../interfaces/view';
 import {assertNodeOfPossibleTypes} from '../node_assert';
 import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
-import {enterView, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getPreviousOrParentTNode, getSelectedIndex, getTView, leaveView, setBindingIndex, setBindingRootForHostBindings, setCheckNoChangesMode, setCurrentQueryIndex, setPreviousOrParentTNode, setSelectedIndex} from '../state';
+import {enterView, getBindingsEnabled, getCheckNoChangesMode, getCurrentDirectiveIndex, getIsParent, getPreviousOrParentTNode, getSelectedIndex, getTView, leaveView, setBindingIndex, setBindingRootForHostBindings, setCheckNoChangesMode, setCurrentDirectiveIndex, setCurrentQueryIndex, setPreviousOrParentTNode, setSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {isAnimationProp, mergeHostAttrs} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER, renderStringify, stringifyForError} from '../util/misc_utils';
@@ -1272,11 +1272,13 @@ function invokeDirectivesHostBindings(tView: TView, lView: LView, tNode: TNode) 
   const expando = tView.expandoInstructions!;
   const firstCreatePass = tView.firstCreatePass;
   const elementIndex = tNode.index - HEADER_OFFSET;
+  const currentDirectiveIndex = getCurrentDirectiveIndex();
   try {
     setSelectedIndex(elementIndex);
-    for (let i = start; i < end; i++) {
-      const def = tView.data[i] as DirectiveDef<any>;
-      const directive = lView[i];
+    for (let dirIndex = start; dirIndex < end; dirIndex++) {
+      const def = tView.data[dirIndex] as DirectiveDef<unknown>;
+      const directive = lView[dirIndex];
+      setCurrentDirectiveIndex(dirIndex);
       if (def.hostBindings !== null || def.hostVars !== 0 || def.hostAttrs !== null) {
         invokeHostBindingsInCreationMode(def, directive);
       } else if (firstCreatePass) {
@@ -1285,6 +1287,7 @@ function invokeDirectivesHostBindings(tView: TView, lView: LView, tNode: TNode) 
     }
   } finally {
     setSelectedIndex(-1);
+    setCurrentDirectiveIndex(currentDirectiveIndex);
   }
 }
 
@@ -1942,9 +1945,18 @@ function getTViewCleanup(tView: TView): any[] {
  * There are cases where the sub component's renderer needs to be included
  * instead of the current renderer (see the componentSyntheticHost* instructions).
  */
-export function loadComponentRenderer(tNode: TNode, lView: LView): Renderer3 {
-  const componentLView = unwrapLView(lView[tNode.index])!;
-  return componentLView[RENDERER];
+export function loadComponentRenderer(
+    currentDef: DirectiveDef<any>|null, tNode: TNode, lView: LView): Renderer3 {
+  // TODO(FW-2043): the `currentDef` is null when host bindings are invoked while creating root
+  // component (see packages/core/src/render3/component.ts). This is not consistent with the process
+  // of creating inner components, when current directive index is available in the state. In order
+  // to avoid relying on current def being `null` (thus special-casing root component creation), the
+  // process of creating root component should be unified with the process of creating inner
+  // components.
+  if (currentDef === null || isComponentDef(currentDef)) {
+    lView = unwrapLView(lView[tNode.index])!;
+  }
+  return lView[RENDERER];
 }
 
 /** Handles an error thrown in an LView. */

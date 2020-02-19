@@ -9,8 +9,9 @@
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 import {assertDefined, assertEqual} from '../util/assert';
 import {assertLViewOrUndefined} from './assert';
+import {DirectiveDef} from './interfaces/definition';
 import {TNode} from './interfaces/node';
-import {CONTEXT, DECLARATION_VIEW, LView, OpaqueViewState, TVIEW, TView} from './interfaces/view';
+import {CONTEXT, DECLARATION_VIEW, LView, OpaqueViewState, TData, TVIEW, TView} from './interfaces/view';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
 import {getTNode} from './util/view_utils';
 
@@ -344,7 +345,7 @@ export function setBindingRootForHostBindings(
     bindingRootIndex: number, currentDirectiveIndex: number) {
   const lFrame = instructionState.lFrame;
   lFrame.bindingIndex = lFrame.bindingRootIndex = bindingRootIndex;
-  lFrame.currentDirectiveIndex = currentDirectiveIndex;
+  setCurrentDirectiveIndex(currentDirectiveIndex);
 }
 
 /**
@@ -354,6 +355,26 @@ export function setBindingRootForHostBindings(
  */
 export function getCurrentDirectiveIndex(): number {
   return instructionState.lFrame.currentDirectiveIndex;
+}
+
+/**
+ * Sets an index of a directive whose `hostBindings` are being processed.
+ *
+ * @param currentDirectiveIndex `TData` index where current directive instance can be found.
+ */
+export function setCurrentDirectiveIndex(currentDirectiveIndex: number): void {
+  instructionState.lFrame.currentDirectiveIndex = currentDirectiveIndex;
+}
+
+/**
+ * Retrieve the current `DirectiveDef` which is active when `hostBindings` instruction is being
+ * executed.
+ *
+ * @param tData Current `TData` where the `DirectiveDef` will be looked up at.
+ */
+export function getCurrentDirectiveDef(tData: TData): DirectiveDef<any>|null {
+  const currentDirectiveIndex = instructionState.lFrame.currentDirectiveIndex;
+  return currentDirectiveIndex === -1 ? null : tData[currentDirectiveIndex] as DirectiveDef<any>;
 }
 
 export function getCurrentQueryIndex(): number {

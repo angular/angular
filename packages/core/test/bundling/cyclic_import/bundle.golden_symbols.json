@@ -312,6 +312,9 @@
     "name": "getContainerRenderParent"
   },
   {
+    "name": "getCurrentDirectiveIndex"
+  },
+  {
     "name": "getDirectiveDef"
   },
   {
@@ -586,6 +589,9 @@
   },
   {
     "name": "setBindingRootForHostBindings"
+  },
+  {
+    "name": "setCurrentDirectiveIndex"
   },
   {
     "name": "setCurrentQueryIndex"
