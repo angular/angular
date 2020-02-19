@@ -76,12 +76,12 @@ describe('nestedSerializer', () => {
         },
         nested: {
           type: 9,
-          editable: true,
+          editable: false,
           expandable: true,
           preview: '{...}',
         },
       },
-      editable: true,
+      editable: false,
       expandable: true,
       preview: '{...}',
     });
@@ -100,25 +100,25 @@ describe('nestedSerializer', () => {
         },
         nested: {
           type: 9,
-          editable: true,
+          editable: false,
           expandable: true,
           preview: '{...}',
           value: {
             arr: {
               type: 11,
-              editable: true,
+              editable: false,
               expandable: true,
               preview: 'Array(3)',
               value: [
                 {
                   type: 11,
-                  editable: true,
+                  editable: false,
                   expandable: true,
                   preview: 'Array(1)',
                   value: [
                     {
                       type: 9,
-                      editable: true,
+                      editable: false,
                       expandable: true,
                       preview: '{...}',
                       value: {},
@@ -130,7 +130,7 @@ describe('nestedSerializer', () => {
           },
         },
       },
-      editable: true,
+      editable: false,
       expandable: true,
       preview: '{...}',
     });
@@ -152,12 +152,12 @@ describe('nestedSerializer', () => {
       value: {
         nested: {
           type: 9,
-          editable: true,
+          editable: false,
           expandable: true,
           preview: '{...}',
         },
       },
-      editable: true,
+      editable: false,
       expandable: true,
       preview: '{...}',
     });

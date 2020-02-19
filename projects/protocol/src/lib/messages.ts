@@ -113,6 +113,14 @@ export interface ProfilerFrame {
   directives: ElementProfile[];
 }
 
+export interface UpdatedStateData {
+  directiveId: DirectiveID;
+  keyPath: string[];
+  newValue: any;
+}
+
+export type AppRecord = ComponentRecord | AppStartChangeDetection | AppEndChangeDetection;
+
 export interface Events {
   handshake: () => void;
   shutdown: () => void;
@@ -132,6 +140,8 @@ export interface Events {
   componentTreeDirty: () => void;
   getLatestComponentExplorerView: (query: ComponentExplorerViewQuery) => void;
   latestComponentExplorerView: (view: ComponentExplorerView) => void;
+
+  updateState: (value: UpdatedStateData) => void;
 
   startProfiling: () => void;
   stopProfiling: () => void;

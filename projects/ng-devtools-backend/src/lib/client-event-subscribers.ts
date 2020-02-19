@@ -42,6 +42,8 @@ export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void =>
 
   messageBus.on('getNestedProperties', getNestedPropertiesCallback(messageBus));
 
+  messageBus.on('updateState', updateStateCallback(messageBus));
+
   setupInspector(messageBus);
 
   initChangeDetection(messageBus);
@@ -114,6 +116,10 @@ const getNestedPropertiesCallback = (messageBus: MessageBus<Events>) => (
   } else {
     messageBus.emit('nestedProperties', [position, { props: {} }, propPath]);
   }
+};
+
+const updateStateCallback = (messageBus: MessageBus<Events>) => (updatedStateData: UpdatedStateData) => {
+  updateState(updatedStateData);
 };
 
 //

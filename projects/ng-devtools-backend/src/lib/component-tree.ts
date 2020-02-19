@@ -162,3 +162,26 @@ export const findNodeFromSerializedPosition = (serializedPosition: string) => {
   const position: number[] = serializedPosition.split(',').map(index => parseInt(index, 10));
   return queryComponentForest(position, getDirectiveForest(document.documentElement, (window as any).ng));
 };
+
+export const updateState = (updatedStateData: UpdatedStateData) => {
+  const node = queryComponentForest(updatedStateData.directiveId.element, getDirectiveForest());
+  if (updatedStateData.directiveId.directive === undefined) {
+    const comp = node.component.instance;
+    mutateComponentOrDirective(updatedStateData, comp);
+    ng.applyChanges(comp);
+  } else {
+    const directive = node.directives[updatedStateData.directiveId.directive].instance;
+    mutateComponentOrDirective(updatedStateData, directive);
+    ng.applyChanges(ng.getOwningComponent(directive));
+  }
+};
+
+const mutateComponentOrDirective = (updatedStateData: UpdatedStateData, compOrDirective) => {
+  const valueKey = updatedStateData.keyPath.pop();
+
+  let parentObjectOfValueToUpdate = compOrDirective;
+  updatedStateData.keyPath.forEach(key => {
+    parentObjectOfValueToUpdate = parentObjectOfValueToUpdate[key];
+  });
+  parentObjectOfValueToUpdate[valueKey] = updatedStateData.newValue;
+};
