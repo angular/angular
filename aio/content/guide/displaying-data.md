@@ -98,7 +98,7 @@ The `@Component` metadata tells Angular where to find the component's template.
 You can store your component's template in one of two places.
 
 * You can define the template *inline* using the `template` property of the `@Component` decorator. An inline template is useful for a small demo or test.
-* Alternatively, you can define the template in a separate HTML file and link to that file in the `templateUrl` property of the `@Component` decorator. This is the typical configuration for anything more complex than a small test or demo, and is the default when you generate a new component.
+* Alternatively, you can define the template in a separate HTML file and link to that file in the `templateUrl` property of the `@Component` decorator. This configuration is typical for anything more complex than a small test or demo, and is the default when you generate a new component.
 
 In either style, the template data bindings have the same access to the component's properties.
 Here the app uses inline HTML because the template is small and the demo is simpler without the additional HTML file.
