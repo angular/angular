@@ -2465,8 +2465,8 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 
 
 
-**Do** create an route for all distinct features in an application;
-for example, the `crisis-center-routing.module.ts`  helps navitagate through the different views in that feature.
+**Do** create a route for all distinct features in an application.
+For example, the `crisis-center-routing.module.ts`  helps navigate through the different views in that feature.
 
 
 </div>
@@ -2475,7 +2475,25 @@ for example, the `crisis-center-routing.module.ts`  helps navitagate through the
 
 
 
-**Consider** The complexity of your application. The routing module should mirror naming conventions and location of feature modules. If you are working on a small application do not worry about this.
+**Consider** the complexity of your application. In a larger application, the routing module should mirror your naming conventions and the locations of feature modules.
+
+</div>
+
+<div class="s-why">
+
+
+
+**Why?** Use of the routing module helps increase modulization, and can simplify the path making process. This helps reduces clutter in the root and feature module files if you choose to use it. 
+
+
+</div>
+
+<div class="s-rule do">
+
+
+
+**Do** Use app routing to define short paths that relate to the components. 
+` path: 'crisis-center' `
 
 
 </div>
@@ -2484,17 +2502,16 @@ for example, the `crisis-center-routing.module.ts`  helps navitagate through the
 
 
 
-**Avoid** defining long paths ie. path: 'home/crisis-center/crisis-center-list/crisis-list-detail:3'.
+**Avoid** defining long paths in the app module file: `home/crisis-center/crisis-center-list/crisis-list-detail:3`.
 
 
 </div>
-
 
 <div class="s-why">
 
 
 
-**Why?** Use of the routing module helps reduce clutter in the root and feature module files. 
+**Why?** Use of the routing module helps increase readability and stabilization of your code. The order in which you define your paths effect how the application runs. When you add many complex paths in one location you may run into bugs.
 
 
 </div>
@@ -2505,17 +2522,7 @@ for example, the `crisis-center-routing.module.ts`  helps navitagate through the
 
 
 **Do** use routerLink with the specified component name to navigate to different components.
-
-
-</div>
-
-
-<div class="s-rule avoid">
-
-
-
-**Avoid** routerLink='..'.
-
+`<a routerLink="/crisis-center" routerLinkActive="active">Crisis Center</a>`
 
 </div>
 
@@ -2528,6 +2535,18 @@ for example, the `crisis-center-routing.module.ts`  helps navitagate through the
 
 
 </div>
+
+
+<div class="s-rule avoid">
+
+
+
+**Avoid** The use of the router links to relative paths. `routerLink='..'` 
+
+
+</div>
+
+
 
 
 
