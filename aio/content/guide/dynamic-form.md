@@ -1,11 +1,7 @@
-<<<<<<< HEAD
 <!--
-# Dynamic Forms
+# Dynamic forms
 -->
 # 동적 폼 (Dynamic Forms)
-=======
-# Dynamic forms
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 {@a top}
 
@@ -215,12 +211,8 @@ The `ngSwitch` determines which type of question to display.
 지금은 질문의 종류가 두 가지 타입 뿐이지만, 필요하다면 얼마든지 확장할 수 있습니다.
 각각의 타입은 템플릿에서 `ngSwitch`로 분기됩니다.
 
-<<<<<<< HEAD
 <!--
-In both components  you're relying on Angular's **formGroup** to connect the template HTML to the
-=======
 In both components you're relying on Angular's **formGroup** to connect the template HTML to the
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 underlying control objects, populated from the question model with display and validation rules.
 -->
 예제에서 사용하는 두 컴포넌트는 모두 Angular **formGroup**을 사용해서 템플릿 HTML과 폼 컨트롤 객체를 연결하고, 이 때 질문 모델에 있는 값을 화면에 표시하고 유효성 검사도 함께 적용합니다.

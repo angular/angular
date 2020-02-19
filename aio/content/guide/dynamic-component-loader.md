@@ -1,11 +1,7 @@
-<<<<<<< HEAD
 <!--
-# Dynamic Component Loader
+# Dynamic component loader
 -->
 # 동적 컴포넌트 로더
-=======
-# Dynamic component loader
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 Component templates are not always fixed. An application may need to load new components at runtime.
@@ -319,15 +315,9 @@ Here are two sample components and the `AdComponent` interface for reference:
 
 <div class="lightbox">
   <img src="generated/images/guide/dynamic-component-loader/ads-example.gif" alt="Ads">
-<<<<<<< HEAD
-</figure>
-
-
-<!--
-=======
 </div>
 
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+<!--
 See the <live-example name="dynamic-component-loader"></live-example>.
 -->
 예제를 직접 실행하거나 다운로드 받으려면 <live-example name="dynamic-component-loader"></live-example>를 확인해 보세요.

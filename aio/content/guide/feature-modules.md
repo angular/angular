@@ -1,27 +1,12 @@
-<<<<<<< HEAD
 <!--
-# Feature Modules
+# Feature modules
 -->
 # 기능 모듈
 
 <!--
-Feature modules are NgModules for the purpose of  organizing code.
+Feature modules are NgModules for the purpose of organizing code.
 -->
 기능 모듈은 애플리케이션의 코드를 용도에 맞게 구분한 NgModule 단위입니다.
-
-<!--
-#### Prerequisites
-A basic understanding of the following:
-* [Bootstrapping](guide/bootstrapping).
-* [JavaScript Modules vs. NgModules](guide/ngmodule-vs-jsmodule).
-* [Frequently Used Modules](guide/frequent-ngmodules).
--->
-#### 사전 지식
-=======
-# Feature modules
-
-Feature modules are NgModules for the purpose of organizing code.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 다음 내용을 먼저 이해하고 이 문서를 보는 것이 좋습니다:
 * [부트스트랩](guide/bootstrapping)
@@ -181,19 +166,17 @@ Next, in the `AppComponent`, `app.component.html`, add the tag `<app-customer-da
 
 <!--
 Now, in addition to the title that renders by default, the `CustomerDashboardComponent` template renders too:
-<<<<<<< HEAD
 -->
 이제 애플리케이션을 실행해보면 `CustomerDashboardComponent`가 렌더링되는 것을 확인할 수 있습니다:
 
-<figure>
- <img src="generated/images/guide/feature-modules/feature-module.png" alt="feature module component">
-</figure>
-=======
-
+<!--
 <div class="lightbox">
   <img src="generated/images/guide/feature-modules/feature-module.png" alt="feature module component">
 </div>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<div class="lightbox">
+  <img src="generated/images/guide/feature-modules/feature-module.png" alt="기능 모듈 컴포넌트">
+</div>
 
 <hr />
 

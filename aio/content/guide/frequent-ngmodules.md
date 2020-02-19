@@ -1,23 +1,7 @@
-<<<<<<< HEAD
 <!--
-# Frequently Used Modules
+# Frequently-used modules
 -->
 # 자주 사용하는 NgModule
-
-<!--
-#### Prerequisites
--->
-#### 사전지식
-
-<!--
-A basic understanding of [Bootstrapping](guide/bootstrapping).
--->
-[부트스트랩](guide/bootstrapping) 문서의 내용을 먼저 이해하고 이 문서를 보는 것이 좋습니다.
-
-<hr>
-=======
-# Frequently-used modules
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 An Angular app needs at least one module that serves as the root module.

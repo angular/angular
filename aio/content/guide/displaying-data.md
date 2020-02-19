@@ -1,11 +1,7 @@
-<<<<<<< HEAD
 <!--
-# Displaying Data
+# Displaying data
 -->
 # 데이터 표시하기
-=======
-# Displaying data
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 You can display data by binding controls in an HTML template to properties of an Angular component.
@@ -24,19 +20,14 @@ The final UI looks like this:
 -->
 최종 결과물로 다음과 같은 화면을 만들 것입니다:
 
-<<<<<<< HEAD
-
-<figure>
-  <!--
-  <img src="generated/images/guide/displaying-data/final.png" alt="Final UI">
-  -->
-  <img src="generated/images/guide/displaying-data/final.png" alt="최종 화면">
-</figure>
-=======
+<!--
 <div class="lightbox">
   <img src="generated/images/guide/displaying-data/final.png" alt="Final UI">
 </div>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<div class="lightbox">
+  <img src="generated/images/guide/displaying-data/final.png" alt="최종 화면">
+</div>
 
 <div class="alert is-helpful">
 
@@ -67,14 +58,10 @@ With interpolation, you put the property name in the view template, enclosed in 
 문자열 바인딩(interpolation)을 사용하는 것입니다.
 문자열 바인딩은 프로퍼티 이름을 이중 중괄호로 감싸서 뷰 템플릿에 `{{myHero}}` 와 같은 형태로 넣는 방법입니다.
 
-<<<<<<< HEAD
 <!--
-Use the CLI command [`ng new displaying-data`](cli/new) to create a workspace and app named `displaying-data`. 
+Use the CLI command [`ng new displaying-data`](cli/new) to create a workspace and app named `displaying-data`.
 -->
 워크스페이스를 생성하면서 `displaying-data`라는 이름으로 앱을 생성하기 위해 [`ng new displaying-data`](cli/new) 명령을 실행합니다.
-=======
-Use the CLI command [`ng new displaying-data`](cli/new) to create a workspace and app named `displaying-data`.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 Delete the <code>app.component.html</code> file. It is not needed for this example.
@@ -175,24 +162,16 @@ Now run the app. It should display the title and hero name:
 -->
 여기까지 작성하고 애플리케이션을 시작하면, 페이지 제목과 히어로 이름이 다음과 같이 표시됩니다:
 
-<<<<<<< HEAD
-<figure>
-  <!--
-  <img src="generated/images/guide/displaying-data/title-and-hero.png" alt="Title and Hero">
-  -->
-  <img src="generated/images/guide/displaying-data/title-and-hero.png" alt="페이지 제목과 히어로가 표시된 화면">
-</figure>
-
-
 <!--
-=======
 <div class="lightbox">
   <img src="generated/images/guide/displaying-data/title-and-hero.png" alt="Title and Hero">
 </div>
-
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
-The next few sections review some of the coding choices in the app.
 -->
+<div class="lightbox">
+  <img src="generated/images/guide/displaying-data/title-and-hero.png" alt="페이지 제목과 히어로가 표시된 화면">
+</div>
+
+The next few sections review some of the coding choices in the app.
 
 <!--
 ## Template inline or template file?
@@ -224,17 +203,8 @@ In either style, the template data bindings have the same access to the componen
 둘 중 어떤 스타일이든, 템플릿에 데이터를 바인딩하는 방법은 같습니다.
 
 <div class="alert is-helpful">
-<<<<<<< HEAD
-  
-  <!--
-=======
 
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
   By default, the Angular CLI command [`ng generate component`](cli/generate) generates components with a template file. You can override that with:
-  -->
-
-Angular CLI의 [`ng generate component`](cli/generate)명령으로 컴포넌트를 생성하면 템플릿 파일을 별개로 만듭니다.
-이 때 템플릿을 인라인으로 만들려면 <code>-it</code> 옵션을 사용하면 됩니다.
 
   <code-example hideCopy language="sh" class="code-shell">
     ng generate component hero -it
@@ -350,24 +320,17 @@ Now the heroes appear in an unordered list.
 -->
 여기까지 작성하면 이제 히어로의 목록이 화면에 표시됩니다.
 
-<<<<<<< HEAD
-
-<figure>
-  <!--
-  <img src="generated/images/guide/displaying-data/hero-names-list.png" alt="After ngfor">
-  -->
-  <img src="generated/images/guide/displaying-data/hero-names-list.png" alt="ngfor 적용 화면">
-</figure>
-
-
 <!--
-=======
 <div class="lightbox">
   <img src="generated/images/guide/displaying-data/hero-names-list.png" alt="After ngfor">
 </div>
+-->
+<div class="lightbox">
+  <img src="generated/images/guide/displaying-data/hero-names-list.png" alt="ngfor 적용 화면">
+</div>
 
 
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+<!--
 ## Creating a class for the data
 -->
 ## 데이터 클래스 정의하기
@@ -499,7 +462,9 @@ Angular에서 제공하는 `ngIf` 디렉티브는 _참/거짓으로 평가되는
 <code-example path="displaying-data/src/app/app.component.ts" header="src/app/app.component.ts (message)" region="message"></code-example>
 
 
+
 <div class="alert is-important">
+
 
 <!--
 Don't forget the leading asterisk (\*) in `*ngIf`. It is an essential part of the syntax.
@@ -527,6 +492,7 @@ see the [template expressions](guide/template-syntax#template-expressions) secti
 
 
 <div class="alert is-helpful">
+
 
 <!--
 Angular isn't showing and hiding the message. It is adding and removing the paragraph element from the DOM. That improves performance, especially in larger projects when conditionally including or excluding
