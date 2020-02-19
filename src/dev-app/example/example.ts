@@ -7,7 +7,8 @@
  */
 
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
-import {EXAMPLE_COMPONENTS, loadExampleFactory} from '@angular/components-examples';
+import {EXAMPLE_COMPONENTS} from '@angular/components-examples';
+import {loadExampleFactory} from '@angular/components-examples/private';
 import {Component, Injector, Input, OnInit, ViewContainerRef} from '@angular/core';
 
 @Component({

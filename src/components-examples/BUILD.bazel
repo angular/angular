@@ -4,7 +4,7 @@ load("//tools:defaults.bzl", "ng_module", "ng_package")
 load("//tools/highlight-files:index.bzl", "highlight_files")
 load("//tools/package-docs-content:index.bzl", "package_docs_content")
 
-EXAMPLE_PACKAGES = [
+ALL_EXAMPLES = [
     # TODO(devversion): try to have for each entry-point a bazel package so that
     # we can automate this using the "package.bzl" variables. Currently generated
     # with "bazel query 'kind("ng_module", //src/components-examples/...:*)' --output="label"
@@ -45,6 +45,7 @@ EXAMPLE_PACKAGES = [
     "//src/components-examples/material/autocomplete",
     "//src/components-examples/material-experimental/column-resize",
     "//src/components-examples/material-experimental/popover-edit",
+    "//src/components-examples/material-experimental/mdc-form-field",
     "//src/components-examples/cdk/tree",
     "//src/components-examples/cdk/text-field",
     "//src/components-examples/cdk/table",
@@ -62,12 +63,12 @@ ng_module(
     name = "components-examples",
     srcs = glob(["*.ts"]) + [":example-module.ts"],
     module_name = "@angular/components-examples",
-    deps = EXAMPLE_PACKAGES,
+    deps = ALL_EXAMPLES,
 )
 
 filegroup(
     name = "example-source-files",
-    srcs = ["%s:source-files" % pkg for pkg in EXAMPLE_PACKAGES],
+    srcs = ["%s:source-files" % pkg for pkg in ALL_EXAMPLES],
 )
 
 highlight_files(
@@ -107,7 +108,7 @@ ng_package(
     data = [":docs-content"],
     entry_point = ":public-api.ts",
     tags = ["docs-package"],
-    deps = [":components-examples"] + EXAMPLE_PACKAGES,
+    deps = [":components-examples"] + ALL_EXAMPLES,
 )
 
 genrule(

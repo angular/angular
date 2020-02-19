@@ -1,0 +1,13 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "private",
+    srcs = glob(["*.ts"]),
+    module_name = "@angular/components-examples/private",
+    deps = [
+        "//src/components-examples",
+        "@npm//@angular/core",
+    ],
+)

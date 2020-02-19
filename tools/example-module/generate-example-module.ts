@@ -44,7 +44,7 @@ function inlineExampleModuleTemplate(parsedData: AnalyzedExamples): string {
       additionalComponents: data.additionalComponents,
       module: {
         name: data.module.name,
-        importSpecifier: `@angular/components-examples/${data.module.packagePath}`,
+        importSpecifier: data.module.packagePath,
       },
     };
 

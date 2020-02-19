@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {loadExampleFactory} from '@angular/components-examples';
+import {loadExampleFactory} from '@angular/components-examples/private';
 import {Component, Injector, Input, OnInit, ViewContainerRef} from '@angular/core';
 
 /** Loads an example component from `@angular/components-examples` */
