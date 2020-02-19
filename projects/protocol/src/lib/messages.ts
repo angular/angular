@@ -1,8 +1,10 @@
 export interface DirectiveType {
+  id: number;
   name: string;
 }
 
 export interface ComponentType {
+  id: number;
   name: string;
 }
 

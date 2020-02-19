@@ -18,6 +18,7 @@ import {
   appIsAngularInDevMode,
   appIsSupportedAngularVersion,
 } from './angular-check';
+import { indexDOM } from './dom-observer';
 
 export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void => {
   messageBus.on('shutdown', shutdownCallback(messageBus));
@@ -57,6 +58,7 @@ const initChangeDetection = (messageBus: MessageBus<Events>) => {
 //
 
 const getLatestComponentExplorerViewCallback = (messageBus: MessageBus<Events>) => query => {
+  indexDOM();
   messageBus.emit('latestComponentExplorerView', [
     {
       forest: prepareForestForSerialization(getDirectiveForest(document.documentElement, (window as any).ng)),
