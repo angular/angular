@@ -27,7 +27,7 @@ describe('identity tracker', () => {
     };
     const cmpInstance = {};
     const nested = {
-      id: [0, 0],
+      position: [0, 0],
       element: 'CMP2',
       component: {
         name: 'CMP2',
@@ -46,11 +46,11 @@ describe('identity tracker', () => {
         name: 'CMP1',
       },
       element: 'CMP',
-      id: [0],
+      position: [0],
     });
 
-    expect(tracker.getDirectiveID(dirInstance)).toEqual([0, 0]);
-    expect(tracker.getDirectiveID(cmpInstance)).toEqual([0, 0]);
+    expect(tracker.getDirectivePosition(dirInstance)).toEqual([0, 0]);
+    expect(tracker.getDirectivePosition(cmpInstance)).toEqual([0, 0]);
   });
 
   it('should update indexes on insertion', () => {
@@ -84,7 +84,7 @@ describe('identity tracker', () => {
     siblingEl.parentElement = rootEl;
 
     const nested = {
-      id: [0, 0],
+      position: [0, 0],
       element: 'CMP2',
       component: {
         name: 'CMP2',
@@ -128,12 +128,12 @@ describe('identity tracker', () => {
         name: 'CMP1',
       },
       element: 'CMP',
-      id: [0],
+      position: [0],
     });
 
-    expect(tracker.getDirectiveID(rootCmp)).toEqual([0]);
+    expect(tracker.getDirectivePosition(rootCmp)).toEqual([0]);
     tracker.insert(siblingEl as any, siblingCmp);
-    expect(tracker.getDirectiveID(siblingCmp)).toEqual([0, 1]);
+    expect(tracker.getDirectivePosition(siblingCmp)).toEqual([0, 1]);
   });
 
   it('should update indexes on insertion of root', () => {
@@ -184,12 +184,12 @@ describe('identity tracker', () => {
         name: 'CMP1',
       },
       element: 'CMP',
-      id: [0],
+      position: [0],
     });
 
-    expect(tracker.getDirectiveID(rootCmp)).toEqual([0]);
+    expect(tracker.getDirectivePosition(rootCmp)).toEqual([0]);
     tracker.insert(secondRootEl as any, secondRootCmp);
-    expect(tracker.getDirectiveID(secondRootCmp)).toEqual([0]);
-    expect(tracker.getDirectiveID(rootCmp)).toEqual([1]);
+    expect(tracker.getDirectivePosition(secondRootCmp)).toEqual([0]);
+    expect(tracker.getDirectivePosition(rootCmp)).toEqual([1]);
   });
 });

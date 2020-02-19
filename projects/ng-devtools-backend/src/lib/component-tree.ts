@@ -4,12 +4,12 @@ import {
   ComponentType,
   DirectiveType,
   Node,
-  ElementID,
+  ElementPosition,
   ComponentExplorerViewQuery,
   DirectivesProperties,
 } from 'protocol';
 import { getComponentName } from './highlighter';
-import { IndexedNode } from './recording/observer';
+import { IndexedNode } from './observer/observer';
 import { DebuggingAPI } from './interfaces';
 
 export interface DirectiveInstanceType extends DirectiveType {
@@ -147,12 +147,15 @@ const buildDirectiveForest = (
 
 // Based on an ElementID we return a specific component node.
 // If we can't find any, we return null.
-export const queryComponentForest = (id: ElementID, forest: ComponentTreeNode[]): ComponentTreeNode | null => {
-  if (!id.length) {
+export const queryComponentForest = (
+  position: ElementPosition,
+  forest: ComponentTreeNode[]
+): ComponentTreeNode | null => {
+  if (!position.length) {
     return null;
   }
   let node: null | ComponentTreeNode = null;
-  for (const i of id) {
+  for (const i of position) {
     node = forest[i];
     if (!node) {
       return null;
@@ -162,26 +165,26 @@ export const queryComponentForest = (id: ElementID, forest: ComponentTreeNode[])
   return node;
 };
 
-export const findNodeInForest = (id: ElementID, forest: ComponentTreeNode[]): HTMLElement | null => {
-  const foundComponent: ComponentTreeNode = queryComponentForest(id, forest);
+export const findNodeInForest = (position: ElementPosition, forest: ComponentTreeNode[]): HTMLElement | null => {
+  const foundComponent: ComponentTreeNode = queryComponentForest(position, forest);
   return foundComponent ? (foundComponent.nativeElement as HTMLElement) : null;
 };
 
 export const getIndexForNativeElementInForest = (
   nativeElement: HTMLElement,
   forest: IndexedNode[]
-): ElementID | null => {
-  const foundElementId: ElementID = findElementIDFromNativeElementInForest(forest, nativeElement);
-  return foundElementId || null;
+): ElementPosition | null => {
+  const foundElementPosition: ElementPosition = findElementIDFromNativeElementInForest(forest, nativeElement);
+  return foundElementPosition || null;
 };
 
 const findElementIDFromNativeElementInForest = (
   forest: IndexedNode[],
   nativeElement: HTMLElement
-): ElementID | null => {
+): ElementPosition | null => {
   for (const el of forest) {
     if (el.nativeElement === nativeElement) {
-      return el.id;
+      return el.position;
     }
   }
 
@@ -193,7 +196,7 @@ const findElementIDFromNativeElementInForest = (
   return null;
 };
 
-export const findNodeFromSerializedPathId = (serializedId: string) => {
-  const id: number[] = serializedId.split(',').map(index => parseInt(index, 10));
-  return queryComponentForest(id, getDirectiveForest(document.documentElement, (window as any).ng));
+export const findNodeFromSerializedPosition = (serializedPosition: string) => {
+  const position: number[] = serializedPosition.split(',').map(index => parseInt(index, 10));
+  return queryComponentForest(position, getDirectiveForest(document.documentElement, (window as any).ng));
 };

@@ -13,7 +13,7 @@ export interface FlatNode {
   expandable: boolean;
   name: string;
   directives: string;
-  id: number[];
+  position: number[];
   level: number;
   original: IndexedNode;
 }
@@ -21,7 +21,7 @@ export interface FlatNode {
 const expandable = (node: IndexedNode) => !!node.children && node.children.length > 0;
 
 const trackBy = (idx: number, item: FlatNode) =>
-  `#${idx}#${item.name}#${item.directives}#${item.id.join(',')}#${(item.original.children || []).length === 0}`;
+  `#${idx}#${item.name}#${item.directives}#${item.position.join(',')}#${(item.original.children || []).length === 0}`;
 
 export class ComponentDataSource extends DataSource<FlatNode> {
   private _differ = new DefaultIterableDiffer(trackBy);
@@ -40,7 +40,7 @@ export class ComponentDataSource extends DataSource<FlatNode> {
         // We can compare the nodes in the navigation functions above
         // based on this identifier directly, since it's a reference type
         // and the reference is preserved after transformation.
-        id: node.id,
+        position: node.position,
         name: node.component ? node.component.name : node.element,
         directives: node.directives.map(d => d.name).join(', '),
         original: node,

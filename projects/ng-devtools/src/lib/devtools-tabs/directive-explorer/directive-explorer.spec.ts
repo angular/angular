@@ -44,15 +44,15 @@ describe('DirectiveExplorerComponent', () => {
     });
 
     it('should emit getLatestComponentExplorerView event on refresh with view query no properties', () => {
-      const currentSelectedElement = jasmine.createSpyObj('currentSelectedElement', ['id', 'children']);
-      currentSelectedElement.id = [0];
+      const currentSelectedElement = jasmine.createSpyObj('currentSelectedElement', ['position', 'children']);
+      currentSelectedElement.position = [0];
       currentSelectedElement.children = [];
       comp.currentSelectedElement = currentSelectedElement;
       comp.propertyViews = jasmine.createSpyObj('propertyViews', ['toArray']);
       (comp.propertyViews.toArray as Spy).and.returnValue([]);
       comp.refresh();
       const viewQuery: ComponentExplorerViewQuery = {
-        selectedElement: comp.currentSelectedElement.id,
+        selectedElement: comp.currentSelectedElement.position,
         expandedProperties: {},
       };
       expect(comp.messageBus.emit).toHaveBeenCalledWith('getLatestComponentExplorerView', [viewQuery]);
@@ -63,7 +63,7 @@ describe('DirectiveExplorerComponent', () => {
     let nodeMock: SpyObj<IndexedNode>;
 
     beforeEach(() => {
-      nodeMock = jasmine.createSpyObj('node', ['id', 'children']);
+      nodeMock = jasmine.createSpyObj('node', ['position', 'children']);
     });
 
     it('sets current selected element', () => {
@@ -72,11 +72,11 @@ describe('DirectiveExplorerComponent', () => {
     });
 
     it('fires node selection events', () => {
-      nodeMock.id = [0];
+      nodeMock.position = [0];
       comp.handleNodeSelection(nodeMock);
       expect(comp.messageBus.emit).toHaveBeenCalledTimes(2);
-      expect(comp.messageBus.emit).toHaveBeenCalledWith('getElementDirectivesProperties', [nodeMock.id]);
-      expect(comp.messageBus.emit).toHaveBeenCalledWith('setSelectedComponent', [nodeMock.id]);
+      expect(comp.messageBus.emit).toHaveBeenCalledWith('getElementDirectivesProperties', [nodeMock.position]);
+      expect(comp.messageBus.emit).toHaveBeenCalledWith('setSelectedComponent', [nodeMock.position]);
     });
   });
 });

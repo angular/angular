@@ -23,8 +23,8 @@ export interface FlamegraphNode {
 const processFlamegraphRecord = (record: ComponentRecord, result: AppEntry) => {
   result.timeSpent += record.duration;
   let current = result.app;
-  for (let i = 0; i < record.id.length - 1; i++) {
-    const position = record.id[i];
+  for (let i = 0; i < record.position.length - 1; i++) {
+    const position = record.position[i];
     if (!current[position]) {
       console.error(`Couldn't insert`, record, 'because parent does not exist');
       return;
@@ -42,7 +42,7 @@ const processFlamegraphRecord = (record: ComponentRecord, result: AppEntry) => {
       return;
     }
   }
-  current[record.id[record.id.length - 1]] = {
+  current[record.position[record.position.length - 1]] = {
     value: record.duration,
     label: record.component,
     duration: record.duration,

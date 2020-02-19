@@ -53,8 +53,8 @@ const buildInitialState = (records: ComponentRecord[]): { initialState: Timeline
     if (record.event !== ComponentEventType.Create) {
       return { initialState, consumed };
     }
-    let currentNode = initialState.roots[record.id[0]];
-    if (currentNode === undefined && record.id.length > 1) {
+    let currentNode = initialState.roots[record.position[0]];
+    if (currentNode === undefined && record.position.length > 1) {
       throw new Error('Cannot find the specified node');
     }
     if (currentNode === undefined) {
@@ -64,14 +64,14 @@ const buildInitialState = (records: ComponentRecord[]): { initialState: Timeline
         state: TimelineNodeState.Default,
         children: [],
       } as TimelineNode;
-      initialState.roots[record.id[0]] = currentNode;
+      initialState.roots[record.position[0]] = currentNode;
       consumed++;
       continue;
     }
-    for (let i = 1; i < record.id.length - 1; i++) {
-      currentNode = currentNode.children[record.id[i]];
+    for (let i = 1; i < record.position.length - 1; i++) {
+      currentNode = currentNode.children[record.position[i]];
     }
-    currentNode.children[record.id[record.id.length - 1]] = {
+    currentNode.children[record.position[record.position.length - 1]] = {
       name: record.component,
       instanceState: record.state,
       state: TimelineNodeState.Default,
@@ -85,7 +85,7 @@ const buildInitialState = (records: ComponentRecord[]): { initialState: Timeline
 const applyChangeDetectionMutation = (frame: TimelineFrame, record: ComponentRecord) => {
   let children = frame.roots;
   let current: TimelineNode;
-  for (const step of record.id) {
+  for (const step of record.position) {
     current = children[step];
     children = current.children;
   }
@@ -98,11 +98,11 @@ const applyChangeDetectionMutation = (frame: TimelineFrame, record: ComponentRec
 const applyCreationMutation = (frame: TimelineFrame, record: ComponentRecord) => {
   let children = frame.roots;
   let current: TimelineNode;
-  for (let i = 0; i < record.id.length - 1; i++) {
-    current = children[record.id[i]];
+  for (let i = 0; i < record.position.length - 1; i++) {
+    current = children[record.position[i]];
     children = current.children;
   }
-  children.splice(record.id[record.id.length - 1], 0, {
+  children.splice(record.position[record.position.length - 1], 0, {
     name: record.component,
     instanceState: record.state,
     children: [],
@@ -114,11 +114,11 @@ const applyCreationMutation = (frame: TimelineFrame, record: ComponentRecord) =>
 const applyDeletionMutation = (frame: TimelineFrame, record: ComponentRecord) => {
   let children = frame.roots;
   let current: TimelineNode;
-  for (let i = 0; i < record.id.length - 1; i++) {
-    current = children[record.id[i]];
+  for (let i = 0; i < record.position.length - 1; i++) {
+    current = children[record.position[i]];
     children = current.children;
   }
-  children.splice(record.id[record.id.length - 1], 1);
+  children.splice(record.position[record.position.length - 1], 1);
   frame.timestamp = record.timestamp;
 };
 
@@ -141,7 +141,7 @@ const applyMutation = (frame: TimelineFrame, record: ComponentRecord): TimelineF
 const undoChangeDetectionMutation = (frame: TimelineFrame, record: ComponentRecord) => {
   let children = frame.roots;
   let current: TimelineNode;
-  for (const step of record.id) {
+  for (const step of record.position) {
     current = children[step];
     children = current.children;
   }

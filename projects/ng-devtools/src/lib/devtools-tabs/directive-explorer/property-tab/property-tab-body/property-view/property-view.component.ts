@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Descriptor, DirectiveID, Events, MessageBus, NestedProp } from 'protocol';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Descriptor, MessageBus, Events, DirectivePosition, NestedProp } from 'protocol';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { FlatNode, PropertyDataSource } from './property-data-source';
 import { getExpandedDirectiveProperties } from './property-expanded-directive-properties';
@@ -19,7 +19,7 @@ export class PropertyViewComponent {
     this.dataSource = new PropertyDataSource(data, this.treeControl, this.entityID, this.messageBus);
   }
   @Input() messageBus: MessageBus<Events>;
-  @Input() entityID: DirectiveID;
+  @Input() entityID: DirectivePosition;
   @Input() name: string;
 
   dataSource: PropertyDataSource;

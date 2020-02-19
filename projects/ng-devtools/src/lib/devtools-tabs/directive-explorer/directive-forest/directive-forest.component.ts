@@ -8,7 +8,7 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { Node, ElementID } from 'protocol';
+import { Node, ElementPosition } from 'protocol';
 import { CdkTree, FlatTreeControl } from '@angular/cdk/tree';
 import { ComponentDataSource, FlatNode } from './component-data-source';
 
@@ -42,11 +42,11 @@ export class DirectiveForestComponent {
       });
     }
   }
-  @Input() highlightIDinTreeFromElement: ElementID | null = null;
+  @Input() highlightIDinTreeFromElement: ElementPosition | null = null;
 
   @Output() selectNode = new EventEmitter();
   @Output() selectDomElement = new EventEmitter();
-  @Output() highlightFromComponent = new EventEmitter<ElementID>();
+  @Output() highlightFromComponent = new EventEmitter<ElementPosition>();
   @Output() unhighlightFromComponent = new EventEmitter<null>();
 
   @ViewChild(CdkTree) tree: CdkTree<any>;
@@ -73,7 +73,7 @@ export class DirectiveForestComponent {
 
   handleSelect(node: FlatNode): void {
     const matchedTree: FlatNode[] = this._findMatchedNodes();
-    this.currentlyMatchedIndex = matchedTree.findIndex(matchedNode => matchedNode.id === node.id);
+    this.currentlyMatchedIndex = matchedTree.findIndex(matchedNode => matchedNode.position === node.position);
     this.select(node);
   }
 
@@ -82,7 +82,7 @@ export class DirectiveForestComponent {
   }
 
   select(node: FlatNode): void {
-    this.populateParents(node.id);
+    this.populateParents(node.position);
     this.selectNode.emit(node.original);
     this.selectedNode = node;
 
@@ -100,13 +100,13 @@ export class DirectiveForestComponent {
     }, 0);
   }
 
-  populateParents(id: ElementID): void {
-    this.parents = id.reduce((nodes: FlatNode[], index: number) => {
+  populateParents(position: ElementPosition): void {
+    this.parents = position.reduce((nodes: FlatNode[], index: number) => {
       let nodeId = [index];
       if (nodes.length > 0) {
-        nodeId = nodes[nodes.length - 1].id.concat(index);
+        nodeId = nodes[nodes.length - 1].position.concat(index);
       }
-      const selectedNode = this.dataSource.data.find(item => item.id.toString() === nodeId.toString());
+      const selectedNode = this.dataSource.data.find(item => item.position.toString() === nodeId.toString());
       nodes.push(selectedNode);
       return nodes;
     }, []);
@@ -119,13 +119,13 @@ export class DirectiveForestComponent {
     }
     evnt.preventDefault();
     const data = this.dataSource.data;
-    let prevIdx = data.findIndex(e => e.id === this.selectedNode.id) - 1;
+    let prevIdx = data.findIndex(e => e.position === this.selectedNode.position) - 1;
     if (prevIdx < 0) {
       return;
     }
     let prevNode = data[prevIdx];
     const currentNode = data[prevIdx + 1];
-    if (prevNode.id.length <= currentNode.id.length) {
+    if (prevNode.position.length <= currentNode.position.length) {
       return this.select(data[prevIdx]);
     }
     while (prevIdx >= 0 && parentCollapsed(prevIdx, data, this.treeControl)) {
@@ -141,12 +141,12 @@ export class DirectiveForestComponent {
       return;
     }
     const data = this.dataSource.data;
-    let idx = data.findIndex(e => e.id === this.selectedNode.id);
+    let idx = data.findIndex(e => e.position === this.selectedNode.position);
     const currentNode = data[idx];
     if (!this.treeControl.isExpanded(currentNode) && currentNode.expandable) {
       for (let i = idx + 1; i < data.length; i++) {
         const node = data[i];
-        if (!isChildOf(node.id, currentNode.id)) {
+        if (!isChildOf(node.position, currentNode.position)) {
           idx = i;
           break;
         }
@@ -184,7 +184,7 @@ export class DirectiveForestComponent {
   }
 
   isSelected(node: FlatNode): boolean {
-    return !!this.selectedNode && this.selectedNode.id.join(',') === node.id.join(',');
+    return !!this.selectedNode && this.selectedNode.position.join(',') === node.position.join(',');
   }
 
   isMatched(node: FlatNode): boolean {
@@ -246,15 +246,15 @@ export class DirectiveForestComponent {
     if (nodeToExpand) {
       // Todo: implement optimized array equals method
       const parentNode = this.dataSource.data.find(
-        node => node.id.toString() === nodeToExpand.id.slice(0, nodeToExpand.id.length - 1).toString()
+        node => node.position.toString() === nodeToExpand.position.slice(0, nodeToExpand.position.length - 1).toString()
       );
       this.treeControl.expand(parentNode);
       this.expandParents(parentNode);
     }
   }
 
-  highlightNode(id: ElementID): void {
-    this.highlightFromComponent.emit(id);
+  highlightNode(position: ElementPosition): void {
+    this.highlightFromComponent.emit(position);
   }
 
   removeHighlight(): void {
@@ -262,6 +262,8 @@ export class DirectiveForestComponent {
   }
 
   isHighlighted(node: FlatNode): boolean {
-    return !!this.highlightIDinTreeFromElement && this.highlightIDinTreeFromElement.join(',') === node.id.join(',');
+    return (
+      !!this.highlightIDinTreeFromElement && this.highlightIDinTreeFromElement.join(',') === node.position.join(',')
+    );
   }
 }

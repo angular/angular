@@ -4,11 +4,11 @@ import {
   Events,
   Node,
   DirectivesProperties,
+  DirectivePosition,
   ComponentExplorerViewQuery,
   ComponentExplorerView,
   ComponentExplorerViewProperties,
-  ElementID,
-  Properties,
+  ElementPosition,
   Descriptor,
 } from 'protocol';
 import { IndexedNode } from './directive-forest/index-forest';
@@ -32,7 +32,7 @@ export class DirectiveExplorerComponent implements OnInit {
   directivesData: DirectivesProperties | null = null;
   currentSelectedElement: IndexedNode = null;
   forest: Node[];
-  highlightIDinTreeFromElement: ElementID | null = null;
+  highlightIDinTreeFromElement: ElementPosition | null = null;
 
   constructor(private _appOperations: ApplicationOperations, private _snackBar: MatSnackBar) {}
 
@@ -56,8 +56,8 @@ export class DirectiveExplorerComponent implements OnInit {
 
   handleNodeSelection(node: IndexedNode): void {
     this.currentSelectedElement = node;
-    this.messageBus.emit('getElementDirectivesProperties', [node.id]);
-    this.messageBus.emit('setSelectedComponent', [node.id]);
+    this.messageBus.emit('getElementDirectivesProperties', [node.position]);
+    this.messageBus.emit('setSelectedComponent', [node.position]);
   }
 
   subscribeToBackendEvents(): void {
@@ -68,8 +68,8 @@ export class DirectiveExplorerComponent implements OnInit {
       this.forest = view.forest;
       this.directivesData = view.properties;
     });
-    this.messageBus.on('highlightComponentInTreeFromElement', (id: ElementID) => {
-      this.highlightIDinTreeFromElement = id;
+    this.messageBus.on('highlightComponentInTreeFromElement', (position: ElementPosition) => {
+      this.highlightIDinTreeFromElement = position;
     });
     this.messageBus.on('removeHighlightFromComponentTree', () => {
       this.highlightIDinTreeFromElement = null;
@@ -80,12 +80,28 @@ export class DirectiveExplorerComponent implements OnInit {
     this.messageBus.emit('getLatestComponentExplorerView', [this._constructViewQuery()]);
   }
 
+  getEntityID(name: string): DirectivePosition {
+    const idx: DirectivePosition = {
+      element: this.currentSelectedElement.position,
+    };
+    const cmp = this.currentSelectedElement.component;
+    if (cmp && cmp.name === name) {
+      return idx;
+    }
+    idx.directive = this.currentSelectedElement.directives.findIndex(d => d.name === name);
+    return idx;
+  }
+
+  nameTracking(_: number, item: { key: string }): string {
+    return item.key;
+  }
+
   viewSource(): void {
-    this._appOperations.viewSource(this.currentSelectedElement.id);
+    this._appOperations.viewSource(this.currentSelectedElement.position);
   }
 
   handleSelectDomElement(node: IndexedNode): void {
-    this._appOperations.selectDomElement(node.id);
+    this._appOperations.selectDomElement(node.position);
   }
 
   private _constructViewQuery(): ComponentExplorerViewQuery {
@@ -93,7 +109,7 @@ export class DirectiveExplorerComponent implements OnInit {
       return { selectedElement: null, expandedProperties: null };
     }
     return {
-      selectedElement: this.currentSelectedElement.id,
+      selectedElement: this.currentSelectedElement.position,
       // We get the latest query for the properties.
       // The directive may have extended the properties
       // with nested ones which were dynamically requested
@@ -123,11 +139,11 @@ export class DirectiveExplorerComponent implements OnInit {
     document.execCommand('copy');
   }
 
-  handleHighlightFromComponent(id: ElementID): void {
-    this.messageBus.emit('highlightElementFromComponentTree', [id]);
+  handleHighlightFromComponent(position: ElementPosition) {
+    this.messageBus.emit('highlightElementFromComponentTree', [position]);
   }
 
-  handleUnhighlightFromComponent(id: ElementID | null): void {
+  handleUnhighlightFromComponent(_: ElementPosition | null) {
     this.messageBus.emit('removeHighlightFromElement');
   }
 }

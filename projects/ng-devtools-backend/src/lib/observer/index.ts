@@ -1,5 +1,5 @@
 import { ComponentTreeObserver } from './observer';
-import { AppRecord, ComponentEventType, ElementID, LifeCycleEventType, Events, MessageBus } from 'protocol';
+import { AppRecord, ComponentEventType, ElementPosition, LifeCycleEventType, Events, MessageBus } from 'protocol';
 import { runOutsideAngular } from '../utils';
 import { createRecord } from './record-factory';
 
@@ -14,10 +14,10 @@ export const start = (messageBus: MessageBus<Events>): void => {
   }
   inProgress = true;
   observer = new ComponentTreeObserver({
-    onCreate(component: any, id: ElementID) {
-      records.push(createRecord({ recorderComponent: { component, id }, eventType: ComponentEventType.Create }));
+    onCreate(component: any, position: ElementPosition) {
+      records.push(createRecord({ recorderComponent: { component, position }, eventType: ComponentEventType.Create }));
     },
-    onChangeDetection(component: any, id: ElementID, duration: number) {
+    onChangeDetection(component: any, position: ElementPosition, duration: number) {
       if (!inChangeDetection) {
         inChangeDetection = true;
         records.push(createRecord({ eventType: LifeCycleEventType.ChangeDetectionStart }));
@@ -29,11 +29,15 @@ export const start = (messageBus: MessageBus<Events>): void => {
         });
       }
       records.push(
-        createRecord({ recorderComponent: { component, id }, eventType: ComponentEventType.ChangeDetection, duration })
+        createRecord({
+          recorderComponent: { component, position },
+          eventType: ComponentEventType.ChangeDetection,
+          duration,
+        })
       );
     },
-    onDestroy(component: any, id: ElementID) {
-      records.push(createRecord({ recorderComponent: { component, id }, eventType: ComponentEventType.Destroy }));
+    onDestroy(component: any, position: ElementPosition) {
+      records.push(createRecord({ recorderComponent: { component, position }, eventType: ComponentEventType.Destroy }));
     },
   });
   observer.initialize();

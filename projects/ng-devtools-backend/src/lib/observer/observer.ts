@@ -1,4 +1,4 @@
-import { ElementID, Node as ComponentNode } from 'protocol';
+import { ElementPosition, Node as ComponentNode } from 'protocol';
 import { ComponentInstanceType, ComponentTreeNode, DirectiveInstanceType, getComponentForest } from '../component-tree';
 import { componentMetadata } from '../utils';
 import { IdentityTracker } from './identity-tracker';
@@ -13,10 +13,10 @@ export type LifecyleHook =
   | 'ngAfterViewInit'
   | 'ngAfterViewChecked';
 
-export type CreationCallback = (component: any, id: ElementID) => void;
+export type CreationCallback = (component: any, position: ElementPosition) => void;
 export type LifecycleCallback = (component: any, hook: LifecyleHook, duration: any) => void;
-export type ChangeDetectionCallback = (component: any, id: ElementID, duration: number) => void;
-export type DestroyCallback = (component: any, id: ElementID) => void;
+export type ChangeDetectionCallback = (component: any, position: ElementPosition, duration: number) => void;
+export type DestroyCallback = (component: any, position: ElementPosition) => void;
 
 declare const ng: any;
 
@@ -107,14 +107,14 @@ export class ComponentTreeObserver {
   }
 
   private _fireCreationCallback(component: any): void {
-    const id = this._tracker.getDirectiveID(component);
-    this._config.onCreate(component, id);
+    const position = this._tracker.getDirectivePosition(component);
+    this._config.onCreate(component, position);
   }
 
   private _fireChangeDetectionCallback(component): void {
     this._config.onChangeDetection(
       component,
-      this._tracker.getDirectiveID(component),
+      this._tracker.getDirectivePosition(component),
       this._lastChangeDetection.get(component)
     );
   }
@@ -144,8 +144,8 @@ export class ComponentTreeObserver {
   }
 
   private _fireDestroyCallback(component: any): void {
-    const id = this._tracker.getDirectiveID(component);
-    this._config.onDestroy(component, id);
+    const position = this._tracker.getDirectivePosition(component);
+    this._config.onDestroy(component, position);
   }
 
   private _initializeChangeDetectionObserver(root: Element = document.documentElement): void {
@@ -173,7 +173,11 @@ export class ComponentTreeObserver {
       const start = performance.now();
       original.apply(this, arguments);
       if (self._tracker.hasDirective(component)) {
-        self._config.onChangeDetection(component, self._tracker.getDirectiveID(component), performance.now() - start);
+        self._config.onChangeDetection(
+          component,
+          self._tracker.getDirectivePosition(component),
+          performance.now() - start
+        );
       } else {
         self._lastChangeDetection.set(component, performance.now() - start);
       }
@@ -202,21 +206,21 @@ export class ComponentTreeObserver {
 }
 
 export interface IndexedNode extends ComponentNode<DirectiveInstanceType, ComponentInstanceType> {
-  id: ElementID;
+  position: ElementPosition;
   children: IndexedNode[];
 }
 
-const indexTree = (node: ComponentNode, idx: number, parentId = []): IndexedNode => {
-  let id = parentId;
+const indexTree = (node: ComponentNode, idx: number, parentPosition = []): IndexedNode => {
+  let position = parentPosition;
   if (node.component) {
-    id = parentId.concat([idx]);
+    position = parentPosition.concat([idx]);
   }
   return {
-    id,
+    position,
     element: node.element,
     component: node.component,
     directives: node.directives.map(d => ({ name: d.name })),
-    children: node.children.map((n, i) => indexTree(n, i, id)),
+    children: node.children.map((n, i) => indexTree(n, i, position)),
     nativeElement: node.nativeElement,
   } as IndexedNode;
 };

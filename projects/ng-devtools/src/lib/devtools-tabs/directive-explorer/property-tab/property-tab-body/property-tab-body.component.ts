@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { Descriptor, DirectiveID, DirectivesProperties, Events, MessageBus } from 'protocol';
+import { Descriptor, DirectivePosition, DirectivesProperties, Events, MessageBus } from 'protocol';
 import { IndexedNode } from '../../directive-forest/index-forest';
 
 @Component({
@@ -19,9 +19,9 @@ export class PropertyTabBodyComponent {
     return item.key;
   }
 
-  getEntityID(name: string): DirectiveID {
-    const idx: DirectiveID = {
-      element: this.currentSelectedElement.id,
+  getEntityID(name: string): DirectivePosition {
+    const idx: DirectivePosition = {
+      element: this.currentSelectedElement.position,
     };
     const cmp = this.currentSelectedElement.component;
     if (cmp && cmp.name === name) {

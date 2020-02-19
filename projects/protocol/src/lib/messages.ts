@@ -46,10 +46,10 @@ export interface Properties {
   props: { [name: string]: Descriptor };
 }
 
-export type ElementID = number[];
+export type ElementPosition = number[];
 
-export interface DirectiveID {
-  element: ElementID;
+export interface DirectivePosition {
+  element: ElementPosition;
   directive?: number;
 }
 
@@ -63,7 +63,7 @@ export interface ComponentExplorerViewProperties {
 }
 
 export interface ComponentExplorerViewQuery {
-  selectedElement: ElementID | null;
+  selectedElement: ElementPosition | null;
   expandedProperties: ComponentExplorerViewProperties;
 }
 
@@ -82,7 +82,7 @@ export interface ComponentRecord {
   recordType: 'component';
   timestamp: number;
   component: string;
-  id: ElementID;
+  position: ElementPosition;
   event: ComponentEventType;
   duration: number;
   state: Properties;
@@ -117,12 +117,12 @@ export interface Events {
   inspectorStart: () => void;
   inspectorEnd: () => void;
 
-  getElementDirectivesProperties: (id: ElementID) => void;
+  getElementDirectivesProperties: (position: ElementPosition) => void;
   elementDirectivesProperties: (data: DirectivesProperties) => void;
-  getNestedProperties: (id: DirectiveID, path: string[]) => void;
-  nestedProperties: (id: DirectiveID, data: Properties, path: string[]) => void;
+  getNestedProperties: (position: DirectivePosition, path: string[]) => void;
+  nestedProperties: (position: DirectivePosition, data: Properties, path: string[]) => void;
 
-  setSelectedComponent: (id: ElementID) => void;
+  setSelectedComponent: (position: ElementPosition) => void;
 
   componentTreeDirty: () => void;
   getLatestComponentExplorerView: (query: ComponentExplorerViewQuery) => void;
@@ -132,9 +132,8 @@ export interface Events {
   stopProfiling: () => void;
   sendProfilerChunk: (results: AppRecord[]) => void;
   profilerResults: (results: AppRecord[]) => void;
-
-  highlightElementFromComponentTree: (id: ElementID) => void;
+  highlightElementFromComponentTree: (position: ElementPosition) => void;
   removeHighlightFromElement: () => void;
-  highlightComponentInTreeFromElement: (id: ElementID) => void;
+  highlightComponentInTreeFromElement: (position: ElementPosition) => void;
   removeHighlightFromComponentTree: () => void;
 }
