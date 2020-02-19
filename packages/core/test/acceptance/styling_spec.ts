@@ -3384,6 +3384,21 @@ describe('styling', () => {
   });
 
   describe('regression', () => {
+    it('should support sanitizer value in the host [style] bindings', () => {
+      @Component({template: ``})
+      class HostBindingTestComponent {
+        @HostBinding('style')
+        style: SafeStyle = this.sanitizer.bypassSecurityTrustStyle('color: white; display: block;');
+
+        constructor(private sanitizer: DomSanitizer) {}
+      }
+      TestBed.configureTestingModule({declarations: [HostBindingTestComponent]});
+      const fixture = TestBed.createComponent(HostBindingTestComponent);
+      fixture.detectChanges();
+      const hostElement: HTMLElement = fixture.nativeElement;
+      expectStyle(hostElement).toEqual({color: 'white', display: 'block'});
+    });
+
     onlyInIvy('styling priority resolution is Ivy only feature.')
         .it('should allow lookahead binding on second pass #35118', () => {
           @Component({
