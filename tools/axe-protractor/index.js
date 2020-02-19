@@ -13,8 +13,8 @@ const checkedPages = [];
 /**
  * Protractor plugin hook which always runs when Angular successfully bootstrapped.
  */
-function onPageStable() {
-  AxeBuilder(browser.driver)
+async function onPageStable() {
+  await AxeBuilder(browser.driver)
     .configure(this.config || {})
     .analyze(results => handleResults(this, results));
 }
@@ -32,7 +32,7 @@ function handleResults(context, results) {
     checkedPages.push(results.url);
 
     results.violations.forEach(violation => {
-      
+
       let specName = `${violation.help} (${results.url})`;
       let message = '\n' + buildMessage(violation);
 
