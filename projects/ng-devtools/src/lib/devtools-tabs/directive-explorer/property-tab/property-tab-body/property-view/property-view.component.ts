@@ -1,7 +1,7 @@
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { Descriptor, MessageBus, Events, DirectivePosition, NestedProp } from 'protocol';
 import { FlatTreeControl } from '@angular/cdk/tree';
-import { FlatNode, PropertyDataSource } from './property-data-source';
+import { FlatNode, Property, PropertyDataSource } from './property-data-source';
 import { getExpandedDirectiveProperties } from './property-expanded-directive-properties';
 
 @Component({
@@ -29,7 +29,7 @@ export class PropertyViewComponent {
     node => node.expandable
   );
 
-  hasChild = (_: number, node: FlatNode) => node.expandable;
+  hasChild = (_: number, node: FlatNode): boolean => node.expandable;
 
   toggle(node: FlatNode): void {
     if (this.treeControl.isExpanded(node)) {
@@ -49,5 +49,21 @@ export class PropertyViewComponent {
 
   getExpandedProperties(): NestedProp[] {
     return getExpandedDirectiveProperties(this.dataSource.data);
+  }
+
+  updateValue({ key, newValue }, node): void {
+    const directiveId = this.entityID;
+    const keyPath = this._constructPathOfKeysToPropertyValue(node.prop);
+    this.messageBus.emit('updateState', [{ directiveId, keyPath, newValue }]);
+    node.prop.descriptor.value = newValue;
+  }
+
+  private _constructPathOfKeysToPropertyValue(nodePropToGetKeysFor: Property, keys: string[] = []): string[] {
+    keys.unshift(nodePropToGetKeysFor.name);
+    const parentNodeProp = nodePropToGetKeysFor.parent;
+    if (parentNodeProp) {
+      this._constructPathOfKeysToPropertyValue(parentNodeProp, keys);
+    }
+    return keys;
   }
 }

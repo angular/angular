@@ -102,7 +102,7 @@ export const createLevelSerializedDescriptor = (
 
   const levelSerializedDescriptor: Descriptor = {
     type,
-    editable: true,
+    editable: false,
     expandable: Object.keys(prop).length > 0,
     preview: getDescriptorPreview(propData),
   };
@@ -127,7 +127,7 @@ export const createNestedSerializedDescriptor = (
 
   const nestedSerializedDescriptor: Descriptor = {
     type,
-    editable: true,
+    editable: false,
     expandable: Object.keys(prop).length > 0,
     preview: getDescriptorPreview(propData),
   };
