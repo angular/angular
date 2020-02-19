@@ -1,0 +1,14 @@
+.explorer-panel header {
+  background-color: #eee;
+  padding: 0 5px;
+  border-bottom: 1px solid #ccc;
+  color: hsla(0, 0%, 32%, 1);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  line-height: 25px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

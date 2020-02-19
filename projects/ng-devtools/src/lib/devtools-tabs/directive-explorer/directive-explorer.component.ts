@@ -4,7 +4,6 @@ import {
   Events,
   Node,
   DirectivesProperties,
-  DirectiveID,
   ComponentExplorerViewQuery,
   ComponentExplorerView,
   ComponentExplorerViewProperties,
@@ -13,7 +12,7 @@ import {
   Descriptor,
 } from 'protocol';
 import { IndexedNode } from './directive-forest/index-forest';
-import { PropertyViewComponent } from './property-view/property-view.component';
+import { PropertyViewComponent } from './property-tab/property-tab-body/property-view/property-view.component';
 import { ApplicationOperations } from '../../application-operations';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -31,7 +30,7 @@ export class DirectiveExplorerComponent implements OnInit {
   // Later, the property viewer may request more nested properties
   // from the backend.
   directivesData: DirectivesProperties | null = null;
-  currentSelectedElement: IndexedNode;
+  currentSelectedElement: IndexedNode = null;
   forest: Node[];
   highlightIDinTreeFromElement: ElementID | null = null;
 
@@ -81,22 +80,6 @@ export class DirectiveExplorerComponent implements OnInit {
     this.messageBus.emit('getLatestComponentExplorerView', [this._constructViewQuery()]);
   }
 
-  getEntityID(name: string): DirectiveID {
-    const idx: DirectiveID = {
-      element: this.currentSelectedElement.id,
-    };
-    const cmp = this.currentSelectedElement.component;
-    if (cmp && cmp.name === name) {
-      return idx;
-    }
-    idx.directive = this.currentSelectedElement.directives.findIndex(d => d.name === name);
-    return idx;
-  }
-
-  nameTracking(_: number, item: { key: string }): string {
-    return item.key;
-  }
-
   viewSource(): void {
     this._appOperations.viewSource(this.currentSelectedElement.id);
   }
@@ -140,11 +123,11 @@ export class DirectiveExplorerComponent implements OnInit {
     document.execCommand('copy');
   }
 
-  handleHighlightFromComponent(id: ElementID) {
+  handleHighlightFromComponent(id: ElementID): void {
     this.messageBus.emit('highlightElementFromComponentTree', [id]);
   }
 
-  handleUnhighlightFromComponent(id: ElementID | null) {
+  handleUnhighlightFromComponent(id: ElementID | null): void {
     this.messageBus.emit('removeHighlightFromElement');
   }
 }

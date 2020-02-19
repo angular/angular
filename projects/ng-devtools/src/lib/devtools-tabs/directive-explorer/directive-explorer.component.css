@@ -4,53 +4,9 @@
   justify-content: space-between;
 }
 
-ng-property-view,
-.property-wrapper {
+.property-tab-wrapper {
   overflow: auto;
-}
-
-ng-property-view {
-  width: 100%;
-}
-
-.property-wrapper {
   height: 100%;
-  width: 350px;
+  width: 100%;
   border-left: 1px solid #ccc;
-}
-
-.explorer-panel {
-  /*max-height: 100%;*/
-}
-
-.explorer-panel header {
-  background-color: #eee;
-  padding: 0 5px;
-  border-bottom: 1px solid #ccc;
-  color: hsla(0, 0%, 32%, 1);
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  line-height: 25px;
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.property-wrapper .element-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  min-height: 40px;
-}
-
-.property-wrapper .element-header .component-name {
-  margin-left: 8px;
-  font-weight: 400;
-}
-
-.property-wrapper .element-header .element-name {
-  margin-left: 8px;
-  font-weight: 300;
 }

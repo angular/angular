@@ -5,8 +5,8 @@
     *matTreeNodeDef="let node"
     matTreeNodePadding
   >
-        <span class="name non-expandable">{{ node.prop.name }}</span
-        >:&nbsp;
+    <span class="name non-expandable">{{ node.prop.name }}</span
+    >:&nbsp;
     <span class="value">{{ node.prop.descriptor.preview }}</span>
   </mat-tree-node>
   <mat-tree-node
@@ -16,13 +16,13 @@
     matTreeNodePadding
   >
     <div (click)="toggle(node)">
-      <span class="arrow"> {{ treeControl.isExpanded(node) ? '▼' : '►' }} </span>&nbsp;<span
-      class="name"
-    >{{ node.prop.name }}</span
-    >:&nbsp;
-    <span class="value">
-          {{ treeControl.isExpanded(node) ? '' : node.prop.descriptor.preview }}
-        </span>
+      <span class="arrow"> {{ treeControl.isExpanded(node) ? '▼' : '►' }} </span>&nbsp;<span class="name">{{
+        node.prop.name
+      }}</span
+      >:&nbsp;
+      <span class="value">
+        {{ treeControl.isExpanded(node) ? '' : node.prop.descriptor.preview }}
+      </span>
     </div>
   </mat-tree-node>
 </mat-tree>

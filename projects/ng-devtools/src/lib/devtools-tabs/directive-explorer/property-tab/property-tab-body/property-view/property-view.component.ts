@@ -1,13 +1,14 @@
-import { Component, Input } from '@angular/core';
-import { Descriptor, MessageBus, Events, DirectiveID, NestedProp } from 'protocol';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { Descriptor, DirectiveID, Events, MessageBus, NestedProp } from 'protocol';
 import { FlatTreeControl } from '@angular/cdk/tree';
-import { PropertyDataSource, FlatNode } from './property-data-source';
+import { FlatNode, PropertyDataSource } from './property-data-source';
 import { getExpandedDirectiveProperties } from './property-expanded-directive-properties';
 
 @Component({
   selector: `ng-property-view`,
   templateUrl: './property-view.component.html',
   styleUrls: ['./property-view.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PropertyViewComponent {
   @Input() set data(data: { [prop: string]: Descriptor }) {
