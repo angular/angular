@@ -10,7 +10,8 @@
     "src/polyfills.ts",
     "src/app/backend.ts",
     "src/app/background.ts",
-    "src/app/content-script.ts"
+    "src/app/content-script.ts",
+    "src/app/ng-validate.ts",
   ],
   "include": ["src/**/*.d.ts"]
 }

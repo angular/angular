@@ -29,12 +29,10 @@
           },
           "configurations": {
             "production": {
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ],
+              "fileReplacements": [{
+                "replace": "src/environments/environment.ts",
+                "with": "src/environments/environment.prod.ts"
+              }],
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -43,8 +41,7 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
-              "budgets": [
-                {
+              "budgets": [{
                   "type": "initial",
                   "maximumWarning": "2mb",
                   "maximumError": "5mb"
@@ -133,19 +130,18 @@
               "projects/shell-chrome/src/favicon.ico",
               "projects/shell-chrome/src/assets",
               "projects/shell-chrome/src/manifest.json",
-              "projects/shell-chrome/src/devtools.html"
+              "projects/shell-chrome/src/devtools.html",
+              "projects/shell-chrome/src/popups",
             ],
             "styles": ["projects/shell-chrome/src/styles.scss"],
             "scripts": []
           },
           "configurations": {
             "production": {
-              "fileReplacements": [
-                {
-                  "replace": "projects/shell-chrome/src/environments/environment.ts",
-                  "with": "projects/shell-chrome/src/environments/environment.prod.ts"
-                }
-              ],
+              "fileReplacements": [{
+                "replace": "projects/shell-chrome/src/environments/environment.ts",
+                "with": "projects/shell-chrome/src/environments/environment.prod.ts"
+              }],
               "optimization": true,
               "outputHashing": "none",
               "sourceMap": false,
@@ -154,13 +150,11 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "5mb"
-                }
-              ]
+              "budgets": [{
+                "type": "initial",
+                "maximumWarning": "2mb",
+                "maximumError": "5mb"
+              }]
             }
           }
         },

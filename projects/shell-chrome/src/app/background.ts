@@ -42,7 +42,6 @@ const isNumeric = (str: string): boolean => {
 const installContentScript = (tabId: number) => {
   console.log('Installing the content-script');
   chrome.tabs.executeScript(tabId, { file: '/content-script.js' }, () => {});
-  chrome.tabs.executeScript(tabId, { file: '/runtime.js' }, () => {});
 };
 
 const doublePipe = (devtoolsPort: chrome.runtime.Port, contentScriptPort: chrome.runtime.Port, tab: string) => {
@@ -69,3 +68,18 @@ const doublePipe = (devtoolsPort: chrome.runtime.Port, contentScriptPort: chrome
   devtoolsPort.onDisconnect.addListener(shutdown.bind(null, 'devtools'));
   contentScriptPort.onDisconnect.addListener(shutdown.bind(null, 'content-script'));
 };
+
+chrome.runtime.onMessage.addListener((req, sender) => {
+  if (sender.tab && req.isSupportedAngularVersion) {
+    chrome.browserAction.setIcon({
+      tabId: sender.tab.id,
+      path: {
+        16: `assets/favicon.ico`,
+      },
+    });
+    chrome.browserAction.setPopup({
+      tabId: sender.tab.id,
+      popup: req.isDebugMode ? `popups/enabled.html` : `popups/production.html`,
+    });
+  }
+});
