@@ -202,13 +202,13 @@ See also [Schematics CLI](#schematics-cli).
 
 ## component
 
-A class with the `@Component()` [decorator](#decorator) that associates it with a companion [template](#template). Together, the component and template define a [view](#view).
+A class with the `@Component()` [decorator](#decorator) that associates it with a companion [template](#template). Together, the component class and template define a [view](#view).
 A component is a special type of [directive](#directive).
 The `@Component()` decorator extends the `@Directive()` decorator with template-oriented features.
 
 An Angular component class is responsible for exposing data and handling most of the view's display and user-interaction logic through [data binding](#data-binding).
 
-Read more about components, templates, and views in [Architecture Overview](guide/architecture).
+Read more about component classes, templates, and views in [Introduction to Angular concepts](guide/architecture).
 
 ## configuration
 
@@ -878,13 +878,13 @@ You can also define a custom builder, and add a target to the project configurat
 
 ## template
 
-Code associated with a component that defines how to render the component's [view](#view).
+Code that defines how to render a component's [view](#view).
 
 A template combines straight HTML with Angular [data-binding](#data-binding) syntax, [directives](#directive),
 and [template expressions](#template-expression) (logical constructs).
-The Angular elements insert or calculate values that modify the HTML elements before the page is displayed.
+The Angular elements insert or calculate values that modify the HTML elements before the page is displayed. Learn more about Angular template language in the [Template Syntax](guide/template-syntax) guide.
 
-A template is associated with a [component](#component) class through the `@Component()` [decorator](#decorator). The HTML can be provided inline, as the value of the `template` property, or in a separate HTML file linked through the `templateUrl` property.
+A template is associated with a [component class](#component) through the `@Component()` [decorator](#decorator). The template code can be provided inline, as the value of the `template` property, or in a separate HTML file linked through the `templateUrl` property.
 
 Additional templates, represented by `TemplateRef` objects, can define alternative or *embedded* views, which can be referenced from multiple components.
 
@@ -963,12 +963,12 @@ To learn more, see [Angular Universal: server-side rendering](guide/universal).
 ## view
 
 The smallest grouping of display elements that can be created and destroyed together.
-Angular renders a view under the control of one or more [directives](#directive),
-especially [component](#component) directives and their companion [templates](#template).
+Angular renders a view under the control of one or more [directives](#directive).
 
-A view is specifically represented by a `ViewRef` instance associated with the component.
-A view that belongs to a component is called a *host view*.
-Views are typically collected into [view hierarchies](#view-tree).
+A [component](#component) class and its associated [template](#template) define a view.
+A view is specifically represented by a `ViewRef` instance associated with a component.
+A view that belongs immediately to a component is called a *host view*.
+Views are typically collected into [view hierarchies](#view-tree). 
 
 Properties of elements in a view can change dynamically, in response to user actions;
 the structure (number and order) of elements in a view can't.
