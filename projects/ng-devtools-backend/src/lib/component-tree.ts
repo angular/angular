@@ -1,4 +1,4 @@
-import { deeplySerializeSelectedProperties } from './state-serializer';
+import { deeplySerializeSelectedProperties } from './state-serializer/state-serializer';
 
 declare const ng: any;
 
@@ -36,6 +36,7 @@ export const getLatestComponentState = (query: ComponentExplorerViewQuery): Dire
     if (!node) {
       return undefined;
     }
+
     result = {};
     node.directives.forEach(dir => {
       if (!query.expandedProperties[dir.name]) {
@@ -45,6 +46,7 @@ export const getLatestComponentState = (query: ComponentExplorerViewQuery): Dire
         props: deeplySerializeSelectedProperties(dir.instance, query.expandedProperties[dir.name]),
       };
     });
+
     if (node.component) {
       if (!query.expandedProperties[node.component.name]) {
         return;

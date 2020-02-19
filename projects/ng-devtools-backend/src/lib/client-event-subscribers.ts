@@ -8,8 +8,8 @@ import {
   prepareForestForSerialization,
 } from './component-tree';
 import { start as startProfiling, stop as stopProfiling } from './recording';
-import { serializeComponentState } from './state-serializer';
-import { ComponentInspector, ComponentInspectorOptions } from './component-inspector';
+import { serializeComponentState } from './state-serializer/state-serializer';
+import { ComponentInspector, ComponentInspectorOptions } from './component-inspector/component-inspector';
 import { setConsoleReference } from './selected-component';
 import { unHighlight } from './highlighter';
 import {

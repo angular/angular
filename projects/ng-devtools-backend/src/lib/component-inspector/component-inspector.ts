@@ -1,13 +1,13 @@
-import { unHighlight, highlight, findComponentAndHost } from './highlighter';
+import { unHighlight, highlight, findComponentAndHost } from '../highlighter';
 import { Type } from '@angular/core';
 import {
   getDirectiveForest,
   ComponentTreeNode,
   findNodeInForest,
   getIndexForNativeElementInForest,
-} from './component-tree';
+} from '../component-tree';
 import { ElementID } from 'protocol';
-import { indexForest, IndexedNode } from './recording/observer';
+import { indexForest, IndexedNode } from '../recording/observer';
 
 export interface ComponentInspectorOptions {
   onComponentEnter: (id: ElementID) => void;
