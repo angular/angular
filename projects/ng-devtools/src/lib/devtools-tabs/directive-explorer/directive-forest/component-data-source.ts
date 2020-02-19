@@ -82,20 +82,33 @@ export class ComponentDataSource extends DataSource<FlatNode> {
     const indexedForest = indexForest(forest);
     const flattenedCollection = this._treeFlattener.flattenNodes(indexedForest);
 
-    const newItems = diff(this._differ, this.data, flattenedCollection);
+    const { newItems, movedItems } = diff(this._differ, this.data, flattenedCollection);
+
+    // We need to preserve the references
+    // which means that we copy potentially updated data.
+    for (const record of movedItems) {
+      const previous = this.data[record.currentIndex];
+      const current = flattenedCollection[record.currentIndex];
+      previous.directives = current.directives;
+      previous.expandable = current.expandable;
+      previous.level = current.level;
+      previous.name = current.name;
+      previous.original = current.original;
+      previous.position = current.position;
+    }
 
     this._treeControl.dataNodes = this.data;
-    this._flattenedData.next(this.data);
 
+    this._flattenedData.next(this.data);
     this._data.next(indexedForest);
 
     return newItems;
   }
 
   connect(collectionViewer: CollectionViewer): Observable<FlatNode[]> {
-    return merge(collectionViewer.viewChange, this._treeControl.expansionModel.changed, this._flattenedData).pipe(
+    return this._data.pipe(
       map(() => {
-        this._expandedData.next(this._treeFlattener.expandFlattenedNodes(this._flattenedData.value, this._treeControl));
+        this._expandedData.next(this.data);
         return this._expandedData.value;
       })
     );

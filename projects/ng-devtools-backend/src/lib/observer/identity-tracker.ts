@@ -53,10 +53,10 @@ export class IdentityTracker {
 
       if (isComponent) {
         for (const child of children) {
-          if (child.component.instance === cmpOrDirective) {
+          if (child.component && child.component.instance === cmpOrDirective) {
             break;
           }
-          if (this._createdDirectives.has(child.component.instance)) {
+          if (child.component && this._createdDirectives.has(child.component.instance)) {
             childIdx++;
           }
         }
@@ -65,7 +65,7 @@ export class IdentityTracker {
           if (child.directives && child.directives.length && child.directives.some(d => d === cmpOrDirective[0])) {
             break;
           }
-          if (this._createdDirectives.has(child.component.instance)) {
+          if (child.component && this._createdDirectives.has(child.component.instance)) {
             childIdx++;
           }
         }
