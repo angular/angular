@@ -127,6 +127,21 @@ export class CounterDirective implements OnChanges {
   }
 }
 
+interface WithContextDirectiveContext {
+  $implicit: {implicitPerson: Person;};
+  nonImplicitPerson: Person;
+}
+
+@Directive({selector: '[withContext]'})
+export class WithContextDirective {
+  constructor(_template: TemplateRef<WithContextDirectiveContext>) {}
+
+  static ngTemplateContextGuard(dir: WithContextDirective, ctx: unknown):
+      ctx is WithContextDirectiveContext {
+    return true;
+  }
+}
+
 /**
  * This Component provides the `test-comp` selector.
  */
