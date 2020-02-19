@@ -415,8 +415,8 @@ The following are some of the key AngularJS built-in directives and their equiva
       <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="router-link"></code-example>
 
 
-      For more information on routing, see the [RouterLink binding](guide/router#router-link)
-      section of the [Routing & Navigation](guide/router) page.
+      For more information on routing, see [Defining a basic route](guide/router#basic-route)
+      in the [Routing & Navigation](guide/router) page.
 
     </td>
 

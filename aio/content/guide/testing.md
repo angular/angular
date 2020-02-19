@@ -1958,7 +1958,7 @@ for the `id` to change during its lifetime.
 
 <div class="alert is-helpful">
 
-The [Router](guide/router#route-parameters) guide covers `ActivatedRoute.paramMap` in more detail.
+The [ActivatedRoute in action](guide/router#activated-route-in-action) section of the [Router](guide/router) guide covers `ActivatedRoute.paramMap` in more detail.
 
 </div>
 
