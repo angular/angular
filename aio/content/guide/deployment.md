@@ -321,7 +321,7 @@ absolutely must be present when the app starts.
 
 Configure the Angular Router to defer loading of all other modules (and their associated code), either by
 [waiting until the app has launched](guide/router#preloading  "Preloading")
-or by [_lazy loading_](guide/router#asynchronous-routing "Lazy loading")
+or by [_lazy loading_](guide/router#lazy-loading "Lazy loading")
 them on demand.
 
 <div class="callout is-helpful">

@@ -318,6 +318,7 @@ const routes: Routes = [{
 
 
 {@a activatedroute-props}
+
 ### ActivatedRoute params and queryParams properties
 
 [ActivatedRoute](api/router/ActivatedRoute) contains two [properties](api/router/ActivatedRoute#properties) that are less capable than their replacements and may be deprecated in a future Angular version.
@@ -327,7 +328,7 @@ const routes: Routes = [{
 | `params` | `paramMap` |
 | `queryParams` | `queryParamMap` |
 
-For more information see the [Router guide](guide/router#activated-route).
+For more information see the [Getting route information](guide/router#activated-route) section of the [Router guide](guide/router).
 
 
 {@a reflect-metadata}
