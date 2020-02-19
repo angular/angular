@@ -1,3 +1,20 @@
+<a name="9.0.2"></a>
+## [9.0.2](https://github.com/angular/angular/compare/9.0.1...9.0.2) (2020-02-19)
+
+
+### Bug Fixes
+
+* **core:** better handing of ICUs outside of i18n blocks ([#35347](https://github.com/angular/angular/issues/35347)) ([4fb5e21](https://github.com/angular/angular/commit/4fb5e21))
+* **core:** correctly concatenate static and dynamic binding to `class` when shadowed ([#35350](https://github.com/angular/angular/issues/35350)) ([8220363](https://github.com/angular/angular/commit/8220363)), closes [#35335](https://github.com/angular/angular/issues/35335)
+* **core:** remove support for `Map`/`Set` in `[class]`/`[style]` bindings ([#35392](https://github.com/angular/angular/issues/35392)) ([1797390](https://github.com/angular/angular/commit/1797390))
+* **ivy:** `LFrame` needs to release memory on `leaveView()` ([#35156](https://github.com/angular/angular/issues/35156)) ([4b1dcaf](https://github.com/angular/angular/commit/4b1dcaf)), closes [#35148](https://github.com/angular/angular/issues/35148)
+* **ivy:** add attributes and classes to host elements based on selector ([#34481](https://github.com/angular/angular/issues/34481)) ([03a8b16](https://github.com/angular/angular/commit/03a8b16))
+* **ivy:** error if directive with synthetic property binding is on same node as directive that injects ViewContainerRef ([#35343](https://github.com/angular/angular/issues/35343)) ([a30fd29](https://github.com/angular/angular/commit/a30fd29)), closes [#35342](https://github.com/angular/angular/issues/35342)
+* **ivy:** queries should match elements inside ng-container with the descendants: false option ([#35384](https://github.com/angular/angular/issues/35384)) ([fd4ce84](https://github.com/angular/angular/commit/fd4ce84)), closes [#34768](https://github.com/angular/angular/issues/34768)
+* **ivy:** wrong context passed to ngOnDestroy when resolved multiple times ([#35249](https://github.com/angular/angular/issues/35249)) ([0671e54](https://github.com/angular/angular/commit/0671e54)), closes [#35167](https://github.com/angular/angular/issues/35167)
+
+
+
 <a name="9.0.1"></a>
 ## [9.0.1](https://github.com/angular/angular/compare/9.0.0...9.0.1) (2020-02-12)
 
