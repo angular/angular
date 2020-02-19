@@ -91,7 +91,10 @@ function getVarDeclarations(
       continue;
     }
     for (const variable of current.variables) {
-      let symbol = info.members.get(variable.value) || info.query.getBuiltinType(BuiltinType.Any);
+      let symbol = info.members.get(variable.value);
+      if (!symbol) {
+        symbol = getVariableTypeFromDirectiveContext(variable.value, info.query, current);
+      }
       const kind = info.query.getTypeKind(symbol);
       if (kind === BuiltinType.Any || kind === BuiltinType.Unbound) {
         // For special cases such as ngFor and ngIf, the any type is not very useful.
@@ -115,22 +118,24 @@ function getVarDeclarations(
 }
 
 /**
- * Gets the type of an ngFor exported value, as enumerated in
- * https://angular.io/api/common/NgForOfContext
- * @param value exported value name
+ * Resolve the type for the variable in `templateElement` by finding the structural
+ * directive which has the context member. Returns any when not found.
+ * @param value variable value name
  * @param query type symbol query
+ * @param templateElement
  */
-function getNgForExportedValueType(value: string, query: SymbolQuery): Symbol|undefined {
-  switch (value) {
-    case 'index':
-    case 'count':
-      return query.getBuiltinType(BuiltinType.Number);
-    case 'first':
-    case 'last':
-    case 'even':
-    case 'odd':
-      return query.getBuiltinType(BuiltinType.Boolean);
+function getVariableTypeFromDirectiveContext(
+    value: string, query: SymbolQuery, templateElement: EmbeddedTemplateAst): Symbol {
+  for (const {directive} of templateElement.directives) {
+    const context = query.getTemplateContext(directive.type.reference);
+    if (context) {
+      const member = context.get(value);
+      if (member && member.type) {
+        return member.type;
+      }
+    }
   }
+  return query.getBuiltinType(BuiltinType.Any);
 }
 
 /**
@@ -145,38 +150,38 @@ function getNgForExportedValueType(value: string, query: SymbolQuery): Symbol|un
 function refinedVariableType(
     value: string, mergedTable: SymbolTable, query: SymbolQuery,
     templateElement: EmbeddedTemplateAst): Symbol {
-  // Special case the ngFor directive
-  const ngForDirective = templateElement.directives.find(d => {
-    const name = identifierName(d.directive.type);
-    return name == 'NgFor' || name == 'NgForOf';
-  });
-  if (ngForDirective) {
-    const ngForOfBinding = ngForDirective.inputs.find(i => i.directiveName == 'ngForOf');
-    if (ngForOfBinding) {
-      // Check if the variable value is a type exported by the ngFor statement.
-      let result = getNgForExportedValueType(value, query);
-
-      // Otherwise, check if there is a known type for the ngFor binding.
-      const bindingType = new AstType(mergedTable, query, {}).getType(ngForOfBinding.value);
-      if (!result && bindingType) {
-        result = query.getElementType(bindingType);
-      }
-
-      if (result) {
-        return result;
+  if (value === '$implicit') {
+    // Special case the ngFor directive
+    const ngForDirective = templateElement.directives.find(d => {
+      const name = identifierName(d.directive.type);
+      return name == 'NgFor' || name == 'NgForOf';
+    });
+    if (ngForDirective) {
+      const ngForOfBinding = ngForDirective.inputs.find(i => i.directiveName == 'ngForOf');
+      if (ngForOfBinding) {
+        // Check if there is a known type for the ngFor binding.
+        const bindingType = new AstType(mergedTable, query, {}).getType(ngForOfBinding.value);
+        if (bindingType) {
+          const result = query.getElementType(bindingType);
+          if (result) {
+            return result;
+          }
+        }
       }
     }
   }
 
   // Special case the ngIf directive ( *ngIf="data$ | async as variable" )
-  const ngIfDirective =
-      templateElement.directives.find(d => identifierName(d.directive.type) === 'NgIf');
-  if (ngIfDirective) {
-    const ngIfBinding = ngIfDirective.inputs.find(i => i.directiveName === 'ngIf');
-    if (ngIfBinding) {
-      const bindingType = new AstType(mergedTable, query, {}).getType(ngIfBinding.value);
-      if (bindingType) {
-        return bindingType;
+  if (value === 'ngIf') {
+    const ngIfDirective =
+        templateElement.directives.find(d => identifierName(d.directive.type) === 'NgIf');
+    if (ngIfDirective) {
+      const ngIfBinding = ngIfDirective.inputs.find(i => i.directiveName === 'ngIf');
+      if (ngIfBinding) {
+        const bindingType = new AstType(mergedTable, query, {}).getType(ngIfBinding.value);
+        if (bindingType) {
+          return bindingType;
+        }
       }
     }
   }
