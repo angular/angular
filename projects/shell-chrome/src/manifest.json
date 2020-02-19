@@ -15,7 +15,7 @@
   },
 
   "browser_action": {
-    "default_popup": "popup.html"
+    "default_popup": "popups/disabled.html"
   },
 
   "devtools_page": "devtools.html",
@@ -27,5 +27,18 @@
     "persistent": false
   },
 
-  "permissions": ["tabs", "http://*/*", "https://*/*", "file:///*"]
+  "permissions": ["activeTab", "http://*/*", "https://*/*", "file:///*"],
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["runtime.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["ng-validate.js"],
+      "run_at": "document_idle"
+    }
+  ]
 }
