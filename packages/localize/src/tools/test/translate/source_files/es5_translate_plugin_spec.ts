@@ -103,6 +103,22 @@ describe('makeEs5Plugin', () => {
       expect(output.code).toEqual('"try" + (40 + 2) + "me";');
     });
 
+    it('should handle minified code', () => {
+      const diagnostics = new Diagnostics();
+      const input = `$localize(
+        cachedObj||
+        (
+          cookedParts=['try', 'me'],
+          rawParts=['try', 'me'],
+          Object.defineProperty?
+            Object.defineProperty(cookedParts,"raw",{value:rawParts}):
+            cookedParts.raw=rawParts,
+          cachedObj=cookedParts
+        ),40 + 2)`;
+      const output = transformSync(input, {plugins: [makeEs5TranslatePlugin(diagnostics, {})]}) !;
+      expect(output.code).toEqual('"try" + (40 + 2) + "me";');
+    });
+
     it('should handle lazy-load helper calls', () => {
       const diagnostics = new Diagnostics();
       const input = `

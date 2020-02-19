@@ -89,6 +89,24 @@ export function unwrapMessagePartsFromLocalizeCall(call: NodePath<t.CallExpressi
         throw new BabelParseError(
             cooked.node, 'Unexpected "makeTemplateObject()" function (expected an expression).');
       }
+    } else if (right.isSequenceExpression()) {
+      const expressions = right.get('expressions');
+      if (expressions.length > 2) {
+        // This is a minified sequence expression, where the first two expressions in the sequence
+        // are assignments of the cooked and raw arrays respectively.
+        const [first, second] = expressions;
+        if (first.isAssignmentExpression() && second.isAssignmentExpression()) {
+          cooked = first.get('right');
+          if (!cooked.isExpression()) {
+            throw new BabelParseError(
+                first.node, 'Unexpected cooked value, expected an expression.');
+          }
+          raw = second.get('right');
+          if (!raw.isExpression()) {
+            throw new BabelParseError(second.node, 'Unexpected raw value, expected an expression.');
+          }
+        }
+      }
     }
   }
 
