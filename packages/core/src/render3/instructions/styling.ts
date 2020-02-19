@@ -625,23 +625,25 @@ export function getHostDirectiveDef(tData: TData): DirectiveDef<any>|null {
 export function toStylingKeyValueArray(
     keyValueArraySet: (keyValueArray: KeyValueArray<any>, key: string, value: any) => void,
     stringParser: (styleKeyValueArray: KeyValueArray<any>, text: string) => void,
-    value: string|string[]|{[key: string]: any}|null|undefined): KeyValueArray<any> {
+    value: string|string[]|{[key: string]: any}|SafeValue|null|undefined): KeyValueArray<any> {
   if (value == null /*|| value === undefined */ || value === '') return EMPTY_ARRAY as any;
   const styleKeyValueArray: KeyValueArray<any> = [] as any;
-  if (Array.isArray(value)) {
-    for (let i = 0; i < value.length; i++) {
-      keyValueArraySet(styleKeyValueArray, value[i], true);
+  const unwrappedValue = unwrapSafeValue(value) as string | string[] | {[key: string]: any};
+  if (Array.isArray(unwrappedValue)) {
+    for (let i = 0; i < unwrappedValue.length; i++) {
+      keyValueArraySet(styleKeyValueArray, unwrappedValue[i], true);
     }
-  } else if (typeof value === 'object') {
-    for (const key in value) {
-      if (value.hasOwnProperty(key)) {
-        keyValueArraySet(styleKeyValueArray, key, value[key]);
+  } else if (typeof unwrappedValue === 'object') {
+    for (const key in unwrappedValue) {
+      if (unwrappedValue.hasOwnProperty(key)) {
+        keyValueArraySet(styleKeyValueArray, key, unwrappedValue[key]);
       }
     }
-  } else if (typeof value === 'string') {
-    stringParser(styleKeyValueArray, value);
+  } else if (typeof unwrappedValue === 'string') {
+    stringParser(styleKeyValueArray, unwrappedValue);
   } else {
-    ngDevMode && throwError('Unsupported styling type ' + typeof value + ': ' + value);
+    ngDevMode &&
+        throwError('Unsupported styling type ' + typeof unwrappedValue + ': ' + unwrappedValue);
   }
   return styleKeyValueArray;
 }
