@@ -1,7 +1,5 @@
 import { deeplySerializeSelectedProperties } from './state-serializer/state-serializer';
 
-declare const ng: any;
-
 import {
   ComponentType,
   DirectiveType,
@@ -12,6 +10,7 @@ import {
 } from 'protocol';
 import { getComponentName } from './highlighter';
 import { IndexedNode } from './recording/observer';
+import { DebuggingAPI } from './interfaces';
 
 export interface DirectiveInstanceType extends DirectiveType {
   instance: any;
@@ -32,7 +31,10 @@ export interface DirectiveForestBuilderOptions {
 export const getLatestComponentState = (query: ComponentExplorerViewQuery): DirectivesProperties | undefined => {
   let result: DirectivesProperties | undefined;
   if (query.selectedElement && query.expandedProperties) {
-    const node = queryComponentForest(query.selectedElement, getDirectiveForest());
+    const node = queryComponentForest(
+      query.selectedElement,
+      getDirectiveForest(document.documentElement, (window as any).ng)
+    );
     if (!node) {
       return undefined;
     }
@@ -80,20 +82,22 @@ export const prepareForestForSerialization = (roots: ComponentTreeNode[]): Compo
   });
 };
 
-export const getDirectiveForest = (root = document.documentElement): ComponentTreeNode[] =>
+export const getDirectiveForest = (root: HTMLElement, ngd: DebuggingAPI): ComponentTreeNode[] =>
   buildDirectiveForest(
     root,
     { element: '__ROOT__', component: null, directives: [], children: [] },
-    { getDirectives: true }
+    { getDirectives: true },
+    ngd
   );
 
-export const getComponentForest = (root = document.documentElement): ComponentTreeNode[] =>
-  buildDirectiveForest(root, { element: '__ROOT__', component: null, directives: [], children: [] });
+export const getComponentForest = (root: HTMLElement, ngd: DebuggingAPI): ComponentTreeNode[] =>
+  buildDirectiveForest(root, { element: '__ROOT__', component: null, directives: [], children: [] }, {}, ngd);
 
 const buildDirectiveForest = (
   node: Element,
   tree: ComponentTreeNode | undefined,
-  options: DirectiveForestBuilderOptions = {}
+  options: DirectiveForestBuilderOptions = {},
+  ngd: DebuggingAPI
 ): ComponentTreeNode[] => {
   if (!node) {
     return [tree];
@@ -101,17 +105,17 @@ const buildDirectiveForest = (
   let dirs = [];
   if (tree.element !== '__ROOT__' && options.getDirectives) {
     // Need to make sure we're in a component tree
-    // otherwise, ng.getDirectives will throw without
+    // otherwise, ngd.getDirectives will throw without
     // a root node.
     try {
-      dirs = ng.getDirectives(node) || [];
+      dirs = ngd.getDirectives(node) || [];
     } catch (e) {
       console.warn('Cannot find context for element', node);
     }
   }
-  const cmp = ng.getComponent(node);
+  const cmp = ngd.getComponent(node);
   if (!cmp && !dirs.length) {
-    Array.from(node.children).forEach(c => buildDirectiveForest(c, tree, options));
+    Array.from(node.children).forEach(c => buildDirectiveForest(c, tree, options, ngd));
     return tree.children;
   }
   const current: ComponentTreeNode = {
@@ -137,7 +141,7 @@ const buildDirectiveForest = (
     current.element = node.tagName.toLowerCase();
   }
   tree.children.push(current);
-  Array.from(node.children).forEach(c => buildDirectiveForest(c, current, options));
+  Array.from(node.children).forEach(c => buildDirectiveForest(c, current, options, ngd));
   return tree.children;
 };
 
@@ -175,14 +179,15 @@ const findElementIDFromNativeElementInForest = (
   forest: IndexedNode[],
   nativeElement: HTMLElement
 ): ElementID | null => {
-  for (let i = 0; i < forest.length; i++) {
-    if (forest[i].nativeElement === nativeElement) {
-      return forest[i].id;
+  for (const el of forest) {
+    if (el.nativeElement === nativeElement) {
+      return el.id;
     }
   }
-  for (let i = 0; i < forest.length; i++) {
-    if (forest[i].children.length) {
-      return findElementIDFromNativeElementInForest(forest[i].children, nativeElement);
+
+  for (const el of forest) {
+    if (el.children.length) {
+      return findElementIDFromNativeElementInForest(el.children, nativeElement);
     }
   }
   return null;
@@ -190,5 +195,5 @@ const findElementIDFromNativeElementInForest = (
 
 export const findNodeFromSerializedPathId = (serializedId: string) => {
   const id: number[] = serializedId.split(',').map(index => parseInt(index, 10));
-  return queryComponentForest(id, getDirectiveForest());
+  return queryComponentForest(id, getDirectiveForest(document.documentElement, (window as any).ng));
 };

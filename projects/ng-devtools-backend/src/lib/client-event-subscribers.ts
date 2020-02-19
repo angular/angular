@@ -59,7 +59,7 @@ const initChangeDetection = (messageBus: MessageBus<Events>) => {
 const getLatestComponentExplorerViewCallback = (messageBus: MessageBus<Events>) => query => {
   messageBus.emit('latestComponentExplorerView', [
     {
-      forest: prepareForestForSerialization(getDirectiveForest()),
+      forest: prepareForestForSerialization(getDirectiveForest(document.documentElement, (window as any).ng)),
       properties: getLatestComponentState(query),
     },
   ]);
@@ -74,7 +74,7 @@ const stopProfilingCallback = (messageBus: MessageBus<Events>) => () => {
 };
 
 const getElementDirectivesPropertiesCallback = (messageBus: MessageBus<Events>) => (id: ElementID) => {
-  const node = queryComponentForest(id, getDirectiveForest());
+  const node = queryComponentForest(id, getDirectiveForest(document.documentElement, (window as any).ng));
   if (node) {
     messageBus.emit('elementDirectivesProperties', [serializeNodeDirectiveProperties(node)]);
   } else {
@@ -83,12 +83,12 @@ const getElementDirectivesPropertiesCallback = (messageBus: MessageBus<Events>) 
 };
 
 const selectedComponentCallback = (id: ElementID) => {
-  const node = queryComponentForest(id, getDirectiveForest());
+  const node = queryComponentForest(id, getDirectiveForest(document.documentElement, (window as any).ng));
   setConsoleReference(node);
 };
 
 const getNestedPropertiesCallback = (messageBus: MessageBus<Events>) => (id: DirectiveID, propPath: string[]) => {
-  const node = queryComponentForest(id.element, getDirectiveForest());
+  const node = queryComponentForest(id.element, getDirectiveForest(document.documentElement, (window as any).ng));
   if (node) {
     let current = (id.directive === undefined ? node.component : node.directives[id.directive]).instance;
     for (const prop of propPath) {

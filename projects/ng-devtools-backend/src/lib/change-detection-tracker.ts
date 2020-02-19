@@ -7,7 +7,7 @@ export const onChangeDetection = (callback: () => void): void => {
   if (hookInitialized) {
     return;
   }
-  const forest = getDirectiveForest();
+  const forest = getDirectiveForest(document.documentElement, (window as any).ng);
   listenAndNotifyOnUpdates(forest, callback);
   hookInitialized = true;
 };
