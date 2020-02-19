@@ -1,16 +1,22 @@
 import { ElementID, Node as ComponentNode } from 'protocol';
 import { ComponentInstanceType, ComponentTreeNode, DirectiveInstanceType, getComponentForest } from '../component-tree';
 import { componentMetadata } from '../utils';
+import { IdentityTracker } from './identity-tracker';
+
+export type LifecyleHook =
+  | 'ngOnInit'
+  | 'ngOnDestroy'
+  | 'ngOnChanges'
+  | 'ngDoCheck'
+  | 'ngAfterContentInit'
+  | 'ngAfterContentChecked'
+  | 'ngAfterViewInit'
+  | 'ngAfterViewChecked';
 
 export type CreationCallback = (component: any, id: ElementID) => void;
+export type LifecycleCallback = (component: any, hook: LifecyleHook, duration: any) => void;
 export type ChangeDetectionCallback = (component: any, id: ElementID, duration: number) => void;
 export type DestroyCallback = (component: any, id: ElementID) => void;
-
-interface TreeNode {
-  parent: TreeNode;
-  component: any;
-  children: TreeNode[];
-}
 
 declare const ng: any;
 
@@ -18,6 +24,7 @@ export interface Config {
   onCreate: CreationCallback;
   onDestroy: DestroyCallback;
   onChangeDetection: ChangeDetectionCallback;
+  onLifecycleHook: LifecycleCallback;
 }
 
 /**
@@ -30,13 +37,9 @@ export interface Config {
  */
 export class ComponentTreeObserver {
   private _mutationObserver = new MutationObserver(this._onMutation.bind(this));
-  private _elementComponent = new Map<Node, any>();
   private _patched = new Map<any, () => void>();
-  private _currentComponentID = new Map<any, ElementID>();
   private _lastChangeDetection = new Map<any, number>();
-  private _createdComponents = new Set<any>();
-  private _forest: TreeNode[] = [];
-  private _componentTreeNode = new Map<any, TreeNode>();
+  private _tracker = new IdentityTracker((window as any).ng);
 
   constructor(private _config: Partial<Config>) {}
 
@@ -54,12 +57,8 @@ export class ComponentTreeObserver {
 
   destroy() {
     this._mutationObserver.disconnect();
-    this._elementComponent = new Map<Node, any>();
-    this._currentComponentID = new Map<any, ElementID>();
     this._lastChangeDetection = new Map<any, number>();
-    this._createdComponents = new Set<any>();
-    this._forest = [];
-    this._componentTreeNode = new Map<any, TreeNode>();
+    this._tracker.destroy();
 
     for (const [cmp, template] of this._patched) {
       const meta = componentMetadata(cmp);
@@ -81,16 +80,11 @@ export class ComponentTreeObserver {
     }
     const component = ng.getComponent(node);
     if (component) {
-      this._elementComponent.set(node, component);
-
       if (this._config.onChangeDetection) {
         this._observeComponent(component);
       }
 
-      const parentComponent = getParentComponentFromDomNode(node);
-      this._updateInsertionID(component, parentComponent);
-
-      this._createdComponents.add(component);
+      this._tracker.insert(node, component);
 
       this._fireCreationCallback(component);
 
@@ -99,101 +93,59 @@ export class ComponentTreeObserver {
         this._lastChangeDetection.delete(component);
       }
     }
+
+    let directives = [];
+    try {
+      directives = ng.getDirectives(node);
+    } catch {}
+    if (directives.length) {
+      this._tracker.insert(node, directives);
+      directives.forEach(dir => {
+        this._fireCreationCallback(dir);
+      });
+    }
   }
 
-  private _fireCreationCallback(component): void {
-    const id = this._currentComponentID.get(component);
+  private _fireCreationCallback(component: any): void {
+    const id = this._tracker.getDirectiveID(component);
     this._config.onCreate(component, id);
   }
 
   private _fireChangeDetectionCallback(component): void {
     this._config.onChangeDetection(
       component,
-      this._currentComponentID.get(component),
+      this._tracker.getDirectiveID(component),
       this._lastChangeDetection.get(component)
     );
   }
 
   private _onDeletedNodesMutation(node: Node): void {
-    const component = this._elementComponent.get(node);
+    if (!(node instanceof HTMLElement)) {
+      return;
+    }
+
+    const component = ng.getComponent(node);
     if (component) {
-      this._elementComponent.delete(node);
-      this._updateDeletionID(component);
+      this._tracker.delete(component);
       this._fireDestroyCallback(component);
     }
+
+    let directives = [];
+    try {
+      directives = ng.getDirectives(node);
+    } catch {}
+
+    if (directives && directives.length) {
+      this._tracker.delete(directives[0]);
+      directives.forEach(dir => {
+        this._fireDestroyCallback(dir);
+      });
+    }
   }
 
-  private _fireDestroyCallback(component): void {
-    const id = this._currentComponentID.get(component);
+  private _fireDestroyCallback(component: any): void {
+    const id = this._tracker.getDirectiveID(component);
     this._config.onDestroy(component, id);
-  }
-
-  private _updateInsertionID(cmp: any, parent: any): void {
-    let parentTreeNode = null;
-    let parentID = [];
-    let childIdx = 0;
-    let siblingsArray = this._forest;
-    if (parent) {
-      const parentElement = ng.getHostElement(parent || document.documentElement);
-      const children = getComponentForest(parentElement)[0].children;
-
-      // tslint:disable-next-line:prefer-for-of
-      for (let i = 0; i < children.length; i++) {
-        if (children[i].component.instance === cmp) {
-          break;
-        }
-        if (this._componentTreeNode.has(children[i].component.instance)) {
-          childIdx++;
-        }
-      }
-      parentID = this._currentComponentID.get(parent);
-      parentTreeNode = this._componentTreeNode.get(parent);
-      siblingsArray = parentTreeNode.children;
-    }
-
-    const treeNode: TreeNode = {
-      parent: parentTreeNode,
-      children: [],
-      component: cmp,
-    };
-    siblingsArray.splice(childIdx, 0, treeNode);
-    this._currentComponentID.set(cmp, parentID.concat([childIdx]));
-    this._componentTreeNode.set(cmp, treeNode);
-
-    for (let i = childIdx + 1; i < siblingsArray.length; i++) {
-      const sibling = siblingsArray[i];
-      const siblingId = this._currentComponentID.get(sibling.component);
-      siblingId[siblingId.length - 1] = siblingId[siblingId.length - 1] + 1;
-      this._updateNestedNodeIds(sibling, siblingId.length - 1, 1);
-    }
-  }
-
-  private _updateDeletionID(cmp: any): void {
-    const node = this._componentTreeNode.get(cmp);
-    const parent = node.parent;
-    let childrenArray = this._forest;
-    if (parent) {
-      childrenArray = parent.children;
-    }
-
-    const childIdx = childrenArray.indexOf(node);
-    childrenArray.splice(childIdx, 1);
-
-    for (let i = childIdx; i < childrenArray.length; i++) {
-      const sibling = childrenArray[i].component;
-      const siblingId = this._currentComponentID.get(sibling);
-      // We removed the sibling node, so we need to decrease the position
-      siblingId[siblingId.length - 1] = siblingId[siblingId.length - 1] - 1;
-      this._updateNestedNodeIds(childrenArray[i], siblingId.length - 1, -1);
-    }
-  }
-
-  private _updateNestedNodeIds(p: TreeNode, level: number, incrementBy: number): void {
-    p.children.forEach(c => {
-      const id = this._currentComponentID.get(c.component);
-      id[level] = id[level] + incrementBy;
-      this._updateNestedNodeIds(c, level, incrementBy);
-    });
   }
 
   private _initializeChangeDetectionObserver(root: Element = document.documentElement): void {
@@ -202,7 +154,6 @@ export class ComponentTreeObserver {
     }
     const cmp = ng.getComponent(root);
     if (cmp) {
-      this._elementComponent.set(root, cmp);
       this._observeComponent(cmp);
     }
     // tslint:disable:prefer-for-of
@@ -221,8 +172,8 @@ export class ComponentTreeObserver {
     declarations.tView.template = function(_, component: any) {
       const start = performance.now();
       original.apply(this, arguments);
-      if (self._createdComponents.has(component)) {
-        self._config.onChangeDetection(component, self._currentComponentID.get(component), performance.now() - start);
+      if (self._tracker.hasDirective(component)) {
+        self._config.onChangeDetection(component, self._tracker.getDirectiveID(component), performance.now() - start);
       } else {
         self._lastChangeDetection.set(component, performance.now() - start);
       }
@@ -232,32 +183,14 @@ export class ComponentTreeObserver {
   }
 
   private _indexTree(): void {
-    const componentForest = indexForest(getComponentForest(document.documentElement));
-    componentForest.forEach(root => this._setIndexes(root));
-  }
-
-  private _setIndexes(root: IndexedNode, parent: TreeNode | null = null): void {
-    if (root.component) {
-      this._createdComponents.add(root.component.instance);
-      const node = {
-        component: root.component.instance,
-        parent,
-        children: [],
-      };
-      this._componentTreeNode.set(root.component.instance, node);
-      if (parent) {
-        parent.children.push(node);
-      } else {
-        this._forest.push(node);
-      }
-      parent = node;
-      this._currentComponentID.set(root.component.instance, root.id);
-    }
-    root.children.forEach(child => this._setIndexes(child, parent));
+    const componentForest = indexForest(getComponentForest(document.documentElement, (window as any).ng));
+    componentForest.forEach(root => this._tracker.index(root));
   }
 
   private _createOriginalTree(): void {
-    getComponentForest().forEach(root => this._fireInitialTreeCallbacks(root));
+    getComponentForest(document.documentElement, (window as any).ng).forEach(root =>
+      this._fireInitialTreeCallbacks(root)
+    );
   }
 
   private _fireInitialTreeCallbacks(root: ComponentTreeNode) {
@@ -286,20 +219,6 @@ const indexTree = (node: ComponentNode, idx: number, parentId = []): IndexedNode
     children: node.children.map((n, i) => indexTree(n, i, id)),
     nativeElement: node.nativeElement,
   } as IndexedNode;
-};
-
-const getParentComponentFromDomNode = (node: Node) => {
-  let current = node;
-  let parent = null;
-  while (current.parentElement) {
-    current = current.parentElement;
-    const parentComponent = ng.getComponent(current);
-    if (parentComponent) {
-      parent = parentComponent;
-      break;
-    }
-  }
-  return parent;
 };
 
 export const indexForest = (forest: ComponentNode[]): IndexedNode[] => forest.map((n, i) => indexTree(n, i));
