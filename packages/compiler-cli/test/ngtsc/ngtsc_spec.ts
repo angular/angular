@@ -1623,7 +1623,7 @@ runInEachFileSystem(os => {
             `);
            verifyThrownError(
                ErrorCode.VALUE_HAS_WRONG_TYPE,
-               'Decorator host metadata must be a string -> string object, but found unparseable value invalid-host-value');
+               'Decorator host metadata must be a string -> string object, but found unparseable value');
          });
 
       it('should throw error if @Directive.queries field has wrong type', () => {

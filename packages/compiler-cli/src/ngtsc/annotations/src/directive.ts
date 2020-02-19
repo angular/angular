@@ -599,7 +599,7 @@ export function extractHostBindings(
       if (typeof key !== 'string') {
         throw new FatalDiagnosticError(
             ErrorCode.VALUE_HAS_WRONG_TYPE, expr,
-            `Decorator host metadata must be a string -> string object, but found unparseable key ${key}`);
+            `Decorator host metadata must be a string -> string object, but found unparseable key`);
       }
 
       if (typeof value == 'string') {
@@ -609,7 +609,7 @@ export function extractHostBindings(
       } else {
         throw new FatalDiagnosticError(
             ErrorCode.VALUE_HAS_WRONG_TYPE, expr,
-            `Decorator host metadata must be a string -> string object, but found unparseable value ${value}`);
+            `Decorator host metadata must be a string -> string object, but found unparseable value`);
       }
     });
   }
