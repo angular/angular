@@ -1,7 +1,6 @@
 import { IdentityTracker } from './identity-tracker';
 import { DebuggingAPI } from '../interfaces';
 import { DirectiveInstanceType } from '../component-tree';
-import { debug } from 'ng-packagr/lib/utils/log';
 
 let debuggingAPI: DebuggingAPI = {
   getComponent(node: Node): any {},
@@ -135,5 +134,62 @@ describe('identity tracker', () => {
     expect(tracker.getDirectiveID(rootCmp)).toEqual([0]);
     tracker.insert(siblingEl as any, siblingCmp);
     expect(tracker.getDirectiveID(siblingCmp)).toEqual([0, 1]);
+  });
+
+  it('should update indexes on insertion of root', () => {
+    const rootEl = {
+      children: [],
+      tagName: 'parent',
+    };
+    const rootCmp = {
+      name: 'rootCmp',
+    };
+
+    const secondRootEl = {
+      children: [],
+      tagName: 'second-root',
+    };
+    const secondRootCmp = {
+      name: 'secondRoot',
+    };
+
+    const nodeComponent = new Map<any, any>();
+    nodeComponent.set(rootEl, rootCmp);
+    nodeComponent.set(secondRootEl, secondRootCmp);
+
+    const componentNode = new Map<any, any>();
+    componentNode.set(rootCmp, rootEl);
+    componentNode.set(secondRootCmp, secondRootEl);
+
+    debuggingAPI = {
+      getComponent(node: Node): any {
+        return nodeComponent.get(node);
+      },
+      getDirectives(_: Node): any[] {
+        return [];
+      },
+      getHostElement(cmp: any): HTMLElement {
+        return componentNode.get(cmp);
+      },
+    };
+
+    tracker = new IdentityTracker(debuggingAPI);
+
+    tracker.index({
+      children: [],
+      nativeElement: rootEl as any,
+      directives: [],
+      component: {
+        instance: rootCmp,
+        name: 'CMP1',
+      },
+      element: 'CMP',
+      id: [0],
+    });
+
+    expect(tracker.getDirectiveID(rootCmp)).toEqual([0]);
+    tracker.insert(secondRootEl as any, secondRootCmp);
+    expect(tracker.getDirectiveID(secondRootCmp)).toEqual([0]);
+    expect(tracker.getDirectiveID(rootCmp)).toEqual([1]);
   });
 });
