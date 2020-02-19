@@ -99,10 +99,9 @@ aio-shell.folder-tutorial mat-toolbar.mat-toolbar {
   padding: 8px 0;
 
   &:focus {
-    outline-color: $focus-outline-ondark;
-    outline-offset: 4px;
     // `outline-offset` is not applied on Chrome on Windows, if `outline-style` is `auto.
-    outline-style: solid;
+    outline: 1px solid $focus-outline-ondark;
+    outline-offset: 4px;
   }
 
   @media screen and (max-width: 991px) {
@@ -245,10 +244,9 @@ aio-search-box.search-container {
       margin: 0 -16px;
 
       &:focus {
-        outline-color: $focus-outline-ondark;
-        outline-offset: -16px;
         // `outline-offset` is not applied on Chrome on Windows, if `outline-style` is `auto.
-        outline-style: solid;
+        outline: 1px solid $focus-outline-ondark;
+        outline-offset: -16px;
       }
 
       @media screen and (max-width: 480px) {

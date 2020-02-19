@@ -36,10 +36,9 @@ footer {
     }
 
     &:focus {
-      outline-color: rgba($white, 0.8);
-      outline-offset: 2px;
       // `outline-offset` is not applied on Chrome on Windows, if `outline-style` is `auto.
-      outline-style: solid;
+      outline: 1px solid rgba($white, 0.8);
+      outline-offset: 2px;
     }
   }
 
