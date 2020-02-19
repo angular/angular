@@ -91,7 +91,7 @@ describe('CachedFileSystem', () => {
   });
 
   describe('invalidateCaches()', () => {
-    it('should call the delegate `readFile()` if the path for the cached file has been invalidated',
+    it('should use the delegate for `readFile()` if the path for the cached file has been invalidated',
        () => {
          spyOn(delegate, 'lstat').and.returnValue({isSymbolicLink: () => false});
          const spy = spyOn(delegate, 'readFile').and.returnValue('Some contents');
@@ -107,7 +107,7 @@ describe('CachedFileSystem', () => {
          expect(spy).toHaveBeenCalledWith(abcPath);
        });
 
-    it('should call the delegate `exists()` if the path for the cached file has been invalidated',
+    it('should use the delegate `exists()` if the path for the cached file has been invalidated',
        () => {
          const spy = spyOn(delegate, 'exists').and.returnValue(true);
          fs.exists(abcPath);  // Call once to fill the cache
