@@ -6,10 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {state, style, transition, trigger} from '@angular/animations';
 import {CommonModule} from '@angular/common';
 import {AfterContentInit, Component, ComponentFactoryResolver, ComponentRef, ContentChildren, Directive, DoCheck, HostBinding, HostListener, Injectable, Input, NgModule, OnChanges, OnInit, QueryList, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
 import {bypassSanitizationTrustHtml, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl} from '@angular/core/src/sanitization/bypass';
 import {TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
 describe('host bindings', () => {
@@ -173,6 +176,313 @@ describe('host bindings', () => {
       fixture.componentInstance.prop2 = 2;
       fixture.detectChanges();
     });
+  });
+
+  describe('with synthetic (animations) props', () => {
+    it('should work when directive contains synthetic props', () => {
+      @Directive({
+        selector: '[animationPropDir]',
+      })
+      class AnimationPropDir {
+        @HostBinding('@myAnimation') myAnimation: string = 'color';
+      }
+
+      @Component({
+        selector: 'my-comp',
+        template: '<div animationPropDir>Some content</div>',
+        animations: [
+          trigger('myAnimation', [state('color', style({color: 'red'}))]),
+        ],
+      })
+      class Comp {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [Comp, AnimationPropDir],
+        imports: [NoopAnimationsModule],
+      });
+      const fixture = TestBed.createComponent(Comp);
+      fixture.detectChanges();
+      const queryResult = fixture.debugElement.query(By.directive(AnimationPropDir));
+      expect(queryResult.nativeElement.style.color).toBe('red');
+    });
+
+    it('should work when directive contains synthetic props and directive is applied to a component',
+       () => {
+         @Directive({
+           selector: '[animationPropDir]',
+         })
+         class AnimationPropDir {
+           @HostBinding('@myAnimation') myAnimation: string = 'color';
+         }
+
+         @Component({
+           selector: 'my-comp',
+           template: 'Some content',
+           animations: [
+             trigger('myAnimation', [state('color', style({color: 'red'}))]),
+           ],
+         })
+         class Comp {
+         }
+
+         @Component({
+           selector: 'app',
+           template: '<my-comp animationPropDir></my-comp>',
+           animations: [
+             trigger('myAnimation', [state('color', style({color: 'green'}))]),
+           ],
+         })
+         class App {
+         }
+
+         TestBed.configureTestingModule({
+           declarations: [App, Comp, AnimationPropDir],
+           imports: [NoopAnimationsModule],
+         });
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+         const queryResult = fixture.debugElement.query(By.directive(AnimationPropDir));
+         expect(queryResult.nativeElement.style.color).toBe('green');
+       });
+
+    it('should work when component contains synthetic props', () => {
+      @Component({
+        selector: 'my-comp',
+        template: '<div>Some content/div>',
+        animations: [
+          trigger('myAnimation', [state('color', style({color: 'red'}))]),
+        ],
+      })
+      class Comp {
+        @HostBinding('@myAnimation') myAnimation: string = 'color';
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [Comp],
+        imports: [NoopAnimationsModule],
+      });
+      const fixture = TestBed.createComponent(Comp);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.style.color).toBe('red');
+    });
+
+    it('should work when child component contains synthetic props', () => {
+      @Component({
+        selector: 'my-comp',
+        template: '<div>Some content/div>',
+        animations: [
+          trigger('myAnimation', [state('color', style({color: 'red'}))]),
+        ],
+      })
+      class Comp {
+        @HostBinding('@myAnimation') myAnimation: string = 'color';
+      }
+
+      @Component({
+        template: '<my-comp></my-comp>',
+      })
+      class App {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [App, Comp],
+        imports: [NoopAnimationsModule],
+      });
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const queryResult = fixture.debugElement.query(By.directive(Comp));
+      expect(queryResult.nativeElement.style.color).toBe('red');
+    });
+
+    it('should work when component extends a directive that contains synthetic props', () => {
+      @Directive({
+        selector: 'animation-dir',
+      })
+      class AnimationDir {
+        @HostBinding('@myAnimation') myAnimation: string = 'color';
+      }
+
+      @Component({
+        selector: 'my-comp',
+        template: '<div>Some content</div>',
+        animations: [
+          trigger('myAnimation', [state('color', style({color: 'red'}))]),
+        ],
+      })
+      class Comp extends AnimationDir {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [Comp, AnimationDir],
+        imports: [NoopAnimationsModule],
+      });
+      const fixture = TestBed.createComponent(Comp);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.style.color).toBe('red');
+    });
+
+    it('should work when directive contains synthetic listeners', async () => {
+      const events: string[] = [];
+
+      @Directive({
+        selector: '[animationPropDir]',
+      })
+      class AnimationPropDir {
+        @HostBinding('@myAnimation') myAnimation: string = 'a';
+
+        @HostListener('@myAnimation.start')
+        onAnimationStart() {
+          events.push('@myAnimation.start');
+        }
+
+        @HostListener('@myAnimation.done')
+        onAnimationDone() {
+          events.push('@myAnimation.done');
+        }
+      }
+
+      @Component({
+        selector: 'my-comp',
+        template: '<div animationPropDir>Some content</div>',
+        animations: [
+          trigger('myAnimation', [state('a', style({color: 'yellow'})), transition('* => a', [])]),
+        ],
+      })
+      class Comp {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [Comp, AnimationPropDir],
+        imports: [NoopAnimationsModule],
+      });
+      const fixture = TestBed.createComponent(Comp);
+      fixture.detectChanges();
+      await fixture.whenStable();  // wait for animations to complete
+      const queryResult = fixture.debugElement.query(By.directive(AnimationPropDir));
+      expect(queryResult.nativeElement.style.color).toBe('yellow');
+      expect(events).toEqual(['@myAnimation.start', '@myAnimation.done']);
+    });
+
+    it('should work when component contains synthetic listeners', async () => {
+      const events: string[] = [];
+
+      @Component({
+        selector: 'my-comp',
+        template: '<div>Some content</div>',
+        animations: [
+          trigger('myAnimation', [state('a', style({color: 'yellow'})), transition('* => a', [])]),
+        ],
+      })
+      class Comp {
+        @HostBinding('@myAnimation') myAnimation: string = 'a';
+
+        @HostListener('@myAnimation.start')
+        onAnimationStart() {
+          events.push('@myAnimation.start');
+        }
+
+        @HostListener('@myAnimation.done')
+        onAnimationDone() {
+          events.push('@myAnimation.done');
+        }
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [Comp],
+        imports: [NoopAnimationsModule],
+      });
+      const fixture = TestBed.createComponent(Comp);
+      fixture.detectChanges();
+      await fixture.whenStable();  // wait for animations to complete
+      expect(fixture.nativeElement.style.color).toBe('yellow');
+      expect(events).toEqual(['@myAnimation.start', '@myAnimation.done']);
+    });
+
+    it('should work when child component contains synthetic listeners', async () => {
+      const events: string[] = [];
+
+      @Component({
+        selector: 'my-comp',
+        template: '<div>Some content</div>',
+        animations: [
+          trigger('myAnimation', [state('a', style({color: 'yellow'})), transition('* => a', [])]),
+        ],
+      })
+      class Comp {
+        @HostBinding('@myAnimation') myAnimation: string = 'a';
+
+        @HostListener('@myAnimation.start')
+        onAnimationStart() {
+          events.push('@myAnimation.start');
+        }
+
+        @HostListener('@myAnimation.done')
+        onAnimationDone() {
+          events.push('@myAnimation.done');
+        }
+      }
+
+      @Component({
+        template: '<my-comp></my-comp>',
+      })
+      class App {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [App, Comp],
+        imports: [NoopAnimationsModule],
+      });
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      await fixture.whenStable();  // wait for animations to complete
+      const queryResult = fixture.debugElement.query(By.directive(Comp));
+      expect(queryResult.nativeElement.style.color).toBe('yellow');
+      expect(events).toEqual(['@myAnimation.start', '@myAnimation.done']);
+    });
+
+    it('should work when component extends a directive that contains synthetic listeners',
+       async () => {
+         const events: string[] = [];
+
+         @Directive({
+           selector: 'animation-dir',
+         })
+         class AnimationDir {
+           @HostBinding('@myAnimation') myAnimation: string = 'a';
+
+           @HostListener('@myAnimation.start')
+           onAnimationStart() {
+             events.push('@myAnimation.start');
+           }
+
+           @HostListener('@myAnimation.done')
+           onAnimationDone() {
+             events.push('@myAnimation.done');
+           }
+         }
+
+         @Component({
+           selector: 'my-comp',
+           template: '<div>Some content</div>',
+           animations: [
+             trigger(
+                 'myAnimation', [state('a', style({color: 'yellow'})), transition('* => a', [])]),
+           ],
+         })
+         class Comp extends AnimationDir {
+         }
+
+         TestBed.configureTestingModule({
+           declarations: [Comp],
+           imports: [NoopAnimationsModule],
+         });
+         const fixture = TestBed.createComponent(Comp);
+         fixture.detectChanges();
+         await fixture.whenStable();  // wait for animations to complete
+         expect(fixture.nativeElement.style.color).toBe('yellow');
+         expect(events).toEqual(['@myAnimation.start', '@myAnimation.done']);
+       });
   });
 
   describe('via @HostBinding', () => {
