@@ -1,4 +1,4 @@
-# Schematics for Libraries
+# Schematics for libraries
 
 When you create an Angular library, you can provide and package it with schematics that integrate it with the Angular CLI.
 With your schematics, your users can use  `ng add` to install an initial version of your library,
@@ -76,7 +76,7 @@ To tell the library how to build the schematics, add a `tsconfig.schematics.json
 
   * The `rootDir` specifies that your `schematics/` folder contains the input files to be compiled.
 
-  * The `outDir` maps to the library's output folder. By default, this is  the `dist/my-lib` folder at the root of your workspace.
+  * The `outDir` maps to the library's output folder. By default, this is the `dist/my-lib` folder at the root of your workspace.
 
 1. To make sure your schematics source files get compiled into the library bundle, add the following scripts to the `package.json` file in your library project's root folder (`projects/my-lib`).
 
@@ -93,7 +93,7 @@ You can add a named schematic to your collection that lets your users use the `n
 
 We'll assume that your library defines a service, `my-service`, that requires some setup. You want your users to be able to generate it using the following CLI command.
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 ng generate my-lib:my-service
 </code-example>
 
@@ -201,7 +201,7 @@ The user can specify the project on the command line, or allow it to default.
 In either case, your code needs to identify the specific project to which this schematic is being applied, so that you can retrieve information from the project configuration.
 
 You can do this using the `Tree` object that is passed in to the factory function.
-The `Tree` methods give you access to the complete file tree in your workspace, allowing you to  read and write files during the execution of the schematic.
+The `Tree` methods give you access to the complete file tree in your workspace, allowing you to read and write files during the execution of the schematic.
 
 ### Get the project configuration
 
@@ -249,7 +249,7 @@ A `Rule` can use external template files, transform them, and return another `Ru
   * The `url()` method reads source files from your filesystem, relative to the schematic.
   * The `applyTemplates()` method receives an argument of methods and properties you want make available to the schematic template and the schematic filenames. It returns a `Rule`. This is where you define the `classify()` and `dasherize()` methods, and the `name` property.
   * The `classify()` method takes a value and returns the value in title case. For example, if the provided name is `my service`, it is returned as `MyService`
-  * The `dasherize()` method takes a value and  returns the value in dashed and lowercase. For example, if the provided name is MyService, it is returned as `my-service.
+  * The `dasherize()` method takes a value and returns the value in dashed and lowercase. For example, if the provided name is MyService, it is returned as `my-service.
   * The `move` method moves the provided source files to their destination when the schematic is applied.
 
 1. Finally, the rule factory must return a rule.
@@ -276,7 +276,7 @@ After you build your library and schematics, you can install the schematics coll
 
 From the root of your workspace, run the `ng build` command for your library.
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 
   ng build my-lib
 
@@ -284,7 +284,7 @@ From the root of your workspace, run the `ng build` command for your library.
 
 Then, you change into your library directory to build the schematic
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 
   cd projects/my-lib
   npm run build
@@ -295,7 +295,7 @@ Then, you change into your library directory to build the schematic
 
 Your library and schematics are packaged and placed in the `dist/my-lib` folder at the root of your workspace. For running the schematic, you need to link the library into your `node_modules` folder. From the root of your workspace, run the `npm link` command with the path to your distributable library.
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 
 npm link dist/my-lib
 
@@ -305,7 +305,7 @@ npm link dist/my-lib
 
 Now that your library is installed, you can run the schematic using the `ng generate` command.
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 
 ng generate my-lib:my-service --name my-data
 
@@ -313,7 +313,7 @@ ng generate my-lib:my-service --name my-data
 
 In the console, you will see that the schematic was run and the `my-data.service.ts` file was created in your app folder.
 
-<code-example language="bash" linenums="false" hideCopy="true">
+<code-example language="bash" hideCopy="true">
 
 CREATE src/app/my-data.service.ts (208 bytes)
 

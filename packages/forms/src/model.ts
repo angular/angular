@@ -47,22 +47,26 @@ export const DISABLED = 'DISABLED';
 function _find(control: AbstractControl, path: Array<string|number>| string, delimiter: string) {
   if (path == null) return null;
 
-  if (!(path instanceof Array)) {
-    path = (<string>path).split(delimiter);
+  if (!Array.isArray(path)) {
+    path = path.split(delimiter);
   }
-  if (path instanceof Array && (path.length === 0)) return null;
+  if (Array.isArray(path) && path.length === 0) return null;
 
-  return (<Array<string|number>>path).reduce((v: AbstractControl, name) => {
-    if (v instanceof FormGroup) {
-      return v.controls.hasOwnProperty(name as string) ? v.controls[name] : null;
+  // Not using Array.reduce here due to a Chrome 80 bug
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=1049982
+  let controlToFind: AbstractControl|null = control;
+  path.forEach((name: string | number) => {
+    if (controlToFind instanceof FormGroup) {
+      controlToFind = controlToFind.controls.hasOwnProperty(name as string) ?
+          controlToFind.controls[name] :
+          null;
+    } else if (controlToFind instanceof FormArray) {
+      controlToFind = controlToFind.at(<number>name) || null;
+    } else {
+      controlToFind = null;
     }
-
-    if (v instanceof FormArray) {
-      return v.at(<number>name) || null;
-    }
-
-    return null;
-  }, control);
+  });
+  return controlToFind;
 }
 
 function coerceToValidator(
@@ -294,7 +298,8 @@ export abstract class AbstractControl {
 
   /**
    * A multicasting observable that emits an event every time the value of the control changes, in
-   * the UI or programmatically.
+   * the UI or programmatically. It also emits an event each time you call enable() or disable()
+   * without passing along {emitEvent: false} as a function argument.
    */
   // TODO(issue/24571): remove '!'.
   public readonly valueChanges !: Observable<any>;
@@ -322,6 +327,10 @@ export abstract class AbstractControl {
   /**
    * Sets the synchronous validators that are active on this control.  Calling
    * this overwrites any existing sync validators.
+   *
+   * When you add or remove a validator at run time, you must call
+   * `updateValueAndValidity()` for the new validation to take effect.
+   *
    */
   setValidators(newValidator: ValidatorFn|ValidatorFn[]|null): void {
     this.validator = coerceToValidator(newValidator);
@@ -330,6 +339,10 @@ export abstract class AbstractControl {
   /**
    * Sets the async validators that are active on this control. Calling this
    * overwrites any existing async validators.
+   *
+   * When you add or remove a validator at run time, you must call
+   * `updateValueAndValidity()` for the new validation to take effect.
+   *
    */
   setAsyncValidators(newValidator: AsyncValidatorFn|AsyncValidatorFn[]|null): void {
     this.asyncValidator = coerceToAsyncValidator(newValidator);
@@ -337,11 +350,19 @@ export abstract class AbstractControl {
 
   /**
    * Empties out the sync validator list.
+   *
+   * When you add or remove a validator at run time, you must call
+   * `updateValueAndValidity()` for the new validation to take effect.
+   *
    */
   clearValidators(): void { this.validator = null; }
 
   /**
    * Empties out the async validator list.
+   *
+   * When you add or remove a validator at run time, you must call
+   * `updateValueAndValidity()` for the new validation to take effect.
+   *
    */
   clearAsyncValidators(): void { this.asyncValidator = null; }
 
@@ -354,7 +375,7 @@ export abstract class AbstractControl {
    * @see `markAsPristine()`
    *
    * @param opts Configuration options that determine how the control propagates changes
-   * and emits events events after marking is applied.
+   * and emits events after marking is applied.
    * * `onlySelf`: When true, mark only this control. When false or not supplied,
    * marks all direct ancestors. Default is false.
    */
@@ -1322,7 +1343,7 @@ export class FormGroup extends AbstractControl {
    * Reports false for disabled controls. If you'd like to check for existence in the group
    * only, use {@link AbstractControl#get get} instead.
    *
-   * @param name The control name to check for existence in the collection
+   * @param controlName The control name to check for existence in the collection
    *
    * @returns false for disabled controls, true otherwise.
    */
@@ -1350,7 +1371,7 @@ export class FormGroup extends AbstractControl {
    * ```
    *
    * @throws When strict checks fail, such as setting the value of a control
-   * that doesn't exist or if you excluding the value of a control.
+   * that doesn't exist or if you exclude a value of a control that does exist.
    *
    * @param value The new value for the control that matches the structure of the group.
    * @param options Configuration options that determine how the control propagates changes
@@ -1427,7 +1448,7 @@ export class FormGroup extends AbstractControl {
    * is a standalone value or a form state object with both a value and a disabled
    * status.
    *
-   * @param formState Resets the control with an initial value,
+   * @param value Resets the control with an initial value,
    * or an object that defines the initial value and disabled state.
    *
    * @param options Configuration options that determine how the control propagates changes

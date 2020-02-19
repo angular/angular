@@ -5,12 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {bindingUpdated} from '../bindings';
 import {SanitizerFn} from '../interfaces/sanitization';
-import {getLView, getSelectedIndex} from '../state';
-import {NO_CHANGE} from '../tokens';
-
-import {bind} from './property';
-import {TsickleIssue1009, elementAttributeInternal} from './shared';
+import {getLView, getSelectedIndex, getTView, nextBindingIndex} from '../state';
+import {elementAttributeInternal, storePropertyBindingMetadata} from './shared';
 
 
 
@@ -29,13 +27,14 @@ import {TsickleIssue1009, elementAttributeInternal} from './shared';
  */
 export function ɵɵattribute(
     name: string, value: any, sanitizer?: SanitizerFn | null,
-    namespace?: string): TsickleIssue1009 {
-  const index = getSelectedIndex();
+    namespace?: string): typeof ɵɵattribute {
   const lView = getLView();
-  // TODO(FW-1340): Refactor to remove the use of other instructions here.
-  const bound = bind(lView, value);
-  if (bound !== NO_CHANGE) {
-    elementAttributeInternal(index, name, bound, lView, sanitizer, namespace);
+  const bindingIndex = nextBindingIndex();
+  if (bindingUpdated(lView, bindingIndex, value)) {
+    const nodeIndex = getSelectedIndex();
+    const tView = getTView();
+    elementAttributeInternal(nodeIndex, name, value, tView, lView, sanitizer, namespace);
+    ngDevMode && storePropertyBindingMetadata(tView.data, nodeIndex, 'attr.' + name, bindingIndex);
   }
   return ɵɵattribute;
 }

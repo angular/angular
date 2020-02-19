@@ -7,6 +7,10 @@ body,
     background-color: $white;
 }
 
+.github-links + .content h1 {
+  max-width: 90%;
+}
+
 .clearfix {
     content: "";
     display: table;

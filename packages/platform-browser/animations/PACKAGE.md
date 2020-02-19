@@ -1,0 +1,1 @@
+Provides infrastructure for the rendering of animations in supported browsers.

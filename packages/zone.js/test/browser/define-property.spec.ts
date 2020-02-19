@@ -13,15 +13,27 @@ describe('defineProperty', function() {
         .not.toThrow();
   });
 
-  it('should not throw error when try to defineProperty with a frozen desc', function() {
+  it('should not be able to change a frozen desc', function() {
     const obj = {};
     const desc = Object.freeze({value: null, writable: true});
     Object.defineProperty(obj, 'prop', desc);
+    let objDesc: any = Object.getOwnPropertyDescriptor(obj, 'prop');
+    expect(objDesc.writable).toBeTruthy();
+    try {
+      Object.defineProperty(obj, 'prop', {configurable: true, writable: true, value: 'test'});
+    } catch (err) {
+    }
+    objDesc = Object.getOwnPropertyDescriptor(obj, 'prop');
+    expect(objDesc.configurable).toBeFalsy();
   });
 
   it('should not throw error when try to defineProperty with a frozen obj', function() {
     const obj = {};
     Object.freeze(obj);
-    Object.defineProperty(obj, 'prop', {configurable: true, writable: true, value: 'value'});
+    try {
+      Object.defineProperty(obj, 'prop', {configurable: true, writable: true, value: 'value'});
+    } catch (err) {
+    }
+    expect((obj as any).prop).toBeFalsy();
   });
 });

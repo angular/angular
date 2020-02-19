@@ -144,6 +144,7 @@ interface ResponseMessageData {
 
 /**
  * @publicApi
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
  */
 export class FnArg {
   constructor(
@@ -152,6 +153,7 @@ export class FnArg {
 
 /**
  * @publicApi
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
  */
 export class UiArguments {
   constructor(public method: string, public args?: FnArg[]) {}

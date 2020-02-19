@@ -6,34 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
-import {AbsoluteFsPath, FileSystem, PathSegment} from '../../../src/ngtsc/file_system';
-import {isRequireCall} from '../host/commonjs_host';
-import {DependencyHost, DependencyInfo} from './dependency_host';
-import {ModuleResolver, ResolvedDeepImport, ResolvedRelativeModule} from './module_resolver';
+import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
+import {RequireCall, isReexportStatement, isRequireCall} from '../host/commonjs_umd_utils';
+import {DependencyHostBase} from './dependency_host';
+import {ResolvedDeepImport, ResolvedRelativeModule} from './module_resolver';
 
 /**
  * Helper functions for computing dependencies.
  */
-export class CommonJsDependencyHost implements DependencyHost {
-  constructor(private fs: FileSystem, private moduleResolver: ModuleResolver) {}
-
-  /**
-   * Find all the dependencies for the entry-point at the given path.
-   *
-   * @param entryPointPath The absolute path to the JavaScript file that represents an entry-point.
-   * @returns Information about the dependencies of the entry-point, including those that were
-   * missing or deep imports into other entry-points.
-   */
-  findDependencies(entryPointPath: AbsoluteFsPath): DependencyInfo {
-    const dependencies = new Set<AbsoluteFsPath>();
-    const missing = new Set<AbsoluteFsPath|PathSegment>();
-    const deepImports = new Set<AbsoluteFsPath>();
-    const alreadySeen = new Set<AbsoluteFsPath>();
-    this.recursivelyFindDependencies(
-        entryPointPath, dependencies, missing, deepImports, alreadySeen);
-    return {dependencies, missing, deepImports};
-  }
-
+export class CommonJsDependencyHost extends DependencyHostBase {
   /**
    * Compute the dependencies of the given file.
    *
@@ -44,48 +25,87 @@ export class CommonJsDependencyHost implements DependencyHost {
    * @param deepImports A set that will have the import paths that exist but cannot be mapped to
    * entry-points, i.e. deep-imports.
    * @param alreadySeen A set that is used to track internal dependencies to prevent getting stuck
-   * in a
-   * circular dependency loop.
+   * in a circular dependency loop.
    */
-  private recursivelyFindDependencies(
+  protected recursivelyCollectDependencies(
       file: AbsoluteFsPath, dependencies: Set<AbsoluteFsPath>, missing: Set<string>,
       deepImports: Set<AbsoluteFsPath>, alreadySeen: Set<AbsoluteFsPath>): void {
     const fromContents = this.fs.readFile(file);
+
     if (!this.hasRequireCalls(fromContents)) {
-      // Avoid parsing the source file as there are no require calls.
+      // Avoid parsing the source file as there are no imports.
       return;
     }
 
     // Parse the source into a TypeScript AST and then walk it looking for imports and re-exports.
     const sf =
         ts.createSourceFile(file, fromContents, ts.ScriptTarget.ES2015, false, ts.ScriptKind.JS);
+    const requireCalls: RequireCall[] = [];
 
-    for (const statement of sf.statements) {
-      const declarations =
-          ts.isVariableStatement(statement) ? statement.declarationList.declarations : [];
-      for (const declaration of declarations) {
-        if (declaration.initializer && isRequireCall(declaration.initializer)) {
-          const importPath = declaration.initializer.arguments[0].text;
-          const resolvedModule = this.moduleResolver.resolveModuleImport(importPath, file);
-          if (resolvedModule) {
-            if (resolvedModule instanceof ResolvedRelativeModule) {
-              const internalDependency = resolvedModule.modulePath;
-              if (!alreadySeen.has(internalDependency)) {
-                alreadySeen.add(internalDependency);
-                this.recursivelyFindDependencies(
-                    internalDependency, dependencies, missing, deepImports, alreadySeen);
-              }
-            } else {
-              if (resolvedModule instanceof ResolvedDeepImport) {
-                deepImports.add(resolvedModule.importPath);
-              } else {
-                dependencies.add(resolvedModule.entryPointPath);
-              }
-            }
-          } else {
-            missing.add(importPath);
+    for (const stmt of sf.statements) {
+      if (ts.isVariableStatement(stmt)) {
+        // Regular import(s):
+        // `var foo = require('...')` or `var foo = require('...'), bar = require('...')`
+        const declarations = stmt.declarationList.declarations;
+        for (const declaration of declarations) {
+          if ((declaration.initializer !== undefined) && isRequireCall(declaration.initializer)) {
+            requireCalls.push(declaration.initializer);
           }
         }
+      } else if (ts.isExpressionStatement(stmt)) {
+        if (isRequireCall(stmt.expression)) {
+          // Import for the side-effects only:
+          // `require('...')`
+          requireCalls.push(stmt.expression);
+        } else if (isReexportStatement(stmt)) {
+          // Re-export in one of the following formats:
+          // - `__export(require('...'))`
+          // - `__export(<identifier>)`
+          // - `tslib_1.__exportStar(require('...'), exports)`
+          // - `tslib_1.__exportStar(<identifier>, exports)`
+          const firstExportArg = stmt.expression.arguments[0];
+
+          if (isRequireCall(firstExportArg)) {
+            // Re-export with `require()` call:
+            // `__export(require('...'))` or `tslib_1.__exportStar(require('...'), exports)`
+            requireCalls.push(firstExportArg);
+          }
+        } else if (
+            ts.isBinaryExpression(stmt.expression) &&
+            (stmt.expression.operatorToken.kind === ts.SyntaxKind.EqualsToken)) {
+          if (isRequireCall(stmt.expression.right)) {
+            // Import with assignment. E.g.:
+            // `exports.foo = require('...')`
+            requireCalls.push(stmt.expression.right);
+          } else if (ts.isObjectLiteralExpression(stmt.expression.right)) {
+            // Import in object literal. E.g.:
+            // `module.exports = {foo: require('...')}`
+            stmt.expression.right.properties.forEach(prop => {
+              if (ts.isPropertyAssignment(prop) && isRequireCall(prop.initializer)) {
+                requireCalls.push(prop.initializer);
+              }
+            });
+          }
+        }
+      }
+    }
+
+    const importPaths = new Set(requireCalls.map(call => call.arguments[0].text));
+    for (const importPath of importPaths) {
+      const resolvedModule = this.moduleResolver.resolveModuleImport(importPath, file);
+      if (resolvedModule === null) {
+        missing.add(importPath);
+      } else if (resolvedModule instanceof ResolvedRelativeModule) {
+        const internalDependency = resolvedModule.modulePath;
+        if (!alreadySeen.has(internalDependency)) {
+          alreadySeen.add(internalDependency);
+          this.recursivelyCollectDependencies(
+              internalDependency, dependencies, missing, deepImports, alreadySeen);
+        }
+      } else if (resolvedModule instanceof ResolvedDeepImport) {
+        deepImports.add(resolvedModule.importPath);
+      } else {
+        dependencies.add(resolvedModule.entryPointPath);
       }
     }
   }
@@ -100,5 +120,5 @@ export class CommonJsDependencyHost implements DependencyHost {
    * @returns false if there are definitely no require calls
    * in this file, true otherwise.
    */
-  hasRequireCalls(source: string): boolean { return /require\(['"]/.test(source); }
+  private hasRequireCalls(source: string): boolean { return /require\(['"]/.test(source); }
 }

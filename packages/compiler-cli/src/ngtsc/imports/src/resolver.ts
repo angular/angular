@@ -8,12 +8,6 @@
 import * as ts from 'typescript';
 import {absoluteFrom} from '../../file_system';
 import {getSourceFileOrNull, resolveModuleName} from '../../util/src/typescript';
-import {Reference} from './references';
-
-export interface ReferenceResolver {
-  resolve(decl: ts.Declaration, importFromHint: string|null, fromFile: string):
-      Reference<ts.Declaration>;
-}
 
 /**
  * Used by `RouterEntryPointManager` and `NgModuleRouteAnalyzer` (which is in turn is used by
@@ -24,11 +18,12 @@ export interface ReferenceResolver {
 export class ModuleResolver {
   constructor(
       private program: ts.Program, private compilerOptions: ts.CompilerOptions,
-      private host: ts.CompilerHost) {}
+      private host: ts.CompilerHost, private moduleResolutionCache: ts.ModuleResolutionCache|null) {
+  }
 
-  resolveModuleName(module: string, containingFile: ts.SourceFile): ts.SourceFile|null {
-    const resolved =
-        resolveModuleName(module, containingFile.fileName, this.compilerOptions, this.host);
+  resolveModule(moduleName: string, containingFile: string): ts.SourceFile|null {
+    const resolved = resolveModuleName(
+        moduleName, containingFile, this.compilerOptions, this.host, this.moduleResolutionCache);
     if (resolved === undefined) {
       return null;
     }

@@ -11,27 +11,24 @@ import {dirname, relative} from 'path';
 import * as ts from 'typescript';
 
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
+import {createMigrationCompilerHost} from '../../utils/typescript/compiler_host';
 import {parseTsconfigFile} from '../../utils/typescript/parse_tsconfig';
 
 import {HelperFunction, getHelper} from './helpers';
 import {migrateExpression, replaceImport} from './migration';
 import {findCoreImport, findRendererReferences} from './util';
 
+const MODULE_AUGMENTATION_FILENAME = 'ɵɵRENDERER_MIGRATION_CORE_AUGMENTATION.d.ts';
 
 /**
  * Migration that switches from `Renderer` to `Renderer2`. More information on how it works:
  * https://hackmd.angular.io/UTzUZTnPRA-cSa_4mHyfYw
  */
 export default function(): Rule {
-  return (tree: Tree, context: SchematicContext) => {
+  return (tree: Tree) => {
     const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
     const allPaths = [...buildPaths, ...testPaths];
-    const logger = context.logger;
-
-    logger.info('------ Renderer to Renderer2 Migration ------');
-    logger.info('As of Angular 9, the Renderer class is no longer available.');
-    logger.info('Renderer2 should be used instead.');
 
     if (!allPaths.length) {
       throw new SchematicsException(
@@ -46,18 +43,23 @@ export default function(): Rule {
 
 function runRendererToRenderer2Migration(tree: Tree, tsconfigPath: string, basePath: string) {
   const parsed = parseTsconfigFile(tsconfigPath, dirname(tsconfigPath));
-  const host = ts.createCompilerHost(parsed.options, true);
+  const host = createMigrationCompilerHost(tree, parsed.options, basePath, fileName => {
+    // In case the module augmentation file has been requested, we return a source file that
+    // augments "@angular/core" to include a named export called "Renderer". This ensures that
+    // we can rely on the type checker for this migration in v9 where "Renderer" has been removed.
+    if (fileName === MODULE_AUGMENTATION_FILENAME) {
+      return `
+        import '@angular/core';
+        declare module "@angular/core" {
+          class Renderer {}
+        }
+      `;
+    }
+    return null;
+  });
 
-  // We need to overwrite the host "readFile" method, as we want the TypeScript
-  // program to be based on the file contents in the virtual file tree. Otherwise
-  // if we run the migration for multiple tsconfig files which have intersecting
-  // source files, it can end up updating query definitions multiple times.
-  host.readFile = fileName => {
-    const buffer = tree.read(relative(basePath, fileName));
-    return buffer ? buffer.toString() : undefined;
-  };
-
-  const program = ts.createProgram(parsed.fileNames, parsed.options, host);
+  const program =
+      ts.createProgram(parsed.fileNames.concat(MODULE_AUGMENTATION_FILENAME), parsed.options, host);
   const typeChecker = program.getTypeChecker();
   const printer = ts.createPrinter();
   const sourceFiles = program.getSourceFiles().filter(

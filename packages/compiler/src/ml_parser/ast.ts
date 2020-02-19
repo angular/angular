@@ -7,7 +7,7 @@
  */
 
 import {AstPath} from '../ast_path';
-import {AST as I18nAST} from '../i18n/i18n_ast';
+import {I18nMeta} from '../i18n/i18n_ast';
 import {ParseSourceSpan} from '../parse_util';
 
 export interface Node {
@@ -15,16 +15,24 @@ export interface Node {
   visit(visitor: Visitor, context: any): any;
 }
 
-export class Text implements Node {
-  constructor(public value: string, public sourceSpan: ParseSourceSpan, public i18n?: I18nAST) {}
+export abstract class NodeWithI18n implements Node {
+  constructor(public sourceSpan: ParseSourceSpan, public i18n?: I18nMeta) {}
+  abstract visit(visitor: Visitor, context: any): any;
+}
+
+export class Text extends NodeWithI18n {
+  constructor(public value: string, sourceSpan: ParseSourceSpan, i18n?: I18nMeta) {
+    super(sourceSpan, i18n);
+  }
   visit(visitor: Visitor, context: any): any { return visitor.visitText(this, context); }
 }
 
-export class Expansion implements Node {
+export class Expansion extends NodeWithI18n {
   constructor(
       public switchValue: string, public type: string, public cases: ExpansionCase[],
-      public sourceSpan: ParseSourceSpan, public switchValueSourceSpan: ParseSourceSpan,
-      public i18n?: I18nAST) {}
+      sourceSpan: ParseSourceSpan, public switchValueSourceSpan: ParseSourceSpan, i18n?: I18nMeta) {
+    super(sourceSpan, i18n);
+  }
   visit(visitor: Visitor, context: any): any { return visitor.visitExpansion(this, context); }
 }
 
@@ -36,18 +44,22 @@ export class ExpansionCase implements Node {
   visit(visitor: Visitor, context: any): any { return visitor.visitExpansionCase(this, context); }
 }
 
-export class Attribute implements Node {
+export class Attribute extends NodeWithI18n {
   constructor(
-      public name: string, public value: string, public sourceSpan: ParseSourceSpan,
-      public valueSpan?: ParseSourceSpan, public i18n?: I18nAST) {}
+      public name: string, public value: string, sourceSpan: ParseSourceSpan,
+      public valueSpan?: ParseSourceSpan, i18n?: I18nMeta) {
+    super(sourceSpan, i18n);
+  }
   visit(visitor: Visitor, context: any): any { return visitor.visitAttribute(this, context); }
 }
 
-export class Element implements Node {
+export class Element extends NodeWithI18n {
   constructor(
       public name: string, public attrs: Attribute[], public children: Node[],
-      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan|null = null,
-      public endSourceSpan: ParseSourceSpan|null = null, public i18n?: I18nAST) {}
+      sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan|null = null,
+      public endSourceSpan: ParseSourceSpan|null = null, i18n?: I18nMeta) {
+    super(sourceSpan, i18n);
+  }
   visit(visitor: Visitor, context: any): any { return visitor.visitElement(this, context); }
 }
 
@@ -112,7 +124,7 @@ export class RecursiveVisitor implements Visitor {
       if (children) results.push(visitAll(t, children, context));
     }
     cb(visit);
-    return [].concat.apply([], results);
+    return Array.prototype.concat.apply([], results);
   }
 }
 

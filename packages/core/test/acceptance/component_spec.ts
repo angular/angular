@@ -6,9 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ComponentFactoryResolver, ComponentRef, ElementRef, InjectionToken, NgModule, OnDestroy, Renderer2, Type, ViewChild, ViewContainerRef, ViewEncapsulation} from '@angular/core';
+import {DOCUMENT} from '@angular/common';
+import {Component, ComponentFactoryResolver, ComponentRef, ElementRef, InjectionToken, Injector, Input, NgModule, OnDestroy, Renderer2, RendererFactory2, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {onlyInIvy} from '@angular/private/testing';
+
+import {domRendererFactory3} from '../../src/render3/interfaces/renderer';
 
 
 describe('component', () => {
@@ -239,7 +244,7 @@ describe('component', () => {
       encapsulation: ViewEncapsulation.Emulated,
     })
     class Parent {
-      @ViewChild(Child, {static: false}) childInstance !: Child;
+      @ViewChild(Child) childInstance !: Child;
       constructor(public renderer: Renderer2) {}
     }
 
@@ -253,4 +258,202 @@ describe('component', () => {
         .toBe(true, 'Expected renderers to be different.');
   });
 
+  it('components should not share the same context when creating with a root element', () => {
+    const log: string[] = [];
+    @Component({
+      selector: 'comp-a',
+      template: '<div>{{ a }}</div>',
+    })
+    class CompA {
+      @Input() a: string = '';
+      ngDoCheck() { log.push('CompA:ngDoCheck'); }
+    }
+
+    @Component({
+      selector: 'comp-b',
+      template: '<div>{{ b }}</div>',
+    })
+    class CompB {
+      @Input() b: string = '';
+      ngDoCheck() { log.push('CompB:ngDoCheck'); }
+    }
+
+    @Component({template: `<span></span>`})
+    class MyCompA {
+      constructor(
+          private _componentFactoryResolver: ComponentFactoryResolver,
+          private _injector: Injector) {}
+
+      createComponent() {
+        const componentFactoryA = this._componentFactoryResolver.resolveComponentFactory(CompA);
+        const compRefA =
+            componentFactoryA.create(this._injector, [], document.createElement('div'));
+        return compRefA;
+      }
+    }
+
+    @Component({template: `<span></span>`})
+    class MyCompB {
+      constructor(private cfr: ComponentFactoryResolver, private injector: Injector) {}
+
+      createComponent() {
+        const componentFactoryB = this.cfr.resolveComponentFactory(CompB);
+        const compRefB = componentFactoryB.create(this.injector, [], document.createElement('div'));
+        return compRefB;
+      }
+    }
+
+    @NgModule({
+      declarations: [CompA],
+      entryComponents: [CompA],
+    })
+    class MyModuleA {
+    }
+
+    @NgModule({
+      declarations: [CompB],
+      entryComponents: [CompB],
+    })
+    class MyModuleB {
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [MyCompA, MyCompB],
+      imports: [MyModuleA, MyModuleB],
+    });
+    const fixtureA = TestBed.createComponent(MyCompA);
+    fixtureA.detectChanges();
+    const compA = fixtureA.componentInstance.createComponent();
+    compA.instance.a = 'a';
+    compA.changeDetectorRef.detectChanges();
+
+    expect(log).toEqual(['CompA:ngDoCheck']);
+
+    log.length = 0;  // reset the log
+
+    const fixtureB = TestBed.createComponent(MyCompB);
+    fixtureB.detectChanges();
+    const compB = fixtureB.componentInstance.createComponent();
+    compB.instance.b = 'b';
+    compB.changeDetectorRef.detectChanges();
+
+    expect(log).toEqual(['CompB:ngDoCheck']);
+  });
+
+  it('should preserve simple component selector in a component factory', () => {
+    @Component({selector: '[foo]', template: ''})
+    class AttSelectorCmp {
+    }
+
+    @NgModule({
+      declarations: [AttSelectorCmp],
+      entryComponents: [AttSelectorCmp],
+    })
+    class AppModule {
+    }
+
+    TestBed.configureTestingModule({imports: [AppModule]});
+    const cmpFactoryResolver = TestBed.inject(ComponentFactoryResolver);
+    const cmpFactory = cmpFactoryResolver.resolveComponentFactory(AttSelectorCmp);
+
+    expect(cmpFactory.selector).toBe('[foo]');
+  });
+
+  it('should preserve complex component selector in a component factory', () => {
+    @Component({selector: '[foo],div:not(.bar)', template: ''})
+    class ComplexSelectorCmp {
+    }
+
+    @NgModule({
+      declarations: [ComplexSelectorCmp],
+      entryComponents: [ComplexSelectorCmp],
+    })
+    class AppModule {
+    }
+
+    TestBed.configureTestingModule({imports: [AppModule]});
+    const cmpFactoryResolver = TestBed.inject(ComponentFactoryResolver);
+    const cmpFactory = cmpFactoryResolver.resolveComponentFactory(ComplexSelectorCmp);
+
+    expect(cmpFactory.selector).toBe('[foo],div:not(.bar)');
+  });
+
+  describe('should clear host element if provided in ComponentFactory.create', () => {
+    function runTestWithRenderer(rendererProviders: any[]) {
+      @Component({
+        selector: 'dynamic-comp',
+        template: 'DynamicComponent Content',
+      })
+      class DynamicComponent {
+      }
+
+      @Component({
+        selector: 'app',
+        template: `
+          <div id="dynamic-comp-root-a">
+            Existing content in slot A, which <b><i>includes</i> some HTML elements</b>.
+          </div>
+          <div id="dynamic-comp-root-b">
+            <p>
+              Existing content in slot B, which includes some HTML elements.
+            </p>
+          </div>
+        `,
+      })
+      class App {
+        constructor(public injector: Injector, public cfr: ComponentFactoryResolver) {}
+
+        createDynamicComponent(target: any) {
+          const dynamicCompFactory = this.cfr.resolveComponentFactory(DynamicComponent);
+          dynamicCompFactory.create(this.injector, [], target);
+        }
+      }
+
+      // View Engine requires DynamicComponent to be in entryComponents.
+      @NgModule({
+        declarations: [App, DynamicComponent],
+        entryComponents: [App, DynamicComponent],
+      })
+      class AppModule {
+      }
+
+      function _document(): any {
+        // Tell Ivy about the global document
+        ɵsetDocument(document);
+        return document;
+      }
+
+      TestBed.configureTestingModule({
+        imports: [AppModule],
+        providers: [
+          {provide: DOCUMENT, useFactory: _document, deps: []},
+          rendererProviders,
+        ],
+      });
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      // Create an instance of DynamicComponent and provide host element *reference*
+      let targetEl = document.getElementById('dynamic-comp-root-a') !;
+      fixture.componentInstance.createDynamicComponent(targetEl);
+      fixture.detectChanges();
+      expect(targetEl.innerHTML).not.toContain('Existing content in slot A');
+      expect(targetEl.innerHTML).toContain('DynamicComponent Content');
+
+      // Create an instance of DynamicComponent and provide host element *selector*
+      targetEl = document.getElementById('dynamic-comp-root-b') !;
+      fixture.componentInstance.createDynamicComponent('#dynamic-comp-root-b');
+      fixture.detectChanges();
+      expect(targetEl.innerHTML).not.toContain('Existing content in slot B');
+      expect(targetEl.innerHTML).toContain('DynamicComponent Content');
+    }
+
+    it('with Renderer2',
+       () => runTestWithRenderer([{provide: RendererFactory2, useClass: DomRendererFactory2}]));
+
+    onlyInIvy('Renderer3 is supported only in Ivy')
+        .it('with Renderer3', () => runTestWithRenderer(
+                                  [{provide: RendererFactory2, useValue: domRendererFactory3}]));
+  });
 });

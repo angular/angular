@@ -88,7 +88,7 @@ if (isBrowser) {
         TestBed.configureTestingModule({
           imports: [TestModule],
         });
-        const compiler = TestBed.get(Compiler) as Compiler;
+        const compiler = TestBed.inject(Compiler);
         expect(compiler.getModuleId(TestModule)).toBe('test-module');
       });
     });

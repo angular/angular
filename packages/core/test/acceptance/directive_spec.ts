@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, Directive, EventEmitter, Output, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, Directive, ElementRef, EventEmitter, Output, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {Input} from '@angular/core/src/metadata';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -172,6 +172,23 @@ describe('directives', () => {
       expect(nodesWithDirective.length).toBe(1);
     });
 
+    it('should match classes to directive selectors without case sensitivity', () => {
+      @Directive({selector: '.Titledir'})
+      class TitleClassDirective {
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComponent, TitleClassDirective]});
+      TestBed.overrideTemplate(TestComponent, `
+        <div class="titleDir" [id]="someId"></div>
+      `);
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const nodesWithDirective =
+          fixture.debugElement.queryAllNodes(By.directive(TitleClassDirective));
+
+      expect(nodesWithDirective.length).toBe(1);
+    });
+
     it('should NOT match classes to directive selectors', () => {
       TestBed.configureTestingModule({declarations: [TestComponent, TitleDirective]});
       TestBed.overrideTemplate(TestComponent, `
@@ -182,6 +199,23 @@ describe('directives', () => {
       const nodesWithDirective = fixture.debugElement.queryAllNodes(By.directive(TitleDirective));
 
       expect(nodesWithDirective.length).toBe(0);
+    });
+
+    it('should match attributes to directive selectors without case sensitivity', () => {
+      @Directive({selector: '[title=Titledir]'})
+      class TitleAttributeDirective {
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComponent, TitleAttributeDirective]});
+      TestBed.overrideTemplate(TestComponent, `
+        <div title="titleDir" [id]="someId"></div>
+      `);
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const nodesWithDirective =
+          fixture.debugElement.queryAllNodes(By.directive(TitleAttributeDirective));
+
+      expect(nodesWithDirective.length).toBe(1);
     });
 
     it('should match directives with attribute selectors on outputs', () => {
@@ -200,6 +234,109 @@ describe('directives', () => {
       expect(spanEl.hasAttribute('out')).toBe(false);
       expect(spanEl.getAttribute('class')).toBe('span');
       expect(fixture.debugElement.query(By.directive(TestDir))).toBeTruthy();
+    });
+
+    it('should not match directives based on attribute bindings', () => {
+      const calls: string[] = [];
+
+      @Directive({selector: '[dir]'})
+      class MyDir {
+        ngOnInit() { calls.push('MyDir.ngOnInit'); }
+      }
+
+      @Component({
+        selector: `my-comp`,
+        template: `<p [attr.dir]="direction"></p><p dir="rtl"></p>`,
+      })
+      class MyComp {
+        direction = 'auto';
+      }
+
+      TestBed.configureTestingModule({declarations: [MyDir, MyComp]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      // Expect only one directive to be instantiated.
+      expect(calls).toEqual(['MyDir.ngOnInit']);
+    });
+
+    it('should match directives on elements with namespace', () => {
+      const calls: string[] = [];
+
+      @Directive({selector: 'svg[dir]'})
+      class MyDir {
+        constructor(private el: ElementRef) {}
+        ngOnInit() { calls.push(`MyDir.ngOnInit: ${this.el.nativeElement.tagName}`); }
+      }
+
+      @Component({
+        selector: `my-comp`,
+        template: `<svg dir><text dir></text></svg>`,
+      })
+      class MyComp {
+      }
+
+      TestBed.configureTestingModule({declarations: [MyDir, MyComp]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      expect(calls).toEqual(['MyDir.ngOnInit: svg']);
+    });
+
+    it('should match directives on descendant elements with namespace', () => {
+      const calls: string[] = [];
+
+      @Directive({selector: 'text[dir]'})
+      class MyDir {
+        constructor(private el: ElementRef) {}
+        ngOnInit() { calls.push(`MyDir.ngOnInit: ${this.el.nativeElement.tagName}`); }
+      }
+
+      @Component({
+        selector: `my-comp`,
+        template: `<svg dir><text dir></text></svg>`,
+      })
+      class MyComp {
+      }
+
+      TestBed.configureTestingModule({declarations: [MyDir, MyComp]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      expect(calls).toEqual(['MyDir.ngOnInit: text']);
+    });
+
+    it('should match directives when the node has "class", "style" and a binding', () => {
+      const logs: string[] = [];
+
+      @Directive({selector: '[test]'})
+      class MyDir {
+        constructor() { logs.push('MyDir.contructor'); }
+
+        @Input('test')
+        myInput = '';
+
+        @Input('disabled')
+        myInput2 = '';
+      }
+
+      @Component({
+        // Note that below we're checking the case where the `test` attribute is after
+        // one `class`, one `attribute` and one other binding.
+        template: `
+          <div class="a" style="font-size: 10px;" [disabled]="true" [test]="test"></div>
+        `
+      })
+      class MyComp {
+        test = '';
+      }
+
+      TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
+
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      expect(logs).toEqual(['MyDir.contructor']);
     });
 
   });

@@ -6,15 +6,17 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, absoluteFromSourceFile, dirname, join, relative} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem, absoluteFromSourceFile, dirname, join, relative} from '../../../src/ngtsc/file_system';
 import {isDtsPath} from '../../../src/ngtsc/util/src/typescript';
 import {EntryPoint, EntryPointJsonProperty} from '../packages/entry_point';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
 import {FileToWrite} from '../rendering/utils';
 
 import {InPlaceFileWriter} from './in_place_file_writer';
+import {PackageJsonUpdater} from './package_json_updater';
 
-const NGCC_DIRECTORY = '__ivy_ngcc__';
+export const NGCC_DIRECTORY = '__ivy_ngcc__';
+export const NGCC_PROPERTY_EXTENSION = '_ivy_ngcc';
 
 /**
  * This FileWriter creates a copy of the original entry-point, then writes the transformed
@@ -25,12 +27,17 @@ const NGCC_DIRECTORY = '__ivy_ngcc__';
  * `InPlaceFileWriter`).
  */
 export class NewEntryPointFileWriter extends InPlaceFileWriter {
-  writeBundle(entryPoint: EntryPoint, bundle: EntryPointBundle, transformedFiles: FileToWrite[]) {
+  constructor(fs: FileSystem, private pkgJsonUpdater: PackageJsonUpdater) { super(fs); }
+
+  writeBundle(
+      bundle: EntryPointBundle, transformedFiles: FileToWrite[],
+      formatProperties: EntryPointJsonProperty[]) {
     // The new folder is at the root of the overall package
+    const entryPoint = bundle.entryPoint;
     const ngccFolder = join(entryPoint.package, NGCC_DIRECTORY);
     this.copyBundle(bundle, entryPoint.package, ngccFolder);
     transformedFiles.forEach(file => this.writeFile(file, entryPoint.package, ngccFolder));
-    this.updatePackageJson(entryPoint, bundle.formatProperty, ngccFolder);
+    this.updatePackageJson(entryPoint, formatProperties, ngccFolder);
   }
 
   protected copyBundle(
@@ -60,12 +67,37 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
   }
 
   protected updatePackageJson(
-      entryPoint: EntryPoint, formatProperty: EntryPointJsonProperty, ngccFolder: AbsoluteFsPath) {
-    const formatPath = join(entryPoint.path, entryPoint.packageJson[formatProperty] !);
-    const newFormatPath = join(ngccFolder, relative(entryPoint.package, formatPath));
-    const newFormatProperty = formatProperty + '_ivy_ngcc';
-    (entryPoint.packageJson as any)[newFormatProperty] = relative(entryPoint.path, newFormatPath);
-    this.fs.writeFile(
-        join(entryPoint.path, 'package.json'), JSON.stringify(entryPoint.packageJson));
+      entryPoint: EntryPoint, formatProperties: EntryPointJsonProperty[],
+      ngccFolder: AbsoluteFsPath) {
+    if (formatProperties.length === 0) {
+      // No format properties need updating.
+      return;
+    }
+
+    const packageJson = entryPoint.packageJson;
+    const packageJsonPath = join(entryPoint.path, 'package.json');
+
+    // All format properties point to the same format-path.
+    const oldFormatProp = formatProperties[0] !;
+    const oldFormatPath = packageJson[oldFormatProp] !;
+    const oldAbsFormatPath = join(entryPoint.path, oldFormatPath);
+    const newAbsFormatPath = join(ngccFolder, relative(entryPoint.package, oldAbsFormatPath));
+    const newFormatPath = relative(entryPoint.path, newAbsFormatPath);
+
+    // Update all properties in `package.json` (both in memory and on disk).
+    const update = this.pkgJsonUpdater.createUpdate();
+
+    for (const formatProperty of formatProperties) {
+      if (packageJson[formatProperty] !== oldFormatPath) {
+        throw new Error(
+            `Unable to update '${packageJsonPath}': Format properties ` +
+            `(${formatProperties.join(', ')}) map to more than one format-path.`);
+      }
+
+      update.addChange(
+          [`${formatProperty}${NGCC_PROPERTY_EXTENSION}`], newFormatPath, {before: formatProperty});
+    }
+
+    update.writeChanges(packageJsonPath, packageJson);
   }
 }

@@ -14,6 +14,7 @@ import * as ts from 'typescript';
 
 import {NgComponentTemplateVisitor} from '../../utils/ng_component_template';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
+import {createMigrationCompilerHost} from '../../utils/typescript/compiler_host';
 import {parseTsconfigFile} from '../../utils/typescript/parse_tsconfig';
 
 import {NgQueryResolveVisitor} from './angular/ng_query_visitor';
@@ -53,12 +54,6 @@ async function runMigration(tree: Tree, context: SchematicContext) {
   const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
   const basePath = process.cwd();
   const logger = context.logger;
-
-  logger.info('------ Static Query Migration ------');
-  logger.info('With Angular version 8, developers need to');
-  logger.info('explicitly specify the timing of ViewChild and');
-  logger.info('ContentChild queries. Read more about this here:');
-  logger.info('https://v8.angular.io/guide/static-query-migration');
 
   if (!buildPaths.length && !testPaths.length) {
     throw new SchematicsException(
@@ -104,8 +99,6 @@ async function runMigration(tree: Tree, context: SchematicContext) {
     logger.info('https://v8.angular.io/guide/static-query-migration');
     failures.forEach(failure => logger.warn(`⮑   ${failure}`));
   }
-
-  logger.info('------------------------------------------------');
 }
 
 /**
@@ -117,20 +110,7 @@ function analyzeProject(
     logger: logging.LoggerApi):
     AnalyzedProject|null {
       const parsed = parseTsconfigFile(tsconfigPath, dirname(tsconfigPath));
-      const host = ts.createCompilerHost(parsed.options, true);
-
-      // We need to overwrite the host "readFile" method, as we want the TypeScript
-      // program to be based on the file contents in the virtual file tree. Otherwise
-      // if we run the migration for multiple tsconfig files which have intersecting
-      // source files, it can end up updating query definitions multiple times.
-      host.readFile = fileName => {
-        const buffer = tree.read(relative(basePath, fileName));
-        // Strip BOM as otherwise TSC methods (Ex: getWidth) will return an offset which
-        // which breaks the CLI UpdateRecorder.
-        // See: https://github.com/angular/angular/pull/30719
-        return buffer ? buffer.toString().replace(/^\uFEFF/, '') : undefined;
-      };
-
+      const host = createMigrationCompilerHost(tree, parsed.options, basePath);
       const program = ts.createProgram(parsed.fileNames, parsed.options, host);
       const syntacticDiagnostics = program.getSyntacticDiagnostics();
 

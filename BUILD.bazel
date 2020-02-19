@@ -19,9 +19,9 @@ filegroup(
     # do not sort
     srcs = [
         "@npm//:node_modules/core-js/client/core.js",
-        "@npm//:node_modules/zone.js/dist/zone.js",
-        "@npm//:node_modules/zone.js/dist/zone-testing.js",
-        "@npm//:node_modules/zone.js/dist/task-tracking.js",
+        "//packages/zone.js/dist:zone.js",
+        "//packages/zone.js/dist:zone-testing.js",
+        "//packages/zone.js/dist:task-tracking.js",
         "//:test-events.js",
         "//:shims_for_IE.js",
         # Including systemjs because it defines `__eval`, which produces correct stack traces.
@@ -47,47 +47,75 @@ filegroup(
     ],
 )
 
-# To run a karma_web_test target locally on SauceLabs:
-# 1) have SAUCE_USERNAME, SAUCE_ACCESS_KEY (and optionally a SAUCE_TUNNEL_IDENTIFIER) set in your environment
-# 2) open a sauce connection with `./scripts/saucelabs/start-tunnel.sh`
-#    NOTE: start-tunnel.sh uses `node_modules/sauce-connect` which is current linux specific:
-#          "sauce-connect": "https://saucelabs.com/downloads/sc-4.5.3-linux.tar.gz".
-#          On OSX or Windows you'll need to use the appropriate sauce-connect binary.
-# 3) run target with `yarn bazel test --config=saucelabs <target>`
-#    NOTE: --config=saucelabs is required as it makes the SAUCE_XXX environment variables available to
-#          the action. See /.bazelrc.
+# To run manually:
+# Setup your SAUCE_USERNAME, SAUCE_ACCESS_KEY & SAUCE_TUNNEL_IDENTIFIER.
+# If on OSX, also set SAUCE_CONNECT to the path of your `sc` binary.
+# environment variables and run:
+# ```
+# yarn bazel run //tools/saucelabs:sauce_service_setup
+# yarn bazel test //:saucelabs_unit_tests --config=saucelabs --config=ivy
+# ```
+# See /tools/saucelabs/README.md for more info on karma Saucelabs tests under Bazel.
 karma_web_test(
-    name = "test_web_all",
+    name = "saucelabs_unit_tests",
+    # Default timeout is moderate (5min). This causes the test to be terminated while
+    # Saucelabs browsers keep running. Ultimately resulting in failing tests and browsers
+    # unnecessarily being acquired. Our specified Saucelabs idle timeout is 10min, so we use
+    # Bazel's long timeout (15min). This ensures that Karma can shut down properly.
+    timeout = "long",
+    karma = "//tools/saucelabs:karma-saucelabs",
     tags = [
-        "local",
         "manual",
+        "no-remote-exec",
         "saucelabs",
     ],
     deps = [
-        # We combine all tests into a single karma_web_test target
-        # as running them as seperate targets in parallel leads to too many
-        # browsers being acquired at once in SauceLabs and the tests flake out
-        # TODO: this is an example subset of tests below, add all remaining angular tests
-        "//packages/common/http/test:test_lib",
-        "//packages/common/http/testing/test:test_lib",
-        "//packages/common/test:test_lib",
-        "//packages/core/test:test_lib",
-        "//packages/forms/test:test_lib",
-        "//packages/http/test:test_lib",
-        "//packages/zone.js/test:karma_jasmine_test_ci",
-        # "//packages/router/test:test_lib",
-        # //packages/router/test:test_lib fails with:
-        # IE 11.0.0 (Windows 8.1.0.0) bootstrap should restore the scrolling position FAILED
-        # 	Expected undefined to equal 5000.
-        # 	   at stack (eval code:2338:11)
-        # 	   at buildExpectationResult (eval code:2305:5)
-        # 	   at expectationResultFactory (eval code:858:11)
-        # 	   at Spec.prototype.addExpectationResult (eval code:487:5)
-        # 	   at addExpectationResult (eval code:802:9)
-        # 	   at Anonymous function (eval code:2252:7)
-        # 	   at Anonymous function (eval code:339:25)
-        # 	   at step (eval code:133:17)
-        # 	   at Anonymous function (eval code:114:50)
-        # 	   at fulfilled (eval code:104:47)
+        "//packages/core/test/acceptance:acceptance_lib",
     ],
+)
+
+SAUCE_TEST_SUITE_TARGETS = [
+    "packages/common/http/test:test_lib",
+    "packages/common/http/testing/test:test_lib",
+    "packages/common/test:test_lib",
+    "packages/core/test:test_lib",
+    "packages/forms/test:test_lib",
+    "packages/http/test:test_lib",
+]
+
+[
+    # These target runs in CI with View Engine as a Saucelabs and Bazel proof-of-concept. It's a
+    # subset of the legacy saucelabs tests.
+    karma_web_test(
+        name = "saucelabs_unit_tests_poc_%s" % test.replace("/", "_").replace(":", "_").replace(".", "_"),
+        # Default timeout is moderate (5min). This causes the test to be terminated while
+        # Saucelabs browsers keep running. Ultimately resulting in failing tests and browsers
+        # unnecessarily being acquired. Our specified Saucelabs idle timeout is 10min, so we use
+        # Bazel's long timeout (15min). This ensures that Karma can shut down properly.
+        timeout = "long",
+        karma = "//tools/saucelabs:karma-saucelabs",
+        tags = [
+            "exclusive",
+            "manual",
+            "no-remote-exec",
+            "saucelabs",
+        ],
+        deps = ["//%s" % test],
+    )
+    for test in SAUCE_TEST_SUITE_TARGETS
+]
+
+# To run manually:
+# Setup your SAUCE_USERNAME, SAUCE_ACCESS_KEY & SAUCE_TUNNEL_IDENTIFIER.
+# If on OSX, also set SAUCE_CONNECT to the path of your `sc` binary.
+# environment variables and run:
+# ```
+# yarn bazel run //tools/saucelabs:sauce_service_setup
+# yarn bazel test //:saucelabs_unit_tests_poc_suite --config=saucelabs
+# ```
+# See /tools/saucelabs/README.md for more info on karma Saucelabs tests under Bazel.
+test_suite(
+    name = "saucelabs_unit_tests_poc_suite",
+    tags = ["manual"],
+    tests = ["//:saucelabs_unit_tests_poc_%s" % test.replace("/", "_").replace(":", "_").replace(".", "_") for test in SAUCE_TEST_SUITE_TARGETS],
 )

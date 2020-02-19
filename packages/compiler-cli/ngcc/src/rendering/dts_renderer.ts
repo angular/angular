@@ -8,9 +8,10 @@
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
 import {FileSystem} from '../../../src/ngtsc/file_system';
+import {Reexport} from '../../../src/ngtsc/imports';
 import {CompileResult} from '../../../src/ngtsc/transform';
 import {translateType, ImportManager} from '../../../src/ngtsc/translator';
-import {DecorationAnalyses} from '../analysis/decoration_analyzer';
+import {DecorationAnalyses} from '../analysis/types';
 import {ModuleWithProvidersInfo, ModuleWithProvidersAnalyses} from '../analysis/module_with_providers_analyzer';
 import {PrivateDeclarationsAnalyses, ExportInfo} from '../analysis/private_declarations_analyzer';
 import {IMPORT_PREFIX} from '../constants';
@@ -33,6 +34,7 @@ class DtsRenderInfo {
   classInfo: DtsClassInfo[] = [];
   moduleWithProviders: ModuleWithProvidersInfo[] = [];
   privateExports: ExportInfo[] = [];
+  reexports: Reexport[] = [];
 }
 
 
@@ -96,14 +98,19 @@ export class DtsRenderer {
       });
     });
 
+    if (renderInfo.reexports.length > 0) {
+      for (const e of renderInfo.reexports) {
+        const newStatement = `\nexport {${e.symbolName} as ${e.asAlias}} from '${e.fromModule}';`;
+        outputText.append(newStatement);
+      }
+    }
+
     this.dtsFormatter.addModuleWithProvidersParams(
         outputText, renderInfo.moduleWithProviders, importManager);
     this.dtsFormatter.addExports(
         outputText, dtsFile.fileName, renderInfo.privateExports, importManager, dtsFile);
     this.dtsFormatter.addImports(
         outputText, importManager.getAllImports(dtsFile.fileName), dtsFile);
-
-
 
     return renderSourceAndMap(dtsFile, input, outputText);
   }
@@ -117,12 +124,24 @@ export class DtsRenderer {
 
     // Capture the rendering info from the decoration analyses
     decorationAnalyses.forEach(compiledFile => {
+      let appliedReexports = false;
       compiledFile.compiledClasses.forEach(compiledClass => {
         const dtsDeclaration = this.host.getDtsDeclaration(compiledClass.declaration);
         if (dtsDeclaration) {
           const dtsFile = dtsDeclaration.getSourceFile();
           const renderInfo = dtsMap.has(dtsFile) ? dtsMap.get(dtsFile) ! : new DtsRenderInfo();
           renderInfo.classInfo.push({dtsDeclaration, compilation: compiledClass.compilation});
+          // Only add re-exports if the .d.ts tree is overlayed with the .js tree, as re-exports in
+          // ngcc are only used to support deep imports into e.g. commonjs code. For a deep import
+          // to work, the typing file and JS file must be in parallel trees. This logic will detect
+          // the simplest version of this case, which is sufficient to handle most commonjs
+          // libraries.
+          if (!appliedReexports &&
+              compiledClass.declaration.getSourceFile().fileName ===
+                  dtsFile.fileName.replace(/\.d\.ts$/, '.js')) {
+            renderInfo.reexports.push(...compiledFile.reexports);
+            appliedReexports = true;
+          }
           dtsMap.set(dtsFile, renderInfo);
         }
       });
@@ -140,7 +159,7 @@ export class DtsRenderer {
     // Capture the private declarations that need to be re-exported
     if (privateDeclarationsAnalyses.length) {
       privateDeclarationsAnalyses.forEach(e => {
-        if (!e.dtsFrom && !e.alias) {
+        if (!e.dtsFrom) {
           throw new Error(
               `There is no typings path for ${e.identifier} in ${e.from}.\n` +
               `We need to add an export for this class to a .d.ts typings file because ` +

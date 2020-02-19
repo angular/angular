@@ -9,12 +9,16 @@ import * as ts from 'typescript';
 
 import {AbsoluteFsPath, join} from '../../file_system';
 import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports';
-import {ClassDeclaration} from '../../reflection';
+import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
 
 import {TypeCheckBlockMetadata, TypeCheckingConfig} from './api';
+import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
+import {OutOfBandDiagnosticRecorder} from './oob';
 import {generateTypeCheckBlock} from './type_check_block';
+
+
 
 /**
  * An `Environment` representing the single type-checking file into which most (if not all) Type
@@ -28,16 +32,19 @@ export class TypeCheckFile extends Environment {
   private nextTcbId = 1;
   private tcbStatements: ts.Statement[] = [];
 
-  constructor(private fileName: string, config: TypeCheckingConfig, refEmitter: ReferenceEmitter) {
+  constructor(
+      private fileName: string, config: TypeCheckingConfig, refEmitter: ReferenceEmitter,
+      reflector: ReflectionHost) {
     super(
-        config, new ImportManager(new NoopImportRewriter(), 'i'), refEmitter,
+        config, new ImportManager(new NoopImportRewriter(), 'i'), refEmitter, reflector,
         ts.createSourceFile(fileName, '', ts.ScriptTarget.Latest, true));
   }
 
   addTypeCheckBlock(
-      ref: Reference<ClassDeclaration<ts.ClassDeclaration>>, meta: TypeCheckBlockMetadata): void {
+      ref: Reference<ClassDeclaration<ts.ClassDeclaration>>, meta: TypeCheckBlockMetadata,
+      domSchemaChecker: DomSchemaChecker, oobRecorder: OutOfBandDiagnosticRecorder): void {
     const fnId = ts.createIdentifier(`_tcb${this.nextTcbId++}`);
-    const fn = generateTypeCheckBlock(this, ref, fnId, meta);
+    const fn = generateTypeCheckBlock(this, ref, fnId, meta, domSchemaChecker, oobRecorder);
     this.tcbStatements.push(fn);
   }
 
@@ -48,6 +55,9 @@ export class TypeCheckFile extends Environment {
         '\n\n';
     const printer = ts.createPrinter();
     source += '\n';
+    for (const stmt of this.helperStatements) {
+      source += printer.printNode(ts.EmitHint.Unspecified, stmt, this.contextFile) + '\n';
+    }
     for (const stmt of this.pipeInstStatements) {
       source += printer.printNode(ts.EmitHint.Unspecified, stmt, this.contextFile) + '\n';
     }
@@ -58,6 +68,11 @@ export class TypeCheckFile extends Environment {
     for (const stmt of this.tcbStatements) {
       source += printer.printNode(ts.EmitHint.Unspecified, stmt, this.contextFile) + '\n';
     }
+
+    // Ensure the template type-checking file is an ES module. Otherwise, it's interpreted as some
+    // kind of global namespace in TS, which forces a full re-typecheck of the user's program that
+    // is somehow more expensive than the initial parse.
+    source += '\nexport const IS_A_MODULE = true;\n';
 
     return ts.createSourceFile(
         this.fileName, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);

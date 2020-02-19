@@ -1,19 +1,20 @@
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 
-load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle", "ts_library")
-load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
+load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle", "ts_devserver", "ts_library")
 load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
 
 ng_module(
     name = "application_lib",
     srcs = glob(
         ["**/*.ts"],
-        exclude = ["**/*.spec.ts"],
+        exclude = ["**/*.perf-spec.ts"],
     ),
+    generate_ve_shims = True,
     deps = [
         "//packages:types",
         "//packages/common",
         "//packages/core",
+        "//packages/localize/init",
         "//packages/platform-browser",
         "@npm//rxjs",
     ],
@@ -22,7 +23,8 @@ ng_module(
 ts_library(
     name = "perf_lib",
     testonly = 1,
-    srcs = ["benchmark_perf.spec.ts"],
+    srcs = ["expanding_rows.perf-spec.ts"],
+    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
     deps = [
         "//modules/e2e_util",
         "@npm//protractor",
@@ -31,7 +33,7 @@ ts_library(
 
 ng_rollup_bundle(
     name = "bundle",
-    entry_point = ":index.ts",
+    entry_point = ":index_aot.ts",
     deps = [
         ":application_lib",
         "@npm//rxjs",
@@ -40,27 +42,22 @@ ng_rollup_bundle(
 
 ts_devserver(
     name = "prodserver",
-    static_files = [
-        ":bundle.min_debug.js",
-        ":bundle.min.js",
-        "@npm//:node_modules/zone.js/dist/zone.js",
-        "index.html",
-    ],
+    bootstrap = ["//packages/zone.js/dist:zone.js"],
+    port = 4200,
+    static_files = ["index.html"],
+    deps = [":bundle.min_debug.es2015.js"],
 )
 
 ts_devserver(
     name = "devserver",
-    entry_module = "angular/modules/benchmarks/src/expanding_rows/index",
-    index_html = "index.html",
+    bootstrap = ["//packages/zone.js/dist:zone.js"],
+    entry_module = "angular/modules/benchmarks/src/expanding_rows/index_aot",
+    port = 4200,
     scripts = [
         "@npm//:node_modules/tslib/tslib.js",
         "//tools/rxjs:rxjs_umd_modules",
     ],
-    serving_path = "/index.js",
-    static_files = [
-        "@npm//:node_modules/zone.js/dist/zone.js",
-        "index.html",
-    ],
+    static_files = ["index.html"],
     deps = [":application_lib"],
 )
 

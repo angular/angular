@@ -7,11 +7,9 @@
  */
 
 import {Inject, Injectable, Optional} from '@angular/core';
-
-
-import {Location} from './location';
 import {APP_BASE_HREF, LocationStrategy} from './location_strategy';
 import {LocationChangeListener, PlatformLocation} from './platform_location';
+import {joinWithSlash, normalizeQueryParams} from './util';
 
 
 
@@ -62,13 +60,12 @@ export class HashLocationStrategy extends LocationStrategy {
   }
 
   prepareExternalUrl(internal: string): string {
-    const url = Location.joinWithSlash(this._baseHref, internal);
+    const url = joinWithSlash(this._baseHref, internal);
     return url.length > 0 ? ('#' + url) : url;
   }
 
   pushState(state: any, title: string, path: string, queryParams: string) {
-    let url: string|null =
-        this.prepareExternalUrl(path + Location.normalizeQueryParams(queryParams));
+    let url: string|null = this.prepareExternalUrl(path + normalizeQueryParams(queryParams));
     if (url.length == 0) {
       url = this._platformLocation.pathname;
     }
@@ -76,7 +73,7 @@ export class HashLocationStrategy extends LocationStrategy {
   }
 
   replaceState(state: any, title: string, path: string, queryParams: string) {
-    let url = this.prepareExternalUrl(path + Location.normalizeQueryParams(queryParams));
+    let url = this.prepareExternalUrl(path + normalizeQueryParams(queryParams));
     if (url.length == 0) {
       url = this._platformLocation.pathname;
     }

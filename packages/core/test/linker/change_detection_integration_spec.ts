@@ -8,10 +8,10 @@
 
 import {ResourceLoader, UrlResolver} from '@angular/compiler';
 import {MockResourceLoader} from '@angular/compiler/testing';
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, DebugElement, Directive, DoCheck, EventEmitter, HostBinding, Inject, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, Provider, RenderComponentType, Renderer, RendererFactory2, RootRenderer, SimpleChange, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, WrappedValue} from '@angular/core';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, DebugElement, Directive, DoCheck, EventEmitter, HostBinding, Inject, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, Provider, RendererFactory2, RendererType2, SimpleChange, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, WrappedValue} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
@@ -41,9 +41,9 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
   }
 
   function initHelpers(): void {
-    renderLog = TestBed.get(RenderLog);
-    directiveLog = TestBed.get(DirectiveLog);
-    patchLoggingRenderer2(TestBed.get(RendererFactory2), renderLog);
+    renderLog = TestBed.inject(RenderLog);
+    directiveLog = TestBed.inject(DirectiveLog);
+    patchLoggingRenderer2(TestBed.inject(RendererFactory2), renderLog);
   }
 
   function queryDirs(el: DebugElement, dirType: Type<any>): any {
@@ -662,9 +662,9 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
            }));
 
         it('should throw when trying to assign to a local', fakeAsync(() => {
-             expect(() => {
-               _bindSimpleProp('(event)="$event=1"');
-             }).toThrowError(new RegExp('Cannot assign to a reference or variable!'));
+             expect(() => { _bindSimpleProp('(event)="$event=1"'); })
+                 .toThrowError(new RegExp(
+                     'Cannot assign value (.*) to template variable (.*). Template variables are read-only.'));
            }));
 
         it('should support short-circuiting', fakeAsync(() => {
@@ -682,7 +682,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
       it('should call the begin and end methods on the renderer factory when change detection is called',
          fakeAsync(() => {
            const ctx = createCompFixture('<div testDirective [a]="42"></div>');
-           const rf = TestBed.get(RendererFactory2);
+           const rf = TestBed.inject(RendererFactory2);
            spyOn(rf, 'begin');
            spyOn(rf, 'end');
            expect(rf.begin).not.toHaveBeenCalled();
@@ -1718,8 +1718,8 @@ function patchLoggingRenderer2(rendererFactory: RendererFactory2, log: RenderLog
   }
   (<any>rendererFactory).__patchedForLogging = true;
   const origCreateRenderer = rendererFactory.createRenderer;
-  rendererFactory.createRenderer = function() {
-    const renderer = origCreateRenderer.apply(this, arguments);
+  rendererFactory.createRenderer = function(element: any, type: RendererType2|null) {
+    const renderer = origCreateRenderer.call(this, element, type);
     if ((<any>renderer).__patchedForLogging) {
       return renderer;
     }
@@ -1731,7 +1731,7 @@ function patchLoggingRenderer2(rendererFactory: RendererFactory2, log: RenderLog
       origSetProperty.call(renderer, el, name, value);
     };
     renderer.setValue = function(node: any, value: string): void {
-      if (getDOM().isTextNode(node)) {
+      if (isTextNode(node)) {
         log.setText(node, value);
       }
       origSetValue.call(renderer, node, value);

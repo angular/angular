@@ -1,8 +1,8 @@
 # Introduction to forms in Angular
 
-Handling user input with forms is the cornerstone of many common applications. Applications use forms to enable users to log in, to update a profile, to enter sensitive information, and to perform many other data-entry tasks. 
+Handling user input with forms is the cornerstone of many common applications. Applications use forms to enable users to log in, to update a profile, to enter sensitive information, and to perform many other data-entry tasks.
 
-Angular provides two different approaches to handling user input through forms: reactive and template-driven. Both capture user input events from the view, validate the user input, create a form model and data model to update, and provide a way to track changes. 
+Angular provides two different approaches to handling user input through forms: reactive and template-driven. Both capture user input events from the view, validate the user input, create a form model and data model to update, and provide a way to track changes.
 
 Reactive and template-driven forms process and manage form data differently. Each offers different advantages.
 
@@ -39,7 +39,7 @@ The table below summarizes the key differences between reactive and template-dri
 
 ## Common foundation
 
-Both reactive and template-driven forms share underlying building blocks. 
+Both reactive and template-driven forms share underlying building blocks.
 
 
 * `FormControl` tracks the value and validation status of an individual form control.
@@ -67,11 +67,11 @@ Here's a component with an input field for a single control implemented using re
 
 The source of truth provides the value and status of the form element at a given point in time. In reactive forms, the form model is the source of truth. In the example above, the form model is the `FormControl` instance.
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/forms-overview/key-diff-reactive-forms.png" alt="Reactive forms key differences">
-</figure>
+</div>
 
-With reactive forms, the form model is explicitly defined in the component class. The reactive form directive (in this case, `FormControlDirective`) then links the existing `FormControl` instance to a specific form element in the view using a value accessor (`ControlValueAccessor` instance). 
+With reactive forms, the form model is explicitly defined in the component class. The reactive form directive (in this case, `FormControlDirective`) then links the existing `FormControl` instance to a specific form element in the view using a value accessor (`ControlValueAccessor` instance).
 
 ### Setup in template-driven forms
 
@@ -82,11 +82,11 @@ Here's the same component with an input field for a single control implemented u
 
 In template-driven forms, the source of truth is the template.
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/forms-overview/key-diff-td-forms.png" alt="Template-driven forms key differences">
-</figure>
+</div>
 
-The abstraction of the form model promotes simplicity over structure. The template-driven form directive `NgModel` is responsible for creating and managing the `FormControl` instance for a given form element. It's less explicit, but you no longer have direct control over the form model. 
+The abstraction of the form model promotes simplicity over structure. The template-driven form directive `NgModel` is responsible for creating and managing the `FormControl` instance for a given form element. It's less explicit, but you no longer have direct control over the form model.
 
 {@a data-flow-in-forms}
 
@@ -98,9 +98,9 @@ When building forms in Angular, it's important to understand how the framework h
 
 As described above, in reactive forms each form element in the view is directly linked to a form model (`FormControl` instance). Updates from the view to the model and from the model to the view are synchronous and aren't dependent on the UI rendered. The diagrams below use the same favorite color example to demonstrate how data flows when an input field's value is changed from the view and then from the model.
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/forms-overview/dataflow-reactive-forms-vtm.png" alt="Reactive forms data flow - view to model" width="100%">
-</figure>
+</div>
 
 The steps below outline the data flow from view to model.
 
@@ -110,9 +110,9 @@ The steps below outline the data flow from view to model.
 1. The `FormControl` instance emits the new value through the `valueChanges` observable.
 1. Any subscribers to the `valueChanges` observable receive the new value.
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/forms-overview/dataflow-reactive-forms-mtv.png" alt="Reactive forms data flow - model to view" width="100%">
-</figure>
+</div>
 
 The steps below outline the data flow from model to view.
 
@@ -125,9 +125,9 @@ The steps below outline the data flow from model to view.
 
 In template-driven forms, each form element is linked to a directive that manages the form model internally. The diagrams below use the same favorite color example to demonstrate how data flows when an input field's value is changed from the view and then from the model.
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/forms-overview/dataflow-td-forms-vtm.png" alt="Template-driven forms data flow - view to model" width="100%">
-</figure>
+</div>
 
 The steps below outline the data flow from view to model when the input value changes from *Red* to *Blue*.
 
@@ -137,12 +137,12 @@ The steps below outline the data flow from view to model when the input value ch
 1. The `FormControl` instance emits the new value through the `valueChanges` observable.
 1. Any subscribers to the `valueChanges` observable receive the new value.
 1. The control value accessor also calls the `NgModel.viewToModelUpdate()` method which emits an `ngModelChange` event.
-1. Because the component template uses two-way data binding for the `favoriteColor` property, the `favoriteColor` property in the component 
-is updated to the value emitted  by the `ngModelChange` event (*Blue*).
+1. Because the component template uses two-way data binding for the `favoriteColor` property, the `favoriteColor` property in the component
+is updated to the value emitted by the `ngModelChange` event (*Blue*).
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/forms-overview/dataflow-td-forms-mtv.png" alt="Template-driven forms data flow - model to view" width="100%">
-</figure>
+</div>
 
 The steps below outline the data flow from model to view when the `favoriteColor` changes from *Blue* to *Red*.
 
@@ -165,7 +165,7 @@ Validation is an integral part of managing any set of forms. Whether you're chec
 
 For more information, see [Form Validation](guide/form-validation).
 
-## Testing 
+## Testing
 
 Testing plays a large part in complex applications and a simpler testing strategy is useful when validating that your forms function correctly. Reactive forms and template-driven forms have different levels of reliance on rendering the UI to perform assertions based on form control and form field changes. The following examples demonstrate the process of testing forms with reactive and template-driven forms.
 
@@ -237,7 +237,7 @@ The change tracking method plays a role in the efficiency of your application.
 
 * **Template-driven** forms rely on mutability with two-way data binding to update the data model in the component as changes are made in the template. Because there are no unique changes to track on the data model when using two-way data binding, change detection is less efficient at determining when updates are required.
 
-The difference is demonstrated in the examples above using the **favorite color** input element. 
+The difference is demonstrated in the examples above using the **favorite color** input element.
 
 
 * With reactive forms, the **`FormControl` instance** always returns a new value when the control's value is updated.
@@ -255,7 +255,7 @@ If forms are a central part of your application, scalability is very important. 
 
 ## Final thoughts
 
-Choosing a strategy begins with understanding the strengths and weaknesses of the options presented. Low-level API and form model access, predictability, mutability, straightforward validation and testing strategies, and scalability are all important considerations in choosing the infrastructure you use to build your forms in Angular. Template-driven forms are similar to patterns in AngularJS, but they have limitations given the criteria of many modern, large-scale Angular apps. Reactive forms minimize these limitations. Reactive forms integrate with reactive patterns already present in other areas of the Angular architecture, and complement those requirements well. 
+Choosing a strategy begins with understanding the strengths and weaknesses of the options presented. Low-level API and form model access, predictability, mutability, straightforward validation and testing strategies, and scalability are all important considerations in choosing the infrastructure you use to build your forms in Angular. Template-driven forms are similar to patterns in AngularJS, but they have limitations given the criteria of many modern, large-scale Angular apps. Reactive forms minimize these limitations. Reactive forms integrate with reactive patterns already present in other areas of the Angular architecture, and complement those requirements well.
 
 ## Next steps
 
@@ -271,4 +271,3 @@ To learn more about template-driven forms, see the following guides:
 
 * [Template-driven Forms](guide/forms#template-driven-forms)
 * [Form Validation](guide/form-validation#template-driven-validation)
-

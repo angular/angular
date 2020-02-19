@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as realFs from 'fs';
-import {absoluteFrom, relativeFrom, setFileSystem} from '../src/helpers';
+import * as fsExtra from 'fs-extra';
+import {absoluteFrom, dirname, relativeFrom, setFileSystem} from '../src/helpers';
 import {NodeJSFileSystem} from '../src/node_js_file_system';
 import {AbsoluteFsPath} from '../src/types';
 
@@ -47,7 +48,18 @@ describe('NodeJSFileSystem', () => {
     it('should delegate to fs.writeFileSync()', () => {
       const spy = spyOn(realFs, 'writeFileSync');
       fs.writeFile(abcPath, 'Some contents');
-      expect(spy).toHaveBeenCalledWith(abcPath, 'Some contents', 'utf8');
+      expect(spy).toHaveBeenCalledWith(abcPath, 'Some contents', undefined);
+      spy.calls.reset();
+      fs.writeFile(abcPath, 'Some contents', /* exclusive */ true);
+      expect(spy).toHaveBeenCalledWith(abcPath, 'Some contents', {flag: 'wx'});
+    });
+  });
+
+  describe('removeFile()', () => {
+    it('should delegate to fs.unlink()', () => {
+      const spy = spyOn(realFs, 'unlinkSync');
+      fs.removeFile(abcPath);
+      expect(spy).toHaveBeenCalledWith(abcPath);
     });
   });
 
@@ -105,14 +117,6 @@ describe('NodeJSFileSystem', () => {
     });
   });
 
-  describe('mkdir()', () => {
-    it('should delegate to fs.mkdirSync()', () => {
-      const spy = spyOn(realFs, 'mkdirSync');
-      fs.mkdir(xyzPath);
-      expect(spy).toHaveBeenCalledWith(xyzPath);
-    });
-  });
-
   describe('ensureDir()', () => {
     it('should call exists() and fs.mkdir()', () => {
       const aPath = absoluteFrom('/a');
@@ -143,6 +147,78 @@ describe('NodeJSFileSystem', () => {
       fs.ensureDir(xyzPath);
       expect(existsCalls).toEqual([xyzPath, xyPath, xPath]);
       expect(mkdirCalls).toEqual([xPath, xyPath, xyzPath]);
+    });
+
+    describe('removeDeep()', () => {
+      it('should delegate to fsExtra.remove()', () => {
+        const spy = spyOn(fsExtra, 'removeSync');
+        fs.removeDeep(abcPath);
+        expect(spy).toHaveBeenCalledWith(abcPath);
+      });
+    });
+
+    it('should not fail if a directory (that did not exist before) does exist when trying to create it',
+       () => {
+         let abcPathExists = false;
+
+         spyOn(fs, 'exists').and.callFake((path: AbsoluteFsPath) => {
+           if (path === abcPath) {
+             // Pretend `abcPath` is created (e.g. by another process) right after we check if it
+             // exists for the first time.
+             const exists = abcPathExists;
+             abcPathExists = true;
+             return exists;
+           }
+           return false;
+         });
+         spyOn(fs, 'stat').and.returnValue({isDirectory: () => true});
+         const mkdirSyncSpy = spyOn(realFs, 'mkdirSync').and.callFake((path: string) => {
+           if (path === abcPath) {
+             throw new Error('It exists already. Supposedly.');
+           }
+         });
+
+         fs.ensureDir(abcPath);
+         expect(mkdirSyncSpy).toHaveBeenCalledTimes(3);
+         expect(mkdirSyncSpy).toHaveBeenCalledWith(abcPath);
+         expect(mkdirSyncSpy).toHaveBeenCalledWith(dirname(abcPath));
+       });
+
+    it('should fail if creating the directory throws and the directory does not exist', () => {
+      spyOn(fs, 'exists').and.returnValue(false);
+      spyOn(realFs, 'mkdirSync').and.callFake((path: string) => {
+        if (path === abcPath) {
+          throw new Error('Unable to create directory (for whatever reason).');
+        }
+      });
+
+      expect(() => fs.ensureDir(abcPath))
+          .toThrowError('Unable to create directory (for whatever reason).');
+    });
+
+    it('should fail if creating the directory throws and the path points to a file', () => {
+      const isDirectorySpy = jasmine.createSpy('isDirectory').and.returnValue(false);
+      let abcPathExists = false;
+
+      spyOn(fs, 'exists').and.callFake((path: AbsoluteFsPath) => {
+        if (path === abcPath) {
+          // Pretend `abcPath` is created (e.g. by another process) right after we check if it
+          // exists for the first time.
+          const exists = abcPathExists;
+          abcPathExists = true;
+          return exists;
+        }
+        return false;
+      });
+      spyOn(fs, 'stat').and.returnValue({isDirectory: isDirectorySpy});
+      spyOn(realFs, 'mkdirSync').and.callFake((path: string) => {
+        if (path === abcPath) {
+          throw new Error('It exists already. Supposedly.');
+        }
+      });
+
+      expect(() => fs.ensureDir(abcPath)).toThrowError('It exists already. Supposedly.');
+      expect(isDirectorySpy).toHaveBeenCalledTimes(1);
     });
   });
 });

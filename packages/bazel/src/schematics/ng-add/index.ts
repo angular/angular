@@ -12,13 +12,15 @@ import {JsonAstObject, parseJsonAst} from '@angular-devkit/core';
 import {Rule, SchematicContext, SchematicsException, Tree, apply, applyTemplates, chain, mergeWith, url} from '@angular-devkit/schematics';
 import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
 import {getWorkspace, getWorkspacePath} from '@schematics/angular/utility/config';
+import {NodeDependencyType, addPackageJsonDependency, getPackageJsonDependency, removePackageJsonDependency} from '@schematics/angular/utility/dependencies';
 import {findPropertyInAstObject, insertPropertyInAstObjectInOrder} from '@schematics/angular/utility/json-utils';
 import {validateProjectName} from '@schematics/angular/utility/validation';
 
-import {isJsonAstObject, removeKeyValueInAstObject, replacePropertyInAstObject} from '../utility/json-utils';
+import {isJsonAstObject, replacePropertyInAstObject} from '../utility/json-utils';
 import {findE2eArchitect} from '../utility/workspace-utils';
 
 import {Schema} from './schema';
+
 
 
 /**
@@ -28,50 +30,66 @@ import {Schema} from './schema';
  */
 function addDevDependenciesToPackageJson(options: Schema) {
   return (host: Tree) => {
-    const packageJson = 'package.json';
-    if (!host.exists(packageJson)) {
-      throw new Error(`Could not find ${packageJson}`);
-    }
-    const packageJsonContent = host.read(packageJson);
-    if (!packageJsonContent) {
-      throw new Error('Failed to read package.json content');
-    }
-    const jsonAst = parseJsonAst(packageJsonContent.toString()) as JsonAstObject;
-    const deps = findPropertyInAstObject(jsonAst, 'dependencies') as JsonAstObject;
-    const devDeps = findPropertyInAstObject(jsonAst, 'devDependencies') as JsonAstObject;
-
-    const angularCoreNode = findPropertyInAstObject(deps, '@angular/core');
-    if (!angularCoreNode) {
+    const angularCore = getPackageJsonDependency(host, '@angular/core');
+    if (!angularCore) {
       throw new Error('@angular/core dependency not found in package.json');
     }
-    const angularCoreVersion = angularCoreNode.value as string;
 
-    const devDependencies: {[k: string]: string} = {
-      '@angular/bazel': angularCoreVersion,
-      '@bazel/bazel': '^0.27.0',
-      '@bazel/hide-bazel-files': '0.32.2',
-      '@bazel/ibazel': '^0.10.2',
-      '@bazel/karma': '0.32.2',
-      '@bazel/typescript': '0.32.2',
-    };
+    // TODO: use a Record<string, string> when the tsc lib setting allows us
+    const devDependencies: [string, string][] = [
+      ['@angular/bazel', angularCore.version],
+      ['@bazel/bazel', '2.1.0'],
+      ['@bazel/ibazel', '0.11.1'],
+      ['@bazel/karma', '1.3.0'],
+      ['@bazel/protractor', '1.3.0'],
+      ['@bazel/rollup', '1.3.0'],
+      ['@bazel/terser', '1.3.0'],
+      ['@bazel/typescript', '1.3.0'],
+      ['history-server', '1.3.1'],
+      ['html-insert-assets', '0.2.0'],
+      ['karma', '4.4.1'],
+      ['karma-chrome-launcher', '3.1.0'],
+      ['karma-firefox-launcher', '1.2.0'],
+      ['karma-jasmine', '2.0.1'],
+      ['karma-requirejs', '1.1.0'],
+      ['karma-sourcemap-loader', '0.3.7'],
+      ['protractor', '5.4.2'],
+      ['requirejs', '2.3.6'],
+      ['rollup', '1.27.5'],
+      ['rollup-plugin-commonjs', '10.1.0'],
+      ['rollup-plugin-node-resolve', '5.2.0'],
+      ['terser', '4.4.0'],
+    ];
 
-    const recorder = host.beginUpdate(packageJson);
-    for (const packageName of Object.keys(devDependencies)) {
-      const existingDep = findPropertyInAstObject(deps, packageName);
-      if (existingDep) {
-        const content = packageJsonContent.toString();
-        removeKeyValueInAstObject(recorder, content, deps, packageName);
+    for (const [name, version] of devDependencies) {
+      const dep = getPackageJsonDependency(host, name);
+      if (dep && dep.type !== NodeDependencyType.Dev) {
+        removePackageJsonDependency(host, name);
       }
-      const version = devDependencies[packageName];
-      const indent = 4;
-      if (findPropertyInAstObject(devDeps, packageName)) {
-        replacePropertyInAstObject(recorder, devDeps, packageName, version, indent);
-      } else {
-        insertPropertyInAstObjectInOrder(recorder, devDeps, packageName, version, indent);
-      }
+
+      addPackageJsonDependency(host, {
+        name,
+        version,
+        type: NodeDependencyType.Dev,
+        overwrite: true,
+      });
     }
-    host.commitUpdate(recorder);
-    return host;
+  };
+}
+
+/**
+ * Remove packages that are not needed under Bazel.
+ * @param options
+ */
+function removeObsoleteDependenciesFromPackageJson(options: Schema) {
+  return (host: Tree) => {
+    const depsToRemove = [
+      '@angular-devkit/build-angular',
+    ];
+
+    for (const packageName of depsToRemove) {
+      removePackageJsonDependency(host, packageName);
+    }
   };
 }
 
@@ -118,7 +136,7 @@ function updateGitignore() {
  * Change the architect in angular.json to use Bazel builder.
  */
 function updateAngularJsonToUseBazelBuilder(options: Schema): Rule {
-  return (host: Tree, context: SchematicContext) => {
+  return (host: Tree) => {
     const name = options.name !;
     const workspacePath = getWorkspacePath(host);
     if (!workspacePath) {
@@ -229,54 +247,36 @@ function backupAngularJson(): Rule {
  */
 function upgradeRxjs() {
   return (host: Tree, context: SchematicContext) => {
-    const packageJson = 'package.json';
-    if (!host.exists(packageJson)) {
-      throw new Error(`Could not find ${packageJson}`);
+    const rxjsNode = getPackageJsonDependency(host, 'rxjs');
+    if (!rxjsNode) {
+      throw new Error(`Failed to find rxjs dependency.`);
     }
-    const content = host.read(packageJson);
-    if (!content) {
-      throw new Error('Failed to read package.json content');
-    }
-    const jsonAst = parseJsonAst(content.toString());
-    if (!isJsonAstObject(jsonAst)) {
-      throw new Error(`Failed to parse JSON for ${packageJson}`);
-    }
-    const deps = findPropertyInAstObject(jsonAst, 'dependencies');
-    if (!isJsonAstObject(deps)) {
-      throw new Error(`Failed to find dependencies in ${packageJson}`);
-    }
-    const rxjs = findPropertyInAstObject(deps, 'rxjs');
-    if (!rxjs) {
-      throw new Error(`Failed to find rxjs in dependencies of ${packageJson}`);
-    }
-    const value = rxjs.value as string;  // value can be version or range
-    const match = value.match(/(\d)+\.(\d)+.(\d)+$/);
+
+    const match = rxjsNode.version.match(/(\d)+\.(\d)+.(\d)+$/);
     if (match) {
       const [_, major, minor] = match;
-      if (major < '6' || (major === '6' && minor < '4')) {
-        const recorder = host.beginUpdate(packageJson);
-        replacePropertyInAstObject(recorder, deps, 'rxjs', '~6.4.0');
-        host.commitUpdate(recorder);
+      if (major < '6' || (major === '6' && minor < '5')) {
+        addPackageJsonDependency(host, {
+          ...rxjsNode,
+          version: '~6.5.3',
+          overwrite: true,
+        });
       }
     } else {
       context.logger.info(
           'Could not determine version of rxjs. \n' +
-          'Please make sure that version is at least 6.4.0.');
+          'Please make sure that version is at least 6.5.3.');
     }
     return host;
   };
 }
 
 /**
- * When using Angular NPM packages and building with AOT compilation, ngc
- * requires ngsumamry files but they are not shipped. This function adds a
- * postinstall step to generate these files.
+ * When using Ivy, ngcc must be run as a postinstall step.
+ * This function adds this postinstall step.
  */
-function addPostinstallToGenerateNgSummaries() {
+function addPostinstallToRunNgcc() {
   return (host: Tree, context: SchematicContext) => {
-    if (!host.exists('angular-metadata.tsconfig.json')) {
-      return;
-    }
     const packageJson = 'package.json';
     if (!host.exists(packageJson)) {
       throw new Error(`Could not find ${packageJson}`);
@@ -291,13 +291,29 @@ function addPostinstallToGenerateNgSummaries() {
     }
     const scripts = findPropertyInAstObject(jsonAst, 'scripts') as JsonAstObject;
     const recorder = host.beginUpdate(packageJson);
+    // For bazel we need to compile the all files in place so we
+    // don't use `--first-only` or `--create-ivy-entry-points`
+    const ngccCommand = 'ngcc --properties es2015 browser module main';
     if (scripts) {
-      insertPropertyInAstObjectInOrder(
-          recorder, scripts, 'postinstall', 'ngc -p ./angular-metadata.tsconfig.json', 4);
+      const postInstall = findPropertyInAstObject(scripts, 'postinstall');
+      if (postInstall && postInstall.value) {
+        let value = postInstall.value as string;
+        if (/\bngcc\b/.test(value)) {
+          // `ngcc` is already in the postinstall script
+          value =
+              value.replace(/\s*--first-only\b/, '').replace(/\s*--create-ivy-entry-points\b/, '');
+          replacePropertyInAstObject(recorder, scripts, 'postinstall', value);
+        } else {
+          const command = `${postInstall.value}; ${ngccCommand}`;
+          replacePropertyInAstObject(recorder, scripts, 'postinstall', command);
+        }
+      } else {
+        insertPropertyInAstObjectInOrder(recorder, scripts, 'postinstall', ngccCommand, 4);
+      }
     } else {
       insertPropertyInAstObjectInOrder(
           recorder, jsonAst, 'scripts', {
-            postinstall: 'ngc -p ./angular-metadata.tsconfig.json',
+            postinstall: ngccCommand,
           },
           2);
     }
@@ -328,7 +344,8 @@ export default function(options: Schema): Rule {
     return chain([
       addFilesRequiredByBazel(options),
       addDevDependenciesToPackageJson(options),
-      addPostinstallToGenerateNgSummaries(),
+      removeObsoleteDependenciesFromPackageJson(options),
+      addPostinstallToRunNgcc(),
       backupAngularJson(),
       updateAngularJsonToUseBazelBuilder(options),
       updateGitignore(),

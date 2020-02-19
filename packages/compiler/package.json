@@ -12,8 +12,8 @@
   "typings": "./compiler.d.ts",
   "author": "angular",
   "license": "MIT",
-  "dependencies": {
-    "tslib": "^1.9.0"
+  "peerDependencies": {
+    "tslib": "^1.10.0"
   },
   "repository": {
     "type": "git",
@@ -22,5 +22,8 @@
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },
-  "sideEffects": true
+  "sideEffects": true,
+  "publishConfig":{
+    "registry":"https://wombat-dressing-room.appspot.com"
+  }
 }

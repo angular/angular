@@ -47,6 +47,7 @@ const requiredNodeModules = {
   'tslib': resolveNpmTreeArtifact('npm/node_modules/tslib'),
   'domino': resolveNpmTreeArtifact('npm/node_modules/domino'),
   'xhr2': resolveNpmTreeArtifact('npm/node_modules/xhr2'),
+  'fs-extra': resolveNpmTreeArtifact('npm/node_modules/fs-extra'),
 
   // Fine grained dependencies which are used by the integration test Angular modules, and
   // need to be symlinked so that they can be resolved by NodeJS or NGC.
@@ -56,7 +57,7 @@ const requiredNodeModules = {
   'source-map': resolveNpmTreeArtifact('npm/node_modules/source-map'),
   'source-map-support': resolveNpmTreeArtifact('npm/node_modules/source-map-support'),
   'typescript': resolveNpmTreeArtifact('npm/node_modules/typescript'),
-  'zone.js': resolveNpmTreeArtifact('npm/node_modules/zone.js'),
+  'zone.js': resolveNpmTreeArtifact('angular/packages/zone.js/npm_package'),
 };
 
 /** Sets up the temporary test directory and returns the path to the directory. */

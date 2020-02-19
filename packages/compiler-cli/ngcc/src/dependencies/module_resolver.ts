@@ -5,11 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {AbsoluteFsPath, FileSystem, absoluteFrom, dirname, isRoot, join, resolve} from '../../../src/ngtsc/file_system';
-import {PathMappings, isRelativePath} from '../utils';
-
-
+import {PathMappings, isRelativePath, resolveFileWithPostfixes} from '../utils';
 
 /**
  * This is a very cut-down implementation of the TypeScript module resolution strategy.
@@ -27,8 +24,8 @@ import {PathMappings, isRelativePath} from '../utils';
 export class ModuleResolver {
   private pathMappings: ProcessedPathMapping[];
 
-  constructor(private fs: FileSystem, pathMappings?: PathMappings, private relativeExtensions = [
-    '.js', '/index.js'
+  constructor(private fs: FileSystem, pathMappings?: PathMappings, readonly relativeExtensions = [
+    '', '.js', '/index.js'
   ]) {
     this.pathMappings = pathMappings ? this.processPathMappings(pathMappings) : [];
   }
@@ -72,8 +69,8 @@ export class ModuleResolver {
    * If neither of these files exist then the method returns `null`.
    */
   private resolveAsRelativePath(moduleName: string, fromPath: AbsoluteFsPath): ResolvedModule|null {
-    const resolvedPath =
-        this.resolvePath(resolve(dirname(fromPath), moduleName), this.relativeExtensions);
+    const resolvedPath = resolveFileWithPostfixes(
+        this.fs, resolve(dirname(fromPath), moduleName), this.relativeExtensions);
     return resolvedPath && new ResolvedRelativeModule(resolvedPath);
   }
 
@@ -94,14 +91,13 @@ export class ModuleResolver {
       const packagePath = this.findPackagePath(fromPath);
       if (packagePath !== null) {
         for (const mappedPath of mappedPaths) {
-          const isRelative =
-              mappedPath.startsWith(packagePath) && !mappedPath.includes('node_modules');
-          if (isRelative) {
-            return this.resolveAsRelativePath(mappedPath, fromPath);
-          } else if (this.isEntryPoint(mappedPath)) {
+          if (this.isEntryPoint(mappedPath)) {
             return new ResolvedExternalModule(mappedPath);
-          } else if (this.resolveAsRelativePath(mappedPath, fromPath)) {
-            return new ResolvedDeepImport(mappedPath);
+          }
+          const nonEntryPointImport = this.resolveAsRelativePath(mappedPath, fromPath);
+          if (nonEntryPointImport !== null) {
+            return isRelativeImport(packagePath, mappedPath) ? nonEntryPointImport :
+                                                               new ResolvedDeepImport(mappedPath);
           }
         }
       }
@@ -134,20 +130,6 @@ export class ModuleResolver {
     return null;
   }
 
-  /**
-   * Attempt to resolve a `path` to a file by appending the provided `postFixes`
-   * to the `path` and checking if the file exists on disk.
-   * @returns An absolute path to the first matching existing file, or `null` if none exist.
-   */
-  private resolvePath(path: AbsoluteFsPath, postFixes: string[]): AbsoluteFsPath|null {
-    for (const postFix of postFixes) {
-      const testPath = absoluteFrom(path + postFix);
-      if (this.fs.exists(testPath)) {
-        return testPath;
-      }
-    }
-    return null;
-  }
 
   /**
    * Can we consider the given path as an entry-point to a package?
@@ -190,7 +172,9 @@ export class ModuleResolver {
       }
     }
 
-    return (bestMapping && bestMatch) ? this.computeMappedTemplates(bestMapping, bestMatch) : [];
+    return (bestMapping !== undefined && bestMatch !== undefined) ?
+        this.computeMappedTemplates(bestMapping, bestMatch) :
+        [];
   }
 
   /**
@@ -203,10 +187,13 @@ export class ModuleResolver {
    */
   private matchMapping(path: string, mapping: ProcessedPathMapping): string|null {
     const {prefix, postfix, hasWildcard} = mapping.matcher;
-    if (path.startsWith(prefix) && path.endsWith(postfix)) {
-      return hasWildcard ? path.substring(prefix.length, path.length - postfix.length) : '';
+    if (hasWildcard) {
+      return (path.startsWith(prefix) && path.endsWith(postfix)) ?
+          path.substring(prefix.length, path.length - postfix.length) :
+          null;
+    } else {
+      return (path === prefix) ? '' : null;
     }
-    return null;
   }
 
   /**
@@ -276,4 +263,8 @@ interface PathMappingPattern {
   prefix: string;
   postfix: string;
   hasWildcard: boolean;
+}
+
+function isRelativeImport(from: AbsoluteFsPath, to: AbsoluteFsPath) {
+  return to.startsWith(from) && !to.includes('node_modules');
 }

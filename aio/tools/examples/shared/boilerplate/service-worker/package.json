@@ -25,7 +25,7 @@
     "core-js": "^2.5.4",
     "rxjs": "^6.5.1",
     "web-animations-js": "^2.3.1",
-    "zone.js": "~0.9.1"
+    "zone.js": "~0.10.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.800.0",

@@ -29,7 +29,7 @@ export function patchTimer(window: any, setName: string, cancelName: string, nam
 
   function scheduleTask(task: Task) {
     const data = <TimerOptions>task.data;
-    function timer() {
+    function timer(this: unknown) {
       try {
         task.invoke.apply(this, arguments);
       } finally {

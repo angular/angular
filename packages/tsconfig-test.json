@@ -7,8 +7,8 @@
     "types": ["node", "jasmine"],
     "plugins": [{
         "name": "@bazel/tsetse",
-        "disabledRules": ["must-use-promises"],
-    }],
+        "disabledRules": ["must-use-promises"]
+    }]
   },
   "bazelOptions": {
     "suppressTsconfigOverrideWarnings": true,

@@ -38,8 +38,7 @@ function getResponseUrl(xhr: any): string|null {
 export abstract class XhrFactory { abstract build(): XMLHttpRequest; }
 
 /**
- * A factory for @{link HttpXhrBackend} that uses the `XMLHttpRequest` browser API.
- *
+ * A factory for `HttpXhrBackend` that uses the `XMLHttpRequest` browser API.
  *
  */
 @Injectable()
@@ -59,8 +58,9 @@ interface PartialResponse {
 }
 
 /**
- * An `HttpBackend` which uses the XMLHttpRequest API to send
- * requests to a backend server.
+ * Uses `XMLHttpRequest` to send requests to a backend server.
+ * @see `HttpHandler`
+ * @see `JsonpClientBackend`
  *
  * @publicApi
  */
@@ -69,7 +69,9 @@ export class HttpXhrBackend implements HttpBackend {
   constructor(private xhrFactory: XhrFactory) {}
 
   /**
-   * Process a request and return a stream of response events.
+   * Processes a request and returns a stream of response events.
+   * @param req The request object.
+   * @returns An observable of the response events.
    */
   handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
     // Quick check to give a better error message when a user attempts to use
@@ -231,7 +233,7 @@ export class HttpXhrBackend implements HttpBackend {
       // The onError callback is called when something goes wrong at the network level.
       // Connection timeout, DNS error, offline, etc. These are actual errors, and are
       // transmitted on the error channel.
-      const onError = (error: ErrorEvent) => {
+      const onError = (error: ProgressEvent) => {
         const {url} = partialFromXhr();
         const res = new HttpErrorResponse({
           error,

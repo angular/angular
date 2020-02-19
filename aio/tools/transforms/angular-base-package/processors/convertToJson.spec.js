@@ -4,7 +4,7 @@ var Dgeni = require('dgeni');
 describe('convertToJson processor', () => {
   var dgeni, injector, processor, log;
 
-  beforeAll(function() {
+  beforeEach(function() {
     dgeni = new Dgeni([testPackage('angular-base-package')]);
     injector = dgeni.configureInjector();
     processor = injector.get('convertToJsonProcessor');

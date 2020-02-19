@@ -1,4 +1,4 @@
-# Dynamic Forms
+# Dynamic forms
 
 {@a top}
 
@@ -77,18 +77,14 @@ appropriate controls dynamically.
 via the `type` property.
 
 
-<code-example path="dynamic-form/src/app/question-textbox.ts" header="src/app/question-textbox.ts" linenums="false">
-
-</code-example>
+<code-example path="dynamic-form/src/app/question-textbox.ts" header="src/app/question-textbox.ts"></code-example>
 
 
 
 `DropdownQuestion` presents a list of choices in a select box.
 
 
-<code-example path="dynamic-form/src/app/question-dropdown.ts" header="src/app/question-dropdown.ts" linenums="false">
-
-</code-example>
+<code-example path="dynamic-form/src/app/question-dropdown.ts" header="src/app/question-dropdown.ts"></code-example>
 
 
 
@@ -97,9 +93,7 @@ In a nutshell, the form group consumes the metadata from the question model and
 allows you to specify default values and validation rules.
 
 
-<code-example path="dynamic-form/src/app/question-control.service.ts" header="src/app/question-control.service.ts" linenums="false">
-
-</code-example>
+<code-example path="dynamic-form/src/app/question-control.service.ts" header="src/app/question-control.service.ts"></code-example>
 
 {@a form-component}
 
@@ -148,7 +142,7 @@ Notice this component can present any type of question in your model.
 You only have two types of questions at this point but you can imagine many more.
 The `ngSwitch` determines which type of question to display.
 
-In both components  you're relying on Angular's **formGroup** to connect the template HTML to the
+In both components you're relying on Angular's **formGroup** to connect the template HTML to the
 underlying control objects, populated from the question model with display and validation rules.
 
 `formControlName` and `formGroup` are directives defined in
@@ -203,10 +197,9 @@ Saving and retrieving the data is an exercise for another time.
 
 The final form looks like this:
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/dynamic-form/dynamic-form.png" alt="Dynamic-Form">
-</figure>
-
+</div>
 
 
 [Back to top](guide/dynamic-form#top)

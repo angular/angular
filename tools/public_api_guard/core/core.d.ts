@@ -18,6 +18,7 @@ export interface AfterViewInit {
     ngAfterViewInit(): void;
 }
 
+/** @deprecated */
 export declare const ANALYZE_FOR_ENTRY_COMPONENTS: InjectionToken<any>;
 
 export declare const APP_BOOTSTRAP_LISTENER: InjectionToken<((compRef: ComponentRef<any>) => void)[]>;
@@ -40,7 +41,7 @@ export declare class ApplicationRef {
     readonly componentTypes: Type<any>[];
     readonly components: ComponentRef<any>[];
     readonly isStable: Observable<boolean>;
-    readonly viewCount: number;
+    get viewCount(): number;
     attachView(viewRef: ViewRef): void;
     bootstrap<C>(componentOrFactory: ComponentFactory<C> | Type<C>, rootSelectorOrNode?: string | any): ComponentRef<C>;
     detachView(viewRef: ViewRef): void;
@@ -116,7 +117,7 @@ export interface Component extends Directive {
     animations?: any[];
     changeDetection?: ChangeDetectionStrategy;
     encapsulation?: ViewEncapsulation;
-    entryComponents?: Array<Type<any> | any[]>;
+    /** @deprecated */ entryComponents?: Array<Type<any> | any[]>;
     interpolation?: [string, string];
     moduleId?: string;
     preserveWhitespaces?: boolean;
@@ -135,17 +136,17 @@ export interface ComponentDecorator {
 }
 
 export declare abstract class ComponentFactory<C> {
-    abstract readonly componentType: Type<any>;
-    abstract readonly inputs: {
+    abstract get componentType(): Type<any>;
+    abstract get inputs(): {
         propName: string;
         templateName: string;
     }[];
-    abstract readonly ngContentSelectors: string[];
-    abstract readonly outputs: {
+    abstract get ngContentSelectors(): string[];
+    abstract get outputs(): {
         propName: string;
         templateName: string;
     }[];
-    abstract readonly selector: string;
+    abstract get selector(): string;
     abstract create(injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string | any, ngModule?: NgModuleRef<any>): ComponentRef<C>;
 }
 
@@ -155,14 +156,19 @@ export declare abstract class ComponentFactoryResolver {
 }
 
 export declare abstract class ComponentRef<C> {
-    abstract readonly changeDetectorRef: ChangeDetectorRef;
-    abstract readonly componentType: Type<any>;
-    abstract readonly hostView: ViewRef;
-    abstract readonly injector: Injector;
-    abstract readonly instance: C;
-    abstract readonly location: ElementRef;
+    abstract get changeDetectorRef(): ChangeDetectorRef;
+    abstract get componentType(): Type<any>;
+    abstract get hostView(): ViewRef;
+    abstract get injector(): Injector;
+    abstract get instance(): C;
+    abstract get location(): ElementRef;
     abstract destroy(): void;
     abstract onDestroy(callback: Function): void;
+}
+
+export interface ConstructorProvider extends ConstructorSansProvider {
+    multi?: boolean;
+    provide: Type<any>;
 }
 
 export interface ConstructorSansProvider {
@@ -172,13 +178,13 @@ export interface ConstructorSansProvider {
 export declare type ContentChild = Query;
 
 export interface ContentChildDecorator {
-    (selector: Type<any> | Function | string, opts: {
+    (selector: Type<any> | Function | string, opts?: {
         read?: any;
-        static: boolean;
+        static?: boolean;
     }): any;
-    new (selector: Type<any> | Function | string, opts: {
+    new (selector: Type<any> | Function | string, opts?: {
         read?: any;
-        static: boolean;
+        static?: boolean;
     }): ContentChild;
 }
 
@@ -251,14 +257,16 @@ export declare const DebugNode: {
     new (...args: any[]): DebugNode;
 };
 
+export declare const DEFAULT_CURRENCY_CODE: InjectionToken<string>;
+
 /** @deprecated */
 export declare class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChanges<V> {
     readonly collection: V[] | Iterable<V> | null;
-    readonly isDirty: boolean;
+    get isDirty(): boolean;
     readonly length: number;
     constructor(trackByFn?: TrackByFunction<V>);
     check(collection: NgIterable<V>): boolean;
-    diff(collection: NgIterable<V>): DefaultIterableDiffer<V> | null;
+    diff(collection: NgIterable<V> | null | undefined): DefaultIterableDiffer<V> | null;
     forEachAddedItem(fn: (record: IterableChangeRecord_<V>) => void): void;
     forEachIdentityChange(fn: (record: IterableChangeRecord_<V>) => void): void;
     forEachItem(fn: (record: IterableChangeRecord_<V>) => void): void;
@@ -292,8 +300,8 @@ export interface Directive {
 export declare const Directive: DirectiveDecorator;
 
 export interface DirectiveDecorator {
-    (obj: Directive): TypeDecorator;
-    new (obj: Directive): Directive;
+    (obj?: Directive): TypeDecorator;
+    new (obj?: Directive): Directive;
 }
 
 export interface DoBootstrap {
@@ -304,14 +312,14 @@ export interface DoCheck {
     ngDoCheck(): void;
 }
 
-export declare class ElementRef<T = any> {
+export declare class ElementRef<T extends any = any> {
     nativeElement: T;
     constructor(nativeElement: T);
 }
 
 export declare abstract class EmbeddedViewRef<C> extends ViewRef {
-    abstract readonly context: C;
-    abstract readonly rootNodes: any[];
+    abstract get context(): C;
+    abstract get rootNodes(): any[];
 }
 
 export declare function enableProdMode(): void;
@@ -320,8 +328,7 @@ export declare class ErrorHandler {
     handleError(error: any): void;
 }
 
-export declare class EventEmitter<T> extends Subject<T> {
-    __isAsync: boolean;
+export declare class EventEmitter<T extends any> extends Subject<T> {
     constructor(isAsync?: boolean);
     emit(value?: T): void;
     subscribe(generatorOrNext?: any, error?: any, complete?: any): Subscription;
@@ -332,9 +339,18 @@ export interface ExistingProvider extends ExistingSansProvider {
     provide: any;
 }
 
+export interface ExistingSansProvider {
+    useExisting: any;
+}
+
 export interface FactoryProvider extends FactorySansProvider {
     multi?: boolean;
     provide: any;
+}
+
+export interface FactorySansProvider {
+    deps?: any[];
+    useFactory: Function;
 }
 
 export declare function forwardRef(forwardRefFn: ForwardRefFn): Type<any>;
@@ -396,7 +412,7 @@ export interface Inject {
 export declare const Inject: InjectDecorator;
 
 export interface Injectable {
-    providedIn?: Type<any> | 'root' | null;
+    providedIn?: Type<any> | 'root' | 'platform' | 'any' | null;
 }
 
 export declare const Injectable: InjectableDecorator;
@@ -404,18 +420,18 @@ export declare const Injectable: InjectableDecorator;
 export interface InjectableDecorator {
     (): TypeDecorator;
     (options?: {
-        providedIn: Type<any> | 'root' | null;
+        providedIn: Type<any> | 'root' | 'platform' | 'any' | null;
     } & InjectableProvider): TypeDecorator;
     new (): Injectable;
     new (options?: {
-        providedIn: Type<any> | 'root' | null;
+        providedIn: Type<any> | 'root' | 'platform' | 'any' | null;
     } & InjectableProvider): Injectable;
 }
 
 export declare type InjectableProvider = ValueSansProvider | ExistingSansProvider | StaticClassSansProvider | ConstructorSansProvider | FactorySansProvider | ClassSansProvider;
 
 export interface InjectableType<T> extends Type<T> {
-    ngInjectableDef: never;
+    ɵprov: never;
 }
 
 export interface InjectDecorator {
@@ -433,20 +449,20 @@ export declare enum InjectFlags {
 
 export declare class InjectionToken<T> {
     protected _desc: string;
-    readonly ngInjectableDef: never | undefined;
+    readonly ɵprov: never | undefined;
     constructor(_desc: string, options?: {
-        providedIn?: Type<any> | 'root' | null;
+        providedIn?: Type<any> | 'root' | 'platform' | 'any' | null;
         factory: () => T;
     });
     toString(): string;
 }
 
 export declare abstract class Injector {
-    abstract get<T>(token: Type<T> | InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
+    abstract get<T>(token: Type<T> | InjectionToken<T> | AbstractType<T>, notFoundValue?: T, flags?: InjectFlags): T;
     /** @deprecated */ abstract get(token: any, notFoundValue?: any): any;
     static NULL: Injector;
-    static THROW_IF_NOT_FOUND: Object;
-    static ngInjectableDef: never;
+    static THROW_IF_NOT_FOUND: {};
+    static ɵprov: never;
     /** @deprecated */ static create(providers: StaticProvider[], parent?: Injector): Injector;
     static create(options: {
         providers: StaticProvider[];
@@ -458,7 +474,7 @@ export declare abstract class Injector {
 export declare const INJECTOR: InjectionToken<Injector>;
 
 export interface InjectorType<T> extends Type<T> {
-    ngInjectorDef: never;
+    ɵinj: never;
 }
 
 export interface Input {
@@ -492,7 +508,7 @@ export interface IterableChanges<V> {
 }
 
 export interface IterableDiffer<V> {
-    diff(object: NgIterable<V>): IterableChanges<V> | null;
+    diff(object: NgIterable<V> | undefined | null): IterableChanges<V> | null;
 }
 
 export interface IterableDifferFactory {
@@ -504,7 +520,7 @@ export declare class IterableDiffers {
     /** @deprecated */ factories: IterableDifferFactory[];
     constructor(factories: IterableDifferFactory[]);
     find(iterable: any): IterableDifferFactory;
-    static ngInjectableDef: never;
+    static ɵprov: never;
     static create(factories: IterableDifferFactory[], parent?: IterableDiffers): IterableDiffers;
     static extend(factories: IterableDifferFactory[]): StaticProvider;
 }
@@ -539,7 +555,7 @@ export declare class KeyValueDiffers {
     /** @deprecated */ factories: KeyValueDifferFactory[];
     constructor(factories: KeyValueDifferFactory[]);
     find(kv: any): KeyValueDifferFactory;
-    static ngInjectableDef: never;
+    static ɵprov: never;
     static create<S>(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers;
     static extend<S>(factories: KeyValueDifferFactory[]): StaticProvider;
 }
@@ -568,7 +584,7 @@ export declare type NgIterable<T> = Array<T> | Iterable<T>;
 export interface NgModule {
     bootstrap?: Array<Type<any> | any[]>;
     declarations?: Array<Type<any> | any[]>;
-    entryComponents?: Array<Type<any> | any[]>;
+    /** @deprecated */ entryComponents?: Array<Type<any> | any[]>;
     exports?: Array<Type<any> | any[]>;
     id?: string;
     imports?: Array<Type<any> | ModuleWithProviders<{}> | any[]>;
@@ -585,7 +601,7 @@ export interface NgModuleDecorator {
 }
 
 export declare abstract class NgModuleFactory<T> {
-    abstract readonly moduleType: Type<T>;
+    abstract get moduleType(): Type<T>;
     abstract create(parentInjector: Injector | null): NgModuleRef<T>;
 }
 
@@ -595,9 +611,9 @@ export declare abstract class NgModuleFactoryLoader {
 }
 
 export declare abstract class NgModuleRef<T> {
-    abstract readonly componentFactoryResolver: ComponentFactoryResolver;
-    abstract readonly injector: Injector;
-    abstract readonly instance: T;
+    abstract get componentFactoryResolver(): ComponentFactoryResolver;
+    abstract get injector(): Injector;
+    abstract get instance(): T;
     abstract destroy(): void;
     abstract onDestroy(callback: () => void): void;
 }
@@ -616,8 +632,9 @@ export declare class NgZone {
     readonly onMicrotaskEmpty: EventEmitter<any>;
     readonly onStable: EventEmitter<any>;
     readonly onUnstable: EventEmitter<any>;
-    constructor({ enableLongStackTrace }: {
+    constructor({ enableLongStackTrace, shouldCoalesceEventChangeDetection }: {
         enableLongStackTrace?: boolean | undefined;
+        shouldCoalesceEventChangeDetection?: boolean | undefined;
     });
     run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T;
     runGuarded<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T;
@@ -663,46 +680,31 @@ export interface OutputDecorator {
     new (bindingPropertyName?: string): any;
 }
 
-export declare function ɵɵallocHostVars(count: number): void;
+export declare function ɵɵadvance(delta: number): void;
 
-export declare function ɵɵattribute(name: string, value: any, sanitizer?: SanitizerFn | null, namespace?: string): TsickleIssue1009;
+export declare function ɵɵattribute(name: string, value: any, sanitizer?: SanitizerFn | null, namespace?: string): typeof ɵɵattribute;
 
-export declare function ɵɵattributeInterpolate1(attrName: string, prefix: string, v0: any, suffix: string, sanitizer?: SanitizerFn, namespace?: string): TsickleIssue1009;
+export declare function ɵɵattributeInterpolate1(attrName: string, prefix: string, v0: any, suffix: string, sanitizer?: SanitizerFn, namespace?: string): typeof ɵɵattributeInterpolate1;
 
-export declare function ɵɵattributeInterpolate2(attrName: string, prefix: string, v0: any, i0: string, v1: any, suffix: string, sanitizer?: SanitizerFn, namespace?: string): TsickleIssue1009;
+export declare function ɵɵattributeInterpolate2(attrName: string, prefix: string, v0: any, i0: string, v1: any, suffix: string, sanitizer?: SanitizerFn, namespace?: string): typeof ɵɵattributeInterpolate2;
 
-export declare function ɵɵattributeInterpolate3(attrName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, suffix: string, sanitizer?: SanitizerFn, namespace?: string): TsickleIssue1009;
+export declare function ɵɵattributeInterpolate3(attrName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, suffix: string, sanitizer?: SanitizerFn, namespace?: string): typeof ɵɵattributeInterpolate3;
 
-export declare function ɵɵattributeInterpolate4(attrName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, suffix: string, sanitizer?: SanitizerFn, namespace?: string): TsickleIssue1009;
+export declare function ɵɵattributeInterpolate4(attrName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, suffix: string, sanitizer?: SanitizerFn, namespace?: string): typeof ɵɵattributeInterpolate4;
 
-export declare function ɵɵattributeInterpolate5(attrName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, suffix: string, sanitizer?: SanitizerFn, namespace?: string): TsickleIssue1009;
+export declare function ɵɵattributeInterpolate5(attrName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, suffix: string, sanitizer?: SanitizerFn, namespace?: string): typeof ɵɵattributeInterpolate5;
 
-export declare function ɵɵattributeInterpolate6(attrName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string, sanitizer?: SanitizerFn, namespace?: string): TsickleIssue1009;
+export declare function ɵɵattributeInterpolate6(attrName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string, sanitizer?: SanitizerFn, namespace?: string): typeof ɵɵattributeInterpolate6;
 
-export declare function ɵɵattributeInterpolate7(attrName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string, sanitizer?: SanitizerFn, namespace?: string): TsickleIssue1009;
+export declare function ɵɵattributeInterpolate7(attrName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string, sanitizer?: SanitizerFn, namespace?: string): typeof ɵɵattributeInterpolate7;
 
-export declare function ɵɵattributeInterpolate8(attrName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any, suffix: string, sanitizer?: SanitizerFn, namespace?: string): TsickleIssue1009;
+export declare function ɵɵattributeInterpolate8(attrName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any, suffix: string, sanitizer?: SanitizerFn, namespace?: string): typeof ɵɵattributeInterpolate8;
 
-export declare function ɵɵattributeInterpolateV(attrName: string, values: any[], sanitizer?: SanitizerFn, namespace?: string): TsickleIssue1009;
-
-export interface ɵɵBaseDef<T> {
-    contentQueries: ContentQueriesFunction<T> | null;
-    /** @deprecated */ readonly declaredInputs: {
-        [P in keyof T]: string;
-    };
-    hostBindings: HostBindingsFunction<T> | null;
-    readonly inputs: {
-        [P in keyof T]: string;
-    };
-    readonly outputs: {
-        [P in keyof T]: string;
-    };
-    viewQuery: ViewQueriesFunction<T> | null;
-}
+export declare function ɵɵattributeInterpolateV(attrName: string, values: any[], sanitizer?: SanitizerFn, namespace?: string): typeof ɵɵattributeInterpolateV;
 
 export declare function ɵɵclassMap(classes: {
-    [styleName: string]: any;
-} | string | null): void;
+    [className: string]: boolean | undefined | null;
+} | string | undefined | null): void;
 
 export declare function ɵɵclassMapInterpolate1(prefix: string, v0: any, suffix: string): void;
 
@@ -722,7 +724,7 @@ export declare function ɵɵclassMapInterpolate8(prefix: string, v0: any, i0: st
 
 export declare function ɵɵclassMapInterpolateV(values: any[]): void;
 
-export declare function ɵɵclassProp(classIndex: number, value: boolean | PlayerFactory, forceOverride?: boolean): void;
+export declare function ɵɵclassProp(className: string, value: boolean | undefined | null): typeof ɵɵclassProp;
 
 export declare type ɵɵComponentDefWithMeta<T, Selector extends String, ExportAs extends string[], InputMap extends {
     [key: string]: string;
@@ -730,7 +732,7 @@ export declare type ɵɵComponentDefWithMeta<T, Selector extends String, ExportA
     [key: string]: string;
 }, QueryFields extends string[]> = ComponentDef<T>;
 
-export declare function ɵɵcomponentHostSyntheticListener<T>(eventName: string, listenerFn: (e?: any) => any, useCapture?: boolean, eventTargetResolver?: GlobalTargetResolver): void;
+export declare function ɵɵcomponentHostSyntheticListener(eventName: string, listenerFn: (e?: any) => any, useCapture?: boolean, eventTargetResolver?: GlobalTargetResolver): typeof ɵɵcomponentHostSyntheticListener;
 
 export declare function ɵɵcontainer(index: number): void;
 
@@ -738,27 +740,16 @@ export declare function ɵɵcontainerRefreshEnd(): void;
 
 export declare function ɵɵcontainerRefreshStart(index: number): void;
 
-export declare function ɵɵcontentQuery<T>(directiveIndex: number, predicate: Type<any> | string[], descend: boolean, read: any): QueryList<T>;
+export declare function ɵɵcontentQuery<T>(directiveIndex: number, predicate: Type<any> | string[], descend: boolean, read?: any): void;
+
+export declare function ɵɵCopyDefinitionFeature(definition: DirectiveDef<any> | ComponentDef<any>): void;
 
 export declare const ɵɵdefaultStyleSanitizer: StyleSanitizeFn;
 
-export declare function ɵɵdefineBase<T>(baseDefinition: {
-    inputs?: {
-        [P in keyof T]?: string | [string, string];
-    };
-    outputs?: {
-        [P in keyof T]?: string;
-    };
-    contentQueries?: ContentQueriesFunction<T> | null;
-    viewQuery?: ViewQueriesFunction<T> | null;
-    hostBindings?: HostBindingsFunction<T>;
-}): ɵɵBaseDef<T>;
-
 export declare function ɵɵdefineComponent<T>(componentDefinition: {
     type: Type<T>;
-    selectors: CssSelectorList;
-    factory: FactoryFn<T>;
-    consts: number;
+    selectors?: CssSelectorList;
+    decls: number;
     vars: number;
     inputs?: {
         [P in keyof T]?: string | [string, string];
@@ -767,9 +758,12 @@ export declare function ɵɵdefineComponent<T>(componentDefinition: {
         [P in keyof T]?: string;
     };
     hostBindings?: HostBindingsFunction<T>;
+    hostVars?: number;
+    hostAttrs?: TAttributes;
     contentQueries?: ContentQueriesFunction<T>;
     exportAs?: string[];
     template: ComponentTemplate<T>;
+    consts?: TConstants;
     ngContentSelectors?: string[];
     viewQuery?: ViewQueriesFunction<T> | null;
     features?: ComponentDefFeature[];
@@ -786,12 +780,13 @@ export declare function ɵɵdefineComponent<T>(componentDefinition: {
 
 export declare const ɵɵdefineDirective: <T>(directiveDefinition: {
     type: Type<T>;
-    selectors: (string | SelectorFlags)[][];
-    factory: FactoryFn<T>;
+    selectors?: CssSelectorList | undefined;
     inputs?: { [P in keyof T]?: string | [string, string] | undefined; } | undefined;
-    outputs?: { [P in keyof T]?: string | undefined; } | undefined;
+    outputs?: { [P_1 in keyof T]?: string | undefined; } | undefined;
     features?: DirectiveDefFeature[] | undefined;
     hostBindings?: HostBindingsFunction<T> | undefined;
+    hostVars?: number | undefined;
+    hostAttrs?: TAttributes | undefined;
     contentQueries?: ContentQueriesFunction<T> | undefined;
     viewQuery?: ViewQueriesFunction<T> | null | undefined;
     exportAs?: string[] | undefined;
@@ -799,7 +794,7 @@ export declare const ɵɵdefineDirective: <T>(directiveDefinition: {
 
 export declare function ɵɵdefineInjectable<T>(opts: {
     token: unknown;
-    providedIn?: Type<any> | 'root' | 'any' | null;
+    providedIn?: Type<any> | 'root' | 'platform' | 'any' | null;
     factory: () => T;
 }): never;
 
@@ -822,7 +817,6 @@ export declare function ɵɵdefineNgModule<T>(def: {
 export declare function ɵɵdefinePipe<T>(pipeDef: {
     name: string;
     type: Type<T>;
-    factory: FactoryFn<T>;
     pure?: boolean;
 }): never;
 
@@ -837,29 +831,33 @@ export declare function ɵɵdirectiveInject<T>(token: Type<T> | InjectionToken<T
 
 export declare function ɵɵdisableBindings(): void;
 
-export declare function ɵɵelement(index: number, name: string, attrs?: TAttributes | null, localRefs?: string[] | null): void;
+export declare function ɵɵelement(index: number, name: string, attrsIndex?: number | null, localRefsIndex?: number): void;
+
+export declare function ɵɵelementContainer(index: number, attrsIndex?: number | null, localRefsIndex?: number): void;
 
 export declare function ɵɵelementContainerEnd(): void;
 
-export declare function ɵɵelementContainerStart(index: number, attrs?: TAttributes | null, localRefs?: string[] | null): void;
+export declare function ɵɵelementContainerStart(index: number, attrsIndex?: number | null, localRefsIndex?: number): void;
 
 export declare function ɵɵelementEnd(): void;
 
-export declare function ɵɵelementHostAttrs(attrs: TAttributes): void;
-
-export declare function ɵɵelementStart(index: number, name: string, attrs?: TAttributes | null, localRefs?: string[] | null): void;
+export declare function ɵɵelementStart(index: number, name: string, attrsIndex?: number | null, localRefsIndex?: number): void;
 
 export declare function ɵɵembeddedViewEnd(): void;
 
-export declare function ɵɵembeddedViewStart(viewBlockId: number, consts: number, vars: number): RenderFlags;
+export declare function ɵɵembeddedViewStart(viewBlockId: number, decls: number, vars: number): RenderFlags;
 
 export declare function ɵɵenableBindings(): void;
+
+export declare type ɵɵFactoryDef<T> = () => T;
 
 export declare function ɵɵgetCurrentView(): OpaqueViewState;
 
 export declare function ɵɵgetFactoryOf<T>(type: Type<any>): FactoryFn<T> | null;
 
 export declare function ɵɵgetInheritedFactory<T>(type: Type<any>): (type: Type<T>) => T;
+
+export declare function ɵɵhostProperty<T>(propName: string, value: T, sanitizer?: SanitizerFn | null): typeof ɵɵhostProperty;
 
 export declare function ɵɵi18n(index: number, message: string, subTemplateIndex?: number): void;
 
@@ -869,12 +867,7 @@ export declare function ɵɵi18nAttributes(index: number, values: string[]): voi
 
 export declare function ɵɵi18nEnd(): void;
 
-export declare function ɵɵi18nExp<T>(value: T): TsickleIssue1009;
-
-/** @deprecated */
-export declare function ɵɵi18nLocalize(input: string, placeholders?: {
-    [key: string]: string;
-}): string;
+export declare function ɵɵi18nExp<T>(value: T): typeof ɵɵi18nExp;
 
 export declare function ɵɵi18nPostprocess(message: string, replacements?: {
     [key: string]: (string | string[]);
@@ -889,7 +882,7 @@ export declare function ɵɵinject<T>(token: Type<T> | InjectionToken<T>, flags?
 
 export interface ɵɵInjectableDef<T> {
     factory: (t?: Type<any>) => T;
-    providedIn: InjectorType<any> | 'root' | 'any' | null;
+    providedIn: InjectorType<any> | 'root' | 'platform' | 'any' | null;
     token: unknown;
     value: T | undefined;
 }
@@ -902,31 +895,15 @@ export interface ɵɵInjectorDef<T> {
     providers: (Type<any> | ValueProvider | ExistingProvider | FactoryProvider | ConstructorProvider | StaticClassProvider | ClassProvider | any[])[];
 }
 
-export declare function ɵɵinterpolation1(prefix: string, v0: any, suffix: string): string | NO_CHANGE;
+export declare function ɵɵinjectPipeChangeDetectorRef(flags?: InjectFlags): ChangeDetectorRef | null;
 
-export declare function ɵɵinterpolation2(prefix: string, v0: any, i0: string, v1: any, suffix: string): string | NO_CHANGE;
+export declare function ɵɵinvalidFactory(): never;
 
-export declare function ɵɵinterpolation3(prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, suffix: string): string | NO_CHANGE;
+export declare function ɵɵinvalidFactoryDep(index: number): never;
 
-export declare function ɵɵinterpolation4(prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, suffix: string): string | NO_CHANGE;
+export declare function ɵɵlistener(eventName: string, listenerFn: (e?: any) => any, useCapture?: boolean, eventTargetResolver?: GlobalTargetResolver): typeof ɵɵlistener;
 
-export declare function ɵɵinterpolation5(prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, suffix: string): string | NO_CHANGE;
-
-export declare function ɵɵinterpolation6(prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string): string | NO_CHANGE;
-
-export declare function ɵɵinterpolation7(prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string): string | NO_CHANGE;
-
-export declare function ɵɵinterpolation8(prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any, suffix: string): string | NO_CHANGE;
-
-export declare function ɵɵinterpolationV(values: any[]): string | NO_CHANGE;
-
-export declare function ɵɵlistener(eventName: string, listenerFn: (e?: any) => any, useCapture?: boolean, eventTargetResolver?: GlobalTargetResolver): void;
-
-export declare function ɵɵload<T>(index: number): T;
-
-export declare function ɵɵloadContentQuery<T>(): QueryList<T>;
-
-export declare function ɵɵloadViewQuery<T>(): T;
+export declare function ɵɵloadQuery<T>(): QueryList<T>;
 
 export declare function ɵɵnamespaceHTML(): void;
 
@@ -950,7 +927,7 @@ export declare function ɵɵpipeBind3(index: number, slotOffset: number, v1: any
 
 export declare function ɵɵpipeBind4(index: number, slotOffset: number, v1: any, v2: any, v3: any, v4: any): any;
 
-export declare function ɵɵpipeBindV(index: number, slotOffset: number, values: any[]): any;
+export declare function ɵɵpipeBindV(index: number, slotOffset: number, values: [any, ...any[]]): any;
 
 export declare type ɵɵPipeDefWithMeta<T, Name extends string> = PipeDef<T>;
 
@@ -958,27 +935,27 @@ export declare function ɵɵprojection(nodeIndex: number, selectorIndex?: number
 
 export declare function ɵɵprojectionDef(projectionSlots?: ProjectionSlots): void;
 
-export declare function ɵɵproperty<T>(propName: string, value: T, sanitizer?: SanitizerFn | null, nativeOnly?: boolean): TsickleIssue1009;
+export declare function ɵɵproperty<T>(propName: string, value: T, sanitizer?: SanitizerFn | null): typeof ɵɵproperty;
 
-export declare function ɵɵpropertyInterpolate(propName: string, v0: any, sanitizer?: SanitizerFn): TsickleIssue1009;
+export declare function ɵɵpropertyInterpolate(propName: string, v0: any, sanitizer?: SanitizerFn): typeof ɵɵpropertyInterpolate;
 
-export declare function ɵɵpropertyInterpolate1(propName: string, prefix: string, v0: any, suffix: string, sanitizer?: SanitizerFn): TsickleIssue1009;
+export declare function ɵɵpropertyInterpolate1(propName: string, prefix: string, v0: any, suffix: string, sanitizer?: SanitizerFn): typeof ɵɵpropertyInterpolate1;
 
-export declare function ɵɵpropertyInterpolate2(propName: string, prefix: string, v0: any, i0: string, v1: any, suffix: string, sanitizer?: SanitizerFn): TsickleIssue1009;
+export declare function ɵɵpropertyInterpolate2(propName: string, prefix: string, v0: any, i0: string, v1: any, suffix: string, sanitizer?: SanitizerFn): typeof ɵɵpropertyInterpolate2;
 
-export declare function ɵɵpropertyInterpolate3(propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, suffix: string, sanitizer?: SanitizerFn): TsickleIssue1009;
+export declare function ɵɵpropertyInterpolate3(propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, suffix: string, sanitizer?: SanitizerFn): typeof ɵɵpropertyInterpolate3;
 
-export declare function ɵɵpropertyInterpolate4(propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, suffix: string, sanitizer?: SanitizerFn): TsickleIssue1009;
+export declare function ɵɵpropertyInterpolate4(propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, suffix: string, sanitizer?: SanitizerFn): typeof ɵɵpropertyInterpolate4;
 
-export declare function ɵɵpropertyInterpolate5(propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, suffix: string, sanitizer?: SanitizerFn): TsickleIssue1009;
+export declare function ɵɵpropertyInterpolate5(propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, suffix: string, sanitizer?: SanitizerFn): typeof ɵɵpropertyInterpolate5;
 
-export declare function ɵɵpropertyInterpolate6(propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string, sanitizer?: SanitizerFn): TsickleIssue1009;
+export declare function ɵɵpropertyInterpolate6(propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string, sanitizer?: SanitizerFn): typeof ɵɵpropertyInterpolate6;
 
-export declare function ɵɵpropertyInterpolate7(propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string, sanitizer?: SanitizerFn): TsickleIssue1009;
+export declare function ɵɵpropertyInterpolate7(propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string, sanitizer?: SanitizerFn): typeof ɵɵpropertyInterpolate7;
 
-export declare function ɵɵpropertyInterpolate8(propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any, suffix: string, sanitizer?: SanitizerFn): TsickleIssue1009;
+export declare function ɵɵpropertyInterpolate8(propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any, suffix: string, sanitizer?: SanitizerFn): typeof ɵɵpropertyInterpolate8;
 
-export declare function ɵɵpropertyInterpolateV(propName: string, values: any[], sanitizer?: SanitizerFn): TsickleIssue1009;
+export declare function ɵɵpropertyInterpolateV(propName: string, values: any[], sanitizer?: SanitizerFn): typeof ɵɵpropertyInterpolateV;
 
 export declare function ɵɵProvidersFeature<T>(providers: Provider[], viewProviders?: Provider[]): (definition: DirectiveDef<T>) => void;
 
@@ -1041,6 +1018,7 @@ export declare function ɵɵsanitizeUrl(unsafeUrl: any): string;
 
 export declare function ɵɵsanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string, prop: string): any;
 
+/** @deprecated */
 export declare function ɵɵselect(index: number): void;
 
 export declare function ɵɵsetComponentScope(type: ComponentType<any>, directives: Type<any>[], pipes: Type<any>[]): void;
@@ -1051,69 +1029,65 @@ export declare function ɵɵsetNgModuleScope(type: any, scope: {
     exports?: Type<any>[] | (() => Type<any>[]);
 }): void;
 
-export declare function ɵɵstaticContentQuery<T>(directiveIndex: number, predicate: Type<any> | string[], descend: boolean, read: any): void;
+export declare function ɵɵstaticContentQuery<T>(directiveIndex: number, predicate: Type<any> | string[], descend: boolean, read?: any): void;
 
-export declare function ɵɵstaticViewQuery<T>(predicate: Type<any> | string[], descend: boolean, read: any): void;
+export declare function ɵɵstaticViewQuery<T>(predicate: Type<any> | string[], descend: boolean, read?: any): void;
 
 export declare function ɵɵstyleMap(styles: {
     [styleName: string]: any;
-} | NO_CHANGE | null): void;
+} | string | undefined | null): void;
 
-export declare function ɵɵstyleProp(styleIndex: number, value: string | number | String | PlayerFactory | null, suffix?: string | null, forceOverride?: boolean): void;
+export declare function ɵɵstyleProp(prop: string, value: string | number | SafeValue | undefined | null, suffix?: string | null): typeof ɵɵstyleProp;
 
-export declare function ɵɵstylePropInterpolate1(styleIndex: number, prefix: string, v0: any, suffix: string, valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009;
+export declare function ɵɵstylePropInterpolate1(prop: string, prefix: string, v0: any, suffix: string, valueSuffix?: string | null): typeof ɵɵstylePropInterpolate1;
 
-export declare function ɵɵstylePropInterpolate2(styleIndex: number, prefix: string, v0: any, i0: string, v1: any, suffix: string, valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009;
+export declare function ɵɵstylePropInterpolate2(prop: string, prefix: string, v0: any, i0: string, v1: any, suffix: string, valueSuffix?: string | null): typeof ɵɵstylePropInterpolate2;
 
-export declare function ɵɵstylePropInterpolate3(styleIndex: number, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, suffix: string, valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009;
+export declare function ɵɵstylePropInterpolate3(prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, suffix: string, valueSuffix?: string | null): typeof ɵɵstylePropInterpolate3;
 
-export declare function ɵɵstylePropInterpolate4(styleIndex: number, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, suffix: string, valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009;
+export declare function ɵɵstylePropInterpolate4(prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, suffix: string, valueSuffix?: string | null): typeof ɵɵstylePropInterpolate4;
 
-export declare function ɵɵstylePropInterpolate5(styleIndex: number, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, suffix: string, valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009;
+export declare function ɵɵstylePropInterpolate5(prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, suffix: string, valueSuffix?: string | null): typeof ɵɵstylePropInterpolate5;
 
-export declare function ɵɵstylePropInterpolate6(styleIndex: number, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string, valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009;
+export declare function ɵɵstylePropInterpolate6(prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string, valueSuffix?: string | null): typeof ɵɵstylePropInterpolate6;
 
-export declare function ɵɵstylePropInterpolate7(styleIndex: number, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string, valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009;
+export declare function ɵɵstylePropInterpolate7(prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string, valueSuffix?: string | null): typeof ɵɵstylePropInterpolate7;
 
-export declare function ɵɵstylePropInterpolate8(styleIndex: number, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any, suffix: string, valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009;
+export declare function ɵɵstylePropInterpolate8(prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any, suffix: string, valueSuffix?: string | null): typeof ɵɵstylePropInterpolate8;
 
-export declare function ɵɵstylePropInterpolateV(styleIndex: number, values: any[], valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009;
+export declare function ɵɵstylePropInterpolateV(prop: string, values: any[], valueSuffix?: string | null): typeof ɵɵstylePropInterpolateV;
 
-export declare function ɵɵstyling(classBindingNames?: string[] | null, styleBindingNames?: string[] | null, styleSanitizer?: StyleSanitizeFn | null): void;
+export declare function ɵɵstyleSanitizer(sanitizer: StyleSanitizeFn | null): void;
 
-export declare function ɵɵstylingApply(): void;
+export declare function ɵɵtemplate(index: number, templateFn: ComponentTemplate<any> | null, decls: number, vars: number, tagName?: string | null, attrsIndex?: number | null, localRefsIndex?: number | null, localRefExtractor?: LocalRefExtractor): void;
 
-export declare function ɵɵtemplate(index: number, templateFn: ComponentTemplate<any> | null, consts: number, vars: number, tagName?: string | null, attrs?: TAttributes | null, localRefs?: string[] | null, localRefExtractor?: LocalRefExtractor): void;
+export declare function ɵɵtemplateRefExtractor(tNode: TNode, currentView: LView): ViewEngine_TemplateRef<unknown> | null;
 
-export declare function ɵɵtemplateRefExtractor(tNode: TNode, currentView: LView): ViewEngine_TemplateRef<{}> | null;
+export declare function ɵɵtext(index: number, value?: string): void;
 
-export declare function ɵɵtext(index: number, value?: any): void;
+export declare function ɵɵtextInterpolate(v0: any): typeof ɵɵtextInterpolate;
 
-export declare function ɵɵtextBinding<T>(value: T | NO_CHANGE): void;
+export declare function ɵɵtextInterpolate1(prefix: string, v0: any, suffix: string): typeof ɵɵtextInterpolate1;
 
-export declare function ɵɵtextInterpolate(v0: any): TsickleIssue1009;
+export declare function ɵɵtextInterpolate2(prefix: string, v0: any, i0: string, v1: any, suffix: string): typeof ɵɵtextInterpolate2;
 
-export declare function ɵɵtextInterpolate1(prefix: string, v0: any, suffix: string): TsickleIssue1009;
+export declare function ɵɵtextInterpolate3(prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, suffix: string): typeof ɵɵtextInterpolate3;
 
-export declare function ɵɵtextInterpolate2(prefix: string, v0: any, i0: string, v1: any, suffix: string): TsickleIssue1009;
+export declare function ɵɵtextInterpolate4(prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, suffix: string): typeof ɵɵtextInterpolate4;
 
-export declare function ɵɵtextInterpolate3(prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, suffix: string): TsickleIssue1009;
+export declare function ɵɵtextInterpolate5(prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, suffix: string): typeof ɵɵtextInterpolate5;
 
-export declare function ɵɵtextInterpolate4(prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, suffix: string): TsickleIssue1009;
+export declare function ɵɵtextInterpolate6(prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string): typeof ɵɵtextInterpolate6;
 
-export declare function ɵɵtextInterpolate5(prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, suffix: string): TsickleIssue1009;
+export declare function ɵɵtextInterpolate7(prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string): typeof ɵɵtextInterpolate7;
 
-export declare function ɵɵtextInterpolate6(prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string): TsickleIssue1009;
+export declare function ɵɵtextInterpolate8(prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any, suffix: string): typeof ɵɵtextInterpolate8;
 
-export declare function ɵɵtextInterpolate7(prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string): TsickleIssue1009;
+export declare function ɵɵtextInterpolateV(values: any[]): typeof ɵɵtextInterpolateV;
 
-export declare function ɵɵtextInterpolate8(prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any, suffix: string): TsickleIssue1009;
+export declare function ɵɵupdateSyntheticHostBinding<T>(propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null): typeof ɵɵupdateSyntheticHostBinding;
 
-export declare function ɵɵtextInterpolateV(values: any[]): TsickleIssue1009;
-
-export declare function ɵɵupdateSyntheticHostBinding<T>(propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null, nativeOnly?: boolean): TsickleIssue1009;
-
-export declare function ɵɵviewQuery<T>(predicate: Type<any> | string[], descend: boolean, read: any): QueryList<T>;
+export declare function ɵɵviewQuery<T>(predicate: Type<any> | string[], descend: boolean, read?: any): void;
 
 export declare const PACKAGE_ROOT_URL: InjectionToken<string>;
 
@@ -1140,8 +1114,8 @@ export declare const PLATFORM_INITIALIZER: InjectionToken<(() => void)[]>;
 export declare const platformCore: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
 
 export declare class PlatformRef {
-    readonly destroyed: boolean;
-    readonly injector: Injector;
+    get destroyed(): boolean;
+    get injector(): Injector;
     bootstrapModule<M>(moduleType: Type<M>, compilerOptions?: (CompilerOptions & BootstrapOptions) | Array<CompilerOptions & BootstrapOptions>): Promise<NgModuleRef<M>>;
     bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>, options?: BootstrapOptions): Promise<NgModuleRef<M>>;
     destroy(): void;
@@ -1160,13 +1134,14 @@ export interface Query {
     isViewQuery: boolean;
     read: any;
     selector: any;
-    static: boolean;
+    static?: boolean;
 }
 
 export declare abstract class Query {
 }
 
-export declare class QueryList<T> {
+export declare class QueryList<T> implements Iterable<T> {
+    [Symbol.iterator]: () => Iterator<T>;
     readonly changes: Observable<any>;
     readonly dirty = true;
     readonly first: T;
@@ -1189,7 +1164,7 @@ export declare class QueryList<T> {
 
 /** @deprecated */
 export declare abstract class ReflectiveInjector implements Injector {
-    abstract readonly parent: Injector | null;
+    abstract get parent(): Injector | null;
     abstract createChildFromResolved(providers: ResolvedReflectiveProvider[]): ReflectiveInjector;
     abstract get(token: any, notFoundValue?: any): any;
     abstract instantiateResolved(provider: ResolvedReflectiveProvider): any;
@@ -1206,46 +1181,12 @@ export declare class ReflectiveKey {
     id: number;
     token: Object;
     constructor(token: Object, id: number);
-    static readonly numberOfKeys: number;
+    static get numberOfKeys(): number;
     static get(token: Object): ReflectiveKey;
 }
 
-/** @deprecated */
-export declare class RenderComponentType {
-    animations: any;
-    encapsulation: ViewEncapsulation;
-    id: string;
-    slotCount: number;
-    styles: Array<string | any[]>;
-    templateUrl: string;
-    constructor(id: string, templateUrl: string, slotCount: number, encapsulation: ViewEncapsulation, styles: Array<string | any[]>, animations: any);
-}
-
-/** @deprecated */
-export declare abstract class Renderer {
-    abstract animate(element: any, startingStyles: any, keyframes: any[], duration: number, delay: number, easing: string, previousPlayers?: any[]): any;
-    abstract attachViewAfter(node: any, viewRootNodes: any[]): void;
-    abstract createElement(parentElement: any, name: string, debugInfo?: RenderDebugInfo): any;
-    abstract createTemplateAnchor(parentElement: any, debugInfo?: RenderDebugInfo): any;
-    abstract createText(parentElement: any, value: string, debugInfo?: RenderDebugInfo): any;
-    abstract createViewRoot(hostElement: any): any;
-    abstract destroyView(hostElement: any, viewAllNodes: any[]): void;
-    abstract detachView(viewRootNodes: any[]): void;
-    abstract invokeElementMethod(renderElement: any, methodName: string, args?: any[]): void;
-    abstract listen(renderElement: any, name: string, callback: Function): Function;
-    abstract listenGlobal(target: string, name: string, callback: Function): Function;
-    abstract projectNodes(parentElement: any, nodes: any[]): void;
-    abstract selectRootElement(selectorOrNode: string | any, debugInfo?: RenderDebugInfo): any;
-    abstract setBindingDebugInfo(renderElement: any, propertyName: string, propertyValue: string): void;
-    abstract setElementAttribute(renderElement: any, attributeName: string, attributeValue?: string): void;
-    abstract setElementClass(renderElement: any, className: string, isAdd: boolean): void;
-    abstract setElementProperty(renderElement: any, propertyName: string, propertyValue: any): void;
-    abstract setElementStyle(renderElement: any, styleName: string, styleValue?: string): void;
-    abstract setText(renderNode: any, text: string): void;
-}
-
 export declare abstract class Renderer2 {
-    abstract readonly data: {
+    abstract get data(): {
         [key: string]: any;
     };
     destroyNode: ((node: any) => void) | null;
@@ -1307,13 +1248,9 @@ export interface ResolvedReflectiveProvider {
 
 export declare function resolveForwardRef<T>(type: T): T;
 
-/** @deprecated */
-export declare abstract class RootRenderer {
-    abstract renderComponent(componentType: RenderComponentType): Renderer;
-}
-
 export declare abstract class Sanitizer {
     abstract sanitize(context: SecurityContext, value: {} | string | null): string | null;
+    static ɵprov: never;
 }
 
 export interface SchemaMetadata {
@@ -1363,6 +1300,16 @@ export interface SkipSelfDecorator {
     new (): SkipSelf;
 }
 
+export interface StaticClassProvider extends StaticClassSansProvider {
+    multi?: boolean;
+    provide: any;
+}
+
+export interface StaticClassSansProvider {
+    deps: any[];
+    useClass: Type<any>;
+}
+
 export declare type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvider | ConstructorProvider | FactoryProvider | any[];
 
 /** @deprecated */
@@ -1378,7 +1325,7 @@ export declare abstract class SystemJsNgModuleLoaderConfig {
 }
 
 export declare abstract class TemplateRef<C> {
-    abstract readonly elementRef: ElementRef;
+    abstract get elementRef(): ElementRef;
     abstract createEmbeddedView(context: C): EmbeddedViewRef<C>;
 }
 
@@ -1443,13 +1390,13 @@ export declare const VERSION: Version;
 export declare type ViewChild = Query;
 
 export interface ViewChildDecorator {
-    (selector: Type<any> | Function | string, opts: {
+    (selector: Type<any> | Function | string, opts?: {
         read?: any;
-        static: boolean;
+        static?: boolean;
     }): any;
-    new (selector: Type<any> | Function | string, opts: {
+    new (selector: Type<any> | Function | string, opts?: {
         read?: any;
-        static: boolean;
+        static?: boolean;
     }): ViewChild;
 }
 
@@ -1465,10 +1412,10 @@ export interface ViewChildrenDecorator {
 }
 
 export declare abstract class ViewContainerRef {
-    abstract readonly element: ElementRef;
-    abstract readonly injector: Injector;
-    abstract readonly length: number;
-    /** @deprecated */ abstract readonly parentInjector: Injector;
+    abstract get element(): ElementRef;
+    abstract get injector(): Injector;
+    abstract get length(): number;
+    /** @deprecated */ abstract get parentInjector(): Injector;
     abstract clear(): void;
     abstract createComponent<C>(componentFactory: ComponentFactory<C>, index?: number, injector?: Injector, projectableNodes?: any[][], ngModule?: NgModuleRef<any>): ComponentRef<C>;
     abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number): EmbeddedViewRef<C>;
@@ -1488,7 +1435,7 @@ export declare enum ViewEncapsulation {
 }
 
 export declare abstract class ViewRef extends ChangeDetectorRef {
-    abstract readonly destroyed: boolean;
+    abstract get destroyed(): boolean;
     abstract destroy(): void;
     abstract onDestroy(callback: Function): any /** TODO #9100 */;
 }
@@ -1500,20 +1447,3 @@ export declare class WrappedValue {
     static unwrap(value: any): any;
     static wrap(value: any): WrappedValue;
 }
-
-/** @deprecated */
-export declare const wtfCreateScope: (signature: string, flags?: any) => WtfScopeFn;
-
-/** @deprecated */
-export declare const wtfEndTimeRange: (range: any) => void;
-
-/** @deprecated */
-export declare const wtfLeave: <T>(scope: any, returnValue?: T) => T;
-
-/** @deprecated */
-export interface WtfScopeFn {
-    (arg0?: any, arg1?: any): any;
-}
-
-/** @deprecated */
-export declare const wtfStartTimeRange: (rangeType: string, action: string) => any;

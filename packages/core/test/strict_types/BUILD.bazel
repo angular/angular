@@ -1,6 +1,15 @@
 package(default_visibility = ["//visibility:private"])
 
+load("@npm_bazel_typescript//:index.bzl", "ts_config")
 load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_config(
+    name = "tsconfig",
+    src = "tsconfig.json",
+    deps = [
+        "//packages:tsconfig-test",
+    ],
+)
 
 ts_library(
     name = "strict_types_lib",
@@ -8,7 +17,7 @@ ts_library(
     srcs = glob(
         ["**/*.ts"],
     ),
-    tsconfig = ":tsconfig.json",
+    tsconfig = ":tsconfig",
     deps = [
         "//packages/core",
     ],
@@ -18,6 +27,5 @@ jasmine_node_test(
     name = "strict_types",
     deps = [
         ":strict_types_lib",
-        "//tools/testing:node",
     ],
 )

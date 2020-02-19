@@ -46,52 +46,52 @@ import {StateKey, escapeHtml, makeStateKey, unescapeHtml} from '@angular/platfor
           BrowserTransferStateModule,
         ]
       });
-      doc = TestBed.get(DOCUMENT);
+      doc = TestBed.inject(DOCUMENT);
     });
 
     afterEach(() => { removeScriptTag(doc, APP_ID + '-state'); });
 
     it('is initialized from script tag', () => {
       addScriptTag(doc, APP_ID, {test: 10});
-      const transferState: TransferState = TestBed.get(TransferState);
+      const transferState: TransferState = TestBed.inject(TransferState);
       expect(transferState.get(TEST_KEY, 0)).toBe(10);
     });
 
     it('is initialized to empty state if script tag not found', () => {
-      const transferState: TransferState = TestBed.get(TransferState);
+      const transferState: TransferState = TestBed.inject(TransferState);
       expect(transferState.get(TEST_KEY, 0)).toBe(0);
     });
 
     it('supports adding new keys using set', () => {
-      const transferState: TransferState = TestBed.get(TransferState);
+      const transferState: TransferState = TestBed.inject(TransferState);
       transferState.set(TEST_KEY, 20);
       expect(transferState.get(TEST_KEY, 0)).toBe(20);
       expect(transferState.hasKey(TEST_KEY)).toBe(true);
     });
 
     it('supports setting and accessing value \'0\' via get', () => {
-      const transferState: TransferState = TestBed.get(TransferState);
+      const transferState: TransferState = TestBed.inject(TransferState);
       transferState.set(TEST_KEY, 0);
       expect(transferState.get(TEST_KEY, 20)).toBe(0);
       expect(transferState.hasKey(TEST_KEY)).toBe(true);
     });
 
     it('supports setting and accessing value \'false\' via get', () => {
-      const transferState: TransferState = TestBed.get(TransferState);
+      const transferState: TransferState = TestBed.inject(TransferState);
       transferState.set(TEST_KEY, false);
       expect(transferState.get(TEST_KEY, true)).toBe(false);
       expect(transferState.hasKey(TEST_KEY)).toBe(true);
     });
 
     it('supports setting and accessing value \'null\' via get', () => {
-      const transferState: TransferState = TestBed.get(TransferState);
+      const transferState: TransferState = TestBed.inject(TransferState);
       transferState.set(TEST_KEY, null);
       expect(transferState.get(TEST_KEY, 20 as any)).toBe(null);
       expect(transferState.hasKey(TEST_KEY)).toBe(true);
     });
 
     it('supports removing keys', () => {
-      const transferState: TransferState = TestBed.get(TransferState);
+      const transferState: TransferState = TestBed.inject(TransferState);
       transferState.set(TEST_KEY, 20);
       transferState.remove(TEST_KEY);
       expect(transferState.get(TEST_KEY, 0)).toBe(0);
@@ -99,13 +99,13 @@ import {StateKey, escapeHtml, makeStateKey, unescapeHtml} from '@angular/platfor
     });
 
     it('supports serialization using toJson()', () => {
-      const transferState: TransferState = TestBed.get(TransferState);
+      const transferState: TransferState = TestBed.inject(TransferState);
       transferState.set(TEST_KEY, 20);
       expect(transferState.toJson()).toBe('{"test":20}');
     });
 
     it('calls onSerialize callbacks when calling toJson()', () => {
-      const transferState: TransferState = TestBed.get(TransferState);
+      const transferState: TransferState = TestBed.inject(TransferState);
       transferState.set(TEST_KEY, 20);
 
       let value = 'initial';

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT, isPlatformBrowser} from '@angular/common';
-import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, Directive, ErrorHandler, Inject, Input, LOCALE_ID, NgModule, OnDestroy, PLATFORM_ID, PLATFORM_INITIALIZER, Pipe, Provider, StaticProvider, Type, VERSION, createPlatformFactory} from '@angular/core';
+import {DOCUMENT, isPlatformBrowser, ɵgetDOM as getDOM} from '@angular/common';
+import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, Directive, ErrorHandler, Inject, Injector, Input, LOCALE_ID, NgModule, OnDestroy, PLATFORM_ID, PLATFORM_INITIALIZER, Pipe, Provider, Sanitizer, StaticProvider, Type, VERSION, createPlatformFactory} from '@angular/core';
 import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
@@ -15,7 +15,6 @@ import {Testability, TestabilityRegistry} from '@angular/core/src/testability/te
 import {AsyncTestCompleter, Log, afterEach, beforeEach, beforeEachProviders, describe, inject, it} from '@angular/core/testing/src/testing_internal';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
@@ -143,7 +142,7 @@ function bootstrap(
       compilerConsole = new DummyConsole();
       testProviders = [{provide: Console, useValue: compilerConsole}];
 
-      const oldRoots = getDOM().querySelectorAll(doc, 'hello-app,hello-app-2,light-dom-el');
+      const oldRoots = doc.querySelectorAll('hello-app,hello-app-2,light-dom-el');
       for (let i = 0; i < oldRoots.length; i++) {
         getDOM().remove(oldRoots[i]);
       }
@@ -151,10 +150,10 @@ function bootstrap(
       el = getDOM().createElement('hello-app', doc);
       el2 = getDOM().createElement('hello-app-2', doc);
       lightDom = getDOM().createElement('light-dom-el', doc);
-      getDOM().appendChild(doc.body, el);
-      getDOM().appendChild(doc.body, el2);
-      getDOM().appendChild(el, lightDom);
-      getDOM().setText(lightDom, 'loading');
+      doc.body.appendChild(el);
+      doc.body.appendChild(el2);
+      el.appendChild(lightDom);
+      lightDom.textContent = 'loading';
     }));
 
     afterEach(destroyPlatform);
@@ -188,6 +187,19 @@ function bootstrap(
                async.done();
              });
            }));
+
+    it('should retrieve sanitizer', inject([Injector], (injector: Injector) => {
+         const sanitizer: Sanitizer|null = injector.get(Sanitizer, null);
+         if (ivyEnabled) {
+           // In Ivy we don't want to have sanitizer in DI. We use DI only to overwrite the
+           // sanitizer, but not for default one. The default one is pulled in by the Ivy
+           // instructions as needed.
+           expect(sanitizer).toBe(null);
+         } else {
+           // In VE we always need to have Sanitizer available.
+           expect(sanitizer).not.toBe(null);
+         }
+       }));
 
     it('should throw if no element is found',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
@@ -428,17 +440,17 @@ function bootstrap(
          const platform = platformBrowserDynamic();
          const document = platform.injector.get(DOCUMENT);
          const style = dom.createElement('style', document);
-         dom.setAttribute(style, 'ng-transition', 'my-app');
-         dom.appendChild(document.head, style);
+         style.setAttribute('ng-transition', 'my-app');
+         document.head.appendChild(style);
 
          const root = dom.createElement('root', document);
-         dom.appendChild(document.body, root);
+         document.body.appendChild(root);
 
          platform.bootstrapModule(TestModule).then(() => {
            const styles: HTMLElement[] =
-               Array.prototype.slice.apply(dom.getElementsByTagName(document, 'style') || []);
+               Array.prototype.slice.apply(document.getElementsByTagName('style') || []);
            styles.forEach(
-               style => { expect(dom.getAttribute(style, 'ng-transition')).not.toBe('my-app'); });
+               style => { expect(style.getAttribute('ng-transition')).not.toBe('my-app'); });
            async.done();
          });
        }));

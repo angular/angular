@@ -5,10 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {NO_CHANGE} from '../tokens';
-import {ɵɵinterpolation1, ɵɵinterpolation2, ɵɵinterpolation3, ɵɵinterpolation4, ɵɵinterpolation5, ɵɵinterpolation6, ɵɵinterpolation7, ɵɵinterpolation8, ɵɵinterpolationV} from './interpolation';
-import {TsickleIssue1009} from './shared';
-import {ɵɵstyleProp} from './styling';
+
+import {getLView,} from '../state';
+import {interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV} from './interpolation';
+import {checkStylingProperty} from './styling';
 
 
 /**
@@ -34,18 +34,15 @@ import {ɵɵstyleProp} from './styling';
  * @param v0 Value checked for change.
  * @param suffix Static value used for concatenation only.
  * @param valueSuffix Optional suffix. Used with scalar values to add unit such as `px`.
- * @param forceOverride Whether or not to update the styling value immediately.
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵstylePropInterpolate1(
-    styleIndex: number, prefix: string, v0: any, suffix: string, valueSuffix?: string | null,
-    forceOverride?: boolean): TsickleIssue1009 {
-  // TODO(FW-1340): Refactor to remove the use of other instructions here.
-  const interpolatedValue = ɵɵinterpolation1(prefix, v0, suffix);
-  if (interpolatedValue !== NO_CHANGE) {
-    ɵɵstyleProp(styleIndex, interpolatedValue as string, valueSuffix, forceOverride);
-  }
+    prop: string, prefix: string, v0: any, suffix: string,
+    valueSuffix?: string | null): typeof ɵɵstylePropInterpolate1 {
+  const lView = getLView();
+  const interpolatedValue = interpolation1(lView, prefix, v0, suffix);
+  checkStylingProperty(prop, interpolatedValue, valueSuffix, false);
   return ɵɵstylePropInterpolate1;
 }
 
@@ -74,18 +71,15 @@ export function ɵɵstylePropInterpolate1(
  * @param v1 Value checked for change.
  * @param suffix Static value used for concatenation only.
  * @param valueSuffix Optional suffix. Used with scalar values to add unit such as `px`.
- * @param forceOverride Whether or not to update the styling value immediately.
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵstylePropInterpolate2(
-    styleIndex: number, prefix: string, v0: any, i0: string, v1: any, suffix: string,
-    valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009 {
-  // TODO(FW-1340): Refactor to remove the use of other instructions here.
-  const interpolatedValue = ɵɵinterpolation2(prefix, v0, i0, v1, suffix);
-  if (interpolatedValue !== NO_CHANGE) {
-    ɵɵstyleProp(styleIndex, interpolatedValue as string, valueSuffix, forceOverride);
-  }
+    prop: string, prefix: string, v0: any, i0: string, v1: any, suffix: string,
+    valueSuffix?: string | null): typeof ɵɵstylePropInterpolate2 {
+  const lView = getLView();
+  const interpolatedValue = interpolation2(lView, prefix, v0, i0, v1, suffix);
+  checkStylingProperty(prop, interpolatedValue, valueSuffix, false);
   return ɵɵstylePropInterpolate2;
 }
 
@@ -116,18 +110,15 @@ export function ɵɵstylePropInterpolate2(
  * @param v2 Value checked for change.
  * @param suffix Static value used for concatenation only.
  * @param valueSuffix Optional suffix. Used with scalar values to add unit such as `px`.
- * @param forceOverride Whether or not to update the styling value immediately.
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵstylePropInterpolate3(
-    styleIndex: number, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any,
-    suffix: string, valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009 {
-  // TODO(FW-1340): Refactor to remove the use of other instructions here.
-  const interpolatedValue = ɵɵinterpolation3(prefix, v0, i0, v1, i1, v2, suffix);
-  if (interpolatedValue !== NO_CHANGE) {
-    ɵɵstyleProp(styleIndex, interpolatedValue as string, valueSuffix, forceOverride);
-  }
+    prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, suffix: string,
+    valueSuffix?: string | null): typeof ɵɵstylePropInterpolate3 {
+  const lView = getLView();
+  const interpolatedValue = interpolation3(lView, prefix, v0, i0, v1, i1, v2, suffix);
+  checkStylingProperty(prop, interpolatedValue, valueSuffix, false);
   return ɵɵstylePropInterpolate3;
 }
 
@@ -160,19 +151,15 @@ export function ɵɵstylePropInterpolate3(
  * @param v3 Value checked for change.
  * @param suffix Static value used for concatenation only.
  * @param valueSuffix Optional suffix. Used with scalar values to add unit such as `px`.
- * @param forceOverride Whether or not to update the styling value immediately.
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵstylePropInterpolate4(
-    styleIndex: number, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any,
-    i2: string, v3: any, suffix: string, valueSuffix?: string | null,
-    forceOverride?: boolean): TsickleIssue1009 {
-  // TODO(FW-1340): Refactor to remove the use of other instructions here.
-  const interpolatedValue = ɵɵinterpolation4(prefix, v0, i0, v1, i1, v2, i2, v3, suffix);
-  if (interpolatedValue !== NO_CHANGE) {
-    ɵɵstyleProp(styleIndex, interpolatedValue as string, valueSuffix, forceOverride);
-  }
+    prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
+    v3: any, suffix: string, valueSuffix?: string | null): typeof ɵɵstylePropInterpolate4 {
+  const lView = getLView();
+  const interpolatedValue = interpolation4(lView, prefix, v0, i0, v1, i1, v2, i2, v3, suffix);
+  checkStylingProperty(prop, interpolatedValue, valueSuffix, false);
   return ɵɵstylePropInterpolate4;
 }
 
@@ -207,19 +194,17 @@ export function ɵɵstylePropInterpolate4(
  * @param v4 Value checked for change.
  * @param suffix Static value used for concatenation only.
  * @param valueSuffix Optional suffix. Used with scalar values to add unit such as `px`.
- * @param forceOverride Whether or not to update the styling value immediately.
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵstylePropInterpolate5(
-    styleIndex: number, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any,
-    i2: string, v3: any, i3: string, v4: any, suffix: string, valueSuffix?: string | null,
-    forceOverride?: boolean): TsickleIssue1009 {
-  // TODO(FW-1340): Refactor to remove the use of other instructions here.
-  const interpolatedValue = ɵɵinterpolation5(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, suffix);
-  if (interpolatedValue !== NO_CHANGE) {
-    ɵɵstyleProp(styleIndex, interpolatedValue as string, valueSuffix, forceOverride);
-  }
+    prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
+    v3: any, i3: string, v4: any, suffix: string,
+    valueSuffix?: string | null): typeof ɵɵstylePropInterpolate5 {
+  const lView = getLView();
+  const interpolatedValue =
+      interpolation5(lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, suffix);
+  checkStylingProperty(prop, interpolatedValue, valueSuffix, false);
   return ɵɵstylePropInterpolate5;
 }
 
@@ -256,20 +241,17 @@ export function ɵɵstylePropInterpolate5(
  * @param v5 Value checked for change.
  * @param suffix Static value used for concatenation only.
  * @param valueSuffix Optional suffix. Used with scalar values to add unit such as `px`.
- * @param forceOverride Whether or not to update the styling value immediately.
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵstylePropInterpolate6(
-    styleIndex: number, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any,
-    i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string,
-    valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009 {
-  // TODO(FW-1340): Refactor to remove the use of other instructions here.
+    prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
+    v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string,
+    valueSuffix?: string | null): typeof ɵɵstylePropInterpolate6 {
+  const lView = getLView();
   const interpolatedValue =
-      ɵɵinterpolation6(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, suffix);
-  if (interpolatedValue !== NO_CHANGE) {
-    ɵɵstyleProp(styleIndex, interpolatedValue as string, valueSuffix, forceOverride);
-  }
+      interpolation6(lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, suffix);
+  checkStylingProperty(prop, interpolatedValue, valueSuffix, false);
   return ɵɵstylePropInterpolate6;
 }
 
@@ -309,20 +291,17 @@ export function ɵɵstylePropInterpolate6(
  * @param v6 Value checked for change.
  * @param suffix Static value used for concatenation only.
  * @param valueSuffix Optional suffix. Used with scalar values to add unit such as `px`.
- * @param forceOverride Whether or not to update the styling value immediately.
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵstylePropInterpolate7(
-    styleIndex: number, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any,
-    i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any,
-    suffix: string, valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009 {
-  // TODO(FW-1340): Refactor to remove the use of other instructions here.
+    prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
+    v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string,
+    valueSuffix?: string | null): typeof ɵɵstylePropInterpolate7 {
+  const lView = getLView();
   const interpolatedValue =
-      ɵɵinterpolation7(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, suffix);
-  if (interpolatedValue !== NO_CHANGE) {
-    ɵɵstyleProp(styleIndex, interpolatedValue as string, valueSuffix, forceOverride);
-  }
+      interpolation7(lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, suffix);
+  checkStylingProperty(prop, interpolatedValue, valueSuffix, false);
   return ɵɵstylePropInterpolate7;
 }
 
@@ -364,21 +343,17 @@ export function ɵɵstylePropInterpolate7(
  * @param v7 Value checked for change.
  * @param suffix Static value used for concatenation only.
  * @param valueSuffix Optional suffix. Used with scalar values to add unit such as `px`.
- * @param forceOverride Whether or not to update the styling value immediately.
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵstylePropInterpolate8(
-    styleIndex: number, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any,
-    i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string,
-    v7: any, suffix: string, valueSuffix?: string | null,
-    forceOverride?: boolean): TsickleIssue1009 {
-  // TODO(FW-1340): Refactor to remove the use of other instructions here.
-  const interpolatedValue =
-      ɵɵinterpolation8(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, i6, v7, suffix);
-  if (interpolatedValue !== NO_CHANGE) {
-    ɵɵstyleProp(styleIndex, interpolatedValue as string, valueSuffix, forceOverride);
-  }
+    prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
+    v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any,
+    suffix: string, valueSuffix?: string | null): typeof ɵɵstylePropInterpolate8 {
+  const lView = getLView();
+  const interpolatedValue = interpolation8(
+      lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, i6, v7, suffix);
+  checkStylingProperty(prop, interpolatedValue, valueSuffix, false);
   return ɵɵstylePropInterpolate8;
 }
 
@@ -409,17 +384,13 @@ export function ɵɵstylePropInterpolate8(
  * a string prefix and ending with a string suffix.
  * (e.g. `['prefix', value0, '-', value1, '-', value2, ..., value99, 'suffix']`)
  * @param valueSuffix Optional suffix. Used with scalar values to add unit such as `px`.
- * @param forceOverride Whether or not to update the styling value immediately.
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵstylePropInterpolateV(
-    styleIndex: number, values: any[], valueSuffix?: string | null,
-    forceOverride?: boolean): TsickleIssue1009 {
-  // TODO(FW-1340): Refactor to remove the use of other instructions here.
-  const interpolated = ɵɵinterpolationV(values);
-  if (interpolated !== NO_CHANGE) {
-    ɵɵstyleProp(styleIndex, interpolated as string, valueSuffix, forceOverride);
-  }
+    prop: string, values: any[], valueSuffix?: string | null): typeof ɵɵstylePropInterpolateV {
+  const lView = getLView();
+  const interpolatedValue = interpolationV(lView, values);
+  checkStylingProperty(prop, interpolatedValue, valueSuffix, false);
   return ɵɵstylePropInterpolateV;
 }

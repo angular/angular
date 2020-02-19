@@ -185,8 +185,7 @@ is available to <code>declarations</code> of this module.</p>
 </td>
 </tr><tr>
 <td><code><b>@Injectable()</b><br>class MyService() {}</code></td>
-<td><p>Declares that a class has dependencies that should be injected into the constructor when the dependency injector is creating an instance of this class.
-</p>
+<td><p>Declares that a class can be provided and injected by other classes. Without this decorator, the compiler won't generate enough metadata to allow the class to be created properly when it's injected somewhere.</p>
 </td>
 </tr>
 </tbody></table>

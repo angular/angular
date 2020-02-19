@@ -57,6 +57,7 @@ function createTestSupportFor(basePath: string) {
     'newLine': ts.NewLineKind.LineFeed,
     'module': ts.ModuleKind.ES2015,
     'moduleResolution': ts.ModuleResolutionKind.NodeJs,
+    'enableIvy': false,
     'lib': Object.freeze([
       path.resolve(basePath, 'node_modules/typescript/lib/lib.es6.d.ts'),
     ]) as string[],
@@ -169,4 +170,10 @@ export function expectNoDiagnosticsInProgram(options: ng.CompilerOptions, p: ng.
 
 export function normalizeSeparators(path: string): string {
   return path.replace(/\\/g, '/');
+}
+
+const STRIP_ANSI = /\x1B\x5B\d+m/g;
+
+export function stripAnsi(diags: string): string {
+  return diags.replace(STRIP_ANSI, '');
 }

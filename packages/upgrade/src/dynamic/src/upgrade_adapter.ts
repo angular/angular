@@ -537,8 +537,8 @@ export class UpgradeAdapter {
                 function(testabilityDelegate: ITestabilityService) {
                   const originalWhenStable: Function = testabilityDelegate.whenStable;
                   // Cannot use arrow function below because we need the context
-                  const newWhenStable = function(callback: Function) {
-                    originalWhenStable.call(this, function() {
+                  const newWhenStable = function(this: unknown, callback: Function) {
+                    originalWhenStable.call(this, function(this: unknown) {
                       const ng2Testability: Testability =
                           upgradeAdapter.moduleRef !.injector.get(Testability);
                       if (ng2Testability.isStable()) {
@@ -670,7 +670,7 @@ class ParentInjectorPromise {
  */
 export class UpgradeAdapterRef {
   /* @internal */
-  private _readyFn: ((upgradeAdapterRef?: UpgradeAdapterRef) => void)|null = null;
+  private _readyFn: ((upgradeAdapterRef: UpgradeAdapterRef) => void)|null = null;
 
   public ng1RootScope: IRootScopeService = null !;
   public ng1Injector: IInjectorService = null !;

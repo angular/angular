@@ -1,4 +1,4 @@
-# Angular Workspace Configuration
+# Angular workspace configuration
 
 A file named `angular.json` at the root level of an Angular [workspace](guide/glossary#workspace) provides workspace-wide and project-specific configuration defaults for build and development tools provided by the Angular CLI.
 Path values given in the configuration are relative to the root workspace folder.
@@ -17,7 +17,7 @@ The following properties, at the top level of the file, configure the workspace.
 
 The initial app that you create with `ng new app_name` is listed under "projects":
 
-<code-example format="." language="json" linenums="false">
+<code-example language="json">
 
 "projects": {
   "app_name": {
@@ -45,7 +45,7 @@ When you create a library project with `ng generate library`, the library projec
 
 The following top-level configuration properties are available for each project, under `projects:<project_name>`.
 
-<code-example format="." language="json" linenums="false">
+<code-example language="json">
 
     "my-app": {
       "root": "",
@@ -118,7 +118,7 @@ Each target object specifies the `builder` for that target, which is the npm pac
 In addition, each target has an `options` section that configures default options for the target, and a `configurations` section that names and specifies alternative configurations for the target.
 See the example in [Build target](#build-target) below.
 
-<code-example format="." language="json" linenums="false">
+<code-example language="json">
 
       "architect": {
         "build": { },
@@ -136,13 +136,13 @@ See the example in [Build target](#build-target) below.
 * The `architect/build` section configures defaults for options of the `ng build` command.
 See [Build target](#build-target) below for more information.
 
-* The `architect/serve` section overrides build defaults and supplies additional serve defaults for the `ng serve` command.  In addition to the options available for the `ng build` command, it adds options related to serving the app.
+* The `architect/serve` section overrides build defaults and supplies additional serve defaults for the `ng serve` command. In addition to the options available for the `ng build` command, it adds options related to serving the app.
 
 * The `architect/e2e` section overrides build-option defaults for building end-to-end testing apps using the `ng e2e` command.
 
 * The `architect/test` section overrides build-option defaults for test builds and supplies additional test-running defaults for the `ng test` command.
 
-* The `architect/lint` section configures defaults for options of the `ng lint` command, which performs code analysis on project source files.  The default linting tool for Angular is [TSLint](https://palantir.github.io/tslint/).
+* The `architect/lint` section configures defaults for options of the `ng lint` command, which performs code analysis on project source files. The default linting tool for Angular is [TSLint](https://palantir.github.io/tslint/).
 
 * The `architect/extract-i18n` section configures defaults for options of the `ng-xi18n` tool used by the `ng xi18n` command, which extracts marked message strings from source code and outputs translation files.
 
@@ -170,9 +170,15 @@ The `architect/build` section configures defaults for options of the `ng build` 
 
 ### Alternate build configurations
 
-By default, a `production` configuration is defined, and the `ng build` command has `--prod` option that builds using this configuration. The `production` configuration sets defaults that optimize the app in a number of ways, such bundling files, minimizing excess whitespace, removing comments and dead code, and rewriting code to use short, cryptic names ("minification").
+By default, a `production` configuration is defined, and the `ng build` command has `--prod` option that builds using this configuration. The `production` configuration sets defaults that optimize the app in a number of ways, such as bundling files, minimizing excess whitespace, removing comments and dead code, and rewriting code to use short, cryptic names ("minification").
 
 You can define and name additional alternate configurations (such as `stage`, for instance) appropriate to your development process. Some examples of different build configurations are `stable`, `archive` and `next` used by AIO itself, and the individual locale-specific configurations required for building localized versions of an app. For details, see [Internationalization (i18n)](guide/i18n#merge-aot).
+
+You can select an alternate configuration by passing its name to the `--configuration` command line flag.
+
+You can also pass in more than one configuration name as a comma-separated list. For example, to apply both `stage` and `fr` build configurations, use the command `ng build --configuration stage,fr`. In this case,  the command parses the named configurations from left to right. If multiple configurations change the same setting, the last-set value is the final one.
+
+If the `--prod` command line flag is also used, it is applied first, and its settings can be overridden by any configurations specified via the `--configuration` flag.
 
 {@a build-props}
 
@@ -184,7 +190,7 @@ Some additional options can only be set through the configuration file, either b
 
 | OPTIONS PROPERTIES | DESCRIPTION |
 | :------------------------- | :---------------------------- |
-| `assets`                   | An object containing paths to static assets to add to the global context of the project. The default paths point to the project's icon file and its `assets` folder.  See more in [Assets configuration](#asset-config) below. |
+| `assets`                   | An object containing paths to static assets to add to the global context of the project. The default paths point to the project's icon file and its `assets` folder. See more in [Assets configuration](#asset-config) below. |
 | `styles`                   | An array of style files to add to the global context of the project. Angular CLI supports CSS imports and all major CSS preprocessors: [sass/scss](http://sass-lang.com/), [less](http://lesscss.org/), and [stylus](http://stylus-lang.com/). See more in [Styles and scripts configuration](#style-script-config) below. |
 | `stylePreprocessorOptions` | An object containing option-value pairs to pass to style preprocessors. See more in [Styles and scripts configuration](#style-script-config) below. |
 | `scripts`                  | An object containing JavaScript script files to add to the global context of the project. The scripts are loaded exactly as if you had added them in a `<script>` tag inside `index.html`. See more in [Styles and scripts configuration](#style-script-config) below. |
@@ -206,7 +212,7 @@ The following sections provide more details of how these complex values are used
 Each `build` target configuration can include an `assets` array that lists files or folders you want to copy as-is when building your project.
 By default, the `src/assets/` folder and `src/favicon.ico` are copied over.
 
-<code-example format="." language="json" linenums="false">
+<code-example language="json">
 
 "assets": [
   "src/assets",
@@ -227,7 +233,7 @@ A asset specification object can have the following fields.
 
 For example, the default asset paths can be represented in more detail using the following objects.
 
-<code-example format="." language="json" linenums="false">
+<code-example language="json">
 
 "assets": [
   { "glob": "**/*", "input": "src/assets/", "output": "/assets/" },
@@ -239,7 +245,7 @@ For example, the default asset paths can be represented in more detail using the
 You can use this extended configuration to copy assets from outside your project.
 For example, the following configuration copies assets from a node package:
 
-<code-example format="." language="json" linenums="false">
+<code-example language="json">
 
 "assets": [
  { "glob": "**/*", "input": "./node_modules/some-package/images", "output": "/some-package/" },
@@ -251,7 +257,7 @@ The contents of `node_modules/some-package/images/` will be available in `dist/s
 
 The following example uses the `ignore` field to exclude certain files in the assets folder from being copied into the build:
 
-<code-example format="." language="json" linenums="false">
+<code-example language="json">
 
 "assets": [
  { "glob": "**/*", "input": "src/assets/", "ignore": ["**/*.svg"], "output": "/assets/" },
@@ -270,27 +276,27 @@ With a configuration object, you have the option of naming the bundle for the en
 The bundle is injected by default, but you can set `inject` to false to exclude the bundle from injection.
 For example, the following object values create and name a bundle that contains styles and scripts, and excludes it from injection:
 
-<code-example format="." language="json" linenums="false">
+<code-example language="json">
 
    "styles": [
-     {"input": "src/external-module/styles.scss", "inject": false, "bundleName: "external-module"}
-     ]
-   "scripts": [{
-     "input": "src/external-module/main.ts", "inject": false, "bundleName: "external-module"}
-     ]
+     { "input": "src/external-module/styles.scss", "inject": false, "bundleName": "external-module" }
+   ],
+   "scripts": [
+     { "input": "src/external-module/main.js", "inject": false, "bundleName": "external-module" }
+   ]
 
 </code-example>
 
 You can mix simple and complex file references for styles and scripts.
 
-<code-example format="." language="json" linenums="false">
+<code-example language="json">
 
 "styles": [
   "src/styles.css",
   "src/more-styles.css",
-  { "input": "src/lazy-style.scss", "lazy": true },
+  { "input": "src/lazy-style.scss", "inject": false },
   { "input": "src/pre-rename-style.scss", "bundleName": "renamed-style" },
-],
+]
 
 </code-example>
 
@@ -302,11 +308,15 @@ In Sass and Stylus you can make use of the `includePaths` functionality for both
 
 To add paths, use the `stylePreprocessorOptions` option:
 
+<code-example language="json">
+
 "stylePreprocessorOptions": {
   "includePaths": [
     "src/style-paths"
   ]
-},
+}
+
+</code-example>
 
 Files in that folder, such as `src/style-paths/_variables.scss`, can be imported from anywhere in your project without the need for a relative path:
 
@@ -331,9 +341,9 @@ You can supply an object as a configuration value for either of these to provide
 
 * The flag `--optimization="true"` applies to both scripts and styles. You can supply a value such as the following to apply optimization to one or the other:
 
-<code-example format="." language="json" linenums="false">
+<code-example language="json">
 
-   "optimization": {"scripts": true, "styles": false}
+   "optimization": { "scripts": true, "styles": false }
 
 </code-example>
 
@@ -342,16 +352,19 @@ You can configure the option to apply to one or the other.
 You can also choose to output hidden source maps, or resolve vendor package source maps.
 For example:
 
-<code-example format="." language="json" linenums="false">
+<code-example language="json">
 
-   "sourceMaps": {"scripts": true, "styles": false, "hidden": true, "vendor": true}
+   "sourceMap": { "scripts": true, "styles": false, "hidden": true, "vendor": true }
 
 </code-example>
 
-<div class="alert is-helpful>
+<div class="alert is-helpful">
 
    When using hidden source maps, source maps will not be referenced in the bundle.
    These are useful if you only want source maps to map error stack traces in error reporting tools,
    but don't want to expose your source maps in the browser developer tools.
+
+   For [Universal](guide/glossary#universal), you can reduce the code rendered in the HTML page by
+   setting styles optimization to `true` and styles source maps to `false`.
 
 </div>

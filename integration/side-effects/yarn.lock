@@ -13,39 +13,25 @@
     webpack-sources "1.3.0"
 
 "@angular/animations@file:../../dist/packages-dist/animations":
-  version "8.0.0-rc.0"
-  dependencies:
-    tslib "^1.9.0"
+  version "9.0.0-next.10"
 
 "@angular/common@file:../../dist/packages-dist/common":
-  version "8.0.0-rc.0"
-  dependencies:
-    tslib "^1.9.0"
+  version "9.0.0-next.10"
 
 "@angular/core@file:../../dist/packages-dist/core":
-  version "8.0.0-rc.0"
-  dependencies:
-    tslib "^1.9.0"
+  version "9.0.0-next.10"
 
 "@angular/elements@file:../../dist/packages-dist/elements":
-  version "8.0.0-rc.0"
-  dependencies:
-    tslib "^1.9.0"
+  version "9.0.0-next.10"
 
 "@angular/forms@file:../../dist/packages-dist/forms":
-  version "8.0.0-rc.0"
-  dependencies:
-    tslib "^1.9.0"
+  version "9.0.0-next.10"
 
 "@angular/platform-browser@file:../../dist/packages-dist/platform-browser":
-  version "8.0.0-rc.0"
-  dependencies:
-    tslib "^1.9.0"
+  version "9.0.0-next.10"
 
 "@angular/router@file:../../dist/packages-dist/router":
-  version "8.0.0-rc.0"
-  dependencies:
-    tslib "^1.9.0"
+  version "9.0.0-next.10"
 
 "@babel/code-frame@^7.0.0":
   version "7.0.0"
@@ -122,9 +108,10 @@ chalk@^2.0.0:
     supports-color "^5.3.0"
 
 "check-side-effects@file:../../node_modules/check-side-effects":
-  version "0.0.20"
+  version "0.0.21"
   dependencies:
     "@angular-devkit/build-optimizer" "0.14.0-beta.5"
+    diff "^4.0.1"
     minimist "~1.2.0"
     rollup "~1.11.3"
     rollup-plugin-node-resolve "~4.2.3"
@@ -151,6 +138,11 @@ core-util-is@~1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
   integrity sha1-tf1UIgqivFq1eqtxQMlAdUUDwac=
+
+diff@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/diff/-/diff-4.0.1.tgz#0c667cb467ebbb5cea7f14f135cc2dba7780a8ff"
+  integrity sha512-s2+XdvhPCOF01LRQBC8hf4vhbVmI2CGS5aZnxLJlT5FtdhPCDFq80q++zK2KlrVorVDdL5BOGZ/VfLrVtYNF+Q==
 
 emojis-list@^2.0.0:
   version "2.1.0"
@@ -350,11 +342,6 @@ terser@^3.14.1:
     commander "^2.19.0"
     source-map "~0.6.1"
     source-map-support "~0.5.10"
-
-tslib@^1.9.0:
-  version "1.9.3"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.9.3.tgz#d7e4dd79245d85428c4d7e4822a79917954ca286"
-  integrity sha512-4krF8scpejhaOgqzBEcGM7yDIEfi0/8+8zDRZhNZZ2kjmHJ4hv3zCbQWxoJGz1iw5U0Jl0nma13xzHXcncMavQ==
 
 typescript@3.2.4:
   version "3.2.4"

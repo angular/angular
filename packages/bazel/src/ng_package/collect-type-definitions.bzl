@@ -8,6 +8,8 @@
 This is used to find all files that will be copied into a "ng_package".
 """
 
+load("@build_bazel_rules_nodejs//:providers.bzl", "DeclarationInfo")
+
 def _filter_typing_files(files):
     return [file for file in files if file.path.endswith(".d.ts")]
 
@@ -35,7 +37,7 @@ def collect_type_definitions(ctx):
 
     # Collect all TypeScript definition files from the specified dependencies.
     for dep in ctx.attr.deps:
-        if hasattr(dep, "typescript"):
-            collected_files += dep.typescript.transitive_declarations.to_list()
+        if DeclarationInfo in dep:
+            collected_files += dep[DeclarationInfo].transitive_declarations.to_list()
 
     return collected_files

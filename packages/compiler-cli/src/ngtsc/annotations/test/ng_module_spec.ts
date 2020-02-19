@@ -8,10 +8,11 @@
 import {WrappedNodeExpr} from '@angular/compiler';
 import {R3Reference} from '@angular/compiler/src/compiler';
 import * as ts from 'typescript';
+
 import {absoluteFrom} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {LocalIdentifierStrategy, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../imports';
-import {DtsMetadataReader, LocalMetadataRegistry} from '../../metadata';
+import {CompoundMetadataReader, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
@@ -56,18 +57,21 @@ runInEachFileSystem(() => {
       ]);
       const checker = program.getTypeChecker();
       const reflectionHost = new TypeScriptReflectionHost(checker);
-      const evaluator = new PartialEvaluator(reflectionHost, checker);
+      const evaluator = new PartialEvaluator(reflectionHost, checker, /* dependencyTracker */ null);
       const referencesRegistry = new NoopReferencesRegistry();
       const metaRegistry = new LocalMetadataRegistry();
+      const metaReader = new CompoundMetadataReader([metaRegistry]);
       const dtsReader = new DtsMetadataReader(checker, reflectionHost);
       const scopeRegistry = new LocalModuleScopeRegistry(
           metaRegistry, new MetadataDtsModuleScopeResolver(dtsReader, null),
           new ReferenceEmitter([]), null);
       const refEmitter = new ReferenceEmitter([new LocalIdentifierStrategy()]);
+      const injectableRegistry = new InjectableClassRegistry(reflectionHost);
 
       const handler = new NgModuleDecoratorHandler(
-          reflectionHost, evaluator, metaRegistry, scopeRegistry, referencesRegistry, false, null,
-          refEmitter, NOOP_DEFAULT_IMPORT_RECORDER);
+          reflectionHost, evaluator, metaReader, metaRegistry, scopeRegistry, referencesRegistry,
+          /* isCore */ false, /* routeAnalyzer */ null, refEmitter, /* factoryTracker */ null,
+          NOOP_DEFAULT_IMPORT_RECORDER, /* annotateForClosureCompiler */ false, injectableRegistry);
       const TestModule =
           getDeclaration(program, _('/entry.ts'), 'TestModule', isNamedClassDeclaration);
       const detected =
@@ -75,7 +79,7 @@ runInEachFileSystem(() => {
       if (detected === undefined) {
         return fail('Failed to recognize @NgModule');
       }
-      const moduleDef = handler.analyze(TestModule, detected.metadata).analysis !.ngModuleDef;
+      const moduleDef = handler.analyze(TestModule, detected.metadata).analysis !.mod;
 
       expect(getReferenceIdentifierTexts(moduleDef.declarations)).toEqual(['TestComp']);
       expect(getReferenceIdentifierTexts(moduleDef.exports)).toEqual(['TestComp']);

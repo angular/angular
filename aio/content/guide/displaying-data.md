@@ -1,4 +1,4 @@
-# Displaying Data
+# Displaying data
 
 You can display data by binding controls in an HTML template to properties of an Angular component.
 
@@ -8,10 +8,9 @@ conditionally show a message below the list.
 
 The final UI looks like this:
 
-
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/displaying-data/final.png" alt="Final UI">
-</figure>
+</div>
 
 <div class="alert is-helpful">
 
@@ -31,7 +30,7 @@ The easiest way to display a component property
 is to bind the property name through interpolation.
 With interpolation, you put the property name in the view template, enclosed in double curly braces: `{{myHero}}`.
 
-Use the CLI command [`ng new displaying-data`](cli/new) to create a workspace and app named `displaying-data`. 
+Use the CLI command [`ng new displaying-data`](cli/new) to create a workspace and app named `displaying-data`.
 
 Delete the <code>app.component.html</code> file. It is not needed for this example.
 
@@ -41,9 +40,7 @@ changing the template and the body of the component.
 When you're done, it should look like this:
 
 
-<code-example path="displaying-data/src/app/app.component.1.ts" header="src/app/app.component.ts">
-
-</code-example>
+<code-example path="displaying-data/src/app/app.component.1.ts" header="src/app/app.component.ts"></code-example>
 
 
 
@@ -53,9 +50,7 @@ The template displays the two component properties using double curly brace
 interpolation:
 
 
-<code-example path="displaying-data/src/app/app.component.1.ts" linenums="false" header="src/app/app.component.ts (template)" region="template">
-
-</code-example>
+<code-example path="displaying-data/src/app/app.component.1.ts" header="src/app/app.component.ts (template)" region="template"></code-example>
 
 
 
@@ -97,9 +92,7 @@ The CSS `selector` in the `@Component` decorator specifies an element named `<ap
 That element is a placeholder in the body of your `index.html` file:
 
 
-<code-example path="displaying-data/src/index.html" linenums="false" header="src/index.html (body)" region="body">
-
-</code-example>
+<code-example path="displaying-data/src/index.html" header="src/index.html (body)" region="body"></code-example>
 
 
 
@@ -109,11 +102,9 @@ inside the `<app-root>` tag.
 
 Now run the app. It should display the title and hero name:
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/displaying-data/title-and-hero.png" alt="Title and Hero">
-</figure>
-
-
+</div>
 
 The next few sections review some of the coding choices in the app.
 
@@ -133,7 +124,7 @@ is simpler without the additional HTML file.
 In either style, the template data bindings have the same access to the component's properties.
 
 <div class="alert is-helpful">
-  
+
   By default, the Angular CLI command [`ng generate component`](cli/generate) generates components with a template file. You can override that with:
 
   <code-example hideCopy language="sh" class="code-shell">
@@ -148,9 +139,7 @@ In either style, the template data bindings have the same access to the componen
 Although this example uses variable assignment to initialize the components, you could instead declare and initialize the properties using a constructor:
 
 
-<code-example path="displaying-data/src/app/app-ctor.component.1.ts" linenums="false" region="class">
-
-</code-example>
+<code-example path="displaying-data/src/app/app-ctor.component.1.ts" region="class"></code-example>
 
 
 
@@ -163,9 +152,7 @@ This app uses more terse "variable assignment" style simply for brevity.
 To display a list of heroes, begin by adding an array of hero names to the component and redefine `myHero` to be the first name in the array.
 
 
-<code-example path="displaying-data/src/app/app.component.2.ts" linenums="false" header="src/app/app.component.ts (class)" region="class">
-
-</code-example>
+<code-example path="displaying-data/src/app/app.component.2.ts" header="src/app/app.component.ts (class)" region="class"></code-example>
 
 
 
@@ -173,9 +160,7 @@ Now use the Angular `ngFor` directive in the template to display
 each item in the `heroes` list.
 
 
-<code-example path="displaying-data/src/app/app.component.2.ts" linenums="false" header="src/app/app.component.ts (template)" region="template">
-
-</code-example>
+<code-example path="displaying-data/src/app/app.component.2.ts" header="src/app/app.component.ts (template)" region="template"></code-example>
 
 
 
@@ -184,9 +169,7 @@ in the `<li>` element is the Angular "repeater" directive.
 It marks that `<li>` element (and its children) as the "repeater template":
 
 
-<code-example path="displaying-data/src/app/app.component.2.ts" linenums="false" header="src/app/app.component.ts (li)" region="li">
-
-</code-example>
+<code-example path="displaying-data/src/app/app.component.2.ts" header="src/app/app.component.ts (li)" region="li"></code-example>
 
 
 
@@ -225,12 +208,9 @@ repeat items for any [iterable](https://developer.mozilla.org/en-US/docs/Web/Jav
 
 Now the heroes appear in an unordered list.
 
-
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/displaying-data/hero-names-list.png" alt="After ngfor">
-</figure>
-
-
+</div>
 
 
 ## Creating a class for the data
@@ -251,9 +231,7 @@ of hero names into an array of `Hero` objects. For that you'll need a `Hero` cla
 With the following code:
 
 
-<code-example path="displaying-data/src/app/hero.ts" linenums="false" header="src/app/hero.ts">
-
-</code-example>
+<code-example path="displaying-data/src/app/hero.ts" header="src/app/hero.ts"></code-example>
 
 
 
@@ -265,9 +243,7 @@ The declaration of the constructor parameters takes advantage of a TypeScript sh
 Consider the first parameter:
 
 
-<code-example path="displaying-data/src/app/hero.ts" linenums="false" header="src/app/hero.ts (id)" region="id">
-
-</code-example>
+<code-example path="displaying-data/src/app/hero.ts" header="src/app/hero.ts (id)" region="id"></code-example>
 
 
 
@@ -285,9 +261,7 @@ After importing the `Hero` class, the `AppComponent.heroes` property can return 
 of `Hero` objects:
 
 
-<code-example path="displaying-data/src/app/app.component.3.ts" linenums="false" header="src/app/app.component.ts (heroes)" region="heroes">
-
-</code-example>
+<code-example path="displaying-data/src/app/app.component.3.ts" header="src/app/app.component.ts (heroes)" region="heroes"></code-example>
 
 
 
@@ -296,9 +270,7 @@ At the moment it displays the hero's `id` and `name`.
 Fix that to display only the hero's `name` property.
 
 
-<code-example path="displaying-data/src/app/app.component.3.ts" linenums="false" header="src/app/app.component.ts (template)" region="template">
-
-</code-example>
+<code-example path="displaying-data/src/app/app.component.3.ts" header="src/app/app.component.ts (template)" region="template"></code-example>
 
 
 
@@ -316,9 +288,7 @@ The Angular `ngIf` directive inserts or removes an element based on a _truthy/fa
 To see it in action, add the following paragraph at the bottom of the template:
 
 
-<code-example path="displaying-data/src/app/app.component.ts" linenums="false" header="src/app/app.component.ts (message)" region="message">
-
-</code-example>
+<code-example path="displaying-data/src/app/app.component.ts" header="src/app/app.component.ts (message)" region="message"></code-example>
 
 
 
@@ -391,4 +361,3 @@ Here's the final code:
   </code-pane>
 
 </code-tabs>
-

@@ -1,9 +1,8 @@
-# Lifecycle Hooks
+# Lifecycle hooks
 
 A component has a lifecycle managed by Angular.
 
-Angular creates it, renders it, creates and renders its children,
-checks it when its data-bound properties change, and destroys it before removing it from the DOM.
+Angular creates and renders components along with their children, checks when their data-bound properties change, and destroys them before removing them from the DOM.
 
 Angular offers **lifecycle hooks**
 that provide visibility into these key life moments and the ability to act when they occur.
@@ -23,7 +22,7 @@ Each interface has a single hook method whose name is the interface name prefixe
 For example, the `OnInit` interface has a hook method named `ngOnInit()`
 that Angular calls shortly after creating the component:
 
-<code-example path="lifecycle-hooks/src/app/peek-a-boo.component.ts" region="ngOnInit" header="peek-a-boo.component.ts (excerpt)" linenums="false"></code-example>
+<code-example path="lifecycle-hooks/src/app/peek-a-boo.component.ts" region="ngOnInit" header="peek-a-boo.component.ts (excerpt)"></code-example>
 
 No directive or component will implement all of the lifecycle hooks.
 Angular only calls a directive/component hook method *if it is defined*.
@@ -292,9 +291,9 @@ The peek-a-boo exists to show how Angular calls the hooks in the expected order.
 
 This snapshot reflects the state of the log after the user clicked the *Create...* button and then the *Destroy...* button.
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/lifecycle-hooks/peek-a-boo.png" alt="Peek-a-boo">
-</figure>
+</div>
 
 The sequence of log messages follows the prescribed hook calling order:
 `OnChanges`, `OnInit`, `DoCheck`&nbsp;(3x), `AfterContentInit`, `AfterContentChecked`&nbsp;(3x),
@@ -339,20 +338,20 @@ The heroes will never know they're being watched.
 The sneaky spy directive is simple, consisting almost entirely of `ngOnInit()` and `ngOnDestroy()` hooks
 that log messages to the parent via an injected `LoggerService`.
 
-<code-example path="lifecycle-hooks/src/app/spy.directive.ts" region="spy-directive" header="src/app/spy.directive.ts" linenums="false"></code-example>
+<code-example path="lifecycle-hooks/src/app/spy.directive.ts" region="spy-directive" header="src/app/spy.directive.ts"></code-example>
 
 You can apply the spy to any native or component element and it'll be initialized and destroyed
 at the same time as that element.
 Here it is attached to the repeated hero `<div>`:
 
-<code-example path="lifecycle-hooks/src/app/spy.component.html" region="template" header="src/app/spy.component.html" linenums="false"></code-example>
+<code-example path="lifecycle-hooks/src/app/spy.component.html" region="template" header="src/app/spy.component.html"></code-example>
 
 Each spy's birth and death marks the birth and death of the attached hero `<div>`
 with an entry in the *Hook Log* as seen here:
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/lifecycle-hooks/spy-directive.gif' alt="Spy Directive">
-</figure>
+</div>
 
 Adding a hero results in a new hero `<div>`. The spy's `ngOnInit()` logs that event.
 
@@ -425,7 +424,7 @@ You risk memory leaks if you neglect to do so.
 Angular calls its `ngOnChanges()` method whenever it detects changes to ***input properties*** of the component (or directive).
 This example monitors the `OnChanges` hook.
 
-<code-example path="lifecycle-hooks/src/app/on-changes.component.ts" region="ng-on-changes" header="on-changes.component.ts (excerpt)" linenums="false"></code-example>
+<code-example path="lifecycle-hooks/src/app/on-changes.component.ts" region="ng-on-changes" header="on-changes.component.ts (excerpt)"></code-example>
 
 The `ngOnChanges()` method takes an object that maps each changed property name to a
 [SimpleChange](api/core/SimpleChange) object holding the current and previous property values.
@@ -433,7 +432,7 @@ This hook iterates over the changed properties and logs them.
 
 The example component, `OnChangesComponent`, has two input properties: `hero` and `power`.
 
-<code-example path="lifecycle-hooks/src/app/on-changes.component.ts" region="inputs" header="src/app/on-changes.component.ts" linenums="false"></code-example>
+<code-example path="lifecycle-hooks/src/app/on-changes.component.ts" region="inputs" header="src/app/on-changes.component.ts"></code-example>
 
 The host `OnChangesParentComponent` binds to them like this:
 
@@ -441,9 +440,9 @@ The host `OnChangesParentComponent` binds to them like this:
 
 Here's the sample in action as the user makes changes.
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/lifecycle-hooks/on-changes-anim.gif' alt="OnChanges">
-</figure>
+</div>
 
 The log entries appear as the string value of the *power* property changes.
 But the `ngOnChanges` does not catch changes to `hero.name`
@@ -468,15 +467,15 @@ Use the `DoCheck` hook to detect and act upon changes that Angular doesn't catch
 
 The *DoCheck* sample extends the *OnChanges* sample with the following `ngDoCheck()` hook:
 
-<code-example path="lifecycle-hooks/src/app/do-check.component.ts" region="ng-do-check" header="DoCheckComponent (ngDoCheck)" linenums="false"></code-example>
+<code-example path="lifecycle-hooks/src/app/do-check.component.ts" region="ng-do-check" header="DoCheckComponent (ngDoCheck)"></code-example>
 
 This code inspects certain _values of interest_, capturing and comparing their current state against previous values.
 It writes a special message to the log when there are no substantive changes to the `hero` or the `power`
 so you can see how often `DoCheck` is called. The results are illuminating:
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/lifecycle-hooks/do-check-anim.gif' alt="DoCheck">
-</figure>
+</div>
 
 While the `ngDoCheck()` hook can detect when the hero's `name` has changed, it has a frightful cost.
 This hook is called with enormous frequency&mdash;after _every_
@@ -497,25 +496,25 @@ The *AfterView* sample explores the `AfterViewInit()` and `AfterViewChecked()` h
 
 Here's a child view that displays a hero's name in an `<input>`:
 
-<code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="child-view" header="ChildComponent" linenums="false"></code-example>
+<code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="child-view" header="ChildComponent"></code-example>
 
 The `AfterViewComponent` displays this child view *within its template*:
 
-<code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="template" header="AfterViewComponent (template)" linenums="false"></code-example>
+<code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="template" header="AfterViewComponent (template)"></code-example>
 
 The following hooks take action based on changing values *within the child view*,
 which can only be reached by querying for the child view via the property decorated with
 [@ViewChild](api/core/ViewChild).
 
 
-<code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="hooks" header="AfterViewComponent (class excerpts)" linenums="false"></code-example>
+<code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="hooks" header="AfterViewComponent (class excerpts)"></code-example>
 
 {@a wait-a-tick}
 
 ### Abide by the unidirectional data flow rule
 The `doSomething()` method updates the screen when the hero name exceeds 10 characters.
 
-<code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="do-something" header="AfterViewComponent (doSomething)" linenums="false"></code-example>
+<code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="do-something" header="AfterViewComponent (doSomething)"></code-example>
 
 Why does the `doSomething()` method wait a tick before updating `comment`?
 
@@ -528,9 +527,9 @@ for one turn of the browser's JavaScript cycle and that's just long enough.
 
 Here's *AfterView* in action:
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/lifecycle-hooks/after-view-anim.gif' alt="AfterView">
-</figure>
+</div>
 
 Notice that Angular frequently calls `AfterViewChecked()`, often when there are no changes of interest.
 Write lean hook methods to avoid performance problems.
@@ -559,7 +558,7 @@ Consider this variation on the [previous _AfterView_](guide/lifecycle-hooks#afte
 This time, instead of including the child view within the template, it imports the content from
 the `AfterContentComponent`'s parent. Here's the parent's template:
 
-<code-example path="lifecycle-hooks/src/app/after-content.component.ts" region="parent-template" header="AfterContentParentComponent (template excerpt)" linenums="false"></code-example>
+<code-example path="lifecycle-hooks/src/app/after-content.component.ts" region="parent-template" header="AfterContentParentComponent (template excerpt)"></code-example>
 
 Notice that the `<app-child>` tag is tucked between the `<after-content>` tags.
 Never put content between a component's element tags *unless you intend to project that content
@@ -567,15 +566,15 @@ into the component*.
 
 Now look at the component's template:
 
-<code-example path="lifecycle-hooks/src/app/after-content.component.ts" region="template" header="AfterContentComponent (template)" linenums="false"></code-example>
+<code-example path="lifecycle-hooks/src/app/after-content.component.ts" region="template" header="AfterContentComponent (template)"></code-example>
 
 The `<ng-content>` tag is a *placeholder* for the external content.
 It tells Angular where to insert that content.
 In this case, the projected content is the `<app-child>` from the parent.
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/lifecycle-hooks/projected-child-view.png' alt="Projected Content">
-</figure>
+</div>
 
 <div class="alert is-helpful">
 
@@ -603,7 +602,7 @@ The following *AfterContent* hooks take action based on changing values in a *co
 which can only be reached by querying for them via the property decorated with
 [@ContentChild](api/core/ContentChild).
 
-<code-example path="lifecycle-hooks/src/app/after-content.component.ts" region="hooks" header="AfterContentComponent (class excerpts)" linenums="false"></code-example>
+<code-example path="lifecycle-hooks/src/app/after-content.component.ts" region="hooks" header="AfterContentComponent (class excerpts)"></code-example>
 
 {@a no-unidirectional-flow-worries}
 

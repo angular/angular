@@ -18,7 +18,7 @@ Whether you came here directly from [Your First App](start "Getting Started: You
 StackBlitz projects are public by default, allowing you to share your Angular app via the project URL. Keep in mind that this is a great way to share ideas and prototypes, but it is not intended for production hosting.
 
 1. In your StackBlitz project, make sure you have forked or saved your project.
-1. In the preview pane, you should see a URL that looks like `https://<Project ID>.stackblitz.io`.
+1. In the preview page, you should see a URL that looks like `https://<Project ID>.stackblitz.io`.
 1. Share this URL with a friend or colleague.
 1. Users that visit your URL will see a development server start up, and then your application will load.
 
@@ -50,6 +50,12 @@ ng build --prod
 
 This will produce the files that you need to deploy.
 
+<div class="alert is-helpful">
+
+If the above `ng build` command throws an error about missing packages, append the missing dependencies in your local project's `package.json` file to match the one in the downloaded StackBlitz project.
+
+</div>
+
 #### Hosting the built project
 
 The files in the `dist/my-project-name` folder are static and can be hosted on any web server capable of serving files (`Node.js`, Java, .NET) or any backend (Firebase, Google Cloud, App Engine, others).
@@ -60,10 +66,13 @@ One of the easiest ways to get your site live is to host it using Firebase.
 
 1. Sign up for a firebase account on [Firebase](https://firebase.google.com/ "Firebase web site").
 1. Create a new project, giving it any name you like.
-1. Install the `firebase-tools` CLI that will handle your deployment using `npm install -g firebase-tools`.
+1. Add the `@angular/fire` schematics that will handle your deployment using `ng add @angular/fire`.
 1. Connect your CLI to your Firebase account and initialize the connection to your project using `firebase login` and `firebase init`.
-1. Follow the prompts to select the `Firebase` project you creating for hosting.
-1. Deploy your application with `firebase deploy` because StackBlitz has created a `firebase.json` that tells Firebase how to serve your app.
+1. Follow the prompts to select the `Firebase` project you are creating for hosting.
+    - Select the `Hosting` option on the first prompt.
+    - Select the project you previously created on Firebase.
+    - Select `dist/my-project-name` as the public directory.
+1. Deploy your application with `ng deploy`.
 1. Once deployed, visit https://your-firebase-project-name.firebaseapp.com to see it live!
 
 ### Hosting an Angular app anywhere else

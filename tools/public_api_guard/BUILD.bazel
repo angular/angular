@@ -65,3 +65,14 @@ ts_api_guardian_test(
     ],
     golden = "angular/tools/public_api_guard/global_utils.d.ts",
 )
+
+# explicit target because the d.ts file is nested in the core and not part of typical public d.ts api
+ts_api_guardian_test(
+    name = "error_code_api",
+    actual = "angular/packages/compiler-cli/src/ngtsc/diagnostics/src/error_code.d.ts",
+    data = [
+        ":error_code.d.ts",
+        "//packages/compiler-cli/src/ngtsc/diagnostics",
+    ],
+    golden = "angular/tools/public_api_guard/error_code.d.ts",
+)

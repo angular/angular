@@ -9,11 +9,8 @@
 import {Type} from '../interface/type';
 
 /**
- * An interface implemented by all Angular type decorators, which allows them to be used as ES7
- * decorators as well as
- * Angular DSL syntax.
- *
- * ES7 syntax:
+ * An interface implemented by all Angular type decorators, which allows them to be used as
+ * decorators as well as Angular syntax.
  *
  * ```
  * @ng.Component({...})
@@ -24,7 +21,7 @@ import {Type} from '../interface/type';
  */
 export interface TypeDecorator {
   /**
-   * Invoke as ES7 decorator.
+   * Invoke as decorator.
    */
   <T extends Type<any>>(type: T): T;
 
@@ -49,10 +46,11 @@ export function makeDecorator<T>(
     {new (...args: any[]): any; (...args: any[]): any; (...args: any[]): (cls: any) => any;} {
   const metaCtor = makeMetadataCtor(props);
 
-  function DecoratorFactory(...args: any[]): (cls: Type<T>) => any {
+  function DecoratorFactory(
+      this: unknown | typeof DecoratorFactory, ...args: any[]): (cls: Type<T>) => any {
     if (this instanceof DecoratorFactory) {
       metaCtor.call(this, ...args);
-      return this;
+      return this as typeof DecoratorFactory;
     }
 
     const annotationInstance = new (DecoratorFactory as any)(...args);
@@ -82,7 +80,7 @@ export function makeDecorator<T>(
 }
 
 function makeMetadataCtor(props?: (...args: any[]) => any): any {
-  return function ctor(...args: any[]) {
+  return function ctor(this: any, ...args: any[]) {
     if (props) {
       const values = props(...args);
       for (const propName in values) {
@@ -95,7 +93,8 @@ function makeMetadataCtor(props?: (...args: any[]) => any): any {
 export function makeParamDecorator(
     name: string, props?: (...args: any[]) => any, parentClass?: any): any {
   const metaCtor = makeMetadataCtor(props);
-  function ParamDecoratorFactory(...args: any[]): any {
+  function ParamDecoratorFactory(
+      this: unknown | typeof ParamDecoratorFactory, ...args: any[]): any {
     if (this instanceof ParamDecoratorFactory) {
       metaCtor.apply(this, args);
       return this;
@@ -135,7 +134,7 @@ export function makePropDecorator(
     additionalProcessing?: (target: any, name: string, ...args: any[]) => void): any {
   const metaCtor = makeMetadataCtor(props);
 
-  function PropDecoratorFactory(...args: any[]): any {
+  function PropDecoratorFactory(this: unknown | typeof PropDecoratorFactory, ...args: any[]): any {
     if (this instanceof PropDecoratorFactory) {
       metaCtor.apply(this, args);
       return this;

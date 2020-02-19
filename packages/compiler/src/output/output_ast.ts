@@ -8,6 +8,7 @@
 
 
 import {ParseSourceSpan} from '../parse_util';
+import {I18nMeta} from '../render3/view/i18n/meta';
 import {error} from '../util';
 
 //// Types
@@ -480,6 +481,101 @@ export class LiteralExpr extends Expression {
 }
 
 
+export class LocalizedString extends Expression {
+  constructor(
+      readonly metaBlock: I18nMeta, readonly messageParts: string[],
+      readonly placeHolderNames: string[], readonly expressions: Expression[],
+      sourceSpan?: ParseSourceSpan|null) {
+    super(STRING_TYPE, sourceSpan);
+  }
+
+  isEquivalent(e: Expression): boolean {
+    // return e instanceof LocalizedString && this.message === e.message;
+    return false;
+  }
+
+  isConstant() { return false; }
+
+  visitExpression(visitor: ExpressionVisitor, context: any): any {
+    return visitor.visitLocalizedString(this, context);
+  }
+
+  /**
+   * Serialize the given `meta` and `messagePart` into "cooked" and "raw" strings that can be used
+   * in a `$localize` tagged string. The format of the metadata is the same as that parsed by
+   * `parseI18nMeta()`.
+   *
+   * @param meta The metadata to serialize
+   * @param messagePart The first part of the tagged string
+   */
+  serializeI18nHead(): {cooked: string, raw: string} {
+    const MEANING_SEPARATOR = '|';
+    const ID_SEPARATOR = '@@';
+    const LEGACY_ID_INDICATOR = '␟';
+
+    let metaBlock = this.metaBlock.description || '';
+    if (this.metaBlock.meaning) {
+      metaBlock = `${this.metaBlock.meaning}${MEANING_SEPARATOR}${metaBlock}`;
+    }
+    if (this.metaBlock.customId) {
+      metaBlock = `${metaBlock}${ID_SEPARATOR}${this.metaBlock.customId}`;
+    }
+    if (this.metaBlock.legacyIds) {
+      this.metaBlock.legacyIds.forEach(
+          legacyId => { metaBlock = `${metaBlock}${LEGACY_ID_INDICATOR}${legacyId}`; });
+    }
+    return createCookedRawString(metaBlock, this.messageParts[0]);
+  }
+
+  /**
+   * Serialize the given `placeholderName` and `messagePart` into "cooked" and "raw" strings that
+   * can be used in a `$localize` tagged string.
+   *
+   * @param placeholderName The placeholder name to serialize
+   * @param messagePart The following message string after this placeholder
+   */
+  serializeI18nTemplatePart(partIndex: number): {cooked: string, raw: string} {
+    const placeholderName = this.placeHolderNames[partIndex - 1];
+    const messagePart = this.messageParts[partIndex];
+    return createCookedRawString(placeholderName, messagePart);
+  }
+}
+
+const escapeSlashes = (str: string): string => str.replace(/\\/g, '\\\\');
+const escapeStartingColon = (str: string): string => str.replace(/^:/, '\\:');
+const escapeColons = (str: string): string => str.replace(/:/g, '\\:');
+const escapeForMessagePart = (str: string): string =>
+    str.replace(/`/g, '\\`').replace(/\${/g, '$\\{');
+
+/**
+ * Creates a `{cooked, raw}` object from the `metaBlock` and `messagePart`.
+ *
+ * The `raw` text must have various character sequences escaped:
+ * * "\" would otherwise indicate that the next character is a control character.
+ * * "`" and "${" are template string control sequences that would otherwise prematurely indicate
+ *   the end of a message part.
+ * * ":" inside a metablock would prematurely indicate the end of the metablock.
+ * * ":" at the start of a messagePart with no metablock would erroneously indicate the start of a
+ *   metablock.
+ *
+ * @param metaBlock Any metadata that should be prepended to the string
+ * @param messagePart The message part of the string
+ */
+function createCookedRawString(metaBlock: string, messagePart: string) {
+  if (metaBlock === '') {
+    return {
+      cooked: messagePart,
+      raw: escapeForMessagePart(escapeStartingColon(escapeSlashes(messagePart)))
+    };
+  } else {
+    return {
+      cooked: `:${metaBlock}:${messagePart}`,
+      raw: escapeForMessagePart(
+          `:${escapeColons(escapeSlashes(metaBlock))}:${escapeSlashes(messagePart)}`)
+    };
+  }
+}
+
 export class ExternalExpr extends Expression {
   constructor(
       public value: ExternalReference, type?: Type|null, public typeParams: Type[]|null = null,
@@ -749,6 +845,7 @@ export interface ExpressionVisitor {
   visitInvokeFunctionExpr(ast: InvokeFunctionExpr, context: any): any;
   visitInstantiateExpr(ast: InstantiateExpr, context: any): any;
   visitLiteralExpr(ast: LiteralExpr, context: any): any;
+  visitLocalizedString(ast: LocalizedString, context: any): any;
   visitExternalExpr(ast: ExternalExpr, context: any): any;
   visitConditionalExpr(ast: ConditionalExpr, context: any): any;
   visitNotExpr(ast: NotExpr, context: any): any;
@@ -1074,6 +1171,14 @@ export class AstTransformer implements StatementVisitor, ExpressionVisitor {
 
   visitLiteralExpr(ast: LiteralExpr, context: any): any { return this.transformExpr(ast, context); }
 
+  visitLocalizedString(ast: LocalizedString, context: any): any {
+    return this.transformExpr(
+        new LocalizedString(
+            ast.metaBlock, ast.messageParts, ast.placeHolderNames,
+            this.visitAllExpressions(ast.expressions, context), ast.sourceSpan),
+        context);
+  }
+
   visitExternalExpr(ast: ExternalExpr, context: any): any {
     return this.transformExpr(ast, context);
   }
@@ -1291,6 +1396,9 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
   visitLiteralExpr(ast: LiteralExpr, context: any): any {
     return this.visitExpression(ast, context);
   }
+  visitLocalizedString(ast: LocalizedString, context: any): any {
+    return this.visitExpression(ast, context);
+  }
   visitExternalExpr(ast: ExternalExpr, context: any): any {
     if (ast.typeParams) {
       ast.typeParams.forEach(type => type.visitType(this, context));
@@ -1464,7 +1572,7 @@ class _ApplySourceSpanTransformer extends AstTransformer {
   constructor(private sourceSpan: ParseSourceSpan) { super(); }
   private _clone(obj: any): any {
     const clone = Object.create(obj.constructor.prototype);
-    for (let prop in obj) {
+    for (let prop of Object.keys(obj)) {
       clone[prop] = obj[prop];
     }
     return clone;
@@ -1549,6 +1657,12 @@ export function ifStmt(condition: Expression, thenClause: Statement[], elseClaus
 export function literal(
     value: any, type?: Type | null, sourceSpan?: ParseSourceSpan | null): LiteralExpr {
   return new LiteralExpr(value, type, sourceSpan);
+}
+
+export function localizedString(
+    metaBlock: I18nMeta, messageParts: string[], placeholderNames: string[],
+    expressions: Expression[], sourceSpan?: ParseSourceSpan | null): LocalizedString {
+  return new LocalizedString(metaBlock, messageParts, placeholderNames, expressions, sourceSpan);
 }
 
 export function isNull(exp: Expression): boolean {

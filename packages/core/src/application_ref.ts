@@ -14,20 +14,23 @@ import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens
 import {getCompilerFacade} from './compiler/compiler_facade';
 import {Console} from './console';
 import {Injectable, InjectionToken, Injector, StaticProvider} from './di';
+import {INJECTOR_SCOPE} from './di/scope';
 import {ErrorHandler} from './error_handler';
+import {DEFAULT_LOCALE_ID} from './i18n/localization';
 import {LOCALE_ID} from './i18n/tokens';
 import {Type} from './interface/type';
+import {ivyEnabled} from './ivy_switch';
 import {COMPILER_OPTIONS, CompilerFactory, CompilerOptions} from './linker/compiler';
 import {ComponentFactory, ComponentRef} from './linker/component_factory';
 import {ComponentFactoryBoundToModule, ComponentFactoryResolver} from './linker/component_factory_resolver';
 import {InternalNgModuleRef, NgModuleFactory, NgModuleRef} from './linker/ng_module_factory';
 import {InternalViewRef, ViewRef} from './linker/view_ref';
 import {isComponentResourceResolutionQueueEmpty, resolveComponentResources} from './metadata/resource_loading';
-import {WtfScopeFn, wtfCreateScope, wtfLeave} from './profile/profile';
 import {assertNgModuleType} from './render3/assert';
 import {ComponentFactory as R3ComponentFactory} from './render3/component_ref';
-import {DEFAULT_LOCALE_ID, setLocaleId} from './render3/i18n';
+import {setLocaleId} from './render3/i18n';
 import {NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref';
+import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from './render3/util/global_utils';
 import {Testability, TestabilityRegistry} from './testability/testability';
 import {isDevMode} from './util/is_dev_mode';
 import {isPromise} from './util/lang';
@@ -79,6 +82,16 @@ export function compileNgModuleFactory__POST_R3__<M>(
       .then(() => moduleFactory);
 }
 
+// the `window.ng` global utilities are only available in non-VE versions of
+// Angular. The function switch below will make sure that the code is not
+// included into Angular when PRE mode is active.
+export function publishDefaultGlobalUtils__PRE_R3__() {}
+export function publishDefaultGlobalUtils__POST_R3__() {
+  ngDevMode && _publishDefaultGlobalUtils();
+}
+
+let publishDefaultGlobalUtils: () => any = publishDefaultGlobalUtils__PRE_R3__;
+
 let isBoundToModule: <C>(cf: ComponentFactory<C>) => boolean = isBoundToModule__PRE_R3__;
 
 export function isBoundToModule__PRE_R3__<C>(cf: ComponentFactory<C>): boolean {
@@ -114,6 +127,7 @@ export function createPlatform(injector: Injector): PlatformRef {
     throw new Error(
         'There can be only one platform. Destroy the previous one to create a new one.');
   }
+  publishDefaultGlobalUtils();
   _platform = injector.get(PlatformRef);
   const inits = injector.get(PLATFORM_INITIALIZER, null);
   if (inits) inits.forEach((init: any) => init());
@@ -139,7 +153,10 @@ export function createPlatformFactory(
             providers.concat(extraProviders).concat({provide: marker, useValue: true}));
       } else {
         const injectedProviders: StaticProvider[] =
-            providers.concat(extraProviders).concat({provide: marker, useValue: true});
+            providers.concat(extraProviders).concat({provide: marker, useValue: true}, {
+              provide: INJECTOR_SCOPE,
+              useValue: 'platform'
+            });
         createPlatform(Injector.create({providers: injectedProviders, name: desc}));
       }
     }
@@ -201,6 +218,27 @@ export interface BootstrapOptions {
    * - `noop` - Use `NoopNgZone` which does nothing.
    */
   ngZone?: NgZone|'zone.js'|'noop';
+
+  /**
+   * Optionally specify coalescing event change detections or not.
+   * Consider the following case.
+   *
+   * <div (click)="doSomething()">
+   *   <button (click)="doSomethingElse()"></button>
+   * </div>
+   *
+   * When button is clicked, because of the event bubbling, both
+   * event handlers will be called and 2 change detections will be
+   * triggered. We can colesce such kind of events to only trigger
+   * change detection only once.
+   *
+   * By default, this option will be false. So the events will not be
+   * coalesced and the change detection will be triggered multiple times.
+   * And if this option be set to true, the change detection will be
+   * triggered async by scheduling a animation frame. So in the case above,
+   * the change detection will only be trigged once.
+   */
+  ngZoneEventCoalescing?: boolean;
 }
 
 /**
@@ -251,7 +289,8 @@ export class PlatformRef {
     // So we create a mini parent injector that just contains the new NgZone and
     // pass that as parent to the NgModuleFactory.
     const ngZoneOption = options ? options.ngZone : undefined;
-    const ngZone = getNgZone(ngZoneOption);
+    const ngZoneEventCoalescing = (options && options.ngZoneEventCoalescing) || false;
+    const ngZone = getNgZone(ngZoneOption, ngZoneEventCoalescing);
     const providers: StaticProvider[] = [{provide: NgZone, useValue: ngZone}];
     // Attention: Don't use ApplicationRef.run here,
     // as we want to be sure that all possible constructor calls are inside `ngZone.run`!
@@ -259,13 +298,10 @@ export class PlatformRef {
       const ngZoneInjector = Injector.create(
           {providers: providers, parent: this.injector, name: moduleFactory.moduleType.name});
       const moduleRef = <InternalNgModuleRef<M>>moduleFactory.create(ngZoneInjector);
-      const exceptionHandler: ErrorHandler = moduleRef.injector.get(ErrorHandler, null);
+      const exceptionHandler: ErrorHandler|null = moduleRef.injector.get(ErrorHandler, null);
       if (!exceptionHandler) {
         throw new Error('No ErrorHandler. Is platform module (BrowserModule) included?');
       }
-      // If the `LOCALE_ID` provider is defined at bootstrap we set the value for runtime i18n (ivy)
-      const localeId = moduleRef.injector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
-      setLocaleId(localeId);
       moduleRef.onDestroy(() => remove(this._modules, moduleRef));
       ngZone !.runOutsideAngular(
           () => ngZone !.onError.subscribe(
@@ -274,6 +310,11 @@ export class PlatformRef {
         const initStatus: ApplicationInitStatus = moduleRef.injector.get(ApplicationInitStatus);
         initStatus.runInitializers();
         return initStatus.donePromise.then(() => {
+          if (ivyEnabled) {
+            // If the `LOCALE_ID` provider is defined at bootstrap then we set the value for ivy
+            const localeId = moduleRef.injector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
+            setLocaleId(localeId || DEFAULT_LOCALE_ID);
+          }
           this._moduleDoBootstrap(moduleRef);
           return moduleRef;
         });
@@ -345,14 +386,17 @@ export class PlatformRef {
   get destroyed() { return this._destroyed; }
 }
 
-function getNgZone(ngZoneOption?: NgZone | 'zone.js' | 'noop'): NgZone {
+function getNgZone(
+    ngZoneOption: NgZone | 'zone.js' | 'noop' | undefined, ngZoneEventCoalescing: boolean): NgZone {
   let ngZone: NgZone;
 
   if (ngZoneOption === 'noop') {
     ngZone = new NoopNgZone();
   } else {
-    ngZone = (ngZoneOption === 'zone.js' ? undefined : ngZoneOption) ||
-        new NgZone({enableLongStackTrace: isDevMode()});
+    ngZone = (ngZoneOption === 'zone.js' ? undefined : ngZoneOption) || new NgZone({
+               enableLongStackTrace: isDevMode(),
+               shouldCoalesceEventChangeDetection: ngZoneEventCoalescing
+             });
   }
   return ngZone;
 }
@@ -482,7 +526,6 @@ function optionsReducer<T extends Object>(dst: any, objs: T | T[]): T {
 @Injectable()
 export class ApplicationRef {
   /** @internal */
-  static _tickScope: WtfScopeFn = wtfCreateScope('ApplicationRef#tick()');
   private _bootstrapListeners: ((compRef: ComponentRef<any>) => void)[] = [];
   private _views: InternalViewRef[] = [];
   private _runningTick: boolean = false;
@@ -598,7 +641,8 @@ export class ApplicationRef {
     this.componentTypes.push(componentFactory.componentType);
 
     // Create a factory associated with the current module if it's not bound to some other
-    const ngModule = isBoundToModule(componentFactory) ? null : this._injector.get(NgModuleRef);
+    const ngModule =
+        isBoundToModule(componentFactory) ? undefined : this._injector.get(NgModuleRef);
     const selectorOrNode = rootSelectorOrNode || componentFactory.selector;
     const compRef = componentFactory.create(Injector.NULL, [], selectorOrNode, ngModule);
 
@@ -632,7 +676,6 @@ export class ApplicationRef {
       throw new Error('ApplicationRef.tick is called recursively');
     }
 
-    const scope = ApplicationRef._tickScope();
     try {
       this._runningTick = true;
       for (let view of this._views) {
@@ -648,7 +691,6 @@ export class ApplicationRef {
       this._zone.runOutsideAngular(() => this._exceptionHandler.handleError(e));
     } finally {
       this._runningTick = false;
-      wtfLeave(scope);
     }
   }
 

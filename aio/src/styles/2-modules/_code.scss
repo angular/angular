@@ -1,6 +1,11 @@
-code-example, code-tabs {
+code-example,
+code-tabs {
     clear: both;
     display: block;
+
+    ol {
+      list-style: decimal;
+    }
 }
 
 code-example {

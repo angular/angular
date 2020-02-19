@@ -44,7 +44,7 @@ describe('compiler compliance: bindings', () => {
           $i0$.ɵɵelementEnd();
         }
         if (rf & 2) {
-          $r3$.ɵɵselect(1);
+          $r3$.ɵɵadvance(1);
           $i0$.ɵɵtextInterpolate1("Hello ", $ctx$.name, "");
         }
       }`;
@@ -74,11 +74,11 @@ describe('compiler compliance: bindings', () => {
       };
 
       const template = `
-      const $e0_attrs$ = [${AttributeMarker.Bindings}, "title"];
       …
+      consts: [[${AttributeMarker.Bindings}, "title"]],
       template:function MyComponent_Template(rf, $ctx$){
         if (rf & 1) {
-          $i0$.ɵɵelement(0, "a", $e0_attrs$);
+          $i0$.ɵɵelement(0, "a", 0);
         }
         if (rf & 2) {
           $i0$.ɵɵproperty("title", $ctx$.title);
@@ -108,11 +108,11 @@ describe('compiler compliance: bindings', () => {
       };
 
       const template = `
-      const $e0_attrs$ = [${AttributeMarker.Bindings}, "title"];
       …
+      consts: [[${AttributeMarker.Bindings}, "title"]],
       template:function MyComponent_Template(rf, $ctx$){
         if (rf & 1) {
-          $i0$.ɵɵelement(0, "a", $e0_attrs$);
+          $i0$.ɵɵelement(0, "a", 0);
         }
         if (rf & 2) {
           $i0$.ɵɵpropertyInterpolate1("title", "Hello ", $ctx$.name, "");
@@ -162,13 +162,13 @@ describe('compiler compliance: bindings', () => {
          };
 
          const template = `
-      const $c0$ = [${AttributeMarker.Bindings}, "for"];
+      consts: [[${AttributeMarker.Bindings}, "for"]]
 
       // ...
 
       function MyComponent_Template(rf, ctx) {
         if (rf & 1) {
-            $i0$.ɵɵelement(0, "label", _c0);
+            $i0$.ɵɵelement(0, "label", 0);
         }
         if (rf & 2) {
             $i0$.ɵɵproperty("for", ctx.forValue);
@@ -360,9 +360,9 @@ describe('compiler compliance: bindings', () => {
             …
             if (rf & 2) {
               $r3$.ɵɵproperty("title", ctx.myTitle)("id", ctx.buttonId)("tabindex", 1);
-              $r3$.ɵɵselect(1);
+              $r3$.ɵɵadvance(1);
               $r3$.ɵɵproperty("id", 1)("title", "hello")("someProp", 1 + 2);
-              $r3$.ɵɵselect(2);
+              $r3$.ɵɵadvance(1);
               $r3$.ɵɵproperty("prop", "one")("otherProp", 2);
             }
           }
@@ -397,7 +397,7 @@ describe('compiler compliance: bindings', () => {
             …
             if (rf & 2) {
               $r3$.ɵɵproperty("title", ctx.myTitle)("id", ctx.buttonId)("tabindex", 1);
-              $r3$.ɵɵselect(1);
+              $r3$.ɵɵadvance(1);
               $r3$.ɵɵproperty("id", 1)("title", "hello")("someProp", 1 + 2);
             }
           }
@@ -566,9 +566,9 @@ describe('compiler compliance: bindings', () => {
             …
             if (rf & 2) {
               $r3$.ɵɵattribute("title", ctx.myTitle)("id", ctx.buttonId)("tabindex", 1);
-              $r3$.ɵɵselect(1);
+              $r3$.ɵɵadvance(1);
               $r3$.ɵɵattribute("id", 1)("title", "hello")("some-attr", 1 + 2);
-              $r3$.ɵɵselect(2);
+              $r3$.ɵɵadvance(1);
               $r3$.ɵɵattribute("some-attr", "one")("some-other-attr", 2);
             }
           }
@@ -603,13 +603,48 @@ describe('compiler compliance: bindings', () => {
             …
             if (rf & 2) {
               $r3$.ɵɵattribute("title", ctx.myTitle)("id", ctx.buttonId)("tabindex", 1);
-              $r3$.ɵɵselect(1);
+              $r3$.ɵɵadvance(1);
               $r3$.ɵɵattribute("id", 1)("title", "hello")("some-attr", 1 + 2);
             }
           }
         `;
 
       expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should exclude attribute bindings from the attributes array', () => {
+      const files: MockDirectory = {
+        app: {
+          'example.ts': `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({
+            selector: 'my-app',
+            template: \`<a
+              target="_blank"
+              [title]="1"
+              [attr.foo]="'one'"
+              (customEvent)="doThings()"
+              [attr.bar]="'two'"
+              [id]="2"
+              aria-label="link"
+              [attr.baz]="three"></a>\`
+          })
+          export class MyComponent {
+            doThings() {}
+          }
+
+          @NgModule({declarations: [MyComponent]})
+          export class MyModule {}`
+        }
+      };
+
+      const template = `
+        consts: [["target", "_blank", "aria-label", "link", ${AttributeMarker.Bindings}, "title", "id", "customEvent"]],
+        …
+      `;
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect attribute array');
     });
 
   });
@@ -633,16 +668,13 @@ describe('compiler compliance: bindings', () => {
       };
 
       const HostBindingDirDeclaration = `
-        HostBindingDir.ngDirectiveDef = $r3$.ɵɵdefineDirective({
-          type: HostBindingDir,
-          selectors: [["", "hostBindingDir", ""]],
-          factory: function HostBindingDir_Factory(t) { return new (t || HostBindingDir)(); },
-          hostBindings: function HostBindingDir_HostBindings(rf, ctx, elIndex) {
-            if (rf & 1) {
-              $r3$.ɵɵallocHostVars(1);
-            }
+      HostBindingDir.ɵdir = $r3$.ɵɵdefineDirective({
+        type: HostBindingDir,
+        selectors: [["", "hostBindingDir", ""]],
+          hostVars: 1,
+          hostBindings: function HostBindingDir_HostBindings(rf, ctx) {
             if (rf & 2) {
-              $r3$.ɵɵproperty("id", ctx.dirId, null, true);
+              $r3$.ɵɵhostProperty("id", ctx.dirId);
             }
           }
         });
@@ -680,19 +712,16 @@ describe('compiler compliance: bindings', () => {
       const HostBindingCompDeclaration = `
         const $ff$ = function ($v$) { return ["red", $v$]; };
         …
-        HostBindingComp.ngComponentDef = $r3$.ɵɵdefineComponent({
+        HostBindingComp.ɵcmp = $r3$.ɵɵdefineComponent({
           type: HostBindingComp,
           selectors: [["host-binding-comp"]],
-          factory: function HostBindingComp_Factory(t) { return new (t || HostBindingComp)(); },
-          hostBindings: function HostBindingComp_HostBindings(rf, ctx, elIndex) {
-            if (rf & 1) {
-              $r3$.ɵɵallocHostVars(3);
-            }
+          hostVars: 3,
+          hostBindings: function HostBindingComp_HostBindings(rf, ctx) {
             if (rf & 2) {
-              $r3$.ɵɵproperty("id", $r3$.ɵɵpureFunction1(1, $ff$, ctx.id), null, true);
+              $r3$.ɵɵhostProperty("id", $r3$.ɵɵpureFunction1(1, $ff$, ctx.id));
             }
           },
-          consts: 0,
+          decls: 0,
           vars: 0,
           template: function HostBindingComp_Template(rf, ctx) {},
           encapsulation: 2
@@ -728,14 +757,11 @@ describe('compiler compliance: bindings', () => {
       };
 
       const HostAttributeDirDeclaration = `
-        HostAttributeDir.ngDirectiveDef = $r3$.ɵɵdefineDirective({
+        HostAttributeDir.ɵdir = $r3$.ɵɵdefineDirective({
           type: HostAttributeDir,
           selectors: [["", "hostAttributeDir", ""]],
-          factory: function HostAttributeDir_Factory(t) { return new (t || HostAttributeDir)(); },
-          hostBindings: function HostAttributeDir_HostBindings(rf, ctx, elIndex) {
-            if (rf & 1) {
-              $r3$.ɵɵallocHostVars(1);
-            }
+          hostVars: 1,
+          hostBindings: function HostAttributeDir_HostBindings(rf, ctx) {
             if (rf & 2) {
               $r3$.ɵɵattribute("required", ctx.required);
             }
@@ -771,17 +797,10 @@ describe('compiler compliance: bindings', () => {
       };
 
       const HostAttributeDirDeclaration = `
-        const $c0$ = ["aria-label", "label"];
-        …
-        HostAttributeDir.ngDirectiveDef = $r3$.ɵɵdefineDirective({
+        HostAttributeDir.ɵdir = $r3$.ɵɵdefineDirective({
           type: HostAttributeDir,
           selectors: [["", "hostAttributeDir", ""]],
-          factory: function HostAttributeDir_Factory(t) { return new (t || HostAttributeDir)(); },
-          hostBindings: function HostAttributeDir_HostBindings(rf, ctx, elIndex) {
-            if (rf & 1) {
-              $r3$.ɵɵelementHostAttrs($c0$);
-            }
-          }
+          hostAttrs: ["aria-label", "label"]
         });
       `;
 
@@ -828,33 +847,20 @@ describe('compiler compliance: bindings', () => {
       };
 
       const CompAndDirDeclaration = `
-        const $c0$ = ["title", "hello there from component", ${AttributeMarker.Styles}, "opacity", "1"];
-        const $c1$ = ["title", "hello there from directive", ${AttributeMarker.Classes}, "one", "two", ${AttributeMarker.Styles}, "width", "200px", "height", "500px"];
-        …
-        HostAttributeComp.ngComponentDef = $r3$.ɵɵdefineComponent({
+        HostAttributeComp.ɵcmp = $r3$.ɵɵdefineComponent({
           type: HostAttributeComp,
           selectors: [["my-host-attribute-component"]],
-          factory: function HostAttributeComp_Factory(t) { return new (t || HostAttributeComp)(); },
-          hostBindings: function HostAttributeComp_HostBindings(rf, ctx, elIndex) {
-            if (rf & 1) {
-              $r3$.ɵɵelementHostAttrs($c0$);
-              …
-            }
-            …
-          }
+          hostAttrs: ["title", "hello there from component", ${AttributeMarker.Styles}, "opacity", "1"],
         …
-        HostAttributeDir.ngDirectiveDef = $r3$.ɵɵdefineDirective({
+        HostAttributeDir.ɵdir = $r3$.ɵɵdefineDirective({
           type: HostAttributeDir,
           selectors: [["", "hostAttributeDir", ""]],
-          factory: function HostAttributeDir_Factory(t) { return new (t || HostAttributeDir)(); },
-          hostBindings: function HostAttributeDir_HostBindings(rf, ctx, elIndex) {
-            if (rf & 1) {
-              $r3$.ɵɵelementHostAttrs($c1$);
-              …
-            }
+          hostAttrs: ["title", "hello there from directive", ${AttributeMarker.Classes}, "one", "two", ${AttributeMarker.Styles}, "width", "200px", "height", "500px"],
+          hostVars: 4,
+          hostBindings: function HostAttributeDir_HostBindings(rf, ctx) {
             …
           }
-      `;
+    `;
 
       const result = compile(files, angularFiles);
       const source = result.source;
@@ -885,10 +891,10 @@ describe('compiler compliance: bindings', () => {
       const result = compile(files, angularFiles);
       const template = `
           …
-          hostBindings: function MyDirective_HostBindings(rf, ctx, elIndex) {
+          hostBindings: function MyDirective_HostBindings(rf, ctx) {
             …
             if (rf & 2) {
-              $r3$.ɵɵproperty("title", ctx.myTitle, null, true)("tabindex", 1, null, true)("id", ctx.myId, null, true);
+              $r3$.ɵɵhostProperty("title", ctx.myTitle)("tabindex", 1)("id", ctx.myId);
             }
           }
         `;
@@ -921,10 +927,10 @@ describe('compiler compliance: bindings', () => {
       const result = compile(files, angularFiles);
       const template = `
           …
-          hostBindings: function MyDirective_HostBindings(rf, ctx, elIndex) {
+          hostBindings: function MyDirective_HostBindings(rf, ctx) {
             …
             if (rf & 2) {
-              $r3$.ɵɵproperty("tabindex", 1, null, true)("title", ctx.myTitle, null, true)("id", ctx.myId, null, true);
+              $r3$.ɵɵhostProperty("tabindex", 1)("title", ctx.myTitle)("id", ctx.myId);
             }
           }
         `;
@@ -953,10 +959,10 @@ describe('compiler compliance: bindings', () => {
       const result = compile(files, angularFiles);
       const template = `
           …
-          hostBindings: function MyDirective_HostBindings(rf, ctx, elIndex) {
+          hostBindings: function MyDirective_HostBindings(rf, ctx) {
             …
             if (rf & 2) {
-              $r3$.ɵɵproperty("title", "my title", null, true)("id", "my-id", null, true);
+              $r3$.ɵɵhostProperty("title", "my title")("id", "my-id");
               $r3$.ɵɵattribute("tabindex", 1);
             }
           }
@@ -989,10 +995,10 @@ describe('compiler compliance: bindings', () => {
       const result = compile(files, angularFiles);
       const template = `
         …
-        hostBindings: function MyDirective_HostBindings(rf, ctx, elIndex) {
+        hostBindings: function MyDirective_HostBindings(rf, ctx) {
           …
           if (rf & 2) {
-            $r3$.ɵɵupdateSyntheticHostBinding("@expand", ctx.expandedState, null, true)("@fadeOut", true, null, true)("@shrink", ctx.isSmall, null, true);
+            $r3$.ɵɵupdateSyntheticHostBinding("@expand", ctx.expandedState)("@fadeOut", true)("@shrink", ctx.isSmall);
           }
         }
       `;
@@ -1024,7 +1030,7 @@ describe('compiler compliance: bindings', () => {
       const result = compile(files, angularFiles);
       const template = `
           …
-          hostBindings: function MyDirective_HostBindings(rf, ctx, elIndex) {
+          hostBindings: function MyDirective_HostBindings(rf, ctx) {
             …
             if (rf & 2) {
               $r3$.ɵɵattribute("title", ctx.myTitle)("tabindex", 1)("id", ctx.myId);
@@ -1060,7 +1066,7 @@ describe('compiler compliance: bindings', () => {
       const result = compile(files, angularFiles);
       const template = `
           …
-          hostBindings: function MyDirective_HostBindings(rf, ctx, elIndex) {
+          hostBindings: function MyDirective_HostBindings(rf, ctx) {
             …
             if (rf & 2) {
               $r3$.ɵɵattribute("tabindex", 1)("title", ctx.myTitle)("id", ctx.myId);
@@ -1092,15 +1098,122 @@ describe('compiler compliance: bindings', () => {
       const result = compile(files, angularFiles);
       const template = `
             …
-            hostBindings: function MyDirective_HostBindings(rf, ctx, elIndex) {
+            hostBindings: function MyDirective_HostBindings(rf, ctx) {
               …
               if (rf & 2) {
-                $r3$.ɵɵproperty("tabindex", 1, null, true);
+                $r3$.ɵɵhostProperty("tabindex", 1);
                 $r3$.ɵɵattribute("title", "my title")("id", "my-id");
               }
             }
           `;
 
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should chain multiple host listeners into a single instruction', () => {
+      const files = {
+        app: {
+          'example.ts': `
+            import {Directive, HostListener} from '@angular/core';
+
+            @Directive({
+              selector: '[my-dir]',
+              host: {
+                '(mousedown)': 'mousedown()',
+                '(mouseup)': 'mouseup()',
+              }
+            })
+            export class MyDirective {
+              mousedown() {}
+              mouseup() {}
+
+              @HostListener('click')
+              click() {}
+            }`
+        }
+      };
+
+      const result = compile(files, angularFiles);
+      const template = `
+          …
+          hostBindings: function MyDirective_HostBindings(rf, ctx) {
+            if (rf & 1) {
+              $r3$.ɵɵlistener("mousedown", function MyDirective_mousedown_HostBindingHandler($event) { return ctx.mousedown(); })("mouseup", function MyDirective_mouseup_HostBindingHandler($event) { return ctx.mouseup(); })("click", function MyDirective_click_HostBindingHandler($event) { return ctx.click(); });
+            }
+          }
+        `;
+
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should chain multiple synthetic host listeners into a single instruction', () => {
+      const files = {
+        app: {
+          'example.ts': `
+            import {Component, HostListener} from '@angular/core';
+
+            @Component({
+              selector: 'my-comp',
+              template: '',
+              host: {
+                '(@animation.done)': 'done()',
+              }
+            })
+            export class MyComponent {
+              @HostListener('@animation.start')
+              start() {}
+            }`
+        }
+      };
+
+      const result = compile(files, angularFiles);
+      const template = `
+          …
+          hostBindings: function MyComponent_HostBindings(rf, ctx) {
+            if (rf & 1) {
+              $r3$.ɵɵcomponentHostSyntheticListener("@animation.done", function MyComponent_animation_animation_done_HostBindingHandler($event) { return ctx.done(); })("@animation.start", function MyComponent_animation_animation_start_HostBindingHandler($event) { return ctx.start(); });
+            }
+          }
+        `;
+
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should chain multiple regular and synthetic host listeners into two instructions', () => {
+      const files = {
+        app: {
+          'example.ts': `
+            import {Component, HostListener} from '@angular/core';
+
+            @Component({
+              selector: 'my-comp',
+              template: '',
+              host: {
+                '(mousedown)': 'mousedown()',
+                '(@animation.done)': 'done()',
+                '(mouseup)': 'mouseup()',
+              }
+            })
+            export class MyComponent {
+              @HostListener('@animation.start')
+              start() {}
+
+              @HostListener('click')
+              click() {}
+            }`
+        }
+      };
+
+      const result = compile(files, angularFiles);
+      const template = `
+        …
+        hostBindings: function MyComponent_HostBindings(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵɵcomponentHostSyntheticListener("@animation.done", function MyComponent_animation_animation_done_HostBindingHandler($event) { return ctx.done(); })("@animation.start", function MyComponent_animation_animation_start_HostBindingHandler($event) { return ctx.start(); });
+            $r3$.ɵɵlistener("mousedown", function MyComponent_mousedown_HostBindingHandler($event) { return ctx.mousedown(); })("mouseup", function MyComponent_mouseup_HostBindingHandler($event) { return ctx.mouseup(); })("click", function MyComponent_click_HostBindingHandler($event) { return ctx.click(); });
+          }
+        }
+      `;
       expectEmit(result.source, template, 'Incorrect template');
     });
 
@@ -1143,23 +1256,23 @@ describe('compiler compliance: bindings', () => {
       …
         if (rf & 2) {
           i0.ɵɵpropertyInterpolateV("title", ["a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h", ctx.eight, "i", ctx.nine, "j"]);
-          i0.ɵɵselect(1);
+          i0.ɵɵadvance(1);
           i0.ɵɵpropertyInterpolate8("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h", ctx.eight, "i");
-          i0.ɵɵselect(2);
+          i0.ɵɵadvance(1);
           i0.ɵɵpropertyInterpolate7("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h");
-          i0.ɵɵselect(3);
+          i0.ɵɵadvance(1);
           i0.ɵɵpropertyInterpolate6("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g");
-          i0.ɵɵselect(4);
+          i0.ɵɵadvance(1);
           i0.ɵɵpropertyInterpolate5("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f");
-          i0.ɵɵselect(5);
+          i0.ɵɵadvance(1);
           i0.ɵɵpropertyInterpolate4("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e");
-          i0.ɵɵselect(6);
+          i0.ɵɵadvance(1);
           i0.ɵɵpropertyInterpolate3("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d");
-          i0.ɵɵselect(7);
+          i0.ɵɵadvance(1);
           i0.ɵɵpropertyInterpolate2("title", "a", ctx.one, "b", ctx.two, "c");
-          i0.ɵɵselect(8);
+          i0.ɵɵadvance(1);
           i0.ɵɵpropertyInterpolate1("title", "a", ctx.one, "b");
-          i0.ɵɵselect(9);
+          i0.ɵɵadvance(1);
           i0.ɵɵpropertyInterpolate("title", ctx.one);
       }
       …
@@ -1187,23 +1300,23 @@ describe('compiler compliance: bindings', () => {
       …
         if (rf & 2) {
           i0.ɵɵattributeInterpolateV("title", ["a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h", ctx.eight, "i", ctx.nine, "j"]);
-          i0.ɵɵselect(1);
+          i0.ɵɵadvance(1);
           i0.ɵɵattributeInterpolate8("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h", ctx.eight, "i");
-          i0.ɵɵselect(2);
+          i0.ɵɵadvance(1);
           i0.ɵɵattributeInterpolate7("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h");
-          i0.ɵɵselect(3);
+          i0.ɵɵadvance(1);
           i0.ɵɵattributeInterpolate6("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g");
-          i0.ɵɵselect(4);
+          i0.ɵɵadvance(1);
           i0.ɵɵattributeInterpolate5("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f");
-          i0.ɵɵselect(5);
+          i0.ɵɵadvance(1);
           i0.ɵɵattributeInterpolate4("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e");
-          i0.ɵɵselect(6);
+          i0.ɵɵadvance(1);
           i0.ɵɵattributeInterpolate3("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d");
-          i0.ɵɵselect(7);
+          i0.ɵɵadvance(1);
           i0.ɵɵattributeInterpolate2("title", "a", ctx.one, "b", ctx.two, "c");
-          i0.ɵɵselect(8);
+          i0.ɵɵadvance(1);
           i0.ɵɵattributeInterpolate1("title", "a", ctx.one, "b");
-          i0.ɵɵselect(9);
+          i0.ɵɵadvance(1);
           i0.ɵɵattribute("title", ctx.one);
       }
       …
@@ -1221,12 +1334,11 @@ describe('compiler compliance: bindings', () => {
       `);
 
       const template = `
-        const $_c0$ = ["id", "my-id"];
-        const $_c1$ = ["myRef", ""];
         …
+        consts: [["id", "my-id"], ["myRef", ""]],
         template:function MyComponent_Template(rf, $ctx$){
           if (rf & 1) {
-            $i0$.ɵɵelementStart(0, "b", $_c0$, $_c1$);
+            $i0$.ɵɵelementStart(0, "b", 0, 1);
             $i0$.ɵɵdisableBindings();
             $i0$.ɵɵelementStart(2, "i");
             $i0$.ɵɵtext(3, "Hello {{ name }}!");
@@ -1237,7 +1349,7 @@ describe('compiler compliance: bindings', () => {
           }
           if (rf & 2) {
             const $_r0$ = $i0$.ɵɵreference(1);
-            $r3$.ɵɵselect(4);
+            $r3$.ɵɵadvance(4);
             $i0$.ɵɵtextInterpolate1(" ", $_r0$.id, " ");
           }
         }
@@ -1254,13 +1366,13 @@ describe('compiler compliance: bindings', () => {
       `);
 
       const template = `
-        const $_c0$ = ["value", "one", "#myInput", ""];
         …
+        consts: [["value", "one", "#myInput", ""]],
         template:function MyComponent_Template(rf, $ctx$){
           if (rf & 1) {
             $i0$.ɵɵelementStart(0, "div");
             $i0$.ɵɵdisableBindings();
-            $i0$.ɵɵelement(1, "input", $_c0$);
+            $i0$.ɵɵelement(1, "input", 0);
             $i0$.ɵɵtext(2, " {{ myInput.value }} ");
             $i0$.ɵɵenableBindings();
             $i0$.ɵɵelementEnd();
@@ -1278,13 +1390,13 @@ describe('compiler compliance: bindings', () => {
       `);
 
       const template = `
-        const $_c0$ = ["[id]", "my-id", "(click)", "onclick"];
         …
+        consts: [["[id]", "my-id", "(click)", "onclick"]],
         template:function MyComponent_Template(rf, $ctx$){
           if (rf & 1) {
             $i0$.ɵɵelementStart(0, "div");
             $i0$.ɵɵdisableBindings();
-            $i0$.ɵɵelement(1, "div", $_c0$);
+            $i0$.ɵɵelement(1, "div", 0);
             $i0$.ɵɵenableBindings();
             $i0$.ɵɵelementEnd();
         }

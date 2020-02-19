@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 import {AbsoluteFsPath, FileSystem, join, resolve} from '../../../src/ngtsc/file_system';
 import {parseStatementForUmdModule} from '../host/umd_host';
 import {Logger} from '../logging/logger';
+import {resolveFileWithPostfixes} from '../utils';
 import {NgccConfiguration, NgccEntryPointConfig} from './configuration';
 
 /**
@@ -22,7 +23,7 @@ export type EntryPointFormat = 'esm5' | 'esm2015' | 'umd' | 'commonjs';
  * An object containing information about an entry-point, including paths
  * to each of the possible entry-point formats.
  */
-export interface EntryPoint {
+export interface EntryPoint extends JsonObject {
   /** The name of the package (e.g. `@angular/core`). */
   name: string;
   /** The parsed package.json file for this entry-point. */
@@ -35,9 +36,18 @@ export interface EntryPoint {
   typings: AbsoluteFsPath;
   /** Is this EntryPoint compiled with the Angular View Engine compiler? */
   compiledByAngular: boolean;
+  /** Should ngcc ignore missing dependencies and process this entrypoint anyway? */
+  ignoreMissingDependencies: boolean;
+  /** Should ngcc generate deep re-exports for this entrypoint? */
+  generateDeepReexports: boolean;
 }
 
-export interface PackageJsonFormatProperties {
+export type JsonPrimitive = string | number | boolean | null;
+export type JsonValue = JsonPrimitive | JsonArray | JsonObject | undefined;
+export interface JsonArray extends Array<JsonValue> {}
+export interface JsonObject { [key: string]: JsonValue; }
+
+export interface PackageJsonFormatPropertiesMap {
   fesm2015?: string;
   fesm5?: string;
   es2015?: string;  // if exists then it is actually FESM2015
@@ -49,15 +59,18 @@ export interface PackageJsonFormatProperties {
   typings?: string;  // TypeScript .d.ts files
 }
 
+export type PackageJsonFormatProperties = keyof PackageJsonFormatPropertiesMap;
+
 /**
  * The properties that may be loaded from the `package.json` file.
  */
-export interface EntryPointPackageJson extends PackageJsonFormatProperties {
+export interface EntryPointPackageJson extends JsonObject, PackageJsonFormatPropertiesMap {
   name: string;
-  __processed_by_ivy_ngcc__?: {[key: string]: string};
+  scripts?: Record<string, string>;
+  __processed_by_ivy_ngcc__?: Record<string, string>;
 }
 
-export type EntryPointJsonProperty = keyof(PackageJsonFormatProperties);
+export type EntryPointJsonProperty = Exclude<PackageJsonFormatProperties, 'types'|'typings'>;
 // We need to keep the elements of this const and the `EntryPointJsonProperty` type in sync.
 export const SUPPORTED_FORMAT_PROPERTIES: EntryPointJsonProperty[] =
     ['fesm2015', 'fesm5', 'es2015', 'esm2015', 'esm5', 'main', 'module'];
@@ -73,7 +86,9 @@ export function getEntryPointInfo(
     fs: FileSystem, config: NgccConfiguration, logger: Logger, packagePath: AbsoluteFsPath,
     entryPointPath: AbsoluteFsPath): EntryPoint|null {
   const packageJsonPath = resolve(entryPointPath, 'package.json');
-  const entryPointConfig = config.getConfig(packagePath).entryPoints[entryPointPath];
+  const packageVersion = getPackageVersion(fs, packageJsonPath);
+  const entryPointConfig =
+      config.getConfig(packagePath, packageVersion).entryPoints[entryPointPath];
   if (entryPointConfig === undefined && !fs.exists(packageJsonPath)) {
     return null;
   }
@@ -93,7 +108,7 @@ export function getEntryPointInfo(
   // We must have a typings property
   const typings = entryPointPackageJson.typings || entryPointPackageJson.types ||
       guessTypingsFromPackageJson(fs, entryPointPath, entryPointPackageJson);
-  if (!typings) {
+  if (typeof typings !== 'string') {
     return null;
   }
 
@@ -109,6 +124,10 @@ export function getEntryPointInfo(
     package: packagePath,
     path: entryPointPath,
     typings: resolve(entryPointPath, typings), compiledByAngular,
+    ignoreMissingDependencies:
+        entryPointConfig !== undefined ? !!entryPointConfig.ignoreMissingDependencies : false,
+    generateDeepReexports:
+        entryPointConfig !== undefined ? !!entryPointConfig.generateDeepReexports : false,
   };
 
   return entryPointInfo;
@@ -121,7 +140,8 @@ export function getEntryPointInfo(
  * @returns An entry-point format or `undefined` if none match the given property.
  */
 export function getEntryPointFormat(
-    fs: FileSystem, entryPoint: EntryPoint, property: string): EntryPointFormat|undefined {
+    fs: FileSystem, entryPoint: EntryPoint, property: EntryPointJsonProperty): EntryPointFormat|
+    undefined {
   switch (property) {
     case 'fesm2015':
       return 'esm2015';
@@ -167,8 +187,12 @@ function loadEntryPointPackage(
 }
 
 function isUmdModule(fs: FileSystem, sourceFilePath: AbsoluteFsPath): boolean {
+  const resolvedPath = resolveFileWithPostfixes(fs, sourceFilePath, ['', '.js', '/index.js']);
+  if (resolvedPath === null) {
+    return false;
+  }
   const sourceFile =
-      ts.createSourceFile(sourceFilePath, fs.readFile(sourceFilePath), ts.ScriptTarget.ES5);
+      ts.createSourceFile(sourceFilePath, fs.readFile(resolvedPath), ts.ScriptTarget.ES5);
   return sourceFile.statements.length > 0 &&
       parseStatementForUmdModule(sourceFile.statements[0]) !== null;
 }
@@ -207,6 +231,23 @@ function guessTypingsFromPackageJson(
     if (fs.exists(typingsPath)) {
       return typingsPath;
     }
+  }
+  return null;
+}
+
+/**
+ * Find the version of the package at `packageJsonPath`.
+ *
+ * @returns the version string or `null` if the package.json does not exist or is invalid.
+ */
+function getPackageVersion(fs: FileSystem, packageJsonPath: AbsoluteFsPath): string|null {
+  try {
+    if (fs.exists(packageJsonPath)) {
+      const packageJson = JSON.parse(fs.readFile(packageJsonPath));
+      return packageJson['version'] || null;
+    }
+  } catch {
+    // Do nothing
   }
   return null;
 }

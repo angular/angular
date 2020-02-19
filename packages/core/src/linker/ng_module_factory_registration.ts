@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+
 import {Type} from '../interface/type';
+import {autoRegisterModuleById} from '../render3/definition';
 import {NgModuleType} from '../render3/ng_module_ref';
 import {stringify} from '../util/stringify';
 
@@ -38,19 +40,19 @@ function assertSameOrNotExisting(id: string, type: Type<any>| null, incoming: Ty
 }
 
 export function registerNgModuleType(ngModuleType: NgModuleType) {
-  if (ngModuleType.ngModuleDef.id !== null) {
-    const id = ngModuleType.ngModuleDef.id;
+  if (ngModuleType.ɵmod.id !== null) {
+    const id = ngModuleType.ɵmod.id;
     const existing = modules.get(id) as NgModuleType | null;
     assertSameOrNotExisting(id, existing, ngModuleType);
     modules.set(id, ngModuleType);
   }
 
-  let imports = ngModuleType.ngModuleDef.imports;
+  let imports = ngModuleType.ɵmod.imports;
   if (imports instanceof Function) {
     imports = imports();
   }
   if (imports) {
-    imports.forEach((i: NgModuleType<any>) => registerNgModuleType(i));
+    imports.forEach(i => registerNgModuleType(i as NgModuleType));
   }
 }
 
@@ -59,5 +61,5 @@ export function clearModulesForTest(): void {
 }
 
 export function getRegisteredNgModuleType(id: string) {
-  return modules.get(id);
+  return modules.get(id) || autoRegisterModuleById[id];
 }

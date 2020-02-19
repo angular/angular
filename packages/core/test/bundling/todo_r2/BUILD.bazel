@@ -1,8 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "jasmine_node_test", "ng_module", "ng_rollup_bundle", "ts_library")
-load("@build_bazel_rules_nodejs//:defs.bzl", "http_server")
-load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
+load("//tools:defaults.bzl", "jasmine_node_test", "ng_module", "ng_rollup_bundle", "ts_devserver", "ts_library")
+load("@npm//http-server:index.bzl", "http_server")
 
 ng_module(
     name = "todo",
@@ -84,8 +83,13 @@ genrule(
 
 ts_devserver(
     name = "devserver",
-    entry_module = "angular/packages/core/test/bundling/todo_r2/index",
-    serving_path = "/bundle.min.js",
+    entry_module = "@angular/core/test/bundling/todo_r2",
+    scripts = [
+        "//tools/rxjs:rxjs_umd_modules",
+    ],
+    # Use a serving_path that matches the common static index.html used
+    # in both devserver & prodserver
+    serving_path = "/bundle.min.js.br",
     static_files = [
         "index.html",
         ":tslib",

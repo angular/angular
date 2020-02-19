@@ -115,7 +115,7 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
    * This is ZoneAwareError which processes the stack frame and cleans up extra frames as well as
    * adds zone information to it.
    */
-  function ZoneAwareError(): Error {
+  function ZoneAwareError(this: unknown | typeof NativeError): Error {
     // We always have to return native error otherwise the browser console will not work.
     let error: Error = NativeError.apply(this, arguments);
     // Save original stack trace
@@ -331,8 +331,9 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   // we need to detect all zone related frames, it will
   // exceed default stackTraceLimit, so we set it to
   // larger number here, and restore it after detect finish.
-  const originalStackTraceLimit = Error.stackTraceLimit;
-  Error.stackTraceLimit = 100;
+  // We cast through any so we don't need to depend on nodejs typings.
+  const originalStackTraceLimit = (Error as any).stackTraceLimit;
+  (Error as any).stackTraceLimit = 100;
   // we schedule event/micro/macro task, and invoke them
   // when onSchedule, so we can get all stack traces for
   // all kinds of tasks with one error thrown.
@@ -374,5 +375,5 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
     });
   });
 
-  Error.stackTraceLimit = originalStackTraceLimit;
+  (Error as any).stackTraceLimit = originalStackTraceLimit;
 });

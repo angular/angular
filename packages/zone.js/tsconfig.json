@@ -2,9 +2,6 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "es5",
-    "noImplicitAny": true,
-    "noImplicitReturns": false,
-    "noImplicitThis": false,
     "outDir": "build",
     "inlineSourceMap": true,
     "inlineSources": true,
@@ -19,7 +16,8 @@
       "es2015.promise",
       "es2015.symbol",
       "es2015.symbol.wellknown"
-    ]
+    ],
+    "typeRoots": ["node_modules/@types"],
   },
   "exclude": [
     "node_modules",

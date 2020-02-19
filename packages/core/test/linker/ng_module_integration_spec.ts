@@ -92,13 +92,6 @@ class SomePipe {
 class CompUsingModuleDirectiveAndPipe {
 }
 
-class DummyConsole implements Console {
-  public warnings: string[] = [];
-
-  log(message: string) {}
-  warn(message: string) { this.warnings.push(message); }
-}
-
 {
   if (ivyEnabled) {
     describe('ivy', () => { declareTests(); });
@@ -112,12 +105,8 @@ function declareTests(config?: {useJit: boolean}) {
   describe('NgModule', () => {
     let compiler: Compiler;
     let injector: Injector;
-    let console: DummyConsole;
 
-    beforeEach(() => {
-      console = new DummyConsole();
-      TestBed.configureCompiler({...config, providers: [{provide: Console, useValue: console}]});
-    });
+    beforeEach(() => { TestBed.configureCompiler(config || {}); });
 
     beforeEach(inject([Compiler, Injector], (_compiler: Compiler, _injector: Injector) => {
       compiler = _compiler;
@@ -136,7 +125,7 @@ function declareTests(config?: {useJit: boolean}) {
     }
 
     function createComp<T>(compType: Type<T>, moduleType: Type<any>): ComponentFixture<T> {
-      const componentDef = (compType as any).ngComponentDef;
+      const componentDef = (compType as any).ɵcmp;
       if (componentDef) {
         // Since we avoid Components/Directives/Pipes recompiling in case there are no overrides, we
         // may face a problem where previously compiled defs available to a given
@@ -261,9 +250,9 @@ function declareTests(config?: {useJit: boolean}) {
             expect(() => createModule(SomeModule)).toThrowError(/Can't bind to 'someUnknownProp'/);
           });
 
-      onlyInIvy('Unknown property error thrown during update mode, not creation mode')
+      onlyInIvy('Unknown property warning logged, instead of throwing an error')
           .it('should error on unknown bound properties on custom elements by default', () => {
-            @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
+            @Component({template: '<div [someUnknownProp]="true"></div>'})
             class ComponentUsingInvalidProperty {
             }
 
@@ -271,8 +260,10 @@ function declareTests(config?: {useJit: boolean}) {
             class SomeModule {
             }
 
+            const spy = spyOn(console, 'warn');
             const fixture = createComp(ComponentUsingInvalidProperty, SomeModule);
-            expect(() => fixture.detectChanges()).toThrowError(/Can't bind to 'someUnknownProp'/);
+            fixture.detectChanges();
+            expect(spy.calls.mostRecent().args[0]).toMatch(/Can't bind to 'someUnknownProp'/);
           });
 
       it('should not error on unknown bound properties on custom elements when using the CUSTOM_ELEMENTS_SCHEMA',
@@ -344,14 +335,14 @@ function declareTests(config?: {useJit: boolean}) {
           .it('should register a module even if not importing the .ngfactory file or calling create()',
               () => {
                 class ChildModule {
-                  static ngModuleDef = defineNgModule({
+                  static ɵmod = defineNgModule({
                     type: ChildModule,
                     id: 'child',
                   });
                 }
 
                 class Module {
-                  static ngModuleDef = defineNgModule({
+                  static ɵmod = defineNgModule({
                     type: Module,
                     id: 'test',
                     imports: [ChildModule],
@@ -1396,7 +1387,7 @@ function declareTests(config?: {useJit: boolean}) {
               }
 
               class Bar {
-                static ngInjectableDef: ɵɵInjectableDef<Bar> = ɵɵdefineInjectable({
+                static ɵprov: ɵɵInjectableDef<Bar> = ɵɵdefineInjectable({
                   token: Bar,
                   factory: () => new Bar(),
                   providedIn: SomeModule,
@@ -1429,7 +1420,7 @@ function declareTests(config?: {useJit: boolean}) {
               }
 
               class Bar {
-                static ngInjectableDef: ɵɵInjectableDef<Bar> = ɵɵdefineInjectable({
+                static ɵprov: ɵɵInjectableDef<Bar> = ɵɵdefineInjectable({
                   token: Bar,
                   factory: () => new Bar(),
                   providedIn: SomeModule,

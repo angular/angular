@@ -70,8 +70,7 @@ import {escapeRegExp, splitAtColon, stringify, utf8Encode} from '../src/util';
           ['\uDEEE', '\xED\xBB\xAE'],
           ['\uDFFF', '\xED\xBF\xBF'],
         ];
-        tests.forEach(
-            ([input, output]: [string, string]) => { expect(utf8Encode(input)).toEqual(output); });
+        tests.forEach(([input, output]) => { expect(utf8Encode(input)).toEqual(output); });
       });
     });
 

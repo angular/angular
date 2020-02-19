@@ -80,11 +80,19 @@ export function startCli() {
       }
 
       if (hasDiff) {
+        const bazelTarget = process.env['BAZEL_TARGET'];
         // Under bazel, give instructions how to use bazel run to accept the golden file.
-        if (!!process.env['BAZEL_TARGET']) {
-          console.error('\n\nAccept the new golden file:');
-          console.error(`  bazel run ${process.env['BAZEL_TARGET'].replace(/_bin$/, "")}.accept`);
+        if (bazelTarget) {
+          console.error('\n\nIf you modify a public API, you must accept the new golden file.');
+          console.error('\n\nTo do so, execute the following Bazel target:');
+          console.error(`  yarn bazel run ${bazelTarget.replace(/_bin$/, "")}.accept`);
+          if (process.env['TEST_WORKSPACE'] === 'angular') {
+            console.error('\n\nFor more information, see');
+            console.error(
+                '\n  https://github.com/angular/angular/blob/master/docs/PUBLIC_API.md#golden-files');
+          }
         }
+
         process.exit(1);
       }
     }

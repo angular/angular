@@ -8,11 +8,12 @@
 import {AUTO_STYLE, AnimationEvent, AnimationOptions, animate, animateChild, group, keyframes, query, state, style, transition, trigger, ɵPRE_STYLE as PRE_STYLE} from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine, ɵNoopAnimationDriver as NoopAnimationDriver} from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
+import {ɵgetDOM as getDOM} from '@angular/common';
 import {ChangeDetectorRef, Component, HostBinding, HostListener, Inject, RendererFactory2, ViewChild} from '@angular/core';
 import {TestBed, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 import {ɵDomRendererFactory2} from '@angular/platform-browser';
 import {ANIMATION_MODULE_TYPE, BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {hasStyle} from '@angular/platform-browser/testing/src/browser_util';
 import {ivyEnabled, modifiedInIvy} from '@angular/private/testing';
 
 const DEFAULT_NAMESPACE_ID = 'id';
@@ -202,7 +203,7 @@ const DEFAULT_COMPONENT_ID = '1';
              }
 
              TestBed.configureTestingModule({declarations: [Cmp]});
-             const engine = TestBed.get(ɵAnimationEngine);
+             const engine = TestBed.inject(ɵAnimationEngine);
              const fixture = TestBed.createComponent(Cmp);
              const cmp = fixture.componentInstance;
 
@@ -242,7 +243,7 @@ const DEFAULT_COMPONENT_ID = '1';
                declarations: [Cmp]
              });
 
-             const engine = TestBed.get(ɵAnimationEngine);
+             const engine = TestBed.inject(ɵAnimationEngine);
              const fixture = TestBed.createComponent(Cmp);
              const cmp = fixture.componentInstance;
 
@@ -274,7 +275,7 @@ const DEFAULT_COMPONENT_ID = '1';
              }
 
              TestBed.configureTestingModule({declarations: [Cmp]});
-             const engine = TestBed.get(ɵAnimationEngine);
+             const engine = TestBed.inject(ɵAnimationEngine);
              const fixture = TestBed.createComponent(Cmp);
              const cmp = fixture.componentInstance;
              cmp.exp = 'on';
@@ -314,10 +315,40 @@ const DEFAULT_COMPONENT_ID = '1';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
         cmp.exp = true;
+        fixture.detectChanges();
+        engine.flush();
+
+        expect(getLog().length).toEqual(1);
+        expect(getLog().pop() !.keyframes).toEqual([
+          {offset: 0, opacity: '0'}, {offset: 1, opacity: '1'}
+        ]);
+      });
+
+      // https://github.com/angular/angular/issues/32794
+      it('should support nested animation triggers', () => {
+        const REUSABLE_ANIMATION = [trigger(
+            'myAnimation',
+            [transition(
+                'void => *', [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])];
+
+        @Component({
+          selector: 'if-cmp',
+          template: `
+          <div @myAnimation></div>
+        `,
+          animations: [REUSABLE_ANIMATION],
+        })
+        class Cmp {
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+
+        const engine = TestBed.inject(ɵAnimationEngine);
+        const fixture = TestBed.createComponent(Cmp);
         fixture.detectChanges();
         engine.flush();
 
@@ -345,7 +376,7 @@ const DEFAULT_COMPONENT_ID = '1';
           ]
         })
         class Cmp {
-          @ViewChild('element', {static: false})
+          @ViewChild('element')
           element: any;
           exp: any = '';
         }
@@ -376,9 +407,8 @@ const DEFAULT_COMPONENT_ID = '1';
       it('should allow a transition to use a function to determine what method to run and expose any parameter values',
          () => {
            const transitionFn =
-               (fromState: string, toState: string, element: any, params: {[key: string]: any}) => {
-                 return params['doMatch'] == true;
-               };
+               (fromState: string, toState: string, element?: any,
+                params?: {[key: string]: any}) => { return params !['doMatch'] == true; };
 
            @Component({
              selector: 'if-cmp',
@@ -437,7 +467,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
         cmp.exp = 0;
@@ -482,7 +512,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -554,7 +584,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
            fixture.detectChanges();
@@ -591,7 +621,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -683,7 +713,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -735,7 +765,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -780,7 +810,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -835,7 +865,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
              TestBed.configureTestingModule({declarations: [Cmp]});
 
-             const engine = TestBed.get(ɵAnimationEngine);
+             const engine = TestBed.inject(ɵAnimationEngine);
              const fixture = TestBed.createComponent(Cmp);
              const cmp = fixture.componentInstance;
              fixture.detectChanges();
@@ -878,7 +908,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
              TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
 
-             const engine = TestBed.get(ɵAnimationEngine);
+             const engine = TestBed.inject(ɵAnimationEngine);
              const fixture = TestBed.createComponent(ParentCmp);
              const cmp = fixture.componentInstance;
              fixture.detectChanges();
@@ -900,6 +930,53 @@ const DEFAULT_COMPONENT_ID = '1';
 
              player.finish();
              expect(fixture.debugElement.nativeElement.children.length).toBe(0);
+           }));
+
+        it('should wait for child animations before removing parent', fakeAsync(() => {
+             @Component({
+               template: '<child-cmp *ngIf="exp" @parentTrigger></child-cmp>',
+               animations: [trigger(
+                   'parentTrigger', [transition(':leave', [group([query('@*', animateChild())])])])]
+             })
+             class ParentCmp {
+               exp = true;
+             }
+
+             @Component({
+               selector: 'child-cmp',
+               template: '<p @childTrigger>Hello there</p>',
+               animations: [trigger(
+                   'childTrigger',
+                   [transition(
+                       ':leave', [style({opacity: 1}), animate('200ms', style({opacity: 0}))])])]
+             })
+             class ChildCmp {
+             }
+
+             TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
+             const engine = TestBed.inject(ɵAnimationEngine);
+             const fixture = TestBed.createComponent(ParentCmp);
+
+             fixture.detectChanges();
+             engine.flush();
+             expect(getLog().length).toBe(0);
+
+             fixture.componentInstance.exp = false;
+             fixture.detectChanges();
+             expect(fixture.nativeElement.children.length).toBe(1);
+
+             engine.flush();
+             expect(getLog().length).toBe(1);
+
+             const player = getLog()[0];
+             expect(player.keyframes).toEqual([
+               {opacity: '1', offset: 0},
+               {opacity: '0', offset: 1},
+             ]);
+
+             player.finish();
+             flushMicrotasks();
+             expect(fixture.nativeElement.children.length).toBe(0);
            }));
 
         // animationRenderer => nonAnimationRenderer
@@ -928,7 +1005,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
              TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
 
-             const engine = TestBed.get(ɵAnimationEngine);
+             const engine = TestBed.inject(ɵAnimationEngine);
              const fixture = TestBed.createComponent(ParentCmp);
              const cmp = fixture.componentInstance;
              fixture.detectChanges();
@@ -984,7 +1061,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
              TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
 
-             const engine = TestBed.get(ɵAnimationEngine);
+             const engine = TestBed.inject(ɵAnimationEngine);
              const fixture = TestBed.createComponent(ParentCmp);
              const cmp = fixture.componentInstance;
              fixture.detectChanges();
@@ -1038,7 +1115,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
              TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
 
-             const engine = TestBed.get(ɵAnimationEngine);
+             const engine = TestBed.inject(ɵAnimationEngine);
              const fixture = TestBed.createComponent(ParentCmp);
              const cmp = fixture.componentInstance;
              fixture.detectChanges();
@@ -1082,7 +1159,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
              TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
 
-             const engine = TestBed.get(ɵAnimationEngine);
+             const engine = TestBed.inject(ɵAnimationEngine);
              const fixture = TestBed.createComponent(ParentCmp);
              const cmp = fixture.componentInstance;
              const element = fixture.nativeElement;
@@ -1135,7 +1212,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -1198,7 +1275,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -1280,7 +1357,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -1333,7 +1410,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
            cmp.exp = true;
@@ -1370,7 +1447,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
            cmp.exp = true;
@@ -1404,7 +1481,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -1433,22 +1510,21 @@ const DEFAULT_COMPONENT_ID = '1';
               ])]
         })
         class Cmp {
-          @ViewChild('green', {static: false}) public element: any;
+          @ViewChild('green') public element: any;
         }
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
         fixture.detectChanges();
         engine.flush();
 
-        const player = engine.players.pop();
+        const player = engine.players.pop() !;
         player.finish();
 
-        expect(getDOM().hasStyle(cmp.element.nativeElement, 'background-color', 'green'))
-            .toBeTruthy();
+        expect(hasStyle(cmp.element.nativeElement, 'background-color', 'green')).toBeTruthy();
       });
 
       it('should retain state styles when the underlying DOM structure changes even if there are no insert/remove animations',
@@ -1582,7 +1658,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
            cmp.exp = true;
@@ -1590,7 +1666,7 @@ const DEFAULT_COMPONENT_ID = '1';
            engine.flush();
            resetLog();
 
-           const element = getDOM().querySelector(fixture.nativeElement, '.ng-if');
+           const element = fixture.nativeElement.querySelector('.ng-if');
            assertHasParent(element, true);
 
            cmp.exp = false;
@@ -1640,7 +1716,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
         cmp.exp = 'go';
@@ -1682,7 +1758,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -1725,7 +1801,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -1770,12 +1846,12 @@ const DEFAULT_COMPONENT_ID = '1';
         class Cmp {
           public exp: any;
 
-          @ViewChild('parent', {static: false}) public parentElement: any;
+          @ViewChild('parent') public parentElement: any;
         }
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine) as ɵAnimationEngine;
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -1824,14 +1900,14 @@ const DEFAULT_COMPONENT_ID = '1';
              public exp1: any;
              public exp2: any;
 
-             @ViewChild('parent', {static: false}) public parent: any;
+             @ViewChild('parent') public parent: any;
 
-             @ViewChild('child', {static: false}) public child: any;
+             @ViewChild('child') public child: any;
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -1881,16 +1957,16 @@ const DEFAULT_COMPONENT_ID = '1';
              public exp1: any;
              public exp2: any;
 
-             @ViewChild('parent', {static: false}) public parent: any;
+             @ViewChild('parent') public parent: any;
 
-             @ViewChild('child1', {static: false}) public child1Elm: any;
+             @ViewChild('child1') public child1Elm: any;
 
-             @ViewChild('child2', {static: false}) public child2Elm: any;
+             @ViewChild('child2') public child2Elm: any;
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -1941,7 +2017,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -1983,7 +2059,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -2028,7 +2104,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -2040,7 +2116,7 @@ const DEFAULT_COMPONENT_ID = '1';
            player.finish();
 
            flushMicrotasks();
-           expect(getDOM().hasStyle(element, 'color', 'red')).toBeTruthy();
+           expect(hasStyle(element, 'color', 'red')).toBeTruthy();
 
            cmp.exp = '1';
            cmp.color = 'blue';
@@ -2048,7 +2124,7 @@ const DEFAULT_COMPONENT_ID = '1';
            resetLog();
 
            flushMicrotasks();
-           expect(getDOM().hasStyle(element, 'color', 'blue')).toBeTruthy();
+           expect(hasStyle(element, 'color', 'blue')).toBeTruthy();
 
            cmp.exp = '1';
            cmp.color = null;
@@ -2056,7 +2132,7 @@ const DEFAULT_COMPONENT_ID = '1';
            resetLog();
 
            flushMicrotasks();
-           expect(getDOM().hasStyle(element, 'color', 'black')).toBeTruthy();
+           expect(hasStyle(element, 'color', 'black')).toBeTruthy();
          }));
 
       it('should substitute in values if the provided state match is an object with values', () => {
@@ -2078,7 +2154,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -2132,7 +2208,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -2158,9 +2234,9 @@ const DEFAULT_COMPONENT_ID = '1';
            p1.finish();
            flushMicrotasks();
 
-           expect(getDOM().hasStyle(element, 'color', 'blue')).toBeTruthy();
-           expect(getDOM().hasStyle(element, 'fontSize', '50px')).toBeTruthy();
-           expect(getDOM().hasStyle(element, 'width', '888px')).toBeTruthy();
+           expect(hasStyle(element, 'color', 'blue')).toBeTruthy();
+           expect(hasStyle(element, 'fontSize', '50px')).toBeTruthy();
+           expect(hasStyle(element, 'width', '888px')).toBeTruthy();
          }));
 
       it('should only evaluate final state param substitutions from the expression and state values and not from the transition options ',
@@ -2200,7 +2276,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -2224,8 +2300,8 @@ const DEFAULT_COMPONENT_ID = '1';
            p1.finish();
            flushMicrotasks();
 
-           expect(getDOM().hasStyle(element, 'width', '100px')).toBeTruthy();
-           expect(getDOM().hasStyle(element, 'height', '100px')).toBeTruthy();
+           expect(hasStyle(element, 'width', '100px')).toBeTruthy();
+           expect(hasStyle(element, 'height', '100px')).toBeTruthy();
          }));
 
       it('should not flush animations twice when an inner component runs change detection', () => {
@@ -2240,7 +2316,7 @@ const DEFAULT_COMPONENT_ID = '1';
               [transition(':enter', [style({opacity: 0}), animate('1s', style({opacity: 1}))])])]
         })
         class OuterCmp {
-          @ViewChild('inner', {static: false}) public inner: any;
+          @ViewChild('inner') public inner: any;
           public exp: any = null;
 
           update() { this.exp = 'go'; }
@@ -2275,7 +2351,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
         TestBed.configureTestingModule({declarations: [OuterCmp, InnerCmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(OuterCmp);
         const cmp = fixture.componentInstance;
         fixture.detectChanges();
@@ -2464,7 +2540,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
            cmp.exp = 'true';
@@ -2500,7 +2576,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -2510,7 +2586,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            expect(cmp.event).toBeFalsy();
 
-           const player = engine.players.pop();
+           const player = engine.players.pop() !;
            player.finish();
            flushMicrotasks();
 
@@ -2560,7 +2636,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -2622,7 +2698,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -2731,7 +2807,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
            cmp.exp = 'TRUE';
@@ -2876,7 +2952,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
            cmp.exp1 = 'go';
@@ -2958,7 +3034,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
                TestBed.configureTestingModule({declarations: [Cmp]});
 
-               const engine = TestBed.get(ɵAnimationEngine);
+               const engine = TestBed.inject(ɵAnimationEngine);
                const fixture = TestBed.createComponent(Cmp);
                const cmp = fixture.componentInstance;
                cmp.exp = 'go';
@@ -3079,7 +3155,7 @@ const DEFAULT_COMPONENT_ID = '1';
           TestBed.configureTestingModule({declarations: [Cmp]});
 
           const fixture = TestBed.createComponent(Cmp);
-          const engine = TestBed.get(ɵAnimationEngine);
+          const engine = TestBed.inject(ɵAnimationEngine);
 
           function assertHeight(element: any, height: string) {
             expect(element.style['height']).toEqual(height);
@@ -3231,7 +3307,7 @@ const DEFAULT_COMPONENT_ID = '1';
             ]
           })
           class Cmp {
-            @ViewChild('parent', {static: false}) public parentElm: any;
+            @ViewChild('parent') public parentElm: any;
             disableExp = false;
             exp = false;
           }
@@ -3322,7 +3398,7 @@ const DEFAULT_COMPONENT_ID = '1';
                 `
              })
              class ParentCmp {
-               @ViewChild('child', {static: false}) public child: ChildCmp|null = null;
+               @ViewChild('child') public child: ChildCmp|null = null;
                disableExp = false;
              }
 
@@ -3438,7 +3514,7 @@ const DEFAULT_COMPONENT_ID = '1';
                 `
              })
              class Cmp {
-               @ViewChild('container', {static: false}) public container: any;
+               @ViewChild('container') public container: any;
 
                disableExp = false;
                exp = '';
@@ -3449,7 +3525,7 @@ const DEFAULT_COMPONENT_ID = '1';
              }
 
              TestBed.configureTestingModule({declarations: [Cmp]});
-             const engine = TestBed.get(ɵAnimationEngine);
+             const engine = TestBed.inject(ɵAnimationEngine);
              const fixture = TestBed.createComponent(Cmp);
              const cmp = fixture.componentInstance;
              cmp.disableExp = true;
@@ -3608,7 +3684,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
          TestBed.configureTestingModule({declarations: [Cmp]});
 
-         const engine = TestBed.get(ɵAnimationEngine);
+         const engine = TestBed.inject(ɵAnimationEngine);
          const fixture = TestBed.createComponent(Cmp);
          const cmp = fixture.componentInstance;
          fixture.detectChanges();
@@ -3689,7 +3765,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
               TestBed.configureTestingModule({declarations: [Cmp]});
 
-              const engine = TestBed.get(ɵAnimationEngine);
+              const engine = TestBed.inject(ɵAnimationEngine);
               const fixture = TestBed.createComponent(Cmp);
 
               const runCD = () => fixture.detectChanges();
@@ -3744,7 +3820,7 @@ const DEFAULT_COMPONENT_ID = '1';
 })();
 
 function assertHasParent(element: any, yes: boolean) {
-  const parent = getDOM().parentElement(element);
+  const parent = element.parentNode;
   if (yes) {
     expect(parent).toBeTruthy();
   } else {

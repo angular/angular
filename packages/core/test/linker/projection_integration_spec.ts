@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule} from '@angular/common';
+import {CommonModule, ɵgetDOM as getDOM} from '@angular/common';
 import {Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, Injector, Input, NO_ERRORS_SCHEMA, NgModule, OnInit, TemplateRef, ViewChild, ViewContainerRef, ViewEncapsulation} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {modifiedInIvy} from '@angular/private/testing';
 
@@ -129,7 +128,7 @@ describe('projection', () => {
     }
 
     TestBed.configureTestingModule({imports: [MyModule]});
-    const injector: Injector = TestBed.get(Injector);
+    const injector: Injector = TestBed.inject(Injector);
 
     const componentFactoryResolver: ComponentFactoryResolver =
         injector.get(ComponentFactoryResolver);
@@ -137,8 +136,9 @@ describe('projection', () => {
         componentFactoryResolver.resolveComponentFactory(MultipleContentTagsComponent);
     expect(componentFactory.ngContentSelectors).toEqual(['h1', '*']);
 
-    const nodeOne = getDOM().createTextNode('one');
-    const nodeTwo = getDOM().createTextNode('two');
+
+    const nodeOne = getDOM().getDefaultDocument().createTextNode('one');
+    const nodeTwo = getDOM().getDefaultDocument().createTextNode('two');
     const component = componentFactory.create(injector, [[nodeOne], [nodeTwo]]);
     expect(component.location.nativeElement).toHaveText('(one, two)');
   });
@@ -168,7 +168,7 @@ describe('projection', () => {
         }
 
         TestBed.configureTestingModule({imports: [MyModule]});
-        const injector: Injector = TestBed.get(Injector);
+        const injector: Injector = TestBed.inject(Injector);
 
         const componentFactoryResolver: ComponentFactoryResolver =
             injector.get(ComponentFactoryResolver);
@@ -176,9 +176,9 @@ describe('projection', () => {
             componentFactoryResolver.resolveComponentFactory(MultipleContentTagsComponent);
         expect(componentFactory.ngContentSelectors).toEqual(['h1', '*', 'h2']);
 
-        const nodeOne = getDOM().createTextNode('one');
-        const nodeTwo = getDOM().createTextNode('two');
-        const nodeThree = getDOM().createTextNode('three');
+        const nodeOne = getDOM().getDefaultDocument().createTextNode('one');
+        const nodeTwo = getDOM().getDefaultDocument().createTextNode('two');
+        const nodeThree = getDOM().getDefaultDocument().createTextNode('three');
         const component = componentFactory.create(injector, [[nodeOne], [nodeTwo], [nodeThree]]);
         component.changeDetectorRef.detectChanges();
         expect(component.location.nativeElement.textContent.trim()).toBe('1one 2two 3three');
@@ -491,7 +491,7 @@ describe('projection', () => {
     expect(main.nativeElement).toHaveText('TREE(0:TREE2(1:TREE(2:)))');
   });
 
-  if (getDOM().supportsNativeShadowDOM()) {
+  if (supportsNativeShadowDOM()) {
     it('should support native content projection and isolate styles per component', () => {
       TestBed.configureTestingModule({declarations: [SimpleNative1, SimpleNative2]});
       TestBed.overrideComponent(MainComp, {
@@ -502,7 +502,7 @@ describe('projection', () => {
       });
       const main = TestBed.createComponent(MainComp);
 
-      const childNodes = getDOM().childNodes(main.nativeElement);
+      const childNodes = main.nativeElement.childNodes;
       expect(childNodes[0]).toHaveText('div {color: red}SIMPLE1(A)');
       expect(childNodes[1]).toHaveText('div {color: blue}SIMPLE2(B)');
       main.destroy();
@@ -522,12 +522,12 @@ describe('projection', () => {
       const main = TestBed.createComponent(MainComp);
 
       const mainEl = main.nativeElement;
-      const div1 = getDOM().firstChild(mainEl);
+      const div1 = mainEl.firstChild;
       const div2 = getDOM().createElement('div');
-      getDOM().setAttribute(div2, 'class', 'redStyle');
-      getDOM().appendChild(mainEl, div2);
-      expect(getDOM().getComputedStyle(div1).color).toEqual('rgb(255, 0, 0)');
-      expect(getDOM().getComputedStyle(div2).color).toEqual('rgb(255, 0, 0)');
+      div2.setAttribute('class', 'redStyle');
+      mainEl.appendChild(div2);
+      expect(getComputedStyle(div1).color).toEqual('rgb(255, 0, 0)');
+      expect(getComputedStyle(div2).color).toEqual('rgb(255, 0, 0)');
     });
 
     it('should support emulated style encapsulation', () => {
@@ -542,11 +542,11 @@ describe('projection', () => {
       const main = TestBed.createComponent(MainComp);
 
       const mainEl = main.nativeElement;
-      const div1 = getDOM().firstChild(mainEl);
+      const div1 = mainEl.firstChild;
       const div2 = getDOM().createElement('div');
-      getDOM().appendChild(mainEl, div2);
-      expect(getDOM().getComputedStyle(div1).color).toEqual('rgb(255, 0, 0)');
-      expect(getDOM().getComputedStyle(div2).color).toEqual('rgb(0, 0, 0)');
+      mainEl.appendChild(div2);
+      expect(getComputedStyle(div1).color).toEqual('rgb(255, 0, 0)');
+      expect(getComputedStyle(div2).color).toEqual('rgb(0, 0, 0)');
     });
   }
 
@@ -574,7 +574,7 @@ describe('projection', () => {
     const main = TestBed.createComponent(MainComp);
 
     main.detectChanges();
-    expect(getDOM().getInnerHTML(main.nativeElement))
+    expect(main.nativeElement.innerHTML)
         .toEqual(
             '<cmp-a><cmp-b><cmp-d><i>cmp-d</i></cmp-d></cmp-b>' +
             '<cmp-c><b>cmp-c</b></cmp-c></cmp-a>');
@@ -586,7 +586,7 @@ describe('projection', () => {
     const main = TestBed.createComponent(MainComp);
 
     main.detectChanges();
-    expect(getDOM().getInnerHTML(main.nativeElement))
+    expect(main.nativeElement.innerHTML)
         .toEqual(
             '<cmp-a1>a1<cmp-b11>b11</cmp-b11><cmp-b12>b12</cmp-b12></cmp-a1>' +
             '<cmp-a2>a2<cmp-b21>b21</cmp-b21><cmp-b22>b22</cmp-b22></cmp-a2>');
@@ -980,7 +980,7 @@ class Tree {
 class CmpD {
   tagName: string;
   constructor(elementRef: ElementRef) {
-    this.tagName = getDOM().tagName(elementRef.nativeElement).toLowerCase();
+    this.tagName = elementRef.nativeElement.tagName.toLowerCase();
   }
 }
 
@@ -989,7 +989,7 @@ class CmpD {
 class CmpC {
   tagName: string;
   constructor(elementRef: ElementRef) {
-    this.tagName = getDOM().tagName(elementRef.nativeElement).toLowerCase();
+    this.tagName = elementRef.nativeElement.tagName.toLowerCase();
   }
 }
 
@@ -1031,4 +1031,8 @@ class CmpA1 {
   template: `{{'a2'}}<cmp-b21></cmp-b21><cmp-b22></cmp-b22>`,
 })
 class CmpA2 {
+}
+
+function supportsNativeShadowDOM(): boolean {
+  return typeof(<any>document.body).createShadowRoot === 'function';
 }

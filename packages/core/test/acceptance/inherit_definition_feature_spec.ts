@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ContentChildren, Directive, EventEmitter, HostBinding, Input, OnChanges, Output, QueryList, ViewChildren} from '@angular/core';
+import {Component, ContentChildren, Directive, EventEmitter, HostBinding, HostListener, Input, OnChanges, Output, QueryList, ViewChildren} from '@angular/core';
+import {ivyEnabled} from '@angular/core/src/ivy_switch';
+import {getDirectiveDef} from '@angular/core/src/render3/definition';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {onlyInIvy} from '@angular/private/testing';
@@ -41,6 +43,86 @@ describe('inheritance', () => {
           TestBed.createComponent(App);
         }).toThrowError('Directives cannot inherit Components');
       });
+
+  describe('multiple children', () => {
+    it('should ensure that multiple child classes don\'t cause multiple parent execution', () => {
+      // Assume this inheritance:
+      //         Base
+      //           |
+      //         Super
+      //        /     \
+      //     Sub1    Sub2
+      //
+      // In the above case:
+      //  1.  Sub1 as will walk the inheritance Sub1, Super, Base
+      //  2.  Sub2 as will walk the inheritance Sub2, Super, Base
+      //
+      // Notice that Super, Base will get walked twice. Because inheritance works by wrapping parent
+      // hostBindings function in a delegate which calls the hostBindings of the directive as well
+      // as super, we need to ensure that we don't double wrap the hostBindings function. Doing so
+      // would result in calling the hostBindings multiple times (unnecessarily). This would be
+      // especially an issue if we have a lot of sub-classes (as is common in component libraries)
+      const log: string[] = [];
+
+      @Directive({selector: '[superDir]'})
+      class BaseDirective {
+        @HostBinding('style.background-color')
+        get backgroundColor() {
+          log.push('Base.backgroundColor');
+          return 'white';
+        }
+      }
+
+      @Directive({selector: '[superDir]'})
+      class SuperDirective extends BaseDirective {
+        @HostBinding('style.color')
+        get color() {
+          log.push('Super.color');
+          return 'blue';
+        }
+      }
+
+      @Directive({selector: '[subDir1]'})
+      class Sub1Directive extends SuperDirective {
+        @HostBinding('style.height')
+        get height() {
+          log.push('Sub1.height');
+          return '200px';
+        }
+      }
+
+      @Directive({selector: '[subDir2]'})
+      class Sub2Directive extends SuperDirective {
+        @HostBinding('style.width')
+        get width() {
+          log.push('Sub2.width');
+          return '100px';
+        }
+      }
+
+      @Component({template: `<div subDir1 subDir2></div>`})
+      class App {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [App, Sub1Directive, Sub2Directive, SuperDirective],
+      });
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges(false);  // Don't check for no changes (so that assertion does not need
+                                     // to worry about it.)
+
+      expect(log).toEqual([
+        'Base.backgroundColor', 'Super.color', 'Sub1.height',  //
+        'Base.backgroundColor', 'Super.color', 'Sub2.width',   //
+      ]);
+      if (ivyEnabled) {
+        expect(getDirectiveDef(BaseDirective) !.hostVars).toEqual(2);
+        expect(getDirectiveDef(SuperDirective) !.hostVars).toEqual(4);
+        expect(getDirectiveDef(Sub1Directive) !.hostVars).toEqual(6);
+        expect(getDirectiveDef(Sub2Directive) !.hostVars).toEqual(6);
+      }
+    });
+  });
 
   describe('ngOnChanges', () => {
     it('should be inherited when super is a directive', () => {
@@ -213,6 +295,37 @@ describe('inheritance', () => {
       fixture.detectChanges();
 
       expect(log).toEqual(['on changes!']);
+    });
+
+    it('should be inherited from undecorated super class which inherits from decorated one', () => {
+      let changes = 0;
+
+      abstract class Base {
+        // Add an Input so that we have at least one Angular decorator on a class field.
+        @Input() inputBase: any;
+        abstract input: any;
+      }
+
+      abstract class UndecoratedBase extends Base {
+        abstract input: any;
+        ngOnChanges() { changes++; }
+      }
+
+      @Component({selector: 'my-comp', template: ''})
+      class MyComp extends UndecoratedBase {
+        @Input() input: any;
+      }
+
+      @Component({template: '<my-comp [input]="value"></my-comp>'})
+      class App {
+        value = 'hello';
+      }
+
+      TestBed.configureTestingModule({declarations: [MyComp, App]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(changes).toBe(1);
     });
   });
 
@@ -4192,6 +4305,71 @@ describe('inheritance', () => {
       fixture.detectChanges();
 
       expect(foundQueryList !.length).toBe(5);
+    });
+
+    it('should inherit host listeners from base class once', () => {
+      const events: string[] = [];
+
+      @Component({
+        selector: 'app-base',
+        template: 'base',
+      })
+      class BaseComponent {
+        @HostListener('click')
+        clicked() { events.push('BaseComponent.clicked'); }
+      }
+
+      @Component({
+        selector: 'app-child',
+        template: 'child',
+      })
+      class ChildComponent extends BaseComponent {
+        // additional host listeners are defined here to have `hostBindings` function generated on
+        // component def, which would trigger `hostBindings` functions merge operation in
+        // InheritDefinitionFeature logic (merging Child and Base host binding functions)
+        @HostListener('focus')
+        focused() {}
+
+        clicked() { events.push('ChildComponent.clicked'); }
+      }
+
+      @Component({
+        selector: 'app-grand-child',
+        template: 'grand-child',
+      })
+      class GrandChildComponent extends ChildComponent {
+        // additional host listeners are defined here to have `hostBindings` function generated on
+        // component def, which would trigger `hostBindings` functions merge operation in
+        // InheritDefinitionFeature logic (merging GrandChild and Child host binding functions)
+        @HostListener('blur')
+        blurred() {}
+
+        clicked() { events.push('GrandChildComponent.clicked'); }
+      }
+
+      @Component({
+        selector: 'root-app',
+        template: `
+          <app-base></app-base>
+          <app-child></app-child>
+          <app-grand-child></app-grand-child>
+        `,
+      })
+      class RootApp {
+      }
+
+      const components = [BaseComponent, ChildComponent, GrandChildComponent];
+      TestBed.configureTestingModule({
+        declarations: [RootApp, ...components],
+      });
+      const fixture = TestBed.createComponent(RootApp);
+      fixture.detectChanges();
+
+      components.forEach(component => {
+        fixture.debugElement.query(By.directive(component)).nativeElement.click();
+      });
+      expect(events).toEqual(
+          ['BaseComponent.clicked', 'ChildComponent.clicked', 'GrandChildComponent.clicked']);
     });
 
     xdescribe(

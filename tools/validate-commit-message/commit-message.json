@@ -13,7 +13,6 @@
     "test"
   ],
   "scopes": [
-    "aio",
     "animations",
     "bazel",
     "benchpress",
@@ -27,6 +26,8 @@
     "http",
     "ivy",
     "language-service",
+    "localize",
+    "ngcc",
     "platform-browser",
     "platform-browser-dynamic",
     "platform-server",

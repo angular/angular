@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectorRef, DoCheck, ElementRef, ErrorHandler, EventEmitter, Injector, OnChanges, OnDestroy, OnInit, Renderer, Renderer2, SimpleChange, TemplateRef, ViewContainerRef,} from '@angular/core';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectorRef, DoCheck, ElementRef, ErrorHandler, EventEmitter, Injector, OnChanges, OnDestroy, OnInit, Renderer2, SimpleChange, TemplateRef, ViewContainerRef,} from '@angular/core';
 import {getDebugContext} from '@angular/core/src/errors';
 import {ArgumentType, DepFlags, NodeFlags, Services, anchorDef, asElementData, directiveDef, elementDef, providerDef, textDef} from '@angular/core/src/view/index';
 import {TestBed, withModule} from '@angular/core/testing';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {ɵgetDOM as getDOM} from '@angular/common';
 import {ivyEnabled} from '@angular/private/testing';
 
 import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetRootNodes, compViewDef, compViewDefFactory} from './helper';
@@ -103,7 +103,7 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
                     () => compViewDef([textDef(0, null, ['a'])])),
                 directiveDef(1, NodeFlags.Component, null, 0, SomeService, [])
               ]),
-              TestBed.get(Injector), [], getDOM().createElement('div'));
+              TestBed.inject(Injector), [], getDOM().createElement('div'));
         } catch (e) {
           err = e;
         }
@@ -285,17 +285,6 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
             expect(instance.dep._view).toBe(compView);
           });
 
-          it('should inject RendererV1', () => {
-            createAndGetRootNodes(compViewDef([
-              elementDef(
-                  0, NodeFlags.None, null, null, 1, 'span', null, null, null, null,
-                  () => compViewDef([anchorDef(NodeFlags.None, null, null, 0)])),
-              directiveDef(1, NodeFlags.Component, null, 0, SomeService, [Renderer])
-            ]));
-
-            expect(instance.dep.createElement).toBeTruthy();
-          });
-
           it('should inject Renderer2', () => {
             createAndGetRootNodes(compViewDef([
               elementDef(
@@ -340,7 +329,7 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
           expect(instance.b).toBe('v2');
 
           const el = rootNodes[0];
-          expect(getDOM().getAttribute(el, 'ng-reflect-a')).toBe('v1');
+          expect(el.getAttribute('ng-reflect-a')).toBe('v1');
         });
 
       });
@@ -377,7 +366,7 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
       });
 
       it('should report debug info on event errors', () => {
-        const handleErrorSpy = spyOn(TestBed.get(ErrorHandler), 'handleError');
+        const handleErrorSpy = spyOn(TestBed.inject(ErrorHandler), 'handleError');
         let emitter = new EventEmitter<any>();
 
         class SomeService {

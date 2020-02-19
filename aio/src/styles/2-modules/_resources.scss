@@ -1,5 +1,8 @@
 .showcase {
   width: 80%;
+  @media (max-width: 600px) {
+    width: 100%;
+  }
 }
 
 .c-resource-nav {
@@ -164,6 +167,10 @@ aio-resource-list {
   .l-flex--column {
     display: flex;
     flex-direction: column;
+  }
+
+  .align-items-center{
+    align-items: center;
   }
 
   .c-resource-header {

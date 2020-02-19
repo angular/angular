@@ -21,7 +21,7 @@ export class HeroService {
   constructor(
     private http: HttpClient,
     private messageService: MessageService,
-    @Optional() @Inject(APP_BASE_HREF) origin: string) {
+    @Optional() @Inject(APP_BASE_HREF) origin?: string) {
       this.heroesUrl = `${origin}${this.heroesUrl}`;
     }
   // #enddocregion ctor

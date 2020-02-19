@@ -23,6 +23,7 @@ export interface BundleProgram {
   host: ts.CompilerHost;
   path: AbsoluteFsPath;
   file: ts.SourceFile;
+  package: AbsoluteFsPath;
   r3SymbolsPath: AbsoluteFsPath|null;
   r3SymbolsFile: ts.SourceFile|null;
 }
@@ -31,10 +32,12 @@ export interface BundleProgram {
  * Create a bundle program.
  */
 export function makeBundleProgram(
-    fs: FileSystem, isCore: boolean, path: AbsoluteFsPath, r3FileName: string,
-    options: ts.CompilerOptions, host: ts.CompilerHost): BundleProgram {
+    fs: FileSystem, isCore: boolean, pkg: AbsoluteFsPath, path: AbsoluteFsPath, r3FileName: string,
+    options: ts.CompilerOptions, host: ts.CompilerHost,
+    additionalFiles: AbsoluteFsPath[] = []): BundleProgram {
   const r3SymbolsPath = isCore ? findR3SymbolsPath(fs, dirname(path), r3FileName) : null;
-  const rootPaths = r3SymbolsPath ? [path, r3SymbolsPath] : [path];
+  let rootPaths =
+      r3SymbolsPath ? [path, r3SymbolsPath, ...additionalFiles] : [path, ...additionalFiles];
 
   const originalGetExpandoInitializer = patchTsGetExpandoInitializer();
   const program = ts.createProgram(rootPaths, options, host);
@@ -46,7 +49,7 @@ export function makeBundleProgram(
   const file = program.getSourceFile(path) !;
   const r3SymbolsFile = r3SymbolsPath && program.getSourceFile(r3SymbolsPath) || null;
 
-  return {program, options, host, path, file, r3SymbolsPath, r3SymbolsFile};
+  return {program, options, host, package: pkg, path, file, r3SymbolsPath, r3SymbolsFile};
 }
 
 /**

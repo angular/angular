@@ -20,9 +20,14 @@ export class TestDocViewerComponent extends DocViewerComponent {
   currViewContainer: HTMLElement;
   nextViewContainer: HTMLElement;
 
-  prepareTitleAndToc(targetElem: HTMLElement, docId: string): () => void { return null as any; }
-  render(doc: DocumentContents): Observable<void> { return null as any; }
-  swapViews(onInsertedCb?: () => void): Observable<void> { return null as any; }
+  // Only used for type-casting; the actual implementation is irrelevant.
+  prepareTitleAndToc(_targetElem: HTMLElement, _docId: string): () => void { return null as any; }
+
+  // Only used for type-casting; the actual implementation is irrelevant.
+  render(_doc: DocumentContents): Observable<void> { return null as any; }
+
+  // Only used for type-casting; the actual implementation is irrelevant.
+  swapViews(_onInsertedCb?: () => void): Observable<void> { return null as any; }
 }
 
 
@@ -82,7 +87,7 @@ export class TestModule { }
 
 export class ObservableWithSubscriptionSpies<T = void> extends Observable<T> {
   unsubscribeSpies: jasmine.Spy[] = [];
-  subscribeSpy = spyOn(this, 'subscribe').and.callFake((...args: any[]) => {
+  subscribeSpy = spyOn(this as Observable<T>, 'subscribe').and.callFake((...args: any[]) => {
     const subscription = super.subscribe(...args);
     const unsubscribeSpy = spyOn(subscription, 'unsubscribe').and.callThrough();
     this.unsubscribeSpies.push(unsubscribeSpy);

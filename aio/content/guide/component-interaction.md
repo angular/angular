@@ -1,4 +1,4 @@
-# Component Interaction
+# Component interaction
 
 {@a top}
 
@@ -50,9 +50,9 @@ and each iteration's `hero` instance to the child's `hero` property.
 The running application displays three heroes:
 
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/component-interaction/parent-to-child.png" alt="Parent-to-child">
-</figure>
+</div>
 
 
 
@@ -94,9 +94,9 @@ Here's the `NameParentComponent` demonstrating name variations including a name 
 
 
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/component-interaction/setter.png" alt="Parent-to-child-setter">
-</figure>
+</div>
 
 
 
@@ -125,7 +125,7 @@ Detect and act upon changes to input property values with the `ngOnChanges()` me
 
 You may prefer this approach to the property setter when watching multiple, interacting input properties.
 
-Learn about `ngOnChanges()` in the [LifeCycle Hooks](guide/lifecycle-hooks) chapter.
+Learn about `ngOnChanges()` in the [Lifecycle Hooks](guide/lifecycle-hooks) chapter.
 
 </div>
 
@@ -152,9 +152,9 @@ The `VersionParentComponent` supplies the `minor` and `major` values and binds b
 Here's the output of a button-pushing sequence:
 
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/component-interaction/parent-to-child-on-changes.gif" alt="Parent-to-child-onchanges">
-</figure>
+</div>
 
 
 
@@ -206,9 +206,9 @@ The framework passes the event argument&mdash;represented by `$event`&mdash;to t
 and the method processes it:
 
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/component-interaction/child-to-parent.gif" alt="Child-to-parent">
-</figure>
+</div>
 
 
 
@@ -268,9 +268,9 @@ uses interpolation to display the child's `seconds` property.
 Here we see the parent and child working together.
 
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/component-interaction/countdown-timer-anim.gif" alt="countdown timer">
-</figure>
+</div>
 
 
 
@@ -421,9 +421,9 @@ the parent `MissionControlComponent` and the `AstronautComponent` children,
 facilitated by the service:
 
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/component-interaction/bidirectional-service.gif" alt="bidirectional-service">
-</figure>
+</div>
 
 
 
