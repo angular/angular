@@ -45,6 +45,11 @@ module.exports = new Package('angular-base', [
   .factory(require('./post-processors/add-image-dimensions'))
   .factory(require('./post-processors/auto-link-code'))
 
+  // Configure jsdoc-style tag parsing
+  .config(function(inlineTagProcessor) {
+    inlineTagProcessor.inlineTagDefinitions.push(require('./inline-tag-defs/custom-search-defs/'));
+  })
+
   .config(function(checkAnchorLinksProcessor) {
     // This is disabled here to prevent false negatives for the `docs-watch` task.
     // It is re-enabled in the main `angular.io-package`
