@@ -3384,6 +3384,55 @@ describe('styling', () => {
   });
 
   describe('regression', () => {
+    it('should support sanitizer value in the [style] bindings', () => {
+      if (!ivyEnabled && !supportsWritingStringsToStyleProperty()) {
+        // VE does not treat `[style]` as anything special, instead it simply writes to the
+        // `style` property on the element like so `element.style=value`. This seems to work fine
+        // every where except ie10, where it throws an error and as a consequence this test fails in
+        // VE on ie10.
+        return;
+      }
+      @Component({template: `<div [style]="style"></div>`})
+      class HostBindingTestComponent {
+        style: SafeStyle = this.sanitizer.bypassSecurityTrustStyle('color: white; display: block;');
+        constructor(private sanitizer: DomSanitizer) {}
+      }
+      TestBed.configureTestingModule({declarations: [HostBindingTestComponent]});
+      const fixture = TestBed.createComponent(HostBindingTestComponent);
+      fixture.detectChanges();
+      const div: HTMLElement = fixture.nativeElement.querySelector('div');
+      expectStyle(div).toEqual({color: 'white', display: 'block'});
+    });
+
+    /**
+     * Tests to see if the current browser supports non standard way of writing into styles.
+     *
+     * This is not the correct way to write to style and is not supported in ie10.
+     * ```
+     * div.style = 'color: white';
+     * ```
+     *
+     * This is the correct way to write to styles:
+     * ```
+     * div.style.cssText = 'color: white';
+     * ```
+     *
+     * Even though writing to `div.style` is not officially supported, it works in all
+     * browsers except ie10.
+     *
+     * This function detects this condition and allows us to skip the test.
+     */
+    function supportsWritingStringsToStyleProperty() {
+      const div = document.createElement('div');
+      const CSS = 'color: white;';
+      try {
+        (div as any).style = CSS;
+      } catch (e) {
+        return false;
+      }
+      return div.style.cssText === CSS;
+    }
+
     onlyInIvy('styling priority resolution is Ivy only feature.')
         .it('should allow lookahead binding on second pass #35118', () => {
           @Component({
