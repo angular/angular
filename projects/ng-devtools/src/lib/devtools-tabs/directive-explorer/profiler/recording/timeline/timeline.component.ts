@@ -27,8 +27,6 @@ export class TimelineComponent {
   };
   currentView = 1;
 
-  constructor(private _el: ElementRef) {}
-
   get recordsView(): AppEntry {
     if (this.view === 'timeline') {
       // null coalesce to aggregated if no data was recorded since aggregated will be empty, whereas
