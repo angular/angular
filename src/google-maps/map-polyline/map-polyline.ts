@@ -38,7 +38,6 @@ export class MapPolyline implements OnInit, OnDestroy {
                           google.maps.LatLngLiteral[]|undefined>(undefined);
 
   private readonly _destroyed = new Subject<void>();
-  private readonly _listeners: google.maps.MapsEventListener[] = [];
 
   _polyline: google.maps.Polyline; // initialized in ngOnInit
 
@@ -156,9 +155,6 @@ export class MapPolyline implements OnInit, OnDestroy {
     this._eventManager.destroy();
     this._destroyed.next();
     this._destroyed.complete();
-    for (let listener of this._listeners) {
-      listener.remove();
-    }
     if (this._polyline) {
       this._polyline.setMap(null);
     }

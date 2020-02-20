@@ -52,7 +52,7 @@ export declare class GoogleMap implements OnChanges, OnInit, OnDestroy {
 
 export declare class GoogleMapsModule {
     static ɵinj: i0.ɵɵInjectorDef<GoogleMapsModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<GoogleMapsModule, [typeof i1.GoogleMap, typeof i2.MapInfoWindow, typeof i3.MapMarker, typeof i4.MapPolyline], never, [typeof i1.GoogleMap, typeof i2.MapInfoWindow, typeof i3.MapMarker, typeof i4.MapPolyline]>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<GoogleMapsModule, [typeof i1.GoogleMap, typeof i2.MapInfoWindow, typeof i3.MapMarker, typeof i4.MapPolyline, typeof i5.MapPolygon, typeof i6.MapRectangle], never, [typeof i1.GoogleMap, typeof i2.MapInfoWindow, typeof i3.MapMarker, typeof i4.MapPolyline, typeof i5.MapPolygon, typeof i6.MapRectangle]>;
 }
 
 export declare class MapInfoWindow implements OnInit, OnDestroy {
@@ -122,6 +122,33 @@ export declare class MapMarker implements OnInit, OnDestroy {
     static ɵfac: i0.ɵɵFactoryDef<MapMarker>;
 }
 
+export declare class MapPolygon implements OnInit, OnDestroy {
+    _polygon: google.maps.Polygon;
+    set options(options: google.maps.PolygonOptions);
+    set paths(paths: google.maps.MVCArray<google.maps.MVCArray<google.maps.LatLng>> | google.maps.MVCArray<google.maps.LatLng> | google.maps.LatLng[] | google.maps.LatLngLiteral[]);
+    polygonClick: Observable<google.maps.PolyMouseEvent>;
+    polygonDblclick: Observable<google.maps.PolyMouseEvent>;
+    polygonDrag: Observable<google.maps.MouseEvent>;
+    polygonDragend: Observable<google.maps.MouseEvent>;
+    polygonDragstart: Observable<google.maps.MouseEvent>;
+    polygonMousedown: Observable<google.maps.PolyMouseEvent>;
+    polygonMousemove: Observable<google.maps.PolyMouseEvent>;
+    polygonMouseout: Observable<google.maps.PolyMouseEvent>;
+    polygonMouseover: Observable<google.maps.PolyMouseEvent>;
+    polygonMouseup: Observable<google.maps.PolyMouseEvent>;
+    polygonRightclick: Observable<google.maps.PolyMouseEvent>;
+    constructor(_map: GoogleMap, _ngZone: NgZone);
+    getDraggable(): boolean;
+    getEditable(): boolean;
+    getPath(): google.maps.MVCArray<google.maps.LatLng>;
+    getPaths(): google.maps.MVCArray<google.maps.MVCArray<google.maps.LatLng>>;
+    getVisible(): boolean;
+    ngOnDestroy(): void;
+    ngOnInit(): void;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MapPolygon, "map-polygon", never, { "options": "options"; "paths": "paths"; }, { "polygonClick": "polygonClick"; "polygonDblclick": "polygonDblclick"; "polygonDrag": "polygonDrag"; "polygonDragend": "polygonDragend"; "polygonDragstart": "polygonDragstart"; "polygonMousedown": "polygonMousedown"; "polygonMousemove": "polygonMousemove"; "polygonMouseout": "polygonMouseout"; "polygonMouseover": "polygonMouseover"; "polygonMouseup": "polygonMouseup"; "polygonRightclick": "polygonRightclick"; }, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MapPolygon>;
+}
+
 export declare class MapPolyline implements OnInit, OnDestroy {
     _polyline: google.maps.Polyline;
     set options(options: google.maps.PolylineOptions);
@@ -146,4 +173,31 @@ export declare class MapPolyline implements OnInit, OnDestroy {
     ngOnInit(): void;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MapPolyline, "map-polyline", never, { "options": "options"; "path": "path"; }, { "polylineClick": "polylineClick"; "polylineDblclick": "polylineDblclick"; "polylineDrag": "polylineDrag"; "polylineDragend": "polylineDragend"; "polylineDragstart": "polylineDragstart"; "polylineMousedown": "polylineMousedown"; "polylineMousemove": "polylineMousemove"; "polylineMouseout": "polylineMouseout"; "polylineMouseover": "polylineMouseover"; "polylineMouseup": "polylineMouseup"; "polylineRightclick": "polylineRightclick"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MapPolyline>;
+}
+
+export declare class MapRectangle implements OnInit, OnDestroy {
+    _rectangle: google.maps.Rectangle;
+    set bounds(bounds: google.maps.LatLngBounds | google.maps.LatLngBoundsLiteral);
+    boundsChanged: Observable<void>;
+    set options(options: google.maps.RectangleOptions);
+    rectangleClick: Observable<google.maps.MouseEvent>;
+    rectangleDblclick: Observable<google.maps.MouseEvent>;
+    rectangleDrag: Observable<google.maps.MouseEvent>;
+    rectangleDragend: Observable<google.maps.MouseEvent>;
+    rectangleDragstart: Observable<google.maps.MouseEvent>;
+    rectangleMousedown: Observable<google.maps.MouseEvent>;
+    rectangleMousemove: Observable<google.maps.MouseEvent>;
+    rectangleMouseout: Observable<google.maps.MouseEvent>;
+    rectangleMouseover: Observable<google.maps.MouseEvent>;
+    rectangleMouseup: Observable<google.maps.MouseEvent>;
+    rectangleRightclick: Observable<google.maps.MouseEvent>;
+    constructor(_map: GoogleMap, _ngZone: NgZone);
+    getBounds(): google.maps.LatLngBounds;
+    getDraggable(): boolean;
+    getEditable(): boolean;
+    getVisible(): boolean;
+    ngOnDestroy(): void;
+    ngOnInit(): void;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MapRectangle, "map-rectangle", never, { "options": "options"; "bounds": "bounds"; }, { "boundsChanged": "boundsChanged"; "rectangleClick": "rectangleClick"; "rectangleDblclick": "rectangleDblclick"; "rectangleDrag": "rectangleDrag"; "rectangleDragend": "rectangleDragend"; "rectangleDragstart": "rectangleDragstart"; "rectangleMousedown": "rectangleMousedown"; "rectangleMousemove": "rectangleMousemove"; "rectangleMouseout": "rectangleMouseout"; "rectangleMouseover": "rectangleMouseover"; "rectangleMouseup": "rectangleMouseup"; "rectangleRightclick": "rectangleRightclick"; }, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MapRectangle>;
 }
