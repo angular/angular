@@ -1,4 +1,4 @@
-import { ElementPosition, Node as ComponentNode } from 'protocol';
+import { ElementPosition, Node as ComponentNode, ComponentType } from 'protocol';
 import { getDirectiveForest, DirectiveInstanceType, ComponentInstanceType } from '../component-tree';
 import { Type } from '@angular/core';
 import { DebuggingAPI } from '../interfaces';
@@ -103,8 +103,8 @@ export class IdentityTracker {
     }
   }
 
-  index() {
-    const componentForest = indexForest(getDirectiveForest(document.documentElement, this._ng));
+  index(rootElement = document.documentElement) {
+    const componentForest = indexForest(getDirectiveForest(rootElement, this._ng));
     componentForest.forEach(root => this._index(root));
   }
 
@@ -179,7 +179,11 @@ export interface IndexedNode extends ComponentNode<DirectiveInstanceType, Compon
   children: IndexedNode[];
 }
 
-const indexTree = (node: ComponentNode, idx: number, parentPosition = []): IndexedNode => {
+const indexTree = <T extends ComponentNode<DirectiveInstanceType, ComponentInstanceType>>(
+  node: T,
+  idx: number,
+  parentPosition = []
+): IndexedNode => {
   let position = parentPosition;
   if (node.component) {
     position = parentPosition.concat([idx]);
@@ -194,4 +198,6 @@ const indexTree = (node: ComponentNode, idx: number, parentPosition = []): Index
   } as IndexedNode;
 };
 
-export const indexForest = (forest: ComponentNode[]): IndexedNode[] => forest.map((n, i) => indexTree(n, i));
+export const indexForest = <T extends ComponentNode<DirectiveInstanceType, ComponentInstanceType>>(
+  forest: T[]
+): IndexedNode[] => forest.map((n, i) => indexTree(n, i));

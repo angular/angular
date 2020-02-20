@@ -1,12 +1,15 @@
-import { DirectivePosition, DirectivesProperties, ElementPosition, Events, MessageBus } from 'protocol';
-import { onChangeDetection } from './change-detection-tracker';
 import {
-  ComponentTreeNode,
-  getDirectiveForest,
-  getLatestComponentState,
-  queryComponentForest,
-  prepareForestForSerialization,
-} from './component-tree';
+  DirectivePosition,
+  DirectivesProperties,
+  ElementPosition,
+  Events,
+  MessageBus,
+  Node,
+  DirectiveType,
+  ComponentType,
+} from 'protocol';
+import { onChangeDetection } from './change-detection-tracker';
+import { ComponentTreeNode, getDirectiveForest, getLatestComponentState, queryComponentForest } from './component-tree';
 import { start as startProfiling, stop as stopProfiling } from './observer';
 import { serializeComponentState } from './state-serializer/state-serializer';
 import { ComponentInspector, ComponentInspectorOptions } from './component-inspector/component-inspector';
@@ -18,7 +21,7 @@ import {
   appIsAngularInDevMode,
   appIsSupportedAngularVersion,
 } from './angular-check';
-import { indexDOM } from './dom-observer';
+import { indexDOM, getDirectiveId } from './dom-observer';
 
 export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void => {
   messageBus.on('shutdown', shutdownCallback(messageBus));
@@ -161,4 +164,36 @@ const setupInspector = (messageBus: MessageBus<Events>) => {
     inspector.highlightByPosition(position);
   });
   messageBus.on('removeHighlightFromElement', unHighlight);
+};
+
+export interface SerializableDirectiveInstanceType extends DirectiveType {
+  id: number;
+}
+
+export interface SerializableComponentInstanceType extends ComponentType {
+  id: number;
+}
+
+export interface SerializableComponentTreeNode
+  extends Node<SerializableDirectiveInstanceType, SerializableComponentInstanceType> {
+  children: SerializableComponentTreeNode[];
+}
+
+// Here we drop properties to prepare the tree for serialization.
+// We don't need the component instance, so we just traverse the tree
+// and leave the component name.
+export const prepareForestForSerialization = (roots: ComponentTreeNode[]): SerializableComponentTreeNode[] => {
+  return roots.map(node => {
+    return {
+      element: node.element,
+      component: node.component
+        ? {
+            name: node.component.name,
+            id: getDirectiveId(node.component.instance),
+          }
+        : null,
+      directives: node.directives.map(d => ({ name: d.name, id: getDirectiveId(d.instance) })),
+      children: prepareForestForSerialization(node.children),
+    } as SerializableComponentTreeNode;
+  });
 };
