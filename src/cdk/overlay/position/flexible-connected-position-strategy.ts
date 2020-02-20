@@ -29,6 +29,9 @@ import {OverlayContainer} from '../overlay-container';
 /** Class to be added to the overlay bounding box. */
 const boundingBoxClass = 'cdk-overlay-connected-position-bounding-box';
 
+/** Regex used to split a string on its CSS units. */
+const cssUnitPattern = /([A-Za-z%]+)$/;
+
 /** Possible values that can be set as the origin of a FlexibleConnectedPositionStrategy. */
 export type FlexibleConnectedPositionStrategyOrigin = ElementRef | HTMLElement | Point & {
   width?: number;
@@ -567,8 +570,8 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
     if (this._hasFlexibleDimensions) {
       const availableHeight = viewport.bottom - point.y;
       const availableWidth = viewport.right - point.x;
-      const minHeight = this._overlayRef.getConfig().minHeight;
-      const minWidth = this._overlayRef.getConfig().minWidth;
+      const minHeight = getPixelValue(this._overlayRef.getConfig().minHeight);
+      const minWidth = getPixelValue(this._overlayRef.getConfig().minWidth);
 
       const verticalFit = fit.fitsInViewportVertically ||
           (minHeight != null && minHeight <= availableHeight);
@@ -1198,4 +1201,18 @@ function extendStyles(destination: CSSStyleDeclaration,
   }
 
   return destination;
+}
+
+
+/**
+ * Extracts the pixel value as a number from a value, if it's a number
+ * or a CSS pixel string (e.g. `1337px`). Otherwise returns null.
+ */
+function getPixelValue(input: number|string|null|undefined): number|null {
+  if (typeof input !== 'number' && input != null) {
+    const [value, units] = input.split(cssUnitPattern);
+    return (!units || units === 'px') ? parseFloat(value) : null;
+  }
+
+  return input || null;
 }

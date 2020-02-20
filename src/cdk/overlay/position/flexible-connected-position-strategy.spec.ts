@@ -2079,6 +2079,100 @@ describe('FlexibleConnectedPositionStrategy', () => {
         expect(boundingBoxStyle.maxHeight).toBeFalsy();
       });
 
+    it('should collapse the overlay vertically if overlay is outside of viewport, but taller ' +
+      'than the minHeight', () => {
+        const bottomOffset = OVERLAY_HEIGHT / 2;
+        originElement.style.bottom = `${bottomOffset}px`;
+        originElement.style.left = '50%';
+        originElement.style.position = 'fixed';
+
+        positionStrategy
+          .withFlexibleDimensions()
+          .withPush(true)
+          .withPositions([{
+            overlayY: 'top',
+            overlayX: 'start',
+            originY: 'bottom',
+            originX: 'start',
+          }]);
+
+        attachOverlay({positionStrategy, minHeight: bottomOffset - 1});
+        const overlayRect = overlayRef.overlayElement.getBoundingClientRect();
+
+        expect(Math.floor(overlayRect.height)).toBe(bottomOffset);
+      });
+
+    it('should collapse the overlay vertically if overlay is outside of viewport, but taller ' +
+      'than the minHeight that is set as a pixel string', () => {
+        const bottomOffset = OVERLAY_HEIGHT / 2;
+        originElement.style.bottom = `${bottomOffset}px`;
+        originElement.style.left = '50%';
+        originElement.style.position = 'fixed';
+
+        positionStrategy
+          .withFlexibleDimensions()
+          .withPush(true)
+          .withPositions([{
+            overlayY: 'top',
+            overlayX: 'start',
+            originY: 'bottom',
+            originX: 'start',
+          }]);
+
+        attachOverlay({positionStrategy, minHeight: `${bottomOffset - 1}px`});
+        const overlayRect = overlayRef.overlayElement.getBoundingClientRect();
+
+        expect(Math.floor(overlayRect.height)).toBe(bottomOffset);
+      });
+
+    it('should collapse the overlay horizontally if overlay is outside of viewport, but wider ' +
+      'than the minWidth', () => {
+        const rightOffset = OVERLAY_WIDTH / 2;
+        originElement.style.top = '50%';
+        originElement.style.right = `${rightOffset}px`;
+        originElement.style.position = 'fixed';
+
+        positionStrategy
+          .withFlexibleDimensions()
+          .withPush(true)
+          .withPositions([{
+            overlayY: 'top',
+            overlayX: 'start',
+            originY: 'top',
+            originX: 'end',
+          }]);
+
+        attachOverlay({positionStrategy, minWidth: rightOffset});
+        const overlayRect = overlayRef.overlayElement.getBoundingClientRect();
+
+        expect(Math.floor(overlayRect.width)).toBe(rightOffset);
+      });
+
+    it('should collapse the overlay horizontally if overlay is outside of viewport, but wider ' +
+      'than the minWidth that is set as a pixel string', () => {
+        const rightOffset = OVERLAY_WIDTH / 2;
+        originElement.style.top = '50%';
+        originElement.style.right = `${rightOffset}px`;
+        originElement.style.position = 'fixed';
+
+        positionStrategy
+          .withFlexibleDimensions()
+          .withPush(true)
+          .withPositions([{
+            overlayY: 'top',
+            overlayX: 'start',
+            originY: 'top',
+            originX: 'end',
+          }]);
+
+        attachOverlay({positionStrategy, minWidth: `${rightOffset}px`});
+        const overlayRect = overlayRef.overlayElement.getBoundingClientRect();
+
+        expect(Math.floor(overlayRect.width)).toBe(rightOffset);
+      });
+
+
+
   });
 
   describe('onPositionChange with scrollable view properties', () => {
