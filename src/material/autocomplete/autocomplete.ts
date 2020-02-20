@@ -24,6 +24,7 @@ import {
   TemplateRef,
   ViewChild,
   ViewEncapsulation,
+  OnDestroy,
 } from '@angular/core';
 import {
   CanDisableRipple,
@@ -33,6 +34,7 @@ import {
   MatOption,
   mixinDisableRipple,
 } from '@angular/material/core';
+import {Subscription} from 'rxjs';
 
 
 /**
@@ -50,6 +52,14 @@ export class MatAutocompleteSelectedEvent {
     public option: MatOption) { }
 }
 
+/** Event object that is emitted when an autocomplete option is activated. */
+export interface MatAutocompleteActivatedEvent {
+  /** Reference to the autocomplete panel that emitted the event. */
+  source: MatAutocomplete;
+
+  /** Option that was selected. */
+  option: MatOption|null;
+}
 
 // Boilerplate for applying mixins to MatAutocomplete.
 /** @docs-private */
@@ -91,7 +101,8 @@ export function MAT_AUTOCOMPLETE_DEFAULT_OPTIONS_FACTORY(): MatAutocompleteDefau
   ]
 })
 export class MatAutocomplete extends _MatAutocompleteMixinBase implements AfterContentInit,
-  CanDisableRipple {
+  CanDisableRipple, OnDestroy {
+    private _activeOptionChanges = Subscription.EMPTY;
 
   /** Manages active item in option list based on key events. */
   _keyManager: ActiveDescendantKeyManager<MatOption>;
@@ -149,6 +160,10 @@ export class MatAutocomplete extends _MatAutocompleteMixinBase implements AfterC
   /** Event that is emitted when the autocomplete panel is closed. */
   @Output() readonly closed: EventEmitter<void> = new EventEmitter<void>();
 
+  /** Emits whenever an option is activated using the keyboard. */
+  @Output() readonly optionActivated: EventEmitter<MatAutocompleteActivatedEvent> =
+      new EventEmitter<MatAutocompleteActivatedEvent>();
+
   /**
    * Takes classes set on the host mat-autocomplete element and applies them to the panel
    * inside the overlay container to allow for easy styling.
@@ -183,8 +198,16 @@ export class MatAutocomplete extends _MatAutocompleteMixinBase implements AfterC
 
   ngAfterContentInit() {
     this._keyManager = new ActiveDescendantKeyManager<MatOption>(this.options).withWrap();
+    this._activeOptionChanges = this._keyManager.change.subscribe(index => {
+      this.optionActivated.emit({source: this, option: this.options.toArray()[index] || null});
+    });
+
     // Set the initial visibility state.
     this._setVisibility();
+  }
+
+  ngOnDestroy() {
+    this._activeOptionChanges.unsubscribe();
   }
 
   /**

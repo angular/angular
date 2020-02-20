@@ -20,7 +20,7 @@ export declare const MAT_AUTOCOMPLETE_SCROLL_STRATEGY_FACTORY_PROVIDER: {
 
 export declare const MAT_AUTOCOMPLETE_VALUE_ACCESSOR: any;
 
-export declare class MatAutocomplete extends _MatAutocompleteMixinBase implements AfterContentInit, CanDisableRipple {
+export declare class MatAutocomplete extends _MatAutocompleteMixinBase implements AfterContentInit, CanDisableRipple, OnDestroy {
     _classList: {
         [key: string]: boolean;
     };
@@ -34,6 +34,7 @@ export declare class MatAutocomplete extends _MatAutocompleteMixinBase implement
     id: string;
     get isOpen(): boolean;
     readonly opened: EventEmitter<void>;
+    readonly optionActivated: EventEmitter<MatAutocompleteActivatedEvent>;
     optionGroups: QueryList<MatOptgroup>;
     readonly optionSelected: EventEmitter<MatAutocompleteSelectedEvent>;
     options: QueryList<MatOption>;
@@ -47,10 +48,16 @@ export declare class MatAutocomplete extends _MatAutocompleteMixinBase implement
     _setScrollTop(scrollTop: number): void;
     _setVisibility(): void;
     ngAfterContentInit(): void;
+    ngOnDestroy(): void;
     static ngAcceptInputType_autoActiveFirstOption: BooleanInput;
     static ngAcceptInputType_disableRipple: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatAutocomplete, "mat-autocomplete", ["matAutocomplete"], { "disableRipple": "disableRipple"; "displayWith": "displayWith"; "autoActiveFirstOption": "autoActiveFirstOption"; "panelWidth": "panelWidth"; "classList": "class"; }, { "optionSelected": "optionSelected"; "opened": "opened"; "closed": "closed"; }, ["options", "optionGroups"]>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatAutocomplete, "mat-autocomplete", ["matAutocomplete"], { "disableRipple": "disableRipple"; "displayWith": "displayWith"; "autoActiveFirstOption": "autoActiveFirstOption"; "panelWidth": "panelWidth"; "classList": "class"; }, { "optionSelected": "optionSelected"; "opened": "opened"; "closed": "closed"; "optionActivated": "optionActivated"; }, ["options", "optionGroups"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatAutocomplete>;
+}
+
+export interface MatAutocompleteActivatedEvent {
+    option: MatOption | null;
+    source: MatAutocomplete;
 }
 
 export interface MatAutocompleteDefaultOptions {

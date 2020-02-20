@@ -2496,6 +2496,34 @@ describe('MatAutocomplete', () => {
     expect(event.option.value).toBe('Puerto Rico');
   }));
 
+  it('should emit an event when an option is activated', fakeAsync(() => {
+    const fixture = createComponent(AutocompleteWithActivatedEvent);
+
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openPanel();
+    zone.simulateZoneExit();
+    fixture.detectChanges();
+
+    const input = fixture.nativeElement.querySelector('input');
+    const spy = fixture.componentInstance.optionActivated;
+    const autocomplete = fixture.componentInstance.autocomplete;
+    const options = fixture.componentInstance.options.toArray();
+
+    expect(spy).not.toHaveBeenCalled();
+
+    dispatchKeyboardEvent(input, 'keydown', DOWN_ARROW);
+    fixture.detectChanges();
+    expect(spy.calls.mostRecent().args[0]).toEqual({source: autocomplete, option: options[0]});
+
+    dispatchKeyboardEvent(input, 'keydown', DOWN_ARROW);
+    fixture.detectChanges();
+    expect(spy.calls.mostRecent().args[0]).toEqual({source: autocomplete, option: options[1]});
+
+    dispatchKeyboardEvent(input, 'keydown', DOWN_ARROW);
+    fixture.detectChanges();
+    expect(spy.calls.mostRecent().args[0]).toEqual({source: autocomplete, option: options[2]});
+  }));
+
   it('should be able to set a custom panel connection element', () => {
     const fixture = createComponent(AutocompleteWithDifferentOrigin);
 
@@ -2977,4 +3005,25 @@ class AutocompleteWithNativeAutocompleteAttribute {
   template: '<input [matAutocomplete]="null" matAutocompleteDisabled>'
 })
 class InputWithoutAutocompleteAndDisabled {
+}
+
+
+@Component({
+  template: `
+    <mat-form-field>
+      <input matInput [matAutocomplete]="auto">
+    </mat-form-field>
+
+    <mat-autocomplete #auto="matAutocomplete" (optionActivated)="optionActivated($event)">
+      <mat-option *ngFor="let state of states" [value]="state">{{ state }}</mat-option>
+    </mat-autocomplete>
+  `
+})
+class AutocompleteWithActivatedEvent {
+  states = ['California', 'West Virginia', 'Florida'];
+  optionActivated = jasmine.createSpy('optionActivated callback');
+
+  @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
+  @ViewChild(MatAutocomplete) autocomplete: MatAutocomplete;
+  @ViewChildren(MatOption) options: QueryList<MatOption>;
 }
