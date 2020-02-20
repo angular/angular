@@ -12,12 +12,12 @@
 <div class="selected-entry" *ngIf="selectedEntry">
   <header>{{ selectedEntry.label }} details</header>
   <section class="entry-statistics">
-    <div><label>Instances:</label> {{ selectedEntry.instances }}</div>
-    <div><label>Change detection:</label> {{ selectedEntry.totalEvents - selectedEntry.instances }}</div>
-    <div><label>Duration spent:</label> {{ selectedEntry.duration | number }} ms</div>
-    <div>
+    <!-- <div><label>Instances:</label> {{ selectedEntry.instances }}</div> -->
+    <!-- <div><label>Change detection:</label> {{ selectedEntry.totalEvents - selectedEntry.instances }}</div> -->
+    <!-- <div><label>Duration spent:</label> {{ selectedEntry.duration | number }} ms</div> -->
+    <!-- <div>
       <label>Duration per check:</label>
       {{ selectedEntry.duration / (selectedEntry.totalEvents - selectedEntry.instances) | number }} ms
-    </div>
+    </div> -->
   </section>
 </div>

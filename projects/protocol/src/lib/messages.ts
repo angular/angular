@@ -85,45 +85,22 @@ export enum ComponentEventType {
   ChangeDetection,
 }
 
-export interface DirectiveRecord {
-  recordType: 'directive';
-  timestamp: number;
-  directive: string;
-  position: ElementPosition;
-  event: DirectiveEventType;
-  duration: number;
-  state: Properties;
+export interface DirectiveProfile {
+  name: string;
+  isComponent: boolean;
+  lifecycle: number;
+  changeDetection: number;
 }
 
-export interface ComponentRecord {
-  recordType: 'component';
-  timestamp: number;
-  component: string;
-  position: ElementPosition;
-  event: ComponentEventType;
-  duration: number;
-  state: Properties;
+export interface ElementProfile {
+  directives: DirectiveProfile[];
+  children: ElementProfile[];
 }
 
-export enum LifeCycleEventType {
-  ChangeDetectionStart,
-  ChangeDetectionEnd,
-}
-
-export interface AppEndChangeDetection {
-  recordType: 'lifecycle';
-  timestamp: number;
-  event: LifeCycleEventType.ChangeDetectionEnd;
-}
-
-export interface AppStartChangeDetection {
-  recordType: 'lifecycle';
-  timestamp: number;
-  event: LifeCycleEventType.ChangeDetectionStart;
+export interface ProfilerFrame {
   source: string;
+  directives: ElementProfile[];
 }
-
-export type AppRecord = DirectiveRecord | ComponentRecord | AppStartChangeDetection | AppEndChangeDetection;
 
 export interface Events {
   handshake: () => void;
@@ -147,8 +124,8 @@ export interface Events {
 
   startProfiling: () => void;
   stopProfiling: () => void;
-  sendProfilerChunk: (results: AppRecord[]) => void;
-  profilerResults: (results: AppRecord[]) => void;
+  sendProfilerChunk: (results: ProfilerFrame) => void;
+  profilerResults: (results: ProfilerFrame) => void;
   highlightElementFromComponentTree: (position: ElementPosition) => void;
   removeHighlightFromElement: () => void;
   highlightComponentInTreeFromElement: (position: ElementPosition) => void;

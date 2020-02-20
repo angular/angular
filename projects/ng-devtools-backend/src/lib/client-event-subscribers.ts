@@ -7,6 +7,7 @@ import {
   Node,
   DirectiveType,
   ComponentType,
+  ProfilerFrame,
 } from 'protocol';
 import { onChangeDetection } from './change-detection-tracker';
 import { ComponentTreeNode, getDirectiveForest, getLatestComponentState, queryComponentForest } from './component-tree';
@@ -71,7 +72,10 @@ const getLatestComponentExplorerViewCallback = (messageBus: MessageBus<Events>) 
 
 const checkForAngularCallback = (messageBus: MessageBus<Events>) => () => checkForAngular(messageBus);
 
-const startProfilingCallback = (messageBus: MessageBus<Events>) => () => startProfiling(messageBus);
+const startProfilingCallback = (messageBus: MessageBus<Events>) => () =>
+  startProfiling((frame: ProfilerFrame) => {
+    messageBus.emit('sendProfilerChunk', [frame]);
+  });
 
 const stopProfilingCallback = (messageBus: MessageBus<Events>) => () => {
   messageBus.emit('profilerResults', [stopProfiling()]);
