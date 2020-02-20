@@ -32,7 +32,10 @@ export class MatSnackBarConfig<D = any> {
    */
   announcementMessage?: string = '';
 
-  /** The view container to place the overlay for the snack bar into. */
+  /**
+   * The view container that serves as the parent for the snackbar for the purposes of dependency
+   * injection. Note: this does not affect where the snackbar is inserted in the DOM.
+   */
   viewContainerRef?: ViewContainerRef;
 
   /** The length of time in milliseconds to wait before automatically dismissing the snack bar. */
