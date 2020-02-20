@@ -100,11 +100,6 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements AfterVie
   set value(v: number) {
     this._value = clamp(v || 0);
     this._syncFoundation();
-
-    // When noop animation is set to true, trigger animationEnd directly.
-    if (this._isNoopAnimation) {
-      this._emitAnimationEnd();
-    }
   }
   private _value = 0;
 
@@ -162,16 +157,18 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements AfterVie
     this._foundation.init();
     this._syncFoundation();
 
-    if (!this._isNoopAnimation) {
-      // Run outside angular so change detection didn't get triggered on every transition end
-      // instead only on the animation that we care about (primary value bar's transitionend)
-      this._ngZone.runOutsideAngular((() => {
-        this._animationEndSubscription =
-            (fromEvent(this._primaryBar, 'transitionend') as Observable<TransitionEvent>)
-              .pipe(filter(((e: TransitionEvent) => e.target === this._primaryBar)))
-              .subscribe(() => this._ngZone.run(() => this._emitAnimationEnd()));
-      }));
-    }
+    // Run outside angular so change detection didn't get triggered on every transition end
+    // instead only on the animation that we care about (primary value bar's transitionend)
+    this._ngZone.runOutsideAngular((() => {
+      this._animationEndSubscription =
+          (fromEvent(this._primaryBar, 'transitionend') as Observable<TransitionEvent>)
+            .pipe(filter(((e: TransitionEvent) => e.target === this._primaryBar)))
+            .subscribe(() => {
+              if (this.mode === 'determinate' || this.mode === 'buffer') {
+                this._ngZone.run(() => this.animationEnd.next({value: this.value}));
+              }
+            });
+    }));
   }
 
   ngOnDestroy() {
@@ -180,13 +177,6 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements AfterVie
     }
     this._animationEndSubscription.unsubscribe();
     this._dirChangeSubscription.unsubscribe();
-  }
-
-  /** Emit an animationEnd event if in determinate or buffer mode. */
-  private _emitAnimationEnd(): void {
-    if (this.mode === 'determinate' || this.mode === 'buffer') {
-      this.animationEnd.next({value: this.value});
-    }
   }
 
   /** Syncs the state of the progress bar with the MDC foundation. */

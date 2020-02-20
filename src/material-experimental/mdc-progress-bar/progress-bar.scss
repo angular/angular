@@ -7,6 +7,14 @@
   // Explicitly set to `block` since the browser defaults custom elements to `inline`.
   display: block;
 
+  &._mat-animation-noopable {
+    .mdc-linear-progress__primary-bar {
+      // There's a `transitionend` event that depends on this element. Add a very short
+      // transition when animations are disabled so that the event can still fire.
+      transition: transform 1ms;
+    }
+  }
+
   &:not(._mat-animation-noopable) {
     @include mdc-linear-progress-core-styles($query: animation);
   }
