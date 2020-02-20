@@ -1,4 +1,4 @@
-import { ComponentRecord, ComponentEventType, Properties, AppRecord } from 'protocol';
+import { ComponentEventType, Properties, AppRecord, ComponentRecord } from 'protocol';
 import clone from 'clone-deep';
 
 export enum TimelineNodeState {

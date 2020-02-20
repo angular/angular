@@ -1,7 +1,16 @@
 import { ComponentTreeObserver } from './observer';
-import { AppRecord, ComponentEventType, ElementPosition, LifeCycleEventType, Events, MessageBus } from 'protocol';
+import {
+  AppRecord,
+  DirectiveEventType,
+  ElementPosition,
+  LifeCycleEventType,
+  Events,
+  MessageBus,
+  ComponentEventType,
+} from 'protocol';
 import { runOutsideAngular } from '../utils';
-import { createDirectiveEventRecord } from './record-factory';
+import { serializeComponentState } from '../state-serializer/state-serializer';
+import { getComponentName } from '../highlighter';
 
 let records: AppRecord[] = [];
 let observer: ComponentTreeObserver;
@@ -15,12 +24,27 @@ export const start = (messageBus: MessageBus<Events>): void => {
   inProgress = true;
   observer = new ComponentTreeObserver({
     onCreate(component: any, id: number, isComponent: boolean, position: ElementPosition) {
-      records.push(
-        createDirectiveEventRecord({
-          recorderComponent: { component, position, isComponent },
-          eventType: ComponentEventType.Create,
-        })
-      );
+      if (isComponent) {
+        records.push({
+          timestamp: Date.now(),
+          event: ComponentEventType.Create,
+          recordType: 'component',
+          component: getComponentName(component),
+          position: [...position],
+          state: { props: serializeComponentState(component, 1) },
+          duration: 0,
+        });
+      } else {
+        records.push({
+          timestamp: Date.now(),
+          event: DirectiveEventType.Create,
+          recordType: 'directive',
+          directive: getComponentName(component),
+          position: [...position],
+          state: { props: serializeComponentState(component, 1) },
+          duration: 0,
+        });
+      }
     },
     onChangeDetection(component: any, id: number, position: ElementPosition, duration: number) {
       if (!inChangeDetection) {
@@ -45,20 +69,38 @@ export const start = (messageBus: MessageBus<Events>): void => {
           });
         });
       }
-      records.push(
-        createDirectiveEventRecord({
-          recorderComponent: { component, position, isComponent: true },
-          eventType: ComponentEventType.ChangeDetection,
-        })
-      );
+      records.push({
+        timestamp: Date.now(),
+        event: ComponentEventType.ChangeDetection,
+        recordType: 'component',
+        component: getComponentName(component),
+        position: [...position],
+        state: { props: serializeComponentState(component, 1) },
+        duration,
+      });
     },
     onDestroy(component: any, id: number, isComponent: boolean, position: ElementPosition) {
-      records.push(
-        createDirectiveEventRecord({
-          recorderComponent: { component, position, isComponent },
-          eventType: ComponentEventType.Destroy,
-        })
-      );
+      if (isComponent) {
+        records.push({
+          timestamp: Date.now(),
+          event: ComponentEventType.Destroy,
+          recordType: 'component',
+          component: getComponentName(component),
+          position: [...position],
+          state: { props: serializeComponentState(component, 1) },
+          duration: 0,
+        });
+      } else {
+        records.push({
+          timestamp: Date.now(),
+          event: DirectiveEventType.Destroy,
+          recordType: 'directive',
+          directive: getComponentName(component),
+          position: [...position],
+          state: { props: serializeComponentState(component, 1) },
+          duration: 0,
+        });
+      }
     },
   });
   observer.initialize();

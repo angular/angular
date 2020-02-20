@@ -74,10 +74,25 @@ export interface ComponentExplorerView {
   properties: DirectivesProperties;
 }
 
+export enum DirectiveEventType {
+  Create,
+  Destroy,
+}
+
 export enum ComponentEventType {
   Create,
   Destroy,
   ChangeDetection,
+}
+
+export interface DirectiveRecord {
+  recordType: 'directive';
+  timestamp: number;
+  directive: string;
+  position: ElementPosition;
+  event: DirectiveEventType;
+  duration: number;
+  state: Properties;
 }
 
 export interface ComponentRecord {
@@ -108,7 +123,7 @@ export interface AppStartChangeDetection {
   source: string;
 }
 
-export type AppRecord = ComponentRecord | AppStartChangeDetection | AppEndChangeDetection;
+export type AppRecord = DirectiveRecord | ComponentRecord | AppStartChangeDetection | AppEndChangeDetection;
 
 export interface Events {
   handshake: () => void;
