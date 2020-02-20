@@ -1,18 +1,18 @@
 export interface DirectiveType {
-  id: number;
   name: string;
+  id: number;
 }
 
 export interface ComponentType {
-  id: number;
   name: string;
+  id: number;
 }
 
 export interface Node<DirType = DirectiveType, CmpType = ComponentType> {
   element: string;
   directives: DirType[];
   component: CmpType | null;
-  children: Node[];
+  children: Node<DirType, CmpType>[];
   nativeElement?: Element;
 }
 

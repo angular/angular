@@ -19,40 +19,6 @@ describe('identity tracker', () => {
     tracker = new IdentityTracker(debuggingAPI);
   });
 
-  it('should index trees', () => {
-    const dirInstance = {};
-    const dir: DirectiveInstanceType = {
-      instance: dirInstance,
-      name: 'DIR',
-    };
-    const cmpInstance = {};
-    const nested = {
-      position: [0, 0],
-      element: 'CMP2',
-      component: {
-        name: 'CMP2',
-        instance: cmpInstance,
-      },
-      directives: [dir],
-      nativeElement: undefined,
-      children: [],
-    };
-    tracker.index({
-      children: [nested],
-      nativeElement: undefined,
-      directives: [],
-      component: {
-        instance: {},
-        name: 'CMP1',
-      },
-      element: 'CMP',
-      position: [0],
-    });
-
-    expect(tracker.getDirectivePosition(dirInstance)).toEqual([0, 0]);
-    expect(tracker.getDirectivePosition(cmpInstance)).toEqual([0, 0]);
-  });
-
   it('should update indexes on insertion', () => {
     const childEl = {
       children: [],
@@ -119,17 +85,7 @@ describe('identity tracker', () => {
 
     tracker = new IdentityTracker(debuggingAPI);
 
-    tracker.index({
-      children: [nested],
-      nativeElement: rootEl as any,
-      directives: [],
-      component: {
-        instance: rootCmp,
-        name: 'CMP1',
-      },
-      element: 'CMP',
-      position: [0],
-    });
+    tracker.index(rootEl as any);
 
     expect(tracker.getDirectivePosition(rootCmp)).toEqual([0]);
     tracker.insert(siblingEl as any, siblingCmp);
@@ -175,17 +131,7 @@ describe('identity tracker', () => {
 
     tracker = new IdentityTracker(debuggingAPI);
 
-    tracker.index({
-      children: [],
-      nativeElement: rootEl as any,
-      directives: [],
-      component: {
-        instance: rootCmp,
-        name: 'CMP1',
-      },
-      element: 'CMP',
-      position: [0],
-    });
+    tracker.index(rootEl as any);
 
     expect(tracker.getDirectivePosition(rootCmp)).toEqual([0]);
     tracker.insert(secondRootEl as any, secondRootCmp);

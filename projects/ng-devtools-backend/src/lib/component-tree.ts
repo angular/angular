@@ -10,15 +10,16 @@ import {
 } from 'protocol';
 import { getComponentName } from './highlighter';
 import { DebuggingAPI } from './interfaces';
-import { getDirectiveId } from './dom-observer';
 import { IndexedNode } from './observer/identity-tracker';
 
-export interface DirectiveInstanceType extends DirectiveType {
+export interface DirectiveInstanceType {
   instance: any;
+  name: string;
 }
 
-export interface ComponentInstanceType extends ComponentType {
+export interface ComponentInstanceType {
   instance: any;
+  name: string;
 }
 
 export interface ComponentTreeNode extends Node<DirectiveInstanceType, ComponentInstanceType> {
@@ -61,25 +62,6 @@ export const getLatestComponentState = (query: ComponentExplorerViewQuery): Dire
   return result;
 };
 
-// Here we drop properties to prepare the tree for serialization.
-// We don't need the component instance, so we just traverse the tree
-// and leave the component name.
-export const prepareForestForSerialization = (roots: ComponentTreeNode[]): ComponentTreeNode[] => {
-  return roots.map(node => {
-    return {
-      element: node.element,
-      component: node.component
-        ? {
-            name: node.component.name,
-            id: node.component.id,
-          }
-        : null,
-      directives: node.directives.map(d => ({ name: d.name, id: d.id })),
-      children: prepareForestForSerialization(node.children),
-    } as ComponentTreeNode;
-  });
-};
-
 export const getDirectiveForest = (root: HTMLElement, ngd: DebuggingAPI): ComponentTreeNode[] =>
   buildDirectiveForest(root, { element: '__ROOT__', component: null, directives: [], children: [] }, ngd);
 
@@ -113,7 +95,6 @@ const buildDirectiveForest = (
       return {
         instance: dir,
         name: getComponentName(dir),
-        id: getDirectiveId(dir),
       } as DirectiveInstanceType;
     }),
     component: null,
@@ -125,7 +106,6 @@ const buildDirectiveForest = (
     current.component = {
       instance: cmp,
       name: node.tagName.toLowerCase(),
-      id: getDirectiveId(cmp),
     };
   } else {
     current.element = node.tagName.toLowerCase();

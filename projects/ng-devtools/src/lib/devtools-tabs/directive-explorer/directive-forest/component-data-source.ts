@@ -1,6 +1,6 @@
 import { Node } from 'protocol';
-import { DataSource, CollectionViewer } from '@angular/cdk/collections';
-import { BehaviorSubject, Observable, merge, of } from 'rxjs';
+import { DataSource } from '@angular/cdk/collections';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { MatTreeFlattener } from '@angular/material/tree';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { map } from 'rxjs/operators';
