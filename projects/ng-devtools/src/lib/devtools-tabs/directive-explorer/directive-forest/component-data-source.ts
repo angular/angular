@@ -10,6 +10,7 @@ import { diff } from '../../diffing';
 
 /** Flat node with expandable and level information */
 export interface FlatNode {
+  id: string;
   expandable: boolean;
   name: string;
   directives: string;
@@ -22,10 +23,20 @@ export interface FlatNode {
 const expandable = (node: IndexedNode) => !!node.children && node.children.length > 0;
 
 const trackBy = (_: number, item: FlatNode) => {
-  if (item.original.component) {
-    return item.original.component.id + '-' + item.original.directives.map(d => d.id).join('-');
+  return item.id;
+};
+
+const getId = (node: IndexedNode) => {
+  let prefix = '';
+  if (node.component) {
+    prefix = node.component.id.toString();
   }
-  return '-' + item.original.directives.map(d => d.id).join('-');
+  const dirIds = node.directives
+    .map(d => d.id)
+    .sort((a, b) => {
+      return a - b;
+    });
+  return prefix + '-' + dirIds.join('-');
 };
 
 export class ComponentDataSource extends DataSource<FlatNode> {
@@ -42,6 +53,7 @@ export class ComponentDataSource extends DataSource<FlatNode> {
       }
       const flatNode: FlatNode = {
         expandable: expandable(node),
+        id: getId(node),
         // We can compare the nodes in the navigation functions above
         // based on this identifier directly, since it's a reference type
         // and the reference is preserved after transformation.

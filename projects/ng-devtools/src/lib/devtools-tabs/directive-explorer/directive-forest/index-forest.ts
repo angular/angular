@@ -11,7 +11,7 @@ const indexTree = (node: Node, idx: number, parentPosition = []): IndexedNode =>
     position,
     element: node.element,
     component: node.component,
-    directives: node.directives.map((d, i) => ({ name: d.name })),
+    directives: node.directives.map((d, i) => ({ name: d.name, id: d.id })),
     children: node.children.map((n, i) => indexTree(n, i, position)),
   } as IndexedNode;
 };

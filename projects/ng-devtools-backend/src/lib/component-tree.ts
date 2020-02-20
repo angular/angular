@@ -80,9 +80,7 @@ const buildDirectiveForest = (
     // a root node.
     try {
       dirs = ngd.getDirectives(node) || [];
-    } catch (e) {
-      console.warn('Cannot find context for element', node);
-    }
+    } catch (e) {}
   }
   const cmp = ngd.getComponent(node);
   if (!cmp && !dirs.length) {
