@@ -35,6 +35,7 @@ export class DirectiveForestComponent {
     if (!this._initialized && forest && forest.length) {
       this.treeControl.expandAll();
       this._initialized = true;
+      newItems.forEach(item => (item.newItem = false));
     }
     if (newItems && newItems.length) {
       newItems.forEach(item => {
