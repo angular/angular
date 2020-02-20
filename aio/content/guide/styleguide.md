@@ -2527,7 +2527,7 @@ For example, the `crisis-center-routing.module.ts`  helps navigate through the d
 </div>
 
 
-<div class="s-why-last">
+<div class="s-why">
 
 
 
@@ -2541,7 +2541,16 @@ For example, the `crisis-center-routing.module.ts`  helps navigate through the d
 
 
 
-**Avoid** The use of the router links to relative paths. `routerLink='..'` 
+**Avoid**  using router links to non-specific relative paths (`routerLink='..' `).
+
+</div>
+
+
+<div class="s-why-last">
+
+
+
+**Why?** Relative paths may navigate the user somewhere you did not intend for them to go. 
 
 
 </div>
