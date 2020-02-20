@@ -85,10 +85,21 @@ export enum ComponentEventType {
   ChangeDetection,
 }
 
+export interface LifecycleProfile {
+  ngOnInit?: number;
+  ngOnDestroy?: number;
+  ngOnChanges?: number;
+  ngDoCheck?: number;
+  ngAfterContentInit?: number;
+  ngAfterContentChecked?: number;
+  ngAfterViewInit?: number;
+  ngAfterViewChecked?: number;
+}
+
 export interface DirectiveProfile {
   name: string;
   isComponent: boolean;
-  lifecycle: number;
+  lifecycle: LifecycleProfile;
   changeDetection: number;
 }
 

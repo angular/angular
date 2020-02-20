@@ -1,4 +1,4 @@
-import { ComponentTreeObserver } from './observer';
+import { ComponentTreeObserver, LifecyleHook } from './observer';
 import { ElementPosition, ProfilerFrame, ElementProfile, DirectiveProfile } from 'protocol';
 import { runOutsideAngular } from '../utils';
 import { getComponentName } from '../highlighter';
@@ -20,7 +20,7 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
         name: getComponentName(directive),
         isComponent,
         changeDetection: 0,
-        lifecycle: 0,
+        lifecycle: {},
       });
     },
     onChangeDetection(component: any, id: number, position: ElementPosition, duration: number) {
@@ -38,7 +38,7 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
           name: getComponentName(component),
           isComponent: true,
           changeDetection: 0,
-          lifecycle: 0,
+          lifecycle: {},
         });
       }
       const profile = eventMap.get(component);
@@ -46,6 +46,17 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
     },
     onDestroy(component: any, id: number, isComponent: boolean, position: ElementPosition) {
       // TODO(mgechev): measure component removal
+    },
+    onLifecycleHook(directive: any, id: number, isComponent: boolean, hook: LifecyleHook, duration: number) {
+      if (!eventMap.has(directive)) {
+        eventMap.set(directive, {
+          name: getComponentName(directive),
+          isComponent: true,
+          changeDetection: 0,
+          lifecycle: {},
+        });
+      }
+      eventMap.get(directive).lifecycle[hook] += duration;
     },
   });
   observer.initialize();

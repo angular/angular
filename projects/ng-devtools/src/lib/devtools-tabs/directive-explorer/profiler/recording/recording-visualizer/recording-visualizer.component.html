@@ -14,7 +14,10 @@
   <section class="entry-statistics">
     <div><label>Total time spent:</label> {{ selectedEntry.value | number }}</div>
     <div *ngFor="let dir of selectedEntry.original.directives">
-      <label>{{ dir.name }}:</label> {{ dir.changeDetection + dir.lifecycle | number }}
+      <label>{{ dir.name }}#changeDetection:</label> {{ dir.changeDetection | number }}
+      <span *ngFor="let item of dir.lifecycle | keyvalue">
+        <label>{{ dir.name }}#{{ item.key }}:</label> {{ item.value | number }}
+      </span>
     </div>
   </section>
 </div>
