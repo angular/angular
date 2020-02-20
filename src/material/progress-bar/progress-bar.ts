@@ -134,11 +134,6 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements CanColor
   get value(): number { return this._value; }
   set value(v: number) {
     this._value = clamp(coerceNumberProperty(v) || 0);
-
-    // When noop animation is set to true, trigger animationEnd directly.
-    if (this._isNoopAnimation) {
-      this._emitAnimationEnd();
-    }
   }
   private _value: number = 0;
 
@@ -194,29 +189,24 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements CanColor
   }
 
   ngAfterViewInit() {
-    if (!this._isNoopAnimation) {
-      // Run outside angular so change detection didn't get triggered on every transition end
-      // instead only on the animation that we care about (primary value bar's transitionend)
-      this._ngZone.runOutsideAngular((() => {
-        const element = this._primaryValueBar.nativeElement;
+    // Run outside angular so change detection didn't get triggered on every transition end
+    // instead only on the animation that we care about (primary value bar's transitionend)
+    this._ngZone.runOutsideAngular((() => {
+      const element = this._primaryValueBar.nativeElement;
 
-        this._animationEndSubscription =
-            (fromEvent(element, 'transitionend') as Observable<TransitionEvent>)
-              .pipe(filter(((e: TransitionEvent) => e.target === element)))
-              .subscribe(() => this._ngZone.run(() => this._emitAnimationEnd()));
-      }));
-    }
+      this._animationEndSubscription =
+        (fromEvent(element, 'transitionend') as Observable<TransitionEvent>)
+          .pipe(filter(((e: TransitionEvent) => e.target === element)))
+          .subscribe(() => {
+            if (this.mode === 'determinate' || this.mode === 'buffer') {
+              this._ngZone.run(() => this.animationEnd.next({value: this.value}));
+            }
+          });
+    }));
   }
 
   ngOnDestroy() {
     this._animationEndSubscription.unsubscribe();
-  }
-
-  /** Emit an animationEnd event if in determinate or buffer mode. */
-  private _emitAnimationEnd(): void {
-    if (this.mode === 'determinate' || this.mode === 'buffer') {
-      this.animationEnd.next({value: this.value});
-    }
   }
 
   static ngAcceptInputType_value: NumberInput;

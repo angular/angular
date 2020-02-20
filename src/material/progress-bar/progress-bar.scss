@@ -147,7 +147,10 @@ $mat-progress-bar-piece-animation-duration: 250ms !default;
     .mat-progress-bar-secondary.mat-progress-bar-fill::after,
     .mat-progress-bar-background {
       animation: none;
-      transition: none;
+
+      // Use a 1ms transition, because we have an event that
+      // is dispatched based on a `transitionend` being fired.
+      transition-duration: 1ms;
     }
   }
 }

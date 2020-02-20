@@ -1,8 +1,7 @@
-import {TestBed, async, ComponentFixture} from '@angular/core/testing';
+import {TestBed, ComponentFixture} from '@angular/core/testing';
 import {Component, DebugElement, Type} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {dispatchFakeEvent} from '@angular/cdk/testing/private';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MatProgressBarModule, MAT_PROGRESS_BAR_LOCATION} from './index';
 import {MatProgressBar} from './progress-bar';
 
@@ -261,33 +260,6 @@ describe('MatProgressBar', () => {
     });
   });
 
-  describe('With NoopAnimations', () => {
-    let progressComponent: MatProgressBar;
-    let primaryValueBar: DebugElement;
-    let fixture: ComponentFixture<BasicProgressBar>;
-
-    beforeEach(async(() => {
-      fixture = createComponent(BasicProgressBar, [MatProgressBarModule, NoopAnimationsModule]);
-      const progressElement = fixture.debugElement.query(By.css('mat-progress-bar'))!;
-      progressComponent = progressElement.componentInstance;
-      primaryValueBar = progressElement.query(By.css('.mat-progress-bar-primary'))!;
-    }));
-
-    it('should not bind transition end listener', () => {
-      spyOn(primaryValueBar.nativeElement, 'addEventListener');
-      fixture.detectChanges();
-
-      expect(primaryValueBar.nativeElement.addEventListener).not.toHaveBeenCalled();
-    });
-
-    it('should trigger the animationEnd output on value set', () => {
-      fixture.detectChanges();
-      spyOn(progressComponent.animationEnd, 'next');
-
-      progressComponent.value = 40;
-      expect(progressComponent.animationEnd.next).toHaveBeenCalledWith({ value: 40 });
-    });
-  });
 });
 
 @Component({template: '<mat-progress-bar></mat-progress-bar>'})
