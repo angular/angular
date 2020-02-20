@@ -189,8 +189,8 @@ runInEachFileSystem(() => {
             fs, config, logger, resolver, basePath, pathMappings);
         const {entryPoints} = finder.findEntryPoints();
         expect(dumpEntryPointPaths(basePath, entryPoints)).toEqual([
-          ['../dist/pkg2', '../dist/pkg2'],
           ['test', 'test'],
+          ['../dist/pkg2', '../dist/pkg2'],
         ]);
       });
 
