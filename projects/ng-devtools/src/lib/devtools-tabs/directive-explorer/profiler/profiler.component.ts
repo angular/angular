@@ -3,7 +3,6 @@ import { RecordingComponent } from './recording/recording.component';
 import { MessageBus, Events, ProfilerFrame } from 'protocol';
 
 type State = 'idle' | 'recording' | 'visualizing';
-type VisualState = 'time-travel' | 'timeline' | 'aggregated';
 
 @Component({
   selector: 'ng-profiler',
@@ -14,7 +13,6 @@ export class ProfilerComponent implements OnInit {
   @Input() messageBus: MessageBus<Events>;
 
   state: State = 'idle';
-  visualState: VisualState = 'aggregated';
   stream: ProfilerFrame[] = [];
   buffer: ProfilerFrame[] = [];
 
@@ -43,7 +41,6 @@ export class ProfilerComponent implements OnInit {
 
   private _profilerFinished(remainingRecords: ProfilerFrame): void {
     this.state = 'visualizing';
-    this.visualState = 'aggregated';
 
     const flattenedBuffer = [].concat.apply([], this.buffer);
     this.stream = [...flattenedBuffer, remainingRecords];
@@ -53,6 +50,5 @@ export class ProfilerComponent implements OnInit {
   discardRecording(): void {
     this.stream = [];
     this.state = 'idle';
-    this.visualState = 'aggregated';
   }
 }

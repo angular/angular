@@ -12,23 +12,7 @@
       <ng-recording-modal></ng-recording-modal>
     </p>
     <p class="visualization" [class.hidden]="state !== 'visualizing'">
-      <label>
-        Select view:
-        <mat-form-field>
-          <mat-select [(ngModel)]="visualState">
-            <!-- <mat-option value="aggregated">Aggregated</mat-option> -->
-            <mat-option value="timeline">Timeline</mat-option>
-            <!-- <mat-option value="time-travel">Time-Travel</mat-option> -->
-          </mat-select>
-        </mat-form-field>
-      </label>
-
-      <ng-recording-timeline
-        [class.hidden]="visualState !== 'aggregated' && visualState !== 'timeline'"
-        [records]="stream"
-      >
-      </ng-recording-timeline>
-      <!-- <ng-time-travel [stream]="stream" [class.hidden]="visualState !== 'time-travel'"></ng-time-travel> -->
+      <ng-recording-timeline [class.hidden]="state !== 'visualizing'" [records]="stream"> </ng-recording-timeline>
     </p>
   </div>
 </div>

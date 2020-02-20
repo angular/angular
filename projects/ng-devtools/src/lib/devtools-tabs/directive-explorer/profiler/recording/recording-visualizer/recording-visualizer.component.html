@@ -12,12 +12,9 @@
 <div class="selected-entry" *ngIf="selectedEntry">
   <header>{{ selectedEntry.label }} details</header>
   <section class="entry-statistics">
-    <!-- <div><label>Instances:</label> {{ selectedEntry.instances }}</div> -->
-    <!-- <div><label>Change detection:</label> {{ selectedEntry.totalEvents - selectedEntry.instances }}</div> -->
-    <!-- <div><label>Duration spent:</label> {{ selectedEntry.duration | number }} ms</div> -->
-    <!-- <div>
-      <label>Duration per check:</label>
-      {{ selectedEntry.duration / (selectedEntry.totalEvents - selectedEntry.instances) | number }} ms
-    </div> -->
+    <div><label>Total time spent:</label> {{ selectedEntry.value | number }}</div>
+    <div *ngFor="let dir of selectedEntry.original.directives">
+      <label>{{ dir.name }}:</label> {{ dir.changeDetection + dir.lifecycle | number }}
+    </div>
   </section>
 </div>
