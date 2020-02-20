@@ -25,7 +25,7 @@ export type LifecycleCallback = (
   id: number,
   isComponent: boolean,
   hook: LifecyleHook,
-  duration: any
+  duration: number
 ) => void;
 
 export type ChangeDetectionCallback = (component: any, id: number, position: ElementPosition, duration: number) => void;
@@ -45,6 +45,16 @@ export interface Config {
   onChangeDetection: ChangeDetectionCallback;
   onLifecycleHook: LifecycleCallback;
 }
+
+const hooks = [
+  'preOrderHooks',
+  'preOrderCheckHooks',
+  'contentHooks',
+  'contentCheckHooks',
+  'viewHooks',
+  'viewCheckHooks',
+  'destroyHooks',
+];
 
 /**
  * This is a temporal "polyfill" until we receive more comprehensive framework
@@ -78,6 +88,9 @@ export class ComponentTreeObserver {
     if (this._config.onChangeDetection) {
       this._initializeChangeDetectionObserver();
     }
+    if (this._config.onLifecycleHook) {
+      this._initializeLifecycleObserver();
+    }
     this._tracker.index();
     this._createOriginalTree();
   }
@@ -110,6 +123,9 @@ export class ComponentTreeObserver {
       if (this._config.onChangeDetection) {
         this._observeComponent(component);
       }
+      if (this._config.onLifecycleHook) {
+        this._observeLifecycle(component, true);
+      }
 
       this._tracker.insert(node, component);
 
@@ -128,6 +144,9 @@ export class ComponentTreeObserver {
     if (directives.length) {
       this._tracker.insert(node, directives);
       directives.forEach(dir => {
+        if (this._config.onLifecycleHook) {
+          this._observeLifecycle(dir, false);
+        }
         this._fireCreationCallback(dir, false);
       });
     }
@@ -238,5 +257,63 @@ export class ComponentTreeObserver {
       this._fireCreationCallback(dir.instance, false);
     });
     root.children.forEach(child => this._fireInitialTreeCallbacks(child));
+  }
+
+  private _initializeLifecycleObserver(root: Element = document.documentElement): void {
+    if (!(root instanceof HTMLElement)) {
+      return;
+    }
+    const cmp = ng.getComponent(root);
+    if (cmp) {
+      this._observeLifecycle(cmp, true);
+    }
+    let dirs: any[] = [];
+    try {
+      dirs = ng.getDirectives(root);
+    } catch {}
+    dirs.forEach((dir: any) => {
+      this._observeLifecycle(dir, false);
+    });
+    for (let i = 0; i < root.children.length; i++) {
+      this._initializeLifecycleObserver(root.children[i]);
+    }
+  }
+
+  private _observeLifecycle(directive: any, isComponent: boolean) {
+    const ctx = directive.__ngContext__;
+    const tview = ctx[1];
+    hooks.forEach(hook => {
+      const current = tview[hook];
+      if (!Array.isArray(current)) {
+        return;
+      }
+      current.forEach((el: any, idx: number) => {
+        if (el.patched) {
+          return;
+        }
+        if (typeof el === 'function') {
+          const self = this;
+          current[idx] = function() {
+            const start = performance.now();
+            const result = el.apply(this, arguments);
+            if (self._tracker.hasDirective(this)) {
+              self._config.onLifecycleHook(
+                this,
+                self._tracker.getDirectiveId(this),
+                isComponent,
+                el.name,
+                performance.now() - start
+              );
+            }
+            console.log(this.constructor.name, el.name);
+            if (!el.name) {
+              console.log(this, el, el.patched);
+            }
+            return result;
+          };
+          el.patched = true;
+        }
+      });
+    });
   }
 }

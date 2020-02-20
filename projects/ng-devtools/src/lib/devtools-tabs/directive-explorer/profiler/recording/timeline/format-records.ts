@@ -26,6 +26,20 @@ const getLabel = (element: ElementProfile) => {
   return attributes === '' ? name : `${name}[${attributes}]`;
 };
 
+const getValue = (element: ElementProfile) => {
+  let result = 0;
+  element.directives.forEach(dir => {
+    result += dir.changeDetection;
+    Object.keys(dir.lifecycle).forEach(key => {
+      const value = parseFloat(dir.lifecycle[key]);
+      if (!isNaN(value)) {
+        result += value;
+      }
+    });
+  });
+  return result;
+};
+
 const addFrame = (nodes: FlamegraphNode[], elements: ElementProfile[]): number => {
   let timeSpent = 0;
   elements.forEach(element => {
@@ -35,7 +49,7 @@ const addFrame = (nodes: FlamegraphNode[], elements: ElementProfile[]): number =
       return;
     }
     const node: FlamegraphNode = {
-      value: element.directives.reduce((a, c) => a + c.lifecycle + c.changeDetection, 0),
+      value: getValue(element),
       label: getLabel(element),
       children: [],
       original: element,
