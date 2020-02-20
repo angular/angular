@@ -7,7 +7,12 @@
 </ng-filter>
 <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
   <mat-tree-node
-    [ngClass]="{ matched: isMatched(node), selected: isSelected(node), highlighted: isHighlighted(node) }"
+    [ngClass]="{
+      matched: isMatched(node),
+      selected: isSelected(node),
+      highlighted: isHighlighted(node),
+      'new-node': node.newItem
+    }"
     (click)="handleSelect(node)"
     (dblclick)="handleSelectDomElement(node)"
     (mouseenter)="highlightNode(node.position)"
@@ -22,7 +27,12 @@
     <span *ngIf="node.directives" class="dir-names">[{{ node.directives }}]</span>
   </mat-tree-node>
   <mat-tree-node
-    [ngClass]="{ matched: isMatched(node), selected: isSelected(node), highlighted: isHighlighted(node) }"
+    [ngClass]="{
+      matched: isMatched(node),
+      selected: isSelected(node),
+      highlighted: isHighlighted(node),
+      'new-node': node.newItem
+    }"
     (click)="handleSelect(node)"
     (dblclick)="handleSelectDomElement(node)"
     (mouseenter)="highlightNode(node.position)"

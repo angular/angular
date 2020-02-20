@@ -34,7 +34,7 @@
   }
 }
 
-:host /deep/ .mat-tree-node {
+.new-node {
   animation: appear 0.5s;
 }
 
