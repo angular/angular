@@ -10,7 +10,7 @@
   "license": "MIT",
   "engines": {
     "node": "^12.0.0",
-    "yarn": ">= 1.19.1"
+    "yarn": ">= 1.0.0"
   },
   "scripts": {
     "postinstall": "node tools/postinstall/apply-patches.js && ngcc --properties main --create-ivy-entry-points && node tools/postinstall/update-ngcc-main-fields.js",

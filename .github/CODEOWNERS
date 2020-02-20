@@ -241,6 +241,7 @@
 
 # Tooling
 /.circleci/**                                      @angular/dev-infra-components
+/.yarn/**                                      @angular/dev-infra-components
 /scripts/**                                        @angular/dev-infra-components
 /test/**                                           @angular/dev-infra-components
 /tools/**                                          @angular/dev-infra-components
