@@ -2,15 +2,25 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  min-height: 40px;
+  font-size: 12px;
 }
 
 .element-header .component-name {
-  margin-left: 8px;
-  font-weight: 400;
+  margin-left: 10px;
+  font-weight: 700;
+  line-height: 25px;
 }
 
 .element-header .element-name {
-  margin-left: 8px;
-  font-weight: 300;
+  margin-left: 10px;
+  line-height: 25px;
+  font-weight: 700;
+}
+
+/deep/ .mat-button,
+.mat-icon-button {
+  height: 25px;
+  width: 25px;
+  line-height: 25px;
+  margin-right: 5px;
 }
