@@ -539,12 +539,14 @@ of multiple words. In Angular, you would bind these attributes using camelCase:
 
 <code-example format="">
   [myHero]="hero"
+  (heroDeleted)="handleHeroDeleted($event)"
 </code-example>
 
 But when using them from AngularJS templates, you must use kebab-case:
 
 <code-example format="">
   [my-hero]="hero"
+  (hero-deleted)="handleHeroDeleted($event)"
 </code-example>
 
 </div>
