@@ -78,6 +78,17 @@ export function getSelectors(info: AstResult): SelectorInfo {
   return {selectors: results, map};
 }
 
+export function getSelectorByName(directiveName: string, cssSelectors: CssSelector[]) {
+  return cssSelectors.find(s => {
+    // attributes are listed in (attribute, value) pairs
+    for (let i = 0; i < s.attrs.length; i += 2) {
+      if (s.attrs[i] === directiveName) {
+        return true;
+      }
+    }
+  });
+}
+
 export function isTypescriptVersion(low: string, high?: string) {
   const version = ts.version;
 

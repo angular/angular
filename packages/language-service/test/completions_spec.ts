@@ -286,22 +286,6 @@ describe('completions', () => {
   });
 
   describe('with a *ngFor', () => {
-    it('should suggest NgForRow members for let initialization expression', () => {
-      mockHost.override(TEST_TEMPLATE, `<div *ngFor="let i=~{cursor}"></div>`);
-      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
-      const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
-      expectContain(completions, CompletionKind.PROPERTY, [
-        '$implicit',
-        'ngForOf',
-        'index',
-        'count',
-        'first',
-        'last',
-        'even',
-        'odd',
-      ]);
-    });
-
     it('should not provide suggestion before the = sign', () => {
       mockHost.override(TEST_TEMPLATE, `<div *ngFor="let i~{cursor}="></div>`);
       const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
@@ -318,6 +302,65 @@ describe('completions', () => {
       // we are actually taking the AST into account and not just referring to
       // the symbol table of the Component.
       expectContain(completions, CompletionKind.VARIABLE, ['x']);
+    });
+
+    it('should provide suggestion for template context and input name', () => {
+      mockHost.override(
+          TEST_TEMPLATE,
+          `<div *ngFor="let x	~{cursor-one}; of heroes ~{cursor-two}; tr~{cursor-three};"></div>`);
+      let marker: ts.TextSpan;
+      ['cursor-one', 'cursor-two', 'cursor-three'].forEach(_marker => {
+        marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, _marker);
+        const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
+        // the completions must include the directive input.
+        expectContain(completions, CompletionKind.PROPERTY, ['of', 'trackBy', 'template']);
+        // the completions must include the template context.
+        expectContain(completions, CompletionKind.PROPERTY, [
+          '$implicit',
+          'ngForOf',
+          'index',
+          'count',
+          'first',
+          'last',
+          'even',
+          'odd',
+        ]);
+      });
+    });
+
+    it('should provide suggestion for template context', () => {
+      mockHost.override(
+          TEST_TEMPLATE,
+          `<div *ngFor="let x; index~{cursor-one} as i; let i=~{cursor-two};"></div>`);
+      let marker: ts.TextSpan;
+      ['cursor-one', 'cursor-two'].forEach(_marker => {
+        marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, _marker);
+        const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
+        expectContain(completions, CompletionKind.PROPERTY, [
+          '$implicit',
+          'ngForOf',
+          'index',
+          'count',
+          'first',
+          'last',
+          'even',
+          'odd',
+        ]);
+      });
+    });
+
+    it('should provide suggestion for input name', () => {
+      mockHost.override(TEST_TEMPLATE, `<div *ngFor="let x; trackBy~{cursor}: myTrack;"></div>`);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+      const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
+      expectContain(completions, CompletionKind.PROPERTY, ['of', 'trackBy']);
+    });
+
+    it('should not provide suggestion before the : sign', () => {
+      mockHost.override(TEST_TEMPLATE, `<div *ngFor="let x; trackBy ~{cursor}: myTrack;"></div>`);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+      const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
+      expect(completions).toBeUndefined();
     });
 
     it('should include expression completions', () => {
