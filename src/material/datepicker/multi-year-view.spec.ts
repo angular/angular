@@ -231,22 +231,37 @@ describe('MatMultiYearView', () => {
   });
 
   describe('multi year view with date filter', () => {
-    let fixture: ComponentFixture<MultiYearViewWithDateFilter>;
-    let multiYearViewNativeElement: Element;
-
-    beforeEach(() => {
-      fixture = TestBed.createComponent(MultiYearViewWithDateFilter);
+    it('should disable years with no enabled days', () => {
+      const fixture = TestBed.createComponent(MultiYearViewWithDateFilter);
       fixture.detectChanges();
 
-      const multiYearViewDebugElement = fixture.debugElement.query(By.directive(MatMultiYearView))!;
-      multiYearViewNativeElement = multiYearViewDebugElement.nativeElement;
-    });
-
-    it('should disablex years with no enabled days', () => {
-      const cells = multiYearViewNativeElement.querySelectorAll('.mat-calendar-body-cell');
+      const cells = fixture.nativeElement.querySelectorAll('.mat-calendar-body-cell');
       expect(cells[0].classList).not.toContain('mat-calendar-body-disabled');
       expect(cells[1].classList).toContain('mat-calendar-body-disabled');
     });
+
+    it('should not call the date filter function if the date is before the min date', () => {
+      const fixture = TestBed.createComponent(MultiYearViewWithDateFilter);
+      const activeDate = fixture.componentInstance.activeDate;
+      const spy = spyOn(fixture.componentInstance, 'dateFilter').and.callThrough();
+      fixture.componentInstance.minDate =
+          new Date(activeDate.getFullYear() + 1, activeDate.getMonth(), activeDate.getDate());
+      fixture.detectChanges();
+
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should not call the date filter function if the date is after the max date', () => {
+      const fixture = TestBed.createComponent(MultiYearViewWithDateFilter);
+      const activeDate = fixture.componentInstance.activeDate;
+      const spy = spyOn(fixture.componentInstance, 'dateFilter').and.callThrough();
+      fixture.componentInstance.maxDate =
+          new Date(activeDate.getFullYear() - 1, activeDate.getMonth(), activeDate.getDate());
+      fixture.detectChanges();
+
+      expect(spy).not.toHaveBeenCalled();
+    });
+
   });
 
   describe('multi year view with minDate only', () => {
@@ -345,12 +360,17 @@ class StandardMultiYearView {
 
 @Component({
   template: `
-    <mat-multi-year-view [(activeDate)]="activeDate" [dateFilter]="dateFilter">
-    </mat-multi-year-view>
+    <mat-multi-year-view
+      [(activeDate)]="activeDate"
+      [dateFilter]="dateFilter"
+      [minDate]="minDate"
+      [maxDate]="maxDate"></mat-multi-year-view>
     `
 })
 class MultiYearViewWithDateFilter {
   activeDate = new Date(2017, JAN, 1);
+  minDate: Date | null = null;
+  maxDate: Date | null = null;
   dateFilter(date: Date) {
     return date.getFullYear() !== 2017;
   }

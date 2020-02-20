@@ -300,9 +300,9 @@ export class MatMonthView<D> implements AfterContentInit, OnDestroy {
   /** Date filter for the month */
   private _shouldEnableDate(date: D): boolean {
     return !!date &&
-        (!this.dateFilter || this.dateFilter(date)) &&
         (!this.minDate || this._dateAdapter.compareDate(date, this.minDate) >= 0) &&
-        (!this.maxDate || this._dateAdapter.compareDate(date, this.maxDate) <= 0);
+        (!this.maxDate || this._dateAdapter.compareDate(date, this.maxDate) <= 0) &&
+        (!this.dateFilter || this.dateFilter(date));
   }
 
   /**
