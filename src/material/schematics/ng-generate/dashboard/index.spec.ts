@@ -54,15 +54,10 @@ describe('material-dashboard-schematic', () => {
 
   it('should throw if no name has been specified', async () => {
     const appTree = await createTestApp(runner);
-    let message: string|null = null;
 
-    try {
-      await runner.runSchematicAsync('dashboard', {project: 'material'}, appTree).toPromise();
-    } catch (e) {
-      message = e.message;
-    }
-
-    expect(message).toMatch(/required property 'name'/);
+    await expectAsync(
+        runner.runSchematicAsync('dashboard', {project: 'material'}, appTree).toPromise())
+      .toBeRejectedWithError(/required property 'name'/);
   });
 
   describe('style option', () => {

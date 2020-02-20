@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './expect-async-error';
 export * from './wrapped-error-message';
 export * from './mock-ng-zone';
 export * from './text-dedent';

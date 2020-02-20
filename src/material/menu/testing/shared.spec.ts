@@ -1,5 +1,4 @@
 import {OverlayContainer} from '@angular/cdk/overlay';
-import {expectAsyncError} from '@angular/cdk/testing/private';
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
@@ -155,8 +154,8 @@ export function runHarnessTests(
 
     it('should throw when item is not found', async () => {
       const menu1 = await loader.getHarness(MatMenuHarness.with({triggerText: 'Menu 1'}));
-      await expectAsyncError(() => menu1.clickItem({text: 'Fake Item'}),
-          /Error: Could not find item matching {"text":"Fake Item"}/);
+      await expectAsync(menu1.clickItem({text: 'Fake Item'})).toBeRejectedWithError(
+          /Could not find item matching {"text":"Fake Item"}/);
     });
 
     it('should select item in nested menu', async () => {
@@ -167,8 +166,8 @@ export function runHarnessTests(
 
     it('should throw when intermediate item does not have submenu', async () => {
       const menu1 = await loader.getHarness(MatMenuHarness.with({triggerText: 'Menu 1'}));
-      await expectAsyncError(() => menu1.clickItem({text: 'Leaf Item 1'}, {}),
-          /Error: Item matching {"text":"Leaf Item 1"} does not have a submenu/);
+      await expectAsync(menu1.clickItem({text: 'Leaf Item 1'}, {})).toBeRejectedWithError(
+          /Item matching {"text":"Leaf Item 1"} does not have a submenu/);
     });
   });
 }

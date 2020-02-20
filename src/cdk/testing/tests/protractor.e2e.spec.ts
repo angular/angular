@@ -4,7 +4,6 @@ import {
   HarnessLoader,
   TestElement
 } from '@angular/cdk/testing';
-import {expectAsyncError} from '@angular/cdk/testing/private';
 import {ProtractorHarnessEnvironment} from '@angular/cdk/testing/protractor';
 import {browser} from 'protractor';
 import {MainComponentHarness} from './harnesses/main-component-harness';
@@ -392,11 +391,16 @@ describe('ProtractorHarnessEnvironment', () => {
     });
 
     it('should throw when multiple queries fail to match', async () => {
-      await expectAsyncError(() => harness.missingElementsAndHarnesses(),
-          'Error: Failed to find element matching one of the following queries:' +
-          '\n(TestElement for element matching selector: ".not-found"),' +
-          '\n(SubComponentHarness with host element matching selector: "test-sub" satisfying' +
-          ' the constraints: title = /not found/)');
+      try {
+        await harness.missingElementsAndHarnesses();
+        fail('Expected to throw.');
+      } catch (e) {
+        expect(e.message).toBe(
+            'Failed to find element matching one of the following queries:' +
+            '\n(TestElement for element matching selector: ".not-found"),' +
+            '\n(SubComponentHarness with host element matching selector: "test-sub" satisfying' +
+            ' the constraints: title = /not found/)');
+      }
     });
 
     it('should check if element is focused', async () => {

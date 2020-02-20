@@ -1,5 +1,4 @@
 import {Platform} from '@angular/cdk/platform';
-import {expectAsyncError} from '@angular/cdk/testing/private';
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
@@ -57,15 +56,10 @@ export function runHarnessTests(radioModule: typeof MatRadioModule,
           fixture.componentInstance.thirdGroupButtonName = 'other-name';
           fixture.detectChanges();
 
-          let errorMessage: string | null = null;
-          try {
-            await loader.getAllHarnesses(radioGroupHarness.with({name: 'third-group-name'}));
-          } catch (e) {
-            errorMessage = e.toString();
-          }
-
-          expect(errorMessage).toMatch(
-              /locator found a radio-group with name "third-group-name".*have mismatching names/);
+          await expectAsync(
+            loader.getAllHarnesses(radioGroupHarness.with({name: 'third-group-name'})))
+          .toBeRejectedWithError(
+            /locator found a radio-group with name "third-group-name".*have mismatching names/);
         });
 
     it('should get name of radio-group', async () => {
@@ -83,14 +77,8 @@ export function runHarnessTests(radioModule: typeof MatRadioModule,
       fixture.componentInstance.thirdGroupButtonName = 'other-button-name';
       fixture.detectChanges();
 
-      let errorMessage: string | null = null;
-      try {
-        await groups[2].getName();
-      } catch (e) {
-        errorMessage = e.toString();
-      }
-
-      expect(errorMessage).toMatch(/Radio buttons in radio-group have mismatching names./);
+      await expectAsync(groups[2].getName())
+        .toBeRejectedWithError(/Radio buttons in radio-group have mismatching names./);
     });
 
     it('should get id of radio-group', async () => {
@@ -149,8 +137,8 @@ export function runHarnessTests(radioModule: typeof MatRadioModule,
 
     it('should throw error when checking invalid radio button', async () => {
       const group = await loader.getHarness(radioGroupHarness.with({name: 'my-group-1-name'}));
-      await expectAsyncError(() => group.checkRadioButton({label: 'opt4'}),
-          /Error: Could not find radio button matching {"label":"opt4"}/);
+      await expectAsync(group.checkRadioButton({label: 'opt4'})).toBeRejectedWithError(
+          /Could not find radio button matching {"label":"opt4"}/);
     });
   });
 

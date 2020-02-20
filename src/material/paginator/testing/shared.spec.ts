@@ -5,7 +5,6 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatPaginatorModule, PageEvent, MatPaginator} from '@angular/material/paginator';
 import {MatPaginatorHarness} from './paginator-harness';
-import {expectAsyncError} from '@angular/cdk/testing/private';
 
 /** Shared tests to run on both the original and MDC-based paginator. */
 export function runHarnessTests(
@@ -91,8 +90,8 @@ export function runHarnessTests(
     instance.showFirstLastButtons = false;
     fixture.detectChanges();
 
-    await expectAsyncError(() => paginator.goToFirstPage(),
-        /Error: Could not find first page button inside paginator/);
+    await expectAsync(paginator.goToFirstPage()).toBeRejectedWithError(
+        /Could not find first page button inside paginator/);
   });
 
   it('should throw an error if the last page button is not available', async () => {
@@ -101,8 +100,8 @@ export function runHarnessTests(
     instance.showFirstLastButtons = false;
     fixture.detectChanges();
 
-    await expectAsyncError(() => paginator.goToLastPage(),
-        /Error: Could not find last page button inside paginator/);
+    await expectAsync(paginator.goToLastPage()).toBeRejectedWithError(
+        /Could not find last page button inside paginator/);
   });
 
   it('should throw an error if the page size selector is not available', async () => {
@@ -111,8 +110,8 @@ export function runHarnessTests(
     instance.pageSizeOptions = [];
     fixture.detectChanges();
 
-    await expectAsyncError(() => paginator.setPageSize(10),
-        /Error: Cannot find page size selector in paginator/);
+    await expectAsync(paginator.setPageSize(10)).toBeRejectedWithError(
+        /Cannot find page size selector in paginator/);
   });
 }
 

@@ -1,5 +1,4 @@
 import {OverlayContainer} from '@angular/cdk/overlay';
-import {expectAsyncError} from '@angular/cdk/testing/private';
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
@@ -131,8 +130,8 @@ export function runHarnessTests(
   it('should throw when selecting an option that is not available', async () => {
     const input = await loader.getHarness(autocompleteHarness.with({selector: '#plain'}));
     await input.enterText('New');
-    await expectAsyncError(() => input.selectOption({text: 'Texas'}),
-        /Error: Could not find a mat-option matching {"text":"Texas"}/);
+    await expectAsync(input.selectOption({text: 'Texas'})).toBeRejectedWithError(
+        /Could not find a mat-option matching {"text":"Texas"}/);
   });
 }
 

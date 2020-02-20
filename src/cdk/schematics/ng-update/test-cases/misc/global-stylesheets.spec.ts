@@ -34,14 +34,9 @@ describe('global stylesheets migration', () => {
     writeFile('/sub_project/node_modules/materialize.css/package.json', '');
     writeFile('/sub_project/assets/test.css', subProjectStylesheet);
 
-    let error: any = null;
-    try {
-      await runFixers()
-    } catch (e) {
-      error = e;
-    }
+    // Run the fixers and expect no error to be thrown.
+    await expectAsync(runFixers()).not.toBeRejected();
 
-    expect(error).toBeNull();
     // if the external stylesheet that is not of a project target would have been checked
     // by accident, the stylesheet would differ from the original file content.
     expect(appTree.readContent('/sub_project/assets/test.css')).toBe(subProjectStylesheet);

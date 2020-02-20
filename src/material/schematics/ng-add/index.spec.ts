@@ -244,15 +244,8 @@ describe('ng-add schematic', () => {
     it('should throw an error if the "build" target has been changed', async () => {
       overwriteTargetBuilder(appTree, 'build', 'thirdparty-builder');
 
-      let message: string|null = null;
-
-      try {
-        await runner.runSchematicAsync('ng-add-setup-project', {}, appTree).toPromise();
-      } catch (e) {
-        message = e.message;
-      }
-
-      expect(message).toMatch(/not using the default builders.*build/);
+      await expectAsync(runner.runSchematicAsync('ng-add-setup-project', {}, appTree).toPromise())
+        .toBeRejectedWithError(/not using the default builders.*build/);
     });
 
     it('should warn if the "test" target has been changed', async () => {
