@@ -69,6 +69,7 @@ export declare class ConfigurableFocusTrap extends FocusTrap implements ManagedF
 export declare class ConfigurableFocusTrapFactory {
     constructor(_checker: InteractivityChecker, _ngZone: NgZone, _focusTrapManager: FocusTrapManager, _document: any, _inertStrategy?: FocusTrapInertStrategy);
     create(element: HTMLElement, config?: ConfigurableFocusTrapConfig): ConfigurableFocusTrap;
+    create(element: HTMLElement, deferCaptureElements: boolean): ConfigurableFocusTrap;
     static ɵfac: i0.ɵɵFactoryDef<ConfigurableFocusTrapFactory>;
     static ɵprov: i0.ɵɵInjectableDef<ConfigurableFocusTrapFactory>;
 }

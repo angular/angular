@@ -41,14 +41,28 @@ export class ConfigurableFocusTrapFactory {
   /**
    * Creates a focus-trapped region around the given element.
    * @param element The element around which focus will be trapped.
-   * @param deferCaptureElements Defers the creation of focus-capturing elements to be done
-   *     manually by the user.
+   * @param config The focus trap configuration.
    * @returns The created focus trap instance.
    */
-  create(element: HTMLElement, config: ConfigurableFocusTrapConfig =
+  create(element: HTMLElement, config?: ConfigurableFocusTrapConfig): ConfigurableFocusTrap;
+
+  /**
+   * @deprecated Pass a config object instead of the `deferCaptureElements` flag.
+   * @breaking-change 11.0.0
+   */
+  create(element: HTMLElement, deferCaptureElements: boolean): ConfigurableFocusTrap;
+
+  create(element: HTMLElement, config: ConfigurableFocusTrapConfig | boolean =
     new ConfigurableFocusTrapConfig()): ConfigurableFocusTrap {
+    let configObject: ConfigurableFocusTrapConfig;
+    if (typeof config === 'boolean') {
+      configObject = new ConfigurableFocusTrapConfig();
+      configObject.defer = config;
+    } else {
+      configObject = config;
+    }
     return new ConfigurableFocusTrap(
         element, this._checker, this._ngZone, this._document, this._focusTrapManager,
-        this._inertStrategy, config);
+        this._inertStrategy, configObject);
   }
 }

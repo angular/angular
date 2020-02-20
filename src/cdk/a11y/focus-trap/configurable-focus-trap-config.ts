@@ -6,6 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
- export class ConfigurableFocusTrapConfig<D = any> {
+/**
+ * Configuration for creating a ConfigurableFocusTrap.
+ */
+export class ConfigurableFocusTrapConfig {
+  /**
+   * Whether to defer the creation of FocusTrap elements to be
+   * done manually by the user. Default is to create them
+   * automatically.
+   */
   defer: boolean = false;
- }
+}
