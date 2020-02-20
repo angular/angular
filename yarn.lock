@@ -1087,7 +1087,7 @@
     debug "^3.1.0"
     lodash.once "^4.1.1"
 
-"@egjs/hammerjs@^2.0.17":
+"@egjs/hammerjs@2.0.17":
   version "2.0.17"
   resolved "https://registry.yarnpkg.com/@egjs/hammerjs/-/hammerjs-2.0.17.tgz#5dc02af75a6a06e4c2db0202cae38c9263895124"
   integrity sha512-XQsZgjm2EcVUiZQf11UBJQfmZeEmOW8DpI1gsFeln6w0ae0ii4dMQEQ0kjl6DspdWX1aGY1/loyXnP0JS06e/A==
@@ -3846,7 +3846,7 @@ elliptic@^6.0.0:
     minimalistic-assert "^1.0.0"
     minimalistic-crypto-utils "^1.0.0"
 
-emitter-component@^1.1.1:
+emitter-component@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/emitter-component/-/emitter-component-1.1.1.tgz#065e2dbed6959bf470679edabeaf7981d1003ab6"
   integrity sha1-Bl4tvtaVm/RwZ57avq95gdEAOrY=
@@ -6890,14 +6890,14 @@ ngx-flamegraph@0.0.3:
   resolved "https://registry.yarnpkg.com/ngx-flamegraph/-/ngx-flamegraph-0.0.3.tgz#33eff2c4295395b129bf6377e2f7ec1ec3381bbf"
   integrity sha512-Y5Y5ycOQIdb2fnfy90TpBMgSBnkhuwOhmtJZOuxo0tnqHMhln2FamlrE6+0XZmCAeXxUsdUk55UxmSjDrl4k/w==
 
-ngx-vis@^3.0.3:
-  version "3.0.4"
-  resolved "https://registry.yarnpkg.com/ngx-vis/-/ngx-vis-3.0.4.tgz#5f28cbb2e273f73991a658d499c4f10b69572705"
-  integrity sha512-fnrxuA/hWGxW6iNKDEuSebGlvYF8bYcCBsZ3bu+eVd3SOvnpoi0utRrp3b0yuhiWcSuw4yRLvv8Fqwp519rmLA==
+ngx-vis@3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/ngx-vis/-/ngx-vis-3.0.3.tgz#d138278f69909de86d5a40db0ba1349619c7f6c6"
+  integrity sha512-Z/YFWzsLbey+Na078o7nnhA+tNZaFqY6olXnjR3fN3UN9bv3phu1DXwlZH+KD4lnIC89Xh9q4qXOKDj1hipx1Q==
   dependencies:
     tslib "^1.9.0"
-    vis-network "^7.3.4"
-    vis-timeline "^7.1.2"
+    vis-network "^7.0.1"
+    vis-timeline "^6.3.0"
 
 nice-try@^1.0.4:
   version "1.0.5"
@@ -8069,7 +8069,7 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-propagating-hammerjs@^1.4.7:
+propagating-hammerjs@1.4.7:
   version "1.4.7"
   resolved "https://registry.yarnpkg.com/propagating-hammerjs/-/propagating-hammerjs-1.4.7.tgz#671ab1791a7f88b9dccce8fd8b14a9655950e7d6"
   integrity sha512-oW9Wd+W2Tp5uOz6Fh4mEU7p+FoyU85smLH/mPga83Loh0pHa6AH4ZHGywvwMk3TWP31l7iUsvJyW265p4Ipwrg==
@@ -10412,26 +10412,46 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-vis-network@^7.3.4:
+vis-data@6.3.5:
+  version "6.3.5"
+  resolved "https://registry.yarnpkg.com/vis-data/-/vis-data-6.3.5.tgz#db53cb0828601aa0908f86eca1cfe80f69f17873"
+  integrity sha512-H8lD1NTmC5HimYeqTouxhbUya5qrYQGjpJhIHkxsm5R34EEdcm/D1cLTMLFFyIoZC6SQkADQj+dlFKf5DOnSww==
+  optionalDependencies:
+    vis-util "2.0.1"
+    vis-uuid "1.1.3"
+
+vis-network@^7.0.1:
   version "7.3.5"
   resolved "https://registry.yarnpkg.com/vis-network/-/vis-network-7.3.5.tgz#367f3a1c19ba1b677dc3dec495f7e0d235e1fd59"
   integrity sha512-i9Ow9qqYGhXwcTEetbKCHBTzYvjsag5xM+Zl009ajjZyAvMLqu3Gljk/VpcAn2WqQHZAz0g/Cg3+xfALxYwLGA==
 
-vis-timeline@^7.1.2:
-  version "7.1.3"
-  resolved "https://registry.yarnpkg.com/vis-timeline/-/vis-timeline-7.1.3.tgz#a765126adf2960a338ac9fa8b019dd596e0765df"
-  integrity sha512-os7XWX/YRg+JVnBZViT4D42eAL9TeEAp6fiB6EWX0GckSoBLQMB+f+DAt4lksYdiw0FXR1MlkkyZT1B8b4yfzQ==
+vis-timeline@^6.3.0:
+  version "6.5.2"
+  resolved "https://registry.yarnpkg.com/vis-timeline/-/vis-timeline-6.5.2.tgz#b58274ead9d57a8249d38729568d64b5ebdb3847"
+  integrity sha512-oHE+qTelAMJ6WqCrHP4QiWOS8VcyYHtqaHcZopjQOlRL8zJyn21jQKTs+PE5k2AR8Wzb9L9ZkF4b7IVE4RO0Gw==
   dependencies:
-    "@egjs/hammerjs" "^2.0.17"
-    emitter-component "^1.1.1"
+    "@egjs/hammerjs" "2.0.17"
+    emitter-component "1.1.1"
     keycharm "^0.3.0"
-    propagating-hammerjs "^1.4.7"
-    vis-util "^2.1.0"
+    moment "2.24.0"
+    propagating-hammerjs "1.4.7"
+    vis-data "6.3.5"
+    vis-util "2.1.0"
 
-vis-util@^2.1.0:
+vis-util@2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/vis-util/-/vis-util-2.0.1.tgz#4538aee119795bde1f7996a3ee8e0148baf71124"
+  integrity sha512-VBQ6zCT+Iaum70uzLbjk0nLMOjp9NhPzU42j0gaM6q6tg0eTcgIWNXzAqamhQtmm1kDj0jMLzKvkFOPENYv34w==
+
+vis-util@2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/vis-util/-/vis-util-2.1.0.tgz#aa3e668aaf0cb36bec061efe5d0e95edcaefb303"
   integrity sha512-NIzlPTwjnW2l5SLUPnThBrcvg3iMYFyE8uWcl3OOa2jH9ypuH8Fq6ZFnOhxK9xWyUmn/mOviyLbFIRlEeMa6Qw==
+
+vis-uuid@1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/vis-uuid/-/vis-uuid-1.1.3.tgz#2f53ff35e9e026b0ec93bc433ce685c40c2f784c"
+  integrity sha512-2B6XdY1bkzbUh+TugmnAaFa61KO9R5pzBzIuFIm8a9FrkbxIdSmQXV+FbfkL8QunkQV/bT0JDLQ2puqCS2+0Og==
 
 vm-browserify@^1.0.0, vm-browserify@^1.0.1:
   version "1.1.2"

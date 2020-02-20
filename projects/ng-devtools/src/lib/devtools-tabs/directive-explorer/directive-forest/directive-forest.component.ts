@@ -73,7 +73,7 @@ export class DirectiveForestComponent {
 
   handleSelect(node: FlatNode): void {
     const matchedTree: FlatNode[] = this._findMatchedNodes();
-    this.currentlyMatchedIndex = matchedTree.findIndex(matchedNode => matchedNode.position === node.position);
+    this.currentlyMatchedIndex = matchedTree.findIndex(matchedNode => matchedNode.id === node.id);
     this.select(node);
   }
 
@@ -119,7 +119,7 @@ export class DirectiveForestComponent {
     }
     evnt.preventDefault();
     const data = this.dataSource.data;
-    let prevIdx = data.findIndex(e => e.position === this.selectedNode.position) - 1;
+    let prevIdx = data.findIndex(e => e.id === this.selectedNode.id) - 1;
     if (prevIdx < 0) {
       return;
     }
@@ -141,7 +141,7 @@ export class DirectiveForestComponent {
       return;
     }
     const data = this.dataSource.data;
-    let idx = data.findIndex(e => e.position === this.selectedNode.position);
+    let idx = data.findIndex(e => e.id === this.selectedNode.id);
     const currentNode = data[idx];
     if (!this.treeControl.isExpanded(currentNode) && currentNode.expandable) {
       for (let i = idx + 1; i < data.length; i++) {
@@ -184,7 +184,7 @@ export class DirectiveForestComponent {
   }
 
   isSelected(node: FlatNode): boolean {
-    return !!this.selectedNode && this.selectedNode.position.join(',') === node.position.join(',');
+    return !!this.selectedNode && this.selectedNode.id === node.id;
   }
 
   isMatched(node: FlatNode): boolean {
