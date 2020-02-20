@@ -41,6 +41,21 @@ describe('EventListenerFocusTrapInertStrategy', () => {
         componentInstance.secondFocusableElement.nativeElement,
         'Expected second focusable element to be focused');
   }));
+
+  it('should not intercept focus if it moved outside the trap and back in again',
+    fakeAsync(() => {
+      const fixture = createComponent(SimpleFocusTrap, providers);
+      fixture.detectChanges();
+      const {secondFocusableElement, outsideFocusableElement} = fixture.componentInstance;
+
+      outsideFocusableElement.nativeElement.focus();
+      secondFocusableElement.nativeElement.focus();
+      flush();
+
+      expect(fixture.componentInstance.activeElement).toBe(secondFocusableElement.nativeElement,
+          'Expected second focusable element to be focused');
+  }));
+
 });
 
 function createComponent<T>(componentType: Type<T>, providers: Array<Object> = []
@@ -91,6 +106,7 @@ class SimpleFocusTrap implements AfterViewInit {
     });
 
     this.focusTrap = this._focusTrapFactory.create(this.focusTrapElement.nativeElement);
+    spyOnProperty(document, 'activeElement', 'get').and.callFake(() => this.activeElement);
     this.focusTrap.focusFirstTabbableElementWhenReady();
   }
 }
