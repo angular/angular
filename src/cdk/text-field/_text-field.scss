@@ -8,11 +8,13 @@
   @keyframes cdk-text-field-autofill-end {/*!*/}
 
   .cdk-text-field-autofill-monitored:-webkit-autofill {
-    animation-name: cdk-text-field-autofill-start;
+    // Since Chrome 80 we need a 1ms delay, or the animationstart event won't fire.
+    animation: cdk-text-field-autofill-start 0s 1ms;
   }
 
   .cdk-text-field-autofill-monitored:not(:-webkit-autofill) {
-    animation-name: cdk-text-field-autofill-end;
+    // Since Chrome 80 we need a 1ms delay, or the animationstart event won't fire.
+    animation: cdk-text-field-autofill-end 0s 1ms;
   }
 
   // Remove the resize handle on autosizing textareas, because whatever height
@@ -49,13 +51,14 @@ $cdk-text-field-autofill-color-frame-count: 0;
   }
 
   &:-webkit-autofill {
-    animation-name: cdk-text-field-autofill-color-#{$cdk-text-field-autofill-color-frame-count};
-    animation-fill-mode: both;
+    animation: cdk-text-field-autofill-color-#{$cdk-text-field-autofill-color-frame-count} both;
   }
 
   &.cdk-text-field-autofill-monitored:-webkit-autofill {
-    animation-name: cdk-text-field-autofill-start,
-                    cdk-text-field-autofill-color-#{$cdk-text-field-autofill-color-frame-count};
+    // Since Chrome 80 we need a 1ms delay for cdk-text-field-autofill-start, or the animationstart
+    // event won't fire.
+    animation: cdk-text-field-autofill-start 0s 1ms,
+               cdk-text-field-autofill-color-#{$cdk-text-field-autofill-color-frame-count} both;
   }
 
   $cdk-text-field-autofill-color-frame-count:
