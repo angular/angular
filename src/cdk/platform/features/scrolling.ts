@@ -26,11 +26,11 @@ export const enum RtlScrollAxisType {
 }
 
 /** Cached result of the way the browser handles the horizontal scroll axis in RTL mode. */
-let rtlScrollAxisType: RtlScrollAxisType;
+let rtlScrollAxisType: RtlScrollAxisType|undefined;
 
 /** Check whether the browser supports scroll behaviors. */
 export function supportsScrollBehavior(): boolean {
-  return !!(typeof document == 'object'  && 'scrollBehavior' in document.documentElement!.style);
+  return !!(typeof document == 'object' && 'scrollBehavior' in document.documentElement!.style);
 }
 
 /**
@@ -43,7 +43,7 @@ export function getRtlScrollAxisType(): RtlScrollAxisType {
     return RtlScrollAxisType.NORMAL;
   }
 
-  if (!rtlScrollAxisType) {
+  if (rtlScrollAxisType == null) {
     // Create a 1px wide scrolling container and a 2px wide content element.
     const scrollContainer = document.createElement('div');
     const containerStyle = scrollContainer.style;
