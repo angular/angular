@@ -128,9 +128,6 @@
 /guides/**                                         @jelbourn
 /src/components-examples/**                        @jelbourn
 
-# Accessibility demos
-/src/a11y-demo/**/*                                @jelbourn
-
 # Dev-app
 /src/dev-app/*                                     @jelbourn
 /src/dev-app/autocomplete/**                       @crisbeto

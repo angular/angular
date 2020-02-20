@@ -164,14 +164,14 @@
           "descendants": "^(true|false)$"
         }
       }
-    }, "src/!(a11y-demo|e2e-app|components-examples|universal-app|dev-app)/**/!(*.spec).ts"],
+    }, "src/!(e2e-app|components-examples|universal-app|dev-app)/**/!(*.spec).ts"],
     "require-license-banner": [
       true,
-      "src/!(a11y-demo|e2e-app|components-examples|universal-app)/**/!(*.spec).ts"
+      "src/!(e2e-app|components-examples|universal-app)/**/!(*.spec).ts"
     ],
     "no-cross-entry-point-relative-imports": [
       true,
-      "src/!(a11y-demo|e2e-app|components-examples|universal-app|dev-app)/**/!(*.spec).ts",
+      "src/!(e2e-app|components-examples|universal-app|dev-app)/**/!(*.spec).ts",
       "!src/+(cdk|material)/schematics/**/*",
       "!src/cdk/testing/+(private|tests)/**/*",
       "!src/google-maps/testing/**/*"
