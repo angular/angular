@@ -26,7 +26,7 @@ const processFlamegraphRecord = (record: ComponentRecord, result: AppEntry) => {
   for (let i = 0; i < record.position.length - 1; i++) {
     const position = record.position[i];
     if (!current[position]) {
-      console.error(`Couldn't insert`, record, 'because parent does not exist');
+      console.error(`Couldn't insert`, record, 'because parent does not exist', result.app);
       return;
     }
     current = current[position].children;

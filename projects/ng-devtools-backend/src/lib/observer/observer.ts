@@ -232,7 +232,7 @@ export class ComponentTreeObserver {
       this._fireCreationCallback(root.component.instance, true);
     }
     (root.directives || []).forEach(dir => {
-      this._fireCreationCallback(dir, false);
+      this._fireCreationCallback(dir.instance, false);
     });
     root.children.forEach(child => this._fireInitialTreeCallbacks(child));
   }
