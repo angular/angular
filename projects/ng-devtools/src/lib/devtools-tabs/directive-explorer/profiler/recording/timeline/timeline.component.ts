@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, ElementRef, Input, ViewChild } from '@angular/core';
-import { AppEntry, FlamegraphNode, formatRecords, formatFlamegraphRecords, TimelineView } from './format-records';
+import { ChangeDetectionStrategy, Component, Input, ViewChild } from '@angular/core';
+import { AppEntry, formatFlamegraphRecords, TimelineView } from './format-records';
 import { MatSlider, MatSliderChange } from '@angular/material/slider';
-import { AppRecord } from 'protocol';
+import { ProfilerFrame } from 'protocol';
 
 @Component({
   selector: 'ng-recording-timeline',
@@ -10,30 +10,19 @@ import { AppRecord } from 'protocol';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimelineComponent {
-  @Input() set records(data: AppRecord[]) {
+  @Input() set records(data: ProfilerFrame[]) {
     this.profileRecords = formatFlamegraphRecords(data);
   }
 
-  @Input() view: 'aggregated' | 'timeline' = 'aggregated';
   @ViewChild(MatSlider) slider: MatSlider;
 
   profileRecords: TimelineView = {
-    aggregated: {
-      app: [],
-      timeSpent: 0,
-      source: '',
-    },
     timeline: [],
   };
   currentView = 1;
 
   get recordsView(): AppEntry {
-    if (this.view === 'timeline') {
-      // null coalesce to aggregated if no data was recorded since aggregated will be empty, whereas
-      // timeline will not even exist
-      return this.profileRecords.timeline[this.currentView] || this.profileRecords.aggregated;
-    }
-    return this.profileRecords.aggregated;
+    return this.profileRecords.timeline[this.currentView] || { app: [], timeSpent: 0, source: '' };
   }
 
   frameRate(timeSpent: number) {

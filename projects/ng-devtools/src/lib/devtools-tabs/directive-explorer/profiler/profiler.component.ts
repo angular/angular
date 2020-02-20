@@ -1,6 +1,6 @@
 import { Component, Input, ViewChildren, QueryList, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { RecordingComponent } from './recording/recording.component';
-import { MessageBus, Events, AppRecord } from 'protocol';
+import { MessageBus, Events, ProfilerFrame } from 'protocol';
 
 type State = 'idle' | 'recording' | 'visualizing';
 type VisualState = 'time-travel' | 'timeline' | 'aggregated';
@@ -15,8 +15,8 @@ export class ProfilerComponent implements OnInit {
 
   state: State = 'idle';
   visualState: VisualState = 'aggregated';
-  stream: AppRecord[] = [];
-  buffer: AppRecord[][] = [];
+  stream: ProfilerFrame[] = [];
+  buffer: ProfilerFrame[] = [];
 
   @ViewChildren(RecordingComponent) recordingRef: QueryList<RecordingComponent>;
 
@@ -36,17 +36,17 @@ export class ProfilerComponent implements OnInit {
     this.messageBus.on('profilerResults', remainingRecords => {
       this._profilerFinished(remainingRecords);
     });
-    this.messageBus.on('sendProfilerChunk', (chunkOfRecords: AppRecord[]) => {
+    this.messageBus.on('sendProfilerChunk', (chunkOfRecords: ProfilerFrame) => {
       this.buffer.push(chunkOfRecords);
     });
   }
 
-  private _profilerFinished(remainingRecords: AppRecord[]): void {
+  private _profilerFinished(remainingRecords: ProfilerFrame): void {
     this.state = 'visualizing';
     this.visualState = 'aggregated';
 
     const flattenedBuffer = [].concat.apply([], this.buffer);
-    this.stream = [...flattenedBuffer, ...remainingRecords];
+    this.stream = [...flattenedBuffer, remainingRecords];
     this.buffer = [];
   }
 

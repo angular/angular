@@ -6,7 +6,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 
 import { ProfilerComponent } from './profiler.component';
-import { TimeTravelModule } from './time-travel/time-travel.module';
+// import { TimeTravelModule } from './time-travel/time-travel.module';
 import { RecordingComponent } from './recording/recording.component';
 import { TimelineModule } from './recording/timeline/timeline.module';
 import { RecordingDialogComponent } from './recording/recording-dialog/recording-dialog.component';
@@ -16,7 +16,7 @@ import { RecordingDialogComponent } from './recording/recording-dialog/recording
   imports: [
     CommonModule,
     MatDialogModule,
-    TimeTravelModule,
+    // TimeTravelModule,
     MatSelectModule,
     FormsModule,
     MatProgressBarModule,

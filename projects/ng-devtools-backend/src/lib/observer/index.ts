@@ -1,126 +1,104 @@
 import { ComponentTreeObserver } from './observer';
-import {
-  AppRecord,
-  DirectiveEventType,
-  ElementPosition,
-  LifeCycleEventType,
-  Events,
-  MessageBus,
-  ComponentEventType,
-} from 'protocol';
+import { ElementPosition, ProfilerFrame, ElementProfile, DirectiveProfile } from 'protocol';
 import { runOutsideAngular } from '../utils';
-import { serializeComponentState } from '../state-serializer/state-serializer';
 import { getComponentName } from '../highlighter';
 
-let records: AppRecord[] = [];
 let observer: ComponentTreeObserver;
 let inProgress = false;
 let inChangeDetection = false;
+let eventMap: Map<any, DirectiveProfile>;
 
-export const start = (messageBus: MessageBus<Events>): void => {
+export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
   if (inProgress) {
     throw new Error('Recording already in progress');
   }
+  eventMap = new Map<any, DirectiveProfile>();
   inProgress = true;
   observer = new ComponentTreeObserver({
-    onCreate(component: any, id: number, isComponent: boolean, position: ElementPosition) {
-      if (isComponent) {
-        records.push({
-          timestamp: Date.now(),
-          event: ComponentEventType.Create,
-          recordType: 'component',
-          component: getComponentName(component),
-          position: [...position],
-          state: { props: serializeComponentState(component, 1) },
-          duration: 0,
-        });
-      } else {
-        records.push({
-          timestamp: Date.now(),
-          event: DirectiveEventType.Create,
-          recordType: 'directive',
-          directive: getComponentName(component),
-          position: [...position],
-          state: { props: serializeComponentState(component, 1) },
-          duration: 0,
-        });
-      }
+    onCreate(directive: any, id: number, isComponent: boolean, position: ElementPosition) {
+      eventMap.set(directive, {
+        name: getComponentName(directive),
+        isComponent,
+        changeDetection: 0,
+        lifecycle: 0,
+      });
     },
     onChangeDetection(component: any, id: number, position: ElementPosition, duration: number) {
       if (!inChangeDetection) {
         inChangeDetection = true;
-        records.push({
-          recordType: 'lifecycle',
-          event: LifeCycleEventType.ChangeDetectionStart,
-          source: getChangeDetectionSource(),
-          timestamp: Date.now(),
-        });
         runOutsideAngular(() => {
           setTimeout(() => {
             inChangeDetection = false;
-            addNewRecord(
-              {
-                recordType: 'lifecycle',
-                event: LifeCycleEventType.ChangeDetectionEnd,
-                timestamp: Date.now(),
-              },
-              messageBus
-            );
+            onFrame(flushBuffer(observer, eventMap, getChangeDetectionSource()));
           });
         });
       }
-      records.push({
-        timestamp: Date.now(),
-        event: ComponentEventType.ChangeDetection,
-        recordType: 'component',
-        component: getComponentName(component),
-        position: [...position],
-        state: { props: serializeComponentState(component, 1) },
-        duration,
-      });
-    },
-    onDestroy(component: any, id: number, isComponent: boolean, position: ElementPosition) {
-      if (isComponent) {
-        records.push({
-          timestamp: Date.now(),
-          event: ComponentEventType.Destroy,
-          recordType: 'component',
-          component: getComponentName(component),
-          position: [...position],
-          state: { props: serializeComponentState(component, 1) },
-          duration: 0,
-        });
-      } else {
-        records.push({
-          timestamp: Date.now(),
-          event: DirectiveEventType.Destroy,
-          recordType: 'directive',
-          directive: getComponentName(component),
-          position: [...position],
-          state: { props: serializeComponentState(component, 1) },
-          duration: 0,
+      if (!eventMap.has(component)) {
+        eventMap.set(component, {
+          name: getComponentName(component),
+          isComponent: true,
+          changeDetection: 0,
+          lifecycle: 0,
         });
       }
+      const profile = eventMap.get(component);
+      profile.changeDetection += duration;
+    },
+    onDestroy(component: any, id: number, isComponent: boolean, position: ElementPosition) {
+      // TODO(mgechev): measure component removal
     },
   });
   observer.initialize();
 };
 
-export const stop = (): AppRecord[] => {
-  observer.destroy();
+export const stop = (): ProfilerFrame => {
+  const result = flushBuffer(observer, eventMap);
   // We want to garbage collect the records;
-  const temp = records;
-  records = [];
+  observer.destroy();
   inProgress = false;
-  return temp;
+  return result;
 };
 
-const addNewRecord = (record: AppRecord, messageBus: MessageBus<Events>) => {
-  records.push(record);
-  if (!inChangeDetection) {
-    messageBus.emit('sendProfilerChunk', [records]);
-    records = [];
+const insertElementProfile = (frames: ElementProfile[], position: ElementPosition, profile: DirectiveProfile) => {
+  for (let i = 0; i < position.length - 1; i++) {
+    const pos = position[i];
+    if (!frames[pos]) {
+      debugger;
+    }
+    frames = frames[pos].children;
   }
+  const lastIdx = position[position.length - 1];
+  let lastFrame: ElementProfile = {
+    children: [],
+    directives: [],
+  };
+  if (frames[lastIdx]) {
+    lastFrame = frames[lastIdx];
+  } else {
+    frames[lastIdx] = lastFrame;
+  }
+  lastFrame.directives.push(profile);
+};
+
+const flushBuffer = (obs: ComponentTreeObserver, events: Map<any, DirectiveProfile>, source: string = '') => {
+  const items = Array.from(events.keys());
+  const positions: ElementPosition[] = [];
+  const positionDirective = new Map<ElementPosition, any>();
+  items.forEach(dir => {
+    const position = obs.getDirectivePosition(dir);
+    positions.push(position);
+    positionDirective.set(position, dir);
+  });
+  positions.sort(lexicographicOrder);
+  const result: ProfilerFrame = {
+    source,
+    directives: [],
+  };
+  positions.forEach(position => {
+    const dir = positionDirective.get(position);
+    insertElementProfile(result.directives, position, events.get(dir));
+  });
+  return result;
 };
 
 const getChangeDetectionSource = () => {
@@ -129,4 +107,22 @@ const getChangeDetectionSource = () => {
     return '';
   }
   return zone.currentTask.source;
+};
+
+const lexicographicOrder = (a: ElementPosition, b: ElementPosition) => {
+  if (a.length < b.length) {
+    return -1;
+  }
+  if (a.length > b.length) {
+    return 1;
+  }
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] < b[i]) {
+      return -1;
+    }
+    if (a[i] > b[i]) {
+      return 1;
+    }
+  }
+  return 0;
 };
