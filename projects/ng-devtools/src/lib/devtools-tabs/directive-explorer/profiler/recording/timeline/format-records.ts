@@ -1,4 +1,11 @@
-import { AppRecord, ComponentEventType, ComponentRecord, LifeCycleEventType } from 'protocol';
+import {
+  AppRecord,
+  DirectiveEventType,
+  DirectiveRecord,
+  LifeCycleEventType,
+  ComponentRecord,
+  ComponentEventType,
+} from 'protocol';
 
 export interface AppEntry {
   app: FlamegraphNode[];
@@ -20,7 +27,10 @@ export interface FlamegraphNode {
   instances: number;
 }
 
-const processFlamegraphRecord = (record: ComponentRecord, result: AppEntry) => {
+const processFlamegraphRecord = (record: DirectiveRecord | ComponentRecord, result: AppEntry) => {
+  if (record.recordType !== 'component') {
+    return;
+  }
   result.timeSpent += record.duration;
   let current = result.app;
   for (let i = 0; i < record.position.length - 1; i++) {

@@ -3,7 +3,7 @@ import { Component, Input, ViewChild, OnDestroy } from '@angular/core';
 import uuid from 'uuid';
 import { Options, Edge, DataSet, Data, Node, VisNetworkService } from 'ngx-vis';
 
-import { ComponentRecord } from 'protocol';
+import { DirectiveRecord } from 'protocol';
 import {
   Timeline,
   TimelineNode,
@@ -69,7 +69,7 @@ export class TimeTravelComponent implements OnDestroy {
 
   constructor(private _visNetworkService: VisNetworkService) {}
 
-  @Input() set stream(stream: ComponentRecord[]) {
+  @Input() set stream(stream: DirectiveRecord[]) {
     if (stream.length === 0) {
       resetIdAutoIncrement();
       this._cachedFrames.clear();
@@ -139,7 +139,7 @@ export class TimeTravelComponent implements OnDestroy {
     this._visNetworkService.off(this.visNetwork, 'click');
   }
 
-  private _initStream(stream: ComponentRecord[]): void {
+  private _initStream(stream: DirectiveRecord[]): void {
     this.timeline = buildTimeline(stream);
     this._showFrame(this.timeline[0]);
   }

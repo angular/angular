@@ -1,5 +1,5 @@
 import { formatRecords, TimelineView } from './format-records';
-import { AppRecord, ComponentEventType, LifeCycleEventType } from 'protocol';
+import { AppRecord, DirectiveEventType, LifeCycleEventType, ComponentEventType } from 'protocol';
 
 describe('format records', () => {
   it('should work with empty app records', () => {
@@ -27,7 +27,7 @@ describe('format records', () => {
         timestamp: 0,
         component: 'foo',
         position: [0],
-        event: ComponentEventType.Create,
+        event: DirectiveEventType.Create,
         duration: 10,
         state: { props: {} },
       },
@@ -36,7 +36,7 @@ describe('format records', () => {
         timestamp: 0,
         component: 'bar',
         position: [0, 1],
-        event: ComponentEventType.Create,
+        event: DirectiveEventType.Create,
         duration: 20,
         state: { props: {} },
       },
