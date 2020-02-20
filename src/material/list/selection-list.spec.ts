@@ -57,7 +57,7 @@ describe('MatSelectionList without forms', () => {
     }));
 
     it('should be able to set a value on a list option', () => {
-      const optionValues = ['inbox', 'starred', 'sent-mail', 'drafts'];
+      const optionValues = ['inbox', 'starred', 'sent-mail', 'archive', 'drafts'];
 
       optionValues.forEach((optionValue, index) => {
         expect(listOptions[index].componentInstance.value).toBe(optionValue);
@@ -337,16 +337,16 @@ describe('MatSelectionList without forms', () => {
     it('should restore focus if active option is destroyed', () => {
       const manager = selectionList.componentInstance._keyManager;
 
-      spyOn(listOptions[2].componentInstance, 'focus').and.callThrough();
-      listOptions[3].componentInstance._handleFocus();
+      spyOn(listOptions[3].componentInstance, 'focus').and.callThrough();
+      listOptions[4].componentInstance._handleFocus();
 
-      expect(manager.activeItemIndex).toBe(3);
+      expect(manager.activeItemIndex).toBe(4);
 
       fixture.componentInstance.showLastOption = false;
       fixture.detectChanges();
 
-      expect(manager.activeItemIndex).toBe(2);
-      expect(listOptions[2].componentInstance.focus).toHaveBeenCalled();
+      expect(manager.activeItemIndex).toBe(3);
+      expect(listOptions[3].componentInstance.focus).toHaveBeenCalled();
     });
 
     it('should not attempt to focus the next option when the destroyed option was not focused',
@@ -354,18 +354,18 @@ describe('MatSelectionList without forms', () => {
         const manager = selectionList.componentInstance._keyManager;
 
         // Focus and blur the option to move the active item index.
-        listOptions[3].componentInstance._handleFocus();
-        listOptions[3].componentInstance._handleBlur();
+        listOptions[4].componentInstance._handleFocus();
+        listOptions[4].componentInstance._handleBlur();
 
-        spyOn(listOptions[2].componentInstance, 'focus').and.callThrough();
+        spyOn(listOptions[3].componentInstance, 'focus').and.callThrough();
 
-        expect(manager.activeItemIndex).toBe(3);
+        expect(manager.activeItemIndex).toBe(4);
 
         fixture.componentInstance.showLastOption = false;
         fixture.detectChanges();
 
-        expect(manager.activeItemIndex).toBe(2);
-        expect(listOptions[2].componentInstance.focus).not.toHaveBeenCalled();
+        expect(manager.activeItemIndex).toBe(3);
+        expect(listOptions[3].componentInstance.focus).not.toHaveBeenCalled();
       });
 
     it('should focus previous item when press UP ARROW', () => {
@@ -475,7 +475,7 @@ describe('MatSelectionList without forms', () => {
       const event = dispatchKeyboardEvent(selectionList.nativeElement, 'keydown', END);
       fixture.detectChanges();
 
-      expect(manager.activeItemIndex).toBe(3);
+      expect(manager.activeItemIndex).toBe(4);
       expect(event.defaultPrevented).toBe(true);
     });
 
@@ -551,15 +551,29 @@ describe('MatSelectionList without forms', () => {
       fixture.detectChanges();
       tick(200);
 
-      expect(manager.activeItemIndex).toBe(3);
+      expect(manager.activeItemIndex).toBe(4);
     }));
 
     it('should be able to skip to an item by typing', fakeAsync(() => {
       const manager = selectionList.componentInstance._keyManager;
 
-      expect(manager.activeItemIndex).not.toBe(3);
+      expect(manager.activeItemIndex).not.toBe(4);
 
       const event = createKeyboardEvent('keydown', D, 'd');
+      selectionList.componentInstance._keydown(event);
+      fixture.detectChanges();
+      tick(200);
+
+      expect(manager.activeItemIndex).toBe(4);
+    }));
+
+    // Test for "A" specifically, because it's a special case that can be used to select all values.
+    it('should be able to skip to an item by typing the letter "A"', fakeAsync(() => {
+      const manager = selectionList.componentInstance._keyManager;
+
+      expect(manager.activeItemIndex).not.toBe(3);
+
+      const event = createKeyboardEvent('keydown', A, 'a');
       selectionList.componentInstance._keydown(event);
       fixture.detectChanges();
       tick(200);
@@ -588,7 +602,7 @@ describe('MatSelectionList without forms', () => {
       fixture.detectChanges();
       tick(100); // Tick the rest of the timeout.
 
-      expect(manager.activeItemIndex).toBe(3);
+      expect(manager.activeItemIndex).toBe(4);
       expect(model.isEmpty()).toBe(true);
     }));
 
@@ -902,7 +916,7 @@ describe('MatSelectionList without forms', () => {
 
   describe('with single selection', () => {
     let fixture: ComponentFixture<SelectionListWithListOptions>;
-    let listOption: DebugElement[];
+    let listOptions: DebugElement[];
     let selectionList: DebugElement;
 
     beforeEach(async(() => {
@@ -915,14 +929,14 @@ describe('MatSelectionList without forms', () => {
 
       fixture = TestBed.createComponent(SelectionListWithListOptions);
       fixture.componentInstance.multiple = false;
-      listOption = fixture.debugElement.queryAll(By.directive(MatListOption));
+      listOptions = fixture.debugElement.queryAll(By.directive(MatListOption));
       selectionList = fixture.debugElement.query(By.directive(MatSelectionList))!;
       fixture.detectChanges();
     }));
 
     it('should select one option at a time', () => {
-      const testListItem1 = listOption[1].injector.get<MatListOption>(MatListOption);
-      const testListItem2 = listOption[2].injector.get<MatListOption>(MatListOption);
+      const testListItem1 = listOptions[1].injector.get<MatListOption>(MatListOption);
+      const testListItem2 = listOptions[2].injector.get<MatListOption>(MatListOption);
       const selectList =
           selectionList.injector.get<MatSelectionList>(MatSelectionList).selectedOptions;
 
@@ -932,16 +946,16 @@ describe('MatSelectionList without forms', () => {
       fixture.detectChanges();
 
       expect(selectList.selected).toEqual([testListItem1]);
-      expect(listOption[1].nativeElement.classList.contains('mat-list-single-selected-option'))
+      expect(listOptions[1].nativeElement.classList.contains('mat-list-single-selected-option'))
           .toBe(true);
 
       dispatchFakeEvent(testListItem2._getHostElement(), 'click');
       fixture.detectChanges();
 
       expect(selectList.selected).toEqual([testListItem2]);
-      expect(listOption[1].nativeElement.classList.contains('mat-list-single-selected-option'))
+      expect(listOptions[1].nativeElement.classList.contains('mat-list-single-selected-option'))
           .toBe(false);
-      expect(listOption[2].nativeElement.classList.contains('mat-list-single-selected-option'))
+      expect(listOptions[2].nativeElement.classList.contains('mat-list-single-selected-option'))
           .toBe(true);
     });
 
@@ -950,7 +964,7 @@ describe('MatSelectionList without forms', () => {
     });
 
     it('should not deselect the target option on click', () => {
-      const testListItem1 = listOption[1].injector.get<MatListOption>(MatListOption);
+      const testListItem1 = listOptions[1].injector.get<MatListOption>(MatListOption);
       const selectList =
           selectionList.injector.get<MatSelectionList>(MatSelectionList).selectedOptions;
 
@@ -972,6 +986,19 @@ describe('MatSelectionList without forms', () => {
       expect(() => fixture.detectChanges()).toThrow(new Error(
           'Cannot change `multiple` mode of mat-selection-list after initialization.'));
     });
+
+    it('should do nothing when pressing ctrl + a', () => {
+      const event = createKeyboardEvent('keydown', A, selectionList.nativeElement);
+      Object.defineProperty(event, 'ctrlKey', {get: () => true});
+
+      expect(listOptions.every(option => !option.componentInstance.selected)).toBe(true);
+
+      dispatchEvent(selectionList.nativeElement, event);
+      fixture.detectChanges();
+
+      expect(listOptions.every(option => !option.componentInstance.selected)).toBe(true);
+    });
+
   });
 });
 
@@ -1369,12 +1396,15 @@ describe('MatSelectionList with forms', () => {
     <mat-list-option checkboxPosition="before" value="sent-mail">
       Sent Mail
     </mat-list-option>
+    <mat-list-option checkboxPosition="before" value="archive">
+      Archive
+    </mat-list-option>
     <mat-list-option checkboxPosition="before" value="drafts" *ngIf="showLastOption">
       Drafts
     </mat-list-option>
   </mat-selection-list>`})
 class SelectionListWithListOptions {
-  showLastOption: boolean = true;
+  showLastOption = true;
   listRippleDisabled = false;
   multiple = true;
   selectionListColor: ThemePalette;
