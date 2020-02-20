@@ -15,6 +15,9 @@ export const start = (messageBus: MessageBus<Events>): void => {
   inProgress = true;
   observer = new ComponentTreeObserver({
     onCreate(component: any, id: number, isComponent: boolean, position: ElementPosition) {
+      if (!isComponent) {
+        return;
+      }
       records.push(createRecord({ recorderComponent: { component, position }, eventType: ComponentEventType.Create }));
     },
     onChangeDetection(component: any, id: number, position: ElementPosition, duration: number) {
@@ -37,6 +40,9 @@ export const start = (messageBus: MessageBus<Events>): void => {
       );
     },
     onDestroy(component: any, id: number, isComponent: boolean, position: ElementPosition) {
+      if (!isComponent) {
+        return;
+      }
       records.push(createRecord({ recorderComponent: { component, position }, eventType: ComponentEventType.Destroy }));
     },
   });
