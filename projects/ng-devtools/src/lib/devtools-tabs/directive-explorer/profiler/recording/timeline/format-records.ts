@@ -14,6 +14,7 @@ export interface FlamegraphNode {
   value: number;
   children: FlamegraphNode[];
   label: string;
+  original: ElementProfile;
 }
 
 const getLabel = (element: ElementProfile) => {
@@ -22,7 +23,7 @@ const getLabel = (element: ElementProfile) => {
     .filter(d => !d.isComponent)
     .map(d => d.name)
     .join(', ');
-  return attributes === '[]' ? name : `${name}[${attributes}]`;
+  return attributes === '' ? name : `${name}[${attributes}]`;
 };
 
 const addFrame = (nodes: FlamegraphNode[], elements: ElementProfile[]): number => {
@@ -37,6 +38,7 @@ const addFrame = (nodes: FlamegraphNode[], elements: ElementProfile[]): number =
       value: element.directives.reduce((a, c) => a + c.lifecycle + c.changeDetection, 0),
       label: getLabel(element),
       children: [],
+      original: element,
     };
     timeSpent += addFrame(node.children, element.children);
     timeSpent += node.value;
