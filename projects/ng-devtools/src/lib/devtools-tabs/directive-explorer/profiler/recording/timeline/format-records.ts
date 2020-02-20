@@ -29,8 +29,8 @@ const getLabel = (element: ElementProfile) => {
 const addFrame = (nodes: FlamegraphNode[], elements: ElementProfile[]): number => {
   let timeSpent = 0;
   elements.forEach(element => {
-    // Possibly undefined because of the insertion
-    // on the backend.
+    // Possibly undefined because of
+    // the insertion on the backend.
     if (!element) {
       return;
     }
