@@ -63,7 +63,8 @@ const insertElementProfile = (frames: ElementProfile[], position: ElementPositio
   for (let i = 0; i < position.length - 1; i++) {
     const pos = position[i];
     if (!frames[pos]) {
-      debugger;
+      // console.warn('Unable to find parent node for', frames);
+      return;
     }
     frames = frames[pos].children;
   }
