@@ -228,6 +228,34 @@ runInEachFileSystem(() => {
            expect(entryPoint.package).toEqual(_Abs('/path_mapped/dist/primary'));
          });
 
+      it('should correctly compute an entry-point whose path starts with the same string as another entry-point, via pathMappings',
+         () => {
+           const basePath = _Abs('/path_mapped/node_modules');
+           const targetPath = _Abs('/path_mapped/node_modules/test');
+           const pathMappings: PathMappings = {
+             baseUrl: '/path_mapped/dist',
+             paths: {
+               'lib1': ['my-lib/my-lib', 'my-lib'],
+               'lib2': ['my-lib-other/my-lib-other', 'my-lib-other']
+             }
+           };
+           loadTestFiles([
+             ...createPackage(_Abs('/path_mapped/node_modules'), 'test', ['lib2']),
+             ...createPackage(_Abs('/path_mapped/dist/my-lib'), 'my-lib'),
+             ...createPackage(_Abs('/path_mapped/dist/my-lib-other'), 'my-lib-other'),
+           ]);
+           const srcHost = new EsmDependencyHost(fs, new ModuleResolver(fs, pathMappings));
+           const dtsHost = new DtsDependencyHost(fs, pathMappings);
+           resolver = new DependencyResolver(fs, logger, {esm2015: srcHost}, dtsHost);
+           const finder = new TargetedEntryPointFinder(
+               fs, config, logger, resolver, basePath, targetPath, pathMappings);
+           const {entryPoints} = finder.findEntryPoints();
+           expect(dumpEntryPointPaths(basePath, entryPoints)).toEqual([
+             ['../dist/my-lib-other/my-lib-other', '../dist/my-lib-other/my-lib-other'],
+             ['test', 'test'],
+           ]);
+         });
+
       it('should handle pathMappings that map to files or non-existent directories', () => {
         const basePath = _Abs('/path_mapped/node_modules');
         const targetPath = _Abs('/path_mapped/node_modules/test');

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, getFileSystem, join, resolve} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, getFileSystem, join, relative, resolve} from '../../../src/ngtsc/file_system';
 import {PathMappings} from '../utils';
 
 /**
@@ -42,7 +42,7 @@ export function getBasePaths(
       basePaths.push(basePath);
     }));
   }
-  basePaths.sort();  // Get the paths in order with the shorter ones first.
+  basePaths.sort().reverse();  // Get the paths in order with the longer ones first.
   return basePaths.filter(removeDeeperPaths);
 }
 
@@ -56,16 +56,19 @@ function extractPathPrefix(path: string) {
 }
 
 /**
- * A filter function that removes paths that are already covered by higher paths.
+ * A filter function that removes paths that are contained by other paths.
+ *
+ * For example given `['a/b/c', 'a/b', 'd/e', 'd']` we will end up with `['a/b', 'd']`.
+ *
+ * We only need to check the following path since the `array` is sorted in reverse alphabetic order.
  *
  * @param value The current path.
  * @param index The index of the current path.
- * @param array The array of paths (sorted alphabetically).
- * @returns true if this path is not already covered by a previous path.
+ * @param array The array of paths (sorted in reverse alphabetical order).
+ * @returns true if this path is not contained by another path.
  */
 function removeDeeperPaths(value: AbsoluteFsPath, index: number, array: AbsoluteFsPath[]) {
-  for (let i = 0; i < index; i++) {
-    if (value.startsWith(array[i])) return false;
-  }
-  return true;
+  // Use `relative()` rather than `startsWith()` to avoid false positives for paths like
+  // `abc/defg` and `abc/def` since the former is not contained by the latter.
+  return index === array.length - 1 || relative(value, array[index + 1]).startsWith('../');
 }
