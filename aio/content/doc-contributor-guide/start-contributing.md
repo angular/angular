@@ -10,8 +10,14 @@ If you're looking for information on how to start contributing to Angular
 code repositories, refer to
 [the Angular community guidelines](https://angular.io/contribute).
 
-## The basics of Angular documentation
+## Filing documentation issues
 
-The Angular documentation lives in the `aio` directory of the
-[Angular GitHub repository](https://github.com/angular/angular). You write
-documentation using a Markdown format. 
+TBA
+
+## Making minor updates
+
+TBA
+
+## Making major updates
+
+TBA
