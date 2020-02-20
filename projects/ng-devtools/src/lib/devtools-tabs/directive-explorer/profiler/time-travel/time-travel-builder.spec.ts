@@ -366,7 +366,7 @@ describe('timelineBuilder', () => {
     expect(timeline[3].roots[0].children[1].children[0].children[0].name).toEqual('TodosComponent');
   });
 
-  fit('should work with creation of sibling components', () => {
+  it('should work with creation of sibling components', () => {
     const timeline = buildTimeline(creationsAndChangeDetectionAndCreationAndCreation);
     expect(timeline.length).toBe(4);
 

@@ -85,20 +85,13 @@ const buildInitialState = (records: ComponentRecord[]): { initialState: Timeline
 const applyChangeDetectionMutation = (frame: TimelineFrame, record: ComponentRecord) => {
   let children = frame.roots;
   let current: TimelineNode;
-  let temp = [];
   for (const step of record.position) {
     current = children[step];
-    if (children.length) {
-      temp = children;
-    }
     if (!current) {
       console.error('Unable to find node in time travel in change detection', record, frame);
       return;
     }
     children = current.children;
-  }
-  if (record.component === 'TodoComponent') {
-    console.log(record.position, temp);
   }
   current.state = TimelineNodeState.Check;
   current.instanceState = record.state;
