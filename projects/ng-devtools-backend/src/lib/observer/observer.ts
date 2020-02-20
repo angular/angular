@@ -46,7 +46,7 @@ export interface Config {
   onLifecycleHook: LifecycleCallback;
 }
 
-const hooks = [
+const hookTViewProperties = [
   'preOrderHooks',
   'preOrderCheckHooks',
   'contentHooks',
@@ -282,7 +282,7 @@ export class ComponentTreeObserver {
   private _observeLifecycle(directive: any, isComponent: boolean) {
     const ctx = directive.__ngContext__;
     const tview = ctx[1];
-    hooks.forEach(hook => {
+    hookTViewProperties.forEach(hook => {
       const current = tview[hook];
       if (!Array.isArray(current)) {
         return;
