@@ -1,5 +1,5 @@
 import { buildTimeline, Timeline, TimelineNodeState } from './time-travel-builder';
-import { ComponentRecord } from 'protocol';
+import { ComponentRecord, ComponentEventType } from 'protocol';
 
 const creations: ComponentRecord[] = [
   {
@@ -285,7 +285,7 @@ const creationsAndChangeDetectionAndCreationAndCreation: ComponentRecord[] = [
     timestamp: 1579213248411,
     component: 'DemoAppComponent',
     position: [0],
-    event: 0,
+    event: ComponentEventType.Create,
     duration: 0,
     state: { props: {} },
   },
@@ -294,7 +294,7 @@ const creationsAndChangeDetectionAndCreationAndCreation: ComponentRecord[] = [
     timestamp: 1579213248411,
     component: 'AppComponent',
     position: [0, 0],
-    event: 0,
+    event: ComponentEventType.Create,
     duration: 0,
     state: { props: {} },
   },
@@ -304,7 +304,7 @@ const creationsAndChangeDetectionAndCreationAndCreation: ComponentRecord[] = [
     component: 'DemoAppComponent',
     state: { props: {} },
     position: [0],
-    event: 2,
+    event: ComponentEventType.ChangeDetection,
     duration: 0.004999979864805937,
   },
   {
@@ -312,7 +312,7 @@ const creationsAndChangeDetectionAndCreationAndCreation: ComponentRecord[] = [
     timestamp: 1579213248411,
     component: 'TodosComponent',
     position: [0, 0],
-    event: 0,
+    event: ComponentEventType.Create,
     duration: 0,
     state: { props: {} },
   },
@@ -322,7 +322,7 @@ const creationsAndChangeDetectionAndCreationAndCreation: ComponentRecord[] = [
     state: { props: {} },
     component: 'AppComponent',
     position: [0, 1],
-    event: 2,
+    event: ComponentEventType.Create,
     duration: 0.014999997802078724,
   },
 ];
@@ -366,7 +366,7 @@ describe('timelineBuilder', () => {
     expect(timeline[3].roots[0].children[1].children[0].children[0].name).toEqual('TodosComponent');
   });
 
-  it('should work with creation of sibling components', () => {
+  fit('should work with creation of sibling components', () => {
     const timeline = buildTimeline(creationsAndChangeDetectionAndCreationAndCreation);
     expect(timeline.length).toBe(4);
 
@@ -378,8 +378,8 @@ describe('timelineBuilder', () => {
 
     // DemoAppComponent's change detection completed, which caused
     // creation of TodosComponent
-    expect(timeline[2].roots[0].state).toEqual(TimelineNodeState.Default);
-    expect(timeline[2].roots[0].children[0].name).toEqual('TodosComponent');
-    expect(timeline[2].roots[0].children[1].name).toEqual('AppComponent');
+    expect(timeline[3].roots[0].state).toEqual(TimelineNodeState.Default);
+    expect(timeline[3].roots[0].children[0].name).toEqual('TodosComponent');
+    expect(timeline[3].roots[0].children[1].name).toEqual('AppComponent');
   });
 });

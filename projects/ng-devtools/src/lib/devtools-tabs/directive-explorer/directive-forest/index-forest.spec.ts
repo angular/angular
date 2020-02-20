@@ -13,6 +13,7 @@ describe('indexForest', () => {
           directives: [],
           component: {
             name: 'Cmp1',
+            id: 1,
           },
           children: [
             {
@@ -20,9 +21,11 @@ describe('indexForest', () => {
               directives: [
                 {
                   name: 'Dir1',
+                  id: 1,
                 },
                 {
                   name: 'Dir2',
+                  id: 1,
                 },
               ],
               component: null,
@@ -33,6 +36,7 @@ describe('indexForest', () => {
               directives: [],
               component: {
                 name: 'Cmp2',
+                id: 1,
               },
               children: [],
             },
@@ -48,6 +52,7 @@ describe('indexForest', () => {
               directives: [
                 {
                   name: 'Dir3',
+                  id: 1,
                 },
               ],
               component: null,
@@ -58,9 +63,11 @@ describe('indexForest', () => {
               directives: [
                 {
                   name: 'Dir4',
+                  id: 1,
                 },
                 {
                   name: 'Dir5',
+                  id: 1,
                 },
               ],
               component: null,
@@ -76,6 +83,7 @@ describe('indexForest', () => {
         position: [0],
         component: {
           name: 'Cmp1',
+          id: 1,
         },
         children: [
           {
@@ -84,9 +92,11 @@ describe('indexForest', () => {
             directives: [
               {
                 name: 'Dir1',
+                id: 1,
               },
               {
                 name: 'Dir2',
+                id: 1,
               },
             ],
             component: null,
@@ -98,6 +108,7 @@ describe('indexForest', () => {
             position: [0, 1],
             component: {
               name: 'Cmp2',
+              id: 1,
             },
             children: [],
           },
@@ -115,6 +126,7 @@ describe('indexForest', () => {
             directives: [
               {
                 name: 'Dir3',
+                id: 1,
               },
             ],
             component: null,
@@ -126,9 +138,11 @@ describe('indexForest', () => {
             directives: [
               {
                 name: 'Dir4',
+                id: 1,
               },
               {
                 name: 'Dir5',
+                id: 1,
               },
             ],
             component: null,
