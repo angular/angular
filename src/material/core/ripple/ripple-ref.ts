@@ -9,7 +9,7 @@
 import {RippleConfig, RippleRenderer} from './ripple-renderer';
 
 /** Possible states for a ripple element. */
-export enum RippleState {
+export const enum RippleState {
   FADING_IN, VISIBLE, FADING_OUT, HIDDEN
 }
 

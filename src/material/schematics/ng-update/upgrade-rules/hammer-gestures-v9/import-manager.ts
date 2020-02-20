@@ -13,7 +13,7 @@ import * as ts from 'typescript';
 // tslint:disable:no-bitwise
 
 /** Enum describing the possible states of an analyzed import. */
-enum ImportState {
+const enum ImportState {
   UNMODIFIED = 0b0,
   MODIFIED = 0b10,
   ADDED = 0b100,

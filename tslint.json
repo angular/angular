@@ -117,6 +117,7 @@
     "require-breaking-change-version": true,
     "class-list-signatures": true,
     "no-nested-ternary": true,
+    "prefer-const-enum": true,
     "coercion-types": [true,
       ["coerceBooleanProperty", "coerceCssPixelValue", "coerceNumberProperty"],
       {

@@ -81,7 +81,7 @@ export declare class MatCheckboxRequiredValidator extends CheckboxRequiredValida
     static ɵfac: i0.ɵɵFactoryDef<MatCheckboxRequiredValidator>;
 }
 
-export declare enum TransitionCheckState {
+export declare const enum TransitionCheckState {
     Init = 0,
     Checked = 1,
     Unchecked = 2,

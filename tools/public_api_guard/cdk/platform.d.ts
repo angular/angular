@@ -26,7 +26,7 @@ export declare class PlatformModule {
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<PlatformModule, never, never, never>;
 }
 
-export declare enum RtlScrollAxisType {
+export declare const enum RtlScrollAxisType {
     NORMAL = 0,
     NEGATED = 1,
     INVERTED = 2

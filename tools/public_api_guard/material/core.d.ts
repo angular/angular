@@ -441,7 +441,7 @@ export declare class RippleRenderer {
     setupTriggerEvents(elementOrElementRef: HTMLElement | ElementRef<HTMLElement>): void;
 }
 
-export declare enum RippleState {
+export declare const enum RippleState {
     FADING_IN = 0,
     VISIBLE = 1,
     FADING_OUT = 2,
