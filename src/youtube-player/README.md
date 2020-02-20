@@ -34,7 +34,7 @@ export class YoutubePlayerExampleModule {
 
 // example-component.ts
 @Component({
-  template: '<youtube-player videoId="PRQCAL_RMVo" />',
+  template: '<youtube-player videoId="PRQCAL_RMVo"></youtube-player>',
   selector: 'youtube-player-example',
 })
 class YoutubePlayerExample implements OnInit {
