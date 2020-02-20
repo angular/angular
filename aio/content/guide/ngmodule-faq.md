@@ -1,21 +1,4 @@
-<<<<<<< HEAD
-# NgModule FAQs
-
-<!--
-#### Prerequisites:
--->
-#### 사전지식
-<!--
-A basic understanding of the following concepts:
-* [NgModules](guide/ngmodules).
--->
-다음 내용을 먼저 이해하고 이 문서를 보는 것이 좋습니다:
-* [NgModule](guide/ngmodules)
-
-<hr />
-=======
 # NgModule FAQ
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 NgModules help organize an application into cohesive blocks of functionality.
@@ -1093,7 +1076,11 @@ Some suggestions and guidelines appear to have wide appeal.
 앱은 모두 다릅니다. 앱을 개발하는 개발자의 경험도 모두 다르고, 정책을 정하는 기준도 다릅니다.
 이 문단에서는 모듈에 대한 대략적인 가이드를 안내합니다.
 
+### `SharedModule`
+<!--
 ### 공유 모듈 (`SharedModule`)
+-->
+
 <!--
 `SharedModule` is a conventional name for an `NgModule` with the components, directives, and pipes that you use
 everywhere in your app. This module should consist entirely of `declarations`,

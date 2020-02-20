@@ -1,26 +1,17 @@
-<<<<<<< HEAD
 <!--
-# Lifecycle Hooks
+# Lifecycle hooks
 -->
 # 라이프싸이클 후킹
-=======
-# Lifecycle hooks
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 A component has a lifecycle managed by Angular.
 -->
 컴포넌트는 Angular가 관리하는 라이프싸이클을 따릅니다.
 
-<<<<<<< HEAD
 <!--
-Angular creates it, renders it, creates and renders its children,
-checks it when its data-bound properties change, and destroys it before removing it from the DOM.
+Angular creates and renders components along with their children, checks when their data-bound properties change, and destroys them before removing them from the DOM.
 -->
 컴포넌트는 Angular가 생성하고, 렌더링하며, 자식 컴포넌트를 순차적으로 생성하고 생성하고 렌더링합니다.
-=======
-Angular creates and renders components along with their children, checks when their data-bound properties change, and destroys them before removing them from the DOM.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 Angular offers **lifecycle hooks**
@@ -205,8 +196,10 @@ calls the lifecycle hook methods in the following sequence at specific moments:
 
       <!--
       Respond after Angular checks the component's views and child views / the view that a directive is in.
+      Called after the `ngAfterViewInit()` and every subsequent `ngAfterContentChecked()`.
       -->
       Angular가 컴포넌트 뷰와 자식 컴포넌트 뷰, 뷰 안에 있는 디렉티브가 준비되었는지 검사한 후에 실행됩니다.
+      Called after the `ngAfterViewInit()` and every subsequent `ngAfterContentChecked()`.
 
     </td>
   </tr>

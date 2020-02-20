@@ -161,15 +161,12 @@ That method toggles the component's `format` property between a short form
 As you click the button, the displayed date alternates between
 "**<samp>04/15/1988</samp>**" and
 "**<samp>Friday, April 15, 1988</samp>**".
-<<<<<<< HEAD
 -->
 앱을 실행하고 버튼을 클릭하면 템플릿에 적용되는 파이프의 형식이 바뀌는 것을 확인할 수 있습니다.
-
-<figure>
-=======
+"**<samp>04/15/1988</samp>**"
+"**<samp>Friday, April 15, 1988</samp>**".
 
 <div class="lightbox">
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
   <img src='generated/images/guide/pipes/date-format-toggle-anim.gif' alt="Date Format Toggle">
 </div>
 
@@ -435,13 +432,8 @@ Notice how a hero is added:
 <code-example path="pipes/src/app/flying-heroes.component.ts" region="push" header="src/app/flying-heroes.component.ts"></code-example>
 
 
-<<<<<<< HEAD
 <!--
-You add the hero into the `heroes` array.  The reference to the array hasn't changed.
-=======
-
 You add the hero into the `heroes` array. The reference to the array hasn't changed.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 It's the same array. That's all Angular cares about. From its perspective, *same array, no change, no display update*.
 
 To fix that, create an array with the new hero appended and assign that to `heroes`.
@@ -878,7 +870,7 @@ The list might be sorted by hero `name` and `planet` of origin properties in the
 
 <!--
 <code-example language="html">
-  &lt;!-- NOT REAL CODE!
+  &lt;!-- NOT REAL CODE! --&gt;
   &lt;div *ngFor="let hero of heroes | orderBy:'name,planet'">&lt;/div>
 </code-example>
 -->

@@ -115,17 +115,18 @@ With the server running, you can point your browser at http://localhost:8080/. Y
 
 **팁:** Angular 서비스 워커를 사용할 때는 이전에 실행했던 서비스 워커의 영향을 배제하기 위해 브라우저를 시크릿 모드로 실행하는 것이 좋습니다.
 
-<<<<<<< HEAD
-<!--
-=======
 <div class="alert is-helpful">
 
+<!--
 **Note:**
 If you are not using HTTPS, the service worker will only be registered when accessing the app on `localhost`.
+-->
+**참고:**
+HTTPS를 사용하지 않으면 `localhost`에서 앱을 실행할 때만 서비스 워커를 등록할 수 있습니다.
 
 </div>
 
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+<!--
 ### Simulating a network issue
 -->
 ### 네트워크 오류 시뮬레이션하기
@@ -139,24 +140,18 @@ To simulate a network issue, disable network interaction for your application. I
 -->
 네트워크 오류를 시뮬레이션하려면 애플리케이션이 동작하는 네트워크 환경을 조작하면 됩니다. Chrome이라면 이렇게 합니다:
 
-<<<<<<< HEAD
 1. 오른쪽 위 메뉴에서 **도구 더보기** > **개발자 도구**를 선택합니다.
 2. **Network 탭**으로 이동합니다.
 3. **Offline 박스**를 체크합니다.
 
 <!--
-<figure>
-  <img src="generated/images/guide/service-worker/offline-checkbox.png" alt="The offline checkbox in the Network tab is checked">
-</figure>
--->
-<figure>
-  <img src="generated/images/guide/service-worker/offline-checkbox.png" alt="Network 탭의 Offline 체크박스가 체크된 모습">
-</figure>
-=======
 <div class="lightbox">
   <img src="generated/images/guide/service-worker/offline-checkbox.png" alt="The offline checkbox in the Network tab is checked">
 </div>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<div class="lightbox">
+  <img src="generated/images/guide/service-worker/offline-checkbox.png" alt="Network 탭의 Offline 체크박스가 체크된 모습">
+</div>
 
 <!--
 Now the app has no access to network interaction.
@@ -279,22 +274,16 @@ Now look at how the browser and service worker handle the updated application.
 -->
 이제 브라우저와 서비스 워커가 어떻게 동작하는지 확인해 봅시다.
 
-<<<<<<< HEAD
 1. 이전에 열었던 윈도우에서 http://localhost:8080로 접속합니다. 어떤 화면이 보이나요?
 
 <!--
-<figure>
-  <img src="generated/images/guide/service-worker/welcome-msg-en.png" alt="It still says Welcome to Service Workers!">
-</figure>
--->
-<figure>
-  <img src="generated/images/guide/service-worker/welcome-msg-en.png" alt="아직 Welcome to Service Workers!가 표시됩니다.">
-</figure>
-=======
 <div class="lightbox">
   <img src="generated/images/guide/service-worker/welcome-msg-en.png" alt="It still says Welcome to Service Workers!">
 </div>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<div class="lightbox">
+  <img src="generated/images/guide/service-worker/welcome-msg-en.png" alt="아직 Welcome to Service Workers!가 표시됩니다.">
+</div>
 
 <!--
 What went wrong? Nothing, actually. The Angular service worker is doing its job and serving the version of the application that it has **installed**, even though there is an update available. In the interest of speed, the service worker doesn't wait to check for updates before it serves the application that it has cached.
@@ -308,22 +297,16 @@ If you look at the `http-server` logs, you can see the service worker requesting
 `http-server`가 출력한 로그를 확인해보면 서비스 워커가 `ngsw.json` 파일을 요청한 것을 확인할 수 있습니다.
 서비스 워커는 이 파일의 내용을 보고 업데이트를 해야 할지 판단합니다.
 
-<<<<<<< HEAD
 2. 페이지를 새로고침 해봅시다.
 
 <!--
-<figure>
-  <img src="generated/images/guide/service-worker/welcome-msg-fr.png" alt="The text has changed to say Bienvenue à app!">
-</figure>
--->
-<figure>
-  <img src="generated/images/guide/service-worker/welcome-msg-fr.png" alt="화면의 문구가 Bienvenue à app!로 변경되었습니다.">
-</figure>
-=======
 <div class="lightbox">
   <img src="generated/images/guide/service-worker/welcome-msg-fr.png" alt="The text has changed to say Bienvenue à app!">
 </div>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<div class="lightbox">
+  <img src="generated/images/guide/service-worker/welcome-msg-fr.png" alt="화면의 문구가 Bienvenue à app!로 변경되었습니다.">
+</div>
 
 <!--
 The service worker installed the updated version of your app *in the background*, and the next time the page is loaded or reloaded, the service worker switches to the latest version.
@@ -341,9 +324,6 @@ The service worker installed the updated version of your app *in the background*
 <!--
 You may also be interested in the following:
 * [Communicating with service workers](guide/service-worker-communications).
-<<<<<<< HEAD
 -->
 이제 다음 내용을 확인해 보세요:
 * [서비스 워커로 통신하기](guide/service-worker-communications).
-=======
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072

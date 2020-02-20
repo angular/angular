@@ -1,23 +1,7 @@
-<<<<<<< HEAD
 <!--
-# JavaScript Modules vs. NgModules
+# JavaScript modules vs. NgModules
 -->
 # JavaScript 모듈 vs. NgModules
-
-<!--
-#### Prerequisites
--->
-#### 사전지식
-
-<!--
-A basic understanding of [JavaScript/ECMAScript modules](https://hacks.mozilla.org/2015/08/es6-in-depth-modules/).
--->
-[JavaScript/ECMAScript의 모듈](https://hacks.mozilla.org/2015/08/es6-in-depth-modules/)에 대해 먼저 이해하고 이 문서를 보는 것이 좋습니다.
-
-<hr>
-=======
-# JavaScript modules vs. NgModules
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 JavaScript and Angular use modules to organize code, and
@@ -25,11 +9,7 @@ though they organize it differently, Angular apps rely on both.
 -->
 JavaScript와 Angular는 코드를 효율적으로 관리하기 위해 모듈 체계를 사용하지만, 두 영역의 모듈 체계는 서로 다릅니다. Angular 애플리케이션에서는 두 모듈 체계를 모두 사용합니다.
 
-<<<<<<< HEAD
 <!--
-=======
-
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 ## JavaScript modules
 -->
 ## JavaScript 모듈
@@ -42,6 +22,7 @@ JavaScript에서는 JavaScript 코드가 작성된 개별 파일을 모듈로 �
 ```typescript
 export class AppComponent { ... }
 ```
+
 <!--
 Then, when you need that file’s code in another file, you import it like this:
 -->

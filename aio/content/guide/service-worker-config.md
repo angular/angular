@@ -17,34 +17,20 @@ A basic understanding of the following:
 
 <hr />
 
-<<<<<<< HEAD
-<!--
-The `src/ngsw-config.json` configuration file specifies which files and data URLs the Angular
-service worker should cache and how it should update the cached files and data. The
-[Angular CLI](cli) processes the configuration file during `ng build --prod`. Manually, you can process
-it with the `ngsw-config` tool:
--->
-Angular 서비스 워커 설정 파일인 `src/ngsw-config.json`에는 서비스 워커가 캐싱해야 할 파일과 데이터 URL, 그리고 이 리소스를 유지하는 정책을 설정합니다. 이 파일은 [Angular CLI](cli)로 `ng build --prod` 명령을 실행할 때 빌드 과정에 반영되며, `ngsw-config` 툴을 사용해서 직접 반영할 수도 있습니다:
-=======
 The `ngsw-config.json` configuration file specifies which files and data URLs the Angular service
 worker should cache and how it should update the cached files and data. The [Angular CLI](cli)
 processes the configuration file during `ng build --prod`. Manually, you can process it with the
 `ngsw-config` tool (where `<project-name>` is the name of the project being built):
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <code-example language="sh">
 ./node_modules/.bin/ngsw-config ./dist/&lt;project-name&gt; ./ngsw-config.json [/base/href]
 </code-example>
 
-<<<<<<< HEAD
 <!--
-The configuration file uses the JSON format. All file paths must begin with `/`, which is the deployment directory&mdash;usually `dist` in CLI projects.
--->
-이 설정 파일은 JSON 형식입니다. 이 파일에서 다른 파일의 위치를 가리킬 때는 반드시 `/`로 시작해야 하는데, 이 위치는 애플리케이션의 빌드 결과물이 위치하는 폴더를 의미하기 때문에 일반적으로 `dist` 폴더를 의미합니다.
-=======
 The configuration file uses the JSON format. All file paths must begin with `/`, which corresponds
 to the deployment directory&mdash;usually `dist/<project-name>` in CLI projects.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+이 설정 파일은 JSON 형식입니다. 이 파일에서 다른 파일의 위치를 가리킬 때는 반드시 `/`로 시작해야 하는데, 이 위치는 애플리케이션의 빌드 결과물이 위치하는 폴더를 의미하기 때문에 일반적으로 `dist/<프로젝트-이름>` 폴더를 의미합니다.
 
 {@a glob-patterns}
 <!--
@@ -199,23 +185,17 @@ Defaults to the value `installMode` is set to.
 
 ### `resources`
 
-<<<<<<< HEAD
 <!--
-This section describes the resources to cache, broken up into three groups.
-=======
 This section describes the resources to cache, broken up into the following groups:
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 * `files` lists patterns that match files in the distribution directory. These can be single files or glob-like patterns that match a number of files.
 
 * `urls` includes both URLs and URL patterns that will be matched at runtime. These resources are not fetched directly and do not have content hashes, but they will be cached according to their HTTP headers. This is most useful for CDNs such as the Google Fonts service.<br>
   _(Negative glob patterns are not supported and `?` will be matched literally; i.e. it will not match any character other than `?`.)_
 -->
-이 섹션에는 캐싱할 리소스 목록을 세가지 방식으로 지정합니다.
+이 섹션에는 캐싱할 리소스 목록을 다음과 같은 방식으로 지정합니다.
 
 * `files`를 사용하면 빌드결과물이 생성된 폴더를 기준으로 패턴으로 파일을 매칭할 수 있습니다. 대상은 파일 하나가 될 수도 있고, glob 패턴으로 한 번에 여러 파일을 지정할 수도 있습니다.
-
-* `versionedFiles`는 사용이 중단되었습니다. v6 버전부터는 `versionedFiles`와 `files` 옵션이 동일한 동작을 합니다. `files`를 사용하는 것을 권장합니다.
 
 * `urls`에는 실행시점에 매칭될 URL이나 URL패턴을 지정합니다. 이 리소스들은 즉시 다운로드되지 않을 수 있고 해시값이 존재하지 않을 수 있지만, HTTP 헤더를 사용하는 방식으로 캐싱됩니다. 이 방식은 Google Fonts 서비스와 같이 CDN을 활용하는 부분에 적용하면 좋습니다.<br>
   _(이 방식에서는 glob 패턴을 반전하는 방식(`!`)이 동작하지 않으며, `?` 문자도 와일드카드로 동작하지 않습니다. `?` 문자는 `?` 문자 하나에만 매칭됩니다.)_
@@ -252,18 +232,14 @@ Similar to `assetGroups`, every data group has a `name` which uniquely identifie
 데이터 그룹을 구분하는 용도로 사용합니다. `assetGroups`에 있는 `name`과 비슷합니다.
 
 ### `urls`
-<<<<<<< HEAD
 <!--
-A list of URL patterns. URLs that match these patterns will be cached according to this data group's policy.<br>
-  _(Negative glob patterns are not supported and `?` will be matched literally; i.e. it will not match any character other than `?`.)_
--->
-캐싱할 URL 패턴을 지정합니다. 이 URL 패턴에 해당하는 URL은 해당 데이터 그룹의 캐싱 정책을 따릅니다.<br>
-  _(이 방식에서는 glob 패턴을 반전하는 방식(`!`)이 동작하지 않으며, `?` 문자도 와일드카드로 동작하지 않습니다. `?` 문자는 `?` 문자 하나에만 매칭됩니다.)_
-=======
 A list of URL patterns. URLs that match these patterns are cached according to this data group's policy. Only non-mutating requests (GET and HEAD) are cached.
  * Negative glob patterns are not supported.
  * `?` is matched literally; that is, it matches *only* the character `?`.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+캐싱할 URL 패턴을 지정합니다. 이 URL 패턴에 해당하는 URL은 해당 데이터 그룹의 캐싱 정책을 따릅니다. 이 캐싱은 데이터를 변경하지 않는 요청(GET, HEAD)에만 해당됩니다.
+ * 이 방식에서는 glob 패턴을 반전하는 방식(`!`)이 동작하지 않습니다.
+ * `?` 문자도 와일드카드로 동작하지 않습니다. `?` 문자는 `?` 문자 *하나에만* 매칭됩니다.
 
 ### `version`
 <!--

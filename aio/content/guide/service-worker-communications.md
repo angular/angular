@@ -75,13 +75,7 @@ Do this with the `checkForUpdate()` method:
 -->
 서버에 새로운 애플리케이션이 배포되었는지 서비스 워커가 확인하게 할 수 있습니다. 이 동작은 사이트를 업데이트하는 주기에 따라 매번 실행되게 할 수도 있고, 일정 주기로 실행하게 할 수도 있습니다.
 
-<<<<<<< HEAD
-새로운 앱 버전이 있는지 확인하려면 `checkForUpdate()` 메소드를 실행하면 됩니다:
-=======
 <code-example path="service-worker-getting-started/src/app/check-for-update.service.ts" header="check-for-update.service.ts"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
-
-<code-example path="service-worker-getting-started/src/app/check-for-update.service.ts" linenums="false" header="check-for-update.service.ts"> </code-example>
 
 <!--
 This method returns a `Promise` which indicates that the update check has completed successfully, though it does not indicate whether an update was discovered as a result of the check. Even if one is found, the service worker must still successfully download the changed files, which can fail. If successful, the `available` event will indicate availability of a new version of the app.
@@ -100,8 +94,7 @@ You can avoid that by waiting for the app to stabilize first, before starting to
 (as shown in the example above).
 
 Note that this is true for any kind of polling done by your application.
-<<<<<<< HEAD
-Check the {@link ApplicationRef#isStable isStable} documentation for more information. 
+Check the {@link ApplicationRef#isStable isStable} documentation for more information.
 -->
 서비스 워커가 애플리케이션 초기 렌더링에 영향을 주지 않으려면 `ServiceWorkerModule`은 애플리케이션이 안정화된 이후에 로드되고 실행되어야 합니다.
 왜냐하면 `interval()`과 같은 함수를 사용해서 업데이트가 있는지 지속적으로 폴링하면 애플리케이션이 안정화되지 않기 때문에 서비스 워커 스크립트도 브라우저에 등록되지 않습니다.
@@ -110,9 +103,6 @@ Check the {@link ApplicationRef#isStable isStable} documentation for more inform
 
 애플리케이션에서 사용하는 폴링 로직은 모두 이런 방식으로 작성되어야 합니다.
 더 자세한 내용은 {@link ApplicationRef#isStable isStable} 문서를 참고하세요.
-=======
-Check the {@link ApplicationRef#isStable isStable} documentation for more information.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 </div>
 

@@ -8,43 +8,32 @@ Angular makes use of observables as an interface to handle a variety of common a
 -->
 Angular는 비동기 로직을 처리할 때 옵저버블을 다양하게 사용합니다. 몇 가지 예를 들면 다음과 같은 경우에 옵저버블을 사용합니다:
 
-<<<<<<< HEAD
 <!--
-* The `EventEmitter` class extends `Observable`.
-=======
 * You can define [custom events](guide/template-syntax#custom-events-with-eventemitter) that send observable output data from a child to a parent component.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 * The HTTP module uses observables to handle AJAX requests and responses.
 * The Router and Forms modules use observables to listen for and respond to user-input events.
 -->
-* `Observable` 클래스를 상속해서 `EventEmitter` 클래스를 제공합니다.
+* You can define [custom events](guide/template-syntax#custom-events-with-eventemitter) that send observable output data from a child to a parent component.
 * HTTP 모듈이 AJAX 요청을 보내거나 응답을 받아 처리할 때 옵저버블을 사용합니다.
 * 라우터와 폼 모듈이 사용자 입력 이벤트를 감지할 때 옵저버블을 사용합니다. 
 
-<<<<<<< HEAD
 <!--
-## Event emitter
--->
-## 이벤트 이미터 (Event Emitter)
-
-<!--
-Angular provides an `EventEmitter` class that is used when publishing values from a component through the `@Output()` decorator. `EventEmitter` extends `Observable`, adding an `emit()` method so it can send arbitrary values. When you call `emit()`, it passes the emitted value to the `next()` method of any subscribed observer.
--->
-`EventEmitter` 클래스는 컴포넌트에서 `@Output` 데코레이터로 지정된 프로퍼티가 컴포넌트 외부로 데이터를 보낼 때 사용합니다. 이 클래스는 `Observable` 클래스를 상속받아 구현되었으며, 데이터를 보내는 함수로 `emit()` 메소드를 제공합니다. `emit()`을 실행하면서 전달한 인자는 옵저버블의 `next()` 메소드로 전달됩니다.
-
-<!--
-A good example of usage can be found on the [EventEmitter](https://angular.io/api/core/EventEmitter) documentation. Here is the example component that listens for open and close events:
--->
-`EventEmitter` 클래스를 사용하는 방법은 [EventEmitter](https://angular.io/api/core/EventEmitter) 문서에서 확인할 수 있습니다. 이 예제는 컴포넌트의 `open` 이벤트와 `close` 이벤트를 감지합니다.
-=======
 ## Transmitting data between components
+-->
+## 컴포넌트간 데이터 전달하기
 
+<!--
 Angular provides an `EventEmitter` class that is used when publishing values from a component through the [`@Output()` decorator](guide/template-syntax#how-to-use-output).
 `EventEmitter` extends [RxJS `Subject`](https://rxjs.dev/api/index/class/Subject), adding an `emit()` method so it can send arbitrary values.
 When you call `emit()`, it passes the emitted value to the `next()` method of any subscribed observer.
 
 A good example of usage can be found in the [EventEmitter](https://angular.io/api/core/EventEmitter) documentation. Here is the example component that listens for open and close events:
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+Angular provides an `EventEmitter` class that is used when publishing values from a component through the [`@Output()` decorator](guide/template-syntax#how-to-use-output).
+`EventEmitter` extends [RxJS `Subject`](https://rxjs.dev/api/index/class/Subject), adding an `emit()` method so it can send arbitrary values.
+When you call `emit()`, it passes the emitted value to the `next()` method of any subscribed observer.
+
+`EventEmitter` 클래스를 사용하는 방법은 [EventEmitter](https://angular.io/api/core/EventEmitter) 문서에서 확인할 수 있습니다. 이 예제는 컴포넌트의 `open` 이벤트와 `close` 이벤트를 감지합니다.
 
 `<zippy (open)="onOpen($event)" (close)="onClose($event)"></zippy>`
 
@@ -99,14 +88,10 @@ The following example binds the `time` observable to the component's view. The o
 
 <code-example path="observables-in-angular/src/main.ts" header="Router events" region="router"></code-example>
 
-<<<<<<< HEAD
 <!--
-The [ActivatedRoute](https://angular.io/api/router/ActivatedRoute) is an injected router service that makes use of observables to get information about a route path and parameters. For example, `ActivateRoute.url` contains an observable that reports the route path or paths. Here's an example:
--->
-[ActivatedRoute](https://angular.io/api/router/ActivatedRoute)도 현재 라우팅 경로나 라우팅 인자를 옵저버블로 제공합니다. 그래서 이 서비스의 프로퍼티 중 `ActivateRoute.url`를 구독해도 현재 라우팅 경로를 확인할 수 있습니다.  예제를 봅시다:
-=======
 The [ActivatedRoute](https://angular.io/api/router/ActivatedRoute) is an injected router service that makes use of observables to get information about a route path and parameters. For example, `ActivatedRoute.url` contains an observable that reports the route path or paths. Here's an example:
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+[ActivatedRoute](https://angular.io/api/router/ActivatedRoute)도 현재 라우팅 경로나 라우팅 인자를 옵저버블로 제공합니다. 그래서 이 서비스의 프로퍼티 중 `ActivatedRoute.url`를 구독해도 현재 라우팅 경로를 확인할 수 있습니다.  예제를 봅시다:
 
 <code-example path="observables-in-angular/src/main.ts" header="ActivatedRoute" region="activated_route"></code-example>
 

@@ -1,25 +1,6 @@
 # NgModules
 
-<<<<<<< HEAD
 <!--
-#### Prerequisites
--->
-#### 사전지식
-
-<!--
-A basic understanding of the following concepts:
-* [Bootstrapping](guide/bootstrapping).
-* [JavaScript Modules vs. NgModules](guide/ngmodule-vs-jsmodule).
--->
-다음 내용을 먼저 이해하고 이 문서를 보는 것이 좋습니다:
-* [부트스트랩](guide/bootstrapping).
-* [JavaScript 모듈 vs. NgModules](guide/ngmodule-vs-jsmodule).
-
-<hr>
-
-<!--
-=======
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 **NgModules** configure the injector and the compiler and help organize related things together.
 -->
 **NgModule**을 구성하는 방법에 따라 애플리케이션이 조합되는 방식이 달라지기 때문에, NgModule은 인젝터(injector)와 컴파일러에 영향을 미칩니다.
@@ -43,11 +24,7 @@ section.
 -->
 이 문서에서 다루는 모든 예제는 <live-example></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
-<<<<<<< HEAD
-
 <!--
-=======
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 ## Angular modularity
 -->
 ## Angular의 모듈 구성방식
@@ -123,29 +100,21 @@ You then import these modules into the root module.
 -->
 ## 기본 NgModule
 
-<<<<<<< HEAD
 <!--
-The [Angular CLI](cli) generates the following basic app module when creating a new app.
--->
-[Angular CLI](cli)로 애플리케이션을 생성하면 앱 모듈은 다음과 같이 생성됩니다.
-=======
 The [Angular CLI](cli) generates the following basic `AppModule` when creating a new app.
-
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+[Angular CLI](cli)로 애플리케이션을 생성하면 기본 모듈인 `AppModule`이 다음과 같이 생성됩니다.
 
 <code-example path="ngmodules/src/app/app.module.1.ts" header="src/app/app.module.ts (default AppModule)">
 // @NgModule decorator with its metadata
 </code-example>
 
-<<<<<<< HEAD
 <!--
-At the top are the import statements. The next section is where you configure the `@NgModule` by stating what components and directives belong to it (`declarations`) as well as which other modules it uses (`imports`). This page builds on [Bootstrapping](guide/bootstrapping), which covers the structure of an NgModule in detail. If you need more information on the structure of an `@NgModule`, be sure to read [Bootstrapping](guide/bootstrapping).
--->
-이 파일의 제일 위쪽에는 `import` 구문들이 있습니다. 그 다음에는 `@NgModule` 데코레이터가 있으며, 이 데코레이터의 메타데이터에는 모듈에 포함되는 컴포넌트와 디렉티브를 정의하는 `declarations` 배열과, 다른 모듈의 구성요소를 불러오는 `imports` 배열이 있습니다.
-이 예제는 [부트스트랩](guide/bootstrapping) 가이드 문서에 있는 코드를 참고한 것이며, `@NgModule`의 구조에 대해 더 알아보려면 [해당 문서](guide/bootstrapping)를 참고하세요.
-=======
 At the top are the import statements. The next section is where you configure the `@NgModule` by stating what components and directives belong to it (`declarations`) as well as which other modules it uses (`imports`). For more information on the structure of an `@NgModule`, be sure to read [Bootstrapping](guide/bootstrapping).
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+이 파일의 제일 위쪽에는 `import` 구문들이 있습니다.
+The next section is where you configure the `@NgModule` by stating what components and directives belong to it (`declarations`) as well as which other modules it uses (`imports`).
+For more information on the structure of an `@NgModule`, be sure to read [Bootstrapping](guide/bootstrapping).
 
 <hr />
 

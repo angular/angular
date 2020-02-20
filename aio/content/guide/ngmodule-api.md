@@ -1,30 +1,6 @@
 # NgModule API
 
-<<<<<<< HEAD
 <!--
-#### Prerequisites
--->
-#### 사전지식
-
-<!--
-A basic understanding of the following concepts:
-* [Bootstrapping](guide/bootstrapping).
-* [JavaScript Modules vs. NgModules](guide/ngmodule-vs-jsmodule).
--->
-다음 내용을 먼저 이해하고 이 문서를 보는 것이 좋습니다:
-* [부트스트랩](guide/bootstrapping)
-* [JavaScript 모듈 vs. NgModules](guide/ngmodule-vs-jsmodule)
-
-<hr />
-
-<!--
-## Purpose of `@NgModule`
--->
-## `@NgModule`의 목적
-
-<!--
-=======
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 At a high level, NgModules are a way to organize Angular apps
 and they accomplish this through the metadata in the `@NgModule`
 decorator.

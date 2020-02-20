@@ -3,20 +3,10 @@
 -->
 # 프로바이더 (Providers)
 
-<<<<<<< HEAD
 <!--
-#### Prerequisites:
--->
-#### 사전지식:
-<!--
-* A basic understanding of [Bootstrapping](guide/bootstrapping).
-* Familiarity with [Frequently Used Modules](guide/frequent-ngmodules).
--->
-* [부트스트랩](guide/bootstrapping)
-* [자주 사용하는 NgModule](guide/frequent-ngmodules)
-=======
 A provider is an instruction to the [Dependency Injection](/guide/dependency-injection) system on how to obtain a value for a dependency. Most of the time, these dependencies are services that you create and provide.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+프로바이더는 [의존성 주입](/guide/dependency-injection)에 사용되는 객체를 가져오는 방법을 지정한 것입니다. 이 때 의존성으로 주입되는 객체는 일반적으로 서비스입니다.
 
 <!--
 For the final sample app using the provider that this page describes,
@@ -24,17 +14,7 @@ see the <live-example></live-example>.
 -->
 이 가이드에서 다루는 예제의 최종 코드는 <live-example></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
-<<<<<<< HEAD
-<hr>
-
 <!--
-A provider is an instruction to the DI system on how to obtain a value for a dependency. Most of the time, these dependencies are services that you create and provide.
--->
-프로바이더는 의존성 주입에 사용되는 객체를 가져오는 방법을 지정한 것입니다. 이 때 의존성으로 주입되는 객체는 일반적으로 서비스입니다.
-
-<!--
-=======
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 ## Providing a service
 -->
 ## 서비스 생성하기
@@ -140,13 +120,9 @@ Another way to limit provider scope is by adding the service you want to limit t
 `providers` array. Component providers and NgModule providers are independent of each other. This
 method is helpful when you want to eagerly load a module that needs a service all to itself.
 Providing a service in the component limits the service only to that component (other components in
-<<<<<<< HEAD
-the same module can’t access it.)
+the same module can’t access it).
 -->
 프로바이더의 범위는 컴포넌트 안으로 제한할 수도 있는데, 이 때 컴포넌트 메타데이터의 `providers` 배열을 사용합니다. 그러면 NgModule의 프로바이더와는 별개로 컴포넌트 프로바이더가 의존성 객체를 생성합니다. 이 방법은 컴포넌트마다 서비스 인스턴스를 별개로 사용하는 경우에 활용하면 좋습니다. 서비스의 인스턴스가 각각 생성되면 컴포넌트에서 이 서비스를 사용해 어떤 동작을 하더라도 다른 컴포넌트는 영향을 받지 않습니다.
-=======
-the same module can’t access it).
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <code-example path="providers/src/app/app.component.ts" region="component-providers" header="src/app/app.component.ts"></code-example>
 
