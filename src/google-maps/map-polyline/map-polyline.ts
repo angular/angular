@@ -39,7 +39,7 @@ export class MapPolyline implements OnInit, OnDestroy {
 
   private readonly _destroyed = new Subject<void>();
 
-  _polyline: google.maps.Polyline; // initialized in ngOnInit
+  _polyline?: google.maps.Polyline; // initialized in ngOnInit
 
   @Input()
   set options(options: google.maps.PolylineOptions) {
@@ -142,7 +142,7 @@ export class MapPolyline implements OnInit, OnDestroy {
         // We'll bring it back in inside the `MapEventManager` only for the events that the
         // user has subscribed to.
         this._ngZone.runOutsideAngular(() => this._polyline = new google.maps.Polyline(options));
-        this._polyline.setMap(this._map._googleMap);
+        this._polyline!.setMap(this._map._googleMap);
         this._eventManager.setTarget(this._polyline);
       });
 
@@ -165,28 +165,29 @@ export class MapPolyline implements OnInit, OnDestroy {
    * developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.getDraggable
    */
   getDraggable(): boolean {
-    return this._polyline.getDraggable();
+    return this._polyline ? this._polyline.getDraggable() : false;
   }
 
   /**
    * @see developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.getEditable
    */
   getEditable(): boolean {
-    return this._polyline.getEditable();
+    return this._polyline ? this._polyline.getEditable() : false;
   }
 
   /**
    * @see developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.getPath
    */
   getPath(): google.maps.MVCArray<google.maps.LatLng> {
-    return this._polyline.getPath();
+    // @breaking-change 11.0.0 Make the return value nullable.
+    return this._polyline ? this._polyline.getPath() : null!;
   }
 
   /**
    * @see developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.getVisible
    */
   getVisible(): boolean {
-    return this._polyline.getVisible();
+    return this._polyline ? this._polyline.getVisible() : false;
   }
 
   private _combineOptions(): Observable<google.maps.PolylineOptions> {
@@ -201,13 +202,15 @@ export class MapPolyline implements OnInit, OnDestroy {
 
   private _watchForOptionsChanges() {
     this._options.pipe(takeUntil(this._destroyed)).subscribe(options => {
-      this._polyline.setOptions(options);
+      if (this._polyline) {
+        this._polyline.setOptions(options);
+      }
     });
   }
 
   private _watchForPathChanges() {
     this._path.pipe(takeUntil(this._destroyed)).subscribe(path => {
-      if (path) {
+      if (path && this._polyline) {
         this._polyline.setPath(path);
       }
     });

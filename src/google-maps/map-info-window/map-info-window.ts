@@ -131,7 +131,7 @@ export class MapInfoWindow implements OnInit, OnDestroy {
    * developers.google.com/maps/documentation/javascript/reference/info-window#InfoWindow.getContent
    */
   getContent(): string|Node {
-    return this._infoWindow!.getContent();
+    return this._infoWindow ? this._infoWindow.getContent() : '';
   }
 
   /**
@@ -140,7 +140,7 @@ export class MapInfoWindow implements OnInit, OnDestroy {
    * #InfoWindow.getPosition
    */
   getPosition(): google.maps.LatLng|null {
-    return this._infoWindow!.getPosition() || null;
+    return this._infoWindow ? this._infoWindow.getPosition() : null;
   }
 
   /**
@@ -148,7 +148,7 @@ export class MapInfoWindow implements OnInit, OnDestroy {
    * developers.google.com/maps/documentation/javascript/reference/info-window#InfoWindow.getZIndex
    */
   getZIndex(): number {
-    return this._infoWindow!.getZIndex();
+    return this._infoWindow ? this._infoWindow.getZIndex() : -1;
   }
 
   /**

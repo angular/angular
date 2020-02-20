@@ -276,7 +276,7 @@ export class MapMarker implements OnInit, OnDestroy {
    * developers.google.com/maps/documentation/javascript/reference/marker#Marker.getAnimation
    */
   getAnimation(): google.maps.Animation|null {
-    return this._marker!.getAnimation() || null;
+    return (this._marker && this._marker.getAnimation()) || null;
   }
 
   /**
@@ -284,7 +284,7 @@ export class MapMarker implements OnInit, OnDestroy {
    * developers.google.com/maps/documentation/javascript/reference/marker#Marker.getClickable
    */
   getClickable(): boolean {
-    return this._marker!.getClickable();
+    return this._marker ? this._marker.getClickable() : false;
   }
 
   /**
@@ -292,7 +292,7 @@ export class MapMarker implements OnInit, OnDestroy {
    * developers.google.com/maps/documentation/javascript/reference/marker#Marker.getCursor
    */
   getCursor(): string|null {
-    return this._marker!.getCursor() || null;
+    return (this._marker && this._marker.getCursor()) || null;
   }
 
   /**
@@ -300,7 +300,7 @@ export class MapMarker implements OnInit, OnDestroy {
    * developers.google.com/maps/documentation/javascript/reference/marker#Marker.getDraggable
    */
   getDraggable(): boolean {
-    return !!this._marker!.getDraggable();
+    return this._marker ? !!this._marker.getDraggable() : false;
   }
 
   /**
@@ -308,7 +308,7 @@ export class MapMarker implements OnInit, OnDestroy {
    * developers.google.com/maps/documentation/javascript/reference/marker#Marker.getIcon
    */
   getIcon(): string|google.maps.Icon|google.maps.Symbol|null {
-    return this._marker!.getIcon() || null;
+    return (this._marker && this._marker.getIcon()) || null;
   }
 
   /**
@@ -316,7 +316,7 @@ export class MapMarker implements OnInit, OnDestroy {
    * developers.google.com/maps/documentation/javascript/reference/marker#Marker.getLabel
    */
   getLabel(): google.maps.MarkerLabel|null {
-    return this._marker!.getLabel() || null;
+    return (this._marker && this._marker.getLabel()) || null;
   }
 
   /**
@@ -324,7 +324,7 @@ export class MapMarker implements OnInit, OnDestroy {
    * developers.google.com/maps/documentation/javascript/reference/marker#Marker.getOpacity
    */
   getOpacity(): number|null {
-    return this._marker!.getOpacity() || null;
+    return (this._marker && this._marker.getOpacity()) || null;
   }
 
   /**
@@ -332,7 +332,7 @@ export class MapMarker implements OnInit, OnDestroy {
    * developers.google.com/maps/documentation/javascript/reference/marker#Marker.getPosition
    */
   getPosition(): google.maps.LatLng|null {
-    return this._marker!.getPosition() || null;
+    return (this._marker && this._marker.getPosition()) || null;
   }
 
   /**
@@ -340,7 +340,7 @@ export class MapMarker implements OnInit, OnDestroy {
    * developers.google.com/maps/documentation/javascript/reference/marker#Marker.getShape
    */
   getShape(): google.maps.MarkerShape|null {
-    return this._marker!.getShape() || null;
+    return (this._marker && this._marker.getShape()) || null;
   }
 
   /**
@@ -348,7 +348,7 @@ export class MapMarker implements OnInit, OnDestroy {
    * developers.google.com/maps/documentation/javascript/reference/marker#Marker.getTitle
    */
   getTitle(): string|null {
-    return this._marker!.getTitle() || null;
+    return (this._marker && this._marker.getTitle()) || null;
   }
 
   /**
@@ -356,7 +356,7 @@ export class MapMarker implements OnInit, OnDestroy {
    * developers.google.com/maps/documentation/javascript/reference/marker#Marker.getVisible
    */
   getVisible(): boolean {
-    return this._marker!.getVisible();
+    return this._marker ? this._marker.getVisible() : false;
   }
 
   /**
@@ -364,7 +364,7 @@ export class MapMarker implements OnInit, OnDestroy {
    * developers.google.com/maps/documentation/javascript/reference/marker#Marker.getZIndex
    */
   getZIndex(): number|null {
-    return this._marker!.getZIndex() || null;
+    return (this._marker && this._marker.getZIndex()) || null;
   }
 
   private _combineOptions(): Observable<google.maps.MarkerOptions> {
