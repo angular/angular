@@ -29,7 +29,7 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
         runOutsideAngular(() => {
           setTimeout(() => {
             inChangeDetection = false;
-            onFrame(flushBuffer(observer, eventMap, getChangeDetectionSource()));
+            onFrame(flushBuffer(observer, getChangeDetectionSource()));
           });
         });
       }
@@ -52,7 +52,7 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
 };
 
 export const stop = (): ProfilerFrame => {
-  const result = flushBuffer(observer, eventMap);
+  const result = flushBuffer(observer);
   // We want to garbage collect the records;
   observer.destroy();
   inProgress = false;
@@ -81,8 +81,8 @@ const insertElementProfile = (frames: ElementProfile[], position: ElementPositio
   lastFrame.directives.push(profile);
 };
 
-const flushBuffer = (obs: ComponentTreeObserver, events: Map<any, DirectiveProfile>, source: string = '') => {
-  const items = Array.from(events.keys());
+const flushBuffer = (obs: ComponentTreeObserver, source: string = '') => {
+  const items = Array.from(eventMap.keys());
   const positions: ElementPosition[] = [];
   const positionDirective = new Map<ElementPosition, any>();
   items.forEach(dir => {
@@ -97,8 +97,9 @@ const flushBuffer = (obs: ComponentTreeObserver, events: Map<any, DirectiveProfi
   };
   positions.forEach(position => {
     const dir = positionDirective.get(position);
-    insertElementProfile(result.directives, position, events.get(dir));
+    insertElementProfile(result.directives, position, eventMap.get(dir));
   });
+  eventMap = new Map<any, DirectiveProfile>();
   return result;
 };
 
