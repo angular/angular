@@ -1,17 +1,17 @@
-@import '../mdc-button/mdc-button';
-@import '../mdc-card/mdc-card';
-@import '../mdc-checkbox/mdc-checkbox';
-@import '../mdc-chips/mdc-chips';
-@import '../mdc-list/mdc-list';
-@import '../mdc-menu/mdc-menu';
-@import '../mdc-radio/mdc-radio';
-@import '../mdc-slide-toggle/mdc-slide-toggle';
-@import '../mdc-slider/mdc-slider';
-@import '../mdc-tabs/mdc-tabs';
-@import '../mdc-table/mdc-table';
-@import '../mdc-progress-bar/mdc-progress-bar';
-@import '../mdc-input/mdc-input';
-@import '../mdc-form-field/mdc-form-field';
+@import '../mdc-button/button-theme';
+@import '../mdc-card/card-theme';
+@import '../mdc-checkbox/checkbox-theme';
+@import '../mdc-chips/chips-theme';
+@import '../mdc-list/list-theme';
+@import '../mdc-menu/menu-theme';
+@import '../mdc-radio/radio-theme';
+@import '../mdc-slide-toggle/slide-toggle-theme';
+@import '../mdc-slider/slider-theme';
+@import '../mdc-tabs/tabs-theme';
+@import '../mdc-table/table-theme';
+@import '../mdc-progress-bar/progress-bar-theme';
+@import '../mdc-input/input-theme';
+@import '../mdc-form-field/form-field-theme';
 
 @mixin angular-material-typography-mdc($config: null) {
   @if $config == null {
