@@ -64,6 +64,11 @@ interface DragHelperTemplate<T = any> {
   context: T;
 }
 
+/** Template that can be used to create a drag preview element. */
+interface DragPreviewTemplate<T = any> extends DragHelperTemplate<T> {
+  matchSize?: boolean;
+}
+
 /** Point on the page or within an element. */
 export interface Point {
   x: number;
@@ -192,7 +197,7 @@ export class DragRef<T = any> {
   private _boundaryRect?: ClientRect;
 
   /** Element that will be used as a template to create the draggable item's preview. */
-  private _previewTemplate?: DragHelperTemplate | null;
+  private _previewTemplate?: DragPreviewTemplate | null;
 
   /** Template for placeholder element rendered to show where a draggable would be dropped. */
   private _placeholderTemplate?: DragHelperTemplate | null;
@@ -332,7 +337,7 @@ export class DragRef<T = any> {
    * Registers the template that should be used for the drag preview.
    * @param template Template that from which to stamp out the preview.
    */
-  withPreviewTemplate(template: DragHelperTemplate | null): this {
+  withPreviewTemplate(template: DragPreviewTemplate | null): this {
     this._previewTemplate = template;
     return this;
   }
@@ -772,10 +777,12 @@ export class DragRef<T = any> {
       this._boundaryRect = this._boundaryElement.getBoundingClientRect();
     }
 
-    // If we have a custom preview template, the element won't be visible anyway so we avoid the
-    // extra `getBoundingClientRect` calls and just move the preview next to the cursor.
-    this._pickupPositionInElement = this._previewTemplate && this._previewTemplate.template ?
-      {x: 0, y: 0} :
+    // If we have a custom preview we can't know ahead of time how large it'll be so we position
+    // it next to the cursor. The exception is when the consumer has opted into making the preview
+    // the same size as the root element, in which case we do know the size.
+    const previewTemplate = this._previewTemplate;
+    this._pickupPositionInElement = previewTemplate && previewTemplate.template &&
+      !previewTemplate.matchSize ? {x: 0, y: 0} :
       this._getPointerPositionInElement(referenceElement, event);
     const pointerPosition = this._pickupPositionOnPage = this._getPointerPositionOnPage(event);
     this._pointerDirectionDelta = {x: 0, y: 0};
@@ -879,16 +886,17 @@ export class DragRef<T = any> {
                                                                       previewConfig!.context);
       preview = getRootNode(viewRef, this._document);
       this._previewRef = viewRef;
-      preview.style.transform =
-          getTransform(this._pickupPositionOnPage.x, this._pickupPositionOnPage.y);
+
+      if (previewConfig!.matchSize) {
+        matchElementSize(preview, this._rootElement);
+      } else {
+        preview.style.transform =
+            getTransform(this._pickupPositionOnPage.x, this._pickupPositionOnPage.y);
+      }
     } else {
       const element = this._rootElement;
-      const elementRect = element.getBoundingClientRect();
-
       preview = deepCloneNode(element);
-      preview.style.width = `${elementRect.width}px`;
-      preview.style.height = `${elementRect.height}px`;
-      preview.style.transform = getTransform(elementRect.left, elementRect.top);
+      matchElementSize(preview, element);
     }
 
     extendStyles(preview.style, {
@@ -1296,4 +1304,17 @@ function getRootNode(viewRef: EmbeddedViewRef<any>, _document: Document): HTMLEl
   }
 
   return rootNode as HTMLElement;
+}
+
+/**
+ * Matches the target element's size to the source's size.
+ * @param target Element that needs to be resized.
+ * @param source Element whose size needs to be matched.
+ */
+function matchElementSize(target: HTMLElement, source: HTMLElement): void {
+  const sourceRect = source.getBoundingClientRect();
+
+  target.style.width = `${sourceRect.width}px`;
+  target.style.height = `${sourceRect.height}px`;
+  target.style.transform = getTransform(sourceRect.left, sourceRect.top);
 }

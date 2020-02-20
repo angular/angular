@@ -121,9 +121,12 @@ export declare class CdkDragPlaceholder<T = any> {
 
 export declare class CdkDragPreview<T = any> {
     data: T;
+    get matchSize(): boolean;
+    set matchSize(value: boolean);
     templateRef: TemplateRef<T>;
     constructor(templateRef: TemplateRef<T>);
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkDragPreview<any>, "ng-template[cdkDragPreview]", never, { "data": "data"; }, {}, never>;
+    static ngAcceptInputType_matchSize: BooleanInput;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkDragPreview<any>, "ng-template[cdkDragPreview]", never, { "data": "data"; "matchSize": "matchSize"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkDragPreview<any>>;
 }
 
@@ -308,7 +311,7 @@ export declare class DragRef<T = any> {
     withDirection(direction: Direction): this;
     withHandles(handles: (HTMLElement | ElementRef<HTMLElement>)[]): this;
     withPlaceholderTemplate(template: DragHelperTemplate | null): this;
-    withPreviewTemplate(template: DragHelperTemplate | null): this;
+    withPreviewTemplate(template: DragPreviewTemplate | null): this;
     withRootElement(rootElement: ElementRef<HTMLElement> | HTMLElement): this;
 }
 

@@ -2931,6 +2931,37 @@ describe('CdkDrag', () => {
       expect(preview.classList).toContain('custom-class');
     }));
 
+    it('should be able to apply the size of the dragged element to a custom preview',
+      fakeAsync(() => {
+        const fixture = createComponent(DraggableInDropZoneWithCustomPreview);
+        fixture.componentInstance.matchPreviewSize = true;
+        fixture.detectChanges();
+        const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+        const itemRect = item.getBoundingClientRect();
+
+        startDraggingViaMouse(fixture, item);
+
+        const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
+
+        expect(preview).toBeTruthy();
+        expect(preview.style.width).toBe(`${itemRect.width}px`);
+        expect(preview.style.height).toBe(`${itemRect.height}px`);
+      }));
+
+    it('should preserve the pickup position if the custom preview inherits the size of the ' +
+      'dragged element', fakeAsync(() => {
+        const fixture = createComponent(DraggableInDropZoneWithCustomPreview);
+        fixture.componentInstance.matchPreviewSize = true;
+        fixture.detectChanges();
+        const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+
+        startDraggingViaMouse(fixture, item, 50, 50);
+
+        const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
+
+        expect(preview.style.transform).toBe('translate3d(8px, 33px, 0px)');
+      }));
+
     it('should not throw when custom preview only has text', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZoneWithCustomTextOnlyPreview);
       fixture.detectChanges();
@@ -5050,10 +5081,11 @@ class DraggableInScrollableHorizontalDropZone extends DraggableInHorizontalDropZ
           {{item}}
 
           <ng-container *ngIf="renderCustomPreview">
-            <div
-              class="custom-preview"
-              style="width: 50px; height: 50px; background: purple;"
-              *cdkDragPreview>Custom preview</div>
+            <ng-template cdkDragPreview [matchSize]="matchPreviewSize">
+              <div
+                class="custom-preview"
+                style="width: 50px; height: 50px; background: purple;">Custom preview</div>
+            </ng-template>
           </ng-container>
       </div>
     </div>
@@ -5065,6 +5097,7 @@ class DraggableInDropZoneWithCustomPreview {
   items = ['Zero', 'One', 'Two', 'Three'];
   boundarySelector: string;
   renderCustomPreview = true;
+  matchPreviewSize = false;
   previewClass: string | string[];
   constrainPosition: (point: Point) => Point;
 }
