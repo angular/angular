@@ -2492,8 +2492,8 @@ For example, the `crisis-center-routing.module.ts`  helps navigate through the d
 
 
 
-**Do** Use app routing to define short paths that relate to the components. 
-` path: 'crisis-center' `
+**Do** use app routing to define short paths that relate to the components. 
+For example: `path: 'crisis-center' `
 
 
 </div>
@@ -2511,7 +2511,7 @@ For example, the `crisis-center-routing.module.ts`  helps navigate through the d
 
 
 
-**Why?** Use of the routing module helps increase readability and stabilization of your code. The order in which you define your paths effect how the application runs. When you add many complex paths in one location you may run into bugs.
+**Why?** Use of the routing module helps increase readability and stabilization of your code. The order in which you define your paths affect how the application runs. When you add many complex paths in one location you may run into bugs.
 
 
 </div>
@@ -2522,7 +2522,7 @@ For example, the `crisis-center-routing.module.ts`  helps navigate through the d
 
 
 **Do** use routerLink with the specified component name to navigate to different components.
-`<a routerLink="/crisis-center" routerLinkActive="active">Crisis Center</a>`
+For example: `<a routerLink="/crisis-center" routerLinkActive="active">Crisis Center</a>`
 
 </div>
 
