@@ -88,9 +88,12 @@ describe('utils', () => {
 
     it('should throw an error if the translation contains placeholders that are not in the message',
        () => {
-         expect(() => doTranslate({'abc': 'a{$PH}bc'}, parts `abc`))
+         expect(
+             () => doTranslate(
+                 {'abc{$INTERPOLATION}def': 'a{$PH}bc'}, parts `abc${1 + 2}:INTERPOLATION:def`))
              .toThrowError(
-                 'No placeholder found with name PH in message "2674653928643152084" ("abc").');
+                 `There is a placeholder name mismatch with the translation provided for the message "8986527425650846693" ("abc{$INTERPOLATION}def").\n` +
+                 `The translation contains a placeholder with name PH, which does not exist in the message.`);
        });
 
     it('(with identity translations) should render template literals as-is', () => {
