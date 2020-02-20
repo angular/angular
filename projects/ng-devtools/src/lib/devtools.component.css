@@ -1,8 +1,10 @@
-:host, .devtools-wrapper {
+:host,
+.devtools-wrapper {
   width: 100%;
   height: 100%;
   display: block;
 }
+
 .noselect {
   user-select: none;
 }
@@ -16,7 +18,7 @@
 }
 
 .initializing .loading {
-  background: url("./images/angular.svg");
+  background: url('./images/angular.svg');
   border-radius: 50%;
   width: 125px;
   height: 125px;
@@ -25,12 +27,19 @@
   animation: pulse 1s infinite;
 }
 
-@keyframes pulse
-{
+@keyframes pulse {
   0% {
     box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.2);
   }
+
   100% {
     box-shadow: 0 0 0 35px rgba(0, 0, 0, 0);
   }
+}
+
+.text-message {
+  font-weight: 500;
+  font-size: 14px;
+  padding: 5px;
+  text-align: center;
 }

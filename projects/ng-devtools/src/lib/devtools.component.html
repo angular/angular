@@ -6,22 +6,22 @@
   </ng-container>
   <ng-template #notSupported>
     <ng-container *ngIf="prodMode; else versionTooLow">
-      <div>
+      <p class="text-message">
         Angular Devtools only supports dev mode.
-      </div>
+      </p>
     </ng-container>
     <ng-template #versionTooLow>
-      <div>
+      <p class="text-message">
         Angular Devtools only supports Angular versions 9 and above.
-      </div>
+      </p>
     </ng-template>
   </ng-template>
 </ng-container>
 <ng-template #errorOrLoad>
   <ng-container *ngIf="angularExists === false; else load">
-    <div>
+    <p class="text-message">
       Not an Angular app
-    </div>
+    </p>
   </ng-container>
   <ng-template #load>
     <div class="initializing" *ngIf="angularExists === null">
@@ -29,4 +29,3 @@
     </div>
   </ng-template>
 </ng-template>
-
