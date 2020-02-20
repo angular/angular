@@ -28,6 +28,11 @@ const getLabel = (element: ElementProfile) => {
 const addFrame = (nodes: FlamegraphNode[], elements: ElementProfile[]): number => {
   let timeSpent = 0;
   elements.forEach(element => {
+    // Possibly undefined because of the insertion
+    // on the backend.
+    if (!element) {
+      return;
+    }
     const node: FlamegraphNode = {
       value: element.directives.reduce((a, c) => a + c.lifecycle + c.changeDetection, 0),
       label: getLabel(element),
