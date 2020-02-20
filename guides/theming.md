@@ -119,7 +119,7 @@ styles will be subject to that component's [view encapsulation](https://angular.
 You can create multiple themes for your application by including the `angular-material-theme` mixin
 multiple times, where each inclusion is gated by an additional CSS class.
 
-Remember to only ever include the `@mat-core` mixin only once; it should not be included for each
+Remember to only ever include the `@mat-core` mixin once; it should not be included for each
 theme.
 
 ##### Example of defining multiple themes:
