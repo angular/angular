@@ -853,9 +853,8 @@ export class HammerGesturesRule extends MigrationRule<null> {
 
     const packageJson = JSON.parse(tree.read('/package.json')!.toString('utf8'));
 
-    // We do not handle the case where someone manually added "hammerjs"
-    // to the dev dependencies.
-    if (packageJson.dependencies[HAMMER_MODULE_SPECIFIER]) {
+    // We do not handle the case where someone manually added "hammerjs" to the dev dependencies.
+    if (packageJson.dependencies && packageJson.dependencies[HAMMER_MODULE_SPECIFIER]) {
       delete packageJson.dependencies[HAMMER_MODULE_SPECIFIER];
       tree.overwrite('/package.json', JSON.stringify(packageJson, null, 2));
       return true;
