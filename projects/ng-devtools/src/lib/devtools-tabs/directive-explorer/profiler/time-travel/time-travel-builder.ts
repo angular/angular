@@ -85,9 +85,20 @@ const buildInitialState = (records: ComponentRecord[]): { initialState: Timeline
 const applyChangeDetectionMutation = (frame: TimelineFrame, record: ComponentRecord) => {
   let children = frame.roots;
   let current: TimelineNode;
+  let temp = [];
   for (const step of record.position) {
     current = children[step];
+    if (children.length) {
+      temp = children;
+    }
+    if (!current) {
+      console.error('Unable to find node in time travel in change detection', record, frame);
+      return;
+    }
     children = current.children;
+  }
+  if (record.component === 'TodoComponent') {
+    console.log(record.position, temp);
   }
   current.state = TimelineNodeState.Check;
   current.instanceState = record.state;
@@ -100,14 +111,18 @@ const applyCreationMutation = (frame: TimelineFrame, record: ComponentRecord) =>
   let current: TimelineNode;
   for (let i = 0; i < record.position.length - 1; i++) {
     current = children[record.position[i]];
+    if (!current) {
+      console.error('Unable to find node in time travel in creation', record, frame);
+      return;
+    }
     children = current.children;
   }
-  children.splice(record.position[record.position.length - 1], 0, {
+  children[record.position[record.position.length - 1]] = {
     name: record.component,
     instanceState: record.state,
     children: [],
     state: TimelineNodeState.Default,
-  });
+  };
   frame.timestamp = record.timestamp;
 };
 
@@ -116,9 +131,17 @@ const applyDeletionMutation = (frame: TimelineFrame, record: ComponentRecord) =>
   let current: TimelineNode;
   for (let i = 0; i < record.position.length - 1; i++) {
     current = children[record.position[i]];
+    if (!current) {
+      console.error('Unable to find node in time travel in deletion', record, frame);
+      return;
+    }
     children = current.children;
   }
-  children.splice(record.position[record.position.length - 1], 1);
+  const lastIdx = record.position[record.position.length - 1];
+  // We might have replaced the node already, we don't want to delete in such case.
+  if (children[lastIdx] && children[lastIdx].name === record.component) {
+    children.splice(record.position[record.position.length - 1], 1);
+  }
   frame.timestamp = record.timestamp;
 };
 
@@ -143,6 +166,10 @@ const undoChangeDetectionMutation = (frame: TimelineFrame, record: ComponentReco
   let current: TimelineNode;
   for (const step of record.position) {
     current = children[step];
+    if (!current) {
+      console.error('Unable to find node in time travel in undo change detection', record, frame);
+      return;
+    }
     children = current.children;
   }
   current.state = TimelineNodeState.Default;

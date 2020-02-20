@@ -9,6 +9,8 @@ export const diff = <T>(differ: DefaultIterableDiffer<T>, a: T[], b: T[]) => {
   differ.diff(a);
   differ.diff(b);
 
+  console.log(b);
+
   const alreadySet = [];
 
   // We first have to set the moved items to their correct positions.
@@ -38,6 +40,8 @@ export const diff = <T>(differ: DefaultIterableDiffer<T>, a: T[], b: T[]) => {
       a.splice(i, 1);
     }
   }
+
+  console.log(a);
 
   return { newItems };
 };

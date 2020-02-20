@@ -21,7 +21,7 @@ import {
   appIsAngularInDevMode,
   appIsSupportedAngularVersion,
 } from './angular-check';
-import { indexDOM, getDirectiveId } from './dom-observer';
+import { observeDOM, getDirectiveId } from './component-tree-identifiers';
 
 export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void => {
   messageBus.on('shutdown', shutdownCallback(messageBus));
@@ -61,7 +61,6 @@ const initChangeDetection = (messageBus: MessageBus<Events>) => {
 //
 
 const getLatestComponentExplorerViewCallback = (messageBus: MessageBus<Events>) => query => {
-  indexDOM();
   messageBus.emit('latestComponentExplorerView', [
     {
       forest: prepareForestForSerialization(getDirectiveForest(document.documentElement, (window as any).ng)),
@@ -119,6 +118,7 @@ const checkForAngular = (messageBus: MessageBus<Events>, attempt = 0): void => {
   const ngVersion = getAngularVersion();
   const hasAngular = !!ngVersion;
   if (hasAngular) {
+    observeDOM();
     messageBus.emit('ngAvailability', [{ version: ngVersion.toString(), prodMode: false }]);
     return;
   }

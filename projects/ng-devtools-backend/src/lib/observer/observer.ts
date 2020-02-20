@@ -203,7 +203,7 @@ export class ComponentTreeObserver {
     if (original.patched) {
       return;
     }
-    declarations.tView.template = function(_, component: any) {
+    declarations.tView.template = function(_: any, component: any) {
       const start = performance.now();
       original.apply(this, arguments);
       if (self._tracker.hasDirective(component)) {
