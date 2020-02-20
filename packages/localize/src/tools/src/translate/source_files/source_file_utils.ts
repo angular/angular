@@ -94,8 +94,7 @@ export function unwrapMessagePartsFromLocalizeCall(call: NodePath<t.CallExpressi
       if (expressions.length > 2) {
         // This is a minified sequence expression, where the first two expressions in the sequence
         // are assignments of the cooked and raw arrays respectively.
-        const first = expressions[0];
-        const second = expressions[1];
+        const [first, second] = expressions;
         if (first.isAssignmentExpression() && second.isAssignmentExpression()) {
           cooked = first.get('right');
           if (!cooked.isExpression()) {
