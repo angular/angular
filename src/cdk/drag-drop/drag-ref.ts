@@ -124,6 +124,9 @@ export class DragRef<T = any> {
   /** Drop container in which the DragRef resided when dragging began. */
   private _initialContainer: DropListRef;
 
+  /** Index at which the item started in its initial container. */
+  private _initialIndex: number;
+
   /** Cached scroll position on the page when the element was picked up. */
   private _scrollPosition: {top: number, left: number};
 
@@ -307,6 +310,14 @@ export class DragRef<T = any> {
   /** Returns the root draggable element. */
   getRootElement(): HTMLElement {
     return this._rootElement;
+  }
+
+  /**
+   * Gets the currently-visible element that represents the drag item.
+   * While dragging this is the placeholder, otherwise it's the root element.
+   */
+  getVisibleElement(): HTMLElement {
+    return this.isDragging() ? this.getPlaceholderElement() : this.getRootElement();
   }
 
   /** Registers the handles that can be used to drag the element. */
@@ -697,6 +708,10 @@ export class DragRef<T = any> {
       this._document.body.appendChild(parent.replaceChild(placeholder, element));
       getPreviewInsertionPoint(this._document).appendChild(preview);
       this._dropContainer.start();
+      this._initialContainer = this._dropContainer;
+      this._initialIndex = this._dropContainer.getItemIndex(this);
+    } else {
+      this._initialContainer = this._initialIndex = undefined!;
     }
   }
 
@@ -743,7 +758,6 @@ export class DragRef<T = any> {
     }
 
     this._hasStartedDragging = this._hasMoved = false;
-    this._initialContainer = this._dropContainer!;
 
     // Avoid multiple subscriptions and memory leaks when multi touch
     // (isDragging check above isn't enough because of possible temporal and/or dimensional delays)
@@ -796,13 +810,14 @@ export class DragRef<T = any> {
       this.dropped.next({
         item: this,
         currentIndex,
-        previousIndex: this._initialContainer.getItemIndex(this),
+        previousIndex: this._initialIndex,
         container: container,
         previousContainer: this._initialContainer,
         isPointerOverContainer,
         distance
       });
-      container.drop(this, currentIndex, this._initialContainer, isPointerOverContainer, distance);
+      container.drop(this, currentIndex, this._initialContainer, isPointerOverContainer, distance,
+          this._initialIndex);
       this._dropContainer = this._initialContainer;
     });
   }
@@ -831,7 +846,10 @@ export class DragRef<T = any> {
         this._dropContainer!.exit(this);
         // Notify the new container that the item has entered.
         this._dropContainer = newContainer!;
-        this._dropContainer.enter(this, x, y);
+        this._dropContainer.enter(this, x, y,
+            // If we're re-entering the initial container,
+            // put item the into its starting index to begin with.
+            newContainer === this._initialContainer ? this._initialIndex : undefined);
         this.entered.next({
           item: this,
           container: newContainer!,

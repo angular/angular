@@ -143,7 +143,6 @@ export interface CdkDragStart<T = any> {
 }
 
 export declare class CdkDropList<T = any> implements AfterContentInit, OnDestroy {
-    _draggables: QueryList<CdkDrag>;
     _dropListRef: DropListRef<CdkDropList<T>>;
     autoScrollDisabled: boolean;
     connectedTo: (CdkDropList | string)[] | CdkDropList | string;
@@ -163,17 +162,20 @@ export declare class CdkDropList<T = any> implements AfterContentInit, OnDestroy
     constructor(
     element: ElementRef<HTMLElement>, dragDrop: DragDrop, _changeDetectorRef: ChangeDetectorRef, _dir?: Directionality | undefined, _group?: CdkDropListGroup<CdkDropList<any>> | undefined,
     _scrollDispatcher?: ScrollDispatcher | undefined, config?: DragDropConfig);
+    addItem(item: CdkDrag): void;
     drop(item: CdkDrag, currentIndex: number, previousContainer: CdkDropList, isPointerOverContainer: boolean): void;
     enter(item: CdkDrag, pointerX: number, pointerY: number): void;
     exit(item: CdkDrag): void;
     getItemIndex(item: CdkDrag): number;
+    getSortedItems(): CdkDrag[];
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
+    removeItem(item: CdkDrag): void;
     start(): void;
     static ngAcceptInputType_autoScrollDisabled: BooleanInput;
     static ngAcceptInputType_disabled: BooleanInput;
     static ngAcceptInputType_sortingDisabled: BooleanInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkDropList<any>, "[cdkDropList], cdk-drop-list", ["cdkDropList"], { "connectedTo": "cdkDropListConnectedTo"; "data": "cdkDropListData"; "orientation": "cdkDropListOrientation"; "id": "id"; "lockAxis": "cdkDropListLockAxis"; "disabled": "cdkDropListDisabled"; "sortingDisabled": "cdkDropListSortingDisabled"; "enterPredicate": "cdkDropListEnterPredicate"; "autoScrollDisabled": "cdkDropListAutoScrollDisabled"; }, { "dropped": "cdkDropListDropped"; "entered": "cdkDropListEntered"; "exited": "cdkDropListExited"; "sorted": "cdkDropListSorted"; }, ["_draggables"]>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkDropList<any>, "[cdkDropList], cdk-drop-list", ["cdkDropList"], { "connectedTo": "cdkDropListConnectedTo"; "data": "cdkDropListData"; "orientation": "cdkDropListOrientation"; "id": "id"; "lockAxis": "cdkDropListLockAxis"; "disabled": "cdkDropListDisabled"; "sortingDisabled": "cdkDropListSortingDisabled"; "enterPredicate": "cdkDropListEnterPredicate"; "autoScrollDisabled": "cdkDropListAutoScrollDisabled"; }, { "dropped": "cdkDropListDropped"; "entered": "cdkDropListEntered"; "exited": "cdkDropListExited"; "sorted": "cdkDropListSorted"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkDropList<any>>;
 }
 
@@ -298,6 +300,7 @@ export declare class DragRef<T = any> {
     getFreeDragPosition(): Readonly<Point>;
     getPlaceholderElement(): HTMLElement;
     getRootElement(): HTMLElement;
+    getVisibleElement(): HTMLElement;
     isDragging(): boolean;
     reset(): void;
     setFreeDragPosition(value: Point): this;
@@ -368,8 +371,8 @@ export declare class DropListRef<T = any> {
     _stopScrolling(): void;
     connectedTo(connectedTo: DropListRef[]): this;
     dispose(): void;
-    drop(item: DragRef, currentIndex: number, previousContainer: DropListRef, isPointerOverContainer: boolean, distance: Point): void;
-    enter(item: DragRef, pointerX: number, pointerY: number): void;
+    drop(item: DragRef, currentIndex: number, previousContainer: DropListRef, isPointerOverContainer: boolean, distance: Point, previousIndex?: number): void;
+    enter(item: DragRef, pointerX: number, pointerY: number, index?: number): void;
     exit(item: DragRef): void;
     getItemIndex(item: DragRef): number;
     isDragging(): boolean;

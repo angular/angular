@@ -215,6 +215,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
     // assigning the drop container both from here and the list.
     if (dropContainer) {
       this._dragRef._withDropContainer(dropContainer._dropListRef);
+      dropContainer.addItem(this);
     }
 
     this._syncInputs(this._dragRef);
@@ -303,6 +304,10 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
+    if (this.dropContainer) {
+      this.dropContainer.removeItem(this);
+    }
+
     this._destroyed.next();
     this._destroyed.complete();
     this._dragRef.dispose();

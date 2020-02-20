@@ -1358,6 +1358,47 @@ describe('CdkDrag', () => {
       expect(fixture.componentInstance.dropInstance.data).toBe(fixture.componentInstance.items);
     });
 
+    it('should register an item with the drop container', () => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+      const list = fixture.componentInstance.dropInstance;
+
+      spyOn(list, 'addItem').and.callThrough();
+
+      fixture.componentInstance.items.push({value: 'Extra', margin: 0, height: ITEM_HEIGHT});
+      fixture.detectChanges();
+
+      expect(list.addItem).toHaveBeenCalledTimes(1);
+    });
+
+    it('should remove an item from the drop container', () => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+      const list = fixture.componentInstance.dropInstance;
+
+      spyOn(list, 'removeItem').and.callThrough();
+
+      fixture.componentInstance.items.pop();
+      fixture.detectChanges();
+
+      expect(list.removeItem).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return the items sorted by their position in the DOM', () => {
+      const fixture = createComponent(DraggableInDropZone);
+      const items = fixture.componentInstance.items;
+      fixture.detectChanges();
+
+      // Insert a couple of items in the start and the middle so the list gets shifted around.
+      items.unshift({value: 'Extra 0', margin: 0, height: ITEM_HEIGHT});
+      items.splice(3, 0, {value: 'Extra 1', margin: 0, height: ITEM_HEIGHT});
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.dropInstance.getSortedItems().map(item => {
+        return item.element.nativeElement.textContent!.trim();
+      })).toEqual(['Extra 0', 'Zero', 'One', 'Extra 1', 'Two', 'Three']);
+    });
+
     it('should sync the drop list inputs with the drop list ref', () => {
       const fixture = createComponent(DraggableInDropZone);
       fixture.detectChanges();
@@ -5167,7 +5208,7 @@ class ConnectedDropZones implements AfterViewInit {
         this.groupedDragItems.push([]);
       }
 
-      this.groupedDragItems[index].push(...dropZone._draggables.toArray());
+      this.groupedDragItems[index].push(...dropZone.getSortedItems());
     });
   }
 }

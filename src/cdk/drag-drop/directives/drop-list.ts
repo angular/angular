@@ -8,13 +8,11 @@
 
 import {BooleanInput, coerceArray, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
-  ContentChildren,
   ElementRef,
   EventEmitter,
   Input,
   OnDestroy,
   Output,
-  QueryList,
   Optional,
   Directive,
   ChangeDetectorRef,
@@ -70,9 +68,6 @@ export class CdkDropList<T = any> implements AfterContentInit, OnDestroy {
 
   /** Reference to the underlying drop list instance. */
   _dropListRef: DropListRef<CdkDropList<T>>;
-
-  /** Draggable items in the container. */
-  @ContentChildren(CdkDrag, {descendants: true}) _draggables: QueryList<CdkDrag>;
 
   /**
    * Other draggable containers that this container is connected to and into which the
@@ -147,6 +142,15 @@ export class CdkDropList<T = any> implements AfterContentInit, OnDestroy {
   @Output('cdkDropListSorted')
   sorted: EventEmitter<CdkDragSortEvent<T>> = new EventEmitter<CdkDragSortEvent<T>>();
 
+  /**
+   * Keeps track of the items that are registered with this container. Historically we used to
+   * do this with a `ContentChildren` query, however queries don't handle transplanted views very
+   * well which means that we can't handle cases like dragging the headers of a `mat-table`
+   * correctly. What we do instead is to have the items register themselves with the container
+   * and then we sort them based on their position in the DOM.
+   */
+  private _unsortedItems = new Set<CdkDrag>();
+
   constructor(
       /** Element that the drop list is attached to. */
       public element: ElementRef<HTMLElement>, dragDrop: DragDrop,
@@ -187,18 +191,37 @@ export class CdkDropList<T = any> implements AfterContentInit, OnDestroy {
         .map(scrollable => scrollable.getElementRef().nativeElement);
       this._dropListRef.withScrollableParents(scrollableParents);
     }
+  }
 
-    this._draggables.changes
-      .pipe(startWith(this._draggables), takeUntil(this._destroyed))
-      .subscribe((items: QueryList<CdkDrag>) => {
-        this._dropListRef.withItems(items.reduce((filteredItems, drag) => {
-          if (drag.dropContainer === this) {
-            filteredItems.push(drag._dragRef);
-          }
+  /** Registers an items with the drop list. */
+  addItem(item: CdkDrag): void {
+    this._unsortedItems.add(item);
 
-          return filteredItems;
-        }, [] as DragRef[]));
-      });
+    if (this._dropListRef.isDragging()) {
+      this._syncItemsWithRef();
+    }
+  }
+
+  /** Removes an item from the drop list. */
+  removeItem(item: CdkDrag): void {
+    this._unsortedItems.delete(item);
+
+    if (this._dropListRef.isDragging()) {
+      this._syncItemsWithRef();
+    }
+  }
+
+  /** Gets the registered items in the list, sorted by their position in the DOM. */
+  getSortedItems(): CdkDrag[] {
+    return Array.from(this._unsortedItems).sort((a: CdkDrag, b: CdkDrag) => {
+      const documentPosition =
+          a._dragRef.getVisibleElement().compareDocumentPosition(b._dragRef.getVisibleElement());
+
+      // `compareDocumentPosition` returns a bitmask so we have to use a bitwise operator.
+      // https://developer.mozilla.org/en-US/docs/Web/API/Node/compareDocumentPosition
+      // tslint:disable-next-line:no-bitwise
+      return documentPosition & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
+    });
   }
 
   ngOnDestroy() {
@@ -212,6 +235,7 @@ export class CdkDropList<T = any> implements AfterContentInit, OnDestroy {
       this._group._items.delete(this);
     }
 
+    this._unsortedItems.clear();
     this._dropListRef.dispose();
     this._destroyed.next();
     this._destroyed.complete();
@@ -310,6 +334,7 @@ export class CdkDropList<T = any> implements AfterContentInit, OnDestroy {
   /** Handles events from the underlying DropListRef. */
   private _handleEvents(ref: DropListRef<CdkDropList>) {
     ref.beforeStarted.subscribe(() => {
+      this._syncItemsWithRef();
       this._changeDetectorRef.markForCheck();
     });
 
@@ -369,6 +394,11 @@ export class CdkDropList<T = any> implements AfterContentInit, OnDestroy {
     if (lockAxis) {
       this.lockAxis = lockAxis;
     }
+  }
+
+  /** Syncs up the registered drag items with underlying drop list ref. */
+  private _syncItemsWithRef() {
+    this._dropListRef.withItems(this.getSortedItems().map(item => item._dragRef));
   }
 
   static ngAcceptInputType_disabled: BooleanInput;

@@ -256,18 +256,26 @@ export class DropListRef<T = any> {
    * @param item Item that was moved into the container.
    * @param pointerX Position of the item along the X axis.
    * @param pointerY Position of the item along the Y axis.
+   * @param index Index at which the item entered. If omitted, the container will try to figure it
+   *   out automatically.
    */
-  enter(item: DragRef, pointerX: number, pointerY: number): void {
+  enter(item: DragRef, pointerX: number, pointerY: number, index?: number): void {
     this.start();
 
     // If sorting is disabled, we want the item to return to its starting
     // position if the user is returning it to its initial container.
-    let newIndex = this.sortingDisabled ? this._draggables.indexOf(item) : -1;
+    let newIndex: number;
 
-    if (newIndex === -1) {
-      // We use the coordinates of where the item entered the drop
-      // zone to figure out at which index it should be inserted.
-      newIndex = this._getItemIndexFromPointerPosition(item, pointerX, pointerY);
+    if (index == null) {
+      newIndex = this.sortingDisabled ? this._draggables.indexOf(item) : -1;
+
+      if (newIndex === -1) {
+        // We use the coordinates of where the item entered the drop
+        // zone to figure out at which index it should be inserted.
+        newIndex = this._getItemIndexFromPointerPosition(item, pointerX, pointerY);
+      }
+    } else {
+      newIndex = index;
     }
 
     const activeDraggables = this._activeDraggables;
@@ -325,14 +333,22 @@ export class DropListRef<T = any> {
    * @param isPointerOverContainer Whether the user's pointer was over the
    *    container when the item was dropped.
    * @param distance Distance the user has dragged since the start of the dragging sequence.
+   * @param previousIndex Index of the item when dragging started.
+   *
+   * @breaking-change 11.0.0 `previousIndex` parameter to become required.
    */
   drop(item: DragRef, currentIndex: number, previousContainer: DropListRef,
-    isPointerOverContainer: boolean, distance: Point): void {
+    isPointerOverContainer: boolean, distance: Point, previousIndex?: number): void {
     this._reset();
-    this.dropped.next({
-      item,
+
+    // @breaking-change 11.0.0 Remove this fallback logic once `previousIndex` is a required param.
+    if (previousIndex == null) {
+      previousIndex = previousContainer.getItemIndex(item);
+    }
+
+    this.dropped.next({item,
       currentIndex,
-      previousIndex: previousContainer.getItemIndex(item),
+      previousIndex,
       container: this,
       previousContainer,
       isPointerOverContainer,
@@ -591,11 +607,7 @@ export class DropListRef<T = any> {
     const isHorizontal = this._orientation === 'horizontal';
 
     this._itemPositions = this._activeDraggables.map(drag => {
-      const elementToMeasure = this._dragDropRegistry.isDragging(drag) ?
-          // If the element is being dragged, we have to measure the
-          // placeholder, because the element is hidden.
-          drag.getPlaceholderElement() :
-          drag.getRootElement();
+      const elementToMeasure = drag.getVisibleElement();
       return {drag, offset: 0, clientRect: getMutableClientRect(elementToMeasure)};
     }).sort((a, b) => {
       return isHorizontal ? a.clientRect.left - b.clientRect.left :
