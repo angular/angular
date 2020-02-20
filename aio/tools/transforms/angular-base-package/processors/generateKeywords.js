@@ -96,8 +96,7 @@ module.exports = function generateKeywordsProcessor(log, readFilesProcessor) {
 
         // Attach search query keywords if available
         if (doc.searchKeywords) {
-          // Make sure the search query comes first before the keywords
-          doc.searchTerms.keywords = `${doc.searchKeywords} ${doc.searchTerms.keywords}`;
+          doc.searchTerms.topics = `${doc.searchKeywords}`;
         }
       });
 
