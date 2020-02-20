@@ -16,7 +16,7 @@ export class IdentityTracker {
   private _currentDirectiveId = new Map<any, number>();
   private _createdDirectives = new Set<any>();
   private _forest: TreeNode[] = [];
-  private _componentTreeNode = new Map<any, TreeNode>();
+  private _directiveTreeNode = new Map<any, TreeNode>();
 
   constructor(private _ng: DebuggingAPI) {}
 
@@ -36,72 +36,23 @@ export class IdentityTracker {
   }
 
   private _insertDirective(node: HTMLElement, directive: any) {
-    this.index();
-    // const parent = getParentComponentFromDomNode(node, this._ng);
+    const parent = getParentComponentFromDomNode(node, this._ng);
 
-    // this._elementDirective.set(node, directive);
-    // this._createdDirectives.add(directive);
+    this._elementDirective.set(node, directive);
+    this._createdDirectives.add(directive);
 
-    // let parentTreeNode = null;
-    // let parentPosition = [];
-    // let childIdx = 0;
-    // let siblingsArray = this._forest;
-    // if (parent) {
-    //   const parentElement = this._ng.getHostElement(parent) || document.documentElement;
-    //   const children = getDirectiveForest(parentElement, this._ng)[0].children;
+    if (!parent) {
+      this.index();
+      return;
+    }
 
-    //   parentPosition = this._currentDirectivePosition.get(parent);
-    //   parentTreeNode = this._componentTreeNode.get(parent);
-    //   siblingsArray = parentTreeNode.children;
-
-    //   for (const child of children) {
-    //     if (
-    //       (child.component && child.component.instance === directive) ||
-    //       (child.directives && child.directives.some(d => d === directive))
-    //     ) {
-    //       break;
-    //     }
-    //     childIdx++;
-    //   }
-    // }
-
-    // const treeNode: TreeNode = {
-    //   parent: parentTreeNode,
-    //   children: [],
-    //   directive,
-    // };
-    // siblingsArray.splice(childIdx, 0, treeNode);
-    // this._currentDirectivePosition.set(directive, parentPosition.concat([childIdx]));
-    // this._currentDirectiveId.set(directive, this._counter++);
-    // this._componentTreeNode.set(directive, treeNode);
-
-    // for (let i = childIdx + 1; i < siblingsArray.length; i++) {
-    //   const sibling = siblingsArray[i];
-    //   const siblingId = this._currentDirectivePosition.get(sibling.directive);
-    //   siblingId[siblingId.length - 1] = siblingId[siblingId.length - 1] + 1;
-    //   this._updateNestedNodeIds(sibling, siblingId.length - 1, 1);
-    // }
+    const parentElement = this._ng.getHostElement(parent) || document.documentElement;
+    const parentNodes = indexForest(getDirectiveForest(parentElement, this._ng));
+    parentNodes.forEach(p => this._index(p));
   }
 
-  delete(cmp: any): void {
+  delete(_: any): void {
     this.index();
-    // const node = this._componentTreeNode.get(cmp);
-    // const parent = node.parent;
-    // let childrenArray = this._forest;
-    // if (parent) {
-    //   childrenArray = parent.children;
-    // }
-
-    // const childIdx = childrenArray.indexOf(node);
-    // childrenArray.splice(childIdx, 1);
-
-    // for (let i = childIdx; i < childrenArray.length; i++) {
-    //   const sibling = childrenArray[i].directive;
-    //   const siblingId = this._currentDirectivePosition.get(sibling);
-    //   // We removed the sibling node, so we need to decrease the position
-    //   siblingId[siblingId.length - 1] = siblingId[siblingId.length - 1] - 1;
-    //   this._updateNestedNodeIds(childrenArray[i], siblingId.length - 1, -1);
-    // }
   }
 
   index(rootElement = document.documentElement) {
@@ -119,14 +70,14 @@ export class IdentityTracker {
     root.children.forEach(child => this._index(child, parent));
   }
 
-  private _indexNode(directive: any, position: number[], parent: TreeNode | null = null) {
+  private _indexNode(directive: any, position: ElementPosition, parent: TreeNode | null = null) {
     this._createdDirectives.add(directive);
     const node: TreeNode = {
       parent,
       directive,
       children: [],
     };
-    this._componentTreeNode.set(directive, node);
+    this._directiveTreeNode.set(directive, node);
     if (parent) {
       parent.children.push(node);
     } else {
@@ -149,15 +100,7 @@ export class IdentityTracker {
     this._currentDirectiveId = new Map<any, number>();
     this._createdDirectives = new Set<any>();
     this._forest = [];
-    this._componentTreeNode = new Map<any, TreeNode>();
-  }
-
-  private _updateNestedNodeIds(p: TreeNode, level: number, incrementBy: number): void {
-    p.children.forEach(c => {
-      const position = this._currentDirectivePosition.get(c.directive);
-      position[level] = position[level] + incrementBy;
-      this._updateNestedNodeIds(c, level, incrementBy);
-    });
+    this._directiveTreeNode = new Map<any, TreeNode>();
   }
 }
 
@@ -190,7 +133,7 @@ const indexTree = <T extends ComponentNode<DirectiveInstanceType, ComponentInsta
     position,
     element: node.element,
     component: node.component,
-    directives: node.directives,
+    directives: node.directives.map(d => ({ position, ...d })),
     children: node.children.map((n, i) => indexTree(n, i, position)),
     nativeElement: node.nativeElement,
   } as IndexedNode;

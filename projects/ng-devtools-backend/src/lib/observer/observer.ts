@@ -19,6 +19,7 @@ export type CreationCallback = (
   isComponent: boolean,
   position: ElementPosition
 ) => void;
+
 export type LifecycleCallback = (
   componentOrDirective: any,
   id: number,
@@ -26,7 +27,9 @@ export type LifecycleCallback = (
   hook: LifecyleHook,
   duration: any
 ) => void;
+
 export type ChangeDetectionCallback = (component: any, id: number, position: ElementPosition, duration: number) => void;
+
 export type DestroyCallback = (
   componentOrDirective: any,
   id: number,

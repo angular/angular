@@ -1,7 +1,7 @@
 import { ComponentTreeObserver } from './observer';
 import { AppRecord, ComponentEventType, ElementPosition, LifeCycleEventType, Events, MessageBus } from 'protocol';
 import { runOutsideAngular } from '../utils';
-import { createRecord } from './record-factory';
+import { createDirectiveEventRecord } from './record-factory';
 
 let records: AppRecord[] = [];
 let observer: ComponentTreeObserver;
@@ -15,35 +15,50 @@ export const start = (messageBus: MessageBus<Events>): void => {
   inProgress = true;
   observer = new ComponentTreeObserver({
     onCreate(component: any, id: number, isComponent: boolean, position: ElementPosition) {
-      if (!isComponent) {
-        return;
-      }
-      records.push(createRecord({ recorderComponent: { component, position }, eventType: ComponentEventType.Create }));
+      records.push(
+        createDirectiveEventRecord({
+          recorderComponent: { component, position, isComponent },
+          eventType: ComponentEventType.Create,
+        })
+      );
     },
     onChangeDetection(component: any, id: number, position: ElementPosition, duration: number) {
       if (!inChangeDetection) {
         inChangeDetection = true;
-        records.push(createRecord({ eventType: LifeCycleEventType.ChangeDetectionStart }));
+        records.push({
+          recordType: 'lifecycle',
+          event: LifeCycleEventType.ChangeDetectionStart,
+          source: getChangeDetectionSource(),
+          timestamp: Date.now(),
+        });
         runOutsideAngular(() => {
           setTimeout(() => {
             inChangeDetection = false;
-            addNewRecord(createRecord({ eventType: LifeCycleEventType.ChangeDetectionEnd }), messageBus);
+            addNewRecord(
+              {
+                recordType: 'lifecycle',
+                event: LifeCycleEventType.ChangeDetectionEnd,
+                timestamp: Date.now(),
+              },
+              messageBus
+            );
           });
         });
       }
       records.push(
-        createRecord({
-          recorderComponent: { component, position },
+        createDirectiveEventRecord({
+          recorderComponent: { component, position, isComponent: true },
           eventType: ComponentEventType.ChangeDetection,
-          duration,
         })
       );
     },
     onDestroy(component: any, id: number, isComponent: boolean, position: ElementPosition) {
-      if (!isComponent) {
-        return;
-      }
-      records.push(createRecord({ recorderComponent: { component, position }, eventType: ComponentEventType.Destroy }));
+      records.push(
+        createDirectiveEventRecord({
+          recorderComponent: { component, position, isComponent },
+          eventType: ComponentEventType.Destroy,
+        })
+      );
     },
   });
   observer.initialize();
@@ -64,4 +79,12 @@ const addNewRecord = (record: AppRecord, messageBus: MessageBus<Events>) => {
     messageBus.emit('sendProfilerChunk', [records]);
     records = [];
   }
+};
+
+const getChangeDetectionSource = () => {
+  const zone = (window as any).Zone;
+  if (!zone || !zone.currentTask) {
+    return '';
+  }
+  return zone.currentTask.source;
 };
