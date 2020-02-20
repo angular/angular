@@ -59,5 +59,9 @@
     @include mdc-notched-outline-core-styles($query: $mat-typography-styles-query);
     @include mdc-line-ripple-core-styles($query: $mat-typography-styles-query);
     @include _mat-form-field-subscript-typography($config);
+
+    .mat-mdc-form-field {
+      @include mat-typography-level-to-styles($config, input);
+    }
   }
 }

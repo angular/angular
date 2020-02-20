@@ -18,10 +18,10 @@
 
   // Unset the border set by MDC. We move the border (which serves as the Material Design
   // text-field bottom line) into its own element. This is necessary because we want the
-  // bottom-line to span across the whole form-field (including prefixes and suffixes).
-  // Also we want to ensure that font styles are inherited for input elements. We want input
-  // text to align with surrounding text. Also font inheritance has been enabled in the non
-  // MDC-based implementation of the form-field too, so we need it for backwards compatibility.
+  // bottom-line to span across the whole form-field (including prefixes and suffixes). Also
+  // we ensure that font styles are inherited for input elements. We do this because inputs by
+  // default have explicit font styles from the user agent, and we set the desired font styles
+  // in the parent `mat-form-field` element (for better custom form-field control support).
   .mat-mdc-input-element {
     font: inherit;
     border: none;
