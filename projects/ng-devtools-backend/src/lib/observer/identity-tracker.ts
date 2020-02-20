@@ -36,71 +36,72 @@ export class IdentityTracker {
   }
 
   private _insertDirective(node: HTMLElement, directive: any) {
-    const parent = getParentComponentFromDomNode(node, this._ng);
+    this.index();
+    // const parent = getParentComponentFromDomNode(node, this._ng);
 
-    this._elementDirective.set(node, directive);
-    this._createdDirectives.add(directive);
+    // this._elementDirective.set(node, directive);
+    // this._createdDirectives.add(directive);
 
-    let parentTreeNode = null;
-    let parentPosition = [];
-    let childIdx = 0;
-    let siblingsArray = this._forest;
-    if (parent) {
-      const parentElement = this._ng.getHostElement(parent) || document.documentElement;
+    // let parentTreeNode = null;
+    // let parentPosition = [];
+    // let childIdx = 0;
+    // let siblingsArray = this._forest;
+    // if (parent) {
+    //   const parentElement = this._ng.getHostElement(parent) || document.documentElement;
+    //   const children = getDirectiveForest(parentElement, this._ng)[0].children;
 
-      const children = getDirectiveForest(parentElement, this._ng)[0].children;
+    //   parentPosition = this._currentDirectivePosition.get(parent);
+    //   parentTreeNode = this._componentTreeNode.get(parent);
+    //   siblingsArray = parentTreeNode.children;
 
-      parentPosition = this._currentDirectivePosition.get(parent);
-      parentTreeNode = this._componentTreeNode.get(parent);
-      siblingsArray = parentTreeNode.children;
+    //   for (const child of children) {
+    //     if (
+    //       (child.component && child.component.instance === directive) ||
+    //       (child.directives && child.directives.some(d => d === directive))
+    //     ) {
+    //       break;
+    //     }
+    //     childIdx++;
+    //   }
+    // }
 
-      for (const child of children) {
-        if (
-          (child.component && child.component.instance === directive) ||
-          (child.directives && child.directives.some(d => d === directive))
-        ) {
-          break;
-        }
-        childIdx++;
-      }
-    }
+    // const treeNode: TreeNode = {
+    //   parent: parentTreeNode,
+    //   children: [],
+    //   directive,
+    // };
+    // siblingsArray.splice(childIdx, 0, treeNode);
+    // this._currentDirectivePosition.set(directive, parentPosition.concat([childIdx]));
+    // this._currentDirectiveId.set(directive, this._counter++);
+    // this._componentTreeNode.set(directive, treeNode);
 
-    const treeNode: TreeNode = {
-      parent: parentTreeNode,
-      children: [],
-      directive,
-    };
-    siblingsArray.splice(childIdx, 0, treeNode);
-    this._currentDirectivePosition.set(directive, parentPosition.concat([childIdx]));
-    this._currentDirectiveId.set(directive, this._counter++);
-    this._componentTreeNode.set(directive, treeNode);
-
-    for (let i = childIdx + 1; i < siblingsArray.length; i++) {
-      const sibling = siblingsArray[i];
-      const siblingId = this._currentDirectivePosition.get(sibling.directive);
-      siblingId[siblingId.length - 1] = siblingId[siblingId.length - 1] + 1;
-      this._updateNestedNodeIds(sibling, siblingId.length - 1, 1);
-    }
+    // for (let i = childIdx + 1; i < siblingsArray.length; i++) {
+    //   const sibling = siblingsArray[i];
+    //   const siblingId = this._currentDirectivePosition.get(sibling.directive);
+    //   siblingId[siblingId.length - 1] = siblingId[siblingId.length - 1] + 1;
+    //   this._updateNestedNodeIds(sibling, siblingId.length - 1, 1);
+    // }
   }
 
   delete(cmp: any): void {
-    const node = this._componentTreeNode.get(cmp);
-    const parent = node.parent;
-    let childrenArray = this._forest;
-    if (parent) {
-      childrenArray = parent.children;
-    }
+    this.index();
+    // const node = this._componentTreeNode.get(cmp);
+    // const parent = node.parent;
+    // let childrenArray = this._forest;
+    // if (parent) {
+    //   childrenArray = parent.children;
+    // }
 
-    const childIdx = childrenArray.indexOf(node);
-    childrenArray.splice(childIdx, 1);
+    // const childIdx = childrenArray.indexOf(node);
+    // childrenArray.splice(childIdx, 1);
 
-    for (let i = childIdx; i < childrenArray.length; i++) {
-      const sibling = childrenArray[i].directive;
-      const siblingId = this._currentDirectivePosition.get(sibling);
-      // We removed the sibling node, so we need to decrease the position
-      siblingId[siblingId.length - 1] = siblingId[siblingId.length - 1] - 1;
-      this._updateNestedNodeIds(childrenArray[i], siblingId.length - 1, -1);
-    }
+    // for (let i = childIdx; i < childrenArray.length; i++) {
+    //   const sibling = childrenArray[i].directive;
+    //   const siblingId = this._currentDirectivePosition.get(sibling);
+    //   // We removed the sibling node, so we need to decrease the position
+    //   siblingId[siblingId.length - 1] = siblingId[siblingId.length - 1] - 1;
+    //   this._updateNestedNodeIds(childrenArray[i], siblingId.length - 1, -1);
+    // }
   }
 
   index(rootElement = document.documentElement) {
@@ -184,10 +185,7 @@ const indexTree = <T extends ComponentNode<DirectiveInstanceType, ComponentInsta
   idx: number,
   parentPosition = []
 ): IndexedNode => {
-  let position = parentPosition;
-  if (node.component) {
-    position = parentPosition.concat([idx]);
-  }
+  const position = parentPosition.concat([idx]);
   return {
     position,
     element: node.element,

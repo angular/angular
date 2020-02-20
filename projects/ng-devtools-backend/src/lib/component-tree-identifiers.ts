@@ -8,9 +8,6 @@ export const observeDOM = () => {
     return;
   }
   observer = new ComponentTreeObserver({});
-};
-
-export const indexDOM = () => {
   observer.initialize();
 };
 
