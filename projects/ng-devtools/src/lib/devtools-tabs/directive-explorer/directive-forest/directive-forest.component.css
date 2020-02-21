@@ -75,7 +75,6 @@
 }
 
 :host /deep/ mat-tree-node {
-  transition: background-color 100ms;
   border-radius: 8px;
   white-space: nowrap;
   text-overflow: ellipsis;

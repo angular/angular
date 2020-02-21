@@ -20,7 +20,6 @@
     *matTreeNodeDef="let node"
     matTreeNodePaddingIndent="20"
     matTreeNodePadding
-    [@simpleFade]="node.level ? 1 : 0"
   >
     <button disabled></button>
     <span class="element-name">{{ node.name }}</span>
@@ -40,7 +39,6 @@
     *matTreeNodeDef="let node; when: hasChild"
     matTreeNodePaddingIndent="20"
     matTreeNodePadding
-    [@simpleFade]="node.level ? 1 : 0"
   >
     <button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.name">
       <mat-icon class="mat-icon-rtl-mirror">
