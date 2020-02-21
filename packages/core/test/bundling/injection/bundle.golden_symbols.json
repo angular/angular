@@ -223,5 +223,8 @@
   },
   {
     "name": "ɵɵinject"
+  },
+  {
+    "name": "noSideEffects"
   }
 ]
