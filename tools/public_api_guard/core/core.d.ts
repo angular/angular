@@ -915,7 +915,7 @@ export declare function ɵɵnextContext<T = any>(level?: number): T;
 
 export declare type ɵɵNgModuleDefWithMeta<T, Declarations, Imports, Exports> = NgModuleDef<T>;
 
-export declare function ɵɵNgOnChangesFeature<T>(): DirectiveDefFeature;
+export declare function ɵɵNgOnChangesFeature<T>(definition: DirectiveDef<T>): void;
 
 export declare function ɵɵpipe(index: number, pipeName: string): any;
 
