@@ -41,7 +41,6 @@ const getId = (node: IndexedNode) => {
 
 export class ComponentDataSource extends DataSource<FlatNode> {
   private _differ = new DefaultIterableDiffer(trackBy);
-  private _data = new BehaviorSubject<IndexedNode[]>([]);
   private _expandedData = new BehaviorSubject<FlatNode[]>([]);
   private _flattenedData = new BehaviorSubject<FlatNode[]>([]);
   private _nodeToFlat = new Map<IndexedNode, FlatNode>();
@@ -79,10 +78,6 @@ export class ComponentDataSource extends DataSource<FlatNode> {
     return this._flattenedData.value;
   }
 
-  get data$(): BehaviorSubject<IndexedNode[]> {
-    return this._data;
-  }
-
   get expandedDataValues() {
     return this._expandedData.value;
   }
@@ -98,11 +93,8 @@ export class ComponentDataSource extends DataSource<FlatNode> {
     this.data.forEach(i => (i.newItem = false));
 
     const { newItems } = diff(this._differ, this.data, flattenedCollection);
-
     this._treeControl.dataNodes = this.data;
-
     this._flattenedData.next(this.data);
-    this._data.next(indexedForest);
 
     newItems.forEach(i => (i.newItem = true));
 
@@ -110,7 +102,7 @@ export class ComponentDataSource extends DataSource<FlatNode> {
   }
 
   connect(): Observable<FlatNode[]> {
-    return this._data.pipe(
+    return this._flattenedData.pipe(
       map(() => {
         this._expandedData.next(this.data);
         return this._expandedData.value;
