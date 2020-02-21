@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstVisitor, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, visitAstChildren} from '@angular/compiler';
+import {AST, AstVisitor, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {BuiltinType, Signature, Symbol, SymbolQuery, SymbolTable} from './symbols';
@@ -178,14 +178,18 @@ export class AstType implements AstVisitor {
 
   visitChain(ast: Chain) {
     // If we are producing diagnostics, visit the children
-    visitAstChildren(ast, this);
+    for (const expr of ast.expressions) {
+      expr.visit(this);
+    }
     // The type of a chain is always undefined.
     return this.query.getBuiltinType(BuiltinType.Undefined);
   }
 
   visitConditional(ast: Conditional) {
     // The type of a conditional is the union of the true and false conditions.
-    visitAstChildren(ast, this);
+    ast.condition.visit(this);
+    ast.trueExp.visit(this);
+    ast.falseExp.visit(this);
     return this.query.getTypeUnion(this.getType(ast.trueExp), this.getType(ast.falseExp));
   }
 
@@ -235,7 +239,9 @@ export class AstType implements AstVisitor {
 
   visitInterpolation(ast: Interpolation): Symbol {
     // If we are producing diagnostics, visit the children.
-    visitAstChildren(ast, this);
+    for (const expr of ast.expressions) {
+      expr.visit(this);
+    }
     return this.undefinedType;
   }
 
@@ -260,7 +266,9 @@ export class AstType implements AstVisitor {
 
   visitLiteralMap(ast: LiteralMap): Symbol {
     // If we are producing diagnostics, visit the children
-    visitAstChildren(ast, this);
+    for (const value of ast.values) {
+      value.visit(this);
+    }
     // TODO: Return a composite type.
     return this.anyType;
   }
@@ -312,7 +320,7 @@ export class AstType implements AstVisitor {
 
   visitPrefixNot(ast: PrefixNot) {
     // If we are producing diagnostics, visit the children
-    visitAstChildren(ast, this);
+    ast.expression.visit(this);
     // The type of a prefix ! is always boolean.
     return this.query.getBuiltinType(BuiltinType.Boolean);
   }
