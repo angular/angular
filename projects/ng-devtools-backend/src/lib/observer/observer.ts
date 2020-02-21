@@ -1,17 +1,7 @@
-import { ElementPosition } from 'protocol';
+import { ElementPosition, LifecycleProfile } from 'protocol';
 import { ComponentTreeNode, getDirectiveForest } from '../component-tree';
 import { componentMetadata } from '../utils';
 import { IdentityTracker } from './identity-tracker';
-
-export type LifecyleHook =
-  | 'ngOnInit'
-  | 'ngOnDestroy'
-  | 'ngOnChanges'
-  | 'ngDoCheck'
-  | 'ngAfterContentInit'
-  | 'ngAfterContentChecked'
-  | 'ngAfterViewInit'
-  | 'ngAfterViewChecked';
 
 export type CreationCallback = (
   componentOrDirective: any,
@@ -24,7 +14,7 @@ export type LifecycleCallback = (
   componentOrDirective: any,
   id: number,
   isComponent: boolean,
-  hook: LifecyleHook,
+  hook: keyof LifecycleProfile | 'unknown',
   duration: number
 ) => void;
 
@@ -46,6 +36,17 @@ export interface Config {
   onLifecycleHook: LifecycleCallback;
 }
 
+const hookNames = [
+  'OnInit',
+  'OnDestroy',
+  'OnChanges',
+  'DoCheck',
+  'AfterContentInit',
+  'AfterContentChecked',
+  'AfterViewInit',
+  'AfterViewChecked',
+];
+
 const hookTViewProperties = [
   'preOrderHooks',
   'preOrderCheckHooks',
@@ -55,6 +56,13 @@ const hookTViewProperties = [
   'viewCheckHooks',
   'destroyHooks',
 ];
+
+const getLifeCycleName = (fnName: string): keyof LifecycleProfile | 'unknown' => {
+  fnName = fnName.toLowerCase();
+  return (
+    (hookNames.filter(hook => fnName.indexOf(hook.toLowerCase()) >= 0).pop() as keyof LifecycleProfile) || 'unknown'
+  );
+};
 
 /**
  * This is a temporal "polyfill" until we receive more comprehensive framework
@@ -67,6 +75,7 @@ const hookTViewProperties = [
 export class ComponentTreeObserver {
   private _mutationObserver = new MutationObserver(this._onMutation.bind(this));
   private _patched = new Map<any, () => void>();
+  private _undoLifecyclePatch: (() => void)[] = [];
   private _lastChangeDetection = new Map<any, number>();
   private _tracker = new IdentityTracker((window as any).ng);
 
@@ -105,6 +114,10 @@ export class ComponentTreeObserver {
       meta.template = template;
       meta.tView.template = template;
     }
+
+    this._patched = new Map<any, () => void>();
+    this._undoLifecyclePatch.forEach(p => p());
+    this._undoLifecyclePatch = [];
   }
 
   private _onMutation(mutations: MutationRecord[]): void {
@@ -301,17 +314,16 @@ export class ComponentTreeObserver {
                 this,
                 self._tracker.getDirectiveId(this),
                 isComponent,
-                el.name,
+                getLifeCycleName(el.name),
                 performance.now() - start
               );
             }
-            console.log(this.constructor.name, el.name);
-            if (!el.name) {
-              console.log(this, el, el.patched);
-            }
             return result;
           };
-          el.patched = true;
+          current[idx].patched = true;
+          this._undoLifecyclePatch.push(() => {
+            current[idx] = el;
+          });
         }
       });
     });

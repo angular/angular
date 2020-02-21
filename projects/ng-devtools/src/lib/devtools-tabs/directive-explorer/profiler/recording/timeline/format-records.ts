@@ -14,15 +14,13 @@ export interface FlamegraphNode {
   value: number;
   children: FlamegraphNode[];
   label: string;
+  instances: number;
   original: ElementProfile;
 }
 
 const getLabel = (element: ElementProfile) => {
   const name = (element.directives.filter(d => d.isComponent).pop() || { name: '' }).name;
-  const attributes = element.directives
-    .filter(d => !d.isComponent)
-    .map(d => d.name)
-    .join(', ');
+  const attributes = [...new Set(element.directives.filter(d => !d.isComponent).map(d => d.name))].join(', ');
   return attributes === '' ? name : `${name}[${attributes}]`;
 };
 
@@ -52,6 +50,7 @@ const addFrame = (nodes: FlamegraphNode[], elements: ElementProfile[]): number =
       value: getValue(element),
       label: getLabel(element),
       children: [],
+      instances: 1,
       original: element,
     };
     timeSpent += addFrame(node.children, element.children);
@@ -79,5 +78,6 @@ export const formatFlamegraphRecords = (records: ProfilerFrame[]): TimelineView 
   records.forEach(record => {
     insertTimelineRecord(result.timeline, record);
   });
+  result.timeline = result.timeline.filter(entry => entry.app.length > 0);
   return result;
 };

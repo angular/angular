@@ -28,29 +28,15 @@ export class IdentityTracker {
     return this._currentDirectiveId.get(dir);
   }
 
+  // It's possible to optimize this method and traverse just a subtree.
   insert(node: HTMLElement, cmpOrDirective: any | any[]): void {
     const isComponent = !Array.isArray(cmpOrDirective);
     (isComponent ? [cmpOrDirective] : cmpOrDirective).forEach((dir: any) => {
-      this._insertDirective(node, dir);
+      this.index();
     });
   }
 
-  private _insertDirective(node: HTMLElement, directive: any) {
-    const parent = getParentComponentFromDomNode(node, this._ng);
-
-    this._elementDirective.set(node, directive);
-    this._createdDirectives.add(directive);
-
-    if (!parent) {
-      this.index();
-      return;
-    }
-
-    const parentElement = this._ng.getHostElement(parent) || document.documentElement;
-    const parentNodes = indexForest(getDirectiveForest(parentElement, this._ng));
-    parentNodes.forEach(p => this._index(p));
-  }
-
+  // It's possible to optimize this method and traverse just a subtree.
   delete(_: any): void {
     this.index();
   }
