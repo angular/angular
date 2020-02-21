@@ -379,12 +379,12 @@ export function getOrCreateInjectable<T>(
       // `-1` is a special value used to identify `Injector` types.
       if (bloomHash === -1) {
         if (flags & InjectFlags.SkipSelf) {
-          const parentInjectorLocation = getParentInjectorLocation(tNode, lView);
+          const _tNode = tNode;
           tNode = getParentTNode(tNode, lView, flags);
           if (tNode === null) {
             return notFoundValueOrThrow(notFoundValue, token, flags);
           }
-          lView = getParentInjectorView(parentInjectorLocation, lView);
+          lView = getParentInjectorView(getParentInjectorLocation(_tNode, lView), lView);
         }
         return new NodeInjector(tNode, lView) as any;
       }

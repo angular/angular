@@ -693,6 +693,9 @@
     "name": "getParentState"
   },
   {
+    "name": "getParentTNode"
+  },
+  {
     "name": "getPipeDef"
   },
   {
@@ -712,9 +715,6 @@
   },
   {
     "name": "getTNode"
-  },
-  {
-    "name": "getTNodeParent"
   },
   {
     "name": "getTStylingRangeNext"
