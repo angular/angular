@@ -91,6 +91,7 @@ const insertElementProfile = (frames: ElementProfile[], position: ElementPositio
   for (let i = 0; i < position.length - 1; i++) {
     const pos = position[i];
     if (!frames[pos]) {
+      // TODO(mgechev): consider how to ensure we don't hit this case
       // console.warn('Unable to find parent node for', frames);
       return;
     }
@@ -116,6 +117,7 @@ const insertElementProfileAtEnd = (frames: ElementProfile[], position: ElementPo
   for (let i = 0; i < position.length - 1; i++) {
     const pos = position[i];
     if (!frames[pos]) {
+      // TODO(mgechev): consider how to ensure we don't hit this case
       // console.warn('Unable to find parent node for', frames);
       return;
     }
