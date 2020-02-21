@@ -26,11 +26,8 @@ export class IdentityTracker {
   }
 
   // It's possible to optimize this method and traverse just a subtree.
-  insert(node: Node, cmpOrDirective: any | any[]): void {
-    const isComponent = !Array.isArray(cmpOrDirective);
-    (isComponent ? [cmpOrDirective] : cmpOrDirective).forEach((dir: any) => {
-      this.index();
-    });
+  insert(_: Node, __: any | any[]): void {
+    this.index();
   }
 
   // It's possible to optimize this method and traverse just a subtree.

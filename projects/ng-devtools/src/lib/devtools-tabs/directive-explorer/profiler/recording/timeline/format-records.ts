@@ -27,7 +27,7 @@ const getLabel = (element: ElementProfile) => {
   return attributes === '' ? name : `${name}[${attributes}]`;
 };
 
-const getValue = (element: ElementProfile) => {
+const getValue = (element: ElementProfile, e: any) => {
   let result = 0;
   element.directives.forEach(dir => {
     result += dir.changeDetection;
@@ -50,7 +50,7 @@ const addFrame = (nodes: FlamegraphNode[], elements: ElementProfile[]): number =
       return;
     }
     const node: FlamegraphNode = {
-      value: getValue(element),
+      value: getValue(element, elements),
       label: getLabel(element),
       children: [],
       instances: 1,
