@@ -185,8 +185,11 @@ export class ComponentTreeObserver {
   private _onDeletedNodesMutation(node: Node): void {
     const component = node instanceof HTMLElement && ng.getComponent(node);
     if (component) {
-      this._tracker.delete(component);
+      // We first want to notify for removal
+      // after that remove the component from the tracker
+      // this way consumers have access to the component's position and ID.
       this._fireDestroyCallback(component, true);
+      this._tracker.delete(component);
     }
 
     let directives = [];
@@ -195,10 +198,10 @@ export class ComponentTreeObserver {
     } catch {}
 
     if (directives && directives.length) {
-      this._tracker.delete(directives[0]);
       directives.forEach(dir => {
         this._fireDestroyCallback(dir, false);
       });
+      this._tracker.delete(directives[0]);
     }
   }
 
