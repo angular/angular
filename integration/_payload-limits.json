@@ -4,7 +4,7 @@
       "uncompressed": {
         "runtime-es2015": 1485,
         "main-es2015": 141569,
-        "polyfills-es2015": 37300
+        "polyfills-es2015": 36657
       }
     }
   },
@@ -13,7 +13,7 @@
       "uncompressed": {
         "runtime-es2015": 1485,
         "main-es2015": 16514,
-        "polyfills-es2015": 37118
+        "polyfills-es2015": 36657
       }
     }
   },
@@ -22,7 +22,7 @@
       "uncompressed": {
         "runtime-es2015": 1485,
         "main-es2015": 147647,
-        "polyfills-es2015": 37300
+        "polyfills-es2015": 36657
       }
     }
   },
@@ -31,7 +31,7 @@
       "uncompressed": {
         "runtime-es2015": 1485,
         "main-es2015": 136777,
-        "polyfills-es2015": 37980
+        "polyfills-es2015": 37334
       }
     }
   },
@@ -40,7 +40,7 @@
       "uncompressed": {
         "runtime-es2015": 2289,
         "main-es2015": 247198,
-        "polyfills-es2015": 36958,
+        "polyfills-es2015": 36657,
         "5-es2015": 751
       }
     }
@@ -50,7 +50,7 @@
       "uncompressed": {
         "runtime-es2015": 2289,
         "main-es2015": 226144,
-        "polyfills-es2015": 37300,
+        "polyfills-es2015": 36657,
         "5-es2015": 779
       }
     }

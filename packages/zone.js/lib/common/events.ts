@@ -257,30 +257,6 @@ export function patchEventTarget(
       }
     }
 
-    /**
-     *
-     * this util function will build an option object with passive option
-     * to handle all possible input from the user
-     */
-    function buildPassiveOptions(options: any, passive: boolean) {
-      if (!passiveSupported || !passive) {
-        return options;
-      }
-      if (!options) {
-        return {passive: true};
-      }
-      if (typeof options === 'boolean') {
-        return {capture: options, passive: true};
-      }
-      if (typeof options === 'object') {
-        if (typeof options.passive === 'boolean' && !options.passive) {
-          return options;
-        }
-        return {...options, passive: true};
-      }
-      return options;
-    }
-
     const customScheduleGlobal = function(task: Task) {
       // if there is already a task for the eventName + capture,
       // just return, because we use the shared globalZoneAwareCallback here.
@@ -362,7 +338,6 @@ export function patchEventTarget(
         (patchOptions && patchOptions.diff) ? patchOptions.diff : compareTaskCallbackVsDelegate;
 
     const blackListedEvents: string[] = (Zone as any)[zoneSymbol('BLACK_LISTED_EVENTS')];
-    const passiveEvents: string[] = _global[zoneSymbol('PASSIVE_EVENTS')];
 
     const makeAddListener = function(
         nativeListener: any, addSource: string, customScheduleFn: any, customCancelFn: any,
@@ -398,19 +373,12 @@ export function patchEventTarget(
         }
 
         const options = arguments[2];
-        const passive =
-            passiveSupported && !!passiveEvents && passiveEvents.indexOf(eventName) !== -1;
 
         if (blackListedEvents) {
           // check black list
           for (let i = 0; i < blackListedEvents.length; i++) {
             if (eventName === blackListedEvents[i]) {
-              if (passive) {
-                const passiveOptions = buildPassiveOptions(options, passive);
-                return nativeListener.call(target, eventName, delegate, passiveOptions);
-              } else {
-                return nativeListener.apply(this, arguments);
-              }
+              return nativeListener.apply(this, arguments);
             }
           }
         }
@@ -463,7 +431,7 @@ export function patchEventTarget(
         }
         // do not create a new object as task.data to pass those things
         // just use the global shared one
-        taskData.options = buildPassiveOptions(options, passive);
+        taskData.options = options;
         if (once) {
           // if addEventListener with once options, we don't pass it to
           // native addEventListener, instead we keep the once setting
