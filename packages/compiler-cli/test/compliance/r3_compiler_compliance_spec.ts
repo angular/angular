@@ -2542,7 +2542,7 @@ describe('compiler compliance', () => {
             type: LifecycleComp,
             selectors: [["lifecycle-comp"]],
             inputs: {nameMin: ["name", "nameMin"]},
-            features: [$r3$.ɵɵNgOnChangesFeature()],
+            features: [$r3$.ɵɵNgOnChangesFeature],
             decls: 0,
             vars: 0,
             template:  function LifecycleComp_Template(rf, ctx) {},
@@ -2662,7 +2662,7 @@ describe('compiler compliance', () => {
               ForOfDirective.ɵdir = $r3$.ɵɵdefineDirective({
                 type: ForOfDirective,
                 selectors: [["", "forOf", ""]],
-                features: [$r3$.ɵɵNgOnChangesFeature()],
+                features: [$r3$.ɵɵNgOnChangesFeature],
                 inputs: {forOf: "forOf"}
               });
             `;
@@ -2742,7 +2742,7 @@ describe('compiler compliance', () => {
           ForOfDirective.ɵdir = $r3$.ɵɵdefineDirective({
             type: ForOfDirective,
             selectors: [["", "forOf", ""]],
-            features: [$r3$.ɵɵNgOnChangesFeature()],
+            features: [$r3$.ɵɵNgOnChangesFeature],
             inputs: {forOf: "forOf"}
           });
         `;
@@ -3767,7 +3767,7 @@ describe('compiler compliance', () => {
       // ...
       BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
         type: BaseClass,
-        features: [$r3$.ɵɵNgOnChangesFeature()]
+        features: [$r3$.ɵɵNgOnChangesFeature]
       });
       // ...
       `;
