@@ -551,9 +551,32 @@ function invalidRef(
   const code =
       type === 'import' ? ErrorCode.NGMODULE_INVALID_IMPORT : ErrorCode.NGMODULE_INVALID_EXPORT;
   const resolveTarget = type === 'import' ? 'NgModule' : 'NgModule, Component, Directive, or Pipe';
-  return makeDiagnostic(
-      code, identifierOfNode(decl.node) || decl.node,
-      `Appears in the NgModule.${type}s of ${nodeNameForError(clazz)}, but could not be resolved to an ${resolveTarget} class`);
+  let message =
+      `Appears in the NgModule.${type}s of ${nodeNameForError(clazz)}, but could not be resolved to an ${resolveTarget} class.` +
+      '\n\n';
+  const library = decl.ownedByModuleGuess !== null ? ` (${decl.ownedByModuleGuess})` : '';
+  const sf = decl.node.getSourceFile();
+
+  // Provide extra context to the error for the user.
+  if (!sf.isDeclarationFile) {
+    // This is a file in the user's program.
+    const annotationType = type === 'import' ? '@NgModule' : 'Angular';
+    message += `Is it missing an ${annotationType} annotation?`;
+  } else if (sf.fileName.indexOf('node_modules') !== -1) {
+    // This file comes from a third-party library in node_modules.
+    message +=
+        `This likely means that the library${library} which declares ${decl.debugName} has not ` +
+        'been processed correctly by ngcc, or is not compatible with Angular Ivy. Check if a ' +
+        'newer version of the library is available, and update if so. Also consider checking ' +
+        'with the library\'s authors to see if the library is expected to be compatible with Ivy.';
+  } else {
+    // This is a monorepo style local dependency. Unfortunately these are too different to really
+    // offer much more advice than this.
+    message +=
+        `This likely means that the dependency${library} which declares ${decl.debugName} has not been processed correctly by ngcc.`;
+  }
+
+  return makeDiagnostic(code, identifierOfNode(decl.node) || decl.node, message);
 }
 
 /**
