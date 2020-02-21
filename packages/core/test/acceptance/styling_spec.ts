@@ -34,7 +34,7 @@ describe('styling', () => {
 
     it('should perform prop bindings', () => {
       @Component({
-        template: `<div [class.dynamic]="true" 
+        template: `<div [class.dynamic]="true"
                         [style.color]="'blue'"
                         [style.width.px]="100"></div>`
       })
@@ -52,7 +52,7 @@ describe('styling', () => {
 
     onlyInIvy('style merging is ivy only feature').it('should perform map bindings', () => {
       @Component({
-        template: `<div [class]="{dynamic: true}" 
+        template: `<div [class]="{dynamic: true}"
                         [style]="{color: 'blue', width: '100px'}"></div>`
       })
       class Cmp {
@@ -1879,83 +1879,6 @@ describe('styling', () => {
             assertStyle(element, 'opacity', '');
           });
 
-  onlyInIvy('only ivy has [style.prop] support')
-      .it('should sanitize style values before writing them', () => {
-        @Component({
-          template: `
-                    <div [style.width]="widthExp"
-                         [style.background-image]="bgImageExp"></div>
-                  `
-        })
-        class Cmp {
-          widthExp = '';
-          bgImageExp = '';
-          styleMapExp: any = {};
-        }
-
-        TestBed.configureTestingModule({declarations: [Cmp]});
-        const fixture = TestBed.createComponent(Cmp);
-        const comp = fixture.componentInstance;
-        fixture.detectChanges();
-
-        const div = fixture.nativeElement.querySelector('div');
-
-        comp.bgImageExp = 'url("javascript:img")';
-        fixture.detectChanges();
-        // for some reasons `background-image: unsafe` is suppressed
-        expect(getSortedStyle(div)).toEqual('');
-        fixture.detectChanges();
-        expect(getSortedStyle(div)).not.toContain('javascript');
-
-        // Prove that bindings work.
-        comp.widthExp = '789px';
-        comp.bgImageExp = bypassSanitizationTrustStyle(comp.bgImageExp) as string;
-        fixture.detectChanges();
-
-        expect(div.style.getPropertyValue('background-image')).toEqual('url("javascript:img")');
-        expect(div.style.getPropertyValue('width')).toEqual('789px');
-      });
-
-  onlyInIvy('only ivy has [style] support')
-      .it('should sanitize style values before writing them', () => {
-        @Component({
-          template: `
-                    <div [style.width]="widthExp"
-                         [style]="styleMapExp"></div>
-                  `
-        })
-        class Cmp {
-          widthExp = '';
-          styleMapExp: {[key: string]: any} = {};
-        }
-
-        TestBed.configureTestingModule({declarations: [Cmp]});
-        const fixture = TestBed.createComponent(Cmp);
-        const comp = fixture.componentInstance;
-        fixture.detectChanges();
-
-        const div = fixture.nativeElement.querySelector('div');
-
-        comp.styleMapExp['background-image'] = 'url("javascript:img")';
-        fixture.detectChanges();
-        // for some reasons `background-image: unsafe` is suppressed
-        expect(getSortedStyle(div)).toEqual('');
-
-        // for some reasons `border-image: unsafe` is NOT suppressed
-        fixture.detectChanges();
-        expect(getSortedStyle(div)).not.toContain('javascript');
-
-        // Prove that bindings work.
-        comp.widthExp = '789px';
-        comp.styleMapExp = {
-          'background-image': bypassSanitizationTrustStyle(comp.styleMapExp['background-image'])
-        };
-        fixture.detectChanges();
-
-        expect(div.style.getPropertyValue('background-image')).toEqual('url("javascript:img")');
-        expect(div.style.getPropertyValue('width')).toEqual('789px');
-      });
-
   it('should apply a unit to a style before writing it', () => {
     @Component({
       template: `
@@ -2943,7 +2866,7 @@ describe('styling', () => {
           () => {
             @Component({
               template: `
-        <div 
+        <div
             dir-that-sets-styles
             [style]="{'font-size': '300px'}"
             [attr.title]="'my-title'"

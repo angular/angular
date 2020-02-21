@@ -15,7 +15,7 @@ import {allowSanitizationBypassAndThrow, BypassType, unwrapSafeValue} from './by
 import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer';
 import {Sanitizer} from './sanitizer';
 import {SecurityContext} from './security';
-import {_sanitizeStyle, StyleSanitizeFn, StyleSanitizeMode} from './style_sanitizer';
+import {StyleSanitizeFn, StyleSanitizeMode} from './style_sanitizer';
 import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
 
 
@@ -69,7 +69,7 @@ export function ɵɵsanitizeStyle(unsafeStyle: any): string {
   if (allowSanitizationBypassAndThrow(unsafeStyle, BypassType.Style)) {
     return unwrapSafeValue(unsafeStyle);
   }
-  return _sanitizeStyle(renderStringify(unsafeStyle));
+  return renderStringify(unsafeStyle);
 }
 
 /**

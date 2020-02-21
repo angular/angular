@@ -163,7 +163,7 @@ describe('instructions', () => {
   });
 
   describe('styleProp', () => {
-    it('should automatically sanitize unless a bypass operation is applied', () => {
+    it('should allow values even if a bypass operation is applied', () => {
       let backgroundImage: string|SafeValue = 'url("http://server")';
       const t = new TemplateFixture(
           () => {
@@ -176,7 +176,7 @@ describe('instructions', () => {
           2, 2);
       // nothing is set because sanitizer suppresses it.
       expect((t.hostElement.firstChild as HTMLElement).style.getPropertyValue('background-image'))
-          .toEqual('');
+          .toEqual('url("http://server")');
 
       backgroundImage = bypassSanitizationTrustStyle('url("http://server2")');
       t.update();
