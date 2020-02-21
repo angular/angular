@@ -29,10 +29,11 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
     onChangeDetection(component: any, id: number, position: ElementPosition, duration: number) {
       if (!inChangeDetection) {
         inChangeDetection = true;
+        const source = getChangeDetectionSource();
         runOutsideAngular(() => {
           setTimeout(() => {
             inChangeDetection = false;
-            onFrame(flushBuffer(observer, getChangeDetectionSource()));
+            onFrame(flushBuffer(observer, source));
           });
         });
       }
