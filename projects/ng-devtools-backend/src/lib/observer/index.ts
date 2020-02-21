@@ -1,5 +1,5 @@
-import { ComponentTreeObserver, LifecyleHook } from './observer';
-import { ElementPosition, ProfilerFrame, ElementProfile, DirectiveProfile } from 'protocol';
+import { ComponentTreeObserver } from './observer';
+import { ElementPosition, ProfilerFrame, ElementProfile, DirectiveProfile, LifecycleProfile } from 'protocol';
 import { runOutsideAngular } from '../utils';
 import { getComponentName } from '../highlighter';
 
@@ -47,7 +47,7 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
     onDestroy(component: any, id: number, isComponent: boolean, position: ElementPosition) {
       // TODO(mgechev): measure component removal
     },
-    onLifecycleHook(directive: any, id: number, isComponent: boolean, hook: LifecyleHook, duration: number) {
+    onLifecycleHook(directive: any, id: number, isComponent: boolean, hook: keyof LifecycleProfile, duration: number) {
       if (!eventMap.has(directive)) {
         eventMap.set(directive, {
           name: getComponentName(directive),

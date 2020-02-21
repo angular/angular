@@ -2,6 +2,13 @@ import { Component, EventEmitter, Output, ChangeDetectorRef, OnInit, OnDestroy }
 import { Todo } from '../models/todo';
 import { TodoFilter } from './todos.pipe';
 
+const fib = (n: number) => {
+  if (n === 1 || n === 2) {
+    return 1;
+  }
+  return fib(n - 1) + fib(n - 2);
+};
+
 @Component({
   templateUrl: 'todos.component.html',
   selector: 'app-todos',
@@ -24,12 +31,14 @@ export class TodosComponent implements OnInit, OnDestroy {
   constructor(private cdRef: ChangeDetectorRef) {}
 
   ngOnInit(): void {
+    fib(40);
     if (typeof window !== 'undefined') {
       window.addEventListener('hashchange', (this.hashListener = () => this.cdRef.markForCheck()));
     }
   }
 
   ngOnDestroy(): void {
+    fib(30);
     if (typeof window !== 'undefined') {
       window.removeEventListener('hashchange', this.hashListener);
     }
