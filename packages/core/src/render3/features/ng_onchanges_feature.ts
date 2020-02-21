@@ -35,25 +35,25 @@ type OnChangesExpando = OnChanges & {
  * static ɵcmp = defineComponent({
  *   ...
  *   inputs: {name: 'publicName'},
- *   features: [NgOnChangesFeature()]
+ *   features: [NgOnChangesFeature]
  * });
  * ```
  *
  * @codeGenApi
  */
-export function ɵɵNgOnChangesFeature<T>(): DirectiveDefFeature {
-  // This option ensures that the ngOnChanges lifecycle hook will be inherited
-  // from superclasses (in InheritDefinitionFeature).
-  (NgOnChangesFeatureImpl as DirectiveDefFeature).ngInherit = true;
-  return NgOnChangesFeatureImpl;
-}
 
-function NgOnChangesFeatureImpl<T>(definition: DirectiveDef<T>): void {
+export function ɵɵNgOnChangesFeature<T>(definition: DirectiveDef<T>): void {
   if (definition.type.prototype.ngOnChanges) {
     definition.setInput = ngOnChangesSetInput;
     (definition as{onChanges: Function}).onChanges = wrapOnChanges();
   }
 }
+
+// This option ensures that the ngOnChanges lifecycle hook will be inherited
+// from superclasses (in InheritDefinitionFeature).
+/** @nocollapse */
+// tslint:disable-next-line:no-toplevel-property-access
+(ɵɵNgOnChangesFeature as DirectiveDefFeature).ngInherit = true;
 
 function wrapOnChanges() {
   return function wrapOnChangesHook_inPreviousChangesStorage(this: OnChanges) {
