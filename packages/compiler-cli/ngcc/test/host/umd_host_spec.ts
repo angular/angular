@@ -929,10 +929,10 @@ runInEachFileSystem(() => {
           name: _('/src/index.js'),
           contents: `
         (function (global, factory) {
-          typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('./functions'), require('./methods'), require('./outer_aliased_class'), require('./inner_aliased_class')) :
-          typeof define === 'function' && define.amd ? define('index', ['exports', './functions', './methods', './outer_aliased_class', './inner_aliased_class'], factory) :
-          (factory(global.index,global.functions,global.methods,global.outer_aliased_class,global.inner_aliased_class));
-        }(this, (function (exports,functions,methods,outer_aliased_class,inner_aliased_class) { 'use strict';
+          typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('./functions'), require('./methods'), require('./aliased_class')) :
+          typeof define === 'function' && define.amd ? define('index', ['exports', './functions', './methods', './aliased_class'], factory) :
+          (factory(global.index,global.functions,global.methods,global.aliased_class));
+        }(this, (function (exports,functions,methods,aliased_class) { 'use strict';
         }))));
         `,
         },
@@ -1025,30 +1025,12 @@ runInEachFileSystem(() => {
     `
         },
         {
-          name: _('/src/outer_aliased_class.js'),
+          name: _('/src/aliased_class.js'),
           contents: `
     (function (global, factory) {
       typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-      typeof define === 'function' && define.amd ? define('outer_aliased_class', ['exports'], factory) :
-      (factory(global.outer_aliased_class));
-    }(this, (function (exports,module) { 'use strict';
-      var AliasedModule = AliasedModule_1 = (function() {
-        function AliasedModule() {}
-        return AliasedModule;
-      }());
-      AliasedModule.forRoot = function() { return { ngModule: AliasedModule_1 }; };
-      exports.AliasedModule = AliasedModule;
-      var AliasedModule_1;
-    })));
-    `
-        },
-        {
-          name: _('/src/inner_aliased_class.js'),
-          contents: `
-    (function (global, factory) {
-      typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-      typeof define === 'function' && define.amd ? define('inner_aliased_class', ['exports'], factory) :
-      (factory(global.inner_aliased_class));
+      typeof define === 'function' && define.amd ? define('aliased_class', ['exports'], factory) :
+      (factory(global.aliased_class));
     }(this, (function (exports,module) { 'use strict';
       var AliasedModule = (function() {
         function AliasedModule() {}
@@ -1847,41 +1829,6 @@ runInEachFileSystem(() => {
         expect(actualDeclaration).not.toBe(null);
         expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
         expect(actualDeclaration !.viaModule).toBe(null);
-      });
-
-      it('should return the correct declaration for an outer alias identifier', () => {
-        const PROGRAM_FILE: TestFile = {
-          name: _('/test.js'),
-          contents: `
-            (function (global, factory) {
-              typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-              typeof define === 'function' && define.amd ? define('test', ['exports'], factory) :
-              (factory(global.test));
-            }(this, (function (exports,module) { 'use strict';
-              var AliasedClass = AliasedClass_1 = (function () {
-                function InnerClass() {
-                }
-                return InnerClass;
-              }());
-              var AliasedClass_1;
-            })));
-          `,
-        };
-
-        loadTestFiles([PROGRAM_FILE]);
-        const bundle = makeTestBundleProgram(PROGRAM_FILE.name);
-        const host = new UmdReflectionHost(new MockLogger(), false, bundle);
-
-        const expectedDeclaration = getDeclaration(
-            bundle.program, PROGRAM_FILE.name, 'AliasedClass', isNamedVariableDeclaration);
-        // Grab the `AliasedClass_1` identifier (which is an alias for `AliasedClass`).
-        const aliasIdentifier =
-            (expectedDeclaration.initializer as ts.BinaryExpression).left as ts.Identifier;
-        const actualDeclaration = host.getDeclarationOfIdentifier(aliasIdentifier);
-
-        expect(aliasIdentifier.getText()).toBe('AliasedClass_1');
-        expect(actualDeclaration).not.toBe(null);
-        expect(actualDeclaration !.node).toBe(expectedDeclaration);
       });
 
       it('should return the source-file of an import namespace', () => {
@@ -2695,30 +2642,17 @@ runInEachFileSystem(() => {
            ]);
          });
 
-      it('should resolve aliased module references to their original declaration (outer alias)',
-         () => {
-           loadTestFiles(MODULE_WITH_PROVIDERS_PROGRAM);
-           const bundle = makeTestBundleProgram(getRootFiles(MODULE_WITH_PROVIDERS_PROGRAM)[0]);
-           const host = new UmdReflectionHost(new MockLogger(), false, bundle);
-           const file = getSourceFileOrError(bundle.program, _('/src/outer_aliased_class.js'));
-           const fn = host.getModuleWithProvidersFunctions(file);
-           expect(fn.map(fn => [fn.declaration.getText(), fn.ngModule.node.name.text])).toEqual([
-             ['function() { return { ngModule: AliasedModule_1 }; }', 'AliasedModule'],
-           ]);
-         });
-
       // https://github.com/angular/angular/issues/29078
-      it('should resolve aliased module references to their original declaration (inner alias)',
-         () => {
-           loadTestFiles(MODULE_WITH_PROVIDERS_PROGRAM);
-           const bundle = makeTestBundleProgram(getRootFiles(MODULE_WITH_PROVIDERS_PROGRAM)[0]);
-           const host = new UmdReflectionHost(new MockLogger(), false, bundle);
-           const file = getSourceFileOrError(bundle.program, _('/src/inner_aliased_class.js'));
-           const fn = host.getModuleWithProvidersFunctions(file);
-           expect(fn.map(fn => [fn.declaration.getText(), fn.ngModule.node.name.text])).toEqual([
-             ['function() { return { ngModule: AliasedModule_1 }; }', 'AliasedModule'],
-           ]);
-         });
+      it('should resolve aliased module references to their original declaration', () => {
+        loadTestFiles(MODULE_WITH_PROVIDERS_PROGRAM);
+        const bundle = makeTestBundleProgram(getRootFiles(MODULE_WITH_PROVIDERS_PROGRAM)[0]);
+        const host = new UmdReflectionHost(new MockLogger(), false, bundle);
+        const file = getSourceFileOrError(bundle.program, _('/src/aliased_class.js'));
+        const fn = host.getModuleWithProvidersFunctions(file);
+        expect(fn.map(fn => [fn.declaration.getText(), fn.ngModule.node.name.text])).toEqual([
+          ['function() { return { ngModule: AliasedModule_1 }; }', 'AliasedModule'],
+        ]);
+      });
     });
   });
 });
