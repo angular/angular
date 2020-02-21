@@ -70,7 +70,7 @@ One of the easiest ways to get your site live is to host it using Firebase.
     - Select the `Hosting` option on the first prompt.
     - Select the project you previously created on Firebase.
     - Select `dist/my-project-name` as the public directory.
-1. Deploy your application with `ng deploy`.
+1. Deploy your application with `firebase deploy`.
 1. Once deployed, visit https://your-firebase-project-name.firebaseapp.com to see it live!
 
 ### Hosting an Angular app anywhere else
