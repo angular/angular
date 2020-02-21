@@ -19,7 +19,10 @@ export interface FlamegraphNode {
 }
 
 const getLabel = (element: ElementProfile) => {
-  const name = (element.directives.filter(d => d.isComponent).pop() || { name: '' }).name;
+  const name = element.directives
+    .filter(d => d.isComponent)
+    .map(c => c.name)
+    .join(', ');
   const attributes = [...new Set(element.directives.filter(d => !d.isComponent).map(d => d.name))].join(', ');
   return attributes === '' ? name : `${name}[${attributes}]`;
 };

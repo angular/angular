@@ -14,8 +14,6 @@ export class IdentityTracker {
   private _currentDirectivePosition = new Map<any, ElementPosition>();
   private _currentDirectiveId = new Map<any, number>();
   private _createdDirectives = new Set<any>();
-  private _forest: TreeNode[] = [];
-  private _directiveTreeNode = new Map<any, TreeNode>();
 
   constructor(private _ng: DebuggingAPI) {}
 
@@ -36,8 +34,10 @@ export class IdentityTracker {
   }
 
   // It's possible to optimize this method and traverse just a subtree.
-  delete(_: any): void {
+  delete(dir: any): void {
     this.index();
+    this._currentDirectivePosition.delete(dir);
+    this._createdDirectives.delete(dir);
   }
 
   index(rootElement = document.documentElement) {
@@ -57,18 +57,6 @@ export class IdentityTracker {
 
   private _indexNode(directive: any, position: ElementPosition, parent: TreeNode | null = null) {
     this._createdDirectives.add(directive);
-    const node: TreeNode = {
-      parent,
-      directive,
-      children: [],
-    };
-    this._directiveTreeNode.set(directive, node);
-    if (parent) {
-      parent.children.push(node);
-    } else {
-      this._forest.push(node);
-    }
-    parent = node;
     this._currentDirectivePosition.set(directive, position);
     if (!this._currentDirectiveId.has(directive)) {
       this._currentDirectiveId.set(directive, this._counter++);
@@ -83,8 +71,6 @@ export class IdentityTracker {
     this._currentDirectivePosition = new Map<any, ElementPosition>();
     this._currentDirectiveId = new Map<any, number>();
     this._createdDirectives = new Set<any>();
-    this._forest = [];
-    this._directiveTreeNode = new Map<any, TreeNode>();
   }
 }
 
