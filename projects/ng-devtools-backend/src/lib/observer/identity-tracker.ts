@@ -10,7 +10,7 @@ interface TreeNode {
 }
 
 export class IdentityTracker {
-  private _counter = 0;
+  private _directiveIdCounter = 0;
   private _currentDirectivePosition = new Map<any, ElementPosition>();
   private _currentDirectiveId = new Map<any, number>();
   private _createdDirectives = new Set<any>();
@@ -56,7 +56,7 @@ export class IdentityTracker {
     this._createdDirectives.add(directive);
     this._currentDirectivePosition.set(directive, position);
     if (!this._currentDirectiveId.has(directive)) {
-      this._currentDirectiveId.set(directive, this._counter++);
+      this._currentDirectiveId.set(directive, this._directiveIdCounter++);
     }
   }
 

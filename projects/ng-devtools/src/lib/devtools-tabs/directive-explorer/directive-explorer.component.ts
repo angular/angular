@@ -80,22 +80,6 @@ export class DirectiveExplorerComponent implements OnInit {
     this.messageBus.emit('getLatestComponentExplorerView', [this._constructViewQuery()]);
   }
 
-  getEntityID(name: string): DirectivePosition {
-    const idx: DirectivePosition = {
-      element: this.currentSelectedElement.position,
-    };
-    const cmp = this.currentSelectedElement.component;
-    if (cmp && cmp.name === name) {
-      return idx;
-    }
-    idx.directive = this.currentSelectedElement.directives.findIndex(d => d.name === name);
-    return idx;
-  }
-
-  nameTracking(_: number, item: { key: string }): string {
-    return item.key;
-  }
-
   viewSource(): void {
     this._appOperations.viewSource(this.currentSelectedElement.position);
   }

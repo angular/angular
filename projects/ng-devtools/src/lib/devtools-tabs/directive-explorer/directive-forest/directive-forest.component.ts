@@ -14,7 +14,6 @@ import { ComponentDataSource, FlatNode } from './component-data-source';
 
 import scrollIntoViewIfNeeded from 'scroll-into-view-if-needed';
 import { isChildOf, parentCollapsed } from './directive-forest-utils';
-import { animate, style, transition, trigger } from '@angular/animations';
 import { FilterComponent } from './filter/filter.component';
 
 @Component({
