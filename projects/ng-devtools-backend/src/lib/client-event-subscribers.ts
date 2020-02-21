@@ -24,6 +24,8 @@ import {
 } from './angular-check';
 import { observeDOM, getDirectiveId } from './component-tree-identifiers';
 
+const ngDebug = (window as any).ng;
+
 export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void => {
   messageBus.on('shutdown', shutdownCallback(messageBus));
 
@@ -64,7 +66,7 @@ const initChangeDetection = (messageBus: MessageBus<Events>) => {
 const getLatestComponentExplorerViewCallback = (messageBus: MessageBus<Events>) => query => {
   messageBus.emit('latestComponentExplorerView', [
     {
-      forest: prepareForestForSerialization(getDirectiveForest(document.documentElement, (window as any).ng)),
+      forest: prepareForestForSerialization(getDirectiveForest(document.documentElement, ngDebug)),
       properties: getLatestComponentState(query),
     },
   ]);
@@ -82,7 +84,7 @@ const stopProfilingCallback = (messageBus: MessageBus<Events>) => () => {
 };
 
 const getElementDirectivesPropertiesCallback = (messageBus: MessageBus<Events>) => (position: ElementPosition) => {
-  const node = queryComponentForest(position, getDirectiveForest(document.documentElement, (window as any).ng));
+  const node = queryComponentForest(position, getDirectiveForest(document.documentElement, ngDebug));
   if (node) {
     messageBus.emit('elementDirectivesProperties', [serializeNodeDirectiveProperties(node)]);
   } else {
@@ -91,7 +93,7 @@ const getElementDirectivesPropertiesCallback = (messageBus: MessageBus<Events>) 
 };
 
 const selectedComponentCallback = (position: ElementPosition) => {
-  const node = queryComponentForest(position, getDirectiveForest(document.documentElement, (window as any).ng));
+  const node = queryComponentForest(position, getDirectiveForest(document.documentElement, ngDebug));
   setConsoleReference(node);
 };
 
@@ -99,7 +101,7 @@ const getNestedPropertiesCallback = (messageBus: MessageBus<Events>) => (
   position: DirectivePosition,
   propPath: string[]
 ) => {
-  const node = queryComponentForest(position.element, getDirectiveForest(document.documentElement, (window as any).ng));
+  const node = queryComponentForest(position.element, getDirectiveForest(document.documentElement, ngDebug));
   if (node) {
     let current = (position.directive === undefined ? node.component : node.directives[position.directive]).instance;
     for (const prop of propPath) {
