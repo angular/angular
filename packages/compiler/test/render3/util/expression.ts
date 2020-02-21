@@ -17,6 +17,17 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
 
   private recordAst(ast: e.AST) { this.result.push([unparse(ast), ast.sourceSpan]); }
 
+  // This method is defined to reconcile the type of ExpressionSourceHumanizer
+  // since both RecursiveAstVisitor and Visitor define the visit() method in
+  // their interfaces.
+  visit(node: e.AST|t.Node, context?: any) {
+    if (node instanceof e.AST) {
+      node.visit(this, context);
+    } else {
+      node.visit(this);
+    }
+  }
+
   visitASTWithSource(ast: e.ASTWithSource) {
     this.recordAst(ast);
     this.visitAll([ast.ast], null);
