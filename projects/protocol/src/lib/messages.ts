@@ -8,12 +8,12 @@ export interface ComponentType {
   id: number;
 }
 
-export interface Node<DirType = DirectiveType, CmpType = ComponentType> {
+export interface DevToolsNode<DirType = DirectiveType, CmpType = ComponentType> {
   element: string;
   directives: DirType[];
   component: CmpType | null;
-  children: Node<DirType, CmpType>[];
-  nativeElement?: Element;
+  children: DevToolsNode<DirType, CmpType>[];
+  nativeElement?: Node;
 }
 
 export enum PropType {
@@ -70,7 +70,7 @@ export interface ComponentExplorerViewQuery {
 }
 
 export interface ComponentExplorerView {
-  forest: Node[];
+  forest: DevToolsNode[];
   properties: DirectivesProperties;
 }
 

@@ -23,14 +23,14 @@ const chromeWindowExtensions = {
       console.error(`Cannot find element associated with node ${serializedId}`);
       return null;
     }
-    const root = ng.getComponent(node.nativeElement);
+    const root = node.nativeElement instanceof HTMLElement && ng.getComponent(node.nativeElement);
     if (root) {
       return root.constructor;
     } else {
       console.error('This component has no instance and therefore no constructor');
     }
   },
-  findDomElementByPosition: (serializedId: string): Element => {
+  findDomElementByPosition: (serializedId: string): Node => {
     const node = findNodeFromSerializedPosition(serializedId);
     if (node === null) {
       console.error(`Cannot find element associated with node ${serializedId}`);

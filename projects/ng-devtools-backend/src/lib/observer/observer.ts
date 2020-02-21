@@ -128,10 +128,7 @@ export class ComponentTreeObserver {
   }
 
   private _onAddedNodesMutation(node: Node): void {
-    if (!(node instanceof HTMLElement)) {
-      return;
-    }
-    const component = ng.getComponent(node);
+    const component = node instanceof HTMLElement && ng.getComponent(node);
     if (component) {
       if (this._config.onChangeDetection) {
         this._observeComponent(component);
@@ -186,11 +183,7 @@ export class ComponentTreeObserver {
   }
 
   private _onDeletedNodesMutation(node: Node): void {
-    if (!(node instanceof HTMLElement)) {
-      return;
-    }
-
-    const component = ng.getComponent(node);
+    const component = node instanceof HTMLElement && ng.getComponent(node);
     if (component) {
       this._tracker.delete(component);
       this._fireDestroyCallback(component, true);
@@ -218,10 +211,7 @@ export class ComponentTreeObserver {
   }
 
   private _initializeChangeDetectionObserver(root: Element = document.documentElement): void {
-    if (!(root instanceof HTMLElement)) {
-      return;
-    }
-    const cmp = ng.getComponent(root);
+    const cmp = root instanceof HTMLElement && ng.getComponent(root);
     if (cmp) {
       this._observeComponent(cmp);
     }
@@ -272,13 +262,12 @@ export class ComponentTreeObserver {
     root.children.forEach(child => this._fireInitialTreeCallbacks(child));
   }
 
-  private _initializeLifecycleObserver(root: Element = document.documentElement): void {
-    if (!(root instanceof HTMLElement)) {
-      return;
-    }
-    const cmp = ng.getComponent(root);
-    if (cmp) {
-      this._observeLifecycle(cmp, true);
+  private _initializeLifecycleObserver(root: Node = document.documentElement): void {
+    if (root instanceof HTMLElement) {
+      const cmp = ng.getComponent(root);
+      if (cmp) {
+        this._observeLifecycle(cmp, true);
+      }
     }
     let dirs: any[] = [];
     try {
@@ -287,8 +276,8 @@ export class ComponentTreeObserver {
     dirs.forEach((dir: any) => {
       this._observeLifecycle(dir, false);
     });
-    for (let i = 0; i < root.children.length; i++) {
-      this._initializeLifecycleObserver(root.children[i]);
+    for (let i = 0; i < root.childNodes.length; i++) {
+      this._initializeLifecycleObserver(root.childNodes[i]);
     }
   }
 

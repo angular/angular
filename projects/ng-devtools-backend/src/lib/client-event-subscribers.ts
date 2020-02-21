@@ -4,7 +4,7 @@ import {
   ElementPosition,
   Events,
   MessageBus,
-  Node,
+  DevToolsNode,
   DirectiveType,
   ComponentType,
   ProfilerFrame,
@@ -179,7 +179,7 @@ export interface SerializableComponentInstanceType extends ComponentType {
 }
 
 export interface SerializableComponentTreeNode
-  extends Node<SerializableDirectiveInstanceType, SerializableComponentInstanceType> {
+  extends DevToolsNode<SerializableDirectiveInstanceType, SerializableComponentInstanceType> {
   children: SerializableComponentTreeNode[];
 }
 

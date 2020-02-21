@@ -1,11 +1,11 @@
-import { Node, ElementPosition } from 'protocol';
+import { DevToolsNode, ElementPosition } from 'protocol';
 
-export interface IndexedNode extends Node {
+export interface IndexedNode extends DevToolsNode {
   position: ElementPosition;
   children: IndexedNode[];
 }
 
-const indexTree = (node: Node, idx: number, parentPosition = []): IndexedNode => {
+const indexTree = (node: DevToolsNode, idx: number, parentPosition = []): IndexedNode => {
   const position = parentPosition.concat([idx]);
   return {
     position,
@@ -16,4 +16,4 @@ const indexTree = (node: Node, idx: number, parentPosition = []): IndexedNode =>
   } as IndexedNode;
 };
 
-export const indexForest = (forest: Node[]) => forest.map((n, i) => indexTree(n, i));
+export const indexForest = (forest: DevToolsNode[]) => forest.map((n, i) => indexTree(n, i));

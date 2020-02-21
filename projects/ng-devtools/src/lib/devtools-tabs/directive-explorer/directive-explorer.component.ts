@@ -2,7 +2,7 @@ import { Component, Input, OnInit, ViewChildren, QueryList } from '@angular/core
 import {
   MessageBus,
   Events,
-  Node,
+  DevToolsNode,
   DirectivesProperties,
   DirectivePosition,
   ComponentExplorerViewQuery,
@@ -31,7 +31,7 @@ export class DirectiveExplorerComponent implements OnInit {
   // from the backend.
   directivesData: DirectivesProperties | null = null;
   currentSelectedElement: IndexedNode = null;
-  forest: Node[];
+  forest: DevToolsNode[];
   highlightIDinTreeFromElement: ElementPosition | null = null;
 
   constructor(private _appOperations: ApplicationOperations, private _snackBar: MatSnackBar) {}
