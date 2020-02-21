@@ -94,7 +94,6 @@ module.exports = new Package('angular-content', [basePackage, contentPackage])
   // Configure jsdoc-style tag parsing
   .config(function(inlineTagProcessor) {
     inlineTagProcessor.inlineTagDefinitions.push(require('./inline-tag-defs/anchor'));
-    inlineTagProcessor.inlineTagDefinitions.push(require('./custom-search-defs/'));
   })
 
 

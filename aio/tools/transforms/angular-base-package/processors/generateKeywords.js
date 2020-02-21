@@ -85,19 +85,16 @@ module.exports = function generateKeywordsProcessor(log, readFilesProcessor) {
 
         // Extract the title to use in searches
         doc.searchTitle = doc.searchTitle || doc.title || doc.vFile && doc.vFile.title || doc.name || '';
-        
+
         // Attach all this search data to the document
         doc.searchTerms = {
           titleWords: tokenize(doc.searchTitle).join(' '),
           headingWords: headingWords.sort().join(' '),
           keywords: words.sort().join(' '),
-          members: members.sort().join(' ')
+          members: members.sort().join(' '),
+          topics: doc.searchKeywords
         };
 
-        // Attach search query keywords if available
-        if (doc.searchKeywords) {
-          doc.searchTerms.topics = `${doc.searchKeywords}`;
-        }
       });
 
       // Now process all the search data and collect it up to be used in creating a new document
