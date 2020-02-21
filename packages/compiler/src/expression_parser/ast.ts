@@ -311,109 +311,85 @@ export interface AstVisitor {
   visitSafeMethodCall(ast: SafeMethodCall, context: any): any;
   visitSafePropertyRead(ast: SafePropertyRead, context: any): any;
   visitASTWithSource?(ast: ASTWithSource, context: any): any;
+  /**
+   * This function is optionally defined to allow classes that implement this
+   * interface to selectively decide if the specified `ast` should be visited.
+   * @param ast node to visit
+   * @param context context that gets passed to the node and all its children
+   */
   visit?(ast: AST, context?: any): any;
 }
 
-export class NullAstVisitor implements AstVisitor {
-  visitBinary(ast: Binary, context: any): any {}
-  visitChain(ast: Chain, context: any): any {}
-  visitConditional(ast: Conditional, context: any): any {}
-  visitFunctionCall(ast: FunctionCall, context: any): any {}
-  visitImplicitReceiver(ast: ImplicitReceiver, context: any): any {}
-  visitInterpolation(ast: Interpolation, context: any): any {}
-  visitKeyedRead(ast: KeyedRead, context: any): any {}
-  visitKeyedWrite(ast: KeyedWrite, context: any): any {}
-  visitLiteralArray(ast: LiteralArray, context: any): any {}
-  visitLiteralMap(ast: LiteralMap, context: any): any {}
-  visitLiteralPrimitive(ast: LiteralPrimitive, context: any): any {}
-  visitMethodCall(ast: MethodCall, context: any): any {}
-  visitPipe(ast: BindingPipe, context: any): any {}
-  visitPrefixNot(ast: PrefixNot, context: any): any {}
-  visitNonNullAssert(ast: NonNullAssert, context: any): any {}
-  visitPropertyRead(ast: PropertyRead, context: any): any {}
-  visitPropertyWrite(ast: PropertyWrite, context: any): any {}
-  visitQuote(ast: Quote, context: any): any {}
-  visitSafeMethodCall(ast: SafeMethodCall, context: any): any {}
-  visitSafePropertyRead(ast: SafePropertyRead, context: any): any {}
-}
-
 export class RecursiveAstVisitor implements AstVisitor {
-  visitBinary(ast: Binary, context: any): any {
-    ast.left.visit(this, context);
-    ast.right.visit(this, context);
-    return null;
+  visit(ast: AST, context?: any): any {
+    // The default implementation just visits every node.
+    // Classes that extend RecursiveAstVisitor should override this function
+    // to selectively visit the specified node.
+    ast.visit(this, context);
   }
-  visitChain(ast: Chain, context: any): any { return this.visitAll(ast.expressions, context); }
+  visitBinary(ast: Binary, context: any): any {
+    this.visit(ast.left, context);
+    this.visit(ast.right, context);
+  }
+  visitChain(ast: Chain, context: any): any { this.visitAll(ast.expressions, context); }
   visitConditional(ast: Conditional, context: any): any {
-    ast.condition.visit(this, context);
-    ast.trueExp.visit(this, context);
-    ast.falseExp.visit(this, context);
-    return null;
+    this.visit(ast.condition, context);
+    this.visit(ast.trueExp, context);
+    this.visit(ast.falseExp, context);
   }
   visitPipe(ast: BindingPipe, context: any): any {
-    ast.exp.visit(this, context);
+    this.visit(ast.exp, context);
     this.visitAll(ast.args, context);
-    return null;
   }
   visitFunctionCall(ast: FunctionCall, context: any): any {
-    ast.target !.visit(this, context);
+    if (ast.target) {
+      this.visit(ast.target, context);
+    }
     this.visitAll(ast.args, context);
-    return null;
   }
-  visitImplicitReceiver(ast: ImplicitReceiver, context: any): any { return null; }
+  visitImplicitReceiver(ast: ImplicitReceiver, context: any): any {}
   visitInterpolation(ast: Interpolation, context: any): any {
-    return this.visitAll(ast.expressions, context);
+    this.visitAll(ast.expressions, context);
   }
   visitKeyedRead(ast: KeyedRead, context: any): any {
-    ast.obj.visit(this, context);
-    ast.key.visit(this, context);
-    return null;
+    this.visit(ast.obj, context);
+    this.visit(ast.key, context);
   }
   visitKeyedWrite(ast: KeyedWrite, context: any): any {
-    ast.obj.visit(this, context);
-    ast.key.visit(this, context);
-    ast.value.visit(this, context);
-    return null;
+    this.visit(ast.obj, context);
+    this.visit(ast.key, context);
+    this.visit(ast.value, context);
   }
   visitLiteralArray(ast: LiteralArray, context: any): any {
-    return this.visitAll(ast.expressions, context);
+    this.visitAll(ast.expressions, context);
   }
-  visitLiteralMap(ast: LiteralMap, context: any): any { return this.visitAll(ast.values, context); }
-  visitLiteralPrimitive(ast: LiteralPrimitive, context: any): any { return null; }
+  visitLiteralMap(ast: LiteralMap, context: any): any { this.visitAll(ast.values, context); }
+  visitLiteralPrimitive(ast: LiteralPrimitive, context: any): any {}
   visitMethodCall(ast: MethodCall, context: any): any {
-    ast.receiver.visit(this, context);
-    return this.visitAll(ast.args, context);
+    this.visit(ast.receiver, context);
+    this.visitAll(ast.args, context);
   }
-  visitPrefixNot(ast: PrefixNot, context: any): any {
-    ast.expression.visit(this, context);
-    return null;
-  }
-  visitNonNullAssert(ast: NonNullAssert, context: any): any {
-    ast.expression.visit(this, context);
-    return null;
-  }
-  visitPropertyRead(ast: PropertyRead, context: any): any {
-    ast.receiver.visit(this, context);
-    return null;
-  }
+  visitPrefixNot(ast: PrefixNot, context: any): any { this.visit(ast.expression, context); }
+  visitNonNullAssert(ast: NonNullAssert, context: any): any { this.visit(ast.expression, context); }
+  visitPropertyRead(ast: PropertyRead, context: any): any { this.visit(ast.receiver, context); }
   visitPropertyWrite(ast: PropertyWrite, context: any): any {
-    ast.receiver.visit(this, context);
-    ast.value.visit(this, context);
-    return null;
+    this.visit(ast.receiver, context);
+    this.visit(ast.value, context);
   }
   visitSafePropertyRead(ast: SafePropertyRead, context: any): any {
-    ast.receiver.visit(this, context);
-    return null;
+    this.visit(ast.receiver, context);
   }
   visitSafeMethodCall(ast: SafeMethodCall, context: any): any {
-    ast.receiver.visit(this, context);
-    return this.visitAll(ast.args, context);
+    this.visit(ast.receiver, context);
+    this.visitAll(ast.args, context);
   }
+  visitQuote(ast: Quote, context: any): any {}
+  // This is not part of the AstVisitor interface, just a helper method
   visitAll(asts: AST[], context: any): any {
-    asts.forEach(ast => ast.visit(this, context));
-    return null;
+    for (const ast of asts) {
+      this.visit(ast, context);
+    }
   }
-  visitQuote(ast: Quote, context: any): any { return null; }
 }
 
 export class AstTransformer implements AstVisitor {
@@ -682,69 +658,6 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
 
   visitQuote(ast: Quote, context: any): AST { return ast; }
 }
-
-export function visitAstChildren(ast: AST, visitor: AstVisitor, context?: any) {
-  function visit(ast: AST) {
-    visitor.visit && visitor.visit(ast, context) || ast.visit(visitor, context);
-  }
-
-  function visitAll<T extends AST>(asts: T[]) { asts.forEach(visit); }
-
-  ast.visit({
-    visitBinary(ast) {
-      visit(ast.left);
-      visit(ast.right);
-    },
-    visitChain(ast) { visitAll(ast.expressions); },
-    visitConditional(ast) {
-      visit(ast.condition);
-      visit(ast.trueExp);
-      visit(ast.falseExp);
-    },
-    visitFunctionCall(ast) {
-      if (ast.target) {
-        visit(ast.target);
-      }
-      visitAll(ast.args);
-    },
-    visitImplicitReceiver(ast) {},
-    visitInterpolation(ast) { visitAll(ast.expressions); },
-    visitKeyedRead(ast) {
-      visit(ast.obj);
-      visit(ast.key);
-    },
-    visitKeyedWrite(ast) {
-      visit(ast.obj);
-      visit(ast.key);
-      visit(ast.obj);
-    },
-    visitLiteralArray(ast) { visitAll(ast.expressions); },
-    visitLiteralMap(ast) {},
-    visitLiteralPrimitive(ast) {},
-    visitMethodCall(ast) {
-      visit(ast.receiver);
-      visitAll(ast.args);
-    },
-    visitPipe(ast) {
-      visit(ast.exp);
-      visitAll(ast.args);
-    },
-    visitPrefixNot(ast) { visit(ast.expression); },
-    visitNonNullAssert(ast) { visit(ast.expression); },
-    visitPropertyRead(ast) { visit(ast.receiver); },
-    visitPropertyWrite(ast) {
-      visit(ast.receiver);
-      visit(ast.value);
-    },
-    visitQuote(ast) {},
-    visitSafeMethodCall(ast) {
-      visit(ast.receiver);
-      visitAll(ast.args);
-    },
-    visitSafePropertyRead(ast) { visit(ast.receiver); },
-  });
-}
-
 
 // Bindings
 

@@ -329,6 +329,17 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
     this.visitNode = (node: Node) => node.visit(this);
   }
 
+  // This method is defined to reconcile the type of TemplateBinder since both
+  // RecursiveAstVisitor and Visitor define the visit() method in their
+  // interfaces.
+  visit(node: AST|Node, context?: any) {
+    if (node instanceof AST) {
+      node.visit(this, context);
+    } else {
+      node.visit(this);
+    }
+  }
+
   /**
    * Process a template and extract metadata about expressions and symbols within.
    *

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ASTWithSource, AstPath as AstPathBase, NullAstVisitor, visitAstChildren} from '@angular/compiler';
+import {AST, ASTWithSource, AstPath as AstPathBase, RecursiveAstVisitor} from '@angular/compiler';
 import {AstType} from './expression_type';
 
 import {BuiltinType, Span, Symbol, SymbolQuery, SymbolTable} from './types';
@@ -16,12 +16,12 @@ type AstPath = AstPathBase<AST>;
 
 function findAstAt(ast: AST, position: number, excludeEmpty: boolean = false): AstPath {
   const path: AST[] = [];
-  const visitor = new class extends NullAstVisitor {
+  const visitor = new class extends RecursiveAstVisitor {
     visit(ast: AST) {
       if ((!excludeEmpty || ast.sourceSpan.start < ast.sourceSpan.end) &&
           inSpan(position, ast.sourceSpan)) {
         path.push(ast);
-        visitAstChildren(ast, this);
+        ast.visit(this);
       }
     }
   };
