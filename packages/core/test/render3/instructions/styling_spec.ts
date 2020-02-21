@@ -242,32 +242,6 @@ describe('styling', () => {
         expectStyle(div).toEqual({width: '200px'});
       });
     });
-
-    describe('sanitization', () => {
-      it('should sanitize property', () => {
-        ɵɵstyleSanitizer(ɵɵsanitizeStyle);
-        ɵɵstyleProp('background', 'url("javascript:/unsafe")');
-        expect(div.style.getPropertyValue('background')).not.toContain('javascript');
-
-        clearFirstUpdatePass();
-
-        rewindBindingIndex();
-        ɵɵstyleProp('background', bypassSanitizationTrustStyle('url("javascript:/trusted")'));
-        expect(div.style.getPropertyValue('background')).toContain('url("javascript:/trusted")');
-      });
-
-      it('should sanitize map', () => {
-        ɵɵstyleSanitizer(ɵɵsanitizeStyle);
-        ɵɵstyleMap('background: url("javascript:/unsafe")');
-        expect(div.style.getPropertyValue('background')).not.toContain('javascript');
-
-        clearFirstUpdatePass();
-
-        rewindBindingIndex();
-        ɵɵstyleMap({'background': bypassSanitizationTrustStyle('url("javascript:/trusted")')});
-        expect(div.style.getPropertyValue('background')).toContain('url("javascript:/trusted")');
-      });
-    });
   });
 
   describe('static', () => {

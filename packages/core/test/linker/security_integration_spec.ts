@@ -238,26 +238,6 @@ function declareTests(config?: {useJit: boolean}) {
         checkEscapeOfHrefProperty(fixture, true);
       });
 
-      it('should escape unsafe style values', () => {
-        const template = `<div [style.background]="ctxProp">Text</div>`;
-        TestBed.overrideComponent(SecuredComponent, {set: {template}});
-        const fixture = TestBed.createComponent(SecuredComponent);
-
-        const e = fixture.debugElement.children[0].nativeElement;
-        const ci = fixture.componentInstance;
-        // Make sure binding harmless values works.
-        ci.ctxProp = 'red';
-        fixture.detectChanges();
-        // In some browsers, this will contain the full background specification, not just
-        // the color.
-        expect(e.style['background']).toMatch(/red.*/);
-
-        ci.ctxProp = 'url(javascript:evil())';
-        fixture.detectChanges();
-        // Updated value gets rejected, no value change.
-        expect(e.style['background']).not.toContain('javascript');
-      });
-
       modifiedInIvy('Unknown property error thrown during update mode, not creation mode')
           .it('should escape unsafe SVG attributes', () => {
             const template = `<svg:circle [xlink:href]="ctxProp">Text</svg:circle>`;

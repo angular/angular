@@ -64,8 +64,8 @@ describe('sanitization', () => {
   it('should sanitize style', () => {
     expect(ɵɵsanitizeStyle('red')).toEqual('red');
     expect(ɵɵsanitizeStyle(new Wrap('red'))).toEqual('red');
-    expect(ɵɵsanitizeStyle('url("http://server")')).toEqual('unsafe');
-    expect(ɵɵsanitizeStyle(new Wrap('url("http://server")'))).toEqual('unsafe');
+    expect(ɵɵsanitizeStyle('url("http://server")')).toEqual('url("http://server")');
+    expect(ɵɵsanitizeStyle(new Wrap('url("http://server")'))).toEqual('url("http://server")');
     expect(() => ɵɵsanitizeStyle(bypassSanitizationTrustHtml('url("http://server")')))
         .toThrowError(/Required a safe Style, got a HTML/);
     expect(ɵɵsanitizeStyle(bypassSanitizationTrustStyle('url("http://server")')))
