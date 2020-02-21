@@ -56,6 +56,7 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
           lifecycle: {},
         });
       }
+      eventMap.get(directive).lifecycle[hook] = eventMap.get(directive).lifecycle[hook] || 0;
       eventMap.get(directive).lifecycle[hook] += duration;
     },
   });

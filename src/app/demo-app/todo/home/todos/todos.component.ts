@@ -31,14 +31,13 @@ export class TodosComponent implements OnInit, OnDestroy {
   constructor(private cdRef: ChangeDetectorRef) {}
 
   ngOnInit(): void {
-    fib(40);
     if (typeof window !== 'undefined') {
       window.addEventListener('hashchange', (this.hashListener = () => this.cdRef.markForCheck()));
     }
   }
 
   ngOnDestroy(): void {
-    fib(30);
+    fib(40);
     if (typeof window !== 'undefined') {
       window.removeEventListener('hashchange', this.hashListener);
     }
