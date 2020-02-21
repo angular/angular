@@ -15,7 +15,10 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
   eventMap = new Map<any, DirectiveProfile>();
   inProgress = true;
   observer = new ComponentTreeObserver({
+    // We flush here because it's possible the current node to overwrite
+    // an existing removed node.
     onCreate(directive: any, id: number, isComponent: boolean, position: ElementPosition) {
+      onFrame(flushBuffer(observer));
       eventMap.set(directive, {
         name: getComponentName(directive),
         isComponent,
