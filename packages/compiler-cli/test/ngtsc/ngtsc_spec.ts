@@ -3769,6 +3769,76 @@ runInEachFileSystem(os => {
       // Success is enough to indicate that this passes.
     });
 
+    describe('NgModule invalid import/export errors', () => {
+      function verifyThrownError(errorCode: ErrorCode, errorMessage: string) {
+        const errors = env.driveDiagnostics();
+        expect(errors.length).toBe(1);
+        const {code, messageText} = errors[0];
+        expect(code).toBe(ngErrorCode(errorCode));
+        expect(trim(messageText as string)).toContain(errorMessage);
+      }
+
+      it('should provide a hint when importing an invalid NgModule from node_modules', () => {
+        env.write('node_modules/external/index.d.ts', `
+          export declare class NotAModule {}
+        `);
+        env.write('test.ts', `
+          import {NgModule} from '@angular/core';
+          import {NotAModule} from 'external';
+
+          @NgModule({
+            imports: [NotAModule],
+          })
+          export class Module {}
+        `);
+
+        verifyThrownError(
+            ErrorCode.NGMODULE_INVALID_IMPORT,
+            'This likely means that the library (external) which declares NotAModule has not ' +
+                'been processed correctly by ngcc, or is not compatible with Angular Ivy.');
+      });
+
+      it('should provide a hint when importing an invalid NgModule from a local library', () => {
+        env.write('libs/external/index.d.ts', `
+          export declare class NotAModule {}
+        `);
+
+        env.write('test.ts', `
+          import {NgModule} from '@angular/core';
+          import {NotAModule} from './libs/external';
+
+          @NgModule({
+            imports: [NotAModule],
+          })
+          export class Module {}
+        `);
+
+        verifyThrownError(
+            ErrorCode.NGMODULE_INVALID_IMPORT,
+            'This likely means that the dependency which declares NotAModule has not ' +
+                'been processed correctly by ngcc.');
+      });
+
+      it('should provide a hint when importing an invalid NgModule in the current program', () => {
+        env.write('invalid.ts', `
+          export class NotAModule {}
+        `);
+
+        env.write('test.ts', `
+          import {NgModule} from '@angular/core';
+          import {NotAModule} from './invalid';
+
+          @NgModule({
+            imports: [NotAModule],
+          })
+          export class Module {}
+        `);
+
+        verifyThrownError(
+            ErrorCode.NGMODULE_INVALID_IMPORT, 'Is it missing an @NgModule annotation?');
+      });
+    });
+
     describe('when processing external directives', () => {
       it('should not emit multiple references to the same directive', () => {
         env.write('node_modules/external/index.d.ts', `
