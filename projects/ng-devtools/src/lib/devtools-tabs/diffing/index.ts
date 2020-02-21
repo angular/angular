@@ -15,8 +15,25 @@ export const diff = <T>(differ: DefaultIterableDiffer<T>, a: T[], b: T[]) => {
   // Keep in mind that the track by function may not guarantee
   // that we haven't changed any of the items' props.
   differ.forEachMovedItem(record => {
-    a[record.currentIndex] = Object.assign(a[record.previousIndex], b[record.currentIndex]);
-    a[record.previousIndex] = null;
+    // We want to preserve the reference so that a default
+    // track by function used by the CDK, for instance, can
+    // recognize that this item's identity hasn't changed.
+    // At the same time, since we don't have the guarantee
+    // that we haven't already set the previousIndex while
+    // iterating, we need to check that. If we have, we assign
+    // this array item to a new object. We don't want to risk
+    // changing the properties of an object we'll use in the future.
+    if (!alreadySet[record.previousIndex]) {
+      a[record.currentIndex] = a[record.previousIndex];
+    } else {
+      a[record.currentIndex] = {} as T;
+    }
+    Object.keys(b[record.currentIndex]).forEach(prop => {
+      a[record.currentIndex][prop] = b[record.currentIndex][prop];
+    });
+    if (!alreadySet[record.previousIndex]) {
+      a[record.previousIndex] = null;
+    }
     alreadySet[record.currentIndex] = true;
   });
 
