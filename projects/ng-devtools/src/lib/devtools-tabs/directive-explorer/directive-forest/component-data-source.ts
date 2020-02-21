@@ -1,4 +1,4 @@
-import { Node } from 'protocol';
+import { DevToolsNode } from 'protocol';
 import { DataSource } from '@angular/cdk/collections';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { MatTreeFlattener } from '@angular/material/tree';
@@ -87,7 +87,7 @@ export class ComponentDataSource extends DataSource<FlatNode> {
     return this._expandedData.value;
   }
 
-  update(forest: Node[]) {
+  update(forest: DevToolsNode[]) {
     if (!forest) {
       return;
     }

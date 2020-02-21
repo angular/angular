@@ -1,13 +1,6 @@
 import { deeplySerializeSelectedProperties } from './state-serializer/state-serializer';
 
-import {
-  ComponentType,
-  DirectiveType,
-  Node,
-  ElementPosition,
-  ComponentExplorerViewQuery,
-  DirectivesProperties,
-} from 'protocol';
+import { DevToolsNode, ElementPosition, ComponentExplorerViewQuery, DirectivesProperties } from 'protocol';
 import { getComponentName } from './highlighter';
 import { DebuggingAPI } from './interfaces';
 import { IndexedNode } from './observer/identity-tracker';
@@ -22,7 +15,7 @@ export interface ComponentInstanceType {
   name: string;
 }
 
-export interface ComponentTreeNode extends Node<DirectiveInstanceType, ComponentInstanceType> {
+export interface ComponentTreeNode extends DevToolsNode<DirectiveInstanceType, ComponentInstanceType> {
   children: ComponentTreeNode[];
 }
 
@@ -66,7 +59,7 @@ export const getDirectiveForest = (root: HTMLElement, ngd: DebuggingAPI): Compon
   buildDirectiveForest(root, { element: '__ROOT__', component: null, directives: [], children: [] }, ngd);
 
 const buildDirectiveForest = (
-  node: Element,
+  node: Node,
   tree: ComponentTreeNode | undefined,
   ngd: DebuggingAPI
 ): ComponentTreeNode[] => {
@@ -82,9 +75,9 @@ const buildDirectiveForest = (
       dirs = ngd.getDirectives(node) || [];
     } catch (e) {}
   }
-  const cmp = ngd.getComponent(node);
+  const cmp = node instanceof HTMLElement && ngd.getComponent(node);
   if (!cmp && !dirs.length) {
-    Array.from(node.children).forEach(c => buildDirectiveForest(c, tree, ngd));
+    Array.from(node.childNodes).forEach(c => buildDirectiveForest(c, tree, ngd));
     return tree.children;
   }
   const current: ComponentTreeNode = {
@@ -100,16 +93,17 @@ const buildDirectiveForest = (
     nativeElement: node,
   };
 
+  const name = node instanceof HTMLElement ? node.tagName.toLowerCase() : node.nodeName.toLowerCase();
   if (cmp) {
     current.component = {
       instance: cmp,
-      name: node.tagName.toLowerCase(),
+      name,
     };
   } else {
-    current.element = node.tagName.toLowerCase();
+    current.element = name;
   }
   tree.children.push(current);
-  Array.from(node.children).forEach(c => buildDirectiveForest(c, current, ngd));
+  Array.from(node.childNodes).forEach(c => buildDirectiveForest(c, current, ngd));
   return tree.children;
 };
 

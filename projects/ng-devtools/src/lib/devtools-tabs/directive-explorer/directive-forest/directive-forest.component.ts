@@ -8,7 +8,7 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { Node, ElementPosition } from 'protocol';
+import { DevToolsNode, ElementPosition } from 'protocol';
 import { CdkTree, FlatTreeControl } from '@angular/cdk/tree';
 import { ComponentDataSource, FlatNode } from './component-data-source';
 
@@ -30,7 +30,7 @@ import { FilterComponent } from './filter/filter.component';
   ],
 })
 export class DirectiveForestComponent {
-  @Input() set forest(forest: Node[]) {
+  @Input() set forest(forest: DevToolsNode[]) {
     const newItems = this.dataSource.update(forest);
     if (!this._initialized && forest && forest.length) {
       this.treeControl.expandAll();

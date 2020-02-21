@@ -28,14 +28,14 @@ function init(): void {
   overlay.appendChild(overlayContent);
 }
 
-export const findComponentAndHost = (el: HTMLElement) => {
+export const findComponentAndHost = (el: Node): { component: any; host: HTMLElement } => {
   if (!el) {
     return;
   }
   while (el) {
-    const component = ng.getComponent(el);
+    const component = el instanceof HTMLElement && ng.getComponent(el);
     if (component) {
-      return { component, host: el };
+      return { component, host: el as HTMLElement };
     }
     el = el.parentElement;
   }
@@ -86,7 +86,10 @@ export function inDoc(node): boolean {
   return doc === node || doc === parent || !!(parent && parent.nodeType === 1 && doc.contains(parent));
 }
 
-export function getComponentRect(el: HTMLElement): DOMRect | ClientRect {
+export function getComponentRect(el: Node): DOMRect | ClientRect {
+  if (!(el instanceof HTMLElement)) {
+    return;
+  }
   if (!inDoc(el)) {
     return;
   }

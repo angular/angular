@@ -1,4 +1,4 @@
-import { ElementPosition, Node as ComponentNode, ComponentType } from 'protocol';
+import { ElementPosition, DevToolsNode } from 'protocol';
 import { getDirectiveForest, DirectiveInstanceType, ComponentInstanceType } from '../component-tree';
 import { Type } from '@angular/core';
 import { DebuggingAPI } from '../interfaces';
@@ -11,7 +11,6 @@ interface TreeNode {
 
 export class IdentityTracker {
   private _counter = 0;
-  private _elementDirective = new Map<Node, any>();
   private _currentDirectivePosition = new Map<any, ElementPosition>();
   private _currentDirectiveId = new Map<any, number>();
   private _createdDirectives = new Set<any>();
@@ -29,7 +28,7 @@ export class IdentityTracker {
   }
 
   // It's possible to optimize this method and traverse just a subtree.
-  insert(node: HTMLElement, cmpOrDirective: any | any[]): void {
+  insert(node: Node, cmpOrDirective: any | any[]): void {
     const isComponent = !Array.isArray(cmpOrDirective);
     (isComponent ? [cmpOrDirective] : cmpOrDirective).forEach((dir: any) => {
       this.index();
@@ -81,7 +80,6 @@ export class IdentityTracker {
   }
 
   destroy() {
-    this._elementDirective = new Map<Node, any>();
     this._currentDirectivePosition = new Map<any, ElementPosition>();
     this._currentDirectiveId = new Map<any, number>();
     this._createdDirectives = new Set<any>();
@@ -90,26 +88,12 @@ export class IdentityTracker {
   }
 }
 
-const getParentComponentFromDomNode = (node: Node, ng: DebuggingAPI) => {
-  let current = node;
-  let parent = null;
-  while (current.parentElement) {
-    current = current.parentElement;
-    const parentComponent = ng.getComponent(current);
-    if (parentComponent) {
-      parent = parentComponent;
-      break;
-    }
-  }
-  return parent;
-};
-
-export interface IndexedNode extends ComponentNode<DirectiveInstanceType, ComponentInstanceType> {
+export interface IndexedNode extends DevToolsNode<DirectiveInstanceType, ComponentInstanceType> {
   position: ElementPosition;
   children: IndexedNode[];
 }
 
-const indexTree = <T extends ComponentNode<DirectiveInstanceType, ComponentInstanceType>>(
+const indexTree = <T extends DevToolsNode<DirectiveInstanceType, ComponentInstanceType>>(
   node: T,
   idx: number,
   parentPosition = []
@@ -125,6 +109,6 @@ const indexTree = <T extends ComponentNode<DirectiveInstanceType, ComponentInsta
   } as IndexedNode;
 };
 
-export const indexForest = <T extends ComponentNode<DirectiveInstanceType, ComponentInstanceType>>(
+export const indexForest = <T extends DevToolsNode<DirectiveInstanceType, ComponentInstanceType>>(
   forest: T[]
 ): IndexedNode[] => forest.map((n, i) => indexTree(n, i));
