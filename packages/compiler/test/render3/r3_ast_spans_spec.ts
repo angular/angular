@@ -118,6 +118,13 @@ describe('R3 AST source spans', () => {
       ]);
     });
 
+    it('is correct for elements with bound text', () => {
+      expectFromHtml('<div>{{x}}</div>').toEqual([
+        ['Element', '0:16', '0:5', '10:16'],
+        ['BoundText', '5:10'],
+      ]);
+    });
+
     it('is correct for elements with attributes without value', () => {
       expectFromHtml('<div a></div>').toEqual([
         ['Element', '0:13', '0:7', '7:13'],

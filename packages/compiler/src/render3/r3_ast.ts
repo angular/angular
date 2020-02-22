@@ -71,9 +71,14 @@ export class Element implements Node {
       public outputs: BoundEvent[], public children: Node[], public references: Reference[],
       public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan|null,
       public endSourceSpan: ParseSourceSpan|null, public i18n?: I18nMeta) {
-    // If the element is empty then the source span should include any closing tag
-    if (children.length === 0 && startSourceSpan && endSourceSpan) {
-      this.sourceSpan = new ParseSourceSpan(sourceSpan.start, endSourceSpan.end);
+    // If startSourceSpan and endSourceSpan are provided then make sure
+    // sourceSpan encompasses both the start and end tag. i.e.
+    // <h1> ... </h1>
+    // ^^^^ startSourceSpan
+    //          ^^^^^ endSourceSpan
+    // ^^^^^^^^^^^^^^ sourceSpan
+    if (startSourceSpan && endSourceSpan) {
+      this.sourceSpan = new ParseSourceSpan(startSourceSpan.start, endSourceSpan.end);
     }
   }
   visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitElement(this); }
