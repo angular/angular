@@ -53,7 +53,7 @@ The initial `tsconfig.json` for an Angular app typically looks like the followin
     ]
   },
   "angularCompilerOptions": {
-    "fullTemplateTypeCheck": true,
+    "strictTemplates": true,
     "strictInjectionParameters": true
   }
 }
