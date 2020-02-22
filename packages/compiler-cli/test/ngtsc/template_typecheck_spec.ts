@@ -293,6 +293,32 @@ export declare class AnimationEvent {
       expect(diags.length).toBe(0);
     });
 
+    it('should support a directive being used in its own input expression', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write('test.ts', `
+        import {Component, Directive, NgModule, Input} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '<target-cmp #ref [foo]="ref.bar"></target-cmp>',
+        })
+        export class TestCmp {}
+
+        @Component({template: '', selector: 'target-cmp'})
+        export class TargetCmp {
+          readonly bar = 'test';
+          @Input() foo: string;
+        }
+
+        @NgModule({
+          declarations: [TestCmp, TargetCmp],
+        })
+        export class Module {}
+      `);
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
     describe('strictInputTypes', () => {
       beforeEach(() => {
         env.write('test.ts', `
