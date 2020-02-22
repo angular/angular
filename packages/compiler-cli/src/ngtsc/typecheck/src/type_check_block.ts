@@ -98,7 +98,19 @@ export function generateTypeCheckBlock(
  * Each `TcbOp` may insert statements into the body of the TCB, and also optionally return a
  * `ts.Expression` which can be used to reference the operation's result.
  */
-abstract class TcbOp { abstract execute(): ts.Expression|null; }
+abstract class TcbOp {
+  abstract execute(): ts.Expression|null;
+
+  /**
+   * Replacement value or operation used while this `TcbOp` is executing (i.e. to resolve circular
+   * references during its execution).
+   *
+   * This is usually a `null!` expression (which asks TS to infer an appropriate type), but another
+   * `TcbOp` can be returned in cases where additional code generation is necessary to deal with
+   * circular references.
+   */
+  circularFallback(): TcbOp|ts.Expression { return INFER_TYPE_FOR_CIRCULAR_OP_EXPR; }
+}
 
 /**
  * A `TcbOp` which creates an expression for a native DOM element (or web component) from a
@@ -315,6 +327,41 @@ class TcbDirectiveOp extends TcbOp {
     const typeCtor = tcbCallTypeCtor(this.dir, this.tcb, inputs);
     addParseSpanInfo(typeCtor, this.node.sourceSpan);
     this.scope.addStatement(tsCreateVariable(id, typeCtor));
+    return id;
+  }
+
+  circularFallback(): TcbOp {
+    return new TcbDirectiveCircularFallbackOp(this.tcb, this.scope, this.node, this.dir);
+  }
+}
+
+/**
+ * A `TcbOp` which is used to generate a fallback expression if the inference of a directive type
+ * via `TcbDirectiveOp` requires a reference to its own type. This can happen using a template
+ * reference:
+ *
+ * ```html
+ * <some-cmp #ref [prop]="ref.foo"></some-cmp>
+ * ```
+ *
+ * In this case, `TcbDirectiveCircularFallbackOp` will add a second inference of the directive type
+ * to the type-check block, this time calling the directive's type constructor without any input
+ * expressions. This infers the widest possible supertype for the directive, which is used to
+ * resolve any recursive references required to infer the real type.
+ */
+class TcbDirectiveCircularFallbackOp extends TcbOp {
+  constructor(
+      private tcb: Context, private scope: Scope, private node: TmplAstTemplate|TmplAstElement,
+      private dir: TypeCheckableDirectiveMeta) {
+    super();
+  }
+
+  execute(): ts.Identifier {
+    const id = this.tcb.allocateId();
+    const typeCtor = this.tcb.env.typeCtorFor(this.dir);
+    const circularPlaceholder = ts.createCall(
+        typeCtor, /* typeArguments */ undefined, [ts.createNonNullExpression(ts.createNull())]);
+    this.scope.addStatement(tsCreateVariable(id, circularPlaceholder));
     return id;
   }
 }
@@ -832,10 +879,10 @@ class Scope {
       return op;
     }
 
-    // Set the result of the operation in the queue to a special expression. If executing this
-    // operation results in a circular dependency, this will break the cycle and infer the least
-    // narrow type where needed (which is how TypeScript deals with circular dependencies in types).
-    this.opQueue[opIndex] = INFER_TYPE_FOR_CIRCULAR_OP_EXPR;
+    // Set the result of the operation in the queue to its circular fallback. If executing this
+    // operation results in a circular dependency, this will prevent an infinite loop and allow for
+    // the resolution of such cycles.
+    this.opQueue[opIndex] = op.circularFallback();
     const res = op.execute();
     // Once the operation has finished executing, it's safe to cache the real result.
     this.opQueue[opIndex] = res;

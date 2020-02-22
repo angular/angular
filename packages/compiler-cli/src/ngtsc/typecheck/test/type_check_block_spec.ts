@@ -180,7 +180,10 @@ describe('type check blocks', () => {
       exportAs: ['dir'],
       inputs: {input: 'input'},
     }];
-    expect(tcb(TEMPLATE, DIRECTIVES)).toContain('var _t2 = Dir.ngTypeCtor({ "input": (null!) });');
+    expect(tcb(TEMPLATE, DIRECTIVES))
+        .toContain(
+            'var _t3 = Dir.ngTypeCtor((null!)); ' +
+            'var _t2 = Dir.ngTypeCtor({ "input": (_t3) });');
   });
 
   it('should generate circular references between two directives correctly', () => {
@@ -206,7 +209,8 @@ describe('type check blocks', () => {
     ];
     expect(tcb(TEMPLATE, DIRECTIVES))
         .toContain(
-            'var _t3 = DirB.ngTypeCtor({ "inputA": (null!) }); ' +
+            'var _t4 = DirA.ngTypeCtor((null!)); ' +
+            'var _t3 = DirB.ngTypeCtor({ "inputA": (_t4) }); ' +
             'var _t2 = DirA.ngTypeCtor({ "inputA": (_t3) });');
   });
 
