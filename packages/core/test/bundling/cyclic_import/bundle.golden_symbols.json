@@ -168,6 +168,9 @@
     "name": "attachPatchData"
   },
   {
+    "name": "autoRegisterModuleById"
+  },
+  {
     "name": "baseResolveDirective"
   },
   {

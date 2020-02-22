@@ -14,6 +14,7 @@ import {getInjectorDef} from '../di/interface/defs';
 import {InjectFlags} from '../di/interface/injector';
 import {Type} from '../interface/type';
 import {assertDefined, assertEqual} from '../util/assert';
+import {noSideEffects} from '../util/closure';
 
 import {assertDirectiveDef} from './assert';
 import {getFactoryDef} from './definition';
@@ -655,15 +656,17 @@ export function ɵɵgetFactoryOf<T>(type: Type<any>): FactoryFn<T>|null {
  * @codeGenApi
  */
 export function ɵɵgetInheritedFactory<T>(type: Type<any>): (type: Type<T>) => T {
-  const proto = Object.getPrototypeOf(type.prototype).constructor as Type<any>;
-  const factory = (proto as any)[NG_FACTORY_DEF] || ɵɵgetFactoryOf<T>(proto);
-  if (factory !== null) {
-    return factory;
-  } else {
-    // There is no factory defined. Either this was improper usage of inheritance
-    // (no Angular decorator on the superclass) or there is no constructor at all
-    // in the inheritance chain. Since the two cases cannot be distinguished, the
-    // latter has to be assumed.
-    return (t) => new t();
-  }
+  return noSideEffects(() => {
+    const proto = Object.getPrototypeOf(type.prototype).constructor as Type<any>;
+    const factory = (proto as any)[NG_FACTORY_DEF] || ɵɵgetFactoryOf<T>(proto);
+    if (factory !== null) {
+      return factory;
+    } else {
+      // There is no factory defined. Either this was improper usage of inheritance
+      // (no Angular decorator on the superclass) or there is no constructor at all
+      // in the inheritance chain. Since the two cases cannot be distinguished, the
+      // latter has to be assumed.
+      return (t) => new t();
+    }
+  });
 }
