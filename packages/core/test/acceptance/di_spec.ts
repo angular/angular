@@ -1066,6 +1066,112 @@ describe('di', () => {
 
   });
 
+  describe('service injection with useClass', () => {
+    @Injectable({providedIn: 'root'})
+    class BarServiceDep {
+      name = 'BarServiceDep';
+    }
+
+    @Injectable({providedIn: 'root'})
+    class BarService {
+      constructor(public dep: BarServiceDep) {}
+      getMessage() { return 'bar'; }
+    }
+
+    @Injectable({providedIn: 'root'})
+    class FooServiceDep {
+      name = 'FooServiceDep';
+    }
+
+    @Injectable({providedIn: 'root', useClass: BarService})
+    class FooService {
+      constructor(public dep: FooServiceDep) {}
+      getMessage() { return 'foo'; }
+    }
+
+    it('should use @Injectable useClass config when token is not provided', () => {
+      let provider: FooService|BarService;
+
+      @Component({template: ''})
+      class App {
+        constructor(service: FooService) { provider = service; }
+      }
+
+      TestBed.configureTestingModule({declarations: [App]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(provider !.getMessage()).toBe('bar');
+
+      // ViewEngine incorrectly uses the original class DI config, instead of the one from useClass.
+      if (ivyEnabled) {
+        expect(provider !.dep.name).toBe('BarServiceDep');
+      }
+    });
+
+    it('should use constructor config directly when token is explicitly provided via useClass',
+       () => {
+         let provider: FooService|BarService;
+
+         @Component({template: ''})
+         class App {
+           constructor(service: FooService) { provider = service; }
+         }
+
+         TestBed.configureTestingModule(
+             {declarations: [App], providers: [{provide: FooService, useClass: FooService}]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         expect(provider !.getMessage()).toBe('foo');
+       });
+
+
+    it('should inject correct provider when re-providing an injectable that has useClass', () => {
+      let directProvider: FooService|BarService;
+      let overriddenProvider: FooService|BarService;
+
+      @Component({template: ''})
+      class App {
+        constructor(@Inject('stringToken') overriddenService: FooService, service: FooService) {
+          overriddenProvider = overriddenService;
+          directProvider = service;
+        }
+      }
+
+      TestBed.configureTestingModule(
+          {declarations: [App], providers: [{provide: 'stringToken', useClass: FooService}]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(directProvider !.getMessage()).toBe('bar');
+      expect(overriddenProvider !.getMessage()).toBe('foo');
+
+      // ViewEngine incorrectly uses the original class DI config, instead of the one from useClass.
+      if (ivyEnabled) {
+        expect(directProvider !.dep.name).toBe('BarServiceDep');
+        expect(overriddenProvider !.dep.name).toBe('FooServiceDep');
+      }
+    });
+
+    it('should use constructor config directly when token is explicitly provided as a type provider',
+       () => {
+         let provider: FooService|BarService;
+
+         @Component({template: ''})
+         class App {
+           constructor(service: FooService) { provider = service; }
+         }
+
+         TestBed.configureTestingModule({declarations: [App], providers: [FooService]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         expect(provider !.getMessage()).toBe('foo');
+         expect(provider !.dep.name).toBe('FooServiceDep');
+       });
+  });
+
   describe('inject', () => {
 
     it('should inject from parent view', () => {
