@@ -53,7 +53,7 @@ The initial `tsconfig.json` for an Angular app typically looks like the followin
     ]
   },
   "angularCompilerOptions": {
-    "fullTemplateTypeCheck": true,
+    "strictTemplates": true,
     "strictInjectionParameters": true
   }
 }
@@ -61,7 +61,6 @@ The initial `tsconfig.json` for an Angular app typically looks like the followin
 
 
 {@a noImplicitAny}
-
 
 ### *noImplicitAny* and *suppressImplicitAnyIndexErrors*
 
@@ -95,6 +94,7 @@ You can suppress them with the following additional flag:
 For more information about how the TypeScript configuration affects compilation, see [Angular Compiler Options](guide/angular-compiler-options) and [Template Type Checking](guide/template-typecheck).
 
 </div>
+
 
 {@a typings}
 
@@ -145,7 +145,6 @@ For instance, to install typings for `jasmine` you run `npm install @types/jasmi
 
 
 {@a target}
-
 
 ### *target*
 
