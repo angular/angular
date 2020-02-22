@@ -12,6 +12,7 @@ import {OnDestroy} from '../interface/lifecycle_hooks';
 import {Type} from '../interface/type';
 import {getFactoryDef} from '../render3/definition';
 import {throwCyclicDependencyError, throwInvalidProviderError, throwMixedMultiProviderError} from '../render3/errors';
+import {FactoryFn} from '../render3/interfaces/definition';
 import {deepForEach, newArray} from '../util/array_utils';
 import {stringify} from '../util/stringify';
 import {resolveForwardRef} from './forward_ref';
@@ -407,7 +408,7 @@ export class R3Injector {
   }
 }
 
-function injectableDefOrInjectorDefFactory(token: Type<any>| InjectionToken<any>): () => any {
+function injectableDefOrInjectorDefFactory(token: Type<any>| InjectionToken<any>): FactoryFn<any> {
   // Most tokens will have an injectable def directly on them, which specifies a factory directly.
   const injectableDef = getInjectableDef(token);
   const factory = injectableDef !== null ? injectableDef.factory : getFactoryDef(token);
@@ -496,7 +497,8 @@ export function providerToFactory(
       if (hasDeps(provider)) {
         factory = () => new (classRef)(...injectArgs(provider.deps));
       } else {
-        return injectableDefOrInjectorDefFactory(classRef);
+        const classFactoryDef = getFactoryDef(classRef);
+        return classFactoryDef || injectableDefOrInjectorDefFactory(classRef);
       }
     }
   }
