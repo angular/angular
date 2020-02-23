@@ -236,12 +236,16 @@ runInEachFileSystem(() => {
              baseUrl: '/path_mapped/dist',
              paths: {
                'lib1': ['my-lib/my-lib', 'my-lib'],
-               'lib2': ['my-lib-other/my-lib-other', 'my-lib-other']
+               'lib2': ['my-lib/a', 'my-lib/a'],
+               'lib3': ['my-lib/b', 'my-lib/b'],
+               'lib4': ['my-lib-other/my-lib-other', 'my-lib-other']
              }
            };
            loadTestFiles([
-             ...createPackage(_Abs('/path_mapped/node_modules'), 'test', ['lib2']),
+             ...createPackage(_Abs('/path_mapped/node_modules'), 'test', ['lib2', 'lib4']),
              ...createPackage(_Abs('/path_mapped/dist/my-lib'), 'my-lib'),
+             ...createPackage(_Abs('/path_mapped/dist/my-lib'), 'a'),
+             ...createPackage(_Abs('/path_mapped/dist/my-lib'), 'b'),
              ...createPackage(_Abs('/path_mapped/dist/my-lib-other'), 'my-lib-other'),
            ]);
            const srcHost = new EsmDependencyHost(fs, new ModuleResolver(fs, pathMappings));
@@ -251,6 +255,7 @@ runInEachFileSystem(() => {
                fs, config, logger, resolver, basePath, targetPath, pathMappings);
            const {entryPoints} = finder.findEntryPoints();
            expect(dumpEntryPointPaths(basePath, entryPoints)).toEqual([
+             ['../dist/my-lib/a', '../dist/my-lib/a'],
              ['../dist/my-lib-other/my-lib-other', '../dist/my-lib-other/my-lib-other'],
              ['test', 'test'],
            ]);

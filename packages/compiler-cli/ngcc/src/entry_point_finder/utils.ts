@@ -43,7 +43,7 @@ export function getBasePaths(
     }));
   }
   basePaths.sort().reverse();  // Get the paths in order with the longer ones first.
-  return basePaths.filter(removeDeeperPaths);
+  return basePaths.filter(removeContainedPaths);
 }
 
 /**
@@ -58,17 +58,23 @@ function extractPathPrefix(path: string) {
 /**
  * A filter function that removes paths that are contained by other paths.
  *
- * For example given `['a/b/c', 'a/b', 'd/e', 'd']` we will end up with `['a/b', 'd']`.
- *
- * We only need to check the following path since the `array` is sorted in reverse alphabetic order.
+ * For example:
+ * Given `['a/b/c', 'a/b/x', 'a/b', 'd/e', 'd/f']` we will end up with `['a/b', 'd/e', 'd/f]`.
+ * (Note that we do not get `d` even though `d/e` and `d/f` share a base directory, since `d` is not
+ * one of the base paths.)
  *
  * @param value The current path.
  * @param index The index of the current path.
  * @param array The array of paths (sorted in reverse alphabetical order).
  * @returns true if this path is not contained by another path.
  */
-function removeDeeperPaths(value: AbsoluteFsPath, index: number, array: AbsoluteFsPath[]) {
-  // Use `relative()` rather than `startsWith()` to avoid false positives for paths like
-  // `abc/defg` and `abc/def` since the former is not contained by the latter.
-  return index === array.length - 1 || relative(value, array[index + 1]).startsWith('../');
+function removeContainedPaths(value: AbsoluteFsPath, index: number, array: AbsoluteFsPath[]) {
+  // We only need to check the following paths since the `array` is sorted in reverse alphabetic
+  // order.
+  for (let i = index + 1; i < array.length; i++) {
+    // We need to use `relative().startsWith()` rather than a simple `startsWith()` to ensure we
+    // don't assume that `a/b` contains `a/b-2`.
+    if (!relative(array[i], value).startsWith('..')) return false;
+  }
+  return true;
 }
