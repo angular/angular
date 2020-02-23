@@ -1,11 +1,7 @@
-<<<<<<< HEAD:aio/content/guide/setup.md
 <!--
-# Setup for Upgrading from AngularJS
+# Setup for upgrading from AngularJS
 -->
 # 로컬 개발환경 설정하기
-=======
-# Setup for upgrading from AngularJS
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072:aio/content/guide/upgrade-setup.md
 
 <!--
 Question: Can we remove this file and instead direct readers to https://github.com/angular/quickstart/blob/master/README.md
@@ -20,9 +16,11 @@ Those Upgrade guides refer to this Setup guide for information about using the [
 
 </div>
 
+<!--
 The <live-example name=quickstart>QuickStart live-coding</live-example> example is an Angular _playground_.
 There are also some differences from a local app, to simplify that live-coding experience.
 In particular, the QuickStart live-coding example shows just the AppComponent file; it creates the equivalent of app.module.ts and main.ts internally for the playground only.
+-->
 
 This guide describes how to develop locally on your own machine.
 Setting up a new project on your machine is quick and easy with the [QuickStart seed on github](https://github.com/angular/quickstart "Install the github QuickStart repo").
@@ -326,17 +324,13 @@ The following are all in `src/`
 
       <!--
       Defines `AppModule`, the  [root module](guide/bootstrapping "AppModule: the root module") that tells Angular how to assemble the application.
-<<<<<<< HEAD:aio/content/guide/setup.md
-      Right now it declares only the `AppComponent`.
-      Soon there will be more components to declare.
-      -->
-      [최상위 모듈](guide/bootstrapping "AppModule: the root module") `AppModule`을 정의합니다. Angular는 이 모듈에 정의된 대로 애플리케이션을 구성합니다.
-      아직은 `AppComponent`만 정의되어 있지만 애플리케이션이 확장되면서 더 많은 컴포넌트가 이 모듈에 추가될 것입니다.
-
-=======
       When initially created, it declares only the `AppComponent`.
       Over time, you add more components to declare.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072:aio/content/guide/upgrade-setup.md
+      -->
+      [최상위 모듈](guide/bootstrapping "AppModule: the root module") `AppModule`을 정의합니다. Angular는 이 모듈에 정의된 대로 애플리케이션을 구성합니다.
+      When initially created, it declares only the `AppComponent`.
+      Over time, you add more components to declare.
+
     </td>
 
   </tr>
@@ -354,17 +348,13 @@ The following are all in `src/`
       [bootstraps](guide/bootstrapping)
       the application's main module (`AppModule`) to run in the browser.
       The JIT compiler is a reasonable choice during the development of most projects and
-<<<<<<< HEAD:aio/content/guide/setup.md
-      it's the only viable choice for a sample running in a _live-coding_ environment like Stackblitz.
-      You'll learn about alternative compiling and [deployment](guide/deployment) options later in the documentation.
-      -->
-      애플리케이션을 [JIT 컴파일러](guide/glossary#jit)로 빌드하고 브라우저에서 애플리케이션 메인 모듈 (`AppModule`)을 [부트스트랩](guide/bootstrapping)할 때 사용하는 파일입니다.
-      JIT 컴파일러는 개발 단계에서 주로 사용하는 컴파일러이며, Stackblitz의 _라이브 코딩_ 환경도 JIT 컴파일러를 활용한 것입니다.
-      실제 운영환경에서는 JIT 컴파일러 대신 AoT 컴파일러를 사용하는데, 이 내용은 [배포](guide/deployment) 문서에서 자세하게 살펴봅니다.
-=======
       it's the only viable choice for a sample running in a _live-coding_ environment such as Stackblitz.
       Alternative [compilation](guide/aot-compiler), [build](guide/build), and [deployment](guide/deployment) options are available.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072:aio/content/guide/upgrade-setup.md
+      -->
+      애플리케이션을 [JIT 컴파일러](guide/glossary#jit)로 빌드하고 브라우저에서 애플리케이션 메인 모듈 (`AppModule`)을 [부트스트랩](guide/bootstrapping)할 때 사용하는 파일입니다.
+      The JIT compiler is a reasonable choice during the development of most projects and
+      it's the only viable choice for a sample running in a _live-coding_ environment such as Stackblitz.
+      Alternative [compilation](guide/aot-compiler), [build](guide/build), and [deployment](guide/deployment) options are available.
 
     </td>
 
@@ -373,70 +363,6 @@ The following are all in `src/`
 </table>
 
 
-<<<<<<< HEAD:aio/content/guide/setup.md
-
-<div class="alert is-helpful">
-
-
-
-<!--
-### Next Step
--->
-### 다음 단계
-
-<!--
-If you're new to Angular, we recommend you follow the [tutorial](tutorial "Tour of Heroes tutorial").
--->
-아직 Angular에 익숙하지 않다면 [튜토리얼](tutorial "Tour of Heroes tutorial")을 먼저 보는 것을 권장합니다.
-
-
-</div>
-
-<br></br><br></br>
-
-{@a install-prerequisites}
-
-
-<!--
-## Appendix: Node.js and npm
--->
-## 부록: Node.js 와 npm
-
-<!--
-[Node.js](https://nodejs.org/en/) and the [npm](https://www.npmjs.com/) package manager are essential to modern web development with Angular and other platforms.
-Node.js powers client development and build tools.
-The _npm_ package manager, which is itself a _Node.js_ application, installs JavaScript libraries.
--->
-최근 웹 개발에는 Angular를 사용하지 않더라도 [Node.js](https://nodejs.org/en/)와 [npm](https://www.npmjs.com/) 패키지 매니저를 많이 사용합니다.
-Node.js는 클라이언트를 개발하거나 빌드할 때 사용하는 툴입니다.
-그리고 _npm_ 패키지 매니저는 그 자체로 _Node.js_ 애플리케이션이며 JavaScript 라이브러리를 설치할 때 사용하는 툴입니다.
-
-<!--
-<a href="https://docs.npmjs.com/getting-started/installing-node" target="_blank" title="Installing Node.js and updating npm">
-Get them now</a> if they're not already installed on your machine.
--->
-아직 PC에 설치되어 있지 않다면 <a href="https://docs.npmjs.com/getting-started/installing-node" target="_blank" title="Installing Node.js and updating npm">
-Node.js</a>를 설치해 보세요.
-
-<!--
-**Verify that you are running Node.js `v8.x` or higher and npm `5.x` or higher**
-by running the commands `node -v` and `npm -v` in a terminal/console window.
-Older versions produce errors.
--->
-**이 때 Node.js는 `v8.x` 버전 이상, npm은 `5.x` 버전 이상이어야 합니다**.
-각 툴의 버전은 `node -v`나 `npm -v` 명령을 실행해서 확인할 수 있으며, 이 버전보다 낮으면 애플리케이션을 실행하면서 에러가 발생할 수 있습니다.
-
-<!--
-We recommend [nvm](https://github.com/creationix/nvm) for managing multiple versions of Node.js and npm.
-You may need [nvm](https://github.com/creationix/nvm) if you already have projects running on your machine that use other versions of Node.js and npm.
--->
-Node.js 버전을 바꾸면서 개발해야 한다면 [nvm](https://github.com/creationix/nvm)을 사용하는 것도 권장합니다.
-그리고 이미 개발이 끝난 프로젝트가 요구하는 Node.js 버전이 다를 때, [nvm](https://github.com/creationix/nvm)을 사용하면 Node.js를 다시 설치하지 않아도 버전을 변경할 수 있습니다.
-
-
-<!--
-=======
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072:aio/content/guide/upgrade-setup.md
 ## Appendix: Develop locally with IE
 -->
 ## 부록: 로컬 개발 환경에서 IE 활용하기

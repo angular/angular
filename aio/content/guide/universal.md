@@ -1,12 +1,8 @@
-<<<<<<< HEAD
 <!--
-# Server-side Rendering (SSR): An intro to Angular Universal
-# Angular Universal: server-side rendering
--->
-# 서버 사이드 렌더링 (Server-side Rendering, SSR): Angular Universal 소개
-=======
 # Server-side rendering (SSR) with Angular Universal
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+-->
+# 서버 사이드 렌더링 (Server-side Rendering, SSR): Angular Universal
 
 <!--
 This guide describes **Angular Universal**, a technology that renders Angular applications on the server.
@@ -144,12 +140,8 @@ There are three main reasons to create a Universal version of your app.
 -->
 ### 웹 크롤러 대응하기 (SEO)
 
-<<<<<<< HEAD
 <!--
-Google, Bing, Facebook, Twitter, and other social media sites rely on web crawlers to index your application content and 
-=======
 Google, Bing, Facebook, Twitter, and other social media sites rely on web crawlers to index your application content and
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 make that content searchable on the web.
 These web crawlers may be unable to navigate and index your highly interactive Angular application as a human user could do.
 
@@ -226,12 +218,8 @@ and gets the full interactive experience after the full app loads.
 -->
 ## Universal 웹 서버
 
-<<<<<<< HEAD
 <!--
-A Universal web server responds to application page requests with static HTML rendered by the [Universal template engine](#universal-engine). 
-=======
 A Universal web server responds to application page requests with static HTML rendered by the [Universal template engine](#universal-engine).
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 The server receives and responds to HTTP requests from clients (usually browsers), and serves static assets such as scripts, CSS, and images.
 It may respond to data requests, either directly or as a proxy to a separate data server.
 
@@ -245,26 +233,17 @@ Universal 웹 서버는 애플리케이션 페이지 요청을 받았을 때 [Un
 
 <div class="alert is-helpful">
 
-<<<<<<< HEAD
   <!--
-  **Note:** _Any_ web server technology can serve a Universal app as long as it can call Universal's `renderModuleFactory()` function.
-=======
   **Note:** _Any_ web server technology can serve a Universal app as long as it can call Universal's `renderModule()` function.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
   The principles and decision points discussed here apply to any web server technology.
   -->
-  **참고:** Angular Universal이 제공하는 `renderModuleFactory()` 함수를 실행할수만 있다면 _아무_ 웹 서버를 사용해도 Universal 앱을 제공할 수 있습니다.
+  **참고:** Angular Universal이 제공하는 `renderModule()` 함수를 실행할수만 있다면 _아무_ 웹 서버를 사용해도 Universal 앱을 제공할 수 있습니다.
   이 섹션에서는 웹 서버를 결정하는 기준에 대해서 조금 더 자세하게 알아봅시다.
 
 </div>
 
-<<<<<<< HEAD
 <!--
-
-Universal applications use the Angular `platform-server` package (as opposed to `platform-browser`), which provides 
-=======
 Universal applications use the Angular `platform-server` package (as opposed to `platform-browser`), which provides
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 server implementations of the DOM, `XMLHttpRequest`, and other low-level features that don't rely on a browser.
 
 The server ([Node Express](https://expressjs.com/) in this guide's example)
@@ -347,12 +326,7 @@ the work is already done. We'll assume this is the case, but it's trivial to pro
 
 Start by creating an [HttpInterceptor](api/common/http/HttpInterceptor).
 
-<<<<<<< HEAD
-
-<code-example format="." language="typescript">
-=======
 <code-example language="typescript" header="universal-interceptor.ts">
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 import {Injectable, Inject, Optional} from '@angular/core';
 import {HttpInterceptor, HttpHandler, HttpRequest, HttpHeaders} from '@angular/common/http';
@@ -363,7 +337,6 @@ import {REQUEST} from '@nguniversal/express-engine/tokens';
 export class UniversalInterceptor implements HttpInterceptor {
 
   constructor(@Optional() @Inject(REQUEST) protected request?: Request) {}
-
 
   intercept(req: HttpRequest<any>, next: HttpHandler) {
     let serverReq: HttpRequest<any> = req;
@@ -399,10 +372,6 @@ import {UniversalInterceptor} from './universal-interceptor';
 export class AppServerModule {}
 
 </code-example>
--->
-<code-example path="universal/src/app/hero.service.ts" region="ctor" header="src/app/hero.service.ts (옵션 인자 origin을 추가한 생성자)">
-</code-example>
-
 
 Now, on every HTTP request made on the server, this interceptor will fire and replace the request URL with the absolute
 URL provided in the Express `Request` object.
@@ -421,14 +390,9 @@ The important bit in the `server.ts` file is the `ngExpressEngine()` function.
 <code-example path="universal/server.ts" header="server.ts" region="ngExpressEngine">
 </code-example>
 
-<<<<<<< HEAD
 <!--
-The `ngExpressEngine()` function is a wrapper around Universal's `renderModuleFactory()` function which turns a client's 
-=======
 The `ngExpressEngine()` function is a wrapper around Universal's `renderModule()` function which turns a client's
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 requests into server-rendered HTML pages.
-
 
 * The first parameter is `AppServerModule`.
 It's the bridge between the Universal server-side renderer and the Angular application.
@@ -444,7 +408,7 @@ It's up to the engine to decide what to do with that page.
 This engine's `Promise` callback returns the rendered page to the web server,
 which then forwards it to the client in the HTTP response.
 -->
-`ngExpressEngine()` 함수는 Universal이 제공하는 `renderModuleFactory()` 함수를 랩핑한 함수이며, `renderModuleFactory()` 함수는 클라이언트의 요청을 서버가 렌더링한 HTML 페이지로 변경해서 요청하는 함수입니다.
+`ngExpressEngine()` 함수는 Universal이 제공하는 `renderModule()` 함수를 랩핑한 함수이며, `renderModuleFactory()` 함수는 클라이언트의 요청을 서버가 렌더링한 HTML 페이지로 변경해서 요청하는 함수입니다.
 
 * 첫번째 인자는 `AppServerModule` 입니다.
 이 모듈은 Universal 서버 사이드 렌더러와 Angular 애플리케이션을 이어주는 역할을 합니다.
@@ -459,16 +423,12 @@ which then forwards it to the client in the HTTP response.
 
 <div class="alert is-helpful">
 
-<<<<<<< HEAD
   <!--
-  **Note:**  These wrappers help hide the complexity of the `renderModuleFactory()` function. There are more wrappers 
-=======
   **Note:**  These wrappers help hide the complexity of the `renderModule()` function. There are more wrappers
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
   for different backend technologies at the [Universal repository](https://github.com/angular/universal).
 
   -->
-  **참고:** `renderModuleFactory()` 함수를 직접 사용하는 것보다는 `ngExpressEngine()` 랩핑 헬퍼를 사용하는 것이 편합니다. 이와 비슷한 방식으로 제공되는 랩퍼 함수들을 알아보려면 [Universal 레파지토리](https://github.com/angular/universal)를 참고하세요.
+  **참고:** `renderModule()` 함수를 직접 사용하는 것보다는 `ngExpressEngine()` 랩핑 헬퍼를 사용하는 것이 편합니다. 이와 비슷한 방식으로 제공되는 랩퍼 함수들을 알아보려면 [Universal 레파지토리](https://github.com/angular/universal)를 참고하세요.
 
 </div>
 
@@ -523,16 +483,10 @@ Angular 앱은 라우터를 사용하기 때문에 다음과 같은 3가지 요�
 Node Express 서버는 미들웨어 파이프라인을 연결하는 방식으로 동작하기 때문에 클라이언트가 보낸 요청을 처리할 때 URL을 활용할 수 있습니다.
 그래서 데이터 요청 URL을 처리하는 Node Express 서버의 파이프라인을 정의한다면 Express가 제공하는 `app.get()` 함수를 사용해서 다음과 같이 정의할 수 있습니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="universal/server.ts" header="server.ts (data URL)" region="data-request" linenums="false">
-</code-example>
--->
-<code-example path="universal/server.ts" header="server.ts (데이터 URL)" region="data-request" linenums="false">
-</code-example>
-=======
 <code-example path="universal/server.ts" header="server.ts (data URL)" region="data-request"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="universal/server.ts" header="server.ts (데이터 URL)" region="data-request"></code-example>
 
 <div class="alert is-helpful">
 
@@ -555,16 +509,10 @@ The following code filters for request URLs with no extensions and treats them a
 -->
 다음 코드는 URL에 확장자가 없을 때 이 요청을 네비게이션 요청으로 처리하는 코드입니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="universal/server.ts" header="server.ts (navigation)" region="navigation-request" linenums="false">
-</code-example>
--->
-<code-example path="universal/server.ts" header="server.ts (네비게이션)" region="navigation-request" linenums="false">
-</code-example>
-=======
 <code-example path="universal/server.ts" header="server.ts (navigation)" region="navigation-request"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="universal/server.ts" header="server.ts (네비게이션)" region="navigation-request"></code-example>
 
 <!--
 ### Serving static files safely
@@ -583,15 +531,11 @@ file isn't found.
 -->
 JavaScript 파일이나 이미지 파일, 스타일 파일과 같은 정적 애셋은 `app.use()` 하나로 간단하게 처리할 수 있습니다.
 
-<<<<<<< HEAD
 그리고 클라이언트가 이 파일들을 다운로드 받을 수 있는 권한을 지정하기 위해, 애셋 파일은 모두 `/dist` 폴더에 두는 것이 좋습니다.
 
 아래 코드는 정적 애셋을 요청받았을 때 실행되는 Node Express 코드입니다. 요청받은 파일은 `/dist` 폴더에서 찾아 보내는데, 이 파일이 존재하지 않으면 `404 - NOT FOUND`를 반환합니다.
 
 <!--
-<code-example path="universal/server.ts" header="server.ts (static files)" region="static" linenums="false">
-</code-example>
-
-=======
 <code-example path="universal/server.ts" header="server.ts (static files)" region="static"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="universal/server.ts" header="server.ts (정적 파일)" region="static"></code-example>

@@ -88,28 +88,21 @@ This will produce the files that you need to deploy.
 -->
 이제 배포할 준비는 끝났습니다.
 
-<<<<<<< HEAD
-<!--
-=======
 <div class="alert is-helpful">
 
 If the above `ng build` command throws an error about missing packages, append the missing dependencies in your local project's `package.json` file to match the one in the downloaded StackBlitz project.
 
 </div>
 
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+<!--
 #### Hosting the built project
 -->
 #### 호스팅하기
 
-<<<<<<< HEAD
 <!--
-The files in the `dist/my-project-name` folder are static and can be hosted on any web server capable of serving files (node, Java, .NET) or any backend (Firebase, Google Cloud, App Engine, others).
--->
-`dist/my-project-name` 폴더에 있는 파일들은 정적 파일로 취급할 수 있기 때문에 파일을 호스팅할 수 있는 웹 서버라면 Node, Java, .NET에 관계없이 호스팅할 수 있습니다. 백엔드는 Firebase, Google Cloud, App Engine 중 어떤 것이라도 상관없습니다.
-=======
 The files in the `dist/my-project-name` folder are static and can be hosted on any web server capable of serving files (`Node.js`, Java, .NET) or any backend (Firebase, Google Cloud, App Engine, others).
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+`dist/my-project-name` 폴더에 있는 파일들은 정적 파일로 취급할 수 있기 때문에 파일을 호스팅할 수 있는 웹 서버라면 `Node.js`, Java, .NET에 관계없이 호스팅할 수 있습니다. 백엔드는 Firebase, Google Cloud, App Engine 중 어떤 것이라도 상관없습니다.
 
 <!--
 ### Hosting an Angular app on Firebase

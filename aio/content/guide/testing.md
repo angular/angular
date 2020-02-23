@@ -10,21 +10,16 @@ This guide offers tips and techniques for unit and integration testing Angular a
 The guide presents tests of a sample application created with the [Angular CLI](cli). This sample application is much like the one created in the [_Tour of Heroes_ tutorial](tutorial).
 The sample application and all tests in this guide are available for inspection and experimentation:
 
-<<<<<<< HEAD
-- <live-example embedded-style>Sample app</live-example>
-- <live-example stackblitz="specs">Tests</live-example>
+- <live-example embedded-style noDownload>Sample app</live-example>
+- <live-example stackblitz="specs" noDownload>Tests</live-example>
 -->
 이 문서는 Angular 애플리케이션에 유닛 테스트와 통합 테스트를 적용하는 방법에 대해 설명합니다.
 
 내용을 설명하면서 사용하는 예제 애플리케이션은 [Angular CLI](cli)를 사용해서 만든 것이며, [_히어로들의 여행_ 튜토리얼](tutorial)에서 다룬 애플리케이션과도 비슷합니다.
 이 문서에서 다루는 예제 애플리케이션과 모든 테스트 코드는 다음 링크에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
-- <live-example embedded-style>예제 앱 실행</live-example>
-- <live-example stackblitz="specs">테스트 코드 실행</live-example>
-=======
-- <live-example embedded-style noDownload>Sample app</live-example>
-- <live-example stackblitz="specs" noDownload>Tests</live-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+- <live-example embedded-style noDownload>예제 앱 실행</live-example>
+- <live-example stackblitz="specs" noDownload>테스트 코드 실행</live-example>
 
 <hr>
 
@@ -33,12 +28,8 @@ The sample application and all tests in this guide are available for inspection 
 -->
 ## 환경 설정
 
-<<<<<<< HEAD
 <!--
-The Angular CLI downloads and install everything you need to test an Angular application with the [Jasmine test framework](https://jasmine.github.io/).
-=======
 The Angular CLI downloads and installs everything you need to test an Angular application with the [Jasmine test framework](https://jasmine.github.io/).
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 The project you create with the CLI is immediately ready to test.
 Just run the [`ng test`](cli/test) CLI command:
@@ -81,20 +72,14 @@ A chrome browser also opens and displays the test output in the "Jasmine HTML Re
 테스트 실행 결과는 Chrome 브라우저에서도 확인할 수 있습니다.
 브라우저에서는 "Jasmine HTML Reporter"를 사용해서 다음과 같이 표시됩니다.
 
-<<<<<<< HEAD
 <!--
-<figure>
-  <img src='generated/images/guide/testing/initial-jasmine-html-reporter.png' alt="Jasmine HTML Reporter in the browser">
-</figure>
--->
-<figure>
-  <img src='generated/images/guide/testing/initial-jasmine-html-reporter.png' alt="브라우저에서 Jasmine HTML Reporter 확인하기">
-</figure>
-=======
 <div class="lightbox">
   <img src='generated/images/guide/testing/initial-jasmine-html-reporter.png' alt="Jasmine HTML Reporter in the browser">
 </div>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<div class="lightbox">
+  <img src='generated/images/guide/testing/initial-jasmine-html-reporter.png' alt="브라우저에서 Jasmine HTML Reporter 확인하기">
+</div>
 
 <!--
 Most people find this browser output easier to read than the console log.
@@ -191,12 +176,8 @@ Adopt these two conventions in your own projects for _every kind_ of test file.
 -->
 ## 지속적인 통합환경 구성하기
 
-<<<<<<< HEAD
 <!--
-One of the best ways to keep your project bug free is through a test suite, but it's easy to forget to run tests all the time. 
-=======
 One of the best ways to keep your project bug free is through a test suite, but it's easy to forget to run tests all the time.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 Continuous integration (CI) servers let you set up your project repository so that your tests run on every commit and pull request.
 
 There are paid CI services like Circle CI and Travis CI, and you can also host your own for free using Jenkins and others.
@@ -250,12 +231,8 @@ jobs:
       - run: npm run e2e -- --protractor-config=e2e/protractor-ci.conf.js
 ```
 
-<<<<<<< HEAD
 <!--
-This configuration caches `node_modules/` and uses [`npm run`](https://docs.npmjs.com/cli/run-script) to run CLI commands, because `@angular/cli` is not installed globally. 
-=======
 This configuration caches `node_modules/` and uses [`npm run`](https://docs.npmjs.com/cli/run-script) to run CLI commands, because `@angular/cli` is not installed globally.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 The double dash (`--`) is needed to pass arguments into the `npm` script.
 
 Step 3: Commit your changes and push them to your repository.
@@ -410,14 +387,9 @@ Now you can run the following commands to use the `--no-sandbox` flag:
 -->
 ## 코드 커버리지 리포트 활성화하기
 
-<<<<<<< HEAD
 <!--
-The CLI can run unit tests and create code coverage reports. 
-Code coverage reports show you  any parts of our code base that may not be properly tested by your unit tests.
-=======
 The CLI can run unit tests and create code coverage reports.
 Code coverage reports show you any parts of our code base that may not be properly tested by your unit tests.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 To generate a coverage report run the following command in the root of your project.
 -->
@@ -430,12 +402,8 @@ Angular CLI로 유닛 테스트를 실행하면서 코드 커버리지 리포트
   ng test --no-watch --code-coverage
 </code-example>
 
-<<<<<<< HEAD
 <!--
-When  the tests are complete, the command creates a new `/coverage` folder in the project. Open the `index.html` file to see a report with your source code and code coverage values.
-=======
 When the tests are complete, the command creates a new `/coverage` folder in the project. Open the `index.html` file to see a report with your source code and code coverage values.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 If you want to create code-coverage reports every time you test, you can set the following option in the CLI configuration file, `angular.json`:
 -->
@@ -457,14 +425,9 @@ If you want to create code-coverage reports every time you test, you can set the
 -->
 ### 코드 커버리지 강제하기
 
-<<<<<<< HEAD
 <!--
-The code coverage percentages let you estimate how much of your code is tested.  
-If your team decides on a set minimum amount to be unit tested, you can enforce this minimum with the Angular CLI. 
-=======
 The code coverage percentages let you estimate how much of your code is tested.
 If your team decides on a set minimum amount to be unit tested, you can enforce this minimum with the Angular CLI.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 For example, suppose you want the code base to have a minimum of 80% code coverage.
 To enable this, open the [Karma](https://karma-runner.github.io) test platform configuration file, `karma.conf.js`, and add the following in the `coverageIstanbulReporter:` key.
@@ -639,13 +602,10 @@ array of the services that you'll test or mock.
   header="app/demo/demo.testbed.spec.ts (beforeEach()에서 ValueService 준비하기)">
 </code-example>
 
-<<<<<<< HEAD
 <!--
-Then inject it inside a test by calling `TestBed.get()` with the service class as the argument.
--->
-그리고 `TestBed.get()` 함수를 실행하면서 인자로 서비스 클래스를 전달하면 서비스 클래스의 인스턴스를 참조할 수 있습니다.
-=======
 Then inject it inside a test by calling `TestBed.inject()` with the service class as the argument.
+-->
+그리고 `TestBed.inject()` 함수를 실행하면서 인자로 서비스 클래스를 전달하면 서비스 클래스의 인스턴스를 참조할 수 있습니다.
 
 <div class="alert is-helpful">
 
@@ -655,7 +615,6 @@ We decided to migrate to a new function instead of updating the existing one giv
 the large scale use that would have an immense amount of breaking changes.
 
 </div>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <code-example
   path="testing/src/app/demo/demo.testbed.spec.ts"
@@ -907,18 +866,12 @@ Do the same with the component class.
 <code-example
   path="testing/src/app/demo/demo.spec.ts"
   region="Lightswitch"
-<<<<<<< HEAD
-  header="app/demo/demo.spec.ts (Lightswitch tests)" linenums="false">
-</code-example>
+  header="app/demo/demo.spec.ts (Lightswitch tests)"></code-example>
 -->
 <code-example
   path="testing/src/app/demo/demo.spec.ts"
   region="Lightswitch"
-  header="app/demo/demo.spec.ts (Lightswitch 테스트하기)" linenums="false">
-</code-example>
-=======
-  header="app/demo/demo.spec.ts (Lightswitch tests)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/demo/demo.spec.ts (Lightswitch 테스트하기)"></code-example>
 
 <!--
 Here is the `DashboardHeroComponent` from the _Tour of Heroes_ tutorial.
@@ -929,18 +882,12 @@ _히어로들의 여행_ 튜토리얼에서 다룬 `DashboardHeroComponent`의 �
 <code-example
   path="testing/src/app/dashboard/dashboard-hero.component.ts"
   region="class"
-<<<<<<< HEAD
-  header="app/dashboard/dashboard-hero.component.ts (component)" linenums="false">
-</code-example>
+  header="app/dashboard/dashboard-hero.component.ts (component)"></code-example>
 -->
 <code-example
   path="testing/src/app/dashboard/dashboard-hero.component.ts"
   region="class"
-  header="app/dashboard/dashboard-hero.component.ts (컴포넌트 코드)" linenums="false">
-</code-example>
-=======
-  header="app/dashboard/dashboard-hero.component.ts (component)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/dashboard/dashboard-hero.component.ts (컴포넌트 코드)"></code-example>
 
 <!--
 It appears within the template of a parent component,
@@ -958,18 +905,12 @@ or its parent component.
 <code-example
   path="testing/src/app/dashboard/dashboard-hero.component.spec.ts"
   region="class-only"
-<<<<<<< HEAD
-  header="app/dashboard/dashboard-hero.component.spec.ts (class tests)" linenums="false">
-</code-example>
+  header="app/dashboard/dashboard-hero.component.spec.ts (class tests)"></code-example>
 -->
 <code-example
   path="testing/src/app/dashboard/dashboard-hero.component.spec.ts"
   region="class-only"
-  header="app/dashboard/dashboard-hero.component.spec.ts (class 테스트하기)" linenums="false">
-</code-example>
-=======
-  header="app/dashboard/dashboard-hero.component.spec.ts (class tests)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/dashboard/dashboard-hero.component.spec.ts (클래스 테스트하기)"></code-example>
 
 <!--
 When a component has dependencies, you may wish to use the `TestBed` to both
@@ -1001,22 +942,10 @@ Then provide and inject _both the_ **component** _and the service_ in the `TestB
 -->
 그리고 이렇게 정의한 컴포넌트를 `TestBed` 환경에 등록합니다. 이 때 _**컴포넌트**도_ 함께 등록합니다.
 
-<!--
 <code-example
   path="testing/src/app/welcome/welcome.component.spec.ts"
   region="class-only-before-each"
-<<<<<<< HEAD
-  header="app/welcome/welcome.component.spec.ts (class-only setup)" linenums="false">
-</code-example>
--->
-<code-example
-  path="testing/src/app/welcome/welcome.component.spec.ts"
-  region="class-only-before-each"
-  header="app/welcome/welcome.component.spec.ts (TestBed 설정)" linenums="false">
-</code-example>
-=======
   header="app/welcome/welcome.component.spec.ts (class-only setup)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 Then exercise the component class, remembering to call the [lifecycle hook methods](guide/lifecycle-hooks) as Angular does when running the app.
@@ -1027,18 +956,12 @@ Then exercise the component class, remembering to call the [lifecycle hook metho
 <code-example
   path="testing/src/app/welcome/welcome.component.spec.ts"
   region="class-only-tests"
-<<<<<<< HEAD
-  header="app/welcome/welcome.component.spec.ts (class-only tests)" linenums="false">
-</code-example>
+  header="app/welcome/welcome.component.spec.ts (class-only tests)"></code-example>
 -->
 <code-example
   path="testing/src/app/welcome/welcome.component.spec.ts"
   region="class-only-tests"
-  header="app/welcome/welcome.component.spec.ts (컴포넌트 클래스 테스트하기)" linenums="false">
-</code-example>
-=======
-  header="app/welcome/welcome.component.spec.ts (class-only tests)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/welcome/welcome.component.spec.ts (컴포넌트 클래스 테슷트하기)"></code-example>
 
 <!--
 ### Component DOM testing
@@ -1123,20 +1046,9 @@ It also generates an initial test file for the component, `banner-external.compo
 -->
 Angular CLI는 이 컴포넌트를 생성하면서 다음 내용으로 `banner-external.component.spec.ts` 파일을 함께 생성합니다:
 
-<!--
 <code-example
   path="testing/src/app/banner/banner-initial.component.spec.ts"
   region="v1"
-<<<<<<< HEAD
-  header="app/banner/banner-external.component.spec.ts (initial)" linenums="false">
-</code-example>
--->
-<code-example
-  path="testing/src/app/banner/banner-initial.component.spec.ts"
-  region="v1"
-  header="app/banner/banner-external.component.spec.ts (기본 코드)" linenums="false">
-</code-example>
-=======
   header="app/banner/banner-external.component.spec.ts (initial)"></code-example>
 
 <div class="alert is-helpful">
@@ -1148,7 +1060,6 @@ function imported from `@angular/core/testing`.
 Please refer to the [async](#async) section for more details.
 
 </div>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 #### Reduce the setup
@@ -1175,18 +1086,12 @@ For now, you can radically reduce this test file to a more manageable size:
 <code-example
   path="testing/src/app/banner/banner-initial.component.spec.ts"
   region="v2"
-<<<<<<< HEAD
-  header="app/banner/banner-initial.component.spec.ts (minimal)" linenums="false">
-</code-example>
--->
+  header="app/banner/banner-initial.component.spec.ts (minimal)"></code-example>
+  -->
 <code-example
   path="testing/src/app/banner/banner-initial.component.spec.ts"
   region="v2"
-  header="app/banner/banner-initial.component.spec.ts (최소 코드)" linenums="false">
-</code-example>
-=======
-  header="app/banner/banner-initial.component.spec.ts (minimal)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/banner/banner-initial.component.spec.ts (최소 코드)"></code-example>
 
 <!--
 In this example, the metadata object passed to `TestBed.configureTestingModule`
@@ -1544,18 +1449,12 @@ and assign it to the `h1` variable.
 <code-example
   path="testing/src/app/banner/banner.component.spec.ts"
   region="setup"
-<<<<<<< HEAD
-  header="app/banner/banner.component.spec.ts (setup)" linenums="false">
-</code-example>
+  header="app/banner/banner.component.spec.ts (setup)"></code-example>
 -->
 <code-example
   path="testing/src/app/banner/banner.component.spec.ts"
   region="setup"
-  header="app/banner/banner.component.spec.ts (테스트환경 설정)" linenums="false">
-</code-example>
-=======
-  header="app/banner/banner.component.spec.ts (setup)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/banner/banner.component.spec.ts (테스트 환경 설정)"></code-example>
 
 {@a detect-changes}
 
@@ -1757,18 +1656,12 @@ as the following variant of `BannerComponent` does.
 <code-example
   path="testing/src/app/banner/banner-external.component.ts"
   region="metadata"
-<<<<<<< HEAD
-  header="app/banner/banner-external.component.ts (metadata)" linenums="false">
-</code-example>
+  header="app/banner/banner-external.component.ts (metadata)"></code-example>
 -->
 <code-example
   path="testing/src/app/banner/banner-external.component.ts"
   region="metadata"
-  header="app/banner/banner-external.component.ts (메타데이터)" linenums="false">
-</code-example>
-=======
-  header="app/banner/banner-external.component.ts (metadata)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/banner/banner-external.component.ts (메타데이터)"></code-example>
 
 <!--
 This syntax tells the Angular compiler to read the external files during component compilation.
@@ -1925,27 +1818,19 @@ Angular는 의존성 주입 시스템을 계층 구조로 제공합니다.
 
 #### _TestBed.inject()_
 
-<<<<<<< HEAD
 <!--
-You _may_ also be able to get the service from the root injector via `TestBed.get()`.
-=======
 You _may_ also be able to get the service from the root injector via `TestBed.inject()`.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 This is easier to remember and less verbose.
 But it only works when Angular injects the component with the service instance in the test's root injector.
 
 In this test suite, the _only_ provider of `UserService` is the root testing module,
-<<<<<<< HEAD
-so it is safe to call `TestBed.get()` as follows:
+so it is safe to call `TestBed.inject()` as follows:
 -->
-서비스의 인스턴스는 `TestBed.get()`을 사용해서 최상위 인젝터에서 참조할 _수도_ 있습니다.
+서비스의 인스턴스는 `TestBed.inject()`을 사용해서 최상위 인젝터에서 참조할 _수도_ 있습니다.
 이렇게 작성하는 것이 더 간단하고 외우기도 쉽습니다.
 하지만 이 방식은 컴포넌트와 서비스 클래스가 테스트 모듈의 최상위 인젝터로 등록되었을 때만 제대로 동작합니다.
 
-다행히 지금 다루는 예제에서는 `UserService`가 최상위 테스트 모듈에만 등록되었기 때문에 `TestBed.get()`을 써서 다음과 같이 작성할 수 있습니다:
-=======
-so it is safe to call `TestBed.inject()` as follows:
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+다행히 지금 다루는 예제에서는 `UserService`가 최상위 테스트 모듈에만 등록되었기 때문에 `TestBed.inject()`을 써서 다음과 같이 작성할 수 있습니다:
 
 <code-example
   path="testing/src/app/welcome/welcome.component.spec.ts"
@@ -1955,16 +1840,12 @@ so it is safe to call `TestBed.inject()` as follows:
 
 <div class="alert is-helpful">
 
-<<<<<<< HEAD
 <!--
-For a use case in which `TestBed.get()` does not work,
-=======
 For a use case in which `TestBed.inject()` does not work,
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 see the [_Override component providers_](#component-override) section that
 explains when and why you must get the service from the component's injector instead.
 -->
-`TestBed.get()`로 의존성으로 주입된 서비스의 인스턴스를 가져올 수 없으면, [_컴포넌트 프로바이더 오버라이드_](#component-override) 섹션을 참고하세요.
+`TestBed.inject()`로 의존성으로 주입된 서비스의 인스턴스를 가져올 수 없으면, [_컴포넌트 프로바이더 오버라이드_](#component-override) 섹션을 참고하세요.
 서비스 인스턴스는 컴포넌트의 인젝터에서 가져와야 할 수도 있습니다.
 
 </div>
@@ -1996,14 +1877,10 @@ a clone of the provided `userServiceStub`.
 -->
 #### 마지막 환경설정, 테스트
 
-<<<<<<< HEAD
 <!--
-Here's the complete `beforeEach()`, using `TestBed.get()`:
--->
-`TestBed.get()`을 사용하면 `beforeEach()` 코드를 다음과 같이 작성할 수 있습니다:
-=======
 Here's the complete `beforeEach()`, using `TestBed.inject()`:
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+`TestBed.inject()`을 사용하면 `beforeEach()` 코드를 다음과 같이 작성할 수 있습니다:
 
 <code-example path="testing/src/app/welcome/welcome.component.spec.ts" region="setup" header="app/welcome/welcome.component.spec.ts"></code-example>
 
@@ -2061,23 +1938,15 @@ The `TwainComponent` displays Mark Twain quotes.
 <code-example
   path="testing/src/app/twain/twain.component.ts"
   region="template"
-<<<<<<< HEAD
-  header="app/twain/twain.component.ts (template)" linenums="false">
-</code-example>
+  header="app/twain/twain.component.ts (template)"></code-example>
 -->
 <code-example
   path="testing/src/app/twain/twain.component.ts"
   region="template"
-  header="app/twain/twain.component.ts (템플릿)" linenums="false">
-</code-example>
+  header="app/twain/twain.component.ts (템플릿)"></code-example>
 
 <!--
-Note that value of the component's `quote` property passes through an `AsyncPipe`.
-=======
-  header="app/twain/twain.component.ts (template)"></code-example>
-
 Note that the value of the component's `quote` property passes through an `AsyncPipe`.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 That means the property returns either a `Promise` or an `Observable`.
 
 In this example, the `TwainComponent.getQuote()` method tells you that
@@ -2129,18 +1998,12 @@ They should emulate such calls. The setup in this `app/twain/twain.component.spe
 <code-example
   path="testing/src/app/twain/twain.component.spec.ts"
   region="setup"
-<<<<<<< HEAD
-  header="app/twain/twain.component.spec.ts (setup)" linenums="false">
-</code-example>
+  header="app/twain/twain.component.spec.ts (setup)"></code-example>
 -->
 <code-example
   path="testing/src/app/twain/twain.component.spec.ts"
   region="setup"
-  header="app/twain/twain.component.spec.ts (테스트 모듈 설정)" linenums="false">
-</code-example>
-=======
-  header="app/twain/twain.component.spec.ts (setup)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/twain/twain.component.spec.ts (테스트 모듈 설정)"></code-example>
 
 {@a service-spy}
 
@@ -2209,20 +2072,17 @@ value becomes available. The test must become _asynchronous_.
 -->
 #### 비동기로 테스트하기: _fakeAsync()_
 
-<<<<<<< HEAD
 <!--
-To use `fakeAsync()` functionality, you need to import `zone-testing`, for details, please read [setup guide](guide/setup#appendix-test-using-fakeasyncasync).
-=======
 To use `fakeAsync()` functionality, you must import `zone.js/dist/zone-testing` in your test setup file.
 If you created your project with the Angular CLI, `zone-testing` is already imported in `src/test.ts`.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 The following test confirms the expected behavior when the service returns an `ErrorObservable`.
 -->
-`fakeAsync()`를 사용하려면 `zone-testing` 패키지를 로드해야 합니다.
-자세한 내용은 [환경설정 가이드](guide/setup#부록-fakeasyncasync-활용하기)를 참고하세요.
+`fakeAsync()`를 사용하려면 테스트 설정 파일에서 `zone-testing` 패키지를 로드해야 합니다.
+If you created your project with the Angular CLI, `zone-testing` is already imported in `src/test.ts`.
 
-아래 코드는 서비스가 `ErrorObservable`을 반환했을 때 정해진 로직을 제대로 실행하는지 검증하는 테스트 코드입니다.
+The following test confirms the expected behavior when the service returns an `ErrorObservable`.
+
 
 <code-example
   path="testing/src/app/twain/twain.component.spec.ts"
@@ -2266,44 +2126,32 @@ XHR calls within a test are rare, but if you need to call XHR, see [`async()`](#
 -->
 #### _tick()_ 함수
 
-<<<<<<< HEAD
 <!--
-You do have to call `tick()` to advance the (virtual) clock.
-=======
 You do have to call [tick()](api/core/testing/tick) to advance the (virtual) clock.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 Calling [tick()](api/core/testing/tick) simulates the passage of time until all pending asynchronous activities finish.
 In this case, it waits for the error handler's `setTimeout()`.
 
-<<<<<<< HEAD
-The `tick()` function accepts milliseconds as parameter (defaults to 0 if not provided). The parameter represents how much the virtual clock advances. For example, if you have a `setTimeout(fn, 100)` in a `fakeAsync()` test, you need to use tick(100) to trigger the fn callback.
+The [tick()](api/core/testing/tick) function accepts milliseconds as a parameter (defaults to 0 if not provided). The parameter represents how much the virtual clock advances. For example, if you have a `setTimeout(fn, 100)` in a `fakeAsync()` test, you need to use tick(100) to trigger the fn callback.
 -->
-`tick()` 함수는 테스트 환경에서 동작하는 가상의 시계를 빠르게 돌리기 위해 사용합니다.
+[tick()](api/core/testing/tick) 함수는 테스트 환경에서 동작하는 가상의 시계를 빠르게 돌리기 위해 사용합니다.
 
-`tick()` 함수를 실행하면 그동안 대기중이던 비동기 작업들이 종료되는 시점까지 시간을 빠르게 돌립니다.
+[tick()](api/core/testing/tick) 함수를 실행하면 그동안 대기중이던 비동기 작업들이 종료되는 시점까지 시간을 빠르게 돌립니다.
 그래서 이 함수를 사용하면 `TwainComponent.getQuote()` 메소드 안에 있는 `setTimeout()`이 종료된 이후에 실행되는 로직을 테스트하는 코드도 작성할 수 있습니다.
 
 `tick()` 함수에 인자를 전달하면 밀리초 단위로 시간을 빠르게 돌릴 수 있으며, 이 인자의 기본값은 0입니다.
 그래서 `fakeAsync()` 테스트 존 안에서 `setTimeout(fn, 100)`이라는 타이머를 정의하고 `tick(100)`을 실행하면 이 타이머가 종료된 시점의 상태를 확인할 수 있습니다.
-=======
-The [tick()](api/core/testing/tick) function accepts milliseconds as a parameter (defaults to 0 if not provided). The parameter represents how much the virtual clock advances. For example, if you have a `setTimeout(fn, 100)` in a `fakeAsync()` test, you need to use tick(100) to trigger the fn callback.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <code-example
   path="testing/src/app/demo/async-helper.spec.ts"
   region="fake-async-test-tick">
 </code-example>
 
-<<<<<<< HEAD
 <!--
-The `tick()` function is one of the Angular testing utilities that you import with `TestBed`.
-=======
 The [tick()](api/core/testing/tick) function is one of the Angular testing utilities that you import with `TestBed`.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 It's a companion to `fakeAsync()` and you can only call it within a `fakeAsync()` body.
 -->
-`tick()` 함수는 Angular가 제공하는 테스트 유틸리티 중 하나이며, `TestBed`가 제공되는 `@angular/core/testing` 패키지로 제공됩니다.
+[tick()](api/core/testing/tick) 함수는 Angular가 제공하는 테스트 유틸리티 중 하나이며, `TestBed`가 제공되는 `@angular/core/testing` 패키지로 제공됩니다.
 그리고 `tick()` 함수는 `fakeAsync()` 함수와 함께 사용해야 제대로 동작하며, `fakeAsync()` 테스트 존 안에서 필요할 때마다 한번씩 실행해주기만 하면 됩니다.
 
 <!--
@@ -2406,12 +2254,8 @@ If you run other `macroTask` such as `HTMLCanvasElement.toBlob()`, `Unknown macr
   </code-pane>
 </code-tabs>
 
-<<<<<<< HEAD
 <!--
-If you want to support such case, you need to define the `macroTask` you want to support in `beforeEach()`.
-=======
 If you want to support such a case, you need to define the `macroTask` you want to support in `beforeEach()`.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 For example:
 -->
 그래서 Angular가 기본으로 지원하지 않는 매크로태스크를 사용하려면 `beforeEach()` 안에 해당 매크로태스크를 직접 정의해야 합니다.
@@ -2472,18 +2316,12 @@ from the `getQuote()` spy like this.
 -->
 #### 비동기 옵저버블 헬퍼
 
-<<<<<<< HEAD
 <!--
-The async observable was produced by an `asyncData` helper
-The `asyncData` helper is a utility function that you'll have to write yourself.
-Or you can copy this one from the sample code.
+The async observable was produced by an `asyncData` helper.
+The `asyncData` helper is a utility function that you'll have to write yourself, or you can copy this one from the sample code.
 -->
 위 코드에서는 옵저버블을 비동기로 생성하기 위해 `asyncData` 헬퍼 함수를 사용했습니다.
 이 때 `asyncData`는 유틸리티 함수인데, 필요한 용도에 맞게 직접 정의하거나 예제 코드를 복사해서 사용하면 됩니다.
-=======
-The async observable was produced by an `asyncData` helper.
-The `asyncData` helper is a utility function that you'll have to write yourself, or you can copy this one from the sample code.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <code-example
   path="testing/src/testing/async-observable-helpers.ts"
@@ -2565,25 +2403,7 @@ Then you can assert that the quote element displays the expected text.
 -->
 #### _async()_ 로 비동기 테스트하기
 
-<<<<<<< HEAD
 <!--
-To use `async()` functionality, you need to import `zone-testing`, for details, please read [setup guide](guide/setup#appendix-test-using-fakeasyncasync).
-
-The `fakeAsync()` utility function has a few limitations.
-In particular, it won't work if the test body makes an `XHR` call.
-
-`XHR` calls within a test are rare so you can generally stick with `fakeAsync()`.
-But if you ever do need to call `XHR`, you'll want to know about `async()`.
--->
-`async()` 기능을 사용하려면 `zone-testing` 패키지를 로드해야 합니다.
-자세한 내용은 [환경설정 가이드](guide/setup#부록-fakeasyncasync-활용하기)를 참고하세요.
-
-`fakeAsync()` 유틸리티 함수는 몇가지 제약이 있습니다.
-예를 들어, 테스트 코드에서 `XHR` 요청을 보낸다면 이 테스트 스펙은 제대로 실행되지 않습니다.
-
-테스트 코드에서 `XHR` 요청을 보내는 경우는 거의 없기 때문에 웬만하면 `fakeAsync()`만 사용해도 테스트 코드를 작성할 수 있습니다.
-하지만 실제로 `XHR` 요청을 보내야 한다면 `async()`를 사용해야 합니다.
-=======
 To use `async()` functionality, you must import `zone.js/dist/zone-testing` in your test setup file.
 If you created your project with the Angular CLI, `zone-testing` is already imported in `src/test.ts`.
 
@@ -2591,7 +2411,14 @@ The `fakeAsync()` utility function has a few limitations.
 In particular, it won't work if the test body makes an `XMLHttpRequest` (XHR) call.
 XHR calls within a test are rare so you can generally stick with [`fakeAsync()`](#fake-async).
 But if you ever do need to call `XMLHttpRequest`, you'll want to know about `async()`.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+`async()` 기능을 사용하려면 테스트 환경설정 파일에서 `zone.js/dist/zone-testing` 을 로드해야 합니다.
+If you created your project with the Angular CLI, `zone-testing` is already imported in `src/test.ts`.
+
+`fakeAsync()` 유틸리티 함수는 몇가지 제약이 있습니다.
+예를 들어, 테스트 코드에서 `XHR` 요청을 보낸다면 이 테스트 스펙은 제대로 실행되지 않습니다.
+XHR calls within a test are rare so you can generally stick with [`fakeAsync()`](#fake-async).
+But if you ever do need to call `XMLHttpRequest`, you'll want to know about `async()`.
 
 <div class="alert is-helpful">
 
@@ -2772,18 +2599,12 @@ Then import the symbols you need.
 <code-example
   path="testing/src/app/twain/twain.component.marbles.spec.ts"
   region="import-marbles"
-<<<<<<< HEAD
-  header="app/twain/twain.component.marbles.spec.ts (import marbles)" linenums="false">
-</code-example>
+  header="app/twain/twain.component.marbles.spec.ts (import marbles)"></code-example>
 -->
 <code-example
   path="testing/src/app/twain/twain.component.marbles.spec.ts"
   region="import-marbles"
-  header="app/twain/twain.component.marbles.spec.ts (심볼 로드하기)" linenums="false">
-</code-example>
-=======
-  header="app/twain/twain.component.marbles.spec.ts (import marbles)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/twain/twain.component.marbles.spec.ts (심볼 로드하기)"></code-example>
 
 <!--
 Here's the complete test for getting a quote:
@@ -2832,16 +2653,12 @@ you tell the `TestScheduler` to _flush_ its queue of prepared tasks like this.
   path="testing/src/app/twain/twain.component.marbles.spec.ts"
   region="test-scheduler-flush"></code-example>
 
-<<<<<<< HEAD
 <!--
-This step serves a purpose analogous to `tick()` and `whenStable()` in the
-=======
 This step serves a purpose analogous to [tick()](api/core/testing/tick) and `whenStable()` in the
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 earlier `fakeAsync()` and `async()` examples.
 The balance of the test is the same as those examples.
 -->
-이 코드는 이전에 다뤘던 `fakeAsync()`와 `async()` 예제에서 `tick()`과 `whenStable()`을 사용했던 것과 비슷하게 동작합니다.
+이 코드는 이전에 다뤘던 `fakeAsync()`와 `async()` 예제에서 [tick()](api/core/testing/tick) 과 `whenStable()`을 사용했던 것과 비슷하게 동작합니다.
 
 나머지 코드는 이전에 살펴봤던 내용과 같습니다.
 
@@ -2859,17 +2676,13 @@ Here's the marble testing version of the `getQuote()` error test.
   path="testing/src/app/twain/twain.component.marbles.spec.ts"
   region="error-test"></code-example>
 
-<<<<<<< HEAD
 <!--
-It's still an async test, calling `fakeAsync()` and `tick()`, because the component itself
-=======
 It's still an async test, calling `fakeAsync()` and [tick()](api/core/testing/tick), because the component itself
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 calls `setTimeout()` when processing errors.
 
 Look at the marble observable definition.
 -->
-컴포넌트는 에러를 처리할 때 `setTimeout()`을 사용하기 때문에 이 코드는 `fakeAsync()`와 `tick()`를 사용해서 비동기로 처리되어야 합니다.
+컴포넌트는 에러를 처리할 때 `setTimeout()`을 사용하기 때문에 이 코드는 `fakeAsync()`와 [tick()](api/core/testing/tick)를 사용해서 비동기로 처리되어야 합니다.
 
 이 때 마블 옵저버블은 어떻게 선언하는지 봅시다.
 
@@ -2959,18 +2772,12 @@ The `DashboardHeroComponent` is embedded in the `DashboardComponent` template li
 <code-example
   path="testing/src/app/dashboard/dashboard.component.html"
   region="dashboard-hero"
-<<<<<<< HEAD
-  header="app/dashboard/dashboard.component.html (excerpt)" linenums="false">
-</code-example>
+  header="app/dashboard/dashboard.component.html (excerpt)"></code-example>
 -->
 <code-example
   path="testing/src/app/dashboard/dashboard.component.html"
   region="dashboard-hero"
-  header="app/dashboard/dashboard.component.html (일부)" linenums="false">
-</code-example>
-=======
-  header="app/dashboard/dashboard.component.html (excerpt)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/dashboard/dashboard.component.html (일부)"></code-example>
 
 <!--
 The `DashboardHeroComponent` appears in an `*ngFor` repeater, which sets each component's `hero` input property
@@ -2988,18 +2795,12 @@ Here's the component's full definition:
 <code-example
   path="testing/src/app/dashboard/dashboard-hero.component.ts"
   region="component"
-<<<<<<< HEAD
-  header="app/dashboard/dashboard-hero.component.ts (component)" linenums="false">
-</code-example>
+  header="app/dashboard/dashboard-hero.component.ts (component)"></code-example>
 -->
 <code-example
   path="testing/src/app/dashboard/dashboard-hero.component.ts"
   region="component"
-  header="app/dashboard/dashboard-hero.component.ts (컴포넌트)" linenums="false">
-</code-example>
-=======
-  header="app/dashboard/dashboard-hero.component.ts (component)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/dashboard/dashboard-hero.component.ts (컴포넌트)"></code-example>
 
 <!--
 While testing a component this simple has little intrinsic value, it's worth knowing how.
@@ -3024,18 +2825,12 @@ A quick look at the `DashboardComponent` constructor discourages the first appro
 <code-example
   path="testing/src/app/dashboard/dashboard.component.ts"
   region="ctor"
-<<<<<<< HEAD
-  header="app/dashboard/dashboard.component.ts (constructor)" linenums="false">
-</code-example>
+  header="app/dashboard/dashboard.component.ts (constructor)"></code-example>
 -->
 <code-example
   path="testing/src/app/dashboard/dashboard.component.ts"
   region="ctor"
-  header="app/dashboard/dashboard.component.ts (생성자)" linenums="false">
-</code-example>
-=======
-  header="app/dashboard/dashboard.component.ts (constructor)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/dashboard/dashboard.component.ts (생성자)"></code-example>
 
 <!--
 The `DashboardComponent` depends on the Angular router and the `HeroService`.
@@ -3078,18 +2873,12 @@ Here's the meat of the spec file setup.
 <code-example
   path="testing/src/app/dashboard/dashboard-hero.component.spec.ts"
   region="setup"
-<<<<<<< HEAD
-  header="app/dashboard/dashboard-hero.component.spec.ts (setup)" linenums="false">
-</code-example>
+  header="app/dashboard/dashboard-hero.component.spec.ts (setup)"></code-example>
 -->
 <code-example
   path="testing/src/app/dashboard/dashboard-hero.component.spec.ts"
   region="setup"
-  header="app/dashboard/dashboard-hero.component.spec.ts (테스트 환경설정)" linenums="false">
-</code-example>
-=======
-  header="app/dashboard/dashboard-hero.component.spec.ts (setup)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/dashboard/dashboard-hero.component.spec.ts (테스트 환경 설정)"></code-example>
 
 <!--
 Note how the setup code assigns a test hero (`expectedHero`) to the component's `hero` property,
@@ -3244,18 +3033,12 @@ in a helper such as the `click()` function below:
 <code-example
   path="testing/src/testing/index.ts"
   region="click-event"
-<<<<<<< HEAD
-  header="testing/index.ts (click helper)" linenums="false">
-</code-example>
+  header="testing/index.ts (click helper)"></code-example>
 -->
 <code-example
   path="testing/src/testing/index.ts"
   region="click-event"
-  header="testing/index.ts (클릭 헬퍼)" linenums="false">
-</code-example>
-=======
-  header="testing/index.ts (click helper)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="testing/index.ts (클릭 헬퍼)"></code-example>
 
 <!--
 The first parameter is the _element-to-click_. If you wish, you can pass a
@@ -3337,19 +3120,13 @@ HTML 레이아웃이나 바인딩을 처리해야 할 수도 있고 생성자로
   path="testing/src/app/dashboard/dashboard-hero.component.spec.ts"
   region="test-host"
   header="app/dashboard/dashboard-hero.component.spec.ts (test host)"
-<<<<<<< HEAD
-  linenums="false">
-</code-example>
+ ></code-example>
 -->
 <code-example
   path="testing/src/app/dashboard/dashboard-hero.component.spec.ts"
   region="test-host"
   header="app/dashboard/dashboard-hero.component.spec.ts (테스트 호스트)"
-  linenums="false">
-</code-example>
-=======
  ></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 This test host binds to `DashboardHeroComponent` as the `DashboardComponent` would
@@ -3371,14 +3148,10 @@ The setup for the _test-host_ tests is similar to the setup for the stand-alone 
 
 _테스트 호스트_ 로 컴포넌트를 테스트하는 환경은 컴포넌트를 단독으로 테스트하는 환경과 비슷합니다:
 
-<<<<<<< HEAD
 <!--
-<code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="test-host-setup" header="app/dashboard/dashboard-hero.component.spec.ts (test host setup)" linenums="false"></code-example>
--->
-<code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="test-host-setup" header="app/dashboard/dashboard-hero.component.spec.ts (테스트 호스트 환경설정)" linenums="false"></code-example>
-=======
 <code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="test-host-setup" header="app/dashboard/dashboard-hero.component.spec.ts (test host setup)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="test-host-setup" header="app/dashboard/dashboard-hero.component.spec.ts (테스트 호스트 환경설정)"></code-example>
 
 <!--
 This testing module configuration shows three important differences:
@@ -3414,18 +3187,12 @@ The tests themselves are almost identical to the stand-alone version:
 <code-example
   path="testing/src/app/dashboard/dashboard-hero.component.spec.ts"
   region="test-host-tests"
-<<<<<<< HEAD
-  header="app/dashboard/dashboard-hero.component.spec.ts (test-host)" linenums="false">
-</code-example>
+  header="app/dashboard/dashboard-hero.component.spec.ts (test-host)"></code-example>
 -->
 <code-example
   path="testing/src/app/dashboard/dashboard-hero.component.spec.ts"
   region="test-host-tests"
-  header="app/dashboard/dashboard-hero.component.spec.ts (테스트 호스트)" linenums="false">
-</code-example>
-=======
-  header="app/dashboard/dashboard-hero.component.spec.ts (test-host)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/dashboard/dashboard-hero.component.spec.ts (테스트 호스트)"></code-example>
 
 <!--
 Only the selected event test differs. It confirms that the selected `DashboardHeroComponent` hero
@@ -3462,18 +3229,12 @@ _라우팅하는 컴포넌트(routing component)_ 는 컴포넌트가 `Router`�
 <code-example
   path="testing/src/app/dashboard/dashboard.component.ts"
   region="ctor"
-<<<<<<< HEAD
-  header="app/dashboard/dashboard.component.ts (constructor)" linenums="false">
-</code-example>
+  header="app/dashboard/dashboard.component.ts (constructor)"></code-example>
 -->
 <code-example
   path="testing/src/app/dashboard/dashboard.component.ts"
   region="ctor"
-  header="app/dashboard/dashboard.component.ts (생성자)" linenums="false">
-</code-example>
-=======
-  header="app/dashboard/dashboard.component.ts (constructor)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/dashboard/dashboard.component.ts (생성자)"></code-example>
 
 <!--
 Mocking the `HeroService` with a spy is a [familiar story](#component-with-async-service).
@@ -3510,18 +3271,12 @@ _컴포넌트의 라우팅 동작_ 은 보통 이렇게 구현합니다.
 <code-example
   path="testing/src/app/dashboard/dashboard.component.spec.ts"
   region="router-spy"
-<<<<<<< HEAD
-  header="app/dashboard/dashboard.component.spec.ts (spies)" linenums="false">
-</code-example>
+  header="app/dashboard/dashboard.component.spec.ts (spies)"></code-example>
 -->
 <code-example
   path="testing/src/app/dashboard/dashboard.component.spec.ts"
   region="router-spy"
-  header="app/dashboard/dashboard.component.spec.ts (테스트 스파이)" linenums="false">
-</code-example>
-=======
-  header="app/dashboard/dashboard.component.spec.ts (spies)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/dashboard/dashboard.component.spec.ts (테스트 스파이)"></code-example>
 
 <!--
 The following test clicks the displayed hero and confirms that
@@ -3533,18 +3288,12 @@ The following test clicks the displayed hero and confirms that
 <code-example
   path="testing/src/app/dashboard/dashboard.component.spec.ts"
   region="navigate-test"
-<<<<<<< HEAD
-  header="app/dashboard/dashboard.component.spec.ts (navigate test)" linenums="false">
-</code-example>
+  header="app/dashboard/dashboard.component.spec.ts (navigate test)"></code-example>
 -->
 <code-example
   path="testing/src/app/dashboard/dashboard.component.spec.ts"
   region="navigate-test"
-  header="app/dashboard/dashboard.component.spec.ts (네비게이션 테스트)" linenums="false">
-</code-example>
-=======
-  header="app/dashboard/dashboard.component.spec.ts (navigate test)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/dashboard/dashboard.component.spec.ts (네비게이션 테스트하기)"></code-example>
 
 {@a routed-component-w-param}
 
@@ -3571,7 +3320,6 @@ Here's the `HeroDetailComponent` constructor:
 _라우팅 대상이 되는 컴포넌트(routed component)_ 는 `Router`로 페이지를 전환할 때 대상이 되는 컴포넌트입니다.
 이런 컴포넌트는 일반 컴포넌트보다 테스트하기 조금 더 까다로운데, 라우팅하면서 변수를 전달한다면 더 그렇습니다.
 
-<<<<<<< HEAD
 사용자가 _대시보드에서_ 히어로를 클릭하면 `DashboardComponent`는 `Router`를 사용해서 `heroes/:id` 주소로 페이지를 전환합니다.
 이 때 `:id`는 라우팅 변수이며, 이 변수는 전환되는 페이지에서 `id`로 받아서 수정할 히어로 인스턴스를 가져올 때 사용합니다.
 
@@ -3581,12 +3329,9 @@ _라우팅 대상이 되는 컴포넌트(routed component)_ 는 `Router`로 페�
 `HeroDetailComponent`의 생성자는 이렇습니다:
 
 <!--
-<code-example path="testing/src/app/hero/hero-detail.component.ts" region="ctor" header="app/hero/hero-detail.component.ts (constructor)" linenums="false"></code-example>
--->
-<code-example path="testing/src/app/hero/hero-detail.component.ts" region="ctor" header="app/hero/hero-detail.component.ts (생성자)" linenums="false"></code-example>
-=======
 <code-example path="testing/src/app/hero/hero-detail.component.ts" region="ctor" header="app/hero/hero-detail.component.ts (constructor)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="testing/src/app/hero/hero-detail.component.ts" region="ctor" header="app/hero/hero-detail.component.ts (생성자)"></code-example>
 
 <!--
 The `HeroDetail` component needs the `id` parameter so it can fetch
@@ -3684,14 +3429,10 @@ Here's a test demonstrating the component's behavior when the observed `id` refe
 -->
 `HeroDetailComponent`가 히어로 중 한 명의 `id`를 받았을 때 실행해야 하는 동작은 다음 테스트 코드로 검사할 수 있습니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="route-good-id" header="app/hero/hero-detail.component.spec.ts (existing id)" linenums="false"></code-example>
--->
-<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="route-good-id" header="app/hero/hero-detail.component.spec.ts (id가 존재할 때)" linenums="false"></code-example>
-=======
 <code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="route-good-id" header="app/hero/hero-detail.component.spec.ts (existing id)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="route-good-id" header="app/hero/hero-detail.component.spec.ts (id가 존재할 때)"></code-example>
 
 <div class="alert is-helpful">
 
@@ -3717,14 +3458,10 @@ This test expects the component to try to navigate to the `HeroListComponent`.
 
 다만, 이 테스트 스펙은 `HeroListComponent`로 전환하려고 시도하는 동작 자체를 검사합니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="route-bad-id" header="app/hero/hero-detail.component.spec.ts (bad id)" linenums="false"></code-example>
--->
-<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="route-bad-id" header="app/hero/hero-detail.component.spec.ts (id가 존재하지 않을 때)" linenums="false"></code-example>
-=======
 <code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="route-bad-id" header="app/hero/hero-detail.component.spec.ts (bad id)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="route-bad-id" header="app/hero/hero-detail.component.spec.ts (id가 존재하지 않을 때)"></code-example>
 
 <!--
 While this app doesn't have a route to the `HeroDetailComponent` that omits the `id` parameter, it might add such a route someday.
@@ -3744,18 +3481,12 @@ New heroes have `id=0` and a blank `name`. This test confirms that the component
 <code-example
   path="testing/src/app/hero/hero-detail.component.spec.ts"
   region="route-no-id"
-<<<<<<< HEAD
-  header="app/hero/hero-detail.component.spec.ts (no id)" linenums="false">
-</code-example>
+  header="app/hero/hero-detail.component.spec.ts (no id)"></code-example>
 -->
 <code-example
   path="testing/src/app/hero/hero-detail.component.spec.ts"
   region="route-no-id"
-  header="app/hero/hero-detail.component.spec.ts (id가 존재하지 않을 때)" linenums="false">
-</code-example>
-=======
-  header="app/hero/hero-detail.component.spec.ts (no id)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/hero/hero-detail.component.spec.ts (id가 존재하지 않을 때)"></code-example>
 
 <hr>
 
@@ -3845,18 +3576,12 @@ and directive that play little or no role in the tests.
 <code-example
   path="testing/src/app/app.component.spec.ts"
   region="component-stubs"
-<<<<<<< HEAD
-  header="app/app.component.spec.ts (stub declaration)" linenums="false">
-</code-example>
+  header="app/app.component.spec.ts (stub declaration)"></code-example>
 -->
 <code-example
   path="testing/src/app/app.component.spec.ts"
   region="component-stubs"
-  header="app/app.component.spec.ts (목 클래스 선언)" linenums="false">
-</code-example>
-=======
-  header="app/app.component.spec.ts (stub declaration)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/app.component.spec.ts (목 클래스 선언)"></code-example>
 
 <!--
 The stub selectors match the selectors for the corresponding real components.
@@ -3874,18 +3599,12 @@ components, directives, and pipes that need to be real.
 <code-example
   path="testing/src/app/app.component.spec.ts"
   region="testbed-stubs"
-<<<<<<< HEAD
-  header="app/app.component.spec.ts (TestBed stubs)" linenums="false">
-</code-example>
+  header="app/app.component.spec.ts (TestBed stubs)"></code-example>
 -->
 <code-example
   path="testing/src/app/app.component.spec.ts"
   region="testbed-stubs"
-  header="app/app.component.spec.ts (TestBed 설정)" linenums="false">
-</code-example>
-=======
-  header="app/app.component.spec.ts (TestBed stubs)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/app.component.spec.ts (TestBed 설정)"></code-example>
 
 <!--
 The `AppComponent` is the test subject, so of course you declare the real version.
@@ -3979,18 +3698,12 @@ as seen in this example.
 <code-example
   path="testing/src/app/app.component.spec.ts"
   region="mixed-setup"
-<<<<<<< HEAD
-  header="app/app.component.spec.ts (mixed setup)" linenums="false">
-</code-example>
+  header="app/app.component.spec.ts (mixed setup)"></code-example>
 -->
 <code-example
   path="testing/src/app/app.component.spec.ts"
   region="mixed-setup"
-  header="app/app.component.spec.ts (두가지 방식을 모두 적용한 환경 설정)" linenums="false">
-</code-example>
-=======
-  header="app/app.component.spec.ts (mixed setup)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/app.component.spec.ts (두가지 방식을 모두 적용한 환경 설정)"></code-example>
 
 <!--
 The Angular compiler creates the `BannerComponentStub` for the `<app-banner>` element
@@ -4071,18 +3784,12 @@ A little more setup triggers the initial data binding and gets references to the
 <code-example
   path="testing/src/app/app.component.spec.ts"
   region="test-setup"
-<<<<<<< HEAD
-  header="app/app.component.spec.ts (test setup)" linenums="false">
-</code-example>
+  header="app/app.component.spec.ts (test setup)"></code-example>
 -->
 <code-example
   path="testing/src/app/app.component.spec.ts"
   region="test-setup"
-  header="app/app.component.spec.ts (테스트환경 설정)" linenums="false">
-</code-example>
-=======
-  header="app/app.component.spec.ts (test setup)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/app.component.spec.ts (테스트 환경 설정)"></code-example>
 
 <!--
 Three points of special interest:
@@ -4110,18 +3817,12 @@ The `AppComponent` links to validate are as follows:
 <code-example
   path="testing/src/app/app.component.html"
   region="links"
-<<<<<<< HEAD
-  header="app/app.component.html (navigation links)" linenums="false">
-</code-example>
+  header="app/app.component.html (navigation links)"></code-example>
 -->
 <code-example
   path="testing/src/app/app.component.html"
   region="links"
-  header="app/app.component.html (네비게이션 링크)" linenums="false">
-</code-example>
-=======
-  header="app/app.component.html (navigation links)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/app.component.html (네비게이션 링크 설정)"></code-example>
 
 {@a app-component-tests}
 
@@ -4131,14 +3832,10 @@ as expected:
 -->
 이 링크들이 `routerLink` 디렉티브와 제대로 연결되었는지 확인하는 테스트 코드는 다음과 같이 작성합니다:
 
-<<<<<<< HEAD
 <!--
-<code-example path="testing/src/app/app.component.spec.ts" region="tests" header="app/app.component.spec.ts (selected tests)" linenums="false"></code-example>
--->
-<code-example path="testing/src/app/app.component.spec.ts" region="tests" header="app/app.component.spec.ts (테스트 코드)" linenums="false"></code-example>
-=======
 <code-example path="testing/src/app/app.component.spec.ts" region="tests" header="app/app.component.spec.ts (selected tests)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="testing/src/app/app.component.spec.ts" region="tests" header="app/app.component.spec.ts (테스트 코드)"></code-example>
 
 <div class="alert is-helpful">
 
@@ -4295,18 +3992,12 @@ Here are a few more `HeroDetailComponent` tests to reinforce the point.
 <code-example
   path="testing/src/app/hero/hero-detail.component.spec.ts"
   region="selected-tests"
-<<<<<<< HEAD
-  header="app/hero/hero-detail.component.spec.ts (selected tests)" linenums="false">
-</code-example>
+  header="app/hero/hero-detail.component.spec.ts (selected tests)"></code-example>
 -->
 <code-example
   path="testing/src/app/hero/hero-detail.component.spec.ts"
   region="selected-tests"
-  header="app/hero/hero-detail.component.spec.ts (테스트 일부)" linenums="false">
-</code-example>
-=======
-  header="app/hero/hero-detail.component.spec.ts (selected tests)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/hero/hero-detail.component.spec.ts (테스트 일부)"></code-example>
 
 <hr>
 
@@ -4350,17 +4041,11 @@ the following version of the `BannerComponent` does.
 <!--
 <code-example
   path="testing/src/app/banner/banner-external.component.ts"
-<<<<<<< HEAD
-  header="app/banner/banner-external.component.ts (external template & css)" linenums="false">
-</code-example>
+  header="app/banner/banner-external.component.ts (external template & css)"></code-example>
 -->
 <code-example
   path="testing/src/app/banner/banner-external.component.ts"
-  header="app/banner/banner-external.component.ts (외부 템플릿 & css)" linenums="false">
-</code-example>
-=======
-  header="app/banner/banner-external.component.ts (external template & css)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/banner/banner-external.component.ts (외부 템플릿 & css)"></code-example>
 
 <!--
 The test fails when the `TestBed` tries to create the component.
@@ -4372,19 +4057,13 @@ The test fails when the `TestBed` tries to create the component.
   path="testing/src/app/banner/banner.component.spec.ts"
   region="configure-and-create"
   header="app/banner/banner.component.spec.ts (setup that fails)"
-<<<<<<< HEAD
-  avoid linenums="false">
-</code-example>
+  avoid></code-example>
 -->
 <code-example
   path="testing/src/app/banner/banner.component.spec.ts"
   region="configure-and-create"
   header="app/banner/banner.component.spec.ts (테스트에 실패하는 환경 설정)"
-  avoid linenums="false">
-</code-example>
-=======
   avoid></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 Recall that the app hasn't been compiled.
@@ -4469,18 +4148,12 @@ Write the first async `beforeEach` like this.
 <code-example
   path="testing/src/app/banner/banner-external.component.spec.ts"
   region="async-before-each"
-<<<<<<< HEAD
-  header="app/banner/banner-external.component.spec.ts (async beforeEach)" linenums="false">
-</code-example>
+  header="app/banner/banner-external.component.spec.ts (async beforeEach)"></code-example>
 -->
 <code-example
   path="testing/src/app/banner/banner-external.component.spec.ts"
   region="async-before-each"
-  header="app/banner/banner-external.component.spec.ts (비동기 beforeEach)" linenums="false">
-</code-example>
-=======
-  header="app/banner/banner-external.component.spec.ts (async beforeEach)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/banner/banner-external.component.spec.ts (비동기 beforeEach)"></code-example>  
 
 <!--
 The `async()` helper function takes a parameterless function with the body of the setup.
@@ -4545,18 +4218,12 @@ which include creating the component and querying for elements to inspect.
 <code-example
   path="testing/src/app/banner/banner-external.component.spec.ts"
   region="sync-before-each"
-<<<<<<< HEAD
-  header="app/banner/banner-external.component.spec.ts (synchronous beforeEach)" linenums="false">
-</code-example>
+  header="app/banner/banner-external.component.spec.ts (synchronous beforeEach)"></code-example>
 -->
 <code-example
   path="testing/src/app/banner/banner-external.component.spec.ts"
   region="sync-before-each"
-  header="app/banner/banner-external.component.spec.ts (동기 beforeEach)" linenums="false">
-</code-example>
-=======
-  header="app/banner/banner-external.component.spec.ts (synchronous beforeEach)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/banner/banner-external.component.spec.ts (동기 beforeEach)"></code-example>  
 
 <!--
 You can count on the test runner to wait for the first asynchronous `beforeEach` to finish before calling the second.
@@ -4583,18 +4250,12 @@ into a `then(...)` callback.
 <code-example
   path="testing/src/app/banner/banner-external.component.spec.ts"
   region="one-before-each"
-<<<<<<< HEAD
-  header="app/banner/banner-external.component.spec.ts (one beforeEach)" linenums="false">
-</code-example>
+  header="app/banner/banner-external.component.spec.ts (one beforeEach)"></code-example>
 -->
 <code-example
   path="testing/src/app/banner/banner-external.component.spec.ts"
   region="one-before-each"
-  header="app/banner/banner-external.component.spec.ts (통합된 beforeEach)" linenums="false">
-</code-example>
-=======
-  header="app/banner/banner-external.component.spec.ts (one beforeEach)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/banner/banner-external.component.spec.ts (통합된 beforeEach)"></code-example>
 
 <!--
 #### _compileComponents()_ is harmless
@@ -4680,18 +4341,12 @@ One approach is to configure the testing module from the individual pieces as in
 <code-example
   path="testing/src/app/hero/hero-detail.component.spec.ts"
   region="setup-forms-module"
-<<<<<<< HEAD
-  header="app/hero/hero-detail.component.spec.ts (FormsModule setup)" linenums="false">
-</code-example>
+  header="app/hero/hero-detail.component.spec.ts (FormsModule setup)"></code-example>
 -->
 <code-example
   path="testing/src/app/hero/hero-detail.component.spec.ts"
   region="setup-forms-module"
-  header="app/hero/hero-detail.component.spec.ts (FormsModule 환경설정)" linenums="false">
-</code-example>
-=======
-  header="app/hero/hero-detail.component.spec.ts (FormsModule setup)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/hero/hero-detail.component.spec.ts (FormsModule 환경설정)"></code-example>  
 
 <div class="alert is-helpful">
 
@@ -4728,18 +4383,12 @@ The test configuration can use the `SharedModule` too as seen in this alternativ
 <code-example
   path="testing/src/app/hero/hero-detail.component.spec.ts"
   region="setup-shared-module"
-<<<<<<< HEAD
-  header="app/hero/hero-detail.component.spec.ts (SharedModule setup)" linenums="false">
-</code-example>
+  header="app/hero/hero-detail.component.spec.ts (SharedModule setup)"></code-example>
 -->
 <code-example
   path="testing/src/app/hero/hero-detail.component.spec.ts"
   region="setup-shared-module"
-  header="app/hero/hero-detail.component.spec.ts (SharedModule 환경설정)" linenums="false">
-</code-example>
-=======
-  header="app/hero/hero-detail.component.spec.ts (SharedModule setup)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app/hero/hero-detail.component.spec.ts (SharedModule 환경설정)"></code-example>  
 
 <!--
 It's a bit tighter and smaller, with fewer import statements (not shown).
@@ -4761,15 +4410,10 @@ Try a test configuration that imports the `HeroModule` like this one:
 `HeroDetailComponent`는 `HeroModule` [기능 모듈](guide/feature-modules)의 구성요소이며, `HeroModule`은 `SharedModule`을 내부적으로 로드합니다.
 그러면 테스트 환경설정은 `HeroModule`을 사용해서 다음과 같이 수정할 수 있습니다:
 
-<<<<<<< HEAD
-
 <!--
-<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="setup-hero-module" header="app/hero/hero-detail.component.spec.ts (HeroModule setup)" linenums="false"></code-example>
--->
-<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="setup-hero-module" header="app/hero/hero-detail.component.spec.ts (HeroModule 환경설정)" linenums="false"></code-example>
-=======
 <code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="setup-hero-module" header="app/hero/hero-detail.component.spec.ts (HeroModule setup)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="setup-hero-module" header="app/hero/hero-detail.component.spec.ts (HeroModule 환경설정)"></code-example>
 
 <!--
 That's _really_ crisp. Only the _test doubles_ in the `providers` remain. Even the `HeroDetailComponent` declaration is gone.
@@ -4808,14 +4452,10 @@ The `HeroDetailComponent` provides its own `HeroDetailService`.
 -->
 `HeroDetailComponent`에는 `HeroDetailService`가 직접 등록되어 있습니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="testing/src/app/hero/hero-detail.component.ts" region="prototype" header="app/hero/hero-detail.component.ts (prototype)" linenums="false"></code-example>
--->
-<code-example path="testing/src/app/hero/hero-detail.component.ts" region="prototype" header="app/hero/hero-detail.component.ts (프로토타입)" linenums="false"></code-example>
-=======
 <code-example path="testing/src/app/hero/hero-detail.component.ts" region="prototype" header="app/hero/hero-detail.component.ts (prototype)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="testing/src/app/hero/hero-detail.component.ts" region="prototype" header="app/hero/hero-detail.component.ts (프로토타입)"></code-example>
 
 <!--
 It's not possible to stub the component's `HeroDetailService` in the `providers` of the `TestBed.configureTestingModule`.
@@ -4854,14 +4494,10 @@ Fortunately, the `HeroDetailService` delegates responsibility for remote data ac
 
 다행히 `HeroDetailService`에서 데이터를 가져오는 로직은 `HeroService`를 활용하기 때문에, 리모트 서버로 보내는 요청은 `HeroService`에서 처리할 수 있습니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="testing/src/app/hero/hero-detail.service.ts" region="prototype" header="app/hero/hero-detail.service.ts (prototype)" linenums="false"></code-example>
--->
-<code-example path="testing/src/app/hero/hero-detail.service.ts" region="prototype" header="app/hero/hero-detail.service.ts (프로토타입)" linenums="false"></code-example>
-=======
 <code-example path="testing/src/app/hero/hero-detail.service.ts" region="prototype" header="app/hero/hero-detail.service.ts (prototype)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="testing/src/app/hero/hero-detail.service.ts" region="prototype" header="app/hero/hero-detail.service.ts (프로토타입)"></code-example>
 
 <!--
 The [previous test configuration](#feature-module-import) replaces the real `HeroService` with a `TestHeroService`
@@ -4882,17 +4518,13 @@ as seen in the following setup variation:
 `HeroService`를 모킹하는 것이 어렵다면 어떻게 해야 할까요?
 `HeroDetailService`가 직접 서버로 요청을 보낸다면 또 어떻게 해야 할까요?
 
-<<<<<<< HEAD
 `TestBed.overrideComponent` 메소드를 사용하면 컴포넌트의 `providers`에 등록된 서비스를 좀 더 관리하기 쉬운 _목 클래스_ 로 대체할 수 있습니다.
 이 함수는 다음과 같이 사용합니다:
 
 <!--
-<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="setup-override" header="app/hero/hero-detail.component.spec.ts (Override setup)" linenums="false"></code-example>
--->
-<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="setup-override" header="app/hero/hero-detail.component.spec.ts (오버라이드 환경설정)" linenums="false"></code-example>
-=======
 <code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="setup-override" header="app/hero/hero-detail.component.spec.ts (Override setup)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="setup-override" header="app/hero/hero-detail.component.spec.ts (오버라이드 환경설정)"></code-example>
 
 <!--
 Notice that `TestBed.configureTestingModule` no longer provides a (fake) `HeroService` because it's [not needed](#spy-stub).
@@ -4920,24 +4552,11 @@ The [override metadata object](#metadata-override-object) is a generic defined a
 이 메소드는 프로바이더가 등록된 컴포넌트 타입(`HeroDetailComponent`)과 오버라이드 메타데이터 객체, 총 2개의 인자를 받습니다.
 이 때 [메타데이터 오버라이드 객체(metadata override object)](#metadata-override-object)는 다음과 같이 제네릭으로 정의되어 있습니다:
 
-<<<<<<< HEAD
-<!--
-<code-example format="." language="javascript">
-=======
 <code-example language="javascript">
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
   type MetadataOverride&lt;T&gt; = {
     add?: Partial&lt;T&gt;;
     remove?: Partial&lt;T&gt;;
     set?: Partial&lt;T&gt;;
-  };
-</code-example>
--->
-<code-example format="." language="javascript">
-  type MetadataOverride&lt;T> = {
-    add?: Partial&lt;T>;
-    remove?: Partial&lt;T>;
-    set?: Partial&lt;T>;
   };
 </code-example>
 
@@ -5003,14 +4622,10 @@ and confirm that service methods were called.
 이제 컴포넌트를 테스트하면서 사용하는 히어로 객체는 스파이 클래스의 `testHero` 프로퍼티로 직접 조작할 수 있습니다.
 그리고 서비스 메소드를 실행하는 것도 확인할 수 있습니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="override-tests" header="app/hero/hero-detail.component.spec.ts (override tests)" linenums="false"></code-example>
--->
-<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="override-tests" header="app/hero/hero-detail.component.spec.ts (오버라이드 테스트)" linenums="false"></code-example>
-=======
 <code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="override-tests" header="app/hero/hero-detail.component.spec.ts (override tests)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="override-tests" header="app/hero/hero-detail.component.spec.ts (오버라이드 테스트)"></code-example>
 
 {@a more-overrides}
 
@@ -5507,36 +5122,19 @@ appropriate to the method, that is, the parameter of an `@NgModule`,
 이와 비슷하게 오버라이드 메소드가 인자로 받는 객체는 `MetadataOverride<T>` 타입인데, 이 때 `T`는 메소드에 해당하는 메타데이터 타입을 의미합니다.
 그래서 메소드 인자는 `@NgModule`이나 `@Component`, `@Directive`, `@Pipe`에 사용하는 메타데이터와 비슷하게 사용합니다.
 
-<<<<<<< HEAD
-<!--
-<code-example format="." language="javascript">
-=======
 <code-example language="javascript">
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
   type MetadataOverride&lt;T&gt; = {
     add?: Partial&lt;T&gt;;
     remove?: Partial&lt;T&gt;;
     set?: Partial&lt;T&gt;;
   };
 </code-example>
--->
-<code-example format="." language="javascript">
-  type MetadataOverride&lt;T> = {
-    add?: Partial&lt;T>;
-    remove?: Partial&lt;T>;
-    set?: Partial&lt;T>;
-  };
-</code-example>
 
 {@a testbed-methods}
 {@a testbed-api-summary}
 
-<<<<<<< HEAD
 <!--
-The `TestBed` API consists of static class methods that either update or reference a _global_ instance of the`TestBed`.
-=======
 The `TestBed` API consists of static class methods that either update or reference a _global_ instance of the `TestBed`.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 Internally, all static methods cover methods of the current runtime `TestBed` instance,
 which is also returned by the `getTestBed()` function.
@@ -5735,14 +5333,10 @@ Here are the most important static methods, in order of likely utility.
 
       <code-example path="testing/src/app/demo/demo.testbed.spec.ts" region="testbed-get-w-null" header="app/demo/demo.testbed.spec.ts"></code-example>
 
-<<<<<<< HEAD
       <!--
-      After calling `get`, the `TestBed` configuration is frozen for the duration of the current spec.
-      -->
-      `get`을 실행하고 나면 `TestBed` 환경 설정이 확정되기 때문에 해당 블럭에서 동작하는 테스트 스펙이 끝날 때까지 `TestBed` 설정을 변경할 수 없습니다.
-=======
       After calling `TestBed.inject`, the `TestBed` configuration is frozen for the duration of the current spec.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+      -->
+      `TestBed.inject`을 실행하고 나면 `TestBed` 환경 설정이 확정되기 때문에 해당 블럭에서 동작하는 테스트 스펙이 끝날 때까지 `TestBed` 설정을 변경할 수 없습니다.
 
     </td>
   </tr>
@@ -6402,25 +5996,17 @@ The Angular `By` class has three static methods for common predicates:
 
 {@a useful-tips}
 
-<<<<<<< HEAD
 <!--
-## Frequently Asked Questions
--->
-## 자주 묻는 질문
-
-{@a q-spec-file-location}
-
-<!--
-#### Why put spec file next to the file it tests?
--->
-#### 스펙 파일은 왜 테스트하는 파일과 함께 둬야 하나요?
-=======
 ## Useful tips
+-->
+## 참고할만 한 팁
 
 {@a q-spec-file-location}
 
+<!--
 #### Place your spec file next to the file it tests
->>>>>>> 939e2f76f6c3180e13886357a7dbdf8d562e98f4
+-->
+#### 스펙 파일을 테스트하는 파일과 함께 두세요.
 
 <!--
 It's a good idea to put unit test spec files in the same folder
@@ -6443,14 +6029,10 @@ as the application source code files that they test:
 
 {@a q-specs-in-test-folder}
 
-<<<<<<< HEAD
 <!--
-#### When would I put specs in a test folder?
--->
-#### 테스트 파일을 한 폴더에 둬야 하는 경우는 어떤 경우인가요?
-=======
 #### Place your spec files in a test folder
->>>>>>> 939e2f76f6c3180e13886357a7dbdf8d562e98f4
+-->
+#### 스펙 파일을 테스트 폴더 한 곳에 모아두세요.
 
 <!--
 Application integration specs can test the interactions of multiple parts
@@ -6474,20 +6056,6 @@ next to their corresponding helper files.
 
 #### Keep it simple
 
-<<<<<<< HEAD
-<!--
-#### Why not rely on E2E tests of DOM integration?
-
-#### 컴포넌트의 DOM을 테스트할 때 왜 E2E 테스트는 하지 않나요?
-
-The component DOM tests described in this guide often require extensive setup and
-advanced techniques whereas the [unit tests](#component-class-testing)
-are comparatively simple.
-
-#### Why not defer DOM integration tests to end-to-end (E2E) testing?
--->
-#### 엔드-투-엔드(E2E) 테스트할 때 왜 DOM은 테스트하지 않나요?
-=======
 [Component class testing](#component-class-testing) should be kept very clean and simple.
 It should test only a single unit. On a first glance, you should be able to understand 
 what the test is testing. If it's doing more, then it doesn't belong here.
@@ -6495,7 +6063,6 @@ what the test is testing. If it's doing more, then it doesn't belong here.
 {@a q-end-to-end}
 
 #### Use E2E (end-to-end) to test more than a single unit
->>>>>>> 939e2f76f6c3180e13886357a7dbdf8d562e98f4
 
 <!--
 E2E tests are great for high-level validation of the entire system.

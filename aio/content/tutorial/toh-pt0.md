@@ -1,11 +1,7 @@
-<<<<<<< HEAD
 <!--
-# The Application Shell
--->
-# 애플리케이션 셸
-=======
 # Create a new project
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+# 새 프로젝트 만들기
 
 <!--
 You begin by creating an initial application using the Angular CLI. Throughout this tutorial, you’ll modify and extend that starter application to create the Tour of Heroes app.
@@ -120,14 +116,10 @@ watches the source files, and rebuilds the app as you make changes to those file
 -->
 `ng serve` 명령을 실행하면 개발서버가 시작되며, 이 서버는 변경된 파일의 내용을 자동으로 반영하는 워치 모드로 동작합니다.
 
-<<<<<<< HEAD
 <!--
-The `--open` flag  opens a browser to `http://localhost:4200/`.
+The `--open` flag opens a browser to `http://localhost:4200/`.
 -->
 `ng serve` 명령을 실행할 때 `--open` 옵션을 함께 사용하면 서버의 주소인 `http://localhost:4200/`를 기본 브라우저로 열 수 있습니다.
-=======
-The `--open` flag opens a browser to `http://localhost:4200/`.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 </div>
 
@@ -189,15 +181,11 @@ Open the component class file (`app.component.ts`) and change the value of the `
 -->
 컴포넌트 클래스 파일(`app.component.ts`)을 열어서 `title` 프로퍼티의 값을 'Tour of Heroes'로 바꿔봅시다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="toh-pt0/src/app/app.component.ts" region="set-title" header="app.component.ts (class title property)" linenums="false">
--->
-<code-example path="toh-pt0/src/app/app.component.ts" region="set-title" header="app.component.ts (class title 프로퍼티)" linenums="false">
-</code-example>
-=======
 <code-example path="toh-pt0/src/app/app.component.ts" region="set-title" header="app.component.ts (class title property)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="toh-pt0/src/app/app.component.ts" region="set-title" header="app.component.ts (title 프로퍼티)"></code-example>
+</code-example>
 
 <!--
 Open the component template file (`app.component.html`) and
@@ -208,15 +196,10 @@ Replace it with the following line of HTML.
 
 <!--
 <code-example path="toh-pt0/src/app/app.component.html"
-<<<<<<< HEAD
-  header="app.component.html (template)" linenums="false">
+  header="app.component.html (template)"></code-example>
 -->
 <code-example path="toh-pt0/src/app/app.component.html"
-  header="app.component.html (템플릿)" linenums="false">
-</code-example>
-=======
-  header="app.component.html (template)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+  header="app.component.html (템플릿)"></code-example>
 
 <!--
 The double curly braces are Angular's *interpolation binding* syntax.

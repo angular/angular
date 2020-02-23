@@ -1,11 +1,7 @@
-<<<<<<< HEAD
 <!--
-# User Input
--->
-# 사용자 동작
-=======
 # User input
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+# 사용자 입력
 
 <!--
 User actions such as clicking a link, pushing a button, and entering

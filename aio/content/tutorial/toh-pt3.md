@@ -1,11 +1,7 @@
-<<<<<<< HEAD
 <!--
-# Master/Detail Components
--->
-# 컴포넌트 구조
-=======
 # Create a feature component
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+# 기능 컴포넌트 만들기
 
 <!--
 At the moment, the `HeroesComponent` displays both the list of heroes and the selected hero's details.
@@ -133,15 +129,10 @@ Amend the `@angular/core` import statement to include the `Input` symbol.
 -->
 `@angular/core` 패키지에서 `Input` 심볼을 로드합니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.ts" region="import-input" header="src/app/hero-detail/hero-detail.component.ts (import Input)" linenums="false">
--->
-<code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.ts" region="import-input" header="src/app/hero-detail/hero-detail.component.ts (Input 로드하기)" linenums="false">
-</code-example>
-=======
 <code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.ts" region="import-input" header="src/app/hero-detail/hero-detail.component.ts (import Input)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.ts" region="import-input" header="src/app/hero-detail/hero-detail.component.ts (Input 로드하기)"></code-example>
 
 <!--
 Add a `hero` property, preceded by the `@Input()` decorator.

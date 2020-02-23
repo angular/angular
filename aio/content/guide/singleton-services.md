@@ -3,35 +3,16 @@
 -->
 # 싱글턴 서비스 (Singleton services)
 
-<<<<<<< HEAD
-<!--
-#### Prerequisites:
--->
-#### 사전지식
-
-<!--
-* A basic understanding of [Bootstrapping](guide/bootstrapping).
-* Familiarity with [Providers](guide/providers).
--->
-다음 내용을 먼저 이해하고 이 문서를 보는 것이 좋습니다.
-* [부트스트랩](guide/bootstrapping)
-* [프로바이더](guide/providers)
-=======
 A singleton service is a service for which only one instance exists in an app.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 For a sample app using the app-wide singleton service that this page describes, see the
 <live-example name="ngmodules"></live-example> showcasing all the documented features of NgModules.
 -->
-이 문서에서는 앱 전역에서 싱글턴으로 동작하는 서비스를 만들어봅니다. 이 문서에서 다루는 모든 예제 코드는 <live-example name="ngmodules"></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
-
-<<<<<<< HEAD
-<hr />
+이 문서에서는 앱 전역에서 싱글턴으로 동작하는 서비스를 만들어봅니다.
+이 문서에서 다루는 모든 예제 코드는 <live-example name="ngmodules"></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
 <!--
-=======
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 ## Providing a singleton service
 -->
 ## 싱글턴 서비스 생성하기
@@ -171,16 +152,10 @@ extends the greeting `UserService`. If a `UserServiceConfig` exists, the `UserSe
 -->
 아래 예제에서 `@Optional`로 주입되는 `UserServiceConfig` 객체는 `UserService`의 환경을 설정하는 용도로 사용됩니다. 그래서 `UserServiceConfig` 객체가 존재하면 이 객체로 전달받은 사용자의 이름으로 `UserService`를 설정할 수 있습니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="ngmodules/src/app/greeting/user.service.ts" region="ctor" header="src/app/greeting/user.service.ts (constructor)" linenums="false">
--->
-<code-example path="ngmodules/src/app/greeting/user.service.ts" region="ctor" header="src/app/greeting/user.service.ts (생성자)" linenums="false">
-
-</code-example>
-=======
 <code-example path="ngmodules/src/app/greeting/user.service.ts" region="ctor" header="src/app/greeting/user.service.ts (constructor)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="ngmodules/src/app/greeting/user.service.ts" region="ctor" header="src/app/greeting/user.service.ts (생성자)"></code-example>
 
 <!--
 Here's `forRoot()` that takes a `UserServiceConfig` object:
@@ -193,7 +168,6 @@ Here's `forRoot()` that takes a `UserServiceConfig` object:
 Lastly, call it within the `imports` list of the `AppModule`. In the following
 snippet, other parts of the file are left out. For the complete file, see the <live-example name="ngmodules"></live-example>, or continue to the next section of this document.
 -->
-이제 이 `forRoot()` 메소드는 `AppModule`의 `imports`에 다음과 같이 사용합니다.
 Lastly, call it within the `imports` list of the `AppModule`.
 In the following snippet, other parts of the file are left out. For the complete file, see the <live-example name="ngmodules"></live-example>, or continue to the next section of this document.
 

@@ -1,11 +1,7 @@
-<<<<<<< HEAD
 <!--
-# Create services
+# Add services
 -->
 # 서비스 생성하기
-=======
-# Add services
->>>>>>> 939e2f76f6c3180e13886357a7dbdf8d562e98f4
 
 <!--
 The Tour of Heroes `HeroesComponent` is currently getting and displaying fake data.

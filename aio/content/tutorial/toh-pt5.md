@@ -1,11 +1,7 @@
-<<<<<<< HEAD
 <!--
-# Add in-app navigation (routing)
+# Add in-app navigation with routing
 -->
 # 화면 전환하기 (라우팅)
-=======
-# Add in-app navigation with routing
->>>>>>> 939e2f76f6c3180e13886357a7dbdf8d562e98f4
 
 <!--
 There are new requirements for the Tour of Heroes app:

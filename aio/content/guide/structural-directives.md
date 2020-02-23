@@ -1,11 +1,7 @@
-<<<<<<< HEAD
 <!--
-# Structural Directives
+# Structural directives
 -->
 # 구조 디렉티브 (Structural Directives)
-=======
-# Structural directives
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <style>
   h4 {font-size: 17px !important; text-transform: none !important;}
@@ -166,7 +162,9 @@ You can [only apply one](guide/structural-directives#one-per-element) _structura
 </div>
 
 
+
 {@a ngIf}
+
 
 <!--
 ## NgIf case study
@@ -391,15 +389,10 @@ In this example, the `[ngClass]="odd"` stays on the `<div>`.
 
 {@a microsyntax}
 
-<<<<<<< HEAD
 <!--
-### Microsyntax
--->
-### 세부 문법(microsyntax)
-=======
-
 ## Microsyntax
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+## 세부 문법(microsyntax)
 
 <!--
 The Angular microsyntax lets you configure a directive in a compact, friendly string.
@@ -417,32 +410,24 @@ The parser translates `let hero`, `let i`, and `let odd` into variables named
 * `let` 키워드는 [_템플릿 입력 변수_](guide/structural-directives#템플릿-입력-변수)를 선언합니다. 이 변수는 템플릿 안에서 참조할 수 있으며, `hero`나 `i`, `odd` 등이 템플릿 변수에 해당합니다.
 문자열에 있던 `let hero`, `let i`, `let odd`를 파서가 처리하고 나면 `let-hero`, `let-i`, `let-odd`와 같은 이름으로 변경됩니다.
 
-<<<<<<< HEAD
 <!--
-* The microsyntax parser takes `of` and `trackBy`, title-cases them (`of` -> `Of`, `trackBy` -> `TrackBy`),
-and prefixes them with the directive's attribute name (`ngFor`), yielding the names `ngForOf` and `ngForTrackBy`.
-Those are the names of two `NgFor` _input properties_ .
-=======
 * The microsyntax parser title-cases all directives and prefixes them with the directive's
 attribute name, such as `ngFor`. For example, the `ngFor` input properties,
 `of` and `trackBy`, become `ngForOf` and `ngForTrackBy`, respectively.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 That's how the directive learns that the list is `heroes` and the track-by function is `trackById`.
 -->
-* 세부 문법 파서가 `ngFor`와 함께 사용된 `of`와 `trackBy`를 확인하면, `ngFor`를 `ngForOf`나 `ngForTrackBy`로 변환합니다.
-동시에 `of`나 `trackBy`는 `NgFor`의 _입력 프로퍼티_ 로 변환되며, 이 입력 프로퍼티를 활용해서 배열을 순회하고 `trackById`와 같은 함수를 실행합니다.
+* The microsyntax parser title-cases all directives and prefixes them with the directive's
+attribute name, such as `ngFor`. For example, the `ngFor` input properties,
+`of` and `trackBy`, become `ngForOf` and `ngForTrackBy`, respectively.
+That's how the directive learns that the list is `heroes` and the track-by function is `trackById`.
 
 <!--
 * As the `NgFor` directive loops through the list, it sets and resets properties of its own _context_ object.
-<<<<<<< HEAD
-These properties include `index` and `odd` and a special property named `$implicit`.
+These properties can include, but aren't limited to, `index`, `odd`, and a special property
+named `$implicit`.
 -->
 * `NgFor` 디렉티브가 배열을 순회할 때 각 싸이클마다 `NgFor` 컨텍스트에만 적용되는 프로퍼티가 있습니다.
 `index`나 `odd`, `$implicit`가 이런 프로퍼티에 해당됩니다.
-=======
-These properties can include, but aren't limited to, `index`, `odd`, and a special property
-named `$implicit`.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 * The `let-i` and `let-odd` variables were defined as `let i=index` and `let odd=odd`.
@@ -459,25 +444,9 @@ which `NgFor` has initialized with the hero for the current iteration.
 -->
 * 하지만 `let-hero` 변수는 소스 코드에 따로 선언되며 외부에서는 확인할 수 없습니다. 좀 더 자세하게 설명하면, `let-hero` 변수는 컨텍스트의 `$implicit` 프로퍼티 안에 선언되며, 현재 순회하는 배열에 맞게 Angular가 값을 할당합니다.
 
-<<<<<<< HEAD
-<!--
-* The [API guide](api/common/NgForOf "API: NgFor")
-=======
 * The [`NgFor` API guide](api/common/NgForOf "API: NgFor")
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 describes additional `NgFor` directive properties and context properties.
--->
-* `NgFor`의 프로퍼티와 컨텍스트 프로퍼티는 [API 문서](api/common/NgForOf "API: NgFor")에서 확인해 보세요.
 
-<<<<<<< HEAD
-<!--
-* `NgFor` is implemented by the `NgForOf` directive. Read more about additional `NgForOf` directive properties and context properties [NgForOf API reference](api/common/NgForOf).
--->
-* `NgForOf` 디렉티브는 `NgFor` 디렉티브의 확장 디렉티브입니다. `NgForOf` 디렉티브의 프로퍼티와 컨텍스트 프로퍼티는 [NgForOf API 문서](api/common/NgForOf)에서 확인해 보세요.
-
-<!--
-These microsyntax mechanisms are available to you when you write your own structural directives.
-=======
 * The `NgForOf` directive implements `NgFor`. Read more about additional `NgForOf` directive properties and context properties in the [NgForOf API reference](api/common/NgForOf).
 
 ### Writing your own structural directives
@@ -608,18 +577,11 @@ The following table demonstrates how Angular desugars microsyntax.
   </tr>
 </table>
 
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 Studying the
 [source code for `NgIf`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_if.ts "Source: NgIf")
 and [`NgForOf`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_for_of.ts "Source: NgForOf")
 is a great way to learn more.
-<<<<<<< HEAD
--->
-세부 문법은 커스텀 구조 디렉티브를 구현할 때도 활용할 수 있습니다.
-[`NgIf`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_if.ts "Source: NgIf")나 [`NgForOf`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_for_of.ts "Source: NgForOf")의 소스 코드를 분석해 보는 것도 큰 도움이 될 것입니다.
-=======
 
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 {@a template-input-variable}
 
@@ -628,15 +590,10 @@ is a great way to learn more.
 -->
 {@a 템플릿-입력-변수}
 
-<<<<<<< HEAD
 <!--
-### Template input variable
--->
-### 템플릿 입력 변수 (Template input variable)
-=======
-
 ## Template input variable
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+## 템플릿 입력 변수 (Template input variable)
 
 <!--
 A _template input variable_ is a variable whose value you can reference _within_ a single instance of the template.
@@ -678,15 +635,10 @@ variable as the `hero` declared as `#hero`.
 {@a one-per-element}
 {@a one-structural-directive-per-host-element}
 
-<<<<<<< HEAD
 <!--
-### One structural directive per host element
--->
-### 구조 디렉티브는 호스트 엘리먼트에 하나만
-=======
-
 ## One structural directive per host element
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+## 구조 디렉티브는 호스트 엘리먼트에 하나만
 
 <!--
 Someday you'll want to repeat a block of HTML but only when a particular condition is true.

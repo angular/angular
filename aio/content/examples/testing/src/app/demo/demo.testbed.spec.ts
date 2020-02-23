@@ -60,11 +60,7 @@ describe('demo (with TestBed):', () => {
 
     it('can inject a default value when service is not provided', () => {
       // #docregion testbed-get-w-null
-<<<<<<< HEAD
-      service = TestBed.get(NotProvided, null); // service에는 null이 할당됩니다.
-=======
-      service = TestBed.inject(NotProvided, null); // service is null
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+      service = TestBed.inject(NotProvided, null); // service에는 null이 할당됩니다.
       // #enddocregion testbed-get-w-null
     });
 
@@ -112,15 +108,9 @@ describe('demo (with TestBed):', () => {
           { provide: ValueService, useValue: spy }
         ]
       });
-<<<<<<< HEAD
       // 서비스의 인스턴스와 목 객체의 인스턴스를 가져옵니다.
-      masterService = TestBed.get(MasterService);
-      valueServiceSpy = TestBed.get(ValueService);
-=======
-      // Inject both the service-to-test and its (spy) dependency
       masterService = TestBed.inject(MasterService);
       valueServiceSpy = TestBed.inject(ValueService);
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
     });
     // #enddocregion master-service-before-each
 
