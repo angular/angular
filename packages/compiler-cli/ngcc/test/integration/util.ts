@@ -33,6 +33,7 @@ export function compileIntoFlatEs5Package(pkgName: string, sources: PackageSourc
   compileIntoFlatPackage(pkgName, sources, {
     target: ts.ScriptTarget.ES5,
     module: ts.ModuleKind.ESNext,
+    formatProperty: 'module',
   });
 }
 
@@ -46,6 +47,11 @@ export interface FlatLayoutOptions {
    * The module kind to use in the compiled result.
    */
   module: ts.ModuleKind;
+
+  /**
+   * The name of the property in package.json that refers to the root source file.
+   */
+  formatProperty: string;
 }
 
 /**
@@ -90,7 +96,7 @@ function compileIntoFlatPackage(
   const pkgJson: unknown = {
     name: pkgName,
     version: '0.0.1',
-    main: './index.js',
+    [options.formatProperty]: './index.js',
     typings: './index.d.ts',
   };
 

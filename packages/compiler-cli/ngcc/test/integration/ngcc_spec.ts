@@ -134,7 +134,7 @@ runInEachFileSystem(() => {
       mainNgcc({
         basePath: '/node_modules',
         targetEntryPointPath: 'test-package',
-        propertiesToConsider: ['main'],
+        propertiesToConsider: ['module'],
       });
 
       const jsContents = fs.readFile(_(`/node_modules/test-package/index.js`)).replace(/\s+/g, ' ');
@@ -244,7 +244,7 @@ runInEachFileSystem(() => {
       mainNgcc({
         basePath: '/node_modules',
         targetEntryPointPath: 'test-package',
-        propertiesToConsider: ['main'],
+        propertiesToConsider: ['module'],
       });
 
       const jsContents = fs.readFile(_(`/node_modules/test-package/index.js`));
@@ -268,7 +268,7 @@ runInEachFileSystem(() => {
       mainNgcc({
         basePath: '/node_modules',
         targetEntryPointPath: 'test-package',
-        propertiesToConsider: ['main'],
+        propertiesToConsider: ['module'],
       });
       const after = fs.readFile(_(`/node_modules/test-package/index.js`));
 
@@ -300,7 +300,7 @@ runInEachFileSystem(() => {
       mainNgcc({
         basePath: '/node_modules',
         targetEntryPointPath: 'test-package',
-        propertiesToConsider: ['main'],
+        propertiesToConsider: ['module'],
       });
 
       const jsContents = fs.readFile(_(`/node_modules/test-package/index.js`));
@@ -410,7 +410,7 @@ runInEachFileSystem(() => {
       mainNgcc({
         basePath: '/node_modules',
         targetEntryPointPath: 'test-package',
-        propertiesToConsider: ['main'],
+        propertiesToConsider: ['module'],
       });
 
       const jsContents = fs.readFile(_(`/node_modules/test-package/index.js`));
@@ -671,7 +671,7 @@ runInEachFileSystem(() => {
       });
       mainNgcc({
         basePath: '/node_modules',
-        propertiesToConsider: ['main'],
+        propertiesToConsider: ['module'],
         logger: new MockLogger(),
       });
 
@@ -687,15 +687,15 @@ runInEachFileSystem(() => {
       // Now run ngcc again to see that it cleans out the outdated artifacts
       mainNgcc({
         basePath: '/node_modules',
-        propertiesToConsider: ['main'],
+        propertiesToConsider: ['module'],
         logger: new MockLogger(),
       });
       const newPackageJson = loadPackage('test-package', _('/node_modules'));
       expect(newPackageJson.__processed_by_ivy_ngcc__).toEqual({
-        main: '0.0.0-PLACEHOLDER',
+        module: '0.0.0-PLACEHOLDER',
         typings: '0.0.0-PLACEHOLDER',
       });
-      expect(newPackageJson.main_ivy_ngcc).toBeUndefined();
+      expect(newPackageJson.module_ivy_ngcc).toBeUndefined();
       expect(fs.exists(_('/node_modules/test-package/x.js'))).toBe(true);
       expect(fs.exists(_('/node_modules/test-package/x.js.__ivy_ngcc_bak'))).toBe(false);
       expect(fs.readFile(_('/node_modules/test-package/x.js'))).toEqual('original content');
@@ -1236,7 +1236,7 @@ runInEachFileSystem(() => {
            mainNgcc({
              basePath: '/node_modules',
              targetEntryPointPath: 'test-package',
-             propertiesToConsider: ['main'],
+             propertiesToConsider: ['module'],
            });
 
 
@@ -1277,7 +1277,7 @@ runInEachFileSystem(() => {
            mainNgcc({
              basePath: '/node_modules',
              targetEntryPointPath: 'test-package',
-             propertiesToConsider: ['main'],
+             propertiesToConsider: ['module'],
            });
 
 
@@ -1320,7 +1320,7 @@ runInEachFileSystem(() => {
            mainNgcc({
              basePath: '/node_modules',
              targetEntryPointPath: 'test-package',
-             propertiesToConsider: ['main'],
+             propertiesToConsider: ['module'],
            });
 
            const dtsContents = fs.readFile(_(`/node_modules/test-package/index.d.ts`));
