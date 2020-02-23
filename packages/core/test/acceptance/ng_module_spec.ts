@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {CUSTOM_ELEMENTS_SCHEMA, Component, Injectable, NO_ERRORS_SCHEMA, NgModule, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelement as element} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, Component, ComponentFactory, Injectable, NO_ERRORS_SCHEMA, NgModule, NgModuleRef, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelement as element} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {modifiedInIvy, onlyInIvy} from '@angular/private/testing';
@@ -474,4 +474,25 @@ describe('NgModule', () => {
         });
 
   });
+
+  it('should be able to use ComponentFactoryResolver from the NgModuleRef inside the module constructor',
+     () => {
+       let factory: ComponentFactory<TestCmp>;
+
+       @NgModule({
+         declarations: [TestCmp],
+         exports: [TestCmp],
+         entryComponents: [TestCmp]  // Only necessary for ViewEngine
+       })
+       class MyModule {
+         constructor(ngModuleRef: NgModuleRef<any>) {
+           factory = ngModuleRef.componentFactoryResolver.resolveComponentFactory(TestCmp);
+         }
+       }
+
+       TestBed.configureTestingModule({imports: [MyModule]});
+       TestBed.createComponent(TestCmp);
+       expect(factory !.componentType).toBe(TestCmp);
+     });
+
 });
