@@ -7,7 +7,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  itemImageUrl = '../assets/phone.png';
+  itemImageUrl = 'https://raw.githubusercontent.com/angular/angular/master/aio/content/examples/property-binding/src/assets/phone.png';
   isUnchanged = true;
   classes = 'special';
   // #docregion parent-data-type
