@@ -51,9 +51,9 @@ export const ROUTER_PROVIDERS: Provider[] = [
     provide: Router,
     useFactory: setupRouter,
     deps: [
-      ApplicationRef, UrlSerializer, ChildrenOutletContexts, Location, Injector,
-      NgModuleFactoryLoader, Compiler, ROUTES, ROUTER_CONFIGURATION,
-      [UrlHandlingStrategy, new Optional()], [RouteReuseStrategy, new Optional()]
+      UrlSerializer, ChildrenOutletContexts, Location, Injector, NgModuleFactoryLoader, Compiler,
+      ROUTES, ROUTER_CONFIGURATION, [UrlHandlingStrategy, new Optional()],
+      [RouteReuseStrategy, new Optional()]
     ]
   },
   ChildrenOutletContexts,
@@ -429,9 +429,9 @@ export interface ExtraOptions {
 }
 
 export function setupRouter(
-    ref: ApplicationRef, urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts,
-    location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler,
-    config: Route[][], opts: ExtraOptions = {}, urlHandlingStrategy?: UrlHandlingStrategy,
+    urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
+    injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Route[][],
+    opts: ExtraOptions = {}, urlHandlingStrategy?: UrlHandlingStrategy,
     routeReuseStrategy?: RouteReuseStrategy) {
   const router = new Router(
       null, urlSerializer, contexts, location, injector, loader, compiler, flatten(config));
