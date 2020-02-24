@@ -358,7 +358,7 @@ The `MatTable` does not require that you use a native HTML table. Instead, you c
 alternative approach that uses `display: flex` for the table's styles.
 
 This alternative approach replaces the native table element tags with the `MatTable` directive
-selectors. For example, `<table mat-table>` becomes `<mat-table>`; `<tr mat-row`> becomes
+selectors. For example, `<table mat-table>` becomes `<mat-table>`; `<tr mat-row>` becomes
 `<mat-row>`. The following shows a previous example using this alternative template:
 
 ```html
