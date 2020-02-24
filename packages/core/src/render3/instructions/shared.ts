@@ -1634,21 +1634,9 @@ function refreshTransplantedViews(lContainer: LContainer, declaredComponentLView
     // Check if we have a transplanted view by compering declaration and insertion location.
     if (insertedComponentLView !== declaredComponentLView) {
       // Yes the `LView` is transplanted.
-      // Here we would like to know if the component is `OnPush`. We don't have
-      // explicit `OnPush` flag instead we set `CheckAlways` to false (which is `OnPush`)
-      // Not to be confused with `ManualOnPush` which is used with wether a DOM event
-      // should automatically mark a view as dirty.
-      const insertionComponentIsOnPush =
-          (insertedComponentLView[FLAGS] & LViewFlags.CheckAlways) === 0;
-      if (insertionComponentIsOnPush) {
-        // Here we know that the template has been transplanted across components and is
-        // on-push (not just moved within a component). If the insertion is marked dirty, then
-        // there is no need to CD here as we will do it again later when we get to insertion
-        // point.
-        const movedTView = movedLView[TVIEW];
-        ngDevMode && assertDefined(movedTView, 'TView must be allocated');
-        refreshView(movedTView, movedLView, movedTView.template, movedLView[CONTEXT] !);
-      }
+      const movedTView = movedLView[TVIEW];
+      ngDevMode && assertDefined(movedTView, 'TView must be allocated');
+      refreshView(movedTView, movedLView, movedTView.template, movedLView[CONTEXT] !);
     }
   }
 }

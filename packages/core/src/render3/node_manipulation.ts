@@ -269,18 +269,13 @@ function trackMovedView(declarationContainer: LContainer, lView: LView) {
   ngDevMode && assertLContainer(insertedLContainer);
   const insertedComponentLView = insertedLContainer[PARENT] ![DECLARATION_COMPONENT_VIEW];
   ngDevMode && assertDefined(insertedComponentLView, 'Missing insertedComponentLView');
-  const insertedComponentIsOnPush =
-      (insertedComponentLView[FLAGS] & LViewFlags.CheckAlways) !== LViewFlags.CheckAlways;
-  if (insertedComponentIsOnPush) {
-    const declaredComponentLView = lView[DECLARATION_COMPONENT_VIEW];
-    ngDevMode && assertDefined(declaredComponentLView, 'Missing declaredComponentLView');
-    if (declaredComponentLView !== insertedComponentLView) {
-      // At this point the declaration-component is not same as insertion-component and we are in
-      // on-push mode, this means that this is a transplanted view. Mark the declared lView as
-      // having
-      // transplanted views so that those views can participate in CD.
-      declarationContainer[ACTIVE_INDEX] |= ActiveIndexFlag.HAS_TRANSPLANTED_VIEWS;
-    }
+  const declaredComponentLView = lView[DECLARATION_COMPONENT_VIEW];
+  ngDevMode && assertDefined(declaredComponentLView, 'Missing declaredComponentLView');
+  if (declaredComponentLView !== insertedComponentLView) {
+    // At this point the declaration-component is not same as insertion-component and we are in
+    // on-push mode, this means that this is a transplanted view. Mark the declared lView as
+    // having transplanted views so that those views can participate in CD.
+    declarationContainer[ACTIVE_INDEX] |= ActiveIndexFlag.HAS_TRANSPLANTED_VIEWS;
   }
   if (movedViews === null) {
     declarationContainer[MOVED_VIEWS] = [lView];

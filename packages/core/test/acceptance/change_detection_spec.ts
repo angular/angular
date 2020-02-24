@@ -1202,10 +1202,11 @@ describe('change detection', () => {
   });
 
   describe('transplanted views', () => {
-    @Component({
-      selector: 'insert-comp',
-      changeDetection: ChangeDetectionStrategy.OnPush,
-      template: `
+    describe('when declaration appears before insertion', () => {
+      @Component({
+        selector: 'insert-comp',
+        changeDetection: ChangeDetectionStrategy.OnPush,
+        template: `
         InsertComp({{greeting}})
         <div *ngIf="true">
           <!-- Add extra level of embedded view to ensure we can handle nesting -->
@@ -1215,138 +1216,188 @@ describe('change detection', () => {
           </ng-container>
         </div>
       `
-    })
-    class InsertComp implements DoCheck,
-        AfterViewChecked {
-      get template(): TemplateRef<any> { return declareComp.myTmpl; }
-      greeting: string = 'Hello';
-      constructor(public changeDetectorRef: ChangeDetectorRef) { insertComp = this; }
-      ngDoCheck(): void { logValue = 'Insert'; }
-      ngAfterViewChecked(): void { logValue = null; }
-    }
+      })
+      class InsertComp implements DoCheck,
+          AfterViewChecked {
+        get template(): TemplateRef<any> { return declareComp.myTmpl; }
 
-    @Component({
-      selector: `declare-comp`,
-      template: `
+        greeting: string = 'Hello';
+
+        constructor(public changeDetectorRef: ChangeDetectorRef) { insertComp = this; }
+
+        ngDoCheck(): void { logValue = 'Insert'; }
+
+        ngAfterViewChecked(): void { logValue = null; }
+      }
+
+      @Component({
+        selector: `declare-comp`,
+        template: `
         DeclareComp({{name}})
         <ng-template #myTmpl let-greeting>
           {{greeting}} {{logName()}}!
         </ng-template>
       `
-    })
-    class DeclareComp implements DoCheck,
-        AfterViewChecked {
-      @ViewChild('myTmpl')
-      myTmpl !: TemplateRef<any>;
-      name: string = 'world';
-      constructor() { declareComp = this; }
-      ngDoCheck(): void { logValue = 'Declare'; }
-      logName() {
-        // This will log when the embedded view gets CD. The `logValue` will show if the CD was from
-        // `Insert` or from `Declare` component.
-        log.push(logValue !);
-        return this.name;
-      }
-      ngAfterViewChecked(): void { logValue = null; }
-    }
+      })
+      class DeclareComp implements DoCheck,
+          AfterViewChecked {
+        @ViewChild('myTmpl')
+        myTmpl !: TemplateRef<any>;
+        name: string = 'world';
 
-    @Component({
-      template: `
+        constructor() { declareComp = this; }
+
+        ngDoCheck(): void { logValue = 'Declare'; }
+
+        logName() {
+          // This will log when the embedded view gets CD. The `logValue` will show if the CD was
+          // from `Insert` or from `Declare` component.
+          log.push(logValue !);
+          return this.name;
+        }
+
+        ngAfterViewChecked(): void { logValue = null; }
+      }
+
+      @Component({
+        template: `
       <declare-comp *ngIf="showDeclare"></declare-comp>
       <insert-comp *ngIf="showInsert"></insert-comp>
       `
-    })
-    class AppComp {
-      showDeclare: boolean = true;
-      showInsert: boolean = true;
-      constructor() { appComp = this; }
-    }
+      })
+      class AppComp {
+        showDeclare: boolean = true;
+        showInsert: boolean = true;
 
-    let log !: string[];
-    let logValue !: string | null;
-    let fixture !: ComponentFixture<AppComp>;
-    let appComp !: AppComp;
-    let insertComp !: InsertComp;
-    let declareComp !: DeclareComp;
+        constructor() { appComp = this; }
+      }
 
-    beforeEach(() => {
-      TestBed.configureTestingModule({
-        declarations: [InsertComp, DeclareComp, AppComp],
-        imports: [CommonModule],
+      let log !: string[];
+      let logValue !: string | null;
+      let fixture !: ComponentFixture<AppComp>;
+      let appComp !: AppComp;
+      let insertComp !: InsertComp;
+      let declareComp !: DeclareComp;
+
+      beforeEach(() => {
+        TestBed.configureTestingModule({
+          declarations: [InsertComp, DeclareComp, AppComp],
+          imports: [CommonModule],
+        });
+        log = [];
+        fixture = TestBed.createComponent(AppComp);
       });
-      log = [];
-      fixture = TestBed.createComponent(AppComp);
+
+      it('should CD with declaration', () => {
+        // NOTE: The CD of VE and Ivy is different and is captured in the assertions:
+        // `expect(log).toEqual(ivyEnabled ? [...] : [...])`
+        //
+        // The reason for this difference is in the algorithm which VE and Ivy use to deal with
+        // transplanted views:
+        // - VE: always runs CD at insertion point. If the insertion component is `OnPush` and the
+        //   transplanted view is `CheckAlways` then the insertion component will be changed to
+        //   `CheckAlways` (defeating the benefit of `OnPush`)
+        // - Ivy: Runs the CD at both the declaration as well as insertion point. The benefit of
+        //   this approach is that each side (declaration/insertion) gets to keep its own semantics
+        //   (either `OnPush` or `CheckAlways`). The implication is that:
+        //   1. The two semantics are slightly different.
+        //   2. Ivy will CD the transplanted view twice under some circumstances. (When both
+        //   insertion and declaration are both dirty.)
+
+        fixture.detectChanges(false);
+        expect(log).toEqual(['Insert']);
+        log.length = 0;
+        expect(trim(fixture.nativeElement.textContent))
+            .toEqual('DeclareComp(world) InsertComp(Hello) Hello world!');
+
+        declareComp.name = 'Angular';
+        fixture.detectChanges(false);
+        expect(log).toEqual(ivyEnabled ? ['Declare'] : ['Insert']);
+        log.length = 0;
+        // Expect transplanted LView to be CD because the declaration is CD.
+        expect(trim(fixture.nativeElement.textContent))
+            .toEqual('DeclareComp(Angular) InsertComp(Hello) Hello Angular!');
+
+        insertComp.greeting = 'Hi';
+        fixture.detectChanges(false);
+        expect(log).toEqual(ivyEnabled ? ['Declare'] : ['Insert']);
+        log.length = 0;
+        // expect no change because it is on push.
+        expect(trim(fixture.nativeElement.textContent))
+            .toEqual('DeclareComp(Angular) InsertComp(Hello) Hello Angular!');
+
+        insertComp.changeDetectorRef.markForCheck();
+        fixture.detectChanges(false);
+        expect(log).toEqual(ivyEnabled ? ['Declare', 'Insert'] : ['Insert']);
+        log.length = 0;
+        expect(trim(fixture.nativeElement.textContent))
+            .toEqual('DeclareComp(Angular) InsertComp(Hi) Hi Angular!');
+
+        // Destroy insertion should also destroy declaration
+        appComp.showInsert = false;
+        insertComp.changeDetectorRef.markForCheck();
+        fixture.detectChanges(false);
+        expect(log).toEqual([]);
+        log.length = 0;
+        expect(trim(fixture.nativeElement.textContent)).toEqual('DeclareComp(Angular)');
+
+        // Restore both
+        appComp.showInsert = true;
+        fixture.detectChanges(false);
+        expect(log).toEqual(['Insert']);
+        log.length = 0;
+        expect(trim(fixture.nativeElement.textContent))
+            .toEqual('DeclareComp(Angular) InsertComp(Hello) Hello Angular!');
+
+        // Destroy declaration, But we should still be able to see updates in insertion
+        appComp.showDeclare = false;
+        insertComp.greeting = 'Hello';
+        insertComp.changeDetectorRef.markForCheck();
+        fixture.detectChanges(false);
+        expect(log).toEqual(['Insert']);
+        log.length = 0;
+        expect(trim(fixture.nativeElement.textContent)).toEqual('InsertComp(Hello) Hello Angular!');
+      });
     });
 
-    it('should CD with declaration', () => {
-      // NOTE: The CD of VE and Ivy is different and is captured in the assertions:
-      // `expect(log).toEqual(ivyEnabled ? [...] : [...])`
-      //
-      // The reason for this difference is in the algorithm which VE and Ivy use to deal with
-      // transplanted views:
-      // - VE: always runs CD at insertion point. If the insertion component is `OnPush` and the
-      //   transplanted view is `CheckAlways` then the insertion component will be changed to
-      //   `CheckAlways` (defeating the benefit of `OnPush`)
-      // - Ivy: Runs the CD at both the declaration as well as insertion point. The benefit of this
-      //   approach is that each side (declaration/insertion) gets to keep its own semantics (either
-      //   `OnPush` or `CheckAlways`). The implication is that:
-      //   1. The two semantics are slightly different.
-      //   2. Ivy will CD the transplanted view twice under some circumstances. (When both insertion
-      //      and declaration are both dirty.)
+    it('CheckAlways transplanted views shielded by non-dirty OnPush', () => {
+      @Component({
+        selector: 'check-always-insertion',
+        template: `<ng-container [ngTemplateOutlet]="template"></ng-container>`
+      })
+      class CheckAlwaysInsertion {
+        @Input() template !: TemplateRef<{}>;
+      }
 
-      fixture.detectChanges(false);
-      expect(log).toEqual(['Insert']);
-      log.length = 0;
-      expect(trim(fixture.nativeElement.textContent))
-          .toEqual('DeclareComp(world) InsertComp(Hello) Hello world!');
+      @Component({
+        selector: 'on-push-insertion-host',
+        template: `<check-always-insertion [template]="template"></check-always-insertion>`,
+        changeDetection: ChangeDetectionStrategy.OnPush
+      })
+      class OnPushInsertionHost {
+        @Input() template !: TemplateRef<{}>;
+      }
 
-      declareComp.name = 'Angular';
-      fixture.detectChanges(false);
-      expect(log).toEqual(ivyEnabled ? ['Declare'] : ['Insert']);
-      log.length = 0;
-      // Expect transplanted LView to be CD because the declaration is CD.
-      expect(trim(fixture.nativeElement.textContent))
-          .toEqual('DeclareComp(Angular) InsertComp(Hello) Hello Angular!');
+      @Component({
+        template: `
+      <ng-template #template>{{value}}</ng-template>
+      <on-push-insertion-host [template]="template"></on-push-insertion-host>
+      `
+      })
+      class CheckAlwaysDeclaration {
+        value = 'initial';
+      }
 
-      insertComp.greeting = 'Hi';
-      fixture.detectChanges(false);
-      expect(log).toEqual(ivyEnabled ? ['Declare'] : ['Insert']);
-      log.length = 0;
-      // expect no change because it is on push.
-      expect(trim(fixture.nativeElement.textContent))
-          .toEqual('DeclareComp(Angular) InsertComp(Hello) Hello Angular!');
-
-      insertComp.changeDetectorRef.markForCheck();
-      fixture.detectChanges(false);
-      expect(log).toEqual(ivyEnabled ? ['Declare', 'Insert'] : ['Insert']);
-      log.length = 0;
-      expect(trim(fixture.nativeElement.textContent))
-          .toEqual('DeclareComp(Angular) InsertComp(Hi) Hi Angular!');
-
-      // Destroy insertion should also destroy declaration
-      appComp.showInsert = false;
-      insertComp.changeDetectorRef.markForCheck();
-      fixture.detectChanges(false);
-      expect(log).toEqual([]);
-      log.length = 0;
-      expect(trim(fixture.nativeElement.textContent)).toEqual('DeclareComp(Angular)');
-
-      // Restore both
-      appComp.showInsert = true;
-      fixture.detectChanges(false);
-      expect(log).toEqual(['Insert']);
-      log.length = 0;
-      expect(trim(fixture.nativeElement.textContent))
-          .toEqual('DeclareComp(Angular) InsertComp(Hello) Hello Angular!');
-
-      // Destroy declaration, But we should still be able to see updates in insertion
-      appComp.showDeclare = false;
-      insertComp.greeting = 'Hello';
-      insertComp.changeDetectorRef.markForCheck();
-      fixture.detectChanges(false);
-      expect(log).toEqual(['Insert']);
-      log.length = 0;
-      expect(trim(fixture.nativeElement.textContent)).toEqual('InsertComp(Hello) Hello Angular!');
+      const fixture =
+          TestBed
+              .configureTestingModule({
+                declarations: [CheckAlwaysDeclaration, CheckAlwaysInsertion, OnPushInsertionHost]
+              })
+              .createComponent(CheckAlwaysDeclaration);
+      fixture.detectChanges();
+      fixture.componentInstance.value = 'new';
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toEqual('new');
     });
   });
 
