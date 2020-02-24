@@ -8,9 +8,16 @@ import {
   DirectiveType,
   ComponentType,
   ProfilerFrame,
+  UpdatedStateData,
 } from 'protocol';
 import { onChangeDetection } from './change-detection-tracker';
-import { ComponentTreeNode, getDirectiveForest, getLatestComponentState, queryComponentForest } from './component-tree';
+import {
+  ComponentTreeNode,
+  getDirectiveForest,
+  getLatestComponentState,
+  queryComponentForest,
+  updateState,
+} from './component-tree';
 import { start as startProfiling, stop as stopProfiling } from './observer';
 import { serializeComponentState } from './state-serializer/state-serializer';
 import { ComponentInspector, ComponentInspectorOptions } from './component-inspector/component-inspector';

@@ -1,9 +1,17 @@
 import { deeplySerializeSelectedProperties } from './state-serializer/state-serializer';
 
-import { DevToolsNode, ElementPosition, ComponentExplorerViewQuery, DirectivesProperties } from 'protocol';
+import {
+  DevToolsNode,
+  ElementPosition,
+  ComponentExplorerViewQuery,
+  DirectivesProperties,
+  UpdatedStateData,
+} from 'protocol';
 import { getComponentName } from './highlighter';
 import { DebuggingAPI } from './interfaces';
 import { IndexedNode } from './observer/identity-tracker';
+
+const ngDebug = (window as any).ng;
 
 export interface DirectiveInstanceType {
   instance: any;
@@ -160,19 +168,22 @@ const findElementIDFromNativeElementInForest = (
 
 export const findNodeFromSerializedPosition = (serializedPosition: string) => {
   const position: number[] = serializedPosition.split(',').map(index => parseInt(index, 10));
-  return queryComponentForest(position, getDirectiveForest(document.documentElement, (window as any).ng));
+  return queryComponentForest(position, getDirectiveForest(document.documentElement, ngDebug));
 };
 
 export const updateState = (updatedStateData: UpdatedStateData) => {
-  const node = queryComponentForest(updatedStateData.directiveId.element, getDirectiveForest());
+  const node = queryComponentForest(
+    updatedStateData.directiveId.element,
+    getDirectiveForest(document.documentElement, ngDebug)
+  );
   if (updatedStateData.directiveId.directive === undefined) {
     const comp = node.component.instance;
     mutateComponentOrDirective(updatedStateData, comp);
-    ng.applyChanges(comp);
+    ngDebug.applyChanges(comp);
   } else {
     const directive = node.directives[updatedStateData.directiveId.directive].instance;
     mutateComponentOrDirective(updatedStateData, directive);
-    ng.applyChanges(ng.getOwningComponent(directive));
+    ngDebug.applyChanges(ngDebug.getOwningComponent(directive));
   }
 };
 
@@ -183,5 +194,6 @@ const mutateComponentOrDirective = (updatedStateData: UpdatedStateData, compOrDi
   updatedStateData.keyPath.forEach(key => {
     parentObjectOfValueToUpdate = parentObjectOfValueToUpdate[key];
   });
+
   parentObjectOfValueToUpdate[valueKey] = updatedStateData.newValue;
 };
