@@ -919,16 +919,6 @@ workflows:
           <<: *skip_on_pull_requests
           requires:
             - test_ivy_aot
-
-  monitoring:
-    jobs:
-      - setup
-      - aio_monitoring_stable:
-          requires:
-            - setup
-      - aio_monitoring_next:
-          requires:
-            - setup
       - saucelabs_ivy:
           # Testing saucelabs via Bazel currently taking longer than the legacy saucelabs job as it
           # each karma_web_test target is provisioning and tearing down browsers which is adding
@@ -945,6 +935,16 @@ workflows:
           # slowing down CI for PRs.
           # TODO: Run this job on all branches (including PRs) once karma_web_test targets can
           # share provisioned browsers and we can remove the legacy saucelabs job.
+          requires:
+            - setup
+
+  monitoring:
+    jobs:
+      - setup
+      - aio_monitoring_stable:
+          requires:
+            - setup
+      - aio_monitoring_next:
           requires:
             - setup
     triggers:
