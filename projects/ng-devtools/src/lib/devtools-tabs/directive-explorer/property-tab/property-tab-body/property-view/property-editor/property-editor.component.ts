@@ -111,7 +111,7 @@ export class PropertyEditorComponent implements OnChanges, AfterViewChecked {
       return undefined;
     } else {
       try {
-        return JSON.parse(value);
+        return JSON.parse(value as any);
       } catch {
         return '' + value;
       }

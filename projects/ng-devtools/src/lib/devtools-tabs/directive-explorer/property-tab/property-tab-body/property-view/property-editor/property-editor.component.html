@@ -1,4 +1,4 @@
-<div (click)="onClick()">
+<div class="editor" (click)="onClick()">
   <span [ngSwitch]="currentPropertyState" class="state-container">
     <span *ngSwitchCase="readState">
       <span class="editable">
@@ -8,6 +8,7 @@
     <span *ngSwitchCase="writeState">
       <input
         type="text"
+        class="editor-input"
         [ngClass]="{ editable: true }"
         [(ngModel)]="valueToSubmit"
         (keydown.enter)="accept()"
