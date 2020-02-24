@@ -1025,6 +1025,24 @@ groups:
         - ~framework-global-approvers
 
 
+  # ================================================
+  #  Circular dependencies
+  # ================================================
+  circular-dependencies:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'goldens/packages-circular-deps.json'
+        ])
+    reviewers:
+      users:
+        - IgorMinar
+        - josephperrott
+        - kara
+      teams:
+        - ~framework-global-approvers
+
+
 ####################################################################################
 #  Special Cases
 ####################################################################################
