@@ -33,7 +33,14 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
   injector: Injector = this;
   instance: T;
   destroyCbs: (() => void)[]|null = [];
-  readonly componentFactoryResolver: ComponentFactoryResolver;
+
+  // When bootstrapping a module we have a dependency graph that looks like this:
+  // ApplicationRef -> ComponentFactoryResolver -> NgModuleRef. The problem is that if the
+  // module being resolved tries to inject the ComponentFactoryResolver, it'll create a
+  // circular dependency which will result in a runtime error, because the injector doesn't
+  // exist yet. We work around the issue by creating the ComponentFactoryResolver ourselves
+  // and providing it, rather than letting the injector resolve it.
+  readonly componentFactoryResolver: ComponentFactoryResolver = new ComponentFactoryResolver(this);
 
   constructor(ngModuleType: Type<T>, public _parent: Injector|null) {
     super();
@@ -45,14 +52,6 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
     const ngLocaleIdDef = getNgLocaleIdDef(ngModuleType);
     ngLocaleIdDef && setLocaleId(ngLocaleIdDef);
     this._bootstrapComponents = maybeUnwrapFn(ngModuleDef !.bootstrap);
-
-    // When bootstrapping a module we have a dependency graph that looks like this:
-    // ApplicationRef -> ComponentFactoryResolver -> NgModuleRef. The problem is that if the
-    // module being resolved tries to inject the ComponentFactoryResolver, it'll create a
-    // circular dependency which will result in a runtime error, because the injector doesn't
-    // exist yet. We work around the issue by creating the ComponentFactoryResolver ourselves
-    // and providing it, rather than letting the injector resolve it.
-    this.componentFactoryResolver = new ComponentFactoryResolver(this);
     this._r3Injector = createInjector(
         ngModuleType, _parent,
         [
