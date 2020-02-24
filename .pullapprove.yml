@@ -40,6 +40,7 @@
 #  AndrewKushnir - Andrew Kushnir
 #  andrewseguin - Andrew Seguin
 #  atscott - Andrew Scott
+#  ayazhafiz - Ayaz Hafiz
 #  clydin - Charles Lyding
 #  crisbeto - Kristiyan Kostadinov
 #  dennispbrown - Denny Brown
@@ -630,6 +631,7 @@ groups:
           ])
     reviewers:
       users:
+        - ayazhafiz
         - kyliau
       teams:
         - ~framework-global-approvers
