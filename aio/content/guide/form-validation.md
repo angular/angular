@@ -248,6 +248,7 @@ at which point the form uses the last value emitted for validation.
 커스텀 비동기 유효성 검사기는 반환 타입이 Promise나 Observable인 것만 빼면 동기 유효성 검사기와 비슷하며, 이 객체 안에 에러 객체나 null을 반환합니다.
 만약 반환 타입이 옵저버블이라면 유효성 검사 로직이 종료된 이후에 이 옵저버블은 반드시 종료되어야 합니다.
 
+{@a adding-to-reactive-forms}
 <!--
 ### Adding to reactive forms
 -->
@@ -261,6 +262,7 @@ to the `FormControl`.
 
 <code-example path="form-validation/src/app/reactive/hero-form-reactive.component.1.ts" region="custom-validator" header="reactive/hero-form-reactive.component.ts (validator functions)"></code-example>
 
+{@a adding-to-template-driven-forms}
 <!--
 ### Adding to template-driven forms
 -->

@@ -159,7 +159,7 @@ You write metadata in a _subset_ of TypeScript that must conform to the followin
 * Decorated and data-bound class members must be public.
 -->
 1. JavaScript 문법 중 [표현식(expression syntax)](#expression-syntax)은 일부만 사용할 수 있습니다.
-2. [코드를 폴딩](#folding)한 이후에 존재하는 심볼만 참조할 수 있습니다.
+2. [코드를 폴딩](#code-folding)한 이후에 존재하는 심볼만 참조할 수 있습니다.
 3. 컴파일러가 지원하는 [일부 함수](#supported-functions)만 사용할 수 있습니다.
 4. 데코레이터가 사용되거나 데이터 바인딩되는 클래스 멤버는 public으로 지정되어야 합니다.
 
@@ -388,7 +388,7 @@ The compiler later reports the error if it needs that piece of metadata to gener
    ...
    "strictMetadataEmit" : true
  }
- ```
+```
 
 <!--
 Angular libraries have this option to ensure that all Angular `.metadata.json` files are clean and it is a best practice to do the same when building your own libraries.
@@ -768,7 +768,7 @@ export class AppComponent {
   template: '<h1>{{title}}</h1>'
 })
 export class AppComponent {
-  private title = 'My App'; // 오류
+  private title = 'My App'; // Bad
 }
 ```
 
@@ -946,7 +946,7 @@ This produces the following error:
 
 ```
   my.component.ts.MyComponent.html(1,1): : Property 'addresss' does not exist on type 'Person'. Did you mean 'address'?
- ```
+```
 
 <!--
 The file name reported in the error message, `my.component.ts.MyComponent.html`, is a synthetic file

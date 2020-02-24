@@ -468,6 +468,7 @@ If you're following along with these code snippets, note that you must import th
 Many servers require extra headers for save operations.
 For example, they may require a "Content-Type" header to explicitly declare the MIME type of the request body; or the server may require an authorization token.
 
+{@a adding-headers}
 <!--
 ### Adding headers
 -->
@@ -551,7 +552,7 @@ It takes two more parameters:
 여기에 인자를 두 개 더 추가합니다.
 
 1. `hero` - POST 메소드일 때 요청으로 보낼 body 데이터를 지정합니다.
-1. `httpOptions` - HTTP 요청에 대한 옵션을 지정합니다. [헤더 추가하기](#헤더-추가하기)에서 지정한 옵션입니다.
+1. `httpOptions` - HTTP 요청에 대한 옵션을 지정합니다. [헤더 추가하기](#adding-headers)에서 지정한 옵션입니다.
 
 <!--
 Of course it catches errors in much the same manner [described above](#error-details).
@@ -1226,7 +1227,7 @@ If a cachable request is not in cache, the code calls `sendRequest`.
 The `sendRequest` function creates a [request clone](#immutability) without headers
 because the npm api forbids them.
 -->
-npm에서 제공하는 API는 헤더를 사용하지 않기 때문에 `sendRequest` 함수에서 [HTTP 요청을 복제한 인스턴스](#불변성)를 생성할 때 헤더를 모두 비웁니다.
+npm에서 제공하는 API는 헤더를 사용하지 않기 때문에 `sendRequest` 함수에서 [HTTP 요청을 복제한 인스턴스](#immutability)를 생성할 때 헤더를 모두 비웁니다.
 
 <!--
 It forwards that request to `next.handle()` which ultimately calls the server and

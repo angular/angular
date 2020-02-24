@@ -393,7 +393,7 @@ You just have to apply the `.selected` class to the `<li>` when the user clicks 
 The Angular [class binding](guide/template-syntax#class-binding) makes it easy to add and remove a CSS class conditionally.
 Just add `[class.some-css-class]="some-condition"` to the element you want to style.
 -->
-Angular가 제공하는 [클래스 바인딩](guide/template-syntax#클래스-바인딩) 문법을 사용하면 특정 조건에 따라 CSS 클래스를 추가하거나 제거할 수 있습니다.
+Angular가 제공하는 [클래스 바인딩](guide/template-syntax#class-binding) 문법을 사용하면 특정 조건에 따라 CSS 클래스를 추가하거나 제거할 수 있습니다.
 스타일을 지정하려는 엘리먼트에 `[class.some-css-class]="some-condition"`와 같은 문법을 추가하면 됩니다.
 
 <!--

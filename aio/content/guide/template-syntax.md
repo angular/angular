@@ -318,9 +318,9 @@ When using template expressions follow these guidelines:
 -->
 템플릿 표현식은 다음 가이드라인을 준수하며 사용하는 것을 권장합니다:
 
-* [외부 영향 최소화](guide/template-syntax#외부-영향-최소화)
-* [실행시간은 최대한 짧게](guide/template-syntax#실행시간은-최대한-짧게)
-* [로직은 최대한 단순하게](guide/template-syntax#로직은-최대한-단순하게)
+* [Simplicity](guide/template-syntax#simplicity)
+* [Quick execution](guide/template-syntax#quick-execution)
+* [No visible side effects](guide/template-syntax#no-visible-side-effects)
 
 
 #### Simplicity
@@ -341,10 +341,11 @@ promise resolutions, HTTP results, timer events, key presses and mouse moves.
 Expressions should finish quickly or the user experience may drag, especially on slower devices.
 Consider caching values when their computation is expensive.
 
+{@a no-visible-side-effects}
 <!--
-### No visible side effects
+#### No visible side effects
 -->
-### 외부 영향 최소화
+#### 외부 영향 최소화
 
 
 <!--
@@ -974,9 +975,7 @@ The following table summarizes the targets for the different binding types.
 
 <hr/>
 
-<!--
 {@a property-binding}
--->
 
 {@a 프로퍼티-바인딩}
 ## Property binding `[property]`
@@ -1268,6 +1267,7 @@ Angular 템플릿에서는 프로퍼티 바인딩 외에도 다음과 같은 특
 
 To see attribute, class, and style bindings in a functioning app, see the <live-example name="attribute-binding"></live-example> especially for this section.
 
+{@a attribute-binding}
 <!--
 ### Attribute binding
 -->
@@ -1569,7 +1569,7 @@ However, if `dirWithHostBinding` sets its binding to `null`, the `width` propert
 -->
 {@a 이벤트-바인딩}
 
-
+{@a event-binding}
 <!--
 ## Event binding `(event)`
 -->
@@ -1765,9 +1765,7 @@ These changes propagate through the system and ultimately display in this and ot
 
 <hr/>
 
-<!--
 {@a two-way}
--->
 {@a 양방향-바인딩}
 
 ## Two-way binding `[(...)]`
@@ -1894,9 +1892,7 @@ For more detail, including how to build your own custom directives, see [Attribu
 
 <hr/>
 
-<!--
 {@a attribute-directives}
--->
 {@a 어트리뷰트-디렉티브}
 
 <!--
@@ -2095,9 +2091,7 @@ Here are all variations in action, including the uppercase version:
 
 <hr/>
 
-<!--
 {@a structural-directives}
--->
 {@a 구조-디렉티브}
 
 <!--
@@ -2223,7 +2217,7 @@ The `nullCustomer` will not be displayed as long as it is `null`.
 See also the
 [safe navigation operator](guide/template-syntax#safe-navigation-operator "Safe navigation operator (?.)") below.
 -->
-[안전 참조 연산자](guide/template-syntax#안전-참조-연산자 "Safe navigation operator (?.)") 에 대해서도 확인해 보세요.
+[안전 참조 연산자](guide/template-syntax#safe-navigation-operator "Safe navigation operator (?.)") 에 대해서도 확인해 보세요.
 
 </div>
 <hr/>
@@ -2433,7 +2427,7 @@ which is bound to the `currentItem` of the parent component.
 -->
 스위치 디렉티브는 *컴포넌트 엘리먼트를* DOM에 추가하거나 제거하는 용도로도 많이 사용합니다.
 위에서 살펴본 예제는 `item-switch.component.ts` 파일에 정의된 컴포넌트 4개를 하나씩 선택해서 적용하는 예제입니다.
-각각의 컴포넌트는 부모 컴포넌트에서 전달되는 `currentItem` 프로퍼티를 `item`를 [입력 프로퍼티](guide/template-syntax#입출력-프로퍼티 "Input property")로 바인딩합니다.
+각각의 컴포넌트는 부모 컴포넌트에서 전달되는 `currentItem` 프로퍼티를 `item`를 [입력 프로퍼티](guide/template-syntax#inputs-outputs "Input property")로 바인딩합니다.
 
 <!--
 Switch directives work as well with native elements and web components too.

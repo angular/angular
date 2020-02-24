@@ -3474,6 +3474,7 @@ Angular는 앞으로 HTML 템플릿에도 이 기능을 지원할 수 있도록 
 
 {@a 05-12}
 
+{@a decorate-input-and-output-properties}
 <!--
 ### Decorate _input_ and _output_ properties
 -->

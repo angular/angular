@@ -3131,7 +3131,7 @@ Update the template with a [class binding](guide/template-syntax#class-binding).
 The binding adds the `selected` CSS class when the comparison returns `true` and removes it when `false`.
 Look for it within the repeated `<li>` tag as shown here:
 -->
-템플릿에 [CSS 클래스 바인딩](guide/template-syntax#클래스-바인딩)을 적용해 봅시다.
+템플릿에 [CSS 클래스 바인딩](guide/template-syntax#class-binding)을 적용해 봅시다.
 라우팅 변수로 받아온 히어로의 `id`에 해당하는 엘리먼트에는 `selected` CSS 클래스를 지정하고, 이 `id`에 해당하지 않는 엘리먼트에는 `selected` CSS 클래스를 제거하려고 합니다.
 이 로직은 템플릿에서 반복되는 `<li>` 태그에 사용되었습니다:
 
@@ -4315,6 +4315,7 @@ the secondary popup route from the current URL.
 팝업 `RouterOutlet`의 값을 `null`로 할당하면 이 라우팅 영역을 비우기 때문에 브라우저 주소표시줄의 URL에서 서브 라우팅 규칙도 제거됩니다.
 
 {@a guards}
+{@a milestone-5-route-guards}
 
 <!--
 ## Milestone 5: Route guards

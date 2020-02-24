@@ -172,6 +172,7 @@ export class AppComponent {
 ```
 
 {@a file-replacement}
+{@a configure-target-specific-file-replacements}
 
 <!--
 ## Configure target-specific file replacements

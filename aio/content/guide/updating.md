@@ -130,8 +130,6 @@ Angular는 라이브러리 업데이트를 쉽게 할 수 있도록 [Angular Upd
 * Update command reference: [Angular CLI `ng update` command reference](cli/update)
 
 * Versioning, release, support, and deprecation practices: [Angular versioning and releases](guide/releases "Angular versioning and releases")
-
-* Release schedule: [Angular versioning and releases](guide/releases#schedule "Angular versioning and releases")
 -->
 * 릴리즈 공지:  [Angular 블로그 - 릴리즈 공지](https://blog.angular.io/tagged/release%20notes "Angular blog announcements about recent releases")
 
@@ -144,6 +142,4 @@ Angular는 라이브러리 업데이트를 쉽게 할 수 있도록 [Angular Upd
 * 업데이트 커맨드 명령: [Angular CLI `ng update` 문서](cli/update)
 
 * 버전 정책, 릴리즈, 버전 지원, 삿용이 중단된 심볼들: [Angular 버전 정책과 릴리즈](guide/releases "Angular versioning and releases")
-
-* 릴리즈 일정: [Angular 버전 정책과 릴리즈](guide/releases#schedule "Angular versioning and releases")
 

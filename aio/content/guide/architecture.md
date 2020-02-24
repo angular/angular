@@ -53,6 +53,7 @@ Angular 애플리케이션에서는 여러가지 뷰를 계층으로 구성합�
 
 </div>
 
+{@a modules}
 <!--
 ## Modules
 -->
@@ -87,6 +88,7 @@ Organizing your code into distinct functional modules helps in managing developm
 
 </div>
 
+{@a components}
 <!--
 ## Components
 -->
@@ -159,6 +161,7 @@ Angular provides predefined pipes for common transformations, and you can also d
 
 </div>
 
+{@a dependency-injection}
 <!--
 {@a dependency-injection}
 -->

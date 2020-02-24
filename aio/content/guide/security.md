@@ -127,6 +127,7 @@ _Angular 템플릿은 실행되는 코드라고 볼 수 있습니다_: 그래서
 사용자가 입력한 내용으로 템플릿을 구성하는 방식은 절대로 사용하면 안됩니다.
 이 기능이 꼭 필요하다면 [오프라인 템플릿 컴파일러](guide/security#offline-template-compiler)를 사용해야 합니다. 이 방식은 _템플릿 주입(template injection)_ 이라고도 합니다.
 
+{@a sanitization-and-security-contexts}
 <!--
 ### Sanitization and security contexts
 -->

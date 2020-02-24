@@ -668,8 +668,12 @@ This template binds directly to the component's `messageService`.
 
 * An `*ngFor` presents the list of messages in repeated `<div>` elements.
 
+
 * An Angular [event binding](guide/template-syntax#event-binding) binds the button's click event
 to `MessageService.clear()`.
+
+The messages will look better when you add the private CSS styles to `messages.component.css`
+as listed in one of the ["final code review"](#final-code-review) tabs below.
 -->
 이 템플릿은 컴포넌트에 의존성으로 주입된 `messageService`를 직접 바인딩합니다.
 
@@ -678,8 +682,6 @@ to `MessageService.clear()`.
 * 리스트에 존재하는 메시지마다 `<div>` 엘리먼트를 반복하기 위해 `*ngFor`를 사용했습니다.
 
 * 버튼을 클릭했을 때 `MessageService.clear()` 함수를 실행하기 위해 [이벤트 바인딩](guide/template-syntax#이벤트-바인딩) 문법을 사용했습니다.
-
-<!--
 The messages will look better when you add the private CSS styles to `messages.component.css`
 as listed in one of the ["final code review"](#final-code-review) tabs below.
 

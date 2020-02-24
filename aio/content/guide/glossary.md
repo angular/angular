@@ -247,7 +247,6 @@ updating application data values.
 
 Read about the following forms of binding in [Template Syntax](guide/template-syntax):
 
-<!--
  * [Interpolation](guide/template-syntax#interpolation)
  * [Property binding](guide/template-syntax#property-binding)
  * [Event binding](guide/template-syntax#event-binding)
@@ -255,14 +254,6 @@ Read about the following forms of binding in [Template Syntax](guide/template-sy
  * [Class binding](guide/template-syntax#class-binding)
  * [Style binding](guide/template-syntax#style-binding)
  * [Two-way data binding with ngModel](guide/template-syntax#ngModel)
--->
- * [문자열 바인딩](guide/template-syntax#문자열-바인딩)
- * [프로퍼티 바인딩](guide/template-syntax#프로퍼티-바인딩)
- * [이벤트 바인딩](guide/template-syntax#이벤트-바인딩)
- * [어트리뷰트 바인딩](guide/template-syntax#어트리뷰트-바인딩)
- * [클래스 바인딩](guide/template-syntax#클래스-바인딩)
- * [스타일 바인딩](guide/template-syntax#스타일-바인딩)
- * [ngModel을 사용하는 양방향 바인딩](guide/template-syntax#ngModel)
 
 {@a declarable}
 
@@ -425,13 +416,7 @@ Learn more about reactive and template-driven forms in the [Introduction to form
 
 ## form validation
 
-<!--
 A check that runs when form values change and reports whether the given values are correct and complete, according to the defined constraints. Reactive forms apply [validator functions](guide/form-validation#adding-to-reactive-forms). Template-driven forms use [validator directives](guide/form-validation#adding-to-template-driven-forms).
-
-
-To learn more, see [Form Validation](guide/form-validation).
--->
-A check that runs when form values change and reports whether the given values are correct and complete, according to the defined constraints. Reactive forms apply [validator functions](guide/form-validation#반응형-폼에-적용하기). Template-driven forms use [validator directives](guide/form-validation#템플릿-기반-폼에-적용하기).
 
 
 To learn more, see [Form Validation](guide/form-validation).
@@ -479,16 +464,8 @@ Learn more about the injector hierarchy in [Hierarchical Dependency Injectors](g
 
 ## input
 
-<!--
 When defining a [directive](#directive), the `@Input()` decorator on a directive property
 makes that property available as a *target* of a [property binding](guide/template-syntax#property-binding).
-Data values flow into an input property from the data source identified
-in the [template expression](#template-expression) to the right of the equal sign.
-
-To learn more, see [input and output properties](guide/template-syntax#inputs-outputs).
--->
-When defining a [directive](#directive), the `@Input()` decorator on a directive property
-makes that property available as a *target* of a [property binding](guide/template-syntax#프로퍼티-바인딩).
 Data values flow into an input property from the data source identified
 in the [template expression](#template-expression) to the right of the equal sign.
 
@@ -668,16 +645,8 @@ An object passed to the `subscribe()` method for an [observable](#observable). T
 
 ## output
 
-<!--
 When defining a [directive](#directive), the `@Output{}` decorator on a directive property
 makes that property available as a *target* of [event binding](guide/template-syntax#event-binding).
-Events stream *out* of this property to the receiver identified
-in the [template expression](#template-expression) to the right of the equal sign.
-
-To learn more, see [Input and Output Properties](guide/template-syntax#inputs-outputs).
--->
-When defining a [directive](#directive), the `@Output{}` decorator on a directive property
-makes that property available as a *target* of [event binding](guide/template-syntax#이벤트-바인딩).
 Events stream *out* of this property to the receiver identified
 in the [template expression](#template-expression) to the right of the equal sign.
 
@@ -941,10 +910,7 @@ The alternative is a reactive form. For an introduction and comparison of both f
 
 A TypeScript-like syntax that Angular evaluates within a [data binding](#data-binding).
 
-<!--
 Read about how to write template expressions in  [Template expressions](guide/template-syntax#template-expressions).
--->
-Read about how to write template expressions in  [Template expressions](guide/template-syntax#템플릿-표현식).
 
 {@a token}
 

@@ -513,6 +513,7 @@ an administrator ever needs to deactivate the service worker quickly.
 -->
 복잡한 시스템이라면 보통 그렇듯이, 설정값을 잘못 지정하거나 버그가 발생하면 서비스 워커도 예상하지 않은 방식으로 동작할 수 있습니다. 하지만 이런 경우를 최소화하기 위해 설정값이 잘못되었을 때 동작하는 안전장치가 몇가지 있습니다. 이 안전장치를 활용하면 오동작하는 서비스 워커를 빠르게 비활성화할 수 있습니다.
 
+{@a fail-safe}
 <!--
 ### Fail-safe
 -->

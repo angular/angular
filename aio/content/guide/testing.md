@@ -826,7 +826,7 @@ can validate much of the component's behavior in an easier, more obvious way.
 하지만 일반적으로는 DOM을 신경쓰지 않고 _컴포넌트 클래스만 테스트하는 경우_ 가 많습니다.
 컴포넌트는 동작 위주로 테스트하는 것이 더 간단하고, 테스트 스펙을 정의하기도 명확합니다.
 
-
+{@a component-class-testing}
 <!--
 ### Component class testing
 -->

@@ -103,25 +103,14 @@ Angular 프로젝트를 최신버전으로 유지하는 것에 대해 자세하�
 -->
 ### 시험판 릴리즈
 
-<!--
-We let you preview what's coming by providing Beta releases and Release Candidates (`rc`) for each major and minor release:
--->
-메이저 버전과 마이너 버전이 릴리즈되기 전에는 베타 버전이나 배포 준비 버전(Release Candidates, `rc`)이 제공됩니다.
+We let you preview what's coming by providing "Next" and Release Candidates (`rc`) pre-releases for each major and minor release:
 
 * **Next:** The release that is under active development and testing. The next release is indicated by a release tag appended with the  `-next` identifier, such as  `8.1.0-next.0`.
 
-<!--
-* **Beta:** A release that is under active development and testing. A Beta release is indicated by a release tag appended with the  `beta` identifier, such as  `8.0.0-beta.0`.
+* **Release candidate:** A release that is feature complete and in final testing. A release candidate is indicated by a release tag appended with the `-rc` identifier, such as version `8.1.0-rc.0`.
 
-* **Release candidate:** A release that is feature complete and in final testing. A release candidate is indicated by a release tag appended with the `rc` identifier, such as version `8.1.0-rc`.
+The latest `next` or `rc` pre-release version of the documentation is available at [next.angular.io](https://next.angular.io).
 
-The next version of the documentation is available at [next.angular.io](https://next.angular.io). This includes any documentation for Beta or Release Candidate features and APIs.
--->
-* **베타 버전:** 아직 개발중이거나 테스트중인 릴리즈 버전을 의미합니다. 베타 릴리즈는 목표로 하는 버전 뒤에 `beta`라는 문자열이 더 붙어서 `8.0.0-beta.0`과 같이 표기합니다.
-
-* **배포 준비 버전:** 해당 버전에 추가하려는 기능이 모두 개발되어 최종 테스트 단계에 있는 릴리즈 버전을 의미합니다. 배포 준비 버전은 목표로 하는 버전 뒤에 `rc`라는 문자열이 붙어서 `8.1.0-rc`와 같이 표기합니다.
-
-앞으로 릴리즈될 다음 버전에 대한 내용은 [next.angular.io](https://next.angular.io)에서 확인할 수 있습니다. 이 문서에는 베타 버전이나 배포 준비 버전에 대한 내용도 포함되어 있습니다.
 
 {@a frequency}
 <!--
@@ -239,7 +228,7 @@ API나 기능이 크게 변하는(breaking changes) 릴리즈를 사용하려면
 
 * **공지:** 사용이 중단되는 기능은 [체인지 로그](https://github.com/angular/angular/blob/master/CHANGELOG.md "Angular change log")에 안내하겠습니다. 사용이 중단되는 기능은 [문서](api?status=deprecated)에 ~~취소선~~ 으로 표시하겠습니다. 그리고 이 기능들에 대해서는 업데이트할 수 있는 방법도 안내하겠습니다. 사용이 중단되는 기능은 [Deprecations](guide/deprecations) 문서에 요약된 내용으로도 제공됩니다.
 
-* **지원 중단 기간:** 사용이 중단되는 API는 [최소한 2개 메이저 릴리즈](#schedule)동안 유지하겠습니다. 사용이 중단되는 API나 기능이 지정되는 것은 어떤 릴리즈라도 상관없지만, 이 기능이 실제로 제거되는 것은 메이저 릴리즈에만 적용하겠습니다. 그리고 이렇게 중단된 API와 기능이라도 LTS 정책을 따르기 때문에, 심각한 결함이나 보안 이슈가 있으면 수정될 수 있습니다.
+* **지원 중단 기간:** 사용이 중단되는 API는 최소한 2개 메이저 릴리즈동안 유지하겠습니다. 사용이 중단되는 API나 기능이 지정되는 것은 어떤 릴리즈라도 상관없지만, 이 기능이 실제로 제거되는 것은 메이저 릴리즈에만 적용하겠습니다. 그리고 이렇게 중단된 API와 기능이라도 LTS 정책을 따르기 때문에, 심각한 결함이나 보안 이슈가 있으면 수정될 수 있습니다.
 
 * **npm 의존성:** npm 패키지 버전이 변경되는 것은 메이저 릴리즈가 변경되면서 꼭 필요할 때만 반영하겠습니다. 마이너 버전이 릴리즈되면서 npm 패키지 버전이 변경되더라도 이것은 지원하는 버전을 더 다양하게 하기 위한 것입니다. 다음 메이저 버전이 있기 전까지는 npm 패키지 버전을 변경하지 않아도 됩니다.
 
