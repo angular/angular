@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {runBenchmark, verifyNoBrowserErrors} from '@angular/testing/src/perf_util';
+import {runBenchmark, verifyNoBrowserErrors} from '@angular/testing/src/e2e_util';
 
 describe('ng-dart1.x naive infinite scroll benchmark', function() {
 

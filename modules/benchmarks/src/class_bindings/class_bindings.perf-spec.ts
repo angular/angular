@@ -7,7 +7,7 @@
  */
 
 import {$, browser} from 'protractor';
-import {runBenchmark} from '../../../e2e_util/perf_util';
+import {runBenchmark} from '../../../e2e_util/e2e_util';
 
 describe('class bindings perf', () => {
 

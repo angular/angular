@@ -8,8 +8,7 @@
 
 import {browser} from 'protractor';
 
-import {openBrowser} from '../../../e2e_util/e2e_util';
-import {runBenchmark} from '../../../e2e_util/perf_util';
+import {openBrowser, runBenchmark} from '../../../e2e_util/e2e_util';
 
 export function runTreeBenchmark({id, prepare, setup, work}: {
   id: string; prepare ? () : void; setup ? () : void; work(): void;

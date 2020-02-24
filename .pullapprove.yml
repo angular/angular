@@ -940,7 +940,6 @@ groups:
           'docs/TOOLS.md',
           'docs/TRIAGE_AND_LABELS.md',
           'modules/e2e_util/e2e_util.ts',
-          'modules/e2e_util/perf_util.ts',
           'modules/*',
           'packages/*',
           'packages/examples/test-utils/**',

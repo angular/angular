@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {runClickBenchmark, verifyNoBrowserErrors} from '@angular/testing/src/perf_util';
+import {runClickBenchmark, verifyNoBrowserErrors} from '@angular/testing/src/e2e_util';
 
 describe('ng1.x tree benchmark', function() {
 
