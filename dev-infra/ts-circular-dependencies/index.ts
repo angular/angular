@@ -120,9 +120,17 @@ export function main(
         chalk.yellow(`   Fixed circular dependencies that need to be removed from the golden:`));
     fixedCircularDeps.forEach(c => console.error(`     • ${convertReferenceChainToString(c)}`));
     console.info();
-    console.info(chalk.yellow(
-        `   Please update the golden. The following command can be ` +
-        `run: yarn ts-circular-deps approve ${getRelativePath(baseDir, goldenFile)}.`));
+    // Print the command for updating the golden. Note that we hard-code the script name for
+    // approving default packages golden in `goldens/`. We cannot infer the script name passed to
+    // Yarn automatically since script are launched in a child process where `argv0` is different.
+    if (resolve(goldenFile) === resolve(projectDir, 'goldens/packages-circular-deps.json')) {
+      console.info(
+          chalk.yellow(`   Please approve the new golden with: yarn ts-circular-deps:approve`));
+    } else {
+      console.info(chalk.yellow(
+          `   Please update the golden. The following command can be ` +
+          `run: yarn ts-circular-deps approve ${getRelativePath(baseDir, goldenFile)}.`));
+    }
   }
   return 1;
 }
