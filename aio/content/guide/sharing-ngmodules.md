@@ -1,28 +1,7 @@
 <!--
-# Sharing Modules
+# Sharing modules
 -->
 # 모듈 공유하기
-
-<!--
-#### Prerequisites
-A basic understanding of the following:
-* [Feature Modules](guide/feature-modules).
-* [JavaScript Modules vs. NgModules](guide/ngmodule-vs-jsmodule).
-* [Frequently Used Modules](guide/frequent-ngmodules).
-* [Routing and Navigation](guide/router).
-* [Lazy loading modules](guide/lazy-loading-ngmodules).
--->
-#### 사전지식
-다음 내용을 먼저 이해하고 이 문서를 보는 것이 좋습니다:
-* [기능 모듈](guide/feature-modules)
-* [JavaScript 모듈 vs. NgModules](guide/ngmodule-vs-jsmodule)
-* [자주 사용하는 NgModule](guide/frequent-ngmodules)
-* [라우팅, 네비게이션](guide/router)
-* [모듈 지연로딩](guide/lazy-loading-ngmodules)
-
-<!--* Components (#TBD) We don’t have a page just on the concept of components, but I think one would be helpful for beginners.-->
-
-<hr>
 
 <!--
 Creating shared modules allows you to organize and streamline your code. You can put commonly
@@ -83,7 +62,7 @@ having to import it directly into the `@NgModule` decorator.
 `SharedModule`의 컴포넌트에 `[(ngModel)]`이 사용되지 않아서 실제로는 `SharedModule`이 `FormsModule`을 로드할 필요가 없더라도, `imports` 목록에 등록되어 있기 때문에 `SharedModule`은 `FormsModule`을 모듈 외부로 공개합니다. 그러면 `SharedModule`을 로드하는 다른 모듈은 `FormsModule`을 따로 로드하지 않아도 이 모듈을 사용할 수 있습니다.
 
 <!--
-### Using components vs services from other modules.
+### Using components vs services from other modules
 -->
 ## 다른 모듈의 컴포넌트 사용하기 vs 서비스 사용하기
 

@@ -3,8 +3,8 @@ export declare class $locationShim {
     $$parse(url: string): void;
     $$parseLinkUrl(url: string, relHref?: string | null): boolean;
     absUrl(): string;
-    hash(hash: string | number | null): this;
     hash(): string;
+    hash(hash: string | number | null): this;
     host(): string;
     onChange(fn: (url: string, state: unknown, oldUrl: string, oldState: unknown) => void, err?: (e: Error) => void): void;
     path(): string;
@@ -21,8 +21,8 @@ export declare class $locationShim {
     search(search: string | number | {
         [key: string]: unknown;
     }, paramValue: null | undefined | string | number | boolean | string[]): this;
-    state(state: unknown): this;
     state(): unknown;
+    state(state: unknown): this;
     url(): string;
     url(url: string): this;
 }

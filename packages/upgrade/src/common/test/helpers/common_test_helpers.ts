@@ -124,7 +124,7 @@ export function createWithEachNg1VersionFn(setNg1: typeof setAngularJSGlobal) {
         delete win.angular;
       });
 
-      methodsToPatch.forEach(method => win[method](function() {
+      methodsToPatch.forEach(method => win[method](function(this: unknown) {
                                // Run the captured callbacks. (Async callbacks not supported.)
                                methodCallbacks[method].forEach(cb => cb.call(this));
                              }));

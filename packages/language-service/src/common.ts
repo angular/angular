@@ -8,37 +8,17 @@
 
 import {CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CssSelector, Node as HtmlAst, ParseError, Parser, TemplateAst} from '@angular/compiler';
 
-import {Diagnostic, TemplateSource} from './types';
+import {TemplateSource} from './types';
 
 export interface AstResult {
-  htmlAst?: HtmlAst[];
-  templateAst?: TemplateAst[];
-  directive?: CompileDirectiveMetadata;
-  directives?: CompileDirectiveSummary[];
-  pipes?: CompilePipeSummary[];
-  parseErrors?: ParseError[];
-  expressionParser?: Parser;
-  errors?: Diagnostic[];
-}
-
-export interface TemplateInfo {
-  position?: number;
-  fileName?: string;
-  template: TemplateSource;
   htmlAst: HtmlAst[];
+  templateAst: TemplateAst[];
   directive: CompileDirectiveMetadata;
   directives: CompileDirectiveSummary[];
   pipes: CompilePipeSummary[];
-  templateAst: TemplateAst[];
+  parseErrors?: ParseError[];
   expressionParser: Parser;
-}
-
-export interface AttrInfo {
-  name: string;
-  input?: boolean;
-  output?: boolean;
-  template?: boolean;
-  fromHtml?: boolean;
+  template: TemplateSource;
 }
 
 export type SelectorInfo = {

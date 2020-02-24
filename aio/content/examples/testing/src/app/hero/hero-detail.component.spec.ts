@@ -206,6 +206,7 @@ function heroModuleSetup() {
       nameInput.value = 'quick BROWN  fOx';
 
       // 엘리먼트의 값이 변경되었다는 것을 Angular에게 알리기 위해 DOM 이벤트를 생성합니다.
+      // use newEvent utility function (not provided by Angular) for better browser compatibility
       nameInput.dispatchEvent(newEvent('input'));
 
       // Angular가 화면을 갱신하도록 detectChanges() 함수를 실행합니다.

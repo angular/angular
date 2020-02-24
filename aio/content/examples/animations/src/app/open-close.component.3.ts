@@ -36,9 +36,6 @@ import { transAnimation } from './animations';
         })
       ])
     ])
-// #docregion runtime
-  ],
-// #enddocregion runtime
 // #enddocregion reusable
   templateUrl: 'open-close.component.html',
   styleUrls: ['open-close.component.css']

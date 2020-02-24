@@ -1,7 +1,7 @@
 <!--
-# Display a Heroes List
+# Display a selection list
 -->
-# 히어로 목록 표시하기
+# 목록 표시하기
 
 <!--
 In this page, you'll expand the Tour of Heroes app to display a list of heroes, and
@@ -36,19 +36,12 @@ The file should look like this.
 이 파일에 `HEROES` 배열을 상수로 선언하고 다른 파일에서 참조할 수 있도록 파일 외부로 공개할 것입니다.
 파일의 내용은 다음과 같이 작성합니다.
 
-<code-example path="toh-pt2/src/app/mock-heroes.ts" linenums="false"
-header="src/app/mock-heroes.ts">
-</code-example>
+<code-example path="toh-pt2/src/app/mock-heroes.ts" header="src/app/mock-heroes.ts"></code-example>
 
 <!--
 ## Displaying heroes
 -->
 ## 히어로 표시하기
-
-<!--
-You're about to display the list of heroes at the top of the `HeroesComponent`.
--->
-이제 `HeroesComponent` 위쪽에 히어로의 목록을 표시해 봅시다.
 
 <!--
 Open the `HeroesComponent` class file and import the mock `HEROES`.
@@ -62,17 +55,17 @@ Open the `HeroesComponent` class file and import the mock `HEROES`.
 </code-example>
 
 <!--
-In the same file (`HeroesComponent` class), define a component property called `heroes` to expose `HEROES` array for binding.
+In the same file (`HeroesComponent` class), define a component property called `heroes` to expose the `HEROES` array for binding.
 -->
 그리고 클래스에 `heroes` 프로퍼티를 선언하고 위에서 로드한 `HEROES` 배열을 바인딩합니다.
 
-<code-example path="toh-pt2/src/app/heroes/heroes.component.ts" region="component">
+<code-example path="toh-pt2/src/app/heroes/heroes.component.ts" header="src/app/heroes/heroes.component.ts" region="component">
 </code-example>
 
 <!--
-### List heroes with _*ngFor_
+### List heroes with `*ngFor`
 -->
-### _*ngFor_ 로 히어로 목록 표시하기
+### `*ngFor` 로 히어로 목록 표시하기
 
 <!--
 Open the `HeroesComponent` template file and make the following changes:
@@ -96,16 +89,9 @@ Make it look like this:
 -->
 그러면 다음과 같은 템플릿이 구성됩니다:
 
-<!--
-<code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="list" header="heroes.component.html (heroes template)" linenums="false">
--->
-<code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="list" header="heroes.component.html (heroes 템플릿)" linenums="false">
-</code-example>
+<code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="list" header="heroes.component.html (heroes template)"></code-example>
 
-<!--
-Now change the `<li>` to this:
--->
-그리고 `<li>`태그를 다음 코드처럼 수정합니다.
+That shows one hero. To list them all, add an `*ngFor` to the `<li>` to iterate through the list of heroes:
 
 <code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="li">
 </code-example>
@@ -118,10 +104,10 @@ It repeats the host element for each element in a list.
 이 디렉티브는 목록에 있는 항목마다 호스트 엘리먼트를 반복합니다.
 
 <!--
-In this example
+The syntax in this example is as follows:
 
-* `<li>` is the host element
-* `heroes` is the list from the `HeroesComponent` class.
+* `<li>` is the host element.
+* `heroes` holds the mock heroes list from the `HeroesComponent` class, the mock heroes list.
 * `hero` holds the current hero object for each iteration through the list.
 -->
 
@@ -240,8 +226,7 @@ Add a click event binding to the `<li>` like this:
 -->
 `<li>`태그에 다음과 같이 클릭 이벤트를 바인딩합니다.
 
-<code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="selectedHero-click" header="heroes.component.html (template excerpt)" linenums="false">
-</code-example>
+<code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="selectedHero-click" header="heroes.component.html (template excerpt)"></code-example>
 
 <!--
 This is an example of Angular's [event binding](guide/template-syntax#event-binding) syntax.
@@ -255,14 +240,10 @@ When the user clicks in the `<li>`, Angular executes the `onSelect(hero)` expres
 이렇게 이벤트를 바인딩하면 Angular가 `<li>` 엘리먼트에서 발생하는 `click` 이벤트를 감지할 수 있습니다.
 그래서 사용자가 `<li>` 엘리먼트를 클릭하면 Angular는 `onSelect(hero)` 표현식을 실행합니다.
 
-<!--
-`onSelect()` is a `HeroesComponent` method that you're about to write.
-Angular calls it with the `hero` object displayed in the clicked `<li>`,
-the same `hero` defined previously in the `*ngFor` expression.
--->
-`onSelect()`는 앞으로 `HeroesComponent`에 작성할 메소드입니다.
-Angular는 이 함수를 실행하면서 사용자가 클릭한 `<li>` 엘리먼트에 해당하는 `hero` 객체를 인자로 전달합니다.
-이 때 `hero` 객체는 `*ngFor` 표현식이 히어로의 목록을 순회할 때마다 할당되는 객체입니다.
+
+In the next section, define an `onSelect()` method in `HeroesComponent` to
+display the hero that was defined in the `*ngFor` expression.
+
 
 <!--
 ### Add the click event handler
@@ -283,26 +264,18 @@ to the component's `selectedHero`.
 -->
 그 다음에는 `onSelect()`메소드를 추가합니다. 이 메소드는 템플릿에서 선택된 히어로를 컴포넌트의 `selectedHero` 변수에 할당합니다.
 
-<code-example path="toh-pt2/src/app/heroes/heroes.component.ts" region="on-select" header="src/app/heroes/heroes.component.ts (onSelect)" linenums="false">
-</code-example>
+<code-example path="toh-pt2/src/app/heroes/heroes.component.ts" region="on-select" header="src/app/heroes/heroes.component.ts (onSelect)"></code-example>
 
 <!--
-### Update the details template
+### Add a details section
 -->
-### 상세정보 화면 템플릿 업데이트 하기
+### 상세화면 영역 추가하기
 
-<!--
-The template still refers to the component's old `hero` property which no longer exists.
-Rename `hero` to `selectedHero`.
--->
-템플릿에서는 컴포넌트에 존재하지 않는 `hero` 프로퍼티를 아직 참조하고 있습니다.
-`hero`를 `selectedHero`로 변경합니다.
+Currently, you have a list in the component template. To click on a hero on the list
+and reveal details about that hero, you need a section for the details to render in the
+template. Add the following to `heroes.component.html` beneath the list section:
 
-<!--
-<code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="selectedHero-details" header="heroes.component.html (selected hero details)" linenums="false">
--->
-<code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="selectedHero-details" header="heroes.component.html (히어로 상세정보 화면)" linenums="false">
-</code-example>
+<code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="selectedHero-details" header="heroes.component.html (selected hero details)"></code-example>
 
 <!--
 After the browser refreshes, the application is broken.
@@ -329,7 +302,7 @@ When the app starts, the `selectedHero` is `undefined` _by design_.
 앱이 시작되고 나면 `selectedHero`를 선언하면서 _의도한 대로_ `selectedHero` 값이 `undefined`입니다.
 
 <!--
-Binding expressions in the template that refer to properties of `selectedHero` &mdash; expressions like `{{selectedHero.name}}` &mdash; _must fail_ because there is no selected hero.
+Binding expressions in the template that refer to properties of `selectedHero`&mdash;expressions like `{{selectedHero.name}}`&mdash;_must fail_ because there is no selected hero.
 -->
 그래서 템플릿에서 &mdash; `{{selectedHero.name}}` 와 같이 &mdash; `selectedHero`의 프로퍼티를 참조하는 바인딩 표현식은 선택된 히어로가 존재하지 않기 때문에 _동작하지 않습니다._
 
@@ -358,8 +331,7 @@ Don't forget the asterisk (*) in front of `ngIf`. It's a critical part of the sy
 `ngIf`앞에 별표(*)가 있다는 것을 잊지마세요. Angular에서 아주 중요한 문법입니다.
 </div>
 
-<code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="ng-if" header="src/app/heroes/heroes.component.html (*ngIf)" linenums="false">
-</code-example>
+<code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="ng-if" header="src/app/heroes/heroes.component.html (*ngIf)"></code-example>
 
 <!--
 After the browser refreshes, the list of names reappears.
@@ -380,7 +352,7 @@ The heroes appear in a list and details about the clicked hero appear at the bot
 #### 어떻게 동작하는 것일까요?
 
 <!--
-When `selectedHero` is undefined, the `ngIf` removes the hero detail from the DOM. There are no `selectedHero` bindings to worry about.
+When `selectedHero` is undefined, the `ngIf` removes the hero detail from the DOM. There are no `selectedHero` bindings to consider.
 -->
 `selectedHero`의 값이 `undefined`이면 `ngIf`는 히어로의 상세정보를 표현하는 부분을 DOM에서 제거합니다.
 그래서 `selectedHero`를 바인딩하지 못하는 에러는 발생하지 않습니다.
@@ -406,11 +378,9 @@ If the user clicks "Magneta", that hero should render with a distinctive but sub
 -->
 이것보다는 사용자가 "Magneta"와 같은 히어로를 클릭했을 때 이 항목의 배경색이 다음과 같이 변경되어 다른 항목과 구별되는 것이 더 좋습니다:
 
-<figure>
-
+<div class="lightbox">
   <img src='generated/images/guide/toh/heroes-list-selected.png' alt="Selected hero">
-
-</figure>
+</div>
 
 <!--
 That _selected hero_ coloring is the work of the `.selected` CSS class in the [styles you added earlier](#styles).
@@ -423,19 +393,18 @@ You just have to apply the `.selected` class to the `<li>` when the user clicks 
 The Angular [class binding](guide/template-syntax#class-binding) makes it easy to add and remove a CSS class conditionally.
 Just add `[class.some-css-class]="some-condition"` to the element you want to style.
 -->
-Angular가 제공하는 [클래스 바인딩](guide/template-syntax#클래스-바인딩) 문법을 사용하면 특정 조건에 따라 CSS 클래스를 추가하거나 제거할 수 있습니다.
+Angular가 제공하는 [클래스 바인딩](guide/template-syntax#class-binding) 문법을 사용하면 특정 조건에 따라 CSS 클래스를 추가하거나 제거할 수 있습니다.
 스타일을 지정하려는 엘리먼트에 `[class.some-css-class]="some-condition"`와 같은 문법을 추가하면 됩니다.
 
 <!--
-Add the following `[class.selected]` binding to  the `<li>` in the `HeroesComponent` template:
+Add the following `[class.selected]` binding to the `<li>` in the `HeroesComponent` template:
 -->
 이 예제에서는 `HeroesComponent` 템플릿의 `<li>` 엘리먼트에 `[class.selected]`와 같은 문법으로 클래스를 바인딩합니다:
 
 <!--
-<code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="class-selected" header="heroes.component.html (toggle the 'selected' CSS class)" linenums="false">
+<code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="class-selected" header="heroes.component.html (toggle the 'selected' CSS class)"></code-example>
 -->
-<code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="class-selected" header="heroes.component.html ('selected' CSS 클래스 토글하기)" linenums="false">
-</code-example>
+<code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="class-selected" header="heroes.component.html ('selected' CSS 클래스 토글하기)"></code-example>
 
 <!--
 When the current row hero is the same as the `selectedHero`, Angular adds the `selected` CSS class. When the two heroes are different, Angular removes the class.
@@ -449,11 +418,9 @@ The finished `<li>` looks like this:
 이렇게 수정된 `<li>` 코드는 다음과 같습니다.
 
 <!--
-<code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="li" header="heroes.component.html (list item hero)" linenums="false">
+<code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="li" header="heroes.component.html (list item hero)"></code-example>
 -->
-<code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="li" header="heroes.component.html (히어로 목록)" linenums="false">
-
-</code-example>
+<code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="li" header="heroes.component.html (히어로 목록)"></code-example>
 
 {@a final-code-review}
 
@@ -473,6 +440,10 @@ Here are the code files discussed on this page, including the `HeroesComponent` 
 그리고 이번 문서에서 다룬 파일의 내용은 다음과 같습니다.
 
 <code-tabs>
+
+  <code-pane header="src/app/mock-heroes.ts" path="toh-pt2/src/app/mock-heroes.ts">
+  </code-pane>
+
   <code-pane header="src/app/heroes/heroes.component.ts" path="toh-pt2/src/app/heroes/heroes.component.ts">
   </code-pane>
 

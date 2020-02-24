@@ -66,6 +66,7 @@ describe('HttpClient testing', () => {
     httpTestingController.verify();
   });
   // #enddocregion get-test
+
   it('can test HttpClient.get with matching header', () => {
     const testData: Data = {name: 'Test Data'};
 

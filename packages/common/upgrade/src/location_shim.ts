@@ -144,6 +144,7 @@ export class $locationShim {
         this.$$parse(oldUrl);
         this.state(oldState);
         this.setBrowserUrlWithFallback(oldUrl, false, oldState);
+        this.$$notifyChangeListeners(this.url(), this.$$state, oldUrl, oldState);
       } else {
         this.initalizing = false;
         $rootScope.$broadcast('$locationChangeSuccess', newUrl, oldUrl, newState, oldState);
@@ -199,6 +200,9 @@ export class $locationShim {
               }
               $rootScope.$broadcast(
                   '$locationChangeSuccess', newUrl, oldUrl, this.$$state, oldState);
+              if (urlOrStateChanged) {
+                this.$$notifyChangeListeners(this.url(), this.$$state, oldUrl, oldState);
+              }
             }
           });
         }
@@ -415,7 +419,6 @@ export class $locationShim {
       // state object; this makes possible quick checking if the state changed in the digest
       // loop. Checking deep equality would be too expensive.
       this.$$state = this.browserState();
-      this.$$notifyChangeListeners(url, state, oldUrl, oldState);
     } catch (e) {
       // Restore old values if pushState fails
       this.url(oldUrl);

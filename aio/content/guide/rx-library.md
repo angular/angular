@@ -4,7 +4,7 @@
 # RxJS 라이브러리
 
 <!--
-Reactive programming is an asynchronous programming paradigm concerned with data streams and the propagation of change ([Wikipedia](https://en.wikipedia.org/wiki/Reactive_programming)). RxJS (Reactive Extensions for JavaScript) is a library for reactive programming using observables that makes it easier to compose asynchronous or callback-based code ([RxJS Docs](http://reactivex.io/rxjs/)).
+Reactive programming is an asynchronous programming paradigm concerned with data streams and the propagation of change ([Wikipedia](https://en.wikipedia.org/wiki/Reactive_programming)). RxJS (Reactive Extensions for JavaScript) is a library for reactive programming using observables that makes it easier to compose asynchronous or callback-based code. See ([RxJS Docs](https://rxjs.dev/guide/overview)).
 -->
 반응형 프로그래밍은 비동기 프로그래밍 패러다임중 하나로, 데이터 스트림과 데이터의 변화를 감지하는 것에 집중하는  패러다임입니다 ([Wikipedia](https://en.wikipedia.org/wiki/Reactive_programming)).
 그리고 RxJS(Reactive Extensions for JavaScript)는 옵저버블을 활용해서 이 패러다임을 구현할 수 있도록 돕는 JavaScript 라이브러리입니다 ([RxJS Docs](http://reactivex.io/rxjs/)).
@@ -113,10 +113,11 @@ The `pipe()` function is also a method on the RxJS `Observable`, so you use this
 -->
 ### 공통 연산자
 
+<<<<<<< HEAD
 <!--
-RxJS provides many operators, but only a handful are used frequently. For a list of operators and usage samples, visit the [RxJS API Documentation](https://rxjs-dev.firebaseapp.com/api).
+RxJS provides many operators, but only a handful are used frequently. For a list of operators and usage samples, visit the [RxJS API Documentation](https://rxjs.dev/api).
 -->
-RxJS는 수많은 연산자를 제공하지만, 이 중 자주 사용하는 연산자는 일부입니다. RxJS가 제공하는 모든 연산자의 목록과 사용 방법을 보려면 [RxJS API 문서](https://rxjs-dev.firebaseapp.com/api)를 참고하세요.
+RxJS는 수많은 연산자를 제공하지만, 이 중 자주 사용하는 연산자는 일부입니다. RxJS가 제공하는 모든 연산자의 목록과 사용 방법을 보려면 [RxJS API 문서](https://rxjs.dev/api)를 참고하세요.
 
 <div class="alert is-helpful">
   <!--

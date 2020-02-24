@@ -1,19 +1,7 @@
 <!--
-# JavaScript Modules vs. NgModules
+# JavaScript modules vs. NgModules
 -->
 # JavaScript 모듈 vs. NgModules
-
-<!--
-#### Prerequisites
--->
-#### 사전지식
-
-<!--
-A basic understanding of [JavaScript/ECMAScript modules](https://hacks.mozilla.org/2015/08/es6-in-depth-modules/).
--->
-[JavaScript/ECMAScript의 모듈](https://hacks.mozilla.org/2015/08/es6-in-depth-modules/)에 대해 먼저 이해하고 이 문서를 보는 것이 좋습니다.
-
-<hr>
 
 <!--
 JavaScript and Angular use modules to organize code, and
@@ -34,6 +22,7 @@ JavaScript에서는 JavaScript 코드가 작성된 개별 파일을 모듈로 �
 ```typescript
 export class AppComponent { ... }
 ```
+
 <!--
 Then, when you need that file’s code in another file, you import it like this:
 -->
@@ -47,6 +36,8 @@ import { AppComponent } from './app.component';
 JavaScript modules help you namespace, preventing accidental global variables.
 -->
 JavaScript 모듈은 네임스페이스를 지원하기 때문에, 전역 변수와 충돌하는 것을 방지하는 용도로도 사용합니다.
+
+For more information on JavaScript modules, see [JavaScript/ECMAScript modules](https://hacks.mozilla.org/2015/08/es6-in-depth-modules/).
 
 ## NgModules
 

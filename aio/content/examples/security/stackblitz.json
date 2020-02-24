@@ -4,5 +4,6 @@
     "!**/*.d.ts",
     "!**/*.js"
   ],
+  "file": "src/app/app.component.ts",
   "tags": ["security"]
 }

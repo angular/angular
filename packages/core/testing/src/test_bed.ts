@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationInitStatus, CompilerOptions, Component, Directive, InjectFlags, InjectionToken, Injector, NgModule, NgModuleFactory, NgModuleRef, NgZone, Optional, Pipe, PlatformRef, Provider, SchemaMetadata, SkipSelf, StaticProvider, Type, ɵAPP_ROOT as APP_ROOT, ɵDepFlags as DepFlags, ɵNodeFlags as NodeFlags, ɵclearOverrides as clearOverrides, ɵgetInjectableDef as getInjectableDef, ɵivyEnabled as ivyEnabled, ɵoverrideComponentView as overrideComponentView, ɵoverrideProvider as overrideProvider, ɵstringify as stringify, ɵɵInjectableDef} from '@angular/core';
+import {AbstractType, ApplicationInitStatus, CompilerOptions, Component, Directive, InjectFlags, InjectionToken, Injector, NgModule, NgModuleFactory, NgModuleRef, NgZone, Optional, Pipe, PlatformRef, Provider, SchemaMetadata, SkipSelf, StaticProvider, Type, ɵDepFlags as DepFlags, ɵINJECTOR_SCOPE as INJECTOR_SCOPE, ɵNodeFlags as NodeFlags, ɵclearOverrides as clearOverrides, ɵgetInjectableDef as getInjectableDef, ɵivyEnabled as ivyEnabled, ɵoverrideComponentView as overrideComponentView, ɵoverrideProvider as overrideProvider, ɵstringify as stringify, ɵɵInjectableDef} from '@angular/core';
 
 import {AsyncTestCompleter} from './async_test_completer';
 import {ComponentFixture} from './component_fixture';
@@ -14,9 +14,6 @@ import {MetadataOverride} from './metadata_override';
 import {TestBedRender3, _getTestBedRender3} from './r3_test_bed';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBedStatic, TestComponentRenderer, TestModuleMetadata} from './test_bed_common';
 import {TestingCompiler, TestingCompilerFactory} from './test_compiler';
-
-
-const UNDEFINED = new Object();
 
 
 let _nextRootElementId = 0;
@@ -56,16 +53,15 @@ export interface TestBed {
 
   compileComponents(): Promise<any>;
 
-  get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
+  inject<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T, flags?: InjectFlags): T;
+  inject<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue: null, flags?: InjectFlags): T
+      |null;
 
-  // TODO: switch back to official deprecation marker once TSLint issue is resolved
-  // https://github.com/palantir/tslint/issues/4522
-  /**
-   * deprecated from v8.0.0 use Type<T> or InjectionToken<T>
-   * This does not use the deprecated jsdoc tag on purpose
-   * because it renders all overloads as deprecated in TSLint
-   * due to https://github.com/palantir/tslint/issues/4522.
-   */
+  /** @deprecated from v9.0.0 use TestBed.inject */
+  get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
+  /** @deprecated from v9.0.0 use TestBed.inject */
   get(token: any, notFoundValue?: any): any;
 
   execute(tokens: any[], fn: Function, context?: any): any;
@@ -104,7 +100,7 @@ export interface TestBed {
  * Note: Use `TestBed` in tests. It will be set to either `TestBedViewEngine` or `TestBedRender3`
  * according to the compiler used.
  */
-export class TestBedViewEngine implements Injector, TestBed {
+export class TestBedViewEngine implements TestBed {
   /**
    * Initialize the environment for testing with a compiler factory, a PlatformRef, and an
    * angular module. These are common to every test in the suite.
@@ -216,16 +212,29 @@ export class TestBedViewEngine implements Injector, TestBed {
     return TestBedViewEngine as any as TestBedStatic;
   }
 
+  static inject<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T, flags?: InjectFlags): T;
+  static inject<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue: null, flags?: InjectFlags): T
+      |null;
+  static inject<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T|null,
+      flags?: InjectFlags): T|null {
+    return _getTestBedViewEngine().inject(token, notFoundValue, flags);
+  }
+
+  /** @deprecated from v9.0.0 use TestBed.inject */
   static get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
   /**
-   * @deprecated from v8.0.0 use Type<T> or InjectionToken<T>
+   * @deprecated from v9.0.0 use TestBed.inject
    * @suppress {duplicate}
    */
   static get(token: any, notFoundValue?: any): any;
+  /** @deprecated from v9.0.0 use TestBed.inject */
   static get(
       token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
       flags: InjectFlags = InjectFlags.Default): any {
-    return _getTestBedViewEngine().get(token, notFoundValue, flags);
+    return _getTestBedViewEngine().inject(token, notFoundValue, flags);
   }
 
   static createComponent<T>(component: Type<T>): ComponentFixture<T> {
@@ -390,7 +399,8 @@ export class TestBedViewEngine implements Injector, TestBed {
       overrideComponentView(component, compFactory);
     }
 
-    const ngZone = new NgZone({enableLongStackTrace: true});
+    const ngZone =
+        new NgZone({enableLongStackTrace: true, shouldCoalesceEventChangeDetection: false});
     const providers: StaticProvider[] = [{provide: NgZone, useValue: ngZone}];
     const ngZoneInjector = Injector.create({
       providers: providers,
@@ -422,7 +432,7 @@ export class TestBedViewEngine implements Injector, TestBed {
       }
       rootScopeImports.push(RootScopeModule);
     }
-    providers.push({provide: APP_ROOT, useValue: this._isRoot});
+    providers.push({provide: INJECTOR_SCOPE, useValue: this._isRoot ? 'root' : null});
 
     const imports = [rootScopeImports, this.ngModule, this._imports];
     const schemas = this._schemas;
@@ -431,8 +441,7 @@ export class TestBedViewEngine implements Injector, TestBed {
     class DynamicTestModule {
     }
 
-    const compilerFactory: TestingCompilerFactory =
-        this.platform.injector.get(TestingCompilerFactory);
+    const compilerFactory = this.platform.injector.get(TestingCompilerFactory);
     this._compiler = compilerFactory.createTestingCompiler(this._compilerOptions);
     for (const summary of [this._testEnvAotSummaries, ...this._aotSummaries]) {
       this._compiler.loadAotSummaries(summary);
@@ -454,26 +463,39 @@ export class TestBedViewEngine implements Injector, TestBed {
     }
   }
 
-  get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
-  /**
-   * @deprecated from v8.0.0 use Type<T> or InjectionToken<T>
-   */
-  get(token: any, notFoundValue?: any): any;
-  get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
-      flags: InjectFlags = InjectFlags.Default): any {
+  inject<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T, flags?: InjectFlags): T;
+  inject<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue: null, flags?: InjectFlags): T
+      |null;
+  inject<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T|null,
+      flags?: InjectFlags): T|null {
     this._initIfNeeded();
-    if (token === TestBed) {
-      return this;
+    if (token as unknown === TestBed) {
+      return this as any;
     }
     // Tests can inject things from the ng module and from the compiler,
     // but the ng module can't inject things from the compiler and vice versa.
+    const UNDEFINED = {};
     const result = this._moduleRef.injector.get(token, UNDEFINED, flags);
-    return result === UNDEFINED ? this._compiler.injector.get(token, notFoundValue, flags) : result;
+    return result === UNDEFINED ? this._compiler.injector.get(token, notFoundValue, flags) as any :
+                                  result;
+  }
+
+  /** @deprecated from v9.0.0 use TestBed.inject */
+  get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
+  /** @deprecated from v9.0.0 use TestBed.inject */
+  get(token: any, notFoundValue?: any): any;
+  /** @deprecated from v9.0.0 use TestBed.inject */
+  get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
+      flags: InjectFlags = InjectFlags.Default): any {
+    return this.inject(token, notFoundValue, flags);
   }
 
   execute(tokens: any[], fn: Function, context?: any): any {
     this._initIfNeeded();
-    const params = tokens.map(t => this.get(t));
+    const params = tokens.map(t => this.inject(t));
     return fn.apply(context, params);
   }
 
@@ -575,12 +597,13 @@ export class TestBedViewEngine implements Injector, TestBed {
           `Cannot create the component ${stringify(component)} as it was not imported into the testing module!`);
     }
 
-    // TODO: Don't cast as `any`, proper type is boolean[]
-    const noNgZone = this.get(ComponentFixtureNoNgZone as any, false);
-    // TODO: Don't cast as `any`, proper type is boolean[]
-    const autoDetect: boolean = this.get(ComponentFixtureAutoDetect as any, false);
-    const ngZone: NgZone|null = noNgZone ? null : this.get(NgZone as Type<NgZone|null>, null);
-    const testComponentRenderer: TestComponentRenderer = this.get(TestComponentRenderer);
+    // TODO: Don't cast as `InjectionToken<boolean>`, declared type is boolean[]
+    const noNgZone = this.inject(ComponentFixtureNoNgZone as InjectionToken<boolean>, false);
+    // TODO: Don't cast as `InjectionToken<boolean>`, declared type is boolean[]
+    const autoDetect: boolean =
+        this.inject(ComponentFixtureAutoDetect as InjectionToken<boolean>, false);
+    const ngZone: NgZone|null = noNgZone ? null : this.inject(NgZone, null);
+    const testComponentRenderer: TestComponentRenderer = this.inject(TestComponentRenderer);
     const rootElId = `root${_nextRootElementId++}`;
     testComponentRenderer.insertRootElement(rootElId);
 
@@ -654,18 +677,18 @@ export function inject(tokens: any[], fn: Function): () => any {
   const testBed = getTestBed();
   if (tokens.indexOf(AsyncTestCompleter) >= 0) {
     // Not using an arrow function to preserve context passed from call site
-    return function() {
+    return function(this: unknown) {
       // Return an async test method that returns a Promise if AsyncTestCompleter is one of
       // the injected tokens.
       return testBed.compileComponents().then(() => {
-        const completer: AsyncTestCompleter = testBed.get(AsyncTestCompleter);
+        const completer = testBed.inject(AsyncTestCompleter);
         testBed.execute(tokens, fn, this);
         return completer.promise;
       });
     };
   } else {
     // Not using an arrow function to preserve context passed from call site
-    return function() { return testBed.execute(tokens, fn, this); };
+    return function(this: unknown) { return testBed.execute(tokens, fn, this); };
   }
 }
 
@@ -685,7 +708,7 @@ export class InjectSetupWrapper {
   inject(tokens: any[], fn: Function): () => any {
     const self = this;
     // Not using an arrow function to preserve context passed from call site
-    return function() {
+    return function(this: unknown) {
       self._addModule();
       return inject(tokens, fn).call(this);
     };
@@ -701,7 +724,7 @@ export function withModule(moduleDef: TestModuleMetadata, fn?: Function | null):
     InjectSetupWrapper {
   if (fn) {
     // Not using an arrow function to preserve context passed from call site
-    return function() {
+    return function(this: unknown) {
       const testBed = getTestBed();
       if (moduleDef) {
         testBed.configureTestingModule(moduleDef);

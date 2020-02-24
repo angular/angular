@@ -1,26 +1,7 @@
-
 <!--
-# Types of Feature Modules
+# Types of feature modules
 -->
 # 기능 모듈의 종류
-
-<!--
-#### Prerequisites
--->
-#### 사전지식
-
-<!--
-A basic understanding of the following concepts:
-* [Feature Modules](guide/feature-modules).
-* [JavaScript Modules vs. NgModules](guide/ngmodule-vs-jsmodule).
-* [Frequently Used Modules](guide/frequent-ngmodules).
--->
-다음 내용을 먼저 이해하고 이 문서를 보는 것이 좋습니다:
-* [기능 모듈](guide/feature-modules).
-* [JavaScript 모듈 vs. NgModules](guide/ngmodule-vs-jsmodule).
-* [자주 사용하는 NgModule](guide/frequent-ngmodules).
-
-<hr>
 
 <!--
 There are five general categories of feature modules which

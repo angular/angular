@@ -25,9 +25,13 @@ export class TreeNode {
 }
 
 let treeCreateCount: number;
-export let maxDepth: number;
+let maxDepth: number;
 let numberData: TreeNode;
 let charData: TreeNode;
+
+export function getMaxDepth() {
+  return maxDepth;
+}
 
 init();
 
@@ -67,4 +71,14 @@ export function flattenTree(node: TreeNode, target: TreeNode[] = []): TreeNode[]
     flattenTree(node.right, target);
   }
   return target;
+}
+
+export function newArray<T = any>(size: number): T[];
+export function newArray<T>(size: number, value: T): T[];
+export function newArray<T>(size: number, value?: T): T[] {
+  const list: T[] = [];
+  for (let i = 0; i < size; i++) {
+    list.push(value !);
+  }
+  return list;
 }

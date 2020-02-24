@@ -10,6 +10,8 @@ ts_library(
     ]),
     deps = [
         "//packages:types",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
         "//packages/compiler-cli/src/ngtsc/testing",
         "//packages/compiler-cli/src/ngtsc/util",
         "@npm//typescript",
@@ -18,9 +20,8 @@ ts_library(
 
 jasmine_node_test(
     name = "test",
-    bootstrap = ["angular/tools/testing/init_node_no_angular_spec.js"],
+    bootstrap = ["//tools/testing:node_no_angular_es5"],
     deps = [
         ":test_lib",
-        "//tools/testing:node_no_angular",
     ],
 )

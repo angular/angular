@@ -80,7 +80,7 @@ export function patchPrototype(prototype: any, fnNames: string[]) {
         continue;
       }
       prototype[name] = ((delegate: Function) => {
-        const patched: any = function() {
+        const patched: any = function(this: unknown) {
           return delegate.apply(this, bindArguments(<any>arguments, source + '.' + name));
         };
         attachOriginToPatched(patched, delegate);
@@ -123,7 +123,7 @@ export const isMix: boolean = typeof _global.process !== 'undefined' &&
 
 const zoneSymbolEventNames: {[eventName: string]: string} = {};
 
-const wrapFn = function(event: Event) {
+const wrapFn = function(this: unknown, event: Event) {
   // https://github.com/angular/zone.js/issues/911, in IE, sometimes
   // event will be undefined, so we need to use window.event
   event = event || _global.event;
@@ -197,7 +197,7 @@ export function patchProperty(obj: any, prop: string, prototype?: any) {
     eventNameSymbol = zoneSymbolEventNames[eventName] = zoneSymbol('ON_PROPERTY' + eventName);
   }
 
-  desc.set = function(newValue) {
+  desc.set = function(this: EventSource, newValue) {
     // in some of windows's onproperty callback, this is undefined
     // so we need to check it
     let target = this;
@@ -207,7 +207,7 @@ export function patchProperty(obj: any, prop: string, prototype?: any) {
     if (!target) {
       return;
     }
-    let previousValue = target[eventNameSymbol];
+    let previousValue = (target as any)[eventNameSymbol];
     if (previousValue) {
       target.removeEventListener(eventName, wrapFn);
     }
@@ -219,10 +219,10 @@ export function patchProperty(obj: any, prop: string, prototype?: any) {
     }
 
     if (typeof newValue === 'function') {
-      target[eventNameSymbol] = newValue;
+      (target as any)[eventNameSymbol] = newValue;
       target.addEventListener(eventName, wrapFn, false);
     } else {
-      target[eventNameSymbol] = null;
+      (target as any)[eventNameSymbol] = null;
     }
   };
 
@@ -238,7 +238,7 @@ export function patchProperty(obj: any, prop: string, prototype?: any) {
     if (!target) {
       return null;
     }
-    const listener = target[eventNameSymbol];
+    const listener = (target as any)[eventNameSymbol];
     if (listener) {
       return listener;
     } else if (originalDescGet) {
@@ -251,8 +251,8 @@ export function patchProperty(obj: any, prop: string, prototype?: any) {
       let value = originalDescGet && originalDescGet.call(this);
       if (value) {
         desc !.set !.call(this, value);
-        if (typeof target[REMOVE_ATTRIBUTE] === 'function') {
-          target.removeAttribute(prop);
+        if (typeof(target as any)[REMOVE_ATTRIBUTE] === 'function') {
+          (target as any).removeAttribute(prop);
         }
         return value;
       }

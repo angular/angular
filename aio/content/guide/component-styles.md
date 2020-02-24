@@ -1,5 +1,5 @@
 <!--
-# Component Styles
+# Component styles
 -->
 # 컴포넌트 스타일
 
@@ -47,8 +47,7 @@ Usually you give it one string, as in the following example:
 가장 간단한 방법은 컴포넌트 메타데이터에 `styles` 프로퍼티를 사용하는 것입니다.
 `styles` 프로퍼티에는 CSS 코드를 문자열 배열 형태로 지정하며, 다음과 같이 문자열 하나로도 간단하게 지정할 수 있습니다:
 
-<code-example path="component-styles/src/app/hero-app.component.ts" header="src/app/hero-app.component.ts" linenums="false">
-</code-example>
+<code-example path="component-styles/src/app/hero-app.component.ts" header="src/app/hero-app.component.ts"></code-example>
 
 <!--
 ## Style scope
@@ -134,8 +133,7 @@ targeting elements *inside* the component's template).
 -->
 컴포넌트가 *위치하는* 엘리먼트(호스트 엘리먼트)에 스타일을 지정하려면  가상 클래스 셀렉터 `:host`를 사용합니다. 이 때 컴포넌트가 위치하는 엘리먼트라는 것은 컴포넌트 템플릿 *안쪽*이 아닌 컴포넌트를 나타내는 엘리먼트 자체를 가리킵니다.
 
-<code-example path="component-styles/src/app/hero-details.component.css" region="host" header="src/app/hero-details.component.css" linenums="false">
-</code-example>
+<code-example path="component-styles/src/app/hero-details.component.css" region="host" header="src/app/hero-details.component.css"></code-example>
 
 <!--
 The `:host` selector is the only way to target the host element. You can't reach
@@ -155,8 +153,7 @@ The next example targets the host element again, but only when it also has the `
 -->
 그래서 아래 예제는 `active` CSS 클래스가 지정된 호스트 엘리먼트만 가리킵니다.
 
-<code-example path="component-styles/src/app/hero-details.component.css" region="hostfunction" header="src/app/hero-details.component.css" linenums="false">
-</code-example>
+<code-example path="component-styles/src/app/hero-details.component.css" region="hostfunction" header="src/app/hero-details.component.css"></code-example>
 
 ### :host-context
 
@@ -183,8 +180,7 @@ if some ancestor element has the CSS class `theme-light`.
 -->
 아래 예제는 CSS 클래스 `theme-light`가 지정된 부모 엘리먼트의 자식 엘리먼트 중 이 컴포넌트 *안*에 있는 `<h2>` 엘리먼트에 `background-color` 스타일을 지정하는 예제 코드입니다.
 
-<code-example path="component-styles/src/app/hero-details.component.css" region="hostcontext" header="src/app/hero-details.component.css" linenums="false">
-</code-example>
+<code-example path="component-styles/src/app/hero-details.component.css" region="hostcontext" header="src/app/hero-details.component.css"></code-example>
 
 {@a deprecated-deep--and-ng-deep}
 
@@ -212,9 +208,7 @@ through this component to all of its child elements in the DOM.
 
 아래 예제는 컴포넌트 뷰 안에 있는 모든 자식 컴포넌트의 `<h3>` 엘리먼트에 이탤릭 속성을 지정하는 예제 코드입니다.
 
-<code-example path="component-styles/src/app/hero-details.component.css" region="deep" header="src/app/hero-details.component.css" linenums="false">
-
-</code-example>
+<code-example path="component-styles/src/app/hero-details.component.css" region="deep" header="src/app/hero-details.component.css"></code-example>
 
 <!--
 The `/deep/` combinator also has the aliases `>>>`, and `::ng-deep`.
@@ -525,7 +519,7 @@ Choose from the following modes:
 <!--
 * `Emulated` view encapsulation (the default) emulates the behavior of shadow DOM by preprocessing
   (and renaming) the CSS code to effectively scope the CSS to the component's view.
-  For details, see [Appendix 1](guide/component-styles#inspect-generated-css).
+  For details, see [Inspecting generated CSS](guide/component-styles#inspect-generated-css) below.
 -->
 * 기본값인 `Emulated` 캡슐화 정책을 사용하면 Angular가 제공하는 섀도우 DOM을 사용하며, CSS 코드를 컴포넌트 뷰에 한정되도록 변경해서 적용합니다.
 좀 더 자세한 내용은 [생성된 css 코드 확인하기](guide/component-styles#생성된-css-코드-확인하기) 섹션을 참고하세요.
@@ -544,8 +538,7 @@ To set the components encapsulation mode, use the `encapsulation` property in th
 -->
 컴포넌트 캡슐화 모드는 컴포넌트 메타데이터의 `encapsulation` 프로퍼티로 지정합니다:
 
-<code-example path="component-styles/src/app/quest-summary.component.ts" region="encapsulation.native" header="src/app/quest-summary.component.ts" linenums="false">
-</code-example>
+<code-example path="component-styles/src/app/quest-summary.component.ts" region="encapsulation.native" header="src/app/quest-summary.component.ts"></code-example>
 
 <!--
 `ShadowDom` view encapsulation only works on browsers that have native support

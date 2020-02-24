@@ -21,6 +21,9 @@
     "types": [
     ]
   },
+  "angularCompilerOptions": {
+    "enableIvy": false,
+  },
   "files": [
     "src/main.ts",
     "src/lazy.module.ts"

@@ -17,7 +17,7 @@ When you are ready to deploy your Angular application to a remote server, you ha
 ## 간단한 배포 옵션
 
 <!--
-Before fully deploying your application, you can test the process, build configuration, and deployed behavior by using one of these interim techniques
+Before fully deploying your application, you can test the process, build configuration, and deployed behavior by using one of these interim techniques.
 -->
 Angular가 제공하는 배포 도구를 활용하면 애플리케이션을 배포가 이루어지는 각 단계가 제대로 동작하는지, 빌드 설정은 올바른지, 배포 동작은 제대로 수행되는지 확인할 수 있습니다.
 
@@ -60,7 +60,9 @@ You will need two terminals to get the live-reload experience.
 * 터미널에서 [`ng build` 명령](cli/build)을 실행하면서 *워치* 모드를 활성화할 수 있습니다. 이렇게 실행하면 애플리케이션 코드가 변경될 때마다 `dist` 폴더의 내용물도 다시 생성됩니다. `ng serve` 명령이 실행되는 동작과 비슷합니다.
 
   <code-example language="none" class="code-shell">
+
    ng build --watch
+
   </code-example>
 
 <!--
@@ -71,7 +73,9 @@ You will need two terminals to get the live-reload experience.
 * 아니면 [lite-server](https://github.com/johnpapa/lite-server)와 같은 웹 서버를 실행해서 빌드 결과물이 위치한 폴더를 직접 띄워볼 수도 있습니다. 보통 이렇게 실행합니다:
 
   <code-example language="none" class="code-shell">
-   lite-server --baseDir="dist"
+
+   lite-server --baseDir="dist/project-name"
+
   </code-example>
 <!--
    The server will automatically reload your browser when new files are output.
@@ -86,6 +90,36 @@ This method is for development and testing only, and is not a supported or secur
 위에서 설명한 방법은 애플리케이션을 개발하거나 테스트하는 용도로만 사용하세요. 이 방법은 애플리케이션을 온전히 배포하는 방법은 아닙니다.
 
 </div>
+
+### Automatic deployment with the CLI
+
+The Angular CLI command `ng deploy` (introduced in version 8.3.0) executes the `deploy` [CLI builder](https://angular.io/guide/cli-builder) associated with your project. A number of third-party builders implement deployment capabilities to different platforms. You can add any of them to your project by running `ng add [package name]`.
+
+When you add a package with deployment capability, it'll automatically update your workspace configuration (`angular.json` file) with a `deploy` section for the selected project. You can then use the `ng deploy` command to deploy that project.
+
+For example, the following command automatically deploys a project to Firebase.
+
+<code-example language="none" class="code-shell">
+ng add @angular/fire
+ng deploy
+</code-example>
+
+The command is interactive. In this case, you must have or create a Firebase account, and authenticate using that account. The command prompts you to select a Firebase project for deployment
+
+After the command produces an optimal build of your application (equivalent to `ng deploy --prod`), it'll upload the production assets to Firebase.
+
+In the table below, you can find a list of packages which implement deployment functionality to different platforms. The `deploy` command for each package may require different command line options. You can read more by following the links associated with the package names below:
+
+| Deployment to                                                 | Package                                                                        |
+|---------------------------------------------------------------|--------------------------------------------------------------------------------|
+| [Firebase hosting](https://firebase.google.com/docs/hosting)  | [`@angular/fire`](https://npmjs.org/package/@angular/fire)                     |
+| [Azure](https://azure.microsoft.com/en-us/)                   | [`@azure/ng-deploy`](https://npmjs.org/package/@azure/ng-deploy)               |
+| [Now](https://zeit.co/now)                                    | [`@zeit/ng-deploy`](https://npmjs.org/package/@zeit/ng-deploy)                 |
+| [Netlify](https://www.netlify.com/)                           | [`@netlify-builder/deploy`](https://npmjs.org/package/@netlify-builder/deploy) |
+| [GitHub pages](https://pages.github.com/)                     | [`angular-cli-ghpages`](https://npmjs.org/package/angular-cli-ghpages)         |
+| [NPM](https://npmjs.com/)                                     | [`ngx-deploy-npm`](https://npmjs.org/package/ngx-deploy-npm)                   |
+
+If you're deploying to a self-managed server or there's no builder for your favorite cloud platform, you can either create a builder that allows you to use the `ng deploy` command, or read through this guide to learn how to manually deploy your app.
 
 <!--
 ### Basic deployment to a remote server
@@ -103,7 +137,9 @@ For the simplest deployment, create a production build and copy the output direc
 1. 애플리케이션을 운영용으로 빌드합니다.
 
   <code-example language="none" class="code-shell">
+
     ng build --prod
+
   </code-example>
 
 
@@ -143,9 +179,11 @@ Make a note of the user name and project name in GitHub.
 1. GitHub 페이지에 배포하려면 먼저 [GitHub 계정을 생성](https://github.com/join)해야 합니다. 그리고 프로젝트가 위치할 [코드 저장소를 하나 만듭니다](https://help.github.com/articles/create-a-repo/).
 
 1. Github 프로젝트 이름을 기본 주소로 지정하면서 Angular 프로젝트를 빌드합니다. [`ng build`](cli/build)를 실행할 때 옵션을 다음과 같이 사용하면 됩니다:
-   <code-example language="none" class="code-shell">
-     ng build --prod --output-path docs --base-href /<project_name>/
-    </code-example>
+  <code-example language="none" class="code-shell">
+
+    ng build --prod --output-path docs --base-href /&lt;project_name&gt;/
+
+  </code-example>
 
 <!--
 1. When the build is complete, make a copy of `docs/index.html` and name it `docs/404.html`.
@@ -184,7 +222,7 @@ Check out [angular-cli-ghpages](https://github.com/angular-buch/angular-cli-ghpa
 ## 서버 설정
 
 <!--
-This section covers changes you may have make to the server or to files deployed to the server.
+This section covers changes you may have to make to the server or to files deployed on the server.
 -->
 이 섹션에서는 Angular 애플리케이션을 서버에 배포할 때 수정해야 할 수도 있는 서버 설정에 대해 다룹니다.
 
@@ -261,13 +299,12 @@ The list is by no means exhaustive, but should provide you with a good starting 
 
 * [Apache](https://httpd.apache.org/): `.htaccess` 파일에 [rewrite rule](http://httpd.apache.org/docs/current/mod/mod_rewrite.html)을 추가합니다. ([참고](https://ngmilk.rocks/2015/03/09/angularjs-html5-mode-or-pretty-urls-on-apache-using-htaccess/))
 
-  <code-example format=".">
+  <code-example>
     RewriteEngine On
     &#35 서버에 존재하는 리소스나 폴더를 요청하면 해당 리소스를 보냅니다.
     RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f [OR]
     RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -d
-    RewriteRule ^ - [L]
-
+    RewriteRule ^ - [L]<br>
     &#35 실제로 존재하지 않는 리소스를 요청하면 index.html을 보냅니다.
     RewriteRule ^ /index.html
   </code-example>
@@ -280,9 +317,27 @@ modified to serve `index.html`:
 -->
 * [Nginx](http://nginx.org/): [Front Controller Pattern Web Apps](https://www.nginx.com/resources/wiki/start/topics/tutorials/config_pitfalls/#front-controller-pattern-web-apps)에서 설명하는 대로 `try_files`를 사용해서 `index.html`을 보내도록 설정합니다.
 
-  <code-example format=".">
-    try_files $uri $uri/ /index.html;
-  </code-example>
+  ```
+  try_files $uri $uri/ /index.html;
+  ```
+
+* [Ruby](https://www.ruby-lang.org/): create a Ruby server using ([sinatra](http://sinatrarb.com/)) with a basic Ruby file that configures the server `server.rb`:
+
+  ``` ruby
+  require 'sinatra'
+
+  # Folder structure
+  # .
+  # -- server.rb
+  # -- public
+  #    |-- dist
+  #        |-- index.html
+
+  get '/' do
+      folderDir = settings.public_folder + '/dist'  # ng build output folder
+      send_file File.join(folderDir, 'index.html')
+  end
+  ```
 
 
 <!--
@@ -291,7 +346,7 @@ modified to serve `index.html`:
 -->
 * [IIS](https://www.iis.net/): [이 글](http://stackoverflow.com/a/26152011/2116927)에서 설명한 것과 비슷하게 `web.config`에 rewrite rule을 추가합니다.
 
-  <code-example format='.'>
+  <code-example format='.' language="xml">
     &lt;system.webServer&gt;
       &lt;rewrite&gt;
         &lt;rules&gt;
@@ -306,7 +361,6 @@ modified to serve `index.html`:
         &lt;/rules&gt;
       &lt;/rewrite&gt;
     &lt;/system.webServer&gt;
-
   </code-example>
 
 <!--
@@ -332,12 +386,11 @@ and to
 -->
 * [Firebase hosting](https://firebase.google.com/docs/hosting/): [rewrite rule](https://firebase.google.com/docs/hosting/url-redirects-rewrites#section-rewrites)을 다음과 같이 추가합니다.
 
-  <code-example format=".">
+  <code-example language="json">
     "rewrites": [ {
       "source": "**",
       "destination": "/index.html"
     } ]
-
   </code-example>
 
 {@a cors}
@@ -416,7 +469,9 @@ In addition to build optimizations, Angular also has a runtime production mode. 
 Angular 애플리케이션은 기본적으로 개발모드로 동작하며, 이 모드에서는 브라우저 콘솔에 다음과 같은 메시지가 출력됩니다:
 
 <code-example format="nocode">
+
   Angular is running in the development mode. Call enableProdMode() to enable the production mode.
+
 </code-example>
 
 <!--
@@ -450,12 +505,12 @@ them on demand.
 -->
 그리고 애플리케이션 초기 실행과 관련되지 않은 모듈은 Angular 라우터로 지연로딩하거나 [애플리케이션이 시작된 직후에](guide/router#preloading  "Preloading") 로딩할 수 있습니다.
 
-<div class="alert is-helpful">
+<div class="callout is-helpful">
 
 <!--
-#### Don't eagerly import something from a lazy-loaded module
+<header>Don't eagerly import something from a lazy-loaded module</header>
 -->
-#### 지연로딩하는 모듈에 있는 심볼을 즉시로딩하지 마세요.
+<header>지연로딩하는 모듈에 있는 심볼을 즉시로딩하지 마세요.</header>
 
 <!--
 If you mean to lazy-load a module, be careful not import it
@@ -477,7 +532,7 @@ You would have to create these bundles manually.
 
 <!--
 The CLI runs the
-[Angular Ahead-of-Time Webpack Plugin](https://github.com/angular/angular-cli/tree/master/packages/%40ngtools/webpack)
+[Angular Ahead-of-Time Webpack Plugin](https://github.com/angular/angular-cli/tree/master/packages/ngtools/webpack)
 which automatically recognizes lazy-loaded `NgModules` and creates separate bundles for them.
 -->
 Angular CLI는 [Angular AoT Webpack 플러그인](https://github.com/angular/angular-cli/tree/master/packages/%40ngtools/webpack)을 사용하기 때문에 지연로딩되는 `NgModule`을 자동으로 인식하고 번들링 파일을 생성합니다.
@@ -535,7 +590,9 @@ Install `source-map-explorer`:
 `source-map-explorer`는 다음 명령을 실행해서 설치합니다:
 
 <code-example language="none" class="code-shell">
+
   npm install source-map-explorer --save-dev
+
 </code-example>
 
 <!--
@@ -544,7 +601,9 @@ Build your app for production _including the source maps_
 그리고 애플리케이션을 운영용으로 빌드할 때 _소스 맵_ 을 함께 생성하도록 다음과 같이 실행합니다.
 
 <code-example language="none" class="code-shell">
+
   ng build --prod --source-map
+
 </code-example>
 
 <!--
@@ -553,7 +612,9 @@ List the generated bundles in the `dist/` folder.
 빌드가 끝나면 `dist/` 폴더의 내용을 확인해 봅시다.
 
 <code-example language="none" class="code-shell">
+
   ls dist/*.bundle.js
+
 </code-example>
 
 <!--
@@ -564,7 +625,9 @@ The following example displays the graph for the _main_ bundle.
 예를 들어 _main_ 파일이 번들링된 결과물을 분석하려면 다음과 같이 실행합니다.
 
 <code-example language="none" class="code-shell">
+
   node_modules/.bin/source-map-explorer dist/main.*.bundle.js
+
 </code-example>
 
 <!--
@@ -578,9 +641,9 @@ Here's the output for the _main_ bundle of an example app called `cli-quickstart
 -->
 `cli-quickstart` 프로젝트의 _main_ 파일을 번들링한 결과로 이 프로그램을 실행시켜보면 다음과 같은 결과를 확인할 수 있습니다.
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/deployment/quickstart-sourcemap-explorer.png" alt="quickstart sourcemap explorer">
-</figure>
+</div>
 
 {@a base-tag}
 
@@ -632,17 +695,29 @@ for the missing files. Look at where it _tried_ to find those files and adjust t
 이 에러가 발생하면 `base` 태그값을 바꿔보면서 정확한 위치를 지정해야 합니다.
 
 
+{@a differential-loading}
 <!--
 ## Differential Loading
 -->
 ## 선택적 로딩(Differential Loading)
 
 <!--
-When building web applications, making sure your application is compatible with the majority of browsers is a goal. Even as JavaScript continues to evolve, with new features being introduced, not all browsers are updated with support for these new features at the same pace. This is where compilation and [polyfills](guide/browser-support#polyfills) come in. The code you write in development using TypeScript is compiled and bundled into a format that is compatible with most browsers, commonly known as ES5. Polyfills are used bridge the gap, providing functionality that simply doesn't exist in some legacy browsers. 
+When building web applications, you want to make sure your application is compatible with the majority of browsers.
+Even as JavaScript continues to evolve, with new features being introduced, not all browsers are updated with support for these new features at the same pace.
 
-There is a cost to ensure this browser compatibility, and it comes in the form of larger bundle size. All modern browsers support ES2015 and beyond, but in most cases, you still have to account for users accessing your application from a browser that doesn't. To maximize compatibility, you ship a single bundle that includes all your compiled code, plus any polyfills that may be needed. Users with modern browsers shouldn't pay the price of increased bundle size when used in a modern browser that supports many of the latest features in JavaScript. This is where differential loading comes into play.
+The code you write in development using TypeScript is compiled and bundled into ES2015, the JavaScript syntax that is compatible with most browsers.
+All modern browsers support ES2015 and beyond, but in most cases, you still have to account for users accessing your application from a browser that doesn't.
+When targeting older browsers, [polyfills](guide/browser-support#polyfills) can bridge the gap by providing functionality that doesn't exist in the older versions of JavaScript supported by those browsers.
 
-Differential loading is a strategy where the CLI builds two separate bundles as part of your deployed application. The modern bundle contains modern syntax, takes advantage of built-in support in modern browsers, ships less polyfills, and results in a smaller bundle size. The second bundle, includes the additional compiled code, all necessary polyfills, and results in a larger bundle size. This strategy allows you to continue to build your web application to support multiple browsers, but only load the necessary code that the browser needs.
+To maximize compatibility, you could ship a single bundle that includes all your compiled code, plus any polyfills that may be needed.
+Users with modern browsers, however, shouldn't have to pay the price of increased bundle size that comes with polyfills they don't need.
+Differential loading, which is supported by default in Angular CLI version 8 and higher, solves this problem.
+
+Differential loading is a strategy that allows your web application to support multiple browsers, but only load the necessary code that the browser needs. When differential loading is enabled (which is the default) the CLI builds two separate bundles as part of your deployed application.
+
+* The first bundle contains modern ES2015 syntax, takes advantage of built-in support in modern browsers, ships fewer polyfills, and results in a smaller bundle size.
+
+* The second bundle contains code in the old ES5 syntax, along with all necessary polyfills. This results in a larger bundle size, but supports older browsers.
 -->
 애플리케이션은 결국 더 많은 브라우저에서 정상적으로 실행되는지가 가장 중요합니다. 하지만 JavaScript 자체도 새로운 기능을 도입하면서 끊임없이 진보하기 때문에 모든 브라우저들이 JavaScript 표준에 있는 기능을 같은 수준으로 지원하지는 않습니다. 그래서 해결책으로 컴파일이라는 과정과 [폴리필(polyfills)](guide/browser-support#polyfills)이라는 개념이 등장했습니다. 이제는 개발자가 TypeScript로 작성한 코드가 컴파일 단계를 거쳐 브라우저에서 원활하게 실행되는 ES5 코드로 변환됩니다. 그리고 이 과정에서 JavaScript 문법으로 새로 추가되어 브라우저가 아직 지원하지 않는 기능은 폴리필을 활용해서 지원하기도 합니다.
 
@@ -650,81 +725,63 @@ Differential loading is a strategy where the CLI builds two separate bundles as 
 
 선택적 로딩은 Angular CLI로 애플리케이션을 빌드할 때 이 애플리케이션의 빌드 결과물을 두 벌로 생성하는 방식입니다. 첫번째 세트에는 최신 JavaScript 문법을 지원하는 코드가 들어갑니다. 이 결과물에는 폴리필이 최소한으로 들어가기 때문에 번들 결과물의 크기도 상대적으로 작습니다. 그리고 두번째 세트에는 조금 더 낮은 JavaScript 버전으로 빌드된 코드와 오래된 브라우저에서 지원하지 않는 문법을 실행하기 위한 폴리필이 모두 포함되는데, 따라서 번들 결과물의 크기는 상대적으로 좀 더 큽니다. 선택적 로딩 방식을 사용하면 애플리케이션이 동작하는 브라우저를 더 확보할 수 있으면서도, 브라우저에 꼭 필요한 코드만 로딩할 수 있습니다.
 
+* The first bundle contains modern ES2015 syntax, takes advantage of built-in support in modern browsers, ships fewer polyfills, and results in a smaller bundle size.
+
+* The second bundle contains code in the old ES5 syntax, along with all necessary polyfills. This results in a larger bundle size, but supports older browsers.
 
 <!--
 ### Differential builds
 -->
 ### 선택적 빌드(Differential builds)
 
-<!--
-The Angular CLI handles differential loading for you as part of the _build_ process for deployment. The Angular CLI will produce the necessary bundles used for differential loading, based on your browser support requirements and compilation target. 
+When you deploy using the Angular CLI build process, you can choose how and when to support differential loading.
+The [`ng build` CLI command](cli/build) queries the browser configuration and the configured build target to determine if support for legacy browsers is required, and whether the build should produce the necessary bundles used for differential loading.
 
-The Angular CLI uses two configurations for differential loading:
+The following configurations determine your requirements.
 
-- Browserslist - The `browserslist` configuration file is included in your application [project structure](guide/file-structure#application-configuration-files) and provides the minimum browsers your application supports. See the [Browserslist spec](https://github.com/browserslist/browserslist) for complete configuration options.
-- tsconfig.json - The `target` in the TypeScript `compilerOptions` determines the ECMAScript target version that the code is compiled to. Modern browsers support ES2015 natively, while ES5 is more commonly used to support legacy browsers.
--->
-Angular는 CLI를 사용해서 애플리케이션을 배포용으로 _빌드_ 하는 단계에 선택적 로딩을 지원합니다. Angular CLI는 빌드하는 프로젝트에 지정된 브라우저 지원 정책이나 컴파일 대상을 분석한 후에 빌드 결과물을 선택적 로딩할 수 있게 생성합니다.
+* Browsers list
 
-이 때 두 가지 환경설정 파일이 활용됩니다:
+   The `browserslist` configuration file is included in your application [project structure](guide/file-structure#application-configuration-files) and provides the minimum browsers your application supports. See the [Browserslist spec](https://github.com/browserslist/browserslist) for complete configuration options.
 
-- `browserlist` - 애플리케이션 [프로젝트](guide/file-structure#application-configuration-files)에 생성된 Browserlist 설정 파일을 사용하면 애플리케이션이 지원해야 하는 브라우저 목록을 지정할 수 있습니다. 자세한 내용은 [Browserlist 스펙](https://github.com/browserslist/browserslist) 문서를 참고하세요.
-- tsconfig.json - TypeScript 환경 설정 옵션 중에서 `compilerOptions.target` 옵션을 사용하면 TypeScript 코드를 어떤 ECMAScript 버전으로 컴파일할지 지정할 수 있습니다. 최신 브라우저들은 보통 ES2015를 기본으로 지원하지만, ES5 문법으로 컴파일하면 지원하는 브라우저를 더 확보할 수 있습니다.
+* TypeScript configuration
 
-<div class="alert is-helpful">
-
-<!--
-**Note:** Differential loading is currently only supported when using `es2015` as a compilation `target`. When used with targets higher than `es2015`, a warning is emitted during build time.
--->
-**참고:** 선택적 로딩은 아직 컴파일 옵션 중 `target` 옵션을 `es2015`로 설정했을 때만 동작합니다. `es2015` 이후 버전을 지정했다면 빌드할 때 에러가 발생합니다.
-
-</div>
-
-<!--
-The CLI queries the Browserslist configuration, and checks the `target` to determine if support for legacy browsers is required. The combination of these two configurations determines whether multiple bundles are produced when you create a _build_. When you create a development build using [`ng build`](cli/build) and differential loading is enabled, the output produced is simpler and easier to debug, allowing you to rely less on sourcemaps of compiled code. When you create a production build using [`ng build --prod`](cli/build), the CLI uses the defined configurations above to determine the bundles to build for deployment of your application. 
-
-The `index.html` file is also modified during the build process to include script tags that enable differential loading. See the sample output below from the `index.html` file produced during a build using `ng build`.
--->
-Angular CLI는 Browserlist 설정파일과 `target` 컴파일 옵션을 분석해서 어떤 폴리필이 필요한지 판단합니다. 이 상태에서 [`ng build`](cli/build) 명령을 실행하면 선택적 로딩이 활성화되지만 빌드 결과물은 원래 코드와 비슷하고 소스맵도 제공하기 때문에 디버깅하기 쉬운 상태로 생성됩니다. 그리고 [`ng build --prod`](cli/build) 명령을 실행해서 애플리케이션을 운영용으로 빌드하면 이 때는 조금 다른 형태로 빌드 결과물이 생성됩니다.
-
-`index.html` 파일은 선택적 로딩을 지원하기 위해 `<script>` 태그 부분이 조금 수정됩니다. 아래 코드를 확인해 보세요.
-
-```html
-<!-- ... -->
-<body>
-  <app-root></app-root>
-  <script src="runtime-es2015.js" type="module"></script>
-  <script src="runtime-es5.js" nomodule></script>
-  <script src="polyfills-es2015.js" type="module"></script>
-  <script src="polyfills-es5.js" nomodule></script>
-  <script src="styles-es2015.js" type="module"></script>
-  <script src="styles-es5.js" nomodule></script>
-  <script src="vendor-es2015.js" type="module"></script>
-  <script src="vendor-es5.js" nomodule></script>
-  <script src="main-es2015.js" type="module"></script>
-  <script src="main-es5.js" nomodule></script>
-</body>
-<!-- ... -->
-```
-
-<!--
-Each script tag has a `type="module"` or `nomodule` attribute. Browsers with native support for ES modules only load the scripts with the `module` type attribute and ignore scripts with the `nomodule` attribute. Legacy browsers only load the scripts with the `nomodule` attribute, and ignore the script tags with the `module` type that load ES modules. 
--->
-이 코드에서 개별 `<script>` 태그에는 `type="module"` 이나 `nomodule`이라는 어트리뷰트가 있습니다. ES 모듈을 지원하는 브라우저는 `module` 타입 어트리뷰트가 지정된 스크립트 파일만 로드하며 `nomodule` 어트리뷰트가 지정된 스크립트 파일은 무시합니다. 그리고 오래된 브라우저들은 반대로 `nomodule` 어트리뷰트가 지정된 스크립트 파일만 로드하며 `module` 타입 어트리뷰트가 지정된 스크립트 파일은 무시합니다.
+   In the TypeScript configuration file, `tsconfig.json`, the "target" option in the `compilerOptions` section determines the ECMAScript target version that the code is compiled to.
+   Modern browsers support ES2015 natively, while ES5 is more commonly used to support legacy browsers.
 
 <div class="alert is-helpful">
 
-<!--
-**Note:** Some legacy browsers still download both bundles, but only execute the appropriate scripts based on the attributes mentioned above. You can read more on the issue [here](https://github.com/philipwalton/webpack-esnext-boilerplate/issues/1).
--->
-**참고:** 그럼에도 불구하고 두 종류의 파일을 모두 다운받는 브라우저가 있을 수 있습니다. 하지만 이 경우에도 브라우저는 다운받은 스크립트 파일을 모두 실행하지 않고 위에서 설명한 것과 같은 방식으로 한 종류만 실행합니다. 자세한 내용은 [이 문서](https://github.com/philipwalton/webpack-esnext-boilerplate/issues/1)를 참고하세요.
+   Differential loading is currently only supported when using `es2015` as a compilation target. When used with targets higher than `es2015`, the build process emits a warning.
 
 </div>
 
-<!--
-See the [configuration table](#configuration-table) below for the configurations for enabling differential loading.
--->
-선택적 로딩이 활성화되는 조건은 아래에 있는 [비교 표](#configuration-table)를 참고하세요.
+For a development build, the output produced by `ng build` is simpler and easier to debug, allowing you to rely less on sourcemaps of compiled code.
+
+For a production build, your configuration determines which bundles are created for deployment of your application.
+When needed, the `index.html` file is also modified during the build process to include script tags that enable differential loading, as shown in the following example.
+
+<code-example language="html" header="index.html">
+&lt;body>
+  &lt;app-root>&lt;/app-root>
+  &lt;script src="runtime-es2015.js" type="module">&lt;/script>
+  &lt;script src="runtime-es5.js" nomodule>&lt;/script>
+  &lt;script src="polyfills-es2015.js" type="module">&lt;/script>
+  &lt;script src="polyfills-es5.js" nomodule>&lt;/script>
+  &lt;script src="styles-es2015.js" type="module">&lt;/script>
+  &lt;script src="styles-es5.js" nomodule>&lt;/script>
+  &lt;script src="vendor-es2015.js" type="module">&lt;/script>
+  &lt;script src="vendor-es5.js" nomodule>&lt;/script>
+  &lt;script src="main-es2015.js" type="module">&lt;/script>
+  &lt;script src="main-es5.js" nomodule>&lt;/script>
+&lt;/body>
+</code-example>
+
+Each script tag has a `type="module"` or `nomodule` attribute. Browsers with native support for ES modules only load the scripts with the `module` type attribute and ignore scripts with the `nomodule` attribute. Legacy browsers only load the scripts with the `nomodule` attribute, and ignore the script tags with the `module` type that load ES modules.
+
+<div class="alert is-helpful">
+
+   Some legacy browsers still download both bundles, but only execute the appropriate scripts based on the attributes mentioned above. You can read more on the issue [here](https://github.com/philipwalton/webpack-esnext-boilerplate/issues/1).
+
+</div>
 
 <!--
 ### Configuring differential loading
@@ -732,33 +789,27 @@ See the [configuration table](#configuration-table) below for the configurations
 ### 선택적 로딩 활성화하기
 
 <!--
-Differential loading for creating builds is already supported with version 8 and later of the Angular CLI. For each application project in your workspace, you can configure how builds are produced based on the mentioned `browserslist` and `tsconfig.json` files in your application project.
+Differential loading is supported by default with version 8 and later of the Angular CLI.
+For each application project in your workspace, you can configure how builds are produced based on the `browserslist` and `tsconfig.json` configuration files in your application project.
 
-Look at the default configuration for a newly created Angular application:
-
-The `browserslist` looks like this:
+For a newly created Angular application, legacy browsers such as IE 9-11 are ignored, and the compilation target is ES2015.
 -->
 선택적 로딩 설정은 Angular CLI 8 버전부터 이미 지원하고 있습니다. 워크스페이스에 있는 애플리케이션 프로젝트를 보면 `browserlist` 파일과 `tsconfig.json` 파일이 존재하는 것을 확인할 수 있습니다.
 
 파일의 내용은 조금씩 달라질 수 있기 때문에 최신 Angular 애플리케이션에 생성된 파일을 기준으로 합시다.
 
-`browserlist` 파일은 이렇게 구성됩니다:
+For a newly created Angular application, legacy browsers such as IE 9-11 are ignored, and the compilation target is ES2015.
 
-```
+<code-example language="none" header="browserslist">
 > 0.5%
 last 2 versions
 Firefox ESR
 not dead
 not IE 9-11 # For IE 9-11 support, remove 'not'.
-```
+</code-example>
 
-<!--
-The `tsconfig.json` looks like this:
--->
-그리고 `tsconfig.json` 파일은 이렇게 구성됩니다:
+<code-example language="json" header="tsconfig.json">
 
-
-```
 {
   "compileOnSave": false,
   "compilerOptions": {
@@ -781,35 +832,31 @@ The `tsconfig.json` looks like this:
     ]
   }
 }
-```
 
-<!--
-By default, legacy browsers such as IE 9-11 are ignored, and the compilation target is ES2015. As a result, this produces two builds, and differential loading is enabled. If you ignore browsers without ES2015 support, a single build is produced. To see the build result for differential loading based on different configurations, refer to the table below. 
--->
-기본적으로 IE 9-11과 같이 오래된 브라우저는 지원하지 않고 컴파일 결과물도 ES2015 문법으로 생성합니다. 이 상태로 애플리케이션을 빌드하면 선택적 로딩을 지원하기 때문에 브라우저 빌드 결과물이 두 벌로 생성됩니다. 나중에 ES2015 문법을 지원하지 않는 브라우저를 지원 브라우저 목록에서 제외하면 빌드 결과물은 한 벌만 생성될 것입니다. 빌드 환경설정에 따라 빌드 결과물이 어떻게 생성되는지 확인하려면 아래 표를 참고하세요.
+</code-example>
+
+The default configuration creates two builds, with differential loading enabled.
 
 <div class="alert is-important">
 
-<!--
-**Note:** To see which browsers are supported with the above configuration, see which settings meet to your browser support requirements, see the [Browserslist compatibility page](https://browserl.ist/?q=%3E+0.5%25%2C+last+2+versions%2C+Firefox+ESR%2C+Chrome+41%2C+not+dead%2C+not+IE+9-11).
--->
-**참고:** 위 설정이 구체적으로 어떤 브라우저를 지원하는 것인지 확인하려면 [Browserslist 호환성 페이지](https://browserl.ist/?q=%3E+0.5%25%2C+last+2+versions%2C+Firefox+ESR%2C+Chrome+41%2C+not+dead%2C+not+IE+9-11)를 참고하세요.
+   To see which browsers are supported with the default configuration and determine which settings meet to your browser support requirements, see the [Browserslist compatibility page](https://browserl.ist/?q=%3E+0.5%25%2C+last+2+versions%2C+Firefox+ESR%2C+not+dead%2C+not+IE+9-11).
 
 </div>
+
+The `browserslist` configuration allows you to ignore browsers without ES2015 support. In this case, a single build is produced.
+
+If your `browserslist` configuration includes support for any legacy browsers, the build target in the TypeScript configuration determines whether the build will support differential loading.
 
 {@a configuration-table }
 
 <!--
-| ES5 Browserslist Result | ES Target | Build Result |
+| browserslist | ES target | Build result |
 | -------- | -------- | -------- |
-| disabled | es5     | Single build |
-| enabled  | es5     | Single build w/Conditional Polyfills |
-| disabled | es2015  | Single build |
-| enabled  | es2015  | Differential Loading (Two builds w/Conditional Polyfills |
-
-When the ES5 Browserslist result is `disabled`, then ES5 browser support is not required. Otherwise, ES5 browser support is required.
+| ES5 support disabled | es2015  | Single build, ES5 not required |
+| ES5 support enabled  | es5     | Single build w/conditional polyfills for ES5 only |
+| ES5 support enabled  | es2015  | Differential loading (two builds w/conditional polyfills) |
 -->
-| ES5 Browserslist 지원대상 | ES 문법 | 빌드 결과물 |
+| Browserslist 지원대상 | ES 문법 | 빌드 결과물 |
 | -------- | -------- | -------- |
 | 지원하지 않음 | es5     | 1벌 |
 | 지원  | es5     | 1벌 + 폴리필 |
@@ -822,12 +869,12 @@ When the ES5 Browserslist result is `disabled`, then ES5 browser support is not 
 ### 선택적 로딩 비활성화하기
 
 <!--
-Differential loading can be explicitly disabled if it causes unexpected issues or you need to target ES5 specifically for legacy browser support. 
+Differential loading can be explicitly disabled if it causes unexpected issues, or if you need to target ES5 specifically for legacy browser support.
 
-To explicitly disable differential loading:
+To explicitly disable differential loading and create an ES5 build:
 
-- Enable the `dead` or `IE` browsers in the `browserslist` config file by removing the `not` keyword in front of them.
-- Set the `target` in the `compilerOptions` to `es5`.
+- Enable the `dead` or `IE` browsers in the `browserslist` configuration file by removing the `not` keyword in front of them.
+- To create a single ES5 build, set the target in the `compilerOptions` to `es5`.
 -->
 예상하지 못한 이슈가 있거나 오래된 브라우저를 확실하게 지원하기 위해 ES5 문법으로 빌드한다면 선택적 로딩을 명시적으로 비활성화할 수 있습니다.
 
@@ -835,3 +882,145 @@ To explicitly disable differential loading:
 
 - `browserlist` 파일에서 `dead`나 `IE` 앞에 설정된 `not` 키워드를 제거합니다.
 - `compilerOptions` 중 `target` 옵션을 `es5`로 지정합니다.
+
+{@a test-and-serve}
+
+## Local development in older browsers
+
+In Angular CLI version 8 and higher, differential loading is enabled by default for the `ng build` command.
+The `ng serve`, `ng test`, and `ng e2e` commands, however, generate a single ES2015 build which cannot run in older browsers that don't support the modules, such as IE 11.
+
+If you want to run ES5 code during development, you could disable differential loading completely.
+To maintain the benefits of differential loading, however, a better option is to define multiple configurations for `ng serve`, `ng e2e`, and `ng test`.
+
+{@a differential-serve}
+
+### Configuring serve for ES5
+
+To do this for `ng serve`, create a new file, `tsconfig-es5.app.json` next to `tsconfig.app.json` with the following content.
+
+<code-example language="json">
+
+{
+ "extends": "./tsconfig.app.json",
+ "compilerOptions": {
+     "target": "es5"
+  }
+}
+
+</code-example>
+
+In `angular.json` add two new configuration sections under the `build` and `serve` targets to point to the new TypeScript configuration.
+
+<code-example language="json">
+
+"build": {
+  "builder": "@angular-devkit/build-angular:browser",
+  "options": {
+      ...
+  },
+  "configurations": {
+    "production": {
+        ...
+    },
+    "es5": {
+      "tsConfig": "./tsconfig-es5.app.json"
+    }
+  }
+},
+"serve": {
+  "builder": "@angular-devkit/build-angular:dev-server",
+  "options": {
+      ...
+  },
+  "configurations": {
+    "production": {
+     ...
+    },
+    "es5": {
+      "browserTarget": "&lt;app-name&gt;:build:es5"
+    }
+  }
+},
+
+</code-example>
+
+You can then run the `ng serve` command with this configuration. Make sure to replace `<app-name>` (in `"<app-name>:build:es5"`) with the actual name of the app, as it appears under `projects` in `angular.json`. For example, if your app name is `myAngularApp` the config will become `"browserTarget": "myAngularApp:build:es5"`.
+
+<code-example language="none" class="code-shell">
+
+ng serve --configuration es5
+
+</code-example>
+
+{@a differential-test}
+
+### Configuring the test command
+
+Create a new file, `tsconfig-es5.spec.json` next to `tsconfig.spec.json` with the following content.
+
+<code-example language="json">
+
+{
+ "extends": "./tsconfig.spec.json",
+ "compilerOptions": {
+     "target": "es5"
+  }
+}
+
+</code-example>
+
+<code-example language="json">
+
+"test": {
+  "builder": "@angular-devkit/build-angular:karma",
+  "options": {
+      ...
+  },
+  "configurations": {
+    "es5": {
+      "tsConfig": "./tsconfig-es5.spec.json"
+    }
+  }
+},
+
+</code-example>
+
+You can then run the tests with this configuration
+
+<code-example language="none" class="code-shell">
+
+ng test --configuration es5
+
+</code-example>
+
+### Configuring the e2e command
+
+Create an [ES5 serve configuration](guide/deployment#configuring-serve-for-es5) as explained above, and configuration an ES5 configuration for the E2E target.
+
+<code-example language="json">
+
+"e2e": {
+  "builder": "@angular-devkit/build-angular:protractor",
+  "options": {
+      ...
+  },
+  "configurations": {
+	  "production": {
+		  ...
+	  },
+    "es5": {
+      "devServerTarget": "&lt;app-name&gt;:serve:es5"
+    }
+  }
+},
+
+</code-example>
+
+You can then run the `ng e2e` command with this configuration. Make sure to replace `<app-name>` (in `"<app-name>:serve:es5"`) with the actual name of the app, as it appears under `projects` in `angular.json`. For example, if your app name is `myAngularApp` the config will become `"devServerTarget": "myAngularApp:serve:es5"`.
+
+<code-example language="none" class="code-shell">
+
+ng e2e --configuration es5
+
+</code-example>

@@ -146,4 +146,4 @@
   // Export the class so that new instances can be created with proper
   // constructor params.
   (Zone as any)['AsyncTestZoneSpec'] = AsyncTestZoneSpec;
-})(global);
+})(typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || global);

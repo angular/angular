@@ -3,10 +3,11 @@
 -->
 <h1 class="no-toc">Angular 가이드문서 소개</h1>
 
+Angular is an app-design framework and development platform for creating efficient and sophisticated single-page apps.
 
 <!--
-These Angular docs help you learn and use the Angular platform and framework, from your first app to optimizing complex enterprise apps. 
-Tutorials and guides include downloadable example to accelerate your projects. 
+These Angular docs help you learn and use the Angular framework and development platform, from your first app to optimizing complex single-page apps for enterprises.
+Tutorials and guides include downloadable examples to accelerate your projects.
 -->
 Angular 가이드 문서는 프로토타입부터 대규모 기업용 앱에도 활용할 수 있는 Angular 플랫폼과 프레임워크에 대해 소개합니다.
 튜토리얼과 가이드문서에서 설명하는 예제 코드는 다운받아 로컬 환경에서 직접 실행해볼 수도 있습니다.
@@ -15,8 +16,8 @@ Angular 가이드 문서는 프로토타입부터 대규모 기업용 앱에도 
   <!--
   <a href="start" class="docs-card" title="Angular Getting Started">
       <section>Learn</section>
-      <p>Create your first Angular app, without any setup</p>
-      <p class="card-footer">Getting Started</p> 
+      <p>Play with and extend a small ready-made Angular app, without any setup</p>
+      <p class="card-footer">Getting Started</p>
   </a>
   -->
   <a href="start" class="docs-card" title="Angular 시작하기">
@@ -39,13 +40,13 @@ Angular 가이드 문서는 프로토타입부터 대규모 기업용 앱에도 
       <p class="card-footer">로컬 개발환경 설정</p>
   </a>
   <!--
-  <a href="guide/architecture" class="docs-card" title="Angular Architecture">
+  <a href="guide/architecture" class="docs-card" title="Angular App Architecture">
       <section>Explore</section>
-      <p>Learn more about Angular apps and framework features</p>
-      <p class="card-footer">Architecture</p>
+      <p>Learn about the fundamental design concepts and architecture of Angular apps</p>
+      <p class="card-footer">Introduction to Angular concepts</p>
   </a>
   -->
-  <a href="guide/architecture" class="docs-card" title="Angular 아키텍처">
+  <a href="guide/architecture" class="docs-card" title="Angular 앱 아키텍처">
       <section>자세히 알아보기</section>
       <p>Angular 프레임워크가 제공하는 기능에 대해 자세하게 알아보세요.</p>
       <p class="card-footer">아키텍처</p>
@@ -58,17 +59,17 @@ Angular 가이드 문서는 프로토타입부터 대규모 기업용 앱에도 
 ## 사전지식
 
 <!--
-These docs assume that you are already familiar with HTML, CSS, [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/A_re-introduction_to_JavaScript "Learn JavaScript"), 
-and some of the tools from the [latest standards](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Language_Resources "Latest JavaScript standards"), such as [classes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes "ES2015 Classes") and [modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import "ES2015 Modules"). 
-The code samples are written using [TypeScript](https://www.typescriptlang.org/ "TypeScript"). 
+These docs assume that you are already familiar with [HTML](https://developer.mozilla.org/docs/Learn/HTML/Introduction_to_HTML "Learn HTML"), [CSS](https://developer.mozilla.org/docs/Learn/CSS/First_steps "Learn CSS"), [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/A_re-introduction_to_JavaScript "Learn JavaScript"),
+and some of the tools from the [latest standards](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Language_Resources "Latest JavaScript standards"), such as [classes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes "ES2015 Classes") and [modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import "ES2015 Modules").
+The code samples are written using [TypeScript](https://www.typescriptlang.org/ "TypeScript").
 Most Angular code can be written with just the latest JavaScript, using [types](https://www.typescriptlang.org/docs/handbook/classes.html "TypeScript Types") for dependency injection, and using [decorators](https://www.typescriptlang.org/docs/handbook/decorators.html "Decorators") for metadata.
 -->
-이 문서를 읽는 분은 HTML이나 CSS, [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/A_re-introduction_to_JavaScript "Learn JavaScript")의 기본 지식이나 관련 툴, 그리고 [클래스](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes "ES2015 클래스")나 [모듈](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import "ES2015 모듈")과 같은 [JavaScript의 최신 기술](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Language_Resources "Latest JavaScript standards")에 익숙한 개발자를 대상으로 합니다.
+이 문서를 읽는 분은 [HTML](https://developer.mozilla.org/docs/Learn/HTML/Introduction_to_HTML "Learn HTML")이나 [CSS](https://developer.mozilla.org/docs/Learn/CSS/First_steps "Learn CSS"), [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/A_re-introduction_to_JavaScript "Learn JavaScript")의 기본 지식이나 관련 툴, 그리고 [클래스](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes "ES2015 클래스")나 [모듈](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import "ES2015 모듈")과 같은 [JavaScript의 최신 기술](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Language_Resources "Latest JavaScript standards")에 익숙한 개발자를 대상으로 합니다.
 그리고 이 문서에서 제공하는 예제 코드는 모두 [TypeScript](https://www.typescriptlang.org/ "TypeScript")로 작성되었습니다.
 Angular 코드는 일반적으로 최신 JavaScript 스펙을 바탕으로 [타입](https://www.typescriptlang.org/docs/handbook/classes.html "TypeScript Types")을 사용해서 의존성을 주입하며, [데코레이터](https://www.typescriptlang.org/docs/handbook/decorators.html "Decorators")를 사용해서 메타데이터를 지정합니다.
 
 <!--
-## Feedback 
+## Feedback
 -->
 ## 피드백
 
@@ -81,7 +82,7 @@ Contribute to Angular docs by creating
 [pull requests](https://github.com/angular/angular/pulls "Angular Github pull requests")
 on the Angular Github repository.
 See [Contributing to Angular](https://github.com/angular/angular/blob/master/CONTRIBUTING.md "Contributing guide")
-for information about submission guidelines.  
+for information about submission guidelines.
 
 Our community values respectful, supportive communication.
 Please consult and adhere to the [Code of Conduct](https://github.com/angular/code-of-conduct/blob/master/CODE_OF_CONDUCT.md "Contributor code of conduct").

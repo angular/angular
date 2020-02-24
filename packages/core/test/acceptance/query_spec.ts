@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, ContentChild, ContentChildren, Directive, ElementRef, Input, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {AfterViewInit, Component, ContentChild, ContentChildren, Directive, ElementRef, Input, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef, ViewRef, forwardRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -177,7 +177,7 @@ describe('query logic', () => {
 
     it('should support ViewChild query inherited from undecorated superclasses', () => {
       class MyComp {
-        @ViewChild('foo', {static: false}) foo: any;
+        @ViewChild('foo') foo: any;
       }
 
       @Component({selector: 'sub-comp', template: '<div #foo></div>'})
@@ -193,7 +193,7 @@ describe('query logic', () => {
 
     it('should support ViewChild query inherited from undecorated grand superclasses', () => {
       class MySuperComp {
-        @ViewChild('foo', {static: false}) foo: any;
+        @ViewChild('foo') foo: any;
       }
 
       class MyComp extends MySuperComp {}
@@ -263,6 +263,42 @@ describe('query logic', () => {
       fixture.detectChanges();
       expect(fixture.componentInstance.foo).toBeAnInstanceOf(QueryList);
       expect(fixture.componentInstance.foo.length).toBe(2);
+    });
+
+    it('should support ViewChild query where template is inserted in child component', () => {
+      @Component({selector: 'required', template: ''})
+      class Required {
+      }
+
+      @Component({
+        selector: 'insertion',
+        template: `<ng-container [ngTemplateOutlet]="content"></ng-container>`
+      })
+      class Insertion {
+        @Input() content !: TemplateRef<{}>;
+      }
+
+      @Component({
+        template: `
+          <ng-template #template>
+            <required></required>
+          </ng-template>
+          <insertion [content]="template"></insertion>
+          `
+      })
+      class App {
+        @ViewChild(Required) requiredEl !: Required;
+        viewChildAvailableInAfterViewInit?: boolean;
+
+        ngAfterViewInit() {
+          this.viewChildAvailableInAfterViewInit = this.requiredEl !== undefined;
+        }
+      }
+
+      const fixture = TestBed.configureTestingModule({declarations: [App, Insertion, Required]})
+                          .createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.viewChildAvailableInAfterViewInit).toBe(true);
     });
 
   });
@@ -493,7 +529,7 @@ describe('query logic', () => {
 
     it('should support ContentChild query inherited from undecorated superclasses', () => {
       class MyComp {
-        @ContentChild('foo', {static: false}) foo: any;
+        @ContentChild('foo') foo: any;
       }
 
       @Component({selector: 'sub-comp', template: '<ng-content></ng-content>'})
@@ -502,7 +538,7 @@ describe('query logic', () => {
 
       @Component({template: '<sub-comp><div #foo></div></sub-comp>'})
       class App {
-        @ViewChild(SubComp, {static: false}) subComp !: SubComp;
+        @ViewChild(SubComp) subComp !: SubComp;
       }
 
       TestBed.configureTestingModule({declarations: [App, SubComp]});
@@ -514,7 +550,7 @@ describe('query logic', () => {
 
     it('should support ContentChild query inherited from undecorated grand superclasses', () => {
       class MySuperComp {
-        @ContentChild('foo', {static: false}) foo: any;
+        @ContentChild('foo') foo: any;
       }
 
       class MyComp extends MySuperComp {}
@@ -525,7 +561,7 @@ describe('query logic', () => {
 
       @Component({template: '<sub-comp><div #foo></div></sub-comp>'})
       class App {
-        @ViewChild(SubComp, {static: false}) subComp !: SubComp;
+        @ViewChild(SubComp) subComp !: SubComp;
       }
 
       TestBed.configureTestingModule({declarations: [App, SubComp]});
@@ -557,7 +593,7 @@ describe('query logic', () => {
       `
       })
       class App {
-        @ViewChild(SubComp, {static: false}) subComp !: SubComp;
+        @ViewChild(SubComp) subComp !: SubComp;
       }
 
       TestBed.configureTestingModule({declarations: [App, SubComp, SomeDir]});
@@ -592,7 +628,7 @@ describe('query logic', () => {
       `
       })
       class App {
-        @ViewChild(SubComp, {static: false}) subComp !: SubComp;
+        @ViewChild(SubComp) subComp !: SubComp;
       }
 
       TestBed.configureTestingModule({declarations: [App, SubComp, SomeDir]});
@@ -713,11 +749,13 @@ describe('query logic', () => {
       class ViewContainerManipulatorDirective {
         constructor(private _vcRef: ViewContainerRef) {}
 
-        insertTpl(tpl: TemplateRef<{}>, ctx: {}, idx?: number) {
-          this._vcRef.createEmbeddedView(tpl, ctx, idx);
+        insertTpl(tpl: TemplateRef<{}>, ctx: {}, idx?: number): ViewRef {
+          return this._vcRef.createEmbeddedView(tpl, ctx, idx);
         }
 
         remove(index?: number) { this._vcRef.remove(index); }
+
+        move(viewRef: ViewRef, index: number) { this._vcRef.move(viewRef, index); }
       }
 
       it('should report results in views inserted / removed by ngIf', () => {
@@ -786,6 +824,109 @@ describe('query logic', () => {
         expect(queryList.last.nativeElement.id).toBe('c');
       });
 
+      /**
+       * ViewContainerRef API allows "moving" a view to the same (previous) index. Such operation
+       * has no observable effect on the rendered UI (displays stays the same) but internally we've
+       * got 2 implementation choices when it comes to "moving" a view:
+       * - systematically detach and insert a view - this would result in unnecessary processing
+       * when the previous and new indexes for the move operation are the same;
+       * - detect the situation where the indexes are the same and do no processing in such case.
+       *
+       * This tests asserts on the implementation choices done by the VE (detach and insert) so we
+       * can replicate the same behaviour in ivy.
+       */
+      it('should notify on changes when a given view is removed and re-inserted at the same index',
+         () => {
+
+           @Component({
+             selector: 'test-comp',
+             template: `
+              <ng-template #tpl><div #foo>match</div></ng-template>
+              <ng-template vc></ng-template>
+            `,
+           })
+           class TestComponent implements AfterViewInit {
+             queryListNotificationCounter = 0;
+
+             @ViewChild(ViewContainerManipulatorDirective)
+             vc !: ViewContainerManipulatorDirective;
+             @ViewChild('tpl') tpl !: TemplateRef<any>;
+             @ViewChildren('foo') query !: QueryList<any>;
+
+             ngAfterViewInit() {
+               this.query.changes.subscribe(() => this.queryListNotificationCounter++);
+             }
+           }
+
+           TestBed.configureTestingModule(
+               {declarations: [ViewContainerManipulatorDirective, TestComponent]});
+           const fixture = TestBed.createComponent(TestComponent);
+           fixture.detectChanges();
+
+           const queryList = fixture.componentInstance.query;
+           const {tpl, vc} = fixture.componentInstance;
+
+           const viewRef = vc.insertTpl(tpl, {}, 0);
+           fixture.detectChanges();
+           expect(queryList.length).toBe(1);
+           expect(fixture.componentInstance.queryListNotificationCounter).toBe(1);
+
+           vc.move(viewRef, 0);
+           fixture.detectChanges();
+           expect(queryList.length).toBe(1);
+           expect(fixture.componentInstance.queryListNotificationCounter).toBe(2);
+         });
+
+      it('should support a mix of content queries from the declaration and embedded view', () => {
+        @Directive({selector: '[query-for-lots-of-content]'})
+        class QueryForLotsOfContent {
+          @ContentChildren('foo', {descendants: true}) foos1 !: QueryList<ElementRef>;
+          @ContentChildren('foo', {descendants: true}) foos2 !: QueryList<ElementRef>;
+        }
+
+        @Directive({selector: '[query-for-content]'})
+        class QueryForContent {
+          @ContentChildren('foo') foos !: QueryList<ElementRef>;
+        }
+
+        @Component({
+          selector: 'test-comp',
+          template: `
+            <div query-for-lots-of-content>
+              <ng-template ngFor let-item [ngForOf]="items">
+                <div query-for-content>
+                  <span #foo></span>
+                </div>
+              </ng-template>
+            </div>
+          `
+        })
+        class TestComponent {
+          items = [1, 2];
+        }
+
+        TestBed.configureTestingModule(
+            {declarations: [TestComponent, QueryForContent, QueryForLotsOfContent]});
+
+        const fixture = TestBed.createComponent(TestComponent);
+        fixture.detectChanges();
+
+        const lotsOfContentEl = fixture.debugElement.query(By.directive(QueryForLotsOfContent));
+        const lotsOfContentInstance = lotsOfContentEl.injector.get(QueryForLotsOfContent);
+
+        const contentEl = fixture.debugElement.query(By.directive(QueryForContent));
+        const contentInstance = contentEl.injector.get(QueryForContent);
+
+        expect(lotsOfContentInstance.foos1.length).toBe(2);
+        expect(lotsOfContentInstance.foos2.length).toBe(2);
+        expect(contentInstance.foos.length).toBe(1);
+
+        fixture.componentInstance.items = [];
+        fixture.detectChanges();
+        expect(lotsOfContentInstance.foos1.length).toBe(0);
+        expect(lotsOfContentInstance.foos2.length).toBe(0);
+      });
+
       // https://stackblitz.com/edit/angular-rrmmuf?file=src/app/app.component.ts
       it('should report results when different instances of TemplateRef are inserted into one ViewContainerRefs',
          () => {
@@ -795,21 +936,21 @@ describe('query logic', () => {
                <ng-template #tpl1 let-idx="idx">
                  <div #foo [id]="'foo1_' + idx"></div>
                </ng-template>
-               
+
                <div #foo id="middle"></div>
-               
+
                <ng-template #tpl2 let-idx="idx">
                  <div #foo [id]="'foo2_' + idx"></div>
                </ng-template>
-               
+
                <ng-template vc></ng-template>
              `,
            })
            class TestComponent {
-             @ViewChild(ViewContainerManipulatorDirective, {static: false})
+             @ViewChild(ViewContainerManipulatorDirective)
              vc !: ViewContainerManipulatorDirective;
-             @ViewChild('tpl1', {static: false}) tpl1 !: TemplateRef<any>;
-             @ViewChild('tpl2', {static: false}) tpl2 !: TemplateRef<any>;
+             @ViewChild('tpl1') tpl1 !: TemplateRef<any>;
+             @ViewChild('tpl2') tpl2 !: TemplateRef<any>;
              @ViewChildren('foo') query !: QueryList<any>;
            }
 
@@ -864,57 +1005,56 @@ describe('query logic', () => {
 
       // https://stackblitz.com/edit/angular-7vvo9j?file=src%2Fapp%2Fapp.component.ts
       // https://stackblitz.com/edit/angular-xzwp6n
-      onlyInIvy('FW-1318: QueryList entries are ordered differently in Ivy.')
-          .it('should report results when the same TemplateRef is inserted into different ViewContainerRefs',
-              () => {
-                @Component({
-                  selector: 'test-comp',
-                  template: `
+      it('should report results when the same TemplateRef is inserted into different ViewContainerRefs',
+         () => {
+           @Component({
+             selector: 'test-comp',
+             template: `
                <ng-template #tpl let-idx="idx" let-container_idx="container_idx">
                  <div #foo [id]="'foo_' + container_idx + '_' + idx"></div>
                </ng-template>
 
                <ng-template vc #vi0="vc"></ng-template>
-               <ng-template vc #vi1="vc"></ng-template> 
+               <ng-template vc #vi1="vc"></ng-template>
              `,
-                })
-                class TestComponent {
-                  @ViewChild('tpl', {static: false}) tpl !: TemplateRef<any>;
-                  @ViewChild('vi0', {static: false}) vi0 !: ViewContainerManipulatorDirective;
-                  @ViewChild('vi1', {static: false}) vi1 !: ViewContainerManipulatorDirective;
-                  @ViewChildren('foo') query !: QueryList<any>;
-                }
+           })
+           class TestComponent {
+             @ViewChild('tpl') tpl !: TemplateRef<any>;
+             @ViewChild('vi0') vi0 !: ViewContainerManipulatorDirective;
+             @ViewChild('vi1') vi1 !: ViewContainerManipulatorDirective;
+             @ViewChildren('foo') query !: QueryList<any>;
+           }
 
-                TestBed.configureTestingModule(
-                    {declarations: [ViewContainerManipulatorDirective, TestComponent]});
-                const fixture = TestBed.createComponent(TestComponent);
-                fixture.detectChanges();
+           TestBed.configureTestingModule(
+               {declarations: [ViewContainerManipulatorDirective, TestComponent]});
+           const fixture = TestBed.createComponent(TestComponent);
+           fixture.detectChanges();
 
-                const queryList = fixture.componentInstance.query;
-                const {tpl, vi0, vi1} = fixture.componentInstance;
+           const queryList = fixture.componentInstance.query;
+           const {tpl, vi0, vi1} = fixture.componentInstance;
 
-                expect(queryList.length).toBe(0);
+           expect(queryList.length).toBe(0);
 
-                vi0.insertTpl(tpl !, {idx: 0, container_idx: 0}, 0);
-                vi1.insertTpl(tpl !, {idx: 0, container_idx: 1}, 0);
-                fixture.detectChanges();
+           vi0.insertTpl(tpl !, {idx: 0, container_idx: 0}, 0);
+           vi1.insertTpl(tpl !, {idx: 0, container_idx: 1}, 0);
+           fixture.detectChanges();
 
-                expect(queryList.length).toBe(2);
-                let qListArr = queryList.toArray();
-                expect(qListArr[0].nativeElement.getAttribute('id')).toBe('foo_1_0');
-                expect(qListArr[1].nativeElement.getAttribute('id')).toBe('foo_0_0');
+           expect(queryList.length).toBe(2);
+           let qListArr = queryList.toArray();
+           expect(qListArr[0].nativeElement.getAttribute('id')).toBe('foo_0_0');
+           expect(qListArr[1].nativeElement.getAttribute('id')).toBe('foo_1_0');
 
-                vi0.remove();
-                fixture.detectChanges();
+           vi0.remove();
+           fixture.detectChanges();
 
-                expect(queryList.length).toBe(1);
-                qListArr = queryList.toArray();
-                expect(qListArr[0].nativeElement.getAttribute('id')).toBe('foo_1_0');
+           expect(queryList.length).toBe(1);
+           qListArr = queryList.toArray();
+           expect(qListArr[0].nativeElement.getAttribute('id')).toBe('foo_1_0');
 
-                vi1.remove();
-                fixture.detectChanges();
-                expect(queryList.length).toBe(0);
-              });
+           vi1.remove();
+           fixture.detectChanges();
+           expect(queryList.length).toBe(0);
+         });
 
       // https://stackblitz.com/edit/angular-wpd6gv?file=src%2Fapp%2Fapp.component.ts
       it('should report results from views inserted in a lifecycle hook', () => {
@@ -924,7 +1064,7 @@ describe('query logic', () => {
             <ng-template #tpl>
               <span #foo id="from_tpl"></span>
             </ng-template>
-            
+
             <ng-template [ngTemplateOutlet]="show ? tpl : null"></ng-template>
           `,
         })
@@ -953,6 +1093,96 @@ describe('query logic', () => {
     });
   });
 
+  describe('non-regression', () => {
+
+    it('should query by provider super-type in an embedded view', () => {
+
+      @Directive({selector: '[child]'})
+      class Child {
+      }
+
+      @Directive({selector: '[parent]', providers: [{provide: Child, useExisting: Parent}]})
+      class Parent extends Child {
+      }
+
+      @Component({
+        selector: 'test-cmpt',
+        template:
+            `<ng-template [ngIf]="true"><ng-template [ngIf]="true"><div parent></div></ng-template></ng-template>`
+      })
+      class TestCmpt {
+        @ViewChildren(Child) instances !: QueryList<Child>;
+      }
+
+      TestBed.configureTestingModule({declarations: [TestCmpt, Parent, Child]});
+      const fixture = TestBed.createComponent(TestCmpt);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.instances.length).toBe(1);
+    });
+
+    it('should flatten multi-provider results', () => {
+
+      class MyClass {}
+
+      @Component({
+        selector: 'with-multi-provider',
+        template: '',
+        providers:
+            [{provide: MyClass, useExisting: forwardRef(() => WithMultiProvider), multi: true}]
+      })
+      class WithMultiProvider {
+      }
+
+      @Component({selector: 'test-cmpt', template: `<with-multi-provider></with-multi-provider>`})
+      class TestCmpt {
+        @ViewChildren(MyClass) queryResults !: QueryList<WithMultiProvider>;
+      }
+
+      TestBed.configureTestingModule({declarations: [TestCmpt, WithMultiProvider]});
+      const fixture = TestBed.createComponent(TestCmpt);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.queryResults.length).toBe(1);
+      expect(fixture.componentInstance.queryResults.first).toBeAnInstanceOf(WithMultiProvider);
+    });
+
+    it('should flatten multi-provider results when crossing ng-template', () => {
+
+      class MyClass {}
+
+      @Component({
+        selector: 'with-multi-provider',
+        template: '',
+        providers:
+            [{provide: MyClass, useExisting: forwardRef(() => WithMultiProvider), multi: true}]
+      })
+      class WithMultiProvider {
+      }
+
+      @Component({
+        selector: 'test-cmpt',
+        template: `
+          <ng-template [ngIf]="true"><with-multi-provider></with-multi-provider></ng-template>
+          <with-multi-provider></with-multi-provider>
+        `
+      })
+      class TestCmpt {
+        @ViewChildren(MyClass) queryResults !: QueryList<WithMultiProvider>;
+      }
+
+      TestBed.configureTestingModule({declarations: [TestCmpt, WithMultiProvider]});
+      const fixture = TestBed.createComponent(TestCmpt);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.queryResults.length).toBe(2);
+      expect(fixture.componentInstance.queryResults.first).toBeAnInstanceOf(WithMultiProvider);
+      expect(fixture.componentInstance.queryResults.last).toBeAnInstanceOf(WithMultiProvider);
+    });
+
+
+  });
+
 });
 
 function initWithTemplate(compType: Type<any>, template: string) {
@@ -964,8 +1194,8 @@ function initWithTemplate(compType: Type<any>, template: string) {
 
 @Component({selector: 'local-ref-query-component', template: '<ng-content></ng-content>'})
 class QueryComp {
-  @ViewChild('viewQuery', {static: false}) viewChild !: any;
-  @ContentChild('contentQuery', {static: false}) contentChild !: any;
+  @ViewChild('viewQuery') viewChild !: any;
+  @ContentChild('contentQuery') contentChild !: any;
 
   @ViewChildren('viewQuery') viewChildren !: QueryList<any>;
   @ContentChildren('contentQuery') contentChildren !: QueryList<any>;
@@ -1008,7 +1238,7 @@ class StaticViewQueryComp {
     this._textDir = value;
   }
 
-  @ViewChild('foo', {static: false})
+  @ViewChild('foo')
   get foo(): ElementRef { return this._foo; }
 
   set foo(value: ElementRef) {
@@ -1033,7 +1263,7 @@ class SubclassStaticViewQueryComp extends StaticViewQueryComp {
   @ViewChild('bar', {static: true})
   bar !: ElementRef;
 
-  @ViewChild('baz', {static: false})
+  @ViewChild('baz')
   baz !: ElementRef;
 }
 
@@ -1052,7 +1282,7 @@ class StaticContentQueryComp {
     this._textDir = value;
   }
 
-  @ContentChild('foo', {static: false})
+  @ContentChild('foo')
   get foo(): ElementRef { return this._foo; }
 
   set foo(value: ElementRef) {
@@ -1075,7 +1305,7 @@ class StaticContentQueryDir {
     this._textDir = value;
   }
 
-  @ContentChild('foo', {static: false})
+  @ContentChild('foo')
   get foo(): ElementRef { return this._foo; }
 
   set foo(value: ElementRef) {
@@ -1089,7 +1319,7 @@ class SubclassStaticContentQueryComp extends StaticContentQueryComp {
   @ContentChild('bar', {static: true})
   bar !: ElementRef;
 
-  @ContentChild('baz', {static: false})
+  @ContentChild('baz')
   baz !: ElementRef;
 }
 

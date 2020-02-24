@@ -10,6 +10,7 @@ import {EmitterVisitorContext} from '@angular/compiler/src/output/abstract_emitt
 import * as o from '@angular/compiler/src/output/output_ast';
 import {JitEmitterVisitor, JitEvaluator} from '@angular/compiler/src/output/output_jit';
 import {R3JitReflector} from '@angular/compiler/src/render3/r3_jit';
+import {newArray} from '@angular/compiler/src/util';
 import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
 
 const anotherModuleUrl = 'somePackage/someOtherPath';
@@ -18,10 +19,10 @@ const anotherModuleUrl = 'somePackage/someOtherPath';
   describe('Output JIT', () => {
     describe('regression', () => {
       it('should generate unique argument names', () => {
-        const externalIds = new Array(10).fill(1).map(
+        const externalIds = newArray(10, 1).map(
             (_, index) =>
                 new o.ExternalReference(anotherModuleUrl, `id_${index}_`, {name: `id_${index}_`}));
-        const externalIds1 = new Array(10).fill(1).map(
+        const externalIds1 = newArray(10, 1).map(
             (_, index) => new o.ExternalReference(
                 anotherModuleUrl, `id_${index}_1`, {name: `id_${index}_1`}));
         const ctx = EmitterVisitorContext.createRoot();

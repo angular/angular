@@ -34,7 +34,8 @@ export class UserMetric extends Metric {
   endMeasure(restart: boolean): Promise<{[key: string]: any}> {
     let resolve: (result: any) => void;
     let reject: (error: any) => void;
-    const promise = new Promise((res, rej) => {
+    const promise = new Promise < { [key: string]: any; }
+    > ((res, rej) => {
       resolve = res;
       reject = rej;
     });

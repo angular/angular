@@ -7,8 +7,8 @@
  */
 
 import {AST} from '../../expression_parser/ast';
-
 import {BoundAttribute, BoundEvent, Element, Node, Reference, Template, TextAttribute, Variable} from '../r3_ast';
+
 
 /*
  * t2 is the replacement for the `TemplateDefinitionBuilder`. It handles the operations of

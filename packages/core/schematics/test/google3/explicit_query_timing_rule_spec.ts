@@ -18,7 +18,7 @@ describe('Google3 explicitQueryTiming TSLint rule', () => {
    * the Bazel runfiles, because on Windows runfiles are not symlinked into the working directory.
    */
   const rulesDirectory =
-      dirname(require.resolve('../../migrations/static-queries/google3/explicitQueryTimingRule'));
+      dirname(require.resolve('../../migrations/google3/explicitQueryTimingRule'));
 
   let tmpDir: string;
 

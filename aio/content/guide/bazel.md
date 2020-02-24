@@ -4,7 +4,7 @@
 # Bazel로 빌드하기
 
 <!--
-This guide explains how to build and test Angular apps with Bazel. 
+This guide explains how to build and test Angular apps with Bazel.
 -->
 이 문서는 Angular 앱을 Bazel로 빌드하고 테스트하는 방법에 대해 다룹니다.
 
@@ -12,7 +12,7 @@ This guide explains how to build and test Angular apps with Bazel.
 <div class="alert is-helpful">
 
 <!--
-This guide assumes you are already familiar with developing and building Angular applications using the [CLI](cli). 
+This guide assumes you are already familiar with developing and building Angular applications using the [CLI](cli).
 
 It describes features which are part of Angular Labs, and are not considered a stable, supported API.
 -->
@@ -59,7 +59,7 @@ ng new --collection=@angular/bazel
 ```
 
 <!--
-Now when you use Angular CLI build commands such as `ng build` and `ng serve`, 
+Now when you use Angular CLI build commands such as `ng build` and `ng serve`,
 Bazel is used behind the scenes.
 Outputs from Bazel appear in the `dist/bin` folder.
 
@@ -82,13 +82,10 @@ Bazel로 빌드된 결과물은 `dist/bin` 폴더에 생성됩니다.
 If you need to opt-out from using Bazel, you can restore the backup files:
 
 - `/angular.json.bak` replaces `/angular.json`
-- `/tsconfig.json.bak` replaces `/tsconfig.json`
 -->
 Bazel을 사용하다가 비활성화하려면 Bazel을 활성화할 때 생성된 백업 파일을 복구하면 됩니다:
 
 - `/angular.json.bak` 파일을 `/angular.json` 파일로 복구합니다.
-- `/tsconfig.json.bak` 파일을 `/tsconfig.json` 파일로 복구합니다.
-
 
 <!--
 ## Advanced configuration
@@ -116,7 +113,7 @@ You can manually adjust the Bazel configuration to:
 * customize the build steps
 * parallellize the build for scale and incrementality
 
-Create the initial Bazel configuration files by running the following command: 
+Create the initial Bazel configuration files by running the following command:
 -->
 Bazel 환경설정은 다음과 같은 경우에 수동으로 변경합니다:
 
@@ -135,7 +132,7 @@ Now you'll find new files in the Angular workspace:
 * `/WORKSPACE` tells Bazel how to download external dependencies.
 * `/BUILD.bazel` and `/src/BUILD.bazel` tell Bazel about your source code.
 
-You can find a full-featured example with custom Bazel configurations at http://github.com/angular/angular-bazel-example.
+You can find a full-featured example with custom Bazel configurations at https://github.com/bazelbuild/rules_nodejs/tree/master/examples/angular.
 
 Documentation for using Bazel for frontend projects is linked from https://docs.bazel.build/versions/master/bazel-and-javascript.html.
 -->
@@ -225,7 +222,7 @@ Rules are used in `BUILD.bazel` files, which are markers for the packages in you
 
 In the `BUILD.bazel` file, each rule must first be imported, using the `load` statement. Then the rule is called with some attributes, and the result of calling the rule is that you've declared to Bazel how it can derive some outputs given some inputs and dependencies. Then later, when you run a `bazel` command line, Bazel loads all the rules you've declared to determine an absolute ordering of what needs to be run. Note that only the rules needed to produce the requested output will actually be executed.
 
-A list of common rules for frontend development is documented in the README at https://github.com/bazelbuild/rules_nodejs/. 
+A list of common rules for frontend development is documented in the README at https://github.com/bazelbuild/rules_nodejs/.
 -->
 룰(Rule)은 Bazel 플러그인과 비슷하다고 볼 수 있습니다. Google의 Angular 팀이 직접 관리하는 이 문서에서 Bazel 룰에 대해 자세하게 알아봅시다.
 

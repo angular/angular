@@ -53,9 +53,7 @@ a human-friendly date.
 파이프는 데이터를 입력으로 받고, 이 데이터를 특정 형식으로 변환해서 반환합니다.
 다음 예제는 컴포넌트에 있는 날짜 데이터를 사용자에게 효율적으로 표시하기 위해 파이프를 어떻게 사용할 수 있는지 알아봅니다.
 
-<code-example path="pipes/src/app/hero-birthday1.component.ts" header="src/app/hero-birthday1.component.ts" linenums="false">
-
-</code-example>
+<code-example path="pipes/src/app/hero-birthday1.component.ts" header="src/app/hero-birthday1.component.ts"></code-example>
 
 
 <!--
@@ -63,9 +61,7 @@ Focus on the component's template.
 -->
 컴포넌트 템플릿을 자세히 봅시다.
 
-<code-example path="pipes/src/app/app.component.html" region="hero-birthday-template" header="src/app/app.component.html" linenums="false">
-
-</code-example>
+<code-example path="pipes/src/app/app.component.html" region="hero-birthday-template" header="src/app/app.component.html"></code-example>
 
 
 <!--
@@ -127,9 +123,7 @@ After formatting the hero's April 15th birthday, it renders as **<samp>04/15/88<
 템플릿에 생년월일을 표시할 때 특정 형식을 인자로 지정해 보겠습니다.
 **<samp>04/15/88</samp>**과 같이 표시하려면 다음과 같이 작성합니다:
 
-<code-example path="pipes/src/app/app.component.html" region="format-birthday" header="src/app/app.component.html" linenums="false">
-
-</code-example>
+<code-example path="pipes/src/app/app.component.html" region="format-birthday" header="src/app/app.component.html"></code-example>
 
 
 <!--
@@ -149,9 +143,7 @@ to the component's `format` property. Here's the template for that component:
 컴포넌트 클래스에 있는 `format` 프로퍼티를 파이프 인자로 *바인딩 하는* 컴포넌트를 작성해 봅시다.
 이 컴포넌트의 템플릿은 다음과 같이 작성합니다:
 
-<code-example path="pipes/src/app/hero-birthday2.component.ts" region="template" header="src/app/hero-birthday2.component.ts (template)" linenums="false">
-
-</code-example>
+<code-example path="pipes/src/app/hero-birthday2.component.ts" region="template" header="src/app/hero-birthday2.component.ts (template)"></code-example>
 
 
 <!--
@@ -162,9 +154,7 @@ That method toggles the component's `format` property between a short form
 그리고 템플릿에 버튼을 추가하는데, 이 버튼을 클릭할 때마다 `toggleFormat()` 함수를 실행합니다.
 이 함수는 컴포넌트의 `format` 프로퍼티를 간단한 형식(`'shortDate'`)이나 자세한 형식(`'fullDate'`)으로 지정합니다.
 
-<code-example path="pipes/src/app/hero-birthday2.component.ts" region="class" header="src/app/hero-birthday2.component.ts (class)" linenums="false">
-
-</code-example>
+<code-example path="pipes/src/app/hero-birthday2.component.ts" region="class" header="src/app/hero-birthday2.component.ts (class)"></code-example>
 
 
 <!--
@@ -173,11 +163,12 @@ As you click the button, the displayed date alternates between
 "**<samp>Friday, April 15, 1988</samp>**".
 -->
 앱을 실행하고 버튼을 클릭하면 템플릿에 적용되는 파이프의 형식이 바뀌는 것을 확인할 수 있습니다.
+"**<samp>04/15/1988</samp>**"
+"**<samp>Friday, April 15, 1988</samp>**".
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/pipes/date-format-toggle-anim.gif' alt="Date Format Toggle">
-</figure>
-
+</div>
 
 
 <div class="alert is-helpful">
@@ -207,9 +198,7 @@ The birthday displays as **<samp>APR 15, 1988</samp>**.
 아래 예제는 생년월일을 `DatePipe`로 처리한 후에 `UpperasePipe`로 다시 한 번 처리해서 최종 결과를 대문자로 표시합니다.
 화면에는 **<samp>APR 15, 1988</samp>**과 같이 표시됩니다.
 
-<code-example path="pipes/src/app/app.component.html" region="chained-birthday" header="src/app/app.component.html" linenums="false">
-
-</code-example>
+<code-example path="pipes/src/app/app.component.html" region="chained-birthday" header="src/app/app.component.html"></code-example>
 
 
 <!--
@@ -218,9 +207,7 @@ the same pipes as above, but passes in a parameter to `date` as well.
 -->
 같은 방식으로 파이프를 체이닝하면서 `date` 파이프에 인자를 지정하면 **<samp>FRIDAY, APRIL 15, 1988</samp>**과 같은 형식으로도 표현할 수 있습니다.
 
-<code-example path="pipes/src/app/app.component.html" region="chained-parameter-birthday" header="src/app/app.component.html" linenums="false">
-
-</code-example>
+<code-example path="pipes/src/app/app.component.html" region="chained-parameter-birthday" header="src/app/app.component.html"></code-example>
 
 
 
@@ -236,9 +223,7 @@ Here's a custom pipe named `ExponentialStrengthPipe` that can boost a hero's pow
 기본 파이프 기능 외에 다른 기능이 필요하다면 커스텀 파이프를 만들어서 활용할 수도 있습니다.
 이번에는 히어로의 파워를 증폭시키는 `ExponentialStrengthPipe` 를 만들어 봅시다.
 
-<code-example path="pipes/src/app/exponential-strength.pipe.ts" header="src/app/exponential-strength.pipe.ts" linenums="false">
-
-</code-example>
+<code-example path="pipes/src/app/exponential-strength.pipe.ts" header="src/app/exponential-strength.pipe.ts"></code-example>
 
 
 <!--
@@ -286,12 +271,11 @@ Now you need a component to demonstrate the pipe.
 -->
 이제 파이프를 테스트하기 위해 컴포넌트를 하나 만듭니다.
 
-<code-example path="pipes/src/app/power-booster.component.ts" header="src/app/power-booster.component.ts" linenums="false">
-</code-example>
+<code-example path="pipes/src/app/power-booster.component.ts" header="src/app/power-booster.component.ts"></code-example>
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/pipes/power-booster.png' alt="Power Booster">
-</figure>
+</div>
 
 
 <!--
@@ -352,9 +336,9 @@ your pipe and two-way data binding with `ngModel`.
 
 
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/pipes/power-boost-calculator-anim.gif' alt="Power Boost Calculator">
-</figure>
+</div>
 
 
 
@@ -391,9 +375,7 @@ its display of every hero in the `heroes` array. Here's the template:
 -->
 이번에 다루는 예제는 컴포넌트의 기본 변화 감지 정책을 사용합니다. 이 예제에서는 `heroes` 배열에 있는 모든 히어로를 화면에 표시하며, 템플릿은 다음과 같이 정의합니다:
 
-<code-example path="pipes/src/app/flying-heroes.component.html" region="template-1" header="src/app/flying-heroes.component.html (v1)" linenums="false">
-
-</code-example>
+<code-example path="pipes/src/app/flying-heroes.component.html" region="template-1" header="src/app/flying-heroes.component.html (v1)"></code-example>
 
 
 <!--
@@ -401,9 +383,7 @@ The companion component class provides heroes, adds heroes into the array, and c
 -->
 그리고 컴포넌트 클래스 코드에서는 히어로 목록에 히어로를 추가하거나 초기화하는 로직을 작성합니다.
 
-<code-example path="pipes/src/app/flying-heroes.component.ts" region="v1" header="src/app/flying-heroes.component.ts (v1)" linenums="false">
-
-</code-example>
+<code-example path="pipes/src/app/flying-heroes.component.ts" region="v1" header="src/app/flying-heroes.component.ts (v1)"></code-example>
 
 
 <!--
@@ -422,9 +402,7 @@ Add a `FlyingHeroesPipe` to the `*ngFor` repeater that filters the list of heroe
 -->
 이제 `<div>`에 적용된 `*ngFor`에 `FlyingHeroesPipe`를 적용합니다. 이 파이프를 적용하면 전체 히어로 목록에서 하늘을 날 수 있는 히어로만 `*ngFor`의 대상으로 필터링됩니다.
 
-<code-example path="pipes/src/app/flying-heroes.component.html" region="template-flying-heroes" header="src/app/flying-heroes.component.html (flyers)" linenums="false">
-
-</code-example>
+<code-example path="pipes/src/app/flying-heroes.component.html" region="template-flying-heroes" header="src/app/flying-heroes.component.html (flyers)"></code-example>
 
 
 <!--
@@ -432,9 +410,7 @@ Here's the `FlyingHeroesPipe` implementation, which follows the pattern for cust
 -->
 `FlyingHeroesPipe`는 다음과 같이 구현합니다.
 
-<code-example path="pipes/src/app/flying-heroes.pipe.ts" region="pure" header="src/app/flying-heroes.pipe.ts" linenums="false">
-
-</code-example>
+<code-example path="pipes/src/app/flying-heroes.pipe.ts" region="pure" header="src/app/flying-heroes.pipe.ts"></code-example>
 
 
 <!--
@@ -453,13 +429,11 @@ Notice how a hero is added:
 
 히어로를 추가하는 로직을 확인해 봅시다:
 
-<code-example path="pipes/src/app/flying-heroes.component.ts" region="push" header="src/app/flying-heroes.component.ts" linenums="false">
-
-</code-example>
+<code-example path="pipes/src/app/flying-heroes.component.ts" region="push" header="src/app/flying-heroes.component.ts"></code-example>
 
 
 <!--
-You add the hero into the `heroes` array.  The reference to the array hasn't changed.
+You add the hero into the `heroes` array. The reference to the array hasn't changed.
 It's the same array. That's all Angular cares about. From its perspective, *same array, no change, no display update*.
 
 To fix that, create an array with the new hero appended and assign that to `heroes`.
@@ -480,9 +454,9 @@ code with checkbox switches and additional displays to help you experience these
 요약하자면, 배열 자체를 새로 할당하지 않으면 파이프도 적용되지 않고 화면도 갱신되지 않습니다.
 이 문제를 수정하고 체크박스를 추가해서 사용자가 사용하기에 좀 더 편하게 개선하면 다음과 같은 구현할 수 있습니다.
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/pipes/flying-heroes-anim.gif' alt="Flying Heroes">
-</figure>
+</div>
 
 
 <!--
@@ -531,9 +505,7 @@ impure like this:
 하지만 파이프 메타데이터의 `pure` 값을 `false`로 설정하면 순수하지 않은 파이프를 구현할 수 있습니다.
 `FlyingHeroesPipe`를 순수하지 않은 파이프로 구현하려면 다음과 같이 적용합니다:
 
-<code-example path="pipes/src/app/flying-heroes.pipe.ts" region="pipe-decorator" header="src/app/flying-heroes.pipe.ts" linenums="false">
-
-</code-example>
+<code-example path="pipes/src/app/flying-heroes.pipe.ts" region="pipe-decorator" header="src/app/flying-heroes.pipe.ts"></code-example>
 
 
 <!--
@@ -645,9 +617,7 @@ This is a good candidate for an impure pipe because the `transform` function is 
 
 이렇게 만든 `FlyingHeroesImpurePipe`는 순수하지 않은 파이프지만, `transform` 함수의 로직은 순수한 파이프일 때와 마찬가지로 아주 간단하기 때문에 위에서 설명한 성능 저하는 크게 신경쓰지 않아도 됩니다.
 
-<code-example path="pipes/src/app/flying-heroes.pipe.ts" linenums="false" header="src/app/flying-heroes.pipe.ts (filter)" region="filter">
-
-</code-example>
+<code-example path="pipes/src/app/flying-heroes.pipe.ts" header="src/app/flying-heroes.pipe.ts (filter)" region="filter"></code-example>
 
 
 <!--
@@ -655,9 +625,7 @@ You can derive a `FlyingHeroesImpureComponent` from `FlyingHeroesComponent`.
 -->
 그리고 `FlyingHeroesImpureComponent` 의 템플릿은 `FlyingHeroesComponent` 와 비슷하게 다음과 같이 구현합니다.
 
-<code-example path="pipes/src/app/flying-heroes-impure.component.html" linenums="false" header="src/app/flying-heroes-impure.component.html (excerpt)" region="template-flying-heroes">
-
-</code-example>
+<code-example path="pipes/src/app/flying-heroes-impure.component.html" header="src/app/flying-heroes-impure.component.html (excerpt)" region="template-flying-heroes"></code-example>
 
 
 <!--
@@ -751,9 +719,9 @@ The component renders as the following:
 -->
 이 컴포넌트는 다음 그림처럼 표시됩니다:
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/pipes/hero-list.png' alt="Hero List">
-</figure>
+</div>
 
 
 <!--
@@ -792,7 +760,7 @@ It displays the same hero data in JSON format by chaining through to the built-i
 
 <!--
 The [JsonPipe](api/common/JsonPipe)
-provides an easy way to diagnosis a mysteriously failing data binding or
+provides an easy way to diagnose a mysteriously failing data binding or
 inspect an object for future binding.
 -->
 [JsonPipe](api/common/JsonPipe)를 사용하면 템플릿에 어떤 데이터가 바인딩 되었는지, 바인딩하기 전에 데이터가 어떤 모양인지 간단하게 확인할 수 있습니다.
@@ -902,7 +870,7 @@ The list might be sorted by hero `name` and `planet` of origin properties in the
 
 <!--
 <code-example language="html">
-  &lt;!-- NOT REAL CODE!
+  &lt;!-- NOT REAL CODE! --&gt;
   &lt;div *ngFor="let hero of heroes | orderBy:'name,planet'">&lt;/div>
 </code-example>
 -->

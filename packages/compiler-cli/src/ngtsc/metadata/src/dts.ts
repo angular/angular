@@ -33,7 +33,7 @@ export class DtsMetadataReader implements MetadataReader {
     // This operation is explicitly not memoized, as it depends on `ref.ownedByModuleGuess`.
     // TODO(alxhub): investigate caching of .d.ts module metadata.
     const ngModuleDef = this.reflector.getMembersOfClass(clazz).find(
-        member => member.name === 'ngModuleDef' && member.isStatic);
+        member => member.name === 'ɵmod' && member.isStatic);
     if (ngModuleDef === undefined) {
       return null;
     } else if (
@@ -54,6 +54,8 @@ export class DtsMetadataReader implements MetadataReader {
           this.checker, exportMetadata, ref.ownedByModuleGuess, resolutionContext),
       imports: extractReferencesFromType(
           this.checker, importMetadata, ref.ownedByModuleGuess, resolutionContext),
+      schemas: [],
+      rawDeclarations: null,
     };
   }
 
@@ -63,8 +65,7 @@ export class DtsMetadataReader implements MetadataReader {
   getDirectiveMetadata(ref: Reference<ClassDeclaration>): DirectiveMeta|null {
     const clazz = ref.node;
     const def = this.reflector.getMembersOfClass(clazz).find(
-        field =>
-            field.isStatic && (field.name === 'ngComponentDef' || field.name === 'ngDirectiveDef'));
+        field => field.isStatic && (field.name === 'ɵcmp' || field.name === 'ɵdir'));
     if (def === undefined) {
       // No definition could be found.
       return null;
@@ -74,15 +75,12 @@ export class DtsMetadataReader implements MetadataReader {
       // The type metadata was the wrong shape.
       return null;
     }
-    const selector = readStringType(def.type.typeArguments[1]);
-    if (selector === null) {
-      return null;
-    }
 
     return {
       ref,
       name: clazz.name.text,
-      isComponent: def.name === 'ngComponentDef', selector,
+      isComponent: def.name === 'ɵcmp',
+      selector: readStringType(def.type.typeArguments[1]),
       exportAs: readStringArrayType(def.type.typeArguments[2]),
       inputs: readStringMapType(def.type.typeArguments[3]),
       outputs: readStringMapType(def.type.typeArguments[4]),
@@ -97,7 +95,7 @@ export class DtsMetadataReader implements MetadataReader {
    */
   getPipeMetadata(ref: Reference<ClassDeclaration>): PipeMeta|null {
     const def = this.reflector.getMembersOfClass(ref.node).find(
-        field => field.isStatic && field.name === 'ngPipeDef');
+        field => field.isStatic && field.name === 'ɵpipe');
     if (def === undefined) {
       // No definition could be found.
       return null;

@@ -26,7 +26,7 @@ export const NG_ANIMATING_SELECTOR = '.ng-animating';
 export function resolveTimingValue(value: string | number) {
   if (typeof value == 'number') return value;
 
-  const matches = (value as string).match(/^(-?[\.\d]+)(m?s)/);
+  const matches = value.match(/^(-?[\.\d]+)(m?s)/);
   if (!matches || matches.length < 2) return 0;
 
   return _convertTimeValueToMS(parseFloat(matches[1]), matches[2]);
@@ -73,7 +73,7 @@ function parseTimeExpression(
       easing = easingVal;
     }
   } else {
-    duration = <number>exp;
+    duration = exp;
   }
 
   if (!allowNegativeValues) {
@@ -214,10 +214,8 @@ const PARAM_REGEX =
 export function extractStyleParams(value: string | number): string[] {
   let params: string[] = [];
   if (typeof value === 'string') {
-    const val = value.toString();
-
     let match: any;
-    while (match = PARAM_REGEX.exec(val)) {
+    while (match = PARAM_REGEX.exec(value)) {
       params.push(match[1] as string);
     }
     PARAM_REGEX.lastIndex = 0;

@@ -115,6 +115,17 @@ With the server running, you can point your browser at http://localhost:8080/. Y
 
 **팁:** Angular 서비스 워커를 사용할 때는 이전에 실행했던 서비스 워커의 영향을 배제하기 위해 브라우저를 시크릿 모드로 실행하는 것이 좋습니다.
 
+<div class="alert is-helpful">
+
+<!--
+**Note:**
+If you are not using HTTPS, the service worker will only be registered when accessing the app on `localhost`.
+-->
+**참고:**
+HTTPS를 사용하지 않으면 `localhost`에서 앱을 실행할 때만 서비스 워커를 등록할 수 있습니다.
+
+</div>
+
 <!--
 ### Simulating a network issue
 -->
@@ -134,13 +145,13 @@ To simulate a network issue, disable network interaction for your application. I
 3. **Offline 박스**를 체크합니다.
 
 <!--
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/service-worker/offline-checkbox.png" alt="The offline checkbox in the Network tab is checked">
-</figure>
+</div>
 -->
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/service-worker/offline-checkbox.png" alt="Network 탭의 Offline 체크박스가 체크된 모습">
-</figure>
+</div>
 
 <!--
 Now the app has no access to network interaction.
@@ -155,9 +166,9 @@ If you look at the Network tab, you can verify that the service worker is active
 
 서비스 워커를 사용하지 않는 Angular 애플리케이션이라면, 이 상태에서 화면을 새로고침 했을 때 인터넷이 연결되지 않았다는 메시지가 표시될 것입니다.
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/service-worker/sw-active.png" alt="Requests are marked as from ServiceWorker">
-</figure>
+</div>
 
 <!--
 Notice that under the "Size" column, the requests state is `(from ServiceWorker)`. This means that the resources are not being loaded from the network. Instead, they are being loaded from the service worker's cache.
@@ -266,13 +277,13 @@ Now look at how the browser and service worker handle the updated application.
 1. 이전에 열었던 윈도우에서 http://localhost:8080로 접속합니다. 어떤 화면이 보이나요?
 
 <!--
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/service-worker/welcome-msg-en.png" alt="It still says Welcome to Service Workers!">
-</figure>
+</div>
 -->
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/service-worker/welcome-msg-en.png" alt="아직 Welcome to Service Workers!가 표시됩니다.">
-</figure>
+</div>
 
 <!--
 What went wrong? Nothing, actually. The Angular service worker is doing its job and serving the version of the application that it has **installed**, even though there is an update available. In the interest of speed, the service worker doesn't wait to check for updates before it serves the application that it has cached.
@@ -289,13 +300,13 @@ If you look at the `http-server` logs, you can see the service worker requesting
 2. 페이지를 새로고침 해봅시다.
 
 <!--
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/service-worker/welcome-msg-fr.png" alt="The text has changed to say Bienvenue à app!">
-</figure>
+</div>
 -->
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/service-worker/welcome-msg-fr.png" alt="화면의 문구가 Bienvenue à app!로 변경되었습니다.">
-</figure>
+</div>
 
 <!--
 The service worker installed the updated version of your app *in the background*, and the next time the page is loaded or reloaded, the service worker switches to the latest version.

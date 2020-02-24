@@ -14,12 +14,14 @@ import {computeMsgId, digest, sha1} from '../../src/i18n/digest';
       it('must return the ID if it\'s explicit', () => {
         expect(digest({
           id: 'i',
+          legacyIds: [],
           nodes: [],
           placeholders: {},
           placeholderToMessage: {},
           meaning: '',
           description: '',
           sources: [],
+          customId: 'i',
         })).toEqual('i');
       });
     });

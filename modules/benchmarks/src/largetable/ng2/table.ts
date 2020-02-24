@@ -36,7 +36,7 @@ export class TableComponent {
 @NgModule({imports: [BrowserModule], bootstrap: [TableComponent], declarations: [TableComponent]})
 export class AppModule {
   constructor(sanitizer: DomSanitizer) {
-    trustedEmptyColor = sanitizer.bypassSecurityTrustStyle('');
+    trustedEmptyColor = sanitizer.bypassSecurityTrustStyle('white');
     trustedGreyColor = sanitizer.bypassSecurityTrustStyle('grey');
   }
 }

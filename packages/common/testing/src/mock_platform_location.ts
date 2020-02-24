@@ -93,7 +93,8 @@ export interface MockPlatformLocationConfig {
  *
  * @publicApi
  */
-export const MOCK_PLATFORM_LOCATION_CONFIG = new InjectionToken('MOCK_PLATFORM_LOCATION_CONFIG');
+export const MOCK_PLATFORM_LOCATION_CONFIG =
+    new InjectionToken<MockPlatformLocationConfig>('MOCK_PLATFORM_LOCATION_CONFIG');
 
 /**
  * Mock implementation of URL state.

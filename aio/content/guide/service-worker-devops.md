@@ -335,6 +335,9 @@ There are two possible degraded states:
 clean copy of the latest known version of the app. Older cached
 versions are safe to use, so existing tabs continue to run from
 cache, but new loads of the app will be served from the network.
+The service worker will try to recover from this state when a new
+version of the application is detected and installed (that is,
+when a new `ngsw.json` is available).
 
 * `SAFE_MODE`: the service worker cannot guarantee the safety of
 using cached data. Either an unexpected error occurred or all
@@ -343,6 +346,13 @@ network, running as little service worker code as possible.
 
 In both cases, the parenthetical annotation provides the
 error that caused the service worker to enter the degraded state.
+
+Both states are temporary; they are saved only for the lifetime of the [ServiceWorker
+instance](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerGlobalScope).
+The browser sometimes terminates an idle service worker to conserve memory and
+processor power, and creates a new service worker instance in response to
+network events. The new instance starts in the `NORMAL` mode, regardless of the
+state of the previous instance.
 -->
 드라이버 상태가 `NORMAL`이기 때문에 서비스 워커가 정상적으로 동작하고 있다는 것을 확인할 수 있습니다.
 
@@ -352,7 +362,15 @@ error that caused the service worker to enter the degraded state.
 
 * `SAFE_MODE`: 서비스 워커가 캐싱된 데이터의 안전성을 보장할 수 없는 상태를 의미합니다. 다르게 표현하면, 캐싱된 앱을 실행하다가 에러가 발생했거나 캐싱된 앱 버전 자체가 유효하지 않은 상태를 의미합니다. 앱에서 주고받는 모든 트래픽은 캐싱된 앱이 아니라 네트워크를 통해 전송되며, 서비스 워커의 실행은 최소화됩니다.
 
-비정상 상태로 앱을 실행한 후에 디버깅 페이지에 접속하면 현재 앱에서 발생한 문제들을 화면에서 확인할 수 있습니다.
+In both cases, the parenthetical annotation provides the
+error that caused the service worker to enter the degraded state.
+
+Both states are temporary; they are saved only for the lifetime of the [ServiceWorker
+instance](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerGlobalScope).
+The browser sometimes terminates an idle service worker to conserve memory and
+processor power, and creates a new service worker instance in response to
+network events. The new instance starts in the `NORMAL` mode, regardless of the
+state of the previous instance.
 
 <!--
 #### Latest manifest hash
@@ -495,6 +513,7 @@ an administrator ever needs to deactivate the service worker quickly.
 -->
 복잡한 시스템이라면 보통 그렇듯이, 설정값을 잘못 지정하거나 버그가 발생하면 서비스 워커도 예상하지 않은 방식으로 동작할 수 있습니다. 하지만 이런 경우를 최소화하기 위해 설정값이 잘못되었을 때 동작하는 안전장치가 몇가지 있습니다. 이 안전장치를 활용하면 오동작하는 서비스 워커를 빠르게 비활성화할 수 있습니다.
 
+{@a fail-safe}
 <!--
 ### Fail-safe
 -->
@@ -535,6 +554,24 @@ the past on your site.
 하지만 이 서비스 워커는 개발자가 브라우저에 직접 등록할 수 없습니다. 왜냐하면 `index.html` 파일에서 다른 서비스 워커를 등록하면 다른 서비스 워커가 이전에 캐싱했던 내용을 확인할 수 없기 때문입니다. `safety-worker.js` 파일은 브라우저에서 제거하려는 서비스 워커 스크립트의 URL 대신 사용하도록 지정해야 하며, 이전에 동작하던 서비스 워커가 완전히 제거될 때까지 유지되어야 합니다. 다르게 표현하면, 서비스 워커를 완벽하게 제거하려면 이전에 가리키던 서비스 워커 파일의 URL 대신 `safety-worker.js` 파일을 계속 가리켜야 합니다.
 
 이 스크립트를 사용하면 `@angular/service-worker`가 등록한 서비스 워커와 다른 방식으로 사이트에 등록된 서비스 워커도 모두 비활성화할 수 있습니다.
+
+### Changing your app's location
+
+It is important to note that service workers don't work behind redirect. You 
+may have already encountered the error `The script resource is behind a redirect, which is disallowed`.
+
+This can be a problem if you have to change your app's location. If you setup 
+a redirect from the old location (for example `example.com`) to the new 
+location (for example `www.example.com`) the worker will stop working. 
+Also, the redirect won't even trigger for users who are loading the site 
+entirely from Service Worker. The old worker (registered at `example.com`)
+ tries to update and sends requests to the old location `example.com` which 
+ get redirected to the new location `www.example.com` and create the error 
+`The script resource is behind a redirect, which is disallowed`.
+
+To remedy this, you may need to kill the old worker using one of the above
+techniques ([Fail-safe](#fail-safe) or [Safety Worker](#safety-worker)).
+
 
 <!--
 ## More on Angular service workers

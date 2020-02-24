@@ -36,8 +36,8 @@ BOILERPLATE_PATHS['service-worker'] = [...cliRelativePath, 'angular.json', 'pack
 BOILERPLATE_PATHS.testing = [
   ...cliRelativePath,
   'angular.json',
-  'src/tsconfig.app.json',
-  'src/tsconfig.spec.json'
+  'tsconfig.app.json',
+  'tsconfig.spec.json'
 ];
 
 BOILERPLATE_PATHS.universal = [...cliRelativePath, 'angular.json', 'package.json'];
@@ -55,6 +55,11 @@ BOILERPLATE_PATHS.ivy = {
 BOILERPLATE_PATHS.schematics = [
   ...cliRelativePath,
   'angular.json'
+];
+
+BOILERPLATE_PATHS['cli-ajs'] = [
+  ...cliRelativePath,
+  'package.json'
 ];
 
 const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
@@ -75,9 +80,7 @@ class ExampleBoilerPlate {
     }
 
     if (ivy) {
-      // We only need the "es2015" bundles as the CLI webpack build does not need
-      // any other formats for building and serving.
-      shelljs.exec(`yarn --cwd ${SHARED_PATH} ivy-ngcc --properties es2015`);
+      shelljs.exec(`yarn --cwd ${SHARED_PATH} ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points`);
     }
 
     exampleFolders.forEach(exampleFolder => {

@@ -33,8 +33,13 @@ export class AfterContentComponent implements AfterContentChecked, AfterContentI
   private prevHero = '';
   comment = '';
 
+<<<<<<< HEAD
   // `ChildComponent` 타입의 자식 컴포넌트를 참조합니다.
   @ContentChild(ChildComponent, {static: false}) contentChild: ChildComponent;
+=======
+  // Query for a CONTENT child of type `ChildComponent`
+  @ContentChild(ChildComponent) contentChild: ChildComponent;
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 // #enddocregion hooks
   constructor(private logger: LoggerService) {

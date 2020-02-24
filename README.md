@@ -6,7 +6,7 @@
 
 # Angular
 
-Angular is a development platform for building mobile and desktop web applications using Typescript/JavaScript and other languages.
+Angular is a development platform for building mobile and desktop web applications using TypeScript/JavaScript and other languages.
 
 ## Quickstart
 
@@ -14,7 +14,7 @@ Angular is a development platform for building mobile and desktop web applicatio
 
 ## Changelog
 
-[Learn about the latest improvements][changelog]. 
+[Learn about the latest improvements][changelog].
 
 ## Want to help?
 

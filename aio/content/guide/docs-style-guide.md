@@ -1,53 +1,53 @@
-# Angular Documentation Style Guide
+# Angular documentation style guide
 <!-- formerly Authors Style Guide -->
 
-This Style Guide is for anyone who contributes to the Angular documentation (this site). 
-These guidelines should be followed by all authors. 
+This style guide is for anyone who contributes to the Angular documentation (this site).
+These guidelines should be followed by all authors.
 Deviations must be approved by a documentation editor.
 
-The guidelines described here serve two purposes: 
+The guidelines described here serve two purposes:
 
-* To ensure a high-quality, consistent experience for Angular documentation users. 
+* To ensure a high-quality, consistent experience for Angular documentation users.
 
-* To simplify the writing process for contributing authors. 
-This guide helps you make decisions about tone, voice, and style. 
-It also helps you find the right markup quickly. 
+* To simplify the writing process for contributing authors.
+This guide helps you make decisions about tone, voice, and style.
+It also helps you find the right markup quickly.
 
 
 <div class="alert is-helpful">
 
-This guide is a *living document*; it changes over time. 
-We strive for consistency to the extent feasible, but you may find parts of our documentation that don't match this style guide. 
+This guide is a *living document*; it changes over time.
+We strive for consistency to the extent feasible, but you may find parts of our documentation that don't match this style guide.
 When in doubt, **follow this guide rather than imitating existing documents.**
 
 </div>
 
 ## Scope of these guidelines
 
-We ask all contributing authors to adhere to three aspects of style: 
+We ask all contributing authors to adhere to three aspects of style:
 
 
-* **Writing style:** Word usage, grammar, capitalization, and punctuation. 
-Adherence to Angular's writing guidelines ensures a consistent "voice", helps ensure accuracy of the information, and facilitates use world-wide, by audiences with different backgrounds. 
+* **Writing style:** Word usage, grammar, capitalization, and punctuation.
+Adherence to Angular's writing guidelines ensures a consistent "voice", helps ensure accuracy of the information, and facilitates use world-wide, by audiences with different backgrounds.
 
 
-* **Markup style:** How to include images, tables, alert boxes, and code snippets. 
-Angular docs are written in Markdown, with custom extensions for this site. Correct markup ensures a consistent look-and-feel, and is essential for the doc to build and function correctly. 
+* **Markup style:** How to include images, tables, alert boxes, and code snippets.
+Angular docs are written in Markdown, with custom extensions for this site. Correct markup ensures a consistent look-and-feel, and is essential for the doc to build and function correctly.
 
 
-* **Angular coding style:** Coding style for example apps and code snippets. 
-Code examples are encouraged for demonstrating how to apply the concepts and features discussed. 
-Angular has a custom framework that enables authors to include code snippets directly from example apps  that are automatically tested as part of doc builds. 
-To contribute example code, you must understand Angular itself and the custom framework for Angular doc examples. 
+* **Angular coding style:** Coding style for example apps and code snippets.
+Code examples are encouraged for demonstrating how to apply the concepts and features discussed.
+Angular has a custom framework that enables authors to include code snippets directly from example apps that are automatically tested as part of doc builds.
+To contribute example code, you must understand Angular itself and the custom framework for Angular doc examples.
 
-For each aspect of style, the following table explains where to find the primary guidelines and what this Angular Documentation Style Guide offers. 
+For each aspect of style, the following table explains where to find the primary guidelines and what this Angular Documentation Style Guide offers.
 
 
 Style                    | Guidelines
 ------------------------ | -------------------------------
-**Writing style**        | Primary: [Google Developer Documentation Style Guide](https://developers.google.com/style/)<br />This guide: Specifies any special considerations for Angular docs.  
-**Markup style**         | Primary: This guide<br />This guide: Specifies guidelines for markup of guides and tutorials, which are written primarily in Markdown. 
-**Angular coding style** | Primary: [Angular Style Guide](guide/styleguide "Angular Application Code Style Guide").<br />This guide: How to create, store, and include code examples in guides and tutorials. 
+**Writing style**        | Primary: [Google Developer Documentation Style Guide](https://developers.google.com/style/)<br />This guide: Specifies any special considerations for Angular docs.
+**Markup style**         | Primary: This guide<br />This guide: Specifies guidelines for markup of guides and tutorials, which are written primarily in Markdown.
+**Angular coding style** | Primary: [Angular Style Guide](guide/styleguide "Angular Application Code Style Guide").<br />This guide: How to create, store, and include code examples in guides and tutorials.
 
 <div class="alert is-helpful">
 
@@ -139,24 +139,26 @@ The title should appear at the top of the physical page.
 Begin the title with the markdown `#` character. Alternatively, you can write the equivalent `<h1>`.
 
 ```html
-  # Authors Style Guide
+  # Angular documentation style guide
 ```
 
 **Only one title (`<h1>`) per document!**
 
-Title text should be in "Title Case", which means that you use capital letters to start the first words and all _principal_ words. Use lower case letters for _secondary_ words such as "in", "of", and "the".
+Title text should be in "Sentence case", which means the first word is capitalized and all other words are lower case (unless they are technical terms that are always capitalized, like "Angular").
 
 ```html
-  # The Meat of the Matter
+  # Deprecation policy in Angular
 ```
 
 **Always follow the title with at least one blank line.**
+
+Note that the corresponding left-nav TOC text should be in "title case", which means that you use capital letters to start the first words and all principal words. Use lower case letters for secondary words such as "in", "of", and "the". The TOC title can also be shortened to fit in the column.
 
 ## Sections
 
 A typical document is divided into sections.
 
-All section heading text should be in "Sentence case", which means the first word is capitalized and all other words are lower case.
+All heading text should be in "Sentence case", which means the first word is capitalized and all other words are lower case.
 
 **Always follow the section heading with at least one blank line.**
 
@@ -295,8 +297,35 @@ Whatever the source, the doc viewer renders them as "code snippets", either indi
 ### Code example
 
 You can display a simple, inline code snippet with the markdown backtick syntax.
-We generally prefer to display a code snippet with the Angular documentation _code-example_ component
-represented by the `<code-example>` tag.
+Use a single backtick on either side of a term when referring to code or the
+name of a file in a sentence.
+The following are some examples:
+
+* In the `app.component.ts`, add a `logger()` method.
+* The `name` property is `Sally`.
+* Add the component class name to the `declarations` array.
+
+The markdown is as follows:
+
+```markdown
+
+* In the `app.component.ts`, add a `logger()` method.
+* The <code class="no-auto-link">item</code> property is `true`.
+* Add the component class name to the `declarations` array.
+
+```
+In certain cases, when you apply backticks around a term, it may auto-link to
+the API documentation. If you do not intend the term to be a link, use the following
+syntax:
+
+```html
+The <code class="no-auto-link">item</code> property is `true`.
+```
+
+For block code snippets, we generally prefer to display code with
+the Angular documentation _code-example_ component represented by the `<code-example>` tag.
+The `<code-example>` tag has a `header` attribute that you use to identify the file that the example comes from. The header should be used whenever possible to establish the context of the example.
+See [Code snippets and code examples](guide/docs-style-guide#code-snippets-and-code-samples) for more details.
 
 <h3 class="no-toc">Inline code-snippets</h3>
 
@@ -321,6 +350,8 @@ user input in a command shell or the _output_ of some process.
 
 **Do not write inline code snippets** unless you have a good reason and the editor's permission to do so.
 In all other cases, code snippets should be generated automatically from tested code samples.
+
+For hypothetical examples such as illustrations of configuration options in a JSON file, you should still use The `<code-example>` tag with the `header` attribute to identify the context.
 
 {@a from-code-samples}
 
@@ -402,7 +433,7 @@ You control the _code-example_ output by setting one or more of its attributes:
 
 * `region`- displays the source file fragment with that region name; regions are identified by _docregion_ markup in the source file, as explained [below](#region "Displaying a code fragment").
 
-* `linenums`- value may be `true`, `false`, or a `number`. When not specified, line numbers are automatically displayed when there are greater than 10 lines of code. The rarely used `number` option starts line numbering at the given value. `linenums=4` sets the starting line number to 4.
+* `linenums`- value may be `true`, `false`, or a `number`. When not specified, line numbers default to `false` (i.e. no line numbers are displayed). The rarely used `number` option starts line numbering at the given value. `linenums=4` sets the starting line number to 4.
 
 * `class`- code snippets can be styled with the CSS classes `no-box`, `code-shell`, and `avoid`.
 
@@ -439,8 +470,6 @@ A couple of observations:
 1. Omitting the `header` is fine when the source of the fragment is obvious. We just said that this is a fragment of the `app.module.ts` file which was displayed immediately above, in full, with a header.
 There's no need to repeat the header.
 
-1. The line numbers disappeared. By default, the doc viewer omits line numbers when there are fewer than 10 lines of code; it adds line numbers after that. You can turn line numbers on or off explicitly by setting the `linenums` attribute.
-
 #### Example of bad code
 
 Sometimes you want to display an example of bad code or bad design.
@@ -470,18 +499,18 @@ Code tabs display code much like _code examples_ do.  The added advantage is tha
 
 #### Code-tabs attributes
 
-* `linenums`: The value can be `true`, `false` or a number indicating the starting line number. If not specified, line numbers are enabled only when code for a tab pane has greater than 10 lines of code.
+* `linenums`: The value can be `true`, `false` or a number indicating the starting line number. If not specified, it defaults to `false`.
 
 #### Code-pane attributes
 
 * `path` - a file in the content/examples folder
 * `header` - seen in the header of a tab
-* `linenums` - overrides the `linenums` property at the `code-tabs` level for this particular pane. The value can be `true`, `false` or a number indicating the starting line number. If not specified, line numbers are enabled only when the number of lines of code are greater than 10.
+* `linenums` - overrides the `linenums` property at the `code-tabs` level for this particular pane. The value can be `true`, `false` or a number indicating the starting line number. If not specified, it defaults to `false`.
 
 The next example displays multiple code tabs, each with its own header.
 It demonstrates control over display of line numbers at both the `<code-tabs>` and `<code-pane>` levels.
 
-<code-tabs linenums="false">
+<code-tabs linenums="true">
   <code-pane
     header="app.component.html"
     path="docs-style-guide/src/app/app.component.html">
@@ -489,7 +518,7 @@ It demonstrates control over display of line numbers at both the `<code-tabs>` a
   <code-pane
     header="app.component.ts"
     path="docs-style-guide/src/app/app.component.ts"
-    linenums="true">
+    linenums="false">
   </code-pane>
   <code-pane
     header="app.component.css (heroes)"
@@ -504,11 +533,11 @@ It demonstrates control over display of line numbers at both the `<code-tabs>` a
 
 Here's the markup for that example.
 
-Note how the `linenums` attribute in the  `<code-tabs>` explicitly disables numbering for all panes.
-The `linenums` attribute in the second pane restores line numbering for _itself only_.
+Note how the `linenums` attribute in the `<code-tabs>` explicitly enables numbering for all panes.
+The `linenums` attribute in the second pane disables line numbering for _itself only_.
 
 ```html
-<code-tabs linenums="false">
+<code-tabs linenums="true">
   <code-pane
     header="app.component.html"
     path="docs-style-guide/src/app/app.component.html">
@@ -516,7 +545,7 @@ The `linenums` attribute in the second pane restores line numbering for _itself 
   <code-pane
     header="app.component.ts"
     path="docs-style-guide/src/app/app.component.ts"
-    linenums="true">
+    linenums="false">
   </code-pane>
   <code-pane
     header="app.component.css (heroes)"
@@ -641,7 +670,7 @@ Examine the `src/app/app.component.ts` file which defines two nested _#docregion
 
 The inner, `class-skeleton` region appears twice, once to capture the code that opens the class definition and once to capture the code that closes the class definition.
 
-<code-example linenums="false">
+<code-example>
 // #docplaster
 ...
 // #docregion class, class-skeleton
@@ -1217,19 +1246,20 @@ Images should be specified in an `<img>` tag.
 
 For accessibility, always set the `alt` attribute with a meaningful description of the image.
 
-You should nest the `<img>` tag within a `<figure>` tag, which styles the image within a drop-shadow frame. You'll need the editor's permission to skip the `<figure>` tag.
+You should nest the `<img>` tag within a `<div class="lightbox">` tag, which styles the image within a drop-shadow frame. You'll need the editor's permission to skip the `lightbox` class on its `div` encapsulation.
 
 Here's a conforming example
 
-<figure>
-  <img src="generated/images/guide/docs-style-guide/flying-hero.png" alt="flying hero">
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/docs-style-guide/flying-hero.png"
+    alt="flying hero">
+</div>
 
 ```html
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/docs-style-guide/flying-hero.png"
-       alt="flying hero">
-</figure>
+    alt="flying hero">
+</div>
 ```
 
 _Note that the HTML image element does not have a closing tag._
@@ -1240,17 +1270,19 @@ The doc generator reads the image dimensions from the file and adds width and he
 
 Here's the "flying hero" at a more reasonable scale.
 
-<figure>
- <img src="generated/images/guide/docs-style-guide/flying-hero.png" alt="flying Angular hero" width="200">
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/docs-style-guide/flying-hero.png"
+    alt="flying Angular hero"
+    width="200">
+</div>
 
 ```html
 
-<figure>
- <img src="generated/images/guide/docs-style-guide/flying-hero.png"
-   alt="flying Angular hero"
-   width="200">
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/docs-style-guide/flying-hero.png"
+    alt="flying Angular hero"
+    width="200">
+</div>
 ```
 
 Wide images can be a problem. Most browsers try to rescale the image but wide images may overflow the document in certain viewports.
@@ -1258,9 +1290,9 @@ Wide images can be a problem. Most browsers try to rescale the image but wide im
 **Do not set a width greater than 700px**. If you wish to display a larger image, provide a link to the actual image that the user can click on to see the full size image separately as in this example of `source-map-explorer` output from the "Ahead-of-time Compilation" guide:
 
 <a href="generated/images/guide/docs-style-guide/toh-pt6-bundle.png" title="Click to view larger image">
-  <figure>
+  <div class="lightbox">
     <img src="generated/images/guide/docs-style-guide/toh-pt6-bundle-700w.png" alt="toh-pt6-bundle" width="300px">
-  </figure>
+  </div>
 </a>
 
 <h3 class="no-toc">Image compression</h3>

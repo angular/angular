@@ -2,112 +2,96 @@
   max-width: 1200px;
 
   table {
-      margin: 12px 0 24px;
+    margin: 12px 0 24px;
 
-      th {
-          text-transform: none;
-          @include font-size(16);
-          font-weight: bold;
+    th {
+        text-transform: none;
+        @include font-size(16);
+        font-weight: bold;
+    }
+
+    tr {
+        border-bottom: 1px solid $lightgray;
+    }
+
+    td {
+      vertical-align: middle;
+    }
+
+    // This is overriding a style here:
+    // https://github.com/angular/angular/blob/95993e1/aio/src/styles/2-modules/_table.scss#L58-L62
+    tbody > tr > td tr td:first-child {
+      @media screen and (max-width: 480px) {
+        background-color: inherit;
       }
+    }
+
+    hr {
+      margin: 16px 0;
+    }
+
+    tr:last-child {
+      border-bottom: none;
+    }
+
+    &.item-table {
+      td {
+        padding: 32px;
+      }
+    }
+
+    &.list-table {
+      td {
+        padding: 16px 24px;
+      }
+    }
+
+    .short-description {
+      margin-left: 0;
+    }
+
+    &.parameters-table {
+      margin-top: 0;
+      @include font-size(14);
+      box-shadow: none;
 
       tr {
-          border-bottom: 1px solid $lightgray;
+        @media screen and (max-width: 480px) {
+          display: flex;
+          flex-direction: column;
+        }
+
+        td:first-child {
+          font-weight: 600;
+          padding-left: 16px;
+          width: 20%;
+        }
       }
 
       td {
-          vertical-align: middle;
+        padding: 8px 8px 8px 0;
+        border: 0;
+        vertical-align: top;
       }
+    }
 
-      // This is overriding a style here:
-      // https://github.com/angular/angular/blob/95993e1/aio/src/styles/2-modules/_table.scss#L58-L62
-      tbody > tr > td tr td:first-child {
-        @media screen and (max-width: 480px) {
-          background-color: inherit;
-        }
+    &.property-table {
+      td {
+        vertical-align: top;
       }
-
-      hr {
-          margin: 16px 0;
-      }
-
-      tr:last-child {
-          border-bottom: none;
-      }
-
-      &.item-table {
-          td {
-              padding: 32px;
-          }
-      }
-
-      &.list-table {
-          td {
-              padding: 16px 24px;
-          }
-      }
-
-      .short-description {
-          margin-left: 0;
-      }
-
-      &.parameters-table {
-        margin-top: 0;
-        @include font-size(14);
-        box-shadow: none;
-
-        tr {
-          @media screen and (max-width: 480px) {
-            display: flex;
-            flex-direction: column;
-          }
-
-          td:first-child {
-            font-weight: 600;
-            padding-left: 16px;
-            width: 20%;
-          }
-        }
-
-        td {
-          padding: 8px 8px 8px 0;
-          border: 0;
-          vertical-align: top;
-        }
-      }
-
-      &.property-table {
-        td {
-          vertical-align: top;
-        }
-      }
+    }
   }
 
   .class-overview {
     position: relative;
 
     code-example {
-        clear: left;
+      clear: left;
     }
   }
 
   .short-description {
-    margin: 6px 0 0 10px;
-  }
-}
-
-.breadcrumb-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-
-.api-header {
-  display: flex;
-  align-items: center;
-
-  @media screen and (max-width: 600px) {
-    flex-direction: column;
-    align-items: flex-start;
+    margin-top: 8px;
   }
 
   h1 {
@@ -117,10 +101,12 @@
 
 .github-links {
   float: right;
+
   .material-icons {
     border-radius: 4px;
     padding: 4px;
     @include font-size(20);
+
     &:hover {
       background-color: $mist;
     }
@@ -128,19 +114,20 @@
 }
 
 .api-body {
-
   .class-overview {
     position: relative;
 
     code-example {
-        clear: left;
+      clear: left;
     }
   }
 
-  .method-table, .option-table, .list-table {
+  .method-table,
+  .option-table,
+  .list-table {
     td > code {
       background-color: inherit;
-      white-space: pre;
+      white-space: pre-wrap;
     }
 
     .with-github-links {
@@ -161,7 +148,7 @@
 
     h3 {
       margin: 6px 0;
-      font-weight: bold;
+      font-weight: 500;
       clear: left;
     }
 
@@ -172,10 +159,9 @@
     }
   }
 
-
   .api-heading {
-    padding: 5px 0;
     @include font-size(14);
+    margin: 16px;
   }
 
   .parameters-table {
@@ -244,7 +230,9 @@
   }
 
 
-  .from-constructor, .read-only-property, .write-only-property {
+  .from-constructor,
+  .read-only-property,
+  .write-only-property {
     @include font-size(12);
     font-weight: 600;
     @include letter-spacing(0.5);
@@ -259,7 +247,8 @@
     padding: 0;
   }
 
-  .selector-list, .inherited-members-list {
+  .selector-list,
+  .inherited-members-list {
     ul {
       padding: 0;
       li {
@@ -270,11 +259,45 @@
   }
 
   .selector-list {
-    li, a {
+    li,
+    a {
       font-weight: bold;
       i {
         font-weight: normal;
       }
+    }
+  }
+}
+
+.breadcrumb-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.api-header {
+  display: flex;
+  align-items: center;
+  margin-top: -4px;
+
+  @media screen and (max-width: 600px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  h1 {
+    margin: 0;
+  }
+}
+
+.github-links {
+  float: right;
+  .material-icons {
+    border-radius: 4px;
+    padding: 4px;
+    font-size: 20px;
+    &:hover {
+      background-color: $mist;
     }
   }
 }

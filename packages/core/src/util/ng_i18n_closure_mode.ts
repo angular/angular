@@ -8,6 +8,9 @@
 
 import {global} from './global';
 
+// Do not remove: needed for closure to be able to properly tree-shake ngI18nClosureMode.
+// goog.define
+
 declare global {
   const ngI18nClosureMode: boolean;
 }

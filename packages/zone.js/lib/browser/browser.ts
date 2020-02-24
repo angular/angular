@@ -15,7 +15,6 @@ import {patchTimer} from '../common/timers';
 import {ZONE_SYMBOL_ADD_EVENT_LISTENER, ZONE_SYMBOL_REMOVE_EVENT_LISTENER, patchClass, patchMethod, patchPrototype, scheduleMacroTaskWithCurrentZone, zoneSymbol} from '../common/utils';
 
 import {patchCustomElements} from './custom-elements';
-import {propertyPatch} from './define-property';
 import {eventTargetPatch, patchEvent} from './event-target';
 import {propertyDescriptorPatch} from './property-descriptor';
 
@@ -68,7 +67,6 @@ Zone.__load_patch('EventTarget', (global: any, Zone: ZoneType, api: _ZonePrivate
 
 Zone.__load_patch('on_property', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   propertyDescriptorPatch(api, global);
-  propertyPatch();
 });
 
 Zone.__load_patch('customElements', (global: any, Zone: ZoneType, api: _ZonePrivate) => {

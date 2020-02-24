@@ -53,6 +53,7 @@ Observables are often compared to promises. Here are some key differences:
 -->
 * 옵저버블은 구독자가 구독하기 전까지 실행되지 않습니다. 그리고 `subscribe()`가 실행되면 스트림이 전달될 때마다 지정된 옵저버블 처리 로직을 실행합니다. 옵저버블은 구독될 때마다 새로운 실행 컨텍스트를 생성하며, 이 때마다 옵저버블이 처음부터 다시 실행됩니다.
 
+<<<<<<< HEAD
 <!--
 <code-example hideCopy>
 // declare a publishing operation
@@ -71,12 +72,20 @@ observable.subscribe(() => {
       // 옵저버가 알림을 처리합니다.
     });
 </code-example>
+=======
+  <code-example 
+    path="comparing-observables/src/observables.ts" 
+    header="src/observables.ts (observable)" 
+    region="observable">
+  </code-example>
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 * Promises execute immediately, and just once. The computation of the result is initiated when the promise is created. There is no way to restart work. All `then` clauses (subscriptions) share the same computation.
 -->
 * Promise는 생성되자마자 딱 한 번만 실행됩니다. Promise에 지정된 로직도 Promise가 생성될 때 한 번만 실행되며, 이 로직을 다시 실행하는 방법은 없습니다. Promise에서 체이닝하는 `then`은 모두 같은 객체를 공유합니다.
 
+<<<<<<< HEAD
 <!--
 <code-example hideCopy>
 // initiate execution
@@ -95,6 +104,13 @@ promise.then((value) => {
       Promise가 전달하는 데이터를 처리합니다.
     });
 </code-example>
+=======
+  <code-example 
+    path="comparing-observables/src/promises.ts" 
+    header="src/promises.ts (promise)"
+    region="promise">
+  </code-example>
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 ### Chaining
@@ -103,19 +119,37 @@ promise.then((value) => {
 
 <!--
 * Observables differentiate between transformation function such as a map and subscription. Only subscription activates the subscriber function to start computing the values.
+<<<<<<< HEAD
 -->
 * 옵저버블은 데이터를 조작하는 것과 구독하는 것을 구별합니다. 옵저버블은 구독자가 있을 때만 옵저버블 로직을 실행합니다.
 
 <code-example hideCopy>observable.map((v) => 2*v);</code-example>
 
+=======
+
+  <code-example 
+    path="comparing-observables/src/observables.ts" 
+    header="src/observables.ts (chain)" 
+    region="chain">
+  </code-example>
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 * Promises do not differentiate between the last `.then` clauses (equivalent to subscription) and intermediate `.then` clauses (equivalent to map).
+<<<<<<< HEAD
 -->
 * Promise는 구독을 의미하는 마지막 `.then`과 데이터 조작을 의미하는 중간 `.then`을 구분하지 않습니다.
 
 <code-example hideCopy>promise.then((v) => 2*v);</code-example>
 
+=======
+
+  <code-example 
+    path="comparing-observables/src/promises.ts"
+    header="src/promises.ts (chain)" 
+    region="chain">
+  </code-example>
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 ### Cancellation
@@ -127,10 +161,11 @@ promise.then((value) => {
 -->
 * 옵저버블 구독은 취소할 수 있습니다. 옵저버블 구독을 해지하면 옵저버블에서 전달하는 값이나 알림을 더이상 받지 않습니다.
 
-<code-example hideCopy>
-const sub = obs.subscribe(...);
-sub.unsubscribe();
-</code-example>
+  <code-example 
+    path="comparing-observables/src/observables.ts" 
+    header="src/observables.ts (unsubcribe)" 
+    region="unsubscribe">
+  </code-example>
 
 <!--
 * Promises are not cancellable.
@@ -147,22 +182,22 @@ sub.unsubscribe();
 -->
 * 옵저버블은 구독자의 에러 핸들러 함수에서 에러를 처리하며, 에러가 발생하면 구독자가 자동으로 구독을 해지합니다.
 
-<code-example hideCopy>
-obs.subscribe(() => {
-  throw Error('my error');
-});
-</code-example>
+  <code-example 
+    path="comparing-observables/src/observables.ts" 
+    header="src/observables.ts (error)"
+    region="error">
+  </code-example>
 
 <!--
 * Promises push errors to the child promises.
 -->
 * Promise는 자식 Promise를 생성하고 이 객체에 에러를 보냅니다.
 
-<code-example hideCopy>
-promise.then(() => {
-      throw Error('my error');
-});
-</code-example>
+  <code-example 
+    path="comparing-observables/src/promises.ts" 
+    header="src/promises.ts (error)"
+    region="error">
+  </code-example>
 
 <!--
 ### Cheat sheet
@@ -194,22 +229,28 @@ The following code snippets illustrate how the same kind of operation is defined
       -->
       <td>생성</td>
       <td>
-        <pre>new Observable((observer) => {
-    observer.next(123);
-  });</pre>
+        <pre>
+new Observable((observer) => {
+  observer.next(123);
+});</pre>
       </td>
       <td>
-        <pre>new Promise((resolve, reject) => {
-    resolve(123);
-  });</pre>
+        <pre>
+new Promise((resolve, reject) => {
+  resolve(123);
+});</pre>
       </td>
     </tr>
     <tr>
       <!--
       <td>Transform</td>
+<<<<<<< HEAD
       -->
       <td>변환</td>
       <td><pre>obs.map((value) => value * 2 );</pre></td>
+=======
+      <td><pre>obs.pipe(map((value) => value * 2));</pre></td>
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
       <td><pre>promise.then((value) => value * 2);</pre></td>
     </tr>
     <tr>
@@ -218,14 +259,16 @@ The following code snippets illustrate how the same kind of operation is defined
       -->
       <td>구독</td>
       <td>
-        <pre>sub = obs.subscribe((value) => {
-    console.log(value)
-  });</pre>
+        <pre>
+sub = obs.subscribe((value) => {
+  console.log(value)
+});</pre>
       </td>
       <td>
-        <pre>promise.then((value) => {
-    console.log(value);
-  });</pre>
+        <pre>
+promise.then((value) => {
+  console.log(value);
+});</pre>
       </td>
     </tr>
     <tr>
@@ -300,7 +343,6 @@ subscription.unsubscribe();</pre>
 <pre>function handler(e) {
   console.log(‘Clicked’, e);
 }
-
 // Setup & begin listening
 button.addEventListener(‘click’, handler);
 // Stop listening
@@ -412,7 +454,7 @@ An observable produces values over time. An array is created as a static set of 
   <tr>
     <td><pre>concat()</pre></td>
     <td>
-      <pre>obs.concat(obsB)</pre>
+      <pre>concat(obs, obsB)</pre>
       <pre>➞1➞2➞3➞5➞7➞'a'➞'b'➞'c'</pre>
     </td>
     <td>
@@ -423,7 +465,7 @@ An observable produces values over time. An array is created as a static set of 
   <tr>
     <td><pre>filter()</pre></td>
     <td>
-      <pre>obs.filter((v) => v>3)</pre>
+      <pre>obs.pipe(filter((v) => v>3))</pre>
       <pre>➞5➞7</pre>
     </td>
     <td>
@@ -434,7 +476,7 @@ An observable produces values over time. An array is created as a static set of 
   <tr>
     <td><pre>find()</pre></td>
     <td>
-      <pre>obs.find((v) => v>3)</pre>
+      <pre>obs.pipe(find((v) => v>3))</pre>
       <pre>➞5</pre>
     </td>
     <td>
@@ -445,7 +487,7 @@ An observable produces values over time. An array is created as a static set of 
   <tr>
     <td><pre>findIndex()</pre></td>
     <td>
-      <pre>obs.findIndex((v) => v>3)</pre>
+      <pre>obs.pipe(findIndex((v) => v>3))</pre>
       <pre>➞3</pre>
     </td>
     <td>
@@ -456,9 +498,9 @@ An observable produces values over time. An array is created as a static set of 
   <tr>
     <td><pre>forEach()</pre></td>
     <td>
-      <pre>obs.forEach((v) => {
+      <pre>obs.pipe(tap((v) => {
   console.log(v);
-})
+}))
 1
 2
 3
@@ -479,7 +521,7 @@ An observable produces values over time. An array is created as a static set of 
   <tr>
     <td><pre>map()</pre></td>
     <td>
-      <pre>obs.map((v) => -v)</pre>
+      <pre>obs.pipe(map((v) => -v))</pre>
       <pre>➞-1➞-2➞-3➞-5➞-7</pre>
     </td>
     <td>
@@ -490,8 +532,8 @@ An observable produces values over time. An array is created as a static set of 
   <tr>
     <td><pre>reduce()</pre></td>
     <td>
-      <pre>obs.scan((s,v)=> s+v, 0)</pre>
-      <pre>➞1➞3➞6➞11➞18</pre>
+      <pre>obs.pipe(reduce((s,v)=> s+v, 0))</pre>
+      <pre>➞18</pre>
     </td>
     <td>
       <pre>arr.reduce((s,v) => s+v, 0)</pre>
@@ -499,6 +541,3 @@ An observable produces values over time. An array is created as a static set of 
     </td>
   </tr>
 </table>
-
-
-

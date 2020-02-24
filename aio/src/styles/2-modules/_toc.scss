@@ -8,20 +8,6 @@
   overflow-x: hidden;
 }
 
-aio-toc.embedded {
-  @media (min-width: 801px) {
-    display: none;
-  }
-
-  .toc-inner {
-    padding: 12px 0 0 0;
-
-    .toc-heading {
-      margin: 0 0 8px;
-    }
-  }
-}
-
 .toc-inner {
   @include font-size(13);
   overflow-y: visible;
@@ -36,74 +22,76 @@ aio-toc.embedded {
     font-weight: 500;
     margin: 0 0 16px 8px;
     padding: 0;
-  }
 
-  .toc-heading.secondary {
-    position: relative;
-    top: -8px;
-
-    &:hover {
-      color: $accentblue;
-    }
-  }
-
-  button.toc-heading,
-  button.toc-more-items {
-    cursor: pointer;
-    display: inline-block;
-    background: 0;
-    background-color: transparent;
-    border: none;
-    box-shadow: none;
-    padding: 0;
-    text-align: start;
-
-    &.embedded:focus {
-      outline: none;
-      background: $lightgray;
-    }
-  }
-
-  button.toc-heading {
-    mat-icon.rotating-icon {
-      height: 18px;
-      width: 18px;
+    &.secondary {
       position: relative;
-      left: -4px;
-      top: 5px;
-    }
+      top: -8px;
 
-    &:hover:not(.embedded) {
-      color: $accentblue;
-    }
-  }
-
-  button.toc-more-items {
-    color: $mediumgray;
-    top: 10px;
-    position: relative;
-
-    &:hover {
-      color: $accentblue;
+      &:hover {
+        color: $accentblue;
+      }
     }
   }
 
-  button.toc-more-items::after {
-    content: 'expand_less';
+  button {
+    &.toc-heading,
+    &.toc-more-items {
+      cursor: pointer;
+      display: inline-block;
+      background: 0;
+      background-color: transparent;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      text-align: start;
+
+      &.embedded:focus {
+        outline: none;
+        background: $lightgray;
+      }
+    }
+
+    &.toc-heading {
+      mat-icon.rotating-icon {
+        height: 18px;
+        width: 18px;
+        position: relative;
+        left: -4px;
+        top: 5px;
+      }
+
+      &:hover:not(.embedded) {
+        color: $accentblue;
+      }
+    }
+
+    &.toc-more-items {
+      color: $mediumgray;
+      top: 10px;
+      position: relative;
+
+      &:hover {
+        color: $accentblue;
+      }
+
+      &::after {
+        content: 'expand_less';
+      }
+
+      &.collapsed::after {
+        content: 'more_horiz';
+      }
+    }
   }
 
-  button.toc-more-items.collapsed::after {
-    content: 'more_horiz';
-  }
+  .mat-icon {
+    &.collapsed {
+      @include rotate(0deg);
+    }
 
-
-  .mat-icon.collapsed {
-    @include rotate(0deg);
-  }
-
-  .mat-icon:not(.collapsed) {
-    @include rotate(90deg);
-    // margin: 4px;
+    &:not(.collapsed) {
+      @include rotate(90deg);
+    }
   }
 
   ul.toc-list {
@@ -129,7 +117,7 @@ aio-toc.embedded {
         height: 1px;
         width: 40%;
         margin: 7px 0 4px 0;
-        background: #DBDBDB;
+        background: $lightgray;
         clear: both;
       }
 
@@ -144,12 +132,14 @@ aio-toc.embedded {
         display: table-cell;
       }
 
-      &:hover a {
-        color: $accentblue;
+      &:hover {
+        * {
+          color: $accentblue;
+        }
       }
 
       &.active {
-        a {
+        * {
           color: $blue;
           font-weight: 500;
 
@@ -197,9 +187,23 @@ aio-toc.embedded {
       }
     }
   }
-
 }
 
-aio-toc.embedded > div.collapsed li.secondary {
-  display: none;
+// Alternative TOC View for Smaller Screens
+aio-toc.embedded {
+  @media (min-width: 801px) {
+    display: none;
+  }
+
+  .toc-inner {
+    padding: 12px 0 0 0;
+
+    .toc-heading {
+      margin: 0 0 8px;
+    }
+  }
+
+  > div.collapsed li.secondary {
+    display: none;
+  }
 }

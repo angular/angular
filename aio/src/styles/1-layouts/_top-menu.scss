@@ -49,8 +49,8 @@ aio-shell.page-resources mat-toolbar.mat-toolbar {
 aio-shell.folder-api mat-toolbar.mat-toolbar,
 aio-shell.folder-cli mat-toolbar.mat-toolbar,
 aio-shell.folder-docs mat-toolbar.mat-toolbar,
-aio-shell.folder-getting-started mat-toolbar.mat-toolbar,
 aio-shell.folder-guide mat-toolbar.mat-toolbar,
+aio-shell.folder-start mat-toolbar.mat-toolbar,
 aio-shell.folder-tutorial mat-toolbar.mat-toolbar {
   @media (min-width: 992px) {
     .hamburger.mat-button {
@@ -192,11 +192,16 @@ aio-search-box.search-container {
       outline: none;
     }
 
+    @include placeholder {
+      @include font-size(14);
+      color: $mediumgray;
+    }
+
     @include bp(big) {
       transition: width 0.4s ease-in-out;
 
       &:focus {
-        width: 50%;
+        width: 80%;
       }
     }
     @media (max-width: 480px) {

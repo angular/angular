@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library", "ts_web_test_suite")
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ts_library")
 
 ts_library(
     name = "selector_lib",
@@ -6,6 +6,7 @@ ts_library(
     srcs = glob(["**/*.ts"]),
     deps = [
         "//packages:types",
+        "//packages/common",
         "//packages/compiler",
         "//packages/compiler/testing",
         "//packages/core/testing",
@@ -16,14 +17,13 @@ ts_library(
 
 jasmine_node_test(
     name = "selector",
-    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    bootstrap = ["//tools/testing:node_es5"],
     deps = [
         ":selector_lib",
-        "//tools/testing:node",
     ],
 )
 
-ts_web_test_suite(
+karma_web_test_suite(
     name = "selector_web",
     deps = [
         ":selector_lib",

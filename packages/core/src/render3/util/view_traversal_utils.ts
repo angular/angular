@@ -8,10 +8,9 @@
 
 import {assertDefined} from '../../util/assert';
 import {assertLView} from '../assert';
-import {TNodeType} from '../interfaces/node';
-import {CONTEXT, DECLARATION_VIEW, FLAGS, LView, LViewFlags, PARENT, RootContext, T_HOST} from '../interfaces/view';
-
-import {isLContainer, isLView, readPatchedLView} from './view_utils';
+import {isLContainer, isLView} from '../interfaces/type_checks';
+import {CONTEXT, FLAGS, LView, LViewFlags, PARENT, RootContext} from '../interfaces/view';
+import {readPatchedLView} from './view_utils';
 
 
 /**
@@ -36,23 +35,6 @@ export function getRootView(componentOrLView: LView | {}): LView {
   let lView = isLView(componentOrLView) ? componentOrLView : readPatchedLView(componentOrLView) !;
   while (lView && !(lView[FLAGS] & LViewFlags.IsRoot)) {
     lView = getLViewParent(lView) !;
-  }
-  ngDevMode && assertLView(lView);
-  return lView;
-}
-
-/**
- * Given a current view, finds the nearest component's host (LElement).
- *
- * @param lView LView for which we want a host element node
- * @returns The host node
- */
-export function findComponentView(lView: LView): LView {
-  let rootTNode = lView[T_HOST];
-  while (rootTNode !== null && rootTNode.type === TNodeType.View) {
-    ngDevMode && assertDefined(lView[DECLARATION_VIEW], 'lView[DECLARATION_VIEW]');
-    lView = lView[DECLARATION_VIEW] !;
-    rootTNode = lView[T_HOST];
   }
   ngDevMode && assertLView(lView);
   return lView;

@@ -36,7 +36,7 @@ As a publisher, you create an `Observable` instance that defines a *subscriber* 
 발행자는 *구독자* 함수를 사용해서 `Observable` 인스턴스를 생성합니다. 구독자 함수는 구독자가 `subscribe()` 메소드를 사용할 때 실행되며, 이 함수에서 데이터나 메시지를 생성하고 발행합니다.
 
 <!--
-To execute the observable you have created and begin receiving notifications, you call its `subscribe()` method, passing an *observer*.  This is a JavaScript object that defines the handlers for the notifications you receive. The `subscribe()` call returns a `Subscription` object that has an `unsubscribe()` method, which you call to stop receiving notifications.
+To execute the observable you have created and begin receiving notifications, you call its `subscribe()` method, passing an *observer*. This is a JavaScript object that defines the handlers for the notifications you receive. The `subscribe()` call returns a `Subscription` object that has an `unsubscribe()` method, which you call to stop receiving notifications.
 -->
 그리고 구독자 함수를 `subscribe()`로 구독할 때 *옵저버(observer)*를 함께 전달하며, 옵저버는 옵저버블에서 발행된 데이터를 어떻게 처리할지 JavaScript 객체 형태로 정의한 것입니다. 옵저버블의 `subscribe()` 함수를 실행하면 반환되는 `Subscription` 타입의 객체가 옵저버이며, 이 객체의 `unsubscribe()`를 실행하면 옵저버블 구독을 해지할 수 있습니다.
 
@@ -46,9 +46,9 @@ Here's an example that demonstrates the basic usage model by showing how an obse
 다음 코드는 옵저버블을 사용해서 사용자의 접속 위치를 확인하는 예제 코드입니다.
 
 <!--
-<code-example path="observables/src/geolocation.ts" header="Observe geolocation updates"></code-example>
+<code-example class="no-auto-link" path="observables/src/geolocation.ts" header="Observe geolocation updates"></code-example>
 -->
-<code-example path="observables/src/geolocation.ts" header="접속 위치 추적하기"></code-example>
+<code-example class="no-auto-link" path="observables/src/geolocation.ts" header="접속 위치 추적하기"></code-example>
 
 <!--
 ## Defining observers
@@ -187,7 +187,7 @@ Now you can use this function to create an observable that publishes keydown eve
 ## 멀티캐스팅 (Multicasting)
 
 <!--
-A typical observable creates a new, independent execution for each subscribed observer. When an observer subscribes, the observable wires up an event handler and delivers values to that observer. When a second observer subscribes, the observable then wires up a new event handler and delivers values to that second observer in a separate execution. 
+A typical observable creates a new, independent execution for each subscribed observer. When an observer subscribes, the observable wires up an event handler and delivers values to that observer. When a second observer subscribes, the observable then wires up a new event handler and delivers values to that second observer in a separate execution.
 -->
 옵저버블은 일반적으로 옵저버블을 구독하는 옵저버끼리 영향을 주지 않는 단일 데이터를 생성합니다.
 그리고 이 데이터는 옵저버블을 구독하는 이벤트 핸들러에 각각 전달되며, 개별 옵저버가 이 데이터를 받아서 처리합니다.
@@ -206,7 +206,7 @@ Sometimes, instead of starting an independent execution for each subscriber, you
 멀티캐스팅 옵저버블을 사용하면 도큐먼트에 여러개의 리스너를 연결하지 않아도 모든 구독자들이 같은 데이터 객체를 처리할 수 있습니다.
 
 <!--
-When creating an observable you should determine how you want that observable to be used and whether or not you want to multicast its values. 
+When creating an observable you should determine how you want that observable to be used and whether or not you want to multicast its values.
 -->
 옵저버블을 어떻게 사용할지, 멀티캐스팅을 사용할지 여부는 옵저버블을 생성할 때 지정합니다.
 
@@ -254,7 +254,7 @@ Notice that if you subscribe twice, there will be two separate streams, each emi
 ## 에러 처리
 
 <!--
-Because observables produce values asynchronously, try/catch will not effectively catch errors. Instead, you handle errors by specifying an `error` callback on the observer. Producing an error also causes the observable to clean up subscriptions and stop producing values. An observable can  either produce values (calling the `next` callback), or it can complete, calling either the `complete` or `error` callback.
+Because observables produce values asynchronously, try/catch will not effectively catch errors. Instead, you handle errors by specifying an `error` callback on the observer. Producing an error also causes the observable to clean up subscriptions and stop producing values. An observable can either produce values (calling the `next` callback), or it can complete, calling either the `complete` or `error` callback.
 -->
 옵저버블은 데이터를 비동기로 발행하기 때문에 try/catch로 에러를 처리할 수 없습니다.
 대신, 옵저버블에서 발행하는 에러 스트림은 옵저버의 `error` 콜백으로 처리합니다.

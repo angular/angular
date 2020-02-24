@@ -6,5 +6,6 @@
     "!**/*.native.*",
     "!**/*.[1].*"
   ],
+  "file": "src/app/hero-app.component.ts",
   "tags": ["CSS"]
 }

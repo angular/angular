@@ -41,8 +41,9 @@ describe('text instructions', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
-    const allTextContent = Array.from(fixture.nativeElement.querySelectorAll('div'))
-                               .map((div: HTMLDivElement) => div.textContent);
+    const allTextContent =
+        Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('div'))
+            .map((div: HTMLDivElement) => div.textContent);
 
     expect(allTextContent).toEqual([
       'a1b2c3d4e5f6g7h8i9j',

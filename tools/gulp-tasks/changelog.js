@@ -11,7 +11,7 @@ module.exports = (gulp) => () => {
   const ignoredScopes = [
     'aio',
     'docs-infra',
-    'ivy',
+    'zone.js',
   ];
 
   return gulp.src('CHANGELOG.md')

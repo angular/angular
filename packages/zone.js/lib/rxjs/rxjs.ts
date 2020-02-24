@@ -8,6 +8,10 @@
 
 import {Observable, Subscriber, Subscription} from 'rxjs';
 
+type ZoneSubscriberContext = {
+  _zone: Zone
+} & Subscriber<any>;
+
 (Zone as any).__load_patch('rxjs', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   const symbol: (symbolString: string) => string = (Zone as any).__symbol__;
   const nextSource = 'rxjs.Subscriber.next';
@@ -46,14 +50,14 @@ import {Observable, Subscriber, Subscription} from 'rxjs';
         },
         set: function(this: Observable<any>, subscribe: any) {
           (this as any)._zone = Zone.current;
-          (this as any)._zoneSubscribe = function() {
+          (this as any)._zoneSubscribe = function(this: ZoneSubscriberContext) {
             if (this._zone && this._zone !== Zone.current) {
-              const tearDown = this._zone.run(subscribe, this, arguments);
+              const tearDown = this._zone.run(subscribe, this, arguments as any);
               if (tearDown && typeof tearDown === 'function') {
                 const zone = this._zone;
-                return function() {
+                return function(this: ZoneSubscriberContext) {
                   if (zone !== Zone.current) {
-                    return zone.run(tearDown, this, arguments);
+                    return zone.run(tearDown, this, arguments as any);
                   }
                   return tearDown.apply(this, arguments);
                 };
@@ -136,40 +140,40 @@ import {Observable, Subscriber, Subscription} from 'rxjs';
 
     // patch Subscriber.next to make sure it run
     // into SubscriptionZone
-    Subscriber.prototype.next = function() {
+    Subscriber.prototype.next = function(this: ZoneSubscriberContext) {
       const currentZone = Zone.current;
       const subscriptionZone = this._zone;
 
       // for performance concern, check Zone.current
       // equal with this._zone(SubscriptionZone) or not
       if (subscriptionZone && subscriptionZone !== currentZone) {
-        return subscriptionZone.run(next, this, arguments, nextSource);
+        return subscriptionZone.run(next, this, arguments as any, nextSource);
       } else {
         return next.apply(this, arguments as any);
       }
     };
 
-    Subscriber.prototype.error = function() {
+    Subscriber.prototype.error = function(this: ZoneSubscriberContext) {
       const currentZone = Zone.current;
       const subscriptionZone = this._zone;
 
       // for performance concern, check Zone.current
       // equal with this._zone(SubscriptionZone) or not
       if (subscriptionZone && subscriptionZone !== currentZone) {
-        return subscriptionZone.run(error, this, arguments, errorSource);
+        return subscriptionZone.run(error, this, arguments as any, errorSource);
       } else {
         return error.apply(this, arguments as any);
       }
     };
 
-    Subscriber.prototype.complete = function() {
+    Subscriber.prototype.complete = function(this: ZoneSubscriberContext) {
       const currentZone = Zone.current;
       const subscriptionZone = this._zone;
 
       // for performance concern, check Zone.current
       // equal with this._zone(SubscriptionZone) or not
       if (subscriptionZone && subscriptionZone !== currentZone) {
-        return subscriptionZone.run(complete, this, arguments, completeSource);
+        return subscriptionZone.run(complete, this, arguments as any, completeSource);
       } else {
         return complete.call(this);
       }

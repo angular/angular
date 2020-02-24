@@ -1,21 +1,21 @@
 <!--
-# Server-side Rendering (SSR): An intro to Angular Universal
-# Angular Universal: server-side rendering
+# Server-side rendering (SSR) with Angular Universal
 -->
-# 서버 사이드 렌더링 (Server-side Rendering, SSR): Angular Universal 소개
+-->
+# 서버 사이드 렌더링 (Server-side Rendering, SSR): Angular Universal
 
 <!--
 This guide describes **Angular Universal**, a technology that renders Angular applications on the server.
 
-A normal Angular application executes in the _browser_, rendering pages in the DOM in response to user actions. 
+A normal Angular application executes in the _browser_, rendering pages in the DOM in response to user actions.
 Angular Universal executes on the _server_, generating _static_ application pages that later get bootstrapped on
 the client. This means that the application generally renders more quickly, giving users a chance to view the application
 layout before it becomes fully interactive.
 
-For a more detailed look at different techniques and concepts surrounding SSR, please check out this 
+For a more detailed look at different techniques and concepts surrounding SSR, please check out this
 [article](https://developers.google.com/web/updates/2019/02/rendering-on-the-web).
 
-You can easily prepare an app for server-side rendering using the [Angular CLI](guide/glossary#cli). 
+You can easily prepare an app for server-side rendering using the [Angular CLI](guide/glossary#cli).
 The CLI schematic `@nguniversal/express-engine` performs the required steps, as described below.
 -->
 이 문서는 **Angular Universal**에 대해 소개합니다. Angular Universal은 Angular 애플리케이션을 서버에서 실행하는 테크닉입니다.
@@ -40,25 +40,25 @@ The CLI schematic `@nguniversal/express-engine` performs the required steps, as 
 </div>
 
 {@a the-example}
-## Universal tutorial 
+## Universal tutorial
 
-The [Tour of Heroes tutorial](tutorial) is the foundation for this walkthrough. 
+The [Tour of Heroes tutorial](tutorial) is the foundation for this walkthrough.
 
 In this example, the Angular CLI compiles and bundles the Universal version of the app with the
-[Ahead-of-Time (AoT) compiler](guide/aot-compiler).
+[Ahead-of-Time (AOT) compiler](guide/aot-compiler).
 A Node Express web server compiles HTML pages with Universal based on client requests.
 
 To create the server-side app module, `app.server.module.ts`, run the following CLI command.
 
-<code-example format="." language="bash">
+<code-example language="bash">
 
-ng add @nguniversal/express-engine --clientProject angular.io-example
+ng add @nguniversal/express-engine
 
 </code-example>
 
 The command creates the following folder structure.
 
-<code-example format="." language="none" linenums="false">
+<code-example language="none">
 src/
   index.html                 <i>app web page</i>
   main.ts                    <i>bootstrapper for client app</i>
@@ -72,7 +72,6 @@ tsconfig.app.json            <i>TypeScript client configuration</i>
 tsconfig.server.json         <i>* TypeScript server configuration</i>
 tsconfig.spec.json           <i>TypeScript spec configuration</i>
 package.json                 <i>npm configuration</i>
-webpack.server.config.js     <i>* webpack server configuration</i>
 </code-example>
 
 The files marked with `*` are new and not in the original tutorial sample.
@@ -81,7 +80,7 @@ The files marked with `*` are new and not in the original tutorial sample.
 
 To start rendering your app with Universal on your local system, use the following command.
 
-<code-example format="." language="bash" linenums="false">
+<code-example language="bash">
 npm run build:ssr && npm run serve:ssr
 </code-example>
 
@@ -92,7 +91,7 @@ Navigation via `routerLinks` works correctly because they use the native anchor 
 You can go from the Dashboard to the Heroes page and back.
 You can click a hero on the Dashboard page to display its Details page.
 
-If you throttle your network speed so that the client-side scripts take longer to download (instructions below), 
+If you throttle your network speed so that the client-side scripts take longer to download (instructions below),
 you'll notice:
 * Clicking a hero on the Heroes page does nothing.
 * You can't add or delete a hero.
@@ -100,7 +99,7 @@ you'll notice:
 * The *Back* and *Save* buttons on the Details page don't work.
 
 User events other than `routerLink` clicks aren't supported.
-You must wait for the full client app to bootstrap and run, or buffer the events using libraries like 
+You must wait for the full client app to bootstrap and run, or buffer the events using libraries like
 [preboot](https://github.com/angular/preboot), which allow you to replay these events once the client-side scripts load.
 
 The transition from the server-rendered app to the client app happens quickly on a development machine, but you should
@@ -109,7 +108,7 @@ always test your apps in real-world scenarios.
 You can simulate a slower network to see the transition more clearly as follows:
 
 1. Open the Chrome Dev Tools and go to the Network tab.
-1. Find the [Network Throttling](https://developers.google.com/web/tools/chrome-devtools/network-performance/reference#throttling) 
+1. Find the [Network Throttling](https://developers.google.com/web/tools/chrome-devtools/network-performance/reference#throttling)
 dropdown on the far right of the menu bar.
 1. Try one of the "3G" speeds.
 
@@ -142,7 +141,7 @@ There are three main reasons to create a Universal version of your app.
 ### 웹 크롤러 대응하기 (SEO)
 
 <!--
-Google, Bing, Facebook, Twitter, and other social media sites rely on web crawlers to index your application content and 
+Google, Bing, Facebook, Twitter, and other social media sites rely on web crawlers to index your application content and
 make that content searchable on the web.
 These web crawlers may be unable to navigate and index your highly interactive Angular application as a human user could do.
 
@@ -186,7 +185,7 @@ JavaScript를 지원하지 않는 디바이스가 존재하기도 하고 JavaScr
 
 <!--
 Displaying the first page quickly can be critical for user engagement.
-[53 percent of mobile site visits are abandoned](https://www.thinkwithgoogle.com/marketing-resources/data-measurement/mobile-page-speed-new-industry-benchmarks/) 
+[53 percent of mobile site visits are abandoned](https://www.thinkwithgoogle.com/marketing-resources/data-measurement/mobile-page-speed-new-industry-benchmarks/)
 if pages take longer than 3 seconds to load.
 Your app may have to launch faster to engage these users before they decide to do something else.
 
@@ -195,7 +194,7 @@ The pages are pure HTML, and can display even if JavaScript is disabled.
 The pages don't handle browser events, but they _do_ support navigation through the site using [`routerLink`](guide/router#router-link).
 
 In practice, you'll serve a static version of the landing page to hold the user's attention.
-At the same time, you'll load the full Angular app behind it. 
+At the same time, you'll load the full Angular app behind it.
 The user perceives near-instant performance from the landing page
 and gets the full interactive experience after the full app loads.
 -->
@@ -220,7 +219,7 @@ and gets the full interactive experience after the full app loads.
 ## Universal 웹 서버
 
 <!--
-A Universal web server responds to application page requests with static HTML rendered by the [Universal template engine](#universal-engine). 
+A Universal web server responds to application page requests with static HTML rendered by the [Universal template engine](#universal-engine).
 The server receives and responds to HTTP requests from clients (usually browsers), and serves static assets such as scripts, CSS, and images.
 It may respond to data requests, either directly or as a proxy to a separate data server.
 
@@ -235,31 +234,30 @@ Universal 웹 서버는 애플리케이션 페이지 요청을 받았을 때 [Un
 <div class="alert is-helpful">
 
   <!--
-  **Note:** _Any_ web server technology can serve a Universal app as long as it can call Universal's `renderModuleFactory()` function.
+  **Note:** _Any_ web server technology can serve a Universal app as long as it can call Universal's `renderModule()` function.
   The principles and decision points discussed here apply to any web server technology.
   -->
-  **참고:** Angular Universal이 제공하는 `renderModuleFactory()` 함수를 실행할수만 있다면 _아무_ 웹 서버를 사용해도 Universal 앱을 제공할 수 있습니다.
+  **참고:** Angular Universal이 제공하는 `renderModule()` 함수를 실행할수만 있다면 _아무_ 웹 서버를 사용해도 Universal 앱을 제공할 수 있습니다.
   이 섹션에서는 웹 서버를 결정하는 기준에 대해서 조금 더 자세하게 알아봅시다.
 
 </div>
 
 <!--
-
-Universal applications use the Angular `platform-server` package (as opposed to `platform-browser`), which provides 
+Universal applications use the Angular `platform-server` package (as opposed to `platform-browser`), which provides
 server implementations of the DOM, `XMLHttpRequest`, and other low-level features that don't rely on a browser.
 
 The server ([Node Express](https://expressjs.com/) in this guide's example)
 passes client requests for application pages to the NgUniversal `ngExpressEngine`. Under the hood, this
-calls Universal's `renderModuleFactory()` function, while providing caching and other helpful utilities.
+calls Universal's `renderModule()` function, while providing caching and other helpful utilities.
 
-The `renderModuleFactory()` function takes as inputs a *template* HTML page (usually `index.html`),
+The `renderModule()` function takes as inputs a *template* HTML page (usually `index.html`),
 an Angular *module* containing components,
 and a *route* that determines which components to display.
 The route comes from the client's request to the server.
 
 Each request results in the appropriate view for the requested route.
-The `renderModuleFactory()` function renders the view within the `<app>` tag of the template, 
-creating a finished HTML page for the client. 
+The `renderModule()` function renders the view within the `<app>` tag of the template,
+creating a finished HTML page for the client.
 
 Finally, the server returns the rendered page to the client.
 -->
@@ -286,11 +284,11 @@ Universal 애플리케이션은 (`platform-browser` 대신) Angular가 제공하
 <!--
 Because a Universal app doesn't execute in the browser, some of the browser APIs and capabilities may be missing on the server.
 
-For example, server-side applications can't reference browser-only global objects such as `window`, `document`, `navigator`, or `location`. 
+For example, server-side applications can't reference browser-only global objects such as `window`, `document`, `navigator`, or `location`.
 
-Angular provides some injectable abstractions over these objects, such as [`Location`](api/common/Location) 
+Angular provides some injectable abstractions over these objects, such as [`Location`](api/common/Location)
 or [`DOCUMENT`](api/common/DOCUMENT); it may substitute adequately for these APIs.
-If Angular doesn't provide it, it's possible to write new abstractions that delegate to the browser APIs while in the browser 
+If Angular doesn't provide it, it's possible to write new abstractions that delegate to the browser APIs while in the browser
 and to an alternative implementation while on the server (aka shimming).
 
 Similarly, without mouse or keyboard events, a server-side app can't rely on a user clicking a button to show a component.
@@ -319,17 +317,16 @@ Angular는 이런 객체를 참조해야 하는 상황을 대비해서 [`Localti
 The tutorial's `HeroService` and `HeroSearchService` delegate to the Angular `HttpClient` module to fetch application data.
 These services send requests to _relative_ URLs such as `api/heroes`.
 In a Universal app, HTTP URLs must be _absolute_ (for example, `https://my-server.com/api/heroes`).
-This means you need to change your services to make requests with absolute URLs when running on the server and with relative 
+This means you need to change your services to make requests with absolute URLs when running on the server and with relative
 URLs when running in the browser.
 
 One solution is to provide the full URL to your application on the server, and write an interceptor that can retrieve this
 value and prepend it to the request URL. If you're using the `ngExpressEngine`, as shown in the example in this guide, half
 the work is already done. We'll assume this is the case, but it's trivial to provide the same functionality.
 
-Start by creating an [HttpInterceptor](api/common/http/HttpInterceptor):
+Start by creating an [HttpInterceptor](api/common/http/HttpInterceptor).
 
-
-<code-example format="." language="typescript">
+<code-example language="typescript" header="universal-interceptor.ts">
 
 import {Injectable, Inject, Optional} from '@angular/core';
 import {HttpInterceptor, HttpHandler, HttpRequest, HttpHeaders} from '@angular/common/http';
@@ -339,8 +336,7 @@ import {REQUEST} from '@nguniversal/express-engine/tokens';
 @Injectable()
 export class UniversalInterceptor implements HttpInterceptor {
 
-  constructor(@Optional() @Inject(REQUEST) protected request: Request) {}
-
+  constructor(@Optional() @Inject(REQUEST) protected request?: Request) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler) {
     let serverReq: HttpRequest<any> = req;
@@ -358,9 +354,9 @@ export class UniversalInterceptor implements HttpInterceptor {
 
 </code-example>
 
-Next, provide the interceptor in the providers for the server `AppModule` (app.server.module.ts):
+Next, provide the interceptor in the providers for the server `AppModule`.
 
-<code-example format="." language="typescript">
+<code-example language="typescript" header="app.server.module.ts">
 
 import {HTTP_INTERCEPTORS} from '@angular/common/http';
 import {UniversalInterceptor} from './universal-interceptor';
@@ -376,10 +372,6 @@ import {UniversalInterceptor} from './universal-interceptor';
 export class AppServerModule {}
 
 </code-example>
--->
-<code-example path="universal/src/app/hero.service.ts" region="ctor" header="src/app/hero.service.ts (옵션 인자 origin을 추가한 생성자)">
-</code-example>
-
 
 Now, on every HTTP request made on the server, this interceptor will fire and replace the request URL with the absolute
 URL provided in the Express `Request` object.
@@ -399,25 +391,24 @@ The important bit in the `server.ts` file is the `ngExpressEngine()` function.
 </code-example>
 
 <!--
-The `ngExpressEngine()` function is a wrapper around Universal's `renderModuleFactory()` function which turns a client's 
+The `ngExpressEngine()` function is a wrapper around Universal's `renderModule()` function which turns a client's
 requests into server-rendered HTML pages.
-
 
 * The first parameter is `AppServerModule`.
 It's the bridge between the Universal server-side renderer and the Angular application.
 
-* The second parameter, `extraProviders`, is optional. It lets you specify dependency providers that apply only when 
+* The second parameter, `extraProviders`, is optional. It lets you specify dependency providers that apply only when
 running on this server.
-You can do this when your app needs information that can only be determined by the currently running server instance. 
+You can do this when your app needs information that can only be determined by the currently running server instance.
 One example could be the running server's *origin*, which could be used to [calculate absolute HTTP URLs](#http-urls) if
 not using the `Request` token as shown above.
 
-The `ngExpressEngine()` function returns a `Promise` callback that resolves to the rendered page. 
+The `ngExpressEngine()` function returns a `Promise` callback that resolves to the rendered page.
 It's up to the engine to decide what to do with that page.
 This engine's `Promise` callback returns the rendered page to the web server,
 which then forwards it to the client in the HTTP response.
 -->
-`ngExpressEngine()` 함수는 Universal이 제공하는 `renderModuleFactory()` 함수를 랩핑한 함수이며, `renderModuleFactory()` 함수는 클라이언트의 요청을 서버가 렌더링한 HTML 페이지로 변경해서 요청하는 함수입니다.
+`ngExpressEngine()` 함수는 Universal이 제공하는 `renderModule()` 함수를 랩핑한 함수이며, `renderModuleFactory()` 함수는 클라이언트의 요청을 서버가 렌더링한 HTML 페이지로 변경해서 요청하는 함수입니다.
 
 * 첫번째 인자는 `AppServerModule` 입니다.
 이 모듈은 Universal 서버 사이드 렌더러와 Angular 애플리케이션을 이어주는 역할을 합니다.
@@ -433,11 +424,11 @@ which then forwards it to the client in the HTTP response.
 <div class="alert is-helpful">
 
   <!--
-  **Note:**  These wrappers help hide the complexity of the `renderModuleFactory()` function. There are more wrappers 
+  **Note:**  These wrappers help hide the complexity of the `renderModule()` function. There are more wrappers
   for different backend technologies at the [Universal repository](https://github.com/angular/universal).
 
   -->
-  **참고:** `renderModuleFactory()` 함수를 직접 사용하는 것보다는 `ngExpressEngine()` 랩핑 헬퍼를 사용하는 것이 편합니다. 이와 비슷한 방식으로 제공되는 랩퍼 함수들을 알아보려면 [Universal 레파지토리](https://github.com/angular/universal)를 참고하세요.
+  **참고:** `renderModule()` 함수를 직접 사용하는 것보다는 `ngExpressEngine()` 랩핑 헬퍼를 사용하는 것이 편합니다. 이와 비슷한 방식으로 제공되는 랩퍼 함수들을 알아보려면 [Universal 레파지토리](https://github.com/angular/universal)를 참고하세요.
 
 </div>
 
@@ -457,7 +448,7 @@ The browser could ask for one of the application routes such as `/dashboard`, `/
 In fact, if the app were only rendered by the server, _every_ app link clicked would arrive at the server
 as a navigation URL intended for the router.
 
-Fortunately, application routes have something in common: their URLs lack file extensions. 
+Fortunately, application routes have something in common: their URLs lack file extensions.
 (Data requests also lack extensions but they're easy to recognize because they always begin with `/api`.)
 All static asset requests have a file extension (such as `main.js` or `/node_modules/zone.js/dist/zone.js`).
 
@@ -467,7 +458,7 @@ Because we use routing, we can easily recognize the three types of requests and 
 1. **App navigation**: request URL with no file extension.
 1. **Static asset**: all other requests.
 
-A Node Express server is a pipeline of middleware that filters and processes requests one after the other. 
+A Node Express server is a pipeline of middleware that filters and processes requests one after the other.
 You configure the Node Express server pipeline with calls to `app.get()` like this one for data requests.
 -->
 NOTE: the basic behavior described below is handled automatically when using the NgUniversal Express schematic, this
@@ -493,11 +484,9 @@ Node Express 서버는 미들웨어 파이프라인을 연결하는 방식으로
 그래서 데이터 요청 URL을 처리하는 Node Express 서버의 파이프라인을 정의한다면 Express가 제공하는 `app.get()` 함수를 사용해서 다음과 같이 정의할 수 있습니다.
 
 <!--
-<code-example path="universal/server.ts" header="server.ts (data URL)" region="data-request" linenums="false">
-</code-example>
+<code-example path="universal/server.ts" header="server.ts (data URL)" region="data-request"></code-example>
 -->
-<code-example path="universal/server.ts" header="server.ts (데이터 URL)" region="data-request" linenums="false">
-</code-example>
+<code-example path="universal/server.ts" header="server.ts (데이터 URL)" region="data-request"></code-example>
 
 <div class="alert is-helpful">
 
@@ -521,11 +510,9 @@ The following code filters for request URLs with no extensions and treats them a
 다음 코드는 URL에 확장자가 없을 때 이 요청을 네비게이션 요청으로 처리하는 코드입니다.
 
 <!--
-<code-example path="universal/server.ts" header="server.ts (navigation)" region="navigation-request" linenums="false">
-</code-example>
+<code-example path="universal/server.ts" header="server.ts (navigation)" region="navigation-request"></code-example>
 -->
-<code-example path="universal/server.ts" header="server.ts (네비게이션)" region="navigation-request" linenums="false">
-</code-example>
+<code-example path="universal/server.ts" header="server.ts (네비게이션)" region="navigation-request"></code-example>
 
 <!--
 ### Serving static files safely
@@ -536,10 +523,10 @@ The following code filters for request URLs with no extensions and treats them a
 A single `app.use()` treats all other URLs as requests for static assets
 such as JavaScript, image, and style files.
 
-To ensure that clients can only download the files that they are permitted to see, put all client-facing asset files in 
+To ensure that clients can only download the files that they are permitted to see, put all client-facing asset files in
 the `/dist` folder and only honor requests for files from the `/dist` folder.
 
-The following Node Express code routes all remaining requests to `/dist`, and returns a `404 - NOT FOUND` error if the 
+The following Node Express code routes all remaining requests to `/dist`, and returns a `404 - NOT FOUND` error if the
 file isn't found.
 -->
 JavaScript 파일이나 이미지 파일, 스타일 파일과 같은 정적 애셋은 `app.use()` 하나로 간단하게 처리할 수 있습니다.
@@ -549,6 +536,6 @@ JavaScript 파일이나 이미지 파일, 스타일 파일과 같은 정적 애�
 아래 코드는 정적 애셋을 요청받았을 때 실행되는 Node Express 코드입니다. 요청받은 파일은 `/dist` 폴더에서 찾아 보내는데, 이 파일이 존재하지 않으면 `404 - NOT FOUND`를 반환합니다.
 
 <!--
-<code-example path="universal/server.ts" header="server.ts (static files)" region="static" linenums="false">
-</code-example>
-
+<code-example path="universal/server.ts" header="server.ts (static files)" region="static"></code-example>
+-->
+<code-example path="universal/server.ts" header="server.ts (정적 파일)" region="static"></code-example>

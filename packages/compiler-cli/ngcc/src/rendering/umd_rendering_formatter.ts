@@ -13,6 +13,7 @@ import {ExportInfo} from '../analysis/private_declarations_analyzer';
 import {UmdReflectionHost} from '../host/umd_host';
 import {Esm5RenderingFormatter} from './esm5_rendering_formatter';
 import {stripExtension} from './utils';
+import {Reexport} from '../../../src/ngtsc/imports';
 
 type CommonJsConditional = ts.ConditionalExpression & {whenTrue: ts.CallExpression};
 type AmdConditional = ts.ConditionalExpression & {whenTrue: ts.CallExpression};
@@ -26,9 +27,30 @@ export class UmdRenderingFormatter extends Esm5RenderingFormatter {
   constructor(protected umdHost: UmdReflectionHost, isCore: boolean) { super(umdHost, isCore); }
 
   /**
-   *  Add the imports to the UMD module IIFE.
+   * Add the imports to the UMD module IIFE.
+   *
+   * Note that imports at "prepended" to the start of the parameter list of the factory function,
+   * and so also to the arguments passed to it when it is called.
+   * This is because there are scenarios where the factory function does not accept as many
+   * parameters as are passed as argument in the call. For example:
+   *
+   * ```
+   * (function (global, factory) {
+   *     typeof exports === 'object' && typeof module !== 'undefined' ?
+   *         factory(exports,require('x'),require('z')) :
+   *     typeof define === 'function' && define.amd ?
+   *         define(['exports', 'x', 'z'], factory) :
+   *     (global = global || self, factory(global.myBundle = {}, global.x));
+   * }(this, (function (exports, x) { ... }
+   * ```
+   *
+   * (See that the `z` import is not being used by the factory function.)
    */
   addImports(output: MagicString, imports: Import[], file: ts.SourceFile): void {
+    if (imports.length === 0) {
+      return;
+    }
+
     // Assume there is only one UMD module in the file
     const umdModule = this.umdHost.getUmdModule(file);
     if (!umdModule) {
@@ -71,6 +93,26 @@ export class UmdRenderingFormatter extends Esm5RenderingFormatter {
     });
   }
 
+  addDirectExports(
+      output: MagicString, exports: Reexport[], importManager: ImportManager,
+      file: ts.SourceFile): void {
+    const umdModule = this.umdHost.getUmdModule(file);
+    if (!umdModule) {
+      return;
+    }
+    const factoryFunction = umdModule.factoryFn;
+    const lastStatement =
+        factoryFunction.body.statements[factoryFunction.body.statements.length - 1];
+    const insertionPoint =
+        lastStatement ? lastStatement.getEnd() : factoryFunction.body.getEnd() - 1;
+    for (const e of exports) {
+      const namedImport = importManager.generateNamedImport(e.fromModule, e.symbolName);
+      const importNamespace = namedImport.moduleImport ? `${namedImport.moduleImport}.` : '';
+      const exportStr = `\nexports.${e.asAlias} = ${importNamespace}${namedImport.symbol};`;
+      output.appendRight(insertionPoint, exportStr);
+    }
+  }
+
   /**
    * Add the constants to the top of the UMD factory function.
    */
@@ -100,9 +142,13 @@ function renderCommonJsDependencies(
     return;
   }
   const factoryCall = conditional.whenTrue;
-  const injectionPoint = factoryCall.getEnd() -
-      1;  // Backup one char to account for the closing parenthesis on the call
-  imports.forEach(i => output.appendLeft(injectionPoint, `,require('${i.specifier}')`));
+  const injectionPoint = factoryCall.arguments.length > 0 ?
+      // Add extra dependencies before the first argument
+      factoryCall.arguments[0].getFullStart() :
+      // Backup one char to account for the closing parenthesis on the call
+      factoryCall.getEnd() - 1;
+  const importString = imports.map(i => `require('${i.specifier}')`).join(',');
+  output.appendLeft(injectionPoint, importString + (factoryCall.arguments.length > 0 ? ',' : ''));
 }
 
 /**
@@ -114,13 +160,27 @@ function renderAmdDependencies(
   if (!conditional) {
     return;
   }
-  const dependencyArray = conditional.whenTrue.arguments[1];
-  if (!dependencyArray || !ts.isArrayLiteralExpression(dependencyArray)) {
-    return;
+  const amdDefineCall = conditional.whenTrue;
+  const importString = imports.map(i => `'${i.specifier}'`).join(',');
+  // The dependency array (if it exists) is the second to last argument
+  // `define(id?, dependencies?, factory);`
+  const factoryIndex = amdDefineCall.arguments.length - 1;
+  const dependencyArray = amdDefineCall.arguments[factoryIndex - 1];
+  if (dependencyArray === undefined || !ts.isArrayLiteralExpression(dependencyArray)) {
+    // No array provided: `define(factory)` or `define(id, factory)`.
+    // Insert a new array in front the `factory` call.
+    const injectionPoint = amdDefineCall.arguments[factoryIndex].getFullStart();
+    output.appendLeft(injectionPoint, `[${importString}],`);
+  } else {
+    // Already an array
+    const injectionPoint = dependencyArray.elements.length > 0 ?
+        // Add imports before the first item.
+        dependencyArray.elements[0].getFullStart() :
+        // Backup one char to account for the closing square bracket on the array
+        dependencyArray.getEnd() - 1;
+    output.appendLeft(
+        injectionPoint, importString + (dependencyArray.elements.length > 0 ? ',' : ''));
   }
-  const injectionPoint = dependencyArray.getEnd() -
-      1;  // Backup one char to account for the closing square bracket on the array
-  imports.forEach(i => output.appendLeft(injectionPoint, `,'${i.specifier}'`));
 }
 
 /**
@@ -132,9 +192,14 @@ function renderGlobalDependencies(
   if (!globalFactoryCall) {
     return;
   }
-  // Backup one char to account for the closing parenthesis after the argument list of the call.
-  const injectionPoint = globalFactoryCall.getEnd() - 1;
-  imports.forEach(i => output.appendLeft(injectionPoint, `,global.${getGlobalIdentifier(i)}`));
+  const injectionPoint = globalFactoryCall.arguments.length > 0 ?
+      // Add extra dependencies before the first argument
+      globalFactoryCall.arguments[0].getFullStart() :
+      // Backup one char to account for the closing parenthesis on the call
+      globalFactoryCall.getEnd() - 1;
+  const importString = imports.map(i => `global.${getGlobalIdentifier(i)}`).join(',');
+  output.appendLeft(
+      injectionPoint, importString + (globalFactoryCall.arguments.length > 0 ? ',' : ''));
 }
 
 /**
@@ -154,9 +219,20 @@ function renderFactoryParameters(
   if (!ts.isFunctionExpression(factoryFunction)) {
     return;
   }
+
   const parameters = factoryFunction.parameters;
-  const injectionPoint = parameters[parameters.length - 1].getEnd();
-  imports.forEach(i => output.appendLeft(injectionPoint, `,${i.qualifier}`));
+  const parameterString = imports.map(i => i.qualifier).join(',');
+  if (parameters.length > 0) {
+    const injectionPoint = parameters[0].getFullStart();
+    output.appendLeft(injectionPoint, parameterString + ',');
+  } else {
+    // If there are no parameters then the factory function will look like:
+    // function () { ... }
+    // The AST does not give us a way to find the insertion point - between the two parentheses.
+    // So we must use a regular expression on the text of the function.
+    const injectionPoint = factoryFunction.getStart() + factoryFunction.getText().indexOf('()') + 1;
+    output.appendLeft(injectionPoint, parameterString);
+  }
 }
 
 /**
@@ -204,17 +280,49 @@ function isAmdConditional(value: ts.Node): value is AmdConditional {
  */
 function isGlobalFactoryCall(value: ts.Node): value is ts.CallExpression {
   if (ts.isCallExpression(value) && !!value.parent) {
+    // Be resilient to the value being part of a comma list
+    value = isCommaExpression(value.parent) ? value.parent : value;
     // Be resilient to the value being inside parentheses
-    const expression = ts.isParenthesizedExpression(value.parent) ? value.parent : value;
-    return !!expression.parent && ts.isConditionalExpression(expression.parent) &&
-        expression.parent.whenFalse === expression;
+    value = ts.isParenthesizedExpression(value.parent) ? value.parent : value;
+    return !!value.parent && ts.isConditionalExpression(value.parent) &&
+        value.parent.whenFalse === value;
   } else {
     return false;
   }
 }
 
-function getGlobalIdentifier(i: Import) {
-  return i.specifier.replace('@angular/', 'ng.').replace(/^\//, '');
+function isCommaExpression(value: ts.Node): value is ts.BinaryExpression {
+  return ts.isBinaryExpression(value) && value.operatorToken.kind === ts.SyntaxKind.CommaToken;
+}
+
+/**
+ * Compute a global identifier for the given import (`i`).
+ *
+ * The identifier used to access a package when using the "global" form of a UMD bundle usually
+ * follows a special format where snake-case is conveted to camelCase and path separators are
+ * converted to dots. In addition there are special cases such as `@angular` is mapped to `ng`.
+ *
+ * For example
+ *
+ * * `@ns/package/entry-point` => `ns.package.entryPoint`
+ * * `@angular/common/testing` => `ng.common.testing`
+ * * `@angular/platform-browser-dynamic` => `ng.platformBrowserDynamic`
+ *
+ * It is possible for packages to specify completely different identifiers for attaching the package
+ * to the global, and so there is no guaranteed way to compute this.
+ * Currently, this approach appears to work for the known scenarios; also it is not known how common
+ * it is to use globals for importing packages.
+ *
+ * If it turns out that there are packages that are being used via globals, where this approach
+ * fails, we should consider implementing a configuration based solution, similar to what would go
+ * in a rollup configuration for mapping import paths to global indentifiers.
+ */
+function getGlobalIdentifier(i: Import): string {
+  return i.specifier.replace(/^@angular\//, 'ng.')
+      .replace(/^@/, '')
+      .replace(/\//g, '.')
+      .replace(/[-_]+(.?)/g, (_, c) => c.toUpperCase())
+      .replace(/^./, c => c.toLowerCase());
 }
 
 function find<T>(node: ts.Node, test: (node: ts.Node) => node is ts.Node & T): T|undefined {

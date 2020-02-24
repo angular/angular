@@ -28,7 +28,7 @@ Whether you came here directly from [Your First App](start "Getting Started: You
 StackBlitz projects are public by default, allowing you to share your Angular app via the project URL. Keep in mind that this is a great way to share ideas and prototypes, but it is not intended for production hosting.
 
 1. In your StackBlitz project, make sure you have forked or saved your project.
-1. In the preview pane, you should see a URL that looks like `https://<Project ID>.stackblitz.io`.
+1. In the preview page, you should see a URL that looks like `https://<Project ID>.stackblitz.io`.
 1. Share this URL with a friend or colleague.
 1. Users that visit your URL will see a development server start up, and then your application will load.
 -->
@@ -47,7 +47,7 @@ StackBlitz 프로젝트는 기본적으로 모두에게 공유되어 있기 때�
 <!--
 To build your application locally or for production, you will need to download the source code from your StackBlitz project. Click the `Download Project` icon in the left menu across from `Project` to download your files.
 
-Once you have the source code downloaded and unzipped, use the [Angular Console](https://angularconsole.com "Angular Console web site") to serve the application, or you install Node and have the Angular CLI installed.
+Once you have the source code downloaded and unzipped, use the [Angular Console](https://angularconsole.com "Angular Console web site") to serve the application, or you install `Node.js` and have the Angular CLI installed.
 
 From the terminal, install the Angular CLI globally with:
 -->
@@ -88,15 +88,21 @@ This will produce the files that you need to deploy.
 -->
 이제 배포할 준비는 끝났습니다.
 
+<div class="alert is-helpful">
+
+If the above `ng build` command throws an error about missing packages, append the missing dependencies in your local project's `package.json` file to match the one in the downloaded StackBlitz project.
+
+</div>
+
 <!--
 #### Hosting the built project
 -->
 #### 호스팅하기
 
 <!--
-The files in the `dist/my-project-name` folder are static and can be hosted on any web server capable of serving files (node, Java, .NET) or any backend (Firebase, Google Cloud, App Engine, others).
+The files in the `dist/my-project-name` folder are static and can be hosted on any web server capable of serving files (`Node.js`, Java, .NET) or any backend (Firebase, Google Cloud, App Engine, others).
 -->
-`dist/my-project-name` 폴더에 있는 파일들은 정적 파일로 취급할 수 있기 때문에 파일을 호스팅할 수 있는 웹 서버라면 Node, Java, .NET에 관계없이 호스팅할 수 있습니다. 백엔드는 Firebase, Google Cloud, App Engine 중 어떤 것이라도 상관없습니다.
+`dist/my-project-name` 폴더에 있는 파일들은 정적 파일로 취급할 수 있기 때문에 파일을 호스팅할 수 있는 웹 서버라면 `Node.js`, Java, .NET에 관계없이 호스팅할 수 있습니다. 백엔드는 Firebase, Google Cloud, App Engine 중 어떤 것이라도 상관없습니다.
 
 <!--
 ### Hosting an Angular app on Firebase
@@ -108,10 +114,13 @@ One of the easiest ways to get your site live is to host it using Firebase.
 
 1. Sign up for a firebase account on [Firebase](https://firebase.google.com/ "Firebase web site").
 1. Create a new project, giving it any name you like.
-1. Install the `firebase-tools` CLI that will handle your deployment using `npm install -g firebase-tools`.
+1. Add the `@angular/fire` schematics that will handle your deployment using `ng add @angular/fire`.
 1. Connect your CLI to your Firebase account and initialize the connection to your project using `firebase login` and `firebase init`.
-1. Follow the prompts to select the `Firebase` project you creating for hosting.
-1. Deploy your application with `firebase deploy` because StackBlitz has created a `firebase.json` that tells Firebase how to serve your app.
+1. Follow the prompts to select the `Firebase` project you are creating for hosting.
+    - Select the `Hosting` option on the first prompt.
+    - Select the project you previously created on Firebase.
+    - Select `dist/my-project-name` as the public directory.
+1. Deploy your application with `ng deploy`.
 1. Once deployed, visit https://your-firebase-project-name.firebaseapp.com to see it live!
 -->
 애플리케이션을 Firebase에 호스팅 하는 것은 아주 간단합니다.

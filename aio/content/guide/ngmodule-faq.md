@@ -1,17 +1,4 @@
-# NgModule FAQs
-
-<!--
-#### Prerequisites:
--->
-#### 사전지식
-<!--
-A basic understanding of the following concepts:
-* [NgModules](guide/ngmodules).
--->
-다음 내용을 먼저 이해하고 이 문서를 보는 것이 좋습니다:
-* [NgModule](guide/ngmodules)
-
-<hr />
+# NgModule FAQ
 
 <!--
 NgModules help organize an application into cohesive blocks of functionality.
@@ -901,8 +888,7 @@ Here is a custom constructor for an NgModule called `GreetingModule`.
 그리고 `BrowserModule`과 같은 모듈은 이 문제를 방지하는 로직을 따로 마련하기도 했습니다.
 `BrowserModule`이 로드되기 전에 `GreetingModule`이 이미 로드되었다면, 이 모듈은 다음과 같은 로직으로 에러를 발생시킵니다.
 
-<code-example path="ngmodules/src/app/greeting/greeting.module.ts" region="ctor" header="src/app/greeting/greeting.module.ts (Constructor)" linenums="false">
-</code-example>
+<code-example path="ngmodules/src/app/greeting/greeting.module.ts" region="ctor" header="src/app/greeting/greeting.module.ts (Constructor)"></code-example>
 
 <hr/>
 
@@ -1090,7 +1076,11 @@ Some suggestions and guidelines appear to have wide appeal.
 앱은 모두 다릅니다. 앱을 개발하는 개발자의 경험도 모두 다르고, 정책을 정하는 기준도 다릅니다.
 이 문단에서는 모듈에 대한 대략적인 가이드를 안내합니다.
 
+### `SharedModule`
+<!--
 ### 공유 모듈 (`SharedModule`)
+-->
+
 <!--
 `SharedModule` is a conventional name for an `NgModule` with the components, directives, and pipes that you use
 everywhere in your app. This module should consist entirely of `declarations`,

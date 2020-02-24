@@ -1,7 +1,7 @@
 <!--
-# User Input
+# User input
 -->
-# 사용자 동작
+# 사용자 입력
 
 <!--
 User actions such as clicking a link, pushing a button, and entering
@@ -39,9 +39,7 @@ The following example shows an event binding that implements a click handler:
 -->
 아래 예제는 클릭 이벤트에 `onClickMe()` 핸들러를 바인딩하는 예제 코드입니다.
 
-<code-example path="user-input/src/app/click-me.component.ts" region="click-me-button" header="src/app/click-me.component.ts" linenums="false">
-
-</code-example>
+<code-example path="user-input/src/app/click-me.component.ts" region="click-me-button" header="src/app/click-me.component.ts"></code-example>
 
 {@a click}
 
@@ -64,9 +62,7 @@ The example above shows a single line of HTML, but that HTML belongs to a larger
 템플릿 실행문의 컨텍스트는 보통 그 템플릿을 조작하는 컴포넌트로 제한되어 있습니다.
 이 예제를 컴포넌트 클래스 코드와 함께 확인해 봅시다:
 
-<code-example path="user-input/src/app/click-me.component.ts" region="click-me-component" header="src/app/click-me.component.ts" linenums="false">
-
-</code-example>
+<code-example path="user-input/src/app/click-me.component.ts" region="click-me-component" header="src/app/click-me.component.ts"></code-example>
 
 
 <!--
@@ -90,9 +86,7 @@ DOM 이벤트에는 컴포넌트에서 활용할 수 있는 정보가 함께 전
 
 `keyup` 이벤트가 발생할 때 생성되는 이벤트 객체(`$event`)를 컴포넌트의 이벤트 핸들러로 전달하려면 다음과 같이 작성합니다.
 
-<code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-1-template" header="src/app/keyup.components.ts (template v.1)" linenums="false">
-
-</code-example>
+<code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-1-template" header="src/app/keyup.components.ts (template v.1)"></code-example>
 
 
 <!--
@@ -101,9 +95,7 @@ DOM event object in the `$event` variable which this code passes as a parameter 
 -->
 사용자가 키를 눌렀다가 떼면 `keyup` 이벤트가 발생되며, Angular는 이 이벤트를 `$event` 변수에 할당했다가 템플릿 실행문에 지정된 대로 `onKey()` 메소드의 인자로 전달합니다.
 
-<code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-1-class-no-type" header="src/app/keyup.components.ts (class v.1)" linenums="false">
-
-</code-example>
+<code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-1-class-no-type" header="src/app/keyup.components.ts (class v.1)"></code-example>
 
 
 <!--
@@ -124,7 +116,7 @@ In this case, `target` refers to the [`<input>` element](https://developer.mozil
 
 <!--
 After each call, the `onKey()` method appends the contents of the input box value to the list
-in the component's `values` property, followed by a  separator character (|).
+in the component's `values` property, followed by a separator character (|).
 The [interpolation](guide/template-syntax#interpolation)
 displays the accumulating input box changes from the `values` property.
 -->
@@ -144,9 +136,9 @@ Here's what the UI displays:
 
 
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/user-input/keyup1-anim.gif' alt="key up 1">
-</figure>
+</div>
 
 
 
@@ -191,9 +183,7 @@ The following example rewrites the method with types:
 
 그래서 다음 예제는 인자로 받는 이벤트 객체에 다음과 같이 타입을 지정했습니다:
 
-<code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-1-class" header="src/app/keyup.components.ts (class v.1 - typed )" linenums="false">
-
-</code-example>
+<code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-1-class" header="src/app/keyup.components.ts (class v.1 - typed )"></code-example>
 
 
 <!--
@@ -245,9 +235,7 @@ Angular에서 제공하는 [**템플릿 참조 변수**](guide/template-syntax#r
 
 다음 예제는 템플릿 참조 변수를 활용하는 방법으로 템플릿에서 키 입력을 확인하는 예제입니다.
 
-<code-example path="user-input/src/app/loop-back.component.ts" region="loop-back-component" header="src/app/loop-back.component.ts" linenums="false">
-
-</code-example>
+<code-example path="user-input/src/app/loop-back.component.ts" region="loop-back-component" header="src/app/loop-back.component.ts"></code-example>
 
 
 <!--
@@ -268,9 +256,9 @@ Type something in the input box, and watch the display update with each keystrok
 
 이제 입력 필드에 글자를 입력하면 키 입력이 있을 때마다 화면에 표시되는 값이 갱신됩니다.
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/user-input/keyup-loop-back-anim.gif' alt="loop back">
-</figure>
+</div>
 
 
 
@@ -304,9 +292,7 @@ variable than to go through the `$event` object. Here's a rewrite of the previou
 -->
 템플릿 참조 변수는 `$event` 객체를 직접 활용하는 방법이 더 간단합니다. 위에서 살펴본 `keyup` 예제를 더 나은 방식으로 개선하면 다음과 같이 활용할 수 있습니다.
 
-<code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-2" header="src/app/keyup.components.ts (v2)" linenums="false">
-
-</code-example>
+<code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-2" header="src/app/keyup.components.ts (v2)"></code-example>
 
 
 <!--
@@ -337,9 +323,7 @@ Then Angular calls the event handler only when the user presses _Enter_.
 
 이 때 Angular는 좀 더 간단한 문법을 제공합니다. 템플릿에서 `keyup.enter`라고 바인딩하면 엔터키가 입력되었을 떄만 이벤트 핸들러를 실행할 수 있습니다.
 
-<code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-3" header="src/app/keyup.components.ts (v3)" linenums="false">
-
-</code-example>
+<code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-3" header="src/app/keyup.components.ts (v3)"></code-example>
 
 
 <!--
@@ -347,9 +331,9 @@ Here's how it works.
 -->
 이 예제는 다음과 같이 동작합니다.
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/user-input/keyup3-anim.gif' alt="key up 3">
-</figure>
+</div>
 
 
 
@@ -371,9 +355,7 @@ To fix this issue, listen to both the _Enter_ key and the _blur_ event.
 
 이 문제를 해결하기 위해 _엔터 키_ 와 _blur_ 이벤트 모두 반응하는 방식으로 바꿔봅시다.
 
-<code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-4" header="src/app/keyup.components.ts (v4)" linenums="false">
-
-</code-example>
+<code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-4" header="src/app/keyup.components.ts (v4)"></code-example>
 
 
 
@@ -397,9 +379,9 @@ clicking **Add**.
 히어로의 목록을 표시하고, 이 목록에 히어로를 추가할 수 있는 앱을 간단하게 만들어 봅시다.
 사용자는 히어로의 이름을 입력 필드에 입력하고 **Add** 버튼을 눌러서 이 히어로의 이름을 목록을 추가할 수 있습니다.
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/user-input/little-tour-anim.gif' alt="Little Tour of Heroes">
-</figure>
+</div>
 
 
 <!--
@@ -408,9 +390,7 @@ Below is the "Little Tour of Heroes"  component.
 그리고 다음 코드는 "Little Tour of Heroes"에서 사용한 컴포넌트입니다.
 
 
-<code-example path="user-input/src/app/little-tour.component.ts" region="little-tour" header="src/app/little-tour.component.ts" linenums="false">
-
-</code-example>
+<code-example path="user-input/src/app/little-tour.component.ts" region="little-tour" header="src/app/little-tour.component.ts"></code-example>
 
 
 <!--
@@ -435,7 +415,7 @@ get the input box value and pass *that* to `addHero`.
 <!--
 * **Keep template statements simple** &mdash;
 The `(blur)` event is bound to two JavaScript statements.
-The first statement calls `addHero`.  The second statement, `newHero.value=''`,
+The first statement calls `addHero`. The second statement, `newHero.value=''`,
 clears the input box after a new hero is added to the list.
 -->
 * **템플릿 실행문은 간단하게 작성하세요.** &mdash;

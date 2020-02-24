@@ -67,7 +67,7 @@ if (browserDetection.supportsCustomElements) {
       element.connectedCallback();
 
       let eventValue: any = null;
-      element.addEventListener('some-event', (e: CustomEvent) => eventValue = e.detail);
+      element.addEventListener('some-event', (e: Event) => eventValue = (e as CustomEvent).detail);
       strategy.events.next({name: 'some-event', value: 'event-value'});
 
       expect(eventValue).toEqual('event-value');
@@ -80,7 +80,7 @@ if (browserDetection.supportsCustomElements) {
       expect(strategy.disconnectCalled).toBe(true);
 
       let eventValue: any = null;
-      element.addEventListener('some-event', (e: CustomEvent) => eventValue = e.detail);
+      element.addEventListener('some-event', (e: Event) => eventValue = (e as CustomEvent).detail);
       strategy.events.next({name: 'some-event', value: 'event-value'});
 
       expect(eventValue).toEqual(null);

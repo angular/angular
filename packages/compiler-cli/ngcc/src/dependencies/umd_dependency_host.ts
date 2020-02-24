@@ -6,39 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
-
-import {AbsoluteFsPath, PathSegment} from '../../../src/ngtsc/path';
-import {FileSystem} from '../file_system/file_system';
+import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {getImportsOfUmdModule, parseStatementForUmdModule} from '../host/umd_host';
-
-import {DependencyHost, DependencyInfo} from './dependency_host';
-import {ModuleResolver, ResolvedDeepImport, ResolvedRelativeModule} from './module_resolver';
-
-
+import {DependencyHostBase} from './dependency_host';
+import {ResolvedDeepImport, ResolvedRelativeModule} from './module_resolver';
 
 /**
  * Helper functions for computing dependencies.
  */
-export class UmdDependencyHost implements DependencyHost {
-  constructor(private fs: FileSystem, private moduleResolver: ModuleResolver) {}
-
-  /**
-   * Find all the dependencies for the entry-point at the given path.
-   *
-   * @param entryPointPath The absolute path to the JavaScript file that represents an entry-point.
-   * @returns Information about the dependencies of the entry-point, including those that were
-   * missing or deep imports into other entry-points.
-   */
-  findDependencies(entryPointPath: AbsoluteFsPath): DependencyInfo {
-    const dependencies = new Set<AbsoluteFsPath>();
-    const missing = new Set<AbsoluteFsPath|PathSegment>();
-    const deepImports = new Set<AbsoluteFsPath>();
-    const alreadySeen = new Set<AbsoluteFsPath>();
-    this.recursivelyFindDependencies(
-        entryPointPath, dependencies, missing, deepImports, alreadySeen);
-    return {dependencies, missing, deepImports};
-  }
-
+export class UmdDependencyHost extends DependencyHostBase {
   /**
    * Compute the dependencies of the given file.
    *
@@ -49,21 +25,22 @@ export class UmdDependencyHost implements DependencyHost {
    * @param deepImports A set that will have the import paths that exist but cannot be mapped to
    * entry-points, i.e. deep-imports.
    * @param alreadySeen A set that is used to track internal dependencies to prevent getting stuck
-   * in a
-   * circular dependency loop.
+   * in a circular dependency loop.
    */
-  private recursivelyFindDependencies(
+  protected recursivelyCollectDependencies(
       file: AbsoluteFsPath, dependencies: Set<AbsoluteFsPath>, missing: Set<string>,
       deepImports: Set<string>, alreadySeen: Set<AbsoluteFsPath>): void {
     const fromContents = this.fs.readFile(file);
+
     if (!this.hasRequireCalls(fromContents)) {
-      // Avoid parsing the source file as there are no require calls.
+      // Avoid parsing the source file as there are no imports.
       return;
     }
 
     // Parse the source into a TypeScript AST and then walk it looking for imports and re-exports.
     const sf =
         ts.createSourceFile(file, fromContents, ts.ScriptTarget.ES2015, false, ts.ScriptKind.JS);
+
     if (sf.statements.length !== 1) {
       return;
     }
@@ -81,7 +58,7 @@ export class UmdDependencyHost implements DependencyHost {
           const internalDependency = resolvedModule.modulePath;
           if (!alreadySeen.has(internalDependency)) {
             alreadySeen.add(internalDependency);
-            this.recursivelyFindDependencies(
+            this.recursivelyCollectDependencies(
                 internalDependency, dependencies, missing, deepImports, alreadySeen);
           }
         } else {
@@ -107,5 +84,5 @@ export class UmdDependencyHost implements DependencyHost {
    * @returns false if there are definitely no require calls
    * in this file, true otherwise.
    */
-  hasRequireCalls(source: string): boolean { return /require\(['"]/.test(source); }
+  private hasRequireCalls(source: string): boolean { return /require\(['"]/.test(source); }
 }

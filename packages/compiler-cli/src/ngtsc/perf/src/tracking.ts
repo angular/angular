@@ -5,13 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 /// <reference types="node" />
 import * as fs from 'fs';
-import * as path from 'path';
-
 import * as ts from 'typescript';
-
+import {resolve} from '../../file_system';
 import {PerfRecorder} from './api';
 import {HrTime, mark, timeSinceInMicros} from './clock';
 
@@ -83,10 +80,10 @@ export class PerfTracker implements PerfRecorder {
 
     if (target.startsWith('ts:')) {
       target = target.substr('ts:'.length);
-      const outFile = path.posix.resolve(host.getCurrentDirectory(), target);
+      const outFile = resolve(host.getCurrentDirectory(), target);
       host.writeFile(outFile, json, false);
     } else {
-      const outFile = path.posix.resolve(host.getCurrentDirectory(), target);
+      const outFile = resolve(host.getCurrentDirectory(), target);
       fs.writeFileSync(outFile, json);
     }
   }

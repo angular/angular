@@ -1,5 +1,5 @@
 <!--
-# Reactive Forms
+# Reactive forms
 -->
 # 반응형 폼 (Reactive Forms)
 
@@ -25,7 +25,7 @@ Try the <live-example title="Reactive Forms in Stackblitz">Reactive Forms live-e
 ## 반응형 폼 소개
 
 <!--
-Reactive forms use an explicit and immutable approach to managing the state of a form at a given point in time. Each change to the form state returns a new state, which maintains the integrity of the model between changes. Reactive forms are built around observable streams, where form inputs and values are provided as streams of input values, which can be accessed synchronously. 
+Reactive forms use an explicit and immutable approach to managing the state of a form at a given point in time. Each change to the form state returns a new state, which maintains the integrity of the model between changes. Reactive forms are built around observable streams, where form inputs and values are provided as streams of input values, which can be accessed synchronously.
 -->
 반응형 폼은 명시적인 방법으로, 그리고 이뮤터블을 처리하는 것과 비슷하게 폼의 상태를 관리하는 방식입니다. 폼 값이 변경되면 이 폼은 폼이 변경되기 전의 정보와 함께 새로운 상태를 표현하는 객체를 반환합니다. 반응형 폼은 옵저버블 스트림을 활용하는 방식으로 만들어졌기 때문에, 폼에 값이 입력되거나 입력된 값이 전달되는 것도 옵저버블로 전달됩니다. 따라서 폼이 변경된 것을 실시간으로 확인하고 필요한 동작을 할 수 있습니다.
 
@@ -59,12 +59,11 @@ To use reactive forms, import `ReactiveFormsModule` from the `@angular/forms` pa
 -->
 반응형 폼을 사용하려면 `@angular/forms`에서 제공하는 `ReactiveFormsModule`을 로드하고 NgModule의 `imports` 배열에 추가해야 합니다.
 
-<code-example path="reactive-forms/src/app/app.module.ts" region="imports" header="src/app/app.module.ts (excerpt)">
-
+<code-example path="reactive-forms/src/app/app.module.ts" region="imports" header="src/app/app.module.ts (excerpt)"></code-example>
 </code-example>
 
 <!--
-### Step 2: Generating and importing a new form control 
+### Step 2: Generating and importing a new form control
 -->
 ### 2단계 - 폼 컨트롤 로드하고 인스턴스 생성하기
 
@@ -84,12 +83,11 @@ The `FormControl` class is the basic building block when using reactive forms. T
 -->
 `FormControl` 클래스는 반응형 폼을 사용할 때 가장 기본이 되는 클래스입니다. 폼 컨트롤을 사용하려면 먼저 컴포넌트 코드에 `FormControl` 클래스를 로드하고, `FormControl`을 인스턴스로 생성하는 코드를 클래스 프로퍼티로 선언합니다.
 
-<code-example path="reactive-forms/src/app/name-editor/name-editor.component.ts" region="create-control" header="src/app/name-editor/name-editor.component.ts">
-
+<code-example path="reactive-forms/src/app/name-editor/name-editor.component.ts" region="create-control" header="src/app/name-editor/name-editor.component.ts"></code-example>
 </code-example>
 
 <!--
-Use the constructor of `FormControl` to set its initial value, which in this case is an empty string. By creating these controls in your component class, you get immediate access to listen for, update, and validate the state of the form input. 
+Use the constructor of `FormControl` to set its initial value, which in this case is an empty string. By creating these controls in your component class, you get immediate access to listen for, update, and validate the state of the form input.
 -->
 그러면 `FormControl`의 생성자가 실행되면서 인자로 전달한 빈 문자열이 초기값으로 설정됩니다. 이렇게 클래스 프로퍼티에 폼 컨트롤을 선언하면 폼에서 입력되는 이벤트나 값, 유효성 검사 결과를 컴포넌트 코드에서 간단하게 확인할 수 있습니다.
 
@@ -103,9 +101,7 @@ After you create the control in the component class, you must associate it with 
 -->
 컴포넌트 클래스에 폼 컨트롤을 추가하고 나면, 컴포넌트 템플릿에도 폼 컨트롤을 연결해야 이 폼 컨트롤을 사용할 수 있습니다. 그래서 `FormControlDirective`를 의미하는 `formControl`을 입력 필드에 지정하면 템플릿과 컴포넌트의 폼 컨트롤을 연결할 수 있습니다. 이 디렉티브는 `ReactiveFormsModule`에서 제공하는 디렉티브입니다.
 
-<code-example path="reactive-forms/src/app/name-editor/name-editor.component.html" region="control-binding" linenums="false" header="src/app/name-editor/name-editor.component.html">
-
-</code-example>
+<code-example path="reactive-forms/src/app/name-editor/name-editor.component.html" region="control-binding" header="src/app/name-editor/name-editor.component.html"></code-example>
 
 <div class="alert is-helpful">
 
@@ -127,17 +123,15 @@ Using the template binding syntax, the form control is now registered to the `na
 #### 화면에 컴포넌트 표시하기
 
 <!--
-The form control assigned to `name` is displayed when the component is added to a template. 
+The form control assigned to `name` is displayed when the component is added to a template.
 -->
 이제 `NameEditorComponent`를 템플릿에 추가하면 다음과 같은 입력 필드가 화면에 표시됩니다.
 
-<code-example path="reactive-forms/src/app/app.component.1.html" region="app-name-editor" linenums="false" header="src/app/app.component.html (name editor)">
+<code-example path="reactive-forms/src/app/app.component.1.html" region="app-name-editor" header="src/app/app.component.html (name editor)"></code-example>
 
-</code-example>
-
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/reactive-forms/name-editor-1.png" alt="Name Editor">
-</figure>
+</div>
 
 <!--
 ## Managing control values
@@ -145,7 +139,7 @@ The form control assigned to `name` is displayed when the component is added to 
 ## 폼 컨트롤 다루기
 
 <!--
-Reactive forms give you access to the form control state and value at a point in time. You can manipulate 
+Reactive forms give you access to the form control state and value at a point in time. You can manipulate
 the current state and value through the component class or the component template. The following examples display the value of the form control instance and change it.
 -->
 반응형 폼을 사용하면 현재 폼 컨트롤의 상태와 값을 간단하게 확인할 수 있습니다. 폼 컨트롤의 상태와 현재 값은 컴포넌트 클래스나 컴포넌트 템플릿에서 자유롭게 활용할 수 있으며, 이번에는 `FormControl`의 현재 값을 확인하고 변경하는 예제를 살펴봅시다.
@@ -159,13 +153,13 @@ the current state and value through the component class or the component templat
 ### 폼 컨트롤의 값 표시하기
 
 <!--
-You can display the value in these ways: 
+You can display the value in these ways:
 -->
 폼 컨트롤의 값을 표시하려면 다음과 같은 방법을 사용할 수 있습니다:
 
 <!--
-* Through the `valueChanges` observable where you can listen for changes in the form's value in the template using `AsyncPipe` or in the component class using the `subscribe()` method. 
-* With the `value` property. which gives you a snapshot of the current value. 
+* Through the `valueChanges` observable where you can listen for changes in the form's value in the template using `AsyncPipe` or in the component class using the `subscribe()` method.
+* With the `value` property, which gives you a snapshot of the current value.
 -->
 * 폼 값이 변경된 것을 알려주는 `valueChanges` 옵저버블을 `AsyncPipe` 파이프와 함께 사용할 수 있습니다. 이 옵저버블은 컴포넌트 클래스에서 `subscribe()` 메소드로 구독해도 됩니다.
 * 폼 컨트롤의 현재 값을 표현하는 `value` 프로퍼티를 사용해도 됩니다.
@@ -175,9 +169,7 @@ The following example shows you how to display the current value using interpola
 -->
 다음 예제는 폼 컨트롤의 값을 문자열 삽입으로 템플릿에 표시하는 예제 코드입니다.
 
-<code-example path="reactive-forms/src/app/name-editor/name-editor.component.html" region="display-value" linenums="false" header="src/app/name-editor/name-editor.component.html (control value)">
-
-</code-example>
+<code-example path="reactive-forms/src/app/name-editor/name-editor.component.html" region="display-value" header="src/app/name-editor/name-editor.component.html (control value)"></code-example>
 
 <!--
 The displayed value changes as you update the form control element.
@@ -201,7 +193,7 @@ Read about other `FormControl` properties and methods in the [Reactive forms API
 ### 폼 컨트롤 값 변경하기
 
 <!--
-Reactive forms have methods to change a control's value programmatically, which gives you the flexibility to update the value without user interaction. A form control instance provides a `setValue()` method that updates the value of the form control and validates the structure of the value provided against the control's structure. For example, when retrieving form data from a backend API or service, use the `setValue()` method to update the control to its new value, replacing the old value entirely. 
+Reactive forms have methods to change a control's value programmatically, which gives you the flexibility to update the value without user interaction. A form control instance provides a `setValue()` method that updates the value of the form control and validates the structure of the value provided against the control's structure. For example, when retrieving form data from a backend API or service, use the `setValue()` method to update the control to its new value, replacing the old value entirely.
 -->
 반응형 폼에서 제공하는 메소드를 사용하면 사용자의 동작 없이도 폼 컨트롤의 값을 컴포넌트 코드에서 변경할 수 있습니다. 이 중 `setValue()` 메소드를 사용하면 폼 컨트롤의 값을 변경할 수 있으며, 이 때 폼 컨트롤의 구조에 맞지 않는 데이터가 전달되는 유효성 검사도 수행합니다. 그래서 백엔드 API나 서비스에서 데이터를 가져온 후에 `setValue()` 메소드를 사용하면 현재 폼 컨트롤의 값 전체를 한 번에 변경할 수 있습니다.
 
@@ -218,25 +210,23 @@ The following example adds a method to the component class to update the value o
 </code-example>
 
 <!--
-Update the template with a button to simulate a name update. When you click the **Update Name** button, the value entered in the form control element is reflected as its current value. 
+Update the template with a button to simulate a name update. When you click the **Update Name** button, the value entered in the form control element is reflected as its current value.
 -->
 이 메소드를 실행할 수 있도록 템플릿을 수정합니다. 다음과 같이 구현한 후에 **Update Name** 버튼을 클릭하면, 폼 컨트롤 엘리먼트에 입력된 값에 관계없이 지정된 값으로 변경됩니다.
 
 <!--
-<code-example path="reactive-forms/src/app/name-editor/name-editor.component.html" region="update-value" linenums="false" header="src/app/name-editor/name-editor.component.html (update value)">
+<code-example path="reactive-forms/src/app/name-editor/name-editor.component.html" region="update-value" header="src/app/name-editor/name-editor.component.html (update value)"></code-example>
 -->
-<code-example path="reactive-forms/src/app/name-editor/name-editor.component.html" region="update-value" linenums="false" header="src/app/name-editor/name-editor.component.html (값 변경하기)">
-
-</code-example>
+<code-example path="reactive-forms/src/app/name-editor/name-editor.component.html" region="update-value" header="src/app/name-editor/name-editor.component.html (값 변경하기)"></code-example>
 
 <!--
 The form model is the source of truth for the control, so when you click the button, the value of the input is changed within the component class, overriding its current value.
 -->
 그리고 이 때 폼 컨트롤의 값은 폼 모델과 연결되어 있기 때문에, 버튼을 눌러서 폼 컨트롤의 값이 변경되면 컴포넌트 클래스에 있는 폼 모델 값도 함께 변경됩니다.
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/reactive-forms/name-editor-2.png" alt="Name Editor Update">
-</figure>
+</div>
 
 <div class="alert is-helpful">
 
@@ -309,9 +299,7 @@ A form group tracks the status and changes for each of its controls, so if one o
 -->
 폼 그룹도 각각의 폼 컨트롤의 상태와 변화를 추적합니다. 그래서 폼 컨트롤 중 하나의 상태나 값이 변경되면 이 폼 컨트롤을 감싸고 있는 부모 폼 컨트롤도 새로운 상태로 변경되고 값도 변경됩니다. 이 폼 그룹이 관리하는 모델은 각각의 폼 컨트롤로 구성됩니다. 그래서 이 모델을 템플릿에 연결하면 폼 컨트롤을 처리했던 것과 비슷하게 폼 그룹을 처리할 수 있습니다.
 
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.html" region="formgroup" linenums="false" header="src/app/profile-editor/profile-editor.component.html (template form group)">
-
-</code-example>
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.html" region="formgroup" header="src/app/profile-editor/profile-editor.component.html (template form group)"></code-example>
 
 <!--
 Note that just as a form group contains a group of controls, the *profile form* `FormGroup` is bound to the `form` element with the `FormGroup` directive, creating a communication layer between the model and the form containing the inputs. The `formControlName` input provided by the `FormControlName` directive binds each individual input to the form control defined in `FormGroup`. The form controls communicate with their respective elements. They also communicate changes to the form group instance, which provides the source of truth for the model value.
@@ -324,7 +312,7 @@ Note that just as a form group contains a group of controls, the *profile form* 
 ### 데이터 저장하기
 
 <!--
-The `ProfileEditor` component accepts input from the user, but in a real scenario you want to capture the form value and make available for further processing outside the component. The `FormGroup` directive listens for the `submit` event emitted by the `form` element and emits an `ngSubmit` event that you can bind to a callback function. 
+The `ProfileEditor` component accepts input from the user, but in a real scenario you want to capture the form value and make available for further processing outside the component. The `FormGroup` directive listens for the `submit` event emitted by the `form` element and emits an `ngSubmit` event that you can bind to a callback function.
 -->
 이 예제에서는 `ProfileEditor` 컴포넌트가 사용자의 입력을 받기만 하지만, 실제 애플리케이션이라면 폼에 입력된 값을 컴포넌트 외부로 전달해서 어떤 동작을 수행해야 할 것입니다.  `FormGroup` 디렉티브는 `form` 엘리먼트에서 발생하는 `submit` 이벤트를 감지하며, `submit` 이벤트가 발생했을 때 폼에 바인딩 된 콜백 함수를 실행하기 위해 `ngSubmit` 이벤트를 새로 발생시킵니다.
 
@@ -333,9 +321,7 @@ Add an `ngSubmit` event listener to the `form` tag with the `onSubmit()` callbac
 -->
 다음과 같이 `form` 태그에 `ngSubmit` 이벤트를 바인딩해서 `onSubmit()` 콜백 메소드가 실행되게 작성해 봅시다.
 
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="ng-submit" linenums="false" header="src/app/profile-editor/profile-editor.component.html (submit event)">
-
-</code-example>
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="ng-submit" header="src/app/profile-editor/profile-editor.component.html (submit event)"></code-example>
 
 <!--
 The `onSubmit()` method in the `ProfileEditor` component captures the current value of `profileForm`. Use `EventEmitter` to keep the form encapsulated and to provide the form value outside the component. The following example uses `console.warn` to log a message to the browser console.
@@ -350,7 +336,7 @@ The `onSubmit()` method in the `ProfileEditor` component captures the current va
 </code-example>
 
 <!--
-The `submit` event is emitted by the `form` tag using the native DOM event. You trigger the event by clicking a button with `submit` type. This allows the user to press the **Enter** key to submit the completed form. 
+The `submit` event is emitted by the `form` tag using the native DOM event. You trigger the event by clicking a button with `submit` type. This allows the user to press the **Enter** key to submit the completed form.
 -->
 `submit` 이벤트는 `form` 태그에서 발생하는 네이티브 DOM 이벤트입니다. 이 이벤트는 `submit` 타입의 버튼을 클릭했을 때 발생하며, 사용자가 폼 내용을 입력하고 **엔터** 키를 눌렀을 때도 발생합니다.
 
@@ -359,9 +345,7 @@ Use a `button` element to add a button to the bottom of the form to trigger the 
 -->
 이 이벤트를 발생시키기 위해 폼 아래에 `button` 엘리먼트를 다음과 같이 추가합니다.
 
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="submit-button" linenums="false" header="src/app/profile-editor/profile-editor.component.html (submit button)">
-
-</code-example>
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="submit-button" header="src/app/profile-editor/profile-editor.component.html (submit button)"></code-example>
 
 <div class="alert is-helpful">
 
@@ -382,18 +366,16 @@ To display the `ProfileEditor` component that contains the form, add it to a com
 -->
 `ProileEditor` 컴포넌트를 화면에 표시하기 위해 `AppComponent` 템플릿에 다음과 같이 컴포넌트를 추가합니다.
 
-<code-example path="reactive-forms/src/app/app.component.1.html" region="app-profile-editor" linenums="false" header="src/app/app.component.html (profile editor)">
-
-</code-example>
+<code-example path="reactive-forms/src/app/app.component.1.html" region="app-profile-editor" header="src/app/app.component.html (profile editor)"></code-example>
 
 <!--
 `ProfileEditor` allows you to manage the form control instances for the `firstName` and `lastName` controls within the form group instance.
 -->
 그러면 `ProfileEditor` 컴포넌트가 화면에 표시되며, 이 컴포넌트에 정의된 폼 그룹 안에 있는 `firstName`과 `lastName` 폼 컨트롤도 화면에 함께 표시됩니다.
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/reactive-forms/profile-editor-1.png" alt="Profile Editor">
-</figure>
+</div>
 
 <!--
 ## Creating nested form groups
@@ -415,9 +397,7 @@ An address is a good example of information that can be grouped together. Form g
 -->
 주소를 입력받는 폼을 생각해 봅시다. 폼 그룹은 폼 컨트롤이나 폼 그룹 인스턴스를 자식으로 가질 수 있습니다. 그래서 복잡한 폼 필드를 연관된 것끼리 묶어서 `FormGroup`으로 처리할 수 있으며, 이 내용을 적용하면 `profileForm` 안에 `address` `FormGroup`을 생성할 수 있습니다.
 
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="nested-formgroup" linenums="false" header="src/app/profile-editor/profile-editor.component.ts (nested form group)">
-
-</code-example>
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="nested-formgroup" header="src/app/profile-editor/profile-editor.component.ts (nested form group)"></code-example>
 
 <!--
 In this example, `address group` combines the current `firstName` and `lastName` controls with the new `street`, `city`, `state`, and `zip` controls. Even though the `address` element in the form group is a child of the overall `profileForm` element in the form group, the same rules apply with value and status changes. Changes in status and value from the nested form group propagate to the parent form group, maintaining consistency with the overall model.
@@ -439,18 +419,16 @@ Add the `address` form group containing the `street`, `city`, `state`, and `zip`
 -->
 `ProfileEditor` 템플릿에 다음과 같이 `address` 폼 그룹을 추가합니다.
 
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.html" region="formgroupname" linenums="false" header="src/app/profile-editor/profile-editor.component.html (template nested form group)">
-
-</code-example>
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.html" region="formgroupname" header="src/app/profile-editor/profile-editor.component.html (template nested form group)"></code-example>
 
 <!--
 The `ProfileEditor` form is displayed as one group, but the model is broken down further to represent the logical grouping areas.
 -->
 그러면 `ProfileEditor` 폼에서 `address` 부분이 다시 한 번 그룹으로 묶여 다음과 같이 화면에 표시됩니다.
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/reactive-forms/profile-editor-2.png" alt="Profile Editor Update">
-</figure>
+</div>
 
 <div class="alert is-helpful">
 
@@ -477,18 +455,16 @@ When updating the value for a form group instance that contains multiple control
 ### 모델 값 일부만 갱신하기
 
 <!--
-There are two ways to update the model value: 
+There are two ways to update the model value:
+
+* Use the `setValue()` method to set a new value for an individual control. The `setValue()` method strictly adheres to the structure of the form group and replaces the entire value for the control.
+
+* Use the `patchValue()` method to replace any properties defined in the object that have changed in the form model.
 -->
 모델의 값을 변경하는 방법은 두 가지가 있습니다:
 
-<!--
-* Use the `setValue()` method to set a new value for an individual control. The `setValue()` method strictly adheres to the structure of the form group and replaces the entire value for the control. 
--->
 * 폼 컨트롤에 `setValue()` 메소드를 사용할 수 있습니다. `setValue()` 메소드는 폼 그룹의 구조와 정확하게 일치하는 객체를 받았을 때만 폼 그룹 전체값을 한 번에 갱신합니다.
 
-<!--
-* Use the `patchValue()` method to replace any properties defined in the object that have changed in the form model. 
--->
 * 폼 모델의 특정 부분만 변경하려면 `patchValue()` 메소드를 사용할 수 있습니다.
 
 <!--
@@ -513,9 +489,7 @@ Simulate an update by adding a button to the template to update the user profile
 -->
 그리고 이 메소드를 실행하는 버튼을 템플릿에 다음과 같이 추가합니다.
 
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.html" region="patch-value" linenums="false" header="src/app/profile-editor/profile-editor.component.html (update value)">
-
-</code-example>
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.html" region="patch-value" header="src/app/profile-editor/profile-editor.component.html (update value)"></code-example>
 
 <!--
 When a user clicks the button, the `profileForm` model is updated with new values for `firstName` and `street`. Notice that `street` is provided in an object inside the `address` property. This is necessary because the `patchValue()` method applies the update against the model structure. `PatchValue()` only updates properties that the form model defines.
@@ -528,7 +502,7 @@ When a user clicks the button, the `profileForm` model is updated with new value
 ## FormBuilder로 폼 컨트롤 생성하기
 
 <!--
-Creating form control instances manually can become repetitive when dealing with multiple forms. The `FormBuilder` service provides convenient methods for generating controls. 
+Creating form control instances manually can become repetitive when dealing with multiple forms. The `FormBuilder` service provides convenient methods for generating controls.
 -->
 폼 컨트롤을 매번 직접 생성해야 하는데, 이런 폼이 여러개라면 귀찮은 반복작업이 될 것입니다. 이 때 `FormBuilder` 서비스를 사용하면 좀 더 편하게 폼을 구성할 수 있습니다.
 
@@ -571,7 +545,7 @@ The `FormBuilder` service is an injectable provider that is provided with the re
 ### 3단계: 폼 컨트롤 생성하기
 
 <!--
-The `FormBuilder` service has three methods: `control()`, `group()`, and `array()`. These are factory methods for generating instances in your component classes including form controls, form groups, and form arrays. 
+The `FormBuilder` service has three methods: `control()`, `group()`, and `array()`. These are factory methods for generating instances in your component classes including form controls, form groups, and form arrays.
 -->
 `FormBuilder` 서비스는 `control()`, `group()`, `array()` 메소드를 제공하는데, 이 메소드는 각각 폼 컨트롤, 폼 그룹, 폼 배열 인스턴스를 생성해서 반환하는 팩토리 메소드입니다.
 
@@ -607,7 +581,7 @@ Compare using the form builder to creating the instances manually.
 
   <!--
   <code-pane path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="formgroup-compare" header="src/app/profile-editor/profile-editor.component.ts (instances)">
-  
+
   </code-pane>
 
   <code-pane path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" region="formgroup-compare" header="src/app/profile-editor/profile-editor.component.ts (form builder)">
@@ -685,11 +659,9 @@ HTML5 has a set of built-in attributes that you can use for native validation, i
 HTML5에서도 `required`나 `minlength`, `maxlength`와 같은 어트리뷰트를 지정해서 네이티브 유효성 검사 로직을 활용할 수 있습니다. 이 기능을 활성화하려면 다음과 같이 `firstName` `input` 엘리먼트에 `required` 어트리뷰트를 지정하기만 하면 됩니다.
 
 <!--
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="required-attribute" linenums="false" header="src/app/profile-editor/profile-editor.component.html (required attribute)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="required-attribute" header="src/app/profile-editor/profile-editor.component.html (required attribute)"></code-example>
 -->
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="required-attribute" linenums="false" header="src/app/profile-editor/profile-editor.component.html (required 어트리뷰트)">
-
-</code-example>
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="required-attribute" header="src/app/profile-editor/profile-editor.component.html (required 어트리뷰트)"></code-example>
 
 <div class="alert is-important">
 
@@ -716,15 +688,13 @@ Display the current status of `profileForm` using interpolation.
 `profileForm`의 상태를 표시하려면 다음과 같이 템플릿을 작성합니다.
 
 <!--
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="display-status" linenums="false" header="src/app/profile-editor/profile-editor.component.html (display status)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="display-status" header="src/app/profile-editor/profile-editor.component.html (display status)"></code-example>
 -->
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="display-status" linenums="false" header="src/app/profile-editor/profile-editor.component.html (폼 상태 표시)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="display-status" header="src/app/profile-editor/profile-editor.component.html (폼 상태 표시)"></code-example>
 
-</code-example>
-
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/reactive-forms/profile-editor-3.png" alt="Profile Editor Validation">
-</figure>
+</div>
 
 <!--
 The **Submit** button is disabled because `profileForm` is invalid due to the required `firstName` form control. After you fill out the `firstName` input, the form becomes valid and the **Submit** button is enabled.
@@ -790,13 +760,12 @@ The aliases control in the form group instance is now populated with a single co
 ### 3단계: FormArray에 접근하기
 
 <!--
-A getter provides easy access to the aliases in the form array instance compared to repeating the `profileForm.get()` method to get each instance. The form array instance represents an undefined number of controls in an array. It's convenient to access a control through a getter, and this approach is easy to repeat for additional controls. 
+A getter provides easy access to the aliases in the form array instance compared to repeating the `profileForm.get()` method to get each instance. The form array instance represents an undefined number of controls in an array. It's convenient to access a control through a getter, and this approach is easy to repeat for additional controls.
+
+Use the getter syntax to create an `aliases` class property to retrieve the alias's form array control from the parent form group.
 -->
 폼 배열을 사용한다면 폼 배열 안의 각 인스턴스를 `profileForm.get()` 메소드로 참조하는 것보다 게터(getter) 함수를 사용하는 것이 편합니다. 게터 함수를 사용하면  폼 배열 안에 있는 폼 컨트롤의 개수에 관계없이 간단하게 폼 컨트롤의 값을 참조할 수 있고, 반복문을 작성할 때도 편합니다.
 
-<!--
-Use the getter syntax to create an `aliases` class property to retrieve the alias's form array  control from the parent form group.
--->
 게터 함수는 다음과 같이 정의합니다.
 
 <!--
@@ -837,7 +806,7 @@ In the template, each control is displayed as a separate input field.
 ### 4단계: 템플릿에 폼 배열 표시하기
 
 <!--
-To attach the aliases from your form model, you must add it to the template. Similar to the `formGroupName` input provided by `FormGroupNameDirective`, `formArrayName` binds communication from the form array instance to the template with `FormArrayNameDirective`. 
+To attach the aliases from your form model, you must add it to the template. Similar to the `formGroupName` input provided by `FormGroupNameDirective`, `formArrayName` binds communication from the form array instance to the template with `FormArrayNameDirective`.
 -->
 사용자가 폼 모델에 aliases 값을 입력하려면 이 폼 컨트롤을 템플릿에 추가해야 합니다. 이전 예제에서 `FormGroupNameDirective`를 `formGroupName` 어트리뷰트로 바인딩했던 것과 비슷하게, `FormArrayNameDirective`가 제공하는 `formArrayName` 어트리뷰트를 사용해서 `FormArray`를 템플릿에 바인딩 하면 됩니다.
 
@@ -847,20 +816,18 @@ Add the template HTML below after the `<div>` closing the `formGroupName` elemen
 `formGroupName` `<div>` 엘리먼트 뒤에 다음과 같은 템플릿을 추가합니다.
 
 <!--
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="formarrayname" linenums="false" header="src/app/profile-editor/profile-editor.component.html (aliases form array template)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="formarrayname" header="src/app/profile-editor/profile-editor.component.html (aliases form array template)"></code-example>
 -->
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="formarrayname" linenums="false" header="src/app/profile-editor/profile-editor.component.html (aliases 폼 배열의 템플릿)">
-
-</code-example>
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="formarrayname" header="src/app/profile-editor/profile-editor.component.html (aliases 폼 배열의 템플릿)"></code-example>
 
 <!--
-The `*ngFor` directive iterates over each form control instance provided by the aliases form array instance. Because form array elements are unnamed, you assign the index to the `i` variable and pass it to each control to bind it to the `formControlName` input. 
+The `*ngFor` directive iterates over each form control instance provided by the aliases form array instance. Because form array elements are unnamed, you assign the index to the `i` variable and pass it to each control to bind it to the `formControlName` input.
 -->
 `*ngFor` 디렉티브는 폼 배열 인스턴스의 각 폼 컨트롤 인스턴스를 순회합니다. 폼 배열 안에 있는 항목은 이름이 없기 때문에 인덱스를 변수 `i`에 활용해서 `formControlName`으로 바인딩했습니다.
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/reactive-forms/profile-editor-4.png" alt="Profile Editor Aliases">
-</figure>
+</div>
 
 <!--
 Each time a new alias instance is added, the new form array instance is provided its control based on the index. This allows you to track each individual control when calculating the status and value of the root control.
@@ -1013,7 +980,7 @@ Listed below are the base classes and services used to create and manage form co
 
     </td>
 
-  </tr>  
+  </tr>
 
 </table>
 

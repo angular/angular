@@ -1,5 +1,5 @@
 <!--
-# Dynamic Component Loader
+# Dynamic component loader
 -->
 # 동적 컴포넌트 로더
 
@@ -72,9 +72,7 @@ mark valid insertion points in the template.
 -->
 광고가 표시될 위치를 지정하도록 `AdDirective` 디렉티브를 다음과 같이 정의합니다.
 
-<code-example path="dynamic-component-loader/src/app/ad.directive.ts" header="src/app/ad.directive.ts" linenums="false">
-
-</code-example>
+<code-example path="dynamic-component-loader/src/app/ad.directive.ts" header="src/app/ad.directive.ts"></code-example>
 
 
 <!--
@@ -119,9 +117,7 @@ where to dynamically load components.
 `<ng-template>`에 `AdDirective`를 적용할 때 대괄호(`[`, `]`)를 사용하지 않은 것에 주의하세요.
 이 문법은 어트리뷰트 셀렉터를 사용하는 것이 아니라 컴포넌트를 동적으로 로드하는 문법입니다.
 
-<code-example path="dynamic-component-loader/src/app/ad-banner.component.ts" region="ad-host" header="src/app/ad-banner.component.ts (template)" linenums="false">
-
-</code-example>
+<code-example path="dynamic-component-loader/src/app/ad-banner.component.ts" region="ad-host" header="src/app/ad-banner.component.ts (template)"></code-example>
 
 
 <!--
@@ -166,9 +162,7 @@ and loads a new component every 3 seconds by calling `loadComponent()`.
 -->
 `AdBannerComponent`는 `getAds()` 메소드를 사용해서 `AdItems` 배열을 각각 순회하는데, 3초마다 `loadComponent()` 메소드를 실행해서 컴포넌트를 하나씩 뷰에 표시합니다.
 
-<code-example path="dynamic-component-loader/src/app/ad-banner.component.ts" region="class" header="src/app/ad-banner.component.ts (excerpt)" linenums="false">
-
-</code-example>
+<code-example path="dynamic-component-loader/src/app/ad-banner.component.ts" region="class" header="src/app/ad-banner.component.ts (excerpt)"></code-example>
 
 
 <!--
@@ -263,9 +257,7 @@ add dynamically loaded components to the `NgModule`'s `entryComponents` array:
 -->
 컴파일러가 생성하는 것을 `ComponentFactory` 타입으로 보정하기 위해 `NgModule` 메타데이터의 `entryComponents` 프로퍼티를 다음과 같이 지정합니다:
 
-<code-example path="dynamic-component-loader/src/app/app.module.ts" region="entry-components" header="src/app/app.module.ts (entry components)" linenums="false">
-
-</code-example>
+<code-example path="dynamic-component-loader/src/app/app.module.ts" region="entry-components" header="src/app/app.module.ts (entry components)"></code-example>
 
 
 <!--
@@ -321,10 +313,9 @@ Here are two sample components and the `AdComponent` interface for reference:
 -->
 우리가 구현한 광고 배너의 최종 결과물은 다음과 같습니다:
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/dynamic-component-loader/ads-example.gif" alt="Ads">
-</figure>
-
+</div>
 
 <!--
 See the <live-example name="dynamic-component-loader"></live-example>.

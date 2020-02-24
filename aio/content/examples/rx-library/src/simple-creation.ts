@@ -7,9 +7,9 @@ import { from } from 'rxjs';
 const data = from(fetch('/api/endpoint'));
 // 구독을 시작하고 Promise가 반환하는 객체를 처리합니다.
 data.subscribe({
- next(response) { console.log(response); },
- error(err) { console.error('Error: ' + err); },
- complete() { console.log('Completed'); }
+  next(response) { console.log(response); },
+  error(err) { console.error('Error: ' + err); },
+  complete() { console.log('Completed'); }
 });
 
 // #enddocregion promise

@@ -1,5 +1,5 @@
 <!--
-# Dependency Injection in Action
+# Dependency injection in action
 -->
 # 실전 의존성 주입
 
@@ -44,9 +44,7 @@ The following example shows that `AppComponent` declares its dependence on `Logg
 
 아래 코드는 `AppComponent`의 생성자가 `LoggerService`와 `UserContext`를 의존성으로 주입받도록 요청하는 예제 코드입니다.
 
-<code-example path="dependency-injection-in-action/src/app/app.component.ts" region="ctor" header="src/app/app.component.ts" linenums="false">
-
-</code-example>
+<code-example path="dependency-injection-in-action/src/app/app.component.ts" region="ctor" header="src/app/app.component.ts"></code-example>
 
 
 <!--
@@ -55,9 +53,7 @@ The following example shows that `AppComponent` declares its dependence on `Logg
 -->
 그런데 `UserContext`에서도 `LoggerService`와 `UserService`를 의존성으로 주입받도록 요청합니다. 이 서비스는 특정 사용자에 대한 정보를 가져올 때 사용합니다.
 
-<code-example path="dependency-injection-in-action/src/app/user-context.service.ts" region="injectables" header="user-context.service.ts (injection)" linenums="false">
-
-</code-example>
+<code-example path="dependency-injection-in-action/src/app/user-context.service.ts" region="injectables" header="user-context.service.ts (injection)"></code-example>
 
 <!--
 When Angular creates `AppComponent`, the DI framework creates an instance of `LoggerService` and starts to create `UserContextService`.
@@ -77,9 +73,9 @@ When all dependencies are in place, `AppComponent` displays the user information
 
 그리고 모든 의존성 관계가 정리되면 `AppComponent`가 화면에 표시됩니다.
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/dependency-injection-in-action/logged-in-user.png" alt="Logged In User">
-</figure>
+</div>
 
 {@a service-scope}
 
@@ -222,9 +218,9 @@ and confirm that the three `HeroBioComponent` instances have their own cached he
 
 이제 `HeroBioComponent`의 인스턴스 3개는 모두 독립된 히어로의 정보를 캐싱할 수 있습니다. 이 예제는 <live-example name="dependency-injection-in-action">라이브 예제 링크</live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/dependency-injection-in-action/hero-bios.png" alt="Bios">
-</figure>
+</div>
 
 {@a qualify-dependency-lookup}
 
@@ -314,9 +310,7 @@ Focus on the template:
 -->
 템플릿을 자세히 봅시다:
 
-<code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="template" header="dependency-injection-in-action/src/app/hero-bios.component.ts" linenums="false">
-
-</code-example>
+<code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="template" header="dependency-injection-in-action/src/app/hero-bios.component.ts"></code-example>
 
 <!--
 Now there's a new `<hero-contact>` element between the `<hero-bio>` tags.
@@ -326,18 +320,16 @@ placing it in the `<ng-content>` slot of the `HeroBioComponent` template.
 템플릿에는 `<hero-bio>` 태그 안에 `<hero-contact>` 엘리먼트가 선언되어 있습니다.
 그러면 `HeroBioComponent`의 뷰에 있는 `<ng-content>` 안에 `HeroContactComponent`가 *프로젝트(project, transclude)* 됩니다.
 
-<code-example path="dependency-injection-in-action/src/app/hero-bio.component.ts" region="template" header="src/app/hero-bio.component.ts (template)" linenums="false">
-
-</code-example>
+<code-example path="dependency-injection-in-action/src/app/hero-bio.component.ts" region="template" header="src/app/hero-bio.component.ts (template)"></code-example>
 
 <!--
 The result is shown below, with the hero's telephone number from `HeroContactComponent` projected above the hero description.
 -->
 이 코드를 실행하면 `HeroContactComponent`에 정의되어 히어로의 전화번호를 입력하는 엘리먼트가 히어로의 정보 위에 다음과 같이 표시됩니다.
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/dependency-injection-in-action/hero-bio-and-content.png" alt="bio and contact">
-</figure>
+</div>
 
 <!--
 Here's `HeroContactComponent`, which demonstrates the qualifying decorators.
@@ -353,9 +345,7 @@ Focus on the constructor parameters.
 -->
 생성자의 인자 선언을 자세히 봅시다.
 
-<code-example path="dependency-injection-in-action/src/app/hero-contact.component.ts" region="ctor-params" header="src/app/hero-contact.component.ts" linenums="false">
-
-</code-example>
+<code-example path="dependency-injection-in-action/src/app/hero-contact.component.ts" region="ctor-params" header="src/app/hero-contact.component.ts"></code-example>
 
 <!--
 The `@Host()` function decorating the  `heroCache` constructor property ensures that
@@ -385,9 +375,9 @@ Here's `HeroBiosAndContactsComponent` in action.
 -->
 `HeroBiosAndContactsComponent`는 이제 아래 그림과 같이 동작합니다.
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/dependency-injection-in-action/hero-bios-and-contacts.png" alt="Bios with contact into">
-</figure>
+</div>
 
 
 <!--
@@ -399,9 +389,9 @@ with the "!!!" marker to indicate that the logger was found.
 만약 `@Host()` 데코레이터를 제거하면 의존성 객체를 찾는 과정이 `AppComponent` 계층까지 버블링되기 때문에 이 애플리케이션은 에러없이 동작합니다.
 로그도 정상적으로 동작할 것이며, `logger` 인스턴스를 찾았다는 것은 화면에 "!!!"가 표시되는 것으로 확인할 수 있습니다.
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/dependency-injection-in-action/hero-bio-contact-no-host.png" alt="Without @Host">
-</figure>
+</div>
 
 <!--
 If you restore the `@Host()` decorator and comment out `@Optional`,
@@ -426,7 +416,8 @@ Using a custom provider allows you to provide a concrete implementation for impl
 </code-example>
 
 <!--
-The `factory` function returns the `localStorage` property that is attached to the browser window object. The `Inject` decorator is a constructor parameter used to specify a custom provider of a dependency. This custom provider can now be overridden during testing with a mock API of `localStorage` instead of interactive with real browser APIs.
+The `factory` function returns the `localStorage` property that is attached to the browser window object. The `Inject` decorator is a constructor parameter used to specify a custom provider of a dependency. This custom provider can now be overridden during testing with a mock API of `localStorage` instead of interacting with real browser APIs.
+
 -->
 `factory` 프로퍼티에 지정된 함수는 브라우저의 `window` 객체에서 `localStorage` 프로퍼티를 반환합니다. 그리고 이렇게 만든 커스텀 프로바이더를 생성자의 인자에 주입하기 위해 `@Inject` 데코레이터를 사용했습니다. 이제 커스텀 프로바이더는 기본 환경에서도 동작하지만, 테스트 환경에서 목 API로 `localStorage`를 대체할 때도 사용할 수 있습니다.
 
@@ -448,7 +439,7 @@ Providers can also be scoped by injector through constructor parameter decorator
 </code-example>
 
 <!--
-Using the `@Self` decorator, the injector only looks at the component's injector for its providers. The `@SkipSelf` decorator allows you to skip the local injector and look up in the hierarchy to find a provider that satisfies this dependency. The `sessionStorageService` instance interacts with the `BrowserStorageService` using the `sessionStorage` browser API, while the `localStorageService` skips the local injector and uses the root `BrowserStorageService` that uses the `localStorage` browswer API.
+Using the `@Self` decorator, the injector only looks at the component's injector for its providers. The `@SkipSelf` decorator allows you to skip the local injector and look up in the hierarchy to find a provider that satisfies this dependency. The `sessionStorageService` instance interacts with the `BrowserStorageService` using the `sessionStorage` browser API, while the `localStorageService` skips the local injector and uses the root `BrowserStorageService` that uses the `localStorage` browser API.
 -->
 `@Self` 데코레이터가 사용된 의존성 객체는 해당 컴포넌트의 인젝터에 등록된 프로바이더만 참조합니다. 그리고 `@SkipSelf` 데코레이터가 사용된 의존성 객체는 해당 컴포넌트의 인젝터를 건너뛰고 그 위쪽 인젝터부터 의존성 객체를 찾기 시작합니다. 결국 `sessionStorageService`에 할당되는 것은 이 컴포넌트에 등록된 프로바이더에 따라 브라우저 내장 `sessionStorage`가 될 것이며, `localStorageService`는 이 컴포넌트를 건너뛰고 탐색하도록 지정했기 때문에 `BrowserStorageService`에서 제공하는 `localStorage`가 할당될 것입니다.
 
@@ -494,18 +485,16 @@ first without a value (yielding the default color) and then with an assigned col
 
 이 디렉티브는 DOM 엘리먼트에 적용하면서 입력값을 받을 수 있는데, 색상을 지정하지 않으면 기본 색상이 배경색으로 적용되고 색상을 지정하면 지정된 색상이 배경색이 됩니다.
 
-<code-example path="dependency-injection-in-action/src/app/app.component.html" region="highlight" header="src/app/app.component.html (highlight)" linenums="false">
-
-</code-example>
+<code-example path="dependency-injection-in-action/src/app/app.component.html" region="highlight" header="src/app/app.component.html (highlight)"></code-example>
 
 <!--
 The following image shows the effect of mousing over the `<hero-bios-and-contacts>` tag.
 -->
 이제 `<hero-bios-and-contacts>`에 마우스를 올려보면 아래 그림과 같이 표시됩니다.
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/dependency-injection-in-action/highlight.png" alt="Highlighted bios">
-</figure>
+</div>
 
 {@a providers}
 
@@ -534,11 +523,9 @@ The following is a typical example.
 예제를 보면서 이 내용을 확인해 봅시다.
 
 <!--
-<code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="ctor" header="src/app/hero-bios.component.ts (component constructor injection)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="ctor" header="src/app/hero-bios.component.ts (component constructor injection)"></code-example>
 -->
-<code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="ctor" header="src/app/hero-bios.component.ts (컴포넌트 생성자로 주입되는 의존성 객체)" linenums="false">
-
-</code-example>
+<code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="ctor" header="src/app/hero-bios.component.ts (컴포넌트 생성자로 주입되는 의존성 객체)"></code-example>
 
 <!--
 Angular asks the injector for the service associated with `LoggerService`
@@ -592,9 +579,9 @@ It's visually simple: a few properties and the logs produced by a logger.
 아래 `HeroOfTheMonthComponent` 예제를 보면서 기본 방식 외에 다른 방식이 어떤 경우에 사용되는지 알아봅시다.
 동작하는 모습은 간단합니다. 이 예제는 `logger`가 처리하는 프로퍼티와 로그를 아래 그림과 같이 화면에 단순하게 표시하는 예제입니다.
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/dependency-injection-in-action/hero-of-month.png" alt="Hero of the month">
-</figure>
+</div>
 
 <!--
 The code behind it customizes how and where the DI framework provides dependencies.
@@ -633,9 +620,7 @@ The `HeroOfTheMonthComponent` example has two value providers.
 
 `HeroOfTheMonthComponent` 예제에서는 이 방식의 프로바이더가 두 번 사용되었습니다.
 
-<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-value" header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" linenums="false">
-
-</code-example>
+<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-value" header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts"></code-example>
 
 <!--
 * The first provides an existing instance of the `Hero` class to use for the `Hero` token, rather than
@@ -701,9 +686,7 @@ The following code shows two examples in `HeroOfTheMonthComponent`.
 
 `HeroOfTheMonthComponent` 예제에서는 이 방식의 프로바이더가 두 번 사용되었습니다.
 
-<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-class" header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" linenums="false">
-
-</code-example>
+<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-class" header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts"></code-example>
 
 <!--
 The first provider is the *de-sugared*, expanded form of the most typical case in which the
@@ -736,9 +719,7 @@ Components outside the tree continue to receive the original `LoggerService` ins
 -->
 `DateLoggerService`는 `LoggerService`를 상속한 클래스이며, 원래 로그의 기능에 날짜와 시간을 함께 출력하는 클래스입니다:
 
-<code-example path="dependency-injection-in-action/src/app/date-logger.service.ts" region="date-logger-service" header="src/app/date-logger.service.ts" linenums="false">
-
-</code-example>
+<code-example path="dependency-injection-in-action/src/app/date-logger.service.ts" region="date-logger-service" header="src/app/date-logger.service.ts"></code-example>
 
 {@a useexisting}
 
@@ -774,30 +755,28 @@ In this example, the `MinimalLogger` [class-interface](#class-interface) reduces
 그래서 이 서비스를 그대로 사용하지 않고 2개의 API만 제공하는 인터페이스를 대신 사용하려고 합니다.
 아래 예제에서 `MinimalLogger` [클래스-인터페이스](#class-interface)에는 실제로 사용하는 API 2개만 정의되어 있습니다:
 
-<code-example path="dependency-injection-in-action/src/app/minimal-logger.service.ts" header="src/app/minimal-logger.service.ts" linenums="false">
-
-</code-example>
+<code-example path="dependency-injection-in-action/src/app/minimal-logger.service.ts" header="src/app/minimal-logger.service.ts"></code-example>
 
 <!--
 The following example puts `MinimalLogger` to use in a simplified version of `HeroOfTheMonthComponent`.
 -->
 그러면 `HeroOfTheMonthComponent`는 `MinimalLogger`를 주입받아 간단한 로그 서비스를 사용할 수 잇습니다.
 
-<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.1.ts" header="src/app/hero-of-the-month.component.ts (minimal version)" linenums="false">
-
-</code-example>
+<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.1.ts" header="src/app/hero-of-the-month.component.ts (minimal version)"></code-example>
 
 <!--
 The `HeroOfTheMonthComponent` constructor's `logger` parameter is typed as `MinimalLogger`, so only the `logs` and `logInfo` members are visible in a TypeScript-aware editor.
 -->
 `HeroOfTheMonthComponent`의 생성자 인자 `logger`는 `MinimalLogger` 타입으로 지정되었기 때문에 TypeScript를 지원하는 에디터에서는 `logs`와 `logInfo` 멤버만 보이게 됩니다.
 
-<figure>
-  <!--
+<!--
+<div class="lightbox">
   <img src="generated/images/guide/dependency-injection-in-action/minimal-logger-intellisense.png" alt="MinimalLogger restricted API">
-  -->
+</div>
+-->
+<div class="lightbox">
   <img src="generated/images/guide/dependency-injection-in-action/minimal-logger-intellisense.png" alt="MinimalLogger로 제한된 API">
-</figure>
+</div>
 
 <!--
 Behind the scenes, Angular sets the `logger` parameter to the full service registered under the `LoggingService` token, which happens to be the `DateLoggerService` instance that was [provided above](guide/dependency-injection-in-action#useclass).
@@ -812,9 +791,9 @@ This is illustrated in the following image, which displays the logging date.
 -->
 이 코드를 실행하면 날짜와 시간을 함께 출력하는 로그 서비스가 사용되는 것을 확인할 수 있습니다.
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/dependency-injection-in-action/date-logger-entry.png" alt="DateLoggerService entry">
-</figure>
+</div>
 
 </div>
 
@@ -865,9 +844,7 @@ the passed-in state value and the injected services `Hero` and `HeroService`.
 예제에서 로컬 상태는 숫자 `2`인데, 이 숫자는 컴포넌트에 표시해야 하는 우승자의 숫자입니다.
 이 값은 `runnersUpFactory()`에 인자로 주입되며, `runnersUpFactory()`가 반환하는 것은 *또 다른 프로바이더 팩토리 함수*인데, 이 팩토리 함수는 `Hero`와 `HeroService`가 서비스로 주입되어야 합니다.
 
-<code-example path="dependency-injection-in-action/src/app/runners-up.ts" region="factory-synopsis" header="runners-up.ts (excerpt)" linenums="false">
-
-</code-example>
+<code-example path="dependency-injection-in-action/src/app/runners-up.ts" region="factory-synopsis" header="runners-up.ts (excerpt)"></code-example>
 
 <!--
 The provider factory function (returned by `runnersUpFactory()`) returns the actual dependency object,
@@ -942,14 +919,12 @@ as the token for a provider of `LoggerService`.
 -->
 그리고 `MinimalLogger`는 다음과 같은 추상 클래스입니다.
 
-<code-example path="dependency-injection-in-action/src/app/minimal-logger.service.ts" header="dependency-injection-in-action/src/app/minimal-logger.service.ts" linenums="false">
-
-</code-example>
+<code-example path="dependency-injection-in-action/src/app/minimal-logger.service.ts" header="dependency-injection-in-action/src/app/minimal-logger.service.ts"></code-example>
 
 <!--
 An abstract class is usually a base class that you can extend.
 In this app, however there is no class that inherits from `MinimalLogger`.
-The `LoggerService` and the `DateLoggerService`could have inherited from `MinimalLogger`,
+The `LoggerService` and the `DateLoggerService` could have inherited from `MinimalLogger`,
 or they could have implemented it instead, in the manner of an interface.
 But they did neither.
 `MinimalLogger` is used only as a dependency injection token.
@@ -970,7 +945,7 @@ an interface is not a valid DI token because it is a TypeScript artifact that do
 Use this abstract class interface to get the strong typing of an interface,
 and also use it as a provider token in the way you would a normal class.
 
-A  class interface should define *only* the members that its consumers are allowed to call.
+A class interface should define *only* the members that its consumers are allowed to call.
 Such a narrowing interface helps decouple the concrete class from its consumers.
 -->
 [의존성 주입 프로바이더](guide/dependency-injection-providers#interface-not-valid-token)에서 언급했던 것처럼, 인터페이스는 TypeScript에만 있는 개념이며 애플리케이션이 실행되는 시점에는 존재하지 않기 때문에 의존성 주입 토큰으로 사용할 수 없습니다.
@@ -990,9 +965,7 @@ The `MinimalLogger` transpiles to this unoptimized, pre-minified JavaScript for 
 하지만 사용되는 메모리를 절약하기 위해 이 클래스에는 *실제 메소드를 정의하는 내용*이 없어야 합니다.
 이 클래스가 TypeScript 컴파일러에 의해 트랜스파일되고 아직 압축되기 전 시점의 JavaScript 코드는 다음과 같습니다.
 
-<code-example path="dependency-injection-in-action/src/app/minimal-logger.service.ts" region="minimal-logger-transpiled" header="dependency-injection-in-action/src/app/minimal-logger.service.ts" linenums="false">
-
-</code-example>
+<code-example path="dependency-injection-in-action/src/app/minimal-logger.service.ts" region="minimal-logger-transpiled" header="dependency-injection-in-action/src/app/minimal-logger.service.ts"></code-example>
 
 <!--
 Notice that it doesn't have any members. It never grows no matter how many members you add to the class,
@@ -1035,18 +1008,14 @@ in the *title* value provider and in the *runnersUp* factory provider.
 `InjectionToken`은 이런 경우에 사용합니다.
 이 객체는 *이번 달의 히어로* 예제를 설명하면서 다룬 *TITLE* 값 프로바이더와 *RUNNERS_UP* 팩토리 프로바이더에 이미 사용되었습니다.
 
-<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="provide-injection-token" header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" linenums="false">
-
-</code-example>
+<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="provide-injection-token" header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts"></code-example>
 
 <!--
 You created the `TITLE` token like this:
 -->
 `TITLE` 토큰은 다음과 같이 정의합니다:
 
-<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="injection-token" header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" linenums="false">
-
-</code-example>
+<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="injection-token" header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts"></code-example>
 
 <!--
 The type parameter, while optional, conveys the dependency's type to developers and tooling.
@@ -1076,9 +1045,9 @@ to display a *sorted* list of heroes.
 
 이 말이 조금 이상해 보일 수도 있습니다. 이번에는 `HeroesBaseComponent`를 상속받아 히어로의 목록을 *정렬해서 출력하는* `SortedHeroesComponent`를 보면서 자세하게 알아봅시다.
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/dependency-injection-in-action/sorted-heroes.png" alt="Sorted Heroes">
-</figure>
+</div>
 
 <!--
 The `HeroesBaseComponent` can stand on its own.
@@ -1194,9 +1163,7 @@ TypeScript에서는 클래스가 정의되는 순서도 신경써야 합니다.
 
 이 경우에도 `forwardRef`를 사용하면 순환 참조를 해결할 수 있습니다.
 
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-providers" header="parent-finder.component.ts (AlexComponent providers)" linenums="false">
-
-</code-example>
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-providers" header="parent-finder.component.ts (AlexComponent providers)"></code-example>
 
 
 <!--- Waiting for good examples

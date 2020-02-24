@@ -1,19 +1,7 @@
 <!--
-# Frequently Used Modules
+# Frequently-used modules
 -->
 # 자주 사용하는 NgModule
-
-<!--
-#### Prerequisites
--->
-#### 사전지식
-
-<!--
-A basic understanding of [Bootstrapping](guide/bootstrapping).
--->
-[부트스트랩](guide/bootstrapping) 문서의 내용을 먼저 이해하고 이 문서를 보는 것이 좋습니다.
-
-<hr>
 
 <!--
 An Angular app needs at least one module that serves as the root module.
@@ -196,9 +184,9 @@ Angular returns an error telling you to use `CommonModule` instead.
 -->
 기능 모듈에서 `BrowserModule`을 지연 로딩하면, 이 때도 에러가 발생합니다. 지연 로딩을 할 때에도 `CommonModule`을 로드해야 합니다.
 
-<figure>
- <img src="generated/images/guide/frequent-ngmodules/browser-module-error.gif" width=750 alt="BrowserModule error">
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/frequent-ngmodules/browser-module-error.gif" width=750 alt="BrowserModule error">
+</div>
 
 <hr />
 

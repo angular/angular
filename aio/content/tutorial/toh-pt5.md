@@ -1,7 +1,7 @@
 <!--
-# Routing
+# Add in-app navigation with routing
 -->
-# 라우팅 (Routing)
+# 화면 전환하기 (라우팅)
 
 <!--
 There are new requirements for the Tour of Heroes app:
@@ -22,11 +22,9 @@ When you’re done, users will be able to navigate the app like this:
 
 그래서 최종 결과물은 다음과 같이 3개의 화면을 이동하면서 동작해야 합니다:
 
-<figure>
-
+<div class="lightbox">
   <img src='generated/images/guide/toh/nav-diagram.png' alt="View navigations">
-
-</figure>
+</div>
 
 <!--
 ## Add the `AppRoutingModule`
@@ -68,106 +66,56 @@ The generated file looks like this:
 -->
 이 명령을 실행해서 만든 파일의 내용은 다음과 같습니다:
 
-<!--
-<code-example path="toh-pt5/src/app/app-routing.module.0.ts" 
-  header="src/app/app-routing.module.ts (generated)">
--->
-<code-example path="toh-pt5/src/app/app-routing.module.0.ts" 
-  header="src/app/app-routing.module.ts (Angular CLI가 생성한 라우팅 모듈)">
+<code-example path="toh-pt5/src/app/app-routing.module.0.ts" header="src/app/app-routing.module.ts (generated)">
 </code-example>
 
-<!--
-You generally don't declare components in a routing module so you can delete the
-`@NgModule.declarations` array and delete `CommonModule` references too.
+Replace it with the following:
 
-You'll configure the router with `Routes` in the `RouterModule`
-so import those two symbols from the `@angular/router` library.
-
-Add an `@NgModule.exports` array with `RouterModule` in it.
-Exporting `RouterModule` makes router directives available for use
-in the `AppModule` components that will need them.
-
-`AppRoutingModule` looks like this now:
--->
-일반적으로 라우팅 모듈에는 컴포넌트를 등록하지 않기 때문에 `@NgModule.declarations` 배열은 제거해도 됩니다.
-그리고 `CommonModule`도 사용하지 않기 때문에 제거해도 됩니다.
-
-라우터는 `RouterModule`과 `Routes` 타입의 객체로 설정합니다.
-그래서 `@angular/router` 라이브러리에서 두 심볼을 로드해야 합니다.
-
-그리고 `@NgModule.exports` 배열을 추가하고 이 배열에 `RouterModule`을 등록하면 `AppModule` 범위에 있는 모든 컴포넌트에 라우터와 관련된 디렉티브를 사용할 수 있습니다.
-
-이 내용으로 수정하면 `AppRoutingModule`이 다음과 같이 정의될 것입니다:
-
-<code-example path="toh-pt5/src/app/app-routing.module.ts" 
-  region="v1"
-  header="src/app/app-routing.module.ts (v1)">
+<code-example path="toh-pt5/src/app/app-routing.module.1.ts" header="src/app/app-routing.module.ts (updated)">
 </code-example>
 
-<!--
-### Add routes
--->
-### 라우팅 규칙 추가하기
+First, `AppRoutingModule` imports `RouterModule` and `Routes` so the app can have routing functionality. The next import, `HeroesComponent`, will give the Router somewhere to go once you configure the routes.
 
-<!--
-*Routes* tell the router which view to display when a user clicks a link or
+Notice that the `CommonModule` references and `declarations` array are unnecessary, so are no
+longer part of `AppRoutingModule`. The following sections explain the rest of the `AppRoutingModule` in more detail.
+
+
+### Routes
+
+The next part of the file is where you configure your routes.
+*Routes* tell the Router which view to display when a user clicks a link or
 pastes a URL into the browser address bar.
 
-A typical Angular `Route` has two properties:
+Since `AppRoutingModule` already imports `HeroesComponent`, you can use it in the `routes` array:
 
-1. `path`: a string that matches the URL in the browser address bar.
-1. `component`: the component that the router should create when navigating to this route.
--->
-사용자가 링크를 클릭하거나 브라우저 주소표시줄에 URL을 입력했을 때 어떤 화면을 표시할지는 *라우팅 규칙 (Route)*으로 정의합니다.
-
-일반적으로 `Route`에는 프로퍼티가 2개 존재합니다:
-
-1. `path`: 브라우저 주소표시줄의 URL과 매칭될 문자열을 지정합니다.
-1. `component`: 이 라우팅 규칙이 적용될 때 표시할 컴포넌트를 지정합니다.
-
-<!--
-You intend to navigate to the `HeroesComponent` when the URL is something like `localhost:4200/heroes`.
-
-Import the `HeroesComponent` so you can reference it in a `Route`.
-Then define an array of routes with a single `route` to that component.
--->
-지금은 `localhost:4200/heroes`라는 URL로 접속했을 때 `HeroesComponent`가 표시되게 하려고 합니다.
-
-이렇게 구현하기 위해 `HeroesComponent`를 로드하고 이 컴포넌트를 `Route`의 `component`에 지정합니다.
-그리고 `Route`를 배열로 구성하면 모듈에 적용될 라우팅 규칙을 정의할 수 있습니다.
-
-<code-example path="toh-pt5/src/app/app-routing.module.ts" 
+<code-example path="toh-pt5/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts"
   region="heroes-route">
 </code-example>
 
-<!--
-Once you've finished setting up, the router will match that URL to `path: 'heroes'` 
-and display the `HeroesComponent`.
--->
-라우팅 규칙을 이렇게 등록하면 URL이 `path: 'heroes'`에 해당될 때 화면에 `HeroesComponent`가 표시될 것입니다.
+A typical Angular `Route` has two properties:
 
-### _RouterModule.forRoot()_
+* `path`: a string that matches the URL in the browser address bar.
+* `component`: the component that the router should create when navigating to this route.
 
-<!--
-You first must initialize the router and start it listening for browser location changes.
+This tells the router to match that URL to `path: 'heroes'`
+and display the `HeroesComponent` when the URL is something like `localhost:4200/heroes`.
 
-Add `RouterModule` to the `@NgModule.imports` array and 
-configure it with the `routes` in one step by calling 
-`RouterModule.forRoot()` _within_ the `imports` array, like this:
--->
-라우팅 규칙을 적용하려면 브라우저에서 주소가 변경되는 것을 감지하기 위해 라우터를 초기화해야 합니다.
+### `RouterModule.forRoot()`
 
-라우터를 초기화하기 위해 `@NgModule.imports` 배열에 `RouterModule`을 추가하는데, 이 때 `RouterModule.forRoot()` 함수를 사용하면서 이전에 정의한 `routes`를 인자로 전달합니다:
+The `@NgModule` metadata initializes the router and starts it listening for browser location changes.
 
-<code-example path="toh-pt5/src/app/app-routing.module.ts" 
-  region="ngmodule-imports">
+The following line adds the `RouterModule` to the `AppRoutingModule` `imports` array and
+configures it with the `routes` in one step by calling
+`RouterModule.forRoot()`:
+
+<code-example path="toh-pt5/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts" region="ngmodule-imports">
 </code-example>
 
 <div class="alert is-helpful">
 
   <!--
   The method is called `forRoot()` because you configure the router at the application's root level.
-  The `forRoot()` method supplies the service providers and directives needed for routing, 
+  The `forRoot()` method supplies the service providers and directives needed for routing,
   and performs the initial navigation based on the current browser URL.
   -->
   애플리케이션 최상위 계층에 존재하는 라우터를 설정할 때는 `forRoot()` 메소드를 사용합니다.
@@ -175,38 +123,33 @@ configure it with the `routes` in one step by calling
 
 </div>
 
+Next, `AppRoutingModule` exports `RouterModule` so it will be available throughout the app.
+
+<code-example path="toh-pt5/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts (exports array)" region="export-routermodule">
+</code-example>
+
 <!--
-## Add _RouterOutlet_
+## Add `RouterOutlet`
 -->
-## 라우팅 영역 추가하기
+## 라우팅 영역 (`RouterOutlet`) 추가하기
+
 
 <!--
 Open the `AppComponent` template and replace the `<app-heroes>` element with a `<router-outlet>` element.
 -->
 `AppComponent` 템플릿을 열어서 `<app-heroes>` 엘리먼트를 `<router-outlet>` 엘리먼트로 변경합니다.
 
-<code-example path="toh-pt5/src/app/app.component.html" 
-  region="outlet"
-  header="src/app/app.component.html (router-outlet)">
+<code-example path="toh-pt5/src/app/app.component.html" region="outlet" header="src/app/app.component.html (router-outlet)">
 </code-example>
 
-<!--
-You removed `<app-heroes>` because you will only display the `HeroesComponent` when the user navigates to it.
+The `AppComponent` template no longer needs `<app-heroes>` because the app will only display the `HeroesComponent` when the user navigates to it.
 
 The `<router-outlet>` tells the router where to display routed views.
--->
-이제는 사용자가 해당 주소로 이동했을 때만 `HeroesComponent`가 표시되어야 하기 때문에 템플릿에서 `<app-heroes>`를 제거했습니다.
-
-라우터가 표시하는 화면은 `<router-outlet>`이 지정된 곳에 표시됩니다.
 
 <div class="alert is-helpful">
 
-<!--
 The `RouterOutlet` is one of the router directives that became available to the `AppComponent`
-because `AppModule` imports `AppRoutingModule` which exported `RouterModule`.
--->
-`RouterOutlet`은 라우터 모듈이 제공하는 디렉티브 중 하나입니다.
-`AppModule`은 `AppRoutingModule`을 로드하는데, 이 때 `AppRoutingModule`의 `exports` 배열에 `RouterModule`이 추가되었기 때문에 `AppModule` 안에 있는 `AppComponent`에서도 이 디렉티브를 사용할 수 있습니다.
+because `AppModule` imports `AppRoutingModule` which exported `RouterModule`. The `ng generate` command you ran at the start of this tutorial added this import because of the `--module=app` flag. If you manually created `app-routing.module.ts` or used a tool other than the CLI to do so, you'll need to import `AppRoutingModule` into `app.module.ts` and add it to the `imports` array of the `NgModule`.
 
 </div>
 
@@ -227,7 +170,7 @@ Angular CLI로 다음 명령을 실행해서 애플리케이션을 실행합니�
 <!--
 The browser should refresh and display the app title but not the list of heroes.
 
-Look at the browser's address bar. 
+Look at the browser's address bar.
 The URL ends in `/`.
 The route path to `HeroesComponent` is `/heroes`.
 
@@ -250,11 +193,10 @@ URL은 `/`로 끝납니다.
 -->
 ## 네비게이션 링크 (`routerLink`) 추가하기
 
-<!--
-Users shouldn't have to paste a route URL into the address bar. 
-They should be able to click a link to navigate.
+Ideally, users should be able to click a link to navigate rather
+than pasting a route URL into the address bar.
 
-Add a `<nav>` element and, within that, an anchor element that, when clicked, 
+Add a `<nav>` element and, within that, an anchor element that, when clicked,
 triggers navigation to the `HeroesComponent`.
 The revised `AppComponent` template looks like this:
 -->
@@ -264,23 +206,20 @@ The revised `AppComponent` template looks like this:
 이번에는 앵커(`<a>`) 엘리먼트를 추가하고, 사용자가 이 엘리먼트를 클릭했을 때 `HeroesComponent`로 이동하도록 해봅시다.
 `AppComponent`의 템플릿을 다음과 같이 수정합니다.
 
-<code-example 
-  path="toh-pt5/src/app/app.component.html" 
-  region="heroes"
-  header="src/app/app.component.html (heroes RouterLink)">
+<code-example path="toh-pt5/src/app/app.component.html" region="heroes" header="src/app/app.component.html (heroes RouterLink)">
 </code-example>
 
 <!--
 A [`routerLink` attribute](#routerlink) is set to `"/heroes"`,
 the string that the router matches to the route to `HeroesComponent`.
-The `routerLink` is the selector for the [`RouterLink` directive](#routerlink)
+The `routerLink` is the selector for the [`RouterLink` directive](/api/router/RouterLink)
 that turns user clicks into router navigations.
 It's another of the public directives in the `RouterModule`.
 
-The browser refreshes and displays the app title and heroes link, 
+The browser refreshes and displays the app title and heroes link,
 but not the heroes list.
 
-Click the link. 
+Click the link.
 The address bar updates to `/heroes` and the list of heroes appears.
 -->
 `routerLink`는 `RouterModule`이 제공하는 [`RouterLink` 디렉티브](#routerlink)이며, 사용자가 이 디렉티브가 적용된 엘리먼트를 클릭하면 네비게이션을 실행합니다.
@@ -310,7 +249,7 @@ as listed in the [final code review](#appcomponent) below.
 
 <!--
 Routing makes more sense when there are multiple views.
-So far there's only the heroes view. 
+So far there's only the heroes view.
 
 Add a `DashboardComponent` using the CLI:
 -->
@@ -326,22 +265,22 @@ Angular CLI로 다음 명령을 실행해서 `DashboardComponent`를 생성합�
 <!--
 The CLI generates the files for the `DashboardComponent` and declares it in `AppModule`.
 
-Replace the default file content in these three files as follows and then return for a little discussion:
+Replace the default file content in these three files as follows:
 -->
 그러면 `DashboardComponent`를 구성하는 파일이 생성되면서 이 컴포넌트가 `AppModule`에 자동으로 등록됩니다.
 
 이 컴포넌트의 내용을 다음과 같이 수정합니다:
 
 <code-tabs>
-  <code-pane 
+  <code-pane
     header="src/app/dashboard/dashboard.component.html" path="toh-pt5/src/app/dashboard/dashboard.component.1.html">
   </code-pane>
 
-  <code-pane 
+  <code-pane
     header="src/app/dashboard/dashboard.component.ts" path="toh-pt5/src/app/dashboard/dashboard.component.ts">
   </code-pane>
 
-  <code-pane 
+  <code-pane
     header="src/app/dashboard/dashboard.component.css" path="toh-pt5/src/app/dashboard/dashboard.component.css">
   </code-pane>
 </code-tabs>
@@ -356,9 +295,9 @@ The  _template_ presents a grid of hero name links.
 The _class_ is similar to the `HeroesComponent` class.
 * It defines a `heroes` array property.
 * The constructor expects Angular to inject the `HeroService` into a private `heroService` property.
-* The `ngOnInit()` lifecycle hook calls `getHeroes`.
+* The `ngOnInit()` lifecycle hook calls `getHeroes()`.
 
-This `getHeroes` returns the sliced list of heroes at positions 1 and 5, returning only four of the Top Heroes (2nd, 3rd, 4th, and 5th).
+This `getHeroes()` returns the sliced list of heroes at positions 1 and 5, returning only four of the Top Heroes (2nd, 3rd, 4th, and 5th).
 -->
 이 _템플릿_ 에는 네비게이션 링크로 구성된 히어로의 이름이 그리드 형태로 배열되어 있습니다.
 
@@ -373,7 +312,7 @@ This `getHeroes` returns the sliced list of heroes at positions 1 and 5, returni
 
 이 때 대시보드 화면의 컴포넌트 클래스에서는 `HeroService`의 `getHeroes()`로 받은 배열 데이터 중에 4개만 추출해서 `heroes` 프로퍼티에 할당합니다.
 
-<code-example path="toh-pt5/src/app/dashboard/dashboard.component.ts" region="getHeroes">
+<code-example path="toh-pt5/src/app/dashboard/dashboard.component.ts" header="src/app/dashboard/dashboard.component.ts" region="getHeroes">
 </code-example>
 
 <!--
@@ -391,15 +330,9 @@ Import the `DashboardComponent` in the `AppRoutingModule`.
 먼저, `AppRoutingModule`에 `DashboardComponent`를 로드합니다.
 
 <!--
-<code-example 
-  path="toh-pt5/src/app/app-routing.module.ts" 
-  region="import-dashboard" 
-  header="src/app/app-routing.module.ts (import DashboardComponent)">
+<code-example path="toh-pt5/src/app/app-routing.module.ts" region="import-dashboard" header="src/app/app-routing.module.ts (import DashboardComponent)">
 -->
-<code-example 
-  path="toh-pt5/src/app/app-routing.module.ts" 
-  region="import-dashboard" 
-  header="src/app/app-routing.module.ts (DashboardComponent 로드하기)">
+<code-example path="toh-pt5/src/app/app-routing.module.ts" region="import-dashboard" header="src/app/app-routing.module.ts (DashboardComponent 로드하기)">
 </code-example>
 
 <!--
@@ -407,9 +340,7 @@ Add a route to the `AppRoutingModule.routes` array that matches a path to the `D
 -->
 그리고 `AppRoutingModule.routes` 배열에 `DashboardComponent`에 해당하는 라우팅 규칙을 추가합니다.
 
-<code-example 
-  path="toh-pt5/src/app/app-routing.module.ts" 
-  region="dashboard-route">
+<code-example path="toh-pt5/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts" region="dashboard-route">
 </code-example>
 
 <!--
@@ -418,7 +349,7 @@ Add a route to the `AppRoutingModule.routes` array that matches a path to the `D
 ### 기본 라우팅 규칙 추가하기
 
 <!--
-When the app starts, the browsers address bar points to the web site's root.
+When the app starts, the browser's address bar points to the web site's root.
 That doesn't match any existing route so the router doesn't navigate anywhere.
 The space below the `<router-outlet>` is blank.
 
@@ -431,7 +362,7 @@ route to the `AppRoutingModule.Routes` array.
 
 애플리케이션이 실행되면서 대시보드 화면을 자동으로 표시하려면 `AppRoutingModule.Routes` 배열에 다음과 같이 기본 라우팅 규칙을 추가하면 됩니다.
 
-<code-example path="toh-pt5/src/app/app-routing.module.ts" region="redirect-route">
+<code-example path="toh-pt5/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts" region="redirect-route">
 </code-example>
 
 <!--
@@ -512,7 +443,7 @@ The heroes list view should no longer show hero details as it does now.
 Open the `HeroesComponent` template (`heroes/heroes.component.html`) and
 delete the `<app-hero-detail>` element from the bottom.
 
-Clicking a hero item now does nothing. 
+Clicking a hero item now does nothing.
 You'll [fix that shortly](#heroes-component-links) after you enable routing to the `HeroDetailComponent`.
 -->
 사용자가 `HeroesComponent`에 있는 히어로 아이템을 클릭하면 `HeroDetailComponent`에 해당하는 주소로 이동하면서 화면에 표시된 컴포넌트를 변경해야 합니다.
@@ -529,7 +460,7 @@ You'll [fix that shortly](#heroes-component-links) after you enable routing to t
 ### _히어로 상세정보 화면_ 에 대한 라우팅 규칙 추가하기
 
 <!--
-A URL like `~/detail/11` would be a good URL for navigating to the *Hero Detail* view of the hero whose `id` is `11`. 
+A URL like `~/detail/11` would be a good URL for navigating to the *Hero Detail* view of the hero whose `id` is `11`.
 
 Open `AppRoutingModule` and import `HeroDetailComponent`.
 -->
@@ -538,15 +469,9 @@ URL이 `~/detail/11`라면 이 URL은 *히어로 상세정보* 화면에서 `id`
 이렇게 구현하기 위해 `AppRoutingModule`을 열어서 `HeroDetailComponent`를 로드합니다.
 
 <!--
-<code-example 
-  path="toh-pt5/src/app/app-routing.module.ts" 
-  region="import-herodetail" 
-  header="src/app/app-routing.module.ts (import HeroDetailComponent)">
+<code-example path="toh-pt5/src/app/app-routing.module.ts" region="import-herodetail" header="src/app/app-routing.module.ts (import HeroDetailComponent)">
 -->
-<code-example 
-  path="toh-pt5/src/app/app-routing.module.ts" 
-  region="import-herodetail" 
-  header="src/app/app-routing.module.ts (HeroDetailComponent 로드하기)">
+<code-example path="toh-pt5/src/app/app-routing.module.ts" region="import-herodetail" header="src/app/app-routing.module.ts (HeroDetailComponent 로드하기)">
 </code-example>
 
 <!--
@@ -554,9 +479,7 @@ Then add a _parameterized_ route to the `AppRoutingModule.routes` array that mat
 -->
 그리고 `AppRoutingModule.routes` 배열에 _히어로 상세정보_ 화면과 매칭되는 패턴을 _라우팅 변수를 사용해서_ 정의합니다.
 
-<code-example 
-  path="toh-pt5/src/app/app-routing.module.ts" 
-  region="detail-route">
+<code-example path="toh-pt5/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts" region="detail-route">
 </code-example>
 
 <!--
@@ -567,15 +490,9 @@ At this point, all application routes are in place.
 이렇게 정의하면 히어로의 `id`에 해당하는 라우팅 변수를 `:id`로 받겠다는 것을 의미합니다.
 
 <!--
-<code-example 
-  path="toh-pt5/src/app/app-routing.module.ts" 
-  region="routes" 
-  header="src/app/app-routing.module.ts (all routes)">
+<code-example path="toh-pt5/src/app/app-routing.module.ts" region="routes" header="src/app/app-routing.module.ts (all routes)">
 -->
-<code-example 
-  path="toh-pt5/src/app/app-routing.module.ts" 
-  region="routes" 
-  header="src/app/app-routing.module.ts (전체 라우팅 규칙)">
+<code-example path="toh-pt5/src/app/app-routing.module.ts" region="routes" header="src/app/app-routing.module.ts (전체 라우팅 규칙)">
 </code-example>
 
 <!--
@@ -594,20 +511,20 @@ fix the dashboard hero links to navigate via the _parameterized_ dashboard route
 `*ngFor`로 배열을 순회할 때 할당되는 `hero` 객체의 `id`를 활용해서 `HeroDetailComponent`로 이동하는 라우팅 규칙을 연결해 봅시다.
 
 <!--
-<code-example 
-  path="toh-pt5/src/app/dashboard/dashboard.component.html" 
-  region="click" 
+<code-example
+  path="toh-pt5/src/app/dashboard/dashboard.component.html"
+  region="click"
   header="src/app/dashboard/dashboard.component.html (hero links)">
 -->
-<code-example 
-  path="toh-pt5/src/app/dashboard/dashboard.component.html" 
-  region="click" 
+<code-example
+  path="toh-pt5/src/app/dashboard/dashboard.component.html"
+  region="click"
   header="src/app/dashboard/dashboard.component.html (히어로 링크)">
 </code-example>
 
 <!--
-You're using Angular [interpolation binding](guide/template-syntax#interpolation) within the `*ngFor` repeater 
-to insert the current iteration's `hero.id` into each 
+You're using Angular [interpolation binding](guide/template-syntax#interpolation) within the `*ngFor` repeater
+to insert the current iteration's `hero.id` into each
 [`routerLink`](#routerlink).
 -->
 이 때 `*ngFor`로 순회하는 각 링크의 [`routerLink`](#routerlink)의 값으로 `hero.id`를 지정하기 위해 Angular가 제공하는 [문자열 바인딩(interpolation binding)](guide/template-syntax#interpolation) 문법을 사용했습니다.
@@ -625,36 +542,24 @@ are bound to the component's `onSelect()` method.
 `HeroesComponent`에 있는 히어로 아이템은 `<li>` 엘리먼트로 구성되었기 때문에, 이 엘리먼트에 클릭 이벤트를 바인딩하면 컴포넌트의 `onSelect()` 메소드를 실행할 수 있었습니다.
 
 <!--
-<code-example 
-  path="toh-pt4/src/app/heroes/heroes.component.html" 
-  region="list" 
-  header="src/app/heroes/heroes.component.html (list with onSelect)">
+<code-example path="toh-pt4/src/app/heroes/heroes.component.html" region="list" header="src/app/heroes/heroes.component.html (list with onSelect)">
 -->
-<code-example 
-  path="toh-pt4/src/app/heroes/heroes.component.html" 
-  region="list" 
-  header="src/app/heroes/heroes.component.html (onSelect가 적용된 리스트)">
+<code-example path="toh-pt4/src/app/heroes/heroes.component.html" region="list" header="src/app/heroes/heroes.component.html (onSelect가 적용된 리스트)">
 </code-example>
 
 <!--
 Strip the `<li>` back to just its `*ngFor`,
 wrap the badge and name in an anchor element (`<a>`),
-and add a `routerLink` attribute to the anchor that 
+and add a `routerLink` attribute to the anchor that
 is the same as in the dashboard template
 -->
 이 코드에서 `<li>`에 적용된 어트리뷰트를 모두 제거하고 `*ngFor`만 남겨둡니다.
 그리고 히어로의 id 뱃지와 이름을 표시하는 앵커 엘리먼트에 `routerLink` 어트리뷰트를 추가합니다.
 
 <!--
-<code-example 
-  path="toh-pt5/src/app/heroes/heroes.component.html" 
-  region="list" 
-  header="src/app/heroes/heroes.component.html (list with links)">
+<code-example path="toh-pt5/src/app/heroes/heroes.component.html" region="list" header="src/app/heroes/heroes.component.html (list with links)">
 -->
-<code-example 
-  path="toh-pt5/src/app/heroes/heroes.component.html" 
-  region="list" 
-  header="src/app/heroes/heroes.component.html (링크가 지정된 리스트)">
+<code-example path="toh-pt5/src/app/heroes/heroes.component.html" region="list" header="src/app/heroes/heroes.component.html (링크가 적용된 리스트)">
 </code-example>
 
 <!--
@@ -671,7 +576,7 @@ Revised styles are in the [final code review](#heroescomponent) at the bottom of
 #### 필요없는 코드 제거하기 (생략 가능)
 
 <!--
-While the `HeroesComponent` class still works, 
+While the `HeroesComponent` class still works,
 the `onSelect()` method and `selectedHero` property are no longer used.
 
 It's nice to tidy up and you'll be grateful to yourself later.
@@ -682,21 +587,17 @@ Here's the class after pruning away the dead code.
 그래서 클래스 코드를 깔끔하게 유지하려면 사용하지 않는 코드를 제거하는 것이 좋습니다.
 
 <!--
-<code-example 
-  path="toh-pt5/src/app/heroes/heroes.component.ts"
-  region="class" 
-  header="src/app/heroes/heroes.component.ts (cleaned up)" linenums="false">
+<code-example path="toh-pt5/src/app/heroes/heroes.component.ts" region="class" header="src/app/heroes/heroes.component.ts (cleaned up)">
 -->
-<code-example 
-  path="toh-pt5/src/app/heroes/heroes.component.ts"
-  region="class" 
-  header="src/app/heroes/heroes.component.ts (코드 정리하기)" linenums="false">
+<code-example path="toh-pt5/src/app/heroes/heroes.component.ts" region="class" header="src/app/heroes/heroes.component.ts (코드 정리 후)">
 </code-example>
 
 <!--
 ## Routable *HeroDetailComponent*
 -->
 ### *HeroDetailComponent*에 라우팅 적용하기
+
+## Routable `HeroDetailComponent`
 
 <!--
 Previously, the parent `HeroesComponent` set the `HeroDetailComponent.hero`
@@ -711,9 +612,10 @@ Now the router creates the `HeroDetailComponent` in response to a URL such as `~
 이제부터는 라우터가 `HeroDetailComponent`를 생성하는데 이 때 URL에 있는 `~/detail/11`과 같은 URL을 활용하도록 수정해 봅시다.
 
 <!--
-The `HeroDetailComponent` needs a new way to obtain the _hero-to-display_.
+The `HeroDetailComponent` needs a new way to obtain the hero-to-display.
+This section explains the following:
 
-* Get the route that created it, 
+* Get the route that created it
 * Extract the `id` from the route
 * Acquire the hero with that `id` from the server via the `HeroService`
 
@@ -725,10 +627,7 @@ Add the following imports:
 * 라우팅 규칙에서 `id`에 해당하는 라우팅 변수를 추출합니다.
 * `id`에 해당되는 히어로 정보는 `HeroService`를 활용해서 서버에서 가져옵니다.
 
-<code-example 
-  path="toh-pt5/src/app/hero-detail/hero-detail.component.ts" 
-  region="added-imports" 
-  header="src/app/hero-detail/hero-detail.component.ts">
+<code-example path="toh-pt5/src/app/hero-detail/hero-detail.component.ts" region="added-imports" header="src/app/hero-detail/hero-detail.component.ts">
 </code-example>
 
 {@a hero-detail-ctor}
@@ -739,14 +638,13 @@ into the constructor, saving their values in private fields:
 -->
 먼저, 컴포넌트 생성자로 `ActivatedRoute`, `HeroService`, `Location` 서비스를 의존성으로 주입하고 `private` 프로퍼티로 선언합니다:
 
-<code-example 
-  path="toh-pt5/src/app/hero-detail/hero-detail.component.ts" region="ctor">
+<code-example path="toh-pt5/src/app/hero-detail/hero-detail.component.ts" header="src/app/hero-detail/hero-detail.component.ts" region="ctor">
 </code-example>
 
 <!--
 The [`ActivatedRoute`](api/router/ActivatedRoute) holds information about the route to this instance of the `HeroDetailComponent`.
-This component is interested in the route's bag of parameters extracted from the URL.
-The _"id"_ parameter is the `id` of the hero to display.
+This component is interested in the route's parameters extracted from the URL.
+The "id" parameter is the `id` of the hero to display.
 -->
 [`ActivatedRoute`](api/router/ActivatedRoute)는 `HeroDetailComponent`의 인스턴스를 생성하면서 적용한 라우팅 규칙에 대한 정보를 담고 있습니다.
 그래서 이 라우팅 규칙을 참조하면 URL을 통해 컴포넌트로 전달되는 변수를 추출할 수 있습니다.
@@ -754,7 +652,7 @@ The _"id"_ parameter is the `id` of the hero to display.
 
 <!--
 The [`HeroService`](tutorial/toh-pt4) gets hero data from the remote server
-and this component will use it to get the _hero-to-display_.
+and this component will use it to get the hero-to-display.
 -->
 컴포넌트에 사용할 히어로 데이터는 [`HeroService`](tutorial/toh-pt4)를 사용해서 리모트 서버에서 가져옵니다.
 
@@ -766,9 +664,9 @@ You'll use it [later](#goback) to navigate back to the view that navigated here.
 이 서비스는 [이전 페이지로 전환하는 예제를 다룰 때](#goback) 다시 살펴봅니다.
 
 <!--
-### Extract the _id_ route parameter
+### Extract the `id` route parameter
 -->
-### 라우팅 변수 _id_ 추출하기
+### 라우팅 변수 `id` 추출하기
 
 <!--
 In the `ngOnInit()` [lifecycle hook](guide/lifecycle-hooks#oninit)
@@ -776,8 +674,7 @@ call `getHero()` and define it as follows.
 -->
 지금까지 작성한 예제에서는 `ngOnInit()` [라이프싸이클 후킹 함수](guide/lifecycle-hooks#oninit)에서 `HeroService`의 `getHero()` 메소드를 호출합니다.
 
-<code-example 
-  path="toh-pt5/src/app/hero-detail/hero-detail.component.ts" region="ngOnInit">
+<code-example path="toh-pt5/src/app/hero-detail/hero-detail.component.ts" header="src/app/hero-detail/hero-detail.component.ts" region="ngOnInit">
 </code-example>
 
 <!--
@@ -811,22 +708,15 @@ Add it now.
 -->
 ### `HeroService.getHero()` 추가하기
 
-<!--
-Open `HeroService` and add this `getHero()` method
--->
-`HeroService` 파일을 열고 `getHero()` 메소드를 다음과 같이 구현합니다.
+Open `HeroService` and add the following `getHero()` method with the `id` after the `getHeroes()` method:
 
-<code-example 
-  path="toh-pt5/src/app/hero.service.ts" 
-  region="getHero" 
-  header="src/app/hero.service.ts (getHero)">
+<code-example path="toh-pt5/src/app/hero.service.ts" region="getHero" header="src/app/hero.service.ts (getHero)">
 </code-example>
 
 <div class="alert is-important">
 
 <!--
-Note the backticks ( &#96; ) that 
-define a JavaScript 
+Note the backticks ( &#96; ) that define a JavaScript
 [_template literal_](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) for embedding the `id`.
 -->
 `id`에 사용된 역따옴표( &#96; )는 [_템플릿 리터럴 (template literal)_](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals)을 표현하는 JavaScript 문법입니다.
@@ -875,7 +765,7 @@ the router navigates to the detail view for the hero with `id: 11`,  "Dr Nice".
 ### 이전 화면으로 돌아가기
 
 <!--
-By clicking the browser's back button, 
+By clicking the browser's back button,
 you can go back to the hero list or dashboard view,
 depending upon which sent you to the detail view.
 
@@ -891,20 +781,14 @@ to the component's `goBack()` method.
 컴포넌트 템플릿 맨 아래에 *뒤로 가기* 버튼을 추가하고 이 버튼을 컴포넌트의 `goBack()` 메소드와 바인딩 합니다.
 
 <!--
-<code-example 
-  path="toh-pt5/src/app/hero-detail/hero-detail.component.html" 
-  region="back-button"
-  header="src/app/hero-detail/hero-detail.component.html (back button)">
+<code-example path="toh-pt5/src/app/hero-detail/hero-detail.component.html" region="back-button" header="src/app/hero-detail/hero-detail.component.html (back button)">
 </code-example>
 -->
-<code-example 
-  path="toh-pt5/src/app/hero-detail/hero-detail.component.html" 
-  region="back-button"
-  header="src/app/hero-detail/hero-detail.component.html (뒤로 가기 버튼)">
+<code-example path="toh-pt5/src/app/hero-detail/hero-detail.component.html" region="back-button" header="src/app/hero-detail/hero-detail.component.html (뒤로 가기 버튼)">
 </code-example>
 
 <!--
-Add a `goBack()` _method_ to the component class that navigates backward one step 
+Add a `goBack()` _method_ to the component class that navigates backward one step
 in the browser's history stack
 using the `Location` service that you [injected previously](#hero-detail-ctor).
 -->
@@ -918,13 +802,9 @@ using the `Location` service that you [injected previously](#hero-detail-ctor).
 Refresh the browser and start clicking.
 Users can navigate around the app, from the dashboard to hero details and back,
 from heroes list to the mini detail to the hero details and back to the heroes again.
-
-You've met all of the navigational requirements that propelled this page.
 -->
 브라우저가 다시 시작되면 이것 저것 클릭해 보세요.
 사용자는 화면에 있는 버튼으로 히어로 목록이나 대시보드 화면을 이동할 수 있으며, 이전 화면으로 돌아갈 수도 있습니다.
-
-이 문서에서 구현하려고 했던 모든 네비게이션을 구현했습니다.
 
 <!--
 ## Final code review
@@ -939,89 +819,89 @@ Here are the code files discussed on this page and your app should look like thi
 {@a approutingmodule}
 {@a appmodule}
 <!--
-#### _AppRoutingModule_, _AppModule_, and _HeroService_
+#### `AppRoutingModule`, `AppModule`, and `HeroService`
 -->
 #### _AppRoutingModule_, _AppModule_, _HeroService_
 
 <code-tabs>
-  <code-pane 
-    header="src/app/app-routing.module.ts" 
+  <code-pane
+    header="src/app/app-routing.module.ts"
     path="toh-pt5/src/app/app-routing.module.ts">
   </code-pane>
-  <code-pane 
-    header="src/app/app.module.ts" 
+  <code-pane
+    header="src/app/app.module.ts"
     path="toh-pt5/src/app/app.module.ts">
   </code-pane>
-  <code-pane 
-    header="src/app/hero.service.ts" 
+  <code-pane
+    header="src/app/hero.service.ts"
     path="toh-pt5/src/app/hero.service.ts">
   </code-pane>
 </code-tabs>
 
 {@a appcomponent}
-#### _AppComponent_
+#### `AppComponent`
 
 <code-tabs>
-  <code-pane 
+  <code-pane
     header="src/app/app.component.html"
     path="toh-pt5/src/app/app.component.html">
   </code-pane>
 
-  <code-pane 
+  <code-pane
     header="src/app/app.component.css"
     path="toh-pt5/src/app/app.component.css">
   </code-pane>
 </code-tabs>
 
 {@a dashboardcomponent}
-#### _DashboardComponent_
+#### `DashboardComponent`
 
 <code-tabs>
-  <code-pane 
+  <code-pane
     header="src/app/dashboard/dashboard.component.html" path="toh-pt5/src/app/dashboard/dashboard.component.html">
   </code-pane>
 
-  <code-pane 
+  <code-pane
     header="src/app/dashboard/dashboard.component.ts" path="toh-pt5/src/app/dashboard/dashboard.component.ts">
   </code-pane>
 
-  <code-pane 
+  <code-pane
     header="src/app/dashboard/dashboard.component.css" path="toh-pt5/src/app/dashboard/dashboard.component.css">
   </code-pane>
 </code-tabs>
 
 {@a heroescomponent}
-#### _HeroesComponent_
+#### `HeroesComponent`
 
 <code-tabs>
-  <code-pane 
+  <code-pane
     header="src/app/heroes/heroes.component.html" path="toh-pt5/src/app/heroes/heroes.component.html">
   </code-pane>
 
-  <code-pane 
-    header="src/app/heroes/heroes.component.ts" 
+  <code-pane
+    header="src/app/heroes/heroes.component.ts"
     path="toh-pt5/src/app/heroes/heroes.component.ts">
   </code-pane>
 
-  <code-pane 
-    header="src/app/heroes/heroes.component.css" 
+  <code-pane
+    header="src/app/heroes/heroes.component.css"
     path="toh-pt5/src/app/heroes/heroes.component.css">
   </code-pane>
 </code-tabs>
 
 {@a herodetailcomponent}
-#### _HeroDetailComponent_
+#### `HeroDetailComponent`
 
 <code-tabs>
-  <code-pane 
+  <code-pane
     header="src/app/hero-detail/hero-detail.component.html" path="toh-pt5/src/app/hero-detail/hero-detail.component.html">
   </code-pane>
 
-  <code-pane 
+  <code-pane
     header="src/app/hero-detail/hero-detail.component.ts" path="toh-pt5/src/app/hero-detail/hero-detail.component.ts">
   </code-pane>
 
-  <code-pane 
+  <code-pane
     header="src/app/hero-detail/hero-detail.component.css" path="toh-pt5/src/app/hero-detail/hero-detail.component.css">
   </code-pane>
 </code-tabs>
@@ -1034,7 +914,7 @@ Here are the code files discussed on this page and your app should look like thi
 <!--
 * You added the Angular router to navigate among different components.
 * You turned the `AppComponent` into a navigation shell with `<a>` links and a `<router-outlet>`.
-* You configured the router in an `AppRoutingModule` 
+* You configured the router in an `AppRoutingModule`
 * You defined simple routes, a redirect route, and a parameterized route.
 * You used the `routerLink` directive in anchor elements.
 * You refactored a tightly-coupled master/detail view into a routed detail view.

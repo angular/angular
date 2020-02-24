@@ -1,7 +1,11 @@
 <!--
-# Style Guide
+# Angular coding style guide
 -->
-# 코딩 스타일 가이드
+# Angular 코딩 스타일 가이드
+
+Looking for an opinionated guide to Angular syntax, conventions, and application structure?
+Step right in!
+This style guide presents preferred conventions and, as importantly, explains why.
 
 {@a toc}
 
@@ -18,9 +22,7 @@ The wording of each guideline indicates how strong the recommendation is.
 각 가이드 라인에서는 권장하는 스타일을 소개하거나 권장하지 않는 스타일을 소개합니다.
 이 문서에서 사용하는 용어를 먼저 정리해 봅시다.
 
-
 <div class="s-rule do">
-
 
 <!--
 **Do** is one that should always be followed.
@@ -34,10 +36,7 @@ _항상_ 이라는 단어가 조금 강하게 와닿을 수도 있지만, 이 �
 
 </div>
 
-
-
 <div class="s-rule consider">
-
 
 <!--
 **Consider** guidelines should generally be followed.
@@ -48,10 +47,7 @@ If you fully understand the meaning behind the guideline and have a good reason 
 
 </div>
 
-
-
 <div class="s-rule avoid">
-
 
 <!--
 **Avoid** indicates something you should almost never do. Code examples to *avoid* have an unmistakable red header.
@@ -60,10 +56,7 @@ If you fully understand the meaning behind the guideline and have a good reason 
 
 </div>
 
-
-
 <div class="s-why">
-
 
 <!--
 **Why?** gives reasons for following the previous recommendations.
@@ -71,8 +64,6 @@ If you fully understand the meaning behind the guideline and have a good reason 
 **"왜?"**는 해당 스타일 가이드에 대한 이유를 설명합니다.
 
 </div>
-
-
 
 <!--
 ## File structure conventions
@@ -93,7 +84,6 @@ The guideline uses the shortcut `hero.component.ts|html|css|spec` to represent t
 컴포넌트 구성 파일은 한 폴더에 작성하며 확장자만 다르기 때문에, 이렇게 표현해도 쉽게 이해할 있을 것입니다.
 
 {@a single-responsibility}
-
 
 <!--
 ## Single responsibility
@@ -122,7 +112,6 @@ This helps make the app cleaner, easier to read and maintain, and more testable.
 #### 스타일 01-01
 
 <div class="s-rule do">
-
 
 <!--
 **Do** define one thing, such as a service or component, per file.
@@ -565,6 +554,7 @@ Abbreviations such as `.srv`, `.svc`, and `.serv` can be confusing.
 
 <div class="s-rule do">
 
+
 <!--
 **Do** use consistent names for all assets named after what they represent.
 -->
@@ -1004,13 +994,10 @@ As always, strive for consistency.
 
 </table>
 
-
-
 <!--
 <a href="#toc">Back to top</a>
 -->
 <a href="#toc">맨 위로</a>
-
 
 {@a 02-05}
 
@@ -1027,7 +1014,6 @@ As always, strive for consistency.
 
 <div class="s-rule do">
 
-
 <!--
 **Do** put bootstrapping and platform logic for the app in a file named `main.ts`.
 -->
@@ -1035,10 +1021,7 @@ As always, strive for consistency.
 
 </div>
 
-
-
 <div class="s-rule do">
-
 
 <!--
 **Do** include error handling in the bootstrapping logic.
@@ -1047,10 +1030,7 @@ As always, strive for consistency.
 
 </div>
 
-
-
 <div class="s-rule avoid">
-
 
 <!--
 **Avoid** putting app logic in `main.ts`. Instead, consider placing it in a component or service.
@@ -1059,10 +1039,7 @@ As always, strive for consistency.
 
 </div>
 
-
-
 <div class="s-why">
-
 
 <!--
 **Why?** Follows a consistent convention for the startup logic of an app.
@@ -1071,10 +1048,7 @@ As always, strive for consistency.
 
 </div>
 
-
-
 <div class="s-why-last">
-
 
 <!--
 **Why?** Follows a familiar convention from other technology platforms.
@@ -1084,12 +1058,9 @@ As always, strive for consistency.
 </div>
 
 
-
 <code-example path="styleguide/src/02-05/main.ts" header="main.ts">
 
 </code-example>
-
-
 
 <!--
 <a href="#toc">Back to top</a>
@@ -1110,15 +1081,12 @@ As always, strive for consistency.
 
 <div class="s-rule do">
 
-
 <!--
 **Do** use _dashed-case_ or _kebab-case_ for naming the element selectors of components.
 -->
 컴포넌트의 셀렉터 이름은 _대시-케이스_ 나 _케밥-케이스_ 로 **정의하세요.**
 
 </div>
-
-
 
 <div class="s-why-last">
 
@@ -1129,15 +1097,9 @@ As always, strive for consistency.
 
 </div>
 
-
-
 <code-example path="styleguide/src/05-02/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example" header="app/heroes/shared/hero-button/hero-button.component.ts">
 
 </code-example>
-
-
-
-
 
 <code-tabs>
 
@@ -1150,8 +1112,6 @@ As always, strive for consistency.
   </code-pane>
 
 </code-tabs>
-
-
 
 <!--
 <a href="#toc">Back to top</a>
@@ -1179,24 +1139,18 @@ As always, strive for consistency.
 
 </div>
 
-
-
 <div class="s-rule do">
-
 
 <!--
 **Do** use a custom prefix for a component selector.
-For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the prefix `admin` represents an admin feature area.
+For example, the prefix `toh` represents **T**our **o**f **H**eroes and the prefix `admin` represents an admin feature area.
 -->
 컴포넌트 셀렉터에는 커스텀 접두사를 **사용하세요.**
 예를 들어 프로젝트 이름이 **T**our **o**f **H**eroes 라면 `toh`를 접두사로 사용할 수 있으며, 관리자용 기능이 구현되어 있는 곳에서는 `admin`을 접두사로 사용할 수 있습니다.
 
 </div>
 
-
-
 <div class="s-rule do">
-
 
 <!--
 **Do** use a prefix that identifies the feature area or the app itself.
@@ -1205,10 +1159,7 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 </div>
 
-
-
 <div class="s-why">
-
 
 <!--
 **Why?** Prevents element name collisions with components in other apps and with native HTML elements.
@@ -1217,10 +1168,7 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 </div>
 
-
-
 <div class="s-why">
-
 
 <!--
 **Why?** Makes it easier to promote and share the component in other apps.
@@ -1229,10 +1177,7 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 </div>
 
-
-
 <div class="s-why-last">
-
 
 <!--
 **Why?** Components are easy to identify in the DOM.
@@ -1241,37 +1186,21 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 </div>
 
-
-
 <code-example path="styleguide/src/02-07/app/heroes/hero.component.avoid.ts" region="example" header="app/heroes/hero.component.ts">
 
 </code-example>
-
-
-
-
 
 <code-example path="styleguide/src/02-07/app/users/users.component.avoid.ts" region="example" header="app/users/users.component.ts">
 
 </code-example>
 
-
-
-
-
 <code-example path="styleguide/src/02-07/app/heroes/hero.component.ts" region="example" header="app/heroes/hero.component.ts">
 
 </code-example>
 
-
-
-
-
 <code-example path="styleguide/src/02-07/app/users/users.component.ts" region="example" header="app/users/users.component.ts">
 
 </code-example>
-
-
 
 <!--
 <a href="#toc">Back to top</a>
@@ -1290,9 +1219,7 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 -->
 #### 스타일 02-06
 
-
 <div class="s-rule do">
-
 
 <!--
 **Do** Use lower camel case for naming the selectors of directives.
@@ -1301,10 +1228,7 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 </div>
 
-
-
 <div class="s-why">
-
 
 <!--
 **Why?** Keeps the names of the properties defined in the directives that are bound to the view consistent with the attribute names.
@@ -1313,10 +1237,7 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 </div>
 
-
-
 <div class="s-why-last">
-
 
 <!--
 **Why?** The Angular HTML parser is case sensitive and recognizes lower camel case.
@@ -1324,6 +1245,7 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 **왜?** Angular HTML 파서는 대소문자를 구별하기 때문에 소문자 캐멀 케이스도 활용할 수 있습니다.
 
 </div>
+
 
 <!--
 <a href="#toc">Back to top</a>
@@ -1427,8 +1349,17 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 <!--
 **Do** use consistent names for all pipes, named after their feature.
+The pipe class name should use [UpperCamelCase](guide/glossary#case-types)
+(the general convention for class names),
+and the corresponding `name` string should use *lowerCamelCase*.
+The `name` string cannot use hyphens ("dash-case" or "kebab-case").
 -->
 커스텀 파이프를 구현한 클래스에는 `Pipe` 접미사를 **붙이고,** 이 파일에는 `.pipe` 타입을 **명시하세요.**
+The pipe class name should use [UpperCamelCase](guide/glossary#case-types)
+(the general convention for class names),
+and the corresponding `name` string should use *lowerCamelCase*.
+The `name` string cannot use hyphens ("dash-case" or "kebab-case").
+
 
 </div>
 
@@ -2044,7 +1975,6 @@ A consistent class and file name convention make these modules easy to spot and 
 </table>
 
 
-
 <!--
 <a href="#toc">Back to top</a>
 -->
@@ -2111,6 +2041,7 @@ keep the **F**lattest structure you can, and
 
 <div class="s-rule do">
 
+
 <!--
 **Do** define the structure to follow these four basic guidelines, listed in order of importance.
 -->
@@ -2122,8 +2053,9 @@ keep the **F**lattest structure you can, and
 
 <div class="s-why-last">
 
+
 <!--
-**Why?** LIFT Provides a consistent structure that scales well, is modular, and makes it easier to increase developer efficiency by finding code quickly.
+**Why?** LIFT provides a consistent structure that scales well, is modular, and makes it easier to increase developer efficiency by finding code quickly.
 To confirm your intuition about a particular structure, ask:
 _can I quickly open and start work in all of the related files for this feature_?
 -->
@@ -2149,8 +2081,9 @@ _이 기능을 수정하려면 어디에 있는 파일을 열어야 원하는 �
 
 <div class="s-rule do">
 
+
 <!--
-**Do** make locating code intuitive, simple and fast.
+**Do** make locating code intuitive, simple, and fast.
 -->
 코드는 직관적으로 떠오르는 위치에 두세요. 그게 간단하고 빠릅니다.
 
@@ -2159,6 +2092,7 @@ _이 기능을 수정하려면 어디에 있는 파일을 열어야 원하는 �
 
 
 <div class="s-why-last">
+
 
 <!--
 **Why?** To work efficiently you must be able to find files quickly,
@@ -2189,6 +2123,7 @@ A descriptive folder structure makes a world of difference to you and the people
 
 <div class="s-rule do">
 
+
 <!--
 **Do** name the file such that you instantly know what it contains and represents.
 -->
@@ -2199,6 +2134,7 @@ A descriptive folder structure makes a world of difference to you and the people
 
 
 <div class="s-rule do">
+
 
 <!--
 **Do** be descriptive with file names and keep the contents of the file to exactly one component.
@@ -2211,6 +2147,7 @@ A descriptive folder structure makes a world of difference to you and the people
 
 <div class="s-rule avoid">
 
+
 <!--
 **Avoid** files with multiple components, multiple services, or a mixture.
 -->
@@ -2221,6 +2158,7 @@ A descriptive folder structure makes a world of difference to you and the people
 
 
 <div class="s-why-last">
+
 
 <!--
 **Why?** Spend less time hunting and pecking for code, and become more efficient.
@@ -2234,6 +2172,7 @@ Longer file names are far better than _short-but-obscure_ abbreviated names.
 
 
 <div class="alert is-helpful">
+
 
 <!--
 It may be advantageous to deviate from the _one-thing-per-file_ rule when
@@ -2279,6 +2218,7 @@ in a single file than as multiple files. Be wary of this loophole.
 
 
 <div class="s-rule consider">
+
 
 
 **Consider** creating sub-folders when a folder reaches seven or more files.
@@ -2406,7 +2346,8 @@ But if something is not obvious or departs from a convention, then spell it out.
 
 
 
-<div class="s-rule do">
+<div class="s-rule
+ do">
 
 <!--
 **Do** have a near term view of implementation and a long term vision.
@@ -2418,6 +2359,7 @@ But if something is not obvious or departs from a convention, then spell it out.
 
 
 <div class="s-rule do">
+
 
 <!--
 **Do** put all of the app's code in a folder named `src`.
@@ -2696,6 +2638,7 @@ Here is a compliant folder and file structure:
 
 <div class="alert is-helpful">
 
+
 <!--
 While components in dedicated folders are widely preferred,
 another option for small apps is to keep components flat (not in a dedicated folder).
@@ -2801,6 +2744,8 @@ and more difficult in a flat structure.
 
 **Do** create an NgModule in the app's root folder,
 for example, in `/src/app`.
+
+
 </div>
 
 
@@ -2810,6 +2755,8 @@ for example, in `/src/app`.
 
 
 **Why?** Every app requires at least one root NgModule.
+
+
 </div>
 
 
@@ -2819,6 +2766,8 @@ for example, in `/src/app`.
 
 
 **Consider** naming the root module `app.module.ts`.
+
+
 </div>
 
 
@@ -2828,6 +2777,8 @@ for example, in `/src/app`.
 
 
 **Why?** Makes it easier to locate and identify the root module.
+
+
 </div>
 
 
@@ -2856,6 +2807,8 @@ for example, in `/src/app`.
 
 **Do** create an NgModule for all distinct features in an application;
 for example, a `Heroes` feature.
+
+
 </div>
 
 
@@ -2866,6 +2819,8 @@ for example, a `Heroes` feature.
 
 **Do** place the feature module in the same named folder as the feature area;
 for example, in `app/heroes`.
+
+
 </div>
 
 
@@ -2919,6 +2874,7 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 <div class="s-why">
 
 
+
 **Why?** A feature module can easily be routed to both eagerly and lazily.
 
 
@@ -2942,6 +2898,7 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 
 
 **Why?** A feature module helps clarify and make it easier to assign development responsibilities to different teams.
+
 
 </div>
 
@@ -2984,6 +2941,7 @@ for example, `app/shared/shared.module.ts` defines `SharedModule`.
 **Do** declare components, directives, and pipes in a shared module when those
 items will be re-used and referenced by the components declared in other feature modules.
 
+
 </div>
 
 
@@ -2994,6 +2952,7 @@ items will be re-used and referenced by the components declared in other feature
 
 **Consider** using the name SharedModule when the contents of a shared
 module are referenced across the entire application.
+
 
 </div>
 
@@ -3007,6 +2966,7 @@ module are referenced across the entire application.
 singletons that are provided once for the entire application or
 in a particular feature module. There are exceptions, however. For example, in the sample code that follows, notice that the `SharedModule` provides `FilterTextService`. This is acceptable here because the service is stateless;that is, the consumers of the service aren't impacted by new instances.
 
+
 </div>
 
 
@@ -3017,6 +2977,7 @@ in a particular feature module. There are exceptions, however. For example, in t
 
 **Do** import all modules required by the assets in the `SharedModule`;
 for example, `CommonModule` and `FormsModule`.
+
 
 </div>
 
@@ -3041,6 +3002,7 @@ that may need features from another common module; for example,
 
 **Do** declare all components, directives, and pipes in the `SharedModule`.
 
+
 </div>
 
 
@@ -3051,6 +3013,7 @@ that may need features from another common module; for example,
 
 **Do** export all symbols from the `SharedModule` that other feature modules need to use.
 
+
 </div>
 
 
@@ -3060,6 +3023,7 @@ that may need features from another common module; for example,
 
 
 **Why?** `SharedModule` exists to make commonly used components, directives and pipes available for use in the templates of components in many other modules.
+
 
 </div>
 
@@ -3223,7 +3187,6 @@ A distinct application feature or workflow may be *lazy loaded* or *loaded on de
 
 <div class="s-rule do">
 
-
 <!--
 **Do** put the contents of lazy loaded features in a *lazy loaded folder*.
 A typical *lazy loaded folder* contains a *routing component*, its child components, and their related assets and modules.
@@ -3234,7 +3197,6 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 </div>
 
 <div class="s-why-last">
-
 
 <!--
 **Why?** The folder makes it easy to identify and isolate the feature content.
@@ -3262,7 +3224,6 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 <div class="s-rule avoid">
 
-
 <!--
 **Avoid** allowing modules in sibling and parent folders to directly import a module in a *lazy loaded feature*.
 -->
@@ -3271,7 +3232,6 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 </div>
 
 <div class="s-why-last">
-
 
 <!--
 **Why?** Directly importing and using a module will load it immediately when the intention is to load it on demand.
@@ -3284,7 +3244,6 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 <a href="#toc">Back to top</a>
 -->
 <a href="#toc">맨 위로</a>
-
 
 <!--
 ## Components
@@ -3313,7 +3272,6 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 </div>
 
 <div class="s-why">
-
 
 <!--
 **Why?** Components have templates containing HTML and optional Angular template syntax.
@@ -3516,6 +3474,7 @@ Angular는 앞으로 HTML 템플릿에도 이 기능을 지원할 수 있도록 
 
 {@a 05-12}
 
+{@a decorate-input-and-output-properties}
 <!--
 ### Decorate _input_ and _output_ properties
 -->
@@ -3568,9 +3527,10 @@ Angular는 앞으로 HTML 템플릿에도 이 기능을 지원할 수 있도록 
 
 <!--
 **Why?** If you ever need to rename the property or event name associated with
-`@Input` or `@Output`, you can modify it in a single place.
+`@Input()` or `@Output()`, you can modify it in a single place.
 -->
 **왜?** 클래스 프로퍼티에 입출력 데코레이터를 지정하면, 이 프로퍼티 이름을 다른 이름으로 바인딩 받거나 이벤트 이름을 다르게 지정할 때도 관련된 내용을 한 곳에서 모두 수정할 수 있습니다.
+
 
 </div>
 
@@ -4399,7 +4359,7 @@ Compare with the less preferred `host` metadata alternative.
 
 </div>
 
-<code-example path="dependency-injection/src/app/tree-shaking/service.ts" header="src/app/treeshaking/service.ts" linenums="false"> </code-example>
+<code-example path="dependency-injection/src/app/tree-shaking/service.ts" header="src/app/treeshaking/service.ts"></code-example>
 
 
 
@@ -4714,7 +4674,6 @@ codelyzer 룰은 필요한대로 수정해서 사용하는 것을 **권장합니
 
 
 <div class="s-rule consider">
-
 
 <!--
 **Consider** using [snippets](https://marketplace.visualstudio.com/items?itemName=johnpapa.Angular2) for [Visual Studio Code](https://code.visualstudio.com/) that follow these styles and guidelines.

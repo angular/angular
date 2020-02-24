@@ -27,18 +27,14 @@ var CIconfiguration = {
   'IE10': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'IE11': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'Edge': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
-  'Android4.4': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
-  'Android5': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
-  'Android6': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'Android7': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  'Safari7': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
-  'Safari8': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
-  'Safari9': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
-  'Safari10': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
-  'iOS7': {unitTest: {target: 'BS', required: true}, e2e: {target: null, required: true}},
-  'iOS8': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
-  'iOS9': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
+  'Android8': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
+  'Android9': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
+  'Android10': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
+  'Safari12': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
+  'Safari13': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'iOS10': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
+  'iOS11': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'WindowsPhone': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}}
 };
 
@@ -96,6 +92,27 @@ var customLaunchers = {
     browserName: 'Chrome',
     platform: 'Android',
     version: '7.1',
+    device: 'Android GoogleAPI Emulator'
+  },
+  'SL_ANDROID8': {
+    base: 'SauceLabs',
+    browserName: 'Chrome',
+    platform: 'Android',
+    version: '8.0',
+    device: 'Android GoogleAPI Emulator'
+  },
+  'SL_ANDROID9': {
+    base: 'SauceLabs',
+    browserName: 'Chrome',
+    platform: 'Android',
+    version: '9.0',
+    device: 'Android GoogleAPI Emulator'
+  },
+  'SL_ANDROID10': {
+    base: 'SauceLabs',
+    browserName: 'Chrome',
+    platform: 'Android',
+    version: '10.0',
     device: 'Android GoogleAPI Emulator'
   },
 

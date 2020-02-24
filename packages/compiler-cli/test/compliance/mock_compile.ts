@@ -5,24 +5,24 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {AotCompilerOptions} from '@angular/compiler';
 import {escapeRegExp} from '@angular/compiler/src/util';
-import {MockCompilerHost, MockData, MockDirectory, arrayToMockDir, settings, toMockFileArray} from '@angular/compiler/test/aot/test_util';
+import {MockCompilerHost, MockData, MockDirectory, arrayToMockDir, toMockFileArray} from '@angular/compiler/test/aot/test_util';
 import * as ts from 'typescript';
-
+import {NodeJSFileSystem, setFileSystem} from '../../src/ngtsc/file_system';
 import {NgtscProgram} from '../../src/ngtsc/program';
-
 
 const IDENTIFIER = /[A-Za-z_$ɵ][A-Za-z0-9_$]*/;
 const OPERATOR =
-    /!|\?|%|\*|\/|\^|&&?|\|\|?|\(|\)|\{|\}|\[|\]|:|;|<=?|>=?|={1,3}|!==?|=>|\+\+?|--?|@|,|\.|\.\.\./;
-const STRING = /'(\\'|[^'])*'|"(\\"|[^"])*"|`(\\`[\s\S])*?`/;
+    /!|\?|%|\*|\/|\^|&&?|\|\|?|\(|\)|\{|\}|\[|\]|:|;|<=?|>=?|={1,3}|!==?|=>|\+\+?|--?|@|,|\.|\.\.\.|`|\\'/;
+const STRING = /'(\\'|[^'])*'|"(\\"|[^"])*"/;
+const BACKTICK_STRING = /\\`(([\s\S]*?)(\$\{[^}]*?\})?)*?[^\\]\\`/;
+const BACKTICK_INTERPOLATION = /(\$\{[^}]*\})/;
 const NUMBER = /\d+/;
 
 const ELLIPSIS = '…';
 const TOKEN = new RegExp(
-    `\\s*((${IDENTIFIER.source})|(${OPERATOR.source})|(${STRING.source})|${NUMBER.source}|${ELLIPSIS})\\s*`,
+    `\\s*((${IDENTIFIER.source})|(${BACKTICK_STRING.source})|(${OPERATOR.source})|(${STRING.source})|${NUMBER.source}|${ELLIPSIS})\\s*`,
     'y');
 
 type Piece = string | RegExp;
@@ -32,6 +32,8 @@ const SKIP = /(?:.|\n|\r)*/;
 const ERROR_CONTEXT_WIDTH = 30;
 // Transform the expected output to set of tokens
 function tokenize(text: string): Piece[] {
+  // TOKEN.lastIndex is stateful so we cache the `lastIndex` and restore it at the end of the call.
+  const lastIndex = TOKEN.lastIndex;
   TOKEN.lastIndex = 0;
 
   let match: RegExpMatchArray|null;
@@ -44,6 +46,8 @@ function tokenize(text: string): Piece[] {
       pieces.push(IDENTIFIER);
     } else if (token === ELLIPSIS) {
       pieces.push(SKIP);
+    } else if (match = BACKTICK_STRING.exec(token)) {
+      pieces.push(...tokenizeBackTickString(token));
     } else {
       pieces.push(token);
     }
@@ -59,7 +63,33 @@ function tokenize(text: string): Piece[] {
         `Invalid test, no token found for "${text[tokenizedTextEnd]}" ` +
         `(context = '${text.substr(from, to)}...'`);
   }
+  // Reset the lastIndex in case we are in a recursive `tokenize()` call.
+  TOKEN.lastIndex = lastIndex;
 
+  return pieces;
+}
+
+/**
+ * Back-ticks are escaped as "\`" so we must strip the backslashes.
+ * Also the string will likely contain interpolations and if an interpolation holds an
+ * identifier we will need to match that later. So tokenize the interpolation too!
+ */
+function tokenizeBackTickString(str: string): Piece[] {
+  const pieces: Piece[] = ['`'];
+  // Unescape backticks that are inside the backtick string
+  // (we had to double escape them in the test string so they didn't look like string markers)
+  str = str.replace(/\\\\\\`/g, '\\`');
+  const backTickPieces = str.slice(2, -2).split(BACKTICK_INTERPOLATION);
+  backTickPieces.forEach((backTickPiece) => {
+    if (BACKTICK_INTERPOLATION.test(backTickPiece)) {
+      // An interpolation so tokenize this expression
+      pieces.push(...tokenize(backTickPiece));
+    } else {
+      // Not an interpolation so just add it as a piece
+      pieces.push(backTickPiece);
+    }
+  });
+  pieces.push('`');
   return pieces;
 }
 
@@ -169,6 +199,7 @@ export function compile(
     errorCollector: (error: any, fileName?: string) => void = error => { throw error;}): {
   source: string,
 } {
+  setFileSystem(new NodeJSFileSystem());
   const testFiles = toMockFileArray(data);
   const scripts = testFiles.map(entry => entry.fileName);
   const angularFilesArray = toMockFileArray(angularFiles);
@@ -179,7 +210,8 @@ export function compile(
       scripts, {
         target: ts.ScriptTarget.ES2015,
         module: ts.ModuleKind.ES2015,
-        moduleResolution: ts.ModuleResolutionKind.NodeJs, ...options,
+        moduleResolution: ts.ModuleResolutionKind.NodeJs,
+        enableI18nLegacyMessageIdFormat: false, ...options,
       },
       mockCompilerHost);
   program.emit();

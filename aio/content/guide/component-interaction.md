@@ -1,5 +1,5 @@
 <!--
-# Component Interaction
+# Component interaction
 -->
 # 컴포넌트 통신
 
@@ -73,9 +73,9 @@ The running application displays three heroes:
 그리고 이 애플리케이션을 실행하면 다음과 같이 세 명의 히어로가 표시됩니다:
 
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/component-interaction/parent-to-child.png" alt="Parent-to-child">
-</figure>
+</div>
 
 
 <!--
@@ -133,9 +133,9 @@ Here's the `NameParentComponent` demonstrating name variations including a name 
 
 
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/component-interaction/setter.png" alt="Parent-to-child-setter">
-</figure>
+</div>
 
 
 <!--
@@ -177,7 +177,7 @@ Detect and act upon changes to input property values with the `ngOnChanges()` me
 <!--
 You may prefer this approach to the property setter when watching multiple, interacting input properties.
 
-Learn about `ngOnChanges()` in the [LifeCycle Hooks](guide/lifecycle-hooks) chapter.
+Learn about `ngOnChanges()` in the [Lifecycle Hooks](guide/lifecycle-hooks) chapter.
 -->
 입력 프로퍼티 여러개를 가로채야 한다면 세터를 사용하는 것보다 이 방식이 더 편할 수 있습니다.
 
@@ -211,9 +211,9 @@ Here's the output of a button-pushing sequence:
 -->
 버튼을 눌렀을 때 화면은 다음과 같습니다:
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/component-interaction/parent-to-child-on-changes.gif" alt="Parent-to-child-onchanges">
-</figure>
+</div>
 
 
 <!--
@@ -285,9 +285,9 @@ and the method processes it:
 -->
 이 때 전달되는 이벤트 객체는 템플릿에서 `$event`라는 이름으로 접근할 수 있으며, 템플릿에서 이벤트 핸들러 함수에 인자로 전달하기 때문에 컴포넌트 클래스 코드에서 이 이벤트 객체를 활용할 수 있습니다:
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/component-interaction/child-to-parent.gif" alt="Child-to-parent">
-</figure>
+</div>
 
 
 <!--
@@ -374,9 +374,9 @@ Here we see the parent and child working together.
 -->
 부모 컴포넌트와 자식 컴포넌트가 어떻게 연동되는지 확인해 보세요.
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/component-interaction/countdown-timer-anim.gif" alt="countdown timer">
-</figure>
+</div>
 
 
 
@@ -617,9 +617,9 @@ facilitated by the service:
 -->
 부모 컴포넌트 `MissionControlComponent`와 자식 컴포넌트 `AstronautComponent`가 서비스를 통해 데이터를 주고받는 과정은 *History* 영역에 다음과 같이 표시됩니다: 
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/component-interaction/bidirectional-service.gif" alt="bidirectional-service">
-</figure>
+</div>
 
 
 <!--

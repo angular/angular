@@ -27,8 +27,13 @@ export class KeyUpComponent_v1 {
   */
   // #docregion key-up-component-1-class
 
+<<<<<<< HEAD
   onKey(event: KeyboardEvent) { // 타입을 지정한 경우
     this.values += (<HTMLInputElement>event.target).value + ' | ';
+=======
+  onKey(event: KeyboardEvent) { // with type info
+    this.values += (event.target as HTMLInputElement).value + ' | ';
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
   }
 // #docregion key-up-component-1-class-no-type
 }

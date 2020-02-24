@@ -13,9 +13,8 @@ export function parseTransitionExpr(
     transitionValue: string | TransitionMatcherFn, errors: string[]): TransitionMatcherFn[] {
   const expressions: TransitionMatcherFn[] = [];
   if (typeof transitionValue == 'string') {
-    (<string>transitionValue)
-        .split(/\s*,\s*/)
-        .forEach(str => parseInnerTransitionStr(str, expressions, errors));
+    transitionValue.split(/\s*,\s*/).forEach(
+        str => parseInnerTransitionStr(str, expressions, errors));
   } else {
     expressions.push(<TransitionMatcherFn>transitionValue);
   }
@@ -30,7 +29,7 @@ function parseInnerTransitionStr(
       expressions.push(result);
       return;
     }
-    eventStr = result as string;
+    eventStr = result;
   }
 
   const match = eventStr.match(/^(\*|[-\w]+)\s*(<?[=-]>)\s*(\*|[-\w]+)$/);

@@ -41,13 +41,11 @@ describe('SelectComponent', () => {
       expect(getButton().textContent!.trim()).toEqual('Label:');
     });
 
-    it('should contain a symbol `<span>` if hasSymbol is true', () => {
-      expect(getButton().querySelector('span')).toEqual(null);
+    it('should contain a symbol if hasSymbol is true', () => {
+      expect(getButtonSymbol()).toEqual(null);
       host.showSymbol = true;
       fixture.detectChanges();
-      const span = getButton().querySelector('span');
-      expect(span).not.toEqual(null);
-      expect(span!.className).toContain('symbol');
+      expect(getButtonSymbol()).not.toEqual(null);
     });
 
     it('should display the selected option, if there is one', () => {
@@ -55,7 +53,7 @@ describe('SelectComponent', () => {
       host.selected = options[0];
       fixture.detectChanges();
       expect(getButton().textContent).toContain(options[0].title);
-      expect(getButton().querySelector('span')!.className).toContain(options[0].value);
+      expect(getButtonSymbol()!.className).toContain(options[0].value);
     });
 
     it('should toggle the visibility of the options list when clicked', () => {
@@ -110,7 +108,7 @@ describe('SelectComponent', () => {
       fixture.detectChanges();
       expect(host.onChange).toHaveBeenCalledWith({ option: options[0], index: 0 });
       expect(getButton().textContent).toContain(options[0].title);
-      expect(getButton().querySelector('span')!.className).toContain(options[0].value);
+      expect(getButtonSymbol()!.className).toContain(options[0].value);
     });
 
     it('should select the current option when enter is pressed', () => {
@@ -119,7 +117,7 @@ describe('SelectComponent', () => {
       fixture.detectChanges();
       expect(host.onChange).toHaveBeenCalledWith({ option: options[0], index: 0 });
       expect(getButton().textContent).toContain(options[0].title);
-      expect(getButton().querySelector('span')!.className).toContain(options[0].value);
+      expect(getButtonSymbol()!.className).toContain(options[0].value);
     });
 
     it('should select the current option when space is pressed', () => {
@@ -128,7 +126,7 @@ describe('SelectComponent', () => {
       fixture.detectChanges();
       expect(host.onChange).toHaveBeenCalledWith({ option: options[0], index: 0 });
       expect(getButton().textContent).toContain(options[0].title);
-      expect(getButton().querySelector('span')!.className).toContain(options[0].value);
+      expect(getButtonSymbol()!.className).toContain(options[0].value);
     });
 
     it('should hide when an option is clicked', () => {
@@ -175,6 +173,10 @@ class HostComponent {
 
 function getButton(): HTMLButtonElement {
   return element.query(By.css('button')).nativeElement;
+}
+
+function getButtonSymbol(): HTMLElement | null {
+  return getButton().querySelector('.symbol');
 }
 
 function getOptionContainer(): HTMLUListElement|null {

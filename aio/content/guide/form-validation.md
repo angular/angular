@@ -1,5 +1,5 @@
 <!--
-# Form Validation
+# Form validation
 -->
 # 폼 유효성 검사
 
@@ -50,9 +50,7 @@ The following example exports `NgModel` into a variable called `name`:
 폼 컨트롤의 상태는 템플릿 변수로 참조하는 `ngModel`을 활용해서 추적할 수 있습니다.
 다음 코드는 `name` 폼 컨트롤의 유효성을 확인하는 예제입니다:
 
-<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="name-with-error-msg" header="template/hero-form-template.component.html (name)" linenums="false">
-
-</code-example>
+<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="name-with-error-msg" header="template/hero-form-template.component.html (name)"></code-example>
 
 <!--
 Note the following:
@@ -161,8 +159,7 @@ built-in validators&mdash;this time, in function form. See below:
 
 {@a reactive-component-class}
 
-<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.1.ts" region="form-group" header="reactive/hero-form-reactive.component.ts (validator functions)" linenums="false">
-</code-example>
+<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.1.ts" region="form-group" header="reactive/hero-form-reactive.component.ts (validator functions)"></code-example>
 
 <!--
 Note that:
@@ -186,8 +183,7 @@ If you look at the template for the name input again, it is fairly similar to th
 -->
 이 내용은 템플릿 기반 폼을 다룰 때와 비슷하게 템플릿에 적용할 수 있습니다.
 
-<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.html" region="name-with-error-msg" header="reactive/hero-form-reactive.component.html (name with error msg)" linenums="false">
-</code-example>
+<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.html" region="name-with-error-msg" header="reactive/hero-form-reactive.component.html (name with error msg)"></code-example>
 
 <!--
 Key takeaways:
@@ -219,8 +215,7 @@ Angular의 기본 유효성 검사기가 애플리케이션의 요구사항을 �
 
 [이전 예제](guide/form-validation#reactive-component-class)에서 살펴본 `forbiddenNameValidator` 함수를 구현해봅시다. 이 함수는 다음과 같이 정의합니다:
 
-<code-example path="form-validation/src/app/shared/forbidden-name.directive.ts" region="custom-validator" header="shared/forbidden-name.directive.ts (forbiddenNameValidator)" linenums="false">
-</code-example>
+<code-example path="form-validation/src/app/shared/forbidden-name.directive.ts" region="custom-validator" header="shared/forbidden-name.directive.ts (forbiddenNameValidator)"></code-example>
 
 <!--
 The function is actually a factory that takes a regular expression to detect a _specific_ forbidden name and returns a validator function.
@@ -253,6 +248,7 @@ at which point the form uses the last value emitted for validation.
 커스텀 비동기 유효성 검사기는 반환 타입이 Promise나 Observable인 것만 빼면 동기 유효성 검사기와 비슷하며, 이 객체 안에 에러 객체나 null을 반환합니다.
 만약 반환 타입이 옵저버블이라면 유효성 검사 로직이 종료된 이후에 이 옵저버블은 반드시 종료되어야 합니다.
 
+{@a adding-to-reactive-forms}
 <!--
 ### Adding to reactive forms
 -->
@@ -264,9 +260,9 @@ to the `FormControl`.
 -->
 커스텀 유효성 검사기를 반응형 폼에 적용하는 것은 아주 간단합니다. `FormControl` 인스턴스를 생성할 때 인자로 전달하기만 하면 됩니다.
 
-<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.1.ts" region="custom-validator" header="reactive/hero-form-reactive.component.ts (validator functions)" linenums="false">
-</code-example>
+<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.1.ts" region="custom-validator" header="reactive/hero-form-reactive.component.ts (validator functions)"></code-example>
 
+{@a adding-to-template-driven-forms}
 <!--
 ### Adding to template-driven forms
 -->
@@ -289,8 +285,7 @@ with the `NG_VALIDATORS` provider, a provider with an extensible collection of v
 -->
 이 디렉티브의 역할이 유효성 검사라는 것을 Angular에게 알리기 위해 `NG_VALIDATORS` 프로바이더를 사용하며, Angular의 기본 디렉티브 목록에 이 디렉티브를 추가하도록 다음과 같이 등록합니다.
 
-<code-example path="form-validation/src/app/shared/forbidden-name.directive.ts" region="directive-providers" header="shared/forbidden-name.directive.ts (providers)" linenums="false">
-</code-example>
+<code-example path="form-validation/src/app/shared/forbidden-name.directive.ts" region="directive-providers" header="shared/forbidden-name.directive.ts (providers)"></code-example>
 
 <!--
 The directive class then implements the `Validator` interface, so that it can easily integrate
@@ -308,9 +303,7 @@ Once the `ForbiddenValidatorDirective` is ready, you can simply add its selector
 -->
 `ForbiddenValidatorDirective`를 등록하고 나면 `appForbiddenName` 어트리뷰트를 사용해서 엘리먼트에 적용할 수 있습니다. 다음과 같이 적용합니다:
 
-<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="name-input" header="template/hero-form-template.component.html (forbidden-name-input)" linenums="false">
-
-</code-example>
+<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="name-input" header="template/hero-form-template.component.html (forbidden-name-input)"></code-example>
 
 
 <div class="alert is-helpful">
@@ -421,8 +414,7 @@ The validator code is as follows:
 -->
 이 때 지정한 유효성 검사기는 다음과 같이 구현되어 있습니다:
 
-<code-example path="form-validation/src/app/shared/identity-revealed.directive.ts" region="cross-validation-validator" header="shared/identity-revealed.directive.ts" linenums="false">
-</code-example>
+<code-example path="form-validation/src/app/shared/identity-revealed.directive.ts" region="cross-validation-validator" header="shared/identity-revealed.directive.ts"></code-example>
 
 <!--
 The identity validator implements the `ValidatorFn` interface. It takes an Angular control object as an argument and returns either null if the form is valid, or `ValidationErrors` otherwise.
@@ -441,11 +433,11 @@ If the values do not match, the hero's identity remains secret, and we can safel
 
 <!--
 Next, to provide better user experience, we show an appropriate error message when the form is invalid.
+<<<<<<< HEAD
 -->
 그 다음에는 좀 더 편한 사용성을 제공하기 위해 에러 메시지를 폼에 표시해 봅시다.
 
-<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.html" region="cross-validation-error-message" header="reactive/hero-form-template.component.html" linenums="false">
-</code-example>
+<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.html" region="cross-validation-error-message" header="reactive/hero-form-template.component.html"></code-example>
 
 <!--
 Note that we check if:
@@ -465,22 +457,20 @@ First we must create a directive that will wrap the validator function. We provi
 -->
 먼저, 유효성 검사 함수를 디렉티브로 랩핑해서 `NG_VALIDATORS` 토큰으로 만들어야 합니다. 왜 이렇게 해야하는지, 어떻게 해야하는지 잘 모르겠다면 [이 문서](guide/form-validation#템플릿-기반-폼에-적용하기)를 참고하세요.
 
-<code-example path="form-validation/src/app/shared/identity-revealed.directive.ts" region="cross-validation-directive" header="shared/identity-revealed.directive.ts" linenums="false">
-</code-example>
+<code-example path="form-validation/src/app/shared/identity-revealed.directive.ts" region="cross-validation-directive" header="shared/identity-revealed.directive.ts"></code-example>
 
 <!--
 Next, we have to add the directive to the html template. Since the validator must be registered at the highest level in the form, we put the directive on the `form` tag.
 -->
 그 다음에는 이렇게 만든 디렉티브를 HTML 템플릿에 적용해야 합니다. 이 우효성 검사기는 폼의 최상위 계층에 적용되어야 하기 때문에 `form` 태그에 이 디렉티브를 지정합니다.
-<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="cross-validation-register-validator" header="template/hero-form-template.component.html" linenums="false">
-</code-example>
+
+<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="cross-validation-register-validator" header="template/hero-form-template.component.html"></code-example>
 
 <!--
 To provide better user experience, we show an appropriate error message when the form is invalid.
 -->
 그리고 좀더 나은 사용성을 위해 폼 유효성 검사가 실패했을 때 에러 메시지를 표시해 줍니다.
-<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="cross-validation-error-message" header="template/hero-form-template.component.html" linenums="false">
-</code-example>
+<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="cross-validation-error-message" header="template/hero-form-template.component.html"></code-example>
 
 <!--
 Note that we check if:
@@ -566,7 +556,7 @@ Let's start by creating the validator class.
 -->
 먼저 유효성 검사기 클래스를 만들어 봅시다.
 
-<code-example path="form-validation/src/app/shared/alter-ego.directive.ts" region="async-validator" linenums="false"></code-example>
+<code-example path="form-validation/src/app/shared/alter-ego.directive.ts" region="async-validator"></code-example>
 
 <!--
 As you can see, the `UniqueAlterEgoValidator` class implements the `AsyncValidator` interface. In the constructor, we inject the `HeroesService` that has the following interface:

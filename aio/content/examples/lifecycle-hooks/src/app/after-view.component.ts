@@ -34,8 +34,13 @@ export class ChildViewComponent {
 export class AfterViewComponent implements  AfterViewChecked, AfterViewInit {
   private prevHero = '';
 
+<<<<<<< HEAD
   // `ChildViewComponent` 타입의 뷰 자식 컴포넌트를 참조합니다.
   @ViewChild(ChildViewComponent, {static: false}) viewChild: ChildViewComponent;
+=======
+  // Query for a VIEW child of type `ChildViewComponent`
+  @ViewChild(ChildViewComponent) viewChild: ChildViewComponent;
+>>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 // #enddocregion hooks
   constructor(private logger: LoggerService) {

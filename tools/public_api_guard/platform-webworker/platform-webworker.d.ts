@@ -11,6 +11,7 @@ export declare class ClientMessageBrokerFactory {
     createMessageBroker(channel: string, runInZone?: boolean): ClientMessageBroker;
 }
 
+/** @deprecated */
 export declare class FnArg {
     type: Type<any> | SerializerTypes;
     value: any;
@@ -25,12 +26,14 @@ export declare abstract class MessageBus implements MessageBusSource, MessageBus
     abstract to(channel: string): EventEmitter<any>;
 }
 
+/** @deprecated */
 export interface MessageBusSink {
     attachToZone(zone: NgZone): void;
     initChannel(channel: string, runInZone: boolean): void;
     to(channel: string): EventEmitter<any>;
 }
 
+/** @deprecated */
 export interface MessageBusSource {
     attachToZone(zone: NgZone): void;
     from(channel: string): EventEmitter<any>;
@@ -40,7 +43,8 @@ export interface MessageBusSource {
 /** @deprecated */
 export declare const platformWorkerApp: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
 
-export declare const platformWorkerUi: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
+/** @deprecated */
+export declare const platformWorkerUi: (extraProviders?: StaticProvider[] | undefined) => import("@angular/core").PlatformRef;
 
 /** @deprecated */
 export interface ReceivedMessage {
@@ -67,6 +71,7 @@ export declare class ServiceMessageBrokerFactory {
     createMessageBroker(channel: string, runInZone?: boolean): ServiceMessageBroker;
 }
 
+/** @deprecated */
 export declare class UiArguments {
     args?: FnArg[] | undefined;
     method: string;
@@ -77,25 +82,7 @@ export declare class UiArguments {
 export declare const VERSION: Version;
 
 /** @deprecated */
-export declare const WORKER_APP_LOCATION_PROVIDERS: ({
-    provide: typeof PlatformLocation;
-    useClass: typeof WebWorkerPlatformLocation;
-    useFactory?: undefined;
-    multi?: undefined;
-    deps?: undefined;
-} | {
-    provide: InjectionToken<(() => void)[]>;
-    useFactory: typeof appInitFnFactory;
-    multi: boolean;
-    deps: (typeof NgZone | typeof PlatformLocation)[];
-    useClass?: undefined;
-} | {
-    provide: InjectionToken<Promise<any>>;
-    useFactory: typeof locationInitialized;
-    deps: (typeof PlatformLocation)[];
-    useClass?: undefined;
-    multi?: undefined;
-})[];
+export declare const WORKER_APP_LOCATION_PROVIDERS: StaticProvider[];
 
 /** @deprecated */
 export declare const WORKER_UI_LOCATION_PROVIDERS: StaticProvider[];

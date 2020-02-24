@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 /* tslint:disable:no-console  */
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Directive} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, NgModule} from '@angular/core';
+import {FormsModule} from '@angular/forms';
 
 
 // #docregion mark-for-check
@@ -42,7 +43,7 @@ class DataListProvider {
     `,
 })
 class GiantList {
-  constructor(private ref: ChangeDetectorRef, private dataProvider: DataListProvider) {
+  constructor(private ref: ChangeDetectorRef, public dataProvider: DataListProvider) {
     ref.detach();
     setInterval(() => { this.ref.detectChanges(); }, 5000);
   }
@@ -70,8 +71,9 @@ class DataProvider {
 
 @Component({selector: 'live-data', inputs: ['live'], template: 'Data: {{dataProvider.data}}'})
 class LiveData {
-  constructor(private ref: ChangeDetectorRef, private dataProvider: DataProvider) {}
+  constructor(private ref: ChangeDetectorRef, public dataProvider: DataProvider) {}
 
+  @Input()
   set live(value: boolean) {
     if (value) {
       this.ref.reattach();
@@ -94,3 +96,8 @@ class App1 {
   live = true;
 }
 // #enddocregion reattach
+
+
+@NgModule({declarations: [AppComponent, GiantList, App, LiveData, App1], imports: [FormsModule]})
+class CoreExamplesModule {
+}

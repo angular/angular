@@ -1,5 +1,5 @@
 <!--
-# Dependency Injection in Angular
+# Dependency injection in Angular
 -->
 # Angular의 의존성 주입
 
@@ -192,7 +192,7 @@ from the injector of its parent NgModule, or from the `root` injector.
 
 * Learn more about the [different kinds of providers](guide/dependency-injection-providers).
 
-* Learn more about  how the [injector hierarchy](guide/hierarchical-dependency-injection) works.
+* Learn more about how the [injector hierarchy](guide/hierarchical-dependency-injection) works.
 -->
 현재 계층에서 인젝터가 의존성 객체를 찾지 못하면 부모 인젝터에서 의존성 객체를 찾기 때문에 인젝터는 상속된다고도 할 수 있습니다.
 컴포넌트의 경우에 의존성으로 주입되는 서비스를 컴포넌트 인젝터에서 찾지 못하면 부모 인젝터에서 다시 찾으며, 이 과정은 부모 NgModule을 거쳐 최상위 인젝터에 도달할 때까지 반복됩니다.
@@ -233,11 +233,11 @@ The `@NgModule()` and `@Component()` decorators have the `providers` metadata op
 <!--
 Components are directives, and the `providers` option is inherited from `@Directive()`. You can also configure providers for directives and pipes at the same level as the component.
 
-Learn more about [where to configure providers](guide/hierarchical-dependency-injection#where-to-register).
+Learn more about [where to configure providers](guide/hierarchical-dependency-injection).
 -->
 컴포넌트도 디렉티브이기 때문에 `@Directive()`에서도 `providers` 옵션을 사용할 수 있으며, 이렇게 등록한 프로바이더도 상속된다고 볼 수 있습니다. 프로바이더는 컴포넌트 계층에 등록하는 것처럼 디렉티브나 파이프 계층에 등록할 수도 있습니다.
 
-자세한 내용은 [프로바이더는 어디에 등록해야 할까](guide/hierarchical-dependency-injection#where-to-register) 문서를 참고하세요.
+자세한 내용은 [프로바이더는 어디에 등록해야 할까](guide/hierarchical-dependency-injection) 문서를 참고하세요.
 
 </div>
 
@@ -347,8 +347,7 @@ under test.
 
 예를 들어 테스트 환경에서 `HeroListComponent`의 새 인스턴스를 생성하는데 목 서비스를 대신 주입하려면 다음과 같이 구성하면 됩니다.
 
-<code-example path="dependency-injection/src/app/test.component.ts" region="spec" header="src/app/test.component.ts" linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/test.component.ts" region="spec" header="src/app/test.component.ts"></code-example>
 
 <div class="alert is-helpful">
 
@@ -396,7 +395,7 @@ The constructor asks for an injected instance of `Logger` and stores it in a pri
 생성자는 `Logger` 타입의 객체를 의존성으로 주입하도록 요청한 후에 이 인스턴스를 `private` 프로퍼티 `logger`에 할당합니다. 그리고 `getHeroes()` 메소드에서 로그를 출력할 때 이 프로퍼티를 사용합니다.
 
 <!--
-Notice that the `Logger` service also has the `@Injectable()` decorator, even though it might not need its own dependencies. In fact, the `@Injectable()` decorator is **required  for all services**.
+Notice that the `Logger` service also has the `@Injectable()` decorator, even though it might not need its own dependencies. In fact, the `@Injectable()` decorator is **required for all services**.
 -->
 이 때 `Logger` 서비스에는 의존성 주입이 필요하지 않지만 `@Injectable()` 데코레이터가 사용되었습니다. 실제로 `@Injectable()` 데코레이터는 **모든 서비스에 지정해야** 합니다.
 
@@ -447,8 +446,7 @@ Here you get a `HeroService` directly from the injector by supplying the `HeroSe
 의존성 주입을 간단하게 살펴볼 때 의존성으로 주입할 클래스의 *타입*은 키이며, 의존성으로 주입하는 *인스턴스*는 맵의 값(value)입니다.
 그래서 `HeroService`라고 타입을 지정하면 이 타입을 토큰으로 사용해서 `HeroService`의 인스턴스를 인젝터에서 찾을 수 있습니다:
 
-<code-example path="dependency-injection/src/app/injector.component.ts" region="get-hero-service" header="src/app/injector.component.ts" linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/injector.component.ts" region="get-hero-service" header="src/app/injector.component.ts"></code-example>
 
 <!--
 The behavior is similar when you write a constructor that requires an injected class-based dependency.
@@ -493,8 +491,7 @@ constructor parameter with `@Optional()`.
 <code-example path="dependency-injection/src/app/providers.component.ts" region="import-optional">
 </code-example>
 
-<code-example path="dependency-injection/src/app/providers.component.ts" region="provider-10-ctor" linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/providers.component.ts" region="provider-10-ctor"></code-example>
 
 <!--
 When using `@Optional()`, your code must be prepared for a null value. If you
@@ -506,7 +503,7 @@ value of `logger` to null.
 <div class="alert is-helpful">
 
 <!--
-`@Inject()` and `@Optional()` are _parameter decorators_.  They alter the way the DI framework provides a dependency, by annotating the dependency parameter on the constructor of the class that requires the dependency.
+`@Inject()` and `@Optional()` are _parameter decorators_. They alter the way the DI framework provides a dependency, by annotating the dependency parameter on the constructor of the class that requires the dependency.
 
 Learn more about parameter decorators in [Hierarchical Dependency Injectors](guide/hierarchical-dependency-injection).
 -->
@@ -541,9 +538,3 @@ Angular의 의존성 주입 시스템에 대해 더 자세하게 알아보려면
 * Learn more about [DI tokens and providers](guide/dependency-injection-providers).
 
 * [Dependency Injection in Action](guide/dependency-injection-in-action) is a cookbook for some of the interesting things you can do with DI.
--->
-* 중첩된 인젝터에 대해 더 알아보려면 [인젝터 계층](guide/hierarchical-dependency-injection) 문서를 참고하세요.
-
-* 의존성 주입 토큰과 프로바이더에 대해 더 알아보려면 [이 문서](guide/dependency-injection-providers)를 참고하세요.
-
-* 의존성 주입을 활용하는 테크닉은 [실전 의존성 주입](guide/dependency-injection-in-action) 문서에서 확인할 수 있습니다.

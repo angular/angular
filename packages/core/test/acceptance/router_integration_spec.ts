@@ -53,7 +53,7 @@ describe('router integration acceptance', () => {
     TestBed.configureTestingModule({
       imports: [RootModule],
     });
-    expect((TestBed.get(Router) as Router).config.map(r => r.path)).toEqual([
+    expect((TestBed.inject(Router)).config.map(r => r.path)).toEqual([
       '1a:1',
       '1a:2',
       '1b:1',

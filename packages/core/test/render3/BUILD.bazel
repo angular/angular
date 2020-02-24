@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library", "ts_web_test_suite")
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -42,10 +42,10 @@ ts_library(
         "load_domino.ts",
     ],
     deps = [
+        "//packages/common",
         "//packages/compiler",
-        "//packages/platform-browser",
         "//packages/platform-server",
-        "@npm//zone.js",
+        "//packages/zone.js/lib:zone_d_ts",
     ],
 )
 
@@ -61,16 +61,14 @@ ts_library(
 
 jasmine_node_test(
     name = "render3",
-    bootstrap = [
-        "angular/packages/core/test/render3/load_domino",
-    ],
+    bootstrap = [":domino_es5"],
     deps = [
         ":render3_node_lib",
-        "@npm//zone.js",
+        "//packages/zone.js/lib",
     ],
 )
 
-ts_web_test_suite(
+karma_web_test_suite(
     name = "render3_web",
     deps = [
         ":render3_lib",

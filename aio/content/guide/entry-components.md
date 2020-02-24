@@ -1,21 +1,7 @@
 <!--
-# Entry Components
+# Entry components
 -->
-# 진입 컴포넌트 (Entry Components)
-
-<!--
-#### Prerequisites:
--->
-#### 사전 지식
-
-<!--
-A basic understanding of the following concepts:
-* [Bootstrapping](guide/bootstrapping).
--->
-다음 내용을 먼저 이해하고 이 문서를 보는 것이 좋습니다:
-* [부트스트랩](guide/bootstrapping)
-
-<hr />
+# 진입 컴포넌트 (Entry components)
 
 <!--
 An entry component is any component that Angular loads imperatively, (which means you’re not referencing it in the template), by type. You specify an entry component by bootstrapping it in an NgModule, or including it in a routing definition.
@@ -25,7 +11,7 @@ An entry component is any component that Angular loads imperatively, (which mean
 <div class="alert is-helpful">
 
 <!--
-To contrast the two types of components, there are components which are included in the template, which are declarative.  Additionally, there are  components which you load imperatively; that is, entry components.
+To contrast the two types of components, there are components which are included in the template, which are declarative. Additionally, there are components which you load imperatively; that is, entry components.
 -->
 컴포넌트는 용도에 따라 두 종류로 구분할 수 있습니다. 하나는 템플릿에서 셀렉터로 사용하는 컴포넌트이며, 다른 하나는 모듈에서 명시적으로 지정하는 진입 컴포넌트입니다.
 

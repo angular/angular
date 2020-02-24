@@ -97,7 +97,6 @@ section#intro {
 
   .hero-logo {
     display: flex;
-    width: 400px;
 
     @media (max-width: 780px) {
       justify-content: center;
@@ -246,12 +245,7 @@ section#intro {
 }
 
 .button.hero-cta {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 184px;
-  height: 40px;
-  padding: 0 24px;
+  padding: 2px 34px 0;
   @include font-size(18);
   font-weight: 600;
   @include line-height(40);
@@ -443,4 +437,8 @@ div[layout=row]{
 }
 .page-features .marketing-banner {
   margin-bottom: 20px;
+}
+
+.events-container{
+  overflow-x: auto;
 }

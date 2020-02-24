@@ -8,20 +8,18 @@
 import {ConstantPool, Expression, Statement, WrappedNodeExpr, WritePropExpr} from '@angular/compiler';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
-
-import {NOOP_DEFAULT_IMPORT_RECORDER} from '@angular/compiler-cli/src/ngtsc/imports';
-import {translateStatement, ImportManager} from '../../../src/ngtsc/translator';
-import {CompiledClass, CompiledFile, DecorationAnalyses} from '../analysis/decoration_analyzer';
+import {ImportManager} from '../../../src/ngtsc/translator';
+import {CompiledClass, CompiledFile, DecorationAnalyses} from '../analysis/types';
 import {PrivateDeclarationsAnalyses} from '../analysis/private_declarations_analyzer';
 import {SwitchMarkerAnalyses, SwitchMarkerAnalysis} from '../analysis/switch_marker_analyzer';
 import {IMPORT_PREFIX} from '../constants';
-import {FileSystem} from '../file_system/file_system';
+import {FileSystem} from '../../../src/ngtsc/file_system';
 import {NgccReflectionHost} from '../host/ngcc_host';
-import {EntryPointBundle} from '../packages/entry_point_bundle';
 import {Logger} from '../logging/logger';
-import {FileToWrite, getImportRewriter, stripExtension} from './utils';
+import {EntryPointBundle} from '../packages/entry_point_bundle';
 import {RenderingFormatter, RedundantDecoratorMap} from './rendering_formatter';
 import {extractSourceMap, renderSourceAndMap} from './source_maps';
+import {FileToWrite, getImportRewriter, stripExtension} from './utils';
 
 /**
  * A base-class for rendering an `AnalyzedFile`.
@@ -31,9 +29,8 @@ import {extractSourceMap, renderSourceAndMap} from './source_maps';
  */
 export class Renderer {
   constructor(
-      private srcFormatter: RenderingFormatter, private fs: FileSystem, private logger: Logger,
-      private host: NgccReflectionHost, private isCore: boolean, private bundle: EntryPointBundle) {
-  }
+      private host: NgccReflectionHost, private srcFormatter: RenderingFormatter,
+      private fs: FileSystem, private logger: Logger, private bundle: EntryPointBundle) {}
 
   renderProgram(
       decorationAnalyses: DecorationAnalyses, switchMarkerAnalyses: SwitchMarkerAnalyses,
@@ -73,7 +70,8 @@ export class Renderer {
     }
 
     const importManager = new ImportManager(
-        getImportRewriter(this.bundle.src.r3SymbolsFile, this.isCore, this.bundle.isFlatCore),
+        getImportRewriter(
+            this.bundle.src.r3SymbolsFile, this.bundle.isCore, this.bundle.isFlatCore),
         IMPORT_PREFIX);
 
     if (compiledFile) {
@@ -83,13 +81,24 @@ export class Renderer {
       this.srcFormatter.removeDecorators(outputText, decoratorsToRemove);
 
       compiledFile.compiledClasses.forEach(clazz => {
-        const renderedDefinition = renderDefinitions(compiledFile.sourceFile, clazz, importManager);
+        const renderedDefinition =
+            this.renderDefinitions(compiledFile.sourceFile, clazz, importManager);
         this.srcFormatter.addDefinitions(outputText, clazz, renderedDefinition);
+
+        const renderedStatements =
+            this.renderAdjacentStatements(compiledFile.sourceFile, clazz, importManager);
+        this.srcFormatter.addAdjacentStatements(outputText, clazz, renderedStatements);
       });
+
+      if (!isEntryPoint && compiledFile.reexports.length > 0) {
+        this.srcFormatter.addDirectExports(
+            outputText, compiledFile.reexports, importManager, compiledFile.sourceFile);
+      }
 
       this.srcFormatter.addConstants(
           outputText,
-          renderConstantPool(compiledFile.sourceFile, compiledFile.constantPool, importManager),
+          renderConstantPool(
+              this.srcFormatter, compiledFile.sourceFile, compiledFile.constantPool, importManager),
           compiledFile.sourceFile);
     }
 
@@ -127,6 +136,9 @@ export class Renderer {
       }
 
       clazz.decorators.forEach(dec => {
+        if (dec.node === null) {
+          return;
+        }
         const decoratorArray = dec.node.parent !;
         if (!decoratorsToRemove.has(decoratorArray)) {
           decoratorsToRemove.set(decoratorArray, [dec.node]);
@@ -137,44 +149,56 @@ export class Renderer {
     });
     return decoratorsToRemove;
   }
+
+  /**
+   * Render the definitions as source code for the given class.
+   * @param sourceFile The file containing the class to process.
+   * @param clazz The class whose definitions are to be rendered.
+   * @param compilation The results of analyzing the class - this is used to generate the rendered
+   * definitions.
+   * @param imports An object that tracks the imports that are needed by the rendered definitions.
+   */
+  private renderDefinitions(
+      sourceFile: ts.SourceFile, compiledClass: CompiledClass, imports: ImportManager): string {
+    const name = this.host.getInternalNameOfClass(compiledClass.declaration);
+    const statements: Statement[] = compiledClass.compilation.map(
+        c => { return createAssignmentStatement(name, c.name, c.initializer); });
+    return this.renderStatements(sourceFile, statements, imports);
+  }
+
+  /**
+   * Render the adjacent statements as source code for the given class.
+   * @param sourceFile The file containing the class to process.
+   * @param clazz The class whose statements are to be rendered.
+   * @param compilation The results of analyzing the class - this is used to generate the rendered
+   * definitions.
+   * @param imports An object that tracks the imports that are needed by the rendered definitions.
+   */
+  private renderAdjacentStatements(
+      sourceFile: ts.SourceFile, compiledClass: CompiledClass, imports: ImportManager): string {
+    const statements: Statement[] = [];
+    for (const c of compiledClass.compilation) {
+      statements.push(...c.statements);
+    }
+    return this.renderStatements(sourceFile, statements, imports);
+  }
+
+  private renderStatements(
+      sourceFile: ts.SourceFile, statements: Statement[], imports: ImportManager): string {
+    const printStatement = (stmt: Statement) =>
+        this.srcFormatter.printStatement(stmt, sourceFile, imports);
+    return statements.map(printStatement).join('\n');
+  }
 }
 
 /**
  * Render the constant pool as source code for the given class.
  */
 export function renderConstantPool(
-    sourceFile: ts.SourceFile, constantPool: ConstantPool, imports: ImportManager): string {
-  const printer = createPrinter();
-  return constantPool.statements
-      .map(stmt => translateStatement(stmt, imports, NOOP_DEFAULT_IMPORT_RECORDER))
-      .map(stmt => printer.printNode(ts.EmitHint.Unspecified, stmt, sourceFile))
-      .join('\n');
-}
-
-/**
- * Render the definitions as source code for the given class.
- * @param sourceFile The file containing the class to process.
- * @param clazz The class whose definitions are to be rendered.
- * @param compilation The results of analyzing the class - this is used to generate the rendered
- * definitions.
- * @param imports An object that tracks the imports that are needed by the rendered definitions.
- */
-export function renderDefinitions(
-    sourceFile: ts.SourceFile, compiledClass: CompiledClass, imports: ImportManager): string {
-  const printer = createPrinter();
-  const name = compiledClass.declaration.name;
-  const translate = (stmt: Statement) =>
-      translateStatement(stmt, imports, NOOP_DEFAULT_IMPORT_RECORDER);
-  const print = (stmt: Statement) =>
-      printer.printNode(ts.EmitHint.Unspecified, translate(stmt), sourceFile);
-  const definitions = compiledClass.compilation
-                          .map(
-                              c => [createAssignmentStatement(name, c.name, c.initializer)]
-                                       .concat(c.statements)
-                                       .map(print)
-                                       .join('\n'))
-                          .join('\n');
-  return definitions;
+    formatter: RenderingFormatter, sourceFile: ts.SourceFile, constantPool: ConstantPool,
+    imports: ImportManager): string {
+  const printStatement = (stmt: Statement) => formatter.printStatement(stmt, sourceFile, imports);
+  return constantPool.statements.map(printStatement).join('\n');
 }
 
 /**
@@ -186,8 +210,4 @@ function createAssignmentStatement(
     receiverName: ts.DeclarationName, propName: string, initializer: Expression): Statement {
   const receiver = new WrappedNodeExpr(receiverName);
   return new WritePropExpr(receiver, propName, initializer).toStmt();
-}
-
-function createPrinter(): ts.Printer {
-  return ts.createPrinter({newLine: ts.NewLineKind.LineFeed});
 }

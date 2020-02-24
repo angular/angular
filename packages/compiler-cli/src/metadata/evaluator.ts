@@ -306,7 +306,7 @@ export class Evaluator {
                 error = propertyValue;
                 return true;  // Stop the forEachChild.
               } else {
-                obj[<string>propertyName] = isPropertyAssignment(assignment) ?
+                obj[propertyName] = isPropertyAssignment(assignment) ?
                     recordEntry(propertyValue, assignment.initializer) :
                     propertyValue;
               }
@@ -401,7 +401,7 @@ export class Evaluator {
           return recordEntry(member, node);
         }
         if (expression && this.isFoldable(propertyAccessExpression.expression))
-          return (<any>expression)[<string>member];
+          return (<any>expression)[member];
         if (isMetadataModuleReferenceExpression(expression)) {
           // A select into a module reference and be converted into a reference to the symbol
           // in the module

@@ -17,6 +17,7 @@ export interface TestSupport {
   basePath: string;
   runfilesPath: string;
   angularCorePath: string;
+  typesRoots: string;
   writeConfig({
       srcTargetPath, depPaths, pathMapping,
   }: {
@@ -49,17 +50,22 @@ export function setup(
   const angularCorePath = path.dirname(require.resolve('angular/packages/core'));
   const tsConfigJsonPath = path.resolve(basePath, tsconfig);
 
+  const emptyTsConfig = ts.readConfigFile(
+      require.resolve('angular/packages/bazel/test/ngc-wrapped/empty/empty_tsconfig.json'), read);
+  const typesRoots = (emptyTsConfig as any).config.compilerOptions.typeRoots[0];
+
   return {
     basePath,
     runfilesPath,
     angularCorePath,
+    typesRoots,
     write,
     read,
     writeFiles,
     writeConfig,
     shouldExist,
     shouldNotExist,
-    runOneBuild: runOneBuildImpl
+    runOneBuild: runOneBuildImpl,
   };
 
   // -----------------

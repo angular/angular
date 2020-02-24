@@ -63,6 +63,7 @@ function setInterval(fn: Function, delay: number) {
   while (rootZone.parent) {
     rootZone = rootZone.parent;
   }
-  rootZone.run(
-      () => { window.setInterval(function() { zone.run(fn, this, arguments as any); }, delay); });
+  rootZone.run(() => {
+    window.setInterval(function(this: unknown) { zone.run(fn, this, arguments as any); }, delay);
+  });
 }

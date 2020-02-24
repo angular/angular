@@ -309,17 +309,27 @@ interface ZoneType {
    */
   root: Zone;
 
-  /** @internal */
+  /**
+  * load patch for specified native module, allow user to
+  * define their own patch, user can use this API after loading zone.js
+  */
   __load_patch(name: string, fn: _PatchFn): void;
 
-  /** Was @ internal but this prevents compiling tests as separate unit */
+  /**
+   * Zone symbol API to generate a string with __zone_symbol__ prefix
+   */
   __symbol__(name: string): string;
 }
 
-/** @internal */
+/**
+ * Patch Function to allow user define their own monkey patch module.
+ */
 type _PatchFn = (global: Window, Zone: ZoneType, api: _ZonePrivate) => void;
 
-/** @internal */
+/**
+ * _ZonePrivate interface to provide helper method to help user implement
+ * their own monkey patch module.
+ */
 interface _ZonePrivate {
   currentZoneFrame: () => _ZoneFrame;
   symbol: (name: string) => string;
@@ -361,7 +371,9 @@ interface _ZonePrivate {
   } | undefined;
 }
 
-/** @internal */
+/**
+ * _ZoneFrame represents zone stack frame information
+ */
 interface _ZoneFrame {
   parent: _ZoneFrame|null;
   zone: Zone;
@@ -663,6 +675,12 @@ type AmbientZone = Zone;
 /** @internal */
 type AmbientZoneDelegate = ZoneDelegate;
 
+// CommonJS / Node have global context exposed as "global" variable.
+// This code should run in a Browser, so we don't want to include the whole node.d.ts
+// typings for this compilation unit.
+// We'll just fake the global "global" var for now.
+declare var global: NodeJS.Global;
+
 const Zone: ZoneType = (function(global: any) {
   const performance: {mark(name: string): void; measure(name: string, label: string): void;} =
       global['performance'];
@@ -698,6 +716,7 @@ const Zone: ZoneType = (function(global: any) {
   }
 
   class Zone implements AmbientZone {
+    // tslint:disable-next-line:require-internal-with-underscore
     static __symbol__: (name: string) => string = __symbol__;
 
     static assertZonePatched() {
@@ -723,6 +742,7 @@ const Zone: ZoneType = (function(global: any) {
 
     static get currentTask(): Task|null { return _currentTask; }
 
+    // tslint:disable-next-line:require-internal-with-underscore
     static __load_patch(name: string, fn: _PatchFn): void {
       if (patches.hasOwnProperty(name)) {
         if (checkDuplicate) {
@@ -781,8 +801,8 @@ const Zone: ZoneType = (function(global: any) {
       }
       const _callback = this._zoneDelegate.intercept(this, callback, source);
       const zone: Zone = this;
-      return function() {
-        return zone.runGuarded(_callback, (this as any), <any>arguments, source);
+      return function(this: unknown) {
+        return zone.runGuarded(_callback, this, <any>arguments, source);
       } as any as T;
     }
 
@@ -1016,47 +1036,49 @@ const Zone: ZoneType = (function(global: any) {
       this._forkZS =
           zoneSpec && (zoneSpec && zoneSpec.onFork ? zoneSpec : parentDelegate !._forkZS);
       this._forkDlgt = zoneSpec && (zoneSpec.onFork ? parentDelegate : parentDelegate !._forkDlgt);
-      this._forkCurrZone = zoneSpec && (zoneSpec.onFork ? this.zone : parentDelegate !.zone);
+      this._forkCurrZone =
+          zoneSpec && (zoneSpec.onFork ? this.zone : parentDelegate !._forkCurrZone);
 
       this._interceptZS =
           zoneSpec && (zoneSpec.onIntercept ? zoneSpec : parentDelegate !._interceptZS);
       this._interceptDlgt =
           zoneSpec && (zoneSpec.onIntercept ? parentDelegate : parentDelegate !._interceptDlgt);
       this._interceptCurrZone =
-          zoneSpec && (zoneSpec.onIntercept ? this.zone : parentDelegate !.zone);
+          zoneSpec && (zoneSpec.onIntercept ? this.zone : parentDelegate !._interceptCurrZone);
 
       this._invokeZS = zoneSpec && (zoneSpec.onInvoke ? zoneSpec : parentDelegate !._invokeZS);
       this._invokeDlgt =
           zoneSpec && (zoneSpec.onInvoke ? parentDelegate ! : parentDelegate !._invokeDlgt);
-      this._invokeCurrZone = zoneSpec && (zoneSpec.onInvoke ? this.zone : parentDelegate !.zone);
+      this._invokeCurrZone =
+          zoneSpec && (zoneSpec.onInvoke ? this.zone : parentDelegate !._invokeCurrZone);
 
       this._handleErrorZS =
           zoneSpec && (zoneSpec.onHandleError ? zoneSpec : parentDelegate !._handleErrorZS);
       this._handleErrorDlgt = zoneSpec &&
           (zoneSpec.onHandleError ? parentDelegate ! : parentDelegate !._handleErrorDlgt);
       this._handleErrorCurrZone =
-          zoneSpec && (zoneSpec.onHandleError ? this.zone : parentDelegate !.zone);
+          zoneSpec && (zoneSpec.onHandleError ? this.zone : parentDelegate !._handleErrorCurrZone);
 
       this._scheduleTaskZS =
           zoneSpec && (zoneSpec.onScheduleTask ? zoneSpec : parentDelegate !._scheduleTaskZS);
       this._scheduleTaskDlgt = zoneSpec &&
           (zoneSpec.onScheduleTask ? parentDelegate ! : parentDelegate !._scheduleTaskDlgt);
-      this._scheduleTaskCurrZone =
-          zoneSpec && (zoneSpec.onScheduleTask ? this.zone : parentDelegate !.zone);
+      this._scheduleTaskCurrZone = zoneSpec &&
+          (zoneSpec.onScheduleTask ? this.zone : parentDelegate !._scheduleTaskCurrZone);
 
       this._invokeTaskZS =
           zoneSpec && (zoneSpec.onInvokeTask ? zoneSpec : parentDelegate !._invokeTaskZS);
       this._invokeTaskDlgt =
           zoneSpec && (zoneSpec.onInvokeTask ? parentDelegate ! : parentDelegate !._invokeTaskDlgt);
       this._invokeTaskCurrZone =
-          zoneSpec && (zoneSpec.onInvokeTask ? this.zone : parentDelegate !.zone);
+          zoneSpec && (zoneSpec.onInvokeTask ? this.zone : parentDelegate !._invokeTaskCurrZone);
 
       this._cancelTaskZS =
           zoneSpec && (zoneSpec.onCancelTask ? zoneSpec : parentDelegate !._cancelTaskZS);
       this._cancelTaskDlgt =
           zoneSpec && (zoneSpec.onCancelTask ? parentDelegate ! : parentDelegate !._cancelTaskDlgt);
       this._cancelTaskCurrZone =
-          zoneSpec && (zoneSpec.onCancelTask ? this.zone : parentDelegate !.zone);
+          zoneSpec && (zoneSpec.onCancelTask ? this.zone : parentDelegate !._cancelTaskCurrZone);
 
       this._hasTaskZS = null;
       this._hasTaskDlgt = null;
@@ -1177,6 +1199,7 @@ const Zone: ZoneType = (function(global: any) {
       }
     }
 
+    // tslint:disable-next-line:require-internal-with-underscore
     _updateTaskCount(type: TaskType, count: number) {
       const counts = this._taskCounts;
       const prev = counts[type];
@@ -1204,9 +1227,12 @@ const Zone: ZoneType = (function(global: any) {
     public data: TaskData|undefined;
     public scheduleFn: ((task: Task) => void)|undefined;
     public cancelFn: ((task: Task) => void)|undefined;
+    // tslint:disable-next-line:require-internal-with-underscore
     _zone: Zone|null = null;
     public runCount: number = 0;
+    // tslint:disable-next-line:require-internal-with-underscore
     _zoneDelegates: ZoneDelegate[]|null = null;
+    // tslint:disable-next-line:require-internal-with-underscore
     _state: TaskState = 'notScheduled';
 
     constructor(
@@ -1217,6 +1243,9 @@ const Zone: ZoneType = (function(global: any) {
       this.data = options;
       this.scheduleFn = scheduleFn;
       this.cancelFn = cancelFn;
+      if (!callback) {
+        throw new Error('callback is not defined');
+      }
       this.callback = callback;
       const self = this;
       // TODO: @JiaLiPassion options should have interface
@@ -1251,6 +1280,7 @@ const Zone: ZoneType = (function(global: any) {
 
     public cancelScheduleRequest() { this._transitionTo(notScheduled, scheduling); }
 
+    // tslint:disable-next-line:require-internal-with-underscore
     _transitionTo(toState: TaskState, fromState1: TaskState, fromState2?: TaskState) {
       if (this._state === fromState1 || this._state === fromState2) {
         this._state = toState;
@@ -1401,4 +1431,4 @@ const Zone: ZoneType = (function(global: any) {
 
   performanceMeasure('Zone', 'Zone');
   return global['Zone'] = Zone;
-})(global);
+})(typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || global);

@@ -1,32 +1,39 @@
 <!--
-<h1 class="no-toc">Tour of Heroes App and Tutorial</h1>
+<h1 class="no-toc">Tour of Heroes app and tutorial</h1>
 -->
 <h1 class="no-toc">히어로들의 여행 튜토리얼</h1>
 
 
+<div class="callout is-helpful">
 <!--
-<div class="callout is-helpful">
-<header>Getting Started Tutorial</header>
+<header>Getting Started</header>
 
 
-If you're new to Angular, see the [**Getting Started tutorial.**](start) 
-The Getting Started tutorial covers the same major topics as this Tour of Heroes&mdash;components, template syntax, routing, services, and accessing data via HTTP&mdash;in a condensed format, following the most current best practices. 
+If you're new to Angular, you might want to try the [**Getting Started**](start) quick-start app first.
+The Getting Started tutorial covers the same major topics&mdash;components, template syntax, routing, services, and accessing data via HTTP&mdash;in a condensed format, following the most current best practices. It uses a partially-completed StackBlitz project, so that you can make modifications and see the results in real time.
 
-**This Tour of Heroes tutorial** is the conceptual basis for many examples in this documentation set. Reading this introduction page provides sufficient context for working with those examples. You do not need to do this tutorial to understand those other examples. The Tour of Heroes tutorial is maintained here for context and continuity. 
+In this tutorial, you build your own app from the ground up, providing experience with the development process as well as a more thorough introduction to basic concepts.
+
+The **Tour of Heroes app** that you create with this tutorial serves as the conceptual basis for many examples throughout Angular documentation.
+Reading this introduction page provides sufficient context for working with those examples.
+You do not need to do this tutorial to understand those other examples.  
 -->
-<div class="callout is-helpful">
 <header>튜토리얼 시작하기</header>
 
 아직 Angular에 익숙하지 않다면 [**시작하기 튜토리얼**](start) 문서를 먼저 보는 것을 권장합니다.
 시작하기 튜토리얼은 히어로들의 여행 튜토리얼과 마찬가지로 컴포넌트와 템플릿 문법, 라우팅, 서비스, HTTP 통신으로 데이터를 다루는 것에 대해 다루지만, 이 문서보다는 조금 더 간단합니다.
 
-**히어로들의 여행 튜토리얼**은 Angular 앱을 개발할 때 활용할 수 있는 기초 기법들에 대해 다룹니다. 이 문서를 읽고 나면 Angular 앱 개발에 대한 대략적인 감을 잡을 수 있으며, 이 튜토리얼에서 학습한 내용을 바탕으로 Angular에 대한 지식을 늘려가는 데에도 도움이 될 것입니다.
+In this tutorial, you build your own app from the ground up, providing experience with the development process as well as a more thorough introduction to basic concepts.
 
-</div> 
+The **Tour of Heroes app** that you create with this tutorial serves as the conceptual basis for many examples throughout Angular documentation.
+Reading this introduction page provides sufficient context for working with those examples.
+You do not need to do this tutorial to understand those other examples.  
+
+</div>
 
 <!--
-This _Tour of Heroes_ tutorial provides an introduction to the fundamentals of Angular. 
-It shows you how to set up your local development environment and develop an app using the [Angular CLI tool](cli "CLI command reference"). 
+This _Tour of Heroes_ tutorial provides an introduction to the fundamentals of Angular.
+It shows you how to set up your local development environment and develop an app using the [Angular CLI tool](cli "CLI command reference").
 
 In this _Tour of Heroes_ tutorial, you will build an app that helps a staffing agency manage its stable of heroes.
 
@@ -52,7 +59,7 @@ By the end of this tutorial you will be able to do the following:
 * Use one-way data binding for read-only data.
 * Add editable fields to update a model with two-way data binding.
 * Bind component methods to user events, like keystrokes and clicks.
-* Enable users to select a hero from a master list and edit that hero in the details view. 
+* Enable users to select a hero from a master list and edit that hero in the details view.
 * Format data with pipes.
 * Create a shared service to assemble the heroes.
 * Use routing to navigate among different views and their components.
@@ -69,7 +76,7 @@ By the end of this tutorial you will be able to do the following:
 
 <!--
 You'll learn enough Angular to get started and gain confidence that
-Angular can do whatever you need it to do. 
+Angular can do whatever you need it to do.
 -->
 이 내용들을 구현하면서 Angular가 제공하는 기능을 다양하게 살펴보기 때문에, 튜토리얼을 끝낼때 쯤이면 Angular로 새로운 프로젝트를 시작하는 것에 어려움을 느끼지 않을 것입니다.
 
@@ -95,9 +102,9 @@ view and the most heroic heroes:
 -->
 튜토리얼 앱을 시작하면 최고의 히어로를 표시하는 대시보드 화면을 표시합니다:
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/toh/heroes-dashboard-1.png' alt="Output of heroes dashboard">
-</figure>
+</div>
 
 <!--
 You can click the two links above the dashboard ("Dashboard" and "Heroes")
@@ -111,9 +118,9 @@ where you can change the hero's name.
 -->
 그리고 대시보드에서 "Magneta" 히어로를 선택하면 해당 히어로의 이름을 변경할 수 있는 히어로 상세 정보 화면을 표시합니다.
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/toh/hero-details-1.png' alt="Details of hero in app">
-</figure>
+</div>
 
 <!--
 Clicking the "Back" button returns you to the Dashboard.
@@ -124,9 +131,9 @@ If you click "Heroes," the app displays the "Heroes" master list view.
 그리고 뷰 위쪽에 있는 링크를 사용해도 대시보드 화면으로 돌아갈 수 있으며, "Heroes" 링크를 클릭하면 히어로의 목록을 표시하는 뷰로 전환합니다.
 
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/toh/heroes-list-2.png' alt="Output of heroes list app">
-</figure>
+</div>
 
 <!--
 When you click a different hero name, the read-only mini detail beneath the list reflects the new choice.
@@ -144,15 +151,15 @@ The following diagram captures all of the navigation options.
 -->
 아래 다이어그램을 보면서 이 앱의 페이지 구성을 확인해 보세요.
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/toh/nav-diagram.png' alt="View navigations">
-</figure>
+</div>
 
 <!--
 Here's the app in action:
 -->
 앱을 실제로 실행하면 다음과 같이 동작합니다:
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/toh/toh-anim.gif' alt="Tour of Heroes in Action">
-</figure>
+</div>

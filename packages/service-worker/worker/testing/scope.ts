@@ -186,7 +186,7 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
 
   parseUrl(url: string, relativeTo?: string): {origin: string, path: string, search: string} {
     const parsedUrl: URL = (typeof URL === 'function') ?
-        new URL(url, relativeTo) :
+        (!relativeTo ? new URL(url) : new URL(url, relativeTo)) :
         require('url').parse(require('url').resolve(relativeTo || '', url));
 
     return {
