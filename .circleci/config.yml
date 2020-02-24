@@ -343,10 +343,6 @@ jobs:
           path: dist/bin/packages/core/test/bundling/todo/bundle.min.js.br
           destination: core/todo/bundle.br
 
-  # This job is currently a PoC for running tests on SauceLabs via bazel. It runs a subset of the
-  # tests in `legacy-unit-tests-saucelabs` (see
-  # [BUILD.bazel](https://github.com/angular/angular/blob/ef44f51d5/BUILD.bazel#L66-L92)).
-  #
   # NOTE: This is currently limited to master builds only. See the `default_workflow` configuration.
   saucelabs_view_engine:
     executor:
@@ -360,16 +356,18 @@ jobs:
       - init_environment
       - init_saucelabs_environment
       - run:
-          name: Run Bazel tests on Saucelabs
+          name: Run Bazel tests on Saucelabs with ViewEngine
           # See /tools/saucelabs/README.md for more info
           command: |
             yarn bazel run //tools/saucelabs:sauce_service_setup
-            yarn bazel test //:saucelabs_unit_tests_poc_suite --config=saucelabs
+            TESTS=$(./node_modules/.bin/bazel query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "ivy-only", ...) except attr("tags", "fixme-saucelabs", ...)')
+            yarn bazel test --config=saucelabs ${TESTS}
             yarn bazel run //tools/saucelabs:sauce_service_stop
-          no_output_timeout: 20m
+          no_output_timeout: 40m
       - notify_webhook_on_fail:
           webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
 
+  # NOTE: This is currently limited to master builds only. See the `default_workflow` configuration.
   saucelabs_ivy:
     executor:
       name: default-executor
@@ -382,13 +380,16 @@ jobs:
       - init_environment
       - init_saucelabs_environment
       - run:
-          name: Run Bazel tests on Saucelabs
+          name: Run Bazel tests on Saucelabs with Ivy
           # See /tools/saucelabs/README.md for more info
           command: |
             yarn bazel run //tools/saucelabs:sauce_service_setup
-            yarn bazel test //:saucelabs_unit_tests --config=saucelabs --config=ivy
+            TESTS=$(./node_modules/.bin/bazel query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "no-ivy-aot", ...) except attr("tags", "fixme-saucelabs", ...)')
+            yarn bazel test --config=saucelabs --config=ivy ${TESTS}
             yarn bazel run //tools/saucelabs:sauce_service_stop
-          no_output_timeout: 20m
+          no_output_timeout: 40m
+      - notify_webhook_on_fail:
+          webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
 
   test_aio:
     executor: default-executor
@@ -840,13 +841,22 @@ workflows:
           requires:
             - setup
       - saucelabs_ivy:
+          # Testing saucelabs via Bazel currently taking longer than the legacy saucelabs job as it
+          # each karma_web_test target is provisioning and tearing down browsers which is adding
+          # a lot of overhead. Running on master only to avoid wasting resources and slowing down
+          # CI for PRs.
+          # TODO: Run this job on all branches (including PRs) once karma_web_test targets can
+          # share provisioned browsers and we can remove the legacy saucelabs job.
+          <<: *only_on_master
           requires:
-            - test_ivy_aot
+            - setup
       - saucelabs_view_engine:
-          # This job is currently a PoC and a subset of `legacy-unit-tests-saucelabs`. Running on
-          # master only to avoid wasting resources.
-          # TODO: Run this job on all branches (including PRs) as soon as it is not a PoC and
-          # we can remove the legacy saucelabs job.
+          # Testing saucelabs via Bazel currently taking longer than the legacy saucelabs job as it
+          # each karma_web_test target is provisioning and tearing down browsers which is adding
+          # a lot of overhead. Running on master only to avoid wasting resources and slowing down
+          # CI for PRs.
+          # TODO: Run this job on all branches (including PRs) once karma_web_test targets can
+          # share provisioned browsers and we can remove the legacy saucelabs job.
           <<: *only_on_master
           requires:
             - setup
@@ -899,6 +909,7 @@ workflows:
             - test
             - test_ivy_aot
             - integration_test
+            - saucelabs_view_engine
             - saucelabs_ivy
             # Only publish if `aio`/`docs` tests using the locally built Angular packages pass
             - test_aio_local

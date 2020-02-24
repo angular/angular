@@ -214,51 +214,66 @@ def pkg_npm(name, substitutions = {}, **kwargs):
         visibility = visibility,
     )
 
-def karma_web_test(bootstrap = [], deps = [], data = [], runtime_deps = [], **kwargs):
-    """Default values for karma_web_test"""
-    if not bootstrap:
-        bootstrap = ["//:web_test_bootstrap_scripts"]
-    local_deps = [
+def karma_web_test_suite(name, **kwargs):
+    """Default values for karma_web_test_suite"""
+
+    # Default value for bootstrap
+    bootstrap = kwargs.pop("bootstrap", [
+        "//:web_test_bootstrap_scripts",
+    ])
+
+    # Add common deps
+    deps = kwargs.pop("deps", []) + [
         "@npm//karma-browserstack-launcher",
         "@npm//karma-sauce-launcher",
         "@npm//:node_modules/tslib/tslib.js",
         "//tools/rxjs:rxjs_umd_modules",
         "//packages/zone.js:npm_package",
-    ] + deps
-    local_runtime_deps = [
-        "//tools/testing:browser",
-    ] + runtime_deps
+    ]
 
+    # Add common runtime deps
+    runtime_deps = kwargs.pop("runtime_deps", []) + [
+        "//tools/testing:browser",
+    ]
+
+    data = kwargs.pop("data", [])
+    tags = kwargs.pop("tags", [])
+
+    _karma_web_test_suite(
+        name = name,
+        runtime_deps = runtime_deps,
+        bootstrap = bootstrap,
+        deps = deps,
+        browsers = ["//tools/browsers:chromium"],
+        data = data,
+        tags = tags,
+        **kwargs
+    )
+
+    # Add a saucelabs target for these karma tests
     _karma_web_test(
-        runtime_deps = local_runtime_deps,
+        name = "saucelabs_%s" % name,
+        # Default timeout is moderate (5min). This causes the test to be terminated while
+        # Saucelabs browsers keep running. Ultimately resulting in failing tests and browsers
+        # unnecessarily being acquired. Our specified Saucelabs idle timeout is 10min, so we use
+        # Bazel's long timeout (15min). This ensures that Karma can shut down properly.
+        timeout = "long",
+        runtime_deps = runtime_deps,
         bootstrap = bootstrap,
         config_file = "//:karma-js.conf.js",
-        deps = local_deps,
+        deps = deps,
         data = data + [
             "//:browser-providers.conf.js",
             "//tools:jasmine-seed-generator.js",
         ],
+        karma = "//tools/saucelabs:karma-saucelabs",
+        tags = tags + [
+            "exclusive",
+            "manual",
+            "no-remote-exec",
+            "saucelabs",
+        ],
         configuration_env_vars = ["KARMA_WEB_TEST_MODE"],
-        **kwargs
-    )
-
-def karma_web_test_suite(bootstrap = [], deps = [], runtime_deps = [], **kwargs):
-    """Default values for karma_web_test_suite"""
-    if not bootstrap:
-        bootstrap = ["//:web_test_bootstrap_scripts"]
-    local_deps = [
-        "@npm//:node_modules/tslib/tslib.js",
-        "//tools/rxjs:rxjs_umd_modules",
-    ] + deps
-    local_runtime_deps = [
-        "//tools/testing:browser",
-    ] + runtime_deps
-
-    _karma_web_test_suite(
-        runtime_deps = local_runtime_deps,
-        bootstrap = bootstrap,
-        deps = local_deps,
-        browsers = ["//tools/browsers:chromium"],
         **kwargs
     )
 
