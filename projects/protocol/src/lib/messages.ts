@@ -114,12 +114,10 @@ export interface ProfilerFrame {
 }
 
 export interface UpdatedStateData {
-  directiveId: DirectiveID;
+  directiveId: DirectivePosition;
   keyPath: string[];
   newValue: any;
 }
-
-export type AppRecord = ComponentRecord | AppStartChangeDetection | AppEndChangeDetection;
 
 export interface Events {
   handshake: () => void;
