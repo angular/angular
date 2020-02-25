@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AstPath, BoundEventAst, CompileDirectiveSummary, CompileTypeMetadata, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, HtmlAstPath, Identifiers, Node, ParseSourceSpan, RecursiveTemplateAstVisitor, RecursiveVisitor, TemplateAst, TemplateAstPath, identifierName, templateVisitAll, visitAll} from '@angular/compiler';
+import {AbsoluteSourceSpan, AstPath, BoundDirectivePropertyAst, BoundEventAst, CompileDirectiveSummary, CompileTypeMetadata, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, HtmlAstPath, Identifiers, Node, ParseSourceSpan, RecursiveTemplateAstVisitor, RecursiveVisitor, TemplateAst, TemplateAstPath, identifierName, templateVisitAll, visitAll} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {AstResult, SelectorInfo} from './common';
@@ -111,6 +111,12 @@ export function findTemplateAstAt(ast: TemplateAst[], position: number): Templat
         if (!len || isNarrower(span, spanOf(path[len - 1]))) {
           path.push(ast);
         }
+      } else if (
+          ast instanceof BoundDirectivePropertyAst && inSpan(position, ast.value.sourceSpan)) {
+        // TODO(kyliau): test this util function
+        // The BoundDirectivePropertyAst itself refers to "of" (ngForOf) in
+        // the source text but its value refers to the symbol after "of".
+        path.push(ast);
       } else {
         // Returning a value here will result in the children being skipped.
         return true;

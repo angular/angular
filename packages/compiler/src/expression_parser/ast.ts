@@ -285,7 +285,7 @@ export class ASTWithSource extends AST {
 
 export class TemplateBinding {
   constructor(
-      public span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public key: string,
+      public span: ParseSpan, public sourceSpan: AbsoluteSourceSpan, public key: string,
       public keyIsVar: boolean, public name: string, public expression: ASTWithSource|null) {}
 }
 
@@ -783,7 +783,18 @@ export class ParsedEvent {
 }
 
 export class ParsedVariable {
-  constructor(public name: string, public value: string, public sourceSpan: ParseSourceSpan) {}
+  /**
+   * Create a new instance of a parsed variable declaration. A variable could be
+   * with or without a value, i.e. "let x" or "let x = y"
+   * @param name the variable name, “x“ in the example above
+   * @param value the variable value, “y” in the example above. If there is no
+   * RHS in the variable declaration, value must be "$implicit".
+   * @param sourceSpan source span of "x"
+   * @param valueSpan source span of "y", optional
+   */
+  constructor(
+      public name: string, public value: string, public sourceSpan: ParseSourceSpan,
+      public valueSpan?: ParseSourceSpan) {}
 }
 
 export const enum BindingType {

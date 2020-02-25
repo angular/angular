@@ -253,8 +253,7 @@ describe('diagnostics', () => {
   describe('embedded templates', () => {
     it('should suggest refining a template context missing a property', () => {
       mockHost.override(
-          TEST_TEMPLATE,
-          `<button type="button" ~{start-emb}*counter="let hero of heroes"~{end-emb}></button>`);
+          TEST_TEMPLATE, `<button type="button" *counter="let «hero» of heroes"></button>`);
       const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
       expect(diags.length).toBe(1);
       const {messageText, start, length, category} = diags[0];
@@ -264,15 +263,13 @@ describe('diagnostics', () => {
               `The template context of 'CounterDirective' does not define an implicit value.\n` +
                   `If the context type is a base type or 'any', consider refining it to a more specific type.`, );
 
-      const span = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'emb');
+      const span = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'hero');
       expect(start).toBe(span.start);
       expect(length).toBe(span.length);
     });
 
     it('should report an unknown context reference', () => {
-      mockHost.override(
-          TEST_TEMPLATE,
-          `<div ~{start-emb}*ngFor="let hero of heroes; let e = even_1"~{end-emb}></div>`);
+      mockHost.override(TEST_TEMPLATE, `<div *ngFor="let hero of heroes; let e = «even_1»"></div>`);
       const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
       expect(diags.length).toBe(1);
       const {messageText, start, length, category} = diags[0];
@@ -282,7 +279,7 @@ describe('diagnostics', () => {
               `The template context of 'NgForOf' does not define a member called 'even_1'.\n` +
               `If the context type is a base type or 'any', consider refining it to a more specific type.`);
 
-      const span = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'emb');
+      const span = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'even_1');
       expect(start).toBe(span.start);
       expect(length).toBe(span.length);
     });

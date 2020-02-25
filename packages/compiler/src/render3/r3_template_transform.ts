@@ -161,8 +161,8 @@ class HtmlAstToIvyAst implements html.Visitor {
         this.bindingParser.parseInlineTemplateBinding(
             templateKey, templateValue, attribute.sourceSpan, absoluteValueOffset, [],
             templateParsedProperties, parsedVariables);
-        templateVariables.push(
-            ...parsedVariables.map(v => new t.Variable(v.name, v.value, v.sourceSpan)));
+        templateVariables.push(...parsedVariables.map(
+            v => new t.Variable(v.name, v.value, v.sourceSpan, v.valueSpan)));
       } else {
         // Check for variables, events, property bindings, interpolation
         hasBinding = this.parseAttribute(

@@ -118,12 +118,31 @@ export class Parser {
         span, span.toAbsolute(absoluteOffset), prefix, uninterpretedExpression, location);
   }
 
-  parseTemplateBindings(tplKey: string, tplValue: string, location: any, absoluteOffset: number):
-      TemplateBindingParseResult {
+  /**
+   * Parse microsyntax template bindings and return errors, if any.
+   *
+   * Given the following example:
+   *   <div *ngFor="let item of items">
+   *         ^      ^ absoluteValueOffset for `tplValue`
+   *         absoluteKeyOffset for `tplKey`
+   *
+   * The `absoluteKeyOffset` is needed so that the correct source span for the
+   * attribute itself could be generated.
+   *
+   * @param tplKey name of directive, without the * prefix. For example: ngIf, ngFor
+   * @param tplValue string value for the inline template
+   * @param location
+   * @param absoluteKeyOffset absolute offset of the `tplKey`.
+   * @param absoluteValueOffset absolute offset of the `tplValue`
+   */
+  parseTemplateBindings(
+      tplKey: string, tplValue: string, location: any, absoluteKeyOffset: number,
+      absoluteValueOffset: number): TemplateBindingParseResult {
     const tokens = this._lexer.tokenize(tplValue);
     return new _ParseAST(
-               tplValue, location, absoluteOffset, tokens, tplValue.length, false, this.errors, 0)
-        .parseTemplateBindings(tplKey);
+               tplValue, location, absoluteValueOffset, tokens, tplValue.length, false, this.errors,
+               0)
+        .parseTemplateBindings(tplKey, absoluteKeyOffset);
   }
 
   parseInterpolation(
@@ -737,56 +756,86 @@ export class _ParseAST {
     return result.toString();
   }
 
-  // Parses the AST for `<some-tag *tplKey=AST>`
-  parseTemplateBindings(tplKey: string): TemplateBindingParseResult {
+  /**
+   * Parses the AST for microsyntax `<some-tag *tplKey=AST>`
+   *
+   * Given the following example:
+   *   <div *ngFor="let item of items">
+   *         ^      ^ absoluteOffset for `this.input`
+   *         absoluteKeyOffset for `tplKey`
+   *
+   * The `absoluteKeyOffset` is needed so that the correct source span for the
+   * attribute itself could be generated.
+   *
+   * @param tplKey the name of the microsyntax directive, like ngIf, ngFor, without the *
+   * @param absoluteKeyOffset absolute offset of the `tplKey`.
+   */
+  parseTemplateBindings(tplKey: string, absoluteKeyOffset: number): TemplateBindingParseResult {
     let firstBinding = true;
     const bindings: TemplateBinding[] = [];
     const warnings: string[] = [];
     do {
-      const start = this.inputIndex;
+      let start = this.inputIndex;
       let rawKey: string;
       let key: string;
       let isVar: boolean = false;
       if (firstBinding) {
         rawKey = key = tplKey;
-        firstBinding = false;
       } else {
         isVar = this.peekKeywordLet();
-        if (isVar) this.advance();
+        if (isVar) {
+          this.advance();
+          start = this.inputIndex;  // do not include 'let' in the source span
+        }
         rawKey = this.expectTemplateBindingKey();
         key = isVar ? rawKey : tplKey + rawKey[0].toUpperCase() + rawKey.substring(1);
-        this.optionalCharacter(chars.$COLON);
+        this.optionalCharacter(chars.$COLON);  // trackBy: trackByFunction
       }
 
-      let name: string = null !;
+      let name: string = rawKey;
       let expression: ASTWithSource|null = null;
       if (isVar) {
-        if (this.optionalOperator('=')) {
-          name = this.expectTemplateBindingKey();
+        if (this.optionalOperator('=')) {          // consume '='
+          name = this.expectTemplateBindingKey();  // let x = b, name is b
+          const token = this.peek(-1);             // token for 'b'
+          const parseSpan = new ParseSpan(token.index, token.end);
+          // The actual AST here doesn't matter much because the RHS of an "="
+          // expression can only be an identifier or string. No expression allowed.
+          // This AST is generated solely to capture the source span of the RHS.
+          const ast = new AST(parseSpan, parseSpan.toAbsolute(this.absoluteOffset));
+          expression =
+              new ASTWithSource(ast, name, this.location, ast.sourceSpan.start, this.errors);
         } else {
-          name = '\$implicit';
+          name = '$implicit';  // let x, there is no RHS
         }
       } else if (this.peekKeywordAs()) {
         this.advance();  // consume `as`
+        start = this.inputIndex;
         name = rawKey;
         key = this.expectTemplateBindingKey();  // read local var name
         isVar = true;
       } else if (this.next !== EOF && !this.peekKeywordLet()) {
         const start = this.inputIndex;
         const ast = this.parsePipe();
-        const source = this.input.substring(start - this.offset, this.inputIndex - this.offset);
+        // Getting the end of the last token removes trailing whitespace
+        // TODO(ayazhafiz): Remove this in https://github.com/angular/angular/pull/34690
+        const source = this.input.substring(start - this.offset, this.peek(-1).end - this.offset);
         expression =
             new ASTWithSource(ast, source, this.location, this.absoluteOffset + start, this.errors);
       }
 
-      bindings.push(new TemplateBinding(
-          this.span(start), this.sourceSpan(start), key, isVar, name, expression));
+      const parseSpan = new ParseSpan(start, start + rawKey.length);
+      const absSourceSpan =
+          parseSpan.toAbsolute(firstBinding ? absoluteKeyOffset : this.absoluteOffset);
+      firstBinding = false;
+      bindings.push(
+          new TemplateBinding(this.span(start), absSourceSpan, key, isVar, name, expression));
       if (this.peekKeywordAs() && !isVar) {
-        const letStart = this.inputIndex;
-        this.advance();                                   // consume `as`
+        this.advance();  // consume `as`
+        const start = this.inputIndex;
         const letName = this.expectTemplateBindingKey();  // read local var name
         bindings.push(new TemplateBinding(
-            this.span(letStart), this.sourceSpan(letStart), letName, true, key, null !));
+            this.span(start), this.sourceSpan(start), letName, true, key, null));
       }
       if (!this.optionalCharacter(chars.$SEMICOLON)) {
         this.optionalCharacter(chars.$COMMA);

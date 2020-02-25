@@ -203,7 +203,7 @@ function getSymbolInMicrosyntax(info: AstResult, path: TemplateAstPath, attribut
   let result: {symbol: Symbol, span: Span}|undefined;
   const {templateBindings} = info.expressionParser.parseTemplateBindings(
       attribute.name, attribute.value, attribute.sourceSpan.toString(),
-      attribute.valueSpan.start.offset);
+      attribute.sourceSpan.start.offset, attribute.valueSpan.start.offset);
   // Find where the cursor is relative to the start of the attribute value.
   const valueRelativePosition = path.position - attribute.valueSpan.start.offset;
 

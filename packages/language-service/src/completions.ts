@@ -454,7 +454,8 @@ class ExpressionVisitor extends NullTemplateVisitor {
       // This a template binding given by micro syntax expression.
       // First, verify the attribute consists of some binding we can give completions for.
       const {templateBindings} = this.info.expressionParser.parseTemplateBindings(
-          ast.name, ast.value, ast.sourceSpan.toString(), ast.sourceSpan.start.offset);
+          ast.name, ast.value, ast.sourceSpan.toString(), ast.sourceSpan.start.offset,
+          ast.sourceSpan.start.offset);
       // Find where the cursor is relative to the start of the attribute value.
       const valueRelativePosition = this.position - ast.sourceSpan.start.offset;
       // Find the template binding that contains the position.

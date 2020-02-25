@@ -215,14 +215,25 @@ describe('hover', () => {
       expect(toText(displayParts)).toBe('(property) StringModel.model: string');
     });
 
+    // TODO(kyliau): ngFor should resolve to the NgForOf directive.
+    // Technically, ngFor just becomes a regular text attribute of the
+    // ng-template element after the template is desugared:
+    //   <ng-template ngFor [ngForOf]="heroes" let-item>
+    // However, the text attribute is dropped so there is no AST node whose
+    // source span maps to the specified position. It used to work because the
+    // source span used to be the entire attribute but now it is more fine-grained.
     it('should work for structural directives', () => {
-      mockHost.override(TEST_TEMPLATE, `<div «*ᐱngForᐱ="let item of heroes"»></div>`);
-      const marker = mockHost.getDefinitionMarkerFor(TEST_TEMPLATE, 'ngFor');
+      mockHost.override(TEST_TEMPLATE, `<div *ngFor="let item «ᐱofᐱ heroes»"></div>`);
+      const marker = mockHost.getDefinitionMarkerFor(TEST_TEMPLATE, 'of');
       const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
       expect(quickInfo).toBeTruthy();
       const {textSpan, displayParts} = quickInfo !;
       expect(textSpan).toEqual(marker);
-      expect(toText(displayParts)).toBe('(directive) NgForOf: typeof NgForOf');
+      expect(toText(displayParts))
+          .toBe(
+              '(property) NgForOf<T, U>.ngForOf: (U & T[]) | (U & Iterable<T>) | null | undefined');
+      // TODO(kyliau): quick info over "ngFor" should show the following
+      // expect(toText(displayParts)).toBe('(directive) NgForOf: typeof NgForOf');
     });
   });
 

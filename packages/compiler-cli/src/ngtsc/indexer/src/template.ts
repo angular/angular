@@ -36,7 +36,6 @@ class ExpressionVisitor extends RecursiveAstVisitor {
   readonly identifiers: ExpressionIdentifier[] = [];
 
   private constructor(
-      private readonly expressionStr: string, private readonly absoluteOffset: number,
       private readonly boundTemplate: BoundTarget<ComponentMeta>,
       private readonly targetToIdentifier: (target: TmplTarget) => TargetIdentifier) {
     super();
@@ -54,10 +53,9 @@ class ExpressionVisitor extends RecursiveAstVisitor {
    * @param targetToIdentifier closure converting a template target node to its identifier.
    */
   static getIdentifiers(
-      ast: AST, source: string, absoluteOffset: number, boundTemplate: BoundTarget<ComponentMeta>,
+      ast: AST, boundTemplate: BoundTarget<ComponentMeta>,
       targetToIdentifier: (target: TmplTarget) => TargetIdentifier): TopLevelIdentifier[] {
-    const visitor =
-        new ExpressionVisitor(source, absoluteOffset, boundTemplate, targetToIdentifier);
+    const visitor = new ExpressionVisitor(boundTemplate, targetToIdentifier);
     visitor.visit(ast);
     return visitor.identifiers;
   }
@@ -95,29 +93,17 @@ class ExpressionVisitor extends RecursiveAstVisitor {
       return;
     }
 
-    // Get the location of the identifier of real interest.
-    // The compiler's expression parser records the location of some expressions in a manner not
-    // useful to the indexer. For example, a `MethodCall` `foo(a, b)` will record the span of the
-    // entire method call, but the indexer is interested only in the method identifier.
-    const localExpression = this.expressionStr.substr(ast.span.start);
-    if (!localExpression.includes(ast.name)) {
-      throw new Error(`Impossible state: "${ast.name}" not found in "${localExpression}"`);
-    }
-    const identifierStart = ast.span.start + localExpression.indexOf(ast.name);
-
-    // Join the relative position of the expression within a node with the absolute position
-    // of the node to get the absolute position of the expression in the source code.
-    const absoluteStart = this.absoluteOffset + identifierStart;
+    const absoluteStart = ast.sourceSpan.start;
     const span = new AbsoluteSourceSpan(absoluteStart, absoluteStart + ast.name.length);
 
     const targetAst = this.boundTemplate.getExpressionTarget(ast);
     const target = targetAst ? this.targetToIdentifier(targetAst) : null;
-    const identifier = {
+    const identifier: ExpressionIdentifier = {
       name: ast.name,
       span,
       kind,
       target,
-    } as ExpressionIdentifier;
+    };
 
     this.identifiers.push(identifier);
   }
@@ -183,25 +169,11 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
     this.visitAll(template.references);
   }
   visitBoundAttribute(attribute: TmplAstBoundAttribute) {
-    // A BoundAttribute's value (the parent AST) may have subexpressions (children ASTs) that have
-    // recorded spans extending past the recorded span of the parent. The most common example of
-    // this is with `*ngFor`.
-    // To resolve this, use the information on the BoundAttribute Template AST, which is always
-    // correct, to determine locations of identifiers in the expression.
-    //
-    // TODO(ayazhafiz): Remove this when https://github.com/angular/angular/pull/31813 lands.
-    const attributeSrc = attribute.sourceSpan.toString();
-    const attributeAbsolutePosition = attribute.sourceSpan.start.offset;
-
-    // Skip the bytes of the attribute name so that there are no collisions between the attribute
-    // name and expression identifier names later.
-    const nameSkipOffet = attributeSrc.indexOf(attribute.name) + attribute.name.length;
-    const expressionSrc = attributeSrc.substring(nameSkipOffet);
-    const expressionAbsolutePosition = attributeAbsolutePosition + nameSkipOffet;
-
+    // TODO(kyliau): The bound attribute itself is also an identifier
+    // For example, "of" in '<div *ngFor="let foo of foos">'
     const identifiers = ExpressionVisitor.getIdentifiers(
-        attribute.value, expressionSrc, expressionAbsolutePosition, this.boundTemplate,
-        this.targetToIdentifier.bind(this));
+        attribute.value, this.boundTemplate, this.targetToIdentifier.bind(this));
+
     identifiers.forEach(id => this.identifiers.add(id));
   }
   visitBoundEvent(attribute: TmplAstBoundEvent) { this.visitExpression(attribute.handler); }
@@ -338,9 +310,8 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
     if (ast instanceof ASTWithSource && ast.source !== null) {
       // Make target to identifier mapping closure stateful to this visitor instance.
       const targetToIdentifier = this.targetToIdentifier.bind(this);
-      const absoluteOffset = ast.sourceSpan.start;
-      const identifiers = ExpressionVisitor.getIdentifiers(
-          ast, ast.source, absoluteOffset, this.boundTemplate, targetToIdentifier);
+      const identifiers =
+          ExpressionVisitor.getIdentifiers(ast, this.boundTemplate, targetToIdentifier);
       identifiers.forEach(id => this.identifiers.add(id));
     }
   }

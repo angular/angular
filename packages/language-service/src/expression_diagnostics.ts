@@ -294,7 +294,7 @@ class ExpressionDiagnosticsVisitor extends RecursiveTemplateAstVisitor {
         this.reportDiagnostic(
             `The template context of '${directive.type.reference.name}' does not define ${missingMember}.\n` +
                 `If the context type is a base type or 'any', consider refining it to a more specific type.`,
-            spanOf(ast.sourceSpan), ts.DiagnosticCategory.Suggestion);
+            spanOf(ast.valueSpan || ast.sourceSpan), ts.DiagnosticCategory.Suggestion);
       }
     }
   }

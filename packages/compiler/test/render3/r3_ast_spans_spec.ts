@@ -168,7 +168,7 @@ describe('R3 AST source spans', () => {
     it('is correct for * directives', () => {
       expectFromHtml('<div *ngIf></div>').toEqual([
         ['Template', '0:11', '0:11', '11:17'],
-        ['TextAttribute', '5:10', '<empty>'],
+        ['TextAttribute', '6:10', '<empty>'],  // ngIf
         ['Element', '0:17', '0:11', '11:17'],
       ]);
     });
@@ -231,9 +231,9 @@ describe('R3 AST source spans', () => {
       // </ng-template>
       expectFromHtml('<div *ngFor="let item of items"></div>').toEqual([
         ['Template', '0:32', '0:32', '32:38'],
-        ['TextAttribute', '5:31', '<empty>'],
-        ['BoundAttribute', '5:31', '<empty>'],
-        ['Variable', '5:31', '<empty>'],
+        ['TextAttribute', '6:11', '<empty>'],  // ngFor
+        ['BoundAttribute', '22:24', '25:30'],  // of -> items
+        ['Variable', '17:21', '<empty>'],      // item
         ['Element', '0:38', '0:32', '32:38'],
       ]);
 
@@ -245,8 +245,8 @@ describe('R3 AST source spans', () => {
       // </ng-template>
       expectFromHtml('<div *ngFor="item of items"></div>').toEqual([
         ['Template', '0:28', '0:28', '28:34'],
-        ['BoundAttribute', '5:27', '<empty>'],
-        ['BoundAttribute', '5:27', '<empty>'],
+        ['BoundAttribute', '6:11', '13:17'],   // ngFor -> item
+        ['BoundAttribute', '18:20', '21:26'],  // of -> items
         ['Element', '0:34', '0:28', '28:34'],
       ]);
     });
@@ -254,8 +254,8 @@ describe('R3 AST source spans', () => {
     it('is correct for variables via let ...', () => {
       expectFromHtml('<div *ngIf="let a=b"></div>').toEqual([
         ['Template', '0:21', '0:21', '21:27'],
-        ['TextAttribute', '5:20', '<empty>'],
-        ['Variable', '5:20', '<empty>'],
+        ['TextAttribute', '6:10', '<empty>'],  // ngIf
+        ['Variable', '16:17', '18:19'],        // a -> b
         ['Element', '0:27', '0:21', '21:27'],
       ]);
     });
@@ -263,8 +263,8 @@ describe('R3 AST source spans', () => {
     it('is correct for variables via as ...', () => {
       expectFromHtml('<div *ngIf="expr as local"></div>').toEqual([
         ['Template', '0:27', '0:27', '27:33'],
-        ['BoundAttribute', '5:26', '<empty>'],
-        ['Variable', '5:26', '<empty>'],
+        ['BoundAttribute', '6:10', '12:16'],  // ngIf -> expr
+        ['Variable', '20:25', '<empty>'],     // local
         ['Element', '0:33', '0:27', '27:33'],
       ]);
     });

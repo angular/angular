@@ -8,11 +8,11 @@
 
 import {CompileDirectiveSummary, CompilePipeSummary} from '../compile_metadata';
 import {SecurityContext} from '../core';
-import {ASTWithSource, BindingPipe, BindingType, BoundElementProperty, EmptyExpr, ParsedEvent, ParsedEventType, ParsedProperty, ParsedPropertyType, ParsedVariable, ParserError, RecursiveAstVisitor, TemplateBinding} from '../expression_parser/ast';
+import {ASTWithSource, AbsoluteSourceSpan, BindingPipe, BindingType, BoundElementProperty, EmptyExpr, ParsedEvent, ParsedEventType, ParsedProperty, ParsedPropertyType, ParsedVariable, ParserError, RecursiveAstVisitor, TemplateBinding} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {mergeNsAndName} from '../ml_parser/tags';
-import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util';
+import {ParseError, ParseErrorLevel, ParseLocation, ParseSourceSpan} from '../parse_util';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {CssSelector} from '../selector';
 import {splitAtColon, splitAtPeriod} from '../util';
@@ -129,20 +129,27 @@ export class BindingParser {
       targetMatchableAttrs: string[][], targetProps: ParsedProperty[],
       targetVars: ParsedVariable[]) {
     const bindings = this._parseTemplateBindings(tplKey, tplValue, sourceSpan, absoluteValueOffset);
-
     for (let i = 0; i < bindings.length; i++) {
       const binding = bindings[i];
+      // Generate a new ParseSourceSpan for the binding based off the original sourceSpan
+      const bindingSourceSpan = offsetParseSourceSpanForMicrosyntax(sourceSpan, binding.sourceSpan);
+      // If the binding has a target (value), generate a ParseSourceSpan for the target as well
+      const valueSpan = binding.expression ?
+          offsetParseSourceSpanForMicrosyntax(sourceSpan, binding.expression.sourceSpan) :
+          undefined;
+
       if (binding.keyIsVar) {
-        targetVars.push(new ParsedVariable(binding.key, binding.name, sourceSpan));
+        targetVars.push(
+            new ParsedVariable(binding.key, binding.name, bindingSourceSpan, valueSpan));
       } else if (binding.expression) {
         this._parsePropertyAst(
-            binding.key, binding.expression, sourceSpan, undefined, targetMatchableAttrs,
+            binding.key, binding.expression, bindingSourceSpan, valueSpan, targetMatchableAttrs,
             targetProps);
       } else {
         targetMatchableAttrs.push([binding.key, '']);
         this.parseLiteralAttr(
-            binding.key, null, sourceSpan, absoluteValueOffset, undefined, targetMatchableAttrs,
-            targetProps);
+            binding.key, null, bindingSourceSpan, absoluteValueOffset, undefined,
+            targetMatchableAttrs, targetProps);
       }
     }
   }
@@ -159,10 +166,11 @@ export class BindingParser {
       tplKey: string, tplValue: string, sourceSpan: ParseSourceSpan,
       absoluteValueOffset: number): TemplateBinding[] {
     const sourceInfo = sourceSpan.start.toString();
-
+    const TEMPLATE_ATTR_PREFIX = '*';
+    const absoluteSourceOffset = sourceSpan.start.offset + TEMPLATE_ATTR_PREFIX.length;
     try {
-      const bindingsResult =
-          this._exprParser.parseTemplateBindings(tplKey, tplValue, sourceInfo, absoluteValueOffset);
+      const bindingsResult = this._exprParser.parseTemplateBindings(
+          tplKey, tplValue, sourceInfo, absoluteSourceOffset, absoluteValueOffset);
       this._reportExpressionParserErrors(bindingsResult.errors, sourceSpan);
       bindingsResult.templateBindings.forEach((binding) => {
         if (binding.expression) {
@@ -477,6 +485,36 @@ export class BindingParser {
       this._reportError(report.msg !, sourceSpan, ParseErrorLevel.ERROR);
     }
   }
+}
+
+/**
+ * Compute a new ParseSourceSpan for a microsyntax inline template binding
+ * based off an original `sourceSpan` by computing a relative offset using the
+ * specified `absoluteSpan`. This should be used only for inline templates
+ * because the implementation assumes that the offset occurs on the same line.
+ * Microsyntax inline templates are, by definition, on the same line.
+ *
+ * @param sourceSpan original source span of the attribute
+ * @param absoluteSpan absolute source span of the binding
+ */
+function offsetParseSourceSpanForMicrosyntax(
+    sourceSpan: ParseSourceSpan, absoluteSpan: AbsoluteSourceSpan): ParseSourceSpan {
+  // The difference of two absolute offsets provide the relative offset
+  const startDiff = absoluteSpan.start - sourceSpan.start.offset;
+  const endDiff = absoluteSpan.end - sourceSpan.end.offset;
+  return new ParseSourceSpan(
+      new ParseLocation(
+          sourceSpan.start.file,                // file
+          sourceSpan.start.offset + startDiff,  // absolute offset
+          sourceSpan.start.line,                // line
+          sourceSpan.start.col + startDiff,     // column
+          ),
+      new ParseLocation(
+          sourceSpan.end.file,              // file
+          sourceSpan.end.offset + endDiff,  // absolute offset
+          sourceSpan.end.line,              // line
+          sourceSpan.end.col + endDiff,     // column
+          ));
 }
 
 export class PipeCollector extends RecursiveAstVisitor {

@@ -303,7 +303,7 @@ describe('parser', () => {
     it('should allow multiple pairs', () => {
       const bindings = parseTemplateBindings('a', '1 b 2');
       expect(keys(bindings)).toEqual(['a', 'aB']);
-      expect(exprSources(bindings)).toEqual(['1 ', '2']);
+      expect(exprSources(bindings)).toEqual(['1', '2']);
     });
 
     it('should store the sources in the result', () => {
@@ -359,11 +359,11 @@ describe('parser', () => {
 
     it('should support as notation', () => {
       let bindings = parseTemplateBindings('ngIf', 'exp as local', 'location');
-      expect(keyValues(bindings)).toEqual(['ngIf=exp  in location', 'let local=ngIf']);
+      expect(keyValues(bindings)).toEqual(['ngIf=exp in location', 'let local=ngIf']);
 
       bindings = parseTemplateBindings('ngFor', 'let item of items as iter; index as i', 'L');
       expect(keyValues(bindings)).toEqual([
-        'ngFor', 'let item=$implicit', 'ngForOf=items  in L', 'let iter=ngForOf', 'let i=index'
+        'ngFor', 'let item=$implicit', 'ngForOf=items in L', 'let iter=ngForOf', 'let i=index'
       ]);
     });
 
@@ -374,15 +374,15 @@ describe('parser', () => {
     });
 
     describe('spans', () => {
-      it('should should support let', () => {
+      it('should not include let', () => {
         const source = 'let i';
-        expect(keySpans(source, parseTemplateBindings('key', 'let i'))).toEqual(['', 'let i']);
+        expect(keySpans(source, parseTemplateBindings('key', 'let i'))).toEqual(['', 'i']);
       });
 
-      it('should support multiple lets', () => {
+      it('should not include multiple lets', () => {
         const source = 'let item; let i=index; let e=even;';
         expect(keySpans(source, parseTemplateBindings('key', source))).toEqual([
-          '', 'let item', 'let i=index', 'let e=even'
+          '', 'item', 'i=index', 'e=even'
         ]);
       });
 
@@ -393,7 +393,7 @@ describe('parser', () => {
         expect(keyValues(bindings)).toEqual([
           'ngFor', 'let person=$implicit', 'ngForOf=people in null'
         ]);
-        expect(keySpans(source, bindings)).toEqual(['', 'let person ', 'of people']);
+        expect(keySpans(source, bindings)).toEqual(['', 'person ', 'of people']);
       });
     });
   });
@@ -541,7 +541,7 @@ function parseBinding(text: string, location: any = null, offset: number = 0): A
 function parseTemplateBindingsResult(
     key: string, value: string, location: any = null,
     offset: number = 0): TemplateBindingParseResult {
-  return createParser().parseTemplateBindings(key, value, location, offset);
+  return createParser().parseTemplateBindings(key, value, location, offset, offset);
 }
 function parseTemplateBindings(
     key: string, value: string, location: any = null, offset: number = 0): TemplateBinding[] {
