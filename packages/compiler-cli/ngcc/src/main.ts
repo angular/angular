@@ -150,7 +150,7 @@ export function mainNgcc(
   const fileSystem = getFileSystem();
   const absBasePath = absoluteFrom(basePath);
   const config = new NgccConfiguration(fileSystem, dirname(absBasePath));
-  const dependencyResolver = getDependencyResolver(fileSystem, logger, pathMappings);
+  const dependencyResolver = getDependencyResolver(fileSystem, logger, config, pathMappings);
 
   // Bail out early if the work is already done.
   const supportedPropertiesToConsider = ensureSupportedProperties(propertiesToConsider);
@@ -355,7 +355,7 @@ function getExecutor(
 }
 
 function getDependencyResolver(
-    fileSystem: FileSystem, logger: Logger,
+    fileSystem: FileSystem, logger: Logger, config: NgccConfiguration,
     pathMappings: PathMappings | undefined): DependencyResolver {
   const moduleResolver = new ModuleResolver(fileSystem, pathMappings);
   const esmDependencyHost = new EsmDependencyHost(fileSystem, moduleResolver);
@@ -363,7 +363,7 @@ function getDependencyResolver(
   const commonJsDependencyHost = new CommonJsDependencyHost(fileSystem, moduleResolver);
   const dtsDependencyHost = new DtsDependencyHost(fileSystem, pathMappings);
   return new DependencyResolver(
-      fileSystem, logger, {
+      fileSystem, logger, config, {
         esm5: esmDependencyHost,
         esm2015: esmDependencyHost,
         umd: umdDependencyHost,
