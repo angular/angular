@@ -3385,9 +3385,8 @@ describe('styling', () => {
 
   describe('regression', () => {
     it('should support sanitizer value in the host [style] bindings', () => {
-      @Component({template: ``})
+      @Component({template: `<span [style]="style"></span>`})
       class HostBindingTestComponent {
-        @HostBinding('style')
         style: SafeStyle = this.sanitizer.bypassSecurityTrustStyle('color: white; display: block;');
 
         constructor(private sanitizer: DomSanitizer) {}
@@ -3395,8 +3394,8 @@ describe('styling', () => {
       TestBed.configureTestingModule({declarations: [HostBindingTestComponent]});
       const fixture = TestBed.createComponent(HostBindingTestComponent);
       fixture.detectChanges();
-      const hostElement: HTMLElement = fixture.nativeElement;
-      expectStyle(hostElement).toEqual({color: 'white', display: 'block'});
+      const span: HTMLElement = fixture.nativeElement.querySelector('span');
+      expectStyle(span).toEqual({color: 'white', display: 'block'});
     });
 
     onlyInIvy('styling priority resolution is Ivy only feature.')
