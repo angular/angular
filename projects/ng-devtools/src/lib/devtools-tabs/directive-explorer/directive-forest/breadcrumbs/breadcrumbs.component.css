@@ -1,0 +1,17 @@
+.parent-nodes {
+  background-color: #ddd;
+  padding: 2px;
+  bottom: 0px;
+  position: fixed;
+  width: 100%;
+}
+
+.btn-node {
+  font-size: 11px;
+  margin: 0px;
+  padding-left: 5px;
+  padding-right: 5px;
+  line-height: 20px;
+  width: auto;
+}
+

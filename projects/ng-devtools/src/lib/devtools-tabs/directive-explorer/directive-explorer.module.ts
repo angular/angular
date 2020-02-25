@@ -10,6 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { PropertyTabModule } from './property-tab/property-tab.module';
 import { AngularSplitModule } from 'angular-split';
+import { DirectiveForestModule } from './directive-forest/directive-forest.module';
 
 @NgModule({
   declarations: [DirectiveExplorerComponent, DirectiveForestComponent, FilterComponent],
@@ -22,6 +23,7 @@ import { AngularSplitModule } from 'angular-split';
     MatButtonModule,
     MatSnackBarModule,
     AngularSplitModule,
+    DirectiveForestModule,
   ],
 })
 export class DirectiveExplorerModule {}
