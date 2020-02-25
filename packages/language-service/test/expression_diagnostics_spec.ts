@@ -180,7 +180,7 @@ describe('expression diagnostics', () => {
   it('should reject a misspelled field of a method result',
      () => reject('{{getPerson().nume.first}}', 'Identifier \'nume\' is not defined'));
   it('should reject calling a uncallable member',
-     () => reject('{{person().name.first}}', 'Member \'person\' is not callable'));
+     () => reject('{{person().name.first}}', '\'person\' is not callable'));
   it('should accept an event handler',
      () => accept('<div (click)="click($event)">{{person.name.first}}</div>'));
   it('should reject a misspelled event handler',
