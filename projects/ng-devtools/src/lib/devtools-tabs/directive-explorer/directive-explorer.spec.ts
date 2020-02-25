@@ -48,7 +48,12 @@ describe('DirectiveExplorerComponent', () => {
       currentSelectedElement.position = [0];
       currentSelectedElement.children = [];
       comp.currentSelectedElement = currentSelectedElement;
-      comp.propertyViews = jasmine.createSpyObj('propertyViews', ['toArray']);
+      const propertyTab = {
+        propertyTabBody: {
+          propertyViews: jasmine.createSpyObj('propertyTab', ['toArray']),
+        },
+      };
+      comp.propertyTab = propertyTab as any;
       (comp.propertyViews.toArray as Spy).and.returnValue([]);
       comp.refresh();
       const viewQuery: ComponentExplorerViewQuery = {

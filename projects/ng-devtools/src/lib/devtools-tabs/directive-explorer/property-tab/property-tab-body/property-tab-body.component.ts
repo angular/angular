@@ -1,6 +1,15 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  QueryList,
+  ViewChildren,
+} from '@angular/core';
 import { Descriptor, DirectivePosition, DirectivesProperties, Events, MessageBus } from 'protocol';
 import { IndexedNode } from '../../directive-forest/index-forest';
+import { PropertyViewComponent } from './property-view/property-view.component';
 
 @Component({
   templateUrl: './property-tab-body.component.html',
@@ -14,6 +23,8 @@ export class PropertyTabBodyComponent {
   @Input() currentSelectedElement: IndexedNode;
 
   @Output() copyPropData = new EventEmitter<{ [key: string]: Descriptor }>();
+
+  @ViewChildren(PropertyViewComponent) propertyViews: QueryList<PropertyViewComponent>;
 
   nameTracking(_: number, item: { key: string }): string {
     return item.key;
