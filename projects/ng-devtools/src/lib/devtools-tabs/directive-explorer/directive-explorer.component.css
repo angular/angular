@@ -10,3 +10,7 @@
   width: 100%;
   border-left: 1px solid #ccc;
 }
+
+:host /deep/ as-split-area {
+  overflow-y: hidden;
+}

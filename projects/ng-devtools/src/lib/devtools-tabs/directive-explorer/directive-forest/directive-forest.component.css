@@ -112,3 +112,8 @@
   width: 20%;
   display: flex;
 }
+
+.tree-wrapper {
+  height: 90%;
+  overflow-y: auto;
+}
