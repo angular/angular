@@ -14,8 +14,7 @@ readonly basedir=$(pwd)/..
 # the tests that are tracked for payload size; these are:
 #   - cli-hello-world*
 #   - hello_world__closure
-# TODO: remove ng_elements_schematics from this once it runs with npm_integration_test
-readonly TEST_DIRS=$(find $(ls) -maxdepth 0 -type d \( -name "cli-hello-world*" -or -name "hello_world__closure" -or -name "ng_elements_schematics" \))
+readonly TEST_DIRS=$(find $(ls) -maxdepth 0 -type d \( -name "cli-hello-world*" -or -name "hello_world__closure" \))
 
 # When running on the CI, we track the payload size of various integration output files. Also
 # we shard tests across multiple CI job instances. The script needs to be run with a shard index
