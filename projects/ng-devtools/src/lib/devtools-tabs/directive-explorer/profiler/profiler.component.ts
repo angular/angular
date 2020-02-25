@@ -6,8 +6,8 @@ type State = 'idle' | 'recording' | 'visualizing';
 
 @Component({
   selector: 'ng-profiler',
-  templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.css'],
+  templateUrl: './profiler.component.html',
+  styleUrls: ['./profiler.component.css'],
 })
 export class ProfilerComponent implements OnInit {
   @Input() messageBus: MessageBus<Events>;
