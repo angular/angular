@@ -14,7 +14,7 @@ const chalk = require('chalk');
 import * as minimist from 'minimist';
 import * as path from 'path';
 
-import {SerializationOptions, generateGoldenFile, verifyAgainstGoldenFile} from './main';
+import {SerializationOptions, generateGoldenFile, verifyAgainstGoldenFile, discoverAllEntrypoints} from './main';
 
 const CMD = 'ts-api-guardian';
 
@@ -44,6 +44,12 @@ export function startCli() {
       banned: ['experimental', 'publicApi', 'codeGenApi'],
       toCopy: ['deprecated']
     };
+  }
+
+  // In autoDiscoverEntrypoints mode we set the inputed files as the discovered entrypoints
+  // for the rootDir
+  if (argv['autoDiscoverEntrypoints']) {
+    argv._ = Array.from(discoverAllEntrypoints(argv['rootDir']));
   }
 
   for (const error of errors) {
@@ -110,7 +116,7 @@ export function parseArguments(input: string[]):
       'allowModuleIdentifiers'
     ],
     boolean: [
-      'help', 'useAngularTagRules',
+      'help', 'useAngularTagRules', 'autoDiscoverEntrypoints',
       // Options used by chalk automagically
       'color', 'no-color'
     ],
@@ -147,15 +153,26 @@ export function parseArguments(input: string[]):
     modes.push('verify');
   }
 
-  if (!argv._.length) {
-    errors.push('No input file specified.');
-    modes = ['help'];
-  } else if (modes.length !== 1) {
-    errors.push('Specify either --out[Dir] or --verify[Dir]');
-    modes = ['help'];
-  } else if (argv._.length > 1 && !argv['outDir'] && !argv['verifyDir']) {
-    errors.push(`More than one input specified. Use --${modes[0]}Dir instead.`);
-    modes = ['help'];
+  if (argv['autoDiscoverEntrypoints']) {
+    if (!argv['rootDir']) {
+      errors.push(`rootDir must be provided with autoDiscoverEntrypoints enabled.`);
+      modes = ['help']
+    }
+    if (!argv['outDir'] && !argv['verifyDir']) {
+      errors.push(`outDir or verifyDir must be used with autoDiscoverEntrypoints.`);
+      modes = ['help']
+    }
+  } else {
+    if (!argv._.length) {
+      errors.push('No input file specified.');
+      modes = ['help'];
+    } else if (modes.length !== 1) {
+      errors.push('Specify either --out[Dir] or --verify[Dir]');
+      modes = ['help'];
+    } else if (argv._.length > 1 && !argv['outDir'] && !argv['verifyDir']) {
+      errors.push(`More than one input specified. Use --${modes[0]}Dir instead.`);
+      modes = ['help'];
+    }
   }
 
   return {argv, mode: modes[0], errors};
@@ -184,7 +201,8 @@ Options:
         --useAngularTagRules <boolean>  Whether the Angular specific tag rules should be used.
         --stripExportPattern <regexp>   Do not output exports matching the pattern
         --allowModuleIdentifiers <identifier>
-                                        Allow identifier for "* as foo" imports`);
+                                        Allow identifier for "* as foo" imports
+        --autoDiscoverEntrypoints       Automatically find all entrypoints .d.ts files in the rootDir`);
   process.exit(error ? 1 : 0);
 }
 
@@ -199,10 +217,12 @@ function resolveBazelFilePath(fileName: string): string {
   // are not available in the working directory. In order to resolve the real path for the
   // runfile, we need to use `require.resolve` which handles runfiles properly on Windows.
   if (process.env['BAZEL_TARGET']) {
-    return path.relative(process.cwd(), require.resolve(fileName));
+    try {
+      return path.relative(process.cwd(), require.resolve(fileName));
+    } catch(err) {
+      return path.relative(process.cwd(), fileName);
+    }
   }
-
-  return fileName;
 }
 
 function resolveFileNamePairs(
