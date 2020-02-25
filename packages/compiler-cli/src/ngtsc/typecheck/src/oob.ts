@@ -50,6 +50,17 @@ export interface OutOfBandDiagnosticRecorder {
 
   illegalAssignmentToTemplateVar(
       templateId: TemplateId, assignment: PropertyWrite, target: TmplAstVariable): void;
+
+  /**
+   * Reports a duplicate declaration of a template variable.
+   *
+   * @param templateId the template type-checking ID of the template which contains the duplicate
+   * declaration.
+   * @param variable the `TmplAstVariable` which duplicates a previously declared variable.
+   * @param firstDecl the first variable declaration which uses the same name as `variable`.
+   */
+  duplicateTemplateVar(
+      templateId: TemplateId, variable: TmplAstVariable, firstDecl: TmplAstVariable): void;
 }
 
 export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecorder {
@@ -98,6 +109,25 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         ngErrorCode(ErrorCode.WRITE_TO_READ_ONLY_VARIABLE), errorMsg, {
           text: `The variable ${assignment.name} is declared here.`,
           span: target.valueSpan || target.sourceSpan,
+        }));
+  }
+
+  duplicateTemplateVar(
+      templateId: TemplateId, variable: TmplAstVariable, firstDecl: TmplAstVariable): void {
+    const mapping = this.resolver.getSourceMapping(templateId);
+    const errorMsg =
+        `Cannot redeclare variable '${variable.name}' as it was previously declared elsewhere for the same template.`;
+
+    // The allocation of the error here is pretty useless for variables declared in microsyntax,
+    // since the sourceSpan refers to the entire microsyntax property, not a span for the specific
+    // variable in question.
+    //
+    // TODO(alxhub): allocate to a tighter span once one is available.
+    this._diagnostics.push(makeTemplateDiagnostic(
+        mapping, variable.sourceSpan, ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.DUPLICATE_VARIABLE_DECLARATION), errorMsg, {
+          text: `The variable '${firstDecl.name}' was first declared here.`,
+          span: firstDecl.sourceSpan,
         }));
   }
 }

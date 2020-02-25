@@ -123,6 +123,16 @@ export enum ErrorCode {
   WRITE_TO_READ_ONLY_VARIABLE = 8005,
 
   /**
+   * A template variable was declared twice. For example:
+   *
+   * ```html
+   * <div *ngFor="let i of items; let i = index">
+   * </div>
+   * ```
+   */
+  DUPLICATE_VARIABLE_DECLARATION = 8006,
+
+  /**
    * An injectable already has a `ɵprov` property.
    */
   INJECTABLE_DUPLICATE_PROV = 9001,
