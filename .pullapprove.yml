@@ -546,7 +546,6 @@ groups:
     conditions:
       - >
         contains_any_globs(files, [
-          'modules/benchmarks_external/**',
           'modules/benchmarks/**'
           ])
     reviewers:
