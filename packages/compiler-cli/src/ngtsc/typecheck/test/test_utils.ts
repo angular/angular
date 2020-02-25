@@ -400,4 +400,5 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
   missingReferenceTarget(): void {}
   missingPipe(): void {}
   illegalAssignmentToTemplateVar(): void {}
+  duplicateTemplateVar(): void {}
 }
