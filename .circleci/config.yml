@@ -78,20 +78,6 @@ executors:
     resource_class: << parameters.resource_class >>
     working_directory: ~/ng
 
-  browsers-executor:
-    parameters:
-      resource_class:
-        type: string
-        default: medium
-    docker:
-      # The browser docker image comes with Chrome and Firefox preinstalled. This is just
-      # needed for jobs that run tests without Bazel. Bazel runs tests with browsers that will be
-      # fetched by the Webtesting rules. Therefore for jobs that run tests with Bazel, we don't need a
-      # docker image with browsers pre-installed.
-      - image: circleci/node:12.14.1-browsers@sha256:792797ab9be3179be7c9fc38a0931a3349288e699467c8d646d7c54e148ae46c
-    resource_class: << parameters.resource_class >>
-    working_directory: ~/ng
-
   windows-executor:
     working_directory: ~/ng
     resource_class: windows.medium
@@ -567,25 +553,18 @@ jobs:
           paths:
             - ng/dist/packages-dist-ivy-aot
 
-  # We run the integration tests outside of Bazel for now.
-  # They are a separate workflow job so that they can be easily re-run.
-  # When the tests are ported to bazel test targets, they should move to the "test"
-  # job above, as part of the bazel test command. That has flaky_test_attempts so the
-  # need to re-run manually should be alleviated.
+  # We run a subset of the integration tests outside of Bazel that track
+  # payload size.
   # See comments inside the integration/run_tests.sh script.
+  # TODO(gregmagolan): move payload size tracking to Bazel and remove this job.
   integration_test:
-    executor:
-      # Needed because the integration/bazel-schematics test expects Chrome to be installed
-      # TODO(gregmagolan): remove the dependency on local chrome from that test
-      name: browsers-executor
-      # Note: we run Bazel in one of the integration tests, and it can consume >2G
-      # of memory. Together with the system under test, this can exhaust the RAM
-      # on a 4G worker so we use a larger machine here too.
-      resource_class: xlarge
+    executor: default-executor
     parallelism: 3
     steps:
       - custom_attach_workspace
       - init_environment
+      - install_chrome_libs
+      - install_java
       # Runs the integration tests in parallel across multiple CircleCI container instances. The
       # amount of container nodes for this job is controlled by the "parallelism" option.
       - run: ./integration/run_tests.sh ${CIRCLE_NODE_INDEX} ${CIRCLE_NODE_TOTAL}
