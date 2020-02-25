@@ -5,6 +5,8 @@
   "devDependencies": {
     "@angular/cli": "file:../../node_modules/@angular/cli",
     "@types/node": "file:../../node_modules/@types/node",
+    "@types/shelljs": "0.8.6",
+    "shelljs": "0.8.3",
     "typescript": "file:../../node_modules/typescript"
   },
   "scripts": {
