@@ -51,8 +51,7 @@ INTEGRATION_TESTS = {
     "ivy-i18n": ["no-ivy-aot"],
     "language_service_plugin": [],
     "ng_elements": ["no-ivy-aot"],
-    # TODO: fix ng_elements_schematics with Bazel which was added recently and uses a new pattern
-    # "ng_elements_schematics": ["no-ivy-aot"],
+    "ng_elements_schematics": ["no-ivy-aot"],
     "ng_update": [],
     "ng_update_migrations": ["no-ivy-aot"],
     "ngcc": ["no-ivy-aot"],
