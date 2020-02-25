@@ -1,10 +1,9 @@
-import { Component, Input, OnInit, ViewChildren, QueryList } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import {
   MessageBus,
   Events,
   DevToolsNode,
   DirectivesProperties,
-  DirectivePosition,
   ComponentExplorerViewQuery,
   ComponentExplorerView,
   ComponentExplorerViewProperties,
@@ -12,9 +11,9 @@ import {
   Descriptor,
 } from 'protocol';
 import { IndexedNode } from './directive-forest/index-forest';
-import { PropertyViewComponent } from './property-tab/property-tab-body/property-view/property-view.component';
 import { ApplicationOperations } from '../../application-operations';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { PropertyTabComponent } from './property-tab/property-tab.component';
 
 @Component({
   selector: 'ng-directive-explorer',
@@ -24,7 +23,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class DirectiveExplorerComponent implements OnInit {
   @Input() messageBus: MessageBus<Events>;
 
-  @ViewChildren(PropertyViewComponent) propertyViews: QueryList<PropertyViewComponent>;
+  @ViewChild(PropertyTabComponent) propertyTab: PropertyTabComponent;
 
   // The original data we pass to the property viewer.
   // Later, the property viewer may request more nested properties
@@ -108,6 +107,10 @@ export class DirectiveExplorerComponent implements OnInit {
       result[view.name] = view.getExpandedProperties();
     });
     return result;
+  }
+
+  get propertyViews() {
+    return this.propertyTab.propertyTabBody.propertyViews;
   }
 
   copyPropData(propData: { [name: string]: Descriptor }): void {
