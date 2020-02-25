@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 
 import {getDirectiveClassLike, getPathToNodeAtPosition} from '../src/utils';
 
-describe('getDirectiveClassLike()', () => {
+describe('getDirectiveClassLike', () => {
   it('should return a directive class', () => {
     const sourceFile = ts.createSourceFile(
         'foo.ts', `
@@ -46,8 +46,8 @@ describe('getPathToNodeAtPosition', () => {
     nodes.push(...rootNodes);
   });
 
-  it('must capture element', () => {
-    // First, try to get a Path to the Element
+  it('should capture element', () => {
+    // Try to get a path to an element
     // <|div c></div>
     //  ^ cursor is here
     const position = html.indexOf('div');
@@ -58,8 +58,8 @@ describe('getPathToNodeAtPosition', () => {
     expect(path.head).toBe(path.tail);
   });
 
-  it('must capture attribute', () => {
-    // Then, try to get a Path to the Attribute
+  it('should capture attribute', () => {
+    // Try to get a path to an attribute
     // <div |c></div>
     //      ^ cusor is here, before the attribute
     const position = html.indexOf('c');
@@ -69,8 +69,8 @@ describe('getPathToNodeAtPosition', () => {
     expect(path.tail instanceof ng.Attribute).toBe(true);
   });
 
-  it('must capture attribute before cursor', () => {
-    // Finally, try to get a Path to the attribute after the 'c' text
+  it('should capture attribute before cursor', () => {
+    // Try to get a path to an attribute
     // <div c|></div>
     //       ^ cursor is here, after the attribute
     const position = html.indexOf('c') + 1;
