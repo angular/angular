@@ -8,6 +8,7 @@
 
 import * as ts from 'typescript';
 
+import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 import {absoluteFrom as _, getFileSystem} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../helpers/src/mock_file_loading';
@@ -1301,6 +1302,36 @@ export declare class AnimationEvent {
       const diags = env.driveDiagnostics();
       expect(diags.length).toEqual(1);
       expect(getSourceCodeForDiagnostic(diags[0])).toEqual('y = !y');
+    });
+
+    it('should detect a duplicate variable declaration', () => {
+      env.write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+
+        @Component({
+          selector: 'test',
+          template: \`
+            <div *ngFor="let i of items; let i = index">
+              {{i}}
+            </div>
+          \`,
+        })
+        export class TestCmp {
+          items!: string[];
+        }
+
+        @NgModule({
+          declarations: [TestCmp],
+          imports: [CommonModule],
+        })
+        export class Module {}
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toEqual(1);
+      expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.DUPLICATE_VARIABLE_DECLARATION));
+      expect(getSourceCodeForDiagnostic(diags[0])).toContain('let i of items;');
     });
 
     it('should still type-check when fileToModuleName aliasing is enabled, but alias exports are not in the .d.ts file',

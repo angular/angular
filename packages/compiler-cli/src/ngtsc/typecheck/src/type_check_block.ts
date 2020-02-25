@@ -738,7 +738,17 @@ class Scope {
     // has.
     if (templateOrNodes instanceof TmplAstTemplate) {
       // The template's variable declarations need to be added as `TcbVariableOp`s.
+      const varMap = new Map<string, TmplAstVariable>();
+
       for (const v of templateOrNodes.variables) {
+        // Validate that variables on the `TmplAstTemplate` are only declared once.
+        if (!varMap.has(v.name)) {
+          varMap.set(v.name, v);
+        } else {
+          const firstDecl = varMap.get(v.name) !;
+          tcb.oobRecorder.duplicateTemplateVar(tcb.id, v, firstDecl);
+        }
+
         const opIndex = scope.opQueue.push(new TcbVariableOp(tcb, scope, templateOrNodes, v)) - 1;
         scope.varMap.set(v, opIndex);
       }
