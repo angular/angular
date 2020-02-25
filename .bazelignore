@@ -1,18 +1,22 @@
+# Bazel does not yet support wildcards or other .gitignore semantics for
+# .bazelignore. Two issues for this feature request are outstanding:
+# https://github.com/bazelbuild/bazel/issues/7093
+# https://github.com/bazelbuild/bazel/issues/8106
 .git
 node_modules
 dist
 aio/content
 aio/node_modules
 aio/tools/examples/shared/node_modules
+packages/bazel/node_modules
 integration/bazel/bazel-bazel
 integration/bazel/bazel-bin
 integration/bazel/bazel-out
 integration/bazel/bazel-testlogs
-integration/bazel/node_modules
-integration/bazel/.yarn_local_cache
-integration/bazel-schematics/node_modules
-integration/bazel-schematics/.yarn_local_cache
 integration/bazel-schematics/demo
+# All integration test node_modules folders
+integration/bazel/node_modules
+integration/bazel-schematics/node_modules
 integration/cli-hello-world/node_modules
 integration/cli-hello-world-ivy-compat/node_modules
 integration/cli-hello-world-ivy-i18n/node_modules
@@ -37,6 +41,9 @@ integration/side-effects/node_modules
 integration/terser/node_modules
 integration/typings_test_ts36/node_modules
 integration/typings_test_ts37/node_modules
+# All integration test .yarn_local_cache folders
+integration/bazel/.yarn_local_cache
+integration/bazel-schematics/.yarn_local_cache
 integration/cli-hello-world/.yarn_local_cache
 integration/cli-hello-world-ivy-compat/.yarn_local_cache
 integration/cli-hello-world-ivy-i18n/.yarn_local_cache
@@ -61,4 +68,30 @@ integration/side-effects/.yarn_local_cache
 integration/terser/.yarn_local_cache
 integration/typings_test_ts36/.yarn_local_cache
 integration/typings_test_ts37/.yarn_local_cache
-packages/bazel/node_modules
+# All integration test NPM_PACKAGE_MANIFEST.json folders
+integration/bazel/NPM_PACKAGE_MANIFEST.json
+integration/bazel-schematics/NPM_PACKAGE_MANIFEST.json
+integration/cli-hello-world/NPM_PACKAGE_MANIFEST.json
+integration/cli-hello-world-ivy-compat/NPM_PACKAGE_MANIFEST.json
+integration/cli-hello-world-ivy-i18n/NPM_PACKAGE_MANIFEST.json
+integration/cli-hello-world-ivy-minimal/NPM_PACKAGE_MANIFEST.json
+integration/cli-hello-world-lazy/NPM_PACKAGE_MANIFEST.json
+integration/cli-hello-world-lazy-rollup/NPM_PACKAGE_MANIFEST.json
+integration/dynamic-compiler/NPM_PACKAGE_MANIFEST.json
+integration/hello_world__closure/NPM_PACKAGE_MANIFEST.json
+integration/hello_world__systemjs_umd/NPM_PACKAGE_MANIFEST.json
+integration/i18n/NPM_PACKAGE_MANIFEST.json
+integration/injectable-def/NPM_PACKAGE_MANIFEST.json
+integration/ivy-i18n/NPM_PACKAGE_MANIFEST.json
+integration/language_service_plugin/NPM_PACKAGE_MANIFEST.json
+integration/ng_elements/NPM_PACKAGE_MANIFEST.json
+integration/ng_elements_schematics/NPM_PACKAGE_MANIFEST.json
+integration/ng_update/NPM_PACKAGE_MANIFEST.json
+integration/ng_update_migrations/NPM_PACKAGE_MANIFEST.json
+integration/ngcc/NPM_PACKAGE_MANIFEST.json
+integration/platform-server/NPM_PACKAGE_MANIFEST.json
+integration/service-worker-schema/NPM_PACKAGE_MANIFEST.json
+integration/side-effects/NPM_PACKAGE_MANIFEST.json
+integration/terser/NPM_PACKAGE_MANIFEST.json
+integration/typings_test_ts36/NPM_PACKAGE_MANIFEST.json
+integration/typings_test_ts37/NPM_PACKAGE_MANIFEST.json

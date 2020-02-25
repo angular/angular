@@ -140,6 +140,7 @@ class TestRunner {
     this.config = config;
     this.successful = 0;
     this._setupTestFiles();
+    this._writeNpmPackageManifest();
   }
 
   /**
@@ -296,6 +297,27 @@ class TestRunner {
       this.testRoot = copyToTmp(this.config.testFiles);
       log(`test files from '${rootDirectory(this.config.testFiles)}' copied to tmp folder ${this.testRoot}`);
     }
+  }
+
+  /**
+   * @internal
+   *
+   * Write an NPM_PACKAGE_MANIFEST.json file to the test root with a mapping of
+   * the npm package mappings for this this test. Integration tests can opt
+   * to use this mappings file instead of the built-in `patch-package-json`
+   * command.
+   */
+  _writeNpmPackageManifest() {
+    if (!this.testRoot) {
+      fail(`test files not yet setup`);
+    }
+    const manifest = {};
+    for (const key of Object.keys(this.config.npmPackages)) {
+      manifest[key] = runfiles.resolveWorkspaceRelative(this.config.npmPackages[key]);
+    }
+    const manifestPath = `${this.testRoot}/NPM_PACKAGE_MANIFEST.json`;
+    fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
+    log(`npm package manifest written to ${manifestPath}`);
   }
 }
 
