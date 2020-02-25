@@ -1129,17 +1129,17 @@ describe('styling', () => {
   });
 
   onlyInIvy('only ivy combines static and dynamic class-related attr values')
-      .it('should write to a `className` input binding, when static `class` is present', () => {
+      .it('should write combined class attribute and class binding to the class input', () => {
         @Component({
           selector: 'comp',
           template: `{{className}}`,
         })
         class Comp {
-          @Input() className: string = '';
+          @Input('class') className: string = '';
         }
 
         @Component({
-          template: `<comp class="static" [className]="'my-className'"></comp>`,
+          template: `<comp class="static" [class]="'my-className'"></comp>`,
         })
         class App {
         }
@@ -1149,32 +1149,6 @@ describe('styling', () => {
         fixture.detectChanges();
         expect(fixture.debugElement.nativeElement.firstChild.innerHTML).toBe('static my-className');
       });
-
-  onlyInIvy('in Ivy [class] and [className] bindings on the same element are not allowed')
-      .it('should throw an error in case [class] and [className] bindings are used on the same element',
-          () => {
-            @Component({
-              selector: 'comp',
-              template: `{{class}} - {{className}}`,
-            })
-            class Comp {
-              @Input() class: string = '';
-              @Input() className: string = '';
-            }
-            @Component({
-              template: `<comp [class]="'my-class'" [className]="'className'"></comp>`,
-            })
-            class App {
-            }
-
-            TestBed.configureTestingModule({declarations: [Comp, App]});
-            expect(() => {
-              const fixture = TestBed.createComponent(App);
-              fixture.detectChanges();
-            })
-                .toThrowError(
-                    '[class] and [className] bindings cannot be used on the same element simultaneously');
-          });
 
   onlyInIvy('only ivy persists static class/style attrs with their binding counterparts')
       .it('should write to a `class` input binding if there is a static class value and there is a binding value',
@@ -3475,6 +3449,44 @@ describe('styling', () => {
           expectClass(cmp1).toEqual({foo: true, bar: true});
           expectClass(cmp2).toEqual({foo: true, bar: true});
         });
+
+    it('should not bind [class] to @Input("className")', () => {
+      @Component({
+        selector: 'my-cmp',
+        template: `className = {{className}}`,
+      })
+      class MyCmp {
+        @Input()
+        className: string = 'unbound';
+      }
+      @Component({template: `<my-cmp [class]="'bound'"></my-cmp>`})
+      class MyApp {
+      }
+
+      TestBed.configureTestingModule({declarations: [MyApp, MyCmp]});
+      const fixture = TestBed.createComponent(MyApp);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toEqual('className = unbound');
+    });
+
+    it('should not bind class to @Input("className")', () => {
+      @Component({
+        selector: 'my-cmp',
+        template: `className = {{className}}`,
+      })
+      class MyCmp {
+        @Input()
+        className: string = 'unbound';
+      }
+      @Component({template: `<my-cmp class="bound"></my-cmp>`})
+      class MyApp {
+      }
+
+      TestBed.configureTestingModule({declarations: [MyApp, MyCmp]});
+      const fixture = TestBed.createComponent(MyApp);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toEqual('className = unbound');
+    });
   });
 });
 
