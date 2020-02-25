@@ -16,6 +16,14 @@ export {SerializationOptions, publicApi} from './serializer';
 export function generateGoldenFile(
     entrypoint: string, outFile: string, options: SerializationOptions = {}): void {
   const output = publicApi(entrypoint, options);
+
+  // BUILD_WORKSPACE_DIRECTORY environment variable is only available during bazel
+  // run executions. This workspace directory allows us to generate golden files directly
+  // in the source file tree rather than via a symlink.
+  if (process.env['BUILD_WORKSPACE_DIRECTORY']) {
+    outFile = path.join(process.env['BUILD_WORKSPACE_DIRECTORY'], outFile);
+  }
+
   ensureDirectory(path.dirname(outFile));
   fs.writeFileSync(outFile, output);
 }
@@ -23,7 +31,7 @@ export function generateGoldenFile(
 export function verifyAgainstGoldenFile(
     entrypoint: string, goldenFile: string, options: SerializationOptions = {}): string {
   const actual = publicApi(entrypoint, options);
-  const expected = fs.readFileSync(goldenFile).toString();
+  const expected = fs.existsSync(goldenFile) ? fs.readFileSync(goldenFile).toString() : '';
 
   if (actual === expected) {
     return '';
@@ -42,4 +50,50 @@ function ensureDirectory(dir: string) {
     ensureDirectory(path.dirname(dir));
     fs.mkdirSync(dir);
   }
+}
+
+/**
+ * Determine if the provided path is a directory.
+ */
+function isDirectory(dirPath: string) {
+  try {
+    fs.lstatSync(dirPath).isDirectory();
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Gets an array of paths to the typings files for each of the recursively discovered
+ * package.json
+ * files from the directory provided.
+ */
+export function discoverAllEntrypoints(dirPath: string) {
+  // Determine all of the package.json files
+  const packageJsons: string[] = [];
+  const entryPoints: string[] = [];
+  const findPackageJsonsInDir = (nextPath: string) => {
+    for (const file of fs.readdirSync(nextPath)) {
+      const fullPath = path.join(nextPath, file);
+      if (isDirectory(fullPath)) {
+        findPackageJsonsInDir(fullPath);
+      } else {
+        if (file === 'package.json') {
+          packageJsons.push(fullPath);
+        }
+      }
+    }
+  };
+  findPackageJsonsInDir(dirPath);
+
+  // Get all typings file locations from package.json files
+  for (const packageJson of packageJsons) {
+    const packageJsonObj = JSON.parse(fs.readFileSync(packageJson, {encoding: 'utf8'}));
+    const typings = packageJsonObj.typings;
+    if (typings) {
+      entryPoints.push(path.join(path.dirname(packageJson), typings));
+    }
+  }
+
+  return entryPoints;
 }
