@@ -13,7 +13,12 @@ import {PackageJsonFormatPropertiesMap} from './entry_point';
 /**
  * The format of a project level configuration file.
  */
-export interface NgccProjectConfig<T = NgccPackageConfig> { packages: {[packagePath: string]: T}; }
+export interface NgccProjectConfig<T = NgccPackageConfig> {
+  /**
+   * The packages that are configured by this project config.
+   */
+  packages: {[packagePath: string]: T};
+}
 
 /**
  * The format of a package level configuration file.
@@ -27,6 +32,11 @@ export interface NgccPackageConfig {
    * will be absolute.
    */
   entryPoints: {[entryPointPath: string]: NgccEntryPointConfig;};
+  /**
+   * A collection of regexes that match deep imports to ignore, for this package, rather than
+   * displaying a warning.
+   */
+  ignorableDeepImportMatchers?: RegExp[];
 }
 
 /**
@@ -201,7 +211,8 @@ export class NgccConfiguration {
         const absPackagePath = resolve(baseDir, 'node_modules', packagePath);
         const entryPoints = this.processEntryPoints(absPackagePath, packageConfig);
         processedConfig.packages[absPackagePath] = processedConfig.packages[absPackagePath] || [];
-        processedConfig.packages[absPackagePath].push({versionRange, entryPoints});
+        processedConfig.packages[absPackagePath].push(
+            {...packageConfig, versionRange, entryPoints});
       }
     }
     return processedConfig;

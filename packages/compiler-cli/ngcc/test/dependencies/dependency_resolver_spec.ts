@@ -8,19 +8,20 @@
 
 import {DepGraph} from 'dependency-graph';
 
-import {FileSystem, absoluteFrom, getFileSystem, relativeFrom} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem, absoluteFrom, getFileSystem, relativeFrom} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {DependencyInfo} from '../../src/dependencies/dependency_host';
 import {DependencyResolver, SortedEntryPointsInfo} from '../../src/dependencies/dependency_resolver';
 import {DtsDependencyHost} from '../../src/dependencies/dts_dependency_host';
 import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
+import {NgccConfiguration} from '../../src/packages/configuration';
 import {EntryPoint} from '../../src/packages/entry_point';
 import {MockLogger} from '../helpers/mock_logger';
 
 
 interface DepMap {
-  [path: string]: {resolved: string[], missing: string[]};
+  [path: string]: {resolved: string[], missing: string[], deepImports?: AbsoluteFsPath[]};
 }
 
 runInEachFileSystem(() => {
@@ -30,15 +31,19 @@ runInEachFileSystem(() => {
     let dtsHost: EsmDependencyHost;
     let resolver: DependencyResolver;
     let fs: FileSystem;
+    let config: NgccConfiguration;
+    let logger: MockLogger;
     let moduleResolver: ModuleResolver;
 
     beforeEach(() => {
       _ = absoluteFrom;
       fs = getFileSystem();
+      config = new NgccConfiguration(fs, _('/'));
+      logger = new MockLogger();
       moduleResolver = new ModuleResolver(fs);
       host = new EsmDependencyHost(fs, moduleResolver);
       dtsHost = new DtsDependencyHost(fs);
-      resolver = new DependencyResolver(fs, new MockLogger(), {esm5: host, esm2015: host}, dtsHost);
+      resolver = new DependencyResolver(fs, logger, config, {esm5: host, esm2015: host}, dtsHost);
     });
 
     describe('sortEntryPointsByDependency()', () => {
@@ -53,7 +58,9 @@ runInEachFileSystem(() => {
 
       beforeEach(() => {
         first = {
+          name: 'first',
           path: _('/first'),
+          package: _('/first'),
           packageJson: {esm5: './index.js'},
           compiledByAngular: true,
           ignoreMissingDependencies: false,
@@ -61,6 +68,7 @@ runInEachFileSystem(() => {
         } as EntryPoint;
         second = {
           path: _('/second'),
+          package: _('/second'),
           packageJson: {esm2015: './sub/index.js'},
           compiledByAngular: true,
           ignoreMissingDependencies: false,
@@ -68,6 +76,7 @@ runInEachFileSystem(() => {
         } as EntryPoint;
         third = {
           path: _('/third'),
+          package: _('/third'),
           packageJson: {fesm5: './index.js'},
           compiledByAngular: true,
           ignoreMissingDependencies: false,
@@ -75,6 +84,7 @@ runInEachFileSystem(() => {
         } as EntryPoint;
         fourth = {
           path: _('/fourth'),
+          package: _('/fourth'),
           packageJson: {fesm2015: './sub2/index.js'},
           compiledByAngular: true,
           ignoreMissingDependencies: false,
@@ -82,6 +92,7 @@ runInEachFileSystem(() => {
         } as EntryPoint;
         fifth = {
           path: _('/fifth'),
+          package: _('/fifth'),
           packageJson: {module: './index.js'},
           compiledByAngular: true,
           ignoreMissingDependencies: false,
@@ -90,6 +101,7 @@ runInEachFileSystem(() => {
 
         sixthIgnoreMissing = {
           path: _('/sixth'),
+          package: _('/sixth'),
           packageJson: {module: './index.js'},
           compiledByAngular: true,
           ignoreMissingDependencies: true,
@@ -232,6 +244,59 @@ runInEachFileSystem(() => {
         ]);
       });
 
+      it('should log a warning for deep imports', () => {
+        spyOn(host, 'collectDependencies').and.callFake(createFakeComputeDependencies({
+          [_('/first/index.js')]: {resolved: [], missing: [], deepImports: [_('/deep/one')]},
+        }));
+        spyOn(dtsHost, 'collectDependencies').and.callFake(createFakeComputeDependencies({
+          [_('/first/index.d.ts')]: {resolved: [], missing: []},
+        }));
+        const result = resolver.sortEntryPointsByDependency([first]);
+        expect(result.entryPoints).toEqual([first]);
+        expect(logger.logs.warn).toEqual([[
+          `Entry point 'first' contains deep imports into '${_('/deep/one')}'. This is probably not a problem, but may cause the compilation of entry points to be out of order.`
+        ]]);
+      });
+
+      it('should not log a warning for ignored deep imports', () => {
+        spyOn(host, 'collectDependencies').and.callFake(createFakeComputeDependencies({
+          [_('/project/node_modules/test-package/index.js')]: {
+            resolved: [],
+            missing: [],
+            deepImports: [
+              _('/project/node_modules/deep/one'), _('/project/node_modules/deep/two'),
+              _('/project/node_modules/deeper/one'), _('/project/node_modules/deeper/two')
+            ]
+          },
+        }));
+        spyOn(dtsHost, 'collectDependencies').and.callFake(createFakeComputeDependencies({
+          [_('/project/node_modules/test-package/index.d.ts')]: {resolved: [], missing: []},
+        }));
+        // Setup the configuration to ignore deep imports that contain either "deep/" or "two".
+        fs.ensureDir(_('/project'));
+        fs.writeFile(
+            _('/project/ngcc.config.js'),
+            `module.exports = { packages: { 'test-package': { ignorableDeepImportMatchers: [/deep\\//, /two/] } } };`);
+        config = new NgccConfiguration(fs, _('/project'));
+        resolver = new DependencyResolver(fs, logger, config, {esm5: host, esm2015: host}, dtsHost);
+        const testEntryPoint = {
+          name: 'test-package',
+          path: _('/project/node_modules/test-package'),
+          package: _('/project/node_modules/test-package'),
+          packageJson: {esm5: './index.js'},
+          compiledByAngular: true,
+          ignoreMissingDependencies: false,
+          typings: _('/project/node_modules/test-package/index.d.ts'),
+        } as EntryPoint;
+
+        const result = resolver.sortEntryPointsByDependency([testEntryPoint]);
+        expect(result.entryPoints).toEqual([testEntryPoint]);
+        expect(logger.logs.warn).toEqual([[
+          `Entry point 'test-package' contains deep imports into '${_('/project/node_modules/deeper/one')}'. This is probably not a problem, but may cause the compilation of entry points to be out of order.`
+        ]]);
+
+      });
+
       it('should error if the entry point does not have a suitable format', () => {
         expect(() => resolver.sortEntryPointsByDependency([
           { path: '/first', packageJson: {}, compiledByAngular: true } as EntryPoint
@@ -239,7 +304,7 @@ runInEachFileSystem(() => {
       });
 
       it('should error if there is no appropriate DependencyHost for the given formats', () => {
-        resolver = new DependencyResolver(fs, new MockLogger(), {esm2015: host}, host);
+        resolver = new DependencyResolver(fs, new MockLogger(), config, {esm2015: host}, host);
         expect(() => resolver.sortEntryPointsByDependency([first]))
             .toThrowError(
                 `Could not find a suitable format for computing dependencies of entry-point: '${first.path}'.`);
@@ -326,7 +391,7 @@ runInEachFileSystem(() => {
         const esm2015Host = new EsmDependencyHost(fs, moduleResolver);
         const dtsHost = new DtsDependencyHost(fs);
         resolver = new DependencyResolver(
-            fs, new MockLogger(), {esm5: esm5Host, esm2015: esm2015Host}, dtsHost);
+            fs, new MockLogger(), config, {esm5: esm5Host, esm2015: esm2015Host}, dtsHost);
         spyOn(esm5Host, 'collectDependencies')
             .and.callFake(createFakeComputeDependencies(dependencies));
         spyOn(esm2015Host, 'collectDependencies')
@@ -396,6 +461,9 @@ runInEachFileSystem(() => {
           deps[entryPointPath].resolved.forEach(dep => dependencies.add(absoluteFrom(dep)));
           deps[entryPointPath].missing.forEach(
               dep => missing.add(fs.isRooted(dep) ? absoluteFrom(dep) : relativeFrom(dep)));
+          if (deps[entryPointPath].deepImports) {
+            deps[entryPointPath].deepImports !.forEach(dep => deepImports.add(dep));
+          }
           return {dependencies, missing, deepImports};
         };
       }
