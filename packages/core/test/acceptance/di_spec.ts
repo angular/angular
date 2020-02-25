@@ -1153,6 +1153,23 @@ describe('di', () => {
         expect(overriddenProvider !.dep.name).toBe('FooServiceDep');
       }
     });
+
+    it('should use constructor config directly when token is explicitly provided as a type provider',
+       () => {
+         let provider: FooService|BarService;
+
+         @Component({template: ''})
+         class App {
+           constructor(service: FooService) { provider = service; }
+         }
+
+         TestBed.configureTestingModule({declarations: [App], providers: [FooService]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         expect(provider !.getMessage()).toBe('foo');
+         expect(provider !.dep.name).toBe('FooServiceDep');
+       });
   });
 
   describe('inject', () => {

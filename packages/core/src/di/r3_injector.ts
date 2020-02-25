@@ -479,7 +479,8 @@ export function providerToFactory(
     provider: SingleProvider, ngModuleType?: InjectorType<any>, providers?: any[]): () => any {
   let factory: (() => any)|undefined = undefined;
   if (isTypeProvider(provider)) {
-    return injectableDefOrInjectorDefFactory(resolveForwardRef(provider));
+    const unwrappedProvider = resolveForwardRef(provider);
+    return getFactoryDef(unwrappedProvider) || injectableDefOrInjectorDefFactory(unwrappedProvider);
   } else {
     if (isValueProvider(provider)) {
       factory = () => resolveForwardRef(provider.useValue);
@@ -497,8 +498,7 @@ export function providerToFactory(
       if (hasDeps(provider)) {
         factory = () => new (classRef)(...injectArgs(provider.deps));
       } else {
-        const classFactoryDef = getFactoryDef(classRef);
-        return classFactoryDef || injectableDefOrInjectorDefFactory(classRef);
+        return getFactoryDef(classRef) || injectableDefOrInjectorDefFactory(classRef);
       }
     }
   }
