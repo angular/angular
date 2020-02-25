@@ -85,7 +85,7 @@ describe('diagnostics', () => {
       mockHost.override(TEST_TEMPLATE, template);
       const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe('Unable to resolve signature for call of method $any');
+      expect(diags[0].messageText).toBe('Unable to resolve signature for call of $any');
     }
   });
 
@@ -129,7 +129,7 @@ describe('diagnostics', () => {
       `);
       const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(`Expected the operants to be of similar type or any`);
+      expect(diags[0].messageText).toBe(`Expected operands to be of similar type or any`);
     });
 
     it('should not report errors for matching exported type', () => {
@@ -228,7 +228,7 @@ describe('diagnostics', () => {
 
     it('should report numeric operator errors', () => {
       const diags = ngLS.getSemanticDiagnostics(EXPRESSION_CASES).map(d => d.messageText);
-      expect(diags).toContain('Expected a numeric type');
+      expect(diags).toContain('Expected a number type');
     });
   });
 

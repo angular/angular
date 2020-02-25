@@ -11,10 +11,12 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {AstResult} from './common';
+import {Diagnostic, createDiagnostic} from './diagnostic_messages';
 import {getTemplateExpressionDiagnostics} from './expression_diagnostics';
 import * as ng from './types';
 import {TypeScriptServiceHost} from './typescript_host';
 import {findPropertyValueOfType, findTightestNode, offsetSpan, spanOf} from './utils';
+
 
 
 /**
@@ -39,18 +41,6 @@ export function getTemplateDiagnostics(ast: AstResult): ng.Diagnostic[] {
     query: template.query,
     members: template.members,
   });
-}
-
-/**
- * Generate an error message that indicates a directive is not part of any
- * NgModule.
- * @param name class name
- * @param isComponent true if directive is an Angular Component
- */
-function missingDirective(name: string, isComponent: boolean) {
-  const type = isComponent ? 'Component' : 'Directive';
-  return `${type} '${name}' is not included in a module and will not be ` +
-      'available inside a template. Consider adding it to a NgModule declaration.';
 }
 
 /**
@@ -96,28 +86,22 @@ export function getDeclarationDiagnostics(
         span: error.span,
       });
     }
+
+    if (!modules.ngModuleByPipeOrDirective.has(declaration.type)) {
+      results.push(createDiagnostic(
+          declarationSpan, Diagnostic.directive_not_in_module,
+          metadata.isComponent ? 'Component' : 'Directive', type.name));
+    }
+
     if (metadata.isComponent) {
-      if (!modules.ngModuleByPipeOrDirective.has(declaration.type)) {
-        results.push({
-          kind: ts.DiagnosticCategory.Suggestion,
-          message: missingDirective(type.name, metadata.isComponent),
-          span: declarationSpan,
-        });
-      }
       const {template, templateUrl, styleUrls} = metadata.template !;
       if (template === null && !templateUrl) {
-        results.push({
-          kind: ts.DiagnosticCategory.Error,
-          message: `Component '${type.name}' must have a template or templateUrl`,
-          span: declarationSpan,
-        });
+        results.push(createDiagnostic(
+            declarationSpan, Diagnostic.missing_template_and_templateurl, type.name));
       } else if (templateUrl) {
         if (template) {
-          results.push({
-            kind: ts.DiagnosticCategory.Error,
-            message: `Component '${type.name}' must not have both template and templateUrl`,
-            span: declarationSpan,
-          });
+          results.push(createDiagnostic(
+              declarationSpan, Diagnostic.both_template_and_templateurl, type.name));
         }
 
         // Find templateUrl value from the directive call expression, which is the parent of the
@@ -147,12 +131,6 @@ export function getDeclarationDiagnostics(
 
         results.push(...validateUrls(styleUrlsNode.elements, host.tsLsHost));
       }
-    } else if (!directives.has(declaration.type)) {
-      results.push({
-        kind: ts.DiagnosticCategory.Suggestion,
-        message: missingDirective(type.name, metadata.isComponent),
-        span: declarationSpan,
-      });
     }
   }
 
@@ -188,12 +166,9 @@ function validateUrls(
     const url = path.join(path.dirname(curPath), urlNode.text);
     if (tsLsHost.fileExists(url)) continue;
 
-    allErrors.push({
-      kind: ts.DiagnosticCategory.Error,
-      message: `URL does not point to a valid file`,
-      // Exclude opening and closing quotes in the url span.
-      span: {start: urlNode.getStart() + 1, end: urlNode.end - 1},
-    });
+    // Exclude opening and closing quotes in the url span.
+    const urlSpan = {start: urlNode.getStart() + 1, end: urlNode.end - 1};
+    allErrors.push(createDiagnostic(urlSpan, Diagnostic.invalid_templateurl));
   }
   return allErrors;
 }
