@@ -225,6 +225,24 @@ describe('R3 AST source spans', () => {
   // TODO(joost): improve spans of nodes extracted from macrosyntax
   describe('inline templates', () => {
     it('is correct for attribute and bound attributes', () => {
+      // Desugared form is
+      // <ng-template ngFor [ngForOf]="items" let-item>
+      //   <div></div>
+      // </ng-template>
+      expectFromHtml('<div *ngFor="let item of items"></div>').toEqual([
+        ['Template', '0:32', '0:32', '32:38'],
+        ['TextAttribute', '5:31', '<empty>'],
+        ['BoundAttribute', '5:31', '<empty>'],
+        ['Variable', '5:31', '<empty>'],
+        ['Element', '0:38', '0:32', '32:38'],
+      ]);
+
+      // Note that this test exercises an *incorrect* usage of the ngFor
+      // directive. There is a missing 'let' in the beginning of the expression
+      // which causes the template to be desugared into
+      // <ng-template [ngFor]="item" [ngForOf]="items">
+      //   <div></div>
+      // </ng-template>
       expectFromHtml('<div *ngFor="item of items"></div>').toEqual([
         ['Template', '0:28', '0:28', '28:34'],
         ['BoundAttribute', '5:27', '<empty>'],
