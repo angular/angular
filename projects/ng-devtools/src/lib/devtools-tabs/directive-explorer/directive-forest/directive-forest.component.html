@@ -5,48 +5,50 @@
   (prevMatched)="prevMatched()"
 >
 </ng-filter>
-<mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
-  <mat-tree-node
-    [ngClass]="{
-      matched: isMatched(node),
-      selected: isSelected(node),
-      highlighted: isHighlighted(node),
-      'new-node': node.newItem
-    }"
-    (click)="handleSelect(node)"
-    (dblclick)="handleSelectDomElement(node)"
-    (mouseenter)="highlightNode(node.position)"
-    (mouseleave)="removeHighlight()"
-    *matTreeNodeDef="let node"
-    matTreeNodePaddingIndent="20"
-    matTreeNodePadding
-  >
-    <button disabled></button>
-    <span class="element-name">{{ node.name }}</span>
-    <span *ngIf="node.directives" class="dir-names">[{{ node.directives }}]</span>
-  </mat-tree-node>
-  <mat-tree-node
-    [ngClass]="{
-      matched: isMatched(node),
-      selected: isSelected(node),
-      highlighted: isHighlighted(node),
-      'new-node': node.newItem
-    }"
-    (click)="handleSelect(node)"
-    (dblclick)="handleSelectDomElement(node)"
-    (mouseenter)="highlightNode(node.position)"
-    (mouseleave)="removeHighlight()"
-    *matTreeNodeDef="let node; when: hasChild"
-    matTreeNodePaddingIndent="20"
-    matTreeNodePadding
-  >
-    <button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.name">
-      <mat-icon class="mat-icon-rtl-mirror">
-        {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
-      </mat-icon>
-    </button>
-    <span class="element-name">{{ node.name }}</span>
-    <span *ngIf="node.directives" class="dir-names">[{{ node.directives }}]</span>
-  </mat-tree-node>
-</mat-tree>
+<div class="tree-wrapper">
+  <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+    <mat-tree-node
+      [ngClass]="{
+        matched: isMatched(node),
+        selected: isSelected(node),
+        highlighted: isHighlighted(node),
+        'new-node': node.newItem
+      }"
+      (click)="handleSelect(node)"
+      (dblclick)="handleSelectDomElement(node)"
+      (mouseenter)="highlightNode(node.position)"
+      (mouseleave)="removeHighlight()"
+      *matTreeNodeDef="let node"
+      matTreeNodePaddingIndent="20"
+      matTreeNodePadding
+    >
+      <button disabled></button>
+      <span class="element-name">{{ node.name }}</span>
+      <span *ngIf="node.directives" class="dir-names">[{{ node.directives }}]</span>
+    </mat-tree-node>
+    <mat-tree-node
+      [ngClass]="{
+        matched: isMatched(node),
+        selected: isSelected(node),
+        highlighted: isHighlighted(node),
+        'new-node': node.newItem
+      }"
+      (click)="handleSelect(node)"
+      (dblclick)="handleSelectDomElement(node)"
+      (mouseenter)="highlightNode(node.position)"
+      (mouseleave)="removeHighlight()"
+      *matTreeNodeDef="let node; when: hasChild"
+      matTreeNodePaddingIndent="20"
+      matTreeNodePadding
+    >
+      <button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.name">
+        <mat-icon class="mat-icon-rtl-mirror">
+          {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
+        </mat-icon>
+      </button>
+      <span class="element-name">{{ node.name }}</span>
+      <span *ngIf="node.directives" class="dir-names">[{{ node.directives }}]</span>
+    </mat-tree-node>
+  </mat-tree>
+</div>
 <ng-breadcrumbs (handleSelect)="handleSelect($event)" [parents]="parents"></ng-breadcrumbs>
