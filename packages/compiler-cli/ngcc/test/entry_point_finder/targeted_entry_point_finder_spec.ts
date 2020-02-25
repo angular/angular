@@ -33,8 +33,8 @@ runInEachFileSystem(() => {
       logger = new MockLogger();
       const srcHost = new EsmDependencyHost(fs, new ModuleResolver(fs));
       const dtsHost = new DtsDependencyHost(fs);
-      resolver = new DependencyResolver(fs, logger, {esm2015: srcHost}, dtsHost);
       config = new NgccConfiguration(fs, _Abs('/'));
+      resolver = new DependencyResolver(fs, logger, config, {esm2015: srcHost}, dtsHost);
     });
 
     describe('findEntryPoints()', () => {
@@ -189,7 +189,7 @@ runInEachFileSystem(() => {
         ]);
         const srcHost = new EsmDependencyHost(fs, new ModuleResolver(fs, pathMappings));
         const dtsHost = new DtsDependencyHost(fs, pathMappings);
-        resolver = new DependencyResolver(fs, logger, {esm2015: srcHost}, dtsHost);
+        resolver = new DependencyResolver(fs, logger, config, {esm2015: srcHost}, dtsHost);
         const finder = new TargetedEntryPointFinder(
             fs, config, logger, resolver, basePath, targetPath, pathMappings);
         const {entryPoints} = finder.findEntryPoints();
@@ -217,7 +217,7 @@ runInEachFileSystem(() => {
            ]);
            const srcHost = new EsmDependencyHost(fs, new ModuleResolver(fs, pathMappings));
            const dtsHost = new DtsDependencyHost(fs, pathMappings);
-           resolver = new DependencyResolver(fs, logger, {esm2015: srcHost}, dtsHost);
+           resolver = new DependencyResolver(fs, logger, config, {esm2015: srcHost}, dtsHost);
            const finder = new TargetedEntryPointFinder(
                fs, config, logger, resolver, basePath, targetPath, pathMappings);
            const {entryPoints} = finder.findEntryPoints();
@@ -250,7 +250,7 @@ runInEachFileSystem(() => {
            ]);
            const srcHost = new EsmDependencyHost(fs, new ModuleResolver(fs, pathMappings));
            const dtsHost = new DtsDependencyHost(fs, pathMappings);
-           resolver = new DependencyResolver(fs, logger, {esm2015: srcHost}, dtsHost);
+           resolver = new DependencyResolver(fs, logger, config, {esm2015: srcHost}, dtsHost);
            const finder = new TargetedEntryPointFinder(
                fs, config, logger, resolver, basePath, targetPath, pathMappings);
            const {entryPoints} = finder.findEntryPoints();
@@ -277,7 +277,7 @@ runInEachFileSystem(() => {
         ]);
         const srcHost = new EsmDependencyHost(fs, new ModuleResolver(fs, pathMappings));
         const dtsHost = new DtsDependencyHost(fs, pathMappings);
-        resolver = new DependencyResolver(fs, logger, {esm2015: srcHost}, dtsHost);
+        resolver = new DependencyResolver(fs, logger, config, {esm2015: srcHost}, dtsHost);
         const finder = new TargetedEntryPointFinder(
             fs, config, logger, resolver, basePath, targetPath, pathMappings);
         const {entryPoints} = finder.findEntryPoints();
