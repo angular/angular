@@ -1,6 +1,6 @@
 import { DevToolsNode } from 'protocol';
-import { DataSource } from '@angular/cdk/collections';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { CollectionViewer, DataSource } from '@angular/cdk/collections';
+import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { MatTreeFlattener } from '@angular/material/tree';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { map } from 'rxjs/operators';
@@ -101,10 +101,11 @@ export class ComponentDataSource extends DataSource<FlatNode> {
     return newItems;
   }
 
-  connect(): Observable<FlatNode[]> {
-    return this._flattenedData.pipe(
+  connect(collectionViewer: CollectionViewer): Observable<FlatNode[]> {
+    const changes = [collectionViewer.viewChange, this._treeControl.expansionModel.changed, this._flattenedData];
+    return merge(...changes).pipe(
       map(() => {
-        this._expandedData.next(this.data);
+        this._expandedData.next(this._treeFlattener.expandFlattenedNodes(this.data, this._treeControl));
         return this._expandedData.value;
       })
     );
