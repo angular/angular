@@ -7,11 +7,11 @@
  */
 
 import {AST, AstPath, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, CompileDirectiveSummary, CompileTypeMetadata, DirectiveAst, ElementAst, EmbeddedTemplateAst, Node, ParseSourceSpan, RecursiveTemplateAstVisitor, ReferenceAst, TemplateAst, TemplateAstPath, VariableAst, identifierName, templateVisitAll, tokenReference} from '@angular/compiler';
-import * as ts from 'typescript';
 
+import {Diagnostic, createDiagnostic} from './diagnostic_messages';
 import {AstType} from './expression_type';
 import {BuiltinType, Definition, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from './symbols';
-import {Diagnostic} from './types';
+import * as ng from './types';
 import {findOutputBinding, getPathToNodeAtPosition} from './utils';
 
 export interface DiagnosticTemplateInfo {
@@ -23,7 +23,7 @@ export interface DiagnosticTemplateInfo {
   templateAst: TemplateAst[];
 }
 
-export function getTemplateExpressionDiagnostics(info: DiagnosticTemplateInfo): Diagnostic[] {
+export function getTemplateExpressionDiagnostics(info: DiagnosticTemplateInfo): ng.Diagnostic[] {
   const visitor = new ExpressionDiagnosticsVisitor(
       info, (path: TemplateAstPath) => getExpressionScope(info, path));
   templateVisitAll(visitor, info.templateAst);
@@ -244,7 +244,7 @@ class ExpressionDiagnosticsVisitor extends RecursiveTemplateAstVisitor {
   private path: TemplateAstPath;
   private directiveSummary: CompileDirectiveSummary|undefined;
 
-  diagnostics: Diagnostic[] = [];
+  diagnostics: ng.Diagnostic[] = [];
 
   constructor(
       private info: DiagnosticTemplateInfo,
@@ -291,10 +291,11 @@ class ExpressionDiagnosticsVisitor extends RecursiveTemplateAstVisitor {
       if (context && !context.has(ast.value)) {
         const missingMember =
             ast.value === '$implicit' ? 'an implicit value' : `a member called '${ast.value}'`;
-        this.reportDiagnostic(
-            `The template context of '${directive.type.reference.name}' does not define ${missingMember}.\n` +
-                `If the context type is a base type or 'any', consider refining it to a more specific type.`,
-            spanOf(ast.sourceSpan), ts.DiagnosticCategory.Suggestion);
+
+        const span = this.absSpan(spanOf(ast.sourceSpan));
+        this.diagnostics.push(createDiagnostic(
+            span, Diagnostic.template_context_missing_member, directive.type.reference.name,
+            missingMember));
       }
     }
   }
@@ -334,10 +335,9 @@ class ExpressionDiagnosticsVisitor extends RecursiveTemplateAstVisitor {
   private diagnoseExpression(ast: AST, offset: number, event: boolean) {
     const scope = this.getExpressionScope(this.path, event);
     const analyzer = new AstType(scope, this.info.query, {event});
-    for (const {message, span, kind} of analyzer.getDiagnostics(ast)) {
-      span.start += offset;
-      span.end += offset;
-      this.reportDiagnostic(message as string, span, kind);
+    for (const diagnostic of analyzer.getDiagnostics(ast)) {
+      diagnostic.span = this.absSpan(diagnostic.span, offset);
+      this.diagnostics.push(diagnostic);
     }
   }
 
@@ -345,11 +345,11 @@ class ExpressionDiagnosticsVisitor extends RecursiveTemplateAstVisitor {
 
   private pop() { this.path.pop(); }
 
-  private reportDiagnostic(
-      message: string, span: Span, kind: ts.DiagnosticCategory = ts.DiagnosticCategory.Error) {
-    span.start += this.info.offset;
-    span.end += this.info.offset;
-    this.diagnostics.push({kind, span, message});
+  private absSpan(span: Span, additionalOffset: number = 0): Span {
+    return {
+      start: span.start + this.info.offset + additionalOffset,
+      end: span.end + this.info.offset + additionalOffset,
+    };
   }
 }
 
