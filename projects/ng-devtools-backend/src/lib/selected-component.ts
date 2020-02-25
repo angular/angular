@@ -8,9 +8,7 @@ export const setConsoleReference = (node: ComponentTreeNode) => {
   Object.defineProperty(window, SELECTED_COMPONENT_PROPERTY_KEY_BASE, {
     get: () => {
       if (node) {
-        return (
-          (node instanceof HTMLElement && ng.getComponent(node.nativeElement)) || ng.getDebugNode(node.nativeElement)
-        );
+        return ng.getComponent(node.nativeElement) || node;
       }
       return node.nativeElement;
     },
