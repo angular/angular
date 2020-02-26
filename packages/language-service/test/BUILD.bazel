@@ -43,6 +43,7 @@ ts_library(
     testonly = True,
     srcs = [
         "diagnostic_messages_spec.ts",
+        "diagnostics_spec.ts",
         "global_symbols_spec.ts",
         "html_info_spec.ts",
         "language_service_spec.ts",
