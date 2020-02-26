@@ -142,6 +142,13 @@ export interface R3DependencyMetadata {
   token: o.Expression;
 
   /**
+   * If an @Attribute decorator is present, this is the literal type of the attribute name, or
+   * the unknown type if no literal type is available (e.g. the attribute name is an expression).
+   * Will be null otherwise.
+   */
+  attribute: o.Expression|null;
+
+  /**
    * An enum indicating whether this dependency has special meaning to Angular and needs to be
    * injected specially.
    */
@@ -180,6 +187,7 @@ export interface R3FactoryFn {
 export function compileFactoryFunction(meta: R3FactoryMetadata): R3FactoryFn {
   const t = o.variable('t');
   const statements: o.Statement[] = [];
+  let ctorDepsType: o.Type = o.NONE_TYPE;
 
   // The type to instantiate via constructor invocation. If there is no delegated factory, meaning
   // this type is always created by constructor invocation, then this is the type-to-create
@@ -197,6 +205,8 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3FactoryFn {
       ctorExpr = new o.InstantiateExpr(
           typeForCtor,
           injectDependencies(meta.deps, meta.injectFn, meta.target === R3FactoryTarget.Pipe));
+
+      ctorDepsType = createCtorDepsType(meta.deps);
     }
   } else {
     const baseFactory = o.variable(`ɵ${meta.name}_BaseFactory`);
@@ -269,8 +279,9 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3FactoryFn {
         [new o.FnParam('t', o.DYNAMIC_TYPE)], body, o.INFERRED_TYPE, undefined,
         `${meta.name}_Factory`),
     statements,
-    type: o.expressionType(
-        o.importExpr(R3.FactoryDef, [typeWithParameters(meta.type.type, meta.typeArgumentCount)]))
+    type: o.expressionType(o.importExpr(
+        R3.FactoryDef,
+        [typeWithParameters(meta.type.type, meta.typeArgumentCount), ctorDepsType]))
   };
 }
 
@@ -319,6 +330,49 @@ function compileInjectDependency(
   }
 }
 
+function createCtorDepsType(deps: R3DependencyMetadata[]): o.Type {
+  let hasTypes = false;
+  const attributeTypes = deps.map(dep => {
+    const type = createCtorDepType(dep);
+    if (type !== null) {
+      hasTypes = true;
+      return type;
+    } else {
+      return o.literal(null);
+    }
+  });
+
+  if (hasTypes) {
+    return o.expressionType(o.literalArr(attributeTypes));
+  } else {
+    return o.NONE_TYPE;
+  }
+}
+
+function createCtorDepType(dep: R3DependencyMetadata): o.LiteralMapExpr|null {
+  const entries: {key: string, quoted: boolean, value: o.Expression}[] = [];
+
+  if (dep.resolved === R3ResolvedDependencyType.Attribute) {
+    if (dep.attribute !== null) {
+      entries.push({key: 'attribute', value: dep.attribute, quoted: false});
+    }
+  }
+  if (dep.optional) {
+    entries.push({key: 'optional', value: o.literal(true), quoted: false});
+  }
+  if (dep.host) {
+    entries.push({key: 'host', value: o.literal(true), quoted: false});
+  }
+  if (dep.self) {
+    entries.push({key: 'self', value: o.literal(true), quoted: false});
+  }
+  if (dep.skipSelf) {
+    entries.push({key: 'skipSelf', value: o.literal(true), quoted: false});
+  }
+
+  return entries.length > 0 ? o.literalMap(entries) : null;
+}
+
 /**
  * A helper function useful for extracting `R3DependencyMetadata` from a Render2
  * `CompileTypeMetadata` instance.
@@ -348,7 +402,7 @@ export function dependenciesFromGlobalMetadata(
       // Construct the dependency.
       deps.push({
         token,
-        resolved,
+        attribute: null, resolved,
         host: !!dependency.isHost,
         optional: !!dependency.isOptional,
         self: !!dependency.isSelf,

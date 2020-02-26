@@ -52,6 +52,7 @@ export interface Render3ParseResult {
   errors: ParseError[];
   styles: string[];
   styleUrls: string[];
+  ngContentSelectors: string[];
 }
 
 export function htmlAstToRender3Ast(
@@ -73,6 +74,7 @@ export function htmlAstToRender3Ast(
     errors: allErrors,
     styleUrls: transformer.styleUrls,
     styles: transformer.styles,
+    ngContentSelectors: transformer.ngContentSelectors,
   };
 }
 
@@ -80,6 +82,7 @@ class HtmlAstToIvyAst implements html.Visitor {
   errors: ParseError[] = [];
   styles: string[] = [];
   styleUrls: string[] = [];
+  ngContentSelectors: string[] = [];
   private inI18nBlock: boolean = false;
 
   constructor(private bindingParser: BindingParser) {}
@@ -189,6 +192,8 @@ class HtmlAstToIvyAst implements html.Visitor {
       const selector = preparsedElement.selectAttr;
       const attrs: t.TextAttribute[] = element.attrs.map(attr => this.visitAttribute(attr));
       parsedElement = new t.Content(selector, attrs, element.sourceSpan, element.i18n);
+
+      this.ngContentSelectors.push(selector);
     } else if (isTemplateElement) {
       // `<ng-template>`
       const attrs = this.extractAttributes(element.name, parsedProperties, i18nAttrsMeta);

@@ -399,8 +399,21 @@ runInEachFileSystem(() => {
          expect(dtsContents)
              .toContain(`export declare class ${exportedName} extends PlatformLocation`);
          // And that ngcc's modifications to that class use the correct (exported) name
-         expect(dtsContents).toContain(`static ɵfac: ɵngcc0.ɵɵFactoryDef<${exportedName}>`);
+         expect(dtsContents).toContain(`static ɵfac: ɵngcc0.ɵɵFactoryDef<${exportedName}, never>`);
        });
+
+    it('should include constructor metadata in factory definitions', () => {
+      mainNgcc({
+        basePath: '/node_modules',
+        targetEntryPointPath: '@angular/common',
+        propertiesToConsider: ['esm2015']
+      });
+
+      const dtsContents = fs.readFile(_('/node_modules/@angular/common/common.d.ts'));
+      expect(dtsContents)
+          .toContain(
+              `static ɵfac: ɵngcc0.ɵɵFactoryDef<NgPluralCase, [{ attribute: "ngPluralCase"; }, null, null, { host: true; }]>`);
+    });
 
     it('should add generic type for ModuleWithProviders and generate exports for private modules',
        () => {
@@ -1589,7 +1602,7 @@ runInEachFileSystem(() => {
            const dtsContents = fs.readFile(_(`/node_modules/test-package/index.d.ts`));
            expect(dtsContents)
                .toContain(
-                   'static ɵcmp: ɵngcc0.ɵɵComponentDefWithMeta<DerivedCmp, "[base]", never, {}, {}, never>;');
+                   'static ɵcmp: ɵngcc0.ɵɵComponentDefWithMeta<DerivedCmp, "[base]", never, {}, {}, never, never>;');
          });
 
       it('should generate directive definitions with CopyDefinitionFeature for undecorated child directives in a long inheritance chain',

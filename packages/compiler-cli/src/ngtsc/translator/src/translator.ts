@@ -447,12 +447,12 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
           `An ExpressionType with type arguments cannot have multiple levels of type arguments`);
     }
 
-    const typeArgs = type.typeParams.map(param => param.visitType(this, context));
+    const typeArgs = type.typeParams.map(param => this.translateType(param, context));
     return ts.createTypeReferenceNode(typeNode.typeName, typeArgs);
   }
 
   visitArrayType(type: ArrayType, context: Context): ts.ArrayTypeNode {
-    return ts.createArrayTypeNode(this.translateType(type, context));
+    return ts.createArrayTypeNode(this.translateType(type.of, context));
   }
 
   visitMapType(type: MapType, context: Context): ts.TypeLiteralNode {
@@ -497,8 +497,18 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
     throw new Error('Method not implemented.');
   }
 
-  visitLiteralExpr(ast: LiteralExpr, context: Context): ts.LiteralTypeNode {
-    return ts.createLiteralTypeNode(ts.createLiteral(ast.value as string));
+  visitLiteralExpr(ast: LiteralExpr, context: Context): ts.TypeNode {
+    if (ast.value === null) {
+      return ts.createKeywordTypeNode(ts.SyntaxKind.NullKeyword);
+    } else if (ast.value === undefined) {
+      return ts.createKeywordTypeNode(ts.SyntaxKind.UndefinedKeyword);
+    } else if (typeof ast.value === 'boolean') {
+      return ts.createLiteralTypeNode(ts.createLiteral(ast.value));
+    } else if (typeof ast.value === 'number') {
+      return ts.createLiteralTypeNode(ts.createLiteral(ast.value));
+    } else {
+      return ts.createLiteralTypeNode(ts.createLiteral(ast.value));
+    }
   }
 
   visitLocalizedString(ast: LocalizedString, context: Context): never {
@@ -578,6 +588,8 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
       return ts.createTypeReferenceNode(node, /* typeArguments */ undefined);
     } else if (ts.isTypeNode(node)) {
       return node;
+    } else if (ts.isLiteralExpression(node)) {
+      return ts.createLiteralTypeNode(node);
     } else {
       throw new Error(
           `Unsupported WrappedNodeExpr in TypeTranslatorVisitor: ${ts.SyntaxKind[node.kind]}`);
@@ -590,8 +602,8 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
     return ts.createTypeQueryNode(expr as ts.Identifier);
   }
 
-  private translateType(expr: Type, context: Context): ts.TypeNode {
-    const typeNode = expr.visitType(this, context);
+  private translateType(type: Type, context: Context): ts.TypeNode {
+    const typeNode = type.visitType(this, context);
     if (!ts.isTypeNode(typeNode)) {
       throw new Error(
           `A Type must translate to a TypeNode, but was ${ts.SyntaxKind[typeNode.kind]}`);

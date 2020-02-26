@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, ExternalExpr, R3DependencyMetadata, R3Reference, R3ResolvedDependencyType, WrappedNodeExpr} from '@angular/compiler';
+import {Expression, ExternalExpr, LiteralExpr, R3DependencyMetadata, R3Reference, R3ResolvedDependencyType, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic} from '../../diagnostics';
@@ -48,6 +48,7 @@ export function getConstructorDependencies(
   }
   ctorParams.forEach((param, idx) => {
     let token = valueReferenceToExpression(param.typeValueReference, defaultImportRecorder);
+    let attribute: Expression|null = null;
     let optional = false, self = false, skipSelf = false, host = false;
     let resolved = R3ResolvedDependencyType.Token;
 
@@ -74,7 +75,13 @@ export function getConstructorDependencies(
               ErrorCode.DECORATOR_ARITY_WRONG, Decorator.nodeForError(dec),
               `Unexpected number of arguments to @Attribute().`);
         }
-        token = new WrappedNodeExpr(dec.args[0]);
+        const attributeName = dec.args[0];
+        token = new WrappedNodeExpr(attributeName);
+        if (ts.isStringLiteralLike(attributeName)) {
+          attribute = new LiteralExpr(attributeName.text);
+        } else {
+          attribute = new WrappedNodeExpr(ts.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword));
+        }
         resolved = R3ResolvedDependencyType.Attribute;
       } else {
         throw new FatalDiagnosticError(
@@ -93,7 +100,7 @@ export function getConstructorDependencies(
         kind: ConstructorDepErrorKind.NO_SUITABLE_TOKEN, param,
       });
     } else {
-      deps.push({token, optional, self, skipSelf, host, resolved});
+      deps.push({token, attribute, optional, self, skipSelf, host, resolved});
     }
   });
   if (errors.length === 0) {
@@ -369,7 +376,8 @@ const parensWrapperTransformerFactory: ts.TransformerFactory<ts.Expression> =
 /**
  * Wraps all functions in a given expression in parentheses. This is needed to avoid problems
  * where Tsickle annotations added between analyse and transform phases in Angular may trigger
- * automatic semicolon insertion, e.g. if a function is the expression in a `return` statement. More
+ * automatic semicolon insertion, e.g. if a function is the expression in a `return` statement.
+ * More
  * info can be found in Tsickle source code here:
  * https://github.com/angular/tsickle/blob/d7974262571c8a17d684e5ba07680e1b1993afdd/src/jsdoc_transformer.ts#L1021
  *

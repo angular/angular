@@ -296,11 +296,12 @@ function convertR3DependencyMetadata(facade: R3DependencyMetadataFacade): R3Depe
   }
   return {
     token: tokenExpr,
+    attribute: null,
     resolved: facade.resolved,
     host: facade.host,
     optional: facade.optional,
     self: facade.self,
-    skipSelf: facade.skipSelf
+    skipSelf: facade.skipSelf,
   };
 }
 
