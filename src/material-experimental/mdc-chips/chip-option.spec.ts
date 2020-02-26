@@ -231,6 +231,16 @@ describe('MDC-based Option Chips', () => {
           expect(chipNativeElement.getAttribute('aria-selected')).toBe('true');
         }));
 
+        it('should disable focus on the checkmark', fakeAsync(() => {
+          // The checkmark is only shown in multi selection mode.
+          testComponent.chipList.multiple = true;
+          flush();
+          fixture.detectChanges();
+
+          const checkmark = chipNativeElement.querySelector('.mdc-chip__checkmark-svg')!;
+          expect(checkmark.getAttribute('focusable')).toBe('false');
+        }));
+
       });
 
       describe('when selectable is false', () => {
