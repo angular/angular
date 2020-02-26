@@ -156,11 +156,11 @@ export function parseArguments(input: string[]):
   if (argv['autoDiscoverEntrypoints']) {
     if (!argv['rootDir']) {
       errors.push(`rootDir must be provided with autoDiscoverEntrypoints enabled.`);
-      modes = ['help']
+      modes = ['help'];
     }
     if (!argv['outDir'] && !argv['verifyDir']) {
       errors.push(`outDir or verifyDir must be used with autoDiscoverEntrypoints.`);
-      modes = ['help']
+      modes = ['help'];
     }
   } else {
     if (!argv._.length) {
@@ -219,7 +219,7 @@ function resolveBazelFilePath(fileName: string): string {
   if (process.env['BAZEL_TARGET']) {
     try {
       return path.relative(process.cwd(), require.resolve(fileName));
-    } catch(err) {
+    } catch (err) {
       return path.relative(process.cwd(), fileName);
     }
   }

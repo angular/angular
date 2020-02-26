@@ -60,7 +60,8 @@ function isDirectory(dirPath: string) {
 }
 
 /**
- * Gets an interable of paths to the typings files for each of the recursively discovered package.json
+ * Gets an interable of paths to the typings files for each of the recursively discovered
+ * package.json
  * files from the directory provided.
  */
 export function* discoverAllEntrypoints(dirPath: string) {
@@ -77,7 +78,7 @@ export function* discoverAllEntrypoints(dirPath: string) {
         }
       }
     }
-  }
+  };
   findPackageJsonsInDir(dirPath);
 
   // Get all typings file locations from package.json files

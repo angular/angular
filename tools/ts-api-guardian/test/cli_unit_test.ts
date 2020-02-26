@@ -63,17 +63,20 @@ describe('cli: parseArguments', () => {
     chai.assert.deepEqual(errors, []);
   });
 
-  it('should show usage with error when supplied with --autoDiscoverEntrypoints without --baseDir', () => {
-    const {mode, errors} =
-        parseArguments(['--autoDiscoverEntrypoints']);
-    chai.assert.equal(mode, 'help');
-    chai.assert.deepEqual(errors, ['rootDir must be provided with autoDiscoverEntrypoints enabled.']);
-  });
+  it('should show usage with error when supplied with --autoDiscoverEntrypoints without --baseDir',
+     () => {
+       const {mode, errors} = parseArguments(['--autoDiscoverEntrypoints']);
+       chai.assert.equal(mode, 'help');
+       chai.assert.deepEqual(
+           errors, ['rootDir must be provided with autoDiscoverEntrypoints enabled.']);
+     });
 
-  it('should show usage with error when supplied with --autoDiscoverEntrypoints without --outDir/verifyDir', () => {
-    const {mode, errors} =
-        parseArguments(['--autoDiscoverEntrypoints', '--outDir', 'something']);
-    chai.assert.equal(mode, 'help');
-    chai.assert.deepEqual(errors, ['rootDir must be provided with autoDiscoverEntrypoints enabled.']);
-  });
+  it('should show usage with error when supplied with --autoDiscoverEntrypoints without --outDir/verifyDir',
+     () => {
+       const {mode, errors} =
+           parseArguments(['--autoDiscoverEntrypoints', '--outDir', 'something']);
+       chai.assert.equal(mode, 'help');
+       chai.assert.deepEqual(
+           errors, ['rootDir must be provided with autoDiscoverEntrypoints enabled.']);
+     });
 });
