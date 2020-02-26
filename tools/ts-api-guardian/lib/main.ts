@@ -17,9 +17,13 @@ export function generateGoldenFile(
     entrypoint: string, outFile: string, options: SerializationOptions = {}): void {
   const output = publicApi(entrypoint, options);
 
+  // BUILD_WORKSPACE_DIRECTORY environment variable is only available during bazel
+  // run executions. This workspace directory allows us to generate golden files directly
+  // in the source file tree rather than via a symlink.
   if (process.env['BUILD_WORKSPACE_DIRECTORY']) {
     outFile = path.join(process.env['BUILD_WORKSPACE_DIRECTORY'], outFile);
   }
+
   ensureDirectory(path.dirname(outFile));
   fs.writeFileSync(outFile, output);
 }
@@ -60,13 +64,14 @@ function isDirectory(dirPath: string) {
 }
 
 /**
- * Gets an interable of paths to the typings files for each of the recursively discovered
+ * Gets an array of paths to the typings files for each of the recursively discovered
  * package.json
  * files from the directory provided.
  */
-export function* discoverAllEntrypoints(dirPath: string) {
+export function discoverAllEntrypoints(dirPath: string) {
   // Determine all of the package.json files
   const packageJsons: string[] = [];
+  const entryPoints: string[] = [];
   const findPackageJsonsInDir = (nextPath: string) => {
     for (const file of fs.readdirSync(nextPath)) {
       const fullPath = path.join(nextPath, file);
@@ -86,7 +91,9 @@ export function* discoverAllEntrypoints(dirPath: string) {
     const packageJsonObj = JSON.parse(fs.readFileSync(packageJson, {encoding: 'utf8'}));
     const typings = packageJsonObj.typings;
     if (typings) {
-      yield path.join(path.dirname(packageJson), typings);
+      entryPoints.push(path.join(path.dirname(packageJson), typings));
     }
   }
+
+  return entryPoints;
 }

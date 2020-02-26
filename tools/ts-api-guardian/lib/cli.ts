@@ -48,8 +48,11 @@ export function startCli() {
 
   // In autoDiscoverEntrypoints mode we set the inputed files as the discovered entrypoints
   // for the rootDir
+  let entrypoints: string[];
   if (argv['autoDiscoverEntrypoints']) {
-    argv._ = Array.from(discoverAllEntrypoints(argv['rootDir']));
+    entrypoints = discoverAllEntrypoints(argv['rootDir']);
+  } else {
+    entrypoints = argv._.slice();
   }
 
   for (const error of errors) {
@@ -59,7 +62,7 @@ export function startCli() {
   if (mode === 'help') {
     printUsageAndExit(!!errors.length);
   } else {
-    const targets = resolveFileNamePairs(argv, mode);
+    const targets = resolveFileNamePairs(argv, mode, entrypoints);
 
     if (mode === 'out') {
       for (const {entrypoint, goldenFile} of targets) {
@@ -155,11 +158,11 @@ export function parseArguments(input: string[]):
 
   if (argv['autoDiscoverEntrypoints']) {
     if (!argv['rootDir']) {
-      errors.push(`rootDir must be provided with autoDiscoverEntrypoints enabled.`);
+      errors.push(`--rootDir must be provided with --autoDiscoverEntrypoints.`);
       modes = ['help'];
     }
     if (!argv['outDir'] && !argv['verifyDir']) {
-      errors.push(`outDir or verifyDir must be used with autoDiscoverEntrypoints.`);
+      errors.push(`--outDir or --verifyDir must be used with --autoDiscoverEntrypoints.`);
       modes = ['help'];
     }
   } else {
@@ -217,26 +220,31 @@ function resolveBazelFilePath(fileName: string): string {
   // are not available in the working directory. In order to resolve the real path for the
   // runfile, we need to use `require.resolve` which handles runfiles properly on Windows.
   if (process.env['BAZEL_TARGET']) {
+    // This try/catch block is necessary because if the path is to the source file directly
+    // rather than via symlinks in the bazel output directories, require is not able to
+    // resolve it.
     try {
       return path.relative(process.cwd(), require.resolve(fileName));
     } catch (err) {
       return path.relative(process.cwd(), fileName);
     }
   }
+
+  return fileName;
 }
 
-function resolveFileNamePairs(
-    argv: minimist.ParsedArgs, mode: string): {entrypoint: string, goldenFile: string}[] {
+function resolveFileNamePairs(argv: minimist.ParsedArgs, mode: string, entrypoints: string[]):
+    {entrypoint: string, goldenFile: string}[] {
   if (argv[mode]) {
     return [{
-      entrypoint: resolveBazelFilePath(argv._[0]),
+      entrypoint: resolveBazelFilePath(entrypoints[0]),
       goldenFile: resolveBazelFilePath(argv[mode]),
     }];
   } else {  // argv[mode + 'Dir']
     let rootDir = argv['rootDir'] || '.';
     const goldenDir = argv[mode + 'Dir'];
 
-    return argv._.map((fileName: string) => {
+    return entrypoints.map((fileName: string) => {
       return {
         entrypoint: resolveBazelFilePath(fileName),
         goldenFile: resolveBazelFilePath(path.join(goldenDir, path.relative(rootDir, fileName))),

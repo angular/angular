@@ -65,18 +65,19 @@ describe('cli: parseArguments', () => {
 
   it('should show usage with error when supplied with --autoDiscoverEntrypoints without --baseDir',
      () => {
-       const {mode, errors} = parseArguments(['--autoDiscoverEntrypoints']);
+       const {mode, errors} =
+           parseArguments(['--autoDiscoverEntrypoints', '--outDir', 'something']);
        chai.assert.equal(mode, 'help');
        chai.assert.deepEqual(
-           errors, ['rootDir must be provided with autoDiscoverEntrypoints enabled.']);
+           errors, ['--rootDir must be provided with --autoDiscoverEntrypoints.']);
      });
 
   it('should show usage with error when supplied with --autoDiscoverEntrypoints without --outDir/verifyDir',
      () => {
        const {mode, errors} =
-           parseArguments(['--autoDiscoverEntrypoints', '--outDir', 'something']);
+           parseArguments(['--autoDiscoverEntrypoints', '--rootDir', 'something']);
        chai.assert.equal(mode, 'help');
        chai.assert.deepEqual(
-           errors, ['rootDir must be provided with autoDiscoverEntrypoints enabled.']);
+           errors, ['--outDir or --verifyDir must be used with --autoDiscoverEntrypoints.']);
      });
 });
