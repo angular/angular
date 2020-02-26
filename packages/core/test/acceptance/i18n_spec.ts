@@ -1358,6 +1358,71 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       expect(element.title).toBe('Bonjour Angular');
     });
 
+    it('should process i18n attributes on explicit <ng-template> elements', () => {
+      const titleDirInstances: TitleDir[] = [];
+      loadTranslations({[computeMsgId('Hello')]: 'Bonjour'});
+
+      @Directive({
+        selector: '[title]',
+      })
+      class TitleDir {
+        @Input() title = '';
+        constructor() { titleDirInstances.push(this); }
+      }
+
+      @Component({
+        selector: 'comp',
+        template: '<ng-template i18n-title title="Hello"></ng-template>',
+      })
+      class Comp {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [Comp, TitleDir],
+      });
+
+      const fixture = TestBed.createComponent(Comp);
+      fixture.detectChanges();
+
+      // make sure we only match `TitleDir` once
+      expect(titleDirInstances.length).toBe(1);
+
+      expect(titleDirInstances[0].title).toBe('Bonjour');
+    });
+
+    it('should match directive only once in case i18n attrs are present on inline template', () => {
+      const titleDirInstances: TitleDir[] = [];
+      loadTranslations({[computeMsgId('Hello')]: 'Bonjour'});
+
+      @Directive({selector: '[title]'})
+      class TitleDir {
+        @Input() title: string = '';
+        constructor(public elRef: ElementRef) { titleDirInstances.push(this); }
+      }
+
+      @Component({
+        selector: 'my-cmp',
+        template: `
+          <button *ngIf="true" i18n-title title="Hello"></button>
+        `,
+      })
+      class Cmp {
+      }
+
+      TestBed.configureTestingModule({
+        imports: [CommonModule],
+        declarations: [Cmp, TitleDir],
+      });
+      const fixture = TestBed.createComponent(Cmp);
+      fixture.detectChanges();
+
+      // make sure we only match `TitleDir` once and on the right element
+      expect(titleDirInstances.length).toBe(1);
+      expect(titleDirInstances[0].elRef.nativeElement instanceof HTMLButtonElement).toBeTruthy();
+
+      expect(titleDirInstances[0].title).toBe('Bonjour');
+    });
+
     it('should apply i18n attributes during second template pass', () => {
       loadTranslations({[computeMsgId('Set')]: 'Set'});
       @Directive({

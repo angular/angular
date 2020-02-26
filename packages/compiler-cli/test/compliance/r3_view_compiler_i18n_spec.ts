@@ -331,6 +331,78 @@ describe('i18n support in the template compiler', () => {
       verify(input, output);
     });
 
+    it('should support i18n attributes on explicit <ng-template> elements', () => {
+      const input = `
+        <ng-template i18n-title title="Hello"></ng-template>
+      `;
+
+      // TODO (FW-1942): update the code to avoid adding `title` attribute in plain form
+      // into the `consts` array on Component def.
+      const output = String.raw `
+        var $I18N_0$;
+        if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
+            const $MSG_EXTERNAL_6616505470450179563$$APP_SPEC_TS_1$ = goog.getMsg("Hello");
+            $I18N_0$ = $MSG_EXTERNAL_6616505470450179563$$APP_SPEC_TS_1$;
+        }
+        else {
+            $I18N_0$ = $localize \`Hello\`;
+        }
+        const $_c2$ = ["title", $I18N_0$];
+        …
+        consts: [["title", "Hello"]],
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵɵtemplate(0, MyComponent_ng_template_0_Template, 0, 0, "ng-template", 0);
+            $r3$.ɵɵi18nAttributes(1, $_c2$);
+          }
+        }
+      `;
+      verify(input, output);
+    });
+
+    it('should support i18n attributes on explicit <ng-template> with structural directives',
+       () => {
+         const input = `
+            <ng-template *ngIf="visible" i18n-title title="Hello">Test</ng-template>
+          `;
+
+         // TODO (FW-1942): update the code to avoid adding `title` attribute in plain form
+         // into the `consts` array on Component def.
+         const output = String.raw `
+            var $I18N_0$;
+            if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
+                const $MSG_EXTERNAL_6616505470450179563$$APP_SPEC_TS_1$ = goog.getMsg("Hello");
+                $I18N_0$ = $MSG_EXTERNAL_6616505470450179563$$APP_SPEC_TS_1$;
+            }
+            else {
+                $I18N_0$ = $localize \`Hello\`;
+            }
+            const $_c2$ = ["title", $I18N_0$];
+            function MyComponent_0_ng_template_0_Template(rf, ctx) {
+              if (rf & 1) {
+                $r3$.ɵɵtext(0, "Test");
+              }
+            }
+            function MyComponent_0_Template(rf, ctx) {
+              if (rf & 1) {
+                $r3$.ɵɵtemplate(0, MyComponent_0_ng_template_0_Template, 1, 0, "ng-template", 1);
+                $r3$.ɵɵi18nAttributes(1, $_c2$);
+              }
+            }
+            …
+            consts: [[${AttributeMarker.Template}, "ngIf"], ["title", "Hello"]],
+            template: function MyComponent_Template(rf, ctx) {
+              if (rf & 1) {
+                $r3$.ɵɵtemplate(0, MyComponent_0_Template, 2, 0, undefined, 0);
+              }
+              if (rf & 2) {
+                $r3$.ɵɵproperty("ngIf", ctx.visible);
+              }
+            }
+          `;
+         verify(input, output);
+       });
+
     it('should not create translations for empty attributes', () => {
       const input = `
         <div id="static" i18n-title="m|d" title></div>
