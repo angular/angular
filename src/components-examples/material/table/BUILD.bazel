@@ -11,6 +11,8 @@ ng_module(
     ]),
     module_name = "@angular/components-examples/material/table",
     deps = [
+        "//src/cdk/drag-drop",
+        "//src/cdk/table",
         "//src/material/button",
         "//src/material/button-toggle",
         "//src/material/checkbox",

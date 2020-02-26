@@ -9,6 +9,9 @@ import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatSortModule} from '@angular/material/sort';
 import {MatTableModule} from '@angular/material/table';
+import {DragDropModule} from '@angular/cdk/drag-drop';
+import {CdkTableModule} from '@angular/cdk/table';
+
 import {TableBasicFlexExample} from './table-basic-flex/table-basic-flex-example';
 import {TableBasicExample} from './table-basic/table-basic-example';
 import {TableDynamicColumnsExample} from './table-dynamic-columns/table-dynamic-columns-example';
@@ -36,6 +39,7 @@ import {
 } from './table-text-column-advanced/table-text-column-advanced-example';
 import {TableTextColumnExample} from './table-text-column/table-text-column-example';
 import {TableWrappedExample, WrapperTable} from './table-wrapped/table-wrapped-example';
+import {TableReorderableExample} from './table-reorderable/table-reorderable-example';
 
 export {
   TableBasicExample,          TableBasicFlexExample,
@@ -49,6 +53,7 @@ export {
   TableStickyFooterExample,   TableStickyHeaderExample,
   TableTextColumnExample,     TableTextColumnAdvancedExample,
   TableWrappedExample,        WrapperTable,
+  TableReorderableExample,
 };
 
 const EXAMPLES = [
@@ -63,6 +68,7 @@ const EXAMPLES = [
   TableStickyFooterExample,   TableStickyHeaderExample,
   TableTextColumnExample,     TableTextColumnAdvancedExample,
   TableWrappedExample,        WrapperTable,
+  TableReorderableExample,
 ];
 
 @NgModule({
@@ -77,6 +83,8 @@ const EXAMPLES = [
     MatProgressSpinnerModule,
     MatSortModule,
     MatTableModule,
+    CdkTableModule,
+    DragDropModule,
   ],
   declarations: EXAMPLES,
   exports: EXAMPLES,
