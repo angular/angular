@@ -3417,7 +3417,7 @@ describe('styling', () => {
      * div.style.cssText = 'color: white';
      * ```
      *
-     * Even thought writing to `div.style` is not officially supported everyone it works in all
+     * Even though writing to `div.style` is not officially supported, it works in all
      * browsers except ie10.
      *
      * This function detects this condition and allows us to skip the test.
