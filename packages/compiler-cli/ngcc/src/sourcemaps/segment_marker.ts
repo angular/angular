@@ -28,9 +28,10 @@ export function compareSegments(a: SegmentMarker, b: SegmentMarker): number {
   return a.line === b.line ? a.column - b.column : a.line - b.line;
 }
 
-// The `1` is to indicate a newline character between the lines
-// Note that in the actual contents there could be more than one character -
-// e.g. \r\n - that indicate a newline but that is not important here.
+// The `1` is to indicate a newline character between the lines.
+// Note that in the actual contents there could be more than one character that indicates a newline
+// - e.g. \r\n - but that is not important here since segment-markers are in line/column pairs and
+// so differences in length due to extra `\r` characters do not affect the algorithms.
 const NEWLINE_MARKER_OFFSET = 1;
 
 /**
@@ -59,11 +60,12 @@ export function segmentDiff(lineLengths: number[], a: SegmentMarker, b: SegmentM
 }
 
 /**
- * Return a new SegmentMarker that is offset by the given number of characters.
+ * Return a new segment-marker that is offset by the given number of characters.
  *
- * @param lineLengths the lines of the source file whose segment marker we are offsetting
- * @param marker The segment to offset
- * @param offset The number of character to offset by
+ * @param lineLengths The length of each line in the source file whose segment-marker we are
+ * offsetting.
+ * @param marker The segment to offset.
+ * @param offset The number of character to offset by.
  */
 export function offsetSegment(lineLengths: number[], marker: SegmentMarker, offset: number) {
   if (offset === 0) {

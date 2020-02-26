@@ -33,7 +33,7 @@ export class SourceFile {
       readonly contents: string,
       /** The raw source map (if any) associated with this source file. */
       readonly rawMap: RawSourceMap|null,
-      /** Whether this source files' source map was inline or external. */
+      /** Whether this source file's source map was inline or external. */
       readonly inline: boolean,
       /** Any source files referenced by the raw source map associated with this source file. */
       readonly sources: (SourceFile|null)[]) {
@@ -91,7 +91,7 @@ export class SourceFile {
       const aToBmapping = mappings[mappingIndex];
       const bSource = aToBmapping.originalSource;
       if (bSource.flattenedMappings.length === 0) {
-        // The b source file has no mappings of its own (i.e. it a pure original file)
+        // The b source file has no mappings of its own (i.e. it is a pure original file)
         // so just use the mapping as-is.
         flattenedMappings.push(aToBmapping);
         continue;
@@ -189,10 +189,10 @@ export interface Mapping {
 
 /**
  * Find the index of `item` in the `items` array.
- * If it is not found, then push `item` to the end of the array and returns its new index.
+ * If it is not found, then push `item` to the end of the array and return its new index.
  *
- * @param item the item to look for.
  * @param items the collection in which to look for `item`.
+ * @param item the item to look for.
  * @returns the index of the `item` in the `items` array.
  */
 function findIndexOrAdd<T>(items: T[], item: T): number {

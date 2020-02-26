@@ -81,8 +81,7 @@ export class SourceFileLoader {
    * Find the source map associated with the source file whose `sourcePath` and `contents` are
    * provided.
    *
-   * Source maps can be inline, as part of a base64 encoded comment, or external as a separate
-   * file
+   * Source maps can be inline, as part of a base64 encoded comment, or external as a separate file
    * whose path is indicated in a comment or implied from the name of the source file itself.
    */
   private loadSourceMap(sourcePath: AbsoluteFsPath, contents: string): MapAndPath|null {
@@ -111,8 +110,7 @@ export class SourceFileLoader {
   }
 
   /**
-   * Iterate over each of the "sources" for this source file's source map, recursively loading
-   * each
+   * Iterate over each of the "sources" for this source file's source map, recursively loading each
    * source file and its associated source map.
    */
   private processSources(
@@ -127,8 +125,7 @@ export class SourceFileLoader {
   }
 
   /**
-   * Load the source map from the file at `mapPath`, parsing its JSON contents into a
-   * `RawSourceMap`
+   * Load the source map from the file at `mapPath`, parsing its JSON contents into a `RawSourceMap`
    * object.
    */
   private loadRawSourceMap(mapPath: AbsoluteFsPath): RawSourceMap {
