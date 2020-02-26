@@ -169,7 +169,7 @@ export class LockFileAsync extends LockFileBase {
    */
   async lock<T>(fn: () => Promise<T>): Promise<T> {
     await this.create();
-    return await fn().finally(() => this.remove());
+    return fn().finally(() => this.remove());
   }
 
   protected async create() {
