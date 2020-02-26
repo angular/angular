@@ -28,6 +28,7 @@ export class DevServer {
     notify: false,
     ghostMode: false,
     server: false,
+    logSnippet: false,
     middleware: (req, res) => this._bazelMiddleware(req, res),
   };
 
