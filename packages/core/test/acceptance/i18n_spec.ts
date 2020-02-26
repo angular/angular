@@ -1358,6 +1358,35 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       expect(element.title).toBe('Bonjour Angular');
     });
 
+    it('should process i18n attributes on <ng-template>', () => {
+      let titleDirInstance: TitleDir;
+      loadTranslations({[computeMsgId('Hello')]: 'Bonjour'});
+
+      @Directive({
+        selector: '[titleDir]',
+      })
+      class TitleDir {
+        @Input() title = '';
+        constructor() { titleDirInstance = this; }
+      }
+
+      @Component({
+        selector: 'comp',
+        template: '<ng-template titleDir i18n-title title="Hello"></ng-template>'
+      })
+      class Comp {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [Comp, TitleDir],
+      });
+
+      const fixture = TestBed.createComponent(Comp);
+      fixture.detectChanges();
+
+      expect(titleDirInstance !.title).toBe('Bonjour');
+    });
+
     it('should apply i18n attributes during second template pass', () => {
       loadTranslations({[computeMsgId('Set')]: 'Set'});
       @Directive({

@@ -331,6 +331,33 @@ describe('i18n support in the template compiler', () => {
       verify(input, output);
     });
 
+    it('should support interpolation with custom interpolation config', () => {
+      const input = `
+        <ng-template i18n-title title="Hello"></ng-template>
+      `;
+
+      const output = String.raw `
+        var $I18N_0$;
+        if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
+            const $MSG_EXTERNAL_6616505470450179563$$APP_SPEC_TS_1$ = goog.getMsg("Hello");
+            $I18N_0$ = $MSG_EXTERNAL_6616505470450179563$$APP_SPEC_TS_1$;
+        }
+        else {
+            $I18N_0$ = $localize \`Hello\`;
+        }
+        const $_c2$ = ["title", $I18N_0$];
+        …
+        consts: [[${AttributeMarker.I18n}, "title"]],
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵɵtemplate(0, MyComponent_ng_template_0_Template, 0, 0, "ng-template", 0);
+            $r3$.ɵɵi18nAttributes(1, $_c2$);
+          }
+        }
+      `;
+      verify(input, output);
+    });
+
     it('should not create translations for empty attributes', () => {
       const input = `
         <div id="static" i18n-title="m|d" title></div>
