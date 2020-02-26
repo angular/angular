@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ng_module", "ng_package")
+load("//tools:defaults.bzl", "ng_module", "ng_package", "ts_api_guardian_test_npm_package")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -42,4 +42,14 @@ ng_package(
         "//packages/platform-browser/animations",
         "//packages/platform-browser/testing",
     ],
+)
+
+ts_api_guardian_test_npm_package(
+    name = "platform-browser_api",
+    actualDir = "packages/platform-browser/npm_package",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    goldenDir = "goldens/public-api/platform-browser",
 )

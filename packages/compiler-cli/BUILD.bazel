@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "pkg_npm", "ts_library")
+load("//tools:defaults.bzl", "pkg_npm", "ts_api_guardian_test", "ts_library")
 load("@npm_bazel_typescript//:index.bzl", "ts_config")
 
 ts_config(
@@ -58,4 +58,24 @@ pkg_npm(
         ":compiler-cli",
         "//packages/compiler-cli/ngcc",
     ],
+)
+
+ts_api_guardian_test(
+    name = "error_code_api",
+    actual = "packages/compiler-cli/npm_package/src/ngtsc/diagnostics/src/error_code.d.ts",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    golden = "goldens/public-api/compiler-cli/error_code.d.ts",
+)
+
+ts_api_guardian_test(
+    name = "compiler_options_api",
+    actual = "packages/compiler-cli/npm_package/src/ngtsc/core/api/src/public_options.d.ts",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    golden = "goldens/public-api/compiler-cli/compiler_options.d.ts",
 )

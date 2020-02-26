@@ -939,6 +939,7 @@ groups:
           'docs/SAVED_REPLIES.md',
           'docs/TOOLS.md',
           'docs/TRIAGE_AND_LABELS.md',
+          'goldens/*',
           'modules/e2e_util/e2e_util.ts',
           'modules/e2e_util/perf_util.ts',
           'modules/*',
@@ -958,8 +959,6 @@ groups:
           'tools/ngcontainer/**',
           'tools/npm/**',
           'tools/npm_integration_test/**',
-          'tools/public_api_guard/BUILD.bazel',
-          'tools/public_api_guard/public_api_guard.bzl',
           'tools/pullapprove/**',
           'tools/rxjs/**',
           'tools/saucelabs/**',
@@ -994,7 +993,7 @@ groups:
     conditions:
       - >
         contains_any_globs(files, [
-          'tools/public_api_guard/**',
+          'goldens/public-api/**',
           'docs/NAMING.md',
           'aio/content/guide/glossary.md',
           'aio/content/guide/styleguide.md',
