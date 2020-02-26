@@ -22,6 +22,7 @@ ng_module(
     assets = [":list_scss"] + glob(["**/*.html"]),
     module_name = "@angular/material-experimental/mdc-list",
     deps = [
+        "//src/material/divider",
         "@npm//@angular/core",
         "@npm//@angular/forms",
         "@npm//@material/list",

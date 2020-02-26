@@ -164,6 +164,7 @@
 /src/dev-app/mdc-checkbox/**                       @mmalerba
 /src/dev-app/mdc-chips/**                          @mmalerba
 /src/dev-app/mdc-input/**                          @devversion @mmalerba
+/src/dev-app/mdc-list/**                           @mmalerba
 /src/dev-app/mdc-menu/**                           @crisbeto
 /src/dev-app/mdc-progress-bar/**                   @crisbeto
 /src/dev-app/mdc-radio/**                          @mmalerba

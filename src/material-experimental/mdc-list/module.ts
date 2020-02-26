@@ -7,6 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
+import {MatDividerModule} from '@angular/material/divider';
 import {MatActionList} from './action-list';
 import {
   MatList,
@@ -29,6 +30,7 @@ import {MatListOption, MatSelectionList} from './selection-list';
     MatListAvatarCssMatStyler,
     MatListIconCssMatStyler,
     MatListSubheaderCssMatStyler,
+    MatDividerModule,
   ],
   declarations: [
     MatList,

@@ -48,6 +48,7 @@ ng_module(
         "//src/dev-app/mdc-checkbox",
         "//src/dev-app/mdc-chips",
         "//src/dev-app/mdc-input",
+        "//src/dev-app/mdc-list",
         "//src/dev-app/mdc-menu",
         "//src/dev-app/mdc-progress-bar",
         "//src/dev-app/mdc-radio",

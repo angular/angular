@@ -17,9 +17,9 @@ import {MatListBase} from './list-base';
    * @breaking-change 11.0.0
    */
   exportAs: 'matNavList, matList',
-  templateUrl: 'list.html',
+  template: '<ng-content></ng-content>',
   host: {
-    'class': 'mat-mdc-nav-list mat-mdc-list-base',
+    'class': 'mat-mdc-nav-list mat-mdc-list-base mdc-list',
   },
   styleUrls: ['list.css'],
   encapsulation: ViewEncapsulation.None,

@@ -42,9 +42,9 @@ export class MatListSubheaderCssMatStyler {}
 @Component({
   selector: 'mat-list',
   exportAs: 'matList',
-  templateUrl: 'list.html',
+  template: '<ng-content></ng-content>',
   host: {
-    'class': 'mat-mdc-list mat-mdc-list-base',
+    'class': 'mat-mdc-list mat-mdc-list-base mdc-list',
   },
   styleUrls: ['list.css'],
   encapsulation: ViewEncapsulation.None,
@@ -56,7 +56,7 @@ export class MatList extends MatListBase {}
   selector: 'mat-list-item, a[mat-list-item], button[mat-list-item]',
   exportAs: 'matListItem',
   host: {
-    'class': 'mat-mdc-list-item',
+    'class': 'mat-mdc-list-item mdc-list-item',
   },
   templateUrl: 'list-item.html',
   encapsulation: ViewEncapsulation.None,

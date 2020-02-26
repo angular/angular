@@ -75,6 +75,7 @@ export class DevAppLayout {
     {name: 'MDC Checkbox', route: '/mdc-checkbox'},
     {name: 'MDC Chips', route: '/mdc-chips'},
     {name: 'MDC Input', route: '/mdc-input'},
+    {name: 'MDC List', route: '/mdc-list'},
     {name: 'MDC Menu', route: '/mdc-menu'},
     {name: 'MDC Radio', route: '/mdc-radio'},
     {name: 'MDC Progress Bar', route: '/mdc-progress-bar'},

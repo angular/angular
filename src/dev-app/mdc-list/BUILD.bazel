@@ -1,0 +1,24 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module", "sass_binary")
+
+ng_module(
+    name = "mdc-list",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "mdc-list-demo.html",
+        ":mdc_list_demo_scss",
+    ],
+    deps = [
+        "//src/material-experimental/mdc-button",
+        "//src/material-experimental/mdc-checkbox",
+        "//src/material-experimental/mdc-list",
+        "//src/material/icon",
+        "@npm//@angular/router",
+    ],
+)
+
+sass_binary(
+    name = "mdc_list_demo_scss",
+    src = "mdc-list-demo.scss",
+)
