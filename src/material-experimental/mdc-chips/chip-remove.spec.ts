@@ -49,6 +49,12 @@ describe('MDC-based Chip Remove', () => {
       expect(buttonElement.getAttribute('type')).toBe('button');
     });
 
+    it('should not set the `type` attribute on non-button elements', () => {
+      const buttonElement = chipNativeElement.querySelector('span.mat-mdc-chip-remove')!;
+
+      expect(buttonElement.hasAttribute('type')).toBe(false);
+    });
+
     it('should start MDC exit animation on click', () => {
       let buttonElement = chipNativeElement.querySelector('button')!;
 
@@ -163,7 +169,10 @@ describe('MDC-based Chip Remove', () => {
     <mat-chip
       [removable]="removable"
       [disabled]="disabled"
-      (removed)="didRemove()"><button matChipRemove></button></mat-chip>
+      (removed)="didRemove()">
+      <button matChipRemove></button>
+      <span matChipRemove></span>
+    </mat-chip>
   `
 })
 class TestChip {

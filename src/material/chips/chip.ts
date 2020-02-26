@@ -439,13 +439,19 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
   host: {
     'class': 'mat-chip-remove mat-chip-trailing-icon',
     '(click)': '_handleClick($event)',
-
-    // Prevent accidental form submissions.
-    'type': 'button',
   }
 })
 export class MatChipRemove {
-  constructor(protected _parentChip: MatChip) {}
+  constructor(
+    protected _parentChip: MatChip,
+    // @breaking-change 11.0.0 `elementRef` parameter to be made required.
+    elementRef?: ElementRef<HTMLElement>) {
+
+      // @breaking-change 11.0.0 Remove null check for `elementRef`.
+    if (elementRef && elementRef.nativeElement.nodeName === 'BUTTON') {
+      elementRef.nativeElement.setAttribute('type', 'button');
+    }
+   }
 
   /** Calls the parent chip's public `remove()` method if applicable. */
   _handleClick(event: Event): void {

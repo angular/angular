@@ -182,7 +182,7 @@ export declare class MatChipListChange {
 
 export declare class MatChipRemove {
     protected _parentChip: MatChip;
-    constructor(_parentChip: MatChip);
+    constructor(_parentChip: MatChip, elementRef?: ElementRef<HTMLElement>);
     _handleClick(event: Event): void;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatChipRemove, "[matChipRemove]", never, {}, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatChipRemove>;

@@ -112,9 +112,6 @@ const _MatChipRemoveMixinBase:
     '(click)': 'interaction.next($event)',
     '(keydown)': 'interaction.next($event)',
 
-    // Prevent accidental form submissions.
-    'type': 'button',
-
     // We need to remove this explicitly, because it gets inherited from MatChipTrailingIcon.
     '[attr.aria-hidden]': 'null',
   }
@@ -126,8 +123,12 @@ export class MatChipRemove extends _MatChipRemoveMixinBase implements CanDisable
    */
   interaction: Subject<MouseEvent | KeyboardEvent> = new Subject<MouseEvent | KeyboardEvent>();
 
-  constructor(_elementRef: ElementRef) {
-    super(_elementRef);
+  constructor(elementRef: ElementRef) {
+    super(elementRef);
+
+    if (elementRef.nativeElement.nodeName === 'BUTTON') {
+      elementRef.nativeElement.setAttribute('type', 'button');
+    }
   }
 
   static ngAcceptInputType_disabled: BooleanInput;
