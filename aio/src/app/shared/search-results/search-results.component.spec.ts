@@ -170,6 +170,12 @@ describe('SearchResultsComponent', () => {
     expect(getText()).toContain('Searching ...');
   });
 
+  it('should not display default links while searching', () => {
+    fixture.detectChanges();
+    const resultLinks = fixture.debugElement.queryAll(By.css('.search-page a'));
+    expect(resultLinks.length).toEqual(0);
+  });
+
   describe('when a search result anchor is clicked', () => {
     let searchResult: SearchResult;
     let selected: SearchResult|null;
@@ -214,9 +220,25 @@ describe('SearchResultsComponent', () => {
   });
 
   describe('when no query results', () => {
-    it('should display "not found" message', () => {
+    beforeEach(() => {
       setSearchResults('something', []);
+    });
+
+    it('should display "not found" message', () => {
       expect(getText()).toContain('No results');
+    });
+
+    it('should contain reference links', () => {
+      const resultLinks = fixture.debugElement.queryAll(By.css('.search-page a'));
+      const resultHrefs = resultLinks.map(a => a.nativeNode.getAttribute('href'));
+      expect(resultHrefs.length).toEqual(5);
+      expect(resultHrefs).toEqual([
+        'api',
+        'resources',
+        'guide/glossary',
+        'guide/cheatsheet',
+        'https://blog.angular.io/',
+      ]);
     });
   });
 });
