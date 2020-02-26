@@ -89,12 +89,22 @@ describe('TypeScriptServiceHost', () => {
     expect(template.source).toContain('<h2>{{hero.name}} details!</h2>');
   });
 
-  it('should be able to find multiple inline templates', () => {
-    const tsLSHost = new MockTypescriptHost(['/app/parsing-cases.ts']);
+  it('should be able to find all inline templates in a source file', () => {
+    const file = '/app/inline-templates.ts';
+    const tsLSHost = new MockTypescriptHost([]);
     const tsLS = ts.createLanguageService(tsLSHost);
+    tsLSHost.addScript(file, `
+      import {Component} from '@angular/core';
+      
+      @Component({ template: 'app-1', })
+      export class Comp1 {}
+      
+      @Component({ template: 'app-2', })
+      export class Comp2 {}
+    `);
     const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
-    const templates = ngLSHost.getTemplates('/app/parsing-cases.ts');
-    expect(templates.length).toBe(9);
+    const templates = ngLSHost.getTemplates(file);
+    expect(templates.map(t => t.source)).toEqual(['app-1', 'app-2']);
   });
 
   it('should be able to find external template', () => {

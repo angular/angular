@@ -7,7 +7,7 @@
  */
 
 import {AST, AstPath, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, Element, ElementAst, HtmlAstPath, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ReferenceAst, TagContentType, TemplateBinding, Text, getHtmlTagDefinition} from '@angular/compiler';
-import {$$, $_, isAsciiLetter, isDigit} from '@angular/compiler/src/chars';
+import {$$, $MINUS, $_, isAsciiLetter, isDigit} from '@angular/compiler/src/chars';
 
 import {AstResult} from './common';
 import {getExpressionScope} from './expression_diagnostics';
@@ -73,8 +73,8 @@ enum ATTR {
 }
 
 function isIdentifierPart(code: number) {
-  // Identifiers consist of alphanumeric characters, '_', or '$'.
-  return isAsciiLetter(code) || isDigit(code) || code == $$ || code == $_;
+  // Identifiers consist of alphanumeric characters, '$', '_', or '-' (in the case of elements).
+  return isAsciiLetter(code) || isDigit(code) || code == $$ || code == $_ || code == $MINUS;
 }
 
 /**
