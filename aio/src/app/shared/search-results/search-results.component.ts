@@ -1,6 +1,12 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { SearchResult, SearchResults, SearchArea } from 'app/search/interfaces';
 
+enum SearchState {
+  InProgress = 'in-progress',
+  ResultsFound = 'results-found',
+  NoResultsFound = 'no-results-found'
+}
+
 /**
  * A component to display search results in groups
  */
@@ -23,11 +29,18 @@ export class SearchResultsComponent implements OnChanges {
   resultSelected = new EventEmitter<SearchResult>();
 
   readonly defaultArea = 'other';
-  notFoundMessage = 'Searching ...';
+  searchState: SearchState = SearchState.InProgress;
   readonly topLevelFolders = ['guide', 'tutorial'];
   searchAreas: SearchArea[] = [];
 
   ngOnChanges() {
+    if (this.searchResults === null) {
+      this.searchState = SearchState.InProgress;
+    } else if (this.searchResults.results.length) {
+      this.searchState = SearchState.ResultsFound;
+    } else {
+      this.searchState = SearchState.NoResultsFound;
+    }
     this.searchAreas = this.processSearchResults(this.searchResults);
   }
 
@@ -43,7 +56,6 @@ export class SearchResultsComponent implements OnChanges {
     if (!search) {
       return [];
     }
-    this.notFoundMessage = 'No results found.';
     const searchAreaMap: { [key: string]: SearchResult[] } = {};
     search.results.forEach(result => {
       if (!result.title) { return; } // bad data; should fix
