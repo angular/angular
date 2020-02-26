@@ -296,7 +296,7 @@ Monkey patching is a technique to add or modify the default behavior of a functi
 ## NgZone
 
 While Zone.js can monitor all the states of synchronous and asynchronous operations, Angular additionally provides a service called NgZone.
-This service creates a zone named `angular` to automatically trigger change detction when the following conditions are satisfied:
+This service creates a zone named `angular` to automatically trigger change detection when the following conditions are satisfied:
 
 1. When a sync or async function is executed.
 1. When there is no `microTask` scheduled.
