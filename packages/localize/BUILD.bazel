@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ng_package", "ts_library")
+load("//tools:defaults.bzl", "ng_package", "ts_api_guardian_test_npm_package", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -35,4 +35,14 @@ ng_package(
         ":localize",
         "//packages/localize/init",
     ],
+)
+
+ts_api_guardian_test_npm_package(
+    name = "localize_api",
+    actualDir = "packages/localize/npm_package",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    goldenDir = "goldens/public-api/localize",
 )
