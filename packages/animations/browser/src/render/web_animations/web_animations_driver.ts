@@ -10,7 +10,7 @@ import {AnimationPlayer, ɵStyleData} from '@angular/animations';
 import {allowPreviousPlayerStylesMerge, balancePreviousStylesIntoKeyframes, copyStyles} from '../../util';
 import {AnimationDriver} from '../animation_driver';
 import {CssKeyframesDriver} from '../css_keyframes/css_keyframes_driver';
-import {containsElement, invokeQuery, isBrowser, matchesElement, validateStyleProperty} from '../shared';
+import {computeStyle, containsElement, invokeQuery, isBrowser, matchesElement, validateStyleProperty} from '../shared';
 import {packageNonAnimatableStyles} from '../special_cased_styles';
 
 import {WebAnimationsPlayer} from './web_animations_player';
@@ -32,7 +32,7 @@ export class WebAnimationsDriver implements AnimationDriver {
   }
 
   computeStyle(element: any, prop: string, defaultValue?: string): string {
-    return (window.getComputedStyle(element) as any)[prop] as string;
+    return computeStyle(element, prop);
   }
 
   overrideWebAnimationsSupport(supported: boolean) { this._isNativeImpl = supported; }

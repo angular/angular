@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimateTimings, AnimationMetadata, AnimationMetadataType, AnimationOptions, sequence, ɵStyleData} from '@angular/animations';
+
 import {Ast as AnimationAst, AstVisitor as AnimationAstVisitor} from './dsl/animation_ast';
 import {AnimationDslVisitor} from './dsl/animation_dsl_visitor';
-import {isNode} from './render/shared';
+import {computeStyle, isNode} from './render/shared';
 
 export const ONE_SECOND = 1000;
 
@@ -339,8 +340,4 @@ export function visitDslNode(visitor: any, node: any, context: any): any {
     default:
       throw new Error(`Unable to resolve animation metadata node #${node.type}`);
   }
-}
-
-export function computeStyle(element: any, prop: string): string {
-  return (<any>window.getComputedStyle(element))[prop];
 }

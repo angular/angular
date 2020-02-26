@@ -7,9 +7,9 @@
  */
 import {AnimationPlayer, ɵStyleData} from '@angular/animations';
 
-import {allowPreviousPlayerStylesMerge, balancePreviousStylesIntoKeyframes, computeStyle} from '../../util';
+import {allowPreviousPlayerStylesMerge, balancePreviousStylesIntoKeyframes} from '../../util';
 import {AnimationDriver} from '../animation_driver';
-import {containsElement, hypenatePropsObject, invokeQuery, matchesElement, validateStyleProperty} from '../shared';
+import {computeStyle, containsElement, hypenatePropsObject, invokeQuery, matchesElement, validateStyleProperty} from '../shared';
 import {packageNonAnimatableStyles} from '../special_cased_styles';
 
 import {CssKeyframesPlayer} from './css_keyframes_player';
@@ -36,7 +36,7 @@ export class CssKeyframesDriver implements AnimationDriver {
   }
 
   computeStyle(element: any, prop: string, defaultValue?: string): string {
-    return (window.getComputedStyle(element) as any)[prop] as string;
+    return computeStyle(element, prop);
   }
 
   buildKeyframeElement(element: any, name: string, keyframes: {[key: string]: any}[]): any {
