@@ -15,7 +15,7 @@ import {InjectFlags} from '../di/interface/injector';
 import {Type} from '../interface/type';
 import {assertDefined, assertEqual} from '../util/assert';
 
-import {assertDirectiveDef} from './assert';
+import {assertDirectiveDef, assertTNodeForLView} from './assert';
 import {getFactoryDef} from './definition';
 import {NG_ELEMENT_ID, NG_FACTORY_DEF} from './fields';
 import {registerPreOrderHooks} from './hooks';
@@ -327,6 +327,33 @@ function notFoundValueOrThrow<T>(
   }
 }
 
+function lookupTokenUsingModuleInjector<T>(
+    lView: LView, token: Type<T>| InjectionToken<T>, flags: InjectFlags = InjectFlags.Default,
+    notFoundValue?: any): T|null {
+  if (flags & InjectFlags.Optional && notFoundValue === undefined) {
+    // This must be set or the NullInjector will throw for optional deps
+    notFoundValue = null;
+  }
+
+  if ((flags & (InjectFlags.Self | InjectFlags.Host)) === 0) {
+    const moduleInjector = lView[INJECTOR];
+    // switch to `injectInjectorOnly` implementation for module injector, since module injector
+    // should not have access to Component/Directive DI scope (that may happen through
+    // `directiveInject` implementation)
+    const previousInjectImplementation = setInjectImplementation(undefined);
+    try {
+      if (moduleInjector) {
+        return moduleInjector.get(token, notFoundValue, flags & InjectFlags.Optional);
+      } else {
+        return injectRootLimpMode(token, notFoundValue, flags & InjectFlags.Optional);
+      }
+    } finally {
+      setInjectImplementation(previousInjectImplementation);
+    }
+  }
+  return notFoundValueOrThrow(notFoundValue, token, flags);
+}
+
 /**
  * Returns the value associated to the given token from the NodeInjectors => ModuleInjector.
  *
@@ -353,13 +380,21 @@ export function getOrCreateInjectable<T>(
     // so just call the factory function to create it.
     if (typeof bloomHash === 'function') {
       if (flags & InjectFlags.SkipSelf) {
+        // TODO: the process of getting parent tNode is incomplete, it would not find the right
+        // tNode in case we cross template boundary. This is currently blocked on other work that
+        // needs to happen to properly support cross-boundary reads.
         const parentTNode = getParentTNode(tNode, lView, flags);
         if (parentTNode === null) {
+          // TODO: check module injector too
           return notFoundValueOrThrow(notFoundValue, token, flags);
         }
+        const parentLView = getParentInjectorView(getParentInjectorLocation(tNode, lView), lView);
+
+        ngDevMode && assertTNodeForLView(parentTNode, parentLView);
+
         return getOrCreateInjectable(
-            parentTNode, getParentInjectorView(getParentInjectorLocation(tNode, lView), lView),
-            token, flags & InjectFlags.Optional ? InjectFlags.Optional : InjectFlags.Default,
+            parentTNode, parentLView, token,
+            flags & InjectFlags.Optional ? InjectFlags.Optional : InjectFlags.Default,
             notFoundValue);
       } else {
         enterDI(lView, tNode);
@@ -382,7 +417,11 @@ export function getOrCreateInjectable<T>(
           const _tNode = tNode;
           tNode = getParentTNode(tNode, lView, flags);
           if (tNode === null) {
-            return notFoundValueOrThrow(notFoundValue, token, flags);
+            // If a token is injected with the @Host flag, the module injector is not searched for
+            // that token in Ivy.
+            return (flags & InjectFlags.Host) ?
+                notFoundValueOrThrow(notFoundValue, token, flags) :
+                lookupTokenUsingModuleInjector(lView, token, flags, notFoundValue);
           }
           lView = getParentInjectorView(getParentInjectorLocation(_tNode, lView), lView);
         }
@@ -450,28 +489,7 @@ export function getOrCreateInjectable<T>(
     }
   }
 
-  if (flags & InjectFlags.Optional && notFoundValue === undefined) {
-    // This must be set or the NullInjector will throw for optional deps
-    notFoundValue = null;
-  }
-
-  if ((flags & (InjectFlags.Self | InjectFlags.Host)) === 0) {
-    const moduleInjector = lView[INJECTOR];
-    // switch to `injectInjectorOnly` implementation for module injector, since module injector
-    // should not have access to Component/Directive DI scope (that may happen through
-    // `directiveInject` implementation)
-    const previousInjectImplementation = setInjectImplementation(undefined);
-    try {
-      if (moduleInjector) {
-        return moduleInjector.get(token, notFoundValue, flags & InjectFlags.Optional);
-      } else {
-        return injectRootLimpMode(token, notFoundValue, flags & InjectFlags.Optional);
-      }
-    } finally {
-      setInjectImplementation(previousInjectImplementation);
-    }
-  }
-  return notFoundValueOrThrow(notFoundValue, token, flags);
+  return lookupTokenUsingModuleInjector(lView, token, flags, notFoundValue);
 }
 
 const NOT_FOUND = {};

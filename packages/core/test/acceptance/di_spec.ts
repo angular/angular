@@ -734,6 +734,90 @@ describe('di', () => {
         expect(child.componentInstance.parentInjector.get('token')).toBe('PARENT');
       });
 
+      it('should lookup module injector in case @SkipSelf is used and no suitable Injector found in element injector tree',
+         () => {
+           let componentInjector: Injector;
+           let moduleInjector: Injector;
+           @Component({
+             selector: 'child',
+             template: '...',
+             providers: [{
+               provide: 'token',
+               useValue: 'CHILD',
+             }]
+           })
+           class MyComponent {
+             constructor(@SkipSelf() public injector: Injector) { componentInjector = injector; }
+           }
+
+           @NgModule({
+             declarations: [MyComponent],
+             providers: [{
+               provide: 'token',
+               useValue: 'NG_MODULE',
+             }]
+           })
+           class MyModule {
+             constructor(public injector: Injector) { moduleInjector = injector; }
+           }
+
+           TestBed.configureTestingModule({
+             imports: [MyModule],
+           });
+           const fixture = TestBed.createComponent(MyComponent);
+           fixture.detectChanges();
+
+           expect(componentInjector !.get('token')).toBe('NG_MODULE');
+           expect(moduleInjector !.get('token')).toBe('NG_MODULE');
+         });
+
+      it('should respect @Host in case @SkipSelf is used and no suitable Injector found in element injector tree',
+         () => {
+           let componentInjector: Injector;
+           let moduleInjector: Injector;
+           @Component({
+             selector: 'child',
+             template: '...',
+             providers: [{
+               provide: 'token',
+               useValue: 'CHILD',
+             }]
+           })
+           class MyComponent {
+             constructor(@Host() @SkipSelf() public injector: Injector) {
+               componentInjector = injector;
+             }
+           }
+
+           @NgModule({
+             declarations: [MyComponent],
+             providers: [{
+               provide: 'token',
+               useValue: 'NG_MODULE',
+             }]
+           })
+           class MyModule {
+             constructor(public injector: Injector) { moduleInjector = injector; }
+           }
+
+           TestBed.configureTestingModule({
+             imports: [MyModule],
+           });
+
+           // If a token is injected with the @Host flag, the module injector is not searched for
+           // that token in Ivy.
+           if (ivyEnabled) {
+             expect(() => TestBed.createComponent(MyComponent))
+                 .toThrowError(/NodeInjector: NOT_FOUND \[Injector]/);
+           } else {
+             const fixture = TestBed.createComponent(MyComponent);
+             fixture.detectChanges();
+
+             expect(componentInjector !.get('token')).toBe('NG_MODULE');
+             expect(moduleInjector !.get('token')).toBe('NG_MODULE');
+           }
+         });
+
       it('should throw when injecting Injectors using @SkipSelf and @Host and no Injectors are available in a current view',
          () => {
            @Component({
@@ -769,6 +853,103 @@ describe('di', () => {
            expect(() => TestBed.createComponent(ParentComponent))
                .toThrowError(expectedErrorMessage);
          });
+
+      // TODO: extend this test to check other special tokens
+      it('should lookup module injector in case @SkipSelf is used for `ChangeDetectorRef` token and Component has no parent',
+         () => {
+           let componentCDR: ChangeDetectorRef;
+           let moduleCDR: ChangeDetectorRef;
+           @Component({selector: 'child', template: '...'})
+           class MyComponent {
+             constructor(@SkipSelf() public injector: ChangeDetectorRef) {
+               componentCDR = injector;
+             }
+           }
+
+           @NgModule({
+             declarations: [MyComponent],
+             providers: [{
+               provide: ChangeDetectorRef,
+               useValue: {from: 'NG_MODULE'},
+             }]
+           })
+           class MyModule {
+             constructor(public injector: ChangeDetectorRef) { moduleCDR = injector; }
+           }
+
+           TestBed.configureTestingModule({
+             imports: [MyModule],
+           });
+           const fixture = TestBed.createComponent(MyComponent);
+           fixture.detectChanges();
+
+           expect((moduleCDR !as any).from).toBe('NG_MODULE');
+           expect((componentCDR !as any).from).toBe('NG_MODULE');
+         });
+
+      describe('@SkipSelf when parent contains embedded views', () => {
+
+        // TODO: add tests for other special tokens
+        // TODO: fix this test in Ivy
+        it('should work for `ElementRef` token', () => {
+          let requestedElementRef: ElementRef;
+          @Component({
+            selector: 'child',
+            template: '...',
+          })
+          class ChildComponent {
+            constructor(@SkipSelf() public elementRef: ElementRef) {
+              requestedElementRef = elementRef;
+            }
+          }
+
+          @Component({
+            selector: 'root',
+            template: '<div><child *ngIf="true"></child></div>',
+          })
+          class ParentComponent {
+          }
+
+          TestBed.configureTestingModule({
+            imports: [CommonModule],
+            declarations: [ParentComponent, ChildComponent],
+          });
+          const fixture = TestBed.createComponent(ParentComponent);
+          fixture.detectChanges();
+
+          expect(requestedElementRef !.nativeElement).toBe(fixture.nativeElement.firstChild);
+        });
+
+        it('should work for `ChangeDetectorRef` token', () => {
+          let requestedChangeDetectorRef: ChangeDetectorRef;
+          @Component({
+            selector: 'child',
+            template: '...',
+          })
+          class ChildComponent {
+            constructor(@SkipSelf() public changeDetectorRef: ChangeDetectorRef) {
+              requestedChangeDetectorRef = changeDetectorRef;
+            }
+          }
+
+          @Component({
+            selector: 'root',
+            template: '<child *ngIf="true"></child>',
+          })
+          class ParentComponent {
+          }
+
+          TestBed.configureTestingModule({
+            imports: [CommonModule],
+            declarations: [ParentComponent, ChildComponent],
+          });
+          const fixture = TestBed.createComponent(ParentComponent);
+          fixture.detectChanges();
+
+          const {context} = requestedChangeDetectorRef !as ViewRef<ParentComponent>;
+          expect(context).toBe(fixture.componentInstance);
+        });
+      });
 
       it('should throw when injecting ViewContainerRef using @SkipSelf and @Host and no ViewContainerRef are available in a current view',
          () => {
