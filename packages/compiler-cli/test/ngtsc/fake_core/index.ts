@@ -34,6 +34,7 @@ export const Inject = callableParamDecorator();
 export const Self = callableParamDecorator();
 export const SkipSelf = callableParamDecorator();
 export const Optional = callableParamDecorator();
+export const Host = callableParamDecorator();
 
 export const ContentChild = callablePropDecorator();
 export const ContentChildren = callablePropDecorator();
@@ -68,7 +69,8 @@ export function forwardRef<T>(fn: () => T): T {
 export interface SimpleChanges { [propName: string]: any; }
 
 export type ɵɵNgModuleDefWithMeta<ModuleT, DeclarationsT, ImportsT, ExportsT> = any;
-export type ɵɵDirectiveDefWithMeta<DirT, SelectorT, ExportAsT, InputsT, OutputsT, QueriesT> = any;
+export type ɵɵDirectiveDefWithMeta<
+    DirT, SelectorT, ExportAsT, InputsT, OutputsT, QueriesT, NgContentSelectorsT> = any;
 export type ɵɵPipeDefWithMeta<PipeT, NameT> = any;
 
 export enum ViewEncapsulation {

@@ -715,7 +715,7 @@ export declare type ɵɵComponentDefWithMeta<T, Selector extends String, ExportA
     [key: string]: string;
 }, OutputMap extends {
     [key: string]: string;
-}, QueryFields extends string[]> = ɵComponentDef<T>;
+}, QueryFields extends string[], NgContentSelectors extends string[]> = ɵComponentDef<T>;
 
 export declare function ɵɵcomponentHostSyntheticListener(eventName: string, listenerFn: (e?: any) => any, useCapture?: boolean, eventTargetResolver?: GlobalTargetResolver): typeof ɵɵcomponentHostSyntheticListener;
 
@@ -834,7 +834,7 @@ export declare function ɵɵembeddedViewStart(viewBlockId: number, decls: number
 
 export declare function ɵɵenableBindings(): void;
 
-export declare type ɵɵFactoryDef<T> = () => T;
+export declare type ɵɵFactoryDef<T, CtorDependencies extends CtorDependency[]> = () => T;
 
 export declare function ɵɵgetCurrentView(): OpaqueViewState;
 

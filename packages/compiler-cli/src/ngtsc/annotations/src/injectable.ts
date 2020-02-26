@@ -274,6 +274,7 @@ function extractInjectableCtorDeps(
 function getDep(dep: ts.Expression, reflector: ReflectionHost): R3DependencyMetadata {
   const meta: R3DependencyMetadata = {
     token: new WrappedNodeExpr(dep),
+    attribute: null,
     host: false,
     resolved: R3ResolvedDependencyType.Token,
     optional: false,
