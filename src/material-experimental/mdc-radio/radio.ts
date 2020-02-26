@@ -32,6 +32,8 @@ import {FocusMonitor} from '@angular/cdk/a11y';
 import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {NG_VALUE_ACCESSOR} from '@angular/forms';
+import {RippleAnimationConfig} from '@angular/material/core';
+import {numbers} from '@material/ripple';
 
 // Re-export symbols used by the base Material radio component so that users do not need to depend
 // on both packages.
@@ -48,6 +50,11 @@ export const MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR: any = {
   multi: true
 };
 
+/** Configuration for the ripple animation. */
+const RIPPLE_ANIMATION_CONFIG: RippleAnimationConfig = {
+  enterDuration: numbers.DEACTIVATION_TIMEOUT_MS,
+  exitDuration: numbers.FG_DEACTIVATION_MS
+};
 
 /**
  * A group of radio buttons. May contain one or more `<mat-radio-button>` elements.
@@ -107,6 +114,9 @@ export class MatRadioButton extends BaseMatRadioButton implements AfterViewInit,
       }
     },
   };
+
+  /** Configuration for the underlying ripple. */
+  _rippleAnimation: RippleAnimationConfig = RIPPLE_ANIMATION_CONFIG;
 
   _radioFoundation = new MDCRadioFoundation(this._radioAdapter);
   _classes: {[key: string]: boolean} = {};

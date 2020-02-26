@@ -42,6 +42,12 @@ import {
 // Increasing integer for generating unique ids for slide-toggle components.
 let nextUniqueId = 0;
 
+/** Configuration for the ripple animation. */
+const RIPPLE_ANIMATION_CONFIG: RippleAnimationConfig = {
+  enterDuration: numbers.DEACTIVATION_TIMEOUT_MS,
+  exitDuration: numbers.FG_DEACTIVATION_MS,
+};
+
 /** @docs-private */
 export const MAT_SLIDE_TOGGLE_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
@@ -104,10 +110,7 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
   _focused: boolean;
 
   /** Configuration for the underlying ripple. */
-  _rippleAnimation: RippleAnimationConfig = {
-    enterDuration: numbers.DEACTIVATION_TIMEOUT_MS,
-    exitDuration: numbers.FG_DEACTIVATION_MS,
-  };
+  _rippleAnimation: RippleAnimationConfig = RIPPLE_ANIMATION_CONFIG;
 
   /** The color palette  for this slide toggle. */
   @Input() color: ThemePalette = 'accent';

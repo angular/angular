@@ -58,6 +58,12 @@ export interface MatChipEvent {
   chip: MatChip;
 }
 
+/** Configuration for the ripple animation. */
+const RIPPLE_ANIMATION_CONFIG: RippleAnimationConfig = {
+  enterDuration: numbers.DEACTIVATION_TIMEOUT_MS,
+  exitDuration: numbers.FG_DEACTIVATION_MS
+};
+
 /**
  * Directive to add MDC CSS to non-basic chips.
  * @docs-private
@@ -114,10 +120,7 @@ const _MatChipMixinBase:
 export class MatChip extends _MatChipMixinBase implements AfterContentInit, AfterViewInit,
   CanColor, CanDisableRipple, HasTabIndex, OnDestroy {
   /** The ripple animation configuration to use for the chip. */
-  readonly _rippleAnimation: RippleAnimationConfig = {
-    enterDuration: numbers.DEACTIVATION_TIMEOUT_MS,
-    exitDuration: numbers.FG_DEACTIVATION_MS
-  };
+  readonly _rippleAnimation: RippleAnimationConfig = RIPPLE_ANIMATION_CONFIG;
 
   /** Whether the ripple is centered on the chip. */
   readonly _isRippleCentered = false;

@@ -31,7 +31,7 @@ import {
   MAT_CHECKBOX_DEFAULT_OPTIONS,
   MatCheckboxClickAction, MatCheckboxDefaultOptions
 } from '@angular/material/checkbox';
-import {ThemePalette} from '@angular/material/core';
+import {ThemePalette, RippleAnimationConfig} from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {MDCCheckboxAdapter, MDCCheckboxFoundation} from '@material/checkbox';
 import {numbers} from '@material/ripple';
@@ -51,6 +51,12 @@ export class MatCheckboxChange {
   /** The new `checked` value of the checkbox. */
   checked: boolean;
 }
+
+/** Configuration for the ripple animation. */
+const RIPPLE_ANIMATION_CONFIG: RippleAnimationConfig = {
+  enterDuration: numbers.DEACTIVATION_TIMEOUT_MS,
+  exitDuration: numbers.FG_DEACTIVATION_MS,
+};
 
 @Component({
   selector: 'mat-checkbox',
@@ -185,10 +191,7 @@ export class MatCheckbox implements AfterViewInit, OnDestroy, ControlValueAccess
   _classes: {[key: string]: boolean} = {'mdc-checkbox__native-control': true};
 
   /** Animation config for the ripple. */
-  _rippleAnimation = {
-    enterDuration: numbers.DEACTIVATION_TIMEOUT_MS,
-    exitDuration: numbers.FG_DEACTIVATION_MS,
-  };
+  _rippleAnimation = RIPPLE_ANIMATION_CONFIG;
 
   /** ControlValueAccessor onChange */
   private _cvaOnChange = (_: boolean) => {};

@@ -38,6 +38,12 @@ export const MAT_BUTTON_HOST = {
   'class': 'mat-mdc-focus-indicator',
 };
 
+/** Configuration for the ripple animation. */
+const RIPPLE_ANIMATION_CONFIG: RippleAnimationConfig = {
+  enterDuration: numbers.DEACTIVATION_TIMEOUT_MS,
+  exitDuration: numbers.FG_DEACTIVATION_MS
+};
+
 /** List of classes to add to buttons instances based on host attribute selector. */
 const HOST_SELECTOR_MDC_CLASS_PAIR: {selector: string, mdcClasses: string[]}[] = [
   {
@@ -84,10 +90,7 @@ export const _MatButtonBaseMixin: CanDisableRippleCtor&CanDisableCtor&CanColorCt
 export class MatButtonBase extends _MatButtonBaseMixin implements CanDisable, CanColor,
                                                                   CanDisableRipple {
   /** The ripple animation configuration to use for the buttons. */
-  _rippleAnimation: RippleAnimationConfig = {
-    enterDuration: numbers.DEACTIVATION_TIMEOUT_MS,
-    exitDuration: numbers.FG_DEACTIVATION_MS
-  };
+  _rippleAnimation: RippleAnimationConfig = RIPPLE_ANIMATION_CONFIG;
 
   /** Whether the ripple is centered on the button. */
   _isRippleCentered = false;
