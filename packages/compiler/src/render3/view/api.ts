@@ -129,6 +129,12 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
      * Parsed nodes of the template.
      */
     nodes: t.Node[];
+
+    /**
+     * Any ng-content selectors extracted from the template. Contains `null` when an ng-content
+     * element without selector is present.
+     */
+    ngContentSelectors: string[];
   };
 
   /**

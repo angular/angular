@@ -1983,8 +1983,13 @@ export interface ParseTemplateOptions {
  * @param options options to modify how the template is parsed
  */
 export function parseTemplate(
-    template: string, templateUrl: string, options: ParseTemplateOptions = {}):
-    {errors?: ParseError[], nodes: t.Node[], styleUrls: string[], styles: string[]} {
+    template: string, templateUrl: string, options: ParseTemplateOptions = {}): {
+  errors?: ParseError[],
+  nodes: t.Node[],
+  styleUrls: string[],
+  styles: string[],
+  ngContentSelectors: string[]
+} {
   const {interpolationConfig, preserveWhitespaces, enableI18nLegacyMessageIdFormat} = options;
   const bindingParser = makeBindingParser(interpolationConfig);
   const htmlParser = new HtmlParser();
@@ -1993,7 +1998,13 @@ export function parseTemplate(
       {leadingTriviaChars: LEADING_TRIVIA_CHARS, ...options, tokenizeExpansionForms: true});
 
   if (parseResult.errors && parseResult.errors.length > 0) {
-    return {errors: parseResult.errors, nodes: [], styleUrls: [], styles: []};
+    return {
+      errors: parseResult.errors,
+      nodes: [],
+      styleUrls: [],
+      styles: [],
+      ngContentSelectors: []
+    };
   }
 
   let rootNodes: html.Node[] = parseResult.rootNodes;
@@ -2020,12 +2031,13 @@ export function parseTemplate(
     }
   }
 
-  const {nodes, errors, styleUrls, styles} = htmlAstToRender3Ast(rootNodes, bindingParser);
+  const {nodes, errors, styleUrls, styles, ngContentSelectors} =
+      htmlAstToRender3Ast(rootNodes, bindingParser);
   if (errors && errors.length > 0) {
-    return {errors, nodes: [], styleUrls: [], styles: []};
+    return {errors, nodes: [], styleUrls: [], styles: [], ngContentSelectors: []};
   }
 
-  return {nodes, styleUrls, styles};
+  return {nodes, styleUrls, styles, ngContentSelectors};
 }
 
 const elementRegistry = new DomElementSchemaRegistry();

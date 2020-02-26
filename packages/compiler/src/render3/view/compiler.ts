@@ -22,7 +22,7 @@ import {CONTENT_ATTR, HOST_ATTR} from '../../style_compiler';
 import {BindingParser} from '../../template_parser/binding_parser';
 import {OutputContext, error} from '../../util';
 import {BoundEvent} from '../r3_ast';
-import {R3FactoryTarget, compileFactoryFunction} from '../r3_factory';
+import {R3DependencyMetadata, R3FactoryTarget, R3ResolvedDependencyType, compileFactoryFunction} from '../r3_factory';
 import {Identifiers as R3} from '../r3_identifiers';
 import {Render3ParseResult} from '../r3_template_transform';
 import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, typeWithParameters} from '../util';
@@ -124,7 +124,9 @@ export function compileDirectiveFromMetadata(
   addFeatures(definitionMap, meta);
   const expression = o.importExpr(R3.defineDirective).callFn([definitionMap.toLiteralMap()]);
 
-  const type = createTypeForDef(meta, R3.DirectiveDefWithMeta);
+  const typeParams = createDirectiveTypeParams(meta);
+  const type = o.expressionType(o.importExpr(R3.DirectiveDefWithMeta, typeParams));
+
   return {expression, type};
 }
 
@@ -252,7 +254,11 @@ export function compileComponentFromMetadata(
   }
 
   const expression = o.importExpr(R3.defineComponent).callFn([definitionMap.toLiteralMap()]);
-  const type = createTypeForDef(meta, R3.ComponentDefWithMeta);
+
+
+  const typeParams = createDirectiveTypeParams(meta);
+  typeParams.push(stringArrayAsType(meta.template.ngContentSelectors));
+  const type = o.expressionType(o.importExpr(R3.ComponentDefWithMeta, typeParams));
 
   return {expression, type};
 }
@@ -311,7 +317,7 @@ export function compileComponentFromRender2(
   const meta: R3ComponentMetadata = {
     ...directiveMetadataFromGlobalMetadata(component, outputCtx, reflector),
     selector: component.selector,
-    template: {nodes: render3Ast.nodes},
+    template: {nodes: render3Ast.nodes, ngContentSelectors: render3Ast.ngContentSelectors},
     directives: [],
     pipes: typeMapToExpressionMap(pipeTypeByName, outputCtx),
     viewQueries: queriesFromGlobalMetadata(component.viewQueries, outputCtx),
@@ -470,24 +476,24 @@ function stringMapAsType(map: {[key: string]: string | string[]}): o.Type {
   return o.expressionType(o.literalMap(mapValues));
 }
 
-function stringArrayAsType(arr: string[]): o.Type {
+function stringArrayAsType(arr: ReadonlyArray<string|null>): o.Type {
   return arr.length > 0 ? o.expressionType(o.literalArr(arr.map(value => o.literal(value)))) :
                           o.NONE_TYPE;
 }
 
-function createTypeForDef(meta: R3DirectiveMetadata, typeBase: o.ExternalReference): o.Type {
+function createDirectiveTypeParams(meta: R3DirectiveMetadata): o.Type[] {
   // On the type side, remove newlines from the selector as it will need to fit into a TypeScript
   // string literal, which must be on one line.
   const selectorForType = meta.selector !== null ? meta.selector.replace(/\n/g, '') : null;
 
-  return o.expressionType(o.importExpr(typeBase, [
+  return [
     typeWithParameters(meta.type.type, meta.typeArgumentCount),
     selectorForType !== null ? stringAsType(selectorForType) : o.NONE_TYPE,
     meta.exportAs !== null ? stringArrayAsType(meta.exportAs) : o.NONE_TYPE,
     stringMapAsType(meta.inputs),
     stringMapAsType(meta.outputs),
     stringArrayAsType(meta.queries.map(q => q.propertyName)),
-  ]));
+  ];
 }
 
 // Define and update any view queries

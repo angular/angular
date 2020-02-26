@@ -91,6 +91,7 @@ export class DtsRenderer {
       const endOfClass = dtsClass.dtsDeclaration.getEnd();
       dtsClass.compilation.forEach(declaration => {
         const type = translateType(declaration.type, importManager);
+        markForEmitAsSingleLine(type);
         const typeStr = printer.printNode(ts.EmitHint.Unspecified, type, dtsFile);
         const newStatement = `    static ${declaration.name}: ${typeStr};\n`;
         outputText.appendRight(endOfClass - 1, newStatement);
@@ -175,4 +176,9 @@ export class DtsRenderer {
 
     return dtsMap;
   }
+}
+
+function markForEmitAsSingleLine(node: ts.Node) {
+  ts.setEmitFlags(node, ts.EmitFlags.SingleLine);
+  ts.forEachChild(node, markForEmitAsSingleLine);
 }

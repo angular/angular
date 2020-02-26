@@ -205,7 +205,7 @@ export class IvyDeclarationDtsTransform implements DtsTransform {
     const newMembers = fields.map(decl => {
       const modifiers = [ts.createModifier(ts.SyntaxKind.StaticKeyword)];
       const typeRef = translateType(decl.type, imports);
-      emitAsSingleLine(typeRef);
+      markForEmitAsSingleLine(typeRef);
       return ts.createProperty(
           /* decorators */ undefined,
           /* modifiers */ modifiers,
@@ -226,9 +226,9 @@ export class IvyDeclarationDtsTransform implements DtsTransform {
   }
 }
 
-function emitAsSingleLine(node: ts.Node) {
+function markForEmitAsSingleLine(node: ts.Node) {
   ts.setEmitFlags(node, ts.EmitFlags.SingleLine);
-  ts.forEachChild(node, emitAsSingleLine);
+  ts.forEachChild(node, markForEmitAsSingleLine);
 }
 
 export class ReturnTypeTransform implements DtsTransform {

@@ -313,6 +313,7 @@ export class ComponentDecoratorHandler implements
           ...metadata,
           template: {
             nodes: template.emitNodes,
+            ngContentSelectors: template.ngContentSelectors,
           },
           encapsulation,
           interpolation: template.interpolation,
@@ -770,12 +771,13 @@ export class ComponentDecoratorHandler implements
       interpolation = InterpolationConfig.fromArray(value as[string, string]);
     }
 
-    const {errors, nodes: emitNodes, styleUrls, styles} = parseTemplate(templateStr, templateUrl, {
-      preserveWhitespaces,
-      interpolationConfig: interpolation,
-      range: templateRange, escapedString,
-      enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
-    });
+    const {errors, nodes: emitNodes, styleUrls, styles, ngContentSelectors} =
+        parseTemplate(templateStr, templateUrl, {
+          preserveWhitespaces,
+          interpolationConfig: interpolation,
+          range: templateRange, escapedString,
+          enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
+        });
 
     // Unfortunately, the primary parse of the template above may not contain accurate source map
     // information. If used directly, it would result in incorrect code locations in template
@@ -804,6 +806,7 @@ export class ComponentDecoratorHandler implements
       diagNodes,
       styleUrls,
       styles,
+      ngContentSelectors,
       errors,
       template: templateStr, templateUrl,
       isInline: component.has('template'),
@@ -922,6 +925,11 @@ export interface ParsedTemplate {
    * Any inline styles extracted from the metadata.
    */
   styles: string[];
+
+  /**
+   * Any ng-content selectors extracted from the template.
+   */
+  ngContentSelectors: string[];
 
   /**
    * Whether the template was inline.
