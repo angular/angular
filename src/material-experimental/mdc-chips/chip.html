@@ -7,5 +7,7 @@
      [matRippleTrigger]="_elementRef.nativeElement"></span>
 
 <ng-content select="mat-chip-avatar, [matChipAvatar]"></ng-content>
-<div class="mdc-chip__text mdc-chip__action--primary"><ng-content></ng-content></div>
+<div class="mdc-chip__primary-action">
+  <div class="mdc-chip__text"><ng-content></ng-content></div>
+</div>
 <ng-content select="mat-chip-trailing-icon,[matChipRemove],[matChipTrailingIcon]"></ng-content>
