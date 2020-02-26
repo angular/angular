@@ -88,7 +88,7 @@ export class MatRadioGroup extends BaseMatRadioGroup {
     '[class.mat-primary]': 'color === "primary"',
     '[class.mat-accent]': 'color === "accent"',
     '[class.mat-warn]': 'color === "warn"',
-    '[attr.tabindex]': '-1',
+    '[attr.tabindex]': 'disabled ? null : -1',
     '[attr.aria-label]': 'null',
     '[attr.aria-labelledby]': 'null',
     '[attr.aria-describedby]': 'null',
