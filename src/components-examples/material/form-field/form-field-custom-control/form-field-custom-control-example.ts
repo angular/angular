@@ -147,7 +147,7 @@ export class MyTelInput implements ControlValueAccessor, MatFormFieldControl<MyT
   }
 
   _handleInput(): void {
-    this.onChange(this.parts.value);
+    this.onChange(this.value);
   }
 
   static ngAcceptInputType_disabled: boolean | string | null | undefined;
