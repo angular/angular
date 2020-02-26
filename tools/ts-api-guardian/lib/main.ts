@@ -57,7 +57,7 @@ function ensureDirectory(dir: string) {
  */
 function isDirectory(dirPath: string) {
   try {
-    fs.lstatSync(dirPath).isDirectory();
+    return fs.lstatSync(dirPath).isDirectory();
   } catch {
     return false;
   }

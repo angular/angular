@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ng_module", "ng_package")
+load("//tools:defaults.bzl", "ng_module", "ng_package", "ts_api_guardian_test_npm_package")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -57,4 +57,14 @@ ng_package(
         ":service-worker",
         "//packages/service-worker/config",
     ],
+)
+
+ts_api_guardian_test_npm_package(
+    name = "service-worker_api",
+    actualDir = "packages/service-worker/npm_package",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    goldenDir = "goldens/public-api/service-worker",
 )

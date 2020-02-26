@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ng_module", "ng_package")
+load("//tools:defaults.bzl", "ng_module", "ng_package", "ts_api_guardian_test", "ts_api_guardian_test_npm_package")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -53,4 +53,24 @@ ng_package(
         ":core",
         "//packages/core/testing",
     ],
+)
+
+ts_api_guardian_test_npm_package(
+    name = "core_api",
+    actualDir = "packages/core/npm_package",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    goldenDir = "goldens/public-api/core",
+)
+
+ts_api_guardian_test(
+    name = "ng_global_utils_api",
+    actual = "packages/core/src/render3/global_utils_api.d.ts",
+    data = [
+        "//goldens:public-api",
+        "//packages/core",
+    ],
+    golden = "goldens/public-api/core/global_utils.d.ts",
 )
