@@ -215,14 +215,19 @@ describe('Zone', function() {
             scrollEvent.initEvent('scroll', true, true);
 
             const zone = Zone.current.fork({name: 'run'});
+            const div = document.createElement('div');
+            document.body.appendChild(div);
 
             Zone.current.fork({name: 'scroll'}).run(() => {
-              document.addEventListener(
-                  'scroll', () => { expect(Zone.current.name).toEqual(zone.name); });
+              const listener = () => {
+                expect(Zone.current.name).toEqual(zone.name);
+                div.removeEventListener('scroll', listener);
+              };
+              div.addEventListener('scroll', listener);
             });
 
-            zone.run(() => { document.dispatchEvent(scrollEvent); });
-            (document as any).removeAllListeners('scroll');
+            zone.run(() => { div.dispatchEvent(scrollEvent); });
+            document.body.removeChild(div);
           });
 
           it('should be able to clear on handler added before load zone.js', function() {
@@ -1047,12 +1052,16 @@ describe('Zone', function() {
         const testPassive = function(eventName: string, expectedPassiveLog: string, options: any) {
           (button as any).addEventListener(eventName, listener, options);
           const evt = document.createEvent('Event');
-          evt.initEvent(eventName, true, true);
+          evt.initEvent(eventName, false, true);
           button.dispatchEvent(evt);
           expect(logs).toEqual(['default will run', expectedPassiveLog]);
           (button as any).removeAllListeners(eventName);
         };
-        beforeEach(() => { logs = []; });
+        beforeEach(() => {
+          logs = [];
+          (button as any).removeAllListeners();
+        });
+        afterEach(() => { (button as any).removeAllListeners(); });
         it('should be passive with global variable defined',
            () => { testPassive('touchstart', 'default will run', {passive: true}); });
         it('should not be passive without global variable defined',
@@ -1065,10 +1074,8 @@ describe('Zone', function() {
            () => { testPassive('touchstart', 'default will run', true); });
         it('should not be passive with global variable defined with passive false option',
            () => { testPassive('touchstart', 'defaultPrevented', {passive: false}); });
-        it('should be passive with global variable defined and also blacklisted', () => {
-          (document as any).removeAllListeners('scroll');
-          testPassive('scroll', 'default will run', undefined);
-        });
+        it('should be passive with global variable defined and also blacklisted',
+           () => { testPassive('scroll', 'default will run', undefined); });
         it('should not be passive without global variable defined and also blacklisted',
            () => { testPassive('wheel', 'defaultPrevented', undefined); });
       });
