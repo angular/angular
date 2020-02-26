@@ -8,29 +8,87 @@ circular_dependency_test(
 )
 
 ts_library(
-    name = "test_lib",
+    name = "test_utils_lib",
+    testonly = True,
+    srcs = [
+        "test_utils.ts",
+    ],
+    deps = [
+        "//packages/compiler",
+        "//packages/compiler-cli/test:test_utils",
+        "//packages/language-service",
+        "@npm//typescript",
+    ],
+)
+
+ts_library(
+    name = "features_test_lib",
     testonly = True,
     srcs = [
         "completions_spec.ts",
         "definitions_spec.ts",
         "diagnostics_spec.ts",
-        "global_symbols_spec.ts",
         "hover_spec.ts",
+    ],
+    data = glob(["project/**/*"]),
+    deps = [
+        ":test_utils_lib",
+        "//packages/language-service",
+        "@npm//typescript",
+    ],
+)
+
+ts_library(
+    name = "infra_test_lib",
+    testonly = True,
+    srcs = [
+        "global_symbols_spec.ts",
         "html_info_spec.ts",
         "language_service_spec.ts",
         "reflector_host_spec.ts",
         "template_spec.ts",
-        "test_utils.ts",
         "ts_plugin_spec.ts",
         "typescript_host_spec.ts",
         "utils_spec.ts",
     ],
     data = glob(["project/**/*"]),
     deps = [
+        ":test_utils_lib",
         "//packages/compiler",
-        "//packages/compiler-cli/test:test_utils",
         "//packages/language-service",
         "@npm//typescript",
+    ],
+)
+
+jasmine_node_test(
+    name = "features_test",
+    data = [
+        "//packages/common:npm_package",
+        "//packages/core:npm_package",
+        "//packages/forms:npm_package",
+    ],
+    tags = [
+        # the language service is not yet compatible with Ivy
+        "no-ivy-aot",
+    ],
+    deps = [
+        ":features_test_lib",
+    ],
+)
+
+jasmine_node_test(
+    name = "infra_test",
+    data = [
+        "//packages/common:npm_package",
+        "//packages/core:npm_package",
+        "//packages/forms:npm_package",
+    ],
+    tags = [
+        # the language service is not yet compatible with Ivy
+        "no-ivy-aot",
+    ],
+    deps = [
+        ":infra_test_lib",
     ],
 )
 
@@ -46,7 +104,8 @@ jasmine_node_test(
         "no-ivy-aot",
     ],
     deps = [
-        ":test_lib",
+        ":features_test_lib",
+        ":infra_test_lib",
     ],
 )
 
