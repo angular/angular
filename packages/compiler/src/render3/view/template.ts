@@ -472,6 +472,46 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     this.i18n = null;  // reset local i18n context
   }
 
+  private i18nAttributesInstruction(
+      nodeIndex: number, attrs: (t.TextAttribute|t.BoundAttribute)[],
+      sourceSpan: ParseSourceSpan): void {
+    let hasBindings: boolean = false;
+    const i18nAttrArgs: o.Expression[] = [];
+    const bindings: ChainableBindingInstruction[] = [];
+    attrs.forEach(attr => {
+      const message = attr.i18n !as i18n.Message;
+      if (attr instanceof t.TextAttribute) {
+        i18nAttrArgs.push(o.literal(attr.name), this.i18nTranslate(message));
+      } else {
+        const converted = attr.value.visit(this._valueConverter);
+        this.allocateBindingSlots(converted);
+        if (converted instanceof Interpolation) {
+          const placeholders = assembleBoundTextPlaceholders(message);
+          const params = placeholdersToParams(placeholders);
+          i18nAttrArgs.push(o.literal(attr.name), this.i18nTranslate(message, params));
+          converted.expressions.forEach(expression => {
+            hasBindings = true;
+            bindings.push({
+              sourceSpan,
+              value: () => this.convertPropertyBinding(expression),
+            });
+          });
+        }
+      }
+    });
+    if (bindings.length > 0) {
+      this.updateInstructionChainWithAdvance(nodeIndex, R3.i18nExp, bindings);
+    }
+    if (i18nAttrArgs.length > 0) {
+      const index: o.Expression = o.literal(this.allocateDataSlot());
+      const args = this.constantPool.getConstLiteral(o.literalArr(i18nAttrArgs), true);
+      this.creationInstruction(sourceSpan, R3.i18nAttributes, [index, args]);
+      if (hasBindings) {
+        this.updateInstruction(sourceSpan, R3.i18nApply, [index]);
+      }
+    }
+  }
+
   private getNamespaceInstruction(namespaceKey: string|null) {
     switch (namespaceKey) {
       case 'math':
@@ -548,10 +588,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         stylingBuilder.registerClassAttr(value);
       } else {
         if (attr.i18n) {
-          // Place attributes into a separate array for i18n processing, but also keep such
-          // attributes in the main list to make them available for directive matching at runtime.
-          // TODO(FW-1248): prevent attributes duplication in `i18nAttributes` and `elementStart`
-          // arguments
           i18nAttrs.push(attr);
         } else {
           outputAttrs.push(attr);
@@ -575,10 +611,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       const stylingInputWasSet = stylingBuilder.registerBoundInput(input);
       if (!stylingInputWasSet) {
         if (input.type === BindingType.Property && input.i18n) {
-          // Place attributes into a separate array for i18n processing, but also keep such
-          // attributes in the main list to make them available for directive matching at runtime.
-          // TODO(FW-1248): prevent attributes duplication in `i18nAttributes` and `elementStart`
-          // arguments
           i18nAttrs.push(input);
         } else {
           allOtherInputs.push(input);
@@ -631,43 +663,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         this.creationInstruction(element.sourceSpan, R3.disableBindings);
       }
 
-      // process i18n element attributes
-      if (i18nAttrs.length) {
-        let hasBindings: boolean = false;
-        const i18nAttrArgs: o.Expression[] = [];
-        const bindings: ChainableBindingInstruction[] = [];
-        i18nAttrs.forEach(attr => {
-          const message = attr.i18n !as i18n.Message;
-          if (attr instanceof t.TextAttribute) {
-            i18nAttrArgs.push(o.literal(attr.name), this.i18nTranslate(message));
-          } else {
-            const converted = attr.value.visit(this._valueConverter);
-            this.allocateBindingSlots(converted);
-            if (converted instanceof Interpolation) {
-              const placeholders = assembleBoundTextPlaceholders(message);
-              const params = placeholdersToParams(placeholders);
-              i18nAttrArgs.push(o.literal(attr.name), this.i18nTranslate(message, params));
-              converted.expressions.forEach(expression => {
-                hasBindings = true;
-                bindings.push({
-                  sourceSpan: element.sourceSpan,
-                  value: () => this.convertPropertyBinding(expression)
-                });
-              });
-            }
-          }
-        });
-        if (bindings.length) {
-          this.updateInstructionChainWithAdvance(elementIndex, R3.i18nExp, bindings);
-        }
-        if (i18nAttrArgs.length) {
-          const index: o.Expression = o.literal(this.allocateDataSlot());
-          const args = this.constantPool.getConstLiteral(o.literalArr(i18nAttrArgs), true);
-          this.creationInstruction(element.sourceSpan, R3.i18nAttributes, [index, args]);
-          if (hasBindings) {
-            this.updateInstruction(element.sourceSpan, R3.i18nApply, [index]);
-          }
-        }
+      if (i18nAttrs.length > 0) {
+        this.i18nAttributesInstruction(elementIndex, i18nAttrs, element.sourceSpan);
       }
 
       // Generate Listeners (outputs)
@@ -850,6 +847,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     this.matchDirectives(NG_TEMPLATE_TAG_NAME, template);
 
     // prepare attributes parameter (including attributes used for directive matching)
+    // TODO (FW-1942): exclude i18n attributes from the main attribute list and pass them
+    // as an `i18nAttrs` argument of the `getAttributeExpressions` function below.
     const attrsExprs: o.Expression[] = this.getAttributeExpressions(
         template.attributes, template.inputs, template.outputs, undefined, template.templateAttrs,
         undefined);
@@ -894,8 +893,17 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // handle property bindings e.g. ɵɵproperty('ngForOf', ctx.items), et al;
     this.templatePropertyBindings(templateIndex, template.templateAttrs);
 
-    // Only add normal input/output binding instructions on explicit ng-template elements.
+    // Only add normal input/output binding instructions on explicit <ng-template> elements.
     if (template.tagName === NG_TEMPLATE_TAG_NAME) {
+      // Add i18n attributes that may act as inputs to directives. If such attributes are present,
+      // generate `i18nAttributes` instruction. Note: we generate it only for explicit <ng-template>
+      // elements, in case of inline templates, corresponding instructions will be generated in the
+      // nested template function.
+      const i18nAttrs: t.TextAttribute[] = template.attributes.filter(attr => !!attr.i18n);
+      if (i18nAttrs.length > 0) {
+        this.i18nAttributesInstruction(templateIndex, i18nAttrs, template.sourceSpan);
+      }
+
       // Add the input bindings
       this.templatePropertyBindings(templateIndex, template.inputs);
       // Generate listeners for directive output
