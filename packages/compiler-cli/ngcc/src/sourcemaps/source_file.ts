@@ -49,11 +49,9 @@ export class SourceFile {
     const sources: SourceFile[] = [];
     const names: string[] = [];
 
-    // Ensure a mapping line array for each line in the generated source.
-    const mappings: SourceMapMappings = this.lineLengths.map(() => []);
+    const mappings: SourceMapMappings = [];
 
     for (const mapping of this.flattenedMappings) {
-      const mappingLine = mappings[mapping.generatedSegment.line];
       const sourceIndex = findIndexOrAdd(sources, mapping.originalSource);
       const mappingArray: SourceMapSegment = [
         mapping.generatedSegment.column,
@@ -65,7 +63,14 @@ export class SourceFile {
         const nameIndex = findIndexOrAdd(names, mapping.name);
         mappingArray.push(nameIndex);
       }
-      mappingLine.push(mappingArray);
+
+      // Ensure a mapping line array for this mapping.
+      const line = mapping.generatedSegment.line;
+      while (line >= mappings.length) {
+        mappings.push([]);
+      }
+      // Add this mapping to the line
+      mappings[line].push(mappingArray);
     }
 
     const sourcePathDir = dirname(this.sourcePath);

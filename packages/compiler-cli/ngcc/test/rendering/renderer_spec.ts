@@ -174,7 +174,6 @@ runInEachFileSystem(() => {
           [5, 0, 1, 20], [7, 0, 1, 22], [12, 0, 1, 27], [14, 0, 1, 28], [15, 0, 1, 29],
           [9, 0, 2, 13], [10, 0, 2, 14]
         ],
-        [],
       ];
 
       JS_CONTENT_MAP = fromObject({
@@ -196,15 +195,12 @@ runInEachFileSystem(() => {
         'file': 'file.js',
         'sources': ['file.js'],
         'names': [],
-        'mappings': encode([
-          [], [], [], [], [], [], [], [], [], [], [], [], [[0, 0, 0, 0]],
-          [], [], [], [], [], [], [], [], []
-        ]),
+        'mappings': encode([[], [], [], [], [], [], [], [], [], [], [], [], [[0, 0, 0, 0]]]),
         'sourcesContent': [JS_CONTENT.contents],
       });
 
       const MERGED_OUTPUT_PROGRAM_MAPPINGS: SourceMapMappings =
-          [[], [], [], [], [], [], [], [], [], [], [], [], ...JS_CONTENT_MAPPINGS, []];
+          [[], [], [], [], [], [], [], [], [], [], [], [], ...JS_CONTENT_MAPPINGS];
 
       MERGED_OUTPUT_PROGRAM_MAP = fromObject({
         'version': 3,

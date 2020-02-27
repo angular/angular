@@ -229,6 +229,32 @@ runInEachFileSystem(() => {
             [[1, 0, 0, 0], [2, 0, 0, 2], [3, 0, 0, 3], [3, 0, 0, 6], [4, 0, 0, 1], [5, 0, 0, 7]]
           ]));
         });
+
+        it('should handle mappings that map from lines outside of the actual content lines', () => {
+          const bSource = new SourceFile(_('/foo/src/b.js'), 'abcdef', null, false, []);
+          const aToBSourceMap: RawSourceMap = {
+            mappings: encode([
+              [[0, 0, 0, 0], [2, 0, 0, 3], [4, 0, 0, 2], [5, 0, 0, 5]],
+              [
+                [0, 0, 0, 0],  // Extra mapping from a non-existent line
+              ]
+            ]),
+            names: [],
+            sources: ['b.js'],
+            version: 3
+          };
+          const aSource =
+              new SourceFile(_('/foo/src/a.js'), 'abdecf', aToBSourceMap, false, [bSource]);
+
+          const aTocSourceMap = aSource.renderFlattenedSourceMap();
+          expect(aTocSourceMap.version).toEqual(3);
+          expect(aTocSourceMap.file).toEqual('a.js');
+          expect(aTocSourceMap.names).toEqual([]);
+          expect(aTocSourceMap.sourceRoot).toBeUndefined();
+          expect(aTocSourceMap.sources).toEqual(['b.js']);
+          expect(aTocSourceMap.sourcesContent).toEqual(['abcdef']);
+          expect(aTocSourceMap.mappings).toEqual(aToBSourceMap.mappings);
+        });
       });
     });
 
