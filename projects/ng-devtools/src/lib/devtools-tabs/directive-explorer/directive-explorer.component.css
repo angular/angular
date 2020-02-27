@@ -8,9 +8,12 @@
   overflow: auto;
   height: 100%;
   width: 100%;
-  border-left: 1px solid #ccc;
 }
 
 :host /deep/ as-split-area {
   overflow-y: hidden;
+}
+
+:host /deep/ .as-split-gutter-icon {
+  display: none;
 }
