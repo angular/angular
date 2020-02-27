@@ -13,6 +13,7 @@ jobs:
 
     environment:
       - CHROME_BIN: /usr/bin/google-chrome
+      - CYPRESS_CACHE_FOLDER: /home/circleci/.cache/Cypress
 
     steps:
       - checkout
@@ -20,16 +21,37 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "package.json" }}
+            - v2-dependencies-{{ checksum "package.json" }}
             # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
+            - v2-dependencies-
 
       - run: yarn install
+      - run: yarn cy:verify
 
       - save_cache:
           paths:
             - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+            - /home/circleci/.cache/Cypress
+          key: v2-dependencies-{{ checksum "package.json" }}
 
       # run tests!
-      - run: yarn test:ci
+      - run:
+          name: 'Run Unit tests'
+          command: yarn test:ci
+
+      - run:
+          name: 'Start Server'
+          command: yarn run start
+          background: true
+
+      - run:
+          name: 'Run Cypress tests'
+          command: yarn run cy:run:ci
+          no_output_timeout: '1m'
+
+    artifacts:
+      when: always
+      paths:
+        - cypress/videos/**/*.mp4
+        - cypress/screenshots/**/*.png
+      expire_in: 1 day
