@@ -174,6 +174,28 @@ runInEachFileSystem(() => {
             },
           ]);
         });
+
+        it('should ignore mappings to missing source files', () => {
+          const bSourceMap: RawSourceMap = {
+            mappings: encode([[[1, 0, 0, 0], [4, 0, 0, 3], [4, 0, 0, 6], [5, 0, 0, 7]]]),
+            names: [],
+            sources: ['c.js'],
+            version: 3
+          };
+          const bSource = new SourceFile(_('/foo/src/b.js'), 'abcdef', bSourceMap, false, [null]);
+          const aSourceMap: RawSourceMap = {
+            mappings: encode([[[0, 0, 0, 0], [2, 0, 0, 3], [4, 0, 0, 2], [5, 0, 0, 5]]]),
+            names: [],
+            sources: ['b.js'],
+            version: 3
+          };
+          const aSource =
+              new SourceFile(_('/foo/src/a.js'), 'abdecf', aSourceMap, false, [bSource]);
+
+          // These flattened mappings are just the mappings from a to b.
+          // (The mappings to c are dropped since there is no source file to map to.)
+          expect(aSource.flattenedMappings).toEqual(parseMappings(aSourceMap, [bSource]));
+        });
       });
 
       describe('renderFlattenedSourceMap()', () => {

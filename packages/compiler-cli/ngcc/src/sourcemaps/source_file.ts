@@ -290,11 +290,16 @@ export function parseMappings(
     const generatedLineMappings = rawMappings[generatedLine];
     for (const rawMapping of generatedLineMappings) {
       if (rawMapping.length >= 4) {
+        const originalSource = sources[rawMapping[1] !];
+        if (originalSource === null || originalSource === undefined) {
+          // the original source is missing so ignore this mapping
+          continue;
+        }
         const generatedColumn = rawMapping[0];
         const name = rawMapping.length === 5 ? rawMap.names[rawMapping[4]] : undefined;
         const mapping: Mapping = {
           generatedSegment: {line: generatedLine, column: generatedColumn},
-          originalSource: sources[rawMapping[1] !] !,
+          originalSource,
           originalSegment: {line: rawMapping[2] !, column: rawMapping[3] !}, name
         };
         mappings.push(mapping);
