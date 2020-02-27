@@ -46,8 +46,6 @@
     // will be removed eventually. See: FW-1392.
     "http/**",
     "language-service/test/project",
-    // requires "types": ["node"] which we don't want to be available for other code
-    "localize/src/tools",
     "platform-server/integrationtest",
     // The webworker packages have deprecated and are not made compatible with the
     // strict flag. Until these packages are removed, we exclude them here.
