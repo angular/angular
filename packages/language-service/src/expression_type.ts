@@ -139,7 +139,7 @@ export class AstType implements AstVisitor {
             return this.anyType;
           default:
             this.diagnostics.push(
-                createDiagnostic(ast.span, Diagnostic.expected_a_numeric_or_string_type));
+                createDiagnostic(ast.span, Diagnostic.expected_a_string_or_number_type));
             return this.anyType;
         }
       case '>':

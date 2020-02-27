@@ -14,7 +14,17 @@ export interface DiagnosticMessage {
   kind: keyof typeof ts.DiagnosticCategory;
 }
 
-export const Diagnostic: {[name: string]: DiagnosticMessage} = {
+type DiagnosticName = 'directive_not_in_module' | 'missing_template_and_templateurl' |
+    'both_template_and_templateurl' | 'invalid_templateurl' | 'template_context_missing_member' |
+    'callable_expression_expected_method_call' | 'call_target_not_callable' |
+    'expression_might_be_null' | 'expected_a_number_type' | 'expected_a_string_or_number_type' |
+    'expected_operands_of_similar_type_or_any' | 'unrecognized_operator' |
+    'unrecognized_primitive' | 'no_pipe_found' | 'unable_to_resolve_compatible_call_signature' |
+    'unable_to_resolve_signature' | 'could_not_resolve_type' | 'identifier_not_callable' |
+    'identifier_possibly_undefined' | 'identifier_not_defined_in_app_context' |
+    'identifier_not_defined_on_receiver' | 'identifier_is_private';
+
+export const Diagnostic: Record<DiagnosticName, DiagnosticMessage> = {
   directive_not_in_module: {
     message:
         `%1 '%2' is not included in a module and will not be available inside a template. Consider adding it to a NgModule declaration.`,
@@ -131,8 +141,17 @@ export const Diagnostic: {[name: string]: DiagnosticMessage} = {
   },
 };
 
+/**
+ * Creates a language service diagnostic.
+ * @param span location the diagnostic for
+ * @param dm diagnostic message
+ * @param formatArgs run-time arguments to format the diagnostic message with (see the messages in
+ *        the `Diagnostic` object for an example).
+ * @returns a created diagnostic
+ */
 export function createDiagnostic(
     span: ng.Span, dm: DiagnosticMessage, ...formatArgs: string[]): ng.Diagnostic {
+  // Formats "%1 %2" with formatArgs ['a', 'b'] as "a b"
   const formattedMessage =
       dm.message.replace(/%(\d+)/g, (_, index: string) => formatArgs[+index - 1]);
   return {
