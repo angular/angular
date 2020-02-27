@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Injector, Input, ModuleWithProviders, NgModule, Optional, Pipe, Type, ViewChild, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵsetNgModuleScope as setNgModuleScope, ɵɵtext as text} from '@angular/core';
+import {ChangeDetectorRef, Compiler, Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Injector, Input, ModuleWithProviders, NgModule, Optional, Pipe, Type, ViewChild, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵsetNgModuleScope as setNgModuleScope, ɵɵtext as text} from '@angular/core';
 import {TestBed, getTestBed} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -484,6 +484,26 @@ describe('TestBed', () => {
        const service = TestBed.inject(MyService);
        expect(service.get()).toEqual('override');
      });
+
+  it('should handle overrides for a provider that has `ChangeDetectorRef` as a dependency', () => {
+    // Note: we specifically check an @Injectable with `ChangeDetectorRef` here due to the fact that
+    // in Ivy there is a special instruction that injects `ChangeDetectorRef` token for Pipes
+    // (ɵɵinjectPipeChangeDetectorRef) and using that function for other types causes problems,
+    // for example when we try to override an @Injectable. The test below captures a use-case that
+    // triggers a problem in case incompatible function is used to inject `ChangeDetectorRef` as a
+    // dependency.
+    @Injectable({providedIn: 'root'})
+    class MyService {
+      token = 'original';
+      constructor(public cdr: ChangeDetectorRef) {}
+    }
+
+    TestBed.configureTestingModule({});
+    TestBed.overrideProvider(MyService, {useValue: {token: 'override'}});
+
+    const service = TestBed.inject(MyService);
+    expect(service.token).toBe('override');
+  });
 
   it('should allow overriding a provider defined via ModuleWithProviders (using TestBed.configureTestingModule)',
      () => {
