@@ -1,4 +1,4 @@
-<as-split unit="percent" [direction]="'horizontal'">
+<as-split unit="percent" [direction]="splitDirection">
   <as-split-area size="60">
     <ng-directive-forest
       (selectNode)="handleNodeSelection($event)"
@@ -9,7 +9,7 @@
       [highlightIDinTreeFromElement]="highlightIDinTreeFromElement"
     ></ng-directive-forest>
   </as-split-area>
-  <as-split-area size="40" minSize="15">
+  <as-split-area size="40" minSize="25">
     <div class="property-tab-wrapper">
       <ng-property-tab
         [messageBus]="messageBus"

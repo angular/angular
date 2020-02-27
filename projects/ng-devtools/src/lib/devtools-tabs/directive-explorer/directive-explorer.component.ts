@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, Input, OnInit, ViewChild } from '@angular/core';
 import {
   MessageBus,
   Events,
@@ -14,6 +14,8 @@ import { IndexedNode } from './directive-forest/index-forest';
 import { ApplicationOperations } from '../../application-operations';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PropertyTabComponent } from './property-tab/property-tab.component';
+import { Subject } from 'rxjs';
+import { throttleTime } from 'rxjs/operators';
 
 @Component({
   selector: 'ng-directive-explorer',
@@ -33,7 +35,16 @@ export class DirectiveExplorerComponent implements OnInit {
   forest: DevToolsNode[];
   highlightIDinTreeFromElement: ElementPosition | null = null;
 
-  constructor(private _appOperations: ApplicationOperations, private _snackBar: MatSnackBar) {}
+  splitDirection = 'horizontal';
+
+  private changeSize = new Subject();
+
+  constructor(private _appOperations: ApplicationOperations, private _snackBar: MatSnackBar) {
+    this.changeSize
+      .asObservable()
+      .pipe(throttleTime(100))
+      .subscribe(event => this.handleResize(event));
+  }
 
   ngOnInit(): void {
     this.subscribeToBackendEvents();
@@ -132,6 +143,19 @@ export class DirectiveExplorerComponent implements OnInit {
 
   handleUnhighlightFromComponent(_: ElementPosition | null) {
     this.messageBus.emit('removeHighlightFromElement');
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    this.changeSize.next(event);
+  }
+
+  handleResize(event) {
+    if (event.target.innerWidth <= 500) {
+      this.splitDirection = 'vertical';
+    } else {
+      this.splitDirection = 'horizontal';
+    }
   }
 }
 
