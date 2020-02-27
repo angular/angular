@@ -21,14 +21,8 @@ import {setupTestHarness} from '../setup';
     @HostBinding('data-a')
     a: string = 'exp';
 
-    @HostBinding('data-b')
-    b: string = 'exp';
-
     @HostListener('click')
     onClick(event: any): void {}
-
-    @HostListener('mousemove')
-    onMousemove(event: any): void {}
   }
 `;
 class HostBindingDir {
@@ -40,18 +34,15 @@ class HostBindingDir {
     hostBindings: function(rf: RenderFlags, ctx: any) {
       if (rf & 1) {
         ɵɵlistener('click', function() { return ctx.onClick(); });
-        ɵɵlistener('mousemove', function() { return ctx.onMousemove(); });
       }
       if (rf & 2) {
         ɵɵhostProperty('data-a', ctx.exp);
-        ɵɵhostProperty('data-b', ctx.exp);
       }
     }
   });
 
   exp = 'string-exp';
   onClick() {}
-  onMousemove() {}
 }
 
 `
