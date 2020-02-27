@@ -11,10 +11,11 @@ import * as ts from 'typescript';
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {findFlatIndexEntryPoint, FlatIndexGenerator} from '../../entry_point';
 import {AbsoluteFsPath, resolve} from '../../file_system';
-import {FactoryGenerator, FactoryTracker, ShimGenerator, SummaryGenerator, TypeCheckShimGenerator} from '../../shims';
-import {typeCheckFilePath} from '../../typecheck';
+import {FactoryGenerator, FactoryTracker, isShim, ShimAdapter, ShimReferenceTagger, SummaryGenerator} from '../../shims';
+import {PerFileShimGenerator, TopLevelShimGenerator} from '../../shims/api';
+import {typeCheckFilePath, TypeCheckShimGenerator} from '../../typecheck';
 import {normalizeSeparators} from '../../util/src/path';
-import {getRootDirs} from '../../util/src/typescript';
+import {getRootDirs, isDtsPath, isNonDeclarationTsPath} from '../../util/src/typescript';
 import {ExtendedTsCompilerHost, NgCompilerOptions, UnifiedModulesHost} from '../api';
 
 // A persistent source of bugs in CompilerHost delegation has been the addition by TS of new,
@@ -96,25 +97,39 @@ export class NgCompilerHost extends DelegatingCompilerHost implements
   readonly inputFiles: ReadonlyArray<string>;
   readonly rootDirs: ReadonlyArray<AbsoluteFsPath>;
   readonly typeCheckFile: AbsoluteFsPath;
-  readonly factoryFiles: AbsoluteFsPath[];
-  readonly summaryFiles: AbsoluteFsPath[];
+
 
   constructor(
       delegate: ExtendedTsCompilerHost, inputFiles: ReadonlyArray<string>,
-      rootDirs: ReadonlyArray<AbsoluteFsPath>, private shims: ShimGenerator[],
-      entryPoint: AbsoluteFsPath|null, typeCheckFile: AbsoluteFsPath,
-      factoryFiles: AbsoluteFsPath[], summaryFiles: AbsoluteFsPath[],
-      factoryTracker: FactoryTracker|null, diagnostics: ts.Diagnostic[]) {
+      rootDirs: ReadonlyArray<AbsoluteFsPath>, private shimAdapter: ShimAdapter,
+      private shimTagger: ShimReferenceTagger, entryPoint: AbsoluteFsPath|null,
+      typeCheckFile: AbsoluteFsPath, factoryTracker: FactoryTracker|null,
+      diagnostics: ts.Diagnostic[]) {
     super(delegate);
 
     this.factoryTracker = factoryTracker;
     this.entryPoint = entryPoint;
     this.typeCheckFile = typeCheckFile;
-    this.factoryFiles = factoryFiles;
-    this.summaryFiles = summaryFiles;
     this.diagnostics = diagnostics;
-    this.inputFiles = inputFiles;
+    this.inputFiles = [...inputFiles, ...shimAdapter.extraInputFiles];
     this.rootDirs = rootDirs;
+  }
+
+  /**
+   * Retrieves a set of `ts.SourceFile`s which should not be emitted as JS files.
+   *
+   * Available after this host is used to create a `ts.Program` (which causes all the files in the
+   * program to be enumerated).
+   */
+  get ignoreForEmit(): Set<ts.SourceFile> {
+    return this.shimAdapter.ignoreForEmit;
+  }
+
+  /**
+   * Performs cleanup that needs to happen after a `ts.Program` has been created using this host.
+   */
+  postProgramCreationCleanup(): void {
+    this.shimTagger.finalize();
   }
 
   /**
@@ -122,8 +137,8 @@ export class NgCompilerHost extends DelegatingCompilerHost implements
    * of TypeScript and Angular compiler options.
    */
   static wrap(
-      delegate: ts.CompilerHost, inputFiles: ReadonlyArray<string>,
-      options: NgCompilerOptions): NgCompilerHost {
+      delegate: ts.CompilerHost, inputFiles: ReadonlyArray<string>, options: NgCompilerOptions,
+      oldProgram: ts.Program|null): NgCompilerHost {
     // TODO(alxhub): remove the fallback to allowEmptyCodegenFiles after verifying that the rest of
     // our build tooling is no longer relying on it.
     const allowEmptyCodegenFiles = options.allowEmptyCodegenFiles || false;
@@ -135,54 +150,41 @@ export class NgCompilerHost extends DelegatingCompilerHost implements
         options.generateNgSummaryShims :
         allowEmptyCodegenFiles;
 
-    let rootFiles = [...inputFiles];
-    let normalizedInputFiles = inputFiles.map(n => resolve(n));
 
-    const generators: ShimGenerator[] = [];
-    let summaryGenerator: SummaryGenerator|null = null;
-    let summaryFiles: AbsoluteFsPath[];
+    const topLevelShimGenerators: TopLevelShimGenerator[] = [];
+    const perFileShimGenerators: PerFileShimGenerator[] = [];
 
     if (shouldGenerateSummaryShims) {
       // Summary generation.
-      summaryGenerator = SummaryGenerator.forRootFiles(normalizedInputFiles);
-      generators.push(summaryGenerator);
-      summaryFiles = summaryGenerator.getSummaryFileNames();
-    } else {
-      summaryFiles = [];
+      perFileShimGenerators.push(new SummaryGenerator());
     }
 
     let factoryTracker: FactoryTracker|null = null;
-    let factoryFiles: AbsoluteFsPath[];
     if (shouldGenerateFactoryShims) {
-      // Factory generation.
-      const factoryGenerator = FactoryGenerator.forRootFiles(normalizedInputFiles);
-      const factoryFileMap = factoryGenerator.factoryFileMap;
+      const factoryGenerator = new FactoryGenerator();
+      perFileShimGenerators.push(factoryGenerator);
 
-      factoryFiles = Array.from(factoryFileMap.keys());
-      rootFiles.push(...factoryFiles);
-      generators.push(factoryGenerator);
-
-      factoryTracker = new FactoryTracker(factoryGenerator);
-    } else {
-      factoryFiles = [];
+      factoryTracker = factoryGenerator;
     }
-
-    // Done separately to preserve the order of factory files before summary files in rootFiles.
-    // TODO(alxhub): validate that this is necessary.
-    rootFiles.push(...summaryFiles);
-
 
     const rootDirs = getRootDirs(delegate, options as ts.CompilerOptions);
 
     const typeCheckFile = typeCheckFilePath(rootDirs);
-    generators.push(new TypeCheckShimGenerator(typeCheckFile));
-    rootFiles.push(typeCheckFile);
+    topLevelShimGenerators.push(new TypeCheckShimGenerator(typeCheckFile));
 
     let diagnostics: ts.Diagnostic[] = [];
 
+    const normalizedTsInputFiles: AbsoluteFsPath[] = [];
+    for (const inputFile of inputFiles) {
+      if (!isNonDeclarationTsPath(inputFile)) {
+        continue;
+      }
+      normalizedTsInputFiles.push(resolve(inputFile));
+    }
+
     let entryPoint: AbsoluteFsPath|null = null;
     if (options.flatModuleOutFile != null && options.flatModuleOutFile !== '') {
-      entryPoint = findFlatIndexEntryPoint(normalizedInputFiles);
+      entryPoint = findFlatIndexEntryPoint(normalizedTsInputFiles);
       if (entryPoint === null) {
         // This error message talks specifically about having a single .ts file in "files". However
         // the actual logic is a bit more permissive. If a single file exists, that will be taken,
@@ -206,37 +208,49 @@ export class NgCompilerHost extends DelegatingCompilerHost implements
         const flatModuleOutFile = normalizeSeparators(options.flatModuleOutFile);
         const flatIndexGenerator =
             new FlatIndexGenerator(entryPoint, flatModuleOutFile, flatModuleId);
-        generators.push(flatIndexGenerator);
-        rootFiles.push(flatIndexGenerator.flatIndexPath);
+        topLevelShimGenerators.push(flatIndexGenerator);
       }
     }
 
+    const shimAdapter = new ShimAdapter(
+        delegate, normalizedTsInputFiles, topLevelShimGenerators, perFileShimGenerators,
+        oldProgram);
+    const shimTagger =
+        new ShimReferenceTagger(perFileShimGenerators.map(gen => gen.extensionPrefix));
     return new NgCompilerHost(
-        delegate, rootFiles, rootDirs, generators, entryPoint, typeCheckFile, factoryFiles,
-        summaryFiles, factoryTracker, diagnostics);
+        delegate, inputFiles, rootDirs, shimAdapter, shimTagger, entryPoint, typeCheckFile,
+        factoryTracker, diagnostics);
+  }
+
+  /**
+   * Check whether the given `ts.SourceFile` is a shim file.
+   *
+   * If this returns false, the file is user-provided.
+   */
+  isShim(sf: ts.SourceFile): boolean {
+    return isShim(sf);
   }
 
   getSourceFile(
       fileName: string, languageVersion: ts.ScriptTarget,
       onError?: ((message: string) => void)|undefined,
       shouldCreateNewSourceFile?: boolean|undefined): ts.SourceFile|undefined {
-    for (let i = 0; i < this.shims.length; i++) {
-      const generator = this.shims[i];
-      // TypeScript internal paths are guaranteed to be POSIX-like absolute file paths.
-      const absoluteFsPath = resolve(fileName);
-      if (generator.recognize(absoluteFsPath)) {
-        const readFile = (originalFile: string) => {
-          return this.delegate.getSourceFile(
-                     originalFile, languageVersion, onError, shouldCreateNewSourceFile) ||
-              null;
-        };
-
-        return generator.generate(absoluteFsPath, readFile) || undefined;
-      }
+    // Is this a previously known shim?
+    const shimSf = this.shimAdapter.maybeGenerate(resolve(fileName));
+    if (shimSf !== null) {
+      // Yes, so return it.
+      return shimSf;
     }
 
-    return this.delegate.getSourceFile(
-        fileName, languageVersion, onError, shouldCreateNewSourceFile);
+    // No, so it's a file which might need shims (or a file which doesn't exist).
+    const sf =
+        this.delegate.getSourceFile(fileName, languageVersion, onError, shouldCreateNewSourceFile);
+    if (sf === undefined) {
+      return undefined;
+    }
+
+    this.shimTagger.tag(sf);
+    return sf;
   }
 
   fileExists(fileName: string): boolean {
@@ -245,8 +259,10 @@ export class NgCompilerHost extends DelegatingCompilerHost implements
     //  2) at least one of the shim generators recognizes it
     // Note that we can pass the file name as branded absolute fs path because TypeScript
     // internally only passes POSIX-like paths.
+    //
+    // Also note that the `maybeGenerate` check below checks for both `null` and `undefined`.
     return this.delegate.fileExists(fileName) ||
-        this.shims.some(shim => shim.recognize(resolve(fileName)));
+        this.shimAdapter.maybeGenerate(resolve(fileName)) != null;
   }
 
   get unifiedModulesHost(): UnifiedModulesHost|null {

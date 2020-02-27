@@ -158,11 +158,16 @@ export class NgtscTestEnvironment {
     this.multiCompileHostExt.invalidate(absFilePath);
   }
 
-  tsconfig(extraOpts: {[key: string]: string|boolean|null} = {}, extraRootDirs?: string[]): void {
+  tsconfig(
+      extraOpts: {[key: string]: string|boolean|null} = {}, extraRootDirs?: string[],
+      files?: string[]): void {
     const tsconfig: {[key: string]: any} = {
       extends: './tsconfig-base.json',
       angularCompilerOptions: {...extraOpts, enableIvy: true},
     };
+    if (files !== undefined) {
+      tsconfig['files'] = files;
+    }
     if (extraRootDirs !== undefined) {
       tsconfig.compilerOptions = {
         rootDirs: ['.', ...extraRootDirs],

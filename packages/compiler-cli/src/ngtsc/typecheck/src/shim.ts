@@ -9,8 +9,7 @@
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
-
-import {ShimGenerator} from './api';
+import {TopLevelShimGenerator} from '../../shims/api';
 
 /**
  * A `ShimGenerator` which adds a type-checking file to the `ts.Program`.
@@ -19,17 +18,14 @@ import {ShimGenerator} from './api';
  * information in the main program when creating the type-checking program if the set of files in
  * each are exactly the same. Thus, the main program also needs the synthetic type-checking file.
  */
-export class TypeCheckShimGenerator implements ShimGenerator {
+export class TypeCheckShimGenerator implements TopLevelShimGenerator {
   constructor(private typeCheckFile: AbsoluteFsPath) {}
 
-  recognize(fileName: AbsoluteFsPath): boolean {
-    return fileName === this.typeCheckFile;
-  }
+  readonly shouldEmit = false;
 
-  generate(genFileName: AbsoluteFsPath, readFile: (fileName: string) => ts.SourceFile | null):
-      ts.SourceFile|null {
+  makeTopLevelShim(): ts.SourceFile {
     return ts.createSourceFile(
-        genFileName, 'export const USED_FOR_NG_TYPE_CHECKING = true;', ts.ScriptTarget.Latest, true,
-        ts.ScriptKind.TS);
+        this.typeCheckFile, 'export const USED_FOR_NG_TYPE_CHECKING = true;',
+        ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
   }
 }
