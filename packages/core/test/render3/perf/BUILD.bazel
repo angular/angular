@@ -216,3 +216,16 @@ ng_benchmark(
     name = "duplicate_map_based_style_and_class_bindings",
     bundle = ":duplicate_map_based_style_and_class_bindings_lib",
 )
+
+ng_rollup_bundle(
+    name = "host_binding_lib",
+    entry_point = ":host_binding/index.ts",
+    deps = [
+        ":perf_lib",
+    ],
+)
+
+ng_benchmark(
+    name = "host_binding",
+    bundle = ":host_binding",
+)
