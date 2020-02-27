@@ -1,3 +1,14 @@
+<a name="9.0.4"></a>
+## [9.0.4](https://github.com/angular/angular/compare/9.0.3...9.0.4) (2020-02-27)
+
+
+### Bug Fixes
+
+* **ngcc:** allow deep-import warnings to be ignored ([#35683](https://github.com/angular/angular/issues/35683)) ([9064f4e](https://github.com/angular/angular/commit/9064f4e)), closes [#35615](https://github.com/angular/angular/issues/35615)
+* **ngcc:** handle mappings outside the content when flattening source-maps ([#35718](https://github.com/angular/angular/issues/35718)) ([bfe7657](https://github.com/angular/angular/commit/bfe7657)), closes [#35709](https://github.com/angular/angular/issues/35709)
+* **ngcc:** handle missing sources when flattening source-maps ([#35718](https://github.com/angular/angular/issues/35718)) ([7ff845b](https://github.com/angular/angular/commit/7ff845b)), closes [#35709](https://github.com/angular/angular/issues/35709)
+
+
 <a name="9.1.0-next.2"></a>
 # [9.1.0-next.2](https://github.com/angular/angular/compare/9.1.0-next.1...9.1.0-next.2) (2020-02-27)
 
