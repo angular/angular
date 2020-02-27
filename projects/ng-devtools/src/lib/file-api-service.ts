@@ -8,16 +8,20 @@ import * as FileSaver from 'file-saver';
 export class FileApiService {
   uploadedData: Subject<any> = new Subject();
 
-  publishFileUpload(parentEvent): void {
+  publishFileUpload(parentEvent: InputEvent): void {
     const reader = new FileReader();
     reader.onload = event => {
-      this.uploadedData.next(JSON.parse((event.target as any).result));
+      try {
+        this.uploadedData.next(JSON.parse((event.target as any).result));
+      } catch (e) {
+        this.uploadedData.next({ error: e });
+      }
       (parentEvent.target as any).value = '';
     };
     reader.readAsText((parentEvent.target as any).files[0]);
   }
 
-  saveObjectAsJSON(object): void {
+  saveObjectAsJSON(object: object): void {
     const blob = new Blob([JSON.stringify(object)], { type: 'application/json' });
     FileSaver.saveAs(blob, `${Date.now()}.json`);
   }

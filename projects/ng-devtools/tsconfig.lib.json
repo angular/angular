@@ -6,7 +6,8 @@
     "declaration": true,
     "inlineSources": true,
     "types": [],
-    "lib": ["dom", "es2018"]
+    "lib": ["dom", "es2018"],
+    "resolveJsonModule": true
   },
   "angularCompilerOptions": {
     "skipTemplateCodegen": true,
