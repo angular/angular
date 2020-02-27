@@ -6,7 +6,8 @@
 /out-tsc
 # Only exists if Bazel was run
 /bazel-out
-
+/cypress/screenshots
+/cypress/videos
 # dependencies
 /node_modules
 
