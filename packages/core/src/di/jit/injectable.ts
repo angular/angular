@@ -65,7 +65,7 @@ export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
             typeArgumentCount: metadata.typeArgumentCount,
             deps: reflectDependencies(type),
             injectFn: 'inject',
-            target: compiler.R3FactoryTarget.Pipe
+            target: compiler.R3FactoryTarget.Injectable
           });
         }
         return ngFactoryDef;
