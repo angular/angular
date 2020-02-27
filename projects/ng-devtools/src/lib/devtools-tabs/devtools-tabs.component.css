@@ -56,9 +56,11 @@ mat-tab-group {
 }
 
 /deep/ .mat-tab-body-wrapper {
-  height: 100%;
-  /* height: calc(100% - 49px); */
-  /* 100% - header */
+  height: calc(100% - 30px);
+}
+
+/deep/ .mat-tab-header {
+  height: 30px;
 }
 
 /deep/ .mat-tab-label-container {
