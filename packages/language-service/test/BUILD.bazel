@@ -62,7 +62,6 @@ ts_library(
 
 jasmine_node_test(
     name = "features_test",
-    coverage = True,
     data = [
         "//packages/common:npm_package",
         "//packages/core:npm_package",
@@ -79,7 +78,6 @@ jasmine_node_test(
 
 jasmine_node_test(
     name = "infra_test",
-    coverage = True,
     data = [
         "//packages/common:npm_package",
         "//packages/core:npm_package",
@@ -96,7 +94,6 @@ jasmine_node_test(
 
 jasmine_node_test(
     name = "test",
-    coverage = True,
     data = [
         "//packages/common:npm_package",
         "//packages/core:npm_package",
