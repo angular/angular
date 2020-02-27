@@ -20,6 +20,7 @@ import 'reflect-metadata/Reflect';
 require('@bazel/jasmine').boot();
 import 'zone.js/lib/jasmine/jasmine';
 
+(Error as any).stopInDebuggerOnAssertFailure = true;
 (global as any).isNode = true;
 (global as any).isBrowser = false;
 

@@ -93,8 +93,20 @@ export function assertDefined<T>(actual: T, msg: string) {
 export function throwError(msg: string): never;
 export function throwError(msg: string, actual: any, expected: any, comparison: string): never;
 export function throwError(msg: string, actual?: any, expected?: any, comparison?: string): never {
-  // tslint:disable-next-line
-  debugger;  // Left intentionally for better debugger experience.
+  if (ngDevMode && (Error as any).stopInDebuggerOnAssertFailure) {
+    // In Angular asserts are consider fatal. During normal application execution they should not
+    // happen. When doing development and the dev-tools console is open it is often useful to stop
+    // the debugger at this line, so that one can examine the conditions under which these error
+    // occur. For this reason if `Error.stopInDebuggerOnAssertFailure = true` then the debugger will
+    // stop here. In default case the `Error.stopInDebuggerOnAssertFailure` is not set and so there
+    // is no observable behavior to the developer.
+    //
+    // Notice that the `debugger` statement is only present in `ngDevMode` and is removed in
+    // production.
+    //
+    // tslint:disable-next-line
+    debugger;  // Left intentionally for better debugger experience in tests.
+  }
   throw new Error(
       `ASSERTION ERROR: ${msg}` +
       (comparison == null ? '' : ` [Expected=> ${expected} ${comparison} ${actual} <=Actual]`));

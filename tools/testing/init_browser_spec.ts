@@ -14,6 +14,7 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 TestBed.initTestEnvironment(
     [BrowserDynamicTestingModule, NoopAnimationsModule], platformBrowserDynamicTesting());
 
+(Error as any).stopInDebuggerOnAssertFailure = true;
 (window as any).isNode = false;
 (window as any).isBrowser = true;
 (window as any).global = window;
