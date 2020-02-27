@@ -12,6 +12,7 @@ import {FileSystem, absoluteFromSourceFile, basename, absoluteFrom} from '../../
 import {FileToWrite} from './utils';
 import {SourceFileLoader} from '../sourcemaps/source_file_loader';
 import {RawSourceMap} from '../sourcemaps/raw_source_map';
+import {Logger} from '../logging/logger';
 
 export interface SourceMapInfo {
   source: string;
@@ -24,28 +25,39 @@ export interface SourceMapInfo {
  * with an appropriate source-map comment pointing to the merged source-map.
  */
 export function renderSourceAndMap(
-    fs: FileSystem, sourceFile: ts.SourceFile, generatedMagicString: MagicString): FileToWrite[] {
+    logger: Logger, fs: FileSystem, sourceFile: ts.SourceFile,
+    generatedMagicString: MagicString): FileToWrite[] {
   const generatedPath = absoluteFromSourceFile(sourceFile);
   const generatedMapPath = absoluteFrom(`${generatedPath}.map`);
   const generatedContent = generatedMagicString.toString();
   const generatedMap: RawSourceMap = generatedMagicString.generateMap(
       {file: generatedPath, source: generatedPath, includeContent: true});
 
-  const loader = new SourceFileLoader(fs);
-  const generatedFile = loader.loadSourceFile(
-      generatedPath, generatedContent, {map: generatedMap, mapPath: generatedMapPath});
+  try {
+    const loader = new SourceFileLoader(fs);
+    const generatedFile = loader.loadSourceFile(
+        generatedPath, generatedContent, {map: generatedMap, mapPath: generatedMapPath});
 
-  const rawMergedMap: RawSourceMap = generatedFile.renderFlattenedSourceMap();
-  const mergedMap = fromObject(rawMergedMap);
-
-  if (generatedFile.sources[0]?.inline) {
-    // The input source-map was inline so make the output one inline too.
-    return [{path: generatedPath, contents: `${generatedFile.contents}\n${mergedMap.toComment()}`}];
-  } else {
-    const sourceMapComment = generateMapFileComment(`${basename(generatedPath)}.map`);
+    const rawMergedMap: RawSourceMap = generatedFile.renderFlattenedSourceMap();
+    const mergedMap = fromObject(rawMergedMap);
+    if (generatedFile.sources[0]?.inline) {
+      // The input source-map was inline so make the output one inline too.
+      return [
+        {path: generatedPath, contents: `${generatedFile.contents}\n${mergedMap.toComment()}`}
+      ];
+    } else {
+      const sourceMapComment = generateMapFileComment(`${basename(generatedPath)}.map`);
+      return [
+        {path: generatedPath, contents: `${generatedFile.contents}\n${sourceMapComment}`},
+        {path: generatedMapPath, contents: mergedMap.toJSON()}
+      ];
+    }
+  } catch (e) {
+    logger.error(
+        `Error when flattening the source-map "${generatedMapPath}" for "${generatedPath}": ${e.toString()}`);
     return [
-      {path: generatedPath, contents: `${generatedFile.contents}\n${sourceMapComment}`},
-      {path: generatedMapPath, contents: mergedMap.toJSON()}
+      {path: generatedPath, contents: generatedContent},
+      {path: generatedMapPath, contents: fromObject(generatedMap).toJSON()},
     ];
   }
 }
