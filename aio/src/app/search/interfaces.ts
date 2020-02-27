@@ -9,7 +9,7 @@ export interface SearchResult {
   type: string;
   titleWords: string;
   keywords: string;
-  topics?: string;
+  topics: string;
   deprecated: boolean;
 }
 

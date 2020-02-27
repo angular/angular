@@ -15,7 +15,7 @@ interface PageInfo {
   type: string;
   titleWords: string;
   keyWords: string;
-  topics?: string;
+  topics: string;
 }
 
 addEventListener('message', handleMessage);
