@@ -296,7 +296,7 @@ export function parseMappings(
     for (const rawMapping of generatedLineMappings) {
       if (rawMapping.length >= 4) {
         const originalSource = sources[rawMapping[1] !];
-        if (originalSource === null) {
+        if (originalSource === null || originalSource === undefined) {
           // the original source is missing so ignore this mapping
           continue;
         }
