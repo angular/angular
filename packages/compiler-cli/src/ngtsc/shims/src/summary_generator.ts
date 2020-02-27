@@ -8,38 +8,23 @@
 
 import * as ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath} from '../../file_system';
-import {isNonDeclarationTsPath} from '../../util/src/typescript';
+import {AbsoluteFsPath} from '../../file_system';
+import {PerFileShimGenerator} from '../api';
 
-import {ShimGenerator} from './api';
 import {generatedModuleName} from './util';
 
-export class SummaryGenerator implements ShimGenerator {
-  private constructor(private map: Map<AbsoluteFsPath, AbsoluteFsPath>) {}
+export class SummaryGenerator implements PerFileShimGenerator {
+  readonly shouldEmit = true;
+  readonly extensionPrefix = 'ngsummary';
 
-  getSummaryFileNames(): AbsoluteFsPath[] {
-    return Array.from(this.map.keys());
-  }
-
-  recognize(fileName: AbsoluteFsPath): boolean {
-    return this.map.has(fileName);
-  }
-
-  generate(genFilePath: AbsoluteFsPath, readFile: (fileName: string) => ts.SourceFile | null):
-      ts.SourceFile|null {
-    const originalPath = this.map.get(genFilePath)!;
-    const original = readFile(originalPath);
-    if (original === null) {
-      return null;
-    }
-
+  generateShimForFile(sf: ts.SourceFile, genFilePath: AbsoluteFsPath): ts.SourceFile {
     // Collect a list of classes that need to have factory types emitted for them. This list is
     // overly broad as at this point the ts.TypeChecker has not been created and so it can't be used
     // to semantically understand which decorators are Angular decorators. It's okay to output an
     // overly broad set of summary exports as the exports are no-ops anyway, and summaries are a
     // compatibility layer which will be removed after Ivy is enabled.
     const symbolNames: string[] = [];
-    for (const stmt of original.statements) {
+    for (const stmt of sf.statements) {
       if (ts.isClassDeclaration(stmt)) {
         // If the class isn't exported, or if it's not decorated, then skip it.
         if (!isExported(stmt) || stmt.decorators === undefined || stmt.name === undefined) {
@@ -73,22 +58,12 @@ export class SummaryGenerator implements ShimGenerator {
       varLines.push(`export const ɵempty = null;`);
     }
     const sourceText = varLines.join('\n');
-    const genFile = ts.createSourceFile(
-        genFilePath, sourceText, original.languageVersion, true, ts.ScriptKind.TS);
-    if (original.moduleName !== undefined) {
-      genFile.moduleName =
-          generatedModuleName(original.moduleName, original.fileName, '.ngsummary');
+    const genFile =
+        ts.createSourceFile(genFilePath, sourceText, sf.languageVersion, true, ts.ScriptKind.TS);
+    if (sf.moduleName !== undefined) {
+      genFile.moduleName = generatedModuleName(sf.moduleName, sf.fileName, '.ngsummary');
     }
     return genFile;
-  }
-
-  static forRootFiles(files: ReadonlyArray<AbsoluteFsPath>): SummaryGenerator {
-    const map = new Map<AbsoluteFsPath, AbsoluteFsPath>();
-    files.filter(sourceFile => isNonDeclarationTsPath(sourceFile))
-        .forEach(
-            sourceFile =>
-                map.set(absoluteFrom(sourceFile.replace(/\.ts$/, '.ngsummary.ts')), sourceFile));
-    return new SummaryGenerator(map);
   }
 }
 

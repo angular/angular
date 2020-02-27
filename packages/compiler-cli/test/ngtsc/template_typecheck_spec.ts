@@ -1838,6 +1838,29 @@ export declare class AnimationEvent {
            expect(diags.length).toBe(0);
          });
     });
+
+    describe('stability', () => {
+      // This section tests various scenarios which have more complex ts.Program setups and thus
+      // exercise edge cases of the template type-checker.
+      it('should accept a program with a flat index', () => {
+        // This test asserts that flat indices don't have any negative interactions with the
+        // generation of template type-checking code in the program.
+        env.tsconfig({fullTemplateTypeCheck: true, flatModuleOutFile: 'flat.js'});
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '{{expr}}'
+          })
+          export class TestCmp {
+            expr = 'string';
+          }
+        `);
+
+        expect(env.driveDiagnostics()).toEqual([]);
+      });
+    });
   });
 });
 

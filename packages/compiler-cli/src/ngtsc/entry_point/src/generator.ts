@@ -11,11 +11,12 @@
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath, dirname, join} from '../../file_system';
-import {ShimGenerator} from '../../shims';
+import {TopLevelShimGenerator} from '../../shims';
 import {relativePathBetween} from '../../util/src/path';
 
-export class FlatIndexGenerator implements ShimGenerator {
+export class FlatIndexGenerator implements TopLevelShimGenerator {
   readonly flatIndexPath: string;
+  readonly shouldEmit = true;
 
   constructor(
       readonly entryPoint: AbsoluteFsPath, relativeFlatIndexPath: string,
@@ -24,11 +25,7 @@ export class FlatIndexGenerator implements ShimGenerator {
         join(dirname(entryPoint), relativeFlatIndexPath).replace(/\.js$/, '') + '.ts';
   }
 
-  recognize(fileName: string): boolean {
-    return fileName === this.flatIndexPath;
-  }
-
-  generate(): ts.SourceFile {
+  makeTopLevelShim(): ts.SourceFile {
     const relativeEntryPoint = relativePathBetween(this.flatIndexPath, this.entryPoint);
     const contents = `/**
  * Generated bundle index. Do not edit.

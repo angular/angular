@@ -7,51 +7,50 @@
  */
 import * as ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath, basename} from '../../file_system';
+import {absoluteFromSourceFile, AbsoluteFsPath, basename} from '../../file_system';
 import {ImportRewriter} from '../../imports';
-import {isNonDeclarationTsPath} from '../../util/src/typescript';
+import {PerFileShimGenerator} from '../api';
 
-import {ShimGenerator} from './api';
 import {generatedModuleName} from './util';
 
 const TS_DTS_SUFFIX = /(\.d)?\.ts$/;
 const STRIP_NG_FACTORY = /(.*)NgFactory$/;
 
 /**
+ * Maintains a mapping of which symbols in a .ngfactory file have been used.
+ *
+ * .ngfactory files are generated with one symbol per defined class in the source file, regardless
+ * of whether the classes in the source files are NgModules (because that isn't known at the time
+ * the factory files are generated). A `FactoryTracker` supports removing factory symbols which
+ * didn't end up being NgModules, by tracking the ones which are.
+ */
+export interface FactoryTracker {
+  readonly sourceInfo: Map<string, FactoryInfo>;
+
+  track(sf: ts.SourceFile, factorySymbolName: string): void;
+}
+
+/**
  * Generates ts.SourceFiles which contain variable declarations for NgFactories for every exported
  * class of an input ts.SourceFile.
  */
-export class FactoryGenerator implements ShimGenerator {
-  private constructor(private map: Map<AbsoluteFsPath, AbsoluteFsPath>) {}
+export class FactoryGenerator implements PerFileShimGenerator, FactoryTracker {
+  readonly sourceInfo = new Map<string, FactoryInfo>();
+  private sourceToFactorySymbols = new Map<string, Set<string>>();
 
-  get factoryFileMap(): Map<AbsoluteFsPath, AbsoluteFsPath> {
-    return this.map;
-  }
+  readonly shouldEmit = true;
+  readonly extensionPrefix = 'ngfactory';
 
-  get factoryFileNames(): AbsoluteFsPath[] {
-    return Array.from(this.map.keys());
-  }
+  generateShimForFile(sf: ts.SourceFile, genFilePath: AbsoluteFsPath): ts.SourceFile {
+    const absoluteSfPath = absoluteFromSourceFile(sf);
 
-  recognize(fileName: AbsoluteFsPath): boolean {
-    return this.map.has(fileName);
-  }
-
-  generate(genFilePath: AbsoluteFsPath, readFile: (fileName: string) => ts.SourceFile | null):
-      ts.SourceFile|null {
-    const originalPath = this.map.get(genFilePath)!;
-    const original = readFile(originalPath);
-    if (original === null) {
-      return null;
-    }
-
-    const relativePathToSource = './' + basename(original.fileName).replace(TS_DTS_SUFFIX, '');
+    const relativePathToSource = './' + basename(sf.fileName).replace(TS_DTS_SUFFIX, '');
     // Collect a list of classes that need to have factory types emitted for them. This list is
     // overly broad as at this point the ts.TypeChecker hasn't been created, and can't be used to
     // semantically understand which decorated types are actually decorated with Angular decorators.
     //
     // The exports generated here are pruned in the factory transform during emit.
-    const symbolNames = original
-                            .statements
+    const symbolNames = sf.statements
                             // Pick out top level class declarations...
                             .filter(ts.isClassDeclaration)
                             // which are named, exported, and have decorators.
@@ -66,7 +65,7 @@ export class FactoryGenerator implements ShimGenerator {
 
     // If there is a top-level comment in the original file, copy it over at the top of the
     // generated factory file. This is important for preserving any load-bearing jsdoc comments.
-    const leadingComment = getFileoverviewComment(original);
+    const leadingComment = getFileoverviewComment(sf);
     if (leadingComment !== null) {
       // Leading comments must be separated from the rest of the contents by a blank line.
       sourceText = leadingComment + '\n\n';
@@ -94,22 +93,23 @@ export class FactoryGenerator implements ShimGenerator {
     // factory transformer if it ends up not being needed.
     sourceText += '\nexport const ɵNonEmptyModule = true;';
 
-    const genFile = ts.createSourceFile(
-        genFilePath, sourceText, original.languageVersion, true, ts.ScriptKind.TS);
-    if (original.moduleName !== undefined) {
-      genFile.moduleName =
-          generatedModuleName(original.moduleName, original.fileName, '.ngfactory');
+    const genFile =
+        ts.createSourceFile(genFilePath, sourceText, sf.languageVersion, true, ts.ScriptKind.TS);
+    if (sf.moduleName !== undefined) {
+      genFile.moduleName = generatedModuleName(sf.moduleName, sf.fileName, '.ngfactory');
     }
+
+    const moduleSymbolNames = new Set<string>();
+    this.sourceToFactorySymbols.set(absoluteSfPath, moduleSymbolNames);
+    this.sourceInfo.set(genFilePath, {sourceFilePath: absoluteSfPath, moduleSymbolNames});
+
     return genFile;
   }
 
-  static forRootFiles(files: ReadonlyArray<AbsoluteFsPath>): FactoryGenerator {
-    const map = new Map<AbsoluteFsPath, AbsoluteFsPath>();
-    files.filter(sourceFile => isNonDeclarationTsPath(sourceFile))
-        .forEach(
-            sourceFile =>
-                map.set(absoluteFrom(sourceFile.replace(/\.ts$/, '.ngfactory.ts')), sourceFile));
-    return new FactoryGenerator(map);
+  track(sf: ts.SourceFile, factorySymbolName: string): void {
+    if (this.sourceToFactorySymbols.has(sf.fileName)) {
+      this.sourceToFactorySymbols.get(sf.fileName)!.add(factorySymbolName);
+    }
   }
 }
 

@@ -3468,6 +3468,40 @@ runInEachFileSystem(os => {
         env.tsconfig({'generateNgFactoryShims': true});
       });
 
+      it('should generate factory shims for files not listed in root files', () => {
+        // This test verifies that shims are generated for all files in the user's program, even if
+        // only a subset of those files are listed in the tsconfig as root files.
+
+        env.tsconfig({'generateNgFactoryShims': true}, /* extraRootDirs */ undefined, [
+          absoluteFrom('/test.ts'),
+        ]);
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          import {OtherCmp} from './other';
+
+          @Component({
+            selector: 'test',
+            template: '...',
+          })
+          export class TestCmp {
+            constructor(other: OtherCmp) {}
+          }
+        `);
+        env.write('other.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'other',
+            template: '...',
+          })
+          export class OtherCmp {}
+        `);
+        env.driveMain();
+
+        expect(env.getContents('other.ngfactory.js')).toContain('OtherCmp');
+      });
+
       it('should generate correct type annotation for NgModuleFactory calls in ngfactories', () => {
         env.write('test.ts', `
         import {Component} from '@angular/core';

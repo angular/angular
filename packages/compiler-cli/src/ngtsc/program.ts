@@ -66,11 +66,13 @@ export class NgtscProgram implements api.Program {
     }
     this.closureCompilerEnabled = !!options.annotateForClosureCompiler;
 
-    this.host = NgCompilerHost.wrap(delegateHost, rootNames, options);
-
     const reuseProgram = oldProgram && oldProgram.reuseTsProgram;
+    this.host = NgCompilerHost.wrap(delegateHost, rootNames, options, reuseProgram ?? null);
+
     this.tsProgram = ts.createProgram(this.host.inputFiles, options, this.host, reuseProgram);
     this.reuseTsProgram = this.tsProgram;
+
+    this.host.postProgramCreationCleanup();
 
     // Create the NgCompiler which will drive the rest of the compilation.
     this.compiler =

@@ -145,13 +145,10 @@ export class NgCompiler {
     }
     setIncrementalDriver(tsProgram, this.incrementalDriver);
 
-    this.ignoreForDiagnostics = new Set([
-      this.typeCheckFile,
-      ...host.factoryFiles.map(fileName => getSourceFileOrError(tsProgram, fileName)),
-      ...host.summaryFiles.map(fileName => getSourceFileOrError(tsProgram, fileName)),
-    ]);
+    this.ignoreForDiagnostics =
+        new Set(tsProgram.getSourceFiles().filter(sf => this.host.isShim(sf)));
 
-    this.ignoreForEmit = new Set([this.typeCheckFile]);
+    this.ignoreForEmit = this.host.ignoreForEmit;
   }
 
   /**
