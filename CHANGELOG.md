@@ -1,3 +1,50 @@
+<a name="9.0.3"></a>
+## [9.0.3](https://github.com/angular/angular/compare/9.0.2...9.0.3) (2020-02-27)
+
+
+### Bug Fixes
+
+* **animations:** false positive when detecting Node in Webpack builds ([#35134](https://github.com/angular/angular/issues/35134)) ([224aaae](https://github.com/angular/angular/commit/224aaae)), closes [#35117](https://github.com/angular/angular/issues/35117)
+* **animations:** Remove ɵAnimationDriver from private exports ([#35690](https://github.com/angular/angular/issues/35690)) ([c2dbcd3](https://github.com/angular/angular/commit/c2dbcd3))
+* **compiler:** use FatalDiagnosticError to generate better error messages ([#35244](https://github.com/angular/angular/issues/35244)) ([72664ca](https://github.com/angular/angular/commit/72664ca))
+* **core:** make subclass inherit developer-defined data ([#35105](https://github.com/angular/angular/issues/35105)) ([f5e1faa](https://github.com/angular/angular/commit/f5e1faa))
+* **core:** support sanitizer value in the [style] bindings ([#35564](https://github.com/angular/angular/issues/35564)) ([36dc1c7](https://github.com/angular/angular/commit/36dc1c7)), closes [#35476](https://github.com/angular/angular/issues/35476)
+* **core:** Add `style="{{exp}}"` based interpolation ([#34202](https://github.com/angular/angular/issues/34202)) ([d63ba9c](https://github.com/angular/angular/commit/d63ba9c)), closes [#33575](https://github.com/angular/angular/issues/33575)
+* **core:** add strictLiteralTypes to align core + VE checking of literals ([#35462](https://github.com/angular/angular/issues/35462)) ([628f957](https://github.com/angular/angular/commit/628f957))
+* **core:** better inference for circularly referenced directive types ([#35622](https://github.com/angular/angular/issues/35622)) ([4c2bd64](https://github.com/angular/angular/commit/4c2bd64)), closes [#35372](https://github.com/angular/angular/issues/35372) [#35603](https://github.com/angular/angular/issues/35603) [#35522](https://github.com/angular/angular/issues/35522)
+* **core:** emulate a View Engine type-checking bug with safe navigation ([#35462](https://github.com/angular/angular/issues/35462)) ([02599e4](https://github.com/angular/angular/commit/02599e4))
+* **core:** error in AOT when pipe inherits constructor from injectable that uses DI ([#35468](https://github.com/angular/angular/issues/35468)) ([bb09cd0](https://github.com/angular/angular/commit/bb09cd0)), closes [#35277](https://github.com/angular/angular/issues/35277)
+* **core:** error when accessing NgModuleRef.componentFactoryResolver in constructor ([#35637](https://github.com/angular/angular/issues/35637)) ([d690488](https://github.com/angular/angular/commit/d690488)), closes [#35580](https://github.com/angular/angular/issues/35580)
+* **core:** incorrectly generating shared pure function between null and object literal ([#35481](https://github.com/angular/angular/issues/35481)) ([8a531e2](https://github.com/angular/angular/commit/8a531e2)), closes [#33705](https://github.com/angular/angular/issues/33705) [#35298](https://github.com/angular/angular/issues/35298)
+* **core:** injecting incorrect provider when re-providing injectable with useClass ([#34574](https://github.com/angular/angular/issues/34574)) ([79aaaa3](https://github.com/angular/angular/commit/79aaaa3)), closes [#34110](https://github.com/angular/angular/issues/34110)
+* **core:** provide a more detailed error message for NG6002/NG6003 ([#35620](https://github.com/angular/angular/issues/35620)) ([e6c416f](https://github.com/angular/angular/commit/e6c416f))
+* **language-service:** get the right 'ElementAst' in the nested HTML tag ([#35317](https://github.com/angular/angular/issues/35317)) ([7403ba1](https://github.com/angular/angular/commit/7403ba1))
+* **language-service:** infer context type of structural directives ([#35537](https://github.com/angular/angular/issues/35537)) ([#35561](https://github.com/angular/angular/issues/35561)) ([a491f7e](https://github.com/angular/angular/commit/a491f7e))
+* **language-service:** provide hover for interpolation in attribute value ([#35494](https://github.com/angular/angular/issues/35494)) ([0700279](https://github.com/angular/angular/commit/0700279)), closes [PR#34847](https://github.com/PR/issues/34847)
+* **localize:** improve placeholder mismatch error message ([#35593](https://github.com/angular/angular/issues/35593)) ([1112875](https://github.com/angular/angular/commit/1112875))
+* **localize:** support minified ES5 `$localize` calls ([#35562](https://github.com/angular/angular/issues/35562)) ([bc7a8a8](https://github.com/angular/angular/commit/bc7a8a8)), closes [#35376](https://github.com/angular/angular/issues/35376)
+* **ngcc:** add default config for `angular2-highcharts` ([#35527](https://github.com/angular/angular/issues/35527)) ([aebd662](https://github.com/angular/angular/commit/aebd662)), closes [#35399](https://github.com/angular/angular/issues/35399)
+* **ngcc:** capture path-mapped entry-points that start with same string ([#35592](https://github.com/angular/angular/issues/35592)) ([d83f62d](https://github.com/angular/angular/commit/d83f62d)), closes [#35536](https://github.com/angular/angular/issues/35536)
+* **ngcc:** correctly detect emitted TS helpers in ES5 ([#35191](https://github.com/angular/angular/issues/35191)) ([af4fe3a](https://github.com/angular/angular/commit/af4fe3a))
+* **ngcc:** correctly detect outer aliased class identifiers in ES5 ([#35527](https://github.com/angular/angular/issues/35527)) ([39bd9a7](https://github.com/angular/angular/commit/39bd9a7)), closes [#35399](https://github.com/angular/angular/issues/35399)
+* **ngcc:** handle imports in dts files when processing CommonJS ([#35191](https://github.com/angular/angular/issues/35191)) ([12e3db8](https://github.com/angular/angular/commit/12e3db8)), closes [#34356](https://github.com/angular/angular/issues/34356)
+* **router:** removed unused ApplicationRef dependency ([#35642](https://github.com/angular/angular/issues/35642)) ([2f140f5](https://github.com/angular/angular/commit/2f140f5)), closes [/github.com/angular/angular/commit/5a849829c42330d7e88e83e916e6e36380c97a97#diff-c0baae5e1df628e1a217e8dc38557](https://github.com//github.com/angular/angular/commit/5a849829c42330d7e88e83e916e6e36380c97a97/issues/diff-c0baae5e1df628e1a217e8dc38557)
+* **service-worker:** treat 503 as offline ([#35595](https://github.com/angular/angular/issues/35595)) ([64a415b](https://github.com/angular/angular/commit/64a415b)), closes [#35571](https://github.com/angular/angular/issues/35571)
+
+
+### Features
+
+* **ngcc:** implement source-map flattening ([#35132](https://github.com/angular/angular/issues/35132)) ([0a8e8cd](https://github.com/angular/angular/commit/0a8e8cd))
+* **zone.js** add an tickOptions parameter with property processNewMacroTasksSynchronously. ([#33838](https://github.com/angular/angular/issues/33838)) ([7d2ea93](https://github.com/angular/angular/commit/7d2ea93)), closes [#33799](https://github.com/angular/angular/issues/33799)
+
+
+### Performance Improvements
+
+* **core:** avoid recursive scope recalculation when TestBed.overrideModule is used ([#35454](https://github.com/angular/angular/issues/35454)) ([349539e](https://github.com/angular/angular/commit/349539e))
+* **core:** remove unused event argument in listener instructions ([#35097](https://github.com/angular/angular/issues/35097)) ([afc5b3e](https://github.com/angular/angular/commit/afc5b3e))
+
+
+
 <a name="9.1.0-next.1"></a>
 # [9.1.0-next.1](https://github.com/angular/angular/compare/9.1.0-next.0...9.1.0-next.1) (2020-02-19)
 
