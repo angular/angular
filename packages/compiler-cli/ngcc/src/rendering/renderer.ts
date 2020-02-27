@@ -114,7 +114,7 @@ export class Renderer {
     }
 
     if (compiledFile || switchMarkerAnalysis || isEntryPoint) {
-      return renderSourceAndMap(this.fs, sourceFile, outputText);
+      return renderSourceAndMap(this.logger, this.fs, sourceFile, outputText);
     } else {
       return [];
     }

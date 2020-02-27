@@ -111,7 +111,7 @@ export class DtsRenderer {
     this.dtsFormatter.addImports(
         outputText, importManager.getAllImports(dtsFile.fileName), dtsFile);
 
-    return renderSourceAndMap(this.fs, dtsFile, outputText);
+    return renderSourceAndMap(this.logger, this.fs, dtsFile, outputText);
   }
 
   private getTypingsFilesToRender(
