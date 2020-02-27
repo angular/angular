@@ -12,6 +12,11 @@ This guide explains how to specify metadata and apply available compiler options
 -->
 Angular 애플리케이션은 크게 컴포넌트와 컴포넌트 HTML 템플릿으로 구성됩니다. 그런데 이 컴포넌트와 템플릿은 브라우저가 바로 이해할 수 없기 때문에 Angular 애플리케이션은 브라우저에서 실행되기 전에 컴파일되어야 합니다.
 
+Angular [Ahead-of-time (AOT) 컴파일러](guide/glossary#aot)는 브라우저가 애플리케이션 코드를 받아서 실행하기 _전에_ 미리 HTML 파일과 TypeScript 코드를 브라우저가 실행할 수 있는 JavaScript 코드로 변환합니다.
+이 빌드 과정이 있기 때문에 브라우저가 앱을 렌더링하는 시간도 이전보다 빠릅니다.
+
+이 문서는 AOT 컴파일러를 사용할 때 지정할 수 있는 메타데이터와 컴파일러 옵션에 대해 다룹니다.
+
 <div class="alert is-helpful">
 
   <!--
@@ -23,6 +28,7 @@ Angular 애플리케이션은 크게 컴포넌트와 컴포넌트 HTML 템플릿
 
 {@a why-aot}
 
+<!--
 Here are some reasons you might want to use AOT.
 
 * *Faster rendering*
@@ -45,6 +51,27 @@ Here are some reasons you might want to use AOT.
    AOT compiles HTML templates and components into JavaScript files long before they are served to the client.
    With no templates to read and no risky client-side HTML or JavaScript evaluation,
    there are fewer opportunities for injection attacks.
+-->
+AOT 컴파일러는 이런 점에서 더 좋습니다.
+
+* *렌더링이 빠릅니다.*
+   AOT 컴파일러를 사용하면 애플리케이션을 미리 컴파일해서 제공할 수 있습니다.
+   이 코드는 브라우저가 바로 실행할 수 있는 코드이기 때문에 브라우저가 내려받기만 하면 애플리케이션이 따로 빌드될 때까지 기다릴 필요가 없습니다.
+
+* *비동기 요청횟수가 줄어듭니다.*
+   컴파일러가 애플리케이션 코드를 JavaScript로 컴파일하면 외부 HTML 템플릿 파일이나 CSS 파일을 모두 _인라인으로_ 변환합니다. 따라서 추가 파일을 내려받기 위해 별도로 ajax 요청을 할 필요가 없습니다.
+
+* *내려받아야 하는 Angular 프레임워크 용량이 줄어듭니다.*
+   앱은 이미 컴파일된 상태로 제공되기 때문에 Angular 컴파일러를 내려받아야 할 필요가 없습니다.
+   Angular 컴파일러의 용량은 Angular 프레임워크의 절반 정도에 해당되기 때문에, 이 용량만 빼도 브라우저가 내려받아야 하는 용량은 크게 줄어듭니다.
+
+* *템플릿 에러를 더 빠르게 발견할 수 있습니다.*
+   AOT 컴파일러는 애플리케이션을 빌드할 때 템플릿 바인딩 에러를 확인하고 에러가 발생했을 때 알려줍니다.
+   이 타이밍은 사용자가 앱을 내려받기도 전입니다.
+
+* *더 안전합니다.*
+   AOT 컴파일러가 HTML 템플릿과 컴포넌트를 JavaScript 파일로 변환하는 것은 클라이언트가 앱을 내려받는 시점보다 훨씬 이전입니다.
+   따라서 템플릿을 추가로 요청하거나 클라이언트쪽에서 위험한 HTML 코드나 JavaScript 코드가 실행될 가능성이 없고, 인젝션 공격의 가능성도더  적습니다.
 
 {@a overview}
 
@@ -100,16 +127,23 @@ See the [CLI command reference](cli) and [Building and serving Angular apps](gui
 
 </div>
 
+<!--
 ## How AOT works
+-->
+## AOT 컴파일러가 동작하는 방식
 
+<!--
 The Angular AOT compiler extracts **metadata** to interpret the parts of the application that Angular is supposed to manage.
 You can specify the metadata explicitly in **decorators** such as `@Component()` and `@Input()`, or implicitly in the constructor declarations of the decorated classes.
 The metadata tells Angular how to construct instances of your application classes and interact with them at runtime.
 
-<!--
 In the following example, the `@Component()` metadata object and the class constructor tell Angular how to create and display an instance of `TypicalComponent`.
 -->
-아래 코드에서 `@Component()`에 지정하는 메타데이터 객체와 클래스 생성자는 Angular가 `TypicalComponent`의 인스턴스를 어떻게 생성하고 처리해야 할지 지정하는 용도로 사용됩니다.
+Angular AOT 컴파일러는 애플리케이션을 구성하는 개별 요소를 관리하기 위해 코드에서 **메타데이터(metadata)**를 추출합니다.
+그리고 이 메타데이터는 `@Component()`나 `@Input()`과 같이 **데코레이터**를 사용해서 명시적으로 지정할 수 있으며, 클래스 생성자의 인자에도 지정할 수 있습니다.
+Angular는 이 메타데이터에 지정된 내용을 바탕으로 애플리케이션 클래스의 인스턴스를 구성하며, 실행시점에 어떻게 동작할지 결정합니다.
+
+아래 코드에서 `TypicalComponent` 클래스에 지정된 `@Component()` 데코레이터가 이 용도로 사용되었습니다.
 
 ```typescript
 @Component({
@@ -129,8 +163,12 @@ When it needs to create a `TypicalComponent` instance, Angular calls the factory
 이 코드를 Angular 컴파일러가 처리하면 메타데이터를 추출해서 `TypicalComponent`에 대한 _팩토리_ 를 만듭니다.
 그러면 `TypicalComponent`의 인스턴스가 필요한 시점에 Angular가 팩토리를 실행해서 인스턴스를 생성하며, 이렇게 생성된 인스턴스를 의존성으로 주입합니다.
 
+<!--
 ### Compilation phases
+-->
+### 컴파일 단계
 
+<!--
 There are three phases of AOT compilation.
 * Phase 1 is *code analysis*.
    In this phase, the TypeScript compiler and  *AOT collector* create a representation of the source. The collector does not attempt to interpret the metadata it collects. It represents the metadata as best it can and records errors when it detects a metadata syntax violation.
@@ -140,7 +178,17 @@ There are three phases of AOT compilation.
 
 * Phase 3 is *template type checking*.
    In this optional phase, the Angular *template compiler* uses the TypeScript compiler to validate the binding expressions in templates. You can enable this phase explicitly by setting the `fullTemplateTypeCheck` configuration option; see [Angular compiler options](guide/angular-compiler-options).
+-->
+AOT 컴파일러는 3단계로 동작합니다.
 
+* 1단계는 *코드 분석* 단계입니다.
+   TypeScript 컴파일러와 *AOT 콜렉터* 가 소스 코드에서 필요한 정보를 수집합니다. 이 단계에서 콜렉터가 메타데이터를 직접 처리하지는 않으며, 단지 수집하기만 합니다. 그리고 이렇게 수집한 메타데이터를 최적화하는데, 메타데이터 문법이 잘못되면 이 단계에서 에러를 발생시킵니다.
+
+* 2단계는 *코드 생성* 단계입니다.
+   1단계에서 수집한 메타데이터를 컴파일러의 `StaticReflector`가 처리하면서 메타데이터 유효성을 추가로 검사합니다. 이 때 에러가 추가로 발견되면 역시 에러를 발생시킵니다.
+
+* 3단계는 *템플릿 문법 체크* 단계입니다.
+   이 단계는 생략될 수 있습니다. 이 단계에서는 Angular *템플릿 컴파일러*가 TypeScript 컴파일러를 사용해서 템플릿에 사용된 바인딩 표현식을 검증합니다.
 
 <!--
 ### Metadata restrictions
@@ -149,32 +197,43 @@ There are three phases of AOT compilation.
 
 <!--
 You write metadata in a _subset_ of TypeScript that must conform to the following general constraints:
--->
-메타데이터는 TypeScript의 _하위 집합(subset)_ 이며 보통 다음과 같은 제약사항이 있습니다:
 
-<!--
 * Limit [expression syntax](#expression-syntax) to the supported subset of JavaScript.
 * Only reference exported symbols after [code folding](#code-folding).
 * Only call [functions supported](#supported-functions) by the compiler.
 * Decorated and data-bound class members must be public.
+
+For additional guidelines and instructions on preparing an application for AOT compilation, see [Angular: Writing AOT-friendly applications](https://medium.com/sparkles-blog/angular-writing-aot-friendly-applications-7b64c8afbe3f).
 -->
+메타데이터는 TypeScript의 _하위 집합(subset)_ 이며 보통 다음과 같은 제약사항이 있습니다:
+
 1. JavaScript 문법 중 [표현식(expression syntax)](#expression-syntax)은 일부만 사용할 수 있습니다.
 2. [코드를 폴딩](#code-folding)한 이후에 존재하는 심볼만 참조할 수 있습니다.
 3. 컴파일러가 지원하는 [일부 함수](#supported-functions)만 사용할 수 있습니다.
 4. 데코레이터가 사용되거나 데이터 바인딩되는 클래스 멤버는 public으로 지정되어야 합니다.
 
-For additional guidelines and instructions on preparing an application for AOT compilation, see [Angular: Writing AOT-friendly applications](https://medium.com/sparkles-blog/angular-writing-aot-friendly-applications-7b64c8afbe3f).
+메타데이터의 제약사항이나 애플리케이션을 AOT 빌드하기 위해 필요한 내용에 대해 더 알아보려면 [Angular: Writing AOT-friendly applications](https://medium.com/sparkles-blog/angular-writing-aot-friendly-applications-7b64c8afbe3f) 글을 참고하세요.
 
 <div class="alert is-helpful">
 
+<!--
 Errors in AOT compilation commonly occur because of metadata that does not conform to the compiler's requirements (as described more fully below).
 For help in understanding and resolving these problems, see [AOT Metadata Errors](guide/aot-metadata-errors).
+-->
+AOT 컴파일 과정 중 발생하는 에러의 원인은 일반적으로 컴파일러에 필요한 정보가 일부 입력되지 않았기 때문입니다 (아래에서 자세하게 설명합니다).
+에러가 왜 발생했는지, 어떻게 해결해야 하는지 알아보려면 [AOT 메타데이터 에러](guide/aot-metadata-errors) 문서를 참고하세요.
 
 </div>
 
+<!--
 ### Configuring AOT compilation
+-->
+### AOT 컴파일 설정하기
 
+<!--
 You can provide options in the `tsconfig.json` [TypeScript configuration file](guide/typescript-configuration) that control the compilation process. See [Angular compiler options](guide/angular-compiler-options) for a complete list of available options.
+-->
+컴파일 옵션은 [TypeScript 환경 설정 파일](guide/typescript-configuration)인 `tsconfig.json` 파일에 지정합니다. 사용할 수 있는 옵션 목록은 [Angular 컴파일러 옵션](guide/angular-compiler-options) 문서를 참고하세요.
 
 <!--
 ## Phase 1: Code analysis
@@ -407,12 +466,11 @@ Angular가 제공하는 라이브러리는 모두 이 옵션을 사용하기 때
 <!--
 The AOT compiler does not support [function expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/function)
 and [arrow functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions), also called _lambda_ functions.
+
+Consider the following component decorator:
 -->
 AOT 컴파일러는 [함수 표현식](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/function)과 [화살표 함수 (람다 함수)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions)를 지원하지 않습니다.
 
-<!--
-Consider the following component decorator:
--->
 다음과 같은 컴포넌트 데코레이터가 있다고 합시다:
 
 ```typescript
@@ -426,14 +484,13 @@ Consider the following component decorator:
 The AOT collector does not support the arrow function, `() => new Server()`, in a metadata expression.
 It generates an error node in place of the function.
 When the compiler later interprets this node, it reports an error that invites you to turn the arrow function into an _exported function_.
+
+You can fix the error by converting to this:
 -->
 이 코드에는 AOT 콜렉터가 지원하지 않는 화살표 함수가 `() => new Server()`와 같이 사용되었습니다.
 그러면 이 코드는 제대로 변환되지 못하고 에러 노드로 처리됩니다.
 그리고 이후에 컴파일러가 이 노드를 처리할 때 에러가 발생하기 때문에, 이 화살표 함수는 _export가 사용된 함수_ 로 변경되어야 합니다.
 
-<!--
-You can fix the error by converting to this:
--->
 이 에러는 다음과 같이 수정하면 해결할 수 있습니다:
 
 ```typescript
@@ -447,7 +504,10 @@ export function serverFactory() {
 })
 ```
 
+<!--
 In version 5 and later, the compiler automatically performs this rewriting while emitting the `.js` file.
+-->
+Angular 5버전 부터는 `.js` 파일을 생성할 때 이 문제를 자동으로 처리합니다.
 
 {@a exported-symbols}
 {@a code-folding}
@@ -738,16 +798,23 @@ _콜렉터_ 는 메타데이터를 이해하는 것이 아니라 메타데이터
 그리고 이 과정에서 메타데이터에 사용된 문법에 오류가 있는지도 검사합니다.
 `.mdtadata.json` 파일을 해석해서 코드를 생성하는 것은 컴파일러의 역할입니다.
 
-The compiler understands all syntax forms that the collector supports, but it may reject _syntactically_ correct metadata if the _semantics_ violate compiler rules.
+콜렉터가 처리할 수 있는 문법은 컴파일러도 모두 처리할 수 있습니다. 다만, _문법_ 은 맞지만 _잘못_ 사용된 메타데이터는 컴파일러가 처리하면서 에러로 판단할 수 있습니다.
 
+<!--
 ### Public symbols
+-->
+### public 심볼
 
+<!--
 The compiler can only reference _exported symbols_.
 
 * Decorated component class members must be public. You cannot make an `@Input()` property private or protected.
 * Data bound properties must also be public.
+-->
+컴파일러는 _파일 외부로 오픈된(exported) 심볼_ 만 참조할 수 있습니다.
 
-데이터 바인딩으로 연결된 프로퍼티도 반드시 public이어야 합니다.
+* 컴포넌트 클래스 멤버 중 데코레이터가 사용된 멤버는 반드시 public이어야 합니다. 그래서 `@Input()` 프로퍼티도 private이나 protected로 지정되면 안됩니다.
+* 데이터 바인딩으로 연결된 프로퍼티도 반드시 public이어야 합니다.
 
 <!--
 ```typescript
@@ -762,7 +829,7 @@ export class AppComponent {
 ```
 -->
 ```typescript
-// 잘못된 코드 - title이 private으로 지정되었습니다.
+// BAD CODE - title이 private으로 지정되었습니다.
 @Component({
   selector: 'app-root',
   template: '<h1>{{title}}</h1>'
@@ -774,8 +841,12 @@ export class AppComponent {
 
 {@a supported-functions}
 
+<!--
 ### Supported classes and functions
+-->
+### 클래스, 함수 지원
 
+<!--
 The collector can represent a function call or object creation with `new` as long as the syntax is valid.
 The compiler, however, can later refuse to generate a call to a _particular_ function or creation of a _particular_ object.
 
@@ -792,14 +863,41 @@ The compiler can only create instances of certain classes, supports only core de
 
    Factory functions must be exported, named functions.
    The AOT compiler does not support lambda expressions ("arrow functions") for factory functions.
+-->
+콜렉터는 함수 실행이나 `new` 키워드를 사용한 객체 생성 문법을 지원합니다.
+하지만 _일부_ 함수나 _일부_ 객체 생성 코드는 컴파일러가 처리하지 않는 경우도 있습니다.
+
+컴파일러는 특정 클래스의 인스턴스를 생성하거나 코어 데코레이터만 지원하며, 표현식을 반환하는 매크로(함수나 static 메소드)만을 지원합니다.
+
+* 인스턴스 생성
+
+    `@angular/core`가 제공하는 `InjectionToken` 클래스의 인스턴스 생성만 가능합니다.
+
+* 사용할 수 있는 데코레이터
+
+    [`@angular/core` 모듈에 있는 Angular 데코레이터](api/core#decorators)만 지원합니다.
+
+* 함수 실행
+
+   팩토리 함수는 반드시 `export`로 지정되어야 하며, 함수의 이름이 있어야 합니다.
+   이 때 람다 표현식(lambda expressions, arrow functions)은 사용할 수 없습니다.
 
 {@a function-calls}
+<!--
 ### Functions and static method calls
+-->
+### 함수 실행, 스태틱 메소드 실행
 
+<!--
 The collector accepts any function or static method that contains a single `return` statement.
 The compiler, however, only supports macros in the form of functions or static methods that return an *expression*.
 
 For example, consider the following function:
+-->
+콜렉터는 일반 함수나 `return` 구문이 하나만 있는 스태틱 메소드를 처리할 수 있습니다.
+하지만 컴파일러는 *표현식(expression)*을 반환하는 함수나 스태틱 메소드만 지원합니다.
+
+다음과 같은 함수가 있다고 합시다:
 
 ```typescript
 export function wrapInArray<T>(value: T): T[] {
@@ -895,39 +993,69 @@ export const ɵ0 = () => new TypicalServer();
 export class TypicalModule {}
 ```
 
+<!--
 This allows the compiler to generate a reference to `ɵ0` in the factory without having to know what the value of `ɵ0` contains.
 
 The compiler does the rewriting during the emit of the `.js` file.
 It does not, however, rewrite the `.d.ts` file, so TypeScript doesn't recognize it as being an export. and it does not interfere with the ES module's exported API.
+-->
+
 
 
 {@a binding-expression-validation}
+<!--
 ## Phase 3: Template type checking
+-->
+### 3단계: 템플릿 타입 체크
 
+<!--
 One of the Angular compiler's most helpful features is the ability to type-check expressions within templates, and catch any errors before they cause crashes at runtime.
 In the template type-checking phase, the Angular template compiler uses the TypeScript compiler to validate the binding expressions in templates.
 
 Enable this phase explicitly by adding the compiler option `"fullTemplateTypeCheck"` in the `"angularCompilerOptions"` of the project's `tsconfig.json`
 (see [Angular Compiler Options](guide/angular-compiler-options)).
+-->
+템플릿 표현식에 사용된 코드의 타입을 체크하는 기능은 Angular 컴파일러가 제공하는 기능 중 가장 훌륭한 기능이라고도 할 수 있습니다.
+이 기능을 활용하면 실행 시점에 발생하는 문제로 앱이 종료되는 것을 미리 방지할 수 있기 때문입니다.
+이 단계에서는 Angular 템플릿 컴파일러가 TypeScript 컴파일러를 활용해서 템플릿에 사용된 바인딩 표현식의 유효성을 검증합니다.
+
+이 단계는 프로젝트의 환경설정 파일 `tsconfig.json`의 컴파일러 옵션 섹션인 `"angularCompilerOptions"`에 `"fullTemplateTypeCheck"` 옵션을 지정하면 명시적으로 활성화할 수 있습니다.
+자세한 내용은 [Angular 컴파일러 옵션](guide/angular-compiler-options) 문서를 참고하세요.
 
 <div class="alert is-helpful">
 
+<!--
 In [Angular Ivy](guide/ivy), the template type checker has been completely rewritten to be more capable as well as stricter, meaning it can catch a variety of new errors that the previous type checker would not detect.
 
 As a result, templates that previously compiled under View Engine can fail type checking under Ivy. This can happen because Ivy's stricter checking catches genuine errors, or because application code is not typed correctly, or because the application uses libraries in which typings are inaccurate or not specific enough.
 
 This stricter type checking is not enabled by default in version 9, but can be enabled by setting the `strictTemplates` configuration option.
 We do expect to make strict type checking the default in the future.
+-->
+[Angular Ivy](guide/ivy)에 사용된 템플릿 타입 체커는 이전 버전보다 강력한 룰을 적용할 수 있도록 완전히 새로 작성되었습니다.
+이제는 이전 버전에서 발견하지 못했던 에러도 확실하게 검출할 수 있습니다.
+
+다만, 이렇게 변경되면서 이전의 View Engine에서 정상 컴파일되었던 템플릿이 Ivy에서는 컴파일되지 않을 수 있습니다.
+이것은 새로운 템플릿 엔진인 Angular Ivy가 검사하는 룰이 좀 더 강력해진 것이 직접적인 원인이지만, 애플리케이션 코드의 타입이 제대로 지정되지 않았거나, 타입정보가 부족한 라이브러리를 사용했기 때문에 발생하는 문제일 수도 있습니다.
+
+Angular 9버전의 기본 설정은 좀 더 깐깐한 타입 체크 기능을 사용하지 않는 것입니다.
+아직까지는 컴파일러 설정 파일에 `strictTemplates` 옵션을 지정해야 활성화할 수 있지만, 언젠가는 이 방식이 기본이 되기를 바랍니다.
 
 <!-- For more information about type-checking options, and about improvements to template type checking in version 9 and above, see [Template type checking](guide/template-type-checking). -->
 
 </div>
 
+<!--
 Template validation produces error messages when a type error is detected in a template binding
 expression, similar to how type errors are reported by the TypeScript compiler against code in a `.ts`
 file.
 
 For example, consider the following component:
+-->
+템플릿의 유효성을 검사하다가 에러가 발생하면 이 에러가 어디서 발생했는지 콘솔에 표시됩니다.
+TypeScript 컴파일러로 `.ts` 파일을 컴파일하다가 에러를 확인하는 것과 비슷합니다.
+
+다음과 같은 컴포넌트 코드를 봅시다:
 
 ```typescript
   @Component({
@@ -954,27 +1082,29 @@ generated by the template compiler that holds contents of the `MyComponent` clas
 The compiler never writes this file to disk.
 The line and column numbers are relative to the template string in the `@Component` annotation of the class, `MyComponent` in this case.
 If a component uses `templateUrl` instead of `template`, the errors are reported in the HTML file referenced by the `templateUrl` instead of a synthetic file.
--->
-에러 메시지에 표시된 파일 이름은 `my.component.ts.MyComponent.html`인데, 이 내용을 해석해 보면 `MyComponent` 클래스가 정의된 코드의 템플릿에서 에러가 발생했다는 것을 확인할 수 있습니다.
-컴파일러는 템플릿 파일을 디스크에 따로 저장하지 않습니다.
-그리고 에러 메시지로 출력되는 에러 위치는 `@Component` 어노테이션을 기준으로 한 상대 위치로 표시됩니다.
-컴포넌트에 `template` 대신 `templateUrl`을 사용했다면, 에러 메시지는 컴포넌트 클래스 파일 대신 HTML 파일을 가리키는 방식으로 출력됩니다.
 
-<!--
 The error location is the beginning of the text node that contains the interpolation expression with the error.
 If the error is in an attribute binding such as `[value]="person.address.street"`, the error
 location is the location of the attribute that contains the error.
 
 The validation uses the TypeScript type checker and the options supplied to the TypeScript compiler to control how detailed the type validation is.
 For example, if the `strictTypeChecks` is specified, the error
-```my.component.ts.MyComponent.html(1,1): : Object is possibly 'undefined'```
+// ```my.component.ts.MyComponent.html(1,1): : Object is possibly 'undefined'```
 is reported as well as the above error message.
 -->
+에러 메시지에 표시된 파일 이름은 `my.component.ts.MyComponent.html`인데, 이 내용을 해석해 보면 `MyComponent` 클래스가 정의된 코드의 템플릿에서 에러가 발생했다는 것을 확인할 수 있습니다.
+컴파일러는 템플릿 파일을 디스크에 따로 저장하지 않습니다.
+그리고 에러 메시지로 출력되는 에러 위치는 `@Component` 어노테이션을 기준으로 한 상대 위치로 표시됩니다.
+컴포넌트에 `template` 대신 `templateUrl`을 사용했다면, 에러 메시지는 컴포넌트 클래스 파일 대신 HTML 파일을 가리키는 방식으로 출력됩니다.
+
 위 코드에서 에러가 발생한 위치는 문자열 바인딩이 사용된 첫번째 텍스트 노드입니다.
 에러가 `[value]="person.address.street"`와 같은 어트리뷰트 바인딩에서 발생했다면 에러가 발생한 위치로 어트리뷰트의 위치가 표시됩니다.
 
 템플릿 표현식의 유효성을 검사하는 로직은 TypeScript가 제공하는 타입 체커를 활용하기 때문에 TypeScript 컴파일러에 사용할 수 있는 옵션은 이 단계에서도 사용할 수 있습니다.
-그래서 `strictTypeChecks` 옵션이 지정되면 위 코드를 처리하면서 ```my.component.ts.MyComponent.html(1,1): : Object is possibly 'undefined'``` 라는 에러가 출력됩니다.
+그래서 `strictTypeChecks` 옵션이 지정되면 위 코드를 처리하면서
+```my.component.ts.MyComponent.html(1,1): : Object is possibly 'undefined'```
+라는 에러가 출력됩니다.
+
 
 <!--
 ### Type narrowing
@@ -1000,7 +1130,10 @@ For example, to avoid `Object is possibly 'undefined'` error in the template abo
   }
 ```
 
+<!--
 Using `*ngIf` allows the TypeScript compiler to infer that the `person` used in the binding expression will never be `undefined`.
+-->
+`*ngIf`를 사용하면 TypeScript 컴파일러가 `person` 객체의 타입을 추론할 수 있기 때문에 이 객체가 `undefined`라면 바인딩 표현식도 실행되지 않습니다.
 
 <!--
 #### Custom `ngIf` like directives
@@ -1017,7 +1150,10 @@ Directives that behave like `*ngIf` can declare that they want the same treatmen
     public static ngIfUseIfTypeGuard: void;
 ```
 
+<!--
 This declares that the input property `ngIf` of the `NgIf` directive should be treated as a guard to the use of its template, implying that the template will only be instantiated if the `ngIf` input property is true.
+-->
+`ngIf`를 사용하면 `ngIf`의 입력 프로퍼티에 해당하는 값이 참으로 평가될 때만 관련 코드가 동작하기 때문에 템플릿 안에서 가드(guard)처럼 활용할 수 있습니다.
 
 <!--
 ### Non-null type assertion operator
