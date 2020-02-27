@@ -55,8 +55,6 @@ export function throwErrorIfNoChangesMode(
   }
   // TODO: include debug context, see `viewDebugError` function in
   // `packages/core/src/view/errors.ts` for reference.
-  // tslint:disable-next-line
-  debugger;  // Left intentionally for better debugger experience.
   throw new Error(msg);
 }
 
