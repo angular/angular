@@ -4,6 +4,7 @@
   bottom: 0px;
   position: fixed;
   width: 100%;
+  height: 20px;
 }
 
 .btn-node {
@@ -14,4 +15,3 @@
   line-height: 20px;
   width: auto;
 }
-
