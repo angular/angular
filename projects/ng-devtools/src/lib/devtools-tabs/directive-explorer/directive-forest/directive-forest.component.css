@@ -14,7 +14,7 @@
   min-height: 20px !important;
   cursor: default;
   font-family: Menlo, monospace;
-  margin-left: 2px;
+  margin: 2px;
 }
 
 :host /deep/ .mat-tree-node,
