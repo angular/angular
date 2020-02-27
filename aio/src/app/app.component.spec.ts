@@ -792,7 +792,7 @@ describe('AppComponent', () => {
           const searchService = TestBed.inject(SearchService) as Partial<SearchService> as MockSearchService;
 
           const results = [
-            { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '', deprecated: false }
+            { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '', deprecated: false, topics: '' }
           ];
 
           searchService.searchResults.next({ query: 'something', results });

@@ -37,21 +37,21 @@ describe('SearchResultsComponent', () => {
 
   /** Get a full set of test results. "Take" what you need */
   beforeEach(() => {
-    apiD = { path: 'api/d', title: 'API D', deprecated: false, keywords: '', titleWords: '', type: '' };
-    apiC = { path: 'api/c', title: 'API C', deprecated: false, keywords: '', titleWords: '', type: '' };
-    guideA = { path: 'guide/a', title: 'Guide A', deprecated: false, keywords: '', titleWords: '', type: '' };
-    guideB = { path: 'guide/b', title: 'Guide B', deprecated: false, keywords: '', titleWords: '', type: '' };
-    guideAC = { path: 'guide/a/c', title: 'Guide A - C', deprecated: false, keywords: '', titleWords: '', type: '' };
-    guideE =  { path: 'guide/e', title: 'Guide e', deprecated: false, keywords: '', titleWords: '', type: '' };
-    guideF =  { path: 'guide/f', title: 'Guide f', deprecated: false, keywords: '', titleWords: '', type: '' };
-    guideG =  { path: 'guide/g', title: 'Guide g', deprecated: false, keywords: '', titleWords: '', type: '' };
-    guideH =  { path: 'guide/h', title: 'Guide h', deprecated: false, keywords: '', titleWords: '', type: '' };
-    guideI =  { path: 'guide/i', title: 'Guide i', deprecated: false, keywords: '', titleWords: '', type: '' };
-    guideJ =  { path: 'guide/j', title: 'Guide j', deprecated: false, keywords: '', titleWords: '', type: '' };
-    guideK =  { path: 'guide/k', title: 'Guide k', deprecated: false, keywords: '', titleWords: '', type: '' };
-    guideL =  { path: 'guide/l', title: 'Guide l', deprecated: false, keywords: '', titleWords: '', type: '' };
-    guideM =  { path: 'guide/m', title: 'Guide m', deprecated: false, keywords: '', titleWords: '', type: '' };
-    guideN =  { path: 'guide/n', title: 'Guide n', deprecated: false, keywords: '', titleWords: '', type: '' };
+    apiD = { path: 'api/d', title: 'API D', deprecated: false, keywords: '', titleWords: '', type: '', topics: '' };
+    apiC = { path: 'api/c', title: 'API C', deprecated: false, keywords: '', titleWords: '', type: '', topics: '' };
+    guideA = { path: 'guide/a', title: 'Guide A', deprecated: false, keywords: '', titleWords: '', type: '', topics: '' };
+    guideB = { path: 'guide/b', title: 'Guide B', deprecated: false, keywords: '', titleWords: '', type: '', topics: '' };
+    guideAC = { path: 'guide/a/c', title: 'Guide A - C', deprecated: false, keywords: '', titleWords: '', type: '', topics: '' };
+    guideE =  { path: 'guide/e', title: 'Guide e', deprecated: false, keywords: '', titleWords: '', type: '', topics: '' };
+    guideF =  { path: 'guide/f', title: 'Guide f', deprecated: false, keywords: '', titleWords: '', type: '', topics: '' };
+    guideG =  { path: 'guide/g', title: 'Guide g', deprecated: false, keywords: '', titleWords: '', type: '', topics: '' };
+    guideH =  { path: 'guide/h', title: 'Guide h', deprecated: false, keywords: '', titleWords: '', type: '', topics: '' };
+    guideI =  { path: 'guide/i', title: 'Guide i', deprecated: false, keywords: '', titleWords: '', type: '', topics: '' };
+    guideJ =  { path: 'guide/j', title: 'Guide j', deprecated: false, keywords: '', titleWords: '', type: '', topics: '' };
+    guideK =  { path: 'guide/k', title: 'Guide k', deprecated: false, keywords: '', titleWords: '', type: '', topics: '' };
+    guideL =  { path: 'guide/l', title: 'Guide l', deprecated: false, keywords: '', titleWords: '', type: '', topics: '' };
+    guideM =  { path: 'guide/m', title: 'Guide m', deprecated: false, keywords: '', titleWords: '', type: '', topics: '' };
+    guideN =  { path: 'guide/n', title: 'Guide n', deprecated: false, keywords: '', titleWords: '', type: '', topics: '' };
 
     standardResults = [
       guideA, apiD, guideB, guideAC, apiC, guideN, guideM, guideL, guideK, guideJ, guideI, guideH, guideG, guideF, guideE,
@@ -80,13 +80,13 @@ describe('SearchResultsComponent', () => {
 
   it('should special case results that are top level folders', () => {
     setSearchResults('', [
-      { path: 'tutorial', title: 'Tutorial index', type: '', keywords: '', titleWords: '', deprecated: false },
-      { path: 'tutorial/toh-pt1', title: 'Tutorial - part 1', type: '', keywords: '', titleWords: '', deprecated: false },
+      { path: 'tutorial', title: 'Tutorial index', type: '', keywords: '', titleWords: '', deprecated: false, topics: '' },
+      { path: 'tutorial/toh-pt1', title: 'Tutorial - part 1', type: '', keywords: '', titleWords: '', deprecated: false, topics: '' },
     ]);
     expect(component.searchAreas).toEqual([
       { name: 'tutorial', priorityPages: [
-        { path: 'tutorial', title: 'Tutorial index', type: '', keywords: '', titleWords: '', deprecated: false },
-        { path: 'tutorial/toh-pt1', title: 'Tutorial - part 1', type: '', keywords: '', titleWords: '', deprecated: false },
+        { path: 'tutorial', title: 'Tutorial index', type: '', keywords: '', titleWords: '', deprecated: false, topics: '' },
+        { path: 'tutorial/toh-pt1', title: 'Tutorial - part 1', type: '', keywords: '', titleWords: '', deprecated: false, topics: '' },
       ], pages: [] }
     ]);
   });
@@ -116,20 +116,20 @@ describe('SearchResultsComponent', () => {
 
   it('should put search results with no containing folder into the default area (other)', () => {
     const results = [
-      { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '', deprecated: false }
+      { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '', deprecated: false, topics: '' }
     ];
 
     setSearchResults('', results);
     expect(component.searchAreas).toEqual([
       { name: 'other', priorityPages: [
-        { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '', deprecated: false }
+        { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '', deprecated: false, topics: '' }
       ], pages: [] }
     ]);
   });
 
   it('should omit search results with no title', () => {
     const results = [
-      { path: 'news', title: '', type: 'marketing', keywords: '', titleWords: '', deprecated: false }
+      { path: 'news', title: '', type: 'marketing', keywords: '', titleWords: '', deprecated: false, topics: '' }
     ];
 
     setSearchResults('something', results);
@@ -179,7 +179,7 @@ describe('SearchResultsComponent', () => {
       component.resultSelected.subscribe((result: SearchResult) => selected = result);
 
       selected = null;
-      searchResult = { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '', deprecated: false };
+      searchResult = { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '', deprecated: false, topics: '' };
       setSearchResults('something', [searchResult]);
 
       fixture.detectChanges();
