@@ -2,14 +2,16 @@
   {
     "startDate": "2020-01-01",
     "endDate": "2020-03-31",
-    "message": "Join us for ng-conf<br/>April 1st-3rd, 2020",
+    "!message": "Join us for ng-conf<br/>April 1st-3rd, 2020",
+    "message": "ng-conf에 참여하세요.<br/>2020. 4. 1 ~ 3",
     "imageUrl": "generated/images/marketing/home/ng-conf.png",
     "linkUrl": "https://ng-conf.org/?utm_source=angular.io&utm_medium=referral"
   },
   {
     "startDate": "2020-04-01",
     "endDate": "2020-04-03",
-    "message": "Watch ng-conf live stream <br/>April 1st-3rd, 2020",
+    "!message": "Watch ng-conf live stream <br/>April 1st-3rd, 2020",
+    "message": "ng-conf 라이브 영상을 확인해 보세요.<br/>2020. 4. 1 ~ 3",
     "imageUrl": "generated/images/marketing/home/ng-conf.png",
     "linkUrl": "https://www.ng-conf.org/livestream/?utm_source=angular.io&utm_medium=referral"
   },
@@ -29,7 +31,7 @@
   },
   {
     "startDate": "2019-01-01",
-    "endDate": "2019-12-31",
+    "endDate": "2020-12-31",
     "message": "angular.kr<br/>한국어 가이드 오픈",
     "imageUrl": "generated/images/marketing/home/angular-kr.png",
     "linkUrl": "http://han41858.tistory.com/48"

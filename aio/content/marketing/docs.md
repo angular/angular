@@ -3,14 +3,16 @@
 -->
 <h1 class="no-toc">Angular 가이드문서 소개</h1>
 
+<!--
 Angular is an app-design framework and development platform for creating efficient and sophisticated single-page apps.
 
-<!--
 These Angular docs help you learn and use the Angular framework and development platform, from your first app to optimizing complex single-page apps for enterprises.
 Tutorials and guides include downloadable examples to accelerate your projects.
 -->
+Angular는 단일 페이지 애플리케이션을 효율적이고 체계적으로 만들기 위해 개발된 프레임워크이자 개발 플랫폼입니다.
+
 Angular 가이드 문서는 프로토타입부터 대규모 기업용 앱에도 활용할 수 있는 Angular 플랫폼과 프레임워크에 대해 소개합니다.
-튜토리얼과 가이드문서에서 설명하는 예제 코드는 다운받아 로컬 환경에서 직접 실행해볼 수도 있습니다.
+튜토리얼과 가이드문서에서 설명하는 예제 코드는 다운받아 로컬 환경에서 직접 실행해 볼 수 있습니다.
 
 <div class="card-container">
   <!--
@@ -87,7 +89,7 @@ for information about submission guidelines.
 Our community values respectful, supportive communication.
 Please consult and adhere to the [Code of Conduct](https://github.com/angular/code-of-conduct/blob/master/CODE_OF_CONDUCT.md "Contributor code of conduct").
 -->
-<h4>우리는 여러분과 멀리 있지 않습니다!</h4>
+<h4>우리는 멀리 있지 않습니다!</h4>
 
 개발자들의 의견을 듣고 싶습니다. [문제가 있거나 문서에 반영하고 싶은 내용이 있다면 이곳에 올려주세요.](https://github.com/angular/angular/issues/new/choose "Angular GitHub repository new issue form")
 
