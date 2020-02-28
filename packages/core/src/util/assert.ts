@@ -93,8 +93,6 @@ export function assertDefined<T>(actual: T, msg: string) {
 export function throwError(msg: string): never;
 export function throwError(msg: string, actual: any, expected: any, comparison: string): never;
 export function throwError(msg: string, actual?: any, expected?: any, comparison?: string): never {
-  // tslint:disable-next-line
-  debugger;  // Left intentionally for better debugger experience.
   throw new Error(
       `ASSERTION ERROR: ${msg}` +
       (comparison == null ? '' : ` [Expected=> ${expected} ${comparison} ${actual} <=Actual]`));
