@@ -45,8 +45,6 @@ export class DirectiveForestComponent {
 
   @ViewChild(CdkTree) tree: CdkTree<any>;
 
-  @ViewChild(FilterComponent) filterComponent;
-
   filterRegex = new RegExp('.^');
   currentlyMatchedIndex = -1;
 
@@ -107,11 +105,10 @@ export class DirectiveForestComponent {
   }
 
   @HostListener('document:keydown.ArrowUp', ['$event'])
-  navigateUp(evnt: KeyboardEvent): void {
-    if (this.invalidArrowEvent(evnt)) {
+  navigateUp(event: KeyboardEvent): void {
+    if (this._invalidArrowEvent(event)) {
       return;
     }
-    evnt.preventDefault();
     const data = this.dataSource.data;
     let prevIdx = data.findIndex(e => e.id === this.selectedNode.id) - 1;
     if (prevIdx < 0) {
@@ -127,11 +124,12 @@ export class DirectiveForestComponent {
       prevNode = data[prevIdx];
     }
     this.select(data[prevIdx]);
+    event.preventDefault();
   }
 
   @HostListener('document:keydown.ArrowDown', ['$event'])
-  navigateDown(evnt: KeyboardEvent): void {
-    if (this.invalidArrowEvent(evnt)) {
+  navigateDown(event: KeyboardEvent): void {
+    if (this._invalidArrowEvent(event)) {
       return;
     }
     const data = this.dataSource.data;
@@ -152,29 +150,29 @@ export class DirectiveForestComponent {
       return;
     }
     this.select(data[idx]);
-    evnt.preventDefault();
+    event.preventDefault();
   }
 
   @HostListener('document:keydown.ArrowLeft', ['$event'])
-  collapseCurrent(evnt: KeyboardEvent): void {
-    if (this.invalidArrowEvent(evnt)) {
+  collapseCurrent(event: KeyboardEvent): void {
+    if (this._invalidArrowEvent(event)) {
       return;
     }
     this.treeControl.collapse(this.selectedNode);
-    evnt.preventDefault();
+    event.preventDefault();
   }
 
   @HostListener('document:keydown.ArrowRight', ['$event'])
-  expandCurrent(evnt: KeyboardEvent): void {
-    if (this.invalidArrowEvent(evnt)) {
+  expandCurrent(event: KeyboardEvent): void {
+    if (this._invalidArrowEvent(event)) {
       return;
     }
     this.treeControl.expand(this.selectedNode);
-    evnt.preventDefault();
+    event.preventDefault();
   }
 
-  invalidArrowEvent(event: KeyboardEvent): boolean {
-    return event.target === this.filterComponent.filterElement.nativeElement || !this.selectedNode;
+  private _invalidArrowEvent(event: KeyboardEvent): boolean {
+    return (event.target as Element).tagName === 'INPUT' || !this.selectedNode;
   }
 
   isSelected(node: FlatNode): boolean {
