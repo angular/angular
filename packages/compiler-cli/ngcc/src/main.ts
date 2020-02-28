@@ -33,7 +33,7 @@ import {ParallelTaskQueue} from './execution/task_selection/parallel_task_queue'
 import {SerialTaskQueue} from './execution/task_selection/serial_task_queue';
 import {ConsoleLogger, LogLevel} from './logging/console_logger';
 import {Logger} from './logging/logger';
-import {hasBeenProcessed, markAsProcessed} from './packages/build_marker';
+import {hasBeenProcessed} from './packages/build_marker';
 import {NgccConfiguration} from './packages/configuration';
 import {EntryPoint, EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from './packages/entry_point';
 import {makeEntryPointBundle} from './packages/entry_point_bundle';
@@ -207,6 +207,12 @@ export function mainNgcc(
       }
 
       for (const formatProperty of propertiesToProcess) {
+        if (hasBeenProcessed(entryPoint.packageJson, formatProperty)) {
+          // The format-path which the property maps to is already processed - nothing to do.
+          logger.debug(`Skipping ${entryPoint.name} : ${formatProperty} (already compiled).`);
+          continue;
+        }
+
         const formatPropertiesToMarkAsProcessed = equivalentPropertiesMap.get(formatProperty) !;
         tasks.push({entryPoint, formatProperty, formatPropertiesToMarkAsProcessed, processDts});
 
@@ -254,13 +260,6 @@ export function mainNgcc(
         throw new Error(
             `Invariant violated: No format-path or format for ${entryPoint.path} : ` +
             `${formatProperty} (formatPath: ${formatPath} | format: ${format})`);
-      }
-
-      // The format-path which the property maps to is already processed - nothing to do.
-      if (hasBeenProcessed(packageJson, formatProperty)) {
-        logger.debug(`Skipping ${entryPoint.name} : ${formatProperty} (already compiled).`);
-        onTaskCompleted(task, TaskProcessingOutcome.AlreadyProcessed);
-        return;
       }
 
       const bundle = makeEntryPointBundle(
