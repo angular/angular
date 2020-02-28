@@ -846,20 +846,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // find directives matching on a given <ng-template> node
     this.matchDirectives(NG_TEMPLATE_TAG_NAME, template);
 
-    const attrs: t.TextAttribute[] = [];
-    const i18nAttrs: (t.TextAttribute | t.BoundAttribute)[] = [];
-
-    for (const attr of template.attributes) {
-      if (attr.i18n) {
-        i18nAttrs.push(attr);
-      } else {
-        attrs.push(attr);
-      }
-    }
-
     // prepare attributes parameter (including attributes used for directive matching)
+    // TODO (FW-1942): exclude i18n attributes from the main attribute list and pass them
+    // as an `i18nAttrs` argument of the `getAttributeExpressions` function below.
     const attrsExprs: o.Expression[] = this.getAttributeExpressions(
-        attrs, template.inputs, template.outputs, undefined, template.templateAttrs, i18nAttrs);
+        template.attributes, template.inputs, template.outputs, undefined, template.templateAttrs,
+        undefined);
     parameters.push(this.addAttrsToConsts(attrsExprs));
 
     // local refs (ex.: <ng-template #foo>)
@@ -898,15 +890,20 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       return trimTrailingNulls(parameters);
     });
 
-    if (i18nAttrs.length) {
-      this.i18nAttributesInstruction(templateIndex, i18nAttrs, template.sourceSpan);
-    }
-
     // handle property bindings e.g. ɵɵproperty('ngForOf', ctx.items), et al;
     this.templatePropertyBindings(templateIndex, template.templateAttrs);
 
-    // Only add normal input/output binding instructions on explicit ng-template elements.
+    // Only add normal input/output binding instructions on explicit <ng-template> elements.
     if (template.tagName === NG_TEMPLATE_TAG_NAME) {
+      // Add i18n attributes that may act as inputs to directives. If such attributes are present,
+      // generate `i18nAttributes` instruction. Note: we generate it only for explicit <ng-template>
+      // elements, in case of inline templates, corresponding instructions will be generated in the
+      // nested template function.
+      const i18nAttrs: t.TextAttribute[] = template.attributes.filter(attr => !!attr.i18n);
+      if (i18nAttrs.length > 0) {
+        this.i18nAttributesInstruction(templateIndex, i18nAttrs, template.sourceSpan);
+      }
+
       // Add the input bindings
       this.templatePropertyBindings(templateIndex, template.inputs);
       // Generate listeners for directive output
