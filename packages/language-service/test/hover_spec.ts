@@ -6,109 +6,276 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import 'reflect-metadata';
-
 import * as ts from 'typescript';
 
 import {createLanguageService} from '../src/language_service';
-import {Hover} from '../src/types';
 import {TypeScriptServiceHost} from '../src/typescript_host';
 
-import {toh} from './test_data';
 import {MockTypescriptHost} from './test_utils';
 
+const TEST_TEMPLATE = '/app/test.ng';
+const PARSING_CASES = '/app/parsing-cases.ts';
+
 describe('hover', () => {
-  let documentRegistry = ts.createDocumentRegistry();
-  let mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts'], toh);
-  let service = ts.createLanguageService(mockHost, documentRegistry);
-  let ngHost = new TypeScriptServiceHost(mockHost, service);
-  let ngService = createLanguageService(ngHost);
-  ngHost.setSite(ngService);
+  const mockHost = new MockTypescriptHost(['/app/main.ts']);
+  const tsLS = ts.createLanguageService(mockHost);
+  const ngLSHost = new TypeScriptServiceHost(mockHost, tsLS);
+  const ngLS = createLanguageService(ngLSHost);
 
+  beforeEach(() => { mockHost.reset(); });
 
-  it('should be able to find field in an interpolation', () => {
-    hover(
-        ` @Component({template: '{{«name»}}'}) export class MyComponent { name: string; }`,
-        'property name of MyComponent');
-  });
-
-  it('should be able to find a field in a attribute reference', () => {
-    hover(
-        ` @Component({template: '<input [(ngModel)]="«name»">'}) export class MyComponent { name: string; }`,
-        'property name of MyComponent');
-  });
-
-  it('should be able to find a method from a call', () => {
-    hover(
-        ` @Component({template: '<div (click)="«ΔmyClickΔ()»;"></div>'}) export class MyComponent { myClick() { }}`,
-        'method myClick of MyComponent');
-  });
-
-  it('should be able to find a field reference in an *ngIf', () => {
-    hover(
-        ` @Component({template: '<div *ngIf="«include»"></div>'}) export class MyComponent { include = true;}`,
-        'property include of MyComponent');
-  });
-
-  it('should be able to find a reference to a component', () => {
-    hover(
-        ` @Component({template: '«<ΔtestΔ-comp></test-comp>»'}) export class MyComponent { }`,
-        'component TestComponent');
-  });
-
-  it('should be able to find an event provider', () => {
-    hover(
-        ` @Component({template: '<test-comp «(ΔtestΔ)="myHandler()"»></div>'}) export class MyComponent { myHandler() {} }`,
-        'event testEvent of TestComponent');
-  });
-
-  it('should be able to find an input provider', () => {
-    hover(
-        ` @Component({template: '<test-comp «[ΔtcNameΔ]="name"»></div>'}) export class MyComponent { name = 'my name'; }`,
-        'property name of TestComponent');
-  });
-
-  it('should be able to ignore a reference declaration', () => {
-    addCode(
-        ` @Component({template: '<div #«chart»></div>'}) export class MyComponent {  }`,
-        fileName => {
-          const markers = mockHost.getReferenceMarkers(fileName) !;
-          const hover = ngService.getHoverAt(fileName, markers.references.chart[0].start);
-          expect(hover).toBeUndefined();
-        });
-  });
-
-  function hover(code: string, hoverText: string) {
-    addCode(code, fileName => {
-      let tests = 0;
-      const markers = mockHost.getReferenceMarkers(fileName) !;
-      const keys = Object.keys(markers.references).concat(Object.keys(markers.definitions));
-      for (const referenceName of keys) {
-        const references = (markers.references[referenceName] ||
-                            []).concat(markers.definitions[referenceName] || []);
-        for (const reference of references) {
-          tests++;
-          const hover = ngService.getHoverAt(fileName, reference.start);
-          if (!hover) throw new Error(`Expected a hover at location ${reference.start}`);
-          expect(hover.span).toEqual(reference);
-          expect(toText(hover)).toEqual(hoverText);
-        }
-      }
-      expect(tests).toBeGreaterThan(0);  // If this fails the test is wrong.
+  describe('location of hover', () => {
+    it('should find members in a text interpolation', () => {
+      mockHost.override(TEST_TEMPLATE, '<div>{{«title»}}</div>');
+      const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'title');
+      const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+      expect(quickInfo).toBeTruthy();
+      const {textSpan, displayParts} = quickInfo !;
+      expect(textSpan).toEqual(marker);
+      expect(toText(displayParts)).toBe('(property) TemplateReference.title: string');
     });
-  }
 
-  function addCode(code: string, cb: (fileName: string, content?: string) => void) {
-    const fileName = '/app/app.component.ts';
-    const originalContent = mockHost.getFileContent(fileName);
-    const newContent = originalContent + code;
-    mockHost.override(fileName, originalContent + code);
-    try {
-      cb(fileName, newContent);
-    } finally {
-      mockHost.override(fileName, undefined !);
-    }
-  }
+    it('should find members in an attribute interpolation', () => {
+      mockHost.override(TEST_TEMPLATE, `<div string-model model="{{«title»}}"></div>`);
+      const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'title');
+      const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+      expect(quickInfo).toBeTruthy();
+      const {textSpan, displayParts} = quickInfo !;
+      expect(textSpan).toEqual(marker);
+      expect(toText(displayParts)).toBe('(property) TemplateReference.title: string');
+    });
 
-  function toText(hover: Hover): string { return hover.text.map(h => h.text).join(''); }
+    it('should find members in a property binding', () => {
+      mockHost.override(TEST_TEMPLATE, `<test-comp [tcName]="«title»"></test-comp>`);
+      const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'title');
+      const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+      expect(quickInfo).toBeTruthy();
+      const {textSpan, displayParts} = quickInfo !;
+      expect(textSpan).toEqual(marker);
+      expect(toText(displayParts)).toBe('(property) TemplateReference.title: string');
+    });
+
+    it('should find members in an event binding', () => {
+      mockHost.override(TEST_TEMPLATE, `<test-comp (test)="«title»=$event"></test-comp>`);
+      const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'title');
+      const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+      expect(quickInfo).toBeTruthy();
+      const {textSpan, displayParts} = quickInfo !;
+      expect(textSpan).toEqual(marker);
+      expect(toText(displayParts)).toBe('(property) TemplateReference.title: string');
+    });
+
+    it('should find members in a two-way binding', () => {
+      mockHost.override(TEST_TEMPLATE, `<input [(ngModel)]="«title»" />`);
+      const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'title');
+      const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+      expect(quickInfo).toBeTruthy();
+      const {textSpan, displayParts} = quickInfo !;
+      expect(textSpan).toEqual(marker);
+      expect(toText(displayParts)).toBe('(property) TemplateReference.title: string');
+    });
+
+    it('should find members in a structural directive', () => {
+      mockHost.override(TEST_TEMPLATE, `<div *ngIf="«anyValue»"></div>`);
+      const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'anyValue');
+      const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+      expect(quickInfo).toBeTruthy();
+      const {textSpan, displayParts} = quickInfo !;
+      expect(textSpan).toEqual(marker);
+      expect(toText(displayParts)).toBe('(property) TemplateReference.anyValue: any');
+    });
+  });
+
+  describe('hovering on expression nodes', () => {
+    it('should provide documentation', () => {
+      mockHost.override(TEST_TEMPLATE, `<div>{{~{cursor}title}}</div>`);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+      const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+      expect(quickInfo).toBeDefined();
+      const documentation = toText(quickInfo !.documentation);
+      expect(documentation).toBe('This is the title of the `TemplateReference` Component.');
+    });
+
+    it('should work for property reads', () => {
+      mockHost.override(TEST_TEMPLATE, `<div>{{«title»}}</div>`);
+      const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'title');
+      const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+      expect(quickInfo).toBeTruthy();
+      const {textSpan, displayParts} = quickInfo !;
+      expect(textSpan).toEqual(marker);
+      expect(textSpan.length).toBe('title'.length);
+      expect(toText(displayParts)).toBe('(property) TemplateReference.title: string');
+    });
+
+    it('should work for method calls', () => {
+      mockHost.override(TEST_TEMPLATE, `<div (click)="«ᐱmyClickᐱ($event)»"></div>`);
+      const marker = mockHost.getDefinitionMarkerFor(TEST_TEMPLATE, 'myClick');
+      const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+      expect(quickInfo).toBeTruthy();
+      const {textSpan, displayParts} = quickInfo !;
+      expect(textSpan).toEqual(marker);
+      expect(toText(displayParts)).toBe('(method) TemplateReference.myClick: (event: any) => void');
+    });
+
+    it('should work for structural directive inputs', () => {
+      mockHost.override(
+          TEST_TEMPLATE, `<div *ngFor="let item of heroes; «ᐱtrackByᐱ: test»;"></div>`);
+      const marker = mockHost.getDefinitionMarkerFor(TEST_TEMPLATE, 'trackBy');
+      const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+      expect(quickInfo).toBeTruthy();
+      const {textSpan, displayParts} = quickInfo !;
+      expect(textSpan).toEqual(marker);
+      expect(toText(displayParts)).toBe('(method) NgForOf<T, U>.ngForTrackBy: TrackByFunction<T>');
+    });
+
+    it('should work for members in structural directives', () => {
+      mockHost.override(TEST_TEMPLATE, `<div *ngFor="let item of «heroes»; trackBy: test;"></div>`);
+      const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'heroes');
+      const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+      expect(quickInfo).toBeTruthy();
+      const {textSpan, displayParts} = quickInfo !;
+      expect(textSpan).toEqual(marker);
+      expect(toText(displayParts)).toBe('(property) TemplateReference.heroes: Hero[]');
+    });
+
+    it('should work for the $any() cast function', () => {
+      const content = mockHost.override(TEST_TEMPLATE, '<div>{{$any(title)}}</div>');
+      const position = content.indexOf('$any');
+      const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, position);
+      expect(quickInfo).toBeDefined();
+      const {textSpan, displayParts} = quickInfo !;
+      expect(textSpan).toEqual({
+        start: position,
+        length: '$any(title)'.length,
+      });
+      expect(toText(displayParts)).toBe('(method) $any: $any');
+    });
+  });
+
+  describe('hovering on template nodes', () => {
+    it('should provide documentation', () => {
+      mockHost.override(TEST_TEMPLATE, `<~{cursor}test-comp></test-comp>`);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+      const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+      expect(quickInfo).toBeDefined();
+      const documentation = toText(quickInfo !.documentation);
+      expect(documentation).toBe('This Component provides the `test-comp` selector.');
+    });
+
+    it('should work for components', () => {
+      mockHost.override(TEST_TEMPLATE, '<~{cursor}test-comp></test-comp>');
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+      const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+      expect(quickInfo).toBeDefined();
+      const {displayParts, documentation} = quickInfo !;
+      expect(toText(displayParts))
+          .toBe('(component) AppModule.TestComponent: typeof TestComponent');
+      expect(toText(documentation)).toBe('This Component provides the `test-comp` selector.');
+    });
+
+    it('should work for directives', () => {
+      const content = mockHost.override(TEST_TEMPLATE, `<div string-model~{cursor}></div>`);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+      const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+      expect(quickInfo).toBeDefined();
+      const {displayParts, textSpan} = quickInfo !;
+      expect(toText(displayParts)).toBe('(directive) AppModule.StringModel: typeof StringModel');
+      expect(content.substring(textSpan.start, textSpan.start + textSpan.length))
+          .toBe('string-model');
+    });
+
+    it('should work for event providers', () => {
+      mockHost.override(TEST_TEMPLATE, `<test-comp «(ᐱtestᐱ)="myClick($event)"»></div>`);
+      const marker = mockHost.getDefinitionMarkerFor(TEST_TEMPLATE, 'test');
+      const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+      expect(quickInfo).toBeTruthy();
+      const {textSpan, displayParts} = quickInfo !;
+      expect(textSpan).toEqual(marker);
+      expect(toText(displayParts)).toBe('(event) TestComponent.testEvent: EventEmitter<any>');
+    });
+
+    it('should work for input providers', () => {
+      mockHost.override(TEST_TEMPLATE, `<test-comp «[ᐱtcNameᐱ]="name"»></div>`);
+      const marker = mockHost.getDefinitionMarkerFor(TEST_TEMPLATE, 'tcName');
+      const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+      expect(quickInfo).toBeTruthy();
+      const {textSpan, displayParts} = quickInfo !;
+      expect(textSpan).toEqual(marker);
+      expect(toText(displayParts)).toBe('(property) TestComponent.name: string');
+    });
+
+    it('should work for two-way binding providers', () => {
+      mockHost.override(
+          TEST_TEMPLATE, `<test-comp string-model «[(ᐱmodelᐱ)]="title"»></test-comp>`);
+      const marker = mockHost.getDefinitionMarkerFor(TEST_TEMPLATE, 'model');
+      const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+      expect(quickInfo).toBeTruthy();
+      const {textSpan, displayParts} = quickInfo !;
+      expect(textSpan).toEqual(marker);
+      expect(toText(displayParts)).toBe('(property) StringModel.model: string');
+    });
+
+    it('should work for structural directives', () => {
+      mockHost.override(TEST_TEMPLATE, `<div «*ᐱngForᐱ="let item of heroes"»></div>`);
+      const marker = mockHost.getDefinitionMarkerFor(TEST_TEMPLATE, 'ngFor');
+      const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+      expect(quickInfo).toBeTruthy();
+      const {textSpan, displayParts} = quickInfo !;
+      expect(textSpan).toEqual(marker);
+      expect(toText(displayParts)).toBe('(directive) NgForOf: typeof NgForOf');
+    });
+  });
+
+  describe('hovering on TypeScript nodes', () => {
+    it('should work for component TypeScript declarations', () => {
+      const content = mockHost.readFile(PARSING_CASES) !;
+      const position = content.indexOf('TemplateReference');
+      expect(position).toBeGreaterThan(0);
+      const quickInfo = ngLS.getQuickInfoAtPosition(PARSING_CASES, position);
+      expect(quickInfo).toBeTruthy();
+      const {textSpan, displayParts} = quickInfo !;
+      expect(textSpan).toEqual({
+        start: position,
+        length: 'TemplateReference'.length,
+      });
+      expect(toText(displayParts)).toBe('(component) AppModule.TemplateReference: class');
+    });
+
+    it('should work for directive TypeScript declarations', () => {
+      const content = mockHost.readFile(PARSING_CASES) !;
+      const position = content.indexOf('StringModel');
+      expect(position).toBeGreaterThan(0);
+      const quickInfo = ngLS.getQuickInfoAtPosition(PARSING_CASES, position);
+      expect(quickInfo).toBeTruthy();
+      const {textSpan, displayParts} = quickInfo !;
+      expect(textSpan).toEqual({
+        start: position,
+        length: 'StringModel'.length,
+      });
+      expect(toText(displayParts)).toBe('(directive) AppModule.StringModel: class');
+    });
+  });
+
+  describe('non-goals', () => {
+    it('should ignore reference declarations', () => {
+      mockHost.override(TEST_TEMPLATE, `<div #«chart»></div>`);
+      const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'chart');
+      const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+      expect(quickInfo).toBeUndefined();
+    });
+
+    it('should not expand i18n templates', () => {
+      mockHost.override(TEST_TEMPLATE, `<div i18n="@@el">{{«title»}}</div>`);
+      const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'title');
+      const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+      expect(quickInfo).toBeTruthy();
+      const {textSpan, displayParts} = quickInfo !;
+      expect(textSpan).toEqual(marker);
+      expect(toText(displayParts)).toBe('(property) TemplateReference.title: string');
+    });
+  });
 });
+
+function toText(displayParts?: ts.SymbolDisplayPart[]): string {
+  return (displayParts || []).map(p => p.text).join('');
+}

@@ -15,12 +15,17 @@ import {AnimationDriver} from '../../src/render/animation_driver';
 // types. `process` is just declared locally here as a result.
 declare const process: any;
 
-export function isBrowser() {
+export function isBrowser(): boolean {
   return (typeof window !== 'undefined' && typeof window.document !== 'undefined');
 }
 
-export function isNode() {
-  return (typeof process !== 'undefined');
+export function isNode(): boolean {
+  // Checking only for `process` isn't enough to identify whether or not we're in a Node
+  // environment, because Webpack by default will polyfill the `process`. While we can discern
+  // that Webpack polyfilled it by looking at `process.browser`, it's very Webpack-specific and
+  // might not be future-proof. Instead we look at the stringified version of `process` which
+  // is `[object process]` in Node and `[object Object]` when polyfilled.
+  return typeof process !== 'undefined' && {}.toString.call(process) === '[object process]';
 }
 
 export function optimizeGroupPlayer(players: AnimationPlayer[]): AnimationPlayer {
@@ -158,16 +163,20 @@ if (_isNode || typeof Element !== 'undefined') {
   // this is well supported in all browsers
   _contains = (elm1: any, elm2: any) => { return elm1.contains(elm2) as boolean; };
 
-  if (_isNode || Element.prototype.matches) {
-    _matches = (element: any, selector: string) => element.matches(selector);
-  } else {
-    const proto = Element.prototype as any;
-    const fn = proto.matchesSelector || proto.mozMatchesSelector || proto.msMatchesSelector ||
-        proto.oMatchesSelector || proto.webkitMatchesSelector;
-    if (fn) {
-      _matches = (element: any, selector: string) => fn.apply(element, [selector]);
+  _matches = (() => {
+    if (_isNode || Element.prototype.matches) {
+      return (element: any, selector: string) => element.matches(selector);
+    } else {
+      const proto = Element.prototype as any;
+      const fn = proto.matchesSelector || proto.mozMatchesSelector || proto.msMatchesSelector ||
+          proto.oMatchesSelector || proto.webkitMatchesSelector;
+      if (fn) {
+        return (element: any, selector: string) => fn.apply(element, [selector]);
+      } else {
+        return _matches;
+      }
     }
-  }
+  })();
 
   _query = (element: any, selector: string, multi: boolean): any[] => {
     let results: any[] = [];

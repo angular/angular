@@ -12,21 +12,80 @@
  * @publicApi
  **/
 export abstract class UrlCodec {
+  /**
+   * Encodes the path from the provided string
+   *
+   * @param path The path string
+   */
   abstract encodePath(path: string): string;
+
+  /**
+   * Decodes the path from the provided string
+   *
+   * @param path The path string
+   */
   abstract decodePath(path: string): string;
 
+  /**
+   * Encodes the search string from the provided string or object
+   *
+   * @param path The path string or object
+   */
   abstract encodeSearch(search: string|{[k: string]: unknown}): string;
+
+  /**
+   * Decodes the search objects from the provided string
+   *
+   * @param path The path string
+   */
   abstract decodeSearch(search: string): {[k: string]: unknown};
 
+  /**
+   * Encodes the hash from the provided string
+   *
+   * @param path The hash string
+   */
   abstract encodeHash(hash: string): string;
+
+  /**
+   * Decodes the hash from the provided string
+   *
+   * @param path The hash string
+   */
   abstract decodeHash(hash: string): string;
 
+  /**
+   * Normalizes the URL from the provided string
+   *
+   * @param path The URL string
+   */
   abstract normalize(href: string): string;
+
+
+  /**
+   * Normalizes the URL from the provided string, search, hash, and base URL parameters
+   *
+   * @param path The URL path
+   * @param search The search object
+   * @param hash The has string
+   * @param baseUrl The base URL for the URL
+   */
   abstract normalize(path: string, search: {[k: string]: unknown}, hash: string, baseUrl?: string):
       string;
 
-  abstract areEqual(a: string, b: string): boolean;
+  /**
+   * Checks whether the two strings are equal
+   * @param valA First string for comparison
+   * @param valB Second string for comparison
+   */
+  abstract areEqual(valA: string, valB: string): boolean;
 
+  /**
+   * Parses the URL string based on the base URL
+   *
+   * @param url The full URL string
+   * @param base The base for the URL
+   */
   abstract parse(url: string, base?: string): {
     href: string,
     protocol: string,
@@ -40,8 +99,8 @@ export abstract class UrlCodec {
 }
 
 /**
- * A `AngularJSUrlCodec` that uses logic from AngularJS to serialize and parse URLs
- * and URL parameters
+ * A `UrlCodec` that uses logic from AngularJS to serialize and parse URLs
+ * and URL parameters.
  *
  * @publicApi
  */
@@ -134,12 +193,13 @@ export class AngularJSUrlCodec implements UrlCodec {
     }
   }
 
-  areEqual(a: string, b: string) { return this.normalize(a) === this.normalize(b); }
+  areEqual(valA: string, valB: string) { return this.normalize(valA) === this.normalize(valB); }
 
   // https://github.com/angular/angular.js/blob/864c7f0/src/ng/urlUtils.js#L60
   parse(url: string, base?: string) {
     try {
-      const parsed = new URL(url, base);
+      // Safari 12 throws an error when the URL constructor is called with an undefined base.
+      const parsed = !base ? new URL(url) : new URL(url, base);
       return {
         href: parsed.href,
         protocol: parsed.protocol ? parsed.protocol.replace(/:$/, '') : '',
@@ -163,12 +223,10 @@ function _stripIndexHtml(url: string): string {
 /**
  * Tries to decode the URI component without throwing an exception.
  *
- * @private
  * @param str value potential URI component to check.
- * @returns {boolean} True if `value` can be decoded
- * with the decodeURIComponent function.
+ * @returns the decoded URI if it can be decoded or else `undefined`.
  */
-function tryDecodeURIComponent(value: string) {
+function tryDecodeURIComponent(value: string): string|undefined {
   try {
     return decodeURIComponent(value);
   } catch (e) {
@@ -181,7 +239,6 @@ function tryDecodeURIComponent(value: string) {
 /**
  * Parses an escaped url query string into key-value pairs. Logic taken from
  * https://github.com/angular/angular.js/blob/864c7f0/src/Angular.js#L1382
- * @returns {Object.<string,boolean|Array>}
  */
 function parseKeyValue(keyValue: string): {[k: string]: unknown} {
   const obj: {[k: string]: unknown} = {};

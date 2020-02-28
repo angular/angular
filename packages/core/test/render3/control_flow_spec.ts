@@ -7,7 +7,7 @@
  */
 
 import {ɵɵdefineComponent} from '../../src/render3/definition';
-import {ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
+import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵselect, ɵɵtext, ɵɵtextInterpolate} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {ComponentFixture, TemplateFixture, createComponent} from './render_util';
@@ -32,7 +32,8 @@ describe('JS control flow', () => {
                 ɵɵelementEnd();
               }
               if (rf1 & RenderFlags.Update) {
-                ɵɵtextBinding(1, ɵɵbind(ctx.message));
+                ɵɵselect(1);
+                ɵɵtextInterpolate(ctx.message);
               }
             }
             ɵɵembeddedViewEnd();
@@ -344,7 +345,8 @@ describe('JS control flow', () => {
                 ɵɵelementEnd();
               }
               if (rf1 & RenderFlags.Update) {
-                ɵɵtextBinding(1, ɵɵbind(data[i]));
+                ɵɵselect(1);
+                ɵɵtextInterpolate(data[i]);
               }
             }
             ɵɵembeddedViewEnd();
@@ -408,7 +410,8 @@ describe('JS control flow', () => {
                       ɵɵtext(0);
                     }
                     if (rf2 & RenderFlags.Update) {
-                      ɵɵtextBinding(0, ɵɵbind(data[0][i] + value));
+                      ɵɵselect(0);
+                      ɵɵtextInterpolate(data[0][i] + value);
                     }
                     ɵɵembeddedViewEnd();
                   });
@@ -475,7 +478,8 @@ describe('JS control flow', () => {
                 ɵɵtext(3, '-');
               }
               if (rf1 & RenderFlags.Update) {
-                ɵɵtextBinding(1, ɵɵbind(cafes[i].name));
+                ɵɵselect(1);
+                ɵɵtextInterpolate(cafes[i].name);
                 ɵɵcontainerRefreshStart(2);
                 {
                   for (let j = 0; j < cafes[i].entrees.length; j++) {
@@ -484,7 +488,8 @@ describe('JS control flow', () => {
                       ɵɵtext(0);
                     }
                     if (rf2 & RenderFlags.Update) {
-                      ɵɵtextBinding(0, ɵɵbind(cafes[i].entrees[j]));
+                      ɵɵselect(0);
+                      ɵɵtextInterpolate(cafes[i].entrees[j]);
                     }
                     ɵɵembeddedViewEnd();
                   }
@@ -570,7 +575,8 @@ describe('JS control flow', () => {
                 ɵɵtext(3, '-');
               }
               if (rf1 & RenderFlags.Update) {
-                ɵɵtextBinding(1, ɵɵbind(cafes[i].name));
+                ɵɵselect(1);
+                ɵɵtextInterpolate(cafes[i].name);
                 ɵɵcontainerRefreshStart(2);
                 {
                   for (let j = 0; j < cafes[i].entrees.length; j++) {
@@ -583,7 +589,8 @@ describe('JS control flow', () => {
                         ɵɵcontainer(2);
                       }
                       if (rf1 & RenderFlags.Update) {
-                        ɵɵtextBinding(1, ɵɵbind(cafes[i].entrees[j].name));
+                        ɵɵselect(1);
+                        ɵɵtextInterpolate(cafes[i].entrees[j].name);
                         ɵɵcontainerRefreshStart(2);
                         {
                           for (let k = 0; k < cafes[i].entrees[j].foods.length; k++) {
@@ -592,7 +599,8 @@ describe('JS control flow', () => {
                               ɵɵtext(0);
                             }
                             if (rf2 & RenderFlags.Update) {
-                              ɵɵtextBinding(0, ɵɵbind(cafes[i].entrees[j].foods[k]));
+                              ɵɵselect(0);
+                              ɵɵtextInterpolate(cafes[i].entrees[j].foods[k]);
                             }
                             ɵɵembeddedViewEnd();
                           }
@@ -683,17 +691,19 @@ describe('JS control flow', () => {
     let log: string[] = [];
 
     // Intentionally duplicating the templates in test below so we are
-    // testing the behavior on firstTemplatePass for each of these tests
+    // testing the behavior on firstCreatePass for each of these tests
     class Comp {
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac =
+          () => {
+            log.push('comp!');
+            return new Comp();
+          }
+
+      static ɵcmp = ɵɵdefineComponent({
         type: Comp,
         selectors: [['comp']],
-        consts: 0,
+        decls: 0,
         vars: 0,
-        factory: () => {
-          log.push('comp!');
-          return new Comp();
-        },
         template: function(rf: RenderFlags, ctx: Comp) {}
       });
     }
@@ -702,11 +712,11 @@ describe('JS control flow', () => {
       condition = true;
       condition2 = true;
 
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new App();
+      static ɵcmp = ɵɵdefineComponent({
         type: App,
         selectors: [['app']],
-        factory: () => new App(),
-        consts: 3,
+        decls: 3,
         vars: 0,
         template: function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
@@ -751,17 +761,19 @@ describe('JS control flow', () => {
     let log: string[] = [];
 
     // Intentionally duplicating the templates from above so we are
-    // testing the behavior on firstTemplatePass for each of these tests
+    // testing the behavior on firstCreatePass for each of these tests
     class Comp {
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac =
+          () => {
+            log.push('comp!');
+            return new Comp();
+          }
+
+      static ɵcmp = ɵɵdefineComponent({
         type: Comp,
         selectors: [['comp']],
-        consts: 0,
+        decls: 0,
         vars: 0,
-        factory: () => {
-          log.push('comp!');
-          return new Comp();
-        },
         template: function(rf: RenderFlags, ctx: Comp) {}
       });
     }
@@ -770,11 +782,11 @@ describe('JS control flow', () => {
       condition = false;
       condition2 = true;
 
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new App();
+      static ɵcmp = ɵɵdefineComponent({
         type: App,
         selectors: [['app']],
-        factory: () => new App(),
-        consts: 3,
+        decls: 3,
         vars: 0,
         template: function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
@@ -848,7 +860,8 @@ describe('JS for loop', () => {
               ɵɵtext(0);
             }
             if (rf2 & RenderFlags.Update) {
-              ɵɵtextBinding(0, ɵɵbind(config.data1[i]));
+              ɵɵselect(0);
+              ɵɵtextInterpolate(config.data1[i]);
             }
             ɵɵembeddedViewEnd();
           }
@@ -858,7 +871,8 @@ describe('JS for loop', () => {
               ɵɵtext(0);
             }
             if (rf2 & RenderFlags.Update) {
-              ɵɵtextBinding(0, ɵɵbind(config.data2[j]));
+              ɵɵselect(0);
+              ɵɵtextInterpolate(config.data2[j]);
             }
             ɵɵembeddedViewEnd();
           }
@@ -896,7 +910,8 @@ describe('function calls', () => {
         ɵɵelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        ɵɵtextBinding(1, ɵɵbind(message));
+        ɵɵselect(1);
+        ɵɵtextInterpolate(message);
       }
     }
 

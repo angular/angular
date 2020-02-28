@@ -44,7 +44,8 @@ export const Output = callablePropDecorator();
 export const ViewChild = callablePropDecorator();
 export const ViewChildren = callablePropDecorator();
 
-export type ModuleWithProviders<T> = any;
+// T defaults to `any` to reflect what is currently in core.
+export type ModuleWithProviders<T = any> = any;
 
 export class ChangeDetectorRef {}
 export class ElementRef {}
@@ -54,6 +55,10 @@ export class ViewContainerRef {}
 export class Renderer2 {}
 export class ɵNgModuleFactory<T> {
   constructor(public clazz: T) {}
+}
+
+export class InjectionToken<T> {
+  constructor(description: string) {}
 }
 
 export function forwardRef<T>(fn: () => T): T {
@@ -77,3 +82,16 @@ export enum ChangeDetectionStrategy {
   OnPush = 0,
   Default = 1
 }
+
+export const CUSTOM_ELEMENTS_SCHEMA: any = false;
+export const NO_ERRORS_SCHEMA: any = false;
+
+export class EventEmitter<T> {
+  subscribe(generatorOrNext?: any, error?: any, complete?: any): unknown { return null; }
+}
+
+export interface QueryList<T>/* implements Iterable<T> */ { [Symbol.iterator]: () => Iterator<T>; }
+
+export type NgIterable<T> = Array<T>| Iterable<T>;
+
+export class NgZone {}

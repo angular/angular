@@ -21,7 +21,7 @@ export class ItemDetailComponent {
   @Output() deleteRequest = new EventEmitter<Item>();
 
   delete() {
-    this.deleteRequest.emit(this.item.name);
+    this.deleteRequest.emit(this.item);
     this.displayNone = this.displayNone ? '' : 'none';
     this.lineThrough = this.lineThrough ? '' : 'line-through';
   }

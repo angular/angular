@@ -75,7 +75,7 @@ class MultiplyDirectiveResolver extends DirectiveResolver {
 
   private _fillCache(component: Type) {
     const view = super.resolve(component);
-    const multipliedTemplates = new Array(this._multiplyBy);
+    const multipliedTemplates = [];
     for (let i = 0; i < this._multiplyBy; ++i) {
       multipliedTemplates[i] = view.template;
     }

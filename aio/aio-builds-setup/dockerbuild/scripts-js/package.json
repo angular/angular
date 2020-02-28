@@ -34,7 +34,7 @@
     "shelljs": "^0.8.2",
     "source-map-support": "^0.5.9",
     "tar-stream": "^1.6.1",
-    "tslib": "^1.9.3"
+    "tslib": "^1.10.0"
   },
   "devDependencies": {
     "@types/body-parser": "^1.17.0",

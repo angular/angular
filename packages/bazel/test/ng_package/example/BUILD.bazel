@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ng_module", "ng_package", "npm_package")
+load("//tools:defaults.bzl", "ng_module", "ng_package", "pkg_npm")
 
 package(default_visibility = ["//packages/bazel/test:__subpackages__"])
 
@@ -22,10 +22,11 @@ ng_package(
         ":arbitrary_bin_file",
         ":arbitrary_genfiles_file",
         ":extra-styles.css",
+        ":logo.png",
     ],
-    entry_point = "packages/bazel/test/ng_package/example/index.js",
+    entry_point = ":index.ts",
     entry_point_name = "waffels",
-    packages = [
+    nested_packages = [
         ":arbitrary_npm_package",
     ],
     deps = [
@@ -51,7 +52,7 @@ genrule(
     output_to_bindir = True,
 )
 
-npm_package(
+pkg_npm(
     name = "arbitrary_npm_package",
     srcs = [":arbitrary-npm-package-main.js"],
 )

@@ -3,7 +3,8 @@
   "schematics": {
     "ng-add": {
       "description": "Adds the document-register-element polyfill.",
-      "factory": "./ng-add"
+      "factory": "./ng-add",
+      "schema": "ng-add/schema.json"
     }
   }
 }

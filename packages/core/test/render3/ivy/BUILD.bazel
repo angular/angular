@@ -10,19 +10,18 @@ ts_library(
         "//packages:types",
         "//packages/core",
         "//packages/core/src/di/interface",
+        "@npm//reflect-metadata",
     ],
 )
 
 jasmine_node_test(
     name = "ivy",
-    bootstrap = [
-        "angular/packages/core/test/render3/load_domino",
-    ],
+    bootstrap = ["//packages/core/test/render3:domino_es5"],
     tags = [
         "ivy-only",
     ],
     deps = [
         ":ivy_lib",
-        "//packages/core/test/render3:domino",
+        "//packages/zone.js/lib",
     ],
 )

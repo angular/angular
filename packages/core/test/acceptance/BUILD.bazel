@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:private"])
 
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ts_library")
 
 ts_library(
     name = "acceptance_lib",
@@ -8,28 +8,47 @@ ts_library(
     srcs = glob(
         ["**/*.ts"],
     ),
+    # Visible to //:saucelabs_unit_tests
+    visibility = ["//:__pkg__"],
     deps = [
+        "//packages/animations",
+        "//packages/animations/browser",
+        "//packages/animations/browser/testing",
         "//packages/common",
+        "//packages/common/locales",
         "//packages/compiler",
         "//packages/compiler/testing",
         "//packages/core",
+        "//packages/core/src/util",
         "//packages/core/testing",
+        "//packages/localize",
+        "//packages/localize/init",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
+        "//packages/platform-browser/animations",
         "//packages/platform-browser/testing",
+        "//packages/platform-server",
         "//packages/private/testing",
-        "@npm//zone.js",
+        "//packages/router",
+        "//packages/zone.js/lib:zone_d_ts",
+        "@npm//rxjs",
     ],
 )
 
 jasmine_node_test(
     name = "acceptance",
-    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    bootstrap = ["//tools/testing:node_es5"],
     deps = [
         ":acceptance_lib",
-        "//tools/testing:node",
+        "//packages/zone.js/lib:zone_d_ts",
         "@npm//base64-js",
         "@npm//source-map",
-        "@npm//zone.js",
+    ],
+)
+
+karma_web_test_suite(
+    name = "acceptance_web",
+    deps = [
+        ":acceptance_lib",
     ],
 )

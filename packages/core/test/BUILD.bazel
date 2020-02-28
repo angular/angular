@@ -1,6 +1,19 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library", "ts_web_test_suite")
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ts_library")
+load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
 
 package(default_visibility = ["//visibility:public"])
+
+circular_dependency_test(
+    name = "circular_deps_test",
+    entry_point = "angular/packages/core/index.js",
+    deps = ["//packages/core"],
+)
+
+circular_dependency_test(
+    name = "testing_circular_deps_test",
+    entry_point = "angular/packages/core/testing/index.js",
+    deps = ["//packages/core/testing"],
+)
 
 ts_library(
     name = "test_lib",
@@ -11,13 +24,14 @@ ts_library(
             "**/*_node_only_spec.ts",
         ],
     ),
-    # Visible to //:test_web_all target
+    # Visible to //:saucelabs_unit_tests_poc target
     visibility = ["//:__pkg__"],
     deps = [
         "//packages/animations",
         "//packages/animations/browser",
         "//packages/animations/browser/testing",
         "//packages/common",
+        "//packages/common/locales",
         "//packages/compiler",
         "//packages/compiler/testing",
         "//packages/core",
@@ -26,6 +40,7 @@ ts_library(
         "//packages/core/src/reflection",
         "//packages/core/src/util",
         "//packages/core/testing",
+        "//packages/localize/init",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser/animations",
@@ -33,8 +48,8 @@ ts_library(
         "//packages/private/testing",
         "//packages/router",
         "//packages/router/testing",
+        "//packages/zone.js/lib:zone_d_ts",
         "@npm//rxjs",
-        "@npm//zone.js",
     ],
 )
 
@@ -57,21 +72,30 @@ ts_library(
 
 jasmine_node_test(
     name = "test",
-    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    bootstrap = ["//tools/testing:node_es5"],
+    shard_count = 4,
     deps = [
         ":test_lib",
         ":test_node_only_lib",
         "//packages/platform-server",
         "//packages/platform-server/testing",
-        "//tools/testing:node",
+        "//packages/zone.js/lib:zone_d_ts",
         "@npm//base64-js",
         "@npm//source-map",
-        "@npm//zone.js",
     ],
 )
 
-ts_web_test_suite(
+karma_web_test_suite(
     name = "test_web",
+    tags = [
+        # FIXME: fix on saucelabs
+        # IE 11.0.0 (Windows 8.1.0.0) ivy NgModule providers should throw when the aliased provider does not exist FAILED
+        #     Error: Expected function to throw an exception with message 'R3InjectorError(SomeModule)[car -> SportsCar]:
+        #     NullInjectorError: No provider for Car!', but it threw an exception with message 'R3InjectorError(SomeModule)[car -> Car]:
+        #     NullInjectorError: No provider for Car!'.
+        #         at <Jasmine>
+        "fixme-saucelabs-ivy",
+    ],
     deps = [
         ":test_lib",
     ],

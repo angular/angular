@@ -9,6 +9,7 @@
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
+import {DependencyTracker} from '../../incremental/api';
 import {ReflectionHost} from '../../reflection';
 
 import {StaticInterpreter} from './interpreter';
@@ -18,21 +19,18 @@ export type ForeignFunctionResolver =
     (node: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
      args: ReadonlyArray<ts.Expression>) => ts.Expression | null;
 
-export type VisitedFilesCallback = (sf: ts.SourceFile) => void;
-
 export class PartialEvaluator {
-  constructor(private host: ReflectionHost, private checker: ts.TypeChecker) {}
+  constructor(
+      private host: ReflectionHost, private checker: ts.TypeChecker,
+      private dependencyTracker: DependencyTracker|null) {}
 
-  evaluate(
-      expr: ts.Expression, foreignFunctionResolver?: ForeignFunctionResolver,
-      visitedFilesCb?: VisitedFilesCallback): ResolvedValue {
-    const interpreter = new StaticInterpreter(this.host, this.checker, visitedFilesCb);
-    if (visitedFilesCb) {
-      visitedFilesCb(expr.getSourceFile());
-    }
+  evaluate(expr: ts.Expression, foreignFunctionResolver?: ForeignFunctionResolver): ResolvedValue {
+    const interpreter = new StaticInterpreter(this.host, this.checker, this.dependencyTracker);
+    const sourceFile = expr.getSourceFile();
     return interpreter.visit(expr, {
+      originatingFile: sourceFile,
       absoluteModuleName: null,
-      resolutionContext: expr.getSourceFile().fileName,
+      resolutionContext: sourceFile.fileName,
       scope: new Map<ts.ParameterDeclaration, ResolvedValue>(), foreignFunctionResolver,
     });
   }

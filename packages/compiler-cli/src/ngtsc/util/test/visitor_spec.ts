@@ -5,10 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import * as ts from 'typescript';
-
-import {makeProgram} from '../../testing/in_memory_typescript';
+import {absoluteFrom, getSourceFileOrError} from '../../file_system';
+import {runInEachFileSystem} from '../../file_system/testing';
+import {makeProgram} from '../../testing';
 import {VisitListEntryResult, Visitor, visit} from '../src/visitor';
 
 class TestAstVisitor extends Visitor {
@@ -43,37 +43,41 @@ function testTransformerFactory(context: ts.TransformationContext): ts.Transform
   return (file: ts.SourceFile) => visit(file, new TestAstVisitor(), context);
 }
 
-describe('AST Visitor', () => {
-  it('should add a statement before class in plain file', () => {
-    const {program, host} =
-        makeProgram([{name: 'main.ts', contents: `class A { static id = 3; }`}]);
-    const sf = program.getSourceFile('main.ts') !;
-    program.emit(sf, undefined, undefined, undefined, {before: [testTransformerFactory]});
-    const main = host.readFile('/main.js');
-    expect(main).toMatch(/^var A_id = 3;/);
-  });
+runInEachFileSystem(() => {
+  describe('AST Visitor', () => {
+    let _: typeof absoluteFrom;
+    beforeEach(() => _ = absoluteFrom);
 
-  it('should add a statement before class inside function definition', () => {
-    const {program, host} = makeProgram([{
-      name: 'main.ts',
-      contents: `
+    it('should add a statement before class in plain file', () => {
+      const {program, host} =
+          makeProgram([{name: _('/main.ts'), contents: `class A { static id = 3; }`}]);
+      const sf = getSourceFileOrError(program, _('/main.ts'));
+      program.emit(sf, undefined, undefined, undefined, {before: [testTransformerFactory]});
+      const main = host.readFile('/main.js');
+      expect(main).toMatch(/^var A_id = 3;/);
+    });
+
+    it('should add a statement before class inside function definition', () => {
+      const {program, host} = makeProgram([{
+        name: _('/main.ts'),
+        contents: `
       export function foo() {
         var x = 3;
         class A { static id = 2; }
         return A;
       }
     `
-    }]);
-    const sf = program.getSourceFile('main.ts') !;
-    program.emit(sf, undefined, undefined, undefined, {before: [testTransformerFactory]});
-    const main = host.readFile('/main.js');
-    expect(main).toMatch(/var x = 3;\s+var A_id = 2;\s+var A =/);
-  });
+      }]);
+      const sf = getSourceFileOrError(program, _('/main.ts'));
+      program.emit(sf, undefined, undefined, undefined, {before: [testTransformerFactory]});
+      const main = host.readFile(_('/main.js'));
+      expect(main).toMatch(/var x = 3;\s+var A_id = 2;\s+var A =/);
+    });
 
-  it('handles nested statements', () => {
-    const {program, host} = makeProgram([{
-      name: 'main.ts',
-      contents: `
+    it('handles nested statements', () => {
+      const {program, host} = makeProgram([{
+        name: _('/main.ts'),
+        contents: `
       export class A {
         static id = 3;
 
@@ -84,11 +88,12 @@ describe('AST Visitor', () => {
           return B;
         }
     }`
-    }]);
-    const sf = program.getSourceFile('main.ts') !;
-    program.emit(sf, undefined, undefined, undefined, {before: [testTransformerFactory]});
-    const main = host.readFile('/main.js');
-    expect(main).toMatch(/var A_id = 3;\s+var A = /);
-    expect(main).toMatch(/var B_id = 4;\s+var B = /);
+      }]);
+      const sf = getSourceFileOrError(program, _('/main.ts'));
+      program.emit(sf, undefined, undefined, undefined, {before: [testTransformerFactory]});
+      const main = host.readFile(_('/main.js'));
+      expect(main).toMatch(/var A_id = 3;\s+var A = /);
+      expect(main).toMatch(/var B_id = 4;\s+var B = /);
+    });
   });
 });

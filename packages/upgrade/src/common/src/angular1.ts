@@ -116,10 +116,7 @@ export interface ITranscludeFunction {
   // If one argument is provided, then it's assumed to be the cloneAttachFn.
   (cloneAttachFn?: ICloneAttachFunction): IAugmentedJQuery;
 }
-export interface ICloneAttachFunction {
-  // Let's hint but not force cloneAttachFn's signature
-  (clonedElement?: IAugmentedJQuery, scope?: IScope): any;
-}
+export interface ICloneAttachFunction { (clonedElement: IAugmentedJQuery, scope: IScope): any; }
 export type IAugmentedJQuery = Node[] & {
   on?: (name: string, fn: () => void) => void;
   data?: (name: string, value?: any) => any;
@@ -234,6 +231,7 @@ let angular: {
     (e: string | Element | Document | IAugmentedJQuery): IAugmentedJQuery;
     cleanData: (nodes: Node[] | NodeList) => void;
   },
+  injector: (modules: Array<string|IInjectable>, strictDi?: boolean) => IInjectorService,
   version: {major: number},
   resumeBootstrap: () => void,
   getTestability: (e: Element) => ITestabilityService
@@ -241,6 +239,7 @@ let angular: {
   bootstrap: noNg,
   module: noNg,
   element: noNgElement,
+  injector: noNg,
   version: undefined as any,
   resumeBootstrap: noNg,
   getTestability: noNg
@@ -281,7 +280,6 @@ export function getAngularLib(): any {
  */
 export function setAngularJSGlobal(ng: any): void {
   angular = ng;
-  version = ng && ng.version;
 }
 
 /**
@@ -304,8 +302,9 @@ export const module_: typeof angular.module = (prefix, dependencies?) =>
 export const element: typeof angular.element = (e => angular.element(e)) as typeof angular.element;
 element.cleanData = nodes => angular.element.cleanData(nodes);
 
+export const injector: typeof angular.injector =
+    (modules: Array<string|IInjectable>, strictDi?: boolean) => angular.injector(modules, strictDi);
+
 export const resumeBootstrap: typeof angular.resumeBootstrap = () => angular.resumeBootstrap();
 
 export const getTestability: typeof angular.getTestability = e => angular.getTestability(e);
-
-export let version = angular.version;

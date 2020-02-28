@@ -45,7 +45,7 @@ describe('Integration', () => {
 
          TestBed.configureTestingModule({imports: [MyModule]});
 
-         const router: Router = TestBed.get(Router);
+         const router: Router = TestBed.inject(Router);
          const fixture = createRoot(router, MyCmp);
          router.resetConfig([{path: 'simple', component: SimpleCmp}]);
 
@@ -62,7 +62,7 @@ describe('Integration', () => {
            template: `
           <div #rla="routerLinkActive" routerLinkActive>
             isActive: {{rla.isActive}}
-            
+
             <ng-template let-data>
               <a [routerLink]="data">link</a>
             </ng-template>
@@ -73,9 +73,10 @@ describe('Integration', () => {
          })
          class ComponentWithRouterLink {
            // TODO(issue/24571): remove '!'.
-           @ViewChild(TemplateRef) templateRef !: TemplateRef<any>;
+           @ViewChild(TemplateRef, {static: true}) templateRef !: TemplateRef<any>;
            // TODO(issue/24571): remove '!'.
-           @ViewChild('container', {read: ViewContainerRef}) container !: ViewContainerRef;
+           @ViewChild('container', {read: ViewContainerRef, static: true})
+           container !: ViewContainerRef;
 
            addLink() {
              this.container.createEmbeddedView(this.templateRef, {$implicit: '/simple'});
@@ -93,7 +94,7 @@ describe('Integration', () => {
            declarations: [ComponentWithRouterLink, SimpleCmp]
          });
 
-         const router: Router = TestBed.get(Router);
+         const router: Router = TestBed.inject(Router);
          const fixture = createRoot(router, ComponentWithRouterLink);
          router.navigateByUrl('/simple');
          advance(fixture);

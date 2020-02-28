@@ -16,18 +16,18 @@ describe('ng-new schematic', () => {
     version: '7.0.0',
   };
 
-  it('should call external @schematics/angular', () => {
+  it('should call external @schematics/angular', async() => {
     const options = {...defaultOptions};
-    const host = schematicRunner.runSchematic('ng-new', options);
+    const host = await schematicRunner.runSchematicAsync('ng-new', options).toPromise();
     const {files} = host;
     // External schematic should produce workspace file angular.json
     expect(files).toContain('/demo/angular.json');
     expect(files).toContain('/demo/package.json');
   });
 
-  it('should call ng-add to generate additional files needed by Bazel', () => {
+  it('should call ng-add to generate additional files needed by Bazel', async() => {
     const options = {...defaultOptions};
-    const host = schematicRunner.runSchematic('ng-new', options);
+    const host = await schematicRunner.runSchematicAsync('ng-new', options).toPromise();
     const {files} = host;
     expect(files).toContain('/demo/src/main.dev.ts');
     expect(files).toContain('/demo/src/main.prod.ts');

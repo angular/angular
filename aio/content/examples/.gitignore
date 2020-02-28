@@ -23,6 +23,9 @@
 **/bs-config.e2e.json
 **/bs-config.json
 **/package.json
+**/tsconfig.json
+**/tsconfig.app.json
+**/tsconfig.spec.json
 **/tslint.json
 **/karma-test-shim.js
 **/browser-test-shim.js

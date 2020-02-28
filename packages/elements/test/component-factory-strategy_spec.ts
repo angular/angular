@@ -45,6 +45,11 @@ describe('ComponentFactoryNgElementStrategy', () => {
     beforeEach(() => {
       // Set up an initial value to make sure it is passed to the component
       strategy.setInputValue('fooFoo', 'fooFoo-1');
+      strategy.setInputValue('falsyUndefined', undefined);
+      strategy.setInputValue('falsyNull', null);
+      strategy.setInputValue('falsyEmpty', '');
+      strategy.setInputValue('falsyFalse', false);
+      strategy.setInputValue('falsyZero', 0);
       strategy.connect(document.createElement('div'));
     });
 
@@ -73,11 +78,39 @@ describe('ComponentFactoryNgElementStrategy', () => {
       expect(componentRef.instance.fooFoo).toBe('fooFoo-1');
     });
 
-    it('should call ngOnChanges with the change', () => {
-      expectSimpleChanges(
-          componentRef.instance.simpleChanges[0],
-          {fooFoo: new SimpleChange(undefined, 'fooFoo-1', false)});
+    it('should initialize the component with falsy initial values', () => {
+      expect(strategy.getInputValue('falsyUndefined')).toEqual(undefined);
+      expect(componentRef.instance.falsyUndefined).toEqual(undefined);
+      expect(strategy.getInputValue('falsyNull')).toEqual(null);
+      expect(componentRef.instance.falsyNull).toEqual(null);
+      expect(strategy.getInputValue('falsyEmpty')).toEqual('');
+      expect(componentRef.instance.falsyEmpty).toEqual('');
+      expect(strategy.getInputValue('falsyFalse')).toEqual(false);
+      expect(componentRef.instance.falsyFalse).toEqual(false);
+      expect(strategy.getInputValue('falsyZero')).toEqual(0);
+      expect(componentRef.instance.falsyZero).toEqual(0);
     });
+
+    it('should call ngOnChanges with the change', () => {
+      expectSimpleChanges(componentRef.instance.simpleChanges[0], {
+        fooFoo: new SimpleChange(undefined, 'fooFoo-1', false),
+        falsyNull: new SimpleChange(undefined, null, false),
+        falsyEmpty: new SimpleChange(undefined, '', false),
+        falsyFalse: new SimpleChange(undefined, false, false),
+        falsyZero: new SimpleChange(undefined, 0, false),
+      });
+    });
+
+    it('should call ngOnChanges with proper firstChange value', fakeAsync(() => {
+         strategy.setInputValue('falsyUndefined', 'notanymore');
+         strategy.setInputValue('barBar', 'barBar-1');
+         tick(16);  // scheduler waits 16ms if RAF is unavailable
+         (strategy as any).detectChanges();
+         expectSimpleChanges(componentRef.instance.simpleChanges[1], {
+           falsyUndefined: new SimpleChange(undefined, 'notanymore', false),
+           barBar: new SimpleChange(undefined, 'barBar-1', true),
+         });
+       }));
   });
 
   it('should not call ngOnChanges if not present on the component', () => {
@@ -234,6 +267,11 @@ export class FakeComponentFactory extends ComponentFactory<any> {
     return [
       {propName: 'fooFoo', templateName: 'fooFoo'},
       {propName: 'barBar', templateName: 'my-bar-bar'},
+      {propName: 'falsyUndefined', templateName: 'falsyUndefined'},
+      {propName: 'falsyNull', templateName: 'falsyNull'},
+      {propName: 'falsyEmpty', templateName: 'falsyEmpty'},
+      {propName: 'falsyFalse', templateName: 'falsyFalse'},
+      {propName: 'falsyZero', templateName: 'falsyZero'},
     ];
   }
 

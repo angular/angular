@@ -8,8 +8,9 @@
 
 /// <reference types='node'/>
 
-import {fork} from 'child_process';
-import {copyFileSync, existsSync, readdirSync, statSync, unlinkSync} from 'fs';
+import {spawn} from 'child_process';
+import {copyFileSync, existsSync, readFileSync, readdirSync, statSync, unlinkSync, writeFileSync} from 'fs';
+import {platform} from 'os';
 import {dirname, join, normalize} from 'path';
 
 export type Executable = 'bazel' | 'ibazel';
@@ -24,7 +25,7 @@ export function runBazel(
   projectDir = normalize(projectDir);
   binary = normalize(binary);
   return new Promise((resolve, reject) => {
-    const buildProcess = fork(binary, [command, workspaceTarget, ...flags], {
+    const buildProcess = spawn(binary, [command, workspaceTarget, ...flags], {
       cwd: projectDir,
       stdio: 'inherit',
     });
@@ -51,12 +52,12 @@ export function runBazel(
  */
 export function checkInstallation(name: Executable, projectDir: string): string {
   projectDir = normalize(projectDir);
-  const packageName = `@bazel/${name}/package.json`;
+  const packageName = `@bazel/${name}`;
   try {
     const bazelPath = require.resolve(packageName, {
       paths: [projectDir],
     });
-    return dirname(bazelPath);
+    return require(bazelPath).getNativeBinary();
   } catch (error) {
     if (error.code === 'MODULE_NOT_FOUND') {
       throw new Error(
@@ -107,6 +108,51 @@ function listR(dir: string): string[] {
 }
 
 /**
+ * Return the name of the lock file that is present in the specified 'root'
+ * directory. If none exists, default to creating an empty yarn.lock file.
+ */
+function getOrCreateLockFile(root: string): 'yarn.lock'|'package-lock.json' {
+  const yarnLock = join(root, 'yarn.lock');
+  if (existsSync(yarnLock)) {
+    return 'yarn.lock';
+  }
+  const npmLock = join(root, 'package-lock.json');
+  if (existsSync(npmLock)) {
+    return 'package-lock.json';
+  }
+  // Prefer yarn if no lock file exists
+  writeFileSync(yarnLock, '');
+  return 'yarn.lock';
+}
+
+// Replace yarn_install rule with npm_install and copy from 'source' to 'dest'.
+function replaceYarnWithNpm(source: string, dest: string) {
+  const srcContent = readFileSync(source, 'utf-8');
+  const destContent = srcContent.replace(/yarn_install/g, 'npm_install')
+                          .replace('yarn_lock', 'package_lock_json')
+                          .replace('yarn.lock', 'package-lock.json');
+  writeFileSync(dest, destContent);
+}
+
+/**
+ * Disable sandbox on Mac OS by setting spawn_strategy in .bazelrc.
+ * For a hello world (ng new) application, removing the sandbox improves build
+ * time by almost 40%.
+ * ng build with sandbox: 22.0 seconds
+ * ng build without sandbox: 13.3 seconds
+ */
+function disableSandbox(source: string, dest: string) {
+  const srcContent = readFileSync(source, 'utf-8');
+  const destContent = `${srcContent}
+# Disable sandbox on Mac OS for performance reason.
+build --spawn_strategy=local
+run --spawn_strategy=local
+test --spawn_strategy=local
+`;
+  writeFileSync(dest, destContent);
+}
+
+/**
  * Copy Bazel files (WORKSPACE, BUILD.bazel, etc) from the template directory to
  * the project `root` directory, and return the absolute paths of the files
  * copied, so that they can be deleted later.
@@ -117,6 +163,7 @@ export function copyBazelFiles(root: string, templateDir: string) {
   templateDir = normalize(templateDir);
   const bazelFiles: string[] = [];
   const templates = listR(templateDir);
+  const useYarn = getOrCreateLockFile(root) === 'yarn.lock';
 
   for (const template of templates) {
     const name = template.replace('__dot__', '.').replace('.template', '');
@@ -124,7 +171,13 @@ export function copyBazelFiles(root: string, templateDir: string) {
     const dest = join(root, name);
     try {
       if (!existsSync(dest)) {
-        copyFileSync(source, dest);
+        if (!useYarn && name === 'WORKSPACE') {
+          replaceYarnWithNpm(source, dest);
+        } else if (platform() === 'darwin' && name === '.bazelrc') {
+          disableSandbox(source, dest);
+        } else {
+          copyFileSync(source, dest);
+        }
         bazelFiles.push(dest);
       }
     } catch {

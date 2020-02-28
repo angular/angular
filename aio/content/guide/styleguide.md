@@ -1,4 +1,4 @@
-# Style Guide
+# Angular coding style guide
 
 Looking for an opinionated guide to Angular syntax, conventions, and application structure?
 Step right in!
@@ -927,7 +927,7 @@ As always, strive for consistency.
 <div class="s-rule do">
 
 **Do** use a custom prefix for a component selector.
-For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the prefix `admin` represents an admin feature area.
+For example, the prefix `toh` represents **T**our **o**f **H**eroes and the prefix `admin` represents an admin feature area.
 
 </div>
 
@@ -1080,6 +1080,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 
 **Do** use consistent names for all pipes, named after their feature.
+The pipe class name should use [UpperCamelCase](guide/glossary#case-types)
+(the general convention for class names),
+and the corresponding `name` string should use *lowerCamelCase*.
+The `name` string cannot use hyphens ("dash-case" or "kebab-case").
 
 
 </div>
@@ -1618,396 +1622,6 @@ A consistent class and file name convention make these modules easy to spot and 
 </table>
 
 
-
-<a href="#toc">Back to top</a>
-
-
-## Coding conventions
-
-Have a consistent set of coding, naming, and whitespace conventions.
-
-{@a 03-01}
-
-### Classes
-
-#### Style 03-01
-
-<div class="s-rule do">
-
-**Do** use upper camel case, also known as PascalCase, when naming classes.
-
-</div>
-
-<div class="s-why">
-
-**Why?** Follows conventional thinking for class names.
-
-</div>
-
-<div class="s-why-last">
-
-**Why?** Classes can be instantiated and construct an instance.
-By convention, upper camel case indicates a constructable asset.
-
-</div>
-
-<code-example path="styleguide/src/03-01/app/core/exception.service.avoid.ts" region="example" header="app/shared/exception.service.ts">
-
-</code-example>
-
-
-<code-example path="styleguide/src/03-01/app/core/exception.service.ts" region="example" header="app/shared/exception.service.ts">
-
-</code-example>
-
-
-<a href="#toc">Back to top</a>
-
-
-{@a 03-02}
-
-### Constants
-
-#### Style 03-02
-
-<div class="s-rule do">
-
-**Do** declare variables with `const` if their values should not change during the application lifetime.
-
-</div>
-
-<div class="s-why">
-
-**Why?** Conveys to readers that the value is invariant.
-
-</div>
-
-
-
-<div class="s-why-last">
-
-**Why?** TypeScript helps enforce that intent by requiring immediate initialization and by
-preventing subsequent re-assignment.
-
-</div>
-
-
-
-<div class="s-rule consider">
-
-**Consider** spelling `const` variables in lower camel case.
-
-</div>
-
-
-
-<div class="s-why">
-
-**Why?** Lower camel case variable names (`heroRoutes`) are easier to read and understand
-than the traditional UPPER_SNAKE_CASE names (`HERO_ROUTES`).
-
-</div>
-
-
-
-<div class="s-why-last">
-
-**Why?** The tradition of naming constants in UPPER_SNAKE_CASE reflects
-an era before the modern IDEs that quickly reveal the `const` declaration.
-TypeScript prevents accidental reassignment.
-
-</div>
-
-
-
-<div class="s-rule do">
-
-**Do** tolerate _existing_ `const` variables that are spelled in UPPER_SNAKE_CASE.
-
-</div>
-
-<div class="s-why-last">
-
-**Why?** The tradition of UPPER_SNAKE_CASE remains popular and pervasive,
-especially in third party modules.
-It is rarely worth the effort to change them at the risk of breaking existing code and documentation.
-
-</div>
-
-<code-example path="styleguide/src/03-02/app/core/data.service.ts" header="app/shared/data.service.ts">
-
-</code-example>
-
-
-
-<a href="#toc">Back to top</a>
-
-
-{@a 03-03}
-
-### Interfaces
-
-#### Style 03-03
-
-<div class="s-rule do">
-
-
-
-**Do** name an interface using upper camel case.
-
-
-</div>
-
-
-
-<div class="s-rule consider">
-
-
-
-**Consider** naming an interface without an `I` prefix.
-
-
-</div>
-
-
-
-<div class="s-rule consider">
-
-
-
-**Consider** using a class instead of an interface for services and declarables (components, directives, and pipes).
-
-
-</div>
-
-
-
-<div class="s-rule consider">
-
-
-
-**Consider** using an interface for data models.
-
-
-</div>
-
-
-
-<div class="s-why">
-
-
-
-**Why?** <a href="https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines">TypeScript guidelines</a>
-discourage the `I` prefix.
-
-
-</div>
-
-
-
-<div class="s-why">
-
-
-
-**Why?** A class alone is less code than a _class-plus-interface_.
-
-
-</div>
-
-
-
-<div class="s-why">
-
-
-
-**Why?** A class can act as an interface (use `implements` instead of `extends`).
-
-
-</div>
-
-
-
-<div class="s-why-last">
-
-
-
-**Why?** An interface-class can be a provider lookup token in Angular dependency injection.
-
-
-</div>
-
-
-
-<code-example path="styleguide/src/03-03/app/core/hero-collector.service.avoid.ts" region="example" header="app/shared/hero-collector.service.ts">
-
-</code-example>
-
-
-
-
-
-<code-example path="styleguide/src/03-03/app/core/hero-collector.service.ts" region="example" header="app/shared/hero-collector.service.ts">
-
-</code-example>
-
-
-
-<a href="#toc">Back to top</a>
-
-{@a 03-04}
-
-### Properties and methods
-
-#### Style 03-04
-
-
-<div class="s-rule do">
-
-
-
-**Do** use lower camel case to name properties and methods.
-
-
-</div>
-
-
-
-<div class="s-rule avoid">
-
-
-
-**Avoid** prefixing private properties and methods with an underscore.
-
-
-</div>
-
-
-
-<div class="s-why">
-
-
-
-**Why?** Follows conventional thinking for properties and methods.
-
-
-</div>
-
-
-
-<div class="s-why">
-
-
-
-**Why?** JavaScript lacks a true private property or method.
-
-
-</div>
-
-
-
-<div class="s-why-last">
-
-
-
-**Why?** TypeScript tooling makes it easy to identify private vs. public properties and methods.
-
-
-</div>
-
-
-
-<code-example path="styleguide/src/03-04/app/core/toast.service.avoid.ts" region="example" header="app/shared/toast.service.ts">
-
-</code-example>
-
-
-
-
-
-<code-example path="styleguide/src/03-04/app/core/toast.service.ts" region="example" header="app/shared/toast.service.ts">
-
-</code-example>
-
-
-
-<a href="#toc">Back to top</a>
-
-{@a 03-06}
-
-### Import line spacing
-
-#### Style 03-06
-
-
-<div class="s-rule consider">
-
-
-
-**Consider** leaving one empty line between third party imports and application imports.
-
-
-</div>
-
-
-
-<div class="s-rule consider">
-
-
-
-**Consider** listing import lines alphabetized by the module.
-
-
-</div>
-
-
-
-<div class="s-rule consider">
-
-
-
-**Consider** listing destructured imported symbols alphabetically.
-
-
-</div>
-
-
-
-<div class="s-why">
-
-
-
-**Why?** The empty line separates _your_ stuff from _their_ stuff.
-
-
-</div>
-
-
-
-<div class="s-why-last">
-
-
-
-**Why?** Alphabetizing makes it easier to read and locate symbols.
-
-
-</div>
-
-
-
-<code-example path="styleguide/src/03-06/app/heroes/shared/hero.service.avoid.ts" region="example" header="app/heroes/shared/hero.service.ts">
-
-</code-example>
-
-
-
-
-
-<code-example path="styleguide/src/03-06/app/heroes/shared/hero.service.ts" region="example" header="app/heroes/shared/hero.service.ts">
-
-</code-example>
-
-
-
 <a href="#toc">Back to top</a>
 
 
@@ -2060,7 +1674,7 @@ keep the **F**lattest structure you can, and
 
 
 
-**Why?** LIFT Provides a consistent structure that scales well, is modular, and makes it easier to increase developer efficiency by finding code quickly.
+**Why?** LIFT provides a consistent structure that scales well, is modular, and makes it easier to increase developer efficiency by finding code quickly.
 To confirm your intuition about a particular structure, ask:
 _can I quickly open and start work in all of the related files for this feature_?
 
@@ -2080,7 +1694,7 @@ _can I quickly open and start work in all of the related files for this feature_
 
 
 
-**Do** make locating code intuitive, simple and fast.
+**Do** make locating code intuitive, simple, and fast.
 
 
 </div>
@@ -2376,10 +1990,6 @@ Here is a compliant folder and file structure:
         <div class='children'>
 
           <div class='file'>
-            core.module.ts
-          </div>
-
-          <div class='file'>
             exception.service.ts|spec.ts
           </div>
 
@@ -2468,11 +2078,11 @@ Here is a compliant folder and file structure:
           </div>
 
           <div class='file'>
-            text-filter.component.ts|spec.ts
+            filter-text.component.ts|spec.ts
           </div>
 
           <div class='file'>
-            text-filter.service.ts|spec.ts
+            filter-text.service.ts|spec.ts
           </div>
 
         </div>
@@ -3019,11 +2629,11 @@ Yet there is a real danger of that happening if the `SharedModule` provides a se
         </div>
 
         <div class='file'>
-          text-filter.component.ts|spec.ts
+          filter-text.component.ts|spec.ts
         </div>
 
         <div class='file'>
-          text-filter.service.ts|spec.ts
+          filter-text.service.ts|spec.ts
         </div>
 
       </div>
@@ -3362,7 +2972,7 @@ in those editors that support it; it won't help with CSS styles.
 
 
 **Why?** If you ever need to rename the property or event name associated with
-`@Input` or `@Output`, you can modify it in a single place.
+`@Input()` or `@Output()`, you can modify it in a single place.
 
 
 </div>
@@ -4064,7 +3674,7 @@ Compare with the less preferred `host` metadata alternative.
 
 </div>
 
-<code-example path="dependency-injection/src/app/tree-shaking/service.ts" header="src/app/treeshaking/service.ts" linenums="false"> </code-example>
+<code-example path="dependency-injection/src/app/tree-shaking/service.ts" header="src/app/treeshaking/service.ts"></code-example>
 
 
 

@@ -9,14 +9,16 @@
 import {Injector, ɵcreateInjector as createInjector, ɵɵdefineInjectable, ɵɵdefineInjector} from '@angular/core';
 
 export class RootService {
-  static ngInjectableDef = ɵɵdefineInjectable({
+  static ɵprov = ɵɵdefineInjectable({
+    token: RootService,
     providedIn: 'root',
     factory: () => new RootService(),
   });
 }
 
 export class ScopedService {
-  static ngInjectableDef = ɵɵdefineInjectable({
+  static ɵprov = ɵɵdefineInjectable({
+    token: ScopedService,
     providedIn: null,
     factory: () => new ScopedService(),
   });
@@ -28,7 +30,7 @@ export class ScopedService {
 }
 
 export class DefinedInjector {
-  static ngInjectorDef = ɵɵdefineInjector({
+  static ɵinj = ɵɵdefineInjector({
     factory: () => new DefinedInjector(),
     providers: [ScopedService],
   });

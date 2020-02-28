@@ -70,7 +70,7 @@ export function createPerformWatchHost(
       const watcher = chokidar.watch(options.basePath, {
         // ignore .dotfiles, .js and .map files.
         // can't ignore other files as we e.g. want to recompile if an `.html` file changes as well.
-        ignored: /((^[\/\\])\..)|(\.js$)|(\.map$)|(\.metadata\.json)/,
+        ignored: /((^[\/\\])\..)|(\.js$)|(\.map$)|(\.metadata\.json|node_modules)/,
         ignoreInitial: true,
         persistent: true,
       });
@@ -103,6 +103,11 @@ interface CacheEntry {
   content?: string;
 }
 
+interface QueuedCompilationInfo {
+  timerHandle: any;
+  modifiedResourceFiles: Set<string>;
+}
+
 /**
  * The logic in this function is adapted from `tsc.ts` from TypeScript.
  */
@@ -111,7 +116,8 @@ export function performWatchCompilation(host: PerformWatchHost):
   let cachedProgram: api.Program|undefined;            // Program cached from last compilation
   let cachedCompilerHost: api.CompilerHost|undefined;  // CompilerHost cached from last compilation
   let cachedOptions: ParsedConfiguration|undefined;  // CompilerOptions cached from last compilation
-  let timerHandleForRecompilation: any;  // Handle for 0.25s wait timer to trigger recompilation
+  let timerHandleForRecompilation: QueuedCompilationInfo|
+      undefined;  // Handle for 0.25s wait timer to trigger recompilation
 
   const ignoreFilesForWatch = new Set<string>();
   const fileCache = new Map<string, CacheEntry>();
@@ -141,7 +147,7 @@ export function performWatchCompilation(host: PerformWatchHost):
   function close() {
     fileWatcher.close();
     if (timerHandleForRecompilation) {
-      host.clearTimeout(timerHandleForRecompilation);
+      host.clearTimeout(timerHandleForRecompilation.timerHandle);
       timerHandleForRecompilation = undefined;
     }
   }
@@ -190,6 +196,13 @@ export function performWatchCompilation(host: PerformWatchHost):
         }
         return ce.content !;
       };
+      // Provide access to the file paths that triggered this rebuild
+      cachedCompilerHost.getModifiedResourceFiles = function() {
+        if (timerHandleForRecompilation === undefined) {
+          return undefined;
+        }
+        return timerHandleForRecompilation.modifiedResourceFiles;
+      };
     }
     ignoreFilesForWatch.clear();
     const oldProgram = cachedProgram;
@@ -233,11 +246,13 @@ export function performWatchCompilation(host: PerformWatchHost):
   }
 
   function watchedFileChanged(event: FileChangeEvent, fileName: string) {
+    const normalizedPath = path.normalize(fileName);
+
     if (cachedOptions && event === FileChangeEvent.Change &&
         // TODO(chuckj): validate that this is sufficient to skip files that were written.
         // This assumes that the file path we write is the same file path we will receive in the
         // change notification.
-        path.normalize(fileName) === path.normalize(cachedOptions.project)) {
+        normalizedPath === path.normalize(cachedOptions.project)) {
       // If the configuration file changes, forget everything and start the recompilation timer
       resetOptions();
     } else if (
@@ -250,29 +265,35 @@ export function performWatchCompilation(host: PerformWatchHost):
     if (event === FileChangeEvent.CreateDeleteDir) {
       fileCache.clear();
     } else {
-      fileCache.delete(path.normalize(fileName));
+      fileCache.delete(normalizedPath);
     }
 
-    if (!ignoreFilesForWatch.has(path.normalize(fileName))) {
+    if (!ignoreFilesForWatch.has(normalizedPath)) {
       // Ignore the file if the file is one that was written by the compiler.
-      startTimerForRecompilation();
+      startTimerForRecompilation(normalizedPath);
     }
   }
 
   // Upon detecting a file change, wait for 250ms and then perform a recompilation. This gives batch
   // operations (such as saving all modified files in an editor) a chance to complete before we kick
   // off a new compilation.
-  function startTimerForRecompilation() {
+  function startTimerForRecompilation(changedPath: string) {
     if (timerHandleForRecompilation) {
-      host.clearTimeout(timerHandleForRecompilation);
+      host.clearTimeout(timerHandleForRecompilation.timerHandle);
+    } else {
+      timerHandleForRecompilation = {
+        modifiedResourceFiles: new Set<string>(),
+        timerHandle: undefined
+      };
     }
-    timerHandleForRecompilation = host.setTimeout(recompile, 250);
+    timerHandleForRecompilation.timerHandle = host.setTimeout(recompile, 250);
+    timerHandleForRecompilation.modifiedResourceFiles.add(changedPath);
   }
 
   function recompile() {
-    timerHandleForRecompilation = undefined;
     host.reportDiagnostics(
         [createMessageDiagnostic('File change detected. Starting incremental compilation.')]);
     doCompilation();
+    timerHandleForRecompilation = undefined;
   }
 }

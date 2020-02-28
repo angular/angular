@@ -10,6 +10,7 @@ import {AotCompilerHost, AotCompilerOptions, GeneratedFile, createAotCompiler, t
 import {MetadataBundlerHost} from '@angular/compiler-cli/src/metadata/bundler';
 import {MetadataCollector} from '@angular/compiler-cli/src/metadata/collector';
 import {ModuleMetadata} from '@angular/compiler-cli/src/metadata/index';
+import {newArray} from '@angular/compiler/src/util';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -32,11 +33,7 @@ export function isDirectory(data: MockFileOrDirectory | undefined): data is Mock
   return typeof data !== 'string';
 }
 
-const NODE_MODULES = '/node_modules/';
-const IS_GENERATED = /\.(ngfactory|ngstyle)$/;
-const angularts = /@angular\/(\w|\/|-)+\.tsx?$/;
 const rxjs = /\/rxjs\//;
-const tsxfile = /\.tsx$/;
 export const settings: ts.CompilerOptions = {
   target: ts.ScriptTarget.ES5,
   declaration: true,
@@ -231,7 +228,7 @@ export class MockCompilerHost implements ts.CompilerHost {
   private traces: string[] = [];
 
   constructor(scriptNames: string[], private data: MockDirectory) {
-    this.scriptNames = scriptNames.slice(0);
+    this.scriptNames = [...scriptNames];
   }
 
   // Test API
@@ -576,8 +573,8 @@ function readBazelWrittenFilesFrom(
   function processDirectory(dir: string, dest: string) {
     const entries = fs.readdirSync(dir);
     for (const name of entries) {
-      const fullName = path.join(dir, name);
-      const destName = path.join(dest, name);
+      const fullName = path.posix.join(dir, name);
+      const destName = path.posix.join(dest, name);
       const stat = fs.statSync(fullName);
       if (!skip(name, fullName)) {
         if (stat.isDirectory()) {
@@ -590,11 +587,11 @@ function readBazelWrittenFilesFrom(
     }
   }
   try {
-    processDirectory(bazelPackageRoot, path.join('/node_modules/@angular', packageName));
+    processDirectory(bazelPackageRoot, path.posix.join('/node_modules/@angular', packageName));
     // todo: check why we always need an index.d.ts
     if (fs.existsSync(path.join(bazelPackageRoot, `${packageName}.d.ts`))) {
       const content = fs.readFileSync(path.join(bazelPackageRoot, `${packageName}.d.ts`), 'utf8');
-      map.set(path.join('/node_modules/@angular', packageName, 'index.d.ts'), content);
+      map.set(path.posix.join('/node_modules/@angular', packageName, 'index.d.ts'), content);
     }
   } catch (e) {
     console.error(
@@ -632,24 +629,25 @@ export function setup(options: {
       if (options.compileAngular) {
         // If this fails please add //packages/core:npm_package as a test data dependency.
         readBazelWrittenFilesFrom(
-            path.join(sources, 'angular/packages/core/npm_package'), 'core', angularFiles,
+            resolveNpmTreeArtifact('angular/packages/core/npm_package'), 'core', angularFiles,
             skipDirs);
       }
       if (options.compileFakeCore) {
         readBazelWrittenFilesFrom(
-            path.join(sources, 'angular/packages/compiler-cli/test/ngtsc/fake_core/npm_package'),
+            resolveNpmTreeArtifact(
+                'angular/packages/compiler-cli/test/ngtsc/fake_core/npm_package'),
             'core', angularFiles, skipDirs);
       }
       if (options.compileAnimations) {
         // If this fails please add //packages/animations:npm_package as a test data dependency.
         readBazelWrittenFilesFrom(
-            path.join(sources, 'angular/packages/animations/npm_package'), 'animations',
+            resolveNpmTreeArtifact('angular/packages/animations/npm_package'), 'animations',
             angularFiles, skipDirs);
       }
       if (options.compileCommon) {
         // If this fails please add //packages/common:npm_package as a test data dependency.
         readBazelWrittenFilesFrom(
-            path.join(sources, 'angular/packages/common/npm_package'), 'common', angularFiles,
+            resolveNpmTreeArtifact('angular/packages/common/npm_package'), 'common', angularFiles,
             skipDirs);
       }
       return;
@@ -689,7 +687,7 @@ export function expectNoDiagnostics(program: ts.Program) {
     return '';
   }
 
-  function chars(len: number, ch: string): string { return new Array(len).fill(ch).join(''); }
+  function chars(len: number, ch: string): string { return newArray(len, ch).join(''); }
 
   function lineNoOf(offset: number, text: string): number {
     let result = 1;
@@ -747,7 +745,11 @@ function isDts(fileName: string): boolean {
 }
 
 function isSourceOrDts(fileName: string): boolean {
-  return /\.ts$/.test(fileName);
+  return /\.ts$/.test(fileName) && !/(ngfactory|ngstyle|ngsummary).d.ts$/.test(fileName);
+}
+
+function resolveNpmTreeArtifact(manifestPath: string, resolveFile = 'package.json') {
+  return path.dirname(require.resolve(path.posix.join(manifestPath, resolveFile)));
 }
 
 export function compile(
@@ -773,7 +775,7 @@ export function compile(
     aotHost.tsFilesOnly();
   }
   const tsSettings = {...settings, ...tsOptions};
-  const program = ts.createProgram(host.scriptNames.slice(0), tsSettings, host);
+  const program = ts.createProgram([...host.scriptNames], tsSettings, host);
   preCompile(program);
   const {compiler, reflector} = createAotCompiler(aotHost, options, (err) => { throw err; });
   const analyzedModules =
@@ -787,7 +789,7 @@ export function compile(
       host.override(file.genFileUrl, source);
     }
   });
-  const newProgram = ts.createProgram(host.scriptNames.slice(0), tsSettings, host);
+  const newProgram = ts.createProgram([...host.scriptNames], tsSettings, host);
   postCompile(newProgram);
   if (emit) {
     newProgram.emit();

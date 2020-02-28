@@ -1,24 +1,22 @@
 {
   "description": "Testing - specs",
   "files":[
+    "src/expected.ts",
+    "src/index-specs.html",
+    "src/main-specs.ts",
     "src/styles.css",
+    "src/test.css",
+    "src/tests.sb.ts",
+
+    "e2e/src/**/*.ts",
 
     "src/app/**/*.css",
     "src/app/**/*.html",
     "src/app/**/*.ts",
-    "src/app/**/*.spec.ts",
 
-    "src/testing/*.ts",
+    "src/testing/**/*",
 
-    "!src/main.ts",
-    "!src/app/bag/*.*",
-    "!src/app/1st.spec.ts",
-
-    "src/expected.ts",
-    "src/test.css",
-    "src/tests.sb.ts",
-    "src/main-specs.ts",
-    "src/index-specs.html"
+    "src/**/*.spec.ts"
   ],
   "main": "src/index-specs.html",
   "tags": ["testing"]

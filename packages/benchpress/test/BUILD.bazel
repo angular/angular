@@ -15,12 +15,11 @@ ts_library(
 
 jasmine_node_test(
     name = "test",
-    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    bootstrap = ["//tools/testing:node_es5"],
     deps = [
         ":test_lib",
         "//packages/benchpress",
         "//packages/core/testing",
-        "//tools/testing:node",
         "@npm//protractor",
     ],
 )

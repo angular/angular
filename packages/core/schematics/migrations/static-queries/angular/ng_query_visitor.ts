@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 import {ResolvedTemplate} from '../../../utils/ng_component_template';
 import {getAngularDecorators} from '../../../utils/ng_decorators';
 import {findParentClassDeclaration, getBaseTypeIdentifiers} from '../../../utils/typescript/class_declaration';
+import {getPropertyNameText} from '../../../utils/typescript/property_name';
 
 import {getInputNamesOfClass} from './directive_inputs';
 import {NgQueryDefinition, QueryType} from './query-definition';
@@ -53,10 +54,30 @@ export class NgQueryResolveVisitor {
       case ts.SyntaxKind.ClassDeclaration:
         this.visitClassDeclaration(node as ts.ClassDeclaration);
         break;
+      case ts.SyntaxKind.GetAccessor:
+      case ts.SyntaxKind.SetAccessor:
+        this.visitAccessorDeclaration(node as ts.AccessorDeclaration);
+        break;
     }
+
+    ts.forEachChild(node, n => this.visitNode(n));
   }
 
   private visitPropertyDeclaration(node: ts.PropertyDeclaration) {
+    this._recordQueryDeclaration(node, node, getPropertyNameText(node.name));
+  }
+
+  private visitAccessorDeclaration(node: ts.AccessorDeclaration) {
+    this._recordQueryDeclaration(node, null, getPropertyNameText(node.name));
+  }
+
+  private visitClassDeclaration(node: ts.ClassDeclaration) {
+    this._recordClassInputSetters(node);
+    this._recordClassInheritances(node);
+  }
+
+  private _recordQueryDeclaration(
+      node: ts.Node, property: ts.PropertyDeclaration|null, queryName: string|null) {
     if (!node.decorators || !node.decorators.length) {
       return;
     }
@@ -81,16 +102,13 @@ export class NgQueryResolveVisitor {
     const newQueries = this.resolvedQueries.get(sourceFile) || [];
 
     this.resolvedQueries.set(sourceFile, newQueries.concat({
+      name: queryName,
       type: queryDecorator.name === 'ViewChild' ? QueryType.ViewChild : QueryType.ContentChild,
-      property: node,
+      node,
+      property,
       decorator: queryDecorator,
       container: queryContainer,
     }));
-  }
-
-  private visitClassDeclaration(node: ts.ClassDeclaration) {
-    this._recordClassInputSetters(node);
-    this._recordClassInheritances(node);
   }
 
   private _recordClassInputSetters(node: ts.ClassDeclaration) {

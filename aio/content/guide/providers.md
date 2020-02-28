@@ -1,15 +1,9 @@
 # Providers
 
-#### Prerequisites:
-* A basic understanding of [Bootstrapping](guide/bootstrapping).
-* Familiarity with [Frequently Used Modules](guide/frequent-ngmodules).
+A provider is an instruction to the [Dependency Injection](/guide/dependency-injection) system on how to obtain a value for a dependency. Most of the time, these dependencies are services that you create and provide.
 
 For the final sample app using the provider that this page describes,
 see the <live-example></live-example>.
-
-<hr>
-
-A provider is an instruction to the DI system on how to obtain a value for a dependency. Most of the time, these dependencies are services that you create and provide.
 
 ## Providing a service
 
@@ -21,7 +15,7 @@ ng generate service User
 
 This command creates the following `UserService` skeleton:
 
-<code-example path="providers/src/app/user.service.0.ts"  header="src/app/user.service.0.ts" linenums="false"> </code-example>
+<code-example path="providers/src/app/user.service.0.ts"  header="src/app/user.service.ts"></code-example>
 
 You can now inject `UserService` anywhere in your application.
 
@@ -38,11 +32,11 @@ You should always provide your service in the root injector unless there is a ca
 
 It's also possible to specify that a service should be provided in a particular `@NgModule`. For example, if you don't want `UserService` to be available to applications unless they import a `UserModule` you've created, you can specify that the service should be provided in the module:
 
-<code-example path="providers/src/app/user.service.1.ts"  header="src/app/user.service.1.ts" linenums="false">  </code-example>
+<code-example path="providers/src/app/user.service.1.ts"  header="src/app/user.service.ts"></code-example>
 
 The example above shows the preferred way to provide a service in a module. This method is preferred because it enables tree-shaking of the service if nothing injects it. If it's not possible to specify in the service which module should provide it, you can also declare a provider for the service within the module:
 
-<code-example path="providers/src/app/user.module.ts"  header="src/app/user.module.ts" linenums="false">  </code-example>
+<code-example path="providers/src/app/user.module.ts"  header="src/app/user.module.ts"></code-example>
 
 ## Limiting provider scope by lazy loading modules
 
@@ -63,12 +57,11 @@ Though you can provide services by lazy loading modules, not all services can be
 
 Another way to limit provider scope is by adding the service you want to limit to the component’s
 `providers` array. Component providers and NgModule providers are independent of each other. This
-method is helpful for when you want to eagerly load a module that needs a service all to itself.
+method is helpful when you want to eagerly load a module that needs a service all to itself.
 Providing a service in the component limits the service only to that component (other components in
-the same module can’t access it.)
+the same module can’t access it).
 
-<code-example path="providers/src/app/app.component.ts" region="component-providers" header="src/app/app.component.ts" linenums="false">
-</code-example>
+<code-example path="providers/src/app/app.component.ts" region="component-providers" header="src/app/app.component.ts"></code-example>
 
 
 ## Providing services in modules vs. components

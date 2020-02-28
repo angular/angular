@@ -25,6 +25,26 @@ describe('project tsconfig paths', () => {
     expect(getProjectTsConfigPaths(testTree).buildPaths).toEqual(['my-custom-config.json']);
   });
 
+  it('should be able to read workspace configuration which is using JSON5 features', () => {
+    testTree.create('/my-build-config.json', '');
+    testTree.create('/angular.json', `{
+      // Comments, unquoted properties or trailing commas are only supported in JSON5.
+      projects: {
+        with_tests: {
+          targets: {
+            build: {
+              options: {
+                tsConfig: './my-build-config.json',
+              }
+            }
+          }
+        }
+      },
+    }`);
+
+    expect(getProjectTsConfigPaths(testTree).buildPaths).toEqual(['my-build-config.json']);
+  });
+
   it('should detect test tsconfig path inside of angular.json file', () => {
     testTree.create('/my-test-config.json', '');
     testTree.create('/angular.json', JSON.stringify({

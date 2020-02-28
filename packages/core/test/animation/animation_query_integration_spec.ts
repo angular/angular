@@ -8,13 +8,13 @@
 import {AUTO_STYLE, AnimationPlayer, animate, animateChild, group, query, sequence, stagger, state, style, transition, trigger, ɵAnimationGroupPlayer as AnimationGroupPlayer} from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine} from '@angular/animations/browser';
 import {matchesElement} from '@angular/animations/browser/src/render/shared';
+import {TransitionAnimationPlayer} from '@angular/animations/browser/src/render/transition_animation_engine';
 import {ENTER_CLASSNAME, LEAVE_CLASSNAME} from '@angular/animations/browser/src/util';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {CommonModule} from '@angular/common';
 import {Component, HostBinding, ViewChild} from '@angular/core';
 import {TestBed, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {ivyEnabled} from '@angular/private/testing';
 
 import {HostListener} from '../../src/metadata/directives';
 
@@ -260,7 +260,7 @@ import {HostListener} from '../../src/metadata/directives';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -338,7 +338,7 @@ import {HostListener} from '../../src/metadata/directives';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -404,7 +404,7 @@ import {HostListener} from '../../src/metadata/directives';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -484,7 +484,7 @@ import {HostListener} from '../../src/metadata/directives';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -559,7 +559,7 @@ import {HostListener} from '../../src/metadata/directives';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -611,7 +611,7 @@ import {HostListener} from '../../src/metadata/directives';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -670,7 +670,7 @@ import {HostListener} from '../../src/metadata/directives';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -723,7 +723,7 @@ import {HostListener} from '../../src/metadata/directives';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -780,7 +780,7 @@ import {HostListener} from '../../src/metadata/directives';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -832,7 +832,7 @@ import {HostListener} from '../../src/metadata/directives';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -894,7 +894,7 @@ import {HostListener} from '../../src/metadata/directives';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -940,7 +940,7 @@ import {HostListener} from '../../src/metadata/directives';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -992,7 +992,7 @@ import {HostListener} from '../../src/metadata/directives';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -1054,7 +1054,7 @@ import {HostListener} from '../../src/metadata/directives';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -1135,7 +1135,7 @@ import {HostListener} from '../../src/metadata/directives';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -1209,7 +1209,7 @@ import {HostListener} from '../../src/metadata/directives';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
            fixture.detectChanges();
@@ -1288,7 +1288,7 @@ import {HostListener} from '../../src/metadata/directives';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
            fixture.detectChanges();
@@ -1356,7 +1356,7 @@ import {HostListener} from '../../src/metadata/directives';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -1409,7 +1409,7 @@ import {HostListener} from '../../src/metadata/directives';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -1472,7 +1472,7 @@ import {HostListener} from '../../src/metadata/directives';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -1542,7 +1542,7 @@ import {HostListener} from '../../src/metadata/directives';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -1597,7 +1597,7 @@ import {HostListener} from '../../src/metadata/directives';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -1686,7 +1686,7 @@ import {HostListener} from '../../src/metadata/directives';
            class ParentCmp {
              public exp: any;
 
-             @ViewChild('child') public child: any;
+             @ViewChild('child', {static: true}) public child: any;
            }
 
            @Component({
@@ -1704,10 +1704,6 @@ import {HostListener} from '../../src/metadata/directives';
            TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
            const fixture = TestBed.createComponent(ParentCmp);
            const cmp = fixture.componentInstance;
-
-           // In Ivy, change detection needs to run before the ViewQuery for cmp.child will resolve.
-           // Keeping this test enabled since we still want to test the animation logic in Ivy.
-           if (ivyEnabled) fixture.detectChanges();
 
            cmp.child.items = [4, 5, 6];
            fixture.detectChanges();
@@ -1860,7 +1856,7 @@ import {HostListener} from '../../src/metadata/directives';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -1920,7 +1916,7 @@ import {HostListener} from '../../src/metadata/directives';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -1990,7 +1986,7 @@ import {HostListener} from '../../src/metadata/directives';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -2043,7 +2039,7 @@ import {HostListener} from '../../src/metadata/directives';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -2113,7 +2109,7 @@ import {HostListener} from '../../src/metadata/directives';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -2166,7 +2162,7 @@ import {HostListener} from '../../src/metadata/directives';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -2218,7 +2214,7 @@ import {HostListener} from '../../src/metadata/directives';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -2365,7 +2361,7 @@ import {HostListener} from '../../src/metadata/directives';
 
            TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(ParentCmp);
            const cmp = fixture.componentInstance;
 
@@ -2486,7 +2482,7 @@ import {HostListener} from '../../src/metadata/directives';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
            const container = fixture.elementRef.nativeElement;
@@ -2573,7 +2569,7 @@ import {HostListener} from '../../src/metadata/directives';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
         cmp.loading = true;
@@ -2670,7 +2666,7 @@ import {HostListener} from '../../src/metadata/directives';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -2713,7 +2709,7 @@ import {HostListener} from '../../src/metadata/directives';
 
         TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(ParentCmp);
         fixture.detectChanges();
         engine.flush();
@@ -2733,7 +2729,7 @@ import {HostListener} from '../../src/metadata/directives';
         expect(players.length).toEqual(2);
         expect(engine.players.length).toEqual(1);
 
-        expect(engine.players[0].getRealPlayer()).toBe(players[1]);
+        expect((engine.players[0] as TransitionAnimationPlayer).getRealPlayer()).toBe(players[1]);
       });
 
       it('should fire and synchronize the start/done callbacks on sub triggers even if they are not allowed to animate within the animation',
@@ -2798,7 +2794,7 @@ import {HostListener} from '../../src/metadata/directives';
            }
 
            TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(ParentCmp);
            fixture.detectChanges();
            flushMicrotasks();
@@ -2901,7 +2897,7 @@ import {HostListener} from '../../src/metadata/directives';
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            fixture.detectChanges();
            flushMicrotasks();
@@ -2957,7 +2953,7 @@ import {HostListener} from '../../src/metadata/directives';
 
            TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(ParentCmp);
            fixture.detectChanges();
            engine.flush();
@@ -2972,7 +2968,8 @@ import {HostListener} from '../../src/metadata/directives';
            engine.flush();
 
            expect(engine.players.length).toEqual(1);  // child player, parent cover, parent player
-           const groupPlayer = engine.players[0].getRealPlayer() as AnimationGroupPlayer;
+           const groupPlayer = (engine.players[0] as TransitionAnimationPlayer)
+                                   .getRealPlayer() as AnimationGroupPlayer;
            const childPlayer = groupPlayer.players.find(player => {
              if (player instanceof MockAnimationPlayer) {
                return matchesElement(player.element, '.child');
@@ -3049,7 +3046,7 @@ import {HostListener} from '../../src/metadata/directives';
 
            TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp, GrandChildCmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(ParentCmp);
            fixture.detectChanges();
            engine.flush();

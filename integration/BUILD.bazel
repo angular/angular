@@ -1,0 +1,99 @@
+load(":angular_integration_test.bzl", "angular_integration_test")
+
+# Some integration ports must be managed manually to be unique and in other
+# cases the tests are able to select a random free port.
+#
+# Where `ng e2e` is used we pass `ng e2e --port 0` which prompts the cli
+# to select a random free port for the the e2e test. The protractor.conf is
+# automaticaly updated to use this port.
+#
+# Karma automatically finds a free port so no effort is needed there.
+#
+# The manually configured ports are as follows:
+#
+#   TEST                                PORT        CONFIGURATION
+#   ====                                ====        =============
+#   dynamic-compiler                    4201        /e2e/browser.config.json: "port": 4201
+#   hello_world__closure                4202        /e2e/browser.config.json: "port": 4202
+#   hello_world__systemjs_umd           4203        /bs-config.e2e.json: "port": 4203
+#   i18n                                4204        /e2e/browser.config.json: "port": 4204
+#   ng_elements                         4205        /e2e/browser.config.json: "port": 4205
+#   platform-server                     4206        /src/server.ts: app.listen(4206,...
+
+# Map of integration tests to tags.
+# A subset of these tests fail or are not meant to be run with ivy bundles. These are tagged
+# "no-ivy-aot".
+INTEGRATION_TESTS = {
+    "bazel": [
+        # Bazel-in-bazel tests are resource intensive and should not be over-parallized
+        # as they will compete for the resources of other parallel tests slowing
+        # everything down. Ask Bazel to allocate multiple CPUs for these tests with "cpu:n" tag.
+        "cpu:3",
+        "no-ivy-aot",
+    ],
+    "bazel-schematics": [
+        # Bazel-in-bazel tests are resource intensive and should not be over-parallized
+        # as they will complete for the resources of other parallel tests slowing
+        # everything down. Ask Bazel to allocate multiple CPUs for these tests with "cpu:n" tag.
+        "cpu:3",
+        "no-ivy-aot",
+    ],
+    "cli-hello-world": [],
+    "cli-hello-world-ivy-compat": [],
+    "cli-hello-world-ivy-i18n": ["no-ivy-aot"],
+    "cli-hello-world-ivy-minimal": [],
+    "cli-hello-world-lazy": [],
+    "cli-hello-world-lazy-rollup": [],
+    "dynamic-compiler": ["no-ivy-aot"],
+    "hello_world__closure": ["no-ivy-aot"],
+    "i18n": ["no-ivy-aot"],
+    "injectable-def": ["no-ivy-aot"],
+    "ivy-i18n": ["no-ivy-aot"],
+    "language_service_plugin": [],
+    "ng_elements": ["no-ivy-aot"],
+    "ng_elements_schematics": ["no-ivy-aot"],
+    "ng_update": [],
+    "ng_update_migrations": ["no-ivy-aot"],
+    "ngcc": ["no-ivy-aot"],
+    "platform-server": ["no-ivy-aot"],
+    "service-worker-schema": [],
+    "side-effects": ["no-ivy-aot"],
+    "terser": [],
+}
+
+[
+    angular_integration_test(
+        name = test_folder + "_test",
+        tags = INTEGRATION_TESTS[test_folder],
+        test_folder = test_folder,
+    )
+    for test_folder in INTEGRATION_TESTS
+]
+
+# Special case for `typings_test_ts36` test as we want to pin
+# `typescript` at version 3.6.x for that test and not link to the
+# root @npm//typescript package.
+angular_integration_test(
+    name = "typings_test_ts36_test",
+    pinned_npm_packages = ["typescript"],
+    test_folder = "typings_test_ts36",
+)
+
+# Special case for `typings_test_ts37` test as we want to pin
+# `typescript` at version 3.7.x for that test and not link to the
+# root @npm//typescript package.
+angular_integration_test(
+    name = "typings_test_ts37_test",
+    pinned_npm_packages = ["typescript"],
+    test_folder = "typings_test_ts37",
+)
+
+# Special case for `hello_world__systemjs_umd` test as we want to pin
+# `systems` at version 0.20.2 and not link to the the root @npm//systemjs
+# which is stuck at 0.18.10 and can't be updated to 0.20.2 without
+# breaking the legacy saucelabs job.
+angular_integration_test(
+    name = "hello_world__systemjs_umd_test",
+    pinned_npm_packages = ["systemjs"],
+    test_folder = "hello_world__systemjs_umd",
+)

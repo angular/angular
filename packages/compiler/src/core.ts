@@ -17,7 +17,7 @@ import {CssSelector} from './selector';
 export interface Inject { token: any; }
 export const createInject = makeMetadataFactory<Inject>('Inject', (token: any) => ({token}));
 export const createInjectionToken = makeMetadataFactory<object>(
-    'InjectionToken', (desc: string) => ({_desc: desc, ngInjectableDef: undefined}));
+    'InjectionToken', (desc: string) => ({_desc: desc, ɵprov: undefined}));
 
 export interface Attribute { attributeName?: string; }
 export const createAttribute =
@@ -491,5 +491,21 @@ export const enum AttributeMarker {
    * ['attr', 'value', AttributeMarker.ProjectAs, ['', 'title', '']]
    * ```
    */
-  ProjectAs = 5
+  ProjectAs = 5,
+
+  /**
+   * Signals that the following attribute will be translated by runtime i18n
+   *
+   * For example, given the following HTML:
+   *
+   * ```
+   * <div moo="car" foo="value" i18n-foo [bar]="binding" i18n-bar>
+   * ```
+   *
+   * the generated code is:
+   *
+   * ```
+   * var _c1 = ['moo', 'car', AttributeMarker.I18n, 'foo', 'bar'];
+   */
+  I18n = 6,
 }

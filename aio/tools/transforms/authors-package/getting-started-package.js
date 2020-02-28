@@ -16,7 +16,7 @@ const { CONTENTS_PATH } = require('../config');
 
 function createPackage(tutorialName) {
 
-  const tutorialFilePath = `${CONTENTS_PATH}/getting-started/${tutorialName}.md`;
+  const tutorialFilePath = `${CONTENTS_PATH}/start/${tutorialName}.md`;
   const tutorialFile = readFileSync(tutorialFilePath, 'utf8');
   const examples = [];
   tutorialFile.replace(/<code-(?:pane|example) [^>]*path="([^"]+)"/g, (_, path) => examples.push('examples/' + path));

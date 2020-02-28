@@ -5,24 +5,24 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {CompileQueryMetadata, CompilerConfig, ProxyClass, StaticSymbol, preserveWhitespacesDefault} from '@angular/compiler';
-import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeMetadata, CompilePipeSummary, CompileProviderMetadata, CompileTemplateMetadata, CompileTokenMetadata, CompileTypeMetadata, tokenReference} from '@angular/compiler/src/compile_metadata';
+import {preserveWhitespacesDefault} from '@angular/compiler';
+import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeMetadata, CompilePipeSummary, CompileProviderMetadata, CompileTemplateMetadata, CompileTokenMetadata, tokenReference} from '@angular/compiler/src/compile_metadata';
 import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
 import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema_registry';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ProviderAstType, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '@angular/compiler/src/template_parser/template_ast';
 import {TemplateParser, splitClasses} from '@angular/compiler/src/template_parser/template_parser';
-import {ChangeDetectionStrategy, ComponentFactory, RendererType2, SchemaMetadata, SecurityContext, ViewEncapsulation} from '@angular/core';
+import {SchemaMetadata, SecurityContext} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {TestBed, inject} from '@angular/core/testing';
 import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
 
-import {CompileEntryComponentMetadata, CompileStylesheetMetadata} from '../../src/compile_metadata';
 import {Identifiers, createTokenForExternalReference, createTokenForReference} from '../../src/identifiers';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../src/ml_parser/interpolation_config';
-import {noUndefined} from '../../src/util';
+import {newArray} from '../../src/util';
 import {MockSchemaRegistry} from '../../testing';
 import {unparse} from '../expression_parser/utils/unparser';
 import {TEST_COMPILER_PROVIDERS} from '../test_bindings';
+import {compileDirectiveMetadataCreate, compileTemplateMetadata, createTypeMeta} from './util/metadata';
 
 const someModuleUrl = 'package:someModule';
 
@@ -32,88 +32,6 @@ const MOCK_SCHEMA_REGISTRY = [{
       {'invalidProp': false}, {'mappedAttr': 'mappedProp'}, {'unknown': false, 'un-known': false},
       ['onEvent'], ['onEvent']),
 }];
-
-function createTypeMeta({reference, diDeps}: {reference: any, diDeps?: any[]}):
-    CompileTypeMetadata {
-  return {reference: reference, diDeps: diDeps || [], lifecycleHooks: []};
-}
-
-function compileDirectiveMetadataCreate(
-    {isHost, type, isComponent, selector, exportAs, changeDetection, inputs, outputs, host,
-     providers, viewProviders, queries, guards, viewQueries, entryComponents, template,
-     componentViewType, rendererType}: {
-      isHost?: boolean,
-      type?: CompileTypeMetadata,
-      isComponent?: boolean,
-      selector?: string | null,
-      exportAs?: string | null,
-      changeDetection?: ChangeDetectionStrategy | null,
-      inputs?: string[],
-      outputs?: string[],
-      host?: {[key: string]: string},
-      providers?: CompileProviderMetadata[] | null,
-      viewProviders?: CompileProviderMetadata[] | null,
-      queries?: CompileQueryMetadata[] | null,
-      guards?: {[key: string]: any},
-      viewQueries?: CompileQueryMetadata[],
-      entryComponents?: CompileEntryComponentMetadata[],
-      template?: CompileTemplateMetadata,
-      componentViewType?: StaticSymbol | ProxyClass | null,
-      rendererType?: StaticSymbol | RendererType2 | null,
-    }) {
-  return CompileDirectiveMetadata.create({
-    isHost: !!isHost,
-    type: noUndefined(type) !,
-    isComponent: !!isComponent,
-    selector: noUndefined(selector),
-    exportAs: noUndefined(exportAs),
-    changeDetection: null,
-    inputs: inputs || [],
-    outputs: outputs || [],
-    host: host || {},
-    providers: providers || [],
-    viewProviders: viewProviders || [],
-    queries: queries || [],
-    guards: guards || {},
-    viewQueries: viewQueries || [],
-    entryComponents: entryComponents || [],
-    template: noUndefined(template) !,
-    componentViewType: noUndefined(componentViewType),
-    rendererType: noUndefined(rendererType),
-    componentFactory: null,
-  });
-}
-
-function compileTemplateMetadata({encapsulation, template, templateUrl, styles, styleUrls,
-                                  externalStylesheets, animations, ngContentSelectors,
-                                  interpolation, isInline, preserveWhitespaces}: {
-  encapsulation?: ViewEncapsulation | null,
-  template?: string | null,
-  templateUrl?: string | null,
-  styles?: string[],
-  styleUrls?: string[],
-  externalStylesheets?: CompileStylesheetMetadata[],
-  ngContentSelectors?: string[],
-  animations?: any[],
-  interpolation?: [string, string] | null,
-  isInline?: boolean,
-  preserveWhitespaces?: boolean | null,
-}): CompileTemplateMetadata {
-  return new CompileTemplateMetadata({
-    encapsulation: noUndefined(encapsulation),
-    template: noUndefined(template),
-    templateUrl: noUndefined(templateUrl),
-    htmlAst: null,
-    styles: styles || [],
-    styleUrls: styleUrls || [],
-    externalStylesheets: externalStylesheets || [],
-    animations: animations || [],
-    ngContentSelectors: ngContentSelectors || [],
-    interpolation: noUndefined(interpolation),
-    isInline: !!isInline,
-    preserveWhitespaces: preserveWhitespacesDefault(noUndefined(preserveWhitespaces)),
-  });
-}
 
 
 function humanizeTplAst(
@@ -481,7 +399,7 @@ class ArrayConsole implements Console {
         new BoundDirectivePropertyAst('foo', 'bar', null !, null !)
       ];
       const result = templateVisitAll(visitor, nodes, null);
-      expect(result).toEqual(new Array(nodes.length).fill(true));
+      expect(result).toEqual(newArray(nodes.length).fill(true));
     });
   });
 
@@ -648,6 +566,16 @@ class ArrayConsole implements Console {
           ]);
         });
 
+        it('should parse mixed case bound attributes with dot in the attribute name', () => {
+          expect(humanizeTplAst(parse('<div [attr.someAttr.someAttrSuffix]="v">', []))).toEqual([
+            [ElementAst, 'div'],
+            [
+              BoundElementPropertyAst, PropertyBindingType.Attribute, 'someAttr.someAttrSuffix',
+              'v', null
+            ]
+          ]);
+        });
+
         it('should parse and dash case bound classes', () => {
           expect(humanizeTplAst(parse('<div [class.some-class]="v">', []))).toEqual([
             [ElementAst, 'div'],
@@ -730,6 +658,11 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           ]);
         });
 
+        it('should report missing property names in bind- syntax', () => {
+          expect(() => parse('<div bind-></div>', [])).toThrowError(`Template parse errors:
+Property name is missing in binding ("<div [ERROR ->]bind-></div>"): TestComp@0:5`);
+        });
+
         it('should parse bound properties via {{...}} and not report them as attributes', () => {
           expect(humanizeTplAst(parse('<div prop="{{v}}">', []))).toEqual([
             [ElementAst, 'div'],
@@ -755,6 +688,11 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
                  .toThrowError(
                      /Assigning animation triggers via @prop="exp" attributes with an expression is invalid. Use property bindings \(e.g. \[@prop\]="exp"\) or use an attribute without a value \(e.g. @prop\) instead. \("<div \[ERROR ->\]@someAnimation="value2">"\): TestComp@0:5/);
            });
+
+        it('should report missing animation trigger in @ syntax', () => {
+          expect(() => parse('<div @></div>', [])).toThrowError(`Template parse errors:
+Animation trigger is missing ("<div [ERROR ->]@></div>"): TestComp@0:5`);
+        });
 
         it('should not issue a warning when host attributes contain a valid property-bound animation trigger',
            () => {
@@ -876,6 +814,11 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           ]))).toEqual([[ElementAst, 'div'], [BoundEventAst, 'event', null, 'v']]);
         });
 
+        it('should report missing event names in on- syntax', () => {
+          expect(() => parse('<div on-></div>', []))
+              .toThrowError(/Event name is missing in binding/);
+        });
+
         it('should allow events on explicit embedded templates that are emitted by a directive',
            () => {
              const dirA =
@@ -912,6 +855,10 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
              ]);
            });
 
+        it('should report missing property names in bindon- syntax', () => {
+          expect(() => parse('<div bindon-></div>', []))
+              .toThrowError(/Property name is missing in binding/);
+        });
       });
 
       describe('directives', () => {
@@ -1136,9 +1083,10 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
         }
 
         function createDir(
-            selector: string, {providers = null, viewProviders = null, deps = [], queries = []}: {
-              providers?: CompileProviderMetadata[] | null,
-              viewProviders?: CompileProviderMetadata[] | null,
+            selector: string,
+            {providers = undefined, viewProviders = undefined, deps = [], queries = []}: {
+              providers?: CompileProviderMetadata[] | undefined,
+              viewProviders?: CompileProviderMetadata[] | undefined,
               deps?: string[],
               queries?: string[]
             } = {}): CompileDirectiveSummary {
@@ -1443,9 +1391,20 @@ There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"><
 "-" is not allowed in reference names ("<div [ERROR ->]#a-b></div>"): TestComp@0:5`);
         });
 
+        it('should report missing reference names', () => {
+          expect(() => parse('<div #></div>', [])).toThrowError(`Template parse errors:
+Reference does not have a name ("<div [ERROR ->]#></div>"): TestComp@0:5`);
+        });
+
         it('should report variables as errors', () => {
           expect(() => parse('<div let-a></div>', [])).toThrowError(`Template parse errors:
 "let-" is only supported on ng-template elements. ("<div [ERROR ->]let-a></div>"): TestComp@0:5`);
+        });
+
+        it('should report missing variable names', () => {
+          expect(() => parse('<ng-template let-></ng-template>', []))
+              .toThrowError(`Template parse errors:
+Variable does not have a name ("<ng-template [ERROR ->]let-></ng-template>"): TestComp@0:13`);
         });
 
         it('should report duplicate reference names', () => {
@@ -1888,7 +1847,7 @@ Can't bind to 'invalidProp' since it isn't a known property of 'div'. ("[ERROR -
 
       it('should report errors in expressions', () => {
         expect(() => parse('<div [prop]="a b"></div>', [])).toThrowError(`Template parse errors:
-Parser Error: Unexpected token 'b' at column 3 in [a b] in TestComp@0:5 ("<div [ERROR ->][prop]="a b"></div>"): TestComp@0:5`);
+Parser Error: Unexpected token 'b' at column 3 in [a b] in TestComp@0:13 ("<div [prop]="[ERROR ->]a b"></div>"): TestComp@0:13`);
       });
 
       it('should not throw on invalid property names if the property is used by a directive',

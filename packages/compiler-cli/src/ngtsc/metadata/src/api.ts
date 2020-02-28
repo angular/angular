@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DirectiveMeta as T2DirectiveMeta} from '@angular/compiler';
+import {DirectiveMeta as T2DirectiveMeta, SchemaMetadata} from '@angular/compiler';
+import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
+
 
 /**
  * Metadata collected for an `NgModule`.
@@ -19,6 +21,15 @@ export interface NgModuleMeta {
   declarations: Reference<ClassDeclaration>[];
   imports: Reference<ClassDeclaration>[];
   exports: Reference<ClassDeclaration>[];
+  schemas: SchemaMetadata[];
+
+  /**
+   * The raw `ts.Expression` which gave rise to `declarations`, if one exists.
+   *
+   * If this is `null`, then either no declarations exist, or no expression was available (likely
+   * because the module came from a .d.ts file).
+   */
+  rawDeclarations: ts.Expression|null;
 }
 
 /**
@@ -27,12 +38,13 @@ export interface NgModuleMeta {
 export interface DirectiveMeta extends T2DirectiveMeta {
   ref: Reference<ClassDeclaration>;
   /**
-   * Unparsed selector of the directive.
+   * Unparsed selector of the directive, or null if the directive does not have a selector.
    */
-  selector: string;
+  selector: string|null;
   queries: string[];
-  ngTemplateGuards: string[];
+  ngTemplateGuards: TemplateGuardMeta[];
   hasNgTemplateContextGuard: boolean;
+  coercedInputFields: Set<string>;
 
   /**
    * A `Reference` to the base class for the directive, if one was detected.
@@ -41,6 +53,25 @@ export interface DirectiveMeta extends T2DirectiveMeta {
    * another type, it could not statically determine the base class.
    */
   baseClass: Reference<ClassDeclaration>|'dynamic'|null;
+}
+
+/**
+ * Metadata that describes a template guard for one of the directive's inputs.
+ */
+export interface TemplateGuardMeta {
+  /**
+   * The input name that this guard should be applied to.
+   */
+  inputName: string;
+
+  /**
+   * Represents the type of the template guard.
+   *
+   * - 'invocation' means that a call to the template guard function is emitted so that its return
+   *   type can result in narrowing of the input type.
+   * - 'binding' means that the input binding expression itself is used as template guard.
+   */
+  type: 'invocation'|'binding';
 }
 
 /**

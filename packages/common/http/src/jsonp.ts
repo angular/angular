@@ -39,8 +39,10 @@ export const JSONP_ERR_WRONG_RESPONSE_TYPE = 'JSONP requests must use Json respo
 export abstract class JsonpCallbackContext { [key: string]: (data: any) => void; }
 
 /**
- * `HttpBackend` that only processes `HttpRequest` with the JSONP method,
+ * Processes an `HttpRequest` with the JSONP method,
  * by performing JSONP style requests.
+ * @see `HttpHandler`
+ * @see `HttpXhrBackend`
  *
  * @publicApi
  */
@@ -54,7 +56,10 @@ export class JsonpClientBackend implements HttpBackend {
   private nextCallback(): string { return `ng_jsonp_callback_${nextRequestId++}`; }
 
   /**
-   * Process a JSONP request and return an event stream of the results.
+   * Processes a JSONP request and returns an event stream of the results.
+   * @param req The request object.
+   * @returns An observable of the response events.
+   *
    */
   handle(req: HttpRequest<never>): Observable<HttpEvent<any>> {
     // Firstly, check both the method and response type. If either doesn't match
@@ -203,8 +208,10 @@ export class JsonpClientBackend implements HttpBackend {
 }
 
 /**
- * An `HttpInterceptor` which identifies requests with the method JSONP and
+ * Identifies requests with the method JSONP and
  * shifts them to the `JsonpClientBackend`.
+ *
+ * @see `HttpInterceptor`
  *
  * @publicApi
  */
@@ -212,6 +219,13 @@ export class JsonpClientBackend implements HttpBackend {
 export class JsonpInterceptor {
   constructor(private jsonp: JsonpClientBackend) {}
 
+  /**
+   * Identifies and handles a given JSONP request.
+   * @param req The outgoing request object to handle.
+   * @param next The next interceptor in the chain, or the backend
+   * if no interceptors remain in the chain.
+   * @returns An observable of the event stream.
+   */
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (req.method === 'JSONP') {
       return this.jsonp.handle(req as HttpRequest<never>);

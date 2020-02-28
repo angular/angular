@@ -7,10 +7,10 @@
  */
 
 import {Type, isType} from '../interface/type';
+import {newArray} from '../util/array_utils';
 import {ANNOTATIONS, PARAMETERS, PROP_METADATA} from '../util/decorators';
 import {global} from '../util/global';
 import {stringify} from '../util/stringify';
-
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
 import {GetterFn, MethodFn, SetterFn} from './types';
 
@@ -26,6 +26,19 @@ export const INHERITED_CLASS_WITH_CTOR =
 export const INHERITED_CLASS_WITH_DELEGATE_CTOR =
     /^class\s+[A-Za-z\d$_]*\s*extends\s+[^{]+{[\s\S]*constructor\s*\(\)\s*{\s+super\(\.\.\.arguments\)/;
 
+/**
+ * Determine whether a stringified type is a class which delegates its constructor
+ * to its parent.
+ *
+ * This is not trivial since compiled code can actually contain a constructor function
+ * even if the original source code did not. For instance, when the child class contains
+ * an initialized instance property.
+ */
+export function isDelegateCtor(typeStr: string): boolean {
+  return DELEGATE_CTOR.test(typeStr) || INHERITED_CLASS_WITH_DELEGATE_CTOR.test(typeStr) ||
+      (INHERITED_CLASS.test(typeStr) && !INHERITED_CLASS_WITH_CTOR.test(typeStr));
+}
+
 export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   private _reflect: any;
 
@@ -40,9 +53,9 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     let result: any[][];
 
     if (typeof paramTypes === 'undefined') {
-      result = new Array(paramAnnotations.length);
+      result = newArray(paramAnnotations.length);
     } else {
-      result = new Array(paramTypes.length);
+      result = newArray(paramTypes.length);
     }
 
     for (let i = 0; i < result.length; i++) {
@@ -51,7 +64,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
       // migration, but this can be revisited.
       if (typeof paramTypes === 'undefined') {
         result[i] = [];
-      } else if (paramTypes[i] != Object) {
+      } else if (paramTypes[i] && paramTypes[i] != Object) {
         result[i] = [paramTypes[i]];
       } else {
         result[i] = [];
@@ -72,8 +85,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     // This also helps to work around for https://github.com/Microsoft/TypeScript/issues/12439
     // that sets 'design:paramtypes' to []
     // if a class inherits from another class but has no ctor declared itself.
-    if (DELEGATE_CTOR.exec(typeStr) || INHERITED_CLASS_WITH_DELEGATE_CTOR.exec(typeStr) ||
-        (INHERITED_CLASS.exec(typeStr) && !INHERITED_CLASS_WITH_CTOR.exec(typeStr))) {
+    if (isDelegateCtor(typeStr)) {
       return null;
     }
 
@@ -108,7 +120,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     // based on function.length.
     // Note: We know that this is a real constructor as we checked
     // the content of the constructor above.
-    return new Array((<any>type.length)).fill(undefined);
+    return newArray<any[]>(type.length);
   }
 
   parameters(type: Type<any>): any[][] {

@@ -8,7 +8,7 @@
 
 import {fakeAsync, tick} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
-import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors} from '@angular/forms';
+import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn} from '@angular/forms';
 import {Validators} from '@angular/forms/src/validators';
 import {of } from 'rxjs';
 
@@ -16,7 +16,7 @@ import {of } from 'rxjs';
   function asyncValidator(expected: string, timeouts = {}) {
     return (c: AbstractControl) => {
       let resolve: (result: any) => void = undefined !;
-      const promise = new Promise(res => { resolve = res; });
+      const promise = new Promise<ValidationErrors|null>(res => { resolve = res; });
       const t = (timeouts as any)[c.value] != null ? (timeouts as any)[c.value] : 0;
       const res = c.value != expected ? {'async': true} : null;
 
@@ -626,7 +626,7 @@ import {of } from 'rxjs';
             c.controls[0].value != 'correct' ? {'broken': true} : null;
 
         const c = new FormControl(null);
-        const g = new FormArray([c], simpleValidator);
+        const g = new FormArray([c], simpleValidator as ValidatorFn);
 
         c.setValue('correct');
 

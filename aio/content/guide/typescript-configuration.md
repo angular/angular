@@ -1,10 +1,10 @@
-# TypeScript Configuration
+# TypeScript configuration
 
 TypeScript is a primary language for Angular application development.
 It is a superset of JavaScript with design-time support for type safety and tooling.
 
-Browsers can't execute TypeScript directly. Typescript must be "transpiled" into JavaScript using the *tsc* compiler,
-which requires some configuration.
+Browsers can't execute TypeScript directly.
+Typescript must be "transpiled" into JavaScript using the *tsc* compiler, which requires some configuration.
 
 This page covers some aspects of TypeScript configuration and the TypeScript environment
 that are important to Angular developers, including details about the following files:
@@ -15,42 +15,49 @@ that are important to Angular developers, including details about the following 
 
 {@a tsconfig}
 
+## TypeScript configuration
 
-
-## *tsconfig.json*
-Typically, you add a TypeScript configuration file called `tsconfig.json` to your project to
-guide the compiler as it generates JavaScript files.
+A TypeScript configuration file called `tsconfig.json` guides the compiler as it generates JavaScript files for a project.
+This file contains options and flags that are essential for Angular applications.
+Typically, the file is found at the [root level of the workspace](guide/file-structure).
 
 <div class="alert is-helpful">
-
-
 
 For details about `tsconfig.json`, see the official
 [TypeScript wiki](http://www.typescriptlang.org/docs/handbook/tsconfig-json.html).
 
 </div>
 
-
-
-The [Setup](guide/setup) guide uses the following `tsconfig.json`:
+The initial `tsconfig.json` for an Angular app typically looks like the following example.
 
 <code-example lang="json" header="tsconfig.json" linenums="false">
-  {
-    "compilerOptions": {
-      "target": "es5",
-      "module": "commonjs",
-      "moduleResolution": "node",
-      "sourceMap": true,
-      "emitDecoratorMetadata": true,
-      "experimentalDecorators": true,
-      "lib": [ "es2015", "dom" ],
-      "noImplicitAny": true,
-      "suppressImplicitAnyIndexErrors": true
-    }
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "declaration": false,
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "target": "es2015",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "lib": [
+      "es2018",
+      "dom"
+    ]
+  },
+  "angularCompilerOptions": {
+    "fullTemplateTypeCheck": true,
+    "strictInjectionParameters": true
   }
+}
 </code-example>
-
-This file contains options and flags that are essential for Angular applications.
 
 
 {@a noImplicitAny}
@@ -66,7 +73,6 @@ When the `noImplicitAny` flag is `false` (the default), and if
 the compiler cannot infer the variable type based on how it's used,
 the compiler silently defaults the type to `any`. That's what is meant by *implicit `any`*.
 
-The documentation setup sets the `noImplicitAny` flag to `true`.
 When the `noImplicitAny` flag is `true` and the TypeScript compiler cannot infer
 the type, it still generates the JavaScript files, but it also **reports an error**.
 Many seasoned developers prefer this stricter setting because type checking catches more
@@ -78,21 +84,22 @@ When the `noImplicitAny` flag is `true`, you may get *implicit index errors* as 
 Most developers feel that *this particular error* is more annoying than helpful.
 You can suppress them with the following additional flag:
 
-<code-example format=".">
-  "suppressImplicitAnyIndexErrors":true
+<code-example>
+
+  "suppressImplicitAnyIndexErrors": true
 
 </code-example>
 
+<div class="alert is-helpful">
 
+For more information about how the TypeScript configuration affects compilation, see [Angular Compiler Options](guide/angular-compiler-options) and [Template Type Checking](guide/template-typecheck).
 
-The documentation setup sets this flag to `true` as well.
-
+</div>
 
 {@a typings}
 
+## TypeScript typings
 
-
-## TypeScript Typings
 Many JavaScript libraries, such as jQuery, the Jasmine testing library, and Angular,
 extend the JavaScript environment with features and syntax
 that the TypeScript compiler doesn't recognize natively.
@@ -106,8 +113,12 @@ Many libraries include definition files in their npm packages where both the Typ
 can find them. Angular is one such library.
 The `node_modules/@angular/core/` folder of any Angular application contains several `d.ts` files that describe parts of Angular.
 
-**You need do nothing to get *typings* files for library packages that include `d.ts` files.
-Angular packages include them already.**
+<div class="alert is-helpful">
+
+You don't need to do anything to get *typings* files for library packages that include `d.ts` files.
+Angular packages include them already.
+
+</div>
 
 ### lib.d.ts
 
@@ -116,20 +127,12 @@ TypeScript includes a special declaration file called `lib.d.ts`. This file cont
 Based on the `--target`, TypeScript adds _additional_ ambient declarations
 like `Promise` if the target is `es6`.
 
-Since the QuickStart is targeting `es5`, you can override the
-list of declaration files to be included:
+By default, the target is `es2015`. If you are targeting `es5`, you still have newer type declarations due to the list of declaration files included:
 
-
-<code-example format=".">
-  "lib": ["es2015", "dom"]
-
-</code-example>
-
-
-
-Thanks to that, you have all the `es6` typings even when targeting `es5`.
+<code-example path="getting-started/tsconfig.0.json" header="tsconfig.json (lib excerpt)" region="lib"></code-example>
 
 ### Installable typings files
+
 Many libraries&mdash;jQuery, Jasmine, and Lodash among them&mdash;do *not* include `d.ts` files in their npm packages.
 Fortunately, either their authors or community contributors have created separate `d.ts` files for these libraries and
 published them in well-known locations.
@@ -138,17 +141,7 @@ You can install these typings via `npm` using the
 [`@types/*` scoped package](http://www.typescriptlang.org/docs/handbook/declaration-files/consumption.html)
 and Typescript, starting at 2.0, automatically recognizes them.
 
-For instance, to install typings for `jasmine` you could do `npm install @types/jasmine --save-dev`.
-
-
-QuickStart identifies two *typings*, or `d.ts`, files:
-
-* [jasmine](http://jasmine.github.io/) typings for the Jasmine test framework.
-
-* [node](https://www.npmjs.com/package/@types/node) for code that references objects in the *Node.js®* environment;
-
-
-QuickStart doesn't require these typings but many of the samples do.
+For instance, to install typings for `jasmine` you run `npm install @types/jasmine --save-dev`.
 
 
 {@a target}
@@ -156,5 +149,4 @@ QuickStart doesn't require these typings but many of the samples do.
 
 ### *target*
 
-By default, the target is `es5`, you can configure the target to `es6` if you only want to deploy the application to
-es6 compatible browser. But if you configure the target to `es6` in some old browser such as `IE`, `Syntax Error` will be thrown.
+By default, the target is `es2015`, which is supported only in modern browsers. You can configure the target to `es5` to specifically support legacy browsers. [Differential loading](guide/deployment#differential-loading) is also provided by the Angular CLI to support modern, and legacy browsers with separate bundles.

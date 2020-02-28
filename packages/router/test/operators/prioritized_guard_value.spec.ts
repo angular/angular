@@ -25,7 +25,7 @@ describe('prioritizedGuardValue operator', () => {
 
   beforeEach(() => { TestBed.configureTestingModule({imports: [RouterTestingModule]}); });
   beforeEach(() => { testScheduler = new TestScheduler(assertDeepEquals); });
-  beforeEach(() => { router = TestBed.get(Router); });
+  beforeEach(() => { router = TestBed.inject(Router); });
 
   it('should return true if all values are true', () => {
     testScheduler.run(({hot, cold, expectObservable}) => {

@@ -21,14 +21,14 @@ describe('template variable assignment migration', () => {
   let warnOutput: string[];
 
   beforeEach(() => {
-    runner = new SchematicTestRunner('test', require.resolve('../test-migrations.json'));
+    runner = new SchematicTestRunner('test', require.resolve('../migrations.json'));
     host = new TempScopedNodeJsSyncHost();
     tree = new UnitTestTree(new HostTree(host));
 
     writeFile('/tsconfig.json', JSON.stringify({
       compilerOptions: {
         lib: ['es2015'],
-      }
+      },
     }));
     writeFile('/angular.json', JSON.stringify({
       projects: {t: {architect: {build: {options: {tsConfig: './tsconfig.json'}}}}}
@@ -58,9 +58,11 @@ describe('template variable assignment migration', () => {
     host.sync.write(normalize(filePath), virtualFs.stringToFileBuffer(contents));
   }
 
-  function runMigration() { runner.runSchematic('migration-template-local-variables', {}, tree); }
+  function runMigration() {
+    return runner.runSchematicAsync('migration-v8-template-local-variables', {}, tree).toPromise();
+  }
 
-  it('should warn for two-way data binding variable assignment', () => {
+  it('should warn for two-way data binding variable assignment', async() => {
     writeFile('/index.ts', `
       import {Component} from '@angular/core';
 
@@ -70,13 +72,13 @@ describe('template variable assignment migration', () => {
       export class MyComp {}
     `);
 
-    runMigration();
+    await runMigration();
 
     expect(warnOutput.length).toBe(1);
     expect(warnOutput[0]).toMatch(/^⮑ {3}index.ts@5:69: Found assignment/);
   });
 
-  it('should warn for two-way data binding assigning to "as" variable', () => {
+  it('should warn for two-way data binding assigning to "as" variable', async() => {
     writeFile('/index.ts', `
       import {Component} from '@angular/core';
 
@@ -92,13 +94,13 @@ describe('template variable assignment migration', () => {
       </div>
     `);
 
-    runMigration();
+    await runMigration();
 
     expect(warnOutput.length).toBe(1);
     expect(warnOutput).toMatch(/^⮑ {3}tmpl.html@3:31: Found assignment/);
   });
 
-  it('should warn for bound event assignments to "as" variable', () => {
+  it('should warn for bound event assignments to "as" variable', async() => {
     writeFile('/index.ts', `
       import {Component} from '@angular/core';
 
@@ -115,14 +117,14 @@ describe('template variable assignment migration', () => {
       </div>
     `);
 
-    runMigration();
+    await runMigration();
 
     expect(warnOutput.length).toBe(2);
     expect(warnOutput[0]).toMatch(/^⮑ {3}sub_dir\/tmpl.html@3:25: Found assignment/);
     expect(warnOutput[1]).toMatch(/^⮑ {3}sub_dir\/tmpl.html@4:25: Found assignment/);
   });
 
-  it('should warn for bound event assignments to template "let" variables', () => {
+  it('should warn for bound event assignments to template "let" variables', async() => {
     writeFile('/index.ts', `
       import {Component} from '@angular/core';
 
@@ -139,14 +141,14 @@ describe('template variable assignment migration', () => {
       </ng-template>
     `);
 
-    runMigration();
+    await runMigration();
 
     expect(warnOutput.length).toBe(2);
     expect(warnOutput[0]).toMatch(/^⮑ {3}sub_dir\/tmpl.html@3:25: Found assignment/);
     expect(warnOutput[1]).toMatch(/^⮑ {3}sub_dir\/tmpl.html@4:25: Found assignment/);
   });
 
-  it('should not warn for bound event assignments to component property', () => {
+  it('should not warn for bound event assignments to component property', async() => {
     writeFile('/index.ts', `
       import {Component} from '@angular/core';
 
@@ -158,13 +160,14 @@ describe('template variable assignment migration', () => {
 
     writeFile('/sub_dir/tmpl.html', `<button (click)="myProp = true"></button>`);
 
-    runMigration();
+    await runMigration();
 
     expect(warnOutput.length).toBe(0);
   });
 
-  it('should not warn for bound event assignments to template variable object property', () => {
-    writeFile('/index.ts', `
+  it('should not warn for bound event assignments to template variable object property',
+     async() => {
+       writeFile('/index.ts', `
       import {Component} from '@angular/core';
 
       @Component({
@@ -173,17 +176,17 @@ describe('template variable assignment migration', () => {
       export class MyComp {}
     `);
 
-    writeFile('/sub_dir/tmpl.html', `
+       writeFile('/sub_dir/tmpl.html', `
       <button *ngFor="let element of list" (click)="element.value = null">Reset</button>
     `);
 
-    runMigration();
+       await runMigration();
 
-    expect(warnOutput.length).toBe(0);
-  });
+       expect(warnOutput.length).toBe(0);
+     });
 
   it('should not warn for property writes with template variable name but different receiver',
-     () => {
+     async() => {
        writeFile('/index.ts', `
       import {Component} from '@angular/core';
 
@@ -203,13 +206,38 @@ describe('template variable assignment migration', () => {
       </button>
     `);
 
-       runMigration();
+       await runMigration();
 
        expect(warnOutput.length).toBe(0);
      });
 
-  it('should not warn for property writes with template variable name but different scope', () => {
+  it('should warn for template variable assignments in expression conditional', async() => {
     writeFile('/index.ts', `
+      import {Component} from '@angular/core';
+
+      @Component({
+        templateUrl: './sub_dir/tmpl.html',
+      })
+      export class MyComp {
+        otherVar = false;
+      }
+    `);
+
+    writeFile('/sub_dir/tmpl.html', `
+      <ng-template let-tmplVar>
+        <p (click)="enabled ? tmplVar = true : otherVar = true"></p>
+      </ng-template>
+    `);
+
+    await runMigration();
+
+    expect(warnOutput.length).toBe(1);
+    expect(warnOutput[0]).toMatch(/^⮑ {3}sub_dir\/tmpl.html@3:31: Found assignment/);
+  });
+
+  it('should not warn for property writes with template variable name but different scope',
+     async() => {
+       writeFile('/index.ts', `
       import {Component} from '@angular/core';
 
       @Component({
@@ -220,18 +248,18 @@ describe('template variable assignment migration', () => {
       }
     `);
 
-    writeFile('/sub_dir/tmpl.html', `
+       writeFile('/sub_dir/tmpl.html', `
       <button *ngFor="let element of list">{{element}}</button>
       <button (click)="element = null"></button>
     `);
 
-    runMigration();
+       await runMigration();
 
-    expect(warnOutput.length).toBe(0);
-  });
+       expect(warnOutput.length).toBe(0);
+     });
 
 
-  it('should not throw an error if a detected template fails parsing', () => {
+  it('should not throw an error if a detected template fails parsing', async() => {
     writeFile('/index.ts', `
       import {Component} from '@angular/core';
 
@@ -243,12 +271,12 @@ describe('template variable assignment migration', () => {
 
     writeFile('/sub_dir/tmpl.html', `<x (click)="<invalid-syntax>"></x>`);
 
-    runMigration();
+    await runMigration();
 
     expect(warnOutput.length).toBe(0);
   });
 
-  it('should be able to report multiple templates within the same source file', () => {
+  it('should be able to report multiple templates within the same source file', async() => {
     writeFile('/index.ts', `
       import {Component} from '@angular/core';
 
@@ -263,7 +291,7 @@ describe('template variable assignment migration', () => {
       export class MyComp2 {}
     `);
 
-    runMigration();
+    await runMigration();
 
     expect(warnOutput.length).toBe(2);
     expect(warnOutput[0]).toMatch(/^⮑ {3}index.ts@5:56: Found assignment/);

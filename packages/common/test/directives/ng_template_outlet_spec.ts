@@ -204,6 +204,39 @@ describe('NgTemplateOutlet', () => {
     fixture.componentInstance.value = 'baz';
     detectChangesAndExpectText('');
   });
+
+  // https://github.com/angular/angular/issues/30801
+  it('should not throw if the context is left blank', () => {
+    const template = `
+      <ng-template #testTemplate>test</ng-template>
+      <ng-template [ngTemplateOutlet]="testTemplate" [ngTemplateOutletContext]=""></ng-template>
+    `;
+
+    expect(() => {
+      fixture = createTestComponent(template);
+      detectChangesAndExpectText('test');
+    }).not.toThrow();
+  });
+
+  it('should not throw when switching from template to null and back to template', async(() => {
+       const template = `<tpl-refs #refs="tplRefs"><ng-template>foo</ng-template></tpl-refs>` +
+           `<ng-container [ngTemplateOutlet]="currentTplRef"></ng-container>`;
+       fixture = createTestComponent(template);
+       fixture.detectChanges();
+       const refs = fixture.debugElement.children[0].references !['refs'];
+
+       setTplRef(refs.tplRefs.first);
+       detectChangesAndExpectText('foo');
+
+       setTplRef(null);
+       detectChangesAndExpectText('');
+
+       expect(() => {
+         setTplRef(refs.tplRefs.first);
+         detectChangesAndExpectText('foo');
+       }).not.toThrow();
+     }));
+
 });
 
 @Injectable()

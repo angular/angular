@@ -18,7 +18,7 @@ describe('filterHiddenCommands processor', () => {
 
   it('should run before the correct processor', () => {
     const processor = processorFactory();
-    expect(processor.$runBefore).toEqual(['processCliContainerDoc']);
+    expect(processor.$runBefore).toEqual(['processCliContainerDoc', 'createSitemap']);
   });
 
   it('should remove CLI command docs that are hidden', () => {

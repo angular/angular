@@ -6,8 +6,7 @@
 # For additional information see: https://developers.google.com/search/docs/guides/rendering
 
 > 0.5%
-last 2 versions
+last 2 major versions
 Firefox ESR
 not dead
-IE 9-11 # For IE 9-11 support.
-Chrome 41 # For Googlebot support.
+IE 11

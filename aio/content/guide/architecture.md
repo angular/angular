@@ -1,11 +1,13 @@
-# Architecture overview
+# Introduction to Angular concepts
 
-Angular is a platform and framework for building client applications in HTML and TypeScript.
-Angular is written in TypeScript. It implements core and optional functionality as a set of TypeScript libraries that you import into your apps.
+Angular is a platform and framework for building single-page client applications in HTML and TypeScript.
+Angular is written in TypeScript.
+It implements core and optional functionality as a set of TypeScript libraries that you import into your apps.
 
-The basic building blocks of an Angular application are *NgModules*, which provide a compilation context for *components*. NgModules collect related code into functional sets; an Angular app is defined by a set of NgModules. An app always has at least a *root module* that enables bootstrapping, and typically has many more *feature modules*.
+The architecture of an Angular application relies on certain fundamental concepts.
+The basic building blocks are *NgModules*, which provide a compilation context for *components*. NgModules collect related code into functional sets; an Angular app is defined by a set of NgModules. An app always has at least a *root module* that enables bootstrapping, and typically has many more *feature modules*.
 
-* Components define *views*, which are sets of screen elements that Angular can choose among and modify according to your program logic and data. 
+* Components define *views*, which are sets of screen elements that Angular can choose among and modify according to your program logic and data.
 
 * Components use *services*, which provide specific functionality not directly related to views. Service providers can be *injected* into components as *dependencies*, making your code modular, reusable, and efficient.
 
@@ -16,6 +18,12 @@ Both components and services are simply classes, with *decorators* that mark the
 * The metadata for a service class provides the information Angular needs to make it available to components through *dependency injection (DI)*.
 
 An app's components typically define many views, arranged hierarchically. Angular provides the `Router` service to help you define navigation paths among views. The router provides sophisticated in-browser navigational capabilities.
+
+<div class="alert is-helpful>
+
+  See the [Angular Glossary](guide/glossary) for basic definitions of important Angular terms and usage.
+
+</div>
 
 ## Modules
 
@@ -58,7 +66,7 @@ There are two types of data binding:
 
 Before a view is displayed, Angular evaluates the directives and resolves the binding syntax in the template to modify the HTML elements and the DOM, according to your program data and logic. Angular supports *two-way data binding*, meaning that changes in the DOM, such as user choices, are also reflected in your program data.
 
-Your templates can use *pipes* to improve the user experience by transforming values for display. 
+Your templates can use *pipes* to improve the user experience by transforming values for display.
 For example, use pipes to display dates and currency values that are appropriate for a user's locale.
 Angular provides predefined pipes for common transformations, and you can also define your own pipes.
 
@@ -113,9 +121,9 @@ To define navigation rules, you associate *navigation paths* with your component
 
 You've learned the basics about the main building blocks of an Angular application. The following diagram shows how these basic pieces are related.
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/architecture/overview2.png" alt="overview">
-</figure>
+</div>
 
 * Together, a component and template define an Angular view.
   * A decorator on a component class adds the metadata, including a pointer to the associated template.

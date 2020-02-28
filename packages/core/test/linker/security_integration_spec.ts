@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵgetDOM as getDOM} from '@angular/common';
 import {Component, Directive, HostBinding, Input, NO_ERRORS_SCHEMA, ɵivyEnabled as ivyEnabled} from '@angular/core';
 import {ComponentFixture, TestBed, getTestBed} from '@angular/core/testing';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomSanitizer} from '@angular/platform-browser/src/security/dom_sanitization_service';
 import {modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
@@ -122,7 +122,7 @@ function declareTests(config?: {useJit: boolean}) {
         const div = cmp.debugElement.children[0];
         expect(div.injector.get(OnPrefixDir).onclick).toBe(value);
         expect(getDOM().getProperty(div.nativeElement, 'onclick')).not.toBe(value);
-        expect(getDOM().hasAttribute(div.nativeElement, 'onclick')).toEqual(false);
+        expect(div.nativeElement.hasAttribute('onclick')).toEqual(false);
       });
 
     });
@@ -177,13 +177,12 @@ function declareTests(config?: {useJit: boolean}) {
         fixture.detectChanges();
         // In the browser, reading href returns an absolute URL. On the server side,
         // it just echoes back the property.
-        let value =
-            isAttribute ? getDOM().getAttribute(e, 'href') : getDOM().getProperty(e, 'href');
+        let value = isAttribute ? e.getAttribute('href') : getDOM().getProperty(e, 'href');
         expect(value).toMatch(/.*\/?hello$/);
 
         ci.ctxProp = 'javascript:alert(1)';
         fixture.detectChanges();
-        value = isAttribute ? getDOM().getAttribute(e, 'href') : getDOM().getProperty(e, 'href');
+        value = isAttribute ? e.getAttribute('href') : getDOM().getProperty(e, 'href');
         expect(value).toEqual('unsafe:javascript:alert(1)');
       }
 
@@ -247,12 +246,12 @@ function declareTests(config?: {useJit: boolean}) {
         fixture.detectChanges();
         // In some browsers, this will contain the full background specification, not just
         // the color.
-        expect(getDOM().getStyle(e, 'background')).toMatch(/red.*/);
+        expect(e.style['background']).toMatch(/red.*/);
 
         ci.ctxProp = 'url(javascript:evil())';
         fixture.detectChanges();
         // Updated value gets rejected, no value change.
-        expect(getDOM().getStyle(e, 'background')).not.toContain('javascript');
+        expect(e.style['background']).not.toContain('javascript');
       });
 
       modifiedInIvy('Unknown property error thrown during update mode, not creation mode')
@@ -264,13 +263,15 @@ function declareTests(config?: {useJit: boolean}) {
                 .toThrowError(/Can't bind to 'xlink:href'/);
           });
 
-      onlyInIvy('Unknown property error thrown during update mode, not creation mode')
+      onlyInIvy('Unknown property warning logged instead of throwing an error')
           .it('should escape unsafe SVG attributes', () => {
             const template = `<svg:circle [xlink:href]="ctxProp">Text</svg:circle>`;
             TestBed.overrideComponent(SecuredComponent, {set: {template}});
 
+            const spy = spyOn(console, 'warn');
             const fixture = TestBed.createComponent(SecuredComponent);
-            expect(() => fixture.detectChanges()).toThrowError(/Can't bind to 'xlink:href'/);
+            fixture.detectChanges();
+            expect(spy.calls.mostRecent().args[0]).toMatch(/Can't bind to 'xlink:href'/);
           });
 
       it('should escape unsafe HTML values', () => {
@@ -283,19 +284,19 @@ function declareTests(config?: {useJit: boolean}) {
         // Make sure binding harmless values works.
         ci.ctxProp = 'some <p>text</p>';
         fixture.detectChanges();
-        expect(getDOM().getInnerHTML(e)).toEqual('some <p>text</p>');
+        expect(e.innerHTML).toEqual('some <p>text</p>');
 
         ci.ctxProp = 'ha <script>evil()</script>';
         fixture.detectChanges();
-        expect(getDOM().getInnerHTML(e)).toEqual('ha ');
+        expect(e.innerHTML).toEqual('ha ');
 
         ci.ctxProp = 'also <img src="x" onerror="evil()"> evil';
         fixture.detectChanges();
-        expect(getDOM().getInnerHTML(e)).toEqual('also <img src="x"> evil');
+        expect(e.innerHTML).toEqual('also <img src="x"> evil');
 
         ci.ctxProp = 'also <iframe srcdoc="evil"></iframe> evil';
         fixture.detectChanges();
-        expect(getDOM().getInnerHTML(e)).toEqual('also  evil');
+        expect(e.innerHTML).toEqual('also  evil');
       });
     });
   });

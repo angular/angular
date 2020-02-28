@@ -13,8 +13,6 @@ import {MockRequest} from '../testing/fetch';
 import {MockFileSystemBuilder, MockServerStateBuilder, tmpHashTableForFs} from '../testing/mock';
 import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
 
-import {async_beforeEach, async_fit, async_it} from './async';
-
 (function() {
   // Skip environments that don't support the minimum APIs needed to run the SW tests.
   if (!SwTestHarness.envIsSupported()) {
@@ -116,32 +114,35 @@ import {async_beforeEach, async_fit, async_it} from './async';
                               .withManifest(seqIncreasedManifest)
                               .build();
 
-  const scope = new SwTestHarnessBuilder().withServerState(server).build();
-
 
   describe('data cache', () => {
     let scope: SwTestHarness;
     let driver: Driver;
-    async_beforeEach(async() => {
-      server.clearRequests();
+    beforeEach(async() => {
       scope = new SwTestHarnessBuilder().withServerState(server).build();
       driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
 
       // Initialize.
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
+      server.clearRequests();
+      serverUpdate.clearRequests();
+      serverSeqUpdate.clearRequests();
+    });
+    afterEach(() => {
       server.reset();
       serverUpdate.reset();
+      serverSeqUpdate.reset();
     });
 
     describe('in performance mode', () => {
-      async_it('names the caches correctly', async() => {
+      it('names the caches correctly', async() => {
         expect(await makeRequest(scope, '/api/test')).toEqual('version 1');
         const keys = await scope.caches.keys();
         expect(keys.every(key => key.startsWith('ngsw:/:'))).toEqual(true);
       });
 
-      async_it('caches a basic request', async() => {
+      it('caches a basic request', async() => {
         expect(await makeRequest(scope, '/api/test')).toEqual('version 1');
         server.assertSawRequestFor('/api/test');
         scope.advance(1000);
@@ -149,7 +150,15 @@ import {async_beforeEach, async_fit, async_it} from './async';
         server.assertNoOtherRequests();
       });
 
-      async_it('refreshes after awhile', async() => {
+      it('does not cache opaque responses', async() => {
+        expect(await makeNoCorsRequest(scope, '/api/test')).toBe('');
+        server.assertSawRequestFor('/api/test');
+
+        expect(await makeNoCorsRequest(scope, '/api/test')).toBe('');
+        server.assertSawRequestFor('/api/test');
+      });
+
+      it('refreshes after awhile', async() => {
         expect(await makeRequest(scope, '/api/test')).toEqual('version 1');
         server.clearRequests();
         scope.advance(10000);
@@ -157,7 +166,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
         expect(await makeRequest(scope, '/api/test')).toEqual('version 2');
       });
 
-      async_it('expires the least recently used entry', async() => {
+      it('expires the least recently used entry', async() => {
         expect(await makeRequest(scope, '/api/a')).toEqual('version A');
         expect(await makeRequest(scope, '/api/b')).toEqual('version B');
         expect(await makeRequest(scope, '/api/c')).toEqual('version C');
@@ -175,7 +184,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
         server.assertNoOtherRequests();
       });
 
-      async_it('does not carry over cache with new version', async() => {
+      it('does not carry over cache with new version', async() => {
         expect(await makeRequest(scope, '/api/test')).toEqual('version 1');
         scope.updateServerState(serverSeqUpdate);
         expect(await driver.checkForUpdate()).toEqual(true);
@@ -185,7 +194,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
     });
 
     describe('in freshness mode', () => {
-      async_it('goes to the server first', async() => {
+      it('goes to the server first', async() => {
         expect(await makeRequest(scope, '/fresh/data')).toEqual('this is fresh data');
         server.assertSawRequestFor('/fresh/data');
         server.clearRequests();
@@ -198,7 +207,17 @@ import {async_beforeEach, async_fit, async_it} from './async';
         serverUpdate.assertNoOtherRequests();
       });
 
-      async_it('falls back on the cache when server times out', async() => {
+      it('caches opaque responses', async() => {
+        expect(await makeNoCorsRequest(scope, '/fresh/data')).toBe('');
+        server.assertSawRequestFor('/fresh/data');
+
+        server.online = false;
+
+        expect(await makeRequest(scope, '/fresh/data')).toBe('');
+        server.assertNoOtherRequests();
+      });
+
+      it('falls back on the cache when server times out', async() => {
         expect(await makeRequest(scope, '/fresh/data')).toEqual('this is fresh data');
         server.assertSawRequestFor('/fresh/data');
         server.clearRequests();
@@ -225,7 +244,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
         expect(await res2).toEqual('this is fresher data');
       });
 
-      async_it('refreshes ahead', async() => {
+      it('refreshes ahead', async() => {
         server.assertNoOtherRequests();
         serverUpdate.assertNoOtherRequests();
         expect(await makeRequest(scope, '/refresh/data')).toEqual('this is some data');
@@ -240,32 +259,59 @@ import {async_beforeEach, async_fit, async_it} from './async';
         expect(await makeRequest(scope, '/refresh/data')).toEqual('this is refreshed data');
         serverUpdate.assertNoOtherRequests();
       });
+
+      it('caches opaque responses on refresh', async() => {
+        // Make the initial request and populate the cache.
+        expect(await makeRequest(scope, '/fresh/data')).toBe('this is fresh data');
+        server.assertSawRequestFor('/fresh/data');
+        server.clearRequests();
+
+        // Update the server state and pause the server, so the next request times out.
+        scope.updateServerState(serverUpdate);
+        serverUpdate.pause();
+        const [res, done] =
+            makePendingRequest(scope, new MockRequest('/fresh/data', {mode: 'no-cors'}));
+
+        // The network request times out after 1,000ms and the cached response is returned.
+        await serverUpdate.nextRequest;
+        scope.advance(2000);
+        expect(await res).toBe('this is fresh data');
+
+        // Unpause the server to allow the network request to complete and be cached.
+        serverUpdate.unpause();
+        await done;
+
+        // Pause the server to force the cached (opaque) response to be returned.
+        serverUpdate.pause();
+        const [res2] = makePendingRequest(scope, '/fresh/data');
+        await serverUpdate.nextRequest;
+        scope.advance(2000);
+
+        expect(await res2).toBe('');
+      });
     });
   });
 })();
 
-async function makeRequest(scope: SwTestHarness, url: string, clientId?: string):
-    Promise<string|null> {
-      const [resPromise, done] = scope.handleFetch(new MockRequest(url), clientId || 'default');
-      await done;
-      const res = await resPromise;
-      if (res !== undefined) {
-        return res.text();
-      }
-      return null;
-    }
+function makeRequest(scope: SwTestHarness, url: string, clientId?: string): Promise<string|null> {
+  const [resTextPromise, done] = makePendingRequest(scope, url, clientId);
+  return done.then(() => resTextPromise);
+}
 
-function makePendingRequest(scope: SwTestHarness, url: string, clientId?: string):
-    [Promise<string|null>, Promise<void>] {
-      const [resPromise, done] = scope.handleFetch(new MockRequest(url), clientId || 'default');
-      return [
-        (async() => {
-          const res = await resPromise;
-          if (res !== undefined) {
-            return res.text();
-          }
-          return null;
-        })(),
-        done
-      ];
-    }
+function makeNoCorsRequest(
+    scope: SwTestHarness, url: string, clientId?: string): Promise<string|null> {
+  const req = new MockRequest(url, {mode: 'no-cors'});
+  const [resTextPromise, done] = makePendingRequest(scope, req, clientId);
+  return done.then(() => resTextPromise);
+}
+
+function makePendingRequest(
+    scope: SwTestHarness, urlOrReq: string | MockRequest,
+    clientId?: string): [Promise<string|null>, Promise<void>] {
+  const req = (typeof urlOrReq === 'string') ? new MockRequest(urlOrReq) : urlOrReq;
+  const [resPromise, done] = scope.handleFetch(req, clientId || 'default');
+  return [
+    resPromise.then<string|null>(res => res ? res.text() : null),
+    done,
+  ];
+}

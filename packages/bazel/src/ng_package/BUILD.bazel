@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 
 # BEGIN-DEV-ONLY
 load("@npm_bazel_typescript//:index.bzl", "ts_library")
@@ -23,13 +23,31 @@ nodejs_binary(
         "lib",
         "@npm//shelljs",
     ],
-    entry_point = "angular/packages/bazel/src/ng_package/packager.js",
-    install_source_map_support = False,
+    entry_point = ":packager.ts",
 )
 
-exports_files(["ng_package.bzl"])
+nodejs_binary(
+    name = "rollup_for_ng_package",
+    data = [
+        "@npm//rollup",
+        "@npm//rollup-plugin-commonjs",
+        "@npm//rollup-plugin-node-resolve",
+        "@npm//rollup-plugin-sourcemaps",
+    ],
+    entry_point = "@npm//:node_modules/rollup/dist/bin/rollup",
+)
+
+exports_files([
+    "ng_package.bzl",
+    "rollup.config.js",
+    "terser_config.default.json",
+])
 
 filegroup(
     name = "package_assets",
-    srcs = glob(["*.bzl"]) + ["BUILD.bazel"],
+    srcs = glob(["*.bzl"]) + [
+        "BUILD.bazel",
+        "rollup.config.js",
+        "terser_config.default.json",
+    ],
 )

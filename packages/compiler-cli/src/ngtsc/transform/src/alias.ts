@@ -9,9 +9,9 @@
 import * as ts from 'typescript';
 
 export function aliasTransformFactory(exportStatements: Map<string, Map<string, [string, string]>>):
-    ts.TransformerFactory<ts.Bundle|ts.SourceFile> {
+    ts.TransformerFactory<ts.SourceFile> {
   return (context: ts.TransformationContext) => {
-    return (file: ts.SourceFile | ts.Bundle) => {
+    return (file: ts.SourceFile) => {
       if (ts.isBundle(file) || !exportStatements.has(file.fileName)) {
         return file;
       }

@@ -6,71 +6,188 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDefined, assertGreaterThan} from '../util/assert';
-
+import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
+import {assertDefined, assertEqual} from '../util/assert';
 import {assertLViewOrUndefined} from './assert';
-import {executeHooks} from './hooks';
-import {ComponentDef, DirectiveDef} from './interfaces/definition';
-import {TElementNode, TNode, TViewNode} from './interfaces/node';
-import {BINDING_INDEX, CONTEXT, DECLARATION_VIEW, FLAGS, InitPhaseState, LView, LViewFlags, OpaqueViewState, TVIEW} from './interfaces/view';
-import {setCachedStylingContext} from './styling/state';
-import {resetPreOrderHookFlags} from './util/view_utils';
-
+import {TNode} from './interfaces/node';
+import {CONTEXT, DECLARATION_VIEW, LView, OpaqueViewState, TVIEW, TView} from './interfaces/view';
+import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
 
 
 /**
- * Store the element depth count. This is used to identify the root elements of the template
- * so that we can than attach `LView` to only those elements.
+ *
  */
-let elementDepthCount !: number;
+interface LFrame {
+  /**
+   * Parent LFrame.
+   *
+   * This is needed when `leaveView` is called to restore the previous state.
+   */
+  parent: LFrame;
+
+  /**
+   * Child LFrame.
+   *
+   * This is used to cache existing LFrames to relieve the memory pressure.
+   */
+  child: LFrame|null;
+
+  /**
+   * State of the current view being processed.
+   *
+   * An array of nodes (text, element, container, etc), pipes, their bindings, and
+   * any local variables that need to be stored between invocations.
+   */
+  lView: LView;
+
+  /**
+   * Current `TView` associated with the `LFrame.lView`.
+   *
+   * One can get `TView` from `lFrame[TVIEW]` however because it is so common it makes sense to
+   * store it in `LFrame` for perf reasons.
+   */
+  tView: TView;
+
+  /**
+   * Used to set the parent property when nodes are created and track query results.
+   *
+   * This is used in conjunction with `isParent`.
+   */
+  previousOrParentTNode: TNode;
+
+  /**
+   * If `isParent` is:
+   *  - `true`: then `previousOrParentTNode` points to a parent node.
+   *  - `false`: then `previousOrParentTNode` points to previous node (sibling).
+   */
+  isParent: boolean;
+
+  /**
+   * Index of currently selected element in LView.
+   *
+   * Used by binding instructions. Updated as part of advance instruction.
+   */
+  selectedIndex: number;
+
+  /**
+   * Current pointer to the binding index.
+   */
+  bindingIndex: number;
+
+  /**
+   * The last viewData retrieved by nextContext().
+   * Allows building nextContext() and reference() calls.
+   *
+   * e.g. const inner = x().$implicit; const outer = x().$implicit;
+   */
+  contextLView: LView;
+
+  /**
+   * Store the element depth count. This is used to identify the root elements of the template
+   * so that we can then attach patch data `LView` to only those elements. We know that those
+   * are the only places where the patch data could change, this way we will save on number
+   * of places where tha patching occurs.
+   */
+  elementDepthCount: number;
+
+  /**
+   * Current namespace to be used when creating elements
+   */
+  currentNamespace: string|null;
+
+  /**
+   * Current sanitizer
+   */
+  currentSanitizer: StyleSanitizeFn|null;
+
+
+  /**
+   * The root index from which pure function instructions should calculate their binding
+   * indices. In component views, this is TView.bindingStartIndex. In a host binding
+   * context, this is the TView.expandoStartIndex + any dirs/hostVars before the given dir.
+   */
+  bindingRootIndex: number;
+
+  /**
+   * Current index of a View or Content Query which needs to be processed next.
+   * We iterate over the list of Queries and increment current query index at every step.
+   */
+  currentQueryIndex: number;
+
+  /**
+   * When host binding is executing this points to the directive index.
+   * `TView.data[currentDirectiveIndex]` is `DirectiveDef`
+   * `LView[currentDirectiveIndex]` is directive instance.
+   */
+  currentDirectiveIndex: number;
+}
+
+/**
+ * All implicit instruction state is stored here.
+ *
+ * It is useful to have a single object where all of the state is stored as a mental model
+ * (rather it being spread across many different variables.)
+ *
+ * PERF NOTE: Turns out that writing to a true global variable is slower than
+ * having an intermediate object with properties.
+ */
+interface InstructionState {
+  /**
+   * Current `LFrame`
+   *
+   * `null` if we have not called `enterView`
+   */
+  lFrame: LFrame;
+
+  /**
+   * Stores whether directives should be matched to elements.
+   *
+   * When template contains `ngNonBindable` then we need to prevent the runtime from matching
+   * directives on children of that element.
+   *
+   * Example:
+   * ```
+   * <my-comp my-directive>
+   *   Should match component / directive.
+   * </my-comp>
+   * <div ngNonBindable>
+   *   <my-comp my-directive>
+   *     Should not match component / directive because we are in ngNonBindable.
+   *   </my-comp>
+   * </div>
+   * ```
+   */
+  bindingsEnabled: boolean;
+
+  /**
+   * In this mode, any changes in bindings will throw an ExpressionChangedAfterChecked error.
+   *
+   * Necessary to support ChangeDetectorRef.checkNoChanges().
+   */
+  checkNoChangesMode: boolean;
+}
+
+export const instructionState: InstructionState = {
+  lFrame: createLFrame(null),
+  bindingsEnabled: true,
+  checkNoChangesMode: false,
+};
+
 
 export function getElementDepthCount() {
-  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
-  return elementDepthCount;
+  return instructionState.lFrame.elementDepthCount;
 }
 
 export function increaseElementDepthCount() {
-  elementDepthCount++;
+  instructionState.lFrame.elementDepthCount++;
 }
 
 export function decreaseElementDepthCount() {
-  elementDepthCount--;
+  instructionState.lFrame.elementDepthCount--;
 }
-
-let currentDirectiveDef: DirectiveDef<any>|ComponentDef<any>|null = null;
-
-export function getCurrentDirectiveDef(): DirectiveDef<any>|ComponentDef<any>|null {
-  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
-  return currentDirectiveDef;
-}
-
-export function setCurrentDirectiveDef(def: DirectiveDef<any>| ComponentDef<any>| null): void {
-  currentDirectiveDef = def;
-}
-
-/**
- * Stores whether directives should be matched to elements.
- *
- * When template contains `ngNonBindable` than we need to prevent the runtime form matching
- * directives on children of that element.
- *
- * Example:
- * ```
- * <my-comp my-directive>
- *   Should match component / directive.
- * </my-comp>
- * <div ngNonBindable>
- *   <my-comp my-directive>
- *     Should not match component / directive because we are in ngNonBindable.
- *   </my-comp>
- * </div>
- * ```
- */
-let bindingsEnabled !: boolean;
 
 export function getBindingsEnabled(): boolean {
-  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
-  return bindingsEnabled;
+  return instructionState.bindingsEnabled;
 }
 
 
@@ -94,7 +211,7 @@ export function getBindingsEnabled(): boolean {
  * @codeGenApi
  */
 export function ɵɵenableBindings(): void {
-  bindingsEnabled = true;
+  instructionState.bindingsEnabled = true;
 }
 
 /**
@@ -117,146 +234,21 @@ export function ɵɵenableBindings(): void {
  * @codeGenApi
  */
 export function ɵɵdisableBindings(): void {
-  bindingsEnabled = false;
+  instructionState.bindingsEnabled = false;
 }
 
+/**
+ * Return the current `LView`.
+ */
 export function getLView(): LView {
-  return lView;
+  return instructionState.lFrame.lView;
 }
 
 /**
- * Used as the starting directive id value.
- *
- * All subsequent directives are incremented from this value onwards.
- * The reason why this value is `1` instead of `0` is because the `0`
- * value is reserved for the template.
+ * Return the current `TView`.
  */
-const MIN_DIRECTIVE_ID = 1;
-
-let activeDirectiveId = MIN_DIRECTIVE_ID;
-
-/**
- * Position depth (with respect from leaf to root) in a directive sub-class inheritance chain.
- */
-let activeDirectiveSuperClassDepthPosition = 0;
-
-/**
- * Total count of how many directives are a part of an inheritance chain.
- *
- * When directives are sub-classed (extended) from one to another, Angular
- * needs to keep track of exactly how many were encountered so it can accurately
- * generate the next directive id (once the next directive id is visited).
- * Normally the next directive id just a single incremented value from the
- * previous one, however, if the previous directive is a part of an inheritance
- * chain (a series of sub-classed directives) then the incremented value must
- * also take into account the total amount of sub-classed values.
- *
- * Note that this value resets back to zero once the next directive is
- * visited (when `incrementActiveDirectiveId` or `setActiveHostElement`
- * is called).
- */
-let activeDirectiveSuperClassHeight = 0;
-
-/**
- * Sets the active directive host element and resets the directive id value
- * (when the provided elementIndex value has changed).
- *
- * @param elementIndex the element index value for the host element where
- *                     the directive/component instance lives
- */
-export function setActiveHostElement(elementIndex: number | null = null) {
-  if (_selectedIndex !== elementIndex) {
-    setSelectedIndex(elementIndex == null ? -1 : elementIndex);
-    activeDirectiveId = MIN_DIRECTIVE_ID;
-    activeDirectiveSuperClassDepthPosition = 0;
-    activeDirectiveSuperClassHeight = 0;
-  }
-}
-
-/**
- * Returns the current id value of the current directive.
- *
- * For example we have an element that has two directives on it:
- * <div dir-one dir-two></div>
- *
- * dirOne->hostBindings() (id == 1)
- * dirTwo->hostBindings() (id == 2)
- *
- * Note that this is only active when `hostBinding` functions are being processed.
- *
- * Note that directive id values are specific to an element (this means that
- * the same id value could be present on another element with a completely
- * different set of directives).
- */
-export function getActiveDirectiveId() {
-  return activeDirectiveId;
-}
-
-/**
- * Increments the current directive id value.
- *
- * For example we have an element that has two directives on it:
- * <div dir-one dir-two></div>
- *
- * dirOne->hostBindings() (index = 1)
- * // increment
- * dirTwo->hostBindings() (index = 2)
- *
- * Depending on whether or not a previous directive had any inherited
- * directives present, that value will be incremented in addition
- * to the id jumping up by one.
- *
- * Note that this is only active when `hostBinding` functions are being processed.
- *
- * Note that directive id values are specific to an element (this means that
- * the same id value could be present on another element with a completely
- * different set of directives).
- */
-export function incrementActiveDirectiveId() {
-  activeDirectiveId += 1 + activeDirectiveSuperClassHeight;
-
-  // because we are dealing with a new directive this
-  // means we have exited out of the inheritance chain
-  activeDirectiveSuperClassDepthPosition = 0;
-  activeDirectiveSuperClassHeight = 0;
-}
-
-/**
- * Set the current super class (reverse inheritance) position depth for a directive.
- *
- * For example we have two directives: Child and Other (but Child is a sub-class of Parent)
- * <div child-dir other-dir></div>
- *
- * // increment
- * parentInstance->hostBindings() (depth = 1)
- * // decrement
- * childInstance->hostBindings() (depth = 0)
- * otherInstance->hostBindings() (depth = 0 b/c it's a different directive)
- *
- * Note that this is only active when `hostBinding` functions are being processed.
- */
-export function adjustActiveDirectiveSuperClassDepthPosition(delta: number) {
-  activeDirectiveSuperClassDepthPosition += delta;
-
-  // we keep track of the height value so that when the next directive is visited
-  // then Angular knows to generate a new directive id value which has taken into
-  // account how many sub-class directives were a part of the previous directive.
-  activeDirectiveSuperClassHeight =
-      Math.max(activeDirectiveSuperClassHeight, activeDirectiveSuperClassDepthPosition);
-}
-
-/**
- * Returns the current super class (reverse inheritance) depth for a directive.
- *
- * This is designed to help instruction code distinguish different hostBindings
- * calls from each other when a directive has extended from another directive.
- * Normally using the directive id value is enough, but with the case
- * of parent/sub-class directive inheritance more information is required.
- *
- * Note that this is only active when `hostBinding` functions are being processed.
- */
-export function getActiveDirectiveSuperClassDepth() {
-  return activeDirectiveSuperClassDepthPosition;
+export function getTView(): TView {
+  return instructionState.lFrame.tView;
 }
 
 /**
@@ -271,146 +263,238 @@ export function getActiveDirectiveSuperClassDepth() {
  * @codeGenApi
  */
 export function ɵɵrestoreView(viewToRestore: OpaqueViewState) {
-  contextLView = viewToRestore as any as LView;
+  instructionState.lFrame.contextLView = viewToRestore as any as LView;
 }
-
-/** Used to set the parent property when nodes are created and track query results. */
-let previousOrParentTNode: TNode;
 
 export function getPreviousOrParentTNode(): TNode {
-  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
-  return previousOrParentTNode;
+  return instructionState.lFrame.previousOrParentTNode;
 }
 
-export function setPreviousOrParentTNode(tNode: TNode) {
-  previousOrParentTNode = tNode;
+export function setPreviousOrParentTNode(tNode: TNode, isParent: boolean) {
+  instructionState.lFrame.previousOrParentTNode = tNode;
+  instructionState.lFrame.isParent = isParent;
 }
-
-export function setTNodeAndViewData(tNode: TNode, view: LView) {
-  ngDevMode && assertLViewOrUndefined(view);
-  previousOrParentTNode = tNode;
-  lView = view;
-}
-
-/**
- * If `isParent` is:
- *  - `true`: then `previousOrParentTNode` points to a parent node.
- *  - `false`: then `previousOrParentTNode` points to previous node (sibling).
- */
-let isParent: boolean;
 
 export function getIsParent(): boolean {
-  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
-  return isParent;
+  return instructionState.lFrame.isParent;
 }
 
-export function setIsParent(value: boolean): void {
-  isParent = value;
+export function setIsNotParent(): void {
+  instructionState.lFrame.isParent = false;
 }
-
-
-/** Checks whether a given view is in creation mode */
-export function isCreationMode(view: LView = lView): boolean {
-  return (view[FLAGS] & LViewFlags.CreationMode) === LViewFlags.CreationMode;
+export function setIsParent(): void {
+  instructionState.lFrame.isParent = true;
 }
-
-/**
- * State of the current view being processed.
- *
- * An array of nodes (text, element, container, etc), pipes, their bindings, and
- * any local variables that need to be stored between invocations.
- */
-let lView: LView;
-
-/**
- * The last viewData retrieved by nextContext().
- * Allows building nextContext() and reference() calls.
- *
- * e.g. const inner = x().$implicit; const outer = x().$implicit;
- */
-let contextLView: LView = null !;
 
 export function getContextLView(): LView {
-  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
-  return contextLView;
+  return instructionState.lFrame.contextLView;
 }
 
-/**
- * In this mode, any changes in bindings will throw an ExpressionChangedAfterChecked error.
- *
- * Necessary to support ChangeDetectorRef.checkNoChanges().
- */
-let checkNoChangesMode = false;
-
 export function getCheckNoChangesMode(): boolean {
-  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
-  return checkNoChangesMode;
+  // TODO(misko): remove this from the LView since it is ngDevMode=true mode only.
+  return instructionState.checkNoChangesMode;
 }
 
 export function setCheckNoChangesMode(mode: boolean): void {
-  checkNoChangesMode = mode;
+  instructionState.checkNoChangesMode = mode;
 }
-
-/**
- * The root index from which pure function instructions should calculate their binding
- * indices. In component views, this is TView.bindingStartIndex. In a host binding
- * context, this is the TView.expandoStartIndex + any dirs/hostVars before the given dir.
- */
-let bindingRootIndex: number = -1;
 
 // top level variables should not be exported for performance reasons (PERF_NOTES.md)
 export function getBindingRoot() {
-  return bindingRootIndex;
+  const lFrame = instructionState.lFrame;
+  let index = lFrame.bindingRootIndex;
+  if (index === -1) {
+    index = lFrame.bindingRootIndex = lFrame.tView.bindingStartIndex;
+  }
+  return index;
 }
 
-export function setBindingRoot(value: number) {
-  bindingRootIndex = value;
+export function getBindingIndex(): number {
+  return instructionState.lFrame.bindingIndex;
+}
+
+export function setBindingIndex(value: number): number {
+  return instructionState.lFrame.bindingIndex = value;
+}
+
+export function nextBindingIndex(): number {
+  return instructionState.lFrame.bindingIndex++;
+}
+
+export function incrementBindingIndex(count: number): number {
+  const lFrame = instructionState.lFrame;
+  const index = lFrame.bindingIndex;
+  lFrame.bindingIndex = lFrame.bindingIndex + count;
+  return index;
 }
 
 /**
- * Current index of a View or Content Query which needs to be processed next.
- * We iterate over the list of Queries and increment current query index at every step.
+ * Set a new binding root index so that host template functions can execute.
+ *
+ * Bindings inside the host template are 0 index. But because we don't know ahead of time
+ * how many host bindings we have we can't pre-compute them. For this reason they are all
+ * 0 index and we just shift the root so that they match next available location in the LView.
+ *
+ * @param bindingRootIndex Root index for `hostBindings`
+ * @param currentDirectiveIndex `TData[currentDirectiveIndex]` will point to the current directive
+ *        whose `hostBindings` are being processed.
  */
-let currentQueryIndex: number = 0;
+export function setBindingRootForHostBindings(
+    bindingRootIndex: number, currentDirectiveIndex: number) {
+  const lFrame = instructionState.lFrame;
+  lFrame.bindingIndex = lFrame.bindingRootIndex = bindingRootIndex;
+  lFrame.currentDirectiveIndex = currentDirectiveIndex;
+}
+
+/**
+ * When host binding is executing this points to the directive index.
+ * `TView.data[getCurrentDirectiveIndex()]` is `DirectiveDef`
+ * `LView[getCurrentDirectiveIndex()]` is directive instance.
+ */
+export function getCurrentDirectiveIndex(): number {
+  return instructionState.lFrame.currentDirectiveIndex;
+}
 
 export function getCurrentQueryIndex(): number {
-  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
-  return currentQueryIndex;
+  return instructionState.lFrame.currentQueryIndex;
 }
 
 export function setCurrentQueryIndex(value: number): void {
-  currentQueryIndex = value;
+  instructionState.lFrame.currentQueryIndex = value;
 }
 
 /**
- * Swap the current state with a new state.
- *
- * For performance reasons we store the state in the top level of the module.
- * This way we minimize the number of properties to read. Whenever a new view
- * is entered we have to store the state for later, and when the view is
- * exited the state has to be restored
- *
- * @param newView New state to become active
- * @param host Element to which the View is a child of
- * @returns the previous state;
+ * This is a light weight version of the `enterView` which is needed by the DI system.
+ * @param newView
+ * @param tNode
  */
-export function enterView(newView: LView, hostTNode: TElementNode | TViewNode | null): LView {
+export function enterDI(newView: LView, tNode: TNode) {
   ngDevMode && assertLViewOrUndefined(newView);
-  const oldView = lView;
-  if (newView) {
-    const tView = newView[TVIEW];
-    bindingRootIndex = tView.bindingStartIndex;
-  }
-
-  previousOrParentTNode = hostTNode !;
-  isParent = true;
-
-  lView = contextLView = newView;
-  return oldView;
+  const newLFrame = allocLFrame();
+  instructionState.lFrame = newLFrame;
+  newLFrame.previousOrParentTNode = tNode !;
+  newLFrame.lView = newView;
 }
 
-export function nextContextImpl<T = any>(level: number = 1): T {
-  contextLView = walkUpViews(level, contextLView !);
+/**
+ * Swap the current lView with a new lView.
+ *
+ * For performance reasons we store the lView in the top level of the module.
+ * This way we minimize the number of properties to read. Whenever a new view
+ * is entered we have to store the lView for later, and when the view is
+ * exited the state has to be restored
+ *
+ * @param newView New lView to become active
+ * @param tNode Element to which the View is a child of
+ * @returns the previously active lView;
+ */
+export function enterView(newView: LView, tNode: TNode | null): void {
+  ngDevMode && assertLViewOrUndefined(newView);
+  const newLFrame = allocLFrame();
+  if (ngDevMode) {
+    assertEqual(newLFrame.isParent, true, 'Expected clean LFrame');
+    assertEqual(newLFrame.lView, null, 'Expected clean LFrame');
+    assertEqual(newLFrame.tView, null, 'Expected clean LFrame');
+    assertEqual(newLFrame.selectedIndex, 0, 'Expected clean LFrame');
+    assertEqual(newLFrame.elementDepthCount, 0, 'Expected clean LFrame');
+    assertEqual(newLFrame.currentDirectiveIndex, -1, 'Expected clean LFrame');
+    assertEqual(newLFrame.currentNamespace, null, 'Expected clean LFrame');
+    assertEqual(newLFrame.currentSanitizer, null, 'Expected clean LFrame');
+    assertEqual(newLFrame.bindingRootIndex, -1, 'Expected clean LFrame');
+    assertEqual(newLFrame.currentQueryIndex, 0, 'Expected clean LFrame');
+  }
+  const tView = newView[TVIEW];
+  instructionState.lFrame = newLFrame;
+  newLFrame.previousOrParentTNode = tNode !;
+  newLFrame.lView = newView;
+  newLFrame.tView = tView;
+  newLFrame.contextLView = newView !;
+  newLFrame.bindingIndex = tView.bindingStartIndex;
+}
+
+/**
+ * Allocates next free LFrame. This function tries to reuse the `LFrame`s to lower memory pressure.
+ */
+function allocLFrame() {
+  const currentLFrame = instructionState.lFrame;
+  const childLFrame = currentLFrame === null ? null : currentLFrame.child;
+  const newLFrame = childLFrame === null ? createLFrame(currentLFrame) : childLFrame;
+  return newLFrame;
+}
+
+function createLFrame(parent: LFrame | null): LFrame {
+  const lFrame: LFrame = {
+    previousOrParentTNode: null !,  //
+    isParent: true,                 //
+    lView: null !,                  //
+    tView: null !,                  //
+    selectedIndex: 0,               //
+    contextLView: null !,           //
+    elementDepthCount: 0,           //
+    currentNamespace: null,         //
+    currentSanitizer: null,         //
+    currentDirectiveIndex: -1,      //
+    bindingRootIndex: -1,           //
+    bindingIndex: -1,               //
+    currentQueryIndex: 0,           //
+    parent: parent !,               //
+    child: null,                    //
+  };
+  parent !== null && (parent.child = lFrame);  // link the new LFrame for reuse.
+  return lFrame;
+}
+
+/**
+ * A lightweight version of leave which is used with DI.
+ *
+ * This function only resets `previousOrParentTNode` and `LView` as those are the only properties
+ * used with DI (`enterDI()`).
+ *
+ * NOTE: This function is reexported as `leaveDI`. However `leaveDI` has return type of `void` where
+ * as `leaveViewLight` has `LFrame`. This is so that `leaveViewLight` can be used in `leaveView`.
+ */
+function leaveViewLight(): LFrame {
+  const oldLFrame = instructionState.lFrame;
+  instructionState.lFrame = oldLFrame.parent;
+  oldLFrame.previousOrParentTNode = null !;
+  oldLFrame.lView = null !;
+  return oldLFrame;
+}
+
+/**
+ * This is a lightweight version of the `leaveView` which is needed by the DI system.
+ *
+ * NOTE: this function is an alias so that we can change the type of the function to have `void`
+ * return type.
+ */
+export const leaveDI: () => void = leaveViewLight;
+
+/**
+ * Leave the current `LView`
+ *
+ * This pops the `LFrame` with the associated `LView` from the stack.
+ *
+ * IMPORTANT: We must zero out the `LFrame` values here otherwise they will be retained. This is
+ * because for performance reasons we don't release `LFrame` but rather keep it for next use.
+ */
+export function leaveView() {
+  const oldLFrame = leaveViewLight();
+  oldLFrame.isParent = true;
+  oldLFrame.tView = null !;
+  oldLFrame.selectedIndex = 0;
+  oldLFrame.contextLView = null !;
+  oldLFrame.elementDepthCount = 0;
+  oldLFrame.currentDirectiveIndex = -1;
+  oldLFrame.currentNamespace = null;
+  oldLFrame.currentSanitizer = null;
+  oldLFrame.bindingRootIndex = -1;
+  oldLFrame.bindingIndex = -1;
+  oldLFrame.currentQueryIndex = 0;
+}
+
+export function nextContextImpl<T = any>(level: number): T {
+  const contextLView = instructionState.lFrame.contextLView =
+      walkUpViews(level, instructionState.lFrame.contextLView !);
   return contextLView[CONTEXT] as T;
 }
 
@@ -426,51 +510,13 @@ function walkUpViews(nestingLevel: number, currentView: LView): LView {
 }
 
 /**
- * Resets the application state.
- */
-export function resetComponentState() {
-  isParent = false;
-  previousOrParentTNode = null !;
-  elementDepthCount = 0;
-  bindingsEnabled = true;
-}
-
-/**
- * Used in lieu of enterView to make it clear when we are exiting a child view. This makes
- * the direction of traversal (up or down the view tree) a bit clearer.
- *
- * @param newView New state to become active
- */
-export function leaveView(newView: LView): void {
-  const tView = lView[TVIEW];
-  if (isCreationMode(lView)) {
-    lView[FLAGS] &= ~LViewFlags.CreationMode;
-  } else {
-    try {
-      resetPreOrderHookFlags(lView);
-      executeHooks(
-          lView, tView.viewHooks, tView.viewCheckHooks, checkNoChangesMode,
-          InitPhaseState.AfterViewInitHooksToBeRun, undefined);
-    } finally {
-      // Views are clean and in update mode after being checked, so these bits are cleared
-      lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
-      lView[BINDING_INDEX] = tView.bindingStartIndex;
-    }
-  }
-  setCachedStylingContext(null);
-  enterView(newView, null);
-}
-
-let _selectedIndex = -1;
-
-/**
- * Gets the most recent index passed to {@link select}
+ * Gets the currently selected element index.
  *
  * Used with {@link property} instruction (and more in the future) to identify the index in the
  * current `LView` to act on.
  */
 export function getSelectedIndex() {
-  return _selectedIndex;
+  return instructionState.lFrame.selectedIndex;
 }
 
 /**
@@ -478,17 +524,14 @@ export function getSelectedIndex() {
  *
  * Used with {@link property} instruction (and more in the future) to identify the index in the
  * current `LView` to act on.
+ *
+ * (Note that if an "exit function" was set earlier (via `setElementExitFn()`) then that will be
+ * run if and when the provided `index` value is different from the current selected index value.)
  */
 export function setSelectedIndex(index: number) {
-  _selectedIndex = index;
-
-  // remove the styling context from the cache
-  // because we are now on a different element
-  setCachedStylingContext(null);
+  instructionState.lFrame.selectedIndex = index;
 }
 
-
-let _currentNamespace: string|null = null;
 
 /**
  * Sets the namespace used to create elements to `'http://www.w3.org/2000/svg'` in global state.
@@ -496,7 +539,7 @@ let _currentNamespace: string|null = null;
  * @codeGenApi
  */
 export function ɵɵnamespaceSVG() {
-  _currentNamespace = 'http://www.w3.org/2000/svg';
+  instructionState.lFrame.currentNamespace = SVG_NAMESPACE;
 }
 
 /**
@@ -505,19 +548,42 @@ export function ɵɵnamespaceSVG() {
  * @codeGenApi
  */
 export function ɵɵnamespaceMathML() {
-  _currentNamespace = 'http://www.w3.org/1998/MathML/';
+  instructionState.lFrame.currentNamespace = MATH_ML_NAMESPACE;
 }
 
 /**
- * Sets the namespace used to create elements no `null`, which forces element creation to use
+ * Sets the namespace used to create elements to `null`, which forces element creation to use
  * `createElement` rather than `createElementNS`.
  *
  * @codeGenApi
  */
 export function ɵɵnamespaceHTML() {
-  _currentNamespace = null;
+  namespaceHTMLInternal();
+}
+
+/**
+ * Sets the namespace used to create elements to `null`, which forces element creation to use
+ * `createElement` rather than `createElementNS`.
+ */
+export function namespaceHTMLInternal() {
+  instructionState.lFrame.currentNamespace = null;
 }
 
 export function getNamespace(): string|null {
-  return _currentNamespace;
+  return instructionState.lFrame.currentNamespace;
+}
+
+export function setCurrentStyleSanitizer(sanitizer: StyleSanitizeFn | null) {
+  instructionState.lFrame.currentSanitizer = sanitizer;
+}
+
+export function resetCurrentStyleSanitizer() {
+  setCurrentStyleSanitizer(null);
+}
+
+export function getCurrentStyleSanitizer() {
+  // TODO(misko): This should throw when there is no LView, but it turns out we can get here from
+  // `NodeStyleDebug` hence we return `null`. This should be fixed
+  const lFrame = instructionState.lFrame;
+  return lFrame === null ? null : lFrame.currentSanitizer;
 }

@@ -67,7 +67,7 @@ class ReentrantInterceptor implements HttpInterceptor {
       });
     });
     it('initializes HttpClient properly', done => {
-      injector.get(HttpClient).get('/test', {responseType: 'text'}).subscribe(value => {
+      injector.get(HttpClient).get('/test', {responseType: 'text'}).subscribe((value: string) => {
         expect(value).toBe('ok!');
         done();
       });
@@ -76,7 +76,7 @@ class ReentrantInterceptor implements HttpInterceptor {
     it('intercepts outbound responses in the order in which interceptors were bound', done => {
       injector.get(HttpClient)
           .get('/test', {observe: 'response', responseType: 'text'})
-          .subscribe(value => done());
+          .subscribe(() => done());
       const req = injector.get(HttpTestingController).expectOne('/test') as TestRequest;
       expect(req.request.headers.get('Intercepted')).toEqual('A,B');
       req.flush('ok!');
@@ -84,7 +84,7 @@ class ReentrantInterceptor implements HttpInterceptor {
     it('intercepts inbound responses in the right (reverse binding) order', done => {
       injector.get(HttpClient)
           .get('/test', {observe: 'response', responseType: 'text'})
-          .subscribe(value => {
+          .subscribe((value: HttpResponse<string>) => {
             expect(value.headers.get('Intercepted')).toEqual('B,A');
             done();
           });

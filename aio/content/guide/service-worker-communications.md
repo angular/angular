@@ -24,7 +24,7 @@ The `SwUpdate` service supports four separate operations:
 
 The two update events, `available` and `activated`, are `Observable` properties of `SwUpdate`:
 
-<code-example path="service-worker-getting-started/src/app/log-update.service.ts" linenums="false" header="log-update.service.ts" region="sw-update"> </code-example>
+<code-example path="service-worker-getting-started/src/app/log-update.service.ts" header="log-update.service.ts" region="sw-update"></code-example>
 
 
 You can use these events to notify the user of a pending update or to refresh their pages when the code they are running is out of date.
@@ -35,7 +35,7 @@ It's possible to ask the service worker to check if any updates have been deploy
 
 Do this with the `checkForUpdate()` method:
 
-<code-example path="service-worker-getting-started/src/app/check-for-update.service.ts" linenums="false" header="check-for-update.service.ts"> </code-example>
+<code-example path="service-worker-getting-started/src/app/check-for-update.service.ts" header="check-for-update.service.ts"></code-example>
 
 
 This method returns a `Promise` which indicates that the update check has completed successfully, though it does not indicate whether an update was discovered as a result of the check. Even if one is found, the service worker must still successfully download the changed files, which can fail. If successful, the `available` event will indicate availability of a new version of the app.
@@ -51,7 +51,7 @@ You can avoid that by waiting for the app to stabilize first, before starting to
 (as shown in the example above).
 
 Note that this is true for any kind of polling done by your application.
-Check the {@link ApplicationRef#isStable isStable} documentation for more information. 
+Check the {@link ApplicationRef#isStable isStable} documentation for more information.
 
 </div>
 
@@ -59,7 +59,7 @@ Check the {@link ApplicationRef#isStable isStable} documentation for more inform
 
 If the current tab needs to be updated to the latest app version immediately, it can ask to do so with the `activateUpdate()` method:
 
-<code-example path="service-worker-getting-started/src/app/prompt-update.service.ts" linenums="false" header="prompt-update.service.ts" region="sw-activate"> </code-example>
+<code-example path="service-worker-getting-started/src/app/prompt-update.service.ts" header="prompt-update.service.ts" region="sw-activate"></code-example>
 
 Doing this could break lazy-loading into currently running apps, especially if the lazy-loaded chunks use filenames with hashes, which change every version.
 

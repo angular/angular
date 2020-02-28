@@ -6,17 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../interface/type';
+import {AbstractType, Type} from '../interface/type';
 import {stringify} from '../util/stringify';
 
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
-import {INJECTOR, NG_TEMP_TOKEN_PATH, NullInjector, THROW_IF_NOT_FOUND, USE_VALUE, catchInjectorError, formatError, ɵɵinject} from './injector_compatibility';
-import {ɵɵdefineInjectable} from './interface/defs';
+import {INJECTOR, NG_TEMP_TOKEN_PATH, NullInjector, THROW_IF_NOT_FOUND, USE_VALUE, catchInjectorError, formatError, setCurrentInjector, ɵɵinject} from './injector_compatibility';
+import {getInjectableDef, ɵɵdefineInjectable} from './interface/defs';
 import {InjectFlags} from './interface/injector';
 import {ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, ValueProvider} from './interface/provider';
 import {Inject, Optional, Self, SkipSelf} from './metadata';
 import {createInjector} from './r3_injector';
+import {INJECTOR_SCOPE} from './scope';
 
 export function INJECTOR_IMPL__PRE_R3__(
     providers: StaticProvider[], parent: Injector | undefined, name: string) {
@@ -31,12 +32,20 @@ export function INJECTOR_IMPL__POST_R3__(
 export const INJECTOR_IMPL = INJECTOR_IMPL__PRE_R3__;
 
 /**
- * Concrete injectors implement this interface.
+ * Concrete injectors implement this interface. Injectors are configured
+ * with [providers](guide/glossary#provider) that associate
+ * dependencies of various types with [injection tokens](guide/glossary#di-token).
  *
- * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
+ * @see ["DI Providers"](guide/dependency-injection-providers).
+ * @see `StaticProvider`
  *
  * @usageNotes
- * ### Example
+ *
+ *  The following example creates a service injector instance.
+ *
+ * {@example core/di/ts/provider_spec.ts region='ConstructorProvider'}
+ *
+ * ### Usage example
  *
  * {@example core/di/ts/injector_spec.ts region='Injector'}
  *
@@ -55,7 +64,8 @@ export abstract class Injector {
    * @returns The instance from the injector if defined, otherwise the `notFoundValue`.
    * @throws When the `notFoundValue` is `undefined` or `Injector.THROW_IF_NOT_FOUND`.
    */
-  abstract get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
+  abstract get<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T, flags?: InjectFlags): T;
   /**
    * @deprecated from v4.0.0 use Type<T> or InjectionToken<T>
    * @suppress {duplicate}
@@ -67,16 +77,21 @@ export abstract class Injector {
    */
   static create(providers: StaticProvider[], parent?: Injector): Injector;
 
+  /**
+   * Creates a new injector instance that provides one or more dependencies,
+   * according to a given type or types of `StaticProvider`.
+   *
+   * @param options An object with the following properties:
+   * * `providers`: An array of providers of the [StaticProvider type](api/core/StaticProvider).
+   * * `parent`: (optional) A parent injector.
+   * * `name`: (optional) A developer-defined identifying name for the new injector.
+   *
+   * @returns The new injector instance.
+   *
+   */
   static create(options: {providers: StaticProvider[], parent?: Injector, name?: string}): Injector;
 
-  /**
-   * Create a new Injector which is configure using `StaticProvider`s.
-   *
-   * @usageNotes
-   * ### Example
-   *
-   * {@example core/di/ts/provider_spec.ts region='ConstructorProvider'}
-   */
+
   static create(
       options: StaticProvider[]|{providers: StaticProvider[], parent?: Injector, name?: string},
       parent?: Injector): Injector {
@@ -88,7 +103,8 @@ export abstract class Injector {
   }
 
   /** @nocollapse */
-  static ngInjectableDef = ɵɵdefineInjectable({
+  static ɵprov = ɵɵdefineInjectable({
+    token: Injector,
     providedIn: 'any' as any,
     factory: () => ɵɵinject(INJECTOR),
   });
@@ -117,17 +133,17 @@ const enum OptionFlags {
   CheckParent = 1 << 2,
   Default = CheckSelf | CheckParent
 }
-const NULL_INJECTOR = Injector.NULL;
 const NO_NEW_LINE = 'ɵ';
 
 export class StaticInjector implements Injector {
   readonly parent: Injector;
   readonly source: string|null;
+  readonly scope: string|null;
 
-  private _records: Map<any, Record>;
+  private _records: Map<any, Record|null>;
 
   constructor(
-      providers: StaticProvider[], parent: Injector = NULL_INJECTOR, source: string|null = null) {
+      providers: StaticProvider[], parent: Injector = Injector.NULL, source: string|null = null) {
     this.parent = parent;
     this.source = source;
     const records = this._records = new Map<any, Record>();
@@ -135,17 +151,37 @@ export class StaticInjector implements Injector {
         Injector, <Record>{token: Injector, fn: IDENT, deps: EMPTY, value: this, useNew: false});
     records.set(
         INJECTOR, <Record>{token: INJECTOR, fn: IDENT, deps: EMPTY, value: this, useNew: false});
-    recursivelyProcessProviders(records, providers);
+    this.scope = recursivelyProcessProviders(records, providers);
   }
 
   get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
   get(token: any, notFoundValue?: any): any;
   get(token: any, notFoundValue?: any, flags: InjectFlags = InjectFlags.Default): any {
-    const record = this._records.get(token);
+    const records = this._records;
+    let record = records.get(token);
+    if (record === undefined) {
+      // This means we have never seen this record, see if it is tree shakable provider.
+      const injectableDef = getInjectableDef(token);
+      if (injectableDef) {
+        const providedIn = injectableDef && injectableDef.providedIn;
+        if (providedIn === 'any' || providedIn != null && providedIn === this.scope) {
+          records.set(
+              token, record = resolveProvider(
+                         {provide: token, useFactory: injectableDef.factory, deps: EMPTY}));
+        }
+      }
+      if (record === undefined) {
+        // Set record to null to make sure that we don't go through expensive lookup above again.
+        records.set(token, null);
+      }
+    }
+    let lastInjector = setCurrentInjector(this);
     try {
-      return tryResolveToken(token, record, this._records, this.parent, notFoundValue, flags);
+      return tryResolveToken(token, record, records, this.parent, notFoundValue, flags);
     } catch (e) {
       return catchInjectorError(e, token, 'StaticInjectorError', this.source);
+    } finally {
+      setCurrentInjector(lastInjector);
     }
   }
 
@@ -202,13 +238,15 @@ function multiProviderMixError(token: any) {
   return staticError('Cannot mix multi providers and regular providers', token);
 }
 
-function recursivelyProcessProviders(records: Map<any, Record>, provider: StaticProvider) {
+function recursivelyProcessProviders(records: Map<any, Record>, provider: StaticProvider): string|
+    null {
+  let scope: string|null = null;
   if (provider) {
     provider = resolveForwardRef(provider);
-    if (provider instanceof Array) {
+    if (Array.isArray(provider)) {
       // if we have an array recurse into the array
       for (let i = 0; i < provider.length; i++) {
-        recursivelyProcessProviders(records, provider[i]);
+        scope = recursivelyProcessProviders(records, provider[i]) || scope;
       }
     } else if (typeof provider === 'function') {
       // Functions were supported in ReflectiveInjector, but are not here. For safety give useful
@@ -243,15 +281,19 @@ function recursivelyProcessProviders(records: Map<any, Record>, provider: Static
       if (record && record.fn == MULTI_PROVIDER_FN) {
         throw multiProviderMixError(token);
       }
+      if (token === INJECTOR_SCOPE) {
+        scope = resolvedProvider.value;
+      }
       records.set(token, resolvedProvider);
     } else {
       throw staticError('Unexpected provider', provider);
     }
   }
+  return scope;
 }
 
 function tryResolveToken(
-    token: any, record: Record | undefined, records: Map<any, Record>, parent: Injector,
+    token: any, record: Record | undefined | null, records: Map<any, Record|null>, parent: Injector,
     notFoundValue: any, flags: InjectFlags): any {
   try {
     return resolveToken(token, record, records, parent, notFoundValue, flags);
@@ -271,7 +313,7 @@ function tryResolveToken(
 }
 
 function resolveToken(
-    token: any, record: Record | undefined, records: Map<any, Record>, parent: Injector,
+    token: any, record: Record | undefined | null, records: Map<any, Record|null>, parent: Injector,
     notFoundValue: any, flags: InjectFlags): any {
   let value;
   if (record && !(flags & InjectFlags.SkipSelf)) {
@@ -304,7 +346,7 @@ function resolveToken(
               records,
               // If we don't know how to resolve dependency and we should not check parent for it,
               // than pass in Null injector.
-              !childRecord && !(options & OptionFlags.CheckParent) ? NULL_INJECTOR : parent,
+              !childRecord && !(options & OptionFlags.CheckParent) ? Injector.NULL : parent,
               options & OptionFlags.Optional ? null : Injector.THROW_IF_NOT_FOUND,
               InjectFlags.Default));
         }
@@ -313,6 +355,10 @@ function resolveToken(
     }
   } else if (!(flags & InjectFlags.Self)) {
     value = parent.get(token, notFoundValue, InjectFlags.Default);
+  } else if (!(flags & InjectFlags.Optional)) {
+    value = Injector.NULL.get(token, notFoundValue);
+  } else {
+    value = Injector.NULL.get(token, typeof notFoundValue !== 'undefined' ? notFoundValue : null);
   }
   return value;
 }
@@ -326,7 +372,7 @@ function computeDeps(provider: StaticProvider): DependencyRecord[] {
     for (let i = 0; i < providerDeps.length; i++) {
       let options = OptionFlags.Default;
       let token = resolveForwardRef(providerDeps[i]);
-      if (token instanceof Array) {
+      if (Array.isArray(token)) {
         for (let j = 0, annotations = token; j < annotations.length; j++) {
           const annotation = annotations[j];
           if (annotation instanceof Optional || annotation == Optional) {

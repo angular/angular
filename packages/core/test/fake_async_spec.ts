@@ -95,7 +95,7 @@ const ProxyZoneSpec: {assertPresent: () => void} = (Zone as any)['ProxyZoneSpec'
             resolvedPromise.then((_) => { throw new Error('async'); });
             flushMicrotasks();
           })();
-        }).toThrowError(/Uncaught \(in promise\): Error: async/);
+        }).toThrow();
       });
 
       it('should complain if a test throws an exception', () => {
@@ -125,6 +125,31 @@ const ProxyZoneSpec: {assertPresent: () => void} = (Zone as any)['ProxyZoneSpec'
 
            tick(6);
            expect(ran).toEqual(true);
+         }));
+
+      it('should run new macro tasks created by timer callback', fakeAsync(() => {
+           function nestedTimer(callback: () => any): void {
+             setTimeout(() => setTimeout(() => callback()));
+           }
+           const callback = jasmine.createSpy('callback');
+           nestedTimer(callback);
+           expect(callback).not.toHaveBeenCalled();
+           tick(0);
+           expect(callback).toHaveBeenCalled();
+         }));
+
+      it('should not queue nested timer on tick with processNewMacroTasksSynchronously=false',
+         fakeAsync(() => {
+           function nestedTimer(callback: () => any): void {
+             setTimeout(() => setTimeout(() => callback()));
+           }
+           const callback = jasmine.createSpy('callback');
+           nestedTimer(callback);
+           expect(callback).not.toHaveBeenCalled();
+           tick(0, {processNewMacroTasksSynchronously: false});
+           expect(callback).not.toHaveBeenCalled();
+           flush();
+           expect(callback).toHaveBeenCalled();
          }));
 
       it('should run queued timer only once', fakeAsync(() => {

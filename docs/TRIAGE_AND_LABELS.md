@@ -12,7 +12,6 @@ The owner of the component is then responsible for the secondary / component-lev
 The caretaker should be able to determine which component the issue belongs to.
 The components have a clear piece of source code associated with it within the `/packages/` folder of this repo.
 
-* `comp: docs-infra` - the angular.io application
 * `comp: animations`
 * `comp: bazel` - @angular/bazel rules
 * `comp: benchpress`
@@ -21,6 +20,8 @@ The components have a clear piece of source code associated with it within the `
 * `comp: core & compiler` - because core, compiler, compiler-cli and
   browser-platforms are very intertwined, we will be treating them as one
 * `comp: ivy` - a subset of core representing the new Ivy renderer.
+* `comp: ngcc` - a subset of ivy representing the [Angular Compatibility Compiler](../packages/compiler-cli/ngcc/README.md)
+* `comp: docs-infra` - the angular.io application and docs-related tooling
 * `comp: elements`
 * `comp: forms`
 * `comp: http`
@@ -120,17 +121,30 @@ Triaging PRs is the same as triaging issues, except that the labels `frequency: 
 
 PRs also have additional label categories that should be used to signal their state.
 
-Every triaged PR must have a `pr_action` label assigned to it:
+Every triaged PR must have a `PR action` label assigned to it:
 
-* `PR action: cleanup` - more work is needed from the author.
-* `PR action: discuss` - discussion is needed, to be led by the author.
-* `PR action: merge` - the PR author is ready for the changes to be merged by the caretaker as soon as the PR is green (or merge-assistance label is applied and caretaker has deemed it acceptable manually). In other words, this label indicates to "auto submit when ready".
+* `PR action: discuss`: Discussion is needed, to be led by the author.
+  * _**Who adds it:** Typically the PR author._
+  * _**Who removes it:** Whoever added it._
+* `PR action: review` (optional): One or more reviews are pending. The label is optional, since the review status can be derived from GitHub's Reviewers interface.
+  * _**Who adds it:** Any team member. The caretaker can use it to differentiate PRs pending review from merge-ready PRs._
+  * _**Who removes it:** Whoever added it or the reviewer adding the last missing review._
+* `PR action: cleanup`: More work is needed from the author.
+  * _**Who adds it:** The reviewer requesting changes to the PR._
+  * _**Who removes it:** Either the author (after implementing the requested changes) or the reviewer (after confirming the requested changes have been implemented)._
+* `PR action: merge`: The PR author is ready for the changes to be merged by the caretaker as soon as the PR is green (or merge-assistance label is applied and caretaker has deemed it acceptable manually). In other words, this label indicates to "auto submit when ready".
+  * _**Who adds it:** Typically the PR author._
+  * _**Who removes it:** Whoever added it._
 
 
 In addition, PRs can have the following states:
 
-* `PR state: WIP` - PR is experimental or rapidly changing. Not ready for review or triage.
-* `PR state: blocked` - PR is blocked on an issue or other PR. Not ready for review or triage or merge.
+* `PR state: WIP`: PR is experimental or rapidly changing. Not ready for review or triage.
+  * _**Who adds it:** The PR author._
+  * _**Who removes it:** Whoever added it._
+* `PR state: blocked`: PR is blocked on an issue or other PR. Not ready for merge.
+  * _**Who adds it:** Any team member._
+  * _**Who removes it:** Any team member._
 
 When a PR is ready for review, a review should be requested using the Reviewers interface in Github.
 
@@ -157,7 +171,10 @@ If a PR is missing the `PR target: *` label, or if the label is set to "TBD" whe
 
 Before a PR can be merged it must be approved by the appropriate reviewer(s).
 
-To ensure that the right people review each change, we configured [GitHub CODEOWNERS](https://help.github.com/articles/about-codeowners/) (via `.github/CODEOWNERS`) and require that each PR has at least one approval from the appropriate code owner.
+To ensure that the right people review each change, we set review requests using [PullApprove](https://https://docs.pullapprove.com/) (via `.pullapprove`) and require that each PR has at least one approval from an appropriate code owner.
+
+If the PR author is a code owner themselves, the approval can come from _any_ repo collaborator (person with write access).
+In any case, the reviewer should actually look through the code and provide feedback if necessary.
 
 Note that approved state does not mean a PR is ready to be merged.
 For example, a reviewer might approve the PR but request a minor tweak that doesn't need further review, e.g., a rebase or small uncontroversial change.
@@ -167,16 +184,31 @@ Only the `PR action: merge` label means that the PR is ready for merging.
 ## Special Labels
 
 ### `cla: yes`, `cla: no`
+* _**Who adds it:** @googlebot, or a Googler manually overriding the status in case the bot got it wrong._
+* _**Who removes it:** @googlebot._
+
 Managed by googlebot.
 Indicates whether a PR has a CLA on file for its author(s).
 Only issues with `cla:yes` should be merged into master.
 
 ### `aio: preview`
+* _**Who adds it:** Any team member. (Typically the author or a reviewer.)_
+* _**Who removes it:** Any team member. (Typically, whoever added it.)_
+
 Applying this label to a PR makes the angular.io preview available regardless of the author. [More info](../aio/aio-builds-setup/docs/overview--security-model.md)
 
 ### `PR action: merge-assistance`
+* _**Who adds it:** Any team member._
+* _**Who removes it:** Any team member._
+
 This label can be added to let the caretaker know that the PR needs special attention.
 There should always be a comment added to the PR to explain why the caretaker's assistance is needed.
 The comment should be formatted like this: `merge-assistance: <explain what kind of assistance you need, and if not obvious why>`
 
 For example, the PR owner might not be a Googler and needs help to run g3sync; or one of the checks is failing due to external causes and the PR should still be merged.
+
+### `PR action: rerun CI at HEAD`
+* _**Who adds it:** Any team member._
+* _**Who removes it:** The Angular Bot, once it triggers the CI rerun._
+
+This label can be added to instruct the Angular Bot to rerun the CI jobs for the PR at latest HEAD of the branch it targets.

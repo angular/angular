@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ASTWithSource, AstPath as AstPathBase, NullAstVisitor, visitAstChildren} from '@angular/compiler';
-import {AstType} from '@angular/compiler-cli/src/language_services';
+import {AST, ASTWithSource, AstPath as AstPathBase, RecursiveAstVisitor} from '@angular/compiler';
+import {AstType} from './expression_type';
 
 import {BuiltinType, Span, Symbol, SymbolQuery, SymbolTable} from './types';
 import {inSpan} from './utils';
@@ -16,11 +16,12 @@ type AstPath = AstPathBase<AST>;
 
 function findAstAt(ast: AST, position: number, excludeEmpty: boolean = false): AstPath {
   const path: AST[] = [];
-  const visitor = new class extends NullAstVisitor {
+  const visitor = new class extends RecursiveAstVisitor {
     visit(ast: AST) {
-      if ((!excludeEmpty || ast.span.start < ast.span.end) && inSpan(position, ast.span)) {
+      if ((!excludeEmpty || ast.sourceSpan.start < ast.sourceSpan.end) &&
+          inSpan(position, ast.sourceSpan)) {
         path.push(ast);
-        visitAstChildren(ast, this);
+        ast.visit(this);
       }
     }
   };
@@ -147,8 +148,14 @@ export function getExpressionSymbol(
     },
     visitPropertyWrite(ast) {
       const receiverType = getType(ast.receiver);
+      const {start} = ast.span;
       symbol = receiverType && receiverType.members().get(ast.name);
-      span = ast.span;
+      // A PropertyWrite span includes both the LHS (name) and the RHS (value) of the write. In this
+      // visit, only the name is relevant.
+      //   prop=$event
+      //   ^^^^        name
+      //        ^^^^^^ value; visited separately as a nested AST
+      span = {start, end: start + ast.name.length};
     },
     visitQuote(ast) {},
     visitSafeMethodCall(ast) {

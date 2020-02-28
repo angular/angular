@@ -1,14 +1,9 @@
 # Singleton services
 
-#### Prerequisites:
-
-* A basic understanding of [Bootstrapping](guide/bootstrapping).
-* Familiarity with [Providers](guide/providers).
+A singleton service is a service for which only one instance exists in an app.
 
 For a sample app using the app-wide singleton service that this page describes, see the
 <live-example name="ngmodules"></live-example> showcasing all the documented features of NgModules.
-
-<hr />
 
 ## Providing a singleton service
 
@@ -25,7 +20,7 @@ There are two ways to make a service a singleton in Angular:
 Beginning with Angular 6.0, the preferred way to create a singleton service is to set `providedIn` to `root` on the service's `@Injectable()` decorator. This tells Angular
 to provide the service in the application root.
 
-<code-example path="providers/src/app/user.service.0.ts"  header="src/app/user.service.0.ts" linenums="false"> </code-example>
+<code-example path="providers/src/app/user.service.0.ts"  header="src/app/user.service.ts"></code-example>
 
 For more detailed information on services, see the [Services](tutorial/toh-pt4) chapter of the
 [Tour of Heroes tutorial](tutorial).
@@ -63,7 +58,7 @@ There are multiple ways to prevent this:
 
 <div class="alert is-helpful">
 
-**Note:** There are two example apps where you can see this scenario; the more advanced <live-example noDownload>NgModules live example</live-example>, which contains `forRoot()` and `forChild()` in the routing modules and the `GreetingModule`, and the simpler <live-example name="lazy-loading-ngmodules" noDownload>Lazy Loading live example</live-example>. For an introductory explanation see the [Lazy Loading Feature Modules](guide/lazy-loading-ngmodules) guide.
+**Note:** There are two example apps where you can see this scenario; the more advanced <live-example noDownload name="ngmodules">NgModules live example</live-example>, which contains `forRoot()` and `forChild()` in the routing modules and the `GreetingModule`, and the simpler <live-example name="lazy-loading-ngmodules" noDownload>Lazy Loading live example</live-example>. For an introductory explanation see the [Lazy Loading Feature Modules](guide/lazy-loading-ngmodules) guide.
 
 </div>
 
@@ -75,7 +70,7 @@ with `providers` and child modules without `providers`.
 1. Create a static method `forRoot()` on the module.
 2. Place the providers into the `forRoot()` method.
 
-<code-example path="ngmodules/src/app/greeting/greeting.module.ts" region="for-root" header="src/app/greeting/greeting.module.ts" linenums="false"> </code-example>
+<code-example path="ngmodules/src/app/greeting/greeting.module.ts" region="for-root" header="src/app/greeting/greeting.module.ts"></code-example>
 
 
 {@a forRoot-router}
@@ -122,22 +117,16 @@ the greeting `UserService`.
 In the following example, the optional, injected `UserServiceConfig`
 extends the greeting `UserService`. If a `UserServiceConfig` exists, the `UserService` sets the user name from that config.
 
-<code-example path="ngmodules/src/app/greeting/user.service.ts" region="ctor" header="src/app/greeting/user.service.ts (constructor)" linenums="false">
-
-</code-example>
+<code-example path="ngmodules/src/app/greeting/user.service.ts" region="ctor" header="src/app/greeting/user.service.ts (constructor)"></code-example>
 
 Here's `forRoot()` that takes a `UserServiceConfig` object:
 
-<code-example path="ngmodules/src/app/greeting/greeting.module.ts" region="for-root" header="src/app/greeting/greeting.module.ts (forRoot)" linenums="false">
-
-</code-example>
+<code-example path="ngmodules/src/app/greeting/greeting.module.ts" region="for-root" header="src/app/greeting/greeting.module.ts (forRoot)"></code-example>
 
 Lastly, call it within the `imports` list of the `AppModule`. In the following
 snippet, other parts of the file are left out. For the complete file, see the <live-example name="ngmodules"></live-example>, or continue to the next section of this document.
 
-<code-example path="ngmodules/src/app/app.module.ts" region="import-for-root" header="src/app/app.module.ts (imports)" linenums="false">
-
-</code-example>
+<code-example path="ngmodules/src/app/app.module.ts" region="import-for-root" header="src/app/app.module.ts (imports)"></code-example>
 
 The app displays "Miss Marple" as the user instead of the default "Sherlock Holmes".
 
@@ -151,9 +140,7 @@ lazy-loaded module imports it too, the app can generate
 
 To guard against a lazy loaded module re-importing `GreetingModule`, add the following `GreetingModule` constructor.
 
-<code-example path="ngmodules/src/app/greeting/greeting.module.ts" region="ctor" header="src/app/greeting/greeting.module.ts" linenums="false">
-
-</code-example>
+<code-example path="ngmodules/src/app/greeting/greeting.module.ts" region="ctor" header="src/app/greeting/greeting.module.ts"></code-example>
 
 The constructor tells Angular to inject the `GreetingModule` into itself.
 The injection would be circular if Angular looked for
@@ -177,7 +164,7 @@ Now `parentModule` exists and the constructor throws the error.
 
 Here are the two files in their entirety for reference:
 
-<code-tabs linenums="false">
+<code-tabs>
  <code-pane header="app.module.ts" path="ngmodules/src/app/app.module.ts">
  </code-pane>
  <code-pane header="greeting.module.ts" region="whole-greeting-module" path="ngmodules/src/app/greeting/greeting.module.ts">

@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵgetDOM as getDOM} from '@angular/common';
 import {iterateListLike} from '@angular/core/src/change_detection/change_detection_util';
 import {QueryList} from '@angular/core/src/linker/query_list';
 import {fakeAsync, tick} from '@angular/core/testing';
 import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 {
   describe('QueryList', () => {
@@ -133,6 +133,22 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
       queryList.reset(['one', 'two', 'three']);
       expect(queryList.some(item => item === 'one')).toEqual(true);
       expect(queryList.some(item => item === 'four')).toEqual(false);
+    });
+
+    it('should be iterable', () => {
+      const data = ['one', 'two', 'three'];
+      queryList.reset([...data]);
+
+      // The type here is load-bearing: it asserts that queryList is considered assignable to
+      // Iterable<string> in TypeScript. This is important for template type-checking of *ngFor
+      // when looping over query results.
+      const queryListAsIterable: Iterable<string> = queryList;
+
+      // For loops use the iteration protocol.
+      for (const value of queryListAsIterable) {
+        expect(value).toBe(data.shift() !);
+      }
+      expect(data.length).toBe(0);
     });
 
     if (getDOM().supportsDOMEvents()) {

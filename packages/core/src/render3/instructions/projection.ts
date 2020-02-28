@@ -5,16 +5,47 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {newArray} from '../../util/array_utils';
 import {TAttributes, TElementNode, TNode, TNodeType} from '../interfaces/node';
-import {CssSelectorList} from '../interfaces/projection';
-import {T_HOST} from '../interfaces/view';
-import {appendProjectedNodes} from '../node_manipulation';
-import {matchingProjectionSelectorIndex} from '../node_selector_matcher';
-import {getLView, setIsParent} from '../state';
-import {findComponentView} from '../util/view_traversal_utils';
+import {ProjectionSlots} from '../interfaces/projection';
+import {DECLARATION_COMPONENT_VIEW, T_HOST} from '../interfaces/view';
+import {applyProjection} from '../node_manipulation';
+import {getProjectAsAttrValue, isNodeMatchingSelectorList, isSelectorInSelectorList} from '../node_selector_matcher';
+import {getLView, getTView, setIsNotParent} from '../state';
+import {getOrCreateTNode} from './shared';
 
-import {createNodeAtIndex} from './shared';
 
+
+/**
+ * Checks a given node against matching projection slots and returns the
+ * determined slot index. Returns "null" if no slot matched the given node.
+ *
+ * This function takes into account the parsed ngProjectAs selector from the
+ * node's attributes. If present, it will check whether the ngProjectAs selector
+ * matches any of the projection slot selectors.
+ */
+export function matchingProjectionSlotIndex(tNode: TNode, projectionSlots: ProjectionSlots): number|
+    null {
+  let wildcardNgContentIndex = null;
+  const ngProjectAsAttrVal = getProjectAsAttrValue(tNode);
+  for (let i = 0; i < projectionSlots.length; i++) {
+    const slotValue = projectionSlots[i];
+    // The last wildcard projection slot should match all nodes which aren't matching
+    // any selector. This is necessary to be backwards compatible with view engine.
+    if (slotValue === '*') {
+      wildcardNgContentIndex = i;
+      continue;
+    }
+    // If we ran into an `ngProjectAs` attribute, we should match its parsed selector
+    // to the list of selectors, otherwise we fall back to matching against the node.
+    if (ngProjectAsAttrVal === null ?
+            isNodeMatchingSelectorList(tNode, slotValue, /* isProjectionMode */ true) :
+            isSelectorInSelectorList(ngProjectAsAttrVal, slotValue)) {
+      return i;  // first matching selector "captures" a given node
+    }
+  }
+  return wildcardNgContentIndex;
+}
 
 /**
  * Instruction to distribute projectable nodes among <ng-content> occurrences in a given template.
@@ -34,36 +65,47 @@ import {createNodeAtIndex} from './shared';
  * - we can't have only a parsed as we can't re-construct textual form from it (as entered by a
  * template author).
  *
- * @param selectors A collection of parsed CSS selectors
- * @param rawSelectors A collection of CSS selectors in the raw, un-parsed form
+ * @param projectionSlots? A collection of projection slots. A projection slot can be based
+ *        on a parsed CSS selectors or set to the wildcard selector ("*") in order to match
+ *        all nodes which do not match any selector. If not specified, a single wildcard
+ *        selector projection slot will be defined.
  *
  * @codeGenApi
  */
-export function ɵɵprojectionDef(selectors?: CssSelectorList[]): void {
-  const componentNode = findComponentView(getLView())[T_HOST] as TElementNode;
+export function ɵɵprojectionDef(projectionSlots?: ProjectionSlots): void {
+  const componentNode = getLView()[DECLARATION_COMPONENT_VIEW][T_HOST] as TElementNode;
 
   if (!componentNode.projection) {
-    const noOfNodeBuckets = selectors ? selectors.length + 1 : 1;
+    // If no explicit projection slots are defined, fall back to a single
+    // projection slot with the wildcard selector.
+    const numProjectionSlots = projectionSlots ? projectionSlots.length : 1;
     const projectionHeads: (TNode | null)[] = componentNode.projection =
-        new Array(noOfNodeBuckets).fill(null);
+        newArray(numProjectionSlots, null !as TNode);
     const tails: (TNode | null)[] = projectionHeads.slice();
 
     let componentChild: TNode|null = componentNode.child;
 
     while (componentChild !== null) {
-      const bucketIndex =
-          selectors ? matchingProjectionSelectorIndex(componentChild, selectors) : 0;
+      const slotIndex =
+          projectionSlots ? matchingProjectionSlotIndex(componentChild, projectionSlots) : 0;
 
-      if (tails[bucketIndex]) {
-        tails[bucketIndex] !.projectionNext = componentChild;
-      } else {
-        projectionHeads[bucketIndex] = componentChild;
+      if (slotIndex !== null) {
+        if (tails[slotIndex]) {
+          tails[slotIndex] !.projectionNext = componentChild;
+        } else {
+          projectionHeads[slotIndex] = componentChild;
+        }
+        tails[slotIndex] = componentChild;
       }
-      tails[bucketIndex] = componentChild;
 
       componentChild = componentChild.next;
     }
   }
+}
+
+let delayProjection = false;
+export function setDelayProjection(value: boolean) {
+  delayProjection = value;
 }
 
 
@@ -81,15 +123,19 @@ export function ɵɵprojectionDef(selectors?: CssSelectorList[]): void {
 export function ɵɵprojection(
     nodeIndex: number, selectorIndex: number = 0, attrs?: TAttributes): void {
   const lView = getLView();
+  const tView = getTView();
   const tProjectionNode =
-      createNodeAtIndex(nodeIndex, TNodeType.Projection, null, null, attrs || null);
+      getOrCreateTNode(tView, lView[T_HOST], nodeIndex, TNodeType.Projection, null, attrs || null);
 
   // We can't use viewData[HOST_NODE] because projection nodes can be nested in embedded views.
   if (tProjectionNode.projection === null) tProjectionNode.projection = selectorIndex;
 
   // `<ng-content>` has no content
-  setIsParent(false);
+  setIsNotParent();
 
-  // re-distribution of projectable nodes is stored on a component's view level
-  appendProjectedNodes(lView, tProjectionNode, selectorIndex, findComponentView(lView));
+  // We might need to delay the projection of nodes if they are in the middle of an i18n block
+  if (!delayProjection) {
+    // re-distribution of projectable nodes is stored on a component's view level
+    applyProjection(tView, lView, tProjectionNode);
+  }
 }

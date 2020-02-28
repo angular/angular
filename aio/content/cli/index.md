@@ -7,7 +7,7 @@ The Angular CLI is a command-line interface tool that you use to initialize, dev
 Major versions of Angular CLI follow the supported major version of Angular, but minor versions can be released separately.
 
 Install the CLI using the `npm` package manager:
-<code-example format="." language="bash">
+<code-example language="bash">
 npm install -g @angular/cli
 </code-example>
 
@@ -20,14 +20,14 @@ Invoke the tool on the command line through the `ng` executable.
 Online help is available on the command line.
 Enter the following to list commands or options for a given command (such as [generate](cli/generate)) with a short description.
 
-<code-example format="." language="bash">
+<code-example language="bash">
 ng help
 ng generate --help
 </code-example>
 
 To create, build, and serve a new, basic Angular project on a development server, go to the parent directory of your new workspace use the following commands:
 
-<code-example format="." language="bash">
+<code-example language="bash">
 ng new my-first-project
 cd my-first-project
 ng serve
@@ -35,6 +35,14 @@ ng serve
 
 In your browser, open http://localhost:4200/ to see the new app run.
 When you use the [ng serve](cli/serve) command to build an app and serve it locally, the server automatically rebuilds the app and reloads the page when you change any of the source files.
+
+<div class="alert is-helpful">
+
+   When you run `ng new my-first-project` a new folder, named `my-first-project`, will be created in the current working directory. Since you want to be able to create files inside that folder, make sure you have sufficient rights in the current working directory before running the command.
+
+   If the current working directory is not the right place for your project, you can change to a more appropriate directory by running `cd <path-to-other-directory>` first.
+
+</div>
 
 ## Workspaces and project files
 
@@ -74,8 +82,8 @@ Command syntax is shown as follows:
 * Option names are prefixed with a double dash (--).
     Option aliases are prefixed with a single dash (-).
     Arguments are not prefixed.
-    For example: 
-    <code-example format="." language="bash">
+    For example:
+    <code-example language="bash">
         ng build my-app -c production
     </code-example>
 
@@ -105,5 +113,5 @@ Schematic options are supplied to the command in the same format as immediate co
 
 ### Building with Bazel
 
-Optionally, you can configure the Angular CLI to use [Bazel](https://docs.bazel.build) as the build tool. For more information, see [Building with Bazel](guide/bazel). 
+Optionally, you can configure the Angular CLI to use [Bazel](https://docs.bazel.build) as the build tool. For more information, see [Building with Bazel](guide/bazel).
 

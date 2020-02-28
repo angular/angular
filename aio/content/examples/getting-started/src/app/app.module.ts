@@ -1,8 +1,8 @@
 // #docplaster
-// #docregion http-client-module-import, http-client-module
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
+// #docregion http-client-module-import
 import { HttpClientModule } from '@angular/common/http';
 // #enddocregion http-client-module-import
 import { ReactiveFormsModule } from '@angular/forms';
@@ -12,7 +12,6 @@ import { TopBarComponent } from './top-bar/top-bar.component';
 import { ProductListComponent } from './product-list/product-list.component';
 import { ProductAlertsComponent } from './product-alerts/product-alerts.component';
 import { ProductDetailsComponent } from './product-details/product-details.component';
-// #enddocregion http-client-module
 import { CartComponent } from './cart/cart.component';
 import { ShippingComponent } from './shipping/shipping.component';
 

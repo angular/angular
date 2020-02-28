@@ -3,7 +3,7 @@ export declare class ServiceWorkerModule {
 }
 
 export declare class SwPush {
-    readonly isEnabled: boolean;
+    get isEnabled(): boolean;
     readonly messages: Observable<object>;
     readonly notificationClicks: Observable<{
         action: string;
@@ -28,7 +28,7 @@ export declare abstract class SwRegistrationOptions {
 export declare class SwUpdate {
     readonly activated: Observable<UpdateActivatedEvent>;
     readonly available: Observable<UpdateAvailableEvent>;
-    readonly isEnabled: boolean;
+    get isEnabled(): boolean;
     constructor(sw: NgswCommChannel);
     activateUpdate(): Promise<void>;
     checkForUpdate(): Promise<void>;

@@ -47,14 +47,17 @@ const requiredNodeModules = {
   'tslib': resolveNpmTreeArtifact('npm/node_modules/tslib'),
   'domino': resolveNpmTreeArtifact('npm/node_modules/domino'),
   'xhr2': resolveNpmTreeArtifact('npm/node_modules/xhr2'),
+  'fs-extra': resolveNpmTreeArtifact('npm/node_modules/fs-extra'),
 
   // Fine grained dependencies which are used by the integration test Angular modules, and
   // need to be symlinked so that they can be resolved by NodeJS or NGC.
+  'buffer-from': resolveNpmTreeArtifact('npm/node_modules/buffer-from'),
   'reflect-metadata': resolveNpmTreeArtifact('npm/node_modules/reflect-metadata'),
   'rxjs': resolveNpmTreeArtifact('npm/node_modules/rxjs'),
+  'source-map': resolveNpmTreeArtifact('npm/node_modules/source-map'),
   'source-map-support': resolveNpmTreeArtifact('npm/node_modules/source-map-support'),
   'typescript': resolveNpmTreeArtifact('npm/node_modules/typescript'),
-  'zone.js': resolveNpmTreeArtifact('npm/node_modules/zone.js'),
+  'zone.js': resolveNpmTreeArtifact('angular/packages/zone.js/npm_package'),
 };
 
 /** Sets up the temporary test directory and returns the path to the directory. */
@@ -98,13 +101,8 @@ function symlinkNodeModules() {
   Object.keys(requiredNodeModules).forEach(importName => {
     const outputPath = path.join(tmpDir, 'node_modules', importName);
     const moduleDir = requiredNodeModules[importName];
-
-    findFilesWithinDirectory(moduleDir).forEach(filePath => {
-      const outputFilePath = path.join(outputPath, path.relative(moduleDir, filePath));
-
-      shx.mkdir('-p', path.dirname(outputFilePath));
-      fs.symlinkSync(filePath, outputFilePath);
-    });
+    shx.mkdir('-p', path.dirname(outputPath));
+    fs.symlinkSync(moduleDir, outputPath, 'junction');
   });
 }
 
@@ -162,5 +160,5 @@ function resolveNpmTreeArtifact(manifestPath, resolveFile = 'package.json') {
 
 /** Finds all files within a specified directory. */
 function findFilesWithinDirectory(directoryPath) {
-  return shx.find(directoryPath).filter(filePath => !fs.statSync(filePath).isDirectory());
+  return shx.find(directoryPath).filter(filePath => !fs.lstatSync(filePath).isDirectory());
 }

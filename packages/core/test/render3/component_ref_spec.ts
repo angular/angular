@@ -8,11 +8,11 @@
 
 import {Injector, NgModuleRef, ViewEncapsulation} from '../../src/core';
 import {ComponentFactory} from '../../src/linker/component_factory';
-import {RendererFactory2} from '../../src/render/api';
+import {RendererFactory2, RendererType2} from '../../src/render/api';
 import {injectComponentFactoryResolver} from '../../src/render3/component_ref';
-import {ɵɵdefineComponent} from '../../src/render3/index';
-import {domRendererFactory3} from '../../src/render3/interfaces/renderer';
-import {Sanitizer} from '../../src/sanitization/security';
+import {AttributeMarker, ɵɵdefineComponent} from '../../src/render3/index';
+import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
+import {Sanitizer} from '../../src/sanitization/sanitizer';
 
 describe('ComponentFactory', () => {
   const cfr = injectComponentFactoryResolver();
@@ -20,19 +20,19 @@ describe('ComponentFactory', () => {
   describe('constructor()', () => {
     it('should correctly populate default properties', () => {
       class TestComponent {
-        static ngComponentDef = ɵɵdefineComponent({
+        static ɵfac = () => new TestComponent();
+        static ɵcmp = ɵɵdefineComponent({
           type: TestComponent,
-          selectors: [['test', 'foo'], ['bar']],
-          consts: 0,
+          selectors: [['test', 'foo', ''], ['bar']],
+          decls: 0,
           vars: 0,
           template: () => undefined,
-          factory: () => new TestComponent(),
         });
       }
 
       const cf = cfr.resolveComponentFactory(TestComponent);
 
-      expect(cf.selector).toBe('test');
+      expect(cf.selector).toBe('test[foo],bar');
       expect(cf.componentType).toBe(TestComponent);
       expect(cf.ngContentSelectors).toEqual([]);
       expect(cf.inputs).toEqual([]);
@@ -41,15 +41,15 @@ describe('ComponentFactory', () => {
 
     it('should correctly populate defined properties', () => {
       class TestComponent {
-        static ngComponentDef = ɵɵdefineComponent({
+        static ɵfac = () => new TestComponent();
+        static ɵcmp = ɵɵdefineComponent({
           type: TestComponent,
           encapsulation: ViewEncapsulation.None,
-          selectors: [['test', 'foo'], ['bar']],
-          consts: 0,
+          selectors: [['test', 'foo', ''], ['bar']],
+          decls: 0,
           vars: 0,
           template: () => undefined,
-          ngContentSelectors: ['a', 'b'],
-          factory: () => new TestComponent(),
+          ngContentSelectors: ['*', 'a', 'b'],
           inputs: {
             in1: 'in1',
             in2: ['input-attr-2', 'in2'],
@@ -65,7 +65,7 @@ describe('ComponentFactory', () => {
 
       expect(cf.componentType).toBe(TestComponent);
       expect(cf.ngContentSelectors).toEqual(['*', 'a', 'b']);
-      expect(cf.selector).toBe('test');
+      expect(cf.selector).toBe('test[foo],bar');
 
       expect(cf.inputs).toEqual([
         {propName: 'in1', templateName: 'in1'},
@@ -89,14 +89,15 @@ describe('ComponentFactory', () => {
       createRenderer3Spy = spyOn(domRendererFactory3, 'createRenderer').and.callThrough();
 
       class TestComponent {
-        static ngComponentDef = ɵɵdefineComponent({
+        static ɵfac = () => new TestComponent();
+        static ɵcmp = ɵɵdefineComponent({
           type: TestComponent,
           encapsulation: ViewEncapsulation.None,
           selectors: [['test']],
-          consts: 0,
+          decls: 0,
           vars: 0,
           template: () => undefined,
-          factory: () => new TestComponent(),
+          hostAttrs: [AttributeMarker.Classes, 'HOST_COMPONENT']
         });
       }
 
@@ -290,6 +291,25 @@ describe('ComponentFactory', () => {
 
            expect(mSanitizerFactorySpy).toHaveBeenCalled();
          });
+    });
+
+    it('should ensure that rendererFactory is called after initial styling is set', () => {
+      const myRendererFactory: RendererFactory3 = {
+        createRenderer: function(hostElement: RElement|null, rendererType: RendererType2|null):
+            Renderer3 {
+              if (hostElement) {
+                hostElement.classList.add('HOST_RENDERER');
+              }
+              return document;
+            }
+      };
+      const injector = Injector.create([
+        {provide: RendererFactory2, useValue: myRendererFactory},
+      ]);
+
+      const hostNode = document.createElement('div');
+      const componentRef = cf.create(injector, undefined, hostNode);
+      expect(hostNode.className).toEqual('HOST_COMPONENT HOST_RENDERER');
     });
   });
 });

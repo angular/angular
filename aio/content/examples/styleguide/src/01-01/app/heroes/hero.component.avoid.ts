@@ -4,13 +4,13 @@ import { Component, NgModule, OnInit } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
-class Hero {
+interface Hero {
   id: number;
   name: string;
 }
 
 @Component({
-  selector: 'my-app',
+  selector: 'app-root',
   template: `
       <h1>{{title}}</h1>
       <pre>{{heroes | json}}</pre>

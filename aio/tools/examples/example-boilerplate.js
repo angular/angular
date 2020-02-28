@@ -13,10 +13,11 @@ const EXAMPLES_BASE_PATH = path.resolve(__dirname, '../../content/examples');
 const BOILERPLATE_PATHS = {
   cli: [
     'src/environments/environment.prod.ts', 'src/environments/environment.ts',
-    'src/assets/.gitkeep', 'src/browserslist', 'src/favicon.ico', 'src/karma.conf.js',
-    'src/polyfills.ts', 'src/test.ts', 'src/tsconfig.app.json', 'src/tsconfig.spec.json',
-    'src/tslint.json', 'e2e/src/app.po.ts', 'e2e/protractor.conf.js', 'e2e/tsconfig.e2e.json',
-    '.editorconfig', 'angular.json', 'package.json', 'tsconfig.json', 'tslint.json'
+    'src/assets/.gitkeep', 'browserslist', 'src/favicon.ico', 'karma.conf.js',
+    'src/polyfills.ts', 'src/test.ts', 'tsconfig.app.json', 'tsconfig.spec.json',
+    'tslint.json', 'e2e/src/app.po.ts', 'e2e/protractor-puppeteer.conf.js',
+    'e2e/protractor.conf.js', 'e2e/tsconfig.json', '.editorconfig', 'angular.json', 'package.json',
+    'tsconfig.json', 'tslint.json'
   ],
   systemjs: [
     'src/systemjs-angular-loader.js', 'src/systemjs.config.js', 'src/tsconfig.json',
@@ -29,13 +30,16 @@ const BOILERPLATE_PATHS = {
 // This maps the CLI files that exists in a parent folder
 const cliRelativePath = BOILERPLATE_PATHS.cli.map(file => `../cli/${file}`);
 
-BOILERPLATE_PATHS.elements = [...cliRelativePath, 'tsconfig.json'];
-
 BOILERPLATE_PATHS.i18n = [...cliRelativePath, 'angular.json', 'package.json'];
 
 BOILERPLATE_PATHS['service-worker'] = [...cliRelativePath, 'angular.json', 'package.json'];
 
-BOILERPLATE_PATHS.testing = [...cliRelativePath, 'angular.json'];
+BOILERPLATE_PATHS.testing = [
+  ...cliRelativePath,
+  'angular.json',
+  'tsconfig.app.json',
+  'tsconfig.spec.json'
+];
 
 BOILERPLATE_PATHS.universal = [...cliRelativePath, 'angular.json', 'package.json'];
 
@@ -46,12 +50,17 @@ BOILERPLATE_PATHS['getting-started'] = [
 
 BOILERPLATE_PATHS.ivy = {
   systemjs: ['rollup-config.js', 'tsconfig-aot.json'],
-  cli: ['src/tsconfig.app.json']
+  cli: ['tsconfig.app.json']
 };
 
 BOILERPLATE_PATHS.schematics = [
   ...cliRelativePath,
   'angular.json'
+];
+
+BOILERPLATE_PATHS['cli-ajs'] = [
+  ...cliRelativePath,
+  'package.json'
 ];
 
 const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
@@ -72,9 +81,7 @@ class ExampleBoilerPlate {
     }
 
     if (ivy) {
-      // We only need the "fesm5" bundles as the CLI webpack build does not need
-      // any other formats for building and serving.
-      shelljs.exec(`yarn --cwd ${SHARED_PATH} ivy-ngcc --properties module`);
+      shelljs.exec(`yarn --cwd ${SHARED_PATH} ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points`);
     }
 
     exampleFolders.forEach(exampleFolder => {
@@ -93,7 +100,7 @@ class ExampleBoilerPlate {
 
       // Copy the boilerplate common files
       const useCommonBoilerplate = exampleConfig.useCommonBoilerplate !== false;
-      
+
       if (useCommonBoilerplate) {
         BOILERPLATE_PATHS.common.forEach(filePath => this.copyFile(BOILERPLATE_COMMON_BASE_PATH, exampleFolder, filePath));
       }

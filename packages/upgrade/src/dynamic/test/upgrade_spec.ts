@@ -29,7 +29,8 @@ withEachNg1Version(() => {
     afterEach(() => destroyPlatform());
 
     describe('(basic use)', () => {
-      it('should have AngularJS loaded', () => expect(angular.version.major).toBe(1));
+      it('should have AngularJS loaded',
+         () => expect(angular.getAngularJSGlobal().version.major).toBe(1));
 
       it('should instantiate ng2 in ng1 template and project content', async(() => {
            const ng1Module = angular.module_('ng1', []);
@@ -1634,13 +1635,14 @@ withEachNg1Version(() => {
                                       controllerAs: '$ctrl',
                                       controller: class {$onInit() { $onInitSpyA(); }}
                                     }))
-                 .directive('ng1B', () => ({
-                                      template: '',
-                                      scope: {},
-                                      bindToController: false,
-                                      controllerAs: '$ctrl',
-                                      controller: function() { this.$onInit = $onInitSpyB; }
-                                    }))
+                 .directive(
+                     'ng1B', () => ({
+                               template: '',
+                               scope: {},
+                               bindToController: false,
+                               controllerAs: '$ctrl',
+                               controller: function(this: any) { this.$onInit = $onInitSpyB; }
+                             }))
                  .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
 
              @NgModule({
@@ -1727,13 +1729,14 @@ withEachNg1Version(() => {
                                       controllerAs: '$ctrl',
                                       controller: class {$doCheck() { $doCheckSpyA(); }}
                                     }))
-                 .directive('ng1B', () => ({
-                                      template: '',
-                                      scope: {},
-                                      bindToController: false,
-                                      controllerAs: '$ctrl',
-                                      controller: function() { this.$doCheck = $doCheckSpyB; }
-                                    }))
+                 .directive(
+                     'ng1B', () => ({
+                               template: '',
+                               scope: {},
+                               bindToController: false,
+                               controllerAs: '$ctrl',
+                               controller: function(this: any) { this.$doCheck = $doCheckSpyB; }
+                             }))
                  .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
 
              @NgModule({
@@ -1834,13 +1837,14 @@ withEachNg1Version(() => {
                                       controllerAs: '$ctrl',
                                       controller: class {$postLink() { $postLinkSpyA(); }}
                                     }))
-                 .directive('ng1B', () => ({
-                                      template: '',
-                                      scope: {},
-                                      bindToController: false,
-                                      controllerAs: '$ctrl',
-                                      controller: function() { this.$postLink = $postLinkSpyB; }
-                                    }))
+                 .directive(
+                     'ng1B', () => ({
+                               template: '',
+                               scope: {},
+                               bindToController: false,
+                               controllerAs: '$ctrl',
+                               controller: function(this: any) { this.$postLink = $postLinkSpyB; }
+                             }))
                  .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
 
              @NgModule({
@@ -1929,7 +1933,7 @@ withEachNg1Version(() => {
                                       scope: {valA: '<'},
                                       bindToController: true,
                                       controllerAs: '$ctrl',
-                                      controller: function($scope: angular.IScope) {
+                                      controller: function(this: any, $scope: angular.IScope) {
                                         this.$onChanges = $onChangesControllerSpyA;
                                       }
                                     }))
@@ -2034,13 +2038,14 @@ withEachNg1Version(() => {
                                       controllerAs: '$ctrl',
                                       controller: class {$onDestroy() { $onDestroySpyA(); }}
                                     }))
-                 .directive('ng1B', () => ({
-                                      template: '',
-                                      scope: {},
-                                      bindToController: false,
-                                      controllerAs: '$ctrl',
-                                      controller: function() { this.$onDestroy = $onDestroySpyB; }
-                                    }))
+                 .directive(
+                     'ng1B', () => ({
+                               template: '',
+                               scope: {},
+                               bindToController: false,
+                               controllerAs: '$ctrl',
+                               controller: function(this: any) { this.$onDestroy = $onDestroySpyB; }
+                             }))
                  .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
 
              @NgModule({

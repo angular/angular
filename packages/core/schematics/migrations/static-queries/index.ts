@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {logging} from '@angular-devkit/core';
 import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {dirname, relative} from 'path';
 import {from} from 'rxjs';
@@ -13,9 +14,8 @@ import * as ts from 'typescript';
 
 import {NgComponentTemplateVisitor} from '../../utils/ng_component_template';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
-import {getInquirer, supportsPrompt} from '../../utils/schematics_prompt';
+import {createMigrationCompilerHost} from '../../utils/typescript/compiler_host';
 import {parseTsconfigFile} from '../../utils/typescript/parse_tsconfig';
-import {TypeScriptVisitor, visitAllNodes} from '../../utils/typescript/visit_nodes';
 
 import {NgQueryResolveVisitor} from './angular/ng_query_visitor';
 import {QueryTemplateStrategy} from './strategies/template_strategy/template_strategy';
@@ -24,10 +24,20 @@ import {TimingStrategy} from './strategies/timing-strategy';
 import {QueryUsageStrategy} from './strategies/usage_strategy/usage_strategy';
 import {getTransformedQueryCallExpr} from './transform';
 
-export enum SELECTED_STRATEGY {
+enum SELECTED_STRATEGY {
   TEMPLATE,
   USAGE,
   TESTS,
+}
+
+interface AnalyzedProject {
+  program: ts.Program;
+  host: ts.CompilerHost;
+  queryVisitor: NgQueryResolveVisitor;
+  sourceFiles: ts.SourceFile[];
+  basePath: string;
+  typeChecker: ts.TypeChecker;
+  tsconfigPath: string;
 }
 
 /** Entry point for the V8 static-query migration. */
@@ -45,110 +55,121 @@ async function runMigration(tree: Tree, context: SchematicContext) {
   const basePath = process.cwd();
   const logger = context.logger;
 
-  logger.info('------ Static Query migration ------');
-  logger.info('In preparation for Ivy, developers can now explicitly specify the');
-  logger.info('timing of their queries. Read more about this here:');
-  logger.info('https://github.com/angular/angular/pull/28810');
-  logger.info('');
-
   if (!buildPaths.length && !testPaths.length) {
     throw new SchematicsException(
         'Could not find any tsconfig file. Cannot migrate queries ' +
-        'to explicit timing.');
+        'to add static flag.');
   }
 
-  // In case prompts are supported, determine the desired migration strategy
-  // by creating a choice prompt. By default the template strategy is used.
-  let selectedStrategy: SELECTED_STRATEGY = SELECTED_STRATEGY.TEMPLATE;
-  if (supportsPrompt()) {
-    logger.info('There are two available migration strategies that can be selected:');
-    logger.info('  • Template strategy  -  migration tool (short-term gains, rare corrections)');
-    logger.info('  • Usage strategy  -  best practices (long-term gains, manual corrections)');
-    logger.info('For an easy migration, the template strategy is recommended. The usage');
-    logger.info('strategy can be used for best practices and a code base that will be more');
-    logger.info('flexible to changes going forward.');
-    const {strategyName} = await getInquirer().prompt<{strategyName: string}>({
-      type: 'list',
-      name: 'strategyName',
-      message: 'What migration strategy do you want to use?',
-      choices: [
-        {name: 'Template strategy', value: 'template'}, {name: 'Usage strategy', value: 'usage'}
-      ],
-      default: 'template',
-    });
-    logger.info('');
-    selectedStrategy =
-        strategyName === 'usage' ? SELECTED_STRATEGY.USAGE : SELECTED_STRATEGY.TEMPLATE;
-  } else {
-    // In case prompts are not supported, we still want to allow developers to opt
-    // into the usage strategy by specifying an environment variable. The tests also
-    // use the environment variable as there is no headless way to select via prompt.
-    selectedStrategy = !!process.env['NG_STATIC_QUERY_USAGE_STRATEGY'] ? SELECTED_STRATEGY.USAGE :
-                                                                         SELECTED_STRATEGY.TEMPLATE;
-  }
-
+  const analyzedFiles = new Set<string>();
+  const buildProjects = new Set<AnalyzedProject>();
   const failures = [];
+  const strategy = process.env['NG_STATIC_QUERY_USAGE_STRATEGY'] === 'true' ?
+      SELECTED_STRATEGY.USAGE :
+      SELECTED_STRATEGY.TEMPLATE;
 
   for (const tsconfigPath of buildPaths) {
-    failures.push(...await runStaticQueryMigration(tree, tsconfigPath, basePath, selectedStrategy));
+    const project = analyzeProject(tree, tsconfigPath, basePath, analyzedFiles, logger);
+    if (project) {
+      buildProjects.add(project);
+    }
   }
+
+  if (buildProjects.size) {
+    for (let project of Array.from(buildProjects.values())) {
+      failures.push(...await runStaticQueryMigration(tree, project, strategy, logger));
+    }
+  }
+
   // For the "test" tsconfig projects we always want to use the test strategy as
   // we can't detect the proper timing within spec files.
   for (const tsconfigPath of testPaths) {
-    failures.push(
-        ...await runStaticQueryMigration(tree, tsconfigPath, basePath, SELECTED_STRATEGY.TESTS));
+    const project = await analyzeProject(tree, tsconfigPath, basePath, analyzedFiles, logger);
+    if (project) {
+      failures.push(
+          ...await runStaticQueryMigration(tree, project, SELECTED_STRATEGY.TESTS, logger));
+    }
   }
 
   if (failures.length) {
-    logger.info('Some queries cannot be migrated automatically. Please go through');
-    logger.info('those manually and apply the appropriate timing:');
+    logger.info('');
+    logger.info('Some queries could not be migrated automatically. Please go');
+    logger.info('through these manually and apply the appropriate timing.');
+    logger.info('For more info on how to choose a flag, please see: ');
+    logger.info('https://v8.angular.io/guide/static-query-migration');
     failures.forEach(failure => logger.warn(`⮑   ${failure}`));
   }
-
-  logger.info('------------------------------------------------');
 }
 
 /**
- * Runs the static query migration for the given TypeScript project. The schematic
- * analyzes all queries within the project and sets up the query timing based on
- * the current usage of the query property. e.g. a view query that is not used in any
- * lifecycle hook does not need to be static and can be set up with "static: false".
+ * Analyzes the given TypeScript project by looking for queries that need to be
+ * migrated. In case there are no queries that can be migrated, null is returned.
+ */
+function analyzeProject(
+    tree: Tree, tsconfigPath: string, basePath: string, analyzedFiles: Set<string>,
+    logger: logging.LoggerApi):
+    AnalyzedProject|null {
+      const parsed = parseTsconfigFile(tsconfigPath, dirname(tsconfigPath));
+      const host = createMigrationCompilerHost(tree, parsed.options, basePath);
+      const program = ts.createProgram(parsed.fileNames, parsed.options, host);
+      const syntacticDiagnostics = program.getSyntacticDiagnostics();
+
+      // Syntactic TypeScript errors can throw off the query analysis and therefore we want
+      // to notify the developer that we couldn't analyze parts of the project. Developers
+      // can just re-run the migration after fixing these failures.
+      if (syntacticDiagnostics.length) {
+        logger.warn(
+            `\nTypeScript project "${tsconfigPath}" has syntactical errors which could cause ` +
+            `an incomplete migration. Please fix the following failures and rerun the migration:`);
+        logger.error(ts.formatDiagnostics(syntacticDiagnostics, host));
+        logger.info(
+            'Migration can be rerun with: "ng update @angular/core --from 7 --to 8 --migrate-only"\n');
+      }
+
+      const typeChecker = program.getTypeChecker();
+      const sourceFiles = program.getSourceFiles().filter(
+          f => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
+      const queryVisitor = new NgQueryResolveVisitor(typeChecker);
+
+      // Analyze all project source-files and collect all queries that
+      // need to be migrated.
+      sourceFiles.forEach(sourceFile => {
+        const relativePath = relative(basePath, sourceFile.fileName);
+
+        // Only look for queries within the current source files if the
+        // file has not been analyzed before.
+        if (!analyzedFiles.has(relativePath)) {
+          analyzedFiles.add(relativePath);
+          queryVisitor.visitNode(sourceFile);
+        }
+      });
+
+      if (queryVisitor.resolvedQueries.size === 0) {
+        return null;
+      }
+
+      return {program, host, tsconfigPath, typeChecker, basePath, queryVisitor, sourceFiles};
+    }
+
+/**
+ * Runs the static query migration for the given project. The schematic analyzes all
+ * queries within the project and sets up the query timing based on the current usage
+ * of the query property. e.g. a view query that is not used in any lifecycle hook does
+ * not need to be static and can be set up with "static: false".
  */
 async function runStaticQueryMigration(
-    tree: Tree, tsconfigPath: string, basePath: string, selectedStrategy: SELECTED_STRATEGY) {
-  const parsed = parseTsconfigFile(tsconfigPath, dirname(tsconfigPath));
-  const host = ts.createCompilerHost(parsed.options, true);
-
-  // We need to overwrite the host "readFile" method, as we want the TypeScript
-  // program to be based on the file contents in the virtual file tree. Otherwise
-  // if we run the migration for multiple tsconfig files which have intersecting
-  // source files, it can end up updating query definitions multiple times.
-  host.readFile = fileName => {
-    const buffer = tree.read(relative(basePath, fileName));
-    return buffer ? buffer.toString() : undefined;
-  };
-
-  const program = ts.createProgram(parsed.fileNames, parsed.options, host);
-  const typeChecker = program.getTypeChecker();
-  const queryVisitor = new NgQueryResolveVisitor(typeChecker);
-  const templateVisitor = new NgComponentTemplateVisitor(typeChecker);
-  const rootSourceFiles = program.getRootFileNames().map(f => program.getSourceFile(f) !);
+    tree: Tree, project: AnalyzedProject, selectedStrategy: SELECTED_STRATEGY,
+    logger: logging.LoggerApi): Promise<string[]> {
+  const {sourceFiles, typeChecker, host, queryVisitor, tsconfigPath, basePath} = project;
   const printer = ts.createPrinter();
-  const analysisVisitors: TypeScriptVisitor[] = [queryVisitor];
   const failureMessages: string[] = [];
+  const templateVisitor = new NgComponentTemplateVisitor(typeChecker);
 
   // If the "usage" strategy is selected, we also need to add the query visitor
   // to the analysis visitors so that query usage in templates can be also checked.
   if (selectedStrategy === SELECTED_STRATEGY.USAGE) {
-    analysisVisitors.push(templateVisitor);
+    sourceFiles.forEach(s => templateVisitor.visitNode(s));
   }
-
-  rootSourceFiles.forEach(sourceFile => {
-    // The visit utility function only traverses a source file once. We don't want to
-    // traverse through all source files multiple times for each visitor as this could be
-    // slow.
-    visitAllNodes(sourceFile, analysisVisitors);
-  });
 
   const {resolvedQueries, classMetadata} = queryVisitor;
   const {resolvedTemplates} = templateVisitor;
@@ -172,10 +193,25 @@ async function runStaticQueryMigration(
     strategy = new QueryTemplateStrategy(tsconfigPath, classMetadata, host);
   }
 
-  // In case the strategy could not be set up properly, we just exit the
-  // migration. We don't want to throw an exception as this could mean
-  // that other migrations are interrupted.
-  if (!strategy.setup()) {
+  try {
+    strategy.setup();
+  } catch (e) {
+    if (selectedStrategy === SELECTED_STRATEGY.TEMPLATE) {
+      logger.warn(
+          `\nThe template migration strategy uses the Angular compiler ` +
+          `internally and therefore projects that no longer build successfully after ` +
+          `the update cannot use the template migration strategy. Please ensure ` +
+          `there are no AOT compilation errors.\n`);
+    }
+    // In case the strategy could not be set up properly, we just exit the
+    // migration. We don't want to throw an exception as this could mean
+    // that other migrations are interrupted.
+    logger.warn(
+        `Could not setup migration strategy for "${project.tsconfigPath}". The ` +
+        `following error has been reported:\n`);
+    logger.error(`${e.toString()}\n`);
+    logger.info(
+        'Migration can be rerun with: "ng update @angular/core --from 7 --to 8 --migrate-only"\n');
     return [];
   }
 

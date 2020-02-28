@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef, Compiler, Component, ComponentFactoryResolver, Directive, HostBinding, Inject, Injectable, InjectionToken, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, Provider, Self, Type, forwardRef, getModuleFactory, ɵivyEnabled as ivyEnabled} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef, Compiler, Component, ComponentFactoryResolver, Directive, HostBinding, Inject, Injectable, InjectionToken, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, Provider, Self, Type, forwardRef, getModuleFactory, ɵivyEnabled as ivyEnabled, ɵɵdefineNgModule as defineNgModule} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {ɵɵInjectableDef, ɵɵdefineInjectable} from '@angular/core/src/di/interface/defs';
 import {getNgModuleDef} from '@angular/core/src/render3/definition';
@@ -17,7 +17,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {modifiedInIvy, obsoleteInIvy, onlyInIvy} from '@angular/private/testing';
 
 import {InternalNgModuleRef, NgModuleFactory} from '../../src/linker/ng_module_factory';
-import {clearModulesForTest} from '../../src/linker/ng_module_factory_loader';
+import {clearModulesForTest} from '../../src/linker/ng_module_factory_registration';
 import {stringify} from '../../src/util/stringify';
 
 class Engine {}
@@ -92,13 +92,6 @@ class SomePipe {
 class CompUsingModuleDirectiveAndPipe {
 }
 
-class DummyConsole implements Console {
-  public warnings: string[] = [];
-
-  log(message: string) {}
-  warn(message: string) { this.warnings.push(message); }
-}
-
 {
   if (ivyEnabled) {
     describe('ivy', () => { declareTests(); });
@@ -112,12 +105,8 @@ function declareTests(config?: {useJit: boolean}) {
   describe('NgModule', () => {
     let compiler: Compiler;
     let injector: Injector;
-    let console: DummyConsole;
 
-    beforeEach(() => {
-      console = new DummyConsole();
-      TestBed.configureCompiler({...config, providers: [{provide: Console, useValue: console}]});
-    });
+    beforeEach(() => { TestBed.configureCompiler(config || {}); });
 
     beforeEach(inject([Compiler, Injector], (_compiler: Compiler, _injector: Injector) => {
       compiler = _compiler;
@@ -136,13 +125,13 @@ function declareTests(config?: {useJit: boolean}) {
     }
 
     function createComp<T>(compType: Type<T>, moduleType: Type<any>): ComponentFixture<T> {
-      const componentDef = (compType as any).ngComponentDef;
+      const componentDef = (compType as any).ɵcmp;
       if (componentDef) {
         // Since we avoid Components/Directives/Pipes recompiling in case there are no overrides, we
         // may face a problem where previously compiled defs available to a given
         // Component/Directive are cached in TView and may become stale (in case any of these defs
         // gets recompiled). In order to avoid this problem, we force fresh TView to be created.
-        componentDef.template.ngPrivateData = null;
+        componentDef.TView = null;
       }
 
       const ngModule = createModule(moduleType, injector);
@@ -261,9 +250,9 @@ function declareTests(config?: {useJit: boolean}) {
             expect(() => createModule(SomeModule)).toThrowError(/Can't bind to 'someUnknownProp'/);
           });
 
-      onlyInIvy('Unknown property error thrown during update mode, not creation mode')
+      onlyInIvy('Unknown property warning logged, instead of throwing an error')
           .it('should error on unknown bound properties on custom elements by default', () => {
-            @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
+            @Component({template: '<div [someUnknownProp]="true"></div>'})
             class ComponentUsingInvalidProperty {
             }
 
@@ -271,8 +260,10 @@ function declareTests(config?: {useJit: boolean}) {
             class SomeModule {
             }
 
+            const spy = spyOn(console, 'warn');
             const fixture = createComp(ComponentUsingInvalidProperty, SomeModule);
-            expect(() => fixture.detectChanges()).toThrowError(/Can't bind to 'someUnknownProp'/);
+            fixture.detectChanges();
+            expect(spy.calls.mostRecent().args[0]).toMatch(/Can't bind to 'someUnknownProp'/);
           });
 
       it('should not error on unknown bound properties on custom elements when using the CUSTOM_ELEMENTS_SCHEMA',
@@ -327,6 +318,40 @@ function declareTests(config?: {useJit: boolean}) {
           createModule(SomeOtherModule);
         }).toThrowError(/Duplicate module registered/);
       });
+
+      it('should not throw immediately if two modules have the same id', () => {
+        expect(() => {
+          @NgModule({id: 'some-module'})
+          class ModuleA {
+          }
+
+          @NgModule({id: 'some-module'})
+          class ModuleB {
+          }
+        }).not.toThrow();
+      });
+
+      onlyInIvy('VE does not allow use of NgModuleFactory without importing the .ngfactory')
+          .it('should register a module even if not importing the .ngfactory file or calling create()',
+              () => {
+                class ChildModule {
+                  static ɵmod = defineNgModule({
+                    type: ChildModule,
+                    id: 'child',
+                  });
+                }
+
+                class Module {
+                  static ɵmod = defineNgModule({
+                    type: Module,
+                    id: 'test',
+                    imports: [ChildModule],
+                  });
+                }
+
+                createModuleFactory(ChildModule);
+                expect(getModuleFactory('child')).toBeAnInstanceOf(NgModuleFactory);
+              });
     });
 
     describe('entryComponents', () => {
@@ -1362,7 +1387,8 @@ function declareTests(config?: {useJit: boolean}) {
               }
 
               class Bar {
-                static ngInjectableDef: ɵɵInjectableDef<Bar> = ɵɵdefineInjectable({
+                static ɵprov: ɵɵInjectableDef<Bar> = ɵɵdefineInjectable({
+                  token: Bar,
                   factory: () => new Bar(),
                   providedIn: SomeModule,
                 });
@@ -1394,7 +1420,8 @@ function declareTests(config?: {useJit: boolean}) {
               }
 
               class Bar {
-                static ngInjectableDef: ɵɵInjectableDef<Bar> = ɵɵdefineInjectable({
+                static ɵprov: ɵɵInjectableDef<Bar> = ɵɵdefineInjectable({
+                  token: Bar,
                   factory: () => new Bar(),
                   providedIn: SomeModule,
                 });

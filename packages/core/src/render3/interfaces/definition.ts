@@ -9,7 +9,10 @@
 import {SchemaMetadata, ViewEncapsulation} from '../../core';
 import {ProcessProvidersFunction} from '../../di/interface/provider';
 import {Type} from '../../interface/type';
+
+import {TAttributes, TConstants} from './node';
 import {CssSelectorList} from './projection';
+import {TView} from './view';
 
 
 /**
@@ -19,7 +22,7 @@ export type ComponentTemplate<T> = {
   // Note: the ctx parameter is typed as T|U, as using only U would prevent a template with
   // e.g. ctx: {} from being assigned to ComponentTemplate<any> as TypeScript won't infer U = any
   // in that scenario. By including T this incompatibility is resolved.
-  <U extends T>(rf: RenderFlags, ctx: T | U): void; ngPrivateData?: never;
+  <U extends T>(rf: RenderFlags, ctx: T | U): void;
 };
 
 /**
@@ -46,7 +49,7 @@ export type FactoryFn<T> = {
   /**
    * If no constructor to instantiate is provided, an instance of type T itself is created.
    */
-  (t: null): T;
+  (t?: undefined): T;
 };
 
 /**
@@ -66,24 +69,25 @@ export const enum RenderFlags {
 }
 
 /**
- * A subclass of `Type` which has a static `ngComponentDef`:`ComponentDef` field making it
+ * A subclass of `Type` which has a static `ɵcmp`:`ComponentDef` field making it
  * consumable for rendering.
  */
-export interface ComponentType<T> extends Type<T> { ngComponentDef: never; }
+export interface ComponentType<T> extends Type<T> { ɵcmp: never; }
 
 /**
- * A subclass of `Type` which has a static `ngDirectiveDef`:`DirectiveDef` field making it
+ * A subclass of `Type` which has a static `ɵdir`:`DirectiveDef` field making it
  * consumable for rendering.
  */
-export interface DirectiveType<T> extends Type<T> { ngDirectiveDef: never; }
-
-export const enum DirectiveDefFlags {ContentQuery = 0b10}
+export interface DirectiveType<T> extends Type<T> {
+  ɵdir: never;
+  ɵfac: () => T;
+}
 
 /**
- * A subclass of `Type` which has a static `ngPipeDef`:`PipeDef` field making it
+ * A subclass of `Type` which has a static `ɵpipe`:`PipeDef` field making it
  * consumable for rendering.
  */
-export interface PipeType<T> extends Type<T> { ngPipeDef: never; }
+export interface PipeType<T> extends Type<T> { ɵpipe: never; }
 
 /**
  * @codeGenApi
@@ -93,17 +97,20 @@ export type ɵɵDirectiveDefWithMeta<
     OutputMap extends{[key: string]: string}, QueryFields extends string[]> = DirectiveDef<T>;
 
 /**
- * Runtime information for classes that are inherited by components or directives
- * that aren't defined as components or directives.
+ * Runtime link information for Directives.
  *
- * This is an internal data structure used by the renderer to determine what inputs
- * and outputs should be inherited.
+ * This is an internal data structure used by the render to link
+ * directives into templates.
  *
- * See: {@link defineBase}
+ * NOTE: Always use `defineDirective` function to create this object,
+ * never create the object directly since the shape of this object
+ * can change between versions.
  *
- * @codeGenApi
+ * @param Selector type metadata specifying the selector of the directive or component
+ *
+ * See: {@link defineDirective}
  */
-export interface ɵɵBaseDef<T> {
+export interface DirectiveDef<T> {
   /**
    * A dictionary mapping the inputs' minified property names to their public API names, which
    * are their aliases if any, or their original unminified property names
@@ -139,26 +146,50 @@ export interface ɵɵBaseDef<T> {
   /**
    * Refreshes host bindings on the associated directive.
    */
-  hostBindings: HostBindingsFunction<T>|null;
-}
+  readonly hostBindings: HostBindingsFunction<T>|null;
 
-/**
- * Runtime link information for Directives.
- *
- * This is internal data structure used by the render to link
- * directives into templates.
- *
- * NOTE: Always use `defineDirective` function to create this object,
- * never create the object directly since the shape of this object
- * can change between versions.
- *
- * @param Selector type metadata specifying the selector of the directive or component
- *
- * See: {@link defineDirective}
- */
-export interface DirectiveDef<T> extends ɵɵBaseDef<T> {
+  /**
+   * The number of bindings in this directive `hostBindings` (including pure fn bindings).
+   *
+   * Used to calculate the length of the component's LView array, so we
+   * can pre-fill the array and set the host binding start index.
+   */
+  readonly hostVars: number;
+
+  /**
+   * Assign static attribute values to a host element.
+   *
+   * This property will assign static attribute values as well as class and style
+   * values to a host element. Since attribute values can consist of different types of values, the
+   * `hostAttrs` array must include the values in the following format:
+   *
+   * attrs = [
+   *   // static attributes (like `title`, `name`, `id`...)
+   *   attr1, value1, attr2, value,
+   *
+   *   // a single namespace value (like `x:id`)
+   *   NAMESPACE_MARKER, namespaceUri1, name1, value1,
+   *
+   *   // another single namespace value (like `x:name`)
+   *   NAMESPACE_MARKER, namespaceUri2, name2, value2,
+   *
+   *   // a series of CSS classes that will be applied to the element (no spaces)
+   *   CLASSES_MARKER, class1, class2, class3,
+   *
+   *   // a series of CSS styles (property + value) that will be applied to the element
+   *   STYLES_MARKER, prop1, value1, prop2, value2
+   * ]
+   *
+   * All non-class and non-style attributes must be defined at the start of the list
+   * first before all class and style values are set. When there is a change in value
+   * type (like when classes and styles are introduced) a marker must be used to separate
+   * the entries. The marker values themselves are set via entries found in the
+   * [AttributeMarker] enum.
+   */
+  readonly hostAttrs: TAttributes|null;
+
   /** Token representing the directive. Used by DI. */
-  type: Type<T>;
+  readonly type: Type<T>;
 
   /** Function that resolves providers and publishes them into the DI system. */
   providersResolver:
@@ -174,19 +205,20 @@ export interface DirectiveDef<T> extends ɵɵBaseDef<T> {
   readonly exportAs: string[]|null;
 
   /**
-   * Factory function used to create a new directive instance.
+   * Factory function used to create a new directive instance. Will be null initially.
+   * Populated when the factory is first requested by directive instantiation logic.
    */
-  factory: FactoryFn<T>;
+  readonly factory: FactoryFn<T>|null;
 
   /* The following are lifecycle hooks for this component */
-  onChanges: (() => void)|null;
-  onInit: (() => void)|null;
-  doCheck: (() => void)|null;
-  afterContentInit: (() => void)|null;
-  afterContentChecked: (() => void)|null;
-  afterViewInit: (() => void)|null;
-  afterViewChecked: (() => void)|null;
-  onDestroy: (() => void)|null;
+  readonly onChanges: (() => void)|null;
+  readonly onInit: (() => void)|null;
+  readonly doCheck: (() => void)|null;
+  readonly afterContentInit: (() => void)|null;
+  readonly afterContentChecked: (() => void)|null;
+  readonly afterViewInit: (() => void)|null;
+  readonly afterViewChecked: (() => void)|null;
+  readonly onDestroy: (() => void)|null;
 
   /**
    * The features applied to this directive
@@ -207,9 +239,14 @@ export type ɵɵComponentDefWithMeta<
     OutputMap extends{[key: string]: string}, QueryFields extends string[]> = ComponentDef<T>;
 
 /**
+ * @codeGenApi
+ */
+export type ɵɵFactoryDef<T> = () => T;
+
+/**
  * Runtime link information for Components.
  *
- * This is internal data structure used by the render to link
+ * This is an internal data structure used by the render to link
  * components into templates.
  *
  * NOTE: Always use `defineComponent` function to create this object,
@@ -229,6 +266,9 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    */
   readonly template: ComponentTemplate<T>;
 
+  /** Constants associated with the component's view. */
+  readonly consts: TConstants|null;
+
   /**
    * An array of `ngContent[selector]` values that were found in the template.
    */
@@ -246,7 +286,7 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    * can pre-fill the array and set the binding start index.
    */
   // TODO(kara): remove queries from this count
-  readonly consts: number;
+  readonly decls: number;
 
   /**
    * The number of bindings in this component template (including pure fn bindings).
@@ -303,6 +343,12 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
   schemas: SchemaMetadata[]|null;
 
   /**
+   * Ivy runtime uses this place to store the computed tView for the component. This gets filled on
+   * the first run of component.
+   */
+  tView: TView|null;
+
+  /**
    * Used to store the result of `noSideEffects` function so that it is not removed by closure
    * compiler. The property should never be read.
    */
@@ -312,7 +358,7 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
 /**
  * Runtime link information for Pipes.
  *
- * This is internal data structure used by the renderer to link
+ * This is an internal data structure used by the renderer to link
  * pipes into templates.
  *
  * NOTE: Always use `definePipe` function to create this object,
@@ -322,6 +368,9 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
  * See: {@link definePipe}
  */
 export interface PipeDef<T> {
+  /** Token representing the pipe. */
+  type: Type<T>;
+
   /**
    * Pipe name.
    *
@@ -330,9 +379,10 @@ export interface PipeDef<T> {
   readonly name: string;
 
   /**
-   * Factory function used to create a new pipe instance.
+   * Factory function used to create a new pipe instance. Will be null initially.
+   * Populated when the factory is first requested by pipe instantiation logic.
    */
-  factory: FactoryFn<T>;
+  factory: FactoryFn<T>|null;
 
   /**
    * Whether or not the pipe is pure.
@@ -390,11 +440,10 @@ export type DirectiveDefList = (DirectiveDef<any>| ComponentDef<any>)[];
 export type DirectiveTypesOrFactory = (() => DirectiveTypeList) | DirectiveTypeList;
 
 export type DirectiveTypeList =
-    (DirectiveDef<any>| ComponentDef<any>|
+    (DirectiveType<any>| ComponentType<any>|
      Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
 
-export type HostBindingsFunction<T> =
-    <U extends T>(rf: RenderFlags, ctx: U, elementIndex: number) => void;
+export type HostBindingsFunction<T> = <U extends T>(rf: RenderFlags, ctx: U) => void;
 
 /**
  * Type used for PipeDefs on component definition.
@@ -405,10 +454,10 @@ export type PipeDefListOrFactory = (() => PipeDefList) | PipeDefList;
 
 export type PipeDefList = PipeDef<any>[];
 
-export type PipeTypesOrFactory = (() => DirectiveTypeList) | DirectiveTypeList;
+export type PipeTypesOrFactory = (() => PipeTypeList) | PipeTypeList;
 
 export type PipeTypeList =
-    (PipeDef<any>| Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
+    (PipeType<any>| Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
 
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency

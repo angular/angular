@@ -76,7 +76,7 @@ export class NgswCommChannel {
       const currentController = defer(() => of (serviceWorker.controller));
       const controllerWithChanges = concat(currentController, controllerChanges);
 
-      this.worker = controllerWithChanges.pipe(filter<ServiceWorker>(c => !!c));
+      this.worker = controllerWithChanges.pipe(filter((c): c is ServiceWorker => !!c));
 
       this.registration = <Observable<ServiceWorkerRegistration>>(
           this.worker.pipe(switchMap(() => serviceWorker.getRegistration())));

@@ -8,9 +8,9 @@
 
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath} from '../../path';
+import {AbsoluteFsPath} from '../../file_system';
 
-import {ShimGenerator} from './host';
+import {ShimGenerator} from './api';
 
 /**
  * A `ShimGenerator` which adds a type-checking file to the `ts.Program`.

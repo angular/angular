@@ -25,13 +25,14 @@ ng_package(
         "package.json",
         "//packages/platform-browser-dynamic/testing:package.json",
     ],
-    entry_point = "packages/platform-browser-dynamic/index.js",
+    entry_point = ":index.ts",
     tags = [
         "release-with-framework",
     ],
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
     visibility = [
+        "//integration:__pkg__",
         "//packages/compiler-cli/integrationtest:__pkg__",
     ],
     deps = [

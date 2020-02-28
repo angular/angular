@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, ViewEncapsulation, ɵɵdefineInjectable, ɵɵdefineInjector} from '../../src/core';
+import {ViewEncapsulation, ɵɵdefineInjectable, ɵɵdefineInjector} from '../../src/core';
 import {createInjector} from '../../src/di/r3_injector';
-import {AttributeMarker, ComponentFactory, LifecycleHooksFeature, getRenderedText, markDirty, ɵɵProvidersFeature, ɵɵdefineComponent, ɵɵdirectiveInject, ɵɵtemplate} from '../../src/render3/index';
-import {tick, ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵnextContext, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
+import {AttributeMarker, ComponentFactory, LifecycleHooksFeature, getRenderedText, markDirty, ɵɵadvance, ɵɵdefineComponent, ɵɵdirectiveInject, ɵɵproperty, ɵɵselect, ɵɵtemplate} from '../../src/render3/index';
+import {tick, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵnextContext, ɵɵtext, ɵɵtextInterpolate} from '../../src/render3/instructions/all';
 import {ComponentDef, RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {NgIf} from './common_with_def';
-import {getRendererFactory2} from './imported_renderer2';
 import {ComponentFixture, MockRendererFactory, containerEl, createComponent, renderComponent, renderToHtml, requestAnimationFrame, toHtml} from './render_util';
 
 describe('component', () => {
@@ -22,21 +21,21 @@ describe('component', () => {
 
     increment() { this.count++; }
 
-    static ngComponentDef = ɵɵdefineComponent({
+    static ɵfac = () => new CounterComponent;
+    static ɵcmp = ɵɵdefineComponent({
       type: CounterComponent,
       encapsulation: ViewEncapsulation.None,
       selectors: [['counter']],
-      consts: 1,
+      decls: 1,
       vars: 1,
       template: function(rf: RenderFlags, ctx: CounterComponent) {
         if (rf & RenderFlags.Create) {
           ɵɵtext(0);
         }
         if (rf & RenderFlags.Update) {
-          ɵɵtextBinding(0, ɵɵbind(ctx.count));
+          ɵɵtextInterpolate(ctx.count);
         }
       },
-      factory: () => new CounterComponent,
       inputs: {count: 'count'},
     });
   }
@@ -64,31 +63,34 @@ describe('component', () => {
 
     class MyService {
       constructor(public value: string) {}
-      static ngInjectableDef =
-          ɵɵdefineInjectable({providedIn: 'root', factory: () => new MyService('no-injector')});
+      static ɵprov = ɵɵdefineInjectable({
+        token: MyService,
+        providedIn: 'root',
+        factory: () => new MyService('no-injector'),
+      });
     }
     class MyComponent {
       constructor(public myService: MyService) {}
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new MyComponent(ɵɵdirectiveInject(MyService));
+      static ɵcmp = ɵɵdefineComponent({
         type: MyComponent,
         encapsulation: ViewEncapsulation.None,
         selectors: [['my-component']],
-        factory: () => new MyComponent(ɵɵdirectiveInject(MyService)),
-        consts: 1,
+        decls: 1,
         vars: 1,
         template: function(fs: RenderFlags, ctx: MyComponent) {
           if (fs & RenderFlags.Create) {
             ɵɵtext(0);
           }
           if (fs & RenderFlags.Update) {
-            ɵɵtextBinding(0, ɵɵbind(ctx.myService.value));
+            ɵɵtextInterpolate(ctx.myService.value);
           }
         }
       });
     }
 
     class MyModule {
-      static ngInjectorDef = ɵɵdefineInjector({
+      static ɵinj = ɵɵdefineInjector({
         factory: () => new MyModule(),
         providers: [{provide: MyService, useValue: new MyService('injector')}]
       });
@@ -113,18 +115,18 @@ describe('component', () => {
       // @Input
       name = '';
 
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new Comp();
+      static ɵcmp = ɵɵdefineComponent({
         type: Comp,
         selectors: [['comp']],
-        factory: () => new Comp(),
-        consts: 1,
+        decls: 1,
         vars: 1,
         template: (rf: RenderFlags, ctx: Comp) => {
           if (rf & RenderFlags.Create) {
             ɵɵtext(0);
           }
           if (rf & RenderFlags.Update) {
-            ɵɵtextBinding(0, ɵɵbind(ctx.name));
+            ɵɵtextInterpolate(ctx.name);
           }
         },
         inputs: {name: 'name'}
@@ -138,7 +140,8 @@ describe('component', () => {
         ɵɵelement(4097, 'comp');
       }
       if (rf & RenderFlags.Update) {
-        ɵɵelementProperty(4097, 'name', ɵɵbind(ctx.name));
+        ɵɵadvance(4097);
+        ɵɵproperty('name', ctx.name);
       }
     }, 4098, 1, [Comp]);
 
@@ -166,16 +169,19 @@ it('should not invoke renderer destroy method for embedded views', () => {
   class Comp {
     visible = true;
 
-    static ngComponentDef = ɵɵdefineComponent({
+    static ɵfac =
+        () => {
+          comp = new Comp();
+          return comp;
+        }
+
+    static ɵcmp = ɵɵdefineComponent({
       type: Comp,
       selectors: [['comp']],
-      consts: 3,
+      decls: 3,
       vars: 1,
-      factory: () => {
-        comp = new Comp();
-        return comp;
-      },
       directives: [NgIf],
+      consts: [[AttributeMarker.Template, 'ngIf']],
       /**
        *  <div>Root view</div>
        *  <div *ngIf="visible">Child view</div>
@@ -185,11 +191,11 @@ it('should not invoke renderer destroy method for embedded views', () => {
           ɵɵelementStart(0, 'div');
           ɵɵtext(1, 'Root view');
           ɵɵelementEnd();
-          ɵɵtemplate(
-              2, MyComponent_div_Template_2, 2, 0, 'div', [AttributeMarker.Template, 'ngIf']);
+          ɵɵtemplate(2, MyComponent_div_Template_2, 2, 0, 'div', 0);
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(2, 'ngIf', ɵɵbind(ctx.visible));
+          ɵɵadvance(2);
+          ɵɵproperty('ngIf', ctx.visible);
         }
       }
     });
@@ -213,7 +219,6 @@ it('should not invoke renderer destroy method for embedded views', () => {
 });
 
 describe('component with a container', () => {
-
   function showItems(rf: RenderFlags, ctx: {items: string[]}) {
     if (rf & RenderFlags.Create) {
       ɵɵcontainer(0);
@@ -228,7 +233,8 @@ describe('component with a container', () => {
               ɵɵtext(0);
             }
             if (rf0 & RenderFlags.Update) {
-              ɵɵtextBinding(0, ɵɵbind(item));
+              ɵɵselect(0);
+              ɵɵtextInterpolate(item);
             }
           }
           ɵɵembeddedViewEnd();
@@ -241,11 +247,12 @@ describe('component with a container', () => {
   class WrapperComponent {
     // TODO(issue/24571): remove '!'.
     items !: string[];
-    static ngComponentDef = ɵɵdefineComponent({
+    static ɵfac = () => new WrapperComponent;
+    static ɵcmp = ɵɵdefineComponent({
       type: WrapperComponent,
       encapsulation: ViewEncapsulation.None,
       selectors: [['wrapper']],
-      consts: 1,
+      decls: 1,
       vars: 0,
       template: function ChildComponentTemplate(rf: RenderFlags, ctx: {items: string[]}) {
         if (rf & RenderFlags.Create) {
@@ -261,7 +268,6 @@ describe('component with a container', () => {
           ɵɵcontainerRefreshEnd();
         }
       },
-      factory: () => new WrapperComponent,
       inputs: {items: 'items'}
     });
   }
@@ -271,7 +277,7 @@ describe('component with a container', () => {
       ɵɵelement(0, 'wrapper');
     }
     if (rf & RenderFlags.Update) {
-      ɵɵelementProperty(0, 'items', ɵɵbind(ctx.items));
+      ɵɵproperty('items', ctx.items);
     }
   }
 
@@ -284,127 +290,6 @@ describe('component with a container', () => {
     ctx.items = [...ctx.items, 'b'];
     expect(renderToHtml(template, ctx, 1, 1, defs)).toEqual('<wrapper>ab</wrapper>');
   });
-
-});
-
-// TODO: add tests with Native once tests are run in real browser (domino doesn't support shadow
-// root)
-describe('encapsulation', () => {
-  class WrapperComponent {
-    static ngComponentDef = ɵɵdefineComponent({
-      type: WrapperComponent,
-      encapsulation: ViewEncapsulation.None,
-      selectors: [['wrapper']],
-      consts: 1,
-      vars: 0,
-      template: function(rf: RenderFlags, ctx: WrapperComponent) {
-        if (rf & RenderFlags.Create) {
-          ɵɵelement(0, 'encapsulated');
-        }
-      },
-      factory: () => new WrapperComponent,
-      directives: () => [EncapsulatedComponent]
-    });
-  }
-
-  class EncapsulatedComponent {
-    static ngComponentDef = ɵɵdefineComponent({
-      type: EncapsulatedComponent,
-      selectors: [['encapsulated']],
-      consts: 2,
-      vars: 0,
-      template: function(rf: RenderFlags, ctx: EncapsulatedComponent) {
-        if (rf & RenderFlags.Create) {
-          ɵɵtext(0, 'foo');
-          ɵɵelement(1, 'leaf');
-        }
-      },
-      factory: () => new EncapsulatedComponent,
-      encapsulation: ViewEncapsulation.Emulated,
-      styles: [],
-      data: {},
-      directives: () => [LeafComponent]
-    });
-  }
-
-  class LeafComponent {
-    static ngComponentDef = ɵɵdefineComponent({
-      type: LeafComponent,
-      encapsulation: ViewEncapsulation.None,
-      selectors: [['leaf']],
-      consts: 2,
-      vars: 0,
-      template: function(rf: RenderFlags, ctx: LeafComponent) {
-        if (rf & RenderFlags.Create) {
-          ɵɵelementStart(0, 'span');
-          { ɵɵtext(1, 'bar'); }
-          ɵɵelementEnd();
-        }
-      },
-      factory: () => new LeafComponent,
-    });
-  }
-
-  it('should encapsulate children, but not host nor grand children', () => {
-    renderComponent(WrapperComponent, {rendererFactory: getRendererFactory2(document)});
-    expect(containerEl.outerHTML)
-        .toMatch(
-            /<div host=""><encapsulated _nghost-[a-z]+-c(\d+)="">foo<leaf _ngcontent-[a-z]+-c\1=""><span>bar<\/span><\/leaf><\/encapsulated><\/div>/);
-  });
-
-  it('should encapsulate host', () => {
-    renderComponent(EncapsulatedComponent, {rendererFactory: getRendererFactory2(document)});
-    expect(containerEl.outerHTML)
-        .toMatch(
-            /<div host="" _nghost-[a-z]+-c(\d+)="">foo<leaf _ngcontent-[a-z]+-c\1=""><span>bar<\/span><\/leaf><\/div>/);
-  });
-
-  it('should encapsulate host and children with different attributes', () => {
-    class WrapperComponentWith {
-      static ngComponentDef = ɵɵdefineComponent({
-        type: WrapperComponentWith,
-        selectors: [['wrapper']],
-        consts: 1,
-        vars: 0,
-        template: function(rf: RenderFlags, ctx: WrapperComponentWith) {
-          if (rf & RenderFlags.Create) {
-            ɵɵelement(0, 'leaf');
-          }
-        },
-        factory: () => new WrapperComponentWith,
-        encapsulation: ViewEncapsulation.Emulated,
-        styles: [],
-        data: {},
-        directives: () => [LeafComponentwith]
-      });
-    }
-
-    class LeafComponentwith {
-      static ngComponentDef = ɵɵdefineComponent({
-        type: LeafComponentwith,
-        selectors: [['leaf']],
-        consts: 2,
-        vars: 0,
-        template: function(rf: RenderFlags, ctx: LeafComponentwith) {
-          if (rf & RenderFlags.Create) {
-            ɵɵelementStart(0, 'span');
-            { ɵɵtext(1, 'bar'); }
-            ɵɵelementEnd();
-          }
-        },
-        factory: () => new LeafComponentwith,
-        encapsulation: ViewEncapsulation.Emulated,
-        styles: [],
-        data: {},
-      });
-    }
-
-    renderComponent(WrapperComponentWith, {rendererFactory: getRendererFactory2(document)});
-    expect(containerEl.outerHTML)
-        .toMatch(
-            /<div host="" _nghost-[a-z]+-c(\d+)=""><leaf _ngcontent-[a-z]+-c\1="" _nghost-[a-z]+-c(\d+)=""><span _ngcontent-[a-z]+-c\2="">bar<\/span><\/leaf><\/div>/);
-  });
-
 });
 
 describe('recursive components', () => {
@@ -439,12 +324,12 @@ describe('recursive components', () => {
 
     ngOnDestroy() { events.push('destroy' + this.data.value); }
 
-    static ngComponentDef = ɵɵdefineComponent({
+    static ɵfac = () => new TreeComponent();
+    static ɵcmp = ɵɵdefineComponent({
       type: TreeComponent,
       encapsulation: ViewEncapsulation.None,
       selectors: [['tree-comp']],
-      factory: () => new TreeComponent(),
-      consts: 3,
+      decls: 3,
       vars: 1,
       template: (rf: RenderFlags, ctx: TreeComponent) => {
         if (rf & RenderFlags.Create) {
@@ -453,7 +338,7 @@ describe('recursive components', () => {
           ɵɵcontainer(2);
         }
         if (rf & RenderFlags.Update) {
-          ɵɵtextBinding(0, ɵɵbind(ctx.data.value));
+          ɵɵtextInterpolate(ctx.data.value);
           ɵɵcontainerRefreshStart(1);
           {
             if (ctx.data.left != null) {
@@ -462,7 +347,8 @@ describe('recursive components', () => {
                 ɵɵelement(0, 'tree-comp');
               }
               if (rf0 & RenderFlags.Update) {
-                ɵɵelementProperty(0, 'data', ɵɵbind(ctx.data.left));
+                ɵɵselect(0);
+                ɵɵproperty('data', ctx.data.left);
               }
               ɵɵembeddedViewEnd();
             }
@@ -476,7 +362,8 @@ describe('recursive components', () => {
                 ɵɵelement(0, 'tree-comp');
               }
               if (rf0 & RenderFlags.Update) {
-                ɵɵelementProperty(0, 'data', ɵɵbind(ctx.data.right));
+                ɵɵselect(0);
+                ɵɵproperty('data', ctx.data.right);
               }
               ɵɵembeddedViewEnd();
             }
@@ -488,8 +375,7 @@ describe('recursive components', () => {
     });
   }
 
-  (TreeComponent.ngComponentDef as ComponentDef<TreeComponent>).directiveDefs =
-      () => [TreeComponent.ngComponentDef];
+  (TreeComponent.ɵcmp as ComponentDef<TreeComponent>).directiveDefs = () => [TreeComponent.ɵcmp];
 
   /**
    * {{ data.value }}
@@ -503,30 +389,27 @@ describe('recursive components', () => {
 
     ngOnDestroy() { events.push('destroy' + this.data.value); }
 
-    static ngComponentDef = ɵɵdefineComponent({
+    static ɵfac = () => new NgIfTree();
+    static ɵcmp = ɵɵdefineComponent({
       type: NgIfTree,
       encapsulation: ViewEncapsulation.None,
       selectors: [['ng-if-tree']],
-      factory: () => new NgIfTree(),
-      consts: 3,
+      decls: 3,
       vars: 3,
+      consts: [[AttributeMarker.Bindings, 'data', AttributeMarker.Template, 'ngIf']],
       template: (rf: RenderFlags, ctx: NgIfTree) => {
-
         if (rf & RenderFlags.Create) {
           ɵɵtext(0);
-          ɵɵtemplate(
-              1, IfTemplate, 1, 1, 'ng-if-tree',
-              [AttributeMarker.Bindings, 'data', AttributeMarker.Template, 'ngIf']);
-          ɵɵtemplate(
-              2, IfTemplate2, 1, 1, 'ng-if-tree',
-              [AttributeMarker.Bindings, 'data', AttributeMarker.Template, 'ngIf']);
+          ɵɵtemplate(1, IfTemplate, 1, 1, 'ng-if-tree', 0);
+          ɵɵtemplate(2, IfTemplate2, 1, 1, 'ng-if-tree', 0);
         }
         if (rf & RenderFlags.Update) {
-          ɵɵtextBinding(0, ɵɵbind(ctx.data.value));
-          ɵɵelementProperty(1, 'ngIf', ɵɵbind(ctx.data.left));
-          ɵɵelementProperty(2, 'ngIf', ɵɵbind(ctx.data.right));
+          ɵɵtextInterpolate(ctx.data.value);
+          ɵɵadvance(1);
+          ɵɵproperty('ngIf', ctx.data.left);
+          ɵɵadvance(1);
+          ɵɵproperty('ngIf', ctx.data.right);
         }
-
       },
       inputs: {data: 'data'},
     });
@@ -539,7 +422,7 @@ describe('recursive components', () => {
     }
     if (rf & RenderFlags.Update) {
       const parent = ɵɵnextContext();
-      ɵɵelementProperty(0, 'data', ɵɵbind(parent.data.left));
+      ɵɵproperty('data', parent.data.left);
     }
   }
 
@@ -550,12 +433,11 @@ describe('recursive components', () => {
     }
     if (rf & RenderFlags.Update) {
       const parent = ɵɵnextContext();
-      ɵɵelementProperty(0, 'data', ɵɵbind(parent.data.right));
+      ɵɵproperty('data', parent.data.right);
     }
   }
 
-  (NgIfTree.ngComponentDef as ComponentDef<NgIfTree>).directiveDefs =
-      () => [NgIfTree.ngComponentDef, NgIf.ngDirectiveDef];
+  (NgIfTree.ɵcmp as ComponentDef<NgIfTree>).directiveDefs = () => [NgIfTree.ɵcmp, NgIf.ɵdir];
 
   function _buildTree(currDepth: number): TreeNode {
     const children = currDepth < 2 ? _buildTree(currDepth + 1) : null;
@@ -648,65 +530,26 @@ describe('recursive components', () => {
     class TestInputsComponent {
       // TODO(issue/24571): remove '!'.
       minifiedName !: string;
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new TestInputsComponent();
+      static ɵcmp = ɵɵdefineComponent({
         type: TestInputsComponent,
         encapsulation: ViewEncapsulation.None,
         selectors: [['test-inputs']],
         inputs: {minifiedName: 'unminifiedName'},
-        consts: 0,
+        decls: 0,
         vars: 0,
-        factory: () => new TestInputsComponent(),
         template: function(rf: RenderFlags, ctx: TestInputsComponent): void {
           // Template not needed for this test
         }
       });
     }
 
-    const testInputsComponentFactory = new ComponentFactory(TestInputsComponent.ngComponentDef);
+    const testInputsComponentFactory = new ComponentFactory(TestInputsComponent.ɵcmp);
 
     expect([
       {propName: 'minifiedName', templateName: 'unminifiedName'}
     ]).toEqual(testInputsComponentFactory.inputs);
 
-  });
-
-});
-
-describe('view destruction', () => {
-  it('should invoke onDestroy when directly destroying a root view', () => {
-    let wasOnDestroyCalled = false;
-
-    class ComponentWithOnDestroy {
-      static ngComponentDef = ɵɵdefineComponent({
-        selectors: [['comp-with-destroy']],
-        type: ComponentWithOnDestroy,
-        consts: 0,
-        vars: 0,
-        factory: () => new ComponentWithOnDestroy(),
-        template: (rf: any, ctx: any) => {},
-      });
-
-      ngOnDestroy() { wasOnDestroyCalled = true; }
-    }
-
-    // This test asserts that the view tree is set up correctly based on the knowledge that this
-    // tree is used during view destruction. If the child view is not correctly attached as a
-    // child of the root view, then the onDestroy hook on the child view will never be called
-    // when the view tree is torn down following the destruction of that root view.
-    const ComponentWithChildOnDestroy = createComponent('test-app', (rf: RenderFlags, ctx: any) => {
-      if (rf & RenderFlags.Create) {
-        ɵɵelement(0, 'comp-with-destroy');
-      }
-    }, 1, 0, [ComponentWithOnDestroy], [], null, [], []);
-
-    const fixture = new ComponentFixture(ComponentWithChildOnDestroy);
-    fixture.update();
-
-    fixture.destroy();
-    expect(wasOnDestroyCalled)
-        .toBe(
-            true,
-            'Expected component onDestroy method to be called when its parent view is destroyed');
   });
 
 });

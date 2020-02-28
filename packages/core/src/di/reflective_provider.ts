@@ -180,15 +180,16 @@ export function mergeResolvedReflectiveProviders(
   return normalizedProvidersMap;
 }
 
-function _normalizeProviders(providers: Provider[], res: Provider[]): Provider[] {
+function _normalizeProviders(
+    providers: Provider[], res: NormalizedProvider[]): NormalizedProvider[] {
   providers.forEach(b => {
     if (b instanceof Type) {
-      res.push({provide: b, useClass: b});
+      res.push({ provide: b, useClass: b } as NormalizedProvider);
 
     } else if (b && typeof b == 'object' && (b as any).provide !== undefined) {
       res.push(b as NormalizedProvider);
 
-    } else if (b instanceof Array) {
+    } else if (Array.isArray(b)) {
       _normalizeProviders(b, res);
 
     } else {

@@ -1,0 +1,12 @@
+{
+    "compress": {
+        "global_defs": {"ngDevMode": false, "ngI18nClosureMode": false},
+        "keep_fnames": true,
+        "passes": 3,
+        "pure_getters": true,
+        "reduce_funcs": true,
+        "reduce_vars": true,
+        "sequences": true
+    },
+    "mangle": true
+}

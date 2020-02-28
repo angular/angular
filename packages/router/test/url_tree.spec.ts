@@ -41,6 +41,24 @@ describe('UrlTree', () => {
         expect(containsTree(t1, t2, true)).toBe(true);
       });
 
+      it('should return true when queryParams are the same but with diffrent order', () => {
+        const t1 = serializer.parse('/one/two?test=1&page=5');
+        const t2 = serializer.parse('/one/two?page=5&test=1');
+        expect(containsTree(t1, t2, true)).toBe(true);
+      });
+
+      it('should return true when queryParams contains array params that are the same', () => {
+        const t1 = serializer.parse('/one/two?test=a&test=b&pages=5&pages=6');
+        const t2 = serializer.parse('/one/two?test=a&test=b&pages=5&pages=6');
+        expect(containsTree(t1, t2, true)).toBe(true);
+      });
+
+      it('should return false when queryParams contains array params but are not the same', () => {
+        const t1 = serializer.parse('/one/two?test=a&test=b&pages=5&pages=6');
+        const t2 = serializer.parse('/one/two?test=a&test=b&pages=5&pages=7');
+        expect(containsTree(t1, t2, false)).toBe(false);
+      });
+
       it('should return false when queryParams are not the same', () => {
         const t1 = serializer.parse('/one/two?test=1&page=5');
         const t2 = serializer.parse('/one/two?test=1');
@@ -130,6 +148,18 @@ describe('UrlTree', () => {
       it('should return false when containee has but container does not have queryParams', () => {
         const t1 = serializer.parse('/one/two');
         const t2 = serializer.parse('/one/two?page=1');
+        expect(containsTree(t1, t2, false)).toBe(false);
+      });
+
+      it('should return true when container has array params but containee does not have', () => {
+        const t1 = serializer.parse('/one/two?test=a&test=b&pages=5&pages=6');
+        const t2 = serializer.parse('/one/two?test=a&test=b');
+        expect(containsTree(t1, t2, false)).toBe(true);
+      });
+
+      it('should return false when containee has array params but container does not have', () => {
+        const t1 = serializer.parse('/one/two?test=a&test=b');
+        const t2 = serializer.parse('/one/two?test=a&test=b&pages=5&pages=6');
         expect(containsTree(t1, t2, false)).toBe(false);
       });
 

@@ -1,4 +1,5 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library", "ts_web_test_suite")
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ts_library")
+load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
 
 # Test that should only be run in node
 NODE_ONLY = [
@@ -9,6 +10,12 @@ NODE_ONLY = [
 UTILS = [
     "aot/test_util.ts",
 ]
+
+circular_dependency_test(
+    name = "circular_deps_test",
+    entry_point = "angular/packages/compiler/index.js",
+    deps = ["//packages/compiler"],
+)
 
 ts_library(
     name = "test_utils",
@@ -70,7 +77,7 @@ ts_library(
 
 jasmine_node_test(
     name = "test",
-    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    bootstrap = ["//tools/testing:node_es5"],
     data = [
         "//packages/animations:npm_package",
         "//packages/common:npm_package",
@@ -83,14 +90,12 @@ jasmine_node_test(
     deps = [
         ":test_lib",
         ":test_node_only_lib",
-        "//packages/core",
-        "//tools/testing:node",
         "@npm//base64-js",
         "@npm//source-map",
     ],
 )
 
-ts_web_test_suite(
+karma_web_test_suite(
     name = "test_web",
     tags = [
         # Disabled as these tests pertain to the old ngc compilation and are not relevant in Ivy.

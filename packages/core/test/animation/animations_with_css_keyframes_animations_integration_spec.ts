@@ -11,7 +11,6 @@ import {AnimationGroupPlayer} from '@angular/animations/src/players/animation_gr
 import {Component, ViewChild} from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
-import {ivyEnabled} from '@angular/private/testing';
 
 import {TestBed} from '../../testing';
 
@@ -55,7 +54,7 @@ import {TestBed} from '../../testing';
 
       TestBed.configureTestingModule({declarations: [Cmp]});
 
-      const engine = TestBed.get(AnimationEngine);
+      const engine = TestBed.inject(AnimationEngine);
       const fixture = TestBed.createComponent(Cmp);
       const cmp = fixture.componentInstance;
 
@@ -110,7 +109,7 @@ import {TestBed} from '../../testing';
 
          TestBed.configureTestingModule({declarations: [Cmp]});
 
-         const engine = TestBed.get(AnimationEngine);
+         const engine = TestBed.inject(AnimationEngine);
          const fixture = TestBed.createComponent(Cmp);
          const cmp = fixture.componentInstance;
 
@@ -173,7 +172,7 @@ import {TestBed} from '../../testing';
 
       TestBed.configureTestingModule({declarations: [Cmp]});
 
-      const engine = TestBed.get(AnimationEngine);
+      const engine = TestBed.inject(AnimationEngine);
       const fixture = TestBed.createComponent(Cmp);
       const cmp = fixture.componentInstance;
 
@@ -224,7 +223,7 @@ import {TestBed} from '../../testing';
 
       TestBed.configureTestingModule({declarations: [Cmp]});
 
-      const engine = TestBed.get(AnimationEngine);
+      const engine = TestBed.inject(AnimationEngine);
       const fixture = TestBed.createComponent(Cmp);
       const cmp = fixture.componentInstance;
 
@@ -280,20 +279,16 @@ import {TestBed} from '../../testing';
            ]
          })
          class Cmp {
-           @ViewChild('elm') public element: any;
+           @ViewChild('elm', {static: true}) public element: any;
 
            public myAnimationExp = '';
          }
 
          TestBed.configureTestingModule({declarations: [Cmp]});
 
-         const engine = TestBed.get(AnimationEngine);
+         const engine = TestBed.inject(AnimationEngine);
          const fixture = TestBed.createComponent(Cmp);
          const cmp = fixture.componentInstance;
-
-         // In Ivy, change detection needs to run before the ViewQuery for cmp.element will resolve.
-         // Keeping this test enabled since we still want to test the animation logic in Ivy.
-         if (ivyEnabled) fixture.detectChanges();
 
          const elm = cmp.element.nativeElement;
          const foo = elm.querySelector('.foo') as HTMLElement;
@@ -303,7 +298,7 @@ import {TestBed} from '../../testing';
 
          expect(foo.style.getPropertyValue('max-height')).toEqual('0px');
 
-         const player = engine.players.pop();
+         const player = engine.players.pop() !;
          player.finish();
 
          expect(foo.style.getPropertyValue('max-height')).toBeFalsy();
@@ -332,20 +327,16 @@ import {TestBed} from '../../testing';
            ]
          })
          class Cmp {
-           @ViewChild('elm') public element: any;
+           @ViewChild('elm', {static: true}) public element: any;
 
            public myAnimationExp = '';
          }
 
          TestBed.configureTestingModule({declarations: [Cmp]});
 
-         const engine = TestBed.get(AnimationEngine);
+         const engine = TestBed.inject(AnimationEngine);
          const fixture = TestBed.createComponent(Cmp);
          const cmp = fixture.componentInstance;
-
-         // In Ivy, change detection needs to run before the ViewQuery for cmp.element will resolve.
-         // Keeping this test enabled since we still want to test the animation logic in Ivy.
-         if (ivyEnabled) fixture.detectChanges();
 
          const elm = cmp.element.nativeElement;
          expect(elm.style.getPropertyValue('display')).toEqual('table');
@@ -357,7 +348,7 @@ import {TestBed} from '../../testing';
          expect(elm.style.getPropertyValue('display')).toEqual('inline');
          expect(elm.style.getPropertyValue('position')).toEqual('absolute');
 
-         const player = engine.players.pop();
+         const player = engine.players.pop() !;
          player.finish();
          player.destroy();
 

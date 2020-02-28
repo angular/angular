@@ -8,9 +8,9 @@
 
 /// <reference types="node" />
 
-import * as path from 'path';
 import * as ts from 'typescript';
 
+import {AbsoluteFsPath, dirname, join} from '../../file_system';
 import {ShimGenerator} from '../../shims';
 import {relativePathBetween} from '../../util/src/path';
 
@@ -18,11 +18,10 @@ export class FlatIndexGenerator implements ShimGenerator {
   readonly flatIndexPath: string;
 
   constructor(
-      readonly entryPoint: string, relativeFlatIndexPath: string,
+      readonly entryPoint: AbsoluteFsPath, relativeFlatIndexPath: string,
       readonly moduleName: string|null) {
-    this.flatIndexPath = path.posix.join(path.posix.dirname(entryPoint), relativeFlatIndexPath)
-                             .replace(/\.js$/, '') +
-        '.ts';
+    this.flatIndexPath =
+        join(dirname(entryPoint), relativeFlatIndexPath).replace(/\.js$/, '') + '.ts';
   }
 
   recognize(fileName: string): boolean { return fileName === this.flatIndexPath; }

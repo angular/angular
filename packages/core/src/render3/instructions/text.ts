@@ -5,57 +5,40 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {assertDataInRange, assertDefined, assertEqual} from '../../util/assert';
-import {TNodeType} from '../interfaces/node';
-import {RText, isProceduralRenderer} from '../interfaces/renderer';
-import {BINDING_INDEX, HEADER_OFFSET, RENDERER, TVIEW} from '../interfaces/view';
+import {assertDataInRange, assertEqual} from '../../util/assert';
+import {TElementNode, TNodeType} from '../interfaces/node';
+import {HEADER_OFFSET, RENDERER, T_HOST} from '../interfaces/view';
 import {appendChild, createTextNode} from '../node_manipulation';
-import {getLView, setIsParent} from '../state';
-import {NO_CHANGE} from '../tokens';
-import {renderStringify} from '../util/misc_utils';
-import {getNativeByIndex} from '../util/view_utils';
-import {createNodeAtIndex} from './shared';
+import {getBindingIndex, getLView, getTView, setPreviousOrParentTNode} from '../state';
+import {getOrCreateTNode} from './shared';
+
+
 
 /**
  * Create static text node
  *
  * @param index Index of the node in the data array
- * @param value Value to write. This value will be stringified.
+ * @param value Static string value to write.
  *
  * @codeGenApi
  */
-export function ɵɵtext(index: number, value?: any): void {
+export function ɵɵtext(index: number, value: string = ''): void {
   const lView = getLView();
+  const tView = getTView();
+  const adjustedIndex = index + HEADER_OFFSET;
+
   ngDevMode && assertEqual(
-                   lView[BINDING_INDEX], lView[TVIEW].bindingStartIndex,
+                   getBindingIndex(), tView.bindingStartIndex,
                    'text nodes should be created before any bindings');
-  ngDevMode && ngDevMode.rendererCreateTextNode++;
-  const textNative = createTextNode(value, lView[RENDERER]);
-  const tNode = createNodeAtIndex(index, TNodeType.Element, textNative, null, null);
+  ngDevMode && assertDataInRange(lView, adjustedIndex);
+
+  const tNode = tView.firstCreatePass ?
+      getOrCreateTNode(tView, lView[T_HOST], index, TNodeType.Element, null, null) :
+      tView.data[adjustedIndex] as TElementNode;
+
+  const textNative = lView[adjustedIndex] = createTextNode(value, lView[RENDERER]);
+  appendChild(tView, lView, textNative, tNode);
 
   // Text nodes are self closing.
-  setIsParent(false);
-  appendChild(textNative, tNode, lView);
-}
-
-/**
- * Create text node with binding
- * Bindings should be handled externally with the proper interpolation(1-8) method
- *
- * @param index Index of the node in the data array.
- * @param value Stringified value to write.
- *
- * @codeGenApi
- */
-export function ɵɵtextBinding<T>(index: number, value: T | NO_CHANGE): void {
-  if (value !== NO_CHANGE) {
-    const lView = getLView();
-    ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
-    const element = getNativeByIndex(index, lView) as any as RText;
-    ngDevMode && assertDefined(element, 'native element should exist');
-    ngDevMode && ngDevMode.rendererSetText++;
-    const renderer = lView[RENDERER];
-    isProceduralRenderer(renderer) ? renderer.setValue(element, renderStringify(value)) :
-                                     element.textContent = renderStringify(value);
-  }
+  setPreviousOrParentTNode(tNode, false);
 }

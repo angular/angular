@@ -5,44 +5,51 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import '../util/ng_i18n_closure_mode';
 
+import {DEFAULT_LOCALE_ID, getPluralCase} from '../i18n/localization';
 import {SRCSET_ATTRS, URI_ATTRS, VALID_ATTRS, VALID_ELEMENTS, getTemplateContent} from '../sanitization/html_sanitizer';
 import {InertBodyHelper} from '../sanitization/inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from '../sanitization/url_sanitizer';
 import {addAllToArray} from '../util/array_utils';
-import {assertDefined, assertEqual, assertGreaterThan} from '../util/assert';
-
+import {assertDataInRange, assertDefined, assertEqual} from '../util/assert';
+import {bindingUpdated} from './bindings';
 import {attachPatchData} from './context_discovery';
-import {attachI18nOpCodesDebug} from './debug';
-import {ɵɵelementAttribute, ɵɵload, ɵɵtextBinding} from './instructions/all';
-import {allocExpando, createNodeAtIndex} from './instructions/shared';
+import {setDelayProjection} from './instructions/all';
+import {attachI18nOpCodesDebug} from './instructions/lview_debug';
+import {allocExpando, elementAttributeInternal, elementPropertyInternal, getOrCreateTNode, setInputsForProperty, setNgReflectProperties, textBindingInternal} from './instructions/shared';
 import {LContainer, NATIVE} from './interfaces/container';
+import {getDocument} from './interfaces/document';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, IcuType, TI18n, TIcu} from './interfaces/i18n';
-import {TElementNode, TIcuContainerNode, TNode, TNodeType} from './interfaces/node';
+import {TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjectionNode} from './interfaces/node';
 import {RComment, RElement, RText} from './interfaces/renderer';
 import {SanitizerFn} from './interfaces/sanitization';
-import {StylingContext} from './interfaces/styling';
-import {BINDING_INDEX, HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST} from './interfaces/view';
-import {appendChild, createTextNode, nativeRemoveNode} from './node_manipulation';
-import {getIsParent, getLView, getPreviousOrParentTNode, setIsParent, setPreviousOrParentTNode} from './state';
-import {NO_CHANGE} from './tokens';
+import {isLContainer} from './interfaces/type_checks';
+import {HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST} from './interfaces/view';
+import {appendChild, applyProjection, createTextNode, nativeRemoveNode} from './node_manipulation';
+import {getBindingIndex, getIsParent, getLView, getPreviousOrParentTNode, getTView, nextBindingIndex, setIsNotParent, setPreviousOrParentTNode} from './state';
 import {renderStringify} from './util/misc_utils';
-import {getNativeByIndex, getNativeByTNode, getTNode, isLContainer} from './util/view_utils';
+import {getNativeByIndex, getNativeByTNode, getTNode, load} from './util/view_utils';
+
 
 const MARKER = `�`;
 const ICU_BLOCK_REGEXP = /^\s*(�\d+:?\d*�)\s*,\s*(select|plural)\s*,/;
 const SUBTEMPLATE_REGEXP = /�\/?\*(\d+:\d+)�/gi;
-const PH_REGEXP = /�(\/?[#*]\d+):?\d*�/gi;
+const PH_REGEXP = /�(\/?[#*!]\d+):?\d*�/gi;
 const BINDING_REGEXP = /�(\d+):?\d*�/gi;
 const ICU_REGEXP = /({\s*�\d+:?\d*�\s*,\s*\S{6}\s*,[\s\S]*})/gi;
+const enum TagType {
+  ELEMENT = '#',
+  TEMPLATE = '*',
+  PROJECTION = '!',
+}
 
 // i18nPostprocess consts
 const ROOT_TEMPLATE_ID = 0;
 const PP_MULTI_VALUE_PLACEHOLDERS_REGEXP = /\[(�.+?�?)\]/;
 const PP_PLACEHOLDERS_REGEXP = /\[(�.+?�?)\]|(�\/?\*\d+:\d+�)/g;
 const PP_ICU_VARS_REGEXP = /({\s*)(VAR_(PLURAL|SELECT)(_\d+)?)(\s*,)/g;
+const PP_ICU_PLACEHOLDERS_REGEXP = /{([A-Z0-9_]+)}/g;
 const PP_ICUS_REGEXP = /�I18N_EXP_(ICU(_\d+)?)�/g;
 const PP_CLOSE_TEMPLATE_REGEXP = /\/\*/;
 const PP_TEMPLATE_ID_REGEXP = /\d+\:(\d+)/;
@@ -121,7 +128,7 @@ function extractParts(pattern: string): (string | IcuExpression)[] {
         const block = pattern.substring(prevPos, pos);
         if (ICU_BLOCK_REGEXP.test(block)) {
           results.push(parseICUBlock(block));
-        } else if (block) {  // Don't push empty strings
+        } else {
           results.push(block);
         }
 
@@ -138,10 +145,7 @@ function extractParts(pattern: string): (string | IcuExpression)[] {
   }
 
   const substring = pattern.substring(prevPos);
-  if (substring != '') {
-    results.push(substring);
-  }
-
+  results.push(substring);
   return results;
 }
 
@@ -180,12 +184,11 @@ function parseICUBlock(pattern: string): IcuExpression {
     }
 
     const blocks = extractParts(parts[pos++]) as string[];
-    if (blocks.length) {
+    if (cases.length > values.length) {
       values.push(blocks);
     }
   }
 
-  assertGreaterThan(cases.indexOf('other'), -1, 'Missing key "other" in ICU statement.');
   // TODO(ocombe): support ICU expressions in attributes, see #21615
   return {type: icuType, mainBinding: mainBinding, cases, values};
 }
@@ -341,6 +344,10 @@ const parentIndexStack: number[] = [];
  *   and end of DOM element that were embedded in the original translation block. The placeholder
  *   `index` points to the element index in the template instructions set. An optional `block` that
  *   matches the sub-template in which it was declared.
+ * - `�!{index}(:{block})�`/`�/!{index}(:{block})�`: *Projection Placeholder*:  Marks the
+ *   beginning and end of <ng-content> that was embedded in the original translation block.
+ *   The placeholder `index` points to the element index in the template instructions set.
+ *   An optional `block` that matches the sub-template in which it was declared.
  * - `�*{index}:{block}�`/`�/*{index}:{block}�`: *Sub-template Placeholder*: Sub-templates must be
  *   split up and translated separately in each angular template function. The `index` points to the
  *   `template` instruction index. A `block` that matches the sub-template in which it was declared.
@@ -352,11 +359,13 @@ const parentIndexStack: number[] = [];
  * @codeGenApi
  */
 export function ɵɵi18nStart(index: number, message: string, subTemplateIndex?: number): void {
-  const tView = getLView()[TVIEW];
+  const tView = getTView();
   ngDevMode && assertDefined(tView, `tView should be defined`);
   i18nIndexStack[++i18nIndexStackPointer] = index;
-  if (tView.firstTemplatePass && tView.data[index + HEADER_OFFSET] === null) {
-    i18nStartFirstPass(tView, index, message, subTemplateIndex);
+  // We need to delay projections until `i18nEnd`
+  setDelayProjection(true);
+  if (tView.firstCreatePass && tView.data[index + HEADER_OFFSET] === null) {
+    i18nStartFirstPass(getLView(), tView, index, message, subTemplateIndex);
   }
 }
 
@@ -369,49 +378,60 @@ let i18nVarsCount: number;
  * See `i18nStart` above.
  */
 function i18nStartFirstPass(
-    tView: TView, index: number, message: string, subTemplateIndex?: number) {
-  const viewData = getLView();
+    lView: LView, tView: TView, index: number, message: string, subTemplateIndex?: number) {
   const startIndex = tView.blueprint.length - HEADER_OFFSET;
   i18nVarsCount = 0;
   const previousOrParentTNode = getPreviousOrParentTNode();
-  const parentTNode = getIsParent() ? getPreviousOrParentTNode() :
-                                      previousOrParentTNode && previousOrParentTNode.parent;
+  const parentTNode =
+      getIsParent() ? previousOrParentTNode : previousOrParentTNode && previousOrParentTNode.parent;
   let parentIndex =
-      parentTNode && parentTNode !== viewData[T_HOST] ? parentTNode.index - HEADER_OFFSET : index;
+      parentTNode && parentTNode !== lView[T_HOST] ? parentTNode.index - HEADER_OFFSET : index;
   let parentIndexPointer = 0;
   parentIndexStack[parentIndexPointer] = parentIndex;
   const createOpCodes: I18nMutateOpCodes = [];
   // If the previous node wasn't the direct parent then we have a translation without top level
-  // element and we need to keep a reference of the previous element if there is one
+  // element and we need to keep a reference of the previous element if there is one. We should also
+  // keep track whether an element was a parent node or not, so that the logic that consumes
+  // the generated `I18nMutateOpCode`s can leverage this information to properly set TNode state
+  // (whether it's a parent or sibling).
   if (index > 0 && previousOrParentTNode !== parentTNode) {
+    let previousTNodeIndex = previousOrParentTNode.index - HEADER_OFFSET;
+    // If current TNode is a sibling node, encode it using a negative index. This information is
+    // required when the `Select` action is processed (see the `readCreateOpCodes` function).
+    if (!getIsParent()) {
+      previousTNodeIndex = ~previousTNodeIndex;
+    }
     // Create an OpCode to select the previous TNode
-    createOpCodes.push(
-        previousOrParentTNode.index << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select);
+    createOpCodes.push(previousTNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select);
   }
   const updateOpCodes: I18nUpdateOpCodes = [];
   const icuExpressions: TIcu[] = [];
 
   const templateTranslation = getTranslationForTemplate(message, subTemplateIndex);
-  const msgParts = templateTranslation.split(PH_REGEXP);
+  const msgParts = replaceNgsp(templateTranslation).split(PH_REGEXP);
   for (let i = 0; i < msgParts.length; i++) {
     let value = msgParts[i];
     if (i & 1) {
       // Odd indexes are placeholders (elements and sub-templates)
       if (value.charAt(0) === '/') {
         // It is a closing tag
-        if (value.charAt(1) === '#') {
+        if (value.charAt(1) === TagType.ELEMENT) {
           const phIndex = parseInt(value.substr(2), 10);
           parentIndex = parentIndexStack[--parentIndexPointer];
           createOpCodes.push(phIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.ElementEnd);
         }
       } else {
         const phIndex = parseInt(value.substr(1), 10);
-        // The value represents a placeholder that we move to the designated index
+        const isElement = value.charAt(0) === TagType.ELEMENT;
+        // The value represents a placeholder that we move to the designated index.
+        // Note: positive indicies indicate that a TNode with a given index should also be marked as
+        // parent while executing `Select` instruction.
         createOpCodes.push(
-            phIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
+            (isElement ? phIndex : ~phIndex) << I18nMutateOpCode.SHIFT_REF |
+                I18nMutateOpCode.Select,
             parentIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild);
 
-        if (value.charAt(0) === '#') {
+        if (isElement) {
           parentIndexStack[++parentIndexPointer] = parentIndex = phIndex;
         }
       }
@@ -460,11 +480,13 @@ function i18nStartFirstPass(
     }
   }
 
-  allocExpando(viewData, i18nVarsCount);
+  if (i18nVarsCount > 0) {
+    allocExpando(tView, lView, i18nVarsCount);
+  }
 
   ngDevMode &&
       attachI18nOpCodesDebug(
-          createOpCodes, updateOpCodes, icuExpressions.length ? icuExpressions : null, viewData);
+          createOpCodes, updateOpCodes, icuExpressions.length ? icuExpressions : null, lView);
 
   // NOTE: local var needed to properly assert the type of `TI18n`.
   const tI18n: TI18n = {
@@ -477,10 +499,11 @@ function i18nStartFirstPass(
   tView.data[index + HEADER_OFFSET] = tI18n;
 }
 
-function appendI18nNode(tNode: TNode, parentTNode: TNode, previousTNode: TNode | null): TNode {
+function appendI18nNode(
+    tView: TView, tNode: TNode, parentTNode: TNode, previousTNode: TNode | null,
+    lView: LView): TNode {
   ngDevMode && ngDevMode.rendererMoveNode++;
   const nextNode = tNode.next;
-  const viewData = getLView();
   if (!previousTNode) {
     previousTNode = parentTNode;
   }
@@ -496,7 +519,7 @@ function appendI18nNode(tNode: TNode, parentTNode: TNode, previousTNode: TNode |
     tNode.next = null;
   }
 
-  if (parentTNode !== viewData[T_HOST]) {
+  if (parentTNode !== lView[T_HOST]) {
     tNode.parent = parentTNode as TElementNode;
   }
 
@@ -509,12 +532,18 @@ function appendI18nNode(tNode: TNode, parentTNode: TNode, previousTNode: TNode |
     cursor = cursor.next;
   }
 
-  appendChild(getNativeByTNode(tNode, viewData), tNode, viewData);
+  // If the placeholder to append is a projection, we need to move the projected nodes instead
+  if (tNode.type === TNodeType.Projection) {
+    applyProjection(tView, lView, tNode as TProjectionNode);
+    return tNode;
+  }
 
-  const slotValue = viewData[tNode.index];
+  appendChild(tView, lView, getNativeByTNode(tNode, lView), tNode);
+
+  const slotValue = lView[tNode.index];
   if (tNode.type !== TNodeType.Container && isLContainer(slotValue)) {
     // Nodes that inject ViewContainerRef also have a comment node that should be moved
-    appendChild(slotValue[NATIVE], tNode, viewData);
+    appendChild(tView, lView, slotValue[NATIVE], tNode);
   }
   return tNode;
 }
@@ -528,7 +557,8 @@ function appendI18nNode(tNode: TNode, parentTNode: TNode, previousTNode: TNode |
  *
  * 1. Resolve all multi-value cases (like [�*1:1��#2:1�|�#4:1�|�5�])
  * 2. Replace all ICU vars (like "VAR_PLURAL")
- * 3. Replace all ICU references with corresponding values (like �ICU_EXP_ICU_1�)
+ * 3. Replace all placeholders used inside ICUs in a form of {PLACEHOLDER}
+ * 4. Replace all ICU references with corresponding values (like �ICU_EXP_ICU_1�)
  *    in case multiple ICUs have the same placeholder name
  *
  * @param message Raw translation string for post processing
@@ -556,8 +586,8 @@ export function ɵɵi18nPostprocess(
     const templateIdsStack: number[] = [ROOT_TEMPLATE_ID];
     result = result.replace(PP_PLACEHOLDERS_REGEXP, (m: any, phs: string, tmpl: string): string => {
       const content = phs || tmpl;
-      if (!matches[content]) {
-        const placeholders: PostprocessPlaceholder[] = [];
+      const placeholders: PostprocessPlaceholder[] = matches[content] || [];
+      if (!placeholders.length) {
         content.split('|').forEach((placeholder: string) => {
           const match = placeholder.match(PP_TEMPLATE_ID_REGEXP);
           const templateId = match ? parseInt(match[1], 10) : ROOT_TEMPLATE_ID;
@@ -566,11 +596,12 @@ export function ɵɵi18nPostprocess(
         });
         matches[content] = placeholders;
       }
-      if (!matches[content].length) {
+
+      if (!placeholders.length) {
         throw new Error(`i18n postprocess: unmatched placeholder - ${content}`);
       }
+
       const currentTemplateId = templateIdsStack[templateIdsStack.length - 1];
-      const placeholders = matches[content];
       let idx = 0;
       // find placeholder index that matches current template id
       for (let i = 0; i < placeholders.length; i++) {
@@ -590,12 +621,6 @@ export function ɵɵi18nPostprocess(
       placeholders.splice(idx, 1);
       return placeholder;
     });
-
-    // verify that we injected all values
-    const hasUnmatchedValues = Object.keys(matches).some(key => !!matches[key].length);
-    if (hasUnmatchedValues) {
-      throw new Error(`i18n postprocess: unmatched values - ${JSON.stringify(matches)}`);
-    }
   }
 
   // return current result if no replacements specified
@@ -611,7 +636,14 @@ export function ɵɵi18nPostprocess(
   });
 
   /**
-   * Step 3: replace all ICU references with corresponding values (like �ICU_EXP_ICU_1�) in case
+   * Step 3: replace all placeholders used inside ICUs in a form of {PLACEHOLDER}
+   */
+  result = result.replace(PP_ICU_PLACEHOLDERS_REGEXP, (match, key): string => {
+    return replacements.hasOwnProperty(key) ? replacements[key] as string : match;
+  });
+
+  /**
+   * Step 4: replace all ICU references with corresponding values (like �ICU_EXP_ICU_1�) in case
    * multiple ICUs have the same placeholder name
    */
   result = result.replace(PP_ICUS_REGEXP, (match, key): string => {
@@ -635,18 +667,20 @@ export function ɵɵi18nPostprocess(
  * @codeGenApi
  */
 export function ɵɵi18nEnd(): void {
-  const tView = getLView()[TVIEW];
+  const lView = getLView();
+  const tView = getTView();
   ngDevMode && assertDefined(tView, `tView should be defined`);
-  i18nEndFirstPass(tView);
+  i18nEndFirstPass(tView, lView);
+  // Stop delaying projections
+  setDelayProjection(false);
 }
 
 /**
  * See `i18nEnd` above.
  */
-function i18nEndFirstPass(tView: TView) {
-  const viewData = getLView();
+function i18nEndFirstPass(tView: TView, lView: LView) {
   ngDevMode && assertEqual(
-                   viewData[BINDING_INDEX], viewData[TVIEW].bindingStartIndex,
+                   getBindingIndex(), tView.bindingStartIndex,
                    'i18nEnd should be called before any binding');
 
   const rootIndex = i18nIndexStack[i18nIndexStackPointer--];
@@ -654,16 +688,27 @@ function i18nEndFirstPass(tView: TView) {
   ngDevMode && assertDefined(tI18n, `You should call i18nStart before i18nEnd`);
 
   // Find the last node that was added before `i18nEnd`
-  let lastCreatedNode = getPreviousOrParentTNode();
+  const lastCreatedNode = getPreviousOrParentTNode();
 
   // Read the instructions to insert/move/remove DOM elements
-  const visitedNodes = readCreateOpCodes(rootIndex, tI18n.create, tI18n.icus, viewData);
+  const visitedNodes = readCreateOpCodes(rootIndex, tI18n.create, tView, lView);
 
   // Remove deleted nodes
-  for (let i = rootIndex + 1; i <= lastCreatedNode.index - HEADER_OFFSET; i++) {
-    if (visitedNodes.indexOf(i) === -1) {
-      removeNode(i, viewData);
+  let index = rootIndex + 1;
+  while (index <= lastCreatedNode.index - HEADER_OFFSET) {
+    if (visitedNodes.indexOf(index) === -1) {
+      removeNode(tView, lView, index, /* markAsDetached */ true);
     }
+    // Check if an element has any local refs and skip them
+    const tNode = getTNode(tView, index);
+    if (tNode && (tNode.type === TNodeType.Element || tNode.type === TNodeType.ElementContainer) &&
+        tNode.localNames !== null) {
+      // Divide by 2 to get the number of local refs,
+      // since they are stored as an array that also includes directive indexes,
+      // i.e. ["localRef", directiveIndex, ...]
+      index += tNode.localNames.length >> 1;
+    }
+    index++;
   }
 }
 
@@ -671,14 +716,16 @@ function i18nEndFirstPass(tView: TView) {
  * Creates and stores the dynamic TNode, and unhooks it from the tree for now.
  */
 function createDynamicNodeAtIndex(
-    index: number, type: TNodeType, native: RElement | RText | null,
+    tView: TView, lView: LView, index: number, type: TNodeType, native: RElement | RText | null,
     name: string | null): TElementNode|TIcuContainerNode {
   const previousOrParentTNode = getPreviousOrParentTNode();
-  const tNode = createNodeAtIndex(index, type as any, native, name, null);
+  ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
+  lView[index + HEADER_OFFSET] = native;
+  const tNode = getOrCreateTNode(tView, lView[T_HOST], index, type as any, name, null);
 
   // We are creating a dynamic node, the previous tNode might not be pointing at this node.
   // We will link ourselves into the tree later with `appendI18nNode`.
-  if (previousOrParentTNode.next === tNode) {
+  if (previousOrParentTNode && previousOrParentTNode.next === tNode) {
     previousOrParentTNode.next = null;
   }
 
@@ -686,9 +733,8 @@ function createDynamicNodeAtIndex(
 }
 
 function readCreateOpCodes(
-    index: number, createOpCodes: I18nMutateOpCodes, icus: TIcu[] | null,
-    viewData: LView): number[] {
-  const renderer = getLView()[RENDERER];
+    index: number, createOpCodes: I18nMutateOpCodes, tView: TView, lView: LView): number[] {
+  const renderer = lView[RENDERER];
   let currentTNode: TNode|null = null;
   let previousTNode: TNode|null = null;
   const visitedNodes: number[] = [];
@@ -699,9 +745,10 @@ function readCreateOpCodes(
       const textNodeIndex = createOpCodes[++i] as number;
       ngDevMode && ngDevMode.rendererCreateTextNode++;
       previousTNode = currentTNode;
-      currentTNode = createDynamicNodeAtIndex(textNodeIndex, TNodeType.Element, textRNode, null);
+      currentTNode =
+          createDynamicNodeAtIndex(tView, lView, textNodeIndex, TNodeType.Element, textRNode, null);
       visitedNodes.push(textNodeIndex);
-      setIsParent(false);
+      setIsNotParent();
     } else if (typeof opCode == 'number') {
       switch (opCode & I18nMutateOpCode.MASK_OPCODE) {
         case I18nMutateOpCode.AppendChild:
@@ -710,39 +757,41 @@ function readCreateOpCodes(
           if (destinationNodeIndex === index) {
             // If the destination node is `i18nStart`, we don't have a
             // top-level node and we should use the host node instead
-            destinationTNode = viewData[T_HOST] !;
+            destinationTNode = lView[T_HOST] !;
           } else {
-            destinationTNode = getTNode(destinationNodeIndex, viewData);
+            destinationTNode = getTNode(tView, destinationNodeIndex);
           }
           ngDevMode &&
               assertDefined(
                   currentTNode !,
                   `You need to create or select a node before you can insert it into the DOM`);
-          previousTNode = appendI18nNode(currentTNode !, destinationTNode, previousTNode);
+          previousTNode =
+              appendI18nNode(tView, currentTNode !, destinationTNode, previousTNode, lView);
           break;
         case I18nMutateOpCode.Select:
-          const nodeIndex = opCode >>> I18nMutateOpCode.SHIFT_REF;
+          // Negative indicies indicate that a given TNode is a sibling node, not a parent node
+          // (see `i18nStartFirstPass` for additional information).
+          const isParent = opCode >= 0;
+          const nodeIndex = (isParent ? opCode : ~opCode) >>> I18nMutateOpCode.SHIFT_REF;
           visitedNodes.push(nodeIndex);
           previousTNode = currentTNode;
-          currentTNode = getTNode(nodeIndex, viewData);
+          currentTNode = getTNode(tView, nodeIndex);
           if (currentTNode) {
-            setPreviousOrParentTNode(currentTNode);
-            if (currentTNode.type === TNodeType.Element) {
-              setIsParent(true);
-            }
+            setPreviousOrParentTNode(currentTNode, isParent);
           }
           break;
         case I18nMutateOpCode.ElementEnd:
           const elementIndex = opCode >>> I18nMutateOpCode.SHIFT_REF;
-          previousTNode = currentTNode = getTNode(elementIndex, viewData);
-          setPreviousOrParentTNode(currentTNode);
-          setIsParent(false);
+          previousTNode = currentTNode = getTNode(tView, elementIndex);
+          setPreviousOrParentTNode(currentTNode, false);
           break;
         case I18nMutateOpCode.Attr:
           const elementNodeIndex = opCode >>> I18nMutateOpCode.SHIFT_REF;
           const attrName = createOpCodes[++i] as string;
           const attrValue = createOpCodes[++i] as string;
-          ɵɵelementAttribute(elementNodeIndex, attrName, attrValue);
+          // This code is used for ICU expressions only, since we don't support
+          // directives/components in ICUs, we don't need to worry about inputs here
+          elementAttributeInternal(elementNodeIndex, attrName, attrValue, tView, lView);
           break;
         default:
           throw new Error(`Unable to determine the type of mutate operation for "${opCode}"`);
@@ -759,12 +808,12 @@ function readCreateOpCodes(
           ngDevMode && ngDevMode.rendererCreateComment++;
           previousTNode = currentTNode;
           currentTNode = createDynamicNodeAtIndex(
-              commentNodeIndex, TNodeType.IcuContainer, commentRNode, null);
+              tView, lView, commentNodeIndex, TNodeType.IcuContainer, commentRNode, null);
           visitedNodes.push(commentNodeIndex);
-          attachPatchData(commentRNode, viewData);
+          attachPatchData(commentRNode, lView);
           (currentTNode as TIcuContainerNode).activeCaseIndex = null;
           // We will add the case nodes later, during the update phase
-          setIsParent(false);
+          setIsNotParent();
           break;
         case ELEMENT_MARKER:
           const tagNameValue = createOpCodes[++i] as string;
@@ -776,7 +825,7 @@ function readCreateOpCodes(
           ngDevMode && ngDevMode.rendererCreateElement++;
           previousTNode = currentTNode;
           currentTNode = createDynamicNodeAtIndex(
-              elementNodeIndex, TNodeType.Element, elementRNode, tagNameValue);
+              tView, lView, elementNodeIndex, TNodeType.Element, elementRNode, tagNameValue);
           visitedNodes.push(elementNodeIndex);
           break;
         default:
@@ -785,14 +834,14 @@ function readCreateOpCodes(
     }
   }
 
-  setIsParent(false);
+  setIsNotParent();
 
   return visitedNodes;
 }
 
 function readUpdateOpCodes(
     updateOpCodes: I18nUpdateOpCodes, icus: TIcu[] | null, bindingsStartIndex: number,
-    changeMask: number, viewData: LView, bypassCheckBit = false) {
+    changeMask: number, tView: TView, lView: LView, bypassCheckBit = false) {
   let caseCreated = false;
   for (let i = 0; i < updateOpCodes.length; i++) {
     // bit code to check if we should apply the next update
@@ -809,7 +858,7 @@ function readUpdateOpCodes(
         } else if (typeof opCode == 'number') {
           if (opCode < 0) {
             // It's a binding index whose value is negative
-            value += renderStringify(viewData[bindingsStartIndex - opCode]);
+            value += renderStringify(lView[bindingsStartIndex - opCode]);
           } else {
             const nodeIndex = opCode >>> I18nUpdateOpCode.SHIFT_REF;
             let tIcuIndex: number;
@@ -817,17 +866,17 @@ function readUpdateOpCodes(
             let icuTNode: TIcuContainerNode;
             switch (opCode & I18nUpdateOpCode.MASK_OPCODE) {
               case I18nUpdateOpCode.Attr:
-                const attrName = updateOpCodes[++j] as string;
+                const propName = updateOpCodes[++j] as string;
                 const sanitizeFn = updateOpCodes[++j] as SanitizerFn | null;
-                ɵɵelementAttribute(nodeIndex, attrName, value, sanitizeFn);
+                elementPropertyInternal(tView, lView, nodeIndex, propName, value, sanitizeFn);
                 break;
               case I18nUpdateOpCode.Text:
-                ɵɵtextBinding(nodeIndex, value);
+                textBindingInternal(lView, nodeIndex, value);
                 break;
               case I18nUpdateOpCode.IcuSwitch:
                 tIcuIndex = updateOpCodes[++j] as number;
                 tIcu = icus ![tIcuIndex];
-                icuTNode = getTNode(nodeIndex, viewData) as TIcuContainerNode;
+                icuTNode = getTNode(tView, nodeIndex) as TIcuContainerNode;
                 // If there is an active case, delete the old nodes
                 if (icuTNode.activeCaseIndex !== null) {
                   const removeCodes = tIcu.remove[icuTNode.activeCaseIndex];
@@ -836,13 +885,16 @@ function readUpdateOpCodes(
                     switch (removeOpCode & I18nMutateOpCode.MASK_OPCODE) {
                       case I18nMutateOpCode.Remove:
                         const nodeIndex = removeOpCode >>> I18nMutateOpCode.SHIFT_REF;
-                        removeNode(nodeIndex, viewData);
+                        // Remove DOM element, but do *not* mark TNode as detached, since we are
+                        // just switching ICU cases (while keeping the same TNode), so a DOM element
+                        // representing a new ICU case will be re-created.
+                        removeNode(tView, lView, nodeIndex, /* markAsDetached */ false);
                         break;
                       case I18nMutateOpCode.RemoveNestedIcu:
                         const nestedIcuNodeIndex =
                             removeCodes[k + 1] as number >>> I18nMutateOpCode.SHIFT_REF;
                         const nestedIcuTNode =
-                            getTNode(nestedIcuNodeIndex, viewData) as TIcuContainerNode;
+                            getTNode(tView, nestedIcuNodeIndex) as TIcuContainerNode;
                         const activeIndex = nestedIcuTNode.activeCaseIndex;
                         if (activeIndex !== null) {
                           const nestedIcuTIndex = removeOpCode >>> I18nMutateOpCode.SHIFT_REF;
@@ -857,18 +909,21 @@ function readUpdateOpCodes(
                 // Update the active caseIndex
                 const caseIndex = getCaseIndex(tIcu, value);
                 icuTNode.activeCaseIndex = caseIndex !== -1 ? caseIndex : null;
-
-                // Add the nodes for the new case
-                readCreateOpCodes(-1, tIcu.create[caseIndex], icus, viewData);
-                caseCreated = true;
+                if (caseIndex > -1) {
+                  // Add the nodes for the new case
+                  readCreateOpCodes(-1, tIcu.create[caseIndex], tView, lView);
+                  caseCreated = true;
+                }
                 break;
               case I18nUpdateOpCode.IcuUpdate:
                 tIcuIndex = updateOpCodes[++j] as number;
                 tIcu = icus ![tIcuIndex];
-                icuTNode = getTNode(nodeIndex, viewData) as TIcuContainerNode;
-                readUpdateOpCodes(
-                    tIcu.update[icuTNode.activeCaseIndex !], icus, bindingsStartIndex, changeMask,
-                    viewData, caseCreated);
+                icuTNode = getTNode(tView, nodeIndex) as TIcuContainerNode;
+                if (icuTNode.activeCaseIndex !== null) {
+                  readUpdateOpCodes(
+                      tIcu.update[icuTNode.activeCaseIndex], icus, bindingsStartIndex, changeMask,
+                      tView, lView, caseCreated);
+                }
                 break;
             }
           }
@@ -879,21 +934,25 @@ function readUpdateOpCodes(
   }
 }
 
-function removeNode(index: number, viewData: LView) {
-  const removedPhTNode = getTNode(index, viewData);
-  const removedPhRNode = getNativeByIndex(index, viewData);
+function removeNode(tView: TView, lView: LView, index: number, markAsDetached: boolean) {
+  const removedPhTNode = getTNode(tView, index);
+  const removedPhRNode = getNativeByIndex(index, lView);
   if (removedPhRNode) {
-    nativeRemoveNode(viewData[RENDERER], removedPhRNode);
+    nativeRemoveNode(lView[RENDERER], removedPhRNode);
   }
 
-  const slotValue = ɵɵload(index) as RElement | RComment | LContainer | StylingContext;
+  const slotValue = load(lView, index) as RElement | RComment | LContainer;
   if (isLContainer(slotValue)) {
     const lContainer = slotValue as LContainer;
     if (removedPhTNode.type !== TNodeType.Container) {
-      nativeRemoveNode(viewData[RENDERER], lContainer[NATIVE]);
+      nativeRemoveNode(lView[RENDERER], lContainer[NATIVE]);
     }
   }
 
+  if (markAsDetached) {
+    // Define this node as detached to avoid projecting it later
+    removedPhTNode.flags |= TNodeFlags.isDetached;
+  }
   ngDevMode && ngDevMode.rendererRemoveNode++;
 }
 
@@ -937,17 +996,16 @@ export function ɵɵi18n(index: number, message: string, subTemplateIndex?: numb
  * @codeGenApi
  */
 export function ɵɵi18nAttributes(index: number, values: string[]): void {
-  const tView = getLView()[TVIEW];
+  const lView = getLView();
+  const tView = getTView();
   ngDevMode && assertDefined(tView, `tView should be defined`);
-  if (tView.firstTemplatePass && tView.data[index + HEADER_OFFSET] === null) {
-    i18nAttributesFirstPass(tView, index, values);
-  }
+  i18nAttributesFirstPass(lView, tView, index, values);
 }
 
 /**
  * See `i18nAttributes` above.
  */
-function i18nAttributesFirstPass(tView: TView, index: number, values: string[]) {
+function i18nAttributesFirstPass(lView: LView, tView: TView, index: number, values: string[]) {
   const previousElement = getPreviousOrParentTNode();
   const previousElementIndex = previousElement.index - HEADER_OFFSET;
   const updateOpCodes: I18nUpdateOpCodes = [];
@@ -961,20 +1019,39 @@ function i18nAttributesFirstPass(tView: TView, index: number, values: string[]) 
       if (j & 1) {
         // Odd indexes are ICU expressions
         // TODO(ocombe): support ICU expressions in attributes
+        throw new Error('ICU expressions are not yet supported in attributes');
       } else if (value !== '') {
         // Even indexes are text (including bindings)
         const hasBinding = !!value.match(BINDING_REGEXP);
         if (hasBinding) {
-          addAllToArray(
-              generateBindingUpdateOpCodes(value, previousElementIndex, attrName), updateOpCodes);
+          if (tView.firstCreatePass && tView.data[index + HEADER_OFFSET] === null) {
+            addAllToArray(
+                generateBindingUpdateOpCodes(value, previousElementIndex, attrName), updateOpCodes);
+          }
         } else {
-          ɵɵelementAttribute(previousElementIndex, attrName, value);
+          const tNode = getTNode(tView, previousElementIndex);
+          // Set attributes for Elements only, for other types (like ElementContainer),
+          // only set inputs below
+          if (tNode.type === TNodeType.Element) {
+            elementAttributeInternal(previousElementIndex, attrName, value, tView, lView);
+          }
+          // Check if that attribute is a directive input
+          const dataValue = tNode.inputs !== null && tNode.inputs[attrName];
+          if (dataValue) {
+            setInputsForProperty(tView, lView, dataValue, attrName, value);
+            if (ngDevMode) {
+              const element = getNativeByIndex(previousElementIndex, lView) as RElement | RComment;
+              setNgReflectProperties(lView, element, tNode.type, dataValue, value);
+            }
+          }
         }
       }
     }
   }
 
-  tView.data[index + HEADER_OFFSET] = updateOpCodes;
+  if (tView.firstCreatePass && tView.data[index + HEADER_OFFSET] === null) {
+    tView.data[index + HEADER_OFFSET] = updateOpCodes;
+  }
 }
 
 let changeMask = 0b0;
@@ -984,15 +1061,19 @@ let shiftsCounter = 0;
  * Stores the values of the bindings during each update cycle in order to determine if we need to
  * update the translated nodes.
  *
- * @param expression The binding's new value or NO_CHANGE
+ * @param value The binding's value
+ * @returns This function returns itself so that it may be chained
+ * (e.g. `i18nExp(ctx.name)(ctx.title)`)
  *
  * @codeGenApi
  */
-export function ɵɵi18nExp<T>(expression: T | NO_CHANGE): void {
-  if (expression !== NO_CHANGE) {
+export function ɵɵi18nExp<T>(value: T): typeof ɵɵi18nExp {
+  const lView = getLView();
+  if (bindingUpdated(lView, nextBindingIndex(), value)) {
     changeMask = changeMask | (1 << shiftsCounter);
   }
   shiftsCounter++;
+  return ɵɵi18nExp;
 }
 
 /**
@@ -1005,8 +1086,7 @@ export function ɵɵi18nExp<T>(expression: T | NO_CHANGE): void {
  */
 export function ɵɵi18nApply(index: number) {
   if (shiftsCounter) {
-    const lView = getLView();
-    const tView = lView[TVIEW];
+    const tView = getTView();
     ngDevMode && assertDefined(tView, `tView should be defined`);
     const tI18n = tView.data[index + HEADER_OFFSET];
     let updateOpCodes: I18nUpdateOpCodes;
@@ -1017,357 +1097,13 @@ export function ɵɵi18nApply(index: number) {
       updateOpCodes = (tI18n as TI18n).update;
       icus = (tI18n as TI18n).icus;
     }
-    const bindingsStartIndex = lView[BINDING_INDEX] - shiftsCounter - 1;
-    readUpdateOpCodes(updateOpCodes, icus, bindingsStartIndex, changeMask, lView);
+    const bindingsStartIndex = getBindingIndex() - shiftsCounter - 1;
+    const lView = getLView();
+    readUpdateOpCodes(updateOpCodes, icus, bindingsStartIndex, changeMask, tView, lView);
 
     // Reset changeMask & maskBit to default for the next update cycle
     changeMask = 0b0;
     shiftsCounter = 0;
-  }
-}
-
-enum Plural {
-  Zero = 0,
-  One = 1,
-  Two = 2,
-  Few = 3,
-  Many = 4,
-  Other = 5,
-}
-
-/**
- * Returns the plural case based on the locale.
- * This is a copy of the deprecated function that we used in Angular v4.
- * // TODO(ocombe): remove this once we can the real getPluralCase function
- *
- * @deprecated from v5 the plural case function is in locale data files common/locales/*.ts
- */
-function getPluralCase(locale: string, nLike: number | string): Plural {
-  if (typeof nLike === 'string') {
-    nLike = parseInt(<string>nLike, 10);
-  }
-  const n: number = nLike as number;
-  const nDecimal = n.toString().replace(/^[^.]*\.?/, '');
-  const i = Math.floor(Math.abs(n));
-  const v = nDecimal.length;
-  const f = parseInt(nDecimal, 10);
-  const t = parseInt(n.toString().replace(/^[^.]*\.?|0+$/g, ''), 10) || 0;
-
-  const lang = locale.split('-')[0].toLowerCase();
-
-  switch (lang) {
-    case 'af':
-    case 'asa':
-    case 'az':
-    case 'bem':
-    case 'bez':
-    case 'bg':
-    case 'brx':
-    case 'ce':
-    case 'cgg':
-    case 'chr':
-    case 'ckb':
-    case 'ee':
-    case 'el':
-    case 'eo':
-    case 'es':
-    case 'eu':
-    case 'fo':
-    case 'fur':
-    case 'gsw':
-    case 'ha':
-    case 'haw':
-    case 'hu':
-    case 'jgo':
-    case 'jmc':
-    case 'ka':
-    case 'kk':
-    case 'kkj':
-    case 'kl':
-    case 'ks':
-    case 'ksb':
-    case 'ky':
-    case 'lb':
-    case 'lg':
-    case 'mas':
-    case 'mgo':
-    case 'ml':
-    case 'mn':
-    case 'nb':
-    case 'nd':
-    case 'ne':
-    case 'nn':
-    case 'nnh':
-    case 'nyn':
-    case 'om':
-    case 'or':
-    case 'os':
-    case 'ps':
-    case 'rm':
-    case 'rof':
-    case 'rwk':
-    case 'saq':
-    case 'seh':
-    case 'sn':
-    case 'so':
-    case 'sq':
-    case 'ta':
-    case 'te':
-    case 'teo':
-    case 'tk':
-    case 'tr':
-    case 'ug':
-    case 'uz':
-    case 'vo':
-    case 'vun':
-    case 'wae':
-    case 'xog':
-      if (n === 1) return Plural.One;
-      return Plural.Other;
-    case 'ak':
-    case 'ln':
-    case 'mg':
-    case 'pa':
-    case 'ti':
-      if (n === Math.floor(n) && n >= 0 && n <= 1) return Plural.One;
-      return Plural.Other;
-    case 'am':
-    case 'as':
-    case 'bn':
-    case 'fa':
-    case 'gu':
-    case 'hi':
-    case 'kn':
-    case 'mr':
-    case 'zu':
-      if (i === 0 || n === 1) return Plural.One;
-      return Plural.Other;
-    case 'ar':
-      if (n === 0) return Plural.Zero;
-      if (n === 1) return Plural.One;
-      if (n === 2) return Plural.Two;
-      if (n % 100 === Math.floor(n % 100) && n % 100 >= 3 && n % 100 <= 10) return Plural.Few;
-      if (n % 100 === Math.floor(n % 100) && n % 100 >= 11 && n % 100 <= 99) return Plural.Many;
-      return Plural.Other;
-    case 'ast':
-    case 'ca':
-    case 'de':
-    case 'en':
-    case 'et':
-    case 'fi':
-    case 'fy':
-    case 'gl':
-    case 'it':
-    case 'nl':
-    case 'sv':
-    case 'sw':
-    case 'ur':
-    case 'yi':
-      if (i === 1 && v === 0) return Plural.One;
-      return Plural.Other;
-    case 'be':
-      if (n % 10 === 1 && !(n % 100 === 11)) return Plural.One;
-      if (n % 10 === Math.floor(n % 10) && n % 10 >= 2 && n % 10 <= 4 &&
-          !(n % 100 >= 12 && n % 100 <= 14))
-        return Plural.Few;
-      if (n % 10 === 0 || n % 10 === Math.floor(n % 10) && n % 10 >= 5 && n % 10 <= 9 ||
-          n % 100 === Math.floor(n % 100) && n % 100 >= 11 && n % 100 <= 14)
-        return Plural.Many;
-      return Plural.Other;
-    case 'br':
-      if (n % 10 === 1 && !(n % 100 === 11 || n % 100 === 71 || n % 100 === 91)) return Plural.One;
-      if (n % 10 === 2 && !(n % 100 === 12 || n % 100 === 72 || n % 100 === 92)) return Plural.Two;
-      if (n % 10 === Math.floor(n % 10) && (n % 10 >= 3 && n % 10 <= 4 || n % 10 === 9) &&
-          !(n % 100 >= 10 && n % 100 <= 19 || n % 100 >= 70 && n % 100 <= 79 ||
-            n % 100 >= 90 && n % 100 <= 99))
-        return Plural.Few;
-      if (!(n === 0) && n % 1e6 === 0) return Plural.Many;
-      return Plural.Other;
-    case 'bs':
-    case 'hr':
-    case 'sr':
-      if (v === 0 && i % 10 === 1 && !(i % 100 === 11) || f % 10 === 1 && !(f % 100 === 11))
-        return Plural.One;
-      if (v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 2 && i % 10 <= 4 &&
-              !(i % 100 >= 12 && i % 100 <= 14) ||
-          f % 10 === Math.floor(f % 10) && f % 10 >= 2 && f % 10 <= 4 &&
-              !(f % 100 >= 12 && f % 100 <= 14))
-        return Plural.Few;
-      return Plural.Other;
-    case 'cs':
-    case 'sk':
-      if (i === 1 && v === 0) return Plural.One;
-      if (i === Math.floor(i) && i >= 2 && i <= 4 && v === 0) return Plural.Few;
-      if (!(v === 0)) return Plural.Many;
-      return Plural.Other;
-    case 'cy':
-      if (n === 0) return Plural.Zero;
-      if (n === 1) return Plural.One;
-      if (n === 2) return Plural.Two;
-      if (n === 3) return Plural.Few;
-      if (n === 6) return Plural.Many;
-      return Plural.Other;
-    case 'da':
-      if (n === 1 || !(t === 0) && (i === 0 || i === 1)) return Plural.One;
-      return Plural.Other;
-    case 'dsb':
-    case 'hsb':
-      if (v === 0 && i % 100 === 1 || f % 100 === 1) return Plural.One;
-      if (v === 0 && i % 100 === 2 || f % 100 === 2) return Plural.Two;
-      if (v === 0 && i % 100 === Math.floor(i % 100) && i % 100 >= 3 && i % 100 <= 4 ||
-          f % 100 === Math.floor(f % 100) && f % 100 >= 3 && f % 100 <= 4)
-        return Plural.Few;
-      return Plural.Other;
-    case 'ff':
-    case 'fr':
-    case 'hy':
-    case 'kab':
-      if (i === 0 || i === 1) return Plural.One;
-      return Plural.Other;
-    case 'fil':
-      if (v === 0 && (i === 1 || i === 2 || i === 3) ||
-          v === 0 && !(i % 10 === 4 || i % 10 === 6 || i % 10 === 9) ||
-          !(v === 0) && !(f % 10 === 4 || f % 10 === 6 || f % 10 === 9))
-        return Plural.One;
-      return Plural.Other;
-    case 'ga':
-      if (n === 1) return Plural.One;
-      if (n === 2) return Plural.Two;
-      if (n === Math.floor(n) && n >= 3 && n <= 6) return Plural.Few;
-      if (n === Math.floor(n) && n >= 7 && n <= 10) return Plural.Many;
-      return Plural.Other;
-    case 'gd':
-      if (n === 1 || n === 11) return Plural.One;
-      if (n === 2 || n === 12) return Plural.Two;
-      if (n === Math.floor(n) && (n >= 3 && n <= 10 || n >= 13 && n <= 19)) return Plural.Few;
-      return Plural.Other;
-    case 'gv':
-      if (v === 0 && i % 10 === 1) return Plural.One;
-      if (v === 0 && i % 10 === 2) return Plural.Two;
-      if (v === 0 &&
-          (i % 100 === 0 || i % 100 === 20 || i % 100 === 40 || i % 100 === 60 || i % 100 === 80))
-        return Plural.Few;
-      if (!(v === 0)) return Plural.Many;
-      return Plural.Other;
-    case 'he':
-      if (i === 1 && v === 0) return Plural.One;
-      if (i === 2 && v === 0) return Plural.Two;
-      if (v === 0 && !(n >= 0 && n <= 10) && n % 10 === 0) return Plural.Many;
-      return Plural.Other;
-    case 'is':
-      if (t === 0 && i % 10 === 1 && !(i % 100 === 11) || !(t === 0)) return Plural.One;
-      return Plural.Other;
-    case 'ksh':
-      if (n === 0) return Plural.Zero;
-      if (n === 1) return Plural.One;
-      return Plural.Other;
-    case 'kw':
-    case 'naq':
-    case 'se':
-    case 'smn':
-      if (n === 1) return Plural.One;
-      if (n === 2) return Plural.Two;
-      return Plural.Other;
-    case 'lag':
-      if (n === 0) return Plural.Zero;
-      if ((i === 0 || i === 1) && !(n === 0)) return Plural.One;
-      return Plural.Other;
-    case 'lt':
-      if (n % 10 === 1 && !(n % 100 >= 11 && n % 100 <= 19)) return Plural.One;
-      if (n % 10 === Math.floor(n % 10) && n % 10 >= 2 && n % 10 <= 9 &&
-          !(n % 100 >= 11 && n % 100 <= 19))
-        return Plural.Few;
-      if (!(f === 0)) return Plural.Many;
-      return Plural.Other;
-    case 'lv':
-    case 'prg':
-      if (n % 10 === 0 || n % 100 === Math.floor(n % 100) && n % 100 >= 11 && n % 100 <= 19 ||
-          v === 2 && f % 100 === Math.floor(f % 100) && f % 100 >= 11 && f % 100 <= 19)
-        return Plural.Zero;
-      if (n % 10 === 1 && !(n % 100 === 11) || v === 2 && f % 10 === 1 && !(f % 100 === 11) ||
-          !(v === 2) && f % 10 === 1)
-        return Plural.One;
-      return Plural.Other;
-    case 'mk':
-      if (v === 0 && i % 10 === 1 || f % 10 === 1) return Plural.One;
-      return Plural.Other;
-    case 'mt':
-      if (n === 1) return Plural.One;
-      if (n === 0 || n % 100 === Math.floor(n % 100) && n % 100 >= 2 && n % 100 <= 10)
-        return Plural.Few;
-      if (n % 100 === Math.floor(n % 100) && n % 100 >= 11 && n % 100 <= 19) return Plural.Many;
-      return Plural.Other;
-    case 'pl':
-      if (i === 1 && v === 0) return Plural.One;
-      if (v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 2 && i % 10 <= 4 &&
-          !(i % 100 >= 12 && i % 100 <= 14))
-        return Plural.Few;
-      if (v === 0 && !(i === 1) && i % 10 === Math.floor(i % 10) && i % 10 >= 0 && i % 10 <= 1 ||
-          v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 5 && i % 10 <= 9 ||
-          v === 0 && i % 100 === Math.floor(i % 100) && i % 100 >= 12 && i % 100 <= 14)
-        return Plural.Many;
-      return Plural.Other;
-    case 'pt':
-      if (n === Math.floor(n) && n >= 0 && n <= 2 && !(n === 2)) return Plural.One;
-      return Plural.Other;
-    case 'ro':
-      if (i === 1 && v === 0) return Plural.One;
-      if (!(v === 0) || n === 0 ||
-          !(n === 1) && n % 100 === Math.floor(n % 100) && n % 100 >= 1 && n % 100 <= 19)
-        return Plural.Few;
-      return Plural.Other;
-    case 'ru':
-    case 'uk':
-      if (v === 0 && i % 10 === 1 && !(i % 100 === 11)) return Plural.One;
-      if (v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 2 && i % 10 <= 4 &&
-          !(i % 100 >= 12 && i % 100 <= 14))
-        return Plural.Few;
-      if (v === 0 && i % 10 === 0 ||
-          v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 5 && i % 10 <= 9 ||
-          v === 0 && i % 100 === Math.floor(i % 100) && i % 100 >= 11 && i % 100 <= 14)
-        return Plural.Many;
-      return Plural.Other;
-    case 'shi':
-      if (i === 0 || n === 1) return Plural.One;
-      if (n === Math.floor(n) && n >= 2 && n <= 10) return Plural.Few;
-      return Plural.Other;
-    case 'si':
-      if (n === 0 || n === 1 || i === 0 && f === 1) return Plural.One;
-      return Plural.Other;
-    case 'sl':
-      if (v === 0 && i % 100 === 1) return Plural.One;
-      if (v === 0 && i % 100 === 2) return Plural.Two;
-      if (v === 0 && i % 100 === Math.floor(i % 100) && i % 100 >= 3 && i % 100 <= 4 || !(v === 0))
-        return Plural.Few;
-      return Plural.Other;
-    case 'tzm':
-      if (n === Math.floor(n) && n >= 0 && n <= 1 || n === Math.floor(n) && n >= 11 && n <= 99)
-        return Plural.One;
-      return Plural.Other;
-    // When there is no specification, the default is always "other"
-    // Spec: http://cldr.unicode.org/index/cldr-spec/plural-rules
-    // > other (required—general plural form — also used if the language only has a single form)
-    default:
-      return Plural.Other;
-  }
-}
-
-function getPluralCategory(value: any, locale: string): string {
-  const plural = getPluralCase(locale, value);
-
-  switch (plural) {
-    case Plural.Zero:
-      return 'zero';
-    case Plural.One:
-      return 'one';
-    case Plural.Two:
-      return 'two';
-    case Plural.Few:
-      return 'few';
-    case Plural.Many:
-      return 'many';
-    default:
-      return 'other';
   }
 }
 
@@ -1382,9 +1118,7 @@ function getCaseIndex(icuExpression: TIcu, bindingValue: string): number {
   if (index === -1) {
     switch (icuExpression.type) {
       case IcuType.plural: {
-        // TODO(ocombe): replace this hard-coded value by the real LOCALE_ID value
-        const locale = 'en-US';
-        const resolvedCase = getPluralCategory(bindingValue, locale);
+        const resolvedCase = getPluralCase(bindingValue, getLocaleId());
         index = icuExpression.cases.indexOf(resolvedCase);
         if (index === -1 && resolvedCase !== 'other') {
           index = icuExpression.cases.indexOf('other');
@@ -1464,7 +1198,7 @@ function icuStart(
 function parseIcuCase(
     unsafeHtml: string, parentIndex: number, nestedIcus: IcuExpression[], tIcus: TIcu[],
     expandoStartIndex: number): IcuCase {
-  const inertBodyHelper = new InertBodyHelper(document);
+  const inertBodyHelper = new InertBodyHelper(getDocument());
   const inertBodyElement = inertBodyHelper.getInertBodyElement(unsafeHtml);
   if (!inertBodyElement) {
     throw new Error('Unable to generate inert body element');
@@ -1607,37 +1341,44 @@ function parseNodes(
   }
 }
 
-let TRANSLATIONS: {[key: string]: string} = {};
-export interface I18nLocalizeOptions { translations: {[key: string]: string}; }
-
 /**
- * Set the configuration for `i18nLocalize`.
- *
- * @deprecated this method is temporary & should not be used as it will be removed soon
+ * Angular Dart introduced &ngsp; as a placeholder for non-removable space, see:
+ * https://github.com/dart-lang/angular/blob/0bb611387d29d65b5af7f9d2515ab571fd3fbee4/_tests/test/compiler/preserve_whitespace_test.dart#L25-L32
+ * In Angular Dart &ngsp; is converted to the 0xE500 PUA (Private Use Areas) unicode character
+ * and later on replaced by a space. We are re-implementing the same idea here, since translations
+ * might contain this special character.
  */
-export function i18nConfigureLocalize(options: I18nLocalizeOptions = {
-  translations: {}
-}) {
-  TRANSLATIONS = options.translations;
+const NGSP_UNICODE_REGEXP = /\uE500/g;
+function replaceNgsp(value: string): string {
+  return value.replace(NGSP_UNICODE_REGEXP, ' ');
 }
 
-const LOCALIZE_PH_REGEXP = /\{\$(.*?)\}/g;
+/**
+ * The locale id that the application is currently using (for translations and ICU expressions).
+ * This is the ivy version of `LOCALE_ID` that was defined as an injection token for the view engine
+ * but is now defined as a global value.
+ */
+let LOCALE_ID = DEFAULT_LOCALE_ID;
 
 /**
- * A goog.getMsg-like function for users that do not use Closure.
+ * Sets the locale id that will be used for translations and ICU expressions.
+ * This is the ivy version of `LOCALE_ID` that was defined as an injection token for the view engine
+ * but is now defined as a global value.
  *
- * This method is required as a *temporary* measure to prevent i18n tests from being blocked while
- * running outside of Closure Compiler. This method will not be needed once runtime translation
- * service support is introduced.
- *
- * @publicApi
- * @deprecated this method is temporary & should not be used as it will be removed soon
+ * @param localeId
  */
-export function ɵɵi18nLocalize(input: string, placeholders: {[key: string]: string} = {}) {
-  if (typeof TRANSLATIONS[input] !== 'undefined') {  // to account for empty string
-    input = TRANSLATIONS[input];
+export function setLocaleId(localeId: string) {
+  assertDefined(localeId, `Expected localeId to be defined`);
+  if (typeof localeId === 'string') {
+    LOCALE_ID = localeId.toLowerCase().replace(/_/g, '-');
   }
-  return Object.keys(placeholders).length ?
-      input.replace(LOCALIZE_PH_REGEXP, (match, key) => placeholders[key] || '') :
-      input;
+}
+
+/**
+ * Gets the locale id that will be used for translations and ICU expressions.
+ * This is the ivy version of `LOCALE_ID` that was defined as an injection token for the view engine
+ * but is now defined as a global value.
+ */
+export function getLocaleId(): string {
+  return LOCALE_ID;
 }

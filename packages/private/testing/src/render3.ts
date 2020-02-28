@@ -37,7 +37,6 @@
 */
 export function withBody<T extends Function>(html: string, blockFn: T): T {
   return function(done: DoneFn) {
-    ensureDocument();
     if (typeof blockFn === 'function') {
       document.body.innerHTML = html;
       const blockReturn = blockFn();
@@ -120,4 +119,4 @@ export function cleanupDocument(): void {
 }
 
 if (typeof beforeEach == 'function') beforeEach(ensureDocument);
-if (typeof afterEach == 'function') beforeEach(cleanupDocument);
+if (typeof afterEach == 'function') afterEach(cleanupDocument);

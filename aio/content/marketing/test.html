@@ -3,7 +3,7 @@
 <h2>&lt;code-tabs&gt;</h2>
 
 <p>No linenums at code-tabs level</p>
-<code-tabs >
+<code-tabs>
   <code-pane header='TS code file' language='ts'>
   class {
     foo(param: string) {}
@@ -26,7 +26,7 @@
 </code-tabs>
 <p></p>
 
-<p>No linenums at code-tabs level; linenums=true for HTML pane</p>
+<p>No linenums at code-tabs level; linenums=true for second HTML pane</p>
 <code-tabs >
   <code-pane header='TS code file' language='ts'>
   class {
@@ -43,8 +43,8 @@
 <p>One line.</p>
 <code-example>const foo = 'bar'</code-example>
 
-<p>Multi-line, linenums=false.</p>
-<code-example linenums='false'>
+<p>Multi-line, linenums=true.</p>
+<code-example linenums='true'>
 &lt;hero-details <em>nghost-pmm-5&gt;
   &lt;h2 </em>ngcontent-pmm-5&gt;Bah Dah Bing&lt;/h2&gt;
   &lt;hero-team <em>ngcontent-pmm-5 </em>nghost-pmm-6&gt;
@@ -53,7 +53,7 @@
 &lt;/hero-details&gt;
 </code-example>
 
-<p>Default linenums.</p>
+<p>Default linenums (false).</p>
 <code-example>
 &lt;hero-details <em>nghost-pmm-5&gt;
   &lt;h2 </em>ngcontent-pmm-5&gt;Mister Fantastic&lt;/h2&gt;

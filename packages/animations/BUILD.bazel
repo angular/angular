@@ -22,13 +22,14 @@ ng_package(
         "//packages/animations/browser:package.json",
         "//packages/animations/browser/testing:package.json",
     ],
-    entry_point = "packages/animations/index.js",
+    entry_point = ":index.ts",
     tags = [
         "release-with-framework",
     ],
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
     visibility = [
+        "//integration:__pkg__",
         "//packages/compiler-cli/integrationtest:__pkg__",
         "//packages/compiler/test:__pkg__",
     ],

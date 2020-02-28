@@ -24,11 +24,13 @@ describe('ServiceWorkerModule', () => {
   let swRegisterSpy: jasmine.Spy;
 
   const untilStable = () => {
-    const appRef: ApplicationRef = TestBed.get(ApplicationRef);
+    const appRef: ApplicationRef = TestBed.inject(ApplicationRef);
     return appRef.isStable.pipe(filter(Boolean), take(1)).toPromise();
   };
 
-  beforeEach(() => swRegisterSpy = spyOn(navigator.serviceWorker, 'register'));
+  beforeEach(
+      () => swRegisterSpy =
+          spyOn(navigator.serviceWorker, 'register').and.returnValue(Promise.resolve()));
 
   describe('register()', () => {
     const configTestBed = async(opts: SwRegistrationOptions) => {
@@ -43,29 +45,38 @@ describe('ServiceWorkerModule', () => {
     it('sets the registration options', async() => {
       await configTestBed({enabled: true, scope: 'foo'});
 
-      expect(TestBed.get(SwRegistrationOptions)).toEqual({enabled: true, scope: 'foo'});
+      expect(TestBed.inject(SwRegistrationOptions)).toEqual({enabled: true, scope: 'foo'});
       expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: 'foo'});
     });
 
     it('can disable the SW', async() => {
       await configTestBed({enabled: false});
 
-      expect(TestBed.get(SwUpdate).isEnabled).toBe(false);
+      expect(TestBed.inject(SwUpdate).isEnabled).toBe(false);
       expect(swRegisterSpy).not.toHaveBeenCalled();
     });
 
     it('can enable the SW', async() => {
       await configTestBed({enabled: true});
 
-      expect(TestBed.get(SwUpdate).isEnabled).toBe(true);
+      expect(TestBed.inject(SwUpdate).isEnabled).toBe(true);
       expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
     });
 
     it('defaults to enabling the SW', async() => {
       await configTestBed({});
 
-      expect(TestBed.get(SwUpdate).isEnabled).toBe(true);
+      expect(TestBed.inject(SwUpdate).isEnabled).toBe(true);
       expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+    });
+
+    it('catches and a logs registration errors', async() => {
+      const consoleErrorSpy = spyOn(console, 'error');
+      swRegisterSpy.and.returnValue(Promise.reject('no reason'));
+
+      await configTestBed({enabled: true, scope: 'foo'});
+      expect(consoleErrorSpy)
+          .toHaveBeenCalledWith('Service worker registration failed with:', 'no reason');
     });
   });
 
@@ -85,7 +96,7 @@ describe('ServiceWorkerModule', () => {
       configTestBed({enabled: true, scope: 'provider'});
       await untilStable();
 
-      expect(TestBed.get(SwRegistrationOptions)).toEqual({enabled: true, scope: 'provider'});
+      expect(TestBed.inject(SwRegistrationOptions)).toEqual({enabled: true, scope: 'provider'});
       expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: 'provider'});
     });
 
@@ -93,7 +104,7 @@ describe('ServiceWorkerModule', () => {
       configTestBed({enabled: false}, {enabled: true});
       await untilStable();
 
-      expect(TestBed.get(SwUpdate).isEnabled).toBe(false);
+      expect(TestBed.inject(SwUpdate).isEnabled).toBe(false);
       expect(swRegisterSpy).not.toHaveBeenCalled();
     });
 
@@ -101,7 +112,7 @@ describe('ServiceWorkerModule', () => {
       configTestBed({enabled: true}, {enabled: false});
       await untilStable();
 
-      expect(TestBed.get(SwUpdate).isEnabled).toBe(true);
+      expect(TestBed.inject(SwUpdate).isEnabled).toBe(true);
       expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
     });
 
@@ -109,7 +120,7 @@ describe('ServiceWorkerModule', () => {
       configTestBed({}, {enabled: false});
       await untilStable();
 
-      expect(TestBed.get(SwUpdate).isEnabled).toBe(true);
+      expect(TestBed.inject(SwUpdate).isEnabled).toBe(true);
       expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
     });
 
@@ -131,7 +142,7 @@ describe('ServiceWorkerModule', () => {
             });
 
             // Dummy `get()` call to initialize the test "app".
-            TestBed.get(ApplicationRef);
+            TestBed.inject(ApplicationRef);
 
             return isStableSub;
           };

@@ -5,19 +5,22 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {assertEqual} from '../../util/assert';
-import {assertHasParent} from '../assert';
+import {assertDataInRange, assertEqual} from '../../util/assert';
+import {assertFirstCreatePass, assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
-import {executePreOrderHooks, registerPostOrderHooks} from '../hooks';
+import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags, registerPostOrderHooks} from '../hooks';
 import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {ComponentTemplate} from '../interfaces/definition';
-import {LocalRefExtractor, TAttributes, TContainerNode, TNode, TNodeType} from '../interfaces/node';
-import {BINDING_INDEX, HEADER_OFFSET, LView, QUERIES, RENDERER, TVIEW} from '../interfaces/view';
+import {LocalRefExtractor, TAttributes, TContainerNode, TNode, TNodeType, TViewNode} from '../interfaces/node';
+import {isDirectiveHost} from '../interfaces/type_checks';
+import {FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, RENDERER, TView, TViewType, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild, removeView} from '../node_manipulation';
-import {getCheckNoChangesMode, getIsParent, getLView, getPreviousOrParentTNode, setIsParent, setPreviousOrParentTNode} from '../state';
-import {getNativeByTNode, loadInternal} from '../util/view_utils';
-import {addToViewTree, createDirectivesAndLocals, createLContainer, createNodeAtIndex, createTView} from './shared';
+import {getBindingIndex, getCheckNoChangesMode, getIsParent, getLView, getPreviousOrParentTNode, getTView, setIsNotParent, setPreviousOrParentTNode} from '../state';
+import {getConstant, getLContainerActiveIndex, load} from '../util/view_utils';
+import {addToViewTree, createDirectivesInstances, createLContainer, createTNode, createTView, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared';
+
+
 
 /**
  * Creates an LContainer for inline views, e.g.
@@ -31,13 +34,44 @@ import {addToViewTree, createDirectivesAndLocals, createLContainer, createNodeAt
  * @codeGenApi
  */
 export function ɵɵcontainer(index: number): void {
-  const tNode = containerInternal(index, null, null);
   const lView = getLView();
-  if (lView[TVIEW].firstTemplatePass) {
+  const tView = getTView();
+  const tNode = containerInternal(tView, lView, index, null, null);
+
+  if (tView.firstCreatePass) {
     tNode.tViews = [];
   }
-  addTContainerToQueries(lView, tNode);
-  setIsParent(false);
+  setIsNotParent();
+}
+
+function templateFirstCreatePass(
+    index: number, tView: TView, lView: LView, templateFn: ComponentTemplate<any>| null,
+    decls: number, vars: number, tagName?: string | null, attrsIndex?: number | null,
+    localRefsIndex?: number | null): TContainerNode {
+  ngDevMode && assertFirstCreatePass(tView);
+  ngDevMode && ngDevMode.firstCreatePass++;
+  const tViewConsts = tView.consts;
+  // TODO(pk): refactor getOrCreateTNode to have the "create" only version
+  const tNode = getOrCreateTNode(
+      tView, lView[T_HOST], index, TNodeType.Container, tagName || null,
+      getConstant<TAttributes>(tViewConsts, attrsIndex));
+
+  resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
+  registerPostOrderHooks(tView, tNode);
+
+  const embeddedTView = tNode.tViews = createTView(
+      TViewType.Embedded, -1, templateFn, decls, vars, tView.directiveRegistry, tView.pipeRegistry,
+      null, tView.schemas, tViewConsts);
+  const embeddedTViewNode = createTNode(tView, null, TNodeType.View, -1, null, null) as TViewNode;
+  embeddedTViewNode.injectorIndex = tNode.injectorIndex;
+  embeddedTView.node = embeddedTViewNode;
+
+  if (tView.queries !== null) {
+    tView.queries.template(tView, tNode);
+    embeddedTView.queries = tView.queries.embeddedTView(tNode);
+  }
+
+  return tNode;
 }
 
 /**
@@ -49,35 +83,43 @@ export function ɵɵcontainer(index: number): void {
  *
  * @param index The index of the container in the data array
  * @param templateFn Inline template
- * @param consts The number of nodes, local refs, and pipes for this template
+ * @param decls The number of nodes, local refs, and pipes for this template
  * @param vars The number of bindings for this template
  * @param tagName The name of the container element, if applicable
- * @param attrs The attrs attached to the container, if applicable
- * @param localRefs A set of local reference bindings on the element.
+ * @param attrsIndex Index of template attributes in the `consts` array.
+ * @param localRefs Index of the local references in the `consts` array.
  * @param localRefExtractor A function which extracts local-refs values from the template.
  *        Defaults to the current element associated with the local-ref.
  *
  * @codeGenApi
  */
 export function ɵɵtemplate(
-    index: number, templateFn: ComponentTemplate<any>| null, consts: number, vars: number,
-    tagName?: string | null, attrs?: TAttributes | null, localRefs?: string[] | null,
+    index: number, templateFn: ComponentTemplate<any>| null, decls: number, vars: number,
+    tagName?: string | null, attrsIndex?: number | null, localRefsIndex?: number | null,
     localRefExtractor?: LocalRefExtractor) {
   const lView = getLView();
-  const tView = lView[TVIEW];
+  const tView = getTView();
+  const adjustedIndex = index + HEADER_OFFSET;
 
-  // TODO: consider a separate node type for templates
-  const tContainerNode = containerInternal(index, tagName || null, attrs || null);
-  if (tView.firstTemplatePass) {
-    tContainerNode.tViews = createTView(
-        -1, templateFn, consts, vars, tView.directiveRegistry, tView.pipeRegistry, null, null);
+  const tNode = tView.firstCreatePass ?
+      templateFirstCreatePass(
+          index, tView, lView, templateFn, decls, vars, tagName, attrsIndex, localRefsIndex) :
+      tView.data[adjustedIndex] as TContainerNode;
+  setPreviousOrParentTNode(tNode, false);
+
+  const comment = lView[RENDERER].createComment(ngDevMode ? 'container' : '');
+  appendChild(tView, lView, comment, tNode);
+  attachPatchData(comment, lView);
+
+  addToViewTree(lView, lView[adjustedIndex] = createLContainer(comment, lView, comment, tNode));
+
+  if (isDirectiveHost(tNode)) {
+    createDirectivesInstances(tView, lView, tNode);
   }
 
-  createDirectivesAndLocals(tView, lView, localRefs, localRefExtractor);
-  addTContainerToQueries(lView, tContainerNode);
-  attachPatchData(getNativeByTNode(tContainerNode, lView), lView);
-  registerPostOrderHooks(tView, tContainerNode);
-  setIsParent(false);
+  if (localRefsIndex != null) {
+    saveResolvedLocalsInData(lView, tNode, localRefExtractor);
+  }
 }
 
 /**
@@ -89,18 +131,31 @@ export function ɵɵtemplate(
  */
 export function ɵɵcontainerRefreshStart(index: number): void {
   const lView = getLView();
-  const tView = lView[TVIEW];
-  let previousOrParentTNode = loadInternal(tView.data, index) as TNode;
-  setPreviousOrParentTNode(previousOrParentTNode);
-
+  const tView = getTView();
+  let previousOrParentTNode = load(tView.data, index) as TNode;
   ngDevMode && assertNodeType(previousOrParentTNode, TNodeType.Container);
-  setIsParent(true);
+  setPreviousOrParentTNode(previousOrParentTNode, true);
 
   lView[index + HEADER_OFFSET][ACTIVE_INDEX] = 0;
 
   // We need to execute init hooks here so ngOnInit hooks are called in top level views
   // before they are called in embedded views (for backwards compatibility).
-  executePreOrderHooks(lView, tView, getCheckNoChangesMode(), undefined);
+  if (!getCheckNoChangesMode()) {
+    const hooksInitPhaseCompleted =
+        (lView[FLAGS] & LViewFlags.InitPhaseStateMask) === InitPhaseState.InitPhaseCompleted;
+    if (hooksInitPhaseCompleted) {
+      const preOrderCheckHooks = tView.preOrderCheckHooks;
+      if (preOrderCheckHooks !== null) {
+        executeCheckHooks(lView, preOrderCheckHooks, null);
+      }
+    } else {
+      const preOrderHooks = tView.preOrderHooks;
+      if (preOrderHooks !== null) {
+        executeInitAndCheckHooks(lView, preOrderHooks, InitPhaseState.OnInitHooksToBeRun, null);
+      }
+      incrementInitPhaseFlags(lView, InitPhaseState.OnInitHooksToBeRun);
+    }
+  }
 }
 
 /**
@@ -113,18 +168,18 @@ export function ɵɵcontainerRefreshStart(index: number): void {
 export function ɵɵcontainerRefreshEnd(): void {
   let previousOrParentTNode = getPreviousOrParentTNode();
   if (getIsParent()) {
-    setIsParent(false);
+    setIsNotParent();
   } else {
     ngDevMode && assertNodeType(previousOrParentTNode, TNodeType.View);
     ngDevMode && assertHasParent(previousOrParentTNode);
     previousOrParentTNode = previousOrParentTNode.parent !;
-    setPreviousOrParentTNode(previousOrParentTNode);
+    setPreviousOrParentTNode(previousOrParentTNode, false);
   }
 
   ngDevMode && assertNodeType(previousOrParentTNode, TNodeType.Container);
 
   const lContainer: LContainer = getLView()[previousOrParentTNode.index];
-  const nextIndex = lContainer[ACTIVE_INDEX];
+  const nextIndex = getLContainerActiveIndex(lContainer);
 
   // remove extra views at the end of the container
   while (nextIndex < lContainer.length - CONTAINER_HEADER_OFFSET) {
@@ -132,47 +187,24 @@ export function ɵɵcontainerRefreshEnd(): void {
   }
 }
 
-/**
-* Reporting a TContainer node queries is a 2-step process as we need to:
-* - check if the container node itself is matching (query might match a <ng-template> node);
-* - prepare room for nodes from views that might be created based on the TemplateRef linked to this
-* container.
-*
-* Those 2 operations need to happen in the specific order (match the container node itself, then
-* prepare space for nodes from views).
-*/
-function addTContainerToQueries(lView: LView, tContainerNode: TContainerNode): void {
-  const queries = lView[QUERIES];
-  if (queries) {
-    const lContainer = lView[tContainerNode.index];
-    if (lContainer[QUERIES]) {
-      // Query container should only exist if it was created through a dynamic view
-      // in a directive constructor. In this case, we must splice the template
-      // matches in before the view matches to ensure query results in embedded views
-      // don't clobber query results on the template node itself.
-      queries.insertNodeBeforeViews(tContainerNode);
-    } else {
-      queries.addNode(tContainerNode);
-      lContainer[QUERIES] = queries.container();
-    }
-  }
-}
-
 function containerInternal(
-    index: number, tagName: string | null, attrs: TAttributes | null): TContainerNode {
-  const lView = getLView();
+    tView: TView, lView: LView, nodeIndex: number, tagName: string | null,
+    attrs: TAttributes | null): TContainerNode {
   ngDevMode && assertEqual(
-                   lView[BINDING_INDEX], lView[TVIEW].bindingStartIndex,
+                   getBindingIndex(), tView.bindingStartIndex,
                    'container nodes should be created before any bindings');
 
-  const adjustedIndex = index + HEADER_OFFSET;
-  const comment = lView[RENDERER].createComment(ngDevMode ? 'container' : '');
+  const adjustedIndex = nodeIndex + HEADER_OFFSET;
+  ngDevMode && assertDataInRange(lView, nodeIndex + HEADER_OFFSET);
   ngDevMode && ngDevMode.rendererCreateComment++;
-  const tNode = createNodeAtIndex(index, TNodeType.Container, comment, tagName, attrs);
-  const lContainer = lView[adjustedIndex] =
-      createLContainer(lView[adjustedIndex], lView, comment, tNode);
+  const comment = lView[adjustedIndex] =
+      lView[RENDERER].createComment(ngDevMode ? 'container' : '');
+  const tNode =
+      getOrCreateTNode(tView, lView[T_HOST], nodeIndex, TNodeType.Container, tagName, attrs);
+  const lContainer = lView[adjustedIndex] = createLContainer(comment, lView, comment, tNode);
 
-  appendChild(comment, tNode, lView);
+  appendChild(tView, lView, comment, tNode);
+  attachPatchData(comment, lView);
 
   // Containers are added to the current view tree instead of their embedded views
   // because views can be removed and re-inserted.

@@ -4,9 +4,29 @@
   "main": "index.js",
   "license": "MIT",
   "devDependencies": {
+    "@angular-devkit/build-angular": "file:../../node_modules/@angular-devkit/build-angular",
+    "@angular/animations": "file:../../dist/packages-dist/animations",
     "@angular/bazel": "file:../../dist/packages-dist/bazel",
     "@angular/cli": "file:../../node_modules/@angular/cli",
-    "@bazel/bazel": "file:../../node_modules/@bazel/bazel"
+    "@angular/common": "file:../../node_modules/@angular/common",
+    "@angular/compiler": "file:../../node_modules/@angular/compiler",
+    "@angular/compiler-cli": "file:../../node_modules/@angular/compiler-cli",
+    "@angular/core": "file:../../node_modules/@angular/core",
+    "@angular/forms": "file:../../node_modules/@angular/forms",
+    "@angular/language-service": "file:../../node_modules/@angular/language-service",
+    "@angular/platform-browser": "file:../../node_modules/@angular/platform-browser",
+    "@angular/platform-browser-dynamic": "file:../../node_modules/@angular/platform-browser-dynamic",
+    "@angular/router": "file:../../node_modules/@angular/router",
+    "@bazel/bazel": "file:../../node_modules/@bazel/bazel",
+    "@types/node": "file:../../node_modules/@types/node",
+    "protractor": "file:../../node_modules/protractor",
+    "puppeteer": "file:../../node_modules/puppeteer",
+    "typescript": "file:../../node_modules/typescript",
+    "tslib": "file:../../node_modules/tslib"
+  },
+  "//resolutions-comment": "Ensure a single version of webdriver-manager which comes from root node_modules that has already run webdriver-manager update",
+  "resolutions": {
+    "**/webdriver-manager": "file:../../node_modules/webdriver-manager"
   },
   "scripts": {
     "test": "./test.sh"

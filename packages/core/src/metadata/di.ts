@@ -45,6 +45,7 @@ import {makePropDecorator} from '../util/decorators';
  * ```
  *
  * @publicApi
+ * @deprecated Since 9.0.0. With Ivy, this property is no longer necessary.
  */
 export const ANALYZE_FOR_ENTRY_COMPONENTS = new InjectionToken<any>('AnalyzeForEntryComponents');
 
@@ -60,7 +61,6 @@ export interface AttributeDecorator {
    * The directive can inject constant string literals of host element attributes.
    *
    * @usageNotes
-   * ### Example
    *
    * Suppose we have an `<input>` element and want to know its `type`.
    *
@@ -125,28 +125,30 @@ export abstract class Query {}
  */
 export interface ContentChildrenDecorator {
   /**
-   * Configures a content query.
+   * Parameter decorator that configures a content query.
    *
-   * You can use ContentChildren to get the `QueryList` of elements or directives from the
-   * content DOM. Any time a child element is added, removed, or moved, the query list will be
+   * Use to get the `QueryList` of elements or directives from the content DOM.
+   * Any time a child element is added, removed, or moved, the query list will be
    * updated, and the changes observable of the query list will emit a new value.
    *
    * Content queries are set before the `ngAfterContentInit` callback is called.
    *
+   * Does not retrieve elements or directives that are in other components' templates,
+   * since a component's template is always a black box to its ancestors.
+   *
    * **Metadata Properties**:
    *
-   * * **selector** - the directive type or the name used for querying.
-   * * **descendants** - include only direct children or all descendants.
-   * * **read** - read a different token from the queried elements.
+   * * **selector** - The directive type or the name used for querying.
+   * * **descendants** - True to include all descendants, otherwise include only direct children.
+   * * **read** - True to read a different token from the queried elements.
    *
    * @usageNotes
-   * ### Basic Example
    *
    * Here is a simple demonstration of how the `ContentChildren` decorator can be used.
    *
    * {@example core/di/ts/contentChildren/content_children_howto.ts region='HowTo'}
    *
-   * ### Tab-pane Example
+   * ### Tab-pane example
    *
    * Here is a slightly more realistic example that shows how `ContentChildren` decorators
    * can be used to implement a tab pane component.
@@ -188,27 +190,25 @@ export const ContentChildren: ContentChildrenDecorator = makePropDecorator(
  */
 export interface ContentChildDecorator {
   /**
-   * Configures a content query.
+   * Parameter decorator that configures a content query.
    *
-   * You can use ContentChild to get the first element or the directive matching the selector from
-   * the content DOM. If the content DOM changes, and a new child matches the selector,
+   * Use to get the first element or the directive matching the selector from the content DOM.
+   * If the content DOM changes, and a new child matches the selector,
    * the property will be updated.
    *
    * Content queries are set before the `ngAfterContentInit` callback is called.
    *
+   * Does not retrieve elements or directives that are in other components' templates,
+   * since a component's template is always a black box to its ancestors.
+   *
    * **Metadata Properties**:
    *
-   * * **selector** - the directive type or the name used for querying.
-   * * **read** - read a different token from the queried element.
-   * * **static** - whether or not to resolve query results before change detection runs (i.e.
-   * return static results only). If this option is not provided, the compiler will fall back
-   * to its default behavior, which is to use query results to determine the timing of query
-   * resolution. If any query results are inside a nested view (e.g. *ngIf), the query will be
-   * resolved after change detection runs. Otherwise, it will be resolved before change detection
-   * runs.
+   * * **selector** - The directive type or the name used for querying.
+   * * **read** - True to read a different token from the queried element.
+   * * **static** - True to resolve query results before change detection runs,
+   * false to resolve after change detection. Defaults to false.
    *
    * @usageNotes
-   * ### Example
    *
    * {@example core/di/ts/contentChild/content_child_howto.ts region='HowTo'}
    *
@@ -251,26 +251,24 @@ export const ContentChild: ContentChildDecorator = makePropDecorator(
  */
 export interface ViewChildrenDecorator {
   /**
-   * Configures a view query.
+   * Parameter decorator that configures a view query.
    *
-   * You can use ViewChildren to get the `QueryList` of elements or directives from the
-   * view DOM. Any time a child element is added, removed, or moved, the query list will be updated,
+   * Use to get the `QueryList` of elements or directives from the view DOM.
+   * Any time a child element is added, removed, or moved, the query list will be updated,
    * and the changes observable of the query list will emit a new value.
    *
    * View queries are set before the `ngAfterViewInit` callback is called.
    *
    * **Metadata Properties**:
    *
-   * * **selector** - the directive type or the name used for querying.
-   * * **read** - read a different token from the queried elements.
+   * * **selector** - The directive type or the name used for querying.
+   * * **read** - True to read a different token from the queried elements.
    *
    * @usageNotes
    *
-   * ### Example
-   *
    * {@example core/di/ts/viewChildren/view_children_howto.ts region='HowTo'}
    *
-   * ### Example
+   * ### Another example
    *
    * {@example core/di/ts/viewChildren/view_children_example.ts region='Component'}
    *
@@ -316,37 +314,30 @@ export interface ViewChildDecorator {
    *
    * **Metadata Properties**:
    *
-   * * **selector** - the directive type or the name used for querying.
-   * * **read** - read a different token from the queried elements.
-   * * **static** - whether or not to resolve query results before change detection runs (i.e.
-   * return static results only). If this option is not provided, the compiler will fall back
-   * to its default behavior, which is to use query results to determine the timing of query
-   * resolution. If any query results are inside a nested view (e.g. *ngIf), the query will be
-   * resolved after change detection runs. Otherwise, it will be resolved before change detection
-   * runs.
+   * * **selector** - The directive type or the name used for querying.
+   * * **read** - True to read a different token from the queried elements.
+   * * **static** - True to resolve query results before change detection runs,
+   * false to resolve after change detection. Defaults to false.
    *
-   * Supported selectors include:
-   *   * any class with the `@Component` or `@Directive` decorator
-   *   * a template reference variable as a string (e.g. query `<my-component #cmp></my-component>`
+   *
+   * The following selectors are supported.
+   *   * Any class with the `@Component` or `@Directive` decorator
+   *   * A template reference variable as a string (e.g. query `<my-component #cmp></my-component>`
    * with `@ViewChild('cmp')`)
-   *   * any provider defined in the child component tree of the current component (e.g.
+   *   * Any provider defined in the child component tree of the current component (e.g.
    * `@ViewChild(SomeService) someService: SomeService`)
-   *   * any provider defined through a string token (e.g. `@ViewChild('someToken') someTokenVal:
+   *   * Any provider defined through a string token (e.g. `@ViewChild('someToken') someTokenVal:
    * any`)
-   *   * a `TemplateRef` (e.g. query `<ng-template></ng-template>` with `@ViewChild(TemplateRef)
+   *   * A `TemplateRef` (e.g. query `<ng-template></ng-template>` with `@ViewChild(TemplateRef)
    * template;`)
    *
    * @usageNotes
    *
    * {@example core/di/ts/viewChild/view_child_example.ts region='Component'}
    *
-   * ### Example
+   * ### Example 2
    *
    * {@example core/di/ts/viewChild/view_child_howto.ts region='HowTo'}
-   *
-   * ### Example
-   *
-   * {@example core/di/ts/viewChild/view_child_example.ts region='Component'}
    *
    * @Annotation
    */

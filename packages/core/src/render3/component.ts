@@ -10,25 +10,26 @@
 // correctly implementing its interfaces for backwards compatibility.
 import {Type} from '../core';
 import {Injector} from '../di/injector';
-import {Sanitizer} from '../sanitization/security';
-
+import {Sanitizer} from '../sanitization/sanitizer';
+import {assertDataInRange} from '../util/assert';
 import {assertComponentType} from './assert';
 import {getComponentDef} from './definition';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
-import {registerPostOrderHooks, registerPreOrderHooks} from './hooks';
-import {CLEAN_PROMISE, addToViewTree, createLView, createNodeAtIndex, createTView, getOrCreateTView, initNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, queueComponentIndexForCheck, refreshDescendantViews} from './instructions/shared';
+import {registerPostOrderHooks} from './hooks';
+import {CLEAN_PROMISE, addHostBindingsToExpandoInstructions, addToViewTree, createLView, createTView, getOrCreateTComponentView, getOrCreateTNode, growHostVarsSpace, initTNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, markAsComponentHost, refreshView, renderView} from './instructions/shared';
 import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition';
-import {TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
+import {TElementNode, TNode, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
-import {CONTEXT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, RENDERER, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
-import {applyOnCreateInstructions} from './node_util';
-import {enterView, getPreviousOrParentTNode, leaveView, resetComponentState, setActiveHostElement} from './state';
-import {renderInitialClasses, renderInitialStyles} from './styling/class_and_style_bindings';
+import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, RootContext, RootContextFlags, TVIEW, TViewType} from './interfaces/view';
+import {writeDirectClass, writeDirectStyle} from './node_manipulation';
+import {enterView, getPreviousOrParentTNode, leaveView, setSelectedIndex} from './state';
+import {computeStaticStyling} from './styling/static_styling';
+import {setUpAttributes} from './util/attrs_utils';
 import {publishDefaultGlobalUtils} from './util/global_utils';
 import {defaultScheduler, stringifyForError} from './util/misc_utils';
 import {getRootContext} from './util/view_traversal_utils';
-import {readPatchedLView, resetPreOrderHookFlags} from './util/view_utils';
+import {readPatchedLView} from './util/view_utils';
 
 
 
@@ -60,7 +61,7 @@ export interface CreateComponentOptions {
    * Typically, the features in this list are features that cannot be added to the
    * other features list in the component definition because they rely on other factors.
    *
-   * Example: `RootLifecycleHooks` is a function that adds lifecycle hook capabilities
+   * Example: `LifecycleHooksFeature` is a function that adds lifecycle hook capabilities
    * to root components in a tree-shakable way. It cannot be added to the component
    * features list because there's no way of knowing when the component will be used as
    * a root component.
@@ -111,25 +112,30 @@ export function renderComponent<T>(
     opts: CreateComponentOptions = {}): T {
   ngDevMode && publishDefaultGlobalUtils();
   ngDevMode && assertComponentType(componentType);
+
   const rendererFactory = opts.rendererFactory || domRendererFactory3;
   const sanitizer = opts.sanitizer || null;
   const componentDef = getComponentDef<T>(componentType) !;
-  if (componentDef.type != componentType) componentDef.type = componentType;
+  if (componentDef.type != componentType) (componentDef as{type: Type<any>}).type = componentType;
 
   // The first index of the first selector is the tag name.
   const componentTag = componentDef.selectors ![0] ![0] as string;
-  const hostRNode = locateHostElement(rendererFactory, opts.host || componentTag);
+  const hostRenderer = rendererFactory.createRenderer(null, null);
+  const hostRNode =
+      locateHostElement(hostRenderer, opts.host || componentTag, componentDef.encapsulation);
   const rootFlags = componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :
                                           LViewFlags.CheckAlways | LViewFlags.IsRoot;
   const rootContext = createRootContext(opts.scheduler, opts.playerHandler);
 
   const renderer = rendererFactory.createRenderer(hostRNode, componentDef);
+  const rootTView = createTView(TViewType.Root, -1, null, 1, 0, null, null, null, null, null);
   const rootView: LView = createLView(
-      null, createTView(-1, null, 1, 0, null, null, null, null), rootContext, rootFlags, null, null,
-      rendererFactory, renderer, undefined, opts.injector || null);
+      null, rootTView, rootContext, rootFlags, null, null, rendererFactory, renderer, undefined,
+      opts.injector || null);
 
-  const oldView = enterView(rootView, null);
+  enterView(rootView, null);
   let component: T;
+
   try {
     if (rendererFactory.begin) rendererFactory.begin();
     const componentView = createRootComponentView(
@@ -137,14 +143,13 @@ export function renderComponent<T>(
     component = createRootComponent(
         componentView, componentDef, rootView, rootContext, opts.hostFeatures || null);
 
-    addToViewTree(rootView, componentView);
+    // create mode pass
+    renderView(rootTView, rootView, null);
+    // update mode pass
+    refreshView(rootTView, rootView, null, null);
 
-    refreshDescendantViews(rootView);  // creation mode pass
-    rootView[FLAGS] &= ~LViewFlags.CreationMode;
-    resetPreOrderHookFlags(rootView);
-    refreshDescendantViews(rootView);  // update mode pass
   } finally {
-    leaveView(oldView);
+    leaveView();
     if (rendererFactory.end) rendererFactory.end();
   }
 
@@ -157,30 +162,46 @@ export function renderComponent<T>(
  * @param rNode Render host element.
  * @param def ComponentDef
  * @param rootView The parent view where the host node is stored
- * @param renderer The current renderer
+ * @param hostRenderer The current renderer
  * @param sanitizer The sanitizer, if provided
  *
  * @returns Component view created
  */
 export function createRootComponentView(
     rNode: RElement | null, def: ComponentDef<any>, rootView: LView,
-    rendererFactory: RendererFactory3, renderer: Renderer3, sanitizer?: Sanitizer | null): LView {
-  resetComponentState();
+    rendererFactory: RendererFactory3, hostRenderer: Renderer3,
+    sanitizer?: Sanitizer | null): LView {
   const tView = rootView[TVIEW];
-  const tNode: TElementNode = createNodeAtIndex(0, TNodeType.Element, rNode, null, null);
-  const componentView = createLView(
-      rootView, getOrCreateTView(
-                    def.template, def.consts, def.vars, def.directiveDefs, def.pipeDefs,
-                    def.viewQuery, def.schemas),
-      null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, rootView[HEADER_OFFSET], tNode,
-      rendererFactory, renderer, sanitizer);
-
-  if (tView.firstTemplatePass) {
-    diPublicInInjector(getOrCreateNodeInjectorForNode(tNode, rootView), rootView, def.type);
-    tNode.flags = TNodeFlags.isComponent;
-    initNodeFlags(tNode, rootView.length, 1);
-    queueComponentIndexForCheck(tNode);
+  ngDevMode && assertDataInRange(rootView, 0 + HEADER_OFFSET);
+  rootView[0 + HEADER_OFFSET] = rNode;
+  const tNode: TElementNode = getOrCreateTNode(tView, null, 0, TNodeType.Element, null, null);
+  const mergedAttrs = tNode.mergedAttrs = def.hostAttrs;
+  if (mergedAttrs !== null) {
+    computeStaticStyling(tNode, mergedAttrs);
+    if (rNode !== null) {
+      setUpAttributes(hostRenderer, rNode, mergedAttrs);
+      if (tNode.classes !== null) {
+        writeDirectClass(hostRenderer, rNode, tNode.classes);
+      }
+      if (tNode.styles !== null) {
+        writeDirectStyle(hostRenderer, rNode, tNode.styles);
+      }
+    }
   }
+
+  const viewRenderer = rendererFactory.createRenderer(rNode, def);
+  const componentView = createLView(
+      rootView, getOrCreateTComponentView(def), null,
+      def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, rootView[HEADER_OFFSET], tNode,
+      rendererFactory, viewRenderer, sanitizer);
+
+  if (tView.firstCreatePass) {
+    diPublicInInjector(getOrCreateNodeInjectorForNode(tNode, rootView), tView, def.type);
+    markAsComponentHost(tView, tNode);
+    initTNodeFlags(tNode, rootView.length, 1);
+  }
+
+  addToViewTree(rootView, componentView);
 
   // Store component view at node index, with node as the HOST
   return rootView[HEADER_OFFSET] = componentView;
@@ -191,11 +212,11 @@ export function createRootComponentView(
  * renderComponent() and ViewContainerRef.createComponent().
  */
 export function createRootComponent<T>(
-    componentView: LView, componentDef: ComponentDef<T>, rootView: LView, rootContext: RootContext,
+    componentView: LView, componentDef: ComponentDef<T>, rootLView: LView, rootContext: RootContext,
     hostFeatures: HostFeature[] | null): any {
-  const tView = rootView[TVIEW];
+  const tView = rootLView[TVIEW];
   // Create directive instance with factory() and store at next index in viewData
-  const component = instantiateRootComponent(tView, rootView, componentDef);
+  const component = instantiateRootComponent(tView, rootLView, componentDef);
 
   rootContext.components.push(component);
   componentView[CONTEXT] = component;
@@ -205,28 +226,21 @@ export function createRootComponent<T>(
   // We want to generate an empty QueryList for root content queries for backwards
   // compatibility with ViewEngine.
   if (componentDef.contentQueries) {
-    componentDef.contentQueries(RenderFlags.Create, component, rootView.length - 1);
+    componentDef.contentQueries(RenderFlags.Create, component, rootLView.length - 1);
   }
 
   const rootTNode = getPreviousOrParentTNode();
-  if (tView.firstTemplatePass && componentDef.hostBindings) {
+  if (tView.firstCreatePass &&
+      (componentDef.hostBindings !== null || componentDef.hostAttrs !== null)) {
     const elementIndex = rootTNode.index - HEADER_OFFSET;
-    setActiveHostElement(elementIndex);
+    setSelectedIndex(elementIndex);
 
-    const expando = tView.expandoInstructions !;
-    invokeHostBindingsInCreationMode(
-        componentDef, expando, component, rootTNode, tView.firstTemplatePass);
-    rootTNode.onElementCreationFns && applyOnCreateInstructions(rootTNode);
+    const rootTView = rootLView[TVIEW];
+    addHostBindingsToExpandoInstructions(rootTView, componentDef);
+    growHostVarsSpace(rootTView, rootLView, componentDef.hostVars);
 
-    setActiveHostElement(null);
+    invokeHostBindingsInCreationMode(componentDef, component);
   }
-
-  if (rootTNode.stylingTemplate) {
-    const native = componentView[HOST] !as RElement;
-    renderInitialClasses(native, rootTNode.stylingTemplate, componentView[RENDERER]);
-    renderInitialStyles(native, rootTNode.stylingTemplate, componentView[RENDERER]);
-  }
-
   return component;
 }
 
@@ -252,14 +266,13 @@ export function createRootContext(
  * Example:
  *
  * ```
- * renderComponent(AppComponent, {features: [RootLifecycleHooks]});
+ * renderComponent(AppComponent, {hostFeatures: [LifecycleHooksFeature]});
  * ```
  */
 export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): void {
   const rootTView = readPatchedLView(component) ![TVIEW];
   const dirIndex = rootTView.data.length - 1;
 
-  registerPreOrderHooks(dirIndex, def, rootTView, -1, -1, -1);
   // TODO(misko): replace `as TNode` with createTNode call. (needs refactoring to lose dep on
   // LNode).
   registerPostOrderHooks(

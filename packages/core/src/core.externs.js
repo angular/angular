@@ -8,11 +8,8 @@
  * @externs
  */
 
-// Note: we can't declare an extern for the global variable `ng` as
-// the namespace `ng` is already used within Google
-// for typings for angularJS (via `goog.provide('ng....')`).
-
 /**
- * @suppress {duplicate}
+ * This is needed to declare global `$localize` to let closure compiler know
+ * about the global variable.
  */
-var wtf;
+var $localize;

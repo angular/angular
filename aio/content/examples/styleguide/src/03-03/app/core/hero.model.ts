@@ -1,6 +1,6 @@
 // #docregion
 // #docregion example
-export class Hero {
+export interface Hero {
   name: string;
   power: string;
 }

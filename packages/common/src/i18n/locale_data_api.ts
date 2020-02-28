@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import localeEn from './locale_en';
-import {LOCALE_DATA, LocaleDataIndex, ExtraLocaleDataIndex, CurrencyIndex} from './locale_data';
+import {ɵCurrencyIndex, ɵExtraLocaleDataIndex, ɵLocaleDataIndex, ɵfindLocaleData, ɵgetLocaleCurrencyCode, ɵgetLocalePluralCase} from '@angular/core';
+
 import {CURRENCIES_EN, CurrenciesSymbols} from './currencies';
+
 
 /**
  * Format styles that can be used to represent numbers.
@@ -31,7 +32,8 @@ export enum NumberFormatStyle {
  * @see `NgPluralCase`
  * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n)
  *
- * @publicApi */
+ * @publicApi
+ */
 export enum Plural {
   Zero = 0,
   One = 1,
@@ -216,7 +218,7 @@ export enum WeekDay {
  * @publicApi
  */
 export function getLocaleId(locale: string): string {
-  return findLocaleData(locale)[LocaleDataIndex.LocaleId];
+  return ɵfindLocaleData(locale)[ɵLocaleDataIndex.LocaleId];
 }
 
 /**
@@ -232,10 +234,10 @@ export function getLocaleId(locale: string): string {
  */
 export function getLocaleDayPeriods(
     locale: string, formStyle: FormStyle, width: TranslationWidth): [string, string] {
-  const data = findLocaleData(locale);
+  const data = ɵfindLocaleData(locale);
   const amPmData = <[
     string, string
-  ][][]>[data[LocaleDataIndex.DayPeriodsFormat], data[LocaleDataIndex.DayPeriodsStandalone]];
+  ][][]>[data[ɵLocaleDataIndex.DayPeriodsFormat], data[ɵLocaleDataIndex.DayPeriodsStandalone]];
   const amPm = getLastDefinedValue(amPmData, formStyle);
   return getLastDefinedValue(amPm, width);
 }
@@ -254,9 +256,9 @@ export function getLocaleDayPeriods(
  */
 export function getLocaleDayNames(
     locale: string, formStyle: FormStyle, width: TranslationWidth): string[] {
-  const data = findLocaleData(locale);
+  const data = ɵfindLocaleData(locale);
   const daysData =
-      <string[][][]>[data[LocaleDataIndex.DaysFormat], data[LocaleDataIndex.DaysStandalone]];
+      <string[][][]>[data[ɵLocaleDataIndex.DaysFormat], data[ɵLocaleDataIndex.DaysStandalone]];
   const days = getLastDefinedValue(daysData, formStyle);
   return getLastDefinedValue(days, width);
 }
@@ -275,9 +277,9 @@ export function getLocaleDayNames(
  */
 export function getLocaleMonthNames(
     locale: string, formStyle: FormStyle, width: TranslationWidth): string[] {
-  const data = findLocaleData(locale);
+  const data = ɵfindLocaleData(locale);
   const monthsData =
-      <string[][][]>[data[LocaleDataIndex.MonthsFormat], data[LocaleDataIndex.MonthsStandalone]];
+      <string[][][]>[data[ɵLocaleDataIndex.MonthsFormat], data[ɵLocaleDataIndex.MonthsStandalone]];
   const months = getLastDefinedValue(monthsData, formStyle);
   return getLastDefinedValue(months, width);
 }
@@ -295,8 +297,8 @@ export function getLocaleMonthNames(
  * @publicApi
  */
 export function getLocaleEraNames(locale: string, width: TranslationWidth): [string, string] {
-  const data = findLocaleData(locale);
-  const erasData = <[string, string][]>data[LocaleDataIndex.Eras];
+  const data = ɵfindLocaleData(locale);
+  const erasData = <[string, string][]>data[ɵLocaleDataIndex.Eras];
   return getLastDefinedValue(erasData, width);
 }
 
@@ -312,8 +314,8 @@ export function getLocaleEraNames(locale: string, width: TranslationWidth): [str
  * @publicApi
  */
 export function getLocaleFirstDayOfWeek(locale: string): WeekDay {
-  const data = findLocaleData(locale);
-  return data[LocaleDataIndex.FirstDayOfWeek];
+  const data = ɵfindLocaleData(locale);
+  return data[ɵLocaleDataIndex.FirstDayOfWeek];
 }
 
 /**
@@ -326,8 +328,8 @@ export function getLocaleFirstDayOfWeek(locale: string): WeekDay {
  * @publicApi
  */
 export function getLocaleWeekEndRange(locale: string): [WeekDay, WeekDay] {
-  const data = findLocaleData(locale);
-  return data[LocaleDataIndex.WeekendRange];
+  const data = ɵfindLocaleData(locale);
+  return data[ɵLocaleDataIndex.WeekendRange];
 }
 
 /**
@@ -342,8 +344,8 @@ export function getLocaleWeekEndRange(locale: string): [WeekDay, WeekDay] {
  * @publicApi
  */
 export function getLocaleDateFormat(locale: string, width: FormatWidth): string {
-  const data = findLocaleData(locale);
-  return getLastDefinedValue(data[LocaleDataIndex.DateFormat], width);
+  const data = ɵfindLocaleData(locale);
+  return getLastDefinedValue(data[ɵLocaleDataIndex.DateFormat], width);
 }
 
 /**
@@ -358,8 +360,8 @@ export function getLocaleDateFormat(locale: string, width: FormatWidth): string 
  * @publicApi
  */
 export function getLocaleTimeFormat(locale: string, width: FormatWidth): string {
-  const data = findLocaleData(locale);
-  return getLastDefinedValue(data[LocaleDataIndex.TimeFormat], width);
+  const data = ɵfindLocaleData(locale);
+  return getLastDefinedValue(data[ɵLocaleDataIndex.TimeFormat], width);
 }
 
 /**
@@ -374,8 +376,8 @@ export function getLocaleTimeFormat(locale: string, width: FormatWidth): string 
  * @publicApi
  */
 export function getLocaleDateTimeFormat(locale: string, width: FormatWidth): string {
-  const data = findLocaleData(locale);
-  const dateTimeFormatData = <string[]>data[LocaleDataIndex.DateTimeFormat];
+  const data = ɵfindLocaleData(locale);
+  const dateTimeFormatData = <string[]>data[ɵLocaleDataIndex.DateTimeFormat];
   return getLastDefinedValue(dateTimeFormatData, width);
 }
 
@@ -390,13 +392,13 @@ export function getLocaleDateTimeFormat(locale: string, width: FormatWidth): str
  * @publicApi
  */
 export function getLocaleNumberSymbol(locale: string, symbol: NumberSymbol): string {
-  const data = findLocaleData(locale);
-  const res = data[LocaleDataIndex.NumberSymbols][symbol];
+  const data = ɵfindLocaleData(locale);
+  const res = data[ɵLocaleDataIndex.NumberSymbols][symbol];
   if (typeof res === 'undefined') {
     if (symbol === NumberSymbol.CurrencyDecimal) {
-      return data[LocaleDataIndex.NumberSymbols][NumberSymbol.Decimal];
+      return data[ɵLocaleDataIndex.NumberSymbols][NumberSymbol.Decimal];
     } else if (symbol === NumberSymbol.CurrencyGroup) {
-      return data[LocaleDataIndex.NumberSymbols][NumberSymbol.Group];
+      return data[ɵLocaleDataIndex.NumberSymbols][NumberSymbol.Group];
     }
   }
   return res;
@@ -438,8 +440,8 @@ export function getLocaleNumberSymbol(locale: string, symbol: NumberSymbol): str
  * @publicApi
  */
 export function getLocaleNumberFormat(locale: string, type: NumberFormatStyle): string {
-  const data = findLocaleData(locale);
-  return data[LocaleDataIndex.NumberFormats][type];
+  const data = ɵfindLocaleData(locale);
+  return data[ɵLocaleDataIndex.NumberFormats][type];
 }
 
 /**
@@ -454,8 +456,8 @@ export function getLocaleNumberFormat(locale: string, type: NumberFormatStyle): 
  * @publicApi
  */
 export function getLocaleCurrencySymbol(locale: string): string|null {
-  const data = findLocaleData(locale);
-  return data[LocaleDataIndex.CurrencySymbol] || null;
+  const data = ɵfindLocaleData(locale);
+  return data[ɵLocaleDataIndex.CurrencySymbol] || null;
 }
 
 /**
@@ -469,8 +471,22 @@ export function getLocaleCurrencySymbol(locale: string): string|null {
  * @publicApi
  */
 export function getLocaleCurrencyName(locale: string): string|null {
-  const data = findLocaleData(locale);
-  return data[LocaleDataIndex.CurrencyName] || null;
+  const data = ɵfindLocaleData(locale);
+  return data[ɵLocaleDataIndex.CurrencyName] || null;
+}
+
+/**
+ * Retrieves the default currency code for the given locale.
+ *
+ * The default is defined as the first currency which is still in use.
+ *
+ * @param locale The code of the locale whose currency code we want.
+ * @returns The code of the default currency for the given locale.
+ *
+ * @publicApi
+ */
+export function getLocaleCurrencyCode(locale: string): string|null {
+  return ɵgetLocaleCurrencyCode(locale);
 }
 
 /**
@@ -480,29 +496,21 @@ export function getLocaleCurrencyName(locale: string): string|null {
  * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n)
  */
 function getLocaleCurrencies(locale: string): {[code: string]: CurrenciesSymbols} {
-  const data = findLocaleData(locale);
-  return data[LocaleDataIndex.Currencies];
+  const data = ɵfindLocaleData(locale);
+  return data[ɵLocaleDataIndex.Currencies];
 }
 
 /**
- * Retrieves the plural function used by ICU expressions to determine the plural case to use
- * for a given locale.
- * @param locale A locale code for the locale format rules to use.
- * @returns The plural function for the locale.
- * @see `NgPlural`
- * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n)
- *
+ * @alias core/ɵgetLocalePluralCase
  * @publicApi
  */
-export function getLocalePluralCase(locale: string): (value: number) => Plural {
-  const data = findLocaleData(locale);
-  return data[LocaleDataIndex.PluralCase];
-}
+export const getLocalePluralCase: (locale: string) => ((value: number) => Plural) =
+    ɵgetLocalePluralCase;
 
 function checkFullData(data: any) {
-  if (!data[LocaleDataIndex.ExtraData]) {
+  if (!data[ɵLocaleDataIndex.ExtraData]) {
     throw new Error(
-        `Missing extra locale data for the locale "${data[LocaleDataIndex.LocaleId]}". Use "registerLocaleData" to load new data. See the "I18n guide" on angular.io to know more.`);
+        `Missing extra locale data for the locale "${data[ɵLocaleDataIndex.LocaleId]}". Use "registerLocaleData" to load new data. See the "I18n guide" on angular.io to know more.`);
   }
 }
 
@@ -529,9 +537,9 @@ function checkFullData(data: any) {
  * @publicApi
  */
 export function getLocaleExtraDayPeriodRules(locale: string): (Time | [Time, Time])[] {
-  const data = findLocaleData(locale);
+  const data = ɵfindLocaleData(locale);
   checkFullData(data);
-  const rules = data[LocaleDataIndex.ExtraData][ExtraLocaleDataIndex.ExtraDayPeriodsRules] || [];
+  const rules = data[ɵLocaleDataIndex.ExtraData][ɵExtraLocaleDataIndex.ExtraDayPeriodsRules] || [];
   return rules.map((rule: string | [string, string]) => {
     if (typeof rule === 'string') {
       return extractTime(rule);
@@ -559,14 +567,26 @@ export function getLocaleExtraDayPeriodRules(locale: string): (Time | [Time, Tim
  */
 export function getLocaleExtraDayPeriods(
     locale: string, formStyle: FormStyle, width: TranslationWidth): string[] {
-  const data = findLocaleData(locale);
+  const data = ɵfindLocaleData(locale);
   checkFullData(data);
   const dayPeriodsData = <string[][][]>[
-    data[LocaleDataIndex.ExtraData][ExtraLocaleDataIndex.ExtraDayPeriodFormats],
-    data[LocaleDataIndex.ExtraData][ExtraLocaleDataIndex.ExtraDayPeriodStandalone]
+      data[ɵLocaleDataIndex.ExtraData][ɵExtraLocaleDataIndex.ExtraDayPeriodFormats],
+      data[ɵLocaleDataIndex.ExtraData][ɵExtraLocaleDataIndex.ExtraDayPeriodStandalone]
   ];
   const dayPeriods = getLastDefinedValue(dayPeriodsData, formStyle) || [];
   return getLastDefinedValue(dayPeriods, width) || [];
+}
+
+/**
+ * Retrieves the writing direction of a specified locale
+ * @param locale A locale code for the locale format rules to use.
+ * @publicApi
+ * @returns 'rtl' or 'ltr'
+ * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n)
+ */
+export function getLocaleDirection(locale: string): 'ltr'|'rtl' {
+  const data = ɵfindLocaleData(locale);
+  return data[ɵLocaleDataIndex.Directionality];
 }
 
 /**
@@ -609,37 +629,7 @@ function extractTime(time: string): Time {
   return {hours: +h, minutes: +m};
 }
 
-/**
- * Finds the locale data for a given locale.
- *
- * @param locale The locale code.
- * @returns The locale data.
- * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n)
- *
- * @publicApi
- */
-export function findLocaleData(locale: string): any {
-  const normalizedLocale = locale.toLowerCase().replace(/_/g, '-');
 
-  let match = LOCALE_DATA[normalizedLocale];
-  if (match) {
-    return match;
-  }
-
-  // let's try to find a parent locale
-  const parentLocale = normalizedLocale.split('-')[0];
-  match = LOCALE_DATA[parentLocale];
-
-  if (match) {
-    return match;
-  }
-
-  if (parentLocale === 'en') {
-    return localeEn;
-  }
-
-  throw new Error(`Missing locale data for the locale "${locale}".`);
-}
 
 /**
  * Retrieves the currency symbol for a given currency code.
@@ -651,20 +641,20 @@ export function findLocaleData(locale: string): any {
  * @param format The format, `wide` or `narrow`.
  * @param locale A locale code for the locale format rules to use.
  *
- * @returns The symbol, or the currency code if no symbol is available.0
+ * @returns The symbol, or the currency code if no symbol is available.
  * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n)
  *
  * @publicApi
  */
 export function getCurrencySymbol(code: string, format: 'wide' | 'narrow', locale = 'en'): string {
   const currency = getLocaleCurrencies(locale)[code] || CURRENCIES_EN[code] || [];
-  const symbolNarrow = currency[CurrencyIndex.SymbolNarrow];
+  const symbolNarrow = currency[ɵCurrencyIndex.SymbolNarrow];
 
   if (format === 'narrow' && typeof symbolNarrow === 'string') {
     return symbolNarrow;
   }
 
-  return currency[CurrencyIndex.Symbol] || code;
+  return currency[ɵCurrencyIndex.Symbol] || code;
 }
 
 // Most currencies have cents, that's why the default is 2
@@ -684,7 +674,7 @@ export function getNumberOfCurrencyDigits(code: string): number {
   let digits;
   const currency = CURRENCIES_EN[code];
   if (currency) {
-    digits = currency[CurrencyIndex.NbOfDigits];
+    digits = currency[ɵCurrencyIndex.NbOfDigits];
   }
   return typeof digits === 'number' ? digits : DEFAULT_NB_OF_CURRENCY_DIGITS;
 }

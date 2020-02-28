@@ -1,0 +1,132 @@
+{
+  "tests": [
+    {
+      "esModules": "./node_modules/@angular/animations/esm5/animations.js",
+      "expectedOutput": "./snapshots/animations/esm5.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/animations/fesm5/animations.js",
+      "expectedOutput": "./snapshots/animations/esm5.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/animations/esm2015/animations.js",
+      "expectedOutput": "./snapshots/animations/esm2015.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/animations/fesm2015/animations.js",
+      "expectedOutput": "./snapshots/animations/esm2015.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/animations/esm5/browser/browser.js",
+      "expectedOutput": "./snapshots/animations-browser/esm5.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/animations/fesm5/browser.js",
+      "expectedOutput": "./snapshots/animations-browser/esm5.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/animations/esm2015/browser/browser.js",
+      "expectedOutput": "./snapshots/animations-browser/esm2015.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/animations/fesm2015/browser.js",
+      "expectedOutput": "./snapshots/animations-browser/esm2015.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/common/esm5/common.js",
+      "expectedOutput": "./snapshots/common/esm5.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/common/fesm5/common.js",
+      "expectedOutput": "./snapshots/common/esm5.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/common/esm2015/common.js",
+      "expectedOutput": "./snapshots/common/esm2015.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/common/fesm2015/common.js",
+      "expectedOutput": "./snapshots/common/esm2015.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/core/esm5/core.js",
+      "expectedOutput": "./snapshots/core/esm5.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/core/fesm5/core.js",
+      "expectedOutput": "./snapshots/core/esm5.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/core/esm2015/core.js",
+      "expectedOutput": "./snapshots/core/esm2015.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/core/fesm2015/core.js",
+      "expectedOutput": "./snapshots/core/esm2015.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/elements/esm5/elements.js",
+      "expectedOutput": "./snapshots/elements/esm5.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/elements/fesm5/elements.js",
+      "expectedOutput": "./snapshots/elements/esm5.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/elements/esm2015/elements.js",
+      "expectedOutput": "./snapshots/elements/esm2015.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/elements/fesm2015/elements.js",
+      "expectedOutput": "./snapshots/elements/esm2015.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/forms/esm5/forms.js",
+      "expectedOutput": "./snapshots/forms/esm5.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/forms/fesm5/forms.js",
+      "expectedOutput": "./snapshots/forms/esm5.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/forms/esm2015/forms.js",
+      "expectedOutput": "./snapshots/forms/esm2015.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/forms/fesm2015/forms.js",
+      "expectedOutput": "./snapshots/forms/esm2015.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/platform-browser/esm5/platform-browser.js",
+      "expectedOutput": "./snapshots/platform-browser/esm5.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/platform-browser/fesm5/platform-browser.js",
+      "expectedOutput": "./snapshots/platform-browser/esm5.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/platform-browser/esm2015/platform-browser.js",
+      "expectedOutput": "./snapshots/platform-browser/esm2015.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/platform-browser/fesm2015/platform-browser.js",
+      "expectedOutput": "./snapshots/platform-browser/esm2015.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/router/esm5/router.js",
+      "expectedOutput": "./snapshots/router/esm5.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/router/fesm5/router.js",
+      "expectedOutput": "./snapshots/router/esm5.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/router/esm2015/router.js",
+      "expectedOutput": "./snapshots/router/esm2015.js"
+    },
+    {
+      "esModules": "./node_modules/@angular/router/fesm2015/router.js",
+      "expectedOutput": "./snapshots/router/esm2015.js"
+    }
+  ]
+}

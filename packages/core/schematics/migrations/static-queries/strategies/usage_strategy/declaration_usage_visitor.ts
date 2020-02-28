@@ -8,8 +8,15 @@
 
 import * as ts from 'typescript';
 import {isFunctionLikeDeclaration, unwrapExpression} from '../../../../utils/typescript/functions';
+import {getPropertyNameText} from '../../../../utils/typescript/property_name';
 
 export type FunctionContext = Map<ts.Node, ts.Node>;
+
+export enum ResolvedUsage {
+  SYNCHRONOUS,
+  ASYNCHRONOUS,
+  AMBIGUOUS,
+}
 
 /**
  * List of TypeScript syntax tokens that can be used within a binary expression as
@@ -27,6 +34,19 @@ const BINARY_COMPOUND_TOKENS = [
 ];
 
 /**
+ * List of known asynchronous external call expressions which aren't analyzable
+ * but are guaranteed to not execute the passed argument synchronously.
+ */
+const ASYNC_EXTERNAL_CALLS = [
+  {parent: ['Promise'], name: 'then'},
+  {parent: ['Promise'], name: 'catch'},
+  {parent: [null, 'Window'], name: 'requestAnimationFrame'},
+  {parent: [null, 'Window'], name: 'setTimeout'},
+  {parent: [null, 'Window'], name: 'setInterval'},
+  {parent: ['*'], name: 'addEventListener'},
+];
+
+/**
  * Class that can be used to determine if a given TypeScript node is used within
  * other given TypeScript nodes. This is achieved by walking through all children
  * of the given node and checking for usages of the given declaration. The visitor
@@ -36,8 +56,17 @@ export class DeclarationUsageVisitor {
   /** Set of visited symbols that caused a jump in control flow. */
   private visitedJumpExprNodes = new Set<ts.Node>();
 
-  /** Queue of nodes that need to be checked for declaration usage. */
+  /**
+   * Queue of nodes that need to be checked for declaration usage and
+   * are guaranteed to be executed synchronously.
+   */
   private nodeQueue: ts.Node[] = [];
+
+  /**
+   * Nodes which need to be checked for declaration usage but aren't
+   * guaranteed to execute synchronously.
+   */
+  private ambiguousNodeQueue: ts.Node[] = [];
 
   /**
    * Function context that holds the TypeScript node values for all parameters
@@ -68,6 +97,7 @@ export class DeclarationUsageVisitor {
     const callExprSymbol = this._getDeclarationSymbolOfNode(node);
 
     if (!callExprSymbol || !callExprSymbol.valueDeclaration) {
+      this.peekIntoJumpExpression(callExpression);
       return;
     }
 
@@ -77,6 +107,7 @@ export class DeclarationUsageVisitor {
     // this could cause cycles.
     if (!isFunctionLikeDeclaration(expressionDecl) ||
         this.visitedJumpExprNodes.has(expressionDecl) || !expressionDecl.body) {
+      this.peekIntoJumpExpression(callExpression);
       return;
     }
 
@@ -95,6 +126,7 @@ export class DeclarationUsageVisitor {
     // we should not visit already visited symbols as this could cause cycles.
     if (!newExprSymbol || !newExprSymbol.valueDeclaration ||
         !ts.isClassDeclaration(newExprSymbol.valueDeclaration)) {
+      this.peekIntoJumpExpression(node);
       return;
     }
 
@@ -111,6 +143,8 @@ export class DeclarationUsageVisitor {
 
       this.visitedJumpExprNodes.add(targetConstructor);
       this.nodeQueue.push(targetConstructor.body);
+    } else {
+      this.peekIntoJumpExpression(node);
     }
   }
 
@@ -160,7 +194,7 @@ export class DeclarationUsageVisitor {
     return true;
   }
 
-  isSynchronouslyUsedInNode(searchNode: ts.Node): boolean {
+  getResolvedNodeUsage(searchNode: ts.Node): ResolvedUsage {
     this.nodeQueue = [searchNode];
     this.visitedJumpExprNodes.clear();
     this.context.clear();
@@ -171,11 +205,17 @@ export class DeclarationUsageVisitor {
     // the derived class.
     this.baseContext.forEach((value, key) => this.context.set(key, value));
 
+    return this.isSynchronouslyUsedInNode(searchNode);
+  }
+
+  private isSynchronouslyUsedInNode(searchNode: ts.Node): ResolvedUsage {
+    this.ambiguousNodeQueue = [];
+
     while (this.nodeQueue.length) {
       const node = this.nodeQueue.shift() !;
 
       if (ts.isIdentifier(node) && this.isReferringToSymbol(node)) {
-        return true;
+        return ResolvedUsage.SYNCHRONOUS;
       }
 
       // Handle call expressions within TypeScript nodes that cause a jump in control
@@ -218,7 +258,65 @@ export class DeclarationUsageVisitor {
         this.nodeQueue.push(...node.getChildren());
       }
     }
-    return false;
+
+    if (this.ambiguousNodeQueue.length) {
+      // Update the node queue to all stored ambiguous nodes. These nodes are not
+      // guaranteed to be executed and therefore in case of a synchronous usage
+      // within one of those nodes, the resolved usage is ambiguous.
+      this.nodeQueue = this.ambiguousNodeQueue;
+      const usage = this.isSynchronouslyUsedInNode(searchNode);
+      return usage === ResolvedUsage.SYNCHRONOUS ? ResolvedUsage.AMBIGUOUS : usage;
+    }
+    return ResolvedUsage.ASYNCHRONOUS;
+  }
+
+  /**
+   * Peeks into the given jump expression by adding all function like declarations
+   * which are referenced in the jump expression arguments to the ambiguous node
+   * queue. These arguments could technically access the given declaration but it's
+   * not guaranteed that the jump expression is executed. In that case the resolved
+   * usage is ambiguous.
+   */
+  private peekIntoJumpExpression(jumpExp: ts.CallExpression|ts.NewExpression) {
+    if (!jumpExp.arguments) {
+      return;
+    }
+
+    // For some call expressions we don't want to add the arguments to the
+    // ambiguous node queue. e.g. "setTimeout" is not analyzable but is
+    // guaranteed to execute its argument asynchronously. We handle a subset
+    // of these call expressions by having a hardcoded list of some.
+    if (ts.isCallExpression(jumpExp)) {
+      const symbol = this._getDeclarationSymbolOfNode(jumpExp.expression);
+      if (symbol && symbol.valueDeclaration) {
+        const parentNode = symbol.valueDeclaration.parent;
+        if (parentNode && (ts.isInterfaceDeclaration(parentNode) || ts.isSourceFile(parentNode)) &&
+            (ts.isMethodSignature(symbol.valueDeclaration) ||
+             ts.isFunctionDeclaration(symbol.valueDeclaration)) &&
+            symbol.valueDeclaration.name) {
+          const parentName = ts.isInterfaceDeclaration(parentNode) ? parentNode.name.text : null;
+          const callName = getPropertyNameText(symbol.valueDeclaration.name);
+          if (ASYNC_EXTERNAL_CALLS.some(
+                  c =>
+                      (c.name === callName &&
+                       (c.parent.indexOf(parentName) !== -1 || c.parent.indexOf('*') !== -1)))) {
+            return;
+          }
+        }
+      }
+    }
+
+    jumpExp.arguments !.forEach((node: ts.Node) => {
+      node = this._resolveDeclarationOfNode(node);
+
+      if (ts.isVariableDeclaration(node) && node.initializer) {
+        node = node.initializer;
+      }
+
+      if (isFunctionLikeDeclaration(node) && !!node.body) {
+        this.ambiguousNodeQueue.push(node.body);
+      }
+    });
   }
 
   /**
@@ -240,8 +338,19 @@ export class DeclarationUsageVisitor {
       callArgs: ts.NodeArray<ts.Expression>, parameters: ts.NodeArray<ts.ParameterDeclaration>) {
     parameters.forEach((parameter, index) => {
       let argumentNode: ts.Node = callArgs[index];
+
+      if (!argumentNode) {
+        if (!parameter.initializer) {
+          return;
+        }
+
+        // Argument can be undefined in case the function parameter has a default
+        // value. In that case we want to store the parameter default value in the context.
+        argumentNode = parameter.initializer;
+      }
+
       if (ts.isIdentifier(argumentNode)) {
-        this.context.set(parameter, this._resolveIdentifier(argumentNode));
+        this.context.set(parameter, this._resolveDeclarationOfNode(argumentNode));
       } else {
         this.context.set(parameter, argumentNode);
       }
@@ -249,10 +358,11 @@ export class DeclarationUsageVisitor {
   }
 
   /**
-   * Resolves a TypeScript identifier node. For example an identifier can refer to a
-   * function parameter which can be resolved through the function context.
+   * Resolves the declaration of a given TypeScript node. For example an identifier can
+   * refer to a function parameter. This parameter can then be resolved through the
+   * function context.
    */
-  private _resolveIdentifier(node: ts.Identifier): ts.Node {
+  private _resolveDeclarationOfNode(node: ts.Node): ts.Node {
     const symbol = this._getDeclarationSymbolOfNode(node);
 
     if (!symbol || !symbol.valueDeclaration) {
@@ -285,7 +395,7 @@ export class DeclarationUsageVisitor {
   private _getPropertyAccessSymbol(node: ts.PropertyAccessExpression): ts.Symbol|null {
     let propertySymbol = this._getDeclarationSymbolOfNode(node.name);
 
-    if (!propertySymbol) {
+    if (!propertySymbol || !propertySymbol.valueDeclaration) {
       return null;
     }
 

@@ -8,7 +8,16 @@
 
 // clang-format off
 export {
-  ɵɵdefineBase,
+  ɵɵattribute,
+  ɵɵattributeInterpolate1,
+  ɵɵattributeInterpolate2,
+  ɵɵattributeInterpolate3,
+  ɵɵattributeInterpolate4,
+  ɵɵattributeInterpolate5,
+  ɵɵattributeInterpolate6,
+  ɵɵattributeInterpolate7,
+  ɵɵattributeInterpolate8,
+  ɵɵattributeInterpolateV,
   ɵɵdefineComponent,
   ɵɵdefineDirective,
   ɵɵdefinePipe,
@@ -23,12 +32,15 @@ export {
   RenderFlags as ɵRenderFlags,
   ɵɵdirectiveInject,
   ɵɵinjectAttribute,
+  ɵɵinjectPipeChangeDetectorRef,
+  ɵɵinvalidFactory,
   ɵɵgetFactoryOf,
   ɵɵgetInheritedFactory,
   ɵɵsetComponentScope,
   ɵɵsetNgModuleScope,
   ɵɵtemplateRefExtractor,
   ɵɵProvidersFeature,
+  ɵɵCopyDefinitionFeature,
   ɵɵInheritDefinitionFeature,
   ɵɵNgOnChangesFeature,
   LifecycleHooksFeature as ɵLifecycleHooksFeature,
@@ -47,18 +59,18 @@ export {
   ɵɵelement,
   ɵɵlistener,
   ɵɵtext,
+  ɵɵtextInterpolate,
+  ɵɵtextInterpolate1,
+  ɵɵtextInterpolate2,
+  ɵɵtextInterpolate3,
+  ɵɵtextInterpolate4,
+  ɵɵtextInterpolate5,
+  ɵɵtextInterpolate6,
+  ɵɵtextInterpolate7,
+  ɵɵtextInterpolate8,
+  ɵɵtextInterpolateV,
   ɵɵembeddedViewStart,
   ɵɵprojection,
-  ɵɵbind,
-  ɵɵinterpolation1,
-  ɵɵinterpolation2,
-  ɵɵinterpolation3,
-  ɵɵinterpolation4,
-  ɵɵinterpolation5,
-  ɵɵinterpolation6,
-  ɵɵinterpolation7,
-  ɵɵinterpolation8,
-  ɵɵinterpolationV,
   ɵɵpipeBind1,
   ɵɵpipeBind2,
   ɵɵpipeBind3,
@@ -84,11 +96,10 @@ export {
   ɵɵviewQuery,
   ɵɵstaticViewQuery,
   ɵɵstaticContentQuery,
-  ɵɵloadViewQuery,
   ɵɵcontentQuery,
-  ɵɵloadContentQuery,
+  ɵɵloadQuery,
   ɵɵelementEnd,
-  ɵɵelementProperty,
+  ɵɵhostProperty,
   ɵɵproperty,
   ɵɵpropertyInterpolate,
   ɵɵpropertyInterpolate1,
@@ -100,39 +111,57 @@ export {
   ɵɵpropertyInterpolate7,
   ɵɵpropertyInterpolate8,
   ɵɵpropertyInterpolateV,
-  ɵɵcomponentHostSyntheticProperty,
+  ɵɵupdateSyntheticHostBinding,
   ɵɵcomponentHostSyntheticListener,
   ɵɵprojectionDef,
   ɵɵreference,
   ɵɵenableBindings,
   ɵɵdisableBindings,
-  ɵɵallocHostVars,
-  ɵɵelementAttribute,
   ɵɵelementContainerStart,
   ɵɵelementContainerEnd,
-  ɵɵelementStyling,
-  ɵɵelementStylingMap,
-  ɵɵelementStyleProp,
-  ɵɵelementStylingApply,
-  ɵɵelementClassProp,
-
-  ɵɵelementHostAttrs,
-  ɵɵelementHostStyling,
-  ɵɵelementHostStylingMap,
-  ɵɵelementHostStyleProp,
-  ɵɵelementHostClassProp,
-  ɵɵelementHostStylingApply,
+  ɵɵelementContainer,
+  ɵɵstyleMap,
+  ɵɵstyleMapInterpolate1,
+  ɵɵstyleMapInterpolate2,
+  ɵɵstyleMapInterpolate3,
+  ɵɵstyleMapInterpolate4,
+  ɵɵstyleMapInterpolate5,
+  ɵɵstyleMapInterpolate6,
+  ɵɵstyleMapInterpolate7,
+  ɵɵstyleMapInterpolate8,
+  ɵɵstyleMapInterpolateV,
+  ɵɵstyleSanitizer,
+  ɵɵclassMap,
+  ɵɵclassMapInterpolate1,
+  ɵɵclassMapInterpolate2,
+  ɵɵclassMapInterpolate3,
+  ɵɵclassMapInterpolate4,
+  ɵɵclassMapInterpolate5,
+  ɵɵclassMapInterpolate6,
+  ɵɵclassMapInterpolate7,
+  ɵɵclassMapInterpolate8,
+  ɵɵclassMapInterpolateV,
+  ɵɵstyleProp,
+  ɵɵstylePropInterpolate1,
+  ɵɵstylePropInterpolate2,
+  ɵɵstylePropInterpolate3,
+  ɵɵstylePropInterpolate4,
+  ɵɵstylePropInterpolate5,
+  ɵɵstylePropInterpolate6,
+  ɵɵstylePropInterpolate7,
+  ɵɵstylePropInterpolate8,
+  ɵɵstylePropInterpolateV,
+  ɵɵclassProp,
 
   ɵɵselect,
-  ɵɵtextBinding,
+  ɵɵadvance,
   ɵɵtemplate,
   ɵɵembeddedViewEnd,
   store as ɵstore,
-  ɵɵload,
   ɵɵpipe,
-  ɵɵBaseDef,
   ComponentDef as ɵComponentDef,
   ɵɵComponentDefWithMeta,
+  ɵɵFactoryDef,
   DirectiveDef as ɵDirectiveDef,
   ɵɵDirectiveDefWithMeta,
   PipeDef as ɵPipeDef,
@@ -145,8 +174,7 @@ export {
   ɵɵi18nEnd,
   ɵɵi18nApply,
   ɵɵi18nPostprocess,
-  i18nConfigureLocalize as ɵi18nConfigureLocalize,
-  ɵɵi18nLocalize,
+  setLocaleId as ɵsetLocaleId,
   setClassMetadata as ɵsetClassMetadata,
   ɵɵresolveWindow,
   ɵɵresolveDocument,
@@ -200,16 +228,15 @@ export {
 
 export {
   NG_ELEMENT_ID as ɵNG_ELEMENT_ID,
-  NG_COMPONENT_DEF as ɵNG_COMPONENT_DEF,
-  NG_DIRECTIVE_DEF as ɵNG_DIRECTIVE_DEF,
+  NG_COMP_DEF as ɵNG_COMP_DEF,
+  NG_DIR_DEF as ɵNG_DIR_DEF,
   NG_PIPE_DEF as ɵNG_PIPE_DEF,
-  NG_MODULE_DEF as ɵNG_MODULE_DEF,
-  NG_BASE_DEF as ɵNG_BASE_DEF
+  NG_MOD_DEF as ɵNG_MOD_DEF,
 } from './render3/fields';
 
 export {
-  NG_INJECTABLE_DEF as ɵNG_INJECTABLE_DEF,
-  NG_INJECTOR_DEF as ɵNG_INJECTOR_DEF,
+  NG_PROV_DEF as ɵNG_PROV_DEF,
+  NG_INJ_DEF as ɵNG_INJ_DEF,
 } from './di/interface/defs';
 
 export {
@@ -224,13 +251,8 @@ export {
 } from './render3/interfaces/context';
 
 export {
-  bindPlayerFactory as ɵbindPlayerFactory,
-} from './render3/styling/player_factory';
-
-export {
-  addPlayer as ɵaddPlayer,
-  getPlayers as ɵgetPlayers,
-} from './render3/players';
+  setDocument as ɵsetDocument
+} from './render3/interfaces/document';
 
 // we reexport these symbols just so that they are retained during the dead code elimination
 // performed by rollup while it's creating fesm files.
@@ -279,10 +301,9 @@ export {
   SWITCH_RENDERER2_FACTORY__POST_R3__ as ɵSWITCH_RENDERER2_FACTORY__POST_R3__,
 } from './render/api';
 
-export {
-  getModuleFactory__POST_R3__ as ɵgetModuleFactory__POST_R3__,
-  registerNgModuleType as ɵregisterNgModuleType,
-} from './linker/ng_module_factory_loader';
+export { getModuleFactory__POST_R3__ as ɵgetModuleFactory__POST_R3__ } from './linker/ng_module_factory_loader';
+
+export { registerNgModuleType as ɵregisterNgModuleType } from './linker/ng_module_factory_registration';
 
 export {
   publishGlobalUtil as ɵpublishGlobalUtil,

@@ -223,8 +223,8 @@ class TestComponent {
 `
 })
 class ComplexComponent {
-  @ViewChild('foo') foo !: TemplateRef<any>;
-  @ViewChild('bar') bar !: TemplateRef<any>;
+  @ViewChild('foo', {static: true}) foo !: TemplateRef<any>;
+  @ViewChild('bar', {static: true}) bar !: TemplateRef<any>;
   state: string = 'case1';
 }
 

@@ -144,6 +144,23 @@ For example, "convert_link_mode".
 * UPPER_UNDERSCORE_CASE (or UPPER_SNAKE_CASE, or SCREAMING_SNAKE_CASE): Traditional for constants (acceptable, but prefer camelCase).
 Upper snake case uses words in all capital letters connected with underscores. For example, "FIX_ME".
 
+{@a change-detection}
+
+## change detection
+
+The mechanism by which the Angular framework synchronizes the state of an application's UI with the state of the data.
+The change detector checks the current state of the data model whenever it runs, and maintains it as the previous state to compare on the next iteration.
+
+As the application logic updates component data, values that are bound to DOM properties in the view can change.
+The change detector is responsible for updating the view to reflect the current data model.
+Similarly, the user can interact with the UI, causing events that change the state of the data model.
+These events can trigger change detection.
+
+Using the default ("CheckAlways") change-detection strategy, the change detector goes through the [view hierarchy](#view-tree) on each VM turn to check every [data-bound property](#data-binding) in the template. In the first phase, it compares the current state of the dependent data with the previous state, and collects changes.
+In the second phase, it updates the page DOM to reflect any new data values.
+
+If you set the `OnPush` ("CheckOnce") change-detection strategy, the change detector runs only when [explicitly invoked] (api/core/ChangeDetectorRef), or when it is triggered by an `Input` reference change or event handler. This typically improves performance. For more information, see [Optimize Angular's change detection](https://web.dev/faster-angular-change-detection/).
+
 {@a class-decorator}
 
 ## class decorator
@@ -176,7 +193,7 @@ In Angular, a set of related [schematics](#schematic) collected in an [npm packa
 
 The [Angular CLI](cli) is a command-line tool for managing the Angular development cycle. Use it to create the initial filesystem scaffolding for a [workspace](#workspace) or [project](#project), and to run [schematics](#schematic) that add and modify code for initial generic versions of various elements. The CLI supports all stages of the development cycle, including building, testing, bundling, and deployment.
 
-* To begin using the CLI for a new project, see [Getting Started](guide/quickstart).
+* To begin using the CLI for a new project, see [Local Environment Setup](guide/setup-local "Setting up for Local Development").
 * To learn more about the full capabilities of the CLI, see the [CLI command reference](cli).
 
 See also [Schematics CLI](#schematics-cli).
@@ -286,6 +303,14 @@ Learn more in [Dependency Injection in Angular](guide/dependency-injection).
 
 A lookup token associated with a dependency [provider](#provider), for use with the [dependency injection](#di) system.
 
+{@a differential-loading}
+
+## differential loading
+
+A build technique that creates two bundles for an application. One smaller bundle is for modern browsers. A second, larger bundle allows the application to run correctly in older browsers (such as IE11) that do not support all modern browser APIs.
+
+For more information, see the [Deployment](guide/deployment#differential-loading) guide.
+
 
 {@a directive}
 {@a directives}
@@ -350,7 +375,7 @@ To learn more, see [Browser Support](guide/browser-support).
 ## element
 
 Angular defines an `ElementRef` class to wrap render-specific native UI elements.
-In most cases, this allows you to use Angular templates and  data binding to access DOM elements
+In most cases, this allows you to use Angular templates and data binding to access DOM elements
 without reference to the native element.
 
 The documentation generally refers to *elements* (`ElementRef` instances), as distinct from  *DOM elements*
@@ -362,11 +387,12 @@ Compare to [custom element](#custom-element).
 
 ## entry point
 
-A JavaScript symbol that makes parts of an [npm package](guide/npm-packages) available for import by other code.
-The Angular [scoped packages](#scoped-package) each have an entry point named `index`.
-
-Within Angular, use [NgModules](#ngmodule) to make public parts available for import by other NgModules.
-
+A [JavaScript module](#module) that is intended to be imported by a user of [an
+npm package](guide/npm-packages). An entry-point module typically re-exports
+symbols from other internal modules. A package can contain multiple
+entry points. For example, the `@angular/core` package has two entry-point
+modules, which can be imported using the module names `@angular/core` and
+`@angular/core/testing`.
 
 {@a F}
 
@@ -453,13 +479,21 @@ A form of property [data binding](#data-binding) in which a [template expression
 That text can be concatenated with neighboring text before it is assigned to an element property
 or displayed between element tags, as in this example.
 
-<code-example language="html" escape="html">
-  <label>My current hero is {{hero.name}}</label>
-
-</code-example>
+```html
+<label>My current hero is {{hero.name}}</label>
+```
 
 
 Read more about [interpolation](guide/template-syntax#interpolation) in [Template Syntax](guide/template-syntax).
+
+{@a ivy}
+
+## Ivy
+
+Ivy is the code name for Angular's [next-generation compilation and rendering pipeline](https://blog.angular.io/a-plan-for-version-8-0-and-ivy-b3318dfc19f7).
+With the version 9 release of Angular, the new compiler and runtime instructions are used by default instead of the older compiler and runtime, known as [View Engine](#ve).
+
+See [Angular Ivy](guide/ivy).
 
 
 {@a J}
@@ -555,6 +589,14 @@ Compare to [NgModule](#ngmodule).
 
 {@a N}
 
+{@a ngcc}
+
+## ngcc
+
+Angular compatibility compiler.
+If you build your app using [Ivy](#ivy), but it depends on libraries have not been compiled with Ivy, the CLI uses `ngcc` to automatically update the dependent libraries to use Ivy.
+
+
 {@a ngmodule}
 
 ## NgModule
@@ -620,6 +662,19 @@ To learn more, see [Input and Output Properties](guide/template-syntax#inputs-ou
 A class which is preceded by the `@Pipe{}` decorator and which defines a function that transforms input values to output values for display in a [view](#view). Angular defines various pipes, and you can define new pipes.
 
 To learn more, see [Pipes](guide/pipes).
+
+{@a platform}
+
+## platform
+
+In Angular terminology, a platform is the context in which an Angular application runs.
+The most common platform for Angular applications is a web browser, but it can also be an operating system for a mobile device, or a web server.
+
+Support for the various Angular run-time platforms is provided by the `@angular/platform-*` packages. These packages allow applications that make use of `@angular/core` and `@angular/common` to execute in different environments by providing implementation for gathering user input and rendering UIs for the given platform. Isolating platform-specific functionality allows the developer to make platform-independent use of the rest of the framework.
+
+* When running in a web browser, [`BrowserModule`](api/platform-browser/BrowserModule) is imported from the `platform-browser` package, and supports services that simplify security and event processing, and allows applications to access browser-specific features, such as interpreting keyboard input and controlling the title of the document being displayed. All applications running in the browser use the same platform service.
+
+* When [server-side rendering](#server-side-rendering) (SSR) is used, the [`platform-server`](api/platform-server) package provides web server implementations of the `DOM`, `XMLHttpRequest`, and other low-level features that don't rely on a browser.
 
 {@a polyfill}
 
@@ -735,7 +790,7 @@ For more information, see [Schematics](guide/schematics) and [Integrating Librar
 Schematics come with their own command-line tool.
 Using Node 6.9 or above, install the Schematics CLI globally:
 
-<code-example format="." language="bash">
+<code-example language="bash">
 npm install -g @angular-devkit/schematics-cli
 </code-example>
 
@@ -750,7 +805,7 @@ NgModules are delivered within scoped packages whose names begin with the Angula
 
 Import a scoped package in the same way that you import a normal package.
 
-<code-example path="architecture/src/app/app.component.ts" linenums="false" header="architecture/src/app/app.component.ts (import)" region="import">
+<code-example path="architecture/src/app/app.component.ts" header="architecture/src/app/app.component.ts (import)" region="import">
 
 </code-example>
 
@@ -921,11 +976,18 @@ You can change the structure of elements by inserting, moving, or removing neste
 
 View hierarchies can be loaded and unloaded dynamically as the user navigates through the application, typically under the control of a [router](#router).
 
+{@a ve}
+
+## View Engine
+
+The compilation and rendering pipeline used by Angular before version 9. Compare [Ivy](#ivy).
+
+
 {@a view-tree}
 
 ## view hierarchy
 
-A tree of related views that can be acted on as a unit. The root view is a component's *host view*.  A host view can be the root of a tree of *embedded views*, collected in a *view container* (`ViewContainerRef`) attached to an anchor element in the hosting component. The view hierarchy is a key part of Angular change detection.
+A tree of related views that can be acted on as a unit. The root view is a component's *host view*. A host view can be the root of a tree of *embedded views*, collected in a *view container* (`ViewContainerRef`) attached to an anchor element in the hosting component. The view hierarchy is a key part of Angular [change detection](#change-detection).
 
 The view hierarchy doesn't imply a component hierarchy. Views that are embedded in the context of a particular hierarchy can be host views of other components. Those components can be in the same NgModule as the hosting component, or belong to other NgModules.
 

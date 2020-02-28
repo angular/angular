@@ -7,19 +7,17 @@
  */
 
 import {Injector} from '../di';
-import {getViewComponent} from '../render3/global_utils_api';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from '../render3/interfaces/container';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from '../render3/interfaces/node';
-import {StylingIndex} from '../render3/interfaces/styling';
-import {LView, PARENT, TData, TVIEW, T_HOST} from '../render3/interfaces/view';
-import {getProp, getValue, isClassBasedValue} from '../render3/styling/class_and_style_bindings';
-import {getStylingContextFromLView} from '../render3/styling/util';
-import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, isBrowserEvents, loadLContext, loadLContextFromNode} from '../render3/util/discovery_utils';
-import {INTERPOLATION_DELIMITER, isPropMetadataString, renderStringify} from '../render3/util/misc_utils';
-import {findComponentView} from '../render3/util/view_traversal_utils';
-import {getComponentViewByIndex, getNativeByTNode, isComponent, isLContainer} from '../render3/util/view_utils';
+import {isComponentHost, isLContainer} from '../render3/interfaces/type_checks';
+import {DECLARATION_COMPONENT_VIEW, LView, PARENT, TData, TVIEW, T_HOST} from '../render3/interfaces/view';
+import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent, loadLContext} from '../render3/util/discovery_utils';
+import {INTERPOLATION_DELIMITER, renderStringify} from '../render3/util/misc_utils';
+import {getComponentLViewByIndex, getNativeByTNodeOrNull} from '../render3/util/view_utils';
 import {assertDomNode} from '../util/assert';
 import {DebugContext} from '../view/index';
+
+
 
 /**
  * @publicApi
@@ -203,6 +201,7 @@ function _queryNodeChildren(
     });
   }
 }
+
 class DebugNode__POST_R3__ implements DebugNode {
   readonly nativeNode: Node;
 
@@ -218,12 +217,14 @@ class DebugNode__POST_R3__ implements DebugNode {
   get componentInstance(): any {
     const nativeElement = this.nativeNode;
     return nativeElement &&
-        (getComponent(nativeElement as Element) || getViewComponent(nativeElement));
+        (getComponent(nativeElement as Element) || getOwningComponent(nativeElement));
   }
-  get context(): any { return getContext(this.nativeNode as Element); }
+  get context(): any {
+    return getComponent(this.nativeNode as Element) || getContext(this.nativeNode as Element);
+  }
 
   get listeners(): DebugEventListener[] {
-    return getListeners(this.nativeNode as Element).filter(isBrowserEvents);
+    return getListeners(this.nativeNode as Element).filter(listener => listener.type === 'dom');
   }
 
   get references(): {[key: string]: any;} { return getLocalRefs(this.nativeNode); }
@@ -241,7 +242,17 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     return this.nativeNode.nodeType == Node.ELEMENT_NODE ? this.nativeNode as Element : null;
   }
 
-  get name(): string { return this.nativeElement !.nodeName; }
+  get name(): string {
+    try {
+      const context = loadLContext(this.nativeNode) !;
+      const lView = context.lView;
+      const tData = lView[TVIEW].data;
+      const tNode = tData[context.nodeIndex] as TNode;
+      return tNode.tagName !;
+    } catch (e) {
+      return this.nativeNode.nodeName;
+    }
+  }
 
   /**
    *  Gets a map of property names to property values for an element.
@@ -256,93 +267,101 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
    *  - attribute bindings (e.g. `[attr.role]="menu"`)
    */
   get properties(): {[key: string]: any;} {
-    const context = loadLContext(this.nativeNode) !;
+    const context = loadLContext(this.nativeNode, false);
+    if (context == null) {
+      return {};
+    }
+
     const lView = context.lView;
     const tData = lView[TVIEW].data;
     const tNode = tData[context.nodeIndex] as TNode;
 
-    const properties = collectPropertyBindings(tNode, lView, tData);
-    const hostProperties = collectHostPropertyBindings(tNode, lView, tData);
-    const className = collectClassNames(this);
-    const output = {...properties, ...hostProperties};
-
-    if (className) {
-      output['className'] = output['className'] ? output['className'] + ` ${className}` : className;
-    }
-
-    return output;
+    const properties: {[key: string]: string} = {};
+    // Collect properties from the DOM.
+    copyDomProperties(this.nativeElement, properties);
+    // Collect properties from the bindings. This is needed for animation renderer which has
+    // synthetic properties which don't get reflected into the DOM.
+    collectPropertyBindings(properties, tNode, lView, tData);
+    return properties;
   }
 
   get attributes(): {[key: string]: string | null;} {
     const attributes: {[key: string]: string | null;} = {};
     const element = this.nativeElement;
-    if (element) {
-      const eAttrs = element.attributes;
-      for (let i = 0; i < eAttrs.length; i++) {
-        const attr = eAttrs[i];
-        attributes[attr.name] = attr.value;
+
+    if (!element) {
+      return attributes;
+    }
+
+    const context = loadLContext(element, false);
+    if (context == null) {
+      return {};
+    }
+
+    const lView = context.lView;
+    const tNodeAttrs = (lView[TVIEW].data[context.nodeIndex] as TNode).attrs;
+    const lowercaseTNodeAttrs: string[] = [];
+
+    // For debug nodes we take the element's attribute directly from the DOM since it allows us
+    // to account for ones that weren't set via bindings (e.g. ViewEngine keeps track of the ones
+    // that are set through `Renderer2`). The problem is that the browser will lowercase all names,
+    // however since we have the attributes already on the TNode, we can preserve the case by going
+    // through them once, adding them to the `attributes` map and putting their lower-cased name
+    // into an array. Afterwards when we're going through the native DOM attributes, we can check
+    // whether we haven't run into an attribute already through the TNode.
+    if (tNodeAttrs) {
+      let i = 0;
+      while (i < tNodeAttrs.length) {
+        const attrName = tNodeAttrs[i];
+
+        // Stop as soon as we hit a marker. We only care about the regular attributes. Everything
+        // else will be handled below when we read the final attributes off the DOM.
+        if (typeof attrName !== 'string') break;
+
+        const attrValue = tNodeAttrs[i + 1];
+        attributes[attrName] = attrValue as string;
+        lowercaseTNodeAttrs.push(attrName.toLowerCase());
+
+        i += 2;
       }
     }
+
+    const eAttrs = element.attributes;
+    for (let i = 0; i < eAttrs.length; i++) {
+      const attr = eAttrs[i];
+      const lowercaseName = attr.name.toLowerCase();
+
+      // Make sure that we don't assign the same attribute both in its
+      // case-sensitive form and the lower-cased one from the browser.
+      if (lowercaseTNodeAttrs.indexOf(lowercaseName) === -1) {
+        // Save the lowercase name to align the behavior between browsers.
+        // IE preserves the case, while all other browser convert it to lower case.
+        attributes[lowercaseName] = attr.value;
+      }
+    }
+
     return attributes;
   }
 
-  get classes(): {[key: string]: boolean;} {
-    const classes: {[key: string]: boolean;} = {};
-    const element = this.nativeElement;
-    if (element) {
-      const lContext = loadLContextFromNode(element);
-      const stylingContext = getStylingContextFromLView(lContext.nodeIndex, lContext.lView);
-      if (stylingContext) {
-        for (let i = StylingIndex.SingleStylesStartPosition; i < stylingContext.length;
-             i += StylingIndex.Size) {
-          if (isClassBasedValue(stylingContext, i)) {
-            const className = getProp(stylingContext, i);
-            const value = getValue(stylingContext, i);
-            if (typeof value == 'boolean') {
-              // we want to ignore `null` since those don't overwrite the values.
-              classes[className] = value;
-            }
-          }
-        }
-      } else {
-        // Fallback, just read DOM.
-        const eClasses = element.classList;
-        for (let i = 0; i < eClasses.length; i++) {
-          classes[eClasses[i]] = true;
-        }
-      }
+  get styles(): {[key: string]: string | null} {
+    if (this.nativeElement && (this.nativeElement as HTMLElement).style) {
+      return (this.nativeElement as HTMLElement).style as{[key: string]: any};
     }
-    return classes;
+    return {};
   }
 
-  get styles(): {[key: string]: string | null;} {
-    const styles: {[key: string]: string | null;} = {};
-    const element = this.nativeElement;
-    if (element) {
-      const lContext = loadLContextFromNode(element);
-      const stylingContext = getStylingContextFromLView(lContext.nodeIndex, lContext.lView);
-      if (stylingContext) {
-        for (let i = StylingIndex.SingleStylesStartPosition; i < stylingContext.length;
-             i += StylingIndex.Size) {
-          if (!isClassBasedValue(stylingContext, i)) {
-            const styleName = getProp(stylingContext, i);
-            const value = getValue(stylingContext, i) as string | null;
-            if (value !== null) {
-              // we want to ignore `null` since those don't overwrite the values.
-              styles[styleName] = value;
-            }
-          }
-        }
-      } else {
-        // Fallback, just read DOM.
-        const eStyles = (element as HTMLElement).style;
-        for (let i = 0; i < eStyles.length; i++) {
-          const name = eStyles.item(i);
-          styles[name] = eStyles.getPropertyValue(name);
-        }
-      }
-    }
-    return styles;
+  get classes(): {[key: string]: boolean;} {
+    const result: {[key: string]: boolean;} = {};
+    const element = this.nativeElement as HTMLElement | SVGElement;
+
+    // SVG elements return an `SVGAnimatedString` instead of a plain string for the `className`.
+    const className = element.className as string | SVGAnimatedString;
+    const classes = className && typeof className !== 'string' ? className.baseVal.split(' ') :
+                                                                 className.split(' ');
+
+    classes.forEach((value: string) => result[value] = true);
+
+    return result;
   }
 
   get childNodes(): DebugNode[] {
@@ -385,12 +404,66 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
   }
 
   triggerEventHandler(eventName: string, eventObj: any): void {
-    this.listeners.forEach((listener) => {
+    const node = this.nativeNode as any;
+    const invokedListeners: Function[] = [];
+
+    this.listeners.forEach(listener => {
       if (listener.name === eventName) {
-        listener.callback(eventObj);
+        const callback = listener.callback;
+        callback.call(node, eventObj);
+        invokedListeners.push(callback);
       }
     });
+
+    // We need to check whether `eventListeners` exists, because it's something
+    // that Zone.js only adds to `EventTarget` in browser environments.
+    if (typeof node.eventListeners === 'function') {
+      // Note that in Ivy we wrap event listeners with a call to `event.preventDefault` in some
+      // cases. We use '__ngUnwrap__' as a special token that gives us access to the actual event
+      // listener.
+      node.eventListeners(eventName).forEach((listener: Function) => {
+        // In order to ensure that we can detect the special __ngUnwrap__ token described above, we
+        // use `toString` on the listener and see if it contains the token. We use this approach to
+        // ensure that it still worked with compiled code since it cannot remove or rename string
+        // literals. We also considered using a special function name (i.e. if(listener.name ===
+        // special)) but that was more cumbersome and we were also concerned the compiled code could
+        // strip the name, turning the condition in to ("" === "") and always returning true.
+        if (listener.toString().indexOf('__ngUnwrap__') !== -1) {
+          const unwrappedListener = listener('__ngUnwrap__');
+          return invokedListeners.indexOf(unwrappedListener) === -1 &&
+              unwrappedListener.call(node, eventObj);
+        }
+      });
+    }
   }
+}
+
+function copyDomProperties(element: Element | null, properties: {[name: string]: string}): void {
+  if (element) {
+    // Skip own properties (as those are patched)
+    let obj = Object.getPrototypeOf(element);
+    const NodePrototype: any = Node.prototype;
+    while (obj !== null && obj !== NodePrototype) {
+      const descriptors = Object.getOwnPropertyDescriptors(obj);
+      for (let key in descriptors) {
+        if (!key.startsWith('__') && !key.startsWith('on')) {
+          // don't include properties starting with `__` and `on`.
+          // `__` are patched values which should not be included.
+          // `on` are listeners which also should not be included.
+          const value = (element as any)[key];
+          if (isPrimitiveValue(value)) {
+            properties[key] = value;
+          }
+        }
+      }
+      obj = Object.getPrototypeOf(obj);
+    }
+  }
+}
+
+function isPrimitiveValue(value: any): boolean {
+  return typeof value === 'string' || typeof value === 'boolean' || typeof value === 'number' ||
+      value === null;
 }
 
 /**
@@ -402,12 +475,24 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
  * @param elementsOnly whether only elements should be searched
  */
 function _queryAllR3(
+    parentElement: DebugElement, predicate: Predicate<DebugElement>, matches: DebugElement[],
+    elementsOnly: true): void;
+function _queryAllR3(
     parentElement: DebugElement, predicate: Predicate<DebugNode>, matches: DebugNode[],
-    elementsOnly: boolean) {
-  const context = loadLContext(parentElement.nativeNode) !;
-  const parentTNode = context.lView[TVIEW].data[context.nodeIndex] as TNode;
-  _queryNodeChildrenR3(
-      parentTNode, context.lView, predicate, matches, elementsOnly, parentElement.nativeNode);
+    elementsOnly: false): void;
+function _queryAllR3(
+    parentElement: DebugElement, predicate: Predicate<DebugElement>| Predicate<DebugNode>,
+    matches: DebugElement[] | DebugNode[], elementsOnly: boolean) {
+  const context = loadLContext(parentElement.nativeNode, false);
+  if (context !== null) {
+    const parentTNode = context.lView[TVIEW].data[context.nodeIndex] as TNode;
+    _queryNodeChildrenR3(
+        parentTNode, context.lView, predicate, matches, elementsOnly, parentElement.nativeNode);
+  } else {
+    // If the context is null, then `parentElement` was either created with Renderer2 or native DOM
+    // APIs.
+    _queryNativeNodeDescendants(parentElement.nativeNode, predicate, matches, elementsOnly);
+  }
 }
 
 /**
@@ -418,29 +503,41 @@ function _queryAllR3(
  * @param predicate the predicate to match
  * @param matches the list of positive matches
  * @param elementsOnly whether only elements should be searched
- * @param rootNativeNode the root native node on which prediccate shouold not be matched
+ * @param rootNativeNode the root native node on which predicate should not be matched
  */
 function _queryNodeChildrenR3(
-    tNode: TNode, lView: LView, predicate: Predicate<DebugNode>, matches: DebugNode[],
-    elementsOnly: boolean, rootNativeNode: any) {
+    tNode: TNode, lView: LView, predicate: Predicate<DebugElement>| Predicate<DebugNode>,
+    matches: DebugElement[] | DebugNode[], elementsOnly: boolean, rootNativeNode: any) {
+  const nativeNode = getNativeByTNodeOrNull(tNode, lView);
   // For each type of TNode, specific logic is executed.
   if (tNode.type === TNodeType.Element || tNode.type === TNodeType.ElementContainer) {
     // Case 1: the TNode is an element
     // The native node has to be checked.
-    _addQueryMatchR3(
-        getNativeByTNode(tNode, lView), predicate, matches, elementsOnly, rootNativeNode);
-    if (isComponent(tNode)) {
+    _addQueryMatchR3(nativeNode, predicate, matches, elementsOnly, rootNativeNode);
+    if (isComponentHost(tNode)) {
       // If the element is the host of a component, then all nodes in its view have to be processed.
       // Note: the component's content (tNode.child) will be processed from the insertion points.
-      const componentView = getComponentViewByIndex(tNode.index, lView);
-      if (componentView && componentView[TVIEW].firstChild)
+      const componentView = getComponentLViewByIndex(tNode.index, lView);
+      if (componentView && componentView[TVIEW].firstChild) {
         _queryNodeChildrenR3(
             componentView[TVIEW].firstChild !, componentView, predicate, matches, elementsOnly,
             rootNativeNode);
+      }
     } else {
-      // Otherwise, its children have to be processed.
-      if (tNode.child)
+      if (tNode.child) {
+        // Otherwise, its children have to be processed.
         _queryNodeChildrenR3(tNode.child, lView, predicate, matches, elementsOnly, rootNativeNode);
+      }
+
+      // We also have to query the DOM directly in order to catch elements inserted through
+      // Renderer2. Note that this is __not__ optimal, because we're walking similar trees multiple
+      // times. ViewEngine could do it more efficiently, because all the insertions go through
+      // Renderer2, however that's not the case in Ivy. This approach is being used because:
+      // 1. Matching the ViewEngine behavior would mean potentially introducing a depedency
+      //    from `Renderer2` to Ivy which could bring Ivy code into ViewEngine.
+      // 2. We would have to make `Renderer3` "know" about debug nodes.
+      // 3. It allows us to capture nodes that were inserted directly via the DOM.
+      nativeNode && _queryNativeNodeDescendants(nativeNode, predicate, matches, elementsOnly);
     }
     // In all cases, if a dynamic container exists for this node, each view inside it has to be
     // processed.
@@ -459,7 +556,7 @@ function _queryNodeChildrenR3(
   } else if (tNode.type === TNodeType.Projection) {
     // Case 3: the TNode is a projection insertion point (i.e. a <ng-content>).
     // The nodes projected at this location all need to be processed.
-    const componentView = findComponentView(lView !);
+    const componentView = lView ![DECLARATION_COMPONENT_VIEW];
     const componentHost = componentView[T_HOST] as TElementNode;
     const head: TNode|null =
         (componentHost.projection as(TNode | null)[])[tNode.projection as number];
@@ -468,25 +565,24 @@ function _queryNodeChildrenR3(
       for (let nativeNode of head) {
         _addQueryMatchR3(nativeNode, predicate, matches, elementsOnly, rootNativeNode);
       }
-    } else {
-      if (head) {
-        const nextLView = componentView[PARENT] !as LView;
-        const nextTNode = nextLView[TVIEW].data[head.index] as TNode;
-        _queryNodeChildrenR3(
-            nextTNode, nextLView, predicate, matches, elementsOnly, rootNativeNode);
-      }
+    } else if (head) {
+      const nextLView = componentView[PARENT] !as LView;
+      const nextTNode = nextLView[TVIEW].data[head.index] as TNode;
+      _queryNodeChildrenR3(nextTNode, nextLView, predicate, matches, elementsOnly, rootNativeNode);
     }
-  } else {
+  } else if (tNode.child) {
     // Case 4: the TNode is a view.
-    if (tNode.child) {
-      _queryNodeChildrenR3(tNode.child, lView, predicate, matches, elementsOnly, rootNativeNode);
-    }
+    _queryNodeChildrenR3(tNode.child, lView, predicate, matches, elementsOnly, rootNativeNode);
   }
-  // To determine the next node to be processed, we need to use the next or the projectionNext link,
-  // depending on whether the current node has been projected.
-  const nextTNode = (tNode.flags & TNodeFlags.isProjected) ? tNode.projectionNext : tNode.next;
-  if (nextTNode) {
-    _queryNodeChildrenR3(nextTNode, lView, predicate, matches, elementsOnly, rootNativeNode);
+
+  // We don't want to go to the next sibling of the root node.
+  if (rootNativeNode !== nativeNode) {
+    // To determine the next node to be processed, we need to use the next or the projectionNext
+    // link, depending on whether the current node has been projected.
+    const nextTNode = (tNode.flags & TNodeFlags.isProjected) ? tNode.projectionNext : tNode.next;
+    if (nextTNode) {
+      _queryNodeChildrenR3(nextTNode, lView, predicate, matches, elementsOnly, rootNativeNode);
+    }
   }
 }
 
@@ -497,11 +593,11 @@ function _queryNodeChildrenR3(
  * @param predicate the predicate to match
  * @param matches the list of positive matches
  * @param elementsOnly whether only elements should be searched
- * @param rootNativeNode the root native node on which prediccate shouold not be matched
+ * @param rootNativeNode the root native node on which predicate should not be matched
  */
 function _queryNodeChildrenInContainerR3(
-    lContainer: LContainer, predicate: Predicate<DebugNode>, matches: DebugNode[],
-    elementsOnly: boolean, rootNativeNode: any) {
+    lContainer: LContainer, predicate: Predicate<DebugElement>| Predicate<DebugNode>,
+    matches: DebugElement[] | DebugNode[], elementsOnly: boolean, rootNativeNode: any) {
   for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
     const childView = lContainer[i];
     _queryNodeChildrenR3(
@@ -516,16 +612,59 @@ function _queryNodeChildrenInContainerR3(
  * @param predicate the predicate to match
  * @param matches the list of positive matches
  * @param elementsOnly whether only elements should be searched
- * @param rootNativeNode the root native node on which prediccate shouold not be matched
+ * @param rootNativeNode the root native node on which predicate should not be matched
  */
 function _addQueryMatchR3(
-    nativeNode: any, predicate: Predicate<DebugNode>, matches: DebugNode[], elementsOnly: boolean,
-    rootNativeNode: any) {
+    nativeNode: any, predicate: Predicate<DebugElement>| Predicate<DebugNode>,
+    matches: DebugElement[] | DebugNode[], elementsOnly: boolean, rootNativeNode: any) {
   if (rootNativeNode !== nativeNode) {
     const debugNode = getDebugNode(nativeNode);
-    if (debugNode && (elementsOnly ? debugNode instanceof DebugElement__POST_R3__ : true) &&
-        predicate(debugNode)) {
+    if (!debugNode) {
+      return;
+    }
+    // Type of the "predicate and "matches" array are set based on the value of
+    // the "elementsOnly" parameter. TypeScript is not able to properly infer these
+    // types with generics, so we manually cast the parameters accordingly.
+    if (elementsOnly && debugNode instanceof DebugElement__POST_R3__ && predicate(debugNode) &&
+        matches.indexOf(debugNode) === -1) {
       matches.push(debugNode);
+    } else if (
+        !elementsOnly && (predicate as Predicate<DebugNode>)(debugNode) &&
+        (matches as DebugNode[]).indexOf(debugNode) === -1) {
+      (matches as DebugNode[]).push(debugNode);
+    }
+  }
+}
+
+/**
+ * Match all the descendants of a DOM node against a predicate.
+ *
+ * @param nativeNode the current native node
+ * @param predicate the predicate to match
+ * @param matches the list of positive matches
+ * @param elementsOnly whether only elements should be searched
+ */
+function _queryNativeNodeDescendants(
+    parentNode: any, predicate: Predicate<DebugElement>| Predicate<DebugNode>,
+    matches: DebugElement[] | DebugNode[], elementsOnly: boolean) {
+  const nodes = parentNode.childNodes;
+  const length = nodes.length;
+
+  for (let i = 0; i < length; i++) {
+    const node = nodes[i];
+    const debugNode = getDebugNode(node);
+
+    if (debugNode) {
+      if (elementsOnly && debugNode instanceof DebugElement__POST_R3__ && predicate(debugNode) &&
+          matches.indexOf(debugNode) === -1) {
+        matches.push(debugNode);
+      } else if (
+          !elementsOnly && (predicate as Predicate<DebugNode>)(debugNode) &&
+          (matches as DebugNode[]).indexOf(debugNode) === -1) {
+        (matches as DebugNode[]).push(debugNode);
+      }
+
+      _queryNativeNodeDescendants(node, predicate, matches, elementsOnly);
     }
   }
 }
@@ -536,98 +675,26 @@ function _addQueryMatchR3(
  * defined in templates, not in host bindings.
  */
 function collectPropertyBindings(
-    tNode: TNode, lView: LView, tData: TData): {[key: string]: string} {
-  const properties: {[key: string]: string} = {};
-  let bindingIndex = getFirstBindingIndex(tNode.propertyMetadataStartIndex, tData);
+    properties: {[key: string]: string}, tNode: TNode, lView: LView, tData: TData): void {
+  let bindingIndexes = tNode.propertyBindings;
 
-  while (bindingIndex < tNode.propertyMetadataEndIndex) {
-    let value: any;
-    let propMetadata = tData[bindingIndex] as string;
-    while (!isPropMetadataString(propMetadata)) {
-      // This is the first value for an interpolation. We need to build up
-      // the full interpolation by combining runtime values in LView with
-      // the static interstitial values stored in TData.
-      value = (value || '') + renderStringify(lView[bindingIndex]) + tData[bindingIndex];
-      propMetadata = tData[++bindingIndex] as string;
-    }
-    value = value === undefined ? lView[bindingIndex] : value += lView[bindingIndex];
-    // Property metadata string has 3 parts: property name, prefix, and suffix
-    const metadataParts = propMetadata.split(INTERPOLATION_DELIMITER);
-    const propertyName = metadataParts[0];
-    // Attr bindings don't have property names and should be skipped
-    if (propertyName) {
-      // Wrap value with prefix and suffix (will be '' for normal bindings), if they're defined.
-      // Avoid wrapping for normal bindings so that the value doesn't get cast to a string.
-      properties[propertyName] = (metadataParts[1] && metadataParts[2]) ?
-          metadataParts[1] + value + metadataParts[2] :
-          value;
-    }
-    bindingIndex++;
-  }
-  return properties;
-}
-
-/**
- * Retrieves the first binding index that holds values for this property
- * binding.
- *
- * For normal bindings (e.g. `[id]="id"`), the binding index is the
- * same as the metadata index. For interpolations (e.g. `id="{{id}}-{{name}}"`),
- * there can be multiple binding values, so we might have to loop backwards
- * from the metadata index until we find the first one.
- *
- * @param metadataIndex The index of the first property metadata string for
- * this node.
- * @param tData The data array for the current TView
- * @returns The first binding index for this binding
- */
-function getFirstBindingIndex(metadataIndex: number, tData: TData): number {
-  let currentBindingIndex = metadataIndex - 1;
-
-  // If the slot before the metadata holds a string, we know that this
-  // metadata applies to an interpolation with at least 2 bindings, and
-  // we need to search further to access the first binding value.
-  let currentValue = tData[currentBindingIndex];
-
-  // We need to iterate until we hit either a:
-  // - TNode (it is an element slot marking the end of `consts` section), OR a
-  // - metadata string (slot is attribute metadata or a previous node's property metadata)
-  while (typeof currentValue === 'string' && !isPropMetadataString(currentValue)) {
-    currentValue = tData[--currentBindingIndex];
-  }
-  return currentBindingIndex + 1;
-}
-
-function collectHostPropertyBindings(
-    tNode: TNode, lView: LView, tData: TData): {[key: string]: string} {
-  const properties: {[key: string]: string} = {};
-
-  // Host binding values for a node are stored after directives on that node
-  let hostPropIndex = tNode.directiveEnd;
-  let propMetadata = tData[hostPropIndex] as any;
-
-  // When we reach a value in TView.data that is not a string, we know we've
-  // hit the next node's providers and directives and should stop copying data.
-  while (typeof propMetadata === 'string') {
-    const propertyName = propMetadata.split(INTERPOLATION_DELIMITER)[0];
-    properties[propertyName] = lView[hostPropIndex];
-    propMetadata = tData[++hostPropIndex];
-  }
-  return properties;
-}
-
-
-function collectClassNames(debugElement: DebugElement__POST_R3__): string {
-  const classes = debugElement.classes;
-  let output = '';
-
-  for (const className of Object.keys(classes)) {
-    if (classes[className]) {
-      output = output ? output + ` ${className}` : className;
+  if (bindingIndexes !== null) {
+    for (let i = 0; i < bindingIndexes.length; i++) {
+      const bindingIndex = bindingIndexes[i];
+      const propMetadata = tData[bindingIndex] as string;
+      const metadataParts = propMetadata.split(INTERPOLATION_DELIMITER);
+      const propertyName = metadataParts[0];
+      if (metadataParts.length > 1) {
+        let value = metadataParts[1];
+        for (let j = 1; j < metadataParts.length - 1; j++) {
+          value += renderStringify(lView[bindingIndex + j - 1]) + metadataParts[j + 1];
+        }
+        properties[propertyName] = value;
+      } else {
+        properties[propertyName] = lView[bindingIndex];
+      }
     }
   }
-
-  return output;
 }
 
 
@@ -638,14 +705,19 @@ function getDebugNode__PRE_R3__(nativeNode: any): DebugNode|null {
   return _nativeNodeToDebugNode.get(nativeNode) || null;
 }
 
+const NG_DEBUG_PROPERTY = '__ng_debug__';
+
 export function getDebugNode__POST_R3__(nativeNode: Element): DebugElement__POST_R3__;
 export function getDebugNode__POST_R3__(nativeNode: Node): DebugNode__POST_R3__;
 export function getDebugNode__POST_R3__(nativeNode: null): null;
 export function getDebugNode__POST_R3__(nativeNode: any): DebugNode|null {
   if (nativeNode instanceof Node) {
-    return nativeNode.nodeType == Node.ELEMENT_NODE ?
-        new DebugElement__POST_R3__(nativeNode as Element) :
-        new DebugNode__POST_R3__(nativeNode);
+    if (!(nativeNode.hasOwnProperty(NG_DEBUG_PROPERTY))) {
+      (nativeNode as any)[NG_DEBUG_PROPERTY] = nativeNode.nodeType == Node.ELEMENT_NODE ?
+          new DebugElement__POST_R3__(nativeNode as Element) :
+          new DebugNode__POST_R3__(nativeNode);
+    }
+    return (nativeNode as any)[NG_DEBUG_PROPERTY];
   }
   return null;
 }
@@ -654,6 +726,18 @@ export function getDebugNode__POST_R3__(nativeNode: any): DebugNode|null {
  * @publicApi
  */
 export const getDebugNode: (nativeNode: any) => DebugNode | null = getDebugNode__PRE_R3__;
+
+
+export function getDebugNodeR2__PRE_R3__(nativeNode: any): DebugNode|null {
+  return getDebugNode__PRE_R3__(nativeNode);
+}
+
+export function getDebugNodeR2__POST_R3__(_nativeNode: any): DebugNode|null {
+  return null;
+}
+
+export const getDebugNodeR2: (nativeNode: any) => DebugNode | null = getDebugNodeR2__PRE_R3__;
+
 
 export function getAllDebugNodes(): DebugNode[] {
   return Array.from(_nativeNodeToDebugNode.values());
@@ -678,9 +762,9 @@ export interface Predicate<T> { (value: T): boolean; }
 /**
  * @publicApi
  */
-export const DebugNode: {new (...args: any[]): DebugNode} = DebugNode__PRE_R3__ as any;
+export const DebugNode: {new (...args: any[]): DebugNode} = DebugNode__PRE_R3__;
 
 /**
  * @publicApi
  */
-export const DebugElement: {new (...args: any[]): DebugElement} = DebugElement__PRE_R3__ as any;
+export const DebugElement: {new (...args: any[]): DebugElement} = DebugElement__PRE_R3__;

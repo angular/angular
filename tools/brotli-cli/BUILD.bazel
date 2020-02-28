@@ -1,4 +1,4 @@
-load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 
 nodejs_binary(
     name = "brotli-cli",
@@ -6,6 +6,6 @@ nodejs_binary(
         "cli.js",
         "@npm//brotli",
     ],
-    entry_point = "angular/tools/brotli-cli/cli.js",
+    entry_point = ":cli.js",
     visibility = ["//:__subpackages__"],
 )

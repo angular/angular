@@ -53,7 +53,8 @@ export const controlNameBinding: any = {
  * ### Use with ngModel
  *
  * Support for using the `ngModel` input property and `ngModelChange` event with reactive
- * form directives has been deprecated in Angular v6 and will be removed in Angular v7.
+ * form directives has been deprecated in Angular v6 and will be removed in a future
+ * version of Angular.
  *
  * Now deprecated:
  *
@@ -72,7 +73,7 @@ export const controlNameBinding: any = {
  * an input/output property named `ngModel` on the reactive form directive that simply
  * approximates (some of) its behavior. Specifically, it allows getting/setting the value
  * and intercepting value events. However, some of `ngModel`'s other features - like
- * delaying updates with`ngModelOptions` or exporting the directive - simply don't work,
+ * delaying updates with `ngModelOptions` or exporting the directive - simply don't work,
  * which has understandably caused some confusion.
  *
  * In addition, this pattern mixes template-driven and reactive forms strategies, which
@@ -81,8 +82,8 @@ export const controlNameBinding: any = {
  * principles behind reactive forms, whereas adding a `FormControl`/`FormGroup` layer in
  * the class removes the convenience of defining forms in the template.
  *
- * To update your code before v7, you'll want to decide whether to stick with reactive form
- * directives (and get/set values using reactive forms patterns) or switch over to
+ * To update your code before support is removed, you'll want to decide whether to stick with
+ * reactive form directives (and get/set values using reactive forms patterns) or switch over to
  * template-driven directives.
  *
  * After (choice 1 - use reactive forms):
@@ -113,7 +114,7 @@ export const controlNameBinding: any = {
  *
  * ```ts
  * imports: [
- *   ReactiveFormsModule.withConfig({warnOnNgModelWithFormControl: 'never'});
+ *   ReactiveFormsModule.withConfig({warnOnNgModelWithFormControl: 'never'})
  * ]
  * ```
  *
@@ -145,9 +146,13 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    * @description
    * Tracks the name of the `FormControl` bound to the directive. The name corresponds
    * to a key in the parent `FormGroup` or `FormArray`.
+   * Accepts a name as a string or a number.
+   * The name in the form of a string is useful for individual forms,
+   * while the numerical form allows for form controls to be bound
+   * to indices when iterating over controls in a `FormArray`.
    */
   // TODO(issue/24571): remove '!'.
-  @Input('formControlName') name !: string;
+  @Input('formControlName') name !: string | number | null;
 
   /**
    * @description
@@ -238,7 +243,9 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    * Returns an array that represents the path from the top-level form to this control.
    * Each index is the string name of the control on that level.
    */
-  get path(): string[] { return controlPath(this.name, this._parent !); }
+  get path(): string[] {
+    return controlPath(this.name == null ? this.name : this.name.toString(), this._parent !);
+  }
 
   /**
    * @description

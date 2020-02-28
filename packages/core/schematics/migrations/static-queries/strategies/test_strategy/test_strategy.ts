@@ -16,7 +16,7 @@ import {TimingResult, TimingStrategy} from '../timing-strategy';
  * of detecting the timing of queries based on how they are used in tests.
  */
 export class QueryTestStrategy implements TimingStrategy {
-  setup() { return true; }
+  setup() {}
 
   /**
    * Detects the timing for a given query. For queries within tests, we always

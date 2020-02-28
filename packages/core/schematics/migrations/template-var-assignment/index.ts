@@ -13,15 +13,14 @@ import * as ts from 'typescript';
 
 import {NgComponentTemplateVisitor} from '../../utils/ng_component_template';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
+import {createMigrationCompilerHost} from '../../utils/typescript/compiler_host';
 import {parseTsconfigFile} from '../../utils/typescript/parse_tsconfig';
-import {visitAllNodes} from '../../utils/typescript/visit_nodes';
 
 import {analyzeResolvedTemplate} from './analyze_template';
 
 type Logger = logging.LoggerApi;
 
-const README_URL =
-    'https://github.com/angular/angular/tree/master/packages/core/schematics/migrations/template-var-assignment/README.md';
+const README_URL = 'https://v8.angular.io/guide/deprecations#cannot-assign-to-template-variables';
 const FAILURE_MESSAGE = `Found assignment to template variable.`;
 
 /** Entry point for the V8 template variable assignment schematic. */
@@ -49,22 +48,15 @@ export default function(): Rule {
 function runTemplateVariableAssignmentCheck(
     tree: Tree, tsconfigPath: string, basePath: string, logger: Logger) {
   const parsed = parseTsconfigFile(tsconfigPath, dirname(tsconfigPath));
-  const host = ts.createCompilerHost(parsed.options, true);
-
-  // We need to overwrite the host "readFile" method, as we want the TypeScript
-  // program to be based on the file contents in the virtual file tree.
-  host.readFile = fileName => {
-    const buffer = tree.read(relative(basePath, fileName));
-    return buffer ? buffer.toString() : undefined;
-  };
-
+  const host = createMigrationCompilerHost(tree, parsed.options, basePath);
   const program = ts.createProgram(parsed.fileNames, parsed.options, host);
   const typeChecker = program.getTypeChecker();
   const templateVisitor = new NgComponentTemplateVisitor(typeChecker);
-  const rootSourceFiles = program.getRootFileNames().map(f => program.getSourceFile(f) !);
+  const sourceFiles = program.getSourceFiles().filter(
+      f => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
 
   // Analyze source files by detecting HTML templates.
-  rootSourceFiles.forEach(sourceFile => visitAllNodes(sourceFile, [templateVisitor]));
+  sourceFiles.forEach(sourceFile => templateVisitor.visitNode(sourceFile));
 
   const {resolvedTemplates} = templateVisitor;
   const collectedFailures: string[] = [];
@@ -95,6 +87,5 @@ function runTemplateVariableAssignmentCheck(
     logger.info('');
     logger.info('The following template assignments were found:');
     collectedFailures.forEach(failure => logger.warn(`⮑   ${failure}`));
-    logger.info('------------------------------------------------');
   }
 }

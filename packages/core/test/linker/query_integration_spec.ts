@@ -361,19 +361,18 @@ describe('Query API', () => {
          expect(comp.children.length).toBe(1);
        });
 
-    onlyInIvy(
-        'Shallow queries don\'t cross ng-container boundaries in ivy (ng-container is treated as a regular element')
-        .it('should not cross ng-container boundaries with shallow queries', () => {
-          const template = `<needs-content-children-shallow>
+
+    it('should not cross ng-container boundaries with shallow queries', () => {
+      const template = `<needs-content-children-shallow>
                           <ng-container>
                             <div #q></div>
                           </ng-container>
                         </needs-content-children-shallow>`;
-          const view = createTestCmpAndDetectChanges(MyComp0, template);
+      const view = createTestCmpAndDetectChanges(MyComp0, template);
 
-          const comp = view.debugElement.children[0].injector.get(NeedsContentChildrenShallow);
-          expect(comp.children.length).toBe(0);
-        });
+      const comp = view.debugElement.children[0].injector.get(NeedsContentChildrenShallow);
+      expect(comp.children.length).toBe(1);
+    });
 
     it('should contain the first descendant content child templateRef', () => {
       const template = '<needs-content-child-template-ref-app>' +
@@ -896,9 +895,9 @@ function createTestCmpAndDetectChanges<T>(type: Type<T>, template: string): Comp
 @Component({selector: 'needs-static-content-view-child', template: `<div text="viewFoo"></div>`})
 class NeedsStaticContentAndViewChild {
   // TODO(issue/24571): remove '!'.
-  @ContentChild(TextDirective) contentChild !: TextDirective;
+  @ContentChild(TextDirective, {static: true}) contentChild !: TextDirective;
   // TODO(issue/24571): remove '!'.
-  @ViewChild(TextDirective) viewChild !: TextDirective;
+  @ViewChild(TextDirective, {static: true}) viewChild !: TextDirective;
 }
 
 @Directive({selector: '[dir]'})
@@ -1025,9 +1024,9 @@ class NeedsTpl {
     {selector: 'needs-named-tpl', template: '<ng-template #tpl><div>shadow</div></ng-template>'})
 class NeedsNamedTpl {
   // TODO(issue/24571): remove '!'.
-  @ViewChild('tpl') viewTpl !: TemplateRef<Object>;
+  @ViewChild('tpl', {static: true}) viewTpl !: TemplateRef<Object>;
   // TODO(issue/24571): remove '!'.
-  @ContentChild('tpl') contentTpl !: TemplateRef<Object>;
+  @ContentChild('tpl', {static: true}) contentTpl !: TemplateRef<Object>;
   constructor(public vc: ViewContainerRef) {}
 }
 
@@ -1044,7 +1043,8 @@ class NeedsContentChildWithRead {
   // TODO(issue/24571): remove '!'.
   @ContentChild('q', {read: TextDirective}) textDirChild !: TextDirective;
   // TODO(issue/24571): remove '!'.
-  @ContentChild('nonExisting', {read: TextDirective}) nonExistingVar !: TextDirective;
+  @ContentChild('nonExisting', {read: TextDirective})
+  nonExistingVar !: TextDirective;
 }
 
 @Component({selector: 'needs-content-children-shallow', template: ''})
@@ -1059,7 +1059,7 @@ class NeedsContentChildrenShallow {
 })
 class NeedsContentChildTemplateRef {
   // TODO(issue/24571): remove '!'.
-  @ContentChild(TemplateRef) templateRef !: TemplateRef<any>;
+  @ContentChild(TemplateRef, {static: true}) templateRef !: TemplateRef<any>;
 }
 
 @Component({
@@ -1098,9 +1098,10 @@ class NeedsViewContainerWithRead {
   // TODO(issue/24571): remove '!'.
   @ViewChild('q', {read: ViewContainerRef}) vc !: ViewContainerRef;
   // TODO(issue/24571): remove '!'.
-  @ViewChild('nonExisting', {read: ViewContainerRef}) nonExistingVar !: ViewContainerRef;
+  @ViewChild('nonExisting', {read: ViewContainerRef})
+  nonExistingVar !: ViewContainerRef;
   // TODO(issue/24571): remove '!'.
-  @ContentChild(TemplateRef) template !: TemplateRef<Object>;
+  @ContentChild(TemplateRef, {static: true}) template !: TemplateRef<Object>;
 
   createView() { this.vc.createEmbeddedView(this.template); }
 }
@@ -1123,7 +1124,7 @@ class MyCompBroken0 {
 @Component({selector: 'manual-projecting', template: '<div #vc></div>'})
 class ManualProjecting {
   // TODO(issue/24571): remove '!'.
-  @ContentChild(TemplateRef) template !: TemplateRef<any>;
+  @ContentChild(TemplateRef, {static: true}) template !: TemplateRef<any>;
 
   // TODO(issue/24571): remove '!'.
   @ViewChild('vc', {read: ViewContainerRef})

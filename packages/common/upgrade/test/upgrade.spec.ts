@@ -75,7 +75,7 @@ describe('LocationProvider', () => {
       providers: [UpgradeModule],
     });
 
-    upgradeModule = TestBed.get(UpgradeModule);
+    upgradeModule = TestBed.inject(UpgradeModule);
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
@@ -101,7 +101,7 @@ describe('LocationHtml5Url', function() {
       providers: [UpgradeModule],
 
     });
-    upgradeModule = TestBed.get(UpgradeModule);
+    upgradeModule = TestBed.inject(UpgradeModule);
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
@@ -176,7 +176,7 @@ describe('NewUrl', function() {
       providers: [UpgradeModule],
     });
 
-    upgradeModule = TestBed.get(UpgradeModule);
+    upgradeModule = TestBed.inject(UpgradeModule);
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
@@ -482,7 +482,7 @@ describe('New URL Parsing', () => {
       providers: [UpgradeModule],
     });
 
-    upgradeModule = TestBed.get(UpgradeModule);
+    upgradeModule = TestBed.inject(UpgradeModule);
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
@@ -512,7 +512,7 @@ describe('New URL Parsing', () => {
       providers: [UpgradeModule],
     });
 
-    upgradeModule = TestBed.get(UpgradeModule);
+    upgradeModule = TestBed.inject(UpgradeModule);
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
@@ -622,6 +622,114 @@ describe('New URL Parsing', () => {
     });
 
   });
+});
+
+describe('$location.onChange()', () => {
+
+  let $location: $locationShim;
+  let upgradeModule: UpgradeModule;
+  let mock$rootScope: $rootScopeMock;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        CommonModule,
+        LocationUpgradeTestModule.config({useHash: false, startUrl: 'http://host.com/'}),
+      ],
+      providers: [UpgradeModule],
+    });
+
+    upgradeModule = TestBed.inject(UpgradeModule);
+    upgradeModule.$injector = {get: injectorFactory()};
+    mock$rootScope = upgradeModule.$injector.get('$rootScope');
+  });
+
+  beforeEach(inject([$locationShim], (loc: $locationShim) => { $location = loc; }));
+
+  it('should have onChange method', () => { expect(typeof $location.onChange).toBe('function'); });
+
+  it('should add registered functions to changeListeners', () => {
+
+    function changeListener(url: string, state: unknown) { return undefined; }
+    function errorHandler(e: Error) {}
+
+    expect(($location as any).$$changeListeners.length).toBe(0);
+
+    $location.onChange(changeListener, errorHandler);
+
+    expect(($location as any).$$changeListeners.length).toBe(1);
+    expect(($location as any).$$changeListeners[0][0]).toEqual(changeListener);
+    expect(($location as any).$$changeListeners[0][1]).toEqual(errorHandler);
+  });
+
+  it('should call changeListeners when URL is updated', () => {
+
+    const onChangeVals =
+        {url: 'url', state: 'state' as unknown, oldUrl: 'oldUrl', oldState: 'oldState' as unknown};
+
+    function changeListener(url: string, state: unknown, oldUrl: string, oldState: unknown) {
+      onChangeVals.url = url;
+      onChangeVals.state = state;
+      onChangeVals.oldUrl = oldUrl;
+      onChangeVals.oldState = oldState;
+    }
+
+    $location.onChange(changeListener);
+
+    const newState = {foo: 'bar'};
+    $location.state(newState);
+    $location.path('/newUrl');
+    mock$rootScope.runWatchers();
+
+    expect(onChangeVals.url).toBe('/newUrl');
+    expect(onChangeVals.state).toEqual(newState);
+    expect(onChangeVals.oldUrl).toBe('http://host.com');
+    expect(onChangeVals.oldState).toBe(null);
+  });
+
+  it('should call changeListeners after $locationChangeSuccess', () => {
+
+    let changeListenerCalled = false;
+    let locationChangeSuccessEmitted = false;
+
+    function changeListener(url: string, state: unknown, oldUrl: string, oldState: unknown) {
+      changeListenerCalled = true;
+    }
+
+    $location.onChange(changeListener);
+
+    mock$rootScope.$on('$locationChangeSuccess', () => {
+      // Ensure that the changeListener hasn't been called yet
+      expect(changeListenerCalled).toBe(false);
+      locationChangeSuccessEmitted = true;
+    });
+
+    // Update state and run watchers
+    const stateValue = {foo: 'bar'};
+    $location.state(stateValue);
+    mock$rootScope.runWatchers();
+
+    // Ensure that change listeners are called and location events are emitted
+    expect(changeListenerCalled).toBe(true);
+    expect(locationChangeSuccessEmitted).toBe(true);
+  });
+
+  it('should call forward errors to error handler', () => {
+
+    let error !: Error;
+
+    function changeListener(url: string, state: unknown, oldUrl: string, oldState: unknown) {
+      throw new Error('Handle error');
+    }
+    function errorHandler(e: Error) { error = e; }
+
+    $location.onChange(changeListener, errorHandler);
+
+    $location.url('/newUrl');
+    mock$rootScope.runWatchers();
+    expect(error.message).toBe('Handle error');
+  });
+
 });
 
 function parseLinkAndReturn(location: $locationShim, toUrl: string, relHref?: string) {

@@ -9,6 +9,7 @@
     "stripInternal": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
+    "strict": true,
     "strictPropertyInitialization": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
