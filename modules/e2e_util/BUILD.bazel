@@ -1,10 +1,10 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
 load("//tools:defaults.bzl", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
 ts_library(
     name = "e2e_util",
-    testonly = 1,
     srcs = glob(["*.ts"]),
     deps = [
         "//packages:types",
@@ -16,4 +16,14 @@ ts_library(
         "@npm//protractor",
         "@npm//selenium-webdriver",
     ],
+)
+
+pkg_npm(
+    name = "benchmark_utils",
+    srcs = [
+        "BUILD.bazel",
+        "package.json",
+    ],
+    tags = ["release-with-framework"],
+    deps = [":e2e_util"],
 )

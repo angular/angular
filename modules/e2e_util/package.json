@@ -1,0 +1,8 @@
+{
+  "name": "todo(wagnermaciel): add a legit name",
+  "version": "0.0.1",
+  "description": "Private internal testing code for angular framework",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true
+}
