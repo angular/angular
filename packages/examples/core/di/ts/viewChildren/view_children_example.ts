@@ -29,7 +29,7 @@ export class Pane {
 })
 export class ViewChildrenComp implements AfterViewInit {
   // TODO(issue/24571): remove '!'.
-  @ViewChildren(Pane) panes !: QueryList<Pane>;
+  @ViewChildren(Pane, { static: false }) panes !: QueryList<Pane>;
   serializedPanes: string = '';
 
   shouldShow = false;
