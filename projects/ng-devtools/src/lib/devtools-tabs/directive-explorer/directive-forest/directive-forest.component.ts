@@ -106,9 +106,10 @@ export class DirectiveForestComponent {
 
   @HostListener('document:keydown.ArrowUp', ['$event'])
   navigateUp(event: KeyboardEvent): void {
-    if (this._invalidArrowEvent(event)) {
+    if (this.isEditingDirectiveState(event)) {
       return;
     }
+
     const data = this.dataSource.data;
     let prevIdx = data.findIndex(e => e.id === this.selectedNode.id) - 1;
     if (prevIdx < 0) {
@@ -124,14 +125,16 @@ export class DirectiveForestComponent {
       prevNode = data[prevIdx];
     }
     this.select(data[prevIdx]);
+
     event.preventDefault();
   }
 
   @HostListener('document:keydown.ArrowDown', ['$event'])
   navigateDown(event: KeyboardEvent): void {
-    if (this._invalidArrowEvent(event)) {
+    if (this.isEditingDirectiveState(event)) {
       return;
     }
+
     const data = this.dataSource.data;
     let idx = data.findIndex(e => e.id === this.selectedNode.id);
     const currentNode = data[idx];
@@ -150,12 +153,13 @@ export class DirectiveForestComponent {
       return;
     }
     this.select(data[idx]);
+
     event.preventDefault();
   }
 
   @HostListener('document:keydown.ArrowLeft', ['$event'])
   collapseCurrent(event: KeyboardEvent): void {
-    if (this._invalidArrowEvent(event)) {
+    if (this.isEditingDirectiveState(event)) {
       return;
     }
     this.treeControl.collapse(this.selectedNode);
@@ -164,14 +168,14 @@ export class DirectiveForestComponent {
 
   @HostListener('document:keydown.ArrowRight', ['$event'])
   expandCurrent(event: KeyboardEvent): void {
-    if (this._invalidArrowEvent(event)) {
+    if (this.isEditingDirectiveState(event)) {
       return;
     }
     this.treeControl.expand(this.selectedNode);
     event.preventDefault();
   }
 
-  private _invalidArrowEvent(event: KeyboardEvent): boolean {
+  isEditingDirectiveState(event: KeyboardEvent): boolean {
     return (event.target as Element).tagName === 'INPUT' || !this.selectedNode;
   }
 
