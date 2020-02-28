@@ -8,7 +8,7 @@ interface NumberTrie {
 export class InsertionTrie {
   private _insertionTrie: NumberTrie = {};
 
-  insert(pos: ElementPosition) {
+  insert(pos: ElementPosition): void {
     if (!pos.length) {
       return;
     }
@@ -22,7 +22,7 @@ export class InsertionTrie {
     current[pos[pos.length - 1]].end = true;
   }
 
-  exists(pos: ElementPosition) {
+  exists(pos: ElementPosition): boolean {
     if (!pos.length) {
       return true;
     }
