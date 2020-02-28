@@ -11,7 +11,12 @@ import {TAttributes} from '../../../../src/render3/interfaces/node';
 import {createBenchmark} from '../micro_bench';
 import {setupTestHarness} from '../setup';
 
-`
+// Number of Directives with Host Binding and Host Listener
+// that should be generated for one element in a template.
+const HOST_BINDING_DIRS_COUNT = 100;
+
+function generateHostBindingDirDef() {
+  `
   @Directive({
     selector: '[hostBindingDir]'
   })
@@ -25,24 +30,26 @@ import {setupTestHarness} from '../setup';
     onClick(event: any): void {}
   }
 `;
-class HostBindingDir {
-  static ɵfac() { return new HostBindingDir(); }
-  static ɵdir = ɵɵdefineDirective({
-    type: HostBindingDir,
-    selectors: [['', 'hostBindingDir', '']],
-    hostVars: 2,
-    hostBindings: function(rf: RenderFlags, ctx: any) {
-      if (rf & 1) {
-        ɵɵlistener('click', function() { return ctx.onClick(); });
+  class HostBindingDir {
+    static ɵfac() { return new HostBindingDir(); }
+    static ɵdir = ɵɵdefineDirective({
+      type: HostBindingDir,
+      selectors: [['', 'hostBindingDir', '']],
+      hostVars: 2,
+      hostBindings: function(rf: RenderFlags, ctx: any) {
+        if (rf & 1) {
+          ɵɵlistener('click', function() { return ctx.onClick(); });
+        }
+        if (rf & 2) {
+          ɵɵhostProperty('data-a', ctx.exp);
+        }
       }
-      if (rf & 2) {
-        ɵɵhostProperty('data-a', ctx.exp);
-      }
-    }
-  });
+    });
 
-  exp = 'string-exp';
-  onClick() {}
+    exp = 'string-exp';
+    onClick() {}
+  }
+  return HostBindingDir.ɵdir;
 }
 
 `
@@ -56,7 +63,10 @@ function componentTemplateFn(rf: RenderFlags, ctx: any) {
 
 const context: any = {};
 const consts: TAttributes[] = [['hostBindingDir', '']];
-const directives: DirectiveDefList = [HostBindingDir.ɵdir];
+const directives: DirectiveDefList = [];
+for (let i = 0; i < HOST_BINDING_DIRS_COUNT; i++) {
+  directives.push(generateHostBindingDirDef());
+}
 const harness = setupTestHarness(componentTemplateFn, 1, 0, 1000, context, consts, directives);
 
 // Benchmark host bindings execution in *creation* mode
