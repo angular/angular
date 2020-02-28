@@ -74,17 +74,6 @@ export interface ComponentExplorerView {
   properties: DirectivesProperties;
 }
 
-export enum DirectiveEventType {
-  Create,
-  Destroy,
-}
-
-export enum ComponentEventType {
-  Create,
-  Destroy,
-  ChangeDetection,
-}
-
 export interface LifecycleProfile {
   ngOnInit?: number;
   ngOnDestroy?: number;
