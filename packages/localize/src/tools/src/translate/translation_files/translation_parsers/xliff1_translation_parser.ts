@@ -9,6 +9,7 @@ import {Element, Node, XmlParser, visitAll} from '@angular/compiler';
 import {ɵMessageId, ɵParsedTranslation} from '@angular/localize';
 import {extname} from 'path';
 
+import {Diagnostics} from '../../../diagnostics';
 import {BaseVisitor} from '../base_visitor';
 import {MessageSerializer} from '../message_serialization/message_serializer';
 import {TargetMessageRenderer} from '../message_serialization/target_message_renderer';
@@ -55,7 +56,8 @@ class XliffFileElementVisitor extends BaseVisitor {
     if (element.name === 'file') {
       this.bundle = {
         locale: getAttribute(element, 'target-language'),
-        translations: XliffTranslationVisitor.extractTranslations(element)
+        translations: XliffTranslationVisitor.extractTranslations(element),
+        diagnostics: new Diagnostics(),
       };
     } else {
       return visitAll(this, element.children);
