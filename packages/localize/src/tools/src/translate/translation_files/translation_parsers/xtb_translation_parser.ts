@@ -24,7 +24,7 @@ import {getAttrOrThrow, parseInnerRange} from './translation_utils';
  * A translation parser that can load XB files.
  */
 export class XtbTranslationParser implements TranslationParser {
-  constructor(private diagnostics: Diagnostics) {}
+  constructor(private diagnostics: Diagnostics = new Diagnostics()) {}
 
   canParse(filePath: string, contents: string): boolean {
     const extension = extname(filePath);
@@ -61,7 +61,11 @@ class XtbVisitor extends BaseVisitor {
               element.sourceSpan, '<translationbundle> elements can not be nested');
         }
         const langAttr = element.attrs.find((attr) => attr.name === 'lang');
-        bundle = {locale: langAttr && langAttr.value, translations: {}};
+        bundle = {
+          locale: langAttr && langAttr.value,
+          translations: {},
+          diagnostics: this.diagnostics
+        };
         visitAll(this, element.children, bundle);
         return bundle;
 
