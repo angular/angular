@@ -263,7 +263,7 @@ export function computeStyle(element: HTMLElement, prop: string): string {
   if (value.length === 0 && (prop === 'margin' || prop === 'padding')) {
     // reconstruct the padding/margin value as `top right bottom left`
     const propTop = (prop + 'Top') as 'marginTop' | 'paddingTop';
-    const propRight = (prop + 'Right') as 'marginRight' | 'paddingLeft';
+    const propRight = (prop + 'Right') as 'marginRight' | 'paddingRight';
     const propBottom = (prop + 'Bottom') as 'marginBottom' | 'paddingBottom';
     const propLeft = (prop + 'Left') as 'marginLeft' | 'paddingLeft';
     value = `${gcs[propTop]} ${gcs[propRight]} ${gcs[propBottom]} ${gcs[propLeft]}`;
