@@ -58,15 +58,8 @@ describe('ClusterWorker', () => {
         new ClusterWorker(mockLogger, createCompileFnSpy);
         const onTaskCompleted: TaskCompletedCallback = createCompileFnSpy.calls.argsFor(0)[0];
 
-        onTaskCompleted(null as any, TaskProcessingOutcome.AlreadyProcessed);
-        expect(processSendSpy).toHaveBeenCalledTimes(1);
-        expect(processSendSpy).toHaveBeenCalledWith({
-          type: 'task-completed',
-          outcome: TaskProcessingOutcome.AlreadyProcessed,
-        });
-
         onTaskCompleted(null as any, TaskProcessingOutcome.Processed);
-        expect(processSendSpy).toHaveBeenCalledTimes(2);
+        expect(processSendSpy).toHaveBeenCalledTimes(1);
         expect(processSendSpy).toHaveBeenCalledWith({
           type: 'task-completed',
           outcome: TaskProcessingOutcome.Processed,
