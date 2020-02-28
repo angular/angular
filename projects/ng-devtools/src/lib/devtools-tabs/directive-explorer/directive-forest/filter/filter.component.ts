@@ -12,8 +12,6 @@ export class FilterComponent {
 
   @Input() hasMatched = false;
 
-  @ViewChild('filterInput') filterElement: ElementRef;
-
   emitFilter(event: InputEvent) {
     this.filter.emit((event.target as HTMLInputElement).value);
   }
