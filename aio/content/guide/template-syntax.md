@@ -1065,7 +1065,7 @@ However, using the above style binding syntax without `NgStyle` is preferred bec
 {@a styling-precedence}
 ### Styling Precedence
 
-A single HTML element can have its CSS class list and style values bound to a multiple sources (for example, host bindings from multiple directives).
+A single HTML element can have its CSS class list and style values bound to multiple sources (for example, host bindings from multiple directives).
 
 When there are multiple bindings to the same class name or style property, Angular uses a set of precedence rules to resolve conflicts and determine which classes or styles are ultimately applied to the element.
 
