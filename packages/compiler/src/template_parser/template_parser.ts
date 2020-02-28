@@ -399,9 +399,11 @@ class TemplateParseVisitor implements html.Visitor {
           this.providerViewContext, parent.providerContext !, parent.isTemplateElement,
           templateDirectiveAsts, [], [], true, templateQueryStartIndex, element.sourceSpan !);
       templateProviderContext.afterElement();
-
+      const attrs = templateElementOrDirectiveProps.filter(p => p.isLiteral).map(p => {
+        return new t.AttrAst(p.name, '', p.sourceSpan);
+      });
       parsedElement = new t.EmbeddedTemplateAst(
-          [], [], [], templateElementVars, templateProviderContext.transformedDirectiveAsts,
+          attrs, [], [], templateElementVars, templateProviderContext.transformedDirectiveAsts,
           templateProviderContext.transformProviders,
           templateProviderContext.transformedHasViewContainer, templateProviderContext.queryMatches,
           [parsedElement], ngContentIndex, element.sourceSpan !);
