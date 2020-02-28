@@ -701,7 +701,8 @@ function i18nEndFirstPass(tView: TView, lView: LView) {
     }
     // Check if an element has any local refs and skip them
     const tNode = getTNode(tView, index);
-    if (tNode && (tNode.type === TNodeType.Element || tNode.type === TNodeType.ElementContainer) &&
+    if (tNode && (tNode.type === TNodeType.Container || tNode.type === TNodeType.Element ||
+                  tNode.type === TNodeType.ElementContainer) &&
         tNode.localNames !== null) {
       // Divide by 2 to get the number of local refs,
       // since they are stored as an array that also includes directive indexes,
