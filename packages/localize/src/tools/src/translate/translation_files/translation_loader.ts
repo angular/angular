@@ -14,7 +14,9 @@ import {TranslationParser} from './translation_parsers/translation_parser';
  * Use this class to load a collection of translation files from disk.
  */
 export class TranslationLoader {
-  constructor(private translationParsers: TranslationParser[], private diagnostics: Diagnostics) {}
+  constructor(
+      private translationParsers: TranslationParser[],
+      /** @deprecated */ private diagnostics?: Diagnostics) {}
 
   /**
    * Load and parse the translation files into a collection of `TranslationBundles`.
@@ -34,22 +36,37 @@ export class TranslationLoader {
     return translationFilePaths.map((filePath, index) => {
       const fileContents = FileUtils.readFile(filePath);
       for (const translationParser of this.translationParsers) {
-        if (translationParser.canParse(filePath, fileContents)) {
-          const providedLocale = translationFileLocales[index];
-          const {locale: parsedLocale, translations} =
-              translationParser.parse(filePath, fileContents);
-          const locale = providedLocale || parsedLocale;
-          if (locale === undefined) {
-            throw new Error(
-                `The translation file "${filePath}" does not contain a target locale and no explicit locale was provided for this file.`);
-          }
-          if (parsedLocale !== undefined && providedLocale !== undefined &&
-              parsedLocale !== providedLocale) {
-            this.diagnostics.warn(
-                `The provided locale "${providedLocale}" does not match the target locale "${parsedLocale}" found in the translation file "${filePath}".`);
-          }
-          return {locale, translations};
+        const result = translationParser.canParse(filePath, fileContents);
+        if (!result) {
+          continue;
         }
+
+        const {locale: parsedLocale, translations, diagnostics} =
+            translationParser.parse(filePath, fileContents);
+        if (diagnostics.hasErrors) {
+          throw new Error(diagnostics.formatDiagnostics(
+              `The translation file "${filePath}" could not be parsed.`));
+        }
+
+        const providedLocale = translationFileLocales[index];
+        const locale = providedLocale || parsedLocale;
+        if (locale === undefined) {
+          throw new Error(
+              `The translation file "${filePath}" does not contain a target locale and no explicit locale was provided for this file.`);
+        }
+
+        if (parsedLocale !== undefined && providedLocale !== undefined &&
+            parsedLocale !== providedLocale) {
+          diagnostics.warn(
+              `The provided locale "${providedLocale}" does not match the target locale "${parsedLocale}" found in the translation file "${filePath}".`);
+        }
+
+        // If we were passed a diagnostics object then copy the messages over to it.
+        if (this.diagnostics) {
+          this.diagnostics.messages.push(...diagnostics.messages);
+        }
+
+        return {locale, translations, diagnostics};
       }
       throw new Error(
           `There is no "TranslationParser" that can parse this translation file: ${filePath}.`);
