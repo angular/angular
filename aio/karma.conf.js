@@ -14,6 +14,9 @@ module.exports = function (config) {
       require('@angular-devkit/build-angular/plugins/karma'),
       {'reporter:jasmine-seed': ['type', JasmineSeedReporter]},
     ],
+    proxies: {
+      '/dummy/image': 'src/assets/images/logos/angular/angular.png',
+    },
     client: {
       clearContext: false,  // leave Jasmine Spec Runner output visible in browser
       jasmine: {
