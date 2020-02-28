@@ -41,6 +41,10 @@ export class ClusterMaster {
   }
 
   run(): Promise<void> {
+    if (this.taskQueue.allTasksCompleted) {
+      return Promise.resolve();
+    }
+
     // Set up listeners for worker events (emitted on `cluster`).
     cluster.on('online', this.wrapEventHandler(worker => this.onWorkerOnline(worker.id)));
 
@@ -51,10 +55,8 @@ export class ClusterMaster {
         'exit',
         this.wrapEventHandler((worker, code, signal) => this.onWorkerExit(worker, code, signal)));
 
-    // Start the workers.
-    for (let i = 0; i < this.workerCount; i++) {
-      cluster.fork();
-    }
+    // Since we have pending tasks at the very minimum we need a single worker.
+    cluster.fork();
 
     return this.finishedDeferred.promise.then(() => this.stopWorkers(), err => {
       this.stopWorkers();
@@ -98,11 +100,16 @@ export class ClusterMaster {
       isWorkerAvailable = false;
     }
 
-    // If there are no available workers or no available tasks, log (for debugging purposes).
     if (!isWorkerAvailable) {
-      this.logger.debug(
-          `All ${this.taskAssignments.size} workers are currently busy and cannot take on more ` +
-          'work.');
+      if (this.taskAssignments.size < this.workerCount) {
+        this.logger.debug('Spawning another worker process as there is more work to be done.');
+        cluster.fork();
+      } else {
+        // If there are no available workers or no available tasks, log (for debugging purposes).
+        this.logger.debug(
+            `All ${this.taskAssignments.size} workers are currently busy and cannot take on more ` +
+            'work.');
+      }
     } else {
       const busyWorkers = Array.from(this.taskAssignments)
                               .filter(([_workerId, task]) => task !== null)
