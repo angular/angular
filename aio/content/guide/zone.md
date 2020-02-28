@@ -218,7 +218,7 @@ zone.run(() => {
 This new context, `zoneThis`, can be retrieved from the `setTimeout()` callback function, and this context is the same when the `setTimeout()` is scheduled.
 To get the context, you can call [`Zone.current`](https://github.com/angular/angular/blob/master/packages/zone.js/lib/zone.ts).
 
-### Zones and async lifecycle hooks
+## Zones and async lifecycle hooks
 
 Zone.js can create contexts that persist across asynchronous operations as well as provide lifecycle hooks for asynchronous operations.
 
@@ -315,12 +315,12 @@ This function, and all asynchronous operations in that function, trigger change 
 export class AppComponent implements OnInit {
   constructor(private ngZone: NgZone) {}
   ngOnInit() {
-    // new async API is not handled by Zone, so you need to
-    // use ngZone.run to make the asynchronous operation in angular zone
-    // and trigger change detection automatically
+    // New async API is not handled by Zone, so you need to
+    // use ngZone.run() to make the asynchronous operation in the angular zone
+    // and trigger change detection automatically.
     this.ngZone.run(() => {
       someNewAsyncAPI(() => {
-        // update data of component
+        // update the data of the component
       });
     });
   }
@@ -335,19 +335,20 @@ In that situation, you can use another NgZone method: [runOutsideAngular()](api/
 export class AppComponent implements OnInit {
   constructor(private ngZone: NgZone) {}
   ngOnInit() {
-    // you know no data will be updated
-    // you don't want to do change detection in this
-    // specified operation, you can call runOutsideAngular
+    // You know no data will be updated,
+    // so you don't want to trigger change detection in this
+    // specified operation. Instead, call ngZone.runOutsideAngular()
     this.ngZone.runOutsideAngular(() => {
       setTimeout(() => {
-        // do something will not update component data
+        // update component data
+        // but don't trigger change detection.
       });
     });
   }
 }
 ```
 
-### Seting up Zone.js
+### Setting up Zone.js
 
 To make Zone.js available in Angular, you need to import the zone.js package.
 If you are using the Angular CLI, this step is done automatically, and you will see the following line in the `src/polyfills.ts`:
