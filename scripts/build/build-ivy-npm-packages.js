@@ -9,8 +9,13 @@
 
 'use strict';
 
+const {buildZoneJsPackage} = require('./zone-js-builder');
 const {buildTargetPackages} = require('./package-builder');
 
 
 // Build the ivy packages into `dist/packages-dist-ivy-aot/`.
 buildTargetPackages('dist/packages-dist-ivy-aot', true, 'Ivy AOT');
+
+// Build the `zone.js` npm package into `dist/zone.js-dist/`, because it might be needed by other
+// scripts/tests.
+buildZoneJsPackage();
