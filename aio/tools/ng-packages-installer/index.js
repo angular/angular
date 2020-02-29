@@ -11,12 +11,11 @@ const yargs = require('yargs');
 const PACKAGE_JSON = 'package.json';
 const YARN_LOCK = 'yarn.lock';
 const LOCAL_MARKER_PATH = 'node_modules/_local_.json';
-const PACKAGE_JSON_REGEX = /^[^/]+\/package\.json$/;
 
 const ANGULAR_ROOT_DIR = path.resolve(__dirname, '../../..');
-const ANGULAR_DIST_PACKAGES = path.join(ANGULAR_ROOT_DIR, 'dist/packages-dist');
-const ANGULAR_DIST_PACKAGES_BUILD_SCRIPT = path.join(ANGULAR_ROOT_DIR, 'scripts/build/build-packages-dist.js');
-const ANGULAR_DIST_PACKAGES_BUILD_CMD = `"${process.execPath}" "${ANGULAR_DIST_PACKAGES_BUILD_SCRIPT}"`;
+const ANGULAR_DIST_PACKAGES_DIR = path.join(ANGULAR_ROOT_DIR, 'dist/packages-dist');
+const DIST_PACKAGES_BUILD_SCRIPT = path.join(ANGULAR_ROOT_DIR, 'scripts/build/build-packages-dist.js');
+const DIST_PACKAGES_BUILD_CMD = `"${process.execPath}" "${DIST_PACKAGES_BUILD_SCRIPT}"`;
 
 /**
  * A tool that can install Angular dependencies for a project from NPM or from the
@@ -94,7 +93,7 @@ class NgPackagesInstaller {
               const pkg2 = packages[key2];
               if (pkg2) {
                 // point the core Angular packages at the distributable folder
-                deps[key2] = `file:${pkg2.parentDir}/${key2.replace('@angular/', '')}`;
+                deps[key2] = `file:${pkg2.packageDir}`;
                 this._log(`Overriding dependency of local ${key} with local package: ${key2}: ${deps[key2]}`);
               }
             });
@@ -178,14 +177,14 @@ class NgPackagesInstaller {
     const canBuild = process.platform !== 'win32';
 
     if (canBuild) {
-      this._log(`Building the Angular packages with: ${ANGULAR_DIST_PACKAGES_BUILD_SCRIPT}`);
-      shelljs.exec(ANGULAR_DIST_PACKAGES_BUILD_CMD);
+      this._log(`Building the Angular packages with: ${DIST_PACKAGES_BUILD_SCRIPT}`);
+      shelljs.exec(DIST_PACKAGES_BUILD_CMD);
     } else {
       this._warn([
         'Automatically building the local Angular packages is currently not supported on Windows.',
-        `Please, ensure '${ANGULAR_DIST_PACKAGES}' exists and is up-to-date (e.g. by running ` +
-          `'${ANGULAR_DIST_PACKAGES_BUILD_SCRIPT}' in Git Bash for Windows, Windows Subsystem for Linux or a Linux ` +
-          'docker container or VM).',
+        `Please, ensure '${ANGULAR_DIST_PACKAGES_DIR}' exists and is up-to-date (e.g. by running ` +
+          `'${DIST_PACKAGES_BUILD_SCRIPT}' in Git Bash for Windows, Windows Subsystem for Linux or a Linux docker ` +
+          'container or VM).',
         '',
         'Proceeding anyway...',
       ].join('\n'));
@@ -200,7 +199,7 @@ class NgPackagesInstaller {
       const sourcePackage = packages[key];
       if (sourcePackage) {
         // point the core Angular packages at the distributable folder
-        mergedDependencies[key] = `file:${sourcePackage.parentDir}/${key.replace('@angular/', '')}`;
+        mergedDependencies[key] = `file:${sourcePackage.packageDir}`;
         this._log(`Overriding dependency with local package: ${key}: ${mergedDependencies[key]}`);
         // grab peer dependencies
         const sourcePackagePeerDeps = sourcePackage.config.peerDependencies || {};
@@ -219,32 +218,43 @@ class NgPackagesInstaller {
    * (Detected as directories in '/dist/packages-dist/' that contain a top-level 'package.json' file.)
    */
   _getDistPackages() {
-    const packageConfigs = Object.create(null);
-    const distDir = ANGULAR_DIST_PACKAGES;
-
-    this._log(`Angular distributable directory: ${distDir}.`);
+    this._log(`Angular distributable directory: ${ANGULAR_DIST_PACKAGES_DIR}.`);
 
     if (this.buildPackages) {
       this._buildDistPackages();
     }
 
-    shelljs
-      .find(distDir)
-      .map(filePath => filePath.slice(distDir.length + 1))
-      .filter(filePath => PACKAGE_JSON_REGEX.test(filePath))
-      .forEach(packagePath => {
-        const packageName = `@angular/${packagePath.slice(0, -PACKAGE_JSON.length -1)}`;
-        if (this.ignorePackages.indexOf(packageName) === -1) {
-          const packageConfig = require(path.resolve(distDir, packagePath));
-          packageConfigs[packageName] = {
-            parentDir: distDir,
-            packageJsonPath: path.resolve(distDir, packagePath),
-            config: packageConfig
-          };
-        } else {
-          this._log('Ignoring package', packageName);
+    const collectPackages = containingDir => {
+      const packages = {};
+
+      for (const dirName of shelljs.ls(containingDir)) {
+        const packageDir = path.resolve(containingDir, dirName);
+        const packageJsonPath = path.join(packageDir, PACKAGE_JSON);
+        const packageConfig = fs.existsSync(packageJsonPath) ? require(packageJsonPath) : null;
+        const packageName = packageConfig && packageConfig.name;
+
+        if (!packageConfig) {
+          // No `package.json` found - this directory is not a package.
+          continue;
+        } else if (!packageName) {
+          // No `name` property in `package.json`. (This should never happen.)
+          throw new Error(`Package '${packageDir}' specifies no name in its '${PACKAGE_JSON}'.`);
+        } else if (this.ignorePackages.includes(packageName)) {
+          this._log(`Ignoring package '${packageName}'.`);
+          continue;
         }
-      });
+
+        packages[packageName] = {
+          packageDir,
+          packageJsonPath,
+          config: packageConfig,
+        };
+      }
+
+      return packages;
+    };
+
+    const packageConfigs = collectPackages(ANGULAR_DIST_PACKAGES_DIR);
 
     this._log('Found the following Angular distributables:', Object.keys(packageConfigs).map(key => `\n - ${key}`));
     return packageConfigs;
