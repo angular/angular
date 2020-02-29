@@ -31,7 +31,7 @@ set('-e');
 
 
 /** @type {string} The absolute path to the project root directory. */
-const baseDir = resolve(`${__dirname}/..`);
+const baseDir = resolve(`${__dirname}/../..`);
 
 /** @type {string} The command to use for running bazel. */
 const bazelCmd = `yarn --cwd "${baseDir}" --silent bazel`;
@@ -47,7 +47,7 @@ const bazelBin = exec(`${bazelCmd} info bazel-bin`, true);
 const scriptPath = relative(baseDir, require.main.filename);
 
 module.exports = {
-    baseDir, bazelBin, bazelCmd, buildTargetPackages, exec, scriptPath,
+  baseDir, bazelBin, bazelCmd, buildTargetPackages, exec, scriptPath,
 };
 
 /**
@@ -93,6 +93,8 @@ function buildTargetPackages(destPath, enableIvy, description) {
       chmod('-R', 'u+w', destDir);
     }
   });
+
+  console.info('');
 }
 
 /**

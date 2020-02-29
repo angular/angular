@@ -520,7 +520,7 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
-      - run: node scripts/build-packages-dist.js
+      - run: node scripts/build/build-packages-dist.js
 
       # Save the npm packages from //packages/... for other workflow jobs to read
       - persist_to_workspace:
@@ -545,7 +545,7 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
-      - run: node scripts/build-ivy-npm-packages.js
+      - run: node scripts/build/build-ivy-npm-packages.js
 
       # Save the npm packages from //packages/... for other workflow jobs to read
       - persist_to_workspace:

@@ -34,7 +34,7 @@ if $CI; then
 else
   # Not on CircleCI so let's build the packages-dist directory.
   # This should be fast on incremental re-build.
-  node ${basedir}/scripts/build-packages-dist.js
+  node ${basedir}/scripts/build/build-packages-dist.js
 
   # If we aren't running on CircleCI, we do not shard tests because this would be the job of
   # Bazel eventually. For now, we just run all tests sequentially when running locally.
