@@ -66,7 +66,7 @@ describe('NgPackagesInstaller', () => {
       // These are the packages that are "found" in the dist directory
       dummyNgPackages = {
         '@angular/core': {
-          parentDir: packagesDir,
+          packageDir: `${packagesDir}/core`,
           packageJsonPath: `${packagesDir}/core/package.json`,
           config: {
             peerDependencies: {
@@ -77,17 +77,17 @@ describe('NgPackagesInstaller', () => {
           }
         },
         '@angular/common': {
-          parentDir: packagesDir,
+          packageDir: `${packagesDir}/common`,
           packageJsonPath: `${packagesDir}/common/package.json`,
           config: { peerDependencies: { '@angular/core': '4.4.4-1ab23cd4' } }
         },
         '@angular/compiler': {
-          parentDir: packagesDir,
+          packageDir: `${packagesDir}/compiler`,
           packageJsonPath: `${packagesDir}/compiler/package.json`,
           config: { peerDependencies: { '@angular/common': '4.4.4-1ab23cd4' } }
         },
         '@angular/compiler-cli': {
-          parentDir: toolsDir,
+          packageDir: `${toolsDir}/compiler-cli`,
           packageJsonPath: `${toolsDir}/compiler-cli/package.json`,
           config: {
             dependencies: { '@angular/tsc-wrapped': '4.4.4-1ab23cd4' },
@@ -95,7 +95,7 @@ describe('NgPackagesInstaller', () => {
           }
         },
         '@angular/tsc-wrapped': {
-          parentDir: toolsDir,
+          packageDir: `${toolsDir}/tsc-wrapped`,
           packageJsonPath: `${toolsDir}/tsc-wrapped/package.json`,
           config: {
             devDependencies: { '@angular/common': '4.4.4-1ab23cd4' },
@@ -288,7 +288,10 @@ describe('NgPackagesInstaller', () => {
   });
 
   describe('_getDistPackages()', () => {
-    beforeEach(() => spyOn(NgPackagesInstaller.prototype, '_buildDistPackages'));
+    beforeEach(() => {
+      fs.existsSync.and.callThrough();
+      spyOn(NgPackagesInstaller.prototype, '_buildDistPackages');
+    });
 
     it('should not build the local packages by default', () => {
       installer._getDistPackages();
@@ -309,7 +312,7 @@ describe('NgPackagesInstaller', () => {
     it('should include top level Angular packages', () => {
       const ngPackages = installer._getDistPackages();
       const expectedValue = jasmine.objectContaining({
-        parentDir: jasmine.any(String),
+        packageDir: jasmine.any(String),
         packageJsonPath: jasmine.any(String),
         config: jasmine.any(Object),
       });
@@ -323,12 +326,12 @@ describe('NgPackagesInstaller', () => {
       expect(ngPackages['@angular/upgrade/static']).not.toBeDefined();
     });
 
-    it('should store each package\'s parent directory', () => {
+    it('should store each package\'s directory', () => {
       const ngPackages = installer._getDistPackages();
 
       // For example...
-      expect(ngPackages['@angular/core'].parentDir).toBe(packagesDir);
-      expect(ngPackages['@angular/router'].parentDir).toBeDefined(toolsDir);
+      expect(ngPackages['@angular/core'].packageDir).toBe(path.join(packagesDir, 'core'));
+      expect(ngPackages['@angular/router'].packageDir).toBe(path.join(packagesDir, 'router'));
     });
 
     it('should not include packages that have been ignored', () => {
