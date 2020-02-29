@@ -15,7 +15,7 @@ import {TranslationParser} from './translation_parsers/translation_parser';
  */
 export class TranslationLoader {
   constructor(
-      private translationParsers: TranslationParser[],
+      private translationParsers: TranslationParser<any>[],
       /** @deprecated */ private diagnostics?: Diagnostics) {}
 
   /**
