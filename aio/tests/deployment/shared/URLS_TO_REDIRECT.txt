@@ -185,6 +185,7 @@
 /guide/service-worker-comm	/guide/service-worker-communications
 /guide/service-worker-configref	/guide/service-worker-config
 /guide/webpack	https://v5.angular.io/guide/webpack
+/guide/zone /guide/ngzone
 /news	https://blog.angular.io/
 /news.html	https://blog.angular.io/
 /start/data	/start/start-data
