@@ -51,7 +51,7 @@ module.exports = {
 };
 
 /**
- * Build the packages.
+ * Build the Angular packages.
  *
  * @param {string} destPath Path to the output directory into which we copy the npm packages.
  * This path should either be absolute or relative to the project root.
