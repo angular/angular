@@ -253,7 +253,7 @@ describe('NgPackagesInstaller', () => {
     };
 
     it('should build the local packages, when not on Windows', () => {
-      const buildScript = path.join(ngRootDir, 'scripts/build-packages-dist.js');
+      const buildScript = path.join(ngRootDir, 'scripts/build/build-packages-dist.js');
       const buildCmd = `"${process.execPath}" "${buildScript}"`;
 
       buildDistPackagesOnPlatform('linux');

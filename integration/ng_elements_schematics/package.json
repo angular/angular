@@ -11,7 +11,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "build-dist": "node ../../scripts/build-packages-dist.js && yarn install --check-files",
+    "build-dist": "node ../../scripts/build/build-packages-dist.js && yarn install --check-files",
     "test": "yarn build && node test.js"
   }
 }
