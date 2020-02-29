@@ -283,10 +283,63 @@ export class ASTWithSource extends AST {
   toString(): string { return `${this.source} in ${this.location}`; }
 }
 
+/**
+ * Binding in this context refers to a particular key-value pair in the
+ * microsyntax expression. A few examples are:
+ *
+ *   |---------------------|--------------|---------|
+ *   |     expression      |     key      |  value  |
+ *   |---------------------|--------------|---------|
+ *   | 1. let item         |    item      |  null   |
+ *   | 2. of items         |   ngForOf    |  items  |
+ *   | 3. let x = y        |      x       |    y    |
+ *   | 4. index as i       |      i       |  index  |
+ *   | 5. trackBy: func    | ngForTrackBy |   func  |
+ *   | 6. *ngIf="cond"     |     ngIf     |   cond  |
+ *   |---------------------|--------------|---------|
+ *
+ * (6) is a notable exception because it is a binding from the LHS of the
+ * microsyntax to an expression in the RHS. All other examples are derived
+ * solely from the RHS.
+ *
+ * Consider the example
+ * ```
+ *   <p *ngIf="condition">
+ * ```
+ * This gets desugared into
+ * ```
+ *   <ng-template [ngIf]="condition">
+ *                ^^^^^^^^^^^^^^^^^^ this is a binding from LHS to RHS
+ * ```
+ *
+ * The following example, however, does not have a binding in the LHS.
+ * ```
+ *   <p *ngFor="let item of items">
+ * ```
+ * This gets desugared into
+ * ```
+ *   <ng-template ngFor [ngForOf]="items" let-item>
+ *                ^^^^^ ^^^^^^^^^^^^^^^^^
+ *                 [1]         [2]
+ *   [1] No binding for ngFor
+ *   [2] ngForOf binding generated from "of" in the microsyntax
+ * ```
+ */
 export class TemplateBinding {
+  /**
+   * @param key binding name, like ngForOf, ngForTrackBy, ngIf
+   * @param keySpan span of the key in the source text, it might be different
+   * from `key.length`. For example
+   *   1. key = ngFor, keySpan is for "ngFor"
+   *   2. key = ngForOf, keySpan is for "of"
+   *   3. key = ngForTrackBy, keySpan is for "trackBy"
+   * @param value optional expression for the RHS
+   * @param keyIsVar true if value is for a variable declared via let or as
+   */
   constructor(
-      public span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public key: string,
-      public keyIsVar: boolean, public name: string, public expression: ASTWithSource|null) {}
+      public readonly span: AbsoluteSourceSpan, public readonly key: string,
+      public readonly keySpan: AbsoluteSourceSpan, public readonly keyIsVar: boolean,
+      public readonly expression: ASTWithSource|null) {}
 }
 
 export interface AstVisitor {

@@ -453,12 +453,18 @@ class ExpressionVisitor extends NullTemplateVisitor {
     if (ast.name.startsWith('*')) {
       // This a template binding given by micro syntax expression.
       // First, verify the attribute consists of some binding we can give completions for.
+      // The sourceSpan of AttrAst points to the RHS of the attribute
+      const expression = ast.sourceSpan.toString();
+      const templateKey = ast.name.substring(1);  // remove the leading *
+      // TODO(kyliau): We are unable to determine the absolute offset of the key
+      // but it is okay here, because we are only looking at the RHS of the attr
+      const absKeyOffset = 0;
+      const absValueOffset = ast.sourceSpan.start.offset;
       const {templateBindings} = this.info.expressionParser.parseTemplateBindings(
-          ast.name, ast.value, ast.sourceSpan.toString(), ast.sourceSpan.start.offset);
-      // Find where the cursor is relative to the start of the attribute value.
-      const valueRelativePosition = this.position - ast.sourceSpan.start.offset;
-      // Find the template binding that contains the position.
-      const binding = templateBindings.find(b => inSpan(valueRelativePosition, b.span));
+          templateKey, ast.value, expression, absKeyOffset, absValueOffset);
+
+      // Find the template binding that contains the absolute position.
+      const binding = templateBindings.find(b => inSpan(this.position, b.span));
 
       if (!binding) {
         return;
@@ -550,6 +556,9 @@ class ExpressionVisitor extends NullTemplateVisitor {
     const valueRelativePosition = this.position - attr.sourceSpan.start.offset;
 
     if (binding.keyIsVar) {
+      // TODO(kyliau): With expression sourceSpan we shouldn't have to search
+      // the attribute value string anymore. Just check if position is in the
+      // expression source span.
       const equalLocation = attr.value.indexOf('=');
       if (equalLocation > 0 && valueRelativePosition > equalLocation) {
         // We are after the '=' in a let clause. The valid values here are the members of the

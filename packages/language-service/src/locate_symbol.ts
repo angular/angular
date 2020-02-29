@@ -200,20 +200,22 @@ function getSymbolInMicrosyntax(info: AstResult, path: TemplateAstPath, attribut
   if (!attribute.valueSpan) {
     return;
   }
+  const valueAbsOffset = attribute.valueSpan.start.offset;
   let result: {symbol: Symbol, span: Span}|undefined;
   const {templateBindings} = info.expressionParser.parseTemplateBindings(
       attribute.name, attribute.value, attribute.sourceSpan.toString(),
-      attribute.valueSpan.start.offset);
-  // Find where the cursor is relative to the start of the attribute value.
-  const valueRelativePosition = path.position - attribute.valueSpan.start.offset;
+      attribute.sourceSpan.start.offset, attribute.valueSpan.start.offset);
 
   // Find the symbol that contains the position.
   templateBindings.filter(tb => !tb.keyIsVar).forEach(tb => {
-    if (inSpan(valueRelativePosition, tb.expression?.ast.span)) {
+    // TODO(kyliau): if keyIsVar is true we should still look for the value of
+    // the key. For example, "let i=index" => "index" should point to
+    // NgForOfContext.index
+    if (inSpan(path.position, tb.expression?.sourceSpan)) {
       const dinfo = diagnosticInfoFromTemplateInfo(info);
       const scope = getExpressionScope(dinfo, path);
       result = getExpressionSymbol(scope, tb.expression !, path.position, info.template.query);
-    } else if (inSpan(valueRelativePosition, tb.span)) {
+    } else if (inSpan(path.position, tb.keySpan)) {
       const template = path.first(EmbeddedTemplateAst);
       if (template) {
         // One element can only have one template binding.
@@ -221,7 +223,10 @@ function getSymbolInMicrosyntax(info: AstResult, path: TemplateAstPath, attribut
         if (directiveAst) {
           const symbol = findInputBinding(info, tb.key.substring(1), directiveAst);
           if (symbol) {
-            result = {symbol, span: tb.span};
+            result = {
+              symbol,
+              span: offsetSpan(tb.keySpan, -valueAbsOffset),
+            };
           }
         }
       }

@@ -248,12 +248,14 @@ describe('parser', () => {
 
   describe('parseTemplateBindings', () => {
 
-    function keys(templateBindings: any[]) { return templateBindings.map(binding => binding.key); }
+    function keys(templateBindings: TemplateBinding[]) {
+      return templateBindings.map(binding => binding.key);
+    }
 
-    function keyValues(templateBindings: any[]) {
+    function keyValues(templateBindings: TemplateBinding[]) {
       return templateBindings.map(binding => {
         if (binding.keyIsVar) {
-          return 'let ' + binding.key + (binding.name == null ? '=null' : '=' + binding.name);
+          return `let ${binding.key}=${binding.expression?.source || '$implicit'}`;
         } else {
           return binding.key + (binding.expression == null ? '' : `=${binding.expression}`);
         }
@@ -262,7 +264,7 @@ describe('parser', () => {
 
     function keySpans(source: string, templateBindings: TemplateBinding[]) {
       return templateBindings.map(
-          binding => source.substring(binding.span.start, binding.span.end));
+          binding => source.substring(binding.keySpan.start, binding.keySpan.end));
     }
 
     function exprSources(templateBindings: any[]) {
@@ -303,7 +305,7 @@ describe('parser', () => {
     it('should allow multiple pairs', () => {
       const bindings = parseTemplateBindings('a', '1 b 2');
       expect(keys(bindings)).toEqual(['a', 'aB']);
-      expect(exprSources(bindings)).toEqual(['1 ', '2']);
+      expect(exprSources(bindings)).toEqual(['1', '2']);
     });
 
     it('should store the sources in the result', () => {
@@ -359,11 +361,11 @@ describe('parser', () => {
 
     it('should support as notation', () => {
       let bindings = parseTemplateBindings('ngIf', 'exp as local', 'location');
-      expect(keyValues(bindings)).toEqual(['ngIf=exp  in location', 'let local=ngIf']);
+      expect(keyValues(bindings)).toEqual(['ngIf=exp in location', 'let local=ngIf']);
 
       bindings = parseTemplateBindings('ngFor', 'let item of items as iter; index as i', 'L');
       expect(keyValues(bindings)).toEqual([
-        'ngFor', 'let item=$implicit', 'ngForOf=items  in L', 'let iter=ngForOf', 'let i=index'
+        'ngFor', 'let item=$implicit', 'ngForOf=items in L', 'let iter=ngForOf', 'let i=index'
       ]);
     });
 
@@ -373,27 +375,30 @@ describe('parser', () => {
       expect(ast).toBeAnInstanceOf(BindingPipe);
     });
 
-    describe('spans', () => {
-      it('should should support let', () => {
+    describe('key spans', () => {
+      it('should not include let', () => {
         const source = 'let i';
-        expect(keySpans(source, parseTemplateBindings('key', 'let i'))).toEqual(['', 'let i']);
+        // The first template binding is for 'key'
+        const bindings = parseTemplateBindings('key', source);
+        expect(bindings.length).toBe(2);
+        expect(keySpans(source, bindings.slice(1))).toEqual(['i']);
       });
 
-      it('should support multiple lets', () => {
+      it('should not include multiple lets', () => {
         const source = 'let item; let i=index; let e=even;';
-        expect(keySpans(source, parseTemplateBindings('key', source))).toEqual([
-          '', 'let item', 'let i=index', 'let e=even'
-        ]);
+        const bindings = parseTemplateBindings('key', source);
+        expect(keySpans(source, bindings.slice(1))).toEqual(['item', 'i', 'e']);
       });
 
       it('should support a prefix', () => {
         const source = 'let person of people';
         const prefix = 'ngFor';
         const bindings = parseTemplateBindings(prefix, source);
+        expect(bindings.length).toBe(3);
         expect(keyValues(bindings)).toEqual([
           'ngFor', 'let person=$implicit', 'ngForOf=people in null'
         ]);
-        expect(keySpans(source, bindings)).toEqual(['', 'let person ', 'of people']);
+        expect(keySpans(source, bindings.slice(1))).toEqual(['person', 'of']);
       });
     });
   });
@@ -541,7 +546,7 @@ function parseBinding(text: string, location: any = null, offset: number = 0): A
 function parseTemplateBindingsResult(
     key: string, value: string, location: any = null,
     offset: number = 0): TemplateBindingParseResult {
-  return createParser().parseTemplateBindings(key, value, location, offset);
+  return createParser().parseTemplateBindings(key, value, location, offset, offset);
 }
 function parseTemplateBindings(
     key: string, value: string, location: any = null, offset: number = 0): TemplateBinding[] {

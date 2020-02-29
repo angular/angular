@@ -118,12 +118,31 @@ export class Parser {
         span, span.toAbsolute(absoluteOffset), prefix, uninterpretedExpression, location);
   }
 
-  parseTemplateBindings(tplKey: string, tplValue: string, location: any, absoluteOffset: number):
-      TemplateBindingParseResult {
+  /**
+   * Parse microsyntax template bindings and return errors, if any.
+   * Given the following example:
+   * ```
+   *   <div *ngFor="let item of items">
+   *         ^      ^ absoluteValueOffset for `tplValue`
+   *         absoluteKeyOffset for `tplKey`
+   * ```
+   * The `absoluteKeyOffset` is needed so that the correct source span for the
+   * attribute itself could be generated.
+   *
+   * @param tplKey name of directive, without the * prefix. For example: ngIf, ngFor
+   * @param tplValue string value for the inline template
+   * @param location
+   * @param absoluteKeyOffset absolute offset of the `tplKey`.
+   * @param absoluteValueOffset absolute offset of the `tplValue`
+   */
+  parseTemplateBindings(
+      tplKey: string, tplValue: string, location: string, absoluteKeyOffset: number,
+      absoluteValueOffset: number): TemplateBindingParseResult {
     const tokens = this._lexer.tokenize(tplValue);
     return new _ParseAST(
-               tplValue, location, absoluteOffset, tokens, tplValue.length, false, this.errors, 0)
-        .parseTemplateBindings(tplKey);
+               tplValue, location, absoluteValueOffset, tokens, tplValue.length, false, this.errors,
+               0)
+        .parseTemplateBindings(tplKey, absoluteKeyOffset);
   }
 
   parseInterpolation(
@@ -723,9 +742,10 @@ export class _ParseAST {
   /**
    * An identifier, a keyword, a string with an optional `-` in between.
    */
-  expectTemplateBindingKey(): string {
+  expectTemplateBindingKey(): {key: string, keySpan: ParseSpan} {
     let result = '';
     let operatorFound = false;
+    const start = this.inputIndex;
     do {
       result += this.expectIdentifierOrKeywordOrString();
       operatorFound = this.optionalOperator('-');
@@ -733,67 +753,134 @@ export class _ParseAST {
         result += '-';
       }
     } while (operatorFound);
-
-    return result.toString();
+    return {
+      key: result,
+      keySpan: new ParseSpan(start, start + result.length),
+    };
   }
 
-  // Parses the AST for `<some-tag *tplKey=AST>`
-  parseTemplateBindings(tplKey: string): TemplateBindingParseResult {
-    let firstBinding = true;
+  /**
+   * Parses the bindings for microsyntax `<some-tag *tplKey=AST>`
+   *
+   * Given the following example:
+   *   <div *ngFor="let item of items; index as i; trackBy: func">
+   *         ^      ^ absoluteOffset for `this.input`
+   *         absoluteKeyOffset for `tplKey`
+   *
+   * The `absoluteKeyOffset` is needed so that the correct source span for the
+   * attribute itself could be generated.
+   *
+   * @param tplKey the name of the microsyntax directive, like ngIf, ngFor, without the *
+   * @param absoluteKeyOffset absolute offset of the `tplKey`.
+   */
+  parseTemplateBindings(tplKey: string, absoluteKeyOffset: number): TemplateBindingParseResult {
     const bindings: TemplateBinding[] = [];
-    const warnings: string[] = [];
-    do {
-      const start = this.inputIndex;
-      let rawKey: string;
-      let key: string;
-      let isVar: boolean = false;
-      if (firstBinding) {
-        rawKey = key = tplKey;
-        firstBinding = false;
+
+    // The first binding is for the template key itself
+    // In *ngFor="let item of items", key = "ngFor", value = null
+    // In *ngIf="cond | pipe", key = "ngIf", value = "cond | pipe"
+    bindings.push(...this.parseDirectiveKeyword(
+        tplKey, tplKey, new ParseSpan(0, tplKey.length), absoluteKeyOffset));
+
+    while (this.index < this.tokens.length) {
+      const letBinding = this.parseLetDeclaration();
+      if (letBinding) {
+        bindings.push(letBinding);
       } else {
-        isVar = this.peekKeywordLet();
-        if (isVar) this.advance();
-        rawKey = this.expectTemplateBindingKey();
-        key = isVar ? rawKey : tplKey + rawKey[0].toUpperCase() + rawKey.substring(1);
-        this.optionalCharacter(chars.$COLON);
-      }
-
-      let name: string = null !;
-      let expression: ASTWithSource|null = null;
-      if (isVar) {
-        if (this.optionalOperator('=')) {
-          name = this.expectTemplateBindingKey();
+        const {key, keySpan} = this.expectTemplateBindingKey();
+        const binding = this.parseValueAsKey(key, keySpan, this.absoluteOffset);
+        if (binding) {
+          bindings.push(binding);
         } else {
-          name = '\$implicit';
+          bindings.push(...this.parseDirectiveKeyword(tplKey, key, keySpan, this.absoluteOffset));
         }
-      } else if (this.peekKeywordAs()) {
-        this.advance();  // consume `as`
-        name = rawKey;
-        key = this.expectTemplateBindingKey();  // read local var name
-        isVar = true;
-      } else if (this.next !== EOF && !this.peekKeywordLet()) {
-        const start = this.inputIndex;
-        const ast = this.parsePipe();
-        const source = this.input.substring(start - this.offset, this.inputIndex - this.offset);
-        expression =
-            new ASTWithSource(ast, source, this.location, this.absoluteOffset + start, this.errors);
-      }
-
-      bindings.push(new TemplateBinding(
-          this.span(start), this.sourceSpan(start), key, isVar, name, expression));
-      if (this.peekKeywordAs() && !isVar) {
-        const letStart = this.inputIndex;
-        this.advance();                                   // consume `as`
-        const letName = this.expectTemplateBindingKey();  // read local var name
-        bindings.push(new TemplateBinding(
-            this.span(letStart), this.sourceSpan(letStart), letName, true, key, null !));
       }
       if (!this.optionalCharacter(chars.$SEMICOLON)) {
         this.optionalCharacter(chars.$COMMA);
       }
-    } while (this.index < this.tokens.length);
+    }
 
-    return new TemplateBindingParseResult(bindings, warnings, this.errors);
+    return new TemplateBindingParseResult(bindings, [] /* warnings */, this.errors);
+  }
+
+  private parseDirectiveKeyword(
+      templateKey: string, rawKey: string, rawKeySpan: ParseSpan,
+      absoluteOffset: number): TemplateBinding[] {
+    const bindings: TemplateBinding[] = [];
+    let key = templateKey;
+    if (rawKey !== templateKey) {
+      // Transform rawKey to actual key. Eg. of -> ngForOf, trackBy -> ngForTrackBy
+      key = templateKey + rawKey[0].toUpperCase() + rawKey.substring(1);
+      this.optionalCharacter(chars.$COLON);  // trackBy: trackByFunction
+    }
+    const spanStart = absoluteOffset + rawKeySpan.start;
+    const spanEnd = this.absoluteOffset + this.inputIndex;
+    const valueExpr = this.getDirectiveBoundTarget();
+    const bindingSpan = new AbsoluteSourceSpan(spanStart, valueExpr?.ast.sourceSpan.end || spanEnd);
+    bindings.push(new TemplateBinding(
+        bindingSpan, key, rawKeySpan.toAbsolute(this.absoluteOffset), false /* keyIsVar */,
+        valueExpr));
+    // The binding could optionally be followed by "as". For example,
+    // *ngIf="cond | pipe as x". In this case, the key in the "as" binding
+    // is "x" and the value is the template key itself ("ngIf").
+    const asBinding = this.parseValueAsKey(key, rawKeySpan, absoluteOffset);
+    if (asBinding) {
+      bindings.push(asBinding);
+    }
+    if (!this.optionalCharacter(chars.$SEMICOLON)) {
+      this.optionalCharacter(chars.$COMMA);
+    }
+    return bindings;
+  }
+
+  private getDirectiveBoundTarget(): ASTWithSource|null {
+    if (this.next === EOF || this.peekKeywordAs() || this.peekKeywordLet()) {
+      return null;
+    }
+    const start = this.inputIndex;
+    const ast = this.parsePipe();  // example: "condition | async"
+    // TODO(ayazhafiz): Remove this in https://github.com/angular/angular/pull/34690
+    // Getting the end of the last token removes trailing whitespace.
+    // If valueAst has the correct end span then no need to peek at last token.
+    const end = this.peek(-1).end;
+    const value = this.input.substring(start, end);
+    return new ASTWithSource(ast, value, this.location, this.absoluteOffset + start, this.errors);
+  }
+
+  private parseValueAsKey(value: string, valueSpan: ParseSpan, absoluteOffset: number):
+      TemplateBinding|undefined {
+    if (!this.peekKeywordAs()) {
+      return;
+    }
+    this.advance();  // consume the 'as' keyword
+    const {key, keySpan} = this.expectTemplateBindingKey();
+    const bindingSpan =
+        new AbsoluteSourceSpan(absoluteOffset + valueSpan.start, absoluteOffset + this.inputIndex);
+    const valueAst = new AST(valueSpan, valueSpan.toAbsolute(absoluteOffset));
+    const valueExpr = new ASTWithSource(
+        valueAst, value, this.location, absoluteOffset + valueSpan.start, this.errors);
+    return new TemplateBinding(
+        bindingSpan, key, keySpan.toAbsolute(this.absoluteOffset), true /* keyIsVar */, valueExpr);
+  }
+
+  private parseLetDeclaration(): TemplateBinding|undefined {
+    if (!this.peekKeywordLet()) {
+      return;
+    }
+    const spanStart = this.absoluteOffset + this.inputIndex;
+    this.advance();  // consume the 'let' keyword
+    const {key, keySpan} = this.expectTemplateBindingKey();
+    let valueExpr: ASTWithSource|null = null;
+    if (this.optionalOperator('=')) {
+      const {key: value, keySpan: valueSpan} = this.expectTemplateBindingKey();
+      const ast = new AST(valueSpan, valueSpan.toAbsolute(this.absoluteOffset));
+      valueExpr = new ASTWithSource(
+          ast, value, this.location, this.absoluteOffset + valueSpan.start, this.errors);
+    }
+    const spanEnd = this.absoluteOffset + this.inputIndex;
+    const bindingSpan = new AbsoluteSourceSpan(spanStart, spanEnd);
+    return new TemplateBinding(
+        bindingSpan, key, keySpan.toAbsolute(this.absoluteOffset), true /* keyIsVar */, valueExpr);
   }
 
   error(message: string, index: number|null = null) {

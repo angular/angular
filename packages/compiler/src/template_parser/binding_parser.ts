@@ -133,7 +133,10 @@ export class BindingParser {
     for (let i = 0; i < bindings.length; i++) {
       const binding = bindings[i];
       if (binding.keyIsVar) {
-        targetVars.push(new ParsedVariable(binding.key, binding.name, sourceSpan));
+        // Note, $implicit here does not refer to the implicit receiver of the
+        // expression AST. It refers to the $implicit symbol in the directive
+        // context. See NgForOfContext in ng_for_of.ts and NgIfContext in ng_if.ts
+        targetVars.push(new ParsedVariable(binding.key, binding.expression?.source || '$implicit', sourceSpan));
       } else if (binding.expression) {
         this._parsePropertyAst(
             binding.key, binding.expression, sourceSpan, undefined, targetMatchableAttrs,
@@ -148,8 +151,9 @@ export class BindingParser {
   }
 
   /**
-   * Parses the bindings in an inline template binding, e.g.
+   * Parses the bindings in a microsyntax template, e.g.
    *    <tag *tplKey="let value1 = prop; let value2 = localVar">
+   *
    * @param tplKey template binding name
    * @param tplValue template binding value
    * @param sourceSpan span of template binding relative to entire the template
@@ -159,10 +163,11 @@ export class BindingParser {
       tplKey: string, tplValue: string, sourceSpan: ParseSourceSpan,
       absoluteValueOffset: number): TemplateBinding[] {
     const sourceInfo = sourceSpan.start.toString();
-
+    const TEMPLATE_ATTR_PREFIX = '*';
+    const absoluteKeyOffset = sourceSpan.start.offset + TEMPLATE_ATTR_PREFIX.length;
     try {
-      const bindingsResult =
-          this._exprParser.parseTemplateBindings(tplKey, tplValue, sourceInfo, absoluteValueOffset);
+      const bindingsResult = this._exprParser.parseTemplateBindings(
+          tplKey, tplValue, sourceInfo, absoluteKeyOffset, absoluteValueOffset);
       this._reportExpressionParserErrors(bindingsResult.errors, sourceSpan);
       bindingsResult.templateBindings.forEach((binding) => {
         if (binding.expression) {
