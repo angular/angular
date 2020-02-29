@@ -899,8 +899,7 @@ In production, change detection kicks in automatically
 when Angular creates a component or the user enters a keystroke or
 an asynchronous activity (e.g., AJAX) completes.
 
-The `TestBed.createComponent` does _not_ trigger change detection.
-a fact confirmed in the revised test:
+The `TestBed.createComponent` does _not_ trigger change detection; a fact confirmed in the revised test:
 
 <code-example
   path="testing/src/app/banner/banner.component.spec.ts" region="test-w-o-detect-changes"></code-example>
@@ -1051,8 +1050,7 @@ attempt to reach an authentication server.
 These behaviors can be hard to intercept.
 It is far easier and safer to create and register a test double in place of the real `UserService`.
 
-This particular test suite supplies a minimal mock of the `UserService` that satisfies the needs of the `WelcomeComponent`
-and its tests:
+This particular test suite supplies a minimal mock of the `UserService` that satisfies the needs of the `WelcomeComponent` and its tests:
 
 <code-example
   path="testing/src/app/welcome/welcome.component.spec.ts"
@@ -1266,8 +1264,7 @@ You do have to call [tick()](api/core/testing/tick) to advance the (virtual) clo
 Calling [tick()](api/core/testing/tick) simulates the passage of time until all pending asynchronous activities finish.
 In this case, it waits for the error handler's `setTimeout()`.
 
-The [tick()](api/core/testing/tick) function accepts milliseconds and tickOptions as parameters, the millisecond (defaults to 0 if not provided) parameter represents how much the virtual clock advances. For example, if you have a `setTimeout(fn, 100)` in a `fakeAsync()` test, you need to use tick(100) to trigger the fn callback. The tickOptions is an optional parameter with a property called processNewMacroTasksSynchronously (defaults is true) represents whether to invoke
-new generated macro tasks when ticking.
+The [tick()](api/core/testing/tick) function accepts milliseconds and tickOptions as parameters, the millisecond (defaults to 0 if not provided) parameter represents how much the virtual clock advances. For example, if you have a `setTimeout(fn, 100)` in a `fakeAsync()` test, you need to use tick(100) to trigger the fn callback. The tickOptions is an optional parameter with a property called `processNewMacroTasksSynchronously` (defaults to true) represents whether to invoke new generated macro tasks when ticking.
 
 <code-example
   path="testing/src/app/demo/async-helper.spec.ts"
@@ -1331,51 +1328,46 @@ You can also use RxJS scheduler in `fakeAsync()` just like using `setTimeout()` 
 
 #### Support more macroTasks
 
-By default `fakeAsync()` supports the following `macroTasks`.
+By default, `fakeAsync()` supports the following macro tasks.
 
-- setTimeout
-- setInterval
-- requestAnimationFrame
-- webkitRequestAnimationFrame
-- mozRequestAnimationFrame
+- `setTimeout`
+- `setInterval`
+- `requestAnimationFrame`
+- `webkitRequestAnimationFrame`
+- `mozRequestAnimationFrame`
 
-If you run other `macroTask` such as `HTMLCanvasElement.toBlob()`, `Unknown macroTask scheduled in fake async test` error will be thrown.
+If you run other macro tasks such as `HTMLCanvasElement.toBlob()`, an _"Unknown macroTask scheduled in fake async test"_ error will be thrown.
 
 <code-tabs>
   <code-pane
+    header="src/app/shared/canvas.component.spec.ts (failing)"
     path="testing/src/app/shared/canvas.component.spec.ts"
-    header="src/app/shared/canvas.component.spec.ts">
+    region="without-toBlob-macrotask">
   </code-pane>
   <code-pane
+    header="src/app/shared/canvas.component.ts"
     path="testing/src/app/shared/canvas.component.ts"
-    header="src/app/shared/canvas.component.ts">
+    region="main">
   </code-pane>
 </code-tabs>
 
-If you want to support such a case, you need to define the `macroTask` you want to support in `beforeEach()`.
+If you want to support such a case, you need to define the macro task you want to support in `beforeEach()`.
 For example:
 
-```javascript
-beforeEach(() => {
-  window['__zone_symbol__FakeAsyncTestMacroTask'] = [
-    {
-      source: 'HTMLCanvasElement.toBlob',
-      callbackArgs: [{ size: 200 }]
-    }
-  ];
-});
+<code-example
+  header="src/app/shared/canvas.component.spec.ts (excerpt)"
+  path="testing/src/app/shared/canvas.component.spec.ts"
+  region="enable-toBlob-macrotask">
+</code-example>
 
-it('toBlob should be able to run in fakeAsync', fakeAsync(() => {
-    const canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
-    let blob = null;
-    canvas.toBlob(function(b) {
-      blob = b;
-    });
-    tick();
-    expect(blob.size).toBe(200);
-  })
-);
-```
+Note that in order to make the `<canvas>` element Zone.js-aware in your app, you need to import the `zone-patch-canvas` patch (either in `polyfills.ts` or in the specific file that uses `<canvas>`):
+
+<code-example
+  header="src/polyfills.ts or src/app/shared/canvas.component.ts"
+  path="testing/src/app/shared/canvas.component.ts"
+  region="import-canvas-patch">
+</code-example>
+
 
 #### Async observables
 
@@ -3635,7 +3627,7 @@ next to their corresponding helper files.
 #### Keep it simple
 
 [Component class testing](#component-class-testing) should be kept very clean and simple.
-It should test only a single unit. On a first glance, you should be able to understand 
+It should test only a single unit. On a first glance, you should be able to understand
 what the test is testing. If it's doing more, then it doesn't belong here.
 
 {@a q-end-to-end}
