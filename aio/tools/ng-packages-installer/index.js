@@ -15,7 +15,7 @@ const PACKAGE_JSON_REGEX = /^[^/]+\/package\.json$/;
 
 const ANGULAR_ROOT_DIR = path.resolve(__dirname, '../../..');
 const ANGULAR_DIST_PACKAGES = path.join(ANGULAR_ROOT_DIR, 'dist/packages-dist');
-const ANGULAR_DIST_PACKAGES_BUILD_SCRIPT = path.join(ANGULAR_ROOT_DIR, 'scripts/build-packages-dist.js');
+const ANGULAR_DIST_PACKAGES_BUILD_SCRIPT = path.join(ANGULAR_ROOT_DIR, 'scripts/build/build-packages-dist.js');
 const ANGULAR_DIST_PACKAGES_BUILD_CMD = `"${process.execPath}" "${ANGULAR_DIST_PACKAGES_BUILD_SCRIPT}"`;
 
 /**
