@@ -344,7 +344,7 @@ describe('directives', () => {
   describe('outputs', () => {
     @Directive({selector: '[out]'})
     class TestDir {
-      @Output() out = new EventEmitter();
+      @Output() out = new EventEmitter<void>();
     }
 
     it('should allow outputs of directive on ng-template', () => {
