@@ -139,7 +139,7 @@ export class OrderListComponent {
 })
 export class OrderItemComponent {
   @Input() item: OrderItem;
-  @Output() delete = new EventEmitter();
+  @Output() delete = new EventEmitter<OrderItem>();
 
   onDelete(): void { this.delete.emit(this.item); }
 }
