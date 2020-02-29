@@ -1129,7 +1129,7 @@ describe('styling', () => {
   });
 
   onlyInIvy('only ivy combines static and dynamic class-related attr values')
-      .it('should write to a `class` input binding, when static `class` is present', () => {
+      .it('should write combined class attribute and class binding to the class input', () => {
         @Component({
           selector: 'comp',
           template: `{{className}}`,
@@ -3460,6 +3460,25 @@ describe('styling', () => {
         className: string = 'unbound';
       }
       @Component({template: `<my-cmp [class]="'bound'"></my-cmp>`})
+      class MyApp {
+      }
+
+      TestBed.configureTestingModule({declarations: [MyApp, MyCmp]});
+      const fixture = TestBed.createComponent(MyApp);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toEqual('className = unbound');
+    });
+
+    it('should not bind class to @Input("className")', () => {
+      @Component({
+        selector: 'my-cmp',
+        template: `className = {{className}}`,
+      })
+      class MyCmp {
+        @Input()
+        className: string = 'unbound';
+      }
+      @Component({template: `<my-cmp class="bound"></my-cmp>`})
       class MyApp {
       }
 
