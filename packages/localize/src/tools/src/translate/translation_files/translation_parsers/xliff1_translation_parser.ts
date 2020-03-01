@@ -5,20 +5,16 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Element, Node, XmlParser, visitAll} from '@angular/compiler';
-import {ɵMessageId, ɵParsedTranslation} from '@angular/localize';
-import {extname} from 'path';
+import {Element, ParseErrorLevel, visitAll} from '@angular/compiler';
+import {ɵParsedTranslation} from '@angular/localize';
 
 import {Diagnostics} from '../../../diagnostics';
 import {BaseVisitor} from '../base_visitor';
 import {MessageSerializer} from '../message_serialization/message_serializer';
 import {TargetMessageRenderer} from '../message_serialization/target_message_renderer';
 
-import {TranslationParseError} from './translation_parse_error';
 import {ParsedTranslationBundle, TranslationParser} from './translation_parser';
-import {getAttrOrThrow, getAttribute, parseInnerRange} from './translation_utils';
-
-const XLIFF_1_2_NS_REGEX = /xmlns="urn:oasis:names:tc:xliff:document:1.2"/;
+import {XmlTranslationParserHint, addParseDiagnostic, addParseError, canParseXml, getAttribute, isNamedElement, parseInnerRange} from './translation_utils';
 
 /**
  * A translation parser that can load XLIFF 1.2 files.
@@ -27,68 +23,120 @@ const XLIFF_1_2_NS_REGEX = /xmlns="urn:oasis:names:tc:xliff:document:1.2"/;
  * http://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html
  *
  */
-export class Xliff1TranslationParser implements TranslationParser {
-  canParse(filePath: string, contents: string): boolean {
-    return (extname(filePath) === '.xlf') && XLIFF_1_2_NS_REGEX.test(contents);
+export class Xliff1TranslationParser implements TranslationParser<XmlTranslationParserHint> {
+  canParse(filePath: string, contents: string): XmlTranslationParserHint|false {
+    return canParseXml(filePath, contents, 'xliff', {version: '1.2'});
   }
 
-  parse(filePath: string, contents: string): ParsedTranslationBundle {
-    const xmlParser = new XmlParser();
-    const xml = xmlParser.parse(contents, filePath);
-    const bundle = XliffFileElementVisitor.extractBundle(xml.rootNodes);
-    if (bundle === undefined) {
+  parse(filePath: string, contents: string, hint?: XmlTranslationParserHint):
+      ParsedTranslationBundle {
+    if (hint) {
+      return this.extractBundle(hint);
+    } else {
+      return this.extractBundleDeprecated(filePath, contents);
+    }
+  }
+
+  private extractBundle({element, errors}: XmlTranslationParserHint): ParsedTranslationBundle {
+    const diagnostics = new Diagnostics();
+    errors.forEach(e => addParseError(diagnostics, e));
+
+    if (element.children.length === 0) {
+      addParseDiagnostic(
+          diagnostics, element.sourceSpan, 'Missing expected <file> element',
+          ParseErrorLevel.WARNING);
+      return {locale: undefined, translations: {}, diagnostics};
+    }
+
+    const files = element.children.filter(isNamedElement('file'));
+    if (files.length === 0) {
+      addParseDiagnostic(
+          diagnostics, element.sourceSpan, 'No <file> elements found in <xliff>',
+          ParseErrorLevel.WARNING);
+    } else if (files.length > 1) {
+      addParseDiagnostic(
+          diagnostics, files[1].sourceSpan, 'More than one <file> element found in <xliff>',
+          ParseErrorLevel.WARNING);
+    }
+
+    const bundle = {
+      locale: getAttribute(files[0], 'target-language'),
+      translations: {}, diagnostics,
+    };
+    const translationVisitor = new XliffTranslationVisitor();
+    visitAll(translationVisitor, files[0].children, bundle);
+
+    return bundle;
+  }
+
+  private extractBundleDeprecated(filePath: string, contents: string) {
+    const hint = this.canParse(filePath, contents);
+    if (!hint) {
       throw new Error(`Unable to parse "${filePath}" as XLIFF 1.2 format.`);
+    }
+    const bundle = this.extractBundle(hint);
+    if (bundle.diagnostics.hasErrors) {
+      const message =
+          bundle.diagnostics.formatDiagnostics(`Failed to parse "${filePath}" as XLIFF 1.2 format`);
+      throw new Error(message);
     }
     return bundle;
   }
 }
 
 class XliffFileElementVisitor extends BaseVisitor {
-  private bundle: ParsedTranslationBundle|undefined;
-
-  static extractBundle(xliff: Node[]): ParsedTranslationBundle|undefined {
-    const visitor = new this();
-    visitAll(visitor, xliff);
-    return visitor.bundle;
-  }
-
-  visitElement(element: Element): any {
-    if (element.name === 'file') {
-      this.bundle = {
-        locale: getAttribute(element, 'target-language'),
-        translations: XliffTranslationVisitor.extractTranslations(element),
-        diagnostics: new Diagnostics(),
-      };
-    } else {
-      return visitAll(this, element.children);
+  visitElement(fileElement: Element): any {
+    if (fileElement.name === 'file') {
+      return {fileElement, locale: getAttribute(fileElement, 'target-language')};
     }
   }
 }
 
 class XliffTranslationVisitor extends BaseVisitor {
-  private translations: Record<ɵMessageId, ɵParsedTranslation> = {};
-
-  static extractTranslations(file: Element): Record<string, ɵParsedTranslation> {
-    const visitor = new this();
-    visitAll(visitor, file.children);
-    return visitor.translations;
+  visitElement(element: Element, bundle: ParsedTranslationBundle): void {
+    if (element.name === 'trans-unit') {
+      this.visitTransUnitElement(element, bundle);
+    } else {
+      visitAll(this, element.children, bundle);
+    }
   }
 
-  visitElement(element: Element): any {
-    if (element.name === 'trans-unit') {
-      const id = getAttrOrThrow(element, 'id');
-      if (this.translations[id] !== undefined) {
-        throw new TranslationParseError(
-            element.sourceSpan, `Duplicated translations for message "${id}"`);
-      }
+  private visitTransUnitElement(element: Element, bundle: ParsedTranslationBundle): void {
+    // Error if no `id` attribute
+    const id = getAttribute(element, 'id');
+    if (id === undefined) {
+      addParseDiagnostic(
+          bundle.diagnostics, element.sourceSpan,
+          `Missing required "id" attribute on <trans-unit> element.`, ParseErrorLevel.ERROR);
+      return;
+    }
 
-      const targetMessage = element.children.find(isTargetElement);
-      if (targetMessage === undefined) {
-        throw new TranslationParseError(element.sourceSpan, 'Missing required <target> element');
+    // Error if there is already a translation with the same id
+    if (bundle.translations[id] !== undefined) {
+      addParseDiagnostic(
+          bundle.diagnostics, element.sourceSpan, `Duplicated translations for message "${id}"`,
+          ParseErrorLevel.ERROR);
+      return;
+    }
+
+    // Error if there is no `<target>` child element
+    const targetMessage = element.children.find(isNamedElement('target'));
+    if (targetMessage === undefined) {
+      addParseDiagnostic(
+          bundle.diagnostics, element.sourceSpan, 'Missing required <target> element',
+          ParseErrorLevel.ERROR);
+      return;
+    }
+
+    try {
+      bundle.translations[id] = serializeTargetMessage(targetMessage);
+    } catch (e) {
+      // Capture any errors from serialize the target message
+      if (e.span && e.msg && e.level) {
+        addParseDiagnostic(bundle.diagnostics, e.span, e.msg, e.level);
+      } else {
+        throw e;
       }
-      this.translations[id] = serializeTargetMessage(targetMessage);
-    } else {
-      return visitAll(this, element.children);
     }
   }
 }
@@ -99,8 +147,4 @@ function serializeTargetMessage(source: Element): ɵParsedTranslation {
     placeholder: {elementName: 'x', nameAttribute: 'id'}
   });
   return serializer.serialize(parseInnerRange(source));
-}
-
-function isTargetElement(node: Node): node is Element {
-  return node instanceof Element && node.name === 'target';
 }

@@ -42,7 +42,7 @@ export class TranslationLoader {
         }
 
         const {locale: parsedLocale, translations, diagnostics} =
-            translationParser.parse(filePath, fileContents);
+            translationParser.parse(filePath, fileContents, result);
         if (diagnostics.hasErrors) {
           throw new Error(diagnostics.formatDiagnostics(
               `The translation file "${filePath}" could not be parsed.`));
