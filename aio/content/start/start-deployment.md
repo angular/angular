@@ -1,7 +1,7 @@
 <!--
-# Deployment
+# Getting Started with Angular: Deployment
 -->
-# 배포
+# Angular 시작하기: 배포
 
 
 <!--
@@ -12,9 +12,9 @@ To deploy your application, you have to compile it, and then host the JavaScript
 <div class="alert is-helpful">
 
 <!--
-Whether you came here directly from [Your First App](start "Getting Started: Your First App"), or completed the entire online store application through the [Routing](start/routing "Getting Started: Routing"), [Managing Data](start/data "Getting Started: Managing Data"), and [Forms](start/forms "Getting Started: Forms") sections, you have an application that you can deploy by following the instructions in this section. 
+Whether you came here directly from [Your First App](start "Getting Started: Your First App"), or completed the entire online store application through the [Routing](start/start-routing "Getting Started: Routing"), [Managing Data](start/start-data "Getting Started: Managing Data"), and [Forms](start/start-forms "Getting Started: Forms") sections, you have an application that you can deploy by following the instructions in this section.
 -->
-이 문서를 보기 전에 [첫번째 앱 만들기](start "시작하기: 첫번째 앱 만들기")를 끝내고 이 문서로 바로 왔거나 [라우팅](start/routing "시작하기: 라우팅"), [데이터 다루기](start/data "시작하기: 데이투 다루기"), and [폼](start/forms "시작하기: 폼") 문서를 쭉 보고 온 것은 중요하지 않습니다. 튜토리얼을 얼마나 진행했는지에 관계없이 이 문서를 활용하면 애플리케이션을 배포하는 방법에 대해 알게 될 것입니다.
+이 문서를 보기 전에 [첫번째 앱 만들기](start "시작하기: 첫번째 앱 만들기")를 끝내고 이 문서로 바로 왔거나 [라우팅](start/start-routing "시작하기: 라우팅"), [데이터 다루기](start/start-data "시작하기: 데이투 다루기"), [폼](start/start-forms "시작하기: 폼") 문서를 쭉 보고 온 것은 중요하지 않습니다. 튜토리얼을 얼마나 진행했는지에 관계없이 이 문서를 활용하면 애플리케이션을 배포하는 방법에 대해 알게 될 것입니다.
 
 </div>
 
@@ -45,9 +45,9 @@ StackBlitz 프로젝트는 기본적으로 모두에게 공유되어 있기 때�
 ## 로컬 환경에서 빌드하기
 
 <!--
-To build your application locally or for production, you will need to download the source code from your StackBlitz project. Click the `Download Project` icon in the left menu across from `Project` to download your files.
+To build your application locally or for production, download the source code from your StackBlitz project by clicking the `Download Project` icon in the left menu across from `Project` to download your files.
 
-Once you have the source code downloaded and unzipped, use the [Angular Console](https://angularconsole.com "Angular Console web site") to serve the application, or you install `Node.js` and have the Angular CLI installed.
+Once you have the source code downloaded and unzipped, use the [Angular Console](https://angularconsole.com "Angular Console web site") to serve the application, or install `Node.js` and serve your app with the Angular CLI.
 
 From the terminal, install the Angular CLI globally with:
 -->
@@ -62,7 +62,7 @@ npm install -g @angular/cli
 ```
 
 <!--
-This will install the command `ng` into your system, which is the command you use to create new workspaces, new projects, serve your application during development, or produce builds that can be shared or distributed.
+This installs the command `ng` on your system, which is the command you use to create new workspaces, new projects, serve your application during development, or produce builds to share or distribute.
 
 Create a new Angular CLI workspace using the [`ng new`](cli/new "CLI ng new command reference") command:
 -->
@@ -75,7 +75,7 @@ ng new my-project-name
 ```
 
 <!--
-From there you replace the `/src` folder with the one from your `StackBlitz` download, and then perform a build.
+In your new CLI generated app, replace the `/src` folder with the one from your `StackBlitz` download, and then perform a build.
 -->
 그리고 이렇게 생성한 프로젝트나 StackBlitz 에서 다운로드받은 프로젝트의 `/src` 폴더로 이동한 후에 다음 명령을 실행하면 애플리케이션을 빌드할 수 있습니다:
 
@@ -100,7 +100,7 @@ If the above `ng build` command throws an error about missing packages, append t
 #### 호스팅하기
 
 <!--
-The files in the `dist/my-project-name` folder are static and can be hosted on any web server capable of serving files (`Node.js`, Java, .NET) or any backend (Firebase, Google Cloud, App Engine, others).
+The files in the `dist/my-project-name` folder are static. This means you can host them on any web server capable of serving files (such as `Node.js`, Java, .NET), or any backend (such as Firebase, Google Cloud, or App Engine).
 -->
 `dist/my-project-name` 폴더에 있는 파일들은 정적 파일로 취급할 수 있기 때문에 파일을 호스팅할 수 있는 웹 서버라면 `Node.js`, Java, .NET에 관계없이 호스팅할 수 있습니다. 백엔드는 Firebase, Google Cloud, App Engine 중 어떤 것이라도 상관없습니다.
 
@@ -139,30 +139,30 @@ One of the easiest ways to get your site live is to host it using Firebase.
 ### 다른 환경에 Angular 앱 호스팅하기
 
 <!--
-To host an Angular app on another web host, you'll need to upload or send the files to the host. 
-Because you are building a Single Page Application, you'll also need to make sure you redirect any invalid URLs to your `index.html` file. 
-Learn more about development and distribution of your application in the [Building & Serving](guide/build "Building and Serving Angular Apps") and [Deployment](guide/deployment "Deployment guide") guides.
+To host an Angular app on another web host, upload or send the files to the host.
+Because you are building a single page application, you'll also need to make sure you redirect any invalid URLs to your `index.html` file.
+Read more about development and distribution of your application in the [Building & Serving](guide/build "Building and Serving Angular Apps") and [Deployment](guide/deployment "Deployment guide") guides.
 -->
 Angular 앱을 Firebase가 아닌 다른 환경에 호스팅하려면 빌드 결과물을 어딘가에 업로드하는 방식을 사용하는 경우가 많습니다.
 Angular 앱을 빌드한 결과물은 싱글 페이지 애플리케이션(Single Page Application)이기 때문에, 앱에 존재하지 않는 URL로 요청이 오더라도 언제나 `index.html` 파일로 리다이렉트하도록 지정하면 됩니다.
 애플리케이션을 배포하는 것에 대해 자세하게 알아보려면 [프로젝트 빌드 & 실행 설정](guide/build "프로젝트 빌드 & 실행 설정") 문서나 [배포](guide/deployment "배포") 문서를 참고하세요.
 
 <!--
-## Join our community
+## Join the Angular community
 -->
 ## 커뮤니티에 참여하세요
 
 <!--
-You are now an Angular developer! [Share this moment](https://twitter.com/intent/tweet?url=https://angular.io/start&text=I%20just%20finished%20the%20Angular%20Getting%20Started%20Tutorial "Angular on Twitter"), tell us what you thought of this Getting Started, or submit [suggestions for future editions](https://github.com/angular/angular/issues/new/choose "Angular GitHub repository new issue form"). 
+You are now an Angular developer! [Share this moment](https://twitter.com/intent/tweet?url=https://angular.io/start&text=I%20just%20finished%20the%20Angular%20Getting%20Started%20Tutorial "Angular on Twitter"), tell us what you thought of this Getting Started, or submit [suggestions for future editions](https://github.com/angular/angular/issues/new/choose "Angular GitHub repository new issue form").
 
 Angular offers many more capabilities, and you now have a foundation that empowers you to build an application and explore those other capabilities:
 
-* Angular provides advanced capabilities for mobile apps, animation, internationalization, server-side rendering, and more. 
-* [Angular Material](https://material.angular.io/ "Angular Material web site") offers an extensive library of Material Design components. 
-* [Angular Protractor](https://protractor.angular.io/ "Angular Protractor web site") offers an end-to-end testing framework for Angular apps. 
-* Angular also has an extensive [network of 3rd-party tools and libraries](https://angular.io/resources "Angular resources list"). 
+* Angular provides advanced capabilities for mobile apps, animation, internationalization, server-side rendering, and more.
+* [Angular Material](https://material.angular.io/ "Angular Material web site") offers an extensive library of Material Design components.
+* [Angular Protractor](https://protractor.angular.io/ "Angular Protractor web site") offers an end-to-end testing framework for Angular apps.
+* Angular also has an extensive [network of 3rd-party tools and libraries](https://angular.io/resources "Angular resources list").
 
-Keep current by following the [Angular blog](https://blog.angular.io/ "Angular blog"). 
+Keep current by following the [Angular blog](https://blog.angular.io/ "Angular blog").
 -->
 여기까지 진행했다면 이제 자랑스럽게 Angular 개발자라고 해도 됩니다! 튜토리얼을 진행하면서 어땠는지 [여기](https://twitter.com/intent/tweet?url=https://angular.io/start&text=I%20just%20finished%20the%20Angular%20Getting%20Started%20Tutorial "Angular on Twitter")에 공유해 보세요. 개선할 내용이 있다면 [Angular Github 레파지토리](https://github.com/angular/angular/issues/new/choose "Angular GitHub repository new issue form")에 이슈를 등록해도 됩니다.
 

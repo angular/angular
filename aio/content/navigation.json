@@ -85,28 +85,28 @@
           "tooltip": "Angular의 컴포넌트 모델, 템플릿 문법, 컴포넌트끼리 통신하는 방법에 대해 소개합니다."
         },
         {
-          "url": "start/routing",
+          "url": "start/start-routing",
           "!title": "Routing",
           "title": "라우팅",
           "!tooltip": "Introduction to routing between components using the browser's URL.",
           "tooltip": "브라우저 URL에 따라 컴포넌트를 전환하는 방법에 대해 소개합니다."
         },
         {
-          "url": "start/data",
+          "url": "start/start-data",
           "!title": "Managing Data",
           "title": "데이터 다루기",
           "!tooltip": "Introduction to services and accessing external data via HTTP.",
           "tooltip": "서비스를 사용해서 HTTP 프로토콜로 외부와 데이터 통신하는 방법에 대해 소개합니다."
         },
         {
-          "url": "start/forms",
+          "url": "start/start-forms",
           "!title": "Forms",
           "title": "폼",
           "!tooltip": "Learn about fetching and managing data from users with forms.",
           "tooltip": "사용자가 입력하는 데이터를 폼으로 처리하는 방법에 대해 소개합니다."
         },
         {
-          "url": "start/deployment",
+          "url": "start/start-deployment",
           "!title": "Deployment",
           "title": "배포",
           "!tooltip": "Move to local development, or deploy your application to Firebase or your own server.",

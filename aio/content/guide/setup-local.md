@@ -200,10 +200,10 @@ You will see:
   
   <!--
   Getting Started assumes the [StackBlitz](https://stackblitz.com/) online development environment.
-  To learn how to export an app from StackBlitz to your local environment, skip ahead to the [Deployment](start/deployment "Getting Started: Deployment") section.
+  To learn how to export an app from StackBlitz to your local environment, skip ahead to the [Deployment](start/start-deployment "Getting Started: Deployment") section.
   -->
   그리고 이 튜토리얼은 [StackBlitz](https://stackblitz.com/) 온라인 개발 환경을 사용하기 때문에, 내용을 진행하는 동안 로컬 개발환경 설정을 잠시 미뤄둘 수 있습니다.
-  StackBlitz 프로젝트를 로컬 개발환경에 다운로드받아 배포하는 방법은 [배포](start/deployment "시작하기: 배포") 문서를 참고하세요.
+  StackBlitz 프로젝트를 로컬 개발환경에 다운로드받아 배포하는 방법은 [배포](start/start-deployment "시작하기: 배포") 문서를 참고하세요.
 
   </div>
 

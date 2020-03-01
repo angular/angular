@@ -224,6 +224,9 @@ To help you get going, the following steps use predefined product data from the 
     <code-example path="getting-started/src/app/product-list/product-list.component.3.html" header="src/app/product-list/product-list.component.html">
     </code-example>
 
+    <!--
+    The app now displays the name and description of each product in the list. Notice that the final product does not have a description paragraph. Because the product's description property is empty, Angular doesn't create the `<p>` element&mdash;including the word "Description".
+    -->
     이제 앱은 목록에 있는 상품마다 이름과 간단한 설명을 표시합니다. 다만, 최종 결과물에서는 상품 설명이 표시되지 않습니다. 왜냐하면 상품의 설명이 없는 경우에는 Angular가 "Description"으로 시작하는 `<p>` 엘리먼트 자체를 생성하지 않기 때문입니다.
 
     <div class="lightbox">
@@ -508,7 +511,11 @@ The new product alert component takes a product as input from the product list. 
 
 <div class="alert is-helpful">
 
+<!--
+See [Component Interaction](guide/component-interaction "Components & Templates > Component Interaction") for more information about passing data from a parent to child component, intercepting and acting upon a value from the parent, and detecting and acting on changes to input property values.
+-->
 부모 컴포넌트에서 자식 컴포넌트로 데이터를 전달하는 방법, 이 데이터에 따라 다르게 동작하는 방법, 입력 프로퍼티 값이 변경된 것을 감지하고 반응하는 방법에 대해 더 알아보려면 [컴포넌트 상호작용](guide/component-interaction "Components & Templates > Component Interaction") 문서를 참고하세요.
+
 
 </div>
 
@@ -639,5 +646,5 @@ To continue exploring Angular, choose either of the following options:
 컴포넌트 클래스와 템플릿이 상호작용하는 방법, 컴포넌트가 다른 컴포넌트와 상호작용하는 방법도 알아봤습니다.
 
 이제 Angular에 대해 더 알아보기 위해 다음 코스 중 하나를 선택해 보세요:
-* 제품 목록 화면에서 제품 이름을 클릭했을 때 표시되는 제품 상세정보 화면을 만들려면 ["라우팅"](start/routing "시작하기: 라우팅") 문서를 참고하세요.
-* 로컬 개발환경에 대해서 알아보거나 Angular 앱을 Firebase나 리모트 서버에 배포하는 방법에 대해 알아보려면 쭉 건너뛰고 ["개발"](start/deployment "시작하기: 배포") 문서를 참고하세요.
+* 제품 목록 화면에서 제품 이름을 클릭했을 때 표시되는 제품 상세정보 화면을 만들려면 ["라우팅"](start/start-routing "시작하기: 라우팅") 문서를 참고하세요.
+* 로컬 개발환경에 대해서 알아보거나 Angular 앱을 Firebase나 리모트 서버에 배포하는 방법에 대해 알아보려면 쭉 건너뛰고 ["개발"](start/start-deployment "시작하기: 배포") 문서를 참고하세요.
