@@ -6,13 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
-import {Observable, Observer} from 'rxjs';
+import { Injectable } from "@angular/core";
+import { Observable, Observer } from "rxjs";
 
-import {HttpBackend} from './backend';
-import {HttpHeaders} from './headers';
-import {HttpRequest} from './request';
-import {HttpDownloadProgressEvent, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaderResponse, HttpJsonParseError, HttpResponse, HttpUploadProgressEvent, HttpStatusCode} from './response';
+import { HttpBackend } from "./backend";
+import { HttpHeaders } from "./headers";
+import { HttpRequest } from "./request";
+import {
+  HttpDownloadProgressEvent,
+  HttpErrorResponse,
+  HttpEvent,
+  HttpEventType,
+  HttpHeaderResponse,
+  HttpJsonParseError,
+  HttpResponse,
+  HttpStatusCode,
+  HttpUploadProgressEvent
+} from "./response";
 
 const XSSI_PREFIX = /^\)\]\}',?\n/;
 
@@ -20,12 +30,12 @@ const XSSI_PREFIX = /^\)\]\}',?\n/;
  * Determine an appropriate URL for the response, by checking either
  * XMLHttpRequest.responseURL or the X-Request-URL header.
  */
-function getResponseUrl(xhr: any): string|null {
-  if ('responseURL' in xhr && xhr.responseURL) {
+function getResponseUrl(xhr: any): string | null {
+  if ("responseURL" in xhr && xhr.responseURL) {
     return xhr.responseURL;
   }
   if (/^X-Request-URL:/m.test(xhr.getAllResponseHeaders())) {
-    return xhr.getResponseHeader('X-Request-URL');
+    return xhr.getResponseHeader("X-Request-URL");
   }
   return null;
 }
@@ -35,7 +45,9 @@ function getResponseUrl(xhr: any): string|null {
  *
  * @publicApi
  */
-export abstract class XhrFactory { abstract build(): XMLHttpRequest; }
+export abstract class XhrFactory {
+  abstract build(): XMLHttpRequest;
+}
 
 /**
  * A factory for `HttpXhrBackend` that uses the `XMLHttpRequest` browser API.
@@ -44,7 +56,9 @@ export abstract class XhrFactory { abstract build(): XMLHttpRequest; }
 @Injectable()
 export class BrowserXhr implements XhrFactory {
   constructor() {}
-  build(): any { return <any>(new XMLHttpRequest()); }
+  build(): any {
+    return <any>new XMLHttpRequest();
+  }
 }
 
 /**
@@ -76,8 +90,10 @@ export class HttpXhrBackend implements HttpBackend {
   handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
     // Quick check to give a better error message when a user attempts to use
     // HttpClient.jsonp() without installing the JsonpClientModule
-    if (req.method === 'JSONP') {
-      throw new Error(`Attempted to construct Jsonp request without JsonpClientModule installed.`);
+    if (req.method === "JSONP") {
+      throw new Error(
+        `Attempted to construct Jsonp request without JsonpClientModule installed.`
+      );
     }
 
     // Everything happens on Observable subscription.
@@ -90,19 +106,21 @@ export class HttpXhrBackend implements HttpBackend {
       }
 
       // Add all the requested headers.
-      req.headers.forEach((name, values) => xhr.setRequestHeader(name, values.join(',')));
+      req.headers.forEach((name, values) =>
+        xhr.setRequestHeader(name, values.join(","))
+      );
 
       // Add an Accept header if one isn't present already.
-      if (!req.headers.has('Accept')) {
-        xhr.setRequestHeader('Accept', 'application/json, text/plain, */*');
+      if (!req.headers.has("Accept")) {
+        xhr.setRequestHeader("Accept", "application/json, text/plain, */*");
       }
 
       // Auto-detect the Content-Type header if one isn't present already.
-      if (!req.headers.has('Content-Type')) {
+      if (!req.headers.has("Content-Type")) {
         const detectedType = req.detectContentTypeHeader();
         // Sometimes Content-Type detection fails.
         if (detectedType !== null) {
-          xhr.setRequestHeader('Content-Type', detectedType);
+          xhr.setRequestHeader("Content-Type", detectedType);
         }
       }
 
@@ -115,7 +133,9 @@ export class HttpXhrBackend implements HttpBackend {
         // xhr.response will be null, and xhr.responseText cannot be accessed to
         // retrieve the prefixed JSON data in order to strip the prefix. Thus, all JSON
         // is parsed by first requesting text and then applying JSON.parse.
-        xhr.responseType = ((responseType !== 'json') ? responseType : 'text') as any;
+        xhr.responseType = (responseType !== "json"
+          ? responseType
+          : "text") as any;
       }
 
       // Serialize the request body if one is present. If not, this will be set to null.
@@ -127,7 +147,7 @@ export class HttpXhrBackend implements HttpBackend {
       // two events, it doesn't make sense to parse them twice. So headerResponse
       // caches the data extracted from the response whenever it's first parsed,
       // to ensure parsing isn't duplicated.
-      let headerResponse: HttpHeaderResponse|null = null;
+      let headerResponse: HttpHeaderResponse | null = null;
 
       // partialFromXhr extracts the HttpHeaderResponse from the current XMLHttpRequest
       // state, and memoizes it into headerResponse.
@@ -137,8 +157,9 @@ export class HttpXhrBackend implements HttpBackend {
         }
 
         // Read status and normalize an IE9 bug (http://bugs.jquery.com/ticket/1450).
-        const status: number = xhr.status === 1223 ? HttpStatusCode.NoContent : xhr.status;
-        const statusText = xhr.statusText || 'OK';
+        const status: number =
+          xhr.status === 1223 ? HttpStatusCode.NoContent : xhr.status;
+        const statusText = xhr.statusText || "OK";
 
         // Parse headers from XMLHttpRequest - this step is lazy.
         const headers = new HttpHeaders(xhr.getAllResponseHeaders());
@@ -148,7 +169,12 @@ export class HttpXhrBackend implements HttpBackend {
         const url = getResponseUrl(xhr) || req.url;
 
         // Construct the HttpHeaderResponse and memoize it.
-        headerResponse = new HttpHeaderResponse({headers, status, statusText, url});
+        headerResponse = new HttpHeaderResponse({
+          headers,
+          status,
+          statusText,
+          url
+        });
         return headerResponse;
       };
 
@@ -158,14 +184,17 @@ export class HttpXhrBackend implements HttpBackend {
       // First up is the load event, which represents a response being fully available.
       const onLoad = () => {
         // Read response state from the memoized partial data.
-        let {headers, status, statusText, url} = partialFromXhr();
+        let { headers, status, statusText, url } = partialFromXhr();
 
         // The body will be read out if present.
-        let body: any|null = null;
+        let body: any | null = null;
 
         if (status !== HttpStatusCode.NoContent) {
           // Use XMLHttpRequest.response if set, responseText otherwise.
-          body = (typeof xhr.response === 'undefined') ? xhr.responseText : xhr.response;
+          body =
+            typeof xhr.response === "undefined"
+              ? xhr.responseText
+              : xhr.response;
         }
 
         // Normalize another potential bug (this one comes from CORS).
@@ -181,13 +210,13 @@ export class HttpXhrBackend implements HttpBackend {
 
         // Check whether the body needs to be parsed as JSON (in many cases the browser
         // will have done that already).
-        if (req.responseType === 'json' && typeof body === 'string') {
+        if (req.responseType === "json" && typeof body === "string") {
           // Save the original body, before attempting XSSI prefix stripping.
           const originalBody = body;
-          body = body.replace(XSSI_PREFIX, '');
+          body = body.replace(XSSI_PREFIX, "");
           try {
             // Attempt the parse. If it fails, a parse error should be delivered to the user.
-            body = body !== '' ? JSON.parse(body) : null;
+            body = body !== "" ? JSON.parse(body) : null;
           } catch (error) {
             // Since the JSON.parse failed, it's reasonable to assume this might not have been a
             // JSON response. Restore the original body (including any XSSI prefix) to deliver
@@ -207,26 +236,30 @@ export class HttpXhrBackend implements HttpBackend {
 
         if (ok) {
           // A successful response is delivered on the event stream.
-          observer.next(new HttpResponse({
-            body,
-            headers,
-            status,
-            statusText,
-            url: url || undefined,
-          }));
+          observer.next(
+            new HttpResponse({
+              body,
+              headers,
+              status,
+              statusText,
+              url: url || undefined
+            })
+          );
           // The full body has been received and delivered, no further events
           // are possible. This request is complete.
           observer.complete();
         } else {
           // An unsuccessful request is delivered on the error channel.
-          observer.error(new HttpErrorResponse({
-            // The error in this case is the response body (error from the server).
-            error: body,
-            headers,
-            status,
-            statusText,
-            url: url || undefined,
-          }));
+          observer.error(
+            new HttpErrorResponse({
+              // The error in this case is the response body (error from the server).
+              error: body,
+              headers,
+              status,
+              statusText,
+              url: url || undefined
+            })
+          );
         }
       };
 
@@ -234,12 +267,12 @@ export class HttpXhrBackend implements HttpBackend {
       // Connection timeout, DNS error, offline, etc. These are actual errors, and are
       // transmitted on the error channel.
       const onError = (error: ProgressEvent) => {
-        const {url} = partialFromXhr();
+        const { url } = partialFromXhr();
         const res = new HttpErrorResponse({
           error,
           status: xhr.status || HttpStatusCode.UnknownError,
-          statusText: xhr.statusText || 'Unknown Error',
-          url: url || undefined,
+          statusText: xhr.statusText || "Unknown Error",
+          url: url || undefined
         });
         observer.error(res);
       };
@@ -263,7 +296,7 @@ export class HttpXhrBackend implements HttpBackend {
         // event stream.
         let progressEvent: HttpDownloadProgressEvent = {
           type: HttpEventType.DownloadProgress,
-          loaded: event.loaded,
+          loaded: event.loaded
         };
 
         // Set the total number of bytes in the event if it's available.
@@ -274,7 +307,7 @@ export class HttpXhrBackend implements HttpBackend {
         // If the request was for text content and a partial response is
         // available on XMLHttpRequest, include it in the progress event
         // to allow for streaming reads.
-        if (req.responseType === 'text' && !!xhr.responseText) {
+        if (req.responseType === "text" && !!xhr.responseText) {
           progressEvent.partialText = xhr.responseText;
         }
 
@@ -289,7 +322,7 @@ export class HttpXhrBackend implements HttpBackend {
         // event.
         let progress: HttpUploadProgressEvent = {
           type: HttpEventType.UploadProgress,
-          loaded: event.loaded,
+          loaded: event.loaded
         };
 
         // If the total number of bytes being uploaded is available, include
@@ -303,34 +336,34 @@ export class HttpXhrBackend implements HttpBackend {
       };
 
       // By default, register for load and error events.
-      xhr.addEventListener('load', onLoad);
-      xhr.addEventListener('error', onError);
+      xhr.addEventListener("load", onLoad);
+      xhr.addEventListener("error", onError);
 
       // Progress events are only enabled if requested.
       if (req.reportProgress) {
         // Download progress is always enabled if requested.
-        xhr.addEventListener('progress', onDownProgress);
+        xhr.addEventListener("progress", onDownProgress);
 
         // Upload progress depends on whether there is a body to upload.
         if (reqBody !== null && xhr.upload) {
-          xhr.upload.addEventListener('progress', onUpProgress);
+          xhr.upload.addEventListener("progress", onUpProgress);
         }
       }
 
       // Fire the request, and notify the event stream that it was fired.
-      xhr.send(reqBody !);
-      observer.next({type: HttpEventType.Sent});
+      xhr.send(reqBody!);
+      observer.next({ type: HttpEventType.Sent });
 
       // This is the return from the Observable function, which is the
       // request cancellation handler.
       return () => {
         // On a cancellation, remove all registered event listeners.
-        xhr.removeEventListener('error', onError);
-        xhr.removeEventListener('load', onLoad);
+        xhr.removeEventListener("error", onError);
+        xhr.removeEventListener("load", onLoad);
         if (req.reportProgress) {
-          xhr.removeEventListener('progress', onDownProgress);
+          xhr.removeEventListener("progress", onDownProgress);
           if (reqBody !== null && xhr.upload) {
-            xhr.upload.removeEventListener('progress', onUpProgress);
+            xhr.upload.removeEventListener("progress", onUpProgress);
           }
         }
 

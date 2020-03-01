@@ -12,10 +12,9 @@ import {
   HttpStatusCode
 } from "@angular/common/http/src/response";
 import {
-  ddescribe,
   describe,
-  it,
-  expect
+  expect,
+  it
 } from "@angular/core/testing/src/testing_internal";
 
 {
@@ -24,9 +23,7 @@ import {
       it("fully constructs responses", () => {
         const resp = new HttpResponse({
           body: "test body",
-          headers: new HttpHeaders({
-            Test: "Test header"
-          }),
+          headers: new HttpHeaders({ Test: "Test header" }),
           status: 201,
           statusText: "Created",
           url: "/test"
