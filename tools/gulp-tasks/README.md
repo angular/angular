@@ -52,5 +52,5 @@ gulp.task('format:enforce', loadTask('format', 'enforce'));
 E.g. Loading a task that has dependencies:
 
 ```js
-gulp.task('lint', ['format:enforce', 'tools:build'], loadTask('lint'));
+gulp.task('lint', ['format:enforce'], loadTask('lint'));
 ```

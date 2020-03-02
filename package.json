@@ -30,7 +30,9 @@
     "bazel": "bazel",
     "//circleci-win-comment": "See the test-win circleci job for why these are needed. If they are not needed anymore, remove them.",
     "circleci-win-ve": "bazel test --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only,-browser:chromium-local //packages/compiler-cli/... //tools/ts-api-guardian/...",
-    "circleci-win-ivy": "bazel test --config=ivy --build_tag_filters=-no-ivy-aot,-fixme-ivy-aot --test_tag_filters=-no-ivy-aot,-fixme-ivy-aot,-browser:chromium-local //packages/compiler-cli/... //tools/ts-api-guardian/..."
+    "circleci-win-ivy": "bazel test --config=ivy --build_tag_filters=-no-ivy-aot,-fixme-ivy-aot --test_tag_filters=-no-ivy-aot,-fixme-ivy-aot,-browser:chromium-local //packages/compiler-cli/... //tools/ts-api-guardian/...",
+    "lint": "yarn -s tslint && yarn gulp lint",
+    "tslint": "tsc -p tools/tsconfig.json && tslint -c tslint.json \"+(packages|modules|scripts|tools)/**/*.+(js|ts)\""
   },
   "// 1": "dependencies are used locally and by bazel",
   "dependencies": {

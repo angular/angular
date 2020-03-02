@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 'use strict';
 
 // Build the dist/packages-dist directory in the same fashion as the legacy
@@ -51,11 +59,11 @@ module.exports = {
  * @param {string} description Human-readable description of the build.
  */
 function buildTargetPackages(destPath, enableIvy, description) {
-  console.log('##################################');
-  console.log(`${scriptPath}:`);
-  console.log('  Building @angular/* npm packages');
-  console.log(`  Mode: ${description}`);
-  console.log('##################################');
+  console.info('##################################');
+  console.info(`${scriptPath}:`);
+  console.info('  Building @angular/* npm packages');
+  console.info(`  Mode: ${description}`);
+  console.info('##################################');
 
   // List of targets to build, e.g. core, common, compiler, etc. Note that we want to also remove
   // all carriage return (`\r`) characters form the query output, because otherwise the carriage
@@ -79,7 +87,7 @@ function buildTargetPackages(destPath, enableIvy, description) {
     const destDir = `${absDestPath}/${pkg}`;
 
     if (test('-d', srcDir)) {
-      console.log(`# Copy artifacts to ${destDir}`);
+      console.info(`# Copy artifacts to ${destDir}`);
       rm('-rf', destDir);
       cp('-R', srcDir, destDir);
       chmod('-R', 'u+w', destDir);

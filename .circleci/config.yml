@@ -274,7 +274,7 @@ jobs:
       - run: 'yarn bazel:lint ||
               (echo -e "\n.bzl files have lint errors. Please run ''yarn bazel:lint-fix''"; exit 1)'
 
-      - run: yarn gulp lint
+      - run: yarn lint
       - run: node tools/pullapprove/verify.js
 
   test:

@@ -91,7 +91,7 @@ export function createBenchmark(benchmarkName: string): Benchmark {
       return (previous.bestTime < current.bestTime) ? previous : current;
     });
     const unitOffset = findUnit(fastest.bestTime);
-    (fn || console.log)(`\nBenchmark: ${benchmarkName}\n${profiles.map((profile: Profile) => {
+    (fn || console.info)(`\nBenchmark: ${benchmarkName}\n${profiles.map((profile: Profile) => {
       const time = formatTime(profile.bestTime, unitOffset);
       const percent = formatPercent(1 - profile.bestTime / fastest.bestTime);
       return ` ${profile.profileName}: ${time}(${percent}) `;

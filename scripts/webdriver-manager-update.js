@@ -1,6 +1,4 @@
 #!/usr/bin/env node
-'use strict';
-
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -8,6 +6,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+'use strict';
 // Use process.cwd() so that this script is portable and can be used in /aio
 // where this will require /aio/node_modules/puppeteer
 const puppeteerPkgPath = require.resolve('puppeteer/package.json', {paths: [process.cwd()]});
