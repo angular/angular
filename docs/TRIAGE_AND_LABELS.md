@@ -21,6 +21,7 @@ The components have a clear piece of source code associated with it within the `
   browser-platforms are very intertwined, we will be treating them as one
 * `comp: ivy` - a subset of core representing the new Ivy renderer.
 * `comp: ngcc` - a subset of ivy representing the [Angular Compatibility Compiler](../packages/compiler-cli/ngcc/README.md)
+* `comp: ve` - a subset of `core & compiler` representing changes specific to ViewEngine (legacy compiler/renderer).
 * `comp: docs-infra` - the angular.io application and docs-related tooling
 * `comp: elements`
 * `comp: forms`
