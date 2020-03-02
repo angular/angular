@@ -31,6 +31,7 @@ ng_package(
     ],
     deps = [
         ":example",
+        "//packages/bazel/test/ng_package/example/a11y",
         "//packages/bazel/test/ng_package/example/secondary",
     ],
 )
