@@ -19,6 +19,7 @@
     "@angular/router": "file:../../node_modules/@angular/router",
     "@bazel/bazel": "file:../../node_modules/@bazel/bazel",
     "@types/node": "file:../../node_modules/@types/node",
+    "patch-package": "^6.2.1",
     "protractor": "file:../../node_modules/protractor",
     "puppeteer": "file:../../node_modules/puppeteer",
     "typescript": "file:../../node_modules/typescript",
@@ -29,6 +30,7 @@
     "**/webdriver-manager": "file:../../node_modules/webdriver-manager"
   },
   "scripts": {
-    "test": "./test.sh"
+    "test": "./test.sh",
+    "postinstall": "patch-package"
   }
 }
