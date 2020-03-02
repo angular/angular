@@ -363,9 +363,7 @@ function collectQueryResults<T>(tView: TView, lView: LView, queryIndex: number, 
     for (let i = 0; i < tQueryMatches.length; i += 2) {
       const tNodeIdx = tQueryMatches[i];
       if (tNodeIdx > 0) {
-        const viewResult = lViewResults[i / 2];
-        ngDevMode && assertDefined(viewResult, 'materialized query result should be defined');
-        result.push(viewResult as T);
+        result.push(lViewResults[i / 2] as T);
       } else {
         const childQueryIndex = tQueryMatches[i + 1];
 
