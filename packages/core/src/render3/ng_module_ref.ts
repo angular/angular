@@ -9,7 +9,7 @@
 import {Injector} from '../di/injector';
 import {INJECTOR} from '../di/injector_compatibility';
 import {InjectFlags} from '../di/interface/injector';
-import {R3Injector, createInjector} from '../di/r3_injector';
+import {R3Injector, createInjectorWithoutInjectorInstances} from '../di/r3_injector';
 import {Type} from '../interface/type';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {InternalNgModuleRef, NgModuleFactory as viewEngine_NgModuleFactory, NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
@@ -52,13 +52,18 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
     const ngLocaleIdDef = getNgLocaleIdDef(ngModuleType);
     ngLocaleIdDef && setLocaleId(ngLocaleIdDef);
     this._bootstrapComponents = maybeUnwrapFn(ngModuleDef !.bootstrap);
-    this._r3Injector = createInjector(
+    this._r3Injector = createInjectorWithoutInjectorInstances(
         ngModuleType, _parent,
         [
           {provide: viewEngine_NgModuleRef, useValue: this},
           {provide: viewEngine_ComponentFactoryResolver, useValue: this.componentFactoryResolver}
         ],
         stringify(ngModuleType)) as R3Injector;
+
+    // We need to resolve the injector types separately from the injector creation, because
+    // the module might be trying to use this ref in its contructor for DI which will cause a
+    // circular error that will eventually error out, because the injector isn't created yet.
+    this._r3Injector._resolveInjectorDefTypes();
     this.instance = this.get(ngModuleType);
   }
 

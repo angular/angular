@@ -78,8 +78,21 @@ interface Record<T> {
 export function createInjector(
     defType: /* InjectorType<any> */ any, parent: Injector | null = null,
     additionalProviders: StaticProvider[] | null = null, name?: string): Injector {
-  parent = parent || getNullInjector();
-  return new R3Injector(defType, additionalProviders, parent, name);
+  const injector =
+      createInjectorWithoutInjectorInstances(defType, parent, additionalProviders, name);
+  injector._resolveInjectorDefTypes();
+  return injector;
+}
+
+/**
+ * Creates a new injector without eagerly resolving its injector types. Can be used in places
+ * where resolving the injector types immediately can lead to an infinite loop. The injector types
+ * should be resolved at a later point by calling `_resolveInjectorDefTypes`.
+ */
+export function createInjectorWithoutInjectorInstances(
+    defType: /* InjectorType<any> */ any, parent: Injector | null = null,
+    additionalProviders: StaticProvider[] | null = null, name?: string): R3Injector {
+  return new R3Injector(defType, additionalProviders, parent || getNullInjector(), name);
 }
 
 export class R3Injector {
@@ -135,9 +148,6 @@ export class R3Injector {
     // any injectable scoped to APP_ROOT_SCOPE.
     const record = this.records.get(INJECTOR_SCOPE);
     this.scope = record != null ? record.value : null;
-
-    // Eagerly instantiate the InjectorType classes themselves.
-    this.injectorDefTypes.forEach(defType => this.get(defType));
 
     // Source name, used for debugging
     this.source = source || (typeof def === 'object' ? null : stringify(def));
@@ -223,6 +233,9 @@ export class R3Injector {
       setCurrentInjector(previousInjector);
     }
   }
+
+  /** @internal */
+  _resolveInjectorDefTypes() { this.injectorDefTypes.forEach(defType => this.get(defType)); }
 
   toString() {
     const tokens = <string[]>[], records = this.records;
