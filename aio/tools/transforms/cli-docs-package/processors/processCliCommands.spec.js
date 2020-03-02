@@ -95,6 +95,22 @@ describe('processCliCommands processor', () => {
         jasmine.objectContaining({name: 'c'}),
       ]);
     });
+
+    it('should collect potential search terms from options for indexing', () => {
+      const doc = {
+        docType: 'cli-command',
+        name: 'name',
+        commandAliases: [],
+        options: [
+          {name: 'named1'},
+          {name: 'positional1', positional: 0},
+          {name: 'named2', hidden: true},
+          {name: 'positional2', hidden: true, positional: 1},
+        ],
+      };
+      processor.$process([doc, navigationStub]);
+      expect(doc.optionKeywords).toEqual('named1  positional1');
+    });
   });
 
   describe('subcommands', () => {
