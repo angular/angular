@@ -30,7 +30,6 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
     const linter = new Linter({fix, rulesDirectory: [rulesDirectory]}, program);
     const config = Configuration.parseConfigFile({
       rules: {'undecorated-classes-with-decorated-fields': true},
-      linterOptions: {typeCheck: true}
     });
 
     program.getRootFileNames().forEach(fileName => {

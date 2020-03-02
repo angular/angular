@@ -30,8 +30,8 @@ describe('Google3 noTemplateVariableAssignment TSLint rule', () => {
   function runTSLint() {
     const program = Linter.createProgram(join(tmpDir, 'tsconfig.json'));
     const linter = new Linter({fix: false, rulesDirectory: [rulesDirectory]}, program);
-    const config = Configuration.parseConfigFile(
-        {rules: {'no-template-variable-assignment': true}, linterOptions: {typeCheck: true}});
+    const config =
+        Configuration.parseConfigFile({rules: {'no-template-variable-assignment': true}});
 
     program.getRootFileNames().forEach(fileName => {
       linter.lint(fileName, program.getSourceFile(fileName) !.getFullText(), config);
