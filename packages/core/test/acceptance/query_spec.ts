@@ -1425,6 +1425,78 @@ describe('query logic', () => {
       expect(fixture.componentInstance.queryResults.last).toBeAnInstanceOf(WithMultiProvider);
     });
 
+    it('should allow undefined provider value in a [View/Content]Child queries', () => {
+      @Directive({selector: '[group]'})
+      class GroupDir {
+      }
+
+      @Directive(
+          {selector: '[undefinedGroup]', providers: [{provide: GroupDir, useValue: undefined}]})
+      class UndefinedGroup {
+      }
+
+      @Component({
+        template: `
+          <div group></div>
+          <ng-template [ngIf]="true">
+            <div undefinedGroup></div>
+          </ng-template>
+        `
+      })
+      class App {
+        @ViewChild(GroupDir) group !: GroupDir;
+      }
+
+      TestBed.configureTestingModule(
+          {declarations: [App, GroupDir, UndefinedGroup], imports: [CommonModule]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.group).toBeAnInstanceOf(GroupDir);
+    });
+
+    it('should allow null / undefined provider value in a [View/Content]Children queries', () => {
+      @Directive({selector: '[group]'})
+      class GroupDir {
+      }
+
+      @Directive({selector: '[nullGroup]', providers: [{provide: GroupDir, useValue: null}]})
+      class NullGroup {
+      }
+
+      @Directive(
+          {selector: '[undefinedGroup]', providers: [{provide: GroupDir, useValue: undefined}]})
+      class UndefinedGroup {
+      }
+
+      @Component({
+        template: `
+          <ng-template [ngIf]="true">
+            <div nullGroup></div>
+          </ng-template>
+          <div group></div>
+          <ng-template [ngIf]="true">
+            <div undefinedGroup></div>
+          </ng-template>
+        `
+      })
+      class App {
+        @ViewChildren(GroupDir) groups !: QueryList<GroupDir>;
+      }
+
+      TestBed.configureTestingModule(
+          {declarations: [App, GroupDir, NullGroup, UndefinedGroup], imports: [CommonModule]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      const queryList = fixture.componentInstance.groups;
+      expect(queryList.length).toBe(3);
+
+      const groups = queryList.toArray();
+      expect(groups[0]).toBeNull();
+      expect(groups[1]).toBeAnInstanceOf(GroupDir);
+      expect(groups[2]).toBeUndefined();
+    });
 
   });
 
