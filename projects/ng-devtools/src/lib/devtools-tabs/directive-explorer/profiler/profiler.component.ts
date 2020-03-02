@@ -2,9 +2,13 @@ import { Component, Input, ViewChildren, QueryList, OnInit, OnDestroy } from '@a
 import { RecordingComponent } from './recording/recording.component';
 import { MessageBus, Events, ProfilerFrame } from 'protocol';
 import { FileApiService } from '../../../file-api-service';
-import { version } from '../../../../../../../package.json';
+import { MatDialog } from '@angular/material/dialog';
+import { ProfilerImportDialogComponent } from './profiler-import-dialog/profiler-import-dialog.component';
 
 type State = 'idle' | 'recording' | 'visualizing';
+
+const SUPPORTED_VERSIONS = [1];
+const PROFILER_VERSION = 1;
 
 @Component({
   selector: 'ng-profiler',
@@ -20,7 +24,7 @@ export class ProfilerComponent implements OnInit, OnDestroy {
 
   @ViewChildren(RecordingComponent) recordingRef: QueryList<RecordingComponent>;
 
-  constructor(private _fileApiService: FileApiService) {}
+  constructor(private _fileApiService: FileApiService, public dialog: MatDialog) {}
 
   startRecording(): void {
     this.state = 'recording';
@@ -38,23 +42,36 @@ export class ProfilerComponent implements OnInit, OnDestroy {
     this.messageBus.on('profilerResults', remainingRecords => {
       this._profilerFinished(remainingRecords);
     });
+
     this.messageBus.on('sendProfilerChunk', (chunkOfRecords: ProfilerFrame) => {
       this.buffer.push(chunkOfRecords);
     });
+
     this._fileApiService.uploadedData.subscribe(importedFile => {
       if (importedFile.error) {
         console.error('Could not process uploaded file');
         console.error(importedFile.error);
+        this.dialog.open(ProfilerImportDialogComponent, {
+          width: '600px',
+          data: { status: 'ERROR', errorMessage: importedFile.error },
+        });
+
+        return;
+      }
+
+      if (!SUPPORTED_VERSIONS.includes(importedFile.version)) {
+        const processDataDialog = this.dialog.open(ProfilerImportDialogComponent, {
+          width: '600px',
+          data: { importedVersion: importedFile.version, profilerVersion: PROFILER_VERSION, status: 'INVALID_VERSION' },
+        });
+
+        processDataDialog.afterClosed().subscribe(result => {
+          if (result) {
+            this._viewProfilerData(importedFile.stream);
+          }
+        });
       } else {
-        let processData = true;
-        if (importedFile.version !== version) {
-          processData = confirm(
-            `The file you are attempting to upload was recorded in a different version of Angular Devtools than the version you are using. \nCurrent Angular Devtools version: ${version}. \nVersion of the file you are uploading: ${importedFile.version}. \nFiles recorded in older versions may no longer be compatible. Do you wish to continue?`
-          );
-        }
-        if (processData) {
-          this._viewProfilerData(importedFile.stream);
-        }
+        this._viewProfilerData(importedFile.stream);
       }
     });
   }
@@ -76,7 +93,7 @@ export class ProfilerComponent implements OnInit, OnDestroy {
 
   exportProfilerResults(): void {
     const fileToExport = {
-      version,
+      version: PROFILER_VERSION,
       stream: this.stream,
     };
     this._fileApiService.saveObjectAsJSON(fileToExport);

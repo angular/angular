@@ -10,9 +10,10 @@ import { RecordingComponent } from './recording/recording.component';
 import { TimelineModule } from './recording/timeline/timeline.module';
 import { RecordingDialogComponent } from './recording/recording-dialog/recording-dialog.component';
 import { MatButtonModule } from '@angular/material/button';
+import { ProfilerImportDialogComponent } from './profiler-import-dialog/profiler-import-dialog.component';
 
 @NgModule({
-  declarations: [ProfilerComponent, RecordingComponent, RecordingDialogComponent],
+  declarations: [ProfilerComponent, RecordingComponent, RecordingDialogComponent, ProfilerImportDialogComponent],
   imports: [
     CommonModule,
     MatDialogModule,
@@ -23,5 +24,6 @@ import { MatButtonModule } from '@angular/material/button';
     MatButtonModule,
   ],
   exports: [ProfilerComponent],
+  entryComponents: [ProfilerImportDialogComponent],
 })
 export class ProfilerModule {}
