@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {CUSTOM_ELEMENTS_SCHEMA, Component, ComponentFactory, Injectable, NO_ERRORS_SCHEMA, NgModule, NgModuleRef, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelement as element} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, Component, Injectable, InjectionToken, NO_ERRORS_SCHEMA, NgModule, NgModuleRef, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelement as element} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {modifiedInIvy, onlyInIvy} from '@angular/private/testing';
@@ -475,9 +475,28 @@ describe('NgModule', () => {
 
   });
 
-  it('should be able to use ComponentFactoryResolver from the NgModuleRef inside the module constructor',
+  it('should be able to use DI through the NgModuleRef inside the module constructor', () => {
+    const token = new InjectionToken<string>('token');
+    let value: string|undefined;
+
+    @NgModule({
+      imports: [CommonModule],
+      providers: [{provide: token, useValue: 'foo'}],
+    })
+    class TestModule {
+      constructor(ngRef: NgModuleRef<TestModule>) { value = ngRef.injector.get(token); }
+    }
+
+    TestBed.configureTestingModule({imports: [TestModule], declarations: [TestCmp]});
+    const fixture = TestBed.createComponent(TestCmp);
+    fixture.detectChanges();
+
+    expect(value).toBe('foo');
+  });
+
+  it('should be able to create a component through the ComponentFactoryResolver of an NgModuleRef in a module constructor',
      () => {
-       let factory: ComponentFactory<TestCmp>;
+       let componentInstance: TestCmp|undefined;
 
        @NgModule({
          declarations: [TestCmp],
@@ -486,13 +505,14 @@ describe('NgModule', () => {
        })
        class MyModule {
          constructor(ngModuleRef: NgModuleRef<any>) {
-           factory = ngModuleRef.componentFactoryResolver.resolveComponentFactory(TestCmp);
+           const factory = ngModuleRef.componentFactoryResolver.resolveComponentFactory(TestCmp);
+           componentInstance = factory.create(ngModuleRef.injector).instance;
          }
        }
 
        TestBed.configureTestingModule({imports: [MyModule]});
        TestBed.createComponent(TestCmp);
-       expect(factory !.componentType).toBe(TestCmp);
+       expect(componentInstance).toBeAnInstanceOf(TestCmp);
      });
 
 });
