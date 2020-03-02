@@ -4,10 +4,14 @@ module.exports = function processCliCommands(createDocMessage) {
     $runBefore: ['rendering-docs'],
     $process(docs) {
       const navigationDoc = docs.find(doc => doc.docType === 'navigation-json');
-      const navigationNode = navigationDoc && navigationDoc.data['SideNav'].find(node => node.children && node.children.length && node.children[0].url === 'cli');
+      const navigationNode = navigationDoc &&
+          navigationDoc.data['SideNav'].find(
+              node => node.children && node.children.length && node.children[0].url === 'cli');
 
       if (!navigationNode) {
-        throw new Error(createDocMessage('Missing `cli` url - CLI Commands must include a first child node with url set at `cli`', navigationDoc));
+        throw new Error(createDocMessage(
+            'Missing `cli` url - CLI Commands must include a first child node with url set at `cli`',
+            navigationDoc));
       }
 
       docs.forEach(doc => {
@@ -18,7 +22,7 @@ module.exports = function processCliCommands(createDocMessage) {
           processOptions(doc, doc.options);
 
           // Add to navigation doc
-          navigationNode.children.push({ url: doc.path, title: `ng ${doc.name}` });
+          navigationNode.children.push({url: doc.path, title: `ng ${doc.name}`});
         }
       });
     }
@@ -31,7 +35,9 @@ function processOptions(container, options) {
 
   options.forEach(option => {
     // Ignore any hidden options
-    if (option.hidden) { return; }
+    if (option.hidden) {
+      return;
+    }
 
     option.types = option.types || [option.type];
     option.names = collectNames(option.name, option.aliases);
