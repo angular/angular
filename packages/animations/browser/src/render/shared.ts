@@ -237,3 +237,53 @@ export function hypenatePropsObject(object: {[key: string]: any}): {[key: string
   });
   return newObj;
 }
+
+/**
+ * Returns the computed style for the provided property on the provided element.
+ *
+ * This function uses `window.getComputedStyle` internally to determine the
+ * style value for the element. Firefox doesn't support reading the shorthand
+ * forms of margin/padding and for this reason this function needs to account
+ * for that.
+ */
+export function computeStyle(element: HTMLElement, prop: string): string {
+  const styles = window.getComputedStyle(element);
+
+  // this is casted to any because the `CSSStyleDeclaration` type is a fixed
+  // set of properties and `prop` is a dynamic reference to a property within
+  // the `CSSStyleDeclaration` list.
+  let value = getComputedValue(styles, prop as keyof CSSStyleDeclaration);
+
+  // Firefox returns empty string values for `margin` and `padding` properties
+  // when extracted using getComputedStyle (see similar issue here:
+  // https://github.com/jquery/jquery/issues/3383). In this situation
+  // we want to emulate the value that is returned by creating the top,
+  // right, bottom and left properties as individual style lookups.
+  if (value.length === 0 && (prop === 'margin' || prop === 'padding')) {
+    const t = getComputedValue(styles, (prop + 'Top') as 'marginTop' | 'paddingTop');
+    const r = getComputedValue(styles, (prop + 'Right') as 'marginRight' | 'paddingRight');
+    const b = getComputedValue(styles, (prop + 'Bottom') as 'marginBottom' | 'paddingBottom');
+    const l = getComputedValue(styles, (prop + 'Left') as 'marginLeft' | 'paddingLeft');
+
+    // reconstruct the padding/margin value as `top right bottom left`
+    // we `trim()` the value because if all of the values above are
+    // empty string values then we would like the return value to
+    // also be an empty string.
+    value = `${t} ${r} ${b} ${l}`.trim();
+  }
+
+  return value;
+}
+
+/**
+ * Reads and returns the provided property style from the provided styles collection.
+ *
+ * This function is useful because it will return an empty string in the
+ * event that the value obtained from the styles collection is a non-string
+ * value (which is usually the case if the `styles` object is mocked out).
+ */
+function getComputedValue<K extends keyof CSSStyleDeclaration>(
+    styles: CSSStyleDeclaration, prop: K): string {
+  const value = styles[prop];
+  return typeof value === 'string' ? value : '';
+}
