@@ -1,7 +1,4 @@
-workspace(
-    name = "bazel_integration_test",
-    managed_directories = {"@npm": ["node_modules"]},
-)
+workspace(name = "bazel_integration_test")
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
@@ -57,6 +54,11 @@ node_repositories(
 yarn_install(
     name = "npm",
     package_json = "//:package.json",
+    # Turn off symlink_node_modules here as it causes flakiness with missing
+    # files in node_modules.
+    # TODO: track down the root cause of the flakiness; current suspect is that
+    # it is an issue with managed_directories when resources are limited
+    symlink_node_modules = False,
     yarn_lock = "//:yarn.lock",
 )
 
