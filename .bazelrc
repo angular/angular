@@ -33,6 +33,10 @@ build --incompatible_strict_action_env
 run --incompatible_strict_action_env
 test --incompatible_strict_action_env
 
+# Since we rely on upstream resources meant for both PY2 and PY3 we need to use python's nonstrict
+# toolchain option.
+build --extra_toolchains=@bazel_toolchains=@bazel_tools//tools/python:autodetecting_toolchain_nonstrict
+
 ###############################
 # Release support             #
 # Turn on these settings with #
