@@ -18,8 +18,7 @@
       "ng-devtools": ["projects/ng-devtools/src/public-api.ts"],
       "ng-devtools-backend": ["projects/ng-devtools-backend/src/public-api.ts"],
       "protocol": ["projects/protocol/src/public-api.ts"]
-    },
-    "resolveJsonModule": true
+    }
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
