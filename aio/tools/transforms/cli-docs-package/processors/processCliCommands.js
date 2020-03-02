@@ -19,7 +19,9 @@ module.exports = function processCliCommands(createDocMessage) {
           doc.names = collectNames(doc.name, doc.commandAliases);
 
           // Recursively process the options
-          processOptions(doc, doc.options);
+          const optionKeywords = new Set();
+          processOptions(doc, doc.options, optionKeywords);
+          doc.optionKeywords = Array.from(optionKeywords).join(' ');
 
           // Add to navigation doc
           navigationNode.children.push({url: doc.path, title: `ng ${doc.name}`});
@@ -29,7 +31,7 @@ module.exports = function processCliCommands(createDocMessage) {
   };
 };
 
-function processOptions(container, options) {
+function processOptions(container, options, optionKeywords) {
   container.positionalOptions = [];
   container.namedOptions = [];
 
@@ -41,6 +43,7 @@ function processOptions(container, options) {
 
     option.types = option.types || [option.type];
     option.names = collectNames(option.name, option.aliases);
+    option.names.forEach(name => optionKeywords.add(name));
 
     // Now work out what kind of option it is: positional/named
     if (option.positional !== undefined) {
@@ -54,7 +57,8 @@ function processOptions(container, options) {
       option.subcommands = getValues(option.subcommands);
       option.subcommands.forEach(subcommand => {
         subcommand.names = collectNames(subcommand.name, subcommand.aliases);
-        processOptions(subcommand, subcommand.options);
+        subcommand.names.forEach(name => optionKeywords.add(name));
+        processOptions(subcommand, subcommand.options, optionKeywords);
       });
     }
   });
@@ -63,7 +67,7 @@ function processOptions(container, options) {
 }
 
 function collectNames(name, aliases) {
-  return [name].concat(aliases);
+  return [name].concat(aliases || []);
 }
 
 function getValues(obj) {
