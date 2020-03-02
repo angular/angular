@@ -109,7 +109,7 @@ describe('processCliCommands processor', () => {
         ],
       };
       processor.$process([doc, navigationStub]);
-      expect(doc.optionKeywords).toEqual('named1  positional1');
+      expect(doc.optionKeywords).toEqual('named1 positional1');
     });
   });
 
@@ -301,4 +301,36 @@ describe('processCliCommands processor', () => {
             'Missing `cli` url - CLI Commands must include a first child node with url set at `cli`',
             navigation));
   });
+
+  it('should collect potential search terms from options for indexing', () => {
+    const doc = {
+      docType: 'cli-command',
+      name: 'name',
+      commandAliases: [],
+      options: [{
+        name: 'supercommand',
+        subcommands: {
+          subcommand1: {
+            name: 'subcommand1',
+            options: [
+              {name: 'subcommand1-option1'},
+              {name: 'subcommand1-option2'},
+            ],
+          },
+          subcommand2: {
+            name: 'subcommand2',
+            options: [
+              {name: 'subcommand2-option1'},
+              {name: 'subcommand2-option2'},
+            ],
+          }
+        },
+      }],
+    };
+    processor.$process([doc, navigationStub]);
+    expect(doc.optionKeywords)
+        .toEqual(
+            'supercommand subcommand1 subcommand1-option1 subcommand1-option2 subcommand2 subcommand2-option1 subcommand2-option2');
+  });
+
 });

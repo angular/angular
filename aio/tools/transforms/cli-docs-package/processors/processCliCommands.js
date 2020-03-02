@@ -67,7 +67,7 @@ function processOptions(container, options, optionKeywords) {
 }
 
 function collectNames(name, aliases) {
-  return [name].concat(aliases);
+  return [name].concat(aliases || []);
 }
 
 function getValues(obj) {
