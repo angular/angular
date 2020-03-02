@@ -248,12 +248,12 @@ export function hypenatePropsObject(object: {[key: string]: any}): {[key: string
  * for that.
  */
 export function computeStyle(element: HTMLElement, prop: string): string {
-  const gcs = window.getComputedStyle(element);
+  const styles = window.getComputedStyle(element);
 
   // this is casted to any because the `CSSStyleDeclaration` type is a fixed
   // set of properties and `prop` is a dynamic reference to a property within
   // the `CSSStyleDeclaration` list.
-  let value = gcs[prop as any];
+  let value = getComputedValue(styles, prop);
 
   // Firefox returns empty string values for `margin` and `padding` properties
   // when extracted using getComputedStyle (see similar issue here:
@@ -261,13 +261,29 @@ export function computeStyle(element: HTMLElement, prop: string): string {
   // we want to emulate the value that is returned by creating the top,
   // right, bottom and left properties as individual style lookups.
   if (value.length === 0 && (prop === 'margin' || prop === 'padding')) {
+    const t = getComputedValue(styles, (prop + 'Top'));
+    const r = getComputedValue(styles, (prop + 'Right'));
+    const b = getComputedValue(styles, (prop + 'Bottom'));
+    const l = getComputedValue(styles, (prop + 'Left'));
+
     // reconstruct the padding/margin value as `top right bottom left`
-    const propTop = (prop + 'Top') as 'marginTop' | 'paddingTop';
-    const propRight = (prop + 'Right') as 'marginRight' | 'paddingRight';
-    const propBottom = (prop + 'Bottom') as 'marginBottom' | 'paddingBottom';
-    const propLeft = (prop + 'Left') as 'marginLeft' | 'paddingLeft';
-    value = `${gcs[propTop]} ${gcs[propRight]} ${gcs[propBottom]} ${gcs[propLeft]}`;
+    // we `trim()` the value because if all of the values above are
+    // empty string values then we would like the return value to
+    // also be an empty string.
+    value = `${t} ${r} ${b} ${l}`.trim();
   }
 
   return value;
+}
+
+/**
+ * Reads and returns the provided property style from the provided styles collection.
+ *
+ * This function is useful because it will return an empty string in the
+ * event that the value obtained from the styles collection is a non-string
+ * value (which is usually the case if the `styles` object is mocked out).
+ */
+function getComputedValue(styles: CSSStyleDeclaration, prop: string): string {
+  const value = styles[prop as any];
+  return typeof value === 'string' ? value : '';
 }
