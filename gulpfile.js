@@ -45,11 +45,9 @@ gulp.task('format:changed', ['format:untracked', 'format:diff']);
 // Alias for `format:changed` that formerly formatted all files.
 gulp.task('format', ['format:changed']);
 
-gulp.task('lint', ['format:enforce', 'validate-commit-messages', 'tslint']);
-gulp.task('tslint', ['tools:build'], loadTask('lint'));
+gulp.task('lint', ['format:enforce', 'validate-commit-messages']);
 gulp.task('validate-commit-messages', loadTask('validate-commit-message'));
 gulp.task('source-map-test', loadTask('source-map-test'));
-gulp.task('tools:build', loadTask('tools-build'));
 gulp.task('changelog', loadTask('changelog'));
 gulp.task('changelog:zonejs', loadTask('changelog-zonejs'));
 gulp.task('check-env', () => {/* this is a noop because the env test ran already above */});

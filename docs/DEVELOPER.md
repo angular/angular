@@ -129,7 +129,7 @@ where `$ANGULAR_PATH` is an environment variable of the absolute path of your An
 You can check that your code is properly formatted and adheres to coding style by running:
 
 ``` shell
-$ yarn gulp lint
+$ yarn lint
 ```
 
 ## Publishing Snapshot Builds

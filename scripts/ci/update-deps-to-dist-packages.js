@@ -1,4 +1,12 @@
 /**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/*
  * This script updates a package.json file by replacing all dependencies and devDependencies
  * such that all packages from the @angular scope point to the packages-dist directory.
  *
@@ -52,12 +60,12 @@ writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
 // Log all packages that were updated
 if (updated.length > 0) {
-  console.log(green(`Updated ${packageJsonPath} to packages in ${packagesDistRoot}:`));
-  console.log(`  ${updated.join('\n  ')}\n`);
+  console.info(green(`Updated ${packageJsonPath} to packages in ${packagesDistRoot}:`));
+  console.info(`  ${updated.join('\n  ')}\n`);
 }
 
 // Log the packages that were skipped, as they were not present in the packages-dist directory
 if (skipped.length > 0) {
-  console.log(yellow(`Did not update packages that were not present in ${packagesDistRoot}:`));
-  console.log(`  ${skipped.join('\n  ')}\n`);
+  console.info(yellow(`Did not update packages that were not present in ${packagesDistRoot}:`));
+  console.info(`  ${skipped.join('\n  ')}\n`);
 }

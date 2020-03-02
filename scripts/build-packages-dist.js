@@ -1,4 +1,12 @@
 #!/usr/bin/env node
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 'use strict';
 
 const {chmod, cp, mkdir, rm} = require('shelljs');
@@ -22,18 +30,18 @@ buildTargetPackages('dist/packages-dist', false, 'Production');
 //       copied into the `dist/packages-dist/` directory (despite its source's being inside
 //       `packages/`), because it is not published to npm under the `@angular` scope (as happens for
 //       the rest of the packages).
-console.log('');
-console.log('##############################');
-console.log(`${scriptPath}:`);
-console.log('  Building zone.js npm package');
-console.log('##############################');
+console.info('');
+console.info('##############################');
+console.info(`${scriptPath}:`);
+console.info('  Building zone.js npm package');
+console.info('##############################');
 exec(`${bazelCmd} build //packages/zone.js:npm_package`);
 
 // Copy artifacts to `dist/zone.js-dist/`, so they can be easier persisted on CI.
 const buildOutputDir = `${bazelBin}/packages/zone.js/npm_package`;
 const distTargetDir = `${baseDir}/dist/zone.js-dist/zone.js`;
 
-console.log(`# Copy artifacts to ${distTargetDir}`);
+console.info(`# Copy artifacts to ${distTargetDir}`);
 mkdir('-p', distTargetDir);
 rm('-rf', distTargetDir);
 cp('-R', buildOutputDir, distTargetDir);

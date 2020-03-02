@@ -1,5 +1,13 @@
 #!/usr/bin/env node
 
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 var json = '';
 
 if (require.main === module) {
@@ -16,8 +24,8 @@ if (require.main === module) {
     var obj = JSON.parse(json);
     var argv = process.argv.slice(2);
     extractPaths(obj, argv).forEach(function(line) {
-      console.log(line);
-    })
+      console.info(line);
+    });
   });
 }
 
