@@ -62,7 +62,7 @@ ts_library(
 )
 
 jasmine_node_test(
-    name = "features_test",
+    name = "test",
     data = [
         "//packages/common:npm_package",
         "//packages/core:npm_package",
@@ -89,23 +89,6 @@ jasmine_node_test(
         "no-ivy-aot",
     ],
     deps = [
-        ":infra_test_lib",
-    ],
-)
-
-jasmine_node_test(
-    name = "test",
-    data = [
-        "//packages/common:npm_package",
-        "//packages/core:npm_package",
-        "//packages/forms:npm_package",
-    ],
-    tags = [
-        # the language service is not yet compatible with Ivy
-        "no-ivy-aot",
-    ],
-    deps = [
-        ":features_test_lib",
         ":infra_test_lib",
     ],
 )
