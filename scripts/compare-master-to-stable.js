@@ -24,7 +24,11 @@ const semver = require('semver');
 const ignorePatterns = [
   'release:',
   'docs:',
-  'build(docs-infra): upgrade cli command docs',
+  // These commits are created to update cli command docs sources with the most recent sha (stored
+  // in `aio/package.json`). Separate commits are generated for master and patch branches and since
+  // it's purely an infrastructure-related change, we ignore these commits while comparing master
+  // and patch diffs to look for delta.
+  'build(docs-infra): upgrade cli command docs sources',
 ];
 
 // Helper methods
@@ -72,6 +76,11 @@ function collectCommitsAsMap(rawGitCommits) {
   return commitsMap;
 }
 
+/**
+ * Returns a list of items present in `mapA`, but *not* present in `mapB`.
+ * This function is needed to compare 2 sets of commits and return the list of unique commits in the
+ * first set.
+ */
 function diff(mapA, mapB) {
   const result = [];
   mapA.forEach((value, key) => {
