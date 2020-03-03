@@ -50,16 +50,19 @@ export class DirectoryWalkerEntryPointFinder implements EntryPointFinder {
     }
 
     if (entryPoints.length > 0) {
-      // The `sourceDirectory` is an entry-point itself so no need to search its sub-directories.
-      // Also check for any nested node_modules in this package.
-      const nestedNodeModulesPath = this.fs.join(sourceDirectory, 'node_modules');
-      if (this.fs.exists(nestedNodeModulesPath)) {
-        entryPoints.push(...this.walkDirectoryForEntryPoints(nestedNodeModulesPath));
+      // The `sourceDirectory` is an entry point itself so no need to search its sub-directories.
+      // Also check for any nested node_modules in this package but only if it was compiled by
+      // Angular.
+      // It is unlikely that a non Angular entry point has a dependency on an Angular library.
+      if (entryPoints.some(e => e.compiledByAngular)) {
+        const nestedNodeModulesPath = this.fs.join(sourceDirectory, 'node_modules');
+        if (this.fs.exists(nestedNodeModulesPath)) {
+          entryPoints.push(...this.walkDirectoryForEntryPoints(nestedNodeModulesPath));
+        }
       }
 
       return entryPoints;
     }
-
 
     this.fs
         .readdir(sourceDirectory)

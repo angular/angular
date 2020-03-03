@@ -136,6 +136,25 @@ runInEachFileSystem(() => {
             ]);
       });
 
+      it('should handle try to process nested node_modules of non Angular packages', () => {
+        const basePath = _Abs('/nested_node_modules/node_modules');
+        loadTestFiles([
+          ...createPackage(basePath, 'outer', ['inner'], false),
+          ...createPackage(_Abs(`${basePath}/outer/node_modules`), 'inner', undefined, false),
+        ]);
+
+        const finder = new DirectoryWalkerEntryPointFinder(
+            fs, config, logger, resolver, _Abs('/nested_node_modules/node_modules'), undefined);
+        const spy = spyOn(finder, 'walkDirectoryForEntryPoints').and.callThrough();
+        const {entryPoints} = finder.findEntryPoints();
+        expect(spy.calls.allArgs()).toEqual([
+          [_Abs(basePath)],
+          [_Abs(`${basePath}/outer`)],
+        ]);
+
+        expect(entryPoints).toEqual([]);
+      });
+
       it('should not try to process deeply nested folders of non TypeScript packages', () => {
         const basePath = _Abs('/namespaced/node_modules');
         loadTestFiles([
@@ -241,8 +260,9 @@ runInEachFileSystem(() => {
       });
 
       function createPackage(
-          basePath: AbsoluteFsPath, packageName: string, deps: string[] = []): TestFile[] {
-        return [
+          basePath: AbsoluteFsPath, packageName: string, deps: string[] = [],
+          isCompiledByAngular = true): TestFile[] {
+        const files: TestFile[] = [
           {
             name: _Abs(`${basePath}/${packageName}/package.json`),
             contents: JSON.stringify({
@@ -251,14 +271,19 @@ runInEachFileSystem(() => {
             })
           },
           {
-            name: _Abs(`${basePath}/${packageName}/${packageName}.metadata.json`),
-            contents: 'metadata info'
-          },
-          {
             name: _Abs(`${basePath}/${packageName}/fesm2015/${packageName}.js`),
             contents: deps.map((dep, i) => `import * as i${i} from '${dep}';`).join('\n'),
           },
         ];
+
+        if (isCompiledByAngular) {
+          files.push({
+            name: _Abs(`${basePath}/${packageName}/${packageName}.metadata.json`),
+            contents: 'metadata info'
+          });
+        }
+
+        return files;
       }
 
       function createNonTsPackage(
