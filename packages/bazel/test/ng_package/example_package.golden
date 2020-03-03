@@ -13,6 +13,10 @@ bundles
   bundles/waffels-a11y.umd.js.map
   bundles/waffels-a11y.umd.min.js
   bundles/waffels-a11y.umd.min.js.map
+  bundles/waffels-imports.umd.js
+  bundles/waffels-imports.umd.js.map
+  bundles/waffels-imports.umd.min.js
+  bundles/waffels-imports.umd.min.js.map
   bundles/waffels-secondary.umd.js
   bundles/waffels-secondary.umd.js.map
   bundles/waffels-secondary.umd.min.js
@@ -29,6 +33,12 @@ esm2015
     esm2015/a11y/public-api.js
   esm2015/example.externs.js
   esm2015/example.js
+  esm2015/imports
+    esm2015/imports/imports.externs.js
+    esm2015/imports/imports.js
+    esm2015/imports/index.js
+    esm2015/imports/public-api.js
+    esm2015/imports/second.js
   esm2015/index.js
   esm2015/mymodule.js
   esm2015/secondary
@@ -42,6 +52,11 @@ esm5
     esm5/a11y/index.js
     esm5/a11y/public-api.js
   esm5/example.js
+  esm5/imports
+    esm5/imports/imports.js
+    esm5/imports/index.js
+    esm5/imports/public-api.js
+    esm5/imports/second.js
   esm5/index.js
   esm5/mymodule.js
   esm5/secondary
@@ -54,6 +69,8 @@ extra-styles.css
 fesm2015
   fesm2015/a11y.js
   fesm2015/a11y.js.map
+  fesm2015/imports.js
+  fesm2015/imports.js.map
   fesm2015/secondary.js
   fesm2015/secondary.js.map
   fesm2015/waffels.js
@@ -61,10 +78,18 @@ fesm2015
 fesm5
   fesm5/a11y.js
   fesm5/a11y.js.map
+  fesm5/imports.js
+  fesm5/imports.js.map
   fesm5/secondary.js
   fesm5/secondary.js.map
   fesm5/waffels.js
   fesm5/waffels.js.map
+imports
+  imports/imports.d.ts
+  imports/imports.metadata.json
+  imports/package.json
+imports.d.ts
+imports.metadata.json
 logo.png
 package.json
 secondary
@@ -443,6 +468,291 @@ var o=function n(e,t,o,r){var f,c=arguments.length,l=c<3?t:null===r?r=Object.get
      * Use of this source code is governed by an MIT-style license that can be
      * found in the LICENSE file at https://angular.io/license
      */e.A11yModule=o,Object.defineProperty(e,"__esModule",{value:!0})}));
+
+--- bundles/waffels-imports.umd.js ---
+
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2020 Google LLC. https://angular.io/
+ * License: MIT
+ */
+
+(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
+    typeof define === 'function' && define.amd ? define('example/imports', ['exports', '@angular/core'], factory) :
+    (global = global || self, factory((global.example = global.example || {}, global.example.imports = {}), global.ng.core));
+}(this, (function (exports, i0) { 'use strict';
+
+    /*! *****************************************************************************
+    Copyright (c) Microsoft Corporation. All rights reserved.
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+    this file except in compliance with the License. You may obtain a copy of the
+    License at http://www.apache.org/licenses/LICENSE-2.0
+
+    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+    WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+    MERCHANTABLITY OR NON-INFRINGEMENT.
+
+    See the Apache Version 2.0 License for specific language governing permissions
+    and limitations under the License.
+    ***************************************************************************** */
+    /* global Reflect, Promise */
+
+    var extendStatics = function(d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+
+    function __extends(d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    }
+
+    var __assign = function() {
+        __assign = Object.assign || function __assign(t) {
+            for (var s, i = 1, n = arguments.length; i < n; i++) {
+                s = arguments[i];
+                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+            }
+            return t;
+        };
+        return __assign.apply(this, arguments);
+    };
+
+    function __rest(s, e) {
+        var t = {};
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+            t[p] = s[p];
+        if (s != null && typeof Object.getOwnPropertySymbols === "function")
+            for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+                if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                    t[p[i]] = s[p[i]];
+            }
+        return t;
+    }
+
+    function __decorate(decorators, target, key, desc) {
+        var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+        if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+        else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+        return c > 3 && r && Object.defineProperty(target, key, r), r;
+    }
+
+    function __param(paramIndex, decorator) {
+        return function (target, key) { decorator(target, key, paramIndex); }
+    }
+
+    function __metadata(metadataKey, metadataValue) {
+        if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(metadataKey, metadataValue);
+    }
+
+    function __awaiter(thisArg, _arguments, P, generator) {
+        return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+            function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+            step((generator = generator.apply(thisArg, _arguments || [])).next());
+        });
+    }
+
+    function __generator(thisArg, body) {
+        var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+        return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+        function verb(n) { return function (v) { return step([n, v]); }; }
+        function step(op) {
+            if (f) throw new TypeError("Generator is already executing.");
+            while (_) try {
+                if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+                if (y = 0, t) op = [op[0] & 2, t.value];
+                switch (op[0]) {
+                    case 0: case 1: t = op; break;
+                    case 4: _.label++; return { value: op[1], done: false };
+                    case 5: _.label++; y = op[1]; op = [0]; continue;
+                    case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                    default:
+                        if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                        if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                        if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                        if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                        if (t[2]) _.ops.pop();
+                        _.trys.pop(); continue;
+                }
+                op = body.call(thisArg, _);
+            } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+            if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+        }
+    }
+
+    function __exportStar(m, exports) {
+        for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+    }
+
+    function __values(o) {
+        var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
+        if (m) return m.call(o);
+        return {
+            next: function () {
+                if (o && i >= o.length) o = void 0;
+                return { value: o && o[i++], done: !o };
+            }
+        };
+    }
+
+    function __read(o, n) {
+        var m = typeof Symbol === "function" && o[Symbol.iterator];
+        if (!m) return o;
+        var i = m.call(o), r, ar = [], e;
+        try {
+            while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+        }
+        catch (error) { e = { error: error }; }
+        finally {
+            try {
+                if (r && !r.done && (m = i["return"])) m.call(i);
+            }
+            finally { if (e) throw e.error; }
+        }
+        return ar;
+    }
+
+    function __spread() {
+        for (var ar = [], i = 0; i < arguments.length; i++)
+            ar = ar.concat(__read(arguments[i]));
+        return ar;
+    }
+
+    function __spreadArrays() {
+        for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+        for (var r = Array(s), k = 0, i = 0; i < il; i++)
+            for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+                r[k] = a[j];
+        return r;
+    };
+
+    function __await(v) {
+        return this instanceof __await ? (this.v = v, this) : new __await(v);
+    }
+
+    function __asyncGenerator(thisArg, _arguments, generator) {
+        if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+        var g = generator.apply(thisArg, _arguments || []), i, q = [];
+        return i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i;
+        function verb(n) { if (g[n]) i[n] = function (v) { return new Promise(function (a, b) { q.push([n, v, a, b]) > 1 || resume(n, v); }); }; }
+        function resume(n, v) { try { step(g[n](v)); } catch (e) { settle(q[0][3], e); } }
+        function step(r) { r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r); }
+        function fulfill(value) { resume("next", value); }
+        function reject(value) { resume("throw", value); }
+        function settle(f, v) { if (f(v), q.shift(), q.length) resume(q[0][0], q[0][1]); }
+    }
+
+    function __asyncDelegator(o) {
+        var i, p;
+        return i = {}, verb("next"), verb("throw", function (e) { throw e; }), verb("return"), i[Symbol.iterator] = function () { return this; }, i;
+        function verb(n, f) { i[n] = o[n] ? function (v) { return (p = !p) ? { value: __await(o[n](v)), done: n === "return" } : f ? f(v) : v; } : f; }
+    }
+
+    function __asyncValues(o) {
+        if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+        var m = o[Symbol.asyncIterator], i;
+        return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+        function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+        function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+    }
+
+    function __makeTemplateObject(cooked, raw) {
+        if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+        return cooked;
+    };
+
+    function __importStar(mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+        result.default = mod;
+        return result;
+    }
+
+    function __importDefault(mod) {
+        return (mod && mod.__esModule) ? mod : { default: mod };
+    }
+
+    var MySecondService = /** @class */ (function () {
+        function MySecondService() {
+        }
+        MySecondService.ɵprov = i0.ɵɵdefineInjectable({ factory: function MySecondService_Factory() { return new MySecondService(); }, token: MySecondService, providedIn: "root" });
+        MySecondService = __decorate([
+            i0.Injectable({ providedIn: 'root' })
+        ], MySecondService);
+        return MySecondService;
+    }());
+
+    var MyService = /** @class */ (function () {
+        function MyService(secondService) {
+            this.secondService = secondService;
+        }
+        MyService.ɵprov = i0.ɵɵdefineInjectable({ factory: function MyService_Factory() { return new MyService(i0.ɵɵinject(MySecondService)); }, token: MyService, providedIn: "root" });
+        MyService = __decorate([
+            i0.Injectable({ providedIn: 'root' }),
+            __metadata("design:paramtypes", [MySecondService])
+        ], MyService);
+        return MyService;
+    }());
+
+    /**
+     * @license
+     * Copyright Google Inc. All Rights Reserved.
+     *
+     * Use of this source code is governed by an MIT-style license that can be
+     * found in the LICENSE file at https://angular.io/license
+     */
+
+    /**
+     * Generated bundle index. Do not edit.
+     */
+
+    exports.MyService = MyService;
+    exports.ɵangular_packages_bazel_test_ng_package_example_imports_imports_a = MySecondService;
+
+    Object.defineProperty(exports, '__esModule', { value: true });
+
+})));
+//# sourceMappingURL=waffels-imports.umd.js.map
+
+
+--- bundles/waffels-imports.umd.min.js ---
+
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2020 Google LLC. https://angular.io/
+ * License: MIT
+ */
+!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports,require("@angular/core")):"function"==typeof define&&define.amd?define("example/imports",["exports","@angular/core"],t):t(((e=e||self).example=e.example||{},e.example.imports={}),e.ng.core)}(this,(function(e,t){"use strict";
+/*! *****************************************************************************
+    Copyright (c) Microsoft Corporation. All rights reserved.
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+    this file except in compliance with the License. You may obtain a copy of the
+    License at http://www.apache.org/licenses/LICENSE-2.0
+
+    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+    WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+    MERCHANTABLITY OR NON-INFRINGEMENT.
+
+    See the Apache Version 2.0 License for specific language governing permissions
+    and limitations under the License.
+    ***************************************************************************** */function n(e,t,n,o){var r,c=arguments.length,f=c<3?t:null===o?o=Object.getOwnPropertyDescriptor(t,n):o;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)f=Reflect.decorate(e,t,n,o);else for(var i=e.length-1;i>=0;i--)(r=e[i])&&(f=(c<3?r(f):c>3?r(t,n,f):r(t,n))||f);return c>3&&f&&Object.defineProperty(t,n,f),f}function o(e,t){if("object"==typeof Reflect&&"function"==typeof Reflect.metadata)return Reflect.metadata(e,t)}var r=function(){function e(){}return e.ɵprov=t.ɵɵdefineInjectable({factory:function t(){return new e},token:e,providedIn:"root"}),e=n([t.Injectable({providedIn:"root"})],e)}(),c=function(){function e(e){this.secondService=e}return e.ɵprov=t.ɵɵdefineInjectable({factory:function n(){return new e(t.ɵɵinject(r))},token:e,providedIn:"root"}),e=n([t.Injectable({providedIn:"root"}),o("design:paramtypes",[r])],e)}();
+/**
+     * @license
+     * Copyright Google Inc. All Rights Reserved.
+     *
+     * Use of this source code is governed by an MIT-style license that can be
+     * found in the LICENSE file at https://angular.io/license
+     */
+e.MyService=c,e.ɵangular_packages_bazel_test_ng_package_example_imports_imports_a=r,Object.defineProperty(e,"__esModule",{value:!0})}));
 
 --- bundles/waffels-secondary.umd.js ---
 
@@ -1092,6 +1402,106 @@ A11yModule.decorators = [
 export * from './index';
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZXhhbXBsZS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL2V4YW1wbGUudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7O0dBRUc7QUFFSCxjQUFjLFNBQVMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogR2VuZXJhdGVkIGJ1bmRsZSBpbmRleC4gRG8gbm90IGVkaXQuXG4gKi9cblxuZXhwb3J0ICogZnJvbSAnLi9pbmRleCc7XG4iXX0=
 
+--- esm2015/imports/imports.externs.js ---
+
+/** @externs */
+/**
+ * @externs
+ * @suppress {duplicate,checkTypes}
+ */
+// NOTE: generated by tsickle, do not edit.
+
+
+--- esm2015/imports/imports.js ---
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+export * from './index';
+export { MySecondService as ɵangular_packages_bazel_test_ng_package_example_imports_imports_a } from './second';
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW1wb3J0cy5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL2ltcG9ydHMvaW1wb3J0cy50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7R0FFRztBQUVILGNBQWMsU0FBUyxDQUFDO0FBRXhCLE9BQU8sRUFBQyxlQUFlLElBQUksaUVBQWlFLEVBQUMsTUFBTSxVQUFVLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEdlbmVyYXRlZCBidW5kbGUgaW5kZXguIERvIG5vdCBlZGl0LlxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vaW5kZXgnO1xuXG5leHBvcnQge015U2Vjb25kU2VydmljZSBhcyDJtWFuZ3VsYXJfcGFja2FnZXNfYmF6ZWxfdGVzdF9uZ19wYWNrYWdlX2V4YW1wbGVfaW1wb3J0c19pbXBvcnRzX2F9IGZyb20gJy4vc2Vjb25kJzsiXX0=
+
+--- esm2015/imports/index.js ---
+
+/**
+ * @fileoverview added by tsickle
+ * Generated from: packages/bazel/test/ng_package/example/imports/index.ts
+ * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+export { MyService } from './public-api';
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9pbXBvcnRzL2luZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7OztBQVFBLDBCQUFjLGNBQWMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuZXhwb3J0ICogZnJvbSAnLi9wdWJsaWMtYXBpJztcbiJdfQ==
+
+--- esm2015/imports/public-api.js ---
+
+/**
+ * @fileoverview added by tsickle
+ * Generated from: packages/bazel/test/ng_package/example/imports/public-api.ts
+ * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+import { Injectable } from '@angular/core';
+import { MySecondService } from './second';
+import * as i0 from "@angular/core";
+import * as i1 from "angular/packages/bazel/test/ng_package/example/imports/second";
+export class MyService {
+    /**
+     * @param {?} secondService
+     */
+    constructor(secondService) {
+        this.secondService = secondService;
+    }
+}
+MyService.decorators = [
+    { type: Injectable, args: [{ providedIn: 'root' },] }
+];
+/** @nocollapse */
+MyService.ctorParameters = () => [
+    { type: MySecondService }
+];
+/** @nocollapse */ MyService.ɵprov = i0.ɵɵdefineInjectable({ factory: function MyService_Factory() { return new MyService(i0.ɵɵinject(i1.MySecondService)); }, token: MyService, providedIn: "root" });
+if (false) {
+    /** @type {?} */
+    MyService.prototype.secondService;
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicHVibGljLWFwaS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL2ltcG9ydHMvcHVibGljLWFwaS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7QUFRQSxPQUFPLEVBQUMsVUFBVSxFQUFDLE1BQU0sZUFBZSxDQUFDO0FBQ3pDLE9BQU8sRUFBQyxlQUFlLEVBQUMsTUFBTSxVQUFVLENBQUM7OztBQUd6QyxNQUFNLE9BQU8sU0FBUzs7OztJQUNwQixZQUFtQixhQUE4QjtRQUE5QixrQkFBYSxHQUFiLGFBQWEsQ0FBaUI7SUFBRyxDQUFDOzs7WUFGdEQsVUFBVSxTQUFDLEVBQUMsVUFBVSxFQUFFLE1BQU0sRUFBQzs7OztZQUZ4QixlQUFlOzs7OztJQUlULGtDQUFxQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuaW1wb3J0IHtJbmplY3RhYmxlfSBmcm9tICdAYW5ndWxhci9jb3JlJztcbmltcG9ydCB7TXlTZWNvbmRTZXJ2aWNlfSBmcm9tICcuL3NlY29uZCc7XG5cbkBJbmplY3RhYmxlKHtwcm92aWRlZEluOiAncm9vdCd9KVxuZXhwb3J0IGNsYXNzIE15U2VydmljZSB7XG4gIGNvbnN0cnVjdG9yKHB1YmxpYyBzZWNvbmRTZXJ2aWNlOiBNeVNlY29uZFNlcnZpY2UpIHt9XG59XG4iXX0=
+
+--- esm2015/imports/second.js ---
+
+/**
+ * @fileoverview added by tsickle
+ * Generated from: packages/bazel/test/ng_package/example/imports/second.ts
+ * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+import { Injectable } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MySecondService {
+}
+MySecondService.decorators = [
+    { type: Injectable, args: [{ providedIn: 'root' },] }
+];
+/** @nocollapse */ MySecondService.ɵprov = i0.ɵɵdefineInjectable({ factory: function MySecondService_Factory() { return new MySecondService(); }, token: MySecondService, providedIn: "root" });
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvYmF6ZWwvdGVzdC9uZ19wYWNrYWdlL2V4YW1wbGUvaW1wb3J0cy9zZWNvbmQudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7O0FBUUEsT0FBTyxFQUFDLFVBQVUsRUFBQyxNQUFNLGVBQWUsQ0FBQzs7QUFHekMsTUFBTSxPQUFPLGVBQWU7OztZQUQzQixVQUFVLFNBQUMsRUFBQyxVQUFVLEVBQUUsTUFBTSxFQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBAbGljZW5zZVxuICogQ29weXJpZ2h0IEdvb2dsZSBJbmMuIEFsbCBSaWdodHMgUmVzZXJ2ZWQuXG4gKlxuICogVXNlIG9mIHRoaXMgc291cmNlIGNvZGUgaXMgZ292ZXJuZWQgYnkgYW4gTUlULXN0eWxlIGxpY2Vuc2UgdGhhdCBjYW4gYmVcbiAqIGZvdW5kIGluIHRoZSBMSUNFTlNFIGZpbGUgYXQgaHR0cHM6Ly9hbmd1bGFyLmlvL2xpY2Vuc2VcbiAqL1xuXG5pbXBvcnQge0luamVjdGFibGV9IGZyb20gJ0Bhbmd1bGFyL2NvcmUnO1xuXG5ASW5qZWN0YWJsZSh7cHJvdmlkZWRJbjogJ3Jvb3QnfSlcbmV4cG9ydCBjbGFzcyBNeVNlY29uZFNlcnZpY2Uge1xufVxuIl19
+
 --- esm2015/index.js ---
 
 /**
@@ -1240,6 +1650,79 @@ export { A11yModule };
 export * from './index';
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZXhhbXBsZS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL2V4YW1wbGUudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7O0dBRUc7QUFFSCxjQUFjLFNBQVMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogR2VuZXJhdGVkIGJ1bmRsZSBpbmRleC4gRG8gbm90IGVkaXQuXG4gKi9cblxuZXhwb3J0ICogZnJvbSAnLi9pbmRleCc7XG4iXX0=
 
+--- esm5/imports/imports.js ---
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+export * from './index';
+export { MySecondService as ɵangular_packages_bazel_test_ng_package_example_imports_imports_a } from './second';
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW1wb3J0cy5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL2ltcG9ydHMvaW1wb3J0cy50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7R0FFRztBQUVILGNBQWMsU0FBUyxDQUFDO0FBRXhCLE9BQU8sRUFBQyxlQUFlLElBQUksaUVBQWlFLEVBQUMsTUFBTSxVQUFVLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEdlbmVyYXRlZCBidW5kbGUgaW5kZXguIERvIG5vdCBlZGl0LlxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vaW5kZXgnO1xuXG5leHBvcnQge015U2Vjb25kU2VydmljZSBhcyDJtWFuZ3VsYXJfcGFja2FnZXNfYmF6ZWxfdGVzdF9uZ19wYWNrYWdlX2V4YW1wbGVfaW1wb3J0c19pbXBvcnRzX2F9IGZyb20gJy4vc2Vjb25kJzsiXX0=
+
+--- esm5/imports/index.js ---
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+export * from './public-api';
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9pbXBvcnRzL2luZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOzs7Ozs7R0FNRztBQUVILGNBQWMsY0FBYyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBAbGljZW5zZVxuICogQ29weXJpZ2h0IEdvb2dsZSBJbmMuIEFsbCBSaWdodHMgUmVzZXJ2ZWQuXG4gKlxuICogVXNlIG9mIHRoaXMgc291cmNlIGNvZGUgaXMgZ292ZXJuZWQgYnkgYW4gTUlULXN0eWxlIGxpY2Vuc2UgdGhhdCBjYW4gYmVcbiAqIGZvdW5kIGluIHRoZSBMSUNFTlNFIGZpbGUgYXQgaHR0cHM6Ly9hbmd1bGFyLmlvL2xpY2Vuc2VcbiAqL1xuXG5leHBvcnQgKiBmcm9tICcuL3B1YmxpYy1hcGknO1xuIl19
+
+--- esm5/imports/public-api.js ---
+
+import { __decorate, __metadata } from "tslib";
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+import { Injectable } from '@angular/core';
+import { MySecondService } from './second';
+import * as i0 from "@angular/core";
+import * as i1 from "angular/packages/bazel/test/ng_package/example/imports/second";
+var MyService = /** @class */ (function () {
+    function MyService(secondService) {
+        this.secondService = secondService;
+    }
+    MyService.ɵprov = i0.ɵɵdefineInjectable({ factory: function MyService_Factory() { return new MyService(i0.ɵɵinject(i1.MySecondService)); }, token: MyService, providedIn: "root" });
+    MyService = __decorate([
+        Injectable({ providedIn: 'root' }),
+        __metadata("design:paramtypes", [MySecondService])
+    ], MyService);
+    return MyService;
+}());
+export { MyService };
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicHVibGljLWFwaS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL2ltcG9ydHMvcHVibGljLWFwaS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiO0FBQUE7Ozs7OztHQU1HO0FBRUgsT0FBTyxFQUFDLFVBQVUsRUFBQyxNQUFNLGVBQWUsQ0FBQztBQUN6QyxPQUFPLEVBQUMsZUFBZSxFQUFDLE1BQU0sVUFBVSxDQUFDOzs7QUFHekM7SUFDRSxtQkFBbUIsYUFBOEI7UUFBOUIsa0JBQWEsR0FBYixhQUFhLENBQWlCO0lBQUcsQ0FBQzs7SUFEMUMsU0FBUztRQURyQixVQUFVLENBQUMsRUFBQyxVQUFVLEVBQUUsTUFBTSxFQUFDLENBQUM7eUNBRUcsZUFBZTtPQUR0QyxTQUFTLENBRXJCO29CQWREO0NBY0MsQUFGRCxJQUVDO1NBRlksU0FBUyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuaW1wb3J0IHtJbmplY3RhYmxlfSBmcm9tICdAYW5ndWxhci9jb3JlJztcbmltcG9ydCB7TXlTZWNvbmRTZXJ2aWNlfSBmcm9tICcuL3NlY29uZCc7XG5cbkBJbmplY3RhYmxlKHtwcm92aWRlZEluOiAncm9vdCd9KVxuZXhwb3J0IGNsYXNzIE15U2VydmljZSB7XG4gIGNvbnN0cnVjdG9yKHB1YmxpYyBzZWNvbmRTZXJ2aWNlOiBNeVNlY29uZFNlcnZpY2UpIHt9XG59XG4iXX0=
+
+--- esm5/imports/second.js ---
+
+import { __decorate } from "tslib";
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+import { Injectable } from '@angular/core';
+import * as i0 from "@angular/core";
+var MySecondService = /** @class */ (function () {
+    function MySecondService() {
+    }
+    MySecondService.ɵprov = i0.ɵɵdefineInjectable({ factory: function MySecondService_Factory() { return new MySecondService(); }, token: MySecondService, providedIn: "root" });
+    MySecondService = __decorate([
+        Injectable({ providedIn: 'root' })
+    ], MySecondService);
+    return MySecondService;
+}());
+export { MySecondService };
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvYmF6ZWwvdGVzdC9uZ19wYWNrYWdlL2V4YW1wbGUvaW1wb3J0cy9zZWNvbmQudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IjtBQUFBOzs7Ozs7R0FNRztBQUVILE9BQU8sRUFBQyxVQUFVLEVBQUMsTUFBTSxlQUFlLENBQUM7O0FBR3pDO0lBQUE7S0FDQzs7SUFEWSxlQUFlO1FBRDNCLFVBQVUsQ0FBQyxFQUFDLFVBQVUsRUFBRSxNQUFNLEVBQUMsQ0FBQztPQUNwQixlQUFlLENBQzNCOzBCQVpEO0NBWUMsQUFERCxJQUNDO1NBRFksZUFBZSIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuaW1wb3J0IHtJbmplY3RhYmxlfSBmcm9tICdAYW5ndWxhci9jb3JlJztcblxuQEluamVjdGFibGUoe3Byb3ZpZGVkSW46ICdyb290J30pXG5leHBvcnQgY2xhc3MgTXlTZWNvbmRTZXJ2aWNlIHtcbn1cbiJdfQ==
+
 --- esm5/index.js ---
 
 /**
@@ -1379,6 +1862,68 @@ export { A11yModule };
 //# sourceMappingURL=a11y.js.map
 
 
+--- fesm2015/imports.js ---
+
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2020 Google LLC. https://angular.io/
+ * License: MIT
+ */
+
+import { Injectable, ɵɵdefineInjectable, ɵɵinject } from '@angular/core';
+
+/**
+ * @fileoverview added by tsickle
+ * Generated from: packages/bazel/test/ng_package/example/imports/second.ts
+ * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+class MySecondService {
+}
+MySecondService.decorators = [
+    { type: Injectable, args: [{ providedIn: 'root' },] }
+];
+/** @nocollapse */ MySecondService.ɵprov = ɵɵdefineInjectable({ factory: function MySecondService_Factory() { return new MySecondService(); }, token: MySecondService, providedIn: "root" });
+
+/**
+ * @fileoverview added by tsickle
+ * Generated from: packages/bazel/test/ng_package/example/imports/public-api.ts
+ * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+class MyService {
+    /**
+     * @param {?} secondService
+     */
+    constructor(secondService) {
+        this.secondService = secondService;
+    }
+}
+MyService.decorators = [
+    { type: Injectable, args: [{ providedIn: 'root' },] }
+];
+/** @nocollapse */
+MyService.ctorParameters = () => [
+    { type: MySecondService }
+];
+/** @nocollapse */ MyService.ɵprov = ɵɵdefineInjectable({ factory: function MyService_Factory() { return new MyService(ɵɵinject(MySecondService)); }, token: MyService, providedIn: "root" });
+if (false) {
+    /** @type {?} */
+    MyService.prototype.secondService;
+}
+
+/**
+ * @fileoverview added by tsickle
+ * Generated from: packages/bazel/test/ng_package/example/imports/index.ts
+ * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+
+export { MyService, MySecondService as ɵangular_packages_bazel_test_ng_package_example_imports_imports_a };
+//# sourceMappingURL=imports.js.map
+
+
 --- fesm2015/secondary.js ---
 
 /**
@@ -1494,6 +2039,55 @@ export { A11yModule };
 //# sourceMappingURL=a11y.js.map
 
 
+--- fesm5/imports.js ---
+
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2020 Google LLC. https://angular.io/
+ * License: MIT
+ */
+
+import { __decorate, __metadata } from 'tslib';
+import { ɵɵdefineInjectable, Injectable, ɵɵinject } from '@angular/core';
+
+var MySecondService = /** @class */ (function () {
+    function MySecondService() {
+    }
+    MySecondService.ɵprov = ɵɵdefineInjectable({ factory: function MySecondService_Factory() { return new MySecondService(); }, token: MySecondService, providedIn: "root" });
+    MySecondService = __decorate([
+        Injectable({ providedIn: 'root' })
+    ], MySecondService);
+    return MySecondService;
+}());
+
+var MyService = /** @class */ (function () {
+    function MyService(secondService) {
+        this.secondService = secondService;
+    }
+    MyService.ɵprov = ɵɵdefineInjectable({ factory: function MyService_Factory() { return new MyService(ɵɵinject(MySecondService)); }, token: MyService, providedIn: "root" });
+    MyService = __decorate([
+        Injectable({ providedIn: 'root' }),
+        __metadata("design:paramtypes", [MySecondService])
+    ], MyService);
+    return MyService;
+}());
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+
+export { MyService, MySecondService as ɵangular_packages_bazel_test_ng_package_example_imports_imports_a };
+//# sourceMappingURL=imports.js.map
+
+
 --- fesm5/secondary.js ---
 
 /**
@@ -1579,6 +2173,61 @@ var MyModule = /** @class */ (function () {
 
 export { MyModule };
 //# sourceMappingURL=waffels.js.map
+
+
+--- imports/imports.d.ts ---
+
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2020 Google LLC. https://angular.io/
+ * License: MIT
+ */
+
+
+export declare class MyService {
+    secondService: ɵangular_packages_bazel_test_ng_package_example_imports_imports_a;
+    constructor(secondService: ɵangular_packages_bazel_test_ng_package_example_imports_imports_a);
+}
+
+
+export declare class ɵangular_packages_bazel_test_ng_package_example_imports_imports_a {
+}
+
+export { }
+
+
+--- imports/imports.metadata.json ---
+
+{"__symbolic":"module","version":4,"metadata":{"MyService":{"__symbolic":"class","decorators":[{"__symbolic":"call","expression":{"__symbolic":"reference","module":"@angular/core","name":"Injectable","line":11,"character":1},"arguments":[{"providedIn":"root"}]}],"members":{"__ctor__":[{"__symbolic":"constructor","parameters":[{"__symbolic":"reference","name":"ɵangular_packages_bazel_test_ng_package_example_imports_imports_a"}]}]},"statics":{"ɵprov":{}}},"ɵangular_packages_bazel_test_ng_package_example_imports_imports_a":{"__symbolic":"class","decorators":[{"__symbolic":"call","expression":{"__symbolic":"reference","module":"@angular/core","name":"Injectable","line":10,"character":1},"arguments":[{"providedIn":"root"}]}],"members":{},"statics":{"ɵprov":{}}}},"origins":{"MyService":"./imports","ɵangular_packages_bazel_test_ng_package_example_imports_imports_a":"./imports"},"importAs":"example/imports"}
+
+--- imports/package.json ---
+
+{
+  "name": "example/imports",
+  "main": "../bundles/example-imports.umd.js",
+  "fesm5": "../fesm5/imports.js",
+  "fesm2015": "../fesm2015/imports.js",
+  "esm5": "../esm5/imports/imports.js",
+  "esm2015": "../esm2015/imports/imports.js",
+  "typings": "./imports.d.ts",
+  "module": "../fesm5/imports.js",
+  "es2015": "../fesm2015/imports.js"
+}
+
+--- imports.d.ts ---
+
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2020 Google LLC. https://angular.io/
+ * License: MIT
+ */
+
+export * from './imports/imports';
+
+
+--- imports.metadata.json ---
+
+{"__symbolic":"module","version":3,"metadata":{},"exports":[{"from":"./imports/imports"}],"flatModuleIndexRedirect":true,"importAs":"example/imports"}
 
 
 --- logo.png ---
