@@ -104,11 +104,11 @@ export class DirectoryWalkerEntryPointFinder implements EntryPointFinder {
     // Otherwise store it and search for secondary entry-points
     entryPoints.push(topLevelEntryPoint);
     this.walkDirectory(packagePath, packagePath, (path, isDirectory) => {
-      // If the path is a JS file then strip its extension and see if we can match an entry-point.
       if (!path.endsWith('.js') && !isDirectory) {
         return false;
       }
 
+      // If the path is a JS file then strip its extension and see if we can match an entry-point.
       const possibleEntryPointPath = isDirectory ? path : stripJsExtension(path);
       const subEntryPoint =
           getEntryPointInfo(this.fs, this.config, this.logger, packagePath, possibleEntryPointPath);
