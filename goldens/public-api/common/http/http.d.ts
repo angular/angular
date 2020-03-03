@@ -1579,6 +1579,14 @@ export declare class HttpParams {
     toString(): string;
 }
 
+export declare interface HttpParamsOptions {
+    encoder?: HttpParameterCodec;
+    fromObject?: {
+        [param: string]: string | ReadonlyArray<string>;
+    };
+    fromString?: string;
+}
+
 export declare interface HttpProgressEvent {
     loaded: number;
     total?: number;
