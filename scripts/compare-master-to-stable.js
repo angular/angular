@@ -16,7 +16,7 @@
  * branch and there is no discrepancy.
  */
 
-const shell = require('shelljs');
+const {exec} = require('shelljs');
 const semver = require('semver');
 
 // Ignore commits that have specific patterns in commit message, it's ok for these commits to be
@@ -30,7 +30,7 @@ const ignorePatterns = [
 // Helper methods
 
 function execGitCommand(gitCommand) {
-  const output = shell.exec(gitCommand, {silent: true});
+  const output = exec(gitCommand, {silent: true});
   if (output.code !== 0) {
     console.error(`Error: git command "${gitCommand}" failed: \n\n ${output.stderr}`);
     process.exit(1);
@@ -38,8 +38,8 @@ function execGitCommand(gitCommand) {
   return output;
 }
 
-function getAsArray(gitCommand) {
-  return execGitCommand(gitCommand).split('\n');
+function toArray(rawGitCommandOutput) {
+  return rawGitCommandOutput.trim().split('\n');
 }
 
 function maybeExtractReleaseVersion(commit) {
@@ -48,10 +48,11 @@ function maybeExtractReleaseVersion(commit) {
   return matches ? matches[1] || matches[2] : null;
 }
 
-function toMap(input) {
+function collectCommitsAsMap(rawGitCommits) {
+  const commits = toArray(rawGitCommits);
+  const commitsMap = new Map();
   let version = 'initial';
-  const data = [];
-  input.reverse().forEach((item) => {
+  commits.reverse().forEach((item) => {
     const skip = ignorePatterns.some(pattern => item.indexOf(pattern) > -1);
     // Keep track of the current version while going though the list of commits, so that we can use
     // this information in the output (i.e. display a version when a commit was introduced).
@@ -65,10 +66,10 @@ function toMap(input) {
       // we extract only "feat: update the locale files" part and use it as a key, since commit SHA
       // and PR number may be different for the same commit in master and patch branches.
       const key = item.slice(11).replace(/\(\#\d+\)/g, '').trim();
-      data.push([key, [item, version]]);
+      commitsMap.set(key, [item, version]);
     }
   });
-  return new Map(data);
+  return commitsMap;
 }
 
 function diff(mapA, mapB) {
@@ -96,28 +97,36 @@ function getLatestTag(tags) {
 }
 
 // Main program
+function main() {
+  execGitCommand('git fetch upstream');
 
-execGitCommand('git fetch upstream');
+  // Extract tags information and pick the most recent version
+  // that we'll use later to compare with master.
+  const tags = toArray(execGitCommand('git tag'));
+  const latestTag = getLatestTag(tags);
 
-const tags = getAsArray('git tag');
-const latestTag = getLatestTag(tags);
+  // Based on the latest tag, generate the name of the patch branch.
+  const branch = getBranchByTag(latestTag);
 
-const branch = getBranchByTag(latestTag);
+  // Extract master-only and patch-only commits using `git log` command.
+  const masterCommits = execGitCommand(
+      `git log --cherry-pick --oneline --right-only upstream/${branch}...upstream/master`);
+  const patchCommits = execGitCommand(
+      `git log --cherry-pick --oneline --left-only upstream/${branch}...upstream/master`);
 
-const masterCommits =
-    getAsArray(`git log --cherry-pick --oneline --right-only upstream/${branch}...upstream/master`);
-const patchCommits =
-    getAsArray(`git log --cherry-pick --oneline --left-only upstream/${branch}...upstream/master`);
+  // Post-process commits and convert raw data into a Map, so that we can diff it easier.
+  const masterCommitsMap = collectCommitsAsMap(masterCommits);
+  const patchCommitsMap = collectCommitsAsMap(patchCommits);
 
-const masterMap = toMap(masterCommits);
-const patchMap = toMap(patchCommits);
-
-console.log(`
+  console.log(`
 Comparing branches "${branch}" and master.
 
 ***** Only in MASTER *****
-${diff(masterMap, patchMap).join('\n') || 'No extra commits'}
+${diff(masterCommitsMap, patchCommitsMap).join('\n') || 'No extra commits'}
 
 ***** Only in PATCH (${branch}) *****
-${diff(patchMap, masterMap).join('\n') || 'No extra commits'}
+${diff(patchCommitsMap, masterCommitsMap).join('\n') || 'No extra commits'}
 `);
+}
+
+main();
