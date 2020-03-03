@@ -401,8 +401,13 @@
         },
         {
           "url": "guide/http",
+<<<<<<< HEAD
           "title": "Access Servers over HTTP",
           "tooltip": "Use HTTP to talk to a remote server."
+=======
+          "title": "Server Interaction",
+          "tooltip": "Use HTTP to communicate with a remote server."
+>>>>>>> docs: update http guide
         },
         {
           "url": "guide/router",
