@@ -952,6 +952,7 @@ groups:
           'tools/browsers/**',
           'tools/build/**',
           'tools/circular_dependency_test/**',
+          'tools/contributing-stats/**',
           'tools/gulp-tasks/**',
           'tools/ng_rollup_bundle/**',
           'tools/ngcontainer/**',
