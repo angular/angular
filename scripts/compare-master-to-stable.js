@@ -127,6 +127,7 @@ function main() {
   const masterCommitsMap = collectCommitsAsMap(masterCommits);
   const patchCommitsMap = collectCommitsAsMap(patchCommits);
 
+  // tslint:disable-next-line:no-console
   console.log(`
 Comparing branches "${branch}" and master.
 
