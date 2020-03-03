@@ -97,15 +97,17 @@ function getLatestTag(tags) {
 
 // Main program
 
+execGitCommand('git fetch upstream');
+
 const tags = getAsArray('git tag');
 const latestTag = getLatestTag(tags);
 
 const branch = getBranchByTag(latestTag);
 
 const masterCommits =
-    getAsArray(`git log --cherry-pick --oneline --right-only ${branch}...upstream/master`);
+    getAsArray(`git log --cherry-pick --oneline --right-only upstream/${branch}...upstream/master`);
 const patchCommits =
-    getAsArray(`git log --cherry-pick --oneline --left-only ${branch}...upstream/master`);
+    getAsArray(`git log --cherry-pick --oneline --left-only upstream/${branch}...upstream/master`);
 
 const masterMap = toMap(masterCommits);
 const patchMap = toMap(patchCommits);
