@@ -1632,7 +1632,7 @@ function declareTests(config?: {useJit: boolean}) {
     });
 
     describe('Property bindings', () => {
-      modifiedInIvy('Unknown property error throws an error instead of logging it')
+      modifiedInIvy('Unknown property error throws an error instead of logging a warning')
           .it('should throw on bindings to unknown properties', () => {
             TestBed.configureTestingModule({declarations: [MyComp]});
             const template = '<div unknown="{{ctxProp}}"></div>';
@@ -1646,20 +1646,20 @@ function declareTests(config?: {useJit: boolean}) {
             }
           });
 
-      onlyInIvy('Unknown property logs an error message instead of throwing')
+      onlyInIvy('Unknown property warning logged instead of throwing an error')
           .it('should throw on bindings to unknown properties', () => {
             TestBed.configureTestingModule({declarations: [MyComp]});
             const template = '<div unknown="{{ctxProp}}"></div>';
             TestBed.overrideComponent(MyComp, {set: {template}});
 
-            const spy = spyOn(console, 'error');
+            const spy = spyOn(console, 'warn');
             const fixture = TestBed.createComponent(MyComp);
             fixture.detectChanges();
             expect(spy.calls.mostRecent().args[0])
                 .toMatch(/Can't bind to 'unknown' since it isn't a known property of 'div'./);
           });
 
-      modifiedInIvy('Unknown property error thrown instead of logging it')
+      modifiedInIvy('Unknown property error thrown instead of a warning')
           .it('should throw on bindings to unknown properties', () => {
             TestBed.configureTestingModule({imports: [CommonModule], declarations: [MyComp]});
             const template = '<div *ngFor="let item in ctxArrProp">{{item}}</div>';
@@ -1675,12 +1675,12 @@ function declareTests(config?: {useJit: boolean}) {
             }
           });
 
-      onlyInIvy('Unknown property logs an error message instead of throwing it')
+      onlyInIvy('Unknown property logs a warning instead of throwing an error')
           .it('should throw on bindings to unknown properties', () => {
             TestBed.configureTestingModule({imports: [CommonModule], declarations: [MyComp]});
             const template = '<div *ngFor="let item in ctxArrProp">{{item}}</div>';
             TestBed.overrideComponent(MyComp, {set: {template}});
-            const spy = spyOn(console, 'error');
+            const spy = spyOn(console, 'warn');
             const fixture = TestBed.createComponent(MyComp);
             fixture.detectChanges();
             expect(spy.calls.mostRecent().args[0])
