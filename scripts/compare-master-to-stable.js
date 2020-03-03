@@ -31,6 +31,9 @@ const ignorePatterns = [
   'build(docs-infra): upgrade cli command docs sources',
 ];
 
+// Limit the log history to start from v9.0.0 release date.
+const after = '--after="2020-02-05"';
+
 // Helper methods
 
 function execGitCommand(gitCommand) {
@@ -119,9 +122,9 @@ function main() {
 
   // Extract master-only and patch-only commits using `git log` command.
   const masterCommits = execGitCommand(
-      `git log --cherry-pick --oneline --right-only upstream/${branch}...upstream/master`);
+      `git log --cherry-pick --oneline --right-only ${after} upstream/${branch}...upstream/master`);
   const patchCommits = execGitCommand(
-      `git log --cherry-pick --oneline --left-only upstream/${branch}...upstream/master`);
+      `git log --cherry-pick --oneline --left-only ${after} upstream/${branch}...upstream/master`);
 
   // Post-process commits and convert raw data into a Map, so that we can diff it easier.
   const masterCommitsMap = collectCommitsAsMap(masterCommits);
