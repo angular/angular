@@ -14,7 +14,6 @@ import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
 import {DirectoryWalkerEntryPointFinder} from '../../src/entry_point_finder/directory_walker_entry_point_finder';
 import {NgccConfiguration} from '../../src/packages/configuration';
-import * as entryPoint from '../../src/packages/entry_point'
 import {EntryPoint} from '../../src/packages/entry_point';
 import {PathMappings} from '../../src/utils';
 import {MockLogger} from '../helpers/mock_logger';
