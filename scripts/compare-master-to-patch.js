@@ -23,7 +23,7 @@ const semver = require('semver');
 // present only in one branch. Ignoring them reduced the "noise" in the final output.
 const ignorePatterns = [
   'release:',
-  'docs:',
+  'docs: release notes',
   // These commits are created to update cli command docs sources with the most recent sha (stored
   // in `aio/package.json`). Separate commits are generated for master and patch branches and since
   // it's purely an infrastructure-related change, we ignore these commits while comparing master
