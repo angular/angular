@@ -12,7 +12,7 @@ import { catchError, retry } from 'rxjs/operators';
 
 // #docregion config-interface
 export interface Config {
-  heroesUrl: string;
+  itemsUrl: string;
   textfile: string;
 }
 // #enddocregion config-interface

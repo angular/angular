@@ -15,7 +15,7 @@ import {
 } from '@angular/platform-browser-dynamic/testing';
 
 // Import spec files individually for Stackblitz
-import './app/heroes/heroes.service.spec.ts';
+import './app/items/items.service.spec.ts';
 import './testing/http-client.spec.ts';
 
 //

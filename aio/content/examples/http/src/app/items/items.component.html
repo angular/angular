@@ -1,0 +1,32 @@
+<h3>Items</h3>
+<!-- #docregion add -->
+<div>
+  <label>Item name:
+    <input #itemName />
+  </label>
+  <!-- (click) passes input value to add() and then clears the input -->
+  <button (click)="add(itemName.value); itemName.value=''">
+    add
+  </button>
+  <button (click)="search(itemName.value)">
+    search
+  </button>
+</div>
+<!-- #enddocregion add -->
+
+<!-- #docregion list -->
+<ul class="items">
+  <li *ngFor="let item of items">
+    <a (click)="edit(item)">
+      <span class="badge">{{ item.id || -1 }}</span>
+      <span *ngIf="item!==editItem">{{item.name}}</span>
+      <input *ngIf="item===editItem" [(ngModel)]="item.name"
+        (blur)="update()" (keyup.enter)="update()">
+    </a>
+    <!-- #docregion delete -->
+    <button class="delete" title="delete item"
+    (click)="delete(item)">x</button>
+    <!-- #enddocregion delete -->
+  </li>
+</ul>
+<!-- #enddocregion list -->

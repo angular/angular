@@ -5,7 +5,7 @@
   <button (click)="clear()">clear</button>
   <button (click)="clear(); makeError()">error</button>
   <span *ngIf="config">
-    <p>Heroes API URL is "{{config.heroesUrl}}"</p>
+    <p>Items API URL is "{{config.itemsUrl}}"</p>
     <p>Textfile URL is "{{config.textfile}}"</p>
     <div *ngIf="headers">
       Response headers:

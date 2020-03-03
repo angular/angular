@@ -1,11 +1,11 @@
-/* HeroesComponent's private CSS styles */
-.heroes {
+/* ItemsComponent's private CSS styles */
+.items {
   margin: 0 0 2em 0;
   list-style-type: none;
   padding: 0;
   width: 15em;
 }
-.heroes li {
+.items li {
   position: relative;
   cursor: pointer;
   background-color: #EEE;
@@ -16,13 +16,13 @@
   width: 19em;
 }
 
-.heroes li:hover {
+.items li:hover {
   color: #607D8B;
   background-color: #DDD;
   left: .1em;
 }
 
-.heroes a {
+.items a {
   color: #888;
   text-decoration: none;
   position: relative;
@@ -30,11 +30,11 @@
   width: 250px;
 }
 
-.heroes a:hover {
+.items a:hover {
   color:#607D8B;
 }
 
-.heroes .badge {
+.items .badge {
   display: inline-block;
   font-size: small;
   color: white;
@@ -82,7 +82,7 @@ input {
   width: 11em;
 }
 
-.heroes input {
+.items input {
   position: relative;
   top: -3px;
   width: 12em;

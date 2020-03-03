@@ -18,7 +18,7 @@ import { AppComponent }         from './app.component';
 import { AuthService }          from './auth.service';
 import { ConfigComponent }      from './config/config.component';
 import { DownloaderComponent }  from './downloader/downloader.component';
-import { HeroesComponent }      from './heroes/heroes.component';
+import { ItemsComponent }      from './items/items.component';
 import { HttpErrorHandler }     from './http-error-handler.service';
 import { MessageService }       from './message.service';
 import { MessagesComponent }    from './messages/messages.component';
@@ -64,7 +64,7 @@ import { httpInterceptorProviders } from './http-interceptors/index';
 // #enddocregion sketch
     ConfigComponent,
     DownloaderComponent,
-    HeroesComponent,
+    ItemsComponent,
     MessagesComponent,
     UploaderComponent,
     PackageSearchComponent,

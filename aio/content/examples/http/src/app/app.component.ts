@@ -5,13 +5,13 @@ import { Component } from '@angular/core';
   templateUrl: './app.component.html'
 })
 export class AppComponent {
-  showHeroes = true;
+  showItems = true;
   showConfig = true;
   showDownloader = true;
   showUploader = true;
   showSearch = true;
 
-  toggleHeroes() { this.showHeroes = !this.showHeroes; }
+  toggleItems() { this.showItems = !this.showItems; }
   toggleConfig() { this.showConfig = !this.showConfig; }
   toggleDownloader() { this.showDownloader = !this.showDownloader; }
   toggleUploader() { this.showUploader = !this.showUploader; }

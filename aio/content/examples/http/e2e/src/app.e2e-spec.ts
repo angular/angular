@@ -11,10 +11,10 @@ const page = {
   downloadButton: element.all(by.css('app-downloader button')).get(0),
   downloadClearButton: element.all(by.css('app-downloader button')).get(1),
   downloadMessage: element(by.css('app-downloader p')),
-  heroesListAddButton: element.all(by.css('app-heroes > div button')).get(0),
-  heroesListInput: element(by.css('app-heroes > div input')),
-  heroesListSearchButton: element.all(by.css('app-heroes > div button')).get(1),
-  heroesListItems: element.all(by.css('app-heroes ul li')),
+  itemsListAddButton: element.all(by.css('app-items > div button')).get(0),
+  itemsListInput: element(by.css('app-items > div input')),
+  itemsListSearchButton: element.all(by.css('app-items > div button')).get(1),
+  itemsListItems: element.all(by.css('app-items ul li')),
   logClearButton: element(by.css('app-messages button')),
   logList: element(by.css('app-messages ol')),
   logListItems: element.all(by.css('app-messages ol li')),
@@ -33,24 +33,24 @@ describe('Http Tests', function() {
     browser.get('');
   });
 
-  describe('Heroes', () => {
-    it('retrieves the list of heroes at startup', () => {
-      expect(page.heroesListItems.count()).toBe(4);
-      expect(page.heroesListItems.get(0).getText()).toContain('Dr Nice');
-      checkLogForMessage('GET "api/heroes"');
+  describe('Items', () => {
+    it('retrieves the list of items at startup', () => {
+      expect(page.itemsListItems.count()).toBe(4);
+      expect(page.itemsListItems.get(0).getText()).toContain('11computer');
+      checkLogForMessage('GET "api/items"');
     });
 
-    it('makes a POST to add a new hero', () => {
-      page.heroesListInput.sendKeys('Magneta');
-      page.heroesListAddButton.click();
-      expect(page.heroesListItems.count()).toBe(5);
-      checkLogForMessage('POST "api/heroes"');
+    it('makes a POST to add a new item', () => {
+      page.itemsListInput.sendKeys('Magneta');
+      page.itemsListAddButton.click();
+      expect(page.itemsListItems.count()).toBe(5);
+      checkLogForMessage('POST "api/items"');
     });
 
-    it('makes a GET to search for a hero', () => {
-      page.heroesListInput.sendKeys('Celeritas');
-      page.heroesListSearchButton.click();
-      checkLogForMessage('GET "api/heroes?name=Celeritas"');
+    it('makes a GET to search for a item', () => {
+      page.itemsListInput.sendKeys('fishbowl');
+      page.itemsListSearchButton.click();
+      checkLogForMessage('GET "api/items?name=fishbowl"');
     });
   });
 
@@ -66,7 +66,7 @@ describe('Http Tests', function() {
     it('can fetch the configuration JSON file', () => {
       page.configGetButton.click();
       checkLogForMessage('GET "assets/config.json"');
-      expect(page.configSpan.getText()).toContain('Heroes API URL is "api/heroes"');
+      expect(page.configSpan.getText()).toContain('Items API URL is "api/items"');
       expect(page.configSpan.getText()).toContain('Textfile URL is "assets/textfile.txt"');
     });
 

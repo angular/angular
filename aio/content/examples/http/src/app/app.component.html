@@ -1,7 +1,7 @@
-<h1>HTTP Sample</h1>
+<h1>HTTPClient Example</h1>
 <div>
-  <input type="checkbox" id="heroes" [checked]="showHeroes" (click)="toggleHeroes()">
-  <label for="heroes">Heroes</label>
+  <input type="checkbox" id="items" [checked]="showItems" (click)="toggleItems()">
+  <label for="items">Items</label>
 
   <input type="checkbox" id="config" [checked]="showConfig" (click)="toggleConfig()">
   <label for="config">Config</label>
@@ -16,7 +16,7 @@
   <label for="search">Search</label>
 </div>
 
-<app-heroes *ngIf="showHeroes"></app-heroes>
+<app-items *ngIf="showItems"></app-items>
 <app-messages></app-messages>
 <app-config *ngIf="showConfig"></app-config>
 <app-downloader *ngIf="showDownloader"></app-downloader>

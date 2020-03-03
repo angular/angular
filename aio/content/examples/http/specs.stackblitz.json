@@ -1,9 +1,9 @@
 {
   "description": "Http Guide Testing",
   "files":[
-    "src/app/heroes/hero.ts",
-    "src/app/heroes/heroes.service.ts",
-    "src/app/heroes/heroes.service.spec.ts",
+    "src/app/items/item.ts",
+    "src/app/items/items.service.ts",
+    "src/app/items/items.service.spec.ts",
 
     "src/app/http-error-handler.service.ts",
     "src/app/message.service.ts",

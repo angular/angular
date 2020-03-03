@@ -156,7 +156,7 @@ describe('HttpClient testing', () => {
       // #enddocregion network-error
       // The rest of this is optional and not used.
       // Just showing that you could provide this too.
-      filename: 'HeroService.ts',
+      filename: 'ItemService.ts',
       lineno: 42,
       colno: 21
     // #docregion network-error

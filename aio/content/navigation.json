@@ -401,8 +401,8 @@
         },
         {
           "url": "guide/http",
-          "title": "HttpClient",
-          "tooltip": "Use HTTP to talk to a remote server."
+          "title": "Server Interaction",
+          "tooltip": "Use HTTP to communicate with a remote server."
         },
         {
           "url": "guide/router",
