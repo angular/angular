@@ -36,7 +36,7 @@ function elementStartFirstCreatePass(
 
   const hasDirectives =
       resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
-  ngDevMode && warnAboutUnknownElement(tView, lView, native, tNode, hasDirectives);
+  ngDevMode && logUnknownElementError(tView, lView, native, tNode, hasDirectives);
 
   if (tNode.mergedAttrs !== null) {
     computeStaticStyling(tNode, tNode.mergedAttrs);
@@ -171,7 +171,7 @@ export function ɵɵelement(
   ɵɵelementEnd();
 }
 
-function warnAboutUnknownElement(
+function logUnknownElementError(
     tView: TView, lView: LView, element: RElement, tNode: TNode, hasDirectives: boolean): void {
   const schemas = tView.schemas;
 
@@ -197,17 +197,17 @@ function warnAboutUnknownElement(
          !customElements.get(tagName));
 
     if (isUnknown && !matchingSchemas(tView, lView, tagName)) {
-      let warning = `'${tagName}' is not a known element:\n`;
-      warning +=
+      let message = `'${tagName}' is not a known element:\n`;
+      message +=
           `1. If '${tagName}' is an Angular component, then verify that it is part of this module.\n`;
       if (tagName && tagName.indexOf('-') > -1) {
-        warning +=
+        message +=
             `2. If '${tagName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`;
       } else {
-        warning +=
+        message +=
             `2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
       }
-      console.warn(warning);
+      console.error(message);
     }
   }
 }
