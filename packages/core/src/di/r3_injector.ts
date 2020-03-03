@@ -78,17 +78,18 @@ interface Record<T> {
 export function createInjector(
     defType: /* InjectorType<any> */ any, parent: Injector | null = null,
     additionalProviders: StaticProvider[] | null = null, name?: string): Injector {
-  const injector = createInjectorWithoutInjectorTypes(defType, parent, additionalProviders, name);
-  injector.resolveInjectorDefTypes();
+  const injector =
+      createInjectorWithoutInjectorInstances(defType, parent, additionalProviders, name);
+  injector._resolveInjectorDefTypes();
   return injector;
 }
 
 /**
  * Creates a new injector without eagerly resolving its injector types. Can be used in places
  * where resolving the injector types immediately can lead to an infinite loop. The injector types
- * should be resolved at a later point by calling `resolveInjectorDefTypes`.
+ * should be resolved at a later point by calling `_resolveInjectorDefTypes`.
  */
-export function createInjectorWithoutInjectorTypes(
+export function createInjectorWithoutInjectorInstances(
     defType: /* InjectorType<any> */ any, parent: Injector | null = null,
     additionalProviders: StaticProvider[] | null = null, name?: string): R3Injector {
   return new R3Injector(defType, additionalProviders, parent || getNullInjector(), name);
@@ -234,7 +235,7 @@ export class R3Injector {
   }
 
   /** @internal */
-  resolveInjectorDefTypes() { this.injectorDefTypes.forEach(defType => this.get(defType)); }
+  _resolveInjectorDefTypes() { this.injectorDefTypes.forEach(defType => this.get(defType)); }
 
   toString() {
     const tokens = <string[]>[], records = this.records;

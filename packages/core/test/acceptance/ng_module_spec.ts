@@ -494,7 +494,7 @@ describe('NgModule', () => {
     expect(value).toBe('foo');
   });
 
-  it('should be able to create a component throught the ComponentFactoryResolver of an NgModuleRef in a module constructor',
+  it('should be able to create a component through the ComponentFactoryResolver of an NgModuleRef in a module constructor',
      () => {
        let componentInstance: TestCmp|undefined;
 

@@ -108,7 +108,7 @@
     "name": "createInjector"
   },
   {
-    "name": "createInjectorWithoutInjectorTypes"
+    "name": "createInjectorWithoutInjectorInstances"
   },
   {
     "name": "deepForEach"
