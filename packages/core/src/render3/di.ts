@@ -23,7 +23,7 @@ import {DirectiveDef, FactoryFn} from './interfaces/definition';
 import {NO_PARENT_INJECTOR, NodeInjectorFactory, PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags, TNODE, isFactory} from './interfaces/injector';
 import {AttributeMarker, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeProviderIndexes, TNodeType} from './interfaces/node';
 import {isComponentDef, isComponentHost} from './interfaces/type_checks';
-import {DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, INJECTOR, LView, TData, TVIEW, TView, T_HOST} from './interfaces/view';
+import {DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, INJECTOR, LView, TData, TVIEW, TView, TViewType, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {enterDI, leaveDI} from './state';
 import {isNameOnlyAttributeMarker} from './util/attrs_utils';
@@ -313,6 +313,12 @@ function getParentTNode(
   // Falling back to `T_HOST` in case we cross component boundary (thus `tNode.parent` is not
   // defined in this case), but do that only if `@Host()` is not present.
   if (parent === null && !(flags & InjectFlags.Host)) {
+    const tView = lView[TVIEW];
+    if (tView.type === TViewType.Embedded) {
+      // TODO: we should go up the chain until we find Element or ElementContainer node
+      return (tView as any).declarationTNode;
+    }
+    // TODO: check other TViewType types
     return lView[T_HOST] as TDirectiveHostNode;
   }
   return parent;

@@ -62,6 +62,10 @@ function templateFirstCreatePass(
   const embeddedTView = tNode.tViews = createTView(
       TViewType.Embedded, -1, templateFn, decls, vars, tView.directiveRegistry, tView.pipeRegistry,
       null, tView.schemas, tViewConsts);
+
+  // TODO: temporary change to test POC
+  (embeddedTView as any).declarationTNode = tNode;
+
   const embeddedTViewNode = createTNode(tView, null, TNodeType.View, -1, null, null) as TViewNode;
   embeddedTViewNode.injectorIndex = tNode.injectorIndex;
   embeddedTView.node = embeddedTViewNode;

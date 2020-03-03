@@ -891,6 +891,9 @@ describe('di', () => {
 
         // TODO: add tests for other special tokens
         // TODO: fix this test in Ivy
+        // TODO: we go to Module Injector in case token is not found in Node Injector hierarchy?
+        // In VE it returns first available ElementRef in the hierarchy
+        // In Ivy - returns element ref for Comment node
         it('should work for `ElementRef` token', () => {
           let requestedElementRef: ElementRef;
           @Component({
@@ -903,6 +906,14 @@ describe('di', () => {
             }
           }
 
+          // Case 0: in VE we get <div> node as Element ref
+          // <div><child *ngIf="true"></child></div>
+
+          // Case 1: in VE, we get <span> as an element ref
+          // '<div><span *ngIf="true"><child *ngIf="true"></child></span></div>'
+
+          // Case 2: in VE we get Comment node as Element ref
+          // <div><ng-container *ngIf="true"><child *ngIf="true"></child></ng-container></div>
           @Component({
             selector: 'root',
             template: '<div><child *ngIf="true"></child></div>',
@@ -920,6 +931,36 @@ describe('di', () => {
           expect(requestedElementRef !.nativeElement).toBe(fixture.nativeElement.firstChild);
         });
 
+        // TODO: investigate why this test returns `requestedRef` as `null` in VE
+        // TODO: for Ivy it should return ViewContainerRef of the first/immediate container?
+        it('should work for `ViewContainerRef` token', () => {
+          let requestedRef: ViewContainerRef;
+          @Component({
+            selector: 'child',
+            template: '...',
+          })
+          class ChildComponent {
+            constructor(@SkipSelf() public ref: ViewContainerRef) { requestedRef = ref; }
+          }
+
+          @Component({
+            selector: 'root',
+            template: '<div><child *ngIf="true"></child></div>',
+          })
+          class ParentComponent {
+          }
+
+          TestBed.configureTestingModule({
+            imports: [CommonModule],
+            declarations: [ParentComponent, ChildComponent],
+          });
+          const fixture = TestBed.createComponent(ParentComponent);
+          fixture.detectChanges();
+
+          expect((requestedRef !as any).nativeElement).toBe(fixture.nativeElement.firstChild);
+        });
+
+        // this works consistently between VE and Ivy
         it('should work for `ChangeDetectorRef` token', () => {
           let requestedChangeDetectorRef: ChangeDetectorRef;
           @Component({
