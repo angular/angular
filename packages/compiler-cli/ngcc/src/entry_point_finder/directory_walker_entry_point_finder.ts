@@ -9,13 +9,11 @@ import {AbsoluteFsPath, FileSystem, join, resolve} from '../../../src/ngtsc/file
 import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver';
 import {Logger} from '../logging/logger';
 import {NgccConfiguration} from '../packages/configuration';
-import {EntryPoint, getEntryPointInfo} from '../packages/entry_point';
+import {EntryPoint, INVALID_ENTRY_POINT, NO_ENTRY_POINT, getEntryPointInfo} from '../packages/entry_point';
 import {PathMappings} from '../utils';
 import {NGCC_DIRECTORY} from '../writing/new_entry_point_file_writer';
-
 import {EntryPointFinder} from './interface';
 import {getBasePaths} from './utils';
-
 
 /**
  * An EntryPointFinder that searches for all entry-points that can be found given a `basePath` and
@@ -96,11 +94,11 @@ export class DirectoryWalkerEntryPointFinder implements EntryPointFinder {
         getEntryPointInfo(this.fs, this.config, this.logger, packagePath, packagePath);
 
     // If there is no primary entry-point then exit
-    if (topLevelEntryPoint === undefined) {
+    if (topLevelEntryPoint === NO_ENTRY_POINT) {
       return [];
     }
 
-    if (topLevelEntryPoint === null) {
+    if (topLevelEntryPoint === INVALID_ENTRY_POINT) {
       return null;
     }
 
@@ -115,12 +113,11 @@ export class DirectoryWalkerEntryPointFinder implements EntryPointFinder {
       const possibleEntryPointPath = isDirectory ? path : stripJsExtension(path);
       const subEntryPoint =
           getEntryPointInfo(this.fs, this.config, this.logger, packagePath, possibleEntryPointPath);
-      if (subEntryPoint) {
-        entryPoints.push(subEntryPoint);
-        return true;
+      if (subEntryPoint === NO_ENTRY_POINT || subEntryPoint === INVALID_ENTRY_POINT) {
+        return false;
       }
-
-      return false;
+      entryPoints.push(subEntryPoint);
+      return true;
     });
 
     return entryPoints;
