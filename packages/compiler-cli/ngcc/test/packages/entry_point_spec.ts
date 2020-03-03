@@ -55,7 +55,7 @@ runInEachFileSystem(() => {
          });
        });
 
-    it('should return null if configured to ignore the specified entry-point', () => {
+    it('should return undefined if configured to ignore the specified entry-point', () => {
       loadTestFiles([
         {
           name: _('/project/node_modules/some_package/valid_entry_point/package.json'),
@@ -75,7 +75,7 @@ runInEachFileSystem(() => {
       const entryPoint = getEntryPointInfo(
           fs, config, new MockLogger(), SOME_PACKAGE,
           _('/project/node_modules/some_package/valid_entry_point'));
-      expect(entryPoint).toBe(null);
+      expect(entryPoint).toBe(undefined);
     });
 
     it('should override the properties on package.json if the entry-point is configured', () => {
@@ -116,7 +116,7 @@ runInEachFileSystem(() => {
       });
     });
 
-    it('should return null if there is no package.json at the entry-point path', () => {
+    it('should return undefined if there is no package.json at the entry-point path', () => {
       loadTestFiles([
         {
           name: _(
@@ -128,7 +128,7 @@ runInEachFileSystem(() => {
       const entryPoint = getEntryPointInfo(
           fs, config, new MockLogger(), SOME_PACKAGE,
           _('/project/node_modules/some_package/missing_package_json'));
-      expect(entryPoint).toBe(null);
+      expect(entryPoint).toBe(undefined);
     });
 
     it('should return a configured entry-point if there is no package.json at the entry-point path',

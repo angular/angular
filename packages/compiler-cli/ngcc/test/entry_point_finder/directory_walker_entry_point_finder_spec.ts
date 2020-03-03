@@ -14,6 +14,7 @@ import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
 import {DirectoryWalkerEntryPointFinder} from '../../src/entry_point_finder/directory_walker_entry_point_finder';
 import {NgccConfiguration} from '../../src/packages/configuration';
+import * as entryPoint from '../../src/packages/entry_point'
 import {EntryPoint} from '../../src/packages/entry_point';
 import {PathMappings} from '../../src/utils';
 import {MockLogger} from '../helpers/mock_logger';
@@ -136,6 +137,52 @@ runInEachFileSystem(() => {
             ]);
       });
 
+      it('should not try to process deeply nested folders of non TypeScript packages', () => {
+        const basePath = _Abs('/namespaced/node_modules');
+        loadTestFiles([
+          ...createNonTsPackage(_Abs(`${basePath}/@schematics`), 'angular'),
+          {
+            name: _Abs(`${basePath}/@schematics/angular/src/nested/index.js`),
+            contents: 'index',
+          },
+        ]);
+
+        const finder =
+            new DirectoryWalkerEntryPointFinder(fs, config, logger, resolver, basePath, undefined);
+        const spy = spyOn(finder, 'walkDirectoryForEntryPoints').and.callThrough();
+        const {entryPoints} = finder.findEntryPoints();
+        expect(spy.calls.allArgs()).toEqual([
+          [_Abs(basePath)],
+          [_Abs(`${basePath}/@schematics`)],
+          [_Abs(`${basePath}/@schematics/angular`)],
+        ]);
+
+        expect(entryPoints).toEqual([]);
+      });
+
+      it('should not try to process nested node_modules of non TypeScript packages', () => {
+        const basePath = _Abs('/namespaced/node_modules');
+        loadTestFiles([
+          ...createNonTsPackage(_Abs(`${basePath}/@schematics`), 'angular'),
+          ...createNonTsPackage(_Abs(`${basePath}/@schematics/angular/node_modules`), 'test'),
+          {
+            name: _Abs(`${basePath}/@schematics/angular/src/nested/index.js`),
+            contents: 'index',
+          },
+        ]);
+
+        const finder =
+            new DirectoryWalkerEntryPointFinder(fs, config, logger, resolver, basePath, undefined);
+        const spy = spyOn(finder, 'walkDirectoryForEntryPoints').and.callThrough();
+        const {entryPoints} = finder.findEntryPoints();
+        expect(spy.calls.allArgs()).toEqual([
+          [_Abs(basePath)],
+          [_Abs(`${basePath}/@schematics`)],
+          [_Abs(`${basePath}/@schematics/angular`)],
+        ]);
+
+        expect(entryPoints).toEqual([]);
+      });
 
       it('should handle dependencies via pathMappings', () => {
         const basePath = _Abs('/path_mapped/node_modules');
@@ -207,6 +254,22 @@ runInEachFileSystem(() => {
           {
             name: _Abs(`${basePath}/${packageName}/${packageName}.metadata.json`),
             contents: 'metadata info'
+          },
+          {
+            name: _Abs(`${basePath}/${packageName}/fesm2015/${packageName}.js`),
+            contents: deps.map((dep, i) => `import * as i${i} from '${dep}';`).join('\n'),
+          },
+        ];
+      }
+
+      function createNonTsPackage(
+          basePath: AbsoluteFsPath, packageName: string, deps: string[] = []): TestFile[] {
+        return [
+          {
+            name: _Abs(`${basePath}/${packageName}/package.json`),
+            contents: JSON.stringify({
+              fesm2015: `./fesm2015/${packageName}.js`,
+            })
           },
           {
             name: _Abs(`${basePath}/${packageName}/fesm2015/${packageName}.js`),

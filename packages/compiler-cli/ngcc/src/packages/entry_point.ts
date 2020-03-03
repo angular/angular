@@ -80,21 +80,25 @@ export const SUPPORTED_FORMAT_PROPERTIES: EntryPointJsonProperty[] =
  *
  * @param packagePath the absolute path to the containing npm package
  * @param entryPointPath the absolute path to the potential entry-point.
- * @returns An entry-point if it is valid, `null` otherwise.
+ * @returns
+ * - An entry-point if it is valid.
+ * - `undefined` when there is no package.json at the path and there is no config to force an
+ * entry-point or the entrypoint is `ignored`.
+ * - `null` there is a package.json but it is not a valid Angular compiled entry-point.
  */
 export function getEntryPointInfo(
     fs: FileSystem, config: NgccConfiguration, logger: Logger, packagePath: AbsoluteFsPath,
-    entryPointPath: AbsoluteFsPath): EntryPoint|null {
+    entryPointPath: AbsoluteFsPath): EntryPoint|null|undefined {
   const packageJsonPath = resolve(entryPointPath, 'package.json');
   const packageVersion = getPackageVersion(fs, packageJsonPath);
   const entryPointConfig =
       config.getConfig(packagePath, packageVersion).entryPoints[entryPointPath];
   if (entryPointConfig === undefined && !fs.exists(packageJsonPath)) {
-    return null;
+    return undefined;
   }
 
   if (entryPointConfig !== undefined && entryPointConfig.ignore === true) {
-    return null;
+    return undefined;
   }
 
   const loadedEntryPointPackageJson =

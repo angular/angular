@@ -54,7 +54,7 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
   targetNeedsProcessingOrCleaning(
       propertiesToConsider: EntryPointJsonProperty[], compileAllFormats: boolean): boolean {
     const entryPoint = this.getEntryPoint(this.targetPath);
-    if (entryPoint === null || !entryPoint.compiledByAngular) {
+    if (!entryPoint || !entryPoint.compiledByAngular) {
       return false;
     }
 
@@ -78,7 +78,7 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
   private processNextPath(): void {
     const path = this.unprocessedPaths.shift() !;
     const entryPoint = this.getEntryPoint(path);
-    if (entryPoint !== null && entryPoint.compiledByAngular) {
+    if (entryPoint && entryPoint.compiledByAngular) {
       this.unsortedEntryPoints.set(entryPoint.path, entryPoint);
       const deps = this.resolver.getEntryPointDependencies(entryPoint);
       deps.dependencies.forEach(dep => {
@@ -89,7 +89,7 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
     }
   }
 
-  private getEntryPoint(entryPointPath: AbsoluteFsPath): EntryPoint|null {
+  private getEntryPoint(entryPointPath: AbsoluteFsPath): EntryPoint|null|undefined {
     const packagePath = this.computePackagePath(entryPointPath);
     return getEntryPointInfo(this.fs, this.config, this.logger, packagePath, entryPointPath);
   }
