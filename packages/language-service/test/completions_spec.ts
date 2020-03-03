@@ -96,7 +96,7 @@ describe('completions', () => {
 
   it('should not expand i18n templates', () => {
     const template = `<div i18n="@@el">{{ | }}</div>`;
-    const expectation = (ci: CI) => { expectContain(ci, CompletionKind.PROPERTY, ['title']); }
+    const expectation = (ci: CI) => { expectContain(ci, CompletionKind.PROPERTY, ['title']); };
 
     driveExternal(template, expectation);
     driveInline(template, expectation);
@@ -211,18 +211,17 @@ describe('completions', () => {
 
     it('should provide structural directives', () => {
       const template = '<div *|></div>';
-      const expectation =
-          (ci: CI) => {
-            expectContain(ci, CompletionKind.ATTRIBUTE, [
-              'ngFor',
-              'ngForOf',
-              'ngIf',
-              'ngSwitchCase',
-              'ngSwitchDefault',
-              'ngPluralCase',
-              'ngTemplateOutlet',
-            ]);
-          }
+      const expectation = (ci: CI) => {
+        expectContain(ci, CompletionKind.ATTRIBUTE, [
+          'ngFor',
+          'ngForOf',
+          'ngIf',
+          'ngSwitchCase',
+          'ngSwitchDefault',
+          'ngPluralCase',
+          'ngTemplateOutlet',
+        ]);
+      };
 
       driveExternal(template, expectation);
       driveInline(template, expectation);
@@ -282,11 +281,10 @@ describe('completions', () => {
 
     it('should not include private members of a class', () => {
       const template = '{{ | }}';
-      const expectation =
-          (ci: CI) => {
-            const internal = ci !.entries.find(e => e.name === 'internal');
-            expect(internal).toBeUndefined();
-          }
+      const expectation = (ci: CI) => {
+        const internal = ci !.entries.find(e => e.name === 'internal');
+        expect(internal).toBeUndefined();
+      };
 
       driveExternal(template, expectation);
       driveInline(template, expectation);
@@ -295,10 +293,9 @@ describe('completions', () => {
     describe('expression property completions', () => {
       it('should provide properties of an object', () => {
         const template = '{{ hero.| }}';
-        const expectation =
-            (ci: CI) => {
-              expectContain(ci, CompletionKind.PROPERTY, ['id', 'name']);
-            }
+        const expectation = (ci: CI) => {
+          expectContain(ci, CompletionKind.PROPERTY, ['id', 'name']);
+        };
 
         driveExternal(template, expectation);
         driveInline(template, expectation);
@@ -307,20 +304,18 @@ describe('completions', () => {
       describe('with numeric index signatures', () => {
         it('should work with numeric index signatures (arrays)', () => {
           const template = `{{ heroes[0].| }}`;
-          const expectation =
-              (ci: CI) => {
-                expectContain(ci, CompletionKind.PROPERTY, ['id', 'name']);
-              }
+          const expectation = (ci: CI) => {
+            expectContain(ci, CompletionKind.PROPERTY, ['id', 'name']);
+          };
 
           driveExternal(template, expectation);
         });
 
         it('should work with numeric index signatures (tuple arrays)', () => {
           const template = `{{ tupleArray[1].| }}`;
-          const expectation =
-              (ci: CI) => {
-                expectContain(ci, CompletionKind.PROPERTY, ['id', 'name']);
-              }
+          const expectation = (ci: CI) => {
+            expectContain(ci, CompletionKind.PROPERTY, ['id', 'name']);
+          };
 
           driveExternal(template, expectation);
         });
@@ -329,20 +324,18 @@ describe('completions', () => {
       describe('with string index signatures', () => {
         it('should work with index notation', () => {
           const template = `{{ heroesByName['Jacky'].| }}`;
-          const expectation =
-              (ci: CI) => {
-                expectContain(ci, CompletionKind.PROPERTY, ['id', 'name']);
-              }
+          const expectation = (ci: CI) => {
+            expectContain(ci, CompletionKind.PROPERTY, ['id', 'name']);
+          };
 
           driveExternal(template, expectation);
         });
 
         it('should work with dot notation', () => {
           const template = `{{ heroesByName.jacky.| }}`;
-          const expectation =
-              (ci: CI) => {
-                expectContain(ci, CompletionKind.PROPERTY, ['id', 'name']);
-              }
+          const expectation = (ci: CI) => {
+            expectContain(ci, CompletionKind.PROPERTY, ['id', 'name']);
+          };
 
           driveExternal(template, expectation);
         });
@@ -350,7 +343,7 @@ describe('completions', () => {
         it('should work with dot notation if stringIndexType is a primitive type', () => {
           const template = `{{ primitiveIndexType.test.| }}`;
           const expectation =
-              (ci: CI) => { expectContain(ci, CompletionKind.METHOD, ['substring']); }
+              (ci: CI) => { expectContain(ci, CompletionKind.METHOD, ['substring']); };
 
           driveExternal(template, expectation);
         });
@@ -393,10 +386,9 @@ describe('completions', () => {
           </test-comp>
         </div>
         <test-comp #test2></test-comp>`;
-        const expectation =
-            (ci: CI) => {
-              expectContain(ci, CompletionKind.REFERENCE, ['div', 'test1', 'test2']);
-            }
+        const expectation = (ci: CI) => {
+          expectContain(ci, CompletionKind.REFERENCE, ['div', 'test1', 'test2']);
+        };
 
         driveExternal(template, expectation);
         driveInline(template, expectation);
@@ -407,10 +399,9 @@ describe('completions', () => {
             <test-comp #test></test-comp>
             <div (click)="test.|"></div>
           `;
-        const expectation =
-            (ci: CI) => {
-              expectContain(ci, CompletionKind.PROPERTY, ['name', 'testEvent']);
-            }
+        const expectation = (ci: CI) => {
+          expectContain(ci, CompletionKind.PROPERTY, ['name', 'testEvent']);
+        };
 
         driveExternal(template, expectation);
       });
@@ -457,7 +448,7 @@ describe('completions', () => {
 
     it('should provide the $any() type cast method', () => {
       const template = '{{ | }}';
-      const expectation = (ci: CI) => { expectContain(ci, CompletionKind.METHOD, ['$any']); }
+      const expectation = (ci: CI) => { expectContain(ci, CompletionKind.METHOD, ['$any']); };
 
       driveExternal(template, expectation);
       driveInline(template, expectation);
@@ -486,10 +477,9 @@ describe('completions', () => {
     describe('binding values', () => {
       it('should provide component members', () => {
         const template = `<div [id]="|"></div>`;
-        const expectation =
-            (ci: CI) => {
-              expectContain(ci, CompletionKind.PROPERTY, ['title', 'hero']);
-            }
+        const expectation = (ci: CI) => {
+          expectContain(ci, CompletionKind.PROPERTY, ['title', 'hero']);
+        };
 
         driveExternal(template, expectation);
         driveInline(template, expectation);
@@ -529,7 +519,7 @@ describe('completions', () => {
     describe('binding values', () => {
       it('should provide component methods', () => {
         const template = `<div (click)="|"></div>`;
-        const expectation = (ci: CI) => { expectContain(ci, CompletionKind.METHOD, ['myClick']); }
+        const expectation = (ci: CI) => { expectContain(ci, CompletionKind.METHOD, ['myClick']); };
 
         driveExternal(template, expectation);
         driveInline(template, expectation);
@@ -537,7 +527,7 @@ describe('completions', () => {
 
       it('should provide $event in event bindings', () => {
         const template = `<div (click)="myClick(|);"></div>`;
-        const expectation = (ci: CI) => { expectContain(ci, CompletionKind.VARIABLE, ['$event']); }
+        const expectation = (ci: CI) => { expectContain(ci, CompletionKind.VARIABLE, ['$event']); };
 
         driveExternal(template, expectation);
         driveInline(template, expectation);
@@ -545,11 +535,10 @@ describe('completions', () => {
 
       it('should provide $event property completions in output bindings', () => {
         const template = `<div string-model (modelChange)="$event.|"></div>`;
-        const expectation =
-            (ci: CI) => {
-              // Expect string properties
-              expectContain(ci, CompletionKind.METHOD, ['charAt', 'substring']);
-            }
+        const expectation = (ci: CI) => {
+          // Expect string properties
+          expectContain(ci, CompletionKind.METHOD, ['charAt', 'substring']);
+        };
 
         driveExternal(template, expectation);
         driveInline(template, expectation);
@@ -577,10 +566,9 @@ describe('completions', () => {
     describe('binding values', () => {
       it('should provide component members', () => {
         const template = `<div [(model)]="|"></div>`;
-        const expectation =
-            (ci: CI) => {
-              expectContain(ci, CompletionKind.PROPERTY, ['title', 'hero']);
-            }
+        const expectation = (ci: CI) => {
+          expectContain(ci, CompletionKind.PROPERTY, ['title', 'hero']);
+        };
 
         driveExternal(template, expectation);
         driveInline(template, expectation);
@@ -588,10 +576,9 @@ describe('completions', () => {
 
       it('should provide properties', () => {
         const template = `<div [(model)]="hero.|"></div>`;
-        const expectation =
-            (ci: CI) => {
-              expectContain(ci, CompletionKind.PROPERTY, ['id', 'name']);
-            }
+        const expectation = (ci: CI) => {
+          expectContain(ci, CompletionKind.PROPERTY, ['id', 'name']);
+        };
 
         driveExternal(template, expectation);
         driveInline(template, expectation);
@@ -599,7 +586,7 @@ describe('completions', () => {
 
       it('should provide $event', () => {
         const template = `<div [(click)]="$ev|"></div>`;
-        const expectation = (ci: CI) => { expectContain(ci, CompletionKind.VARIABLE, ['$event']); }
+        const expectation = (ci: CI) => { expectContain(ci, CompletionKind.VARIABLE, ['$event']); };
 
         driveExternal(template, expectation);
         driveInline(template, expectation);
@@ -610,7 +597,7 @@ describe('completions', () => {
   describe('template reference variable completions', () => {
     it('should provide reference targets (ref- prefix)', () => {
       const template = `<form ref-itemForm="ngF|"></form>`;
-      const expectation = (ci: CI) => { expectContain(ci, CompletionKind.REFERENCE, ['ngForm']); }
+      const expectation = (ci: CI) => { expectContain(ci, CompletionKind.REFERENCE, ['ngForm']); };
 
       driveExternal(template, expectation);
       driveInline(template, expectation);
@@ -618,7 +605,7 @@ describe('completions', () => {
 
     it('should provide reference targets (# prefix)', () => {
       const template = `<form #itemForm="ngF|"></form>`;
-      const expectation = (ci: CI) => { expectContain(ci, CompletionKind.REFERENCE, ['ngForm']); }
+      const expectation = (ci: CI) => { expectContain(ci, CompletionKind.REFERENCE, ['ngForm']); };
 
       driveExternal(template, expectation);
       driveInline(template, expectation);
@@ -665,7 +652,7 @@ describe('completions', () => {
         driveExternal(template, expectation);
         driveInline(template, expectation);
       });
-    })
+    });
 
     describe('ngIf special cases', () => {
       it('should be able to get completions for exported *ngIf variable', () => {
@@ -760,48 +747,44 @@ describe('completions', () => {
 
     it('should work for attributes', () => {
       const template = `<div (cl|)></div>`;
-      const expectation =
-          (ci: CI) => {
-            const completion = ci ?.entries ?.find(entry => entry.name === 'click');
-            expect(completion).toBeDefined();
-            expect(completion !.replacementSpan).toEqual({start: 6, length: 2});
-          }
+      const expectation = (ci: CI) => {
+        const completion = ci ?.entries ?.find(entry => entry.name === 'click');
+        expect(completion).toBeDefined();
+        expect(completion !.replacementSpan).toEqual({start: 6, length: 2});
+      };
 
       driveExternal(template, expectation);
     });
 
     it('should work for events', () => {
       const template = `<div (click)="my|"></div>`;
-      const expectation =
-          (ci: CI) => {
-            const completion = ci ?.entries ?.find(entry => entry.name === 'myClick');
-            expect(completion).toBeDefined();
-            expect(completion !.replacementSpan).toEqual({start: 14, length: 2});
-          }
+      const expectation = (ci: CI) => {
+        const completion = ci ?.entries ?.find(entry => entry.name === 'myClick');
+        expect(completion).toBeDefined();
+        expect(completion !.replacementSpan).toEqual({start: 14, length: 2});
+      };
 
       driveExternal(template, expectation);
     });
 
     it('should work for element names', () => {
       const template = `<tes|></test-comp>`;
-      const expectation =
-          (ci: CI) => {
-            const completion = ci ?.entries ?.find(entry => entry.name === 'test-comp');
-            expect(completion).toBeDefined();
-            expect(completion !.replacementSpan).toEqual({start: 1, length: 3});
-          }
+      const expectation = (ci: CI) => {
+        const completion = ci ?.entries ?.find(entry => entry.name === 'test-comp');
+        expect(completion).toBeDefined();
+        expect(completion !.replacementSpan).toEqual({start: 1, length: 3});
+      };
 
       driveExternal(template, expectation);
     });
 
     it('should work for bindings', () => {
       const template = `<input [(ngMod|)] />`;
-      const expectation =
-          (ci: CI) => {
-            const completion = ci ?.entries ?.find(entry => entry.name === 'ngModel');
-            expect(completion).toBeDefined();
-            expect(completion !.replacementSpan).toEqual({start: 9, length: 5});
-          }
+      const expectation = (ci: CI) => {
+        const completion = ci ?.entries ?.find(entry => entry.name === 'ngModel');
+        expect(completion).toBeDefined();
+        expect(completion !.replacementSpan).toEqual({start: 9, length: 5});
+      };
 
       driveExternal(template, expectation);
     });
