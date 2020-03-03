@@ -962,7 +962,7 @@ export function elementPropertyInternal<T>(
       validateAgainstEventProperties(propName);
       if (!validateProperty(tView, lView, element, propName, tNode)) {
         // Return here since we only log warnings for unknown properties.
-        logUnknownPropertyError(propName, tNode);
+        warnAboutUnknownProperty(propName, tNode);
         return;
       }
       ngDevMode.rendererSetProperty++;
@@ -982,7 +982,7 @@ export function elementPropertyInternal<T>(
     // If the node is a container and the property didn't
     // match any of the inputs or schemas we should throw.
     if (ngDevMode && !matchingSchemas(tView, lView, tNode.tagName)) {
-      logUnknownPropertyError(propName, tNode);
+      warnAboutUnknownProperty(propName, tNode);
     }
   }
 }
@@ -1070,12 +1070,12 @@ export function matchingSchemas(tView: TView, lView: LView, tagName: string | nu
 }
 
 /**
- * Logs an error that a property is not supported on an element.
+ * Logs a warning that a property is not supported on an element.
  * @param propName Name of the invalid property.
  * @param tNode Node on which we encountered the property.
  */
-function logUnknownPropertyError(propName: string, tNode: TNode): void {
-  console.error(
+function warnAboutUnknownProperty(propName: string, tNode: TNode): void {
+  console.warn(
       `Can't bind to '${propName}' since it isn't a known property of '${tNode.tagName}'.`);
 }
 
