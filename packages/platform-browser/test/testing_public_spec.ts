@@ -937,7 +937,7 @@ Did you run and wait for 'resolveComponentResources()'?` :
       });
 
 
-      modifiedInIvy(`Unknown property error thrown instead of logging a message`)
+      modifiedInIvy(`Unknown property error thrown instead of logging a warning`)
           .it('should error on unknown bound properties on custom elements by default', () => {
             @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
             class ComponentUsingInvalidProperty {
@@ -956,13 +956,13 @@ Did you run and wait for 'resolveComponentResources()'?` :
             restoreJasmineIt();
           });
 
-      onlyInIvy(`Unknown property error logged instead of throwing`)
+      onlyInIvy(`Unknown property warning logged instead of an error`)
           .it('should error on unknown bound properties on custom elements by default', () => {
             @Component({template: '<div [someUnknownProp]="true"></div>'})
             class ComponentUsingInvalidProperty {
             }
 
-            const spy = spyOn(console, 'error');
+            const spy = spyOn(console, 'warn');
             withModule({declarations: [ComponentUsingInvalidProperty]}, () => {
               const fixture = TestBed.createComponent(ComponentUsingInvalidProperty);
               fixture.detectChanges();
