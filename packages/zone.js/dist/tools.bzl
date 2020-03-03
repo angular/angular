@@ -8,6 +8,7 @@ def zone_rollup_bundle(config_file, bundles):
             name = b[0] + "-rollup",
             config_file = config_file,
             entry_point = b[1] + ".ts",
+            silent = True,
             sourcemap = "false",
             deps = [
                 "//packages/zone.js/lib",
