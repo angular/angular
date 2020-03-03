@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {assertDataInRange} from '../util/assert';
 import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4, getBinding, updateBinding} from './bindings';
 import {LView} from './interfaces/view';
 import {getBindingRoot, getLView} from './state';
@@ -277,6 +278,18 @@ export function ɵɵpureFunctionV(
   return pureFunctionVInternal(getLView(), getBindingRoot(), slotOffset, pureFn, exps, thisArg);
 }
 
+/**
+ * Results of a pure function invocation are stored in LView in a dedicated slot that is initialized
+ * to NO_CHANGE. In rare situations a pure pipe might throw an exception on the very first
+ * invocation and not produce any valid results. In this case LView would keep holding the NO_CHANGE
+ * value. The NO_CHANGE is not something that we can use in expressions / bindings thus we convert
+ * it to `undefined`.
+ */
+function getPureFunctionReturnValue(lView: LView, returnValueIndex: number) {
+  ngDevMode && assertDataInRange(lView, returnValueIndex);
+  const lastReturnValue = lView[returnValueIndex];
+  return lastReturnValue === NO_CHANGE ? undefined : lastReturnValue;
+}
 
 /**
  * If the value of the provided exp has changed, calls the pure function to return
@@ -296,7 +309,7 @@ export function pureFunction1Internal(
   const bindingIndex = bindingRoot + slotOffset;
   return bindingUpdated(lView, bindingIndex, exp) ?
       updateBinding(lView, bindingIndex + 1, thisArg ? pureFn.call(thisArg, exp) : pureFn(exp)) :
-      getBinding(lView, bindingIndex + 1);
+      getPureFunctionReturnValue(lView, bindingIndex + 1);
 }
 
 
@@ -321,7 +334,7 @@ export function pureFunction2Internal(
       updateBinding(
           lView, bindingIndex + 2,
           thisArg ? pureFn.call(thisArg, exp1, exp2) : pureFn(exp1, exp2)) :
-      getBinding(lView, bindingIndex + 2);
+      getPureFunctionReturnValue(lView, bindingIndex + 2);
 }
 
 /**
@@ -347,7 +360,7 @@ export function pureFunction3Internal(
       updateBinding(
           lView, bindingIndex + 3,
           thisArg ? pureFn.call(thisArg, exp1, exp2, exp3) : pureFn(exp1, exp2, exp3)) :
-      getBinding(lView, bindingIndex + 3);
+      getPureFunctionReturnValue(lView, bindingIndex + 3);
 }
 
 
@@ -376,7 +389,7 @@ export function pureFunction4Internal(
       updateBinding(
           lView, bindingIndex + 4,
           thisArg ? pureFn.call(thisArg, exp1, exp2, exp3, exp4) : pureFn(exp1, exp2, exp3, exp4)) :
-      getBinding(lView, bindingIndex + 4);
+      getPureFunctionReturnValue(lView, bindingIndex + 4);
 }
 
 /**
@@ -403,5 +416,5 @@ export function pureFunctionVInternal(
     bindingUpdated(lView, bindingIndex++, exps[i]) && (different = true);
   }
   return different ? updateBinding(lView, bindingIndex, pureFn.apply(thisArg, exps)) :
-                     getBinding(lView, bindingIndex);
+                     getPureFunctionReturnValue(lView, bindingIndex);
 }

@@ -582,4 +582,111 @@ describe('pipe', () => {
 
   });
 
+  describe('pure pipe error handling', () => {
+
+    it('should not re-invoke pure pipes if it fails initially', () => {
+
+      @Pipe({name: 'throwPipe', pure: true})
+      class ThrowPipe implements PipeTransform {
+        transform(): never { throw new Error('ThrowPipeError'); }
+      }
+      @Component({template: `{{val | throwPipe}}`})
+      class App {
+        val = 'anything';
+      }
+
+      const fixture =
+          TestBed.configureTestingModule({declarations: [App, ThrowPipe]}).createComponent(App);
+
+      // first invocation
+      expect(() => fixture.detectChanges()).toThrowError(/ThrowPipeError/);
+
+      // second invocation - should not throw
+      fixture.detectChanges();
+    });
+
+
+    it('should display the last known result from a pure pipe when it throws', () => {
+
+      @Pipe({name: 'throwPipe', pure: true})
+      class ThrowPipe implements PipeTransform {
+        transform(value: string): string {
+          if (value === 'KO') {
+            throw new Error('ThrowPipeError');
+          } else {
+            return value;
+          }
+        }
+      }
+
+      @Component({template: `{{val | throwPipe}}`})
+      class App {
+        val = 'anything';
+      }
+
+      const fixture =
+          TestBed.configureTestingModule({declarations: [App, ThrowPipe]}).createComponent(App);
+
+      // first invocation - no error thrown
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('anything');
+
+
+      // second invocation when the error is thrown
+      fixture.componentInstance.val = 'KO';
+      expect(() => fixture.detectChanges()).toThrowError(/ThrowPipeError/);
+      expect(fixture.nativeElement.textContent).toBe('anything');
+
+
+      // third invocation with no changes to input - should not thrown and preserve the last known
+      // results
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('anything');
+    });
+
+    describe('pure pipe error handling with multiple arguments', () => {
+      const args: string[] = new Array(10).fill(':0');
+      for (let numberOfPipeArgs = 0; numberOfPipeArgs < args.length; numberOfPipeArgs++) {
+        it(`should not invoke ${numberOfPipeArgs} argument pure pipe second time if it throws unless input changes`,
+           () => {
+             // https://stackblitz.com/edit/angular-mbx2pg
+             const log: string[] = [];
+             @Pipe({name: 'throw', pure: true})
+             class ThrowPipe implements PipeTransform {
+               transform(): never {
+                 log.push('throw');
+                 throw new Error('ThrowPipeError');
+               }
+             }
+             @Component({template: `{{val | throw${args.slice(0, numberOfPipeArgs).join('')}}}`})
+             class App {
+               val = 'anything';
+             }
+
+             const fixture = TestBed.configureTestingModule({declarations: [App, ThrowPipe]})
+                                 .createComponent(App);
+             // First invocation of detect changes should throw.
+             expect(() => fixture.detectChanges()).toThrowError(/ThrowPipeError/);
+             expect(log).toEqual(['throw']);
+             // Second invocation should not throw as input to the `throw` pipe has not changed and
+             // the pipe is pure.
+             log.length = 0;
+             expect(() => fixture.detectChanges()).not.toThrow();
+             expect(log).toEqual([]);
+             fixture.componentInstance.val = 'change';
+             // First invocation of detect changes should throw because the input changed.
+             expect(() => fixture.detectChanges()).toThrowError(/ThrowPipeError/);
+             expect(log).toEqual(['throw']);
+             // Second invocation should not throw as input to the `throw` pipe has not changed and
+             // the pipe is pure.
+             log.length = 0;
+             expect(() => fixture.detectChanges()).not.toThrow();
+             expect(log).toEqual([]);
+           });
+      }
+    });
+
+  });
+
+
 });
