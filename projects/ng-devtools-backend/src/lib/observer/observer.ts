@@ -128,38 +128,67 @@ export class ComponentTreeObserver {
   }
 
   private _onAddedNodesMutation(node: Node): void {
-    const component = node instanceof HTMLElement && ng.getComponent(node);
-    if (component) {
-      if (this._config.onChangeDetection) {
-        this._observeComponent(component);
-      }
-      if (this._config.onLifecycleHook) {
-        this._observeLifecycle(component, true);
-      }
-
-      this._tracker.insert(node, component);
-
-      this._fireCreationCallback(component, true);
-
-      if (this._lastChangeDetection.has(component)) {
-        this._fireChangeDetectionCallback(component);
-        this._lastChangeDetection.delete(component);
-      }
+    const components = this._getAllNestedComponentsWithinDomNode(node);
+    if (components.length > 0) {
+      components.forEach(component => this._onAddedComponent(component));
     }
 
+    const directives = this._getAllNestedDirectivesWithinDomNode(node);
+    if (directives.length) {
+      directives.forEach(dir => this._onAddedDirective(dir));
+    }
+
+    if (components.length + directives.length > 0) {
+      this._tracker.index();
+    }
+  }
+
+  private _onAddedComponent(addedComponent): void {
+    if (this._config.onChangeDetection) {
+      this._observeComponent(addedComponent);
+    }
+    if (this._config.onLifecycleHook) {
+      this._observeLifecycle(addedComponent, true);
+    }
+    this._fireCreationCallback(addedComponent, true);
+
+    if (this._lastChangeDetection.has(addedComponent)) {
+      this._fireChangeDetectionCallback(addedComponent);
+      this._lastChangeDetection.delete(addedComponent);
+    }
+  }
+
+  private _onAddedDirective(addedDirective): void {
+    if (this._config.onLifecycleHook) {
+      this._observeLifecycle(addedDirective, false);
+    }
+    this._fireCreationCallback(addedDirective, false);
+  }
+
+  private _getAllNestedComponentsWithinDomNode(node, componentAccumulator = []) {
+    const component = node instanceof HTMLElement && ng.getComponent(node);
+
+    if (component) {
+      componentAccumulator.push(component);
+    } else {
+      Array.from(node.children).forEach(child =>
+        this._getAllNestedComponentsWithinDomNode(child, componentAccumulator)
+      );
+    }
+
+    return componentAccumulator;
+  }
+
+  private _getAllNestedDirectivesWithinDomNode(node) {
     let directives = [];
     try {
       directives = ng.getDirectives(node);
     } catch {}
-    if (directives.length) {
-      this._tracker.insert(node, directives);
-      directives.forEach(dir => {
-        if (this._config.onLifecycleHook) {
-          this._observeLifecycle(dir, false);
-        }
-        this._fireCreationCallback(dir, false);
-      });
-    }
+
+    Array.from(node.children).forEach(
+      child => (directives = directives.concat(this._getAllNestedDirectivesWithinDomNode(child)))
+    );
+    return directives;
   }
 
   private _fireCreationCallback(component: any, isComponent: boolean): void {
