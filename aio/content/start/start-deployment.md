@@ -90,7 +90,10 @@ This will produce the files that you need to deploy.
 
 <div class="alert is-helpful">
 
+<!--
 If the above `ng build` command throws an error about missing packages, append the missing dependencies in your local project's `package.json` file to match the one in the downloaded StackBlitz project.
+-->
+`ng build` 명령을 실행했을 때 에러가 발생한다면 프로젝트 빌드에 필요한 패키지가 설치되어있는지 확인해 보세요. 패키지 목록은 `package.json` 파일을 참고하면 됩니다.
 
 </div>
 
