@@ -136,11 +136,12 @@
       }
     }
 
-    tick(millis: number = 0, doTick?: (elapsed: number) => void, tickOptions: {
+    tick(millis: number = 0, doTick?: (elapsed: number) => void, tickOptions?: {
       processNewMacroTasksSynchronously: boolean
-    } = {processNewMacroTasksSynchronously: true}): void {
+    }): void {
       let finalTime = this._currentTime + millis;
       let lastCurrentTime = 0;
+      tickOptions = Object.assign({processNewMacroTasksSynchronously: true}, tickOptions);
       // we need to copy the schedulerQueue so nested timeout
       // will not be wrongly called in the current tick
       // https://github.com/angular/angular/issues/33799
