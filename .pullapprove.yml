@@ -928,6 +928,7 @@ groups:
           '.github/**',
           '.vscode/**',
           '.yarn/**',
+          'dev-infra/**',
           'docs/BAZEL.md',
           'docs/CARETAKER.md',
           'docs/COMMITTER.md',
