@@ -184,7 +184,7 @@ export function compile({allDepsCompiledWithBazel = true, useManifestPathsAsModu
   }
 
   // Detect from compilerOpts whether the entrypoint is being invoked in Ivy mode.
-  const isInIvyMode = compilerOpts.enableIvy === 'ngtsc';
+  const isInIvyMode = !!compilerOpts.enableIvy;
 
   // Disable downleveling and Closure annotation if in Ivy mode.
   if (isInIvyMode) {
@@ -246,9 +246,18 @@ export function compile({allDepsCompiledWithBazel = true, useManifestPathsAsModu
         files, compilerOpts, bazelOpts, tsHost, fileLoader, generatedFileModuleResolver);
   }
 
-  // Also need to disable decorator downleveling in the BazelHost in Ivy mode.
   if (isInIvyMode) {
+    // Also need to disable decorator downleveling in the BazelHost in Ivy mode.
     bazelHost.transformDecorators = false;
+
+    const delegate = bazelHost.shouldSkipTsickleProcessing.bind(bazelHost);
+    bazelHost.shouldSkipTsickleProcessing = (fileName: string) => {
+      // The base implementation of shouldSkipTsickleProcessing checks whether `fileName` is part of
+      // the original `srcs[]`. For Angular (Ivy) compilations, ngfactory/ngsummary files that are
+      // shims for original .ts files in the program should be treated identically. Thus, strip the
+      // '.ngfactory' or '.ngsummary' part of the filename away before calling the delegate.
+      return delegate(fileName.replace(/\.(ngfactory|ngsummary)\.ts$/, '.ts'));
+    };
   }
 
   // Prevent tsickle adding any types at all if we don't want closure compiler annotations.

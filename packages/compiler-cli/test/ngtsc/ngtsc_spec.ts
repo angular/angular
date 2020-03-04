@@ -3322,21 +3322,6 @@ runInEachFileSystem(os => {
         expect(ngfactoryContents).toContain(`i0.ɵNgModuleFactory<any>`);
       });
 
-      it('should copy a top-level comment into a factory stub', () => {
-        env.tsconfig({'allowEmptyCodegenFiles': true});
-
-        env.write('test.ts', `/** I am a top-level comment. */
-          import {NgModule} from '@angular/core';
-
-          @NgModule({})
-          export class TestModule {}
-      `);
-        env.driveMain();
-
-        const factoryContents = env.getContents('test.ngfactory.js');
-        expect(factoryContents).toMatch(/^\/\*\* I am a top-level comment\. \*\//);
-      });
-
       it('should be able to compile an app using the factory shim', () => {
         env.tsconfig({'allowEmptyCodegenFiles': true});
 
@@ -3375,6 +3360,48 @@ runInEachFileSystem(os => {
         import { TestModule } from './test';
         export var TestModuleNgFactory = new i0.NgModuleFactory(TestModule);
       `));
+      });
+
+      describe('file-level comments', () => {
+        it('should copy a top-level comment into a factory stub', () => {
+          env.tsconfig({'allowEmptyCodegenFiles': true});
+
+          env.write('test.ts', `/** I am a top-level comment. */
+
+            import {NgModule} from '@angular/core';
+  
+            @NgModule({})
+            export class TestModule {}
+          `);
+          env.driveMain();
+
+          const factoryContents = env.getContents('test.ngfactory.js');
+          expect(factoryContents).toContain(`/** I am a top-level comment. */\n`);
+        });
+
+        it('should not copy a non-file level comment into a factory stub', () => {
+          env.tsconfig({'allowEmptyCodegenFiles': true});
+
+          env.write('test.ts', `/** I am a top-level comment, but not for the file. */
+            export const TEST = true;
+          `);
+          env.driveMain();
+
+          const factoryContents = env.getContents('test.ngfactory.js');
+          expect(factoryContents).not.toContain('top-level comment');
+        });
+
+        it('should not copy a file level comment with an @license into a factory stub', () => {
+          env.tsconfig({'allowEmptyCodegenFiles': true});
+
+          env.write('test.ts', `/** @license I am a top-level comment, but have a license. */
+            export const TEST = true;
+          `);
+          env.driveMain();
+
+          const factoryContents = env.getContents('test.ngfactory.js');
+          expect(factoryContents).not.toContain('top-level comment');
+        });
       });
     });
 
@@ -4792,6 +4819,31 @@ runInEachFileSystem(os => {
 
           env.driveMain();
           const jsContents = env.getContents('test.js');
+          const fileoverview = `
+        /**
+         * @fileoverview added by tsickle
+         * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+         */
+      `;
+          expect(trim(jsContents).startsWith(trim(fileoverview))).toBeTruthy();
+        });
+
+        it('should be produced for generated factory files', () => {
+          env.tsconfig({
+            'annotateForClosureCompiler': true,
+            'generateNgFactoryShims': true,
+          });
+          env.write(`test.ts`, `
+            import {Component} from '@angular/core';
+    
+            @Component({
+              template: '<div class="test"></div>',
+            })
+            export class SomeComp {}
+          `);
+
+          env.driveMain();
+          const jsContents = env.getContents('test.ngfactory.js');
           const fileoverview = `
         /**
          * @fileoverview added by tsickle
