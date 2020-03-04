@@ -72,14 +72,14 @@ present in the form field control. It can also be set to `auto` to restore the d
 
 <!-- example(form-field-label) -->
 
-Global default label options can be specified by providing a value for
-`MAT_LABEL_GLOBAL_OPTIONS` in your application's root module. Like the property, the global
-setting can be either `always`, `never`, or `auto`.
+The floating label behavior can be adjusted globally by providing a value for
+`MAT_FORM_FIELD_DEFAULT_OPTIONS` in your application's root module. Like the `floatLabel` input,
+the option can be either set to `always`, `never`, or `auto`.
 
 ```ts
 @NgModule({
   providers: [
-    {provide: MAT_LABEL_GLOBAL_OPTIONS, useValue: {float: 'always'}}
+    {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {floatLabel: 'always'}}
   ]
 })
 ```
