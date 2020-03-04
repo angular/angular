@@ -51,7 +51,7 @@ class HeroProfile {
         pending.destroy();
       }
     };
-    setTimeout(attempt);
+    attempt();
   }
 }
 ```
