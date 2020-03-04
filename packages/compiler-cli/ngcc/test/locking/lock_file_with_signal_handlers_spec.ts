@@ -9,8 +9,7 @@ import * as process from 'process';
 
 import {CachedFileSystem, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {LockFileWithSignalHandlers, SyncLocker} from '../../src/execution/lock_file';
-import {MockLockFile} from '../helpers/mock_lock_file';
+import {LockFileWithSignalHandlers} from '../../src/locking/lock_file_with_signal_handlers';
 
 runInEachFileSystem(() => {
   describe('LockFileWithSignalHandlers', () => {
@@ -66,7 +65,7 @@ runInEachFileSystem(() => {
         expect(lockFile.log).toEqual(['write()', 'addSignalHandlers()', 'removeSignalHandlers()']);
       });
 
-      it('should remove the lockFile if CTRL-C is triggered', () => {
+      it('should remove the lock-file if CTRL-C is triggered', () => {
         const fs = getFileSystem();
         const lockFile = new LockFileUnderTest(fs, /* handleSignals */ true);
 
@@ -83,7 +82,7 @@ runInEachFileSystem(() => {
         ]);
       });
 
-      it('should remove the lockFile if terminal is closed', () => {
+      it('should remove the lock-file if terminal is closed', () => {
         const fs = getFileSystem();
         const lockFile = new LockFileUnderTest(fs, /* handleSignals */ true);
 
@@ -102,14 +101,14 @@ runInEachFileSystem(() => {
     });
 
     describe('read()', () => {
-      it('should return the contents of the lockFile', () => {
+      it('should return the contents of the lock-file', () => {
         const fs = getFileSystem();
         const lockFile = new LockFileUnderTest(fs);
         fs.writeFile(lockFile.path, '188');
         expect(lockFile.read()).toEqual('188');
       });
 
-      it('should return `{unknown}` if the lockFile does not exist', () => {
+      it('should return `{unknown}` if the lock-file does not exist', () => {
         const fs = getFileSystem();
         const lockFile = new LockFileUnderTest(fs);
         expect(lockFile.read()).toEqual('{unknown}');
@@ -149,58 +148,6 @@ runInEachFileSystem(() => {
         fs.writeFile(lockFile.path, '188');
         lockFile.remove();
         expect(lockFile.log).toEqual(['remove()', 'removeSignalHandlers()']);
-      });
-    });
-  });
-
-  describe('SyncLocker', () => {
-    describe('lock()', () => {
-      it('should guard the `fn()` with calls to `write()` and `remove()`', () => {
-        const fs = getFileSystem();
-        const log: string[] = [];
-        const lockFile = new MockLockFile(fs, log);
-        const locker = new SyncLocker(lockFile);
-
-        locker.lock(() => log.push('fn()'));
-
-        expect(log).toEqual(['write()', 'fn()', 'remove()']);
-      });
-
-      it('should guard the `fn()` with calls to `write()` and `remove()`, even if it throws',
-         () => {
-           let error: string = '';
-           const fs = getFileSystem();
-           const log: string[] = [];
-           const lockFile = new MockLockFile(fs, log);
-           const locker = new SyncLocker(lockFile);
-
-           try {
-             locker.lock(() => {
-               log.push('fn()');
-               throw new Error('ERROR');
-             });
-           } catch (e) {
-             error = e.message;
-           }
-           expect(error).toEqual('ERROR');
-           expect(log).toEqual(['write()', 'fn()', 'remove()']);
-         });
-
-      it('should error if a lock file already exists', () => {
-        const fs = getFileSystem();
-        const log: string[] = [];
-        const lockFile = new MockLockFile(fs, log);
-        const locker = new SyncLocker(lockFile);
-
-        spyOn(lockFile, 'write').and.callFake(() => { throw {code: 'EEXIST'}; });
-        spyOn(lockFile, 'read').and.returnValue('188');
-
-        expect(() => locker.lock(() => {}))
-            .toThrowError(
-                `ngcc is already running at process with id 188.\n` +
-                `If you are running multiple builds in parallel then you should pre-process your node_modules via the command line ngcc tool before starting the builds;\n` +
-                `See https://v9.angular.io/guide/ivy#speeding-up-ngcc-compilation.\n` +
-                `(If you are sure no ngcc process is running then you should delete the lockFile at ${lockFile.path}.)`);
       });
     });
   });

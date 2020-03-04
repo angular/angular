@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {FileSystem} from '../../../src/ngtsc/file_system';
-import {LockFile} from '../../src/execution/lock_file';
+import {LockFile} from '../../src/locking/lock_file';
 
 /**
  * A mock implementation of `LockFile` that just logs its calls.

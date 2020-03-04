@@ -9,9 +9,9 @@
 /// <reference types="node" />
 
 import {MockFileSystemNative} from '../../../src/ngtsc/file_system/testing';
-import {SyncLocker} from '../../src/execution/lock_file';
 import {SingleProcessExecutorSync} from '../../src/execution/single_process_executor';
 import {SerialTaskQueue} from '../../src/execution/task_selection/serial_task_queue';
+import {SyncLocker} from '../../src/locking/sync_locker';
 import {PackageJsonUpdater} from '../../src/writing/package_json_updater';
 import {MockLockFile} from '../helpers/mock_lock_file';
 import {MockLogger} from '../helpers/mock_logger';
