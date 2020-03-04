@@ -27,9 +27,10 @@ export class DevServer {
     port: this.port,
     notify: false,
     ghostMode: false,
-    server: false,
-    logSnippet: false,
-    middleware: (req, res) => this._bazelMiddleware(req, res),
+    server: {
+      directory: false,
+      middleware: [(req, res) => this._bazelMiddleware(req, res)],
+    },
   };
 
   constructor(
@@ -72,6 +73,7 @@ export class DevServer {
       if (!absoluteJoinedPath.startsWith(absoluteRootPath)) {
         res.statusCode = 500;
         res.end('Error: Detected directory traversal');
+        return;
       }
     }
 
