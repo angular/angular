@@ -11,15 +11,6 @@ describe('shared animations code', () => {
   if (isNode) return;
 
   describe('computeStyle', () => {
-    it('should return an empty string if the inner computed style value is not a string', () => {
-      const gcsSpy = spyOn(window, 'getComputedStyle').and.returnValue(() => null);
-      const elementLike = buildActualElement();
-      expect(computeStyle(elementLike, 'width')).toEqual('');
-      expect(computeStyle(elementLike, 'padding')).toEqual('');
-      expect(computeStyle(elementLike, 'margin')).toEqual('');
-      gcsSpy.and.callThrough();
-    });
-
     it('should compute the margin style into the form top,right,bottom,left', () => {
       const div = buildActualElement();
 
