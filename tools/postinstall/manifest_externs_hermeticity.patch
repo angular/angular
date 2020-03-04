@@ -61,27 +61,27 @@ diff --git node_modules/@bazel/typescript/internal/tsc_wrapped/tsc_wrapped.js no
 index 0346123..3d9bc64 100644
 --- node_modules/@bazel/typescript/internal/tsc_wrapped/tsc_wrapped.js
 +++ node_modules/@bazel/typescript/internal/tsc_wrapped/tsc_wrapped.js
-@@ -307,6 +307,23 @@
-         }
-         else {
-             diagnostics = emitWithTypescript(program, compilationTargets, transforms);
-+            if (bazelOpts.manifest) {
-+                fs.writeFileSync(bazelOpts.manifest, "");
-+            }
-+            if (bazelOpts.tsickleExternsPath) {
-+                fs.writeFileSync(bazelOpts.tsickleExternsPath, "");
-+                if (bazelOpts.tsickleGenerateExterns && compilerHost.provideExternalModuleDtsNamespace) {
-+                    for (const extern of compilationTargets) {
-+                        if (!extern.isDeclarationFile)
-+                            continue;
-+                        const outputBaseDir = options.outDir;
-+                        const relativeOutputPath = compilerHost.relativeOutputPath(extern.fileName);
-+                        mkdirp(outputBaseDir, path.dirname(relativeOutputPath));
-+                        const outputPath = path.join(outputBaseDir, relativeOutputPath);
-+                        fs.writeFileSync(outputPath, "");
-+                    }
+@@ -381,6 +381,23 @@ function createProgramAndEmit(fileLoader, options, bazelOpts, files, disabledTse
+     }
+     else {
+         diagnostics = emitWithTypescript(program, compilationTargets, transformers);
++        if (bazelOpts.manifest) {
++            fs.writeFileSync(bazelOpts.manifest, "");
++        }
++        if (bazelOpts.tsickleExternsPath) {
++            fs.writeFileSync(bazelOpts.tsickleExternsPath, "");
++            if (bazelOpts.tsickleGenerateExterns && compilerHost.provideExternalModuleDtsNamespace) {
++                for (const extern of compilationTargets) {
++                    if (!extern.isDeclarationFile)
++                        continue;
++                    const outputBaseDir = options.outDir;
++                    const relativeOutputPath = compilerHost.relativeOutputPath(extern.fileName);
++                    mkdirp(outputBaseDir, path.dirname(relativeOutputPath));
++                    const outputPath = path.join(outputBaseDir, relativeOutputPath);
++                    fs.writeFileSync(outputPath, "");
 +                }
 +            }
-         }
-         if (diagnostics.length > 0) {
-             console.error(bazelDiagnostics.format(bazelOpts.target, diagnostics));
++        }
+     }
+     if (diagnostics.length > 0) {
+         worker_1.debug('compilation failed at', new Error().stack);

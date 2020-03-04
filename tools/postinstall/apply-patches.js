@@ -164,8 +164,8 @@ function applyPatch(patchFile) {
     return;
   }
 
-  writePatchMarker(patchMarkerPath);
   shelljs.cat(patchFile).exec('patch -p0');
+  writePatchMarker(patchMarkerPath);
 }
 
 /**
