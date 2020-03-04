@@ -10,11 +10,13 @@
 
 import * as cluster from 'cluster';
 
+import {MockFileSystemNative} from '../../../../src/ngtsc/file_system/testing';
 import {ClusterExecutor} from '../../../src/execution/cluster/executor';
 import {ClusterMaster} from '../../../src/execution/cluster/master';
 import {ClusterWorker} from '../../../src/execution/cluster/worker';
+import {AsyncLocker} from '../../../src/execution/lock_file';
 import {PackageJsonUpdater} from '../../../src/writing/package_json_updater';
-import {MockLockFileAsync} from '../../helpers/mock_lock_file';
+import {MockLockFile} from '../../helpers/mock_lock_file';
 import {MockLogger} from '../../helpers/mock_logger';
 import {mockProperty} from '../../helpers/spy_utils';
 
@@ -24,7 +26,9 @@ describe('ClusterExecutor', () => {
   let masterRunSpy: jasmine.Spy;
   let workerRunSpy: jasmine.Spy;
   let mockLogger: MockLogger;
-  let mockLockFile: MockLockFileAsync;
+  let lockFileLog: string[];
+  let mockLockFile: MockLockFile;
+  let locker: AsyncLocker;
   let executor: ClusterExecutor;
 
   beforeEach(() => {
@@ -34,9 +38,10 @@ describe('ClusterExecutor', () => {
                        .and.returnValue(Promise.resolve('CusterWorker#run()'));
 
     mockLogger = new MockLogger();
-    mockLockFile = new MockLockFileAsync();
-    executor =
-        new ClusterExecutor(42, mockLogger, null as unknown as PackageJsonUpdater, mockLockFile);
+    lockFileLog = [];
+    mockLockFile = new MockLockFile(new MockFileSystemNative(), lockFileLog);
+    locker = new AsyncLocker(mockLockFile, mockLogger, 200, 2);
+    executor = new ClusterExecutor(42, mockLogger, null as unknown as PackageJsonUpdater, locker);
   });
 
   describe('execute()', () => {
@@ -66,14 +71,14 @@ describe('ClusterExecutor', () => {
         expect(createCompilerFnSpy).not.toHaveBeenCalled();
       });
 
-      it('should call LockFile.create() and LockFile.remove() if master runner completes successfully',
+      it('should call LockFile.write() and LockFile.remove() if master runner completes successfully',
          async() => {
            const anyFn: () => any = () => undefined;
            await executor.execute(anyFn, anyFn);
-           expect(mockLockFile.log).toEqual(['create()', 'remove()']);
+           expect(lockFileLog).toEqual(['write()', 'remove()']);
          });
 
-      it('should call LockFile.create() and LockFile.remove() if master runner fails', async() => {
+      it('should call LockFile.write() and LockFile.remove() if master runner fails', async() => {
         const anyFn: () => any = () => undefined;
         masterRunSpy.and.returnValue(Promise.reject(new Error('master runner error')));
         let error = '';
@@ -83,30 +88,37 @@ describe('ClusterExecutor', () => {
           error = e.message;
         }
         expect(error).toEqual('master runner error');
-        expect(mockLockFile.log).toEqual(['create()', 'remove()']);
+        expect(lockFileLog).toEqual(['write()', 'remove()']);
       });
 
-      it('should not call master runner if Lockfile.create() fails', async() => {
+      it('should not call master runner if LockFile.write() fails', async() => {
         const anyFn: () => any = () => undefined;
-        const lockFile = new MockLockFileAsync({throwOnCreate: true});
+        spyOn(mockLockFile, 'write').and.callFake(() => {
+          lockFileLog.push('write()');
+          throw new Error('LockFile.write() error');
+        });
+
         executor =
-            new ClusterExecutor(42, mockLogger, null as unknown as PackageJsonUpdater, lockFile);
+            new ClusterExecutor(42, mockLogger, null as unknown as PackageJsonUpdater, locker);
         let error = '';
         try {
           await executor.execute(anyFn, anyFn);
         } catch (e) {
           error = e.message;
         }
-        expect(error).toEqual('LockFile.create() error');
-        expect(lockFile.log).toEqual(['create()']);
+        expect(error).toEqual('LockFile.write() error');
         expect(masterRunSpy).not.toHaveBeenCalled();
       });
 
-      it('should fail if Lockfile.remove() fails', async() => {
+      it('should fail if LockFile.remove() fails', async() => {
         const anyFn: () => any = () => undefined;
-        const lockFile = new MockLockFileAsync({throwOnRemove: true});
+        spyOn(mockLockFile, 'remove').and.callFake(() => {
+          lockFileLog.push('remove()');
+          throw new Error('LockFile.remove() error');
+        });
+
         executor =
-            new ClusterExecutor(42, mockLogger, null as unknown as PackageJsonUpdater, lockFile);
+            new ClusterExecutor(42, mockLogger, null as unknown as PackageJsonUpdater, locker);
         let error = '';
         try {
           await executor.execute(anyFn, anyFn);
@@ -114,7 +126,7 @@ describe('ClusterExecutor', () => {
           error = e.message;
         }
         expect(error).toEqual('LockFile.remove() error');
-        expect(lockFile.log).toEqual(['create()', 'remove()']);
+        expect(lockFileLog).toEqual(['write()', 'remove()']);
         expect(masterRunSpy).toHaveBeenCalled();
       });
     });
@@ -143,10 +155,10 @@ describe('ClusterExecutor', () => {
         expect(createCompilerFnSpy).toHaveBeenCalledWith(jasmine.any(Function));
       });
 
-      it('should not call LockFile.create() or LockFile.remove()', async() => {
+      it('should not call LockFile.write() or LockFile.remove()', async() => {
         const anyFn: () => any = () => undefined;
         await executor.execute(anyFn, anyFn);
-        expect(mockLockFile.log).toEqual([]);
+        expect(lockFileLog).toEqual([]);
       });
     });
   });
