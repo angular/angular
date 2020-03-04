@@ -6,18 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {graphql as unauthenticatedGraphql} from '@octokit/graphql';
-import * as minimist from 'minimist';
-import {alias, params, query as graphqlQuery, types} from 'typed-graphqlify';
-
-// The organization to be consider for the queries.
-const ORG = 'angular';
-// The repositories to be consider for the queries.
-const REPOS = ['angular', 'components', 'angular-cli'];
-
 /**
- * Handle flags for the script.
- *
+ * This script gets contribution stats for all members of the angular org,
+ * since a provided date.
  * The script expects the following flag(s):
  *
  * required:
@@ -26,6 +17,22 @@ const REPOS = ['angular', 'components', 'angular-cli'];
  * optional:
  *  --use-created [boolean] If the created timestamp should be used for
  *     time comparisons, defaults otherwise to the updated timestamp.
+ *     Uses githubs search format for dates, e.g. "2020-01-21".
+ *     See
+ * https://help.github.com/en/github/searching-for-information-on-github/understanding-the-search-syntax#query-for-dates.
+ */
+
+import {graphql as unauthenticatedGraphql} from '@octokit/graphql';
+import * as minimist from 'minimist';
+import {alias, params, query as graphqlQuery, types} from 'typed-graphqlify';
+
+// The organization to be considered for the queries.
+const ORG = 'angular';
+// The repositories to be considered for the queries.
+const REPOS = ['angular', 'components', 'angular-cli'];
+
+/**
+ * Handle flags for the script.
  */
 const args = minimist(process.argv.slice(2), {
   string: ['since'],
@@ -56,7 +63,7 @@ const graphql = unauthenticatedGraphql.defaults({
  */
 async function getAllOrgMembers() {
   // The GraphQL query object to get a page of members of an organization.
-  const memberQuery = params(
+  const MEMBERS_QUERY = params(
       {
         $first: 'Int',      // How many entries to get with each request
         $after: 'String',   // The cursor to start the page at
@@ -78,13 +85,14 @@ async function getAllOrgMembers() {
               }),
         })
       });
+  const query = graphqlQuery('members', MEMBERS_QUERY);
 
   /**
    * Gets the query and queryParams for a specific page of entries.
    */
   const queryBuilder = (count: number, cursor?: string) => {
     return {
-      query: graphqlQuery('members', memberQuery),
+      query,
       params: {
         after: cursor || null,
         first: count,
@@ -102,9 +110,10 @@ async function getAllOrgMembers() {
 
   while (hasNextPage) {
     const {query, params} = queryBuilder(100, cursor);
-    const results = await graphql(query, params) as typeof memberQuery;
+    const results = await graphql(query, params) as typeof MEMBERS_QUERY;
 
-    results.organization.membersWithRole.nodes.forEach(node => members.push(node.login));
+    results.organization.membersWithRole.nodes.forEach(
+        (node: {login: string}) => members.push(node.login));
     hasNextPage = results.organization.membersWithRole.pageInfo.hasNextPage;
     cursor = results.organization.membersWithRole.pageInfo.endCursor;
   }
@@ -119,43 +128,43 @@ async function getAllOrgMembers() {
 function buildQueryAndParams(username: string, date: string) {
   // Whether the updated or created timestamp should be used.
   const updatedOrCreated = args['use-created'] ? 'created' : 'updated';
-  let key_val_pairs: {[key: string]: {query: string, label: string}} = {};
+  let dataQueries: {[key: string]: {query: string, label: string}} = {};
   // Add queries and params for all values queried for each repo.
   for (let repo of REPOS) {
-    key_val_pairs = {
-      ...key_val_pairs,
+    dataQueries = {
+      ...dataQueries,
       [`${repo.replace(/[\/\-]/g, '_')}_issue_author`]: {
-        query: `repo:${repo} is:issue author:${username} ${updatedOrCreated}:>${date}`,
+        query: `repo:${ORG}/${repo} is:issue author:${username} ${updatedOrCreated}:>${date}`,
         label: 'Issue Authored'
       },
       [`${repo.replace(/[\/\-]/g, '_')}_issues_involved`]: {
         query:
-            `repo:${repo} is:issue -author:${username} involves:${username} ${updatedOrCreated}:>${date}`,
+            `repo:${ORG}/${repo} is:issue -author:${username} involves:${username} ${updatedOrCreated}:>${date}`,
         label: 'Issue Involved'
       },
       [`${repo.replace(/[\/\-]/g, '_')}_pr_author`]: {
-        query: `repo:${repo} is:pr author:${username} ${updatedOrCreated}:>${date}`,
+        query: `repo:${ORG}/${repo} is:pr author:${username} ${updatedOrCreated}:>${date}`,
         label: 'PR Author'
       },
       [`${repo.replace(/[\/\-]/g, '_')}_pr_involved`]: {
-        query: `repo:${repo} is:pr involves:${username} ${updatedOrCreated}:>${date}`,
+        query: `repo:${ORG}/${repo} is:pr involves:${username} ${updatedOrCreated}:>${date}`,
         label: 'PR Involved'
       },
       [`${repo.replace(/[\/\-]/g, '_')}_pr_reviewed`]: {
         query:
-            `repo:${repo} is:pr -author:${username} reviewed-by:${username} ${updatedOrCreated}:>${date}`,
+            `repo:${ORG}/${repo} is:pr -author:${username} reviewed-by:${username} ${updatedOrCreated}:>${date}`,
         label: 'PR Reviewed'
       },
       [`${repo.replace(/[\/\-]/g, '_')}_pr_commented`]: {
         query:
-            `repo:${repo} is:pr -author:${username} commenter:${username} ${updatedOrCreated}:>${date}`,
+            `repo:${ORG}/${repo} is:pr -author:${username} commenter:${username} ${updatedOrCreated}:>${date}`,
         label: 'PR Commented'
       },
     };
   }
   // Add queries and params for all values queried for the org.
-  key_val_pairs = {
-    ...key_val_pairs,
+  dataQueries = {
+    ...dataQueries,
     [`${ORG}_org_issue_author`]: {
       query: `org:${ORG} is:issue author:${username} ${updatedOrCreated}:>${date}`,
       label: 'Issue Authored'
@@ -186,39 +195,21 @@ function buildQueryAndParams(username: string, date: string) {
   };
 
   /**
-   * Gets the query paramaters for the GraphQL request.
-   */
-  function getQueryParams(pairs: typeof key_val_pairs) {
-    const output: {[key: string]: string} = {};
-    Object.entries(pairs).forEach(([key, val]) => { output[`${key}`] = val.query; });
-    return output;
-  }
-
-  /**
    * Gets the labels for each requested value to be used as headers.
    */
-  function getLabels(pairs: typeof key_val_pairs) {
-    return Object.entries(pairs).map(([key, val]) => val.label);
-  }
-
-  /**
-   * Gets the graphql parameter block for the GraphQL query.
-   */
-  function getParams(pairs: typeof key_val_pairs) {
-    const output: {[key: string]: string} = {};
-    Object.entries(pairs).forEach(([key, val]) => { output[`$${key}`] = 'String!'; });
-    return output;
+  function getLabels(pairs: typeof dataQueries) {
+    return Object.values(pairs).map(val => val.label);
   }
 
   /**
    * Gets the graphql query object for the GraphQL query.
    */
-  function getQuery(pairs: typeof key_val_pairs) {
+  function getQuery(pairs: typeof dataQueries) {
     const output: {[key: string]: {}} = {};
-    Object.keys(pairs).forEach((key: string) => {
+    Object.entries(pairs).map(([key, val]) => {
       output[alias(key, 'search')] = params(
           {
-            query: `$${key}`,
+            query: `"${val.query}"`,
             type: 'ISSUE',
           },
           {
@@ -228,11 +219,7 @@ function buildQueryAndParams(username: string, date: string) {
     return output;
   }
 
-  return {
-    query: graphqlQuery(params(getParams(key_val_pairs), getQuery(key_val_pairs))),
-    params: getQueryParams(key_val_pairs),
-    labels: getLabels(key_val_pairs)
-  };
+  return {query: graphqlQuery(getQuery(dataQueries)), labels: getLabels(dataQueries),};
 }
 
 /**
@@ -243,11 +230,9 @@ async function run(date: string) {
   console.info(['Username'].concat(buildQueryAndParams('', date).labels).join(','));
 
   for (let username of await getAllOrgMembers()) {
-    const {query, params} = buildQueryAndParams(username, date);
-    const results = await graphql(query, params);
-    console.info([username]
-                     .concat(Array.from(Object.values(results)).map(result => result.issueCount))
-                     .join(','));
+    const results = await graphql(buildQueryAndParams(username, date).query);
+    const values = Object.values(results).map(result => `${result.issueCount}`);
+    console.info([username].concat(values).join(','));
   }
 }
 
