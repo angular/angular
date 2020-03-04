@@ -32,6 +32,8 @@ const ignorePatterns = [
 ];
 
 // Limit the log history to start from v9.0.0 release date.
+// Note: this is needed only for 9.0.x branch to avoid RC history.
+// Remove it once `9.1.x` branch is created.
 const after = '--after="2020-02-05"';
 
 // Helper methods
@@ -88,7 +90,7 @@ function diff(mapA, mapB) {
   const result = [];
   mapA.forEach((value, key) => {
     if (!mapB.has(key)) {
-      result.push(`[${value[1]}] ${value[0]}`);
+      result.push(`[${value[1]}+] ${value[0]}`);
     }
   });
   return result;
