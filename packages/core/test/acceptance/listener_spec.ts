@@ -207,7 +207,7 @@ describe('event listeners', () => {
       @Directive({selector: '[foo]'})
       class FooDirective {
         @Input('foo') model: any;
-        @Output('fooChange') update = new EventEmitter();
+        @Output('fooChange') update = new EventEmitter<any>();
 
         updateValue(value: any) { this.update.emit(value); }
       }

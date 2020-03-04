@@ -200,7 +200,7 @@ export class NgModel extends NgControl implements OnChanges,
    * Event emitter for producing the `ngModelChange` event after
    * the view model updates.
    */
-  @Output('ngModelChange') update = new EventEmitter();
+  @Output('ngModelChange') update = new EventEmitter<any>();
 
   constructor(@Optional() @Host() parent: ControlContainer,
               @Optional() @Self() @Inject(NG_VALIDATORS) validators: Array<Validator|ValidatorFn>,

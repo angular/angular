@@ -221,7 +221,7 @@ describe('directives', () => {
     it('should match directives with attribute selectors on outputs', () => {
       @Directive({selector: '[out]'})
       class TestDir {
-        @Output() out = new EventEmitter();
+        @Output() out = new EventEmitter<any>();
       }
 
       TestBed.configureTestingModule({declarations: [TestComponent, TestDir]});

@@ -2466,7 +2466,7 @@ class IdDir {
 
 @Directive({selector: '[customEvent]'})
 class EventDir {
-  @Output() customEvent = new EventEmitter();
+  @Output() customEvent = new EventEmitter<any>();
   doSomething() {}
 }
 
@@ -2533,7 +2533,7 @@ class ToolbarComponent {
 
 @Directive({selector: '[two-way]', inputs: ['control'], outputs: ['controlChange']})
 class DirectiveWithTwoWayBinding {
-  controlChange = new EventEmitter();
+  controlChange = new EventEmitter<any>();
   control: any = null;
 
   triggerChange(value: any) { this.controlChange.emit(value); }
@@ -2722,7 +2722,7 @@ class DirectiveWithPropDecorators {
 
   // TODO(issue/24571): remove '!'.
   @Input('elProp') dirProp !: string;
-  @Output('elEvent') event = new EventEmitter();
+  @Output('elEvent') event = new EventEmitter<any>();
 
   // TODO(issue/24571): remove '!'.
   @HostBinding('attr.my-attr') myAttr !: string;

@@ -188,7 +188,7 @@ describe('property bindings', () => {
     })
     class OtherDir {
       @Input() id: number|undefined;
-      @Output('click') clickStream = new EventEmitter();
+      @Output('click') clickStream = new EventEmitter<any>();
     }
 
     @Directive({
@@ -398,7 +398,7 @@ describe('property bindings', () => {
     class MyDir {
       @Input() role: string|undefined;
       @Input('dir') direction: string|undefined;
-      @Output('change') changeStream = new EventEmitter();
+      @Output('change') changeStream = new EventEmitter<any>();
     }
 
     @Directive({selector: '[myDirB]'})

@@ -1984,7 +1984,7 @@ describe('di', () => {
       @Directive({selector: '[dir]'})
       class MyDir {
         @Input() binding !: string;
-        @Output() output = new EventEmitter();
+        @Output() output = new EventEmitter<any>();
         constructor(
             @Attribute('exist') public exist: string,
             @Attribute('binding') public bindingAttr: string,
