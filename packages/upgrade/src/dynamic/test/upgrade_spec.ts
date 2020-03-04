@@ -390,10 +390,10 @@ withEachNg1Version(() => {
              oneWayB = '?';
              twoWayA = '?';
              twoWayB = '?';
-             eventA = new EventEmitter();
-             eventB = new EventEmitter();
-             twoWayAEmitter = new EventEmitter();
-             twoWayBEmitter = new EventEmitter();
+             eventA = new EventEmitter<string>();
+             eventB = new EventEmitter<string>();
+             twoWayAEmitter = new EventEmitter<string>();
+             twoWayBEmitter = new EventEmitter<string>();
              ngOnChanges(changes: SimpleChanges) {
                const assert = (prop: string, value: any) => {
                  if ((this as any)[prop] != value) {
@@ -490,7 +490,7 @@ withEachNg1Version(() => {
            class Ng2Component implements OnChanges {
              ngOnChangesCount = 0;
              @Input() model = '?';
-             @Output() modelChange = new EventEmitter();
+             @Output() modelChange = new EventEmitter<string>();
 
              ngOnChanges(changes: SimpleChanges) {
                switch (this.ngOnChangesCount++) {

@@ -107,7 +107,7 @@ import {EventEmitter} from '../src/event_emitter';
 
     it('delivers events asynchronously when forced to async mode',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         const e = new EventEmitter(true);
+         const e = new EventEmitter<number>(true);
          const log: any[] /** TODO #9100 */ = [];
          e.subscribe((x: any) => {
            log.push(x);

@@ -1365,7 +1365,7 @@ class WrappedValue implements ControlValueAccessor {
 
 @Component({selector: 'my-input', template: ''})
 export class MyInput implements ControlValueAccessor {
-  @Output('input') onInput = new EventEmitter();
+  @Output('input') onInput = new EventEmitter<any>();
   // TODO(issue/24571): remove '!'.
   value !: string;
 

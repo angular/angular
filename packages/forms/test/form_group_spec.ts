@@ -36,7 +36,7 @@ import {of } from 'rxjs';
   }
 
   function asyncValidatorReturningObservable(c: AbstractControl) {
-    const e = new EventEmitter();
+    const e = new EventEmitter<any>();
     Promise.resolve(null).then(() => { e.emit({'async': true}); });
     return e;
   }

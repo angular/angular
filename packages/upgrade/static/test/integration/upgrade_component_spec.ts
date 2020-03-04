@@ -4029,7 +4029,7 @@ withEachNg1Version(() => {
          class Ng2ComponentB {
            @Input('ng2BInput1') ng2BInputA: any;
            @Input() ng2BInputC: any;
-           @Output() ng2BOutputC = new EventEmitter();
+           @Output() ng2BOutputC = new EventEmitter<any>();
 
            constructor() { ng2ComponentBInstance = this; }
          }
