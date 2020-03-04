@@ -57,3 +57,10 @@ import {calcPossibleSecurityContexts} from '../../src/template_parser/binding_pa
     });
   });
 }
+
+describe('parseInlineTemplateBinding', () => {
+
+  it('something', () => {
+
+  });
+});

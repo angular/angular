@@ -795,9 +795,7 @@ export class _ParseAST {
           bindings.push(...this.parseDirectiveKeyword(tplKey, key, keySpan, this.absoluteOffset));
         }
       }
-      if (!this.optionalCharacter(chars.$SEMICOLON)) {
-        this.optionalCharacter(chars.$COMMA);
-      }
+      this.optionalCharacter(chars.$SEMICOLON) || this.optionalCharacter(chars.$COMMA);
     }
 
     return new TemplateBindingParseResult(bindings, [] /* warnings */, this.errors);
@@ -814,11 +812,11 @@ export class _ParseAST {
       this.optionalCharacter(chars.$COLON);  // trackBy: trackByFunction
     }
     const spanStart = absoluteOffset + rawKeySpan.start;
-    const spanEnd = this.absoluteOffset + this.inputIndex;
     const valueExpr = this.getDirectiveBoundTarget();
+    const spanEnd = this.absoluteOffset + this.inputIndex;
     const bindingSpan = new AbsoluteSourceSpan(spanStart, valueExpr?.ast.sourceSpan.end || spanEnd);
     bindings.push(new TemplateBinding(
-        bindingSpan, key, rawKeySpan.toAbsolute(this.absoluteOffset), false /* keyIsVar */,
+        bindingSpan, key, rawKeySpan.toAbsolute(absoluteOffset), false /* keyIsVar */,
         valueExpr));
     // The binding could optionally be followed by "as". For example,
     // *ngIf="cond | pipe as x". In this case, the key in the "as" binding
@@ -827,9 +825,7 @@ export class _ParseAST {
     if (asBinding) {
       bindings.push(asBinding);
     }
-    if (!this.optionalCharacter(chars.$SEMICOLON)) {
-      this.optionalCharacter(chars.$COMMA);
-    }
+    this.optionalCharacter(chars.$SEMICOLON) || this.optionalCharacter(chars.$COMMA);
     return bindings;
   }
 
@@ -855,7 +851,7 @@ export class _ParseAST {
     this.advance();  // consume the 'as' keyword
     const {key, keySpan} = this.expectTemplateBindingKey();
     const bindingSpan =
-        new AbsoluteSourceSpan(absoluteOffset + valueSpan.start, absoluteOffset + this.inputIndex);
+        new AbsoluteSourceSpan(absoluteOffset + valueSpan.start, this.absoluteOffset + this.inputIndex);
     const valueAst = new AST(valueSpan, valueSpan.toAbsolute(absoluteOffset));
     const valueExpr = new ASTWithSource(
         valueAst, value, this.location, absoluteOffset + valueSpan.start, this.errors);

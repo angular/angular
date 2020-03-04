@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ASTWithSource, BindingPipe, Interpolation, ParserError, TemplateBinding} from '@angular/compiler/src/expression_parser/ast';
+import {ASTWithSource, BindingPipe, Interpolation, ParserError, TemplateBinding, AbsoluteSourceSpan} from '@angular/compiler/src/expression_parser/ast';
 import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
 import {Parser, SplitInterpolation, TemplateBindingParseResult} from '@angular/compiler/src/expression_parser/parser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -14,6 +14,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {unparse} from './utils/unparser';
 import {validate} from './utils/validator';
+import {parse} from 'path';
 
 describe('parser', () => {
   describe('parseAction', () => {
@@ -401,6 +402,43 @@ describe('parser', () => {
         expect(keySpans(source, bindings.slice(1))).toEqual(['person', 'of']);
       });
     });
+
+    describe('absolute spans', () => {
+      type Span = [number, number];
+      function humanize(bindings: TemplateBinding[]): Array<[Span, Span, Span|null]> {
+        return bindings.map(binding => {
+          const {span, expression} = binding;
+          const sourceSpan: Span = [span.start, span.end];
+          const keySpan: Span = [binding.keySpan.start, binding.keySpan.end];
+          const valueSpan: Span|null = expression ? [expression.sourceSpan.start, expression.sourceSpan.end] : null;
+          return [sourceSpan, keySpan, valueSpan];
+        });
+      }
+
+      function parse(expression: string) {
+        const match = expression.match(/^\*(.*)="(.*)"$/);
+        const [_, key, value] = match;
+        const absKeyOffset = expression.indexOf(key);
+        const absValOffset = expression.indexOf(value);
+        debugger;
+        return createParser().parseTemplateBindings(key, value, expression, absKeyOffset, absValOffset).templateBindings;
+      }
+
+      fit('should map source, key and value', () => {
+        let bindings: TemplateBinding[];
+        bindings = parse('*ngIf="cond | pipe as foo, let x; ngIf as y"');
+        console.error(humanize(bindings));
+
+        bindings = parse(
+          '*ngFor="let item; of items | slice:0:1 as collection, trackBy: func; index as i"');
+        console.error(humanize(bindings));
+
+        bindings = parse(
+          '*ngFor="let item, of: [1,2,3] | pipe as items; let i=index, count as len"');
+        console.error(humanize(bindings));
+      });
+    });
+
   });
 
   describe('parseInterpolation', () => {
