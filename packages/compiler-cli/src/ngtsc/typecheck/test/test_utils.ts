@@ -15,7 +15,9 @@ import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy,
 import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
-import {TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckingConfig} from '../src/api';
+import {TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckingConfig, UpdateMode} from '../src/api';
+import {ReusedProgramStrategy} from '../src/augmented_program';
+import {ProgramTypeCheckAdapter, TemplateTypeChecker} from '../src/checker';
 import {TypeCheckContext} from '../src/context';
 import {DomSchemaChecker} from '../src/dom';
 import {Environment} from '../src/environment';
@@ -236,7 +238,7 @@ export function typecheck(
     template: string, source: string, declarations: TestDeclaration[] = [],
     additionalSources: {name: AbsoluteFsPath; contents: string}[] = [],
     config: Partial<TypeCheckingConfig> = {}, opts: ts.CompilerOptions = {}): ts.Diagnostic[] {
-  const typeCheckFilePath = absoluteFrom('/_typecheck_.ts');
+  const typeCheckFilePath = absoluteFrom('/main.ngtypecheck.ts');
   const files = [
     typescriptLibDts(),
     angularCoreDts(),
@@ -261,8 +263,7 @@ export function typecheck(
         program, checker, moduleResolver, new TypeScriptReflectionHost(checker)),
     new LogicalProjectStrategy(reflectionHost, logicalFs),
   ]);
-  const ctx = new TypeCheckContext(
-      {...ALL_ENABLED_CONFIG, ...config}, emitter, reflectionHost, typeCheckFilePath);
+  const fullConfig = {...ALL_ENABLED_CONFIG, ...config};
 
   const templateUrl = 'synthetic.html';
   const templateFile = new ParseSourceFile(template, templateUrl);
@@ -294,8 +295,21 @@ export function typecheck(
     node: clazz.node.name,
   };
 
-  ctx.addTemplate(clazz, boundTarget, pipes, [], sourceMapping, templateFile);
-  return ctx.calculateTemplateDiagnostics(program, host, options).diagnostics;
+  const checkAdapter = createTypeCheckAdapter((ctx: TypeCheckContext) => {
+    ctx.addTemplate(clazz, boundTarget, pipes, [], sourceMapping, templateFile);
+  });
+
+  const programStrategy = new ReusedProgramStrategy(program, host, options, []);
+  const templateTypeChecker = new TemplateTypeChecker(
+      program, programStrategy, checkAdapter, fullConfig, emitter, reflectionHost);
+  templateTypeChecker.refresh();
+  return templateTypeChecker.getDiagnosticsForFile(sf);
+}
+
+function createTypeCheckAdapter(fn: (ctx: TypeCheckContext) => void): ProgramTypeCheckAdapter {
+  return {
+    typeCheck: fn,
+  };
 }
 
 function prepareDeclarations(

@@ -106,11 +106,9 @@ runInEachFileSystem(() => {
 
       env.driveMain();
 
-      // Look for index.js, not app/index.js, because of TypeScript's behavior of stripping off the
-      // common prefix of all input files.
-      const jsContents = env.getContents('index.js');
+      const jsContents = env.getContents('app/index.js');
 
-      // The real goal of this test was to check that the relative import has the leading './'.
+      // Check that the relative import has the leading './'.
       expect(jsContents).toContain(`import * as i1 from "./target";`);
     });
   });

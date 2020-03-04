@@ -1840,12 +1840,7 @@ export declare class AnimationEvent {
     });
 
     describe('stability', () => {
-      // This section tests various scenarios which have more complex ts.Program setups and thus
-      // exercise edge cases of the template type-checker.
-      it('should accept a program with a flat index', () => {
-        // This test asserts that flat indices don't have any negative interactions with the
-        // generation of template type-checking code in the program.
-        env.tsconfig({fullTemplateTypeCheck: true, flatModuleOutFile: 'flat.js'});
+      beforeEach(() => {
         env.write('test.ts', `
           import {Component} from '@angular/core';
 
@@ -1857,8 +1852,30 @@ export declare class AnimationEvent {
             expr = 'string';
           }
         `);
+      });
+
+      // This section tests various scenarios which have more complex ts.Program setups and thus
+      // exercise edge cases of the template type-checker.
+      it('should accept a program with a flat index', () => {
+        // This test asserts that flat indices don't have any negative interactions with the
+        // generation of template type-checking code in the program.
+        env.tsconfig({fullTemplateTypeCheck: true, flatModuleOutFile: 'flat.js'});
 
         expect(env.driveDiagnostics()).toEqual([]);
+      });
+
+      it('should not leave references to shims after execution', () => {
+        // This test verifies that proper cleanup is performed for the technique being used to
+        // include shim files in the ts.Program, and that none are left in the referencedFiles of
+        // any ts.SourceFile after compilation.
+        env.enableMultipleCompilations();
+
+        env.driveMain();
+        for (const sf of env.getTsProgram().getSourceFiles()) {
+          for (const ref of sf.referencedFiles) {
+            expect(ref.fileName).not.toContain('.ngtypecheck.ts');
+          }
+        }
       });
     });
   });

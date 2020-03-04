@@ -28,7 +28,7 @@ import {ComponentScopeReader, LocalModuleScopeRegistry, MetadataDtsModuleScopeRe
 import {generatedFactoryTransform} from '../../shims';
 import {ivySwitchTransform} from '../../switch';
 import {aliasTransformFactory, declarationTransformFactory, DecoratorHandler, DtsTransformRegistry, ivyTransformFactory, TraitCompiler} from '../../transform';
-import {isTemplateDiagnostic, TypeCheckContext, TypeCheckingConfig} from '../../typecheck';
+import {isTemplateDiagnostic, TemplateTypeChecker, TypeCheckContext, TypeCheckingConfig, TypeCheckingProgramStrategy} from '../../typecheck';
 import {getSourceFileOrNull, isDtsPath, resolveModuleName} from '../../util/src/typescript';
 import {LazyRoute, NgCompilerOptions} from '../api';
 
@@ -53,6 +53,7 @@ interface LazyCompilationState {
   defaultImportTracker: DefaultImportTracker;
   aliasingHost: AliasingHost|null;
   refEmitter: ReferenceEmitter;
+  templateTypeChecker: TemplateTypeChecker;
 }
 
 /**
@@ -90,7 +91,6 @@ export class NgCompiler {
   private diagnostics: ts.Diagnostic[]|null = null;
 
   private closureCompilerEnabled: boolean;
-  private typeCheckFile: ts.SourceFile;
   private nextProgram: ts.Program;
   private entryPoint: ts.SourceFile|null;
   private moduleResolver: ModuleResolver;
@@ -102,8 +102,9 @@ export class NgCompiler {
 
   constructor(
       private host: NgCompilerHost, private options: NgCompilerOptions,
-      private tsProgram: ts.Program, oldProgram: ts.Program|null = null,
-      private perfRecorder: PerfRecorder = NOOP_PERF_RECORDER) {
+      private tsProgram: ts.Program,
+      private typeCheckingProgramStrategy: TypeCheckingProgramStrategy,
+      oldProgram: ts.Program|null = null, private perfRecorder: PerfRecorder = NOOP_PERF_RECORDER) {
     this.constructionDiagnostics.push(...this.host.diagnostics);
     const incompatibleTypeCheckOptionsDiagnostic = verifyCompatibleTypeCheckOptions(this.options);
     if (incompatibleTypeCheckOptionsDiagnostic !== null) {
@@ -116,7 +117,6 @@ export class NgCompiler {
     this.entryPoint =
         host.entryPoint !== null ? getSourceFileOrNull(tsProgram, host.entryPoint) : null;
 
-    this.typeCheckFile = getSourceFileOrError(tsProgram, host.typeCheckFile);
     const moduleResolutionCache = ts.createModuleResolutionCache(
         this.host.getCurrentDirectory(), fileName => this.host.getCanonicalFileName(fileName));
     this.moduleResolver =
@@ -380,28 +380,26 @@ export class NgCompiler {
     this.incrementalDriver.recordSuccessfulAnalysis(traitCompiler);
   }
 
-  private getTemplateDiagnostics(): ReadonlyArray<ts.Diagnostic> {
-    const host = this.host;
-
+  private get fullTemplateTypeCheck(): boolean {
     // Determine the strictness level of type checking based on compiler options. As
     // `strictTemplates` is a superset of `fullTemplateTypeCheck`, the former implies the latter.
     // Also see `verifyCompatibleTypeCheckOptions` where it is verified that `fullTemplateTypeCheck`
     // is not disabled when `strictTemplates` is enabled.
     const strictTemplates = !!this.options.strictTemplates;
-    const fullTemplateTypeCheck = strictTemplates || !!this.options.fullTemplateTypeCheck;
+    return strictTemplates || !!this.options.fullTemplateTypeCheck;
+  }
 
-    // Skip template type-checking if it's disabled.
-    if (this.options.ivyTemplateTypeCheck === false && !fullTemplateTypeCheck) {
-      return [];
-    }
-
-    const compilation = this.ensureAnalyzed();
-    // Run template type-checking.
+  private getTypeCheckingConfig(): TypeCheckingConfig {
+    // Determine the strictness level of type checking based on compiler options. As
+    // `strictTemplates` is a superset of `fullTemplateTypeCheck`, the former implies the latter.
+    // Also see `verifyCompatibleTypeCheckOptions` where it is verified that `fullTemplateTypeCheck`
+    // is not disabled when `strictTemplates` is enabled.
+    const strictTemplates = !!this.options.strictTemplates;
 
     // First select a type-checking configuration, based on whether full template type-checking is
     // requested.
     let typeCheckingConfig: TypeCheckingConfig;
-    if (fullTemplateTypeCheck) {
+    if (this.fullTemplateTypeCheck) {
       typeCheckingConfig = {
         applyTemplateContextGuards: strictTemplates,
         checkQueries: false,
@@ -480,17 +478,36 @@ export class NgCompiler {
       typeCheckingConfig.strictLiteralTypes = this.options.strictLiteralTypes;
     }
 
+    return typeCheckingConfig;
+  }
+
+  private getTemplateDiagnostics(): ReadonlyArray<ts.Diagnostic> {
+    const host = this.host;
+
+    // Skip template type-checking if it's disabled.
+    if (this.options.ivyTemplateTypeCheck === false && !this.fullTemplateTypeCheck) {
+      return [];
+    }
+
+    const compilation = this.ensureAnalyzed();
+
     // Execute the typeCheck phase of each decorator in the program.
     const prepSpan = this.perfRecorder.start('typeCheckPrep');
-    const ctx = new TypeCheckContext(
-        typeCheckingConfig, compilation.refEmitter!, compilation.reflector, host.typeCheckFile);
-    compilation.traitCompiler.typeCheck(ctx);
+    compilation.templateTypeChecker.refresh();
     this.perfRecorder.stop(prepSpan);
 
     // Get the diagnostics.
     const typeCheckSpan = this.perfRecorder.start('typeCheckDiagnostics');
-    const {diagnostics, program} =
-        ctx.calculateTemplateDiagnostics(this.tsProgram, this.host, this.options);
+    const diagnostics: ts.Diagnostic[] = [];
+    for (const sf of this.tsProgram.getSourceFiles()) {
+      if (sf.isDeclarationFile || this.host.isShim(sf)) {
+        continue;
+      }
+
+      diagnostics.push(...compilation.templateTypeChecker.getDiagnosticsForFile(sf));
+    }
+
+    const program = this.typeCheckingProgramStrategy.getProgram();
     this.perfRecorder.stop(typeCheckSpan);
     setIncrementalDriver(program, this.incrementalDriver);
     this.nextProgram = program;
@@ -709,6 +726,10 @@ export class NgCompiler {
         handlers, reflector, this.perfRecorder, this.incrementalDriver,
         this.options.compileNonExportedClasses !== false, dtsTransforms);
 
+    const templateTypeChecker = new TemplateTypeChecker(
+        this.tsProgram, this.typeCheckingProgramStrategy, traitCompiler,
+        this.getTypeCheckingConfig(), refEmitter, reflector);
+
     return {
       isCore,
       traitCompiler,
@@ -722,6 +743,7 @@ export class NgCompiler {
       defaultImportTracker,
       aliasingHost,
       refEmitter,
+      templateTypeChecker,
     };
   }
 }

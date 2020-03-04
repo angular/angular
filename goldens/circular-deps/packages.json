@@ -42,10 +42,6 @@
     "packages/compiler-cli/src/ngtsc/scope/src/local.ts"
   ],
   [
-    "packages/compiler-cli/src/ngtsc/typecheck/src/context.ts",
-    "packages/compiler-cli/src/ngtsc/typecheck/src/host.ts"
-  ],
-  [
     "packages/compiler-cli/test/helpers/index.ts",
     "packages/compiler-cli/test/helpers/src/mock_file_loading.ts"
   ],

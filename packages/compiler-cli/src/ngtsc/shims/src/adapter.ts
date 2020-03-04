@@ -70,6 +70,11 @@ export class ShimAdapter {
    */
   readonly extraInputFiles: ReadonlyArray<AbsoluteFsPath>;
 
+  /**
+   * Extension prefixes of all installed per-file shims.
+   */
+  readonly extensionPrefixes: string[] = [];
+
   constructor(
       private delegate: Pick<ts.CompilerHost, 'getSourceFile'|'fileExists'>,
       tsRootFiles: AbsoluteFsPath[], topLevelGenerators: TopLevelShimGenerator[],
@@ -86,6 +91,7 @@ export class ShimAdapter {
         test: regexp,
         suffix: `.${gen.extensionPrefix}.ts`,
       });
+      this.extensionPrefixes.push(gen.extensionPrefix);
     }
     // Process top-level generators and pre-generate their shims. Accumulate the list of filenames
     // as extra input files.
@@ -187,7 +193,7 @@ export class ShimAdapter {
       if (inputFile === undefined || isShim(inputFile)) {
         // Something strange happened here. This case is also not cached in `notShims`, but this
         // path is not expected to occur in reality so this shouldn't be a problem.
-        return null;
+        return undefined;
       }
 
       // Actually generate and cache the shim.
