@@ -75,7 +75,7 @@ export class NgIfThenElse implements OnInit {
 
 // #docregion NgIfAs
 @Component({
-  selector: 'ng-if-let',
+  selector: 'ng-if-as',
   template: `
     <button (click)="nextUser()">Next User</button>
     <br>
@@ -112,7 +112,7 @@ export class NgIfAs {
     <hr>
     <ng-if-then-else></ng-if-then-else>
     <hr>
-    <ng-if-let></ng-if-let>
+    <ng-if-as></ng-if-as>
     <hr>
 `
 })
