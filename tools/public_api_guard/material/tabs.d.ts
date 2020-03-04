@@ -8,7 +8,7 @@ export interface _MatInkBarPositioner {
 }
 
 export declare abstract class _MatTabBodyBase implements OnInit, OnDestroy {
-    readonly _afterLeavingCenter: EventEmitter<boolean>;
+    readonly _afterLeavingCenter: EventEmitter<void>;
     readonly _beforeCentering: EventEmitter<boolean>;
     _content: TemplatePortal;
     readonly _onCentered: EventEmitter<void>;
