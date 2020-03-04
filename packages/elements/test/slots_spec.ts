@@ -134,7 +134,7 @@ class NamedSlotsComponent {
 })
 class SlotEventsComponent {
   @Input() slotEvents: Event[] = [];
-  @Output() slotEventsChange = new EventEmitter();
+  @Output() slotEventsChange = new EventEmitter<Event>();
   constructor() {}
   onSlotChange(event: Event) {
     this.slotEvents.push(event);
