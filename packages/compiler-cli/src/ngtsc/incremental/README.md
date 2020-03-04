@@ -135,13 +135,13 @@ Currently the compiler does not distinguish these two cases, and conservatively 
 
 ## Skipping template type-checking
 
-For certain kinds of changes, it may be possible to avoid the cost of generating and checking the template type-checking file. Several levels of this can be imagined.
+For certain kinds of changes, it may be possible to avoid the cost of generating and checking template type-checking files. Several levels of this can be imagined.
 
 For resource-only changes, only the component(s) which have changed resources need to be re-checked. No other components could be affected, so previously produced diagnostics are still valid.
 
 For arbitrary source changes, things get a bit more complicated. A change to any .ts file could affect types anywhere in the program (think `declare global ...`). If a set of affected components can be determined (perhaps via the import graph that the cycle analyzer extracts?) and it can be proven that the change does not impact any global types (exactly how to do this is left as an exercise for  the reader), then type-checking could be skipped for other components in the mix.
 
-If the above is too complex, then certain kinds of type changes might allow for the reuse of the text of the template type-checking file, if it can be proven that none of the inputs to its generation have changed. This is useful for two very important reasons.
+If the above is too complex, then certain kinds of type changes might allow for the reuse of the text of some template type-checking files, if it can be proven that none of the inputs to their generation have changed. This is useful for two very important reasons.
 
-1) Generating (and subsequently parsing) the template type-checking file itself is expensive.
+1) Generating (and subsequently parsing) the template type-checking files is expensive.
 2) Under ideal conditions, after an initial template type-checking program is created, it may be possible to reuse it for emit _and_ type-checking in subsequent builds. This would be a pretty advanced optimization but would save creation of a second `ts.Program` on each valid rebuild.

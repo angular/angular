@@ -14,7 +14,7 @@ import {IncrementalBuild} from '../../incremental/api';
 import {IndexingContext} from '../../indexer';
 import {PerfRecorder} from '../../perf';
 import {ClassDeclaration, Decorator, ReflectionHost} from '../../reflection';
-import {TypeCheckContext} from '../../typecheck';
+import {ProgramTypeCheckAdapter, TypeCheckContext} from '../../typecheck';
 import {getSourceFile, isExported} from '../../util/src/typescript';
 
 import {AnalysisOutput, CompileResult, DecoratorHandler, HandlerFlags, HandlerPrecedence, ResolveResult} from './api';
@@ -67,7 +67,7 @@ export interface ClassRecord {
  * in the production of `CompileResult`s instructing the compiler to apply various mutations to the
  * class (like adding fields or type declarations).
  */
-export class TraitCompiler {
+export class TraitCompiler implements ProgramTypeCheckAdapter {
   /**
    * Maps class declarations to their `ClassRecord`, which tracks the Ivy traits being applied to
    * those classes.

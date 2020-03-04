@@ -42,6 +42,7 @@ ts_library(
     name = "api",
     srcs = glob(["api/**/*.ts"]),
     deps = [
+        "//packages/compiler-cli/src/ngtsc/file_system",
         "@npm//typescript",
     ],
 )

@@ -8,24 +8,27 @@
 
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath} from '../../file_system';
-import {TopLevelShimGenerator} from '../../shims/api';
+import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
+import {PerFileShimGenerator, TopLevelShimGenerator} from '../../shims/api';
 
 /**
- * A `ShimGenerator` which adds a type-checking file to the `ts.Program`.
+ * A `ShimGenerator` which adds type-checking files to the `ts.Program`.
  *
  * This is a requirement for performant template type-checking, as TypeScript will only reuse
  * information in the main program when creating the type-checking program if the set of files in
- * each are exactly the same. Thus, the main program also needs the synthetic type-checking file.
+ * each are exactly the same. Thus, the main program also needs the synthetic type-checking files.
  */
-export class TypeCheckShimGenerator implements TopLevelShimGenerator {
-  constructor(private typeCheckFile: AbsoluteFsPath) {}
-
+export class TypeCheckShimGenerator implements PerFileShimGenerator {
+  readonly extensionPrefix = 'ngtypecheck';
   readonly shouldEmit = false;
 
-  makeTopLevelShim(): ts.SourceFile {
+  generateShimForFile(sf: ts.SourceFile, genFilePath: AbsoluteFsPath): ts.SourceFile {
     return ts.createSourceFile(
-        this.typeCheckFile, 'export const USED_FOR_NG_TYPE_CHECKING = true;',
-        ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+        genFilePath, 'export const USED_FOR_NG_TYPE_CHECKING = true;', ts.ScriptTarget.Latest, true,
+        ts.ScriptKind.TS);
+  }
+
+  static shimFor(fileName: AbsoluteFsPath): AbsoluteFsPath {
+    return absoluteFrom(fileName.replace(/\.tsx?$/, '.ngtypecheck.ts'));
   }
 }

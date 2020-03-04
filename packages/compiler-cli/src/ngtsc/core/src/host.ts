@@ -13,7 +13,7 @@ import {findFlatIndexEntryPoint, FlatIndexGenerator} from '../../entry_point';
 import {AbsoluteFsPath, resolve} from '../../file_system';
 import {FactoryGenerator, FactoryTracker, isShim, ShimAdapter, ShimReferenceTagger, SummaryGenerator} from '../../shims';
 import {PerFileShimGenerator, TopLevelShimGenerator} from '../../shims/api';
-import {typeCheckFilePath, TypeCheckShimGenerator} from '../../typecheck';
+import {TypeCheckShimGenerator} from '../../typecheck';
 import {normalizeSeparators} from '../../util/src/path';
 import {getRootDirs, isDtsPath, isNonDeclarationTsPath} from '../../util/src/typescript';
 import {ExtendedTsCompilerHost, NgCompilerOptions, UnifiedModulesHost} from '../api';
@@ -96,20 +96,17 @@ export class NgCompilerHost extends DelegatingCompilerHost implements
 
   readonly inputFiles: ReadonlyArray<string>;
   readonly rootDirs: ReadonlyArray<AbsoluteFsPath>;
-  readonly typeCheckFile: AbsoluteFsPath;
 
 
   constructor(
       delegate: ExtendedTsCompilerHost, inputFiles: ReadonlyArray<string>,
       rootDirs: ReadonlyArray<AbsoluteFsPath>, private shimAdapter: ShimAdapter,
       private shimTagger: ShimReferenceTagger, entryPoint: AbsoluteFsPath|null,
-      typeCheckFile: AbsoluteFsPath, factoryTracker: FactoryTracker|null,
-      diagnostics: ts.Diagnostic[]) {
+      factoryTracker: FactoryTracker|null, diagnostics: ts.Diagnostic[]) {
     super(delegate);
 
     this.factoryTracker = factoryTracker;
     this.entryPoint = entryPoint;
-    this.typeCheckFile = typeCheckFile;
     this.diagnostics = diagnostics;
     this.inputFiles = [...inputFiles, ...shimAdapter.extraInputFiles];
     this.rootDirs = rootDirs;
@@ -123,6 +120,14 @@ export class NgCompilerHost extends DelegatingCompilerHost implements
    */
   get ignoreForEmit(): Set<ts.SourceFile> {
     return this.shimAdapter.ignoreForEmit;
+  }
+
+  /**
+   * Retrieve the array of shim extension prefixes for which shims were created for each original
+   * file.
+   */
+  get shimExtensionPrefixes(): string[] {
+    return this.shimAdapter.extensionPrefixes;
   }
 
   /**
@@ -169,8 +174,7 @@ export class NgCompilerHost extends DelegatingCompilerHost implements
 
     const rootDirs = getRootDirs(delegate, options as ts.CompilerOptions);
 
-    const typeCheckFile = typeCheckFilePath(rootDirs);
-    topLevelShimGenerators.push(new TypeCheckShimGenerator(typeCheckFile));
+    perFileShimGenerators.push(new TypeCheckShimGenerator());
 
     let diagnostics: ts.Diagnostic[] = [];
 
@@ -218,8 +222,8 @@ export class NgCompilerHost extends DelegatingCompilerHost implements
     const shimTagger =
         new ShimReferenceTagger(perFileShimGenerators.map(gen => gen.extensionPrefix));
     return new NgCompilerHost(
-        delegate, inputFiles, rootDirs, shimAdapter, shimTagger, entryPoint, typeCheckFile,
-        factoryTracker, diagnostics);
+        delegate, inputFiles, rootDirs, shimAdapter, shimTagger, entryPoint, factoryTracker,
+        diagnostics);
   }
 
   /**

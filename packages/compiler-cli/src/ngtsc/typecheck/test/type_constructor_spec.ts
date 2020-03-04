@@ -10,13 +10,17 @@ import * as ts from 'typescript';
 import {absoluteFrom, getSourceFileOrError, LogicalFileSystem} from '../../file_system';
 import {runInEachFileSystem, TestFile} from '../../file_system/testing';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
-import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
+import {isNamedClassDeclaration, ReflectionHost, TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
-import {TypeCheckContext} from '../src/context';
+import {UpdateMode} from '../src/api';
+import {ReusedProgramStrategy} from '../src/augmented_program';
+import {PendingFileTypeCheckingData, TypeCheckContext} from '../src/context';
+import {RegistryDomSchemaChecker} from '../src/dom';
+import {TemplateSourceManager} from '../src/source';
 import {TypeCheckFile} from '../src/type_check_file';
 
-import {ALL_ENABLED_CONFIG} from './test_utils';
+import {ALL_ENABLED_CONFIG, NoopOobRecorder} from './test_utils';
 
 runInEachFileSystem(() => {
   describe('ngtsc typechecking', () => {
@@ -33,12 +37,6 @@ runInEachFileSystem(() => {
     type Pick<T, K extends keyof T> = { [P in K]: T[P]; };
     type NonNullable<T> = T extends null | undefined ? never : T;`
       };
-      TYPE_CHECK_TS = {
-        name: _('/_typecheck_.ts'),
-        contents: `
-        export const IS_A_MODULE = true;
-        `
-      };
     });
 
     it('should not produce an empty SourceFile when there is nothing to typecheck', () => {
@@ -46,13 +44,13 @@ runInEachFileSystem(() => {
           _('/_typecheck_.ts'), ALL_ENABLED_CONFIG, new ReferenceEmitter([]),
           /* reflector */ null!);
       const sf = file.render();
-      expect(sf.statements.length).toBe(1);
+      expect(sf).toContain('export const IS_A_MODULE = true;');
     });
 
     describe('ctors', () => {
       it('compiles a basic type constructor', () => {
         const files: TestFile[] = [
-          LIB_D_TS, TYPE_CHECK_TS, {
+          LIB_D_TS, {
             name: _('/main.ts'),
             contents: `
 class TestClass<T extends string> {
@@ -74,12 +72,12 @@ TestClass.ngTypeCtor({value: 'test'});
           new AbsoluteModuleStrategy(program, checker, moduleResolver, reflectionHost),
           new LogicalProjectStrategy(reflectionHost, logicalFs),
         ]);
-        const ctx =
-            new TypeCheckContext(ALL_ENABLED_CONFIG, emitter, reflectionHost, _('/_typecheck_.ts'));
+        const ctx = new TypeCheckContext(ALL_ENABLED_CONFIG, program, emitter, reflectionHost);
         const TestClass =
             getDeclaration(program, _('/main.ts'), 'TestClass', isNamedClassDeclaration);
+        const pendingFile = makePendingFile(reflectionHost);
         ctx.addInlineTypeCtor(
-            getSourceFileOrError(program, _('/main.ts')), new Reference(TestClass), {
+            pendingFile, getSourceFileOrError(program, _('/main.ts')), new Reference(TestClass), {
               fnName: 'ngTypeCtor',
               body: true,
               fields: {
@@ -89,12 +87,12 @@ TestClass.ngTypeCtor({value: 'test'});
               },
               coercedInputFields: new Set(),
             });
-        ctx.calculateTemplateDiagnostics(program, host, options);
+        ctx.finalize();
       });
 
       it('should not consider query fields', () => {
         const files: TestFile[] = [
-          LIB_D_TS, TYPE_CHECK_TS, {
+          LIB_D_TS, {
             name: _('/main.ts'),
             contents: `class TestClass { value: any; }`,
           }
@@ -110,12 +108,12 @@ TestClass.ngTypeCtor({value: 'test'});
           new AbsoluteModuleStrategy(program, checker, moduleResolver, reflectionHost),
           new LogicalProjectStrategy(reflectionHost, logicalFs),
         ]);
-        const ctx =
-            new TypeCheckContext(ALL_ENABLED_CONFIG, emitter, reflectionHost, _('/_typecheck_.ts'));
+        const pendingFile = makePendingFile(reflectionHost);
+        const ctx = new TypeCheckContext(ALL_ENABLED_CONFIG, program, emitter, reflectionHost);
         const TestClass =
             getDeclaration(program, _('/main.ts'), 'TestClass', isNamedClassDeclaration);
         ctx.addInlineTypeCtor(
-            getSourceFileOrError(program, _('/main.ts')), new Reference(TestClass), {
+            pendingFile, getSourceFileOrError(program, _('/main.ts')), new Reference(TestClass), {
               fnName: 'ngTypeCtor',
               body: true,
               fields: {
@@ -125,9 +123,10 @@ TestClass.ngTypeCtor({value: 'test'});
               },
               coercedInputFields: new Set(),
             });
-        const res = ctx.calculateTemplateDiagnostics(program, host, options);
-        const TestClassWithCtor =
-            getDeclaration(res.program, _('/main.ts'), 'TestClass', isNamedClassDeclaration);
+        const programStrategy = new ReusedProgramStrategy(program, host, options, []);
+        programStrategy.updateFiles(ctx.finalize().updates, UpdateMode.Complete);
+        const TestClassWithCtor = getDeclaration(
+            programStrategy.getProgram(), _('/main.ts'), 'TestClass', isNamedClassDeclaration);
         const typeCtor = TestClassWithCtor.members.find(isTypeCtor)!;
         expect(typeCtor.getText()).not.toContain('queryField');
       });
@@ -136,7 +135,7 @@ TestClass.ngTypeCtor({value: 'test'});
     describe('input type coercion', () => {
       it('should coerce input types', () => {
         const files: TestFile[] = [
-          LIB_D_TS, TYPE_CHECK_TS, {
+          LIB_D_TS, {
             name: _('/main.ts'),
             contents: `class TestClass { value: any; }`,
           }
@@ -152,12 +151,12 @@ TestClass.ngTypeCtor({value: 'test'});
           new AbsoluteModuleStrategy(program, checker, moduleResolver, reflectionHost),
           new LogicalProjectStrategy(reflectionHost, logicalFs),
         ]);
-        const ctx =
-            new TypeCheckContext(ALL_ENABLED_CONFIG, emitter, reflectionHost, _('/_typecheck_.ts'));
+        const pendingFile = makePendingFile(reflectionHost);
+        const ctx = new TypeCheckContext(ALL_ENABLED_CONFIG, program, emitter, reflectionHost);
         const TestClass =
             getDeclaration(program, _('/main.ts'), 'TestClass', isNamedClassDeclaration);
         ctx.addInlineTypeCtor(
-            getSourceFileOrError(program, _('/main.ts')), new Reference(TestClass), {
+            pendingFile, getSourceFileOrError(program, _('/main.ts')), new Reference(TestClass), {
               fnName: 'ngTypeCtor',
               body: true,
               fields: {
@@ -167,9 +166,10 @@ TestClass.ngTypeCtor({value: 'test'});
               },
               coercedInputFields: new Set(['bar']),
             });
-        const res = ctx.calculateTemplateDiagnostics(program, host, options);
-        const TestClassWithCtor =
-            getDeclaration(res.program, _('/main.ts'), 'TestClass', isNamedClassDeclaration);
+        const programStrategy = new ReusedProgramStrategy(program, host, options, []);
+        programStrategy.updateFiles(ctx.finalize().updates, UpdateMode.Complete);
+        const TestClassWithCtor = getDeclaration(
+            programStrategy.getProgram(), _('/main.ts'), 'TestClass', isNamedClassDeclaration);
         const typeCtor = TestClassWithCtor.members.find(isTypeCtor)!;
         const ctorText = typeCtor.getText().replace(/[ \r\n]+/g, ' ');
         expect(ctorText).toContain(
@@ -182,3 +182,15 @@ TestClass.ngTypeCtor({value: 'test'});
     return ts.isMethodDeclaration(el) && ts.isIdentifier(el.name) && el.name.text === 'ngTypeCtor';
   }
 });
+
+function makePendingFile(reflector: ReflectionHost): PendingFileTypeCheckingData {
+  const manager = new TemplateSourceManager();
+  return {
+    domSchemaChecker: new RegistryDomSchemaChecker(manager),
+    hasInlines: false,
+    oobRecorder: new NoopOobRecorder(),
+    sourceManager: manager,
+    typeCheckFile: new TypeCheckFile(
+        absoluteFrom('/typecheck.ts'), ALL_ENABLED_CONFIG, new ReferenceEmitter([]), reflector)
+  };
+}

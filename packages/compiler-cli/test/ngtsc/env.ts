@@ -57,6 +57,7 @@ export class NgtscTestEnvironment {
         "noEmitOnError": true,
         "strictNullChecks": true,
         "outDir": "built",
+        "rootDir": ".",
         "baseUrl": ".",
         "declaration": true,
         "target": "es5",
@@ -117,6 +118,13 @@ export class NgtscTestEnvironment {
     }
     this.changedResources!.clear();
     this.multiCompileHostExt.flushWrittenFileTracking();
+  }
+
+  getTsProgram(): ts.Program {
+    if (this.oldProgram === null) {
+      throw new Error('No ts.Program has been created yet.');
+    }
+    return this.oldProgram.getTsProgram();
   }
 
   /**
