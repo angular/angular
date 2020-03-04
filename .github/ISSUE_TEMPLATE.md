@@ -1,3 +1,8 @@
+---
+title: "issue([COMPONENT]): [TITLE]"
+labels: needs triage
+---
+
 #### Bug, feature request, or proposal:
 
 
