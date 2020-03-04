@@ -296,9 +296,10 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
     const exportPipes = new Map<ts.Declaration, PipeMeta>();
 
     // The algorithm is as follows:
-    // 1) Add directives/pipes declared in the NgModule to the compilation scope.
-    // 2) Add all of the directives/pipes from each NgModule imported into the current one to the
-    //    compilation scope. At this point, the compilation scope is complete.
+    // 1) Add all of the directives/pipes from each NgModule imported into the current one to the
+    //    compilation scope.
+    // 2) Add directives/pipes declared in the NgModule to the compilation scope. At this point, the
+    //    compilation scope is complete.
     // 3) For each entry in the NgModule's exports:
     //    a) Attempt to resolve it as an NgModule with its own exported directives/pipes. If it is
     //       one, add them to the export scope of this NgModule.
@@ -307,31 +308,7 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
     //    c) If it's neither an NgModule nor a directive/pipe in the compilation scope, then this
     //       is an error.
 
-    // 1) add declarations.
-    for (const decl of ngModule.declarations) {
-      const directive = this.localReader.getDirectiveMetadata(decl);
-      const pipe = this.localReader.getPipeMetadata(decl);
-      if (directive !== null) {
-        compilationDirectives.set(decl.node, {...directive, ref: decl});
-      } else if (pipe !== null) {
-        compilationPipes.set(decl.node, {...pipe, ref: decl});
-      } else {
-        this.taintedModules.add(ngModule.ref.node);
-
-        const errorNode = decl.getOriginForDiagnostics(ngModule.rawDeclarations !);
-        diagnostics.push(makeDiagnostic(
-            ErrorCode.NGMODULE_INVALID_DECLARATION, errorNode,
-            `The class '${decl.node.name.text}' is listed in the declarations of the NgModule '${ngModule.ref.node.name.text}', but is not a directive, a component, or a pipe.
-
-Either remove it from the NgModule's declarations, or add an appropriate Angular decorator.`,
-            [{node: decl.node.name, messageText: `'${decl.node.name.text}' is declared here.`}]));
-        continue;
-      }
-
-      declared.add(decl.node);
-    }
-
-    // 2) process imports.
+    // 1) process imports.
     for (const decl of ngModule.imports) {
       const importScope = this.getExportedScope(decl, diagnostics, ref.node, 'import');
       if (importScope === null) {
@@ -351,6 +328,30 @@ Either remove it from the NgModule's declarations, or add an appropriate Angular
       for (const pipe of importScope.exported.pipes) {
         compilationPipes.set(pipe.ref.node, pipe);
       }
+    }
+
+    // 2) add declarations.
+    for (const decl of ngModule.declarations) {
+      const directive = this.localReader.getDirectiveMetadata(decl);
+      const pipe = this.localReader.getPipeMetadata(decl);
+      if (directive !== null) {
+        compilationDirectives.set(decl.node, {...directive, ref: decl});
+      } else if (pipe !== null) {
+        compilationPipes.set(decl.node, {...pipe, ref: decl});
+      } else {
+        this.taintedModules.add(ngModule.ref.node);
+
+        const errorNode = decl.getOriginForDiagnostics(ngModule.rawDeclarations !);
+        diagnostics.push(makeDiagnostic(
+            ErrorCode.NGMODULE_INVALID_DECLARATION, errorNode,
+            `The class '${decl.node.name.text}' is listed in the declarations ` +
+                `of the NgModule '${ngModule.ref.node.name.text}', but is not a directive, a component, or a pipe. ` +
+                `Either remove it from the NgModule's declarations, or add an appropriate Angular decorator.`,
+            [{node: decl.node.name, messageText: `'${decl.node.name.text}' is declared here.`}]));
+        continue;
+      }
+
+      declared.add(decl.node);
     }
 
     // 3) process exports.
