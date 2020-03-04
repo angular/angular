@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ElementAnimationStyleHandler} from '../../../src/render/css_keyframes/element_animation_style_handler';
+import {computeStyle} from '../../../src/util';
+
 import {assertStyle, createElement, makeAnimationEvent, supportsAnimationEventCreation} from './shared';
 
 const EMPTY_FN = () => {};
