@@ -20,7 +20,7 @@ This page guides you through creating the shopping cart in three phases:
 
 * 상품 상세정보 화면에 "Buy" 버튼을 추가합니다. 이 버튼을 클릭하면 현재 보고 있는 상품을 장바구니 서비스가 관리하는 목록에 추가합니다.
 * 장바구니 컴포넌트를 추가합니다. 이 컴포넌트는 장바구니 안에 있는 상품 목록을 보여줍니다.
-* 주문 컴포넌트를 추가합니다. 이 컴포넌트는 Angular `HttpClient`를 사용해서 `.json` 파일에서 데이터를 불러와서 상품의 가격을 가져옵니다.
+* 주문 컴포넌트를 추가합니다. 이 컴포넌트는 Angular `HttpClient`를 사용해서 `.json` 파일에서 상품의 배송 비용을 가져옵니다.
 
 {@a services}
 <!--
@@ -434,26 +434,47 @@ For more information about services, see [Introduction to Services and Dependenc
 </div>
 
 
+<!--
 ## Retrieve shipping prices
+-->
+## 배송가격 가져오기
 <!-- Accessing data with the HTTP client -->
 
+<!--
 Servers often return data in the form of a stream.
 Streams are useful because they make it easy to transform the returned data and  make modifications to the way you request that data.
 The Angular HTTP client, `HttpClient`, is a built-in way to fetch data from external APIs and provide them to your app as a stream.
 
 This section shows you how to use the HTTP client to retrieve shipping prices from an external file.
+-->
+서버는 보통 데이터 스트림 형식으로 데이터를 제공하는데, 이런 형식의 데이터는 개발자가 원하는 대로 변형할 수 있기 때문에 사용하기 편합니다.
+Angular가 제공하는 `HttpClient`를 사용하면 앱 외부에서 데이터를 쉽게 가져올 수 있으며, 앱 내부에서도 데이터를 스트림 형태로 처리할 수 있습니다.
 
+이 섹션에서는 HTTP 클라이언트를 사용해서 외부 파일에서 배송가격을 가져오는 방법에 대해 알아봅니다.
+
+
+<!--
 ### Predefined shipping data
+-->
+### 배송가격 데이터
 
+<!--
 The application that StackBlitz generates for this guide comes with predefined shipping data in `assets/shipping.json`.
 Use this data to add shipping prices for items in the cart.
+-->
+StackBlitz에서 생성한 애플리케이션을 보면 `assets/shipping.json` 파일에 배송가격 데이터가 미리 정의되어 있습니다.
+장바구니에 있는 상품을 주문할 때 이 데이터를 사용해 봅시다.
 
 <code-example header="src/assets/shipping.json" path="getting-started/src/assets/shipping.json">
 </code-example>
 
 
+<!--
 ### Use `HttpClient` in the `AppModule`
+-->
+### `AppModule`에서 `HttpClient` 사용하기
 
+<!--
 Before you can use Angular's HTTP client, you must configure your app to use `HttpClientModule`.
 
 Angular's `HttpClientModule` registers the providers your app needs to use a single instance of the `HttpClient` service throughout your app.
@@ -471,9 +492,32 @@ Angular's `HttpClientModule` registers the providers your app needs to use a sin
 
     <code-example path="getting-started/src/app/app.module.ts" header="src/app/app.module.ts" region="http-client-module">
     </code-example>
+-->
+Angular가 제공하는 HTTP 클라이언트를 사용하려면 앱에 `HttpClientModule`을 설정해야 합니다.
 
+앱에 `HttpClientModule`을 설정하면 `HttpClient` 서비스 프로바이더(provider)도 자동으로 등록되기 때문에, 원하는 곳에서 `HttpClient` 인스턴스를 의존성으로 주입받아 자유롭게 사용할 수 있습니다.
+
+1. `app.module.ts` 파일을 엽니다
+
+  이 파일에는 앱 전체에 영향을 미치는 항목들이 등록되어 있습니다.
+
+1. 파일 제일 위에서 `@angular/common/http` 패키지에 있는 `HttpClientModule`을 로드합니다. 아래 예제 코드에서는 이 부분만 간단하게 표시했으며, 원래 있던 로드 구문들은 그대로 둡니다.
+
+    <code-example header="src/app/app.module.ts" path="getting-started/src/app/app.module.ts" region="http-client-module-import">
+    </code-example>
+
+1. `AppModule` `@NgModule()` `imports` 배열에 `HttpClientModule`을 추가합니다. 그러면 `HttpClient` 프로바이더도 전역으로 등록됩니다.
+
+    <code-example path="getting-started/src/app/app.module.ts" header="src/app/app.module.ts" region="http-client-module">
+    </code-example>
+
+
+<!--
 ### Use `HttpClient` in the cart service
+-->
+### 장바구니 서비스에서 `HttpClient` 사용하기
 
+<!--
 Now that the `AppModule` imports the `HttpClientModule`, the next step is to inject the `HttpClient` service into your service so your app can fetch data and interact with external APIs and resources.
 
 
@@ -488,10 +532,28 @@ Now that the `AppModule` imports the `HttpClientModule`, the next step is to inj
 
     <code-example path="getting-started/src/app/cart.service.ts" header="src/app/cart.service.ts" region="inject-http">
     </code-example>
+-->
+`AppModule`에 `HttpClientModule`을 추가하고 나면 다음은 `HttpClient` 서비스를 서비스에 의존성으로 주입해야 외부에서 데이터를 가져오거나 서버로 요청을 보낼 수 있습니다.
 
 
+1. `cart.service.ts` 파일을 엽니다.
+
+1. `@angular/common/http` 패키지에서 `HttpClient` 심볼을 로드합니다.
+
+    <code-example header="src/app/cart.service.ts" path="getting-started/src/app/cart.service.ts" region="import-http">
+    </code-example>
+
+1. `CartService` 생성자에 `HttpClient`를 의존성으로 주입합니다:
+
+    <code-example path="getting-started/src/app/cart.service.ts" header="src/app/cart.service.ts" region="inject-http">
+    </code-example>
+
+<!--
 ### Define the `get()` method
+-->
+### `get()` 메소드 정의하기
 
+<!--
 Multiple components can leverage the same service.
 Later in this tutorial, the shipping component uses the cart service to retrieve shipping data via HTTP from the `shipping.json` file.
 First, define a `get()` method.
@@ -501,16 +563,32 @@ First, define a `get()` method.
 1. Below the `clearCart()` method, define a new `getShippingPrices()` method that uses the `HttpClient` `get()` method to retrieve the shipping data.
 
     <code-example header="src/app/cart.service.ts" path="getting-started/src/app/cart.service.ts" region="get-shipping"></code-example>
+-->
+서비스는 여러 컴포넌트에서 사용할 수 있기 때문에 중요합니다.
+이후에 구현할 배송 컴포넌트도 장바구니 서비스를 사용하는데, `shipping.json` 파일을 HTTP 클라이언트로 가져올 때 이 서비스를 사용할 것입니다.
+먼저, `get()` 메소드를 정의합니다.
 
+1. `cart.service.ts` 파일을 계속 수정합니다.
+
+1. `clearCart()` 메소드 아래에 `getShippingPrices()` 메소드를 추가하고 `HttpClient`가 제공하는 `get()` 메소드를 사용해서 배송가격 데이터를 가져옵니다.
+
+    <code-example header="src/app/cart.service.ts" path="getting-started/src/app/cart.service.ts" region="get-shipping"></code-example>
 
 <div class="alert is-helpful">
 
+<!--
 For more information about Angular's `HttpClient`, see [HttpClient](guide/http "HttpClient guide").
+-->
+`HttpClient`에 대해 자세하게 알아보려면 [HttpClient](guide/http "HttpClient guide") 문서를 참고하세요.
 
 </div>
 
+<!--
 ## Define the shipping page
+-->
+## 배송 화면 구현하기
 
+<!--
 Now that your app can retrieve shipping data, create a shipping component and  template.
 
 1. Generate a new component named `shipping`.
@@ -566,12 +644,78 @@ Now that your app can retrieve shipping data, create a shipping component and  t
     <div class="lightbox">
       <img src='generated/images/guide/start/shipping-prices.png' alt="Display shipping prices">
     </div>
+-->
+이제 앱에서 배송 데이터를 가져올 수 있습니다. 배송 컴포넌트와 템플릿을 만들어 봅시다.
+
+1. `shipping`이라는 이름으로 새 컴포넌트를 생성합니다.
+
+    기억해 보세요: 파일 목록 화면에서 `app` 폴더에 마우스 오른쪽 버튼을 클릭하고 `Angular Generator` - `Component`를 선택하면 됩니다.
+
+    <code-example header="src/app/shipping/shipping.component.ts" path="getting-started/src/app/shipping/shipping.component.1.ts"></code-example>
+
+1. `app.module.ts` 파일에 배송 화면으로 연결되는 라우팅 규칙을 추가합니다. `path`는 `shipping`, 컴포넌트는 `ShippingComponent`를 지정합니다.
+
+    <code-example header="src/app/app.module.ts" path="getting-started/src/app/app.module.ts" region="shipping-route"></code-example>
+
+    아직 배송 컴포넌트로 이동하는 링크는 없지만, 미리보기 영역에서 URL을 직접 입력하면 템플릿을 확인할 수 있습니다. 주소는 `https://getting-started.stackblitz.io/shipping`와 같은 형식이 될 것이며, `getting-started.stackblitz.io` 부분은 프로젝트마다 다를 수 있습니다.
+
+1. 배송 컴포넌트를 수정합니다. 장바구니 서비스를 통해 `shipping.json` 파일에서 배송가격 데이터를 가져오도록 구현합니다.
+
+    1. 장바구니 서비스를 로드합니다.
+
+        <code-example header="src/app/shipping/shipping.component.ts" path="getting-started/src/app/shipping/shipping.component.ts" region="imports"></code-example>
+
+    1. `shippingCosts` 프로퍼티를 선언합니다.
+
+        <code-example path="getting-started/src/app/shipping/shipping.component.ts" header="src/app/shipping/shipping.component.ts" region="props"></code-example>
+
+    1. `ShippingComponent`의 생성자로 장바구니 서비스를 의존성으로 주입합니다.
+
+        <code-example path="getting-started/src/app/shipping/shipping.component.ts" header="src/app/shipping/shipping.component.ts" region="inject-cart-service"></code-example>
+
+    1. 장바구니 서비스의 `getShippingPrices()` 메소드가 반환한 결과를 `shippingCosts` 프로퍼티에 할당합니다.
+
+        <code-example path="getting-started/src/app/shipping/shipping.component.ts" header="src/app/shipping/shipping.component.ts" region="ctor"></code-example>
+
+1. 배송 컴포넌트의 템플릿을 수정해서 배송 타입과 가격을 표시합니다. 이 때 `async` 파이프를 사용합니다:
+
+    <code-example header="src/app/shipping/shipping.component.html" path="getting-started/src/app/shipping/shipping.component.html"></code-example>
+
+    `async` 파이프를 사용하면 데이터 스트림이 반환하는 마지막 데이터를 자동으로 프로퍼티에 할당할 수 있으며, 이 과정은 컴포넌트가 존재하는 동안 계속 유지됩니다. 그리고 Angular가 컴포넌트를 종료하게 되면 `async` 파이프도 자동으로 종료됩니다. `async` 파이프에 대해 자세하게 알아보려면 [AsyncPipe API 문서](/api/common/AsyncPipe)를 참고하세요.
+
+1. 배송 화면으로 이동하는 링크를 장바구니 화면에 추가합니다:
+
+    <code-example header="src/app/cart/cart.component.html" path="getting-started/src/app/cart/cart.component.2.html"></code-example>
+
+1. 배송가격이 제대로 표시되는지 확인해 봅시다:
+
+    "Checkout" 버튼을 누르면 장바구니 화면이 표시됩니다. 이전에 설명했듯이, 앱이 새로고침되면 장바구니가 초기화됩니다.
+
+    <div class="lightbox">
+      <img src='generated/images/guide/start/cart-empty-with-shipping-prices.png' alt="Cart with link to shipping prices">
+    </div>
+
+    그리고 이 화면에서 링크를 클릭하면 배송가격 안내 페이지로 이동합니다.
+
+    <div class="lightbox">
+      <img src='generated/images/guide/start/shipping-prices.png' alt="Display shipping prices">
+    </div>
 
 
+<!--    
 ## Next steps
+-->
+## 다음 단계
 
+<!--
 Congratulations! You have an online store application with a product catalog and shopping cart. You can also look up and display shipping prices.
 
 To continue exploring Angular, choose either of the following options:
 * [Continue to the "Forms" section](start/start-forms "Getting Started: Forms") to finish the app by adding the shopping cart page and a checkout form.
 * [Skip ahead to the "Deployment" section](start/start-deployment "Getting Started: Deployment") to move to local development, or deploy your app to Firebase or your own server.
+-->
+축하합니다! 이제 온라인 쇼핑몰 앱에서 상품 목록과 장바구니 기능을 사용할 수 있습니다. 상품 배송가격도 확인할 수 있습니다.
+
+이런 내용에 대해서도 알아보세요:
+* 계속해서 장바구니 화면과 주문 폼을 추가해 보려면 [폼](start/start-forms "Getting Started: Forms") 문서를 확인해 보세요.
+* 앱을 Firebase에 배포하거나 로컬 개발환경을 설정하는 방법에 대해 알아보려면 [배포](start/start-deployment "Getting Started: Deployment") 문서를 참고하세요.
