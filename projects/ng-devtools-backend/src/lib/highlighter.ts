@@ -77,7 +77,7 @@ export function unHighlight(): void {
   }
 }
 
-export function inDoc(node): boolean {
+export function inDoc(node: any): boolean {
   if (!node) {
     return false;
   }
@@ -96,7 +96,17 @@ export function getComponentRect(el: Node): DOMRect | ClientRect {
   return el.getBoundingClientRect();
 }
 
-function showOverlay({ width = 0, height = 0, top = 0, left = 0 }, content = []): void {
+interface OverlayDimensionsAndPosition {
+  width: number;
+  height: number;
+  top: number;
+  left: number;
+}
+
+function showOverlay(
+  { width = 0, height = 0, top = 0, left = 0 }: OverlayDimensionsAndPosition,
+  content: any[] = []
+): void {
   overlay.style.width = ~~width + 'px';
   overlay.style.height = ~~height + 'px';
   overlay.style.top = ~~top + 'px';

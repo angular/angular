@@ -19,7 +19,7 @@ export class ZoneUnawareIFrameMessageBus extends MessageBus<Events> {
     this._delegate = new IFrameMessageBus(source, destination, docWindow);
   }
 
-  onAny(cb: AnyEventCallback<Events>) {
+  onAny(cb: AnyEventCallback<Events>): any {
     let result: any;
     runOutsideAngular(() => {
       result = this._delegate.onAny(cb);
@@ -27,7 +27,7 @@ export class ZoneUnawareIFrameMessageBus extends MessageBus<Events> {
     return result;
   }
 
-  on<E extends keyof Events>(topic: E, cb: Events[E]) {
+  on<E extends keyof Events>(topic: E, cb: Events[E]): any {
     let result: any;
     runOutsideAngular(() => {
       result = this._delegate.on(topic, cb);
@@ -35,7 +35,7 @@ export class ZoneUnawareIFrameMessageBus extends MessageBus<Events> {
     return result;
   }
 
-  once<E extends keyof Events>(topic: E, cb: Events[E]) {
+  once<E extends keyof Events>(topic: E, cb: Events[E]): any {
     let result: any;
     runOutsideAngular(() => {
       result = this._delegate.once(topic, cb);
@@ -49,7 +49,7 @@ export class ZoneUnawareIFrameMessageBus extends MessageBus<Events> {
     return this._delegate.emit(topic, args);
   }
 
-  destroy() {
+  destroy(): void {
     this._delegate.destroy();
   }
 }

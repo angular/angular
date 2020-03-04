@@ -86,7 +86,7 @@ export class ProfilerComponent implements OnInit, OnDestroy {
     this._fileApiService.uploadedData.unsubscribe();
   }
 
-  private _viewProfilerData(stream): void {
+  private _viewProfilerData(stream: ProfilerFrame[]): void {
     this.state = 'visualizing';
     this.stream = stream;
   }

@@ -4,7 +4,7 @@ window.addEventListener('message', (event: MessageEvent) => {
   }
 });
 
-function detectAngular(win: Window) {
+function detectAngular(win: Window): void {
   const isDebugMode = Boolean((win as any).ng);
   const ngVersionElement = document.querySelector('[ng-version]');
   const isSupportedAngularVersion = ngVersionElement
@@ -20,7 +20,7 @@ function detectAngular(win: Window) {
   );
 }
 
-function installScript(fn: string) {
+function installScript(fn: string): void {
   const source = `;(${fn})(window)`;
   const script = document.createElement('script');
   script.textContent = source;

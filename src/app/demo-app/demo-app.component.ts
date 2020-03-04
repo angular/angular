@@ -8,7 +8,7 @@ import { ZippyComponent } from './zippy/zippy.component';
 export class DemoAppComponent {
   @ViewChild(ZippyComponent) zippy: ZippyComponent;
 
-  getTitle() {
+  getTitle(): '► Click to expand' | '▼ Click to collapse' {
     if (!this.zippy || !this.zippy.visible) {
       return '► Click to expand';
     }

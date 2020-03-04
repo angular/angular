@@ -27,12 +27,12 @@ export class TimelineComponent {
     return this.profileRecords.timeline[this.currentView] || { app: [], timeSpent: 0, source: '' };
   }
 
-  frameRate(timeSpent: number) {
+  frameRate(timeSpent: number): number {
     const multiplier = Math.max(Math.ceil(timeSpent / 16) - 1, 0);
     return Math.floor(64 / 2 ** multiplier);
   }
 
-  updateView($event: MatSliderChange) {
+  updateView($event: MatSliderChange): void {
     if ($event.value === undefined || $event.value > this.profileRecords.timeline.length) {
       return;
     }

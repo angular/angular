@@ -81,15 +81,15 @@ export class ComponentTreeObserver {
 
   constructor(private _config: Partial<Config>) {}
 
-  getDirectivePosition(dir: any) {
+  getDirectivePosition(dir: any): ElementPosition {
     return this._tracker.getDirectivePosition(dir);
   }
 
-  getDirectiveId(dir: any) {
+  getDirectiveId(dir: any): number {
     return this._tracker.getDirectiveId(dir);
   }
 
-  getDirectiveForest() {
+  getDirectiveForest(): IndexedNode[] {
     return this._forest;
   }
 
@@ -101,7 +101,7 @@ export class ComponentTreeObserver {
     this._observeUpdates();
   }
 
-  destroy() {
+  destroy(): void {
     this._mutationObserver.disconnect();
     this._lastChangeDetection = new Map<any, number>();
     this._tracker.destroy();
@@ -117,7 +117,7 @@ export class ComponentTreeObserver {
     this._undoLifecyclePatch = [];
   }
 
-  private _observeUpdates() {
+  private _observeUpdates(): void {
     const { newNodes, removedNodes, indexedForest } = this._tracker.index();
     this._forest = indexedForest;
     newNodes.forEach(node => {
@@ -162,7 +162,7 @@ export class ComponentTreeObserver {
     if (original.patched) {
       return;
     }
-    declarations.tView.template = function(_: any, component: any) {
+    declarations.tView.template = function(_: any, component: any): void {
       const start = performance.now();
       original.apply(this, arguments);
       if (self._tracker.hasDirective(component)) {
@@ -180,7 +180,7 @@ export class ComponentTreeObserver {
     this._patched.set(cmp, original);
   }
 
-  private _observeLifecycle(directive: any, isComponent: boolean) {
+  private _observeLifecycle(directive: any, isComponent: boolean): void {
     const ctx = directive.__ngContext__;
     const tview = ctx[1];
     hookTViewProperties.forEach(hook => {
@@ -194,7 +194,7 @@ export class ComponentTreeObserver {
         }
         if (typeof el === 'function') {
           const self = this;
-          current[idx] = function() {
+          current[idx] = function(): any {
             const start = performance.now();
             const result = el.apply(this, arguments);
             if (self._tracker.hasDirective(this)) {

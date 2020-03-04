@@ -13,7 +13,7 @@ const fib = (n: number) => {
   styleUrls: ['./heavy.component.css'],
 })
 export class HeavyComponent {
-  calculate() {
+  calculate(): number {
     return fib(15);
   }
 }

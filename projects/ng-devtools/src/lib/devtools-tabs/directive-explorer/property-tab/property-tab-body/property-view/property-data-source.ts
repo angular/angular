@@ -72,11 +72,11 @@ export class PropertyDataSource extends DataSource<FlatNode> {
     this._data.next(this.treeFlattener.flattenNodes(this._arrayify(props)));
   }
 
-  get data() {
+  get data(): FlatNode[] {
     return this._data.value;
   }
 
-  update(props: { [prop: string]: Descriptor }) {
+  update(props: { [prop: string]: Descriptor }): void {
     const newData = this.treeFlattener.flattenNodes(this._arrayify(props));
 
     diff(this._differ, this.data, newData);
@@ -109,16 +109,16 @@ export class PropertyDataSource extends DataSource<FlatNode> {
     );
   }
 
-  disconnect() {
+  disconnect(): void {
     this._subscriptions.forEach(s => s.unsubscribe());
     this._subscriptions = [];
   }
 
-  private _arrayify(props: { [prop: string]: Descriptor }, parent: Property = null) {
+  private _arrayify(props: { [prop: string]: Descriptor }, parent: Property = null): Property[] {
     return Object.keys(props).map(name => ({ name, descriptor: props[name], parent }));
   }
 
-  private _toggleNode(node: FlatNode, expand: boolean) {
+  private _toggleNode(node: FlatNode, expand: boolean): void {
     const index = this.data.indexOf(node);
     // If we cannot find the current node, or the current node is not expandable
     // or...if it's expandable but it does have a value, or we're collapsing
@@ -151,7 +151,7 @@ export class PropertyDataSource extends DataSource<FlatNode> {
     });
   }
 
-  private _getChildren(prop: Property) {
+  private _getChildren(prop: Property): Property[] {
     const descriptor = prop.descriptor;
     if (descriptor.type === PropType.Object && !(descriptor.value instanceof Observable)) {
       return Object.keys(descriptor.value || {}).map(name => {

@@ -18,11 +18,11 @@ export class RecordingVisualizerComponent {
 
   constructor(private _el: ElementRef) {}
 
-  selectFrame(frame: RawData) {
+  selectFrame(frame: RawData): void {
     this.selectedEntry = frame as FlamegraphNode;
   }
 
-  get availableWidth() {
+  get availableWidth(): number {
     return this._el.nativeElement.querySelector('.level-profile-wrapper').offsetWidth;
   }
 }
