@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {AsyncLocker} from '../locking/async_locker';
+import {SyncLocker} from '../locking/sync_locker';
 import {Logger} from '../logging/logger';
 import {PackageJsonUpdater} from '../writing/package_json_updater';
 
 import {AnalyzeEntryPointsFn, CreateCompileFn, Executor} from './api';
-import {AsyncLocker, SyncLocker} from './lock_file';
 import {onTaskCompleted} from './utils';
 
 export abstract class SingleProcessorExecutorBase {

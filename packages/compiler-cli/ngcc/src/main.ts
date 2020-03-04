@@ -27,10 +27,12 @@ import {TargetedEntryPointFinder} from './entry_point_finder/targeted_entry_poin
 import {AnalyzeEntryPointsFn, CreateCompileFn, Executor, PartiallyOrderedTasks, Task, TaskProcessingOutcome, TaskQueue} from './execution/api';
 import {ClusterExecutor} from './execution/cluster/executor';
 import {ClusterPackageJsonUpdater} from './execution/cluster/package_json_updater';
-import {AsyncLocker, LockFileWithSignalHandlers, SyncLocker} from './execution/lock_file';
 import {SingleProcessExecutorAsync, SingleProcessExecutorSync} from './execution/single_process_executor';
 import {ParallelTaskQueue} from './execution/task_selection/parallel_task_queue';
 import {SerialTaskQueue} from './execution/task_selection/serial_task_queue';
+import {AsyncLocker} from './locking/async_locker';
+import {LockFileWithSignalHandlers} from './locking/lock_file_with_signal_handlers';
+import {SyncLocker} from './locking/sync_locker';
 import {ConsoleLogger} from './logging/console_logger';
 import {LogLevel, Logger} from './logging/logger';
 import {hasBeenProcessed} from './packages/build_marker';

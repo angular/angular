@@ -14,7 +14,7 @@ import {MockFileSystemNative} from '../../../../src/ngtsc/file_system/testing';
 import {ClusterExecutor} from '../../../src/execution/cluster/executor';
 import {ClusterMaster} from '../../../src/execution/cluster/master';
 import {ClusterWorker} from '../../../src/execution/cluster/worker';
-import {AsyncLocker} from '../../../src/execution/lock_file';
+import {AsyncLocker} from '../../../src/locking/async_locker';
 import {PackageJsonUpdater} from '../../../src/writing/package_json_updater';
 import {MockLockFile} from '../../helpers/mock_lock_file';
 import {MockLogger} from '../../helpers/mock_logger';
