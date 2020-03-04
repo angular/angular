@@ -1116,7 +1116,7 @@ class BasicTooltipDemo {
 @Component({
      selector: 'app',
      template: `
-    <div cdk-scrollable style="padding: 100px; margin: 300px;
+    <div cdkScrollable style="padding: 100px; margin: 300px;
                                height: 200px; width: 200px; overflow: auto;">
       <button *ngIf="showButton" style="margin-bottom: 600px"
               [matTooltip]="message"

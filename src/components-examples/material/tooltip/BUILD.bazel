@@ -11,6 +11,7 @@ ng_module(
     ]),
     module_name = "@angular/components-examples/material/tooltip",
     deps = [
+        "//src/cdk/scrolling",
         "//src/material/button",
         "//src/material/checkbox",
         "//src/material/input",

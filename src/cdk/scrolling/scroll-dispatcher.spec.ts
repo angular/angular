@@ -241,7 +241,7 @@ describe('ScrollDispatcher', () => {
 
 /** Simple component that contains a large div and can be scrolled. */
 @Component({
-  template: `<div #scrollingElement cdk-scrollable style="height: 9999px"></div>`
+  template: `<div #scrollingElement cdkScrollable style="height: 9999px"></div>`
 })
 class ScrollingComponent {
   @ViewChild(CdkScrollable) scrollable: CdkScrollable;
@@ -252,13 +252,13 @@ class ScrollingComponent {
 /** Component containing nested scrollables. */
 @Component({
   template: `
-    <div id="scrollable-1" cdk-scrollable>
-      <div id="scrollable-1a" cdk-scrollable>
+    <div id="scrollable-1" cdkScrollable>
+      <div id="scrollable-1a" cdkScrollable>
         <div #interestingElement></div>
       </div>
-      <div id="scrollable-1b" cdk-scrollable></div>
+      <div id="scrollable-1b" cdkScrollable></div>
     </div>
-    <div id="scrollable-2" cdk-scrollable></div>
+    <div id="scrollable-2" cdkScrollable></div>
   `
 })
 class NestedScrollingComponent {
