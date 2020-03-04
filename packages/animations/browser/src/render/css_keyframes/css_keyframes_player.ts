@@ -7,7 +7,7 @@
  */
 import {AnimationPlayer} from '@angular/animations';
 
-import {computeStyle} from '../shared';
+import {computeStyle} from '../../util';
 import {SpecialCasedStyles} from '../special_cased_styles';
 import {ElementAnimationStyleHandler} from './element_animation_style_handler';
 

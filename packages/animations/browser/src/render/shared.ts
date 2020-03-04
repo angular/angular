@@ -237,37 +237,3 @@ export function hypenatePropsObject(object: {[key: string]: any}): {[key: string
   });
   return newObj;
 }
-
-
-/**
- * Returns the computed style for the provided property on the provided element.
- *
- * This function uses `window.getComputedStyle` internally to determine the
- * style value for the element. Firefox doesn't support reading the shorthand
- * forms of margin/padding and for this reason this function needs to account
- * for that.
- */
-export function computeStyle(element: HTMLElement, prop: string): string {
-  const gcs = window.getComputedStyle(element);
-
-  // this is casted to any because the `CSSStyleDeclaration` type is a fixed
-  // set of properties and `prop` is a dynamic reference to a property within
-  // the `CSSStyleDeclaration` list.
-  let value = gcs[prop as any];
-
-  // Firefox returns empty string values for `margin` and `padding` properties
-  // when extracted using getComputedStyle (see similar issue here:
-  // https://github.com/jquery/jquery/issues/3383). In this situation
-  // we want to emulate the value that is returned by creating the top,
-  // right, bottom and left properties as individual style lookups.
-  if (value.length === 0 && (prop === 'margin' || prop === 'padding')) {
-    // reconstruct the padding/margin value as `top right bottom left`
-    const propTop = (prop + 'Top') as 'marginTop' | 'paddingTop';
-    const propRight = (prop + 'Right') as 'marginRight' | 'paddingRight';
-    const propBottom = (prop + 'Bottom') as 'marginBottom' | 'paddingBottom';
-    const propLeft = (prop + 'Left') as 'marginLeft' | 'paddingLeft';
-    value = `${gcs[propTop]} ${gcs[propRight]} ${gcs[propBottom]} ${gcs[propLeft]}`;
-  }
-
-  return value;
-}
