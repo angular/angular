@@ -10,6 +10,7 @@
 'use strict';
 
 const {buildZoneJsPackage} = require('./zone-js-builder');
+const {buildDevInfraPackage} = require('./dev-infra-builder');
 const {buildTargetPackages} = require('./package-builder');
 
 
@@ -19,3 +20,6 @@ buildTargetPackages('dist/packages-dist', false, 'Production');
 // Build the `zone.js` npm package into `dist/zone.js-dist/`, because it might be needed by other
 // scripts/tests.
 buildZoneJsPackage();
+
+// Build the `angular-dev-infra` npm package into `dist/packages-dist/@angular/dev-infra-private`
+buildDevInfraPackage();
