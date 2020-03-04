@@ -598,6 +598,213 @@ runInEachFileSystem(os => {
       expect(jsContents).toContain('outputs: { output: "output" }');
     });
 
+    it('should pick a Pipe defined in `declarations` over imported Pipes', () => {
+      env.tsconfig({});
+      env.write('test.ts', `
+        import {Component, Pipe, NgModule} from '@angular/core';
+
+        // ModuleA classes
+
+        @Pipe({name: 'number'})
+        class PipeA {}
+
+        @NgModule({
+          declarations: [PipeA],
+          exports: [PipeA]
+        })
+        class ModuleA {}
+
+        // ModuleB classes
+
+        @Pipe({name: 'number'})
+        class PipeB {}
+
+        @Component({
+          selector: 'app',
+          template: '{{ count | number }}'
+        })
+        export class App {}
+
+        @NgModule({
+          imports: [ModuleA],
+          declarations: [PipeB, App],
+        })
+        class ModuleB {}
+      `);
+
+      env.driveMain();
+
+      const jsContents = trim(env.getContents('test.js'));
+      expect(jsContents).toContain('pipes: [PipeB]');
+    });
+
+    it('should respect imported module order when selecting Pipe (last imported Pipe is used)',
+       () => {
+         env.tsconfig({});
+         env.write('test.ts', `
+            import {Component, Pipe, NgModule} from '@angular/core';
+
+            // ModuleA classes
+
+            @Pipe({name: 'number'})
+            class PipeA {}
+
+            @NgModule({
+              declarations: [PipeA],
+              exports: [PipeA]
+            })
+            class ModuleA {}
+
+            // ModuleB classes
+
+            @Pipe({name: 'number'})
+            class PipeB {}
+
+            @NgModule({
+              declarations: [PipeB],
+              exports: [PipeB]
+            })
+            class ModuleB {}
+
+            // ModuleC classes
+
+            @Component({
+              selector: 'app',
+              template: '{{ count | number }}'
+            })
+            export class App {}
+
+            @NgModule({
+              imports: [ModuleA, ModuleB],
+              declarations: [App],
+            })
+            class ModuleC {}
+          `);
+
+         env.driveMain();
+
+         const jsContents = trim(env.getContents('test.js'));
+         expect(jsContents).toContain('pipes: [PipeB]');
+       });
+
+    it('should add Directives and Components from `declarations` at the end of the list', () => {
+      env.tsconfig({});
+      env.write('test.ts', `
+        import {Component, Directive, NgModule} from '@angular/core';
+
+        // ModuleA classes
+
+        @Directive({selector: '[dir]'})
+        class DirectiveA {}
+
+        @Component({
+          selector: 'comp',
+          template: '...'
+        })
+        class ComponentA {}
+
+        @NgModule({
+          declarations: [DirectiveA, ComponentA],
+          exports: [DirectiveA, ComponentA]
+        })
+        class ModuleA {}
+
+        // ModuleB classes
+
+        @Directive({selector: '[dir]'})
+        class DirectiveB {}
+
+        @Component({
+          selector: 'comp',
+          template: '...',
+        })
+        export class ComponentB {}
+
+        @Component({
+          selector: 'app',
+          template: \`
+            <div dir></div>
+            <comp></comp>
+          \`,
+        })
+        export class App {}
+
+        @NgModule({
+          imports: [ModuleA],
+          declarations: [DirectiveB, ComponentB, App],
+        })
+        class ModuleB {}
+      `);
+
+      env.driveMain();
+
+      const jsContents = trim(env.getContents('test.js'));
+      expect(jsContents).toContain('directives: [DirectiveA, DirectiveB, ComponentA, ComponentB]');
+    });
+
+    it('should respect imported module order while processing Directives and Components', () => {
+      env.tsconfig({});
+      env.write('test.ts', `
+        import {Component, Directive, NgModule} from '@angular/core';
+
+        // ModuleA classes
+
+        @Directive({selector: '[dir]'})
+        class DirectiveA {}
+
+        @Component({
+          selector: 'comp',
+          template: '...'
+        })
+        class ComponentA {}
+
+        @NgModule({
+          declarations: [DirectiveA, ComponentA],
+          exports: [DirectiveA, ComponentA]
+        })
+        class ModuleA {}
+
+        // ModuleB classes
+
+        @Directive({selector: '[dir]'})
+        class DirectiveB {}
+
+        @Component({
+          selector: 'comp',
+          template: '...'
+        })
+        class ComponentB {}
+
+        @NgModule({
+          declarations: [DirectiveB, ComponentB],
+          exports: [DirectiveB, ComponentB]
+        })
+        class ModuleB {}
+
+        // ModuleC classes
+
+        @Component({
+          selector: 'app',
+          template: \`
+            <div dir></div>
+            <comp></comp>
+          \`,
+        })
+        export class App {}
+
+        @NgModule({
+          imports: [ModuleA, ModuleB],
+          declarations: [App],
+        })
+        class ModuleC {}
+      `);
+
+      env.driveMain();
+
+      const jsContents = trim(env.getContents('test.js'));
+      expect(jsContents).toContain('directives: [DirectiveA, DirectiveB, ComponentA, ComponentB]');
+    });
+
     it('should compile Components with a templateUrl in a different rootDir', () => {
       env.tsconfig({}, ['./extraRootDir']);
       env.write('extraRootDir/test.html', '<p>Hello World</p>');

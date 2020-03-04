@@ -455,19 +455,6 @@ export function transitiveScopesFor<T>(moduleType: Type<T>): NgModuleTransitiveS
     },
   };
 
-  maybeUnwrapFn(def.declarations).forEach(declared => {
-    const declaredWithDefs = declared as Type<any>& { ɵpipe?: any; };
-
-    if (getPipeDef(declaredWithDefs)) {
-      scopes.compilation.pipes.add(declared);
-    } else {
-      // Either declared has a ɵcmp or ɵdir, or it's a component which hasn't
-      // had its template compiled yet. In either case, it gets added to the compilation's
-      // directives.
-      scopes.compilation.directives.add(declared);
-    }
-  });
-
   maybeUnwrapFn(def.imports).forEach(<I>(imported: Type<I>) => {
     const importedType = imported as Type<I>& {
       // If imported is an @NgModule:
@@ -483,6 +470,19 @@ export function transitiveScopesFor<T>(moduleType: Type<T>): NgModuleTransitiveS
     const importedScope = transitiveScopesFor(importedType);
     importedScope.exported.directives.forEach(entry => scopes.compilation.directives.add(entry));
     importedScope.exported.pipes.forEach(entry => scopes.compilation.pipes.add(entry));
+  });
+
+  maybeUnwrapFn(def.declarations).forEach(declared => {
+    const declaredWithDefs = declared as Type<any>& { ɵpipe?: any; };
+
+    if (getPipeDef(declaredWithDefs)) {
+      scopes.compilation.pipes.add(declared);
+    } else {
+      // Either declared has a ɵcmp or ɵdir, or it's a component which hasn't
+      // had its template compiled yet. In either case, it gets added to the compilation's
+      // directives.
+      scopes.compilation.directives.add(declared);
+    }
   });
 
   maybeUnwrapFn(def.exports).forEach(<E>(exported: Type<E>) => {
