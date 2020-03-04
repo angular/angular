@@ -25,12 +25,18 @@ def _package_docs_content(ctx):
     # output file which will be added to the executable arguments.
     for input_target, section_name in ctx.attr.srcs.items():
         section_files = input_target.files.to_list()
+        base_dir = "%s" % (input_target.label.package)
 
         for input_file in section_files:
+            # Creates a relative path from the input file. We don't want to include the full
+            # path in docs content. e.g. `docs-content/overviews/cdk/src/cdk/a11y/a11y.html`.
+            # Instead, we want the path to be: `docs-content/overviews/cdk/a11y/a11y.html`.
+            section_relative_file_name = input_file.short_path[len(base_dir):]
+
             # For each input file, we want to create a copy that is stored in the output directory
             # within its specified section. e.g. "pkg_bin/docs-content/guides/getting-started.html"
             output_file = ctx.actions.declare_file(
-                "%s/%s/%s" % (output_dir, section_name, input_file.basename),
+                "%s/%s/%s" % (output_dir, section_name, section_relative_file_name),
             )
 
             # Add the output file to the expected outputs so that Bazel throws an error if the file
