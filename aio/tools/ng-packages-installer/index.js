@@ -14,12 +14,11 @@ const LOCAL_MARKER_PATH = 'node_modules/_local_.json';
 
 const ANGULAR_ROOT_DIR = path.resolve(__dirname, '../../..');
 const ANGULAR_DIST_PACKAGES_DIR = path.join(ANGULAR_ROOT_DIR, 'dist/packages-dist');
-const ZONEJS_DIST_PACKAGES_DIR = path.join(ANGULAR_ROOT_DIR, 'dist/zone.js-dist');
 const DIST_PACKAGES_BUILD_SCRIPT = path.join(ANGULAR_ROOT_DIR, 'scripts/build/build-packages-dist.js');
 const DIST_PACKAGES_BUILD_CMD = `"${process.execPath}" "${DIST_PACKAGES_BUILD_SCRIPT}"`;
 
 /**
- * A tool that can install Angular/Zone.js dependencies for a project from NPM or from the
+ * A tool that can install Angular dependencies for a project from NPM or from the
  * locally built distributables.
  *
  * This tool is used to change dependencies of the `aio` application and the example
@@ -34,7 +33,7 @@ class NgPackagesInstaller {
    * @param {object} options - a hash of options for the install:
    *     * `debug` (`boolean`) - whether to display debug messages.
    *     * `force` (`boolean`) - whether to force a local installation even if there is a local marker file.
-   *     * `buildPackages` (`boolean`) - whether to build the local Angular/Zone.js packages before using them.
+   *     * `buildPackages` (`boolean`) - whether to build the local Angular packages before using them.
    *           (NOTE: Building the packages is currently not supported on Windows, so a message is printed instead.)
    *     * `ignorePackages` (`string[]`) - a collection of names of packages that should not be copied over.
    */
@@ -53,7 +52,7 @@ class NgPackagesInstaller {
 
   /**
    * Check whether the dependencies have been overridden with locally built
-   * Angular/Zone.js packages. This is done by checking for the `_local_.json` marker file.
+   * Angular packages. This is done by checking for the `_local_.json` marker file.
    * This will emit a warning to the console if the dependencies have been overridden.
    */
   checkDependencies() {
@@ -63,8 +62,8 @@ class NgPackagesInstaller {
   }
 
   /**
-   * Install locally built Angular/Zone.js dependencies, overriding the dependencies in the `package.json`.
-   * This will also write a "marker" file (`_local_.json`), which contains the overridden `package.json`
+   * Install locally built Angular dependencies, overriding the dependencies in the package.json
+   * This will also write a "marker" file (`_local_.json`), which contains the overridden package.json
    * contents and acts as an indicator that dependencies have been overridden.
    */
   installLocalDependencies() {
@@ -87,13 +86,13 @@ class NgPackagesInstaller {
           // Prevent accidental publishing of the package, if something goes wrong.
           tmpConfig.private = true;
 
-          // Overwrite project dependencies/devDependencies to Angular/Zone.js packages with local files.
+          // Overwrite project dependencies/devDependencies to Angular packages with local files.
           ['dependencies', 'devDependencies'].forEach(prop => {
             const deps = tmpConfig[prop] || {};
             Object.keys(deps).forEach(key2 => {
               const pkg2 = packages[key2];
               if (pkg2) {
-                // point the local packages at the distributable folder
+                // point the core Angular packages at the distributable folder
                 deps[key2] = `file:${pkg2.packageDir}`;
                 this._log(`Overriding dependency of local ${key} with local package: ${key2}: ${deps[key2]}`);
               }
@@ -126,8 +125,8 @@ class NgPackagesInstaller {
           fs.writeFileSync(pathToPackageConfig, packageConfigFile);
         }
       } finally {
-        // Restore local Angular/Zone.js packages dependencies to other Angular packages.
-        this._log(`Restoring original ${PACKAGE_JSON} for local packages.`);
+        // Restore local Angular packages dependencies to other Angular packages.
+        this._log(`Restoring original ${PACKAGE_JSON} for local Angular packages.`);
         Object.keys(packages).forEach(key => {
           const pkg = packages[key];
           fs.writeFileSync(pkg.packageJsonPath, JSON.stringify(pkg.config, null, 2));
@@ -168,7 +167,7 @@ class NgPackagesInstaller {
   }
 
   /**
-   * Build the local Angular/Zone.js packages.
+   * Build the local Angular packages.
    *
    * NOTE:
    * Building the packages is currently not supported on Windows, so a message is printed instead, prompting the user to
@@ -178,14 +177,14 @@ class NgPackagesInstaller {
     const canBuild = process.platform !== 'win32';
 
     if (canBuild) {
-      this._log(`Building the local packages with: ${DIST_PACKAGES_BUILD_SCRIPT}`);
+      this._log(`Building the Angular packages with: ${DIST_PACKAGES_BUILD_SCRIPT}`);
       shelljs.exec(DIST_PACKAGES_BUILD_CMD);
     } else {
       this._warn([
-        'Automatically building the local Angular/Zone.js packages is currently not supported on Windows.',
-        `Please, ensure '${ANGULAR_DIST_PACKAGES_DIR}' and '${ZONEJS_DIST_PACKAGES_DIR}' exist and are up-to-date ` +
-          `(e.g. by running '${DIST_PACKAGES_BUILD_SCRIPT}' in Git Bash for Windows, Windows Subsystem for Linux or ` +
-          'a Linux docker container or VM).',
+        'Automatically building the local Angular packages is currently not supported on Windows.',
+        `Please, ensure '${ANGULAR_DIST_PACKAGES_DIR}' exists and is up-to-date (e.g. by running ` +
+          `'${DIST_PACKAGES_BUILD_SCRIPT}' in Git Bash for Windows, Windows Subsystem for Linux or a Linux docker ` +
+          'container or VM).',
         '',
         'Proceeding anyway...',
       ].join('\n'));
@@ -205,7 +204,7 @@ class NgPackagesInstaller {
         // grab peer dependencies
         const sourcePackagePeerDeps = sourcePackage.config.peerDependencies || {};
         Object.keys(sourcePackagePeerDeps)
-          // ignore peerDependencies which are already core Angular/Zone.js packages
+          // ignore peerDependencies which are already core Angular packages
           .filter(key => !packages[key])
           .forEach(key => peerDependencies[key] = sourcePackagePeerDeps[key]);
       }
@@ -215,13 +214,11 @@ class NgPackagesInstaller {
   }
 
   /**
-   * A hash of Angular/Zone.js package configs.
-   * (Detected as directories in '/dist/packages-dist/' and '/dist/zone.js-dist/' that contain a top-level
-   * 'package.json' file.)
+   * A hash of Angular package configs.
+   * (Detected as directories in '/dist/packages-dist/' that contain a top-level 'package.json' file.)
    */
   _getDistPackages() {
     this._log(`Angular distributable directory: ${ANGULAR_DIST_PACKAGES_DIR}.`);
-    this._log(`Zone.js distributable directory: ${ZONEJS_DIST_PACKAGES_DIR}.`);
 
     if (this.buildPackages) {
       this._buildDistPackages();
@@ -257,10 +254,7 @@ class NgPackagesInstaller {
       return packages;
     };
 
-    const packageConfigs = {
-      ...collectPackages(ANGULAR_DIST_PACKAGES_DIR),
-      ...collectPackages(ZONEJS_DIST_PACKAGES_DIR),
-    };
+    const packageConfigs = collectPackages(ANGULAR_DIST_PACKAGES_DIR);
 
     this._log('Found the following Angular distributables:', Object.keys(packageConfigs).map(key => `\n - ${key}`));
     return packageConfigs;
@@ -349,7 +343,7 @@ class NgPackagesInstaller {
 
     // Log a warning.
     this._warn([
-      `The project at "${absoluteProjectDir}" is running against the local Angular/Zone.js build.`,
+      `The project at "${absoluteProjectDir}" is running against the local Angular build.`,
       '',
       'To restore the npm packages run:',
       '',
@@ -402,10 +396,10 @@ function main() {
 
     .option('debug', { describe: 'Print additional debug information.', default: false })
     .option('force', { describe: 'Force the command to execute even if not needed.', default: false })
-    .option('build-packages', { describe: 'Build the local Angular/Zone.js packages, before using them.', default: false })
-    .option('ignore-packages', { describe: 'List of Angular/Zone.js packages that should not be used in local mode.', default: [], array: true })
+    .option('build-packages', { describe: 'Build the local Angular packages, before using them.', default: false })
+    .option('ignore-packages', { describe: 'List of Angular packages that should not be used in local mode.', default: [], array: true })
 
-    .command('overwrite <projectDir> [--force] [--debug] [--ignore-packages package1 package2]', 'Install dependencies from the locally built Angular/Zone.js distributables.', () => {}, argv => {
+    .command('overwrite <projectDir> [--force] [--debug] [--ignore-packages package1 package2]', 'Install dependencies from the locally built Angular distributables.', () => {}, argv => {
       createInstaller(argv).installLocalDependencies();
     })
     .command('restore <projectDir> [--debug]', 'Install dependencies from the npm registry.', () => {}, argv => {
