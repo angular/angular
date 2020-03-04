@@ -73,7 +73,6 @@ ROLLUP_GLOBALS = {
     "protractor": "protractor",
     "rxjs": "rxjs",
     "rxjs/operators": "rxjs.operators",
-    "tslib": "tslib",
 }
 
 # Converts a string from dash-case to lower camel case.
