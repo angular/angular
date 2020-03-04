@@ -1,0 +1,9 @@
+{
+  "name": "@angular/dev-infra-private",
+  "version": "0.0.0",
+  "description": "INTERNAL USE ONLY - Angular internal DevInfra tooling/scripts - INTERNAL USE ONLY",
+  "license": "MIT",
+  "bin": {
+    "ng-dev": "./cli.js"
+  }
+}
