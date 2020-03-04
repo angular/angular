@@ -9,7 +9,7 @@ import {
   dispatchKeyboardEvent,
   dispatchMouseEvent,
 } from '@angular/cdk/testing/private';
-import {Component, FactoryProvider, Type, ValueProvider, ViewChild} from '@angular/core';
+import {Component, Type, ViewChild, Provider} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, inject, TestBed, tick} from '@angular/core/testing';
 import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
 import {MAT_DATE_LOCALE, MatNativeDateModule, NativeDateModule} from '@angular/material/core';
@@ -18,6 +18,7 @@ import {DEC, JAN, JUL, JUN, SEP} from '@angular/material/testing';
 import {By} from '@angular/platform-browser';
 import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {MAT_DIALOG_DEFAULT_OPTIONS, MatDialogConfig} from '@angular/material/dialog';
 import {Subject} from 'rxjs';
 import {MatInputModule} from '../input/index';
 import {MatDatepicker} from './datepicker';
@@ -32,7 +33,7 @@ describe('MatDatepicker', () => {
   function createComponent(
     component: Type<any>,
     imports: Type<any>[] = [],
-    providers: (FactoryProvider | ValueProvider)[] = [],
+    providers: Provider[] = [],
     entryComponents: Type<any>[] = []): ComponentFixture<any> {
 
     TestBed.configureTestingModule({
@@ -1759,6 +1760,24 @@ describe('MatDatepicker', () => {
 
         expect(document.querySelector('.custom-element')).toBeTruthy();
     }));
+  });
+
+  it('should not pick up values from the global dialog config', () => {
+    const fixture = createComponent(StandardDatepicker, [MatNativeDateModule], [{
+      provide: MAT_DIALOG_DEFAULT_OPTIONS,
+      useValue: {
+        minWidth: '1337px',
+        hasBackdrop: false
+      } as MatDialogConfig
+    }]);
+    fixture.componentInstance.touch = true;
+    fixture.detectChanges();
+    fixture.componentInstance.datepicker.open();
+    fixture.detectChanges();
+
+    const overlay = document.querySelector('.cdk-overlay-pane') as HTMLElement;
+    expect(document.querySelector('.cdk-overlay-backdrop')).toBeTruthy();
+    expect(overlay.style.minWidth).toBeFalsy();
   });
 
 });
