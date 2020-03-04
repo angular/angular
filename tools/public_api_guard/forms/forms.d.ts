@@ -241,7 +241,7 @@ export declare class FormControlDirective extends NgControl implements OnChanges
     set isDisabled(isDisabled: boolean);
     /** @deprecated */ model: any;
     get path(): string[];
-    /** @deprecated */ update: EventEmitter<any>;
+    /** @deprecated */ update: EventEmitter<void>;
     get validator(): ValidatorFn | null;
     viewModel: any;
     constructor(validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[], _ngModelWarningConfig: string | null);
@@ -257,7 +257,7 @@ export declare class FormControlName extends NgControl implements OnChanges, OnD
     /** @deprecated */ model: any;
     name: string | number | null;
     get path(): string[];
-    /** @deprecated */ update: EventEmitter<any>;
+    /** @deprecated */ update: EventEmitter<void>;
     get validator(): ValidatorFn | null;
     constructor(parent: ControlContainer, validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[], _ngModelWarningConfig: string | null);
     ngOnChanges(changes: SimpleChanges): void;
@@ -301,7 +301,7 @@ export declare class FormGroupDirective extends ControlContainer implements Form
     directives: FormControlName[];
     form: FormGroup;
     get formDirective(): Form;
-    ngSubmit: EventEmitter<any>;
+    ngSubmit: EventEmitter<unknown>;
     get path(): string[];
     readonly submitted: boolean;
     constructor(_validators: any[], _asyncValidators: any[]);
@@ -372,7 +372,7 @@ export declare class NgForm extends ControlContainer implements Form, AfterViewI
     };
     form: FormGroup;
     get formDirective(): Form;
-    ngSubmit: EventEmitter<any>;
+    ngSubmit: EventEmitter<unknown>;
     options: {
         updateOn?: FormHooks;
     };
@@ -408,7 +408,7 @@ export declare class NgModel extends NgControl implements OnChanges, OnDestroy {
         updateOn?: FormHooks;
     };
     get path(): string[];
-    update: EventEmitter<any>;
+    update: EventEmitter<void>;
     get validator(): ValidatorFn | null;
     viewModel: any;
     constructor(parent: ControlContainer, validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[]);
