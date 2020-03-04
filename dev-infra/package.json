@@ -4,6 +4,6 @@
   "description": "INTERNAL USE ONLY - Angular internal DevInfra tooling/scripts - INTERNAL USE ONLY",
   "license": "MIT",
   "bin": {
-    "ng-dev": "./cli.js"
+    "ng-dev": "./bundle.js"
   }
 }
