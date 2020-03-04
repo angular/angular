@@ -5,6 +5,6 @@
   "license": "MIT",
   "private": true,
   "bin": {
-    "ng-dev": "./cli.js"
+    "ng-dev": "./bundle.js"
   }
 }
