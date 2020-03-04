@@ -13,13 +13,13 @@
  *
  * required:
  *   --since [date] The data after which contributions are queried for.
+ *       Uses githubs search format for dates, e.g. "2020-01-21".
+ *       See
+ * https://help.github.com/en/github/searching-for-information-on-github/understanding-the-search-syntax#query-for-dates
  *
  * optional:
  *  --use-created [boolean] If the created timestamp should be used for
  *     time comparisons, defaults otherwise to the updated timestamp.
- *     Uses githubs search format for dates, e.g. "2020-01-21".
- *     See
- * https://help.github.com/en/github/searching-for-information-on-github/understanding-the-search-syntax#query-for-dates.
  */
 
 import {graphql as unauthenticatedGraphql} from '@octokit/graphql';
@@ -54,7 +54,9 @@ if (!args['since']) {
  */
 const graphql = unauthenticatedGraphql.defaults({
   headers: {
-    authorization: `token ${process.env.TOKEN}`,
+    // TODO(josephperrott): Remove reference to TOKEN environment variable as part of larger
+    // effort to migrate to expecting tokens via GITHUB_ACCESS_TOKEN environment variables.
+    authorization: `token ${process.env.TOKEN || process.env.GITHUB_ACCESS_TOKEN}`,
   }
 });
 
@@ -135,30 +137,30 @@ function buildQueryAndParams(username: string, date: string) {
       ...dataQueries,
       [`${repo.replace(/[\/\-]/g, '_')}_issue_author`]: {
         query: `repo:${ORG}/${repo} is:issue author:${username} ${updatedOrCreated}:>${date}`,
-        label: 'Issue Authored'
+        label: `${ORG}/${repo} Issue Authored`,
       },
       [`${repo.replace(/[\/\-]/g, '_')}_issues_involved`]: {
         query:
             `repo:${ORG}/${repo} is:issue -author:${username} involves:${username} ${updatedOrCreated}:>${date}`,
-        label: 'Issue Involved'
+        label: `${ORG}/${repo} Issue Involved`,
       },
       [`${repo.replace(/[\/\-]/g, '_')}_pr_author`]: {
         query: `repo:${ORG}/${repo} is:pr author:${username} ${updatedOrCreated}:>${date}`,
-        label: 'PR Author'
+        label: `${ORG}/${repo} PR Author`,
       },
       [`${repo.replace(/[\/\-]/g, '_')}_pr_involved`]: {
         query: `repo:${ORG}/${repo} is:pr involves:${username} ${updatedOrCreated}:>${date}`,
-        label: 'PR Involved'
+        label: `${ORG}/${repo} PR Involved`,
       },
       [`${repo.replace(/[\/\-]/g, '_')}_pr_reviewed`]: {
         query:
             `repo:${ORG}/${repo} is:pr -author:${username} reviewed-by:${username} ${updatedOrCreated}:>${date}`,
-        label: 'PR Reviewed'
+        label: `${ORG}/${repo} PR Reviewed`,
       },
       [`${repo.replace(/[\/\-]/g, '_')}_pr_commented`]: {
         query:
             `repo:${ORG}/${repo} is:pr -author:${username} commenter:${username} ${updatedOrCreated}:>${date}`,
-        label: 'PR Commented'
+        label: `${ORG}/${repo} PR Commented`,
       },
     };
   }
@@ -167,30 +169,30 @@ function buildQueryAndParams(username: string, date: string) {
     ...dataQueries,
     [`${ORG}_org_issue_author`]: {
       query: `org:${ORG} is:issue author:${username} ${updatedOrCreated}:>${date}`,
-      label: 'Issue Authored'
+      label: `${ORG} org Issue Authored`,
     },
     [`${ORG}_org_issues_involved`]: {
       query:
           `org:${ORG} is:issue -author:${username} involves:${username} ${updatedOrCreated}:>${date}`,
-      label: 'Issue Involved'
+      label: `${ORG} org Issue Involved`,
     },
     [`${ORG}_org_pr_author`]: {
       query: `org:${ORG} is:pr author:${username} ${updatedOrCreated}:>${date}`,
-      label: 'PR Author'
+      label: `${ORG} org PR Author`,
     },
     [`${ORG}_org_pr_involved`]: {
       query: `org:${ORG} is:pr involves:${username} ${updatedOrCreated}:>${date}`,
-      label: 'PR Involved'
+      label: `${ORG} org PR Involved`,
     },
     [`${ORG}_org_pr_reviewed`]: {
       query:
           `org:${ORG} is:pr -author:${username} reviewed-by:${username} ${updatedOrCreated}:>${date}`,
-      label: 'PR Reviewed'
+      label: `${ORG} org PR Reviewed`,
     },
     [`${ORG}_org_pr_commented`]: {
       query:
           `org:${ORG} is:pr -author:${username} commenter:${username} ${updatedOrCreated}:>${date}`,
-      label: 'PR Commented'
+      label: `${ORG} org PR Commented`,
     },
   };
 
@@ -219,7 +221,10 @@ function buildQueryAndParams(username: string, date: string) {
     return output;
   }
 
-  return {query: graphqlQuery(getQuery(dataQueries)), labels: getLabels(dataQueries),};
+  return {
+    query: graphqlQuery(getQuery(dataQueries)),
+    labels: getLabels(dataQueries),
+  };
 }
 
 /**
