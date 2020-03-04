@@ -1,4 +1,4 @@
-import { Component, HostListener, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, Input, OnInit, QueryList, ViewChild } from '@angular/core';
 import {
   MessageBus,
   Events,
@@ -16,6 +16,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { PropertyTabComponent } from './property-tab/property-tab.component';
 import { Subject } from 'rxjs';
 import { throttleTime } from 'rxjs/operators';
+import { PropertyViewComponent } from './property-tab/property-tab-body/property-view/property-view.component';
 
 @Component({
   selector: 'ng-directive-explorer',
@@ -37,7 +38,7 @@ export class DirectiveExplorerComponent implements OnInit {
 
   splitDirection = 'horizontal';
 
-  private changeSize = new Subject();
+  private changeSize = new Subject<Event>();
 
   constructor(private _appOperations: ApplicationOperations, private _snackBar: MatSnackBar) {
     this.changeSize
@@ -120,7 +121,7 @@ export class DirectiveExplorerComponent implements OnInit {
     return result;
   }
 
-  get propertyViews() {
+  get propertyViews(): QueryList<PropertyViewComponent> {
     return this.propertyTab.propertyTabBody.propertyViews;
   }
 
@@ -137,21 +138,21 @@ export class DirectiveExplorerComponent implements OnInit {
     document.execCommand('copy');
   }
 
-  handleHighlightFromComponent(position: ElementPosition) {
+  handleHighlightFromComponent(position: ElementPosition): void {
     this.messageBus.emit('highlightElementFromComponentTree', [position]);
   }
 
-  handleUnhighlightFromComponent(_: ElementPosition | null) {
+  handleUnhighlightFromComponent(_: ElementPosition | null): void {
     this.messageBus.emit('removeHighlightFromElement');
   }
 
   @HostListener('window:resize', ['$event'])
-  onResize(event) {
+  onResize(event: Event): void {
     this.changeSize.next(event);
   }
 
-  handleResize(event) {
-    if (event.target.innerWidth <= 500) {
+  handleResize(event: Event): void {
+    if ((event.target as any).innerWidth <= 500) {
       this.splitDirection = 'vertical';
     } else {
       this.splitDirection = 'horizontal';

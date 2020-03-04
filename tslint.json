@@ -48,7 +48,8 @@
     "template-banana-in-box": true,
     "template-no-negated-async": true,
     "use-lifecycle-interface": true,
-    "use-pipe-transform-interface": true
+    "use-pipe-transform-interface": true,
+    "typedef": [true, "parameter", "call-signature", "property-declaration"]
   },
   "rulesDirectory": ["node_modules/codelyzer"]
 }

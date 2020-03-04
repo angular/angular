@@ -1,8 +1,8 @@
 import { nestedSerializer } from './state-serializer';
 
-const query1_1 = [];
+const QUERY_1_1 = [];
 
-const query1_2 = [
+const QUERY_1_2 = [
   {
     name: 'nested',
     children: [
@@ -63,7 +63,7 @@ const dir2 = {
 
 describe('nestedSerializer', () => {
   it('should work with empty queries', () => {
-    const result = nestedSerializer(dir1, query1_1);
+    const result = nestedSerializer(dir1, QUERY_1_1);
     expect(result).toEqual({
       type: 9,
       value: {
@@ -88,7 +88,7 @@ describe('nestedSerializer', () => {
   });
 
   it('should collect not specified but existing props below level', () => {
-    expect(nestedSerializer(dir1, query1_2)).toEqual({
+    expect(nestedSerializer(dir1, QUERY_1_2)).toEqual({
       type: 9,
       value: {
         one: {

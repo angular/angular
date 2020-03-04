@@ -5,7 +5,7 @@ const TYPE = 1;
 const ELEMENT = 0;
 const LVIEW_TVIEW = 1;
 
-export function isLContainer(value: any) {
+export function isLContainer(value: any): boolean {
   return Array.isArray(value) && value[TYPE] === true;
 }
 

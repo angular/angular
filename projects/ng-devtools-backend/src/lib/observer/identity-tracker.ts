@@ -9,6 +9,11 @@ interface TreeNode {
   children: TreeNode[];
 }
 
+type NodeArray = {
+  directive: any;
+  isComponent: boolean;
+}[];
+
 export class IdentityTracker {
   private _directiveIdCounter = 0;
   private _currentDirectivePosition = new Map<any, ElementPosition>();
@@ -17,22 +22,22 @@ export class IdentityTracker {
 
   constructor(private _ng: DebuggingAPI) {}
 
-  getDirectivePosition(dir: any) {
+  getDirectivePosition(dir: any): ElementPosition {
     return this._currentDirectivePosition.get(dir);
   }
 
-  getDirectiveId(dir: any) {
+  getDirectiveId(dir: any): number {
     return this._currentDirectiveId.get(dir);
   }
 
-  hasDirective(dir: any) {
+  hasDirective(dir: any): boolean {
     return this._currentDirectiveId.has(dir);
   }
 
-  index() {
+  index(): { newNodes: NodeArray; removedNodes: NodeArray; indexedForest: IndexedNode[] } {
     const indexedForest = indexForest(buildDirectiveForest(this._ng));
-    const newNodes: { directive: any; isComponent: boolean }[] = [];
-    const removedNodes: { directive: any; isComponent: boolean }[] = [];
+    const newNodes: NodeArray = [];
+    const removedNodes: NodeArray = [];
     const allNodes = new Set<any>();
     indexedForest.forEach(root => this._index(root, null, newNodes, allNodes));
     this._currentDirectiveId.forEach((_: number, dir: any) => {
@@ -66,7 +71,7 @@ export class IdentityTracker {
     node.children.forEach(child => this._index(child, parent, newNodes, allNodes));
   }
 
-  private _indexNode(directive: any, position: ElementPosition, newNodes: { directive: any; isComponent: boolean }[]) {
+  private _indexNode(directive: any, position: ElementPosition, newNodes: NodeArray): void {
     this._currentDirectivePosition.set(directive, position);
     if (!this._currentDirectiveId.has(directive)) {
       newNodes.push({ directive, isComponent: this._isComponent.get(directive) });
@@ -74,7 +79,7 @@ export class IdentityTracker {
     }
   }
 
-  destroy() {
+  destroy(): void {
     this._currentDirectivePosition = new Map<any, ElementPosition>();
     this._currentDirectiveId = new Map<any, number>();
   }

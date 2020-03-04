@@ -76,11 +76,11 @@ export class ComponentDataSource extends DataSource<FlatNode> {
     return this._flattenedData.value;
   }
 
-  get expandedDataValues() {
+  get expandedDataValues(): FlatNode[] {
     return this._expandedData.value;
   }
 
-  update(forest: DevToolsNode[]) {
+  update(forest: DevToolsNode[]): FlatNode[] {
     if (!forest) {
       return;
     }
@@ -110,5 +110,5 @@ export class ComponentDataSource extends DataSource<FlatNode> {
     );
   }
 
-  disconnect() {}
+  disconnect(): void {}
 }

@@ -4,6 +4,11 @@ import { FlatTreeControl } from '@angular/cdk/tree';
 import { FlatNode, Property, PropertyDataSource } from './property-data-source';
 import { getExpandedDirectiveProperties } from './property-expanded-directive-properties';
 
+interface UpdatedValueProperties {
+  key: string;
+  newValue: any;
+}
+
 @Component({
   selector: `ng-property-view`,
   templateUrl: './property-view.component.html',
@@ -51,7 +56,7 @@ export class PropertyViewComponent {
     return getExpandedDirectiveProperties(this.dataSource.data);
   }
 
-  updateValue({ key, newValue }, node): void {
+  updateValue({ key, newValue }: UpdatedValueProperties, node: FlatNode): void {
     const directiveId = this.entityID;
     const keyPath = this._constructPathOfKeysToPropertyValue(node.prop);
     this.messageBus.emit('updateState', [{ directiveId, keyPath, newValue }]);

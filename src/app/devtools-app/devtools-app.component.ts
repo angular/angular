@@ -9,7 +9,7 @@ export class DevToolsComponent implements AfterViewInit {
   messageBus: IFrameMessageBus | null = null;
   @ViewChild('ref') iframe: ElementRef;
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     setTimeout(() => {
       this.messageBus = new IFrameMessageBus(
         'angular-devtools',

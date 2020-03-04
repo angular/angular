@@ -9,7 +9,7 @@ export class IFrameMessageBus extends MessageBus<Events> {
     super();
   }
 
-  onAny(cb: AnyEventCallback<Events>) {
+  onAny(cb: AnyEventCallback<Events>): () => void {
     const listener = (e: MessageEvent) => {
       if (!e.data || !e.data.topic || e.data.source !== this._destination) {
         return;
@@ -24,7 +24,7 @@ export class IFrameMessageBus extends MessageBus<Events> {
     };
   }
 
-  on<E extends keyof Events>(topic: E, cb: Events[E]) {
+  on<E extends keyof Events>(topic: E, cb: Events[E]): () => void {
     const listener = (e: MessageEvent) => {
       if (!e.data || e.data.source !== this._destination || !e.data.topic) {
         return;
@@ -41,7 +41,7 @@ export class IFrameMessageBus extends MessageBus<Events> {
     };
   }
 
-  once<E extends keyof Events>(topic: E, cb: Events[E]) {
+  once<E extends keyof Events>(topic: E, cb: Events[E]): void {
     const listener = (e: MessageEvent) => {
       if (!e.data || e.data.source !== this._destination || !e.data.topic) {
         return;

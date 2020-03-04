@@ -12,15 +12,15 @@ export class FilterComponent {
 
   @Input() hasMatched = false;
 
-  emitFilter(event: InputEvent) {
+  emitFilter(event: InputEvent): void {
     this.filter.emit((event.target as HTMLInputElement).value);
   }
 
-  emitNextMatched() {
+  emitNextMatched(): void {
     this.nextMatched.emit();
   }
 
-  emitPrevMatched() {
+  emitPrevMatched(): void {
     this.prevMatched.emit();
   }
 }

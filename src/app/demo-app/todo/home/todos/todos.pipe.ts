@@ -12,7 +12,7 @@ export const enum TodoFilter {
   name: 'todosFilter',
 })
 export class TodosFilter implements PipeTransform {
-  transform(todos: Todo[], filter: TodoFilter) {
+  transform(todos: Todo[], filter: TodoFilter): Todo[] {
     return (todos || []).filter(t => {
       if (filter === TodoFilter.All) {
         return true;
