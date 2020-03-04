@@ -13,7 +13,7 @@ import * as os from 'os';
 import {AbsoluteFsPath, FileSystem, absoluteFrom, getFileSystem, join} from '../../../src/ngtsc/file_system';
 import {Folder, MockFileSystem, TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles, loadTestFiles} from '../../../test/helpers';
-import {getLockFilePath} from '../../src/execution/lock_file';
+import {getLockFilePath} from '../../src/locking/lock_file';
 import {mainNgcc} from '../../src/main';
 import {markAsProcessed} from '../../src/packages/build_marker';
 import {EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTIES} from '../../src/packages/entry_point';

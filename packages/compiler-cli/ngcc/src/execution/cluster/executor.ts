@@ -10,10 +10,10 @@
 
 import * as cluster from 'cluster';
 
+import {AsyncLocker} from '../../locking/async_locker';
 import {Logger} from '../../logging/logger';
 import {PackageJsonUpdater} from '../../writing/package_json_updater';
 import {AnalyzeEntryPointsFn, CreateCompileFn, Executor} from '../api';
-import {AsyncLocker} from '../lock_file';
 
 import {ClusterMaster} from './master';
 import {ClusterWorker} from './worker';
