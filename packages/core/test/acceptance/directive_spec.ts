@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, Directive, ElementRef, EventEmitter, Output, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, Directive, ElementRef, EventEmitter, NgModule, Output, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {Input} from '@angular/core/src/metadata';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -632,5 +632,97 @@ describe('directives', () => {
          expect(dirWithTitle.title).toBe('');
          expect(div.getAttribute('title')).toBe('a');
        });
+  });
+
+  describe('directives with the same selector', () => {
+    it('should process Directives from `declarations` list after imported ones', () => {
+      const log: string[] = [];
+      @Directive({selector: '[dir]'})
+      class DirectiveA {
+        constructor() { log.push('DirectiveA.constructor'); }
+        ngOnInit() { log.push('DirectiveA.ngOnInit'); }
+      }
+
+      @NgModule({
+        declarations: [DirectiveA],
+        exports: [DirectiveA],
+      })
+      class ModuleA {
+      }
+
+      @Directive({selector: '[dir]'})
+      class DirectiveB {
+        constructor() { log.push('DirectiveB.constructor'); }
+        ngOnInit() { log.push('DirectiveB.ngOnInit'); }
+      }
+
+      @Component({
+        selector: 'app',
+        template: '<div dir></div>',
+      })
+      class App {
+      }
+
+      TestBed.configureTestingModule({
+        imports: [ModuleA],
+        declarations: [DirectiveB, App],
+      });
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(log).toEqual([
+        'DirectiveA.constructor', 'DirectiveB.constructor', 'DirectiveA.ngOnInit',
+        'DirectiveB.ngOnInit'
+      ]);
+    });
+
+    it('should respect imported module order', () => {
+      const log: string[] = [];
+      @Directive({selector: '[dir]'})
+      class DirectiveA {
+        constructor() { log.push('DirectiveA.constructor'); }
+        ngOnInit() { log.push('DirectiveA.ngOnInit'); }
+      }
+
+      @NgModule({
+        declarations: [DirectiveA],
+        exports: [DirectiveA],
+      })
+      class ModuleA {
+      }
+
+      @Directive({selector: '[dir]'})
+      class DirectiveB {
+        constructor() { log.push('DirectiveB.constructor'); }
+        ngOnInit() { log.push('DirectiveB.ngOnInit'); }
+      }
+
+      @NgModule({
+        declarations: [DirectiveB],
+        exports: [DirectiveB],
+      })
+      class ModuleB {
+      }
+
+      @Component({
+        selector: 'app',
+        template: '<div dir></div>',
+      })
+      class App {
+      }
+
+      TestBed.configureTestingModule({
+        imports: [ModuleA, ModuleB],
+        declarations: [App],
+      });
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(log).toEqual([
+        'DirectiveA.constructor', 'DirectiveB.constructor', 'DirectiveA.ngOnInit',
+        'DirectiveB.ngOnInit'
+      ]);
+    });
+
   });
 });

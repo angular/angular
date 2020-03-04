@@ -110,6 +110,86 @@ describe('pipe', () => {
     expect(fixture.nativeElement.textContent).toEqual('value a b default 0 1 2 3');
   });
 
+  it('should pick a Pipe defined in `declarations` over imported Pipes', () => {
+    @Pipe({name: 'number'})
+    class PipeA implements PipeTransform {
+      transform(value: any) { return `PipeA: ${value}`; }
+    }
+
+    @NgModule({
+      declarations: [PipeA],
+      exports: [PipeA],
+    })
+    class ModuleA {
+    }
+
+    @Pipe({name: 'number'})
+    class PipeB implements PipeTransform {
+      transform(value: any) { return `PipeB: ${value}`; }
+    }
+
+    @Component({
+      selector: 'app',
+      template: '{{ count | number }}',
+    })
+    class App {
+      count = 10;
+    }
+
+    TestBed.configureTestingModule({
+      imports: [ModuleA],
+      declarations: [PipeB, App],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('PipeB: 10');
+  });
+
+  it('should respect imported module order when selecting Pipe (last imported Pipe is used)',
+     () => {
+       @Pipe({name: 'number'})
+       class PipeA implements PipeTransform {
+         transform(value: any) { return `PipeA: ${value}`; }
+       }
+
+       @NgModule({
+         declarations: [PipeA],
+         exports: [PipeA],
+       })
+       class ModuleA {
+       }
+
+       @Pipe({name: 'number'})
+       class PipeB implements PipeTransform {
+         transform(value: any) { return `PipeB: ${value}`; }
+       }
+
+       @NgModule({
+         declarations: [PipeB],
+         exports: [PipeB],
+       })
+       class ModuleB {
+       }
+
+       @Component({
+         selector: 'app',
+         template: '{{ count | number }}',
+       })
+       class App {
+         count = 10;
+       }
+
+       TestBed.configureTestingModule({
+         imports: [ModuleA, ModuleB],
+         declarations: [App],
+       });
+       const fixture = TestBed.createComponent(App);
+       fixture.detectChanges();
+
+       expect(fixture.nativeElement.textContent).toBe('PipeB: 10');
+     });
+
   it('should do nothing when no change', () => {
     let calls: any[] = [];
 
