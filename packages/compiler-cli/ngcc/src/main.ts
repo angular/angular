@@ -27,7 +27,7 @@ import {TargetedEntryPointFinder} from './entry_point_finder/targeted_entry_poin
 import {AnalyzeEntryPointsFn, CreateCompileFn, Executor, PartiallyOrderedTasks, Task, TaskProcessingOutcome, TaskQueue} from './execution/api';
 import {ClusterExecutor} from './execution/cluster/executor';
 import {ClusterPackageJsonUpdater} from './execution/cluster/package_json_updater';
-import {LockFileAsync, LockFileSync} from './execution/lock_file';
+import {AsyncLocker, LockFileWithSignalHandlers, SyncLocker} from './execution/lock_file';
 import {SingleProcessExecutorAsync, SingleProcessExecutorSync} from './execution/single_process_executor';
 import {ParallelTaskQueue} from './execution/task_selection/parallel_task_queue';
 import {SerialTaskQueue} from './execution/task_selection/serial_task_queue';
@@ -336,20 +336,21 @@ function getTaskQueue(
 function getExecutor(
     async: boolean, inParallel: boolean, logger: Logger, pkgJsonUpdater: PackageJsonUpdater,
     fileSystem: FileSystem): Executor {
+  const lockFile = new LockFileWithSignalHandlers(fileSystem);
   if (async) {
     // Execute asynchronously (either serially or in parallel)
-    const lockFile = new LockFileAsync(fileSystem, logger, 500, 50);
+    const locker = new AsyncLocker(lockFile, logger, 500, 50);
     if (inParallel) {
       // Execute in parallel. Use up to 8 CPU cores for workers, always reserving one for master.
       const workerCount = Math.min(8, os.cpus().length - 1);
-      return new ClusterExecutor(workerCount, logger, pkgJsonUpdater, lockFile);
+      return new ClusterExecutor(workerCount, logger, pkgJsonUpdater, locker);
     } else {
       // Execute serially, on a single thread (async).
-      return new SingleProcessExecutorAsync(logger, pkgJsonUpdater, lockFile);
+      return new SingleProcessExecutorAsync(logger, pkgJsonUpdater, locker);
     }
   } else {
     // Execute serially, on a single thread (sync).
-    return new SingleProcessExecutorSync(logger, pkgJsonUpdater, new LockFileSync(fileSystem));
+    return new SingleProcessExecutorSync(logger, pkgJsonUpdater, new SyncLocker(lockFile));
   }
 }
 
