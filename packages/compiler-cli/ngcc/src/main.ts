@@ -30,7 +30,7 @@ import {ClusterPackageJsonUpdater} from './execution/cluster/package_json_update
 import {SingleProcessExecutorAsync, SingleProcessExecutorSync} from './execution/single_process_executor';
 import {ParallelTaskQueue} from './execution/task_selection/parallel_task_queue';
 import {SerialTaskQueue} from './execution/task_selection/serial_task_queue';
-import {LockFileWithSignalHandlers} from './locking/lock_file_with_signal_handlers';
+import {LockFileWithChildProcess} from './locking/lock_file_with_child_process';
 import {SyncLocker} from './locking/sync_locker';
 import {ConsoleLogger} from './logging/console_logger';
 import {LogLevel, Logger} from './logging/logger';
@@ -337,7 +337,7 @@ function getTaskQueue(
 function getExecutor(
     async: boolean, inParallel: boolean, logger: Logger, pkgJsonUpdater: PackageJsonUpdater,
     fileSystem: FileSystem): Executor {
-  const lockFile = new LockFileWithSignalHandlers(fileSystem);
+  const lockFile = new LockFileWithChildProcess(fileSystem, logger);
   const locker = new SyncLocker(lockFile);
   if (async) {
     // Execute asynchronously (either serially or in parallel)
