@@ -88,10 +88,14 @@ export const Decorator = {
  * a namespaced property access (e.g. `core.Decorator`).
  */
 export type DecoratorIdentifier = ts.Identifier | NamespacedIdentifier;
-export type NamespacedIdentifier = ts.PropertyAccessExpression & {expression: ts.Identifier};
+export type NamespacedIdentifier = ts.PropertyAccessExpression & {
+  expression: ts.Identifier;
+  name: ts.Identifier
+};
 export function isDecoratorIdentifier(exp: ts.Expression): exp is DecoratorIdentifier {
   return ts.isIdentifier(exp) ||
-      ts.isPropertyAccessExpression(exp) && ts.isIdentifier(exp.expression);
+      ts.isPropertyAccessExpression(exp) && ts.isIdentifier(exp.expression) &&
+      ts.isIdentifier(exp.name);
 }
 
 /**

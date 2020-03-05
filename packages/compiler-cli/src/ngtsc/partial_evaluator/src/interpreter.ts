@@ -565,9 +565,11 @@ export class StaticInterpreter {
   private stringNameFromPropertyName(node: ts.PropertyName, context: Context): string|undefined {
     if (ts.isIdentifier(node) || ts.isStringLiteral(node) || ts.isNumericLiteral(node)) {
       return node.text;
-    } else {  // ts.ComputedPropertyName
+    } else if (ts.isComputedPropertyName(node)) {
       const literal = this.visitExpression(node.expression, context);
       return typeof literal === 'string' ? literal : undefined;
+    } else {
+      return undefined;
     }
   }
 

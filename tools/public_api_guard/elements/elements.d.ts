@@ -15,7 +15,7 @@ export interface NgElementConfig {
 
 export interface NgElementConstructor<P> {
     readonly observedAttributes: string[];
-    new (injector: Injector): NgElement & WithProperties<P>;
+    new (injector?: Injector): NgElement & WithProperties<P>;
 }
 
 export interface NgElementStrategy {

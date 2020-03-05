@@ -1597,7 +1597,8 @@ exports.ExternalModule = ExternalModule;
           const variableNode =
               getDeclaration(bundle.program, _('/file_b.js'), 'b', isNamedVariableDeclaration);
           const identifier = (variableNode.initializer &&
-                              ts.isPropertyAccessExpression(variableNode.initializer)) ?
+                              ts.isPropertyAccessExpression(variableNode.initializer) &&
+                              ts.isIdentifier(variableNode.initializer.name)) ?
               variableNode.initializer.name :
               null;
 
@@ -1649,7 +1650,8 @@ exports.ExternalModule = ExternalModule;
           const variableNode =
               getDeclaration(bundle.program, _('/file_c.js'), 'c', isNamedVariableDeclaration);
           const identifier = (variableNode.initializer &&
-                              ts.isPropertyAccessExpression(variableNode.initializer)) ?
+                              ts.isPropertyAccessExpression(variableNode.initializer) &&
+                              ts.isIdentifier(variableNode.initializer.name)) ?
               variableNode.initializer.name :
               null;
 
@@ -1681,7 +1683,7 @@ exports.ExternalModule = ExternalModule;
           if (decl.initializer !== undefined && ts.isCallExpression(decl.initializer)) {
             const expr = decl.initializer.expression;
             if (ts.isIdentifier(expr)) return expr;
-            if (ts.isPropertyAccessExpression(expr)) return expr.name;
+            if (ts.isPropertyAccessExpression(expr) && ts.isIdentifier(expr.name)) return expr.name;
           }
           throw new Error(`Unable to extract identifier from declaration '${decl.getText()}'.`);
         };
@@ -1807,7 +1809,8 @@ exports.ExternalModule = ExternalModule;
           const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const variableNode =
               getDeclaration(bundle.program, _('/index.js'), 'b', isNamedVariableDeclaration);
-          const identifier = (variableNode.initializer !as ts.PropertyAccessExpression).name;
+          const identifier =
+              (variableNode.initializer !as ts.PropertyAccessExpression).name as ts.Identifier;
 
           const importOfIdent = host.getDeclarationOfIdentifier(identifier !) !;
           expect(importOfIdent.viaModule).toBe('lib');
