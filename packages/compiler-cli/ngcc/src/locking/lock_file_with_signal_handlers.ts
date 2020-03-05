@@ -17,7 +17,7 @@ export class LockFileWithSignalHandlers implements LockFile {
   write(): void {
     try {
       this.addSignalHandlers();
-      // To avoid race conditions, we check for existence of the lockFile by actually trying to
+      // To avoid race conditions, we check for existence of the lock-file by actually trying to
       // create it exclusively.
       return this.fs.writeFile(this.path, process.pid.toString(), /* exclusive */ true);
     } catch (e) {
@@ -48,7 +48,7 @@ export class LockFileWithSignalHandlers implements LockFile {
 
   /**
    * Capture CTRL-C and terminal closing events.
-   * When these occur we remove the lockFile and exit.
+   * When these occur we remove the lock-file and exit.
    */
   protected addSignalHandlers() {
     process.addListener('SIGINT', this.signalHandler);

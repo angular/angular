@@ -65,7 +65,7 @@ runInEachFileSystem(() => {
         expect(lockFile.log).toEqual(['write()', 'addSignalHandlers()', 'removeSignalHandlers()']);
       });
 
-      it('should remove the lockFile if CTRL-C is triggered', () => {
+      it('should remove the lock-file if CTRL-C is triggered', () => {
         const fs = getFileSystem();
         const lockFile = new LockFileUnderTest(fs, /* handleSignals */ true);
 
@@ -82,7 +82,7 @@ runInEachFileSystem(() => {
         ]);
       });
 
-      it('should remove the lockFile if terminal is closed', () => {
+      it('should remove the lock-file if terminal is closed', () => {
         const fs = getFileSystem();
         const lockFile = new LockFileUnderTest(fs, /* handleSignals */ true);
 
@@ -101,14 +101,14 @@ runInEachFileSystem(() => {
     });
 
     describe('read()', () => {
-      it('should return the contents of the lockFile', () => {
+      it('should return the contents of the lock-file', () => {
         const fs = getFileSystem();
         const lockFile = new LockFileUnderTest(fs);
         fs.writeFile(lockFile.path, '188');
         expect(lockFile.read()).toEqual('188');
       });
 
-      it('should return `{unknown}` if the lockFile does not exist', () => {
+      it('should return `{unknown}` if the lock-file does not exist', () => {
         const fs = getFileSystem();
         const lockFile = new LockFileUnderTest(fs);
         expect(lockFile.read()).toEqual('{unknown}');

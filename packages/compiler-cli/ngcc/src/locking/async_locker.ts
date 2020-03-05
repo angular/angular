@@ -61,6 +61,6 @@ export class AsyncLocker {
     // If we fall out of the loop then we ran out of rety attempts
     throw new Error(
         `Timed out waiting ${this.retryAttempts * this.retryDelay/1000}s for another ngcc process, with id ${pid}, to complete.\n` +
-        `(If you are sure no ngcc process is running then you should delete the lockFile at ${this.lockFile.path}.)`);
+        `(If you are sure no ngcc process is running then you should delete the lock-file at ${this.lockFile.path}.)`);
   }
 }

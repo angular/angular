@@ -19,9 +19,9 @@ export interface LockFile {
   write(): void;
 
   /**
-   * Read the PID, of the process holding the lock, from the lockFile.
+   * Read the PID, of the process holding the lock, from the lock-file.
    *
-   * It is feasible that the lockFile was removed between the call to `write()` that effectively
+   * It is feasible that the lock-file was removed between the call to `write()` that effectively
    * checks for existence and this attempt to read the file. If so then this method should just
    * gracefully return `"{unknown}"`.
    */

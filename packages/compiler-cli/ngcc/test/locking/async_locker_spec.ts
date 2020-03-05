@@ -71,15 +71,15 @@ runInEachFileSystem(() => {
         });
 
         const promise = locker.lock(async() => log.push('fn()'));
-        // The lock is now waiting on the lockFile becoming free, so no `fn()` in the log.
+        // The lock is now waiting on the lock-file becoming free, so no `fn()` in the log.
         expect(log).toEqual(['write()', 'read() => 188']);
         expect(logger.logs.info).toEqual([[
           'Another process, with id 188, is currently running ngcc.\nWaiting up to 1s for it to finish.'
         ]]);
 
         lockFileContents = null;
-        // The lockFile has been removed, so we can create our own lockFile, call `fn()` and then
-        // remove the lockFile.
+        // The lock-file has been removed, so we can create our own lock-file, call `fn()` and then
+        // remove the lock-file.
         await promise;
         expect(log).toEqual(['write()', 'read() => 188', 'write()', 'fn()', 'remove()']);
       });
@@ -105,14 +105,14 @@ runInEachFileSystem(() => {
 
         async() => {
           const promise = locker.lock(async() => log.push('fn()'));
-          // The lock is now waiting on the lockFile becoming free, so no `fn()` in the log.
+          // The lock is now waiting on the lock-file becoming free, so no `fn()` in the log.
           expect(log).toEqual(['write()', 'read() => 188']);
           expect(logger.logs.info).toEqual([[
             'Another process, with id 188, is currently running ngcc.\nWaiting up to 1s for it to finish.'
           ]]);
 
           lockFileContents = '444';
-          // The lockFile has been taken over by another process
+          // The lock-file has been taken over by another process
           await new Promise(resolve => setTimeout(resolve, 250));
           expect(log).toEqual(['write()', 'read() => 188', 'write()', 'read() => 444']);
           expect(logger.logs.info).toEqual([
@@ -125,8 +125,8 @@ runInEachFileSystem(() => {
           ]);
 
           lockFileContents = null;
-          // The lockFile has been removed, so we can create our own lockFile, call `fn()` and then
-          // remove the lockFile.
+          // The lock-file has been removed, so we can create our own lock-file, call `fn()` and
+          // then remove the lock-file.
           await promise;
           expect(log).toEqual([
             'write()', 'read() => 188', 'write()', 'read() => 444', 'write()', 'fn()', 'remove()'
@@ -134,7 +134,7 @@ runInEachFileSystem(() => {
         };
       });
 
-      it('should error if another process does not release the lockFile before this times out',
+      it('should error if another process does not release the lock-file before this times out',
          async() => {
            const fs = getFileSystem();
            const log: string[] = [];
@@ -156,16 +156,16 @@ runInEachFileSystem(() => {
 
            const promise = locker.lock(async() => log.push('fn()'));
 
-           // The lock is now waiting on the lockFile becoming free, so no `fn()` in the log.
+           // The lock is now waiting on the lock-file becoming free, so no `fn()` in the log.
            expect(log).toEqual(['write()', 'read() => 188']);
-           // Do not remove the lockFile and let the call to `lock()` timeout.
+           // Do not remove the lock-file and let the call to `lock()` timeout.
            let error: Error;
            await promise.catch(e => error = e);
            expect(log).toEqual(['write()', 'read() => 188', 'write()', 'read() => 188']);
            expect(error !.message)
                .toEqual(
                    `Timed out waiting 0.2s for another ngcc process, with id 188, to complete.\n` +
-                   `(If you are sure no ngcc process is running then you should delete the lockFile at ${lockFile.path}.)`);
+                   `(If you are sure no ngcc process is running then you should delete the lock-file at ${lockFile.path}.)`);
          });
     });
   });
