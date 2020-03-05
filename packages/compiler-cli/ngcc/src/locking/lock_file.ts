@@ -7,13 +7,8 @@
  */
 import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
 
-let _lockFilePath: AbsoluteFsPath;
 export function getLockFilePath(fs: FileSystem) {
-  if (!_lockFilePath) {
-    _lockFilePath =
-        fs.resolve(require.resolve('@angular/compiler-cli/ngcc'), '../__ngcc_lock_file__');
-  }
-  return _lockFilePath;
+  return fs.resolve(require.resolve('@angular/compiler-cli/ngcc'), '../__ngcc_lock_file__');
 }
 
 export interface LockFile {
