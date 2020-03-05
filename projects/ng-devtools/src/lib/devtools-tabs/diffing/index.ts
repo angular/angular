@@ -10,6 +10,7 @@ export const diff = <T>(differ: DefaultIterableDiffer<T>, a: T[], b: T[]) => {
   differ.diff(b);
 
   const alreadySet = [];
+  const movedItems: T[] = [];
 
   // We first have to set the moved items to their correct positions.
   // Keep in mind that the track by function may not guarantee
@@ -35,6 +36,7 @@ export const diff = <T>(differ: DefaultIterableDiffer<T>, a: T[], b: T[]) => {
       a[record.previousIndex] = null;
     }
     alreadySet[record.currentIndex] = true;
+    movedItems.push(a[record.currentIndex]);
   });
 
   // Now we can set the new items and remove the deleted ones.
@@ -61,5 +63,5 @@ export const diff = <T>(differ: DefaultIterableDiffer<T>, a: T[], b: T[]) => {
     }
   }
 
-  return { newItems, removedItems };
+  return { newItems, removedItems, movedItems };
 };

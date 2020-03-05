@@ -94,31 +94,10 @@ export class DirectiveForestComponent {
     this.parents = [];
   }
 
-  private _findCurrentlySelectedNode(currentlySelected: IndexedNode): FlatNode {
-    return this.dataSource.data.find(flatNode => {
-      const flatNodeIsNotComponent = flatNode.id[0] === '-';
-      if (currentlySelected.component && flatNodeIsNotComponent) {
-        return false;
-      }
-
-      const idArray = flatNode.id
-        .split('-')
-        .filter(id => id !== '')
-        .map(Number);
-
-      return currentlySelected.component
-        ? idArray[0] === currentlySelected.component.id
-        : arrayEquals(
-            idArray,
-            currentlySelected.directives.map(dir => dir.id)
-          );
-    });
-  }
-
   private _reselectNodeOnUpdate(): void {
-    const searchNode = this._findCurrentlySelectedNode(this.currentSelectedElement);
-    if (searchNode) {
-      this.select(searchNode);
+    const nodeThatStillExists = this.dataSource.getFlatNodeFromIndexedNode(this.currentSelectedElement);
+    if (nodeThatStillExists) {
+      this.select(nodeThatStillExists);
     } else {
       this.clearSelectedNode();
     }
