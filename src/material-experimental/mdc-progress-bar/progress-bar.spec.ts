@@ -69,28 +69,32 @@ describe('MDC-based MatProgressBar', () => {
         const primaryStyles =
             progressElement.nativeElement.querySelector('.mdc-linear-progress__primary-bar').style;
         const bufferStyles =
-          progressElement.nativeElement.querySelector('.mdc-linear-progress__buffer').style;
+          progressElement.nativeElement.querySelector('.mdc-linear-progress__buffer-bar').style;
+
+        // Parse out and round the value since different
+        // browsers return the value with a different precision.
+        const getBufferValue = () => Math.floor(parseInt(bufferStyles.flexBasis));
 
         expect(primaryStyles.transform).toBe('scaleX(0)');
-        expect(bufferStyles.transform).toBe('scaleX(1)');
+        expect(getBufferValue()).toBe(100);
 
         progressComponent.value = 40;
         expect(primaryStyles.transform).toBe('scaleX(0.4)');
-        expect(bufferStyles.transform).toBe('scaleX(1)');
+        expect(getBufferValue()).toBe(100);
 
         progressComponent.value = 35;
         progressComponent.bufferValue = 55;
         expect(primaryStyles.transform).toBe('scaleX(0.35)');
-        expect(bufferStyles.transform).toBe('scaleX(1)');
+        expect(getBufferValue()).toBe(100);
 
         progressComponent.mode = 'buffer';
         expect(primaryStyles.transform).toBe('scaleX(0.35)');
-        expect(bufferStyles.transform).toEqual('scaleX(0.55)');
+        expect(getBufferValue()).toEqual(55);
 
         progressComponent.value = 60;
         progressComponent.bufferValue = 60;
         expect(primaryStyles.transform).toBe('scaleX(0.6)');
-        expect(bufferStyles.transform).toEqual('scaleX(0.6)');
+        expect(getBufferValue()).toEqual(60);
       });
 
       it('should remove the `aria-valuenow` attribute in indeterminate mode', () => {
