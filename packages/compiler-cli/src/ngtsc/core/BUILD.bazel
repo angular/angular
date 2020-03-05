@@ -39,7 +39,7 @@ ts_library(
 
 ts_library(
     name = "api",
-    srcs = ["api.ts"],
+    srcs = glob(["api/**/*.ts"]),
     deps = [
         "@npm//typescript",
     ],
