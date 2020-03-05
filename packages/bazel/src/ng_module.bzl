@@ -315,7 +315,12 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         "createExternalSymbolFactoryReexports": (not _is_bazel()),
         # FIXME: wrong place to de-dupe
         "expectedOut": depset([o.path for o in expected_outs]).to_list(),
+        # We instruct the compiler to use the host for import generation in Blaze. By default,
+        # module names between source files of the same compilation unit are relative paths. This
+        # is not desired in google3 where the generated module names are used as qualified names
+        # for aliased exports. We disable relative paths and always use manifest paths in google3.
         "_useHostForImportGeneration": (not _is_bazel()),
+        "_useManifestPathsAsModuleName": (not _is_bazel()),
     }
 
     if _should_produce_flat_module_outs(ctx):
