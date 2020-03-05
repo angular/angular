@@ -209,10 +209,10 @@ function getSymbolInMicrosyntax(info: AstResult, path: TemplateAstPath, attribut
 
   // Find the symbol that contains the position.
   templateBindings.filter(tb => !tb.keyIsVar).forEach(tb => {
-    if (inSpan(valueRelativePosition, tb.expression?.ast.span)) {
+    if (inSpan(valueRelativePosition, tb.value?.ast.span)) {
       const dinfo = diagnosticInfoFromTemplateInfo(info);
       const scope = getExpressionScope(dinfo, path);
-      result = getExpressionSymbol(scope, tb.expression !, path.position, info.template.query);
+      result = getExpressionSymbol(scope, tb.value !, path.position, info.template.query);
     } else if (inSpan(valueRelativePosition, tb.span)) {
       const template = path.first(EmbeddedTemplateAst);
       if (template) {

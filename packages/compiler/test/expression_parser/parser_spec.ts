@@ -248,14 +248,16 @@ describe('parser', () => {
 
   describe('parseTemplateBindings', () => {
 
-    function keys(templateBindings: any[]) { return templateBindings.map(binding => binding.key); }
+    function keys(templateBindings: TemplateBinding[]) {
+      return templateBindings.map(binding => binding.key);
+    }
 
-    function keyValues(templateBindings: any[]) {
+    function keyValues(templateBindings: TemplateBinding[]) {
       return templateBindings.map(binding => {
         if (binding.keyIsVar) {
           return 'let ' + binding.key + (binding.name == null ? '=null' : '=' + binding.name);
         } else {
-          return binding.key + (binding.expression == null ? '' : `=${binding.expression}`);
+          return binding.key + (binding.value == null ? '' : `=${binding.value}`);
         }
       });
     }
@@ -265,14 +267,13 @@ describe('parser', () => {
           binding => source.substring(binding.span.start, binding.span.end));
     }
 
-    function exprSources(templateBindings: any[]) {
-      return templateBindings.map(
-          binding => binding.expression != null ? binding.expression.source : null);
+    function exprSources(templateBindings: TemplateBinding[]) {
+      return templateBindings.map(binding => binding.value != null ? binding.value.source : null);
     }
 
     function humanize(bindings: TemplateBinding[]): Array<[string, string | null, boolean]> {
       return bindings.map(binding => {
-        const {key, expression, name, keyIsVar} = binding;
+        const {key, value: expression, name, keyIsVar} = binding;
         const value = keyIsVar ? name : (expression ? expression.source : expression);
         return [key, value, keyIsVar];
       });
@@ -316,13 +317,13 @@ describe('parser', () => {
 
     it('should store the sources in the result', () => {
       const bindings = parseTemplateBindings('a', '1,b 2');
-      expect(bindings[0].expression !.source).toEqual('1');
-      expect(bindings[1].expression !.source).toEqual('2');
+      expect(bindings[0].value !.source).toEqual('1');
+      expect(bindings[1].value !.source).toEqual('2');
     });
 
     it('should store the passed-in location', () => {
       const bindings = parseTemplateBindings('a', '1,b 2', 'location');
-      expect(bindings[0].expression !.location).toEqual('location');
+      expect(bindings[0].value !.location).toEqual('location');
     });
 
     it('should support common usage of ngIf', () => {
@@ -415,7 +416,7 @@ describe('parser', () => {
 
     it('should parse pipes', () => {
       const bindings = parseTemplateBindings('key', 'value|pipe');
-      const ast = bindings[0].expression !.ast;
+      const ast = bindings[0].value !.ast;
       expect(ast).toBeAnInstanceOf(BindingPipe);
     });
 
