@@ -10,7 +10,8 @@ import * as yargs from 'yargs';
 
 import {resolve, setFileSystem, CachedFileSystem, NodeJSFileSystem} from '../src/ngtsc/file_system';
 import {mainNgcc} from './src/main';
-import {ConsoleLogger, LogLevel} from './src/logging/console_logger';
+import {ConsoleLogger} from './src/logging/console_logger';
+import {LogLevel} from './src/logging/logger';
 
 // CLI entry point
 if (require.main === module) {
