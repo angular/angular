@@ -33,9 +33,9 @@ If you'd like to contribute, please follow our [contributing guidelines][contrib
 our [`help wanted`][help-wanted] label for a list of issues with good opportunities for
 contribution.
 
-## High level work planned for Q1 2020 (Jan - Mar):
+## What we're working on now (Q1 2020):
 * Date-range picker
-* Finish remaining test harnesses for Angular Material components (four remaining as of January)
+* Remaining test harnesses for Angular Material components (four remaining as of January)
 * Continuing to create new, API-compatible versions of the Angular Material components backed by
 [MDC Web][] ([see @jelbourn's ng-conf talk](https://youtu.be/4EXQKP-Sihw?t=891)). There are five
 remaining components to complete here as of January.
