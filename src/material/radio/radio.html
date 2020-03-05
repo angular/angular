@@ -5,16 +5,6 @@
   <div class="mat-radio-container">
     <div class="mat-radio-outer-circle"></div>
     <div class="mat-radio-inner-circle"></div>
-    <div mat-ripple class="mat-radio-ripple mat-focus-indicator"
-         [matRippleTrigger]="label"
-         [matRippleDisabled]="_isRippleDisabled()"
-         [matRippleCentered]="true"
-         [matRippleRadius]="20"
-         [matRippleAnimation]="{enterDuration: 150}">
-
-      <div class="mat-ripple-element mat-radio-persistent-ripple"></div>
-    </div>
-
     <input #input class="mat-radio-input cdk-visually-hidden" type="radio"
         [id]="inputId"
         [checked]="checked"
@@ -28,6 +18,18 @@
         [attr.aria-describedby]="ariaDescribedby"
         (change)="_onInputChange($event)"
         (click)="_onInputClick($event)">
+
+    <!-- The ripple comes after the input so that we can target it with a CSS
+         sibling selector when the input is focused. -->
+    <div mat-ripple class="mat-radio-ripple mat-focus-indicator"
+         [matRippleTrigger]="label"
+         [matRippleDisabled]="_isRippleDisabled()"
+         [matRippleCentered]="true"
+         [matRippleRadius]="20"
+         [matRippleAnimation]="{enterDuration: 150}">
+
+      <div class="mat-ripple-element mat-radio-persistent-ripple"></div>
+    </div>
   </div>
 
   <!-- The label content for radio control. -->
