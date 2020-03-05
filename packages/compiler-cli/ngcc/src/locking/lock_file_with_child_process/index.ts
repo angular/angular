@@ -16,7 +16,7 @@ import {removeLockFile} from './util';
 /// <reference types="node" />
 
 /**
- * This LockFile implenentation uses a child-process to remove the lock file when the main process
+ * This LockFile implementation uses a child-process to remove the lock file when the main process
  * exits (for whatever reason).
  *
  * There are a few milliseconds between the child-process being forked and it registering its

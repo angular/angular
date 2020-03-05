@@ -5,12 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {getLockFilePath} from '@angular/compiler-cli/ngcc/src/locking/lock_file';
 import {ChildProcess} from 'child_process';
 import * as process from 'process';
 
 import {CachedFileSystem, FileSystem, getFileSystem} from '../../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../../src/ngtsc/file_system/testing';
+import {getLockFilePath} from '../../../src/locking/lock_file';
 import {LockFileWithChildProcess} from '../../../src/locking/lock_file_with_child_process';
 import {MockLogger} from '../../helpers/mock_logger';
 
