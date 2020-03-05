@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ChildProcess, fork} from 'child_process';
-import {pid} from 'process';
 import {AbsoluteFsPath, CachedFileSystem, FileSystem} from '../../../../src/ngtsc/file_system';
 import {Logger} from '../../logging/logger';
 import {LockFile, getLockFilePath} from '../lock_file';
 import {removeLockFile} from './util';
+
+/// <reference types="node" />
 
 /**
  * This LockFile implenentation uses a child-process to remove the lock file when the main process
@@ -45,9 +46,11 @@ export class LockFileWithChildProcess implements LockFile {
       // `remove()` Normally the LockFile should only be used once per instance.
       this.unlocker = this.createUnlocker(this.path);
     }
+    this.logger.debug(`Attemping to write lockFile at ${this.path} with PID ${process.pid}`);
     // To avoid race conditions, check for existence of the lockFile by trying to create it.
     // This will throw an error if the file already exists.
-    return this.fs.writeFile(this.path, pid.toString(), /* exclusive */ true);
+    this.fs.writeFile(this.path, process.pid.toString(), /* exclusive */ true);
+    this.logger.debug(`Written lockFile at ${this.path} with PID ${process.pid}`);
   }
 
   read(): string {
@@ -73,6 +76,7 @@ export class LockFileWithChildProcess implements LockFile {
   }
 
   protected createUnlocker(path: AbsoluteFsPath): ChildProcess {
+    this.logger.debug('Forking unlocker child-process');
     return fork(
         this.fs.resolve(__dirname, './unlocker.js'), [path, this.logger.level.toString()],
         { detached: true});

@@ -5,10 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as process from 'process';
 import {NodeJSFileSystem} from '../../../../src/ngtsc/file_system';
 import {ConsoleLogger} from '../../logging/console_logger';
 import {removeLockFile} from './util';
+
+/// <reference types="node" />
 
 // This file is an entry-point for the child-process that is started by `LockFileWithChildProcess`
 // to ensure that the lockFile is removed when the primary process exits unexpectedly.
