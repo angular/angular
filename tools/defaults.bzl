@@ -100,7 +100,7 @@ def ng_module(
         **kwargs
     )
 
-def ng_package(name, data = [], globals = ROLLUP_GLOBALS, readme_md = None, **kwargs):
+def ng_package(name, data = [], deps = [], globals = ROLLUP_GLOBALS, readme_md = None, **kwargs):
     # If no readme file has been specified explicitly, use the default readme for
     # release packages from "src/README.md".
     if not readme_md:
@@ -119,6 +119,10 @@ def ng_package(name, data = [], globals = ROLLUP_GLOBALS, readme_md = None, **kw
         name = name,
         globals = globals,
         data = data + [":license_copied"],
+        # Tslib needs to be explicitly specified as dependency here, so that the `ng_package`
+        # rollup bundling action can include tslib. Tslib is usually a transitive dependency of
+        # entry-points passed to `ng_package`, but the rule does not collect transitive deps.
+        deps = deps + ["@npm//tslib"],
         readme_md = readme_md,
         substitutions = VERSION_PLACEHOLDER_REPLACEMENTS,
         **kwargs
