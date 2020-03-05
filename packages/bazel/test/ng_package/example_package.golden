@@ -1455,7 +1455,7 @@ export { MyService } from './public-api';
 import { Injectable } from '@angular/core';
 import { MySecondService } from './second';
 import * as i0 from "@angular/core";
-import * as i1 from "angular/packages/bazel/test/ng_package/example/imports/second";
+import * as i1 from "./second";
 export class MyService {
     /**
      * @param {?} secondService
@@ -1684,7 +1684,7 @@ import { __decorate, __metadata } from "tslib";
 import { Injectable } from '@angular/core';
 import { MySecondService } from './second';
 import * as i0 from "@angular/core";
-import * as i1 from "angular/packages/bazel/test/ng_package/example/imports/second";
+import * as i1 from "./second";
 var MyService = /** @class */ (function () {
     function MyService(secondService) {
         this.secondService = secondService;

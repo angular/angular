@@ -113,19 +113,17 @@ export function runOneBuild(args: string[], inputs?: {[path: string]: string}): 
     }
   }
 
-  const expectedOuts = config['angularCompilerOptions']['expectedOut'];
+  // These are options passed through from the `ng_module` rule which aren't supported
+  // by the `@angular/compiler-cli` and are only intended for `ngc-wrapped`.
+  const {expectedOut, _useManifestPathsAsModuleName} = config['angularCompilerOptions'];
 
   const {basePath} = ng.calcProjectFileAndBasePath(project);
   const compilerOpts = ng.createNgCompilerOptions(basePath, config, tsOptions);
   const tsHost = ts.createCompilerHost(compilerOpts, true);
   const {diagnostics} = compile({
     allDepsCompiledWithBazel: ALL_DEPS_COMPILED_WITH_BAZEL,
-    compilerOpts,
-    tsHost,
-    bazelOpts,
-    files,
-    inputs,
-    expectedOuts
+    useManifestPathsAsModuleName: _useManifestPathsAsModuleName,
+    expectedOuts: expectedOut, compilerOpts, tsHost, bazelOpts, files, inputs,
   });
   if (diagnostics.length) {
     console.error(ng.formatDiagnostics(diagnostics));
@@ -144,9 +142,11 @@ export function relativeToRootDirs(filePath: string, rootDirs: string[]): string
   return filePath;
 }
 
-export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, bazelOpts, files,
-                         inputs, expectedOuts, gatherDiagnostics, bazelHost}: {
+export function compile({allDepsCompiledWithBazel = true, useManifestPathsAsModuleName,
+                         compilerOpts, tsHost, bazelOpts, files, inputs, expectedOuts,
+                         gatherDiagnostics, bazelHost}: {
   allDepsCompiledWithBazel?: boolean,
+  useManifestPathsAsModuleName?: boolean,
   compilerOpts: ng.CompilerOptions,
   tsHost: ts.CompilerHost, inputs?: {[path: string]: string},
   bazelOpts: BazelOptions,
@@ -199,13 +199,14 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
     throw new Error(`Couldn't find bazel bin in the rootDirs: ${compilerOpts.rootDirs}`);
   }
 
-  const expectedOutsSet = new Set(expectedOuts.map(p => p.replace(/\\/g, '/')));
+  const expectedOutsSet = new Set(expectedOuts.map(p => convertToForwardSlashPath(p)));
 
   const originalWriteFile = tsHost.writeFile.bind(tsHost);
   tsHost.writeFile =
       (fileName: string, content: string, writeByteOrderMark: boolean,
        onError?: (message: string) => void, sourceFiles?: ts.SourceFile[]) => {
-        const relative = relativeToRootDirs(fileName.replace(/\\/g, '/'), [compilerOpts.rootDir]);
+        const relative =
+            relativeToRootDirs(convertToForwardSlashPath(fileName), [compilerOpts.rootDir]);
         if (expectedOutsSet.has(relative)) {
           expectedOutsSet.delete(relative);
           originalWriteFile(fileName, content, writeByteOrderMark, onError, sourceFiles);
@@ -290,20 +291,32 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
 
   const ngHost = ng.createCompilerHost({options: compilerOpts, tsHost: bazelHost});
   const fileNameToModuleNameCache = new Map<string, string>();
-  ngHost.fileNameToModuleName = (importedFilePath: string, containingFilePath: string) => {
+  ngHost.fileNameToModuleName = (importedFilePath: string, containingFilePath?: string) => {
+    const cacheKey = `${importedFilePath}:${containingFilePath}`;
     // Memoize this lookup to avoid expensive re-parses of the same file
     // When run as a worker, the actual ts.SourceFile is cached
     // but when we don't run as a worker, there is no cache.
     // For one example target in g3, we saw a cache hit rate of 7590/7695
-    if (fileNameToModuleNameCache.has(importedFilePath)) {
-      return fileNameToModuleNameCache.get(importedFilePath);
+    if (fileNameToModuleNameCache.has(cacheKey)) {
+      return fileNameToModuleNameCache.get(cacheKey);
     }
-    const result = doFileNameToModuleName(importedFilePath);
-    fileNameToModuleNameCache.set(importedFilePath, result);
+    const result = doFileNameToModuleName(importedFilePath, containingFilePath);
+    fileNameToModuleNameCache.set(cacheKey, result);
     return result;
   };
 
-  function doFileNameToModuleName(importedFilePath: string): string {
+  function doFileNameToModuleName(importedFilePath: string, containingFilePath?: string): string {
+    const relativeTargetPath =
+        relativeToRootDirs(importedFilePath, compilerOpts.rootDirs).replace(EXT, '');
+    const manifestTargetPath = `${bazelOpts.workspaceName}/${relativeTargetPath}`;
+    if (useManifestPathsAsModuleName === true) {
+      return manifestTargetPath;
+    }
+
+    // Unless manifest paths are explicitly enforced, we initially check if a module name is
+    // set for the given source file. The compiler host from `@bazel/typescript` sets source
+    // file module names if the compilation targets either UMD or AMD. To ensure that the AMD
+    // module names match, we first consider those.
     try {
       const sourceFile = ngHost.getSourceFile(importedFilePath, ts.ScriptTarget.Latest);
       if (sourceFile && sourceFile.moduleName) {
@@ -342,11 +355,31 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
         ngHost.amdModuleName) {
       return ngHost.amdModuleName({ fileName: importedFilePath } as ts.SourceFile);
     }
-    const result = relativeToRootDirs(importedFilePath, compilerOpts.rootDirs).replace(EXT, '');
-    if (result.startsWith(NODE_MODULES)) {
-      return result.substr(NODE_MODULES.length);
+
+    // If no AMD module name has been set for the source file by the `@bazel/typescript` compiler
+    // host, and the target file is not part of a flat module node module package, we use the
+    // following rules (in order):
+    //    1. If target file is part of `node_modules/`, we use the package module name.
+    //    2. If no containing file is specified, or the target file is part of a different
+    //       compilation unit, we use a Bazel manifest path. Relative paths are not possible
+    //       since we don't have a containing file, and the target file could be located in the
+    //       output directory, or in an external Bazel repository.
+    //    3. If both rules above didn't match, we compute a relative path between the source files
+    //       since they are part of the same compilation unit.
+    // Note that we don't want to always use (2) because it could mean that compilation outputs
+    // are always leaking Bazel-specific paths, and the output is not self-contained. This could
+    // break `esm2015` or `esm5` output for Angular package release output
+    // Omit the `node_modules` prefix if the module name of an NPM package is requested.
+    if (relativeTargetPath.startsWith(NODE_MODULES)) {
+      return relativeTargetPath.substr(NODE_MODULES.length);
+    } else if (
+        containingFilePath == null || !bazelOpts.compilationTargetSrc.includes(importedFilePath)) {
+      return manifestTargetPath;
     }
-    return bazelOpts.workspaceName + '/' + result;
+    const containingFileDir =
+        path.dirname(relativeToRootDirs(containingFilePath, compilerOpts.rootDirs));
+    const relativeImportPath = path.posix.relative(containingFileDir, relativeTargetPath);
+    return relativeImportPath.startsWith('.') ? relativeImportPath : `./${relativeImportPath}`;
   }
 
   ngHost.toSummaryFileName = (fileName: string, referringSrcFileName: string) => path.posix.join(
@@ -462,6 +495,10 @@ function generateMetadataJson(
 function isCompilationTarget(bazelOpts: BazelOptions, sf: ts.SourceFile): boolean {
   return !NGC_GEN_FILES.test(sf.fileName) &&
       (bazelOpts.compilationTargetSrc.indexOf(sf.fileName) !== -1);
+}
+
+function convertToForwardSlashPath(filePath: string): string {
+  return filePath.replace(/\\/g, '/');
 }
 
 function gatherDiagnosticsForInputsOnly(
