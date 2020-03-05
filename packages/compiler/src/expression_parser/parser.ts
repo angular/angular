@@ -314,7 +314,7 @@ export class _ParseAST {
 
   advance() { this.index++; }
 
-  optionalCharacter(code: number): boolean {
+  consumeOptionalCharacter(code: number): boolean {
     if (this.next.isCharacter(code)) {
       this.advance();
       return true;
@@ -327,7 +327,7 @@ export class _ParseAST {
   peekKeywordAs(): boolean { return this.next.isKeywordAs(); }
 
   expectCharacter(code: number) {
-    if (this.optionalCharacter(code)) return;
+    if (this.consumeOptionalCharacter(code)) return;
     this.error(`Missing expected ${String.fromCharCode(code)}`);
   }
 
@@ -372,11 +372,11 @@ export class _ParseAST {
       const expr = this.parsePipe();
       exprs.push(expr);
 
-      if (this.optionalCharacter(chars.$SEMICOLON)) {
+      if (this.consumeOptionalCharacter(chars.$SEMICOLON)) {
         if (!this.parseAction) {
           this.error('Binding expression cannot contain chained expression');
         }
-        while (this.optionalCharacter(chars.$SEMICOLON)) {
+        while (this.consumeOptionalCharacter(chars.$SEMICOLON)) {
         }  // read all semicolons
       } else if (this.index < this.tokens.length) {
         this.error(`Unexpected token '${this.next}'`);
@@ -399,7 +399,7 @@ export class _ParseAST {
         const name = this.expectIdentifierOrKeyword();
         const nameSpan = this.sourceSpan(nameStart);
         const args: AST[] = [];
-        while (this.optionalCharacter(chars.$COLON)) {
+        while (this.consumeOptionalCharacter(chars.$COLON)) {
           args.push(this.parseExpression());
         }
         const {start} = result.span;
@@ -420,7 +420,7 @@ export class _ParseAST {
     if (this.optionalOperator('?')) {
       const yes = this.parsePipe();
       let no: AST;
-      if (!this.optionalCharacter(chars.$COLON)) {
+      if (!this.consumeOptionalCharacter(chars.$COLON)) {
         const end = this.inputIndex;
         const expression = this.input.substring(start, end);
         this.error(`Conditional expression ${expression} requires all 3 expressions`);
@@ -570,13 +570,13 @@ export class _ParseAST {
     let result = this.parsePrimary();
     const resultStart = result.span.start;
     while (true) {
-      if (this.optionalCharacter(chars.$PERIOD)) {
+      if (this.consumeOptionalCharacter(chars.$PERIOD)) {
         result = this.parseAccessMemberOrMethodCall(result, false);
 
       } else if (this.optionalOperator('?.')) {
         result = this.parseAccessMemberOrMethodCall(result, true);
 
-      } else if (this.optionalCharacter(chars.$LBRACKET)) {
+      } else if (this.consumeOptionalCharacter(chars.$LBRACKET)) {
         this.rbracketsExpected++;
         const key = this.parsePipe();
         this.rbracketsExpected--;
@@ -589,7 +589,7 @@ export class _ParseAST {
           result = new KeyedRead(this.span(resultStart), this.sourceSpan(resultStart), result, key);
         }
 
-      } else if (this.optionalCharacter(chars.$LPAREN)) {
+      } else if (this.consumeOptionalCharacter(chars.$LPAREN)) {
         this.rparensExpected++;
         const args = this.parseCallArguments();
         this.rparensExpected--;
@@ -608,7 +608,7 @@ export class _ParseAST {
 
   parsePrimary(): AST {
     const start = this.inputIndex;
-    if (this.optionalCharacter(chars.$LPAREN)) {
+    if (this.consumeOptionalCharacter(chars.$LPAREN)) {
       this.rparensExpected++;
       const result = this.parsePipe();
       this.rparensExpected--;
@@ -635,7 +635,7 @@ export class _ParseAST {
       this.advance();
       return new ImplicitReceiver(this.span(start), this.sourceSpan(start));
 
-    } else if (this.optionalCharacter(chars.$LBRACKET)) {
+    } else if (this.consumeOptionalCharacter(chars.$LBRACKET)) {
       this.rbracketsExpected++;
       const elements = this.parseExpressionList(chars.$RBRACKET);
       this.rbracketsExpected--;
@@ -673,7 +673,7 @@ export class _ParseAST {
     if (!this.next.isCharacter(terminator)) {
       do {
         result.push(this.parsePipe());
-      } while (this.optionalCharacter(chars.$COMMA));
+      } while (this.consumeOptionalCharacter(chars.$COMMA));
     }
     return result;
   }
@@ -683,7 +683,7 @@ export class _ParseAST {
     const values: AST[] = [];
     const start = this.inputIndex;
     this.expectCharacter(chars.$LBRACE);
-    if (!this.optionalCharacter(chars.$RBRACE)) {
+    if (!this.consumeOptionalCharacter(chars.$RBRACE)) {
       this.rbracesExpected++;
       do {
         const quoted = this.next.isString();
@@ -691,7 +691,7 @@ export class _ParseAST {
         keys.push({key, quoted});
         this.expectCharacter(chars.$COLON);
         values.push(this.parsePipe());
-      } while (this.optionalCharacter(chars.$COMMA));
+      } while (this.consumeOptionalCharacter(chars.$COMMA));
       this.rbracesExpected--;
       this.expectCharacter(chars.$RBRACE);
     }
@@ -702,7 +702,7 @@ export class _ParseAST {
     const start = receiver.span.start;
     const id = this.expectIdentifierOrKeyword();
 
-    if (this.optionalCharacter(chars.$LPAREN)) {
+    if (this.consumeOptionalCharacter(chars.$LPAREN)) {
       this.rparensExpected++;
       const args = this.parseCallArguments();
       this.expectCharacter(chars.$RPAREN);
@@ -742,7 +742,7 @@ export class _ParseAST {
     const positionals: AST[] = [];
     do {
       positionals.push(this.parsePipe());
-    } while (this.optionalCharacter(chars.$COMMA));
+    } while (this.consumeOptionalCharacter(chars.$COMMA));
     return positionals as BindingPipe[];
   }
 
@@ -845,7 +845,7 @@ export class _ParseAST {
   private parseDirectiveKeywordBindings(key: string, keySpan: ParseSpan, absoluteOffset: number):
       TemplateBinding[] {
     const bindings: TemplateBinding[] = [];
-    this.optionalCharacter(chars.$COLON);  // trackBy: trackByFunction
+    this.consumeOptionalCharacter(chars.$COLON);  // trackBy: trackByFunction
     const valueExpr = this.getDirectiveBoundTarget();
     const span = new ParseSpan(keySpan.start, this.inputIndex);
     bindings.push(new TemplateBinding(
@@ -943,7 +943,7 @@ export class _ParseAST {
    * Consume the optional statement terminator: semicolon or comma.
    */
   private consumeStatementTerminator() {
-    this.optionalCharacter(chars.$SEMICOLON) || this.optionalCharacter(chars.$COMMA);
+    this.consumeOptionalCharacter(chars.$SEMICOLON) || this.consumeOptionalCharacter(chars.$COMMA);
   }
 
   error(message: string, index: number|null = null) {

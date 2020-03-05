@@ -134,10 +134,9 @@ export class BindingParser {
       const binding = bindings[i];
       if (binding.keyIsVar) {
         targetVars.push(new ParsedVariable(binding.key, binding.name, sourceSpan));
-      } else if (binding.expression) {
+      } else if (binding.value) {
         this._parsePropertyAst(
-            binding.key, binding.expression, sourceSpan, undefined, targetMatchableAttrs,
-            targetProps);
+            binding.key, binding.value, sourceSpan, undefined, targetMatchableAttrs, targetProps);
       } else {
         targetMatchableAttrs.push([binding.key, '']);
         this.parseLiteralAttr(
@@ -165,8 +164,8 @@ export class BindingParser {
           this._exprParser.parseTemplateBindings(tplKey, tplValue, sourceInfo, absoluteValueOffset);
       this._reportExpressionParserErrors(bindingsResult.errors, sourceSpan);
       bindingsResult.templateBindings.forEach((binding) => {
-        if (binding.expression) {
-          this._checkPipes(binding.expression, sourceSpan);
+        if (binding.value) {
+          this._checkPipes(binding.value, sourceSpan);
         }
       });
       bindingsResult.warnings.forEach(
