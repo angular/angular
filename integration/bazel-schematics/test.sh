@@ -38,7 +38,7 @@ function installLocalPackages() {
   local_packages+=("puppeteer@file:${pwd}/../node_modules/puppeteer")
   local_packages+=("webdriver-manager@file:${pwd}/../node_modules/webdriver-manager")
 
-  yarn add --ignore-scripts --silent "${local_packages[@]}"
+  yarn add --ignore-scripts --silent "${local_packages[@]}" --cache-folder ./.yarn_local_cache
 }
 
 function patchKarmaConf() {
@@ -58,6 +58,8 @@ function testBazel() {
   # Create project
   ng new demo --collection=@angular/bazel --routing --skip-git --skip-install --style=scss
   cd demo
+  # Use a local yarn cache folder so we don't access the global yarn cache
+  mkdir .yarn_local_cache
   patchKarmaConf
   patchProtractorConf
   installLocalPackages
@@ -79,7 +81,7 @@ function testNonBazel() {
   # disable CLI's version check (if version is 0.0.0, then no version check happens)
   yarn --cwd node_modules/@angular/cli version --new-version 0.0.0 --no-git-tag-version
   # re-add build-angular
-  yarn add --dev file:../node_modules/@angular-devkit/build-angular
+  yarn add --dev file:../node_modules/@angular-devkit/build-angular --cache-folder ./.yarn_local_cache
   ng build --progress=false
   ng test --progress=false --watch=false
   ng e2e --port 0 --configuration=production --webdriver-update=false

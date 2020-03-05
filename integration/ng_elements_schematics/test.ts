@@ -53,11 +53,13 @@ rm('-rf', `demo`);
 exec('ng version');
 exec('ng new demo --skip-git --skip-install --style=css --no-interactive');
 cd('demo');
+// Use a local yarn cache folder so we don't access the global yarn cache
+exec('mkdir .yarn_local_cache');
 
 // Install Angular packages that are built locally from HEAD and npm packages
 // from root node modules that are to be kept in sync
 const packageList = Object.keys(packages).map(p => `${p}@${packages[p]}`).join(' ');
-exec(`yarn add --ignore-scripts --silent ${packageList}`);
+exec(`yarn add --ignore-scripts --silent ${packageList} --cache-folder ./.yarn_local_cache`);
 
 // Add @angular/elements
 exec(bazelMappings ? `ng add "${bazelMappings['@angular/elements']}"` : `ng add "${__dirname}/../../dist/packages-dist/elements"`);
