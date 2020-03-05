@@ -104,7 +104,8 @@ describe('TypeScriptServiceHost', () => {
     `);
     const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
     const templates = ngLSHost.getTemplates(file);
-    expect(templates.map(t => t.source)).toEqual(['app-1', 'app-2']);
+    expect templates[0].source == 'app-1';
+    expect templates[1].source == 'app-2';
   });
 
   it('should be able to find external template', () => {

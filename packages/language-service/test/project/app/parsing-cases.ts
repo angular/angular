@@ -104,11 +104,11 @@ export class TemplateReference {
   anyValue: any;
   optional?: string;
   myClick(event: any) {}
-  people: Promise<Person[]> = Promise.resolve([]);
   promisedPerson = Promise.resolve({
     name: 'John Doe',
     age: 42,
     street: '123 Angular Ln',
   });
-  private internal: string = 'internal';
+  promisedPeople: Promise<Person[]> = Promise.resolve([]);
+  private internal = 'internal';
 }

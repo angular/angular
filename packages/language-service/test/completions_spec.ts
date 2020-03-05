@@ -22,29 +22,17 @@ describe('completions', () => {
 
   type CI = ts.CompletionInfo | undefined;
 
-  function normalizeTemplateCursor(template: string): string {
-    const cursorMarker = '~{cursor}';
-    if (template.indexOf(cursorMarker) === -1) {
-      // mockHost ignores location markers; replace the cursor shorthand "|" with the marker if
-      // necessary.
-      return template.replace('|', cursorMarker);
-    }
-
-    return template;
-  }
-
   /**
    * Evaluates an expectation on completions generated for an external template.
    * The external template's component is defined in this function.
-   * @param template template to test completions on. The template must include a cursor location,
-   *        either via the "|" character or "~{cursor}" marker, where completions will be generated
-   *        at.
+   * @param template template to test completions on. The template must include a cursor location
+   *        via the "~{cursor}" marker where completions will be generated at.
    * @param expectation assertion function to perform on the generated completions
    */
   function driveExternal(template: string, expectation: (completions: CI) => void) {
     const TEST_TEMPLATE = '/app/test.ng';
 
-    mockHost.override(TEST_TEMPLATE, normalizeTemplateCursor(template));
+    mockHost.override(TEST_TEMPLATE, template);
     const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
     const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
     expectation(completions);
@@ -53,15 +41,13 @@ describe('completions', () => {
   /**
    * Evaluates an expectation completions generated for an inline template.
    * The inline template's component is expected to be "TemplateReference" in "parsing-cases".
-   * @param template template to test completions on. The template must include a cursor location,
-   *        either via the "|" character or "~{cursor}" marker, where completions will be generated
-   *        at.
+   * @param template template to test completions on. The template must include a cursor location
+   *        via the "~{cursor}" marker where completions will be generated at.
    * @param expectation assertion function to perform on the generated completions
    */
   function driveInline(template: string, expectation: (completions: CI) => void) {
     const APP_COMPONENT = '/app/app.component.ts';
 
-    template = normalizeTemplateCursor(template);
     // TODO(ayazhafiz): it would be easier to inject the template into the "TemplateReference"
     // component.
     mockHost.override(APP_COMPONENT, `
@@ -82,9 +68,9 @@ describe('completions', () => {
           heroes = [this.hero];
           league = [this.heroes];
           myClick(event: any) {}
-          people = Promise.resolve([person]);
           promisedPerson = Promise.resolve(person);
-          private internal: string = 'internal';
+          promisedPeople = Promise.resolve([person]);
+          private internal = 'internal';
         }
       `);
     const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'cursor');
@@ -95,7 +81,7 @@ describe('completions', () => {
   beforeEach(() => { mockHost.reset(); });
 
   it('should not expand i18n templates', () => {
-    const template = `<div i18n="@@el">{{ | }}</div>`;
+    const template = `<div i18n="@@el">{{ ~{cursor} }}</div>`;
     const expectation = (ci: CI) => { expectContain(ci, CompletionKind.PROPERTY, ['title']); };
 
     driveExternal(template, expectation);
@@ -104,7 +90,7 @@ describe('completions', () => {
 
   describe('entity completions', () => {
     it('should provide entity completions', () => {
-      const template = '&|amp';
+      const template = '&~{cursor}amp';
       const expectation = (ci: CI) => {
         expectContain(ci, CompletionKind.ENTITY, ['&amp;', '&gt;', '&lt;', '&iota;']);
       };
@@ -157,7 +143,7 @@ describe('completions', () => {
     });
 
     it('should provide completions in an incomplete template', () => {
-      const template = '<t|';
+      const template = '<t~{cursor}';
       const expectation =
           (ci: CI) => { expectContain(ci, CompletionKind.COMPONENT, ['test-comp']); };
 
@@ -200,7 +186,7 @@ describe('completions', () => {
 
   describe('attribute completions', () => {
     it('should provide attribute directives', () => {
-      const template = '<div |></div>';
+      const template = '<div ~{cursor}></div>';
       const expectation = (ci: CI) => {
         expectContain(ci, CompletionKind.ATTRIBUTE, ['string-model', 'number-model']);
       };
@@ -210,7 +196,7 @@ describe('completions', () => {
     });
 
     it('should provide structural directives', () => {
-      const template = '<div *|></div>';
+      const template = '<div *~{cursor}></div>';
       const expectation = (ci: CI) => {
         expectContain(ci, CompletionKind.ATTRIBUTE, [
           'ngFor',
@@ -228,7 +214,7 @@ describe('completions', () => {
     });
 
     it('should provide completions in an incomplete template', () => {
-      const template = '<div |>';
+      const template = '<div ~{cursor}>';
       const expectation =
           (ci: CI) => { expectContain(ci, CompletionKind.ATTRIBUTE, ['string-model']); };
 
@@ -237,7 +223,7 @@ describe('completions', () => {
     });
 
     it('should provide completions inside an unknown tag', () => {
-      const template = '<unknown |></unknown>';
+      const template = '<unknown ~{cursor}></unknown>';
       const expectation =
           (ci: CI) => { expectContain(ci, CompletionKind.ATTRIBUTE, ['string-model']); };
 
@@ -246,7 +232,7 @@ describe('completions', () => {
     });
 
     describe('html attribute completions', () => {
-      const TEMPLATE = `<h1 |</h1>`;
+      const TEMPLATE = `<h1 ~{cursor}</h1>`;
       const ATTRS = ['class', 'id', 'onclick', 'onmouseup'];
 
       it('should provide html elements in inline templates', () => {
@@ -270,7 +256,7 @@ describe('completions', () => {
 
   describe('expression completions', () => {
     it('should provide public members of a component', () => {
-      const template = '{{ | }}';
+      const template = '{{ ~{cursor} }}';
       const expectation = (ci: CI) => {
         expectContain(ci, CompletionKind.PROPERTY, ['title', 'hero']);
       };
@@ -280,7 +266,7 @@ describe('completions', () => {
     });
 
     it('should not include private members of a class', () => {
-      const template = '{{ | }}';
+      const template = '{{ ~{cursor} }}';
       const expectation = (ci: CI) => {
         const internal = ci !.entries.find(e => e.name === 'internal');
         expect(internal).toBeUndefined();
@@ -292,7 +278,7 @@ describe('completions', () => {
 
     describe('expression property completions', () => {
       it('should provide properties of an object', () => {
-        const template = '{{ hero.| }}';
+        const template = '{{ hero.~{cursor} }}';
         const expectation = (ci: CI) => {
           expectContain(ci, CompletionKind.PROPERTY, ['id', 'name']);
         };
@@ -303,7 +289,7 @@ describe('completions', () => {
 
       describe('with numeric index signatures', () => {
         it('should work with numeric index signatures (arrays)', () => {
-          const template = `{{ heroes[0].| }}`;
+          const template = `{{ heroes[0].~{cursor} }}`;
           const expectation = (ci: CI) => {
             expectContain(ci, CompletionKind.PROPERTY, ['id', 'name']);
           };
@@ -312,7 +298,7 @@ describe('completions', () => {
         });
 
         it('should work with numeric index signatures (tuple arrays)', () => {
-          const template = `{{ tupleArray[1].| }}`;
+          const template = `{{ tupleArray[1].~{cursor} }}`;
           const expectation = (ci: CI) => {
             expectContain(ci, CompletionKind.PROPERTY, ['id', 'name']);
           };
@@ -323,7 +309,7 @@ describe('completions', () => {
 
       describe('with string index signatures', () => {
         it('should work with index notation', () => {
-          const template = `{{ heroesByName['Jacky'].| }}`;
+          const template = `{{ heroesByName['Jacky'].~{cursor} }}`;
           const expectation = (ci: CI) => {
             expectContain(ci, CompletionKind.PROPERTY, ['id', 'name']);
           };
@@ -332,7 +318,7 @@ describe('completions', () => {
         });
 
         it('should work with dot notation', () => {
-          const template = `{{ heroesByName.jacky.| }}`;
+          const template = `{{ heroesByName.jacky.~{cursor} }}`;
           const expectation = (ci: CI) => {
             expectContain(ci, CompletionKind.PROPERTY, ['id', 'name']);
           };
@@ -341,7 +327,7 @@ describe('completions', () => {
         });
 
         it('should work with dot notation if stringIndexType is a primitive type', () => {
-          const template = `{{ primitiveIndexType.test.| }}`;
+          const template = `{{ primitiveIndexType.test.~{cursor} }}`;
           const expectation =
               (ci: CI) => { expectContain(ci, CompletionKind.METHOD, ['substring']); };
 
@@ -382,7 +368,7 @@ describe('completions', () => {
         const template = `
         <div #div>
           <test-comp #test1>
-            {{ | }}
+            {{ ~{cursor} }}
           </test-comp>
         </div>
         <test-comp #test2></test-comp>`;
@@ -397,7 +383,7 @@ describe('completions', () => {
       it('should provide properties for template references targetting components', () => {
         const template = `
             <test-comp #test></test-comp>
-            <div (click)="test.|"></div>
+            <div (click)="test.~{cursor}"></div>
           `;
         const expectation = (ci: CI) => {
           expectContain(ci, CompletionKind.PROPERTY, ['name', 'testEvent']);
@@ -422,7 +408,7 @@ describe('completions', () => {
       it('should provide template bindings variables', () => {
         const template = `
         <div *ngFor="let h of heroes">
-          {{ | }}
+          {{ ~{cursor} }}
         </div>
       `;
         const expectation = (ci: CI) => { expectContain(ci, CompletionKind.VARIABLE, ['h']); };
@@ -447,7 +433,7 @@ describe('completions', () => {
     });
 
     it('should provide the $any() type cast method', () => {
-      const template = '{{ | }}';
+      const template = '{{ ~{cursor} }}';
       const expectation = (ci: CI) => { expectContain(ci, CompletionKind.METHOD, ['$any']); };
 
       driveExternal(template, expectation);
@@ -457,7 +443,7 @@ describe('completions', () => {
 
   describe('property binding completions', () => {
     it('should suggest input property bindings ([] syntax)', () => {
-      const template = `<div number-model [|]></div>`;
+      const template = `<div number-model [~{cursor}]></div>`;
       const expectation =
           (ci: CI) => { expectContain(ci, CompletionKind.ATTRIBUTE, ['inputAlias']); };
 
@@ -466,7 +452,7 @@ describe('completions', () => {
     });
 
     it('should suggest input property bindings (bind- syntax)', () => {
-      const template = `<div number-model bind-|></div>`;
+      const template = `<div number-model bind-~{cursor}></div>`;
       const expectation =
           (ci: CI) => { expectContain(ci, CompletionKind.ATTRIBUTE, ['inputAlias']); };
 
@@ -476,7 +462,7 @@ describe('completions', () => {
 
     describe('binding values', () => {
       it('should provide component members', () => {
-        const template = `<div [id]="|"></div>`;
+        const template = `<div [id]="~{cursor}"></div>`;
         const expectation = (ci: CI) => {
           expectContain(ci, CompletionKind.PROPERTY, ['title', 'hero']);
         };
@@ -486,7 +472,7 @@ describe('completions', () => {
       });
 
       it('should provide properties', () => {
-        const template = `<h1 [model]="hero.|"></h1>`;
+        const template = `<h1 [model]="hero.~{cursor}"></h1>`;
         const expectation = (ci: CI) => {
           expectContain(ci, CompletionKind.PROPERTY, ['id', 'name']);
         };
@@ -499,7 +485,7 @@ describe('completions', () => {
 
   describe('event binding completions', () => {
     it('should suggest output event bindings ([] syntax)', () => {
-      const template = `<div number-model (|)></div>`;
+      const template = `<div number-model (~{cursor})></div>`;
       const expectation =
           (ci: CI) => { expectContain(ci, CompletionKind.ATTRIBUTE, ['outputAlias']); };
 
@@ -508,7 +494,7 @@ describe('completions', () => {
     });
 
     it('should suggest output event bindings (on- syntax)', () => {
-      const template = `<div number-model on-|></div>`;
+      const template = `<div number-model on-~{cursor}></div>`;
       const expectation =
           (ci: CI) => { expectContain(ci, CompletionKind.ATTRIBUTE, ['outputAlias']); };
 
@@ -518,7 +504,7 @@ describe('completions', () => {
 
     describe('binding values', () => {
       it('should provide component methods', () => {
-        const template = `<div (click)="|"></div>`;
+        const template = `<div (click)="~{cursor}"></div>`;
         const expectation = (ci: CI) => { expectContain(ci, CompletionKind.METHOD, ['myClick']); };
 
         driveExternal(template, expectation);
@@ -526,7 +512,7 @@ describe('completions', () => {
       });
 
       it('should provide $event in event bindings', () => {
-        const template = `<div (click)="myClick(|);"></div>`;
+        const template = `<div (click)="myClick(~{cursor});"></div>`;
         const expectation = (ci: CI) => { expectContain(ci, CompletionKind.VARIABLE, ['$event']); };
 
         driveExternal(template, expectation);
@@ -534,7 +520,7 @@ describe('completions', () => {
       });
 
       it('should provide $event property completions in output bindings', () => {
-        const template = `<div string-model (modelChange)="$event.|"></div>`;
+        const template = `<div string-model (modelChange)="$event.~{cursor}"></div>`;
         const expectation = (ci: CI) => {
           // Expect string properties
           expectContain(ci, CompletionKind.METHOD, ['charAt', 'substring']);
@@ -548,7 +534,7 @@ describe('completions', () => {
 
   describe('two-way binding completions', () => {
     it('should suggest two-way input and output bindings ( [()] syntax )', () => {
-      const template = `<div string-model [(|)]></div>`;
+      const template = `<div string-model [(~{cursor})]></div>`;
       const expectation = (ci: CI) => { expectContain(ci, CompletionKind.ATTRIBUTE, ['model']); };
 
       driveInline(template, expectation);
@@ -556,7 +542,7 @@ describe('completions', () => {
     });
 
     it('should suggest two-way input and output bindings (bindon- syntax)', () => {
-      const template = `<div string-model bindon-|></div>`;
+      const template = `<div string-model bindon-~{cursor}></div>`;
       const expectation = (ci: CI) => { expectContain(ci, CompletionKind.ATTRIBUTE, ['model']); };
 
       driveInline(template, expectation);
@@ -565,7 +551,7 @@ describe('completions', () => {
 
     describe('binding values', () => {
       it('should provide component members', () => {
-        const template = `<div [(model)]="|"></div>`;
+        const template = `<div [(model)]="~{cursor}"></div>`;
         const expectation = (ci: CI) => {
           expectContain(ci, CompletionKind.PROPERTY, ['title', 'hero']);
         };
@@ -575,7 +561,7 @@ describe('completions', () => {
       });
 
       it('should provide properties', () => {
-        const template = `<div [(model)]="hero.|"></div>`;
+        const template = `<div [(model)]="hero.~{cursor}"></div>`;
         const expectation = (ci: CI) => {
           expectContain(ci, CompletionKind.PROPERTY, ['id', 'name']);
         };
@@ -585,7 +571,7 @@ describe('completions', () => {
       });
 
       it('should provide $event', () => {
-        const template = `<div [(click)]="$ev|"></div>`;
+        const template = `<div [(click)]="$ev~{cursor}"></div>`;
         const expectation = (ci: CI) => { expectContain(ci, CompletionKind.VARIABLE, ['$event']); };
 
         driveExternal(template, expectation);
@@ -596,7 +582,7 @@ describe('completions', () => {
 
   describe('template reference variable completions', () => {
     it('should provide reference targets (ref- prefix)', () => {
-      const template = `<form ref-itemForm="ngF|"></form>`;
+      const template = `<form ref-itemForm="ngF~{cursor}"></form>`;
       const expectation = (ci: CI) => { expectContain(ci, CompletionKind.REFERENCE, ['ngForm']); };
 
       driveExternal(template, expectation);
@@ -604,7 +590,7 @@ describe('completions', () => {
     });
 
     it('should provide reference targets (# prefix)', () => {
-      const template = `<form #itemForm="ngF|"></form>`;
+      const template = `<form #itemForm="ngF~{cursor}"></form>`;
       const expectation = (ci: CI) => { expectContain(ci, CompletionKind.REFERENCE, ['ngForm']); };
 
       driveExternal(template, expectation);
@@ -615,7 +601,7 @@ describe('completions', () => {
   describe('template binding completions', () => {
     describe('let expression', () => {
       it('should not provide suggestion before the = sign', () => {
-        const template = `<div *withContext="let i| = "></div>`;
+        const template = `<div *withContext="let i~{cursor} = "></div>`;
         const expectation = (ci: CI) => { expect(ci).toBeUndefined(); };
 
         driveExternal(template, expectation);
@@ -623,7 +609,7 @@ describe('completions', () => {
       });
 
       it('should suggest template context members for initialization', () => {
-        const template = `<div *withContext="let p=|"></div>`;
+        const template = `<div *withContext="let p=~{cursor}"></div>`;
         const expectation = (ci: CI) => {
           expectContain(ci, CompletionKind.PROPERTY, ['$implicit', 'nonImplicitPerson']);
         };
@@ -633,7 +619,7 @@ describe('completions', () => {
       });
 
       it('should suggest field references', () => {
-        const template = `<div *withContext="let x of |"></div>`;
+        const template = `<div *withContext="let x of ~{cursor}"></div>`;
         const expectation = (ci: CI) => {
           expectContain(ci, CompletionKind.PROPERTY, ['title', 'heroes']);
           // The symbol 'x' is also in scope. This asserts that we are actually taking the AST into
@@ -646,7 +632,7 @@ describe('completions', () => {
       });
 
       it('should provide expression completions', () => {
-        const template = `<div *ngFor="let x of hero.|"></div>`;
+        const template = `<div *ngFor="let x of hero.~{cursor}"></div>`;
         const expectation = (ci: CI) => { expectContain(ci, CompletionKind.PROPERTY, ['name']); };
 
         driveExternal(template, expectation);
@@ -672,7 +658,7 @@ describe('completions', () => {
     describe('ngFor special cases', () => {
       it('should be able to infer the type of a ngForOf with an async pipe', () => {
         const template = `
-          <div *ngFor="let person of people | async">
+          <div *ngFor="let person of promisedPeople | async">
             {{ person.~{cursor}name }}
           </div>`;
         const expectation = (ci: CI) => {
@@ -687,7 +673,7 @@ describe('completions', () => {
         const template = `
           <div *ngFor="let leagueMembers of league">
             <div *ngFor="let member of leagueMembers">
-              {{ member.| }}
+              {{ member.~{cursor} }}
             </div>
           </div>`;
         const expectation = (ci: CI) => {
@@ -702,7 +688,7 @@ describe('completions', () => {
 
   describe('replacement span', () => {
     it('should not generate replacement entries for zero-length replacements', () => {
-      const template = '{{ hero.| }}';
+      const template = '{{ hero.~{cursor} }}';
       const expectation = (ci: CI) => {
         const completion = ci ?.entries ?.find(entry => entry.name === 'name');
         expect(completion).toBeDefined();
@@ -713,7 +699,7 @@ describe('completions', () => {
     });
 
     it('should work at the start of a template', () => {
-      const template = '|tes';
+      const template = '~{cursor}tes';
       const expectation = (ci: CI) => {
         const completion = ci ?.entries ?.find(entry => entry.name === 'test-comp');
         expect(completion).toBeDefined();
@@ -724,7 +710,7 @@ describe('completions', () => {
     });
 
     it('should work at the end of a template', () => {
-      const template = 'tes|';
+      const template = 'tes~{cursor}';
       const expectation = (ci: CI) => {
         const completion = ci ?.entries ?.find(entry => entry.name === 'test-comp');
         expect(completion).toBeDefined();
@@ -735,7 +721,7 @@ describe('completions', () => {
     });
 
     it('should work for mid-word completions', () => {
-      const template = 'tes|t-co';
+      const template = 'tes~{cursor}t-co';
       const expectation = (ci: CI) => {
         const completion = ci ?.entries ?.find(entry => entry.name === 'test-comp');
         expect(completion).toBeDefined();
@@ -746,7 +732,7 @@ describe('completions', () => {
     });
 
     it('should work for attributes', () => {
-      const template = `<div (cl|)></div>`;
+      const template = `<div (cl~{cursor})></div>`;
       const expectation = (ci: CI) => {
         const completion = ci ?.entries ?.find(entry => entry.name === 'click');
         expect(completion).toBeDefined();
@@ -757,7 +743,7 @@ describe('completions', () => {
     });
 
     it('should work for events', () => {
-      const template = `<div (click)="my|"></div>`;
+      const template = `<div (click)="my~{cursor}"></div>`;
       const expectation = (ci: CI) => {
         const completion = ci ?.entries ?.find(entry => entry.name === 'myClick');
         expect(completion).toBeDefined();
@@ -768,7 +754,7 @@ describe('completions', () => {
     });
 
     it('should work for element names', () => {
-      const template = `<tes|></test-comp>`;
+      const template = `<tes~{cursor}></test-comp>`;
       const expectation = (ci: CI) => {
         const completion = ci ?.entries ?.find(entry => entry.name === 'test-comp');
         expect(completion).toBeDefined();
@@ -779,7 +765,7 @@ describe('completions', () => {
     });
 
     it('should work for bindings', () => {
-      const template = `<input [(ngMod|)] />`;
+      const template = `<input [(ngMod~{cursor})] />`;
       const expectation = (ci: CI) => {
         const completion = ci ?.entries ?.find(entry => entry.name === 'ngModel');
         expect(completion).toBeDefined();
@@ -792,7 +778,7 @@ describe('completions', () => {
 
   describe('insert text', () => {
     it('should include parentheses for methods', () => {
-      const template = `<div (click)="|"></div>`;
+      const template = `<div (click)="~{cursor}"></div>`;
       const expectation = (ci: CI) => {
         expect(ci?.entries).toContain(jasmine.objectContaining({
           name: 'myClick',
