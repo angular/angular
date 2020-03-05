@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Logger} from './logger';
+import {LogLevel, Logger} from './logger';
 
 const RESET = '\x1b[0m';
 const RED = '\x1b[31m';
@@ -16,13 +16,6 @@ export const DEBUG = `${BLUE}Debug:${RESET}`;
 export const WARN = `${YELLOW}Warning:${RESET}`;
 export const ERROR = `${RED}Error:${RESET}`;
 
-export enum LogLevel {
-  debug,
-  info,
-  warn,
-  error,
-}
-
 /**
  * A simple logger that outputs directly to the Console.
  *
@@ -30,17 +23,17 @@ export enum LogLevel {
  * constructor parameter.
  */
 export class ConsoleLogger implements Logger {
-  constructor(private logLevel: LogLevel) {}
+  constructor(public level: LogLevel) {}
   debug(...args: string[]) {
-    if (this.logLevel <= LogLevel.debug) console.debug(DEBUG, ...args);
+    if (this.level <= LogLevel.debug) console.debug(DEBUG, ...args);
   }
   info(...args: string[]) {
-    if (this.logLevel <= LogLevel.info) console.info(...args);
+    if (this.level <= LogLevel.info) console.info(...args);
   }
   warn(...args: string[]) {
-    if (this.logLevel <= LogLevel.warn) console.warn(WARN, ...args);
+    if (this.level <= LogLevel.warn) console.warn(WARN, ...args);
   }
   error(...args: string[]) {
-    if (this.logLevel <= LogLevel.error) console.error(ERROR, ...args);
+    if (this.level <= LogLevel.error) console.error(ERROR, ...args);
   }
 }
