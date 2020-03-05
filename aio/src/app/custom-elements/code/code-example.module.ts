@@ -8,7 +8,6 @@ import { WithCustomElementComponent } from '../element-registry';
   imports: [ CommonModule, CodeModule ],
   declarations: [ CodeExampleComponent ],
   exports: [ CodeExampleComponent ],
-  entryComponents: [ CodeExampleComponent ]
 })
 export class CodeExampleModule implements WithCustomElementComponent {
   customElementComponent: Type<any> = CodeExampleComponent;

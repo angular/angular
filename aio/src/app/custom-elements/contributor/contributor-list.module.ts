@@ -9,7 +9,6 @@ import { WithCustomElementComponent } from '../element-registry';
 @NgModule({
   imports: [ CommonModule, MatIconModule ],
   declarations: [ ContributorListComponent, ContributorComponent ],
-  entryComponents: [ ContributorListComponent ],
   providers: [ ContributorService ]
 })
 export class ContributorListModule implements WithCustomElementComponent {

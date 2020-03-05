@@ -6,7 +6,6 @@ import { WithCustomElementComponent } from '../element-registry';
 @NgModule({
   imports: [ CommonModule ],
   declarations: [ LiveExampleComponent, EmbeddedStackblitzComponent ],
-  entryComponents: [ LiveExampleComponent ]
 })
 export class LiveExampleModule implements WithCustomElementComponent {
   customElementComponent: Type<any> = LiveExampleComponent;

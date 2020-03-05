@@ -10,7 +10,6 @@ import { WithCustomElementComponent } from '../element-registry';
   imports: [ CommonModule, MatCardModule, MatTabsModule, CodeModule ],
   declarations: [ CodeTabsComponent ],
   exports: [ CodeTabsComponent ],
-  entryComponents: [ CodeTabsComponent ]
 })
 export class CodeTabsModule implements WithCustomElementComponent {
   customElementComponent: Type<any> = CodeTabsComponent;
