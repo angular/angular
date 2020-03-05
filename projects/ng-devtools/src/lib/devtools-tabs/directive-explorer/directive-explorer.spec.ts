@@ -24,11 +24,12 @@ describe('DirectiveExplorerComponent', () => {
 
   it('subscribe to backend events', () => {
     comp.subscribeToBackendEvents();
-    expect(comp.messageBus.on).toHaveBeenCalledTimes(4);
+    expect(comp.messageBus.on).toHaveBeenCalledTimes(5);
     expect(comp.messageBus.on).toHaveBeenCalledWith('elementDirectivesProperties', jasmine.any(Function));
     expect(comp.messageBus.on).toHaveBeenCalledWith('latestComponentExplorerView', jasmine.any(Function));
     expect(comp.messageBus.on).toHaveBeenCalledWith('highlightComponentInTreeFromElement', jasmine.any(Function));
     expect(comp.messageBus.on).toHaveBeenCalledWith('removeHighlightFromComponentTree', jasmine.any(Function));
+    expect(comp.messageBus.on).toHaveBeenCalledWith('componentTreeDirty', jasmine.any(Function));
   });
 
   describe('refresh', () => {

@@ -104,14 +104,13 @@ export class DirectiveForestComponent {
         .split('-')
         .filter(id => id !== '')
         .map(Number);
-      if (currentlySelected.component) {
-        return idArray[0] === currentlySelected.component.id;
-      } else {
-        return arrayEquals(
-          idArray,
-          currentlySelected.directives.map(dir => dir.id)
-        );
-      }
+
+      return currentlySelected.component
+        ? idArray[0] === currentlySelected.component.id
+        : arrayEquals(
+            idArray,
+            currentlySelected.directives.map(dir => dir.id)
+          );
     });
   }
 
@@ -286,9 +285,8 @@ export class DirectiveForestComponent {
 
   expandParents(nodeToExpand: FlatNode): void {
     if (nodeToExpand) {
-      // Todo: implement optimized array equals method
-      const parentNode = this.dataSource.data.find(
-        node => node.position.toString() === nodeToExpand.position.slice(0, nodeToExpand.position.length - 1).toString()
+      const parentNode = this.dataSource.data.find(node =>
+        arrayEquals(node.position, nodeToExpand.position.slice(0, nodeToExpand.position.length - 1))
       );
       this.treeControl.expand(parentNode);
       this.expandParents(parentNode);
@@ -311,7 +309,7 @@ export class DirectiveForestComponent {
 }
 
 // works with arrays of string, numbers and booleans
-export const arrayEquals = (a, b) => {
+const arrayEquals = (a: string[] | number[] | boolean[], b: string[] | number[] | boolean[]): boolean => {
   if (a.length !== b.length) {
     return false;
   }
@@ -324,10 +322,9 @@ export const arrayEquals = (a, b) => {
 
   let equal;
   for (let i = 0; i < a.length; i++) {
-    if (i === 0) {
-      equal = a[i] === b[i];
-    } else {
-      equal = a[i] === b[i] && equal;
+    equal = i === 0 ? a[i] === b[i] : a[i] === b[i] && equal;
+    if (!equal) {
+      break;
     }
   }
   return equal;
