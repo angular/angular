@@ -7,7 +7,9 @@
  */
 
 import * as ts from 'typescript';
-import {BazelAndG3Options, I18nOptions, LegacyNgcOptions, NgcCompatibilityOptions, StrictTemplateOptions} from './public_options';
+
+import {BazelAndG3Options, I18nOptions, LegacyNgcOptions, MiscOptions, NgcCompatibilityOptions, StrictTemplateOptions} from './public_options';
+
 
 /**
  * Non-public options which are useful during testing of the compiler.
@@ -33,32 +35,6 @@ export interface TestOnlyOptions {
    * @internal
    */
   ivyTemplateTypeCheck?: boolean;
-}
-
-/**
- * A merged interface of all of the various Angular compiler options, as well as the standard
- * `ts.CompilerOptions`.
- *
- * Also includes a few miscellaneous options.
- */
-export interface NgCompilerOptions extends ts.CompilerOptions, LegacyNgcOptions, BazelAndG3Options,
-    NgcCompatibilityOptions, StrictTemplateOptions, TestOnlyOptions, I18nOptions {
-  /**
-   * Whether the compiler should avoid generating code for classes that haven't been exported.
-   * This is only active when building with `enableIvy: true`. Defaults to `true`.
-   */
-  compileNonExportedClasses?: boolean;
-
-  /**
-   * Whether to remove blank text nodes from compiled templates. It is `false` by default starting
-   * from Angular 6.
-   */
-  preserveWhitespaces?: boolean;
-
-  /**
-   * Disable TypeScript Version Check.
-   */
-  disableTypeScriptVersionCheck?: boolean;
 
   /** An option to enable ngtsc's internal performance tracing.
    *
@@ -70,3 +46,12 @@ export interface NgCompilerOptions extends ts.CompilerOptions, LegacyNgcOptions,
    */
   tracePerformance?: string;
 }
+
+/**
+ * A merged interface of all of the various Angular compiler options, as well as the standard
+ * `ts.CompilerOptions`.
+ *
+ * Also includes a few miscellaneous options.
+ */
+export interface NgCompilerOptions extends ts.CompilerOptions, LegacyNgcOptions, BazelAndG3Options,
+    NgcCompatibilityOptions, StrictTemplateOptions, TestOnlyOptions, I18nOptions, MiscOptions {}
