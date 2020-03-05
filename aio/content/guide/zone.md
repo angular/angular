@@ -303,7 +303,7 @@ This service creates a zone named `angular` to automatically trigger change dete
 
 ### NgZone `run()`/`runOutsideOfAngular()`
 
-`Zone` handles most asynchronous APIs such as `setTimeout()`, `Promise.then(),and `addEventListener()`.
+`Zone` handles most asynchronous APIs such as `setTimeout()`, `Promise.then()`, and `addEventListener()`.
 For the full list, see the [Zone Module document](https://github.com/angular/angular/blob/master/packages/zone.js/MODULE.md).
 Therefore in those asynchronous APIs, you don't need to trigger change detection manually.
 
