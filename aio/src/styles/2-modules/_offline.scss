@@ -1,0 +1,28 @@
+aio-offline-dialog{
+  
+  .button-bar{
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+
+    .button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 35px;
+      min-width: 150px;
+      @include font-size(16);
+      color: $white;
+      background-color: $blue;
+      border-radius: 48px;
+      box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
+      box-sizing: border-box;
+      cursor: pointer;
+      margin-left:10px;
+
+      &:hover {
+        color: rgba($white, 0.7);
+      }
+    }
+  }
+}

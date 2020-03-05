@@ -40,6 +40,10 @@ export const ELEMENT_MODULE_LOAD_CALLBACKS_AS_ROUTES = [
   {
     selector: 'live-example',
     loadChildren: () => import('./live-example/live-example.module').then(m => m.LiveExampleModule)
+  },
+  {
+    selector: 'aio-offline',
+    loadChildren: () => import('./offline/offline.module').then(m => m.OfflineModule)
   }
 ];
 
