@@ -132,10 +132,10 @@
     "sourcemap-codec": "^1.4.8",
     "systemjs": "0.18.10",
     "terser": "^4.4.0",
-    "tsickle": "0.38.0",
+    "tsickle": "0.38.1",
     "tslib": "^1.10.0",
     "tslint": "6.0.0",
-    "typescript": "~3.7.4",
+    "typescript": "~3.8.3",
     "xhr2": "0.1.4",
     "yaml": "^1.7.2",
     "yargs": "13.1.0"

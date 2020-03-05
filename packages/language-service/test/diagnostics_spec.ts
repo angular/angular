@@ -636,8 +636,7 @@ describe('diagnostics', () => {
     const tsDiags = tsLS.getSemanticDiagnostics(APP_COMPONENT);
     expect(tsDiags.length).toBe(1);
     const msgText = ts.flattenDiagnosticMessageText(tsDiags[0].messageText, '\n');
-    expect(msgText).toBe(
-        `Type 'null[]' is not assignable to type 'Provider[]'.\n  Type 'null' is not assignable to type 'Provider'.`);
+    expect(msgText).toBe(`Type 'null' is not assignable to type 'Provider'.`);
     const ngDiags = ngLS.getSemanticDiagnostics(APP_COMPONENT);
     expect(ngDiags.length).toBe(1);
     const {messageText, start, length} = ngDiags[0];

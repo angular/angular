@@ -45,7 +45,8 @@ export class SummaryGenerator implements ShimGenerator {
       } else if (ts.isExportDeclaration(stmt)) {
         // Look for an export statement of the form "export {...};". If it doesn't match that, then
         // skip it.
-        if (stmt.exportClause === undefined || stmt.moduleSpecifier !== undefined) {
+        if (stmt.exportClause === undefined || stmt.moduleSpecifier !== undefined ||
+            !ts.isNamedExports(stmt.exportClause)) {
           continue;
         }
 
