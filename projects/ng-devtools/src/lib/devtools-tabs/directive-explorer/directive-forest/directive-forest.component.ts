@@ -15,6 +15,7 @@ import { ComponentDataSource, FlatNode } from './component-data-source';
 import scrollIntoViewIfNeeded from 'scroll-into-view-if-needed';
 import { isChildOf, parentCollapsed } from './directive-forest-utils';
 import { IndexedNode } from './index-forest';
+import { arrayEquals } from 'shared-utils';
 
 @Component({
   selector: 'ng-directive-forest',
@@ -307,25 +308,3 @@ export class DirectiveForestComponent {
     );
   }
 }
-
-// works with arrays of string, numbers and booleans
-const arrayEquals = (a: string[] | number[] | boolean[], b: string[] | number[] | boolean[]): boolean => {
-  if (a.length !== b.length) {
-    return false;
-  }
-  if (a.length === 0) {
-    return b.length === 0;
-  }
-  if (typeof a[0] !== typeof b[0]) {
-    return false;
-  }
-
-  let equal;
-  for (let i = 0; i < a.length; i++) {
-    equal = i === 0 ? a[i] === b[i] : a[i] === b[i] && equal;
-    if (!equal) {
-      break;
-    }
-  }
-  return equal;
-};
