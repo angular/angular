@@ -11,6 +11,8 @@
  * compiler for backwards compatibility.
  *
  * These are expected to be removed at some point in the future.
+ *
+ * @publicApi
  */
 export interface LegacyNgcOptions {
   /** generate all possible generated files  */
@@ -82,6 +84,8 @@ export interface LegacyNgcOptions {
  * existing View Engine applications.
  *
  * These are expected to be removed at some point in the future.
+ *
+ * @publicApi
  */
 export interface NgcCompatibilityOptions {
   /**
@@ -116,6 +120,8 @@ export interface NgcCompatibilityOptions {
 
 /**
  * Options related to template type-checking and its strictness.
+ *
+ * @publicApi
  */
 export interface StrictTemplateOptions {
   /**
@@ -239,6 +245,8 @@ export interface StrictTemplateOptions {
 /**
  * Options which control behavior useful for "monorepo" build cases using Bazel (such as the
  * internal Google monorepo, g3).
+ *
+ * @publicApi
  */
 export interface BazelAndG3Options {
   /**
@@ -280,6 +288,8 @@ export interface BazelAndG3Options {
 
 /**
  * Options related to i18n compilation support.
+ *
+ * @publicApi
  */
 export interface I18nOptions {
   /**
@@ -303,4 +313,22 @@ export interface I18nOptions {
    * (used by Closure Compiler's output of `goog.getMsg` for transition period)
    */
   i18nUseExternalIds?: boolean;
+}
+
+/**
+ * Miscellaneous options that don't fall into any other category
+ *
+ * @publicApi
+ */
+export interface MiscOptions {
+  /**
+   * Whether the compiler should avoid generating code for classes that haven't been exported.
+   * This is only active when building with `enableIvy: true`. Defaults to `true`.
+   */
+  compileNonExportedClasses?: boolean;
+
+  /**
+   * Disable TypeScript Version Check.
+   */
+  disableTypeScriptVersionCheck?: boolean;
 }
