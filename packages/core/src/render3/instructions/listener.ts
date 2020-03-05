@@ -42,7 +42,8 @@ export function ɵɵlistener(
   const tView = getTView();
   const tNode = getPreviousOrParentTNode();
   listenerInternal(
-      tView, lView, lView[RENDERER], tNode, eventName, listenerFn, useCapture, eventTargetResolver);
+      tView, lView, lView[RENDERER], tNode, eventName, listenerFn, useCapture,
+      eventTargetResolver || null);
   return ɵɵlistener;
 }
 
@@ -75,7 +76,8 @@ export function ɵɵcomponentHostSyntheticListener(
   const renderer = loadComponentRenderer(tNode, lView);
   const tView = getTView();
   listenerInternal(
-      tView, lView, renderer, tNode, eventName, listenerFn, useCapture, eventTargetResolver);
+      tView, lView, renderer, tNode, eventName, listenerFn, useCapture,
+      eventTargetResolver || null);
   return ɵɵcomponentHostSyntheticListener;
 }
 
@@ -114,7 +116,7 @@ function findExistingListener(
 function listenerInternal(
     tView: TView, lView: LView, renderer: Renderer3, tNode: TNode, eventName: string,
     listenerFn: (e?: any) => any, useCapture = false,
-    eventTargetResolver?: GlobalTargetResolver): void {
+    eventTargetResolver: GlobalTargetResolver | null): void {
   const isTNodeDirectiveHost = isDirectiveHost(tNode);
   const firstCreatePass = tView.firstCreatePass;
   const tCleanup: false|any[] = firstCreatePass && (tView.cleanup || (tView.cleanup = []));
@@ -132,10 +134,10 @@ function listenerInternal(
   // add native event listener - applicable to elements only
   if (tNode.type === TNodeType.Element) {
     const native = getNativeByTNode(tNode, lView) as RElement;
-    const resolved = eventTargetResolver ? eventTargetResolver(native) : EMPTY_OBJ as any;
+    const resolved = eventTargetResolver !== null ? eventTargetResolver(native) : EMPTY_OBJ as any;
     const target = resolved.target || native;
     const lCleanupIndex = lCleanup.length;
-    const idxOrTargetGetter = eventTargetResolver ?
+    const idxOrTargetGetter = eventTargetResolver !== null ?
         (_lView: LView) => eventTargetResolver(unwrapRNode(_lView[tNode.index])).target :
         tNode.index;
 
@@ -159,7 +161,7 @@ function listenerInternal(
       // Also, we don't have to search for existing listeners is there are no directives
       // matching on a given node as we can't register multiple event handlers for the same event in
       // a template (this would mean having duplicate attributes).
-      if (!eventTargetResolver && isTNodeDirectiveHost) {
+      if (eventTargetResolver === null && isTNodeDirectiveHost) {
         existingListener = findExistingListener(tView, lView, eventName, tNode.index);
       }
       if (existingListener !== null) {
