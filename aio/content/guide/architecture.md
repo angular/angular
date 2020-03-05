@@ -47,9 +47,12 @@ An app's components typically define many views, arranged hierarchically. Angula
 -->
 Angular 애플리케이션에서는 여러가지 뷰를 계층으로 구성합니다. 그리고 `Router` 서비스를 사용하면 이 뷰들을 전환하면서 페이지를 이동할 수 있습니다. 라우터 서비스는 브라우저의 페이지 전환 로직을 활용하면서 정교하게 동작합니다.
 
-<div class="alert is-helpful>
+<div class="alert is-helpful">
 
+  <!--
   See the [Angular Glossary](guide/glossary) for basic definitions of important Angular terms and usage.
+  -->
+  Angular 용어에 대해 더 알아보려면 [찾아보기](guide/glossary) 문서를 참고하세요.
 
 </div>
 
