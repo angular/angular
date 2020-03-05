@@ -129,17 +129,18 @@ export class ComponentTreeObserver {
 
   private _onAddedNodesMutation(node: Node): void {
     const components = this._getAllNestedComponentsWithinDomNode(node);
+    const directives = this._getAllNestedDirectivesWithinDomNode(node);
+
+    if (components.length + directives.length > 0) {
+      this._tracker.index();
+    }
+
     if (components.length > 0) {
       components.forEach(component => this._onAddedComponent(component));
     }
 
-    const directives = this._getAllNestedDirectivesWithinDomNode(node);
-    if (directives.length) {
+    if (directives.length > 0) {
       directives.forEach(dir => this._onAddedDirective(dir));
-    }
-
-    if (components.length + directives.length > 0) {
-      this._tracker.index();
     }
   }
 
