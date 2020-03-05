@@ -41,8 +41,6 @@ import {NgZone, NoopNgZone} from './zone/ng_zone';
 
 let _platform: PlatformRef;
 
-declare const ngJitMode: boolean;
-
 let compileNgModuleFactory:
     <M>(injector: Injector, options: CompilerOptions, moduleType: Type<M>) =>
         Promise<NgModuleFactory<M>> = compileNgModuleFactory__PRE_R3__;
