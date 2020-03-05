@@ -29,10 +29,12 @@
           },
           "configurations": {
             "production": {
-              "fileReplacements": [{
-                "replace": "src/environments/environment.ts",
-                "with": "src/environments/environment.prod.ts"
-              }],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -41,7 +43,8 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
-              "budgets": [{
+              "budgets": [
+                {
                   "type": "initial",
                   "maximumWarning": "2mb",
                   "maximumError": "5mb"
@@ -131,17 +134,19 @@
               "projects/shell-chrome/src/assets",
               "projects/shell-chrome/src/manifest.json",
               "projects/shell-chrome/src/devtools.html",
-              "projects/shell-chrome/src/popups",
+              "projects/shell-chrome/src/popups"
             ],
             "styles": ["projects/shell-chrome/src/styles.scss"],
             "scripts": []
           },
           "configurations": {
             "production": {
-              "fileReplacements": [{
-                "replace": "projects/shell-chrome/src/environments/environment.ts",
-                "with": "projects/shell-chrome/src/environments/environment.prod.ts"
-              }],
+              "fileReplacements": [
+                {
+                  "replace": "projects/shell-chrome/src/environments/environment.ts",
+                  "with": "projects/shell-chrome/src/environments/environment.prod.ts"
+                }
+              ],
               "optimization": true,
               "outputHashing": "none",
               "sourceMap": false,
@@ -150,11 +155,13 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
-              "budgets": [{
-                "type": "initial",
-                "maximumWarning": "2mb",
-                "maximumError": "5mb"
-              }]
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
             }
           }
         },
@@ -312,6 +319,36 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": ["projects/protocol/tsconfig.lib.json", "projects/protocol/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**"]
+          }
+        }
+      }
+    },
+    "shared-utils": {
+      "projectType": "library",
+      "root": "projects/shared-utils",
+      "sourceRoot": "projects/shared-utils/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/shared-utils/tsconfig.lib.json",
+            "project": "projects/shared-utils/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/shared-utils/src/test.ts",
+            "tsConfig": "projects/shared-utils/tsconfig.spec.json",
+            "karmaConfig": "projects/shared-utils/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["projects/shared-utils/tsconfig.lib.json", "projects/shared-utils/tsconfig.spec.json"],
             "exclude": ["**/node_modules/**"]
           }
         }
