@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ASTWithSource, BindingPipe, Interpolation, ParserError, TemplateBinding} from '@angular/compiler/src/expression_parser/ast';
+import {ASTWithSource, BindingPipe, Interpolation, ParserError, TemplateBinding, VariableBinding} from '@angular/compiler/src/expression_parser/ast';
 import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
-import {Parser, SplitInterpolation, TemplateBindingParseResult} from '@angular/compiler/src/expression_parser/parser';
+import {Parser, SplitInterpolation} from '@angular/compiler/src/expression_parser/parser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 
@@ -247,200 +247,309 @@ describe('parser', () => {
   });
 
   describe('parseTemplateBindings', () => {
-
-    function keys(templateBindings: TemplateBinding[]) {
-      return templateBindings.map(binding => binding.key);
-    }
-
-    function keyValues(templateBindings: TemplateBinding[]) {
-      return templateBindings.map(binding => {
-        if (binding.keyIsVar) {
-          return 'let ' + binding.key + (binding.name == null ? '=null' : '=' + binding.name);
-        } else {
-          return binding.key + (binding.value == null ? '' : `=${binding.value}`);
-        }
-      });
-    }
-
-    function keySpans(source: string, templateBindings: TemplateBinding[]) {
-      return templateBindings.map(
-          binding => source.substring(binding.span.start, binding.span.end));
-    }
-
-    function exprSources(templateBindings: TemplateBinding[]) {
-      return templateBindings.map(binding => binding.value != null ? binding.value.source : null);
-    }
-
     function humanize(bindings: TemplateBinding[]): Array<[string, string | null, boolean]> {
       return bindings.map(binding => {
-        const {key, value: expression, name, keyIsVar} = binding;
-        const value = keyIsVar ? name : (expression ? expression.source : expression);
+        const key = binding.key.source;
+        const value = binding.value ? binding.value.source : null;
+        const keyIsVar = binding instanceof VariableBinding;
         return [key, value, keyIsVar];
       });
     }
 
-    it('should parse a key without a value',
-       () => { expect(keys(parseTemplateBindings('a', ''))).toEqual(['a']); });
+    function humanizeSpans(
+        bindings: TemplateBinding[], attr: string): Array<[string, string, string | null]> {
+      return bindings.map(binding => {
+        const {sourceSpan, key, value} = binding;
+        const sourceStr = attr.substring(sourceSpan.start, sourceSpan.end);
+        const keyStr = attr.substring(key.span.start, key.span.end);
+        let valueStr = null;
+        if (value) {
+          const {start, end} = value instanceof ASTWithSource ? value.ast.sourceSpan : value.span;
+          valueStr = attr.substring(start, end);
+        }
+        return [sourceStr, keyStr, valueStr];
+      });
+    }
 
-    it('should allow string including dashes as keys', () => {
-      let bindings = parseTemplateBindings('a', 'b');
-      expect(keys(bindings)).toEqual(['a']);
-
-      bindings = parseTemplateBindings('a-b', 'c');
-      expect(keys(bindings)).toEqual(['a-b']);
+    it('should parse key and value', () => {
+      const cases: Array<[string, string, string | null, boolean, string, string, string | null]> =
+          [
+            // expression, key, value, VariableBinding, source span, key span, value span
+            ['*a=""', 'a', null, false, 'a="', 'a', null],
+            ['*a="b"', 'a', 'b', false, 'a="b', 'a', 'b'],
+            ['*a-b="c"', 'a-b', 'c', false, 'a-b="c', 'a-b', 'c'],
+            ['*a="1+1"', 'a', '1+1', false, 'a="1+1', 'a', '1+1'],
+          ];
+      for (const [attr, key, value, keyIsVar, sourceSpan, keySpan, valueSpan] of cases) {
+        const bindings = parseTemplateBindings(attr);
+        expect(humanize(bindings)).toEqual([
+          [key, value, keyIsVar],
+        ]);
+        expect(humanizeSpans(bindings, attr)).toEqual([
+          [sourceSpan, keySpan, valueSpan],
+        ]);
+      }
     });
 
-    it('should detect expressions as value', () => {
-      let bindings = parseTemplateBindings('a', 'b');
-      expect(exprSources(bindings)).toEqual(['b']);
-
-      bindings = parseTemplateBindings('a', '1+1');
-      expect(exprSources(bindings)).toEqual(['1+1']);
-    });
-
-    it('should detect names as value', () => {
-      const bindings = parseTemplateBindings('a', 'let b');
-      expect(keyValues(bindings)).toEqual(['a', 'let b=$implicit']);
-    });
-
-    it('should allow space and colon as separators', () => {
-      let bindings = parseTemplateBindings('a', 'b');
-      expect(keys(bindings)).toEqual(['a']);
-      expect(exprSources(bindings)).toEqual(['b']);
+    it('should variable declared via let', () => {
+      const bindings = parseTemplateBindings('*a="let b"');
+      expect(humanize(bindings)).toEqual([
+        // key, value, VariableBinding
+        ['a', null, false],
+        ['b', null, true],
+      ]);
     });
 
     it('should allow multiple pairs', () => {
-      const bindings = parseTemplateBindings('a', '1 b 2');
-      expect(keys(bindings)).toEqual(['a', 'aB']);
-      expect(exprSources(bindings)).toEqual(['1 ', '2']);
+      const bindings = parseTemplateBindings('*a="1 b 2"');
+      expect(humanize(bindings)).toEqual([
+        // key, value, VariableBinding
+        ['a', '1', false],
+        ['aB', '2', false],
+      ]);
     });
 
-    it('should store the sources in the result', () => {
-      const bindings = parseTemplateBindings('a', '1,b 2');
-      expect(bindings[0].value !.source).toEqual('1');
-      expect(bindings[1].value !.source).toEqual('2');
+    it('should allow space and colon as separators', () => {
+      const bindings = parseTemplateBindings('*a="1,b 2"');
+      expect(humanize(bindings)).toEqual([
+        // key, value, VariableBinding
+        ['a', '1', false],
+        ['aB', '2', false],
+      ]);
     });
 
-    it('should store the passed-in location', () => {
-      const bindings = parseTemplateBindings('a', '1,b 2', 'location');
-      expect(bindings[0].value !.location).toEqual('location');
+    it('should store the templateUrl', () => {
+      const bindings = parseTemplateBindings('*a="1,b 2"', '/foo/bar.html');
+      expect(humanize(bindings)).toEqual([
+        // key, value, VariableBinding
+        ['a', '1', false],
+        ['aB', '2', false],
+      ]);
+      expect((bindings[0].value as ASTWithSource).location).toEqual('/foo/bar.html');
     });
 
     it('should support common usage of ngIf', () => {
-      const bindings = parseTemplateBindings('ngIf', 'cond | pipe as foo, let x; ngIf as y');
+      const bindings = parseTemplateBindings('*ngIf="cond | pipe as foo, let x; ngIf as y"');
       expect(humanize(bindings)).toEqual([
-        // [ key, value, keyIsVar ]
-        ['ngIf', 'cond | pipe ', false],
+        // [ key, value, VariableBinding ]
+        ['ngIf', 'cond | pipe', false],
         ['foo', 'ngIf', true],
-        ['x', '$implicit', true],
+        ['x', null, true],
         ['y', 'ngIf', true],
       ]);
     });
 
     it('should support common usage of ngFor', () => {
       let bindings: TemplateBinding[];
-      bindings = parseTemplateBindings(
-          'ngFor', 'let item; of items | slice:0:1 as collection, trackBy: func; index as i');
+      bindings = parseTemplateBindings('*ngFor="let person of people"');
       expect(humanize(bindings)).toEqual([
-        // [ key, value, keyIsVar ]
+        // [ key, value, VariableBinding ]
         ['ngFor', null, false],
-        ['item', '$implicit', true],
-        ['ngForOf', 'items | slice:0:1 ', false],
+        ['person', null, true],
+        ['ngForOf', 'people', false],
+      ]);
+
+
+      bindings = parseTemplateBindings(
+          '*ngFor="let item; of items | slice:0:1 as collection, trackBy: func; index as i"');
+      expect(humanize(bindings)).toEqual([
+        // [ key, value, VariableBinding ]
+        ['ngFor', null, false],
+        ['item', null, true],
+        ['ngForOf', 'items | slice:0:1', false],
         ['collection', 'ngForOf', true],
         ['ngForTrackBy', 'func', false],
         ['i', 'index', true],
       ]);
 
       bindings = parseTemplateBindings(
-          'ngFor', 'let item, of: [1,2,3] | pipe as items; let i=index, count as len');
+          '*ngFor="let item, of: [1,2,3] | pipe as items; let i=index, count as len"');
       expect(humanize(bindings)).toEqual([
-        // [ key, value, keyIsVar ]
+        // [ key, value, VariableBinding ]
         ['ngFor', null, false],
-        ['item', '$implicit', true],
-        ['ngForOf', '[1,2,3] | pipe ', false],
+        ['item', null, true],
+        ['ngForOf', '[1,2,3] | pipe', false],
         ['items', 'ngForOf', true],
         ['i', 'index', true],
         ['len', 'count', true],
       ]);
     });
 
-    it('should support let notation', () => {
-      let bindings = parseTemplateBindings('key', 'let i');
-      expect(keyValues(bindings)).toEqual(['key', 'let i=$implicit']);
-
-      bindings = parseTemplateBindings('key', 'let a; let b');
-      expect(keyValues(bindings)).toEqual([
-        'key',
-        'let a=$implicit',
-        'let b=$implicit',
-      ]);
-
-      bindings = parseTemplateBindings('key', 'let a; let b;');
-      expect(keyValues(bindings)).toEqual([
-        'key',
-        'let a=$implicit',
-        'let b=$implicit',
-      ]);
-
-      bindings = parseTemplateBindings('key', 'let i-a = k-a');
-      expect(keyValues(bindings)).toEqual([
-        'key',
-        'let i-a=k-a',
-      ]);
-
-      bindings = parseTemplateBindings('key', 'let item; let i = k');
-      expect(keyValues(bindings)).toEqual([
-        'key',
-        'let item=$implicit',
-        'let i=k',
-      ]);
-
-      bindings = parseTemplateBindings('directive', 'let item in expr; let a = b', 'location');
-      expect(keyValues(bindings)).toEqual([
-        'directive',
-        'let item=$implicit',
-        'directiveIn=expr in location',
-        'let a=b',
-      ]);
-    });
-
-    it('should support as notation', () => {
-      let bindings = parseTemplateBindings('ngIf', 'exp as local', 'location');
-      expect(keyValues(bindings)).toEqual(['ngIf=exp  in location', 'let local=ngIf']);
-
-      bindings = parseTemplateBindings('ngFor', 'let item of items as iter; index as i', 'L');
-      expect(keyValues(bindings)).toEqual([
-        'ngFor', 'let item=$implicit', 'ngForOf=items  in L', 'let iter=ngForOf', 'let i=index'
-      ]);
-    });
-
     it('should parse pipes', () => {
-      const bindings = parseTemplateBindings('key', 'value|pipe');
-      const ast = bindings[0].value !.ast;
-      expect(ast).toBeAnInstanceOf(BindingPipe);
+      const bindings = parseTemplateBindings('*key="value|pipe "');
+      expect(humanize(bindings)).toEqual([
+        // [ key, value, VariableBinding ]
+        ['key', 'value|pipe', false],
+      ]);
+      const {value} = bindings[0];
+      expect(value).toBeAnInstanceOf(ASTWithSource);
+      expect((value as ASTWithSource).ast).toBeAnInstanceOf(BindingPipe);
     });
 
-    describe('spans', () => {
-      it('should should support let', () => {
-        const source = 'let i';
-        expect(keySpans(source, parseTemplateBindings('key', 'let i'))).toEqual(['', 'let i']);
-      });
-
-      it('should support multiple lets', () => {
-        const source = 'let item; let i=index; let e=even;';
-        expect(keySpans(source, parseTemplateBindings('key', source))).toEqual([
-          '', 'let item', 'let i=index', 'let e=even'
+    describe('"let" binding', () => {
+      it('should support single declaration', () => {
+        const bindings = parseTemplateBindings('*key="let i"');
+        expect(humanize(bindings)).toEqual([
+          // [ key, value, VariableBinding ]
+          ['key', null, false],
+          ['i', null, true],
         ]);
       });
 
-      it('should support a prefix', () => {
-        const source = 'let person of people';
-        const prefix = 'ngFor';
-        const bindings = parseTemplateBindings(prefix, source);
-        expect(keyValues(bindings)).toEqual([
-          'ngFor', 'let person=$implicit', 'ngForOf=people in null'
+      it('should support multiple declarations', () => {
+        const bindings = parseTemplateBindings('*key="let a; let b"');
+        expect(humanize(bindings)).toEqual([
+          // [ key, value, VariableBinding ]
+          ['key', null, false],
+          ['a', null, true],
+          ['b', null, true],
         ]);
-        expect(keySpans(source, bindings)).toEqual(['', 'let person ', 'of people']);
+      });
+
+      it('should support empty string assignment', () => {
+        const bindings = parseTemplateBindings(`*key="let a=''; let b='';"`);
+        expect(humanize(bindings)).toEqual([
+          // [ key, value, VariableBinding ]
+          ['key', null, false],
+          ['a', '', true],
+          ['b', '', true],
+        ]);
+      });
+
+      it('should support key and value names with dash', () => {
+        const bindings = parseTemplateBindings('*key="let i-a = j-a,"');
+        expect(humanize(bindings)).toEqual([
+          // [ key, value, VariableBinding ]
+          ['key', null, false],
+          ['i-a', 'j-a', true],
+        ]);
+      });
+
+      it('should support declarations with or without value assignment', () => {
+        const bindings = parseTemplateBindings('*key="let item; let i = k"');
+        expect(humanize(bindings)).toEqual([
+          // [ key, value, VariableBinding ]
+          ['key', null, false],
+          ['item', null, true],
+          ['i', 'k', true],
+        ]);
+      });
+
+      it('should support declaration before an expression', () => {
+        const bindings = parseTemplateBindings('*directive="let item in expr; let a = b"');
+        expect(humanize(bindings)).toEqual([
+          // [ key, value, VariableBinding ]
+          ['directive', null, false],
+          ['item', null, true],
+          ['directiveIn', 'expr', false],
+          ['a', 'b', true],
+        ]);
+      });
+    });
+
+    describe('"as" binding', () => {
+      it('should support single declaration', () => {
+        const bindings = parseTemplateBindings('*ngIf="exp as local"');
+        expect(humanize(bindings)).toEqual([
+          // [ key, value, VariableBinding ]
+          ['ngIf', 'exp', false],
+          ['local', 'ngIf', true],
+        ]);
+      });
+
+      it('should support declaration after an expression', () => {
+        const bindings = parseTemplateBindings('*ngFor="let item of items as iter; index as i"');
+        expect(humanize(bindings)).toEqual([
+          // [ key, value, VariableBinding ]
+          ['ngFor', null, false],
+          ['item', null, true],
+          ['ngForOf', 'items', false],
+          ['iter', 'ngForOf', true],
+          ['i', 'index', true],
+        ]);
+      });
+
+      it('should support key and value names with dash', () => {
+        const bindings = parseTemplateBindings('*key="foo, k-b as l-b;"');
+        expect(humanize(bindings)).toEqual([
+          // [ key, value, VariableBinding ]
+          ['key', 'foo', false],
+          ['l-b', 'k-b', true],
+        ]);
+      });
+    });
+
+    describe('source, key, value spans', () => {
+      it('should map empty expression', () => {
+        const attr = '*ngIf=""';
+        const bindings = parseTemplateBindings(attr);
+        expect(humanizeSpans(bindings, attr)).toEqual([
+          // source span, key span, value span
+          ['ngIf="', 'ngIf', null],
+        ]);
+      });
+
+      it('should map variable declaration via "let"', () => {
+        const attr = '*key="let i"';
+        const bindings = parseTemplateBindings(attr);
+        expect(humanizeSpans(bindings, attr)).toEqual([
+          // source span, key span, value span
+          ['key="', 'key', null],  // source span stretches till next binding
+          ['let i', 'i', null],
+        ]);
+      });
+
+      it('shoud map multiple variable declarations via "let"', () => {
+        const attr = '*key="let item; let i=index; let e=even;"';
+        const bindings = parseTemplateBindings(attr);
+        expect(humanizeSpans(bindings, attr)).toEqual([
+          // source span, key span, value span
+          ['key="', 'key', null],
+          ['let item; ', 'item', null],
+          ['let i=index; ', 'i', 'index'],
+          ['let e=even;', 'e', 'even'],
+        ]);
+      });
+
+      it('shoud map expression with pipe', () => {
+        const attr = '*ngIf="cond | pipe as foo, let x; ngIf as y"';
+        const bindings = parseTemplateBindings(attr);
+        expect(humanizeSpans(bindings, attr)).toEqual([
+          // source span, key span, value span
+          ['ngIf="cond | pipe ', 'ngIf', 'cond | pipe '],
+          ['ngIf="cond | pipe as foo, ', 'foo', 'ngIf'],
+          ['let x; ', 'x', null],
+          ['ngIf as y', 'y', 'ngIf'],
+        ]);
+      });
+
+      it('should map variable declaration via "as"', () => {
+        const attr =
+            '*ngFor="let item; of items | slice:0:1 as collection, trackBy: func; index as i"';
+        const bindings = parseTemplateBindings(attr);
+        expect(humanizeSpans(bindings, attr)).toEqual([
+          // source span, key span, value span
+          ['ngFor="', 'ngFor', null],
+          ['let item; ', 'item', null],
+          ['of items | slice:0:1 ', 'of', 'items | slice:0:1 '],
+          ['of items | slice:0:1 as collection, ', 'collection', 'of'],
+          ['trackBy: func; ', 'trackBy', 'func'],
+          ['index as i', 'i', 'index'],
+        ]);
+      });
+
+      it('should map literal array', () => {
+        const attr = '*ngFor="let item, of: [1,2,3] | pipe as items; let i=index, count as len, "';
+        const bindings = parseTemplateBindings(attr);
+        expect(humanizeSpans(bindings, attr)).toEqual([
+          // source span, key span, value span
+          ['ngFor="', 'ngFor', null],
+          ['let item, ', 'item', null],
+          ['of: [1,2,3] | pipe ', 'of', '[1,2,3] | pipe '],
+          ['of: [1,2,3] | pipe as items; ', 'items', 'of'],
+          ['let i=index, ', 'i', 'index'],
+          ['count as len, ', 'len', 'count'],
+        ]);
       });
     });
   });
@@ -585,14 +694,18 @@ function parseBinding(text: string, location: any = null, offset: number = 0): A
   return createParser().parseBinding(text, location, offset);
 }
 
-function parseTemplateBindingsResult(
-    key: string, value: string, location: any = null,
-    offset: number = 0): TemplateBindingParseResult {
-  return createParser().parseTemplateBindings(key, value, location, offset);
-}
-function parseTemplateBindings(
-    key: string, value: string, location: any = null, offset: number = 0): TemplateBinding[] {
-  return parseTemplateBindingsResult(key, value, location).templateBindings;
+function parseTemplateBindings(attribute: string, templateUrl = 'foo.html'): TemplateBinding[] {
+  const match = attribute.match(/^\*(.+)="(.*)"$/);
+  expect(match).toBeTruthy(`failed to extract key and value from ${attribute}`);
+  const [_, key, value] = match;
+  const absKeyOffset = 1;  // skip the * prefix
+  const absValueOffset = attribute.indexOf('=') + '="'.length;
+  const parser = createParser();
+  const result =
+      parser.parseTemplateBindings(key, value, templateUrl, absKeyOffset, absValueOffset);
+  expect(result.errors).toEqual([]);
+  expect(result.warnings).toEqual([]);
+  return result.templateBindings;
 }
 
 function parseInterpolation(text: string, location: any = null, offset: number = 0): ASTWithSource|

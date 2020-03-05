@@ -283,10 +283,58 @@ export class ASTWithSource extends AST {
   toString(): string { return `${this.source} in ${this.location}`; }
 }
 
-export class TemplateBinding {
+/**
+ * TemplateBinding refers to a particular key-value pair in a microsyntax
+ * expression. A few examples are:
+ *
+ *   |---------------------|--------------|---------|--------------|
+ *   |     expression      |     key      |  value  | binding type |
+ *   |---------------------|--------------|---------|--------------|
+ *   | 1. let item         |    item      |  null   |   variable   |
+ *   | 2. of items         |   ngForOf    |  items  |  expression  |
+ *   | 3. let x = y        |      x       |    y    |   variable   |
+ *   | 4. index as i       |      i       |  index  |   variable   |
+ *   | 5. trackBy: func    | ngForTrackBy |   func  |  expression  |
+ *   | 6. *ngIf="cond"     |     ngIf     |   cond  |  expression  |
+ *   |---------------------|--------------|---------|--------------|
+ *
+ * (6) is a notable exception because it is a binding from the template key in
+ * the LHS of a HTML attribute to the expression in the RHS. All other bindings
+ * in the example above are derived solely from the RHS.
+ */
+export type TemplateBinding = VariableBinding | ExpressionBinding;
+
+export class VariableBinding {
+  /**
+   * @param sourceSpan entire span of the binding.
+   * @param key name of the LHS along with its span.
+   * @param value optional value for the RHS along with its span.
+   */
   constructor(
-      public span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public key: string,
-      public keyIsVar: boolean, public name: string, public value: ASTWithSource|null) {}
+      public readonly sourceSpan: AbsoluteSourceSpan,
+      public readonly key: TemplateBindingIdentifier,
+      public readonly value: TemplateBindingIdentifier|null) {}
+}
+
+export class ExpressionBinding {
+  /**
+   * @param sourceSpan entire span of the binding.
+   * @param key binding name, like ngForOf, ngForTrackBy, ngIf, along with its
+   * span. Note that the length of the span may not be the same as
+   * `key.source.length`. For example,
+   * 1. key.source = ngFor, key.span is for "ngFor"
+   * 2. key.source = ngForOf, key.span is for "of"
+   * 3. key.source = ngForTrackBy, key.span is for "trackBy"
+   * @param value optional expression for the RHS.
+   */
+  constructor(
+      public readonly sourceSpan: AbsoluteSourceSpan,
+      public readonly key: TemplateBindingIdentifier, public readonly value: ASTWithSource|null) {}
+}
+
+export interface TemplateBindingIdentifier {
+  source: string;
+  span: AbsoluteSourceSpan;
 }
 
 export interface AstVisitor {

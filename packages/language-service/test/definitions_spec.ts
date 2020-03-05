@@ -310,9 +310,7 @@ describe('definitions', () => {
     });
 
     it('should be able to find the directive property', () => {
-      mockHost.override(
-          TEST_TEMPLATE,
-          `<div *ngFor="let item of heroes; ~{start-my}«trackBy»: test~{end-my};"></div>`);
+      mockHost.override(TEST_TEMPLATE, `<div *ngFor="let item of heroes; «trackBy»: test;"></div>`);
 
       // Get the marker for trackBy in the code added above.
       const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'trackBy');
@@ -322,8 +320,7 @@ describe('definitions', () => {
       const {textSpan, definitions} = result !;
 
       // Get the marker for bounded text in the code added above
-      const boundedText = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'my');
-      expect(textSpan).toEqual(boundedText);
+      expect(textSpan).toEqual(marker);
 
       expect(definitions).toBeDefined();
       // The two definitions are setter and getter of 'ngForTrackBy'.

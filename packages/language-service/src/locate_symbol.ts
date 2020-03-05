@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, Attribute, BoundDirectivePropertyAst, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, RecursiveTemplateAstVisitor, SelectorMatcher, StaticSymbol, TemplateAst, TemplateAstPath, templateVisitAll, tokenReference} from '@angular/compiler';
+import {AST, Attribute, BoundDirectivePropertyAst, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, ExpressionBinding, RecursiveTemplateAstVisitor, SelectorMatcher, StaticSymbol, TemplateAst, TemplateAstPath, VariableBinding, templateVisitAll, tokenReference} from '@angular/compiler';
 import * as tss from 'typescript/lib/tsserverlibrary';
 
 import {AstResult} from './common';
@@ -200,33 +200,44 @@ function getSymbolInMicrosyntax(info: AstResult, path: TemplateAstPath, attribut
   if (!attribute.valueSpan) {
     return;
   }
+  const absValueOffset = attribute.valueSpan.start.offset;
   let result: {symbol: Symbol, span: Span}|undefined;
   const {templateBindings} = info.expressionParser.parseTemplateBindings(
       attribute.name, attribute.value, attribute.sourceSpan.toString(),
-      attribute.valueSpan.start.offset);
-  // Find where the cursor is relative to the start of the attribute value.
-  const valueRelativePosition = path.position - attribute.valueSpan.start.offset;
+      attribute.sourceSpan.start.offset, attribute.valueSpan.start.offset);
 
   // Find the symbol that contains the position.
-  templateBindings.filter(tb => !tb.keyIsVar).forEach(tb => {
-    if (inSpan(valueRelativePosition, tb.value?.ast.span)) {
+  for (const tb of templateBindings) {
+    if (tb instanceof VariableBinding) {
+      // TODO(kyliau): if binding is variable we should still look for the value
+      // of the key. For example, "let i=index" => "index" should point to
+      // NgForOfContext.index
+      continue;
+    }
+    if (inSpan(path.position, tb.value?.ast.sourceSpan)) {
       const dinfo = diagnosticInfoFromTemplateInfo(info);
       const scope = getExpressionScope(dinfo, path);
       result = getExpressionSymbol(scope, tb.value !, path.position, info.template.query);
-    } else if (inSpan(valueRelativePosition, tb.span)) {
+    } else if (inSpan(path.position, tb.sourceSpan)) {
       const template = path.first(EmbeddedTemplateAst);
       if (template) {
         // One element can only have one template binding.
         const directiveAst = template.directives[0];
         if (directiveAst) {
-          const symbol = findInputBinding(info, tb.key.substring(1), directiveAst);
+          const symbol = findInputBinding(info, tb.key.source.substring(1), directiveAst);
           if (symbol) {
-            result = {symbol, span: tb.span};
+            result = {
+              symbol,
+              // the span here has to be relative to the start of the template
+              // value so deduct the absolute offset.
+              // TODO(kyliau): Use absolute source span throughout completions.
+              span: offsetSpan(tb.key.span, -absValueOffset),
+            };
           }
         }
       }
     }
-  });
+  }
   return result;
 }
 
