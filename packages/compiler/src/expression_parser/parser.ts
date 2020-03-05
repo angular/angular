@@ -795,10 +795,14 @@ export class _ParseAST {
           bindings.push(...this.parseDirectiveKeyword(tplKey, key, keySpan, this.absoluteOffset));
         }
       }
-      this.optionalCharacter(chars.$SEMICOLON) || this.optionalCharacter(chars.$COMMA);
+      this.consumeStatementTerminator();
     }
 
     return new TemplateBindingParseResult(bindings, [] /* warnings */, this.errors);
+  }
+
+  private consumeStatementTerminator() {
+    this.optionalCharacter(chars.$SEMICOLON) || this.optionalCharacter(chars.$COMMA);
   }
 
   private parseDirectiveKeyword(
@@ -813,19 +817,27 @@ export class _ParseAST {
     }
     const spanStart = absoluteOffset + rawKeySpan.start;
     const valueExpr = this.getDirectiveBoundTarget();
-    const spanEnd = this.absoluteOffset + this.inputIndex;
-    const bindingSpan = new AbsoluteSourceSpan(spanStart, valueExpr?.ast.sourceSpan.end || spanEnd);
-    bindings.push(new TemplateBinding(
-        bindingSpan, key, rawKeySpan.toAbsolute(absoluteOffset), false /* keyIsVar */,
-        valueExpr));
+    let spanEnd = this.absoluteOffset + this.inputIndex;
+
     // The binding could optionally be followed by "as". For example,
     // *ngIf="cond | pipe as x". In this case, the key in the "as" binding
     // is "x" and the value is the template key itself ("ngIf").
     const asBinding = this.parseValueAsKey(key, rawKeySpan, absoluteOffset);
+
+    if (!asBinding) {
+      this.consumeStatementTerminator();
+      spanEnd = this.absoluteOffset + this.inputIndex;
+    }
+
+    const bindingSpan = new AbsoluteSourceSpan(spanStart, spanEnd);
+    bindings.push(new TemplateBinding(
+        bindingSpan, key, rawKeySpan.toAbsolute(absoluteOffset), false /* keyIsVar */,
+        valueExpr));
+
     if (asBinding) {
       bindings.push(asBinding);
     }
-    this.optionalCharacter(chars.$SEMICOLON) || this.optionalCharacter(chars.$COMMA);
+
     return bindings;
   }
 
@@ -850,6 +862,7 @@ export class _ParseAST {
     }
     this.advance();  // consume the 'as' keyword
     const {key, keySpan} = this.expectTemplateBindingKey();
+    this.consumeStatementTerminator();
     const bindingSpan =
         new AbsoluteSourceSpan(absoluteOffset + valueSpan.start, this.absoluteOffset + this.inputIndex);
     const valueAst = new AST(valueSpan, valueSpan.toAbsolute(absoluteOffset));
@@ -873,6 +886,7 @@ export class _ParseAST {
       valueExpr = new ASTWithSource(
           ast, value, this.location, this.absoluteOffset + valueSpan.start, this.errors);
     }
+    this.consumeStatementTerminator();
     const spanEnd = this.absoluteOffset + this.inputIndex;
     const bindingSpan = new AbsoluteSourceSpan(spanStart, spanEnd);
     return new TemplateBinding(

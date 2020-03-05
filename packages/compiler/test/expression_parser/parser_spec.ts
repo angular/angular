@@ -427,15 +427,64 @@ describe('parser', () => {
       fit('should map source, key and value', () => {
         let bindings: TemplateBinding[];
         bindings = parse('*ngIf="cond | pipe as foo, let x; ngIf as y"');
-        console.error(humanize(bindings));
+        expect(humanize(bindings)).toEqual(
+          [
+            [ [ 1, 19 ], [ 1, 5 ], [ 7, 18 ] ],
+            [ [ 1, 27 ], [ 22, 25 ], [ 1, 5 ] ],
+            [ [ 27, 34 ], [ 31, 32 ], null ],
+            [ [ 34, 43 ], [ 42, 43 ], [ 34, 38 ] ],
+          ]
+        );
 
         bindings = parse(
           '*ngFor="let item; of items | slice:0:1 as collection, trackBy: func; index as i"');
-        console.error(humanize(bindings));
+        expect(humanize(bindings)).toEqual(
+          [
+            [ [ 1, 8 ], [ 1, 6 ], null ],
+            [ [ 8, 18 ], [ 12, 16 ], null ],
+            [ [ 18, 39 ], [ 18, 20 ], [ 21, 38 ] ],
+            [ [ 18, 54 ], [ 42, 52 ], [ 18, 25 ] ],
+            [ [ 54, 69 ], [ 54, 61 ], [ 63, 67 ] ],
+            [ [ 69, 79 ], [ 78, 79 ], [ 69, 74 ] ],
+          ]
+        );
 
         bindings = parse(
           '*ngFor="let item, of: [1,2,3] | pipe as items; let i=index, count as len"');
-        console.error(humanize(bindings));
+        expect(humanize(bindings)).toEqual(
+          [
+            [ [ 1, 8 ], [ 1, 6 ], null ],
+            [ [ 8, 18 ], [ 12, 16 ], null ],
+            [ [ 18, 37 ], [ 18, 20 ], [ 22, 36 ] ],
+            [ [ 18, 47 ], [ 40, 45 ], [ 18, 25 ] ],
+            [ [ 47, 60 ], [ 51, 52 ], [ 53, 58 ] ],
+            [ [ 60, 72 ], [ 69, 72 ], [ 60, 65 ] ]
+          ]
+        );
+      });
+
+      fit('binding span should encompass key span and value span', () => {
+        const bindings = humanize(parse('*ngIf="cond | pipe as foo, let x; ngIf as y"'));
+        for (const binding of bindings) {
+          const [bindingSpan, keySpan, valueSpan] = binding;
+          expect(keySpan[0]).toBeGreaterThanOrEqual(bindingSpan[0]);
+          expect(keySpan[1]).toBeLessThanOrEqual(bindingSpan[1]);
+          if (valueSpan) {
+            expect(valueSpan[0]).toBeGreaterThanOrEqual(bindingSpan[0]);
+            expect(valueSpan[1]).toBeLessThanOrEqual(bindingSpan[1]);
+          }
+        }
+      });
+
+      fit('should not have any gaps between successive bindings', () => {
+        const bindings = humanize(parse('*ngIf="cond | pipe as foo, let x; ngIf as y"'));
+        for (let i = 1; i < bindings.length; ++i) {
+          const prev = bindings[i - 1][0];
+          const curr = bindings[i][0];
+          const currStartIsPrevEnd = curr[0] === prev[1];
+          const currStartIsPrevStart = curr[0] === prev[0];
+          expect(currStartIsPrevEnd || currStartIsPrevStart).toBe(true);
+        }
       });
     });
 
