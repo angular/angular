@@ -16,21 +16,21 @@ import {removeLockFile} from './util';
 /// <reference types="node" />
 
 /**
- * This LockFile implementation uses a child-process to remove the lock file when the main process
+ * This `LockFile` implementation uses a child-process to remove the lock file when the main process
  * exits (for whatever reason).
  *
  * There are a few milliseconds between the child-process being forked and it registering its
- * `disconnect` event, which is responsible for tidying up the lockFile in the event that the main
+ * `disconnect` event, which is responsible for tidying up the lock-file in the event that the main
  * process exits unexpectedly.
  *
- * We eagerly create the unlocker child-process so that it maximizes the time before the lockFile is
- * actually written, which makes it very unlikely that the unlocker would not be ready in the case
- * that the developer hits Ctrl-C or closes the terminal within a fraction of a second of the
- * lockFile being created.
+ * We eagerly create the unlocker child-process so that it maximizes the time before the lock-file
+ * is actually written, which makes it very unlikely that the unlocker would not be ready in the
+ * case that the developer hits Ctrl-C or closes the terminal within a fraction of a second of the
+ * lock-file being created.
  *
  * The worst case scenario is that ngcc is killed too quickly and leaves behind an orphaned
- * lockFile. In which case the next ngcc run will display a helpful error message about deleting the
- * lockFile.
+ * lock-file. In which case the next ngcc run will display a helpful error message about deleting
+ * the lock-file.
  */
 export class LockFileWithChildProcess implements LockFile {
   path: AbsoluteFsPath;
@@ -48,17 +48,17 @@ export class LockFileWithChildProcess implements LockFile {
       // `remove()`. Normally the LockFile should only be used once per instance.
       this.unlocker = this.createUnlocker(this.path);
     }
-    this.logger.debug(`Attemping to write lockFile at ${this.path} with PID ${process.pid}`);
-    // To avoid race conditions, check for existence of the lockFile by trying to create it.
+    this.logger.debug(`Attemping to write lock-file at ${this.path} with PID ${process.pid}`);
+    // To avoid race conditions, check for existence of the lock-file by trying to create it.
     // This will throw an error if the file already exists.
     this.fs.writeFile(this.path, process.pid.toString(), /* exclusive */ true);
-    this.logger.debug(`Written lockFile at ${this.path} with PID ${process.pid}`);
+    this.logger.debug(`Written lock-file at ${this.path} with PID ${process.pid}`);
   }
 
   read(): string {
     try {
       if (this.fs instanceof CachedFileSystem) {
-        // The lockFile file is "volatile", it might be changed by an external process,
+        // The lock-file file is "volatile", it might be changed by an external process,
         // so we must not rely upon the cached value when reading it.
         this.fs.invalidateCaches(this.path);
       }

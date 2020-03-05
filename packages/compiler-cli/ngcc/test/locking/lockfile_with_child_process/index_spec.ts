@@ -60,7 +60,7 @@ runInEachFileSystem(() => {
     });
 
     describe('write()', () => {
-      it('should write the lockFile to disk', () => {
+      it('should write the lock-file to disk', () => {
         const fs = getFileSystem();
         const lockFile = new LockFileUnderTest(fs);
         expect(fs.exists(getLockFilePath(fs))).toBe(false);
@@ -81,14 +81,14 @@ runInEachFileSystem(() => {
     });
 
     describe('read()', () => {
-      it('should return the contents of the lockFile', () => {
+      it('should return the contents of the lock-file', () => {
         const fs = getFileSystem();
         const lockFile = new LockFileUnderTest(fs);
         fs.writeFile(lockFile.path, '' + process.pid);
         expect(lockFile.read()).toEqual('' + process.pid);
       });
 
-      it('should return `{unknown}` if the lockFile does not exist', () => {
+      it('should return `{unknown}` if the lock-file does not exist', () => {
         const fs = getFileSystem();
         const lockFile = new LockFileUnderTest(fs);
         expect(lockFile.read()).toEqual('{unknown}');
