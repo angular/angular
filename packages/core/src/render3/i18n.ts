@@ -800,7 +800,8 @@ function readCreateOpCodes(
           const attrValue = createOpCodes[++i] as string;
           // This code is used for ICU expressions only, since we don't support
           // directives/components in ICUs, we don't need to worry about inputs here
-          elementAttributeInternal(elementNodeIndex, attrName, attrValue, tView, lView);
+          elementAttributeInternal(
+              getTNode(tView, elementNodeIndex), lView, attrName, attrValue, null, null);
           break;
         default:
           throw new Error(`Unable to determine the type of mutate operation for "${opCode}"`);
@@ -877,7 +878,9 @@ function readUpdateOpCodes(
               case I18nUpdateOpCode.Attr:
                 const propName = updateOpCodes[++j] as string;
                 const sanitizeFn = updateOpCodes[++j] as SanitizerFn | null;
-                elementPropertyInternal(tView, lView, nodeIndex, propName, value, sanitizeFn);
+                elementPropertyInternal(
+                    tView, getTNode(tView, nodeIndex), lView, propName, value, lView[RENDERER],
+                    sanitizeFn, false);
                 break;
               case I18nUpdateOpCode.Text:
                 textBindingInternal(lView, nodeIndex, value);
@@ -1042,7 +1045,7 @@ function i18nAttributesFirstPass(lView: LView, tView: TView, index: number, valu
           // Set attributes for Elements only, for other types (like ElementContainer),
           // only set inputs below
           if (tNode.type === TNodeType.Element) {
-            elementAttributeInternal(previousElementIndex, attrName, value, tView, lView);
+            elementAttributeInternal(tNode, lView, attrName, value, null, null);
           }
           // Check if that attribute is a directive input
           const dataValue = tNode.inputs !== null && tNode.inputs[attrName];

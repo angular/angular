@@ -192,6 +192,9 @@
     "name": "newArray"
   },
   {
+    "name": "noSideEffects"
+  },
+  {
     "name": "providerToFactory"
   },
   {
@@ -223,8 +226,5 @@
   },
   {
     "name": "ɵɵinject"
-  },
-  {
-    "name": "noSideEffects"
   }
 ]

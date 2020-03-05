@@ -7,8 +7,10 @@
  */
 import {bindingUpdated} from '../bindings';
 import {SanitizerFn} from '../interfaces/sanitization';
-import {getLView, getSelectedIndex, getTView, nextBindingIndex} from '../state';
+import {RENDERER} from '../interfaces/view';
+import {getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
+
 import {elementPropertyInternal, loadComponentRenderer, storePropertyBindingMetadata} from './shared';
 
 /**
@@ -30,10 +32,10 @@ export function ɵɵhostProperty<T>(
   const lView = getLView();
   const bindingIndex = nextBindingIndex();
   if (bindingUpdated(lView, bindingIndex, value)) {
-    const nodeIndex = getSelectedIndex();
     const tView = getTView();
-    elementPropertyInternal(tView, lView, nodeIndex, propName, value, sanitizer, true);
-    ngDevMode && storePropertyBindingMetadata(tView.data, nodeIndex, propName, bindingIndex);
+    const tNode = getSelectedTNode();
+    elementPropertyInternal(tView, tNode, lView, propName, value, lView[RENDERER], sanitizer, true);
+    ngDevMode && storePropertyBindingMetadata(tView.data, tNode, propName, bindingIndex);
   }
   return ɵɵhostProperty;
 }
@@ -66,11 +68,11 @@ export function ɵɵupdateSyntheticHostBinding<T>(
   const lView = getLView();
   const bindingIndex = nextBindingIndex();
   if (bindingUpdated(lView, bindingIndex, value)) {
-    const nodeIndex = getSelectedIndex();
     const tView = getTView();
-    elementPropertyInternal(
-        tView, lView, nodeIndex, propName, value, sanitizer, true, loadComponentRenderer);
-    ngDevMode && storePropertyBindingMetadata(tView.data, nodeIndex, propName, bindingIndex);
+    const tNode = getSelectedTNode();
+    const renderer = loadComponentRenderer(tNode, lView);
+    elementPropertyInternal(tView, tNode, lView, propName, value, renderer, sanitizer, true);
+    ngDevMode && storePropertyBindingMetadata(tView.data, tNode, propName, bindingIndex);
   }
   return ɵɵupdateSyntheticHostBinding;
 }

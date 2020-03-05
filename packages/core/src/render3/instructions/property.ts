@@ -8,8 +8,9 @@
 import {bindingUpdated} from '../bindings';
 import {TNode} from '../interfaces/node';
 import {SanitizerFn} from '../interfaces/sanitization';
-import {LView, TView} from '../interfaces/view';
-import {getLView, getSelectedIndex, getTView, nextBindingIndex} from '../state';
+import {LView, RENDERER, TView} from '../interfaces/view';
+import {getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
+
 import {elementPropertyInternal, setInputsForProperty, storePropertyBindingMetadata} from './shared';
 
 
@@ -36,10 +37,11 @@ export function ɵɵproperty<T>(
   const lView = getLView();
   const bindingIndex = nextBindingIndex();
   if (bindingUpdated(lView, bindingIndex, value)) {
-    const nodeIndex = getSelectedIndex();
     const tView = getTView();
-    elementPropertyInternal(tView, lView, nodeIndex, propName, value, sanitizer);
-    ngDevMode && storePropertyBindingMetadata(tView.data, nodeIndex, propName, bindingIndex);
+    const tNode = getSelectedTNode();
+    elementPropertyInternal(
+        tView, tNode, lView, propName, value, lView[RENDERER], sanitizer, false);
+    ngDevMode && storePropertyBindingMetadata(tView.data, tNode, propName, bindingIndex);
   }
   return ɵɵproperty;
 }

@@ -708,6 +708,9 @@
     "name": "getSelectedIndex"
   },
   {
+    "name": "getSelectedTNode"
+  },
+  {
     "name": "getSymbolIterator"
   },
   {
