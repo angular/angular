@@ -80,6 +80,10 @@ export class ComponentDataSource extends DataSource<FlatNode> {
     return this._expandedData.value;
   }
 
+  getFlatNodeFromIndexedNode(indexedNode: IndexedNode): FlatNode {
+    return this._nodeToFlat.get(indexedNode);
+  }
+
   update(forest: DevToolsNode[]): FlatNode[] {
     if (!forest) {
       return;
@@ -90,10 +94,11 @@ export class ComponentDataSource extends DataSource<FlatNode> {
 
     this.data.forEach(i => (i.newItem = false));
 
-    const { newItems, removedItems } = diff(this._differ, this.data, flattenedCollection);
+    const { newItems, removedItems, movedItems } = diff(this._differ, this.data, flattenedCollection);
     this._treeControl.dataNodes = this.data;
     this._flattenedData.next(this.data);
 
+    movedItems.forEach(i => this._nodeToFlat.set(i.original, i));
     removedItems.forEach(item => this._nodeToFlat.delete(item.original));
     newItems.forEach(i => (i.newItem = true));
 

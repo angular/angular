@@ -1,5 +1,5 @@
 // works with arrays of string, numbers and booleans
-export const arrayEquals = (a: string[] | number[] | boolean[], b: string[] | number[] | boolean[]): boolean => {
+export const arrayEquals = (a: (string | number | boolean)[], b: (string | number | boolean)[]): boolean => {
   if (a.length !== b.length) {
     return false;
   }
