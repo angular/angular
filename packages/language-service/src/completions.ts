@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstPath, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, Element, ElementAst, HtmlAstPath, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ReferenceAst, TagContentType, TemplateBinding, Text, getHtmlTagDefinition} from '@angular/compiler';
+import {AST, ASTWithSource, AstPath, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, Element, ElementAst, HtmlAstPath, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ReferenceAst, TagContentType, TemplateBinding, Text, VariableBinding, getHtmlTagDefinition} from '@angular/compiler';
 import {$$, $_, isAsciiLetter, isDigit} from '@angular/compiler/src/chars';
 
 import {AstResult} from './common';
@@ -71,6 +71,8 @@ enum ATTR {
   // Group 10 = identifier inside ()
   IDENT_EVENT_IDX = 10,
 }
+// Microsyntax template starts with '*'. See https://angular.io/api/core/TemplateRef
+const TEMPLATE_ATTR_PREFIX = '*';
 
 function isIdentifierPart(code: number) {
   // Identifiers consist of alphanumeric characters, '_', or '$'.
@@ -231,8 +233,7 @@ function attributeCompletions(info: AstResult, path: AstPath<HtmlAst>): ng.Compl
   // bind parts for cases like [()|]
   //                              ^ cursor is here
   const bindParts = attr.name.match(BIND_NAME_REGEXP);
-  // TemplateRef starts with '*'. See https://angular.io/api/core/TemplateRef
-  const isTemplateRef = attr.name.startsWith('*');
+  const isTemplateRef = attr.name.startsWith(TEMPLATE_ATTR_PREFIX);
   const isBinding = bindParts !== null || isTemplateRef;
 
   if (!isBinding) {
@@ -450,15 +451,21 @@ class ExpressionVisitor extends NullTemplateVisitor {
   }
 
   visitAttr(ast: AttrAst) {
-    if (ast.name.startsWith('*')) {
+    if (ast.name.startsWith(TEMPLATE_ATTR_PREFIX)) {
       // This a template binding given by micro syntax expression.
       // First, verify the attribute consists of some binding we can give completions for.
+      // The sourceSpan of AttrAst points to the RHS of the attribute
+      const templateKey = ast.name.substring(TEMPLATE_ATTR_PREFIX.length);
+      const templateValue = ast.sourceSpan.toString();
+      const templateUrl = ast.sourceSpan.start.file.url;
+      // TODO(kyliau): We are unable to determine the absolute offset of the key
+      // but it is okay here, because we are only looking at the RHS of the attr
+      const absKeyOffset = 0;
+      const absValueOffset = ast.sourceSpan.start.offset;
       const {templateBindings} = this.info.expressionParser.parseTemplateBindings(
-          ast.name, ast.value, ast.sourceSpan.toString(), ast.sourceSpan.start.offset);
-      // Find where the cursor is relative to the start of the attribute value.
-      const valueRelativePosition = this.position - ast.sourceSpan.start.offset;
+          templateKey, templateValue, templateUrl, absKeyOffset, absValueOffset);
       // Find the template binding that contains the position.
-      const binding = templateBindings.find(b => inSpan(valueRelativePosition, b.span));
+      const binding = templateBindings.find(b => inSpan(this.position, b.sourceSpan));
 
       if (!binding) {
         return;
@@ -549,7 +556,10 @@ class ExpressionVisitor extends NullTemplateVisitor {
 
     const valueRelativePosition = this.position - attr.sourceSpan.start.offset;
 
-    if (binding.keyIsVar) {
+    if (binding instanceof VariableBinding) {
+      // TODO(kyliau): With expression sourceSpan we shouldn't have to search
+      // the attribute value string anymore. Just check if position is in the
+      // expression source span.
       const equalLocation = attr.value.indexOf('=');
       if (equalLocation > 0 && valueRelativePosition > equalLocation) {
         // We are after the '=' in a let clause. The valid values here are the members of the
@@ -566,9 +576,8 @@ class ExpressionVisitor extends NullTemplateVisitor {
         }
       }
     }
-
-    if (binding.value && inSpan(valueRelativePosition, binding.value.ast.span)) {
-      this.processExpressionCompletions(binding.value.ast);
+    else if (inSpan(valueRelativePosition, binding.value?.ast.span)) {
+      this.processExpressionCompletions(binding.value !.ast);
       return;
     }
 

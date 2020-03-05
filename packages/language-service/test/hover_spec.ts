@@ -118,9 +118,8 @@ describe('hover', () => {
     });
 
     it('should work for structural directive inputs', () => {
-      mockHost.override(
-          TEST_TEMPLATE, `<div *ngFor="let item of heroes; «ᐱtrackByᐱ: test»;"></div>`);
-      const marker = mockHost.getDefinitionMarkerFor(TEST_TEMPLATE, 'trackBy');
+      mockHost.override(TEST_TEMPLATE, `<div *ngFor="let item of heroes; «trackBy»: test;"></div>`);
+      const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'trackBy');
       const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
       expect(quickInfo).toBeTruthy();
       const {textSpan, displayParts} = quickInfo !;

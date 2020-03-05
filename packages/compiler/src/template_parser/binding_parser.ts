@@ -8,7 +8,7 @@
 
 import {CompileDirectiveSummary, CompilePipeSummary} from '../compile_metadata';
 import {SecurityContext} from '../core';
-import {ASTWithSource, BindingPipe, BindingType, BoundElementProperty, EmptyExpr, ParsedEvent, ParsedEventType, ParsedProperty, ParsedPropertyType, ParsedVariable, ParserError, RecursiveAstVisitor, TemplateBinding} from '../expression_parser/ast';
+import {ASTWithSource, BindingPipe, BindingType, BoundElementProperty, EmptyExpr, ParsedEvent, ParsedEventType, ParsedProperty, ParsedPropertyType, ParsedVariable, ParserError, RecursiveAstVisitor, TemplateBinding, VariableBinding} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {mergeNsAndName} from '../ml_parser/tags';
@@ -114,8 +114,9 @@ export class BindingParser {
   }
 
   /**
-   * Parses an inline template binding, e.g.
-   *    <tag *tplKey="<tplValue>">
+   * Parses the bindings in a microsyntax expression, and converts them to
+   * `ParsedProperty` or `ParsedVariable`.
+   *
    * @param tplKey template binding name
    * @param tplValue template binding value
    * @param sourceSpan span of template binding relative to entire the template
@@ -128,43 +129,51 @@ export class BindingParser {
       tplKey: string, tplValue: string, sourceSpan: ParseSourceSpan, absoluteValueOffset: number,
       targetMatchableAttrs: string[][], targetProps: ParsedProperty[],
       targetVars: ParsedVariable[]) {
-    const bindings = this._parseTemplateBindings(tplKey, tplValue, sourceSpan, absoluteValueOffset);
+    const absoluteKeyOffset = sourceSpan.start.offset;
+    const bindings = this._parseTemplateBindings(
+        tplKey, tplValue, sourceSpan, absoluteKeyOffset, absoluteValueOffset);
 
     for (let i = 0; i < bindings.length; i++) {
       const binding = bindings[i];
-      if (binding.keyIsVar) {
-        targetVars.push(new ParsedVariable(binding.key, binding.name, sourceSpan));
+      const key = binding.key.source;
+      if (binding instanceof VariableBinding) {
+        const value = binding.value ? binding.value.source : '$implicit';
+        targetVars.push(new ParsedVariable(key, value, sourceSpan));
       } else if (binding.value) {
         this._parsePropertyAst(
-            binding.key, binding.value, sourceSpan, undefined, targetMatchableAttrs, targetProps);
+            key, binding.value, sourceSpan, undefined, targetMatchableAttrs, targetProps);
       } else {
-        targetMatchableAttrs.push([binding.key, '']);
+        targetMatchableAttrs.push([key, '']);
         this.parseLiteralAttr(
-            binding.key, null, sourceSpan, absoluteValueOffset, undefined, targetMatchableAttrs,
+            key, null, sourceSpan, absoluteValueOffset, undefined, targetMatchableAttrs,
             targetProps);
       }
     }
   }
 
   /**
-   * Parses the bindings in an inline template binding, e.g.
+   * Parses the bindings in a microsyntax expression, e.g.
+   * ```
    *    <tag *tplKey="let value1 = prop; let value2 = localVar">
+   * ```
+   *
    * @param tplKey template binding name
    * @param tplValue template binding value
    * @param sourceSpan span of template binding relative to entire the template
-   * @param absoluteValueOffset start of the tplValue relative to the entire template
+   * @param absoluteKeyOffset start of the `tplKey`
+   * @param absoluteValueOffset start of the `tplValue`
    */
   private _parseTemplateBindings(
-      tplKey: string, tplValue: string, sourceSpan: ParseSourceSpan,
+      tplKey: string, tplValue: string, sourceSpan: ParseSourceSpan, absoluteKeyOffset: number,
       absoluteValueOffset: number): TemplateBinding[] {
     const sourceInfo = sourceSpan.start.toString();
 
     try {
-      const bindingsResult =
-          this._exprParser.parseTemplateBindings(tplKey, tplValue, sourceInfo, absoluteValueOffset);
+      const bindingsResult = this._exprParser.parseTemplateBindings(
+          tplKey, tplValue, sourceInfo, absoluteKeyOffset, absoluteValueOffset);
       this._reportExpressionParserErrors(bindingsResult.errors, sourceSpan);
       bindingsResult.templateBindings.forEach((binding) => {
-        if (binding.value) {
+        if (binding.value instanceof ASTWithSource) {
           this._checkPipes(binding.value, sourceSpan);
         }
       });
