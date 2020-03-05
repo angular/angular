@@ -405,7 +405,7 @@ function createExportTableFor(sourceFile: ts.SourceFile): Set<string> {
       case ts.SyntaxKind.ExportDeclaration:
         const exportDeclaration = node as ts.ExportDeclaration;
         const {moduleSpecifier, exportClause} = exportDeclaration;
-        if (!moduleSpecifier && exportClause) {
+        if (!moduleSpecifier && exportClause && ts.isNamedExports(exportClause)) {
           exportClause.elements.forEach(spec => { exportTable.add(spec.name.text); });
         }
     }

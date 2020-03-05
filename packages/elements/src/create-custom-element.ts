@@ -29,9 +29,9 @@ export interface NgElementConstructor<P> {
 
   /**
    * Initializes a constructor instance.
-   * @param injector The source component's injector.
+   * @param injector If provided, overrides the configured injector.
    */
-  new (injector: Injector): NgElement&WithProperties<P>;
+  new (injector?: Injector): NgElement&WithProperties<P>;
 }
 
 /**

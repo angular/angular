@@ -1748,7 +1748,7 @@ runInEachFileSystem(() => {
         if (decl.initializer !== undefined && ts.isCallExpression(decl.initializer)) {
           const expr = decl.initializer.expression;
           if (ts.isIdentifier(expr)) return expr;
-          if (ts.isPropertyAccessExpression(expr)) return expr.name;
+          if (ts.isPropertyAccessExpression(expr) && ts.isIdentifier(expr.name)) return expr.name;
         }
         throw new Error(`Unable to extract identifier from declaration '${decl.getText()}'.`);
       };
