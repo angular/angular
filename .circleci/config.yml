@@ -132,6 +132,12 @@ var_19: &skip_on_pull_requests_filter
       ignore:
         - /pull\/\d+/
 
+# Filter which ensures that jobs only run for pull requests.
+var_20: &only_on_pull_requests_filter
+  branches:
+      only:
+        - /pull\/\d+/
+
 # -----------------------------
 # Container version of CircleCI
 # -----------------------------
@@ -342,6 +348,21 @@ jobs:
           path: /tmp/cdk-umd-minified-bundles
           destination: /angular_material/cdk_release_output/
 
+  upload_release_packages:
+    <<: *job_defaults
+    steps:
+      - *checkout_code
+      - *restore_cache
+      - *attach_release_output
+      - *yarn_install
+
+      # Creates package archives and passes in an appropriate meaningful archive suffix. The
+      # suffix consists of the pull request number and a short SHA describing the current `HEAD`.
+      - run: ./scripts/create-package-archives.js --suffix "pr$CIRCLE_PR_NUMBER-$(git rev-parse --short HEAD)"
+      # Upload archives to the CircleCI job artifacts.
+      - store_artifacts:
+          path: dist/release-archives
+
   # ----------------------------------------
   # Job that publishes the build snapshots
   # ----------------------------------------
@@ -514,6 +535,12 @@ workflows:
           filters: *ignore_presubmit_branch_filter
       - build_release_packages:
           filters: *ignore_presubmit_branch_filter
+      - upload_release_packages:
+          # We don't want to run this job on push builds because for those, the
+          # `publish_snapshots` runs, and publishes build artifacts.
+          filters: *only_on_pull_requests_filter
+          requires:
+            - build_release_packages
       - lint:
           filters: *ignore_presubmit_branch_filter
       - ngcc_compatibility:

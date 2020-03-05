@@ -23,3 +23,38 @@ and rebuild. The browser should refresh automatically when changes are made.
 To run unit tests, run `yarn test <target>`. The `target` can be either a short name (e.g. `yarn test button`) or an explicit path `yarn test src/cdk/stepper`.
 To run the e2e tests, run `yarn e2e`.
 To run lint, run `yarn lint`.
+
+### Getting Packages from Build Artifacts
+Each CI run for a Pull Request stores the built Angular packages as
+[build artifacts](https://circleci.com/docs/2.0/artifacts). The artifacts are not guaranteed to be
+available as a long-term distribution mechanism, but they are guaranteed to be available around the
+time of the build.
+
+You can access the artifacts for a specific CI run by going to the workflow page, clicking on the
+`upload_release_packages` job and then switching to the "Artifacts" tab.
+
+#### Archives for each Package
+On the "Artifacts" tab, there is a list of links to compressed archives for Angular packages. The
+archive names are of the format `<package-name>-pr<pr-number>-<sha>.tgz` (for example
+`material-pr12345-a1b2c3d.tgz`).
+
+One can use the URL to the `.tgz` file for each package to install them as dependencies in a
+project they need to test the Pull Request changes against. [Yarn](https://yarnpkg.com/lang/en/docs/cli/add)
+supports installing dependencies from URLs to `.tgz` files. As an example, update the dependencies
+in `package.json` to point to the artifact URLs and then run `yarn` to install the packages:
+
+```json
+"dependencies": {
+  "@angular/cdk": "https://<...>.circle-artifacts.com<...>/cdk-pr12345-a1b2c3d.tgz",
+  "@angular/material": "https://<...>.circle-artifacts.com<...>/material-pr12345-a1b2c3d.tgz",
+}
+```
+
+#### Download all Packages
+In addition to the individual package archives, a `.tgz` file including all packages is also
+available (named `all-pr<pr-number>-<sha>.tgz`). This can be used if one prefers to download all
+packages locally and test them by either of the following ways:
+
+1. Update the dependencies in `package.json` to point to the local uncompressed package directories.
+2. Directly copy the local uncompressed package directories into the `node_modules/` directory
+   of a project.
