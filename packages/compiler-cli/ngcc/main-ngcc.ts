@@ -11,7 +11,8 @@ import * as yargs from 'yargs';
 import {resolve, setFileSystem, CachedFileSystem, NodeJSFileSystem} from '../src/ngtsc/file_system';
 import {mainNgcc} from './src/main';
 import {ConsoleLogger} from './src/logging/console_logger';
-import {LogLevel} from './src/logging/logger';
+import {LogLevel, Logger} from './src/logging/logger';
+import {JsonConsoleLogger} from './src/logging/json_console_logger';
 
 // CLI entry point
 if (require.main === module) {
@@ -76,6 +77,11 @@ if (require.main === module) {
             describe: 'The lowest severity logging message that should be output.',
             choices: ['debug', 'info', 'warn', 'error'],
           })
+          .option('log-format', {
+            describe: 'Choose the format of the logging messages.',
+            choices: ['default', 'json'],
+            default: 'default',
+          })
           .help()
           .parse(args);
 
@@ -92,12 +98,13 @@ if (require.main === module) {
   const targetEntryPointPath = options['t'] ? options['t'] : undefined;
   const compileAllFormats = !options['first-only'];
   const createNewEntryPointFormats = options['create-ivy-entry-points'];
-  const logLevel = options['l'] as keyof typeof LogLevel | undefined;
+  const logLevel = options['l'] as keyof typeof LogLevel || 'info';
+  const logFormat = options['log-format'];
   const enableI18nLegacyMessageIdFormat = options['legacy-message-ids'];
 
   (async() => {
     try {
-      const logger = logLevel && new ConsoleLogger(LogLevel[logLevel]);
+      const logger = getLogger(logFormat, LogLevel[logLevel]);
 
       await mainNgcc({
         basePath: baseSourcePath,
@@ -110,10 +117,8 @@ if (require.main === module) {
         async: options['async'],
       });
 
-      if (logger) {
-        const duration = Math.round((Date.now() - startTime) / 1000);
-        logger.debug(`Run ngcc in ${duration}s.`);
-      }
+      const duration = Math.round((Date.now() - startTime) / 100) / 10;
+      logger.debug(`Run ngcc in ${duration}s.`);
 
       process.exitCode = 0;
     } catch (e) {
@@ -121,4 +126,13 @@ if (require.main === module) {
       process.exitCode = 1;
     }
   })();
+}
+
+function getLogger(format: 'default' | 'json', level: LogLevel): Logger {
+  switch (format) {
+    case 'json':
+      return new JsonConsoleLogger(level);
+    default:
+      return new ConsoleLogger(level);
+  }
 }
