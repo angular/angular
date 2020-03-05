@@ -567,8 +567,8 @@ class ExpressionVisitor extends NullTemplateVisitor {
       }
     }
 
-    if (binding.expression && inSpan(valueRelativePosition, binding.expression.ast.span)) {
-      this.processExpressionCompletions(binding.expression.ast);
+    if (binding.value && inSpan(valueRelativePosition, binding.value.ast.span)) {
+      this.processExpressionCompletions(binding.value.ast);
       return;
     }
 
