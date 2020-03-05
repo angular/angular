@@ -26,7 +26,6 @@ runInEachFileSystem(() => {
           // testing an async scenario.
           await Promise.resolve();
           log.push('fn() - after');
-          // return Promise.resolve();
         });
         expect(log).toEqual(['write()', 'fn() - before', 'fn() - after', 'remove()']);
       });
