@@ -30,6 +30,7 @@ export const DEV_APP_ROUTES: Routes = [
   {path: 'card', loadChildren: 'card/card-demo-module#CardDemoModule'},
   {path: 'checkbox', loadChildren: 'checkbox/checkbox-demo-module#CheckboxDemoModule'},
   {path: 'chips', loadChildren: 'chips/chips-demo-module#ChipsDemoModule'},
+  {path: 'clipboard', loadChildren: 'clipboard/clipboard-demo-module#ClipboardDemoModule'},
   {
     path: 'column-resize',
     loadChildren: 'column-resize/column-resize-demo-module#ColumnResizeDemoModule'

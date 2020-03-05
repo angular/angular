@@ -31,6 +31,7 @@ export class DevAppLayout {
     {name: 'Card', route: '/card'},
     {name: 'Checkbox', route: '/checkbox'},
     {name: 'Chips', route: '/chips'},
+    {name: 'Clipboard', route: '/clipboard'},
     {name: 'Column Resize', route: 'column-resize'},
     {name: 'Connected Overlay', route: '/connected-overlay'},
     {name: 'Datepicker', route: '/datepicker'},

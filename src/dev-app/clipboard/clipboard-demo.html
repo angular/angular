@@ -1,0 +1,14 @@
+<section>
+  <label for="example-textarea">Text to be copied</label>
+  <textarea id="example-textarea" cols="30" rows="10" [(ngModel)]="value"></textarea>
+</section>
+
+<section>
+  <label for="example-attempts-input">Copy attempts</label>
+  <input id="example-attempts-input" type="number" [(ngModel)]="attempts"/>
+</section>
+
+<button (click)="copyViaService()">Copy to clipboard via service</button>
+<button
+  [cdkCopyToClipboard]="value"
+  [cdkCopyToClipboardAttempts]="attempts">Copy to clipboard via directive</button>
