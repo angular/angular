@@ -30,7 +30,7 @@ const ppid = process.ppid.toString();
 const lockFilePath = fs.resolve(process.argv.pop() !);
 
 logger.debug(`Starting unlocker at process ${process.pid} on behalf of process ${ppid}`);
-logger.debug(`The lockfilePath is ${lockFilePath}`);
+logger.debug(`The lockFile Path is ${lockFilePath}`);
 
 /**
  * When the parent process exits (for whatever reason) remove the lockFile if it exists and as long

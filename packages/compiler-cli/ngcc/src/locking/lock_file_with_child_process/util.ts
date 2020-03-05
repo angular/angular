@@ -9,7 +9,7 @@ import {AbsoluteFsPath, FileSystem} from '../../../../src/ngtsc/file_system';
 import {Logger} from '../../logging/logger';
 
 /**
- * Remove the lockfile at the provided `lockFilePath` from the given file-system.
+ * Remove the lockFile at the provided `lockFilePath` from the given file-system.
  *
  * It only removes the file if the pid stored in the file matches the provided `pid`.
  * The provided `pid` is of the process that is exiting and so no longer needs to hold the lock.
@@ -17,15 +17,14 @@ import {Logger} from '../../logging/logger';
 export function removeLockFile(
     fs: FileSystem, logger: Logger, lockFilePath: AbsoluteFsPath, pid: string) {
   try {
-    logger.debug(`Attempting to remove lockfile at ${lockFilePath}.`);
+    logger.debug(`Attempting to remove lockFile at ${lockFilePath}.`);
     const lockFilePid = fs.readFile(lockFilePath);
     if (lockFilePid === pid) {
       logger.debug(`PIDs match (${pid}), so removing ${lockFilePath}.`);
       fs.removeFile(lockFilePath);
     } else {
-      logger &&
-          logger.debug(
-              `PIDs do not match (${pid} and ${lockFilePid}), so not removing ${lockFilePath}.`);
+      logger.debug(
+          `PIDs do not match (${pid} and ${lockFilePid}), so not removing ${lockFilePath}.`);
     }
   } catch (e) {
     if (e.code === 'ENOENT') {

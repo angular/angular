@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ChildProcess, fork} from 'child_process';
+
 import {AbsoluteFsPath, CachedFileSystem, FileSystem} from '../../../../src/ngtsc/file_system';
-import {Logger} from '../../logging/logger';
+import {LogLevel, Logger} from '../../logging/logger';
 import {LockFile, getLockFilePath} from '../lock_file';
+
 import {removeLockFile} from './util';
 
 /// <reference types="node" />
@@ -17,14 +19,14 @@ import {removeLockFile} from './util';
  * This LockFile implenentation uses a child-process to remove the lock file when the main process
  * exits (for whatever reason).
  *
- * There is a few milliseconds between the child-process being forked and it registering its
- * `disconnect` event, which is responsible for tidying up the lockFile in the even that the main
+ * There are a few milliseconds between the child-process being forked and it registering its
+ * `disconnect` event, which is responsible for tidying up the lockFile in the event that the main
  * process exits unexpectedly.
  *
  * We eagerly create the unlocker child-process so that it maximizes the time before the lockFile is
  * actually written, which makes it very unlikely that the unlocker would not be ready in the case
  * that the developer hits Ctrl-C or closes the terminal within a fraction of a second of the
- * lockfile being created.
+ * lockFile being created.
  *
  * The worst case scenario is that ngcc is killed too quickly and leaves behind an orphaned
  * lockFile. In which case the next ngcc run will display a helpful error message about deleting the
@@ -42,8 +44,8 @@ export class LockFileWithChildProcess implements LockFile {
 
   write(): void {
     if (this.unlocker === null) {
-      // In case we already disconnected the previous unlocker child process, perhaps by calling
-      // `remove()` Normally the LockFile should only be used once per instance.
+      // In case we already disconnected the previous unlocker child-process, perhaps by calling
+      // `remove()`. Normally the LockFile should only be used once per instance.
       this.unlocker = this.createUnlocker(this.path);
     }
     this.logger.debug(`Attemping to write lockFile at ${this.path} with PID ${process.pid}`);
@@ -77,8 +79,8 @@ export class LockFileWithChildProcess implements LockFile {
 
   protected createUnlocker(path: AbsoluteFsPath): ChildProcess {
     this.logger.debug('Forking unlocker child-process');
-    return fork(
-        this.fs.resolve(__dirname, './unlocker.js'), [path, this.logger.level.toString()],
-        { detached: true});
+    const logLevel =
+        this.logger.level !== undefined ? this.logger.level.toString() : LogLevel.info.toString();
+    return fork(this.fs.resolve(__dirname, './unlocker.js'), [path, logLevel], {detached: true});
   }
 }

@@ -60,7 +60,7 @@ runInEachFileSystem(() => {
     });
 
     describe('write()', () => {
-      it('should write the lockfile to disk', () => {
+      it('should write the lockFile to disk', () => {
         const fs = getFileSystem();
         const lockFile = new LockFileUnderTest(fs);
         expect(fs.exists(getLockFilePath(fs))).toBe(false);
