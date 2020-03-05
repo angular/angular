@@ -12,6 +12,7 @@ import {assertLViewOrUndefined} from './assert';
 import {TNode} from './interfaces/node';
 import {CONTEXT, DECLARATION_VIEW, LView, OpaqueViewState, TVIEW, TView} from './interfaces/view';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
+import {getTNode} from './util/view_utils';
 
 
 /**
@@ -532,6 +533,13 @@ export function setSelectedIndex(index: number) {
   instructionState.lFrame.selectedIndex = index;
 }
 
+/**
+ * Gets the `tNode` that represents currently selected element.
+ */
+export function getSelectedTNode() {
+  const lFrame = instructionState.lFrame;
+  return getTNode(lFrame.tView, lFrame.selectedIndex);
+}
 
 /**
  * Sets the namespace used to create elements to `'http://www.w3.org/2000/svg'` in global state.

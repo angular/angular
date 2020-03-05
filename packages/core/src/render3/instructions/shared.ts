@@ -941,17 +941,15 @@ function mapPropName(name: string): string {
 }
 
 export function elementPropertyInternal<T>(
-    tView: TView, lView: LView, index: number, propName: string, value: T,
-    sanitizer?: SanitizerFn | null, nativeOnly?: boolean,
-    loadRendererFn?: ((tNode: TNode, lView: LView) => Renderer3) | null): void {
+    tView: TView, tNode: TNode, lView: LView, propName: string, value: T, renderer: Renderer3,
+    sanitizer: SanitizerFn | null | undefined, nativeOnly: boolean): void {
   ngDevMode && assertNotSame(value, NO_CHANGE as any, 'Incoming value should never be NO_CHANGE.');
-  const element = getNativeByIndex(index, lView) as RElement | RComment;
-  const tNode = getTNode(tView, index);
+  const element = getNativeByTNode(tNode, lView) as RElement | RComment;
   let inputData = tNode.inputs;
   let dataValue: PropertyAliasValue|undefined;
   if (!nativeOnly && inputData != null && (dataValue = inputData[propName])) {
     setInputsForProperty(tView, lView, dataValue, propName, value);
-    if (isComponentHost(tNode)) markDirtyIfOnPush(lView, index + HEADER_OFFSET);
+    if (isComponentHost(tNode)) markDirtyIfOnPush(lView, tNode.index);
     if (ngDevMode) {
       setNgReflectProperties(lView, element, tNode.type, dataValue, value);
     }
@@ -968,7 +966,6 @@ export function elementPropertyInternal<T>(
       ngDevMode.rendererSetProperty++;
     }
 
-    const renderer = loadRendererFn ? loadRendererFn(tNode, lView) : lView[RENDERER];
     // It is assumed that the sanitizer is only added when the compiler determines that the
     // property is risky, so sanitization can be done without further checks.
     value = sanitizer != null ? (sanitizer(value, tNode.tagName || '', propName) as any) : value;
@@ -1438,11 +1435,11 @@ function addComponentLogic<T>(lView: LView, hostTNode: TElementNode, def: Compon
 }
 
 export function elementAttributeInternal(
-    index: number, name: string, value: any, tView: TView, lView: LView,
-    sanitizer?: SanitizerFn | null, namespace?: string) {
+    tNode: TNode, lView: LView, name: string, value: any, sanitizer: SanitizerFn | null | undefined,
+    namespace: string | null | undefined) {
   ngDevMode && assertNotSame(value, NO_CHANGE as any, 'Incoming value should never be NO_CHANGE.');
   ngDevMode && validateAgainstEventAttributes(name);
-  const element = getNativeByIndex(index, lView) as RElement;
+  const element = getNativeByTNode(tNode, lView) as RElement;
   const renderer = lView[RENDERER];
   if (value == null) {
     ngDevMode && ngDevMode.rendererRemoveAttribute++;
@@ -1450,7 +1447,6 @@ export function elementAttributeInternal(
                                      element.removeAttribute(name);
   } else {
     ngDevMode && ngDevMode.rendererSetAttribute++;
-    const tNode = getTNode(tView, index);
     const strValue =
         sanitizer == null ? renderStringify(value) : sanitizer(value, tNode.tagName || '', name);
 
@@ -1892,19 +1888,18 @@ function executeViewQueryFn<T>(
  * interpolated properties.
  *
  * @param tData `TData` where meta-data will be saved;
- * @param nodeIndex index of a `TNode` that is a target of the binding;
+ * @param tNode `TNode` that is a target of the binding;
  * @param propertyName bound property name;
  * @param bindingIndex binding index in `LView`
  * @param interpolationParts static interpolation parts (for property interpolations)
  */
 export function storePropertyBindingMetadata(
-    tData: TData, nodeIndex: number, propertyName: string, bindingIndex: number,
+    tData: TData, tNode: TNode, propertyName: string, bindingIndex: number,
     ...interpolationParts: string[]) {
   // Binding meta-data are stored only the first time a given property instruction is processed.
   // Since we don't have a concept of the "first update pass" we need to check for presence of the
   // binding meta-data to decide if one should be stored (or if was stored already).
   if (tData[bindingIndex] === null) {
-    const tNode = tData[nodeIndex + HEADER_OFFSET] as TNode;
     if (tNode.inputs == null || !tNode.inputs[propertyName]) {
       const propBindingIdxs = tNode.propertyBindings || (tNode.propertyBindings = []);
       propBindingIdxs.push(bindingIndex);
