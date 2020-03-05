@@ -49,6 +49,32 @@ export class DirectiveExplorerComponent implements OnInit {
 
   ngOnInit(): void {
     this.subscribeToBackendEvents();
+  }
+
+  handleNodeSelection(node: IndexedNode): void {
+    this.currentSelectedElement = node;
+    if (this.currentSelectedElement) {
+      this.messageBus.emit('getElementDirectivesProperties', [node.position]);
+      this.messageBus.emit('setSelectedComponent', [node.position]);
+    }
+  }
+
+  subscribeToBackendEvents(): void {
+    this.messageBus.on('elementDirectivesProperties', (data: DirectivesProperties) => {
+      this.directivesData = data;
+    });
+
+    this.messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
+      this.forest = view.forest;
+      this.directivesData = view.properties;
+    });
+
+    this.messageBus.on('highlightComponentInTreeFromElement', (position: ElementPosition) => {
+      this.highlightIDinTreeFromElement = position;
+    });
+    this.messageBus.on('removeHighlightFromComponentTree', () => {
+      this.highlightIDinTreeFromElement = null;
+    });
 
     // Only one refresh per 50ms.
     let buffering = false;
@@ -63,28 +89,6 @@ export class DirectiveExplorerComponent implements OnInit {
       }, 50);
     });
     this.refresh();
-  }
-
-  handleNodeSelection(node: IndexedNode): void {
-    this.currentSelectedElement = node;
-    this.messageBus.emit('getElementDirectivesProperties', [node.position]);
-    this.messageBus.emit('setSelectedComponent', [node.position]);
-  }
-
-  subscribeToBackendEvents(): void {
-    this.messageBus.on('elementDirectivesProperties', (data: DirectivesProperties) => {
-      this.directivesData = data;
-    });
-    this.messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
-      this.forest = view.forest;
-      this.directivesData = view.properties;
-    });
-    this.messageBus.on('highlightComponentInTreeFromElement', (position: ElementPosition) => {
-      this.highlightIDinTreeFromElement = position;
-    });
-    this.messageBus.on('removeHighlightFromComponentTree', () => {
-      this.highlightIDinTreeFromElement = null;
-    });
   }
 
   refresh(): void {
