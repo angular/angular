@@ -14,7 +14,7 @@ import { ComponentDataSource, FlatNode } from './component-data-source';
 
 import scrollIntoViewIfNeeded from 'scroll-into-view-if-needed';
 import { isChildOf, parentCollapsed } from './directive-forest-utils';
-import { FilterComponent } from './filter/filter.component';
+import { IndexedNode } from './index-forest';
 
 @Component({
   selector: 'ng-directive-forest',
@@ -24,19 +24,14 @@ import { FilterComponent } from './filter/filter.component';
 })
 export class DirectiveForestComponent {
   @Input() set forest(forest: DevToolsNode[]) {
-    const newItems = this.dataSource.update(forest);
-    if (!this._initialized && forest && forest.length) {
-      this.treeControl.expandAll();
-      this._initialized = true;
-      newItems.forEach(item => (item.newItem = false));
-    }
-    if (newItems && newItems.length) {
-      newItems.forEach(item => {
-        this.treeControl.expand(item);
-      });
+    this._updateForest(forest);
+
+    if (this.currentSelectedElement) {
+      this._reselectNodeOnUpdate();
     }
   }
   @Input() highlightIDinTreeFromElement: ElementPosition | null = null;
+  @Input() currentSelectedElement: IndexedNode;
 
   @Output() selectNode = new EventEmitter();
   @Output() selectDomElement = new EventEmitter();
@@ -90,6 +85,57 @@ export class DirectiveForestComponent {
         inline: 'nearest',
       });
     }, 0);
+  }
+
+  clearSelectedNode(): void {
+    this.selectNode.emit(null);
+    this.selectedNode = null;
+    this.parents = [];
+  }
+
+  private _findCurrentlySelectedNode(currentlySelected: IndexedNode): FlatNode {
+    return this.dataSource.data.find(flatNode => {
+      const flatNodeIsNotComponent = flatNode.id[0] === '-';
+      if (currentlySelected.component && flatNodeIsNotComponent) {
+        return false;
+      }
+
+      const idArray = flatNode.id
+        .split('-')
+        .filter(id => id !== '')
+        .map(Number);
+      if (currentlySelected.component) {
+        return idArray[0] === currentlySelected.component.id;
+      } else {
+        return arrayEquals(
+          idArray,
+          currentlySelected.directives.map(dir => dir.id)
+        );
+      }
+    });
+  }
+
+  private _reselectNodeOnUpdate(): void {
+    const searchNode = this._findCurrentlySelectedNode(this.currentSelectedElement);
+    if (searchNode) {
+      this.select(searchNode);
+    } else {
+      this.clearSelectedNode();
+    }
+  }
+
+  private _updateForest(forest: DevToolsNode[]): void {
+    const newItems = this.dataSource.update(forest);
+    if (!this._initialized && forest && forest.length) {
+      this.treeControl.expandAll();
+      this._initialized = true;
+      newItems.forEach(item => (item.newItem = false));
+    }
+    if (newItems && newItems.length) {
+      newItems.forEach(item => {
+        this.treeControl.expand(item);
+      });
+    }
   }
 
   populateParents(position: ElementPosition): void {
@@ -263,3 +309,26 @@ export class DirectiveForestComponent {
     );
   }
 }
+
+// works with arrays of string, numbers and booleans
+export const arrayEquals = (a, b) => {
+  if (a.length !== b.length) {
+    return false;
+  }
+  if (a.length === 0) {
+    return b.length === 0;
+  }
+  if (typeof a[0] !== typeof b[0]) {
+    return false;
+  }
+
+  let equal;
+  for (let i = 0; i < a.length; i++) {
+    if (i === 0) {
+      equal = a[i] === b[i];
+    } else {
+      equal = a[i] === b[i] && equal;
+    }
+  }
+  return equal;
+};
