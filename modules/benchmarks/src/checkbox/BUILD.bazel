@@ -1,0 +1,19 @@
+load("//dev-infra/tools/component_benchmark:component_benchmark.bzl", "component_benchmark")
+
+component_benchmark(
+    name = "benchmark",
+    driver = ":checkbox.perf-spec.ts",
+    driver_deps = [],
+    ng_deps = [
+        "//packages/core",
+        "//packages/platform-browser",
+    ],
+    ng_srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.perf-spec.ts"],
+    ),
+    entry_point_deps = [
+    ],
+    prefix = "",
+)
+

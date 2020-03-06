@@ -1,0 +1,24 @@
+load("@npm_bazel_typescript//:index.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "driver-utilities",
+    srcs = glob(["*.ts"]),
+    tsconfig = "//dev-infra/tools/component_benchmark:tsconfig-e2e.json",
+    deps = [
+        "//packages/benchpress",
+        "@npm//@types/fs-extra",
+        "@npm//@types/node",
+        "@npm//@types/selenium-webdriver",
+        "@npm//fs-extra",
+        "@npm//node-uuid",
+        "@npm//protractor",
+        "@npm//selenium-webdriver",
+    ],
+)
+
+filegroup(
+    name = "files",
+    srcs = glob(["*"]),
+)

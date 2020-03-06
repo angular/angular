@@ -1,0 +1,6 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+  name = "files",
+  srcs = glob(["*"]) + ["//dev-infra/tools/component_benchmark/defaults:files"],
+)
