@@ -185,7 +185,7 @@ searchHeroes(term: string): Observable {
 
   let heroesURL = `${this.heroesURL}?${term}`;
   return this.http.jsonp(heroesUrl, 'callback').pipe(
-      catchError(this.handleError('searchHeroes', []) // then handle the error
+      catchError(this.handleError('searchHeroes', [])) // then handle the error
     );
 };
 ```
