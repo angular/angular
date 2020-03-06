@@ -11,7 +11,7 @@ import {ApplicationRef, Component, ComponentFactoryResolver, ComponentRef, Eleme
 import {TestBed} from '@angular/core/testing';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {onlyInIvy} from '@angular/private/testing';
+import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
 import {domRendererFactory3} from '../../src/render3/interfaces/renderer';
 
@@ -258,6 +258,65 @@ describe('component', () => {
        const wrapperEls = fixture.nativeElement.querySelectorAll('.wrapper');
        expect(wrapperEls.length).toBe(2);  // other elements are preserved
      });
+
+  describe('invalid host element', () => {
+    it('should throw when <ng-container> is used as a host element for a Component', () => {
+      @Component({
+        selector: 'ng-container',
+        template: '...',
+      })
+      class Comp {
+      }
+
+      @Component({
+        selector: 'root',
+        template: '<ng-container></ng-container>',
+      })
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Comp]});
+      if (ivyEnabled) {
+        expect(() => TestBed.createComponent(App))
+            .toThrowError(
+                /"ng-container" tags cannot be used as component hosts. Please use a different tag to activate the Comp component/);
+      } else {
+        // In VE there is no special check for the case when `<ng-container>` is used as a host
+        // element for a Component. VE tries to attach Component's content to a Comment node that
+        // represents the `<ng-container>` location and this call fails with a
+        // browser/environment-specific error message, so we just verify that this scenario is
+        // triggering an error in VE.
+        expect(() => TestBed.createComponent(App)).toThrow();
+      }
+    });
+
+    it('should throw when <ng-template> is used as a host element for a Component', () => {
+      @Component({
+        selector: 'ng-template',
+        template: '...',
+      })
+      class Comp {
+      }
+
+      @Component({
+        selector: 'root',
+        template: '<ng-template></ng-template>',
+      })
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Comp]});
+      if (ivyEnabled) {
+        expect(() => TestBed.createComponent(App))
+            .toThrowError(
+                /"ng-template" tags cannot be used as component hosts. Please use a different tag to activate the Comp component/);
+      } else {
+        expect(() => TestBed.createComponent(App))
+            .toThrowError(
+                /Components on an embedded template: Comp \("\[ERROR ->\]<ng-template><\/ng-template>"\)/);
+      }
+    });
+  });
 
   it('should use a new ngcontent attribute for child elements created w/ Renderer2', () => {
     @Component({

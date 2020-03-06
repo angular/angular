@@ -267,7 +267,7 @@ export function diPublicInInjector(
 export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): string|null {
   ngDevMode &&
       assertNodeOfPossibleTypes(
-          tNode, TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer);
+          tNode, [TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer]);
   ngDevMode && assertDefined(tNode, 'expecting tNode');
   if (attrNameToInject === 'class') {
     return tNode.classes;

@@ -128,7 +128,7 @@ function listenerInternal(
 
   ngDevMode &&
       assertNodeOfPossibleTypes(
-          tNode, TNodeType.Element, TNodeType.Container, TNodeType.ElementContainer);
+          tNode, [TNodeType.Element, TNodeType.Container, TNodeType.ElementContainer]);
 
   let processOutputs = true;
 
