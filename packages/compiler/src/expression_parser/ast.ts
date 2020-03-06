@@ -691,7 +691,7 @@ export class ParsedEvent {
   // Animation events have a phase
   constructor(
       public name: string, public targetOrPhase: string, public type: ParsedEventType,
-      public handler: AST, public sourceSpan: ParseSourceSpan,
+      public handler: ASTWithSource, public sourceSpan: ParseSourceSpan,
       public handlerSpan: ParseSourceSpan) {}
 }
 
@@ -715,6 +715,6 @@ export const enum BindingType {
 export class BoundElementProperty {
   constructor(
       public name: string, public type: BindingType, public securityContext: SecurityContext,
-      public value: AST, public unit: string|null, public sourceSpan: ParseSourceSpan,
+      public value: ASTWithSource, public unit: string|null, public sourceSpan: ParseSourceSpan,
       public valueSpan?: ParseSourceSpan) {}
 }

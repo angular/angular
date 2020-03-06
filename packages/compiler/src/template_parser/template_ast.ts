@@ -9,7 +9,7 @@
 import {AstPath} from '../ast_path';
 import {CompileDirectiveSummary, CompileProviderMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {SecurityContext} from '../core';
-import {AST, BindingType, BoundElementProperty, ParsedEvent, ParsedEventType, ParsedVariable} from '../expression_parser/ast';
+import {ASTWithSource, BindingType, BoundElementProperty, ParsedEvent, ParsedEventType, ParsedVariable} from '../expression_parser/ast';
 import {LifecycleHooks} from '../lifecycle_reflector';
 import {ParseSourceSpan} from '../parse_util';
 
@@ -44,7 +44,8 @@ export class TextAst implements TemplateAst {
  */
 export class BoundTextAst implements TemplateAst {
   constructor(
-      public value: AST, public ngContentIndex: number, public sourceSpan: ParseSourceSpan) {}
+      public value: ASTWithSource, public ngContentIndex: number,
+      public sourceSpan: ParseSourceSpan) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitBoundText(this, context);
   }
@@ -88,8 +89,8 @@ export class BoundElementPropertyAst implements TemplateAst {
 
   constructor(
       public name: string, public type: PropertyBindingType,
-      public securityContext: SecurityContext, public value: AST, public unit: string|null,
-      public sourceSpan: ParseSourceSpan) {
+      public securityContext: SecurityContext, public value: ASTWithSource,
+      public unit: string|null, public sourceSpan: ParseSourceSpan) {
     this.isAnimation = this.type === PropertyBindingType.Animation;
   }
 
@@ -114,7 +115,7 @@ export class BoundEventAst implements TemplateAst {
 
   constructor(
       public name: string, public target: string|null, public phase: string|null,
-      public handler: AST, public sourceSpan: ParseSourceSpan,
+      public handler: ASTWithSource, public sourceSpan: ParseSourceSpan,
       public handlerSpan: ParseSourceSpan) {
     this.fullName = BoundEventAst.calcFullName(this.name, this.target, this.phase);
     this.isAnimation = !!this.phase;
@@ -209,7 +210,7 @@ export class EmbeddedTemplateAst implements TemplateAst {
  */
 export class BoundDirectivePropertyAst implements TemplateAst {
   constructor(
-      public directiveName: string, public templateName: string, public value: AST,
+      public directiveName: string, public templateName: string, public value: ASTWithSource,
       public sourceSpan: ParseSourceSpan) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitDirectiveProperty(this, context);
@@ -350,7 +351,7 @@ export class RecursiveTemplateAstVisitor extends NullTemplateVisitor implements 
     });
   }
 
-  protected visitChildren<T extends TemplateAst>(
+  protected visitChildren(
       context: any,
       cb: (visit: (<V extends TemplateAst>(children: V[]|undefined) => void)) => void) {
     let results: any[][] = [];
