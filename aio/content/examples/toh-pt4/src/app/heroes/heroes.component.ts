@@ -6,6 +6,7 @@ import { Hero } from '../hero';
 // #docregion hero-service-import
 import { HeroService } from '../hero.service';
 // #enddocregion hero-service-import
+import { MessageService } from '../message.service';
 
 @Component({
   selector: 'app-heroes',
@@ -21,7 +22,7 @@ export class HeroesComponent implements OnInit {
   // #enddocregion heroes
 
   // #docregion ctor
-  constructor(private heroService: HeroService) { }
+  constructor(private heroService: HeroService, private messageService: MessageService) { }
   // #enddocregion ctor
 
   // #docregion ng-on-init
@@ -32,6 +33,7 @@ export class HeroesComponent implements OnInit {
 
   onSelect(hero: Hero): void {
     this.selectedHero = hero;
+    this.messageService.add(`HeroService: Selected hero id=${hero.id}`);
   }
 
   // #docregion getHeroes

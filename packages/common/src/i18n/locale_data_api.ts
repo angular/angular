@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵCurrencyIndex, ɵExtraLocaleDataIndex, ɵLocaleDataIndex, ɵfindLocaleData, ɵgetLocalePluralCase} from '@angular/core';
+import {ɵCurrencyIndex, ɵExtraLocaleDataIndex, ɵLocaleDataIndex, ɵfindLocaleData, ɵgetLocaleCurrencyCode, ɵgetLocalePluralCase} from '@angular/core';
+
 import {CURRENCIES_EN, CurrenciesSymbols} from './currencies';
+
 
 /**
  * Format styles that can be used to represent numbers.
@@ -474,6 +476,20 @@ export function getLocaleCurrencyName(locale: string): string|null {
 }
 
 /**
+ * Retrieves the default currency code for the given locale.
+ *
+ * The default is defined as the first currency which is still in use.
+ *
+ * @param locale The code of the locale whose currency code we want.
+ * @returns The code of the default currency for the given locale.
+ *
+ * @publicApi
+ */
+export function getLocaleCurrencyCode(locale: string): string|null {
+  return ɵgetLocaleCurrencyCode(locale);
+}
+
+/**
  * Retrieves the currency values for a given locale.
  * @param locale A locale code for the locale format rules to use.
  * @returns The currency values.
@@ -559,6 +575,18 @@ export function getLocaleExtraDayPeriods(
   ];
   const dayPeriods = getLastDefinedValue(dayPeriodsData, formStyle) || [];
   return getLastDefinedValue(dayPeriods, width) || [];
+}
+
+/**
+ * Retrieves the writing direction of a specified locale
+ * @param locale A locale code for the locale format rules to use.
+ * @publicApi
+ * @returns 'rtl' or 'ltr'
+ * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n)
+ */
+export function getLocaleDirection(locale: string): 'ltr'|'rtl' {
+  const data = ɵfindLocaleData(locale);
+  return data[ɵLocaleDataIndex.Directionality];
 }
 
 /**

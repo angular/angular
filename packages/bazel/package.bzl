@@ -29,19 +29,26 @@ def rules_angular_dev_dependencies():
     _maybe(
         http_archive,
         name = "bazel_toolchains",
-        sha256 = "3c1299efcf64a4ecf4f6def7564db28879ad2870632144d77932e7910686d3f3",
-        strip_prefix = "bazel-toolchains-1.1.2",
-        url = "https://github.com/bazelbuild/bazel-toolchains/archive/1.1.2.tar.gz",
+        sha256 = "4d348abfaddbcee0c077fc51bb1177065c3663191588ab3d958f027cbfe1818b",
+        strip_prefix = "bazel-toolchains-2.1.0",
+        urls = [
+            "https://mirror.bazel.build/github.com/bazelbuild/bazel-toolchains/releases/download/2.1.0/bazel-toolchains-2.1.0.tar.gz",
+            "https://github.com/bazelbuild/bazel-toolchains/releases/download/2.1.0/bazel-toolchains-2.1.0.tar.gz",
+        ],
     )
 
     #############################################
     # Dependencies for generating documentation #
     #############################################
-    http_archive(
+    _maybe(
+        http_archive,
         name = "io_bazel_rules_sass",
-        sha256 = "4f05239080175a3f4efa8982d2b7775892d656bb47e8cf56914d5f9441fb5ea6",
-        url = "https://github.com/bazelbuild/rules_sass/archive/86ca977cf2a8ed481859f83a286e164d07335116.zip",
-        strip_prefix = "rules_sass-86ca977cf2a8ed481859f83a286e164d07335116",
+        sha256 = "77e241148f26d5dbb98f96fe0029d8f221c6cb75edbb83e781e08ac7f5322c5f",
+        strip_prefix = "rules_sass-1.24.0",
+        urls = [
+            "https://github.com/bazelbuild/rules_sass/archive/1.24.0.zip",
+            "https://mirror.bazel.build/github.com/bazelbuild/rules_sass/archive/1.24.0.zip",
+        ],
     )
 
     http_archive(

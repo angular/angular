@@ -37,7 +37,7 @@
       "program": "${workspaceFolder}/node_modules/.bin/bazel",
       "args": [
         "test",
-        "--define=compile=aot",
+        "--config=ivy",
         "packages/core/test/acceptance",
         "--config=debug"
       ],
@@ -54,7 +54,7 @@
       "program": "${workspaceFolder}/node_modules/.bin/bazel",
       "args": [
         "test",
-        "--define=compile=aot",
+        "--config=ivy",
         "packages/core/test/render3",
         "--config=debug"
       ],
@@ -71,7 +71,7 @@
       "program": "${workspaceFolder}/node_modules/.bin/bazel",
       "args": [
         "test",
-        "--define=compile=aot",
+        "--config=ivy",
         "packages/core/test",
         "--config=debug"
       ],

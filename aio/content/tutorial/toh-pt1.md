@@ -1,4 +1,4 @@
-# The Hero Editor
+# The hero editor
 
 The application now has a basic title.
 Next you will create a new component to display hero information
@@ -67,17 +67,17 @@ So add an `<app-heroes>` element to the `AppComponent` template file, just below
 Assuming that the CLI `ng serve` command is still running,
 the browser should refresh and display both the application title and the hero name.
 
-## Create a Hero class
+## Create a Hero interface
 
 A real hero is more than a name.
 
-Create a `Hero` class in its own file in the `src/app` folder.
+Create a `Hero` interface in its own file in the `src/app` folder.
 Give it `id` and `name` properties.
 
 <code-example path="toh-pt1/src/app/hero.ts"  header="src/app/hero.ts"></code-example>
 
 
-Return to the `HeroesComponent` class and import the `Hero` class.
+Return to the `HeroesComponent` class and import the `Hero` interface.
 
 Refactor the component's `hero` property to be of type `Hero`.
 Initialize it with an `id` of `1` and the name `Windstorm`.

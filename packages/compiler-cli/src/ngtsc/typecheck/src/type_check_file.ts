@@ -9,7 +9,7 @@ import * as ts from 'typescript';
 
 import {AbsoluteFsPath, join} from '../../file_system';
 import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports';
-import {ClassDeclaration} from '../../reflection';
+import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
 
 import {TypeCheckBlockMetadata, TypeCheckingConfig} from './api';
@@ -32,9 +32,11 @@ export class TypeCheckFile extends Environment {
   private nextTcbId = 1;
   private tcbStatements: ts.Statement[] = [];
 
-  constructor(private fileName: string, config: TypeCheckingConfig, refEmitter: ReferenceEmitter) {
+  constructor(
+      private fileName: string, config: TypeCheckingConfig, refEmitter: ReferenceEmitter,
+      reflector: ReflectionHost) {
     super(
-        config, new ImportManager(new NoopImportRewriter(), 'i'), refEmitter,
+        config, new ImportManager(new NoopImportRewriter(), 'i'), refEmitter, reflector,
         ts.createSourceFile(fileName, '', ts.ScriptTarget.Latest, true));
   }
 

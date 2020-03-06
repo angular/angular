@@ -11,13 +11,13 @@ import * as ts from 'typescript';
 import {AbsoluteFsPath, absoluteFrom} from '../../file_system';
 import {isNonDeclarationTsPath} from '../../util/src/typescript';
 
-import {ShimGenerator} from './host';
+import {ShimGenerator} from './api';
 import {generatedModuleName} from './util';
 
 export class SummaryGenerator implements ShimGenerator {
-  private constructor(private map: Map<AbsoluteFsPath, string>) {}
+  private constructor(private map: Map<AbsoluteFsPath, AbsoluteFsPath>) {}
 
-  getSummaryFileNames(): string[] { return Array.from(this.map.keys()); }
+  getSummaryFileNames(): AbsoluteFsPath[] { return Array.from(this.map.keys()); }
 
   recognize(fileName: AbsoluteFsPath): boolean { return this.map.has(fileName); }
 
@@ -78,7 +78,7 @@ export class SummaryGenerator implements ShimGenerator {
   }
 
   static forRootFiles(files: ReadonlyArray<AbsoluteFsPath>): SummaryGenerator {
-    const map = new Map<AbsoluteFsPath, string>();
+    const map = new Map<AbsoluteFsPath, AbsoluteFsPath>();
     files.filter(sourceFile => isNonDeclarationTsPath(sourceFile))
         .forEach(
             sourceFile =>

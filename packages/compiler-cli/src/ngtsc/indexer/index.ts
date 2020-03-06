@@ -8,3 +8,4 @@
 
 export * from './src/api';
 export {IndexingContext} from './src/context';
+export {generateAnalysis} from './src/transform';

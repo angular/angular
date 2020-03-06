@@ -54,6 +54,7 @@
     ['{1} {0}', u, '{1} \'a\' \'las\' {0}', u],
     [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
     ['#,##0.###', '#,##0 %', '¤ #,##0.00;¤ -#,##0.00', '#E0'],
+    'PYG',
     'Gs.',
     'guaraní paraguayo',
     {
@@ -84,6 +85,7 @@
       'XCD': [u, '$'],
       'XOF': []
     },
+    'ltr',
     plural,
     [
       [['del mediodía', 'de la madrugada', 'de la mañana', 'de la tarde', 'de la noche'], u, u],

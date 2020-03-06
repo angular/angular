@@ -43,6 +43,7 @@ test --incompatible_strict_action_env
 # This command assumes node on the path and is a workaround for
 # https://github.com/bazelbuild/bazel/issues/4802
 build:release --workspace_status_command="node ./tools/bazel_stamp_vars.js"
+build:release --stamp
 
 ###############################
 # Output                      #
@@ -61,12 +62,25 @@ test --test_output=errors
 
 # Bazel flags for CircleCI are in /.circleci/bazel.linux.rc and /.circleci/bazel.windows.rc
 
+##################################
+# Settings for integration tests #
+##################################
+
+# Trick bazel into treating BUILD files under integration/bazel as being regular files
+# This lets us glob() up all the files inside this integration test to make them inputs to tests
+# (Note, we cannot use common --deleted_packages because the bazel version command doesn't support it)
+build --deleted_packages=integration/bazel,integration/bazel/src,integration/bazel/src/hello-world,integration/bazel/test,integration/bazel/test/e2e
+query --deleted_packages=integration/bazel,integration/bazel/src,integration/bazel/src/hello-world,integration/bazel/test,integration/bazel/test/e2e
+
 ################################
 # Temporary Settings for Ivy   #
 ################################
-# to determine if the compiler used should be Ivy or ViewEngine one can use `--define=compile=aot` on
-# any bazel target. This is a temporary flag until codebase is permanently switched to Ivy.
-build --define=compile=legacy
+# To determine if the compiler used should be Ivy instead of ViewEngine, one can use `--config=ivy`
+# on any bazel target. This is a temporary flag until codebase is permanently switched to Ivy.
+build --define=angular_ivy_enabled=False
+
+build:view-engine --define=angular_ivy_enabled=False
+build:ivy --define=angular_ivy_enabled=True
 
 ##################################
 # Remote Build Execution support #
@@ -96,7 +110,6 @@ build:remote --javabase=@rbe_ubuntu1604_angular//java:jdk
 build:remote --host_java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8
 build:remote --java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8
 build:remote --crosstool_top=@rbe_ubuntu1604_angular//cc:toolchain
-build:remote --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
 build:remote --extra_toolchains=@rbe_ubuntu1604_angular//config:cc-toolchain
 build:remote --extra_execution_platforms=//tools:rbe_ubuntu1604-angular
 build:remote --host_platform=//tools:rbe_ubuntu1604-angular
@@ -107,6 +120,16 @@ build:remote --remote_instance_name=projects/internal-200822/instances/default_i
 build:remote --project_id=internal-200822
 build:remote --remote_cache=remotebuildexecution.googleapis.com
 build:remote --remote_executor=remotebuildexecution.googleapis.com
+
+##################################
+# Saucelabs tests settings       #
+# Turn on these settings with    #
+#  --config=saucelabs            #
+##################################
+
+# For saucelabs tests we don't want to enable flaky test attempts. Karma has its own integrated
+# retry mechanism and we do not want to retry unnecessarily if Karma already tried multiple times.
+test:saucelabs --flaky_test_attempts=1
 
 ###############################
 # NodeJS rules settings

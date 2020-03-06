@@ -8,9 +8,6 @@
 
 import {global} from './global';
 
-// Do not remove: needed for closure to be able to properly tree-shake ngDevMode.
-// goog.define
-
 declare global {
   /**
    * Values of ngDevMode
@@ -51,17 +48,6 @@ declare global {
     rendererAppendChild: number;
     rendererInsertBefore: number;
     rendererCreateComment: number;
-    styleMap: number;
-    styleMapCacheMiss: number;
-    classMap: number;
-    classMapCacheMiss: number;
-    styleProp: number;
-    stylePropCacheMiss: number;
-    classProp: number;
-    classPropCacheMiss: number;
-    flushStyling: number;
-    classesApplied: number;
-    stylesApplied: number;
   }
 }
 
@@ -91,17 +77,6 @@ export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
     rendererAppendChild: 0,
     rendererInsertBefore: 0,
     rendererCreateComment: 0,
-    styleMap: 0,
-    styleMapCacheMiss: 0,
-    classMap: 0,
-    classMapCacheMiss: 0,
-    styleProp: 0,
-    stylePropCacheMiss: 0,
-    classProp: 0,
-    classPropCacheMiss: 0,
-    flushStyling: 0,
-    classesApplied: 0,
-    stylesApplied: 0,
   };
 
   // Make sure to refer to ngDevMode as ['ngDevMode'] for closure.

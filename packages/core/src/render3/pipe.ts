@@ -8,13 +8,14 @@
 
 import {WrappedValue} from '../change_detection/change_detection_util';
 import {PipeTransform} from '../change_detection/pipe_transform';
+import {setInjectImplementation} from '../di/injector_compatibility';
 
 import {getFactoryDef} from './definition';
-import {store} from './instructions/all';
+import {store, ɵɵdirectiveInject} from './instructions/all';
 import {PipeDef, PipeDefList} from './interfaces/definition';
 import {HEADER_OFFSET, LView, TVIEW} from './interfaces/view';
-import {ɵɵpureFunction1, ɵɵpureFunction2, ɵɵpureFunction3, ɵɵpureFunction4, ɵɵpureFunctionV} from './pure_function';
-import {getBindingIndex, getLView} from './state';
+import {pureFunction1Internal, pureFunction2Internal, pureFunction3Internal, pureFunction4Internal, pureFunctionVInternal} from './pure_function';
+import {getBindingIndex, getBindingRoot, getLView, getTView} from './state';
 import {NO_CHANGE} from './tokens';
 import {load} from './util/view_utils';
 
@@ -30,7 +31,7 @@ import {load} from './util/view_utils';
  * @codeGenApi
  */
 export function ɵɵpipe(index: number, pipeName: string): any {
-  const tView = getLView()[TVIEW];
+  const tView = getTView();
   let pipeDef: PipeDef<any>;
   const adjustedIndex = index + HEADER_OFFSET;
 
@@ -45,8 +46,10 @@ export function ɵɵpipe(index: number, pipeName: string): any {
   }
 
   const pipeFactory = pipeDef.factory || (pipeDef.factory = getFactoryDef(pipeDef.type, true));
+  const previousInjectImplementation = setInjectImplementation(ɵɵdirectiveInject);
   const pipeInstance = pipeFactory();
-  store(index, pipeInstance);
+  setInjectImplementation(previousInjectImplementation);
+  store(tView, getLView(), index, pipeInstance);
   return pipeInstance;
 }
 
@@ -57,8 +60,6 @@ export function ɵɵpipe(index: number, pipeName: string): any {
  * @param name Name of pipe to resolve
  * @param registry Full list of available pipes
  * @returns Matching PipeDef
- *
- * @publicApi
  */
 function getPipeDef(name: string, registry: PipeDefList | null): PipeDef<any> {
   if (registry) {
@@ -89,7 +90,8 @@ export function ɵɵpipeBind1(index: number, slotOffset: number, v1: any): any {
   const pipeInstance = load<PipeTransform>(lView, index);
   return unwrapValue(
       lView, isPure(lView, index) ?
-          ɵɵpureFunction1(slotOffset, pipeInstance.transform, v1, pipeInstance) :
+          pureFunction1Internal(
+              lView, getBindingRoot(), slotOffset, pipeInstance.transform, v1, pipeInstance) :
           pipeInstance.transform(v1));
 }
 
@@ -111,7 +113,8 @@ export function ɵɵpipeBind2(index: number, slotOffset: number, v1: any, v2: an
   const pipeInstance = load<PipeTransform>(lView, index);
   return unwrapValue(
       lView, isPure(lView, index) ?
-          ɵɵpureFunction2(slotOffset, pipeInstance.transform, v1, v2, pipeInstance) :
+          pureFunction2Internal(
+              lView, getBindingRoot(), slotOffset, pipeInstance.transform, v1, v2, pipeInstance) :
           pipeInstance.transform(v1, v2));
 }
 
@@ -133,9 +136,10 @@ export function ɵɵpipeBind3(index: number, slotOffset: number, v1: any, v2: an
   const lView = getLView();
   const pipeInstance = load<PipeTransform>(lView, index);
   return unwrapValue(
-      lView, isPure(lView, index) ?
-          ɵɵpureFunction3(slotOffset, pipeInstance.transform, v1, v2, v3, pipeInstance) :
-          pipeInstance.transform(v1, v2, v3));
+      lView, isPure(lView, index) ? pureFunction3Internal(
+                                        lView, getBindingRoot(), slotOffset, pipeInstance.transform,
+                                        v1, v2, v3, pipeInstance) :
+                                    pipeInstance.transform(v1, v2, v3));
 }
 
 /**
@@ -158,9 +162,10 @@ export function ɵɵpipeBind4(
   const lView = getLView();
   const pipeInstance = load<PipeTransform>(lView, index);
   return unwrapValue(
-      lView, isPure(lView, index) ?
-          ɵɵpureFunction4(slotOffset, pipeInstance.transform, v1, v2, v3, v4, pipeInstance) :
-          pipeInstance.transform(v1, v2, v3, v4));
+      lView, isPure(lView, index) ? pureFunction4Internal(
+                                        lView, getBindingRoot(), slotOffset, pipeInstance.transform,
+                                        v1, v2, v3, v4, pipeInstance) :
+                                    pipeInstance.transform(v1, v2, v3, v4));
 }
 
 /**
@@ -180,7 +185,8 @@ export function ɵɵpipeBindV(index: number, slotOffset: number, values: [any, .
   const pipeInstance = load<PipeTransform>(lView, index);
   return unwrapValue(
       lView, isPure(lView, index) ?
-          ɵɵpureFunctionV(slotOffset, pipeInstance.transform, values, pipeInstance) :
+          pureFunctionVInternal(
+              lView, getBindingRoot(), slotOffset, pipeInstance.transform, values, pipeInstance) :
           pipeInstance.transform.apply(pipeInstance, values));
 }
 

@@ -8,8 +8,9 @@
 import {AbsoluteFsPath, FileSystem, PathSegment, join, relative, relativeFrom} from '../../../src/ngtsc/file_system';
 import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver';
 import {Logger} from '../logging/logger';
+import {hasBeenProcessed} from '../packages/build_marker';
 import {NgccConfiguration} from '../packages/configuration';
-import {EntryPoint, getEntryPointInfo} from '../packages/entry_point';
+import {EntryPoint, EntryPointJsonProperty, INVALID_ENTRY_POINT, NO_ENTRY_POINT, getEntryPointInfo} from '../packages/entry_point';
 import {PathMappings} from '../utils';
 import {EntryPointFinder} from './interface';
 import {getBasePaths} from './utils';
@@ -37,27 +38,66 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
       this.processNextPath();
     }
     const targetEntryPoint = this.unsortedEntryPoints.get(this.targetPath);
-    return this.resolver.sortEntryPointsByDependency(
+    const entryPoints = this.resolver.sortEntryPointsByDependency(
         Array.from(this.unsortedEntryPoints.values()), targetEntryPoint);
+
+    const invalidTarget =
+        entryPoints.invalidEntryPoints.find(i => i.entryPoint.path === this.targetPath);
+    if (invalidTarget !== undefined) {
+      throw new Error(
+          `The target entry-point "${invalidTarget.entryPoint.name}" has missing dependencies:\n` +
+          invalidTarget.missingDependencies.map(dep => ` - ${dep}\n`).join(''));
+    }
+    return entryPoints;
+  }
+
+  targetNeedsProcessingOrCleaning(
+      propertiesToConsider: EntryPointJsonProperty[], compileAllFormats: boolean): boolean {
+    const entryPoint = this.getEntryPoint(this.targetPath);
+    if (entryPoint === null || !entryPoint.compiledByAngular) {
+      return false;
+    }
+
+    for (const property of propertiesToConsider) {
+      if (entryPoint.packageJson[property]) {
+        // Here is a property that should be processed.
+        if (!hasBeenProcessed(entryPoint.packageJson, property)) {
+          return true;
+        }
+        if (!compileAllFormats) {
+          // This property has been processed, and we only need one.
+          return false;
+        }
+      }
+    }
+    // All `propertiesToConsider` that appear in this entry-point have been processed.
+    // In other words, there were no properties that need processing.
+    return false;
   }
 
   private processNextPath(): void {
     const path = this.unprocessedPaths.shift() !;
     const entryPoint = this.getEntryPoint(path);
-    if (entryPoint !== null && entryPoint.compiledByAngular) {
-      this.unsortedEntryPoints.set(entryPoint.path, entryPoint);
-      const deps = this.resolver.getEntryPointDependencies(entryPoint);
-      deps.dependencies.forEach(dep => {
-        if (!this.unsortedEntryPoints.has(dep)) {
-          this.unprocessedPaths.push(dep);
-        }
-      });
+    if (entryPoint === null || !entryPoint.compiledByAngular) {
+      return;
     }
+    this.unsortedEntryPoints.set(entryPoint.path, entryPoint);
+    const deps = this.resolver.getEntryPointDependencies(entryPoint);
+    deps.dependencies.forEach(dep => {
+      if (!this.unsortedEntryPoints.has(dep)) {
+        this.unprocessedPaths.push(dep);
+      }
+    });
   }
 
   private getEntryPoint(entryPointPath: AbsoluteFsPath): EntryPoint|null {
     const packagePath = this.computePackagePath(entryPointPath);
-    return getEntryPointInfo(this.fs, this.config, this.logger, packagePath, entryPointPath);
+    const entryPoint =
+        getEntryPointInfo(this.fs, this.config, this.logger, packagePath, entryPointPath);
+    if (entryPoint === NO_ENTRY_POINT || entryPoint === INVALID_ENTRY_POINT) {
+      return null;
+    }
+    return entryPoint;
   }
 
   /**
@@ -76,17 +116,27 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
       if (entryPointPath.startsWith(basePath)) {
         let packagePath = basePath;
         const segments = this.splitPath(relative(basePath, entryPointPath));
-
-        // Start the search at the last nested `node_modules` folder if the relative
-        // `entryPointPath` contains one or more.
         let nodeModulesIndex = segments.lastIndexOf(relativeFrom('node_modules'));
+
+        // If there are no `node_modules` in the relative path between the `basePath` and the
+        // `entryPointPath` then just try the `basePath` as the `packagePath`.
+        // (This can be the case with path-mapped entry-points.)
+        if (nodeModulesIndex === -1) {
+          if (this.fs.exists(join(packagePath, 'package.json'))) {
+            return packagePath;
+          }
+        }
+
+        // Start the search at the deepest nested `node_modules` folder that is below the `basePath`
+        // but above the `entryPointPath`, if there are any.
         while (nodeModulesIndex >= 0) {
           packagePath = join(packagePath, segments.shift() !);
           nodeModulesIndex--;
         }
 
-        // Note that we skip the first `packagePath` and start looking from the first folder below
-        // it because that will be the `node_modules` folder.
+        // Note that we start at the folder below the current candidate `packagePath` because the
+        // initial candidate `packagePath` is either a `node_modules` folder or the `basePath` with
+        // no `package.json`.
         for (const segment of segments) {
           packagePath = join(packagePath, segment);
           if (this.fs.exists(join(packagePath, 'package.json'))) {
@@ -94,9 +144,9 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
           }
         }
 
-        // If we got here then we couldn't find a `packagePath` for the current `basePath` but since
-        // `basePath`s are guaranteed not to be a sub-directory each other then no other `basePath`
-        // will match either.
+        // If we got here then we couldn't find a `packagePath` for the current `basePath`.
+        // Since `basePath`s are guaranteed not to be a sub-directory of each other then no other
+        // `basePath` will match either.
         break;
       }
     }

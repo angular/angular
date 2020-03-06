@@ -129,10 +129,10 @@ export class R3TestBedCompiler {
     this.resolvers.module.addOverride(ngModule, override);
     const metadata = this.resolvers.module.resolve(ngModule);
     if (metadata === null) {
-      throw new Error(`${ngModule.name} is not an @NgModule or is missing metadata`);
+      throw invalidTypeError(ngModule.name, 'NgModule');
     }
 
-    this.recompileNgModule(ngModule);
+    this.recompileNgModule(ngModule, metadata);
 
     // At this point, the module has a valid module def (ɵmod), but the override may have introduced
     // new declarations or imported modules. Ingest any possible new types and add them to the
@@ -158,14 +158,19 @@ export class R3TestBedCompiler {
   overrideProvider(
       token: any,
       provider: {useFactory?: Function, useValue?: any, deps?: any[], multi?: boolean}): void {
-    const providerDef = provider.useFactory ?
-        {
-          provide: token,
-          useFactory: provider.useFactory,
-          deps: provider.deps || [],
-          multi: provider.multi
-        } :
-        {provide: token, useValue: provider.useValue, multi: provider.multi};
+    let providerDef: Provider;
+    if (provider.useFactory !== undefined) {
+      providerDef = {
+        provide: token,
+        useFactory: provider.useFactory,
+        deps: provider.deps || [],
+        multi: provider.multi
+      };
+    } else if (provider.useValue !== undefined) {
+      providerDef = {provide: token, useValue: provider.useValue, multi: provider.multi};
+    } else {
+      providerDef = {provide: token};
+    }
 
     const injectableDef: InjectableDef<any>|null =
         typeof token !== 'string' ? getInjectableDef(token) : null;
@@ -306,7 +311,10 @@ export class R3TestBedCompiler {
     let needsAsyncResources = false;
     this.pendingComponents.forEach(declaration => {
       needsAsyncResources = needsAsyncResources || isComponentDefPendingResolution(declaration);
-      const metadata = this.resolvers.component.resolve(declaration) !;
+      const metadata = this.resolvers.component.resolve(declaration);
+      if (metadata === null) {
+        throw invalidTypeError(declaration.name, 'Component');
+      }
       this.maybeStoreNgDef(NG_COMP_DEF, declaration);
       compileComponent(declaration, metadata);
     });
@@ -314,13 +322,19 @@ export class R3TestBedCompiler {
 
     this.pendingDirectives.forEach(declaration => {
       const metadata = this.resolvers.directive.resolve(declaration);
+      if (metadata === null) {
+        throw invalidTypeError(declaration.name, 'Directive');
+      }
       this.maybeStoreNgDef(NG_DIR_DEF, declaration);
       compileDirective(declaration, metadata);
     });
     this.pendingDirectives.clear();
 
     this.pendingPipes.forEach(declaration => {
-      const metadata = this.resolvers.pipe.resolve(declaration) !;
+      const metadata = this.resolvers.pipe.resolve(declaration);
+      if (metadata === null) {
+        throw invalidTypeError(declaration.name, 'Pipe');
+      }
       this.maybeStoreNgDef(NG_PIPE_DEF, declaration);
       compilePipe(declaration, metadata);
     });
@@ -341,8 +355,11 @@ export class R3TestBedCompiler {
             // are present, always re-calculate transitive scopes to have the most up-to-date
             // information available. The `moduleToScope` map avoids repeated re-calculation of
             // scopes for the same module.
-            const forceRecalc = !isTestingModule && this.hasModuleOverrides;
-            moduleToScope.set(moduleType, transitiveScopesFor(realType, forceRecalc));
+            if (!isTestingModule && this.hasModuleOverrides) {
+              this.storeFieldOfDefOnType(moduleType as any, NG_MOD_DEF, 'transitiveCompileScopes');
+              (moduleType as any)[NG_MOD_DEF].transitiveCompileScopes = null;
+            }
+            moduleToScope.set(moduleType, transitiveScopesFor(realType));
           }
           return moduleToScope.get(moduleType) !;
         };
@@ -380,15 +397,8 @@ export class R3TestBedCompiler {
 
     const injectorDef: any = (moduleType as any)[NG_INJ_DEF];
     if (this.providerOverridesByToken.size > 0) {
-      // Extract the list of providers from ModuleWithProviders, so we can define the final list of
-      // providers that might have overrides.
-      // Note: second `flatten` operation is needed to convert an array of providers
-      // (e.g. `[[], []]`) into one flat list, also eliminating empty arrays.
-      const providersFromModules = flatten(flatten(
-          injectorDef.imports, (imported: NgModuleType<any>| ModuleWithProviders<any>) =>
-                                   isModuleWithProviders(imported) ? imported.providers : []));
       const providers = [
-        ...providersFromModules, ...injectorDef.providers,
+        ...injectorDef.providers,
         ...(this.providerOverridesByModule.get(moduleType as InjectorType<any>) || [])
       ];
       if (this.hasProviderOverrides(providers)) {
@@ -399,8 +409,9 @@ export class R3TestBedCompiler {
       }
 
       // Apply provider overrides to imported modules recursively
-      const moduleDef: any = (moduleType as any)[NG_MOD_DEF];
-      for (const importedModule of moduleDef.imports) {
+      const moduleDef = (moduleType as any)[NG_MOD_DEF];
+      const imports = maybeUnwrapFn(moduleDef.imports);
+      for (const importedModule of imports) {
         this.applyProviderOverridesToModule(importedModule);
       }
       // Also override the providers on any ModuleWithProviders imports since those don't appear in
@@ -434,11 +445,7 @@ export class R3TestBedCompiler {
     }
   }
 
-  private recompileNgModule(ngModule: Type<any>): void {
-    const metadata = this.resolvers.module.resolve(ngModule);
-    if (metadata === null) {
-      throw new Error(`Unable to resolve metadata for NgModule: ${ngModule.name}`);
-    }
+  private recompileNgModule(ngModule: Type<any>, metadata: NgModule): void {
     // Cache the initial ngModuleDef as it will be overwritten.
     this.maybeStoreNgDef(NG_MOD_DEF, ngModule);
     this.maybeStoreNgDef(NG_INJ_DEF, ngModule);
@@ -749,6 +756,10 @@ function forEachRight<T>(values: T[], fn: (value: T, idx: number) => void): void
   for (let idx = values.length - 1; idx >= 0; idx--) {
     fn(values[idx], idx);
   }
+}
+
+function invalidTypeError(name: string, expectedType: string): Error {
+  return new Error(`${name} class doesn't have @${expectedType} decorator or is missing metadata.`);
 }
 
 class R3TestCompiler implements Compiler {

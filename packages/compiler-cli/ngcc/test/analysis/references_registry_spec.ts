@@ -47,7 +47,7 @@ runInEachFileSystem(() => {
       const testArrayExpression = testArrayDeclaration.initializer !;
 
       const reflectionHost = new TypeScriptReflectionHost(checker);
-      const evaluator = new PartialEvaluator(reflectionHost, checker);
+      const evaluator = new PartialEvaluator(reflectionHost, checker, /* dependencyTracker */ null);
       const registry = new NgccReferencesRegistry(reflectionHost);
 
       const references = (evaluator.evaluate(testArrayExpression) as any[]).filter(isReference);

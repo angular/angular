@@ -1,7 +1,6 @@
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 
-load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle")
-load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
+load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle", "ts_devserver")
 
 ng_module(
     name = "application_lib",
@@ -38,17 +37,14 @@ ts_devserver(
 
 ts_devserver(
     name = "devserver",
-    data = [
-        "//packages/zone.js/dist:zone.js",
-    ],
     entry_module = "angular/modules/benchmarks/src/views/index",
-    index_html = "index.html",
     scripts = [
         "@npm//:node_modules/tslib/tslib.js",
         "//tools/rxjs:rxjs_umd_modules",
     ],
     serving_path = "/index.js",
     static_files = [
+        "//packages/zone.js/dist:zone.js",
         "index.html",
     ],
     deps = [":application_lib"],

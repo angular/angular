@@ -9,11 +9,18 @@ ls_rollup_bundle(
         "typescript": "ts",
         "typescript/lib/tsserverlibrary": "tss",
     },
-    license_banner = "banner.js.txt",
+    license_banner = ":banner",
     visibility = ["//packages/language-service:__pkg__"],
     deps = [
         "//packages/language-service",
         "@npm//rxjs",
         "@npm//tslib",
     ],
+)
+
+genrule(
+    name = "banner",
+    srcs = ["banner.js"],
+    outs = ["banner.txt"],
+    cmd = "cp $< $@",
 )

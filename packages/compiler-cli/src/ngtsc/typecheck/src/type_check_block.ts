@@ -6,18 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, BindingType, BoundTarget, DYNAMIC_TYPE, ImplicitReceiver, MethodCall, ParseSourceSpan, ParseSpan, ParsedEventType, PropertyRead, SchemaMetadata, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AST, BindingPipe, BindingType, BoundTarget, DYNAMIC_TYPE, ImplicitReceiver, MethodCall, ParseSourceSpan, ParsedEventType, PropertyRead, PropertyWrite, SchemaMetadata, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 
-import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta} from './api';
-import {addParseSpanInfo, addSourceId, toAbsoluteSpan, wrapForDiagnostics} from './diagnostics';
+import {TemplateId, TypeCheckBlockMetadata, TypeCheckableDirectiveMeta} from './api';
+import {addParseSpanInfo, addTemplateId, ignoreDiagnostics, wrapForDiagnostics} from './diagnostics';
 import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {NULL_AS_ANY, astToTypescript} from './expression';
 import {OutOfBandDiagnosticRecorder} from './oob';
+import {ExpressionSemanticVisitor} from './template_semantics';
 import {checkIfClassIsExported, checkIfGenericTypesAreUnbound, tsCallMethod, tsCastToAny, tsCreateElement, tsCreateVariable, tsDeclareVariable} from './ts_util';
 
 
@@ -50,13 +51,13 @@ export function generateTypeCheckBlock(
     oobRecorder: OutOfBandDiagnosticRecorder): ts.FunctionDeclaration {
   const tcb = new Context(
       env, domSchemaChecker, oobRecorder, meta.id, meta.boundTarget, meta.pipes, meta.schemas);
-  const scope = Scope.forNodes(tcb, null, tcb.boundTarget.target.template !);
+  const scope = Scope.forNodes(tcb, null, tcb.boundTarget.target.template !, /* guard */ null);
   const ctxRawType = env.referenceType(ref);
   if (!ts.isTypeReferenceNode(ctxRawType)) {
     throw new Error(
         `Expected TypeReferenceNode when referencing the ctx param for ${ref.debugName}`);
   }
-  const paramList = [tcbCtxParam(ref.node, ctxRawType.typeName)];
+  const paramList = [tcbCtxParam(ref.node, ctxRawType.typeName, env.config.useContextGenericType)];
 
   const scopeStatements = scope.render();
   const innerBody = ts.createBlock([
@@ -72,11 +73,11 @@ export function generateTypeCheckBlock(
       /* modifiers */ undefined,
       /* asteriskToken */ undefined,
       /* name */ name,
-      /* typeParameters */ ref.node.typeParameters,
+      /* typeParameters */ env.config.useContextGenericType ? ref.node.typeParameters : undefined,
       /* parameters */ paramList,
       /* type */ undefined,
       /* body */ body);
-  addSourceId(fnDecl, meta.id);
+  addTemplateId(fnDecl, meta.id);
   return fnDecl;
 }
 
@@ -97,7 +98,19 @@ export function generateTypeCheckBlock(
  * Each `TcbOp` may insert statements into the body of the TCB, and also optionally return a
  * `ts.Expression` which can be used to reference the operation's result.
  */
-abstract class TcbOp { abstract execute(): ts.Expression|null; }
+abstract class TcbOp {
+  abstract execute(): ts.Expression|null;
+
+  /**
+   * Replacement value or operation used while this `TcbOp` is executing (i.e. to resolve circular
+   * references during its execution).
+   *
+   * This is usually a `null!` expression (which asks TS to infer an appropriate type), but another
+   * `TcbOp` can be returned in cases where additional code generation is necessary to deal with
+   * circular references.
+   */
+  circularFallback(): TcbOp|ts.Expression { return INFER_TYPE_FOR_CIRCULAR_OP_EXPR; }
+}
 
 /**
  * A `TcbOp` which creates an expression for a native DOM element (or web component) from a
@@ -181,10 +194,6 @@ class TcbTemplateBodyOp extends TcbOp {
     super();
   }
   execute(): null {
-    // Create a new Scope for the template. This constructs the list of operations for the template
-    // children, as well as tracks bindings within the template.
-    const tmplScope = Scope.forNodes(this.tcb, this.scope, this.template);
-
     // An `if` will be constructed, within which the template's children will be type checked. The
     // `if` is used for two reasons: it creates a new syntactic scope, isolating variables declared
     // in the template's TCB from the outer context, and it allows any directives on the templates
@@ -214,9 +223,11 @@ class TcbTemplateBodyOp extends TcbOp {
                       i instanceof TmplAstBoundAttribute && i.name === guard.inputName);
           if (boundInput !== undefined) {
             // If there is such a binding, generate an expression for it.
-            const expr = tcbExpression(
-                boundInput.value, this.tcb, this.scope,
-                boundInput.valueSpan || boundInput.sourceSpan);
+            const expr = tcbExpression(boundInput.value, this.tcb, this.scope);
+
+            // The expression has already been checked in the type constructor invocation, so
+            // it should be ignored when used within a template guard.
+            ignoreDiagnostics(expr);
 
             if (guard.type === 'binding') {
               // Use the binding expression itself as guard.
@@ -228,8 +239,7 @@ class TcbTemplateBodyOp extends TcbOp {
                 dirInstId,
                 expr,
               ]);
-              addParseSpanInfo(
-                  guardInvoke, toAbsoluteSpan(boundInput.value.span, boundInput.sourceSpan));
+              addParseSpanInfo(guardInvoke, boundInput.value.sourceSpan);
               directiveGuards.push(guardInvoke);
             }
           }
@@ -247,7 +257,7 @@ class TcbTemplateBodyOp extends TcbOp {
     }
 
     // By default the guard is simply `true`.
-    let guard: ts.Expression = ts.createTrue();
+    let guard: ts.Expression|null = null;
 
     // If there are any guards from directives, use them instead.
     if (directiveGuards.length > 0) {
@@ -259,12 +269,19 @@ class TcbTemplateBodyOp extends TcbOp {
           directiveGuards.pop() !);
     }
 
-    // Construct the `if` block for the template with the generated guard expression. The body of
-    // the `if` block is created by rendering the template's `Scope.
-    const tmplIf = ts.createIf(
-        /* expression */ guard,
-        /* thenStatement */ ts.createBlock(tmplScope.render()));
-    this.scope.addStatement(tmplIf);
+    // Create a new Scope for the template. This constructs the list of operations for the template
+    // children, as well as tracks bindings within the template.
+    const tmplScope = Scope.forNodes(this.tcb, this.scope, this.template, guard);
+
+    // Render the template's `Scope` into a block.
+    let tmplBlock: ts.Statement = ts.createBlock(tmplScope.render());
+    if (guard !== null) {
+      // The scope has a guard that needs to be applied, so wrap the template block into an `if`
+      // statement containing the guard expression.
+      tmplBlock = ts.createIf(/* expression */ guard, /* thenStatement */ tmplBlock);
+    }
+    this.scope.addStatement(tmplBlock);
+
     return null;
   }
 }
@@ -280,7 +297,7 @@ class TcbTextInterpolationOp extends TcbOp {
   }
 
   execute(): null {
-    const expr = tcbExpression(this.binding.value, this.tcb, this.scope, this.binding.sourceSpan);
+    const expr = tcbExpression(this.binding.value, this.tcb, this.scope);
     this.scope.addStatement(ts.createExpressionStatement(expr));
     return null;
   }
@@ -310,6 +327,41 @@ class TcbDirectiveOp extends TcbOp {
     const typeCtor = tcbCallTypeCtor(this.dir, this.tcb, inputs);
     addParseSpanInfo(typeCtor, this.node.sourceSpan);
     this.scope.addStatement(tsCreateVariable(id, typeCtor));
+    return id;
+  }
+
+  circularFallback(): TcbOp {
+    return new TcbDirectiveCircularFallbackOp(this.tcb, this.scope, this.node, this.dir);
+  }
+}
+
+/**
+ * A `TcbOp` which is used to generate a fallback expression if the inference of a directive type
+ * via `TcbDirectiveOp` requires a reference to its own type. This can happen using a template
+ * reference:
+ *
+ * ```html
+ * <some-cmp #ref [prop]="ref.foo"></some-cmp>
+ * ```
+ *
+ * In this case, `TcbDirectiveCircularFallbackOp` will add a second inference of the directive type
+ * to the type-check block, this time calling the directive's type constructor without any input
+ * expressions. This infers the widest possible supertype for the directive, which is used to
+ * resolve any recursive references required to infer the real type.
+ */
+class TcbDirectiveCircularFallbackOp extends TcbOp {
+  constructor(
+      private tcb: Context, private scope: Scope, private node: TmplAstTemplate|TmplAstElement,
+      private dir: TypeCheckableDirectiveMeta) {
+    super();
+  }
+
+  execute(): ts.Identifier {
+    const id = this.tcb.allocateId();
+    const typeCtor = this.tcb.env.typeCtorFor(this.dir);
+    const circularPlaceholder = ts.createCall(
+        typeCtor, /* typeArguments */ undefined, [ts.createNonNullExpression(ts.createNull())]);
+    this.scope.addStatement(tsCreateVariable(id, circularPlaceholder));
     return id;
   }
 }
@@ -399,8 +451,7 @@ class TcbUnclaimedInputsOp extends TcbOp {
         continue;
       }
 
-      let expr = tcbExpression(
-          binding.value, this.tcb, this.scope, binding.valueSpan || binding.sourceSpan);
+      let expr = tcbExpression(binding.value, this.tcb, this.scope);
       if (!this.tcb.env.config.checkTypeOfInputBindings) {
         // If checking the type of bindings is disabled, cast the resulting expression to 'any'
         // before the assignment.
@@ -491,6 +542,9 @@ class TcbDirectiveOutputsOp extends TcbOp {
         const handler = tcbCreateEventHandler(output, this.tcb, this.scope, EventParamType.Any);
         this.scope.addStatement(ts.createExpressionStatement(handler));
       }
+
+      ExpressionSemanticVisitor.visit(
+          output.handler, this.tcb.id, this.tcb.boundTarget, this.tcb.oobRecorder);
     }
 
     return null;
@@ -549,6 +603,9 @@ class TcbUnclaimedOutputsOp extends TcbOp {
         const handler = tcbCreateEventHandler(output, this.tcb, this.scope, EventParamType.Any);
         this.scope.addStatement(ts.createExpressionStatement(handler));
       }
+
+      ExpressionSemanticVisitor.visit(
+          output.handler, this.tcb.id, this.tcb.boundTarget, this.tcb.oobRecorder);
     }
 
     return null;
@@ -576,7 +633,7 @@ export class Context {
 
   constructor(
       readonly env: Environment, readonly domSchemaChecker: DomSchemaChecker,
-      readonly oobRecorder: OutOfBandDiagnosticRecorder, readonly id: string,
+      readonly oobRecorder: OutOfBandDiagnosticRecorder, readonly id: TemplateId,
       readonly boundTarget: BoundTarget<TypeCheckableDirectiveMeta>,
       private pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
       readonly schemas: SchemaMetadata[]) {}
@@ -656,7 +713,9 @@ class Scope {
    */
   private statements: ts.Statement[] = [];
 
-  private constructor(private tcb: Context, private parent: Scope|null = null) {}
+  private constructor(
+      private tcb: Context, private parent: Scope|null = null,
+      private guard: ts.Expression|null = null) {}
 
   /**
    * Constructs a `Scope` given either a `TmplAstTemplate` or a list of `TmplAstNode`s.
@@ -666,10 +725,12 @@ class Scope {
    * `Scope`.
    * @param templateOrNodes either a `TmplAstTemplate` representing the template for which to
    * calculate the `Scope`, or a list of nodes if no outer template object is available.
+   * @param guard an expression that is applied to this scope for type narrowing purposes.
    */
   static forNodes(
-      tcb: Context, parent: Scope|null, templateOrNodes: TmplAstTemplate|(TmplAstNode[])): Scope {
-    const scope = new Scope(tcb, parent);
+      tcb: Context, parent: Scope|null, templateOrNodes: TmplAstTemplate|(TmplAstNode[]),
+      guard: ts.Expression|null): Scope {
+    const scope = new Scope(tcb, parent, guard);
 
     let children: TmplAstNode[];
 
@@ -677,7 +738,17 @@ class Scope {
     // has.
     if (templateOrNodes instanceof TmplAstTemplate) {
       // The template's variable declarations need to be added as `TcbVariableOp`s.
+      const varMap = new Map<string, TmplAstVariable>();
+
       for (const v of templateOrNodes.variables) {
+        // Validate that variables on the `TmplAstTemplate` are only declared once.
+        if (!varMap.has(v.name)) {
+          varMap.set(v.name, v);
+        } else {
+          const firstDecl = varMap.get(v.name) !;
+          tcb.oobRecorder.duplicateTemplateVar(tcb.id, v, firstDecl);
+        }
+
         const opIndex = scope.opQueue.push(new TcbVariableOp(tcb, scope, templateOrNodes, v)) - 1;
         scope.varMap.set(v, opIndex);
       }
@@ -737,6 +808,32 @@ class Scope {
     return this.statements;
   }
 
+  /**
+   * Returns an expression of all template guards that apply to this scope, including those of
+   * parent scopes. If no guards have been applied, null is returned.
+   */
+  guards(): ts.Expression|null {
+    let parentGuards: ts.Expression|null = null;
+    if (this.parent !== null) {
+      // Start with the guards from the parent scope, if present.
+      parentGuards = this.parent.guards();
+    }
+
+    if (this.guard === null) {
+      // This scope does not have a guard, so return the parent's guards as is.
+      return parentGuards;
+    } else if (parentGuards === null) {
+      // There's no guards from the parent scope, so this scope's guard represents all available
+      // guards.
+      return this.guard;
+    } else {
+      // Both the parent scope and this scope provide a guard, so create a combination of the two.
+      // It is important that the parent guard is used as left operand, given that it may provide
+      // narrowing that is required for this scope's guard to be valid.
+      return ts.createBinary(parentGuards, ts.SyntaxKind.AmpersandAmpersandToken, this.guard);
+    }
+  }
+
   private resolveLocal(
       ref: TmplAstElement|TmplAstTemplate|TmplAstVariable,
       directive?: TypeCheckableDirectiveMeta): ts.Expression|null {
@@ -792,10 +889,10 @@ class Scope {
       return op;
     }
 
-    // Set the result of the operation in the queue to a special expression. If executing this
-    // operation results in a circular dependency, this will break the cycle and infer the least
-    // narrow type where needed (which is how TypeScript deals with circular dependencies in types).
-    this.opQueue[opIndex] = INFER_TYPE_FOR_CIRCULAR_OP_EXPR;
+    // Set the result of the operation in the queue to its circular fallback. If executing this
+    // operation results in a circular dependency, this will prevent an infinite loop and allow for
+    // the resolution of such cycles.
+    this.opQueue[opIndex] = op.circularFallback();
     const res = op.execute();
     // Once the operation has finished executing, it's safe to cache the real result.
     this.opQueue[opIndex] = res;
@@ -918,12 +1015,18 @@ class Scope {
  * parameters listed (without their generic bounds).
  */
 function tcbCtxParam(
-    node: ClassDeclaration<ts.ClassDeclaration>, name: ts.EntityName): ts.ParameterDeclaration {
+    node: ClassDeclaration<ts.ClassDeclaration>, name: ts.EntityName,
+    useGenericType: boolean): ts.ParameterDeclaration {
   let typeArguments: ts.TypeNode[]|undefined = undefined;
   // Check if the component is generic, and pass generic type parameters if so.
   if (node.typeParameters !== undefined) {
-    typeArguments =
-        node.typeParameters.map(param => ts.createTypeReferenceNode(param.name, undefined));
+    if (useGenericType) {
+      typeArguments =
+          node.typeParameters.map(param => ts.createTypeReferenceNode(param.name, undefined));
+    } else {
+      typeArguments =
+          node.typeParameters.map(() => ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
+    }
   }
   const type = ts.createTypeReferenceNode(name, typeArguments);
   return ts.createParameter(
@@ -940,23 +1043,19 @@ function tcbCtxParam(
  * Process an `AST` expression and convert it into a `ts.Expression`, generating references to the
  * correct identifiers in the current scope.
  */
-function tcbExpression(
-    ast: AST, tcb: Context, scope: Scope, sourceSpan: ParseSourceSpan): ts.Expression {
-  const translator = new TcbExpressionTranslator(tcb, scope, sourceSpan);
+function tcbExpression(ast: AST, tcb: Context, scope: Scope): ts.Expression {
+  const translator = new TcbExpressionTranslator(tcb, scope);
   return translator.translate(ast);
 }
 
 class TcbExpressionTranslator {
-  constructor(
-      protected tcb: Context, protected scope: Scope, protected sourceSpan: ParseSourceSpan) {}
+  constructor(protected tcb: Context, protected scope: Scope) {}
 
   translate(ast: AST): ts.Expression {
     // `astToTypescript` actually does the conversion. A special resolver `tcbResolve` is passed
     // which interprets specific expression nodes that interact with the `ImplicitReceiver`. These
     // nodes actually refer to identifiers within the current scope.
-    return astToTypescript(
-        ast, ast => this.resolve(ast), this.tcb.env.config,
-        (span: ParseSpan) => toAbsoluteSpan(span, this.sourceSpan));
+    return astToTypescript(ast, ast => this.resolve(ast), this.tcb.env.config);
   }
 
   /**
@@ -972,6 +1071,16 @@ class TcbExpressionTranslator {
       // returned here to let it fall through resolution so it will be caught when the
       // `ImplicitReceiver` is resolved in the branch below.
       return this.resolveTarget(ast);
+    } else if (ast instanceof PropertyWrite && ast.receiver instanceof ImplicitReceiver) {
+      const target = this.resolveTarget(ast);
+      if (target === null) {
+        return null;
+      }
+
+      const expr = this.translate(ast.value);
+      const result = ts.createParen(ts.createBinary(target, ts.SyntaxKind.EqualsToken, expr));
+      addParseSpanInfo(result, ast.sourceSpan);
+      return result;
     } else if (ast instanceof ImplicitReceiver) {
       // AST instances representing variables and references look very similar to property reads
       // or method calls from the component context: both have the shape
@@ -993,8 +1102,7 @@ class TcbExpressionTranslator {
         pipe = this.tcb.getPipeByName(ast.name);
         if (pipe === null) {
           // No pipe by that name exists in scope. Record this as an error.
-          const nameAbsoluteSpan = toAbsoluteSpan(ast.nameSpan, this.sourceSpan);
-          this.tcb.oobRecorder.missingPipe(this.tcb.id, ast, nameAbsoluteSpan);
+          this.tcb.oobRecorder.missingPipe(this.tcb.id, ast);
 
           // Return an 'any' value to at least allow the rest of the expression to be checked.
           pipe = NULL_AS_ANY;
@@ -1005,7 +1113,7 @@ class TcbExpressionTranslator {
       }
       const args = ast.args.map(arg => this.translate(arg));
       const result = tsCallMethod(pipe, 'transform', [expr, ...args]);
-      addParseSpanInfo(result, toAbsoluteSpan(ast.span, this.sourceSpan));
+      addParseSpanInfo(result, ast.sourceSpan);
       return result;
     } else if (ast instanceof MethodCall && ast.receiver instanceof ImplicitReceiver) {
       // Resolve the special `$any(expr)` syntax to insert a cast of the argument to type `any`.
@@ -1014,7 +1122,7 @@ class TcbExpressionTranslator {
         const exprAsAny =
             ts.createAsExpression(expr, ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
         const result = ts.createParen(exprAsAny);
-        addParseSpanInfo(result, toAbsoluteSpan(ast.span, this.sourceSpan));
+        addParseSpanInfo(result, ast.sourceSpan);
         return result;
       }
 
@@ -1030,7 +1138,7 @@ class TcbExpressionTranslator {
       const method = ts.createPropertyAccess(wrapForDiagnostics(receiver), ast.name);
       const args = ast.args.map(arg => this.translate(arg));
       const node = ts.createCall(method, undefined, args);
-      addParseSpanInfo(node, toAbsoluteSpan(ast.span, this.sourceSpan));
+      addParseSpanInfo(node, ast.sourceSpan);
       return node;
     } else {
       // This AST isn't special after all.
@@ -1052,7 +1160,7 @@ class TcbExpressionTranslator {
     // This expression has a binding to some variable or reference in the template. Resolve it.
     if (binding instanceof TmplAstVariable) {
       const expr = ts.getMutableClone(this.scope.resolve(binding));
-      addParseSpanInfo(expr, toAbsoluteSpan(ast.span, this.sourceSpan));
+      addParseSpanInfo(expr, ast.sourceSpan);
       return expr;
     } else if (binding instanceof TmplAstReference) {
       const target = this.tcb.boundTarget.getReferenceTarget(binding);
@@ -1073,7 +1181,7 @@ class TcbExpressionTranslator {
         }
 
         const expr = ts.getMutableClone(this.scope.resolve(target));
-        addParseSpanInfo(expr, toAbsoluteSpan(ast.span, this.sourceSpan));
+        addParseSpanInfo(expr, ast.sourceSpan);
         return expr;
       } else if (target instanceof TmplAstTemplate) {
         if (!this.tcb.env.config.checkTypeOfNonDomReferences) {
@@ -1090,7 +1198,7 @@ class TcbExpressionTranslator {
             value,
             this.tcb.env.referenceExternalType('@angular/core', 'TemplateRef', [DYNAMIC_TYPE]));
         value = ts.createParen(value);
-        addParseSpanInfo(value, toAbsoluteSpan(ast.span, this.sourceSpan));
+        addParseSpanInfo(value, ast.sourceSpan);
         return value;
       } else {
         if (!this.tcb.env.config.checkTypeOfNonDomReferences) {
@@ -1099,7 +1207,7 @@ class TcbExpressionTranslator {
         }
 
         const expr = ts.getMutableClone(this.scope.resolve(target.node, target.directive));
-        addParseSpanInfo(expr, toAbsoluteSpan(ast.span, this.sourceSpan));
+        addParseSpanInfo(expr, ast.sourceSpan);
         return expr;
       }
     } else {
@@ -1162,7 +1270,10 @@ type TcbDirectiveInput = {
 function tcbGetDirectiveInputs(
     el: TmplAstElement | TmplAstTemplate, dir: TypeCheckableDirectiveMeta, tcb: Context,
     scope: Scope): TcbDirectiveInput[] {
-  const directiveInputs: TcbDirectiveInput[] = [];
+  // Only the first binding to a property is written.
+  // TODO(alxhub): produce an error for duplicate bindings to the same property, independently of
+  // this logic.
+  const directiveInputs = new Map<string, TcbDirectiveInput>();
   // `dir.inputs` is an object map of field names on the directive class to property names.
   // This is backwards from what's needed to match bindings - a map of properties to field names
   // is desired. Invert `dir.inputs` into `propMatch` to create this map.
@@ -1173,10 +1284,6 @@ function tcbGetDirectiveInputs(
                                  propMatch.set(inputs[key] as string, key);
   });
 
-  // To determine which of directive's inputs are unset, we keep track of the set of field names
-  // that have not been seen yet. A field is removed from this set once a binding to it is found.
-  const unsetFields = new Set(propMatch.values());
-
   el.inputs.forEach(processAttribute);
   el.attributes.forEach(processAttribute);
   if (el instanceof TmplAstTemplate) {
@@ -1184,11 +1291,16 @@ function tcbGetDirectiveInputs(
   }
 
   // Add unset directive inputs for each of the remaining unset fields.
-  for (const field of unsetFields) {
-    directiveInputs.push({type: 'unset', field});
+  // Note: it's actually important here that `propMatch.values()` isn't used, as there can be
+  // multiple fields which share the same property name and only one of them will be listed as a
+  // value in `propMatch`.
+  for (const field of Object.keys(inputs)) {
+    if (!directiveInputs.has(field)) {
+      directiveInputs.set(field, {type: 'unset', field});
+    }
   }
 
-  return directiveInputs;
+  return Array.from(directiveInputs.values());
 
   /**
    * Add a binding expression to the map for each input/template attribute of the directive that has
@@ -1211,19 +1323,21 @@ function tcbGetDirectiveInputs(
     }
     const field = propMatch.get(attr.name) !;
 
-    // Remove the field from the set of unseen fields, now that it's been assigned to.
-    unsetFields.delete(field);
+    // Skip the attribute if a previous binding also wrote to it.
+    if (directiveInputs.has(field)) {
+      return;
+    }
 
     let expr: ts.Expression;
     if (attr instanceof TmplAstBoundAttribute) {
       // Produce an expression representing the value of the binding.
-      expr = tcbExpression(attr.value, tcb, scope, attr.valueSpan || attr.sourceSpan);
+      expr = tcbExpression(attr.value, tcb, scope);
     } else {
       // For regular attributes with a static string value, use the represented string literal.
       expr = ts.createStringLiteral(attr.value);
     }
 
-    directiveInputs.push({
+    directiveInputs.set(field, {
       type: 'binding',
       field: field,
       expression: expr,
@@ -1255,8 +1369,8 @@ const enum EventParamType {
  */
 function tcbCreateEventHandler(
     event: TmplAstBoundEvent, tcb: Context, scope: Scope,
-    eventType: EventParamType | ts.TypeNode): ts.ArrowFunction {
-  const handler = tcbEventHandlerExpression(event.handler, tcb, scope, event.handlerSpan);
+    eventType: EventParamType | ts.TypeNode): ts.Expression {
+  const handler = tcbEventHandlerExpression(event.handler, tcb, scope);
 
   let eventParamType: ts.TypeNode|undefined;
   if (eventType === EventParamType.Infer) {
@@ -1267,6 +1381,16 @@ function tcbCreateEventHandler(
     eventParamType = eventType;
   }
 
+  // Obtain all guards that have been applied to the scope and its parents, as they have to be
+  // repeated within the handler function for their narrowing to be in effect within the handler.
+  const guards = scope.guards();
+
+  let body: ts.Statement = ts.createExpressionStatement(handler);
+  if (guards !== null) {
+    // Wrap the body in an `if` statement containing all guards that have to be applied.
+    body = ts.createIf(guards, body);
+  }
+
   const eventParam = ts.createParameter(
       /* decorators */ undefined,
       /* modifiers */ undefined,
@@ -1274,13 +1398,15 @@ function tcbCreateEventHandler(
       /* name */ EVENT_PARAMETER,
       /* questionToken */ undefined,
       /* type */ eventParamType);
-  return ts.createArrowFunction(
+
+  return ts.createFunctionExpression(
       /* modifier */ undefined,
+      /* asteriskToken */ undefined,
+      /* name */ undefined,
       /* typeParameters */ undefined,
       /* parameters */[eventParam],
       /* type */ ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
-      /* equalsGreaterThanToken*/ undefined,
-      /* body */ handler);
+      /* body */ ts.createBlock([body]));
 }
 
 /**
@@ -1288,9 +1414,8 @@ function tcbCreateEventHandler(
  * `ts.Expression`, with special handling of the `$event` variable that can be used within event
  * bindings.
  */
-function tcbEventHandlerExpression(
-    ast: AST, tcb: Context, scope: Scope, sourceSpan: ParseSourceSpan): ts.Expression {
-  const translator = new TcbEventHandlerTranslator(tcb, scope, sourceSpan);
+function tcbEventHandlerExpression(ast: AST, tcb: Context, scope: Scope): ts.Expression {
+  const translator = new TcbEventHandlerTranslator(tcb, scope);
   return translator.translate(ast);
 }
 
@@ -1303,7 +1428,7 @@ class TcbEventHandlerTranslator extends TcbExpressionTranslator {
     if (ast instanceof PropertyRead && ast.receiver instanceof ImplicitReceiver &&
         ast.name === EVENT_PARAMETER) {
       const event = ts.createIdentifier(EVENT_PARAMETER);
-      addParseSpanInfo(event, toAbsoluteSpan(ast.span, this.sourceSpan));
+      addParseSpanInfo(event, ast.sourceSpan);
       return event;
     }
 

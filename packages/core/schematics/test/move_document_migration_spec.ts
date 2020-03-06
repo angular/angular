@@ -165,6 +165,6 @@ describe('move-document migration', () => {
   }
 
   function runMigration() {
-    runner.runSchematicAsync('migration-v8-move-document', {}, tree).toPromise();
+    return runner.runSchematicAsync('migration-v8-move-document', {}, tree).toPromise();
   }
 });

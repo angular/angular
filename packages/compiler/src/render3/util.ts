@@ -98,3 +98,8 @@ export function jitOnlyGuardedExpression(expr: o.Expression): o.Expression {
       /* sourceSpan */ undefined, true);
   return new o.BinaryOperatorExpr(o.BinaryOperator.And, jitFlagUndefinedOrTrue, expr);
 }
+
+export function wrapReference(value: any): R3Reference {
+  const wrapped = new o.WrappedNodeExpr(value);
+  return {value: wrapped, type: wrapped};
+}

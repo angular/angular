@@ -73,7 +73,6 @@ describe('renderer factory lifecycle', () => {
     fixture.detectChanges();
     expect(logs).toEqual(
         ['create', 'create', 'begin', 'some_component create', 'some_component update', 'end']);
-
     logs = [];
     fixture.detectChanges();
     expect(logs).toEqual(['begin', 'some_component update', 'end']);

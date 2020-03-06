@@ -53,6 +53,7 @@
     ['{1} {0}', u, u, u],
     [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
     ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'],
+    'BRL',
     'R$',
     'Real brasileiro',
     {
@@ -65,6 +66,7 @@
       'TWD': ['NT$'],
       'USD': ['US$', '$']
     },
+    'ltr',
     plural,
     [
       [['meia-noite', 'meio-dia', 'da manhã', 'da tarde', 'da noite', 'da madrugada'], u, u],

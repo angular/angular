@@ -8,7 +8,7 @@
 import * as ts from 'typescript';
 import {LogicalFileSystem, absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {TestFile, runInEachFileSystem} from '../../file_system/testing';
-import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, Reference, ReferenceEmitter} from '../../imports';
+import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
@@ -40,8 +40,9 @@ runInEachFileSystem(() => {
     });
 
     it('should not produce an empty SourceFile when there is nothing to typecheck', () => {
-      const file =
-          new TypeCheckFile(_('/_typecheck_.ts'), ALL_ENABLED_CONFIG, new ReferenceEmitter([]));
+      const file = new TypeCheckFile(
+          _('/_typecheck_.ts'), ALL_ENABLED_CONFIG, new ReferenceEmitter([]),
+          /* reflector */ null !);
       const sf = file.render();
       expect(sf.statements.length).toBe(1);
     });
@@ -64,12 +65,15 @@ TestClass.ngTypeCtor({value: 'test'});
         const checker = program.getTypeChecker();
         const reflectionHost = new TypeScriptReflectionHost(checker);
         const logicalFs = new LogicalFileSystem(getRootDirs(host, options));
+        const moduleResolver =
+            new ModuleResolver(program, options, host, /* moduleResolutionCache */ null);
         const emitter = new ReferenceEmitter([
           new LocalIdentifierStrategy(),
-          new AbsoluteModuleStrategy(program, checker, options, host, reflectionHost),
+          new AbsoluteModuleStrategy(program, checker, moduleResolver, reflectionHost),
           new LogicalProjectStrategy(reflectionHost, logicalFs),
         ]);
-        const ctx = new TypeCheckContext(ALL_ENABLED_CONFIG, emitter, _('/_typecheck_.ts'));
+        const ctx =
+            new TypeCheckContext(ALL_ENABLED_CONFIG, emitter, reflectionHost, _('/_typecheck_.ts'));
         const TestClass =
             getDeclaration(program, _('/main.ts'), 'TestClass', isNamedClassDeclaration);
         ctx.addInlineTypeCtor(
@@ -97,12 +101,15 @@ TestClass.ngTypeCtor({value: 'test'});
         const checker = program.getTypeChecker();
         const reflectionHost = new TypeScriptReflectionHost(checker);
         const logicalFs = new LogicalFileSystem(getRootDirs(host, options));
+        const moduleResolver =
+            new ModuleResolver(program, options, host, /* moduleResolutionCache */ null);
         const emitter = new ReferenceEmitter([
           new LocalIdentifierStrategy(),
-          new AbsoluteModuleStrategy(program, checker, options, host, reflectionHost),
+          new AbsoluteModuleStrategy(program, checker, moduleResolver, reflectionHost),
           new LogicalProjectStrategy(reflectionHost, logicalFs),
         ]);
-        const ctx = new TypeCheckContext(ALL_ENABLED_CONFIG, emitter, _('/_typecheck_.ts'));
+        const ctx =
+            new TypeCheckContext(ALL_ENABLED_CONFIG, emitter, reflectionHost, _('/_typecheck_.ts'));
         const TestClass =
             getDeclaration(program, _('/main.ts'), 'TestClass', isNamedClassDeclaration);
         ctx.addInlineTypeCtor(
@@ -136,12 +143,15 @@ TestClass.ngTypeCtor({value: 'test'});
         const checker = program.getTypeChecker();
         const reflectionHost = new TypeScriptReflectionHost(checker);
         const logicalFs = new LogicalFileSystem(getRootDirs(host, options));
+        const moduleResolver =
+            new ModuleResolver(program, options, host, /* moduleResolutionCache */ null);
         const emitter = new ReferenceEmitter([
           new LocalIdentifierStrategy(),
-          new AbsoluteModuleStrategy(program, checker, options, host, reflectionHost),
+          new AbsoluteModuleStrategy(program, checker, moduleResolver, reflectionHost),
           new LogicalProjectStrategy(reflectionHost, logicalFs),
         ]);
-        const ctx = new TypeCheckContext(ALL_ENABLED_CONFIG, emitter, _('/_typecheck_.ts'));
+        const ctx =
+            new TypeCheckContext(ALL_ENABLED_CONFIG, emitter, reflectionHost, _('/_typecheck_.ts'));
         const TestClass =
             getDeclaration(program, _('/main.ts'), 'TestClass', isNamedClassDeclaration);
         ctx.addInlineTypeCtor(

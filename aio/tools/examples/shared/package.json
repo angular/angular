@@ -6,14 +6,14 @@
   "scripts": {
     "http-server": "http-server",
     "protractor": "protractor",
-    "webdriver:update": "webdriver-manager update --standalone false --gecko false $CI_CHROMEDRIVER_VERSION_ARG",
+    "webdriver:update": "node ../../../../scripts/webdriver-manager-update.js",
     "preinstall": "node ../../../../tools/yarn/check-yarn.js",
     "postinstall": "yarn webdriver:update"
   },
-  "//engines-comment": "Keep this in sync with aio/package.json",
+  "//engines-comment": "Keep this in sync with /package.json and /aio/package.json",
   "engines": {
     "node": ">=10.9.0 <13.0.0",
-    "yarn": ">=1.17.3 <=1.19.1"
+    "yarn": ">=1.21.1 <2"
   },
   "keywords": [],
   "author": "",
@@ -58,8 +58,8 @@
     "@types/express": "^4.0.35",
     "@types/jasmine": "~2.8.8",
     "@types/jasminewd2": "^2.0.4",
-    "@types/jquery": "^3.3.4",
-    "@types/node": "~8.9.4",
+    "@types/jquery": "3.3.28",
+    "@types/node": "~12.12.14",
     "canonical-path": "1.0.0",
     "concurrently": "^3.0.0",
     "http-server": "^0.11.1",
@@ -74,6 +74,7 @@
     "lite-server": "^2.2.2",
     "lodash": "^4.16.2",
     "protractor": "^5.4.2",
+    "puppeteer": "2.1.1",
     "rimraf": "^2.5.4",
     "rollup": "^1.1.0",
     "rollup-plugin-commonjs": "^9.2.1",

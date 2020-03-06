@@ -138,6 +138,9 @@
     "name": "_renderCompCount"
   },
   {
+    "name": "addHostBindingsToExpandoInstructions"
+  },
+  {
     "name": "addToViewTree"
   },
   {
@@ -160,6 +163,12 @@
   },
   {
     "name": "callHooks"
+  },
+  {
+    "name": "computeStaticStyling"
+  },
+  {
+    "name": "concatStringsWithSpace"
   },
   {
     "name": "createLFrame"
@@ -208,9 +217,6 @@
   },
   {
     "name": "executeCheckHooks"
-  },
-  {
-    "name": "executeElementExitFn"
   },
   {
     "name": "executeInitAndCheckHooks"
@@ -318,7 +324,10 @@
     "name": "getSelectedIndex"
   },
   {
-    "name": "hasActiveElementFlag"
+    "name": "getTView"
+  },
+  {
+    "name": "growHostVarsSpace"
   },
   {
     "name": "hasParentInjector"
@@ -327,13 +336,10 @@
     "name": "includeViewProviders"
   },
   {
-    "name": "incrementActiveDirectiveId"
-  },
-  {
     "name": "incrementInitPhaseFlags"
   },
   {
-    "name": "initNodeFlags"
+    "name": "initTNodeFlags"
   },
   {
     "name": "insertBloom"
@@ -351,6 +357,9 @@
     "name": "invokeHostBindingsInCreationMode"
   },
   {
+    "name": "isAnimationProp"
+  },
+  {
     "name": "isComponentDef"
   },
   {
@@ -366,16 +375,13 @@
     "name": "isProceduralRenderer"
   },
   {
-    "name": "isRootView"
-  },
-  {
     "name": "leaveDI"
   },
   {
     "name": "leaveView"
   },
   {
-    "name": "leaveViewProcessExit"
+    "name": "leaveViewLight"
   },
   {
     "name": "locateHostElement"
@@ -420,6 +426,9 @@
     "name": "refreshView"
   },
   {
+    "name": "registerPreOrderHooks"
+  },
+  {
     "name": "renderChildComponents"
   },
   {
@@ -441,22 +450,16 @@
     "name": "selectIndexInternal"
   },
   {
-    "name": "setActiveHostElement"
-  },
-  {
     "name": "setBindingIndex"
   },
   {
-    "name": "setBindingRoot"
-  },
-  {
-    "name": "setCurrentDirectiveDef"
+    "name": "setBindingRootForHostBindings"
   },
   {
     "name": "setCurrentQueryIndex"
   },
   {
-    "name": "setHostBindings"
+    "name": "setHostBindingsByExecutingExpandoInstructions"
   },
   {
     "name": "setIncludeViewProviders"
@@ -471,6 +474,9 @@
     "name": "setSelectedIndex"
   },
   {
+    "name": "setUpAttributes"
+  },
+  {
     "name": "stringifyForError"
   },
   {
@@ -481,6 +487,12 @@
   },
   {
     "name": "viewAttachedToChangeDetector"
+  },
+  {
+    "name": "writeDirectClass"
+  },
+  {
+    "name": "writeDirectStyle"
   },
   {
     "name": "ɵɵdefineComponent"

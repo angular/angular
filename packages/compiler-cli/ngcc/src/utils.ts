@@ -7,6 +7,7 @@
  */
 import * as ts from 'typescript';
 import {AbsoluteFsPath, FileSystem, absoluteFrom} from '../../src/ngtsc/file_system';
+import {KnownDeclaration} from '../../src/ngtsc/reflection';
 
 /**
  * A list (`Array`) of partially ordered `T` items.
@@ -90,6 +91,33 @@ export function isRelativePath(path: string): boolean {
 }
 
 /**
+ * A `Map`-like object that can compute and memoize a missing value for any key.
+ *
+ * The computed values are memoized, so the factory function is not called more than once per key.
+ * This is useful for storing values that are expensive to compute and may be used multiple times.
+ */
+// NOTE:
+// Ideally, this class should extend `Map`, but that causes errors in ES5 transpiled code:
+// `TypeError: Constructor Map requires 'new'`
+export class FactoryMap<K, V> {
+  private internalMap: Map<K, V>;
+
+  constructor(private factory: (key: K) => V, entries?: readonly(readonly[K, V])[]|null) {
+    this.internalMap = new Map(entries);
+  }
+
+  get(key: K): V {
+    if (!this.internalMap.has(key)) {
+      this.internalMap.set(key, this.factory(key));
+    }
+
+    return this.internalMap.get(key) !;
+  }
+
+  set(key: K, value: V): void { this.internalMap.set(key, value); }
+}
+
+/**
  * Attempt to resolve a `path` to a file by appending the provided `postFixes`
  * to the `path` and checking if the file exists on disk.
  * @returns An absolute path to the first matching existing file, or `null` if none exist.
@@ -106,6 +134,40 @@ export function resolveFileWithPostfixes(
 }
 
 /**
+ * Determine whether a function declaration corresponds with a TypeScript helper function, returning
+ * its kind if so or null if the declaration does not seem to correspond with such a helper.
+ */
+export function getTsHelperFnFromDeclaration(decl: ts.Declaration): KnownDeclaration|null {
+  if (!ts.isFunctionDeclaration(decl) && !ts.isVariableDeclaration(decl)) {
+    return null;
+  }
+
+  if (decl.name === undefined || !ts.isIdentifier(decl.name)) {
+    return null;
+  }
+
+  return getTsHelperFnFromIdentifier(decl.name);
+}
+
+/**
+ * Determine whether an identifier corresponds with a TypeScript helper function (based on its
+ * name), returning its kind if so or null if the identifier does not seem to correspond with such a
+ * helper.
+ */
+export function getTsHelperFnFromIdentifier(id: ts.Identifier): KnownDeclaration|null {
+  switch (stripDollarSuffix(id.text)) {
+    case '__assign':
+      return KnownDeclaration.TsHelperAssign;
+    case '__spread':
+      return KnownDeclaration.TsHelperSpread;
+    case '__spreadArrays':
+      return KnownDeclaration.TsHelperSpreadArrays;
+    default:
+      return null;
+  }
+}
+
+/**
  * An identifier may become repeated when bundling multiple source files into a single bundle, so
  * bundlers have a strategy of suffixing non-unique identifiers with a suffix like $2. This function
  * strips off such suffixes, so that ngcc deals with the canonical name of an identifier.
@@ -114,4 +176,8 @@ export function resolveFileWithPostfixes(
  */
 export function stripDollarSuffix(value: string): string {
   return value.replace(/\$\d+$/, '');
+}
+
+export function stripExtension(fileName: string): string {
+  return fileName.replace(/\..+$/, '');
 }

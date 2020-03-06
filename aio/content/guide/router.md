@@ -1,4 +1,4 @@
-# Routing & Navigation
+# Routing and navigation
 
 The Angular **`Router`** enables navigation from one [view](guide/glossary#view) to the next
 as users perform application tasks.
@@ -1590,7 +1590,7 @@ Remove the `HeroListComponent` from the `AppModule`'s `declarations` because it'
 After these steps, the `AppModule` should look like this:
 
 
-<code-example path="router/src/app/app.module.3.ts" header="src/app/app.module.ts"></code-example>
+<code-example path="router/src/app/app.module.3.ts" header="src/app/app.module.ts" region="remove-heroes"></code-example>
 
 
 
@@ -3302,7 +3302,13 @@ Although it doesn't actually log in, it has what you need for this discussion.
 It has an `isLoggedIn` flag to tell you whether the user is authenticated.
 Its `login` method simulates an API call to an external service by returning an
 observable that resolves successfully after a short pause.
-The `redirectUrl` property will store the attempted URL so you can navigate to it after authenticating.
+The `redirectUrl` property stores the URL that the user wanted to access so you can navigate to it after authentication.
+
+<div class="alert is-helpful">
+
+To keep things simple, this example redirects unauthenticated users to `/admin`. 
+
+</div>
 
 Revise the `AuthGuard` to call it.
 
@@ -3597,7 +3603,7 @@ of its values. You use the `take` operator with an argument of `1` to ensure tha
 Observable completes after retrieving the first value from the Observable returned by the
 `getCrisis` method.
 
-If it doesn't return a valid `Crisis`, return an empty `Observable`, canceling the previous in-flight navigation to the `CrisisDetailComponent` and navigate the user back to the `CrisisListComponent`. The update resolver service looks like this:
+If it doesn't return a valid `Crisis`, return an empty `Observable`, canceling the previous in-flight navigation to the `CrisisDetailComponent` and navigate the user back to the `CrisisListComponent`. The updated resolver service looks like this:
 
 <code-example path="router/src/app/crisis-center/crisis-detail-resolver.service.ts" header="src/app/crisis-center/crisis-detail-resolver.service.ts"></code-example>
 

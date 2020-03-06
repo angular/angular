@@ -8,6 +8,7 @@
 import {AbsoluteFsPath, FileSystem, absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
+import {JsonObject} from '../../src/packages/entry_point';
 import {DirectPackageJsonUpdater, PackageJsonUpdater} from '../../src/writing/package_json_updater';
 
 runInEachFileSystem(() => {
@@ -150,6 +151,138 @@ runInEachFileSystem(() => {
           .toThrowError('Trying to apply a `PackageJsonUpdate` that has already been applied.');
       expect(() => update.writeChanges(_('/bar/package.json')))
           .toThrowError('Trying to apply a `PackageJsonUpdate` that has already been applied.');
+    });
+
+    describe('(property positioning)', () => {
+      // Helpers
+      const createJsonFile = (jsonObj: JsonObject) => {
+        const jsonPath = _('/foo/package.json');
+        loadTestFiles([{name: jsonPath, contents: JSON.stringify(jsonObj)}]);
+        return jsonPath;
+      };
+      const expectJsonEquals = (jsonFilePath: AbsoluteFsPath, jsonObj: JsonObject) =>
+          expect(fs.readFile(jsonFilePath).trim()).toBe(JSON.stringify(jsonObj, null, 2));
+
+      it('should not change property positioning by default', () => {
+        const jsonPath = createJsonFile({
+          p2: '2',
+          p1: {p12: '1.2', p11: '1.1'},
+        });
+
+        updater.createUpdate()
+            .addChange(['p1', 'p11'], '1.1-updated')
+            .addChange(['p1', 'p10'], '1.0-added')
+            .addChange(['p2'], '2-updated')
+            .addChange(['p0'], '0-added')
+            .writeChanges(jsonPath);
+
+        expectJsonEquals(jsonPath, {
+          p2: '2-updated',
+          p1: {p12: '1.2', p11: '1.1-updated', p10: '1.0-added'},
+          p0: '0-added',
+        });
+      });
+
+      it('should not change property positioning with `positioning: unimportant`', () => {
+        const jsonPath = createJsonFile({
+          p2: '2',
+          p1: {p12: '1.2', p11: '1.1'},
+        });
+
+        updater.createUpdate()
+            .addChange(['p1', 'p11'], '1.1-updated', 'unimportant')
+            .addChange(['p1', 'p10'], '1.0-added', 'unimportant')
+            .addChange(['p2'], '2-updated', 'unimportant')
+            .addChange(['p0'], '0-added', 'unimportant')
+            .writeChanges(jsonPath);
+
+        expectJsonEquals(jsonPath, {
+          p2: '2-updated',
+          p1: {p12: '1.2', p11: '1.1-updated', p10: '1.0-added'},
+          p0: '0-added',
+        });
+      });
+
+      it('should position added/updated properties alphabetically with `positioning: alphabetic`',
+         () => {
+           const jsonPath = createJsonFile({
+             p2: '2',
+             p1: {p12: '1.2', p11: '1.1'},
+           });
+
+           updater.createUpdate()
+               .addChange(['p1', 'p11'], '1.1-updated', 'alphabetic')
+               .addChange(['p1', 'p10'], '1.0-added', 'alphabetic')
+               .addChange(['p0'], '0-added', 'alphabetic')
+               .addChange(['p3'], '3-added', 'alphabetic')
+               .writeChanges(jsonPath);
+
+           expectJsonEquals(jsonPath, {
+             p0: '0-added',
+             p2: '2',
+             p1: {p10: '1.0-added', p11: '1.1-updated', p12: '1.2'},
+             p3: '3-added',
+           });
+         });
+
+      it('should position added/updated properties correctly with `positioning: {before: ...}`',
+         () => {
+           const jsonPath = createJsonFile({
+             p2: '2',
+             p1: {p12: '1.2', p11: '1.1'},
+           });
+
+           updater.createUpdate()
+               .addChange(['p0'], '0-added', {before: 'p1'})
+               .addChange(['p1', 'p10'], '1.0-added', {before: 'p11'})
+               .addChange(['p1', 'p12'], '1.2-updated', {before: 'p11'})
+               .writeChanges(jsonPath);
+
+           expectJsonEquals(jsonPath, {
+             p2: '2',
+             p0: '0-added',
+             p1: {p10: '1.0-added', p12: '1.2-updated', p11: '1.1'},
+           });
+
+           // Verify that trying to add before non-existent property, puts updated property at the
+           // end.
+           updater.createUpdate()
+               .addChange(['p3'], '3-added', {before: 'non-existent'})
+               .addChange(['p1', 'p10'], '1.0-updated', {before: 'non-existent'})
+               .writeChanges(jsonPath);
+
+           expectJsonEquals(jsonPath, {
+             p2: '2',
+             p0: '0-added',
+             p1: {p12: '1.2-updated', p11: '1.1', p10: '1.0-updated'},
+             p3: '3-added',
+           });
+         });
+
+      it('should ignore positioning when updating an in-memory representation', () => {
+        const jsonObj = {
+          p20: '20',
+          p10: {p102: '10.2', p101: '10.1'},
+        };
+        const jsonPath = createJsonFile(jsonObj);
+
+        updater.createUpdate()
+            .addChange(['p0'], '0-added', 'alphabetic')
+            .addChange(['p1'], '1-added', 'unimportant')
+            .addChange(['p2'], '2-added')
+            .addChange(['p20'], '20-updated', 'alphabetic')
+            .addChange(['p10', 'p103'], '10.3-added', {before: 'p102'})
+            .addChange(['p10', 'p102'], '10.2-updated', {before: 'p103'})
+            .writeChanges(jsonPath, jsonObj);
+
+        expect(JSON.stringify(jsonObj)).toBe(JSON.stringify({
+          p20: '20-updated',
+          p10: {p102: '10.2-updated', p101: '10.1', p103: '10.3-added'},
+          p0: '0-added',
+          p1: '1-added',
+          p2: '2-added',
+        }));
+      });
     });
   });
 });

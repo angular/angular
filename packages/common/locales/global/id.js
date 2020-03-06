@@ -42,6 +42,7 @@
     ['{1} {0}', u, u, u],
     [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', '.'],
     ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
+    'IDR',
     'Rp',
     'Rupiah Indonesia',
     {
@@ -54,6 +55,7 @@
       'USD': ['US$', '$'],
       'XXX': []
     },
+    'ltr',
     plural,
     [
       [['tengah malam', 'tengah hari', 'pagi', 'siang', 'sore', 'malam'], u, u], u,

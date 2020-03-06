@@ -18,11 +18,16 @@ const PROFILE_CREATE = true;
 const PROFILE_UPDATE = true;
 const PROFILE_NOOP = true;
 
+const consts: TAttributes[] = [
+  [AttributeMarker.Classes, 'A', 'B']  // 0
+];
+const context: any = {};
+const benchmarks: Benchmark[] = [];
 
 function benchmark(
     name: string, template: ComponentTemplate<any>, baselineTemplate: ComponentTemplate<any>) {
-  const ivyHarness = setupTestHarness(template, 1, 1, 1000, context, consts);
-  const baseHarness = setupTestHarness(baselineTemplate, 1, 1, 1000, context, consts);
+  const ivyHarness = setupTestHarness(template, 1, 4, 1000, context, consts);
+  const baseHarness = setupTestHarness(baselineTemplate, 1, 4, 1000, context, consts);
 
   if (PROFILE_CREATE) {
     const benchmark = createBenchmark('class binding[create]: ' + name);
@@ -88,12 +93,6 @@ const A_10 = 'one two three four five six seven eight nine ten';
 const B_10 = A_10.toUpperCase();
 let toggle = true;
 
-const consts: TAttributes[] = [
-  [AttributeMarker.Classes, 'A', 'B']  // 0
-];
-const context: any = {};
-const benchmarks: Benchmark[] = [];
-
 benchmark(
     `<div class="A B">`,
     function(rf: RenderFlags, ctx: any) {
@@ -103,7 +102,7 @@ benchmark(
     },
     function(rf: RenderFlags, ctx: any) {
       if (rf & 1) {
-        ɵɵelement(0, 'div', 1);
+        ɵɵelement(0, 'div', 0);
       }
     });
 
@@ -177,7 +176,7 @@ benchmark(
     },
     function(rf: RenderFlags, ctx: any) {
       if (rf & 1) {
-        ɵɵelement(0, 'div', 1);
+        ɵɵelement(0, 'div', 0);
       }
       if (rf & 2) {
         ɵɵproperty('className', toggle ? A_1 : B_1);
@@ -196,7 +195,7 @@ benchmark(
     },
     function(rf: RenderFlags, ctx: any) {
       if (rf & 1) {
-        ɵɵelement(0, 'div', 1);
+        ɵɵelement(0, 'div', 0);
       }
       if (rf & 2) {
         ɵɵproperty('className', toggle ? A_10 : B_10);
@@ -216,7 +215,7 @@ benchmark(
     },
     function(rf: RenderFlags, ctx: any) {
       if (rf & 1) {
-        ɵɵelement(0, 'div', 1);
+        ɵɵelement(0, 'div', 0);
       }
       if (rf & 2) {
         ɵɵproperty('className', toggle ? A_1 + 'foo' : B_1);

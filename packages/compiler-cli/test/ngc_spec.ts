@@ -11,7 +11,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {main, readCommandLineAndConfiguration, watchMode} from '../src/main';
-import {setup} from './test_support';
+import {setup, stripAnsi} from './test_support';
 
 describe('ngc transformer command-line', () => {
   let basePath: string;
@@ -89,8 +89,9 @@ describe('ngc transformer command-line', () => {
     errorSpy.and.stub();
 
     const exitCode = main(['-p', basePath], errorSpy);
-    expect(errorSpy).toHaveBeenCalledWith(
-        `test.ts(1,1): error TS1128: Declaration or statement expected.\r\n`);
+    const errorText = stripAnsi(errorSpy.calls.mostRecent().args[0]);
+    expect(errorText).toContain(
+        `test.ts:1:1 - error TS1128: Declaration or statement expected.\r\n`);
     expect(exitCode).toBe(1);
   });
 
@@ -105,7 +106,8 @@ describe('ngc transformer command-line', () => {
       }`);
 
       const exitCode = main(['-p', basePath], errorSpy);
-      expect(errorSpy).toHaveBeenCalledWith(
+      const errorText = stripAnsi(errorSpy.calls.mostRecent().args[0]);
+      expect(errorText).toContain(
           `error TS6053: File '` + path.posix.join(basePath, 'test.ts') + `' not found.` +
           '\n');
       expect(exitCode).toEqual(1);
@@ -116,8 +118,9 @@ describe('ngc transformer command-line', () => {
       write('test.ts', 'foo;');
 
       const exitCode = main(['-p', basePath], errorSpy);
-      expect(errorSpy).toHaveBeenCalledWith(
-          `test.ts(1,1): error TS2304: Cannot find name 'foo'.` +
+      const errorText = stripAnsi(errorSpy.calls.mostRecent().args[0]);
+      expect(errorText).toContain(
+          `test.ts:1:1 - error TS2304: Cannot find name 'foo'.` +
           '\n');
       expect(exitCode).toEqual(1);
     });
@@ -127,8 +130,9 @@ describe('ngc transformer command-line', () => {
       write('test.ts', `import {MyClass} from './not-exist-deps';`);
 
       const exitCode = main(['-p', basePath], errorSpy);
-      expect(errorSpy).toHaveBeenCalledWith(
-          `test.ts(1,23): error TS2307: Cannot find module './not-exist-deps'.` +
+      const errorText = stripAnsi(errorSpy.calls.mostRecent().args[0]);
+      expect(errorText).toContain(
+          `test.ts:1:23 - error TS2307: Cannot find module './not-exist-deps'.` +
           '\n');
       expect(exitCode).toEqual(1);
     });
@@ -139,8 +143,9 @@ describe('ngc transformer command-line', () => {
       write('test.ts', `import {MyClass} from './empty-deps';`);
 
       const exitCode = main(['-p', basePath], errorSpy);
-      expect(errorSpy).toHaveBeenCalledWith(
-          `test.ts(1,9): error TS2305: Module '"./empty-deps"' has no exported member 'MyClass'.\n`);
+      const errorText = stripAnsi(errorSpy.calls.mostRecent().args[0]);
+      expect(errorText).toContain(
+          `test.ts:1:9 - error TS2305: Module '"./empty-deps"' has no exported member 'MyClass'.\n`);
       expect(exitCode).toEqual(1);
     });
 
@@ -153,8 +158,9 @@ describe('ngc transformer command-line', () => {
       `);
 
       const exitCode = main(['-p', basePath], errorSpy);
-      expect(errorSpy).toHaveBeenCalledWith(
-          'test.ts(3,9): error TS2349: This expression is not callable.\n' +
+      const errorText = stripAnsi(errorSpy.calls.mostRecent().args[0]);
+      expect(errorText).toContain(
+          'test.ts:3:9 - error TS2349: This expression is not callable.\n' +
           '  Type \'String\' has no call signatures.\n');
       expect(exitCode).toEqual(1);
     });

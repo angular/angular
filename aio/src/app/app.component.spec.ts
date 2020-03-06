@@ -1,35 +1,32 @@
-import { NO_ERRORS_SCHEMA, DebugElement } from '@angular/core';
-import { inject, ComponentFixture, TestBed, fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
-import { Title } from '@angular/platform-browser';
 import { APP_BASE_HREF } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
+import { ComponentFixture, fakeAsync, flushMicrotasks, inject, TestBed, tick } from '@angular/core/testing';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { MatSidenav } from '@angular/material/sidenav';
-import { By } from '@angular/platform-browser';
-
-import { Subject, of, timer } from 'rxjs';
-import { first, mapTo } from 'rxjs/operators';
-
-import { AppComponent } from './app.component';
-import { AppModule } from './app.module';
-import { CurrentNodes } from 'app/navigation/navigation.model';
+import { By, Title } from '@angular/platform-browser';
+import { ElementsLoader } from 'app/custom-elements/elements-loader';
 import { DocumentService } from 'app/documents/document.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
+import { CurrentNodes } from 'app/navigation/navigation.model';
+import { NavigationNode, NavigationService } from 'app/navigation/navigation.service';
+import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
+import { SearchService } from 'app/search/search.service';
 import { Deployment } from 'app/shared/deployment.service';
-import { ElementsLoader } from 'app/custom-elements/elements-loader';
 import { GaService } from 'app/shared/ga.service';
 import { LocationService } from 'app/shared/location.service';
 import { Logger } from 'app/shared/logger.service';
+import { ScrollService } from 'app/shared/scroll.service';
+import { SearchResultsComponent } from 'app/shared/search-results/search-results.component';
+import { SelectComponent } from 'app/shared/select/select.component';
+import { TocItem, TocService } from 'app/shared/toc.service';
+import { of, Subject, timer } from 'rxjs';
+import { first, mapTo } from 'rxjs/operators';
 import { MockLocationService } from 'testing/location.service';
 import { MockLogger } from 'testing/logger.service';
 import { MockSearchService } from 'testing/search.service';
-import { NavigationNode, NavigationService } from 'app/navigation/navigation.service';
-import { ScrollService } from 'app/shared/scroll.service';
-import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
-import { SearchResultsComponent } from 'app/shared/search-results/search-results.component';
-import { SearchService } from 'app/search/search.service';
-import { SelectComponent } from 'app/shared/select/select.component';
-import { TocItem, TocService } from 'app/shared/toc.service';
+import { AppComponent } from './app.component';
+import { AppModule } from './app.module';
 
 const sideBySideBreakPoint = 992;
 const hideToCBreakPoint = 800;
@@ -405,10 +402,12 @@ describe('AppComponent', () => {
       // Older docs versions have an href
       it('should navigate when change to a version with a url', async () => {
         await setupSelectorForTesting();
+        locationService.urlSubject.next('new-page?id=1#section-1');
         const versionWithUrlIndex = component.docVersions.findIndex(v => !!v.url);
         const versionWithUrl = component.docVersions[versionWithUrlIndex];
+        const versionWithUrlAndPage = `${versionWithUrl.url}new-page?id=1#section-1`;
         selectElement.triggerEventHandler('change', { option: versionWithUrl, index: versionWithUrlIndex});
-        expect(locationService.go).toHaveBeenCalledWith(versionWithUrl.url);
+        expect(locationService.go).toHaveBeenCalledWith(versionWithUrlAndPage);
       });
 
       it('should not navigate when change to a version without a url', async () => {
@@ -417,6 +416,15 @@ describe('AppComponent', () => {
         const versionWithoutUrl = component.docVersions[versionWithoutUrlIndex] = { title: 'foo' };
         selectElement.triggerEventHandler('change', { option: versionWithoutUrl, index: versionWithoutUrlIndex });
         expect(locationService.go).not.toHaveBeenCalled();
+      });
+
+      it('should navigate when change to a version with a url that does not end with `/`', async () => {
+        await setupSelectorForTesting();
+        locationService.urlSubject.next('docs#section-1');
+        const versionWithoutSlashIndex = component.docVersions.length;
+        const versionWithoutSlashUrl = component.docVersions[versionWithoutSlashIndex] = { url: 'https://next.angular.io', title: 'foo' };
+        selectElement.triggerEventHandler('change', { option: versionWithoutSlashUrl, index: versionWithoutSlashIndex });
+        expect(locationService.go).toHaveBeenCalledWith('https://next.angular.io/docs#section-1');
       });
     });
 
@@ -793,7 +801,7 @@ describe('AppComponent', () => {
           const searchService = TestBed.inject(SearchService) as Partial<SearchService> as MockSearchService;
 
           const results = [
-            { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '', deprecated: false }
+            { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '', deprecated: false, topics: '' }
           ];
 
           searchService.searchResults.next({ query: 'something', results });
@@ -957,7 +965,7 @@ describe('AppComponent', () => {
         triggerDocViewerEvent('docRendered');
         fixture.detectChanges();
         expect(component.isTransitioning).toBe(false);
-        expect(toolbar.classes['transitioning']).toBe(false);
+        expect(toolbar.classes['transitioning']).toBeFalsy();
 
         // While a document is being rendered, `isTransitoning` is set to true.
         triggerDocViewerEvent('docReady');
@@ -968,7 +976,7 @@ describe('AppComponent', () => {
         triggerDocViewerEvent('docRendered');
         fixture.detectChanges();
         expect(component.isTransitioning).toBe(false);
-        expect(toolbar.classes['transitioning']).toBe(false);
+        expect(toolbar.classes['transitioning']).toBeFalsy();
       });
 
       it('should update the sidenav state as soon as a new document is inserted (but not before)', () => {

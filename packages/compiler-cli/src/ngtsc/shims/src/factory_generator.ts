@@ -11,7 +11,7 @@ import {AbsoluteFsPath, absoluteFrom, basename} from '../../file_system';
 import {ImportRewriter} from '../../imports';
 import {isNonDeclarationTsPath} from '../../util/src/typescript';
 
-import {ShimGenerator} from './host';
+import {ShimGenerator} from './api';
 import {generatedModuleName} from './util';
 
 const TS_DTS_SUFFIX = /(\.d)?\.ts$/;
@@ -22,9 +22,11 @@ const STRIP_NG_FACTORY = /(.*)NgFactory$/;
  * class of an input ts.SourceFile.
  */
 export class FactoryGenerator implements ShimGenerator {
-  private constructor(private map: Map<string, string>) {}
+  private constructor(private map: Map<AbsoluteFsPath, AbsoluteFsPath>) {}
 
-  get factoryFileMap(): Map<string, string> { return this.map; }
+  get factoryFileMap(): Map<AbsoluteFsPath, AbsoluteFsPath> { return this.map; }
+
+  get factoryFileNames(): AbsoluteFsPath[] { return Array.from(this.map.keys()); }
 
   recognize(fileName: AbsoluteFsPath): boolean { return this.map.has(fileName); }
 
@@ -101,7 +103,7 @@ export class FactoryGenerator implements ShimGenerator {
   }
 
   static forRootFiles(files: ReadonlyArray<AbsoluteFsPath>): FactoryGenerator {
-    const map = new Map<AbsoluteFsPath, string>();
+    const map = new Map<AbsoluteFsPath, AbsoluteFsPath>();
     files.filter(sourceFile => isNonDeclarationTsPath(sourceFile))
         .forEach(
             sourceFile =>

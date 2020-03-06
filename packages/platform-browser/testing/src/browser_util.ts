@@ -9,8 +9,6 @@
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {NgZone, ɵglobal as global} from '@angular/core';
 
-export let browserDetection: BrowserDetection;
-
 export class BrowserDetection {
   private _overrideUa: string|null;
   private get _ua(): string {
@@ -21,7 +19,7 @@ export class BrowserDetection {
     return getDOM() ? getDOM().getUserAgent() : '';
   }
 
-  static setup() { browserDetection = new BrowserDetection(null); }
+  static setup() { return new BrowserDetection(null); }
 
   constructor(ua: string|null) { this._overrideUa = ua; }
 
@@ -88,7 +86,7 @@ export class BrowserDetection {
   }
 }
 
-BrowserDetection.setup();
+export const browserDetection: BrowserDetection = BrowserDetection.setup();
 
 export function dispatchEvent(element: any, eventType: any): void {
   const evt: Event = getDOM().getDefaultDocument().createEvent('Event');

@@ -5,7 +5,8 @@
     "packageManager": "yarn",
     "warnings": {
       "typescriptMismatch": false
-    }
+    },
+    "analytics": false
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -97,6 +98,9 @@
                 }
               ],
               "serviceWorker": true
+            },
+            "ci": {
+              "progress": false
             }
           }
         },
@@ -119,7 +123,7 @@
               "browserTarget": "site:build:archive"
             },
             "ci": {
-              "progress": false
+              "browserTarget": "site:build:ci"
             }
           }
         },

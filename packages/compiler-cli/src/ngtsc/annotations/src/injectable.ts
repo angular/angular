@@ -11,12 +11,13 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder} from '../../imports';
+import {InjectableClassRegistry} from '../../metadata';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {findAngularDecorator, getConstructorDependencies, getValidConstructorDependencies, isAngularCore, unwrapConstructorDependencies, unwrapForwardRef, validateConstructorDependencies} from './util';
+import {findAngularDecorator, getConstructorDependencies, getValidConstructorDependencies, isAngularCore, unwrapConstructorDependencies, unwrapForwardRef, validateConstructorDependencies, wrapTypeReference} from './util';
 
 export interface InjectableHandlerData {
   meta: R3InjectableMetadata;
@@ -29,12 +30,21 @@ export interface InjectableHandlerData {
  * Adapts the `compileIvyInjectable` compiler for `@Injectable` decorators to the Ivy compiler.
  */
 export class InjectableDecoratorHandler implements
-    DecoratorHandler<InjectableHandlerData, Decorator> {
+    DecoratorHandler<Decorator, InjectableHandlerData, unknown> {
   constructor(
       private reflector: ReflectionHost, private defaultImportRecorder: DefaultImportRecorder,
-      private isCore: boolean, private strictCtorDeps: boolean) {}
+      private isCore: boolean, private strictCtorDeps: boolean,
+      private injectableRegistry: InjectableClassRegistry,
+      /**
+       * What to do if the injectable already contains a ɵprov property.
+       *
+       * If true then an error diagnostic is reported.
+       * If false then there is no error and a new ɵprov property is not added.
+       */
+      private errorOnDuplicateProv = true) {}
 
   readonly precedence = HandlerPrecedence.SHARED;
+  readonly name = InjectableDecoratorHandler.name;
 
   detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
     if (!decorators) {
@@ -44,6 +54,7 @@ export class InjectableDecoratorHandler implements
     if (decorator !== undefined) {
       return {
         trigger: decorator.node,
+        decorator: decorator,
         metadata: decorator,
       };
     } else {
@@ -51,7 +62,8 @@ export class InjectableDecoratorHandler implements
     }
   }
 
-  analyze(node: ClassDeclaration, decorator: Decorator): AnalysisOutput<InjectableHandlerData> {
+  analyze(node: ClassDeclaration, decorator: Readonly<Decorator>):
+      AnalysisOutput<InjectableHandlerData> {
     const meta = extractInjectableMetadata(node, decorator, this.reflector);
     const decorators = this.reflector.getDecoratorsOfDeclaration(node);
 
@@ -71,7 +83,9 @@ export class InjectableDecoratorHandler implements
     };
   }
 
-  compile(node: ClassDeclaration, analysis: InjectableHandlerData): CompileResult[] {
+  register(node: ClassDeclaration): void { this.injectableRegistry.registerInjectable(node); }
+
+  compile(node: ClassDeclaration, analysis: Readonly<InjectableHandlerData>): CompileResult[] {
     const res = compileIvyInjectable(analysis.meta);
     const statements = res.statements;
     const results: CompileResult[] = [];
@@ -93,11 +107,18 @@ export class InjectableDecoratorHandler implements
       results.push(factoryRes);
     }
 
-    results.push({
-      name: 'ɵprov',
-      initializer: res.expression, statements,
-      type: res.type,
-    });
+    const ɵprov = this.reflector.getMembersOfClass(node).find(member => member.name === 'ɵprov');
+    if (ɵprov !== undefined && this.errorOnDuplicateProv) {
+      throw new FatalDiagnosticError(
+          ErrorCode.INJECTABLE_DUPLICATE_PROV, ɵprov.nameNode || ɵprov.node || node,
+          'Injectables cannot contain a static ɵprov property, because the compiler is going to generate one.');
+    }
+
+    if (ɵprov === undefined) {
+      // Only add a new ɵprov if there is not one already
+      results.push({name: 'ɵprov', initializer: res.expression, statements, type: res.type});
+    }
+
 
     return results;
   }
@@ -105,8 +126,7 @@ export class InjectableDecoratorHandler implements
 
 /**
  * Read metadata from the `@Injectable` decorator and produce the `IvyInjectableMetadata`, the
- * input
- * metadata needed to run `compileIvyInjectable`.
+ * input metadata needed to run `compileIvyInjectable`.
  *
  * A `null` return value indicates this is @Injectable has invalid data.
  */
@@ -114,7 +134,7 @@ function extractInjectableMetadata(
     clazz: ClassDeclaration, decorator: Decorator,
     reflector: ReflectionHost): R3InjectableMetadata {
   const name = clazz.name.text;
-  const type = new WrappedNodeExpr(clazz.name);
+  const type = wrapTypeReference(reflector, clazz);
   const internalType = new WrappedNodeExpr(reflector.getInternalNameOfClass(clazz));
   const typeArgumentCount = reflector.getGenericArityOfClass(clazz) || 0;
   if (decorator.args === null) {
@@ -136,7 +156,9 @@ function extractInjectableMetadata(
     // transport references from one location to another. This is the problem that lowering
     // used to solve - if this restriction proves too undesirable we can re-implement lowering.
     if (!ts.isObjectLiteralExpression(metaNode)) {
-      throw new Error(`In Ivy, decorator metadata must be inline.`);
+      throw new FatalDiagnosticError(
+          ErrorCode.DECORATOR_ARG_NOT_LITERAL, metaNode,
+          `@Injectable argument must be an object literal`);
     }
 
     // Resolve the fields of the literal into a map of field name to expression.
@@ -152,7 +174,7 @@ function extractInjectableMetadata(
       if (!ts.isArrayLiteralExpression(depsExpr)) {
         throw new FatalDiagnosticError(
             ErrorCode.VALUE_NOT_LITERAL, depsExpr,
-            `In Ivy, deps metadata must be an inline array.`);
+            `@Injectable deps metadata must be an inline array`);
       }
       userDeps = depsExpr.elements.map(dep => getDep(dep, reflector));
     }

@@ -240,17 +240,8 @@ function printDiagnostics(
   if (diagnostics.length === 0) {
     return;
   }
-
   const formatHost = getFormatDiagnosticsHost(options);
-  if (options && options.enableIvy !== false) {
-    const ngDiagnostics = diagnostics.filter(api.isNgDiagnostic);
-    const tsDiagnostics = diagnostics.filter(api.isTsDiagnostic);
-    consoleError(replaceTsWithNgInErrors(
-        ts.formatDiagnosticsWithColorAndContext(tsDiagnostics, formatHost)));
-    consoleError(formatDiagnostics(ngDiagnostics, formatHost));
-  } else {
-    consoleError(formatDiagnostics(diagnostics, formatHost));
-  }
+  consoleError(formatDiagnostics(diagnostics, formatHost));
 }
 
 // CLI entry point

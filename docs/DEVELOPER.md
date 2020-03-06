@@ -69,7 +69,7 @@ yarn install
 To build Angular run:
 
 ```shell
-node ./scripts/build-packages-dist.js
+node ./scripts/build/build-packages-dist.js
 ```
 
 * Results are put in the `dist/packages-dist` folder.
@@ -129,7 +129,7 @@ where `$ANGULAR_PATH` is an environment variable of the absolute path of your An
 You can check that your code is properly formatted and adheres to coding style by running:
 
 ``` shell
-$ yarn gulp lint
+$ yarn lint
 ```
 
 ## Publishing Snapshot Builds
@@ -190,7 +190,7 @@ c. Some package managers (such as `pnpm` or `yarn pnp`) might not work correctly
 ### Publishing to GitHub repos
 You can also manually publish `*-builds` snapshots just like our CircleCI build does for upstream
 builds. Before being able to publish the packages, you need to build them locally by running the
-`./scripts/build-packages-dist.js` script.
+`./scripts/build/build-packages-dist.js` script.
 
 First time, you need to create the GitHub repositories:
 

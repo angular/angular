@@ -5,5 +5,6 @@
     "!**/*.js",
     "!**/*.[1].*"
   ],
+  "file": "src/app/popup.service.ts",
   "tags":["cookbook"]
 }

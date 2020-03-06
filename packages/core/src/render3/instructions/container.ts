@@ -13,12 +13,11 @@ import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/c
 import {ComponentTemplate} from '../interfaces/definition';
 import {LocalRefExtractor, TAttributes, TContainerNode, TNode, TNodeType, TViewNode} from '../interfaces/node';
 import {isDirectiveHost} from '../interfaces/type_checks';
-import {FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, RENDERER, TVIEW, TView, TViewType, T_HOST} from '../interfaces/view';
+import {FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, RENDERER, TView, TViewType, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild, removeView} from '../node_manipulation';
-import {getBindingIndex, getCheckNoChangesMode, getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from '../state';
+import {getBindingIndex, getCheckNoChangesMode, getIsParent, getLView, getPreviousOrParentTNode, getTView, setIsNotParent, setPreviousOrParentTNode} from '../state';
 import {getConstant, getLContainerActiveIndex, load} from '../util/view_utils';
-
 import {addToViewTree, createDirectivesInstances, createLContainer, createTNode, createTView, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared';
 
 
@@ -36,9 +35,10 @@ import {addToViewTree, createDirectivesInstances, createLContainer, createTNode,
  */
 export function ɵɵcontainer(index: number): void {
   const lView = getLView();
-  const tNode = containerInternal(lView, index, null, null);
+  const tView = getTView();
+  const tNode = containerInternal(tView, lView, index, null, null);
 
-  if (lView[TVIEW].firstCreatePass) {
+  if (tView.firstCreatePass) {
     tNode.tViews = [];
   }
   setIsNotParent();
@@ -98,7 +98,7 @@ export function ɵɵtemplate(
     tagName?: string | null, attrsIndex?: number | null, localRefsIndex?: number | null,
     localRefExtractor?: LocalRefExtractor) {
   const lView = getLView();
-  const tView = lView[TVIEW];
+  const tView = getTView();
   const adjustedIndex = index + HEADER_OFFSET;
 
   const tNode = tView.firstCreatePass ?
@@ -108,7 +108,7 @@ export function ɵɵtemplate(
   setPreviousOrParentTNode(tNode, false);
 
   const comment = lView[RENDERER].createComment(ngDevMode ? 'container' : '');
-  appendChild(comment, tNode, lView);
+  appendChild(tView, lView, comment, tNode);
   attachPatchData(comment, lView);
 
   addToViewTree(lView, lView[adjustedIndex] = createLContainer(comment, lView, comment, tNode));
@@ -131,7 +131,7 @@ export function ɵɵtemplate(
  */
 export function ɵɵcontainerRefreshStart(index: number): void {
   const lView = getLView();
-  const tView = lView[TVIEW];
+  const tView = getTView();
   let previousOrParentTNode = load(tView.data, index) as TNode;
   ngDevMode && assertNodeType(previousOrParentTNode, TNodeType.Container);
   setPreviousOrParentTNode(previousOrParentTNode, true);
@@ -188,10 +188,10 @@ export function ɵɵcontainerRefreshEnd(): void {
 }
 
 function containerInternal(
-    lView: LView, nodeIndex: number, tagName: string | null,
+    tView: TView, lView: LView, nodeIndex: number, tagName: string | null,
     attrs: TAttributes | null): TContainerNode {
   ngDevMode && assertEqual(
-                   getBindingIndex(), lView[TVIEW].bindingStartIndex,
+                   getBindingIndex(), tView.bindingStartIndex,
                    'container nodes should be created before any bindings');
 
   const adjustedIndex = nodeIndex + HEADER_OFFSET;
@@ -200,10 +200,10 @@ function containerInternal(
   const comment = lView[adjustedIndex] =
       lView[RENDERER].createComment(ngDevMode ? 'container' : '');
   const tNode =
-      getOrCreateTNode(lView[TVIEW], lView[T_HOST], nodeIndex, TNodeType.Container, tagName, attrs);
+      getOrCreateTNode(tView, lView[T_HOST], nodeIndex, TNodeType.Container, tagName, attrs);
   const lContainer = lView[adjustedIndex] = createLContainer(comment, lView, comment, tNode);
 
-  appendChild(comment, tNode, lView);
+  appendChild(tView, lView, comment, tNode);
   attachPatchData(comment, lView);
 
   // Containers are added to the current view tree instead of their embedded views

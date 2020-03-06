@@ -10,14 +10,15 @@ import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {OwningModule} from '../../imports/src/references';
+import {DependencyTracker} from '../../incremental/api';
 import {Declaration, InlineDeclaration, ReflectionHost} from '../../reflection';
 import {isDeclaration} from '../../util/src/typescript';
 
 import {ArrayConcatBuiltinFn, ArraySliceBuiltinFn} from './builtin';
 import {DynamicValue} from './dynamic';
-import {DependencyTracker, ForeignFunctionResolver} from './interface';
-import {BuiltinFn, EnumValue, ResolvedModule, ResolvedValue, ResolvedValueArray, ResolvedValueMap} from './result';
-import {evaluateTsHelperInline} from './ts_helpers';
+import {ForeignFunctionResolver} from './interface';
+import {resolveKnownDeclaration} from './known_declaration';
+import {EnumValue, KnownFn, ResolvedModule, ResolvedValue, ResolvedValueArray, ResolvedValueMap} from './result';
 
 
 
@@ -89,7 +90,7 @@ interface Context {
 export class StaticInterpreter {
   constructor(
       private host: ReflectionHost, private checker: ts.TypeChecker,
-      private dependencyTracker?: DependencyTracker) {}
+      private dependencyTracker: DependencyTracker|null) {}
 
   visit(node: ts.Expression, context: Context): ResolvedValue {
     return this.visitExpression(node, context);
@@ -228,6 +229,9 @@ export class StaticInterpreter {
         return DynamicValue.fromUnknownIdentifier(node);
       }
     }
+    if (decl.known !== null) {
+      return resolveKnownDeclaration(decl.known);
+    }
     const declContext = {...context, ...joinModuleContext(context, node, decl)};
     // The identifier's declaration is either concrete (a ts.Declaration exists for it) or inline
     // (a direct reference to a ts.Expression).
@@ -249,8 +253,8 @@ export class StaticInterpreter {
   }
 
   private visitDeclaration(node: ts.Declaration, context: Context): ResolvedValue {
-    if (this.dependencyTracker) {
-      this.dependencyTracker.trackFileDependency(node.getSourceFile(), context.originatingFile);
+    if (this.dependencyTracker !== null) {
+      this.dependencyTracker.addDependency(context.originatingFile, node.getSourceFile());
     }
     if (this.host.isClass(node)) {
       return this.getReference(node, context);
@@ -328,6 +332,10 @@ export class StaticInterpreter {
     }
 
     return new ResolvedModule(declarations, decl => {
+      if (decl.known !== null) {
+        return resolveKnownDeclaration(decl.known);
+      }
+
       const declContext = {
           ...context, ...joinModuleContext(context, node, decl),
       };
@@ -356,9 +364,9 @@ export class StaticInterpreter {
       if (rhs === 'length') {
         return lhs.length;
       } else if (rhs === 'slice') {
-        return new ArraySliceBuiltinFn(node, lhs);
+        return new ArraySliceBuiltinFn(lhs);
       } else if (rhs === 'concat') {
-        return new ArrayConcatBuiltinFn(node, lhs);
+        return new ArrayConcatBuiltinFn(lhs);
       }
       if (typeof rhs !== 'number' || !Number.isInteger(rhs)) {
         return DynamicValue.fromInvalidExpressionType(node, rhs);
@@ -399,8 +407,8 @@ export class StaticInterpreter {
     }
 
     // If the call refers to a builtin function, attempt to evaluate the function.
-    if (lhs instanceof BuiltinFn) {
-      return lhs.evaluate(this.evaluateFunctionArguments(node, context));
+    if (lhs instanceof KnownFn) {
+      return lhs.evaluate(node, this.evaluateFunctionArguments(node, context));
     }
 
     if (!(lhs instanceof Reference)) {
@@ -410,12 +418,6 @@ export class StaticInterpreter {
     const fn = this.host.getDefinitionOfFunction(lhs.node);
     if (fn === null) {
       return DynamicValue.fromInvalidExpressionType(node.expression, lhs);
-    }
-
-    // If the function corresponds with a tslib helper function, evaluate it with custom logic.
-    if (fn.helper !== null) {
-      const args = this.evaluateFunctionArguments(node, context);
-      return evaluateTsHelperInline(fn.helper, node, args);
     }
 
     if (!isFunctionOrMethodReference(lhs)) {

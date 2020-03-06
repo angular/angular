@@ -21,7 +21,7 @@ The subcommands for `ng generate` are shorthand for the corresponding schematic.
 ng generate my-schematic-collection:my-schematic-name
 </code-example>
 
-&mdash;or&mdash;
+or
 
 <code-example language="bash">
 ng generate my-schematic-name --collection collection-name

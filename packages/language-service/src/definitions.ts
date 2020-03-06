@@ -9,9 +9,9 @@
 import * as path from 'path';
 import * as ts from 'typescript'; // used as value and is provided at runtime
 import {AstResult} from './common';
-import {locateSymbol} from './locate_symbol';
+import {locateSymbols} from './locate_symbol';
 import {getPropertyAssignmentFromValue, isClassDecoratorProperty} from './template';
-import {Span, TemplateSource} from './types';
+import {Span} from './types';
 import {findTightestNode} from './utils';
 
 /**
@@ -34,32 +34,53 @@ function ngSpanToTsTextSpan(span: Span): ts.TextSpan {
  */
 export function getDefinitionAndBoundSpan(
     info: AstResult, position: number): ts.DefinitionInfoAndBoundSpan|undefined {
-  const symbolInfo = locateSymbol(info, position);
-  if (!symbolInfo) {
+  const symbols = locateSymbols(info, position);
+  if (!symbols.length) {
     return;
   }
-  const textSpan = ngSpanToTsTextSpan(symbolInfo.span);
-  const {symbol} = symbolInfo;
-  const {container, definition: locations} = symbol;
-  if (!locations || !locations.length) {
+
+  const seen = new Set<string>();
+  const definitions: ts.DefinitionInfo[] = [];
+  for (const symbolInfo of symbols) {
+    const {symbol} = symbolInfo;
+
     // symbol.definition is really the locations of the symbol. There could be
     // more than one. No meaningful info could be provided without any location.
-    return {textSpan};
+    const {kind, name, container, definition: locations} = symbol;
+    if (!locations || !locations.length) {
+      continue;
+    }
+
+    const containerKind =
+        container ? container.kind as ts.ScriptElementKind : ts.ScriptElementKind.unknown;
+    const containerName = container ? container.name : '';
+
+    for (const {fileName, span} of locations) {
+      const textSpan = ngSpanToTsTextSpan(span);
+      // In cases like two-way bindings, a request for the definitions of an expression may return
+      // two of the same definition:
+      //    [(ngModel)]="prop"
+      //                 ^^^^  -- one definition for the property binding, one for the event binding
+      // To prune duplicate definitions, tag definitions with unique location signatures and ignore
+      // definitions whose locations have already been seen.
+      const signature = `${textSpan.start}:${textSpan.length}@${fileName}`;
+      if (seen.has(signature)) continue;
+
+      definitions.push({
+        kind: kind as ts.ScriptElementKind,
+        name,
+        containerKind,
+        containerName,
+        textSpan: ngSpanToTsTextSpan(span),
+        fileName: fileName,
+      });
+      seen.add(signature);
+    }
   }
-  const containerKind = container ? container.kind : ts.ScriptElementKind.unknown;
-  const containerName = container ? container.name : '';
-  const definitions = locations.map((location) => {
-    return {
-      kind: symbol.kind as ts.ScriptElementKind,
-      name: symbol.name,
-      containerKind: containerKind as ts.ScriptElementKind,
-      containerName: containerName,
-      textSpan: ngSpanToTsTextSpan(location.span),
-      fileName: location.fileName,
-    };
-  });
+
   return {
-      definitions, textSpan,
+    definitions,
+    textSpan: symbols[0].span,
   };
 }
 

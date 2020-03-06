@@ -160,6 +160,6 @@ describe('dynamic queries migration', () => {
   }
 
   function runMigration() {
-    runner.runSchematicAsync('migration-v9-dynamic-queries', {}, tree).toPromise();
+    return runner.runSchematicAsync('migration-v9-dynamic-queries', {}, tree).toPromise();
   }
 });

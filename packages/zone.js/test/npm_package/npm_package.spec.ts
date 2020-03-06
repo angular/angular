@@ -39,6 +39,13 @@ describe('Zone.js npm_package', () => {
     describe('typescript support', () => {
       it('should have an zone.js.d.ts file',
          () => { expect(shx.cat('zone.js.d.ts')).toContain('declare const'); });
+
+      it('should have an zone.api.extensions.ts file',
+         () => { expect(shx.cat('zone.api.extensions.ts')).toContain('EventTarget'); });
+
+      it('should have an zone.configurations.api.ts file', () => {
+        expect(shx.cat('zone.configurations.api.ts')).toContain('ZoneGlobalConfigurations');
+      });
     });
 
     describe('closure', () => {
@@ -136,6 +143,8 @@ describe('Zone.js npm_package', () => {
           'zone-testing.min.js',
           'zone.js',
           'zone.js.d.ts',
+          'zone.api.extensions.ts',
+          'zone.configurations.api.ts',
           'zone.min.js',
         ].sort();
         expect(list.length).toBe(expected.length);

@@ -75,41 +75,77 @@ export type EntryPointJsonProperty = Exclude<PackageJsonFormatProperties, 'types
 export const SUPPORTED_FORMAT_PROPERTIES: EntryPointJsonProperty[] =
     ['fesm2015', 'fesm5', 'es2015', 'esm2015', 'esm5', 'main', 'module'];
 
+
+/**
+ * The path does not represent an entry-point:
+ * * there is no package.json at the path and there is no config to force an entry-point
+ * * or the entrypoint is `ignored` by a config.
+ */
+export const NO_ENTRY_POINT = 'no-entry-point';
+
+/**
+ * The path has a package.json, but it is not a valid entry-point for ngcc processing.
+ */
+export const INVALID_ENTRY_POINT = 'invalid-entry-point';
+
+/**
+ * The result of calling `getEntryPointInfo()`.
+ *
+ * This will be an `EntryPoint` object if an Angular entry-point was identified;
+ * Otherwise it will be a flag indicating one of:
+ * * NO_ENTRY_POINT - the path is not an entry-point or ngcc is configured to ignore it
+ * * INVALID_ENTRY_POINT - the path was a non-processable entry-point that should be searched
+ * for sub-entry-points
+ */
+export type GetEntryPointResult = EntryPoint | typeof INVALID_ENTRY_POINT | typeof NO_ENTRY_POINT;
+
+
 /**
  * Try to create an entry-point from the given paths and properties.
  *
  * @param packagePath the absolute path to the containing npm package
  * @param entryPointPath the absolute path to the potential entry-point.
- * @returns An entry-point if it is valid, `null` otherwise.
+ * @returns
+ * - An entry-point if it is valid.
+ * - `undefined` when there is no package.json at the path and there is no config to force an
+ * entry-point or the entrypoint is `ignored`.
+ * - `null` there is a package.json but it is not a valid Angular compiled entry-point.
  */
 export function getEntryPointInfo(
     fs: FileSystem, config: NgccConfiguration, logger: Logger, packagePath: AbsoluteFsPath,
-    entryPointPath: AbsoluteFsPath): EntryPoint|null {
+    entryPointPath: AbsoluteFsPath): GetEntryPointResult {
   const packageJsonPath = resolve(entryPointPath, 'package.json');
   const packageVersion = getPackageVersion(fs, packageJsonPath);
   const entryPointConfig =
       config.getConfig(packagePath, packageVersion).entryPoints[entryPointPath];
-  if (entryPointConfig === undefined && !fs.exists(packageJsonPath)) {
-    return null;
+  const hasConfig = entryPointConfig !== undefined;
+
+  if (!hasConfig && !fs.exists(packageJsonPath)) {
+    // No package.json and no config
+    return NO_ENTRY_POINT;
   }
 
-  if (entryPointConfig !== undefined && entryPointConfig.ignore === true) {
-    return null;
+  if (hasConfig && entryPointConfig.ignore === true) {
+    // Explicitly ignored
+    return NO_ENTRY_POINT;
   }
 
-  const loadedEntryPointPackageJson =
-      loadEntryPointPackage(fs, logger, packageJsonPath, entryPointConfig !== undefined);
-  const entryPointPackageJson = mergeConfigAndPackageJson(
-      loadedEntryPointPackageJson, entryPointConfig, packagePath, entryPointPath);
+  const loadedEntryPointPackageJson = loadEntryPointPackage(fs, logger, packageJsonPath, hasConfig);
+  const entryPointPackageJson = hasConfig ?
+      mergeConfigAndPackageJson(
+          loadedEntryPointPackageJson, entryPointConfig, packagePath, entryPointPath) :
+      loadedEntryPointPackageJson;
+
   if (entryPointPackageJson === null) {
-    return null;
+    // package.json exists but could not be parsed and there was no redeeming config
+    return INVALID_ENTRY_POINT;
   }
 
-  // We must have a typings property
   const typings = entryPointPackageJson.typings || entryPointPackageJson.types ||
       guessTypingsFromPackageJson(fs, entryPointPath, entryPointPackageJson);
   if (typeof typings !== 'string') {
-    return null;
+    // Missing the required `typings` property
+    return INVALID_ENTRY_POINT;
   }
 
   // An entry-point is assumed to be compiled by Angular if there is either:
@@ -198,22 +234,13 @@ function isUmdModule(fs: FileSystem, sourceFilePath: AbsoluteFsPath): boolean {
 }
 
 function mergeConfigAndPackageJson(
-    entryPointPackageJson: EntryPointPackageJson | null,
-    entryPointConfig: NgccEntryPointConfig | undefined, packagePath: AbsoluteFsPath,
-    entryPointPath: AbsoluteFsPath): EntryPointPackageJson|null {
+    entryPointPackageJson: EntryPointPackageJson | null, entryPointConfig: NgccEntryPointConfig,
+    packagePath: AbsoluteFsPath, entryPointPath: AbsoluteFsPath): EntryPointPackageJson {
   if (entryPointPackageJson !== null) {
-    if (entryPointConfig === undefined) {
-      return entryPointPackageJson;
-    } else {
-      return {...entryPointPackageJson, ...entryPointConfig.override};
-    }
+    return {...entryPointPackageJson, ...entryPointConfig.override};
   } else {
-    if (entryPointConfig === undefined) {
-      return null;
-    } else {
-      const name = `${basename(packagePath)}/${relative(packagePath, entryPointPath)}`;
-      return {name, ...entryPointConfig.override};
-    }
+    const name = `${basename(packagePath)}/${relative(packagePath, entryPointPath)}`;
+    return {name, ...entryPointConfig.override};
   }
 }
 

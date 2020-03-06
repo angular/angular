@@ -17,10 +17,9 @@ ts_library(
 
 jasmine_node_test(
     name = "selector",
-    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    bootstrap = ["//tools/testing:node_es5"],
     deps = [
         ":selector_lib",
-        "//tools/testing:node",
     ],
 )
 

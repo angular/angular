@@ -13,7 +13,12 @@ import {PackageJsonFormatPropertiesMap} from './entry_point';
 /**
  * The format of a project level configuration file.
  */
-export interface NgccProjectConfig<T = NgccPackageConfig> { packages: {[packagePath: string]: T}; }
+export interface NgccProjectConfig<T = NgccPackageConfig> {
+  /**
+   * The packages that are configured by this project config.
+   */
+  packages: {[packagePath: string]: T};
+}
 
 /**
  * The format of a package level configuration file.
@@ -27,6 +32,11 @@ export interface NgccPackageConfig {
    * will be absolute.
    */
   entryPoints: {[entryPointPath: string]: NgccEntryPointConfig;};
+  /**
+   * A collection of regexes that match deep imports to ignore, for this package, rather than
+   * displaying a warning.
+   */
+  ignorableDeepImportMatchers?: RegExp[];
 }
 
 /**
@@ -90,6 +100,19 @@ export const DEFAULT_NGCC_CONFIG: NgccProjectConfig = {
     //     './database-deprecated': {ignore: true},
     //   },
     // },
+
+    // The package does not contain any `.metadata.json` files in the root directory but only inside
+    // `dist/`. Without this config, ngcc does not realize this is a ViewEngine-built Angular
+    // package that needs to be compiled to Ivy.
+    'angular2-highcharts': {
+      entryPoints: {
+        '.': {
+          override: {
+            main: './index.js',
+          },
+        },
+      },
+    },
 
     // The `dist/` directory has a duplicate `package.json` pointing to the same files, which (under
     // certain configurations) can causes ngcc to try to process the files twice and fail.
@@ -188,7 +211,8 @@ export class NgccConfiguration {
         const absPackagePath = resolve(baseDir, 'node_modules', packagePath);
         const entryPoints = this.processEntryPoints(absPackagePath, packageConfig);
         processedConfig.packages[absPackagePath] = processedConfig.packages[absPackagePath] || [];
-        processedConfig.packages[absPackagePath].push({versionRange, entryPoints});
+        processedConfig.packages[absPackagePath].push(
+            {...packageConfig, versionRange, entryPoints});
       }
     }
     return processedConfig;

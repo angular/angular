@@ -431,10 +431,8 @@ describe('compiler compliance', () => {
         const $_c1$ = function (a0, a1) { return { value: a0, params: a1 }; };
         const $_c2$ = function (a0, a1) { return { collapsedWidth: a0, expandedWidth: a1 }; };
         …
-        hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
-          if (rf & 1) {
-            $r3$.ɵɵallocHostVars(14);
-          }
+        hostVars: 14,
+        hostBindings: function MyComponent_HostBindings(rf, ctx) {
           if (rf & 2) {
             $r3$.ɵɵupdateSyntheticHostBinding("@expansionHeight",
                 $r3$.ɵɵpureFunction2(5, $_c1$, ctx.getExpandedState(),
@@ -479,7 +477,7 @@ describe('compiler compliance', () => {
       const template = `
         MyComponent.ɵcmp = i0.ɵɵdefineComponent({type:MyComponent,selectors:[["my-component"]],
             decls: 1,
-            vars: 2,
+            vars: 4,
             template: function MyComponent_Template(rf,ctx){
               if (rf & 1) {
                 $r3$.ɵɵelement(0, "div");
@@ -1510,6 +1508,51 @@ describe('compiler compliance', () => {
             result.source, SimpleComponentDefinition, 'Incorrect SimpleComponent definition');
       });
 
+      it('should include parsed ngProjectAs selectors into template attrs', () => {
+        const files = {
+          app: {
+            'spec.ts': `
+              import {Component} from '@angular/core';
+
+              @Component({
+                selector: 'my-app',
+                template: '<div *ngIf="show" ngProjectAs=".someclass"></div>'
+              })
+              export class MyApp {
+                show = true;
+              }
+            `
+          }
+        };
+
+        const SimpleComponentDefinition = `
+          MyApp.ɵcmp = i0.ɵɵdefineComponent({
+            type: MyApp,
+            selectors: [
+                ["my-app"]
+            ],
+            decls: 1,
+            vars: 1,
+            consts: [
+                ["ngProjectAs", ".someclass", ${AttributeMarker.ProjectAs}, ["", 8, "someclass"], ${AttributeMarker.Template}, "ngIf"],
+                ["ngProjectAs", ".someclass", ${AttributeMarker.ProjectAs}, ["", 8, "someclass"]]
+            ],
+            template: function MyApp_Template(rf, ctx) {
+                if (rf & 1) {
+                    i0.ɵɵtemplate(0, MyApp_div_0_Template, 1, 0, "div", 0);
+                }
+                if (rf & 2) {
+                    i0.ɵɵproperty("ngIf", ctx.show);
+                }
+            },
+            encapsulation: 2
+          });
+        `;
+
+        const result = compile(files, angularFiles);
+        expectEmit(result.source, SimpleComponentDefinition, 'Incorrect MyApp definition');
+      });
+
     });
 
     describe('queries', () => {
@@ -2499,7 +2542,7 @@ describe('compiler compliance', () => {
             type: LifecycleComp,
             selectors: [["lifecycle-comp"]],
             inputs: {nameMin: ["name", "nameMin"]},
-            features: [$r3$.ɵɵNgOnChangesFeature()],
+            features: [$r3$.ɵɵNgOnChangesFeature],
             decls: 0,
             vars: 0,
             template:  function LifecycleComp_Template(rf, ctx) {},
@@ -2619,7 +2662,7 @@ describe('compiler compliance', () => {
               ForOfDirective.ɵdir = $r3$.ɵɵdefineDirective({
                 type: ForOfDirective,
                 selectors: [["", "forOf", ""]],
-                features: [$r3$.ɵɵNgOnChangesFeature()],
+                features: [$r3$.ɵɵNgOnChangesFeature],
                 inputs: {forOf: "forOf"}
               });
             `;
@@ -2699,7 +2742,7 @@ describe('compiler compliance', () => {
           ForOfDirective.ɵdir = $r3$.ɵɵdefineDirective({
             type: ForOfDirective,
             selectors: [["", "forOf", ""]],
-            features: [$r3$.ɵɵNgOnChangesFeature()],
+            features: [$r3$.ɵɵNgOnChangesFeature],
             inputs: {forOf: "forOf"}
           });
         `;
@@ -3085,6 +3128,159 @@ describe('compiler compliance', () => {
       expectEmit(result.source, MyAppDeclaration, 'Invalid component definition');
     });
 
+    it('should not share pure functions between null and object literals', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+
+              @Component({
+                template: \`
+                  <div [dir]="{foo: null}"></div>
+                  <div [dir]="{foo: {}}"></div>
+                \`
+              })
+              export class MyApp {}
+
+              @NgModule({declarations: [MyApp]})
+              export class MyModule {}
+          `
+        }
+      };
+
+      const MyAppDeclaration = `
+        const $c0$ = function () { return { foo: null }; };
+        const $c1$ = function () { return {}; };
+        const $c2$ = function (a0) { return { foo: a0 }; };
+        …
+        MyApp.ɵcmp = $r3$.ɵɵdefineComponent({
+          type: MyApp,
+          selectors: [["ng-component"]],
+          decls: 2,
+          vars: 6,
+          consts: [[${AttributeMarker.Bindings}, "dir"]],
+          template:  function MyApp_Template(rf, ctx) {
+            if (rf & 1) {
+              $r3$.ɵɵelement(0, "div", 0);
+              $r3$.ɵɵelement(1, "div", 0);
+            }
+            if (rf & 2) {
+              $r3$.ɵɵproperty("dir", $r3$.ɵɵpureFunction0(2, $c0$));
+              $r3$.ɵɵadvance(1);
+              $r3$.ɵɵproperty("dir", $r3$.ɵɵpureFunction1(4, $c2$, $r3$.ɵɵpureFunction0(3, $c1$)));
+            }
+          },
+         encapsulation: 2
+        });
+      `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, MyAppDeclaration, 'Invalid component definition');
+    });
+
+    it('should not share pure functions between null and array literals', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+
+              @Component({
+                template: \`
+                  <div [dir]="{foo: null}"></div>
+                  <div [dir]="{foo: []}"></div>
+                \`
+              })
+              export class MyApp {}
+
+              @NgModule({declarations: [MyApp]})
+              export class MyModule {}
+          `
+        }
+      };
+
+      const MyAppDeclaration = `
+        const $c0$ = function () { return { foo: null }; };
+        const $c1$ = function () { return []; };
+        const $c2$ = function (a0) { return { foo: a0 }; };
+        …
+        MyApp.ɵcmp = $r3$.ɵɵdefineComponent({
+          type: MyApp,
+          selectors: [["ng-component"]],
+          decls: 2,
+          vars: 6,
+          consts: [[${AttributeMarker.Bindings}, "dir"]],
+          template:  function MyApp_Template(rf, ctx) {
+            if (rf & 1) {
+              $r3$.ɵɵelement(0, "div", 0);
+              $r3$.ɵɵelement(1, "div", 0);
+            }
+            if (rf & 2) {
+              $r3$.ɵɵproperty("dir", $r3$.ɵɵpureFunction0(2, $c0$));
+              $r3$.ɵɵadvance(1);
+              $r3$.ɵɵproperty("dir", $r3$.ɵɵpureFunction1(4, $c2$, $r3$.ɵɵpureFunction0(3, $c1$)));
+            }
+          },
+         encapsulation: 2
+        });
+      `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, MyAppDeclaration, 'Invalid component definition');
+    });
+
+    it('should not share pure functions between null and function calls', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+
+              @Component({
+                template: \`
+                  <div [dir]="{foo: null}"></div>
+                  <div [dir]="{foo: getFoo()}"></div>
+                \`
+              })
+              export class MyApp {
+                getFoo() {
+                  return 'foo!';
+                }
+              }
+
+              @NgModule({declarations: [MyApp]})
+              export class MyModule {}
+          `
+        }
+      };
+
+      const MyAppDeclaration = `
+        const $c0$ = function () { return { foo: null }; };
+        const $c1$ = function (a0) { return { foo: a0 }; };
+        …
+        MyApp.ɵcmp = $r3$.ɵɵdefineComponent({
+          type: MyApp,
+          selectors: [["ng-component"]],
+          decls: 2,
+          vars: 5,
+          consts: [[${AttributeMarker.Bindings}, "dir"]],
+          template:  function MyApp_Template(rf, ctx) {
+            if (rf & 1) {
+              $r3$.ɵɵelement(0, "div", 0);
+              $r3$.ɵɵelement(1, "div", 0);
+            }
+            if (rf & 2) {
+              $r3$.ɵɵproperty("dir", $r3$.ɵɵpureFunction0(2, $c0$));
+              $r3$.ɵɵadvance(1);
+              $r3$.ɵɵproperty("dir", $r3$.ɵɵpureFunction1(3, $c1$, ctx.getFoo()));
+            }
+          },
+         encapsulation: 2
+        });
+      `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, MyAppDeclaration, 'Invalid component definition');
+    });
+
   });
 
   describe('inherited base classes', () => {
@@ -3454,10 +3650,8 @@ describe('compiler compliance', () => {
       // ...
       BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
         type: BaseClass,
-        hostBindings: function BaseClass_HostBindings(rf, ctx, elIndex) {
-          if (rf & 1) {
-            $r3$.ɵɵallocHostVars(1);
-          }
+        hostVars: 1,
+        hostBindings: function BaseClass_HostBindings(rf, ctx) {
           if (rf & 2) {
             $r3$.ɵɵattribute("tabindex", ctx.tabindex);
           }
@@ -3497,7 +3691,7 @@ describe('compiler compliance', () => {
       // ...
       BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
         type: BaseClass,
-        hostBindings: function BaseClass_HostBindings(rf, ctx, elIndex) {
+        hostBindings: function BaseClass_HostBindings(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵlistener("mousedown", function BaseClass_mousedown_HostBindingHandler($event) {
               return ctx.handleMousedown($event);
@@ -3573,7 +3767,7 @@ describe('compiler compliance', () => {
       // ...
       BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
         type: BaseClass,
-        features: [$r3$.ɵɵNgOnChangesFeature()]
+        features: [$r3$.ɵɵNgOnChangesFeature]
       });
       // ...
       `;

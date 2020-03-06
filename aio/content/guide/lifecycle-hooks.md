@@ -1,4 +1,4 @@
-# Lifecycle Hooks
+# Lifecycle hooks
 
 A component has a lifecycle managed by Angular.
 

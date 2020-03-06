@@ -9,7 +9,7 @@ import {FileSystem, absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_s
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {NgccConfiguration} from '../../src/packages/configuration';
-import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, getEntryPointInfo} from '../../src/packages/entry_point';
+import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, INVALID_ENTRY_POINT, NO_ENTRY_POINT, getEntryPointInfo} from '../../src/packages/entry_point';
 import {EntryPointBundle, makeEntryPointBundle} from '../../src/packages/entry_point_bundle';
 import {FileWriter} from '../../src/writing/file_writer';
 import {NewEntryPointFileWriter} from '../../src/writing/new_entry_point_file_writer';
@@ -103,8 +103,12 @@ runInEachFileSystem(() => {
         fs = getFileSystem();
         fileWriter = new NewEntryPointFileWriter(fs, new DirectPackageJsonUpdater(fs));
         const config = new NgccConfiguration(fs, _('/'));
-        entryPoint = getEntryPointInfo(
+        const result = getEntryPointInfo(
             fs, config, new MockLogger(), _('/node_modules/test'), _('/node_modules/test')) !;
+        if (result === NO_ENTRY_POINT || result === INVALID_ENTRY_POINT) {
+          return fail(`Expected an entry point but got ${result}`);
+        }
+        entryPoint = result;
         esm5bundle = makeTestBundle(fs, entryPoint, 'module', 'esm5');
         esm2015bundle = makeTestBundle(fs, entryPoint, 'es2015', 'esm2015');
       });
@@ -239,8 +243,12 @@ runInEachFileSystem(() => {
         fs = getFileSystem();
         fileWriter = new NewEntryPointFileWriter(fs, new DirectPackageJsonUpdater(fs));
         const config = new NgccConfiguration(fs, _('/'));
-        entryPoint = getEntryPointInfo(
+        const result = getEntryPointInfo(
             fs, config, new MockLogger(), _('/node_modules/test'), _('/node_modules/test/a')) !;
+        if (result === NO_ENTRY_POINT || result === INVALID_ENTRY_POINT) {
+          return fail(`Expected an entry point but got ${result}`);
+        }
+        entryPoint = result;
         esm5bundle = makeTestBundle(fs, entryPoint, 'module', 'esm5');
         esm2015bundle = makeTestBundle(fs, entryPoint, 'es2015', 'esm2015');
       });
@@ -364,8 +372,12 @@ runInEachFileSystem(() => {
         fs = getFileSystem();
         fileWriter = new NewEntryPointFileWriter(fs, new DirectPackageJsonUpdater(fs));
         const config = new NgccConfiguration(fs, _('/'));
-        entryPoint = getEntryPointInfo(
+        const result = getEntryPointInfo(
             fs, config, new MockLogger(), _('/node_modules/test'), _('/node_modules/test/b')) !;
+        if (result === NO_ENTRY_POINT || result === INVALID_ENTRY_POINT) {
+          return fail(`Expected an entry point but got ${result}`);
+        }
+        entryPoint = result;
         esm5bundle = makeTestBundle(fs, entryPoint, 'module', 'esm5');
         esm2015bundle = makeTestBundle(fs, entryPoint, 'es2015', 'esm2015');
       });

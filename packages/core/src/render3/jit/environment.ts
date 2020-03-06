@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵɵinject} from '../../di/injector_compatibility';
+import {ɵɵinject, ɵɵinvalidFactoryDep} from '../../di/injector_compatibility';
 import {ɵɵdefineInjectable, ɵɵdefineInjector} from '../../di/interface/defs';
 import * as sanitization from '../../sanitization/sanitization';
 import * as r3 from '../index';
@@ -42,6 +42,7 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵinject': ɵɵinject,
        'ɵɵinjectAttribute': r3.ɵɵinjectAttribute,
        'ɵɵinvalidFactory': r3.ɵɵinvalidFactory,
+       'ɵɵinvalidFactoryDep': ɵɵinvalidFactoryDep,
        'ɵɵinjectPipeChangeDetectorRef': r3.ɵɵinjectPipeChangeDetectorRef,
        'ɵɵtemplateRefExtractor': r3.ɵɵtemplateRefExtractor,
        'ɵɵNgOnChangesFeature': r3.ɵɵNgOnChangesFeature,
@@ -57,7 +58,6 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵnamespaceSVG': r3.ɵɵnamespaceSVG,
        'ɵɵenableBindings': r3.ɵɵenableBindings,
        'ɵɵdisableBindings': r3.ɵɵdisableBindings,
-       'ɵɵallocHostVars': r3.ɵɵallocHostVars,
        'ɵɵelementStart': r3.ɵɵelementStart,
        'ɵɵelementEnd': r3.ɵɵelementEnd,
        'ɵɵelement': r3.ɵɵelement,
@@ -106,7 +106,6 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵloadQuery': r3.ɵɵloadQuery,
        'ɵɵcontentQuery': r3.ɵɵcontentQuery,
        'ɵɵreference': r3.ɵɵreference,
-       'ɵɵelementHostAttrs': r3.ɵɵelementHostAttrs,
        'ɵɵclassMap': r3.ɵɵclassMap,
        'ɵɵclassMapInterpolate1': r3.ɵɵclassMapInterpolate1,
        'ɵɵclassMapInterpolate2': r3.ɵɵclassMapInterpolate2,
@@ -118,6 +117,15 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵclassMapInterpolate8': r3.ɵɵclassMapInterpolate8,
        'ɵɵclassMapInterpolateV': r3.ɵɵclassMapInterpolateV,
        'ɵɵstyleMap': r3.ɵɵstyleMap,
+       'ɵɵstyleMapInterpolate1': r3.ɵɵstyleMapInterpolate1,
+       'ɵɵstyleMapInterpolate2': r3.ɵɵstyleMapInterpolate2,
+       'ɵɵstyleMapInterpolate3': r3.ɵɵstyleMapInterpolate3,
+       'ɵɵstyleMapInterpolate4': r3.ɵɵstyleMapInterpolate4,
+       'ɵɵstyleMapInterpolate5': r3.ɵɵstyleMapInterpolate5,
+       'ɵɵstyleMapInterpolate6': r3.ɵɵstyleMapInterpolate6,
+       'ɵɵstyleMapInterpolate7': r3.ɵɵstyleMapInterpolate7,
+       'ɵɵstyleMapInterpolate8': r3.ɵɵstyleMapInterpolate8,
+       'ɵɵstyleMapInterpolateV': r3.ɵɵstyleMapInterpolateV,
        'ɵɵstyleProp': r3.ɵɵstyleProp,
        'ɵɵstylePropInterpolate1': r3.ɵɵstylePropInterpolate1,
        'ɵɵstylePropInterpolate2': r3.ɵɵstylePropInterpolate2,

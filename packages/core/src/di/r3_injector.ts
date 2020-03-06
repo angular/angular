@@ -12,6 +12,7 @@ import {OnDestroy} from '../interface/lifecycle_hooks';
 import {Type} from '../interface/type';
 import {getFactoryDef} from '../render3/definition';
 import {throwCyclicDependencyError, throwInvalidProviderError, throwMixedMultiProviderError} from '../render3/errors';
+import {FactoryFn} from '../render3/interfaces/definition';
 import {deepForEach, newArray} from '../util/array_utils';
 import {stringify} from '../util/stringify';
 import {resolveForwardRef} from './forward_ref';
@@ -77,8 +78,21 @@ interface Record<T> {
 export function createInjector(
     defType: /* InjectorType<any> */ any, parent: Injector | null = null,
     additionalProviders: StaticProvider[] | null = null, name?: string): Injector {
-  parent = parent || getNullInjector();
-  return new R3Injector(defType, additionalProviders, parent, name);
+  const injector =
+      createInjectorWithoutInjectorInstances(defType, parent, additionalProviders, name);
+  injector._resolveInjectorDefTypes();
+  return injector;
+}
+
+/**
+ * Creates a new injector without eagerly resolving its injector types. Can be used in places
+ * where resolving the injector types immediately can lead to an infinite loop. The injector types
+ * should be resolved at a later point by calling `_resolveInjectorDefTypes`.
+ */
+export function createInjectorWithoutInjectorInstances(
+    defType: /* InjectorType<any> */ any, parent: Injector | null = null,
+    additionalProviders: StaticProvider[] | null = null, name?: string): R3Injector {
+  return new R3Injector(defType, additionalProviders, parent || getNullInjector(), name);
 }
 
 export class R3Injector {
@@ -134,9 +148,6 @@ export class R3Injector {
     // any injectable scoped to APP_ROOT_SCOPE.
     const record = this.records.get(INJECTOR_SCOPE);
     this.scope = record != null ? record.value : null;
-
-    // Eagerly instantiate the InjectorType classes themselves.
-    this.injectorDefTypes.forEach(defType => this.get(defType));
 
     // Source name, used for debugging
     this.source = source || (typeof def === 'object' ? null : stringify(def));
@@ -223,6 +234,9 @@ export class R3Injector {
     }
   }
 
+  /** @internal */
+  _resolveInjectorDefTypes() { this.injectorDefTypes.forEach(defType => this.get(defType)); }
+
   toString() {
     const tokens = <string[]>[], records = this.records;
     records.forEach((v, token) => tokens.push(stringify(token)));
@@ -289,10 +303,6 @@ export class R3Injector {
       return false;
     }
 
-    // Track the InjectorType and add a provider for it.
-    this.injectorDefTypes.add(defType);
-    this.records.set(defType, makeRecord(def.factory, NOT_YET));
-
     // Add providers in the same way that @NgModule resolution did:
 
     // First, include providers from any imports.
@@ -330,6 +340,10 @@ export class R3Injector {
         }
       }
     }
+    // Track the InjectorType and add a provider for it. It's important that this is done after the
+    // def's imports.
+    this.injectorDefTypes.add(defType);
+    this.records.set(defType, makeRecord(def.factory, NOT_YET));
 
     // Next, include providers listed on the definition itself.
     const defProviders = def.providers;
@@ -407,7 +421,7 @@ export class R3Injector {
   }
 }
 
-function injectableDefOrInjectorDefFactory(token: Type<any>| InjectionToken<any>): () => any {
+function injectableDefOrInjectorDefFactory(token: Type<any>| InjectionToken<any>): FactoryFn<any> {
   // Most tokens will have an injectable def directly on them, which specifies a factory directly.
   const injectableDef = getInjectableDef(token);
   const factory = injectableDef !== null ? injectableDef.factory : getFactoryDef(token);
@@ -478,14 +492,15 @@ export function providerToFactory(
     provider: SingleProvider, ngModuleType?: InjectorType<any>, providers?: any[]): () => any {
   let factory: (() => any)|undefined = undefined;
   if (isTypeProvider(provider)) {
-    return injectableDefOrInjectorDefFactory(resolveForwardRef(provider));
+    const unwrappedProvider = resolveForwardRef(provider);
+    return getFactoryDef(unwrappedProvider) || injectableDefOrInjectorDefFactory(unwrappedProvider);
   } else {
     if (isValueProvider(provider)) {
       factory = () => resolveForwardRef(provider.useValue);
-    } else if (isExistingProvider(provider)) {
-      factory = () => ɵɵinject(resolveForwardRef(provider.useExisting));
     } else if (isFactoryProvider(provider)) {
       factory = () => provider.useFactory(...injectArgs(provider.deps || []));
+    } else if (isExistingProvider(provider)) {
+      factory = () => ɵɵinject(resolveForwardRef(provider.useExisting));
     } else {
       const classRef = resolveForwardRef(
           provider &&
@@ -496,7 +511,7 @@ export function providerToFactory(
       if (hasDeps(provider)) {
         factory = () => new (classRef)(...injectArgs(provider.deps));
       } else {
-        return injectableDefOrInjectorDefFactory(classRef);
+        return getFactoryDef(classRef) || injectableDefOrInjectorDefFactory(classRef);
       }
     }
   }

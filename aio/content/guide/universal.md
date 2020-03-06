@@ -1,4 +1,4 @@
-# Server-side Rendering (SSR): An intro to Angular Universal
+# Server-side rendering (SSR) with Angular Universal
 
 This guide describes **Angular Universal**, a technology that renders Angular applications on the server.
 
@@ -26,7 +26,7 @@ The CLI schematic `@nguniversal/express-engine` performs the required steps, as 
 The [Tour of Heroes tutorial](tutorial) is the foundation for this walkthrough.
 
 In this example, the Angular CLI compiles and bundles the Universal version of the app with the
-[Ahead-of-Time (AoT) compiler](guide/aot-compiler).
+[Ahead-of-Time (AOT) compiler](guide/aot-compiler).
 A Node Express web server compiles HTML pages with Universal based on client requests.
 
 To create the server-side app module, `app.server.module.ts`, run the following CLI command.
@@ -127,8 +127,7 @@ people who otherwise couldn't use the app at all.
 ### Show the first page quickly
 
 Displaying the first page quickly can be critical for user engagement.
-[53 percent of mobile site visits are abandoned](https://www.thinkwithgoogle.com/marketing-resources/data-measurement/mobile-page-speed-new-industry-benchmarks/)
-if pages take longer than 3 seconds to load.
+Pages that load faster perform better, [even with changes as small as 100ms](https://web.dev/shopping-for-speed-on-ebay/).
 Your app may have to launch faster to engage these users before they decide to do something else.
 
 With Angular Universal, you can generate landing pages for the app that look like the complete app.
@@ -214,7 +213,7 @@ import {REQUEST} from '@nguniversal/express-engine/tokens';
 @Injectable()
 export class UniversalInterceptor implements HttpInterceptor {
 
-  constructor(@Optional() @Inject(REQUEST) protected request: Request) {}
+  constructor(@Optional() @Inject(REQUEST) protected request?: Request) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler) {
     let serverReq: HttpRequest<any> = req;

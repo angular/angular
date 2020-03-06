@@ -1,4 +1,4 @@
-# Style Guide
+# Angular coding style guide
 
 Looking for an opinionated guide to Angular syntax, conventions, and application structure?
 Step right in!
@@ -2972,7 +2972,7 @@ in those editors that support it; it won't help with CSS styles.
 
 
 **Why?** If you ever need to rename the property or event name associated with
-`@Input` or `@Output`, you can modify it in a single place.
+`@Input()` or `@Output()`, you can modify it in a single place.
 
 
 </div>

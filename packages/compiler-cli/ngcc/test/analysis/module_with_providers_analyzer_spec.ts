@@ -334,8 +334,7 @@ runInEachFileSystem(() => {
             getRootFiles(TEST_DTS_PROGRAM));
         program = bundle.src.program;
         dtsProgram = bundle.dts !;
-        const host = new Esm2015ReflectionHost(
-            new MockLogger(), false, program.getTypeChecker(), dtsProgram);
+        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle.src, dtsProgram);
         referencesRegistry = new NgccReferencesRegistry(host);
 
         const processDts = true;
@@ -538,8 +537,7 @@ runInEachFileSystem(() => {
           getRootFiles(TEST_DTS_PROGRAM));
       const program = bundle.src.program;
       const dtsProgram = bundle.dts !;
-      const host =
-          new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker(), dtsProgram);
+      const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle.src, dtsProgram);
       const referencesRegistry = new NgccReferencesRegistry(host);
 
       const processDts = true;
@@ -569,8 +567,7 @@ runInEachFileSystem(() => {
       const bundle =
           makeTestEntryPointBundle('test-package', 'esm2015', false, getRootFiles(TEST_PROGRAM));
       const program = bundle.src.program;
-      const host =
-          new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker(), null);
+      const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle.src, null);
       const referencesRegistry = new NgccReferencesRegistry(host);
 
       const processDts = false;  // Emulate the scenario where typings have already been processed

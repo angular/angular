@@ -6,25 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstVisitor, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, visitAstChildren} from '@angular/compiler';
+import {AST, AstVisitor, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '@angular/compiler';
 
-import {BuiltinType, Signature, Span, Symbol, SymbolQuery, SymbolTable} from './symbols';
+import {Diagnostic, createDiagnostic} from './diagnostic_messages';
+import {BuiltinType, Signature, Symbol, SymbolQuery, SymbolTable} from './symbols';
+import * as ng from './types';
 
 export interface ExpressionDiagnosticsContext { event?: boolean; }
 
-export enum DiagnosticKind {
-  Error,
-  Warning,
-}
-
-export class TypeDiagnostic {
-  constructor(public kind: DiagnosticKind, public message: string, public ast: AST) {}
-}
-
 // AstType calculatetype of the ast given AST element.
 export class AstType implements AstVisitor {
-  // TODO(issue/24571): remove '!'.
-  public diagnostics !: TypeDiagnostic[];
+  private readonly diagnostics: ng.Diagnostic[] = [];
 
   constructor(
       private scope: SymbolTable, private query: SymbolQuery,
@@ -32,11 +24,11 @@ export class AstType implements AstVisitor {
 
   getType(ast: AST): Symbol { return ast.visit(this); }
 
-  getDiagnostics(ast: AST): TypeDiagnostic[] {
-    this.diagnostics = [];
+  getDiagnostics(ast: AST): ng.Diagnostic[] {
     const type: Symbol = ast.visit(this);
     if (this.context.event && type.callable) {
-      this.reportWarning('Unexpected callable expression. Expected a method call', ast);
+      this.diagnostics.push(
+          createDiagnostic(ast.span, Diagnostic.callable_expression_expected_method_call));
     }
     return this.diagnostics;
   }
@@ -65,7 +57,7 @@ export class AstType implements AstVisitor {
             // Nullable allowed.
             break;
           default:
-            this.reportError(`The expression might be null`, ast);
+            this.diagnostics.push(createDiagnostic(ast.span, Diagnostic.expression_might_be_null));
             break;
         }
         return this.query.getNonNullableType(type);
@@ -109,7 +101,9 @@ export class AstType implements AstVisitor {
                 errorAst = ast.right;
                 break;
             }
-            return this.reportError('Expected a numeric type', errorAst);
+            this.diagnostics.push(
+                createDiagnostic(errorAst.span, Diagnostic.expected_a_number_type));
+            return this.anyType;
         }
       case '+':
         switch (operKind) {
@@ -135,12 +129,18 @@ export class AstType implements AstVisitor {
             return this.query.getBuiltinType(BuiltinType.Number);
           case BuiltinType.Boolean << 8 | BuiltinType.Number:
           case BuiltinType.Other << 8 | BuiltinType.Number:
-            return this.reportError('Expected a number type', ast.left);
+            this.diagnostics.push(
+                createDiagnostic(ast.left.span, Diagnostic.expected_a_number_type));
+            return this.anyType;
           case BuiltinType.Number << 8 | BuiltinType.Boolean:
           case BuiltinType.Number << 8 | BuiltinType.Other:
-            return this.reportError('Expected a number type', ast.right);
+            this.diagnostics.push(
+                createDiagnostic(ast.right.span, Diagnostic.expected_a_number_type));
+            return this.anyType;
           default:
-            return this.reportError('Expected operands to be a string or number type', ast);
+            this.diagnostics.push(
+                createDiagnostic(ast.span, Diagnostic.expected_a_string_or_number_type));
+            return this.anyType;
         }
       case '>':
       case '<':
@@ -166,7 +166,9 @@ export class AstType implements AstVisitor {
           case BuiltinType.Other << 8 | BuiltinType.Other:
             return this.query.getBuiltinType(BuiltinType.Boolean);
           default:
-            return this.reportError('Expected the operants to be of similar type or any', ast);
+            this.diagnostics.push(
+                createDiagnostic(ast.span, Diagnostic.expected_operands_of_similar_type_or_any));
+            return this.anyType;
         }
       case '&&':
         return rightType;
@@ -174,13 +176,15 @@ export class AstType implements AstVisitor {
         return this.query.getTypeUnion(leftType, rightType);
     }
 
-    return this.reportError(`Unrecognized operator ${ast.operation}`, ast);
+    this.diagnostics.push(
+        createDiagnostic(ast.span, Diagnostic.unrecognized_operator, ast.operation));
+    return this.anyType;
   }
 
   visitChain(ast: Chain) {
-    if (this.diagnostics) {
-      // If we are producing diagnostics, visit the children
-      visitAstChildren(ast, this);
+    // If we are producing diagnostics, visit the children
+    for (const expr of ast.expressions) {
+      expr.visit(this);
     }
     // The type of a chain is always undefined.
     return this.query.getBuiltinType(BuiltinType.Undefined);
@@ -188,9 +192,9 @@ export class AstType implements AstVisitor {
 
   visitConditional(ast: Conditional) {
     // The type of a conditional is the union of the true and false conditions.
-    if (this.diagnostics) {
-      visitAstChildren(ast, this);
-    }
+    ast.condition.visit(this);
+    ast.trueExp.visit(this);
+    ast.falseExp.visit(this);
     return this.query.getTypeUnion(this.getType(ast.trueExp), this.getType(ast.falseExp));
   }
 
@@ -201,11 +205,18 @@ export class AstType implements AstVisitor {
     // version.
     const args = ast.args.map(arg => this.getType(arg));
     const target = this.getType(ast.target !);
-    if (!target || !target.callable) return this.reportError('Call target is not callable', ast);
+    if (!target || !target.callable) {
+      this.diagnostics.push(createDiagnostic(ast.span, Diagnostic.call_target_not_callable));
+      return this.anyType;
+    }
     const signature = target.selectSignature(args);
-    if (signature) return signature.result;
+    if (signature) {
+      return signature.result;
+    }
     // TODO: Consider a better error message here.
-    return this.reportError('Unable no compatible signature found for call', ast);
+    this.diagnostics.push(
+        createDiagnostic(ast.span, Diagnostic.unable_to_resolve_compatible_call_signature));
+    return this.anyType;
   }
 
   visitImplicitReceiver(ast: ImplicitReceiver): Symbol {
@@ -223,17 +234,19 @@ export class AstType implements AstVisitor {
       nullable: false,
       public: true,
       definition: undefined,
+      documentation: [],
       members(): SymbolTable{return _this.scope;},
       signatures(): Signature[]{return [];},
       selectSignature(types): Signature | undefined{return undefined;},
-      indexed(argument): Symbol | undefined{return undefined;}
+      indexed(argument): Symbol | undefined{return undefined;},
+      typeArguments(): Symbol[] | undefined{return undefined;},
     };
   }
 
   visitInterpolation(ast: Interpolation): Symbol {
     // If we are producing diagnostics, visit the children.
-    if (this.diagnostics) {
-      visitAstChildren(ast, this);
+    for (const expr of ast.expressions) {
+      expr.visit(this);
     }
     return this.undefinedType;
   }
@@ -241,7 +254,8 @@ export class AstType implements AstVisitor {
   visitKeyedRead(ast: KeyedRead): Symbol {
     const targetType = this.getType(ast.obj);
     const keyType = this.getType(ast.key);
-    const result = targetType.indexed(keyType);
+    const result = targetType.indexed(
+        keyType, ast.key instanceof LiteralPrimitive ? ast.key.value : undefined);
     return result || this.anyType;
   }
 
@@ -258,8 +272,8 @@ export class AstType implements AstVisitor {
 
   visitLiteralMap(ast: LiteralMap): Symbol {
     // If we are producing diagnostics, visit the children
-    if (this.diagnostics) {
-      visitAstChildren(ast, this);
+    for (const value of ast.values) {
+      value.visit(this);
     }
     // TODO: Return a composite type.
     return this.anyType;
@@ -282,7 +296,9 @@ export class AstType implements AstVisitor {
           case 'number':
             return this.query.getBuiltinType(BuiltinType.Number);
           default:
-            return this.reportError('Unrecognized primitive', ast);
+            this.diagnostics.push(
+                createDiagnostic(ast.span, Diagnostic.unrecognized_primitive, typeof ast.value));
+            return this.anyType;
         }
     }
   }
@@ -295,19 +311,24 @@ export class AstType implements AstVisitor {
     // The type of a pipe node is the return type of the pipe's transform method. The table returned
     // by getPipes() is expected to contain symbols with the corresponding transform method type.
     const pipe = this.query.getPipes().get(ast.name);
-    if (!pipe) return this.reportError(`No pipe by the name ${ast.name} found`, ast);
+    if (!pipe) {
+      this.diagnostics.push(createDiagnostic(ast.span, Diagnostic.no_pipe_found, ast.name));
+      return this.anyType;
+    }
     const expType = this.getType(ast.exp);
     const signature =
         pipe.selectSignature([expType].concat(ast.args.map(arg => this.getType(arg))));
-    if (!signature) return this.reportError('Unable to resolve signature for pipe invocation', ast);
+    if (!signature) {
+      this.diagnostics.push(
+          createDiagnostic(ast.span, Diagnostic.unable_to_resolve_signature, ast.name));
+      return this.anyType;
+    }
     return signature.result;
   }
 
   visitPrefixNot(ast: PrefixNot) {
     // If we are producing diagnostics, visit the children
-    if (this.diagnostics) {
-      visitAstChildren(ast, this);
-    }
+    ast.expression.visit(this);
     // The type of a prefix ! is always boolean.
     return this.query.getBuiltinType(BuiltinType.Boolean);
   }
@@ -339,8 +360,7 @@ export class AstType implements AstVisitor {
     return this.resolvePropertyRead(this.query.getNonNullableType(this.getType(ast.receiver)), ast);
   }
 
-  // TODO(issue/24571): remove '!'.
-  private _anyType !: Symbol;
+  private _anyType: Symbol|undefined;
   private get anyType(): Symbol {
     let result = this._anyType;
     if (!result) {
@@ -349,8 +369,7 @@ export class AstType implements AstVisitor {
     return result;
   }
 
-  // TODO(issue/24571): remove '!'.
-  private _undefinedType !: Symbol;
+  private _undefinedType: Symbol|undefined;
   private get undefinedType(): Symbol {
     let result = this._undefinedType;
     if (!result) {
@@ -363,15 +382,26 @@ export class AstType implements AstVisitor {
     if (this.isAny(receiverType)) {
       return this.anyType;
     }
-
-    // The type of a method is the selected methods result type.
-    const method = receiverType.members().get(ast.name);
-    if (!method) return this.reportError(`Unknown method '${ast.name}'`, ast);
-    if (!method.type) return this.reportError(`Could not find a type for '${ast.name}'`, ast);
-    if (!method.type.callable) return this.reportError(`Member '${ast.name}' is not callable`, ast);
-    const signature = method.type.selectSignature(ast.args.map(arg => this.getType(arg)));
-    if (!signature)
-      return this.reportError(`Unable to resolve signature for call of method ${ast.name}`, ast);
+    const methodType = this.resolvePropertyRead(receiverType, ast);
+    if (!methodType) {
+      this.diagnostics.push(
+          createDiagnostic(ast.span, Diagnostic.could_not_resolve_type, ast.name));
+      return this.anyType;
+    }
+    if (this.isAny(methodType)) {
+      return this.anyType;
+    }
+    if (!methodType.callable) {
+      this.diagnostics.push(
+          createDiagnostic(ast.span, Diagnostic.identifier_not_callable, ast.name));
+      return this.anyType;
+    }
+    const signature = methodType.selectSignature(ast.args.map(arg => this.getType(arg)));
+    if (!signature) {
+      this.diagnostics.push(
+          createDiagnostic(ast.span, Diagnostic.unable_to_resolve_signature, ast.name));
+      return this.anyType;
+    }
     return signature.result;
   }
 
@@ -379,52 +409,34 @@ export class AstType implements AstVisitor {
     if (this.isAny(receiverType)) {
       return this.anyType;
     }
-
     // The type of a property read is the seelcted member's type.
     const member = receiverType.members().get(ast.name);
     if (!member) {
-      let receiverInfo = receiverType.name;
-      if (receiverInfo == '$implicit') {
-        receiverInfo =
-            'The component declaration, template variable declarations, and element references do';
-      } else if (receiverType.nullable) {
-        return this.reportError(`The expression might be null`, ast.receiver);
+      if (receiverType.name === '$implicit') {
+        this.diagnostics.push(
+            createDiagnostic(ast.span, Diagnostic.identifier_not_defined_in_app_context, ast.name));
+      } else if (receiverType.nullable && ast.receiver instanceof PropertyRead) {
+        const receiver = ast.receiver.name;
+        this.diagnostics.push(createDiagnostic(
+            ast.span, Diagnostic.identifier_possibly_undefined, receiver,
+            `${receiver}?.${ast.name}`, `${receiver}!.${ast.name}`));
       } else {
-        receiverInfo = `'${receiverInfo}' does`;
+        this.diagnostics.push(createDiagnostic(
+            ast.span, Diagnostic.identifier_not_defined_on_receiver, ast.name, receiverType.name));
       }
-      return this.reportError(
-          `Identifier '${ast.name}' is not defined. ${receiverInfo} not contain such a member`,
-          ast);
+      return this.anyType;
     }
     if (!member.public) {
-      let receiverInfo = receiverType.name;
-      if (receiverInfo == '$implicit') {
-        receiverInfo = 'the component';
-      } else {
-        receiverInfo = `'${receiverInfo}'`;
-      }
-      this.reportWarning(
-          `Identifier '${ast.name}' refers to a private member of ${receiverInfo}`, ast);
+      const container =
+          receiverType.name === '$implicit' ? 'the component' : `'${receiverType.name}'`;
+      this.diagnostics.push(
+          createDiagnostic(ast.span, Diagnostic.identifier_is_private, ast.name, container));
     }
     return member.type;
   }
 
-  private reportError(message: string, ast: AST): Symbol {
-    if (this.diagnostics) {
-      this.diagnostics.push(new TypeDiagnostic(DiagnosticKind.Error, message, ast));
-    }
-    return this.anyType;
-  }
-
-  private reportWarning(message: string, ast: AST): Symbol {
-    if (this.diagnostics) {
-      this.diagnostics.push(new TypeDiagnostic(DiagnosticKind.Warning, message, ast));
-    }
-    return this.anyType;
-  }
-
   private isAny(symbol: Symbol): boolean {
-    return !symbol || this.query.getTypeKind(symbol) == BuiltinType.Any ||
+    return !symbol || this.query.getTypeKind(symbol) === BuiltinType.Any ||
         (!!symbol.type && this.isAny(symbol.type));
   }
 }

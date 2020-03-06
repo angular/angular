@@ -44,7 +44,8 @@ export class ClusterPackageJsonUpdater implements PackageJsonUpdater {
           throw new Error(`Missing property path for writing value to '${packageJsonPath}'.`);
         }
 
-        applyChange(preExistingParsedJson, propPath, value);
+        // No need to take property positioning into account for in-memory representations.
+        applyChange(preExistingParsedJson, propPath, value, 'unimportant');
       }
     }
 

@@ -57,9 +57,13 @@ export abstract class Body {
     if (this._body instanceof ArrayBuffer) {
       switch (encodingHint) {
         case 'legacy':
-          return String.fromCharCode.apply(null, new Uint16Array(this._body));
+          // TODO: Argument of type 'Uint16Array' is not assignable to parameter of type
+          // 'number[]'.
+          return String.fromCharCode.apply(null, new Uint16Array(this._body) as any);
         case 'iso-8859':
-          return String.fromCharCode.apply(null, new Uint8Array(this._body));
+          // TODO: Argument of type 'Uint8Array' is not assignable to parameter of type
+          // 'number[]'.
+          return String.fromCharCode.apply(null, new Uint8Array(this._body) as any);
         default:
           throw new Error(`Invalid value for encodingHint: ${encodingHint}`);
       }

@@ -7,7 +7,7 @@ As a contributor, see the instructions in [CONTRIBUTING.md](../CONTRIBUTING.md).
 
 # Change approvals
 
-Change approvals in our monorepo are managed via [GitHub CODEOWNERS](https://help.github.com/articles/about-codeowners/) and are configured via the [`.github/CODEOWNERS`](../.github/CODEOWNERS) file.
+Change approvals in our monorepo are managed via [PullApprove](https://https://docs.pullapprove.com/) and are configured via the [`.pullapprove`](../.pullapprove) file.
 
 # Merging
 

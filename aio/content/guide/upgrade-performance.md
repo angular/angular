@@ -1,4 +1,4 @@
-# Upgrading for Performance
+# Upgrading for performance
 
 <div class="alert is-helpful">
 

@@ -8,7 +8,6 @@
 
 import * as ts from 'typescript';
 
-import {isAstResult} from './common';
 import {createGlobalSymbolTable} from './global_symbols';
 import * as ng from './types';
 import {TypeScriptServiceHost} from './typescript_host';
@@ -73,7 +72,7 @@ abstract class BaseTemplate implements ng.TemplateSource {
         // TODO: There is circular dependency here between TemplateSource and
         // TypeScriptHost. Consider refactoring the code to break this cycle.
         const ast = this.host.getTemplateAst(this);
-        const pipes = isAstResult(ast) ? ast.pipes : [];
+        const pipes = (ast && ast.pipes) || [];
         return getPipesTable(sourceFile, program, typeChecker, pipes);
       });
     }
@@ -99,7 +98,9 @@ export class InlineTemplate extends BaseTemplate {
       throw new Error(`Inline template and component class should belong to the same source file`);
     }
     this.fileName = sourceFile.fileName;
-    this.source = templateNode.text;
+    // node.text returns the TS internal representation of the normalized text,
+    // and all CR characters are stripped. node.getText() returns the raw text.
+    this.source = templateNode.getText().slice(1, -1);  // strip leading and trailing quotes
     this.span = {
       // TS string literal includes surrounding quotes in the start/end offsets.
       start: templateNode.getStart() + 1,

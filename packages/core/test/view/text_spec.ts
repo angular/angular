@@ -41,7 +41,7 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, compViewDef, createAndGetRoot
       });
 
       it('should add debug information to the renderer', () => {
-        const someContext = new Object();
+        const someContext = {};
         const {view, rootNodes} =
             createAndGetRootNodes(compViewDef([textDef(0, null, ['a'])]), someContext);
         expect(getDebugNode(rootNodes[0]) !.nativeNode).toBe(asTextData(view, 0).renderText);

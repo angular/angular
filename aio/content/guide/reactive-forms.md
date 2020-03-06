@@ -1,4 +1,4 @@
-# Reactive Forms
+# Reactive forms
 
 *Reactive forms* provide a model-driven approach to handling form inputs whose values change over time. This guide shows you how to create and update a simple form control, progress to using multiple controls in a group, validate form values, and implement more advanced forms.
 
@@ -80,7 +80,7 @@ the current state and value through the component class or the component templat
 You can display the value in these ways:
 
 * Through the `valueChanges` observable where you can listen for changes in the form's value in the template using `AsyncPipe` or in the component class using the `subscribe()` method.
-* With the `value` property. which gives you a snapshot of the current value.
+* With the `value` property, which gives you a snapshot of the current value.
 
 The following example shows you how to display the current value using interpolation in the template.
 

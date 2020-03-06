@@ -199,16 +199,15 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
     throw new Error(`Couldn't find bazel bin in the rootDirs: ${compilerOpts.rootDirs}`);
   }
 
-  const writtenExpectedOuts = expectedOuts.map(p => p.replace(/\\/g, '/'));
+  const expectedOutsSet = new Set(expectedOuts.map(p => p.replace(/\\/g, '/')));
 
   const originalWriteFile = tsHost.writeFile.bind(tsHost);
   tsHost.writeFile =
       (fileName: string, content: string, writeByteOrderMark: boolean,
        onError?: (message: string) => void, sourceFiles?: ts.SourceFile[]) => {
         const relative = relativeToRootDirs(fileName.replace(/\\/g, '/'), [compilerOpts.rootDir]);
-        const expectedIdx = writtenExpectedOuts.findIndex(o => o === relative);
-        if (expectedIdx >= 0) {
-          writtenExpectedOuts.splice(expectedIdx, 1);
+        if (expectedOutsSet.has(relative)) {
+          expectedOutsSet.delete(relative);
           originalWriteFile(fileName, content, writeByteOrderMark, onError, sourceFiles);
         }
       };
@@ -425,8 +424,10 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
     fs.writeFileSync(bazelOpts.tsickleExternsPath, externs);
   }
 
-  for (let i = 0; i < writtenExpectedOuts.length; i++) {
-    originalWriteFile(writtenExpectedOuts[i], '', false);
+  // There might be some expected output files that are not written by the
+  // compiler. In this case, just write an empty file.
+  for (const fileName of expectedOutsSet) {
+    originalWriteFile(fileName, '', false);
   }
 
   return {program, diagnostics};

@@ -49,6 +49,7 @@
     ['{1} {0}', u, '{1}, {0}', u],
     [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
     ['#,##0.###', '#,##0 %', '¤#,##0.00', '#E0'],
+    'XAF',
     'FCFA',
     'franco CFA de África Central',
     {
@@ -72,6 +73,7 @@
       'XCD': [u, '$'],
       'XOF': []
     },
+    'ltr',
     plural,
     [
       [['del mediodía', 'de la madrugada', 'de la mañana', 'de la tarde', 'de la noche'], u, u],

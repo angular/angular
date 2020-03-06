@@ -6,20 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {AsyncLocker} from '../locking/async_locker';
+import {SyncLocker} from '../locking/sync_locker';
 import {Logger} from '../logging/logger';
 import {PackageJsonUpdater} from '../writing/package_json_updater';
 
 import {AnalyzeEntryPointsFn, CreateCompileFn, Executor} from './api';
 import {onTaskCompleted} from './utils';
 
-
-/**
- * An `Executor` that processes all tasks serially and completes synchronously.
- */
-export class SingleProcessExecutor implements Executor {
+export abstract class SingleProcessorExecutorBase {
   constructor(private logger: Logger, private pkgJsonUpdater: PackageJsonUpdater) {}
 
-  execute(analyzeEntryPoints: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn): void {
+  doExecute(analyzeEntryPoints: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn):
+      void|Promise<void> {
     this.logger.debug(`Running ngcc on ${this.constructor.name}.`);
 
     const taskQueue = analyzeEntryPoints();
@@ -42,10 +41,26 @@ export class SingleProcessExecutor implements Executor {
 }
 
 /**
+ * An `Executor` that processes all tasks serially and completes synchronously.
+ */
+export class SingleProcessExecutorSync extends SingleProcessorExecutorBase implements Executor {
+  constructor(logger: Logger, pkgJsonUpdater: PackageJsonUpdater, private lockFile: SyncLocker) {
+    super(logger, pkgJsonUpdater);
+  }
+  execute(analyzeEntryPoints: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn): void {
+    this.lockFile.lock(() => this.doExecute(analyzeEntryPoints, createCompileFn));
+  }
+}
+
+/**
  * An `Executor` that processes all tasks serially, but still completes asynchronously.
  */
-export class AsyncSingleProcessExecutor extends SingleProcessExecutor {
-  async execute(...args: Parameters<Executor['execute']>): Promise<void> {
-    return super.execute(...args);
+export class SingleProcessExecutorAsync extends SingleProcessorExecutorBase implements Executor {
+  constructor(logger: Logger, pkgJsonUpdater: PackageJsonUpdater, private lockFile: AsyncLocker) {
+    super(logger, pkgJsonUpdater);
+  }
+  async execute(analyzeEntryPoints: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn):
+      Promise<void> {
+    await this.lockFile.lock(async() => this.doExecute(analyzeEntryPoints, createCompileFn));
   }
 }

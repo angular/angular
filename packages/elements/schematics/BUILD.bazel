@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "npm_package")
+load("//tools:defaults.bzl", "pkg_npm")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -15,7 +15,7 @@ genrule(
     output_to_bindir = 1,
 )
 
-npm_package(
+pkg_npm(
     name = "npm_package",
     srcs = [
         "collection.json",

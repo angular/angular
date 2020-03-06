@@ -1,4 +1,4 @@
-# Schematics for Libraries
+# Schematics for libraries
 
 When you create an Angular library, you can provide and package it with schematics that integrate it with the Angular CLI.
 With your schematics, your users can use  `ng add` to install an initial version of your library,

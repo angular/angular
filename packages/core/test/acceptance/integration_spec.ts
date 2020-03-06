@@ -9,7 +9,6 @@ import {CommonModule} from '@angular/common';
 import {Component, ContentChild, Directive, ElementRef, EventEmitter, HostBinding, HostListener, Input, NgModule, OnInit, Output, Pipe, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
 import {TVIEW} from '@angular/core/src/render3/interfaces/view';
 import {getLView} from '@angular/core/src/render3/state';
-import {loadLContext} from '@angular/core/src/render3/util/discovery_utils';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -1033,7 +1032,7 @@ describe('acceptance integration tests', () => {
 
         fixture.componentInstance.value = false;
         fixture.detectChanges();
-        expect(structuralCompEl.getAttribute('class')).toEqual('');
+        expect(structuralCompEl.getAttribute('class')).toBeFalsy();
       });
 
       @Directive({selector: '[DirWithClass]'})
@@ -1072,7 +1071,7 @@ describe('acceptance integration tests', () => {
 
       it('should delegate initial styles to a [style] input binding if present on a directive on the same element',
          () => {
-           @Component({template: '<div style="width:100px;height:200px" DirWithStyle></div>'})
+           @Component({template: '<div style="width: 100px; height: 200px" DirWithStyle></div>'})
            class App {
              @ViewChild(DirWithStyleDirective)
              mockStyleDirective !: DirWithStyleDirective;
@@ -1085,8 +1084,8 @@ describe('acceptance integration tests', () => {
            const styles = fixture.componentInstance.mockStyleDirective.stylesVal;
 
            // Use `toContain` since Ivy and ViewEngine have some slight differences in formatting.
-           expect(styles).toContain('width:100px');
-           expect(styles).toContain('height:200px');
+           expect(styles).toContain('width: 100px');
+           expect(styles).toContain('height: 200px');
          });
 
       it('should update `[class]` and bindings in the provided directive if the input is matched',
@@ -1123,7 +1122,7 @@ describe('acceptance integration tests', () => {
                 fixture.detectChanges();
 
                 expect(fixture.componentInstance.mockStyleDirective.stylesVal)
-                    .toEqual({'width': '200px', 'height': '500px'});
+                    .toEqual({width: '200px', height: '500px'});
               });
 
       onlyInIvy('Style binding merging works differently in Ivy')
@@ -1178,14 +1177,14 @@ describe('acceptance integration tests', () => {
                   }
                 })
                 class DirWithSingleStylingBindings {
-                  width: null|string = null;
-                  height: null|string = null;
+                  width: string|null|undefined = undefined;
+                  height: string|null|undefined = undefined;
                   activateXYZClass: boolean = false;
                 }
 
                 @Component({
                   template: `
-              <div DirWithSingleStylingBindings class="abc" style="width:100px; height:200px"></div>
+              <div DirWithSingleStylingBindings class="abc" style="width:100px;"></div>
             `
                 })
                 class App {
@@ -1199,7 +1198,7 @@ describe('acceptance integration tests', () => {
                 const dirInstance = fixture.componentInstance.dirInstance;
                 const target: HTMLDivElement = fixture.nativeElement.querySelector('div');
                 expect(target.style.getPropertyValue('width')).toEqual('100px');
-                expect(target.style.getPropertyValue('height')).toEqual('200px');
+                expect(target.style.getPropertyValue('height')).toEqual('');
                 expect(target.classList.contains('abc')).toBeTruthy();
                 expect(target.classList.contains('def')).toBeTruthy();
                 expect(target.classList.contains('xyz')).toBeFalsy();
@@ -1209,18 +1208,18 @@ describe('acceptance integration tests', () => {
                 dirInstance.activateXYZClass = true;
                 fixture.detectChanges();
 
-                expect(target.style.getPropertyValue('width')).toEqual('444px');
+                expect(target.style.getPropertyValue('width')).toEqual('100px');
                 expect(target.style.getPropertyValue('height')).toEqual('999px');
                 expect(target.classList.contains('abc')).toBeTruthy();
                 expect(target.classList.contains('def')).toBeTruthy();
                 expect(target.classList.contains('xyz')).toBeTruthy();
 
-                dirInstance.width = null;
-                dirInstance.height = null;
+                dirInstance.width = undefined;
+                dirInstance.height = undefined;
                 fixture.detectChanges();
 
                 expect(target.style.getPropertyValue('width')).toEqual('100px');
-                expect(target.style.getPropertyValue('height')).toEqual('200px');
+                expect(target.style.getPropertyValue('height')).toEqual('');
                 expect(target.classList.contains('abc')).toBeTruthy();
                 expect(target.classList.contains('def')).toBeTruthy();
                 expect(target.classList.contains('xyz')).toBeTruthy();
@@ -1231,7 +1230,7 @@ describe('acceptance integration tests', () => {
               () => {
                 @Directive({selector: '[Dir1WithStyle]', host: {'[style.width]': 'width'}})
                 class Dir1WithStyle {
-                  width: null|string = null;
+                  width: null|string|undefined = undefined;
                 }
 
                 @Directive({
@@ -1239,7 +1238,7 @@ describe('acceptance integration tests', () => {
                   host: {'style': 'width: 111px', '[style.width]': 'width'}
                 })
                 class Dir2WithStyle {
-                  width: null|string = null;
+                  width: null|string|undefined = undefined;
                 }
 
                 @Component(
@@ -1247,10 +1246,10 @@ describe('acceptance integration tests', () => {
                 class App {
                   @ViewChild(Dir1WithStyle) dir1Instance !: Dir1WithStyle;
                   @ViewChild(Dir2WithStyle) dir2Instance !: Dir2WithStyle;
-                  width: string|null = null;
+                  width: string|null|undefined = undefined;
                 }
 
-                TestBed.configureTestingModule({declarations: [App, Dir1WithStyle, Dir2WithStyle]});
+                TestBed.configureTestingModule({declarations: [App, Dir2WithStyle, Dir1WithStyle]});
                 const fixture = TestBed.createComponent(App);
                 fixture.detectChanges();
                 const {dir1Instance, dir2Instance} = fixture.componentInstance;
@@ -1264,15 +1263,15 @@ describe('acceptance integration tests', () => {
                 fixture.detectChanges();
                 expect(target.style.getPropertyValue('width')).toEqual('999px');
 
-                fixture.componentInstance.width = null;
+                fixture.componentInstance.width = undefined;
                 fixture.detectChanges();
                 expect(target.style.getPropertyValue('width')).toEqual('222px');
 
-                dir1Instance.width = null;
+                dir1Instance.width = undefined;
                 fixture.detectChanges();
                 expect(target.style.getPropertyValue('width')).toEqual('333px');
 
-                dir2Instance.width = null;
+                dir2Instance.width = undefined;
                 fixture.detectChanges();
                 expect(target.style.getPropertyValue('width')).toEqual('111px');
 
@@ -1317,7 +1316,7 @@ describe('acceptance integration tests', () => {
                 }
 
                 TestBed.configureTestingModule(
-                    {declarations: [App, Dir1WithStyling, Dir2WithStyling]});
+                    {declarations: [App, Dir2WithStyling, Dir1WithStyling]});
                 const fixture = TestBed.createComponent(App);
                 fixture.detectChanges();
                 const {dir1Instance, dir2Instance} = fixture.componentInstance;
@@ -1326,7 +1325,7 @@ describe('acceptance integration tests', () => {
                 expect(target.style.getPropertyValue('width')).toEqual('111px');
 
                 const compInstance = fixture.componentInstance;
-                compInstance.stylesExp = {width: '999px', height: null};
+                compInstance.stylesExp = {width: '999px', height: undefined};
                 compInstance.classesExp = {one: true, two: false};
                 dir1Instance.stylesExp = {width: '222px'};
                 dir1Instance.classesExp = {two: true, three: false};

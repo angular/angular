@@ -70,8 +70,7 @@ function createTestRenderer(
   const isCore = packageName === '@angular/core';
   const bundle = makeTestEntryPointBundle(
       'test-package', 'esm2015', isCore, getRootFiles(files), dtsFiles && getRootFiles(dtsFiles));
-  const typeChecker = bundle.src.program.getTypeChecker();
-  const host = new Esm2015ReflectionHost(logger, isCore, typeChecker, bundle.dts);
+  const host = new Esm2015ReflectionHost(logger, isCore, bundle.src, bundle.dts);
   const referencesRegistry = new NgccReferencesRegistry(host);
   const decorationAnalyses =
       new DecorationAnalyzer(fs, bundle, host, referencesRegistry).analyzeProgram();
@@ -115,7 +114,7 @@ runInEachFileSystem(() => {
             `import { Directive } from '@angular/core';\nexport class A {\n    foo(x) {\n        return x;\n    }\n}\nA.decorators = [\n    { type: Directive, args: [{ selector: '[a]' }] }\n];\n`
       };
       INPUT_DTS_PROGRAM = {
-        name: _('/typings/file.d.ts'),
+        name: _('/node_modules/test-package/typings/file.d.ts'),
         contents: `export declare class A {\nfoo(x: number): number;\n}\n`
       };
     });
@@ -127,7 +126,8 @@ runInEachFileSystem(() => {
       const result = renderer.renderProgram(
           decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses);
 
-      const typingsFile = result.find(f => f.path === _('/typings/file.d.ts')) !;
+      const typingsFile =
+          result.find(f => f.path === _('/node_modules/test-package/typings/file.d.ts')) !;
       expect(typingsFile.contents)
           .toContain(
               'foo(x: number): number;\n    static ɵfac: ɵngcc0.ɵɵFactoryDef<A>;\n    static ɵdir: ɵngcc0.ɵɵDirectiveDefWithMeta');
@@ -140,7 +140,8 @@ runInEachFileSystem(() => {
       const result = renderer.renderProgram(
           decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses);
 
-      const typingsFile = result.find(f => f.path === _('/typings/file.d.ts')) !;
+      const typingsFile =
+          result.find(f => f.path === _('/node_modules/test-package/typings/file.d.ts')) !;
       expect(typingsFile.contents).toContain(`\n// ADD IMPORTS\n`);
     });
 
@@ -159,7 +160,8 @@ runInEachFileSystem(() => {
       const result = renderer.renderProgram(
           decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses);
 
-      const typingsFile = result.find(f => f.path === _('/typings/file.d.ts')) !;
+      const typingsFile =
+          result.find(f => f.path === _('/node_modules/test-package/typings/file.d.ts')) !;
       expect(typingsFile.contents).toContain(`\n// ADD EXPORTS\n`);
     });
 
@@ -171,7 +173,8 @@ runInEachFileSystem(() => {
       const result = renderer.renderProgram(
           decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses);
 
-      const typingsFile = result.find(f => f.path === _('/typings/file.d.ts')) !;
+      const typingsFile =
+          result.find(f => f.path === _('/node_modules/test-package/typings/file.d.ts')) !;
       expect(typingsFile.contents).toContain(`\n// ADD MODUlE WITH PROVIDERS PARAMS\n`);
     });
   });

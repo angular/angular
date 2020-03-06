@@ -12,34 +12,40 @@ import {DepGraph} from 'dependency-graph';
 import * as os from 'os';
 import * as ts from 'typescript';
 
+import {replaceTsWithNgInErrors} from '../../src/ngtsc/diagnostics';
 import {AbsoluteFsPath, FileSystem, absoluteFrom, dirname, getFileSystem, resolve} from '../../src/ngtsc/file_system';
 
 import {CommonJsDependencyHost} from './dependencies/commonjs_dependency_host';
-import {DependencyResolver, InvalidEntryPoint, PartiallyOrderedEntryPoints, SortedEntryPointsInfo} from './dependencies/dependency_resolver';
+import {DependencyResolver, InvalidEntryPoint} from './dependencies/dependency_resolver';
+import {DtsDependencyHost} from './dependencies/dts_dependency_host';
 import {EsmDependencyHost} from './dependencies/esm_dependency_host';
 import {ModuleResolver} from './dependencies/module_resolver';
 import {UmdDependencyHost} from './dependencies/umd_dependency_host';
 import {DirectoryWalkerEntryPointFinder} from './entry_point_finder/directory_walker_entry_point_finder';
+import {EntryPointFinder} from './entry_point_finder/interface';
 import {TargetedEntryPointFinder} from './entry_point_finder/targeted_entry_point_finder';
 import {AnalyzeEntryPointsFn, CreateCompileFn, Executor, PartiallyOrderedTasks, Task, TaskProcessingOutcome, TaskQueue} from './execution/api';
 import {ClusterExecutor} from './execution/cluster/executor';
 import {ClusterPackageJsonUpdater} from './execution/cluster/package_json_updater';
-import {AsyncSingleProcessExecutor, SingleProcessExecutor} from './execution/single_process_executor';
+import {SingleProcessExecutorAsync, SingleProcessExecutorSync} from './execution/single_process_executor';
 import {ParallelTaskQueue} from './execution/task_selection/parallel_task_queue';
 import {SerialTaskQueue} from './execution/task_selection/serial_task_queue';
-import {ConsoleLogger, LogLevel} from './logging/console_logger';
-import {Logger} from './logging/logger';
-import {hasBeenProcessed, markAsProcessed} from './packages/build_marker';
+import {AsyncLocker} from './locking/async_locker';
+import {LockFileWithChildProcess} from './locking/lock_file_with_child_process';
+import {SyncLocker} from './locking/sync_locker';
+import {ConsoleLogger} from './logging/console_logger';
+import {LogLevel, Logger} from './logging/logger';
+import {hasBeenProcessed} from './packages/build_marker';
 import {NgccConfiguration} from './packages/configuration';
 import {EntryPoint, EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from './packages/entry_point';
 import {makeEntryPointBundle} from './packages/entry_point_bundle';
 import {Transformer} from './packages/transformer';
 import {PathMappings} from './utils';
+import {cleanOutdatedPackages} from './writing/cleaning/package_cleaner';
 import {FileWriter} from './writing/file_writer';
 import {InPlaceFileWriter} from './writing/in_place_file_writer';
 import {NewEntryPointFileWriter} from './writing/new_entry_point_file_writer';
 import {DirectPackageJsonUpdater, PackageJsonUpdater} from './writing/package_json_updater';
-
 
 /**
  * The options to configure the ngcc compiler for synchronous execution.
@@ -97,6 +103,19 @@ export interface SyncNgccOptions {
    * Default: `false` (i.e. run synchronously)
    */
   async?: false;
+
+  /**
+   * Render `$localize` messages with legacy format ids.
+   *
+   * The default value is `true`. Only set this to `false` if you do not want legacy message ids to
+   * be rendered. For example, if you are not using legacy message ids in your translation files
+   * AND are not doing compile-time inlining of translations, in which case the extra message ids
+   * would add unwanted size to the final source bundle.
+   *
+   * It is safe to leave this set to true if you are doing compile-time inlining because the extra
+   * legacy message ids will all be stripped during translation.
+   */
+  enableI18nLegacyMessageIdFormat?: boolean;
 }
 
 /**
@@ -108,8 +127,6 @@ export type AsyncNgccOptions = Omit<SyncNgccOptions, 'async'>& {async: true};
  * The options to configure the ngcc compiler.
  */
 export type NgccOptions = AsyncNgccOptions | SyncNgccOptions;
-
-const EMPTY_GRAPH = new DepGraph<EntryPoint>();
 
 /**
  * This is the main entry-point into ngcc (aNGular Compatibility Compiler).
@@ -124,8 +141,8 @@ export function mainNgcc(options: SyncNgccOptions): void;
 export function mainNgcc(
     {basePath, targetEntryPointPath, propertiesToConsider = SUPPORTED_FORMAT_PROPERTIES,
      compileAllFormats = true, createNewEntryPointFormats = false,
-     logger = new ConsoleLogger(LogLevel.info), pathMappings, async = false}: NgccOptions): void|
-    Promise<void> {
+     logger = new ConsoleLogger(LogLevel.info), pathMappings, async = false,
+     enableI18nLegacyMessageIdFormat = true}: NgccOptions): void|Promise<void> {
   // Execute in parallel, if async execution is acceptable and there are more than 1 CPU cores.
   const inParallel = async && (os.cpus().length > 1);
 
@@ -133,6 +150,23 @@ export function mainNgcc(
   // NOTE: Avoid eagerly instantiating anything that might not be used when running sync/async or in
   //       master/worker process.
   const fileSystem = getFileSystem();
+  const absBasePath = absoluteFrom(basePath);
+  const config = new NgccConfiguration(fileSystem, dirname(absBasePath));
+  const dependencyResolver = getDependencyResolver(fileSystem, logger, config, pathMappings);
+
+  // Bail out early if the work is already done.
+  const supportedPropertiesToConsider = ensureSupportedProperties(propertiesToConsider);
+  const absoluteTargetEntryPointPath =
+      targetEntryPointPath !== undefined ? resolve(basePath, targetEntryPointPath) : null;
+  const finder = getEntryPointFinder(
+      fileSystem, logger, dependencyResolver, config, absBasePath, absoluteTargetEntryPointPath,
+      pathMappings);
+  if (finder instanceof TargetedEntryPointFinder &&
+      !finder.targetNeedsProcessingOrCleaning(supportedPropertiesToConsider, compileAllFormats)) {
+    logger.debug('The target entry-point has already been processed');
+    return;
+  }
+
   // NOTE: To avoid file corruption, ensure that each `ngcc` invocation only creates _one_ instance
   //       of `PackageJsonUpdater` that actually writes to disk (across all processes).
   //       This is hard to enforce automatically, when running on multiple processes, so needs to be
@@ -144,24 +178,15 @@ export function mainNgcc(
     logger.debug('Analyzing entry-points...');
     const startTime = Date.now();
 
-    const supportedPropertiesToConsider = ensureSupportedProperties(propertiesToConsider);
+    let entryPointInfo = finder.findEntryPoints();
+    const cleaned = cleanOutdatedPackages(fileSystem, entryPointInfo.entryPoints);
+    if (cleaned) {
+      // If we had to clean up one or more packages then we must read in the entry-points again.
+      entryPointInfo = finder.findEntryPoints();
+    }
 
-    const moduleResolver = new ModuleResolver(fileSystem, pathMappings);
-    const esmDependencyHost = new EsmDependencyHost(fileSystem, moduleResolver);
-    const umdDependencyHost = new UmdDependencyHost(fileSystem, moduleResolver);
-    const commonJsDependencyHost = new CommonJsDependencyHost(fileSystem, moduleResolver);
-    const dependencyResolver = new DependencyResolver(fileSystem, logger, {
-      esm5: esmDependencyHost,
-      esm2015: esmDependencyHost,
-      umd: umdDependencyHost,
-      commonjs: commonJsDependencyHost
-    });
-
-    const absBasePath = absoluteFrom(basePath);
-    const config = new NgccConfiguration(fileSystem, dirname(absBasePath));
-    const {entryPoints, graph} = getEntryPoints(
-        fileSystem, pkgJsonUpdater, logger, dependencyResolver, config, absBasePath,
-        targetEntryPointPath, pathMappings, supportedPropertiesToConsider, compileAllFormats);
+    const {entryPoints, invalidEntryPoints, graph} = entryPointInfo;
+    logInvalidEntryPoints(logger, invalidEntryPoints);
 
     const unprocessableEntryPointPaths: string[] = [];
     // The tasks are partially ordered by virtue of the entry-points being partially ordered too.
@@ -169,7 +194,7 @@ export function mainNgcc(
 
     for (const entryPoint of entryPoints) {
       const packageJson = entryPoint.packageJson;
-      const hasProcessedTypings = hasBeenProcessed(packageJson, 'typings', entryPoint.path);
+      const hasProcessedTypings = hasBeenProcessed(packageJson, 'typings');
       const {propertiesToProcess, equivalentPropertiesMap} =
           getPropertiesToProcess(packageJson, supportedPropertiesToConsider, compileAllFormats);
       let processDts = !hasProcessedTypings;
@@ -184,6 +209,12 @@ export function mainNgcc(
       }
 
       for (const formatProperty of propertiesToProcess) {
+        if (hasBeenProcessed(entryPoint.packageJson, formatProperty)) {
+          // The format-path which the property maps to is already processed - nothing to do.
+          logger.debug(`Skipping ${entryPoint.name} : ${formatProperty} (already compiled).`);
+          continue;
+        }
+
         const formatPropertiesToMarkAsProcessed = equivalentPropertiesMap.get(formatProperty) !;
         tasks.push({entryPoint, formatProperty, formatPropertiesToMarkAsProcessed, processDts});
 
@@ -233,36 +264,34 @@ export function mainNgcc(
             `${formatProperty} (formatPath: ${formatPath} | format: ${format})`);
       }
 
-      // The format-path which the property maps to is already processed - nothing to do.
-      if (hasBeenProcessed(packageJson, formatProperty, entryPoint.path)) {
-        logger.debug(`Skipping ${entryPoint.name} : ${formatProperty} (already compiled).`);
-        onTaskCompleted(task, TaskProcessingOutcome.AlreadyProcessed);
-        return;
-      }
-
       const bundle = makeEntryPointBundle(
-          fileSystem, entryPoint, formatPath, isCore, format, processDts, pathMappings, true);
+          fileSystem, entryPoint, formatPath, isCore, format, processDts, pathMappings, true,
+          enableI18nLegacyMessageIdFormat);
 
       logger.info(`Compiling ${entryPoint.name} : ${formatProperty} as ${format}`);
 
       const result = transformer.transform(bundle);
       if (result.success) {
         if (result.diagnostics.length > 0) {
-          logger.warn(ts.formatDiagnostics(result.diagnostics, bundle.src.host));
+          logger.warn(replaceTsWithNgInErrors(
+              ts.formatDiagnosticsWithColorAndContext(result.diagnostics, bundle.src.host)));
         }
         fileWriter.writeBundle(bundle, result.transformedFiles, formatPropertiesToMarkAsProcessed);
       } else {
-        const errors = ts.formatDiagnostics(result.diagnostics, bundle.src.host);
+        const errors = replaceTsWithNgInErrors(
+            ts.formatDiagnosticsWithColorAndContext(result.diagnostics, bundle.src.host));
         throw new Error(
-            `Failed to compile entry-point ${entryPoint.name} due to compilation errors:\n${errors}`);
+            `Failed to compile entry-point ${entryPoint.name} (${formatProperty} as ${format}) due to compilation errors:\n${errors}`);
       }
+
+      logger.debug(`  Successfully compiled ${entryPoint.name} : ${formatProperty}`);
 
       onTaskCompleted(task, TaskProcessingOutcome.Processed);
     };
   };
 
   // The executor for actually planning and getting the work done.
-  const executor = getExecutor(async, inParallel, logger, pkgJsonUpdater);
+  const executor = getExecutor(async, inParallel, logger, pkgJsonUpdater, fileSystem);
 
   return executor.execute(analyzeEntryPoints, createCompileFn);
 }
@@ -307,119 +336,55 @@ function getTaskQueue(
 }
 
 function getExecutor(
-    async: boolean, inParallel: boolean, logger: Logger,
-    pkgJsonUpdater: PackageJsonUpdater): Executor {
-  if (inParallel) {
-    // Execute in parallel (which implies async).
-    // Use up to 8 CPU cores for workers, always reserving one for master.
-    const workerCount = Math.min(8, os.cpus().length - 1);
-    return new ClusterExecutor(workerCount, logger, pkgJsonUpdater);
-  } else {
-    // Execute serially, on a single thread (either sync or async).
-    return async ? new AsyncSingleProcessExecutor(logger, pkgJsonUpdater) :
-                   new SingleProcessExecutor(logger, pkgJsonUpdater);
-  }
-}
-
-function getEntryPoints(
-    fs: FileSystem, pkgJsonUpdater: PackageJsonUpdater, logger: Logger,
-    resolver: DependencyResolver, config: NgccConfiguration, basePath: AbsoluteFsPath,
-    targetEntryPointPath: string | undefined, pathMappings: PathMappings | undefined,
-    propertiesToConsider: string[], compileAllFormats: boolean):
-    {entryPoints: PartiallyOrderedEntryPoints, graph: DepGraph<EntryPoint>} {
-  const {entryPoints, invalidEntryPoints, graph} = (targetEntryPointPath !== undefined) ?
-      getTargetedEntryPoints(
-          fs, pkgJsonUpdater, logger, resolver, config, basePath, targetEntryPointPath,
-          propertiesToConsider, compileAllFormats, pathMappings) :
-      getAllEntryPoints(fs, config, logger, resolver, basePath, pathMappings);
-  logInvalidEntryPoints(logger, invalidEntryPoints);
-  return {entryPoints, graph};
-}
-
-function getTargetedEntryPoints(
-    fs: FileSystem, pkgJsonUpdater: PackageJsonUpdater, logger: Logger,
-    resolver: DependencyResolver, config: NgccConfiguration, basePath: AbsoluteFsPath,
-    targetEntryPointPath: string, propertiesToConsider: string[], compileAllFormats: boolean,
-    pathMappings: PathMappings | undefined): SortedEntryPointsInfo {
-  const absoluteTargetEntryPointPath = resolve(basePath, targetEntryPointPath);
-  if (hasProcessedTargetEntryPoint(
-          fs, absoluteTargetEntryPointPath, propertiesToConsider, compileAllFormats)) {
-    logger.debug('The target entry-point has already been processed');
-    return {
-      entryPoints: [] as unknown as PartiallyOrderedEntryPoints,
-      invalidEntryPoints: [],
-      ignoredDependencies: [],
-      graph: EMPTY_GRAPH,
-    };
-  }
-  const finder = new TargetedEntryPointFinder(
-      fs, config, logger, resolver, basePath, absoluteTargetEntryPointPath, pathMappings);
-  const entryPointInfo = finder.findEntryPoints();
-  const invalidTarget = entryPointInfo.invalidEntryPoints.find(
-      i => i.entryPoint.path === absoluteTargetEntryPointPath);
-  if (invalidTarget !== undefined) {
-    throw new Error(
-        `The target entry-point "${invalidTarget.entryPoint.name}" has missing dependencies:\n` +
-        invalidTarget.missingDependencies.map(dep => ` - ${dep}\n`).join(''));
-  }
-  if (entryPointInfo.entryPoints.length === 0) {
-    markNonAngularPackageAsProcessed(fs, pkgJsonUpdater, absoluteTargetEntryPointPath);
-  }
-  return entryPointInfo;
-}
-
-function getAllEntryPoints(
-    fs: FileSystem, config: NgccConfiguration, logger: Logger, resolver: DependencyResolver,
-    basePath: AbsoluteFsPath, pathMappings: PathMappings | undefined): SortedEntryPointsInfo {
-  const finder =
-      new DirectoryWalkerEntryPointFinder(fs, config, logger, resolver, basePath, pathMappings);
-  return finder.findEntryPoints();
-}
-
-function hasProcessedTargetEntryPoint(
-    fs: FileSystem, targetPath: AbsoluteFsPath, propertiesToConsider: string[],
-    compileAllFormats: boolean) {
-  const packageJsonPath = resolve(targetPath, 'package.json');
-  // It might be that this target is configured in which case its package.json might not exist.
-  if (!fs.exists(packageJsonPath)) {
-    return false;
-  }
-  const packageJson = JSON.parse(fs.readFile(packageJsonPath));
-
-  for (const property of propertiesToConsider) {
-    if (packageJson[property]) {
-      // Here is a property that should be processed
-      if (hasBeenProcessed(packageJson, property as EntryPointJsonProperty, targetPath)) {
-        if (!compileAllFormats) {
-          // It has been processed and we only need one, so we are done.
-          return true;
-        }
-      } else {
-        // It has not been processed but we need all of them, so we are done.
-        return false;
-      }
+    async: boolean, inParallel: boolean, logger: Logger, pkgJsonUpdater: PackageJsonUpdater,
+    fileSystem: FileSystem): Executor {
+  const lockFile = new LockFileWithChildProcess(fileSystem, logger);
+  if (async) {
+    // Execute asynchronously (either serially or in parallel)
+    const locker = new AsyncLocker(lockFile, logger, 500, 50);
+    if (inParallel) {
+      // Execute in parallel. Use up to 8 CPU cores for workers, always reserving one for master.
+      const workerCount = Math.min(8, os.cpus().length - 1);
+      return new ClusterExecutor(workerCount, logger, pkgJsonUpdater, locker);
+    } else {
+      // Execute serially, on a single thread (async).
+      return new SingleProcessExecutorAsync(logger, pkgJsonUpdater, locker);
     }
+  } else {
+    // Execute serially, on a single thread (sync).
+    return new SingleProcessExecutorSync(logger, pkgJsonUpdater, new SyncLocker(lockFile));
   }
-  // Either all formats need to be compiled and there were none that were unprocessed,
-  // Or only the one matching format needs to be compiled but there was at least one matching
-  // property before the first processed format that was unprocessed.
-  return true;
 }
 
-/**
- * If we get here, then the requested entry-point did not contain anything compiled by
- * the old Angular compiler. Therefore there is nothing for ngcc to do.
- * So mark all formats in this entry-point as processed so that clients of ngcc can avoid
- * triggering ngcc for this entry-point in the future.
- */
-function markNonAngularPackageAsProcessed(
-    fs: FileSystem, pkgJsonUpdater: PackageJsonUpdater, path: AbsoluteFsPath) {
-  const packageJsonPath = resolve(path, 'package.json');
-  const packageJson = JSON.parse(fs.readFile(packageJsonPath));
+function getDependencyResolver(
+    fileSystem: FileSystem, logger: Logger, config: NgccConfiguration,
+    pathMappings: PathMappings | undefined): DependencyResolver {
+  const moduleResolver = new ModuleResolver(fileSystem, pathMappings);
+  const esmDependencyHost = new EsmDependencyHost(fileSystem, moduleResolver);
+  const umdDependencyHost = new UmdDependencyHost(fileSystem, moduleResolver);
+  const commonJsDependencyHost = new CommonJsDependencyHost(fileSystem, moduleResolver);
+  const dtsDependencyHost = new DtsDependencyHost(fileSystem, pathMappings);
+  return new DependencyResolver(
+      fileSystem, logger, config, {
+        esm5: esmDependencyHost,
+        esm2015: esmDependencyHost,
+        umd: umdDependencyHost,
+        commonjs: commonJsDependencyHost
+      },
+      dtsDependencyHost);
+}
 
-  // Note: We are marking all supported properties as processed, even if they don't exist in the
-  //       `package.json` file. While this is redundant, it is also harmless.
-  markAsProcessed(pkgJsonUpdater, packageJson, packageJsonPath, SUPPORTED_FORMAT_PROPERTIES);
+function getEntryPointFinder(
+    fs: FileSystem, logger: Logger, resolver: DependencyResolver, config: NgccConfiguration,
+    basePath: AbsoluteFsPath, absoluteTargetEntryPointPath: AbsoluteFsPath | null,
+    pathMappings: PathMappings | undefined): EntryPointFinder {
+  if (absoluteTargetEntryPointPath !== null) {
+    return new TargetedEntryPointFinder(
+        fs, config, logger, resolver, basePath, absoluteTargetEntryPointPath, pathMappings);
+  } else {
+    return new DirectoryWalkerEntryPointFinder(
+        fs, config, logger, resolver, basePath, pathMappings);
+  }
 }
 
 function logInvalidEntryPoints(logger: Logger, invalidEntryPoints: InvalidEntryPoint[]): void {

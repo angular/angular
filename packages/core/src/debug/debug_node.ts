@@ -7,18 +7,15 @@
  */
 
 import {Injector} from '../di';
-import {getViewComponent} from '../render3/global_utils_api';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from '../render3/interfaces/container';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from '../render3/interfaces/node';
 import {isComponentHost, isLContainer} from '../render3/interfaces/type_checks';
 import {DECLARATION_COMPONENT_VIEW, LView, PARENT, TData, TVIEW, T_HOST} from '../render3/interfaces/view';
-import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, isBrowserEvents, loadLContext} from '../render3/util/discovery_utils';
+import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent, loadLContext} from '../render3/util/discovery_utils';
 import {INTERPOLATION_DELIMITER, renderStringify} from '../render3/util/misc_utils';
 import {getComponentLViewByIndex, getNativeByTNodeOrNull} from '../render3/util/view_utils';
 import {assertDomNode} from '../util/assert';
 import {DebugContext} from '../view/index';
-
-import {createProxy} from './proxy';
 
 
 
@@ -204,6 +201,7 @@ function _queryNodeChildren(
     });
   }
 }
+
 class DebugNode__POST_R3__ implements DebugNode {
   readonly nativeNode: Node;
 
@@ -219,14 +217,14 @@ class DebugNode__POST_R3__ implements DebugNode {
   get componentInstance(): any {
     const nativeElement = this.nativeNode;
     return nativeElement &&
-        (getComponent(nativeElement as Element) || getViewComponent(nativeElement));
+        (getComponent(nativeElement as Element) || getOwningComponent(nativeElement));
   }
   get context(): any {
     return getComponent(this.nativeNode as Element) || getContext(this.nativeNode as Element);
   }
 
   get listeners(): DebugEventListener[] {
-    return getListeners(this.nativeNode as Element).filter(isBrowserEvents);
+    return getListeners(this.nativeNode as Element).filter(listener => listener.type === 'dom');
   }
 
   get references(): {[key: string]: any;} { return getLocalRefs(this.nativeNode); }
@@ -331,10 +329,14 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     const eAttrs = element.attributes;
     for (let i = 0; i < eAttrs.length; i++) {
       const attr = eAttrs[i];
+      const lowercaseName = attr.name.toLowerCase();
+
       // Make sure that we don't assign the same attribute both in its
       // case-sensitive form and the lower-cased one from the browser.
-      if (lowercaseTNodeAttrs.indexOf(attr.name) === -1) {
-        attributes[attr.name] = attr.value;
+      if (lowercaseTNodeAttrs.indexOf(lowercaseName) === -1) {
+        // Save the lowercase name to align the behavior between browsers.
+        // IE preserves the case, while all other browser convert it to lower case.
+        attributes[lowercaseName] = attr.value;
       }
     }
 
@@ -348,35 +350,18 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     return {};
   }
 
-  private _classesProxy !: {};
   get classes(): {[key: string]: boolean;} {
-    if (!this._classesProxy) {
-      const element = this.nativeElement;
+    const result: {[key: string]: boolean;} = {};
+    const element = this.nativeElement as HTMLElement | SVGElement;
 
-      // we use a proxy here because VE code expects `.classes` to keep
-      // track of which classes have been added and removed. Because we
-      // do not make use of a debug renderer anymore, the return value
-      // must always be `false` in the event that a class does not exist
-      // on the element (even if it wasn't added and removed beforehand).
-      this._classesProxy = createProxy({
-        get(target: {}, prop: string) {
-          return element ? element.classList.contains(prop) : false;
-        },
-        set(target: {}, prop: string, value: any) {
-          return element ? element.classList.toggle(prop, !!value) : false;
-        },
-        ownKeys() { return element ? Array.from(element.classList).sort() : []; },
-        getOwnPropertyDescriptor(k: any) {
-          // we use a special property descriptor here so that enumeration operations
-          // such as `Object.keys` will work on this proxy.
-          return {
-            enumerable: true,
-            configurable: true,
-          };
-        },
-      });
-    }
-    return this._classesProxy;
+    // SVG elements return an `SVGAnimatedString` instead of a plain string for the `className`.
+    const className = element.className as string | SVGAnimatedString;
+    const classes = className && typeof className !== 'string' ? className.baseVal.split(' ') :
+                                                                 className.split(' ');
+
+    classes.forEach((value: string) => result[value] = true);
+
+    return result;
   }
 
   get childNodes(): DebugNode[] {
@@ -425,7 +410,7 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     this.listeners.forEach(listener => {
       if (listener.name === eventName) {
         const callback = listener.callback;
-        callback(eventObj);
+        callback.call(node, eventObj);
         invokedListeners.push(callback);
       }
     });
@@ -434,11 +419,20 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     // that Zone.js only adds to `EventTarget` in browser environments.
     if (typeof node.eventListeners === 'function') {
       // Note that in Ivy we wrap event listeners with a call to `event.preventDefault` in some
-      // cases. We use `Function` as a special token that gives us access to the actual event
+      // cases. We use '__ngUnwrap__' as a special token that gives us access to the actual event
       // listener.
       node.eventListeners(eventName).forEach((listener: Function) => {
-        const unwrappedListener = listener(Function);
-        return invokedListeners.indexOf(unwrappedListener) === -1 && unwrappedListener(eventObj);
+        // In order to ensure that we can detect the special __ngUnwrap__ token described above, we
+        // use `toString` on the listener and see if it contains the token. We use this approach to
+        // ensure that it still worked with compiled code since it cannot remove or rename string
+        // literals. We also considered using a special function name (i.e. if(listener.name ===
+        // special)) but that was more cumbersome and we were also concerned the compiled code could
+        // strip the name, turning the condition in to ("" === "") and always returning true.
+        if (listener.toString().indexOf('__ngUnwrap__') !== -1) {
+          const unwrappedListener = listener('__ngUnwrap__');
+          return invokedListeners.indexOf(unwrappedListener) === -1 &&
+              unwrappedListener.call(node, eventObj);
+        }
       });
     }
   }
@@ -489,10 +483,16 @@ function _queryAllR3(
 function _queryAllR3(
     parentElement: DebugElement, predicate: Predicate<DebugElement>| Predicate<DebugNode>,
     matches: DebugElement[] | DebugNode[], elementsOnly: boolean) {
-  const context = loadLContext(parentElement.nativeNode) !;
-  const parentTNode = context.lView[TVIEW].data[context.nodeIndex] as TNode;
-  _queryNodeChildrenR3(
-      parentTNode, context.lView, predicate, matches, elementsOnly, parentElement.nativeNode);
+  const context = loadLContext(parentElement.nativeNode, false);
+  if (context !== null) {
+    const parentTNode = context.lView[TVIEW].data[context.nodeIndex] as TNode;
+    _queryNodeChildrenR3(
+        parentTNode, context.lView, predicate, matches, elementsOnly, parentElement.nativeNode);
+  } else {
+    // If the context is null, then `parentElement` was either created with Renderer2 or native DOM
+    // APIs.
+    _queryNativeNodeDescendants(parentElement.nativeNode, predicate, matches, elementsOnly);
+  }
 }
 
 /**
@@ -726,6 +726,18 @@ export function getDebugNode__POST_R3__(nativeNode: any): DebugNode|null {
  * @publicApi
  */
 export const getDebugNode: (nativeNode: any) => DebugNode | null = getDebugNode__PRE_R3__;
+
+
+export function getDebugNodeR2__PRE_R3__(nativeNode: any): DebugNode|null {
+  return getDebugNode__PRE_R3__(nativeNode);
+}
+
+export function getDebugNodeR2__POST_R3__(_nativeNode: any): DebugNode|null {
+  return null;
+}
+
+export const getDebugNodeR2: (nativeNode: any) => DebugNode | null = getDebugNodeR2__PRE_R3__;
+
 
 export function getAllDebugNodes(): DebugNode[] {
   return Array.from(_nativeNodeToDebugNode.values());

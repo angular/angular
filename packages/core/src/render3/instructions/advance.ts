@@ -7,9 +7,8 @@
  */
 import {assertDataInRange, assertGreaterThan} from '../../util/assert';
 import {executeCheckHooks, executeInitAndCheckHooks} from '../hooks';
-import {FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, TVIEW} from '../interfaces/view';
-import {ActiveElementFlags, executeElementExitFn, getCheckNoChangesMode, getLView, getSelectedIndex, hasActiveElementFlag, setSelectedIndex} from '../state';
-
+import {FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, TView} from '../interfaces/view';
+import {getCheckNoChangesMode, getLView, getSelectedIndex, getTView, setSelectedIndex} from '../state';
 
 
 /**
@@ -37,7 +36,7 @@ import {ActiveElementFlags, executeElementExitFn, getCheckNoChangesMode, getLVie
   */
 export function ɵɵadvance(delta: number): void {
   ngDevMode && assertGreaterThan(delta, 0, 'Can only advance forward');
-  selectIndexInternal(getLView(), getSelectedIndex() + delta, getCheckNoChangesMode());
+  selectIndexInternal(getTView(), getLView(), getSelectedIndex() + delta, getCheckNoChangesMode());
 }
 
 /**
@@ -46,16 +45,14 @@ export function ɵɵadvance(delta: number): void {
  * @codeGenApi
  */
 export function ɵɵselect(index: number): void {
-  selectIndexInternal(getLView(), index, getCheckNoChangesMode());
+  // TODO(misko): Remove this function as it is no longer being used.
+  selectIndexInternal(getTView(), getLView(), index, getCheckNoChangesMode());
 }
 
-export function selectIndexInternal(lView: LView, index: number, checkNoChangesMode: boolean) {
+export function selectIndexInternal(
+    tView: TView, lView: LView, index: number, checkNoChangesMode: boolean) {
   ngDevMode && assertGreaterThan(index, -1, 'Invalid index');
   ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
-
-  if (hasActiveElementFlag(ActiveElementFlags.RunExitFn)) {
-    executeElementExitFn();
-  }
 
   // Flush the initial hooks for elements in the view that have been added up to this point.
   // PERF WARNING: do NOT extract this to a separate function without running benchmarks
@@ -63,12 +60,12 @@ export function selectIndexInternal(lView: LView, index: number, checkNoChangesM
     const hooksInitPhaseCompleted =
         (lView[FLAGS] & LViewFlags.InitPhaseStateMask) === InitPhaseState.InitPhaseCompleted;
     if (hooksInitPhaseCompleted) {
-      const preOrderCheckHooks = lView[TVIEW].preOrderCheckHooks;
+      const preOrderCheckHooks = tView.preOrderCheckHooks;
       if (preOrderCheckHooks !== null) {
         executeCheckHooks(lView, preOrderCheckHooks, index);
       }
     } else {
-      const preOrderHooks = lView[TVIEW].preOrderHooks;
+      const preOrderHooks = tView.preOrderHooks;
       if (preOrderHooks !== null) {
         executeInitAndCheckHooks(lView, preOrderHooks, InitPhaseState.OnInitHooksToBeRun, index);
       }

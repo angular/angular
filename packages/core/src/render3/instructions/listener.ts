@@ -13,12 +13,11 @@ import {EMPTY_OBJ} from '../empty';
 import {PropertyAliasValue, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {GlobalTargetResolver, RElement, Renderer3, isProceduralRenderer} from '../interfaces/renderer';
 import {isDirectiveHost} from '../interfaces/type_checks';
-import {CLEANUP, FLAGS, LView, LViewFlags, RENDERER, TVIEW} from '../interfaces/view';
+import {CLEANUP, FLAGS, LView, LViewFlags, RENDERER, TView} from '../interfaces/view';
 import {assertNodeOfPossibleTypes} from '../node_assert';
-import {getLView, getPreviousOrParentTNode} from '../state';
+import {getLView, getPreviousOrParentTNode, getTView} from '../state';
 import {getComponentLViewByIndex, getNativeByTNode, unwrapRNode} from '../util/view_utils';
-
-import {TsickleIssue1009, getCleanup, handleError, loadComponentRenderer, markViewDirty} from './shared';
+import {getLCleanup, handleError, loadComponentRenderer, markViewDirty} from './shared';
 
 
 
@@ -38,11 +37,12 @@ import {TsickleIssue1009, getCleanup, handleError, loadComponentRenderer, markVi
  */
 export function ɵɵlistener(
     eventName: string, listenerFn: (e?: any) => any, useCapture = false,
-    eventTargetResolver?: GlobalTargetResolver): TsickleIssue1009 {
+    eventTargetResolver?: GlobalTargetResolver): typeof ɵɵlistener {
   const lView = getLView();
+  const tView = getTView();
   const tNode = getPreviousOrParentTNode();
   listenerInternal(
-      lView, lView[RENDERER], tNode, eventName, listenerFn, useCapture, eventTargetResolver);
+      tView, lView, lView[RENDERER], tNode, eventName, listenerFn, useCapture, eventTargetResolver);
   return ɵɵlistener;
 }
 
@@ -69,11 +69,13 @@ export function ɵɵlistener(
 */
 export function ɵɵcomponentHostSyntheticListener(
     eventName: string, listenerFn: (e?: any) => any, useCapture = false,
-    eventTargetResolver?: GlobalTargetResolver): TsickleIssue1009 {
-  const lView = getLView();
+    eventTargetResolver?: GlobalTargetResolver): typeof ɵɵcomponentHostSyntheticListener {
   const tNode = getPreviousOrParentTNode();
+  const lView = getLView();
   const renderer = loadComponentRenderer(tNode, lView);
-  listenerInternal(lView, renderer, tNode, eventName, listenerFn, useCapture, eventTargetResolver);
+  const tView = getTView();
+  listenerInternal(
+      tView, lView, renderer, tNode, eventName, listenerFn, useCapture, eventTargetResolver);
   return ɵɵcomponentHostSyntheticListener;
 }
 
@@ -83,8 +85,7 @@ export function ɵɵcomponentHostSyntheticListener(
  * are registered for a given element.
  */
 function findExistingListener(
-    lView: LView, eventName: string, tNodeIdx: number): ((e?: any) => any)|null {
-  const tView = lView[TVIEW];
+    tView: TView, lView: LView, eventName: string, tNodeIdx: number): ((e?: any) => any)|null {
   const tCleanup = tView.cleanup;
   if (tCleanup != null) {
     for (let i = 0; i < tCleanup.length - 1; i += 2) {
@@ -111,13 +112,17 @@ function findExistingListener(
 }
 
 function listenerInternal(
-    lView: LView, renderer: Renderer3, tNode: TNode, eventName: string,
+    tView: TView, lView: LView, renderer: Renderer3, tNode: TNode, eventName: string,
     listenerFn: (e?: any) => any, useCapture = false,
     eventTargetResolver?: GlobalTargetResolver): void {
-  const tView = lView[TVIEW];
   const isTNodeDirectiveHost = isDirectiveHost(tNode);
   const firstCreatePass = tView.firstCreatePass;
   const tCleanup: false|any[] = firstCreatePass && (tView.cleanup || (tView.cleanup = []));
+
+  // When the ɵɵlistener instruction was generated and is executed we know that there is either a
+  // native listener or a directive output on this element. As such we we know that we will have to
+  // register a listener and store its cleanup function on LView.
+  const lCleanup = getLCleanup(lView);
 
   ngDevMode && assertNodeOfPossibleTypes(
                    tNode, TNodeType.Element, TNodeType.Container, TNodeType.ElementContainer);
@@ -129,7 +134,6 @@ function listenerInternal(
     const native = getNativeByTNode(tNode, lView) as RElement;
     const resolved = eventTargetResolver ? eventTargetResolver(native) : EMPTY_OBJ as any;
     const target = resolved.target || native;
-    const lCleanup = getCleanup(lView);
     const lCleanupIndex = lCleanup.length;
     const idxOrTargetGetter = eventTargetResolver ?
         (_lView: LView) => eventTargetResolver(unwrapRNode(_lView[tNode.index])).target :
@@ -156,7 +160,7 @@ function listenerInternal(
       // matching on a given node as we can't register multiple event handlers for the same event in
       // a template (this would mean having duplicate attributes).
       if (!eventTargetResolver && isTNodeDirectiveHost) {
-        existingListener = findExistingListener(lView, eventName, tNode.index);
+        existingListener = findExistingListener(tView, lView, eventName, tNode.index);
       }
       if (existingListener !== null) {
         // Attach a new listener to coalesced listeners list, maintaining the order in which
@@ -195,7 +199,6 @@ function listenerInternal(
   if (processOutputs && outputs !== null && (props = outputs[eventName])) {
     const propsLength = props.length;
     if (propsLength) {
-      const lCleanup = getCleanup(lView);
       for (let i = 0; i < propsLength; i += 2) {
         const index = props[i] as number;
         ngDevMode && assertDataInRange(lView, index);
@@ -218,7 +221,7 @@ function listenerInternal(
 }
 
 function executeListenerWithErrorHandling(
-    lView: LView, tNode: TNode, listenerFn: (e?: any) => any, e: any): boolean {
+    lView: LView, listenerFn: (e?: any) => any, e: any): boolean {
   try {
     // Only explicitly returning false from a listener should preventDefault
     return listenerFn(e) !== false;
@@ -261,13 +264,13 @@ function wrapListener(
       markViewDirty(startView);
     }
 
-    let result = executeListenerWithErrorHandling(lView, tNode, listenerFn, e);
+    let result = executeListenerWithErrorHandling(lView, listenerFn, e);
     // A just-invoked listener function might have coalesced listeners so we need to check for
     // their presence and invoke as needed.
     let nextListenerFn = (<any>wrapListenerIn_markDirtyAndPreventDefault).__ngNextListenerFn__;
     while (nextListenerFn) {
       // We should prevent default if any of the listeners explicitly return false
-      result = executeListenerWithErrorHandling(lView, tNode, nextListenerFn, e) && result;
+      result = executeListenerWithErrorHandling(lView, nextListenerFn, e) && result;
       nextListenerFn = (<any>nextListenerFn).__ngNextListenerFn__;
     }
 

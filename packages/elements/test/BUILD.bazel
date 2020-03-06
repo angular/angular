@@ -1,4 +1,11 @@
 load("//tools:defaults.bzl", "karma_web_test_suite", "ts_library")
+load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
+
+circular_dependency_test(
+    name = "circular_deps_test",
+    entry_point = "angular/packages/elements/index.js",
+    deps = ["//packages/elements"],
+)
 
 ts_library(
     name = "test_lib",
@@ -35,7 +42,11 @@ karma_web_test_suite(
     bootstrap = [
         ":elements_test_bootstrap_scripts",
     ],
-    # do not sort
+    tags = [
+        # FIXME: timed out in CI
+        "fixme-saucelabs-ivy",
+        "fixme-saucelabs-ve",
+    ],
     deps = [
         ":test_lib",
     ],

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
-import {AbsoluteFsPath, FileSystem, NgtscCompilerHost, absoluteFrom} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem, NgtscCompilerHost} from '../../../src/ngtsc/file_system';
 import {PathMappings} from '../utils';
 import {BundleProgram, makeBundleProgram} from './bundle_program';
 import {EntryPoint, EntryPointFormat} from './entry_point';
@@ -24,6 +24,7 @@ export interface EntryPointBundle {
   rootDirs: AbsoluteFsPath[];
   src: BundleProgram;
   dts: BundleProgram|null;
+  enableI18nLegacyMessageIdFormat: boolean;
 }
 
 /**
@@ -37,21 +38,22 @@ export interface EntryPointBundle {
  * @param pathMappings An optional set of mappings to use when compiling files.
  * @param mirrorDtsFromSrc If true then the `dts` program will contain additional files that
  * were guessed by mapping the `src` files to `dts` files.
+ * @param enableI18nLegacyMessageIdFormat Whether to render legacy message ids for i18n messages in
+ * component templates.
  */
 export function makeEntryPointBundle(
     fs: FileSystem, entryPoint: EntryPoint, formatPath: string, isCore: boolean,
     format: EntryPointFormat, transformDts: boolean, pathMappings?: PathMappings,
-    mirrorDtsFromSrc: boolean = false): EntryPointBundle {
+    mirrorDtsFromSrc: boolean = false,
+    enableI18nLegacyMessageIdFormat: boolean = true): EntryPointBundle {
   // Create the TS program and necessary helpers.
+  const rootDir = entryPoint.package;
   const options: ts.CompilerOptions = {
     allowJs: true,
-    maxNodeModuleJsDepth: Infinity,
-    noLib: true,
-    rootDir: entryPoint.path, ...pathMappings
+    maxNodeModuleJsDepth: Infinity, rootDir, ...pathMappings
   };
   const srcHost = new NgccSourcesCompilerHost(fs, options, entryPoint.path);
   const dtsHost = new NgtscCompilerHost(fs, options);
-  const rootDirs = [absoluteFrom(entryPoint.path)];
 
   // Create the bundle programs, as necessary.
   const absFormatPath = fs.resolve(entryPoint.path, formatPath);
@@ -67,7 +69,11 @@ export function makeEntryPointBundle(
                              null;
   const isFlatCore = isCore && src.r3SymbolsFile === null;
 
-  return {entryPoint, format, rootDirs, isCore, isFlatCore, src, dts};
+  return {
+    entryPoint,
+    format,
+    rootDirs: [rootDir], isCore, isFlatCore, src, dts, enableI18nLegacyMessageIdFormat
+  };
 }
 
 function computePotentialDtsFilesFromJsFiles(

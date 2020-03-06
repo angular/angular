@@ -14,7 +14,7 @@ import {absoluteFrom as _} from '../../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../../src/ngtsc/file_system/testing';
 import {ClusterPackageJsonUpdater} from '../../../src/execution/cluster/package_json_updater';
 import {JsonObject} from '../../../src/packages/entry_point';
-import {PackageJsonUpdate, PackageJsonUpdater} from '../../../src/writing/package_json_updater';
+import {PackageJsonPropertyPositioning, PackageJsonUpdate, PackageJsonUpdater} from '../../../src/writing/package_json_updater';
 import {mockProperty} from '../../helpers/spy_utils';
 
 
@@ -48,10 +48,18 @@ runInEachFileSystem(() => {
               const update = updater.createUpdate();
 
               update.addChange(['foo'], 'updated');
+              update.addChange(['baz'], 'updated 2', 'alphabetic');
+              update.addChange(['bar'], 'updated 3', {before: 'bar'});
               update.writeChanges(jsonPath);
 
               expect(writeChangesSpy)
-                  .toHaveBeenCalledWith([[['foo'], 'updated']], jsonPath, undefined);
+                  .toHaveBeenCalledWith(
+                      [
+                        [['foo'], 'updated', 'unimportant'],
+                        [['baz'], 'updated 2', 'alphabetic'],
+                        [['bar'], 'updated 3', {before: 'bar'}],
+                      ],
+                      jsonPath, undefined);
             });
           }));
     });
@@ -65,10 +73,18 @@ runInEachFileSystem(() => {
           const jsonPath = _('/foo/package.json');
           const parsedJson = {foo: 'bar'};
 
-          updater.createUpdate().addChange(['foo'], 'updated').writeChanges(jsonPath, parsedJson);
+          updater.createUpdate()
+              .addChange(['foo'], 'updated')
+              .addChange(['bar'], 'updated too', 'alphabetic')
+              .writeChanges(jsonPath, parsedJson);
 
           expect(delegate.writeChanges)
-              .toHaveBeenCalledWith([[['foo'], 'updated']], jsonPath, parsedJson);
+              .toHaveBeenCalledWith(
+                  [
+                    [['foo'], 'updated', 'unimportant'],
+                    [['bar'], 'updated too', 'alphabetic'],
+                  ],
+                  jsonPath, parsedJson);
         });
 
         it('should throw, if trying to re-apply an already applied update', () => {
@@ -84,25 +100,36 @@ runInEachFileSystem(() => {
 
       describe('(on cluster worker)', () => {
         beforeEach(() => runAsClusterMaster(false));
+        afterEach(() => expect(delegate.writeChanges).not.toHaveBeenCalled());
 
         it('should send an `update-package-json` message to the master process', () => {
           const jsonPath = _('/foo/package.json');
 
-          const writeToProp = (propPath: string[], parsed?: JsonObject) =>
-              updater.createUpdate().addChange(propPath, 'updated').writeChanges(jsonPath, parsed);
+          const writeToProp =
+              (propPath: string[], positioning?: PackageJsonPropertyPositioning,
+               parsed?: JsonObject) => updater.createUpdate()
+                                           .addChange(propPath, 'updated', positioning)
+                                           .writeChanges(jsonPath, parsed);
 
           writeToProp(['foo']);
           expect(processSendSpy).toHaveBeenCalledWith({
             type: 'update-package-json',
             packageJsonPath: jsonPath,
-            changes: [[['foo'], 'updated']],
+            changes: [[['foo'], 'updated', 'unimportant']],
           });
 
-          writeToProp(['bar', 'baz', 'qux'], {});
+          writeToProp(['bar'], {before: 'foo'});
           expect(processSendSpy).toHaveBeenCalledWith({
             type: 'update-package-json',
             packageJsonPath: jsonPath,
-            changes: [[['bar', 'baz', 'qux'], 'updated']],
+            changes: [[['bar'], 'updated', {before: 'foo'}]],
+          });
+
+          writeToProp(['bar', 'baz', 'qux'], 'alphabetic', {});
+          expect(processSendSpy).toHaveBeenCalledWith({
+            type: 'update-package-json',
+            packageJsonPath: jsonPath,
+            changes: [[['bar', 'baz', 'qux'], 'updated', 'alphabetic']],
           });
         });
 

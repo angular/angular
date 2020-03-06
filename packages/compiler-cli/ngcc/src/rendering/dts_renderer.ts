@@ -20,7 +20,7 @@ import {EntryPointBundle} from '../packages/entry_point_bundle';
 import {Logger} from '../logging/logger';
 import {FileToWrite, getImportRewriter} from './utils';
 import {RenderingFormatter} from './rendering_formatter';
-import {extractSourceMap, renderSourceAndMap} from './source_maps';
+import {renderSourceAndMap} from './source_maps';
 
 /**
  * A structure that captures information about what needs to be rendered
@@ -81,8 +81,7 @@ export class DtsRenderer {
   }
 
   renderDtsFile(dtsFile: ts.SourceFile, renderInfo: DtsRenderInfo): FileToWrite[] {
-    const input = extractSourceMap(this.fs, this.logger, dtsFile);
-    const outputText = new MagicString(input.source);
+    const outputText = new MagicString(dtsFile.text);
     const printer = ts.createPrinter();
     const importManager = new ImportManager(
         getImportRewriter(this.bundle.dts !.r3SymbolsFile, this.bundle.isCore, false),
@@ -112,7 +111,7 @@ export class DtsRenderer {
     this.dtsFormatter.addImports(
         outputText, importManager.getAllImports(dtsFile.fileName), dtsFile);
 
-    return renderSourceAndMap(dtsFile, input, outputText);
+    return renderSourceAndMap(this.logger, this.fs, dtsFile, outputText);
   }
 
   private getTypingsFilesToRender(
@@ -124,6 +123,7 @@ export class DtsRenderer {
 
     // Capture the rendering info from the decoration analyses
     decorationAnalyses.forEach(compiledFile => {
+      let appliedReexports = false;
       compiledFile.compiledClasses.forEach(compiledClass => {
         const dtsDeclaration = this.host.getDtsDeclaration(compiledClass.declaration);
         if (dtsDeclaration) {
@@ -135,9 +135,11 @@ export class DtsRenderer {
           // to work, the typing file and JS file must be in parallel trees. This logic will detect
           // the simplest version of this case, which is sufficient to handle most commonjs
           // libraries.
-          if (compiledClass.declaration.getSourceFile().fileName ===
-              dtsFile.fileName.replace(/\.d\.ts$/, '.js')) {
-            renderInfo.reexports.push(...compiledClass.reexports);
+          if (!appliedReexports &&
+              compiledClass.declaration.getSourceFile().fileName ===
+                  dtsFile.fileName.replace(/\.d\.ts$/, '.js')) {
+            renderInfo.reexports.push(...compiledFile.reexports);
+            appliedReexports = true;
           }
           dtsMap.set(dtsFile, renderInfo);
         }
@@ -156,7 +158,7 @@ export class DtsRenderer {
     // Capture the private declarations that need to be re-exported
     if (privateDeclarationsAnalyses.length) {
       privateDeclarationsAnalyses.forEach(e => {
-        if (!e.dtsFrom && !e.alias) {
+        if (!e.dtsFrom) {
           throw new Error(
               `There is no typings path for ${e.identifier} in ${e.from}.\n` +
               `We need to add an export for this class to a .d.ts typings file because ` +

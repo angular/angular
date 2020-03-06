@@ -94,7 +94,7 @@ describe('TypeScriptServiceHost', () => {
     const tsLS = ts.createLanguageService(tsLSHost);
     const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
     const templates = ngLSHost.getTemplates('/app/parsing-cases.ts');
-    expect(templates.length).toBe(18);
+    expect(templates.length).toBe(9);
   });
 
   it('should be able to find external template', () => {
@@ -175,52 +175,5 @@ describe('TypeScriptServiceHost', () => {
     // But, analyzed modules should remain the same because none of the source
     // files have changed.
     expect(newModules).toBe(oldModules);
-  });
-
-  it('should get the correct StaticSymbol for a Directive', () => {
-    const tsLSHost = new MockTypescriptHost(['/app/app.component.ts', '/app/main.ts']);
-    const tsLS = ts.createLanguageService(tsLSHost);
-    const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
-    ngLSHost.getAnalyzedModules();  // modules are analyzed lazily
-    const sf = ngLSHost.getSourceFile('/app/app.component.ts');
-    expect(sf).toBeDefined();
-    const directiveDecl = sf !.forEachChild(n => {
-      if (ts.isClassDeclaration(n) && n.name && n.name.text === 'AppComponent') return n;
-    });
-
-    expect(directiveDecl).toBeDefined();
-    expect(directiveDecl !.name).toBeDefined();
-    const fileName = directiveDecl !.getSourceFile().fileName;
-    const symbolName = directiveDecl !.name !.getText();
-    const directiveSymbol = ngLSHost.getStaticSymbol(fileName, symbolName);
-    expect(directiveSymbol).toBeDefined();
-    expect(directiveSymbol !.name).toBe('AppComponent');
-  });
-
-  it('should allow for retreiving analyzedModules in synchronized mode', () => {
-    const fileName = '/app/app.component.ts';
-    const tsLSHost = new MockTypescriptHost([fileName]);
-    const tsLS = ts.createLanguageService(tsLSHost);
-    const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
-
-    // Get initial state
-    const originalModules = ngLSHost.getAnalyzedModules();
-
-    // Override app.component.ts with a different component
-    tsLSHost.override(fileName, `
-      import {Component} from '@angular/core';
-
-      @Component({
-        template: '<div>Hello!</div>',
-      })
-      export class HelloComponent {}
-    `);
-    // Make sure synchronized modules match the original state
-    const syncModules = ngLSHost.getAnalyzedModules(false);
-    expect(originalModules).toEqual(syncModules);
-
-    // Now, get modules for the updated project, which should not be synchronized
-    const updatedModules = ngLSHost.getAnalyzedModules();
-    expect(updatedModules).not.toEqual(syncModules);
   });
 });

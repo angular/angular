@@ -1,19 +1,19 @@
 ### Build
 
 ```
-yarn bazel build //packages/core/test/render3/perf:${BENCHMARK}.min_debug.es2015.js --define=compile=aot
+yarn bazel build //packages/core/test/render3/perf:${BENCHMARK}_lib.min_debug.es2015.js --config=ivy
 ```
 
 ### Run 
 
 ```
-node dist/bin/packages/core/test/render3/perf/${BENCHMARK}.min_debug.es2015.js
+node dist/bin/packages/core/test/render3/perf/${BENCHMARK}_lib.min_debug.es2015.js
 ```
 
 ### Profile
 
 ```
-node --no-turbo-inlining --inspect-brk dist/bin/packages/core/test/render3/perf/${BENCHMARK}.min_debug.es2015.js
+node --no-turbo-inlining --inspect-brk dist/bin/packages/core/test/render3/perf/${BENCHMARK}_lib.min_debug.es2015.js
 ```
 
 then connect with a debugger (the `--inspect-brk` option will make sure that benchmark execution doesn't start until a debugger is connected and the code execution is manually resumed). 
@@ -24,7 +24,7 @@ The actual benchmark code has calls that will start (`console.profile`) and stop
 
 ```
 yarn add deoptigate
-yarn deoptigate dist/bin/packages/core/test/render3/perf/${BENCHMARK}.min_debug.es2015.js
+yarn deoptigate dist/bin/packages/core/test/render3/perf/${BENCHMARK}_lib.min_debug.es2015.js
 ```
 
 ### Run All
@@ -72,9 +72,13 @@ The resulting output should look something like this:
 ### Notes
 
 To run the benchmark use `bazel run <benchmark_target>`, example:
-- `yarn bazel run --define=compile=aot //packages/core/test/render3/perf:noop_change_detection`
+- `yarn bazel run --config=ivy //packages/core/test/render3/perf:noop_change_detection`
 
 To profile, append `_profile` to the target name and attach a debugger via chrome://inspect, example:
-- `yarn bazel run --define=compile=aot //packages/core/test/render3/perf:noop_change_detection_profile`
+- `yarn bazel run --config=ivy //packages/core/test/render3/perf:noop_change_detection_profile`
 
 To interactively edit/rerun benchmarks use `ibazel` instead of `bazel`.
+
+To debug
+- `yarn bazel build --config=ivy //packages/core/test/render3/perf:noop_change_detection`
+- `node --inspect-brk bazel-out/darwin-fastbuild/bin/packages/core/test/render3/perf/noop_change_detection.min_debug.es2015.js`

@@ -128,6 +128,13 @@ export function compileNgModuleDefs(
               schemas: ngModule.schemas ? flatten(ngModule.schemas) : null,
               id: ngModule.id || null,
             });
+        // Set `schemas` on ngModuleDef to an empty array in JIT mode to indicate that runtime
+        // should verify that there are no unknown elements in a template. In AOT mode, that check
+        // happens at compile time and `schemas` information is not present on Component and Module
+        // defs after compilation (so the check doesn't happen the second time at runtime).
+        if (!ngModuleDef.schemas) {
+          ngModuleDef.schemas = [];
+        }
       }
       return ngModuleDef;
     }
@@ -420,25 +427,19 @@ export function patchComponentDefWithScope<C>(
 /**
  * Compute the pair of transitive scopes (compilation scope and exported scope) for a given module.
  *
- * By default this operation is memoized and the result is cached on the module's definition. You
- * can avoid memoization and previously stored results (if available) by providing the second
- * argument with the `true` value (forcing transitive scopes recalculation).
- *
- * This function can be called on modules with components that have not fully compiled yet, but the
- * result should not be used until they have.
+ * This operation is memoized and the result is cached on the module's definition. This function can
+ * be called on modules with components that have not fully compiled yet, but the result should not
+ * be used until they have.
  *
  * @param moduleType module that transitive scope should be calculated for.
- * @param forceRecalc flag that indicates whether previously calculated and memoized values should
- * be ignored and transitive scope to be fully recalculated.
  */
-export function transitiveScopesFor<T>(
-    moduleType: Type<T>, forceRecalc: boolean = false): NgModuleTransitiveScopes {
+export function transitiveScopesFor<T>(moduleType: Type<T>): NgModuleTransitiveScopes {
   if (!isNgModule(moduleType)) {
     throw new Error(`${moduleType.name} does not have a module def (ɵmod property)`);
   }
   const def = getNgModuleDef(moduleType) !;
 
-  if (!forceRecalc && def.transitiveCompileScopes !== null) {
+  if (def.transitiveCompileScopes !== null) {
     return def.transitiveCompileScopes;
   }
 
@@ -479,7 +480,7 @@ export function transitiveScopesFor<T>(
 
     // When this module imports another, the imported module's exported directives and pipes are
     // added to the compilation scope of this module.
-    const importedScope = transitiveScopesFor(importedType, forceRecalc);
+    const importedScope = transitiveScopesFor(importedType);
     importedScope.exported.directives.forEach(entry => scopes.compilation.directives.add(entry));
     importedScope.exported.pipes.forEach(entry => scopes.compilation.pipes.add(entry));
   });
@@ -498,7 +499,7 @@ export function transitiveScopesFor<T>(
     if (isNgModule(exportedType)) {
       // When this module exports another, the exported module's exported directives and pipes are
       // added to both the compilation and exported scopes of this module.
-      const exportedScope = transitiveScopesFor(exportedType, forceRecalc);
+      const exportedScope = transitiveScopesFor(exportedType);
       exportedScope.exported.directives.forEach(entry => {
         scopes.compilation.directives.add(entry);
         scopes.exported.directives.add(entry);
@@ -514,9 +515,7 @@ export function transitiveScopesFor<T>(
     }
   });
 
-  if (!forceRecalc) {
-    def.transitiveCompileScopes = scopes;
-  }
+  def.transitiveCompileScopes = scopes;
   return scopes;
 }
 

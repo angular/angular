@@ -15,7 +15,7 @@ import * as o from '../output/output_ast';
 import {Identifiers as R3} from '../render3/r3_identifiers';
 import {OutputContext} from '../util';
 
-import {typeWithParameters} from './util';
+import {R3Reference, typeWithParameters} from './util';
 import {unsupported} from './view/util';
 
 
@@ -32,7 +32,7 @@ export interface R3ConstructorFactoryMetadata {
   /**
    * An expression representing the interface type being constructed.
    */
-  type: o.Expression;
+  type: R3Reference;
 
   /**
    * An expression representing the constructor type, intended for use within a class definition
@@ -125,6 +125,11 @@ export enum R3ResolvedDependencyType {
    * Injecting the `ChangeDetectorRef` token. Needs special handling when injected into a pipe.
    */
   ChangeDetectorRef = 2,
+
+  /**
+   * An invalid dependency (no token could be determined). An error should be thrown at runtime.
+   */
+  Invalid = 3,
 }
 
 /**
@@ -265,17 +270,18 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3FactoryFn {
         `${meta.name}_Factory`),
     statements,
     type: o.expressionType(
-        o.importExpr(R3.FactoryDef, [typeWithParameters(meta.type, meta.typeArgumentCount)]))
+        o.importExpr(R3.FactoryDef, [typeWithParameters(meta.type.type, meta.typeArgumentCount)]))
   };
 }
 
 function injectDependencies(
     deps: R3DependencyMetadata[], injectFn: o.ExternalReference, isPipe: boolean): o.Expression[] {
-  return deps.map(dep => compileInjectDependency(dep, injectFn, isPipe));
+  return deps.map((dep, index) => compileInjectDependency(dep, injectFn, isPipe, index));
 }
 
 function compileInjectDependency(
-    dep: R3DependencyMetadata, injectFn: o.ExternalReference, isPipe: boolean): o.Expression {
+    dep: R3DependencyMetadata, injectFn: o.ExternalReference, isPipe: boolean,
+    index: number): o.Expression {
   // Interpret the dependency according to its resolved type.
   switch (dep.resolved) {
     case R3ResolvedDependencyType.Token:
@@ -305,6 +311,8 @@ function compileInjectDependency(
     case R3ResolvedDependencyType.Attribute:
       // In the case of attributes, the attribute name in question is given as the token.
       return o.importExpr(R3.injectAttribute).callFn([dep.token]);
+    case R3ResolvedDependencyType.Invalid:
+      return o.importExpr(R3.invalidFactoryDep).callFn([o.literal(index)]);
     default:
       return unsupported(
           `Unknown R3ResolvedDependencyType: ${R3ResolvedDependencyType[dep.resolved]}`);

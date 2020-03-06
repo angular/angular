@@ -46,8 +46,10 @@
     ['.', '’', ';', '%', '+', '−', 'E', '×', '‰', '∞', 'NaN', ':'],
     ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'],
     'CHF',
+    'CHF',
     'Schwiizer Franke',
     {'ATS': ['öS']},
+    'ltr',
     plural,
     [
       [['Mitternacht', 'am Morge', 'zmittag', 'am Namittag', 'zaabig', 'znacht'], u, u],

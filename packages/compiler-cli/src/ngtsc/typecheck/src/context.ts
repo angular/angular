@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
 import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports';
-import {ClassDeclaration} from '../../reflection';
+import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
 
 import {TemplateSourceMapping, TypeCheckBlockMetadata, TypeCheckableDirectiveMeta, TypeCheckingConfig, TypeCtorMetadata} from './api';
@@ -20,7 +20,7 @@ import {DomSchemaChecker, RegistryDomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {TypeCheckProgramHost} from './host';
 import {OutOfBandDiagnosticRecorder, OutOfBandDiagnosticRecorderImpl} from './oob';
-import {TcbSourceManager} from './source';
+import {TemplateSourceManager} from './source';
 import {generateTypeCheckBlock, requiresInlineTypeCheckBlock} from './type_check_block';
 import {TypeCheckFile} from './type_check_file';
 import {generateInlineTypeCtor, requiresInlineTypeCtor} from './type_constructor';
@@ -39,8 +39,8 @@ export class TypeCheckContext {
 
   constructor(
       private config: TypeCheckingConfig, private refEmitter: ReferenceEmitter,
-      typeCheckFilePath: AbsoluteFsPath) {
-    this.typeCheckFile = new TypeCheckFile(typeCheckFilePath, this.config, this.refEmitter);
+      private reflector: ReflectionHost, typeCheckFilePath: AbsoluteFsPath) {
+    this.typeCheckFile = new TypeCheckFile(typeCheckFilePath, config, refEmitter, reflector);
   }
 
   /**
@@ -55,7 +55,7 @@ export class TypeCheckContext {
    */
   private typeCtorPending = new Set<ts.ClassDeclaration>();
 
-  private sourceManager = new TcbSourceManager();
+  private sourceManager = new TemplateSourceManager();
 
   private domSchemaChecker = new RegistryDomSchemaChecker(this.sourceManager);
 
@@ -80,7 +80,7 @@ export class TypeCheckContext {
     for (const dir of boundTarget.getUsedDirectives()) {
       const dirRef = dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
       const dirNode = dirRef.node;
-      if (requiresInlineTypeCtor(dirNode)) {
+      if (requiresInlineTypeCtor(dirNode, this.reflector)) {
         // Add a type constructor operation for the directive.
         this.addInlineTypeCtor(dirNode.getSourceFile(), dirRef, {
           fnName: 'ngTypeCtor',
@@ -239,7 +239,8 @@ export class TypeCheckContext {
       this.opMap.set(sf, []);
     }
     const ops = this.opMap.get(sf) !;
-    ops.push(new TcbOp(ref, tcbMeta, this.config, this.domSchemaChecker, this.oobRecorder));
+    ops.push(new TcbOp(
+        ref, tcbMeta, this.config, this.reflector, this.domSchemaChecker, this.oobRecorder));
   }
 }
 
@@ -271,7 +272,7 @@ class TcbOp implements Op {
   constructor(
       readonly ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
       readonly meta: TypeCheckBlockMetadata, readonly config: TypeCheckingConfig,
-      readonly domSchemaChecker: DomSchemaChecker,
+      readonly reflector: ReflectionHost, readonly domSchemaChecker: DomSchemaChecker,
       readonly oobRecorder: OutOfBandDiagnosticRecorder) {}
 
   /**
@@ -281,7 +282,7 @@ class TcbOp implements Op {
 
   execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter, printer: ts.Printer):
       string {
-    const env = new Environment(this.config, im, refEmitter, sf);
+    const env = new Environment(this.config, im, refEmitter, this.reflector, sf);
     const fnName = ts.createIdentifier(`_tcb_${this.ref.node.pos}`);
     const fn = generateTypeCheckBlock(
         env, this.ref, fnName, this.meta, this.domSchemaChecker, this.oobRecorder);

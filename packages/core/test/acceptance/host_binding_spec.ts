@@ -93,7 +93,7 @@ describe('host bindings', () => {
        *   - That executes a **different template**, that has host bindings
        *     - this executes `setHostBindings`
        *     - Inside of `setHostBindings` we are currently updating the selected index **global
-       *       state** via `setActiveHostElement`.
+       *       state** via `setSelectedIndex`.
        * 3. We attempt to update the next property in the **original template**.
        *  - But the selected index has been altered, and we get errors.
        */
@@ -254,7 +254,7 @@ describe('host bindings', () => {
               }
 
               TestBed.configureTestingModule(
-                  {declarations: [MyApp, ParentDir, ChildDir, SiblingDir]});
+                  {declarations: [MyApp, ParentDir, SiblingDir, ChildDir]});
               const fixture = TestBed.createComponent(MyApp);
               const element = fixture.nativeElement;
               fixture.detectChanges();
@@ -262,10 +262,9 @@ describe('host bindings', () => {
               const childElement = element.querySelector('div');
 
               // width/height values were set in all directives, but the sub-class directive
-              // (ChildDir)
-              // had priority over the parent directive (ParentDir) which is why its value won. It
-              // also
-              // won over Dir because the SiblingDir directive was evaluated later on.
+              // (ChildDir) had priority over the parent directive (ParentDir) which is why its
+              // value won. It also won over Dir because the SiblingDir directive was declared
+              // later in `declarations`.
               expect(childElement.style.width).toEqual('200px');
               expect(childElement.style.height).toEqual('200px');
 
@@ -828,6 +827,30 @@ describe('host bindings', () => {
     fixture.detectChanges();
     expect(hostElement.id).toBe('green');
     expect(hostElement.title).toBe('other title');
+  });
+
+  it('should merge attributes on host and template', () => {
+    @Directive({selector: '[dir1]', host: {id: 'dir1'}})
+    class MyDir1 {
+    }
+    @Directive({selector: '[dir2]', host: {id: 'dir2'}})
+    class MyDir2 {
+    }
+
+    @Component({template: `<div dir1 dir2 id="tmpl"></div>`})
+    class MyComp {
+    }
+
+    TestBed.configureTestingModule({declarations: [MyComp, MyDir1, MyDir2]});
+    const fixture = TestBed.createComponent(MyComp);
+    fixture.detectChanges();
+    const div: HTMLElement = fixture.debugElement.nativeElement.firstChild;
+    expect(div.id).toEqual(
+        ivyEnabled ?
+            // In ivy the correct result is `tmpl` because template has the highest priority.
+            'tmpl' :
+            // In VE the order was simply that of execution and so dir2 would win.
+            'dir2');
   });
 
   onlyInIvy('Host bindings do not get merged in ViewEngine')

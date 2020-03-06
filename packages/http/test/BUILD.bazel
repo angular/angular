@@ -4,7 +4,7 @@ ts_library(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
-    # Visible to //:test_web_all target
+    # Visible to //:saucelabs_unit_tests_poc target
     visibility = ["//:__pkg__"],
     deps = [
         "//packages/common",
@@ -20,10 +20,9 @@ ts_library(
 
 jasmine_node_test(
     name = "test",
-    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    bootstrap = ["//tools/testing:node_es5"],
     deps = [
         ":test_lib",
-        "//tools/testing:node",
     ],
 )
 

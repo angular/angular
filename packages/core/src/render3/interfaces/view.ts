@@ -15,10 +15,11 @@ import {Sanitizer} from '../../sanitization/sanitizer';
 import {LContainer} from './container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList, ViewQueriesFunction} from './definition';
 import {I18nUpdateOpCodes, TI18n} from './i18n';
-import {TAttributes, TConstants, TElementNode, TNode, TViewNode} from './node';
+import {TConstants, TElementNode, TNode, TViewNode} from './node';
 import {PlayerHandler} from './player';
 import {LQueries, TQueries} from './query';
 import {RElement, Renderer3, RendererFactory3} from './renderer';
+import {TStylingKey, TStylingRange} from './styling';
 
 
 
@@ -143,7 +144,7 @@ export interface LView extends Array<any> {
   /** An optional Module Injector to be used as fall back after Element Injectors are consulted. */
   readonly[INJECTOR]: Injector|null;
 
-  /** Renderer to be used for this view. */
+  /** Factory to be used for creating Renderer. */
   [RENDERER_FACTORY]: RendererFactory3;
 
   /** Renderer to be used for this view. */
@@ -470,7 +471,17 @@ export interface TView {
   /** Whether or not this template has been processed in creation mode. */
   firstCreatePass: boolean;
 
-  /** Whether or not the first update for this template has been processed. */
+  /**
+   *  Whether or not this template has been processed in update mode (e.g. change detected)
+   *
+   * `firstUpdatePass` is used by styling to set up `TData` to contain metadata about the styling
+   * instructions. (Mainly to build up a linked list of styling priority order.)
+   *
+   * Typically this function gets cleared after first execution. If exception is thrown then this
+   * flag can remain turned un until there is first successful (no exception) pass. This means that
+   * individual styling instructions keep track of if they have already been added to the linked
+   * list to prevent double adding.
+   */
   firstUpdatePass: boolean;
 
   /** Static data equivalent of LView.data[]. Contains TNodes, PipeDefInternal or TI18n. */
@@ -524,6 +535,8 @@ export interface TView {
    *
    * See VIEW_DATA.md for more information.
    */
+  // TODO(misko): `expandoInstructions` should be renamed to `hostBindingsInstructions` since they
+  // keep track of `hostBindings` which need to be executed.
   expandoInstructions: ExpandoInstructions|null;
 
   /**
@@ -751,8 +764,8 @@ export type HookData = (number | (() => void))[];
  * Injector bloom filters are also stored here.
  */
 export type TData =
-    (TNode | PipeDef<any>| DirectiveDef<any>| ComponentDef<any>| number | Type<any>|
-     InjectionToken<any>| TI18n | I18nUpdateOpCodes | null | string)[];
+    (TNode | PipeDef<any>| DirectiveDef<any>| ComponentDef<any>| number | TStylingRange |
+     TStylingKey | Type<any>| InjectionToken<any>| TI18n | I18nUpdateOpCodes | null | string)[];
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

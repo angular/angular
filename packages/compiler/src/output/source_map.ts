@@ -74,6 +74,10 @@ export class SourceMapGenerator {
     return this;
   }
 
+  /**
+  * @internal strip this from published d.ts files due to
+  * https://github.com/microsoft/TypeScript/issues/36216
+  */
   private get currentLine(): Segment[]|null { return this.lines.slice(-1)[0]; }
 
   toJSON(): SourceMap|null {

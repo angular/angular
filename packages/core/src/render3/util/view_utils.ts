@@ -13,7 +13,7 @@ import {LContext, MONKEY_PATCH_KEY_NAME} from '../interfaces/context';
 import {TConstants, TNode} from '../interfaces/node';
 import {RNode, isProceduralRenderer} from '../interfaces/renderer';
 import {isLContainer, isLView} from '../interfaces/type_checks';
-import {FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, PARENT, PREORDER_HOOK_FLAGS, RENDERER, TData, TVIEW} from '../interfaces/view';
+import {FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, PARENT, PREORDER_HOOK_FLAGS, RENDERER, TData, TView} from '../interfaces/view';
 
 
 
@@ -117,10 +117,10 @@ export function getNativeByTNodeOrNull(tNode: TNode, lView: LView): RNode|null {
 }
 
 
-export function getTNode(index: number, view: LView): TNode {
+export function getTNode(tView: TView, index: number): TNode {
   ngDevMode && assertGreaterThan(index, -1, 'wrong index for TNode');
-  ngDevMode && assertLessThan(index, view[TVIEW].data.length, 'wrong index for TNode');
-  return view[TVIEW].data[index + HEADER_OFFSET] as TNode;
+  ngDevMode && assertLessThan(index, tView.data.length, 'wrong index for TNode');
+  return tView.data[index + HEADER_OFFSET] as TNode;
 }
 
 /** Retrieves a value from any `LView` or `TData`. */

@@ -25,7 +25,6 @@ if (typeof window !== 'undefined') {
   try {
     const options =
         Object.defineProperty({}, 'passive', {get: function() { passiveSupported = true; }});
-
     window.addEventListener('test', options, options);
     window.removeEventListener('test', options, options);
   } catch (err) {
@@ -43,6 +42,16 @@ export const globalSources: any = {};
 
 const EVENT_NAME_SYMBOL_REGX = new RegExp('^' + ZONE_SYMBOL_PREFIX + '(\\w+)(true|false)$');
 const IMMEDIATE_PROPAGATION_SYMBOL = zoneSymbol('propagationStopped');
+
+function prepareEventNames(eventName: string, eventNameToString?: (eventName: string) => string) {
+  const falseEventName = (eventNameToString ? eventNameToString(eventName) : eventName) + FALSE_STR;
+  const trueEventName = (eventNameToString ? eventNameToString(eventName) : eventName) + TRUE_STR;
+  const symbol = ZONE_SYMBOL_PREFIX + falseEventName;
+  const symbolCapture = ZONE_SYMBOL_PREFIX + trueEventName;
+  zoneSymbolEventNames[eventName] = {};
+  zoneSymbolEventNames[eventName][FALSE_STR] = symbol;
+  zoneSymbolEventNames[eventName][TRUE_STR] = symbolCapture;
+}
 
 export interface PatchEventTargetOptions {
   // validateHandler
@@ -235,16 +244,30 @@ export function patchEventTarget(
           proto[patchOptions.prepend];
     }
 
-    function checkIsPassive(task: Task) {
-      if (!passiveSupported && typeof taskData.options !== 'boolean' &&
-          typeof taskData.options !== 'undefined' && taskData.options !== null) {
-        // options is a non-null non-undefined object
-        // passive is not supported
-        // don't pass options as object
-        // just pass capture as a boolean
-        (task as any).options = !!taskData.options.capture;
-        taskData.options = (task as any).options;
+    /**
+     * This util function will build an option object with passive option
+     * to handle all possible input from the user.
+     */
+    function buildEventListenerOptions(options: any, passive: boolean) {
+      if (!passiveSupported && typeof options === 'object' && options) {
+        // doesn't support passive but user want to pass an object as options.
+        // this will not work on some old browser, so we just pass a boolean
+        // as useCapture parameter
+        return !!options.capture;
       }
+      if (!passiveSupported || !passive) {
+        return options;
+      }
+      if (typeof options === 'boolean') {
+        return {capture: options, passive: true};
+      }
+      if (!options) {
+        return {passive: true};
+      }
+      if (typeof options === 'object' && options.passive !== false) {
+        return {...options, passive: true};
+      }
+      return options;
     }
 
     const customScheduleGlobal = function(task: Task) {
@@ -253,7 +276,6 @@ export function patchEventTarget(
       if (taskData.isExisting) {
         return;
       }
-      checkIsPassive(task);
       return nativeAddEventListener.call(
           taskData.target, taskData.eventName,
           taskData.capture ? globalZoneAwareCaptureCallback : globalZoneAwareCallback,
@@ -301,7 +323,6 @@ export function patchEventTarget(
     };
 
     const customScheduleNonGlobal = function(task: Task) {
-      checkIsPassive(task);
       return nativeAddEventListener.call(
           taskData.target, taskData.eventName, task.invoke, taskData.options);
     };
@@ -328,6 +349,7 @@ export function patchEventTarget(
         (patchOptions && patchOptions.diff) ? patchOptions.diff : compareTaskCallbackVsDelegate;
 
     const blackListedEvents: string[] = (Zone as any)[zoneSymbol('BLACK_LISTED_EVENTS')];
+    const passiveEvents: string[] = _global[zoneSymbol('PASSIVE_EVENTS')];
 
     const makeAddListener = function(
         nativeListener: any, addSource: string, customScheduleFn: any, customCancelFn: any,
@@ -362,48 +384,33 @@ export function patchEventTarget(
           return;
         }
 
-        const options = arguments[2];
+        const passive =
+            passiveSupported && !!passiveEvents && passiveEvents.indexOf(eventName) !== -1;
+        const options = buildEventListenerOptions(arguments[2], passive);
 
         if (blackListedEvents) {
           // check black list
           for (let i = 0; i < blackListedEvents.length; i++) {
             if (eventName === blackListedEvents[i]) {
-              return nativeListener.apply(this, arguments);
+              if (passive) {
+                return nativeListener.call(target, eventName, delegate, options);
+              } else {
+                return nativeListener.apply(this, arguments);
+              }
             }
           }
         }
 
-        let capture;
-        let once = false;
-        if (options === undefined) {
-          capture = false;
-        } else if (options === true) {
-          capture = true;
-        } else if (options === false) {
-          capture = false;
-        } else {
-          capture = options ? !!options.capture : false;
-          once = options ? !!options.once : false;
-        }
+        const capture = !options ? false : typeof options === 'boolean' ? true : options.capture;
+        const once = options && typeof options === 'object' ? options.once : false;
 
         const zone = Zone.current;
-        const symbolEventNames = zoneSymbolEventNames[eventName];
-        let symbolEventName;
+        let symbolEventNames = zoneSymbolEventNames[eventName];
         if (!symbolEventNames) {
-          // the code is duplicate, but I just want to get some better performance
-          const falseEventName =
-              (eventNameToString ? eventNameToString(eventName) : eventName) + FALSE_STR;
-          const trueEventName =
-              (eventNameToString ? eventNameToString(eventName) : eventName) + TRUE_STR;
-          const symbol = ZONE_SYMBOL_PREFIX + falseEventName;
-          const symbolCapture = ZONE_SYMBOL_PREFIX + trueEventName;
-          zoneSymbolEventNames[eventName] = {};
-          zoneSymbolEventNames[eventName][FALSE_STR] = symbol;
-          zoneSymbolEventNames[eventName][TRUE_STR] = symbolCapture;
-          symbolEventName = capture ? symbolCapture : symbol;
-        } else {
-          symbolEventName = symbolEventNames[capture ? TRUE_STR : FALSE_STR];
+          prepareEventNames(eventName, eventNameToString);
+          symbolEventNames = zoneSymbolEventNames[eventName];
         }
+        const symbolEventName = symbolEventNames[capture ? TRUE_STR : FALSE_STR];
         let existingTasks = target[symbolEventName];
         let isExisting = false;
         if (existingTasks) {
@@ -509,17 +516,7 @@ export function patchEventTarget(
       }
       const options = arguments[2];
 
-      let capture;
-      if (options === undefined) {
-        capture = false;
-      } else if (options === true) {
-        capture = true;
-      } else if (options === false) {
-        capture = false;
-      } else {
-        capture = options ? !!options.capture : false;
-      }
-
+      const capture = !options ? false : typeof options === 'boolean' ? true : options.capture;
       const delegate = arguments[1];
       if (!delegate) {
         return nativeRemoveEventListener.apply(this, arguments);
@@ -668,20 +665,35 @@ export function patchEventTarget(
 }
 
 export function findEventTasks(target: any, eventName: string): Task[] {
-  const foundTasks: any[] = [];
-  for (let prop in target) {
-    const match = EVENT_NAME_SYMBOL_REGX.exec(prop);
-    let evtName = match && match[1];
-    if (evtName && (!eventName || evtName === eventName)) {
-      const tasks: any = target[prop];
-      if (tasks) {
-        for (let i = 0; i < tasks.length; i++) {
-          foundTasks.push(tasks[i]);
+  if (!eventName) {
+    const foundTasks: any[] = [];
+    for (let prop in target) {
+      const match = EVENT_NAME_SYMBOL_REGX.exec(prop);
+      let evtName = match && match[1];
+      if (evtName && (!eventName || evtName === eventName)) {
+        const tasks: any = target[prop];
+        if (tasks) {
+          for (let i = 0; i < tasks.length; i++) {
+            foundTasks.push(tasks[i]);
+          }
         }
       }
     }
+    return foundTasks;
   }
-  return foundTasks;
+  let symbolEventName = zoneSymbolEventNames[eventName];
+  if (!symbolEventName) {
+    prepareEventNames(eventName);
+    symbolEventName = zoneSymbolEventNames[eventName];
+  }
+  const captureFalseTasks = target[symbolEventName[FALSE_STR]];
+  const captureTrueTasks = target[symbolEventName[TRUE_STR]];
+  if (!captureFalseTasks) {
+    return captureTrueTasks ? captureTrueTasks.slice() : [];
+  } else {
+    return captureTrueTasks ? captureFalseTasks.concat(captureTrueTasks) :
+                              captureFalseTasks.slice();
+  }
 }
 
 export function patchEventPrototype(global: any, api: _ZonePrivate) {

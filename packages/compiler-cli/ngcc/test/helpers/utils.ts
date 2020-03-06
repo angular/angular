@@ -39,13 +39,18 @@ export function makeTestEntryPoint(
  */
 export function makeTestEntryPointBundle(
     packageName: string, format: EntryPointFormat, isCore: boolean, srcRootNames: AbsoluteFsPath[],
-    dtsRootNames?: AbsoluteFsPath[], config?: TestConfig): EntryPointBundle {
+    dtsRootNames?: AbsoluteFsPath[], config?: TestConfig,
+    enableI18nLegacyMessageIdFormat = false): EntryPointBundle {
   const entryPoint = makeTestEntryPoint(packageName, packageName, config);
   const src = makeTestBundleProgram(srcRootNames[0], isCore);
   const dts =
       dtsRootNames ? makeTestDtsBundleProgram(dtsRootNames[0], entryPoint.package, isCore) : null;
   const isFlatCore = isCore && src.r3SymbolsFile === null;
-  return {entryPoint, format, rootDirs: [absoluteFrom('/')], src, dts, isCore, isFlatCore};
+  return {
+    entryPoint,
+    format,
+    rootDirs: [absoluteFrom('/')], src, dts, isCore, isFlatCore, enableI18nLegacyMessageIdFormat
+  };
 }
 
 export function makeTestBundleProgram(

@@ -7,6 +7,8 @@
  */
 
 import {StaticSymbol} from '@angular/compiler';
+import * as ts from 'typescript';
+
 
 /**
  * The range of a span of text in a source file.
@@ -96,6 +98,11 @@ export interface Symbol {
   readonly nullable: boolean;
 
   /**
+   * Documentation comment on the Symbol, if any.
+   */
+  readonly documentation: ts.SymbolDisplayPart[];
+
+  /**
    * A table of the members of the symbol; that is, the members that can appear
    * after a `.` in an Angular expression.
    */
@@ -116,9 +123,17 @@ export interface Symbol {
 
   /**
    * Return the type of the expression if this symbol is indexed by `argument`.
+   * Sometimes we need the key of arguments to get the type of the expression, for example
+   * in the case of tuples (`type Example = [string, number]`).
+   * [string, number]).
    * If the symbol cannot be indexed, this method should return `undefined`.
    */
-  indexed(argument: Symbol): Symbol|undefined;
+  indexed(argument: Symbol, key?: any): Symbol|undefined;
+
+  /**
+   * Returns the type arguments of a Symbol, if any.
+   */
+  typeArguments(): Symbol[]|undefined;
 }
 
 /**

@@ -270,6 +270,14 @@ describe('parser', () => {
           binding => binding.expression != null ? binding.expression.source : null);
     }
 
+    function humanize(bindings: TemplateBinding[]): Array<[string, string | null, boolean]> {
+      return bindings.map(binding => {
+        const {key, expression, name, keyIsVar} = binding;
+        const value = keyIsVar ? name : (expression ? expression.source : expression);
+        return [key, value, keyIsVar];
+      });
+    }
+
     it('should parse a key without a value',
        () => { expect(keys(parseTemplateBindings('a', ''))).toEqual(['a']); });
 
@@ -315,6 +323,44 @@ describe('parser', () => {
     it('should store the passed-in location', () => {
       const bindings = parseTemplateBindings('a', '1,b 2', 'location');
       expect(bindings[0].expression !.location).toEqual('location');
+    });
+
+    it('should support common usage of ngIf', () => {
+      const bindings = parseTemplateBindings('ngIf', 'cond | pipe as foo, let x; ngIf as y');
+      expect(humanize(bindings)).toEqual([
+        // [ key, value, keyIsVar ]
+        ['ngIf', 'cond | pipe ', false],
+        ['foo', 'ngIf', true],
+        ['x', '$implicit', true],
+        ['y', 'ngIf', true],
+      ]);
+    });
+
+    it('should support common usage of ngFor', () => {
+      let bindings: TemplateBinding[];
+      bindings = parseTemplateBindings(
+          'ngFor', 'let item; of items | slice:0:1 as collection, trackBy: func; index as i');
+      expect(humanize(bindings)).toEqual([
+        // [ key, value, keyIsVar ]
+        ['ngFor', null, false],
+        ['item', '$implicit', true],
+        ['ngForOf', 'items | slice:0:1 ', false],
+        ['collection', 'ngForOf', true],
+        ['ngForTrackBy', 'func', false],
+        ['i', 'index', true],
+      ]);
+
+      bindings = parseTemplateBindings(
+          'ngFor', 'let item, of: [1,2,3] | pipe as items; let i=index, count as len');
+      expect(humanize(bindings)).toEqual([
+        // [ key, value, keyIsVar ]
+        ['ngFor', null, false],
+        ['item', '$implicit', true],
+        ['ngForOf', '[1,2,3] | pipe ', false],
+        ['items', 'ngForOf', true],
+        ['i', 'index', true],
+        ['len', 'count', true],
+      ]);
     });
 
     it('should support let notation', () => {

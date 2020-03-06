@@ -18,7 +18,7 @@ import {NgccReflectionHost} from '../host/ngcc_host';
 import {Logger} from '../logging/logger';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
 import {RenderingFormatter, RedundantDecoratorMap} from './rendering_formatter';
-import {extractSourceMap, renderSourceAndMap} from './source_maps';
+import {renderSourceAndMap} from './source_maps';
 import {FileToWrite, getImportRewriter, stripExtension} from './utils';
 
 /**
@@ -61,8 +61,7 @@ export class Renderer {
       switchMarkerAnalysis: SwitchMarkerAnalysis|undefined,
       privateDeclarationsAnalyses: PrivateDeclarationsAnalyses): FileToWrite[] {
     const isEntryPoint = sourceFile === this.bundle.src.file;
-    const input = extractSourceMap(this.fs, this.logger, sourceFile);
-    const outputText = new MagicString(input.source);
+    const outputText = new MagicString(sourceFile.text);
 
     if (switchMarkerAnalysis) {
       this.srcFormatter.rewriteSwitchableDeclarations(
@@ -88,12 +87,12 @@ export class Renderer {
         const renderedStatements =
             this.renderAdjacentStatements(compiledFile.sourceFile, clazz, importManager);
         this.srcFormatter.addAdjacentStatements(outputText, clazz, renderedStatements);
-
-        if (!isEntryPoint && clazz.reexports.length > 0) {
-          this.srcFormatter.addDirectExports(
-              outputText, clazz.reexports, importManager, compiledFile.sourceFile);
-        }
       });
+
+      if (!isEntryPoint && compiledFile.reexports.length > 0) {
+        this.srcFormatter.addDirectExports(
+            outputText, compiledFile.reexports, importManager, compiledFile.sourceFile);
+      }
 
       this.srcFormatter.addConstants(
           outputText,
@@ -115,7 +114,7 @@ export class Renderer {
     }
 
     if (compiledFile || switchMarkerAnalysis || isEntryPoint) {
-      return renderSourceAndMap(sourceFile, input, outputText);
+      return renderSourceAndMap(this.logger, this.fs, sourceFile, outputText);
     } else {
       return [];
     }

@@ -52,9 +52,11 @@
     ['{1}, {0}', u, u, u],
     [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'son emas', ':'],
     ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'],
+    'UZS',
     'soʻm',
     'O‘zbekiston so‘mi',
     {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$'], 'UZS': ['soʻm']},
+    'ltr',
     plural,
     [
       [['yarim tun', 'tush payti', 'ertalab', 'kunduzi', 'kechqurun', 'kechasi'], u, u], u,

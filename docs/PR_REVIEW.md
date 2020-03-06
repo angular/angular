@@ -41,7 +41,7 @@ cef93a51b (pr/24623_top) ci: scripts to review PRs locally
 637805a0c (pr/24623_base) docs: update `lowercase` pipe example in "AngularJS to Angular" guide (#24588)
 ```
 
-Knowing `pr/24623_top` and `pr/24623_base` makes it convenient to refer to different SHAs in PR when rebasing or reseting. 
+Knowing `pr/24623_top` and `pr/24623_base` makes it convenient to refer to different SHAs in PR when rebasing or resetting.
 
 ### 2. Review PR
 
@@ -131,7 +131,7 @@ cef93a51b (pr/24623_top) ci: scripts to review PRs locally
 
 ### 5. Pushing local edits back to the PR
 
-The last step is to push your local changes back into the PR. 
+The last step is to push your local changes back into the PR.
 Use `./scripts/github/push-pr` script for that.
 
 ```
@@ -151,5 +151,4 @@ To github.com:mhevery/angular.git
 NOTE: Notice that we did not have to specify the PR number since the script can guess it from the branch name.
 
 If you visit https://github.com/angular/angular/pull/24623/commits you will see that your `fixup!` commit has been added to the PR.
-This greatly simplifies the work for many minor changes to the PR. 
-
+This greatly simplifies the work for many minor changes to the PR.

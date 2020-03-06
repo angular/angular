@@ -1,4 +1,4 @@
-# Master/Detail Components
+# Create a feature component
 
 At the moment, the `HeroesComponent` displays both the list of heroes and the selected hero's details.
 

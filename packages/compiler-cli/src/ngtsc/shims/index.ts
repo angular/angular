@@ -8,7 +8,8 @@
 
 /// <reference types="node" />
 
+export {ShimGenerator} from './src/api';
 export {FactoryGenerator, FactoryInfo, generatedFactoryTransform} from './src/factory_generator';
-export {GeneratedShimsHostWrapper, ShimGenerator} from './src/host';
+export {FactoryTracker} from './src/factory_tracker';
 export {SummaryGenerator} from './src/summary_generator';
 export {TypeCheckShimGenerator} from './src/typecheck_shim';

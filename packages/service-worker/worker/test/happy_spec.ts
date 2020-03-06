@@ -12,7 +12,7 @@ import {Driver, DriverReadyState} from '../src/driver';
 import {AssetGroupConfig, DataGroupConfig, Manifest} from '../src/manifest';
 import {sha1} from '../src/sha1';
 import {MockCache, clearAllCaches} from '../testing/cache';
-import {MockRequest} from '../testing/fetch';
+import {MockRequest, MockResponse} from '../testing/fetch';
 import {MockFileSystemBuilder, MockServerStateBuilder, tmpHashTableForFs} from '../testing/mock';
 import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
 
@@ -871,6 +871,21 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
       expect(scope.unregistered).toBeFalsy();
       expect(await scope.caches.keys()).not.toEqual([]);
     });
+
+    it('does not unregister or change state when status code is 503 (service unavailable)',
+       async() => {
+         expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+         await driver.initialized;
+         spyOn(server, 'fetch').and.callFake((req: Request) => new MockResponse(null, {
+                                               status: 503,
+                                               statusText: 'Service Unavailable'
+                                             }));
+
+         expect(await driver.checkForUpdate()).toEqual(false);
+         expect(driver.state).toEqual(DriverReadyState.NORMAL);
+         expect(scope.unregistered).toBeFalsy();
+         expect(await scope.caches.keys()).not.toEqual([]);
+       });
 
     describe('cache naming', () => {
       // Helpers

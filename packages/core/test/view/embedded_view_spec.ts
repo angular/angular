@@ -16,8 +16,8 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
   describe(`Embedded Views`, () => {
 
     it('should create embedded views with the right context', () => {
-      const parentContext = new Object();
-      const childContext = new Object();
+      const parentContext = {};
+      const childContext = {};
 
       const {view: parentView} = createAndGetRootNodes(
           compViewDef([

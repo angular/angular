@@ -55,24 +55,6 @@ const resolvedPromise = (() => Promise.resolve(null))();
  *
  * @usageNotes
  *
- * ### Migrating from deprecated ngForm selector
- *
- * Support for using `ngForm` element selector has been deprecated in Angular v6 and will be removed
- * in Angular v9.
- *
- * This has been deprecated to keep selectors consistent with other core Angular selectors,
- * as element selectors are typically written in kebab-case.
- *
- * Now deprecated:
- * ```html
- * <ngForm #myForm="ngForm">
- * ```
- *
- * After:
- * ```html
- * <ng-form #myForm="ngForm">
- * ```
- *
  * ### Listening for form submission
  *
  * The following example shows how to capture the form values from the "ngSubmit" event.
@@ -87,6 +69,20 @@ const resolvedPromise = (() => Promise.resolve(null))();
  * ```html
  * <form [ngFormOptions]="{updateOn: 'blur'}">
  *    <input name="one" ngModel>  <!-- this ngModel will update on blur -->
+ * </form>
+ * ```
+ *
+ * ### Native DOM validation UI
+ *
+ * In order to prevent the native DOM form validation UI from interfering with Angular's form
+ * validation, Angular automatically adds the `novalidate` attribute on any `<form>` whenever
+ * `FormModule` or `ReactiveFormModule` are imported into the application.
+ * If you want to explicitly enable native DOM validation UI with Angular forms, you can add the
+ * `ngNativeValidate` attribute to the `<form>` element:
+ *
+ * ```html
+ * <form ngNativeValidate>
+ *   ...
  * </form>
  * ```
  *

@@ -50,6 +50,11 @@ expect, save and then click the refresh button.
 * StackBlitz is continually improving, so there may be
 slight differences in generated code, but the app's
 behavior will be the same.
+* When you generate the StackBlitz example apps that
+accompany the tutorials, StackBlitz creates the starter
+files and mock data for you. The files you'll use throughout
+the tutorials are in the `src` folder of the StackBlitz
+example apps.
 
 </div>
 
@@ -70,7 +75,7 @@ This section introduces template syntax by enhancing the "Products" area.
 
 <div class="alert is-helpful">
 
-To help you get going, the following steps use predefined product data and methods from the `product-list.component.ts` file.
+To help you get going, the following steps use predefined product data from the `products.ts` file (already created in StackBlitz example) and methods from the `product-list.component.ts` file.
 
 </div>
 
@@ -87,7 +92,7 @@ To help you get going, the following steps use predefined product data and metho
 
       <div class="alert is-helpful">
 
-      `*ngFor` is a "structural directive". Structural directives shape or reshape the DOM's structure, typically by adding, removing, and manipulating the elements to which they are attached. Any directive with an asterisk, `*`, is a structural directive.
+      `*ngFor` is a "structural directive". Structural directives shape or reshape the DOM's structure, typically by adding, removing, and manipulating the elements to which they are attached. Directives with an asterisk, `*`, are structural directives.
 
       </div>
 
@@ -255,11 +260,11 @@ The next step is to create a new alert feature that takes a product as an input.
 
     1. Import `Input` from `@angular/core`.
 
-        <code-example path="getting-started/src/app/product-alerts/product-alerts.component.1.ts" region="imports" header="src/app/product-list/product-alerts.component.ts"></code-example>
+        <code-example path="getting-started/src/app/product-alerts/product-alerts.component.1.ts" region="imports" header="src/app/product-alerts/product-alerts.component.ts"></code-example>
 
     1. In the `ProductAlertsComponent` class definition, define a property named `product` with an `@Input()` decorator. The `@Input()` decorator indicates that the property value passes in from the component's parent, the product list component.
 
-        <code-example path="getting-started/src/app/product-alerts/product-alerts.component.1.ts" region="input-decorator" header="src/app/product-list/product-alerts.component.ts"></code-example>
+        <code-example path="getting-started/src/app/product-alerts/product-alerts.component.1.ts" region="input-decorator" header="src/app/product-alerts/product-alerts.component.ts"></code-example>
 
 1. Define the view for the new product alert component.
 
@@ -306,6 +311,13 @@ To make the "Notify Me" button work, you need to configure two things:
 
 1. In the component class, define a property named `notify` with an `@Output()` decorator and an instance of `EventEmitter()`. This allows the product alert component to emit an event when the value of the notify property changes.
 
+<div class="alert is-helpful">
+
+  When the Angular CLI generates a new component, it includes an empty constructor, the `OnInit` interface, and the `ngOnInit()` method.
+  Since the following example isn't using them, they are omitted here for brevity.
+
+</div>
+
     <code-example path="getting-started/src/app/product-alerts/product-alerts.component.ts" header="src/app/product-alerts/product-alerts.component.ts" region="input-output"></code-example>
 
 1. In the product alert template, `product-alerts.component.html`, update the "Notify Me" button with an event binding to call the `notify.emit()` method.
@@ -346,5 +358,5 @@ You've learned about the foundation of Angular: components and template syntax.
 You've also learned how the component class and template interact, and how components communicate with each other.
 
 To continue exploring Angular, choose either of the following options:
-* [Continue to the "Routing" section](start/routing "Getting Started: Routing") to create a product details page that can be accessed by clicking a product name and that has its own URL pattern.
-* [Skip ahead to the "Deployment" section](start/deployment "Getting Started: Deployment") to move to local development, or deploy your app to Firebase or your own server.
+* [Continue to the "Routing" section](start/start-routing "Getting Started: Routing") to create a product details page that can be accessed by clicking a product name and that has its own URL pattern.
+* [Skip ahead to the "Deployment" section](start/start-deployment "Getting Started: Deployment") to move to local development, or deploy your app to Firebase or your own server.

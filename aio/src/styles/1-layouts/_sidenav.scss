@@ -79,7 +79,7 @@ mat-sidenav-container div.mat-sidenav-content {
   }
 
   &:focus {
-    outline: $accentblue auto 2px;
+    outline: $focus-outline-onlight auto 2px;
   }
 
   &.selected {

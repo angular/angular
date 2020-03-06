@@ -7,5 +7,5 @@
  */
 
 export {DynamicValue} from './src/dynamic';
-export {DependencyTracker, ForeignFunctionResolver, PartialEvaluator} from './src/interface';
-export {BuiltinFn, EnumValue, ResolvedValue, ResolvedValueArray, ResolvedValueMap} from './src/result';
+export {ForeignFunctionResolver, PartialEvaluator} from './src/interface';
+export {EnumValue, KnownFn, ResolvedValue, ResolvedValueArray, ResolvedValueMap} from './src/result';

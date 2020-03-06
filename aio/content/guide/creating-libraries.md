@@ -1,4 +1,4 @@
-﻿# Creating Libraries
+﻿# Creating libraries
 
 You can create and publish new libraries to extend Angular functionality. If you find that you need to solve the same problem in more than one app (or want to share your solution with other developers), you have a candidate for a library.
 
@@ -48,7 +48,7 @@ You can build, test, and lint the project with CLI commands:
 </code-example>
 
 Notice that the configured builder for the project is different from the default builder for app projects.
-This builder, among other things, ensures that the library is always built with the [AoT compiler](guide/aot-compiler), without the need to specify the `--prod` flag.
+This builder, among other things, ensures that the library is always built with the [AOT compiler](guide/aot-compiler), without the need to specify the `--prod` flag.
 
 To make library code reusable you must define a public API for it. This "user layer" defines what is available to consumers of your library. A user of your library should be able to access public functionality (such as NgModules, service providers and general utility functions) through a single import path.
 
@@ -119,6 +119,7 @@ npm publish
 
 If you've never published a package in npm before, you must create a user account. Read more in [Publishing npm Packages](https://docs.npmjs.com/getting-started/publishing-npm-packages).
 
+
 ## Linked libraries
 
 While working on a published library, you can use [npm link](https://docs.npmjs.com/cli/link) to avoid reinstalling the library on every build.
@@ -155,6 +156,7 @@ List all the peer dependencies that your library uses in the workspace TypeScrip
 ```
 
 This mapping ensures that your library always loads the local copies of the modules it needs.
+
 
 ## Using your own library in apps
 
@@ -213,3 +215,14 @@ For this reason, an app that depends on a library should only use TypeScript pat
 TypeScript path mappings should *not* point to the library source `.ts` files.
 
 </div>
+
+{@a lib-assets}
+
+### Managing library assets with ng-packagr
+
+Starting with version 9.x of the [ng-packagr](https://github.com/ng-packagr/ng-packagr/blob/master/README.md) tool, you can configure the tool to automatically copy assets into your library package as part of the build process.
+You can use this feature when your library needs to publish optional theming files, Sass mixins, or documentation (like a changelog).
+
+* Learn how to [copy assets into your library as part of the build](https://github.com/ng-packagr/ng-packagr/blob/master/docs/copy-assets.md).
+
+* Learn more about how to use the tool to [embed assets in CSS](https://github.com/ng-packagr/ng-packagr/blob/master/docs/embed-assets-css.md).

@@ -1,4 +1,4 @@
-# AngularJS to Angular Concepts: Quick Reference
+# AngularJS to Angular concepts: Quick reference
 
 
 {@a top}
@@ -1271,4 +1271,3 @@ also encapsulate a style sheet within a specific component.
   </tr>
 
 </table>
-

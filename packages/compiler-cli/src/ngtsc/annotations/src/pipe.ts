@@ -11,27 +11,30 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, Reference} from '../../imports';
-import {MetadataRegistry} from '../../metadata';
+import {InjectableClassRegistry, MetadataRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
+import {LocalModuleScopeRegistry} from '../../scope';
+import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
 
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {findAngularDecorator, getValidConstructorDependencies, unwrapExpression} from './util';
+import {findAngularDecorator, getValidConstructorDependencies, makeDuplicateDeclarationError, unwrapExpression, wrapTypeReference} from './util';
 
 export interface PipeHandlerData {
   meta: R3PipeMetadata;
   metadataStmt: Statement|null;
 }
 
-export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, Decorator> {
+export class PipeDecoratorHandler implements DecoratorHandler<Decorator, PipeHandlerData, unknown> {
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
-      private metaRegistry: MetadataRegistry, private defaultImportRecorder: DefaultImportRecorder,
-      private isCore: boolean) {}
+      private metaRegistry: MetadataRegistry, private scopeRegistry: LocalModuleScopeRegistry,
+      private defaultImportRecorder: DefaultImportRecorder,
+      private injectableRegistry: InjectableClassRegistry, private isCore: boolean) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
+  readonly name = PipeDecoratorHandler.name;
 
   detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
     if (!decorators) {
@@ -41,6 +44,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
     if (decorator !== undefined) {
       return {
         trigger: decorator.node,
+        decorator: decorator,
         metadata: decorator,
       };
     } else {
@@ -48,10 +52,12 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
     }
   }
 
-  analyze(clazz: ClassDeclaration, decorator: Decorator): AnalysisOutput<PipeHandlerData> {
+  analyze(clazz: ClassDeclaration, decorator: Readonly<Decorator>):
+      AnalysisOutput<PipeHandlerData> {
     const name = clazz.name.text;
-    const type = new WrappedNodeExpr(clazz.name);
+    const type = wrapTypeReference(this.reflector, clazz);
     const internalType = new WrappedNodeExpr(this.reflector.getInternalNameOfClass(clazz));
+
     if (decorator.args === null) {
       throw new FatalDiagnosticError(
           ErrorCode.DECORATOR_NOT_CALLED, Decorator.nodeForError(decorator),
@@ -79,8 +85,6 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
       throw new FatalDiagnosticError(
           ErrorCode.VALUE_HAS_WRONG_TYPE, pipeNameExpr, `@Pipe.name must be a string`);
     }
-    const ref = new Reference(clazz);
-    this.metaRegistry.registerPipeMetadata({ref, name: pipeName});
 
     let pure = true;
     if (pipe.has('pure')) {
@@ -110,7 +114,26 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
     };
   }
 
-  compile(node: ClassDeclaration, analysis: PipeHandlerData): CompileResult[] {
+  register(node: ClassDeclaration, analysis: Readonly<PipeHandlerData>): void {
+    const ref = new Reference(node);
+    this.metaRegistry.registerPipeMetadata({ref, name: analysis.meta.pipeName});
+
+    this.injectableRegistry.registerInjectable(node);
+  }
+
+  resolve(node: ClassDeclaration): ResolveResult<unknown> {
+    const duplicateDeclData = this.scopeRegistry.getDuplicateDeclarations(node);
+    if (duplicateDeclData !== null) {
+      // This pipe was declared twice (or more).
+      return {
+        diagnostics: [makeDuplicateDeclarationError(node, duplicateDeclData, 'Pipe')],
+      };
+    }
+
+    return {};
+  }
+
+  compile(node: ClassDeclaration, analysis: Readonly<PipeHandlerData>): CompileResult[] {
     const meta = analysis.meta;
     const res = compilePipeFromMetadata(meta);
     const factoryRes = compileNgFactoryDefField({

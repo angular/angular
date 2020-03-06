@@ -3,8 +3,8 @@
 [Stackblitz](https://stackblitz.com/) is an online tool for creating, collaborating and sharing ideas. 
 In AIO we use it to share one or more runnable versions of our examples.
 
-Stackblitz can be used both in a separate page and in an embedded form.
-* `generateStackblitz.js` - executes each of the the StackblitzBuilder to generate a stackblitz file for each example.
+Stackblitz can be used both on a separate page and in an embedded form.
+* `generateStackblitz.js` - executes each of the StackblitzBuilder to generate a stackblitz file for each example.
 
 ## Stackblitz generation
 
@@ -53,7 +53,7 @@ example.
 
 ## Appendix: Why not generating stackblitz at runtime?
 
-At AngularJS, all the plunker examples were generated a runtime. The downside was that all the example code had to be 
-deployed as well and would no longer be useful after the plunker was generated. 
+At AngularJS, all the plunker examples were generated at runtime. The downside was that all the example code had to be 
+deployed as well and would no longer be useful after the plunker was generated.
 
 This `StackblitzBuilder` tool takes a few seconds to run, and the end result is only 3mb~.

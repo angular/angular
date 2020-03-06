@@ -15,6 +15,7 @@ Learn more about the [Compiler](https://www.youtube.com/watch?v=anphffaCZrQ) and
 
 AOT compilation with Ivy is faster and should be used by default.
 In the `angular.json` workspace configuration file, set the default build options for your project to always use AOT compilation.
+When using application internationalization (i18n) with Ivy, [translation merging](guide/i18n#merge) also requires the use of AOT compilation.
 
 <code-example language="json" header="angular.json">
 
@@ -38,7 +39,9 @@ In the `angular.json` workspace configuration file, set the default build option
 
 Ivy applications can be built with libraries that were created with the View Engine compiler.
 This compatibility is provided by a tool known as the Angular compatibility compiler (`ngcc`).
-CLI commands run `ngcc` as needed performing an Angular build.
+CLI commands run `ngcc` as needed when performing an Angular build.
+
+For more information on how to publish libraries see [Publishing your Library](guide/creating-libraries#publishing-your-library).
 
 {@a speeding-up-ngcc-compilation}
 ### Speeding up ngcc compilation
@@ -71,6 +74,27 @@ By having all libraries continue to use View Engine, you will maintain compatibi
 
 See the [Creating Libraries](guide/creating-libraries) guide for more on how to compile or bundle your Angular library.
 When you use the tools integrated into the Angular CLI or `ng-packagr`, your library will always be built the right way automatically.
+
+{@a ivy-and-universal-app-shell}
+## Ivy and Universal/App shell
+In version 9, the server builder which is used for [App shell](guide/app-shell) and [Angular Universal](guide/universal) has the `bundleDependencies` option enabled by default.
+If you opt-out of bundling dependencies you will need to run the standalone Angular compatibility compiler (`ngcc`). This is needed because otherwise Node will be unable to resolve the Ivy version of the packages.
+
+You can run `ngcc` after each installation of node_modules by adding a `postinstall` [npm script](https://docs.npmjs.com/misc/scripts):
+
+<code-example language="json" header="package.json">
+{
+  "scripts": {
+    "postinstall": "ngcc"
+  }
+}
+</code-example>
+
+<div class="alert is-important">
+
+Don't use `--create-ivy-entry-points` as this will cause Node not to resolve the Ivy version of the packages correctly.
+
+</div>
 
 {@a opting-out-of-angular-ivy}
 ## Opting out of Ivy in version 9
@@ -117,6 +141,17 @@ If you disable Ivy, you might also want to reconsider whether to make AOT compil
 To revert the compiler default, set the build option `aot: false` in the `angular.json` configuration file.
 
 </div>
+
+If you disable Ivy and the project uses internationalization, you can also remove the `@angular/localize` runtime component from the project's polyfills file located be default at `src/polyfills.ts`.
+
+To remove, delete the `import '@angular/localize/init';` line from the polyfills file.
+
+<code-example language="typescript" header="polyfills.ts">
+/***************************************************************************************************
+ * Load `$localize` onto the global scope - used if i18n tags appear in Angular templates.
+ */
+import '@angular/localize/init';
+</code-example>
 
 {@a using-ssr-without-angular-ivy}
 ### Using SSR without Ivy

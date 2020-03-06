@@ -9,9 +9,10 @@
 import {DepGraph} from 'dependency-graph';
 import {AbsoluteFsPath, FileSystem, resolve} from '../../../src/ngtsc/file_system';
 import {Logger} from '../logging/logger';
+import {NgccConfiguration} from '../packages/configuration';
 import {EntryPoint, EntryPointFormat, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from '../packages/entry_point';
 import {PartiallyOrderedList} from '../utils';
-import {DependencyHost, DependencyInfo} from './dependency_host';
+import {DependencyHost, DependencyInfo, createDependencyInfo} from './dependency_host';
 
 const builtinNodeJsModules = new Set<string>(require('module').builtinModules);
 
@@ -81,8 +82,9 @@ export interface SortedEntryPointsInfo extends DependencyDiagnostics {
  */
 export class DependencyResolver {
   constructor(
-      private fs: FileSystem, private logger: Logger,
-      private hosts: Partial<Record<EntryPointFormat, DependencyHost>>) {}
+      private fs: FileSystem, private logger: Logger, private config: NgccConfiguration,
+      private hosts: Partial<Record<EntryPointFormat, DependencyHost>>,
+      private typingsHost: DependencyHost) {}
   /**
    * Sort the array of entry points so that the dependant entry points always come later than
    * their dependencies in the array.
@@ -123,7 +125,10 @@ export class DependencyResolver {
       throw new Error(
           `Could not find a suitable format for computing dependencies of entry-point: '${entryPoint.path}'.`);
     }
-    return host.findDependencies(formatInfo.path);
+    const depInfo = createDependencyInfo();
+    host.collectDependencies(formatInfo.path, depInfo);
+    this.typingsHost.collectDependencies(entryPoint.typings, depInfo);
+    return depInfo;
   }
 
   /**
@@ -172,11 +177,14 @@ export class DependencyResolver {
         });
       }
 
-      if (deepImports.size) {
-        const imports = Array.from(deepImports).map(i => `'${i}'`).join(', ');
-        this.logger.warn(
-            `Entry point '${entryPoint.name}' contains deep imports into ${imports}. ` +
-            `This is probably not a problem, but may cause the compilation of entry points to be out of order.`);
+      if (deepImports.size > 0) {
+        const notableDeepImports = this.filterIgnorableDeepImports(entryPoint, deepImports);
+        if (notableDeepImports.length > 0) {
+          const imports = notableDeepImports.map(i => `'${i}'`).join(', ');
+          this.logger.warn(
+              `Entry point '${entryPoint.name}' contains deep imports into ${imports}. ` +
+              `This is probably not a problem, but may cause the compilation of entry points to be out of order.`);
+        }
       }
     });
 
@@ -205,6 +213,18 @@ export class DependencyResolver {
 
     throw new Error(
         `There is no appropriate source code format in '${entryPoint.path}' entry-point.`);
+  }
+
+  /**
+   * Filter out the deepImports that can be ignored, according to this entryPoint's config.
+   */
+  private filterIgnorableDeepImports(entryPoint: EntryPoint, deepImports: Set<AbsoluteFsPath>):
+      AbsoluteFsPath[] {
+    const version = (entryPoint.packageJson.version || null) as string | null;
+    const packageConfig = this.config.getConfig(entryPoint.package, version);
+    const matchers = packageConfig.ignorableDeepImportMatchers || [];
+    return Array.from(deepImports)
+        .filter(deepImport => !matchers.some(matcher => matcher.test(deepImport)));
   }
 }
 

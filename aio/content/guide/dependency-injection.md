@@ -1,4 +1,4 @@
-# Dependency Injection in Angular
+# Dependency injection in Angular
 
 Dependency injection (DI), is an important application design pattern.
 Angular has its own DI framework, which is typically

@@ -4,7 +4,7 @@
 
 # Import config items common to both Linux and Windows setups.
 # https://docs.bazel.build/versions/master/guide.html#bazelrc-syntax-and-semantics
-import %workspace%/.circleci/bazel.common.rc
+try-import %workspace%/.circleci/bazel.common.rc
 
 # Save downloaded repositories in a location that can be cached by CircleCI. This helps us
 # speeding up the analysis time significantly with Bazel managed node dependencies on the CI.
@@ -15,3 +15,7 @@ build --repository_cache=/home/circleci/bazel_repository_cache
 # Limit Bazel to consuming resources that fit in CircleCI "xlarge" class
 # https://circleci.com/docs/2.0/configuration-reference/#resource_class
 build --local_resources=14336,8.0,1.0
+
+# All build executed remotely should be done using our RBE configuration.
+build:remote --google_default_credentials
+build --config=remote

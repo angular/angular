@@ -1,4 +1,4 @@
-# JavaScript Modules vs. NgModules
+# JavaScript modules vs. NgModules
 
 JavaScript and Angular use modules to organize code, and
 though they organize it differently, Angular apps rely on both.

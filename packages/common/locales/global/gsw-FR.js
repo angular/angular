@@ -45,9 +45,11 @@
     ['{1} {0}', u, u, u],
     ['.', '’', ';', '%', '+', '−', 'E', '×', '‰', '∞', 'NaN', ':'],
     ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'],
+    'EUR',
     '€',
     'Euro',
     {'ATS': ['öS']},
+    'ltr',
     plural,
     [
       [['Mitternacht', 'am Morge', 'zmittag', 'am Namittag', 'zaabig', 'znacht'], u, u],

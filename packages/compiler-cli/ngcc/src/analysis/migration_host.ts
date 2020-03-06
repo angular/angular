@@ -7,58 +7,40 @@
  */
 import * as ts from 'typescript';
 
-import {ErrorCode, FatalDiagnosticError} from '../../../src/ngtsc/diagnostics';
 import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {MetadataReader} from '../../../src/ngtsc/metadata';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
 import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection';
-import {DecoratorHandler, HandlerFlags} from '../../../src/ngtsc/transform';
+import {HandlerFlags, TraitState} from '../../../src/ngtsc/transform';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {MigrationHost} from '../migrations/migration';
 
-import {AnalyzedClass, AnalyzedFile} from './types';
-import {analyzeDecorators, isWithinPackage} from './util';
+import {NgccTraitCompiler} from './ngcc_trait_compiler';
+import {isWithinPackage} from './util';
 
 /**
- * The standard implementation of `MigrationHost`, which is created by the
- * `DecorationAnalyzer`.
+ * The standard implementation of `MigrationHost`, which is created by the `DecorationAnalyzer`.
  */
 export class DefaultMigrationHost implements MigrationHost {
   constructor(
       readonly reflectionHost: NgccReflectionHost, readonly metadata: MetadataReader,
-      readonly evaluator: PartialEvaluator, private handlers: DecoratorHandler<any, any>[],
-      private entryPointPath: AbsoluteFsPath, private analyzedFiles: AnalyzedFile[]) {}
+      readonly evaluator: PartialEvaluator, private compiler: NgccTraitCompiler,
+      private entryPointPath: AbsoluteFsPath) {}
 
   injectSyntheticDecorator(clazz: ClassDeclaration, decorator: Decorator, flags?: HandlerFlags):
       void {
-    const classSymbol = this.reflectionHost.getClassSymbol(clazz) !;
-    const newAnalyzedClass = analyzeDecorators(classSymbol, [decorator], this.handlers, flags);
-    if (newAnalyzedClass === null) {
-      return;
-    }
+    const migratedTraits = this.compiler.injectSyntheticDecorator(clazz, decorator, flags);
 
-    const analyzedFile = getOrCreateAnalyzedFile(this.analyzedFiles, clazz.getSourceFile());
-    const oldAnalyzedClass = analyzedFile.analyzedClasses.find(c => c.declaration === clazz);
-    if (oldAnalyzedClass === undefined) {
-      analyzedFile.analyzedClasses.push(newAnalyzedClass);
-    } else {
-      mergeAnalyzedClasses(oldAnalyzedClass, newAnalyzedClass);
+    for (const trait of migratedTraits) {
+      if (trait.state === TraitState.ERRORED) {
+        trait.diagnostics =
+            trait.diagnostics.map(diag => createMigrationDiagnostic(diag, clazz, decorator));
+      }
     }
   }
 
   getAllDecorators(clazz: ClassDeclaration): Decorator[]|null {
-    const sourceFile = clazz.getSourceFile();
-    const analyzedFile = this.analyzedFiles.find(file => file.sourceFile === sourceFile);
-    if (analyzedFile === undefined) {
-      return null;
-    }
-
-    const analyzedClass = analyzedFile.analyzedClasses.find(c => c.declaration === clazz);
-    if (analyzedClass === undefined) {
-      return null;
-    }
-
-    return analyzedClass.decorators;
+    return this.compiler.getAllDecorators(clazz);
   }
 
   isInScope(clazz: ClassDeclaration): boolean {
@@ -66,39 +48,42 @@ export class DefaultMigrationHost implements MigrationHost {
   }
 }
 
-function getOrCreateAnalyzedFile(
-    analyzedFiles: AnalyzedFile[], sourceFile: ts.SourceFile): AnalyzedFile {
-  const analyzedFile = analyzedFiles.find(file => file.sourceFile === sourceFile);
-  if (analyzedFile !== undefined) {
-    return analyzedFile;
+/**
+ * Creates a diagnostic from another one, containing additional information about the synthetic
+ * decorator.
+ */
+function createMigrationDiagnostic(
+    diagnostic: ts.Diagnostic, source: ts.Node, decorator: Decorator): ts.Diagnostic {
+  const clone = {...diagnostic};
+
+  const chain: ts.DiagnosticMessageChain[] = [{
+    messageText: `Occurs for @${decorator.name} decorator inserted by an automatic migration`,
+    category: ts.DiagnosticCategory.Message,
+    code: 0,
+  }];
+
+  if (decorator.args !== null) {
+    const args = decorator.args.map(arg => arg.getText()).join(', ');
+    chain.push({
+      messageText: `@${decorator.name}(${args})`,
+      category: ts.DiagnosticCategory.Message,
+      code: 0,
+    });
+  }
+
+  if (typeof clone.messageText === 'string') {
+    clone.messageText = {
+      messageText: clone.messageText,
+      category: diagnostic.category,
+      code: diagnostic.code,
+      next: chain,
+    };
   } else {
-    const newAnalyzedFile: AnalyzedFile = {sourceFile, analyzedClasses: []};
-    analyzedFiles.push(newAnalyzedFile);
-    return newAnalyzedFile;
-  }
-}
-
-function mergeAnalyzedClasses(oldClass: AnalyzedClass, newClass: AnalyzedClass) {
-  if (newClass.decorators !== null) {
-    if (oldClass.decorators === null) {
-      oldClass.decorators = newClass.decorators;
+    if (clone.messageText.next === undefined) {
+      clone.messageText.next = chain;
     } else {
-      for (const newDecorator of newClass.decorators) {
-        if (oldClass.decorators.some(d => d.name === newDecorator.name)) {
-          throw new FatalDiagnosticError(
-              ErrorCode.NGCC_MIGRATION_DECORATOR_INJECTION_ERROR, newClass.declaration,
-              `Attempted to inject "${newDecorator.name}" decorator over a pre-existing decorator with the same name on the "${newClass.name}" class.`);
-        }
-      }
-      oldClass.decorators.push(...newClass.decorators);
+      clone.messageText.next.push(...chain);
     }
   }
-
-  if (newClass.diagnostics !== undefined) {
-    if (oldClass.diagnostics === undefined) {
-      oldClass.diagnostics = newClass.diagnostics;
-    } else {
-      oldClass.diagnostics.push(...newClass.diagnostics);
-    }
-  }
+  return clone;
 }

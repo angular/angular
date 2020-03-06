@@ -37,12 +37,12 @@ var tunnel = new BrowserStackTunnel({
   hosts: hosts
 });
 
-console.log('Starting tunnel on ports', PORTS.join(', '));
+console.info('Starting tunnel on ports', PORTS.join(', '));
 tunnel.start(function(error) {
   if (error) {
     console.error('Can not establish the tunnel', error);
   } else {
-    console.log('Tunnel established.');
+    console.info('Tunnel established.');
     fakeServers.forEach(function(server) {
       server.close();
     });

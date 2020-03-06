@@ -1,4 +1,4 @@
-# Deprecated APIs and Features
+# Deprecated APIs and features
 
 Angular strives to balance innovation and stability.
 Sometimes, APIs and features become obsolete and need to be removed or replaced so that Angular can stay current with new best practices, changing dependencies, or changes in the (web) platform itself.
@@ -36,17 +36,14 @@ v9 - v12
 | Area                          | API or Feature                                                                | May be removed in |
 | ----------------------------- | ---------------------------------------------------------------------------   | ----------------- |
 | `@angular/common`             | [`ReflectiveInjector`](#reflectiveinjector)                                   | <!--v8--> v10 |
+| `@angular/common`             | [`CurrencyPipe` - `DEFAULT_CURRENCY_CODE`](api/common/CurrencyPipe#currency-code-deprecation) | <!--v9--> v11 |
 | `@angular/core`               | [`CollectionChangeRecord`](#core)                                             | <!--v7--> v10 |
 | `@angular/core`               | [`DefaultIterableDiffer`](#core)                                              | <!--v7--> v10 |
 | `@angular/core`               | [`ReflectiveKey`](#core)                                                      | <!--v8--> v10 |
 | `@angular/core`               | [`RenderComponentType`](#core)                                                | <!--v7--> v10 |
 | `@angular/core`               | [`ViewEncapsulation.Native`](#core)                                           | <!--v6--> v10 |
-| `@angular/core`               | [`WtfScopeFn`](api/core/WtfScopeFn)                                           | <!--v8--> v10 |
-| `@angular/core`               | [`wtfCreateScope`](api/core/wtfCreateScope)                                   | <!--v8--> v10 |
-| `@angular/core`               | [`wtfStartTimeRange`](api/core/wtfStartTimeRange)                             | <!--v8--> v10 |
-| `@angular/core`               | [`wtfEndTimeRange`](api/core/wtfEndTimeRange)                                 | <!--v8--> v10 |
-| `@angular/core`               | [`wtfLeave`](api/core/wtfLeave)                                               | <!--v8--> v10 |
 | `@angular/core`               | [`ModuleWithProviders` without a generic](#moduleWithProviders)               | <!--v9--> v10 |
+| `@angular/core`               | [Undecorated base classes that use Angular features](#undecorated-base-classes) | <!--v9--> v10 |
 | `@angular/forms`              | [`ngModel` with reactive forms](#ngmodel-reactive)                            | <!--v6--> v10 |
 | `@angular/router`             | [`preserveQueryParams`](#router)                                              | <!--v7--> v10 |
 | `@angular/upgrade`            | [`@angular/upgrade`](#upgrade)                                                | <!--v8--> v10 |
@@ -78,6 +75,14 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 
 </div>
 
+{@a common}
+### @angular/common
+
+| API                                                                                           | Replacement                                         | Deprecation announced | Notes |
+| --------------------------------------------------------------------------------------------- | --------------------------------------------------- | --------------------- | ----- |
+| [`CurrencyPipe` - `DEFAULT_CURRENCY_CODE`](api/common/CurrencyPipe#currency-code-deprecation) | `{provide: DEFAULT_CURRENCY_CODE, useValue: 'USD'}` | v9                    | From v11 the default code will be extracted from the locale data given by `LOCAL_ID`, rather than `USD`. |
+
+
 {@a core}
 ### @angular/core
 
@@ -89,14 +94,10 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 | [`ReflectiveKey`](api/core/ReflectiveKey) | none | v5 | none |
 | [`ViewEncapsulation.Native`](api/core/ViewEncapsulation#Native) | [`ViewEncapsulation.ShadowDom`](api/core/ViewEncapsulation#ShadowDom) | v6 | Use the native encapsulation mechanism of the renderer. See [view.ts](https://github.com/angular/angular/blob/3e992e18ebf51d6036818f26c3d77b52d3ec48eb/packages/core/src/metadata/view.ts#L32).
 | [`defineInjectable`](api/core/defineInjectable) | `ɵɵdefineInjectable` | v8 | Used only in generated code. No source code should depend on this API. |
-| [`WtfScopeFn`](api/core/WtfScopeFn) | none | v8 | See [Web Tracing Framework](#wtf) |
-| [`wtfCreateScope`](api/core/wtfCreateScope) | none | v8 | See [Web Tracing Framework](#wtf) |
-| [`wtfStartTimeRange`](api/core/wtfStartTimeRange) | none | v8 | See [Web Tracing Framework](#wtf) |
-| [`wtfEndTimeRange`](api/core/wtfEndTimeRange) | none | v8 | See [Web Tracing Framework](#wtf) |
-| [`wtfLeave`](api/core/wtfLeave) | none | v8 | See [Web Tracing Framework](#wtf) |
 | [`entryComponents`](api/core/NgModule#entryComponents) | none | v9 | See [`entryComponents`](#entryComponents) |
 | [`ANALYZE_FOR_ENTRY_COMPONENTS`](api/core/ANALYZE_FOR_ENTRY_COMPONENTS) | none | v9 | See [`ANALYZE_FOR_ENTRY_COMPONENTS`](#entryComponents) |
 | `ModuleWithProviders` without a generic |  `ModuleWithProviders` with a generic             | v9 | See [`ModuleWithProviders` section](#moduleWithProviders) |
+| Undecorated base classes that use Angular features | Base classes with `@Directive()` decorator that use Angular features | v9 | See [undecorated base classes section](#undecorated-base-classes) |
 
 
 
@@ -166,7 +167,7 @@ This section lists all of the currently-deprecated features, which includes temp
 {@a wtf}
 ### Web Tracing Framework integration
 
-Angular previously has supported an integration with the Web Tracing Framework (WTF) for performance testing of Angular applications. This integration has not been maintained and likely does not work for the majority of Angular applications today. As a result, we are deprecating the integration in Angular version 8.
+Angular previously has supported an integration with the [Web Tracing Framework (WTF)](https://google.github.io/tracing-framework/) for performance testing of Angular applications. This integration has not been maintained and defunct. As a result, the integration was deprecated in Angular version 8 and due to no evidence of any existing usage removed in version 9.
 
 
 {@a deep-component-style-selector}
@@ -312,6 +313,62 @@ However, in practice, Angular simply ignores two-way bindings to template variab
 <option *ngFor="let optionName of options" [value]="optionName"></option>
 ```
 
+{@a undecorated-base-classes}
+### Undecorated base classes using Angular features
+
+As of version 9, it's deprecated to have an undecorated base class that:
+
+- uses Angular features
+- is extended by a directive or component
+
+Angular lifecycle hooks or any of the following Angular field decorators are considered Angular features:
+
+- `@Input()`
+- `@Output()`
+- `@HostBinding()`
+- `@HostListener()`
+- `@ViewChild()` / `@ViewChildren()`
+- `@ContentChild()` / `@ContentChildren()`
+
+For example, the following case is deprecated because the base class uses `@Input()` and does not have a class-level decorator:
+
+```ts
+class Base {
+  @Input()
+  foo: string;
+}
+
+@Directive(...)
+class Dir extends Base {
+  ngOnChanges(): void {
+    // notified when bindings to [foo] are updated
+  }
+}
+```
+
+In a future version of Angular, this code will start to throw an error.
+To fix this example, add a selectorless `@Directive()` decorator to the base class:
+
+```ts
+@Directive()
+class Base {
+  @Input()
+  foo: string;
+}
+
+@Directive(...)
+class Dir extends Base {
+  ngOnChanges(): void {
+    // notified when bindings to [foo] are updated
+  }
+}
+```
+
+In version 9, the CLI has an automated migration that will update your code for you when `ng update` is run.
+See [the dedicated migration guide](guide/migration-undecorated-classes) for more information about the change and more examples.
+
+
+
 {@a binding-to-innertext}
 ### Binding to `innerText` in `platform-server`
 
@@ -454,6 +511,11 @@ The following APIs have been removed starting with version 9.0.0*:
 | `@angular/core`  | [`Renderer`](https://v8.angular.io/api/core/Renderer) | [`Renderer2`](https://angular.io/api/core/Renderer2) | [Migration guide](guide/migration-renderer) |
 | `@angular/core`  | [`RootRenderer`](https://v8.angular.io/api/core/RootRenderer) | [`RendererFactory2`](https://angular.io/api/core/RendererFactory2) | none |
 | `@angular/core`  | [`RenderComponentType`](https://v8.angular.io/api/core/RenderComponentType) | [`RendererType2`](https://angular.io/api/core/RendererType2) | none |
+| `@angular/core`  | [`WtfScopeFn`](https://v8.angular.io/api/core/WtfScopeFn) | none | v8 | See [Web Tracing Framework](#wtf) |
+| `@angular/core`  | [`wtfCreateScope`](https://v8.angular.io/api/core/wtfCreateScope) | none | v8 | See [Web Tracing Framework](#wtf) |
+| `@angular/core`  | [`wtfStartTimeRange`](https://v8.angular.io/api/core/wtfStartTimeRange) | none | v8 | See [Web Tracing Framework](#wtf) |
+| `@angular/core`  | [`wtfEndTimeRange`](https://v8.angular.io/api/core/wtfEndTimeRange) | none | v8 | See [Web Tracing Framework](#wtf) |
+| `@angular/core`  | [`wtfLeave`](https://v8.angular.io/api/core/wtfLeave) | none | v8 | See [Web Tracing Framework](#wtf) |
 | `@angular/common` | `DeprecatedI18NPipesModule` | [`CommonModule`](api/common/CommonModule#pipes) | none |
 | `@angular/common` | `DeprecatedCurrencyPipe` | [`CurrencyPipe`](api/common/CurrencyPipe) | none |
 | `@angular/common` | `DeprecatedDatePipe`     | [`DatePipe`](api/common/DatePipe) | none |

@@ -1,4 +1,4 @@
-# Authoring Schematics
+# Authoring schematics
 
 You can create your own schematics to operate on Angular projects.
 Library developers typically package schematics with their libraries in order to integrate them with the Angular CLI.

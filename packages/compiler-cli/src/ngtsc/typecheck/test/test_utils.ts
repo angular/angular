@@ -11,11 +11,11 @@ import * as ts from 'typescript';
 
 import {AbsoluteFsPath, LogicalFileSystem, absoluteFrom} from '../../file_system';
 import {TestFile} from '../../file_system/testing';
-import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, Reference, ReferenceEmitter} from '../../imports';
+import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
-import {TemplateSourceMapping, TypeCheckBlockMetadata, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../src/api';
+import {TemplateId, TemplateSourceMapping, TypeCheckBlockMetadata, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../src/api';
 import {TypeCheckContext} from '../src/context';
 import {DomSchemaChecker} from '../src/dom';
 import {Environment} from '../src/environment';
@@ -29,7 +29,7 @@ export function typescriptLibDts(): TestFile {
       type Partial<T> = { [P in keyof T]?: T[P]; };
       type Pick<T, K extends keyof T> = { [P in K]: T[P]; };
       type NonNullable<T> = T extends null | undefined ? never : T;
-      
+
       // The following native type declarations are required for proper type inference
       declare interface Function {
         call(...args: any[]): any;
@@ -40,7 +40,7 @@ export function typescriptLibDts(): TestFile {
       declare interface String {
         length: number;
       }
-      
+
       declare interface Event {
         preventDefault(): void;
       }
@@ -48,7 +48,7 @@ export function typescriptLibDts(): TestFile {
         readonly x: number;
         readonly y: number;
       }
-      
+
       declare interface HTMLElementEventMap {
         "click": MouseEvent;
       }
@@ -88,10 +88,12 @@ export function angularCoreDts(): TestFile {
       abstract readonly elementRef: unknown;
       abstract createEmbeddedView(context: C): unknown;
     }
-    
+
     export declare class EventEmitter<T> {
       subscribe(generatorOrNext?: any, error?: any, complete?: any): unknown;
     }
+    
+    export declare type NgIterable<T> = Array<T> | Iterable<T>;
   `
   };
 }
@@ -131,7 +133,7 @@ export function ngForDts(): TestFile {
     export interface TrackByFunction<T> {
       (index: number, item: T): any;
     }
-    
+
     export declare class NgForOfContext<T> {
       $implicit: T;
       index: number;
@@ -161,6 +163,8 @@ export const ALL_ENABLED_CONFIG: TypeCheckingConfig = {
   checkTypeOfNonDomReferences: true,
   checkTypeOfPipes: true,
   strictSafeNavigationTypes: true,
+  useContextGenericType: true,
+  strictLiteralTypes: true,
 };
 
 // Remove 'ref' from TypeCheckableDirectiveMeta and add a 'selector' instead.
@@ -197,7 +201,8 @@ export function tcb(
   const binder = new R3TargetBinder(matcher);
   const boundTarget = binder.bind({template: nodes});
 
-  const meta: TypeCheckBlockMetadata = {boundTarget, pipes, id: 'tcb', schemas: []};
+  const id = 'tcb' as TemplateId;
+  const meta: TypeCheckBlockMetadata = {id, boundTarget, pipes, schemas: []};
 
   config = config || {
     applyTemplateContextGuards: true,
@@ -214,6 +219,8 @@ export function tcb(
     checkTypeOfPipes: true,
     checkTemplateBodies: true,
     strictSafeNavigationTypes: true,
+    useContextGenericType: true,
+    strictLiteralTypes: true,
   };
   options = options || {
     emitSpans: false,
@@ -249,13 +256,16 @@ export function typecheck(
   const checker = program.getTypeChecker();
   const logicalFs = new LogicalFileSystem(getRootDirs(host, options));
   const reflectionHost = new TypeScriptReflectionHost(checker);
+  const moduleResolver =
+      new ModuleResolver(program, options, host, /* moduleResolutionCache */ null);
   const emitter = new ReferenceEmitter([
     new LocalIdentifierStrategy(),
     new AbsoluteModuleStrategy(
-        program, checker, options, host, new TypeScriptReflectionHost(checker)),
+        program, checker, moduleResolver, new TypeScriptReflectionHost(checker)),
     new LogicalProjectStrategy(reflectionHost, logicalFs),
   ]);
-  const ctx = new TypeCheckContext({...ALL_ENABLED_CONFIG, ...config}, emitter, typeCheckFilePath);
+  const ctx = new TypeCheckContext(
+      {...ALL_ENABLED_CONFIG, ...config}, emitter, reflectionHost, typeCheckFilePath);
 
   const templateUrl = 'synthetic.html';
   const templateFile = new ParseSourceFile(template, templateUrl);
@@ -389,4 +399,6 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
   get diagnostics(): ReadonlyArray<ts.Diagnostic> { return []; }
   missingReferenceTarget(): void {}
   missingPipe(): void {}
+  illegalAssignmentToTemplateVar(): void {}
+  duplicateTemplateVar(): void {}
 }

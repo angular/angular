@@ -1,4 +1,4 @@
-# Types of Feature Modules
+# Types of feature modules
 
 There are five general categories of feature modules which
 tend to fall into the following groups:

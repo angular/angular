@@ -26,34 +26,6 @@ load(
 _FLAT_DTS_FILE_SUFFIX = ".bundle.d.ts"
 _R3_SYMBOLS_DTS_FILE = "src/r3_symbols.d.ts"
 
-def compile_strategy(ctx):
-    """Detect which strategy should be used to implement ng_module.
-
-    Depending on the value of the 'compile' define flag, ng_module
-    can be implemented in various ways. This function reads the configuration passed by the user and
-    determines which mode is active.
-
-    Args:
-      ctx: skylark rule execution context
-
-    Returns:
-      one of 'legacy' or 'aot' depending on the configuration in ctx
-    """
-
-    strategy = "legacy"
-    if "compile" in ctx.var:
-        strategy = ctx.var["compile"]
-
-    # Enable Angular targets extracted by Kythe Angular indexer to be compiled with the Ivy compiler architecture.
-    # TODO(ayazhafiz): remove once Ivy has landed as the default in g3.
-    if ctx.var.get("GROK_ELLIPSIS_BUILD", None) != None:
-        strategy = "aot"
-
-    if strategy not in ["legacy", "aot"]:
-        fail("Unknown --define=compile value '%s'" % strategy)
-
-    return strategy
-
 def is_ivy_enabled(ctx):
     """Determine if the ivy compiler should be used to by the ng_module.
 
@@ -64,8 +36,17 @@ def is_ivy_enabled(ctx):
       Boolean, Whether the ivy compiler should be used.
     """
 
-    # TODO(josephperrott): Remove configuration via compile=aot define flag.
-    if ctx.var.get("compile", None) == "aot":
+    # TODO(josephperott): Remove after ~Feb 2020, to allow local script migrations
+    if "compile" in ctx.var and ctx.workspace_name == "angular":
+        fail(
+            msg = "Setting ViewEngine/Ivy using --define=compile is deprecated, please use " +
+                  "--config=ivy or --config=view-engine instead.",
+            attr = "ng_module",
+        )
+
+    # This attribute is only defined in google's private ng_module rule and not
+    # available externally. For external users, this is effectively a no-op.
+    if hasattr(ctx.attr, "ivy") and ctx.attr.ivy == True:
         return True
 
     if ctx.var.get("angular_ivy_enabled", None) == "True":
@@ -325,9 +306,6 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         "enableSummariesForJit": is_legacy_ngc,
         "enableIvy": is_ivy_enabled(ctx),
         "fullTemplateTypeCheck": ctx.attr.type_check,
-        # TODO(alxhub/arick): template type-checking for Ivy needs to be tested in g3 before it can
-        # be enabled here.
-        "ivyTemplateTypeCheck": False,
         # In Google3 we still want to use the symbol factory re-exports in order to
         # not break existing apps inside Google. Unlike Bazel, Google3 does not only
         # enforce strict dependencies of source files, but also for generated files
@@ -597,7 +575,6 @@ def ng_module_impl(ctx, ts_compile_actions):
     providers = ts_compile_actions(
         ctx,
         is_library = True,
-        deps = ctx.attr.deps,
         compile_action = _prodmode_compile_action,
         devmode_compile_action = _devmode_compile_action,
         tsc_wrapped_tsconfig = _ngc_tsconfig,

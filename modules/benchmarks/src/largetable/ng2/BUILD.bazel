@@ -1,6 +1,6 @@
-load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle")
-load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
+load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle", "ts_devserver")
 load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
+load("//modules/benchmarks:e2e_test.bzl", "e2e_test")
 
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 
@@ -12,8 +12,6 @@ ng_module(
     srcs = glob(["*.ts"]),
     generate_ve_shims = True,
     tsconfig = "//modules/benchmarks:tsconfig-build.json",
-    # TODO: FW-1004 Type checking is currently not complete.
-    type_check = False,
     deps = [
         "//modules/benchmarks/src:util_lib",
         "//modules/benchmarks/src/largetable:util_lib",
@@ -34,16 +32,20 @@ ng_rollup_bundle(
 
 ts_devserver(
     name = "prodserver",
-    index_html = "index.html",
+    bootstrap = ["//packages/zone.js/dist:zone.js"],
     port = 4200,
-    static_files = [
-        ":bundle.min_debug.es2015.js",
-        "//packages/zone.js/dist:zone.js",
-    ],
+    static_files = ["index.html"],
+    deps = [":bundle.min_debug.es2015.js"],
 )
 
 benchmark_test(
     name = "perf",
     server = ":prodserver",
-    deps = ["//modules/benchmarks/src/largetable:perf_lib"],
+    deps = ["//modules/benchmarks/src/largetable:perf_tests_lib"],
+)
+
+e2e_test(
+    name = "e2e",
+    server = ":prodserver",
+    deps = ["//modules/benchmarks/src/largetable:e2e_tests_lib"],
 )
