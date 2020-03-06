@@ -179,8 +179,10 @@ class TNode implements ITNode {
       public parent: TElementNode|TContainerNode|null,                               //
       public projection: number|(ITNode|RNode[])[]|null,                             //
       public styles: string|null,                                                    //
+      public stylesWithoutHost: string|null,                                         //
       public residualStyles: KeyValueArray<any>|undefined|null,                      //
       public classes: string|null,                                                   //
+      public classesWithoutHost: string|null,                                        //
       public residualClasses: KeyValueArray<any>|undefined|null,                     //
       public classBindings: TStylingRange,                                           //
       public styleBindings: TStylingRange,                                           //

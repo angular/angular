@@ -177,7 +177,7 @@ export function createRootComponentView(
   const tNode: TElementNode = getOrCreateTNode(tView, null, 0, TNodeType.Element, null, null);
   const mergedAttrs = tNode.mergedAttrs = def.hostAttrs;
   if (mergedAttrs !== null) {
-    computeStaticStyling(tNode, mergedAttrs);
+    computeStaticStyling(tNode, mergedAttrs, true);
     if (rNode !== null) {
       setUpAttributes(hostRenderer, rNode, mergedAttrs);
       if (tNode.classes !== null) {
