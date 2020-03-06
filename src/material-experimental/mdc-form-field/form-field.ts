@@ -330,6 +330,9 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
     this._refreshOutlineNotchWidth();
     // Enable animations now. This ensures we don't animate on initial render.
     this._subscriptAnimationState = 'enter';
+    // Because the above changes a value used in the template after it was checked, we need
+    // to trigger CD or the change might not be reflected if there is no other CD scheduled.
+    this._changeDetectorRef.detectChanges();
   }
 
   ngAfterContentInit() {
