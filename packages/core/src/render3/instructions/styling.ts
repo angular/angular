@@ -221,7 +221,7 @@ export function checkStylingMap(
       // the binding has removed it. This would confuse `[ngStyle]`/`[ngClass]` to do the wrong
       // thing as it would think that the static portion was removed. For this reason we
       // concatenate it so that `[ngStyle]`/`[ngClass]`  can continue to work on changed.
-      let staticPrefix = isClassBased ? tNode.classes : tNode.styles;
+      let staticPrefix = isClassBased ? tNode.classesWithoutHost : tNode.stylesWithoutHost;
       ngDevMode && isClassBased === false && staticPrefix !== null &&
           assertEqual(
               staticPrefix.endsWith(';'), true, 'Expecting static portion to end with \';\'');

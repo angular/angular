@@ -33,7 +33,7 @@ function elementContainerStartFirstCreatePass(
   // While ng-container doesn't necessarily support styling, we use the style context to identify
   // and execute directives on the ng-container.
   if (attrs !== null) {
-    computeStaticStyling(tNode, attrs);
+    computeStaticStyling(tNode, attrs, true);
   }
 
   const localRefs = getConstant<string[]>(tViewConsts, localRefsIndex);
