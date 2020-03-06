@@ -1,3 +1,22 @@
+## 9.1.1 "tartan-tonsure" (2020-03-04)
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **chips:** only add type attribute to button remove icons ([#18477](https://github.com/angular/components/issues/18477)) ([584cd49](https://github.com/angular/components/commit/584cd49)), closes [#18095](https://github.com/angular/components/issues/18095) [#18464](https://github.com/angular/components/issues/18464) |
+| bug fix |  **sidenav:** not restoring focus to SVG elements ([#18614](https://github.com/angular/components/issues/18614)) ([ed763f5](https://github.com/angular/components/commit/ed763f5)) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-button:** add base css class to all buttons ([#18422](https://github.com/angular/components/issues/18422)) ([144cb41](https://github.com/angular/components/commit/144cb41)) |
+| bug fix |  **mdc-chips:** align with latest MDC markup ([#18472](https://github.com/angular/components/issues/18472)) ([7db3e3a](https://github.com/angular/components/commit/7db3e3a)) |
+| bug fix |  **mdc-chips:** don't allow focus on checkmark icon ([#18588](https://github.com/angular/components/issues/18588)) ([8637f66](https://github.com/angular/components/commit/8637f66)) |
+| bug fix |  **mdc-radio:** able to focus disabled radio button via click ([#18584](https://github.com/angular/components/issues/18584)) ([cdd3600](https://github.com/angular/components/commit/cdd3600)), closes [#15499](https://github.com/angular/components/issues/15499) |
+| bug fix |  **mdc-radio:** use consistent ripple timings ([#18590](https://github.com/angular/components/issues/18590)) ([2658d9d](https://github.com/angular/components/commit/2658d9d)) |
+
 # 9.1.0 "adamantium-mannequin" (2020-02-24)
 
 ### Highlights
