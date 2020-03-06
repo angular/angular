@@ -308,13 +308,86 @@ describe('styling', () => {
         // VE has weird behavior where it calls the @Input('class') with either `class="static` or
         // `[class]="dynamic"` but never both. This is determined at compile time. Due to locality
         // we don't know if `[class]` is coming if we see `class` only. So we need to combine the
-        // static and dynamic parte. This results in slightly different calling sequence, but should
+        // static and dynamic parts. This results in slightly different calling sequence, but should
         // result in the same final DOM.
         expect(div1.getAttribute('shadow-class')).toEqual('s1 d1');
 
         expect(div2.className).toEqual('');
         expect(div2.getAttribute('shadow-class')).toEqual('s2 d2');
       });
+
+  it('should not feed host classes back into shadow input', () => {
+    @Component({
+      template: `
+          <div class="s1" dir-shadows-class-input></div>
+          <div class="s1" [class]=" 'd1' " dir-shadows-class-input></div>
+          `
+    })
+    class Cmp {
+    }
+
+    @Directive({selector: '[dir-shadows-class-input]', host: {'class': 'DIRECTIVE'}})
+    class DirectiveShadowsClassInput {
+      constructor(private elementRef: ElementRef) {}
+      @Input('class')
+      set klass(value: string) {
+        this.elementRef.nativeElement.setAttribute('shadow-class', value);
+      }
+    }
+
+    TestBed.configureTestingModule({declarations: [Cmp, DirectiveShadowsClassInput]});
+    const fixture = TestBed.createComponent(Cmp);
+    fixture.detectChanges();
+
+    const [divStatic, divBinding] = fixture.nativeElement.querySelectorAll('div');
+    expectClass(divStatic).toEqual({'DIRECTIVE': true, 's1': true});
+    expect(divStatic.getAttribute('shadow-class')).toEqual('s1');
+
+    expectClass(divBinding).toEqual({'DIRECTIVE': true, 's1': true});
+    // VE has weird behavior where it calls the @Input('class') with either `class="static` or
+    // `[class]="dynamic"` but never both. This is determined at compile time. Due to locality
+    // we don't know if `[class]` is coming if we see `class` only. So we need to combine the
+    // static and dynamic parts. This results in slightly different calling sequence, but should
+    // result in the same final DOM.
+    expect(divBinding.getAttribute('shadow-class')).toEqual(ivyEnabled ? 's1 d1' : 'd1');
+  });
+
+  it('should not feed host style back into shadow input', () => {
+    @Component({
+      template: `
+          <div style="width: 1px;" dir-shadows-class-input></div>
+          <div style="width: 1px;" [style]=" 'height:1px;' " dir-shadows-class-input></div>
+          `
+    })
+    class Cmp {
+    }
+
+    @Directive({selector: '[dir-shadows-class-input]', host: {'style': 'color: red;'}})
+    class DirectiveShadowsStyleInput {
+      constructor(private elementRef: ElementRef) {}
+      @Input('style')
+      set style(value: string) {
+        this.elementRef.nativeElement.setAttribute('shadow-style', value);
+      }
+    }
+
+    TestBed.configureTestingModule({declarations: [Cmp, DirectiveShadowsStyleInput]});
+    const fixture = TestBed.createComponent(Cmp);
+    fixture.detectChanges();
+
+    const [divStatic, divBinding] = fixture.nativeElement.querySelectorAll('div');
+    expectStyle(divStatic).toEqual({'color': 'red', 'width': '1px'});
+    expect(divStatic.getAttribute('shadow-style')).toEqual('width: 1px;');
+
+    expectStyle(divBinding).toEqual({'color': 'red', 'width': '1px'});
+    // VE has weird behavior where it calls the @Input('style') with either `style="static` or
+    // `[style]="dynamic"` but never both. This is determined at compile time. Due to locality
+    // we don't know if `[style]` is coming if we see `style` only. So we need to combine the
+    // static and dynamic parts. This results in slightly different calling sequence, but should
+    // result in the same final DOM.
+    expect(divBinding.getAttribute('shadow-style'))
+        .toEqual(ivyEnabled ? 'width: 1px; height:1px;' : 'height:1px;');
+  });
 
   onlyInIvy('shadow bindings include static portion')
       .it('should bind [class] as input to directive when both static and falsy dynamic values are present',
@@ -375,7 +448,7 @@ describe('styling', () => {
         }
 
         @Directive({selector: '[dir-shadows-style-input]'})
-        class DirectiveShadowsClassInput {
+        class DirectiveShadowsStyleInput {
           constructor(private elementRef: ElementRef) {}
           @Input('style')
           set style(value: string) {
@@ -383,7 +456,7 @@ describe('styling', () => {
           }
         }
 
-        TestBed.configureTestingModule({declarations: [Cmp, DirectiveShadowsClassInput]});
+        TestBed.configureTestingModule({declarations: [Cmp, DirectiveShadowsStyleInput]});
         const fixture = TestBed.createComponent(Cmp);
         fixture.detectChanges();
 
@@ -410,7 +483,7 @@ describe('styling', () => {
         }
 
         @Directive({selector: '[dir-shadows-style-input]'})
-        class DirectiveShadowsClassInput {
+        class DirectiveShadowsStyleInput {
           constructor(private elementRef: ElementRef) {}
           @Input('style')
           set style(value: string) {
@@ -418,7 +491,7 @@ describe('styling', () => {
           }
         }
 
-        TestBed.configureTestingModule({declarations: [Cmp, DirectiveShadowsClassInput]});
+        TestBed.configureTestingModule({declarations: [Cmp, DirectiveShadowsStyleInput]});
         const fixture = TestBed.createComponent(Cmp);
         fixture.detectChanges();
 

@@ -502,13 +502,29 @@ export interface TNode {
   projection: (TNode|RNode[])[]|number|null;
 
   /**
-   * A collection of all style static values for an element.
+   * A collection of all `style` static values for an element (including from host).
    *
    * This field will be populated if and when:
    *
-   * - There are one or more initial styles on an element (e.g. `<div style="width:200px">`)
+   * - There are one or more initial `style`s on an element (e.g. `<div style="width:200px;">`)
+   * - There are one or more initial `style`s on a directive/component host
+   *   (e.g. `@Directive({host: {style: "width:200px;" } }`)
    */
   styles: string|null;
+
+
+  /**
+   * A collection of all `style` static values for an element excluding host sources.
+   *
+   * Populated when there are one or more initial `style`s on an element
+   * (e.g. `<div style="width:200px;">`)
+   * Must be stored separately from `tNode.styles` to facilitate setting directive
+   * inputs that shadow the `style` property. If we used `tNode.styles` as is for shadowed inputs,
+   * we would feed host styles back into directives as "inputs". If we used `tNode.attrs`, we would
+   * have to concatenate the attributes on every template pass. Instead, we process once on first
+   * create pass and store here.
+   */
+  stylesWithoutHost: string|null;
 
   /**
    * A `KeyValueArray` version of residual `styles`.
@@ -540,13 +556,28 @@ export interface TNode {
   residualStyles: KeyValueArray<any>|undefined|null;
 
   /**
-   * A collection of all class static values for an element.
+   * A collection of all class static values for an element (including from host).
    *
    * This field will be populated if and when:
    *
    * - There are one or more initial classes on an element (e.g. `<div class="one two three">`)
+   * - There are one or more initial classes on an directive/component host
+   *   (e.g. `@Directive({host: {class: "SOME_CLASS" } }`)
    */
   classes: string|null;
+
+  /**
+   * A collection of all class static values for an element excluding host sources.
+   *
+   * Populated when there are one or more initial classes on an element
+   * (e.g. `<div class="SOME_CLASS">`)
+   * Must be stored separately from `tNode.classes` to facilitate setting directive
+   * inputs that shadow the `class` property. If we used `tNode.classes` as is for shadowed inputs,
+   * we would feed host classes back into directives as "inputs". If we used `tNode.attrs`, we would
+   * have to concatenate the attributes on every template pass. Instead, we process once on first
+   * create pass and store here.
+   */
+  classesWithoutHost: string|null;
 
   /**
    * A `KeyValueArray` version of residual `classes`.
