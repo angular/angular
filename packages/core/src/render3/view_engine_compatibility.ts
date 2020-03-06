@@ -340,7 +340,7 @@ export function createContainerRef(
 
   ngDevMode &&
       assertNodeOfPossibleTypes(
-          hostTNode, TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer);
+          hostTNode, [TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer]);
 
   let lContainer: LContainer;
   const slotValue = hostView[hostTNode.index];

@@ -225,7 +225,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
         createElementRef(viewEngine_ElementRef, tElementNode, rootLView), rootLView, tElementNode);
 
     // The host element of the internal root view is attached to the component's host view node.
-    ngDevMode && assertNodeOfPossibleTypes(rootTView.node, TNodeType.View);
+    ngDevMode && assertNodeOfPossibleTypes(rootTView.node, [TNodeType.View]);
     rootTView.node!.child = tElementNode;
 
     return componentRef;
