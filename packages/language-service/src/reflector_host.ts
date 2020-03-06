@@ -19,12 +19,17 @@ class ReflectorModuleModuleResolutionHost implements ts.ModuleResolutionHost, Me
   });
 
   readonly directoryExists?: (directoryName: string) => boolean;
+  // Resolve a symbolic link.
+  realpath?: (path: string) => string;
 
   constructor(
       private readonly tsLSHost: ts.LanguageServiceHost,
       private readonly getProgram: () => ts.Program) {
     if (tsLSHost.directoryExists) {
       this.directoryExists = directoryName => tsLSHost.directoryExists !(directoryName);
+    }
+    if (tsLSHost.realpath) {
+      this.realpath = path => tsLSHost.realpath !(path);
     }
   }
 
