@@ -502,13 +502,24 @@ export interface TNode {
   projection: (TNode|RNode[])[]|number|null;
 
   /**
-   * A collection of all style static values for an element.
+   * A collection of all `style` static values for an element (including from host).
    *
    * This field will be populated if and when:
    *
-   * - There are one or more initial styles on an element (e.g. `<div style="width:200px">`)
+   * - There are one or more initial `style`s on an element (e.g. `<div style="width:200px;">`)
+   * - There are one or more initial `style`s on an directive/component host
+   *   (e.g. `@Directive({host: {style: "width:200px;" } }`)
    */
   styles: string|null;
+
+
+  /**
+   * A collection of all `style` static values for an element excluding host sources.
+   *
+   * Populated when there are one or more initial `style`s on an element
+   * (e.g. `<div style="width:200px;">`)
+   */
+  stylesNoHost: string|null;
 
   /**
    * A `KeyValueArray` version of residual `styles`.
@@ -540,13 +551,23 @@ export interface TNode {
   residualStyles: KeyValueArray<any>|undefined|null;
 
   /**
-   * A collection of all class static values for an element.
+   * A collection of all class static values for an element (including from host).
    *
    * This field will be populated if and when:
    *
    * - There are one or more initial classes on an element (e.g. `<div class="one two three">`)
+   * - There are one or more initial classes on an directive/component host
+   *   (e.g. `@Directive({host: {class: "SOME_CLASS" } }`)
    */
   classes: string|null;
+
+  /**
+   * A collection of all class static values for an element excluding host sources.
+   *
+   * Populated when there are one or more initial classes on an element
+   * (e.g. `<div class="SOME_CLASS">`)
+   */
+  classesNoHost: string|null;
 
   /**
    * A `KeyValueArray` version of residual `classes`.
