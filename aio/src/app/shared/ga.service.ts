@@ -14,7 +14,7 @@ export class GaService {
   private previousUrl: string;
 
   constructor(@Inject(WindowToken) private window: Window) {
-    this.ga('create', environment['gaId'] , 'auto');
+    this.gtag('config', environment['gaId'] );
   }
 
   locationChanged(url: string) {
@@ -25,18 +25,17 @@ export class GaService {
     // Won't re-send if the url hasn't changed.
     if (url === this.previousUrl) { return; }
     this.previousUrl = url;
-    this.ga('set', 'page', '/' + url);
-    this.ga('send', 'pageview');
+    this.gtag('set', 'page', '/' + url);
   }
 
   sendEvent(source: string, action: string, label?: string, value?: number) {
-    this.ga('send', 'event', source, action, label, value);
+    this.gtag('send', 'event', source, action, label, value);
   }
 
-  ga(...args: any[]) {
-    const gaFn = (this.window as any)['ga'];
-    if (gaFn) {
-      gaFn(...args);
+  gtag(...args: any[]) {
+    const gtagFn = (this.window as any)['gtag'];
+    if (gtagFn) {
+      gtagFn(...args);
     }
   }
 }
