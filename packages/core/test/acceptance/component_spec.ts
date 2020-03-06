@@ -259,6 +259,51 @@ describe('component', () => {
        expect(wrapperEls.length).toBe(2);  // other elements are preserved
      });
 
+  onlyInIvy('Ivy throws an exception when invalid host elements are used for Components')
+      .describe('invalid host element', () => {
+        it('should throw when <ng-container> is used as a host element for a Component', () => {
+          @Component({
+            selector: 'ng-container',
+            template: '...',
+          })
+          class Comp {
+          }
+
+          @Component({
+            selector: 'root',
+            template: '<ng-container></ng-container>',
+          })
+          class App {
+          }
+
+          TestBed.configureTestingModule({declarations: [App, Comp]});
+          expect(() => TestBed.createComponent(App))
+              .toThrowError(
+                  /Element with "ng-container" tag name is not a valid host for Comp component/);
+        });
+
+        it('should throw when <ng-template> is used as a host element for a Component', () => {
+          @Component({
+            selector: 'ng-template',
+            template: '...',
+          })
+          class Comp {
+          }
+
+          @Component({
+            selector: 'root',
+            template: '<ng-template></ng-template>',
+          })
+          class App {
+          }
+
+          TestBed.configureTestingModule({declarations: [App, Comp]});
+          expect(() => TestBed.createComponent(App))
+              .toThrowError(
+                  /Element with "ng-template" tag name is not a valid host for Comp component/);
+        });
+      });
+
   it('should use a new ngcontent attribute for child elements created w/ Renderer2', () => {
     @Component({
       selector: 'app-root',
