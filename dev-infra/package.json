@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "description": "INTERNAL USE ONLY - Angular internal DevInfra tooling/scripts - INTERNAL USE ONLY",
   "license": "MIT",
+  "private": true,
   "bin": {
     "ng-dev": "./cli.js"
   }
