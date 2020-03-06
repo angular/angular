@@ -1,0 +1,6 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "files",
+    srcs = glob(["*"]) + ["//dev-infra/benchmark/driver-utilities:files"],
+)

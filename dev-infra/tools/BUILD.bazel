@@ -1,0 +1,11 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+  name = "files",
+  srcs = glob(["*"]) + [
+    "//dev-infra/tools/brotli-cli:files",
+    "//dev-infra/tools/browsers:files",
+    "//dev-infra/tools/component_benchmark:files",
+    "//dev-infra/tools/ng_rollup_bundle:files",
+  ],
+)

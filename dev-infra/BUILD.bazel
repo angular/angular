@@ -14,10 +14,18 @@ ts_library(
 pkg_npm(
     name = "npm_package",
     srcs = [
+        "BUILD.bazel",
         "package.json",
+        "//dev-infra/benchmark:files",
+        "//dev-infra/tools:files",
     ],
     visibility = ["//visibility:public"],
     deps = [
         ":cli",
     ],
+    hide_build_files = False,
+    substitutions = {
+        "//tools:defaults.bzl": "@npm_angular_bazel//:index.bzl",
+        "//packages/bazel/src:esm5.bzl": "@npm_angular_bazel//src:esm5.bzl",
+    },
 )

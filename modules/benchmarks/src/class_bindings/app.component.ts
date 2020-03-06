@@ -8,7 +8,7 @@
 import {Component} from '@angular/core';
 
 @Component({
-  selector: 'app-component',
+  selector: 'app-root',
   template: `
     <button id="create" (click)="create()">Create</button>
     <button id="update" (click)="update()">Update</button>

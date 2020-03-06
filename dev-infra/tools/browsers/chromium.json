@@ -1,0 +1,20 @@
+{
+  "environment" : "local",
+  "capabilities" : {
+    "browserName" : "chrome",
+    "goog:chromeOptions" : {
+      "binary" : "%FILE:CHROMIUM%",
+      "args" : [
+        "--headless", 
+        "--use-gl=swiftshader-webgl"
+      ]
+    },
+    "google:wslConfig": {
+      "binary": "%FILE:CHROMEDRIVER%",
+      "port":"%WSLPORT:WSL%",
+      "args": ["--port=%WSLPORT:WSL%"],
+      "status": true,
+      "shutdown": true
+    }
+  }
+}
