@@ -46,12 +46,8 @@ when the user clicks a hero.
 여러 클래스에 사용되는 정보를 공유하려면 서비스를 사용하는 방법이 가장 좋습니다.
 `MessageService`를 만들고 다음 두 곳에 이 서비스를 주입해서 활용해 봅시다:
 
-1. Inject in HeroService, which uses the service to send a message.
-2. Inject in MessagesComponent, which displays that message, and also displays the ID
-when the user clicks a hero.
-
 1. `HeroService`가 메시지를 보낼 때 사용합니다.
-2. 이 메시지는 `MessagesComponent`가 화면에 표시합니다.
+2. 이 메시지는 `MessagesComponent`가 받아서 화면에 표시합니다.
 
 <!--
 ## Create the `HeroService`
@@ -139,6 +135,7 @@ Add a `getHeroes` method to return the _mock heroes_.
 -->
 ## `HeroService` 등록하기
 
+<!--
 You must make the `HeroService` available to the dependency injection system
 before Angular can _inject_ it into the `HeroesComponent` by registering a _provider_. A provider is something that can create or deliver a service; in this case, it instantiates the `HeroService` class to provide the service.
 
@@ -147,6 +144,13 @@ with the _injector_, which is the object that is responsible for choosing
 and injecting the provider where the app requires it.
 
 By default, the Angular CLI command `ng generate service` registers a provider with the _root injector_ for your service by including provider metadata, that is `providedIn: 'root'` in the `@Injectable()` decorator.
+-->
+`HeroService`를 `HeroesComponent`에 _의존성으로 주입_ 하려면 이 서비스의 _프로바이더(provider)_ 가 Angular 의존성 주입 시스템에 등록되어야 합니다.
+프로바이더는 서비스를 생성하고 전달하는 방식을 정의한 것입니다. 이 예제에서는 서비스 클래스가 `HeroService`의 프로바이더입니다.
+
+서비스 프로바이더는 _인젝터(injector)_ 에 등록됩니다. 인젝터는 의존성 주입 요청이 있었던 객체를 적절하게 고르고 생성하는 역할을 합니다.
+
+Angular CLI로 `ng generate service` 명령을 실행하면 이 서비스의 `@Injectable()` 데코레이터에 `providedIn: 'root'`를 지정해서 서비스 프로바이더를 _최상위 인젝터_ 에 등록합니다.
 
 ```
 @Injectable({
@@ -682,23 +686,36 @@ as listed in one of the ["final code review"](#final-code-review) tabs below.
 * 리스트에 존재하는 메시지마다 `<div>` 엘리먼트를 반복하기 위해 `*ngFor`를 사용했습니다.
 
 * 버튼을 클릭했을 때 `MessageService.clear()` 함수를 실행하기 위해 [이벤트 바인딩](guide/template-syntax#이벤트-바인딩) 문법을 사용했습니다.
-The messages will look better when you add the private CSS styles to `messages.component.css`
-as listed in one of the ["final code review"](#final-code-review) tabs below.
 
+이 메시지는 컴포넌트 CSS 파일 `messages.component.css`에서 스타일을 지정하면 좀 더 보기 좋게 표시할 수 있습니다.
+[최종 코드 리뷰](#final-code-review) 탭에서 스타일이 지정된 모습을 확인해 보세요.
+
+<!--
 ## Add additional messages to hero service
+-->
+## 히어로 서비스로 메시지 보내기
 
+<!--
 The following example shows how to send and display a message each time the user clicks on
 a hero, showing a history of the user's selections. This will be helpful when you get to the
 next section on [Routing](tutorial/toh-pt5).
+-->
+사용자가 히어로를 클릭할 때마다 어떤 히어로를 선택했는지 기록을 남기려면 다음과 같은 코드를 추가하면 됩니다.
+이 내용은 다음 섹션인 [라우팅](tutorial/toh-pt5)에서 활용해 봅시다.
 
 <code-example header="src/app/heroes/heroes.component.ts"
 path="toh-pt4/src/app/heroes/heroes.component.ts">
 </code-example>
 
+<!--
 The browser refreshes and the page displays the list of heroes.
 Refresh the browser to see the list of heroes, and scroll to the bottom to see the
 messages from the HeroService. Each time you click a hero, a new message appears to record
 the selection. Use the "clear" button to clear the message history.
+-->
+브라우저를 새로고침하면 히어로 목록이 화면에 표시됩니다.
+그리고 이 화면에서 스크롤을 화면 끝까지 내리면 HeroService가 보낸 메시지를 확인할 수 있습니다.
+이 메시지 목록은 사용자가 히어로를 클릭할 때마다 추가되며, "clear" 버튼을 누르면 기록을 지울 수 있습니다.
 
 {@a final-code-review}
 

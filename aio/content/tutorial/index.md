@@ -23,11 +23,11 @@ You do not need to do this tutorial to understand those other examples.
 아직 Angular에 익숙하지 않다면 [**시작하기 튜토리얼**](start) 문서를 먼저 보는 것을 권장합니다.
 시작하기 튜토리얼은 히어로들의 여행 튜토리얼과 마찬가지로 컴포넌트와 템플릿 문법, 라우팅, 서비스, HTTP 통신으로 데이터를 다루는 것에 대해 다루지만, 이 문서보다는 조금 더 간단합니다.
 
-In this tutorial, you build your own app from the ground up, providing experience with the development process as well as a more thorough introduction to basic concepts.
+이 튜토리얼에서는 초기 세팅부터 앱을 개발하면서 Angular의 기본 개념을 이해하면서 개발 경험을 쌓는 것이 목표입니다.
 
-The **Tour of Heroes app** that you create with this tutorial serves as the conceptual basis for many examples throughout Angular documentation.
-Reading this introduction page provides sufficient context for working with those examples.
-You do not need to do this tutorial to understand those other examples.  
+**히어로들의 여행 앱**은 다양한 Angular 문서에서 다루는 개념을 쭉 훑어보는 방식으로 진행합니다.
+그리고 이 문서는 예제가 동작하는 것을 보면서 앞으로 만들 앱이 어떤 방식으로 동작하는지 소개하고 있습니다.
+아직 예제 코드를 볼 필요는 없습니다.
 
 </div>
 

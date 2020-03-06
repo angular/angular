@@ -89,9 +89,15 @@ Make it look like this:
 -->
 그러면 다음과 같은 템플릿이 구성됩니다:
 
+<!--
 <code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="list" header="heroes.component.html (heroes template)"></code-example>
+-->
+<code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="list" header="heroes.component.html (히어로 목록 템플릿)"></code-example>
 
+<!--
 That shows one hero. To list them all, add an `*ngFor` to the `<li>` to iterate through the list of heroes:
+-->
+이 구문은 히어로 한 명을 표시하는 구문입니다. 목록에 있는 히어로를 모두 표시하려면 `<li>` 엘리먼트에 `*ngFor`를 적용해서 배열을 순회하면 됩니다:
 
 <code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="li">
 </code-example>
@@ -230,19 +236,19 @@ Add a click event binding to the `<li>` like this:
 
 <!--
 This is an example of Angular's [event binding](guide/template-syntax#event-binding) syntax.
--->
-위 코드는 Angular의 [이벤트 바인딩](guide/template-syntax#이벤트-바인딩) 문법입니다.
 
-<!--
 The parentheses around `click` tell Angular to listen for the `<li>` element's  `click` event.
 When the user clicks in the `<li>`, Angular executes the `onSelect(hero)` expression.
--->
-이렇게 이벤트를 바인딩하면 Angular가 `<li>` 엘리먼트에서 발생하는 `click` 이벤트를 감지할 수 있습니다.
-그래서 사용자가 `<li>` 엘리먼트를 클릭하면 Angular는 `onSelect(hero)` 표현식을 실행합니다.
-
 
 In the next section, define an `onSelect()` method in `HeroesComponent` to
 display the hero that was defined in the `*ngFor` expression.
+-->
+위 코드는 Angular의 [이벤트 바인딩](guide/template-syntax#이벤트-바인딩) 문법입니다.
+
+이렇게 이벤트를 바인딩하면 Angular가 `<li>` 엘리먼트에서 발생하는 `click` 이벤트를 감지할 수 있습니다.
+그래서 사용자가 `<li>` 엘리먼트를 클릭하면 Angular는 `onSelect(hero)` 표현식을 실행합니다.
+
+다음 섹션에서는 `HeroesComponent`에 `onSelect()` 메소드를 정의해서 `*ngFor`로 반복한 히어로 엘리먼트 중에서 사용자가 클릭한 엘리먼트를 하이라이트 처리해봅시다.
 
 
 <!--
@@ -271,9 +277,14 @@ to the component's `selectedHero`.
 -->
 ### 상세화면 영역 추가하기
 
+<!--
 Currently, you have a list in the component template. To click on a hero on the list
 and reveal details about that hero, you need a section for the details to render in the
 template. Add the following to `heroes.component.html` beneath the list section:
+-->
+지금까지 만든 앱에서 컴포넌트 템플릿에는 히어로 목록이 표시됩니다.
+이제는 이 목록에서 히어로 한 명을 클릭했을 때 해당 히어로의 상세정보를 표시하기 위해 상세정보에 해당하는 템플릿을 추가해야 합니다.
+다음 내용을 `heroes.component.html` 파일의 목록 아래에 추가합니다:
 
 <code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="selectedHero-details" header="heroes.component.html (selected hero details)"></code-example>
 
