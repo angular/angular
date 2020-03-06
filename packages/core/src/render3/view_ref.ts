@@ -324,10 +324,10 @@ function collectNativeNodes(
     tView: TView, lView: LView, tNode: TNode|null, result: any[],
     isProjection: boolean = false): any[] {
   while (tNode !== null) {
-    ngDevMode &&
-        assertNodeOfPossibleTypes(
-            tNode, TNodeType.Element, TNodeType.Container, TNodeType.Projection,
-            TNodeType.ElementContainer, TNodeType.IcuContainer);
+    ngDevMode && assertNodeOfPossibleTypes(tNode, [
+      TNodeType.Element, TNodeType.Container, TNodeType.Projection, TNodeType.ElementContainer,
+      TNodeType.IcuContainer
+    ]);
 
     const lNode = lView[tNode.index];
     if (lNode !== null) {

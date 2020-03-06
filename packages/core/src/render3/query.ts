@@ -326,7 +326,7 @@ function createSpecialToken(lView: LView, tNode: TNode, read: any): any {
   } else if (read === ViewContainerRef) {
     ngDevMode &&
         assertNodeOfPossibleTypes(
-            tNode, TNodeType.Element, TNodeType.Container, TNodeType.ElementContainer);
+            tNode, [TNodeType.Element, TNodeType.Container, TNodeType.ElementContainer]);
     return createContainerRef(
         ViewContainerRef, ViewEngine_ElementRef,
         tNode as TElementNode | TContainerNode | TElementContainerNode, lView);
