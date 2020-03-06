@@ -294,18 +294,6 @@
   }
 }
 
-.github-links {
-  float: right;
-  .material-icons {
-    border-radius: 4px;
-    padding: 4px;
-    font-size: 20px;
-    &:hover {
-      background-color: $mist;
-    }
-  }
-}
-
 .deprecated-api-item {
   text-decoration: line-through;
 }
