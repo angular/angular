@@ -3637,7 +3637,7 @@ what the test is testing. If it's doing more, then it doesn't belong here.
 E2E tests are great for high-level validation of the entire system.
 But they can't give you the comprehensive test coverage that you'd expect from unit tests.
 
-E2E tests are difficult to write and perform poorly compared to unit tests.
+E2E tests are difficult to write and perform poorly compared to unit tests. Unit tests are much faster than E2E tests.
 They break easily, often due to changes or misbehavior far removed from the site of breakage.
 
 E2E tests can't easily reveal how your components behave when things go wrong,
