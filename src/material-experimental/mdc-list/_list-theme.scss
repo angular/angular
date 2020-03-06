@@ -7,7 +7,7 @@
   }
 }
 
-@mixin mat-list-typography-mdc($config: null) {
+@mixin mat-list-typography-mdc($config) {
   @include mat-using-mdc-typography($config) {
     @include mdc-list-without-ripple($query: $mat-typography-styles-query);
   }

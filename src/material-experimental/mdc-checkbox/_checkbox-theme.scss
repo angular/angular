@@ -70,7 +70,7 @@
   $mdc-checkbox-disabled-color: $orig-mdc-checkbox-disabled-color !global;
 }
 
-@mixin mat-checkbox-typography-mdc($config: null) {
+@mixin mat-checkbox-typography-mdc($config) {
   @include mat-using-mdc-typography($config) {
     @include mdc-checkbox-without-ripple($query: $mat-typography-styles-query);
     @include mdc-form-field-core-styles($query: $mat-typography-styles-query);
