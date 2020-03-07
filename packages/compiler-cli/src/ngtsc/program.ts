@@ -10,7 +10,6 @@ import {GeneratedFile} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import * as api from '../transformers/api';
-import {nocollapseHack} from '../transformers/nocollapse_hack';
 import {verifySupportedTypeScriptVersion} from '../typescript_support';
 
 import {NgCompilerHost} from './core';
@@ -192,16 +191,6 @@ export class NgtscProgram implements api.Program {
 
               this.compiler.incrementalDriver.recordSuccessfulEmit(writtenSf);
             }
-          }
-
-          // If Closure annotations are being produced, tsickle should be adding `@nocollapse` to
-          // any static fields present. However, tsickle doesn't yet handle synthetic fields added
-          // during other transformations, so this hack is in place to ensure Ivy definitions get
-          // properly annotated, pending an upstream fix in tsickle.
-          //
-          // TODO(alxhub): remove when tsickle properly annotates synthetic fields.
-          if (this.closureCompilerEnabled && fileName.endsWith('.js')) {
-            data = nocollapseHack(data);
           }
           this.host.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
         };

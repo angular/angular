@@ -47,7 +47,8 @@ class IvyVisitor extends Visitor {
   constructor(
       private compilation: TraitCompiler, private reflector: ReflectionHost,
       private importManager: ImportManager, private defaultImportRecorder: DefaultImportRecorder,
-      private isCore: boolean, private constantPool: ConstantPool) {
+      private isClosureCompilerEnabled: boolean, private isCore: boolean,
+      private constantPool: ConstantPool) {
     super();
   }
 
@@ -72,6 +73,16 @@ class IvyVisitor extends Visitor {
         const property = ts.createProperty(
             undefined, [ts.createToken(ts.SyntaxKind.StaticKeyword)], field.name, undefined,
             undefined, exprNode);
+
+        if (this.isClosureCompilerEnabled) {
+          // Closure compiler transforms the form `Service.ɵprov = X` into `Service$ɵprov = X`. To
+          // prevent this transformation, such assignments need to be annotated with @nocollapse.
+          // Note that tsickle is typically responsible for adding such annotations, however it
+          // doesn't yet handle synthetic fields added during other transformations.
+          ts.addSyntheticLeadingComment(
+              property, ts.SyntaxKind.MultiLineCommentTrivia, '* @nocollapse ',
+              /* hasTrailingNewLine */ false);
+        }
 
         field.statements
             .map(
@@ -215,7 +226,8 @@ function transformIvySourceFile(
 
   // Recursively scan through the AST and perform any updates requested by the IvyCompilation.
   const visitor = new IvyVisitor(
-      compilation, reflector, importManager, defaultImportRecorder, isCore, constantPool);
+      compilation, reflector, importManager, defaultImportRecorder, isClosureCompilerEnabled,
+      isCore, constantPool);
   let sf = visit(file, visitor, context);
 
   // Generate the constant statements first, as they may involve adding additional imports
