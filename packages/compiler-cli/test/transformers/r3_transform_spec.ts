@@ -40,14 +40,16 @@ describe('r3_transform_spec', () => {
   });
 
   it('should be able to modify multiple classes in the same module', () => {
-    const result = emit(getAngularClassTransformerFactory([{
-      fileName: someGenFileName,
-      statements: [
-        classMethod(new o.ReturnStatement(o.variable('v')), ['v'], 'someMethod', 'SomeClass'),
-        classMethod(
-            new o.ReturnStatement(o.variable('v')), ['v'], 'someOtherMethod', 'SomeOtherClass')
-      ]
-    }]));
+    const result = emit(getAngularClassTransformerFactory(
+        [{
+          fileName: someGenFileName,
+          statements: [
+            classMethod(new o.ReturnStatement(o.variable('v')), ['v'], 'someMethod', 'SomeClass'),
+            classMethod(
+                new o.ReturnStatement(o.variable('v')), ['v'], 'someOtherMethod', 'SomeOtherClass')
+          ]
+        }],
+        false));
     expect(result).toContain('static someMethod(v) { return v; }');
     expect(result).toContain('static someOtherMethod(v) { return v; }');
   });
@@ -94,7 +96,7 @@ describe('r3_transform_spec', () => {
       fileName: someGenFileName,
       statements: [classMethod(stmt, parameters, methodName, className)]
     };
-    return emit(getAngularClassTransformerFactory([module]));
+    return emit(getAngularClassTransformerFactory([module], false));
   }
 
   function emitStaticField(
@@ -104,7 +106,7 @@ describe('r3_transform_spec', () => {
       fileName: someGenFileName,
       statements: [classField(initializer, fieldName, className)]
     };
-    return emit(getAngularClassTransformerFactory([module]));
+    return emit(getAngularClassTransformerFactory([module], false));
   }
 });
 

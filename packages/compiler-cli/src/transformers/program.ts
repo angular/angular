@@ -562,11 +562,13 @@ class AngularCompilerProgram implements Program {
           getExpressionLoweringTransformFactory(this.loweringMetadataTransform, this.tsProgram));
       metadataTransforms.push(this.loweringMetadataTransform);
     }
+    const annotateForClosureCompiler = this.options.annotateForClosureCompiler || false;
     if (genFiles) {
-      beforeTs.push(getAngularEmitterTransformFactory(genFiles, this.getTsProgram()));
+      beforeTs.push(getAngularEmitterTransformFactory(
+          genFiles, this.getTsProgram(), annotateForClosureCompiler));
     }
     if (partialModules) {
-      beforeTs.push(getAngularClassTransformerFactory(partialModules));
+      beforeTs.push(getAngularClassTransformerFactory(partialModules, annotateForClosureCompiler));
 
       // If we have partial modules, the cached metadata might be incorrect as it doesn't reflect
       // the partial module transforms.

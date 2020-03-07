@@ -33,7 +33,7 @@ describe('TypeScriptNodeEmitter', () => {
   beforeEach(() => {
     context = new MockAotContext('/', FILES);
     host = new MockCompilerHost(context);
-    emitter = new TypeScriptNodeEmitter();
+    emitter = new TypeScriptNodeEmitter(false);
     someVar = o.variable('someVar', null, null);
   });
 
