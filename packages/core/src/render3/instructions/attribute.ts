@@ -33,7 +33,7 @@ export function ɵɵattribute(
   if (bindingUpdated(lView, bindingIndex, value)) {
     const tView = getTView();
     const tNode = getSelectedTNode();
-    elementAttributeInternal(tNode, lView, name, value, sanitizer || null, namespace || null);
+    elementAttributeInternal(tNode, lView, name, value, sanitizer, namespace);
     ngDevMode && storePropertyBindingMetadata(tView.data, tNode, 'attr.' + name, bindingIndex);
   }
   return ɵɵattribute;

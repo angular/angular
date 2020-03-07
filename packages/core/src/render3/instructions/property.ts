@@ -40,7 +40,7 @@ export function ɵɵproperty<T>(
     const tView = getTView();
     const tNode = getSelectedTNode();
     elementPropertyInternal(
-        tView, tNode, lView, propName, value, lView[RENDERER], sanitizer || null, false);
+        tView, tNode, lView, propName, value, lView[RENDERER], sanitizer, false);
     ngDevMode && storePropertyBindingMetadata(tView.data, tNode, propName, bindingIndex);
   }
   return ɵɵproperty;

@@ -942,7 +942,7 @@ function mapPropName(name: string): string {
 
 export function elementPropertyInternal<T>(
     tView: TView, tNode: TNode, lView: LView, propName: string, value: T, renderer: Renderer3,
-    sanitizer: SanitizerFn | null, nativeOnly: boolean): void {
+    sanitizer?: SanitizerFn | null, nativeOnly?: boolean): void {
   ngDevMode && assertNotSame(value, NO_CHANGE as any, 'Incoming value should never be NO_CHANGE.');
   const element = getNativeByTNode(tNode, lView) as RElement | RComment;
   let inputData = tNode.inputs;
@@ -968,7 +968,7 @@ export function elementPropertyInternal<T>(
 
     // It is assumed that the sanitizer is only added when the compiler determines that the
     // property is risky, so sanitization can be done without further checks.
-    value = sanitizer !== null ? (sanitizer(value, tNode.tagName || '', propName) as any) : value;
+    value = sanitizer != null ? (sanitizer(value, tNode.tagName || '', propName) as any) : value;
     if (isProceduralRenderer(renderer)) {
       renderer.setProperty(element as RElement, propName, value);
     } else if (!isAnimationProp(propName)) {
@@ -1435,8 +1435,8 @@ function addComponentLogic<T>(lView: LView, hostTNode: TElementNode, def: Compon
 }
 
 export function elementAttributeInternal(
-    tNode: TNode, lView: LView, name: string, value: any, sanitizer: SanitizerFn | null,
-    namespace: string | null) {
+    tNode: TNode, lView: LView, name: string, value: any, sanitizer?: SanitizerFn | null,
+    namespace?: string | null) {
   ngDevMode && assertNotSame(value, NO_CHANGE as any, 'Incoming value should never be NO_CHANGE.');
   ngDevMode && validateAgainstEventAttributes(name);
   const element = getNativeByTNode(tNode, lView) as RElement;
@@ -1448,7 +1448,7 @@ export function elementAttributeInternal(
   } else {
     ngDevMode && ngDevMode.rendererSetAttribute++;
     const strValue =
-        sanitizer === null ? renderStringify(value) : sanitizer(value, tNode.tagName || '', name);
+        sanitizer == null ? renderStringify(value) : sanitizer(value, tNode.tagName || '', name);
 
 
     if (isProceduralRenderer(renderer)) {
