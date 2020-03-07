@@ -22,7 +22,6 @@ import {CodeGenerator, TsCompilerAotCompilerTypeCheckHostAdapter, getOriginalRef
 import {InlineResourcesMetadataTransformer, getInlineResourcesTransformFactory} from './inline_resources';
 import {LowerMetadataTransform, getExpressionLoweringTransformFactory} from './lower_expressions';
 import {MetadataCache, MetadataTransformer} from './metadata_cache';
-import {nocollapseHack} from './nocollapse_hack';
 import {getAngularEmitterTransformFactory} from './node_emitter_transform';
 import {PartialModuleMetadataTransformer} from './r3_metadata_transform';
 import {StripDecoratorsMetadataTransformer, getDecoratorStripTransformerFactory} from './r3_strip_decorators';
@@ -281,12 +280,6 @@ class AngularCompilerProgram implements Program {
 
     const writeTsFile: ts.WriteFileCallback =
         (outFileName, outData, writeByteOrderMark, onError?, sourceFiles?) => {
-          const sourceFile = sourceFiles && sourceFiles.length == 1 ? sourceFiles[0] : null;
-          let genFile: GeneratedFile|undefined;
-          if (this.options.annotateForClosureCompiler && sourceFile &&
-              TS.test(sourceFile.fileName)) {
-            outData = nocollapseHack(outData);
-          }
           this.writeFile(outFileName, outData, writeByteOrderMark, onError, undefined, sourceFiles);
         };
 
@@ -376,9 +369,6 @@ class AngularCompilerProgram implements Program {
               if (originalFile) {
                 emittedSourceFiles.push(originalFile);
               }
-            }
-            if (this.options.annotateForClosureCompiler && TS.test(sourceFile.fileName)) {
-              outData = nocollapseHack(outData);
             }
           }
           this.writeFile(outFileName, outData, writeByteOrderMark, onError, genFile, sourceFiles);
@@ -572,11 +562,13 @@ class AngularCompilerProgram implements Program {
           getExpressionLoweringTransformFactory(this.loweringMetadataTransform, this.tsProgram));
       metadataTransforms.push(this.loweringMetadataTransform);
     }
+    const annotateForClosureCompiler = this.options.annotateForClosureCompiler || false;
     if (genFiles) {
-      beforeTs.push(getAngularEmitterTransformFactory(genFiles, this.getTsProgram()));
+      beforeTs.push(getAngularEmitterTransformFactory(
+          genFiles, this.getTsProgram(), annotateForClosureCompiler));
     }
     if (partialModules) {
-      beforeTs.push(getAngularClassTransformerFactory(partialModules));
+      beforeTs.push(getAngularClassTransformerFactory(partialModules, annotateForClosureCompiler));
 
       // If we have partial modules, the cached metadata might be incorrect as it doesn't reflect
       // the partial module transforms.
