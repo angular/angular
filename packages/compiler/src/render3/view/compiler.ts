@@ -747,7 +747,7 @@ function createHostListeners(eventBindings: ParsedEvent[], name?: string): o.Sta
   eventBindings.forEach(binding => {
     let bindingName = binding.name && sanitizeIdentifier(binding.name);
     const bindingFnName = binding.type === ParsedEventType.Animation ?
-        prepareSyntheticListenerFunctionName(bindingName, binding.targetOrPhase) :
+        prepareSyntheticListenerFunctionName(bindingName, binding.targetOrPhase !) :
         bindingName;
     const handlerName = name && bindingName ? `${name}_${bindingFnName}_HostBindingHandler` : null;
     const params = prepareEventListenerParameters(BoundEvent.fromParsedEvent(binding), handlerName);
