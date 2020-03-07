@@ -2119,6 +2119,55 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
   });
 
+  describe('invalid translations handling', () => {
+    it('should throw in case invalid ICU is present in a template', () => {
+      // Error message is produced by Compiler.
+      expect(() => initWithTemplate(AppComp, '{count, select, 10 {ten} other {other}'))
+          .toThrowError(
+              /Invalid ICU message. Missing '}'. \("{count, select, 10 {ten} other {other}\[ERROR ->\]"\)/);
+    });
+
+    it('should throw in case invalid ICU is present in translation', () => {
+      loadTranslations({
+        [computeMsgId('{VAR_SELECT, select, 10 {ten} other {other}}')]:
+            // Missing "}" at the end of translation.
+            '{VAR_SELECT, select, 10 {dix} other {autre}'
+      });
+
+      // Error message is produced at runtime.
+      expect(() => initWithTemplate(AppComp, '{count, select, 10 {ten} other {other}}'))
+          .toThrowError(
+              /Unable to parse ICU expression in "{�0�, select, 10 {dix} other {autre}" message./);
+    });
+
+    it('should throw in case unescaped curly braces are present in a template', () => {
+      // Error message is produced by Compiler.
+      expect(() => initWithTemplate(AppComp, 'Text { count }'))
+          .toThrowError(
+              /Do you have an unescaped "{" in your template\? Use "{{ '{' }}"\) to escape it/);
+    });
+
+    it('should throw in case curly braces are added into translation', () => {
+      loadTranslations({
+        // Curly braces which were not present in a template were added into translation.
+        [computeMsgId('Text')]: 'Text { count }',
+      });
+      expect(() => initWithTemplate(AppComp, '<div i18n>Text</div>'))
+          .toThrowError(/Unable to parse ICU expression in "Text { count }" message./);
+    });
+  });
+
+  it('should handle extra HTML in translation as plain text', () => {
+    loadTranslations({
+      // Translation contains HTML tags that were not present in original message.
+      [computeMsgId('Text')]: 'Text <div *ngIf="true">Extra content</div>',
+    });
+    const fixture = initWithTemplate(AppComp, '<div i18n>Text</div>');
+
+    const element = fixture.nativeElement;
+    expect(element).toHaveText('Text <div *ngIf="true">Extra content</div>');
+  });
+
   it('should reflect lifecycle hook changes in text interpolations in i18n block', () => {
     @Directive({selector: 'input'})
     class InputsDir {
