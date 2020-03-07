@@ -538,7 +538,8 @@ export function setSelectedIndex(index: number) {
  * Gets the `tNode` that represents currently selected element.
  */
 export function getSelectedTNode() {
-  return getTNode(instructionState.lFrame.tView, instructionState.lFrame.selectedIndex);
+  const lFrame = instructionState.lFrame;
+  return getTNode(lFrame.tView, lFrame.selectedIndex);
 }
 
 /**
