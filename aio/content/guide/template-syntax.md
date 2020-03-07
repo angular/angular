@@ -318,28 +318,51 @@ When using template expressions follow these guidelines:
 -->
 템플릿 표현식은 다음 가이드라인을 준수하며 사용하는 것을 권장합니다:
 
-* [Simplicity](guide/template-syntax#simplicity)
-* [Quick execution](guide/template-syntax#quick-execution)
-* [No visible side effects](guide/template-syntax#no-visible-side-effects)
+* [간단하게](guide/template-syntax#simplicity)
+* [빠르게 실행되도록](guide/template-syntax#quick-execution)
+* [외부 영향 최소화](guide/template-syntax#no-visible-side-effects)
 
 
+{@a simplicity}
+<!--
 #### Simplicity
+-->
+#### 간단하게
 
+<!--
 Although it's possible to write complex template expressions, it's a better
 practice to avoid them.
 
 A property name or method call should be the norm, but an occasional Boolean negation, `!`, is OK.
 Otherwise, confine application and business logic to the component,
 where it is easier to develop and test.
+-->
+템플릿 표현식을 복잡하게 작성해도 동작은 하지만 이런 로직은 피하는 것이 좋습니다.
 
+프로퍼티 이름이나 메소드 실행을 간단하게 작성하는 것이 일반적이고 필요하면 `!`와 같은 불리언 값을 바꾸는 것도 좋습니다.
+하지만 애플리케이션이나 컴포넌트 로직의 일부를 템플릿 표현식에 작성하면 개발하기도 어렵고 테스트하기도 어렵습니다.
+
+
+{@a quick-execution}
+<!--
 #### Quick execution
+-->
+#### 빠르게 실행되도록
 
+<!--
 Angular executes template expressions after every change detection cycle.
 Change detection cycles are triggered by many asynchronous activities such as
 promise resolutions, HTTP results, timer events, key presses and mouse moves.
 
 Expressions should finish quickly or the user experience may drag, especially on slower devices.
 Consider caching values when their computation is expensive.
+-->
+Angular는 변화감지 싸이클마다 템플릿 표현식을 실행합니다.
+그리고 변화감지 싸이클은 프로미스가 완료되거나 HTTP 응답이 왔을때, 타이머 이벤트나 키 이벤트, 마우스 이벤트가 있을 때도 실행됩니다.
+
+마우스 드래그를 활용하거나 디바이스의 사양이 낮을수록 템플릿 표현식은 빠르게 실행되어야 합니다.
+연산이 많이 필요하다면 캐싱을 활용하는 방법도 고려해 보세요.
+
 
 {@a no-visible-side-effects}
 <!--
@@ -556,14 +579,14 @@ Angular provides many kinds of data-binding. Binding types can be grouped into t
 애플리케이션 로직을 쉽고 빠르면서 간결하게 작성할 수 있습니다.
 바인딩할 객체와 HTML을 단순하게 연결하기만 하면 그 이후는 프레임워크가 알아서 필요한 작업을 수행합니다.
 
-For a demonstration of the syntax and code snippets in this section, see the <live-example name="binding-syntax">binding syntax example</live-example>.
+이 섹션에서 다루는 문법이 실행되는 것을 직접 확인하려면 <live-example name="binding-syntax">바인딩 문법 예제</live-example>를 참소하세요.
 
 Angular는 데이터 바인딩을 여러가지 방식으로 제공합니다.
 이 문서에서는 Angular가 제공하는 데이터 바인딩을 기본부터 차근차근 알아봅시다.
 
-* From the _source-to-view_
-* From _view-to-source_
-* Two-way sequence: _view-to-source-to-view_
+* 소스에서 화면으로
+* 화면에서 소스로
+* 양방향으로: 화면에서 소스로, 소스에서 화면으로
 
 <style>
   td, th {vertical-align: top}
@@ -596,11 +619,18 @@ Angular는 데이터 바인딩을 여러가지 방식으로 제공합니다.
   </tr>
   <tr>
      <td>
+      <!--
       Interpolation<br>
       Property<br>
       Attribute<br>
       Class<br>
       Style
+      -->
+      문자열(Interpolation)<br>
+      프로퍼티(property)<br>
+      어트리뷰트(attribute)<br>
+      클래스(class)<br>
+      스타일(style)
     </td>
     <td>
 
@@ -620,11 +650,17 @@ Angular는 데이터 바인딩을 여러가지 방식으로 제공합니다.
     </td>
 
     <td>
+      <!--
       One-way<br>from data source<br>to view target
+      -->
+      원천 소스에서<br>화면으로<br>단방향
     </td>
     <tr>
       <td>
+        <!--
         Event
+        -->
+        이벤트
       </td>
       <td>
         <!--
@@ -640,7 +676,10 @@ Angular는 데이터 바인딩을 여러가지 방식으로 제공합니다.
       </td>
 
       <td>
+        <!--
         One-way<br>from view target<br>to data source
+        -->
+        대상에서<br>데이터 소스로<br>단방향
       </td>
     </tr>
     <tr>
@@ -683,10 +722,10 @@ You don't have to do anything special to access a directive member in a template
 -->
 문자열 바인딩을 제외하면 모든 바인딩 방식에는 등호 왼쪽에 **바인딩할 대상의 이름**이 있고, `[]`나 `()`로 둘러싸여 있거나 `bind-`, `on-`, `bindon-` 접두사가 붙습니다.
 
-The *target* of a binding is the property or event inside the binding punctuation: `[]`, `()` or `[()]`.
+바인딩 *대상*은 `[]`나 `()`, `[()]` 안에 들어가는 프로퍼티나 이벤트입니다.
 
-Every public member of a **source** directive is automatically available for binding.
-You don't have to do anything special to access a directive member in a template expression or statement.
+디렉티브의 멤버 중 `public`으로 지정된 멤버는 모두 바인딩할 수 있습니다.
+디렉티브의 템플릿 표현식이나 실행문에 사용하기 위해 특별히 뭔가 더 할 것은 없습니다.
 
 <!--
 ### Data-binding and HTML
@@ -705,12 +744,20 @@ you modify those elements by setting element attributes with string constants.
 <button disabled>Save</button>
 ```
 
+<!--
 With data-binding, you can control things like the state of a button:
+-->
+데이터 바인딩을 활용하면 다음과 같이 버튼의 상태를 제어할 수 있습니다:
 
 <code-example path="binding-syntax/src/app/app.component.html" region="disabled-button" header="src/app/app.component.html"></code-example>
 
+<!--
 Notice that the binding is to the `disabled` property of the button's DOM element,
 **not** the attribute. This applies to data-binding in general. Data-binding works with *properties* of DOM elements, components, and directives, not HTML *attributes*.
+-->
+위 예제 코드에서 버튼의 DOM 엘리먼트에 바인딩된 `disabled`는 프로퍼티이며 어트리뷰트가 **아닙니다.**
+데이터 바인딩은 이런 방식이 일반적입니다.
+데이터 바인딩은 DOM 엘리먼트나 컴포넌트, 이렉티브의 *프로퍼티*와 바인딩합니다. *어트리뷰트*가 아닙니다.
 
 <!--
 ### HTML attribute vs. DOM property
@@ -720,9 +767,6 @@ Notice that the binding is to the `disabled` property of the button's DOM elemen
 <!--
 The distinction between an HTML attribute and a DOM property is key to understanding
 how Angular binding works. **Attributes are defined by HTML. Properties are accessed from DOM (Document Object Model) nodes.**
--->
-Angular에서 바인딩이 어떻게 동작하는지 이해하려면, HTML 어트리뷰트와 DOM 프로퍼티를 확실하게 구분해야 합니다.
-**어트리뷰트는 HTML에 지정합니다. 그리고 프로퍼티는 DOM(Document Object Model)에 지정합니다.**
 
 * A few HTML attributes have 1:1 mapping to properties; for example, `id`.
 
@@ -736,76 +780,143 @@ In Angular, the only role of HTML attributes is to initialize element and direct
 **Template binding works with *properties* and *events*, not *attributes*.**
 
 When you write a data-binding, you're dealing exclusively with the *DOM properties* and *events* of the target object.
+-->
+Angular에서 바인딩이 어떻게 동작하는지 이해하려면, HTML 어트리뷰트와 DOM 프로퍼티를 확실하게 구분해야 합니다.
+**어트리뷰트는 HTML에 지정합니다. 그리고 프로퍼티는 DOM(Document Object Model)에 지정합니다.**
+
+* 일부 HTML 어트리뷰트는 프로퍼티와 1:1 매칭됩니다. `id`가 그렇습니다.
+
+* 일부 HTML 어트리뷰트는 프로퍼티와 매칭되지 않는 어트리뷰트도 있습니다. `aria-*` 어트리뷰트가 그렇습니다.
+
+* 일부 DOM 프로퍼티는 해당되는 어트리뷰트가 없는 경우도 있습니다. `textContent`가 그렇습니다.
+
+이름이 같은 것도 있지만 *HTML 어트리뷰트*와 *DOM 프로퍼티*는 다르다는 것을 명심해야 합니다.
+Angular에서 HTML 어트리뷰트는 엘리먼트나 디렉티브 상태를 초기화할 때만 사용합니다.
+
+**템플릿에서 하는 바인딩도 *어트리뷰트*가 아니라 *프로퍼티*와 *이벤트*를 바인딩하는 것입니다.**
+
+그래서 데이터 바인딩은 *DOM 프로퍼티*와 *이벤트*만 대상 객체와 바인딩하는 것을 의미합니다.
 
 <div class="alert is-helpful">
 
+<!--
 This general rule can help you build a mental model of attributes and DOM properties:
 **Attributes initialize DOM properties and then they are done.
 Property values can change; attribute values can't.**
 
 There is one exception to this rule.
 Attributes can be changed by `setAttribute()`, which re-initializes corresponding DOM properties.
+-->
+어트리뷰트와 DOM 프로퍼티를 구별하려면 확실한 규칙을 세워놓는 것이 좋습니다:
+**어트리뷰트는 DOM 프로퍼티를 초기화하고 나면 역할을 다한 것입니다.
+프로퍼티는 변경될 수 있지만 어트리뷰트는 변경되지 않습니다.**
+
+다만 한가지 예외는 있습니다.
+`setAttribute()`를 사용하면 어트리뷰트가 변경되기 때문에 관련된 DOM 프로퍼티도 다시 초기화됩니다.
 
 </div>
 
+<!--
 For more information, see the [MDN Interfaces documentation](https://developer.mozilla.org/en-US/docs/Web/API#Interfaces) which has API docs for all the standard DOM elements and their properties.
 Comparing the [`<td>` attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td) attributes to the [`<td>` properties](https://developer.mozilla.org/en-US/docs/Web/API/HTMLTableCellElement) provides a helpful example for differentiation.
 In particular, you can navigate from the attributes page to the properties via "DOM interface" link, and navigate the inheritance hierarchy up to `HTMLTableCellElement`.
+-->
+더 자세한 내용을 알아보려면 [MDN 인터페이스 문서](https://developer.mozilla.org/en-US/docs/Web/API#Interfaces)에서 설명하는 표준 DOM 엘리먼트와 이 엘리먼트의 프로퍼티에 대한 설명을 보는 것도 좋습니다.
+그리고 [`<td>` 어트리뷰트](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td)와 [`<td>` 프로퍼티](https://developer.mozilla.org/en-US/docs/Web/API/HTMLTableCellElement)가 어떻게 다른지 비교해 보는 것도 좋습니다.
+이 문서에서는 "DOM 인터페이스" 링크를 통해 어트리뷰트와 프로퍼티를 비교해볼 수 있기 때문에 `HTMLTableCellElement`의 계층 구조에 대해서도 함께 보면 더 좋습니다.
 
 
+<!--
 #### Example 1: an `<input>`
+-->
+#### 예제 1: `<input>`
 
+<!--
 When the browser renders `<input type="text" value="Sarah">`, it creates a
 corresponding DOM node with a `value` property initialized to "Sarah".
+-->
+브라우저가 `<input type="text" value="Sarah">` 엘리먼트를 렌더링하면 DOM 노드의 `value` 프로퍼티를 "Sarah"로 초기화합니다.
 
 ```html
 <input type="text" value="Sarah">
 ```
 
+<!--
 When the user enters "Sally" into the `<input>`, the DOM element `value` *property* becomes "Sally".
 However, if you look at the HTML attribute `value` using `input.getAttribute('value')`, you can see that the *attribute* remains unchanged&mdash;it returns "Sarah".
 
-<!--
 The HTML attribute `value` specifies the *initial* value; the DOM `value` property is the *current* value.
--->
-HTML에 있는 `value` 어트리뷰트는 연결된 DOM 필드의 값을 초기화할 뿐이고, DOM에 있는 `value` 프로퍼티가 *현재값* 을 나타냅니다.
 
 To see attributes versus DOM properties in a functioning app, see the <live-example name="binding-syntax"></live-example> especially for binding syntax.
+-->
+그리고 사용자가 `<input>` 엘리먼트에 "Sally"를 입력하면 DOM 엘리먼트의 `value` *프로퍼티*가 "Sally"로 변경됩니다.
+하지만 `input.getAttribute('value')`를 실행해서 `value` HTML 어트리뷰트의 값을 확인해보면 이 *어트리뷰트* 값은 여전히 "Sarah"인 것을 확인할 수 있습니다.
 
+`value` HTML 어트리뷰트는 *초기값*을 지정하는 용도로 사용되지만, `value` DOM 프로퍼티는 *현재값*을 저장하는 용도로 사용됩니다.
+
+어트리뷰트와 DOM 프로퍼티의 관계를 동작하는 앱에서 확인해 보려면 <live-example name="binding-syntax"></live-example>를 참고하세요.
+
+<!--
 #### Example 2: a disabled button
+-->
+#### 예제 2: 버튼 비활성화
 
+<!--
 The `disabled` attribute is another example. A button's `disabled`
 *property* is `false` by default so the button is enabled.
 
 When you add the `disabled` *attribute*, its presence alone
 initializes the button's `disabled` *property* to `true`
 so the button is disabled.
+-->
+`disabled` 어트리뷰트는 조금 다릅니다.
+버튼의 `disabled` *프로퍼티*의 기본값은 `false`이기 때문에 기본 상태에서 버튼은 활성화되어 있습니다.
+
+그리고 `disabled` *어트리뷰트*를 추가하면 이 어트리뷰트는 버튼의 `disabled` *프로퍼티* 값을 `true`로 바꾸기 때문에 버튼도 비활성화 됩니다.
 
 ```html
 <button disabled>Test Button</button>
 ```
 
+<!--
 Adding and removing the `disabled` *attribute* disables and enables the button.
 However, the value of the *attribute* is irrelevant,
 which is why you cannot enable a button by writing `<button disabled="false">Still Disabled</button>`.
 
 To control the state of the button, set the `disabled` *property*,
+-->
+이때 `disabled` *어트리뷰트*가 존재하는지에 따라서 버튼이 활성화 되거나 비활성화 되며, *어트리뷰트* 값은 중요하지 않습니다.
+`<button disabled="false">Still Disabled</button>`와 같이 작성해도 버튼은 비활성화됩니다.
+
+버튼의 활성화 여부를 결정하는 것은 `disabled` *프로퍼티* 입니다.
 
 <div class="alert is-helpful">
 
+<!--
 Though you could technically set the `[attr.disabled]` attribute binding, the values are different in that the property binding requires to a boolean value, while its corresponding attribute binding relies on whether the value is `null` or not. Consider the following:
+-->
+문법으로 보면 `[attr.disabled]` 처럼 어트리뷰트 바인딩을 사용할 수도 있지만 이 때 지정하는 값은 프로퍼티를 바인딩할 때 사용했던 불리언 값이 아니라 `null`이거나 `null`이 아닌 값만을 구별합니다.
+다음 코드를 참고하세요:
 
 ```html
 <input [disabled]="condition ? true : false">
 <input [attr.disabled]="condition ? 'disabled' : null">
 ```
 
+<!--
 Generally, use property binding over attribute binding as it is more intuitive (being a boolean value), has a shorter syntax, and is more performant.
+-->
+일반적으로 프로퍼티 바인딩을 사용하면 어트리뷰트 바인딩을 사용할때보다 코드가 짧으며, 성능이 좋고 이 경우에는 불리언 값을 그대로 반영하기 때문에 좀 더 직관적입니다.
 
 </div>
 
 
+<!--
 To see the `disabled` button example in a functioning app, see the <live-example name="binding-syntax"></live-example> especially for binding syntax. This example shows you how to toggle the disabled property from the component.
+-->
+`disabled` 버튼이 동작하는 것을 직접 확인해 보려면 <live-example name="binding-syntax"></live-example>에서 바인딩 문법 쪽을 보면 좋습니다.
+이 예제는 컴포넌트의 프로퍼티에 따라 버튼의 비활성화를 토글하는 예제입니다.
+
 
 ## Binding types and targets
 

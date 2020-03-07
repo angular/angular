@@ -171,7 +171,10 @@ Now run the app. It should display the title and hero name:
   <img src="generated/images/guide/displaying-data/title-and-hero.png" alt="페이지 제목과 히어로가 표시된 화면">
 </div>
 
+<!--
 The next few sections review some of the coding choices in the app.
+-->
+다음 섹션에서는 앱을 개발할때 고민이 될 수 있는 문제에 대해 생각해 봅시다.
 
 <!--
 ## Template inline or template file?
@@ -204,7 +207,10 @@ In either style, the template data bindings have the same access to the componen
 
 <div class="alert is-helpful">
 
+  <!--
   By default, the Angular CLI command [`ng generate component`](cli/generate) generates components with a template file. You can override that with:
+  -->
+  Angular CLI로 [`ng generate component`](cli/generate) 명령을 실행하면 템플릿 파일을 별개로 생성합니다. 인라인 템플릿으로 생성하려면 다음과 같이 `-it` 옵션을 주면 됩니다:
 
   <code-example hideCopy language="sh" class="code-shell">
     ng generate component hero -it
