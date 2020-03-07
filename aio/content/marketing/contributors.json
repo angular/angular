@@ -806,6 +806,485 @@
     "bio": "Kwinten is a GDE for Angular with a passion for reactive coding. He works as a software engineer for Stackblitz. He shares his passion for Angular and coding through blogposts and training sessions with the company he co-founded called Strongbrew.",
     "groups": ["GDE"]
   },
+  "abraham": {
+    "name": "Abraham Williams",
+    "twitter": "abraham",
+    "website": "https://abrah.am/",
+    "bio": "An experienced developer, start-up founder, and international speaker, Abraham Williams brings a broad range of skills to his current role as a senior developer at Bendyworks. A top 1% contributor at Stack Overflow and an active member of Google Developer Groups, Abraham has been recognized as a Developer Expert for his ability to identify technology problems and provide quality solutions in the community.",
+    "groups": ["GDE"],
+    "picture": "abraham.jpg"
+  },
+  "aaronfrost": {
+      "name": "Aaron Frost",
+      "twitter": "aaronfrost",
+      "website": "https://www.twitter.com/aaronfrost",
+      "bio": "Aaron (or Frosty) is one of the co-founders of ng-conf, the world's original Angular conference. He spends most of the year preparing to host the largest gathering of Angular presenters and conference attendees. Having built teams and software for most of his career, Frosty founded HeroDevs, a software consulting team of elite web developers that service enterprise, corporate and startup customers. He is also a world-traveled conference presenter and emcee.",
+      "groups": ["GDE"],
+      "picture": "aaronfrost.jpg"
+  },
+  "jdjuan": {
+      "name": "Juan Herrera",
+      "twitter": "jdjuan",
+      "website": "https://www.twitter.com/jdjuan",
+      "bio": "Juan Herrera is a Colombian Software Engineer based in Graz, Austria. He works for Parkside Interactive where he constantly advocates for a culture of engineering excellence and Angular proficiency. He is a certified Sprint Master, and community organizer. He loves dancing and singing 🕺🏻",
+      "groups": ["GDE"],
+      "picture": "jdjuan.jpg"
+  },
+  "jilles": {
+    "name": "Jilles Soeters",
+    "twitter": "@Jilles",
+    "website": "@Jilles",
+    "bio": "Jilles is a passionate web developer and front-end fanboy. Occasional blogger and conference speaker / attender. Currently a full stack developer at Udemy.",
+    "groups": ["GDE"],
+    "picture": "jilles.jpg"
+  },
+  "asnowwolf": {
+    "name": "Zhicheng Wang",
+    "twitter": "https://github.com/asnowwolf",
+    "website": "https://github.com/asnowwolf",
+    "bio": "Zhicheng Wang is a senior R&D consultant at ThoughWorks. He is a technology enthusiast and he is a passionate advocate of “Simplicity, Professionalism and Sharing”. In his eighteen years of R&D career, he worked as tester, R&D engineer, project manager, product manager and CTO, across multiple areas in the Tech industry, including translation software, web browser software, security software, VoIP software and hardware, CRM system and big data monitoring system etc.",
+    "groups": ["GDE"],
+    "picture": "asnowwolf.jpg"
+  },
+  "brandontroberts": {
+    "name": "Brandon Roberts",
+    "twitter": "@brandontroberts",
+    "website": "@brandontroberts",
+    "bio": "Brandon is a Software Engineer at Synapse Wireless building web applications for Industrial IoT solutions. He is a natural born troubleshooter and is passionate about writing good documentation to help developers. He is a core contributor to the NgRx project and previously a member of the Angular docs team.",
+    "groups": ["GDE"],
+    "picture": "brandontroberts.jpg"
+  },
+  "juarezpaf": {
+    "name": "Juarez Filho",
+    "twitter": "@juarezpaf",
+    "website": "https://github.com/juarezpaf",
+    "bio": "Juarez is passionate about California and Web. A Traveler who loves to tell his adventures with Google Technologies, including Firebase, Polymer, and Angular all over the world. He joined the Google Developers Group program in 2014 helping communities to learn, discover and share everything related to Technology. Juarez also has spoken and taught at conferences like DevFests, Google Dev Summit Brazil, Front-end Conferences and other activities.",
+    "groups": ["GDE"],
+    "picture": "juarezpaf.png"
+  },
+  "gionkunz": {
+    "name": "Gion Kunz",
+    "twitter": "GionKunz",
+    "website": "https://syncrea.ch/",
+    "bio": "Gion Kunz has years of experience with web technologies and is totally in love with web standards. With over 10 years of experience of writing interactive user interfaces using JavaScript, he constantly evaluates new approaches and frameworks. He's worked with the Angular Framework for over 5 years and was one of the early adopters of the second major version of the framework. Gion speaks about Angular 2 at conferences, and he helps with the organization of the Zurich Angular Meetup group in Switzerland. He's working as a freelance developer and consultant in Zurich Switzerland, where he helps customers building websites and web applications. Besides working for clients, Gion is an instructor at the SAE Institute in Zurich and loves to get his students enthusiastic about the Web. He is also the creator of the responsive charting library Chartist, and he loves to contribute to the open source community whenever he finds time.",
+    "groups": ["GDE"],
+    "picture": "gionkunz.png"
+  },
+  "biondifabio": {
+    "name": "Fabio Biondi",
+    "twitter": "biondifabio",
+    "website": "http://www.fabiobiondi.io/",
+    "bio": "Fabio is both a community leader and a frequent contributor in many Italian front-end usergroups (Angular, React, Javascript). He's a Google Developer Expert in Web Technologies / Angular & Microsoft MVP with more than 15 years of experience in developing enterprise level applications, interactive experiences and UI components in several languages and web technologies. Currently he holds meetups, events and training courses all over Italy. His particular specialism is front-end applications and related aspects, both visuals and architectural. He daily uses cutting-edge libraries and frameworks offering training, development, code review and consulting on Angular, React, Typescript/ES6, Redux, NGRX, RxJS, Firebase, D3.js and several other web technologies.",
+    "groups": ["GDE"],
+    "picture": "biondifabio.png"
+  },
+  "anasfirdousi": {
+    "name": "Anas Raza Firdousi",
+    "twitter": "AnasFirdousi",
+    "website": "http://www.anasfirdousi.com/",
+    "bio": "Anas.R.Firdousi is a software enthusiast and JavaScript veteran. He has over a decade of experience building scalable enterprise applications for fortune 5 companies. He is an Angular advocate and active member of Angular community in Bay Area, California and local Angular JS community in Pakistan. Anas founded and manages Angular Pakistan including all meetups, events, and workshops for the local Angular community in Pakistan. Anas also manages Angular community relationships in Pakistan bringing in top software companies and universities on board for regular meetups. Anas has also helped critical teams at Apple Inc. and PayPal in adopting Angular as their main front-end framework. Anas also manages JavaScript and Angular meetups at Apple bringing in both internal & external talent together. Anas has given talks on Angular related subjects at numerous conferences across the globe including but not limited to ng-conf at Salt Lake City, Angular Connect in London, Webinale in Berlin, Google Dev Conference in Minnesota, ng-conf extended in Pakistan to name a few. Angular frequently speaks at meetups in the bay area(SF and south bay)and gives online talks at Angular Pakistan meetups.Anas also blogs and do frequent write-ups about Angular and related technologies. Anas also helps university students in the bay area as well as in Pakistan adopting Angular as their first web technology to work on. Between 2012 and 2017, Anas has taught Angular to over 500+ university students and beginners in Pakistan and in the bay area (SJSU).Anas is currently helping the Angular Pakistan community on key projects including localization of angular.io in Urdu language and creating a resource management tool for all Angular conferences. Anas also manages the social pages, slack and website for Angular Pakistan. Anas is the process of arranging the first ever open source software conference in Pakistan in 2018 (OS Conf Pakistan) which is themed around Angular, JS Tooling and UI/UX.",
+    "groups": ["GDE"],
+    "picture": "anasFirdousi.jpg"
+  },
+  "loiane": {
+    "name": "Loiane Groner",
+    "twitter": "@loiane",
+    "website": "https://loiane.com/",
+    "bio": "Loiane is a software developer from Brazil. She’s been working with software development for 10+ years and works at an american financial institution as business analyst and developer. She is passionate about sharing what she's learned with the community. She is a published author and has written 7 titles for Packt Publishing (some titles were translated to Chinese, Korean and Portuguese) and has also been given the opportunity to speak at some conferences about Java, JavaScript/HTML5, hybrid mobile development and Angular. She also enjoys publishing tutorials at her blog (https://loiane.com), creating tech videos for Youtube and sharing free video courses at her portal (https://loiane.training).",
+    "groups": ["GDE"],
+    "picture": "loiane.jpg"
+  },
+  "zchapple": {
+    "name": "Zack Chapple",
+    "twitter": "ZChapple",
+    "website": "https://github.com/zackarychapple",
+    "bio": "Zack Chapple - in his current role as a Principal Architect at Ultimate Software Zack is responsible for enterprise strategy for the UI. Zack has a strong passion for software craftsmanship, testing and a contagious excitement for living on the bleeding edge of software. Zack also has a very strong passion for Diversity and Inclusion, this is evident through his organization of the ngAtlanta conference, an Angular conference with 82% of the speakers identifying as diversity speakers of which 62% are women in technology. Zack is also the founder of a nonprofit called the ngAtlanta Foundation which is working on paving the road of access to tech for underrepresented individuals in tech.",
+    "groups": ["GDE"],
+    "picture": "zchapple.jpg"
+  },
+  "will_huang": {
+    "name": "Will Huang",
+    "twitter": "@will_huang",
+    "website": "https://blog.miniasp.com/",
+    "bio": "Will is an entrepreneur, teacher, book author, speaker, youtuber. He likes to learn things. No boundary. He is always having fun with code, write, video, eat, travel, sing, playing guitar, side-projects, and making some tools for becoming more lazier. In Taiwan, there are many people call him \"Will 保哥\". You can just call him \"Will'. Will is a software developer with 20+ years programming experience. He is passionate about web technology and loves to share his thoughts on his Blog, YouTube channel, Twitter, and Facebook Pages. He loves Angular, a lot, and started teaching, public speaking, blogging, live broadcasting Angular related technology from 1.x to 5.x from 2013. He has more than 3000 students in Taiwan. Will is also an Microsoft acknowledged industry expert and awarded Microsoft Valuable Professional (MVP) for ten consecutive years from 2008. Extensive experience in .NET technology, Web development, Software architecture, Linux and Windows system integration, Kubernetes, Enterprise information systems. He is Founder/CTO at Duotify Inc. (多奇數位創意有限公司)",
+    "groups": ["GDE"],
+    "picture": "will_huang.jpg"
+  },
+  "gruizdevilla": {
+    "name": "Gonzalo Ruiz de Villa",
+    "twitter": "@gruizdevilla",
+    "website": "https://github.com/gonzaloruizdevilla",
+    "bio": "Gonzalo is CIO and co-founder of Adesis Netlife, a Spanish company founded in 2000 offering internet and technology services. During the last 15 years, he has worked with both server and front technologies. More recently, he's been involved in the development of huge Single Page Application websites for Spanish and Mexican financial institutions. Here he used new MVC frameworks such as Backbone.js and AngularJS, and new backend solutions like ElasticSearch, Apache Storm, Apache Spark, as well as no-sql storage solutions including MongoDB, Redis or Cassandra.",
+    "groups": ["GDE"],
+    "picture": "gruizdevilla.png"
+  },
+  "chrisoncode": {
+    "name": "Chris Sevilleja",
+    "twitter": "@chrisoncode",
+    "website": "https://scotch.io/",
+    "bio": "Chris is the founder of web development tutorial site, Scotch.io. He's passionate about making amazing sites/apps and teaching everything he knows so others can do the same.",
+    "groups": ["GDE"],
+    "picture": "chrisoncode.jpg"
+  },
+  "splaktar": {
+    "name": "Michael Prentice",
+    "twitter": "@Splaktar",
+    "website": "https://www.devintent.com/",
+    "bio": "Michael Prentice is a consultant on Angular, Material Design, Firebase, Google Cloud, NodeJS, software architecture, and Agile project management. He is the founder of GDG Space Coast and DevIntent. He is a contributor to AngularJS Material and Angular Material.",
+    "groups": ["GDE"],
+    "picture": "splaktar.jpg"
+  },
+  "huseyinbabal": {
+    "name": "Huseyin Babal",
+    "twitter": "@huseyinbabal",
+    "website": "http://huseyinbabal.net/",
+    "bio": "Huseyin is a Full-Stack Software Engineer who developed large scaled applications in global companies by involving in both backend and frontend side. He likes sharing his experiences by speaking in public conferences like GDG, organizes meetups and webinars for Docker and Node.js, writing articles on his blogs. He is the co-organizer of Nodeschool Istanbul which is a local division of large Node.js community and Docker Istanbul.",
+    "groups": ["GDE"],
+    "picture": "huseyinbabal.jpg"
+  },
+  "jeado": {
+    "name": "Jeado Ko",
+    "twitter": "https://www.linkedin.com/in/jeado-ko-942b6a56",
+    "website": "https://github.com/jeado",
+    "bio": "Jeado Ko is a software engineer with a strong passion to learn and experience new technologies. He has extensive experience building enterprise development framework in JavaScript and Java. And he is the author of Beginning AngularJS (http://wikibook.co.kr/beginning-angularjs/) from wikibook in Korea. He currently works at Kaoaobank of Korea and he develops bigdata software. Also, he loves to have a technical discussion with his team member and discover a solution or new way of building up software. Previously, He worked at kt and led Iot Platform development. Also he had the IAESTE traineeship in the Czech Republic as a JavaScript Developer.",
+    "groups": ["GDE"],
+    "picture": "jeado.png"
+  },
+  "willgmbr": {
+    "name": "William Grasel",
+    "twitter": "willgmbr",
+    "website": "http://developers.scup.com/author/william-grasel/",
+    "bio": "William is a passionate Full Stack Web Developer, specialized in Single Page Apps and Progressive Web Apps, with more than 15 years at the area. Speaker, consultant, community organizer and leader of AngularSP, the largest Angular and Typescript community in Latin America Web.",
+    "groups": ["GDE"],
+    "picture": "willgmbr.jpg"
+  },
+  "maxkoretskyi": {
+    "name": "Maximus Koretskyi",
+    "twitter": "maxkoretskyi",
+    "website": "https://github.com/maximusk",
+    "bio": "I'm a Growth Hacker\\Developer Evangelist at ag-Grid. I am a self-taught software engineer that learnt programming from top to bottom, from JavaScript to Assembly. I believe in fundamental knowledge and hardcore learning, so I started “In-depth Education” program and one of the biggest Angular publications online, Angular-In-Depth. The program focuses on self-education driven by curiosity and self-development guided by mentors. I'm one of the top Angular contributors on StackOverflow and writer on all things Angular. In my spare time I work on growing the “In-depth Education” community and speak at international conferences.",
+    "groups": ["GDE"],
+    "picture": "maxkoretskyi.jpg"
+  },
+  "cbalit": {
+    "name": "Cyril Balit",
+    "twitter": "@cbalit",
+    "website": "https://github.com/cbalit",
+    "bio": "Cyril Balit is a passionate developer. He builds single page javascript applications since 2003 and has fallen in love with Angular in 2012. He is an active member of the french web community on several subjects like Angular, Polymer and progressive web app. Conference organizer, speaker at many conferences and trainer, Cyril loves to share with communities. He's Front End CTO at SFEIR (300-developer French IT Consultancy Company)",
+    "groups": ["GDE"],
+    "picture": "cbalit.jpg"
+  },
+  "csdhall": {
+    "name": "Chander Dhall",
+    "twitter": "csdhall",
+    "website": "http://chanderdhall.com/",
+    "bio": "Microsoft MVP, Microsoft Azure Advisor, ASP.NET Insider, Web API Advisor, DocumentDB Advisor.",
+    "groups": ["GDE"],
+    "picture": "csdhall.jpg"
+  },
+  "monty": {
+    "name": "Monty Rasmussen",
+    "website": "https://goo.gl/ZbfuHG",
+    "bio": "Monty is a senior-level application developer with 25+ years programming experience. He has a passion for technology, especially for cross-platform solutions and reactive programming principles. Monty has worked in a number of software industries, including education, process simulation, web design, medical software, and even gaming. He has many tech articles published on SitePoint and Dart Academy on topics such as web application architecture, the Polymer library, the Angular framework, crafting web games, and creating cross-platform applications with the Flutter framework. At Azova, Monty oversees the design and development of real-time chat and appointment software for the medical industry using Dart and Flutter.",
+    "groups": ["GDE"],
+    "picture": "monty.png"
+  },
+  "ayssomething": {
+    "name": "Ayşegül Yönet",
+    "twitter": "@AysSomething",
+    "website": "https://github.com/Yonet",
+    "bio": "Ayşegül is a Senior Cloud Developer Advocate at Microsoft, focusing on Mixed Reality, AI, Spatial Computing, Angular and Data Visualization. She is a Google Developer Expert for Web Technologies & Angular and an active conference speaker. She previously worked as Senior Software Engineer at Nrwl.io, Autodesk on Play, a 3D and VR authoring tool and A360 Viewer and A360 Drive. She enjoys teaching at a variety of non-profit organizations aiming to increase diversity in the software industry. She is the co-founder of code4good, an organization with the goal of helping people to contribute to open source. Previously she led Women Who Code meetups, Girl Develop It workshops and was a CTO at AnnieCannons, a bootcamp dedicated to teach tech skills to human trafficking survivors.",
+    "groups": ["GDE"],
+    "picture": "ayssomething.jpg"
+  },
+  "shmuelaj": {
+    "name": "Shmuela Jacobs",
+    "twitter": "@ShmuelaJ",
+    "website": "https://developers.google.com/community/experts/directory/profile/profile-shmuela_jacobs",
+    "bio": "Shmuela Jacobs is a front-end instructor, consultant, developer, speaker, and community activist, focusing on Angular. She is the founder of ngGirls - an initiative aiming to increase diversity in the programming world. http://ng-girls.org Shmuela received her M.Sc. in Information Management Engineering from the Technion, Israel Institute of Technology, where she had researched systems modeling languages in collaboration with IBM Research and Israel Aerospace Industries (IAI). This has been a career change for her, after receiving B.Sc. in Physics from the Hebrew University of Jerusalem, Israel. Shmuela has gained experience in several software development environments and languages (C++, JAVA, Python), as a researcher at the Technion and a software engineer at Intel’s Israel Development Center. She has been developing with AngularJS and Angular in the past few years.",
+    "groups": ["GDE"],
+    "picture": "shmuelaj.jpg"
+  },
+  "kn9ts": {
+    "name": "Eugene Mutai",
+    "twitter": "@kn9ts",
+    "website": "https://stackoverflow.com/users/1709647",
+    "bio": "Eugene Mutai is currently a software engineer/consultant at Andela. He has also been a consultant for iHub Consulting in Nairobi, where he also leads the JavaScript community. His journey, 4 years in, which began on a Nokia feature phone, has taken him though varied, intensive and demanding projects that have sharpened his skills, gaining him in-depth knowledge in architecturing, creating, testing and debugging web application. Eugene says he values the international standards that ensure products deliver the best value to clients. He has come a long way in a short time, always eager to learn and contribute to a rich knowledge pool. He is yet another story that inspires aspiring developers — provide an example for the good, maverick or veteran, to become better. He believes in sharing, and dedicates his spare time to share his experiences and web technologies knowledge wherever he can.",
+    "groups": ["GDE"],
+    "picture": "kn9ts.png"
+  },
+  "saniyusuf": {
+    "name": "Sani Yusuf",
+    "twitter": "@saniyusuf",
+    "website": "https://saniyusuf.com/",
+    "bio": "Sani Yusuf is a Software Engineer, Trainer & Speaker in Web, Mobile & Cloud Technologies. Sani is the founder of Haibrid, a London based consultancy that offers IT training and consultancy services around web & mobile technologies. Sani is very active in the Ionic & Angular open source communities and enjoys travelling to different countries to share his knowledge and learn more about what people are building around the world. A published author, Sani also enjoys content creation with works done on Lynda.COM. In the past, Sani has worked with companies like Microsoft, Anritsu & Huddlebuy/Perkbox. Some of the applications he developed, like Sworkit & Perkbox, have had almost 30 million downloads in the Google & Apple App stores in total. Being Nigerian, Sani has a passion for bringing tech to more people in the developing world, as well as trying to contribute towards a more diverse tech industry. In his free time, Sani loves to paddleboard on the ocean, travel and learn about different cultures from around the world.",
+    "groups": ["GDE"],
+    "picture": "saniyusuf.png"
+  },
+  "ryanchenkie": {
+    "name": "Ryan Chenkie",
+    "twitter": "@ryanchenkie",
+    "website": "http://ryanchenkie.com/",
+    "bio": "Ryan is a full stack JavaScript developer who focuses on building single page applications with Angular 1.x and Angular 2. He works for Auth0 as the Product Owner for documentation and is responsible for maintaining SDKs for a wide range of languages and frameworks, including Angular and Node. Ryan has a keen interest in client/API authentication and authorization with JSON Web Tokens and has written libraries such as angular2-jwt which makes authentication easy for Angular 2 apps. Ryan is a big believer in teaching everything he knows and has written blog posts about many technologies, including Angular, for sites such as Scotch.io, SitePoint, Auth0, and more. He also educates others about web technologies through screencast courses available on YouTube.",
+    "groups": ["GDE"],
+    "picture": "ryanchenkie.jpg"
+  },
+  "mikeryandev": {
+    "name": "Mike Ryan",
+    "twitter": "@MikeRyanDev",
+    "website": "https://www.linkedin.com/in/mikeryandesigns/",
+    "bio": "Mike is a Software Engineer at Synapse working on real time applications for the Industrial Internet of Things. He is an advocate for building web apps using functional reactive programming and serves as a core contributor to the NgRx project.",
+    "groups": ["GDE"],
+    "picture": "mikeryandev.jpg"
+  },
+  "jesses_briebug": {
+    "name": "Jesse Sanders",
+    "twitter": "JesseS_BrieBug",
+    "website": "http://www.briebug.com/",
+    "bio": "I am the founder and CEO of BrieBug, an Angular consultancy in Denver, CO. I learned to code BASIC at 13 years old on a TRS-80 Color Computer and I started as a developer over 20 years ago on the Microsoft stack using VB4. I founded BrieBug in 2009 and built a team of talented developers dedicated to delivering cutting edge enterprise solutions. I am an expert in JavaScript and including Angular, and I'm passionate about enterprise applications patterns like NgRx. When I'm not busy traveling the country talking and writing blogs on Angular, I enjoy snowboarding, cycling, running, and playing ice hockey in my home state of Colorado.",
+    "groups": ["GDE"],
+    "picture": "jesses_briebug.jpg"
+  },
+  "valorkin": {
+    "name": "Dmitriy Schekhovtsov",
+    "twitter": "valorkin",
+    "website": "https://github.com/valorkin",
+    "bio": "Dima(@valorkin) is the author of ngx-bootstrap (first FOSS Angular v2+ module) and the founder of Valor Software, an outsourcing development firm focused on MEAN stack and developer education. Dima made his way from the TurboPascal and Basic days to Javascript via cpp, asm, and c#. JavaScript is now his goto language for both frontend and backend applications. Dima has a heart for performance and design. Outside of the office Dima enjoys time with his family, his husky, his PS4 and riding like a crazy person on his CBR 1000rr.",
+    "groups": ["GDE"],
+    "picture": "valorkin.jpg"
+  },
+  "likeomgitsfeday": {
+    "name": "Jennifer Wadella",
+    "twitter": "likeOMGitsFEDAY",
+    "website": "https://jenniferwadella.com/",
+    "bio": "Often described as a force of nature, Jennifer Wadella is a JavaScript developer, international speaker, foodie, furbaby mama, fitness geek, and community organizer most well known for her work creating innovative and highly sought-after programs for women in technology. Jennifer has been writing code since before she realized it was a credible career path. She currently works as a lead Angular developer at Bitovi and loves building javascript applications and speaking at technical conferences. Jennifer is the founder of Kansas City Women in Technology(KCWiT), an organization aimed at growing the number of women in technology careers in Kansas City. She's created a number of programs for KCWiT to help women and girls learn to code including CoderDojoKC, Coding & Cupcakes and Coding & Cocktails. She is a Rising Trendsetter STEMMy award-winner, PubConf Sydney 2018 Champion and is apparently Missouri's Coolest Woman according to Pure Wow.",
+    "groups": ["GDE"],
+    "picture": "likeomgitsfeday.jpg"
+  },
+  "angularboy": {
+    "name": "Aayush Arora",
+    "twitter": "angularboy",
+    "website": "https://github.com/aayusharora",
+    "bio": "Aayush is a field Marshal of Frontend Applications, thriving to innovate frontend with accessible Interfaces. An innovation strategist and Massachusetts Institute of Technology Bootcamper graduate, he brings 4+ years of experience in Web Development and Accessibility. Since, 2+ years, he has mentored around 1 lakh students across the globe for Udacity under Google Scholarship programmes and 20+ startups under Pluralsight. Aayush has always been a prominent voice for FOSSASIA during GSoC and has been contributing continuously to the growth of the communities such as FOSSASIA, NASA and CloudCV. He has a passion for solving Accessibility issues and is working as an Instructor & Product Engineer at Coding Blocks, New Delhi.",
+    "groups": ["GDE"],
+    "picture": "angularboy.jpg"
+  },
+  "christianliebel": {
+    "name": "Christian Liebel",
+    "twitter": "christianliebel",
+    "website": "https://christianliebel.com/",
+    "bio": "Christian Liebel is a cross-platform development enthusiast thrilled by the opportunities offered by modern web technologies: Angular developer since the early alphas, Christian helps enterprises and independent software vendors to develop modern, cross-platform business applications based on Angular. He speaks about Progressive Web Apps at user groups and conferences, both national and international and published a book on this topic as well. Publishing regularly in major German developer magazines, Christian is well known in the German-speaking developer community. You can reach him directly via email (christian.liebel@thinktecture.com) or Twitter (@christianliebel).",
+    "groups": ["GDE"],
+    "picture": "christianliebel.jpg"
+  },
+  "pankajparkar": {
+    "name": "Pankaj Parkar",
+    "twitter": "pankajparkar",
+    "website": "https://github.com/pankajparkar",
+    "bio": "Pankaj Parkar is currently working as a Technical Lead at Synerzip, Pune. He has almost 6 years of experience in developing Angular applications. He is top Stackoverflow Contributor for Angular tag. Also he have been awarded thrice by Microsoft MVP award. He loves to spend time on new open source technologies and contribute to them. Most of the time you will find him helping other developer fellow on Stackoverflow for Angular questions.",
+    "groups": ["GDE"],
+    "picture": "pankajparkar.jpg"
+  },
+  "avishwakarma": {
+    "name": "Ashok Vishwakarma",
+    "twitter": "_avishwakarma",
+    "website": "https://github.com/ashokvishwakarma",
+    "bio": "Ashok Vishwakarma leads the Frontend team at Naukri.com - India and consults in many startups. He spends most of his time consulting teams on Frontend Architecture, Best Practises and Standards in the area of Frontend development. He started his career designing and developing user interfaces, and over the years has been instrumental in building real-time web applications for Payments, E-commerce, Travel and etc. He has worked across a breadth of tools and technologies and has lead teams working on JavaScript, Angular, React, Ionic, Flutter, Node, PHP and etc. He is a strong proponent of Web technologies and has been promoting them within his peers and community, he also speaks to various JavaScript conferences and events.",
+    "groups": ["GDE"],
+    "picture": "avishwakarma.jpg"
+  },
+  "ilia_idakiev": {
+    "name": "Iliya Idakiev",
+    "twitter": "ilia_idakiev",
+    "website": "http://hillgrand.com/",
+    "bio": "Hi! My name is Iliya Idakiev and I'm a Google Developer Expert (GDE). I'm also a software developer/entrepreneur, as well as a JavaScript enthusiast with 7+ years experience in software development for the web. I'm is а co-organiser of Angular Sofia, commit.js, SofiaJS / BeerJS and a lecturer at Sofia University (Faculty of Mathematics and Informatics). I also do a lot of private and public trainings and from time to time I work as consultant/contractor. My main focus now is developing the JavaScript community in my country (Bulgaria) and growing my company - https://hillgrand.com/ In my spare time I like collecting and playing vinyl on musical events.",
+    "groups": ["GDE"],
+    "picture": "ilia_idakiev.jpg"
+  },
+  "gregonnet": {
+    "name": "Gregor Woiwode",
+    "twitter": "GregOnNet",
+    "website": "https://github.com/GregOnNet",
+    "bio": "Gregor loves to build tools that enable developers to be more productive. In his role as Speaker, Trainer and Consultant he shares ideas and techniques that continuously improve the architectural design of Angular applications. He also maintains a Blog as well as a YouTube channel offering content about Angular & Software Engineering In his quiet times, Gregor enjoys running or trying his hand at hobby cooking.",
+    "groups": ["GDE"],
+    "picture": "gregonnet.jpg"
+  },
+  "elmd_": {
+    "name": "Dominic Elm",
+    "twitter": "elmd_",
+    "website": "https://github.com/d3lm",
+    "bio": "Dominic is Software Engineer based in the Munich area (Germany) with a passion for Angular, Firebase, and reactive programming. Since 2016, he's also been a trainer and consultant at thoughtram and loves to share his experiences and knowledge with the community. He does so mostly by speaking at conferences, writing blog posts and delivering high quality public and corporate trainings all around the world. Dominic is an active member of the open source community and the creator of 'ngx-drag-to-select', a lightweight and fast drag-to-select component for Angular. He is also a co-creator of 'Angular Checklist', a curated list of best practices to overcome some common pitfalls when developing Angular applications. Another big passion of his is Machine Learning. This journey started in 2017 and ever since then, he has been diving deep into the field of Machine Learning and is sharing his learnings with the community through blog posts and an online course called Machine Learning Jump Start. Besides work, you will most likely find Dominic outside with his racing bike, climbing, hiking or doing some other sporty activity. If not, he's probably drawing or reading a book. Find him on Twitter @elmd_.",
+    "groups": ["GDE"],
+    "picture": "elmd_.jpg"
+  },
+  "sravi_kiran": {
+    "name": "Rabi Kiran Srirangam",
+    "twitter": "SRavi_Kiran",
+    "website": "http://sravi-kiran.blogspot.com/",
+    "bio": "Rabi Kiran (Ravi) is a web developer working on front end web technologies for several years now. He is an organizer of the ngHyderabad meetup group, through this group he organized several meetup sessions and workshops in Hyderabad. He speaks regularly at ngHyderabad, GDG events and at a few other meetup groups. He writes regularly on web technologies for DotnetCurry, magazine and the site. He also writes for SitePoint and Auth0 blog. His contributions earned him several notable accolades like Microsoft MVP, DZone MVB and Google Developer Expert.",
+    "groups": ["GDE"],
+    "picture": "sravi_kiran.jpg"
+  },
+  "nicobytes": {
+    "name": "Nicolas Molina Monroy",
+    "twitter": "nicobytes",
+    "website": "https://nicobytes.com/",
+    "bio": "I'm a software developer who is passionate about Web Technologies. I love to be a developer and to create software. Currently, I'm a Tech leader and work mainly in single page applications with Angular and Ionic for front-end, NodeJs /Python for web services with GraphQL. I love to share my knowledge with the community across meetups, workshops, courses, videos, articles and, conferences. I'm co-organizer in Angular Bolivia and creator of the NG Classroom. Recently I'm a dad and when I'm not coding, I share time with my baby and wife.",
+    "groups": ["GDE"],
+    "picture": "nicobytes.jpg"
+  },
+  "mayrascript": {
+    "name": "Mayra Rodriguez",
+    "twitter": "mayrascript",
+    "website": "https://mayrascript.com/",
+    "bio": "Mayra Rodríguez is a Computer Engineer graduated from Fermín Toro University in Cabudare, Edo. Lara - Venezuela. She has been developing web and mobile applications mainly for more than 3 years the Angular technology. She feels passionate about learning, sharing her knowledge, empowerment feminine and of course, technology. Mayra is the first Venezuelan GDE for Angular category :), she also is Women Techmakers Ambassador and Co-Organizer in Flutter Colombia. Currently is working as a Senior Web Engineer in MerlinJobs and as a full-time mother of a beautiful baby named Thomas.",
+    "groups": ["GDE"],
+    "picture": "mayrascript.png"
+  },
+  "fmalcher01": {
+    "name": "Ferdinand Malcher",
+    "twitter": "fmalcher01",
+    "website": "https://ferdinand-malcher.de/",
+    "bio": "Ferdinand is a software developer, trainer and international speaker from Leipzig, Germany. As one of the authors of the German \"Angular\" book, he is specialized on Angular and web technologies. Ferdinand loves to share knowledge. That's why he writes books and blog posts, speaks at meetups and conferences, does Angular training and works as a full-time consultant in his company \"Angular.Schule\".",
+    "groups": ["GDE"],
+    "picture": "fmalcher01.jpg"
+  },
+  "vanessamarely" :{
+    "name": "Vanessa Marely Aristizabal Angel",
+    "twitter": "vanessamarely",
+    "website": "https://github.com/vanessamarely",
+    "bio": "Vanessa Aristizabal is a System Engineering with experience as a Web Developer. She is an organizer of GDG Medellin and She codes Angular. She is passionate about technology, books, code (particularly JS language), design, videogames, and Anime (and drawing Manga style).",
+    "groups": ["GDE"],
+    "picture": "vanessamarely.jpg"
+  },
+  "yjaaidi": {
+    "name": "Younes Jaaidi",
+    "twitter": "yjaaidi",
+    "website": "https://marmicode.io/",
+    "bio": "Younes is a pythonic full-stack web developer with a focus on Angular. He is a trainer, consultant & eXtreme Programming coach who loves the challenge of boosting teams efficiency and helping everyone enjoy every part of their job. His experience convinced him that the key to making quality products is collective ownership, kindness and knowledge sharing,. On his spare time, you will find him contributing to open-source software, writing articles or speaking at meetups or conferences… and sometimes sailing. His favorite trick? Adding features by removing code.",
+    "groups": ["GDE"],
+    "picture": "yjaaidi.png"
+  },
+  "sebawita": {
+    "name": "Sebastian Witalec",
+    "twitter": "sebawita",
+    "website": "https://www.linkedin.com/in/sebawita/",
+    "bio": "Sebastian is a Developer Advocate with a big love for modern technology. He is a strong believer in using the right tool for the right job. You can often meet him at various Angular events where he speaks about building mobile apps with NativeScript, controlling robots via bluetooth, and what is cool in Angular. One day he will build a robot-army, he just doesn't know why he needs one, but it sounds like a cool thing to do with Angular. He is always up for a game of footy (some call it soccer) and dreams of attending a football-themed Angular conference.",
+    "groups": ["GDE"],
+    "picture": "sebawita.jpg"
+  },
+  "eliraneliassy": {
+    "name": "Eliran Eliassy",
+    "twitter": "EliranEliassy",
+    "website": "https://eliassy.dev/",
+    "bio": "Eliran is an Experienced FE developer, specialized in B2C applications located in Tel Aviv, Israel. He is a developer, trainer, and consultant with focus on Angular and the eco-system around it. He gives talks and workshops on Angular, RXJS, NGRX and related technologies. As an active part of the community, he is constantly involved in growing it and interacting with the members. Eliran is one of the Organisers of AngularUP Annual Conference in Tel Aviv and also an organizer and leading the Angular-IL meetup & community. He is often speaking at conferences and Meetups and also writing for AngualrInDepth.com.",
+    "groups": ["GDE"],
+    "picture": "eliraneliassy.jpg"
+  },
+  "duluca": {
+    "name": "Doguhan Uluca",
+    "twitter": "duluca",
+    "website": "https://duluca.github.io/",
+    "bio": "Doguhan Uluca is a technical fellow for Excella in Washington, DC. He is an expert at full-stack JavaScript, Agile and cloud engineering. Doguhan believes in the power of open source software, contributing to the community with libraries and tools published for JavaScript, Angular, Node, and MongoDB. As an author, he has published two books with Packt, including the best-selling Angular for Enterprise-Ready Web Applications, a paper on ACM and articles on IT Pro. Doguhan is an active participant in the DC tech community, founding and organizing the Tech Talk DC and Angular DC meetups. He enjoys teaching developers, new and experienced, about software engineering from fundamentals to advanced design patterns, focusing on implementations that are easy to learn and maintain. Doguhan organized the DC Full-Stack Web Summit in 2017. He has presented at conferences, such as Ng-Conf, Angular Mix, Angular Denver, CodeStock, deliver:Agile and Agile XP. Doguhan enjoys recording music, and playing Go, in addition to being an avid mixologist.",
+    "groups": ["GDE"],
+    "picture": "duluca.jpg"
+  },
+  "debug_mode": {
+    "name": "Dhananjay Kumar",
+    "twitter": "debug_mode",
+    "website": "https://debugmode.net/",
+    "bio": "Dhananjay Kumar is an independent trainer and consultant from India. He is a published author, a well-known speaker, and winner of 10 times the Microsoft MVP Award. He is the founder of geek97, which trains developers on Angular and other JavaScript frameworks such that they can be job-ready and organizes India's largest Angular Conference - ng-India. He is the author of the best-selling book on Angular, Angular Essential. So far he has authored more than 800 blog posts and delivered more than 65 free workshops or meetups. Out of 65, he has hosted more around 20 workshops on Angular in various cities of India.",
+    "groups": ["GDE"],
+    "picture": "debug_mode.jpg"
+  },
+  "johanneshoppe": {
+    "name": "Johannes Hoppe",
+    "twitter": "johanneshoppe",
+    "website": "https://haushoppe-its.de/",
+    "bio": "Johannes Hoppe is one of the authors of the German \"Angular\" book and organises the Angular Meetup in Heidelberg. He works as a software architect and consultant for Angular. He founded the Angular.Schule company and regularly hosts workshops there. Johannes is always busy writing articles and is engaged in a couple of open source projects.",
+    "groups": ["GDE"],
+    "picture": "johanneshoppe.jpg"
+  },
+  "martaw_pl": {
+    "name": "Marta Wiśniewska",
+    "twitter": "MartaW_PL",
+    "website": "https://www.linkedin.com/in/martawpl/",
+    "bio": "Marta is a Frontend Developer, PWA Fire co-creator, international speaker, blogger, enthusiast of Angular, PWA, hybrid apps who loves exploring new web features and following hottest trends in tech. She is passionate about sharing knowledge in the community and spreading her love for tech. Currently, she satisfies herself as an organizer in Women Techmakers Warsaw and Google Developers Group Warsaw.",
+    "groups": ["GDE"],
+    "picture": "martaw_pl.jpg"
+  },
+  "wesgrimes": {
+    "name": "Wes Grimes",
+    "twitter": "wesgrimes",
+    "website": "https://wesleygrimes.com/",
+    "bio": "Wes is a Senior Engineer at Nrwl, Core Team Member of NgRx, active open source contributor, speaker, writer, and mentor. Wes has well over a decade of experience in the insurance and disaster relief industries architecting and building full-stack enterprise software solutions. He has served in roles from tech support to business analysis, project management, and software development. Wes hails from sunny Central Florida and in his free time, he loves taking in sunsets, cooking BBQ, and spending time with his wife and 3 children.",
+    "groups": ["GDE"],
+    "picture": "wesgrimes.jpg"
+  },
+  "dcoustawilson": {
+    "name": "Nishu  Goel",
+    "twitter": "DcoustaWilson",
+    "website": "https://nishugoel.wordpress.com/",
+    "bio": "Nishu Goel is a software developer currently working with IBM in Bengaluru, India. She works on Angular and keeps learning on the go. She loves to write blog posts and talk around the basic concepts of Angular at conferences. She is also the author of book \"\"Step-by-Step Angular Routing\"\". You can read her blog posts at https:// nishugoel.wordpress.com/",
+    "groups": ["GDE"],
+    "picture": "dcoustawilson.jpg"
+  },
+  "kreuzercode": {
+    "name": "Kevin Kreuzer",
+    "twitter": "kreuzercode",
+    "website": "https://www.medium.com/@kevinkreuzer",
+    "bio": "My name is Kevin Kreuzer. I am a passionate freelance front-end engineer based in Switzerland. I am a JavaScript enthusiast and fascinated by Angular. I always try to learn, share, and expand my knowledge. I like that technology always moves on so that there's always something new to discover. Learning alone is only half the fun. Therefore I love to spread what I have learned over blog posts or presentations. In my free time, I am often fiddling around with technology and sometimes the resulting code or library is useful to others. It is this passion that led me into a career as a Freelance Frontend Engineer were I currently provide workshops or work on client projects. In my free time, I enjoy the crazy views on the Swiss alps on my snowboard or I play football. Even though I live in Switzerland, my team is in Madrid. Since my childhood, I support Real Madrid, which you will also notice in a lot of my blog posts or tutorials.",
+    "groups": ["GDE"],
+    "picture": "kreuzercode.jpg"
+  },
+  "nikpoltoratsky": {
+    "name": "Nikita Poltoratsky",
+    "twitter": "nikpoltoratsky",
+    "website": "https://tibing.github.io/",
+    "bio": "Nikita is a software engineer focused on the front end technologies and currently working at Akveo, based at Minsk, Belarus. He has an in-depth knowledge of Angular and related technologies. He's doing a lot of Angular almost every day since the first beta versions. Since then, He designed and built several solutions using Angular and related technologies - NgRx, firebase, Nx, and others. Now, he is guiding internal products and outsourcing clients on how to build their systems. All his work experience is tightly coupled with building and dissecting different systems, platforms, and technologies. In his spare time, he contributes to the developer's community. He writes articles, creates open-source projects, talking at international conferences, holding workshops and driving Angular community in Belarus.",
+    "groups": ["GDE"],
+    "picture": "nikpoltoratsky.jpg"
+  },
+  "yadong_xie": {
+    "name": "Yadong Xie",
+    "twitter": "yadong_xie",
+    "website": "https://www.github.com/vthinkxie",
+    "bio": "Yadong Xie is a Senior Front-end Engineer at Alibaba. He loves the concept of open source, enjoy using open source software, as well as creating & maintaining some himself to contribute back to the community. He loves Angular, and that’s why he created NG-ZORRO (https://ng.ant.design/docs/introduce/en), a set of high-quality UI components (with 300k active users) to help Angular developers build rich, beautiful and interactive user interfaces.",
+    "groups": ["GDE"],
+    "picture": "yadong_xie.jpg"
+  },
+  "ahasall": {
+    "name": "Amadou Sall",
+    "twitter": "ahasall",
+    "website": "https://www.amadousall.com/",
+    "bio": "Amadou Sall is a Frontend Software Engineer from Senegal 🇸🇳 based in Toulouse, France 🇫🇷. After two years at Schneider Electric, where he worked as a Full-stack Developer, Amadou joined Air France-KLM to make the most of modern web technologies like Angular, Ionic, and TypeScript. Amadou currently specializes in Angular. At Air France-KLM, his main mission is to help developers build better Angular applications, by providing to them tools, training, coaching, and support. He regularly speaks, presents, and writes about Angular and its ecosystem. You can find his blog at www.amadousall.com. When he isn't in front of his computer screen, Amadou likes to play football ⚽️. He watches every game of his favorite football team, FC Barcelona. You can reach him at contact@amadou.dev, or on Twitter at @ahasall.",
+    "groups": ["GDE"],
+    "picture": "ahasall.jpg"
+  },
+  "wellwind": {
+    "name": "Mike Huang",
+    "twitter": "wellwind",
+    "website": "https://wellwind.idv.tw/blog/",
+    "bio": "Mike is a full-stack developer, consultant, blogger, instructor, and conference speaker. He has over 10 years of web development experience and passion to share his knowledge.",
+    "groups": ["GDE"],
+    "picture": "wellwind.jpg"
+  },
+  "thekiba_io": {
+    "name": "Andrew Grekov",
+    "twitter": "thekiba_io",
+    "website": "https://thekiba.io/",
+    "bio": "I am an enthusiastic software engineer truly passionate about web technologies. I have worked in various industries which were mostly connected with finance. I've been doing full-stack development for the past 13 years and have been focusing on Angular based applications for the past four. I like diving deep into the code and sharing my knowledge through visualization with thousand people. I've been spending most of my spare time keeping up to date, helping other people and experimenting with web tech.",
+    "groups": ["GDE"],
+    "picture": "thekiba_io.jpg"
+  },
+  "devpato": {
+    "name": "Patricio Vargas",
+    "twitter": "https://www.github.com/devpato",
+    "website": "https://devpato.github.io/",
+    "bio": "Patricio is Software Engineer. Has organized hackathons, loves helping the community by contributing on stackoverflow, open source, writing articles, mentoring & giving tech talks. He is also the founder of AngularJAX meetup & part of the Auth0 ambassador program.",
+    "groups": ["GDE"],
+    "picture": "devpato.jpg"
+  },
   "juleskremer": {
     "name": "Jules Kremer",
     "picture": "juleskremer.jpg",
