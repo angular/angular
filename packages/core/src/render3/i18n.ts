@@ -441,6 +441,15 @@ function i18nStartFirstPass(
       for (let j = 0; j < parts.length; j++) {
         if (j & 1) {
           // Odd indexes are ICU expressions
+          const icuExpression = parts[j] as IcuExpression;
+
+          // Verify that ICU expression has the right shape. Translations might contain invalid
+          // constructions (while original messages were correct), so ICU parsing at runtime may not
+          // succeed (thus `icuExpression` remains a string).
+          if (typeof icuExpression !== 'object') {
+            throw new Error(`Unable to parse ICU expression in "${templateTranslation}" message.`);
+          }
+
           // Create the comment node that will anchor the ICU expression
           const icuNodeIndex = startIndex + i18nVarsCount++;
           createOpCodes.push(
@@ -448,7 +457,6 @@ function i18nStartFirstPass(
               parentIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild);
 
           // Update codes for the ICU expression
-          const icuExpression = parts[j] as IcuExpression;
           const mask = getBindingMask(icuExpression);
           icuStart(icuExpressions, icuExpression, icuNodeIndex, icuNodeIndex);
           // Since this is recursive, the last TIcu that was pushed is the one we want
