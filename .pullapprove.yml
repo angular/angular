@@ -123,10 +123,10 @@ pullapprove_conditions:
 groups:
   # =========================================================
   #  Global Approvers
-  # 
+  #
   # All reviews performed for global approvals require using
   # the `Reviewed-for:` specifier to set the approval
-  # specificity as documented at: 
+  # specificity as documented at:
   # https://docs.pullapprove.com/reviewed-for/
   # =========================================================
   global-approvers:
@@ -141,10 +141,10 @@ groups:
 
   # =========================================================
   #  Global Approvers For Docs
-  # 
+  #
   # All reviews performed for global docs approvals require
   # using the `Reviewed-for:` specifier to set the approval
-  # specificity as documented at: 
+  # specificity as documented at:
   # https://docs.pullapprove.com/reviewed-for/
   # =========================================================
   global-docs-approvers:
@@ -197,6 +197,10 @@ groups:
           'aio/content/guide/aot-compiler.md',
           'aio/content/guide/aot-metadata-errors.md',
           'aio/content/guide/template-typecheck.md '
+          ])
+      - >
+        not contains_any_globs(files, [
+          'packages/compiler-cli/ngcc/**'
           ])
     reviewers:
       users:
