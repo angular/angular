@@ -84,7 +84,7 @@
     "ts-node": "~8.3.0",
     "tsickle": "^0.35.0",
     "tslint": "~5.18.0",
-    "typescript": "~3.6.4",
+    "typescript": "~3.7.0",
     "wait-on": "^4.0.0"
   }
 }

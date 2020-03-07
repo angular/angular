@@ -10,6 +10,7 @@ import {
 import { getComponentName } from './highlighter';
 import { DebuggingAPI } from './interfaces';
 import { IndexedNode } from './observer/identity-tracker';
+import { buildDirectiveTree } from './lview-transform';
 
 const ngDebug = (window as any).ng;
 
@@ -63,56 +64,9 @@ export const getLatestComponentState = (query: ComponentExplorerViewQuery): Dire
   return result;
 };
 
-export const getDirectiveForest = (root: HTMLElement, ngd: DebuggingAPI): ComponentTreeNode[] =>
-  buildDirectiveForest(root, { element: '__ROOT__', component: null, directives: [], children: [] }, ngd);
-
-const buildDirectiveForest = (
-  node: Node,
-  tree: ComponentTreeNode | undefined,
-  ngd: DebuggingAPI
-): ComponentTreeNode[] => {
-  if (!node) {
-    return [tree];
-  }
-  let dirs = [];
-  if (tree.element !== '__ROOT__') {
-    // Need to make sure we're in a component tree
-    // otherwise, ngd.getDirectives will throw without
-    // a root node.
-    try {
-      dirs = ngd.getDirectives(node) || [];
-    } catch (e) {}
-  }
-  const cmp = node instanceof HTMLElement && ngd.getComponent(node);
-  if (!cmp && !dirs.length) {
-    Array.from(node.childNodes).forEach(c => buildDirectiveForest(c, tree, ngd));
-    return tree.children;
-  }
-  const current: ComponentTreeNode = {
-    element: node.constructor.name,
-    directives: dirs.map(dir => {
-      return {
-        instance: dir,
-        name: getComponentName(dir),
-      } as DirectiveInstanceType;
-    }),
-    component: null,
-    children: [],
-    nativeElement: node,
-  };
-
-  const name = node instanceof HTMLElement ? node.tagName.toLowerCase() : node.nodeName.toLowerCase();
-  if (cmp) {
-    current.component = {
-      instance: cmp,
-      name,
-    };
-  } else {
-    current.element = name;
-  }
-  tree.children.push(current);
-  Array.from(node.childNodes).forEach(c => buildDirectiveForest(c, current, ngd));
-  return tree.children;
+export const getDirectiveForest = (root: HTMLElement, ngd: DebuggingAPI): ComponentTreeNode[] => {
+  const roots = Array.from(root.querySelectorAll('[ng-version]')).map(el => ngd.getComponent(el).__ngContext__);
+  return Array.prototype.concat.apply([], roots.map(buildDirectiveTree));
 };
 
 // Based on an ElementID we return a specific component node.
