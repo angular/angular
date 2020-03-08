@@ -24,8 +24,10 @@ export interface DiagnosticTemplateInfo {
 }
 
 export function getTemplateExpressionDiagnostics(info: DiagnosticTemplateInfo): ng.Diagnostic[] {
+  const variableCache = new Map<TemplateAst, SymbolDeclaration[]>();
+  const eventCache = new Map<BoundEventAst, SymbolDeclaration>();
   const visitor = new ExpressionDiagnosticsVisitor(
-      info, (path: TemplateAstPath) => getExpressionScope(info, path));
+      info, (path: TemplateAstPath) => getExpressionScope(info, path, variableCache, eventCache));
   templateVisitAll(visitor, info.templateAst);
   return visitor.diagnostics;
 }
@@ -84,33 +86,41 @@ function getDefinitionOf(info: DiagnosticTemplateInfo, ast: TemplateAst): Defini
  * @param path template AST path
  */
 function getVarDeclarations(
-    info: DiagnosticTemplateInfo, path: TemplateAstPath): SymbolDeclaration[] {
+    info: DiagnosticTemplateInfo, path: TemplateAstPath,
+    cache: Map<TemplateAst, SymbolDeclaration[]>): SymbolDeclaration[] {
   const results: SymbolDeclaration[] = [];
   for (let current = path.head; current; current = path.childOf(current)) {
     if (!(current instanceof EmbeddedTemplateAst)) {
       continue;
     }
-    for (const variable of current.variables) {
-      let symbol = getVariableTypeFromDirectiveContext(variable.value, info.query, current);
 
-      const kind = info.query.getTypeKind(symbol);
-      if (kind === BuiltinType.Any || kind === BuiltinType.Unbound) {
-        // For special cases such as ngFor and ngIf, the any type is not very useful.
-        // We can do better by resolving the binding value.
-        const symbolsInScope = info.query.mergeSymbolTable([
-          info.members,
-          // Since we are traversing the AST path from head to tail, any variables
-          // that have been declared so far are also in scope.
-          info.query.createSymbolTable(results),
-        ]);
-        symbol = refinedVariableType(variable.value, symbolsInScope, info.query, current);
+    if (!cache.has(current)) {
+      const variables: SymbolDeclaration[] = [];
+      for (const variable of current.variables) {
+        let symbol = getVariableTypeFromDirectiveContext(variable.value, info.query, current);
+
+        const kind = info.query.getTypeKind(symbol);
+        if (kind === BuiltinType.Any || kind === BuiltinType.Unbound) {
+          // For special cases such as ngFor and ngIf, the any type is not very useful.
+          // We can do better by resolving the binding value.
+          const symbolsInScope = info.query.mergeSymbolTable([
+            info.members,
+            // Since we are traversing the AST path from head to tail, any variables
+            // that have been declared so far are also in scope.
+            info.query.createSymbolTable(results),
+          ]);
+          symbol = refinedVariableType(variable.value, symbolsInScope, info.query, current);
+        }
+        variables.push({
+          name: variable.name,
+          kind: 'variable',
+          type: symbol, get definition() { return getDefinitionOf(info, variable); },
+        });
       }
-      results.push({
-        name: variable.name,
-        kind: 'variable',
-        type: symbol, get definition() { return getDefinitionOf(info, variable); },
-      });
+      cache.set(current, variables);
     }
+
+    results.push(...cache.get(current));
   }
   return results;
 }
@@ -189,32 +199,41 @@ function refinedVariableType(
 }
 
 function getEventDeclaration(
-    info: DiagnosticTemplateInfo, path: TemplateAstPath): SymbolDeclaration|undefined {
+    info: DiagnosticTemplateInfo, path: TemplateAstPath,
+    cache: Map<BoundEventAst, SymbolDeclaration>): SymbolDeclaration|undefined {
   const event = path.tail;
   if (!(event instanceof BoundEventAst)) {
     // No event available in this context.
     return;
   }
 
-  const genericEvent: SymbolDeclaration = {
-    name: '$event',
-    kind: 'variable',
-    type: info.query.getBuiltinType(BuiltinType.Any),
+  if (!cache.has(event)) {
+    const eventDeclaration = (() => {
+      const genericEvent: SymbolDeclaration = {
+        name: '$event',
+        kind: 'variable',
+        type: info.query.getBuiltinType(BuiltinType.Any),
+      };
+
+      const outputSymbol = findOutputBinding(event, path, info.query);
+      if (!outputSymbol) {
+        // The `$event variable doesn't belong to an output, so its type can't be refined.
+        // TODO: type $event` variables in bindings to DOM events.
+        return genericEvent;
+      }
+
+      // The raw event type is wrapped in a generic, like EventEmitter<T> or Observable<T>.
+      const ta = outputSymbol.typeArguments();
+      if (!ta || ta.length !== 1) return genericEvent;
+      const eventType = ta[0];
+
+      return {...genericEvent, type: eventType};
+    })();
+
+    cache.set(event, eventDeclaration);
   };
 
-  const outputSymbol = findOutputBinding(event, path, info.query);
-  if (!outputSymbol) {
-    // The `$event` variable doesn't belong to an output, so its type can't be refined.
-    // TODO: type `$event` variables in bindings to DOM events.
-    return genericEvent;
-  }
-
-  // The raw event type is wrapped in a generic, like EventEmitter<T> or Observable<T>.
-  const ta = outputSymbol.typeArguments();
-  if (!ta || ta.length !== 1) return genericEvent;
-  const eventType = ta[0];
-
-  return {...genericEvent, type: eventType};
+  return cache.get(event);
 }
 
 /**
@@ -224,11 +243,13 @@ function getEventDeclaration(
  * derived for.
  */
 export function getExpressionScope(
-    info: DiagnosticTemplateInfo, path: TemplateAstPath): SymbolTable {
+    info: DiagnosticTemplateInfo, path: TemplateAstPath,
+    variableCache: Map<TemplateAst, SymbolDeclaration[]> = new Map(),
+    eventCache: Map<BoundEventAst, SymbolDeclaration> = new Map()): SymbolTable {
   let result = info.members;
   const references = getReferences(info);
-  const variables = getVarDeclarations(info, path);
-  const event = getEventDeclaration(info, path);
+  const variables = getVarDeclarations(info, path, variableCache);
+  const event = getEventDeclaration(info, path, eventCache);
   if (references.length || variables.length || event) {
     const referenceTable = info.query.createSymbolTable(references);
     const variableTable = info.query.createSymbolTable(variables);
