@@ -121,34 +121,17 @@ export class ComponentTreeObserver {
     const { newNodes, removedNodes, indexedForest } = this._tracker.index();
     this._forest = indexedForest;
     newNodes.forEach(node => {
-      if (node.component) {
-        if (this._config.onLifecycleHook) {
-          this._observeLifecycle(node.component, true);
-        }
-        if (this._config.onChangeDetection) {
-          this._observeComponent(node.component);
-        }
-        this._fireCreationCallback(node.component, true);
+      if (this._config.onLifecycleHook) {
+        this._observeLifecycle(node.directive, node.isComponent);
       }
-      if (node.directives && node.directives.length) {
-        node.directives.forEach(dir => {
-          if (this._config.onLifecycleHook) {
-            this._observeLifecycle(dir, true);
-          }
-          this._fireCreationCallback(dir, false);
-        });
+      if (node.isComponent && this._config.onChangeDetection) {
+        this._observeComponent(node.directive);
       }
+      this._fireCreationCallback(node.directive, node.isComponent);
     });
     removedNodes.forEach(node => {
-      if (node.component) {
-        this._patched.delete(node.component);
-        this._fireDestroyCallback(node.component, true);
-      }
-      if (node.directives && node.directives.length) {
-        node.directives.forEach(dir => {
-          this._fireDestroyCallback(dir, false);
-        });
-      }
+      this._patched.delete(node.directive);
+      this._fireDestroyCallback(node.directive, node.isComponent);
     });
   }
 

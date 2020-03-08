@@ -12,6 +12,7 @@ import { ProfilerFrame } from 'protocol';
 export class TimelineComponent {
   @Input() set records(data: ProfilerFrame[]) {
     this.profileRecords = formatFlamegraphRecords(data);
+    console.log(this.profileRecords);
   }
 
   @Output() exportProfile = new EventEmitter<void>();
