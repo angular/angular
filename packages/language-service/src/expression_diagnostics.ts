@@ -24,40 +24,51 @@ export interface DiagnosticTemplateInfo {
 }
 
 export function getTemplateExpressionDiagnostics(info: DiagnosticTemplateInfo): ng.Diagnostic[] {
-  const variableCache = new Map<TemplateAst, SymbolDeclaration[]>();
-  const eventCache = new Map<BoundEventAst, SymbolDeclaration>();
+  const cache = {
+    references: new Map<TemplateAst, SymbolDeclaration[]>(),
+    variables: new Map<TemplateAst, SymbolDeclaration[]>(),
+    events: new Map<BoundEventAst, SymbolDeclaration>(),
+  };
   const visitor = new ExpressionDiagnosticsVisitor(
-      info, (path: TemplateAstPath) => getExpressionScope(info, path, variableCache, eventCache));
+      info, (path: TemplateAstPath) => getExpressionScope(info, path, cache));
   templateVisitAll(visitor, info.templateAst);
   return visitor.diagnostics;
 }
 
-function getReferences(info: DiagnosticTemplateInfo): SymbolDeclaration[] {
+function getReferences(info: DiagnosticTemplateInfo, cache: Map<TemplateAst, SymbolDeclaration[]>):
+    SymbolDeclaration[] {
   const result: SymbolDeclaration[] = [];
 
-  function processReferences(references: ReferenceAst[]) {
-    for (const reference of references) {
-      let type: Symbol|undefined = undefined;
-      if (reference.value) {
-        type = info.query.getTypeSymbol(tokenReference(reference.value));
+  function processReferences(ast: TemplateAst & {references: ReferenceAst[]}): SymbolDeclaration[] {
+    if (!cache.has(ast)) {
+      const referenceDeclarations: SymbolDeclaration[] = [];
+      for (const reference of ast.references) {
+        let type: Symbol|undefined = undefined;
+        if (reference.value) {
+          type = info.query.getTypeSymbol(tokenReference(reference.value));
+        }
+        referenceDeclarations.push({
+          name: reference.name,
+          kind: 'reference',
+          type: type || info.query.getBuiltinType(BuiltinType.Any),
+          get definition() { return getDefinitionOf(info, reference); }
+        });
       }
-      result.push({
-        name: reference.name,
-        kind: 'reference',
-        type: type || info.query.getBuiltinType(BuiltinType.Any),
-        get definition() { return getDefinitionOf(info, reference); }
-      });
+
+      cache.set(ast, referenceDeclarations);
     }
+
+    return cache.get(ast) !;
   }
 
   const visitor = new class extends RecursiveTemplateAstVisitor {
     visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
       super.visitEmbeddedTemplate(ast, context);
-      processReferences(ast.references);
+      result.push(...processReferences(ast));
     }
     visitElement(ast: ElementAst, context: any): any {
       super.visitElement(ast, context);
-      processReferences(ast.references);
+      result.push(...processReferences(ast));
     }
   };
 
@@ -242,14 +253,19 @@ function getEventDeclaration(
  * @param path path of template nodes narrowing to the context the expression scope should be
  * derived for.
  */
-export function getExpressionScope(
-    info: DiagnosticTemplateInfo, path: TemplateAstPath,
-    variableCache: Map<TemplateAst, SymbolDeclaration[]> = new Map(),
-    eventCache: Map<BoundEventAst, SymbolDeclaration> = new Map()): SymbolTable {
+export function getExpressionScope(info: DiagnosticTemplateInfo, path: TemplateAstPath, cache: {
+  references: Map<TemplateAst, SymbolDeclaration[]>,
+  variables: Map<TemplateAst, SymbolDeclaration[]>,
+  events: Map<BoundEventAst, SymbolDeclaration>
+} = {
+  references: new Map(),
+  variables: new Map(),
+  events: new Map()
+}): SymbolTable {
   let result = info.members;
-  const references = getReferences(info);
-  const variables = getVarDeclarations(info, path, variableCache);
-  const event = getEventDeclaration(info, path, eventCache);
+  const references = getReferences(info, cache.references);
+  const variables = getVarDeclarations(info, path, cache.variables);
+  const event = getEventDeclaration(info, path, cache.events);
   if (references.length || variables.length || event) {
     const referenceTable = info.query.createSymbolTable(references);
     const variableTable = info.query.createSymbolTable(variables);
