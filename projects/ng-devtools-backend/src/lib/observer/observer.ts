@@ -1,7 +1,6 @@
 import { ElementPosition, LifecycleProfile } from 'protocol';
-import { ComponentTreeNode, getDirectiveForest } from '../component-tree';
 import { componentMetadata } from '../utils';
-import { IdentityTracker } from './identity-tracker';
+import { IdentityTracker, IndexedNode } from './identity-tracker';
 
 export type CreationCallback = (
   componentOrDirective: any,
@@ -78,6 +77,7 @@ export class ComponentTreeObserver {
   private _undoLifecyclePatch: (() => void)[] = [];
   private _lastChangeDetection = new Map<any, number>();
   private _tracker = new IdentityTracker((window as any).ng);
+  private _forest: IndexedNode[] = [];
 
   constructor(private _config: Partial<Config>) {}
 
@@ -87,6 +87,10 @@ export class ComponentTreeObserver {
 
   getDirectiveId(dir: any) {
     return this._tracker.getDirectiveId(dir);
+  }
+
+  getDirectiveForest() {
+    return this._forest;
   }
 
   initialize(): void {
@@ -114,8 +118,9 @@ export class ComponentTreeObserver {
   }
 
   private _observeUpdates() {
-    const updates = this._tracker.index();
-    updates.newNodes.forEach(node => {
+    const { newNodes, removedNodes, indexedForest } = this._tracker.index();
+    this._forest = indexedForest;
+    newNodes.forEach(node => {
       if (node.component) {
         if (this._config.onLifecycleHook) {
           this._observeLifecycle(node.component, true);
@@ -134,7 +139,7 @@ export class ComponentTreeObserver {
         });
       }
     });
-    updates.removedNodes.forEach(node => {
+    removedNodes.forEach(node => {
       if (node.component) {
         this._patched.delete(node.component);
         this._fireDestroyCallback(node.component, true);
