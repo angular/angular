@@ -11,6 +11,18 @@
 
 .resources-container {
   position: relative;
+  .group-buttons{
+    @media (max-width: 480px) {
+      .button, a.button.mat-button{
+        font-size:1.2rem;
+        padding:0;
+      }
+
+      a.filter-button{
+        margin: 0;
+      }
+    }
+  }
 }
 
 .grid-fixed:after, .grid-fixed:before {
