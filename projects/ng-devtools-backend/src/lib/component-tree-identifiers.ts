@@ -12,8 +12,11 @@ export const observeDOM = () => {
 };
 
 export const getDirectiveId = (dir: any) => {
-  const res = observer.getDirectiveId(dir);
-  return res;
+  return observer.getDirectiveId(dir);
+};
+
+export const getDirectiveForest = () => {
+  return observer.getDirectiveForest();
 };
 
 export const getDirectivePosition = (dir: any) => {

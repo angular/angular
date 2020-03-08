@@ -1,5 +1,5 @@
 import { ElementPosition, DevToolsNode } from 'protocol';
-import { getDirectiveForest, DirectiveInstanceType, ComponentInstanceType } from '../component-tree';
+import { buildDirectiveForest, DirectiveInstanceType, ComponentInstanceType } from '../component-tree';
 import { Type } from '@angular/core';
 import { DebuggingAPI } from '../interfaces';
 
@@ -25,11 +25,11 @@ export class IdentityTracker {
   }
 
   index() {
-    const componentForest = indexForest(getDirectiveForest(this._ng));
+    const indexedForest = indexForest(buildDirectiveForest(this._ng));
     const newNodes: IndexedNode[] = [];
     const removedNodes: IndexedNode[] = [];
     const allNodes = new Set<any>();
-    componentForest.forEach(root => this._index(root, null, newNodes, allNodes));
+    indexedForest.forEach(root => this._index(root, null, newNodes, allNodes));
     this._currentDirectiveId.forEach((_: number, dir: any) => {
       if (!allNodes.has(dir)) {
         removedNodes.push(dir);
@@ -37,7 +37,7 @@ export class IdentityTracker {
         this._currentDirectivePosition.delete(dir);
       }
     });
-    return { newNodes, removedNodes };
+    return { newNodes, removedNodes, indexedForest };
   }
 
   private _index(node: IndexedNode, parent: TreeNode | null, newNodes: IndexedNode[], allNodes: Set<any>): void {

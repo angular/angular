@@ -1,4 +1,4 @@
-import { getDirectiveForest, ComponentTreeNode } from './component-tree';
+import { buildDirectiveForest, ComponentTreeNode } from './component-tree';
 import { runOutsideAngular, patchTemplate } from './utils';
 
 let hookInitialized = false;
@@ -7,7 +7,7 @@ export const onChangeDetection = (callback: () => void): void => {
   if (hookInitialized) {
     return;
   }
-  const forest = getDirectiveForest((window as any).ng);
+  const forest = buildDirectiveForest((window as any).ng);
   listenAndNotifyOnUpdates(forest, callback);
   hookInitialized = true;
 };

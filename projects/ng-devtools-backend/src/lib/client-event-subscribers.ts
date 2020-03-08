@@ -11,13 +11,7 @@ import {
   UpdatedStateData,
 } from 'protocol';
 import { onChangeDetection } from './change-detection-tracker';
-import {
-  ComponentTreeNode,
-  getDirectiveForest,
-  getLatestComponentState,
-  queryComponentForest,
-  updateState,
-} from './component-tree';
+import { ComponentTreeNode, getLatestComponentState, queryDirectiveForest, updateState } from './component-tree';
 import { start as startProfiling, stop as stopProfiling } from './observer';
 import { serializeComponentState } from './state-serializer/state-serializer';
 import { ComponentInspector, ComponentInspectorOptions } from './component-inspector/component-inspector';
@@ -29,9 +23,7 @@ import {
   appIsAngularInDevMode,
   appIsSupportedAngularVersion,
 } from './angular-check';
-import { observeDOM, getDirectiveId } from './component-tree-identifiers';
-
-const ngDebug = (window as any).ng;
+import { observeDOM, getDirectiveId, getDirectiveForest } from './component-tree-identifiers';
 
 export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void => {
   messageBus.on('shutdown', shutdownCallback(messageBus));
@@ -75,7 +67,7 @@ const initChangeDetection = (messageBus: MessageBus<Events>) => {
 const getLatestComponentExplorerViewCallback = (messageBus: MessageBus<Events>) => query => {
   messageBus.emit('latestComponentExplorerView', [
     {
-      forest: prepareForestForSerialization(getDirectiveForest(ngDebug)),
+      forest: prepareForestForSerialization(getDirectiveForest()),
       properties: getLatestComponentState(query),
     },
   ]);
@@ -93,7 +85,7 @@ const stopProfilingCallback = (messageBus: MessageBus<Events>) => () => {
 };
 
 const getElementDirectivesPropertiesCallback = (messageBus: MessageBus<Events>) => (position: ElementPosition) => {
-  const node = queryComponentForest(position, getDirectiveForest(ngDebug));
+  const node = queryDirectiveForest(position, getDirectiveForest());
   if (node) {
     messageBus.emit('elementDirectivesProperties', [serializeNodeDirectiveProperties(node)]);
   } else {
@@ -102,7 +94,7 @@ const getElementDirectivesPropertiesCallback = (messageBus: MessageBus<Events>) 
 };
 
 const selectedComponentCallback = (position: ElementPosition) => {
-  const node = queryComponentForest(position, getDirectiveForest(ngDebug));
+  const node = queryDirectiveForest(position, getDirectiveForest());
   setConsoleReference(node);
 };
 
@@ -110,7 +102,7 @@ const getNestedPropertiesCallback = (messageBus: MessageBus<Events>) => (
   position: DirectivePosition,
   propPath: string[]
 ) => {
-  const node = queryComponentForest(position.element, getDirectiveForest(ngDebug));
+  const node = queryDirectiveForest(position.element, getDirectiveForest());
   if (node) {
     let current = (position.directive === undefined ? node.component : node.directives[position.directive]).instance;
     for (const prop of propPath) {
