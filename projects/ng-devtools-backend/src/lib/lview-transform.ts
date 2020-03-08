@@ -13,12 +13,13 @@ const getNode = (lView: any, data: any, idx: number): ComponentTreeNode => {
   const directives = [];
   let component = null;
   const tNode = data[idx];
+  const element = (lView[idx][ELEMENT].tagName || lView[idx][ELEMENT].nodeName).toLowerCase();
   for (let i = tNode.directiveStart; i < tNode.directiveEnd; i++) {
     const dir = lView[i];
     const dirMeta = data[i];
     if (dirMeta && dirMeta.template) {
       component = {
-        name: dir.constructor.name,
+        name: element,
         instance: dir,
       };
     } else if (dirMeta) {
@@ -29,7 +30,7 @@ const getNode = (lView: any, data: any, idx: number): ComponentTreeNode => {
     }
   }
   return {
-    element: (lView[idx][ELEMENT].tagName || lView[idx][ELEMENT].nodeName).toLowerCase(),
+    element,
     nativeElement: lView[idx][ELEMENT],
     directives,
     component,

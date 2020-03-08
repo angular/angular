@@ -80,7 +80,7 @@ describe('Search items in component tree', () => {
     cy.get('.parent-nodes')
       .find('button')
       .its('length')
-      .should('eq', 4);
+      .should('eq', 7);
 
     // should display correct text in explorer panel
     checkComponentName('app-todos');
