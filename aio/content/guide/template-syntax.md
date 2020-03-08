@@ -918,12 +918,20 @@ To see the `disabled` button example in a functioning app, see the <live-example
 이 예제는 컴포넌트의 프로퍼티에 따라 버튼의 비활성화를 토글하는 예제입니다.
 
 
+<!--
 ## Binding types and targets
+-->
+## 타입에 따른 바인딩 대상
 
+<!--
 The **target of a data-binding** is something in the DOM.
 Depending on the binding type, the target can be a property (element, component, or directive),
 an event (element, component, or directive), or sometimes an attribute name.
 The following table summarizes the targets for the different binding types.
+-->
+**데이터 바인딩 대상**은 DOM에 있는 무언가입니다.
+이 때 바인딩 대상은 바인딩 종류에 따라 엘리먼트,컴포넌트, 디렉티브의 프로퍼티가 될수도 있고 이벤트가 될수도 있으며, 어트리뷰트 이름이 될수도 있습니다.
+바인딩 종류에 따라 어떤 것이 바인딩 대상이 되는지 아래 표로 확인해 보세요.
 
 <style>
   td, th {vertical-align: top}
@@ -982,7 +990,10 @@ The following table summarizes the targets for the different binding types.
       디렉티브 프로퍼티
     </td>
     <td>
+      <!--
       <code>src</code>, <code>hero</code>, and <code>ngClass</code> in the following:
+      -->
+      <code>src</code>, <code>hero</code>, <code>ngClass</code> 프로퍼티:
       <code-example path="template-syntax/src/app/app.component.html" region="property-binding-syntax-1"></code-example>
       <!-- For more information, see [Property Binding](guide/property-binding). -->
     </td>
@@ -1005,7 +1016,10 @@ The following table summarizes the targets for the different binding types.
       디렉티브 이벤트
     </td>
     <td>
+      <!--
       <code>click</code>, <code>deleteRequest</code>, and <code>myClick</code> in the following:
+      -->
+      <code>click</code>, <code>deleteRequest</code>, <code>myClick</code> 이벤트:
       <code-example path="template-syntax/src/app/app.component.html" region="event-binding-syntax-1"></code-example>
       <!-- KW--Why don't these links work in the table? -->
       <!-- <div>For more information, see [Event Binding](guide/event-binding).</div> -->
@@ -1022,7 +1036,7 @@ The following table summarizes the targets for the different binding types.
       <!--
       Event and property
       -->
-      이벤트나 프로퍼티
+      이벤트, 프로퍼티
     </td>
     <td>
       <code-example path="template-syntax/src/app/app.component.html" region="2-way-binding-syntax-1"></code-example>
@@ -1089,15 +1103,26 @@ The following table summarizes the targets for the different binding types.
 {@a property-binding}
 
 {@a 프로퍼티-바인딩}
+<!--
 ## Property binding `[property]`
+-->
+## 프로퍼티 바인딩 `[property]`
 
+<!--
 Use property binding to _set_ properties of target elements or
 directive `@Input()` decorators. For an example
 demonstrating all of the points in this section, see the
 <live-example name="property-binding">property binding example</live-example>.
+-->
+프로퍼티 바인딩은 대상 엘리먼트나 디렉티브에 있는 프로퍼티 중 `@Input()` 데코레이터를 사용한 프로퍼티의 값을 _설정하기 위해_ 사용합니다.
+이 문서에서 다루는 내용을 확인하려면 <live-example name="property-binding">프로퍼티 바인딩 예제</live-example>를 참고하세요.
 
+<!--
 ### One-way in
+-->
+### 단방향 전달
 
+<!--
 Property binding flows a value in one direction,
 from a component's property into a target element property.
 
@@ -1109,9 +1134,22 @@ If the element raises events, you can listen to them with an [event binding](gui
 If you must read a target element property or call one of its methods,
 see the API reference for [ViewChild](api/core/ViewChild) and
 [ContentChild](api/core/ContentChild).
+-->
+프로퍼티 바인딩은 컴포넌트의 프로퍼티값 하나를 대상 엘리먼트 프로퍼티로 한 번 전달합니다.
 
+그래서 프로퍼티 바인딩은 대상 엘리먼트의 값을 읽는 용도로 사용할 수는 없습니다.
+이와 비슷하게, 대상 엘리먼트에 있는 메소드를 실행하는 용도로도 사용할 수 없습니다.
+엘리먼트에서 발생하는 이벤트에 반응하려면 [이벤트 바인딩](guide/template-syntax#event-binding)을 사용해야 합니다.
+
+대상 엘리먼트의 프로퍼티를 읽거나 메소드를 실행해야 한다면 [ViewChild](api/core/ViewChild)나 [ContentChild](api/core/ContentChild)를 활용하는 것이 좋습니다.
+
+
+<!--
 ### Examples
+-->
+### 예제
 
+<!--
 The most common property binding sets an element property to a component
 property value. An example is
 binding the `src` property of an image element to a component's `itemImageUrl` property:
@@ -1124,10 +1162,23 @@ which is the attribute, spelled with a lowercase `s`.
 <code-example path="property-binding/src/app/app.component.html" region="colSpan" header="src/app/app.component.html"></code-example>
 
 For more details, see the [MDN HTMLTableCellElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLTableCellElement) documentation.
+-->
+프로퍼티 바인딩은 보통 컴포넌트의 프로퍼티 값을 지정하기 위해 사용합니다.
+컴포넌트의 `itemImageUrl` 프로퍼티 값을 `<img>` 엘리먼트의 `src` 프로퍼티에 지정하려면 다음과 같이 구현합니다:
+
+<code-example path="property-binding/src/app/app.component.html" region="property-binding" header="src/app/app.component.html"></code-example>
+
+`colSpan` 프로퍼티도 바인딩할 수 있습니다.
+소문자 `s`가 사용된 어트리뷰트 `colspan`이 아니라 `colSpan` 프로퍼티라는 것에 주의하세요.
+
+<code-example path="property-binding/src/app/app.component.html" region="colSpan" header="src/app/app.component.html"></code-example>
+
+테이블 셀에 사용할 수 있는 프로퍼티 목록은 [MDN HTMLTableCellElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLTableCellElement) 문서를 참고하세요.
 
 <!-- Add link when Attribute Binding updates are merged:
 For more about `colSpan` and `colspan`, see (Attribute Binding)[guide/template-syntax]. -->
 
+<!--
 Another example is disabling a button when the component says that it `isUnchanged`:
 
 <code-example path="property-binding/src/app/app.component.html" region="disabled-button" header="src/app/app.component.html"></code-example>
@@ -1138,6 +1189,18 @@ Another is setting a property of a directive:
 
 Yet another is setting the model property of a custom component&mdash;a great way
 for parent and child components to communicate:
+
+<code-example path="property-binding/src/app/app.component.html" region="model-property-binding" header="src/app/app.component.html"></code-example>
+-->
+컴포넌트의 `isUnchanged` 프로퍼티를 사용했던 것처럼 버튼을 비활성화하는 용도로도 사용할 수 있습니다:
+
+<code-example path="property-binding/src/app/app.component.html" region="disabled-button" header="src/app/app.component.html"></code-example>
+
+디렉티브에서는 이렇게 사용합니다:
+
+<code-example path="property-binding/src/app/app.component.html" region="class-binding" header="src/app/app.component.html"></code-example>
+
+그리고 아직 다루지는 않았지만, 부모 컴포넌트의 객체를 자식 컴포넌트로 전달할 때는 이렇게 사용할 수 있습니다:
 
 <code-example path="property-binding/src/app/app.component.html" region="model-property-binding" header="src/app/app.component.html"></code-example>
 
@@ -1159,38 +1222,48 @@ The target property in the following code is the image element's `src` property.
 There's also the `bind-` prefix alternative:
 -->
 이 방식이 익숙하지 않다면 다음과 같이 `bind-` 접두사를 사용할 수도 있습니다.
--->
 
 <code-example path="property-binding/src/app/app.component.html" region="bind-prefix" header="src/app/app.component.html"></code-example>
 
-
+<!--
 In most cases, the target name is the name of a property, even
 when it appears to be the name of an attribute.
 So in this case, `src` is the name of the `<img>` element property.
 
-<!--
 Element properties may be the more common targets,
 but Angular looks first to see if the name is a property of a known directive,
 as it is in the following example:
 -->
+대부분의 경우에 바인딩 대상으로 지정한 이름은 프로퍼티 이름입니다. 어트리뷰트같이 보여도 프로퍼티인 경우가 더 많습니다.
+위 예제도 `src`는 `<img>` 엘리먼트의 프로퍼티입니다.
+
 바인딩되는 프로퍼티는 대상 엘리먼트의 프로퍼티인 것이 일반적이지만, 다음과 같이 Angular가 제공하는 기본 디렉티브의 프로퍼티일 수도 있습니다.
 이 때는 엘리먼트 프로퍼티보다 디렉티브 프로퍼티의 우선순위가 높습니다:
 
 <code-example path="property-binding/src/app/app.component.html" region="class-binding" header="src/app/app.component.html"></code-example>
 
+<!--
 Technically, Angular is matching the name to a directive `@Input()`,
 one of the property names listed in the directive's `inputs` array
 or a property decorated with `@Input()`.
 Such inputs map to the directive's own properties.
 
 If the name fails to match a property of a known directive or element, Angular reports an “unknown directive” error.
+-->
+Angular는 바인딩 대상을 찾을 때 `@Input()`이 지정된 프로퍼티나 디렉티브의 `inputs` 배열을 찾습니다.
+
+그리고 매칭되는 이름을 찾지 못하면 "unknown directive" 에러가 발생합니다.
 
 <div class="alert is-helpful">
 
+<!--
 Though the target name is usually the name of a property,
 there is an automatic attribute-to-property mapping in Angular for
 several common attributes. These include `class`/`className`, `innerHtml`/`innerHTML`, and
 `tabindex`/`tabIndex`.
+-->
+일반적으로 바인딩 대상은 프로퍼티의 이름과 매칭되지만 어트리뷰트 값이 프로퍼티 값과 자동으로 연결된 경우도 있습니다.
+`class`/`className`, `innerHtml`/`innerHTML`, `tabindex`/`tabIndex`가 그렇습니다.
 
 </div>
 
@@ -1202,6 +1275,7 @@ several common attributes. These include `class`/`className`, `innerHtml`/`inner
 -->
 ### 외부 영향 최소화
 
+<!--
 Evaluation of a template expression should have no visible side effects.
 The expression language itself, or the way you write template expressions,
 helps to a certain extent;
@@ -1216,9 +1290,24 @@ Angular may or may not display the changed value. Angular may detect the
 change and throw a warning error.
 As a best practice, stick to properties and to methods that return
 values and avoid side effects.
+-->
+템플릿 표현식을 평가하는 것은 다른 곳에 영향을 주지 않는 것이 좋습니다.
+표현식은 그 자체로 실행되고 끝나야지 이 표현식의 결과가 다른 컨텍스트에 영향을 주면 디버깅하기 어렵습니다.
+템플릿 표현식의 결과값으로 바인딩된 프로퍼티 값을 지정하는 것은 좋지만 템플릿 표현식에서 증감연산자를 사용하는 것도 좋지 않습니다.
 
+템플릿 표현식 밖으로 영향을 미치는 표현식에 대해 생각해 봅시다.
+`getFoo()`라는 함수가 어떤 동작을 하는지 제대로 이해하고 있다면 템플릿 표현식에서 이 함수를 사용하는 것이 문제되지 않습니다.
+그런데 `getFoo()` 함수는 한 템플릿 표현식 외에도 다른 곳에 사용되어 바인딩된 값을 바꿀 수 있습니다.
+Angular가 이런 문제를 발견한다면 경고 메시지를 표시하겠지만 모든 경우를 감지할 수는 없기 때문에 좋지 않습니다.
+가장 좋은 방법은 프로퍼티를 그대로 전달하거나 메소드가 실행한 값을 그대로 반환하는 것입니다.
+
+
+<!--
 ### Return the proper type
+-->
+### 맞는 타입으로 반환하세요.
 
+<!--
 The template expression should evaluate to the type of value
 that the target property expects.
 Return a string if the target property expects a string, a number if it
@@ -1233,9 +1322,29 @@ You can confirm this by looking in the `ItemDetailComponent` where the `@Input` 
 
 As you can see here, the `parentItem` in `AppComponent` is a string, which the `ItemDetailComponent` expects:
 <code-example path="property-binding/src/app/app.component.ts" region="parent-data-type" header="src/app/app.component.ts"></code-example>
+-->
+템플릿 표현식을 작성할 때는 이 표현식이 반환하는 값의 타입을 적절하게 지정해야 합니다.
+대상 프로퍼티가 문자열이라면 문자열을 반환해야 하고, 대상 프로퍼티가 숫자라면 숫자를, 대상 프로퍼티가 객체라면 객체를 반환해야 합니다.
 
+아래 예제에서 `ItemDetailComponent`의 `childItem` 프로퍼티는 `string` 타입으로 선언되어 있으며 프로퍼티 바인딩은 다음과 같이 사용되었습니다:
+
+<code-example path="property-binding/src/app/app.component.html" region="model-property-binding" header="src/app/app.component.html"></code-example>
+
+아래 `ItemDetailComponent` 코드에서도 알 수 있듯이 `@Input()`으로 지정된 프로퍼티는 `string` 타입입니다:
+
+<code-example path="property-binding/src/app/item-detail/item-detail.component.ts" region="input-type" header="src/app/item-detail/item-detail.component.ts (@Input() 데코레이터가 지정된 프로퍼티)"></code-example>
+
+그렇다면 `AppComponent`가 전달하는 `parentItem` 프로퍼티도 문자열이어야 이 코드가 모두 제대로 동작할 것입니다:
+
+<code-example path="property-binding/src/app/app.component.ts" region="parent-data-type" header="src/app/app.component.ts"></code-example>
+
+
+<!--
 #### Passing in an object
+-->
+#### 객체 전달하기
 
+<!--
 The previous simple example showed passing in a string. To pass in an object,
 the syntax and thinking are the same.
 
@@ -1261,6 +1370,31 @@ You just have to make sure, in this case, that you're supplying an array of obje
 In this example, `AppComponent` specifies a different `item` object
 (`currentItem`) and passes it to the nested `ListItemComponent`. `ListItemComponent` was able to use `currentItem` because it matches what an `Item` object is according to `item.ts`. The `item.ts` file is where
 `ListItemComponent` gets its definition of an `item`.
+-->
+위 예제는 문자열을 전달하기 때문에 아주 간단합니다.
+그리고 객체의 경우도 마찬가지입니다.
+
+`AppComponent`의 `items` 프로퍼티는 객체의 배열이고 이 프로퍼티가 `ListItemComponent`로 바인딩되는 경우를 봅시다.
+
+<code-example path="property-binding/src/app/app.component.html" region="pass-object" header="src/app/app.component.html"></code-example>
+
+`ListItemComponent`의 `items` 프로퍼티는 `@Input()` 데코레이터로 지정되었으며 이 배열은 `Item` 타입의 배열입니다.
+
+<code-example path="property-binding/src/app/list-item/list-item.component.ts" region="item-input" header="src/app/list-item.component.ts"></code-example>
+
+이 예제 앱에서 `Item` 객체에는 `id` 프로퍼티와 `name` 프로퍼티가 존재합니다.
+
+<code-example path="property-binding/src/app/item.ts" region="item-class" header="src/app/item.ts"></code-example>
+
+원래 이 데이터는 외부 파일 `mock-items.ts`에 있지만, `AppComponent`에 다음과 같이 작성해도 앱은 동작합니다:
+
+<code-example path="property-binding/src/app/app.component.ts" region="pass-object" header="src/app.component.ts"></code-example>
+
+여기에서 확인해야 할 것은, `ListItemComponent`의 `items` 프로퍼티는 객체의 배열을 할당받는 것으로 정의했기 때문에 이 타입에 맞는 값을 바인딩해야 한다는 것입니다.
+
+위 코드처럼 `AppComponent`의 `currentItem` 프로퍼티 값을 `Item` 배열 형식으로 할당하면 자식 컴포넌트 `ListItemComponent`도 제대로 동작합니다.
+`AppComponent`에서는 `Item` 타입이라는 것을 명시하지 않았지만 이 객체가 `ListItemComponent`에서 원하는 형식과 같기 때문입니다.
+
 
 <!--
 ### Remember the brackets
