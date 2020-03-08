@@ -133,6 +133,7 @@ function getVariableTypeFromDirectiveContext(
       }
     }
   }
+
   return query.getBuiltinType(BuiltinType.Any);
 }
 
@@ -149,7 +150,7 @@ function refinedVariableType(
     value: string, mergedTable: SymbolTable, query: SymbolQuery,
     templateElement: EmbeddedTemplateAst): Symbol {
   if (value === '$implicit') {
-    // Special case the ngFor directive
+    // Special case: ngFor directive
     const ngForDirective = templateElement.directives.find(d => {
       const name = identifierName(d.directive.type);
       return name == 'NgFor' || name == 'NgForOf';
@@ -169,13 +170,20 @@ function refinedVariableType(
     }
   }
 
-  // Special case the ngIf directive ( *ngIf="data$ | async as variable" )
-  if (value === 'ngIf') {
+  if (value === 'ngIf' || value === '$implicit') {
     const ngIfDirective =
         templateElement.directives.find(d => identifierName(d.directive.type) === 'NgIf');
     if (ngIfDirective) {
+      // Special case: ngIf directive. The NgIf structural directive owns a template context with
+      // "$implicit" and "ngIf" members. These properties are typed as generics. Until the language
+      // service uses an Ivy and TypecheckBlock backend, we cannot bind these values to a concrete
+      // type without manual inference. To get the concrete type, look up the type of the "ngIf"
+      // import on the NgIf directive bound to the template.
+      //
+      // See @angular/common/ng_if.ts for more information.
       const ngIfBinding = ngIfDirective.inputs.find(i => i.directiveName === 'ngIf');
       if (ngIfBinding) {
+        // Check if there is a known type bound to the ngIf input.
         const bindingType = new AstType(mergedTable, query, {}).getType(ngIfBinding.value);
         if (bindingType) {
           return bindingType;
