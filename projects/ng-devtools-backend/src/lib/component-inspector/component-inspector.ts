@@ -61,7 +61,7 @@ export class ComponentInspector {
     unHighlight();
     if (this._selectedComponent.component) {
       highlight(this._selectedComponent.host);
-      const forest: IndexedNode[] = indexForest(getDirectiveForest(document.documentElement, (window as any).ng));
+      const forest: IndexedNode[] = indexForest(getDirectiveForest((window as any).ng));
       const elementPosition: ElementPosition = getIndexForNativeElementInForest(this._selectedComponent.host, forest);
       this._onComponentEnter(elementPosition);
     }
@@ -81,7 +81,7 @@ export class ComponentInspector {
   }
 
   highlightByPosition(position: ElementPosition): void {
-    const forest: ComponentTreeNode[] = getDirectiveForest(document.documentElement, (window as any).ng);
+    const forest: ComponentTreeNode[] = getDirectiveForest((window as any).ng);
     const elementToHighlight: HTMLElement = findNodeInForest(position, forest);
     highlight(elementToHighlight);
   }

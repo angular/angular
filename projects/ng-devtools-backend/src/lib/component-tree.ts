@@ -31,10 +31,7 @@ export interface ComponentTreeNode extends DevToolsNode<DirectiveInstanceType, C
 export const getLatestComponentState = (query: ComponentExplorerViewQuery): DirectivesProperties | undefined => {
   let result: DirectivesProperties | undefined;
   if (query.selectedElement && query.expandedProperties) {
-    const node = queryComponentForest(
-      query.selectedElement,
-      getDirectiveForest(document.documentElement, (window as any).ng)
-    );
+    const node = queryComponentForest(query.selectedElement, getDirectiveForest((window as any).ng));
     if (!node) {
       return undefined;
     }
@@ -64,8 +61,10 @@ export const getLatestComponentState = (query: ComponentExplorerViewQuery): Dire
   return result;
 };
 
-export const getDirectiveForest = (root: HTMLElement, ngd: DebuggingAPI): ComponentTreeNode[] => {
-  const roots = Array.from(root.querySelectorAll('[ng-version]')).map(el => ngd.getComponent(el).__ngContext__);
+export const getDirectiveForest = (ngd: DebuggingAPI): ComponentTreeNode[] => {
+  const roots = Array.from(document.documentElement.querySelectorAll('[ng-version]')).map(
+    el => ngd.getComponent(el).__ngContext__
+  );
   return Array.prototype.concat.apply([], roots.map(buildDirectiveTree));
 };
 
@@ -122,14 +121,11 @@ const findElementIDFromNativeElementInForest = (
 
 export const findNodeFromSerializedPosition = (serializedPosition: string) => {
   const position: number[] = serializedPosition.split(',').map(index => parseInt(index, 10));
-  return queryComponentForest(position, getDirectiveForest(document.documentElement, ngDebug));
+  return queryComponentForest(position, getDirectiveForest(ngDebug));
 };
 
 export const updateState = (updatedStateData: UpdatedStateData) => {
-  const node = queryComponentForest(
-    updatedStateData.directiveId.element,
-    getDirectiveForest(document.documentElement, ngDebug)
-  );
+  const node = queryComponentForest(updatedStateData.directiveId.element, getDirectiveForest(ngDebug));
   if (updatedStateData.directiveId.directive === undefined) {
     const comp = node.component.instance;
     mutateComponentOrDirective(updatedStateData, comp);
