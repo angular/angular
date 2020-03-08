@@ -94,14 +94,7 @@ export class ComponentTreeObserver {
       subtree: true,
       childList: true,
     });
-    if (this._config.onChangeDetection) {
-      this._initializeChangeDetectionObserver();
-    }
-    if (this._config.onLifecycleHook) {
-      this._initializeLifecycleObserver();
-    }
-    this._tracker.index();
-    this._createOriginalTree();
+    this._observeUpdates();
   }
 
   destroy() {
@@ -120,77 +113,42 @@ export class ComponentTreeObserver {
     this._undoLifecyclePatch = [];
   }
 
-  private _onMutation(mutations: MutationRecord[]): void {
-    mutations.forEach((v: MutationRecord) => {
-      v.addedNodes.forEach(node => this._onAddedNodesMutation(node));
-      v.removedNodes.forEach(node => this._onDeletedNodesMutation(node));
+  private _observeUpdates() {
+    const updates = this._tracker.index();
+    updates.newNodes.forEach(node => {
+      if (node.component) {
+        if (this._config.onLifecycleHook) {
+          this._observeLifecycle(node.component, true);
+        }
+        if (this._config.onChangeDetection) {
+          this._observeComponent(node.component);
+        }
+        this._fireCreationCallback(node.component, true);
+      }
+      if (node.directives && node.directives.length) {
+        node.directives.forEach(dir => {
+          if (this._config.onLifecycleHook) {
+            this._observeLifecycle(dir, true);
+          }
+          this._fireCreationCallback(dir, false);
+        });
+      }
+    });
+    updates.removedNodes.forEach(node => {
+      if (node.component) {
+        this._patched.delete(node.component);
+        this._fireDestroyCallback(node.component, true);
+      }
+      if (node.directives && node.directives.length) {
+        node.directives.forEach(dir => {
+          this._fireDestroyCallback(dir, false);
+        });
+      }
     });
   }
 
-  private _onAddedNodesMutation(node: Node): void {
-    const components = this._getAllNestedComponentsWithinDomNode(node);
-    const directives = this._getAllNestedDirectivesWithinDomNode(node);
-
-    if (components.length + directives.length > 0) {
-      this._tracker.index();
-    }
-
-    if (components.length > 0) {
-      components.forEach(component => this._onAddedComponent(component));
-    }
-
-    if (directives.length > 0) {
-      directives.forEach(dir => this._onAddedDirective(dir));
-    }
-  }
-
-  private _onAddedComponent(addedComponent): void {
-    if (this._config.onChangeDetection) {
-      this._observeComponent(addedComponent);
-    }
-    if (this._config.onLifecycleHook) {
-      this._observeLifecycle(addedComponent, true);
-    }
-    this._fireCreationCallback(addedComponent, true);
-
-    if (this._lastChangeDetection.has(addedComponent)) {
-      this._fireChangeDetectionCallback(addedComponent);
-      this._lastChangeDetection.delete(addedComponent);
-    }
-  }
-
-  private _onAddedDirective(addedDirective): void {
-    if (this._config.onLifecycleHook) {
-      this._observeLifecycle(addedDirective, false);
-    }
-    this._fireCreationCallback(addedDirective, false);
-  }
-
-  private _getAllNestedComponentsWithinDomNode(node, componentAccumulator = []) {
-    const component = node instanceof HTMLElement && ng.getComponent(node);
-
-    if (component) {
-      componentAccumulator.push(component);
-    } else {
-      Array.from(node.children || []).forEach(child =>
-        this._getAllNestedComponentsWithinDomNode(child, componentAccumulator)
-      );
-    }
-
-    return componentAccumulator;
-  }
-
-  private _getAllNestedDirectivesWithinDomNode(node) {
-    let directives = [];
-    try {
-      directives = ng.getDirectives(node);
-    } catch {}
-
-    Array.from(node.children || []).forEach(
-      child => (directives = directives.concat(this._getAllNestedDirectivesWithinDomNode(child)))
-    );
-
-    return directives;
+  private _onMutation(): void {
+    this._observeUpdates();
   }
 
   private _fireCreationCallback(component: any, isComponent: boolean): void {
@@ -201,58 +159,12 @@ export class ComponentTreeObserver {
     this._config.onCreate(component, this._tracker.getDirectiveId(component), isComponent, position);
   }
 
-  private _fireChangeDetectionCallback(component: any): void {
-    if (!this._config.onChangeDetection) {
-      return;
-    }
-    this._config.onChangeDetection(
-      component,
-      this._tracker.getDirectiveId(component),
-      this._tracker.getDirectivePosition(component),
-      this._lastChangeDetection.get(component)
-    );
-  }
-
-  private _onDeletedNodesMutation(node: Node): void {
-    const component = node instanceof HTMLElement && ng.getComponent(node);
-    if (component) {
-      // We first want to notify for removal
-      // after that remove the component from the tracker
-      // this way consumers have access to the component's position and ID.
-      this._fireDestroyCallback(component, true);
-      this._tracker.delete(component);
-    }
-
-    let directives = [];
-    try {
-      directives = ng.getDirectives(node);
-    } catch {}
-
-    if (directives && directives.length) {
-      directives.forEach(dir => {
-        this._fireDestroyCallback(dir, false);
-      });
-      this._tracker.delete(directives[0]);
-    }
-  }
-
   private _fireDestroyCallback(component: any, isComponent: boolean): void {
     if (!this._config.onDestroy) {
       return;
     }
     const position = this._tracker.getDirectivePosition(component);
     this._config.onDestroy(component, this._tracker.getDirectiveId(component), isComponent, position);
-  }
-
-  private _initializeChangeDetectionObserver(root: Element = document.documentElement): void {
-    const cmp = root instanceof HTMLElement && ng.getComponent(root);
-    if (cmp) {
-      this._observeComponent(cmp);
-    }
-    // tslint:disable:prefer-for-of
-    for (let i = 0; i < root.children.length; i++) {
-      this._initializeChangeDetectionObserver(root.children[i]);
-    }
   }
 
   private _observeComponent(cmp: any): void {
@@ -278,41 +190,6 @@ export class ComponentTreeObserver {
     };
     declarations.tView.template.patched = true;
     this._patched.set(cmp, original);
-  }
-
-  private _createOriginalTree(): void {
-    getDirectiveForest(document.documentElement, (window as any).ng).forEach(root =>
-      this._fireInitialTreeCallbacks(root)
-    );
-  }
-
-  private _fireInitialTreeCallbacks(root: ComponentTreeNode) {
-    if (root.component) {
-      this._fireCreationCallback(root.component.instance, true);
-    }
-    (root.directives || []).forEach(dir => {
-      this._fireCreationCallback(dir.instance, false);
-    });
-    root.children.forEach(child => this._fireInitialTreeCallbacks(child));
-  }
-
-  private _initializeLifecycleObserver(root: Node = document.documentElement): void {
-    if (root instanceof HTMLElement) {
-      const cmp = ng.getComponent(root);
-      if (cmp) {
-        this._observeLifecycle(cmp, true);
-      }
-    }
-    let dirs: any[] = [];
-    try {
-      dirs = ng.getDirectives(root);
-    } catch {}
-    dirs.forEach((dir: any) => {
-      this._observeLifecycle(dir, false);
-    });
-    for (let i = 0; i < root.childNodes.length; i++) {
-      this._initializeLifecycleObserver(root.childNodes[i]);
-    }
   }
 
   private _observeLifecycle(directive: any, isComponent: boolean) {

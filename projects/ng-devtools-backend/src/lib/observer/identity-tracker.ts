@@ -13,7 +13,6 @@ export class IdentityTracker {
   private _directiveIdCounter = 0;
   private _currentDirectivePosition = new Map<any, ElementPosition>();
   private _currentDirectiveId = new Map<any, number>();
-  private _createdDirectives = new Set<any>();
 
   constructor(private _ng: DebuggingAPI) {}
 
@@ -25,35 +24,38 @@ export class IdentityTracker {
     return this._currentDirectiveId.get(dir);
   }
 
-  // It's possible to optimize this method and traverse just a subtree.
-  insert(_: Node, __: any | any[]): void {
-    this.index();
-  }
-
-  // It's possible to optimize this method and traverse just a subtree.
-  delete(dir: any): void {
-    this.index();
-    this._currentDirectivePosition.delete(dir);
-    this._createdDirectives.delete(dir);
-  }
-
-  index(rootElement = document.documentElement) {
-    const componentForest = indexForest(getDirectiveForest(rootElement, this._ng));
-    componentForest.forEach(root => this._index(root));
-  }
-
-  private _index(root: IndexedNode, parent: TreeNode | null = null): void {
-    if (root.component) {
-      this._indexNode(root.component.instance, root.position, parent);
-    }
-    (root.directives || []).forEach(dir => {
-      this._indexNode(dir.instance, root.position, parent);
+  index() {
+    const componentForest = indexForest(getDirectiveForest(this._ng));
+    const newNodes: IndexedNode[] = [];
+    const removedNodes: IndexedNode[] = [];
+    const allNodes = new Set<any>();
+    componentForest.forEach(root => this._index(root, null, newNodes, allNodes));
+    this._currentDirectiveId.forEach((_: number, dir: any) => {
+      if (!allNodes.has(dir)) {
+        removedNodes.push(dir);
+        this._currentDirectiveId.delete(dir);
+        this._currentDirectivePosition.delete(dir);
+      }
     });
-    root.children.forEach(child => this._index(child, parent));
+    return { newNodes, removedNodes };
   }
 
-  private _indexNode(directive: any, position: ElementPosition, parent: TreeNode | null = null) {
-    this._createdDirectives.add(directive);
+  private _index(node: IndexedNode, parent: TreeNode | null, newNodes: IndexedNode[], allNodes: Set<any>): void {
+    if (node.component) {
+      allNodes.add(node.component.instance);
+      this._indexNode(node.component.instance, node.position, parent, newNodes);
+    }
+    (node.directives || []).forEach(dir => {
+      allNodes.add(dir.instance);
+      this._indexNode(dir.instance, node.position, parent, newNodes);
+    });
+    node.children.forEach(child => this._index(child, parent, newNodes, allNodes));
+  }
+
+  private _indexNode(directive: any, position: ElementPosition, parent: TreeNode | null, newNodes: IndexedNode[]) {
+    if (!this._currentDirectiveId.has(directive)) {
+      newNodes.push(directive);
+    }
     this._currentDirectivePosition.set(directive, position);
     if (!this._currentDirectiveId.has(directive)) {
       this._currentDirectiveId.set(directive, this._directiveIdCounter++);
@@ -61,13 +63,12 @@ export class IdentityTracker {
   }
 
   hasDirective(dir: any) {
-    return this._createdDirectives.has(dir);
+    return this._currentDirectiveId.has(dir);
   }
 
   destroy() {
     this._currentDirectivePosition = new Map<any, ElementPosition>();
     this._currentDirectiveId = new Map<any, number>();
-    this._createdDirectives = new Set<any>();
   }
 }
 
