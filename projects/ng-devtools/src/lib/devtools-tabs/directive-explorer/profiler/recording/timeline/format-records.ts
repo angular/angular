@@ -81,6 +81,6 @@ export const formatFlamegraphRecords = (records: ProfilerFrame[]): TimelineView 
   records.forEach(record => {
     insertTimelineRecord(result.timeline, record);
   });
-  result.timeline = result.timeline.filter(entry => entry.app.length > 0);
+  result.timeline = result.timeline.filter(entry => entry.app.length > 0 && entry.timeSpent > 0);
   return result;
 };

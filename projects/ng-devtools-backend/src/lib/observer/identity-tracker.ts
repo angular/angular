@@ -13,6 +13,7 @@ export class IdentityTracker {
   private _directiveIdCounter = 0;
   private _currentDirectivePosition = new Map<any, ElementPosition>();
   private _currentDirectiveId = new Map<any, number>();
+  private _isComponent = new Map<any, boolean>();
 
   constructor(private _ng: DebuggingAPI) {}
 
@@ -24,46 +25,53 @@ export class IdentityTracker {
     return this._currentDirectiveId.get(dir);
   }
 
+  hasDirective(dir: any) {
+    return this._currentDirectiveId.has(dir);
+  }
+
   index() {
     const indexedForest = indexForest(buildDirectiveForest(this._ng));
-    const newNodes: IndexedNode[] = [];
-    const removedNodes: IndexedNode[] = [];
+    const newNodes: { directive: any; isComponent: boolean }[] = [];
+    const removedNodes: { directive: any; isComponent: boolean }[] = [];
     const allNodes = new Set<any>();
     indexedForest.forEach(root => this._index(root, null, newNodes, allNodes));
     this._currentDirectiveId.forEach((_: number, dir: any) => {
       if (!allNodes.has(dir)) {
-        removedNodes.push(dir);
-        this._currentDirectiveId.delete(dir);
-        this._currentDirectivePosition.delete(dir);
+        removedNodes.push({ directive: dir, isComponent: this._isComponent.get(dir) });
+        // We can't clean these up because during profiling
+        // they might be requested for removed components
+        // this._currentDirectiveId.delete(dir);
+        // this._currentDirectivePosition.delete(dir);
       }
     });
     return { newNodes, removedNodes, indexedForest };
   }
 
-  private _index(node: IndexedNode, parent: TreeNode | null, newNodes: IndexedNode[], allNodes: Set<any>): void {
+  private _index(
+    node: IndexedNode,
+    parent: TreeNode | null,
+    newNodes: { directive: any; isComponent: boolean }[],
+    allNodes: Set<any>
+  ): void {
     if (node.component) {
       allNodes.add(node.component.instance);
-      this._indexNode(node.component.instance, node.position, parent, newNodes);
+      this._isComponent.set(node.component.instance, true);
+      this._indexNode(node.component.instance, node.position, newNodes);
     }
     (node.directives || []).forEach(dir => {
       allNodes.add(dir.instance);
-      this._indexNode(dir.instance, node.position, parent, newNodes);
+      this._isComponent.set(dir.instance, false);
+      this._indexNode(dir.instance, node.position, newNodes);
     });
     node.children.forEach(child => this._index(child, parent, newNodes, allNodes));
   }
 
-  private _indexNode(directive: any, position: ElementPosition, parent: TreeNode | null, newNodes: IndexedNode[]) {
-    if (!this._currentDirectiveId.has(directive)) {
-      newNodes.push(directive);
-    }
+  private _indexNode(directive: any, position: ElementPosition, newNodes: { directive: any; isComponent: boolean }[]) {
     this._currentDirectivePosition.set(directive, position);
     if (!this._currentDirectiveId.has(directive)) {
+      newNodes.push({ directive, isComponent: this._isComponent.get(directive) });
       this._currentDirectiveId.set(directive, this._directiveIdCounter++);
     }
-  }
-
-  hasDirective(dir: any) {
-    return this._currentDirectiveId.has(dir);
   }
 
   destroy() {

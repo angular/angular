@@ -3,6 +3,7 @@ import { ElementPosition, ProfilerFrame, ElementProfile, DirectiveProfile, Lifec
 import { runOutsideAngular } from '../utils';
 import { getComponentName } from '../highlighter';
 import { InsertionTrie } from './insertion-trie';
+import { ComponentTreeNode } from '../component-tree';
 
 let observer: ComponentTreeObserver;
 let inProgress = false;
@@ -84,15 +85,35 @@ export const stop = (): ProfilerFrame => {
   return result;
 };
 
+const insertOrMerge = (lastFrame: ElementProfile, profile: DirectiveProfile) => {
+  let exists = false;
+  lastFrame.directives.forEach(d => {
+    if (d.name === profile.name) {
+      exists = true;
+      d.changeDetection += profile.changeDetection;
+      for (const key of Object.keys(profile.lifecycle)) {
+        if (!d.lifecycle[key]) {
+          d.lifecycle[key] = 0;
+        }
+        d.lifecycle[key] += profile.lifecycle[key];
+      }
+    }
+  });
+  if (!exists) {
+    lastFrame.directives.push(profile);
+  }
+};
+
 const insertElementProfile = (frames: ElementProfile[], position: ElementPosition, profile?: DirectiveProfile) => {
   if (!profile) {
     return;
   }
+  const original = frames;
   for (let i = 0; i < position.length - 1; i++) {
     const pos = position[i];
     if (!frames[pos]) {
       // TODO(mgechev): consider how to ensure we don't hit this case
-      // console.warn('Unable to find parent node for', frames);
+      console.warn('Unable to find parent node for', original);
       return;
     }
     frames = frames[pos].children;
@@ -107,7 +128,7 @@ const insertElementProfile = (frames: ElementProfile[], position: ElementPositio
   } else {
     frames[lastIdx] = lastFrame;
   }
-  lastFrame.directives.push(profile);
+  insertOrMerge(lastFrame, profile);
 };
 
 const insertElementProfileAtEnd = (frames: ElementProfile[], position: ElementPosition, profile?: DirectiveProfile) => {
@@ -118,7 +139,7 @@ const insertElementProfileAtEnd = (frames: ElementProfile[], position: ElementPo
     const pos = position[i];
     if (!frames[pos]) {
       // TODO(mgechev): consider how to ensure we don't hit this case
-      // console.warn('Unable to find parent node for', frames);
+      console.warn('Unable to find parent node for', frames);
       return;
     }
     frames = frames[pos].children;
@@ -128,7 +149,47 @@ const insertElementProfileAtEnd = (frames: ElementProfile[], position: ElementPo
     directives: [],
   };
   frames.push(lastFrame);
-  lastFrame.directives.push(profile);
+  insertOrMerge(lastFrame, profile);
+};
+
+const prepareInitialFrame = (source: string) => {
+  const frame: ProfilerFrame = {
+    source,
+    directives: [],
+  };
+  const directiveForest = observer.getDirectiveForest();
+  const traverse = (node: ComponentTreeNode, children = frame.directives) => {
+    let position: ElementPosition;
+    if (node.component) {
+      position = observer.getDirectivePosition(node.component.instance);
+    } else {
+      position = observer.getDirectivePosition(node.directives[0].instance);
+    }
+    const directives = node.directives.map(d => {
+      return {
+        isComponent: false,
+        name: d.name,
+        lifecycle: {},
+        changeDetection: 0,
+      };
+    });
+    if (node.component) {
+      directives.push({
+        changeDetection: 0,
+        isComponent: true,
+        lifecycle: {},
+        name: node.component.name,
+      });
+    }
+    const result = {
+      children: [],
+      directives,
+    };
+    children[position[position.length - 1]] = result;
+    node.children.forEach(n => traverse(n, result.children));
+  };
+  directiveForest.forEach(n => traverse(n));
+  return frame;
 };
 
 const flushBuffer = (obs: ComponentTreeObserver, source: string = '') => {
@@ -141,10 +202,7 @@ const flushBuffer = (obs: ComponentTreeObserver, source: string = '') => {
     positionDirective.set(position, dir);
   });
   positions.sort(lexicographicOrder);
-  const result: ProfilerFrame = {
-    source,
-    directives: [],
-  };
+  const result = prepareInitialFrame(source);
   positions.forEach(position => {
     const dir = positionDirective.get(position);
     if (removedComponents.has(dir) && insertionTrie.exists(removedComponents.get(dir))) {
