@@ -59,12 +59,24 @@ export class Xliff1TranslationParser implements TranslationParser<XmlTranslation
           ParseErrorLevel.WARNING);
     }
 
-    const bundle = {
-      locale: getAttribute(files[0], 'target-language'),
-      translations: {}, diagnostics,
-    };
+    const bundle: ParsedTranslationBundle = {locale: undefined, translations: {}, diagnostics};
     const translationVisitor = new XliffTranslationVisitor();
-    visitAll(translationVisitor, files[0].children, bundle);
+    const localesFound = new Set<string>();
+    for (const file of files) {
+      const locale = getAttribute(file, 'target-language');
+      if (locale !== undefined) {
+        localesFound.add(locale);
+        bundle.locale = locale;
+      }
+      visitAll(translationVisitor, file.children, bundle);
+    }
+
+    if (localesFound.size > 1) {
+      addParseDiagnostic(
+          diagnostics, element.sourceSpan,
+          `More than one locale found in translation file: ${JSON.stringify(Array.from(localesFound))}. Using "${bundle.locale}"`,
+          ParseErrorLevel.WARNING);
+    }
 
     return bundle;
   }

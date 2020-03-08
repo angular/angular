@@ -31,18 +31,34 @@ describe('Xliff1TranslationParser', () => {
   });
 
   describe('parse() [without hint]', () => {
-    it('should extract the locale from the file contents', () => {
-      const XLIFF = `
+    it('should extract the locale from the last `<file>` element to contain a `target-language` attribute',
+       () => {
+         const XLIFF = `
       <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+        <file source-language="en" datatype="plaintext" original="ng2.template">
+          <body></body>
+        </file>
         <file source-language="en" target-language="fr" datatype="plaintext" original="ng2.template">
-          <body>
-          </body>
+          <body></body>
+        </file>
+        <file source-language="en" datatype="plaintext" original="ng2.template">
+          <body></body>
+        </file>
+        <file source-language="en" target-language="de" datatype="plaintext" original="ng2.template">
+          <body></body>
+        </file>
+        <file source-language="en" datatype="plaintext" original="ng2.template">
+          <body></body>
         </file>
       </xliff>`;
-      const parser = new Xliff1TranslationParser();
-      const result = parser.parse('/some/file.xlf', XLIFF);
-      expect(result.locale).toEqual('fr');
-    });
+         const parser = new Xliff1TranslationParser();
+         const hint = parser.canParse('/some/file.xlf', XLIFF);
+         if (!hint) {
+           return fail('expected XLIFF to be valid');
+         }
+         const result = parser.parse('/some/file.xlf', XLIFF, hint);
+         expect(result.locale).toEqual('de');
+       });
 
     it('should return an undefined locale if there is no locale in the file', () => {
       const XLIFF = `
@@ -435,6 +451,58 @@ describe('Xliff1TranslationParser', () => {
       const result = parser.parse('/some/file.xlf', XLIFF);
       expect(result.translations['registration.submit'])
           .toEqual(ɵmakeParsedTranslation(['Weiter']));
+    });
+
+    it('should merge messages from each `<file>` element', () => {
+      /**
+       * Source HTML:
+       *
+       * ```
+       * <div i18n>translatable attribute</div>
+       * ```
+
+       * ```
+       * <div i18n>translatable element <b>with placeholders</b> {{ interpolation}}</div>
+       * ```
+       */
+      const XLIFF = `
+      <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+        <file source-language="en" target-language="fr" datatype="plaintext" original="file-1">
+          <body>
+            <trans-unit id="1933478729560469763" datatype="html">
+              <source>translatable attribute</source>
+              <target>etubirtta elbatalsnart</target>
+              <context-group purpose="location">
+                <context context-type="sourcefile">file.ts</context>
+                <context context-type="linenumber">1</context>
+              </context-group>
+            </trans-unit>
+          </body>
+        </file>
+        <file source-language="en" target-language="fr" datatype="plaintext" original="file-2">
+          <body>
+            <trans-unit id="5057824347511785081" datatype="html">
+              <source>translatable element <x id="START_BOLD_TEXT" ctype="b"/>with placeholders<x id="CLOSE_BOLD_TEXT" ctype="b"/> <x id="INTERPOLATION"/></source>
+              <target><x id="INTERPOLATION"/> tnemele elbatalsnart <x id="START_BOLD_TEXT" ctype="x-b"/>sredlohecalp htiw<x id="CLOSE_BOLD_TEXT" ctype="x-b"/></target>
+              <context-group purpose="location">
+                <context context-type="sourcefile">file.ts</context>
+                <context context-type="linenumber">2</context>
+              </context-group>
+            </trans-unit>
+          </body>
+        </file>
+      </xliff>`;
+      const parser = new Xliff1TranslationParser();
+      const result = parser.parse('/some/file.xlf', XLIFF);
+
+      expect(result.translations[ɵcomputeMsgId('translatable attribute')])
+          .toEqual(ɵmakeParsedTranslation(['etubirtta elbatalsnart']));
+      expect(
+          result.translations[ɵcomputeMsgId(
+              'translatable element {$START_BOLD_TEXT}with placeholders{$LOSE_BOLD_TEXT} {$INTERPOLATION}')])
+          .toEqual(ɵmakeParsedTranslation(
+              ['', ' tnemele elbatalsnart ', 'sredlohecalp htiw', ''],
+              ['INTERPOLATION', 'START_BOLD_TEXT', 'CLOSE_BOLD_TEXT']));
     });
 
     describe('[structure errors]', () => {
@@ -547,22 +615,34 @@ describe('Xliff1TranslationParser', () => {
   });
 
   describe('parse() [with hint]', () => {
-    it('should extract the locale from the file contents', () => {
-      const XLIFF = `
+    it('should extract the locale from the last `<file>` element to contain a `target-language` attribute',
+       () => {
+         const XLIFF = `
       <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+        <file source-language="en" datatype="plaintext" original="ng2.template">
+          <body></body>
+        </file>
         <file source-language="en" target-language="fr" datatype="plaintext" original="ng2.template">
-          <body>
-          </body>
+          <body></body>
+        </file>
+        <file source-language="en" datatype="plaintext" original="ng2.template">
+          <body></body>
+        </file>
+        <file source-language="en" target-language="de" datatype="plaintext" original="ng2.template">
+          <body></body>
+        </file>
+        <file source-language="en" datatype="plaintext" original="ng2.template">
+          <body></body>
         </file>
       </xliff>`;
-      const parser = new Xliff1TranslationParser();
-      const hint = parser.canParse('/some/file.xlf', XLIFF);
-      if (!hint) {
-        return fail('expected XLIFF to be valid');
-      }
-      const result = parser.parse('/some/file.xlf', XLIFF, hint);
-      expect(result.locale).toEqual('fr');
-    });
+         const parser = new Xliff1TranslationParser();
+         const hint = parser.canParse('/some/file.xlf', XLIFF);
+         if (!hint) {
+           return fail('expected XLIFF to be valid');
+         }
+         const result = parser.parse('/some/file.xlf', XLIFF, hint);
+         expect(result.locale).toEqual('de');
+       });
 
     it('should return an undefined locale if there is no locale in the file', () => {
       const XLIFF = `
@@ -1003,6 +1083,62 @@ describe('Xliff1TranslationParser', () => {
       const result = parser.parse('/some/file.xlf', XLIFF, hint);
       expect(result.translations['registration.submit'])
           .toEqual(ɵmakeParsedTranslation(['Weiter']));
+    });
+
+    it('should merge messages from each `<file>` element', () => {
+      /**
+       * Source HTML:
+       *
+       * ```
+       * <div i18n>translatable attribute</div>
+       * ```
+       *
+       * ```
+       * <div i18n>translatable element <b>with placeholders</b> {{ interpolation}}</div>
+       * ```
+       */
+      const XLIFF = `
+      <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+        <file source-language="en" target-language="fr" datatype="plaintext" original="file-1">
+          <body>
+            <trans-unit id="1933478729560469763" datatype="html">
+              <source>translatable attribute</source>
+              <target>etubirtta elbatalsnart</target>
+              <context-group purpose="location">
+                <context context-type="sourcefile">file.ts</context>
+                <context context-type="linenumber">1</context>
+              </context-group>
+            </trans-unit>
+          </body>
+        </file>
+        <file source-language="en" target-language="fr" datatype="plaintext" original="file-2">
+          <body>
+            <trans-unit id="5057824347511785081" datatype="html">
+              <source>translatable element <x id="START_BOLD_TEXT" ctype="b"/>with placeholders<x id="CLOSE_BOLD_TEXT" ctype="b"/> <x id="INTERPOLATION"/></source>
+              <target><x id="INTERPOLATION"/> tnemele elbatalsnart <x id="START_BOLD_TEXT" ctype="x-b"/>sredlohecalp htiw<x id="CLOSE_BOLD_TEXT" ctype="x-b"/></target>
+              <context-group purpose="location">
+                <context context-type="sourcefile">file.ts</context>
+                <context context-type="linenumber">2</context>
+              </context-group>
+            </trans-unit>
+          </body>
+        </file>
+      </xliff>`;
+      const parser = new Xliff1TranslationParser();
+      const hint = parser.canParse('/some/file.xlf', XLIFF);
+      if (!hint) {
+        return fail('expected XLIFF to be valid');
+      }
+      const result = parser.parse('/some/file.xlf', XLIFF, hint);
+
+      expect(result.translations[ɵcomputeMsgId('translatable attribute')])
+          .toEqual(ɵmakeParsedTranslation(['etubirtta elbatalsnart']));
+      expect(
+          result.translations[ɵcomputeMsgId(
+              'translatable element {$START_BOLD_TEXT}with placeholders{$LOSE_BOLD_TEXT} {$INTERPOLATION}')])
+          .toEqual(ɵmakeParsedTranslation(
+              ['', ' tnemele elbatalsnart ', 'sredlohecalp htiw', ''],
+              ['INTERPOLATION', 'START_BOLD_TEXT', 'CLOSE_BOLD_TEXT']));
     });
 
     describe('[structure errors]', () => {
