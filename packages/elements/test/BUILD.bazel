@@ -30,6 +30,7 @@ filegroup(
     testonly = True,
     # do not sort
     srcs = [
+        "@npm//:node_modules/core-js/client/core.js",
         "@npm//:node_modules/@webcomponents/custom-elements/src/native-shim.js",
         "@npm//:node_modules/reflect-metadata/Reflect.js",
         "//packages/zone.js/dist:zone.js",
@@ -41,11 +42,6 @@ karma_web_test_suite(
     name = "test",
     bootstrap = [
         ":elements_test_bootstrap_scripts",
-    ],
-    tags = [
-        # FIXME: timed out in CI
-        "fixme-saucelabs-ivy",
-        "fixme-saucelabs-ve",
     ],
     deps = [
         ":test_lib",
