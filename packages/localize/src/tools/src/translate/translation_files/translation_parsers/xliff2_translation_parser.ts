@@ -40,13 +40,6 @@ export class Xliff2TranslationParser implements TranslationParser<XmlTranslation
     const diagnostics = new Diagnostics();
     errors.forEach(e => addParseError(diagnostics, e));
 
-    if (element.children.length === 0) {
-      addParseDiagnostic(
-          diagnostics, element.sourceSpan, 'Missing expected <file> element',
-          ParseErrorLevel.WARNING);
-      return {locale: undefined, translations: {}, diagnostics};
-    }
-
     const locale = getAttribute(element, 'trgLang');
     const files = element.children.filter(isFileElement);
     if (files.length === 0) {
@@ -61,8 +54,9 @@ export class Xliff2TranslationParser implements TranslationParser<XmlTranslation
 
     const bundle = {locale, translations: {}, diagnostics};
     const translationVisitor = new Xliff2TranslationVisitor();
-    visitAll(translationVisitor, files[0].children, {bundle});
-
+    for (const file of files) {
+      visitAll(translationVisitor, file.children, {bundle});
+    }
     return bundle;
   }
 

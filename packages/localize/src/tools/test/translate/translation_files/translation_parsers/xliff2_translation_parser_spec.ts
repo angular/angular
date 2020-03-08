@@ -87,7 +87,7 @@ describe('Xliff2TranslationParser', () => {
        * Source HTML:
        *
        * ```
-       * <div i18n>translatable element <b>>with placeholders</b> {{ interpolation}}</div>
+       * <div i18n>translatable element <b>with placeholders</b> {{ interpolation}}</div>
        * ```
        */
       const XLIFF = `
@@ -371,6 +371,57 @@ describe('Xliff2TranslationParser', () => {
 
       expect(result.translations['mrk-test2'])
           .toEqual(ɵmakeParsedTranslation(['Translated first sentence.']));
+    });
+
+    it('should merge messages from each `<file>` element', () => {
+      /**
+       * Source HTML:
+       *
+       * ```
+       * <div i18n>translatable attribute</div>
+       * ```
+       *
+       * ```
+       * <div i18n>translatable element <b>with placeholders</b> {{ interpolation}}</div>
+       * ```
+       */
+      const XLIFF = `
+      <xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="en" trgLang="fr">
+        <file original="ng.template" id="file-1">
+          <unit id="1933478729560469763">
+            <notes>
+              <note category="location">file.ts:2</note>
+            </notes>
+            <segment>
+              <source>translatable attribute</source>
+              <target>etubirtta elbatalsnart</target>
+            </segment>
+          </unit>
+        </file>
+        <file original="ng.template" id="file-2">
+          <unit id="5057824347511785081">
+            <notes>
+              <note category="location">file.ts:3</note>
+            </notes>
+            <segment>
+              <source>translatable element <pc id="0" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT" type="fmt" dispStart="&lt;b&gt;" dispEnd="&lt;/b&gt;">with placeholders</pc> <ph id="1" equiv="INTERPOLATION" disp="{{ interpolation}}"/></source>
+              <target><ph id="1" equiv="INTERPOLATION" disp="{{ interpolation}}"/> tnemele elbatalsnart <pc id="0" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT" type="fmt" dispStart="&lt;b&gt;" dispEnd="&lt;/b&gt;">sredlohecalp htiw</pc></target>
+            </segment>
+          </unit>
+        </file>
+      </xliff>`;
+      const parser = new Xliff2TranslationParser();
+      const result = parser.parse('/some/file.xlf', XLIFF);
+
+      expect(result.translations[ɵcomputeMsgId('translatable attribute', '')])
+          .toEqual(ɵmakeParsedTranslation(['etubirtta elbatalsnart']));
+      expect(
+          result.translations[ɵcomputeMsgId(
+              'translatable element {$START_BOLD_TEXT}with placeholders{$LOSE_BOLD_TEXT} {$INTERPOLATION}')])
+          .toEqual(ɵmakeParsedTranslation(
+              ['', ' tnemele elbatalsnart ', 'sredlohecalp htiw', ''],
+              ['INTERPOLATION', 'START_BOLD_TEXT', 'CLOSE_BOLD_TEXT']));
+
     });
 
     describe('[structure errors]', () => {
@@ -864,6 +915,61 @@ describe('Xliff2TranslationParser', () => {
 
       expect(result.translations['mrk-test2'])
           .toEqual(ɵmakeParsedTranslation(['Translated first sentence.']));
+    });
+
+    it('should merge messages from each `<file>` element', () => {
+      /**
+       * Source HTML:
+       *
+       * ```
+       * <div i18n>translatable attribute</div>
+       * ```
+       *
+       * ```
+       * <div i18n>translatable element <b>with placeholders</b> {{ interpolation}}</div>
+       * ```
+       */
+      const XLIFF = `
+      <xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="en" trgLang="fr">
+        <file original="ng.template" id="file-1">
+          <unit id="1933478729560469763">
+            <notes>
+              <note category="location">file.ts:2</note>
+            </notes>
+            <segment>
+              <source>translatable attribute</source>
+              <target>etubirtta elbatalsnart</target>
+            </segment>
+          </unit>
+        </file>
+        <file original="ng.template" id="file-2">
+          <unit id="5057824347511785081">
+            <notes>
+              <note category="location">file.ts:3</note>
+            </notes>
+            <segment>
+              <source>translatable element <pc id="0" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT" type="fmt" dispStart="&lt;b&gt;" dispEnd="&lt;/b&gt;">with placeholders</pc> <ph id="1" equiv="INTERPOLATION" disp="{{ interpolation}}"/></source>
+              <target><ph id="1" equiv="INTERPOLATION" disp="{{ interpolation}}"/> tnemele elbatalsnart <pc id="0" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT" type="fmt" dispStart="&lt;b&gt;" dispEnd="&lt;/b&gt;">sredlohecalp htiw</pc></target>
+            </segment>
+          </unit>
+        </file>
+      </xliff>`;
+      const parser = new Xliff2TranslationParser();
+      const hint = parser.canParse('/some/file.xlf', XLIFF);
+      if (!hint) {
+        return fail('expected XLIFF to be valid');
+      }
+      const result = parser.parse('/some/file.xlf', XLIFF, hint);
+
+      expect(result.translations[ɵcomputeMsgId('translatable attribute', '')])
+          .toEqual(ɵmakeParsedTranslation(['etubirtta elbatalsnart']));
+      expect(
+          result.translations[ɵcomputeMsgId(
+              'translatable element {$START_BOLD_TEXT}with placeholders{$LOSE_BOLD_TEXT} {$INTERPOLATION}')])
+          .toEqual(ɵmakeParsedTranslation(
+              ['', ' tnemele elbatalsnart ', 'sredlohecalp htiw', ''],
+              ['INTERPOLATION', 'START_BOLD_TEXT', 'CLOSE_BOLD_TEXT']));
+
     });
 
     describe('[structure errors]', () => {
