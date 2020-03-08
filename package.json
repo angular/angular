@@ -78,7 +78,7 @@
     "@types/systemjs": "0.19.32",
     "@types/yaml": "^1.2.0",
     "@types/yargs": "^11.1.1",
-    "@webcomponents/custom-elements": "^1.0.4",
+    "@webcomponents/custom-elements": "^1.1.0",
     "angular": "npm:angular@1.7",
     "angular-1.5": "npm:angular@1.5",
     "angular-1.6": "npm:angular@1.6",
