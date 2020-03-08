@@ -144,6 +144,44 @@ describe('diagnostics', () => {
     });
   });
 
+  describe('diagnostics for ngIf exported values', () => {
+    it('should infer the type of an implicit value in an NgIf context', () => {
+      mockHost.override(TEST_TEMPLATE, `
+        <div *ngIf="title; let titleProxy;">
+            'titleProxy' is a string
+          {{~{start-err}titleProxy.notAProperty~{end-err}}}
+        </div>
+      `);
+      const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
+      expect(diags.length).toBe(1);
+      const {messageText, start, length} = diags[0];
+      expect(messageText)
+          .toBe(
+              `Identifier 'notAProperty' is not defined. 'string' does not contain such a member`);
+      const span = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'err');
+      expect(start).toBe(span.start);
+      expect(length).toBe(span.length);
+    });
+
+    it('should infer the type of an ngIf value in an NgIf context', () => {
+      mockHost.override(TEST_TEMPLATE, `
+        <div *ngIf="title as titleProxy">
+            'titleProxy' is a string
+          {{~{start-err}titleProxy.notAProperty~{end-err}}}
+        </div>
+      `);
+      const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
+      expect(diags.length).toBe(1);
+      const {messageText, start, length} = diags[0];
+      expect(messageText)
+          .toBe(
+              `Identifier 'notAProperty' is not defined. 'string' does not contain such a member`);
+      const span = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'err');
+      expect(start).toBe(span.start);
+      expect(length).toBe(span.length);
+    });
+  });
+
   describe('diagnostics for invalid indexed type property access', () => {
     it('should work with numeric index signatures (arrays)', () => {
       mockHost.override(TEST_TEMPLATE, `
