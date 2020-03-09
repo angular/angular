@@ -49,6 +49,10 @@ node_repositories(
 
 yarn_install(
     name = "npm",
+    # Redirects Yarn `stdout` output to `stderr`. This ensures that stdout is not accidentally
+    # polluted when Bazel runs Yarn. Workaround until the upstream fix is available:
+    # https://github.com/bazelbuild/bazel/pull/10611.
+    args = ["1>&2"],
     # We add the postinstall patches file, and ngcc main fields update script here so
     # that Yarn will rerun whenever one of these files has been modified.
     data = [
@@ -56,6 +60,7 @@ yarn_install(
         "//:tools/postinstall/update-ngcc-main-fields.js",
     ],
     package_json = "//:package.json",
+    quiet = False,
     yarn_lock = "//:yarn.lock",
 )
 
