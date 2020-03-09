@@ -20,6 +20,8 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
 
   const __symbol__ = api.symbol;
   const _uncaughtPromiseErrors: UncaughtPromiseError[] = [];
+  const isDisableWrappingUncaughtPromiseRejection =
+      global[__symbol__('DISABLE_WRAPPING_UNCAUGHT_PROMISE_REJECTION')] === true;
   const symbolPromise = __symbol__('Promise');
   const symbolThen = __symbol__('then');
   const creationTrace = '__creationTrace__';
@@ -41,13 +43,11 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
 
   api.microtaskDrainDone = () => {
     while (_uncaughtPromiseErrors.length) {
-      while (_uncaughtPromiseErrors.length) {
-        const uncaughtPromiseError: UncaughtPromiseError = _uncaughtPromiseErrors.shift() !;
-        try {
-          uncaughtPromiseError.zone.runGuarded(() => { throw uncaughtPromiseError; });
-        } catch (error) {
-          handleUnhandledRejection(error);
-        }
+      const uncaughtPromiseError: UncaughtPromiseError = _uncaughtPromiseErrors.shift() !;
+      try {
+        uncaughtPromiseError.zone.runGuarded(() => { throw uncaughtPromiseError; });
+      } catch (error) {
+        handleUnhandledRejection(error);
       }
     }
   };
@@ -58,7 +58,7 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
     api.onUnhandledError(e);
     try {
       const handler = (Zone as any)[UNHANDLED_PROMISE_REJECTION_HANDLER_SYMBOL];
-      if (handler && typeof handler === 'function') {
+      if (typeof handler === 'function') {
         handler.call(this, e);
       }
     } catch (err) {
@@ -176,20 +176,28 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
         }
         if (queue.length == 0 && state == REJECTED) {
           (promise as any)[symbolState] = REJECTED_NO_CATCH;
-          try {
-            // try to print more readable error log
-            throw new Error(
-                'Uncaught (in promise): ' + readableObjectToString(value) +
-                (value && value.stack ? '\n' + value.stack : ''));
-          } catch (err) {
-            const error: UncaughtPromiseError = err;
-            error.rejection = value;
-            error.promise = promise;
-            error.zone = Zone.current;
-            error.task = Zone.currentTask !;
-            _uncaughtPromiseErrors.push(error);
-            api.scheduleMicroTask();  // to make sure that it is running
+          let uncaughtPromiseError = value;
+          if (!isDisableWrappingUncaughtPromiseRejection) {
+            // If disable wrapping uncaught promise reject
+            // and the rejected value is an Error object,
+            // use the value instead of wrapping it.
+            try {
+              // Here we throws a new Error to print more readable error log
+              // and if the value is not an error, zone.js builds an `Error`
+              // Object here to attach the stack information.
+              throw new Error(
+                  'Uncaught (in promise): ' + readableObjectToString(value) +
+                  (value && value.stack ? '\n' + value.stack : ''));
+            } catch (err) {
+              uncaughtPromiseError = err;
+            }
           }
+          uncaughtPromiseError.rejection = value;
+          uncaughtPromiseError.promise = promise;
+          uncaughtPromiseError.zone = Zone.current;
+          uncaughtPromiseError.task = Zone.currentTask !;
+          _uncaughtPromiseErrors.push(uncaughtPromiseError);
+          api.scheduleMicroTask();  // to make sure that it is running
         }
       }
     }

@@ -33,6 +33,7 @@ ts_library(
         ],
         exclude = [
             "common/Error.spec.ts",
+            "common/promise-disable-wrap-uncaught-promise-rejection.spec.ts",
         ],
     ),
     deps = [
@@ -253,7 +254,10 @@ env_entry_point = ":browser-env-setup.ts"
 
 test_srcs = glob(
     ["browser/*.ts"],
-    exclude = ["browser/shadydom.spec.ts"],
+    exclude = [
+        "browser/shadydom.spec.ts",
+        "common/promise-disable-wrap-uncaught-promise-rejection.spec.ts",
+    ],
 ) + [
     "extra/cordova.spec.ts",
     "mocha-patch.spec.ts",
@@ -321,5 +325,26 @@ karma_test(
     test_srcs = [
         "browser/shadydom.spec.ts",
         "browser_shadydom_entry_point.ts",
+    ],
+)
+
+karma_test(
+    name = "browser_disable_wrap_uncaught_promise_rejection",
+    bootstraps = {"browser_disable_wrap_uncaught_promise_rejection": [
+        "//packages/zone.js/dist:zone-testing-bundle.js",
+    ]},
+    ci = False,
+    env_deps = [
+        "//packages/zone.js/lib",
+    ],
+    env_entry_point = ":browser_disable_wrap_uncaught_promise_rejection_setup.ts",
+    env_srcs = ["browser_disable_wrap_uncaught_promise_rejection_setup.ts"],
+    test_deps = [
+        "//packages/zone.js/lib",
+    ],
+    test_entry_point = ":browser_disable_wrap_uncaught_promise_rejection_entry_point.ts",
+    test_srcs = [
+        "common/promise-disable-wrap-uncaught-promise-rejection.spec.ts",
+        "browser_disable_wrap_uncaught_promise_rejection_entry_point.ts",
     ],
 )
