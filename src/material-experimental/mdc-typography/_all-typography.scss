@@ -1,37 +1,13 @@
-@import '../mdc-button/button-theme';
-@import '../mdc-card/card-theme';
-@import '../mdc-checkbox/checkbox-theme';
-@import '../mdc-chips/chips-theme';
-@import '../mdc-list/list-theme';
-@import '../mdc-menu/menu-theme';
-@import '../mdc-radio/radio-theme';
-@import '../mdc-slide-toggle/slide-toggle-theme';
-@import '../mdc-slider/slider-theme';
-@import '../mdc-tabs/tabs-theme';
-@import '../mdc-table/table-theme';
-@import '../mdc-progress-bar/progress-bar-theme';
-@import '../mdc-input/input-theme';
-@import '../mdc-form-field/form-field-theme';
+@import '../mdc-theming/all-theme';
 
 @mixin angular-material-mdc-typography($config: null) {
   @if $config == null {
     $config: mat-typography-config();
   }
 
-  @include mat-mdc-button-typography($config);
-  @include mat-mdc-fab-typography($config);
-  @include mat-mdc-icon-button-typography($config);
-  @include mat-mdc-card-typography($config);
-  @include mat-mdc-checkbox-typography($config);
-  @include mat-mdc-chips-typography($config);
-  @include mat-mdc-list-typography($config);
-  @include mat-mdc-menu-typography($config);
-  @include mat-mdc-radio-typography($config);
-  @include mat-mdc-slide-toggle-typography($config);
-  @include mat-mdc-slider-typography($config);
-  @include mat-mdc-tabs-typography($config);
-  @include mat-mdc-table-typography($config);
-  @include mat-mdc-progress-bar-typography($config);
-  @include mat-mdc-input-typography($config);
-  @include mat-mdc-form-field-typography($config);
+  @include angular-material-mdc-theme((
+    color: null,
+    density: null,
+    typography: $config,
+  ));
 }

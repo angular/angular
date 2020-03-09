@@ -1,0 +1,10 @@
+@import '../theming/all-theme';
+
+// Includes all of the density styles.
+@mixin _angular-material-density($config) {
+  @include angular-material-theme((
+    color: null,
+    typography: null,
+    density: $config,
+  ));
+}

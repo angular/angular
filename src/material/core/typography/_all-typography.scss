@@ -43,6 +43,12 @@
     $config: mat-typography-config();
   }
 
+  // TODO: Do not use individual mixins. Instead, use the all-theme mixin and only specify a
+  // `typography` config while setting `color` and `density` to `null`. This is currently
+  // not possible as it would introduce a circular dependency for typography because the
+  // `mat-core` mixin that is transitively loaded by the `all-theme` file, imports
+  // `all-typography` which would then load `all-theme` again. This causes a cycle.
+
   @include mat-badge-typography($config);
   @include mat-base-typography($config);
   @include mat-autocomplete-typography($config);

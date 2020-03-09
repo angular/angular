@@ -44,6 +44,7 @@
 /src/material/core/animation/**                    @jelbourn
 /src/material/core/common-behaviors/**             @jelbourn @devversion
 /src/material/core/datetime/**                     @mmalerba
+/src/material/core/density/**                      @devversion
 /src/material/core/error/**                        @crisbeto @mmalerba
 /src/material/core/focus-indicators/**             @jelbourn @zelliott
 /src/material/core/gestures/**                     @jelbourn

@@ -1,33 +1,9 @@
-@import '../mdc-button/button-theme';
-@import '../mdc-card/card-theme';
-@import '../mdc-checkbox/checkbox-theme';
-@import '../mdc-chips/chips-theme';
-@import '../mdc-list/list-theme';
-@import '../mdc-menu/menu-theme';
-@import '../mdc-radio/radio-theme';
-@import '../mdc-slide-toggle/slide-toggle-theme';
-@import '../mdc-slider/slider-theme';
-@import '../mdc-tabs/tabs-theme';
-@import '../mdc-table/table-theme';
-@import '../mdc-progress-bar/progress-bar-theme';
-@import '../mdc-input/input-theme';
-@import '../mdc-form-field/form-field-theme';
+@import '../mdc-theming/all-theme';
 
 @mixin angular-material-density-mdc($config: null) {
-  @include mat-button-density-mdc($config);
-  @include mat-fab-density-mdc($config);
-  @include mat-icon-button-density-mdc($config);
-  @include mat-card-density-mdc($config);
-  @include mat-checkbox-density-mdc($config);
-  @include mat-chips-density-mdc($config);
-  @include mat-list-density-mdc($config);
-  @include mat-menu-density-mdc($config);
-  @include mat-radio-density-mdc($config);
-  @include mat-slide-toggle-density-mdc($config);
-  @include mat-slider-density-mdc($config);
-  @include mat-tabs-density-mdc($config);
-  @include mat-table-density-mdc($config);
-  @include mat-progress-bar-density-mdc($config);
-  @include mat-input-density-mdc($config);
-  @include mat-form-field-density-mdc($config);
+  @include angular-material-mdc-theme((
+    color: null,
+    typography: null,
+    density: $config,
+  ));
 }
