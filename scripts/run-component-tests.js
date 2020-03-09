@@ -34,6 +34,11 @@ const packagesDir = path.join(projectDir, 'src/');
 // e.g. "button" will become "material/button", and "overlay" becomes "cdk/overlay".
 const orderedGuessPackages = ['material', 'cdk', 'material-experimental', 'cdk-experimental'];
 
+/** Map of common typos in target names. The key is the typo, the value is the correct form. */
+const commonTypos = new Map([
+  ['snackbar', 'snack-bar'],
+]);
+
 // ShellJS should exit if any command fails.
 shelljs.set('-e');
 shelljs.cd(projectDir);
@@ -82,7 +87,9 @@ if (!components.length) {
 }
 
 const bazelAction = local ? 'run' : 'test';
-const testLabels = components.map(t => `${getBazelPackageOfComponentName(t)}:${testTargetName}`);
+const testLabels = components
+    .map(t => correctTypos(t))
+    .map(t => `${getBazelPackageOfComponentName(t)}:${testTargetName}`);
 
 // Runs Bazel for the determined test labels.
 shelljs.exec(`${bazelBinary} ${bazelAction} ${testLabels.join(' ')}`);
@@ -119,6 +126,16 @@ function convertPathToBazelLabel(name) {
     return `//${convertPathToPosix(path.relative(projectDir, name))}`;
   }
   return null;
+}
+
+/** Correct common typos in a target name */
+function correctTypos(target) {
+  let correctedTarget = target;
+  for (const [typo, correction] of commonTypos) {
+    correctedTarget = correctedTarget.replace(typo, correction);
+  }
+
+  return correctedTarget;
 }
 
 /** Converts an arbitrary path to a Posix path. */
