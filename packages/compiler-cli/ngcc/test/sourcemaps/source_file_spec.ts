@@ -7,18 +7,16 @@
  */
 import {encode} from 'sourcemap-codec';
 
-import {FileSystem, absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
+import {absoluteFrom} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {RawSourceMap} from '../../src/sourcemaps/raw_source_map';
 import {SourceFile, computeLineLengths, extractOriginalSegments, parseMappings} from '../../src/sourcemaps/source_file';
 
 runInEachFileSystem(() => {
   describe('SourceFile and utilities', () => {
-    let fs: FileSystem;
     let _: typeof absoluteFrom;
 
     beforeEach(() => {
-      fs = getFileSystem();
       _ = absoluteFrom;
     });
 
