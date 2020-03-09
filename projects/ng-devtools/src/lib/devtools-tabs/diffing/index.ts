@@ -39,6 +39,7 @@ export const diff = <T>(differ: DefaultIterableDiffer<T>, a: T[], b: T[]) => {
 
   // Now we can set the new items and remove the deleted ones.
   const newItems: T[] = [];
+  const removedItems: T[] = [];
   differ.forEachAddedItem(record => {
     if (record.currentIndex !== null && record.previousIndex === null) {
       a[record.currentIndex] = record.item;
@@ -51,6 +52,7 @@ export const diff = <T>(differ: DefaultIterableDiffer<T>, a: T[], b: T[]) => {
     if (record.currentIndex === null && !alreadySet[record.previousIndex]) {
       a[record.previousIndex] = null;
     }
+    removedItems.push(record.item);
   });
 
   for (let i = a.length - 1; i >= 0; i--) {
@@ -59,5 +61,5 @@ export const diff = <T>(differ: DefaultIterableDiffer<T>, a: T[], b: T[]) => {
     }
   }
 
-  return { newItems };
+  return { newItems, removedItems };
 };
