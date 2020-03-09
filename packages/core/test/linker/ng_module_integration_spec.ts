@@ -794,7 +794,7 @@ function declareTests(config?: {useJit: boolean}) {
         const injector = createInjector([{provide: 'car', useExisting: SportsCar}]);
         let errorMsg = `NullInjectorError: No provider for ${stringify(SportsCar)}!`;
         if (ivyEnabled) {
-          errorMsg = `R3InjectorError(SomeModule)[car -> SportsCar]: \n  ` + errorMsg;
+          errorMsg = `R3InjectorError(SomeModule)[car -> ${stringify(SportsCar)}]: \n  ` + errorMsg;
         }
         expect(() => injector.get('car')).toThrowError(errorMsg);
       });
