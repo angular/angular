@@ -1092,7 +1092,7 @@ describe('Xliff1TranslationParser', () => {
        * ```
        * <div i18n>translatable attribute</div>
        * ```
-
+       *
        * ```
        * <div i18n>translatable element <b>with placeholders</b> {{ interpolation}}</div>
        * ```
