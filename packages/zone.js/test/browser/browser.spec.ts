@@ -1127,11 +1127,11 @@ describe('Zone', function() {
         });
 
         zone.run(() => { button.addEventListener('click', function() { logs.push('click'); }); });
-        let listeners = button.eventListeners('click');
+        let listeners = button.eventListeners !('click');
         expect(listeners.length).toBe(1);
         eventTask !.zone.cancelTask(eventTask !);
 
-        listeners = button.eventListeners('click');
+        listeners = button.eventListeners !('click');
         button.dispatchEvent(clickEvent);
         expect(logs.length).toBe(0);
         expect(listeners.length).toBe(0);
@@ -1153,11 +1153,11 @@ describe('Zone', function() {
            zone.run(() => {
              button.addEventListener('click', function() { logs.push('click'); }, true);
            });
-           let listeners = button.eventListeners('click');
+           let listeners = button.eventListeners !('click');
            expect(listeners.length).toBe(1);
            eventTask !.zone.cancelTask(eventTask !);
 
-           listeners = button.eventListeners('click');
+           listeners = button.eventListeners !('click');
            button.dispatchEvent(clickEvent);
            expect(logs.length).toBe(0);
            expect(listeners.length).toBe(0);
@@ -1179,7 +1179,7 @@ describe('Zone', function() {
            zone.run(
                () => { button.addEventListener('click', function() { logs.push('click1'); }); });
            button.addEventListener('click', function() { logs.push('click2'); });
-           let listeners = button.eventListeners('click');
+           let listeners = button.eventListeners !('click');
            expect(listeners.length).toBe(2);
 
            button.dispatchEvent(clickEvent);
@@ -1188,7 +1188,7 @@ describe('Zone', function() {
            eventTask !.zone.cancelTask(eventTask !);
            logs = [];
 
-           listeners = button.eventListeners('click');
+           listeners = button.eventListeners !('click');
            button.dispatchEvent(clickEvent);
            expect(logs.length).toBe(1);
            expect(listeners.length).toBe(1);
@@ -1212,7 +1212,7 @@ describe('Zone', function() {
              button.addEventListener('click', function() { logs.push('click1'); }, true);
            });
            button.addEventListener('click', function() { logs.push('click2'); }, true);
-           let listeners = button.eventListeners('click');
+           let listeners = button.eventListeners !('click');
            expect(listeners.length).toBe(2);
 
            button.dispatchEvent(clickEvent);
@@ -1221,7 +1221,7 @@ describe('Zone', function() {
            eventTask !.zone.cancelTask(eventTask !);
            logs = [];
 
-           listeners = button.eventListeners('click');
+           listeners = button.eventListeners !('click');
            button.dispatchEvent(clickEvent);
            expect(logs.length).toBe(1);
            expect(listeners.length).toBe(1);
@@ -1245,7 +1245,7 @@ describe('Zone', function() {
              button.addEventListener('click', function() { logs.push('click1'); }, true);
            });
            button.addEventListener('click', function() { logs.push('click2'); });
-           let listeners = button.eventListeners('click');
+           let listeners = button.eventListeners !('click');
            expect(listeners.length).toBe(2);
 
            button.dispatchEvent(clickEvent);
@@ -1254,7 +1254,7 @@ describe('Zone', function() {
            eventTask !.zone.cancelTask(eventTask !);
            logs = [];
 
-           listeners = button.eventListeners('click');
+           listeners = button.eventListeners !('click');
            button.dispatchEvent(clickEvent);
            expect(logs.length).toBe(1);
            expect(listeners.length).toBe(1);
@@ -1796,7 +1796,7 @@ describe('Zone', function() {
            function() {
              let logs: string[] = [];
              const listener1 = function() {
-               button.removeAllListeners('click');
+               button.removeAllListeners !('click');
                logs.push('listener1');
              };
              const listener2 = function() { logs.push('listener2'); };
@@ -1819,7 +1819,7 @@ describe('Zone', function() {
            function() {
              let logs: string[] = [];
              const listener1 = function() {
-               button.removeAllListeners('click');
+               button.removeAllListeners !('click');
                logs.push('listener1');
              };
              const listener2 = function() { logs.push('listener2'); };
@@ -1843,7 +1843,7 @@ describe('Zone', function() {
              let logs: string[] = [];
              const listener1 = function() { logs.push('listener1'); };
              const listener2 = function() {
-               button.removeAllListeners('click');
+               button.removeAllListeners !('click');
                logs.push('listener2');
              };
              const listener3 = {handleEvent: function(event: Event) { logs.push('listener3'); }};
@@ -1866,7 +1866,7 @@ describe('Zone', function() {
              let logs: string[] = [];
              const listener1 = function() { logs.push('listener1'); };
              const listener2 = function() {
-               button.removeAllListeners('click');
+               button.removeAllListeners !('click');
                logs.push('listener2');
              };
              const listener3 = {handleEvent: function(event: Event) { logs.push('listener3'); }};
@@ -1892,7 +1892,7 @@ describe('Zone', function() {
              const listener3 = {
                handleEvent: function(event: Event) {
                  logs.push('listener3');
-                 button.removeAllListeners('click');
+                 button.removeAllListeners !('click');
                }
              };
 
@@ -1917,7 +1917,7 @@ describe('Zone', function() {
              const listener3 = {
                handleEvent: function(event: Event) {
                  logs.push('listener3');
-                 button.removeAllListeners('click');
+                 button.removeAllListeners !('click');
                }
              };
 
@@ -1946,7 +1946,7 @@ describe('Zone', function() {
         button.addEventListener('click', listener3);
         button.addEventListener('mouseover', listener4);
 
-        const listeners = button.eventListeners('click');
+        const listeners = button.eventListeners !('click');
         expect(listeners.length).toBe(3);
         expect(listeners).toEqual([listener1, listener2, listener3]);
         button.removeEventListener('click', listener1);
@@ -1963,7 +1963,7 @@ describe('Zone', function() {
         button.addEventListener('mouseover', listener2);
         button.addEventListener('mousehover', listener3);
 
-        const listeners = button.eventListeners();
+        const listeners = button.eventListeners !();
         expect(listeners.length).toBe(3);
         expect(listeners).toEqual([listener1, listener2, listener3]);
         button.removeEventListener('click', listener1);
@@ -1986,8 +1986,8 @@ describe('Zone', function() {
         button.onmouseover = listener5;
         expect((button as any)[Zone.__symbol__('ON_PROPERTYmouseover')]).toEqual(listener5);
 
-        button.removeAllListeners('mouseover');
-        const listeners = button.eventListeners('mouseover');
+        button.removeAllListeners !('mouseover');
+        const listeners = button.eventListeners !('mouseover');
         expect(listeners.length).toBe(0);
         expect((button as any)[Zone.__symbol__('ON_PROPERTYmouseover')]).toBeNull();
         expect(!!button.onmouseover).toBeFalsy();
@@ -2017,8 +2017,8 @@ describe('Zone', function() {
            button.addEventListener('mouseover', listener3, true);
            button.addEventListener('click', listener4, true);
 
-           button.removeAllListeners('mouseover');
-           const listeners = button.eventListeners('mouseover');
+           button.removeAllListeners !('mouseover');
+           const listeners = button.eventListeners !('mouseover');
            expect(listeners.length).toBe(0);
 
            const mouseEvent = document.createEvent('Event');
@@ -2046,8 +2046,8 @@ describe('Zone', function() {
            button.addEventListener('mouseover', listener3, true);
            button.addEventListener('click', listener4, true);
 
-           button.removeAllListeners('mouseover');
-           const listeners = button.eventListeners('mouseove');
+           button.removeAllListeners !('mouseover');
+           const listeners = button.eventListeners !('mouseove');
            expect(listeners.length).toBe(0);
 
            const mouseEvent = document.createEvent('Event');
@@ -2077,8 +2077,8 @@ describe('Zone', function() {
         button.onmouseover = listener5;
         expect((button as any)[Zone.__symbol__('ON_PROPERTYmouseover')]).toEqual(listener5);
 
-        button.removeAllListeners();
-        const listeners = button.eventListeners('mouseover');
+        button.removeAllListeners !();
+        const listeners = button.eventListeners !('mouseover');
         expect(listeners.length).toBe(0);
         expect((button as any)[Zone.__symbol__('ON_PROPERTYmouseover')]).toBeNull();
         expect(!!button.onmouseover).toBeFalsy();
@@ -2109,7 +2109,7 @@ describe('Zone', function() {
         button.removeEventListener('mouseover', listener2);
         button.removeEventListener('click', listener3);
         button.removeEventListener('click', listener4);
-        const listeners = button.eventListeners('mouseover');
+        const listeners = button.eventListeners !('mouseover');
         expect(listeners.length).toBe(0);
 
         const mouseEvent = document.createEvent('Event');
@@ -2134,8 +2134,8 @@ describe('Zone', function() {
         button.addEventListener('click', listener3);
         (button as any)[Zone.__symbol__('addEventListener')]('click', listener4);
 
-        button.removeAllListeners();
-        const listeners = button.eventListeners('mouseover');
+        button.removeAllListeners !();
+        const listeners = button.eventListeners !('mouseover');
         expect(listeners.length).toBe(0);
 
         const mouseEvent = document.createEvent('Event');
