@@ -123,8 +123,6 @@ describe('Zone.js npm_package', () => {
           'zone-patch-fetch.min.js',
           'zone-patch-jsonp.js',
           'zone-patch-jsonp.min.js',
-          'zone-patch-message-port.js',
-          'zone-patch-message-port.min.js',
           'zone-patch-promise-test.js',
           'zone-patch-promise-test.min.js',
           'zone-patch-resize-observer.js',
