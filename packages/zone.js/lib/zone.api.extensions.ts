@@ -17,16 +17,22 @@ interface EventTarget {
    *
    * Remove all event listeners by name for this event target.
    *
+   * This method is optional because it may not be available if you use `noop zone` when
+   * bootstrapping Angular application or disable the `EventTarget` monkey patch by `zone.js`.
+   *
    * If the `eventName` is provided, will remove event listeners of that name.
    * If the `eventName` is not provided, will remove all event listeners associated with
    * `EventTarget`.
    *
    * @param eventName the name of the event, such as `click`. This parameter is optional.
    */
-  removeAllListeners(eventName?: string): void;
+  removeAllListeners?(eventName?: string): void;
   /**
    *
    * Retrieve all event listeners by name.
+   *
+   * This method is optional because it may not be available if you use `noop zone` when
+   * bootstrapping Angular application or disable the `EventTarget` monkey patch by `zone.js`.
    *
    * If the `eventName` is provided, will return an array of event handlers or event listener
    * objects of the given event.
@@ -34,5 +40,5 @@ interface EventTarget {
    *
    * @param eventName the name of the event, such as click. This parameter is optional.
    */
-  eventListeners(eventName?: string): EventListenerOrEventListenerObject[];
+  eventListeners?(eventName?: string): EventListenerOrEventListenerObject[];
 }
