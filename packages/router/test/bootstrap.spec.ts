@@ -298,24 +298,27 @@ describe('bootstrap', () => {
     await router.navigateByUrl('/aa');
     window.scrollTo(0, 5000);
 
+    // IE 9/10/11 use non-standard pageYOffset instead of scrollY
+    const getScrollY = () => window.scrollY !== undefined ? window.scrollY : window.pageYOffset;
+
     await router.navigateByUrl('/fail');
-    expect(window.scrollY).toEqual(5000);
+    expect(getScrollY()).toEqual(5000);
 
     await router.navigateByUrl('/bb');
     window.scrollTo(0, 3000);
 
-    expect(window.scrollY).toEqual(3000);
+    expect(getScrollY()).toEqual(3000);
 
     await router.navigateByUrl('/cc');
-    expect(window.scrollY).toEqual(0);
+    expect(getScrollY()).toEqual(0);
 
     await router.navigateByUrl('/aa#marker2');
-    expect(window.scrollY >= 5900).toBe(true);
+    expect(getScrollY() >= 5900).toBe(true);
     expect(window.scrollY < 6000).toBe(true);  // offset
 
     await router.navigateByUrl('/aa#marker3');
-    expect(window.scrollY >= 8900).toBe(true);
-    expect(window.scrollY < 9000).toBe(true);
+    expect(getScrollY() >= 8900).toBe(true);
+    expect(getScrollY() < 9000).toBe(true);
     done();
   });
 
