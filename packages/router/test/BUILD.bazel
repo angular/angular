@@ -44,21 +44,6 @@ jasmine_node_test(
 
 karma_web_test_suite(
     name = "test_web",
-    tags = [
-        # FIXME: fix on saucelabs
-        # IE 11.0.0 (Windows 8.1.0.0) bootstrap should restore the scrolling position FAILED
-        # IE 10.0.0 (Windows 8.0.0) bootstrap should restore the scrolling position FAILED
-        #   Error: Expected undefined to equal 5000.
-        #       at <Jasmine>
-        #   Error: Expected undefined to equal 3000.
-        #       at <Jasmine>
-        #   Error: Expected undefined to equal 0.
-        #       at <Jasmine>
-        #   Error: Expected false to be true.
-        #       at <Jasmine>
-        "fixme-saucelabs-ivy",
-        "fixme-saucelabs-ve",
-    ],
     deps = [
         ":test_lib",
     ],
