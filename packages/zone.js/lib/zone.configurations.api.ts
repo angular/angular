@@ -529,6 +529,17 @@ interface ZoneGlobalConfigurations {
    * The preceding code makes all scroll event listeners passive.
    */
   __zone_symbol__PASSIVE_EVENTS?: boolean;
+
+  /**
+   * Disable wrapping uncaught promise rejection.
+   *
+   * By default, `zone.js` wraps the uncaught promise rejection in a new `Error` object
+   * which contains additional information such as a value of the rejection and a stack trace.
+   *
+   * If you set `__zone_symbol__DISABLE_WRAPPING_UNCAUGHT_PROMISE_REJECTION = true;` before
+   * importing `zone.js`, `zone.js` will not wrap the uncaught promise rejection.
+   */
+  __zone_symbol__DISABLE_WRAPPING_UNCAUGHT_PROMISE_REJECTION?: boolean;
 }
 
 /**
