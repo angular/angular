@@ -173,13 +173,14 @@ abstract class BaseTestComponent {
     return parseInt((thumbElement.parentNode as HTMLElement).style.left!, 10);
   }
 
-  beginColumnResizeWithMouse(index: number): void {
+  beginColumnResizeWithMouse(index: number, button = 0): void {
     const thumbElement = this.getOverlayThumbElement(index);
     this.table.nativeElement!.dispatchEvent(new MouseEvent('mouseleave',
-        {bubbles: true, relatedTarget: thumbElement}));
+        {bubbles: true, relatedTarget: thumbElement, button}));
     thumbElement.dispatchEvent(new MouseEvent('mousedown', {
       bubbles: true,
       screenX: MOUSE_START_OFFSET,
+      button
     } as MouseEventInit));
   }
 
@@ -389,6 +390,21 @@ describe('Material Popover Edit', () => {
 
         component.endHoverState();
         fixture.detectChanges();
+      }));
+
+      it('should not start dragging using the right mouse button', fakeAsync(() => {
+        const initialColumnWidth = component.getColumnWidth(1);
+
+        component.triggerHoverState();
+        fixture.detectChanges();
+        component.beginColumnResizeWithMouse(1, 2);
+
+        const initialPosition = component.getOverlayThumbPosition(1);
+
+        component.updateResizeWithMouseInProgress(5);
+
+        (expect(component.getOverlayThumbPosition(1)) as any).toBe(initialPosition);
+        (expect(component.getColumnWidth(1)) as any).toBe(initialColumnWidth);
       }));
 
       it('cancels an active mouse resize with the escape key', fakeAsync(() => {

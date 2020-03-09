@@ -80,6 +80,11 @@ export abstract class ResizeOverlayHandle implements AfterViewInit, OnDestroy {
   }
 
   private _dragStarted(mousedownEvent: MouseEvent) {
+    // Only allow dragging using the left mouse button.
+    if (mousedownEvent.button !== 0) {
+      return;
+    }
+
     const mouseup = fromEvent<MouseEvent>(this.document, 'mouseup');
     const mousemove = fromEvent<MouseEvent>(this.document, 'mousemove');
     const escape = fromEvent<KeyboardEvent>(this.document, 'keyup')
