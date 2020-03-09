@@ -179,7 +179,7 @@ const prepareInitialFrame = (source: string) => {
       return {
         isComponent: false,
         isElement: false,
-        name: d.name,
+        name: d.instance.constructor.name,
         lifecycle: {},
         changeDetection: 0,
       };
@@ -190,7 +190,7 @@ const prepareInitialFrame = (source: string) => {
         isElement: node.component.isElement,
         isComponent: true,
         lifecycle: {},
-        name: node.component.name,
+        name: node.component.instance.constructor.name,
       });
     }
     const result = {
