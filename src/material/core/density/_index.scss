@@ -1,0 +1,42 @@
+// Taken from mat-density with small modifications to not rely on the new Sass module system.
+// https://github.com/material-components/material-components-web/blob/master/packages/mdc-density
+
+$_mat-density-interval: 4px !default;
+$_mat-density-minimum-scale: minimum !default;
+$_mat-density-maximum-scale: maximum !default;
+$_mat-density-supported-scales: (default, minimum, maximum) !default;
+$_mat-density-supported-properties: (height, size) !default;
+$_mat-density-default-scale: 0 !default;
+
+@function _mat-density-prop-value($density-config, $density-scale, $property-name) {
+  @if (type-of($density-scale) == 'string' and
+      index($list: $_mat-density-supported-scales, $value: $density-scale) == null) {
+    @error 'mat-density: Supported density scales #{$_mat-density-supported-scales}, '  +
+      'but received #{$density-scale}.';
+  }
+
+  @if (index($list: $_mat-density-supported-properties, $value: $property-name) == null) {
+    @error 'mat-density: Supported density properties #{$_mat-density-supported-properties},' +
+      'but received #{$property-name}.';
+  }
+
+  $value: null;
+  $property-scale-map: map_get($density-config, $property-name);
+
+  @if map_has_key($property-scale-map, $density-scale) {
+    $value: map_get($property-scale-map, $density-scale);
+  }
+  @else {
+    $value: map_get($property-scale-map, default) + $density-scale * $_mat-density-interval;
+  }
+
+  $min-value: map_get($property-scale-map, $_mat-density-minimum-scale);
+  $max-value: map_get($property-scale-map, $_mat-density-maximum-scale);
+
+  @if ($value < $min-value or $value > $max-value) {
+    @error 'mat-density: #{$property-name} must be between #{$min-value} and ' +
+      '#{$max-value} (inclusive), but received #{$value}.';
+  }
+
+  @return $value;
+}

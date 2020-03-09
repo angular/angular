@@ -1,0 +1,29 @@
+$mat-stepper-header-height: 72px !default;
+// Minimum height for highest density stepper's is determined based on how much
+// stepper headers can shrink until the step icon or step label exceed. We can't use
+// a value below `42px` because the optional label for steps would otherwise exceed.
+$mat-stepper-header-minimum-height: 42px !default;
+$mat-stepper-header-maximum-height: $mat-stepper-header-height !default;
+
+$mat-stepper-density-config: (
+  height: (
+    default: $mat-stepper-header-height,
+    maximum: $mat-stepper-header-maximum-height,
+    minimum: $mat-stepper-header-minimum-height,
+  )
+) !default;
+
+// Note: These variables are not denoted with `!default` because they are used in the non-theme
+// component styles. Modifying these variables does not have the desired effect for consumers.
+$mat-stepper-label-header-height: 24px;
+$mat-stepper-label-position-bottom-top-gap: 16px;
+$mat-stepper-label-min-width: 50px;
+
+$mat-vertical-stepper-content-margin: 36px;
+
+$mat-stepper-side-gap: 24px;
+$mat-stepper-line-width: 1px;
+$mat-stepper-line-gap: 8px;
+
+$mat-step-sub-label-font-size: 12px;
+$mat-step-header-icon-size: 16px;

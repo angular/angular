@@ -1,6 +1,4 @@
-$mat-paginator-height: 56px;
 $mat-paginator-padding: 0 8px;
-
 $mat-paginator-page-size-margin-right: 8px;
 
 $mat-paginator-items-per-page-label-margin: 0 4px;
@@ -8,7 +6,9 @@ $mat-paginator-selector-margin: 6px 4px 0 4px;
 $mat-paginator-selector-trigger-width: 56px;
 $mat-paginator-selector-trigger-outline-width: 64px;
 $mat-paginator-selector-trigger-fill-width: 64px;
+
 $mat-paginator-range-label-margin: 0 32px 0 24px;
+$mat-paginator-button-icon-size: 28px;
 
 .mat-paginator {
   display: block;
@@ -24,7 +24,6 @@ $mat-paginator-range-label-margin: 0 32px 0 24px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  min-height: $mat-paginator-height;
   padding: $mat-paginator-padding;
   flex-wrap: wrap-reverse;
   width: 100%;
@@ -68,7 +67,7 @@ $mat-paginator-range-label-margin: 0 32px 0 24px;
 }
 
 .mat-paginator-icon {
-  width: $mat-paginator-height / 2;
+  width: $mat-paginator-button-icon-size;
   fill: currentColor;
 
   [dir='rtl'] & {

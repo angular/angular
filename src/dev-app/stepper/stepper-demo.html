@@ -1,5 +1,10 @@
 <mat-checkbox [(ngModel)]="isNonLinear">Disable linear mode</mat-checkbox>
 <mat-checkbox [(ngModel)]="disableRipple">Disable header ripple</mat-checkbox>
+<p>
+  <button mat-stroked-button (click)="showLabelBottom = !showLabelBottom">
+    Toggle label position
+  </button>
+</p>
 
 <h3>Linear Vertical Stepper Demo using a single form</h3>
 <form [formGroup]="formGroup">
@@ -52,7 +57,8 @@
 
 <h3>Linear Horizontal Stepper Demo using a different form for each step</h3>
 <mat-horizontal-stepper #linearHorizontalStepper="matHorizontalStepper" [linear]="!isNonLinear"
-                        [disableRipple]="disableRipple">
+                        [disableRipple]="disableRipple"
+                        [labelPosition]="showLabelBottom ? 'bottom' : 'end'">
   <mat-step [stepControl]="nameFormGroup">
     <form [formGroup]="nameFormGroup">
       <ng-template matStepLabel>Fill out your name</ng-template>

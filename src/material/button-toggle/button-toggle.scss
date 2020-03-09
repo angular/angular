@@ -3,7 +3,6 @@
 @import '../../cdk/a11y/a11y';
 
 $mat-button-toggle-standard-padding: 0 12px !default;
-$mat-button-toggle-standard-height: 48px !default;
 $mat-button-toggle-standard-border-radius: 4px !default;
 
 $mat-button-toggle-legacy-padding: 0 16px !default;
@@ -104,7 +103,6 @@ $mat-button-toggle-legacy-border-radius: 2px !default;
   position: relative;
 
   .mat-button-toggle-appearance-standard & {
-    line-height: $mat-button-toggle-standard-height;
     padding: $mat-button-toggle-standard-padding;
   }
 }
@@ -131,14 +129,6 @@ $mat-button-toggle-legacy-border-radius: 2px !default;
     @include cdk-high-contrast(active, off) {
       opacity: 0.5;
       height: 0;
-    }
-  }
-}
-
-@include cdk-high-contrast(active, off) {
-  .mat-button-toggle-checked {
-    &.mat-button-toggle-appearance-standard .mat-button-toggle-focus-overlay {
-      border-bottom: solid $mat-button-toggle-standard-height;
     }
   }
 }

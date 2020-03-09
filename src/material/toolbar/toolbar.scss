@@ -1,22 +1,10 @@
-@import '../core/style/variables';
 @import '../../cdk/a11y/a11y';
 
-$mat-toolbar-height-desktop: 64px !default;
-$mat-toolbar-height-mobile: 56px !default;
 $mat-toolbar-row-padding: 16px !default;
 
 /** @deprecated @breaking-change 8.0.0 */
 // TODO: Remove once internal g3 apps no longer depend on this variable. Tracked with: COMP-303.
 $mat-toolbar-height-mobile-portrait: 56px !default;
-
-@mixin mat-toolbar-height($height) {
-  .mat-toolbar-multiple-rows {
-    min-height: $height;
-  }
-  .mat-toolbar-row, .mat-toolbar-single-row {
-    height: $height;
-  }
-}
 
 .mat-toolbar {
   @include cdk-high-contrast(active, off) {
@@ -45,14 +33,4 @@ $mat-toolbar-height-mobile-portrait: 56px !default;
   box-sizing: border-box;
   flex-direction: column;
   width: 100%;
-}
-
-// Set the default height for the toolbar.
-@include mat-toolbar-height($mat-toolbar-height-desktop);
-
-// As per specs, toolbars should have a different height in mobile devices. This has been
-// specified in the old guidelines and is still observable in the new specifications by looking at
-// the spec images. See: https://material.io/design/components/app-bars-top.html#anatomy
-@media ($mat-xsmall) {
-  @include mat-toolbar-height($mat-toolbar-height-mobile);
 }

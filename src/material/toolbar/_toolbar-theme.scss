@@ -1,7 +1,18 @@
+@import '../core/density/index';
+@import '../core/style/variables';
 @import '../core/theming/palette';
 @import '../core/theming/theming';
 @import '../core/typography/typography-utils';
+@import './toolbar-variables';
 
+@mixin _mat-toolbar-height($height) {
+  .mat-toolbar-multiple-rows {
+    min-height: $height;
+  }
+  .mat-toolbar-row, .mat-toolbar-single-row {
+    height: $height;
+  }
+}
 
 @mixin _mat-toolbar-color($palette) {
   background: mat-color($palette);
@@ -68,7 +79,22 @@
   }
 }
 
-@mixin _mat-toolbar-density($density-scale) {}
+@mixin _mat-toolbar-density($density-scale) {
+  $height-desktop: _mat-density-prop-value(
+      $mat-toolbar-desktop-density-config, $density-scale, height);
+  $height-mobile: _mat-density-prop-value(
+      $mat-toolbar-mobile-density-config, $density-scale, height);
+
+  // Set the default height for the toolbar.
+  @include _mat-toolbar-height($height-desktop);
+
+  // As per specs, toolbars should have a different height in mobile devices. This has been
+  // specified in the old guidelines and is still observable in the new specifications by looking at
+  // the spec images. See: https://material.io/design/components/app-bars-top.html#anatomy
+  @media ($mat-xsmall) {
+    @include _mat-toolbar-height($height-mobile);
+  }
+}
 
 @mixin mat-toolbar-theme($theme) {
   $color: mat-get-color-config($theme);

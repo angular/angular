@@ -1,0 +1,14 @@
+$mat-tree-node-height: 48px !default;
+// Minimum height for tree nodes in highest density is difficult to determine as
+// developers can display arbitrary content. We use a minimum height which ensures
+// that common content placed in tree nodes does not exceed (e.g. icons, checkboxes).
+$mat-tree-node-minimum-height: 24px !default;
+$mat-tree-node-maximum-height: $mat-tree-node-height !default;
+
+$mat-tree-density-config: (
+  height: (
+    default: $mat-tree-node-height,
+    maximum: $mat-tree-node-maximum-height,
+    minimum: $mat-tree-node-minimum-height,
+  )
+) !default;

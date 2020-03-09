@@ -1,12 +1,5 @@
 @import '../core/style/variables';
-
-$mat-horizontal-stepper-header-height: 72px !default;
-$mat-stepper-label-header-height: 24px !default;
-$mat-stepper-label-position-bottom-top-gap: 16px !default;
-$mat-stepper-side-gap: 24px !default;
-$mat-vertical-stepper-content-margin: 36px !default;
-$mat-stepper-line-width: 1px !default;
-$mat-stepper-line-gap: 8px !default;
+@import './stepper-variables';
 
 .mat-stepper-vertical,
 .mat-stepper-horizontal {
@@ -35,7 +28,6 @@ $mat-stepper-line-gap: 8px !default;
     margin: 0;
     min-width: 0;
     position: relative;
-    top: $mat-stepper-side-gap + $mat-stepper-label-header-height / 2;
   }
 }
 
@@ -46,13 +38,12 @@ $mat-stepper-line-gap: 8px !default;
   display: inline-block;
   height: 0;
   position: absolute;
-  top: $mat-stepper-side-gap + $mat-stepper-label-header-height / 2;
-  width: calc(50% - #{$mat-stepper-label-header-height / 2 + $mat-stepper-line-gap});
+  width: calc(50% - #{$mat-stepper-side-gap / 2 + $mat-stepper-line-gap});
 }
 
 .mat-horizontal-stepper-header {
   display: flex;
-  height: $mat-horizontal-stepper-header-height;
+  height: $mat-stepper-header-height;
   overflow: hidden;
   align-items: center;
   padding: 0 $mat-stepper-side-gap;
@@ -73,7 +64,6 @@ $mat-stepper-line-gap: 8px !default;
     // We use auto instead of fixed 104px (by spec) because when there is an optional step
     //  the height is greater than that
     height: auto;
-    padding: $mat-stepper-side-gap;
 
     &:not(:last-child)::after,
     [dir='rtl'] &:not(:first-child)::after {
@@ -109,7 +99,6 @@ $mat-stepper-line-gap: 8px !default;
 .mat-vertical-stepper-header {
   display: flex;
   align-items: center;
-  padding: $mat-stepper-side-gap;
 
   // We can't use `max-height` here, because it breaks the flexbox centering in IE.
   height: $mat-stepper-label-header-height;
@@ -152,8 +141,6 @@ $mat-stepper-line-gap: 8px !default;
 .mat-stepper-vertical-line::before {
   content: '';
   position: absolute;
-  top: $mat-stepper-line-gap - $mat-stepper-side-gap;
-  bottom: $mat-stepper-line-gap - $mat-stepper-side-gap;
   left: 0;
   border-left-width: $mat-stepper-line-width;
   border-left-style: solid;

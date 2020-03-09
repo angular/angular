@@ -1,12 +1,5 @@
 @import '../core/style/layout-common';
-
-$mat-stepper-label-header-height: 24px !default;
-$mat-stepper-label-min-width: 50px !default;
-$mat-stepper-side-gap: 24px !default;
-$mat-vertical-stepper-content-margin: 36px !default;
-$mat-stepper-line-gap: 8px !default;
-$mat-step-sub-label-font-size: 12px;
-$mat-step-header-icon-size: 16px !default;
+@import './stepper-variables';
 
 .mat-step-header {
   overflow: hidden;

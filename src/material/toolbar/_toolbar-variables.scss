@@ -1,0 +1,28 @@
+// Minimum height for toolbar's in the highest density is difficult to determine because
+// developers can project arbitrary content. We use a minimum value that ensures that most
+// common content (e.g. icon buttons) does not exceed the row boundaries in highest density.
+$mat-toolbar-minimum-height: 44px !default;
+
+$mat-toolbar-height-desktop: 64px !default;
+$mat-toolbar-maximum-height-desktop: $mat-toolbar-height-desktop !default;
+$mat-toolbar-minimum-height-desktop: $mat-toolbar-minimum-height !default;
+
+$mat-toolbar-height-mobile: 56px !default;
+$mat-toolbar-maximum-height-mobile: $mat-toolbar-height-mobile !default;
+$mat-toolbar-minimum-height-mobile: $mat-toolbar-minimum-height !default;
+
+$mat-toolbar-desktop-density-config: (
+  height: (
+    default: $mat-toolbar-height-desktop,
+    maximum: $mat-toolbar-maximum-height-desktop,
+    minimum: $mat-toolbar-minimum-height-desktop,
+  )
+) !default;
+
+$mat-toolbar-mobile-density-config: (
+  height: (
+    default: $mat-toolbar-height-mobile,
+    maximum: $mat-toolbar-maximum-height-mobile,
+    minimum: $mat-toolbar-minimum-height-mobile,
+  )
+) !default;
