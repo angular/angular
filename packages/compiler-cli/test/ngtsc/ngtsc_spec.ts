@@ -4594,31 +4594,6 @@ runInEachFileSystem(os => {
           expect(trim(jsContents).startsWith(trim(fileoverview))).toBeTruthy();
         });
 
-        it('should be produced for generated factory files', () => {
-          env.tsconfig({
-            'annotateForClosureCompiler': true,
-            'generateNgFactoryShims': true,
-          });
-          env.write(`test.ts`, `
-            import {Component} from '@angular/core';
-    
-            @Component({
-              template: '<div class="test"></div>',
-            })
-            export class SomeComp {}
-          `);
-
-          env.driveMain();
-          const jsContents = env.getContents('test.ngfactory.js');
-          const fileoverview = `
-        /**
-         * @fileoverview added by tsickle
-         * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
-         */
-      `;
-          expect(trim(jsContents).startsWith(trim(fileoverview))).toBeTruthy();
-        });
-
         it('should always be at the very beginning of a script (if placed above imports)', () => {
           env.tsconfig({
             'annotateForClosureCompiler': true,
