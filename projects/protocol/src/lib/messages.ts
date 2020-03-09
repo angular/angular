@@ -5,6 +5,7 @@ export interface DirectiveType {
 
 export interface ComponentType {
   name: string;
+  isElement: boolean;
   id: number;
 }
 
@@ -87,6 +88,7 @@ export interface LifecycleProfile {
 
 export interface DirectiveProfile {
   name: string;
+  isElement: boolean;
   isComponent: boolean;
   lifecycle: LifecycleProfile;
   changeDetection: number;

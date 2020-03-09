@@ -200,6 +200,7 @@ export const prepareForestForSerialization = (roots: ComponentTreeNode[]): Seria
       component: node.component
         ? {
             name: node.component.name,
+            isElement: node.component.isElement,
             id: getDirectiveId(node.component.instance),
           }
         : null,

@@ -7,10 +7,9 @@ import {
   DirectivesProperties,
   UpdatedStateData,
 } from 'protocol';
-import { getComponentName } from './highlighter';
 import { DebuggingAPI } from './interfaces';
 import { IndexedNode } from './observer/identity-tracker';
-import { buildDirectiveTree } from './lview-transform';
+import { buildDirectiveTree, METADATA_PROPERTY_NAME } from './lview-transform';
 
 const ngDebug = (window as any).ng;
 
@@ -22,6 +21,7 @@ export interface DirectiveInstanceType {
 export interface ComponentInstanceType {
   instance: any;
   name: string;
+  isElement: boolean;
 }
 
 export interface ComponentTreeNode extends DevToolsNode<DirectiveInstanceType, ComponentInstanceType> {
@@ -63,7 +63,7 @@ export const getLatestComponentState = (query: ComponentExplorerViewQuery): Dire
 
 export const buildDirectiveForest = (ngd: DebuggingAPI): ComponentTreeNode[] => {
   const roots = Array.from(document.documentElement.querySelectorAll('[ng-version]')).map(
-    el => ngd.getComponent(el).__ngContext__
+    el => ngd.getComponent(el)[METADATA_PROPERTY_NAME]
   );
   return Array.prototype.concat.apply([], roots.map(buildDirectiveTree));
 };

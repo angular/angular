@@ -12,6 +12,7 @@ describe('indexForest', () => {
           element: 'Parent1',
           directives: [],
           component: {
+            isElement: false,
             name: 'Cmp1',
             id: 1,
           },
@@ -35,6 +36,7 @@ describe('indexForest', () => {
               element: 'Child1_2',
               directives: [],
               component: {
+                isElement: false,
                 name: 'Cmp2',
                 id: 1,
               },
@@ -82,6 +84,7 @@ describe('indexForest', () => {
         directives: [],
         position: [0],
         component: {
+          isElement: false,
           name: 'Cmp1',
           id: 1,
         },
@@ -107,6 +110,7 @@ describe('indexForest', () => {
             directives: [],
             position: [0, 1],
             component: {
+              isElement: false,
               name: 'Cmp2',
               id: 1,
             },

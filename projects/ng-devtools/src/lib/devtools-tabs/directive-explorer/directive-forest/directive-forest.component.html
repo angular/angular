@@ -23,7 +23,7 @@
       matTreeNodePadding
     >
       <button disabled></button>
-      <span class="element-name">{{ node.name }}</span>
+      <span class="element-name" [class.angular-element]="isElement(node)">{{ node.name }}</span>
       <span *ngIf="node.directives" class="dir-names">[{{ node.directives }}]</span>
     </mat-tree-node>
     <mat-tree-node
@@ -46,7 +46,7 @@
           {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
         </mat-icon>
       </button>
-      <span class="element-name">{{ node.name }}</span>
+      <span class="element-name" [class.angular-element]="isElement(node)">{{ node.name }}</span>
       <span *ngIf="node.directives" class="dir-names">[{{ node.directives }}]</span>
     </mat-tree-node>
   </mat-tree>

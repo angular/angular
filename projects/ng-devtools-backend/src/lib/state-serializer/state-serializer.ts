@@ -4,8 +4,9 @@ import {
   createNestedSerializedDescriptor,
   createShallowSerializedDescriptor,
 } from './serialized-descriptor-factory';
+import { METADATA_PROPERTY_NAME } from '../lview-transform';
 
-const ignoreList = new Set(['__ngContext__', '__ngSimpleChanges__']);
+const ignoreList = new Set([METADATA_PROPERTY_NAME, '__ngSimpleChanges__']);
 
 const commonTypes = {
   boolean: PropType.Boolean,

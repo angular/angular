@@ -47,6 +47,7 @@ const addFrame = (nodes: FlamegraphNode[], elements: ElementProfile[]): number =
     // Possibly undefined because of
     // the insertion on the backend.
     if (!element) {
+      console.error('Unable to insert undefined element');
       return;
     }
     const node: FlamegraphNode = {

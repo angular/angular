@@ -1,4 +1,5 @@
 import { Descriptor, NestedProp, PropType } from 'protocol';
+import { METADATA_PROPERTY_NAME } from '../lview-transform';
 
 interface PropData {
   type: PropType;
@@ -26,7 +27,7 @@ interface CommonTypeCases {
   unknownCase?: () => any;
 }
 
-const ignoreList = new Set(['__ngContext__', '__ngSimpleChanges__']);
+const ignoreList = new Set([METADATA_PROPERTY_NAME, '__ngSimpleChanges__']);
 
 const shallowPropTypeToTreeMetaData = {
   [PropType.String]: {
