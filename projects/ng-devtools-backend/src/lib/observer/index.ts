@@ -1,6 +1,6 @@
 import { ComponentTreeObserver } from './observer';
 import { ElementPosition, ProfilerFrame, ElementProfile, DirectiveProfile, LifecycleProfile } from 'protocol';
-import { runOutsideAngular } from '../utils';
+import { runOutsideAngular, isCustomElement } from '../utils';
 import { getComponentName } from '../highlighter';
 import { InsertionTrie } from './insertion-trie';
 import { ComponentTreeNode } from '../component-tree';
@@ -23,16 +23,17 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
   observer = new ComponentTreeObserver({
     // We flush here because it's possible the current node to overwrite
     // an existing removed node.
-    onCreate(directive: any, id: number, isComponent: boolean, position: ElementPosition): void {
+    onCreate(directive: any, node: Node, id: number, isComponent: boolean, position: ElementPosition): void {
       eventMap.set(directive, {
         name: getComponentName(directive),
+        isElement: isCustomElement(node),
         isComponent,
         changeDetection: 0,
         lifecycle: {},
       });
       insertionTrie.insert(position);
     },
-    onChangeDetection(component: any, id: number, position: ElementPosition, duration: number): void {
+    onChangeDetection(component: any, node: Node, id: number, position: ElementPosition, duration: number): void {
       if (!inChangeDetection) {
         inChangeDetection = true;
         const source = getChangeDetectionSource();
@@ -46,6 +47,7 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
       if (!eventMap.has(component)) {
         eventMap.set(component, {
           name: getComponentName(component),
+          isElement: isCustomElement(node),
           isComponent: true,
           changeDetection: 0,
           lifecycle: {},
@@ -61,6 +63,7 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
     },
     onLifecycleHook(
       directive: any,
+      node: Node,
       id: number,
       isComponent: boolean,
       hook: keyof LifecycleProfile,
@@ -69,6 +72,7 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
       if (!eventMap.has(directive)) {
         eventMap.set(directive, {
           name: getComponentName(directive),
+          isElement: isCustomElement(node),
           isComponent: true,
           changeDetection: 0,
           lifecycle: {},
@@ -174,6 +178,7 @@ const prepareInitialFrame = (source: string) => {
     const directives = node.directives.map(d => {
       return {
         isComponent: false,
+        isElement: false,
         name: d.name,
         lifecycle: {},
         changeDetection: 0,
@@ -182,6 +187,7 @@ const prepareInitialFrame = (source: string) => {
     if (node.component) {
       directives.push({
         changeDetection: 0,
+        isElement: node.component.isElement,
         isComponent: true,
         lifecycle: {},
         name: node.component.name,

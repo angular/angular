@@ -1,26 +1,43 @@
-import { ComponentTreeNode } from './component-tree';
+import { ComponentTreeNode, ComponentInstanceType } from './component-tree';
+import { isCustomElement } from './utils';
 
 const HEADER_OFFSET = 19;
 const TYPE = 1;
 const ELEMENT = 0;
 const LVIEW_TVIEW = 1;
+const COMPONENTS = 8;
+export const METADATA_PROPERTY_NAME = '__ngContext__';
 
 export function isLContainer(value: any): boolean {
   return Array.isArray(value) && value[TYPE] === true;
 }
 
+export const getDirectiveHostElement = (dir: any) => {
+  const ctx = dir[METADATA_PROPERTY_NAME];
+  if (ctx[0] !== null) {
+    return ctx[0];
+  }
+  const components = ctx[LVIEW_TVIEW].components;
+  if (!components || components.length !== 1) {
+    return false;
+  }
+  return ctx[components[0]][0];
+};
+
 const getNode = (lView: any, data: any, idx: number): ComponentTreeNode => {
   const directives = [];
-  let component = null;
+  let component: ComponentInstanceType | null = null;
   const tNode = data[idx];
-  const element = (lView[idx][ELEMENT].tagName || lView[idx][ELEMENT].nodeName).toLowerCase();
+  const node = lView[idx][ELEMENT] || lView[idx][ELEMENT];
+  const elementName = (node.tagName || node.nodeName).toLowerCase();
   for (let i = tNode.directiveStart; i < tNode.directiveEnd; i++) {
     const dir = lView[i];
     const dirMeta = data[i];
     if (dirMeta && dirMeta.template) {
       component = {
-        name: element,
+        name: elementName,
         instance: dir,
+        isElement: isCustomElement(node),
       };
     } else if (dirMeta) {
       directives.push({
@@ -30,7 +47,7 @@ const getNode = (lView: any, data: any, idx: number): ComponentTreeNode => {
     }
   }
   return {
-    element,
+    element: elementName,
     nativeElement: lView[idx][ELEMENT],
     directives,
     component,

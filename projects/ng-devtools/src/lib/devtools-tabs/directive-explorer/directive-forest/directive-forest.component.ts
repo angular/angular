@@ -286,4 +286,8 @@ export class DirectiveForestComponent {
       !!this.highlightIDinTreeFromElement && this.highlightIDinTreeFromElement.join(',') === node.position.join(',')
     );
   }
+
+  isElement(node: FlatNode) {
+    return node.original.component && node.original.component.isElement;
+  }
 }

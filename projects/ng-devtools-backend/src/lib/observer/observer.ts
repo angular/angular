@@ -1,10 +1,12 @@
 import { ElementPosition, LifecycleProfile } from 'protocol';
 import { componentMetadata } from '../utils';
 import { IdentityTracker, IndexedNode } from './identity-tracker';
-import { DevToolsHighlightNodeId } from '../highlighter';
+import { DEV_TOOLS_HIGHLIGHT_NODE_ID } from '../highlighter';
+import { METADATA_PROPERTY_NAME, getDirectiveHostElement } from '../lview-transform';
 
 export type CreationCallback = (
   componentOrDirective: any,
+  node: Node,
   id: number,
   isComponent: boolean,
   position: ElementPosition
@@ -12,13 +14,20 @@ export type CreationCallback = (
 
 export type LifecycleCallback = (
   componentOrDirective: any,
+  node: Node,
   id: number,
   isComponent: boolean,
   hook: keyof LifecycleProfile | 'unknown',
   duration: number
 ) => void;
 
-export type ChangeDetectionCallback = (component: any, id: number, position: ElementPosition, duration: number) => void;
+export type ChangeDetectionCallback = (
+  component: any,
+  node: Node,
+  id: number,
+  position: ElementPosition,
+  duration: number
+) => void;
 
 export type DestroyCallback = (
   componentOrDirective: any,
@@ -148,7 +157,13 @@ export class ComponentTreeObserver {
       return;
     }
     const position = this._tracker.getDirectivePosition(component);
-    this._config.onCreate(component, this._tracker.getDirectiveId(component), isComponent, position);
+    this._config.onCreate(
+      component,
+      getDirectiveHostElement(component),
+      this._tracker.getDirectiveId(component),
+      isComponent,
+      position
+    );
   }
 
   private _fireDestroyCallback(component: any, isComponent: boolean): void {
@@ -172,6 +187,7 @@ export class ComponentTreeObserver {
       if (self._tracker.hasDirective(component)) {
         self._config.onChangeDetection(
           component,
+          getDirectiveHostElement(component),
           self._tracker.getDirectiveId(component),
           self._tracker.getDirectivePosition(component),
           performance.now() - start
@@ -185,7 +201,7 @@ export class ComponentTreeObserver {
   }
 
   private _observeLifecycle(directive: any, isComponent: boolean): void {
-    const ctx = directive.__ngContext__;
+    const ctx = directive[METADATA_PROPERTY_NAME];
     const tview = ctx[1];
     hookTViewProperties.forEach(hook => {
       const current = tview[hook];
@@ -204,6 +220,7 @@ export class ComponentTreeObserver {
             if (self._tracker.hasDirective(this)) {
               self._config.onLifecycleHook(
                 this,
+                getDirectiveHostElement(this),
                 self._tracker.getDirectiveId(this),
                 isComponent,
                 getLifeCycleName(el.name),
@@ -242,7 +259,7 @@ const containsInternalElements = (nodes: NodeList): boolean => {
       continue;
     }
     const attr = node.getAttribute('id');
-    if (attr === DevToolsHighlightNodeId) {
+    if (attr === DEV_TOOLS_HIGHLIGHT_NODE_ID) {
       return true;
     }
   }

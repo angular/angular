@@ -117,3 +117,16 @@
   height: calc(100% - 50px);
   overflow-y: auto;
 }
+
+.angular-element {
+  content: '';
+  color: blue;
+}
+
+.angular-element::before {
+  content: '<';
+}
+
+.angular-element::after {
+  content: '/>';
+}

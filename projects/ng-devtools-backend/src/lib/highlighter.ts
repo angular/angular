@@ -1,11 +1,11 @@
 import { Type } from '@angular/core';
 
-let overlay;
-let overlayContent;
+let overlay: any;
+let overlayContent: any;
 
 declare const ng: any;
 
-export const DevToolsHighlightNodeId = '____ngDevToolsHighlight';
+export const DEV_TOOLS_HIGHLIGHT_NODE_ID = '____ngDevToolsHighlight';
 
 function init(): void {
   if (overlay) {
@@ -20,7 +20,7 @@ function init(): void {
   overlay.style.alignItems = 'center';
   overlay.style.justifyContent = 'center';
   overlay.style.borderRadius = '3px';
-  overlay.setAttribute('id', DevToolsHighlightNodeId);
+  overlay.setAttribute('id', DEV_TOOLS_HIGHLIGHT_NODE_ID);
   overlayContent = document.createElement('div');
   overlayContent.style.backgroundColor = 'rgba(104, 182, 255, 0.9)';
   overlayContent.style.fontFamily = 'monospace';

@@ -20,3 +20,14 @@ export const patchTemplate = (instance: any, fn: () => void) => {
 
   return original;
 };
+
+export const isCustomElement = (node: Node) => {
+  if (typeof customElements === 'undefined') {
+    return false;
+  }
+  if (!(node instanceof HTMLElement)) {
+    return false;
+  }
+  const tagName = node.tagName.toLowerCase();
+  return !!customElements.get(tagName);
+};
