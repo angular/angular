@@ -101,7 +101,16 @@ Instead, it adds the declared route, `customers` to the `routes` array declared 
 Notice that the lazy-loading syntax uses `loadChildren` followed by a function that uses the browser's built-in `import('...')` syntax for dynamic imports.
 The import path is the relative path to the module.
 
-#### Add another feature module
+<div class="callout is-helpful">
+<header>String-based lazy loading</header>
+
+In Angular version 8, the string syntax for the `loadChildren` route specification [was deprecated](https://angular.io/guide/deprecations#loadchildren-string-syntax) in favor of the `import()` syntax. However, you can opt into using string-based lazy loading (`loadChildren: './path/to/module#Module'`) by including the lazy-loaded routes in your `tsconfig` file, which includes the lazy-loaded files in the compilation.
+
+By default the CLI will generate projects which stricter file inclusions intended to be used with the `import()` syntax.
+
+</div>
+
+### Add another feature module
 
 Use the same command to create a second lazy-loaded feature module with routing, along with its stub component.
 
