@@ -10,15 +10,14 @@ import {encode} from 'sourcemap-codec';
 import {absoluteFrom} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {RawSourceMap} from '../../src/sourcemaps/raw_source_map';
-import {SourceFile, computeLineLengths, extractOriginalSegments, parseMappings} from '../../src/sourcemaps/source_file';
+import {SegmentMarker} from '../../src/sourcemaps/segment_marker';
+import {Mapping, SourceFile, computeLineLengths, extractOriginalSegments, findLastMappingIndexBefore, parseMappings} from '../../src/sourcemaps/source_file';
 
 runInEachFileSystem(() => {
   describe('SourceFile and utilities', () => {
     let _: typeof absoluteFrom;
 
-    beforeEach(() => {
-      _ = absoluteFrom;
-    });
+    beforeEach(() => { _ = absoluteFrom; });
 
     describe('parseMappings()', () => {
       it('should be an empty array for source files with no source map', () => {
@@ -82,6 +81,205 @@ runInEachFileSystem(() => {
              {line: 0, column: 3},
            ]);
          });
+    });
+
+    describe('findLastMappingIndexBefore', () => {
+      it('should find the highest mapping index that has a segment marker below the given one if there is not an exact match',
+         () => {
+           const marker5: SegmentMarker = {line: 0, column: 50};
+           const marker4: SegmentMarker = {line: 0, column: 40};
+           const marker3: SegmentMarker = {line: 0, column: 30};
+           const marker2: SegmentMarker = {line: 0, column: 20};
+           const marker1: SegmentMarker = {line: 0, column: 10};
+           const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
+               marker => ({ generatedSegment: marker } as Mapping));
+
+           const marker: SegmentMarker = {line: 0, column: 35};
+           const index = findLastMappingIndexBefore(mappings, marker, /* exclusive */ false, 0);
+           expect(index).toEqual(2);
+         });
+
+      it('should find the highest mapping index that has a segment marker (when there are duplicates) below the given one if there is not an exact match',
+         () => {
+           const marker5: SegmentMarker = {line: 0, column: 50};
+           const marker4: SegmentMarker = {line: 0, column: 30};
+           const marker3: SegmentMarker = {line: 0, column: 30};
+           const marker2: SegmentMarker = {line: 0, column: 20};
+           const marker1: SegmentMarker = {line: 0, column: 10};
+           const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
+               marker => ({ generatedSegment: marker } as Mapping));
+
+           const marker: SegmentMarker = {line: 0, column: 35};
+           const index = findLastMappingIndexBefore(mappings, marker, /* exclusive */ false, 0);
+           expect(index).toEqual(3);
+         });
+
+      it('should find the last mapping if the segment marker is higher than all of them', () => {
+        const marker5: SegmentMarker = {line: 0, column: 50};
+        const marker4: SegmentMarker = {line: 0, column: 40};
+        const marker3: SegmentMarker = {line: 0, column: 30};
+        const marker2: SegmentMarker = {line: 0, column: 20};
+        const marker1: SegmentMarker = {line: 0, column: 10};
+        const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
+            marker => ({ generatedSegment: marker } as Mapping));
+
+        const marker: SegmentMarker = {line: 0, column: 60};
+
+        const index = findLastMappingIndexBefore(mappings, marker, /* exclusive */ false, 0);
+        expect(index).toEqual(4);
+      });
+
+      it('should return -1 if the segment marker is lower than all of them', () => {
+        const marker5: SegmentMarker = {line: 0, column: 50};
+        const marker4: SegmentMarker = {line: 0, column: 40};
+        const marker3: SegmentMarker = {line: 0, column: 30};
+        const marker2: SegmentMarker = {line: 0, column: 20};
+        const marker1: SegmentMarker = {line: 0, column: 10};
+        const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
+            marker => ({ generatedSegment: marker } as Mapping));
+
+        const marker: SegmentMarker = {line: 0, column: 5};
+
+        const index = findLastMappingIndexBefore(mappings, marker, /* exclusive */ false, 0);
+        expect(index).toEqual(-1);
+      });
+
+      describe('[exact match inclusive]', () => {
+        it('should find the matching segment marker mapping index if there is only one of them',
+           () => {
+             const marker5: SegmentMarker = {line: 0, column: 50};
+             const marker4: SegmentMarker = {line: 0, column: 40};
+             const marker3: SegmentMarker = {line: 0, column: 30};
+             const marker2: SegmentMarker = {line: 0, column: 20};
+             const marker1: SegmentMarker = {line: 0, column: 10};
+
+             const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
+                 marker => ({ generatedSegment: marker } as Mapping));
+             const index = findLastMappingIndexBefore(mappings, marker3, /* exclusive */ false, 0);
+             expect(index).toEqual(2);
+           });
+
+        it('should find the highest matching segment marker mapping index if there is more than one of them',
+           () => {
+             const marker5: SegmentMarker = {line: 0, column: 50};
+             const marker4: SegmentMarker = {line: 0, column: 30};
+             const marker3: SegmentMarker = {line: 0, column: 30};
+             const marker2: SegmentMarker = {line: 0, column: 20};
+             const marker1: SegmentMarker = {line: 0, column: 10};
+
+             const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
+                 marker => ({ generatedSegment: marker } as Mapping));
+             const index = findLastMappingIndexBefore(mappings, marker3, /* exclusive */ false, 0);
+             expect(index).toEqual(3);
+           });
+      });
+
+      describe('[exact match exclusive]', () => {
+        it('should find the preceding mapping index if there is a matching segment marker', () => {
+          const marker5: SegmentMarker = {line: 0, column: 50};
+          const marker4: SegmentMarker = {line: 0, column: 40};
+          const marker3: SegmentMarker = {line: 0, column: 30};
+          const marker2: SegmentMarker = {line: 0, column: 20};
+          const marker1: SegmentMarker = {line: 0, column: 10};
+
+          const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
+              marker => ({ generatedSegment: marker } as Mapping));
+          const index = findLastMappingIndexBefore(mappings, marker3, /* exclusive */ true, 0);
+          expect(index).toEqual(1);
+        });
+
+        it('should find the highest preceding mapping index if there is more than one matching segment marker',
+           () => {
+             const marker5: SegmentMarker = {line: 0, column: 50};
+             const marker4: SegmentMarker = {line: 0, column: 30};
+             const marker3: SegmentMarker = {line: 0, column: 30};
+             const marker2: SegmentMarker = {line: 0, column: 20};
+             const marker1: SegmentMarker = {line: 0, column: 10};
+
+             const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
+                 marker => ({ generatedSegment: marker } as Mapping));
+             const index = findLastMappingIndexBefore(mappings, marker3, /* exclusive */ false, 0);
+             expect(index).toEqual(3);
+           });
+      });
+
+      describe('[with lowerIndex hint', () => {
+        it('should find the highest mapping index above the lowerIndex hint that has a segment marker below the given one if there is not an exact match',
+           () => {
+             const marker5: SegmentMarker = {line: 0, column: 50};
+             const marker4: SegmentMarker = {line: 0, column: 40};
+             const marker3: SegmentMarker = {line: 0, column: 30};
+             const marker2: SegmentMarker = {line: 0, column: 20};
+             const marker1: SegmentMarker = {line: 0, column: 10};
+             const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
+                 marker => ({ generatedSegment: marker } as Mapping));
+
+             const marker: SegmentMarker = {line: 0, column: 35};
+             const index = findLastMappingIndexBefore(mappings, marker, /* exclusive */ false, 1);
+             expect(index).toEqual(2);
+           });
+
+        it('should return the lowerIndex mapping index if there is a single exact match and we are not exclusive',
+           () => {
+             const marker5: SegmentMarker = {line: 0, column: 50};
+             const marker4: SegmentMarker = {line: 0, column: 40};
+             const marker3: SegmentMarker = {line: 0, column: 30};
+             const marker2: SegmentMarker = {line: 0, column: 20};
+             const marker1: SegmentMarker = {line: 0, column: 10};
+             const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
+                 marker => ({ generatedSegment: marker } as Mapping));
+
+             const marker: SegmentMarker = {line: 0, column: 30};
+             const index = findLastMappingIndexBefore(mappings, marker, /* exclusive */ false, 2);
+             expect(index).toEqual(2);
+           });
+
+        it('should return the lowerIndex mapping index if there are multiple exact matches and we are not exclusive',
+           () => {
+             const marker5: SegmentMarker = {line: 0, column: 50};
+             const marker4: SegmentMarker = {line: 0, column: 30};
+             const marker3: SegmentMarker = {line: 0, column: 30};
+             const marker2: SegmentMarker = {line: 0, column: 20};
+             const marker1: SegmentMarker = {line: 0, column: 10};
+             const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
+                 marker => ({ generatedSegment: marker } as Mapping));
+
+             const marker: SegmentMarker = {line: 0, column: 30};
+             const index = findLastMappingIndexBefore(mappings, marker, /* exclusive */ false, 3);
+             expect(index).toEqual(3);
+           });
+
+        it('should return -1 if the segment marker is lower than the lowerIndex hint', () => {
+          const marker5: SegmentMarker = {line: 0, column: 50};
+          const marker4: SegmentMarker = {line: 0, column: 40};
+          const marker3: SegmentMarker = {line: 0, column: 30};
+          const marker2: SegmentMarker = {line: 0, column: 20};
+          const marker1: SegmentMarker = {line: 0, column: 10};
+          const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
+              marker => ({ generatedSegment: marker } as Mapping));
+
+          const marker: SegmentMarker = {line: 0, column: 25};
+
+          const index = findLastMappingIndexBefore(mappings, marker, /* exclusive */ false, 2);
+          expect(index).toEqual(-1);
+        });
+
+        it('should return -1 if the segment marker is equal to the lowerIndex hint and we are exclusive',
+           () => {
+             const marker5: SegmentMarker = {line: 0, column: 50};
+             const marker4: SegmentMarker = {line: 0, column: 40};
+             const marker3: SegmentMarker = {line: 0, column: 30};
+             const marker2: SegmentMarker = {line: 0, column: 20};
+             const marker1: SegmentMarker = {line: 0, column: 10};
+             const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
+                 marker => ({ generatedSegment: marker } as Mapping));
+
+             const marker: SegmentMarker = {line: 0, column: 30};
+
+             const index = findLastMappingIndexBefore(mappings, marker, /* exclusive */ true, 2);
+             expect(index).toEqual(-1);
+           });
+      });
     });
 
     describe('SourceFile', () => {

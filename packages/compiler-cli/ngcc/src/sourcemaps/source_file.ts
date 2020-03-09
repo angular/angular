@@ -147,16 +147,14 @@ export class SourceFile {
       // The range with `incomingStart` at 2 and `incomingEnd` at 5 has outgoing start mapping of
       // [1,0] and outgoing end mapping of [4, 6], which also includes [4, 3].
       //
-      let outgoingStartIndex = findLastIndex(
-          bSource.flattenedMappings,
-          mapping => compareSegments(mapping.generatedSegment, incomingStart) <= 0);
+      let outgoingStartIndex =
+          findLastMappingIndexBefore(bSource.flattenedMappings, incomingStart, false, 0);
       if (outgoingStartIndex < 0) {
         outgoingStartIndex = 0;
       }
       const outgoingEndIndex = incomingEnd !== undefined ?
-          findLastIndex(
-              bSource.flattenedMappings,
-              mapping => compareSegments(mapping.generatedSegment, incomingEnd) < 0) :
+          findLastMappingIndexBefore(
+              bSource.flattenedMappings, incomingEnd, true, outgoingStartIndex) :
           bSource.flattenedMappings.length - 1;
 
       for (let bToCmappingIndex = outgoingStartIndex; bToCmappingIndex <= outgoingEndIndex;
@@ -169,13 +167,38 @@ export class SourceFile {
   }
 }
 
-function findLastIndex<T>(items: T[], predicate: (item: T) => boolean): number {
-  for (let index = items.length - 1; index >= 0; index--) {
-    if (predicate(items[index])) {
-      return index;
+/**
+ *
+ * @param mappings The collection of mappings whose segment-markers we are searching.
+ * @param marker The segment-marker to match against those of the given `mappings`.
+ * @param exclusive If exclusive then we must find a mapping with a segment-marker that is
+ * exclusively earlier than the given `marker`.
+ * If not exclusive then we can return the highest mappings with an equivalent segment-marker to the
+ * given `marker`.
+ * @param lowerIndex If provided, this is used as a hint that the marker we are searching for has an
+ * index that is no lower than this.
+ */
+export function findLastMappingIndexBefore(
+    mappings: Mapping[], marker: SegmentMarker, exclusive: boolean, lowerIndex: number): number {
+  let upperIndex = mappings.length - 1;
+  const test = exclusive ? -1 : 0;
+
+  if (compareSegments(mappings[lowerIndex].generatedSegment, marker) > test) {
+    // Exit early since the marker is outside the allowed range of mappings.
+    return -1;
+  }
+
+  let matchingIndex = -1;
+  while (lowerIndex <= upperIndex) {
+    const index = (upperIndex + lowerIndex) >> 1;
+    if (compareSegments(mappings[index].generatedSegment, marker) <= test) {
+      matchingIndex = index;
+      lowerIndex = index + 1;
+    } else {
+      upperIndex = index - 1;
     }
   }
-  return -1;
+  return matchingIndex;
 }
 
 /**
