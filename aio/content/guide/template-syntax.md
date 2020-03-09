@@ -1411,9 +1411,12 @@ and *initializes the target property* with that string:
 
 <code-example path="property-binding/src/app/app.component.html" region="no-evaluation" header="src/app.component.html"></code-example>
 
-
+<!--
 Omitting the brackets will render the string
 `parentItem`, not the value of `parentItem`.
+-->
+괄호를 깜빡하면 `parentItem`의 값 대신 `parentItem`이라는 문자열을 표시합니다.
+
 
 <!--
 ### One-time string initialization
@@ -1423,7 +1426,7 @@ Omitting the brackets will render the string
 <!--
 You *should* omit the brackets when all of the following are true:
 -->
-다음과 같은 경우라면 프로퍼티 바인딩에 사용하는 대괄호를 사용하지 않는 것이 좋습니다.
+다음과 같은 경우라면 프로퍼티 바인딩에 사용하는 대괄호를 빼는 것이 좋습니다.
 
 <!--
 * The target property accepts a string value.
@@ -1431,6 +1434,7 @@ You *should* omit the brackets when all of the following are true:
 * This initial value never changes.
 -->
 * 바인딩 대상 프로퍼티에 문자열 값을 할당하는 경우
+* 템플릿에서 고정된 문자열 값을 전달하는 경우
 * 변경되지 않는 문자열
 
 <!--
@@ -1445,9 +1449,16 @@ HTML에서 어트리뷰트를 초기화하는 방식은 Angular에서도 유효�
 
 <code-example path="property-binding/src/app/app.component.html" region="string-init" header="src/app/app.component.html"></code-example>
 
+<!--
 The `[item]` binding, on the other hand, remains a live binding to the component's `currentItem` property.
+-->
+하지만 `[item]` 바인딩에서는 컴포넌트의 `currentItem` 프로퍼티 값에 따라 전달되는 값이 달라지기 때문에 대문자를 사용하는 것이 좋습니다.
 
+
+<!--
 ### Property binding vs. interpolation
+-->
+### 프로퍼티 바인딩 vs. 문자열 바인딩
 
 <!--
 You often have a choice between interpolation and property binding.
@@ -1458,14 +1469,23 @@ The following binding pairs do the same thing:
 
 <code-example path="property-binding/src/app/app.component.html" region="property-binding-interpolation" header="src/app/app.component.html"></code-example>
 
+<!--
 Interpolation is a convenient alternative to property binding in
 many cases. When rendering data values as strings, there is no
 technical reason to prefer one form to the other, though readability
 tends to favor interpolation. However, *when setting an element
 property to a non-string data value, you must use property binding*.
+-->
+일반적으로 문자열 바인딩은 프로퍼티 바인딩을 간단하게 사용하는 방법으로 볼 수 있습니다.
+그리고 문자열을 화면에 렌더링하는 경우라면 꼭 필요한 경우가 아닌 이상 문자열 바인딩을 사용한 코드가 가독성이 좋습니다.
+*하지만 문자열이 아닌 값으로 엘리먼트 프로퍼티 값을 지정하는 경우라면 반드시 프로퍼티 바인딩을 사용해야 합니다.*
 
+<!--
 ### Content security
+-->
+### 컨텐츠 보안
 
+<!--
 Imagine the following malicious content.
 
 <code-example path="property-binding/src/app/app.component.ts" region="malicious-content" header="src/app/app.component.ts"></code-example>
@@ -1493,6 +1513,31 @@ of the `evilTitle` examples.
 "Template <script>alert("evil never sleeps")</script> Syntax" is the interpolated evil title.
 "Template alert("evil never sleeps")Syntax" is the property bound evil title.
 </code-example>
+-->
+다음과 같은 악성 코드가 있다고 합시다.
+
+<code-example path="property-binding/src/app/app.component.ts" region="malicious-content" header="src/app/app.component.ts"></code-example>
+
+이 프로퍼티는 템플릿에서 다음과 같이 문자열 바인딩되어 사용됩니다:
+
+<code-example path="property-binding/src/app/app.component.html" region="malicious-interpolated" header="src/app/app.component.html"></code-example>
+
+다행히 Angular는 데이터 바인딩을 처리하면서 위험한 HTML을 발견하면 경고를 표시합니다.
+그리고 위와 같은 코드가 있더라도 이 코드의 JavaScript 부분을 실행하지 않고 HTML 문자열로 그냥 표시합니다.
+프로퍼티 바인딩의 경우도 마찬가지입니다.
+
+아래 예제 코드처럼 작성해도 Angular는 화면에 프로퍼티값을 표시하기 전에 [코드의 안전성을 검사](guide/security#sanitization-and-security-contexts)합니다.
+
+<code-example path="property-binding/src/app/app.component.html" region="malicious-content" header="src/app/app.component.html"></code-example>
+
+문자열 바인딩을 사용한 경우와 프로퍼티 바인딩을 사용한 경우에 `<script>` 태그를 처리하는 방식이 조금 다르지만, 두 경우 모두 코드의 안전성을 검사한 이후에 화면에 렌더링한다는 점은 같습니다.
+위 코드처럼 작성하면 브라우저 콘솔에 다음과 같은 경고 문구가 출력됩니다.
+
+<code-example language="bash">
+"Template <script>alert("evil never sleeps")</script> Syntax" is the interpolated evil title.
+"Template alert("evil never sleeps")Syntax" is the property bound evil title.
+</code-example>
+
 
 <hr/>
 {@a other-bindings}
@@ -1510,7 +1555,8 @@ To see attribute, class, and style bindings in a functioning app, see the <live-
 -->
 Angular 템플릿에서는 프로퍼티 바인딩 외에도 다음과 같은 특수한 바인딩을 사용할 수 있습니다.
 
-To see attribute, class, and style bindings in a functioning app, see the <live-example name="attribute-binding"></live-example> especially for this section.
+이 문서에서 설명하는 내용을 앱에서 직접 확인하려면 <live-example name="attribute-binding"></live-example>를 참고하세요.
+
 
 {@a attribute-binding}
 <!--
@@ -1518,6 +1564,7 @@ To see attribute, class, and style bindings in a functioning app, see the <live-
 -->
 ### 어트리뷰트 바인딩
 
+<!--
 Set the value of an attribute directly with an **attribute binding**. This is the only exception to the rule that a binding sets a target property and the only binding that creates and sets an attribute.
 
 Usually, setting an element property with a [property binding](guide/template-syntax#property-binding)
@@ -1535,16 +1582,40 @@ or remove the attribute when the expression resolves to `null`.
 
 One of the primary use cases for attribute binding
 is to set ARIA attributes, as in this example:
+-->
+**어트리뷰트 바인딩**은 어트리뷰트 값을 직접 설정할 때 사용합니다.
+이 방식은 프로퍼티를 바인딩하는 것과 조금 다릅니다.
+
+일반적으로 엘리먼트 프로퍼티값을 지정하려면 문자열로 어트리뷰트를 바인딩하는 것보다 [프로퍼티 바인딩](guide/template-syntax#property-binding)을 사용하는 것이 더 좋습니다.
+하지만 원하는 프로퍼티가 없어서 어트리뷰트 바인딩을 사용해야만 하는 경우가 있습니다.
+
+[ARIA](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA)나 [SVG](https://developer.mozilla.org/en-US/docs/Web/SVG)의 경우를 생각해 봅시다.
+이 객체들은 어트리뷰트로만 구성되기 때문에 엘리먼트 프로퍼티가 존재하지 않아서 엘리먼트의 프로퍼티를 지정할 수 없습니다.
+프로퍼티 바인딩의 대상이 되는 것이 존재하지 않는 상황입니다.
+
+어트리뷰트 바인딩 문법은 프로퍼티 바인딩 문법과 비슷하지만 대괄호 안에 엘리먼트 프로퍼티를 지정하는 대신 `attr`이라는 접미사와 `.` 문자를 붙인다는 점이 다릅니다.
+그리고 어트리뷰트에 할당되는 값이 문자열인 경우에는 이 어트리뷰트 바인딩이 유효하지만, `null` 값이 할당되는 경우에는 어트리뷰트 자체가 존재하지 않습니다.
+
+그래서 ARIA 어트리뷰트는 다음과 같은 방식으로 지정합니다:
 
 <code-example path="attribute-binding/src/app/app.component.html" region="attrib-binding-aria" header="src/app/app.component.html"></code-example>
 
 <div class="alert is-helpful">
 
-#### `colspan` and `colSpan`
 
+<!--
+#### `colspan` and `colSpan`
+-->
+#### `colspan`과 `colSpan`
+
+<!--
 Notice the difference between the `colspan` attribute and the `colSpan` property.
 
 If you wrote something like this:
+-->
+`colspan` 어트리뷰트와 `colSpan` 프로퍼티의 차이점에 대해 알아봅시다.
+
+다음과 같은 코드를 작성했다고 합시다:
 
 <code-example language="html">
   &lt;tr&gt;&lt;td colspan="{{1 + 1}}"&gt;Three-Four&lt;/td&gt;&lt;/tr&gt;
@@ -1560,11 +1631,19 @@ You'd get this error:
   Can't bind to 'colspan' since it isn't a known native property
 </code-example>
 
+<!--
 As the message says, the `<td>` element does not have a `colspan` property. This is true
 because `colspan` is an attribute&mdash;`colSpan`, with a capital `S`, is the
 corresponding property. Interpolation and property binding can set only *properties*, not attributes.
 
 Instead, you'd use property binding and write it like this:
+-->
+이 메시지는 `<td>` 엘리먼트에 `colspan` 프로퍼티가 없다는 의미입니다.
+왜냐하면 소문자 `s`가 들어간 `colspan`은 어트리뷰트이고 대문자 `S`가 들어간 `colSpan`은 프로퍼티이기 때문입니다.
+문자열 바인딩이나 프로퍼티 바인딩은 *프로퍼티에만* 동작합니다.
+어트리뷰트는 이렇게 바인딩할 수 없습니다.
+
+이 코드는 프로퍼티 바인딩 규칙에 맞게 다음과 같이 작성되어야 합니다:
 
 <code-example path="attribute-binding/src/app/app.component.html" region="colSpan" header="src/app/app.component.html"></code-example>
 
@@ -1573,12 +1652,17 @@ Instead, you'd use property binding and write it like this:
 
 <hr/>
 
+{@a class-binding}
+<!--
 ### Class binding
+-->
+### 클래스 바인딩
 
+<!--
 Here's how to set the `class` attribute without a binding in plain HTML:
 
 ```html
-<!-- standard class attribute setting -->
+<!- standard class attribute setting ->
 <div class="foo bar">Some text</div>
 ```
 
@@ -1595,6 +1679,29 @@ It's important to note that with any object-like expression (`object`, `Array`, 
 Updating the property without changing object identity will have no effect.
 
 If there are multiple bindings to the same class name, conflicts are resolved using [styling precedence](#styling-precedence).
+-->
+바인딩을 사용하지 않고 문자열로 `class` 어트리뷰트를 지정하려면 다음과 같이 작성하면 됩니다:
+
+```html
+<!-- 일반적인 클래스 어트리뷰트 설정 방법 -->
+<div class="foo bar">Some text</div>
+```
+
+여기에 **클래스 바인딩** 을 사용하면 엘리먼트의 `class` 어트리뷰트를 원하는 대로 추가하거나 제거할 수 있습니다.
+
+CSS 클래스 하나를 바인딩하려면 `class`라는 접미사 뒤에 `.` 문자를 붙여서 `[class.foo]="hasFoo"`와 같이 작성하면 됩니다.
+그러면 `hasFoo`라는 표현식이 참으로 평가될 때 `foo` 클래스가 추가되며, 표현식이 거짓으로 평가되면 `foo` 클래스가 제거됩니다.
+(이 때 `undefined`는 예외입니다. [스타일 위임](#styling-delegation) 섹션을 참고하세요.)
+
+CSS 클래스 여러 개를 한번에 바인딩하려면 `.` 방식을 사용하지 않고 `[class]`에 표현식을 할당하는 방식을 사용합니다.
+이 방식은 `[class]="classExpr"`와 같이 작성하는데, 표현식 부분에 공백으로 구분되는 문자열을 지정하거나, 클래스 이름이 키(key)이고 지정 여부가 값(value)인 형태의 객체를 지정합니다.
+객체를 지정하는 방식을 사용하면 엘리먼트에 원하는 CSS 클래스만 지정하기 편합니다.
+
+이 때 객체는 `object`나 `Array`, `Map`, `Set` 등의 형식을 사용할 수 있는데, CSS 클래스가 제대로 지정되려면 이 객체 자체가 변경되어야 합니다.
+객체는 그대로이고 프로퍼티 값만 변경되는 경우는 제대로 동작하지 않을 수 있습니다.
+
+같은 클래스 이름이 동시에 사용되어 충돌하는 경우라면 [스타일 적용 우선순위](#styling-precedence) 섹션을 참고하세요.
+
 
 <style>
   td, th {vertical-align: top}
@@ -1611,26 +1718,44 @@ If there are multiple bindings to the same class name, conflicts are resolved us
   </col>
   <tr>
     <th>
+      <!--
       Binding Type
+      -->
+      바인딩 타입
     </th>
     <th>
+      <!--
       Syntax
+      -->
+      문법
     </th>
     <th>
+      <!--
       Input Type
+      -->
+      입력값 타입
     </th>
     <th>
+      <!--
       Example Input Values
+      -->
+      사용할 수 있는 값
     </th>
   </tr>
   <tr>
+    <!--
     <td>Single class binding</td>
+    -->
+    <td>단일 클래스 바인딩</td>
     <td><code>[class.foo]="hasFoo"</code></td>
     <td><code>boolean | undefined | null</code></td>
     <td><code>true</code>, <code>false</code></td>
   </tr>
   <tr>
+    <!--
     <td rowspan=3>Multi-class binding</td>
+    -->
+    <td rowspan=3>여러 클래스 바인딩</td>
     <td rowspan=3><code>[class]="classExpr"</code></td>
     <td><code>string</code></td>
     <td><code>"my-class-1 my-class-2 my-class-3"</code></td>
@@ -1646,18 +1771,27 @@ If there are multiple bindings to the same class name, conflicts are resolved us
 </table>
 
 
+<!--
 The [NgClass](#ngclass) directive can be used as an alternative to direct `[class]` bindings. 
 However, using the above class binding syntax without `NgClass` is preferred because due to improvements in class binding in Angular, `NgClass` no longer provides significant value, and might eventually be removed in the future.
-
+-->
+`[class]`를 직접 바인딩하는 방식 외에 [NgClass](#ngclass) 디렉티브를 사용하는 방식도 고려해 볼 만 합니다.
+하지만 Angular 차원에서 클래스 바인딩 방식의 개선을 고려하고 있기 때문에 `[class]`를 직접 바인딩하는 방식도 나쁜 것은 아닙니다.
+`NgClass` 디렉티브를 아예 없애는 것도 고려하고 있습니다.
 
 <hr/>
 
+{@a style-binding}
+<!--
 ### Style binding
+-->
+### 스타일 바인딩
 
+<!--
 Here's how to set the `style` attribute without a binding in plain HTML:
 
 ```html
-<!-- standard style attribute setting -->
+<!- standard style attribute setting ->
 <div style="color: blue">Some text</div>
 ```
 
@@ -1683,6 +1817,35 @@ It's important to note that with any object-like expression (`object`, `Array`, 
 Updating the property without changing object identity will have no effect.
 
 If there are multiple bindings to the same style property, conflicts are resolved using [styling precedence rules](#styling-precedence).
+-->
+바인딩을 사용하지 않고 문자열로 `style` 어트리뷰트를 지정하려면 다음과 같이 작성하면 됩니다:
+
+```html
+<!-- 일반적인 스타일 어트리뷰트 설정 방법 -->
+<div style="color: blue">Some text</div>
+```
+
+여기에 동적으로 스타일을 지정하려면 **스타일 바인딩**을 사용하면 됩니다.
+
+스타일 하나를 바인딩하려면 `style`이라는 접미사 뒤에 `.` 문자를 붙이고 원하는 CSS 스타일 프로퍼티의 이름을 지정해서 `[style.width]="width"`와 같이 작성하면 됩니다.
+그러면 바인딩 표현식의 결과값으로 프로퍼티 값이 지정되며, 이 값은 일반적으로 문자열입니다.
+`em`이나 `%`와 같은 단위를 명시한다면 숫자 타입을 사용할 수도 있습니다.
+
+<div class="alert is-helpful">
+
+_스타일 프로퍼티_ 이름은 [대시 케이스(dash-case)](guide/glossary#dash-case)일 수도 있고 `fontSize`와 같이 [캐멀 케이스(camelCase)](guide/glossary#camelcase)일 수도 있습니다.
+
+</div>
+
+스타일 여러개를 동시에 바인딩하려면 접미사와 `.` 문자 없이 `[style]` 프로퍼티를 직접 바인딩하는 방식을 사용할 수 있습니다.
+이 방식은 `[style]="styleExpr"`과 같이 작성하는데, 이때 스타일 표현식은 일반적으로 `"width: 100px; height: 100px;"`과 같은 형식의 문자열로 지정합니다.
+
+문자열 방식 외에도 스타일 이름을 키(key)로 하고 원하는 값을 지정하는 객체형식(`{width: '100px', height: '100px'}`)도 사용할 수 있습니다.
+이 때 객체는 `object`나 `Array`, `Map`, `Set` 등의 형식을 사용할 수 있는데, CSS 클래스가 제대로 지정되려면 이 객체 자체가 변경되어야 합니다.
+객체는 그대로이고 프로퍼티 값만 변경되는 경우는 제대로 동작하지 않을 수 있습니다.
+
+같은 스타일 프로퍼티가 동시에 사용되어 충돌하는 경우라면 [스타일 적용 우선순위](#styling-precedence) 섹션을 참고하세요.
+
 
 <style>
   td, th {vertical-align: top}
@@ -1699,33 +1862,54 @@ If there are multiple bindings to the same style property, conflicts are resolve
   </col>
   <tr>
     <th>
+      <!--
       Binding Type
+      -->
+      바인딩 타입
     </th>
     <th>
+      <!--
       Syntax
+      -->
+      문법
     </th>
     <th>
+      <!--
       Input Type
+      -->
+      입력값 타입
     </th>
     <th>
+      <!--
       Example Input Values
+      -->
+      사용할 수 있는 값
     </th>
   </tr>
   <tr>
+    <!--
     <td>Single style binding</td>
+    -->
+    <td>단일 스타일 바인딩</td>
     <td><code>[style.width]="width"</code></td>
     <td><code>string | undefined | null</code></td>
     <td><code>"100px"</code></td>
   </tr>
   <tr>
   <tr>
+  	<!--
     <td>Single style binding with units</td>
+    -->
+    <td>단위와 함께 사용하는 단일 스타일 바인딩</td>
     <td><code>[style.width.px]="width"</code></td>
     <td><code>number | undefined | null</code></td>
     <td><code>100</code></td>
   </tr>
     <tr>
+    <!--
     <td rowspan=3>Multi-style binding</td>
+    -->
+    <td rowspan=3>여러 스탕리 바인딩</td>
     <td rowspan=3><code>[style]="styleExpr"</code></td>
     <td><code>string</code></td>
     <td><code>"width: 100px; height: 100px"</code></td>
@@ -1740,15 +1924,23 @@ If there are multiple bindings to the same style property, conflicts are resolve
   </tr>
 </table>
 
+<!--
 The [NgStyle](#ngstyle) directive can be used as an alternative to direct `[style]` bindings. 
 However, using the above style binding syntax without `NgStyle` is preferred because due to improvements in style binding in Angular, `NgStyle` no longer provides significant value, and might eventually be removed in the future.
-
+-->
+`[style]`을 직접 바인딩하는 방식 외에 [NgStyle](#ngstyle) 디렉티브를 사용하는 방식도 고려해 볼 만 합니다.
+하지만 Angular 차원에서 스타일 바인딩 방식의 개선을 고려하고 있기 때문에 `[style]`를 직접 바인딩하는 방식도 나쁜 것은 아닙니다.
+`NgStyle` 디렉티브를 아예 없애는 것도 고려하고 있습니다.
 
 <hr/>
 
 {@a styling-precedence}
+<!--
 ### Styling Precedence
+-->
+### 스타일 적용 우선순위
 
+<!--
 A single HTML element can have its CSS class list and style values bound to a multiple sources (for example, host bindings from multiple directives).
 
 When there are multiple bindings to the same class name or style property, Angular uses a set of precedence rules to resolve conflicts and determine which classes or styles are ultimately applied to the element.
@@ -1793,10 +1985,59 @@ In addition, bindings take precedence over static attributes.
 In the following case, `class` and `[class]` have similar specificity, but the `[class]` binding will take precedence because it is dynamic.
 
 <code-example path="attribute-binding/src/app/app.component.html" region="dynamic-priority" header="src/app/app.component.html"></code-example>
+-->
+HTML 엘리먼트는 CSS 클래스와 스타일 값을 여러개 가질 수 있습니다. 클래스나 스타일을 지정하는 디렉티브가 여러개 적용된 경우도 마찬가지입니다.
+
+그런데 같은 클래스 이름이나 스타일 프로퍼티가 동시에 바인딩되면 충돌이 발생할 수 있는데 Angular는 이 충돌을 발생하기 위해 우선순위를 마련해두었습니다.
+
+<div class="alert is-helpful">
+<h4>스타일 적용 우선순위 (높은 것부터 낮은 순으로)</h4>
+
+1. 템플릿 바인딩
+    1. 프로퍼티 바인딩 (ex. `<div [class.foo]="hasFoo">`, `<div [style.color]="color">`)
+    1. Map 바인딩 (ex. `<div [class]="classExpr">`, `<div [style]="styleExpr">`)
+    1. 정적 바인딩 (ex. `<div class="foo">`, `<div style="color: blue">`) 
+1. 디렉티브 호스트 바인딩
+    1. 프로퍼티 바인딩 (ex. `host: {'[class.foo]': 'hasFoo'}`, `host: {'[style.color]': 'color'}`)
+    1. Map 바인딩 (ex. `host: {'[class]': 'classExpr'}`, `host: {'[style]': 'styleExpr'}`)
+    1. 정적 바인딩 (ex. `host: {'class': 'foo'}`, `host: {'style': 'color: blue'}`)    
+1. 컴포넌트 호스트 바인딩
+    1. 프로퍼티 바인딩 (ex. `host: {'[class.foo]': 'hasFoo'}`, `host: {'[style.color]': 'color'}`)
+    1. Map 바인딩 (ex. `host: {'[class]': 'classExpr'}`, `host: {'[style]': 'styleExpr'}`)
+    1. 정적 바인딩 (ex. `host: {'class': 'foo'}`, `host: {'style': 'color: blue'}`)    
+
+</div>
+
+더 구체적으로 지정하는 클래스와 스타일 바인딩의 우선순위가 더 높습니다.
+
+그래서 `[class.foo]`처럼 바인딩하는 방식이 `[class]`를 바인딩하는 것보다 우선순위가 높고, `[style.bar]`처럼 바인딩하는 방식이 `[style]`을 바인딩하는 것보다 우선순위가 높습니다.
+
+<code-example path="attribute-binding/src/app/app.component.html" region="basic-specificity" header="src/app/app.component.html"></code-example>
+
+이 규칙은 클래스나 스타일을 지정하는 소스가 다른 경우에도 마찬가지입니다.
+그래서 템플릿에서 직접 지정한 것보다 디렉티브로 호스트 바인딩한 스타일이 적용될 수도 있습니다.
+
+하지만 일반적으로는 템플릿에서 직접 바인딩할 때 가장 구체적인 규칙을 사용하기 때문에 대부분의 경우 템플릿 바인딩의 우선순위가 가장 높습니다.
+
+그리고 디렉티브로 바인딩할 때는 이 디렉티브가 여러 곳에서 다른 방식으로 사용될 수 있기 때문에 템플릿 바인딩에 비하면 우선순위가 낮을 수 있습니다.
+
+디렉티브는 컴포넌트의 동작을 확장하는 용도로 하는 것이 주목적이기 때문에 이 방식의 우선순위가 가장 낮습니다.
+
+<code-example path="attribute-binding/src/app/app.component.html" region="source-specificity" header="src/app/app.component.html"></code-example>
+
+클래스나 스타일을 바인딩하면 정적 어트리뷰트로 지정한 것보다 우선순위가 높습니다.
+
+아래 예제에서 `class`와 `[class]`를 사용한 것은 비슷해보이지만 `[class]`는 정적인 규칙이 적용된 이후에 동적으로 적용되기 때문에 우선순위가 더 높습니다.
+
+<code-example path="attribute-binding/src/app/app.component.html" region="dynamic-priority" header="src/app/app.component.html"></code-example>
 
 {@a styling-delegation}
+<!--
 ### Delegating to styles with lower precedence
+-->
+### 낮은 우선순위로 위임될 때
 
+<!--
 It is possible for higher precedence styles to "delegate" to lower precedence styles using `undefined` values.
 Whereas setting a style property to `null` ensures the style is removed, setting it to `undefined` will cause Angular to fall back to the next-highest precedence binding to that style.
 
@@ -1807,6 +2048,17 @@ For example, consider the following template:
 Imagine that the `dirWithHostBinding` directive and the `comp-with-host-binding` component both have a `[style.width]` host binding.
 In that case, if `dirWithHostBinding` sets its binding to `undefined`, the `width` property will fall back to the value of the `comp-with-host-binding` host binding.
 However, if `dirWithHostBinding` sets its binding to `null`, the `width` property will be removed entirely.
+-->
+클래스나 스타일 적용 우선순위가 높다고 해도 `undefined` 값이 바인딩 된 경우라면 낮은 우선순위가 적용될 수 있습니다.
+스타일 프로퍼티를 `null`로 지정하면 해당 스타일이 확실하게 제거되며, `undefined`로 지정하면 다음 우선순위로 넘어갑니다.
+
+예를 들어 다음과 같은 템플릿 코드가 있다고 합시다:
+
+<code-example path="attribute-binding/src/app/app.component.html" region="style-delegation" header="src/app/app.component.html"></code-example>
+
+`dirWithHostBinding` 디렉티브와 `comp-with-host-binding` 컴포넌트가 모두 `[style.width]`를 호스트 바인딩한다고 합시다.
+그런데 `dirWithHostBinding`에서 `width` 프로퍼티에 `undefined` 값을 바인딩하면 `comp-with-host-binding`에 있는 스타일이 적용됩니다.
+하지만 `dirWithHostBinding`에서 `width` 프로퍼티에 `null` 값을 바인딩하면 `width` 프로퍼티는 제거됩니다.
 
 
 <!--

@@ -76,8 +76,8 @@
 
 <!-- #docregion malicious-content -->
   <!--
-  Angular generates a warning for the following line as it sanitizes them
-  WARNING: sanitizing HTML stripped some content (see http://g.co/ng/security#xss).
+  Angular가 아래와 같이 위험한 코드를 발견하면 경고를 표시합니다.
+  WARNING: 안전성 검사를 우회하는 방법은 http://g.co/ng/security#xss 를 참고하세요.
  -->
   <p>"<span [innerHTML]="evilTitle"></span>" is the <i>property bound</i> evil title.</p>
 <!-- #enddocregion malicious-content -->

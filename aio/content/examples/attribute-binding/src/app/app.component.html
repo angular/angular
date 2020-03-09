@@ -10,7 +10,7 @@
     <tr><td colspan="{{1 + 1}}">Three-Four</td></tr>
   -->
   <!-- #docregion colSpan -->
-  <!-- Notice the colSpan property is camel case -->
+  <!-- colSpan 프로퍼티는 캐멀 케이스입니다. -->
   <tr><td [colSpan]="1 + 1">Three-Four</td></tr>
   <!-- #enddocregion colSpan -->
 
@@ -20,7 +20,7 @@
 
 <div>
   <!-- #docregion attrib-binding-aria -->
-  <!-- create and set an aria attribute for assistive technology -->
+  <!-- 웹 접근성 향상을 위해 ARIA 어트리뷰트를 지정할 수 있습니다. -->
   <button [attr.aria-label]="actionName">{{actionName}} with Aria</button>
   <!-- #enddocregion attrib-binding-aria -->
 </div>
@@ -30,32 +30,32 @@
 <h2>Styling precedence</h2>
 
 <!-- #docregion basic-specificity -->
-<h3>Basic specificity</h3>
+<h3>기본 순서</h3>
 
-<!-- The `class.special` binding will override any value for the `special` class in `classExpr`.  -->
+<!-- `class.special`이 `class`보다 우선순위가 높습니다.  -->
 <div [class.special]="isSpecial" [class]="classExpr">Some text.</div>
 
-<!-- The `style.color` binding will override any value for the `color` property in `styleExpr`.  -->
+<!-- `style.color`가 `style`보다 우선순위가 높습니다.  -->
 <div [style.color]="color" [style]="styleExpr">Some text.</div>
 <!-- #enddocregion basic-specificity -->
 
 <!-- #docregion source-specificity -->
-<h3>Source specificity</h3>
+<h3>소스별 우선순위</h3>
 
-<!-- The `class.special` template binding will override any host binding to the `special` class set by `dirWithClassBinding` or `comp-with-host-binding`.-->
+<!-- `dirWithClassBinding`이나 `comp-with-host-binding`보다 `class.special` 템플릿 바인딩의 우선순위가 더 높습니다. -->
 <comp-with-host-binding [class.special]="isSpecial" dirWithClassBinding>Some text.</comp-with-host-binding>
 
-<!-- The `style.color` template binding will override any host binding to the `color` property set by `dirWithStyleBinding` or `comp-with-host-binding`. -->
+<!-- `dirWithStyleBinding`이나 `comp-with-host-binding`보다 `style.color` 템플릿 바인딩의 우선순위가 더 높습니다. -->
 <comp-with-host-binding [style.color]="color" dirWithStyleBinding>Some text.</comp-with-host-binding>
 <!-- #enddocregion source-specificity -->
 
 <!-- #docregion dynamic-priority -->
-<h3>Dynamic vs static</h3>
+<h3>동적 vs 정적</h3>
 
-<!-- If `classExpr` has a value for the `special` class, this value will override the `class="special"` below -->
+<!-- `classExpr`이 동적으로 처리되기 때문에 `class`보다 우선순위가 높습니다. -->
 <div class="special" [class]="classExpr">Some text.</div>
 
-<!-- If `styleExpr` has a value for the `color` property, this value will override the `style="color: blue"` below -->
+<!-- `styleExpr`이 동적으로 처리되기 때문에 `style`보다 우선순위가 높습니다. -->
 <div style="color: blue" [style]="styleExpr">Some text.</div>
 
 <!-- #enddocregion dynamic-priority -->
