@@ -45,6 +45,7 @@ module.exports = config => {
         watched: false
       },
       {pattern: 'node_modules/@material/*/dist/*', included: false, watched: false},
+      {pattern: 'node_modules/kagekiri/**', included: false, watched: false},
 
       // Include all Angular dependencies
       {pattern: 'node_modules/@angular/**/*', included: false, watched: false},

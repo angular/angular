@@ -8,7 +8,8 @@
     "max-line-length": [true, {
         "limit": 100,
         "check-strings": true,
-        "check-regex": true
+        "check-regex": true,
+        "ignore-pattern": "//\\s+https?://"
       }
     ],
     // Disable this flag because of SHA tslint#48b0c597f9257712c7d1f04b55ed0aa60e333f6a

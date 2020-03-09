@@ -102,6 +102,7 @@ ts_devserver(
     static_files = [
         "@npm//zone.js",
         "@npm//core-js",
+        "@npm//kagekiri",
         "@npm//material-components-web",
         "@npm//moment",
         "@npm//@webcomponents/custom-elements",

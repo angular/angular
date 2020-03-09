@@ -1,3 +1,4 @@
+import {_supportsShadowDom} from '@angular/cdk/platform';
 import {
   ComponentHarness,
   ComponentHarnessConstructor,
@@ -6,6 +7,7 @@ import {
 } from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {async, ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
+import {querySelectorAll as piercingQuerySelectorAll} from 'kagekiri';
 import {FakeOverlayHarness} from './harnesses/fake-overlay-harness';
 import {MainComponentHarness} from './harnesses/main-component-harness';
 import {SubComponentHarness, SubComponentSpecialHarness} from './harnesses/sub-component-harness';
@@ -504,6 +506,29 @@ describe('TestbedHarnessEnvironment', () => {
       }
     });
   });
+
+  if (_supportsShadowDom()) {
+    describe('shadow DOM interaction', () => {
+      it('should not pierce shadow boundary by default', async () => {
+        const harness = await TestbedHarnessEnvironment
+            .harnessForFixture(fixture, MainComponentHarness);
+        expect(await harness.shadows()).toEqual([]);
+      });
+
+      it('should pierce shadow boundary when using piercing query', async () => {
+        const harness = await TestbedHarnessEnvironment
+            .harnessForFixture(fixture, MainComponentHarness, {queryFn: piercingQuerySelectorAll});
+        const shadows = await harness.shadows();
+        expect(await Promise.all(shadows.map(el => el.text()))).toEqual(['Shadow 1', 'Shadow 2']);
+      });
+
+      it('should allow querying across shadow boundary', async () => {
+        const harness = await TestbedHarnessEnvironment
+            .harnessForFixture(fixture, MainComponentHarness, {queryFn: piercingQuerySelectorAll});
+        expect(await (await harness.deepShadow()).text()).toBe('Shadow 2');
+      });
+    });
+  }
 });
 
 async function checkIsElement(result: ComponentHarness | TestElement, selector?: string) {

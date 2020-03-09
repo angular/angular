@@ -7,6 +7,7 @@
  */
 
 import {ENTER} from '@angular/cdk/keycodes';
+import {_supportsShadowDom} from '@angular/cdk/platform';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -42,6 +43,7 @@ export class TestMainComponent implements OnDestroy {
   specialKey = '';
   relativeX = 0;
   relativeY = 0;
+  _shadowDomSupported = _supportsShadowDom();
 
   @ViewChild('clickTestElement') clickTestElement: ElementRef<HTMLElement>;
   @ViewChild('taskStateResult') taskStateResultElement: ElementRef<HTMLElement>;

@@ -7,18 +7,34 @@
  */
 
 import {HarnessEnvironment, HarnessLoader, TestElement} from '@angular/cdk/testing';
-import {by, element as protractorElement, ElementFinder} from 'protractor';
+import {by, element as protractorElement, ElementArrayFinder, ElementFinder} from 'protractor';
 import {ProtractorElement} from './protractor-element';
+
+/** Options to configure the environment. */
+export interface ProtractorHarnessEnvironmentOptions {
+  /** The query function used to find DOM elements. */
+  queryFn: (selector: string, root: ElementFinder) => ElementArrayFinder;
+}
+
+/** The default environment options. */
+const defaultEnvironmentOptions: ProtractorHarnessEnvironmentOptions = {
+  queryFn: (selector: string, root: ElementFinder) => root.all(by.css(selector))
+};
 
 /** A `HarnessEnvironment` implementation for Protractor. */
 export class ProtractorHarnessEnvironment extends HarnessEnvironment<ElementFinder> {
-  protected constructor(rawRootElement: ElementFinder) {
+  /** The options for this environment. */
+  private _options: ProtractorHarnessEnvironmentOptions;
+
+  protected constructor(
+      rawRootElement: ElementFinder, options?: ProtractorHarnessEnvironmentOptions) {
     super(rawRootElement);
+    this._options = {...defaultEnvironmentOptions, ...options};
   }
 
   /** Creates a `HarnessLoader` rooted at the document root. */
-  static loader(): HarnessLoader {
-    return new ProtractorHarnessEnvironment(protractorElement(by.css('body')));
+  static loader(options?: ProtractorHarnessEnvironmentOptions): HarnessLoader {
+    return new ProtractorHarnessEnvironment(protractorElement(by.css('body')), options);
   }
 
   async forceStabilize(): Promise<void> {}
@@ -37,15 +53,15 @@ export class ProtractorHarnessEnvironment extends HarnessEnvironment<ElementFind
   }
 
   protected createEnvironment(element: ElementFinder): HarnessEnvironment<ElementFinder> {
-    return new ProtractorHarnessEnvironment(element);
+    return new ProtractorHarnessEnvironment(element, this._options);
   }
 
   protected async getAllRawElements(selector: string): Promise<ElementFinder[]> {
-    const elementFinderArray = this.rawRootElement.all(by.css(selector));
-    const length = await elementFinderArray.count();
+    const elementArrayFinder = this._options.queryFn(selector, this.rawRootElement);
+    const length = await elementArrayFinder.count();
     const elements: ElementFinder[] = [];
     for (let i = 0; i < length; i++) {
-      elements.push(elementFinderArray.get(i));
+      elements.push(elementArrayFinder.get(i));
     }
     return elements;
   }

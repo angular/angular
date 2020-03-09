@@ -9,12 +9,14 @@ ng_module(
         ["**/*.ts"],
         exclude = [
             "**/*.spec.ts",
+            "**/*.spec.d.ts",
             "harnesses/**",
         ],
     ),
     assets = glob(["**/*.html"]),
     deps = [
         "//src/cdk/keycodes",
+        "//src/cdk/platform",
         "@npm//@angular/forms",
     ],
 )
@@ -30,22 +32,30 @@ ts_library(
 ng_test_library(
     name = "unit_test_sources",
     srcs = glob(
-        ["**/*.spec.ts"],
+        [
+            "**/*.spec.ts",
+            "**/*.spec.d.ts",
+        ],
         exclude = ["**/*.e2e.spec.ts"],
     ),
     deps = [
         ":test_components",
         ":test_harnesses",
+        "//src/cdk/platform",
         "//src/cdk/testing",
         "//src/cdk/testing/private",
         "//src/cdk/testing/testbed",
         "@npm//@angular/platform-browser",
+        "@npm//kagekiri",
     ],
 )
 
 ng_e2e_test_library(
     name = "e2e_test_sources",
-    srcs = glob(["**/*.e2e.spec.ts"]),
+    srcs = glob([
+        "**/*.e2e.spec.ts",
+        "**/*.spec.d.ts",
+    ]),
     deps = [
         ":test_harnesses",
         "//src/cdk/testing",

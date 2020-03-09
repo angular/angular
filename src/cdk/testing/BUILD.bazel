@@ -26,7 +26,15 @@ filegroup(
 
 ng_web_test_suite(
     name = "unit_tests",
-    deps = ["//src/cdk/testing/tests:unit_test_sources"],
+    # We need to load Kagekiri statically since it is not a named AMD module and needs to
+    # be manually configured through "require.js" which is used by "karma_web_test_suite".
+    static_files = [
+        "@npm//kagekiri",
+    ],
+    deps = [
+        ":require-config.js",
+        "//src/cdk/testing/tests:unit_test_sources",
+    ],
 )
 
 e2e_test_suite(

@@ -69,6 +69,7 @@ ROLLUP_GLOBALS = {
     "@material/top-app-bar": "mdc.topAppBar",
 
     # Third-party libraries.
+    "kagekiri": "kagekiri",
     "moment": "moment",
     "protractor": "protractor",
     "rxjs": "rxjs",
