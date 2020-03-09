@@ -53,8 +53,11 @@ const MIN_AUTO_TICK_SEPARATION = 30;
  */
 const TICK_MARKER_SIZE = 2;
 
-/** Options to pass to the slider interaction listeners. */
-const listenerOptions = normalizePassiveListenerOptions({passive: true});
+/** Event options used to bind passive listeners. */
+const passiveListenerOptions = normalizePassiveListenerOptions({passive: true});
+
+/** Event options used to bind active listeners. */
+const activeListenerOptions = normalizePassiveListenerOptions({passive: false});
 
 /**
  * Provider Expression that allows mat-slider to register as a ControlValueAccessor.
@@ -232,39 +235,36 @@ export class MatSlider implements AfterViewInit, OnChanges, OnDestroy, ControlVa
         // as they will prevent the default behavior. Additionally we can't run these event
         // handlers outside of the Angular zone because we rely on the events to cause the
         // component tree to be re-checked.
-    this._elementRef.nativeElement.addEventListener(evtType, handler),
+        // TODO: take in the event listener options from the adapter once MDC supports it.
+        this._elementRef.nativeElement.addEventListener(evtType, handler, activeListenerOptions),
     deregisterInteractionHandler: (evtType, handler) =>
         this._elementRef.nativeElement.removeEventListener(evtType, handler),
-    registerThumbContainerInteractionHandler:
-        (evtType, handler) => {
-          // The thumb container interaction handlers are currently just used for transition
-          // events which don't need to run in the Angular zone.
-          this._ngZone.runOutsideAngular(() => {
-            this._thumbContainer.nativeElement.addEventListener(evtType, handler, listenerOptions);
-          });
-        },
-    deregisterThumbContainerInteractionHandler:
-        (evtType, handler) => {
-          this._thumbContainer.nativeElement.removeEventListener(evtType, handler, listenerOptions);
-        },
+    registerThumbContainerInteractionHandler: (evtType, handler) => {
+      // The thumb container interaction handlers are currently just used for transition
+      // events which don't need to run in the Angular zone.
+      this._ngZone.runOutsideAngular(() => {
+        this._thumbContainer.nativeElement
+          .addEventListener(evtType, handler, passiveListenerOptions);
+      });
+    },
+    deregisterThumbContainerInteractionHandler: (evtType, handler) => {
+      this._thumbContainer.nativeElement
+        .removeEventListener(evtType, handler, passiveListenerOptions);
+    },
     registerBodyInteractionHandler: (evtType, handler) =>
         // Body event handlers (which handle thumb sliding) cannot be passive as they will
         // prevent the default behavior. Additionally we can't run these event handlers
         // outside of the Angular zone because we rely on the events to cause the component
         // tree to be re-checked.
-    document.body.addEventListener(evtType, handler),
+        document.body.addEventListener(evtType, handler),
     deregisterBodyInteractionHandler: (evtType, handler) =>
         document.body.removeEventListener(evtType, handler),
-    registerResizeHandler:
-        (handler) => {
-          // The resize handler is currently responsible for detecting slider dimension
-          // changes and therefore doesn't cause a value change that needs to be propagated.
-          this._ngZone.runOutsideAngular(() => {
-            window.addEventListener('resize', handler, listenerOptions);
-          });
-        },
-    deregisterResizeHandler: (handler) =>
-        window.removeEventListener('resize', handler, listenerOptions),
+    registerResizeHandler: (handler) => {
+      // The resize handler is currently responsible for detecting slider dimension
+      // changes and therefore doesn't cause a value change that needs to be propagated.
+      this._ngZone.runOutsideAngular(() => window.addEventListener('resize', handler));
+    },
+    deregisterResizeHandler: (handler) => window.removeEventListener('resize', handler),
     notifyInput:
         () => {
           const newValue = this._foundation.getValue();
