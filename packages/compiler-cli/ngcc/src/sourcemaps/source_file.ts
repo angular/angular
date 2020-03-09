@@ -90,7 +90,7 @@ export class SourceFile {
    */
   private flattenMappings(): Mapping[] {
     const mappings = parseMappings(this.rawMap, this.sources);
-    const originalSegments = extractOriginalSegments(mappings);
+    const originalSegmentsBySource = extractOriginalSegments(mappings);
     const flattenedMappings: Mapping[] = [];
     for (let mappingIndex = 0; mappingIndex < mappings.length; mappingIndex++) {
       const aToBmapping = mappings[mappingIndex];
@@ -120,6 +120,8 @@ export class SourceFile {
       // For mapping [0,0] the incoming start and end are 0 and 2 (i.e. the range a, b, c)
       // For mapping [4,2] the incoming start and end are 2 and 5 (i.e. the range c, d, e, f)
       //
+
+      const originalSegments = originalSegmentsBySource.get(bSource) !;
       const incomingStart = aToBmapping.originalSegment;
       const incomingEndIndex = originalSegments.indexOf(incomingStart) + 1;
       const incomingEnd = incomingEndIndex < originalSegments.length ?
@@ -337,8 +339,26 @@ export function parseMappings(
   return mappings;
 }
 
-export function extractOriginalSegments(mappings: Mapping[]): SegmentMarker[] {
-  return mappings.map(mapping => mapping.originalSegment).sort(compareSegments);
+/**
+ * Extract the segment markers from the original source files in each mapping of an array of
+ * `mappings`.
+ *
+ * @param mappings The mappings whose original segments we want to extract
+ * @returns Return a map from original source-files (referenced in the `mappings`) to arrays of
+ * segment-markers sorted by their order in their source file.
+ */
+export function extractOriginalSegments(mappings: Mapping[]): Map<SourceFile, SegmentMarker[]> {
+  const originalSegments = new Map<SourceFile, SegmentMarker[]>();
+  for (const mapping of mappings) {
+    const originalSource = mapping.originalSource;
+    if (!originalSegments.has(originalSource)) {
+      originalSegments.set(originalSource, []);
+    }
+    const segments = originalSegments.get(originalSource) !;
+    segments.push(mapping.originalSegment);
+  }
+  originalSegments.forEach(segmentMarkers => segmentMarkers.sort(compareSegments));
+  return originalSegments;
 }
 
 export function computeLineLengths(str: string): number[] {

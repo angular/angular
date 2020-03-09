@@ -58,12 +58,12 @@ runInEachFileSystem(() => {
     });
 
     describe('extractOriginalSegments()', () => {
-      it('should return an empty array for source files with no source map',
-         () => { expect(extractOriginalSegments(parseMappings(null, []))).toEqual([]); });
+      it('should return an empty Map for source files with no source map',
+         () => { expect(extractOriginalSegments(parseMappings(null, []))).toEqual(new Map()); });
 
-      it('should be empty array for source files with no source map mappings', () => {
+      it('should be empty Map for source files with no source map mappings', () => {
         const rawSourceMap: RawSourceMap = {mappings: '', names: [], sources: [], version: 3};
-        expect(extractOriginalSegments(parseMappings(rawSourceMap, []))).toEqual([]);
+        expect(extractOriginalSegments(parseMappings(rawSourceMap, []))).toEqual(new Map());
       });
 
       it('should parse the segments in ascending order of original position from the raw source map',
@@ -75,12 +75,37 @@ runInEachFileSystem(() => {
              sources: ['a.js'],
              version: 3
            };
-           expect(extractOriginalSegments(parseMappings(rawSourceMap, [originalSource]))).toEqual([
+           const originalSegments =
+               extractOriginalSegments(parseMappings(rawSourceMap, [originalSource]));
+           expect(originalSegments.get(originalSource)).toEqual([
              {line: 0, column: 0},
              {line: 0, column: 2},
              {line: 0, column: 3},
            ]);
          });
+
+      it('should create separate arrays for each original source file', () => {
+        const sourceA = new SourceFile(_('/foo/src/a.js'), 'abcdefg', null, false, []);
+        const sourceB = new SourceFile(_('/foo/src/b.js'), '1234567', null, false, []);
+        const rawSourceMap: RawSourceMap = {
+          mappings:
+              encode([[[0, 0, 0, 0], [2, 1, 0, 3], [4, 0, 0, 2], [5, 1, 0, 5], [6, 1, 0, 2]]]),
+          names: [],
+          sources: ['a.js', 'b.js'],
+          version: 3
+        };
+        const originalSegments =
+            extractOriginalSegments(parseMappings(rawSourceMap, [sourceA, sourceB]));
+        expect(originalSegments.get(sourceA)).toEqual([
+          {line: 0, column: 0},
+          {line: 0, column: 2},
+        ]);
+        expect(originalSegments.get(sourceB)).toEqual([
+          {line: 0, column: 2},
+          {line: 0, column: 3},
+          {line: 0, column: 5},
+        ]);
+      });
     });
 
     describe('findLastMappingIndexBefore', () => {
@@ -313,15 +338,18 @@ runInEachFileSystem(() => {
            });
 
         it('should merge mappings from flattened original source files', () => {
-          const cSource = new SourceFile(_('/foo/src/c.js'), 'bcd123e', null, false, []);
+          const cSource = new SourceFile(_('/foo/src/c.js'), 'bcd123', null, false, []);
+          const dSource = new SourceFile(_('/foo/src/d.js'), 'aef', null, false, []);
+
           const bSourceMap: RawSourceMap = {
-            mappings: encode([[[1, 0, 0, 0], [4, 0, 0, 3], [4, 0, 0, 6], [5, 0, 0, 7]]]),
+            mappings: encode([[[0, 1, 0, 0], [1, 0, 0, 0], [4, 1, 0, 1]]]),
             names: [],
-            sources: ['c.js'],
+            sources: ['c.js', 'd.js'],
             version: 3
           };
           const bSource =
-              new SourceFile(_('/foo/src/b.js'), 'abcdef', bSourceMap, false, [cSource]);
+              new SourceFile(_('/foo/src/b.js'), 'abcdef', bSourceMap, false, [cSource, dSource]);
+
           const aSourceMap: RawSourceMap = {
             mappings: encode([[[0, 0, 0, 0], [2, 0, 0, 3], [4, 0, 0, 2], [5, 0, 0, 5]]]),
             names: [],
@@ -332,6 +360,12 @@ runInEachFileSystem(() => {
               new SourceFile(_('/foo/src/a.js'), 'abdecf', aSourceMap, false, [bSource]);
 
           expect(aSource.flattenedMappings).toEqual([
+            {
+              generatedSegment: {line: 0, column: 0},
+              originalSource: dSource,
+              originalSegment: {line: 0, column: 0},
+              name: undefined
+            },
             {
               generatedSegment: {line: 0, column: 1},
               originalSource: cSource,
@@ -346,14 +380,8 @@ runInEachFileSystem(() => {
             },
             {
               generatedSegment: {line: 0, column: 3},
-              originalSource: cSource,
-              originalSegment: {line: 0, column: 3},
-              name: undefined
-            },
-            {
-              generatedSegment: {line: 0, column: 3},
-              originalSource: cSource,
-              originalSegment: {line: 0, column: 6},
+              originalSource: dSource,
+              originalSegment: {line: 0, column: 1},
               name: undefined
             },
             {
@@ -364,8 +392,8 @@ runInEachFileSystem(() => {
             },
             {
               generatedSegment: {line: 0, column: 5},
-              originalSource: cSource,
-              originalSegment: {line: 0, column: 7},
+              originalSource: dSource,
+              originalSegment: {line: 0, column: 2},
               name: undefined
             },
           ]);
