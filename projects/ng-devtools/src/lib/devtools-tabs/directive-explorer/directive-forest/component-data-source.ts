@@ -22,9 +22,7 @@ export interface FlatNode {
 
 const expandable = (node: IndexedNode) => !!node.children && node.children.length > 0;
 
-const trackBy = (_: number, item: FlatNode) => {
-  return item.id;
-};
+const trackBy = (_: number, item: FlatNode) => `${item.id}#${item.expandable}`;
 
 const getId = (node: IndexedNode) => {
   let prefix = '';
@@ -92,10 +90,11 @@ export class ComponentDataSource extends DataSource<FlatNode> {
 
     this.data.forEach(i => (i.newItem = false));
 
-    const { newItems } = diff(this._differ, this.data, flattenedCollection);
+    const { newItems, removedItems } = diff(this._differ, this.data, flattenedCollection);
     this._treeControl.dataNodes = this.data;
     this._flattenedData.next(this.data);
 
+    removedItems.forEach(item => this._nodeToFlat.delete(item.original));
     newItems.forEach(i => (i.newItem = true));
 
     return newItems;
