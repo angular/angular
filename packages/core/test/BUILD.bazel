@@ -87,15 +87,6 @@ jasmine_node_test(
 
 karma_web_test_suite(
     name = "test_web",
-    tags = [
-        # FIXME: fix on saucelabs
-        # IE 11.0.0 (Windows 8.1.0.0) ivy NgModule providers should throw when the aliased provider does not exist FAILED
-        #     Error: Expected function to throw an exception with message 'R3InjectorError(SomeModule)[car -> SportsCar]:
-        #     NullInjectorError: No provider for Car!', but it threw an exception with message 'R3InjectorError(SomeModule)[car -> Car]:
-        #     NullInjectorError: No provider for Car!'.
-        #         at <Jasmine>
-        "fixme-saucelabs-ivy",
-    ],
     deps = [
         ":test_lib",
     ],
