@@ -5,6 +5,8 @@ let overlayContent;
 
 declare const ng: any;
 
+export const DevToolsHighlightNodeId = '____ngDevToolsHighlight';
+
 function init(): void {
   if (overlay) {
     return;
@@ -18,6 +20,7 @@ function init(): void {
   overlay.style.alignItems = 'center';
   overlay.style.justifyContent = 'center';
   overlay.style.borderRadius = '3px';
+  overlay.setAttribute('id', DevToolsHighlightNodeId);
   overlayContent = document.createElement('div');
   overlayContent.style.backgroundColor = 'rgba(104, 182, 255, 0.9)';
   overlayContent.style.fontFamily = 'monospace';

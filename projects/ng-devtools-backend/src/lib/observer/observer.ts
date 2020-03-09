@@ -1,6 +1,7 @@
 import { ElementPosition, LifecycleProfile } from 'protocol';
 import { componentMetadata } from '../utils';
 import { IdentityTracker, IndexedNode } from './identity-tracker';
+import { DevToolsHighlightNodeId } from '../highlighter';
 
 export type CreationCallback = (
   componentOrDirective: any,
@@ -135,7 +136,10 @@ export class ComponentTreeObserver {
     });
   }
 
-  private _onMutation(): void {
+  private _onMutation(records: MutationRecord[]): void {
+    if (this._isDevToolsMutation(records)) {
+      return;
+    }
     this._observeUpdates();
   }
 
@@ -216,4 +220,31 @@ export class ComponentTreeObserver {
       });
     });
   }
+
+  private _isDevToolsMutation(records: MutationRecord[]): boolean {
+    for (const record of records) {
+      if (containsInternalElements(record.addedNodes)) {
+        return true;
+      }
+      if (containsInternalElements(record.removedNodes)) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
+
+const containsInternalElements = (nodes: NodeList): boolean => {
+  // tslint:disable prefer-for-of
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i];
+    if (!(node instanceof Element)) {
+      continue;
+    }
+    const attr = node.getAttribute('id');
+    if (attr === DevToolsHighlightNodeId) {
+      return true;
+    }
+  }
+  return false;
+};
