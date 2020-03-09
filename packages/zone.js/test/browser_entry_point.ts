@@ -28,4 +28,3 @@ import './browser/Worker.spec';
 import './mocha-patch.spec';
 import './jasmine-patch.spec';
 import './extra/cordova.spec';
-import './browser/messageport.spec';
