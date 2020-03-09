@@ -55,10 +55,6 @@
   width: $mat-form-field-default-infix-width;
   // Needed so that the floating label does not overlap with prefixes or suffixes.
   position: relative;
-
-  // We add a minimum height in order to ensure that custom controls have the same
-  // default vertical space as text-field inputs (with respect to the vertical padding).
-  min-height: $mdc-text-field-height;
   box-sizing: border-box;
 }
 
