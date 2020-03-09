@@ -2,7 +2,7 @@
 @import '@material/typography/mixins.import';
 @import '../mdc-helpers/mdc-helpers';
 
-@mixin mat-card-theme-mdc($theme) {
+@mixin mat-mdc-card-theme($theme) {
   $foreground: map-get($theme, foreground);
   $is-dark-theme: map-get($theme, is-dark);
 
@@ -17,7 +17,7 @@
   }
 }
 
-@mixin mat-card-typography-mdc($config) {
+@mixin mat-mdc-card-typography($config) {
   @include mat-using-mdc-typography($config) {
     @include mdc-card-without-ripple($query: $mat-typography-styles-query);
 

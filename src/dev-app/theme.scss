@@ -13,7 +13,7 @@
 // have to load a single css file for Angular Material in your app.
 // **Be sure that you only ever include this mixin once!**
 @include mat-core();
-@include angular-material-typography-mdc();
+@include angular-material-mdc-typography();
 @include mat-edit-typography(mat-typography-config());
 
 // Include base styles for strong focus indicators.
@@ -29,9 +29,9 @@ $candy-app-theme: mat-light-theme($candy-app-primary, $candy-app-accent);
 
 // Include the default theme styles.
 @include angular-material-theme($candy-app-theme);
-@include angular-material-theme-mdc($candy-app-theme);
+@include angular-material-mdc-theme($candy-app-theme);
 @include mat-column-resize-theme($candy-app-theme);
-@include mat-slider-theme-mdc($candy-app-theme);
+@include mat-mdc-slider-theme($candy-app-theme);
 @include mat-popover-edit-theme($candy-app-theme);
 
 // Define an alternate dark theme.
@@ -52,9 +52,9 @@ $dark-theme: mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
 // default theme.
 .demo-unicorn-dark-theme {
   @include angular-material-theme($dark-theme);
-  @include angular-material-theme-mdc($dark-theme);
+  @include angular-material-mdc-theme($dark-theme);
   @include mat-column-resize-theme($dark-theme);
-  @include mat-slider-theme-mdc($dark-theme);
+  @include mat-mdc-slider-theme($dark-theme);
   @include mat-popover-edit-theme($dark-theme);
 }
 

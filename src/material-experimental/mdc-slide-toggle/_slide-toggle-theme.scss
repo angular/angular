@@ -5,7 +5,7 @@
 @import '@material/theme/functions.import';
 @import '../mdc-helpers/mdc-helpers';
 
-@mixin mat-slide-toggle-theme-mdc($theme) {
+@mixin mat-mdc-slide-toggle-theme($theme) {
   $primary: mat-color(map-get($theme, primary));
   $accent: mat-color(map-get($theme, accent));
   $warn: mat-color(map-get($theme, warn));
@@ -65,7 +65,7 @@
   $mdc-switch-baseline-theme-color: $orig-mdc-switch-baseline-theme-color !global;
 }
 
-@mixin mat-slide-toggle-typography-mdc($config) {
+@mixin mat-mdc-slide-toggle-typography($config) {
   @include mat-using-mdc-typography($config) {
     @include mdc-switch-without-ripple($query: $mat-typography-styles-query);
     @include mdc-form-field-core-styles($query: $mat-typography-styles-query);

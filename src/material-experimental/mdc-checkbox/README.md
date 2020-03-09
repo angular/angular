@@ -60,8 +60,8 @@ component by following these steps:
    $my-accent:  mat-palette($mat-pink, A200, A100, A400);
    $my-theme:   mat-light-theme($my-primary, $my-accent);
 
-   @include mat-checkbox-theme-mdc($my-theme);
-  @include mat-checkbox-typography-mdc();
+   @include mat-mdc-checkbox-theme($my-theme);
+  @include mat-mdc-checkbox-typography();
    ```
 
 ## API differences

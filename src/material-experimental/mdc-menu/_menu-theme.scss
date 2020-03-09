@@ -5,7 +5,7 @@
 @import '@material/theme/functions.import';
 @import '../mdc-helpers/mdc-helpers';
 
-@mixin mat-menu-theme-mdc($theme) {
+@mixin mat-mdc-menu-theme($theme) {
   @include mat-using-mdc-theme($theme) {
     @include mdc-menu-surface-core-styles($mat-theme-styles-query);
     @include mdc-list-without-ripple($mat-theme-styles-query);
@@ -38,7 +38,7 @@
   }
 }
 
-@mixin mat-menu-typography-mdc($config) {
+@mixin mat-mdc-menu-typography($config) {
   @include mat-using-mdc-typography($config) {
     @include mdc-menu-surface-core-styles($mat-typography-styles-query);
 

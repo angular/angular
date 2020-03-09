@@ -61,8 +61,8 @@ component by following these steps:
    $my-accent:  mat-palette($mat-pink, A200, A100, A400);
    $my-theme:   mat-light-theme($my-primary, $my-accent);
 
-   @include mat-progress-bar-theme-mdc($my-theme);
-   @include mat-progress-bar-typography-mdc();
+   @include mat-mdc-progress-bar-theme($my-theme);
+   @include mat-mdc-progress-bar-typography();
    ```
 
 ## Replacing the standard progress bar in an existing app

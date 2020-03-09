@@ -2,7 +2,7 @@
 @import '@material/radio/mixins';
 @import '@material/radio/variables';
 
-@mixin mat-radio-theme-mdc($theme) {
+@mixin mat-mdc-radio-theme($theme) {
   // Save original values of MDC global variables. We need to save these so we can restore the
   // variables to their original values and prevent unintended side effects from using this mixin.
   $orig-mdc-radio-baseline-theme-color: $mdc-radio-baseline-theme-color;
@@ -31,7 +31,7 @@
   $mdc-radio-baseline-theme-color: $orig-mdc-radio-baseline-theme-color !global;
 }
 
-@mixin mat-radio-typography-mdc($config) {
+@mixin mat-mdc-radio-typography($config) {
   @include mat-using-mdc-typography($config) {
     @include mdc-radio-without-ripple($query: $mat-typography-styles-query);
   }

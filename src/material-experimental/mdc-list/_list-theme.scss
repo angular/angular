@@ -1,13 +1,13 @@
 @import '@material/list/mixins.import';
 @import '../mdc-helpers/mdc-helpers';
 
-@mixin mat-list-theme-mdc($theme) {
+@mixin mat-mdc-list-theme($theme) {
   @include mat-using-mdc-theme($theme) {
     @include mdc-list-without-ripple($query: $mat-theme-styles-query);
   }
 }
 
-@mixin mat-list-typography-mdc($config) {
+@mixin mat-mdc-list-typography($config) {
   @include mat-using-mdc-typography($config) {
     @include mdc-list-without-ripple($query: $mat-typography-styles-query);
   }

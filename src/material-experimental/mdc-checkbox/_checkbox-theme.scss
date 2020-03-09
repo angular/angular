@@ -5,7 +5,7 @@
 @import '@material/theme/functions.import';
 @import '../mdc-helpers/mdc-helpers';
 
-@mixin mat-checkbox-theme-mdc($theme) {
+@mixin mat-mdc-checkbox-theme($theme) {
   $primary: mat-color(map-get($theme, primary));
   $accent: mat-color(map-get($theme, accent));
   $warn: mat-color(map-get($theme, warn));
@@ -70,7 +70,7 @@
   $mdc-checkbox-disabled-color: $orig-mdc-checkbox-disabled-color !global;
 }
 
-@mixin mat-checkbox-typography-mdc($config) {
+@mixin mat-mdc-checkbox-typography($config) {
   @include mat-using-mdc-typography($config) {
     @include mdc-checkbox-without-ripple($query: $mat-typography-styles-query);
     @include mdc-form-field-core-styles($query: $mat-typography-styles-query);

@@ -4,7 +4,7 @@
 @import '@material/tab/variables.import';
 @import '../mdc-helpers/mdc-helpers';
 
-@mixin mat-tabs-theme-mdc($theme) {
+@mixin mat-mdc-tabs-theme($theme) {
   // Save original values of MDC global variables. We need to save these so we can restore the
   // variables to their original values and prevent unintended side effects from using this mixin.
   $orig-mdc-tab-text-label-color-active: $mdc-tab-text-label-color-active;
@@ -91,7 +91,7 @@
   }
 }
 
-@mixin mat-tabs-typography-mdc($config) {
+@mixin mat-mdc-tabs-typography($config) {
   @include mat-using-mdc-typography($config) {
     @include mdc-tab-without-ripple($query: $mat-typography-styles-query);
     @include mdc-tab-indicator-core-styles($query: $mat-typography-styles-query);

@@ -12,7 +12,7 @@
   @include mdc-linear-progress-buffer-color($buffer-color, $query: $mat-theme-styles-query);
 }
 
-@mixin mat-progress-bar-theme-mdc($theme) {
+@mixin mat-mdc-progress-bar-theme($theme) {
   @include mat-using-mdc-theme($theme) {
     .mat-mdc-progress-bar {
       @include _mat-mdc-progress-bar-color(primary);
@@ -28,6 +28,6 @@
   }
 }
 
-@mixin mat-progress-bar-typography-mdc($config) {
+@mixin mat-mdc-progress-bar-typography($config) {
   // No typography for this component.
 }

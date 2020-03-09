@@ -8,7 +8,7 @@
 // have to load a single css file for Angular Material in your app.
 // **Be sure that you only ever include this mixin once!**
 @include mat-core();
-@include angular-material-typography-mdc();
+@include angular-material-mdc-typography();
 
 // Define the default theme (same as the example above).
 $candy-app-primary: mat-palette($mat-indigo);
@@ -17,4 +17,4 @@ $candy-app-theme: mat-light-theme($candy-app-primary, $candy-app-accent);
 
 // Include the default theme styles.
 @include angular-material-theme($candy-app-theme);
-@include angular-material-theme-mdc($candy-app-theme);
+@include angular-material-mdc-theme($candy-app-theme);

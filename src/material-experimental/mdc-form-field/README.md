@@ -45,7 +45,7 @@ component by following these steps:
    form-field.
    
 5. Ensure color and typography styles for `@angular/material-experimental` are set up. Either
-   use a custom theme and use the `mat-form-field-theme-mdc` mixin, or use a prebuilt theme
+   use a custom theme and use the `mat-mdc-form-field-theme` mixin, or use a prebuilt theme
    from `@angular/material-experimental/mdc-theming/prebuilt`.
 
 ## API differences

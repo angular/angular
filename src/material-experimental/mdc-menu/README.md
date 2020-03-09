@@ -64,8 +64,8 @@ component by following these steps:
    $my-accent:  mat-palette($mat-pink, A200, A100, A400);
    $my-theme:   mat-light-theme($my-primary, $my-accent);
 
-   @include mat-menu-theme-mdc($my-theme);
-   @include mat-menu-typography-mdc();
+   @include mat-mdc-menu-theme($my-theme);
+   @include mat-mdc-menu-typography();
    ```
 
 ## API differences

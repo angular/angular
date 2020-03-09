@@ -60,8 +60,8 @@ component by following these steps:
    $my-accent:  mat-palette($mat-pink, A200, A100, A400);
    $my-theme:   mat-light-theme($my-primary, $my-accent);
 
-   @include mat-slide-toggle-theme-mdc($my-theme);
-   @include mat-slide-toggle-typography-mdc();
+   @include mat-mdc-slide-toggle-theme($my-theme);
+   @include mat-mdc-slide-toggle-typography();
    ```
 
 ## Replacing the standard slide toggle in an existing app

@@ -54,7 +54,7 @@ component by following these steps:
    
 5. Ensure color and typography styles for `@angular/material-experimental` are set up. The input
    itself does not provide any styles. If an input is used inside of the MDC-based
-   `mat-form-field`, either use a custom theme with the `mat-form-field-theme-mdc` mixin, or use
+   `mat-mdc-form-field`, either use a custom theme with the `mat-form-field-theme` mixin, or use
    a prebuilt theme from `@angular/material-experimental/mdc-theming/prebuilt`.
 
 ## API differences

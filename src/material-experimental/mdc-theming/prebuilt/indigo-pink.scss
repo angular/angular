@@ -8,5 +8,5 @@ $accent:  mat-palette($mat-pink, A200, A100, A400);
 $theme: mat-light-theme($primary, $accent);
 
 // Include all theme styles for the components.
-@include angular-material-theme-mdc($theme);
-@include angular-material-typography-mdc();
+@include angular-material-mdc-theme($theme);
+@include angular-material-mdc-typography();

@@ -13,25 +13,25 @@
 @import '../mdc-input/input-theme';
 @import '../mdc-form-field/form-field-theme';
 
-@mixin angular-material-typography-mdc($config: null) {
+@mixin angular-material-mdc-typography($config: null) {
   @if $config == null {
     $config: mat-typography-config();
   }
 
-  @include mat-button-typography-mdc($config);
-  @include mat-fab-typography-mdc($config);
-  @include mat-icon-button-typography-mdc($config);
-  @include mat-card-typography-mdc($config);
-  @include mat-checkbox-typography-mdc($config);
-  @include mat-chips-typography-mdc($config);
-  @include mat-list-typography-mdc($config);
-  @include mat-menu-typography-mdc($config);
-  @include mat-radio-typography-mdc($config);
-  @include mat-slide-toggle-typography-mdc($config);
-  @include mat-slider-typography-mdc($config);
-  @include mat-tabs-typography-mdc($config);
-  @include mat-table-typography-mdc($config);
-  @include mat-progress-bar-typography-mdc($config);
-  @include mat-input-typography-mdc($config);
-  @include mat-form-field-typography-mdc($config);
+  @include mat-mdc-button-typography($config);
+  @include mat-mdc-fab-typography($config);
+  @include mat-mdc-icon-button-typography($config);
+  @include mat-mdc-card-typography($config);
+  @include mat-mdc-checkbox-typography($config);
+  @include mat-mdc-chips-typography($config);
+  @include mat-mdc-list-typography($config);
+  @include mat-mdc-menu-typography($config);
+  @include mat-mdc-radio-typography($config);
+  @include mat-mdc-slide-toggle-typography($config);
+  @include mat-mdc-slider-typography($config);
+  @include mat-mdc-tabs-typography($config);
+  @include mat-mdc-table-typography($config);
+  @include mat-mdc-progress-bar-typography($config);
+  @include mat-mdc-input-typography($config);
+  @include mat-mdc-form-field-typography($config);
 }

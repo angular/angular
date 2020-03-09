@@ -2,7 +2,7 @@
 @import '../mdc-helpers/mdc-helpers';
 @import '@material/theme/functions.import';
 
-@mixin mat-chips-theme-mdc($theme) {
+@mixin mat-mdc-chips-theme($theme) {
   @include mdc-chip-set-core-styles($query: $mat-theme-styles-query);
   @include mdc-chip-without-ripple($query: $mat-theme-styles-query);
 
@@ -36,7 +36,7 @@
   }
 }
 
-@mixin mat-chips-typography-mdc($config) {
+@mixin mat-mdc-chips-typography($config) {
   @include mdc-chip-set-core-styles($query: $mat-typography-styles-query);
   @include mat-using-mdc-typography($config) {
     @include mdc-chip-without-ripple($query: $mat-typography-styles-query);

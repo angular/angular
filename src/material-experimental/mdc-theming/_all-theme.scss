@@ -13,22 +13,22 @@
 @import '../mdc-form-field/form-field-theme';
 
 
-@mixin angular-material-theme-mdc($theme) {
-  @include mat-button-theme-mdc($theme);
-  @include mat-fab-theme-mdc($theme);
-  @include mat-icon-button-theme-mdc($theme);
-  @include mat-card-theme-mdc($theme);
-  @include mat-checkbox-theme-mdc($theme);
-  @include mat-chips-theme-mdc($theme);
-  @include mat-list-theme-mdc($theme);
-  @include mat-menu-theme-mdc($theme);
-  @include mat-progress-bar-theme-mdc($theme);
-  @include mat-radio-theme-mdc($theme);
-  @include mat-slide-toggle-theme-mdc($theme);
-  @include mat-table-theme-mdc($theme);
-  @include mat-form-field-theme-mdc($theme);
-  @include mat-input-theme-mdc($theme);
+@mixin angular-material-mdc-theme($theme) {
+  @include mat-mdc-button-theme($theme);
+  @include mat-mdc-fab-theme($theme);
+  @include mat-mdc-icon-button-theme($theme);
+  @include mat-mdc-card-theme($theme);
+  @include mat-mdc-checkbox-theme($theme);
+  @include mat-mdc-chips-theme($theme);
+  @include mat-mdc-list-theme($theme);
+  @include mat-mdc-menu-theme($theme);
+  @include mat-mdc-progress-bar-theme($theme);
+  @include mat-mdc-radio-theme($theme);
+  @include mat-mdc-slide-toggle-theme($theme);
+  @include mat-mdc-table-theme($theme);
+  @include mat-mdc-form-field-theme($theme);
+  @include mat-mdc-input-theme($theme);
   // TODO(andrewjs): Add this back when MDC syncs their slider code into Google-internal code
-  // @include mat-slider-theme-mdc($theme);
-  @include mat-tabs-theme-mdc($theme);
+  // @include mat-mdc-slider-theme($theme);
+  @include mat-mdc-tabs-theme($theme);
 }

@@ -31,7 +31,7 @@
   $mdc-text-field-focused-label-color: $_mdc-text-field-focused-label-color !global;
 }
 
-@mixin mat-form-field-theme-mdc($theme) {
+@mixin mat-mdc-form-field-theme($theme) {
   @include mat-using-mdc-theme($theme) {
     @include _mdc-text-field-refresh-theme-variables() {
       @include mdc-text-field-without-ripple($query: $mat-theme-styles-query);
@@ -52,7 +52,7 @@
   }
 }
 
-@mixin mat-form-field-typography-mdc($config) {
+@mixin mat-mdc-form-field-typography($config) {
   @include mat-using-mdc-typography($config) {
     @include mdc-text-field-without-ripple($query: $mat-typography-styles-query);
     @include mdc-floating-label-core-styles($query: $mat-typography-styles-query);
