@@ -7,9 +7,7 @@
  */
 
 /// <reference types="node" />
-
 import * as os from 'os';
-
 import {AbsoluteFsPath, FileSystem, absoluteFrom, getFileSystem, join} from '../../../src/ngtsc/file_system';
 import {Folder, MockFileSystem, TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles, loadTestFiles} from '../../../test/helpers';
@@ -17,11 +15,11 @@ import {getLockFilePath} from '../../src/locking/lock_file';
 import {mainNgcc} from '../../src/main';
 import {hasBeenProcessed, markAsProcessed} from '../../src/packages/build_marker';
 import {EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTIES} from '../../src/packages/entry_point';
+import {EntryPointManifestFile} from '../../src/packages/entry_point_manifest';
 import {Transformer} from '../../src/packages/transformer';
 import {DirectPackageJsonUpdater, PackageJsonUpdater} from '../../src/writing/package_json_updater';
 import {MockLogger} from '../helpers/mock_logger';
 import {compileIntoApf, compileIntoFlatEs5Package} from './util';
-
 
 const testFiles = loadStandardTestFiles({fakeCore: false, rxjs: true});
 
@@ -995,9 +993,10 @@ runInEachFileSystem(() => {
         expect(hasBeenProcessed(commonTesting, 'esm5')).toBe(true);
         expect(hasBeenProcessed(commonTesting, 'esm2015')).toBe(false);
         // Modify the manifest to test that is has no effect
-        const manifest = JSON.parse(fs.readFile(_('/node_modules/__ngcc_entry_points__.json')));
+        let manifest: EntryPointManifestFile =
+            JSON.parse(fs.readFile(_('/node_modules/__ngcc_entry_points__.json')));
         manifest.entryPointPaths = manifest.entryPointPaths.filter(
-            (paths: [string, string]) => paths[1] !== _('/node_modules/@angular/common/testing'));
+            paths => paths[1] !== _('/node_modules/@angular/common/testing'));
         fs.writeFile(_('/node_modules/__ngcc_entry_points__.json'), JSON.stringify(manifest));
         // Now run ngcc again ignoring this manifest but trying to process ES2015, which are not yet
         // processed.
@@ -1012,6 +1011,12 @@ runInEachFileSystem(() => {
             JSON.parse(fs.readFile(_('/node_modules/@angular/common/testing/package.json')));
         expect(hasBeenProcessed(commonTesting, 'esm5')).toBe(true);
         expect(hasBeenProcessed(commonTesting, 'esm2015')).toBe(true);
+        // Check that the newly computed manifest has written to disk, containing the path that we
+        // had removed earlier.
+        manifest = JSON.parse(fs.readFile(_('/node_modules/__ngcc_entry_points__.json')));
+        expect(manifest.entryPointPaths).toContain([
+          _('/node_modules/@angular/common'), _('/node_modules/@angular/common/testing')
+        ]);
       });
     });
 

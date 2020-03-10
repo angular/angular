@@ -79,7 +79,7 @@ if (require.main === module) {
           .option('invalidate-entry-point-manifest', {
             describe:
                 'If this is set then ngcc will not read an entry-point manifest file from disk.\n' +
-                'Instead it will walking the directory tree as normal looking for entry-points, and then write a new manifest file.',
+                'Instead it will walk the directory tree as normal looking for entry-points, and then write a new manifest file.',
             type: 'boolean',
             default: false,
           })
