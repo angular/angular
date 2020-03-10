@@ -1,3 +1,31 @@
+## 9.1.2 "milk-blade" (2020-03-10)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **testing:** don't send unnecessary `Key.chord`s to protractor ([#18685](https://github.com/angular/components/issues/18685)) ([f87195b](https://github.com/angular/components/commit/f87195b)), closes [mozilla/geckodriver#1502](https://github.com/mozilla/geckodriver/issues/1502) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **column-resize:** don't allow dragging using the right mouse button ([#18758](https://github.com/angular/components/issues/18758)) ([b29308a](https://github.com/angular/components/commit/b29308a)) |
+| bug fix |  **datepicker:** prevent default dialog options from affecting touch ui calendar ([#18657](https://github.com/angular/components/issues/18657)) ([913ca45](https://github.com/angular/components/commit/913ca45)), closes [#18648](https://github.com/angular/components/issues/18648) |
+| bug fix |  **radio:** Move .mat-radio-input above .mat-focus-indicator. ([#18709](https://github.com/angular/components/issues/18709)) ([bdd9ec9](https://github.com/angular/components/commit/bdd9ec9)) |
+| bug fix |  **typography:** default to normal letter spacing ([e441a8c](https://github.com/angular/components/commit/e441a8c)) |
+| bug fix |  **tabs:** fix event emitter type ([#18664](https://github.com/angular/components/issues/18664)) ([b486891](https://github.com/angular/components/commit/b486891)) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-*:** rename sass mixins to mat-mdc-* ([#18615](https://github.com/angular/components/issues/18615)) ([694386a](https://github.com/angular/components/commit/694386a)) |
+| bug fix |  **mdc-form-field:** avoid expression changed after check ([#18741](https://github.com/angular/components/issues/18741)) ([65a602f](https://github.com/angular/components/commit/65a602f)) |
+| bug fix |  **mdc-progress-bar:** account for breaking changes in latest canary ([5d49f37](https://github.com/angular/components/commit/5d49f37)) |
+| bug fix |  **mdc-slider:** resolve warnings about active event listeners ([#18583](https://github.com/angular/components/issues/18583)) ([6faa30c](https://github.com/angular/components/commit/6faa30c)) |
+
+
 ## 9.1.1 "tartan-tonsure" (2020-03-04)
 
 ### material
