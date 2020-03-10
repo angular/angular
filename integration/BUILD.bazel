@@ -1,5 +1,9 @@
 load(":angular_integration_test.bzl", "angular_integration_test")
 
+exports_files([
+    "_payload-limits.json",
+])
+
 # Some integration ports must be managed manually to be unique and in other
 # cases the tests are able to select a random free port.
 #
@@ -24,76 +28,82 @@ load(":angular_integration_test.bzl", "angular_integration_test")
 # A subset of these tests fail or are not meant to be run with ivy bundles. These are tagged
 # "no-ivy-aot".
 INTEGRATION_TESTS = {
-    "bazel": [
-        # Bazel-in-bazel tests are resource intensive and should not be over-parallized
-        # as they will compete for the resources of other parallel tests slowing
-        # everything down. Ask Bazel to allocate multiple CPUs for these tests with "cpu:n" tag.
-        "cpu:3",
-        "no-ivy-aot",
-    ],
-    "bazel-schematics": [
-        # Bazel-in-bazel tests are resource intensive and should not be over-parallized
-        # as they will complete for the resources of other parallel tests slowing
-        # everything down. Ask Bazel to allocate multiple CPUs for these tests with "cpu:n" tag.
-        "cpu:3",
-        "no-ivy-aot",
-    ],
-    "cli-hello-world": [],
-    "cli-hello-world-ivy-compat": [],
-    "cli-hello-world-ivy-i18n": ["no-ivy-aot"],
-    "cli-hello-world-ivy-minimal": [],
-    "cli-hello-world-lazy": [],
-    "cli-hello-world-lazy-rollup": [],
-    "dynamic-compiler": ["no-ivy-aot"],
-    "hello_world__closure": ["no-ivy-aot"],
-    "i18n": ["no-ivy-aot"],
-    "injectable-def": ["no-ivy-aot"],
-    "ivy-i18n": ["no-ivy-aot"],
-    "language_service_plugin": [],
-    "ng_elements": ["no-ivy-aot"],
-    "ng_elements_schematics": ["no-ivy-aot"],
-    "ng_update": [],
-    "ng_update_migrations": ["no-ivy-aot"],
-    "ngcc": ["no-ivy-aot"],
-    "platform-server": ["no-ivy-aot"],
-    "service-worker-schema": [],
-    "side-effects": ["no-ivy-aot"],
-    "terser": [],
+    "bazel": {
+        "tags": [
+            # Bazel-in-bazel tests are resource intensive and should not be over-parallized
+            # as they will compete for the resources of other parallel tests slowing
+            # everything down. Ask Bazel to allocate multiple CPUs for these tests with "cpu:n" tag.
+            "cpu:3",
+            "no-ivy-aot",
+        ],
+    },
+    "bazel-schematics": {
+        "tags": [
+            # Bazel-in-bazel tests are resource intensive and should not be over-parallized
+            # as they will complete for the resources of other parallel tests slowing
+            # everything down. Ask Bazel to allocate multiple CPUs for these tests with "cpu:n" tag.
+            "cpu:3",
+            "no-ivy-aot",
+        ],
+    },
+    "cli-hello-world": {"commands": "payload_size_tracking"},
+    "cli-hello-world-ivy-compat": {"commands": "payload_size_tracking"},
+    "cli-hello-world-ivy-i18n": {
+        "commands": "payload_size_tracking",
+        "tags": ["no-ivy-aot"],
+    },
+    "cli-hello-world-ivy-minimal": {"commands": "payload_size_tracking"},
+    "cli-hello-world-lazy": {
+        "commands": "payload_size_tracking",
+        # TODO: cli-hello-world-lazy fails on a bundle size check with Ivy bundles
+        "tags": ["no-ivy-aot"],
+    },
+    "cli-hello-world-lazy-rollup": {"commands": "payload_size_tracking"},
+    "dynamic-compiler": {"tags": ["no-ivy-aot"]},
+    "hello_world__closure": {
+        "commands": "payload_size_tracking",
+        "tags": ["no-ivy-aot"],
+    },
+    "hello_world__systemjs_umd": {
+        # Special case for `hello_world__systemjs_umd` test as we want to pin
+        # `systems` at version 0.20.2 and not link to the the root @npm//systemjs
+        # which is stuck at 0.18.10 and can't be updated to 0.20.2 without
+        # breaking the legacy saucelabs job.
+        "pinned_npm_packages": ["systemjs"],
+    },
+    "i18n": {"tags": ["no-ivy-aot"]},
+    "injectable-def": {"tags": ["no-ivy-aot"]},
+    "ivy-i18n": {"tags": ["no-ivy-aot"]},
+    "language_service_plugin": {},
+    "ng_elements": {"tags": ["no-ivy-aot"]},
+    "ng_elements_schematics": {"tags": ["no-ivy-aot"]},
+    "ng_update": {},
+    "ng_update_migrations": {"tags": ["no-ivy-aot"]},
+    "ngcc": {"tags": ["no-ivy-aot"]},
+    "platform-server": {"tags": ["no-ivy-aot"]},
+    "service-worker-schema": {},
+    "side-effects": {"tags": ["no-ivy-aot"]},
+    "terser": {},
+    "typings_test_ts36": {
+        # Special case for `typings_test_ts36` test as we want to pin
+        # `typescript` at version 3.6.x for that test and not link to the
+        # root @npm//typescript package.
+        "pinned_npm_packages": ["typescript"],
+    },
+    "typings_test_ts37": {
+        # Special case for `typings_test_ts37` test as we want to pin
+        # `typescript` at version 3.7.x for that test and not link to the
+        # root @npm//typescript package.
+        "pinned_npm_packages": ["typescript"],
+    },
 }
 
 [
     angular_integration_test(
-        name = test_folder + "_test",
-        tags = INTEGRATION_TESTS[test_folder],
-        test_folder = test_folder,
+        name = test_folder,
+        commands = INTEGRATION_TESTS[test_folder].get("commands", "default"),
+        pinned_npm_packages = INTEGRATION_TESTS[test_folder].get("pinned_npm_packages", []),
+        tags = INTEGRATION_TESTS[test_folder].get("tags", []),
     )
     for test_folder in INTEGRATION_TESTS
 ]
-
-# Special case for `typings_test_ts36` test as we want to pin
-# `typescript` at version 3.6.x for that test and not link to the
-# root @npm//typescript package.
-angular_integration_test(
-    name = "typings_test_ts36_test",
-    pinned_npm_packages = ["typescript"],
-    test_folder = "typings_test_ts36",
-)
-
-# Special case for `typings_test_ts37` test as we want to pin
-# `typescript` at version 3.7.x for that test and not link to the
-# root @npm//typescript package.
-angular_integration_test(
-    name = "typings_test_ts37_test",
-    pinned_npm_packages = ["typescript"],
-    test_folder = "typings_test_ts37",
-)
-
-# Special case for `hello_world__systemjs_umd` test as we want to pin
-# `systems` at version 0.20.2 and not link to the the root @npm//systemjs
-# which is stuck at 0.18.10 and can't be updated to 0.20.2 without
-# breaking the legacy saucelabs job.
-angular_integration_test(
-    name = "hello_world__systemjs_umd_test",
-    pinned_npm_packages = ["systemjs"],
-    test_folder = "hello_world__systemjs_umd",
-)
