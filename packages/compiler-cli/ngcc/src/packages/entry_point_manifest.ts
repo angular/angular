@@ -129,6 +129,18 @@ export class EntryPointManifest {
 }
 
 /**
+ * A specialized implementation of the `EntryPointManifest` that always returns `null` rather than a
+ * set of entry-points from a manifest file.
+ *
+ * This is used if you want to ignore a manifest file that is written to disc.
+ * Note that it will still write a new manifest file with the entry-points that were found by
+ * walking the directories.
+ */
+export class NullEntryPointManifest extends EntryPointManifest {
+  readEntryPointsUsingManifest(basePath: AbsoluteFsPath): EntryPoint[]|null { return null; }
+}
+
+/**
  * The JSON format of the manifest file that is written to disk.
  */
 export interface EntryPointManifestFile {

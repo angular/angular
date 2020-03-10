@@ -39,7 +39,7 @@ import {hasBeenProcessed} from './packages/build_marker';
 import {NgccConfiguration} from './packages/configuration';
 import {EntryPoint, EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from './packages/entry_point';
 import {makeEntryPointBundle} from './packages/entry_point_bundle';
-import {EntryPointManifest} from './packages/entry_point_manifest';
+import {EntryPointManifest, NullEntryPointManifest} from './packages/entry_point_manifest';
 import {Transformer} from './packages/transformer';
 import {PathMappings} from './utils';
 import {cleanOutdatedPackages} from './writing/cleaning/package_cleaner';
@@ -117,6 +117,17 @@ export interface SyncNgccOptions {
    * legacy message ids will all be stripped during translation.
    */
   enableI18nLegacyMessageIdFormat?: boolean;
+
+  /**
+   * Whether to read an entry-point manifest file from disk, rather than walking the directory tree
+   * looking for entry-points.
+   *
+   * If `true` then any manifest that exists will be replaced with a new one created from walking
+   * the directory tree.
+   *
+   * Default: `false` (i.e. the manifest will be read)
+   */
+  invalidateEntryPointManifest?: boolean;
 }
 
 /**
@@ -139,11 +150,12 @@ export type NgccOptions = AsyncNgccOptions | SyncNgccOptions;
  */
 export function mainNgcc(options: AsyncNgccOptions): Promise<void>;
 export function mainNgcc(options: SyncNgccOptions): void;
-export function mainNgcc(
-    {basePath, targetEntryPointPath, propertiesToConsider = SUPPORTED_FORMAT_PROPERTIES,
-     compileAllFormats = true, createNewEntryPointFormats = false,
-     logger = new ConsoleLogger(LogLevel.info), pathMappings, async = false,
-     enableI18nLegacyMessageIdFormat = true}: NgccOptions): void|Promise<void> {
+export function mainNgcc({basePath, targetEntryPointPath,
+                          propertiesToConsider = SUPPORTED_FORMAT_PROPERTIES,
+                          compileAllFormats = true, createNewEntryPointFormats = false,
+                          logger = new ConsoleLogger(LogLevel.info), pathMappings, async = false,
+                          enableI18nLegacyMessageIdFormat = true,
+                          invalidateEntryPointManifest = false}: NgccOptions): void|Promise<void> {
   // Execute in parallel, if async execution is acceptable and there are more than 1 CPU cores.
   const inParallel = async && (os.cpus().length > 1);
 
@@ -154,7 +166,9 @@ export function mainNgcc(
   const absBasePath = absoluteFrom(basePath);
   const config = new NgccConfiguration(fileSystem, dirname(absBasePath));
   const dependencyResolver = getDependencyResolver(fileSystem, logger, config, pathMappings);
-  const entryPointManifest = new EntryPointManifest(fileSystem, config, logger);
+  const entryPointManifest = invalidateEntryPointManifest ?
+      new NullEntryPointManifest(fileSystem, config, logger) :
+      new EntryPointManifest(fileSystem, config, logger);
 
   // Bail out early if the work is already done.
   const supportedPropertiesToConsider = ensureSupportedProperties(propertiesToConsider);
