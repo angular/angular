@@ -39,7 +39,7 @@ import {hasBeenProcessed} from './packages/build_marker';
 import {NgccConfiguration} from './packages/configuration';
 import {EntryPoint, EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from './packages/entry_point';
 import {makeEntryPointBundle} from './packages/entry_point_bundle';
-import {EntryPointManifest, NullEntryPointManifest} from './packages/entry_point_manifest';
+import {EntryPointManifest, InvalidatingEntryPointManifest} from './packages/entry_point_manifest';
 import {Transformer} from './packages/transformer';
 import {PathMappings} from './utils';
 import {cleanOutdatedPackages} from './writing/cleaning/package_cleaner';
@@ -167,7 +167,7 @@ export function mainNgcc({basePath, targetEntryPointPath,
   const config = new NgccConfiguration(fileSystem, dirname(absBasePath));
   const dependencyResolver = getDependencyResolver(fileSystem, logger, config, pathMappings);
   const entryPointManifest = invalidateEntryPointManifest ?
-      new NullEntryPointManifest(fileSystem, config, logger) :
+      new InvalidatingEntryPointManifest(fileSystem, config, logger) :
       new EntryPointManifest(fileSystem, config, logger);
 
   // Bail out early if the work is already done.

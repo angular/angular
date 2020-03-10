@@ -129,14 +129,14 @@ export class EntryPointManifest {
 }
 
 /**
- * A specialized implementation of the `EntryPointManifest` that always returns `null` rather than a
- * set of entry-points from a manifest file.
+ * A specialized implementation of the `EntryPointManifest` that can be used to invalidate the
+ * current manifest file.
  *
- * This is used if you want to ignore a manifest file that is written to disc.
- * Note that it will still write a new manifest file with the entry-points that were found by
- * walking the directories.
+ * It always returns `null` from the `readEntryPointsUsingManifest()` method, which forces a new
+ * manifest to be created, which will overwrite the current file when `writeEntryPointManifest()` is
+ * called.
  */
-export class NullEntryPointManifest extends EntryPointManifest {
+export class InvalidatingEntryPointManifest extends EntryPointManifest {
   readEntryPointsUsingManifest(basePath: AbsoluteFsPath): EntryPoint[]|null { return null; }
 }
 
