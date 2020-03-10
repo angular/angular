@@ -42,6 +42,7 @@ They don't have a clear location in the source tree.
 We will treat them as a component even thought no specific source tree is associated with them.
 
 * `comp: build & ci` - build and CI infrastructure for the angular/angular repo
+* `comp: dev-infra` - angular's common internal developer infrastructure scripting and tooling
 * `comp: docs` - documentation, including API docs, guides, tutorial
 * `comp: packaging` - packaging format of @angular/* npm packages
 * `comp: performance`
