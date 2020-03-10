@@ -403,6 +403,86 @@ describe('i18n support in the template compiler', () => {
          verify(input, output);
        });
 
+    it('should support i18n attributes with interpolations on explicit <ng-template> elements',
+       () => {
+         const input = `
+           <ng-template i18n-title title="Hello {{ name }}"></ng-template>
+         `;
+
+         const output = String.raw `
+           var $I18N_0$;
+           if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
+             const $MSG_EXTERNAL_3771704108176831903$$APP_SPEC_TS_1$ = goog.getMsg("Hello {$interpolation}", {
+               "interpolation": "\uFFFD0\uFFFD"
+              });
+             $I18N_0$ = $MSG_EXTERNAL_3771704108176831903$$APP_SPEC_TS_1$;
+           }
+           else {
+             $I18N_0$ = $localize \`Hello $` +
+             String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
+           }
+           const $_c2$ = ["title", $I18N_0$];
+           …
+           consts: [[${AttributeMarker.Bindings}, "title"]],
+           template: function MyComponent_Template(rf, ctx) {
+             if (rf & 1) {
+               $r3$.ɵɵtemplate(0, MyComponent_ng_template_0_Template, 0, 0, "ng-template", 0);
+               $r3$.ɵɵi18nAttributes(1, $_c2$);
+             }
+             if (rf & 2) {
+               $r3$.ɵɵi18nExp(ctx.name);
+               $r3$.ɵɵi18nApply(1);
+             }
+           }
+         `;
+         verify(input, output);
+       });
+
+    it('should support i18n attributes with interpolations on explicit <ng-template> elements with structural directives',
+       () => {
+         const input = `
+            <ng-template *ngIf="true" i18n-title title="Hello {{ name }}"></ng-template>
+          `;
+
+         const output = String.raw `
+            var $I18N_0$;
+            if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
+              const $MSG_EXTERNAL_3771704108176831903$$APP_SPEC_TS__1$ = goog.getMsg("Hello {$interpolation}", {
+                "interpolation": "\uFFFD0\uFFFD"
+              });
+              $I18N_0$ = $MSG_EXTERNAL_3771704108176831903$$APP_SPEC_TS__1$;
+            }
+            else {
+              $I18N_0$ = $localize \`Hello $` +
+             String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
+            }
+            const $_c2$ = ["title", $I18N_0$];
+            …
+            function MyComponent_0_Template(rf, ctx) {
+              if (rf & 1) {
+                $r3$.ɵɵtemplate(0, MyComponent_0_ng_template_0_Template, 0, 0, "ng-template", 1);
+                $r3$.ɵɵi18nAttributes(1, $_c2$);
+              }
+              if (rf & 2) {
+                const $ctx_r2$ = $r3$.ɵɵnextContext();
+                $r3$.ɵɵi18nExp($ctx_r2$.name);
+                $r3$.ɵɵi18nApply(1);
+              }
+            }
+            …
+            consts: [[${AttributeMarker.Template}, "ngIf"], [${AttributeMarker.Bindings}, "title"]],
+            template: function MyComponent_Template(rf, ctx) {
+              if (rf & 1) {
+                $r3$.ɵɵtemplate(0, MyComponent_0_Template, 2, 1, undefined, 0);
+              }
+              if (rf & 2) {
+                $r3$.ɵɵproperty("ngIf", true);
+              }
+            },
+          `;
+         verify(input, output);
+       });
+
     it('should not create translations for empty attributes', () => {
       const input = `
         <div id="static" i18n-title="m|d" title></div>
