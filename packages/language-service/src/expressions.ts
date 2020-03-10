@@ -96,6 +96,14 @@ export function getExpressionCompletions(
   return result && result.values();
 }
 
+/**
+ * Retrieves the expression symbol at a particular position in a template.
+ *
+ * @param scope symbols in scope of the template
+ * @param ast template AST
+ * @param position absolute location in template to retrieve symbol at
+ * @param query type symbol query for the template scope
+ */
 export function getExpressionSymbol(
     scope: SymbolTable, ast: AST, position: number,
     query: SymbolQuery): {symbol: Symbol, span: Span}|undefined {
@@ -129,14 +137,19 @@ export function getExpressionSymbol(
       span = ast.span;
     },
     visitPipe(ast) {
-      if (position >= ast.exp.span.end &&
-          (!ast.args || !ast.args.length || position < (<AST>ast.args[0]).span.start)) {
+      if (inSpan(position, ast.nameSpan, /* exclusive */ true)) {
         // We are in a position a pipe name is expected.
         const pipes = query.getPipes();
-        if (pipes) {
-          symbol = pipes.get(ast.name);
-          span = ast.span;
-        }
+        symbol = pipes.get(ast.name);
+
+        // `nameSpan` is an absolute span, but the span expected by the result of this method is
+        // relative to the start of the expression.
+        // TODO(ayazhafiz): migrate to only using absolute spans
+        const offset = ast.sourceSpan.start - ast.span.start;
+        span = {
+          start: ast.nameSpan.start - offset,
+          end: ast.nameSpan.end - offset,
+        };
       }
     },
     visitPrefixNot(ast) {},

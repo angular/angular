@@ -171,6 +171,7 @@ export class TemplateReference {
   anyValue: any;
   optional?: string;
   myClick(event: any) {}
+  birthday = new Date();
 }
 
 @Component({

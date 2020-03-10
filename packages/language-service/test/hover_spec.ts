@@ -138,6 +138,19 @@ describe('hover', () => {
       expect(toText(displayParts)).toBe('(property) TemplateReference.heroes: Hero[]');
     });
 
+    it('should work for pipes', () => {
+      mockHost.override(TEST_TEMPLATE, `
+        <p>The hero's birthday is {{birthday | «date»: "MM/dd/yy"}}</p>`);
+      const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'date');
+      const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+      expect(quickInfo).toBeTruthy();
+      const {textSpan, displayParts} = quickInfo !;
+      expect(textSpan).toEqual(marker);
+      expect(toText(displayParts))
+          .toBe(
+              '(pipe) date: (value: any, format?: string | undefined, timezone?: string | undefined, locale?: string | undefined) => string | null');
+    });
+
     it('should work for the $any() cast function', () => {
       const content = mockHost.override(TEST_TEMPLATE, '<div>{{$any(title)}}</div>');
       const position = content.indexOf('$any');
