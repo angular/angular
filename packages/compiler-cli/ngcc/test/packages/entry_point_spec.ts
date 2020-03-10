@@ -466,28 +466,28 @@ runInEachFileSystem(() => {
       expect(getEntryPointFormat(fs, entryPoint, 'main')).toBe('umd');
     });
   });
-
-  function createPackageJson(
-      packageName: string,
-      {excludes, typingsProp = 'typings', typingsIsArray}:
-          {excludes?: string[], typingsProp?: string, typingsIsArray?: boolean} = {}): string {
-    const packageJson: any = {
-      name: `some_package/${packageName}`,
-      [typingsProp]: typingsIsArray ? [`./${packageName}.d.ts`] : `./${packageName}.d.ts`,
-      fesm2015: `./fesm2015/${packageName}.js`,
-      esm2015: `./esm2015/${packageName}.js`,
-      es2015: `./es2015/${packageName}.js`,
-      fesm5: `./fesm5/${packageName}.js`,
-      esm5: `./esm5/${packageName}.js`,
-      main: `./bundles/${packageName}/index.js`,
-      module: './index.js',
-    };
-    if (excludes) {
-      excludes.forEach(exclude => delete packageJson[exclude]);
-    }
-    return JSON.stringify(packageJson);
-  }
 });
+
+export function createPackageJson(
+    packageName: string,
+    {excludes, typingsProp = 'typings', typingsIsArray}:
+        {excludes?: string[], typingsProp?: string, typingsIsArray?: boolean} = {}): string {
+  const packageJson: any = {
+    name: `some_package/${packageName}`,
+    [typingsProp]: typingsIsArray ? [`./${packageName}.d.ts`] : `./${packageName}.d.ts`,
+    fesm2015: `./fesm2015/${packageName}.js`,
+    esm2015: `./esm2015/${packageName}.js`,
+    es2015: `./es2015/${packageName}.js`,
+    fesm5: `./fesm5/${packageName}.js`,
+    esm5: `./esm5/${packageName}.js`,
+    main: `./bundles/${packageName}/index.js`,
+    module: './index.js',
+  };
+  if (excludes) {
+    excludes.forEach(exclude => delete packageJson[exclude]);
+  }
+  return JSON.stringify(packageJson);
+}
 
 export function loadPackageJson(fs: FileSystem, packagePath: string) {
   return JSON.parse(fs.readFile(fs.resolve(packagePath + '/package.json')));
