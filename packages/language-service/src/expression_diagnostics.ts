@@ -185,7 +185,7 @@ function refinedVariableType(
       // See @angular/common/ng_if.ts for more information.
       const ngIfBinding = ngIfDirective.inputs.find(i => i.directiveName === 'ngIf');
       if (ngIfBinding) {
-        // Check if tehre is a known type bound to the ngIf input.
+        // Check if there is a known type bound to the ngIf input.
         const bindingType = new AstType(mergedTable, query, {}).getType(ngIfBinding.value);
         if (bindingType) {
           return bindingType;
