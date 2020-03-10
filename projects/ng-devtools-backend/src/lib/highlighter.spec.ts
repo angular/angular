@@ -30,10 +30,10 @@ describe('highlighter', () => {
 
   describe('getComponentName', () => {
     it('should return null when called with null values', () => {
-      let name = highlighter.getComponentName(null);
+      let name = highlighter.getDirectiveName(null);
       expect(name).toBeFalsy();
 
-      name = highlighter.getComponentName(undefined);
+      name = highlighter.getDirectiveName(undefined);
       expect(name).toBeFalsy();
     });
 
@@ -44,7 +44,7 @@ describe('highlighter', () => {
         },
       };
 
-      const name = highlighter.getComponentName(MOCK_COMPONENT as any);
+      const name = highlighter.getDirectiveName(MOCK_COMPONENT as any);
       expect(name).toBe(MOCK_COMPONENT.constructor.name);
     });
   });
