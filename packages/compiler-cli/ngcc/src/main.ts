@@ -231,7 +231,7 @@ export function mainNgcc(
           unprocessableEntryPointPaths.map(path => `\n  - ${path}`).join(''));
     }
 
-    const duration = Math.round((Date.now() - startTime) / 1000);
+    const duration = Math.round((Date.now() - startTime) / 100) / 10;
     logger.debug(
         `Analyzed ${entryPoints.length} entry-points in ${duration}s. ` +
         `(Total tasks: ${tasks.length})`);
