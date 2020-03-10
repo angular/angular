@@ -331,7 +331,7 @@ export class _ParseAST {
     this.error(`Missing expected ${String.fromCharCode(code)}`);
   }
 
-  optionalOperator(op: string): boolean {
+  consumeOptionalOperator(op: string): boolean {
     if (this.next.isOperator(op)) {
       this.advance();
       return true;
@@ -341,7 +341,7 @@ export class _ParseAST {
   }
 
   expectOperator(operator: string) {
-    if (this.optionalOperator(operator)) return;
+    if (this.consumeOptionalOperator(operator)) return;
     this.error(`Missing expected operator ${operator}`);
   }
 
@@ -389,7 +389,7 @@ export class _ParseAST {
 
   parsePipe(): AST {
     let result = this.parseExpression();
-    if (this.optionalOperator('|')) {
+    if (this.consumeOptionalOperator('|')) {
       if (this.parseAction) {
         this.error('Cannot have a pipe in an action expression');
       }
@@ -405,7 +405,7 @@ export class _ParseAST {
         const {start} = result.span;
         result =
             new BindingPipe(this.span(start), this.sourceSpan(start), result, name, args, nameSpan);
-      } while (this.optionalOperator('|'));
+      } while (this.consumeOptionalOperator('|'));
     }
 
     return result;
@@ -417,7 +417,7 @@ export class _ParseAST {
     const start = this.inputIndex;
     const result = this.parseLogicalOr();
 
-    if (this.optionalOperator('?')) {
+    if (this.consumeOptionalOperator('?')) {
       const yes = this.parsePipe();
       let no: AST;
       if (!this.consumeOptionalCharacter(chars.$COLON)) {
@@ -437,7 +437,7 @@ export class _ParseAST {
   parseLogicalOr(): AST {
     // '||'
     let result = this.parseLogicalAnd();
-    while (this.optionalOperator('||')) {
+    while (this.consumeOptionalOperator('||')) {
       const right = this.parseLogicalAnd();
       const {start} = result.span;
       result = new Binary(this.span(start), this.sourceSpan(start), '||', result, right);
@@ -448,7 +448,7 @@ export class _ParseAST {
   parseLogicalAnd(): AST {
     // '&&'
     let result = this.parseEquality();
-    while (this.optionalOperator('&&')) {
+    while (this.consumeOptionalOperator('&&')) {
       const right = this.parseEquality();
       const {start} = result.span;
       result = new Binary(this.span(start), this.sourceSpan(start), '&&', result, right);
@@ -573,7 +573,7 @@ export class _ParseAST {
       if (this.consumeOptionalCharacter(chars.$PERIOD)) {
         result = this.parseAccessMemberOrMethodCall(result, false);
 
-      } else if (this.optionalOperator('?.')) {
+      } else if (this.consumeOptionalOperator('?.')) {
         result = this.parseAccessMemberOrMethodCall(result, true);
 
       } else if (this.consumeOptionalCharacter(chars.$LBRACKET)) {
@@ -581,7 +581,7 @@ export class _ParseAST {
         const key = this.parsePipe();
         this.rbracketsExpected--;
         this.expectCharacter(chars.$RBRACKET);
-        if (this.optionalOperator('=')) {
+        if (this.consumeOptionalOperator('=')) {
           const value = this.parseConditional();
           result = new KeyedWrite(
               this.span(resultStart), this.sourceSpan(resultStart), result, key, value);
@@ -597,7 +597,7 @@ export class _ParseAST {
         result =
             new FunctionCall(this.span(resultStart), this.sourceSpan(resultStart), result, args);
 
-      } else if (this.optionalOperator('!')) {
+      } else if (this.consumeOptionalOperator('!')) {
         result = new NonNullAssert(this.span(resultStart), this.sourceSpan(resultStart), result);
 
       } else {
@@ -714,14 +714,14 @@ export class _ParseAST {
 
     } else {
       if (isSafe) {
-        if (this.optionalOperator('=')) {
+        if (this.consumeOptionalOperator('=')) {
           this.error('The \'?.\' operator cannot be used in the assignment');
           return new EmptyExpr(this.span(start), this.sourceSpan(start));
         } else {
           return new SafePropertyRead(this.span(start), this.sourceSpan(start), receiver, id);
         }
       } else {
-        if (this.optionalOperator('=')) {
+        if (this.consumeOptionalOperator('=')) {
           if (!this.parseAction) {
             this.error('Bindings cannot contain assignments');
             return new EmptyExpr(this.span(start), this.sourceSpan(start));
@@ -755,7 +755,7 @@ export class _ParseAST {
     const start = this.inputIndex;
     do {
       result += this.expectIdentifierOrKeywordOrString();
-      operatorFound = this.optionalOperator('-');
+      operatorFound = this.consumeOptionalOperator('-');
       if (operatorFound) {
         result += '-';
       }
@@ -927,7 +927,7 @@ export class _ParseAST {
     this.advance();  // consume the 'let' keyword
     const {key} = this.expectTemplateBindingKey();
     let valueExpr: ASTWithSource|null = null;
-    if (this.optionalOperator('=')) {
+    if (this.consumeOptionalOperator('=')) {
       const {key: value, keySpan: valueSpan} = this.expectTemplateBindingKey();
       const ast = new AST(valueSpan, valueSpan.toAbsolute(this.absoluteOffset));
       valueExpr = new ASTWithSource(
