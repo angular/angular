@@ -242,7 +242,7 @@ function getEventDeclaration(
     })();
 
     cache.set(event, eventDeclaration);
-  };
+  }
 
   return cache.get(event);
 }
