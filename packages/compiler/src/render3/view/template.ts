@@ -587,11 +587,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       } else if (name === 'class') {
         stylingBuilder.registerClassAttr(value);
       } else {
-        if (attr.i18n) {
-          i18nAttrs.push(attr);
-        } else {
-          outputAttrs.push(attr);
-        }
+        (attr.i18n ? i18nAttrs : outputAttrs).push(attr);
       }
     }
 
@@ -895,17 +891,26 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     // Only add normal input/output binding instructions on explicit <ng-template> elements.
     if (template.tagName === NG_TEMPLATE_TAG_NAME) {
+      const inputs: t.BoundAttribute[] = [];
+      const i18nAttrs: (t.TextAttribute | t.BoundAttribute)[] =
+          template.attributes.filter(attr => !!attr.i18n);
+
+      template.inputs.forEach(
+          (input: t.BoundAttribute) => (input.i18n ? i18nAttrs : inputs).push(input));
+
       // Add i18n attributes that may act as inputs to directives. If such attributes are present,
       // generate `i18nAttributes` instruction. Note: we generate it only for explicit <ng-template>
       // elements, in case of inline templates, corresponding instructions will be generated in the
       // nested template function.
-      const i18nAttrs: t.TextAttribute[] = template.attributes.filter(attr => !!attr.i18n);
       if (i18nAttrs.length > 0) {
         this.i18nAttributesInstruction(templateIndex, i18nAttrs, template.sourceSpan);
       }
 
       // Add the input bindings
-      this.templatePropertyBindings(templateIndex, template.inputs);
+      if (inputs.length > 0) {
+        this.templatePropertyBindings(templateIndex, inputs);
+      }
+
       // Generate listeners for directive output
       if (template.outputs.length > 0) {
         const listeners = template.outputs.map(
@@ -1036,11 +1041,24 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
         if (value !== undefined) {
           this.allocateBindingSlots(value);
-          propertyBindings.push({
-            name: input.name,
-            sourceSpan: input.sourceSpan,
-            value: () => this.convertPropertyBinding(value)
-          });
+          if (value instanceof Interpolation) {
+            // Params typically contain attribute namespace and value sanitizer, which is applicable
+            // for regular HTML elements, but not applicable for <ng-template> (since props act as
+            // inputs to directives), so keep params array empty.
+            const params: any[] = [];
+
+            // prop="{{value}}" case
+            this.interpolatedUpdateInstruction(
+                getPropertyInterpolationExpression(value), templateIndex, input.name, input, value,
+                params);
+          } else {
+            // [prop]="value" case
+            propertyBindings.push({
+              name: input.name,
+              sourceSpan: input.sourceSpan,
+              value: () => this.convertPropertyBinding(value)
+            });
+          }
         }
       }
     });
