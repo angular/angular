@@ -106,7 +106,7 @@ history_server(
         "--port",
         "4200",
     ],
-    templated_args = ["src/prodapp"],
+    templated_args = ["$(rlocation project/src/prodapp)"],
 )
 
 filegroup(
