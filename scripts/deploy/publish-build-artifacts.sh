@@ -15,9 +15,16 @@ if [ -z ${MATERIAL2_BUILDS_TOKEN} ]; then
   exit 1
 fi
 
-# Material packages that need to published.
-PACKAGES=(cdk material material-moment-adapter)
-REPOSITORIES=(cdk-builds material2-builds material2-moment-adapter-builds)
+# Release packages that need to published as snapshots.
+PACKAGES=(
+  cdk
+  cdk-experimental
+  material
+  material-experimental
+  material-moment-adapter
+  google-maps
+  youtube-player
+)
 
 # Command line arguments.
 COMMAND_ARGS=${*}
@@ -117,11 +124,8 @@ publishPackage() {
   echo "Published package artifacts for ${packageName}#${buildVersionName} into ${branchName}"
 }
 
-for ((i = 0; i < ${#PACKAGES[@]}; i++)); do
-  packageName=${PACKAGES[${i}]}
-  packageRepo=${REPOSITORIES[${i}]}
-
-  # Publish artifacts of the current package. Run publishing in a sub-shell to avoid working
-  # directory changes.
-  (publishPackage ${packageName} ${packageRepo})
+for packageName in "${PACKAGES[@]}"; do
+  # Publish artifacts of the current package. Run publishing in a sub-shell to avoid
+  # working directory changes.
+  (publishPackage ${packageName} "${packageName}-builds")
 done
