@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {createHash} from 'crypto';
 import {satisfies} from 'semver';
 import * as vm from 'vm';
 import {AbsoluteFsPath, FileSystem, dirname, join, resolve} from '../../../src/ngtsc/file_system';
@@ -159,10 +160,12 @@ export class NgccConfiguration {
   private defaultConfig: NgccProjectConfig<VersionedPackageConfig[]>;
   private projectConfig: NgccProjectConfig<VersionedPackageConfig[]>;
   private cache = new Map<string, VersionedPackageConfig>();
+  readonly hash: string;
 
   constructor(private fs: FileSystem, baseDir: AbsoluteFsPath) {
     this.defaultConfig = this.processProjectConfig(baseDir, DEFAULT_NGCC_CONFIG);
     this.projectConfig = this.processProjectConfig(baseDir, this.loadProjectConfig(baseDir));
+    this.hash = this.computeHash();
   }
 
   /**
@@ -282,6 +285,10 @@ export class NgccConfiguration {
           packagePathAndVersion.substring(versionIndex + 1)
         ] :
         [packagePathAndVersion, undefined];
+  }
+
+  private computeHash(): string {
+    return createHash('md5').update(JSON.stringify(this.projectConfig)).digest('hex');
   }
 }
 
