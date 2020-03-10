@@ -958,7 +958,6 @@ groups:
           'tools/ngcontainer/**',
           'tools/npm/**',
           'tools/npm_integration_test/**',
-          'tools/pullapprove/**',
           'tools/rxjs/**',
           'tools/saucelabs/**',
           'tools/size-tracking/**',
