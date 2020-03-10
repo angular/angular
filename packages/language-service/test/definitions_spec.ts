@@ -234,22 +234,19 @@ describe('definitions', () => {
   it('should be able to find a pipe', () => {
     const fileName = mockHost.addCode(`
       @Component({
-        template: '<div *ngIf="~{start-my}input | «async»~{end-my}"></div>'
+        template: '<div *ngIf="input | «async»"></div>'
       })
       export class MyComponent {
         input: EventEmitter;
       }`);
 
-    // Get the marker for «test» in the code added above.
+    // Get the marker for «async» in the code added above.
     const marker = mockHost.getReferenceMarkerFor(fileName, 'async');
-
     const result = ngService.getDefinitionAndBoundSpan(fileName, marker.start);
+
     expect(result).toBeDefined();
     const {textSpan, definitions} = result !;
-
-    // Get the marker for bounded text in the code added above
-    const boundedText = mockHost.getLocationMarkerFor(fileName, 'my');
-    expect(textSpan).toEqual(boundedText);
+    expect(textSpan).toEqual(marker);
 
     expect(definitions).toBeDefined();
     expect(definitions !.length).toBe(4);
@@ -260,6 +257,28 @@ describe('definitions', () => {
       expect(def.name).toBe('async');
       expect(def.kind).toBe('pipe');
       // Not asserting the textSpan of definition because it's external file
+    }
+  });
+
+  // https://github.com/angular/vscode-ng-language-service/issues/677
+  it('should be able to find a pipe with arguments', () => {
+    mockHost.override(TEST_TEMPLATE, `{{birthday | «date»: "MM/dd/yy"}}`);
+
+    const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'date');
+    const result = ngService.getDefinitionAndBoundSpan(TEST_TEMPLATE, marker.start);
+
+    expect(result).toBeDefined();
+    const {textSpan, definitions} = result !;
+    expect(textSpan).toEqual(marker);
+
+    expect(definitions).toBeDefined();
+    expect(definitions !.length).toBe(1);
+
+    const refFileName = '/node_modules/@angular/common/common.d.ts';
+    for (const def of definitions !) {
+      expect(def.fileName).toBe(refFileName);
+      expect(def.name).toBe('date');
+      expect(def.kind).toBe('pipe');
     }
   });
 
