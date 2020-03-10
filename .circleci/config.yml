@@ -280,7 +280,7 @@ jobs:
 
       - run: yarn lint
       - run: yarn ts-circular-deps:check
-      - run: node tools/pullapprove/verify.js
+      - run: yarn -s ng-dev pullapprove:verify
 
   test:
     executor:
