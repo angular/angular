@@ -91,10 +91,8 @@ function getVarDeclarations(
       continue;
     }
     for (const variable of current.variables) {
-      let symbol = info.members.get(variable.value);
-      if (!symbol) {
-        symbol = getVariableTypeFromDirectiveContext(variable.value, info.query, current);
-      }
+      let symbol = getVariableTypeFromDirectiveContext(variable.value, info.query, current);
+
       const kind = info.query.getTypeKind(symbol);
       if (kind === BuiltinType.Any || kind === BuiltinType.Unbound) {
         // For special cases such as ngFor and ngIf, the any type is not very useful.
