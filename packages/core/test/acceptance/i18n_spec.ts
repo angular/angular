@@ -1423,6 +1423,58 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       expect(titleDirInstances[0].title).toBe('Bonjour');
     });
 
+    it('should allow directive inputs (as an interpolated prop) on <ng-template>', () => {
+      loadTranslations({[computeMsgId('Hello {$INTERPOLATION}')]: 'Bonjour {$INTERPOLATION}'});
+
+      let dirInstance: WithInput;
+      @Directive({selector: '[dir]'})
+      class WithInput {
+        constructor() { dirInstance = this; }
+        @Input() dir: string = '';
+      }
+
+      @Component({
+        selector: 'my-app',
+        template: '<ng-template i18n-dir dir="Hello {{ name }}"></ng-template>',
+      })
+      class TestComp {
+        name = 'Angular';
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComp, WithInput]});
+      const fixture = TestBed.createComponent(TestComp);
+      fixture.detectChanges();
+
+      expect(dirInstance !.dir).toBe('Bonjour Angular');
+    });
+
+    it('should allow directive inputs (as interpolated props)' +
+           'on <ng-template> with structural directives present',
+       () => {
+         loadTranslations({[computeMsgId('Hello {$INTERPOLATION}')]: 'Bonjour {$INTERPOLATION}'});
+
+         let dirInstance: WithInput;
+         @Directive({selector: '[dir]'})
+         class WithInput {
+           constructor() { dirInstance = this; }
+           @Input() dir: string = '';
+         }
+
+         @Component({
+           selector: 'my-app',
+           template: '<ng-template *ngIf="true" i18n-dir dir="Hello {{ name }}"></ng-template>',
+         })
+         class TestComp {
+           name = 'Angular';
+         }
+
+         TestBed.configureTestingModule({declarations: [TestComp, WithInput]});
+         const fixture = TestBed.createComponent(TestComp);
+         fixture.detectChanges();
+
+         expect(dirInstance !.dir).toBe('Bonjour Angular');
+       });
+
     it('should apply i18n attributes during second template pass', () => {
       loadTranslations({[computeMsgId('Set')]: 'Set'});
       @Directive({

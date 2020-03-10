@@ -341,6 +341,78 @@ describe('directives', () => {
 
   });
 
+  describe('inputs', () => {
+    it('should allow directive inputs (as a prop binding) on <ng-template>', () => {
+      let dirInstance: WithInput;
+      @Directive({selector: '[dir]'})
+      class WithInput {
+        constructor() { dirInstance = this; }
+        @Input() dir: string = '';
+      }
+
+      @Component({
+        selector: 'my-app',
+        template: '<ng-template [dir]="message"></ng-template>',
+      })
+      class TestComp {
+        message = 'Hello';
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComp, WithInput]});
+      const fixture = TestBed.createComponent(TestComp);
+      fixture.detectChanges();
+
+      expect(dirInstance !.dir).toBe('Hello');
+    });
+
+    it('should allow directive inputs (as an interpolated prop) on <ng-template>', () => {
+      let dirInstance: WithInput;
+      @Directive({selector: '[dir]'})
+      class WithInput {
+        constructor() { dirInstance = this; }
+        @Input() dir: string = '';
+      }
+
+      @Component({
+        selector: 'my-app',
+        template: '<ng-template dir="{{ message }}"></ng-template>',
+      })
+      class TestComp {
+        message = 'Hello';
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComp, WithInput]});
+      const fixture = TestBed.createComponent(TestComp);
+      fixture.detectChanges();
+
+      expect(dirInstance !.dir).toBe('Hello');
+    });
+
+    it('should allow directive inputs (as an interpolated prop) on <ng-template> with structural directives',
+       () => {
+         let dirInstance: WithInput;
+         @Directive({selector: '[dir]'})
+         class WithInput {
+           constructor() { dirInstance = this; }
+           @Input() dir: string = '';
+         }
+
+         @Component({
+           selector: 'my-app',
+           template: '<ng-template *ngIf="true" dir="{{ message }}"></ng-template>',
+         })
+         class TestComp {
+           message = 'Hello';
+         }
+
+         TestBed.configureTestingModule({declarations: [TestComp, WithInput]});
+         const fixture = TestBed.createComponent(TestComp);
+         fixture.detectChanges();
+
+         expect(dirInstance !.dir).toBe('Hello');
+       });
+  });
+
   describe('outputs', () => {
     @Directive({selector: '[out]'})
     class TestDir {
