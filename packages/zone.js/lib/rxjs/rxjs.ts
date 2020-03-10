@@ -50,22 +50,28 @@ type ZoneSubscriberContext = {
         },
         set: function(this: Observable<any>, subscribe: any) {
           (this as any)._zone = Zone.current;
-          (this as any)._zoneSubscribe = function(this: ZoneSubscriberContext) {
-            if (this._zone && this._zone !== Zone.current) {
-              const tearDown = this._zone.run(subscribe, this, arguments as any);
-              if (tearDown && typeof tearDown === 'function') {
-                const zone = this._zone;
-                return function(this: ZoneSubscriberContext) {
-                  if (zone !== Zone.current) {
-                    return zone.run(tearDown, this, arguments as any);
-                  }
-                  return tearDown.apply(this, arguments);
-                };
+          if (!subscribe) {
+            (this as any)._zoneSubscribe = subscribe;
+          } else {
+            (this as any)._zoneSubscribe = function(this: ZoneSubscriberContext) {
+              if (this._zone && this._zone !== Zone.current) {
+                const tearDown = this._zone.run(subscribe, this, arguments as any);
+                if (typeof tearDown === 'function') {
+                  const zone = this._zone;
+                  return function(this: ZoneSubscriberContext) {
+                    if (zone !== Zone.current) {
+                      return zone.run(tearDown, this, arguments as any);
+                    }
+                    return tearDown.apply(this, arguments);
+                  };
+                } else {
+                  return tearDown;
+                }
+              } else {
+                return subscribe.apply(this, arguments);
               }
-              return tearDown;
-            }
-            return subscribe.apply(this, arguments);
-          };
+            };
+          }
         }
       },
       subjectFactory: {
@@ -113,12 +119,17 @@ type ZoneSubscriberContext = {
         },
         set: function(this: Subscription, unsubscribe: any) {
           (this as any)._zone = Zone.current;
-          (this as any)._zoneUnsubscribe = function() {
-            if (this._zone && this._zone !== Zone.current) {
-              return this._zone.run(unsubscribe, this, arguments);
-            }
-            return unsubscribe.apply(this, arguments);
-          };
+          if (!unsubscribe) {
+            (this as any)._zoneUnsubscribe = unsubscribe;
+          } else {
+            (this as any)._zoneUnsubscribe = function() {
+              if (this._zone && this._zone !== Zone.current) {
+                return this._zone.run(unsubscribe, this, arguments);
+              } else {
+                return unsubscribe.apply(this, arguments);
+              }
+            };
+          }
         }
       }
     });
