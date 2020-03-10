@@ -10,6 +10,7 @@ import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/depende
 import {Logger} from '../logging/logger';
 import {NgccConfiguration} from '../packages/configuration';
 import {EntryPoint, INVALID_ENTRY_POINT, NO_ENTRY_POINT, getEntryPointInfo} from '../packages/entry_point';
+import {EntryPointManifest} from '../packages/entry_point_manifest';
 import {PathMappings} from '../utils';
 import {NGCC_DIRECTORY} from '../writing/new_entry_point_file_writer';
 import {EntryPointFinder} from './interface';
@@ -23,16 +24,28 @@ export class DirectoryWalkerEntryPointFinder implements EntryPointFinder {
   private basePaths = getBasePaths(this.sourceDirectory, this.pathMappings);
   constructor(
       private fs: FileSystem, private config: NgccConfiguration, private logger: Logger,
-      private resolver: DependencyResolver, private sourceDirectory: AbsoluteFsPath,
-      private pathMappings: PathMappings|undefined) {}
+      private resolver: DependencyResolver, private entryPointManifest: EntryPointManifest,
+      private sourceDirectory: AbsoluteFsPath, private pathMappings: PathMappings|undefined) {}
   /**
    * Search the `sourceDirectory`, and sub-directories, using `pathMappings` as necessary, to find
    * all package entry-points.
    */
   findEntryPoints(): SortedEntryPointsInfo {
-    const unsortedEntryPoints = this.basePaths.reduce<EntryPoint[]>(
-        (entryPoints, basePath) => entryPoints.concat(this.walkDirectoryForEntryPoints(basePath)),
-        []);
+    const unsortedEntryPoints: EntryPoint[] = [];
+    for (const basePath of this.basePaths) {
+      let entryPoints = this.entryPointManifest.readEntryPointsUsingManifest(basePath);
+      if (entryPoints === null) {
+        this.logger.debug(
+            `No manifest found for ${basePath} so walking the directories for entry-points.`);
+        const startTime = Date.now();
+        entryPoints = this.walkDirectoryForEntryPoints(basePath);
+        const duration = Math.round((Date.now() - startTime) / 100) / 10;
+        this.logger.debug(`Walking directories took ${duration}s.`);
+
+        this.entryPointManifest.writeEntryPointManifest(basePath, entryPoints);
+      }
+      unsortedEntryPoints.push(...entryPoints);
+    }
     return this.resolver.sortEntryPointsByDependency(unsortedEntryPoints);
   }
 

@@ -39,6 +39,7 @@ import {hasBeenProcessed} from './packages/build_marker';
 import {NgccConfiguration} from './packages/configuration';
 import {EntryPoint, EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from './packages/entry_point';
 import {makeEntryPointBundle} from './packages/entry_point_bundle';
+import {EntryPointManifest} from './packages/entry_point_manifest';
 import {Transformer} from './packages/transformer';
 import {PathMappings} from './utils';
 import {cleanOutdatedPackages} from './writing/cleaning/package_cleaner';
@@ -153,14 +154,15 @@ export function mainNgcc(
   const absBasePath = absoluteFrom(basePath);
   const config = new NgccConfiguration(fileSystem, dirname(absBasePath));
   const dependencyResolver = getDependencyResolver(fileSystem, logger, config, pathMappings);
+  const entryPointManifest = new EntryPointManifest(fileSystem, config, logger);
 
   // Bail out early if the work is already done.
   const supportedPropertiesToConsider = ensureSupportedProperties(propertiesToConsider);
   const absoluteTargetEntryPointPath =
       targetEntryPointPath !== undefined ? resolve(basePath, targetEntryPointPath) : null;
   const finder = getEntryPointFinder(
-      fileSystem, logger, dependencyResolver, config, absBasePath, absoluteTargetEntryPointPath,
-      pathMappings);
+      fileSystem, logger, dependencyResolver, config, entryPointManifest, absBasePath,
+      absoluteTargetEntryPointPath, pathMappings);
   if (finder instanceof TargetedEntryPointFinder &&
       !finder.targetNeedsProcessingOrCleaning(supportedPropertiesToConsider, compileAllFormats)) {
     logger.debug('The target entry-point has already been processed');
@@ -376,14 +378,15 @@ function getDependencyResolver(
 
 function getEntryPointFinder(
     fs: FileSystem, logger: Logger, resolver: DependencyResolver, config: NgccConfiguration,
-    basePath: AbsoluteFsPath, absoluteTargetEntryPointPath: AbsoluteFsPath | null,
+    entryPointManifest: EntryPointManifest, basePath: AbsoluteFsPath,
+    absoluteTargetEntryPointPath: AbsoluteFsPath | null,
     pathMappings: PathMappings | undefined): EntryPointFinder {
   if (absoluteTargetEntryPointPath !== null) {
     return new TargetedEntryPointFinder(
         fs, config, logger, resolver, basePath, absoluteTargetEntryPointPath, pathMappings);
   } else {
     return new DirectoryWalkerEntryPointFinder(
-        fs, config, logger, resolver, basePath, pathMappings);
+        fs, config, logger, resolver, entryPointManifest, basePath, pathMappings);
   }
 }
 
