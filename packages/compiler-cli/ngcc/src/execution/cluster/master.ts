@@ -70,7 +70,7 @@ export class ClusterMaster {
 
     // First, check whether all tasks have been completed.
     if (this.taskQueue.allTasksCompleted) {
-      const duration = Math.round((Date.now() - this.processingStartTime) / 1000);
+      const duration = Math.round((Date.now() - this.processingStartTime) / 100) / 10;
       this.logger.debug(`Processed tasks in ${duration}s.`);
 
       return this.finishedDeferred.resolve();
