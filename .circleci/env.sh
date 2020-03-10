@@ -83,6 +83,22 @@ openssl aes-256-cbc -d -in "${projectDir}/.circleci/gcp_token" \
 cp "${projectDir}/.circleci/bazel.linux.rc" "$HOME/.bazelrc";
 
 ####################################################################################################
+# Create shell script in /tmp for Bazel actions to access CI envs without
+# busting the cache. Used by payload-size.sh script in integration tests.
+####################################################################################################
+readonly bazelVarEnv="/tmp/bazel-ci-env.sh"
+echo "# Setup by /.circle/env.sh" > $bazelVarEnv
+echo "export PROJECT_ROOT=\"${PROJECT_ROOT}\";" >> $bazelVarEnv
+echo "export CI_BRANCH=\"${CI_BRANCH}\";" >> $bazelVarEnv
+echo "export CI_BUILD_URL=\"${CI_BUILD_URL}\";" >> $bazelVarEnv
+echo "export CI_COMMIT=\"${CI_COMMIT}\";" >> $bazelVarEnv
+echo "export CI_COMMIT_RANGE=\"${CI_COMMIT_RANGE}\";" >> $bazelVarEnv
+echo "export CI_PULL_REQUEST=\"${CI_PULL_REQUEST}\";" >> $bazelVarEnv
+echo "export CI_REPO_NAME=\"${CI_REPO_NAME}\";" >> $bazelVarEnv
+echo "export CI_REPO_OWNER=\"${CI_REPO_OWNER}\";" >> $bazelVarEnv
+echo "export CI_SECRET_PAYLOAD_FIREBASE_TOKEN=\"${CI_SECRET_PAYLOAD_FIREBASE_TOKEN}\";" >> $bazelVarEnv
+
+####################################################################################################
 ####################################################################################################
 ##                  Source `$BASH_ENV` to make the variables available immediately.               ##
 ##                  ***NOTE: This must remain the the last action in this script***               ##

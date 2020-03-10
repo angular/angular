@@ -556,22 +556,6 @@ jobs:
             - ng/dist/packages-dist-ivy-aot
             - ng/dist/zone.js-dist-ivy-aot
 
-  # We run a subset of the integration tests outside of Bazel that track
-  # payload size.
-  # See comments inside the integration/run_tests.sh script.
-  # TODO(gregmagolan): move payload size tracking to Bazel and remove this job.
-  integration_test:
-    executor: default-executor
-    parallelism: 3
-    steps:
-      - custom_attach_workspace
-      - init_environment
-      - install_chrome_libs
-      - install_java
-      # Runs the integration tests in parallel across multiple CircleCI container instances. The
-      # amount of container nodes for this job is controlled by the "parallelism" option.
-      - run: ./integration/run_tests.sh ${CIRCLE_NODE_INDEX} ${CIRCLE_NODE_TOTAL}
-
   # This job creates compressed tarballs (`.tgz` files) for all Angular packages and stores them as
   # build artifacts. This makes it easy to try out changes from a PR build for testing purposes.
   # More info CircleCI build artifacts: https://circleci.com/docs/2.0/artifacts
@@ -855,9 +839,6 @@ workflows:
       - test_aio_preview:
           requires:
             - aio_preview
-      - integration_test:
-          requires:
-            - build-npm-packages
       - publish_packages_as_artifacts:
           requires:
             - build-npm-packages
@@ -870,7 +851,6 @@ workflows:
             # Only publish if tests and integration tests pass
             - test
             - test_ivy_aot
-            - integration_test
             # Only publish if `aio`/`docs` tests using the locally built Angular packages pass
             - test_aio_local
             - test_aio_local_viewengine

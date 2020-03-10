@@ -7,41 +7,20 @@ CI=${CI:-false}
 
 cd "$(dirname "$0")"
 
-# basedir is the workspace root
-readonly basedir=$(pwd)/..
-
-# Skip all integration tests that are now handled by angular_integration_test except
-# the tests that are tracked for payload size; these are:
-#   - cli-hello-world*
-#   - hello_world__closure
-readonly TEST_DIRS=$(find $(ls) -maxdepth 0 -type d \( -name "cli-hello-world*" -or -name "hello_world__closure" \))
-
-# When running on the CI, we track the payload size of various integration output files. Also
-# we shard tests across multiple CI job instances. The script needs to be run with a shard index
-# and the maximum amount of shards available for the integration tests on the CI.
-# For example: "./run_tests.sh {SHARD_INDEX} {MAX_SHARDS}".
-if $CI; then
-  source ${basedir}/scripts/ci/payload-size.sh
-
-  readonly SHARD_INDEX=${1:?"No shard index has been specified."}
-  readonly MAX_SHARDS=${2:?"The maximum amount of shards has not been specified."}
-
-  # Determines the tests that need to be run for this shard index.
-  readonly RUN_TESTS=$(node ./get-sharded-tests.js --shardIndex ${SHARD_INDEX} --maxShards ${MAX_SHARDS} ${TEST_DIRS})
-
-  # NB: we don't run build-packages-dist.js because we expect that it was done
-  # by an earlier job in the CircleCI workflow.
+# If we aren't running on CircleCI, we do not shard tests because this would be the job of
+# Bazel eventually. For now, we just run all tests sequentially when running locally.
+if [ -n "${1:-}" ]; then
+  readonly RUN_TESTS=$@
 else
-  # Not on CircleCI so let's build the packages-dist directory.
-  # This should be fast on incremental re-build.
-  node ${basedir}/scripts/build/build-packages-dist.js
-
-  # If we aren't running on CircleCI, we do not shard tests because this would be the job of
-  # Bazel eventually. For now, we just run all tests sequentially when running locally.
-  readonly RUN_TESTS=${TEST_DIRS}
+  readonly RUN_TESTS=$(find $(ls) -maxdepth 0 -type d)
 fi
 
-echo "Running integration tests: ${RUN_TESTS}"
+echo "Running integration tests:"
+echo ${RUN_TESTS}
+
+# Build the packages-dist directory.
+# This should be fast on incremental re-build.
+node ../scripts/build/build-packages-dist.js
 
 # Workaround https://github.com/yarnpkg/yarn/issues/2165
 # Yarn will cache file://dist URIs and not update Angular code
@@ -73,20 +52,7 @@ for testDir in ${RUN_TESTS}; do
     yarn install --cache-folder ../$cache
     yarn test || exit 1
 
-    # Track payload size for cli-hello-world* tests, plus hello_world__closure
-    if $CI && ([[ $testDir =~ cli-hello-world ]] || [[ $testDir == hello_world__closure ]]); then
-      if ([[ $testDir =~ cli-hello-world ]]); then
-        yarn build
-      fi
-
-      trackPayloadSize "$testDir" "dist/*.js" true "${basedir}/integration/_payload-limits.json"
-    fi
-
     # remove the temporary node modules directory to keep the source folder clean.
     rm -rf node_modules
   )
 done
-
-if $CI && [[ "$SHARD_INDEX" == "0" ]]; then
-  trackPayloadSize "umd" "../dist/packages-dist/*/bundles/*.umd.min.js" false
-fi
