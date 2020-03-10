@@ -1,7 +1,7 @@
 import { ComponentTreeObserver } from './observer';
 import { ElementPosition, ProfilerFrame, ElementProfile, DirectiveProfile, LifecycleProfile } from 'protocol';
 import { runOutsideAngular, isCustomElement } from '../utils';
-import { getComponentName } from '../highlighter';
+import { getDirectiveName } from '../highlighter';
 import { InsertionTrie } from './insertion-trie';
 import { ComponentTreeNode } from '../component-tree';
 
@@ -25,8 +25,8 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
     // an existing removed node.
     onCreate(directive: any, node: Node, id: number, isComponent: boolean, position: ElementPosition): void {
       eventMap.set(directive, {
-        name: getComponentName(directive),
         isElement: isCustomElement(node),
+        name: getDirectiveName(directive),
         isComponent,
         changeDetection: 0,
         lifecycle: {},
@@ -46,8 +46,8 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
       }
       if (!eventMap.has(component)) {
         eventMap.set(component, {
-          name: getComponentName(component),
           isElement: isCustomElement(node),
+          name: getDirectiveName(component),
           isComponent: true,
           changeDetection: 0,
           lifecycle: {},
@@ -71,8 +71,8 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
     ): void {
       if (!eventMap.has(directive)) {
         eventMap.set(directive, {
-          name: getComponentName(directive),
           isElement: isCustomElement(node),
+          name: getDirectiveName(directive),
           isComponent: true,
           changeDetection: 0,
           lifecycle: {},
@@ -179,7 +179,7 @@ const prepareInitialFrame = (source: string) => {
       return {
         isComponent: false,
         isElement: false,
-        name: d.instance.constructor.name,
+        name: getDirectiveName(d.instance),
         lifecycle: {},
         changeDetection: 0,
       };
@@ -190,7 +190,7 @@ const prepareInitialFrame = (source: string) => {
         isElement: node.component.isElement,
         isComponent: true,
         lifecycle: {},
-        name: node.component.instance.constructor.name,
+        name: getDirectiveName(node.component.instance),
       });
     }
     const result = {

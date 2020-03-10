@@ -1,5 +1,6 @@
 import { ComponentTreeNode, ComponentInstanceType } from './component-tree';
 import { isCustomElement } from './utils';
+import { getDirectiveName } from './highlighter';
 
 const HEADER_OFFSET = 19;
 const TYPE = 1;
@@ -41,7 +42,7 @@ const getNode = (lView: any, data: any, idx: number): ComponentTreeNode => {
       };
     } else if (dirMeta) {
       directives.push({
-        name: dir.constructor.name,
+        name: getDirectiveName(dir),
         instance: dir,
       });
     }

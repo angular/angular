@@ -45,9 +45,9 @@ export const findComponentAndHost = (el: Node): { component: any; host: HTMLElem
   return { component: null, host: null };
 };
 
-export const getComponentName = (cmp: Type<unknown>): string | null => {
-  if (cmp) {
-    return cmp.constructor.name;
+export const getDirectiveName = (dir: Type<unknown>): string | null => {
+  if (dir) {
+    return dir.constructor.name;
   }
   return null;
 };
@@ -59,7 +59,7 @@ export const highlight = (el: HTMLElement): void => {
   init();
   if (rect) {
     const content = [];
-    const name = getComponentName(cmp);
+    const name = getDirectiveName(cmp);
     if (name) {
       const pre = document.createElement('span');
       pre.style.opacity = '0.6';
