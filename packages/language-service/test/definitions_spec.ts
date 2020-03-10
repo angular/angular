@@ -260,6 +260,28 @@ describe('definitions', () => {
     }
   });
 
+  // https://github.com/angular/vscode-ng-language-service/issues/677
+  it('should be able to find a pipe with arguments', () => {
+    mockHost.override(TEST_TEMPLATE, `{{birthday | «date»: "MM/dd/yy"}}`);
+
+    const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'date');
+    const result = ngService.getDefinitionAndBoundSpan(TEST_TEMPLATE, marker.start);
+
+    expect(result).toBeDefined();
+    const {textSpan, definitions} = result !;
+    expect(textSpan).toEqual(marker);
+
+    expect(definitions).toBeDefined();
+    expect(definitions !.length).toBe(1);
+
+    const refFileName = '/node_modules/@angular/common/common.d.ts';
+    for (const def of definitions !) {
+      expect(def.fileName).toBe(refFileName);
+      expect(def.name).toBe('date');
+      expect(def.kind).toBe('pipe');
+    }
+  });
+
   describe('in structural directive', () => {
     it('should be able to find the directive', () => {
       mockHost.override(
@@ -445,29 +467,5 @@ describe('definitions', () => {
     expect(def.name).toBe('name');
     expect(def.kind).toBe('property');
     expect(def.textSpan).toEqual(mockHost.getDefinitionMarkerFor(fileName, 'name'));
-  });
-
-  describe('regression tests', () => {
-    // https://github.com/angular/vscode-ng-language-service/issues/677
-    it('should be able to find a pipe with arguments', () => {
-      mockHost.override(TEST_TEMPLATE, `{{birthday | «date»: "MM/dd/yy"}}`);
-
-      const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'date');
-      const result = ngService.getDefinitionAndBoundSpan(TEST_TEMPLATE, marker.start);
-
-      expect(result).toBeDefined();
-      const {textSpan, definitions} = result !;
-      expect(textSpan).toEqual(marker);
-
-      expect(definitions).toBeDefined();
-      expect(definitions !.length).toBe(1);
-
-      const refFileName = '/node_modules/@angular/common/common.d.ts';
-      for (const def of definitions !) {
-        expect(def.fileName).toBe(refFileName);
-        expect(def.name).toBe('date');
-        expect(def.kind).toBe('pipe');
-      }
-    });
   });
 });
