@@ -50,5 +50,6 @@ import './rxjs.Observable.map.spec';
 import './rxjs.Observable.race.spec';
 import './rxjs.Observable.sample.spec';
 import './rxjs.Observable.take.spec';
+import './rxjs.Observable.retry.spec';
 import './rxjs.Observable.timeout.spec';
 import './rxjs.Observable.window.spec';
