@@ -119,13 +119,11 @@ export interface SyncNgccOptions {
   enableI18nLegacyMessageIdFormat?: boolean;
 
   /**
-   * Whether to read an entry-point manifest file from disk, rather than walking the directory tree
-   * looking for entry-points.
+   * Whether to invalidate any entry-point manifest file that is on disk. Instead, walk the
+   * directory tree looking for entry-points, and then write a new entry-point manifest, if
+   * possible.
    *
-   * If `true` then any manifest that exists will be replaced with a new one created from walking
-   * the directory tree.
-   *
-   * Default: `false` (i.e. the manifest will be read)
+   * Default: `false` (i.e. the manifest will be used if available)
    */
   invalidateEntryPointManifest?: boolean;
 }
