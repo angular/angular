@@ -153,6 +153,10 @@
     universal-analytics "^0.4.20"
     uuid "^3.3.2"
 
+"@angular/dev-infra-private@angular/dev-infra-private-builds#3724a71":
+  version "0.0.0"
+  resolved "https://codeload.github.com/angular/dev-infra-private-builds/tar.gz/3724a71047361d85f4131d990f00a5aecdbc3ddc"
+
 "@babel/code-frame@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.0.0.tgz#06e2ab19bdb535385559aabb5ba59729482800f8"
