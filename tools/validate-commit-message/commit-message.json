@@ -21,6 +21,7 @@
     "compiler",
     "compiler-cli",
     "core",
+    "dev-infra",
     "docs-infra",
     "elements",
     "forms",
