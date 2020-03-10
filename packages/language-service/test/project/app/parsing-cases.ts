@@ -170,6 +170,8 @@ export class TemplateReference {
   primitiveIndexType: {[name: string]: string} = {};
   anyValue: any;
   optional?: string;
+  // Use to test the `index` variable conflict between the `ngFor` and component context.
+  index = null;
   myClick(event: any) {}
   birthday = new Date();
 }
