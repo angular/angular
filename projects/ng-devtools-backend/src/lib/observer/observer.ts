@@ -1,8 +1,8 @@
 import { ElementPosition, LifecycleProfile } from 'protocol';
 import { componentMetadata } from '../utils';
 import { IdentityTracker, IndexedNode } from './identity-tracker';
+import { getLViewFromDirectiveInstance, getDirectiveHostElement } from '../lview-transform';
 import { DEV_TOOLS_HIGHLIGHT_NODE_ID } from '../highlighter';
-import { METADATA_PROPERTY_NAME, getDirectiveHostElement } from '../lview-transform';
 
 export type CreationCallback = (
   componentOrDirective: any,
@@ -201,7 +201,7 @@ export class ComponentTreeObserver {
   }
 
   private _observeLifecycle(directive: any, isComponent: boolean): void {
-    const ctx = directive[METADATA_PROPERTY_NAME];
+    const ctx = getLViewFromDirectiveInstance(directive);
     const tview = ctx[1];
     hookTViewProperties.forEach(hook => {
       const current = tview[hook];
