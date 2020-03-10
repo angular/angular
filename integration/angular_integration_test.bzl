@@ -80,35 +80,56 @@ def npm_package_archives():
 def _npm_package_archive_label(package_name):
     return package_name.replace("/", "_").replace("@", "") + "_archive"
 
-def _angular_integration_test(pinned_npm_packages = [], **kwargs):
+def _angular_integration_test(name, **kwargs):
     "Set defaults for the npm_integration_test common to the angular repo"
-    commands = kwargs.pop("commands", None)
-    if not commands:
-        # By default run `yarn install` followed by `yarn test` using
-        # the bazel managed hermetic version of yarn inside
-        commands = [
-            # Workaround https://github.com/yarnpkg/yarn/issues/2165
-            # Yarn will cache file://dist URIs and not update Angular code
-            "rm -rf ./.yarn_local_cache",
-            "mkdir .yarn_local_cache",
-            "patch-package-json",
-            "$(rootpath @nodejs//:yarn_bin) install --cache-folder ./.yarn_local_cache",
-            "$(rootpath @nodejs//:yarn_bin) test",
-            "rm -rf ./.yarn_local_cache",
+    payload_size_tracking = kwargs.pop("payload_size_tracking", [])
+    pinned_npm_packages = kwargs.pop("pinned_npm_packages", [])
+    data = [
+        # We need the yarn_bin & yarn_files available at runtime
+        "@nodejs//:yarn_bin",
+        "@nodejs//:yarn_files",
+    ]
+
+    # By default run `yarn install` followed by `yarn test` using
+    # the bazel managed hermetic version of yarn inside
+    DEFAULT_COMMANDS = [
+        "patch-package-json",
+        # Workaround https://github.com/yarnpkg/yarn/issues/2165
+        # Yarn will cache file://dist URIs and not update Angular code
+        "rm -rf ./.yarn_local_cache",
+        "mkdir .yarn_local_cache",
+        "$(rootpath @nodejs//:yarn_bin) install --cache-folder ./.yarn_local_cache",
+        "$(rootpath @nodejs//:yarn_bin) test",
+    ]
+
+    commands = kwargs.pop("commands", [])
+    if commands == "default":
+        commands = DEFAULT_COMMANDS
+    elif commands == "payload_size_tracking":
+        commands = DEFAULT_COMMANDS + [
+            "$(rootpath @nodejs//:yarn_bin) build",
+            "$(rootpath //:scripts/ci/track-payload-size.sh) %s dist/*.js true ${RUNFILES}/angular/$(rootpath //integration:_payload-limits.json)" % name,
+        ]
+        data = data + [
+            "//integration:_payload-limits.json",
+            "//:scripts/ci/track-payload-size.sh",
+            "//:scripts/ci/payload-size.sh",
+            "//:scripts/ci/payload-size.js",
         ]
 
     # Complete list of npm packages to override in the test's package.json file mapped to
     # tgz archive to use for the replacement. This is the full list for all integration
     # tests. Any given integration does not need to use all of these packages.
     npm_packages = {}
-    for name in NPM_PACKAGE_ARCHIVES:
-        if name not in pinned_npm_packages:
-            npm_packages["@npm//:" + _npm_package_archive_label(name)] = name
-    for name in GENERATED_NPM_PACKAGES:
-        last_segment_name = name if name.find("/") == -1 else name.split("/")[-1]
-        npm_packages["//packages/%s:npm_package_archive" % last_segment_name] = name
+    for pkg in NPM_PACKAGE_ARCHIVES:
+        if pkg not in pinned_npm_packages:
+            npm_packages["@npm//:" + _npm_package_archive_label(pkg)] = pkg
+    for pkg in GENERATED_NPM_PACKAGES:
+        last_segment_name = pkg if pkg.find("/") == -1 else pkg.split("/")[-1]
+        npm_packages["//packages/%s:npm_package_archive" % last_segment_name] = pkg
 
     npm_integration_test(
+        name = name + "_test",
         check_npm_packages = GENERATED_NPM_PACKAGES,
         commands = commands,
         npm_packages = npm_packages,
@@ -122,11 +143,7 @@ def _angular_integration_test(pinned_npm_packages = [], **kwargs):
             # Remote doesn't work as it needs network access right now
             "no-remote-exec",
         ],
-        data = kwargs.pop("data", []) + [
-            # We need the yarn_bin & yarn_files available at runtime
-            "@nodejs//:yarn_bin",
-            "@nodejs//:yarn_files",
-        ],
+        data = kwargs.pop("data", []) + data,
         # 15-minute timeout
         timeout = "long",
         # Tells bazel that this test should be allocated a large amount of memory.
@@ -135,21 +152,20 @@ def _angular_integration_test(pinned_npm_packages = [], **kwargs):
         **kwargs
     )
 
-def angular_integration_test(name, test_folder, pinned_npm_packages = [], **kwargs):
+def angular_integration_test(name, **kwargs):
     "Sets up the integration test target based on the test folder name"
     native.filegroup(
         name = "_%s_sources" % name,
         srcs = native.glob(
-            include = ["%s/**" % test_folder],
+            include = ["%s/**" % name],
             exclude = [
-                "%s/node_modules/**" % test_folder,
-                "%s/.yarn_local_cache/**" % test_folder,
+                "%s/node_modules/**" % name,
+                "%s/.yarn_local_cache/**" % name,
             ],
         ),
     )
     _angular_integration_test(
         name = name,
         test_files = kwargs.pop("test_files", "_%s_sources" % name),
-        pinned_npm_packages = pinned_npm_packages,
         **kwargs
     )
