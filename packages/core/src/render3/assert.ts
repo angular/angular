@@ -15,6 +15,10 @@ import {TNode} from './interfaces/node';
 import {isLContainer, isLView} from './interfaces/type_checks';
 import {LView, TVIEW, TView} from './interfaces/view';
 
+// [Assert functions do not constraint type when they are guarded by a truthy
+// expression.](https://github.com/microsoft/TypeScript/issues/37295)
+
+
 export function assertTNodeForLView(tNode: TNode, lView: LView) {
   tNode.hasOwnProperty('tView_') && assertEqual(
                                         (tNode as any as{tView_: TView}).tView_, lView[TVIEW],

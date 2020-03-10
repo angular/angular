@@ -23,8 +23,6 @@ declare global {
    * - The URL contains a `ngDevMode=false` text.
    * Finally, ngDevMode may not have been defined at all.
    */
-  // [Assert functions do not constraint type when they are guarded by a truthy
-  // expression.](https://github.com/microsoft/TypeScript/issues/37295)
   const ngDevMode: null|NgDevModePerfCounters;
   interface NgDevModePerfCounters {
     namedConstructors: boolean;
