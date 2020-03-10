@@ -5,16 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {parse} from 'json5';
 import {readFileSync} from 'fs';
+import {parse} from 'json5';
 import {join} from 'path';
 import {exec} from 'shelljs';
-
 
 /**
  * Gets the path of the directory for the repository base.
  */
-function getRepoBaseDir() {
+export function getRepoBaseDir() {
   const baseRepoDir = exec(`git rev-parse --show-toplevel`, {silent: true});
   if (baseRepoDir.code) {
     throw Error(
@@ -28,7 +27,7 @@ function getRepoBaseDir() {
 /**
  * Retrieve the configuration from the .dev-infra.json file.
  */
-export function getAngularDevConfig(): DevInfraConfig {
+export function getAngularDevConfig<K, T>(): DevInfraConfig<K, T> {
   const configPath = join(getRepoBaseDir(), '.dev-infra.json');
   let rawConfig = '';
   try {
@@ -41,5 +40,8 @@ export function getAngularDevConfig(): DevInfraConfig {
   return parse(rawConfig);
 }
 
-// Interface exressing the expected structure of the DevInfraConfig.
-export interface DevInfraConfig {}
+/**
+ * Interface exressing the expected structure of the DevInfraConfig.
+ * Allows for providing a typing for a part of the config to read.
+ */
+export interface DevInfraConfig<K, T> { [K: string]: T; }
