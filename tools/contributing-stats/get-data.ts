@@ -119,7 +119,7 @@ async function getAllOrgMembers() {
     hasNextPage = results.organization.membersWithRole.pageInfo.hasNextPage;
     cursor = results.organization.membersWithRole.pageInfo.endCursor;
   }
-  return members;
+  return members.sort();
 }
 
 /**
