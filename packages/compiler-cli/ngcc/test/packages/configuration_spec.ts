@@ -5,6 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {createHash} from 'crypto';
+
 import {FileSystem, absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
@@ -27,6 +29,58 @@ runInEachFileSystem(() => {
         expect(() => new NgccConfiguration(fs, _Abs('/project-1')))
             .toThrowError(
                 `Invalid project configuration file at "${_Abs('/project-1/ngcc.config.js')}": Unexpected identifier`);
+      });
+    });
+
+    describe('hash', () => {
+      it('should compute a hash from the loaded and processed project configuration', () => {
+        const project1 = _Abs('/project-1');
+        const project1Config = fs.resolve(project1, 'ngcc.config.js');
+        const project1NodeModules = fs.resolve(project1, 'node_modules');
+        const project1Package1 = fs.resolve(project1NodeModules, 'package-1');
+        const project1Package1EntryPoint1 = fs.resolve(project1Package1, 'entry-point-1');
+
+        loadTestFiles([{
+          name: project1Config,
+          contents: `
+            module.exports = {
+              packages: {
+                'package-1': {entryPoints: {'./entry-point-1': {}}},
+              },
+            };`
+        }]);
+        const project1Conf = new NgccConfiguration(fs, project1);
+        const expectedProject1Config =
+            `{"packages":{"${project1Package1}":[{"entryPoints":{"${project1Package1EntryPoint1}":{}},"versionRange":"*"}]}}`;
+        expect(project1Conf.hash)
+            .toEqual(createHash('md5').update(expectedProject1Config).digest('hex'));
+
+        const project2 = _Abs('/project-2');
+        const project2Config = fs.resolve(project2, 'ngcc.config.js');
+        const project2NodeModules = fs.resolve(project2, 'node_modules');
+        const project2Package1 = fs.resolve(project2NodeModules, 'package-1');
+        const project2Package1EntryPoint1 = fs.resolve(project2Package1, 'entry-point-1');
+
+        loadTestFiles([{
+          name: project2Config,
+          contents: `
+              module.exports = {
+                packages: {
+                  'package-1': {entryPoints: {'./entry-point-1': {ignore: true}}},
+                },
+              };`
+        }]);
+        const project2Conf = new NgccConfiguration(fs, project2);
+        const expectedProject2Config =
+            `{"packages":{"${project2Package1}":[{"entryPoints":{"${project2Package1EntryPoint1}":{"ignore":true}},"versionRange":"*"}]}}`;
+        expect(project2Conf.hash)
+            .toEqual(createHash('md5').update(expectedProject2Config).digest('hex'));
+      });
+
+      it('should compute a hash even if there is no project configuration', () => {
+        loadTestFiles([{name: _Abs('/project-1/empty.js'), contents: ``}]);
+        const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
+        expect(configuration.hash).toEqual('87c535c3ce0eac2a54c246892e0e21a1');
       });
     });
 
