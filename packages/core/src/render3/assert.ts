@@ -85,7 +85,7 @@ export function assertFirstUpdatePass(tView: TView, errMessage?: string) {
  * This is a basic sanity check that an object is probably a directive def. DirectiveDef is
  * an interface, so we can't do a direct instanceof check.
  */
-export function assertDirectiveDef(obj: any): asserts obj is DirectiveDef<any> {
+export function assertDirectiveDef<T>(obj: any): asserts obj is DirectiveDef<T> {
   if (obj.type === undefined || obj.selectors == undefined || obj.inputs === undefined) {
     throwError(
         `Expected a DirectiveDef/ComponentDef and this object does not seem to have the expected shape.`);
