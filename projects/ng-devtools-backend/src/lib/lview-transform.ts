@@ -6,12 +6,23 @@ const HEADER_OFFSET = 19;
 const TYPE = 1;
 const ELEMENT = 0;
 const LVIEW_TVIEW = 1;
-const COMPONENTS = 8;
 export const METADATA_PROPERTY_NAME = '__ngContext__';
 
-export function isLContainer(value: any): boolean {
+const isLContainer = (value: any): boolean => {
   return Array.isArray(value) && value[TYPE] === true;
-}
+};
+
+const isLView = (value: any): boolean => {
+  return Array.isArray(value) && typeof value[TYPE] === 'object';
+};
+
+export const getLViewFromDirectiveInstance = (dir: any) => {
+  const context = dir[METADATA_PROPERTY_NAME];
+  if (isLView(context)) {
+    return context;
+  }
+  return context.lView;
+};
 
 export const getDirectiveHostElement = (dir: any) => {
   const ctx = dir[METADATA_PROPERTY_NAME];

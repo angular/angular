@@ -9,7 +9,7 @@ import {
 } from 'protocol';
 import { DebuggingAPI } from './interfaces';
 import { IndexedNode } from './observer/identity-tracker';
-import { buildDirectiveTree, METADATA_PROPERTY_NAME } from './lview-transform';
+import { buildDirectiveTree, getLViewFromDirectiveInstance } from './lview-transform';
 
 const ngDebug = (window as any).ng;
 
@@ -62,8 +62,8 @@ export const getLatestComponentState = (query: ComponentExplorerViewQuery): Dire
 };
 
 export const buildDirectiveForest = (ngd: DebuggingAPI): ComponentTreeNode[] => {
-  const roots = Array.from(document.documentElement.querySelectorAll('[ng-version]')).map(
-    el => ngd.getComponent(el)[METADATA_PROPERTY_NAME]
+  const roots = Array.from(document.documentElement.querySelectorAll('[ng-version]')).map(el =>
+    getLViewFromDirectiveInstance(ngd.getComponent(el))
   );
   return Array.prototype.concat.apply([], roots.map(buildDirectiveTree));
 };
