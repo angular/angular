@@ -8,7 +8,9 @@ ts_library(
     ],
     module_name = "@angular/dev-infra-private",
     deps = [
+        "//dev-infra/commit-message",
         "//dev-infra/pullapprove",
+        "//dev-infra/utils:config",
         "@npm//@types/node",
     ],
 )
@@ -33,6 +35,7 @@ pkg_npm(
     deps = [
         ":cli",
         ":package-json",
+        "//dev-infra/commit-message",
         "//dev-infra/ts-circular-dependencies",
     ],
 )
