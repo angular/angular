@@ -7,21 +7,19 @@
  */
 
 /// <reference types="node" />
-
 import * as os from 'os';
-
 import {AbsoluteFsPath, FileSystem, absoluteFrom, getFileSystem, join} from '../../../src/ngtsc/file_system';
 import {Folder, MockFileSystem, TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles, loadTestFiles} from '../../../test/helpers';
 import {getLockFilePath} from '../../src/locking/lock_file';
 import {mainNgcc} from '../../src/main';
-import {markAsProcessed} from '../../src/packages/build_marker';
+import {hasBeenProcessed, markAsProcessed} from '../../src/packages/build_marker';
 import {EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTIES} from '../../src/packages/entry_point';
+import {EntryPointManifestFile} from '../../src/packages/entry_point_manifest';
 import {Transformer} from '../../src/packages/transformer';
 import {DirectPackageJsonUpdater, PackageJsonUpdater} from '../../src/writing/package_json_updater';
 import {MockLogger} from '../helpers/mock_logger';
 import {compileIntoApf, compileIntoFlatEs5Package} from './util';
-
 
 const testFiles = loadStandardTestFiles({fakeCore: false, rxjs: true});
 
@@ -980,6 +978,46 @@ runInEachFileSystem(() => {
 
            function stringifyKeys(obj: object) { return `|${Object.keys(obj).join('|')}|`; }
          });
+    });
+
+    describe('with ignoreEntryPointManifest', () => {
+      it('should not read the entry-point manifest file', () => {
+        // Ensure there is a lock-file. Otherwise the manifest will not be written
+        fs.writeFile(_('/yarn.lock'), 'DUMMY YARN LOCK FILE');
+        // Populate the manifest file
+        mainNgcc(
+            {basePath: '/node_modules', propertiesToConsider: ['esm5'], logger: new MockLogger()});
+        // Check that common/testings ES5 was processed
+        let commonTesting =
+            JSON.parse(fs.readFile(_('/node_modules/@angular/common/testing/package.json')));
+        expect(hasBeenProcessed(commonTesting, 'esm5')).toBe(true);
+        expect(hasBeenProcessed(commonTesting, 'esm2015')).toBe(false);
+        // Modify the manifest to test that is has no effect
+        let manifest: EntryPointManifestFile =
+            JSON.parse(fs.readFile(_('/node_modules/__ngcc_entry_points__.json')));
+        manifest.entryPointPaths = manifest.entryPointPaths.filter(
+            paths => paths[1] !== _('/node_modules/@angular/common/testing'));
+        fs.writeFile(_('/node_modules/__ngcc_entry_points__.json'), JSON.stringify(manifest));
+        // Now run ngcc again ignoring this manifest but trying to process ES2015, which are not yet
+        // processed.
+        mainNgcc({
+          basePath: '/node_modules',
+          propertiesToConsider: ['esm2015'],
+          logger: new MockLogger(),
+          invalidateEntryPointManifest: true,
+        });
+        // Check that common/testing ES2015 is now processed, despite the manifest not listing it
+        commonTesting =
+            JSON.parse(fs.readFile(_('/node_modules/@angular/common/testing/package.json')));
+        expect(hasBeenProcessed(commonTesting, 'esm5')).toBe(true);
+        expect(hasBeenProcessed(commonTesting, 'esm2015')).toBe(true);
+        // Check that the newly computed manifest has written to disk, containing the path that we
+        // had removed earlier.
+        manifest = JSON.parse(fs.readFile(_('/node_modules/__ngcc_entry_points__.json')));
+        expect(manifest.entryPointPaths).toContain([
+          _('/node_modules/@angular/common'), _('/node_modules/@angular/common/testing')
+        ]);
+      });
     });
 
     describe('diagnostics', () => {

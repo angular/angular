@@ -130,6 +130,18 @@ export class EntryPointManifest {
 }
 
 /**
+ * A specialized implementation of the `EntryPointManifest` that can be used to invalidate the
+ * current manifest file.
+ *
+ * It always returns `null` from the `readEntryPointsUsingManifest()` method, which forces a new
+ * manifest to be created, which will overwrite the current file when `writeEntryPointManifest()` is
+ * called.
+ */
+export class InvalidatingEntryPointManifest extends EntryPointManifest {
+  readEntryPointsUsingManifest(basePath: AbsoluteFsPath): EntryPoint[]|null { return null; }
+}
+
+/**
  * The JSON format of the manifest file that is written to disk.
  */
 export interface EntryPointManifestFile {

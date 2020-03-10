@@ -76,6 +76,13 @@ if (require.main === module) {
             describe: 'The lowest severity logging message that should be output.',
             choices: ['debug', 'info', 'warn', 'error'],
           })
+          .option('invalidate-entry-point-manifest', {
+            describe:
+                'If this is set then ngcc will not read an entry-point manifest file from disk.\n' +
+                'Instead it will walk the directory tree as normal looking for entry-points, and then write a new manifest file.',
+            type: 'boolean',
+            default: false,
+          })
           .strict()
           .help()
           .parse(args);
@@ -95,6 +102,7 @@ if (require.main === module) {
   const createNewEntryPointFormats = options['create-ivy-entry-points'];
   const logLevel = options['l'] as keyof typeof LogLevel | undefined;
   const enableI18nLegacyMessageIdFormat = options['legacy-message-ids'];
+  const invalidateEntryPointManifest = options['invalidate-entry-point-manifest'];
 
   (async() => {
     try {
@@ -108,7 +116,7 @@ if (require.main === module) {
         createNewEntryPointFormats,
         logger,
         enableI18nLegacyMessageIdFormat,
-        async: options['async'],
+        async: options['async'], invalidateEntryPointManifest,
       });
 
       if (logger) {
