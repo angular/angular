@@ -119,7 +119,8 @@ export class NgZone {
   readonly onError: EventEmitter<any> = new EventEmitter(false);
 
 
-  constructor({enableLongStackTrace = false, shouldCoalesceEventChangeDetection = false}) {
+  constructor({enableLongStackTrace = false, shouldCoalesceEventChangeDetection = false,
+               additionalZoneSpecKeys = [] as string[]}) {
     if (typeof Zone == 'undefined') {
       throw new Error(`In this configuration Angular requires Zone.js`);
     }
@@ -130,17 +131,32 @@ export class NgZone {
 
     self._outer = self._inner = Zone.current;
 
-    if ((Zone as any)['wtfZoneSpec']) {
-      self._inner = self._inner.fork((Zone as any)['wtfZoneSpec']);
-    }
+    const TaskTrackingZoneSpec = (Zone as any)['TaskTrackingZoneSpec'];
+    const longStackTraceZoneSpec = (Zone as any)['longStackTraceZoneSpec'];
+    const builtinZoneSpecs = [
+      enableLongStackTrace && longStackTraceZoneSpec,
+      TaskTrackingZoneSpec && new TaskTrackingZoneSpec(),
+      (Zone as any)['wtfZoneSpec'],
+    ];
 
-    if ((Zone as any)['TaskTrackingZoneSpec']) {
-      self._inner = self._inner.fork(new ((Zone as any)['TaskTrackingZoneSpec'] as any));
-    }
+    const additionalZoneSpecs = additionalZoneSpecKeys.map(key => (Zone as any)[key]);
 
-    if (enableLongStackTrace && (Zone as any)['longStackTraceZoneSpec']) {
-      self._inner = self._inner.fork((Zone as any)['longStackTraceZoneSpec']);
-    }
+    builtinZoneSpecs.forEach(buildInZoneSpec => {
+      if (buildInZoneSpec &&
+          !additionalZoneSpecs.find(
+              additionalZoneSpec =>
+                  additionalZoneSpec && additionalZoneSpec.name === buildInZoneSpec.name)) {
+        additionalZoneSpecs.unshift(buildInZoneSpec);
+      }
+    });
+
+    // user can specify an array of ZoneSpecs, and those ZoneSpecs
+    // will be forked inside NgZone instance.
+    additionalZoneSpecs.forEach(zoneSpec => {
+      if (zoneSpec && !(zoneSpec === longStackTraceZoneSpec && !enableLongStackTrace)) {
+        self._inner = self._inner.fork(zoneSpec);
+      }
+    });
 
     self.shouldCoalesceEventChangeDetection = shouldCoalesceEventChangeDetection;
     self.lastRequestAnimationFrameId = -1;

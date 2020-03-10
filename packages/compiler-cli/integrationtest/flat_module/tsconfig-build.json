@@ -16,7 +16,7 @@
     "outDir": "../node_modules/flat_module",
     "rootDir": "",
     "target": "es5",
-    "typeRoots": ["../node_modules/@types"]
+    "typeRoots": ["../node_modules/@types"],
  },
 
  "files": ["public-api.ts"]
