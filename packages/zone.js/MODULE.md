@@ -43,6 +43,7 @@ Below is the full list of currently supported modules.
 |PromiseRejectionEvent|PromiseRejectEvent will fire when ZoneAwarePromise has unhandled error|__Zone_disable_PromiseRejectionEvent = true|
 |mediaQuery|mediaQuery addListener API will be patched as Zone aware EventTask. (By default, mediaQuery patch will not be loaded by zone.js) |__Zone_disable_mediaQuery = true|
 |notification|notification onProperties API will be patched as Zone aware EventTask. (By default, notification patch will not be loaded by zone.js) |__Zone_disable_notification = true|
+|MessagePort|MessagePort onProperties APIs will be patched as Zone aware EventTask. (By default, MessagePort patch will not be loaded by zone.js) |__Zone_disable_MessagePort = true|
 
 - NodeJS
 
