@@ -11,7 +11,7 @@ import {ViewEncapsulation} from '../metadata/view';
 import {addToArray, removeFromArray} from '../util/array_utils';
 import {assertDefined, assertDomNode, assertEqual, assertString} from '../util/assert';
 import {assertLContainer, assertLView, assertTNodeForLView} from './assert';
-import {attachPatchData} from './context_discovery';
+import {attachPatchData, detachPatchData} from './context_discovery';
 import {ACTIVE_INDEX, ActiveIndexFlag, CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS, NATIVE, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
 import {ComponentDef} from './interfaces/definition';
 import {NodeInjectorFactory} from './interfaces/injector';
@@ -106,6 +106,14 @@ function applyToElementOrContainer(
       nativeInsertBefore(renderer, parent, rNode, beforeNode || null);
     } else if (action === WalkTNodeTreeAction.Detach) {
       nativeRemoveNode(renderer, rNode, isComponent);
+      // Clear __ngContext__ from node to avoid memory leak.
+      // In Chrome, if the chrome dev tool is open, the last
+      // clicked element will be kept in the memory event the element
+      // is removed from it's parentNode, it will make memory
+      // analyze very difficult, so we clear the __ngContext__
+      // here, for details, please check this issue,
+      // https://github.com/angular/angular/issues/35575
+      detachPatchData(rNode);
     } else if (action === WalkTNodeTreeAction.Destroy) {
       ngDevMode && ngDevMode.rendererDestroyNode++;
       (renderer as ProceduralRenderer3).destroyNode !(rNode);

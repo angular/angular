@@ -177,6 +177,13 @@ export function attachPatchData(target: any, data: LView | LContext) {
   target[MONKEY_PATCH_KEY_NAME] = data;
 }
 
+/**
+ * Clear the monkey-patched data from the given target
+ */
+export function detachPatchData(target: any) {
+  target[MONKEY_PATCH_KEY_NAME] = null;
+}
+
 export function isComponentInstance(instance: any): boolean {
   return instance && instance.constructor && instance.constructor.ɵcmp;
 }
