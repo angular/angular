@@ -16,8 +16,14 @@ const isLView = (value: any): boolean => {
   return Array.isArray(value) && typeof value[TYPE] === 'object';
 };
 
-export const getLViewFromDirectiveInstance = (dir: any) => {
+export const getLViewFromDirectiveOrElementInstance = (dir: any): null | {} => {
+  if (!dir) {
+    return null;
+  }
   const context = dir[METADATA_PROPERTY_NAME];
+  if (!context) {
+    return null;
+  }
   if (isLView(context)) {
     return context;
   }
@@ -79,8 +85,12 @@ const extractNodes = (lViewOrLContainer: any, nodes = []): ComponentTreeNode[] =
   for (let i = HEADER_OFFSET; i < lView.length; i++) {
     if (lView[i] && lView[i][ELEMENT] instanceof Node) {
       const node = getNode(lView, tView.data, i);
-      nodes.push(node);
-      extractNodes(lView[i], node.children);
+
+      // TODO(mgechev): verify if this won't make us skip projected content.
+      if (node.component || node.directives.length) {
+        nodes.push(node);
+        extractNodes(lView[i], node.children);
+      }
     }
   }
   return nodes;
