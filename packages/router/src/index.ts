@@ -23,6 +23,7 @@ export {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot
 export {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET} from './shared';
 export {UrlHandlingStrategy} from './url_handling_strategy';
 export {DefaultUrlSerializer, UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
+export {Tree, TreeNode} from './utils/tree';
 export {VERSION} from './version';
 
 export * from './private_export';

@@ -464,12 +464,12 @@ export declare class RouterPreloader implements OnDestroy {
     setUpPreloading(): void;
 }
 
-export declare class RouterState extends ɵangular_packages_router_router_m<ActivatedRoute> {
+export declare class RouterState extends Tree<ActivatedRoute> {
     snapshot: RouterStateSnapshot;
     toString(): string;
 }
 
-export declare class RouterStateSnapshot extends ɵangular_packages_router_router_m<ActivatedRouteSnapshot> {
+export declare class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
     url: string;
     toString(): string;
 }
@@ -499,6 +499,18 @@ export declare class Scroll {
     routerEvent: NavigationEnd,
     position: [number, number] | null,
     anchor: string | null);
+    toString(): string;
+}
+
+export declare class Tree<T> {
+    get root(): T;
+    constructor(root: TreeNode<T>);
+}
+
+export declare class TreeNode<T> {
+    children: TreeNode<T>[];
+    value: T;
+    constructor(value: T, children: TreeNode<T>[]);
     toString(): string;
 }
 

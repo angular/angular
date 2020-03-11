@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+ /**
+  * @publicApi
+  */
 export class Tree<T> {
   /** @internal */
   _root: TreeNode<T>;
@@ -89,6 +92,9 @@ function findPath<T>(value: T, node: TreeNode<T>): TreeNode<T>[] {
   return [];
 }
 
+/**
+ * @publicApi
+ */
 export class TreeNode<T> {
   constructor(public value: T, public children: TreeNode<T>[]) {}
 
