@@ -43,10 +43,9 @@ Zone.__load_patch('jest', (context: any, Zone: ZoneType) => {
 
   function wrapTestFactoryInZone(originalJestFn: Function) {
     return function(this: unknown, ...tableArgs: any[]) {
-      const testFn = originalJestFn.apply(this, tableArgs);
       return function(this: unknown, ...args: any[]) {
         args[1] = wrapTestInZone(args[1]);
-        return testFn.apply(this, args);
+        return originalJestFn.apply(this, tableArgs).apply(this, args);
       };
     };
   }
@@ -64,16 +63,21 @@ Zone.__load_patch('jest', (context: any, Zone: ZoneType) => {
   /**
    * Gets a function wrapping the body of a jest `it/beforeEach/afterEach` block to
    * execute in a ProxyZone zone.
-   * This will run in the `testProxyZone`.
+   * This will run in the `proxyZone`.
    */
   function wrapTestInZone(testBody: Function): Function {
     if (typeof testBody !== 'function') {
       return testBody;
     }
-    // The `done` callback is only passed through if the function expects at least one argument.
-    // Note we have to make a function with correct number of arguments, otherwise jest will
-    // think that all functions are sync or async.
-    return function(this: unknown, ...args: any[]) { return proxyZone.run(testBody, this, args); };
+    const wrappedFunc = function() {
+      return proxyZone.run(testBody, null, arguments as any);
+    };
+    // Update the length of wrappedFunc to be the same as the length of the testBody
+    // So jest core can handle whether the test function has `done()` or not correctly
+    Object.defineProperty(
+        wrappedFunc, 'length', {configurable: true, writable: true, enumerable: false});
+    wrappedFunc.length = testBody.length;
+    return wrappedFunc;
   }
 
   ['describe', 'xdescribe', 'fdescribe'].forEach(methodName => {
