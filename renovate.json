@@ -9,7 +9,7 @@
   "timezone": "America/Tijuana",
   "packageRules": [
     {
-      "managers": ["yarn"],
+      "managers": ["npm"],
       "updateTypes": ["digest"],
       "enabled": true
     },
