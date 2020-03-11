@@ -55,8 +55,6 @@ const shutdownCallback = (messageBus: MessageBus<Events>) => () => {
 const initChangeDetection = (messageBus: MessageBus<Events>) => {
   if (appIsAngularInDevMode() && appIsSupportedAngularVersion()) {
     onChangeDetection(() => messageBus.emit('componentTreeDirty'));
-  } else {
-    messageBus.emit('ngAvailability', [{ version: getAngularVersion(), prodMode: appIsAngularInProdMode() }]);
   }
 };
 

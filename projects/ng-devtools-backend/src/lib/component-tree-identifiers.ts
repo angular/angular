@@ -12,13 +12,25 @@ export const observeDOM = () => {
 };
 
 export const getDirectiveId = (dir: any) => {
+  if (!observer) {
+    console.warn('Observer not yet instantiated');
+    return -1;
+  }
   return observer.getDirectiveId(dir);
 };
 
 export const getDirectiveForest = () => {
+  if (!observer) {
+    console.warn('Observer not yet instantiated');
+    return [];
+  }
   return observer.getDirectiveForest();
 };
 
 export const getDirectivePosition = (dir: any) => {
+  if (!observer) {
+    console.warn('Observer not yet instantiated');
+    return null;
+  }
   return observer.getDirectivePosition(dir);
 };
