@@ -90,7 +90,7 @@ export class SourceFile {
    */
   private flattenMappings(): Mapping[] {
     const mappings = parseMappings(this.rawMap, this.sources);
-    const originalSegmentsBySource = extractOriginalSegments(mappings);
+    ensureOriginalSegmentLinks(mappings);
     const flattenedMappings: Mapping[] = [];
     for (let mappingIndex = 0; mappingIndex < mappings.length; mappingIndex++) {
       const aToBmapping = mappings[mappingIndex];
@@ -120,13 +120,8 @@ export class SourceFile {
       // For mapping [0,0] the incoming start and end are 0 and 2 (i.e. the range a, b, c)
       // For mapping [4,2] the incoming start and end are 2 and 5 (i.e. the range c, d, e, f)
       //
-
-      const originalSegments = originalSegmentsBySource.get(bSource) !;
       const incomingStart = aToBmapping.originalSegment;
-      const incomingEndIndex = originalSegments.indexOf(incomingStart) + 1;
-      const incomingEnd = incomingEndIndex < originalSegments.length ?
-          originalSegments[incomingEndIndex] :
-          undefined;
+      const incomingEnd = incomingStart.next;
 
       // The `outgoingStartIndex` and `outgoingEndIndex` are the indices of the range of mappings
       // that leave `b` that we are interested in merging with the aToBmapping.
@@ -330,12 +325,19 @@ export function parseMappings(
         }
         const generatedColumn = rawMapping[0];
         const name = rawMapping.length === 5 ? rawMap.names[rawMapping[4]] : undefined;
-        const mapping: Mapping = {
-          generatedSegment: {line: generatedLine, column: generatedColumn},
-          originalSource,
-          originalSegment: {line: rawMapping[2] !, column: rawMapping[3] !}, name
+        const line = rawMapping[2] !;
+        const column = rawMapping[3] !;
+        const generatedSegment: SegmentMarker = {
+          line: generatedLine,
+          column: generatedColumn,
+          next: undefined,
         };
-        mappings.push(mapping);
+        const originalSegment: SegmentMarker = {
+          line,
+          column,
+          next: undefined,
+        };
+        mappings.push({name, generatedSegment, originalSegment, originalSource});
       }
     }
   }
@@ -362,6 +364,21 @@ export function extractOriginalSegments(mappings: Mapping[]): Map<SourceFile, Se
   }
   originalSegments.forEach(segmentMarkers => segmentMarkers.sort(compareSegments));
   return originalSegments;
+}
+
+/**
+ * Update the original segments of each of the given `mappings` to include a link to the next
+ * segment in the source file.
+ *
+ * @param mappings the mappings whose segments should be updated
+ */
+export function ensureOriginalSegmentLinks(mappings: Mapping[]): void {
+  const segmentsBySource = extractOriginalSegments(mappings);
+  segmentsBySource.forEach(markers => {
+    for (let i = 0; i < markers.length - 1; i++) {
+      markers[i].next = markers[i + 1];
+    }
+  });
 }
 
 export function computeStartOfLinePositions(str: string) {
