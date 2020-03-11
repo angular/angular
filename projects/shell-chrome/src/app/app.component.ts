@@ -19,8 +19,9 @@ export class AppComponent implements OnInit {
     const cleanup = () => {
       console.log('Cleaning up');
       if (this.messageBus) {
-        this.messageBus.destroy();
+        this.messageBus.emit('shutdown');
         this.messageBus = null;
+        this._cd.detectChanges();
       }
     };
 
