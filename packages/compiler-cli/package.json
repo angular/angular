@@ -22,7 +22,7 @@
     "semver": "^6.3.0",
     "source-map": "^0.6.1",
     "sourcemap-codec": "^1.4.8",
-    "yargs": "13.1.0"
+    "yargs": "15.3.0"
   },
   "peerDependencies": {
     "@angular/compiler": "0.0.0-PLACEHOLDER",

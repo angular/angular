@@ -140,7 +140,7 @@
     "typescript": "~3.8.3",
     "xhr2": "0.1.4",
     "yaml": "^1.7.2",
-    "yargs": "13.1.0"
+    "yargs": "15.3.0"
   },
   "// 2": "devDependencies are not used under Bazel. Many can be removed after test.sh is deleted.",
   "// 3": "when updating @bazel/bazel version you also need to update the RBE settings in .bazelrc (see https://github.com/angular/angular/pull/27935)",
