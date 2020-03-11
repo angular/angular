@@ -34,7 +34,7 @@
   "dependencies": {
     "@babel/core": "7.8.3",
     "glob": "7.1.2",
-    "yargs": "13.1.0"
+    "yargs": "15.3.0"
   },
   "publishConfig":{
     "registry":"https://wombat-dressing-room.appspot.com"
