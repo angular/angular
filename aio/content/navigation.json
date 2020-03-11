@@ -338,8 +338,8 @@
             },
             {
               "url": "guide/providers",
-              "title": "Providers",
-              "tooltip": "Providers and NgModules."
+              "title": "Providing Dependencies",
+              "tooltip": "Providing dependencies to NgModules."
             },
             {
               "url": "guide/singleton-services",
@@ -401,7 +401,7 @@
         },
         {
           "url": "guide/http",
-          "title": "HttpClient",
+          "title": "Access Servers over HTTP",
           "tooltip": "Use HTTP to talk to a remote server."
         },
         {
@@ -557,12 +557,12 @@
         },
         {
           "title": "Schematics",
-          "tooltip": "Understanding schematics.",
+          "tooltip": "Using CLI schematics for code generation.",
           "children": [
             {
               "url": "guide/schematics",
               "title": "Schematics Overview",
-              "tooltip": "Understand how schematics are used in Angular."
+              "tooltip": "How the CLI uses schematics to generate code."
             },
             {
               "url": "guide/schematics-authoring",
