@@ -233,7 +233,7 @@ describe('R3 AST source spans', () => {
         ['Template', '0:32', '0:32', '32:38'],
         ['TextAttribute', '5:31', '<empty>'],
         ['BoundAttribute', '5:31', '<empty>'],
-        ['Variable', '5:31', '<empty>'],
+        ['Variable', '13:22', '<empty>'],  // let item
         ['Element', '0:38', '0:32', '32:38'],
       ]);
 
@@ -255,7 +255,7 @@ describe('R3 AST source spans', () => {
       expectFromHtml('<div *ngIf="let a=b"></div>').toEqual([
         ['Template', '0:21', '0:21', '21:27'],
         ['TextAttribute', '5:20', '<empty>'],
-        ['Variable', '5:20', '<empty>'],
+        ['Variable', '12:19', '18:19'],  // let a=b -> b
         ['Element', '0:27', '0:21', '21:27'],
       ]);
     });
@@ -264,7 +264,7 @@ describe('R3 AST source spans', () => {
       expectFromHtml('<div *ngIf="expr as local"></div>').toEqual([
         ['Template', '0:27', '0:27', '27:33'],
         ['BoundAttribute', '5:26', '<empty>'],
-        ['Variable', '5:26', '<empty>'],
+        ['Variable', '6:25', '6:10'],  // ngIf="expr as local -> ngIf
         ['Element', '0:33', '0:27', '27:33'],
       ]);
     });

@@ -1331,7 +1331,7 @@ export declare class AnimationEvent {
       const diags = env.driveDiagnostics();
       expect(diags.length).toEqual(1);
       expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.DUPLICATE_VARIABLE_DECLARATION));
-      expect(getSourceCodeForDiagnostic(diags[0])).toContain('let i of items;');
+      expect(getSourceCodeForDiagnostic(diags[0])).toContain('let i = index');
     });
 
     it('should still type-check when fileToModuleName aliasing is enabled, but alias exports are not in the .d.ts file',
