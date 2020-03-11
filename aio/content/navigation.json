@@ -272,28 +272,28 @@
           "children": [
             {
               "url": "guide/observables",
-              "title": "Observables",
-              "tooltip": ""
+              "title": "Observables Overview",
+              "tooltip": "Using observables to pass values synchronously or asynchronously."
             },
             {
               "url": "guide/rx-library",
               "title": "The RxJS Library",
-              "tooltip": ""
+              "tooltip": "The RxJS library provides useful operators."
             },
             {
               "url": "guide/observables-in-angular",
               "title": "Observables in Angular",
-              "tooltip": ""
+              "tooltip": "How Angular subsystems make us of observables."
             },
             {
               "url": "guide/practical-observable-usage",
               "title": "Practical Usage",
-              "tooltip": ""
+              "tooltip": "Domains in which observables are useful."
             },
             {
               "url": "guide/comparing-observables",
               "title": "Compare to Other Techniques",
-              "tooltip": ""
+              "tooltip": "How observables compare to promises and other message passing techniques."
             }
           ]
         },
