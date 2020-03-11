@@ -23,6 +23,8 @@ interface NormalizedProvider extends TypeProvider, ValueProvider, ClassProvider,
 /**
  * `Dependency` is used by the framework to extend DI.
  * This is internal to Angular and should not be used directly.
+ *
+ * @publicApi
  */
 export class ReflectiveDependency {
   constructor(

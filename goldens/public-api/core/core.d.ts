@@ -769,6 +769,14 @@ export declare class QueryList<T> implements Iterable<T> {
     toString(): string;
 }
 
+export declare class ReflectiveDependency {
+    key: ReflectiveKey;
+    optional: boolean;
+    visibility: Self | SkipSelf | null;
+    constructor(key: ReflectiveKey, optional: boolean, visibility: Self | SkipSelf | null);
+    static fromKey(key: ReflectiveKey): ReflectiveDependency;
+}
+
 /** @deprecated */
 export declare abstract class ReflectiveInjector implements Injector {
     abstract get parent(): Injector | null;
@@ -840,11 +848,11 @@ export declare interface RendererType2 {
 }
 
 export declare class ResolvedReflectiveFactory {
-    dependencies: ɵangular_packages_core_core_e[];
+    dependencies: ReflectiveDependency[];
     factory: Function;
     constructor(
     factory: Function,
-    dependencies: ɵangular_packages_core_core_e[]);
+    dependencies: ReflectiveDependency[]);
 }
 
 export declare interface ResolvedReflectiveProvider {
