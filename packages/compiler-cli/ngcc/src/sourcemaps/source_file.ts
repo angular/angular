@@ -24,7 +24,7 @@ export class SourceFile {
    * pure original source files).
    */
   readonly flattenedMappings: Mapping[];
-  readonly lineLengths: number[];
+  readonly startOfLinePositions: number[];
 
   constructor(
       /** The path to this source file. */
@@ -38,7 +38,7 @@ export class SourceFile {
       /** Any source files referenced by the raw source map associated with this source file. */
       readonly sources: (SourceFile|null)[]) {
     this.contents = removeSourceMapComments(contents);
-    this.lineLengths = computeLineLengths(this.contents);
+    this.startOfLinePositions = computeStartOfLinePositions(this.contents);
     this.flattenedMappings = this.flattenMappings();
   }
 
@@ -282,11 +282,13 @@ export function mergeMappings(generatedSource: SourceFile, ab: Mapping, bc: Mapp
   // segment-marker" of B->C (4*): `1 - 4 = -3`.
   // Since it is negative we must increment the "generated segment-marker" with `3` to give [3,2].
 
-  const diff = segmentDiff(ab.originalSource.lineLengths, ab.originalSegment, bc.generatedSegment);
+  const diff =
+      segmentDiff(ab.originalSource.startOfLinePositions, ab.originalSegment, bc.generatedSegment);
   if (diff > 0) {
     return {
       name,
-      generatedSegment: offsetSegment(generatedSource.lineLengths, ab.generatedSegment, diff),
+      generatedSegment:
+          offsetSegment(generatedSource.startOfLinePositions, ab.generatedSegment, diff),
       originalSource: bc.originalSource,
       originalSegment: bc.originalSegment,
     };
@@ -295,7 +297,8 @@ export function mergeMappings(generatedSource: SourceFile, ab: Mapping, bc: Mapp
       name,
       generatedSegment: ab.generatedSegment,
       originalSource: bc.originalSource,
-      originalSegment: offsetSegment(bc.originalSource.lineLengths, bc.originalSegment, -diff),
+      originalSegment:
+          offsetSegment(bc.originalSource.startOfLinePositions, bc.originalSegment, -diff),
     };
   }
 }
@@ -361,6 +364,21 @@ export function extractOriginalSegments(mappings: Mapping[]): Map<SourceFile, Se
   return originalSegments;
 }
 
-export function computeLineLengths(str: string): number[] {
+export function computeStartOfLinePositions(str: string) {
+  // The `1` is to indicate a newline character between the lines.
+  // Note that in the actual contents there could be more than one character that indicates a
+  // newline
+  // - e.g. \r\n - but that is not important here since segment-markers are in line/column pairs and
+  // so differences in length due to extra `\r` characters do not affect the algorithms.
+  const NEWLINE_MARKER_OFFSET = 1;
+  const lineLengths = computeLineLengths(str);
+  const startPositions = [0];  // First line starts at position 0
+  for (let i = 0; i < lineLengths.length - 1; i++) {
+    startPositions.push(startPositions[i] + lineLengths[i] + NEWLINE_MARKER_OFFSET);
+  }
+  return startPositions;
+}
+
+function computeLineLengths(str: string): number[] {
   return (str.split(/\r?\n/)).map(s => s.length);
 }

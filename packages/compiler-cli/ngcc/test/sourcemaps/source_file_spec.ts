@@ -11,7 +11,7 @@ import {absoluteFrom} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {RawSourceMap} from '../../src/sourcemaps/raw_source_map';
 import {SegmentMarker} from '../../src/sourcemaps/segment_marker';
-import {Mapping, SourceFile, computeLineLengths, extractOriginalSegments, findLastMappingIndexBefore, parseMappings} from '../../src/sourcemaps/source_file';
+import {Mapping, SourceFile, computeStartOfLinePositions, extractOriginalSegments, findLastMappingIndexBefore, parseMappings} from '../../src/sourcemaps/source_file';
 
 runInEachFileSystem(() => {
   describe('SourceFile and utilities', () => {
@@ -482,17 +482,17 @@ runInEachFileSystem(() => {
       });
     });
 
-    describe('computeLineLengths()', () => {
-      it('should compute the length of each line in the given string', () => {
-        expect(computeLineLengths('')).toEqual([0]);
-        expect(computeLineLengths('abc')).toEqual([3]);
-        expect(computeLineLengths('\n')).toEqual([0, 0]);
-        expect(computeLineLengths('\n\n')).toEqual([0, 0, 0]);
-        expect(computeLineLengths('abc\n')).toEqual([3, 0]);
-        expect(computeLineLengths('\nabc')).toEqual([0, 3]);
-        expect(computeLineLengths('abc\ndefg')).toEqual([3, 4]);
-        expect(computeLineLengths('abc\r\n')).toEqual([3, 0]);
-        expect(computeLineLengths('abc\r\ndefg')).toEqual([3, 4]);
+    describe('computeStartOfLinePositions()', () => {
+      it('should compute the cumulative length of each line in the given string', () => {
+        expect(computeStartOfLinePositions('')).toEqual([0]);
+        expect(computeStartOfLinePositions('abc')).toEqual([0]);
+        expect(computeStartOfLinePositions('\n')).toEqual([0, 1]);
+        expect(computeStartOfLinePositions('\n\n')).toEqual([0, 1, 2]);
+        expect(computeStartOfLinePositions('abc\n')).toEqual([0, 4]);
+        expect(computeStartOfLinePositions('\nabc')).toEqual([0, 1]);
+        expect(computeStartOfLinePositions('abc\ndefg')).toEqual([0, 4]);
+        expect(computeStartOfLinePositions('abc\r\n')).toEqual([0, 4]);
+        expect(computeStartOfLinePositions('abc\r\ndefg')).toEqual([0, 4]);
       });
     });
   });
