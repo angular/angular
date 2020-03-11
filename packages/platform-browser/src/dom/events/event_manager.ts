@@ -90,6 +90,9 @@ export class EventManager {
   }
 }
 
+/**
+ * @publicApi
+ */
 export abstract class EventManagerPlugin {
   constructor(private _doc: any) {}
 

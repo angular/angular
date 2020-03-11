@@ -27,13 +27,21 @@ export declare abstract class DomSanitizer implements Sanitizer {
 
 export declare function enableDebugTools<T>(ref: ComponentRef<T>): ComponentRef<T>;
 
-export declare const EVENT_MANAGER_PLUGINS: InjectionToken<ɵangular_packages_platform_browser_platform_browser_g[]>;
+export declare const EVENT_MANAGER_PLUGINS: InjectionToken<EventManagerPlugin[]>;
 
 export declare class EventManager {
-    constructor(plugins: ɵangular_packages_platform_browser_platform_browser_g[], _zone: NgZone);
+    constructor(plugins: EventManagerPlugin[], _zone: NgZone);
     addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
     addGlobalEventListener(target: string, eventName: string, handler: Function): Function;
     getZone(): NgZone;
+}
+
+export declare abstract class EventManagerPlugin {
+    manager: EventManager;
+    constructor(_doc: any);
+    abstract addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
+    addGlobalEventListener(element: string, eventName: string, handler: Function): Function;
+    abstract supports(eventName: string): boolean;
 }
 
 export declare const HAMMER_GESTURE_CONFIG: InjectionToken<HammerGestureConfig>;
