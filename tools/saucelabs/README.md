@@ -5,17 +5,17 @@
 1. Set up your `SAUCE_USERNAME`, `SAUCE_ACCESS_KEY` & `SAUCE_TUNNEL_IDENTIFIER` environment variables. 
 These are required.  
 
-2. On OSX, you will also need to set `SAUCE_CONNECT` to the path of your `sc` binary (Sauce Connect Proxy).
+2. On OSX and Windows, you will also need to set `SAUCE_CONNECT` to the path of your `sc` binary (Sauce Connect Proxy).
 You will have to download Sauce Connect Proxy if you don't already have it downloaded. 
-It's available on the SauceLabs website here: https://wiki.saucelabs.com/display/DOCS/Sauce+Connect+Proxy+Change+Logs.
+It's available on the SauceLabs website [here](https://wiki.saucelabs.com/display/DOCS/Downloading+Sauce+Connect+Proxy).
 Unzip it and point the SAUCE_CONNECT env variable to the `sc` binary.
 
 ```
 export SAUCE_CONNECT=/{path_to_sc}/bin/sc
 ```
 
-Note: it will not work to use the Sauce Connect that's already in node_modules. 
-Download the one above.
+Note: it will not work to use the Sauce Connect that's already in node_modules unless you are using Linux. 
+Download the one above for other platforms.
 
 3. Once you have your environment variables set up, run the setup task in the root of the repo:
 
