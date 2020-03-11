@@ -1,34 +1,49 @@
-<div class="controls">
-  <button mat-stroked-button (click)="exportProfile.emit()">Export to JSON</button>
-  <mat-slider
-    [max]="profileRecords.timeline.length - 1"
-    [min]="1"
-    [(ngModel)]="currentView"
-    (change)="updateView($event)"
-  ></mat-slider>
-  &nbsp;
-  <button mat-stroked-button (click)="move(-1)"><</button><button mat-stroked-button (click)="move(1)">></button>
-  &nbsp;
-  <label
-    [class.warning-no]="recordsView.timeSpent < 16"
-    [class.warning-low]="recordsView.timeSpent >= 16"
-    [class.warning-mid]="recordsView.timeSpent >= 32"
-    [class.warning-high]="recordsView.timeSpent >= 64"
-  >
-    Time spent: {{ recordsView.timeSpent | number }} ms
-  </label>
+<ng-container *ngIf="profileRecords.timeline.length > 1; else resultsWithoutControls">
+  <ng-container *ngTemplateOutlet="recordView; context: { record: recordsView, showControls: true }"></ng-container>
+</ng-container>
+<ng-template #resultsWithoutControls>
+  <ng-container *ngIf="profileRecords.timeline.length === 1; else noRecords">
+    <ng-container *ngTemplateOutlet="recordView; context: { record: profileRecords.timeline[0] }"></ng-container>
+  </ng-container>
+  <ng-template #noRecords>
+    Nothing was profiled
+  </ng-template>
+</ng-template>
 
-  <label
-    [class.warning-no]="recordsView.timeSpent < 16"
-    [class.warning-low]="recordsView.timeSpent >= 16"
-    [class.warning-mid]="recordsView.timeSpent >= 32"
-    [class.warning-high]="recordsView.timeSpent >= 64"
-    *ngIf="frameRate(recordsView.timeSpent) < 64"
-  >
-    Frame rate: {{ frameRate(recordsView.timeSpent) }} fps
-  </label>
+<ng-template let-record="record" let-showControls="showControls" #recordView>
+  <div class="controls">
+    <button mat-stroked-button (click)="exportProfile.emit()">Export to JSON</button>
+    <ng-container *ngIf="showControls">
+      <mat-slider
+        [max]="profileRecords.timeline.length - 1"
+        [min]="1"
+        [(ngModel)]="currentView"
+        (change)="updateView($event)"
+      ></mat-slider>
+      &nbsp;
+      <button mat-stroked-button (click)="move(-1)"><</button>
+      <button mat-stroked-button (click)="move(1)">></button>
+    </ng-container>
 
-  <label *ngIf="recordsView.source">Source: {{ recordsView.source }}</label>
-</div>
+    <label
+      [class.warning-no]="record.timeSpent < 16"
+      [class.warning-low]="record.timeSpent >= 16"
+      [class.warning-mid]="record.timeSpent >= 32"
+      [class.warning-high]="record.timeSpent >= 64"
+    >
+      Time spent: {{ record.timeSpent | number }} ms
+    </label>
 
-<ng-recording-visualizer [bars]="recordsView.app"></ng-recording-visualizer>
+    <label
+      [class.warning-no]="record.timeSpent < 16"
+      [class.warning-low]="record.timeSpent >= 16"
+      [class.warning-mid]="record.timeSpent >= 32"
+      [class.warning-high]="record.timeSpent >= 64"
+      *ngIf="frameRate(record.timeSpent) < 64"
+    >
+      Frame rate: {{ frameRate(record.timeSpent) }} fps
+    </label>
+    <label *ngIf="record.source">Source: {{ record.source }}</label>
+  </div>
+  <ng-recording-visualizer [bars]="record.app"></ng-recording-visualizer>
+</ng-template>
