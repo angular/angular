@@ -17,10 +17,8 @@
     "cy:run": "ng serve & wait-on http://localhost:4200 && $(npm bin)/cypress run",
     "cy:run:watch": "ng serve & wait-on http://localhost:4200 && $(npm bin)/cypress open",
     "test:backend": "ng test ng-devtools-backend --watch=false",
-    "test:shared-utils": "ng test shared-utils --watch=false",
     "test:devtools": "ng test ng-devtools --watch=false",
-    "test:shell": "ng test shell-dev --watch=false",
-    "test:ci": "npm run test:backend && npm run test:devtools && npm run test:shell && npm run test:shared-utils",
+    "test:ci": "npm run test:backend && npm run test:devtools",
     "prettier": "prettier --write \"{,!(node_modules|dist|build|coverage)/**/}*.{js,jsx,ts,tsx,json}\"",
     "prettier:fix": "pretty-quick --staged"
   },
