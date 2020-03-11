@@ -8,7 +8,7 @@
 
 import {CommonModule} from '@angular/common';
 import {ChangeDetectionStrategy, Component, Input, NgModule, TemplateRef, ɵdetectChanges} from '@angular/core';
-import {numViews} from '../util';
+import {newArray, numViews} from '../util';
 
 @Component({
   selector: 'declaration-component',
@@ -37,10 +37,11 @@ export class DeclarationComponent {
 })
 export class InsertionComponent {
   @Input() template !: TemplateRef<{}>;
-  views: undefined[] = [];
+  views: any[] = [];
   @Input()
-  set viewCount(n: number) { this.views = new Array(n); }
+  set viewCount(n: number) { this.views = n > 0 ? newArray<any>(n) : []; }
 
+  // use trackBy to ensure profile isn't affected by the cost to refresh ngFor.
   trackByIndex(index: number, item: any) { return index; }
 }
 

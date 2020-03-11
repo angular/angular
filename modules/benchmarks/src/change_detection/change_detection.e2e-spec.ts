@@ -19,10 +19,11 @@ describe('change detection benchmark', () => {
       ignoreBrowserSynchronization: true,
       params: [{name: 'viewCount', value: 1}],
     });
-    await $('#createDom').click();
     expect($('#root').getText()).toContain('1');
-    await $('#createDom').click();
+    await $('#detectChanges').click();
     expect($('#root').getText()).toContain('2');
+    await $('#detectChanges').click();
+    expect($('#root').getText()).toContain('3');
     await $('#destroyDom').click();
     expect(await $('#root').getText()).toEqual('');
   });
