@@ -42,9 +42,11 @@ function assertNotEquals {
   fi
 }
 
-
 ngcc --help
 assertSucceeded "Expected 'ngcc --help' to succeed."
+
+ngcc --unknown-option 2>&1 | grep 'Unknown arguments: unknown-option, unknownOption'
+assertSucceeded "Expected ngcc to report bad option."
 
 # node --inspect-brk $(npm bin)/ngcc -f esm2015
 # Run ngcc and check it logged compilation output as expected
