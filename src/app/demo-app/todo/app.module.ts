@@ -1,12 +1,25 @@
 import { NgModule } from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 
-import { AppComponent } from './app.component';
 import { RouterModule } from '@angular/router';
 
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { FormsModule } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
+
+import { AppComponent } from './app.component';
+
+import { DialogComponent } from './dialog.component';
+
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, DialogComponent],
   imports: [
+    MatDialogModule,
+    MatFormFieldModule,
+    FormsModule,
+    MatInputModule,
     CommonModule,
     RouterModule.forChild([
       {
