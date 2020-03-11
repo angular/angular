@@ -56,6 +56,8 @@ const hookNames = [
   'AfterViewChecked',
 ];
 
+const hookMethodNames = new Set(hookNames.map(hook => `ng${hook}`));
+
 const hookTViewProperties = [
   'preOrderHooks',
   'preOrderCheckHooks',
@@ -66,11 +68,19 @@ const hookTViewProperties = [
   'destroyHooks',
 ];
 
-const getLifeCycleName = (fnName: string): keyof LifecycleProfile | 'unknown' => {
-  fnName = fnName.toLowerCase();
-  return (
-    (hookNames.filter(hook => fnName.indexOf(hook.toLowerCase()) >= 0).pop() as keyof LifecycleProfile) || 'unknown'
-  );
+const getLifeCycleName = (obj: {}, fn: any): keyof LifecycleProfile | 'unknown' => {
+  const proto = Object.getPrototypeOf(obj);
+  const keys = Object.keys(proto);
+  for (const propName of keys) {
+    // We don't want to touch random get accessors.
+    if (!hookMethodNames.has(propName)) {
+      continue;
+    }
+    if (proto[propName] === fn) {
+      return propName as keyof LifecycleProfile;
+    }
+  }
+  return 'unknown';
 };
 
 /**
@@ -223,7 +233,7 @@ export class ComponentTreeObserver {
                 getDirectiveHostElement(this),
                 self._tracker.getDirectiveId(this),
                 isComponent,
-                getLifeCycleName(el.name),
+                getLifeCycleName(this, el),
                 performance.now() - start
               );
             }
