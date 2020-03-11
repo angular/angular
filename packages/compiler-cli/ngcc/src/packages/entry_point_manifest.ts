@@ -15,8 +15,8 @@ import {NgccConfiguration} from './configuration';
 import {EntryPoint, INVALID_ENTRY_POINT, NO_ENTRY_POINT, getEntryPointInfo} from './entry_point';
 
 /**
- * Manages reading and write a manifest file that contains a list of all the entry-points that were
- * found below a given basePath.
+ * Manages reading and writing a manifest file that contains a list of all the entry-points that
+ * were found below a given basePath.
  *
  * This is a super-set of the entry-points that are actually processed for a given run of ngcc,
  * since some may already be processed, or excluded if they do not have the required format.
@@ -46,13 +46,13 @@ export class EntryPointManifest {
         return null;
       }
 
-      const computedLockFileHash = this.computeLockFileHash(basePath);
-      if (computedLockFileHash === null) {
+      const manifestPath = this.getEntryPointManifestPath(basePath);
+      if (!this.fs.exists(manifestPath)) {
         return null;
       }
 
-      const manifestPath = this.getEntryPointManifestPath(basePath);
-      if (!this.fs.exists(manifestPath)) {
+      const computedLockFileHash = this.computeLockFileHash(basePath);
+      if (computedLockFileHash === null) {
         return null;
       }
 
@@ -82,7 +82,8 @@ export class EntryPointManifest {
       this.logger.debug(`Reading entry-points using the manifest entries took ${duration}s.`);
       return entryPoints;
     } catch (e) {
-      this.logger.warn(`Unable to read the entry-point manifest for ${basePath}:`, e.toString());
+      this.logger.warn(
+          `Unable to read the entry-point manifest for ${basePath}:\n`, e.stack || e.toString());
       return null;
     }
   }
