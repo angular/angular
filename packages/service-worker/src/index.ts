@@ -14,7 +14,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {UpdateActivatedEvent, UpdateAvailableEvent, NgswCommChannel} from './low_level';
+export {NgswCommChannel, UpdateActivatedEvent, UpdateAvailableEvent} from './low_level';
 export {ServiceWorkerModule, SwRegistrationOptions} from './module';
 export {SwPush} from './push';
 export {SwUpdate} from './update';

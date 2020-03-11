@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
- /**
-  * @publicApi
-  */
+/**
+ * @publicApi
+ */
 export class Tree<T> {
   /** @internal */
   _root: TreeNode<T>;
@@ -24,36 +24,36 @@ export class Tree<T> {
   /**
    * @internal
    */
-  parent(t: T): T|null {
-    const p = this.pathFromRoot(t);
+  parent(tree: T): T|null {
+    const p = this.pathFromRoot(tree);
     return p.length > 1 ? p[p.length - 2] : null;
   }
 
   /**
    * @internal
    */
-  children(t: T): T[] {
-    const n = findNode(t, this._root);
+  children(tree: T): T[] {
+    const n = findNode(tree, this._root);
     return n ? n.children.map(t => t.value) : [];
   }
 
   /**
    * @internal
    */
-  firstChild(t: T): T|null {
-    const n = findNode(t, this._root);
+  firstChild(tree: T): T|null {
+    const n = findNode(tree, this._root);
     return n && n.children.length > 0 ? n.children[0].value : null;
   }
 
   /**
    * @internal
    */
-  siblings(t: T): T[] {
-    const p = findPath(t, this._root);
+  siblings(tree: T): T[] {
+    const p = findPath(tree, this._root);
     if (p.length < 2) return [];
 
     const c = p[p.length - 2].children.map(c => c.value);
-    return c.filter(cc => cc !== t);
+    return c.filter(cc => cc !== tree);
   }
 
   /**

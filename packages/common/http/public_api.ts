@@ -10,7 +10,7 @@ export {HttpBackend, HttpHandler} from './src/backend';
 export {HttpClient} from './src/client';
 export {HttpHeaders} from './src/headers';
 export {HTTP_INTERCEPTORS, HttpInterceptor} from './src/interceptor';
-export {JsonpClientBackend, JsonpInterceptor, JsonpCallbackContext} from './src/jsonp';
+export {JsonpCallbackContext, JsonpClientBackend, JsonpInterceptor} from './src/jsonp';
 export {HttpClientJsonpModule, HttpClientModule, HttpClientXsrfModule, HttpInterceptingHandler as ɵHttpInterceptingHandler} from './src/module';
 export {HttpParameterCodec, HttpParams, HttpUrlEncodingCodec} from './src/params';
 export {HttpRequest} from './src/request';
