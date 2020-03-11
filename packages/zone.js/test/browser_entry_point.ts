@@ -27,4 +27,5 @@ import './browser/Notification.spec';
 import './browser/Worker.spec';
 import './mocha-patch.spec';
 import './jasmine-patch.spec';
+import './browser/messageport.spec';
 import './extra/cordova.spec';
