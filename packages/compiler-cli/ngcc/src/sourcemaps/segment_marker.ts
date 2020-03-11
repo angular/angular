@@ -16,6 +16,7 @@
 export interface SegmentMarker {
   readonly line: number;
   readonly column: number;
+  next: SegmentMarker|undefined;
 }
 
 /**
@@ -64,5 +65,5 @@ export function offsetSegment(
     line--;
   }
   const column = newPos - startOfLinePositions[line];
-  return {line, column};
+  return {line, column, next: undefined};
 }
