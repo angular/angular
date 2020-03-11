@@ -161,10 +161,10 @@
   uid "1253d8705e4db165a918e05f4d4113aecfe24073"
   resolved "https://codeload.github.com/angular/animations-builds/tar.gz/1253d8705e4db165a918e05f4d4113aecfe24073"
 
-"@angular/cdk@~9.0.0":
-  version "9.0.1"
-  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-9.0.1.tgz#3580375ce0b4aa9ddbd6ea790ab241a8db73b156"
-  integrity sha512-slhYG9lOX7JoxcULdfIvXspkDRjYTBG8PH6B2Slxi8CpV42x0t+yQnBQxp/U3ud1m1BWVrlxwKZywaPFe1tSeA==
+"@angular/cdk@~9.1.0":
+  version "9.1.2"
+  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-9.1.2.tgz#c22271bc0cad509f9f08e4e6b5ceeaefd06237be"
+  integrity sha512-x5niyE0iYrbVtLYjJFw2MoS+OoSbJn6y/G2pNScviDwyjBBgqRh4YgUox2kMhdPumkvuh+eA6blZoE9qpvSo2w==
   optionalDependencies:
     parse5 "^5.0.0"
 
@@ -241,10 +241,10 @@
   uid "9f70bfda23caf1e2714c0cca2655426d985005b9"
   resolved "https://codeload.github.com/angular/language-service-builds/tar.gz/9f70bfda23caf1e2714c0cca2655426d985005b9"
 
-"@angular/material@~9.0.0":
-  version "9.0.1"
-  resolved "https://registry.yarnpkg.com/@angular/material/-/material-9.0.1.tgz#752a9424c946ea8d2dc677810a98b3b2c6bfc448"
-  integrity sha512-Urc5TJwEWcItfoAG7uDVCXSbKBmIARfTjAC3n1wdaUYYkeii0AEOxOuOR9vNUqiC+gC3L64Y+QlNTWClJhmu1w==
+"@angular/material@~9.1.0":
+  version "9.1.2"
+  resolved "https://registry.yarnpkg.com/@angular/material/-/material-9.1.2.tgz#3065d48aa1fa106963a8d9889f68fb5686e88f91"
+  integrity sha512-8uwwkSnsg/YlhqxD/+0Cj+1S97Xf5WUcgxSEXmC1r0/AD+o6PGL5ImIk4n+3tdgYqm7MoJZQthlIB2J0EVLjVw==
 
 "@angular/platform-browser-dynamic@github:angular/platform-browser-dynamic-builds#59069116669a8251b574ceb408f79a957ff14760":
   version "9.1.0-next.4+33.sha-8ea61a1"
