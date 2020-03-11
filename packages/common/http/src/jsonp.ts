@@ -34,7 +34,7 @@ export const JSONP_ERR_WRONG_RESPONSE_TYPE = 'JSONP requests must use Json respo
  *
  * In the browser, this should always be the `window` object.
  *
- *
+ * @publicApi
  */
 export abstract class JsonpCallbackContext {
   [key: string]: (data: any) => void;

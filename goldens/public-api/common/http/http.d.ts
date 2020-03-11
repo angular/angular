@@ -1718,8 +1718,12 @@ export declare abstract class HttpXsrfTokenExtractor {
     abstract getToken(): string | null;
 }
 
+export declare abstract class JsonpCallbackContext {
+    [key: string]: (data: any) => void;
+}
+
 export declare class JsonpClientBackend implements HttpBackend {
-    constructor(callbackMap: ɵangular_packages_common_http_http_b, document: any);
+    constructor(callbackMap: JsonpCallbackContext, document: any);
     handle(req: HttpRequest<never>): Observable<HttpEvent<any>>;
 }
 
