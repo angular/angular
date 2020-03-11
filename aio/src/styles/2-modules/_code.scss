@@ -42,6 +42,13 @@ code-example, code-tabs {
   }
 }
 
+p code {
+  background-color: rgba($lightgray, 0.5);
+  color: $deepgray;
+  padding: 4px;
+  border-radius: 4px;
+}
+
 code-tabs {
   margin: 16px 0;
 }
@@ -97,11 +104,9 @@ aio-code pre {
     }
 }
 
-
 .code-missing {
   color: $darkred;
 }
-
 
 .copy-button {
   position: absolute;

@@ -3,7 +3,7 @@
 
     .header-link {
       color: $mediumgray;
-      margin: 0 4px;
+      margin: 0 6px;
       text-decoration: none;
       user-select: none;
       visibility: hidden;
@@ -13,6 +13,19 @@
 
     &:hover .header-link {
       visibility: visible;
+      position: absolute;
     }
+  }
+
+  h1 .header-link {
+    top: 16px;
+  }
+
+  h2 .header-link {
+    top: 50px;
+  }
+
+  h3 .header-link {
+    top: 4px;
   }
 }

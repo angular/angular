@@ -2,3 +2,8 @@
   // Disable view transition animations.
   transition: none !important;
 }
+
+aio-doc-viewer > div {
+  max-width: 50em;
+  margin: 0 auto;
+}
