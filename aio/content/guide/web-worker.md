@@ -1,17 +1,26 @@
-# Using web workers with Angular CLI
+# Background processing using web workers
 
-[Web workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) allow you to run CPU intensive computations in a background thread, freeing the main thread to update the user interface.
+[Web workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) allow you to run CPU-intensive computations in a background thread,
+freeing the main thread to update the user interface.
 
 If you find your application becomes unresponsive while processing data, using web workers can help.
+The Angular CLI `ng generate` command supports adding a web worker to an existing project.
+
+<div class="alert is-helpful>
+
+The CLI does not support running Angular itself in a web worker.
+
+</div>
 
 ## Adding a web worker
 
-You can add a web worker anywhere in your application. If the file that contains your expensive computation is `src/app/app.component.ts`, you can add a web worker using `ng generate web-worker app`.
+You can add a web worker anywhere in your application.
+If the file that contains your expensive computation is `src/app/app.component.ts`, for example, you can add a web worker using `ng generate web-worker app`.
 
-Running this command will:
+The command performs the following actions.
 
-- configure your project to use web workers, if it isn't already.
-- add `src/app/app.worker.ts` with scaffolded code to receive messages:
+- Configures your project to use web workers, if it isn't already.
+- Adds the following scaffold code to `src/app/app.worker.ts` to  receive messages.
 
   <code-example language="typescript" header="src/app/app.worker.ts">
   addEventListener('message', ({ data }) => {
@@ -20,7 +29,7 @@ Running this command will:
   });
  </code-example>
 
-- add scaffolded code to `src/app/app.component.ts` to use the worker:
+- Adds the following scaffold code to `src/app/app.component.ts` to use the worker.
 
   <code-example language="typescript" header="src/app/app.component.ts">
   if (typeof Worker !== 'undefined') {
@@ -36,11 +45,10 @@ Running this command will:
   }
   </code-example>
 
-After the initial scaffolding, you will need to refactor your code to use the web worker by sending messages to and from.
+After you generate this initial scaffold, you must refactor your code to use the web worker by sending messages to and from the worker.
 
-## Caveats
+<div class="alert is-important>
 
-There are two important things to keep in mind when using web workers in Angular projects:
+Some environments or platforms, such as `@angular/platform-server` used in [Server-side Rendering](guide/universal), don't support web workers. You must provide a fallback mechanism to perform the computations that the worker would otherwise perform, in order to ensure that your application will work in these environments.
 
-- Some environments or platforms, like `@angular/platform-server` used in [Server-side Rendering](guide/universal), don't support web workers. You have to provide a fallback mechanism to perform the computations that the worker would perform to ensure your application will work in these environments.
-- Running Angular itself in a web worker via [**@angular/platform-webworker**](api/platform-webworker) is not yet supported in Angular CLI.
+</div>

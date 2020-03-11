@@ -583,8 +583,8 @@
         },
         {
           "url": "guide/web-worker",
-          "title": "Web Workers",
-          "tooltip": "Using Web Workers with Angular CLI."
+          "title": "Web Workers in Angular",
+          "tooltip": "Implement background processing with web workers."
         }
       ]
     },
