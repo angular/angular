@@ -94,6 +94,17 @@ export declare interface AbstractControlOptions {
     validators?: ValidatorFn | ValidatorFn[] | null;
 }
 
+export declare class AbstractControlStatus {
+    get ngClassDirty(): boolean;
+    get ngClassInvalid(): boolean;
+    get ngClassPending(): boolean;
+    get ngClassPristine(): boolean;
+    get ngClassTouched(): boolean;
+    get ngClassUntouched(): boolean;
+    get ngClassValid(): boolean;
+    constructor(cd: AbstractControlDirective);
+}
+
 export declare class AbstractFormGroupDirective extends ControlContainer implements OnInit, OnDestroy {
     get asyncValidator(): AsyncValidatorFn | null;
     get control(): FormGroup;
@@ -359,11 +370,11 @@ export declare abstract class NgControl extends AbstractControlDirective {
     abstract viewToModelUpdate(newValue: any): void;
 }
 
-export declare class NgControlStatus extends ɵangular_packages_forms_forms_g {
+export declare class NgControlStatus extends AbstractControlStatus {
     constructor(cd: NgControl);
 }
 
-export declare class NgControlStatusGroup extends ɵangular_packages_forms_forms_g {
+export declare class NgControlStatusGroup extends AbstractControlStatus {
     constructor(cd: ControlContainer);
 }
 
@@ -450,13 +461,19 @@ export declare class PatternValidator implements Validator, OnChanges {
     validate(control: AbstractControl): ValidationErrors | null;
 }
 
+export declare class RadioControlRegistry {
+    add(control: NgControl, accessor: RadioControlValueAccessor): void;
+    remove(accessor: RadioControlValueAccessor): void;
+    select(accessor: RadioControlValueAccessor): void;
+}
+
 export declare class RadioControlValueAccessor implements ControlValueAccessor, OnDestroy, OnInit {
     formControlName: string;
     name: string;
     onChange: () => void;
     onTouched: () => void;
     value: any;
-    constructor(_renderer: Renderer2, _elementRef: ElementRef, _registry: ɵangular_packages_forms_forms_n, _injector: Injector);
+    constructor(_renderer: Renderer2, _elementRef: ElementRef, _registry: RadioControlRegistry, _injector: Injector);
     fireUncheck(value: any): void;
     ngOnDestroy(): void;
     ngOnInit(): void;

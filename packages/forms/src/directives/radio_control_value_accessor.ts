@@ -27,6 +27,8 @@ function throwNameError() {
 /**
  * @description
  * Class used by Angular to track radio buttons. For internal use only.
+ *
+ * @publicApi
  */
 @Injectable()
 export class RadioControlRegistry {

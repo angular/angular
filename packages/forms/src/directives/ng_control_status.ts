@@ -12,6 +12,9 @@ import {AbstractControlDirective} from './abstract_control_directive';
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';
 
+/**
+ * @publicApi
+ */
 export class AbstractControlStatus {
   private _cd: AbstractControlDirective;
 
