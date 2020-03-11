@@ -8,7 +8,6 @@
 
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 import {assertDefined, assertEqual} from '../util/assert';
-
 import {assertLViewOrUndefined} from './assert';
 import {TNode} from './interfaces/node';
 import {CONTEXT, DECLARATION_VIEW, LView, OpaqueViewState, TVIEW, TView} from './interfaces/view';

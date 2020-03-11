@@ -942,7 +942,7 @@ function mapPropName(name: string): string {
 
 export function elementPropertyInternal<T>(
     tView: TView, tNode: TNode, lView: LView, propName: string, value: T, renderer: Renderer3,
-    sanitizer?: SanitizerFn | null, nativeOnly?: boolean): void {
+    sanitizer: SanitizerFn | null | undefined, nativeOnly: boolean): void {
   ngDevMode && assertNotSame(value, NO_CHANGE as any, 'Incoming value should never be NO_CHANGE.');
   const element = getNativeByTNode(tNode, lView) as RElement | RComment;
   let inputData = tNode.inputs;
@@ -1435,8 +1435,8 @@ function addComponentLogic<T>(lView: LView, hostTNode: TElementNode, def: Compon
 }
 
 export function elementAttributeInternal(
-    tNode: TNode, lView: LView, name: string, value: any, sanitizer?: SanitizerFn | null,
-    namespace?: string | null) {
+    tNode: TNode, lView: LView, name: string, value: any, sanitizer: SanitizerFn | null | undefined,
+    namespace: string | null | undefined) {
   ngDevMode && assertNotSame(value, NO_CHANGE as any, 'Incoming value should never be NO_CHANGE.');
   ngDevMode && validateAgainstEventAttributes(name);
   const element = getNativeByTNode(tNode, lView) as RElement;
