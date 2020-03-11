@@ -16,6 +16,7 @@
 export interface SegmentMarker {
   readonly line: number;
   readonly column: number;
+  readonly position: number;
   next: SegmentMarker|undefined;
 }
 
@@ -26,20 +27,7 @@ export interface SegmentMarker {
  * and zero if they are at the same position.
  */
 export function compareSegments(a: SegmentMarker, b: SegmentMarker): number {
-  return a.line === b.line ? a.column - b.column : a.line - b.line;
-}
-
-/**
- * Compute the difference between two segment markers in a source file.
- *
- * @param startOfLinePositions the position of the start of each line of content of the source file
- * where we are computing the difference
- * @param a the start marker
- * @param b the end marker
- * @returns the number of characters between the two segments `a` and `b`
- */
-export function segmentDiff(startOfLinePositions: number[], a: SegmentMarker, b: SegmentMarker) {
-  return startOfLinePositions[b.line] - startOfLinePositions[a.line] + b.column - a.column;
+  return a.position - b.position;
 }
 
 /**
@@ -51,19 +39,19 @@ export function segmentDiff(startOfLinePositions: number[], a: SegmentMarker, b:
  * @param offset the number of character to offset by.
  */
 export function offsetSegment(
-    startOfLinePositions: number[], marker: SegmentMarker, offset: number) {
+    startOfLinePositions: number[], marker: SegmentMarker, offset: number): SegmentMarker {
   if (offset === 0) {
     return marker;
   }
 
   let line = marker.line;
-  const newPos = startOfLinePositions[line] + marker.column + offset;
-  while (line < startOfLinePositions.length - 1 && startOfLinePositions[line + 1] <= newPos) {
+  const position = marker.position + offset;
+  while (line < startOfLinePositions.length - 1 && startOfLinePositions[line + 1] <= position) {
     line++;
   }
-  while (line > 0 && startOfLinePositions[line] > newPos) {
+  while (line > 0 && startOfLinePositions[line] > position) {
     line--;
   }
-  const column = newPos - startOfLinePositions[line];
-  return {line, column, next: undefined};
+  const column = position - startOfLinePositions[line];
+  return {line, column, position, next: undefined};
 }
