@@ -11,7 +11,7 @@ import { DebuggingAPI } from './interfaces';
 import { IndexedNode } from './observer/identity-tracker';
 import { buildDirectiveTree, getLViewFromDirectiveOrElementInstance } from './lview-transform';
 
-const ngDebug = (window as any).ng;
+const ngDebug = () => (window as any).ng;
 
 export interface DirectiveInstanceType {
   instance: any;
@@ -147,19 +147,20 @@ const findElementIDFromNativeElementInForest = (
 
 export const findNodeFromSerializedPosition = (serializedPosition: string) => {
   const position: number[] = serializedPosition.split(',').map(index => parseInt(index, 10));
-  return queryDirectiveForest(position, buildDirectiveForest(ngDebug));
+  return queryDirectiveForest(position, buildDirectiveForest(ngDebug()));
 };
 
 export const updateState = (updatedStateData: UpdatedStateData) => {
-  const node = queryDirectiveForest(updatedStateData.directiveId.element, buildDirectiveForest(ngDebug));
+  const ngd = ngDebug();
+  const node = queryDirectiveForest(updatedStateData.directiveId.element, buildDirectiveForest(ngd));
   if (updatedStateData.directiveId.directive === undefined) {
     const comp = node.component.instance;
     mutateComponentOrDirective(updatedStateData, comp);
-    ngDebug.applyChanges(comp);
+    ngd.applyChanges(comp);
   } else {
     const directive = node.directives[updatedStateData.directiveId.directive].instance;
     mutateComponentOrDirective(updatedStateData, directive);
-    ngDebug.applyChanges(ngDebug.getOwningComponent(directive));
+    ngd.applyChanges(ngd.getOwningComponent(directive));
   }
 };
 
