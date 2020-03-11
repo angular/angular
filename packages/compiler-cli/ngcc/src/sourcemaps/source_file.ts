@@ -9,7 +9,7 @@ import {removeComments, removeMapFileComments} from 'convert-source-map';
 import {SourceMapMappings, SourceMapSegment, decode, encode} from 'sourcemap-codec';
 import {AbsoluteFsPath, dirname, relative} from '../../../src/ngtsc/file_system';
 import {RawSourceMap} from './raw_source_map';
-import {SegmentMarker, compareSegments, offsetSegment, segmentDiff} from './segment_marker';
+import {SegmentMarker, compareSegments, offsetSegment} from './segment_marker';
 
 export function removeSourceMapComments(contents: string): string {
   return removeMapFileComments(removeComments(contents)).replace(/\n\n$/, '\n');
@@ -89,7 +89,7 @@ export class SourceFile {
    * source files with no transitive source maps.
    */
   private flattenMappings(): Mapping[] {
-    const mappings = parseMappings(this.rawMap, this.sources);
+    const mappings = parseMappings(this.rawMap, this.sources, this.startOfLinePositions);
     ensureOriginalSegmentLinks(mappings);
     const flattenedMappings: Mapping[] = [];
     for (let mappingIndex = 0; mappingIndex < mappings.length; mappingIndex++) {
@@ -277,8 +277,7 @@ export function mergeMappings(generatedSource: SourceFile, ab: Mapping, bc: Mapp
   // segment-marker" of B->C (4*): `1 - 4 = -3`.
   // Since it is negative we must increment the "generated segment-marker" with `3` to give [3,2].
 
-  const diff =
-      segmentDiff(ab.originalSource.startOfLinePositions, ab.originalSegment, bc.generatedSegment);
+  const diff = compareSegments(bc.generatedSegment, ab.originalSegment);
   if (diff > 0) {
     return {
       name,
@@ -303,7 +302,8 @@ export function mergeMappings(generatedSource: SourceFile, ab: Mapping, bc: Mapp
  * in the `sources` parameter.
  */
 export function parseMappings(
-    rawMap: RawSourceMap | null, sources: (SourceFile | null)[]): Mapping[] {
+    rawMap: RawSourceMap | null, sources: (SourceFile | null)[],
+    generatedSourceStartOfLinePositions: number[]): Mapping[] {
   if (rawMap === null) {
     return [];
   }
@@ -330,11 +330,13 @@ export function parseMappings(
         const generatedSegment: SegmentMarker = {
           line: generatedLine,
           column: generatedColumn,
+          position: generatedSourceStartOfLinePositions[generatedLine] + generatedColumn,
           next: undefined,
         };
         const originalSegment: SegmentMarker = {
           line,
           column,
+          position: originalSource.startOfLinePositions[line] + column,
           next: undefined,
         };
         mappings.push({name, generatedSegment, originalSegment, originalSource});
