@@ -1,6 +1,6 @@
-# Routing and navigation
+# In-app navigation with routing
 
-The Angular **`Router`** enables navigation from one [view](guide/glossary#view) to the next
+The Angular **`Router`** enables navigation from one [view](guide/glossary#view "View definition") to the next
 as users perform application tasks.
 
 This guide covers the router's primary features, illustrating them through the evolution
@@ -3306,7 +3306,7 @@ The `redirectUrl` property stores the URL that the user wanted to access so you 
 
 <div class="alert is-helpful">
 
-To keep things simple, this example redirects unauthenticated users to `/admin`. 
+To keep things simple, this example redirects unauthenticated users to `/admin`.
 
 </div>
 

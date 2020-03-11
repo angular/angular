@@ -1,4 +1,4 @@
-# HttpClient
+# Communicating with backend services using HTTP
 
 Most front-end applications communicate with backend services over the HTTP protocol. Modern browsers support two different APIs for making HTTP requests: the `XMLHttpRequest` interface and the `fetch()` API.
 
