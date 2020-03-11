@@ -21,6 +21,11 @@ For example, to add a web worker to the root component, `src/app/app.component.t
 
  `ng generate web-worker app`.
 
+You can add a web worker anywhere in your application.
+For example, to add a web worker to the root component, `src/app/app.component.ts`, run the following command.
+
+ `ng generate web-worker app`.
+
 
 The command performs the following actions.
 
