@@ -4,11 +4,12 @@
 {
   "extends": "../tsconfig-defaults.json",
   "compilerOptions": {
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
+    "module": "commonjs",
     "lib": [
-      "ES2015",
-      "dom"
+      "ES2017"
+    ],
+    "types": [
+      "node",
     ]
   }
 }

@@ -1,22 +1,17 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
-
-# BEGIN-DEV-ONLY
-load("@npm_bazel_typescript//:index.bzl", "ts_library")
+load("//tools:defaults.bzl", "nodejs_binary", "ts_library")
 
 ts_library(
     name = "lib",
     srcs = glob(["*.ts"]),
-    node_modules = "@npm//typescript:typescript__typings",
-    tsconfig = ":tsconfig.json",
+    tsconfig = "//:tsconfig-defaults.json",
     deps = [
         "@npm//@types/node",
         "@npm//@types/shelljs",
     ],
 )
 
-# END-DEV-ONLY
 nodejs_binary(
     name = "packager",
     data = [
