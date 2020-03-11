@@ -74,7 +74,7 @@ if (require.main === module) {
             choices: ['error', 'warning', 'ignore'],
             default: 'warning',
           })
-
+          .strict()
           .help()
           .parse(args);
 
