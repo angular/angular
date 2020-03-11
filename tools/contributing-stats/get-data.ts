@@ -232,12 +232,18 @@ function buildQueryAndParams(username: string, date: string) {
  * of the organization.
  */
 async function run(date: string) {
-  console.info(['Username'].concat(buildQueryAndParams('', date).labels).join(','));
+  try {
+    const allOrgMembers = await getAllOrgMembers();
+    console.info(['Username', ...buildQueryAndParams('', date).labels].join(','));
 
-  for (let username of await getAllOrgMembers()) {
-    const results = await graphql(buildQueryAndParams(username, date).query);
-    const values = Object.values(results).map(result => `${result.issueCount}`);
-    console.info([username].concat(values).join(','));
+    for (const username of allOrgMembers) {
+      const results = await graphql(buildQueryAndParams(username, date).query);
+      const values = Object.values(results).map(result => `${result.issueCount}`);
+      console.info([username, ...values].join(','));
+    }
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    process.exit(1);
   }
 }
 
