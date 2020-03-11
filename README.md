@@ -8,7 +8,7 @@
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/angular2-ci.svg)](https://saucelabs.com/u/angular2-ci)  
 *Safari (7+), iOS (7+), Edge (14) and IE mobile (11) are tested on [BrowserStack][browserstack].*
 
-Angular
+AngularTest
 =========
 
 Angular is a development platform for building mobile and desktop web applications. This is the
