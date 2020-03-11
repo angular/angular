@@ -76,6 +76,7 @@ if (require.main === module) {
             describe: 'The lowest severity logging message that should be output.',
             choices: ['debug', 'info', 'warn', 'error'],
           })
+          .strict()
           .help()
           .parse(args);
 
