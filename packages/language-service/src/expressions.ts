@@ -8,7 +8,7 @@
 
 import {AST, ASTWithSource, AstPath as AstPathBase, RecursiveAstVisitor} from '@angular/compiler';
 import {AstType} from './expression_type';
-import {BuiltinType, Span, Symbol, SymbolQuery, SymbolTable, TemplateSource} from './types';
+import {BuiltinType, Span, Symbol, SymbolTable, TemplateSource} from './types';
 import {inSpan} from './utils';
 
 type AstPath = AstPathBase<AST>;
