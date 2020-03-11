@@ -9,7 +9,7 @@ import {
 } from 'protocol';
 import { DebuggingAPI } from './interfaces';
 import { IndexedNode } from './observer/identity-tracker';
-import { buildDirectiveTree, getLViewFromDirectiveInstance } from './lview-transform';
+import { buildDirectiveTree, getLViewFromDirectiveOrElementInstance } from './lview-transform';
 
 const ngDebug = (window as any).ng;
 
@@ -61,11 +61,29 @@ export const getLatestComponentState = (query: ComponentExplorerViewQuery): Dire
   return result;
 };
 
+const getRootLViewsHelper = (element: Element, rootLViews: any[] = []) => {
+  if (!(element instanceof HTMLElement)) {
+    return;
+  }
+  const lView = getLViewFromDirectiveOrElementInstance(element);
+  if (lView) {
+    rootLViews.push(lView);
+    return;
+  }
+  // tslint:disable-next-line: prefer-for-of
+  for (let i = 0; i < element.children.length; i++) {
+    getRootLViewsHelper(element.children[i], rootLViews);
+  }
+  return rootLViews;
+};
+
 export const buildDirectiveForest = (ngd: DebuggingAPI): ComponentTreeNode[] => {
-  const roots = Array.from(document.documentElement.querySelectorAll('[ng-version]')).map(el =>
-    getLViewFromDirectiveInstance(ngd.getComponent(el))
-  );
-  return Array.prototype.concat.apply([], roots.map(buildDirectiveTree));
+  // const then = performance.now();
+  const roots = getRootLViewsHelper(document.documentElement);
+  // console.info('%cTime to find roots: ' + (performance.now() - then), 'color: blue');
+  const result = Array.prototype.concat.apply([], roots.map(buildDirectiveTree));
+  // console.info('%cTime to generate tree: ' + (performance.now() - then), 'color: blue');
+  return result;
 };
 
 // Based on an ElementID we return a specific component node.
