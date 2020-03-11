@@ -743,8 +743,14 @@ export class ParsedEvent {
       public handlerSpan: ParseSourceSpan) {}
 }
 
+/**
+ * ParsedVariable represents a variable declaration in a microsyntax expression.
+ */
 export class ParsedVariable {
-  constructor(public name: string, public value: string, public sourceSpan: ParseSourceSpan) {}
+  constructor(
+      public readonly name: string, public readonly value: string,
+      public readonly sourceSpan: ParseSourceSpan, public readonly keySpan: ParseSourceSpan,
+      public readonly valueSpan?: ParseSourceSpan) {}
 }
 
 export const enum BindingType {

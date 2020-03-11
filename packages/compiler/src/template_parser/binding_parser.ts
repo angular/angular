@@ -8,11 +8,11 @@
 
 import {CompileDirectiveSummary, CompilePipeSummary} from '../compile_metadata';
 import {SecurityContext} from '../core';
-import {ASTWithSource, BindingPipe, BindingType, BoundElementProperty, EmptyExpr, ParsedEvent, ParsedEventType, ParsedProperty, ParsedPropertyType, ParsedVariable, ParserError, RecursiveAstVisitor, TemplateBinding, VariableBinding} from '../expression_parser/ast';
+import {ASTWithSource, AbsoluteSourceSpan, BindingPipe, BindingType, BoundElementProperty, EmptyExpr, ParsedEvent, ParsedEventType, ParsedProperty, ParsedPropertyType, ParsedVariable, ParserError, RecursiveAstVisitor, TemplateBinding, VariableBinding} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {mergeNsAndName} from '../ml_parser/tags';
-import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util';
+import {ParseError, ParseErrorLevel, ParseLocation, ParseSourceSpan} from '../parse_util';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {CssSelector} from '../selector';
 import {splitAtColon, splitAtPeriod} from '../util';
@@ -21,7 +21,7 @@ const PROPERTY_PARTS_SEPARATOR = '.';
 const ATTRIBUTE_PREFIX = 'attr';
 const CLASS_PREFIX = 'class';
 const STYLE_PREFIX = 'style';
-
+const TEMPLATE_ATTR_PREFIX = '*';
 const ANIMATE_PROP_PREFIX = 'animate-';
 
 /**
@@ -129,16 +129,21 @@ export class BindingParser {
       tplKey: string, tplValue: string, sourceSpan: ParseSourceSpan, absoluteValueOffset: number,
       targetMatchableAttrs: string[][], targetProps: ParsedProperty[],
       targetVars: ParsedVariable[]) {
-    const absoluteKeyOffset = sourceSpan.start.offset;
+    const absoluteKeyOffset = sourceSpan.start.offset + TEMPLATE_ATTR_PREFIX.length;
     const bindings = this._parseTemplateBindings(
         tplKey, tplValue, sourceSpan, absoluteKeyOffset, absoluteValueOffset);
 
-    for (let i = 0; i < bindings.length; i++) {
-      const binding = bindings[i];
+    for (const binding of bindings) {
+      // sourceSpan is for the entire HTML attribute. bindingSpan is for a particular
+      // binding within the microsyntax expression so it's more narrow than sourceSpan.
+      const bindingSpan = moveParseSourceSpan(sourceSpan, binding.sourceSpan);
       const key = binding.key.source;
+      const keySpan = moveParseSourceSpan(sourceSpan, binding.key.span);
       if (binding instanceof VariableBinding) {
         const value = binding.value ? binding.value.source : '$implicit';
-        targetVars.push(new ParsedVariable(key, value, sourceSpan));
+        const valueSpan =
+            binding.value ? moveParseSourceSpan(sourceSpan, binding.value.span) : undefined;
+        targetVars.push(new ParsedVariable(key, value, bindingSpan, keySpan, valueSpan));
       } else if (binding.value) {
         this._parsePropertyAst(
             key, binding.value, sourceSpan, undefined, targetMatchableAttrs, targetProps);
@@ -517,4 +522,19 @@ export function calcPossibleSecurityContexts(
         elementName => registry.securityContext(elementName, propName, isAttribute)));
   });
   return ctxs.length === 0 ? [SecurityContext.NONE] : Array.from(new Set(ctxs)).sort();
+}
+
+/**
+ * Compute a new ParseSourceSpan based off an original `sourceSpan` by using
+ * absolute offsets from the specified `absoluteSpan`.
+ *
+ * @param sourceSpan original source span
+ * @param absoluteSpan absolute source span to move to
+ */
+function moveParseSourceSpan(
+    sourceSpan: ParseSourceSpan, absoluteSpan: AbsoluteSourceSpan): ParseSourceSpan {
+  // The difference of two absolute offsets provide the relative offset
+  const startDiff = absoluteSpan.start - sourceSpan.start.offset;
+  const endDiff = absoluteSpan.end - sourceSpan.end.offset;
+  return new ParseSourceSpan(sourceSpan.start.moveBy(startDiff), sourceSpan.end.moveBy(endDiff));
 }
