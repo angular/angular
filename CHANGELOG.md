@@ -31,7 +31,7 @@
 
 
 <a name="9.0.6"></a>
-## [9.0.6](https://github.com/angular/angular/compare/9.0.5...9.0.6) (2020-03-11)
+## [9.0.6](https://github.com/angular/angular/compare/9.0.5...9.0.6) (2020-03-10)
 
 
 ### Bug Fixes
