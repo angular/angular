@@ -56,6 +56,7 @@ def karma_test(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, 
             "//packages/zone.js/dist:zone-patch-canvas.js",
             "//packages/zone.js/dist:zone-patch-fetch.js",
             "//packages/zone.js/dist:zone-patch-resize-observer.js",
+            "//packages/zone.js/dist:zone-patch-message-port.js",
             "//packages/zone.js/dist:zone-patch-user-media.js",
             ":" + name + "_rollup.umd",
         ]
