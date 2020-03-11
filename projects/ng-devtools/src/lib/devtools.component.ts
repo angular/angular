@@ -38,7 +38,7 @@ export class DevToolsComponent implements OnInit, OnDestroy {
   }
 
   get supportedVersion(): boolean {
-    return this.majorAngularVersion() >= 9 && !this.prodMode;
+    return (this.majorAngularVersion() >= 9 || this.majorAngularVersion() === 0) && !this.prodMode;
   }
 
   ngOnDestroy(): void {
