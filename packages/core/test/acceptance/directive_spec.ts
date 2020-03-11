@@ -587,6 +587,46 @@ describe('directives', () => {
       expect(div.getAttribute('title')).toBe('a');
     });
 
+    it('should set structural directive input for empty and false-y values', () => {
+      const dirInstances: StructuralDir[] = [];
+      @Directive({selector: '[dir]'})
+      class StructuralDir {
+        constructor() { dirInstances.push(this); }
+        @Input() dir: any;
+      }
+
+      @Component({
+        template: `
+          <div *dir></div>
+          <div *dir=""></div>
+          <div *dir="''"></div>
+          <div *dir="undefined"></div>
+          <div *dir="false"></div>
+          <div *dir="null"></div>
+          <div *dir="0"></div>
+        `,
+      })
+      class App {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [App, StructuralDir],
+      });
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      const expectedInput = [
+        null,       // *dir
+        null,       // *dir=""
+        '',         // *dir="''"
+        undefined,  // *dir="undefined"
+        false,      // *dir="false"
+        null,       // *dir="null"
+        0,          // *dir="0"
+      ];
+      dirInstances.forEach((instance, index) => expect(instance.dir).toBe(expectedInput[index]));
+    });
+
     it('should set the directive input only, shadowing the title property of the div, for `[title]="value"`',
        () => {
          @Component({template: `<div dir-with-title [title]="value"></div>`})
