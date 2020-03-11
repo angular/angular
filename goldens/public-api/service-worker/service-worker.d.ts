@@ -1,3 +1,17 @@
+export declare class NgswCommChannel {
+    readonly events: Observable<TypedEvent>;
+    get isEnabled(): boolean;
+    readonly registration: Observable<ServiceWorkerRegistration>;
+    readonly worker: Observable<ServiceWorker>;
+    constructor(serviceWorker: ServiceWorkerContainer | undefined);
+    eventsOfType<T extends TypedEvent>(type: T['type']): Observable<T>;
+    generateNonce(): number;
+    nextEventOfType<T extends TypedEvent>(type: T['type']): Observable<T>;
+    postMessage(action: string, payload: Object): Promise<void>;
+    postMessageWithStatus(type: string, payload: Object, nonce: number): Promise<void>;
+    waitForStatus(nonce: number): Promise<void>;
+}
+
 export declare class ServiceWorkerModule {
     static register(script: string, opts?: SwRegistrationOptions): ModuleWithProviders<ServiceWorkerModule>;
 }
@@ -12,7 +26,7 @@ export declare class SwPush {
         };
     }>;
     readonly subscription: Observable<PushSubscription | null>;
-    constructor(sw: ɵangular_packages_service_worker_service_worker_a);
+    constructor(sw: NgswCommChannel);
     requestSubscription(options: {
         serverPublicKey: string;
     }): Promise<PushSubscription>;
@@ -29,7 +43,7 @@ export declare class SwUpdate {
     readonly activated: Observable<UpdateActivatedEvent>;
     readonly available: Observable<UpdateAvailableEvent>;
     get isEnabled(): boolean;
-    constructor(sw: ɵangular_packages_service_worker_service_worker_a);
+    constructor(sw: NgswCommChannel);
     activateUpdate(): Promise<void>;
     checkForUpdate(): Promise<void>;
 }
