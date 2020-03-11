@@ -2265,15 +2265,28 @@ These changes propagate through the system and ultimately display in this and ot
 {@a two-way}
 {@a 양방향-바인딩}
 
+<!--
 ## Two-way binding `[(...)]`
+-->
+## 양방향 바인딩 `[(...)]`
 
+<!--
 Two-way binding gives your app a way to share data between a component class and
 its template.
 
 For a demonstration of the syntax and code snippets in this section, see the <live-example name="two-way-binding">two-way binding example</live-example>.
+-->
+양방향 바인딩(two-way binding)을 사용하면 컴포넌트 클래스와 템플릿이 서로 데이터를 주고받을 수 있습니다.
 
+이 섹션에서 설명하는 내용을 어떻게 동작하는지 확인하려면 <live-example name="two-way-binding">양방향 바인딩 예제</live-example>를 참고하세요.
+
+
+<!--
 ### Basics of two-way binding
+-->
+### 양방향 바인딩 기본
 
+<!--
 Two-way binding does two things:
 
 1. Sets a specific element property.
@@ -2282,6 +2295,15 @@ Two-way binding does two things:
 Angular offers a special _two-way data binding_ syntax for this purpose, `[()]`.
 The `[()]` syntax combines the brackets
 of property binding, `[]`, with the parentheses of event binding, `()`.
+-->
+양방향 바인딩은 다음 두 가지 용도로 사용합니다:
+
+1. 엘리먼트 프로퍼티의 값을 설정합니다.
+1. 프로퍼티 값이 변경되는 이벤트를 감지합니다.
+
+Angular는 _양방향 데이터 바인딩_ 에만 사용하는 `[()]` 표기법을 제공합니다.
+`[()]`라는 문법은 프로퍼티 바인딩 문법 `[]`과 이벤트 바인딩 문법 `()`을 동시에 사용하는 형태입니다.
+
 
 <div class="callout is-important">
 
@@ -2303,10 +2325,6 @@ Visualize a *banana in a box* to remember that the parentheses go _inside_ the b
 The `[()]` syntax is easy to demonstrate when the element has a settable
 property called `x` and a corresponding event named `xChange`.
 Here's a `SizerComponent` that fits this pattern.
-=======
-The `[()]` syntax is easy to demonstrate when the element has a settable
-property called `x` and a corresponding event named `xChange`.
-Here's a `SizerComponent` that fits this pattern.
 It has a `size` value property and a companion `sizeChange` event:
 -->
 `[()]` 라고 사용하면 컴포넌트에서 이름이 `x`인 프로퍼티가 프로퍼티 바인딩 되면서, 이벤트 이름이 `xChange`인 이벤트가 함께 이벤트 바인딩 됩니다.
@@ -2317,28 +2335,34 @@ It has a `size` value property and a companion `sizeChange` event:
 
 <code-example path="two-way-binding/src/app/sizer/sizer.component.html" header="src/app/sizer.component.html"></code-example>
 
+<!--
 The initial `size` is an input value from a property binding.
 Clicking the buttons increases or decreases the `size`, within
 min/max value constraints,
 and then raises, or emits, the `sizeChange` event with the adjusted size.
 
-<!--
 Here's an example in which the `AppComponent.fontSizePx` is two-way bound to the `SizerComponent`:
 -->
+입력 프로퍼티 `size`의 초기값은 프로퍼티 바인딩에 의해 지정됩니다.
+그리고 증감 버튼을 누르면 최소/최대값의 범위에 따라 `size` 값이 변경됩니다.
+그리고 이때 변경된 값이 담긴 `sizeChange` 이벤트가 발생합니다.
+
 이 때 받은 커스텀 이벤트를 활용해서 `SizerComponent` 의 부모 컴포넌트인 `AppComponent`의 `fontSizePx` 프로퍼티를 양방향 바인딩으로 연결해 봅시다.
 
 <code-example path="two-way-binding/src/app/app.component.html" header="src/app/app.component.html (two-way-1)" region="two-way-1"></code-example>
 
 <!--
 The `AppComponent.fontSizePx` establishes the initial `SizerComponent.size` value.
+-->
+`AppComponent`에서도 `fontSizePx` 프로퍼티의 초기값은 `SizerComponent.size` 값으로 초기화 됩니다.
 
 <code-example path="two-way-binding/src/app/app.component.ts" header="src/app/app.component.ts" region="font-size"></code-example>
 
+<!--
 Clicking the buttons updates the `AppComponent.fontSizePx` via the two-way binding.
 The revised `AppComponent.fontSizePx` value flows through to the _style_ binding,
 making the displayed text bigger or smaller.
 -->
-`AppComponent`에서도 `fontSizePx` 프로퍼티의 초기값은 `SizerComponent.size` 값으로 초기화 됩니다.
 그리고 증감 버튼을 누를때마다 `AppComponent.fontSizePx`값이 양방향 바인딩에 의해 갱신됩니다.
 이렇게 갱신된 `AppComponent.fontSizePx` 값은 _스타일_ 바인딩으로 연결되면서, `Resizable Text`의 크기가 커지거나 작아집니다.
 
@@ -2358,8 +2382,13 @@ Angular assigns the `$event` value to the `AppComponent.fontSizePx` when the use
 `$event` 객체에는 `SizeComponent.sizeChange` 이벤트에서 보내는 폰트 크기값이 담겨 있습니다.
 그래서 사용자가 증감 버튼을 클릭해서 이벤트가 발생할 때마다 `AppComponent.fontSizePx` 프로퍼티의 값을 새로운 값으로 할당하고 있습니다.
 
-### Two-way binding in forms
 
+<!--
+### Two-way binding in forms
+-->
+### 폼에서 양방향 바인딩 사용하기
+
+<!--
 The two-way binding syntax is a great convenience compared to
 separate property and event bindings. It would be convenient to
 use two-way binding with HTML form elements like `<input>` and
@@ -2368,6 +2397,12 @@ value and `xChange` event pattern.
 
 For more on how to use two-way binding in forms, see
 Angular [NgModel](guide/template-syntax#ngModel).
+-->
+양방향 바인딩 문법을 사용하는 것은 프로퍼티 바인딩 문법과 이벤트 바인딩 문법을 따로 사용하는 것보다 훨씬 편합니다.
+`<input>`이나 `<select>`와 같은 HTML 폼 엘리먼트인 경우에 특히 그렇습니다.
+그리고 표준 HTML 엘리먼트가 아닌 경우에는 `x` 값이 변경되었을 때 `xChange` 이벤트가 발생하는 패턴으로 구현하는 것을 권장합니다.
+
+폼에서 사용하는 양방향 바인딩에 대해 자세하게 알아보려면 [NgModel](guide/template-syntax#ngModel) 문서를 참고하세요.
 
 <hr/>
 
@@ -2381,11 +2416,18 @@ Angular [NgModel](guide/template-syntax#ngModel).
 -->
 ## 기본 디렉티브
 
+<!--
 Angular offers two kinds of built-in directives: attribute
 directives and structural directives. This segment reviews some of the most common built-in directives,
 classified as either [_attribute_ directives](guide/template-syntax#attribute-directives) or [_structural_ directives](guide/template-syntax#structural-directives) and has its own <live-example name="built-in-directives">built-in directives example</live-example>.
 
 For more detail, including how to build your own custom directives, see [Attribute Directives](guide/attribute-directives) and [Structural Directives](guide/structural-directives).
+-->
+Angular에서 디렉티브는 어트리뷰트 디렉티브와 구조 디렉티브, 이렇게 두 종류입니다.
+이번 섹션에서는 자주 사용하는 Angular 기본 디렉티브에 대해 [_어트리뷰트_ 디렉티브](guide/template-syntax#attribute-directives)와 [_구조_ 디렉티브](guide/template-syntax#structural-directives) 차원에서 각각 살펴봅시다. 
+직접 실행할 수 있는 예제 앱은 <live-example name="built-in-directives">기본 디렉티브 예제</live-example>를 참고하세요.
+
+커스텀 디렉티브에 대한 내용은 [어트리뷰트 디렉티브](guide/attribute-directives)와 [구조 디렉티브](guide/structural-directives) 문서를 참고하세요.
 
 <hr/>
 
@@ -2397,7 +2439,7 @@ For more detail, including how to build your own custom directives, see [Attribu
 -->
 ## 기본 어트리뷰트 디렉티브
 
-<!-
+<!--
 Attribute directives listen to and modify the behavior of
 other HTML elements, attributes, properties, and components.
 You usually apply them to elements as if they were HTML attributes, hence the name.
@@ -2411,11 +2453,10 @@ The most common attribute directives are as follows:
 * [`NgModel`](guide/template-syntax#ngModel)&mdash;adds two-way data binding to an HTML form element.
 -->
 어트리뷰트 디렉티브는 HTML 엘리먼트나 어트리뷰트, 프로퍼티, 컴포넌트의 동작을 조작합니다.
-You usually apply them to elements as if they were HTML attributes, hence the name.
+그리고 일반 HTML 어트리뷰트처럼 이름을 지정하는 방식으로 사용합니다.
 
-Many NgModules such as the [`RouterModule`](guide/router "Routing and Navigation")
-and the [`FormsModule`](guide/forms "Forms") define their own attribute directives.
-The most common attribute directives are as follows:
+[`RouterModule`](guide/router "Routing and Navigation")이나 [`FormsModule`](guide/forms "Forms")처럼 모듈이 어트리뷰트 디렉티브를 제공하기도 합니다.
+그 중 자주 사용하는 어트리뷰트 디렉티브는 이런 것들이 있습니다:
 
 * [`NgClass`](guide/template-syntax#ngClass)&mdash;CSS 클래스를 추가하거나 제거합니다.
 * [`NgStyle`](guide/template-syntax#ngStyle)&mdash;HTML 스타일을 추가하거나 제거합니다.
@@ -2427,7 +2468,10 @@ The most common attribute directives are as follows:
 
 ### `NgClass`
 
+<!--
 Add or remove several CSS classes simultaneously with `ngClass`.
+-->
+`ngClass`를 사용하면 CSS 클래스 여러개를 동시에 추가하거나 제거할 수 있습니다.
 
 <code-example path="built-in-directives/src/app/app.component.html" region="special-div" header="src/app/app.component.html"></code-example>
 
@@ -2436,7 +2480,7 @@ Add or remove several CSS classes simultaneously with `ngClass`.
 <!--
 To add or remove a *single* class, use [class binding](guide/template-syntax#class-binding) rather than `NgClass`.
 -->
-하지만 클래스 *여러 개를 동시에* 조작한다면 클래스 바인딩을 사용하는 것보다 `NgClass` 디렉티브를 사용하는 것이 더 좋습니다.
+클래스 *하나를* 조작한다면 `NgClass` 보다 [클래스 바인딩](guide/template-syntax#class-binding)을 사용하는 것이 더 좋습니다.
 
 </div>
 
@@ -2446,23 +2490,26 @@ Consider a `setCurrentClasses()` component method that sets a component property
 `true`/`false` state of three other component properties. Each key of the object is a CSS class name; its value is `true` if the class should be added,
 `false` if it should be removed.
 -->
-지정해야 하는 클래스가 여러 개라면 컴포넌트 프로퍼티를 따로 선언하고, 이 프로퍼티 값이 `true`냐 `false`냐에 따라 이 값에 따라 클래스를 지정하는 방법도 고려해볼만 합니다.
-Each key of the object is a CSS class name; its value is `true` if the class should be added,
-`false` if it should be removed.
+컴포넌트 메소드 `setCurrentClasses()`는 컴포넌트 프로퍼티 `currentClasses`의 값을 지정하는데, 이 때 지정하는 클래스는 3개이며 다른 컴포넌트 프로퍼티 값에 따라 객체로 구성됩니다.
+이 객체의 키(key)는 CSS 클래스 이름이며 키에 연결된 값이 `true`면 클래스가 추가되고 `false`면 클래스가 제거됩니다.
 
 <code-example path="built-in-directives/src/app/app.component.ts" region="setClasses" header="src/app/app.component.ts"></code-example>
 
 <!--
 Adding an `ngClass` property binding to `currentClasses` sets the element's classes accordingly:
 -->
-그리고 `currentClasses`를 `ngClass` 디렉티브에 바인딩하려면 다음과 같이 구현합니다:
+`currentClasses`는 엘리먼트의 클래스를 지정하기 위해 `ngClass`에 다음과 같이 프로퍼티 바인딩합니다::
 
 <code-example path="built-in-directives/src/app/app.component.html" region="NgClass-1" header="src/app/app.component.html"></code-example>
 
 <div class="alert is-helpful">
 
+<!--
 Remember that in this situation you'd call `setCurrentClasses()`,
 both initially and when the dependent properties change.
+-->
+이 예제에서는 초기값을 지정하거나 연결된 프로퍼티 값이 변경된 것을 반영하기 위해 `setCurrentClasses()`를 직접 실행했습니다.
+
 
 </div>
 
@@ -2472,10 +2519,18 @@ both initially and when the dependent properties change.
 
 ### `NgStyle`
 
+<!--
 Use `NgStyle` to set many inline styles simultaneously and dynamically, based on the state of the component.
+-->
+`NgStyle`을 사용하면 컴포넌트 상태에 따라 인라인 스타일을 여러개를 동적으로 지정할 수 있습니다.
 
+
+<!--
 #### Without `NgStyle`
+-->
+#### `NgStyle`을 사용하지 않는 방식
 
+<!--
 For context, consider setting a *single* style value with [style binding](guide/template-syntax#style-binding), without `NgStyle`.
 
 <code-example path="built-in-directives/src/app/app.component.html" region="without-ng-style" header="src/app/app.component.html"></code-example>
@@ -2488,16 +2543,31 @@ based on the state of three other component properties:
 
 <code-example path="built-in-directives/src/app/app.component.ts" region="setStyles" header="src/app/app.component.ts"></code-example>
 
-<!--
 Adding an `ngStyle` property binding to `currentStyles` sets the element's styles accordingly:
--->
-그리고 `currentStyles`를 `ngStyle` 디렉티브에 바인딩하려면 다음과 같이 구현합니다:
 
 <code-example path="built-in-directives/src/app/app.component.html" region="NgStyle-2" header="src/app/app.component.html"></code-example>
 
 <div class="alert is-helpful">
 
 Remember to call `setCurrentStyles()`, both initially and when the dependent properties change.
+-->
+`NgStyle`을 사용하지 않고 스타일 *하나를* [스타일 바인딩](guide/template-syntax#style-binding)하는 코드를 살펴봅니다.
+
+<code-example path="built-in-directives/src/app/app.component.html" region="without-ng-style" header="src/app/app.component.html"></code-example>
+
+이 때 인라인 스타일 *여러 개를* 동시에 지정하려면 `NgStyle` 디렉티브를 사용합니다.
+
+다음 코드에서 `setCurrentStyles()` 메소드는 컴포넌트 프로퍼티 `currentStyles`의 값을 설정합니다. `currentStyles`는 객체로 구성되며 다른 컴포넌트 프로퍼티 값에 따라 3개의 스타일을 지정합니다:
+
+<code-example path="built-in-directives/src/app/app.component.ts" region="setStyles" header="src/app/app.component.ts"></code-example>
+
+그리고 `currentStyles`를 `ngStyle` 디렉티브에 바인딩하려면 다음과 같이 구현합니다:
+
+<code-example path="built-in-directives/src/app/app.component.html" region="NgStyle-2" header="src/app/app.component.html"></code-example>
+
+<div class="alert is-helpful">
+
+이 예제에서는 초기값을 지정하거나 연결된 프로퍼티 값이 변경된 것을 반영하기 위해 `setCurrentStyles()`를 직접 실행했습니다.
 
 </div>
 
