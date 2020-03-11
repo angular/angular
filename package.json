@@ -43,7 +43,6 @@
     "@angular-devkit/build-optimizer": "0.900.3",
     "@angular-devkit/core": "9.0.3",
     "@angular-devkit/schematics": "9.0.3",
-    "@angular/bazel": "file:./tools/npm/@angular_bazel",
     "@babel/core": "^7.8.6",
     "@babel/generator": "^7.8.6",
     "@babel/template": "^7.8.6",

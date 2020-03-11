@@ -127,9 +127,6 @@
     ora "4.0.2"
     rxjs "6.5.3"
 
-"@angular/bazel@file:./tools/npm/@angular_bazel":
-  version "0.0.0"
-
 "@angular/cli@9.0.3":
   version "9.0.3"
   resolved "https://registry.yarnpkg.com/@angular/cli/-/cli-9.0.3.tgz#114bf16fd00685d814840f6fece286e0f8f6f1e3"

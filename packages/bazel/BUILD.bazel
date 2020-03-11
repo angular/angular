@@ -19,6 +19,7 @@ pkg_npm(
     ],
     substitutions = {
         "(#|\/\/)\\s+BEGIN-DEV-ONLY[\\w\W]+?(#|\/\/)\\s+END-DEV-ONLY": "",
+        "//packages/bazel/src/ngc-wrapped": "@npm//@angular/bazel/bin:ngc-wrapped",
         "//packages/bazel/": "//",
         "angular/packages/bazel/": "npm_angular_bazel/",
     },
