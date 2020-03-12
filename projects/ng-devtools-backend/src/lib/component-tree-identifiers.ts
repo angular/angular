@@ -1,13 +1,13 @@
-import { ComponentTreeObserver } from './observer/observer';
+import { DirectiveForestObserver } from './observer/observer';
 
-let observer: ComponentTreeObserver;
+let observer: DirectiveForestObserver;
 
 export const observeDOM = () => {
   if (observer) {
     console.error('Cannot initialize the DOM observer more than once');
     return;
   }
-  observer = new ComponentTreeObserver({});
+  observer = new DirectiveForestObserver({});
   observer.initialize();
 };
 
@@ -25,6 +25,10 @@ export const getDirectiveForest = () => {
     return [];
   }
   return observer.getDirectiveForest();
+};
+
+export const indexDirectiveForest = () => {
+  observer.indexForest();
 };
 
 export const getDirectivePosition = (dir: any) => {

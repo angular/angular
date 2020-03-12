@@ -9,6 +9,7 @@ import {
   ComponentType,
   ProfilerFrame,
   UpdatedStateData,
+  ComponentExplorerViewQuery,
 } from 'protocol';
 import { onChangeDetection } from './change-detection-tracker';
 import { ComponentTreeNode, getLatestComponentState, queryDirectiveForest, updateState } from './component-tree';
@@ -23,7 +24,7 @@ import {
   appIsAngularInDevMode,
   appIsSupportedAngularVersion,
 } from './angular-check';
-import { observeDOM, getDirectiveId, getDirectiveForest } from './component-tree-identifiers';
+import { observeDOM, getDirectiveId, getDirectiveForest, indexDirectiveForest } from './component-tree-identifiers';
 
 export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void => {
   messageBus.on('shutdown', shutdownCallback(messageBus));
@@ -62,7 +63,12 @@ const initChangeDetection = (messageBus: MessageBus<Events>) => {
 // Callback Definitions
 //
 
-const getLatestComponentExplorerViewCallback = (messageBus: MessageBus<Events>) => query => {
+const getLatestComponentExplorerViewCallback = (messageBus: MessageBus<Events>) => (
+  query: ComponentExplorerViewQuery
+) => {
+  // We want to force re-indexing of the component tree.
+  // Pressing the refresh button means the user saw stuck UI.
+  indexDirectiveForest();
   messageBus.emit('latestComponentExplorerView', [
     {
       forest: prepareForestForSerialization(getDirectiveForest()),
