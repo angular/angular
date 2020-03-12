@@ -31,6 +31,7 @@ export type ChangeDetectionCallback = (
 
 export type DestroyCallback = (
   componentOrDirective: any,
+  node: Node,
   id: number,
   isComponent: boolean,
   position: ElementPosition
@@ -181,7 +182,13 @@ export class ComponentTreeObserver {
       return;
     }
     const position = this._tracker.getDirectivePosition(component);
-    this._config.onDestroy(component, this._tracker.getDirectiveId(component), isComponent, position);
+    this._config.onDestroy(
+      component,
+      getDirectiveHostElement(component),
+      this._tracker.getDirectiveId(component),
+      isComponent,
+      position
+    );
   }
 
   private _observeComponent(cmp: any): void {

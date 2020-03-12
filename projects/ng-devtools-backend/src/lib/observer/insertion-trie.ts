@@ -1,14 +1,14 @@
 import { ElementPosition } from 'protocol';
 
 interface NumberTrie {
-  end?: boolean;
+  end?: boolean | any;
   [key: number]: NumberTrie;
 }
 
 export class InsertionTrie {
   private _insertionTrie: NumberTrie = {};
 
-  insert(pos: ElementPosition): void {
+  insert(pos: ElementPosition, value: any): void {
     if (!pos.length) {
       return;
     }
@@ -19,10 +19,10 @@ export class InsertionTrie {
       current = current[p];
     }
     current[pos[pos.length - 1]] = current[pos[pos.length - 1]] || { end: false };
-    current[pos[pos.length - 1]].end = true;
+    current[pos[pos.length - 1]].end = value;
   }
 
-  exists(pos: ElementPosition): boolean {
+  get(pos: ElementPosition): any {
     if (!pos.length) {
       return true;
     }
@@ -33,6 +33,6 @@ export class InsertionTrie {
       }
       current = current[p];
     }
-    return !!current.end;
+    return current.end;
   }
 }
