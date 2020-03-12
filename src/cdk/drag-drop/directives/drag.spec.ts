@@ -3010,6 +3010,30 @@ describe('CdkDrag', () => {
       expect(placeholder.textContent!.trim()).not.toContain('Custom placeholder');
     }));
 
+    it('should measure the custom placeholder after the first change detection', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZoneWithCustomPlaceholder);
+      fixture.componentInstance.extraPlaceholderClass = 'tall-placeholder';
+      fixture.detectChanges();
+      const dragItems = fixture.componentInstance.dragItems;
+      const item = dragItems.toArray()[0].element.nativeElement;
+
+      startDraggingViaMouse(fixture, item);
+
+      const thirdItem = dragItems.toArray()[2].element.nativeElement;
+      const thirdItemRect = thirdItem.getBoundingClientRect();
+
+      dispatchMouseEvent(document, 'mousemove', thirdItemRect.left + 1, thirdItemRect.top + 1);
+      fixture.detectChanges();
+
+      dispatchMouseEvent(document, 'mouseup');
+      fixture.detectChanges();
+      flush();
+      fixture.detectChanges();
+
+      const event = fixture.componentInstance.droppedSpy.calls.mostRecent().args[0];
+      expect(event.currentIndex).toBe(2);
+    }));
+
     it('should not throw when custom placeholder only has text', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZoneWithCustomTextOnlyPlaceholder);
       fixture.detectChanges();
@@ -5127,21 +5151,34 @@ class DraggableInDropZoneWithCustomTextOnlyPreview {
 
 @Component({
   template: `
-    <div cdkDropList style="width: 100px; background: pink;">
+    <div
+      cdkDropList
+      (cdkDropListDropped)="droppedSpy($event)"
+      style="width: 100px; background: pink;">
       <div *ngFor="let item of items" cdkDrag
         style="width: 100%; height: ${ITEM_HEIGHT}px; background: red;">
           {{item}}
           <ng-container *ngIf="renderPlaceholder">
-            <div class="custom-placeholder" *cdkDragPlaceholder>Custom placeholder</div>
+            <div
+              class="custom-placeholder"
+              [ngClass]="extraPlaceholderClass"
+              *cdkDragPlaceholder>Custom placeholder</div>
           </ng-container>
       </div>
     </div>
-  `
+  `,
+  styles: [`
+    .tall-placeholder {
+      height: ${ITEM_HEIGHT * 3}px;
+    }
+  `]
 })
 class DraggableInDropZoneWithCustomPlaceholder {
   @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
   items = ['Zero', 'One', 'Two', 'Three'];
   renderPlaceholder = true;
+  extraPlaceholderClass = '';
+  droppedSpy = jasmine.createSpy('dropped spy');
 }
 
 @Component({
