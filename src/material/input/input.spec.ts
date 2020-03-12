@@ -850,6 +850,13 @@ describe('MatInput without forms', () => {
     expect(inputContainer.floatLabel).toBe('always');
   }));
 
+  it('should not throw when trying to animate and lock too early', fakeAsync(() => {
+    const fixture = createComponent(MatInputTextTestController);
+    const formField = fixture.debugElement.query(By.directive(MatFormField))!
+        .componentInstance as MatFormField;
+    expect(() => formField._animateAndLockLabel()).not.toThrow();
+  }));
+
   it('should not highlight when focusing a readonly input', fakeAsync(() => {
     let fixture = createComponent(MatInputWithReadonlyInput);
     fixture.detectChanges();
