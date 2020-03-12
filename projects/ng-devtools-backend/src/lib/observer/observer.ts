@@ -71,7 +71,7 @@ const hookTViewProperties = [
 
 const getLifeCycleName = (obj: {}, fn: any): keyof LifecycleProfile | 'unknown' => {
   const proto = Object.getPrototypeOf(obj);
-  const keys = Object.keys(proto);
+  const keys = Object.getOwnPropertyNames(proto);
   for (const propName of keys) {
     // We don't want to touch random get accessors.
     if (!hookMethodNames.has(propName)) {
