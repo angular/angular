@@ -147,7 +147,7 @@
     "@angular/cli": "9.0.3",
     "@bazel/bazel": "2.1.0",
     "@bazel/buildifier": "^0.29.0",
-    "@bazel/ibazel": "^0.11.1",
+    "@bazel/ibazel": "^0.12.2",
     "@octokit/graphql": "^4.3.1",
     "@types/minimist": "^1.2.0",
     "@yarnpkg/lockfile": "^1.1.0",
