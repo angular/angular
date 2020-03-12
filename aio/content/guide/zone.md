@@ -85,7 +85,7 @@ To clarify how changes are detected and values updated, consider the following c
     // example 5: some other asynchronous APIs
     document.getElementById('canvas').toBlob(blob => {
       // update value when blob data is created from the canvas
-      value = `value updated by canvas, size is ${blog.size}`;
+      value = `value updated by canvas, size is ${blob.size}`;
       // call detectChange manually
       detectChange();
     });
