@@ -999,6 +999,44 @@ describe('MatSelectionList without forms', () => {
       expect(listOptions.every(option => !option.componentInstance.selected)).toBe(true);
     });
 
+    it('should focus, but not toggle, the next item when pressing SHIFT + UP_ARROW in single ' +
+      'selection mode', () => {
+        const manager = selectionList.componentInstance._keyManager;
+        const upKeyEvent = createKeyboardEvent('keydown', UP_ARROW);
+        Object.defineProperty(upKeyEvent, 'shiftKey', {get: () => true});
+
+        dispatchFakeEvent(listOptions[3].nativeElement, 'focus');
+        expect(manager.activeItemIndex).toBe(3);
+
+        expect(listOptions[1].componentInstance.selected).toBe(false);
+        expect(listOptions[2].componentInstance.selected).toBe(false);
+
+        selectionList.componentInstance._keydown(upKeyEvent);
+        fixture.detectChanges();
+
+        expect(listOptions[1].componentInstance.selected).toBe(false);
+        expect(listOptions[2].componentInstance.selected).toBe(false);
+      });
+
+    it('should focus, but not toggle, the next item when pressing SHIFT + DOWN_ARROW ' +
+      'in single selection mode', () => {
+        const manager = selectionList.componentInstance._keyManager;
+        const downKeyEvent = createKeyboardEvent('keydown', DOWN_ARROW);
+        Object.defineProperty(downKeyEvent, 'shiftKey', {get: () => true});
+
+        dispatchFakeEvent(listOptions[0].nativeElement, 'focus');
+        expect(manager.activeItemIndex).toBe(0);
+
+        expect(listOptions[1].componentInstance.selected).toBe(false);
+        expect(listOptions[2].componentInstance.selected).toBe(false);
+
+        selectionList.componentInstance._keydown(downKeyEvent);
+        fixture.detectChanges();
+
+        expect(listOptions[1].componentInstance.selected).toBe(false);
+        expect(listOptions[2].componentInstance.selected).toBe(false);
+      });
+
   });
 });
 
