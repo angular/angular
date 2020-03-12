@@ -767,6 +767,29 @@ describe('FlexibleConnectedPositionStrategy', () => {
 
     });
 
+    it('should position the panel correctly when the origin is an SVG element', () => {
+      document.body.removeChild(originElement);
+      originElement = createBlockElement('svg', 'http://www.w3.org/2000/svg');
+      document.body.appendChild(originElement);
+
+      const originRect = originElement.getBoundingClientRect();
+
+      positionStrategy
+        .setOrigin(originElement)
+        .withPositions([{
+          originX: 'start',
+          originY: 'bottom',
+          overlayX: 'start',
+          overlayY: 'top'
+        }]);
+
+      attachOverlay({positionStrategy});
+
+      const overlayRect = overlayRef.overlayElement.getBoundingClientRect();
+      expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect.bottom));
+      expect(Math.floor(overlayRect.left)).toBe(Math.floor(originRect.left));
+    });
+
     it('should account for the `offsetX` pushing the overlay out of the screen', () => {
       // Position the element so it would have enough space to fit.
       originElement.style.top = '200px';
@@ -2592,8 +2615,15 @@ function createPositionedBlockElement() {
 }
 
 /** Creates a block element with a default size. */
-function createBlockElement() {
-  const element = document.createElement('div');
+function createBlockElement(tagName = 'div', namespace?: string) {
+  let element;
+
+  if (namespace) {
+    element = document.createElementNS(namespace, tagName) as HTMLElement;
+  } else {
+    element = document.createElement(tagName);
+  }
+
   element.style.width = `${DEFAULT_WIDTH}px`;
   element.style.height = `${DEFAULT_HEIGHT}px`;
   element.style.backgroundColor = 'rebeccapurple';
