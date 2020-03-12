@@ -84,7 +84,7 @@
     "protractor": "~5.4.2",
     "todomvc-app-css": "^2.3.0",
     "todomvc-common": "^1.0.5",
-    "ts-node": "~8.3.0",
+    "ts-node": "~8.6.0",
     "tsickle": "^0.35.0",
     "tslint": "~5.18.0",
     "typescript": "~3.7.0",
