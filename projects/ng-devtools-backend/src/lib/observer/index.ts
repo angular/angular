@@ -23,7 +23,7 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
   observer = new ComponentTreeObserver({
     // We flush here because it's possible the current node to overwrite
     // an existing removed node.
-    onCreate(directive: any, node: Node, id: number, isComponent: boolean, position: ElementPosition): void {
+    onCreate(directive: any, node: Node, _: number, isComponent: boolean, position: ElementPosition): void {
       eventMap.set(directive, {
         isElement: isCustomElement(node),
         name: getDirectiveName(directive),
@@ -31,9 +31,9 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
         changeDetection: 0,
         lifecycle: {},
       });
-      insertionTrie.insert(position);
+      insertionTrie.insert(position, directive);
     },
-    onChangeDetection(component: any, node: Node, id: number, position: ElementPosition, duration: number): void {
+    onChangeDetection(component: any, node: Node, _: number, __: ElementPosition, duration: number): void {
       if (!inChangeDetection) {
         inChangeDetection = true;
         const source = getChangeDetectionSource();
@@ -56,15 +56,24 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
       const profile = eventMap.get(component);
       profile.changeDetection += duration;
     },
-    onDestroy(directive: any, id: number, isComponent: boolean, position: ElementPosition): void {
+    onDestroy(directive: any, node: Node, _: number, isComponent: boolean, position: ElementPosition): void {
       if (isComponent) {
         removedComponents.set(directive, position);
+      }
+      if (!eventMap.has(directive)) {
+        eventMap.set(directive, {
+          isElement: isComponent && isCustomElement(node),
+          name: getDirectiveName(directive),
+          isComponent: true,
+          changeDetection: 0,
+          lifecycle: {},
+        });
       }
     },
     onLifecycleHook(
       directive: any,
       node: Node,
-      id: number,
+      _: number,
       isComponent: boolean,
       hook: keyof LifecycleProfile,
       duration: number
@@ -73,7 +82,7 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
         eventMap.set(directive, {
           isElement: isCustomElement(node),
           name: getDirectiveName(directive),
-          isComponent: true,
+          isComponent,
           changeDetection: 0,
           lifecycle: {},
         });
@@ -217,7 +226,9 @@ const flushBuffer = (obs: ComponentTreeObserver, source: string = '') => {
   const result = prepareInitialFrame(source);
   positions.forEach(position => {
     const dir = positionDirective.get(position);
-    if (removedComponents.has(dir) && insertionTrie.exists(removedComponents.get(dir))) {
+    const removedPosition = removedComponents.get(dir);
+    const trieNode = removedPosition && insertionTrie.get(removedPosition);
+    if (removedComponents.has(dir) && trieNode && trieNode !== dir) {
       console.warn('Trying to add a removed directive on the place of an existing new one.');
       return;
     }

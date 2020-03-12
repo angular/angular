@@ -28,7 +28,7 @@ import { createCustomElement } from '@angular/elements';
   ],
 })
 export class DemoAppModule {
-  constructor(private injector: Injector) {
+  constructor(injector: Injector) {
     const el = createCustomElement(ZippyComponent, { injector });
     customElements.define('app-zippy', el as any);
   }
