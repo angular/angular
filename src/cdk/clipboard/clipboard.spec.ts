@@ -68,6 +68,21 @@ describe('Clipboard', () => {
       expect(document.activeElement).toBe(focusedInput);
     });
 
+    it('does not move focus away from focused SVG element', () => {
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('focusable', 'true');
+      svg.setAttribute('tabindex', '0');
+      document.body.appendChild(svg);
+
+      svg.focus();
+      expect(document.activeElement).toBe(svg);
+
+      clipboard.copy(COPY_CONTENT);
+      expect(document.activeElement).toBe(svg);
+
+      svg.parentNode!.removeChild(svg);
+    });
+
     describe('when execCommand fails', () => {
       beforeEach(() => {
         execCommand.and.throwError('could not copy');
