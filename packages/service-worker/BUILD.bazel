@@ -61,10 +61,10 @@ ng_package(
 
 ts_api_guardian_test_npm_package(
     name = "service-worker_api",
-    actualDir = "packages/service-worker/npm_package",
+    actualDir = "angular/packages/service-worker/npm_package",
     data = [
         ":npm_package",
         "//goldens:public-api",
     ],
-    goldenDir = "goldens/public-api/service-worker",
+    goldenDir = "angular/goldens/public-api/service-worker",
 )

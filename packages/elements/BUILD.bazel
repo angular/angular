@@ -40,10 +40,10 @@ ng_package(
 
 ts_api_guardian_test_npm_package(
     name = "elements_api",
-    actualDir = "packages/elements/npm_package",
+    actualDir = "angular/packages/elements/npm_package",
     data = [
         ":npm_package",
         "//goldens:public-api",
     ],
-    goldenDir = "goldens/public-api/elements",
+    goldenDir = "angular/goldens/public-api/elements",
 )
