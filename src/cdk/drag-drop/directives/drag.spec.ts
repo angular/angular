@@ -4487,6 +4487,48 @@ describe('CdkDrag', () => {
         expect(fixture.componentInstance.droppedSpy).not.toHaveBeenCalled();
       }));
 
+    it('should enter an item into the correct index when returning to the initial container, if ' +
+      'sorting is enabled', fakeAsync(() => {
+        const fixture = createComponent(ConnectedDropZones);
+        fixture.detectChanges();
+
+        const groups = fixture.componentInstance.groupedDragItems;
+        const dropZones = fixture.componentInstance.dropInstances.map(d => d.element.nativeElement);
+        const item = groups[0][1];
+        const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
+
+        // Explicitly enable just in case.
+        fixture.componentInstance.dropInstances.first.sortingDisabled = false;
+        startDraggingViaMouse(fixture, item.element.nativeElement);
+
+        const placeholder = dropZones[0].querySelector('.cdk-drag-placeholder')!;
+
+        expect(placeholder).toBeTruthy();
+        expect(dropZones[0].contains(placeholder))
+            .toBe(true, 'Expected placeholder to be inside the first container.');
+        expect(getElementIndexByPosition(placeholder, 'top'))
+            .toBe(1, 'Expected placeholder to be at item index.');
+
+        dispatchMouseEvent(document, 'mousemove', targetRect.left + 1, targetRect.top + 1);
+        fixture.detectChanges();
+
+        expect(dropZones[1].contains(placeholder))
+            .toBe(true, 'Expected placeholder to be inside second container.');
+        expect(getElementIndexByPosition(placeholder, 'top'))
+            .toBe(3, 'Expected placeholder to be at the target index.');
+
+        const nextTargetRect = groups[0][3].element.nativeElement.getBoundingClientRect();
+
+        // Return the item to an index that is different from the initial one.
+        dispatchMouseEvent(document, 'mousemove', nextTargetRect.left + 1, nextTargetRect.top + 1);
+        fixture.detectChanges();
+
+        expect(dropZones[0].contains(placeholder))
+            .toBe(true, 'Expected placeholder to be back inside first container.');
+        expect(getElementIndexByPosition(placeholder, 'top'))
+            .toBe(2, 'Expected placeholder to be at the index at which it entered.');
+      }));
+
     it('should toggle a class when dragging an item inside a wrapper component component ' +
            'with OnPush change detection',
        fakeAsync(() => {

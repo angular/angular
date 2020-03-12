@@ -853,10 +853,10 @@ export class DragRef<T = any> {
         this._dropContainer!.exit(this);
         // Notify the new container that the item has entered.
         this._dropContainer = newContainer!;
-        this._dropContainer.enter(this, x, y,
-            // If we're re-entering the initial container,
+        this._dropContainer.enter(this, x, y, newContainer === this._initialContainer &&
+            // If we're re-entering the initial container and sorting is disabled,
             // put item the into its starting index to begin with.
-            newContainer === this._initialContainer ? this._initialIndex : undefined);
+            newContainer.sortingDisabled ? this._initialIndex : undefined);
         this.entered.next({
           item: this,
           container: newContainer!,
