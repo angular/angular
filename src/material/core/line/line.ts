@@ -31,18 +31,19 @@ export class MatLine {}
  * Helper that takes a query list of lines and sets the correct class on the host.
  * @docs-private
  */
-export function setLines(lines: QueryList<MatLine>, element: ElementRef<HTMLElement>) {
+export function setLines(lines: QueryList<unknown>, element: ElementRef<HTMLElement>,
+                         prefix = 'mat') {
   // Note: doesn't need to unsubscribe, because `changes`
   // gets completed by Angular when the view is destroyed.
   lines.changes.pipe(startWith(lines)).subscribe(({length}) => {
-    setClass(element, 'mat-2-line', false);
-    setClass(element, 'mat-3-line', false);
-    setClass(element, 'mat-multi-line', false);
+    setClass(element, `${prefix}-2-line`, false);
+    setClass(element, `${prefix}-3-line`, false);
+    setClass(element, `${prefix}-multi-line`, false);
 
     if (length === 2 || length === 3) {
-      setClass(element, `mat-${length}-line`, true);
+      setClass(element, `${prefix}-${length}-line`, true);
     } else if (length > 3) {
-      setClass(element, `mat-multi-line`, true);
+      setClass(element, `${prefix}-multi-line`, true);
     }
   });
 }

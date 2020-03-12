@@ -1,4 +1,5 @@
 @import '@material/list/mixins.import';
+@import '@material/list/variables.import';
 @import '../mdc-helpers/mdc-helpers';
 
 @include mdc-list-without-ripple($query: $mat-base-styles-query);
@@ -7,4 +8,76 @@
 // explicitly set `display: block`
 .mat-mdc-list-base {
   display: block;
+}
+
+// .mdc-list-item__primary-text adds its own margin settings, so only reset if it doesn't have that
+// class
+.mat-mdc-list-base .mdc-list-item__text > :not(.mdc-list-item__primary-text),
+.mat-mdc-list-base .mdc-list-item__text > :not(.mdc-list-item__primary-text) {
+  margin: 0;
+
+  // Fixes the gap between the 2nd & 3rd lines.
+  &.mdc-list-item__secondary-text {
+    margin-top: -3px;
+  }
+}
+
+
+// MDC does have 2-line support, but it's a per-list setting, whereas ours applies to individual
+// items. Therefore, we need to add our own styles.
+.mat-mdc-2-line {
+  height: 72px;
+
+  .mdc-list-item__text {
+    align-self: flex-start;
+  }
+}
+
+// MDC does not support more than 2 lines, so we need to add our own styles.
+.mat-mdc-3-line {
+  height: 88px;
+
+  .mdc-list-item__text {
+    align-self: flex-start;
+  }
+}
+
+// MDC supports avatars, but it's a per-list setting, whereas ours applies to individual
+// items. Therefore, we need to add our own styles.
+.mat-mdc-list-avatar {
+  // Styles here come from `$mdc-list-graphic-size_`:
+  // https://github.com/material-components/material-components-web/blob/3ca8c4c45a3d2a654ef3cb8fc7525bcde37badf0/packages/mdc-list/_mixins.scss#L538
+  $size: 40px;
+  $margin-value: 72px - $mdc-list-side-padding - $size;
+
+  margin-left: 0;
+  margin-right: $margin-value;
+  width: $size;
+  height: $size;
+  border-radius: 50%;
+
+  // `.mdc-list-item` added for extra specificity to override MDC's built in styles.
+  [dir='rtl'] .mdc-list-item & {
+    margin-left: $margin-value;
+    margin-right: 0;
+  }
+}
+
+// MDC doesn't have list dividers, so we use mat-divider and style appropriately.
+.mat-mdc-list-item,
+.mat-mdc-list-option {
+  .mat-divider-inset {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  .mat-mdc-list-avatar ~ .mat-divider-inset {
+    margin-left: 72px;
+
+    [dir='rtl'] & {
+      margin-right: 72px;
+    }
+  }
 }

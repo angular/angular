@@ -6,8 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, Component, forwardRef, ViewEncapsulation} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ContentChildren,
+  ElementRef,
+  forwardRef,
+  NgZone,
+  QueryList,
+  ViewEncapsulation
+} from '@angular/core';
 import {NG_VALUE_ACCESSOR} from '@angular/forms';
+import {MatLine} from '@angular/material/core';
 import {MatListBase, MatListItemBase} from './list-base';
 
 const MAT_SELECTION_LIST_VALUE_ACCESSOR: any = {
@@ -49,4 +59,11 @@ export class MatSelectionList extends MatListBase {}
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatListOption extends MatListItemBase {}
+export class MatListOption extends MatListItemBase {
+  @ContentChildren(MatLine, {read: ElementRef, descendants: true}) lines:
+      QueryList<ElementRef<Element>>;
+
+  constructor(element: ElementRef, ngZone: NgZone) {
+    super(element, ngZone);
+  }
+}

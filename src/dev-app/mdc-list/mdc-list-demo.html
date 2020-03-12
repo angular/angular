@@ -8,7 +8,7 @@
     <h2>Normal lists</h2>
 
     <mat-list>
-      <h3 mat-subheader>Items</h3>
+      <div mat-subheader>Items</div>
       <mat-list-item *ngFor="let item of items">
         {{item}}
       </mat-list-item>
@@ -16,28 +16,28 @@
 
     <mat-list>
       <mat-list-item *ngFor="let contact of contacts">
-        <h3 mat-line>{{contact.name}}</h3>
-        <p mat-line *ngIf="thirdLine">extra line</p>
-        <p mat-line class="demo-secondary-text">{{contact.headline}}</p>
+        <div mat-line>{{contact.name}}</div>
+        <div mat-line *ngIf="thirdLine">extra line</div>
+        <div mat-line>{{contact.headline}}</div>
       </mat-list-item>
     </mat-list>
 
     <mat-list>
-      <h3 mat-subheader>Today</h3>
+      <div mat-subheader>Today</div>
       <mat-list-item *ngFor="let message of messages; last as last">
         <img mat-list-avatar [src]="message.image" alt="Image of {{message.from}}">
-        <h4 mat-line>{{message.from}}</h4>
-        <p mat-line>
+        <div mat-line>{{message.from}}</div>
+        <div mat-line>
           <span>{{message.subject}} -- </span>
-          <span class="demo-secondary-text">{{message.message}}</span>
-        </p>
+          <span>{{message.message}}</span>
+        </div>
         <mat-divider inset *ngIf="!last"></mat-divider>
       </mat-list-item>
       <mat-divider></mat-divider>
       <mat-list-item *ngFor="let message of messages">
-        <h4 mat-line>{{message.from}}</h4>
-        <p mat-line> {{message.subject}} </p>
-        <p mat-line class="demo-secondary-text">{{message.message}} </p>
+        <div mat-line>{{message.from}}</div>
+        <div mat-line>{{message.subject}}</div>
+        <div mat-line>{{message.message}}</div>
       </mat-list-item>
     </mat-list>
   </div>
@@ -45,7 +45,7 @@
   <div>
     <h2>Dense lists</h2>
     <mat-list dense>
-      <h3 mat-subheader>Items</h3>
+      <div mat-subheader>Items</div>
       <mat-list-item *ngFor="let item of items">
         {{item}}
       </mat-list-item>
@@ -53,18 +53,18 @@
 
     <mat-list dense>
       <mat-list-item *ngFor="let contact of contacts">
-        <h3 mat-line>{{contact.name}}</h3>
-        <p mat-line class="demo-secondary-text">{{contact.headline}}</p>
+        <div mat-line>{{contact.name}}</div>
+        <div mat-line>{{contact.headline}}</div>
       </mat-list-item>
     </mat-list>
 
     <mat-list dense>
-      <h3 mat-subheader>Today</h3>
+      <div mat-subheader>Today</div>
       <mat-list-item *ngFor="let message of messages">
         <img mat-list-avatar [src]="message.image" alt="Image of {{message.from}}">
-        <h4 mat-line>{{message.from}}</h4>
-        <p mat-line> {{message.subject}} </p>
-        <p mat-line class="demo-secondary-text">{{message.message}} </p>
+        <div mat-line>{{message.from}}</div>
+        <div mat-line> {{message.subject}} </div>
+        <div mat-line>{{message.message}} </div>
       </mat-list-item>
     </mat-list>
   </div>
@@ -90,7 +90,7 @@
       <a mat-list-item *ngFor="let link of links; last as last" href="http://www.google.com">
         <mat-icon mat-list-icon>folder</mat-icon>
         <span mat-line>{{ link.name }}</span>
-        <span mat-line class="demo-secondary-text"> Description </span>
+        <span mat-line> Description </span>
         <mat-divider inset *ngIf="!last"></mat-divider>
       </a>
     </mat-nav-list>
