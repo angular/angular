@@ -92,7 +92,7 @@ const getLifeCycleName = (obj: {}, fn: any): keyof LifecycleProfile | 'unknown' 
  * The polyfill also patches the tView template function reference to allow
  * tracking of how much time we spend in the particular component in change detection.
  */
-export class ComponentTreeObserver {
+export class DirectiveForestObserver {
   private _mutationObserver = new MutationObserver(this._onMutation.bind(this));
   private _patched = new Map<any, () => void>();
   private _undoLifecyclePatch: (() => void)[] = [];
@@ -119,7 +119,7 @@ export class ComponentTreeObserver {
       subtree: true,
       childList: true,
     });
-    this._observeUpdates();
+    this.indexForest();
   }
 
   destroy(): void {
@@ -138,7 +138,7 @@ export class ComponentTreeObserver {
     this._undoLifecyclePatch = [];
   }
 
-  private _observeUpdates(): void {
+  indexForest(): void {
     const { newNodes, removedNodes, indexedForest } = this._tracker.index();
     this._forest = indexedForest;
     newNodes.forEach(node => {
@@ -160,7 +160,7 @@ export class ComponentTreeObserver {
     if (this._isDevToolsMutation(records)) {
       return;
     }
-    this._observeUpdates();
+    this.indexForest();
   }
 
   private _fireCreationCallback(component: any, isComponent: boolean): void {

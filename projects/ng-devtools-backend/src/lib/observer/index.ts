@@ -1,10 +1,10 @@
-import { ComponentTreeObserver } from './observer';
+import { DirectiveForestObserver } from './observer';
 import { ElementPosition, ProfilerFrame, ElementProfile, DirectiveProfile, LifecycleProfile } from 'protocol';
 import { runOutsideAngular, isCustomElement } from '../utils';
 import { getDirectiveName } from '../highlighter';
 import { ComponentTreeNode } from '../component-tree';
 
-let observer: ComponentTreeObserver;
+let observer: DirectiveForestObserver;
 let inProgress = false;
 let inChangeDetection = false;
 let eventMap: Map<any, DirectiveProfile>;
@@ -15,7 +15,7 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
   }
   eventMap = new Map<any, DirectiveProfile>();
   inProgress = true;
-  observer = new ComponentTreeObserver({
+  observer = new DirectiveForestObserver({
     // We flush here because it's possible the current node to overwrite
     // an existing removed node.
     onCreate(directive: any, node: Node, _: number, isComponent: boolean, position: ElementPosition): void {
@@ -182,7 +182,7 @@ const prepareInitialFrame = (source: string) => {
   return frame;
 };
 
-const flushBuffer = (obs: ComponentTreeObserver, source: string = '') => {
+const flushBuffer = (obs: DirectiveForestObserver, source: string = '') => {
   const items = Array.from(eventMap.keys());
   const positions: ElementPosition[] = [];
   const positionDirective = new Map<ElementPosition, any>();
