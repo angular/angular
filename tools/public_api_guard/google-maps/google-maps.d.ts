@@ -52,7 +52,38 @@ export declare class GoogleMap implements OnChanges, OnInit, OnDestroy {
 
 export declare class GoogleMapsModule {
     static ɵinj: i0.ɵɵInjectorDef<GoogleMapsModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<GoogleMapsModule, [typeof i1.GoogleMap, typeof i2.MapInfoWindow, typeof i3.MapMarker, typeof i4.MapPolyline, typeof i5.MapPolygon, typeof i6.MapRectangle], never, [typeof i1.GoogleMap, typeof i2.MapInfoWindow, typeof i3.MapMarker, typeof i4.MapPolyline, typeof i5.MapPolygon, typeof i6.MapRectangle]>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<GoogleMapsModule, [typeof i1.GoogleMap, typeof i2.MapCircle, typeof i3.MapInfoWindow, typeof i4.MapMarker, typeof i5.MapPolygon, typeof i6.MapPolyline, typeof i7.MapRectangle], never, [typeof i1.GoogleMap, typeof i2.MapCircle, typeof i3.MapInfoWindow, typeof i4.MapMarker, typeof i5.MapPolygon, typeof i6.MapPolyline, typeof i7.MapRectangle]>;
+}
+
+export declare class MapCircle implements OnInit, OnDestroy {
+    set center(center: google.maps.LatLng | google.maps.LatLngLiteral);
+    centerChanged: Observable<void>;
+    circle: google.maps.Circle;
+    circleClick: Observable<google.maps.MouseEvent>;
+    circleDblclick: Observable<google.maps.MouseEvent>;
+    circleDrag: Observable<google.maps.MouseEvent>;
+    circleDragend: Observable<google.maps.MouseEvent>;
+    circleDragstart: Observable<google.maps.MouseEvent>;
+    circleMousedown: Observable<google.maps.MouseEvent>;
+    circleMousemove: Observable<google.maps.MouseEvent>;
+    circleMouseout: Observable<google.maps.MouseEvent>;
+    circleMouseover: Observable<google.maps.MouseEvent>;
+    circleMouseup: Observable<google.maps.MouseEvent>;
+    circleRightclick: Observable<google.maps.MouseEvent>;
+    set options(options: google.maps.CircleOptions);
+    set radius(radius: number);
+    radiusChanged: Observable<void>;
+    constructor(_map: GoogleMap, _ngZone: NgZone);
+    getBounds(): google.maps.LatLngBounds;
+    getCenter(): google.maps.LatLng;
+    getDraggable(): boolean;
+    getEditable(): boolean;
+    getRadius(): number;
+    getVisible(): boolean;
+    ngOnDestroy(): void;
+    ngOnInit(): void;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MapCircle, "map-circle", never, { "options": "options"; "center": "center"; "radius": "radius"; }, { "centerChanged": "centerChanged"; "circleClick": "circleClick"; "circleDblclick": "circleDblclick"; "circleDrag": "circleDrag"; "circleDragend": "circleDragend"; "circleDragstart": "circleDragstart"; "circleMousedown": "circleMousedown"; "circleMousemove": "circleMousemove"; "circleMouseout": "circleMouseout"; "circleMouseover": "circleMouseover"; "circleMouseup": "circleMouseup"; "radiusChanged": "radiusChanged"; "circleRightclick": "circleRightclick"; }, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MapCircle>;
 }
 
 export declare class MapInfoWindow implements OnInit, OnDestroy {

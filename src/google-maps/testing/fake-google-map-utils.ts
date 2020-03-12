@@ -18,6 +18,7 @@ export interface TestingWindow extends Window {
       Polyline?: jasmine.Spy;
       Polygon?: jasmine.Spy;
       Rectangle?: jasmine.Spy;
+      Circle?: jasmine.Spy;
     };
   };
 }
@@ -204,4 +205,35 @@ export function createRectangleConstructorSpy(rectangleSpy: jasmine.SpyObj<googl
     };
   }
   return rectangleConstructorSpy;
+}
+
+/** Creates a jasmine.SpyObj for a google.maps.Circle */
+export function createCircleSpy(options: google.maps.CircleOptions):
+    jasmine.SpyObj<google.maps.Circle> {
+  const circleSpy = jasmine.createSpyObj('google.maps.Circle', [
+    'addListener', 'getCenter', 'getRadius', 'getDraggable', 'getEditable', 'getVisible', 'setMap',
+    'setOptions', 'setCenter', 'setRadius'
+  ]);
+  circleSpy.addListener.and.returnValue({remove: () => {}});
+  return circleSpy;
+}
+
+/** Creates a jasmine.Spy to watch for the constructor of a google.maps.Circle */
+export function createCircleConstructorSpy(circleSpy: jasmine.SpyObj<google.maps.Circle>):
+    jasmine.Spy {
+  const circleConstructorSpy =
+      jasmine.createSpy('Circle constructor', (_options: google.maps.CircleOptions) => {
+        return circleSpy;
+      });
+  const testingWindow: TestingWindow = window;
+  if (testingWindow.google && testingWindow.google.maps) {
+    testingWindow.google.maps['Circle'] = circleConstructorSpy;
+  } else {
+    testingWindow.google = {
+      maps: {
+        'Circle': circleConstructorSpy,
+      },
+    };
+  }
+  return circleConstructorSpy;
 }

@@ -16,6 +16,7 @@
     <map-polyline *ngIf="isPolylineDisplayed" [options]="polylineOptions"></map-polyline>
     <map-polygon *ngIf="isPolygonDisplayed" [options]="polygonOptions"></map-polygon>
     <map-rectangle *ngIf="isRectangleDisplayed" [options]="rectangleOptions"></map-rectangle>
+    <map-circle *ngIf="isCircleDisplayed" [options]="circleOptions"></map-circle>
   </google-map>
 
   <p><label>Latitude:</label> {{display?.lat}}</p>
@@ -63,6 +64,19 @@
       <input type="checkbox"
              [disabled]="!isRectangleDisplayed"
              (click)="toggleEditableRectangle()">
+    </label>
+  </div>
+
+  <div>
+    <label for="circle-checkbox">
+      Toggle Circle
+      <input type="checkbox" (click)="toggleCircleDisplay()">
+    </label>
+  </div>
+  <div>
+    <label for="editable-circle-checkbox">
+      Toggle Editable Circle
+      <input type="checkbox" [disabled]="!isCircleDisplayed" (click)="toggleEditableCircle()">
     </label>
   </div>
 

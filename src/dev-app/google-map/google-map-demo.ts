@@ -8,6 +8,7 @@
 
 import {Component, ViewChild} from '@angular/core';
 import {
+  MapCircle,
   MapInfoWindow,
   MapMarker,
   MapPolygon,
@@ -28,6 +29,12 @@ const RECTANGLE_BOUNDS: google.maps.LatLngBoundsLiteral = {
   south: -5
 };
 
+const CIRCLE_CENTER: google.maps.LatLngLiteral = {
+  lat: 19,
+  lng: 20
+};
+const CIRCLE_RADIUS = 500000;
+
 /** Demo Component for @angular/google-maps/map */
 @Component({
   selector: 'google-map-demo',
@@ -39,6 +46,7 @@ export class GoogleMapDemo {
   @ViewChild(MapPolyline) polyline: MapPolyline;
   @ViewChild(MapPolygon) polygon: MapPolygon;
   @ViewChild(MapRectangle) rectangle: MapRectangle;
+  @ViewChild(MapCircle) circle: MapCircle;
 
   center = {lat: 24, lng: 12};
   markerOptions = {draggable: false};
@@ -54,6 +62,9 @@ export class GoogleMapDemo {
   isRectangleDisplayed = false;
   rectangleOptions: google.maps
       .RectangleOptions = {bounds: RECTANGLE_BOUNDS, strokeColor: 'grey', strokeOpacity: 0.8};
+  isCircleDisplayed = false;
+  circleOptions: google.maps.CircleOptions =
+      {center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, strokeColor: 'grey', strokeOpacity: 0.8};
 
   handleClick(event: google.maps.MouseEvent) {
     this.markerPositions.push(event.latLng.toJSON());
@@ -104,6 +115,19 @@ export class GoogleMapDemo {
       ...this.rectangleOptions,
       editable: !this.rectangleOptions.editable,
       bounds: this.rectangle.getBounds()
+    };
+  }
+
+  toggleCircleDisplay() {
+    this.isCircleDisplayed = !this.isCircleDisplayed;
+  }
+
+  toggleEditableCircle() {
+    this.circleOptions = {
+      ...this.circleOptions,
+      editable: !this.circleOptions.editable,
+      center: this.circle.getCenter(),
+      radius: this.circle.getRadius(),
     };
   }
 }
