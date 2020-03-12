@@ -190,6 +190,28 @@ describe('MatMenu', () => {
     expect(document.activeElement).not.toBe(triggerEl);
   }));
 
+  it('should be able to move focus in the closed event', fakeAsync(() => {
+    const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
+    const instance = fixture.componentInstance;
+    fixture.detectChanges();
+    const triggerEl = instance.triggerEl.nativeElement;
+    const button = document.createElement('button');
+    button.setAttribute('tabindex', '0');
+    document.body.appendChild(button);
+
+    triggerEl.click();
+    fixture.detectChanges();
+
+    const subscription = instance.trigger.menuClosed.subscribe(() => button.focus());
+    instance.trigger.closeMenu();
+    fixture.detectChanges();
+    tick(500);
+
+    expect(document.activeElement).toBe(button);
+    document.body.removeChild(button);
+    subscription.unsubscribe();
+  }));
+
   it('should restore focus to the trigger immediately once the menu is closed', () => {
     const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
     fixture.detectChanges();

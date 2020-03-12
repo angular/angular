@@ -277,9 +277,9 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
     }
 
     const menu = this.menu;
-
     this._closingActionsSubscription.unsubscribe();
     this._overlayRef.detach();
+    this._restoreFocus();
 
     if (menu instanceof MatMenu) {
       menu._resetAnimation();
@@ -308,8 +308,6 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
         menu.lazyContent.detach();
       }
     }
-
-    this._restoreFocus();
   }
 
   /**
