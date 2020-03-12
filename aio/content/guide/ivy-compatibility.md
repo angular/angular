@@ -75,7 +75,7 @@ Please note that these constants are not meant to be used by 3rd party library o
 
 * ICU parsing happens at runtime, so only text, HTML tags and text bindings are allowed inside ICU cases (previously, directives were also permitted inside ICUs).
 
-* I18n translations parsing happens at runtime (when component's template is already compiled), so adding extra text bindings (that are not present in the source i18n message extracted from component’s template) into translations will trigger runtime error and extra HTML tags will be rendered as plain text.
+* Adding extra text bindings (that are not present in the source i18n message extracted from component's template) into translations will trigger runtime error and extra HTML tags will be rendered as plain text (previously it was possible to add extra bindings and HTML tags into translations since templates were re-compiled for each locale).
 
 * Providers formatted as `{provide: X}` without a `useValue`, `useFactory`, `useExisting`, or `useClass` property are treated like `{provide: X, useClass: X}` (previously, it defaulted to `{provide: X, useValue: undefined}`).
 
