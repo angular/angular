@@ -2851,6 +2851,7 @@ For more information on `NgIf` and `ngIfElse`, see the [API documentation about 
 -->
 #### null 방지
 
+<!--
 Another advantage of `ngIf` is that you can use it to guard against null. Show/hide
 is best suited for very simple use cases, so when you need a guard, opt instead for `ngIf`. Angular will throw an error if a nested expression tries to access a property of `null`.
 
@@ -2864,10 +2865,25 @@ The `nullCustomer` will not be displayed as long as it is `null`.
 
 <div class="alert is-helpful">
 
-<!--
 See also the
 [safe navigation operator](guide/template-syntax#safe-navigation-operator "Safe navigation operator (?.)") below.
+
+</div>
 -->
+`ngIf` 디렉티브는 `null` 값을 방지하는 용도로도 사용할 수 있습니다.
+그래서 간단한 방법으로도 템플릿에서 `null` 객체의 프로퍼티에 접근하는 표현식의 에러를 방지할 수 있습니다.
+
+다음과 같이 `NgIf`를 사용한 두 개의 `<div>` 엘리먼트를 봅시다.
+`currentCustomer`의 이름은 `currentCustomer` 객체가 존재할 때만 표시됩니다.
+그리고 `nullCustomer` 프로퍼티의 값은 `null`이기 때문에 아무것도 표시되지 않을 것입니다.
+
+<code-example path="built-in-directives/src/app/app.component.html" region="NgIf-2" header="src/app/app.component.html"></code-example>
+
+<code-example path="built-in-directives/src/app/app.component.html" region="NgIf-2b" header="src/app/app.component.html"></code-example>
+
+
+<div class="alert is-helpful">
+
 [안전 참조 연산자](guide/template-syntax#safe-navigation-operator "Safe navigation operator (?.)") 에 대해서도 확인해 보세요.
 
 </div>
@@ -2881,10 +2897,6 @@ See also the
 You define a block of HTML that defines how a single item should be displayed
 and then you tell Angular to use that block as a template for rendering each item in the list.
 The text assigned to `*ngFor` is the instruction that guides the repeater process.
--->
-`NgForOf`는 템플릿을 반복하는 디렉티브이며, 배열의 각 항목을 뷰에 표시할 때 주로 사용합니다.
-이 디렉티브를 사용할 때는 배열의 한 항목을 뷰로 어떻게 표시할지 HTML 템플릿으로 먼저 정의합니다.
-그러면 Angular가 템플릿을 반복할 때마다 배열의 항목이 하나씩 전달되면서 뷰를 표시합니다.
 
 The following example shows `NgFor` applied to a simple `<div>`. (Don't forget the asterisk (`*`) in front of `ngFor`.)
 
@@ -2893,10 +2905,26 @@ The following example shows `NgFor` applied to a simple `<div>`. (Don't forget t
 You can also apply an `NgFor` to a component element, as in the following example.
 
 <code-example path="built-in-directives/src/app/app.component.html" region="NgFor-2" header="src/app/app.component.html"></code-example>
+-->
+`NgForOf`는 템플릿을 반복하는 디렉티브이며, 배열의 각 항목을 뷰에 표시할 때 주로 사용합니다.
+이 디렉티브를 사용할 때는 배열의 한 항목을 뷰로 어떻게 표시할지 HTML 템플릿으로 먼저 정의합니다.
+그러면 Angular가 템플릿을 반복할 때마다 배열의 항목이 하나씩 전달되면서 뷰를 표시합니다.
+`*ngFor`가 어떻게 동작하는지는 이 디렉티브에 전달하는 문자열로 지정합니다.
+
+아래 예제에서는 간단한 `<div>` 엘리먼트에 `NgFor` 디렉티브가 적용되었습니다. (`ngFor` 앞에 별표(`*`)를 빠뜨리지 마세요.)
+
+<code-example path="built-in-directives/src/app/app.component.html" region="NgFor-1" header="src/app/app.component.html"></code-example>
+
+그리고 다음과 같이 컴포넌트 엘리먼트에도 적용할 수 있습니다.
+
+<code-example path="built-in-directives/src/app/app.component.html" region="NgFor-2" header="src/app/app.component.html"></code-example>
+
 
 {@a microsyntax}
 
 <div class="callout is-critical">
+
+<!--
 <header>*ngFor microsyntax</header>
 
 The string assigned to `*ngFor` is not a [template expression](guide/template-syntax#template-expressions). Rather,
@@ -2910,6 +2938,18 @@ Angular translates this instruction into an `<ng-template>` around the host elem
 then uses this template repeatedly to create a new set of elements and bindings for each `item`
 in the list.
 For more information about microsyntax, see the [Structural Directives](guide/structural-directives#microsyntax) guide.
+-->
+<header>*ngFor 세부문법(microsyntax)</header>
+
+`*ngFor`에 할당되는 문자열은 [템플릿 표현식](guide/template-syntax#template-expressions)이 아닙니다.
+이 문자열은 Angular 인터프리터가 처리하는 작은 언어셋이라고 이해할 수 있습니다.
+예를 들어 `"let item of items"`와 같은 문자열이 있다면 이 문자열은:
+
+> *`items` 배열에서 항목을 가져와서 로컬 변수 `item`에 담은 뒤에 이 변수마다 템플릿 HTML을 반복하라는 것을 의미합니다.*
+
+Angular는 호스트 엘리먼트 근처에 `<ng-template>`을 만들어서 이런 동작을 처리합니다.
+그리고 새로 만들어지는 엘리먼트마다 `item` 항목을 적용합니다.
+세부문법에 대해 자세하게 알아보려면 [구조 디렉티브](guide/structural-directives#microsyntax) 문서를 참고하세요.
 
 </div>
 
@@ -2933,33 +2973,38 @@ Reference `item` within the `ngFor` host element
 as well as within its descendants to access the item's properties.
 The following example references `item` first in an interpolation
 and then passes in a binding to the `item` property of the `<app-item-detail>` component.
--->
-`hero` 안에 있는 `let` 키워드는 _템플릿 입력 변수_ `hero`를 만드는 키워드입니다.
-그리고 `NgForOf` 디렉티브는 부모 컴포넌트의 `heroes` 배열의 각 항목을 반환하면서 이 문법을 반복하고, 각각의 반복마다 새로운 `hero` 아이템을 템플릿에 적용합니다.
-
-Reference `item` within the `ngFor` host element
-as well as within its descendants to access the item's properties.
-The following example references `item` first in an interpolation
-and then passes in a binding to the `item` property of the `<app-item-detail>` component.
 
 <code-example path="built-in-directives/src/app/app.component.html" region="NgFor-1-2" header="src/app/app.component.html"></code-example>
 
 For more information about template input variables, see
 [Structural Directives](guide/structural-directives#template-input-variable).
+-->
+`hero` 안에 있는 `let` 키워드는 _템플릿 입력 변수_ `hero`를 만드는 키워드입니다.
+그리고 `NgForOf` 디렉티브는 부모 컴포넌트의 `heroes` 배열의 각 항목을 반환하면서 이 문법을 반복하고, 각각의 반복마다 새로운 `hero` 아이템을 템플릿에 적용합니다.
 
+`ngFor`가 사용된 호스트 엘리먼트에서 `item`에 접근할 수 있다는 것은, 이 호스트 엘리먼트의 자식 엘리먼트에서도 `item`에 접근할 수 있다는 것을 의미합니다.
+그래서 아래 예제에서 볼 수 있듯이 `ngFor`로 반복할 때 받는 `item` 객체는 자식 컴포넌트인 `<app-item-detail>`로 전달할 수 있습니다.
+
+<code-example path="built-in-directives/src/app/app.component.html" region="NgFor-1-2" header="src/app/app.component.html"></code-example>
+
+템플릿 입력 변수에 대해 자세하게 알아보려면 [구조 디렉티브](guide/structural-directives#template-input-variable) 문서를 참고하세요.
+
+
+<!--
 #### `*ngFor` with `index`
+-->
+#### `*ngFor`와 `index`
 
 <!--
 The `index` property of the `NgFor` directive context
 returns the zero-based index of the item in each iteration.
 You can capture the `index` in a template input variable and use it in the template.
+
+The next example captures the `index` in a variable named `i` and displays it with the item name.
 -->
 `NgForOf` 디렉티브에서 제공하는 `index` 프로퍼티는 반복문이 반복되는 횟수를 나타내는 인덱스입니다.
 이 `index` 프로퍼티는 템플릿 입력 변수로 할당 받아 템플릿 안에서 사용할 수 있습니다.
 
-<!--
-The next example captures the `index` in a variable named `i` and displays it with the item name.
--->
 다음 코드는 `index` 프로퍼티를 변수 `i`로 할당하고 히어로의 이름과 함께 표시하는 예제입니다.
 
 <code-example path="built-in-directives/src/app/app.component.html" region="NgFor-3" header="src/app/app.component.html"></code-example>
@@ -2975,8 +3020,12 @@ and `odd` in the [NgForOf API reference](api/common/NgForOf).
 </div>
 
 {@a trackBy}
+<!--
 #### *ngFor with `trackBy`
+-->
+#### *ngFor와 `trackBy`
 
+<!--
 If you use `NgFor` with large lists, a small change to one item, such as removing or adding an item, can trigger a cascade of DOM manipulations. For example, re-querying the server could reset a list with all new item objects, even when those items were previously displayed. In this case, Angular sees only a fresh list of new object references and has no choice but to replace the old DOM elements with all new DOM elements.
 
 You can make this more efficient with `trackBy`.
@@ -2996,6 +3045,28 @@ Here is an illustration of the `trackBy` effect.
 
 * With no `trackBy`, both buttons trigger complete DOM element replacement.
 * With `trackBy`, only changing the `id` triggers element replacement.
+-->
+`NgFor`로 복잡한 배열을 순회하면서 이 배열에 있는 항목을 추가하거나 제거하는 경우에는 관련된 DOM 전체가 변화 감지 로직의 대상이 됩니다.
+화면에 표시하는 목록을 무시하고 서버에 새로 데이터를 받아 화면을 전체 갱신하는 경우도 이런 경우입니다.
+이 경우에는 기존에 있는 항목은 그대로 두고 새로운 항목만 DOM 엘리먼트를 생성하게 할 수 있습니다.
+
+`trackBy`는 이런 경우에 사용합니다.
+컴포넌트 클래스에 `NgFor`가 추적하는 값을 반환하는 메소드를 정의합니다.
+지금 예제에서는 히어로의 `id`입니다.
+그러면 `id`에 해당하는 히어로가 화면에 표시되고 있으면 이 항목을 변경하지 않고 그대로 두게 됩니다.
+
+<code-example path="built-in-directives/src/app/app.component.ts" region="trackByItems" header="src/app/app.component.ts"></code-example>
+
+그리고 세부문법으로 `trackBy`에 `trackByItems()` 메소드를 지정합니다.
+
+<code-example path="built-in-directives/src/app/app.component.html" region="trackBy" header="src/app/app.component.html"></code-example>
+
+`trackBy`가 동작하는 모습을 살펴봅시다.
+"Reset items" 버튼을 클릭하면 기존에 있던 `item.id`와 같은 값으로 항목을 생성합니다.
+그리고 "Change ids" 버튼을 누르면 새로운 `item.id`로 항목을 생성합니다.
+
+* `trackBy`가 사용되지 않은 곳에서는 두 버튼이 모두 DOM 엘리먼트를 갱신합니다.
+* `trackBy`가 사용된 곳에서는 `id`가 바뀐 경우에만 엘리먼트가 갱신됩니다.
 
 <div class="lightbox">
   <img src="generated/images/guide/built-in-directives/ngfor-trackby.gif" alt="Animation of trackBy">
@@ -3004,8 +3075,11 @@ Here is an illustration of the `trackBy` effect.
 
 <div class="alert is-helpful">
 
+<!--
 Built-in directives use only public APIs; that is,
 they do not have special access to any private APIs that other directives can't access.
+-->
+기본 디렉티브는 public API만 사용합니다. 다른 디렉티브의 private API에는 접근할 수 없습니다.
 
 </div>
 
@@ -3027,10 +3101,13 @@ Angular puts only the selected element into the DOM.
 이 때 *선택된* 엘리먼트만 DOM에 추가되며, 조건을 만족하지 않는 엘리먼트들은 DOM에 존재하지 않습니다.
 
 <!-- API Flagged -->
+<!--
 `NgSwitch` is actually a set of three, cooperating directives:
 `NgSwitch`, `NgSwitchCase`, and `NgSwitchDefault` as in the following example.
+-->
+`NgSwitch`는 일반적으로 `NgSwitch`, `NgSwitchCase`, `NgSwitchDefault` 3개의 디렉티브를 함께 의미합니다:
 
- <code-example path="built-in-directives/src/app/app.component.html" region="NgSwitch" header="src/app/app.component.html"></code-example>
+<code-example path="built-in-directives/src/app/app.component.html" region="NgSwitch" header="src/app/app.component.html"></code-example>
 
 <div class="lightbox">
   <img src="generated/images/guide/built-in-directives/ngswitch.gif" alt="Animation of NgSwitch">
@@ -3040,50 +3117,45 @@ Angular puts only the selected element into the DOM.
 `NgSwitch` is the controller directive. Bind it to an expression that returns
 the *switch value*, such as `feature`. Though the `feature` value in this
 example is a string, the switch value can be of any type.
--->
-`NgSwitch`는 해당하는 조건을 선택하는 디렉티브입니다. 이 디렉티브는 템플릿 표현식이 반환하는 값에 해당하는 *특정 조건*을 선택합니다.
-위 예제에서는 문자열 타입의 `emotion` 변수로 조건을 판단했지만, 타입은 자유롭게 사용할 수 있습니다.
 
-<!--
 **Bind to `[ngSwitch]`**. You'll get an error if you try to set `*ngSwitch` because
 `NgSwitch` is an *attribute* directive, not a *structural* directive.
 Rather than touching the DOM directly, it changes the behavior of its companion directives.
--->
-스위칭 조건을 판단하는 템플릿 표현식은 **`[ngSwitch]`** 와 같이 바인딩합니다.
-이 때 문법을 `*ngSwitch`로 사용해도 되지 않을까 생각할 수 있지만, `NgSwitch`는 *구조* 디렉티브가 아니라 *어트리뷰트* 디렉티브이기 때문에 `*ngSwitch`로 사용하면 에러가 발생합니다.
-Rather than touching the DOM directly, it changes the behavior of its companion directives.
 
-<!--
 **Bind to `*ngSwitchCase` and `*ngSwitchDefault`**.
 The `NgSwitchCase` and `NgSwitchDefault` directives are _structural_ directives
 because they add or remove elements from the DOM.
--->
-`NgSwitch`와는 다르게 `NgSwitchCase`와 `NgSwitchDefault`는 _구조_ 디렉티브이며, `*ngSwitchCase`, `*ngSwitchDefault`와 같이 사용합니다.
-두 디렉티브는 DOM에 엘리먼트를 직접 추가하거나 제거하는 디렉티브입니다.
 
-<!--
 * `NgSwitchCase` adds its element to the DOM when its bound value equals the switch value and removes
 its bound value when it doesn't equal the switch value.
 
 * `NgSwitchDefault` adds its element to the DOM when there is no selected `NgSwitchCase`.
--->
-* `NgSwitchCase`는 스위칭 조건이 맞을 때 해당 엘리먼트를 DOM에 추가하며, 조건에 맞지 않으면 해당 엘리먼트를 제거합니다.
-* `NgSwitchDefault`는 `NgSwitchCase`가 하나도 선택되지 않았을 때 DOM에 추가하는 엘리먼트를 지정합니다.
 
-<!--
 The switch directives are particularly useful for adding and removing *component elements*.
 This example switches among four `item` components defined in the `item-switch.components.ts` file.
 Each component has an `item` [input property](guide/template-syntax#inputs-outputs "Input property")
 which is bound to the `currentItem` of the parent component.
+
+Switch directives work as well with native elements and web components too.
+For example, you could replace the `<app-best-item>` switch case with the following.
 -->
+`NgSwitch`는 해당하는 조건을 선택하는 디렉티브입니다. 이 디렉티브는 템플릿 표현식이 반환하는 값에 해당하는 *특정 조건*을 선택합니다.
+위 예제에서는 문자열 타입의 `emotion` 변수로 조건을 판단했지만, 타입은 자유롭게 사용할 수 있습니다.
+
+스위칭 조건을 판단하는 템플릿 표현식은 **`[ngSwitch]`** 와 같이 바인딩합니다.
+이 때 문법을 `*ngSwitch`로 사용해도 되지 않을까 생각할 수 있지만, `NgSwitch`는 *구조* 디렉티브가 아니라 *어트리뷰트* 디렉티브이기 때문에 `*ngSwitch`로 사용하면 에러가 발생합니다.
+Rather than touching the DOM directly, it changes the behavior of its companion directives.
+
+`NgSwitch`와는 다르게 `NgSwitchCase`와 `NgSwitchDefault`는 _구조_ 디렉티브이며, `*ngSwitchCase`, `*ngSwitchDefault`와 같이 사용합니다.
+두 디렉티브는 DOM에 엘리먼트를 직접 추가하거나 제거하는 디렉티브입니다.
+
+* `NgSwitchCase`는 스위칭 조건이 맞을 때 해당 엘리먼트를 DOM에 추가하며, 조건에 맞지 않으면 해당 엘리먼트를 제거합니다.
+* `NgSwitchDefault`는 `NgSwitchCase`가 하나도 선택되지 않았을 때 DOM에 추가하는 엘리먼트를 지정합니다.
+
 스위치 디렉티브는 *컴포넌트 엘리먼트를* DOM에 추가하거나 제거하는 용도로도 많이 사용합니다.
 위에서 살펴본 예제는 `item-switch.component.ts` 파일에 정의된 컴포넌트 4개를 하나씩 선택해서 적용하는 예제입니다.
 각각의 컴포넌트는 부모 컴포넌트에서 전달되는 `currentItem` 프로퍼티를 `item`를 [입력 프로퍼티](guide/template-syntax#inputs-outputs "Input property")로 바인딩합니다.
 
-<!--
-Switch directives work as well with native elements and web components too.
-For example, you could replace the `<app-best-item>` switch case with the following.
--->
 그리고 스위치 디렉티브는 네이티브 엘리먼트나 웹 컴포넌트에도 자연스럽게 적용할 수 있습니다.
 위 예제에서 `<confused-hero>`에 사용했던 스위치 디렉티브는 다음과 같이 네이티브 엘리먼트에도 사용할 수 있습니다.
 
@@ -3111,24 +3183,27 @@ A **template reference variable** is often a reference to a DOM element within a
 It can also refer to a directive (which contains a component), an element, [TemplateRef](api/core/TemplateRef), or a <a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components" title="MDN: Web Components">web component</a>.
 
 For a demonstration of the syntax and code snippets in this section, see the <live-example name="template-reference-variables">template reference variables example</live-example>.
--->
-**템플릿 참조 변수**는 템플릿 안에서 DOM 엘리먼트를 가리킬 때 사용합니다.
-It can also refer to a directive (which contains a component), an element, [TemplateRef](api/core/TemplateRef), or a <a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components" title="MDN: Web Components">web component</a>.
-
-For a demonstration of the syntax and code snippets in this section, see the <live-example name="template-reference-variables">template reference variables example</live-example>.
 
 
-<!--
 Use the hash symbol (#) to declare a reference variable.
 The following reference variable, `#phone`, declares a `phone` variable on an `<input>` element.
 -->
+**템플릿 참조 변수**는 템플릿 안에서 DOM 엘리먼트를 가리킬 때 사용합니다.
+그리고 디렉티브나 엘리먼트, [TemplateRef](api/core/TemplateRef), <a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components" title="MDN: Web Components">웹 컴포넌트</a>를 가리킬 때도 사용합니다.
+
+이 섹션에서 설명하는 내용을 직접 확인하려면 <live-example name="template-reference-variables">템플릿 참조 변수 예제</live-example>를 참고하세요.
+
 참조 변수는 해시 기호(#)를 사용해서 정의합니다.
 예를 들어, `<input>` 엘리먼트를 `phone` 변수로 가리키려면 `#phone` 과 같이 정의합니다.
 
 <code-example path="template-reference-variables/src/app/app.component.html" region="ref-var" header="src/app/app.component.html"></code-example>
 
+<!--
 You can refer to a template reference variable anywhere in the component's template.
 Here, a `<button>` further down the template refers to the `phone` variable.
+-->
+컴포넌트 템플릿에서는 어디에서라도 템플릿 참조 변수를 사용할 수 있습니다.
+아래 예제에서 `<button>` 엘리먼트는 `phone`으로 지정된 엘리먼트의 값을 참조합니다.
 
 <code-example path="template-reference-variables/src/app/app.component.html" region="ref-phone" header="src/app/app.component.html"></code-example>
 
