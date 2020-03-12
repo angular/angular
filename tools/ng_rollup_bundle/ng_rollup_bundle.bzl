@@ -66,7 +66,7 @@ _NG_ROLLUP_BUNDLE_DEPS_ASPECTS = [esm5_outputs_aspect, ng_rollup_module_mappings
 _NG_ROLLUP_BUNDLE_ATTRS = {
     "build_optimizer": attr.bool(
         doc = """Use build optimizer plugin
-        
+
         Only used if sources are esm5 which depends on value of esm5_sources.""",
         default = True,
     ),
@@ -82,7 +82,7 @@ _NG_ROLLUP_BUNDLE_ATTRS = {
     "entry_point": attr.label(
         doc = """The starting point of the application, passed as the `--input` flag to rollup.
 
-        If the entry JavaScript file belongs to the same package (as the BUILD file), 
+        If the entry JavaScript file belongs to the same package (as the BUILD file),
         you can simply reference it by its relative name to the package directory:
 
         ```
@@ -110,7 +110,7 @@ _NG_ROLLUP_BUNDLE_ATTRS = {
 
         The rule will use the corresponding `.js` output of the ts_library rule as the entry point.
 
-        If the entry point target is a rule, it should produce a single JavaScript entry file that will be passed to the nodejs_binary rule. 
+        If the entry point target is a rule, it should produce a single JavaScript entry file that will be passed to the nodejs_binary rule.
         For example:
 
         ```
@@ -274,6 +274,7 @@ def _write_rollup_config(ctx, root_dir, build_optimizer, filename = "_%s.rollup.
             "TMPL_workspace_name": ctx.workspace_name,
             "TMPL_external": ", ".join(["'%s'" % e for e in external]),
             "TMPL_globals": ", ".join(["'%s': '%s'" % g for g in globals]),
+            "TMPL_ivy_enabled": "true" if ctx.var.get("angular_ivy_enabled", None) == "True" else "false",
         },
     )
 
