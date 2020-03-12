@@ -34,10 +34,10 @@ ng_package(
 
 ts_api_guardian_test_npm_package(
     name = "platform-webworker-dynamic_api",
-    actualDir = "packages/platform-webworker-dynamic/npm_package",
+    actualDir = "angular/packages/platform-webworker-dynamic/npm_package",
     data = [
         ":npm_package",
         "//goldens:public-api",
     ],
-    goldenDir = "goldens/public-api/platform-webworker-dynamic",
+    goldenDir = "angular/goldens/public-api/platform-webworker-dynamic",
 )

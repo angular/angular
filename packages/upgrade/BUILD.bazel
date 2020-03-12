@@ -41,10 +41,10 @@ ng_package(
 
 ts_api_guardian_test_npm_package(
     name = "upgrade_api",
-    actualDir = "packages/upgrade/npm_package",
+    actualDir = "angular/packages/upgrade/npm_package",
     data = [
         ":npm_package",
         "//goldens:public-api",
     ],
-    goldenDir = "goldens/public-api/upgrade",
+    goldenDir = "angular/goldens/public-api/upgrade",
 )
