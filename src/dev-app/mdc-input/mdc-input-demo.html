@@ -637,23 +637,27 @@
 <mat-card class="demo-card demo-basic">
   <mat-toolbar color="primary">Autocomplete</mat-toolbar>
   <mat-card-content>
-    <mat-form-field class="demo-block">
-      <mat-label>Pick Number</mat-label>
-      <input type="text" aria-label="Number" matInput
-             [matAutocomplete]="autoComplete1">
-      <mat-autocomplete #autoComplete1="matAutocomplete">
-        <mat-option *ngFor="let option of options" [value]="option">{{option}}</mat-option>
-      </mat-autocomplete>
-    </mat-form-field>
+    <p>
+      <mat-form-field>
+        <mat-label>Pick Number</mat-label>
+        <input type="text" aria-label="Number" matInput
+               [matAutocomplete]="autoComplete1">
+        <mat-autocomplete #autoComplete1="matAutocomplete">
+          <mat-option *ngFor="let option of options" [value]="option">{{option}}</mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </p>
 
-    <mat-form-field appearance="outline" class="demo-block">
-      <mat-label>Pick Number</mat-label>
-      <input type="text" aria-label="Number" matInput
-             [matAutocomplete]="autoComplete2">
-      <mat-autocomplete #autoComplete2="matAutocomplete">
-        <mat-option *ngFor="let option of options" [value]="option">{{option}}</mat-option>
-      </mat-autocomplete>
-    </mat-form-field>
+    <p>
+      <mat-form-field appearance="outline">
+        <mat-label>Pick Number</mat-label>
+        <input type="text" aria-label="Number" matInput
+               [matAutocomplete]="autoComplete2">
+        <mat-autocomplete #autoComplete2="matAutocomplete">
+          <mat-option *ngFor="let option of options" [value]="option">{{option}}</mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </p>
   </mat-card-content>
 </mat-card>
 

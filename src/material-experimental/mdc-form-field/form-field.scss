@@ -38,6 +38,12 @@
   width: 100%;
 }
 
+// The MDC text-field should stretch to the width of the host `<mat-form-field>` element.
+// This allows developers to control the width without needing custom CSS overrides.
+.mat-mdc-text-field-wrapper {
+  width: 100%;
+}
+
 // Infix that contains the projected content (usually an input or a textarea). We ensure
 // that the projected form-field control and content can stretch as needed, but we also
 // apply a default infix width to make the form-field's look natural.
