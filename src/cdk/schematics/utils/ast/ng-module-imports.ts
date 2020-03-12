@@ -48,7 +48,7 @@ export function hasNgModuleImport(tree: Tree, modulePath: string, className: str
 function resolveIdentifierOfExpression(expression: ts.Expression): ts.Identifier | null {
   if (ts.isIdentifier(expression)) {
     return expression;
-  } else if (ts.isPropertyAccessExpression(expression)) {
+  } else if (ts.isPropertyAccessExpression(expression) && ts.isIdentifier(expression.name)) {
     return expression.name;
   }
   return null;
@@ -84,6 +84,7 @@ function isNgModuleCallExpression(callExpression: ts.CallExpression): boolean {
     return false;
   }
 
+  // The `NgModule` call expression name is never referring to a `PrivateIdentifier`.
   const decoratorIdentifier = resolveIdentifierOfExpression(callExpression.expression);
   return decoratorIdentifier ? decoratorIdentifier.text === 'NgModule' : false;
 }

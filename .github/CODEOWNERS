@@ -241,9 +241,12 @@
 # Universal app
 /src/universal-app/**                              @jelbourn
 
+# Integration tests
+/integration/**                                    @jelbourn @devversion
+
 # Tooling
 /.circleci/**                                      @angular/dev-infra-components
-/.yarn/**                                      @angular/dev-infra-components
+/.yarn/**                                          @angular/dev-infra-components
 /scripts/**                                        @angular/dev-infra-components
 /test/**                                           @angular/dev-infra-components
 /tools/**                                          @angular/dev-infra-components

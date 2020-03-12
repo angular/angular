@@ -1,0 +1,46 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@bazel_skylib//rules:write_file.bzl", "write_file")
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_test")
+load("//integration/ts-compat:import-all-entry-points.bzl", "generate_import_all_entry_points_file")
+
+write_file(
+    name = "import-all-entry-points-file",
+    out = "import-all-entry-points.ts",
+    content = [generate_import_all_entry_points_file()],
+)
+
+# List of TypeScript packages that we want to run the compatibility test against.
+# The list contains NPM module names that resolve to the desired TypeScript version.
+typescript_version_packages = [
+    "typescript-3.6",
+    "typescript-3.7",
+    "typescript",
+]
+
+# Generates a NodeJS test for each configured TypeScript version.
+[
+    nodejs_test(
+        name = ts_pkg_name,
+        args = [ts_pkg_name],
+        data = [
+            "helpers.js",
+            "test.js",
+            ":import-all-entry-points-file",
+            "//src/cdk:npm_package",
+            "//src/cdk-experimental:npm_package",
+            "//src/google-maps:npm_package",
+            "//src/material:npm_package",
+            "//src/material-experimental:npm_package",
+            "//src/youtube-player:npm_package",
+            "@npm//shelljs",
+            "@npm//%s" % ts_pkg_name,
+            "@npm//@types/node",
+        ],
+        entry_point = "test.js",
+        tags = [
+            "integration",
+        ],
+    )
+    for ts_pkg_name in typescript_version_packages
+]

@@ -485,6 +485,23 @@ jobs:
       - run: bazel test src/... --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --config=view-engine --build_tests_only
 
   # ----------------------------------------------------------------------------
+  # Job that runs all Bazel integration tests.
+  # ----------------------------------------------------------------------------
+  integration_tests:
+    <<: *job_defaults
+    resource_class: xlarge
+    environment:
+      GCP_DECRYPT_TOKEN: *gcp_decrypt_token
+    steps:
+      - *checkout_code
+      - *restore_cache
+      - *setup_bazel_ci_config
+      - *setup_bazel_remote_execution
+      - *setup_bazel_binary
+      # Integration tests run with --config=view-engine because we release with View Engine.
+      - run: bazel test integration/... --build_tests_only --config=view-engine
+
+  # ----------------------------------------------------------------------------
   # Job that runs all Bazel tests against material-components-web@canary
   # ----------------------------------------------------------------------------
   mdc_snapshot_test_cronjob:
@@ -524,6 +541,8 @@ workflows:
       - view_engine_test:
           filters: *ignore_presubmit_branch_filter
       - api_golden_checks:
+          filters: *ignore_presubmit_branch_filter
+      - integration_tests:
           filters: *ignore_presubmit_branch_filter
       - tests_local_browsers:
           filters: *ignore_presubmit_branch_filter

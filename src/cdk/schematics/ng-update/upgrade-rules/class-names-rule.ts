@@ -25,6 +25,8 @@ import {getVersionUpgradeData, RuleUpgradeData} from '../upgrade-data';
  * Rule that walks through every identifier that is part of Angular Material or thr CDK
  * and replaces the outdated name with the new one if specified in the upgrade data.
  */
+// TODO: rework this rule to identify symbols using the import identifier resolver. This
+// makes it more robust, less AST convoluted and is more TypeScript AST idiomatic. COMP-300.
 export class ClassNamesRule extends MigrationRule<RuleUpgradeData> {
   /** Change data that upgrades to the specified target version. */
   data: ClassNameUpgradeData[] = getVersionUpgradeData(this, 'classNames');
