@@ -12,9 +12,6 @@
 @mixin _mat-mdc-text-field-textarea-overrides() {
   // Ensures that textarea elements inside of the form-field have proper vertical spacing
   // to account for the floating label. Also ensures that there is no vertical text overflow.
-  // TODO(devversion): remove extra specificity if we removed the ":not(outline-appearance)"
-  // selector from the structure overwrites. Blocked on material-components-web#5326.
-  .mat-mdc-form-field > .mat-mdc-text-field-wrapper .mat-mdc-form-field-infix
   .mat-mdc-textarea-input {
     resize: vertical;
     box-sizing: border-box;

@@ -62,6 +62,8 @@ export class MatFormFieldNotchedOutline implements AfterViewInit, OnChanges, OnD
       // that we cannot extend from the "MDCNotchedOutline".
       this._mdcNotchedOutline = MDCNotchedOutline.attachTo(this._elementRef.nativeElement);
     }
+    // Initial sync in case state has been updated before view initialization.
+    this._syncNotchedOutlineState();
   }
 
   ngOnChanges() {
