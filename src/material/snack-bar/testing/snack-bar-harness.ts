@@ -74,13 +74,29 @@ export class MatSnackBarHarness extends ComponentHarness {
     return (await this._simpleSnackBarMessage()).text();
   }
 
+  /** Gets whether the snack-bar has been dismissed. */
+  async isDismissed(): Promise<boolean> {
+    // We consider the snackbar dismissed if it's not in the DOM. We can assert that the
+    // element isn't in the DOM by seeing that its width and height are zero.
+
+    const host = await this.host();
+    const [exit, dimensions] = await Promise.all([
+      // The snackbar container is marked with the "exit" attribute after it has been dismissed
+      // but before the animation has finished (after which it's removed from the DOM).
+      host.getAttribute('mat-exit'),
+      host.getDimensions(),
+    ]);
+
+    return exit != null || (!!dimensions && dimensions.height === 0 && dimensions.width === 0);
+  }
+
   /**
    * Asserts that the current snack-bar does not use custom content. Promise rejects if
    * custom content is used.
    */
   private async _assertSimpleSnackBar(): Promise<void> {
     if (!await this._isSimpleSnackBar()) {
-      throw new Error('Method cannot be used for snack-bar with custom content.');
+      throw Error('Method cannot be used for snack-bar with custom content.');
     }
   }
 
@@ -91,7 +107,7 @@ export class MatSnackBarHarness extends ComponentHarness {
   private async _assertSimpleSnackBarWithAction(): Promise<void> {
     await this._assertSimpleSnackBar();
     if (!await this.hasAction()) {
-      throw new Error('Method cannot be used for standard snack-bar without action.');
+      throw Error('Method cannot be used for standard snack-bar without action.');
     }
   }
 

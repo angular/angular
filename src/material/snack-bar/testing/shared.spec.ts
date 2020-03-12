@@ -128,8 +128,13 @@ export function runHarnessTests(
     let actionCount = 0;
     snackBarRef.onAction().subscribe(() => actionCount++);
 
+    expect(await snackBar.isDismissed())
+        .toBe(false, 'The snackbar should be present in the DOM before dismiss');
+
     await snackBar.dismissWithAction();
     expect(actionCount).toBe(1);
+    expect(await snackBar.isDismissed())
+        .toBe(true, 'The snackbar should be absent from the DOM after dismiss');
 
     fixture.componentInstance.openSimple('No action');
     snackBar = await loader.getHarness(snackBarHarness);

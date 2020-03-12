@@ -152,6 +152,12 @@ export class MatSnackBarContainer extends BasePortalOutlet implements OnDestroy 
     // where multiple snack bars are opened in quick succession (e.g. two consecutive calls to
     // `MatSnackBar.open`).
     this._animationState = 'hidden';
+
+    // Mark this element with an 'exit' attribute to indicate that the snackbar has
+    // been dismissed and will soon be removed from the DOM. This is used by the snackbar
+    // test harness.
+    this._elementRef.nativeElement.setAttribute('mat-exit', '');
+
     return this._onExit;
   }
 
