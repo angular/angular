@@ -6,6 +6,8 @@ export declare function getMatFormFieldMissingControlError(): Error;
 
 export declare function getMatFormFieldPlaceholderConflictError(): Error;
 
+export declare const MAT_FORM_FIELD: InjectionToken<MatFormField>;
+
 export declare const MAT_FORM_FIELD_DEFAULT_OPTIONS: InjectionToken<MatFormFieldDefaultOptions>;
 
 export declare class MatError {

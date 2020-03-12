@@ -37,7 +37,7 @@ import {
 import {
   getMatFormFieldDuplicatedHintError,
   getMatFormFieldMissingControlError,
-  MatFormField as NonMdcFormField,
+  MAT_FORM_FIELD,
   matFormFieldAnimations,
   MatFormFieldControl,
 } from '@angular/material/form-field';
@@ -123,9 +123,7 @@ const FLOATING_LABEL_DEFAULT_DOCKED_TRANSFORM = `translateY(-50%)`;
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
-    // Temporary workaround that allows us to test the MDC form-field against
-    // components which inject the non-mdc form-field (e.g. autocomplete).
-    {provide: NonMdcFormField, useExisting: MatFormField}
+    {provide: MAT_FORM_FIELD, useExisting: MatFormField},
   ]
 })
 export class MatFormField implements AfterViewInit, OnDestroy, AfterContentChecked,

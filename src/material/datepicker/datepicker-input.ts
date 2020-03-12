@@ -30,7 +30,7 @@ import {
   Validators,
 } from '@angular/forms';
 import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats, ThemePalette} from '@angular/material/core';
-import {MatFormField} from '@angular/material/form-field';
+import {MAT_FORM_FIELD, MatFormField} from '@angular/material/form-field';
 import {MAT_INPUT_VALUE_ACCESSOR} from '@angular/material/input';
 import {Subscription} from 'rxjs';
 import {MatDatepicker} from './datepicker';
@@ -243,7 +243,7 @@ export class MatDatepickerInput<D> implements ControlValueAccessor, OnDestroy, V
       private _elementRef: ElementRef<HTMLInputElement>,
       @Optional() public _dateAdapter: DateAdapter<D>,
       @Optional() @Inject(MAT_DATE_FORMATS) private _dateFormats: MatDateFormats,
-      @Optional() private _formField: MatFormField) {
+      @Optional() @Inject(MAT_FORM_FIELD) private _formField: MatFormField) {
     if (!this._dateAdapter) {
       throw createMissingDateImplError('DateAdapter');
     }

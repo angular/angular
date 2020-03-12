@@ -45,7 +45,7 @@ import {
   MatOption,
   MatOptionSelectionChange,
 } from '@angular/material/core';
-import {MatFormField} from '@angular/material/form-field';
+import {MAT_FORM_FIELD, MatFormField} from '@angular/material/form-field';
 import {defer, fromEvent, merge, Observable, of as observableOf, Subject, Subscription} from 'rxjs';
 import {delay, filter, map, switchMap, take, tap} from 'rxjs/operators';
 
@@ -217,7 +217,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewIn
               private _changeDetectorRef: ChangeDetectorRef,
               @Inject(MAT_AUTOCOMPLETE_SCROLL_STRATEGY) scrollStrategy: any,
               @Optional() private _dir: Directionality,
-              @Optional() @Host() private _formField: MatFormField,
+              @Optional() @Inject(MAT_FORM_FIELD) @Host() private _formField: MatFormField,
               @Optional() @Inject(DOCUMENT) private _document: any,
               // @breaking-change 8.0.0 Make `_viewportRuler` required.
               private _viewportRuler?: ViewportRuler) {

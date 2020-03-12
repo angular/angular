@@ -101,6 +101,12 @@ export interface MatFormFieldDefaultOptions {
 export const MAT_FORM_FIELD_DEFAULT_OPTIONS =
     new InjectionToken<MatFormFieldDefaultOptions>('MAT_FORM_FIELD_DEFAULT_OPTIONS');
 
+/**
+ * Injection token that can be used to inject an instances of `MatFormField`. It serves
+ * as alternative token to the actual `MatFormField` class which would cause unnecessary
+ * retention of the `MatFormField` class and its component metadata.
+ */
+export const MAT_FORM_FIELD = new InjectionToken<MatFormField>('MatFormField');
 
 /** Container for form controls that applies Material Design styling and behavior. */
 @Component({
@@ -147,6 +153,9 @@ export const MAT_FORM_FIELD_DEFAULT_OPTIONS =
   inputs: ['color'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [
+    {provide: MAT_FORM_FIELD, useExisting: MatFormField},
+  ]
 })
 
 export class MatFormField extends _MatFormFieldMixinBase
