@@ -40,13 +40,8 @@ jobs:
           command: yarn test:ci
 
       - run:
-          name: 'Start Server'
-          command: yarn run start
-          background: true
-
-      - run:
           name: 'Run Cypress tests'
-          command: yarn run cy:run:ci
+          command: yarn start:e2e:ci
           no_output_timeout: '1m'
 
     artifacts:

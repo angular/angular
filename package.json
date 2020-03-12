@@ -14,6 +14,7 @@
     "cy:verify": "$(npm bin)/cypress verify",
     "cy:version": "$(npm bin)/cypress version",
     "cy:run:ci": "$(npm bin)/cypress run",
+    "start:e2e:ci": "ng serve & wait-on http://localhost:4200 && npm run cy:run:ci",
     "cy:run": "ng serve & wait-on http://localhost:4200 && $(npm bin)/cypress run",
     "cy:run:watch": "ng serve & wait-on http://localhost:4200 && $(npm bin)/cypress open",
     "test:backend": "ng test ng-devtools-backend --watch=false",
@@ -87,6 +88,6 @@
     "tsickle": "^0.35.0",
     "tslint": "~5.18.0",
     "typescript": "~3.7.0",
-    "wait-on": "^4.0.0"
+    "wait-on": "^4.0.1"
   }
 }
