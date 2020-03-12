@@ -54,10 +54,10 @@ ng_package(
 
 ts_api_guardian_test_npm_package(
     name = "common_api",
-    actualDir = "packages/common/npm_package",
+    actualDir = "angular/packages/common/npm_package",
     data = [
         ":npm_package",
         "//goldens:public-api",
     ],
-    goldenDir = "goldens/public-api/common",
+    goldenDir = "angular/goldens/public-api/common",
 )

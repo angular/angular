@@ -43,10 +43,10 @@ ng_package(
 
 ts_api_guardian_test_npm_package(
     name = "platform-browser-dynamic_api",
-    actualDir = "packages/platform-browser-dynamic/npm_package",
+    actualDir = "angular/packages/platform-browser-dynamic/npm_package",
     data = [
         ":npm_package",
         "//goldens:public-api",
     ],
-    goldenDir = "goldens/public-api/platform-browser-dynamic",
+    goldenDir = "angular/goldens/public-api/platform-browser-dynamic",
 )

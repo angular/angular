@@ -39,10 +39,10 @@ ng_package(
 
 ts_api_guardian_test_npm_package(
     name = "localize_api",
-    actualDir = "packages/localize/npm_package",
+    actualDir = "angular/packages/localize/npm_package",
     data = [
         ":npm_package",
         "//goldens:public-api",
     ],
-    goldenDir = "goldens/public-api/localize",
+    goldenDir = "angular/goldens/public-api/localize",
 )
