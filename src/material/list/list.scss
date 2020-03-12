@@ -305,6 +305,12 @@ mat-action-list {
 
 .mat-list-item-disabled {
   pointer-events: none;
+
+  // Since we can't use a color to indicate that the list
+  // item is disabled, we have to use opacity instead.
+  @include cdk-high-contrast {
+    opacity: 0.5;
+  }
 }
 
 @include cdk-high-contrast(active, off) {
