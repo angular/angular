@@ -24,13 +24,15 @@ export declare class CdkAutofill implements OnDestroy, OnInit {
 }
 
 export declare class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
+    protected _document?: Document;
     get enabled(): boolean;
     set enabled(value: boolean);
     get maxRows(): number;
     set maxRows(value: number);
     get minRows(): number;
     set minRows(value: number);
-    constructor(_elementRef: ElementRef<HTMLElement>, _platform: Platform, _ngZone: NgZone);
+    constructor(_elementRef: ElementRef<HTMLElement>, _platform: Platform, _ngZone: NgZone,
+    document?: any);
     _noopInputHandler(): void;
     _setMaxHeight(): void;
     _setMinHeight(): void;

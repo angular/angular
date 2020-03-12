@@ -21,11 +21,13 @@ import {
   OnDestroy,
   NgZone,
   HostListener,
+  Optional,
+  Inject,
 } from '@angular/core';
 import {Platform} from '@angular/cdk/platform';
 import {auditTime, takeUntil} from 'rxjs/operators';
 import {fromEvent, Subject} from 'rxjs';
-
+import {DOCUMENT} from '@angular/common';
 
 /** Directive to automatically resize a textarea to fit its content. */
 @Directive({
@@ -89,10 +91,16 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
   /** Cached height of a textarea with a single row. */
   private _cachedLineHeight: number;
 
-  constructor(
-    private _elementRef: ElementRef<HTMLElement>,
-    private _platform: Platform,
-    private _ngZone: NgZone) {
+  /** Used to reference correct document/window */
+  protected _document?: Document;
+
+  constructor(private _elementRef: ElementRef<HTMLElement>,
+              private _platform: Platform,
+              private _ngZone: NgZone,
+              /** @breaking-change 11.0.0 make document required */
+              @Optional() @Inject(DOCUMENT) document?: any) {
+    this._document = document;
+
     this._textareaElement = this._elementRef.nativeElement as HTMLTextAreaElement;
   }
 
@@ -124,6 +132,8 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
       this.resizeToFitContent();
 
       this._ngZone.runOutsideAngular(() => {
+        const window = this._getWindow();
+
         fromEvent(window, 'resize')
           .pipe(auditTime(16), takeUntil(this._destroyed))
           .subscribe(() => this.resizeToFitContent(true));
@@ -263,6 +273,17 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
     // no-op handler that ensures we're running change detection on input events.
   }
 
+  /** Access injected document if available or fallback to global document reference */
+  private _getDocument(): Document {
+    return this._document || document;
+  }
+
+  /** Use defaultView of injected document if available or fallback to global window reference */
+  private _getWindow(): Window {
+    const doc = this._getDocument();
+    return doc.defaultView || window;
+  }
+
   /**
    * Scrolls a textarea to the caret position. On Firefox resizing the textarea will
    * prevent it from scrolling to the caret position. We need to re-set the selection
@@ -270,6 +291,7 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
    */
   private _scrollToCaretPosition(textarea: HTMLTextAreaElement) {
     const {selectionStart, selectionEnd} = textarea;
+    const document = this._getDocument();
 
     // IE will throw an "Unspecified error" if we try to set the selection range after the
     // element has been removed from the DOM. Assert that the directive hasn't been destroyed

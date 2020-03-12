@@ -698,6 +698,11 @@ export class MatSlider extends _MatSliderMixinBase
     }
   }
 
+  /** Use defaultView of injected document if available or fallback to global window reference */
+  private _getWindow(): Window {
+    return this._document?.defaultView || window;
+  }
+
   /**
    * Binds our global move and end events. They're bound at the document level and only while
    * dragging so that the user doesn't have to keep their pointer exactly over the slider
@@ -716,6 +721,9 @@ export class MatSlider extends _MatSliderMixinBase
         body.addEventListener('touchcancel', this._pointerUp, activeEventOptions);
       }
     }
+
+    const window = this._getWindow();
+
     if (typeof window !== 'undefined' && window) {
       window.addEventListener('blur', this._windowBlur);
     }
@@ -731,6 +739,9 @@ export class MatSlider extends _MatSliderMixinBase
       body.removeEventListener('touchend', this._pointerUp, activeEventOptions);
       body.removeEventListener('touchcancel', this._pointerUp, activeEventOptions);
     }
+
+    const window = this._getWindow();
+
     if (typeof window !== 'undefined' && window) {
       window.removeEventListener('blur', this._windowBlur);
     }

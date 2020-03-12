@@ -154,9 +154,11 @@ export declare class FixedSizeVirtualScrollStrategy implements VirtualScrollStra
 }
 
 export declare class ScrollDispatcher implements OnDestroy {
+    protected _document?: Document;
     _globalSubscription: Subscription | null;
     scrollContainers: Map<CdkScrollable, Subscription>;
-    constructor(_ngZone: NgZone, _platform: Platform);
+    constructor(_ngZone: NgZone, _platform: Platform,
+    document?: any);
     ancestorScrolled(elementRef: ElementRef, auditTimeInMs?: number): Observable<CdkScrollable | void>;
     deregister(scrollable: CdkScrollable): void;
     getAncestorScrollContainers(elementRef: ElementRef): CdkScrollable[];
@@ -173,7 +175,9 @@ export declare class ScrollingModule {
 }
 
 export declare class ViewportRuler implements OnDestroy {
-    constructor(_platform: Platform, ngZone: NgZone);
+    protected _document?: Document;
+    constructor(_platform: Platform, ngZone: NgZone,
+    document?: any);
     change(throttleTime?: number): Observable<Event>;
     getViewportRect(): ClientRect;
     getViewportScrollPosition(): ViewportScrollPosition;

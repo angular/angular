@@ -10,7 +10,7 @@ import {HighContrastModeDetector} from '@angular/cdk/a11y';
 import {BidiModule} from '@angular/cdk/bidi';
 import {Inject, InjectionToken, isDevMode, NgModule, Optional, Version} from '@angular/core';
 import {VERSION as CDK_VERSION} from '@angular/cdk';
-
+import {DOCUMENT} from '@angular/common';
 
 // Private version constant to circumvent test/build issues,
 // i.e. avoid core to depend on the @angular/material primary entry-point
@@ -62,18 +62,19 @@ export class MatCommonModule {
   /** Whether we've done the global sanity checks (e.g. a theme is loaded, there is a doctype). */
   private _hasDoneGlobalChecks = false;
 
-  /** Reference to the global `document` object. */
-  private _document = typeof document === 'object' && document ? document : null;
-
-  /** Reference to the global 'window' object. */
-  private _window = typeof window === 'object' && window ? window : null;
-
   /** Configured sanity checks. */
   private _sanityChecks: SanityChecks;
 
+  /** Used to reference correct document/window */
+  protected _document?: Document;
+
   constructor(
       highContrastModeDetector: HighContrastModeDetector,
-      @Optional() @Inject(MATERIAL_SANITY_CHECKS) sanityChecks: any) {
+      @Optional() @Inject(MATERIAL_SANITY_CHECKS) sanityChecks: any,
+      /** @breaking-change 11.0.0 make document required */
+      @Optional() @Inject(DOCUMENT) document?: any) {
+    this._document = document;
+
     // While A11yModule also does this, we repeat it here to avoid importing A11yModule
     // in MatCommonModule.
     highContrastModeDetector._applyBodyHighContrastModeCssClasses();
@@ -90,6 +91,19 @@ export class MatCommonModule {
     }
   }
 
+    /** Access injected document if available or fallback to global document reference */
+    private _getDocument(): Document | null {
+      const doc = this._document || document;
+      return typeof doc === 'object' && doc ? doc : null;
+    }
+
+    /** Use defaultView of injected document if available or fallback to global window reference */
+    private _getWindow(): Window | null {
+      const doc = this._getDocument();
+      const win = doc?.defaultView || window;
+      return typeof win === 'object' && win ? win : null;
+    }
+
   /** Whether any sanity checks are enabled. */
   private _checksAreEnabled(): boolean {
     return isDevMode() && !this._isTestEnv();
@@ -97,15 +111,16 @@ export class MatCommonModule {
 
   /** Whether the code is running in tests. */
   private _isTestEnv() {
-    const window = this._window as any;
+    const window = this._getWindow() as any;
     return window && (window.__karma__ || window.jasmine);
   }
 
   private _checkDoctypeIsDefined(): void {
     const isEnabled = this._checksAreEnabled() &&
       (this._sanityChecks === true || (this._sanityChecks as GranularSanityChecks).doctype);
+    const document = this._getDocument();
 
-    if (isEnabled && this._document && !this._document.doctype) {
+    if (isEnabled && document && !document.doctype) {
       console.warn(
         'Current document does not have a doctype. This may cause ' +
         'some Angular Material components not to behave as expected.'
@@ -118,16 +133,17 @@ export class MatCommonModule {
     // and the `body` won't be defined if the consumer put their scripts in the `head`.
     const isDisabled = !this._checksAreEnabled() ||
       (this._sanityChecks === false || !(this._sanityChecks as GranularSanityChecks).theme);
+    const document = this._getDocument();
 
-    if (isDisabled || !this._document || !this._document.body ||
+    if (isDisabled || !document || !document.body ||
         typeof getComputedStyle !== 'function') {
       return;
     }
 
-    const testElement = this._document.createElement('div');
+    const testElement = document.createElement('div');
 
     testElement.classList.add('mat-theme-loaded-marker');
-    this._document.body.appendChild(testElement);
+    document.body.appendChild(testElement);
 
     const computedStyle = getComputedStyle(testElement);
 
@@ -142,7 +158,7 @@ export class MatCommonModule {
       );
     }
 
-    this._document.body.removeChild(testElement);
+    document.body.removeChild(testElement);
   }
 
   /** Checks whether the material version matches the cdk version */

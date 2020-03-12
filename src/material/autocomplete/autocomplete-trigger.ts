@@ -225,6 +225,8 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewIn
   }
 
   ngAfterViewInit() {
+    const window = this._getWindow();
+
     if (typeof window !== 'undefined') {
       this._zone.runOutsideAngular(() => {
         window.addEventListener('blur', this._windowBlurHandler);
@@ -245,6 +247,8 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewIn
   }
 
   ngOnDestroy() {
+    const window = this._getWindow();
+
     if (typeof window !== 'undefined') {
       window.removeEventListener('blur', this._windowBlurHandler);
     }
@@ -750,6 +754,11 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewIn
   private _canOpen(): boolean {
     const element = this._element.nativeElement;
     return !element.readOnly && !element.disabled && !this._autocompleteDisabled;
+  }
+
+  /** Use defaultView of injected document if available or fallback to global window reference */
+  private _getWindow(): Window {
+    return this._document?.defaultView || window;
   }
 
   static ngAcceptInputType_autocompleteDisabled: BooleanInput;

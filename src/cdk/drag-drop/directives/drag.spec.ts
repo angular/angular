@@ -1948,6 +1948,7 @@ describe('CdkDrag', () => {
         // mode in unit tests and there are some issues with doing it in e2e tests.
         const fakeDocument = {
           body: document.body,
+          documentElement: document.documentElement,
           fullscreenElement: document.createElement('div'),
           ELEMENT_NODE: Node.ELEMENT_NODE,
           querySelectorAll: function(...args: [string]) {
