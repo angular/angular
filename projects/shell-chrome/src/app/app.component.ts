@@ -14,33 +14,17 @@ export class AppComponent implements OnInit {
   constructor(private _cd: ChangeDetectorRef, private _ngZone: NgZone) {}
 
   ngOnInit(): void {
-    console.log('Initializing the devtools');
+    console.log('Initializing Angular DevTools');
 
-    const cleanup = () => {
-      console.log('Cleaning up');
-      if (this.messageBus) {
-        this.messageBus.emit('shutdown');
-        this.messageBus = null;
-        this._cd.detectChanges();
-      }
-    };
+    const port = chrome.runtime.connect({
+      name: '' + chrome.devtools.inspectedWindow.tabId,
+    });
 
-    const initialize = () => {
-      console.log('Initialize the port');
-      const port = chrome.runtime.connect({
-        name: '' + chrome.devtools.inspectedWindow.tabId,
-      });
-      this.messageBus = new ZoneAwareChromeMessageBus(port, this._ngZone);
-      panelDevTools.injectBackend();
-      this._cd.detectChanges();
-    };
+    this.messageBus = new ZoneAwareChromeMessageBus(port, this._ngZone);
 
-    const reload = () => {
-      cleanup();
-      initialize();
-    };
+    this.messageBus.on('reload', () => window.location.reload());
 
-    panelDevTools.onReload(reload);
-    initialize();
+    panelDevTools.injectBackend();
+    this._cd.detectChanges();
   }
 }
