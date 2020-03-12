@@ -142,28 +142,30 @@ export class MapRectangle implements OnInit, OnDestroy {
   constructor(private readonly _map: GoogleMap, private readonly _ngZone: NgZone) {}
 
   ngOnInit() {
-    const combinedOptionsChanges = this._combineOptions();
-
-    combinedOptionsChanges.pipe(take(1)).subscribe(options => {
-      // Create the object outside the zone so its events don't trigger change detection.
-      // We'll bring it back in inside the `MapEventManager` only for the events that the
-      // user has subscribed to.
-      this._ngZone.runOutsideAngular(() => {
-        this._rectangle = new google.maps.Rectangle(options);
+    if (this._map._isBrowser) {
+      this._combineOptions().pipe(take(1)).subscribe(options => {
+        // Create the object outside the zone so its events don't trigger change detection.
+        // We'll bring it back in inside the `MapEventManager` only for the events that the
+        // user has subscribed to.
+        this._ngZone.runOutsideAngular(() => {
+          this._rectangle = new google.maps.Rectangle(options);
+        });
+        this._rectangle.setMap(this._map._googleMap);
+        this._eventManager.setTarget(this._rectangle);
       });
-      this._rectangle.setMap(this._map._googleMap);
-      this._eventManager.setTarget(this._rectangle);
-    });
 
-    this._watchForOptionsChanges();
-    this._watchForBoundsChanges();
+      this._watchForOptionsChanges();
+      this._watchForBoundsChanges();
+    }
   }
 
   ngOnDestroy() {
     this._eventManager.destroy();
     this._destroyed.next();
     this._destroyed.complete();
-    this._rectangle.setMap(null);
+    if (this._rectangle) {
+      this._rectangle.setMap(null);
+    }
   }
 
   /**

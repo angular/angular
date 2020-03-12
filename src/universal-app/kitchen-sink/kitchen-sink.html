@@ -375,7 +375,7 @@
 <h2>Virtual scroll</h2>
 
 <cdk-virtual-scroll-viewport itemSize="50" class="universal-viewport">
-  <div *cdkVirtualFor="let size of virtualScrollData; let i = index" style="height: 50px">
+  <div *cdkVirtualFor="let size of virtualScrollData; let i = index" style="height: 50px;">
     Item #{{i}}
   </div>
 </cdk-virtual-scroll-viewport>
@@ -392,4 +392,14 @@
     strokeColor: 'grey',
     strokeOpacity: 0.8
   }"></map-polyline>
+  <map-polygon [options]="{
+    paths: [{lat: 20, lng: 21}, {lat: 22, lng: 23}, {lat: 24, lng: 25}],
+    strokeColor: 'grey',
+    strokeOpacity: 0.8
+  }"></map-polygon>
+  <map-rectangle [options]="{
+    bounds: {east: 30, north: 15, west: 10, south: -5},
+    strokeColor: 'grey',
+    strokeOpacity: 0.8
+  }"></map-rectangle>
 </google-map>

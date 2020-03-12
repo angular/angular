@@ -134,28 +134,30 @@ export class MapPolygon implements OnInit, OnDestroy {
   constructor(private readonly _map: GoogleMap, private readonly _ngZone: NgZone) {}
 
   ngOnInit() {
-    const combinedOptionsChanges = this._combineOptions();
-
-    combinedOptionsChanges.pipe(take(1)).subscribe(options => {
-      // Create the object outside the zone so its events don't trigger change detection.
-      // We'll bring it back in inside the `MapEventManager` only for the events that the
-      // user has subscribed to.
-      this._ngZone.runOutsideAngular(() => {
-        this._polygon = new google.maps.Polygon(options);
+    if (this._map._isBrowser) {
+      this._combineOptions().pipe(take(1)).subscribe(options => {
+        // Create the object outside the zone so its events don't trigger change detection.
+        // We'll bring it back in inside the `MapEventManager` only for the events that the
+        // user has subscribed to.
+        this._ngZone.runOutsideAngular(() => {
+          this._polygon = new google.maps.Polygon(options);
+        });
+        this._polygon.setMap(this._map._googleMap);
+        this._eventManager.setTarget(this._polygon);
       });
-      this._polygon.setMap(this._map._googleMap);
-      this._eventManager.setTarget(this._polygon);
-    });
 
-    this._watchForOptionsChanges();
-    this._watchForPathChanges();
+      this._watchForOptionsChanges();
+      this._watchForPathChanges();
+    }
   }
 
   ngOnDestroy() {
     this._eventManager.destroy();
     this._destroyed.next();
     this._destroyed.complete();
-    this._polygon.setMap(null);
+    if (this._polygon) {
+      this._polygon.setMap(null);
+    }
   }
 
   /**

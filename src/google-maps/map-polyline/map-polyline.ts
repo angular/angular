@@ -135,9 +135,7 @@ export class MapPolyline implements OnInit, OnDestroy {
 
   ngOnInit() {
     if (this._map._isBrowser) {
-      const combinedOptionsChanges = this._combineOptions();
-
-      combinedOptionsChanges.pipe(take(1)).subscribe(options => {
+      this._combineOptions().pipe(take(1)).subscribe(options => {
         // Create the object outside the zone so its events don't trigger change detection.
         // We'll bring it back in inside the `MapEventManager` only for the events that the
         // user has subscribed to.
