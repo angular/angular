@@ -7,7 +7,7 @@
  */
 
 import {coerceNumberProperty, NumberInput} from '@angular/cdk/coercion';
-import {Platform} from '@angular/cdk/platform';
+import {Platform, _getShadowRoot} from '@angular/cdk/platform';
 import {DOCUMENT} from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -218,7 +218,7 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
     // Note that we need to look up the root node in ngOnInit, rather than the constructor, because
     // Angular seems to create the element outside the shadow root and then moves it inside, if the
     // node is inside an `ngIf` and a ShadowDom-encapsulated component.
-    this._styleRoot = _getShadowRoot(element, this._document) || this._document.head;
+    this._styleRoot = _getShadowRoot(element) || this._document.head;
     this._attachStyleNode();
 
     // On IE and Edge, we can't animate the `stroke-dashoffset`
@@ -332,27 +332,4 @@ export class MatSpinner extends MatProgressSpinner {
     super(elementRef, platform, document, animationMode, defaults);
     this.mode = 'indeterminate';
   }
-}
-
-
-/** Gets the shadow root of an element, if supported and the element is inside the Shadow DOM. */
-export function _getShadowRoot(element: HTMLElement, _document: Document): Node | null {
-  // TODO(crisbeto): see whether we should move this into the CDK
-  // feature detection utilities once #15616 gets merged in.
-  if (typeof window !== 'undefined') {
-    const head = _document.head;
-
-    // Check whether the browser supports Shadow DOM.
-    if (head && ((head as any).createShadowRoot || head.attachShadow)) {
-      const rootNode = element.getRootNode ? element.getRootNode() : null;
-
-      // We need to take the `ShadowRoot` off of `window`, because the built-in types are
-      // incorrect. See https://github.com/Microsoft/TypeScript/issues/27929.
-      if (rootNode instanceof (window as any).ShadowRoot) {
-        return rootNode;
-      }
-    }
-  }
-
-  return null;
 }

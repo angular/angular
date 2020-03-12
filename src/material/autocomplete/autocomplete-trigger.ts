@@ -17,7 +17,7 @@ import {
   ScrollStrategy,
   ConnectedPosition,
 } from '@angular/cdk/overlay';
-import {_supportsShadowDom} from '@angular/cdk/platform';
+import {_getShadowRoot} from '@angular/cdk/platform';
 import {TemplatePortal} from '@angular/cdk/portal';
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {DOCUMENT} from '@angular/common';
@@ -230,14 +230,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewIn
         window.addEventListener('blur', this._windowBlurHandler);
       });
 
-      if (_supportsShadowDom()) {
-        const element = this._element.nativeElement;
-        const rootNode = element.getRootNode ? element.getRootNode() : null;
-
-        // We need to take the `ShadowRoot` off of `window`, because the built-in types are
-        // incorrect. See https://github.com/Microsoft/TypeScript/issues/27929.
-        this._isInsideShadowRoot = rootNode instanceof (window as any).ShadowRoot;
-      }
+      this._isInsideShadowRoot = !!_getShadowRoot(this._element.nativeElement);
     }
   }
 

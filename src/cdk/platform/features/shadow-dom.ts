@@ -17,3 +17,16 @@ export function _supportsShadowDom(): boolean {
 
   return shadowDomIsSupported;
 }
+
+/** Gets the shadow root of an element, if supported and the element is inside the Shadow DOM. */
+export function _getShadowRoot(element: HTMLElement): Node | null {
+  if (_supportsShadowDom()) {
+    const rootNode = element.getRootNode ? element.getRootNode() : null;
+
+    if (rootNode instanceof ShadowRoot) {
+      return rootNode;
+    }
+  }
+
+  return null;
+}

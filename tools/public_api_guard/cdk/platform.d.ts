@@ -1,3 +1,5 @@
+export declare function _getShadowRoot(element: HTMLElement): Node | null;
+
 export declare function _supportsShadowDom(): boolean;
 
 export declare function getRtlScrollAxisType(): RtlScrollAxisType;

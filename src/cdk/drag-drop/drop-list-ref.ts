@@ -10,7 +10,7 @@ import {ElementRef, NgZone} from '@angular/core';
 import {Direction} from '@angular/cdk/bidi';
 import {coerceElement} from '@angular/cdk/coercion';
 import {ViewportRuler} from '@angular/cdk/scrolling';
-import {_supportsShadowDom} from '@angular/cdk/platform';
+import {_getShadowRoot} from '@angular/cdk/platform';
 import {Subject, Subscription, interval, animationFrameScheduler} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {moveItemInArray} from './drag-utils';
@@ -907,7 +907,8 @@ export class DropListRef<T = any> {
    */
   private _getShadowRoot(): DocumentOrShadowRoot {
     if (!this._cachedShadowRoot) {
-      this._cachedShadowRoot = getShadowRoot(coerceElement(this.element)) || this._document;
+      const shadowRoot = _getShadowRoot(coerceElement(this.element)) as ShadowRoot | null;
+      this._cachedShadowRoot = shadowRoot || this._document;
     }
 
     return this._cachedShadowRoot;
@@ -1101,17 +1102,4 @@ function getElementScrollDirections(element: HTMLElement, clientRect: ClientRect
   }
 
   return [verticalScrollDirection, horizontalScrollDirection];
-}
-
-/** Gets the shadow root of an element, if any. */
-function getShadowRoot(element: HTMLElement): DocumentOrShadowRoot | null {
-  if (_supportsShadowDom()) {
-    const rootNode = element.getRootNode ? element.getRootNode() : null;
-
-    if (rootNode instanceof ShadowRoot) {
-      return rootNode;
-    }
-  }
-
-  return null;
 }

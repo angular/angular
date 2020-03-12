@@ -1,9 +1,8 @@
 import {TestBed, async, inject} from '@angular/core/testing';
 import {Component, ViewEncapsulation, ViewChild, ElementRef} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {Platform} from '@angular/cdk/platform';
+import {Platform, _getShadowRoot, _supportsShadowDom} from '@angular/cdk/platform';
 import {CommonModule} from '@angular/common';
-import {_getShadowRoot} from './progress-spinner';
 import {
   MatProgressSpinnerModule,
   MatProgressSpinner,
@@ -11,8 +10,6 @@ import {
 } from './index';
 
 describe('MatProgressSpinner', () => {
-  const supportsShadowDom = typeof document.createElement('div').attachShadow !== 'undefined';
-
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [MatProgressSpinnerModule, CommonModule],
@@ -357,7 +354,7 @@ describe('MatProgressSpinner', () => {
 
   it('should add the indeterminate animation style tag to the Shadow root', () => {
     // The test is only relevant in browsers that support Shadow DOM.
-    if (!supportsShadowDom) {
+    if (!_supportsShadowDom()) {
       return;
     }
 
@@ -366,7 +363,7 @@ describe('MatProgressSpinner', () => {
     fixture.detectChanges();
 
     const spinner = fixture.debugElement.query(By.css('mat-progress-spinner'))!.nativeElement;
-    const shadowRoot = _getShadowRoot(spinner, document) as HTMLElement;
+    const shadowRoot = _getShadowRoot(spinner) as HTMLElement;
 
     expect(shadowRoot.querySelector('style[mat-spinner-animation="27"]')).toBeTruthy();
 
@@ -378,7 +375,7 @@ describe('MatProgressSpinner', () => {
 
   it('should not duplicate style tags inside the Shadow root', () => {
     // The test is only relevant in browsers that support Shadow DOM.
-    if (!supportsShadowDom) {
+    if (!_supportsShadowDom()) {
       return;
     }
 
@@ -387,7 +384,7 @@ describe('MatProgressSpinner', () => {
     fixture.detectChanges();
 
     const spinner = fixture.debugElement.query(By.css('mat-progress-spinner'))!.nativeElement;
-    const shadowRoot = _getShadowRoot(spinner, document) as HTMLElement;
+    const shadowRoot = _getShadowRoot(spinner) as HTMLElement;
 
     expect(shadowRoot.querySelectorAll('style[mat-spinner-animation="39"]').length).toBe(1);
 
@@ -409,7 +406,7 @@ describe('MatProgressSpinner', () => {
   it('should add the indeterminate animation style tag to the Shadow root if the element is ' +
     'inside an ngIf', () => {
       // The test is only relevant in browsers that support Shadow DOM.
-      if (!supportsShadowDom) {
+      if (!_supportsShadowDom()) {
         return;
       }
 
@@ -418,7 +415,7 @@ describe('MatProgressSpinner', () => {
       fixture.detectChanges();
 
       const spinner = fixture.componentInstance.spinner.nativeElement;
-      const shadowRoot = _getShadowRoot(spinner, document) as HTMLElement;
+      const shadowRoot = _getShadowRoot(spinner) as HTMLElement;
 
       expect(shadowRoot.querySelector('style[mat-spinner-animation="27"]')).toBeTruthy();
 
