@@ -27,14 +27,15 @@
     border: none;
   }
 
-  // Reset the padding that MDC sets on native input elements. We cannot rely on this
-  // spacing as we support arbitrary form-field controls which aren't necessarily matching
-  // the "mdc-text-field__input" class. Note: We need the first selector to overwrite the
-  // default no-label MDC padding styles which are set with a very high specificity.
+  // Reset the height that MDC sets on native input elements. We cannot rely on their
+  // fixed height as we handle vertical spacing differently. MDC sets a fixed height for
+  // inputs and modifies the baseline so that the textfield matches the spec. This does
+  // not work for us since we support arbitrary form field controls which don't necessarily
+  // use an `input` element. We organize the vertical spacing on the infix container.
   .mdc-text-field--no-label:not(.mdc-text-field--textarea)
   .mat-mdc-input-element.mdc-text-field__input,
   .mat-mdc-text-field-wrapper .mat-mdc-input-element {
-    padding: 0;
+    height: auto;
   }
 
   // MDC adds vertical spacing to inputs. We removed this spacing and intend to add it
@@ -75,12 +76,6 @@
     transition-delay: 40ms;
     transition-duration: 110ms;
     opacity: 1;
-  }
-
-  // We removed the horizontal inset on input elements, but need to re-add the spacing to
-  // the actual form-field flex container that contains the prefixes, suffixes and infix.
-  .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex {
-    padding: 0 $mdc-text-field-input-padding;
   }
 
   // Since we moved the horizontal spacing from the input to the form-field flex container
