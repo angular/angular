@@ -67,7 +67,7 @@
     "@types/jasmine": "~3.5.0",
     "@types/jasminewd2": "~2.0.3",
     "codelyzer": "^5.2.1",
-    "cypress": "^3.8.3",
+    "cypress": "^4.0.0",
     "cypress-browser-extension-plugin": "^0.1.0",
     "cypress-iframe": "^1.0.1",
     "husky": "^4.2.1",
