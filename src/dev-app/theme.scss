@@ -1,5 +1,4 @@
 @import '../material/core/theming/all-theme';
-@import '../material-experimental/mdc-slider/slider-theme';
 @import '../material/core/focus-indicator/focus-indicator';
 @import '../material-experimental/column-resize/column-resize';
 @import '../material-experimental/mdc-helpers/mdc-helpers';
@@ -31,7 +30,6 @@ $candy-app-theme: mat-light-theme($candy-app-primary, $candy-app-accent);
 @include angular-material-theme($candy-app-theme);
 @include angular-material-mdc-theme($candy-app-theme);
 @include mat-column-resize-theme($candy-app-theme);
-@include mat-mdc-slider-theme($candy-app-theme);
 @include mat-popover-edit-theme($candy-app-theme);
 
 // Define an alternate dark theme.
@@ -54,7 +52,6 @@ $dark-theme: mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
   @include angular-material-theme($dark-theme);
   @include angular-material-mdc-theme($dark-theme);
   @include mat-column-resize-theme($dark-theme);
-  @include mat-mdc-slider-theme($dark-theme);
   @include mat-popover-edit-theme($dark-theme);
 }
 

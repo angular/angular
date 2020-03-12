@@ -6,6 +6,7 @@
 @import '../mdc-menu/menu-theme';
 @import '../mdc-radio/radio-theme';
 @import '../mdc-slide-toggle/slide-toggle-theme';
+@import '../mdc-slider/slider-theme';
 @import '../mdc-tabs/tabs-theme';
 @import '../mdc-table/table-theme';
 @import '../mdc-progress-bar/progress-bar-theme';
@@ -28,7 +29,6 @@
   @include mat-mdc-table-theme($theme);
   @include mat-mdc-form-field-theme($theme);
   @include mat-mdc-input-theme($theme);
-  // TODO(andrewjs): Add this back when MDC syncs their slider code into Google-internal code
-  // @include mat-mdc-slider-theme($theme);
+  @include mat-mdc-slider-theme($theme);
   @include mat-mdc-tabs-theme($theme);
 }
