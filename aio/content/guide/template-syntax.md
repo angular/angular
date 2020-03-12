@@ -2188,7 +2188,11 @@ are directives&mdash;`$event` has whatever shape the directive produces.
 -->
 대상 이벤트가 DOM 엘리먼트의 이벤트가 아니고 커스텀 디렉티브(컴포넌트)에서 정의하는 이벤트라면, `$event` 객체는 해당 디렉티브에서 정의하는 대로 자유로운 형식이 될 수 있습니다.
 
+<!--
 ### Custom events with `EventEmitter`
+-->
+{@a custom-events-with-eventemitter}
+### `EventEmitter`로 커스텀 이벤트 보내기
 
 <!--
 Directives typically raise custom events with an Angular [EventEmitter](api/core/EventEmitter).
@@ -2576,15 +2580,26 @@ Remember to call `setCurrentStyles()`, both initially and when the dependent pro
 
 {@a ngModel}
 
+<!--
 ### `[(ngModel)]`: Two-way binding
+-->
+### `[(ngModel)]`: 양방향 바인딩
 
+<!--
 The `NgModel` directive allows you to display a data property and
 update that property when the user makes changes. Here's an example:
 
 <code-example path="built-in-directives/src/app/app.component.html" header="src/app/app.component.html (NgModel example)" region="NgModel-1"></code-example>
+-->
+`NgModel` 디렉티브를 사용하면 데이터의 값을 화면에 표시하면서 이 데이터가 변경되는 것도 감지할 수 있습니다:
+
+<code-example path="built-in-directives/src/app/app.component.html" header="src/app/app.component.html (NgModel 예제)" region="NgModel-1"></code-example>
 
 
+<!--
 #### Import `FormsModule` to use `ngModel`
+-->
+### `ngModel`을 사용하려면 `FormsModule`을 로드해야 합니다.
 
 <!--
 Before using the `ngModel` directive in a two-way data binding,
@@ -2592,14 +2607,8 @@ you must import the `FormsModule` and add it to the NgModule's `imports` list.
 Learn more about the `FormsModule` and `ngModel` in [Forms](guide/forms#ngModel).
 
 Remember to import the `FormsModule` to make `[(ngModel)]` available as follows:
--->
-`ngModel` 디렉티브로 양방향 바인딩을 구현하려면 NgModule의 `imports` 목록에 `FormsModule`을 추가해야 합니다.
-`FormsModule`과 `ngModel`에 대한 자세한 설명은 [Forms](guide/forms#ngModel) 문서를 참고하세요.
-
-NgModule에 `FormsModule` 을 다음과 같이 추가합니다.
 
 <code-example path="built-in-directives/src/app/app.module.ts" header="src/app/app.module.ts (FormsModule import)" region="import-forms-module"></code-example>
-
 
 You could achieve the same result with separate bindings to
 the `<input>` element's  `value` property and `input` event:
@@ -2610,14 +2619,33 @@ To streamline the syntax, the `ngModel` directive hides the details behind its o
 
 <code-example path="built-in-directives/src/app/app.component.html" region="NgModelChange" header="src/app/app.component.html"></code-example>
 
-<!--
 The `ngModel` data property sets the element's value property and the `ngModelChange` event property
 listens for changes to the element's value.
 -->
+`ngModel` 디렉티브로 양방향 바인딩을 구현하려면 NgModule의 `imports` 목록에 `FormsModule`을 추가해야 합니다.
+`FormsModule`과 `ngModel`에 대한 자세한 설명은 [Forms](guide/forms#ngModel) 문서를 참고하세요.
+
+NgModule에 `FormsModule` 을 다음과 같이 추가합니다.
+
+<code-example path="built-in-directives/src/app/app.module.ts" header="src/app/app.module.ts (FormsModule 로드하기)" region="import-forms-module"></code-example>
+
+`<input>` 엘리먼트의 경우라면 `value` 프로퍼티와 `input` 이벤트를 따로 바인딩해도 똑같이 동작합니다:
+
+<code-example path="built-in-directives/src/app/app.component.html" region="without-NgModel" header="src/app/app.component.html"></code-example>
+
+이 방식을 간결하게 구현하기 위해 `ngModel` 디렉티브를 사용하면 내부적으로 `ngModel` 입력 프로퍼티와 `ngModelChange` 출력 프로퍼티가 지정됩니다:
+
+<code-example path="built-in-directives/src/app/app.component.html" region="NgModelChange" header="src/app/app.component.html"></code-example>
+
 `ngModel` 프로퍼티는 엘리먼트의 프로퍼티 값을 지정하고 `ngModelChange` 이벤트 프로퍼티는 엘리먼트 값이 변경되는 것을 감지합니다.
 
-#### `NgModel` and value accessors
 
+<!--
+#### `NgModel` and value accessors
+-->
+#### `NgModel`과 밸류 액세서(value accessor)
+
+<!--
 The details are specific to each kind of element and therefore the `NgModel` directive only works for an element
 supported by a [ControlValueAccessor](api/forms/ControlValueAccessor)
 that adapts an element to this protocol.
@@ -2647,9 +2675,27 @@ for example, the following changes the `<input>` value to uppercase:
 
 <code-example path="built-in-directives/src/app/app.component.html" region="uppercase" header="src/app/app.component.html"></code-example>
 
-<!--
 Here are all variations in action, including the uppercase version:
 -->
+`NgModel` 디렉티브가 동작하는 것은 엘리먼트에 따라 조금씩 다르며, `NgModel` 디렉티브는 [ControlValueAccessor](api/forms/ControlValueAccessor)가 지원하는 엘리먼트에만 사용할 수 있습니다.
+여기에서 밸류 액세서는 엘리먼트가 `NgModel`과 어떻게 동작하는지 연결하는 프로토콜이라고 볼 수 있습니다.
+Angular는 표준 HTML 폼 엘리먼트에 대한 *밸류 액세서*는 기본으로 지원하며, 밸류 액세서를 사용하는 방법은 [Forms](guide/forms) 문서에서 소개하고 있습니다.
+
+다만, 표준 폼 엘리먼트가 아니거나 서드파티로 불러온 커스텀 엘리먼트가 밸류 액세서를 제공하지 않는다면 `[(ngModel)]`을 사용할 수 없습니다.
+자세한 내용은 [DefaultValueAccessor](https://angular.io/api/forms/DefaultValueAccessor) 문서를 참고하세요.
+
+프로퍼티와 이벤트를 바인딩하는 문법이 [양방향 바인딩 문법](guide/template-syntax#two-way)에 맞다면 `NgModel`을 꼭 사용할 필요는 없습니다.
+[양방향 바인딩](guide/template-syntax#two-way) 섹션에서 살펴본 `sizer` 프로퍼티가 이렇게 구현되었습니다.
+
+`ngModel` 바인딩을 프로퍼티 바인딩과 이벤트 바인딩으로 나눠서 사용해도 기존 HTML 엘리먼트를 확장하는 것에 변함은 없지만, `[(ngModel)]` 문법으로 작성하면 문법이 좀 더 간단해질 수 있습니다:
+
+<code-example path="built-in-directives/src/app/app.component.html" region="NgModel-1" header="src/app/app.component.html"></code-example>
+
+`[(ngModel)]` 문법은 데이터만 바인딩하는 문법입니다.
+이 문법을 사용하면서 값이 변경되는 이벤트를 다른 방식으로 활용하려면 다음과 같이 프로퍼티 바인딩과 이벤트 바인딩을 나눠서 구현하면 됩니다:
+
+<code-example path="built-in-directives/src/app/app.component.html" region="uppercase" header="src/app/app.component.html"></code-example>
+
 `ngModel` 디렉티브는 다음과 같이 다양한 문법으로 사용할 수 있습니다.
 
 <div class="lightbox">
@@ -2670,8 +2716,6 @@ Here are all variations in action, including the uppercase version:
 Structural directives are responsible for HTML layout.
 They shape or reshape the DOM's structure, typically by adding, removing, and manipulating
 the host elements to which they are attached.
--->
-구조 디렉티브는 DOM 엘리먼트의 모양을 바꾸거나, DOM 트리에서 DOM 엘리먼트를 추가하거나 제거하는 등 HTML 레이아웃을 조작합니다.
 
 This section is an introduction to the common built-in structural directives:
 
@@ -2691,6 +2735,26 @@ which explains the following:
 to group elements when there is no suitable host element for the directive.
 * How to write your own structural directive.
 * That you can only apply [one structural directive](guide/structural-directives#one-per-element "one per host element") to an element.
+
+</div>
+-->
+구조 디렉티브는 DOM 엘리먼트의 모양을 바꾸거나, DOM 트리에서 DOM 엘리먼트를 추가하거나 제거하는 등 HTML 레이아웃을 조작합니다.
+
+그리고 이번 섹션에서는 자주 사용하는 구조 디렉티브에 대해 알아봅시다:
+
+* [`NgIf`](guide/template-syntax#ngIf)&mdash;조건에 따라 템플릿의 일부를 DOM에 추가하거나 제거합니다.
+* [`NgFor`](guide/template-syntax#ngFor)&mdash;목록에 있는 아이템마다 노드를 반복합니다.
+* [`NgSwitch`](guide/template-syntax#ngSwitch)&mdash;조건에 맞는 노드를 화면에 표시합니다.
+
+<div class="alert is-helpful">
+
+[구조 디렉티브](guide/structural-directives) 문서는 구조 디렉티브에 대해 더 깊이있게 다룹니다.
+다음 내용에 대해 궁금하다면 참고해 보세요:
+
+* [디렉티브 이름은 왜 별표(\*)로 시작해야 하는지](guide/structural-directives#the-asterisk--prefix)
+* [`<ng-container>`](guide/structural-directives#ngcontainer "<ng-container>")를 사용해서 엘리먼트를 묶는 방법
+* 커스텀 구조 디렉티브는 어떻게 구현하는지
+* 엘리먼트 하나에는 [구조 디렉티브 하나만](guide/structural-directives#one-per-element "one per host element") 적용할 수 있는지
 
 </div>
 
@@ -2718,9 +2782,7 @@ on the asterisk, see the [asterisk (*) prefix](guide/structural-directives#the-a
 [Structural Directives](guide/structural-directives).
 -->
 `ngIf` 앞에 별표(`*`)를 꼭 붙여야 합니다.
-For more information
-on the asterisk, see the [asterisk (*) prefix](guide/structural-directives#the-asterisk--prefix) section of
-[Structural Directives](guide/structural-directives).
+왜 [별표(\*) 접두사](guide/structural-directives#the-asterisk--prefix)를 붙이는지 자세하게 알아보려면 [구조 디렉티브](guide/structural-directives) 문서를 참고하세요.
 
 </div>
 
@@ -2736,6 +2798,7 @@ from the DOM, destroying that component and all of its sub-components.
 
 #### Show/hide vs. `NgIf`
 
+<!--
 Hiding an element is different from removing it with `NgIf`.
 For comparison, the following example shows how to control
 the visibility of an element with a
@@ -2761,6 +2824,27 @@ efficient alternative to showing/hiding.
 For more information on `NgIf` and `ngIfElse`, see the [API documentation about NgIf](api/common/NgIf).
 
 </div>
+-->
+엘리먼트를 보이지 않게 처리하는 것은 `NgIf`가 DOM에러 엘리먼트를 제거하는 것과 다릅니다.
+이 내용을 비교해보기 위해 [클래스 바인딩](guide/template-syntax#class-binding)과 [스타일 바인딩](guide/template-syntax#style-binding)을 사용해서 엘리먼트를 제어하는 예제에 대해 알아봅시다.
+
+<code-example path="built-in-directives/src/app/app.component.html" region="NgIf-3" header="src/app/app.component.html"></code-example>
+
+엘리먼트를 숨기더라도 그 엘리먼트와 자식 엘리먼트는 DOM에 여전히 남아있습니다.
+이 컴포넌트들은 메모리에 여전히 남아있으며 Angular의 변화 감지 로직이 동작하는 대상에 이 컴포넌트도 포함됩니다.
+자연스럽게 자원 소모도 많아지고 사용자가 느끼는 성능도 좋지 않을 것입니다.
+
+`NgIf`는 다릅니다. `NgIf` 값이 `false`면 Angular는 이 엘리먼트와 자식 엘리먼트를 DOM에서 완전히 제거합니다.
+이 때 컴포넌트가 종료되고 자원도 반환되기 때문에 사용자가 느끼는 성능도 더 좋습니다.
+
+그래서 무거운 컴포넌트 트리를 화면에서 감춰야 한다면 show/hide 대신 `NgIf`가 효율적입니다.
+
+<div class="alert is-helpful">
+
+`NgIf`와 `ngIfElse`에 대해 자세하게 알아보려면 [NgIf API 문서](api/common/NgIf)를 참고하세요.
+
+</div>
+
 
 <!--
 #### Guard against null

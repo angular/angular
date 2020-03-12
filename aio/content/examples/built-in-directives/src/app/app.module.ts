@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 // #docregion import-forms-module
-import { FormsModule } from '@angular/forms'; // <--- JavaScript import from Angular
+import { FormsModule } from '@angular/forms'; // <--- FormsModule 패키지 로드
 // #enddocregion import-forms-module
 
 
@@ -22,7 +22,7 @@ import { ItemSwitchComponents } from './item-switch.component';
 
   imports: [
     BrowserModule,
-    FormsModule // <--- import into the NgModule
+    FormsModule // <--- NgModule에 로드
   ],
   // #enddocregion import-forms-module
   providers: [],
