@@ -2,22 +2,17 @@ import { ComponentTreeObserver } from './observer';
 import { ElementPosition, ProfilerFrame, ElementProfile, DirectiveProfile, LifecycleProfile } from 'protocol';
 import { runOutsideAngular, isCustomElement } from '../utils';
 import { getDirectiveName } from '../highlighter';
-import { InsertionTrie } from './insertion-trie';
 import { ComponentTreeNode } from '../component-tree';
 
 let observer: ComponentTreeObserver;
 let inProgress = false;
 let inChangeDetection = false;
 let eventMap: Map<any, DirectiveProfile>;
-let insertionTrie: InsertionTrie;
-let removedComponents: Map<any, ElementPosition>;
 
 export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
   if (inProgress) {
     throw new Error('Recording already in progress');
   }
-  removedComponents = new Map();
-  insertionTrie = new InsertionTrie();
   eventMap = new Map<any, DirectiveProfile>();
   inProgress = true;
   observer = new ComponentTreeObserver({
@@ -31,7 +26,6 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
         changeDetection: 0,
         lifecycle: {},
       });
-      insertionTrie.insert(position, directive);
     },
     onChangeDetection(component: any, node: Node, _: number, __: ElementPosition, duration: number): void {
       if (!inChangeDetection) {
@@ -56,15 +50,13 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
       const profile = eventMap.get(component);
       profile.changeDetection += duration;
     },
-    onDestroy(directive: any, node: Node, _: number, isComponent: boolean, position: ElementPosition): void {
-      if (isComponent) {
-        removedComponents.set(directive, position);
-      }
+    onDestroy(directive: any, node: Node, _: number, isComponent: boolean, __: ElementPosition): void {
+      // Make sure we reflect such directives in the report.
       if (!eventMap.has(directive)) {
         eventMap.set(directive, {
           isElement: isComponent && isCustomElement(node),
           name: getDirectiveName(directive),
-          isComponent: true,
+          isComponent,
           changeDetection: 0,
           lifecycle: {},
         });
@@ -99,8 +91,6 @@ export const stop = (): ProfilerFrame => {
   // We want to garbage collect the records;
   observer.destroy();
   inProgress = false;
-  removedComponents = new Map();
-  insertionTrie = new InsertionTrie();
   return result;
 };
 
@@ -147,27 +137,6 @@ const insertElementProfile = (frames: ElementProfile[], position: ElementPositio
   } else {
     frames[lastIdx] = lastFrame;
   }
-  insertOrMerge(lastFrame, profile);
-};
-
-const insertElementProfileAtEnd = (frames: ElementProfile[], position: ElementPosition, profile?: DirectiveProfile) => {
-  if (!profile) {
-    return;
-  }
-  for (let i = 0; i < position.length - 1; i++) {
-    const pos = position[i];
-    if (!frames[pos]) {
-      // TODO(mgechev): consider how to ensure we don't hit this case
-      console.warn('Unable to find parent node for', profile);
-      return;
-    }
-    frames = frames[pos].children;
-  }
-  const lastFrame: ElementProfile = {
-    children: [],
-    directives: [],
-  };
-  frames.push(lastFrame);
   insertOrMerge(lastFrame, profile);
 };
 
@@ -226,21 +195,9 @@ const flushBuffer = (obs: ComponentTreeObserver, source: string = '') => {
   const result = prepareInitialFrame(source);
   positions.forEach(position => {
     const dir = positionDirective.get(position);
-    const removedPosition = removedComponents.get(dir);
-    const trieNode = removedPosition && insertionTrie.get(removedPosition);
-    if (removedComponents.has(dir) && trieNode && trieNode !== dir) {
-      console.warn('Trying to add a removed directive on the place of an existing new one.');
-      return;
-    }
     insertElementProfile(result.directives, position, eventMap.get(dir));
   });
-
-  for (const cmp of removedComponents.keys()) {
-    insertElementProfileAtEnd(result.directives, removedComponents.get(cmp), eventMap.get(cmp));
-  }
-
   eventMap = new Map<any, DirectiveProfile>();
-  removedComponents = new Map();
   return result;
 };
 
