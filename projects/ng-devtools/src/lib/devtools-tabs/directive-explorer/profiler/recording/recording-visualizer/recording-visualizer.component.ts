@@ -1,6 +1,5 @@
-import { Component, ElementRef, Input } from '@angular/core';
-import { FlamegraphNode } from '../timeline/format-records';
-import { RawData } from 'ngx-flamegraph/lib/utils';
+import { Component, Input } from '@angular/core';
+import { VisualizationMode } from '../timeline/timeline.component';
 
 @Component({
   selector: 'ng-recording-visualizer',
@@ -8,21 +7,8 @@ import { RawData } from 'ngx-flamegraph/lib/utils';
   styleUrls: ['./recording-visualizer.component.css'],
 })
 export class RecordingVisualizerComponent {
-  profilerBars: FlamegraphNode[] = [];
-  selectedEntry: FlamegraphNode = null;
+  @Input() visualizationMode: VisualizationMode;
+  @Input() records;
 
-  @Input() set bars(data: FlamegraphNode[]) {
-    this.selectedEntry = null;
-    this.profilerBars = data;
-  }
-
-  constructor(private _el: ElementRef) {}
-
-  selectFrame(frame: RawData): void {
-    this.selectedEntry = frame as FlamegraphNode;
-  }
-
-  get availableWidth(): number {
-    return this._el.nativeElement.querySelector('.level-profile-wrapper').offsetWidth;
-  }
+  cmpVisualizationModes = VisualizationMode;
 }

@@ -2,6 +2,12 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewCh
 import { AppEntry, formatFlamegraphRecords, TimelineView } from './format-records';
 import { MatSlider, MatSliderChange } from '@angular/material/slider';
 import { ProfilerFrame } from 'protocol';
+import { MatSelectChange } from '@angular/material/select';
+
+export enum VisualizationMode {
+  FlameGraph,
+  WebTreeGraph,
+}
 
 @Component({
   selector: 'ng-recording-timeline',
@@ -12,6 +18,7 @@ import { ProfilerFrame } from 'protocol';
 export class TimelineComponent {
   @Input() set records(data: ProfilerFrame[]) {
     this.profileRecords = formatFlamegraphRecords(data);
+    console.log(this.profileRecords);
   }
 
   @Output() exportProfile = new EventEmitter<void>();
@@ -22,6 +29,9 @@ export class TimelineComponent {
     timeline: [],
   };
   currentView = 1;
+
+  cmpVisualizationModes = VisualizationMode;
+  visualizationMode = VisualizationMode.FlameGraph;
 
   get recordsView(): AppEntry {
     return this.profileRecords.timeline[this.currentView] || { app: [], timeSpent: 0, source: '' };

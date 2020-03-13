@@ -1,0 +1,23 @@
+<div class="level-profile-wrapper" [class.split-width]="selectedEntry">
+  <ngx-flamegraph
+    (frameClick)="selectFrame($event)"
+    [data]="profilerBars"
+    [width]="availableWidth"
+    [height]="300"
+    siblingLayout="equal"
+  >
+  </ngx-flamegraph>
+</div>
+
+<div class="selected-entry" *ngIf="selectedEntry">
+  <header>{{ selectedEntry.label }} details</header>
+  <section class="entry-statistics">
+    <div><label>Total time spent:</label> {{ selectedEntry.value | number }}</div>
+    <div *ngFor="let dir of selectedEntry.original.directives">
+      <label>{{ dir.name }}#changeDetection:</label> {{ dir.changeDetection | number }}
+      <span *ngFor="let item of dir.lifecycle | keyvalue">
+        <label>{{ dir.name }}#{{ item.key }}:</label> {{ item.value | number }}
+      </span>
+    </div>
+  </section>
+</div>

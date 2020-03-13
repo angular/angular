@@ -6,6 +6,7 @@ import { MatSliderModule } from '@angular/material/slider';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 import { NgxFlamegraphModule } from 'ngx-flamegraph';
+import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
   declarations: [TimelineComponent],
@@ -16,6 +17,7 @@ import { NgxFlamegraphModule } from 'ngx-flamegraph';
     MatSliderModule,
     MatButtonModule,
     NgxFlamegraphModule,
+    MatSelectModule,
   ],
   exports: [TimelineComponent],
 })
