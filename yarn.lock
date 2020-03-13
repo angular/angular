@@ -10626,6 +10626,13 @@ websocket-extensions@>=0.1.1:
   resolved "https://registry.yarnpkg.com/websocket-extensions/-/websocket-extensions-0.1.3.tgz#5d2ff22977003ec687a4b87073dfbbac146ccf29"
   integrity sha512-nqHUnMXmBzT0w570r2JpJxfiSD1IzoI+HGVdd3aZ0yNi3ngvQ4jv1dtHt5VGxfI2yj5yqImPhOK4vmIh2xMbGg==
 
+webtreemap@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/webtreemap/-/webtreemap-2.0.1.tgz#2891805bb9a4acbeabbfd0f8bdb82fbe55b39dc6"
+  integrity sha1-KJGAW7mkrL6rv9D4vbgvvlWzncY=
+  dependencies:
+    commander "^2.11.0"
+
 when@~3.6.x:
   version "3.6.4"
   resolved "https://registry.yarnpkg.com/when/-/when-3.6.4.tgz#473b517ec159e2b85005497a13983f095412e34e"
