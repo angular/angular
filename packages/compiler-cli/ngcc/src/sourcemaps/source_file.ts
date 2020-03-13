@@ -327,12 +327,12 @@ export function parseMappings(
         const name = rawMapping.length === 5 ? rawMap.names[rawMapping[4]] : undefined;
         const line = rawMapping[2] !;
         const column = rawMapping[3] !;
-        const generatedSegment = {
+        const generatedSegment: SegmentMarker = {
           line: generatedLine,
           column: generatedColumn,
           next: undefined,
         };
-        const originalSegment = {
+        const originalSegment: SegmentMarker = {
           line,
           column,
           next: undefined,
