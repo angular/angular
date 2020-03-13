@@ -1298,10 +1298,10 @@
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.0.0.tgz#9c13c2574c92d4503b005feca8f2e16cc1611506"
   integrity sha512-KYyTT/T6ALPkIRd2Ge080X/BsXvy9O0hcWTtMWkPvwAwF99+vn6Dv4GzrFT/Nn1LePr+FFDbRXXlqmsy9lw2zA==
 
-"@types/chrome@^0.0.91":
-  version "0.0.91"
-  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.91.tgz#4b3996f55f344057e6a677c8366aa98080c6e380"
-  integrity sha512-vNvo9lJkp1AvViWrUwe1bxhoMwr5dRZWlgr1DTuaNkz97LsG56lDX1sceWeZir2gRACJ5vdHtoRdVAvm8C75Ug==
+"@types/chrome@^0.0.100":
+  version "0.0.100"
+  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.100.tgz#78caca66784ccd636fc15f497366b6a2987b5606"
+  integrity sha512-6wqc/WJyPvS9TrSRcvETIJ02r658weQy2q5CM4wiJRDax5UFcsWXAtZcr0ENSCvcLHrHvYLelYymO8CKxE+iLg==
   dependencies:
     "@types/filesystem" "*"
 
