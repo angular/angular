@@ -49,7 +49,7 @@
     "rxjs": "~6.5.3",
     "scroll-into-view-if-needed": "^2.2.22",
     "tslib": "^1.10.0",
-    "uuid": "^3.4.0",
+    "uuid": "^7.0.0",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
