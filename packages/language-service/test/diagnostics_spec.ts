@@ -1026,7 +1026,9 @@ describe('diagnostics', () => {
 
   describe('function calls', () => {
     it('should report error for non-callable function call', () => {
-      mockHost.override(TEST_TEMPLATE, `{{myClick()()}}`);
+      mockHost.override(TEST_TEMPLATE, `
+        <p>{{myClick()()}}</p>
+      `);
 
       const content = mockHost.readFile(TEST_TEMPLATE) !;
       const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);

@@ -362,7 +362,9 @@ export class AstType implements AstVisitor {
     return this.resolvePropertyRead(this.query.getNonNullableType(this.getType(ast.receiver)), ast);
   }
 
-  private sourceOf(ast: AST): string { return this.source.substring(ast.span.start, ast.span.end); }
+  private sourceOf(ast: AST): string {
+    return this.source.substring(ast.sourceSpan.start, ast.sourceSpan.end);
+  }
 
   private _anyType: Symbol|undefined;
   private get anyType(): Symbol {
