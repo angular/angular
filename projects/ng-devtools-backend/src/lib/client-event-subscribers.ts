@@ -18,12 +18,7 @@ import { serializeComponentState } from './state-serializer/state-serializer';
 import { ComponentInspector, ComponentInspectorOptions } from './component-inspector/component-inspector';
 import { setConsoleReference } from './selected-component';
 import { unHighlight } from './highlighter';
-import {
-  getAngularVersion,
-  appIsAngularInProdMode,
-  appIsAngularInDevMode,
-  appIsSupportedAngularVersion,
-} from './angular-check';
+import { getAngularVersion, appIsAngularInDevMode, appIsSupportedAngularVersion } from './angular-check';
 import { observeDOM, getDirectiveId, getDirectiveForest, indexDirectiveForest } from './component-tree-identifiers';
 
 export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void => {
@@ -42,21 +37,16 @@ export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void =>
 
   messageBus.on('getNestedProperties', getNestedPropertiesCallback(messageBus));
 
-  messageBus.on('updateState', updateStateCallback(messageBus));
+  messageBus.on('updateState', updateState);
 
-  setupInspector(messageBus);
-
-  initChangeDetection(messageBus);
+  if (appIsAngularInDevMode() && appIsSupportedAngularVersion()) {
+    setupInspector(messageBus);
+    onChangeDetection(() => messageBus.emit('componentTreeDirty'));
+  }
 };
 
 const shutdownCallback = (messageBus: MessageBus<Events>) => () => {
   messageBus.destroy();
-};
-
-const initChangeDetection = (messageBus: MessageBus<Events>) => {
-  if (appIsAngularInDevMode() && appIsSupportedAngularVersion()) {
-    onChangeDetection(() => messageBus.emit('componentTreeDirty'));
-  }
 };
 
 //
@@ -119,10 +109,6 @@ const getNestedPropertiesCallback = (messageBus: MessageBus<Events>) => (
   } else {
     messageBus.emit('nestedProperties', [position, { props: {} }, propPath]);
   }
-};
-
-const updateStateCallback = (messageBus: MessageBus<Events>) => (updatedStateData: UpdatedStateData) => {
-  updateState(updatedStateData);
 };
 
 //

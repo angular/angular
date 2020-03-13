@@ -1,21 +1,4 @@
-let reloadFns: ((url: string) => void)[] = [];
-export const panelDevTools = {
-  injectBackend(cb?: () => void): void {
-    injectScripts(['backend.js', 'runtime.js'], cb);
-  },
-
-  onReload(reloadFn: (url: string) => void): void {
-    reloadFns.push(reloadFn);
-    chrome.devtools.network.onNavigated.addListener(reloadFn);
-  },
-
-  destroy(): void {
-    reloadFns.forEach(f => chrome.devtools.network.onNavigated.removeListener(f));
-    reloadFns = [];
-  },
-};
-
-const injectScripts = (scripts: string[], cb?: () => void) => {
+export const injectScripts = (scripts: string[], cb?: () => void) => {
   let injected = 0;
   scripts.forEach(s =>
     injectScript(chrome.runtime.getURL(s), () => {

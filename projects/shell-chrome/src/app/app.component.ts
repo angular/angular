@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
-import { panelDevTools } from '../panel-devtools';
+import { injectScripts } from '../inject';
 import { MessageBus, Events } from 'protocol';
 import { ZoneAwareChromeMessageBus } from './zone-aware-chrome-message-bus';
 
@@ -20,11 +20,13 @@ export class AppComponent implements OnInit {
       name: '' + chrome.devtools.inspectedWindow.tabId,
     });
 
+    chrome.devtools.network.onNavigated.addListener(() => {
+      window.location.reload();
+    });
+
     this.messageBus = new ZoneAwareChromeMessageBus(port, this._ngZone);
 
-    this.messageBus.on('reload', () => window.location.reload());
-
-    panelDevTools.injectBackend();
+    injectScripts(['backend.js', 'runtime.js']);
     this._cd.detectChanges();
   }
 }
