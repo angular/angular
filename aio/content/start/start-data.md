@@ -141,19 +141,21 @@ Create the cart page in two steps:
     <code-example header="src/app/app.module.ts" path="getting-started/src/app/app.module.ts" region="cart-route">
     </code-example>
 
-1. Update the "Checkout" button so that it routes to `/cart` url.
+1. Update the "Checkout" button so that it routes to the `/cart` url.
 
-    Open `top-bar.component.html` and add `routerLink` with a value to `/cart`.
+    Open `top-bar.component.html` and add a `routerLink` directive pointing to `/cart`.
 
-    <code-example header="src/app/top-bar/top-bar.component.html" path="getting-started/src/app/top-bar/top-bar.component.html" region="cart-route">
+    <code-example
+        header="src/app/top-bar/top-bar.component.html"
+        path="getting-started/src/app/top-bar/top-bar.component.html"
+        region="cart-route">
     </code-example>
+
+1. To see the new cart component, click the "Checkout" button. You can see the "cart works!" default text, and the URL has the pattern `https://getting-started.stackblitz.io/cart`,  where `getting-started.stackblitz.io` may be different for your StackBlitz project.
 
     <div class="lightbox">
       <img src='generated/images/guide/start/cart-works.png' alt="Display cart page before customizing">
     </div>
-
-1. To see the new cart component, click the "Checkout" button. You can see the "cart works!" default text, and the URL has the pattern `https://getting-started.stackblitz.io/cart`,  where `getting-started.stackblitz.io` may be different for your StackBlitz project.
-
 
 ### Display the cart items
 
