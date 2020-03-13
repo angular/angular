@@ -340,7 +340,7 @@ export function parseMappings(
 }
 
 /**
- * Extract the segment markers from the original source files in each mapping of a array of
+ * Extract the segment markers from the original source files in each mapping of an array of
  * `mappings`.
  *
  * @param mappings The mappings whose original segments we want to extract
