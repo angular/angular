@@ -17,12 +17,16 @@ let jitOptions: JitCompilerOptions|null = null;
 export function setJitOptions(options: JitCompilerOptions): void {
   if (jitOptions !== null) {
     if (options.defaultEncapsulation !== jitOptions.defaultEncapsulation) {
-      throw new Error(
-          'Provided value for `defaultEncapsulation` can not be changed once it has been set.');
+      ngDevMode &&
+          console.error(
+              'Provided value for `defaultEncapsulation` can not be changed once it has been set.');
+      return;
     }
     if (options.preserveWhitespaces !== jitOptions.preserveWhitespaces) {
-      throw new Error(
-          'Provided value for `preserveWhitespaces` can not be changed once it has been set.');
+      ngDevMode &&
+          console.error(
+              'Provided value for `preserveWhitespaces` can not be changed once it has been set.');
+      return;
     }
   }
   jitOptions = options;
