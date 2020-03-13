@@ -821,8 +821,8 @@ content harmlessly. The following is the browser output
 of the `evilTitle` examples.
 
 <code-example language="bash">
-"Template <script>alert("evil never sleeps")</script> Syntax" is the interpolated evil title.
-"Template alert("evil never sleeps")Syntax" is the property bound evil title.
+"Template &lt;script&gt;alert("evil never sleeps")&lt;/script&gt; Syntax" is the interpolated evil title.
+"Template Syntax" is the property bound evil title.
 </code-example>
 
 <hr/>
