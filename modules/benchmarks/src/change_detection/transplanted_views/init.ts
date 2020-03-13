@@ -14,8 +14,8 @@ import {numViews} from '../util';
 import {DeclarationComponent, TransplantedViewsModule} from './transplanted_views';
 
 export function init(moduleRef: NgModuleRef<TransplantedViewsModule>) {
-  let declaration: DeclarationComponent;
-  let appRef: ApplicationRef;
+  const appRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
+  const declaration: DeclarationComponent = appRef.components[0].instance;
 
   bindAction('#destroyDom', destroyDom);
   bindAction('#createDom', createDom);
@@ -38,9 +38,4 @@ export function init(moduleRef: NgModuleRef<TransplantedViewsModule>) {
   function detectChanges() { appRef.tick(); }
 
   function noop() {}
-
-  const injector = moduleRef.injector;
-  appRef = injector.get(ApplicationRef);
-
-  declaration = appRef.components[0].instance;
 }
