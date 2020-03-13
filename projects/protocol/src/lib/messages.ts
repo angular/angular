@@ -113,7 +113,6 @@ export interface UpdatedStateData {
 export interface Events {
   handshake: () => void;
   shutdown: () => void;
-  reload: () => void;
   queryNgAvailability: () => void;
   ngAvailability: (config: { version: string | undefined | boolean; prodMode: boolean }) => void;
 

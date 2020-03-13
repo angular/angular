@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { MessageBus, Events } from 'protocol';
 import { interval } from 'rxjs';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'ng-devtools',
@@ -20,7 +21,16 @@ export class DevToolsComponent implements OnInit, OnDestroy {
   prodMode: boolean;
   @Input() messageBus: MessageBus<Events>;
 
-  private _interval$ = interval(500).subscribe(() => this.messageBus.emit('queryNgAvailability'));
+  private _interval$ = interval(500)
+    .pipe(take(10))
+    .subscribe({
+      next: () => this.messageBus.emit('queryNgAvailability'),
+      complete: () => {
+        if (this.angularExists === null) {
+          this.angularExists = false;
+        }
+      },
+    });
 
   ngOnInit(): void {
     console.log('Initialized the devtools UI');
