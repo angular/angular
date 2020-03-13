@@ -3212,15 +3212,24 @@ Here, a `<button>` further down the template refers to the `phone` variable.
 -->
 <h3 class="no-toc">참조 변수를 사용해서 입력값 얻기</h3>
 
+<!--
 In most cases, Angular sets the reference variable's value to the element on which it is declared.
 In the previous example, `phone` refers to the phone number `<input>`.
 The button's click handler passes the `<input>` value to the component's `callPhone()` method.
 
 The `NgForm` directive can change that behavior and set the value to something else. In the following example, the template reference variable, `itemForm`, appears three times separated
 by HTML.
+-->
+템플릿 참조 변수는 일반적으로 엘리먼트의 값을 가져오기 위해 선언합니다.
+이전 예제에서도 `<input>`에 입력된 값을 얻기 위해 `phone` 변수를 선언했습니다.
+`<input>` 엘리먼트에서 가져온 값은 버튼을 클릭했을 때 실행되는 핸들러 함수로 전달해서 컴포넌트의 `callPhone()` 메소드를 실행합니다.
+
+`NgForm` 디렉티브를 사용해서 이 동작을 다른 방식으로 구현하는 방법에 대해 알아봅시다.
+아래 예제에서는 템플릿 참조 변수 `itemForm`는 3번 사용되었습니다.
 
 <code-example path="template-reference-variables/src/app/app.component.html" region="ngForm" header="src/app/hero-form.component.html"></code-example>
 
+<!--
 The reference value of itemForm, without the ngForm attribute value, would be
 the [HTMLFormElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement).
 There is, however, a difference between a Component and a Directive in that a `Component`
@@ -3236,14 +3245,35 @@ The native `<form>` element doesn't have a `form` property, but the `NgForm` dir
 if the `itemForm.form.valid` is invalid and passing the entire form control tree
 to the parent component's `onSubmit()` method.
 
+
 <h3 class="no-toc">Template reference variable considerations</h3>
 
 A template _reference_ variable (`#phone`) is not the same as a template _input_ variable (`let phone`) such as in an [`*ngFor`](guide/template-syntax#template-input-variable).
 See [_Structural Directives_](guide/structural-directives#template-input-variable) for more information.
 
 The scope of a reference variable is the entire template. So, don't define the same variable name more than once in the same template as the runtime value will be unpredictable.
+-->
+이 예제는 `ngForm` 어트리뷰트를 사용하지 않고 [HTMLFormElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement)에 템플릿 참조 변수 `itemForm`를 지정했습니다.
+이 코드에는 일반적으로 사용하는 `FormGroup`이나 `FormControl`이 사용되지 않았습니다.
 
+하지만 `itemForm`이 [NgForm](api/forms/NgForm "API: NgForm")을 직접 참조하기 때문에 값이 변경되는 것을 감지하고 유효성을 검사하는 로직은 모두 동일하게 동작합니다.
+
+표준 엘리먼트 `<form>`에는 `form` 프로퍼티가 없지만 `NgForm`이 적용되었기 때문에 제출 버튼이 `itemForm.form.valid`라고 사용할 수 있으며, `onSubmit()` 메소드가 실행될 때는 `itemForm` 전체가 컴포넌트의 `onSubmit()` 메소드로 전달됩니다.
+
+
+<h3 class="no-toc">주의할 점</h3>
+
+템플릿 _참조_ 변수(`#phone`)는 [`*ngFor`](guide/template-syntax#template-input-variable)에 사용된 템플릿 _입력_ 변수(`let phone`)와는 다릅니다.
+자세한 내용은 [_구조 디렉티브_](guide/structural-directives#template-input-variable) 문서를 참고하세요.
+
+템플릿 참조 변수의 스코프는 템플릿 전체입니다.
+그래서 같은 이름의 템플릿 참조 변수가 있으면 실행시점에 예기치 않은 문제가 발생할 수 있습니다.
+
+
+<!--
 #### Alternative syntax
+-->
+#### 대체 문법
 
 <!--
 You can use the `ref-` prefix alternative to `#`.
@@ -3259,10 +3289,13 @@ This example declares the `fax` variable as `ref-fax` instead of `#fax`.
 <hr/>
 
 {@a inputs-outputs}
-{@a 입출력 프로퍼티}
-
+{@a input-and-output-properties}
+<!--
 ## `@Input()` and `@Output()` properties
+-->
+## `@Input()`, `@Output()` 프로퍼티
 
+<!--
 `@Input()` and `@Output()` allow Angular to share data between the parent context
 and child directives or components. An `@Input()` property is writable
 while an `@Output()` property is observable.
@@ -3289,60 +3322,110 @@ child component to send data out.
 
 This section about `@Input()` and `@Output()` has its own <live-example name="inputs-outputs"></live-example>. The following subsections highlight
 key points in the sample app.
+-->
+`@Input()` 데코레이터와 `@Output()` 데코레이터는 부모 컨텍스트가 자식 디렉티브나 컴포넌트와 데이터를 주고 받을 때 사용합니다.
+이 때 `@Input()` 프로퍼티는 일반 데이터 타입이고 `@Output()` 프로퍼티는 옵저버블 타입입니다.
+
+다음과 같은 부모/자식 관계에서 생각해 봅시다:
+
+```html
+<parent-component>
+  <child-component></child-component>
+</parent-component>
+
+```
+
+이 코드에서 `<child-component>` 셀렉터는 `<parent-component>` 안에 존재하는 자식 디렉티브이며, 이 디렉티브 안에 독립적인 컨텍스트가 존재합니다.
+
+`@Input()`과 `@Output()`은 API(application programming interface)처럼 동작하기 때문에 자식 컴포넌트는 이 데코레이터를 사용해서 부모 컴포넌트와 통신할 수 있습니다.
+나눠서 살펴보면, `@Input()`은 컴포넌트로 데이터가 들어오는 문이고 `@Output()`은 컴포넌트에서 데이터가 나가는 문이라고 이해할 수 있습니다.
+
+이 섹션에서 설명하는 `@Input()`과 `@Output()`이 어떻게 동작하는지 직접 확인하려면 <live-example name="inputs-outputs"></live-example>를 참고하세요.
+
 
 <div class="alert is-helpful">
 
+<!--
 #### `@Input()` and `@Output()` are independent
+-->
+#### `@Input()`과 `@Output()`은 독립적입니다.
 
+<!--
 Though `@Input()` and `@Output()` often appear together in apps, you can use
 them separately. If the nested
 component is such that it only needs to send data to its parent, you wouldn't
 need an `@Input()`, only an `@Output()`. The reverse is also true in that if the
 child only needs to receive data from the parent, you'd only need `@Input()`.
+-->
+`@Input()`과 `@Output()`은 컴포넌트 코드에 자주 사용되지만 두 데코레이터가 별개로 동작한다는 것을 명심해야 합니다.
+자식 컴포넌트가 부모 컴포넌트로 데이터를 보내기만 한다면 `@Input()`은 필요없고 `@Output()`만 있으면 됩니다.
+그리고 자식 컴포넌트가 부모 컴포넌트에게 데이터를 받기만 한다면 반대로 `@Inupt()`만 있으면 됩니다.
 
 </div>
 
 {@a input}
 
+<!--
 ## How to use `@Input()`
+-->
+## `@Input()` 사용하기
 
+<!--
 Use the `@Input()` decorator in a child component or directive to let Angular know
 that a property in that component can receive its value from its parent component.
 It helps to remember that the data flow is from the perspective of the
 child component. So an `@Input()` allows data to be input _into_ the
 child component from the parent component.
-
+-->
+`@Input()` 데코레이터를 사용하면 자식 컴포넌트가 디렉티브가 부모 컴포넌트로부터 어떤 데이터를 받아 프로퍼티 값으로 할당할 수 있습니다.
+이 때 데이터는 자식 컴포넌트로 향한다는 것이 중요합니다.
 
 <div class="lightbox">
   <img src="generated/images/guide/inputs-outputs/input.svg" alt="Input data flow diagram">
 </div>
 
+<!--
 To illustrate the use of `@Input()`, edit these parts of your app:
 
 * The child component class and template
 * The parent component class and template
+-->
+`@Input()` 데코레이터가 동작하는 것을 확인하기 위해 앱을 수정해 봅시다.
 
 
+<!--
 ### In the child
+-->
+### 자식 컴포넌트에서
 
+<!--
 To use the `@Input()` decorator in a child component class, first import
 `Input` and then decorate the property with `@Input()`:
+-->
+자식 컴포넌트 클래스에서 `@Input()` 데코레이터를 사용하려면 먼저 `Input` 심볼을 로드하고 프로퍼티에 `Input()`을 지정하면 됩니다:
 
 <code-example path="inputs-outputs/src/app/item-detail/item-detail.component.ts" region="use-input" header="src/app/item-detail/item-detail.component.ts"></code-example>
 
-
+<!--
 In this case, `@Input()` decorates the property <code class="no-auto-link">item</code>, which has
 a type of `string`, however, `@Input()` properties can have any type, such as
 `number`, `string`, `boolean`, or `object`. The value for `item` will come from the parent component, which the next section covers.
 
 Next, in the child component template, add the following:
+-->
+이 경우에 `@Input()` 데코레이터는 `string` 타입인 <code class="no-auto-link">item</code> 프로퍼티에 지정되었지만, `@Input()` 데코레이터는 `number`나 `string`, `boolean`, `object` 타입에도 지정할 수 있습니다.
+
+그리고 컴포넌트 템플릿을 다음과 같이 수정합니다:
 
 <code-example path="inputs-outputs/src/app/item-detail/item-detail.component.html" region="property-in-template" header="src/app/item-detail/item-detail.component.html"></code-example>
 
 
-
+<!--
 ### In the parent
+-->
+### 부모 컴포넌트에서
 
+<!--
 The next step is to bind the property in the parent component's template.
 In this example, the parent component template is `app.component.html`.
 
@@ -3372,32 +3455,75 @@ component passes to the nested component.
 The key takeaway is that when binding to a child component's property in a parent component&mdash;that is, what's
 in square brackets&mdash;you must
 decorate the property with `@Input()` in the child component.
+-->
+자식 컴포넌트를 수정하고 나면 이제 부모 컴포넌트 템플릿에서 프로퍼티를 바인딩해야 합니다.
+이 예제에서는 `app.component.html`를 부모 컴포넌트 템플릿으로 사용해 봅시다.
+
+먼저, 자식 컴포넌트가 사용된 셀렉터 `<app-item-detail>`을 부모 컴포넌트 템플릿에 추가합니다.
+그리고 이 때 [프로퍼티 바인딩](guide/template-syntax#property-binding)을 사용해서 부모 컴포넌트의 프로퍼티를 자식 컴포넌트로 바인딩합니다.
+
+<code-example path="inputs-outputs/src/app/app.component.html" region="input-parent" header="src/app/app.component.html"></code-example>
+
+그 다음에는 부모 컴포넌트 클래스 `app.component.ts`에 `currentItem` 프로퍼티를 선언합니다:
+
+<code-example path="inputs-outputs/src/app/app.component.ts" region="parent-property" header="src/app/app.component.ts"></code-example>
+
+그러면 자식 컴포넌트에서 `@Input()` 데코레이터를 사용했기 때문에 부모 컴포넌트의 `currentItem` 프로퍼티의 값이 자식 컴포넌트의 `item` 프로퍼티로 전달됩니다.
+
+아래 그림을 참고하세요:
+
+<div class="lightbox">
+  <img src="generated/images/guide/inputs-outputs/input-diagram-target-source.svg" alt="Property binding diagram">
+</div>
+
+바인딩 대상이 되는 프로퍼티는 대괄호 `[]`로 둘러싸인 `item`이며, 이 프로퍼티는 자식 컴포넌트 클래스에서 `@Input()` 데코레이터로 지정되어 있습니다.
+그리고 이 데이터의 소스는 등호 오른쪽에 있는 `currentItem`이며, 이 프로퍼티는 부모 컴포넌트에 있는 프로퍼티입니다.
+
+결국 부모 컴포넌트의 데이터를 자식 컴포넌트로 전달할 때는 대괄호 `[]`를 사용해서 프로퍼티 바인딩을 하며, 이 프로퍼티는 자식 컴포넌트 클래스에서 `@Input()` 데코레이터로 지정되어야 한다는 점이 가장 중요합니다.
+
 
 <div class="alert is-helpful">
 
-#### `OnChanges` and `@Input()`
 
+<!--
+#### `OnChanges` and `@Input()`
+-->
+#### `OnChanges`와 `@Input()`
+
+<!--
 To watch for changes on an `@Input()` property, use
 `OnChanges`, one of Angular's [lifecycle hooks](guide/lifecycle-hooks#onchanges).
 `OnChanges` is specifically designed to work with properties that have the
 `@Input()` decorator. See the [`OnChanges`](guide/lifecycle-hooks#onchanges) section of the [Lifecycle Hooks](guide/lifecycle-hooks) guide for more details and examples.
+-->
+`@Input()` 데코레이터가 지정된 프로퍼티의 값이 변경되는 것을 감지하려면 Angular [라이프싸이클 후킹](guide/lifecycle-hooks#onchanges)으로 제공하는 `OnChanges`를 사용하면 됩니다.
+`OnChanges`는 `@Input()` 데코레이터가 지정된 프로퍼티가 동작하는 것을 감지하기 위해 특별히 만들어진 인터페이스입니다.
+자세한 내용은 [라이프싸이클 후킹](guide/lifecycle-hooks) 문서의 [`OnChanges`](guide/lifecycle-hooks#onchanges) 섹션을 참고하세요.
 
 </div>
 
 {@a output}
 
+<!--
 ## How to use `@Output()`
+-->
+## `@Output()` 사용하기
 
+<!--
 Use the `@Output()` decorator in the child component or directive to allow data to flow from
 the child _out_ to the parent.
 
 An `@Output()` property should normally be initialized to an Angular [`EventEmitter`](api/core/EventEmitter) with values flowing out of the component as [events](#event-binding).
+-->
+`@Output()` 데코레이터를 사용하면 자식 컴포넌트나 디렉티브에서 부모에게 데이터를 전달할 수 있습니다.
 
+`@Output()` 데코레이터로 지정하는 프로퍼티는 일반적으로 Angular [`EventEmitter`](api/core/EventEmitter) 타입으로 선언하며, 부모 컴포넌트에서는 이 [이벤트를 바인딩](#event-binding)하는 방식으로 데이터를 받습니다.
 
 <div class="lightbox">
   <img src="generated/images/guide/inputs-outputs/output.svg" alt="Output diagram">
 </div>
 
+<!--
 Just like with `@Input()`, you can use `@Output()`
 on a property of the child component but its type should be
 `EventEmitter`.
@@ -3419,16 +3545,34 @@ When you use `@Output()`, edit these parts of your app:
 The following example shows how to set up an `@Output()` in a child
 component that pushes data you enter in an HTML `<input>` to an array in the
 parent component.
+-->
+`@Input()` 데코레이터와 마찬가지로 `@Output()` 데코레이터도 자식 컴포넌트의 프로퍼티에 지정하지만, `@Output()` 데코레이터를 지정하는 프로퍼티는 반드시 `EventEmitter` 타입이어야 합니다.
+
+`@Output()` 데코레이터를 사용하면 자식 컴포넌트에 있는 프로퍼티를 외부와 연결된 문처럼 지정하는 것과 비슷합니다.
+그러면 자식 컴포넌트에서 무언가 변경되었을 때 이 문을 통해서 부모 컴포넌트에게 알릴 수 있는데, 이때 `@angular/core` 패키지가 제공하는 `EventEmitter`를 사용해서 커스텀 이벤트를 발생시킵니다.
+
+`@Output()`이 동작하는 것을 확인하기 위해 앱을 수정해 봅시다.
+
+아래 예제에서 `@Output()` 데코레이터는 자식 컴포넌트에 사용하며, 이 데코레이터가 지정된 프로퍼티에서 전달되는 데이터는 `<input>` 엘리먼트를 통해 부모 컴포넌트로 전달됩니다.
 
 <div class="alert is-helpful">
 
+<!--
 The HTML element `<input>` and the Angular decorator `@Input()`
 are different. This documentation is about component communication in Angular as it pertains to `@Input()` and `@Output()`. For more information on the HTML element `<input>`, see the [W3C Recommendation](https://www.w3.org/TR/html5/sec-forms.html#the-input-element).
+-->
+HTML 엘리먼트인 `<input>`과 Angular 데코레이터인 `@Input()`은 다릅니다.
+이 문서는 Angular가 제공하는 데코레이터인 `@Input()`과 `@Output()`에 대해 설명합니다.
+HTML 엘리먼트 `<input>`에 대해 자세하게 알아보려면 [W3C Recommendation](https://www.w3.org/TR/html5/sec-forms.html#the-input-element)을 참고하세요.
 
 </div>
 
+<!--
 ### In the child
+-->
+### 자식 컴포넌트에서
 
+<!--
 This example features an `<input>` where a user can enter a value and click a `<button>` that raises an event. The `EventEmitter` then relays the data to the parent component.
 
 First, be sure to import `Output` and `EventEmitter`
@@ -3462,9 +3606,42 @@ to raise an event in which it emits the value the user
 types into the `<input>`. In other words, when
 the user clicks the add button in the UI, the child lets the parent know
 about the event and gives that data to the parent.
+-->
+이번 예제에서는 `<input>` 엘리먼트에 사용자가 값을 입력하고 `<button>` 엘리먼트를 클릭하면 이벤트가 발생합니다.
+이벤트 데이터는 `EventEmitter` 객체를 통해 부모 컴포넌트에 전달될 것입니다.
 
+먼저, 자식 컴포넌트 클래스에서 `Output` 심볼과 `EventEmitter` 심볼을 로드합니다:
+
+```js
+import { Output, EventEmitter } from '@angular/core';
+
+```
+
+그리고 자식 컴포넌트 클래스 프로퍼티 `newItemEvent`에 `@Output()` 데코레이터를 지정합니다.
+이 프로퍼티의 타입은 반드시 `EventEmitter`여야 합니다.
+
+<code-example path="inputs-outputs/src/app/item-output/item-output.component.ts" region="item-output" header="src/app/item-output/item-output.component.ts"></code-example>
+
+이전에 살펴본 예제와는 이런점들이 다릅니다:
+
+* `@Output()`&mdash;자식 컴포넌트에서 부모 컴포넌트로 향하는 데이터 전달 통로를 선언하는 데코레이터 함수입니다.
+* `newItemEvent`&mdash;`Output()` 데코레이터가 지정된 프로퍼티입니다.
+* `EventEmitter<string>`&mdash;`@Output()` 데코레이터가 지정된 프로퍼티의 타입입니다.
+* `new EventEmitter<string>()`&mdash;Angular 이벤트 이미터의 인스턴스를 생성합니다. 이 예제에서는 전달되는 데이터의 타입으로 `string`을 지정했지만, 어떤 타입이던지 가능합니다. 더 자세한 내용은 [EventEmitter API 문서](api/core/EventEmitter)를 참소하세요.
+
+그리고 자식 컴포넌트 클래스에 `addNewItem()` 메소드를 정의합니다:
+
+<code-example path="inputs-outputs/src/app/item-output/item-output.component.ts" region="item-output-class" header="src/app/item-output/item-output.component.ts"></code-example>
+
+`addNewItem()`은 사용자가 `<input>` 엘리먼트에 입력한 값을 가져와서 `@Output()` 데코레이터가 지정된 `newItemEvent` 프로퍼티로 보냅니다.
+다르게 표현하자면, 사용자가 자식 컴포넌트 화면에서 버튼을 클릭하면 자식 컴포넌트가 이 값을 이벤트로 전달하면서 부모 컴포넌트에게 알리는 방식입니다.
+
+<!--
 #### In the child's template
+-->
+#### 자식 컴포넌트 템플릿에서
 
+<!--
 The child's template has two controls. The first is an HTML `<input>` with a
 [template reference variable](guide/template-syntax#ref-var) , `#newItem`,
 where the user types in an item name. Whatever the user types
@@ -3483,9 +3660,26 @@ takes as its argument whatever the value of `#newItem` is.
 Now the child component has an `@Output()`
 for sending data to the parent and a method for raising an event.
 The next step is in the parent.
+-->
+자식 컴포넌트 템플릿에는 컨트롤이 2개 있는데, 하나는 사용자의 입력을 받는 HTML `<input>` 엘리먼트이고 이 엘리먼트에는 [템플릿 참조 변수](guide/template-syntax#ref-var) `#newItem`이 지정되어 있습니다. 따라서 사용자가 `<input>` 엘리먼트에 입력하는 값은 `#newItem` 변수에 저장됩니다.
 
+<code-example path="inputs-outputs/src/app/item-output/item-output.component.html" region="child-output" header="src/app/item-output/item-output.component.html"></code-example>
+
+또 다른 하나는 `<button>` 엘리먼트이며 이 엘리먼트에는 [이벤트 바인딩](guide/template-syntax#event-binding)이 사용되었습니다.
+이벤트 바인딩문법은 `(click)`과 같이 이벤트 이름을 괄호로 둘러싼 문법을 사용하기 때문에 쉽게 구분할 수 있습니다.
+
+`(click)` 이벤트는 자식 컴포넌트의 `addNewItem()` 메소드와 바인딩되어 있으며, 이 메소드를 실행할 때 `#newItem`의 값을 인자로 전달합니다.
+
+이제 자식 컴포넌트 클래스에 `@Output()`이 사용되었기 때문에 부모 컴포넌트로 이벤트를 보낼 준비가 끝났습니다.
+이제 부모 컴포넌트를 수정해 봅시다.
+
+
+<!--
 ### In the parent
+-->
+### 부모 컴포넌트에서
 
+<!--
 In this example, the parent component is `AppComponent`, but you could use
 any component in which you could nest the child.
 
@@ -3496,9 +3690,21 @@ in an array and a method for adding more items to the array.
 
 The `addItem()` method takes an argument in the form of a string
 and then pushes, or adds, that string to the `items` array.
+-->
+이 예제에서 부모 컴포넌트는 `AppComponent`를 사용했지만 부모 컴포넌트는 어떤 컴포넌트라도 가능합니다.
 
+이 예제의 `AppComponent`에는 `items` 프로퍼티가 배열 타입으로 선언되어 있으며 이 배열에 항목을 추가하는 메소드도 정의되어 있습니다.
+
+<code-example path="inputs-outputs/src/app/app.component.ts" region="add-new-item" header="src/app/app.component.ts"></code-example>
+
+이 때 `addItem()` 메소드는 폼에서 인자로 받은 문자열을 `items` 배열에 추가합니다.
+
+<!--
 #### In the parent's template
+-->
+#### 부모 컴포넌트 템플릿에서
 
+<!--
 Next, in the parent's template, bind the parent's
 method to the child's event. Put the child selector, here `<app-item-output>`,
 within the parent component's
@@ -3523,6 +3729,27 @@ Now, in order to see the `@Output()` working, add the following to the parent's 
   ```
 
 The `*ngFor` iterates over the items in the `items` array. When you enter a value in the child's `<input>` and click the button, the child emits the event and the parent's `addItem()` method pushes the value to the `items` array and it renders in the list.
+-->
+이제 자식 컴포넌트에서 올라오는 이벤트를 부모 컴포넌트의 메소드와 바인딩해봅시다.
+부모 컴포넌트의 템플릿 파일 `app.component.html`에 자식 컴포넌트 셀렉터 `<app-item-output>`을 추가합니다.
+
+<code-example path="inputs-outputs/src/app/app.component.html" region="output-parent" header="src/app/app.component.html"></code-example>
+
+이벤트 바인딩은 `(newItemEvent)='addItem($event)'`라는 방식으로 사용되었습니다.
+이 바인딩 표현식은 자식 컴포넌트에서 `newItemEvent`가 발생했을 때 부모 컴포넌트의 `addItem()`을 실행하는데, 이 때 자식 컴포넌트에서 받은 인자를 `addItem()`의 인자로 전달한다는 의미입니다.
+데이터가 실제로 전달되는 곳은 이 부분입니다.
+`$event`에는 사용자가 자식 컴포넌트 템플릿 화면의 `<input>` 엘리먼트에 입력한 값이 전달될 것입니다.
+
+이제 `@Output()` 데코레이터가 동작하는 것을 확인하기 위해 부모 컴포넌트 템플릿에 다음 코드를 추가합니다:
+
+```html
+  <ul>
+    <li *ngFor="let item of items">{{item}}</li>
+  </ul>
+  ```
+
+`*ngFor`는 `items` 배열을 순회하는 디렉티브입니다.
+이제 자식 컴포넌트 `<input>` 엘리먼트에 값을 입력하고 버튼을 클릭하면 자식 컴포넌트에서 이벤트가 발생하면서 부모 컴포넌트의 `addItem()` 메소드를 실행하게 되고, `items` 배열에 추가된 항목이 화면에 표시될 것입니다.
 
 
 ## `@Input()` and `@Output()` together
