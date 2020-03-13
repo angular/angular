@@ -3503,7 +3503,7 @@ To watch for changes on an `@Input()` property, use
 </div>
 
 {@a output}
-
+{@a how-to-use-output}
 <!--
 ## How to use `@Output()`
 -->
