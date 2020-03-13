@@ -55,7 +55,6 @@ ng_test_library(
     ),
     deps = [
         ":radio",
-        "//src/cdk/a11y",
         "//src/cdk/testing/private",
         "@npm//@angular/forms",
         "@npm//@angular/platform-browser",

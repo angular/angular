@@ -351,6 +351,10 @@ const _MatRadioButtonMixinBase:
     '[attr.aria-label]': 'null',
     '[attr.aria-labelledby]': 'null',
     '[attr.aria-describedby]': 'null',
+    // Note: under normal conditions focus shouldn't land on this element, however it may be
+    // programmatically set, for example inside of a focus trap, in this case we want to forward
+    // the focus to the native element.
+    '(focus)': '_inputElement.nativeElement.focus()',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -536,13 +540,7 @@ export class MatRadioButton extends _MatRadioButtonMixinBase
     this._focusMonitor
       .monitor(this._elementRef, true)
       .subscribe(focusOrigin => {
-        // Only forward focus manually when it was received programmatically or through the
-        // keyboard. We should not do this for mouse/touch focus for two reasons:
-        // 1. It can prevent clicks from landing in Chrome (see #18269).
-        // 2. They're already handled by the wrapping `label` element.
-        if (focusOrigin === 'keyboard' || focusOrigin === 'program') {
-          this._inputElement.nativeElement.focus();
-        } else if (!focusOrigin && this.radioGroup) {
+        if (!focusOrigin && this.radioGroup) {
           this.radioGroup._touch();
         }
       });

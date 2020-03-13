@@ -1,9 +1,8 @@
-import {async, ComponentFixture, fakeAsync, TestBed, tick, inject} from '@angular/core/testing';
+import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
 import {Component, DebugElement, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {dispatchFakeEvent} from '@angular/cdk/testing/private';
-import {FocusMonitor} from '@angular/cdk/a11y';
 
 import {MAT_RADIO_DEFAULT_OPTIONS} from './radio';
 import {MatRadioButton, MatRadioChange, MatRadioGroup, MatRadioModule} from './index';
@@ -395,21 +394,6 @@ describe('MatRadio', () => {
       expect(radioRippleNativeElements
           .every(element => element.classList.contains('mat-focus-indicator'))).toBe(true);
     });
-
-    it('should not manually move focus to underlying input when focus comes from mouse or touch',
-      inject([FocusMonitor], (focusMonitor: FocusMonitor) => {
-        const radioElement = radioNativeElements[0];
-        const inputElement = radioInputElements[0];
-        expect(document.activeElement).not.toBe(inputElement);
-
-        focusMonitor.focusVia(radioElement, 'mouse');
-        fixture.detectChanges();
-        expect(document.activeElement).not.toBe(inputElement);
-
-        focusMonitor.focusVia(radioElement, 'touch');
-        fixture.detectChanges();
-        expect(document.activeElement).not.toBe(inputElement);
-      }));
 
   });
 
