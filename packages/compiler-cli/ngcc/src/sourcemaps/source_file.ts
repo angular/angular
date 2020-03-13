@@ -148,7 +148,7 @@ export class SourceFile {
       // [1,0] and outgoing end mapping of [4, 6], which also includes [4, 3].
       //
       let outgoingStartIndex =
-          findLastMappingIndexBefore(bSource.flattenedMappings, incomingStart, false);
+          findLastMappingIndexBefore(bSource.flattenedMappings, incomingStart, false, 0);
       if (outgoingStartIndex < 0) {
         outgoingStartIndex = 0;
       }
@@ -172,14 +172,14 @@ export class SourceFile {
  * @param mappings The collection of mappings whose segment-markers we are searching.
  * @param marker The segment-marker to match against those of the given `mappings`.
  * @param exclusive If exclusive then we must find a mapping with a segment-marker that is
- * exclusively earlier that the given `marker`.
+ * exclusively earlier than the given `marker`.
  * If not exclusive then we can return the highest mappings with an equivalent segment-marker to the
  * given `marker`.
  * @param lowerIndex If provided, this is used as a hint that the marker we are searching for has an
  * index that is no lower than this.
  */
 export function findLastMappingIndexBefore(
-    mappings: Mapping[], marker: SegmentMarker, exclusive: boolean, lowerIndex = 0): number {
+    mappings: Mapping[], marker: SegmentMarker, exclusive: boolean, lowerIndex: number): number {
   let upperIndex = mappings.length - 1;
   const test = exclusive ? -1 : 0;
 

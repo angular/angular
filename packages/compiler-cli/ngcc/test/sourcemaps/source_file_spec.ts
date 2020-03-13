@@ -95,7 +95,7 @@ runInEachFileSystem(() => {
                marker => ({ generatedSegment: marker } as Mapping));
 
            const marker: SegmentMarker = {line: 0, column: 35};
-           const index = findLastMappingIndexBefore(mappings, marker, /* exclusive */ false);
+           const index = findLastMappingIndexBefore(mappings, marker, /* exclusive */ false, 0);
            expect(index).toEqual(2);
          });
 
@@ -110,7 +110,7 @@ runInEachFileSystem(() => {
                marker => ({ generatedSegment: marker } as Mapping));
 
            const marker: SegmentMarker = {line: 0, column: 35};
-           const index = findLastMappingIndexBefore(mappings, marker, /* exclusive */ false);
+           const index = findLastMappingIndexBefore(mappings, marker, /* exclusive */ false, 0);
            expect(index).toEqual(3);
          });
 
@@ -125,7 +125,7 @@ runInEachFileSystem(() => {
 
         const marker: SegmentMarker = {line: 0, column: 60};
 
-        const index = findLastMappingIndexBefore(mappings, marker, /* exclusive */ false);
+        const index = findLastMappingIndexBefore(mappings, marker, /* exclusive */ false, 0);
         expect(index).toEqual(4);
       });
 
@@ -140,7 +140,7 @@ runInEachFileSystem(() => {
 
         const marker: SegmentMarker = {line: 0, column: 5};
 
-        const index = findLastMappingIndexBefore(mappings, marker, /* exclusive */ false);
+        const index = findLastMappingIndexBefore(mappings, marker, /* exclusive */ false, 0);
         expect(index).toEqual(-1);
       });
 
@@ -155,7 +155,7 @@ runInEachFileSystem(() => {
 
              const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
                  marker => ({ generatedSegment: marker } as Mapping));
-             const index = findLastMappingIndexBefore(mappings, marker3, /* exclusive */ false);
+             const index = findLastMappingIndexBefore(mappings, marker3, /* exclusive */ false, 0);
              expect(index).toEqual(2);
            });
 
@@ -169,7 +169,7 @@ runInEachFileSystem(() => {
 
              const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
                  marker => ({ generatedSegment: marker } as Mapping));
-             const index = findLastMappingIndexBefore(mappings, marker3, /* exclusive */ false);
+             const index = findLastMappingIndexBefore(mappings, marker3, /* exclusive */ false, 0);
              expect(index).toEqual(3);
            });
       });
@@ -184,7 +184,7 @@ runInEachFileSystem(() => {
 
           const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
               marker => ({ generatedSegment: marker } as Mapping));
-          const index = findLastMappingIndexBefore(mappings, marker3, /* exclusive */ true);
+          const index = findLastMappingIndexBefore(mappings, marker3, /* exclusive */ true, 0);
           expect(index).toEqual(1);
         });
 
@@ -198,7 +198,7 @@ runInEachFileSystem(() => {
 
              const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
                  marker => ({ generatedSegment: marker } as Mapping));
-             const index = findLastMappingIndexBefore(mappings, marker3, /* exclusive */ false);
+             const index = findLastMappingIndexBefore(mappings, marker3, /* exclusive */ false, 0);
              expect(index).toEqual(3);
            });
       });
