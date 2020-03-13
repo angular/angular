@@ -10,7 +10,7 @@ import {ApplicationRef} from '../application_ref';
 import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEngine_InternalViewRef} from '../linker/view_ref';
-
+import {assertDefined} from '../util/assert';
 import {checkNoChangesInRootView, checkNoChangesInternal, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupFn} from './instructions/shared';
 import {CONTAINER_HEADER_OFFSET} from './interfaces/container';
 import {TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
@@ -359,11 +359,22 @@ function collectNativeNodes(
     } else if (tNodeType === TNodeType.Projection) {
       const componentView = lView[DECLARATION_COMPONENT_VIEW];
       const componentHost = componentView[T_HOST] as TElementNode;
-      const parentView = getLViewParent(componentView);
-      let firstProjectedNode: TNode|null =
-          (componentHost.projection as (TNode | null)[])[tNode.projection as number];
-      if (firstProjectedNode !== null && parentView !== null) {
-        collectNativeNodes(parentView[TVIEW], parentView, firstProjectedNode, result, true);
+      const slotIdx = tNode.projection as number;
+      ngDevMode &&
+          assertDefined(
+              componentHost.projection,
+              'Components with projection nodes (<ng-content>) must have projection slots defined.');
+
+      const nodesInSlot = componentHost.projection![slotIdx];
+      if (Array.isArray(nodesInSlot)) {
+        result.push(...nodesInSlot);
+      } else {
+        const parentView = getLViewParent(componentView)!;
+        ngDevMode &&
+            assertDefined(
+                parentView,
+                'Component views should always have a parent view (component\'s host view)');
+        collectNativeNodes(parentView[TVIEW], parentView, nodesInSlot, result, true);
       }
     }
     tNode = isProjection ? tNode.projectionNext : tNode.next;
