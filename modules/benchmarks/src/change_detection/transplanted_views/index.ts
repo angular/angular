@@ -7,10 +7,10 @@
  */
 
 import {enableProdMode} from '@angular/core';
-import {platformBrowser} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import {init} from './init';
-import {TransplantedViewsModuleNgFactory} from './transplanted_views.ngfactory';
+import {TransplantedViewsModule} from './transplanted_views';
 
 enableProdMode();
-platformBrowser().bootstrapModuleFactory(TransplantedViewsModuleNgFactory).then(init);
+platformBrowserDynamic().bootstrapModule(TransplantedViewsModule).then(init);

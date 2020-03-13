@@ -7,8 +7,10 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {ChangeDetectionStrategy, Component, Input, NgModule, TemplateRef, ɵdetectChanges} from '@angular/core';
-import {newArray, numViews} from '../util';
+import {ChangeDetectionStrategy, Component, Input, NgModule, TemplateRef} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+
+import {newArray} from '../util';
 
 @Component({
   selector: 'declaration-component',
@@ -45,21 +47,10 @@ export class InsertionComponent {
   trackByIndex(index: number, item: any) { return index; }
 }
 
-@NgModule({declarations: [DeclarationComponent, InsertionComponent], imports: [CommonModule]})
-export class TransplantedViewModule {
-}
-
-export function destroyDom(component: DeclarationComponent) {
-  component.templateRefreshCount = 0;
-  component.viewCount = 0;
-  ɵdetectChanges(component);
-}
-
-export function createDom(component: DeclarationComponent) {
-  component.viewCount = numViews;
-  ɵdetectChanges(component);
-}
-
-export function detectChanges(component: DeclarationComponent) {
-  ɵdetectChanges(component);
+@NgModule({
+  declarations: [DeclarationComponent, InsertionComponent],
+  bootstrap: [DeclarationComponent],
+  imports: [CommonModule, BrowserModule]
+})
+export class TransplantedViewsModule {
 }
