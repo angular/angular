@@ -484,15 +484,15 @@ runInEachFileSystem(() => {
 
     describe('computeStartOfLinePositions()', () => {
       it('should compute the cumulative length of each line in the given string', () => {
-        expect(computeStartOfLinePositions('')).toEqual([0, 1]);
-        expect(computeStartOfLinePositions('abc')).toEqual([0, 4]);
-        expect(computeStartOfLinePositions('\n')).toEqual([0, 1, 2]);
-        expect(computeStartOfLinePositions('\n\n')).toEqual([0, 1, 2, 3]);
-        expect(computeStartOfLinePositions('abc\n')).toEqual([0, 4, 5]);
-        expect(computeStartOfLinePositions('\nabc')).toEqual([0, 1, 5]);
-        expect(computeStartOfLinePositions('abc\ndefg')).toEqual([0, 4, 9]);
-        expect(computeStartOfLinePositions('abc\r\n')).toEqual([0, 4, 5]);
-        expect(computeStartOfLinePositions('abc\r\ndefg')).toEqual([0, 4, 9]);
+        expect(computeStartOfLinePositions('')).toEqual([0]);
+        expect(computeStartOfLinePositions('abc')).toEqual([0]);
+        expect(computeStartOfLinePositions('\n')).toEqual([0, 1]);
+        expect(computeStartOfLinePositions('\n\n')).toEqual([0, 1, 2]);
+        expect(computeStartOfLinePositions('abc\n')).toEqual([0, 4]);
+        expect(computeStartOfLinePositions('\nabc')).toEqual([0, 1]);
+        expect(computeStartOfLinePositions('abc\ndefg')).toEqual([0, 4]);
+        expect(computeStartOfLinePositions('abc\r\n')).toEqual([0, 4]);
+        expect(computeStartOfLinePositions('abc\r\ndefg')).toEqual([0, 4]);
       });
     });
   });

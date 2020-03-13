@@ -373,7 +373,7 @@ export function computeStartOfLinePositions(str: string) {
   const NEWLINE_MARKER_OFFSET = 1;
   const lineLengths = computeLineLengths(str);
   const startPositions = [0];  // First line starts at position 0
-  for (let i = 0; i < lineLengths.length; i++) {
+  for (let i = 0; i < lineLengths.length - 1; i++) {
     startPositions.push(startPositions[i] + lineLengths[i] + NEWLINE_MARKER_OFFSET);
   }
   return startPositions;

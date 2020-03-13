@@ -120,6 +120,7 @@ describe('SegmentMarker utils', () => {
       expect(offsetSegment(startOfLinePositions, marker, 4)).toEqual({line: 2, column: 7});
       expect(offsetSegment(startOfLinePositions, marker, 6)).toEqual({line: 3, column: 0});
       expect(offsetSegment(startOfLinePositions, marker, 8)).toEqual({line: 3, column: 2});
+      expect(offsetSegment(startOfLinePositions, marker, 20)).toEqual({line: 3, column: 14});
       expect(offsetSegment(startOfLinePositions, marker, -1)).toEqual({line: 2, column: 2});
       expect(offsetSegment(startOfLinePositions, marker, -2)).toEqual({line: 2, column: 1});
       expect(offsetSegment(startOfLinePositions, marker, -3)).toEqual({line: 2, column: 0});
