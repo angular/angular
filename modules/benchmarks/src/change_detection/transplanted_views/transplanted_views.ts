@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule} from '@angular/common';
 import {ChangeDetectionStrategy, Component, Input, NgModule, TemplateRef} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
@@ -50,7 +49,7 @@ export class InsertionComponent {
 @NgModule({
   declarations: [DeclarationComponent, InsertionComponent],
   bootstrap: [DeclarationComponent],
-  imports: [CommonModule, BrowserModule]
+  imports: [BrowserModule]
 })
 export class TransplantedViewsModule {
 }

@@ -17,6 +17,12 @@ export function init(moduleRef: NgModuleRef<TransplantedViewsModule>) {
   let declaration: DeclarationComponent;
   let appRef: ApplicationRef;
 
+  bindAction('#destroyDom', destroyDom);
+  bindAction('#createDom', createDom);
+  bindAction('#detectChanges', detectChanges);
+  bindAction('#detectChangesProfile', profile(detectChanges, noop, 'detectChanges'));
+
+  // helpers
   function destroyDom() {
     declaration.viewCount = 0;
     appRef.tick();
@@ -37,8 +43,4 @@ export function init(moduleRef: NgModuleRef<TransplantedViewsModule>) {
   appRef = injector.get(ApplicationRef);
 
   declaration = appRef.components[0].instance;
-  bindAction('#destroyDom', destroyDom);
-  bindAction('#createDom', createDom);
-  bindAction('#detectChanges', detectChanges);
-  bindAction('#detectChangesProfile', profile(detectChanges, noop, 'detectChanges'));
 }

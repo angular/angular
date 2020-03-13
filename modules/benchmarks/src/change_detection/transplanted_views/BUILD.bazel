@@ -5,14 +5,13 @@ load("//modules/benchmarks:e2e_test.bzl", "e2e_test")
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 
 ng_module(
-    name = "ng2",
+    name = "transplanted_views_lib",
     srcs = glob(["*.ts"]),
     generate_ve_shims = True,
     tsconfig = "//modules/benchmarks:tsconfig-build.json",
     deps = [
         "//modules/benchmarks/src:util_lib",
         "//modules/benchmarks/src/change_detection:util_lib",
-        "//packages/common",
         "//packages/core",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
@@ -23,7 +22,7 @@ ng_rollup_bundle(
     name = "bundle",
     entry_point = ":index_aot.ts",
     deps = [
-        ":ng2",
+        ":transplanted_views_lib",
         "@npm//rxjs",
     ],
 )
