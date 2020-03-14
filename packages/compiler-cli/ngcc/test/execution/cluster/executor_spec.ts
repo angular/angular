@@ -30,18 +30,21 @@ describe('ClusterExecutor', () => {
   let mockLockFile: MockLockFile;
   let locker: AsyncLocker;
   let executor: ClusterExecutor;
+  let createTaskCompletedCallback: jasmine.Spy;
 
   beforeEach(() => {
     masterRunSpy = spyOn(ClusterMaster.prototype, 'run')
                        .and.returnValue(Promise.resolve('CusterMaster#run()'));
     workerRunSpy = spyOn(ClusterWorker.prototype, 'run')
                        .and.returnValue(Promise.resolve('CusterWorker#run()'));
+    createTaskCompletedCallback = jasmine.createSpy('createTaskCompletedCallback');
 
     mockLogger = new MockLogger();
     lockFileLog = [];
     mockLockFile = new MockLockFile(new MockFileSystemNative(), lockFileLog);
     locker = new AsyncLocker(mockLockFile, mockLogger, 200, 2);
-    executor = new ClusterExecutor(42, mockLogger, null as unknown as PackageJsonUpdater, locker);
+    executor = new ClusterExecutor(
+        42, mockLogger, null as unknown as PackageJsonUpdater, locker, createTaskCompletedCallback);
   });
 
   describe('execute()', () => {
@@ -98,8 +101,9 @@ describe('ClusterExecutor', () => {
           throw new Error('LockFile.write() error');
         });
 
-        executor =
-            new ClusterExecutor(42, mockLogger, null as unknown as PackageJsonUpdater, locker);
+        executor = new ClusterExecutor(
+            42, mockLogger, null as unknown as PackageJsonUpdater, locker,
+            createTaskCompletedCallback);
         let error = '';
         try {
           await executor.execute(anyFn, anyFn);
@@ -117,8 +121,9 @@ describe('ClusterExecutor', () => {
           throw new Error('LockFile.remove() error');
         });
 
-        executor =
-            new ClusterExecutor(42, mockLogger, null as unknown as PackageJsonUpdater, locker);
+        executor = new ClusterExecutor(
+            42, mockLogger, null as unknown as PackageJsonUpdater, locker,
+            createTaskCompletedCallback);
         let error = '';
         try {
           await executor.execute(anyFn, anyFn);

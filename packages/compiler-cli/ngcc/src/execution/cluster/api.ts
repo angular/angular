@@ -9,7 +9,7 @@
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
 import {JsonObject} from '../../packages/entry_point';
 import {PackageJsonChange} from '../../writing/package_json_updater';
-import {Task, TaskProcessingOutcome} from '../api';
+import {Task, TaskProcessingOutcome} from '../tasks/api';
 
 
 /** A message reporting that an unrecoverable error occurred. */

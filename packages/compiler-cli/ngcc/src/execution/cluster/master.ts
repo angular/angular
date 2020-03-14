@@ -13,8 +13,9 @@ import * as cluster from 'cluster';
 import {resolve} from '../../../../src/ngtsc/file_system';
 import {Logger} from '../../logging/logger';
 import {PackageJsonUpdater} from '../../writing/package_json_updater';
-import {AnalyzeEntryPointsFn, Task, TaskQueue} from '../api';
-import {onTaskCompleted, stringifyTask} from '../utils';
+import {AnalyzeEntryPointsFn} from '../api';
+import {CreateTaskCompletedCallback, Task, TaskCompletedCallback, TaskQueue} from '../tasks/api';
+import {stringifyTask} from '../tasks/utils';
 
 import {MessageFromWorker, TaskCompletedMessage, UpdatePackageJsonMessage} from './api';
 import {Deferred, sendMessageToWorker} from './utils';
@@ -29,15 +30,18 @@ export class ClusterMaster {
   private processingStartTime: number = -1;
   private taskAssignments = new Map<number, Task|null>();
   private taskQueue: TaskQueue;
+  private onTaskCompleted: TaskCompletedCallback;
 
   constructor(
       private workerCount: number, private logger: Logger,
-      private pkgJsonUpdater: PackageJsonUpdater, analyzeEntryPoints: AnalyzeEntryPointsFn) {
+      private pkgJsonUpdater: PackageJsonUpdater, analyzeEntryPoints: AnalyzeEntryPointsFn,
+      createTaskCompletedCallback: CreateTaskCompletedCallback) {
     if (!cluster.isMaster) {
       throw new Error('Tried to instantiate `ClusterMaster` on a worker process.');
     }
 
     this.taskQueue = analyzeEntryPoints();
+    this.onTaskCompleted = createTaskCompletedCallback(this.taskQueue);
   }
 
   run(): Promise<void> {
@@ -206,7 +210,7 @@ export class ClusterMaster {
           JSON.stringify(msg));
     }
 
-    onTaskCompleted(this.pkgJsonUpdater, task, msg.outcome);
+    this.onTaskCompleted(task, msg.outcome, msg.message);
 
     this.taskQueue.markTaskCompleted(task);
     this.taskAssignments.set(workerId, null);

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PartiallyOrderedTasks, Task, TaskQueue} from '../../../src/execution/api';
-import {SerialTaskQueue} from '../../../src/execution/task_selection/serial_task_queue';
+import {PartiallyOrderedTasks, Task, TaskQueue} from '../../../../src/execution/tasks/api';
+import {SerialTaskQueue} from '../../../../src/execution/tasks/queues/serial_task_queue';
 
 
 describe('SerialTaskQueue', () => {

@@ -11,8 +11,8 @@
 import * as cluster from 'cluster';
 import {EventEmitter} from 'events';
 
-import {Task, TaskCompletedCallback, TaskProcessingOutcome} from '../../../src/execution/api';
 import {ClusterWorker} from '../../../src/execution/cluster/worker';
+import {Task, TaskCompletedCallback, TaskProcessingOutcome} from '../../../src/execution/tasks/api';
 import {MockLogger} from '../../helpers/mock_logger';
 import {mockProperty} from '../../helpers/spy_utils';
 

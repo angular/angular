@@ -9,21 +9,21 @@
 import {AsyncLocker} from '../locking/async_locker';
 import {SyncLocker} from '../locking/sync_locker';
 import {Logger} from '../logging/logger';
-import {PackageJsonUpdater} from '../writing/package_json_updater';
 
 import {AnalyzeEntryPointsFn, CreateCompileFn, Executor} from './api';
-import {onTaskCompleted} from './utils';
+import {CreateTaskCompletedCallback} from './tasks/api';
 
 export abstract class SingleProcessorExecutorBase {
-  constructor(private logger: Logger, private pkgJsonUpdater: PackageJsonUpdater) {}
+  constructor(
+      private logger: Logger, private createTaskCompletedCallback: CreateTaskCompletedCallback) {}
 
   doExecute(analyzeEntryPoints: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn):
       void|Promise<void> {
     this.logger.debug(`Running ngcc on ${this.constructor.name}.`);
 
     const taskQueue = analyzeEntryPoints();
-    const compile =
-        createCompileFn((task, outcome) => onTaskCompleted(this.pkgJsonUpdater, task, outcome));
+    const onTaskCompleted = this.createTaskCompletedCallback(taskQueue);
+    const compile = createCompileFn(onTaskCompleted);
 
     // Process all tasks.
     this.logger.debug('Processing tasks...');
@@ -44,8 +44,10 @@ export abstract class SingleProcessorExecutorBase {
  * An `Executor` that processes all tasks serially and completes synchronously.
  */
 export class SingleProcessExecutorSync extends SingleProcessorExecutorBase implements Executor {
-  constructor(logger: Logger, pkgJsonUpdater: PackageJsonUpdater, private lockFile: SyncLocker) {
-    super(logger, pkgJsonUpdater);
+  constructor(
+      logger: Logger, private lockFile: SyncLocker,
+      createTaskCompletedCallback: CreateTaskCompletedCallback) {
+    super(logger, createTaskCompletedCallback);
   }
   execute(analyzeEntryPoints: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn): void {
     this.lockFile.lock(() => this.doExecute(analyzeEntryPoints, createCompileFn));
@@ -56,8 +58,10 @@ export class SingleProcessExecutorSync extends SingleProcessorExecutorBase imple
  * An `Executor` that processes all tasks serially, but still completes asynchronously.
  */
 export class SingleProcessExecutorAsync extends SingleProcessorExecutorBase implements Executor {
-  constructor(logger: Logger, pkgJsonUpdater: PackageJsonUpdater, private lockFile: AsyncLocker) {
-    super(logger, pkgJsonUpdater);
+  constructor(
+      logger: Logger, private lockFile: AsyncLocker,
+      createTaskCompletedCallback: CreateTaskCompletedCallback) {
+    super(logger, createTaskCompletedCallback);
   }
   async execute(analyzeEntryPoints: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn):
       Promise<void> {

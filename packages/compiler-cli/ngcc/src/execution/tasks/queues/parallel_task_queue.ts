@@ -8,7 +8,7 @@
 
 import {DepGraph} from 'dependency-graph';
 
-import {EntryPoint} from '../../packages/entry_point';
+import {EntryPoint} from '../../../packages/entry_point';
 import {PartiallyOrderedTasks, Task} from '../api';
 import {stringifyTask} from '../utils';
 

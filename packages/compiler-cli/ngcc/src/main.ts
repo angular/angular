@@ -24,12 +24,14 @@ import {UmdDependencyHost} from './dependencies/umd_dependency_host';
 import {DirectoryWalkerEntryPointFinder} from './entry_point_finder/directory_walker_entry_point_finder';
 import {EntryPointFinder} from './entry_point_finder/interface';
 import {TargetedEntryPointFinder} from './entry_point_finder/targeted_entry_point_finder';
-import {AnalyzeEntryPointsFn, CreateCompileFn, Executor, PartiallyOrderedTasks, Task, TaskProcessingOutcome, TaskQueue} from './execution/api';
+import {AnalyzeEntryPointsFn, CreateCompileFn, Executor} from './execution/api';
 import {ClusterExecutor} from './execution/cluster/executor';
 import {ClusterPackageJsonUpdater} from './execution/cluster/package_json_updater';
 import {SingleProcessExecutorAsync, SingleProcessExecutorSync} from './execution/single_process_executor';
-import {ParallelTaskQueue} from './execution/task_selection/parallel_task_queue';
-import {SerialTaskQueue} from './execution/task_selection/serial_task_queue';
+import {CreateTaskCompletedCallback, PartiallyOrderedTasks, Task, TaskProcessingOutcome, TaskQueue} from './execution/tasks/api';
+import {composeTaskCompletedCallbacks, createMarkAsProcessedHandler, createThrowErrorHandler} from './execution/tasks/completion';
+import {ParallelTaskQueue} from './execution/tasks/queues/parallel_task_queue';
+import {SerialTaskQueue} from './execution/tasks/queues/serial_task_queue';
 import {AsyncLocker} from './locking/async_locker';
 import {LockFileWithChildProcess} from './locking/lock_file_with_child_process';
 import {SyncLocker} from './locking/sync_locker';
@@ -294,8 +296,7 @@ export function mainNgcc({basePath, targetEntryPointPath,
       } else {
         const errors = replaceTsWithNgInErrors(
             ts.formatDiagnosticsWithColorAndContext(result.diagnostics, bundle.src.host));
-        throw new Error(
-            `Failed to compile entry-point ${entryPoint.name} (${formatProperty} as ${format}) due to compilation errors:\n${errors}`);
+        onTaskCompleted(task, TaskProcessingOutcome.Failed, `compilation errors:\n${errors}`);
       }
 
       logger.debug(`  Successfully compiled ${entryPoint.name} : ${formatProperty}`);
@@ -305,7 +306,9 @@ export function mainNgcc({basePath, targetEntryPointPath,
   };
 
   // The executor for actually planning and getting the work done.
-  const executor = getExecutor(async, inParallel, logger, pkgJsonUpdater, fileSystem);
+  const createTaskCompletedCallback = getCreateTaskCompletedCallback(pkgJsonUpdater, fileSystem);
+  const executor = getExecutor(
+      async, inParallel, logger, pkgJsonUpdater, fileSystem, createTaskCompletedCallback);
 
   return executor.execute(analyzeEntryPoints, createCompileFn);
 }
@@ -349,9 +352,17 @@ function getTaskQueue(
   return inParallel ? new ParallelTaskQueue(tasks, graph) : new SerialTaskQueue(tasks);
 }
 
+function getCreateTaskCompletedCallback(
+    pkgJsonUpdater: PackageJsonUpdater, fileSystem: FileSystem): CreateTaskCompletedCallback {
+  return _taskQueue => composeTaskCompletedCallbacks({
+           [TaskProcessingOutcome.Processed]: createMarkAsProcessedHandler(pkgJsonUpdater),
+           [TaskProcessingOutcome.Failed]: createThrowErrorHandler(fileSystem),
+         });
+}
+
 function getExecutor(
     async: boolean, inParallel: boolean, logger: Logger, pkgJsonUpdater: PackageJsonUpdater,
-    fileSystem: FileSystem): Executor {
+    fileSystem: FileSystem, createTaskCompletedCallback: CreateTaskCompletedCallback): Executor {
   const lockFile = new LockFileWithChildProcess(fileSystem, logger);
   if (async) {
     // Execute asynchronously (either serially or in parallel)
@@ -359,14 +370,16 @@ function getExecutor(
     if (inParallel) {
       // Execute in parallel. Use up to 8 CPU cores for workers, always reserving one for master.
       const workerCount = Math.min(8, os.cpus().length - 1);
-      return new ClusterExecutor(workerCount, logger, pkgJsonUpdater, locker);
+      return new ClusterExecutor(
+          workerCount, logger, pkgJsonUpdater, locker, createTaskCompletedCallback);
     } else {
       // Execute serially, on a single thread (async).
-      return new SingleProcessExecutorAsync(logger, pkgJsonUpdater, locker);
+      return new SingleProcessExecutorAsync(logger, locker, createTaskCompletedCallback);
     }
   } else {
     // Execute serially, on a single thread (sync).
-    return new SingleProcessExecutorSync(logger, pkgJsonUpdater, new SyncLocker(lockFile));
+    return new SingleProcessExecutorSync(
+        logger, new SyncLocker(lockFile), createTaskCompletedCallback);
   }
 }
 
