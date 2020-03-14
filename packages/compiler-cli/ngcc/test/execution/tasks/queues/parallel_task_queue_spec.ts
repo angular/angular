@@ -6,26 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DepGraph} from 'dependency-graph';
-
-import {PartiallyOrderedTasks, Task, TaskQueue} from '../../../../src/execution/tasks/api';
+import {PartiallyOrderedTasks, TaskQueue} from '../../../../src/execution/tasks/api';
 import {ParallelTaskQueue} from '../../../../src/execution/tasks/queues/parallel_task_queue';
-import {EntryPoint} from '../../../../src/packages/entry_point';
-
+import {computeTaskDependencies} from '../../../../src/execution/tasks/utils';
+import {createTasksAndGraph} from '../../helpers';
 
 describe('ParallelTaskQueue', () => {
-  // Helpers
   /**
    * Create a `TaskQueue` by generating mock tasks (optionally with interdependencies).
    *
-   * NOTE 1: The first task for each entry-point generates typings (which is similar to what happens
-   *         in the actual code).
-   * NOTE 2: The `ParallelTaskQueue` implementation relies on the fact that tasks are sorted in such
-   *         a way that a task can only be blocked by earlier tasks (i.e. dependencies always come
-   *         before dependants in the list of tasks).
-   *         To preserve this attribute, you need to ensure that entry-points will only depend on
-   *         entry-points with a lower index. Take this into account when defining `entryPointDeps`.
-   *         (Failing to do so, will result in an error.)
+   * See `createTasksAndGraph()` for important usage notes.
    *
    * @param entryPointCount The number of different entry-points to mock.
    * @param tasksPerEntryPointCount The number of tasks to generate per entry-point (i.e. simulating
@@ -36,51 +26,18 @@ describe('ParallelTaskQueue', () => {
    *                       For example, if entry-point #2 depends on entry-points #0 and #1,
    *                       `entryPointDeps` would be `{2: [0, 1]}`.
    * @return An object with the following properties:
-   *         - `graph`: The dependency graph for the generated mock entry-point.
    *         - `tasks`: The (partially ordered) list of generated mock tasks.
    *         - `queue`: The created `TaskQueue`.
    */
-  const createQueue = (entryPointCount: number, tasksPerEntryPointCount = 1, entryPointDeps: {
-    [entryPointIndex: string]: number[]
-  } = {}): {tasks: PartiallyOrderedTasks, graph: DepGraph<EntryPoint>, queue: TaskQueue} => {
-    const entryPoints: EntryPoint[] = [];
-    const tasks: PartiallyOrderedTasks = [] as any;
-    const graph = new DepGraph<EntryPoint>();
-
-    // Create the entry-points and the associated tasks.
-    for (let epIdx = 0; epIdx < entryPointCount; epIdx++) {
-      const entryPoint = {
-        name: `entry-point-${epIdx}`,
-        path: `/path/to/entry/point/${epIdx}`,
-      } as EntryPoint;
-
-      entryPoints.push(entryPoint);
-      graph.addNode(entryPoint.path);
-
-      for (let tIdx = 0; tIdx < tasksPerEntryPointCount; tIdx++) {
-        tasks.push({ entryPoint, formatProperty: `prop-${tIdx}`, processDts: tIdx === 0, } as Task);
-      }
-    }
-
-    // Define entry-point interdependencies.
-    for (const epIdx of Object.keys(entryPointDeps).map(strIdx => +strIdx)) {
-      const fromPath = entryPoints[epIdx].path;
-      for (const depIdx of entryPointDeps[epIdx]) {
-        // Ensure that each entry-point only depends on entry-points at a lower index.
-        if (depIdx >= epIdx) {
-          throw Error(
-              'Invalid `entryPointDeps`: Entry-points can only depend on entry-points at a lower ' +
-              `index, but entry-point #${epIdx} depends on #${depIdx} in: ` +
-              JSON.stringify(entryPointDeps, null, 2));
-        }
-
-        const toPath = entryPoints[depIdx].path;
-        graph.addDependency(fromPath, toPath);
-      }
-    }
-
-    return {tasks, graph, queue: new ParallelTaskQueue(tasks.slice(), graph)};
-  };
+  function createQueue(
+      entryPointCount: number, tasksPerEntryPointCount = 1,
+      entryPointDeps: {[entryPointIndex: string]: number[]} = {}):
+      {tasks: PartiallyOrderedTasks, queue: TaskQueue} {
+    const {tasks, graph} =
+        createTasksAndGraph(entryPointCount, tasksPerEntryPointCount, entryPointDeps);
+    const dependencies = computeTaskDependencies(tasks, graph);
+    return {tasks, queue: new ParallelTaskQueue(tasks.slice(), dependencies)};
+  }
 
   /**
    * Simulate processing the next task:
@@ -149,27 +106,9 @@ describe('ParallelTaskQueue', () => {
     });
   });
 
-  describe('constructor()', () => {
-    it('should throw, if there are multiple tasks that generate typings for a single entry-point',
-       () => {
-         const {tasks, graph} = createQueue(2, 2, {
-           0: [],   // Entry-point #0 does not depend on anything.
-           1: [0],  // Entry-point #1 depends on #0.
-         });
-         tasks[1].processDts = true;  // Tweak task #1 to also generate typings.
-
-         expect(() => new ParallelTaskQueue(tasks, graph))
-             .toThrowError(
-                 'Invariant violated: Multiple tasks are assigned generating typings for ' +
-                 '\'/path/to/entry/point/0\':\n' +
-                 '  - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: true}\n' +
-                 '  - {entryPoint: entry-point-0, formatProperty: prop-1, processDts: true}');
-       });
-  });
-
   describe('getNextTask()', () => {
     it('should return the tasks in order (when they are not blocked by other tasks)', () => {
-      const {tasks, queue} = createQueue(3, 2, {});  // 2 tasks per entry-point; no dependencies.
+      const {tasks, queue} = createQueue(6, 1, {});  // 1 task per entry-point; no dependencies.
 
       expect(queue.getNextTask()).toBe(tasks[0]);
       expect(queue.getNextTask()).toBe(tasks[1]);
@@ -201,26 +140,33 @@ describe('ParallelTaskQueue', () => {
 
       // Verify that the first two tasks are for the first entry-point.
       expect(tasks[0].entryPoint.name).toBe('entry-point-0');
+      expect(tasks[0].processDts).toBe(true);
       expect(tasks[1].entryPoint.name).toBe('entry-point-0');
+      expect(tasks[1].processDts).toBe(false);
 
       // Verify that the last two tasks are for the second entry-point.
       expect(tasks[2].entryPoint.name).toBe('entry-point-1');
       expect(tasks[3].entryPoint.name).toBe('entry-point-1');
 
-      // Return the first two tasks first, since they are not blocked.
+      // Return the first task, since it is not blocked.
       expect(queue.getNextTask()).toBe(tasks[0]);
-      expect(queue.getNextTask()).toBe(tasks[1]);
 
-      // No task available, until task #0 (which geenrates typings for entry-point #0) is completed.
-      expect(tasks[0].processDts).toBe(true);
-      expect(tasks[1].processDts).toBe(false);
-
-      queue.markTaskCompleted(tasks[1]);
+      // But the rest are blocked on the first task
       expect(queue.getNextTask()).toBe(null);
 
-      // Finally, unblock tasks for entry-point #1, once task #0 is completed.
+      // Unblock typings task for entry-point #1 and non-typings task for entry-point #0
       queue.markTaskCompleted(tasks[0]);
       expect(queue.getNextTask()).toBe(tasks[2]);
+      expect(queue.getNextTask()).toBe(tasks[1]);
+
+      // The non-typings task for entry-point #1 is blocked on the typings task
+      expect(queue.getNextTask()).toBe(null);
+      queue.markTaskCompleted(tasks[1]);
+      // Still blocked because we only completed a non-blocking task
+      expect(queue.getNextTask()).toBe(null);
+
+      // Finally, unblock non-typings task for entry-point #1
+      queue.markTaskCompleted(tasks[2]);
       expect(queue.getNextTask()).toBe(tasks[3]);
     });
 
@@ -455,34 +401,56 @@ describe('ParallelTaskQueue', () => {
 
       expect(queue.toString())
           .toContain(
-              '  Blocked tasks (4): \n' +
-              // Tasks #1.0 and #1.1 are blocked by #0.0.
+              '  Blocked tasks (6): \n' +
+              // #0.1 blocked by its typings #0.0
+              '    - {entryPoint: entry-point-0, formatProperty: prop-1, processDts: false} (1): \n' +
+              '        - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: true}\n' +
+              // #1.0 blocked by #0.0
               '    - {entryPoint: entry-point-1, formatProperty: prop-0, processDts: true} (1): \n' +
               '        - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: true}\n' +
-              '    - {entryPoint: entry-point-1, formatProperty: prop-1, processDts: false} (1): \n' +
+              // #1.1 blocked by #0.0 and its typings #1.0
+              '    - {entryPoint: entry-point-1, formatProperty: prop-1, processDts: false} (2): \n' +
               '        - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: true}\n' +
-              // Tasks #3.0 and #3.1 are blocked by #0.0 (transitively), #1.0 and #2.0.
+              '        - {entryPoint: entry-point-1, formatProperty: prop-0, processDts: true}\n' +
+              // #3.0 blocked by #0.0 (transitively), #1.0 and #2.0.
               '    - {entryPoint: entry-point-3, formatProperty: prop-0, processDts: true} (3): \n' +
               '        - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: true}\n' +
               '        - {entryPoint: entry-point-1, formatProperty: prop-0, processDts: true}\n' +
               '        - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: true}\n' +
-              '    - {entryPoint: entry-point-3, formatProperty: prop-1, processDts: false} (3): \n' +
+              // #3.1 blocked by #0.0 (transitively), #1.0 and #2.0, and its typings #3.0
+              '    - {entryPoint: entry-point-3, formatProperty: prop-1, processDts: false} (4): \n' +
               '        - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: true}\n' +
               '        - {entryPoint: entry-point-1, formatProperty: prop-0, processDts: true}\n' +
+              '        - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: true}\n' +
+              '        - {entryPoint: entry-point-3, formatProperty: prop-0, processDts: true}\n' +
+              // #2.1 blocked by its typings #2.0
+              '    - {entryPoint: entry-point-2, formatProperty: prop-1, processDts: false} (1): \n' +
               '        - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: true}');
 
       expect(processNextTask(queue)).toBe(tasks[0]);  // Process #0.0.
       expect(processNextTask(queue)).toBe(tasks[2]);  // Process #1.0.
       expect(queue.toString())
           .toContain(
-              '  Blocked tasks (2): \n' +
-              // Tasks #3.0 and #3.1 are blocked by #2.0.
+              '  Blocked tasks (3): \n' +
+              // #3.0 blocked by #2.0.
               '    - {entryPoint: entry-point-3, formatProperty: prop-0, processDts: true} (1): \n' +
               '        - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: true}\n' +
-              '    - {entryPoint: entry-point-3, formatProperty: prop-1, processDts: false} (1): \n' +
+              // #3.1 blocked by #2.0 and its typings #3.0
+              '    - {entryPoint: entry-point-3, formatProperty: prop-1, processDts: false} (2): \n' +
+              '        - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: true}\n' +
+              '        - {entryPoint: entry-point-3, formatProperty: prop-0, processDts: true}\n' +
+              // #2.1 blocked by its typings #2.0
+              '    - {entryPoint: entry-point-2, formatProperty: prop-1, processDts: false} (1): \n' +
               '        - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: true}');
 
       expect(processNextTask(queue)).toBe(tasks[4]);  // Process #2.0.
+      expect(queue.toString())
+          .toContain(
+              '  Blocked tasks (1): \n' +
+              // #3.1 blocked by its typings #3.0
+              '    - {entryPoint: entry-point-3, formatProperty: prop-1, processDts: false} (1): \n' +
+              '        - {entryPoint: entry-point-3, formatProperty: prop-0, processDts: true}');
+      expect(processNextTask(queue)).toBe(tasks[6]);  // Process #3.0.
       expect(queue.toString()).toContain('  Blocked tasks (0): ');
     });
 

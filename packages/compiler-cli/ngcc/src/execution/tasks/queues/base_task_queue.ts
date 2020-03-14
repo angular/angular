@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PartiallyOrderedTasks, Task, TaskQueue} from '../api';
+import {PartiallyOrderedTasks, Task, TaskDependencies, TaskQueue} from '../api';
 import {stringifyTask} from '../utils';
 
 
@@ -19,7 +19,7 @@ export abstract class BaseTaskQueue implements TaskQueue {
   }
   protected inProgressTasks = new Set<Task>();
 
-  constructor(protected tasks: PartiallyOrderedTasks) {}
+  constructor(protected tasks: PartiallyOrderedTasks, protected dependencies: TaskDependencies) {}
 
   abstract getNextTask(): Task|null;
 
