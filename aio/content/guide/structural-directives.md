@@ -69,7 +69,7 @@ Angular desugars this notation into a marked-up `<ng-template>` that surrounds t
 host element and its descendents.
 Each structural directive does something different with that template.
 -->
-아래 부분에서 좀 더 자세히 설명하겠지만, [별표(`*`)는 구조 디렉티브를 사용하기 편하게 만드는](guide/structural-directives#asterisk) 문법 테크닉이며, 이런 문법은 [템플릿 표현식](guide/template-syntax#템플릿-표현식)이라기 보다는 [_세부 문법(microsyntax)_](guide/structural-directives#microsyntax)이라고 하는 것이 더 적합합니다.
+아래 부분에서 좀 더 자세히 설명하겠지만, [별표(`*`)는 구조 디렉티브를 사용하기 편하게 만드는](guide/structural-directives#asterisk) 문법 테크닉이며, 이런 문법은 [템플릿 표현식](guide/template-syntax#template-expressions)이라기 보다는 [_세부 문법(microsyntax)_](guide/structural-directives#microsyntax)이라고 하는 것이 더 적합합니다.
 Angular가 애플리케이션을 빌드하면 이 문법 테크닉은 호스트 엘리먼트와 자식 엘리먼트 사이에 `<ng-template>` 계층의 마크업을 구성하면서 사라집니다.
 이 때 구조 디렉티브를 템플릿에서 어떻게 사용했느냐에 따라 다른 결과물이 될 수도 있습니다.
 

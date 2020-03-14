@@ -25,14 +25,14 @@ to respond to any [DOM event](https://developer.mozilla.org/en-US/docs/Web/Event
 Many DOM events are triggered by user input. Binding to these events provides a way to
 get input from the user.
 -->
-[DOM에서 발생하는 이벤트](https://developer.mozilla.org/en-US/docs/Web/Events)는 [Angular 이벤트 바인딩](guide/template-syntax#이벤트-바인딩) 문법을 사용해서 반응할 수 있습니다.
+[DOM에서 발생하는 이벤트](https://developer.mozilla.org/en-US/docs/Web/Events)는 [Angular 이벤트 바인딩](guide/template-syntax#event-binding) 문법을 사용해서 반응할 수 있습니다.
 DOM에서 일어나는 이벤트는 대부분 사용자의 행동에 의해 발생합니다. 그래서 이 이벤트를 확인하면 사용자가 어떤 동작을 하고 있는지 알 수 있습니다.
 
 <!--
 To bind to a DOM event, surround the DOM event name in parentheses and assign a quoted
 [template statement](guide/template-syntax#template-statements) to it.
 -->
-DOM 이벤트를 바인딩 하려면 이벤트 이름을 괄호(`(`, `)`)로 감싸고 [템플릿 실행문](guide/template-syntax#템플릿-실행문)을 연결하면 됩니다.
+DOM 이벤트를 바인딩 하려면 이벤트 이름을 괄호(`(`, `)`)로 감싸고 [템플릿 실행문](guide/template-syntax#template-statements)을 연결하면 됩니다.
 
 <!--
 The following example shows an event binding that implements a click handler:

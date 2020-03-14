@@ -17,7 +17,7 @@ export class ItemDetailComponent {
   @Input() prefix = '';
 
   // #docregion deleteRequest
-  // This component makes a request but it can't actually delete a hero.
+  // 이 컴포넌트는 직접 히어로를 삭제하지 않고 히어로 삭제 요청을 보내기만 합니다.
   @Output() deleteRequest = new EventEmitter<Item>();
 
   delete() {

@@ -243,7 +243,7 @@ When the user clicks in the `<li>`, Angular executes the `onSelect(hero)` expres
 In the next section, define an `onSelect()` method in `HeroesComponent` to
 display the hero that was defined in the `*ngFor` expression.
 -->
-위 코드는 Angular의 [이벤트 바인딩](guide/template-syntax#이벤트-바인딩) 문법입니다.
+위 코드는 Angular의 [이벤트 바인딩](guide/template-syntax#event-binding) 문법입니다.
 
 이렇게 이벤트를 바인딩하면 Angular가 `<li>` 엘리먼트에서 발생하는 `click` 이벤트를 감지할 수 있습니다.
 그래서 사용자가 `<li>` 엘리먼트를 클릭하면 Angular는 `onSelect(hero)` 표현식을 실행합니다.

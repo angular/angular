@@ -133,7 +133,7 @@ The parameter value can be any valid template expression,
 such as a string literal or a component property.
 In other words, you can control the format through a binding the same way you control the birthday value through a binding.
 -->
-파이프 인자는 [템플릿 표현식](guide/template-syntax#템플릿-표현식) 에 적합하다면 어떠한 형태로든 사용할 수 있습니다.
+파이프 인자는 [템플릿 표현식](guide/template-syntax#template-expressions) 에 적합하다면 어떠한 형태로든 사용할 수 있습니다.
 그래서 문자열은 물론이고 컴포넌트 프로퍼티도 사용할 수 있는데, 이 방법을 활용하면 파이프의 동작을 컴포넌트 클래스에서 지정할 수도 있습니다.
 
 <!--

@@ -1555,7 +1555,7 @@ Replace the list's `ng-repeat` with an `*ngFor` as
 Replace the image tag's `ng-src` with a binding to the native `src` property.
 -->
 Replace the list's `ng-repeat` with an `*ngFor` as
-[described in the Template Syntax page](guide/template-syntax#디렉티브).
+[described in the Template Syntax page](guide/template-syntax#directives).
 Replace the image tag's `ng-src` with a binding to the native `src` property.
 
 <code-example path="upgrade-phonecat-2-hybrid/app/phone-list/phone-list.template.html" region="list" header="app/phone-list/phone-list.template.html (phones)"></code-example>
@@ -1632,7 +1632,7 @@ There are several notable changes here:
   a property expression, as opposed to a literal string.
 -->
 * You're using the property binding syntax around `ng-class`. Though Angular
-  does have [a very similar `ngClass`](guide/template-syntax#디렉티브)
+  does have [a very similar `ngClass`](guide/template-syntax#directives)
   as AngularJS does, its value is not magically evaluated as an expression.
   In Angular, you always specify  in the template when an attribute's value is
   a property expression, as opposed to a literal string.

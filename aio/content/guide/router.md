@@ -321,7 +321,7 @@ The `RouterLinkActive` directive toggles css classes for active `RouterLink` bin
 <!--
 On each anchor tag, you see a [property binding](guide/template-syntax#property-binding) to the `RouterLinkActive` directive that look like `routerLinkActive="..."`.
 -->
-각 앵커 태그에는 `routerLinkActive="..."`와 같이 [프로퍼티 바인딩](guide/template-syntax#프로퍼티-바인딩)된 `RouterLinkActive` 디렉티브가 존재합니다.
+각 앵커 태그에는 `routerLinkActive="..."`와 같이 [프로퍼티 바인딩](guide/template-syntax#property-binding)된 `RouterLinkActive` 디렉티브가 존재합니다.
 
 <!--
 The template expression to the right of the equals (=) contains a space-delimited string of CSS classes

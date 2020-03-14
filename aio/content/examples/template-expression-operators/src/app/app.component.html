@@ -7,12 +7,12 @@
 <p>Title through uppercase pipe: {{title | uppercase}}</p>
 <!-- #enddocregion uppercase-pipe-->
 <!-- #docregion pipe-chain-->
-<!-- convert title to uppercase, then to lowercase -->
+<!-- title 을 대문자로 변경한 후에 소문자로 변경합니다. -->
 <p>Title through a pipe chain: {{title | uppercase | lowercase}}</p>
 <!-- #enddocregion pipe-chain-->
 
 <!-- #docregion date-pipe -->
-<!-- pipe with configuration argument => "February 25, 1980" -->
+<!-- 파이프에 인자 사용하기 => "February 25, 1980" -->
 <p>Manufacture date with date format pipe: {{item.manufactureDate | date:'longDate'}}</p>
 <!-- #enddocregion date-pipe -->
 <p>Manufacture date with uppercase pipe: {{(item.manufactureDate | date:'longDate') | uppercase}}</p>
@@ -62,7 +62,7 @@
 
 <div>
   <h3>Using safe navigation operator (<code>?</code>)</h3>
-  <!-- No item, no problem! -->
+  <!-- item 값이 없어도 에러가 발생하지 않습니다. -->
   <p>The null item's name is: {{nullItem?.name}}</p>
 </div>
 
@@ -72,7 +72,7 @@
 <h2>Non-null assertion operator (<code>!</code>)</h2>
 <div>
   <!-- #docregion non-null -->
-  <!--No color, no error -->
+  <!-- color 값이 없어도 에러가 발생하지 않습니다. -->
   <p *ngIf="item">The item's color is: {{item!.color}}</p>
   <!-- #enddocregion non-null -->
 

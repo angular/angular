@@ -203,7 +203,7 @@ Bind the `HeroesComponent.selectedHero` to the element's `hero` property like th
 <!--
 `[hero]="selectedHero"` is an Angular [property binding](guide/template-syntax#property-binding).
 -->
-`[hero]="selectedHero"`는 Angular가 제공하는 [프로퍼티 바인딩](guide/template-syntax#프로퍼티-바인딩) 문법입니다.
+`[hero]="selectedHero"`는 Angular가 제공하는 [프로퍼티 바인딩](guide/template-syntax#property-binding) 문법입니다.
 
 <!--
 It's a _one way_ data binding from
@@ -308,7 +308,7 @@ by the external `HeroesComponent`.
 -->
 * 기존 컴포넌트의 일부를 분리해서 `HeroDetailComponent`를 만들었습니다. 이 컴포넌트는 다른 곳에 재사용할 수 있습니다.
 
-* 부모 컴포넌트 `HeroesComponent`에서 자식 컴포넌트 `HeroDetailComponent`로 데이터를 전달하기 위해 [프로퍼티 바인딩](guide/template-syntax#프로퍼티-바인딩)을 사용했습니다.
+* 부모 컴포넌트 `HeroesComponent`에서 자식 컴포넌트 `HeroDetailComponent`로 데이터를 전달하기 위해 [프로퍼티 바인딩](guide/template-syntax#property-binding)을 사용했습니다.
 
 * `HeroDetailComponent`의 `hero` 프로퍼티 값을 컴포넌트 외부인 `HeroesComponent`에서 가져오기 위해 [`@Input` 데코레이터](guide/template-syntax#inputs-outputs)를 사용했습니다.
 

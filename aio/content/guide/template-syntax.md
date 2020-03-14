@@ -11,27 +11,23 @@
 
 <!--
 The Angular application manages what the user sees and can do, achieving this through the interaction of a component class instance (the *component*) and its user-facing template.
--->
-Angular 애플리케이션은 사용자의 행동에 반응하면서 화면에 데이터를 표시하는데, 이 과정은 컴포넌트 클래스와 템플릿이 상호작용하면서 이루어집니다.
 
-<!--
 You may be familiar with the component/template duality from your experience with model-view-controller (MVC) or model-view-viewmodel (MVVM).
 In Angular, the component plays the part of the controller/viewmodel, and the template represents the view.
--->
-MVC(모델-뷰-컨트롤러)나 MVVM(모델-뷰-뷰모델) 구조를 다뤄봤다면 컴포넌트와 템플릿의 관계가 이미 익숙할 수도 있습니다.
-Angular에서는 컴포넌트가 컨트롤러나 뷰모델 역할을 하고, 템플릿이 뷰 역할을 합니다.
 
-<!--
 This page is a comprehensive technical reference to the Angular template language.
 It explains basic principles of the template language and describes most of the syntax that you'll encounter elsewhere in the documentation.
--->
-이 문서에서는 Angular 템플릿 문법의 기술적인 부분을 종합적으로 다룹니다.
-템플릿 문법의 기초부터 시작해서 다른 가이드 페이지에서도 등장하는 템플릿 문법 대부분을 이 문서에서 다룹니다.
 
-<!--
 Many code snippets illustrate the points and concepts, all of them available
 in the <live-example title="Template Syntax Live Code"></live-example>.
 -->
+Angular 애플리케이션은 사용자의 행동에 반응하면서 화면에 데이터를 표시하는데, 이 과정은 컴포넌트 클래스와 템플릿이 상호작용하면서 이루어집니다.
+
+MVC(모델-뷰-컨트롤러)나 MVVM(모델-뷰-뷰모델) 구조를 다뤄봤다면 컴포넌트와 템플릿의 관계가 좀 더 익숙할 수 있습니다.
+Angular에서는 컴포넌트가 컨트롤러나 뷰모델 역할을 하고, 템플릿이 뷰 역할을 합니다.
+
+이 문서에서는 Angular 템플릿 문법의 기술적인 부분을 종합적으로 다룹니다.
+템플릿 문법의 기초부터 시작해서 다른 가이드 페이지에서도 등장하는 템플릿 문법 대부분을 이 문서에서 다룹니다.
 
 템플릿 문법의 개념을 확실하게 이해하기 위해 많은 코드를 살펴볼 것이며,
 이 문서에서 설명하는 코드는 <live-example title="템플릿 문법 라이브 코딩"></live-example> 에서 확인하거나 다운받을 수 있습니다.
@@ -50,8 +46,8 @@ it is forbidden, eliminating the risk of script injection attacks.
 In practice, `<script>` is ignored and a warning appears in the browser console.
 See the [Security](guide/security) page for details.
 -->
-Angular 템플릿에는 HTML을 사용하며, 거의 모든 HTML 문법은 템플릿 문법에서도 유효합니다.
-하지만 `<script>` 엘리먼트는 예외입니다. 이 엘리먼트는 스크립트 인젝션 공격에 노출될 수 있기 때문에 Angular 템플릿에 있더라도 처리되지 않으며, 브라우저 콘솔에 경고 메시지를 출력합니다.
+Angular 템플릿에는 HTML을 사용하며 거의 모든 HTML 문법은 템플릿 문법에서도 유효합니다.
+하지만 `<script>` 엘리먼트는 예외입니다. 이 엘리먼트는 스크립트 인젝션 공격에 노출될 수 있기 때문에 Angular 템플릿에 있더라도 처리되지 않고 브라우저 콘솔에 경고 메시지를 출력합니다.
 더 자세한 내용은 [보안](guide/security) 문서를 확인하세요.
 
 <!--
@@ -68,7 +64,7 @@ You can extend the HTML vocabulary of your templates with components and directi
 In the following sections, you'll learn how to get and set DOM (Document Object Model) values dynamically through data binding.
 -->
 컴포넌트나 디렉티브를 정의하면 템플릿에 사용할 수 있는 HTML 엘리먼트를 새롭게 정의하거나 표준 HTML 엘리먼트에는 없던 속성을 추가할 수 있습니다.
-이 문서에서는 템플릿 문법을 하나씩 살펴보면서 DOM(Document Object Model) 값을 어떻게 참조하고 어떻게 원하는 값을 지정하는지 알아볼 것입니다.
+이 문서에서는 템플릿 문법을 하나씩 살펴보면서 DOM(Document Object Model) 값을 어떻게 참조하고 어떻게 원하는 값으로 변경하는지 알아볼 것입니다.
 
 <!--
 Begin with the first form of data binding&mdash;interpolation&mdash;to see how much richer template HTML can be.
@@ -78,7 +74,6 @@ Begin with the first form of data binding&mdash;interpolation&mdash;to see how m
 <hr/>
 
 {@a interpolation}
-{@a 문자열-바인딩}
 
 
 <!--
@@ -95,7 +90,7 @@ The interpolation <live-example></live-example> demonstrates all of
 the syntax and code snippets described in this section.
 -->
 문자열 바인딩(Interpolation)을 사용하면 HTML 엘리먼트 태그나 어트리뷰트에 지정하는 문자열을 조합할 수 있습니다.
-그리고 이 문자열은 템플릿 표현식으로도 조합할 수 있습니다.
+그리고 이 문자열은 템플릿 표현식(template expressions)으로도 조합할 수 있습니다.
 
 이 섹션에서 다루는 예제는 <live-example></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
@@ -179,7 +174,7 @@ option in the `Component` metadata.
 <!--
 ### Template expressions
 -->
-### 템플릿 표현식
+### 템플릿 표현식 (Template expressions)
 
 <!--
 A template **expression** produces a value and appears within the double
@@ -254,7 +249,7 @@ such as a template input variable,
 `let customer`, or a template reference variable, `#customerInput`.
 &lt;!-- link to guide/template-ref-variables --&gt;
 -->
-템플릿 표현식에서는 _템플릿 안에_ 선언된 템플릿 입력 변수도 참조할 수 있습니다.
+템플릿 표현식에서는 _템플릿 안에_ 선언된 템플릿 입력 변수(template input variable)도 참조할 수 있습니다.
 그래서 아래 코드에 선언된 `let customer`나 `#customerInput`도 템플릿 표현식에 사용할 수 있습니다.
 
 <!--
@@ -358,7 +353,7 @@ Expressions should finish quickly or the user experience may drag, especially on
 Consider caching values when their computation is expensive.
 -->
 Angular는 변화감지 싸이클마다 템플릿 표현식을 실행합니다.
-그리고 변화감지 싸이클은 프로미스가 완료되거나 HTTP 응답이 왔을때, 타이머 이벤트나 키 이벤트, 마우스 이벤트가 있을 때도 실행됩니다.
+그리고 변화감지 싸이클은 프로미스(promise)가 완료되거나 HTTP 응답이 왔을때, 타이머 이벤트나 키 이벤트, 마우스 이벤트가 있을 때도 실행됩니다.
 
 마우스 드래그를 활용하거나 디바이스의 사양이 낮을수록 템플릿 표현식은 빠르게 실행되어야 합니다.
 연산이 많이 필요하다면 캐싱을 활용하는 방법도 고려해 보세요.
@@ -383,8 +378,8 @@ This rule is essential to Angular's "unidirectional data flow" policy.
 You should never worry that reading a component value might change some other displayed value.
 The view should be stable throughout a single rendering pass.
 -->
-이 규칙은 Angular가 제안하는 "단방향 데이터 흐름"의 관점에서도 아주 중요합니다.
-다른 프로퍼티의 영향을 최소화하면 컴포넌트 프로퍼티를 참조하는 과정에 다른 프로퍼티의 영향을 걱정할 필요가 없으며, 뷰는 렌더링 단계에서 한 번만 갱신됩니다.
+이 규칙은 Angular가 권장하는 "단방향 데이터 흐름"의 관점에서도 아주 중요합니다.
+다른 프로퍼티의 영향을 최소화하면 컴포넌트 프로퍼티를 참조하는 동안 다른 프로퍼티의 영향을 걱정할 필요가 없으며, 화면은 렌더링 단계에서 한 번만 갱신됩니다.
 
 <!--
 An [idempotent](https://en.wikipedia.org/wiki/Idempotence) expression is ideal because
@@ -400,15 +395,16 @@ Angular에서 이야기하는 멱등적인 표현식이란, 어떤 값을 기준
 Dependent values should not change during a single turn of the event loop.
 If an idempotent expression returns a string or a number, it returns the same string or number when called twice in a row. If the expression returns an object, including an `array`, it returns the same object *reference* when called twice in a row.
 -->
-그리고 템플릿 표현식에 사용된 값은 이벤트 루프가 한 번 실행되는 동안 여러변 변경되면 안됩니다.
-템플릿 표현식을 멱등적으로 작성해서 어떤 문자열이나 숫자를 반환한다면, 이 템플릿 표현식은 여러번 실행되더라도 항상 같은 값을 반환해야 합니다.
-그리고 템플릿 표현식이 객체나 배열을 반환한다면, 이 템플릿 표현식은 여러번 실행되더라도 항상 같은 객체를 참조해야 합니다.
+그리고 템플릿 표현식에 사용된 값은 이벤트 루프가 한 번 실행되는 동안 변경되면 안됩니다.
+템플릿 표현식이 어떤 문자열이나 숫자를 반환한다면, 이 템플릿 표현식은 여러번 실행되더라도 항상 같은 값을 반환해야 합니다.
+그리고 객체나 배열을 반환한다면, 이 템플릿 표현식은 여러번 실행되더라도 항상 같은 객체를 참조해야 합니다.
 
 <div class="alert is-helpful">
 
 <!--
 There is one exception to this behavior that applies to `*ngFor`. `*ngFor` has `trackBy` functionality that can deal with referential inequality of objects when iterating over them. See [*ngFor with `trackBy`](guide/template-syntax#ngfor-with-trackby) for details.
--->`*ngFor`의 동작을 제어할 때는 이 규칙을 예외로 처리할 수 있습니다.
+-->
+`*ngFor`의 동작을 제어할 때는 이 규칙을 예외로 처리할 수 있습니다.
 `*ngFor`를 사용하면서 `trackBy` 기능을 사용하면 이전과 다른 객체를 참조하더라도 같은 객체를 참조하는 것으로 간주할 수 있습니다.
 
 더 자세한 내용을 확인하려면 이 문서의 [`trackBy`와 함께 사용하기](guide/template-syntax#trackBy) 섹션을 참고하세요.
@@ -419,11 +415,7 @@ There is one exception to this behavior that applies to `*ngFor`. `*ngFor` has `
 
 <hr/>
 
-<!--
 {@a template-statements}
--->
-
-{@a 템플릿-실행문}
 
 <!--
 ## Template statements
@@ -436,8 +428,8 @@ such as an element, component, or directive.
 You'll see template statements in the [event binding](guide/template-syntax#event-binding) section,
 appearing in quotes to the right of the `=`&nbsp;symbol as in `(event)="statement"`.
 -->
-템플릿 **실행문**은 엘리먼트나 컴포넌트, 디렉티브에서 발생하는 **이벤트**에 반응합니다.
-템플릿 실행문은 이 문서의 [이벤트 바인딩](guide/template-syntax#이벤트-바인딩) 섹션에서도 확인할 수 있으며,
+템플릿 **실행문**은 엘리먼트나 컴포넌트, 디렉티브에서 발생하는 **이벤트**에 반응하기 위해 사용합니다.
+템플릿 실행문은 이 문서의 [이벤트 바인딩](guide/template-syntax#event-binding) 섹션에서도 확인할 수 있으며,
 `=` 기호를 사용해서 `(이벤트)="실행문"`과 같이 작성합니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="context-component-statement" header="src/app/app.component.html"></code-example>
@@ -454,21 +446,20 @@ It's how you update application state from user action.
 Responding to events is the other side of Angular's "unidirectional data flow".
 You're free to change anything, anywhere, during this turn of the event loop.
 -->
-이벤트에 반응하는 것은 Angular가 제안하는 "단방향 데이터 흐름"의 또다른 한 방향입니다.
-이 방향은 컴포넌트 프로퍼티가 뷰로 반영되는 것의 반대 방향이며, 이벤트 루프에서는 어떠한 객체의 어떠한 값도 자유롭게 변경할 수 있습니다.
+이벤트에 반응하는 것은 Angular가 권장하는 "단방향 데이터 흐름"의 또다른 한 방향입니다.
+이 방향은 컴포넌트 프로퍼티가 화면으로 반영되는 것의 반대 방향이며, 이벤트 루프에서는 어떠한 객체의 어떠한 값도 자유롭게 변경할 수 있습니다.
 
 <!--
 Like template expressions, template *statements* use a language that looks like JavaScript.
 The template statement parser differs from the template expression parser and
-specifically supports both basic assignment (`=`) and chaining expressions
-(with <code>;</code> or <code>,</code>).
+specifically supports both basic assignment (`=`) and chaining expressions with <code>;</code>.
 -->
 템플릿 표현식과 비슷하게 템플릿 *실행문*도 JavaScript와 비슷한 문법을 사용합니다.
 하지만 템플릿 실행문을 파싱하는 파서는 템플릿 표현식을 파싱하는 파서와 다르며, 템플릿 표현식에서는 사용할 수 없는 문법도 몇 가지는 사용할 수 있습니다.
-템플릿 실행문에서는 값을 할당하는 표현이나(`=`) 여러 줄에 걸친 표현(<code>;</code>, <code>,</code>)도 사용할 수 있습니다.
+템플릿 실행문에서는 값을 할당하는 표현이나(`=`) 여러 줄에 걸친 표현(<code>;</code>)도 사용할 수 있습니다.
 
 <!--
-However, certain JavaScript syntax is not allowed:
+However, certain JavaScript and template expression syntax is not allowed:
 -->
 하지만 다음과 같은 JavaScript 문법은 사용할 수 없습니다.
 
@@ -476,13 +467,13 @@ However, certain JavaScript syntax is not allowed:
 * <code>new</code>
 * increment and decrement operators, `++` and `--`
 * operator assignment, such as `+=` and `-=`
-* the bitwise operators `|` and `&`
-* the [template expression operators](guide/template-syntax#expression-operators)
+* the bitwise operators, such as `|` and `&`
+* the [pipe operator](guide/template-syntax#pipe)
 -->
 * <code>new</code> 키워드
-* `+=`나 `-=`와 같은 연산 할당자
-* `|`나 `&`와 같은 비트 연산자
-* [템플릿 표현식 전용 연산자](guide/template-syntax#템플릿-표현식-전용-연산자)
+* 연산 할당자: `+=`, `-=`
+* 비트 연산자: `|`, `&`
+* [파이프 연산자](guide/template-syntax#pipe)
 
 <!--
 ### Statement context
@@ -512,8 +503,8 @@ and a [template reference variable](guide/template-syntax#ref-vars) (`#heroForm`
 are passed to an event handling method of the component.
 -->
 템플릿 실행문의 컨텍스트에서는 템플릿 컨텍스트 안에 있는 프로퍼티에 접근할 수도 있습니다.
-아래 예제에서 `$event` 객체는 템플릿 변수이며, `let hero`는 [템플릿 입력 변수](guide/template-syntax#템플릿-입력-변수)이고,
-`#heroForm`은 [템플릿 참조 변수](guide/template-syntax#템플릿-참조-변수)입니다.
+아래 예제에서 `$event` 객체는 템플릿 변수이며, `let hero`는 [템플릿 입력 변수](guide/template-syntax#template-input-variable)이고,
+`#heroForm`은 [템플릿 참조 변수](guide/template-syntax#template-reference-variable)입니다.
 각각의 변수는 컴포넌트의 이벤트 핸들링 메소드로 전달됩니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="context-var-statement" header="src/app/app.component.html"></code-example>
@@ -537,7 +528,7 @@ can't refer to `window` or `document`.
 They can't call `console.log` or `Math.max`.
 -->
 템플릿 실행문에서는 템플릿 표현식과 마찬가지로 전역 공간에 접근할 수 없습니다.
-또, `window`나 `document`에도 접근할 수 없고, `console.log`나 `Math.max`와 같은 함수도 실행할 수 없습니다.
+`window`나 `document`에도 접근할 수 없고, `console.log`나 `Math.max`와 같은 함수도 실행할 수 없습니다.
 
 <!--
 As with expressions, avoid writing complex template statements.
@@ -548,11 +539,7 @@ A method call or simple property assignment should be the norm.
 
 <hr/>
 
-<!--
 {@a binding-syntax}
--->
-
-{@a 바인딩-문법}
 
 <!--
 ## Binding syntax: an overview
@@ -576,7 +563,7 @@ Angular provides many kinds of data-binding. Binding types can be grouped into t
 -->
 사용자가 보는 화면과 애플리케이션 데이터의 값은 데이터 바인딩을 통해 자동으로 동기화됩니다.
 데이터 바인딩을 지원하는 프레임워크에서는 HTML에 값을 반영하거나 HTML에서 값을 가져오는 과정이 훨씬 간단하기 때문에,
-애플리케이션 로직을 쉽고 빠르면서 간결하게 작성할 수 있습니다.
+애플리케이션 로직을 쉽게, 빠르게, 간결하게 작성할 수 있습니다.
 바인딩할 객체와 HTML을 단순하게 연결하기만 하면 그 이후는 프레임워크가 알아서 필요한 작업을 수행합니다.
 
 이 섹션에서 다루는 문법이 실행되는 것을 직접 확인하려면 <live-example name="binding-syntax">바인딩 문법 예제</live-example>를 참소하세요.
@@ -725,7 +712,7 @@ You don't have to do anything special to access a directive member in a template
 바인딩 *대상*은 `[]`나 `()`, `[()]` 안에 들어가는 프로퍼티나 이벤트입니다.
 
 디렉티브의 멤버 중 `public`으로 지정된 멤버는 모두 바인딩할 수 있습니다.
-디렉티브의 템플릿 표현식이나 실행문에 사용하기 위해 특별히 뭔가 더 할 것은 없습니다.
+디렉티브의 템플릿 표현식이나 실행문에 사용하기 위해 특별히 뭔가 더 해야 하는 것은 없습니다.
 
 <!--
 ### Data-binding and HTML
@@ -790,12 +777,12 @@ Angular에서 바인딩이 어떻게 동작하는지 이해하려면, HTML 어�
 
 * 일부 DOM 프로퍼티는 해당되는 어트리뷰트가 없는 경우도 있습니다. `textContent`가 그렇습니다.
 
-이름이 같은 것도 있지만 *HTML 어트리뷰트*와 *DOM 프로퍼티*는 다르다는 것을 명심해야 합니다.
+*HTML 어트리뷰트*와 *DOM 프로퍼티*는 이름이 같은 것도 있지만 엄연히 다르다는 것을 명심해야 합니다.
 Angular에서 HTML 어트리뷰트는 엘리먼트나 디렉티브 상태를 초기화할 때만 사용합니다.
 
 **템플릿에서 하는 바인딩도 *어트리뷰트*가 아니라 *프로퍼티*와 *이벤트*를 바인딩하는 것입니다.**
 
-그래서 데이터 바인딩은 *DOM 프로퍼티*와 *이벤트*만 대상 객체와 바인딩하는 것을 의미합니다.
+그래서 데이터 바인딩은 *DOM 프로퍼티*와 *이벤트*를 대상 객체와 바인딩하는 것을 의미합니다.
 
 <div class="alert is-helpful">
 
@@ -854,7 +841,7 @@ To see attributes versus DOM properties in a functioning app, see the <live-exam
 
 `value` HTML 어트리뷰트는 *초기값*을 지정하는 용도로 사용되지만, `value` DOM 프로퍼티는 *현재값*을 저장하는 용도로 사용됩니다.
 
-어트리뷰트와 DOM 프로퍼티의 관계를 동작하는 앱에서 확인해 보려면 <live-example name="binding-syntax"></live-example>를 참고하세요.
+동작하는 앱에서 어트리뷰트와 DOM 프로퍼티의 관계를 확인해 보려면 <live-example name="binding-syntax"></live-example>를 참고하세요.
 
 <!--
 #### Example 2: a disabled button
@@ -921,7 +908,7 @@ To see the `disabled` button example in a functioning app, see the <live-example
 <!--
 ## Binding types and targets
 -->
-## 타입에 따른 바인딩 대상
+## 타입별 바인딩 대상
 
 <!--
 The **target of a data-binding** is something in the DOM.
@@ -1101,8 +1088,6 @@ The following table summarizes the targets for the different binding types.
 <hr/>
 
 {@a property-binding}
-
-{@a 프로퍼티-바인딩}
 <!--
 ## Property binding `[property]`
 -->
@@ -1135,7 +1120,7 @@ If you must read a target element property or call one of its methods,
 see the API reference for [ViewChild](api/core/ViewChild) and
 [ContentChild](api/core/ContentChild).
 -->
-프로퍼티 바인딩은 컴포넌트의 프로퍼티값 하나를 대상 엘리먼트 프로퍼티로 한 번 전달합니다.
+프로퍼티 바인딩은 컴포넌트의 프로퍼티 값 하나를 대상 엘리먼트 프로퍼티로 전달합니다.
 
 그래서 프로퍼티 바인딩은 대상 엘리먼트의 값을 읽는 용도로 사용할 수는 없습니다.
 이와 비슷하게, 대상 엘리먼트에 있는 메소드를 실행하는 용도로도 사용할 수 없습니다.
@@ -1298,8 +1283,8 @@ values and avoid side effects.
 템플릿 표현식 밖으로 영향을 미치는 표현식에 대해 생각해 봅시다.
 `getFoo()`라는 함수가 어떤 동작을 하는지 제대로 이해하고 있다면 템플릿 표현식에서 이 함수를 사용하는 것이 문제되지 않습니다.
 그런데 `getFoo()` 함수는 한 템플릿 표현식 외에도 다른 곳에 사용되어 바인딩된 값을 바꿀 수 있습니다.
-Angular가 이런 문제를 발견한다면 경고 메시지를 표시하겠지만 모든 경우를 감지할 수는 없기 때문에 좋지 않습니다.
-가장 좋은 방법은 프로퍼티를 그대로 전달하거나 메소드가 실행한 값을 그대로 반환하는 것입니다.
+Angular가 이런 문제를 발견한다면 경고 메시지를 표시하겠지만 모든 경우를 감지할 수는 없기 때문에 사용하지 않는 것이 좋습니다.
+컴포넌트 프로퍼티를 그대로 전달하거나 메소드가 실행된 후에 반환한 값을 그대로 전달하는 것이 가장 좋습니다.
 
 
 <!--
@@ -1386,7 +1371,7 @@ In this example, `AppComponent` specifies a different `item` object
 
 <code-example path="property-binding/src/app/item.ts" region="item-class" header="src/app/item.ts"></code-example>
 
-원래 이 데이터는 외부 파일 `mock-items.ts`에 있지만, `AppComponent`에 다음과 같이 작성해도 앱은 동작합니다:
+원래 이 데이터는 외부 파일 `mock-items.ts`에 있지만, `AppComponent`에 다음과 같이 작성해도 동작합니다:
 
 <code-example path="property-binding/src/app/app.component.ts" region="pass-object" header="src/app.component.ts"></code-example>
 
@@ -1415,7 +1400,7 @@ and *initializes the target property* with that string:
 Omitting the brackets will render the string
 `parentItem`, not the value of `parentItem`.
 -->
-괄호를 깜빡하면 `parentItem`의 값 대신 `parentItem`이라는 문자열을 표시합니다.
+괄호를 깜빡하면 `parentItem`의 값 대신 `parentItem`이라는 문자열을 할당합니다.
 
 
 <!--
@@ -1452,7 +1437,7 @@ HTML에서 어트리뷰트를 초기화하는 방식은 Angular에서도 유효�
 <!--
 The `[item]` binding, on the other hand, remains a live binding to the component's `currentItem` property.
 -->
-하지만 `[item]` 바인딩에서는 컴포넌트의 `currentItem` 프로퍼티 값에 따라 전달되는 값이 달라지기 때문에 대문자를 사용하는 것이 좋습니다.
+하지만 `[item]` 바인딩에서는 컴포넌트의 `currentItem` 프로퍼티 값에 따라 전달되는 값이 달라지기 때문에 대괄호를 사용하는 것이 좋습니다.
 
 
 <!--
@@ -1476,7 +1461,7 @@ technical reason to prefer one form to the other, though readability
 tends to favor interpolation. However, *when setting an element
 property to a non-string data value, you must use property binding*.
 -->
-일반적으로 문자열 바인딩은 프로퍼티 바인딩을 간단하게 사용하는 방법으로 볼 수 있습니다.
+일반적으로 문자열 바인딩은 프로퍼티 바인딩을 간단하게 사용하는 테크닉으로 간주할 수 있습니다.
 그리고 문자열을 화면에 렌더링하는 경우라면 꼭 필요한 경우가 아닌 이상 문자열 바인딩을 사용한 코드가 가독성이 좋습니다.
 *하지만 문자열이 아닌 값으로 엘리먼트 프로퍼티 값을 지정하는 경우라면 반드시 프로퍼티 바인딩을 사용해야 합니다.*
 
@@ -1541,7 +1526,6 @@ of the `evilTitle` examples.
 
 <hr/>
 {@a other-bindings}
-{@a 기타-바인딩}
 
 <!--
 ## Attribute, class, and style bindings
@@ -1555,7 +1539,7 @@ To see attribute, class, and style bindings in a functioning app, see the <live-
 -->
 Angular 템플릿에서는 프로퍼티 바인딩 외에도 다음과 같은 특수한 바인딩을 사용할 수 있습니다.
 
-이 문서에서 설명하는 내용을 앱에서 직접 확인하려면 <live-example name="attribute-binding"></live-example>를 참고하세요.
+이 섹션에서 설명하는 내용을 앱에서 직접 확인하려면 <live-example name="attribute-binding"></live-example>를 참고하세요.
 
 
 {@a attribute-binding}
@@ -1594,7 +1578,7 @@ is to set ARIA attributes, as in this example:
 프로퍼티 바인딩의 대상이 되는 것이 존재하지 않는 상황입니다.
 
 어트리뷰트 바인딩 문법은 프로퍼티 바인딩 문법과 비슷하지만 대괄호 안에 엘리먼트 프로퍼티를 지정하는 대신 `attr`이라는 접미사와 `.` 문자를 붙인다는 점이 다릅니다.
-그리고 어트리뷰트에 할당되는 값이 문자열인 경우에는 이 어트리뷰트 바인딩이 유효하지만, `null` 값이 할당되는 경우에는 어트리뷰트 자체가 존재하지 않습니다.
+그리고 어트리뷰트에 할당되는 값이 문자열인 경우에는 이 어트리뷰트 바인딩이 유효하지만, `null` 값이 할당되는 경우에는 어트리뷰트 자체가 사라집니다.
 
 그래서 ARIA 어트리뷰트는 다음과 같은 방식으로 지정합니다:
 
@@ -1694,7 +1678,7 @@ CSS 클래스 하나를 바인딩하려면 `class`라는 접미사 뒤에 `.` �
 (이 때 `undefined`는 예외입니다. [스타일 위임](#styling-delegation) 섹션을 참고하세요.)
 
 CSS 클래스 여러 개를 한번에 바인딩하려면 `.` 방식을 사용하지 않고 `[class]`에 표현식을 할당하는 방식을 사용합니다.
-이 방식은 `[class]="classExpr"`와 같이 작성하는데, 표현식 부분에 공백으로 구분되는 문자열을 지정하거나, 클래스 이름이 키(key)이고 지정 여부가 값(value)인 형태의 객체를 지정합니다.
+이 방식은 `[class]="클래스_표현식"`과 같이 작성하는데, 표현식 부분에 공백으로 구분되는 문자열을 지정하거나, 클래스 이름이 키(key)이고 지정 여부가 값(value)인 형태의 객체를 지정합니다.
 객체를 지정하는 방식을 사용하면 엘리먼트에 원하는 CSS 클래스만 지정하기 편합니다.
 
 이 때 객체는 `object`나 `Array`, `Map`, `Set` 등의 형식을 사용할 수 있는데, CSS 클래스가 제대로 지정되려면 이 객체 자체가 변경되어야 합니다.
@@ -1838,7 +1822,7 @@ _스타일 프로퍼티_ 이름은 [대시 케이스(dash-case)](guide/glossary#
 </div>
 
 스타일 여러개를 동시에 바인딩하려면 접미사와 `.` 문자 없이 `[style]` 프로퍼티를 직접 바인딩하는 방식을 사용할 수 있습니다.
-이 방식은 `[style]="styleExpr"`과 같이 작성하는데, 이때 스타일 표현식은 일반적으로 `"width: 100px; height: 100px;"`과 같은 형식의 문자열로 지정합니다.
+이 방식은 `[style]="스타일_표현식"`과 같이 작성하는데, 이때 스타일 표현식은 일반적으로 `"width: 100px; height: 100px;"`과 같은 형식의 문자열로 지정합니다.
 
 문자열 방식 외에도 스타일 이름을 키(key)로 하고 원하는 값을 지정하는 객체형식(`{width: '100px', height: '100px'}`)도 사용할 수 있습니다.
 이 때 객체는 `object`나 `Array`, `Map`, `Set` 등의 형식을 사용할 수 있는데, CSS 클래스가 제대로 지정되려면 이 객체 자체가 변경되어야 합니다.
@@ -1941,7 +1925,7 @@ However, using the above style binding syntax without `NgStyle` is preferred bec
 ### 스타일 적용 우선순위
 
 <!--
-A single HTML element can have its CSS class list and style values bound to a multiple sources (for example, host bindings from multiple directives).
+A single HTML element can have its CSS class list and style values bound to multiple sources (for example, host bindings from multiple directives).
 
 When there are multiple bindings to the same class name or style property, Angular uses a set of precedence rules to resolve conflicts and determine which classes or styles are ultimately applied to the element.
 
@@ -2060,11 +2044,6 @@ However, if `dirWithHostBinding` sets its binding to `null`, the `width` propert
 그런데 `dirWithHostBinding`에서 `width` 프로퍼티에 `undefined` 값을 바인딩하면 `comp-with-host-binding`에 있는 스타일이 적용됩니다.
 하지만 `dirWithHostBinding`에서 `width` 프로퍼티에 `null` 값을 바인딩하면 `width` 프로퍼티는 제거됩니다.
 
-
-<!--
-{@a event-binding}
--->
-{@a 이벤트-바인딩}
 
 {@a event-binding}
 <!--
@@ -2217,7 +2196,10 @@ Here are the pertinent excerpts from that `ItemDetailComponent`:
 
 `ItemDetailComponent` 코드에서 관련된 부분을 봅시다:
 
+<!--
 <code-example path="event-binding/src/app/item-detail/item-detail.component.html" header="src/app/item-detail/item-detail.component.html (template)" region="line-through"></code-example>
+-->
+<code-example path="event-binding/src/app/item-detail/item-detail.component.html" header="src/app/item-detail/item-detail.component.html (템플릿)" region="line-through"></code-example>
 
 <code-example path="event-binding/src/app/item-detail/item-detail.component.ts" header="src/app/item-detail/item-detail.component.ts (deleteRequest)" region="deleteRequest"></code-example>
 
@@ -2235,7 +2217,10 @@ of the `ItemDetailComponent`.
 
 그러면 부모 컴포넌트에서 이 이벤트를 받기 위해 `deleteRequest` 프로퍼티를 바인딩하고 있어야 합니다.
 
+<!--
 <code-example path="event-binding/src/app/app.component.html" header="src/app/app.component.html (event-binding-to-component)" region="event-binding-to-component"></code-example>
+-->
+<code-example path="event-binding/src/app/app.component.html" header="src/app/app.component.html (부모 컴포넌트의 이벤트 바인딩)" region="event-binding-to-component"></code-example>
 
 <!--
 When the `deleteRequest` event fires, Angular calls the parent component's
@@ -2267,7 +2252,6 @@ These changes propagate through the system and ultimately display in this and ot
 <hr/>
 
 {@a two-way}
-{@a 양방향-바인딩}
 
 <!--
 ## Two-way binding `[(...)]`
@@ -2305,7 +2289,7 @@ of property binding, `[]`, with the parentheses of event binding, `()`.
 1. 엘리먼트 프로퍼티의 값을 설정합니다.
 1. 프로퍼티 값이 변경되는 이벤트를 감지합니다.
 
-Angular는 _양방향 데이터 바인딩_ 에만 사용하는 `[()]` 표기법을 제공합니다.
+Angular는 _양방향 데이터 바인딩_ 에만 사용하는 `[()]` 문법을 제공합니다.
 `[()]`라는 문법은 프로퍼티 바인딩 문법 `[]`과 이벤트 바인딩 문법 `()`을 동시에 사용하는 형태입니다.
 
 
@@ -2331,7 +2315,7 @@ property called `x` and a corresponding event named `xChange`.
 Here's a `SizerComponent` that fits this pattern.
 It has a `size` value property and a companion `sizeChange` event:
 -->
-`[()]` 라고 사용하면 컴포넌트에서 이름이 `x`인 프로퍼티가 프로퍼티 바인딩 되면서, 이벤트 이름이 `xChange`인 이벤트가 함께 이벤트 바인딩 됩니다.
+`[()]` 문법을 사용하면 컴포넌트에서 이름이 `x`인 프로퍼티가 프로퍼티 바인딩 되면서, 이벤트 이름이 `xChange`인 이벤트가 함께 이벤트 바인딩 됩니다.
 `SizerComponent` 예제를 보면서 이 내용을 확인해봅시다.
 이 컴포넌트에는 `size` 프로퍼티와 `sizeChange` 이벤트가 선언되어 있습니다.
 
@@ -2410,10 +2394,7 @@ Angular [NgModel](guide/template-syntax#ngModel).
 
 <hr/>
 
-<!--
 {@a directives}
--->
-{@a 디렉티브}
 
 <!--
 ## Built-in directives
@@ -2436,7 +2417,6 @@ Angular에서 디렉티브는 어트리뷰트 디렉티브와 구조 디렉티�
 <hr/>
 
 {@a attribute-directives}
-{@a 어트리뷰트-디렉티브}
 
 <!--
 ### Built-in attribute directives
@@ -2623,7 +2603,7 @@ The `ngModel` data property sets the element's value property and the `ngModelCh
 listens for changes to the element's value.
 -->
 `ngModel` 디렉티브로 양방향 바인딩을 구현하려면 NgModule의 `imports` 목록에 `FormsModule`을 추가해야 합니다.
-`FormsModule`과 `ngModel`에 대한 자세한 설명은 [Forms](guide/forms#ngModel) 문서를 참고하세요.
+`FormsModule`과 `ngModel`에 대한 자세한 설명은 [폼](guide/forms#ngModel) 문서를 참고하세요.
 
 NgModule에 `FormsModule` 을 다음과 같이 추가합니다.
 
@@ -2679,7 +2659,7 @@ Here are all variations in action, including the uppercase version:
 -->
 `NgModel` 디렉티브가 동작하는 것은 엘리먼트에 따라 조금씩 다르며, `NgModel` 디렉티브는 [ControlValueAccessor](api/forms/ControlValueAccessor)가 지원하는 엘리먼트에만 사용할 수 있습니다.
 여기에서 밸류 액세서는 엘리먼트가 `NgModel`과 어떻게 동작하는지 연결하는 프로토콜이라고 볼 수 있습니다.
-Angular는 표준 HTML 폼 엘리먼트에 대한 *밸류 액세서*는 기본으로 지원하며, 밸류 액세서를 사용하는 방법은 [Forms](guide/forms) 문서에서 소개하고 있습니다.
+Angular는 표준 HTML 폼 엘리먼트에 대한 *밸류 액세서*는 기본으로 지원하며, 밸류 액세서를 사용하는 방법은 [폼](guide/forms) 문서에서 자세하게 소개합니다.
 
 다만, 표준 폼 엘리먼트가 아니거나 서드파티로 불러온 커스텀 엘리먼트가 밸류 액세서를 제공하지 않는다면 `[(ngModel)]`을 사용할 수 없습니다.
 자세한 내용은 [DefaultValueAccessor](https://angular.io/api/forms/DefaultValueAccessor) 문서를 참고하세요.
@@ -2705,7 +2685,6 @@ Angular는 표준 HTML 폼 엘리먼트에 대한 *밸류 액세서*는 기본�
 <hr/>
 
 {@a structural-directives}
-{@a 구조-디렉티브}
 
 <!--
 ## Built-in _structural_ directives
@@ -2738,7 +2717,7 @@ to group elements when there is no suitable host element for the directive.
 
 </div>
 -->
-구조 디렉티브는 DOM 엘리먼트의 모양을 바꾸거나, DOM 트리에서 DOM 엘리먼트를 추가하거나 제거하는 등 HTML 레이아웃을 조작합니다.
+구조 디렉티브는 DOM 엘리먼트의 모양을 바꾸거나 DOM 트리에서 DOM 엘리먼트를 추가하거나 제거하는 등 HTML 레이아웃을 조작합니다.
 
 그리고 이번 섹션에서는 자주 사용하는 구조 디렉티브에 대해 알아봅시다:
 
@@ -2825,7 +2804,7 @@ For more information on `NgIf` and `ngIfElse`, see the [API documentation about 
 
 </div>
 -->
-엘리먼트를 보이지 않게 처리하는 것은 `NgIf`가 DOM에러 엘리먼트를 제거하는 것과 다릅니다.
+엘리먼트를 보이지 않게 처리하는 것과 `NgIf`가 DOM에러 엘리먼트를 제거하는 것은 다릅니다.
 이 내용을 비교해보기 위해 [클래스 바인딩](guide/template-syntax#class-binding)과 [스타일 바인딩](guide/template-syntax#style-binding)을 사용해서 엘리먼트를 제어하는 예제에 대해 알아봅시다.
 
 <code-example path="built-in-directives/src/app/app.component.html" region="NgIf-3" header="src/app/app.component.html"></code-example>
@@ -2837,7 +2816,7 @@ For more information on `NgIf` and `ngIfElse`, see the [API documentation about 
 `NgIf`는 다릅니다. `NgIf` 값이 `false`면 Angular는 이 엘리먼트와 자식 엘리먼트를 DOM에서 완전히 제거합니다.
 이 때 컴포넌트가 종료되고 자원도 반환되기 때문에 사용자가 느끼는 성능도 더 좋습니다.
 
-그래서 무거운 컴포넌트 트리를 화면에서 감춰야 한다면 show/hide 대신 `NgIf`가 효율적입니다.
+그래서 무거운 컴포넌트 트리일수록 show/hide 대신 `NgIf`가 효율적입니다.
 
 <div class="alert is-helpful">
 
@@ -2908,7 +2887,7 @@ You can also apply an `NgFor` to a component element, as in the following exampl
 -->
 `NgForOf`는 템플릿을 반복하는 디렉티브이며, 배열의 각 항목을 뷰에 표시할 때 주로 사용합니다.
 이 디렉티브를 사용할 때는 배열의 한 항목을 뷰로 어떻게 표시할지 HTML 템플릿으로 먼저 정의합니다.
-그러면 Angular가 템플릿을 반복할 때마다 배열의 항목이 하나씩 전달되면서 뷰를 표시합니다.
+그러면 Angular가 템플릿을 반복할 때마다 배열의 항목이 하나씩 전달되면서 화면에 표시합니다.
 `*ngFor`가 어떻게 동작하는지는 이 디렉티브에 전달하는 문자열로 지정합니다.
 
 아래 예제에서는 간단한 `<div>` 엘리먼트에 `NgFor` 디렉티브가 적용되었습니다. (`ngFor` 앞에 별표(`*`)를 빠뜨리지 마세요.)
@@ -2957,7 +2936,6 @@ Angular는 호스트 엘리먼트 근처에 `<ng-template>`을 만들어서 이�
 {@a template-input-variable}
 
 {@a template-input-variables}
-{@a 템플릿-입력-변수}
 
 <!--
 #### Template input variables
@@ -3047,8 +3025,7 @@ Here is an illustration of the `trackBy` effect.
 * With `trackBy`, only changing the `id` triggers element replacement.
 -->
 `NgFor`로 복잡한 배열을 순회하면서 이 배열에 있는 항목을 추가하거나 제거하는 경우에는 관련된 DOM 전체가 변화 감지 로직의 대상이 됩니다.
-화면에 표시하는 목록을 무시하고 서버에 새로 데이터를 받아 화면을 전체 갱신하는 경우도 이런 경우입니다.
-이 경우에는 기존에 있는 항목은 그대로 두고 새로운 항목만 DOM 엘리먼트를 생성하게 할 수 있습니다.
+화면에 표시하는 목록을 무시하고 서버에 새로 데이터를 받아 화면을 전체 갱신하는 경우라면 기존에 있는 항목은 그대로 두고 새로운 항목만 DOM 엘리먼트를 생성하게 할 수 있습니다.
 
 `trackBy`는 이런 경우에 사용합니다.
 컴포넌트 클래스에 `NgFor`가 추적하는 값을 반환하는 메소드를 정의합니다.
@@ -3144,7 +3121,7 @@ For example, you could replace the `<app-best-item>` switch case with the follow
 
 스위칭 조건을 판단하는 템플릿 표현식은 **`[ngSwitch]`** 와 같이 바인딩합니다.
 이 때 문법을 `*ngSwitch`로 사용해도 되지 않을까 생각할 수 있지만, `NgSwitch`는 *구조* 디렉티브가 아니라 *어트리뷰트* 디렉티브이기 때문에 `*ngSwitch`로 사용하면 에러가 발생합니다.
-Rather than touching the DOM directly, it changes the behavior of its companion directives.
+`NgSwitch`는 DOM을 직접 조작하는 디렉티브가 아니라 `NgSwitchCase`와 `NgSwitchDefault` 디렉티브의 동작을 변경하는 디렉티브입니다.
 
 `NgSwitch`와는 다르게 `NgSwitchCase`와 `NgSwitchDefault`는 _구조_ 디렉티브이며, `*ngSwitchCase`, `*ngSwitchDefault`와 같이 사용합니다.
 두 디렉티브는 DOM에 엘리먼트를 직접 추가하거나 제거하는 디렉티브입니다.
@@ -3170,8 +3147,6 @@ Rather than touching the DOM directly, it changes the behavior of its companion 
 {@a ref-vars}
 
 {@a ref-var}
-
-{@a 템플릿-참조-변수}
 
 <!--
 ## Template reference variables (`#var`)
@@ -3359,7 +3334,7 @@ child only needs to receive data from the parent, you'd only need `@Input()`.
 -->
 `@Input()`과 `@Output()`은 컴포넌트 코드에 자주 사용되지만 두 데코레이터가 별개로 동작한다는 것을 명심해야 합니다.
 자식 컴포넌트가 부모 컴포넌트로 데이터를 보내기만 한다면 `@Input()`은 필요없고 `@Output()`만 있으면 됩니다.
-그리고 자식 컴포넌트가 부모 컴포넌트에게 데이터를 받기만 한다면 반대로 `@Inupt()`만 있으면 됩니다.
+그리고 자식 컴포넌트가 부모 컴포넌트에서 데이터를 받기만 한다면 반대로 `@Inupt()`만 있으면 됩니다.
 
 </div>
 
@@ -3752,8 +3727,12 @@ The `*ngFor` iterates over the items in the `items` array. When you enter a valu
 이제 자식 컴포넌트 `<input>` 엘리먼트에 값을 입력하고 버튼을 클릭하면 자식 컴포넌트에서 이벤트가 발생하면서 부모 컴포넌트의 `addItem()` 메소드를 실행하게 되고, `items` 배열에 추가된 항목이 화면에 표시될 것입니다.
 
 
+<!--
 ## `@Input()` and `@Output()` together
+-->
+## `@Input()`, `@Output()` 함께 사용하기
 
+<!--
 You can use `@Input()` and `@Output()` on the same child component as in the following:
 
 <code-example path="inputs-outputs/src/app/app.component.html" region="together" header="src/app/app.component.html"></code-example>
@@ -3774,9 +3753,36 @@ To combine property and event bindings using the banana-in-a-box
 syntax, `[()]`, see [Two-way Binding](guide/template-syntax#two-way).
 
 For more detail on how these work, see the previous sections on [Input](guide/template-syntax#input) and [Output](guide/template-syntax#output). To see it in action, see the <live-example name="inputs-outputs">Inputs and Outputs Example</live-example>.
+-->
+`@Input()`과 `@Input()`은 다음과 같이 동시에 사용할 수 있습니다:
 
+<code-example path="inputs-outputs/src/app/app.component.html" region="together" header="src/app/app.component.html"></code-example>
+
+`item` 프로퍼티는 자식 컴포넌트 클래스에서 `@Input()` 데코레이터가 지정된 프로퍼티이며, 부모 컴포넌트의 프로퍼티 `currentItem`의 값을 받는 프로퍼티입니다.
+그리고 자식 컴포넌트 화면에서 삭제 버튼을 클릭하면 `deleteRequest` 이벤트가 발생하는데, 부모 컴포넌트는 이 이벤트가 발생했을 때 `crossOffItem()` 메소드를 실행합니다.
+
+아래 그림을 보면서 `@Input()` 데코레이터와 `@Output()` 데코레이터가 각각 어떻게 사용되었는지 확인해 보세요:
+
+<div class="lightbox">
+  <img src="generated/images/guide/inputs-outputs/input-output-diagram.svg" alt="Input/Output diagram">
+</div>
+
+그림에서 볼 수 있듯이 입력 프로퍼티와 출력 프로퍼티는 이전과 동일하게 작성되엇습니다.
+이 코드에서 자식 컴포넌트의 셀렉터는 `<app-input-output>`이며 이 컴포넌트 클래스에 있는 `item` 프로퍼티에는 `@Input()` 데코레이터가, `deleteRequest` 프로퍼티에는 `@Output()` 데코레이터가 사용되었습니다.
+`currentItem` 프로퍼티와 `crossOffItem()` 메소드는 부모 컴포넌트 클래스에 존재합니다.
+
+프로퍼티 바인딩과 이벤트 바인딩을 조합한 `[()]` 문법을 사용하려면 [양방향 바인딩](guide/template-syntax#two-way) 섹션을 참고하세요.
+
+두 방식이 어떻게 동작하는지 자세하게 알아보려면 이전에 설명했던 [Input](guide/template-syntax#input)과 [Output](guide/template-syntax#output) 섹션을 보면 됩니다.
+그리고 직접 동작하는 것을 확인하려면 <live-example name="inputs-outputs">입출력 프로퍼티 예제</live-example>를 참고하세요.
+
+
+<!--
 ## `@Input()` and `@Output()` declarations
+-->
+## `@Input()`, `@Output()` 대체 방법
 
+<!--
 Instead of using the `@Input()` and `@Output()` decorators
 to declare inputs and outputs, you can identify
 members in the `inputs` and `outputs` arrays
@@ -3792,15 +3798,29 @@ class decorators instead, as follows:
 
 See the [Decorate input and output properties](guide/styleguide#decorate-input-and-output-properties) section of the
 [Style Guide](guide/styleguide) for details.
+-->
+`@Input()`, `@Output()` 데코레이터를 사용하지 않고 입출력 프로퍼티를 지정하는 방법이 있습니다.
+이렇게 구현하려면 다음과 같이 디렉티브 메타데이터에 `inputs`와 `ouputs` 배열을 선언하면 됩니다:
 
+<code-example path="inputs-outputs/src/app/in-the-metadata/in-the-metadata.component.ts" region="metadata" header="src/app/in-the-metadata/in-the-metadata.component.ts"></code-example>
+
+`inputs`, `outputs` 배열을 선언하는 방식은 `@Directive`와 `@Component` 메타데이터에 모두 사용할 수 있으며 이렇게 구현해도 입출력 프로퍼티는 이전과 같이 동작하지만, 다음과 같이 `@Input()`, `@Output()` 데코레이터를 사용하는 방식을 권장합니다.
+
+<code-example path="inputs-outputs/src/app/input-output/input-output.component.ts" region="input-output" header="src/app/input-output/input-output.component.ts"></code-example>
+
+더 자세한 내용은 [스타일 가이드](guide/styleguide) 문서의 [입출력 프로퍼티 지정하기](guide/styleguide#decorate-input-and-output-properties) 섹션을 참고하세요.
 
 
 <div class="alert is-helpful">
 
+<!--
 If you get a template parse error when trying to use inputs or outputs, but you know that the
 properties do indeed exist, double check
 that your properties are annotated with `@Input()` / `@Output()` or that you've declared
 them in an `inputs`/`outputs` array:
+-->
+입출력 프로퍼티를 지정했을 때 템플릿에서 파싱 에러가 발생한다면 먼저 이 프로퍼티들이 컴포넌트 클래스에 존재하는지 확인해 보세요.
+그리고 입출력 프로퍼티가 `@Input()`/`@Output()`으로, 아니면 `inputs`/`outputs` 배열로 지정되었는지 확인해 보세요:
 
 <code-example language="bash">
 Uncaught Error: Template parse errors:
@@ -3811,22 +3831,43 @@ Can't bind to 'item' since it isn't a known property of 'app-item-detail'
 
 {@a aliasing-io}
 
+<!--
 ## Aliasing inputs and outputs
+-->
+## 입출력 프로퍼티 이름 변경하기
 
+<!--
 Sometimes the public name of an input/output property should be different from the internal name. While it is a best practice to avoid this situation, Angular does
 offer a solution.
+-->
+어떤 경우에는 외부에 노출된 입출력 프로퍼티 이름과 컴포넌트 내부에 사용하는 이름이 달라야 하는 때가 있습니다.
+이런 경우에 활용할 수 있는 테크닉에 대해 알아봅시다.
 
+<!--
 ### Aliasing in the metadata
+-->
+### 메타데이터에서 변경하기
 
+<!--
 Alias inputs and outputs in the metadata using a colon-delimited (`:`) string with
 the directive property name on the left and the public alias on the right:
+-->
+메타데이터에서 콜론(`:`)으로 구분되는 문자열을 사용하면 디렉티브 프로퍼티의 이름을 변경할 수 있습니다.
+이 때 콜론 왼쪽에는 클래스 안에서 사용하는 이름을 지정하고 콜론 오른쪽에는 클래스 밖에서 사용할 이름을 지정합니다:
 
 <code-example path="inputs-outputs/src/app/aliasing/aliasing.component.ts" region="alias" header="src/app/aliasing/aliasing.component.ts"></code-example>
 
 
+<!--
 ### Aliasing with the `@Input()`/`@Output()` decorator
+-->
+### `@Input()`/`@Output()` 데코레이터에서 변경하기
 
+<!--
 You can specify the alias for the property name by passing the alias name to the `@Input()`/`@Output()` decorator. The internal name remains as usual.
+-->
+`@Input()`/`@Output()` 데코레이터에 원하는 프로퍼티 이름을 사용하면 이 이름을 클래스 밖에서 사용할 수 있습니다.
+내부에서 사용하는 이름은 그대로 유지됩니다.
 
 <code-example path="inputs-outputs/src/app/aliasing/aliasing.component.ts" region="alias-input-output" header="src/app/aliasing/aliasing.component.ts"></code-example>
 
@@ -3835,19 +3876,25 @@ You can specify the alias for the property name by passing the alias name to the
 
 {@a expression-operators}
 
-{@a 템플릿-표현식-전용-연산자}
-
 <!--
 ## Template expression operators
 -->
 ## 템플릿 표현식 전용 연산자
 
+<!--
 The Angular template expression language employs a subset of JavaScript syntax supplemented with a few special operators
 for specific scenarios. The next sections cover three of these operators:
 
 * [pipe](guide/template-syntax#pipe)
 * [safe navigation operator](guide/template-syntax#safe-navigation-operator)
 * [non-null assertion operator](guide/template-syntax#non-null-assertion-operator)
+-->
+Angular의 템플릿 표현식은 JavaScript 문법의 서브셋(subset)이며 특정 시나리오를 위해 몇가지 연산자가 추가된 언어를 사용합니다.
+이 섹션은 다음 3개의 연산자에 대해 다룹니다:
+
+* [파이프](guide/template-syntax#pipe)
+* [안전 참조 연산자](guide/template-syntax#safe-navigation-operator)
+* [null 보장 연산자](guide/template-syntax#non-null-assertion-operator)
 
 {@a pipe}
 
@@ -3910,11 +3957,16 @@ The generated output would look something like this:
 
 <div class="alert is-helpful">
 
+<!--
 The pipe operator has a higher precedence than the ternary operator (`?:`),
 which means `a ? b : c | x` is parsed as `a ? b : (c | x)`.
 Nevertheless, for a number of reasons,
 the pipe operator cannot be used without parentheses in the first and second operands of `?:`.
 A good practice is to use parentheses in the third operand too.
+-->
+파이프 연산자는 삼항연산자(`?:`)보다 우선순위가 높기 때문에 `a ? b : c | x`는 `a ? b : (c | x)`로 처리됩니다.
+그리고 몇가지 이유때문에 파이프 연산자는 삼항연산자와 함께 사용할 때 첫번째 항목이나 두번째 항목에는 사용할 수 없습니다.
+파이프 연산자와 삼항연산자를 함께 사용할 때는 세번째 항목에만 파이프를 사용하거나 삼항연산자 전체에 파이프를 사용할 수 있습니다.
 
 </div>
 
@@ -3923,22 +3975,37 @@ A good practice is to use parentheses in the third operand too.
 
 {@a safe-navigation-operator}
 
+<!--
 ### The safe navigation operator ( `?` ) and null property paths
+-->
+### 안전참조 연산자(`?`)로 null 프로퍼티 경로 다루기
 
+<!--
 The Angular safe navigation operator, `?`, guards against `null` and `undefined`
 values in property paths. Here, it protects against a view render failure if `item` is `null`.
+-->
+안전 참조 연산자(safe navigation operator, `?`)는 프로퍼티 경로에 있을 수 있는 `null`과 `undefined`를 방지할 때 사용합니다.
+`item`값이 `null`일 때 발생하는 렌더링 에러는 다음과 같이 방지할 수 있습니다:
 
 <code-example path="template-expression-operators/src/app/app.component.html" region="safe" header="src/app/app.component.html"></code-example>
 
+<!--
 If `item` is `null`, the view still renders but the displayed value is blank; you see only "The item name is:" with nothing after it.
 
 Consider the next example, with a `nullItem`.
+-->
+`item`의 값이 `null` 이라면 화면을 렌더링하는 데에 아무 문제가 없으며 "The item name is:" 뒤에 아무것도 표시되지 않을 것입니다.
+
+그리고 `nullItem`이 사용된 코드를 봅시다.
 
 <code-example language="html">
   The null item name is {{nullItem.name}}
 </code-example>
 
+<!--
 Since there is no safe navigation operator and `nullItem` is `null`, JavaScript and Angular would throw a `null` reference error and break the rendering process of Angular:
+-->
+이 코드에서 `nullItem` 값은 `null`이지만 안전 참조 연산자가 없기 때문에 JavaScript와 Angular가 `null` 참조 에러를 발생시키면서 화면 렌더링도 중단됩니다:
 
 <code-example language="bash">
   TypeError: Cannot read property 'name' of null.
@@ -3953,24 +4020,20 @@ With the safe navigation operator, `?`, Angular stops evaluating the expression 
 
 It works perfectly with long property paths such as `a?.b?.c?.d`.
 -->
-Sometimes however, `null` values in the property
-path may be OK under certain circumstances,
-especially when the value starts out null but the data arrives eventually.
+참조 시작점이 되는 객체는 존재하지만 이 객체를 참조하는 중간에 `null` 값을 만나게 되는 경우도 있습니다.
 
-With the safe navigation operator, `?`, Angular stops evaluating the expression when it hits the first `null` value and renders the view without errors.
+이런 경우에도 안전 참조 연산자 `?`를 사용하면 중간에 `null` 값이 있더라도 에러없이 화면 렌더링을 끝낼 수 있습니다.
 
-안전 참조 연산자는 `a?.b?.c?.d`와 같은 경우에도 완벽하게 동작합니다.
+`a?.b?.c?.d`와 같은 경우에도 완벽하게 동작합니다.
 
 
 <hr/>
 
 {@a non-null-assertion-operator}
-
-{@a null-방지-연산자}
 <!--
 ### The non-null assertion operator ( `!` )
 -->
-### null 방지 연산자 ( `!` )
+### null 보장 연산자 ( `!` )
 
 <!--
 As of Typescript 2.0, you can enforce [strict null checking](http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html "Strict null checking in TypeScript") with the `--strictNullChecks` flag. TypeScript then ensures that no variable is unintentionally null or undefined.
@@ -3979,19 +4042,6 @@ In this mode, typed variables disallow `null` and `undefined` by default. The ty
 
 The type checker also throws an error if it can't determine whether a variable will be `null` or undefined at runtime. You tell the type checker not to throw an error by applying the postfix
 [non-null assertion operator, !](http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html#non-null-assertion-operator "Non-null assertion operator").
-
-The Angular non-null assertion operator, `!`, serves the same purpose in
-an Angular template. For example, after you use [*ngIf](guide/template-syntax#ngIf)
-to check that `item` is defined, you can assert that
-`item` properties are also defined.
--->
-TypeScript 2.0 버전부터  [null 검사를 더 엄격하게](http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html "Strict null checking in TypeScript")하는 옵션이 추가되었습니다. 옵션은 `--strictNullChecks`로 활성화하며, 이 옵션을 설정하면 객체의 값이 null이나 undefined이 되는 것을 방지합니다.
-
-이 모드를 활성화하면 타입을 지정한 변수에 null이나 undefined을 할당하는 것이 허용되지 않습니다. 그래서 변수의 값을 할당하지 않고 놔두거나, 변수에 null이나 undefined을 할당하는 코드가 있으면 타입을 체크할 때 오류가 발생합니다.
-
-그런데 TypeScript 컴파일러는 앱이 실행되는 시점에 변수의 값이 null이나 undefined가 될 수 있는 코드에서도 에러를 발생합니다.
-개발자는 발생하지 않는 경우라고 할 수 있지만 TypeScript 컴파일러가 알수는 없기 때문이죠.
-그래서 실행시점에서도 이 객체가 null이 되지 않는다는 것을 [null 방지 연산자](http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html#non-null-assertion-operator "Non-null assertion operator")를 사용해서 TypeScript 컴파일러에게 알려줘야 합니다.
 
 The Angular non-null assertion operator, `!`, serves the same purpose in
 an Angular template. For example, after you use [*ngIf](guide/template-syntax#ngIf)
@@ -4008,6 +4058,26 @@ the non-null assertion operator does not guard against `null` or `undefined`.
 Rather, it tells the TypeScript type checker to suspend strict `null` checks for a specific property expression.
 
 The non-null assertion operator, `!`, is optional with the exception that you must use it when you turn on strict null checks.
+-->
+TypeScript 2.0 버전부터  [null 검사를 더 엄격하게](http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html "Strict null checking in TypeScript")하는 옵션이 추가되었습니다. 옵션은 `--strictNullChecks`로 활성화하며, 이 옵션을 설정하면 객체의 값이 null이나 undefined이 되는 것을 방지합니다.
+
+이 모드를 활성화하면 타입을 지정한 변수에 null이나 undefined을 할당하는 것이 허용되지 않습니다. 그래서 변수의 값을 할당하지 않고 놔두거나, 변수에 null이나 undefined을 할당하는 코드가 있으면 타입을 체크할 때 오류가 발생합니다.
+
+그런데 TypeScript 컴파일러는 앱이 실행되는 시점에 변수의 값이 null이나 undefined가 될 수 있는 코드에서도 에러를 발생합니다.
+개발자는 발생하지 않는 경우라고 할 수 있지만 TypeScript 컴파일러가 알수는 없기 때문입니다.
+그래서 실행시점에서도 이 객체가 null이 되지 않는다는 것을 [null 보장 연산자](http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html#non-null-assertion-operator "Non-null assertion operator")를 사용해서 TypeScript 컴파일러에게 알려줘야 합니다.
+
+null 보장 연산자 `!`는 템플릿에서도 똑같은 역할을 합니다.
+그래서 `item`의 값이 유효한지 확인한 [`*ngIf`](guide/template-syntax#ngIf) 안에 null 보장 연산자를 사용하면 에러 경고를 방지할 수 있습니다.
+
+<code-example path="template-expression-operators/src/app/app.component.html" region="non-null" header="src/app/app.component.html"></code-example>
+
+이렇게 작성하면 Angular 컴파일러가 템플릿 코드를 TypeScript 코드로 변환할 때 `item` 프로퍼티의 값이 `null`이나 `undefined`가 아니라는 것을 TypeScript 컴파일러가 인식합니다.
+
+다만, null 보장 연산자는 [_안전 참조 연산자_](guide/template-syntax#safe-navigation-operator "Safe navigation operator (?)")와는 다르게 `null` 값이나 `undefined` 값을 방지하지는 않습니다.
+null 보장 연산자는 단순하게 TypeScript 타입 체크 에러를 우회하는 역할만 합니다.
+
+null 보장 연산자는 꼭 사용할 필요 없이 `--strictNullChecks` 옵션을 사용했을 때만 사용하면 됩니다.
 
 <a href="#top-of-page">back to top</a>
 
@@ -4021,7 +4091,6 @@ The non-null assertion operator, `!`, is optional with the exception that you mu
 ## 기본 템플릿 함수
 
 {@a any-type-cast-function}
-{@a any-타입-캐스팅-함수}
 
 <!--
 ### The `$any()` type cast function
@@ -4057,8 +4126,13 @@ The `$any()` cast function works anywhere in a binding expression where a method
 -->
 `$any()` 캐스팅 함수는 함수를 실행할 수 있는 바인딩 표현식이라면 어디에나 자유롭게 사용할 수 있습니다.
 
-## SVG in templates
 
+<!--
+## SVG in templates
+-->
+## SVG를 템플릿으로 사용하기
+
+<!--
 It is possible to use SVG as valid templates in Angular. All of the template syntax below is
 applicable to both SVG and HTML. Learn more in the SVG [1.1](https://www.w3.org/TR/SVG11/) and
 [2.0](https://www.w3.org/TR/SVG2/) specifications.
@@ -4078,3 +4152,21 @@ Add the following code to your `svg.component.svg` file:
 
 Here you can see the use of a `click()` event binding and the property binding syntax
 (`[attr.fill]="fillColor"`).
+-->
+Angular에서는 SVG 파일도 템플릿으로 사용할 수 있습니다.
+이 때 모든 템플릿 문법은 SVG와 HTML 표준을 그대로 따릅니다.
+SVG 스펙은 [1.1 스펙](https://www.w3.org/TR/SVG11/)과 [2.0](https://www.w3.org/TR/SVG2/)을 참고하세요.
+
+간단하게 이미지를 사용하는 대신 왜 템플릿에 SVG를 사용할까요?
+
+SVG를 템플릿으로 사용하면 일반 HTML 템플릿을 사용하듯이 이 템플릿에 디렉티브와 바인딩 문법을 사용할 수 있습니다.
+
+이런 컴포넌트 코드를 한 번 봅시다:
+
+<code-example path="template-syntax/src/app/svg.component.ts" header="src/app/svg.component.ts"></code-example>
+
+그리고 `svg.component.svg` 파일은 이렇게 정의되어 있습니다:
+
+<code-example path="template-syntax/src/app/svg.component.svg" header="src/app/svg.component.svg"></code-example>
+
+이렇게 구현하면 `click()` 이벤트를 컴포넌트 클래스와 바인딩 할 수 있고, `[attr.fill]="fillColor"`처럼 프로퍼티 바인딩을 할 수도 있습니다.

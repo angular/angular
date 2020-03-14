@@ -3896,7 +3896,7 @@ helps instantly identify which members of the component serve which purpose.
 <!--
 **Why?** Angular allows for an [alternative syntax](guide/template-syntax#binding-syntax) `on-*`. If the event itself was prefixed with `on` this would result in an `on-onEvent` binding expression.
 -->
-**왜?** Angular에서 제공하는 문법 중 `on-*`을 붙이는 문법은 [이벤트 바인딩을 사용하는 방법](guide/template-syntax#바인딩-문법) 중 하나입니다. 그래서 이벤트 이름에 `on`을 붙이면, 이 이벤트를 바인딩할 때 `on-onEvent`와 같은 표현을 사용해야 합니다.
+**왜?** Angular에서 제공하는 문법 중 `on-*`을 붙이는 문법은 [이벤트 바인딩을 사용하는 방법](guide/template-syntax#binding-syntax) 중 하나입니다. 그래서 이벤트 이름에 `on`을 붙이면, 이 이벤트를 바인딩할 때 `on-onEvent`와 같은 표현을 사용해야 합니다.
 
 </div>
 
