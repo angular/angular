@@ -71,12 +71,15 @@ export interface Task extends JsonObject {
 }
 
 /** A function to be called once a task has been processed. */
-export type TaskCompletedCallback = (task: Task, outcome: TaskProcessingOutcome) => void;
+export type TaskCompletedCallback =
+    (task: Task, outcome: TaskProcessingOutcome, message: string | null) => void;
 
 /** Represents the outcome of processing a `Task`. */
 export const enum TaskProcessingOutcome {
   /** Successfully processed the target format property. */
   Processed,
+  /** Failed to process the target format. */
+  Failed,
 }
 
 /**

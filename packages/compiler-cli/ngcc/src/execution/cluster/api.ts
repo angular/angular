@@ -33,6 +33,7 @@ export interface ProcessTaskMessage extends JsonObject {
 export interface TaskCompletedMessage extends JsonObject {
   type: 'task-completed';
   outcome: TaskProcessingOutcome;
+  message: string|null;
 }
 
 /** A message requesting the update of a `package.json` file. */

@@ -54,15 +54,26 @@ describe('ClusterWorker', () => {
         expect(createCompileFnSpy).toHaveBeenCalledWith(jasmine.any(Function));
       });
 
-      it('should set up `compileFn()` to send a `task-completed` message to master', () => {
+      it('should set up `compileFn()` to send `task-completed` messages to master', () => {
         new ClusterWorker(mockLogger, createCompileFnSpy);
         const onTaskCompleted: TaskCompletedCallback = createCompileFnSpy.calls.argsFor(0)[0];
 
-        onTaskCompleted(null as any, TaskProcessingOutcome.Processed);
+        onTaskCompleted(null as any, TaskProcessingOutcome.Processed, null);
         expect(processSendSpy).toHaveBeenCalledTimes(1);
         expect(processSendSpy).toHaveBeenCalledWith({
           type: 'task-completed',
           outcome: TaskProcessingOutcome.Processed,
+          message: null
+        });
+
+        processSendSpy.calls.reset();
+
+        onTaskCompleted(null as any, TaskProcessingOutcome.Failed, 'error message');
+        expect(processSendSpy).toHaveBeenCalledTimes(1);
+        expect(processSendSpy).toHaveBeenCalledWith({
+          type: 'task-completed',
+          outcome: TaskProcessingOutcome.Failed,
+          message: 'error message',
         });
       });
     });
