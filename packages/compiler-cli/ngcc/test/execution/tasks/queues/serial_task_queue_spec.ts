@@ -5,9 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {DepGraph} from 'dependency-graph';
 
 import {PartiallyOrderedTasks, Task, TaskQueue} from '../../../../src/execution/tasks/api';
 import {SerialTaskQueue} from '../../../../src/execution/tasks/queues/serial_task_queue';
+import {computeTaskDependencies} from '../../../../src/execution/tasks/utils';
+import {EntryPoint} from '../../../../src/packages/entry_point';
 
 
 describe('SerialTaskQueue', () => {
@@ -24,13 +27,18 @@ describe('SerialTaskQueue', () => {
    */
   const createQueue = (taskCount: number): {tasks: PartiallyOrderedTasks, queue: TaskQueue} => {
     const tasks: PartiallyOrderedTasks = [] as any;
+    const graph = new DepGraph<EntryPoint>();
     for (let i = 0; i < taskCount; i++) {
-      tasks.push({
-        entryPoint: {name: `entry-point-${i}`}, formatProperty: `prop-${i}`,
-            processDts: i % 2 === 0,
-      } as Task);
+      const entryPoint = {
+        name: `entry-point-${i}`,
+        path: `/path/to/entry/point/${i}`
+      } as EntryPoint;
+      tasks.push(
+          { entryPoint: entryPoint, formatProperty: `prop-${i}`, processDts: i % 2 === 0 } as Task);
+      graph.addNode(entryPoint.path);
     }
-    return {tasks, queue: new SerialTaskQueue(tasks.slice())};
+    const dependencies = computeTaskDependencies(tasks, graph);
+    return {tasks, queue: new SerialTaskQueue(tasks.slice(), dependencies)};
   };
 
   /**

@@ -32,6 +32,7 @@ import {CreateTaskCompletedCallback, PartiallyOrderedTasks, Task, TaskProcessing
 import {composeTaskCompletedCallbacks, createMarkAsProcessedHandler, createThrowErrorHandler} from './execution/tasks/completion';
 import {ParallelTaskQueue} from './execution/tasks/queues/parallel_task_queue';
 import {SerialTaskQueue} from './execution/tasks/queues/serial_task_queue';
+import {computeTaskDependencies} from './execution/tasks/utils';
 import {AsyncLocker} from './locking/async_locker';
 import {LockFileWithChildProcess} from './locking/lock_file_with_child_process';
 import {SyncLocker} from './locking/sync_locker';
@@ -349,7 +350,9 @@ function getFileWriter(
 
 function getTaskQueue(
     inParallel: boolean, tasks: PartiallyOrderedTasks, graph: DepGraph<EntryPoint>): TaskQueue {
-  return inParallel ? new ParallelTaskQueue(tasks, graph) : new SerialTaskQueue(tasks);
+  const dependencies = computeTaskDependencies(tasks, graph);
+  return inParallel ? new ParallelTaskQueue(tasks, dependencies) :
+                      new SerialTaskQueue(tasks, dependencies);
 }
 
 function getCreateTaskCompletedCallback(

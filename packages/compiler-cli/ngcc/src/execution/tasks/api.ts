@@ -52,6 +52,12 @@ export interface Task extends JsonObject {
 export type PartiallyOrderedTasks = PartiallyOrderedList<Task>;
 
 /**
+ * A mapping from Tasks to the Tasks that depend upon them (dependents).
+ */
+export type TaskDependencies = Map<Task, Set<Task>>;
+export const TaskDependencies = Map;
+
+/**
  * A function to create a TaskCompletedCallback function.
  */
 export type CreateTaskCompletedCallback = (taskQueue: TaskQueue) => TaskCompletedCallback;
