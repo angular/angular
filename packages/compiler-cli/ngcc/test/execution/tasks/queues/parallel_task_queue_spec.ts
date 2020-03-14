@@ -8,9 +8,9 @@
 
 import {DepGraph} from 'dependency-graph';
 
-import {PartiallyOrderedTasks, Task, TaskQueue} from '../../../src/execution/api';
-import {ParallelTaskQueue} from '../../../src/execution/task_selection/parallel_task_queue';
-import {EntryPoint} from '../../../src/packages/entry_point';
+import {PartiallyOrderedTasks, Task, TaskQueue} from '../../../../src/execution/tasks/api';
+import {ParallelTaskQueue} from '../../../../src/execution/tasks/queues/parallel_task_queue';
+import {EntryPoint} from '../../../../src/packages/entry_point';
 
 
 describe('ParallelTaskQueue', () => {
