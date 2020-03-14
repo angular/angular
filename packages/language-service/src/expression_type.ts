@@ -362,6 +362,11 @@ export class AstType implements AstVisitor {
     return this.resolvePropertyRead(this.query.getNonNullableType(this.getType(ast.receiver)), ast);
   }
 
+  /**
+   * Gets the source of an expession AST.
+   * The AST's sourceSpan is relative to the start of the template source code, which is contained
+   * at this.source.
+   */
   private sourceOf(ast: AST): string {
     return this.source.substring(ast.sourceSpan.start, ast.sourceSpan.end);
   }
