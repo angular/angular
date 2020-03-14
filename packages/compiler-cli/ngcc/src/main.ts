@@ -300,7 +300,7 @@ export function mainNgcc({basePath, targetEntryPointPath,
 
       logger.debug(`  Successfully compiled ${entryPoint.name} : ${formatProperty}`);
 
-      onTaskCompleted(task, TaskProcessingOutcome.Processed);
+      onTaskCompleted(task, TaskProcessingOutcome.Processed, null);
     };
   };
 

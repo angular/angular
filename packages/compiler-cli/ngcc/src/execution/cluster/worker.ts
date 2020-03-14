@@ -30,8 +30,9 @@ export class ClusterWorker {
       throw new Error('Tried to instantiate `ClusterWorker` on the master process.');
     }
 
-    this.compile =
-        createCompileFn((_task, outcome) => sendMessageToMaster({type: 'task-completed', outcome}));
+    this.compile = createCompileFn(
+        (_task, outcome, message) =>
+            sendMessageToMaster({type: 'task-completed', outcome, message}));
   }
 
   run(): Promise<void> {
