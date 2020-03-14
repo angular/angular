@@ -516,7 +516,7 @@ describe('parser', () => {
         const bindings = parseTemplateBindings(attr);
         expect(humanizeSpans(bindings, attr)).toEqual([
           // source span, key span, value span
-          ['ngIf="cond | pipe ', 'ngIf', 'cond | pipe '],
+          ['ngIf="cond | pipe ', 'ngIf', 'cond | pipe'],
           ['ngIf="cond | pipe as foo, ', 'foo', 'ngIf'],
           ['let x; ', 'x', null],
           ['ngIf as y', 'y', 'ngIf'],
@@ -531,7 +531,7 @@ describe('parser', () => {
           // source span, key span, value span
           ['ngFor="', 'ngFor', null],
           ['let item; ', 'item', null],
-          ['of items | slice:0:1 ', 'of', 'items | slice:0:1 '],
+          ['of items | slice:0:1 ', 'of', 'items | slice:0:1'],
           ['of items | slice:0:1 as collection, ', 'collection', 'of'],
           ['trackBy: func; ', 'trackBy', 'func'],
           ['index as i', 'i', 'index'],
@@ -545,7 +545,7 @@ describe('parser', () => {
           // source span, key span, value span
           ['ngFor="', 'ngFor', null],
           ['let item, ', 'item', null],
-          ['of: [1,2,3] | pipe ', 'of', '[1,2,3] | pipe '],
+          ['of: [1,2,3] | pipe ', 'of', '[1,2,3] | pipe'],
           ['of: [1,2,3] | pipe as items; ', 'items', 'of'],
           ['let i=index, ', 'i', 'index'],
           ['count as len, ', 'len', 'count'],
