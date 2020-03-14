@@ -220,7 +220,9 @@ class HtmlAstToIvyAst implements html.Visitor {
       attrs.bound.forEach(attr => templateAttrs.push(attr));
       const hoistedAttrs = parsedElement instanceof t.Element ?
           {
-            attributes: parsedElement.attributes,
+            // Include extracted literal attributes into the set of hoisted attributes, since they
+            // can act as inputs to directives.
+            attributes: [...parsedElement.attributes, ...attrs.literal],
             inputs: parsedElement.inputs,
             outputs: parsedElement.outputs,
           } :

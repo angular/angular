@@ -4251,33 +4251,35 @@ runInEachFileSystem(os => {
       });
     });
 
-    it('should generate `property` instructions for structural directive inputs for empty and false-y values',
-       () => {
-         const getComponentWithTemplate = (template: string) => `
-            import {Component} from '@angular/core';
-            @Component({
-              template: \`${template}\`
-            })
-            export class App {}
-          `;
-         env.write('test-no-args.ts', getComponentWithTemplate('<div *dir></div>'));
-         env.write('test-empty-exp.ts', getComponentWithTemplate('<div *dir=""></div>'));
-         env.write('test-empty-str.ts', getComponentWithTemplate(`<div *dir="''"></div>`));
-         env.write('test-undefined.ts', getComponentWithTemplate('<div *dir="undefined"></div>'));
-         env.write('test-false.ts', getComponentWithTemplate('<div *dir="false"></div>'));
-         env.write('test-null.ts', getComponentWithTemplate('<div *dir="null"></div>'));
-         env.write('test-zero.ts', getComponentWithTemplate('<div *dir="0"></div>'));
+    it('should handle structural directive inputs for empty and false-y values', () => {
+      const getComponentWithTemplate = (template: string) => `
+        import {Component} from '@angular/core';
+        @Component({
+          template: \`${template}\`
+        })
+        export class App {}
+      `;
+      env.write('test-no-args.ts', getComponentWithTemplate('<div *dir></div>'));
+      env.write('test-empty-exp.ts', getComponentWithTemplate('<div *dir=""></div>'));
+      env.write('test-empty-str.ts', getComponentWithTemplate(`<div *dir="''"></div>`));
+      env.write('test-undefined.ts', getComponentWithTemplate('<div *dir="undefined"></div>'));
+      env.write('test-false.ts', getComponentWithTemplate('<div *dir="false"></div>'));
+      env.write('test-null.ts', getComponentWithTemplate('<div *dir="null"></div>'));
+      env.write('test-zero.ts', getComponentWithTemplate('<div *dir="0"></div>'));
 
-         env.driveMain();
+      env.driveMain();
 
-         expect(env.getContents('test-no-args.js')).toContain('ɵɵproperty("dir", null)');
-         expect(env.getContents('test-empty-exp.js')).toContain('ɵɵproperty("dir", null)');
-         expect(env.getContents('test-empty-str.js')).toContain(`ɵɵproperty("dir", "")`);
-         expect(env.getContents('test-undefined.js')).toContain('ɵɵproperty("dir", undefined)');
-         expect(env.getContents('test-false.js')).toContain('ɵɵproperty("dir", false)');
-         expect(env.getContents('test-null.js')).toContain('ɵɵproperty("dir", null)');
-         expect(env.getContents('test-zero.js')).toContain('ɵɵproperty("dir", 0)');
-       });
+      // Include `dir` into static attribute list in case of empty args
+      expect(env.getContents('test-no-args.js')).toContain('consts: [["dir", "", 4, "dir"]]');
+      expect(env.getContents('test-empty-exp.js')).toContain('consts: [["dir", "", 4, "dir"]]');
+
+      // Generate `property` instruction for false-y values
+      expect(env.getContents('test-empty-str.js')).toContain(`ɵɵproperty("dir", "")`);
+      expect(env.getContents('test-undefined.js')).toContain('ɵɵproperty("dir", undefined)');
+      expect(env.getContents('test-false.js')).toContain('ɵɵproperty("dir", false)');
+      expect(env.getContents('test-null.js')).toContain('ɵɵproperty("dir", null)');
+      expect(env.getContents('test-zero.js')).toContain('ɵɵproperty("dir", 0)');
+    });
 
     it('should wrap "inputs" and "outputs" keys if they contain unsafe characters', () => {
       env.write(`test.ts`, `

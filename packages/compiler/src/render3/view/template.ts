@@ -1069,18 +1069,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
             });
           }
         }
-      } else if (input instanceof t.TextAttribute && input.value === '') {
-        // Special case for structural directives with no or empty expressions,
-        // e.g. `<input *dir>` or `<input *dir="">`. We generate `property` instruction in these
-        // cases to set `dir` inputs to be aligned with View Engine behavior. Such attributes are
-        // represented using t.TextAttribute with empty string as a value, see `extractAttributes`
-        // function in `r3_template_transform.ts`.
-        this.allocateBindingSlots(null);
-        propertyBindings.push({
-          name: input.name,
-          sourceSpan: input.sourceSpan,
-          value: () => o.NULL_EXPR,
-        });
       }
     });
 

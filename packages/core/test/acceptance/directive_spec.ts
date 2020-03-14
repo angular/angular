@@ -11,6 +11,7 @@ import {Component, Directive, ElementRef, EventEmitter, NgModule, Output, Templa
 import {Input} from '@angular/core/src/metadata';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
+import {ivyEnabled} from '@angular/private/testing';
 
 describe('directives', () => {
   describe('matching', () => {
@@ -616,8 +617,14 @@ describe('directives', () => {
       fixture.detectChanges();
 
       const expectedInput = [
-        null,       // *dir
-        null,       // *dir=""
+        // In View Engine, structural directive input with empty arg is initialized as `null` in
+        // the regular form (e.g. `<input *dir>`), but as an empty string in de-sugared form
+        // (`<ng-template dir><input></ng-template>`), which is inconsistent. In Ivy, directive
+        // input in both regular form and its de-sugared versions always receive empty string as an
+        // input.
+        ivyEnabled ? '' : null,  // *dir
+        ivyEnabled ? '' : null,  // *dir=""
+
         '',         // *dir="''"
         undefined,  // *dir="undefined"
         false,      // *dir="false"
@@ -625,6 +632,75 @@ describe('directives', () => {
         0,          // *dir="0"
       ];
       dirInstances.forEach((instance, index) => expect(instance.dir).toBe(expectedInput[index]));
+    });
+
+    it('de-sugared structural directives should receive same inputs', () => {
+      const dirInstances: StructuralDir[] = [];
+      const callsCount: {[key: string]: number} = {dir: 0, dirOf: 0};
+
+      @Directive({selector: '[dir]'})
+      class StructuralDir {
+        _dir: any;
+        _dirOf: any;
+
+        constructor() { dirInstances.push(this); }
+
+        @Input()
+        set dir(value: any) {
+          this._dir = value;
+          callsCount.dir++;
+        };
+        get dir() { return this._dir; }
+
+        @Input()
+        set dirOf(value: any) {
+          this._dirOf = value;
+          callsCount.dirOf++;
+        };
+        get dirOf() { return this._dirOf; }
+      }
+
+      @Component({
+        template: `
+          <!-- Regular form of structural directive -->
+          <div title="div" *dir="let item of items">Some content</div>
+
+          <!-- De-sugared version of the same structural directive -->
+          <ng-template title="ng-template" dir let-item [dirOf]="items">
+            <div>Some content</div>
+          </ng-template>
+        `,
+      })
+      class App {
+        items = [1, 2, 3];
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [App, StructuralDir],
+      });
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      const [regularDir, desugaredDir] = dirInstances;
+
+      // In View Engine, structural directive input with empty arg is initialized as `null` in
+      // the regular form (e.g. `<input *dir>`), but as an empty string in de-sugared form
+      // (`<ng-template dir><input></ng-template>`), which is inconsistent. In Ivy, directive
+      // input in both regular form and its de-sugared versions always receive empty string as an
+      // input.
+      expect(regularDir.dir).toBe(ivyEnabled ? '' : null);
+      expect(desugaredDir.dir).toBe('');
+      expect(regularDir.dirOf).toEqual([1, 2, 3]);
+      expect(desugaredDir.dirOf).toEqual([1, 2, 3]);
+
+      // Verify that each input was called just once.
+      expect(callsCount).toEqual({dir: 2, dirOf: 2});
+
+      fixture.componentInstance.items = [1, 2, 3, 4];
+      fixture.detectChanges();
+
+      // Verify that bound input was called again, but static input was not called.
+      expect(callsCount).toEqual({dir: 2, dirOf: 4});
     });
 
     it('should set the directive input only, shadowing the title property of the div, for `[title]="value"`',
