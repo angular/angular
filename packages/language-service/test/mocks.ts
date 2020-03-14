@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotSummaryResolver, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, InterpolationConfig, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, StaticSymbolResolverHost, SummaryResolver, TemplateParser, analyzeNgModules, createOfflineCompileUrlResolver} from '@angular/compiler';
+import {AotSummaryResolver, CompileMetadataResolver, CompilerConfig, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, StaticSymbolResolverHost, TemplateParser, analyzeNgModules, createOfflineCompileUrlResolver} from '@angular/compiler';
 import {Directory, MockAotContext} from '@angular/compiler-cli/test/mocks';
 import {setup} from '@angular/compiler-cli/test/test_support';
 import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
@@ -238,7 +238,8 @@ export function getDiagnosticTemplateInfo(
           fileName: templateFile,
           offset: 0, query, members,
           htmlAst: compiledTemplate.htmlAst,
-          templateAst: compiledTemplate.templateAst
+          templateAst: compiledTemplate.templateAst,
+          source: sourceFile.text,
         };
       }
     }
