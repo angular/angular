@@ -2,6 +2,12 @@
 
 _Angular elements_ are Angular components packaged as _custom elements_ (also called Web Components), a web standard for defining new HTML elements in a framework-agnostic way.
 
+<div class="alert is-helpful">
+
+  For the sample app that this page describes, see the <live-example></live-example>.
+
+</div>
+
 [Custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) are a Web Platform feature currently supported by Chrome, Edge (Chromium-based), Firefox, Opera, and Safari, and available in other browsers through polyfills (see [Browser Support](#browser-support)).
 A custom element extends HTML by allowing you to define a tag whose content is created and controlled by JavaScript code.
 The browser maintains a `CustomElementRegistry` of defined custom elements, which maps an instantiable JavaScript class to an HTML tag.
@@ -152,12 +158,6 @@ For comparison, the demo shows both methods. One button adds the popup using the
 
   </code-pane>
 </code-tabs>
-
-<!--
-  StackBlitz transpiles code to ES5. The live example will not work without a polyfill.
-  Only offer a `.zip` to download for now.
--->
-You can download the full code for the example <live-example downloadOnly>here</live-example>.
 
 
 ## Typings for custom elements
