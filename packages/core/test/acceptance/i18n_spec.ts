@@ -1448,7 +1448,8 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       expect(dirInstance !.dir).toBe('Bonjour Angular');
     });
 
-    it('should allow directive inputs (as an interpolated prop) on <ng-template> with structural directives',
+    it('should allow directive inputs (as interpolated props)' +
+           'on <ng-template> with structural directives present',
        () => {
          loadTranslations({[computeMsgId('Hello {$INTERPOLATION}')]: 'Bonjour {$INTERPOLATION}'});
 
