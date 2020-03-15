@@ -7,6 +7,12 @@ schedule a meeting, and perform countless other data-entry tasks.
 In developing a form, it's important to create a data-entry experience that guides the
 user efficiently and effectively through the workflow.
 
+<div class="alert is-helpful">
+
+  For the sample app that this page describes, see the <live-example></live-example>.
+
+</div>
+
 ## Introduction to Template-driven forms
 
 Developing forms requires design skills (which are out of scope for this page), as well as framework support for
@@ -21,8 +27,6 @@ This page shows you how to build a simple form from scratch. Along the way you'l
 * Provide visual feedback using special CSS classes that track the state of the controls.
 * Display validation errors to users and enable/disable form controls.
 * Share information across HTML elements using template reference variables.
-
-You can run the <live-example></live-example> in Stackblitz and download the code from there.
 
 {@a template-driven}
 
