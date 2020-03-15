@@ -1,5 +1,5 @@
 import { Component, Input, ViewChildren, QueryList, OnInit, OnDestroy } from '@angular/core';
-import { RecordingComponent } from './recording/recording.component';
+import { RecordingModalComponent } from './recording/recording-modal/recording-modal.component';
 import { MessageBus, Events, ProfilerFrame } from 'protocol';
 import { FileApiService } from '../../../file-api-service';
 import { MatDialog } from '@angular/material/dialog';
@@ -22,7 +22,7 @@ export class ProfilerComponent implements OnInit, OnDestroy {
   stream: ProfilerFrame[] = [];
   buffer: ProfilerFrame[] = [];
 
-  @ViewChildren(RecordingComponent) recordingRef: QueryList<RecordingComponent>;
+  @ViewChildren(RecordingModalComponent) recordingRef: QueryList<RecordingModalComponent>;
 
   constructor(private _fileApiService: FileApiService, public dialog: MatDialog) {}
 

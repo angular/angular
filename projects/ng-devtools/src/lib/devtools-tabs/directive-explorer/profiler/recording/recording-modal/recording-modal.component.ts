@@ -2,10 +2,10 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'ng-recording-modal',
-  templateUrl: './recording.component.html',
-  styleUrls: ['./recording.component.css'],
+  templateUrl: './recording-modal.component.html',
+  styleUrls: ['./recording-modal.component.css'],
 })
-export class RecordingComponent {
+export class RecordingModalComponent {
   visible = false;
 
   stop(): void {
