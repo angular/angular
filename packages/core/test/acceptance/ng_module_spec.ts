@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, CUSTOM_ELEMENTS_SCHEMA, Injectable, InjectionToken, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelement as element} from '@angular/core';
+import {Component, CUSTOM_ELEMENTS_SCHEMA, Injectable, InjectionToken, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelement as element, ɵɵproperty as property} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {modifiedInIvy, onlyInIvy} from '@angular/private/testing';
@@ -247,72 +247,121 @@ describe('NgModule', () => {
               }).toThrowError(/'custom' is not a known element/);
             });
 
-    onlyInIvy('test relies on Ivy-specific AOT format')
-        .it('should not log unknown element warning for AOT-compiled components', () => {
-          const spy = spyOn(console, 'warn');
-
-          /*
-           *  @Component({
-           *    selector: 'comp',
-           *    template: '<custom-el></custom-el>',
-           *  })
-           *  class MyComp {}
-           */
-          class MyComp {
-            static ɵfac = () => new MyComp();
-            static ɵcmp = defineComponent({
-              type: MyComp,
-              selectors: [['comp']],
-              decls: 1,
-              vars: 0,
-              template:
-                  function MyComp_Template(rf, ctx) {
-                    if (rf & 1) {
-                      element(0, 'custom-el');
-                    }
-                  },
-              encapsulation: 2
-            });
-          }
-          setClassMetadata(
-              MyComp, [{
-                type: Component,
-                args: [{
-                  selector: 'comp',
-                  template: '<custom-el></custom-el>',
-                }]
-              }],
-              null, null);
-
-          /*
-           *  @NgModule({
-           *    declarations: [MyComp],
-           *    schemas: [NO_ERRORS_SCHEMA],
-           *  })
-           *  class MyModule {}
-           */
-          class MyModule {
-            static ɵmod = defineNgModule({type: MyModule});
-            static ɵinj = defineInjector({factory: () => new MyModule()});
-          }
-          setClassMetadata(
-              MyModule, [{
-                type: NgModule,
-                args: [{
-                  declarations: [MyComp],
-                  schemas: [NO_ERRORS_SCHEMA],
-                }]
-              }],
-              null, null);
-
-          TestBed.configureTestingModule({
-            imports: [MyModule],
+    onlyInIvy('test relies on Ivy-specific AOT format').describe('AOT-compiled components', () => {
+      function createComponent(
+          template: (rf: any) => void, vars: number, consts?: (number|string)[][]) {
+        class Comp {
+          static ɵfac = () => new Comp();
+          static ɵcmp = defineComponent({
+            type: Comp,
+            selectors: [['comp']],
+            decls: 1,
+            vars,
+            consts,
+            template,
+            encapsulation: 2
           });
+        }
+        setClassMetadata(
+            Comp, [{
+              type: Component,
+              args: [
+                {selector: 'comp', template: '...'},
+              ]
+            }],
+            null, null);
+        return Comp;
+      }
 
-          const fixture = TestBed.createComponent(MyComp);
-          fixture.detectChanges();
-          expect(spy).not.toHaveBeenCalled();
+      function createNgModule(Comp: any) {
+        class Module {
+          static ɵmod = defineNgModule({type: Module});
+          static ɵinj = defineInjector({factory: () => new Module()});
+        }
+        setClassMetadata(
+            Module, [{
+              type: NgModule,
+              args: [{
+                declarations: [Comp],
+                schemas: [NO_ERRORS_SCHEMA],
+              }]
+            }],
+            null, null);
+        return Module;
+      }
+
+      it('should not log unknown element warning for AOT-compiled components', () => {
+        const spy = spyOn(console, 'warn');
+
+        /*
+         *  @Component({
+         *    selector: 'comp',
+         *    template: '<custom-el></custom-el>',
+         *  })
+         *  class MyComp {}
+         */
+        const MyComp = createComponent((rf: any) => {
+          if (rf & 1) {
+            element(0, 'custom-el');
+          }
+        }, 0);
+
+        /*
+         *  @NgModule({
+         *    declarations: [MyComp],
+         *    schemas: [NO_ERRORS_SCHEMA],
+         *  })
+         *  class MyModule {}
+         */
+        const MyModule = createNgModule(MyComp);
+
+        TestBed.configureTestingModule({
+          imports: [MyModule],
         });
+
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
+        expect(spy).not.toHaveBeenCalled();
+      });
+
+      it('should not log unknown property warning for AOT-compiled components', () => {
+        const spy = spyOn(console, 'warn');
+
+        /*
+         *  @Component({
+         *    selector: 'comp',
+         *    template: '<div [foo]="1"></div>',
+         *  })
+         *  class MyComp {}
+         */
+        const MyComp = createComponent((rf: any) => {
+          if (rf & 1) {
+            element(0, 'div', 0);
+          }
+          if (rf & 2) {
+            property('foo', true);
+          }
+        }, 1, [[3, 'foo']]);
+
+        /*
+         *  @NgModule({
+         *    declarations: [MyComp],
+         *    schemas: [NO_ERRORS_SCHEMA],
+         *  })
+         *  class MyModule {}
+         */
+        const MyModule = createNgModule(MyComp);
+
+        TestBed.configureTestingModule({
+          imports: [MyModule],
+        });
+
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
+
+        expect(spy).not.toHaveBeenCalled();
+      });
+    });
 
     onlyInIvy('unknown element check logs a warning rather than throwing')
         .it('should not warn about unknown elements with CUSTOM_ELEMENTS_SCHEMA', () => {
