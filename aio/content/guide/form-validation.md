@@ -1,13 +1,16 @@
 # Form validation
 
-
-
-
 Improve overall data quality by validating user input for accuracy and completeness.
 
 This page shows how to validate user input in the UI and display useful validation messages
 using both reactive and template-driven forms. It assumes some basic knowledge of the two
 forms modules.
+
+<div class="alert is-helpful">
+
+  For the sample app that this page describes, see the <live-example></live-example>.
+
+</div>
 
 <div class="alert is-helpful">
 
@@ -336,5 +339,3 @@ With reactive forms:
 ```typescript
 new FormControl('', {updateOn: 'blur'});
 ```
-
-**You can run the <live-example></live-example> to see the complete reactive and template-driven example code.**
