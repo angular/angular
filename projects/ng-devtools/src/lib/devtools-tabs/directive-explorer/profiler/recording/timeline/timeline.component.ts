@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewCh
 import { AppEntry, formatFlamegraphRecords, TimelineView } from './format-records';
 import { MatSlider, MatSliderChange } from '@angular/material/slider';
 import { ProfilerFrame } from 'protocol';
-import { MatSelectChange } from '@angular/material/select';
 
 export enum VisualizationMode {
   FlameGraph,

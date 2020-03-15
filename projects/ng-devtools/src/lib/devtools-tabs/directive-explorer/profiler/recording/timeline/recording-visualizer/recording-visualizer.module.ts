@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
-import { RecordingVisualizerComponent } from './recording-visualizer.component';
+import { TimelineVisualizerComponent } from './timeline-visualizer.component';
 import { CommonModule } from '@angular/common';
 import { NgxFlamegraphModule } from 'ngx-flamegraph';
 import { FlamegraphVisualizerComponent } from './flamegraph-visualizer/flamegraph-visualizer.component';
 import { WebtreegraphVisualizerComponent } from './webtreegraph-visualizer/webtreegraph-visualizer.component';
 
 @NgModule({
-  declarations: [RecordingVisualizerComponent, FlamegraphVisualizerComponent, WebtreegraphVisualizerComponent],
+  declarations: [TimelineVisualizerComponent, FlamegraphVisualizerComponent, WebtreegraphVisualizerComponent],
   imports: [CommonModule, NgxFlamegraphModule],
-  exports: [RecordingVisualizerComponent],
+  exports: [TimelineVisualizerComponent],
 })
 export class RecordingVisualizerModule {}
