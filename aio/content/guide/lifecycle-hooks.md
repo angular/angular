@@ -24,6 +24,7 @@ A directive has the same set of lifecycle hooks.
 -->
 디렉티브는 컴포넌트와 같은 라이크싸이클을 갖습니다.
 
+
 {@a hooks-overview}
 
 <!--
@@ -56,6 +57,7 @@ Angular only calls a directive/component hook method *if it is defined*.
 -->
 하지만 디렉티브나 컴포넌트에 모든 라이프싸이클 후킹 함수를 구현할 필요는 없습니다.
 라이프싸이클 후킹 함수는 필요한 것만 골라서 사용하면 되며, Angular 프레임워크는 명시적으로 구현한 라이프싸이클 후킹 함수만 실행합니다.
+
 
 {@a hooks-purpose-timing}
 
@@ -199,7 +201,8 @@ calls the lifecycle hook methods in the following sequence at specific moments:
       Called after the `ngAfterViewInit()` and every subsequent `ngAfterContentChecked()`.
       -->
       Angular가 컴포넌트 뷰와 자식 컴포넌트 뷰, 뷰 안에 있는 디렉티브가 준비되었는지 검사한 후에 실행됩니다.
-      Called after the `ngAfterViewInit()` and every subsequent `ngAfterContentChecked()`.
+
+      `ngAfterViewInit()`이 실행된 이후에 실행되며 `ngAfterContentChecked()`가 실행될 때마다 실행됩니다.
 
     </td>
   </tr>
@@ -224,10 +227,8 @@ calls the lifecycle hook methods in the following sequence at specific moments:
   </tr>
 </table>
 
-<!--
+
 {@a interface-optional}
--->
-{@a 인터페이스는-옵션}
 
 <!--
 ## Interfaces are optional (technically)
@@ -262,10 +263,8 @@ in order to benefit from strong typing and editor tooling.
 -->
 그럼에도 불구하고, TypeScript의 강력한 타입 검사와 에디터가 지원하는 타입 지원 기능을 제대로 활용하려면 Angular가 제안하는 방법처럼 인터페이스를 제대로 구현하는 것이 좋습니다.
 
-<!--
+
 {@a other-lifecycle-hooks}
--->
-{@a 기타-라이프싸이클-후킹-함수}
 
 <!--
 ## Other Angular lifecycle hooks
@@ -282,6 +281,7 @@ Angular 서드파티 라이브러리 중에는 라이프싸이클 후킹 함수�
 control over how these libraries are used.
 -->
 이런 라이프싸이클 후킹 함수는 Angular가 정의하는 라이프싸이클 외에 좀 더 다양한 시점을 활용하기 위해 마련된 것이며, 컴포넌트를 좀 더 효율적으로 활용할 수 있는 방법입니다.
+
 
 {@a the-sample}
 
@@ -447,6 +447,7 @@ The remainder of this page discusses selected exercises in further detail.
 -->
 이제부터는 각각의 예제를 좀 더 자세하게 알아봅시다.
 
+
 {@a peek-a-boo}
 
 <!--
@@ -507,6 +508,7 @@ Clearly these three hooks fire *often*. Keep the logic in these hooks as lean as
 The next examples focus on hook details.
 -->
 그리고 다음 예제부터는 각각의 라이프싸이클 후킹 함수를 자세하게 다룹니다.
+
 
 {@a spy}
 
@@ -598,6 +600,7 @@ The `ngOnInit()` and `ngOnDestroy()` methods have more vital roles to play in re
 -->
 `ngOnInit()` 함수와 `ngOnDestroy()` 함수는 실제 업무용 애플리케이션에도 중요하게 사용됩니다.
 
+
 {@a oninit}
 
 <!--
@@ -678,6 +681,7 @@ That's where the heavy initialization logic belongs.
 -->
 `ngOnInit()` 메소드는 컴포넌트가 생성된 _직후에_ 실행되기 때문에 생성자가 실행되는 시점과 많이 차이나지 않습니다.
 
+
 {@a ondestroy}
 
 <!--
@@ -704,6 +708,7 @@ You risk memory leaks if you neglect to do so.
 JavaScript 환경은 필요없는 자원을 자동으로 정리하지만, 정리해야 하는 자원이 그 외에 추가로 있다면 이 함수에 작성하는 것이 좋습니다. 
 옵저버블이나 DOM 이벤트를 구독한 것을 해제하거나, 타이머를 종료하는 로직, 서비스나 디렉티브에 등록된 콜백 함수를 해제하는 것도 이 함수에서 하는 것이 좋습니다.
 수동으로 정리해야 하는 항목을 정리하지 않으면 메모리 누수의 위험이 있습니다.
+
 
 {@a onchanges}
 
@@ -772,6 +777,7 @@ Angular는 입력 프로퍼티 값이 변경되었을 때만 `ngOnChangaes()` �
 그래서 `hero` 객체 안에 있는 `name` 값이 변경되는 것은 Angular가 신경쓰지 않습니다.
 객체가 인자로 전달될 때는 *참조하는 주소 자체가* 변경되지 않는 이상 값이 변경된 것으로 처리하지 않습니다.
 
+
 {@a docheck}
 
 <!--
@@ -832,6 +838,7 @@ Clearly our implementation must be very lightweight or the user experience suffe
 예를 들면, `<input>` 엘리먼트에 마우스 동작이 있을 때도 이 함수가 실행됩니다.
 따라서 컴포넌트 프로퍼티값이 변한 것을 수동으로 감지할 때는 꼭 필요한 곳에만, 최대한 간단한 로직으로 작성해야 사용자가 불편함을 느끼지 않습니다.
 
+
 {@a afterview}
 
 ## AfterView
@@ -864,6 +871,7 @@ which can only be reached by querying for the child view via the property decora
 마지막으로 다음 코드는 *자식 컴포넌트 뷰*가 변경될 때마다 [@ViewChild](api/core/ViewChild)로 지정된 프로퍼티를 통해 자식 컴포넌트에 있는 `hero` 객체를 가져와서 동작을 수행할 수 있는 예제 코드입니다.
 
 <code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="hooks" header="AfterViewComponent (class excerpts)"></code-example>
+
 
 {@a wait-a-tick}
 
@@ -915,6 +923,7 @@ Write lean hook methods to avoid performance problems.
 이 결과를 보면 별다른 변화가 없을 때도 `AfterViewChecked` 후킹 함수가 여러번 실행되는 것을 확인할 수 있습니다.
 성능 문제를 피하려면 후킹 함수에는 간단한 로직만 작성하세요.
 
+
 {@a aftercontent}
 
 ## AfterContent
@@ -924,6 +933,7 @@ The *AfterContent* sample explores the `AfterContentInit()` and `AfterContentChe
 *after* Angular projects external content into the component.
 -->
 *AfterContent* 예제는 Angular가 컴포넌트 안에 외부 컨텐츠를 넣은 이후에 실행되는 `AfterContentInit`과 `AfterContentChecked` 후킹 인터페이스를 다룹니다.
+
 
 {@a content-projection}
 
@@ -1000,6 +1010,7 @@ Angular가 이 태그를 확인하면 컴포넌트 외부에서 전달되는 컨
 
 </div>
 
+
 {@a aftercontent-hooks}
 
 <!--
@@ -1034,6 +1045,7 @@ which can only be reached by querying for them via the property decorated with
 *AfterContent* 후킹은 *자식 컴포넌트에 반영된 컨텐츠가* 변경되는 것과 관계가 있으며, 이 컨텐츠 내용을 직접 할용하려면 [@ContentChild](api/core/ContentChild) 데코레이터를 사용해야 합니다.
 
 <code-example path="lifecycle-hooks/src/app/after-content.component.ts" region="hooks" header="AfterContentComponent (class excerpts)"></code-example>
+
 
 {@a no-unidirectional-flow-worries}
 

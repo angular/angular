@@ -4155,7 +4155,7 @@ Here you can see the use of a `click()` event binding and the property binding s
 -->
 Angular에서는 SVG 파일도 템플릿으로 사용할 수 있습니다.
 이 때 모든 템플릿 문법은 SVG와 HTML 표준을 그대로 따릅니다.
-SVG 스펙은 [1.1 스펙](https://www.w3.org/TR/SVG11/)과 [2.0](https://www.w3.org/TR/SVG2/)을 참고하세요.
+SVG 스펙은 [1.1 스펙](https://www.w3.org/TR/SVG11/)과 [2.0 스펙](https://www.w3.org/TR/SVG2/)을 참고하세요.
 
 간단하게 이미지를 사용하는 대신 왜 템플릿에 SVG를 사용할까요?
 
@@ -4169,4 +4169,4 @@ SVG를 템플릿으로 사용하면 일반 HTML 템플릿을 사용하듯이 이
 
 <code-example path="template-syntax/src/app/svg.component.svg" header="src/app/svg.component.svg"></code-example>
 
-이렇게 구현하면 `click()` 이벤트를 컴포넌트 클래스와 바인딩 할 수 있고, `[attr.fill]="fillColor"`처럼 프로퍼티 바인딩을 할 수도 있습니다.
+이렇게 구현하면 `click()` 이벤트를 컴포넌트 클래스와 바인딩 할 수 있고, `[attr.fill]="fillColor"`처럼 프로퍼티 바인딩도 할 수 있습니다.

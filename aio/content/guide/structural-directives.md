@@ -21,10 +21,8 @@ Try the <live-example></live-example>.
 -->
 이 문서에서 다루는 예제는 <live-example></live-example>에서 바로 확인하거나 다운받을 수 있습니다.
 
-<!--
+
 {@a definition}
--->
-{@a 정의}
 
 <!--
 ## What are structural directives?
@@ -338,6 +336,7 @@ The [`NgFor`](guide/structural-directives#ngFor) and [`NgSwitch...`](guide/struc
 -->
 이 과정은 [`NgFor`](guide/structural-directives#ngFor)나 [`NgSwitch...`](guide/structural-directives#ngSwitch)에서도 비슷합니다.
 
+
 {@a ngFor}
 
 
@@ -397,82 +396,105 @@ In this example, the `[ngClass]="odd"` stays on the `<div>`.
 <!--
 The Angular microsyntax lets you configure a directive in a compact, friendly string.
 The microsyntax parser translates that string into attributes on the `<ng-template>`:
--->
-세부 문법을 활용하면 복잡한 디렉티브 설정을 문자열로 간단하게 할 수 있습니다.
-세부 문법은 별도의 파서를 사용해서 문자열을 `<ng-template>`의 어트리뷰트로 변환합니다.
 
-<!--
 * The `let` keyword declares a [_template input variable_](guide/structural-directives#template-input-variable)
 that you reference within the template. The input variables in this example are `hero`, `i`, and `odd`.
 The parser translates `let hero`, `let i`, and `let odd` into variables named
 `let-hero`, `let-i`, and `let-odd`.
--->
-* `let` 키워드는 [_템플릿 입력 변수_](guide/structural-directives#템플릿-입력-변수)를 선언합니다. 이 변수는 템플릿 안에서 참조할 수 있으며, `hero`나 `i`, `odd` 등이 템플릿 변수에 해당합니다.
-문자열에 있던 `let hero`, `let i`, `let odd`를 파서가 처리하고 나면 `let-hero`, `let-i`, `let-odd`와 같은 이름으로 변경됩니다.
 
-<!--
-* The microsyntax parser title-cases all directives and prefixes them with the directive's
-attribute name, such as `ngFor`. For example, the `ngFor` input properties,
-`of` and `trackBy`, become `ngForOf` and `ngForTrackBy`, respectively.
-That's how the directive learns that the list is `heroes` and the track-by function is `trackById`.
--->
 * The microsyntax parser title-cases all directives and prefixes them with the directive's
 attribute name, such as `ngFor`. For example, the `ngFor` input properties,
 `of` and `trackBy`, become `ngForOf` and `ngForTrackBy`, respectively.
 That's how the directive learns that the list is `heroes` and the track-by function is `trackById`.
 
-<!--
 * As the `NgFor` directive loops through the list, it sets and resets properties of its own _context_ object.
 These properties can include, but aren't limited to, `index`, `odd`, and a special property
 named `$implicit`.
--->
-* `NgFor` 디렉티브가 배열을 순회할 때 각 싸이클마다 `NgFor` 컨텍스트에만 적용되는 프로퍼티가 있습니다.
-`index`나 `odd`, `$implicit`가 이런 프로퍼티에 해당됩니다.
 
-<!--
 * The `let-i` and `let-odd` variables were defined as `let i=index` and `let odd=odd`.
 Angular sets them to the current value of the context's `index` and `odd` properties.
--->
-* `let-i`나 `let-odd`와 같은 변수는 `let i=index`나 `let odd=odd`를 사용할 때만 선언됩니다.
-그리고 이 때 사용되는 `index`와 `odd` 프로퍼티는 `NgFor` 컨텍스트에 맞게 Angular가 각각 할당합니다.
 
-<!--
 * The context property for `let-hero` wasn't specified.
 Its intended source is implicit.
 Angular sets `let-hero` to the value of the context's `$implicit` property,
 which `NgFor` has initialized with the hero for the current iteration.
--->
-* 하지만 `let-hero` 변수는 소스 코드에 따로 선언되며 외부에서는 확인할 수 없습니다. 좀 더 자세하게 설명하면, `let-hero` 변수는 컨텍스트의 `$implicit` 프로퍼티 안에 선언되며, 현재 순회하는 배열에 맞게 Angular가 값을 할당합니다.
 
 * The [`NgFor` API guide](api/common/NgForOf "API: NgFor")
 describes additional `NgFor` directive properties and context properties.
 
 * The `NgForOf` directive implements `NgFor`. Read more about additional `NgForOf` directive properties and context properties in the [NgForOf API reference](api/common/NgForOf).
+-->
+세부 문법을 활용하면 복잡한 디렉티브 설정을 문자열로 간단하게 할 수 있습니다.
+세부 문법 파서는 어트리뷰트에 사용된 문자열을 `<ng-template>`의 어트리뷰트로 이렇게 변환합니다:
 
+* `let` 키워드는 [_템플릿 입력 변수_](guide/structural-directives#template-input-variable)를 선언합니다. 이 변수는 템플릿 안에서 참조할 수 있으며, `hero`나 `i`, `odd` 등이 템플릿 변수에 해당합니다.
+문자열에 있던 `let hero`, `let i`, `let odd`를 파서가 처리하고 나면 `let-hero`, `let-i`, `let-odd`와 같은 이름으로 변경됩니다.
+
+* 그리고 세부문법 파서는 엘리먼트에 사용된 디렉티브 어트리뷰트 이름을 실제 디렉티브와 연결합니다.
+`ngFor`의 경우에는 `of`와 `trackBy`를 `ngForOf`와 `ngForTrackBy`로 연결하는 식입니다.
+이 작업을 거쳐야 디렉티브에서 처리하는 배열이 `heroes`이며 `trackById` 함수로 객체를 추적할 수 있습니다.
+
+* `NgFor` 디렉티브가 배열을 순회할 때 각 싸이클마다 `NgFor` 컨텍스트에만 적용되는 프로퍼티가 있습니다.
+`index`나 `odd`, `$implicit`가 이런 프로퍼티에 해당됩니다.
+
+* `let-i`나 `let-odd`와 같은 변수는 `let i=index`나 `let odd=odd`를 사용할 때만 선언됩니다.
+그리고 이 때 사용되는 `index`와 `odd` 프로퍼티는 `NgFor` 컨텍스트에 맞게 Angular가 각각 할당합니다.
+
+* 하지만 `let-hero` 변수는 소스 코드에 따로 선언되며 외부에서는 확인할 수 없습니다. 좀 더 자세하게 설명하면, `let-hero` 변수는 컨텍스트의 `$implicit` 프로퍼티 안에 선언되며, 현재 순회하는 배열에 맞게 Angular가 값을 할당합니다.
+
+* `NgFor` 디렉티브의 프로퍼티와 컨텍스트 프로퍼티에 대해 더 알아보려면 [`NgFor` API 문서](api/common/NgForOf "API: NgFor")를 참고하세요.
+
+* `NgForOf` 디렉티브는 `NgFor` 디렉티블르 기반으로 만들어졌습니다. `NgForOf` 디렉티브의 프로퍼티와 컨텍스트 프로퍼티에 대해 더 알아보려면 [NgForOf API 문서](api/common/NgForOf)를 참고하세요.
+
+<!--
 ### Writing your own structural directives
+-->
+### 커스텀 구조 디렉티브 구현하기
 
+<!--
 These microsyntax mechanisms are also available to you when you write your own structural directives.
 For example, microsyntax in Angular allows you to write `<div *ngFor="let item of items">{{item}}</div>`
 instead of `<ng-template ngFor let-item [ngForOf]="items"><div>{{item}}</div></ng-template>`.
 The following sections provide detailed information on constraints, grammar,
 and translation of microsyntax.
+-->
+세부문법은 커스텀 구조 디렉티브에서도 동일하게 동작합니다.
+그래서 `<ng-template ngFor let-item [ngForOf]="items"><div>{{item}}</div></ng-template>` 라고 작성하지 않고 `<div *ngFor="let item of items">{{item}}</div>`처럼 작성해도 됩니다.
+다음 섹션에서는 세부문법의 제약사항, 문법, 변환결과에 대해 자세하게 알아봅시다.
 
+<!--
 ### Constraints
+-->
+### 제약사항
 
+<!--
 Microsyntax must meet the following requirements:
 
 - It must be known ahead of time so that IDEs can parse it without knowing the underlying semantics of the directive or what directives are present.
 - It must translate to key-value attributes in the DOM.
+-->
+세부문법에는 이런 제약사항들이 있습니다:
+- 세부문법은 문자열이기 때문에 IDE가 제대로 처리하지 못할 수 있습니다. 어떤 디렉티브가 사용되었는지 개발자가 충분히 알고 있어야 합니다.
+- DOM에서 키-값 어트리뷰트로 변환되어야 합니다.
 
+<!--
 ### Grammar
+-->
+### 문법
 
+<!--
 When you write your own structural directives, use the following grammar:
+-->
+커스텀 구조 디렉티브를 만들었다면 이렇게 사용해야 합니다:
 
 ```
 *:prefix="( :let | :expression ) (';' | ',')? ( :let | :as | :keyExp )*"
 ```
 
+<!--
 The following tables describe each portion of the microsyntax grammar.
+-->
+세부문법의 각 부분에 대해 자세하게 알아봅시다.
 
 <!-- What should I put in the table headers? -->
 
@@ -483,23 +505,23 @@ The following tables describe each portion of the microsyntax grammar.
   </tr>
   <tr>
     <td><code>prefix</code></td>
-    <td>HTML attribute key</td>
+    <td><!--HTML attribute key-->HTML 어트리뷰트 키</td>
   </tr>
   <tr>
     <td><code>key</code></td>
-    <td>HTML attribute key</td>
+    <td><!--HTML attribute key-->HTML 어트리뷰트 키</td>
   </tr>
   <tr>
     <td><code>local</code></td>
-    <td>local variable name used in the template</td>
+    <td><!--local variable name used in the template-->템플릿에 있는 로벌 변수 이름</td>
   </tr>
   <tr>
     <td><code>export</code></td>
-    <td>value exported by the directive under a given name</td>
+    <td><!--value exported by the directive under a given name-->디렉티브 외부로 공개되는 값</td>
   </tr>
   <tr>
     <td><code>expression</code></td>
-    <td>standard Angular expression</td>
+    <td><!--standard Angular expression-->일반적인 Angular 표현식</td>
   </tr>
 </table>
 
@@ -520,7 +542,10 @@ The following tables describe each portion of the microsyntax grammar.
 </table>
 
 
+<!--
 ### Translation
+-->
+### 변환결과
 
 A microsyntax is translated to the normal binding syntax as follows:
 
@@ -584,11 +609,7 @@ is a great way to learn more.
 
 
 {@a template-input-variable}
-
-<!--
 {@a template-input-variables}
--->
-{@a 템플릿-입력-변수}
 
 <!--
 ## Template input variable
@@ -766,6 +787,7 @@ You'll refer to the `<ng-template>` when you [write your own structural directiv
 
 디렉티브가 조작하는 엘리먼트가 여러개라면 [&lt;ng-container&gt;](guide/structural-directives#ng-container)를 사용하는 것도 좋습니다.
 
+
 {@a template}
 
 
@@ -809,9 +831,8 @@ as you'll see when you [write your own structural directive](guide/structural-di
 -->
 `<ng-template>`는 구조 디렉티브가 적용될 때에만 그 용도에 맞게 동작하며, [커스텀 구조 디렉티브를 구현](guide/structural-directives#unless)할 때도 활용됩니다.
 
+
 {@a ngcontainer}
-
-
 {@a ng-container}
 
 
@@ -993,8 +1014,8 @@ The `<ng-container>` satisfies a similar need in Angular templates.
 의도한 대로 실행문 3개를 한 번에 실행하려면 실행문 전체를 중괄호로 묶어야 합니다.
 Angular 템플릿에서는 `<ng-container>`가 이런 역할을 합니다.
 
-{@a unless}
 
+{@a unless}
 
 <!--
 ## Write a structural directive
@@ -1176,10 +1197,7 @@ When the `condition` is truthy, the top (A) paragraph is removed and the bottom 
 </div>
 
 
-<!--
 {@a summary}
--->
-{@a 정리}
 
 <!--
 ## Summary
