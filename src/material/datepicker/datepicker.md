@@ -246,7 +246,7 @@ The easiest way to ensure this is to import one of the provided date modules:
   </tr>
   <tr>
     <th align="left" scope="row">Supported locales</th>
-    <td><a href="https://github.com/moment/moment/tree/develop/src/locale) for details">See project</a></td>
+    <td><a href="https://github.com/moment/moment/tree/develop/src/locale">See project for details</a></td>
   </tr>
   <tr>
     <th align="left" scope="row">Dependencies</th>
