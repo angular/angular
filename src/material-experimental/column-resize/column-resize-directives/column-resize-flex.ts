@@ -7,7 +7,6 @@
  */
 
 import {Directive, ElementRef, NgZone} from '@angular/core';
-import {Directionality} from '@angular/cdk/bidi';
 import {
   ColumnResize,
   ColumnResizeNotifier,
@@ -32,7 +31,6 @@ import {AbstractMatColumnResize, FLEX_HOST_BINDINGS, FLEX_PROVIDERS} from './com
 export class MatColumnResizeFlex extends AbstractMatColumnResize {
   constructor(
       readonly columnResizeNotifier: ColumnResizeNotifier,
-      readonly directionality: Directionality,
       protected readonly elementRef: ElementRef,
       protected readonly eventDispatcher: HeaderRowEventDispatcher,
       protected readonly ngZone: NgZone,

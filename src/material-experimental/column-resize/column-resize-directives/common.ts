@@ -31,15 +31,10 @@ export const TABLE_PROVIDERS: Provider[] = [
 ];
 export const FLEX_PROVIDERS: Provider[] = [...PROVIDERS, FLEX_RESIZE_STRATEGY_PROVIDER];
 
-const HOST_BINDINGS = {
-  '[class.mat-column-resize-rtl]': 'directionality.value === "rtl"',
-};
 export const TABLE_HOST_BINDINGS = {
-  ...HOST_BINDINGS,
   'class': 'mat-column-resize-table',
 };
 export const FLEX_HOST_BINDINGS = {
-  ...HOST_BINDINGS,
   'class': 'mat-column-resize-flex',
 };
 

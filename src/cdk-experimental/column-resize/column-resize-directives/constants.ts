@@ -25,6 +25,3 @@ export const TABLE_PROVIDERS: Provider[] = [
   TABLE_LAYOUT_FIXED_RESIZE_STRATEGY_PROVIDER,
 ];
 export const FLEX_PROVIDERS: Provider[] = [...PROVIDERS, FLEX_RESIZE_STRATEGY_PROVIDER];
-export const HOST_BINDINGS = {
-  '[class.cdk-column-resize-rtl]': 'directionality.value === "rtl"',
-};

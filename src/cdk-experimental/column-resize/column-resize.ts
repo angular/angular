@@ -7,7 +7,6 @@
  */
 
 import {AfterViewInit, Directive, ElementRef, NgZone, OnDestroy} from '@angular/core';
-import {Directionality} from '@angular/cdk/bidi';
 import {fromEvent, merge, ReplaySubject} from 'rxjs';
 import {filter, map, mapTo, pairwise, startWith, take, takeUntil} from 'rxjs/operators';
 
@@ -33,7 +32,6 @@ export abstract class ColumnResize implements AfterViewInit, OnDestroy {
   /* Publicly accessible interface for triggering and being notified of resizes. */
   abstract readonly columnResizeNotifier: ColumnResizeNotifier;
 
-  abstract readonly directionality: Directionality;
   protected abstract readonly elementRef: ElementRef<HTMLElement>;
   protected abstract readonly eventDispatcher: HeaderRowEventDispatcher;
   protected abstract readonly ngZone: NgZone;

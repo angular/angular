@@ -51,8 +51,8 @@
     right: 0;
   }
 
-  .mat-column-resize-rtl .mat-header-cell:not(.mat-resizable)::after,
-  .mat-column-resize-rtl .mat-resizable-handle {
+  [dir='rtl'] .mat-header-cell:not(.mat-resizable)::after,
+  [dir='rtl'] .mat-resizable-handle {
     left: 0;
     right: auto;
   }
