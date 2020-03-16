@@ -514,7 +514,10 @@ Find the `<input>` tag for *Name* and update it like this:
 
 *이름*에 해당하는 `<input>` 태그에 이 방법을 적용해 봅시다:
 
+<!--
 <code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (excerpt)" region="ngModelName-1"></code-example>
+-->
+<code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (일부)" region="ngModelName-1"></code-example>
 
 <div class="alert is-helpful">
 
@@ -539,7 +542,10 @@ a template variable for the form. Update the `<form>` tag with
 
 입력 필드는 현재 값을 화면에 표시하면서 또 다른 기능을 동시에 수행해야 합니다. 폼에 다음과 같이 템플릿 변수를 선언합니다:
 
+<!--
 <code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (excerpt)" region="template-variable"></code-example>
+-->
+<code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (일부)" region="template-variable"></code-example>
 
 <!--
 The variable `heroForm` is now a reference to the `NgForm` directive that governs the form as a whole.
@@ -643,7 +649,10 @@ After revision, the core of the form should look like this:
 
 이렇게 수정하고 나면 폼 템플릿의 내용은 다음과 같습니다:
 
+<!--
 <code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (excerpt)" region="ngModel-2"></code-example>
+-->
+<code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (일부)" region="ngModel-2"></code-example>
 
 <div class="alert is-helpful">
 
@@ -785,7 +794,10 @@ to the _Name_ `<input>` tag and use it to display the input's CSS classes.
 -->
 클래스가 지정되는 것을 확인하기 위해 임시로 [템플릿 참조 변수](guide/template-syntax#ref-vars) `spy`를 _이름_ 에 해당하는 `<input>` 태그에 지정하고, 템플릿에 표시하도록 다음과 같이 작성해 봅시다.
 
+<!--
 <code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (excerpt)" region="ngModelName-2"></code-example>
+-->
+<code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (일부)" region="ngModelName-2"></code-example>
 
 <!--
 Now run the app and look at the _Name_ input box.
@@ -898,7 +910,10 @@ Here's an example of an error message added to the _name_ input box:
 * [템플릿 참조 변수](guide/template-syntax#ref-vars)
 * 폼 컨트롤 값이 유효하지 않을 때 에러 메시지를 표시할 `<div>`
 
+<!--
 <code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (excerpt)" region="name-with-error-msg"></code-example>
+-->
+<code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (일부)" region="name-with-error-msg"></code-example>
 
 <!--
 You need a template reference variable to access the input box's Angular control from within the template.
@@ -927,7 +942,10 @@ control to the message `<div>` element's `hidden` property.
 -->
 그리고 이 에러 메시지가 표시되는 것을 제어하기 위해, `name`으로 참조하는 폼 컨트롤을 활용해서 새로 추가한 `<div>` 엘리먼트의 `hidden` 프로퍼티를 지정합니다.
 
+<!--
 <code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (hidden-error-msg)" region="hidden-error-msg"></code-example>
+-->
+<code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (hidden 조건)" region="hidden-error-msg"></code-example>
 
 <!--
 In this example, you hide the message when the control is valid or pristine;
@@ -975,9 +993,14 @@ Place a *New Hero* button at the bottom of the form and bind its click event to 
 이제 폼에 입력된 내용을 초기화하는 기능을 구현해 봅시다.
 폼 가장 아래에 *New Hero* 버튼을 만들고 이 버튼의 클릭 이벤트를 컴포넌트 메소드 `newHero`에 연결합니다.
 
+<!--
 <code-example path="forms/src/app/hero-form/hero-form.component.html" region="new-hero-button-no-reset" header="src/app/hero-form/hero-form.component.html (New Hero button)"></code-example>
 
 <code-example path="forms/src/app/hero-form/hero-form.component.ts" region="new-hero" header="src/app/hero-form/hero-form.component.ts (New Hero method)"></code-example>
+-->
+<code-example path="forms/src/app/hero-form/hero-form.component.html" region="new-hero-button-no-reset" header="src/app/hero-form/hero-form.component.html (히어로 추가 버튼)"></code-example>
+
+<code-example path="forms/src/app/hero-form/hero-form.component.ts" region="new-hero" header="src/app/hero-form/hero-form.component.ts (히어로 추가 메소드)"></code-example>
 
 <!--
 Run the application again, click the *New Hero* button, and the form clears.
@@ -1017,7 +1040,10 @@ by calling the form's `reset()` method after calling the `newHero()` method.
 그래서 `newHero()` 메소드를 실행한 후에는 폼 컨트롤의 상태를 초기화하는 동작을 수행해야 합니다.
 이 동작은 폼에서 제공하는 `reset()` 메소드를 활용할 수 있으며, *New Hero* 버튼에서 `newHero()` 메소드를 실행한 이후에 이 메소드를 실행하도록 다음과 같이 수정합니다.
 
+<!--
 <code-example path="forms/src/app/hero-form/hero-form.component.html" region="new-hero-button-form-reset" header="src/app/hero-form/hero-form.component.html (Reset the form)"></code-example>
+-->
+<code-example path="forms/src/app/hero-form/hero-form.component.html" region="new-hero-button-form-reset" header="src/app/hero-form/hero-form.component.html (폼 초기화 버튼)"></code-example>
 
 <!--
 Now clicking "New Hero" resets both the form and its control flags.
@@ -1061,7 +1087,10 @@ using an event binding. Here's the code:
 
 이제 전체 폼 유효성 결과를 활용해서 버튼의 `disabled` 프로퍼티를 설정합니다:
 
+<!--
 <code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (submit-button)" region="submit-button"></code-example>
+-->
+<code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (폼 제출 버튼)" region="submit-button"></code-example>
 
 <!--
 If you run the application now, you find that the button is enabled&mdash;although
@@ -1127,7 +1156,10 @@ its `hidden` property to the `HeroFormComponent.submitted` property.
 
 폼을 `<div>`로 감싸고 이 엘리먼트의 `hidden` 프로퍼티에 `HeroFormComponent.submitted` 프로퍼티를 바인딩합니다.
 
+<!--
 <code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (excerpt)" region="edit-div"></code-example>
+-->
+<code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (일부)" region="edit-div"></code-example>
 
 <!--
 The main form is visible from the start because the
@@ -1151,7 +1183,10 @@ Add the following HTML below the `<div>` wrapper you just wrote:
 그러면 폼 대신 표시할 무언가를 만들어 봅시다.
 다음 내용을 HTML 템플릿에 추가합니다:
 
+<!--
 <code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (excerpt)" region="submitted"></code-example>
+-->
+<code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (일부)" region="submitted"></code-example>
 
 <!--
 There's the hero again, displayed read-only with interpolation bindings.

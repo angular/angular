@@ -5,18 +5,15 @@ import { Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
 
 // #enddocregion skeleton
 /**
- * 평가 조건이 true가 아니라면 DOM에 템플릿을 추가합니다.
+ * 평가 결과가 참으로 평가되면 DOM에서 템플릿을 제거합니다.
+ * 평가 결과가 거짓으로 평가되면 DOM에 템플릿을 추가합니다.
 // #enddocregion no-docs
- *
- * If the expression assigned to `appUnless` evaluates to a truthy value
- * then the templated elements are removed removed from the DOM,
- * the templated elements are (re)inserted into the DOM.
  *
  * <div *appUnless="errorCount" class="success">
  *   Congrats! Everything is great!
  * </div>
  *
- * ### Syntax
+ * ### 사용법
  *
  * - `<div *appUnless="condition">...</div>`
  * - `<ng-template [appUnless]="condition"><div>...</div></ng-template>`

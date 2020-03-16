@@ -183,7 +183,10 @@ If you look at the template for the name input again, it is fairly similar to th
 -->
 이 내용은 템플릿 기반 폼을 다룰 때와 비슷하게 템플릿에 적용할 수 있습니다.
 
+<!--
 <code-example path="form-validation/src/app/reactive/hero-form-reactive.component.html" region="name-with-error-msg" header="reactive/hero-form-reactive.component.html (name with error msg)"></code-example>
+-->
+<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.html" region="name-with-error-msg" header="reactive/hero-form-reactive.component.html (name 필드와 에러 메시지)"></code-example>
 
 <!--
 Key takeaways:
@@ -260,7 +263,10 @@ to the `FormControl`.
 -->
 커스텀 유효성 검사기를 반응형 폼에 적용하는 것은 아주 간단합니다. `FormControl` 인스턴스를 생성할 때 인자로 전달하기만 하면 됩니다.
 
+<!--
 <code-example path="form-validation/src/app/reactive/hero-form-reactive.component.1.ts" region="custom-validator" header="reactive/hero-form-reactive.component.ts (validator functions)"></code-example>
+-->
+<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.1.ts" region="custom-validator" header="reactive/hero-form-reactive.component.ts (유효성 검사 함수 적용)"></code-example>
 
 {@a adding-to-template-driven-forms}
 <!--
@@ -295,7 +301,11 @@ comes together:
 그리고 디렉티브 클래스는 `Validator` 인터페이스를 사용해서 구현하는데, 이 인터페이스를 사용하면 Angular 폼과 호환되도록 클래스를 정의할 수 있습니다.
 디렉티브 클래스는 다음과 같이 정의합니다:
 
+<!--
 <code-example path="form-validation/src/app/shared/forbidden-name.directive.ts" region="directive" header="shared/forbidden-name.directive.ts (directive)">
+</code-example>
+-->
+<code-example path="form-validation/src/app/shared/forbidden-name.directive.ts" region="directive" header="shared/forbidden-name.directive.ts (디렉티브)">
 </code-example>
 
 <!--
@@ -303,7 +313,10 @@ Once the `ForbiddenValidatorDirective` is ready, you can simply add its selector
 -->
 `ForbiddenValidatorDirective`를 등록하고 나면 `appForbiddenName` 어트리뷰트를 사용해서 엘리먼트에 적용할 수 있습니다. 다음과 같이 적용합니다:
 
+<!--
 <code-example path="form-validation/src/app/template/hero-form-template.component.html" region="name-input" header="template/hero-form-template.component.html (forbidden-name-input)"></code-example>
+-->
+<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="name-input" header="template/hero-form-template.component.html (forbidden 디렉티브가 적용된 입력 필드)"></code-example>
 
 
 <div class="alert is-helpful">
@@ -345,7 +358,10 @@ set the color of each form control's border.
 -->
 이 중 `.ng-valid`와 `.ng-invalid` 클래스를 활용해서 폼 컨트롤의 외곽선을 다르게 표시하려면 다음과 같이 작성합니다.
 
+<!--
 <code-example path="form-validation/src/assets/forms.css" header="forms.css (status classes)">
+-->
+<code-example path="form-validation/src/assets/forms.css" header="forms.css (상태 클래스)">
 
 </code-example>
 

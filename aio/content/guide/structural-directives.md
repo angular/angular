@@ -547,25 +547,44 @@ The following tables describe each portion of the microsyntax grammar.
 -->
 ### 변환결과
 
+<!--
 A microsyntax is translated to the normal binding syntax as follows:
+-->
+세부문법이 파서로 처리되면 다음과 같이 변환됩니다:
 
 <!-- What to put in the table headers below? Are these correct?-->
 <table>
   <tr>
+    <!--
     <th>Microsyntax</th>
     <th>Translation</th>
+    -->
+    <th>세부문법</th>
+    <th>변환결과</th>
   </tr>
   <tr>
+    <!--
     <td><code>prefix</code> and naked <code>expression</code></td>
+    <td><code>[prefix]="expression"</code></td>
+    -->
+    <td><code>prefix</code>, <code>expression</code></td>
     <td><code>[prefix]="expression"</code></td>
   </tr>
   <tr>
+    <!--
     <td><code>keyExp</code></td>
     <td><code>[prefixKey] "expression"
     (let-prefixKey="export")</code>
     <br />
     Notice that the <code>prefix</code>
     is added to the <code>key</code>
+    </td>
+    -->
+    <td><code>keyExp</code></td>
+    <td><code>[prefixKey] "expression"
+    (let-prefixKey="export")</code>
+    <br />
+    <code>key</code> 앞에 <code>prefix</code>가 추가됩니다.
     </td>
   </tr>
   <tr>
@@ -574,14 +593,24 @@ A microsyntax is translated to the normal binding syntax as follows:
   </tr>
 </table>
 
+<!--
 ### Microsyntax examples
+-->
+### 세부문법 예제
 
+<!--
 The following table demonstrates how Angular desugars microsyntax.
+-->
+Angular가 세부문법의 문법 설탕을 제거하고나면(desugar) 다음과 같이 변환됩니다.
 
 <table>
   <tr>
+    <!--
     <th>Microsyntax</th>
     <th>Desugared</th>
+    -->
+    <th>세부문법</th>
+    <th>변환결과</th>
   </tr>
   <tr>
     <td><code>*ngFor="let item of [1,2,3]"</code></td>
@@ -602,10 +631,13 @@ The following table demonstrates how Angular desugars microsyntax.
   </tr>
 </table>
 
+<!--
 Studying the
 [source code for `NgIf`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_if.ts "Source: NgIf")
 and [`NgForOf`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_for_of.ts "Source: NgForOf")
 is a great way to learn more.
+-->
+세부문법에 대해 더 자세하게 알아보려면 [`NgIf` 소스 코드](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_if.ts "Source: NgIf")나 [`NgForOf` 소스 코드](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_for_of.ts "Source: NgForOf")를 참고하는 것도 좋습니다.
 
 
 {@a template-input-variable}
@@ -983,7 +1015,10 @@ The drop down works properly.
 
 <div class="alert is-helpful">
 
+<!--
 **Note:** Remember that ngModel directive is defined as a part of Angular FormsModule and you need to include FormsModule in the imports: [...] section of the Angular module metadata, in which you want to use it.
+-->
+**참고:** `ngModel` 디렉티브는 Angular `FormsModule`이 제공하는 디렉티브입니다. 이 디렉티브를 사용하려면 모듈 메타데이터의 `imports` 배열에 `FormsModule`을 추가해야 합니다.
 
 </div>
 

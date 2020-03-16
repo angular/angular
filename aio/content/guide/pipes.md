@@ -143,8 +143,10 @@ to the component's `format` property. Here's the template for that component:
 컴포넌트 클래스에 있는 `format` 프로퍼티를 파이프 인자로 *바인딩 하는* 컴포넌트를 작성해 봅시다.
 이 컴포넌트의 템플릿은 다음과 같이 작성합니다:
 
+<!--
 <code-example path="pipes/src/app/hero-birthday2.component.ts" region="template" header="src/app/hero-birthday2.component.ts (template)"></code-example>
-
+-->
+<code-example path="pipes/src/app/hero-birthday2.component.ts" region="template" header="src/app/hero-birthday2.component.ts (템플릿)"></code-example>
 
 <!--
 You also added a button to the template and bound its click event to the component's `toggleFormat()` method.
@@ -154,7 +156,10 @@ That method toggles the component's `format` property between a short form
 그리고 템플릿에 버튼을 추가하는데, 이 버튼을 클릭할 때마다 `toggleFormat()` 함수를 실행합니다.
 이 함수는 컴포넌트의 `format` 프로퍼티를 간단한 형식(`'shortDate'`)이나 자세한 형식(`'fullDate'`)으로 지정합니다.
 
+<!--
 <code-example path="pipes/src/app/hero-birthday2.component.ts" region="class" header="src/app/hero-birthday2.component.ts (class)"></code-example>
+-->
+<code-example path="pipes/src/app/hero-birthday2.component.ts" region="class" header="src/app/hero-birthday2.component.ts (클래스)"></code-example>
 
 
 <!--
@@ -289,7 +294,7 @@ Note the following:
 
 * 커스텀 파이프를 사용하는 방법은 기본 파이프를 사용하는 방법과 같습니다.
 * 커스텀 파이프는 `AppModule`의 `declarations`에 등록해야 사용할 수 있습니다.
-* If you choose to inject your pipe into a class, you must provide it in the `providers` array of your `NgModule`.
+* 파이프를 클래스 안에 의존성으로 주입하려면 `NgModule`의 `providers` 배열에 파이프 프로바이더를 추가해야 합니다.
 
 <div class="callout is-helpful">
 
@@ -402,7 +407,10 @@ Add a `FlyingHeroesPipe` to the `*ngFor` repeater that filters the list of heroe
 -->
 이제 `<div>`에 적용된 `*ngFor`에 `FlyingHeroesPipe`를 적용합니다. 이 파이프를 적용하면 전체 히어로 목록에서 하늘을 날 수 있는 히어로만 `*ngFor`의 대상으로 필터링됩니다.
 
+<!--
 <code-example path="pipes/src/app/flying-heroes.component.html" region="template-flying-heroes" header="src/app/flying-heroes.component.html (flyers)"></code-example>
+-->
+<code-example path="pipes/src/app/flying-heroes.component.html" region="template-flying-heroes" header="src/app/flying-heroes.component.html (비행할 수 있는 영웅만)"></code-example>
 
 
 <!--
@@ -625,8 +633,10 @@ You can derive a `FlyingHeroesImpureComponent` from `FlyingHeroesComponent`.
 -->
 그리고 `FlyingHeroesImpureComponent` 의 템플릿은 `FlyingHeroesComponent` 와 비슷하게 다음과 같이 구현합니다.
 
+<!--
 <code-example path="pipes/src/app/flying-heroes-impure.component.html" header="src/app/flying-heroes-impure.component.html (excerpt)" region="template-flying-heroes"></code-example>
-
+-->
+<code-example path="pipes/src/app/flying-heroes-impure.component.html" header="src/app/flying-heroes-impure.component.html (일부)" region="template-flying-heroes"></code-example>
 
 <!--
 The only substantive change is the pipe in the template.
