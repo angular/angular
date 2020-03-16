@@ -1,9 +1,9 @@
 import {
-  NESTED_FORMATTED_RECORD,
+  NESTED_FORMATTED_FLAMEGRAPH_RECORD,
   NESTED_RECORD,
-  SIMPLE_FORMATTED_RECORD,
+  SIMPLE_FORMATTED_FLAMEGRAPH_RECORD,
   SIMPLE_RECORD,
-} from './flamegraph-formatter-spec-constants';
+} from '../record-formatter-spec-constants';
 import { FlamegraphFormatter, FlamegraphNode } from './flamegraph-formatter';
 import { AppEntry } from '../record-formatter';
 
@@ -24,12 +24,12 @@ describe('addFrame cases', () => {
   it('add frame for simple case', () => {
     timeSpent = formatter.addFrame(entry.app, SIMPLE_RECORD);
     expect(timeSpent).toBe(17);
-    expect(entry.app).toEqual(SIMPLE_FORMATTED_RECORD);
+    expect(entry.app).toEqual(SIMPLE_FORMATTED_FLAMEGRAPH_RECORD);
   });
 
   it('add frame for deeply nested records', () => {
     timeSpent = formatter.addFrame(entry.app, NESTED_RECORD);
     expect(timeSpent).toBe(21);
-    expect(entry.app).toEqual(NESTED_FORMATTED_RECORD);
+    expect(entry.app).toEqual(NESTED_FORMATTED_FLAMEGRAPH_RECORD);
   });
 });
