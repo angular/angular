@@ -149,6 +149,23 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
         expect(control.value).toEqual(0);
       });
 
+      it('should ignore the change event', () => {
+        const fixture = initTest(FormControlNumberInput);
+        const control = new FormControl();
+        fixture.componentInstance.control = control;
+        fixture.detectChanges();
+
+        control.valueChanges.subscribe({
+          next: (value) => {
+            throw 'Input[number] should not react to change event';
+          }
+        });
+        const input = fixture.debugElement.query(By.css('input'));
+
+        input.nativeElement.value = '5';
+        dispatchEvent(input.nativeElement, 'change');
+      });
+
       it('when value is cleared programmatically', () => {
         const fixture = initTest(FormControlNumberInput);
         const control = new FormControl(10);
