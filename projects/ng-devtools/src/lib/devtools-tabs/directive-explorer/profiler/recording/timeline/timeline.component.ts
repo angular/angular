@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { AppEntry, formatFlamegraphRecords, TimelineView } from './format-records';
+import { AppEntry, formatFlamegraphRecords, TimelineView } from './record-formatter/format-records';
 import { MatSlider, MatSliderChange } from '@angular/material/slider';
 import { ProfilerFrame } from 'protocol';
 
