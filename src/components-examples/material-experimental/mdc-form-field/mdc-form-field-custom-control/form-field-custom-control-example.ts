@@ -1,7 +1,7 @@
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Component, ElementRef, Input, OnDestroy, Optional, Self} from '@angular/core';
-import {FormBuilder, FormGroup, ControlValueAccessor, NgControl} from '@angular/forms';
+import {FormBuilder, FormGroup, ControlValueAccessor, NgControl, Validators} from '@angular/forms';
 import {MatFormFieldControl} from '@angular/material-experimental/mdc-form-field';
 import {Subject} from 'rxjs';
 
@@ -78,8 +78,8 @@ export class MyTelInput implements ControlValueAccessor, MatFormFieldControl<MyT
 
   @Input()
   get value(): MyTel | null {
-    const {value: {area, exchange, subscriber}} = this.parts;
-    if (area.length === 3 && exchange.length === 3 && subscriber.length === 4) {
+    if (this.parts.valid) {
+      const {value: {area, exchange, subscriber}} = this.parts;
       return new MyTel(area, exchange, subscriber);
     }
     return null;
@@ -97,9 +97,9 @@ export class MyTelInput implements ControlValueAccessor, MatFormFieldControl<MyT
     @Optional() @Self() public ngControl: NgControl) {
 
     this.parts = formBuilder.group({
-      area: '',
-      exchange: '',
-      subscriber: '',
+      area: [null, [Validators.required, Validators.minLength(3), Validators.maxLength(3)]],
+      exchange: [null, [Validators.required, Validators.minLength(3), Validators.maxLength(3)]],
+      subscriber: [null, [Validators.required, Validators.minLength(4), Validators.maxLength(4)]],
     });
 
     _focusMonitor.monitor(_elementRef, true).subscribe(origin => {
