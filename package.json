@@ -152,7 +152,7 @@
     "ts-api-guardian": "^0.5.0",
     "ts-node": "^3.0.4",
     "tsickle": "0.38.1",
-    "tslint": "^6.0.0",
+    "tslint": "^6.1.0",
     "tsutils": "^3.0.0",
     "typescript": "~3.8.3",
     "typescript-3.6": "npm:typescript@~3.6.4",
