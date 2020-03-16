@@ -2,9 +2,7 @@
 
 [Web workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) allow you to run CPU-intensive computations in a background thread,
 freeing the main thread to update the user interface.
-
-If you find your application becomes unresponsive while processing data, using web workers can help.
-The Angular CLI `ng generate` command supports adding a web worker to an existing project.
+If you find your application performs a lot of computations, such as generating CAD drawings or doing heavy geometrical calculations, using web workers can help increase the performance.
 
 <div class="alert is-helpful>
 
@@ -14,8 +12,15 @@ The CLI does not support running Angular itself in a web worker.
 
 ## Adding a web worker
 
+To add a web worker to an existing project use the Angular CLI `ng generate` command.
+
+`ng generate web-worker` *location*
+
 You can add a web worker anywhere in your application.
-If the file that contains your expensive computation is `src/app/app.component.ts`, for example, you can add a web worker using `ng generate web-worker app`.
+For example, to add a web worker to the root component, `src/app/app.component.ts`, run the following command.
+
+ `ng generate web-worker app`.
+
 
 The command performs the following actions.
 
@@ -49,6 +54,6 @@ After you generate this initial scaffold, you must refactor your code to use the
 
 <div class="alert is-important>
 
-Some environments or platforms, such as `@angular/platform-server` used in [Server-side Rendering](guide/universal), don't support web workers. You must provide a fallback mechanism to perform the computations that the worker would otherwise perform, in order to ensure that your application will work in these environments.
+Some environments or platforms, such as `@angular/platform-server` used in [Server-side Rendering](guide/universal), don't support web workers. To ensure that your application will work in these environments, you must provide a fallback mechanism to perform the computations that the worker would otherwise perform.
 
 </div>
