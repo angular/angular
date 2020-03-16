@@ -18,7 +18,7 @@ export interface FlamegraphNode {
   original: ElementProfile;
 }
 
-const getLabel = (element: ElementProfile) => {
+export const getLabel = (element: ElementProfile) => {
   const name = element.directives
     .filter(d => d.isComponent)
     .map(c => c.name)
@@ -27,7 +27,7 @@ const getLabel = (element: ElementProfile) => {
   return attributes === '' ? name : `${name}[${attributes}]`;
 };
 
-const getValue = (element: ElementProfile, e: any) => {
+export const getValue = (element: ElementProfile) => {
   let result = 0;
   element.directives.forEach(dir => {
     result += dir.changeDetection;
@@ -41,7 +41,7 @@ const getValue = (element: ElementProfile, e: any) => {
   return result;
 };
 
-const addFrame = (nodes: FlamegraphNode[], elements: ElementProfile[]): number => {
+export const addFrame = (nodes: FlamegraphNode[], elements: ElementProfile[]): number => {
   let timeSpent = 0;
   elements.forEach(element => {
     // Possibly undefined because of
@@ -51,7 +51,7 @@ const addFrame = (nodes: FlamegraphNode[], elements: ElementProfile[]): number =
       return;
     }
     const node: FlamegraphNode = {
-      value: getValue(element, elements),
+      value: getValue(element),
       label: getLabel(element),
       children: [],
       instances: 1,
@@ -64,7 +64,7 @@ const addFrame = (nodes: FlamegraphNode[], elements: ElementProfile[]): number =
   return timeSpent;
 };
 
-const insertTimelineRecord = (result: AppEntry[], record: ProfilerFrame) => {
+export const insertTimelineRecord = (result: AppEntry[], record: ProfilerFrame) => {
   const entry: AppEntry = {
     app: [],
     timeSpent: 0,
