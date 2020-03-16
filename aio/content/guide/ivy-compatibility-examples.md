@@ -348,3 +348,72 @@ To fix this problem, we recommend either getting the information for the binding
 {{ myName }}
 <div myDir [name]="myName"></div>
 ```
+
+{@a foreign-values}
+## Foreign functions and foreign values aren't statically resolvable
+
+### Basic example of change 
+
+Consider a library that defines and exports some selector string to be used in other libraries:
+
+```
+export let mySelector = '[my-selector]';
+```
+
+This selector is then imported in another library or an application:
+
+```
+import {mySelector} from 'my-library';
+
+@Directive({selector: mySelector})
+export class MyDirective {}
+```
+
+Because the `mySelector` value is imported from an external library, it is part of a different compilation unit and therefore considered _foreign_.
+
+While this code would work correctly in the View Engine compiler, it would fail to compile in Ivy in AOT mode.
+
+### Background
+
+In View Engine, the compiler would capture the source code of a library in `metadata.json` files when bundling the library, so that external consumers could "look inside" the source code of an external library.
+When AOT-compiling the application, the `metadata.json` files would be used to determine the value of `mySelector`.
+In Ivy, the `metadata.json` files are no longer used. Instead, the compiler extracts metadata for external libraries from the `.d.ts` files that TypeScript creates.
+This has several benefits such as better performance, much improved error reporting, and enables more build caching opportunities as there is no longer a dependency on library internals.
+
+Looking back at the previous example, the `mySelector` value would be represented in the `.d.ts` as follows:
+
+```
+export declare let mySelector: string;
+```
+
+Notice that the actual value of the selector is no longer present, so that the Ivy compiler is unable to use it during AOT compilations.
+
+### Example of error
+
+In the above example, a compilation error would occur when compiling `MyDirective`:
+
+```
+error NG1010: selector must be a string
+  Value is a reference to 'mySelector'.
+
+    1  export declare let mySelector: string;
+                          ~~~~~~~~~~
+    Reference is declared here.
+
+```
+
+### Recommended fix
+
+When exporting values from a library, ensure the actual value is present in the `.d.ts` file. This typically requires that the variable be declared as a constant:
+
+```
+export const mySelector = '[my-selector]';
+```
+
+In classes, a field should be declared using the `static readonly` modifiers:
+
+```
+export class Selectors {
+  static readonly mySelector = '[my-selector]';
+}
+```
