@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {Logger} from '../../../logging/logger';
 import {PartiallyOrderedTasks, Task, TaskDependencies} from '../api';
 import {getBlockedTasks, sortTasksByPriority, stringifyTask} from '../utils';
 import {BaseTaskQueue} from './base_task_queue';
@@ -21,12 +22,12 @@ export class ParallelTaskQueue extends BaseTaskQueue {
    */
   private blockedTasks: Map<Task, Set<Task>>;
 
-  constructor(tasks: PartiallyOrderedTasks, dependents: TaskDependencies) {
-    super(sortTasksByPriority(tasks, dependents), dependents);
-    this.blockedTasks = getBlockedTasks(dependents);
+  constructor(logger: Logger, tasks: PartiallyOrderedTasks, dependencies: TaskDependencies) {
+    super(logger, sortTasksByPriority(tasks, dependencies), dependencies);
+    this.blockedTasks = getBlockedTasks(dependencies);
   }
 
-  getNextTask(): Task|null {
+  computeNextTask(): Task|null {
     // Look for the first available (i.e. not blocked) task.
     // (NOTE: Since tasks are sorted by priority, the first available one is the best choice.)
     const nextTaskIdx = this.tasks.findIndex(task => !this.blockedTasks.has(task));

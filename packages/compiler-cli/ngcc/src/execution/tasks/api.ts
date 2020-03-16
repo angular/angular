@@ -111,6 +111,13 @@ export interface TaskQueue {
   markTaskCompleted(task: Task): void;
 
   /**
+   * Mark a task as failed.
+   *
+   * Do not process the tasks that depend upon the given task.
+   */
+  markAsFailed(task: Task): void;
+
+  /**
    * Return a string representation of the task queue (for debugging purposes).
    *
    * @return A string representation of the task queue.

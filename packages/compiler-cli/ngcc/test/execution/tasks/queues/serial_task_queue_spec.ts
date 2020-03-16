@@ -11,6 +11,7 @@ import {PartiallyOrderedTasks, Task, TaskQueue} from '../../../../src/execution/
 import {SerialTaskQueue} from '../../../../src/execution/tasks/queues/serial_task_queue';
 import {computeTaskDependencies} from '../../../../src/execution/tasks/utils';
 import {EntryPoint} from '../../../../src/packages/entry_point';
+import {MockLogger} from '../../../helpers/mock_logger';
 
 
 describe('SerialTaskQueue', () => {
@@ -38,7 +39,7 @@ describe('SerialTaskQueue', () => {
       graph.addNode(entryPoint.path);
     }
     const dependencies = computeTaskDependencies(tasks, graph);
-    return {tasks, queue: new SerialTaskQueue(tasks.slice(), dependencies)};
+    return {tasks, queue: new SerialTaskQueue(new MockLogger(), tasks.slice(), dependencies)};
   };
 
   /**
