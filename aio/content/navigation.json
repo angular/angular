@@ -401,7 +401,7 @@
         },
         {
           "url": "guide/http",
-          "title": "Server interaction with HTTP",
+          "title": "Access Servers over HTTP",
           "tooltip": "Use HTTP to talk to a remote server."
         },
         {
@@ -557,7 +557,7 @@
         },
         {
           "title": "Schematics",
-          "tooltip": "Understanding schematics for code generation.",
+          "tooltip": "Using CLI schematics for code generation.",
           "children": [
             {
               "url": "guide/schematics",
