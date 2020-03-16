@@ -39,7 +39,8 @@ if (require.main === module) {
           .option('t', {
             alias: 'target',
             describe:
-                'A relative path (from the `source` path) to a single entry-point to process (plus its dependencies).',
+                'A relative path (from the `source` path) to a single entry-point to process (plus its dependencies).\n' +
+                'If this property is provided then `error-on-failed-entry-point` is forced to true',
           })
           .option('first-only', {
             describe:
@@ -83,6 +84,14 @@ if (require.main === module) {
             type: 'boolean',
             default: false,
           })
+          .option('error-on-failed-entry-point', {
+            describe:
+                'Set this option in order to terminate immediately with an error code if an entry-point fails to be processed.\n' +
+                'If `-t`/`--target` is provided then this property is always true and cannot be changed. Otherwise the default is false.\n' +
+                'When set to false, ngcc will continue to process entry-points after a failure. In which case it will log an error and resume processing other entry-points.',
+            type: 'boolean',
+            default: false,
+          })
           .strict()
           .help()
           .parse(args);
@@ -103,6 +112,7 @@ if (require.main === module) {
   const logLevel = options['l'] as keyof typeof LogLevel | undefined;
   const enableI18nLegacyMessageIdFormat = options['legacy-message-ids'];
   const invalidateEntryPointManifest = options['invalidate-entry-point-manifest'];
+  const errorOnFailedEntryPoint = options['error-on-failed-entry-point'];
 
   (async() => {
     try {
@@ -116,7 +126,7 @@ if (require.main === module) {
         createNewEntryPointFormats,
         logger,
         enableI18nLegacyMessageIdFormat,
-        async: options['async'], invalidateEntryPointManifest,
+        async: options['async'], invalidateEntryPointManifest, errorOnFailedEntryPoint,
       });
 
       if (logger) {

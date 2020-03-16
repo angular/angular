@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
+import {Logger} from '../../../logging/logger';
 import {PartiallyOrderedTasks, Task, TaskDependencies, TaskQueue} from '../api';
 import {stringifyTask} from '../utils';
 
@@ -19,9 +19,40 @@ export abstract class BaseTaskQueue implements TaskQueue {
   }
   protected inProgressTasks = new Set<Task>();
 
-  constructor(protected tasks: PartiallyOrderedTasks, protected dependencies: TaskDependencies) {}
+  /**
+   * A map of tasks that should be skipped, mapped to the task that caused them to be skipped.
+   */
+  private tasksToSkip = new Map<Task, Task>();
 
-  abstract getNextTask(): Task|null;
+  constructor(
+      protected logger: Logger, protected tasks: PartiallyOrderedTasks,
+      protected dependencies: TaskDependencies) {}
+
+  protected abstract computeNextTask(): Task|null;
+
+  getNextTask(): Task|null {
+    let nextTask = this.computeNextTask();
+    while (nextTask !== null) {
+      if (!this.tasksToSkip.has(nextTask)) {
+        break;
+      }
+      // We are skipping this task so mark it as complete
+      this.markTaskCompleted(nextTask);
+      const failedTask = this.tasksToSkip.get(nextTask) !;
+      this.logger.warn(
+          `Skipping processing of ${nextTask.entryPoint.name} because its dependency ${failedTask.entryPoint.name} failed to compile.`);
+      nextTask = this.computeNextTask();
+    }
+    return nextTask;
+  }
+
+  markAsFailed(task: Task) {
+    if (this.dependencies.has(task)) {
+      for (const dependentTask of this.dependencies.get(task) !) {
+        this.skipDependentTasks(dependentTask, task);
+      }
+    }
+  }
 
   markTaskCompleted(task: Task): void {
     if (!this.inProgressTasks.has(task)) {
@@ -39,6 +70,21 @@ export abstract class BaseTaskQueue implements TaskQueue {
         `  All tasks completed: ${this.allTasksCompleted}\n` +
         `  Unprocessed tasks (${this.tasks.length}): ${this.stringifyTasks(this.tasks, '    ')}\n` +
         `  In-progress tasks (${inProgTasks.length}): ${this.stringifyTasks(inProgTasks, '    ')}`;
+  }
+
+  /**
+   * Mark the given `task` as to be skipped, then recursive skip all its dependents.
+   *
+   * @param task The task to skip
+   * @param failedTask The task that failed, causing this task to be skipped
+   */
+  protected skipDependentTasks(task: Task, failedTask: Task) {
+    this.tasksToSkip.set(task, failedTask);
+    if (this.dependencies.has(task)) {
+      for (const dependentTask of this.dependencies.get(task) !) {
+        this.skipDependentTasks(dependentTask, failedTask);
+      }
+    }
   }
 
   protected stringifyTasks(tasks: Task[], indentation: string): string {

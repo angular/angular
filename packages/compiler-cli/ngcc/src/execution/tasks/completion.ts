@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {FileSystem, resolve} from '../../../../src/ngtsc/file_system';
+import {Logger} from '../../logging/logger';
 import {markAsProcessed} from '../../packages/build_marker';
 import {PackageJsonFormatProperties, getEntryPointFormat} from '../../packages/entry_point';
 import {PackageJsonUpdater} from '../../writing/package_json_updater';
-import {Task, TaskCompletedCallback, TaskProcessingOutcome} from './api';
+import {Task, TaskCompletedCallback, TaskProcessingOutcome, TaskQueue} from './api';
 
 /**
  * A function that can handle a specific outcome of a task completion.
@@ -66,6 +67,20 @@ export function createThrowErrorHandler(fs: FileSystem): TaskCompletedHandler {
   return (task: Task, message: string | null): void => {
     const format = getEntryPointFormat(fs, task.entryPoint, task.formatProperty);
     throw new Error(
+        `Failed to compile entry-point ${task.entryPoint.name} (${task.formatProperty} as ${format})` +
+        (message !== null ? ` due to ${message}` : ''));
+  };
+}
+
+/**
+ * Create a handler that logs an error and marks the task as failed.
+ */
+export function createLogErrorHandler(
+    logger: Logger, fs: FileSystem, taskQueue: TaskQueue): TaskCompletedHandler {
+  return (task: Task, message: string | null): void => {
+    taskQueue.markAsFailed(task);
+    const format = getEntryPointFormat(fs, task.entryPoint, task.formatProperty);
+    logger.error(
         `Failed to compile entry-point ${task.entryPoint.name} (${task.formatProperty} as ${format})` +
         (message !== null ? ` due to ${message}` : ''));
   };

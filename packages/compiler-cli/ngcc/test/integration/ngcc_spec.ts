@@ -1085,45 +1085,130 @@ runInEachFileSystem(() => {
     });
 
     describe('diagnostics', () => {
-      it('should fail with formatted diagnostics when an error diagnostic is produced', () => {
-        loadTestFiles([
-          {
-            name: _('/node_modules/fatal-error/package.json'),
-            contents: '{"name": "fatal-error", "es2015": "./index.js", "typings": "./index.d.ts"}',
-          },
-          {name: _('/node_modules/fatal-error/index.metadata.json'), contents: 'DUMMY DATA'},
-          {
-            name: _('/node_modules/fatal-error/index.js'),
-            contents: `
+      it('should fail with formatted diagnostics when an error diagnostic is produced, if targetEntryPointPath is provided',
+         () => {
+           loadTestFiles([
+             {
+               name: _('/node_modules/fatal-error/package.json'),
+               contents:
+                   '{"name": "fatal-error", "es2015": "./index.js", "typings": "./index.d.ts"}',
+             },
+             {name: _('/node_modules/fatal-error/index.metadata.json'), contents: 'DUMMY DATA'},
+             {
+               name: _('/node_modules/fatal-error/index.js'),
+               contents: `
               import {Component} from '@angular/core';
               export class FatalError {}
               FatalError.decorators = [
                 {type: Component, args: [{selector: 'fatal-error'}]}
               ];
             `,
-          },
-          {
-            name: _('/node_modules/fatal-error/index.d.ts'),
-            contents: `
+             },
+             {
+               name: _('/node_modules/fatal-error/index.d.ts'),
+               contents: `
               export declare class FatalError {}
             `,
-          },
-        ]);
+             },
+           ]);
 
-        try {
-          mainNgcc({
-            basePath: '/node_modules',
-            targetEntryPointPath: 'fatal-error',
-            propertiesToConsider: ['es2015']
-          });
-          fail('should have thrown');
-        } catch (e) {
-          expect(e.message).toContain(
-              'Failed to compile entry-point fatal-error (es2015 as esm2015) due to compilation errors:');
-          expect(e.message).toContain('NG2001');
-          expect(e.message).toContain('component is missing a template');
-        }
-      });
+           try {
+             mainNgcc({
+               basePath: '/node_modules',
+               targetEntryPointPath: 'fatal-error',
+               propertiesToConsider: ['es2015']
+             });
+             fail('should have thrown');
+           } catch (e) {
+             expect(e.message).toContain(
+                 'Failed to compile entry-point fatal-error (es2015 as esm2015) due to compilation errors:');
+             expect(e.message).toContain('NG2001');
+             expect(e.message).toContain('component is missing a template');
+           }
+         });
+
+      it('should not fail but log an error with formatted diagnostics when an error diagnostic is produced, if targetEntryPoint is not provided and errorOnFailedEntryPoint is false',
+         () => {
+           loadTestFiles([
+             {
+               name: _('/node_modules/fatal-error/package.json'),
+               contents:
+                   '{"name": "fatal-error", "es2015": "./index.js", "typings": "./index.d.ts"}',
+             },
+             {name: _('/node_modules/fatal-error/index.metadata.json'), contents: 'DUMMY DATA'},
+             {
+               name: _('/node_modules/fatal-error/index.js'),
+               contents: `
+             import {Component} from '@angular/core';
+             export class FatalError {}
+             FatalError.decorators = [
+               {type: Component, args: [{selector: 'fatal-error'}]}
+             ];`,
+             },
+             {
+               name: _('/node_modules/fatal-error/index.d.ts'),
+               contents: `export declare class FatalError {}`,
+             },
+             {
+               name: _('/node_modules/dependent/package.json'),
+               contents: '{"name": "dependent", "es2015": "./index.js", "typings": "./index.d.ts"}',
+             },
+             {name: _('/node_modules/dependent/index.metadata.json'), contents: 'DUMMY DATA'},
+             {
+               name: _('/node_modules/dependent/index.js'),
+               contents: `
+             import {Component} from '@angular/core';
+             import {FatalError} from 'fatal-error';
+             export class Dependent {}
+             Dependent.decorators = [
+               {type: Component, args: [{selector: 'dependent', template: ''}]}
+             ];`,
+             },
+             {
+               name: _('/node_modules/dependent/index.d.ts'),
+               contents: `export declare class Dependent {}`,
+             },
+             {
+               name: _('/node_modules/independent/package.json'),
+               contents:
+                   '{"name": "independent", "es2015": "./index.js", "typings": "./index.d.ts"}',
+             },
+             {name: _('/node_modules/independent/index.metadata.json'), contents: 'DUMMY DATA'},
+             {
+               name: _('/node_modules/independent/index.js'),
+               contents: `
+             import {Component} from '@angular/core';
+             export class Independent {}
+             Independent.decorators = [
+               {type: Component, args: [{selector: 'independent', template: ''}]}
+             ];`,
+             },
+             {
+               name: _('/node_modules/independent/index.d.ts'),
+               contents: `export declare class Independent {}`,
+             },
+           ]);
+
+           const logger = new MockLogger();
+           mainNgcc({
+             basePath: '/node_modules',
+             propertiesToConsider: ['es2015'],
+             errorOnFailedEntryPoint: false, logger,
+           });
+           expect(logger.logs.error.length).toEqual(1);
+           const message = logger.logs.error[0][0];
+           expect(message).toContain(
+               'Failed to compile entry-point fatal-error (es2015 as esm2015) due to compilation errors:');
+           expect(message).toContain('NG2001');
+           expect(message).toContain('component is missing a template');
+
+           expect(hasBeenProcessed(loadPackage('fatal-error', _('/node_modules')), 'es2015'))
+               .toBe(false);
+           expect(hasBeenProcessed(loadPackage('dependent', _('/node_modules')), 'es2015'))
+               .toBe(false);
+           expect(hasBeenProcessed(loadPackage('independent', _('/node_modules')), 'es2015'))
+               .toBe(true);
+         });
     });
 
     describe('logger', () => {

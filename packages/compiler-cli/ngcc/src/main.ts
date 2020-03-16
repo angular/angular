@@ -29,7 +29,7 @@ import {ClusterExecutor} from './execution/cluster/executor';
 import {ClusterPackageJsonUpdater} from './execution/cluster/package_json_updater';
 import {SingleProcessExecutorAsync, SingleProcessExecutorSync} from './execution/single_process_executor';
 import {CreateTaskCompletedCallback, PartiallyOrderedTasks, Task, TaskProcessingOutcome, TaskQueue} from './execution/tasks/api';
-import {composeTaskCompletedCallbacks, createMarkAsProcessedHandler, createThrowErrorHandler} from './execution/tasks/completion';
+import {composeTaskCompletedCallbacks, createLogErrorHandler, createMarkAsProcessedHandler, createThrowErrorHandler} from './execution/tasks/completion';
 import {ParallelTaskQueue} from './execution/tasks/queues/parallel_task_queue';
 import {SerialTaskQueue} from './execution/tasks/queues/serial_task_queue';
 import {computeTaskDependencies} from './execution/tasks/utils';
@@ -63,6 +63,8 @@ export interface SyncNgccOptions {
    * `basePath`.
    *
    * All its dependencies will need to be processed too.
+   *
+   * If this property is provided then `errorOnFailedEntryPoint` is forced to true.
    */
   targetEntryPointPath?: string;
 
@@ -107,6 +109,18 @@ export interface SyncNgccOptions {
    * Default: `false` (i.e. run synchronously)
    */
   async?: false;
+
+  /**
+   * Set to true in order to terminate immediately with an error code if an entry-point fails to be
+   * processed.
+   *
+   * If `targetEntryPointPath` is provided then this property is always true and cannot be
+   * changed. Otherwise the default is false.
+   *
+   * When set to false, ngcc will continue to process entry-points after a failure. In which case it
+   * will log an error and resume processing other entry-points.
+   */
+  errorOnFailedEntryPoint?: boolean;
 
   /**
    * Render `$localize` messages with legacy format ids.
@@ -155,8 +169,13 @@ export function mainNgcc({basePath, targetEntryPointPath,
                           propertiesToConsider = SUPPORTED_FORMAT_PROPERTIES,
                           compileAllFormats = true, createNewEntryPointFormats = false,
                           logger = new ConsoleLogger(LogLevel.info), pathMappings, async = false,
-                          enableI18nLegacyMessageIdFormat = true,
+                          errorOnFailedEntryPoint = false, enableI18nLegacyMessageIdFormat = true,
                           invalidateEntryPointManifest = false}: NgccOptions): void|Promise<void> {
+  if (!!targetEntryPointPath) {
+    // targetEntryPointPath forces us to error if an entry-point fails.
+    errorOnFailedEntryPoint = true;
+  }
+
   // Execute in parallel, if async execution is acceptable and there are more than 1 CPU cores.
   const inParallel = async && (os.cpus().length > 1);
 
@@ -253,7 +272,7 @@ export function mainNgcc({basePath, targetEntryPointPath,
         `Analyzed ${entryPoints.length} entry-points in ${duration}s. ` +
         `(Total tasks: ${tasks.length})`);
 
-    return getTaskQueue(inParallel, tasks, graph);
+    return getTaskQueue(logger, inParallel, tasks, graph);
   };
 
   // The function for creating the `compile()` function.
@@ -294,20 +313,21 @@ export function mainNgcc({basePath, targetEntryPointPath,
               ts.formatDiagnosticsWithColorAndContext(result.diagnostics, bundle.src.host)));
         }
         fileWriter.writeBundle(bundle, result.transformedFiles, formatPropertiesToMarkAsProcessed);
+
+        logger.debug(`  Successfully compiled ${entryPoint.name} : ${formatProperty}`);
+
+        onTaskCompleted(task, TaskProcessingOutcome.Processed, null);
       } else {
         const errors = replaceTsWithNgInErrors(
             ts.formatDiagnosticsWithColorAndContext(result.diagnostics, bundle.src.host));
         onTaskCompleted(task, TaskProcessingOutcome.Failed, `compilation errors:\n${errors}`);
       }
-
-      logger.debug(`  Successfully compiled ${entryPoint.name} : ${formatProperty}`);
-
-      onTaskCompleted(task, TaskProcessingOutcome.Processed, null);
     };
   };
 
   // The executor for actually planning and getting the work done.
-  const createTaskCompletedCallback = getCreateTaskCompletedCallback(pkgJsonUpdater, fileSystem);
+  const createTaskCompletedCallback =
+      getCreateTaskCompletedCallback(pkgJsonUpdater, errorOnFailedEntryPoint, logger, fileSystem);
   const executor = getExecutor(
       async, inParallel, logger, pkgJsonUpdater, fileSystem, createTaskCompletedCallback);
 
@@ -349,17 +369,21 @@ function getFileWriter(
 }
 
 function getTaskQueue(
-    inParallel: boolean, tasks: PartiallyOrderedTasks, graph: DepGraph<EntryPoint>): TaskQueue {
+    logger: Logger, inParallel: boolean, tasks: PartiallyOrderedTasks,
+    graph: DepGraph<EntryPoint>): TaskQueue {
   const dependencies = computeTaskDependencies(tasks, graph);
-  return inParallel ? new ParallelTaskQueue(tasks, dependencies) :
-                      new SerialTaskQueue(tasks, dependencies);
+  return inParallel ? new ParallelTaskQueue(logger, tasks, dependencies) :
+                      new SerialTaskQueue(logger, tasks, dependencies);
 }
 
 function getCreateTaskCompletedCallback(
-    pkgJsonUpdater: PackageJsonUpdater, fileSystem: FileSystem): CreateTaskCompletedCallback {
-  return _taskQueue => composeTaskCompletedCallbacks({
+    pkgJsonUpdater: PackageJsonUpdater, errorOnFailedEntryPoint: boolean, logger: Logger,
+    fileSystem: FileSystem): CreateTaskCompletedCallback {
+  return taskQueue => composeTaskCompletedCallbacks({
            [TaskProcessingOutcome.Processed]: createMarkAsProcessedHandler(pkgJsonUpdater),
-           [TaskProcessingOutcome.Failed]: createThrowErrorHandler(fileSystem),
+           [TaskProcessingOutcome.Failed]:
+               errorOnFailedEntryPoint ? createThrowErrorHandler(fileSystem) :
+                                         createLogErrorHandler(logger, fileSystem, taskQueue),
          });
 }
 
