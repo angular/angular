@@ -22,12 +22,8 @@ established through the components' [view objects](guide/glossary#view).
 Angular에서도 약간의 트릭을 활용하면 컴포넌트를 직접 참조할 수 있습니다.
 다만, Angular 컴포넌트에는 트리 정보가 없습니다. 부모-자식은 직접 연결되지 않은 관계이며 컴포넌트의 [뷰 객체](guide/glossary#view)를 통해서만 연결됩니다.
 
-<<<<<<< HEAD
 <!--
-Each component has a *host view*, and can have additional *embedded views*. 
-=======
 Each component has a *host view*, and can have additional *embedded views*.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 An embedded view in component A is the
 host view of component B, which can in turn have embedded view.
 This means that there is a [view hierarchy](guide/glossary#view-hierarchy) for each component,
@@ -219,18 +215,12 @@ the same way you've done it before.
 이 코드에서 [Parent](#parent-token) 토큰은 프로바이더의 클래스 인터페이스 토큰입니다.
 그리고 `AlexComponent`가 자신을 직접 참조해서 순환 참조가 발생하는 것을 피하기 위해 [*forwardRef*](guide/dependency-injection-in-action#forwardref)를 사용했습니다.
 
-<<<<<<< HEAD
 그러면 *Alex*의 자식 컴포넌트인 *Carol*은 이전에 살펴봤던 것과 마찬가지 방법으로 `parent` 인자에 부모 컴포넌트를 주입받을 수 있습니다.
 
 <!--
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="carol-class" header="parent-finder.component.ts (CarolComponent class)" linenums="false">
--->
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="carol-class" header="parent-finder.component.ts (CarolComponent 클래스)" linenums="false">
-
-</code-example>
-=======
 <code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="carol-class" header="parent-finder.component.ts (CarolComponent class)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="carol-class" header="parent-finder.component.ts (CarolComponent 클래스)"></code-example>
 
 
 <!--
@@ -338,18 +328,12 @@ The example defines a `Parent` class interface.
 -->
 [이전 문서에서](guide/dependency-injection-in-action#class-interface) 클래스 인터페이스는 추상 클래스이며, 상속받기 위해 사용하는 것이 아니라 의존성을 주입할 때 사용하는 것이라고 언급했었습니다.
 
-<<<<<<< HEAD
 그리고 `Parent` 클래스 인터페이스는 다음과 같이 구현되어 있습니다.
 
 <!--
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="parent" header="parent-finder.component.ts (Parent class-interface)" linenums="false">
--->
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="parent" header="parent-finder.component.ts (부모 클래스-인터페이스)" linenums="false">
-
-</code-example>
-=======
 <code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="parent" header="parent-finder.component.ts (Parent class-interface)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="parent" header="parent-finder.component.ts (부모 클래스-인터페이스)"></code-example>
 
 
 <!--
@@ -365,40 +349,24 @@ A component that could serve as a parent *should* implement the class interface 
 
 그러면 부모 컴포넌트는 반드시 이 클래스 인터페이스를 사용해서 구현해야 합니다. `AliceComponent`가 이렇게 구현되었습니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alice-class-signature" header="parent-finder.component.ts (AliceComponent class signature)" linenums="false">
--->
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alice-class-signature" header="parent-finder.component.ts (AliceComponent 클래스 선언)" linenums="false">
-
-</code-example>
-
-
-<!--
-Doing so adds clarity to the code.  But it's not technically necessary.
-=======
 <code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alice-class-signature" header="parent-finder.component.ts (AliceComponent class signature)"></code-example>
+-->
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alice-class-signature" header="parent-finder.component.ts (AliceComponent 클래스 선언)"></code-example>
 
 
-
+<!--
 Doing so adds clarity to the code. But it's not technically necessary.
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 Although `AlexComponent` has a `name` property, as required by its `Base` class,
 its class signature doesn't mention `Parent`.
 -->
 이렇게 구현하면 코드도 간단해지지만 문법적으로 꼭 이래야만 하는 것은 아닙니다.
 `Base` 클래스에 선언한 대로 `AlexComponent`에도 `name` 프로퍼티가 존재하지만, 이 클래스 선언은 `Parent`을 활용한 것이 아닙니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-class-signature" header="parent-finder.component.ts (AlexComponent class signature)" linenums="false">
--->
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-class-signature" header="parent-finder.component.ts (AlexComponent 클래스 선언)" linenums="false">
-
-</code-example>
-=======
 <code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-class-signature" header="parent-finder.component.ts (AlexComponent class signature)"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-class-signature" header="parent-finder.component.ts (AlexComponent 클래스 선언)"></code-example>
 
 
 

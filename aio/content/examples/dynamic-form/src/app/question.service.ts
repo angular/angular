@@ -9,12 +9,7 @@ import { of } from 'rxjs';
 @Injectable()
 export class QuestionService {
 
-<<<<<<< HEAD
   // TODO: 질문을 정의하는 메타데이터는 리모트 서버에서 받아오기
-  // TODO: 비동기로 만들기
-=======
-  // TODO: get from a remote source of question metadata
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
   getQuestions() {
 
     let questions: QuestionBase<string>[] = [

@@ -192,16 +192,10 @@ HTML 코드를 그대로 사용하려면 이 코드는 `innerHTML`과 같은 HTM
 하지만 이 코드를 아무 처리없이 바인딩하는 것은 공격자가 XSS 취약점을 사용하도록 하는 것과 같습니다.
 예를 들어 `htmlSnippet`의 내용 안에 `<script>` 태그가 포함되어 있다고 합시다:
 
-<<<<<<< HEAD
 <!--
-<code-example path="security/src/app/inner-html-binding.component.ts" linenums="false" header="src/app/inner-html-binding.component.ts (class)" region="class">
--->
-<code-example path="security/src/app/inner-html-binding.component.ts" linenums="false" header="src/app/inner-html-binding.component.ts (클래스)" region="class">
-
-</code-example>
-=======
 <code-example path="security/src/app/inner-html-binding.component.ts" header="src/app/inner-html-binding.component.ts (class)" region="class"></code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
+-->
+<code-example path="security/src/app/inner-html-binding.component.ts" header="src/app/inner-html-binding.component.ts (클래스)" region="class"></code-example>
 
 
 <!--

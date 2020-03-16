@@ -53,64 +53,22 @@ Observables are often compared to promises. Here are some key differences:
 -->
 * 옵저버블은 구독자가 구독하기 전까지 실행되지 않습니다. 그리고 `subscribe()`가 실행되면 스트림이 전달될 때마다 지정된 옵저버블 처리 로직을 실행합니다. 옵저버블은 구독될 때마다 새로운 실행 컨텍스트를 생성하며, 이 때마다 옵저버블이 처음부터 다시 실행됩니다.
 
-<<<<<<< HEAD
-<!--
-<code-example hideCopy>
-// declare a publishing operation
-new Observable((observer) => { subscriber_fn });
-// initiate execution
-observable.subscribe(() => {
-      // observer handles notifications
-    });
-</code-example>
--->
-<code-example hideCopy>
-// 옵저버블 발행 로직을 지정합니다.
-new Observable((observer) => { subscriber_fn });
-// 옵저버블을 시작합니다.
-observable.subscribe(() => {
-      // 옵저버가 알림을 처리합니다.
-    });
-</code-example>
-=======
   <code-example 
     path="comparing-observables/src/observables.ts" 
     header="src/observables.ts (observable)" 
     region="observable">
   </code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 * Promises execute immediately, and just once. The computation of the result is initiated when the promise is created. There is no way to restart work. All `then` clauses (subscriptions) share the same computation.
 -->
 * Promise는 생성되자마자 딱 한 번만 실행됩니다. Promise에 지정된 로직도 Promise가 생성될 때 한 번만 실행되며, 이 로직을 다시 실행하는 방법은 없습니다. Promise에서 체이닝하는 `then`은 모두 같은 객체를 공유합니다.
 
-<<<<<<< HEAD
-<!--
-<code-example hideCopy>
-// initiate execution
-new Promise((resolve, reject) => { executer_fn });
-// handle return value
-promise.then((value) => {
-      // handle result here
-    });
-</code-example>
--->
-<code-example hideCopy>
-// Promise를 실행합니다.
-new Promise((resolve, reject) => { executer_fn });
-// Promise 실행 결과를 then으로 받습니다.
-promise.then((value) => {
-      Promise가 전달하는 데이터를 처리합니다.
-    });
-</code-example>
-=======
   <code-example 
     path="comparing-observables/src/promises.ts" 
     header="src/promises.ts (promise)"
     region="promise">
   </code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 ### Chaining
@@ -119,37 +77,25 @@ promise.then((value) => {
 
 <!--
 * Observables differentiate between transformation function such as a map and subscription. Only subscription activates the subscriber function to start computing the values.
-<<<<<<< HEAD
 -->
 * 옵저버블은 데이터를 조작하는 것과 구독하는 것을 구별합니다. 옵저버블은 구독자가 있을 때만 옵저버블 로직을 실행합니다.
-
-<code-example hideCopy>observable.map((v) => 2*v);</code-example>
-
-=======
 
   <code-example 
     path="comparing-observables/src/observables.ts" 
     header="src/observables.ts (chain)" 
     region="chain">
   </code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 * Promises do not differentiate between the last `.then` clauses (equivalent to subscription) and intermediate `.then` clauses (equivalent to map).
-<<<<<<< HEAD
 -->
 * Promise는 구독을 의미하는 마지막 `.then`과 데이터 조작을 의미하는 중간 `.then`을 구분하지 않습니다.
-
-<code-example hideCopy>promise.then((v) => 2*v);</code-example>
-
-=======
 
   <code-example 
     path="comparing-observables/src/promises.ts"
     header="src/promises.ts (chain)" 
     region="chain">
   </code-example>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
 
 <!--
 ### Cancellation
@@ -244,13 +190,9 @@ new Promise((resolve, reject) => {
     <tr>
       <!--
       <td>Transform</td>
-<<<<<<< HEAD
       -->
       <td>변환</td>
-      <td><pre>obs.map((value) => value * 2 );</pre></td>
-=======
       <td><pre>obs.pipe(map((value) => value * 2));</pre></td>
->>>>>>> ae0253f34adad0e37d2a5e6596a08aa049ba3072
       <td><pre>promise.then((value) => value * 2);</pre></td>
     </tr>
     <tr>

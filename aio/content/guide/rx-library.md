@@ -113,7 +113,6 @@ The `pipe()` function is also a method on the RxJS `Observable`, so you use this
 -->
 ### 공통 연산자
 
-<<<<<<< HEAD
 <!--
 RxJS provides many operators, but only a handful are used frequently. For a list of operators and usage samples, visit the [RxJS API Documentation](https://rxjs.dev/api).
 -->
