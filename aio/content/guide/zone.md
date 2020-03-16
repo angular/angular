@@ -117,12 +117,13 @@ To understand how change detection works, first consider when the application ne
 })
 export class AppComponent implements OnInit {
   data = 'initial value';
+  serverUrl = 'SERVER_URL';
   constructor(private httpClient: HttpClient) {}
 
   ngOnInit() {
-    this.httpClient.get(serverUrl).subscribe(response => {
+    this.httpClient.get(this.serverUrl).subscribe(response => {
       // user does not need to trigger change detection manually
-      data = response.data;
+      this.data = response.data;
     });
   }
 }
@@ -141,7 +142,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     setTimeout(() => {
       // user does not need to trigger change detection manually
-      data = 'value updated';
+      this.data = 'value updated';
     });
   }
 }
@@ -160,7 +161,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     Promise.resolve(1).then(v => {
       // user does not need to trigger change detection manually
-      data = v;
+      this.data = v;
     });
   }
 }
@@ -200,7 +201,7 @@ func.apply(ctx2);
 The value of `this` in the callback of `setTimeout` might differ depending on when `setTimeout` is called.
 Thus you can lose the context in asynchronous operations.
 
-A zone provides a new zone context other than `this`, the zone context persists across asynchronous operations.
+A zone provides a new zone context other than `this`, the zone context that persists across asynchronous operations.
 In the following example, the new zone context is called `zoneThis`.
 
 ```javascript
@@ -257,16 +258,14 @@ The Zone Task concept is very similar to the Javascript VM Task concept.
 - `microTask`: such as `Promise.then()`.
 - `eventTask`: such as `element.addEventListener()`.
 
-The `onInvoke` hook triggers when a synchronize function is executed in a Zone.
-
 These hooks trigger under the following circumstances:
 
 - `onScheduleTask`: triggers when a new asynchronous task is scheduled, such as when you call `setTimeout()`.
 - `onInvokeTask`: triggers when an asynchronous task is about to execute, such as when the callback of `setTimeout()` is about to execute.
 - `onHasTask`: triggers when the status of one kind of task inside a zone changes from stable to unstable or from unstable to stable. A status of stable means there are no tasks inside the Zone, while unstable means a new task is scheduled in the zone.
-- `onInvoke`: triggers when a synchronize function is going to execute in the zone.
+- `onInvoke`: triggers when a synchronous function is going to execute in the zone.
 
-With these hooks, `Zone` can monitor the status of all synchronize and asynchronous operations inside a zone.
+With these hooks, `Zone` can monitor the status of all synchronous and asynchronous operations inside a zone.
 
 The above example returns the following output.
 
