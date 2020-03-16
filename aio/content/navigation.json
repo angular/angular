@@ -313,7 +313,7 @@
             },
             {
               "url": "guide/bootstrapping",
-              "title": "App Root NgModule",
+              "title": "Launching Apps with a Root Module",
               "tooltip": "Tell Angular how to construct and bootstrap the app in the root \"AppModule\"."
             },
             {

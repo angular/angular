@@ -1,4 +1,4 @@
-# App root module
+# Launching your app with a root module
 
 #### Prerequisites
 
