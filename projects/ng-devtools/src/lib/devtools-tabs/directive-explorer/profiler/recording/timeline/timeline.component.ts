@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { AppEntry, formatFlamegraphRecords, TimelineView } from './record-formatter/format-records';
 import { MatSlider, MatSliderChange } from '@angular/material/slider';
 import { ProfilerFrame } from 'protocol';
+import { FlamegraphFormatter, AppEntry, TimelineView } from './record-formatter/flamegraph-formatter';
 
 export enum VisualizationMode {
   FlameGraph,
@@ -16,13 +16,15 @@ export enum VisualizationMode {
 })
 export class TimelineComponent {
   @Input() set records(data: ProfilerFrame[]) {
-    this.profileRecords = formatFlamegraphRecords(data);
+    this.profileRecords = this.formatter.format(data);
     console.log(this.profileRecords);
   }
 
   @Output() exportProfile = new EventEmitter<void>();
 
   @ViewChild(MatSlider) slider: MatSlider;
+
+  formatter = new FlamegraphFormatter();
 
   profileRecords: TimelineView = {
     timeline: [],

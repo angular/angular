@@ -1,5 +1,5 @@
 import { Component, ElementRef, Input } from '@angular/core';
-import { FlamegraphNode } from '../../record-formatter/format-records';
+import { FlamegraphNode } from '../../record-formatter/flamegraph-formatter/flamegraph-formatter';
 import { RawData } from 'ngx-flamegraph/lib/utils';
 
 @Component({

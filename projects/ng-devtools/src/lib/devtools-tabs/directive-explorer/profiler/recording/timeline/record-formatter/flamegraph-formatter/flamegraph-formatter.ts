@@ -1,0 +1,89 @@
+import { RecordFormatter } from '../record-formatter';
+import { ElementProfile, ProfilerFrame } from 'protocol';
+
+export interface TimelineView {
+  timeline: AppEntry[];
+}
+
+export interface AppEntry {
+  app: FlamegraphNode[];
+  timeSpent: number;
+  source: string;
+}
+
+export interface FlamegraphNode {
+  value: number;
+  children: FlamegraphNode[];
+  label: string;
+  instances: number;
+  original: ElementProfile;
+}
+
+export class FlamegraphFormatter implements RecordFormatter {
+  format(records: ProfilerFrame[]): TimelineView {
+    const result: TimelineView = {
+      timeline: [],
+    };
+    records.forEach(record => {
+      this.insertTimelineRecord(result.timeline, record);
+    });
+    result.timeline = result.timeline.filter(entry => entry.app.length > 0 && entry.timeSpent > 0);
+    return result;
+  }
+
+  getLabel(element: ElementProfile): string {
+    const name = element.directives
+      .filter(d => d.isComponent)
+      .map(c => c.name)
+      .join(', ');
+    const attributes = [...new Set(element.directives.filter(d => !d.isComponent).map(d => d.name))].join(', ');
+    return attributes === '' ? name : `${name}[${attributes}]`;
+  }
+
+  getValue(element: ElementProfile): number {
+    let result = 0;
+    element.directives.forEach(dir => {
+      result += dir.changeDetection;
+      Object.keys(dir.lifecycle).forEach(key => {
+        const value = parseFloat(dir.lifecycle[key]);
+        if (!isNaN(value)) {
+          result += value;
+        }
+      });
+    });
+    return result;
+  }
+
+  addFrame(nodes: FlamegraphNode[], elements: ElementProfile[]): number {
+    let timeSpent = 0;
+    elements.forEach(element => {
+      // Possibly undefined because of
+      // the insertion on the backend.
+      if (!element) {
+        console.error('Unable to insert undefined element');
+        return;
+      }
+      const node: FlamegraphNode = {
+        value: this.getValue(element),
+        label: this.getLabel(element),
+        children: [],
+        instances: 1,
+        original: element,
+      };
+      timeSpent += this.addFrame(node.children, element.children);
+      timeSpent += node.value;
+      nodes.push(node);
+    });
+    return timeSpent;
+  }
+
+  insertTimelineRecord(result: AppEntry[], record: ProfilerFrame): void {
+    const entry: AppEntry = {
+      app: [],
+      timeSpent: 0,
+      source: record.source,
+    };
+    entry.timeSpent = this.addFrame(entry.app, record.directives);
+    result.push(entry);
+  }
+}

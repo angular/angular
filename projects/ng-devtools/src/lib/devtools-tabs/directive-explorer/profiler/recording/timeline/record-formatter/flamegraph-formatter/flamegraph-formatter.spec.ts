@@ -1,11 +1,13 @@
-import { addFrame, AppEntry, getLabel, getValue, insertTimelineRecord, TimelineView } from './format-records';
 import { ElementProfile } from 'protocol';
 import {
   NESTED_FORMATTED_RECORD,
   NESTED_RECORD,
   SIMPLE_FORMATTED_RECORD,
   SIMPLE_RECORD,
-} from './format-records-test-constants';
+} from './flamegraph-formatter-spec-constants';
+import { AppEntry, FlamegraphFormatter } from './flamegraph-formatter';
+
+const formatter = new FlamegraphFormatter();
 
 describe('getValue cases', () => {
   let element;
@@ -15,7 +17,7 @@ describe('getValue cases', () => {
       children: [],
       directives: [{ changeDetection: 10, isElement: false, isComponent: true, lifecycle: {}, name: 'AppComponent' }],
     };
-    expect(getValue(element)).toBe(10);
+    expect(formatter.getValue(element)).toBe(10);
   });
 
   it('calculates value with 0 change detection and existing lifecycle hooks', () => {
@@ -25,7 +27,7 @@ describe('getValue cases', () => {
         { isComponent: false, isElement: false, name: 'NgForOf', lifecycle: { ngDoCheck: 5 }, changeDetection: 0 },
       ],
     };
-    expect(getValue(element)).toBe(5);
+    expect(formatter.getValue(element)).toBe(5);
   });
 
   it('calculates value with non 0 change detection and one lifecycle hook', () => {
@@ -35,7 +37,7 @@ describe('getValue cases', () => {
         { isComponent: false, isElement: false, name: 'NgForOf', lifecycle: { ngDoCheck: 5 }, changeDetection: 10 },
       ],
     };
-    expect(getValue(element)).toBe(15);
+    expect(formatter.getValue(element)).toBe(15);
   });
 
   it('calculates value with non 0 change detection and multiple lifecycle hooks', () => {
@@ -51,7 +53,7 @@ describe('getValue cases', () => {
         },
       ],
     };
-    expect(getValue(element)).toBe(115);
+    expect(formatter.getValue(element)).toBe(115);
   });
 });
 
@@ -71,7 +73,7 @@ describe('getLabel cases', () => {
         },
       ],
     };
-    expect(getLabel(element)).toBe('AppComponent');
+    expect(formatter.getLabel(element)).toBe('AppComponent');
   });
 
   it('has only directives', () => {
@@ -87,7 +89,7 @@ describe('getLabel cases', () => {
         },
       ],
     };
-    expect(getLabel(element)).toBe('[RouterOutlet]');
+    expect(formatter.getLabel(element)).toBe('[RouterOutlet]');
   });
 
   it('has a component and a directive', () => {
@@ -98,7 +100,7 @@ describe('getLabel cases', () => {
         { changeDetection: 0, isElement: false, isComponent: true, lifecycle: {}, name: 'TodoComponent' },
       ],
     };
-    expect(getLabel(element)).toBe('TodoComponent[TooltipDirective]');
+    expect(formatter.getLabel(element)).toBe('TodoComponent[TooltipDirective]');
   });
 
   it('has a component and multiple directives', () => {
@@ -110,7 +112,7 @@ describe('getLabel cases', () => {
         { changeDetection: 0, isElement: false, isComponent: true, lifecycle: {}, name: 'TodoComponent' },
       ],
     };
-    expect(getLabel(element)).toBe('TodoComponent[TooltipDirective, RandomDirective]');
+    expect(formatter.getLabel(element)).toBe('TodoComponent[TooltipDirective, RandomDirective]');
   });
 });
 
@@ -127,13 +129,13 @@ describe('addFrame cases', () => {
   });
 
   it('add frame for simple case', () => {
-    timeSpent = addFrame(entry.app, SIMPLE_RECORD);
+    timeSpent = formatter.addFrame(entry.app, SIMPLE_RECORD);
     expect(timeSpent).toBe(17);
     expect(entry.app).toEqual(SIMPLE_FORMATTED_RECORD);
   });
 
   it('add frame for deeply nested records', () => {
-    timeSpent = addFrame(entry.app, NESTED_RECORD);
+    timeSpent = formatter.addFrame(entry.app, NESTED_RECORD);
     expect(timeSpent).toBe(21);
     expect(entry.app).toEqual(NESTED_FORMATTED_RECORD);
   });
