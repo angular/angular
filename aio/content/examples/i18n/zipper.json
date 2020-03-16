@@ -1,11 +1,9 @@
 {
-  "files":[
+  "files": [
     "!dist/",
     "!**/*.d.ts",
     "!src/**/*.js",
     "!doc-files/**/*",
     "**/*.xlf"
-  ],
-  "removeSystemJsConfig": true,
-  "type": "i18n"
+  ]
 }
