@@ -57,7 +57,7 @@ export class MatFooterRowDef extends CdkFooterRowDef {
 export class MatRowDef<T> extends CdkRowDef<T> {
 }
 
-/** Footer template container that contains the cell outlet. Adds the right class and role. */
+/** Header template container that contains the cell outlet. Adds the right class and role. */
 @Component({
   selector: 'mat-header-row, tr[mat-header-row]',
   template: CDK_ROW_TEMPLATE,
