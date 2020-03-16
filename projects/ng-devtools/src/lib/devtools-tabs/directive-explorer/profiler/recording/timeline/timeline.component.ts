@@ -1,12 +1,19 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { MatSlider, MatSliderChange } from '@angular/material/slider';
 import { ProfilerFrame } from 'protocol';
-import { FlamegraphFormatter, AppEntry, TimelineView } from './record-formatter/flamegraph-formatter';
+import { FlamegraphFormatter, FlamegraphNode } from './record-formatter/flamegraph-formatter';
+import { AppEntry, TimelineView } from './record-formatter/record-formatter';
+import { WebtreegraphFormatter, WebtreegraphNode } from './record-formatter/webtreegraph-formatter';
 
 export enum VisualizationMode {
   FlameGraph,
   WebTreeGraph,
 }
+
+const formatters = {
+  [VisualizationMode.FlameGraph]: new FlamegraphFormatter(),
+  [VisualizationMode.WebTreeGraph]: new WebtreegraphFormatter(),
+};
 
 @Component({
   selector: 'ng-recording-timeline',
@@ -16,17 +23,17 @@ export enum VisualizationMode {
 })
 export class TimelineComponent {
   @Input() set records(data: ProfilerFrame[]) {
-    this.profileRecords = this.formatter.format(data);
-    console.log(this.profileRecords);
+    this.unFormattedRecords = data;
+    this.formatRecords();
   }
 
   @Output() exportProfile = new EventEmitter<void>();
 
   @ViewChild(MatSlider) slider: MatSlider;
 
-  formatter = new FlamegraphFormatter();
+  @Input() unFormattedRecords: ProfilerFrame[];
 
-  profileRecords: TimelineView = {
+  profileRecords: TimelineView<FlamegraphNode> | TimelineView<WebtreegraphNode> = {
     timeline: [],
   };
   currentView = 1;
@@ -34,7 +41,11 @@ export class TimelineComponent {
   cmpVisualizationModes = VisualizationMode;
   visualizationMode = VisualizationMode.FlameGraph;
 
-  get recordsView(): AppEntry {
+  get formatter(): FlamegraphFormatter | WebtreegraphFormatter {
+    return formatters[this.visualizationMode];
+  }
+
+  get recordsView(): AppEntry<FlamegraphNode> | AppEntry<WebtreegraphNode> {
     return this.profileRecords.timeline[this.currentView] || { app: [], timeSpent: 0, source: '' };
   }
 
@@ -57,5 +68,9 @@ export class TimelineComponent {
       this.currentView = newVal;
       this.slider.value = this.currentView;
     }
+  }
+
+  formatRecords(): void {
+    this.profileRecords = this.formatter.format(this.unFormattedRecords);
   }
 }

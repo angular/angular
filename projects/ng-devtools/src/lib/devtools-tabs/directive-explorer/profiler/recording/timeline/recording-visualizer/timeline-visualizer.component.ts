@@ -1,5 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { VisualizationMode } from '../timeline.component';
+import { TimelineView } from '../record-formatter/record-formatter';
+import { FlamegraphNode } from '../record-formatter/flamegraph-formatter';
+import { WebtreegraphNode } from '../record-formatter/webtreegraph-formatter';
 
 @Component({
   selector: 'ng-timeline-visualizer',
@@ -8,7 +11,7 @@ import { VisualizationMode } from '../timeline.component';
 })
 export class TimelineVisualizerComponent {
   @Input() visualizationMode: VisualizationMode;
-  @Input() records;
+  @Input() records: FlamegraphNode[] | WebtreegraphNode[];
 
   cmpVisualizationModes = VisualizationMode;
 }
