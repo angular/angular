@@ -1,15 +1,5 @@
-import { RecordFormatter } from '../record-formatter';
+import { AppEntry, RecordFormatter, TimelineView } from '../record-formatter';
 import { ElementProfile, ProfilerFrame } from 'protocol';
-
-export interface TimelineView {
-  timeline: AppEntry[];
-}
-
-export interface AppEntry {
-  app: FlamegraphNode[];
-  timeSpent: number;
-  source: string;
-}
 
 export interface FlamegraphNode {
   value: number;
@@ -19,9 +9,9 @@ export interface FlamegraphNode {
   original: ElementProfile;
 }
 
-export class FlamegraphFormatter implements RecordFormatter {
-  format(records: ProfilerFrame[]): TimelineView {
-    const result: TimelineView = {
+export class FlamegraphFormatter extends RecordFormatter<FlamegraphNode> {
+  format(records: ProfilerFrame[]): TimelineView<FlamegraphNode> {
+    const result: TimelineView<FlamegraphNode> = {
       timeline: [],
     };
     records.forEach(record => {
@@ -31,27 +21,14 @@ export class FlamegraphFormatter implements RecordFormatter {
     return result;
   }
 
-  getLabel(element: ElementProfile): string {
-    const name = element.directives
-      .filter(d => d.isComponent)
-      .map(c => c.name)
-      .join(', ');
-    const attributes = [...new Set(element.directives.filter(d => !d.isComponent).map(d => d.name))].join(', ');
-    return attributes === '' ? name : `${name}[${attributes}]`;
-  }
-
-  getValue(element: ElementProfile): number {
-    let result = 0;
-    element.directives.forEach(dir => {
-      result += dir.changeDetection;
-      Object.keys(dir.lifecycle).forEach(key => {
-        const value = parseFloat(dir.lifecycle[key]);
-        if (!isNaN(value)) {
-          result += value;
-        }
-      });
-    });
-    return result;
+  insertTimelineRecord(result: AppEntry<FlamegraphNode>[], record: ProfilerFrame): void {
+    const entry: AppEntry<FlamegraphNode> = {
+      app: [],
+      timeSpent: 0,
+      source: record.source,
+    };
+    entry.timeSpent = this.addFrame(entry.app, record.directives);
+    result.push(entry);
   }
 
   addFrame(nodes: FlamegraphNode[], elements: ElementProfile[]): number {
@@ -64,8 +41,8 @@ export class FlamegraphFormatter implements RecordFormatter {
         return;
       }
       const node: FlamegraphNode = {
-        value: this.getValue(element),
-        label: this.getLabel(element),
+        value: super.getValue(element),
+        label: super.getLabel(element),
         children: [],
         instances: 1,
         original: element,
@@ -75,15 +52,5 @@ export class FlamegraphFormatter implements RecordFormatter {
       nodes.push(node);
     });
     return timeSpent;
-  }
-
-  insertTimelineRecord(result: AppEntry[], record: ProfilerFrame): void {
-    const entry: AppEntry = {
-      app: [],
-      timeSpent: 0,
-      source: record.source,
-    };
-    entry.timeSpent = this.addFrame(entry.app, record.directives);
-    result.push(entry);
   }
 }

@@ -5,7 +5,8 @@ import {
   SIMPLE_FORMATTED_RECORD,
   SIMPLE_RECORD,
 } from './flamegraph-formatter-spec-constants';
-import { AppEntry, FlamegraphFormatter } from './flamegraph-formatter';
+import { FlamegraphFormatter, FlamegraphNode } from './flamegraph-formatter';
+import { AppEntry } from '../record-formatter';
 
 const formatter = new FlamegraphFormatter();
 
@@ -117,7 +118,7 @@ describe('getLabel cases', () => {
 });
 
 describe('addFrame cases', () => {
-  let entry: AppEntry;
+  let entry: AppEntry<FlamegraphNode>;
   let timeSpent;
 
   beforeEach(() => {
