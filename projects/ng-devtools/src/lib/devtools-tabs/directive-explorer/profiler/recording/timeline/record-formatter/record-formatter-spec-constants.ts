@@ -32,7 +32,7 @@ export const SIMPLE_RECORD = [
     ],
   },
 ];
-export const SIMPLE_FORMATTED_RECORD = [
+export const SIMPLE_FORMATTED_FLAMEGRAPH_RECORD = [
   {
     value: 7,
     label: '[NgForOf]',
@@ -240,7 +240,7 @@ export const NESTED_RECORD = [
     ],
   },
 ];
-export const NESTED_FORMATTED_RECORD = [
+export const NESTED_FORMATTED_FLAMEGRAPH_RECORD = [
   {
     value: 1,
     label: 'AppComponent',
@@ -1172,4 +1172,70 @@ export const NESTED_FORMATTED_RECORD = [
       ],
     },
   },
+];
+export const SIMPLE_FORMATTED_WEBTREEGRAPH_RECORD = [
+  Object({
+    id: '[NgForOf]',
+    size: 17,
+    value: 7,
+    children: [
+      Object({
+        id: 'TodoComponent[TooltipDirective]',
+        size: 10,
+        value: 10,
+        children: [],
+        original: Object({
+          children: [],
+          directives: [
+            Object({
+              isComponent: false,
+              isElement: false,
+              name: 'TooltipDirective',
+              lifecycle: Object({}),
+              changeDetection: 5,
+            }),
+            Object({
+              changeDetection: 5,
+              isElement: false,
+              isComponent: true,
+              lifecycle: Object({}),
+              name: 'TodoComponent',
+            }),
+          ],
+        }),
+      }),
+    ],
+    original: Object({
+      children: [
+        Object({
+          children: [],
+          directives: [
+            Object({
+              isComponent: false,
+              isElement: false,
+              name: 'TooltipDirective',
+              lifecycle: Object({}),
+              changeDetection: 5,
+            }),
+            Object({
+              changeDetection: 5,
+              isElement: false,
+              isComponent: true,
+              lifecycle: Object({}),
+              name: 'TodoComponent',
+            }),
+          ],
+        }),
+      ],
+      directives: [
+        Object({
+          isComponent: false,
+          isElement: false,
+          name: 'NgForOf',
+          lifecycle: Object({ ngDoCheck: 7 }),
+          changeDetection: 0,
+        }),
+      ],
+    }),
+  }),
 ];
