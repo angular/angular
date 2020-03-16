@@ -1,15 +1,13 @@
 # Using observables to pass values
 
 Observables provide support for passing messages between parts of your application.
-They offer significant benefits over other techniques for event handling, asynchronous programming, and handling multiple values.
+They are used frequently in Angular and are the recommended technique for event handling, asynchronous programming, and handling multiple values.
 
 The observer pattern is a software design pattern in which an object, called the *subject*, maintains a list of its dependents, called *observers*, and notifies them automatically of state changes.
-This is similar (but not identical) to the [publish/subscribe](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) design pattern.
+This pattern is similar (but not identical) to the [publish/subscribe](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) design pattern.
 
 Observables are declarative&mdash;that is, you define a function for publishing values, but it is not executed until a consumer subscribes to it.
 The subscribed consumer then receives notifications until the function completes, or until they unsubscribe.
-
-Observables are declarative. You define a function for producing values, but that function is not executed until a consumer makes a request to receive notifications. The act of subscribing creates an observer. The observer then receives notifications of new values until the function completes, or until they unsubscribe.
 
 An observable can deliver multiple values of any type&mdash;literals, messages, or events, depending on the context. The API for receiving values is the same whether the values are delivered synchronously or asynchronously. Because setup and teardown logic are both handled by the observable, your application code only needs to worry about subscribing to consume values, and when done, unsubscribing. Whether the stream was keystrokes, an HTTP response, or an interval timer, the interface for listening to values and stopping listening is the same.
 
