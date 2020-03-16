@@ -63,6 +63,16 @@ describe('KeyValuePipe', () => {
       const transform2 = pipe.transform({1: 3});
       expect(transform1 !== transform2).toEqual(true);
     });
+    it('should accept a type union of an object with string keys and null', () => {
+      let value !: {[key: string]: string} | null;
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      expect(pipe.transform(value)).toEqual(null);
+    });
+    it('should accept a type union of an object with number keys and null', () => {
+      let value !: {[key: number]: string} | null;
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      expect(pipe.transform(value)).toEqual(null);
+    });
   });
 
   describe('Map', () => {
@@ -114,6 +124,11 @@ describe('KeyValuePipe', () => {
       const transform1 = pipe.transform(new Map([[1, 2]]));
       const transform2 = pipe.transform(new Map([[1, 3]]));
       expect(transform1 !== transform2).toEqual(true);
+    });
+    it('should accept a type union of a Map and null', () => {
+      let value !: Map<number, number>| null;
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      expect(pipe.transform(value)).toEqual(null);
     });
   });
 });
