@@ -1,3 +1,42 @@
+## 9.1.3 "plastic-juice" (2020-03-16)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **overlay:** support SVG element as overlay origin ([#18595](https://github.com/angular/components/issues/18595)) ([1303d8f](https://github.com/angular/components/commit/1303d8f)) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **clipboard:** not restoring focus to SVG elements ([#18626](https://github.com/angular/components/issues/18626)) ([f48ddf0](https://github.com/angular/components/commit/f48ddf0)) |
+| bug fix |  **document-injection:** Update to use injected document ([#18780](https://github.com/angular/components/issues/18780)) ([350e598](https://github.com/angular/components/commit/350e598)) |
+| bug fix |  **drag-drop:** detect changes on custom preview/placeholder before measuring ([#18698](https://github.com/angular/components/issues/18698)) ([2201a99](https://github.com/angular/components/commit/2201a99)), closes [#18622](https://github.com/angular/components/issues/18622) |
+| bug fix |  **drag-drop:** error on IE when document is being auto scrolled ([#18757](https://github.com/angular/components/issues/18757)) ([b0b44d2](https://github.com/angular/components/commit/b0b44d2)) |
+| bug fix |  **drag-drop:** only return item to initial index if the new container's sorting is disabled ([#18706](https://github.com/angular/components/issues/18706)) ([14ae95f](https://github.com/angular/components/commit/14ae95f)), closes [#18697](https://github.com/angular/components/issues/18697) |
+| bug fix |  **form-field:** error when trying to lock label into position too early ([#18666](https://github.com/angular/components/issues/18666)) ([6fd3e6c](https://github.com/angular/components/commit/6fd3e6c)), closes [#18663](https://github.com/angular/components/issues/18663) |
+| bug fix |  **list:** incorrectly selecting items when moving focus using shift + arrow key in single selection mode ([#18579](https://github.com/angular/components/issues/18579)) ([4a809d7](https://github.com/angular/components/commit/4a809d7)) |
+| bug fix |  **list:** no disabled indication in high contrast mode ([#18567](https://github.com/angular/components/issues/18567)) ([5f37eb7](https://github.com/angular/components/commit/5f37eb7)) |
+| bug fix |  **mdc-form-field:** refresh notch width when toggling appearances ([#18776](https://github.com/angular/components/issues/18776)) ([0bfa717](https://github.com/angular/components/commit/0bfa717)) |
+| bug fix |  **mdc-form-field:** text-field should stretch based on host element ([#18778](https://github.com/angular/components/issues/18778)) ([2555344](https://github.com/angular/components/commit/2555344)) |
+| bug fix |  **menu:** allow focus to be moved inside menuClosed event ([#18756](https://github.com/angular/components/issues/18756)) ([5499c40](https://github.com/angular/components/commit/5499c40)) |
+
+### google-maps
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  server-side rendering error for polygon and rectangle components ([#18573](https://github.com/angular/components/issues/18573)) ([d987807](https://github.com/angular/components/commit/d987807)) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-list:** fix styles for normal lists ([#18632](https://github.com/angular/components/issues/18632)) ([fcef522](https://github.com/angular/components/commit/fcef522)) |
+| bug fix |  **slider:** add slider mixin to main theme mixin ([#18384](https://github.com/angular/components/issues/18384)) ([3b777eb](https://github.com/angular/components/commit/3b777eb)) |
+| bug fix |  **mdc-form-field:** account for breaking changes in MDC ([#18795](https://github.com/angular/components/issues/18795)) ([e26670f](https://github.com/angular/components/commit/e26670f)) |
+
+
 ## 9.1.2 "milk-blade" (2020-03-10)
 
 ### cdk
