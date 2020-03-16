@@ -10,7 +10,7 @@
 import {Compiler, InjectionToken, Injector, NgModuleFactory, NgModuleFactoryLoader} from '@angular/core';
 import {isPromise} from '@angular/core/src/util/lang';
 import {Observable, from, of } from 'rxjs';
-import {mergeMap, switchMap} from 'rxjs/operators';
+import {map, mergeMap} from 'rxjs/operators';
 
 import {LoadChildren, LoadedRouterConfig, Route, standardizeConfig} from './config';
 import {flatten, wrapIntoObservable} from './utils/collection';
@@ -50,42 +50,23 @@ export class RouterConfigLoader {
 
     const moduleFactory$ = this.loadModuleFactory(route.loadChildren !);
 
-    return moduleFactory$.pipe(switchMap((factory: NgModuleFactory<any>) => {
+    return moduleFactory$.pipe(mergeMap((factory: NgModuleFactory<any>) => {
       if (this.onLoadEndListener) {
         this.onLoadEndListener(route);
       }
 
       const module = factory.create(parentInjector);
-      const routeInits: (() => any)[] = module.injector.get(ROUTE_INITIALIZER, () => {});
+      const routeInits: (() => any)[] = module.injector.get(ROUTE_INITIALIZER, []);
 
-      return from(
-          this.runInitializers(routeInits)
-              .then(
-                  () => new LoadedRouterConfig(
+      return this.runInitializers(routeInits)
+          .pipe(
+              map(() => new LoadedRouterConfig(
                       flatten(module.injector.get(ROUTES)).map(standardizeConfig), module)));
-
     }));
   }
 
-  private runInitializers(routeInits: (() => any)[]): Promise<unknown> {
-    return new Promise((res, rej) => {
-      const asyncInitPromises: Promise<any>[] = [];
-
-      if (routeInits) {
-        for (let i = 0; i < routeInits.length; i++) {
-          const initResult = routeInits[i]();
-          if (isPromise(initResult)) {
-            asyncInitPromises.push(initResult);
-          }
-        }
-      }
-
-      Promise.all(asyncInitPromises).then(() => { res(); }).catch(e => { rej(e); });
-
-      if (asyncInitPromises.length === 0) {
-        res();
-      }
-    });
+  private runInitializers(routeInits: (() => any)[] = []) {
+    return from(Promise.all(routeInits.map(routeInit => routeInit()).filter(isPromise)));
   }
 
   private loadModuleFactory(loadChildren: LoadChildren): Observable<NgModuleFactory<any>> {
