@@ -141,6 +141,8 @@ API docs.
 
 
 #### Getters and Setters
+* Only use getters and setters for `@Input` properties or when otherwise required for API
+compatibility.
 * Avoid long or complex getters and setters. If the logic of an accessor would take more than
 three lines, introduce a new method to contain the logic.
 * A getter should immediately precede its corresponding setter.
@@ -204,6 +206,9 @@ specific error being caught and why it cannot be prevented.
 * Prefer *exact* names over short names (within reason). E.g., `labelPosition` is better than
 `align` because the former much more exactly communicates what the property means.
 * Except for `@Input` properties, use `is` and `has` prefixes for boolean properties / methods.
+
+##### Observables
+* Don't suffix observables with `$`. 
 
 ##### Classes
 Classes should be named based on what they're responsible for. Names should capture what the code
