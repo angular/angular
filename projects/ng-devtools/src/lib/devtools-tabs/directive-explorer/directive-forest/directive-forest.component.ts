@@ -25,9 +25,9 @@ import { arrayEquals } from 'shared-utils';
 })
 export class DirectiveForestComponent {
   @Input() set forest(forest: DevToolsNode[]) {
-    this._updateForest(forest);
-
-    if (this.currentSelectedElement) {
+    const result = this._updateForest(forest);
+    const changed = result.movedItems.length || result.newItems.length || result.removedItems.length;
+    if (this.currentSelectedElement && changed) {
       this._reselectNodeOnUpdate();
     }
   }
@@ -103,18 +103,21 @@ export class DirectiveForestComponent {
     }
   }
 
-  private _updateForest(forest: DevToolsNode[]): void {
-    const newItems = this.dataSource.update(forest);
+  private _updateForest(
+    forest: DevToolsNode[]
+  ): { newItems: FlatNode[]; movedItems: FlatNode[]; removedItems: FlatNode[] } {
+    const result = this.dataSource.update(forest);
     if (!this._initialized && forest && forest.length) {
       this.treeControl.expandAll();
       this._initialized = true;
-      newItems.forEach(item => (item.newItem = false));
+      result.newItems.forEach(item => (item.newItem = false));
     }
-    if (newItems && newItems.length) {
-      newItems.forEach(item => {
+    if (result.newItems && result.newItems.length) {
+      result.newItems.forEach(item => {
         this.treeControl.expand(item);
       });
     }
+    return result;
   }
 
   populateParents(position: ElementPosition): void {

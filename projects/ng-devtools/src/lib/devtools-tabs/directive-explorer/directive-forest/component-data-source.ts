@@ -84,9 +84,9 @@ export class ComponentDataSource extends DataSource<FlatNode> {
     return this._nodeToFlat.get(indexedNode);
   }
 
-  update(forest: DevToolsNode[]): FlatNode[] {
+  update(forest: DevToolsNode[]): { newItems: FlatNode[]; movedItems: FlatNode[]; removedItems: FlatNode[] } {
     if (!forest) {
-      return;
+      return { newItems: [], movedItems: [], removedItems: [] };
     }
 
     const indexedForest = indexForest(forest);
@@ -101,7 +101,7 @@ export class ComponentDataSource extends DataSource<FlatNode> {
     movedItems.forEach(i => this._nodeToFlat.set(i.original, i));
     newItems.forEach(i => (i.newItem = true));
 
-    return newItems;
+    return { newItems, movedItems, removedItems };
   }
 
   connect(collectionViewer: CollectionViewer): Observable<FlatNode[]> {
