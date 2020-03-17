@@ -26,7 +26,7 @@ describe('CanvasComponent', () => {
 
   it('should be able to generate blob data from canvas', fakeAsync(() => {
     const fixture = TestBed.createComponent(CanvasComponent);
-    const canvasComp = fixture.debugElement.componentInstance;
+    const canvasComp = fixture.componentInstance;
 
     fixture.detectChanges();
     expect(canvasComp.blobSize).toBe(0);
