@@ -41,7 +41,7 @@ export class ComponentDataSource extends DataSource<FlatNode> {
   private _differ = new DefaultIterableDiffer(trackBy);
   private _expandedData = new BehaviorSubject<FlatNode[]>([]);
   private _flattenedData = new BehaviorSubject<FlatNode[]>([]);
-  private _nodeToFlat = new Map<IndexedNode, FlatNode>();
+  private _nodeToFlat = new WeakMap<IndexedNode, FlatNode>();
 
   private _treeFlattener = new MatTreeFlattener(
     (node: IndexedNode, level: number) => {
@@ -99,7 +99,6 @@ export class ComponentDataSource extends DataSource<FlatNode> {
     this._flattenedData.next(this.data);
 
     movedItems.forEach(i => this._nodeToFlat.set(i.original, i));
-    removedItems.forEach(item => this._nodeToFlat.delete(item.original));
     newItems.forEach(i => (i.newItem = true));
 
     return newItems;
