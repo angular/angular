@@ -21,7 +21,7 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   }));
 
-  it('should render title in a h1 tag', async(() => {
+  it('should render title', async(() => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
 
