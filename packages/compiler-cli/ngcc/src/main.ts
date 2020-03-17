@@ -277,7 +277,8 @@ export function mainNgcc({basePath, targetEntryPointPath,
 
   // The function for creating the `compile()` function.
   const createCompileFn: CreateCompileFn = onTaskCompleted => {
-    const fileWriter = getFileWriter(fileSystem, pkgJsonUpdater, createNewEntryPointFormats);
+    const fileWriter = getFileWriter(
+        fileSystem, logger, pkgJsonUpdater, createNewEntryPointFormats, errorOnFailedEntryPoint);
     const transformer = new Transformer(fileSystem, logger);
 
     return (task: Task) => {
@@ -362,10 +363,11 @@ function getPackageJsonUpdater(inParallel: boolean, fs: FileSystem): PackageJson
 }
 
 function getFileWriter(
-    fs: FileSystem, pkgJsonUpdater: PackageJsonUpdater,
-    createNewEntryPointFormats: boolean): FileWriter {
-  return createNewEntryPointFormats ? new NewEntryPointFileWriter(fs, pkgJsonUpdater) :
-                                      new InPlaceFileWriter(fs);
+    fs: FileSystem, logger: Logger, pkgJsonUpdater: PackageJsonUpdater,
+    createNewEntryPointFormats: boolean, errorOnFailedEntryPoint: boolean): FileWriter {
+  return createNewEntryPointFormats ?
+      new NewEntryPointFileWriter(fs, logger, errorOnFailedEntryPoint, pkgJsonUpdater) :
+      new InPlaceFileWriter(fs, logger, errorOnFailedEntryPoint);
 }
 
 function getTaskQueue(

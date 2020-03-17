@@ -8,6 +8,7 @@
  */
 import {AbsoluteFsPath, FileSystem, absoluteFromSourceFile, dirname, join, relative} from '../../../src/ngtsc/file_system';
 import {isDtsPath} from '../../../src/ngtsc/util/src/typescript';
+import {Logger} from '../logging/logger';
 import {EntryPoint, EntryPointJsonProperty} from '../packages/entry_point';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
 import {FileToWrite} from '../rendering/utils';
@@ -27,7 +28,11 @@ export const NGCC_PROPERTY_EXTENSION = '_ivy_ngcc';
  * `InPlaceFileWriter`).
  */
 export class NewEntryPointFileWriter extends InPlaceFileWriter {
-  constructor(fs: FileSystem, private pkgJsonUpdater: PackageJsonUpdater) { super(fs); }
+  constructor(
+      fs: FileSystem, logger: Logger, errorOnFailedEntryPoint: boolean,
+      private pkgJsonUpdater: PackageJsonUpdater) {
+    super(fs, logger, errorOnFailedEntryPoint);
+  }
 
   writeBundle(
       bundle: EntryPointBundle, transformedFiles: FileToWrite[],
