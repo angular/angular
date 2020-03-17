@@ -3,14 +3,14 @@ import { Observable } from 'rxjs';
 
 // #docregion observable
 
-// declare a publishing operation
+// 실행 준비
 const observable = new Observable<number>(observer => {
-  // Subscriber fn...
+  // 구독자 함수
 });
 
-// initiate execution
+// 옵저버블을 구독합니다.
 observable.subscribe(() => {
-  // observer handles notifications
+  // 데이터 처리
 });
 
 // #enddocregion observable
@@ -18,7 +18,7 @@ observable.subscribe(() => {
 // #docregion unsubscribe
 
 const subscription = observable.subscribe(() => {
-  // observer handles notifications
+  // 옵저버가 데이터를 처리하는 로직
 });
 
 subscription.unsubscribe();

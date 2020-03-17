@@ -113,8 +113,8 @@ The [Angular CLI](cli) generates the following basic `AppModule` when creating a
 At the top are the import statements. The next section is where you configure the `@NgModule` by stating what components and directives belong to it (`declarations`) as well as which other modules it uses (`imports`). For more information on the structure of an `@NgModule`, be sure to read [Bootstrapping](guide/bootstrapping).
 -->
 이 파일의 제일 위쪽에는 `import` 구문들이 있습니다.
-The next section is where you configure the `@NgModule` by stating what components and directives belong to it (`declarations`) as well as which other modules it uses (`imports`).
-For more information on the structure of an `@NgModule`, be sure to read [Bootstrapping](guide/bootstrapping).
+다음 문서에서는 컴포넌트와 디렉티브를 `@NgModule`에 포함시키는 `declations`와 `imports`에 대해 알아봅시다.
+`@NgModule`의 구조에 대해 자세하게 알아보려면 [부트스트랩](guide/bootstrapping) 문서를 참고하세요.
 
 <hr />
 

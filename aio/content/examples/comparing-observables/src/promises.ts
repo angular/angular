@@ -1,11 +1,11 @@
 // #docregion promise
-// initiate execution
+// 실행 준비
 const promise = new Promise<number>((resolve, reject) => {
-  // Executer fn...
+  // 실행 함수
 });
 
 promise.then(value => {
-  // handle result here
+  // 데이터 처리
 });
 
 // #enddocregion promise

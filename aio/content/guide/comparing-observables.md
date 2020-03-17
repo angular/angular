@@ -5,12 +5,11 @@
 
 <!--
 You can often use observables instead of promises to deliver values asynchronously. Similarly, observables can take the place of event handlers. Finally, because observables deliver multiple values, you can use them where you might otherwise build and operate on arrays.
+
+Observables behave somewhat differently from the alternative techniques in each of these situations, but offer some significant advantages. Here are detailed comparisons of the differences.
 -->
 비동기 로직을 처리하려면 Promise대신 옵저버블을 사용할 수 있으며, 이벤트 핸들러도 옵저버블로 처리할 수 있습니다. 그리고 옵저버블은 객체 하나로 데이터를 여러번 보낼 수 있기 때문에, 데이터를 배열로 묶어서 한번에 보내는 방식보다 더 효율적입니다.
 
-<!--
-Observables behave somewhat differently from the alternative techniques in each of these situations, but offer some significant advantages. Here are detailed comparisons of the differences.
--->
 옵저버블은 Promise나 이벤트 API, 배열을 사용하는 방식과 조금 다르게 동작하지만, 옵저버블의 독특한 장점이 있습니다. 이 문서에서는 이 차이점에 대해 알아봅니다.
 
 <!--
@@ -20,27 +19,23 @@ Observables behave somewhat differently from the alternative techniques in each 
 
 <!--
 Observables are often compared to promises. Here are some key differences:
+
+* Observables are declarative; computation does not start until subscription. Promises execute immediately on creation. This makes observables useful for defining recipes that can be run whenever you need the result.
+
+* Observables provide many values. Promises provide one. This makes observables useful for getting multiple values over time.
+
+* Observables differentiate between chaining and subscription. Promises only have `.then()` clauses. This makes observables useful for creating complex transformation recipes to be used by other part of the system, without causing the work to be executed.
+
+* Observables `subscribe()` is responsible for handling errors. Promises push errors to the child promises. This makes observables useful for centralized and predictable error handling.
 -->
 옵저버블은 Promise와 자주 비교됩니다. 간단하게 살펴보면 다음과 같은 점이 다릅니다:
 
-<!--
-* Observables are declarative; computation does not start until subscription. Promises execute immediately on creation. This makes observables useful for defining recipes that can be run whenever you need the result.
--->
 * 옵저버블은 명시적으로 구독하기 전까지는 실행되지 않지만, Promise는 객체를 생성할 때 바로 실행됩니다. 데이터를 받는 쪽에서 원하는 시점을 결정하는 경우라면 옵저버블이 더 효율적입니다.
 
-<!--
-* Observables provide many values. Promises provide one. This makes observables useful for getting multiple values over time.
--->
 * 옵저버블은 데이터를 여러개 보낼 수 있지만, Promise는 하나만 보낼 수 있습니다. 데이터를 여러번 나눠서 보내는 경우라면 옵저버블이 더 효율적입니다.
 
-<!--
-* Observables differentiate between chaining and subscription. Promises only have `.then()` clauses. This makes observables useful for creating complex transformation recipes to be used by other part of the system, without causing the work to be executed.
--->
 * 옵저버블은 체이닝과 구독을 구별하지만, Promise는 `.then()` 하나로 사용합니다. 다른 곳에서 가져온 데이터를 복잡하게 가공해야 한다면 옵저버블이 더 효율적입니다.
 
-<!--
-* Observables `subscribe()` is responsible for handling errors. Promises push errors to the child promises. This makes observables useful for centralized and predictable error handling.
--->
 * 옵저버블에서 제공하는 `subscribe()`는 에러도 함께 처리할 수 있습니다. Promise는 `.catch()`를 사용하는 위치에 따라 에러를 처리하는 로직이 달라져야 하지만, 옵저버블은 에러 처리 로직을 한 군데에 집중할 수 있습니다.
 
 <!--
@@ -50,8 +45,6 @@ Observables are often compared to promises. Here are some key differences:
 
 <!--
 * Observables are not executed until a consumer subscribes. The `subscribe()` executes the defined behavior once, and it can be called again. Each subscription has its own computation. Resubscription causes recomputation of values.
--->
-* 옵저버블은 구독자가 구독하기 전까지 실행되지 않습니다. 그리고 `subscribe()`가 실행되면 스트림이 전달될 때마다 지정된 옵저버블 처리 로직을 실행합니다. 옵저버블은 구독될 때마다 새로운 실행 컨텍스트를 생성하며, 이 때마다 옵저버블이 처음부터 다시 실행됩니다.
 
   <code-example 
     path="comparing-observables/src/observables.ts" 
@@ -59,14 +52,27 @@ Observables are often compared to promises. Here are some key differences:
     region="observable">
   </code-example>
 
-<!--
 * Promises execute immediately, and just once. The computation of the result is initiated when the promise is created. There is no way to restart work. All `then` clauses (subscriptions) share the same computation.
--->
-* Promise는 생성되자마자 딱 한 번만 실행됩니다. Promise에 지정된 로직도 Promise가 생성될 때 한 번만 실행되며, 이 로직을 다시 실행하는 방법은 없습니다. Promise에서 체이닝하는 `then`은 모두 같은 객체를 공유합니다.
 
   <code-example 
     path="comparing-observables/src/promises.ts" 
     header="src/promises.ts (promise)"
+    region="promise">
+  </code-example>
+-->
+* 옵저버블은 구독자가 구독하기 전까지 실행되지 않습니다. 그리고 `subscribe()`가 실행되면 스트림이 전달될 때마다 지정된 옵저버블 처리 로직을 실행합니다. 옵저버블은 구독될 때마다 새로운 실행 컨텍스트를 생성하며, 이 때마다 옵저버블이 처음부터 다시 실행됩니다.
+
+  <code-example 
+    path="comparing-observables/src/observables.ts" 
+    header="src/observables.ts (옵저버블)" 
+    region="observable">
+  </code-example>
+
+* Promise는 생성되자마자 딱 한 번만 실행됩니다. Promise에 지정된 로직도 Promise가 생성될 때 한 번만 실행되며, 이 로직을 다시 실행하는 방법은 없습니다. Promise에서 체이닝하는 `then`은 모두 같은 객체를 공유합니다.
+
+  <code-example 
+    path="comparing-observables/src/promises.ts" 
+    header="src/promises.ts (Promise)"
     region="promise">
   </code-example>
 
@@ -77,8 +83,6 @@ Observables are often compared to promises. Here are some key differences:
 
 <!--
 * Observables differentiate between transformation function such as a map and subscription. Only subscription activates the subscriber function to start computing the values.
--->
-* 옵저버블은 데이터를 조작하는 것과 구독하는 것을 구별합니다. 옵저버블은 구독자가 있을 때만 옵저버블 로직을 실행합니다.
 
   <code-example 
     path="comparing-observables/src/observables.ts" 
@@ -86,14 +90,27 @@ Observables are often compared to promises. Here are some key differences:
     region="chain">
   </code-example>
 
-<!--
 * Promises do not differentiate between the last `.then` clauses (equivalent to subscription) and intermediate `.then` clauses (equivalent to map).
--->
-* Promise는 구독을 의미하는 마지막 `.then`과 데이터 조작을 의미하는 중간 `.then`을 구분하지 않습니다.
 
   <code-example 
     path="comparing-observables/src/promises.ts"
     header="src/promises.ts (chain)" 
+    region="chain">
+  </code-example>
+-->
+* 옵저버블은 데이터를 조작하는 것과 구독하는 것을 구별합니다. 옵저버블은 구독자가 있을 때만 옵저버블 로직을 실행합니다.
+
+  <code-example 
+    path="comparing-observables/src/observables.ts" 
+    header="src/observables.ts (체이닝)" 
+    region="chain">
+  </code-example>
+
+* Promise는 구독을 의미하는 마지막 `.then`과 데이터 조작을 의미하는 중간 `.then`을 구분하지 않습니다.
+
+  <code-example 
+    path="comparing-observables/src/promises.ts"
+    header="src/promises.ts (체이닝)" 
     region="chain">
   </code-example>
 
