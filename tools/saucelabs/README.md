@@ -27,10 +27,18 @@ yarn bazel run //tools/saucelabs:sauce_service_setup
 For example, `packages/core/test:test_web` becomes `packages/core/test:saucelabs_test_web`.
 
 ```
-yarn bazel test //path/to/target:saucelabs_target1 --config=saucelabs --config=ivy
+yarn bazel test //packages/core/test:saucelabs_test_web --config=saucelabs --config=ivy
 ```
 
 Remove the `--config=ivy` if you want to run through View Engine instead. 
+
+5. Sauce service log may be tailed or dumped with the following targets:
+
+``` bash
+yarn bazel run //tools/saucelabs:sauce_service_tail
+yarn bazel run //tools/saucelabs:sauce_service_log
+```
+
 
 ## Additional test features
 
