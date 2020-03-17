@@ -29,7 +29,10 @@ export function verifyAgainstGoldenFile(
   if (actual === expected) {
     return '';
   } else {
-    const displayFileName = path.relative(process.cwd(), goldenFile);
+    // The patch should not show absolute paths, as these are pretty long and obfuscated
+    // the printed golden diff. Additionally, path separators in the patch should be forward
+    // slashes for consistency and to enable easier integration testing.
+    const displayFileName = path.relative(process.cwd(), goldenFile).replace(/\\/g, '/');
     const patch = createPatch(displayFileName, expected, actual, 'Golden file', 'Generated API');
 
     // Remove the header of the patch
