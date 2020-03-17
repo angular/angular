@@ -1070,10 +1070,10 @@
     "@bazel/buildifier-linux_x64" "0.29.0"
     "@bazel/buildifier-win32_x64" "0.29.0"
 
-"@bazel/ibazel@^0.12.2":
-  version "0.12.2"
-  resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.12.2.tgz#98a290dbf8025076dd3040eab4f13a3d7e99357c"
-  integrity sha512-CktVREceZn+6VokQ7A2qByuXBSGRM0THuyv68JUShHYyCkYS94nYMZEIe5NXk12CRzcpMLfZGD5Gdtr+jWs9pw==
+"@bazel/ibazel@^0.12.3":
+  version "0.12.3"
+  resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.12.3.tgz#c8c82647f920cd529c7793c50e087e1a754a5973"
+  integrity sha512-dyx62Uo5kogrxFmqFNpGvbavfr8yjmuQlOyZczOuA60piULwlUsO7Oh3/1OUWKDSXaMMqHhFQfpdl+z0HjI6TQ==
 
 "@bazel/jasmine@1.4.1":
   version "1.4.1"
