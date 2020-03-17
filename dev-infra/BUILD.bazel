@@ -1,38 +1,38 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
 load("@npm_bazel_typescript//:index.bzl", "ts_library")
-load("@npm_bazel_rollup//:index.bzl", "rollup_bundle")
 
 ts_library(
     name = "cli",
     srcs = [
         "cli.ts",
     ],
+    module_name = "@angular/dev-infra-private",
     deps = [
         "//dev-infra/pullapprove",
         "@npm//@types/node",
     ],
 )
 
-rollup_bundle(
-    name = "bundle",
-    config_file = "rollup.config.js",
-    entry_point = ":cli.ts",
-    format = "umd",
-    sourcemap = "hidden",
-    deps = [
-        ":cli",
-        "@npm//rollup-plugin-commonjs",
-        "@npm//rollup-plugin-node-resolve",
+genrule(
+    name = "package-json",
+    srcs = [
+        "tmpl-package.json",
+        "//:package.json",
     ],
+    outs = ["package.json"],
+    cmd = """
+        $(location //tools:inline-package-json-deps) $(location tmpl-package.json) \
+            $(location //:package.json) $@
+    """,
+    tools = ["//tools:inline-package-json-deps"],
 )
 
 pkg_npm(
     name = "npm_package",
-    srcs = [
-        "package.json",
-    ],
     visibility = ["//visibility:public"],
     deps = [
-        ":bundle",
+        ":cli",
+        ":package-json",
+        "//dev-infra/ts-circular-dependencies",
     ],
 )
