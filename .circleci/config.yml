@@ -464,17 +464,6 @@ jobs:
       - install_chrome_libs
         # Install aio
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
-      - when:
-          condition: << parameters.ivy >>
-          steps:
-              # Rename the "dist/*-dist-ivy-aot" packages directories (persisted to the workspace by
-              # the `build-ivy-npm-packages` job) to "dist/*-dist" as the AIO package installer
-              # picks up the locally built packages from that location.
-              # *Note*: We could also adjust the packages installer, but given we won't have
-              # two different folders of Angular distributions in the future, we should keep
-              # the packages installer unchanged.
-            - run: mv dist/packages-dist-ivy-aot dist/packages-dist
-            - run: mv dist/zone.js-dist-ivy-aot dist/zone.js-dist
         # Run examples tests. The "CIRCLE_NODE_INDEX" will be set if "parallelism" is enabled.
         # Since the parallelism is set to "5", there will be five parallel CircleCI containers.
         # with either "0", "1", etc as node index. This can be passed to the "--shard" argument.
@@ -832,7 +821,7 @@ workflows:
           name: test_docs_examples_ivy
           ivy: true
           requires:
-            - build-ivy-npm-packages
+            - build-npm-packages
       - aio_preview:
           # Only run on PR builds. (There can be no previews for non-PR builds.)
           <<: *only_on_pull_requests
