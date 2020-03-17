@@ -23,12 +23,15 @@ runInEachFileSystem(() => {
     let _: typeof absoluteFrom;
     let fs: FileSystem;
     let fileWriter: FileWriter;
+    let logger: MockLogger;
     let entryPoint: EntryPoint;
     let esm5bundle: EntryPointBundle;
     let esm2015bundle: EntryPointBundle;
 
     beforeEach(() => {
       _ = absoluteFrom;
+      fs = getFileSystem();
+      logger = new MockLogger();
       loadTestFiles([
 
         {
@@ -100,11 +103,11 @@ runInEachFileSystem(() => {
 
     describe('writeBundle() [primary entry-point]', () => {
       beforeEach(() => {
-        fs = getFileSystem();
-        fileWriter = new NewEntryPointFileWriter(fs, new DirectPackageJsonUpdater(fs));
+        fileWriter = new NewEntryPointFileWriter(
+            fs, logger, /* errorOnFailedEntryPoint */ true, new DirectPackageJsonUpdater(fs));
         const config = new NgccConfiguration(fs, _('/'));
         const result = getEntryPointInfo(
-            fs, config, new MockLogger(), _('/node_modules/test'), _('/node_modules/test')) !;
+            fs, config, logger, _('/node_modules/test'), _('/node_modules/test')) !;
         if (result === NO_ENTRY_POINT || result === INVALID_ENTRY_POINT) {
           return fail(`Expected an entry point but got ${result}`);
         }
@@ -240,11 +243,11 @@ runInEachFileSystem(() => {
 
     describe('writeBundle() [secondary entry-point]', () => {
       beforeEach(() => {
-        fs = getFileSystem();
-        fileWriter = new NewEntryPointFileWriter(fs, new DirectPackageJsonUpdater(fs));
+        fileWriter = new NewEntryPointFileWriter(
+            fs, logger, /* errorOnFailedEntryPoint */ true, new DirectPackageJsonUpdater(fs));
         const config = new NgccConfiguration(fs, _('/'));
         const result = getEntryPointInfo(
-            fs, config, new MockLogger(), _('/node_modules/test'), _('/node_modules/test/a')) !;
+            fs, config, logger, _('/node_modules/test'), _('/node_modules/test/a')) !;
         if (result === NO_ENTRY_POINT || result === INVALID_ENTRY_POINT) {
           return fail(`Expected an entry point but got ${result}`);
         }
@@ -369,8 +372,8 @@ runInEachFileSystem(() => {
 
     describe('writeBundle() [entry-point (with files placed outside entry-point folder)]', () => {
       beforeEach(() => {
-        fs = getFileSystem();
-        fileWriter = new NewEntryPointFileWriter(fs, new DirectPackageJsonUpdater(fs));
+        fileWriter = new NewEntryPointFileWriter(
+            fs, logger, /* errorOnFailedEntryPoint */ true, new DirectPackageJsonUpdater(fs));
         const config = new NgccConfiguration(fs, _('/'));
         const result = getEntryPointInfo(
             fs, config, new MockLogger(), _('/node_modules/test'), _('/node_modules/test/b')) !;
