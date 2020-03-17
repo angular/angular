@@ -119,12 +119,19 @@ export class DirectiveForestComponent {
 
   populateParents(position: ElementPosition): void {
     this.parents = position.reduce((nodes: FlatNode[], index: number) => {
-      let nodeId = [index];
+      let nodePosition = [index];
       if (nodes.length > 0) {
-        nodeId = nodes[nodes.length - 1].position.concat(index);
+        nodePosition = nodes[nodes.length - 1].position.concat(index);
       }
-      const selectedNode = this.dataSource.data.find(item => item.position.toString() === nodeId.toString());
-      nodes.push(selectedNode);
+      // It's possible selectedNode to be undefined
+      // In this case, we don't want to push it to the list
+      // of parent nodes. Instead, we want to report a warning.
+      const selectedNode = this.dataSource.data.find(item => item.position.toString() === nodePosition.toString());
+      if (selectedNode) {
+        nodes.push(selectedNode);
+      } else {
+        console.warn('Cant find node for position', nodePosition);
+      }
       return nodes;
     }, []);
   }
