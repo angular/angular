@@ -960,6 +960,12 @@ angular.module('myHybridApp', [...])
 
 Once you introduce the Angular Router, using the Angular Router triggers navigations through the unified location service, still providing a single source for navigating with AngularJS and Angular.
 
+<!--
+TODO:
+Correctly document how to use AOT with SystemJS-based `ngUpgrade` apps (or better yet update the
+`ngUpgrade` examples/guides to use `@angular/cli`).
+See https://github.com/angular/angular/issues/35989.
+
 ## Using Ahead-of-time compilation with hybrid apps
 
 You can take advantage of Ahead-of-time (AOT) compilation on hybrid apps just like on any other
@@ -979,6 +985,7 @@ bootstrap the hybrid app:
 </code-example>
 
 And that's all you need do to get the full benefit of AOT for Angular apps!
+-->
 
 ## PhoneCat Upgrade Tutorial
 
@@ -1364,7 +1371,7 @@ You also need to make a couple of adjustments
 to the `systemjs.config.js` file installed during [upgrade setup](guide/upgrade-setup).
 
 Point the browser to the project root when loading things through SystemJS,
-instead of using the  `<base>` URL.
+instead of using the `<base>` URL.
 
 Install the `upgrade` package via `npm install @angular/upgrade --save`
 and add a mapping for the `@angular/upgrade/static` package.
