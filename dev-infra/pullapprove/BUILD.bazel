@@ -5,6 +5,7 @@ ts_library(
     srcs = [
         "verify.ts",
     ],
+    module_name = "@angular/dev-infra-private/pullapprove",
     visibility = ["//dev-infra:__subpackages__"],
     deps = [
         "@npm//@types/minimatch",

@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.

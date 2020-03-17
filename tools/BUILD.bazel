@@ -1,6 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
 load("@npm_bazel_typescript//:index.bzl", "ts_config")
+load("//tools:defaults.bzl", "nodejs_binary")
 
 exports_files([
     "tsconfig.json",
@@ -11,6 +12,11 @@ ts_config(
     name = "tsconfig-test",
     src = "tsconfig-test.json",
     deps = ["tsconfig.json"],
+)
+
+nodejs_binary(
+    name = "inline-package-json-deps",
+    entry_point = "inline-package-json-deps.js",
 )
 
 platform(
