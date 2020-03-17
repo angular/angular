@@ -42,30 +42,75 @@ export function typeToValue(
   // Look at the local `ts.Symbol`'s declarations and see if it comes from an import
   // statement. If so, extract the module specifier and the name of the imported type.
   const firstDecl = local.declarations && local.declarations[0];
+  if (firstDecl !== undefined) {
+    if (ts.isImportClause(firstDecl) && firstDecl.name !== undefined) {
+      // This is a default import.
+      //   import Foo from 'foo';
 
-  if (firstDecl && ts.isImportClause(firstDecl) && firstDecl.name !== undefined) {
-    // This is a default import.
-    return {
-      local: true,
-      // Copying the name here ensures the generated references will be correctly transformed along
-      // with the import.
-      expression: ts.updateIdentifier(firstDecl.name),
-      defaultImportStatement: firstDecl.parent,
-    };
-  } else if (firstDecl && isImportSource(firstDecl)) {
-    const origin = extractModuleAndNameFromImport(firstDecl, symbols.importName);
-    return {local: false, valueDeclaration: decl.valueDeclaration, ...origin};
-  } else {
-    const expression = typeNodeToValueExpr(typeNode);
-    if (expression !== null) {
       return {
         local: true,
-        expression,
-        defaultImportStatement: null,
+        // Copying the name here ensures the generated references will be correctly transformed
+        // along with the import.
+        expression: ts.updateIdentifier(firstDecl.name),
+        defaultImportStatement: firstDecl.parent,
       };
-    } else {
-      return null;
+    } else if (ts.isImportSpecifier(firstDecl)) {
+      // The symbol was imported by name
+      //   import {Foo} from 'foo';
+      // or
+      //   import {Foo as Bar} from 'foo';
+
+      // Determine the name to import (`Foo`) from the import specifier, as the symbol names of
+      // the imported type could refer to a local alias (like `Bar` in the example above).
+      const importedName = (firstDecl.propertyName || firstDecl.name).text;
+
+      // The first symbol name refers to the local name, which is replaced by `importedName` above.
+      // Any remaining symbol names make up the complete path to the value.
+      const [_localName, ...nestedPath] = symbols.symbolNames;
+
+      const moduleName = extractModuleName(firstDecl.parent.parent.parent);
+      return {
+        local: false,
+        valueDeclaration: decl.valueDeclaration,
+        moduleName,
+        importedName,
+        nestedPath
+      };
+    } else if (ts.isNamespaceImport(firstDecl)) {
+      // The import is a namespace import
+      //   import * as Foo from 'foo';
+
+      if (symbols.symbolNames.length === 1) {
+        // The type refers to the namespace itself, which cannot be represented as a value.
+        return null;
+      }
+
+      // The first symbol name refers to the local name of the namespace, which is is discarded
+      // as a new namespace import will be generated. This is followed by the symbol name that needs
+      // to be imported and any remaining names that constitute the complete path to the value.
+      const [_ns, importedName, ...nestedPath] = symbols.symbolNames;
+
+      const moduleName = extractModuleName(firstDecl.parent.parent);
+      return {
+        local: false,
+        valueDeclaration: decl.valueDeclaration,
+        moduleName,
+        importedName,
+        nestedPath
+      };
     }
+  }
+
+  // If the type is not imported, the type reference can be converted into an expression as is.
+  const expression = typeNodeToValueExpr(typeNode);
+  if (expression !== null) {
+    return {
+      local: true,
+      expression,
+      defaultImportStatement: null,
+    };
+  } else {
+    return null;
   }
 }
 
@@ -88,14 +133,14 @@ export function typeNodeToValueExpr(node: ts.TypeNode): ts.Expression|null {
  *
  * In the event that the `TypeReference` refers to a locally declared symbol, these will be the
  * same. If the `TypeReference` refers to an imported symbol, then `decl` will be the fully resolved
- * `ts.Symbol` of the referenced symbol. `local` will be the `ts.Symbol` of the `ts.Identifer` which
- * points to the import statement by which the symbol was imported.
+ * `ts.Symbol` of the referenced symbol. `local` will be the `ts.Symbol` of the `ts.Identifier`
+ * which points to the import statement by which the symbol was imported.
  *
- * In the event `typeRef` refers to a default import, an `importName` will also be returned to
- * give the identifier name within the current file by which the import is known.
+ * All symbol names that make up the type reference are returned left-to-right into the
+ * `symbolNames` array, which is guaranteed to include at least one entry.
  */
 function resolveTypeSymbols(typeRef: ts.TypeReferenceNode, checker: ts.TypeChecker):
-    {local: ts.Symbol, decl: ts.Symbol, importName: string|null}|null {
+    {local: ts.Symbol, decl: ts.Symbol, symbolNames: string[]}|null {
   const typeName = typeRef.typeName;
   // typeRefSymbol is the ts.Symbol of the entire type reference.
   const typeRefSymbol: ts.Symbol|undefined = checker.getSymbolAtLocation(typeName);
@@ -103,32 +148,36 @@ function resolveTypeSymbols(typeRef: ts.TypeReferenceNode, checker: ts.TypeCheck
     return null;
   }
 
-  // local is the ts.Symbol for the local ts.Identifier for the type.
+  // `local` is the `ts.Symbol` for the local `ts.Identifier` for the type.
   // If the type is actually locally declared or is imported by name, for example:
   //   import {Foo} from './foo';
-  // then it'll be the same as top. If the type is imported via a namespace import, for example:
+  // then it'll be the same as `typeRefSymbol`.
+  //
+  // If the type is imported via a namespace import, for example:
   //   import * as foo from './foo';
   // and then referenced as:
   //   constructor(f: foo.Foo)
-  // then local will be the ts.Symbol of `foo`, whereas top will be the ts.Symbol of `foo.Foo`.
-  // This allows tracking of the import behind whatever type reference exists.
+  // then `local` will be the `ts.Symbol` of `foo`, whereas `typeRefSymbol` will be the `ts.Symbol`
+  // of `foo.Foo`. This allows tracking of the import behind whatever type reference exists.
   let local = typeRefSymbol;
-  let importName: string|null = null;
 
-  // TODO(alxhub): this is technically not correct. The user could have any import type with any
-  // amount of qualification following the imported type:
-  //
-  // import * as foo from 'foo'
-  // constructor(inject: foo.X.Y.Z)
-  //
-  // What we really want is the ability to express the arbitrary operation of `.X.Y.Z` on top of
-  // whatever import we generate for 'foo'. This logic is sufficient for now, though.
-  if (ts.isQualifiedName(typeName) && ts.isIdentifier(typeName.left) &&
-      ts.isIdentifier(typeName.right)) {
-    const localTmp = checker.getSymbolAtLocation(typeName.left);
+  // Destructure a name like `foo.X.Y.Z` as follows:
+  // - in `leftMost`, the `ts.Identifier` of the left-most name (`foo`) in the qualified name.
+  //   This identifier is used to resolve the `ts.Symbol` for `local`.
+  // - in `symbolNames`, all names involved in the qualified path, or a single symbol name if the
+  //   type is not qualified.
+  let leftMost = typeName;
+  const symbolNames: string[] = [];
+  while (ts.isQualifiedName(leftMost)) {
+    symbolNames.unshift(leftMost.right.text);
+    leftMost = leftMost.left;
+  }
+  symbolNames.unshift(leftMost.text);
+
+  if (leftMost !== typeName) {
+    const localTmp = checker.getSymbolAtLocation(leftMost);
     if (localTmp !== undefined) {
       local = localTmp;
-      importName = typeName.right.text;
     }
   }
 
@@ -137,7 +186,7 @@ function resolveTypeSymbols(typeRef: ts.TypeReferenceNode, checker: ts.TypeCheck
   if (typeRefSymbol.flags & ts.SymbolFlags.Alias) {
     decl = checker.getAliasedSymbol(typeRefSymbol);
   }
-  return {local, decl, importName};
+  return {local, decl, symbolNames};
 }
 
 function entityNameToValue(node: ts.EntityName): ts.Expression|null {
@@ -151,38 +200,9 @@ function entityNameToValue(node: ts.EntityName): ts.Expression|null {
   }
 }
 
-function isImportSource(node: ts.Declaration): node is(ts.ImportSpecifier | ts.NamespaceImport) {
-  return ts.isImportSpecifier(node) || ts.isNamespaceImport(node);
-}
-
-function extractModuleAndNameFromImport(
-    node: ts.ImportSpecifier|ts.NamespaceImport|ts.ImportClause,
-    localName: string|null): {name: string, moduleName: string} {
-  let name: string;
-  let moduleSpecifier: ts.Expression;
-  switch (node.kind) {
-    case ts.SyntaxKind.ImportSpecifier:
-      // The symbol was imported by name, in a ts.ImportSpecifier.
-      name = (node.propertyName || node.name).text;
-      moduleSpecifier = node.parent.parent.parent.moduleSpecifier;
-      break;
-    case ts.SyntaxKind.NamespaceImport:
-      // The symbol was imported via a namespace import. In this case, the name to use when
-      // importing it was extracted by resolveTypeSymbols.
-      if (localName === null) {
-        // resolveTypeSymbols() should have extracted the correct local name for the import.
-        throw new Error(`Debug failure: no local name provided for NamespaceImport`);
-      }
-      name = localName;
-      moduleSpecifier = node.parent.parent.moduleSpecifier;
-      break;
-    default:
-      throw new Error(`Unreachable: ${ts.SyntaxKind[(node as ts.Node).kind]}`);
-  }
-
-  if (!ts.isStringLiteral(moduleSpecifier)) {
+function extractModuleName(node: ts.ImportDeclaration): string {
+  if (!ts.isStringLiteral(node.moduleSpecifier)) {
     throw new Error('not a module specifier');
   }
-  const moduleName = moduleSpecifier.text;
-  return {moduleName, name};
+  return node.moduleSpecifier.text;
 }

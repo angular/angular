@@ -3880,6 +3880,140 @@ runInEachFileSystem(os => {
       expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.Other'));
     });
 
+    describe('namespace support', () => {
+      it('should generate correct imports for type references to namespaced symbols using a namespace import',
+         () => {
+           env.write(`/node_modules/ns/index.d.ts`, `
+              export declare class Zero {}
+              export declare namespace one {
+                export declare class One {}
+              }
+              export declare namespace one.two {
+                export declare class Two {}
+              }
+           `);
+           env.write(`test.ts`, `
+              import {Inject, Injectable, InjectionToken} from '@angular/core';
+              import * as ns from 'ns';
+
+              @Injectable()
+              export class MyService {
+                constructor(
+                  zero: ns.Zero,
+                  one: ns.one.One,
+                  two: ns.one.two.Two,
+                ) {}
+              }
+           `);
+
+           env.driveMain();
+           const jsContents = trim(env.getContents('test.js'));
+           expect(jsContents).toContain(`import * as i1 from "ns";`);
+           expect(jsContents).toContain('i0.ɵɵinject(i1.Zero)');
+           expect(jsContents).toContain('i0.ɵɵinject(i1.one.One)');
+           expect(jsContents).toContain('i0.ɵɵinject(i1.one.two.Two)');
+           expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.Zero'));
+           expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.one.One'));
+           expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.one.two.Two'));
+         });
+
+      it('should generate correct imports for type references to namespaced symbols using named imports',
+         () => {
+           env.write(`/node_modules/ns/index.d.ts`, `
+              export namespace ns {
+                export declare class Zero {}
+                export declare namespace one {
+                  export declare class One {}
+                }
+                export declare namespace one.two {
+                  export declare class Two {}
+                }
+              }
+           `);
+           env.write(`test.ts`, `
+              import {Inject, Injectable, InjectionToken} from '@angular/core';
+              import {ns} from 'ns';
+              import {ns as alias} from 'ns';
+
+              @Injectable()
+              export class MyService {
+                constructor(
+                  zero: ns.Zero,
+                  one: ns.one.One,
+                  two: ns.one.two.Two,
+                  aliasedZero: alias.Zero,
+                  aliasedOne: alias.one.One,
+                  aliasedTwo: alias.one.two.Two,
+                ) {}
+              }
+           `);
+
+           env.driveMain();
+           const jsContents = trim(env.getContents('test.js'));
+           expect(jsContents).toContain(`import * as i1 from "ns";`);
+           expect(jsContents)
+               .toContain(
+                   'i0.ɵɵinject(i1.ns.Zero), ' +
+                   'i0.ɵɵinject(i1.ns.one.One), ' +
+                   'i0.ɵɵinject(i1.ns.one.two.Two), ' +
+                   'i0.ɵɵinject(i1.ns.Zero), ' +
+                   'i0.ɵɵinject(i1.ns.one.One), ' +
+                   'i0.ɵɵinject(i1.ns.one.two.Two)');
+           expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.ns.Zero'));
+           expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.ns.one.One'));
+           expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.ns.one.two.Two'));
+         });
+
+      it('should not error for a namespace import as parameter type when @Inject is used', () => {
+        env.tsconfig({'strictInjectionParameters': true});
+        env.write(`/node_modules/foo/index.d.ts`, `
+          export = Foo;
+          declare class Foo {}
+          declare namespace Foo {}
+        `);
+        env.write(`test.ts`, `
+          import {Inject, Injectable, InjectionToken} from '@angular/core';
+          import * as Foo from 'foo';
+
+          export const TOKEN = new InjectionToken<Foo>('Foo');
+
+          @Injectable()
+          export class MyService {
+            constructor(@Inject(TOKEN) foo: Foo) {}
+          }
+       `);
+
+        env.driveMain();
+        const jsContents = trim(env.getContents('test.js'));
+        expect(jsContents).toContain('i0.ɵɵinject(TOKEN)');
+        expect(jsContents).toMatch(setClassMetadataRegExp('type: undefined'));
+      });
+
+      it('should error for a namespace import as parameter type used for DI', () => {
+        env.tsconfig({'strictInjectionParameters': true});
+        env.write(`/node_modules/foo/index.d.ts`, `
+          export = Foo;
+          declare class Foo {}
+          declare namespace Foo {}
+        `);
+        env.write(`test.ts`, `
+          import {Injectable} from '@angular/core';
+          import * as Foo from 'foo';
+
+          @Injectable()
+          export class MyService {
+            constructor(foo: Foo) {}
+          }
+       `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toBe(
+                `No suitable injection token for parameter 'foo' of class 'MyService'.\nFound Foo`);
+      });
+    });
+
     it('should use `undefined` in setClassMetadata if types can\'t be represented as values',
        () => {
          env.write(`types.ts`, `
