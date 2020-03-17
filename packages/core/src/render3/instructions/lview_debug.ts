@@ -8,6 +8,8 @@
 
 import {AttributeMarker, ComponentTemplate} from '..';
 import {SchemaMetadata} from '../../core';
+import {Injector} from '../../di';
+import {Sanitizer} from '../../sanitization/sanitizer';
 import {KeyValueArray} from '../../util/array_utils';
 import {assertDefined} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
@@ -17,14 +19,12 @@ import {DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, TIcu} from '../interfaces/i18n';
 import {PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TViewNode} from '../interfaces/node';
 import {SelectorFlags} from '../interfaces/projection';
-import {TQueries, LQueries} from '../interfaces/query';
-import {RComment, RElement, RNode, RendererFactory3, ObjectOrientedRenderer3, Renderer3} from '../interfaces/renderer';
+import {LQueries, TQueries} from '../interfaces/query';
+import {ObjectOrientedRenderer3, RComment, RElement, RNode, Renderer3, RendererFactory3} from '../interfaces/renderer';
 import {TStylingKey, TStylingRange, getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate} from '../interfaces/styling';
 import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, HookData, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TData, TVIEW, TView as ITView, TView, TViewType, T_HOST} from '../interfaces/view';
 import {attachDebugObject} from '../util/debug_utils';
 import {getLContainerActiveIndex, getTNode, unwrapRNode} from '../util/view_utils';
-import {Injector} from '../../di';
-import {Sanitizer} from '../../sanitization/sanitizer';
 
 const NG_DEV_MODE = ((typeof ngDevMode === 'undefined' || !!ngDevMode) && initNgDevMode());
 
