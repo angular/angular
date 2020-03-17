@@ -13,6 +13,13 @@ import {isFromDtsFile} from '../../../src/ngtsc/util/src/typescript';
 
 import {ModuleWithProvidersFunction, NgccClassSymbol, NgccReflectionHost, SwitchableVariableDeclaration} from './ngcc_host';
 
+/**
+ * A reflection host implementation that delegates reflector queries depending on whether they
+ * reflect on declaration files (for dependent libraries) or source files within the entry-point
+ * that is being compiled. The first type of queries are handled by the regular TypeScript
+ * reflection host, whereas the other queries are handled by an `NgccReflectionHost` that is
+ * specific to the entry-point's format.
+ */
 export class DelegatingReflectionHost implements NgccReflectionHost {
   constructor(private tsHost: ReflectionHost, private ngccHost: NgccReflectionHost) {}
 
@@ -120,6 +127,9 @@ export class DelegatingReflectionHost implements NgccReflectionHost {
     }
     return this.ngccHost.isClass(node);
   }
+
+  // Note: the methods below are specific to ngcc and the entry-point that is being compiled, so
+  // they don't take declaration files into account.
 
   findClassSymbols(sourceFile: ts.SourceFile): NgccClassSymbol[] {
     return this.ngccHost.findClassSymbols(sourceFile);
