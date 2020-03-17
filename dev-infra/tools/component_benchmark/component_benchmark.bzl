@@ -1,6 +1,6 @@
 load("//dev-infra/tools/ng_rollup_bundle:ng_rollup_bundle.bzl", "ng_rollup_bundle")
 load("//tools:defaults.bzl", "ng_module")
-load("@npm_bazel_typescript//:index.bzl", "ts_library", "ts_devserver")
+load("@npm_bazel_typescript//:index.bzl", "ts_devserver", "ts_library")
 load(":benchmark_test.bzl", "benchmark_test")
 
 def copy_default_file(origin, destination):
@@ -29,8 +29,8 @@ def component_benchmark(
         styles = None,
         entry_point = None,
         entry_point_deps = [
-            "//packages/core", # needs sub
-            "//packages/platform-browser", # needs sub
+            "//packages/core",  # needs sub
+            "//packages/platform-browser",  # needs sub
         ]):
     """
     Runs a benchmark test against the given angular app using the given driver.
@@ -134,7 +134,7 @@ def component_benchmark(
         static_files = assets + styles,
         deps = [":" + app_main + ".min_debug.es2015.js"],
         additional_root_paths = ["//dev-infra/tools/components/defaults"],
-        serving_path = '/app_bundle.js',
+        serving_path = "/app_bundle.js",
     )
 
     # Runs a protractor test that's set up to use @angular/benchpress.

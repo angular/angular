@@ -3,12 +3,6 @@ load("@npm_bazel_typescript//:index.bzl", "ts_library")
 load("@npm_bazel_rollup//:index.bzl", "rollup_bundle")
 
 ts_library(
-  name = "driver-utilities",
-  srcs = ["//dev-infra/benchmark/driver-utilities"],
-  deps = [],
-)
-
-ts_library(
     name = "cli",
     srcs = [
         "cli.ts",
@@ -39,18 +33,16 @@ pkg_npm(
         "package.json",
         "//dev-infra/tools:files",
     ],
-    visibility = ["//visibility:public"],
-    deps = [
-        ":bundle",
-        "//dev-infra/benchmark/driver-utilities"
-    ],
-    hide_build_files = True,
     substitutions = {
         "//dev-infra/": "@npm_dev_infra//",
-        "//packages:types": "@npm//@angular:types",
         "//packages/benchpress": "@npm//@angular/benchpress",
         "//packages/bazel/src:esm5.bzl": "@npm_angular_bazel//src:esm5.bzl",
         "//packages/zone.js/dist:zone.js": "@npm//:node_modules/zone.js/dist/zone.js",
         "//tools:defaults.bzl": "@npm_angular_bazel//:index.bzl",
     },
+    visibility = ["//visibility:public"],
+    deps = [
+        ":bundle",
+        "//dev-infra/benchmark/driver-utilities",
+    ],
 )

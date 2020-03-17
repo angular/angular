@@ -20,6 +20,6 @@ nodejs_binary(
 )
 
 filegroup(
-  name = "files",
-  srcs = glob(["*"]),
+    name = "files",
+    srcs = glob(["*"]),
 )

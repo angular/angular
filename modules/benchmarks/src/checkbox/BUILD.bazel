@@ -4,6 +4,8 @@ component_benchmark(
     name = "benchmark",
     driver = ":checkbox.perf-spec.ts",
     driver_deps = [],
+    entry_point_deps = [
+    ],
     ng_deps = [
         "//packages/core",
         "//packages/platform-browser",
@@ -12,8 +14,5 @@ component_benchmark(
         ["**/*.ts"],
         exclude = ["**/*.perf-spec.ts"],
     ),
-    entry_point_deps = [
-    ],
     prefix = "",
 )
-

@@ -11,8 +11,8 @@ def benchmark_test(name, server, tags = [], **kwargs):
     protractor_web_test_suite(
         name = name,
         browsers = ["//dev-infra/tools/browsers:chromium"],
-        configuration = "//dev-infra/tools/component_benchmark:protractor-perf.conf.js", # Changed
-        on_prepare = "//dev-infra/tools/component_benchmark:start-server.js", # Changed
+        configuration = "//dev-infra/tools/component_benchmark:protractor-perf.conf.js",  # Changed
+        on_prepare = "//dev-infra/tools/component_benchmark:start-server.js",  # Changed
         server = server,
         # Benchmark targets should not run on CI by default.
         tags = tags + [

@@ -72,6 +72,6 @@ browser(
 )
 
 filegroup(
-  name = "files",
-  srcs = glob(["*"]),
+    name = "files",
+    srcs = glob(["*"]),
 )
