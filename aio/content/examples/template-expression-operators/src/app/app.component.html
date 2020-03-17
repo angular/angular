@@ -72,8 +72,8 @@
 <h2>Non-null assertion operator (<code>!</code>)</h2>
 <div>
   <!-- #docregion non-null -->
-  <!--No color, no error -->
-  <p *ngIf="item">The item's color is: {{item!.color}}</p>
+  <!-- Assert color is defined, even if according to the `Item` type it could be undefined. -->
+  <p>The item's color is: {{item.color!.toUpperCase()}}</p>
   <!-- #enddocregion non-null -->
 
 

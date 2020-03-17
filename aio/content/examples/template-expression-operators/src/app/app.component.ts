@@ -1,6 +1,13 @@
 import { Component } from '@angular/core';
 
 
+interface Item {
+  name: string;
+  manufactureDate: Date;
+  color?: string | null;
+  price: number;
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -9,10 +16,11 @@ import { Component } from '@angular/core';
 export class AppComponent {
   title = 'Template Expression Operators';
 
-  item = {
+  item: Item = {
     name : 'Telephone',
     manufactureDate : new Date(1980, 1, 25),
-    price: 98
+    color: 'orange',
+    price: 98,
   };
 
   nullItem = null;
