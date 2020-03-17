@@ -17,13 +17,6 @@ export function generateGoldenFile(
     entrypoint: string, outFile: string, options: SerializationOptions = {}): void {
   const output = publicApi(entrypoint, options);
 
-  // BUILD_WORKSPACE_DIRECTORY environment variable is only available during bazel
-  // run executions. This workspace directory allows us to generate golden files directly
-  // in the source file tree rather than via a symlink.
-  if (process.env['BUILD_WORKSPACE_DIRECTORY']) {
-    outFile = path.join(process.env['BUILD_WORKSPACE_DIRECTORY'], outFile);
-  }
-
   ensureDirectory(path.dirname(outFile));
   fs.writeFileSync(outFile, output);
 }
@@ -36,7 +29,8 @@ export function verifyAgainstGoldenFile(
   if (actual === expected) {
     return '';
   } else {
-    const patch = createPatch(goldenFile, expected, actual, 'Golden file', 'Generated API');
+    const displayFileName = path.relative(process.cwd(), goldenFile);
+    const patch = createPatch(displayFileName, expected, actual, 'Golden file', 'Generated API');
 
     // Remove the header of the patch
     const start = patch.indexOf('\n', patch.indexOf('\n') + 1) + 1;

@@ -16,7 +16,22 @@ import * as path from 'path';
 
 import {SerializationOptions, generateGoldenFile, verifyAgainstGoldenFile, discoverAllEntrypoints} from './main';
 
+/** Name of the CLI */
 const CMD = 'ts-api-guardian';
+
+/** Name of the Bazel workspace that runs the CLI. */
+const bazelWorkspaceName = process.env.BAZEL_WORKSPACE;
+/**
+ * Path to the Bazel workspace directory. Only set if the CLI is run with `bazel run`.
+ * https://docs.bazel.build/versions/master/user-manual.html#run.
+ */
+const bazelWorkspaceDirectory = process.env.BUILD_WORKSPACE_DIRECTORY;
+/**
+ * Regular expression that matches Bazel manifest paths that start with the
+ * current Bazel workspace, followed by a path delimiter.
+ */
+const bazelWorkspaceManifestPathRegex =
+    bazelWorkspaceName ? new RegExp(`^${bazelWorkspaceName}[/\\\\]`) : null;
 
 export function startCli() {
   const {argv, mode, errors} = parseArguments(process.argv.slice(2));
@@ -210,35 +225,48 @@ Options:
 }
 
 /**
- * Resolves a given path to the associated relative path if the current process runs within
- * Bazel. We need to use the wrapped NodeJS resolve logic in order to properly handle the given
- * runfiles files which are only part of the runfile manifest on Windows.
+ * Resolves a given path in the file system. If `ts-api-guardian` runs with Bazel, file paths
+ * are resolved through runfiles. Additionally in Bazel, this method handles the case where
+ * manifest file paths are not existing, but need to resolve to the Bazel workspace directory.
+ * This happens commonly when goldens are approved, but the golden file does not exist yet.
  */
-function resolveBazelFilePath(fileName: string): string {
-  // If the CLI has been launched through the NodeJS Bazel rules, we need to resolve the
-  // actual file paths because otherwise this script won't work on Windows where runfiles
-  // are not available in the working directory. In order to resolve the real path for the
-  // runfile, we need to use `require.resolve` which handles runfiles properly on Windows.
-  if (process.env['BAZEL_TARGET']) {
-    // This try/catch block is necessary because if the path is to the source file directly
-    // rather than via symlinks in the bazel output directories, require is not able to
-    // resolve it.
-    try {
-      return path.relative(process.cwd(), require.resolve(fileName));
-    } catch (err) {
-      return path.relative(process.cwd(), fileName);
-    }
+function resolveFilePath(fileName: string): string {
+  // If an absolute path is specified, the path is already resolved.
+  if (path.isAbsolute(fileName)) {
+    return fileName;
   }
-
-  return fileName;
+  // Outside of Bazel, file paths are resolved based on the current working directory.
+  if (!bazelWorkspaceName) {
+    return path.resolve(fileName);
+  }
+  // In Bazel, we first try to resolve the file through the runfiles. We do this by calling
+  // the `require.resolve` function that is patched by the Bazel NodeJS rules. Note that we
+  // need to catch errors because files inside tree artifacts cannot be resolved through
+  // runfile manifests. Hence, we need to have alternative resolution logic when resolving
+  // file paths. Additionally, it could happen that manifest paths which aren't part of the
+  // runfiles are specified (i.e. golden is approved but does not exist in the workspace yet).
+  try {
+    return require.resolve(fileName);
+  } catch {
+  }
+  // This handles cases where file paths cannot be resolved through runfiles. This happens
+  // commonly when goldens are approved while the golden does not exist in the workspace yet.
+  // In those cases, we want to build up a relative path based on the manifest path, and join
+  // it with the absolute bazel workspace directory (which is only set in `bazel run`).
+  // e.g. `angular/goldens/<..>/common` should become `{workspace_dir}/goldens/<...>/common`.
+  if (bazelWorkspaceManifestPathRegex !== null && bazelWorkspaceDirectory &&
+      bazelWorkspaceManifestPathRegex.test(fileName)) {
+    return path.join(bazelWorkspaceDirectory, fileName.substr(bazelWorkspaceName.length + 1));
+  }
+  throw Error(`Could not resolve file path in runfiles: ${fileName}`);
 }
 
 function resolveFileNamePairs(argv: minimist.ParsedArgs, mode: string, entrypoints: string[]):
     {entrypoint: string, goldenFile: string}[] {
   if (argv[mode]) {
     return [{
-      entrypoint: resolveBazelFilePath(entrypoints[0]),
-      goldenFile: resolveBazelFilePath(argv[mode]),
+      entrypoint: resolveFilePath(entrypoints[0]),
+      goldenFile: resolveFilePath(argv[mode]),
     }];
   } else {  // argv[mode + 'Dir']
     let rootDir = argv['rootDir'] || '.';
@@ -246,8 +274,8 @@ function resolveFileNamePairs(argv: minimist.ParsedArgs, mode: string, entrypoin
 
     return entrypoints.map((fileName: string) => {
       return {
-        entrypoint: resolveBazelFilePath(fileName),
-        goldenFile: resolveBazelFilePath(path.join(goldenDir, path.relative(rootDir, fileName))),
+        entrypoint: resolveFilePath(fileName),
+        goldenFile: resolveFilePath(path.join(goldenDir, path.relative(rootDir, fileName))),
       };
     });
   }
