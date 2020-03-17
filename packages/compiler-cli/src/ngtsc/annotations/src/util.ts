@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, ExternalExpr, LiteralExpr, ParseLocation, ParseSourceFile, ParseSourceSpan, R3DependencyMetadata, R3Reference, R3ResolvedDependencyType, WrappedNodeExpr} from '@angular/compiler';
+import {Expression, ExternalExpr, LiteralExpr, ParseLocation, ParseSourceFile, ParseSourceSpan, R3DependencyMetadata, R3Reference, R3ResolvedDependencyType, ReadPropExpr, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic} from '../../diagnostics';
@@ -138,7 +138,19 @@ export function valueReferenceToExpression(
     return new WrappedNodeExpr(valueRef.expression);
   } else {
     // TODO(alxhub): this cast is necessary because the g3 typescript version doesn't narrow here.
-    return new ExternalExpr(valueRef as {moduleName: string, name: string});
+    const ref = valueRef as {
+      moduleName: string;
+      importedName: string;
+      nestedPath: string[]|null;
+    };
+    let importExpr: Expression =
+        new ExternalExpr({moduleName: ref.moduleName, name: ref.importedName});
+    if (ref.nestedPath !== null) {
+      for (const property of ref.nestedPath) {
+        importExpr = new ReadPropExpr(importExpr, property);
+      }
+    }
+    return importExpr;
   }
 }
 

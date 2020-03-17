@@ -464,7 +464,7 @@ runInEachFileSystem(() => {
         expect(argExpressionToString(param.typeValueReference.expression)).toEqual(type);
       } else if (!param.typeValueReference.local && typeof type !== 'string') {
         expect(param.typeValueReference.moduleName).toEqual(type.moduleName);
-        expect(param.typeValueReference.name).toEqual(type.name);
+        expect(param.typeValueReference.importedName).toEqual(type.name);
       } else {
         return fail(`Mismatch between typeValueReference and expected type: ${param.name} / ${
             param.typeValueReference.local}`);
