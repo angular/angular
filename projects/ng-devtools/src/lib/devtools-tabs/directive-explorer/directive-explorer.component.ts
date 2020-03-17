@@ -1,4 +1,4 @@
-import { Component, HostListener, Input, OnInit, QueryList, ViewChild } from '@angular/core';
+import { Component, HostListener, Input, OnInit } from '@angular/core';
 import {
   MessageBus,
   Events,
@@ -6,17 +6,15 @@ import {
   DirectivesProperties,
   ComponentExplorerViewQuery,
   ComponentExplorerView,
-  ComponentExplorerViewProperties,
   ElementPosition,
   Descriptor,
 } from 'protocol';
 import { IndexedNode } from './directive-forest/index-forest';
 import { ApplicationOperations } from '../../application-operations';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { PropertyTabComponent } from './property-tab/property-tab.component';
 import { Subject } from 'rxjs';
 import { throttleTime } from 'rxjs/operators';
-import { PropertyViewComponent } from './property-tab/property-tab-body/property-view/property-view.component';
+import { NestedPropertyResolver } from './nested-property-resolver';
 
 @Component({
   selector: 'ng-directive-explorer',
@@ -26,11 +24,6 @@ import { PropertyViewComponent } from './property-tab/property-tab-body/property
 export class DirectiveExplorerComponent implements OnInit {
   @Input() messageBus: MessageBus<Events>;
 
-  @ViewChild(PropertyTabComponent) propertyTab: PropertyTabComponent;
-
-  // The original data we pass to the property viewer.
-  // Later, the property viewer may request more nested properties
-  // from the backend.
   directivesData: DirectivesProperties | null = null;
   currentSelectedElement: IndexedNode = null;
   forest: DevToolsNode[];
@@ -40,7 +33,11 @@ export class DirectiveExplorerComponent implements OnInit {
 
   private changeSize = new Subject<Event>();
 
-  constructor(private _appOperations: ApplicationOperations, private _snackBar: MatSnackBar) {
+  constructor(
+    private _appOperations: ApplicationOperations,
+    private _snackBar: MatSnackBar,
+    private _propResolver: NestedPropertyResolver
+  ) {
     this.changeSize
       .asObservable()
       .pipe(throttleTime(100))
@@ -62,11 +59,13 @@ export class DirectiveExplorerComponent implements OnInit {
   subscribeToBackendEvents(): void {
     this.messageBus.on('elementDirectivesProperties', (data: DirectivesProperties) => {
       this.directivesData = data;
+      this._propResolver.setProperties(data);
     });
 
     this.messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
       this.forest = view.forest;
       this.directivesData = view.properties;
+      this._propResolver.setProperties(view.properties);
     });
 
     this.messageBus.on('highlightComponentInTreeFromElement', (position: ElementPosition) => {
@@ -109,24 +108,8 @@ export class DirectiveExplorerComponent implements OnInit {
     }
     return {
       selectedElement: this.currentSelectedElement.position,
-      // We get the latest query for the properties.
-      // The directive may have extended the properties
-      // with nested ones which were dynamically requested
-      // during the lifecycle of the app.
-      expandedProperties: this._latestDirectiveData(),
+      expandedProperties: this._propResolver.getExpandedProperties(),
     };
-  }
-
-  private _latestDirectiveData(): ComponentExplorerViewProperties {
-    const result = {};
-    this.propertyViews.toArray().forEach(view => {
-      result[view.name] = view.getExpandedProperties();
-    });
-    return result;
-  }
-
-  get propertyViews(): QueryList<PropertyViewComponent> {
-    return this.propertyTab.propertyTabBody.propertyViews;
   }
 
   copyPropData(propData: { [name: string]: Descriptor }): void {

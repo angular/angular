@@ -10,7 +10,7 @@
       <ng-property-editor
         [key]="node.prop.name"
         [initialValue]="node.prop.descriptor.value || node.prop.descriptor.preview"
-        (updateValue)="updateValue($event, node)"
+        (updateValue)="updateValue(node, $event)"
       >
       </ng-property-editor>
     </ng-template>

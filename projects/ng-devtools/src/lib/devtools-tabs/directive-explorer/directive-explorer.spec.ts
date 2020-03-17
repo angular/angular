@@ -3,6 +3,7 @@ import { ComponentExplorerViewQuery } from 'protocol';
 import { IndexedNode } from './directive-forest/index-forest';
 import SpyObj = jasmine.SpyObj;
 import Spy = jasmine.Spy;
+import { NestedPropertyResolver } from './nested-property-resolver';
 
 describe('DirectiveExplorerComponent', () => {
   let messageBusMock;
@@ -13,7 +14,7 @@ describe('DirectiveExplorerComponent', () => {
   beforeEach(() => {
     applicationOperationsSpy = jasmine.createSpyObj('_appOperations', ['viewSource', 'selectDomElement']);
     snackBarSpy = jasmine.createSpyObj('_snackBar', ['show']);
-    comp = new DirectiveExplorerComponent(applicationOperationsSpy, snackBarSpy);
+    comp = new DirectiveExplorerComponent(applicationOperationsSpy, snackBarSpy, new NestedPropertyResolver());
     messageBusMock = jasmine.createSpyObj('messageBus', ['on', 'once', 'emit', 'destroy']);
     comp.messageBus = messageBusMock;
   });
