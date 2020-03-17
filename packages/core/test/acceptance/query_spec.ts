@@ -984,6 +984,42 @@ describe('query logic', () => {
       expect(changes).toBe(1);
     });
 
+    it('should be like VE?', () => {
+      @Component({
+        selector: 'test-cmpt',
+        template: `
+          <div #match></div>
+          <ng-template [ngIf]="show">
+            <ng-template></ng-template>
+          </ng-template>
+        `,
+      })
+      class TestCmpt {
+        @ViewChildren('match') matches !: QueryList<any>;
+        show = false;
+      }
+
+      TestBed.configureTestingModule({declarations: [TestCmpt]});
+      const fixture = TestBed.createComponent(TestCmpt);
+      fixture.detectChanges();
+
+      let changes = 0;
+      fixture.componentInstance.matches.changes.subscribe((value: any) => { changes++; });
+
+      fixture.detectChanges();
+      expect(changes).toBe(0);
+
+      fixture.componentInstance.show = true;
+      fixture.detectChanges();
+      expect(changes).toBe(1);
+      expect(fixture.componentInstance.matches.length).toBe(1);
+
+      fixture.componentInstance.show = false;
+      fixture.detectChanges();
+      expect(changes).toBe(2);
+      expect(fixture.componentInstance.matches.length).toBe(1);
+    });
+
   });
 
   describe('view boundaries', () => {
