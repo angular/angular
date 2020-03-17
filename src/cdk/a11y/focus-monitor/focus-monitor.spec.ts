@@ -9,7 +9,13 @@ import {Component, NgZone} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {A11yModule} from '../index';
-import {FocusMonitor, FocusOrigin, TOUCH_BUFFER_MS} from './focus-monitor';
+import {
+  FocusMonitor,
+  FocusMonitorDetectionMode,
+  FocusOrigin,
+  FOCUS_MONITOR_DEFAULT_OPTIONS,
+  TOUCH_BUFFER_MS,
+} from './focus-monitor';
 
 
 describe('FocusMonitor', () => {
@@ -239,8 +245,63 @@ describe('FocusMonitor', () => {
 
     flush();
   }));
+
+  it('should clear the focus origin after one tick with "immediate" detection',
+     fakeAsync(() => {
+       dispatchKeyboardEvent(document, 'keydown', TAB);
+       tick(2);
+       buttonElement.focus();
+
+       // After 2 ticks, the timeout has cleared the origin. Default is 'program'.
+       expect(changeHandler).toHaveBeenCalledWith('program');
+     }));
 });
 
+describe('FocusMonitor with "eventual" detection', () => {
+  let fixture: ComponentFixture<PlainButton>;
+  let buttonElement: HTMLElement;
+  let focusMonitor: FocusMonitor;
+  let changeHandler: (origin: FocusOrigin) => void;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [A11yModule],
+      declarations: [
+        PlainButton,
+      ],
+      providers: [
+        {
+          provide: FOCUS_MONITOR_DEFAULT_OPTIONS,
+          useValue: {
+            detectionMode: FocusMonitorDetectionMode.EVENTUAL,
+          },
+        },
+      ],
+    }).compileComponents();
+  });
+
+  beforeEach(inject([FocusMonitor], (fm: FocusMonitor) => {
+    fixture = TestBed.createComponent(PlainButton);
+    fixture.detectChanges();
+
+    buttonElement = fixture.debugElement.query(By.css('button'))!.nativeElement;
+    focusMonitor = fm;
+
+    changeHandler = jasmine.createSpy('focus origin change handler');
+    focusMonitor.monitor(buttonElement).subscribe(changeHandler);
+    patchElementFocus(buttonElement);
+  }));
+
+
+  it('should not clear the focus origin, even after a few seconds', fakeAsync(() => {
+    dispatchKeyboardEvent(document, 'keydown', TAB);
+    tick(2000);
+
+    buttonElement.focus();
+
+    expect(changeHandler).toHaveBeenCalledWith('keyboard');
+  }));
+});
 
 describe('cdkMonitorFocus', () => {
   beforeEach(() => {

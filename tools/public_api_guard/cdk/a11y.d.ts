@@ -79,6 +79,8 @@ export declare class EventListenerFocusTrapInertStrategy implements FocusTrapIne
     preventFocus(focusTrap: ConfigurableFocusTrap): void;
 }
 
+export declare const FOCUS_MONITOR_DEFAULT_OPTIONS: InjectionToken<FocusMonitorOptions>;
+
 export declare const FOCUS_TRAP_INERT_STRATEGY: InjectionToken<FocusTrapInertStrategy>;
 
 export interface FocusableOption extends ListKeyManagerOption {
@@ -94,7 +96,7 @@ export declare class FocusKeyManager<T> extends ListKeyManager<FocusableOption &
 export declare class FocusMonitor implements OnDestroy {
     protected _document?: Document;
     constructor(_ngZone: NgZone, _platform: Platform,
-    document?: any);
+    document: any | null, options: FocusMonitorOptions | null);
     _onBlur(event: FocusEvent, element: HTMLElement): void;
     focusVia(element: HTMLElement, origin: FocusOrigin, options?: FocusOptions): void;
     focusVia(element: ElementRef<HTMLElement>, origin: FocusOrigin, options?: FocusOptions): void;
@@ -105,6 +107,15 @@ export declare class FocusMonitor implements OnDestroy {
     stopMonitoring(element: ElementRef<HTMLElement>): void;
     static ɵfac: i0.ɵɵFactoryDef<FocusMonitor>;
     static ɵprov: i0.ɵɵInjectableDef<FocusMonitor>;
+}
+
+export declare const enum FocusMonitorDetectionMode {
+    IMMEDIATE = 0,
+    EVENTUAL = 1
+}
+
+export interface FocusMonitorOptions {
+    detectionMode?: FocusMonitorDetectionMode;
 }
 
 export interface FocusOptions {
