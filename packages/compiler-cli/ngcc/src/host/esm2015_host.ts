@@ -1436,7 +1436,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
             local: false,
             valueDeclaration: decl.node,
             moduleName: decl.viaModule,
-            name: decl.node.name.text,
+            importedName: decl.node.name.text,
+            nestedPath: null,
           };
         } else {
           typeValueReference = {

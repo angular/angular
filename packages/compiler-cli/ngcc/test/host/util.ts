@@ -32,7 +32,7 @@ export function expectTypeValueReferencesForParameters(
         }
       } else if (param.typeValueReference !== null) {
         expect(param.typeValueReference.moduleName).toBe(fromModule!);
-        expect(param.typeValueReference.name).toBe(expected);
+        expect(param.typeValueReference.importedName).toBe(expected);
       }
     }
   });

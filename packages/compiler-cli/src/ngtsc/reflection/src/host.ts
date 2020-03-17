@@ -243,8 +243,24 @@ export type TypeValueReference = {
   local: true; expression: ts.Expression; defaultImportStatement: ts.ImportDeclaration | null;
 }|{
   local: false;
-  name: string;
+
+  /**
+   * The module specifier from which the `importedName` symbol should be imported.
+   */
   moduleName: string;
+
+  /**
+   * The name of the top-level symbol that is imported from `moduleName`. If `nestedPath` is also
+   * present, a nested object is being referenced from the top-level symbol.
+   */
+  importedName: string;
+
+  /**
+   * If present, represents the symbol names that are referenced from the top-level import.
+   * When `null` or empty, the `importedName` itself is the symbol being referenced.
+   */
+  nestedPath: string[]|null;
+
   valueDeclaration: ts.Declaration;
 };
 
