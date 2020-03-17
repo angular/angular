@@ -258,7 +258,6 @@ groups:
           'aio/content/examples/ngmodules/**',
           'aio/content/guide/ngmodule-api.md',
           'aio/content/guide/ngmodule-faq.md',
-          'aio/content/examples/ngmodule-faq/**',
           'aio/content/guide/ngmodule-vs-jsmodule.md',
           'aio/content/guide/module-types.md',
           'aio/content/guide/template-syntax.md',
@@ -901,8 +900,7 @@ groups:
           'aio/content/guide/docs-style-guide.md',
           'aio/content/examples/docs-style-guide/**',
           'aio/content/images/guide/docs-style-guide/**',
-          'aio/content/guide/visual-studio-2015.md',
-          'aio/content/examples/visual-studio-2015/**'
+          'aio/content/guide/visual-studio-2015.md'
           ])
     reviewers:
       users:
