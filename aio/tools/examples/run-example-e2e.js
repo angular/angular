@@ -183,7 +183,9 @@ function runE2eTestsSystemJS(appDir, outputFile) {
 
   let run = runProtractorSystemJS(appBuildSpawnInfo.promise, appDir, appRunSpawnInfo, outputFile);
 
-  if (fs.existsSync(appDir + '/aot/index.html')) {
+  // Only run AOT tests in ViewEngine mode. The current AOT setup does not work in Ivy.
+  // See https://github.com/angular/angular/issues/35989.
+  if (!argv.ivy && fs.existsSync(appDir + '/aot/index.html')) {
     run = run.then((ok) => ok && runProtractorAoT(appDir, outputFile));
   }
   return run;
