@@ -232,8 +232,8 @@ describe('R3 AST source spans', () => {
       expectFromHtml('<div *ngFor="let item of items"></div>').toEqual([
         ['Template', '0:32', '0:32', '32:38'],
         ['TextAttribute', '5:31', '<empty>'],
-        ['BoundAttribute', '5:31', '<empty>'],
-        ['Variable', '13:22', '<empty>'],  // let item
+        ['BoundAttribute', '5:31', '25:30'],  // *ngFor="let item of items" -> items
+        ['Variable', '13:22', '<empty>'],     // let item
         ['Element', '0:38', '0:32', '32:38'],
       ]);
 
@@ -245,8 +245,8 @@ describe('R3 AST source spans', () => {
       // </ng-template>
       expectFromHtml('<div *ngFor="item of items"></div>').toEqual([
         ['Template', '0:28', '0:28', '28:34'],
-        ['BoundAttribute', '5:27', '<empty>'],
-        ['BoundAttribute', '5:27', '<empty>'],
+        ['BoundAttribute', '5:27', '13:18'],  // ngFor="item of items" -> item
+        ['BoundAttribute', '5:27', '21:26'],  // ngFor="item of items" -> items
         ['Element', '0:34', '0:28', '28:34'],
       ]);
     });
@@ -263,8 +263,8 @@ describe('R3 AST source spans', () => {
     it('is correct for variables via as ...', () => {
       expectFromHtml('<div *ngIf="expr as local"></div>').toEqual([
         ['Template', '0:27', '0:27', '27:33'],
-        ['BoundAttribute', '5:26', '<empty>'],
-        ['Variable', '6:25', '6:10'],  // ngIf="expr as local -> ngIf
+        ['BoundAttribute', '5:26', '12:17'],  // ngIf="expr as local" -> expr
+        ['Variable', '6:25', '6:10'],         // ngIf="expr as local -> ngIf
         ['Element', '0:33', '0:27', '27:33'],
       ]);
     });

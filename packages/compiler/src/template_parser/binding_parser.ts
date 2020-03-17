@@ -145,8 +145,9 @@ export class BindingParser {
             binding.value ? moveParseSourceSpan(sourceSpan, binding.value.span) : undefined;
         targetVars.push(new ParsedVariable(key, value, bindingSpan, keySpan, valueSpan));
       } else if (binding.value) {
+        const valueSpan = moveParseSourceSpan(sourceSpan, binding.value.ast.sourceSpan);
         this._parsePropertyAst(
-            key, binding.value, sourceSpan, undefined, targetMatchableAttrs, targetProps);
+            key, binding.value, sourceSpan, valueSpan, targetMatchableAttrs, targetProps);
       } else {
         targetMatchableAttrs.push([key, '']);
         this.parseLiteralAttr(
