@@ -5,7 +5,7 @@ import { MatTreeFlattener } from '@angular/material/tree';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { map } from 'rxjs/operators';
 import { DefaultIterableDiffer } from '@angular/core';
-import { diff } from '../../../../diffing';
+import { diff } from '../diffing';
 
 const expandable = (prop: Descriptor, messageBus?: MessageBus<Events>) => {
   if (!prop) {
@@ -49,11 +49,7 @@ export class PropertyDataSource extends DataSource<FlatNode> {
     (node: Property, level: number): FlatNode => {
       return {
         expandable: expandable(node.descriptor, this._messageBus),
-        prop: {
-          name: node.name,
-          descriptor: node.descriptor,
-          parent: node.parent,
-        },
+        prop: node,
         level,
       };
     },
@@ -138,9 +134,6 @@ export class PropertyDataSource extends DataSource<FlatNode> {
     this._messageBus.emit('getNestedProperties', [this._entityPosition, parentPath]);
 
     this._messageBus.once('nestedProperties', (position: DirectivePosition, data: Properties, path: string[]) => {
-      // if (this._selectedDirectiveID.join(',') !== id.join(',')) {
-      //   throw new Error('The directive for which received nested props does not match the selected directive');
-      // }
       node.prop.descriptor.value = data.props;
       this._treeControl.expand(node);
       const props = this._arrayify(data.props, node.prop);

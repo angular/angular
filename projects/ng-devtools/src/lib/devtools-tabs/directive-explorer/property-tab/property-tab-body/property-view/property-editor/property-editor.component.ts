@@ -99,7 +99,7 @@ export class PropertyEditorComponent implements OnChanges, AfterViewChecked {
   accept(): void {
     const parsed = this.parseValue(this.valueToSubmit);
 
-    this.updateValue.emit({ key: this.key, newValue: parsed });
+    this.updateValue.emit(parsed);
 
     this.initialValue = parsed;
 
