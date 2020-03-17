@@ -146,7 +146,7 @@
     "@angular/cli": "9.0.3",
     "@bazel/bazelisk": "^1.3.0",
     "@bazel/buildifier": "^0.29.0",
-    "@bazel/ibazel": "^0.12.2",
+    "@bazel/ibazel": "^0.12.3",
     "@octokit/graphql": "^4.3.1",
     "@types/json5": "^0.0.30",
     "@types/minimist": "^1.2.0",
