@@ -1099,10 +1099,10 @@
   resolved "https://registry.yarnpkg.com/@bazel/hide-bazel-files/-/hide-bazel-files-0.34.0.tgz#368ea84db2756ff80ead23bb9eb179e9ed24b462"
   integrity sha512-suyO6cZf8iV6W2LkM1X1spWBt7CsRRXH7gU1wYNuAuHYkkfI0A6qj84yPiIXiOt/2G44kbioGyC1bUsI3fKv7A==
 
-"@bazel/ibazel@^0.11.1":
-  version "0.11.1"
-  resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.11.1.tgz#c07ceaded388f1e39d6aa732953e0dd04f3dbdf0"
-  integrity sha512-qAdEquFAudYyN+CYfLzvuRWNubdsh6C8+o5CiViUEfchq1HQM5Rs8xAOE3fzGsTZ1EUsvgca/PY0kn0VIxckBA==
+"@bazel/ibazel@^0.12.3":
+  version "0.12.3"
+  resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.12.3.tgz#c8c82647f920cd529c7793c50e087e1a754a5973"
+  integrity sha512-dyx62Uo5kogrxFmqFNpGvbavfr8yjmuQlOyZczOuA60piULwlUsO7Oh3/1OUWKDSXaMMqHhFQfpdl+z0HjI6TQ==
 
 "@bazel/jasmine@1.3.0":
   version "1.3.0"
