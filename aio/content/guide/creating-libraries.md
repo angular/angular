@@ -121,7 +121,7 @@ If you've never published a package in npm before, you must create a user accoun
 
 {@a lib-assets}
 
-## Manage assets in a published library with ng-packagr
+## Managing assets in a library
 
 Starting with version 9.x of the [ng-packagr](https://github.com/ng-packagr/ng-packagr/blob/master/README.md) tool, you can configure the tool to automatically copy assets into your library package as part of the build process.
 You can use this feature when your library needs to publish optional theming files, Sass mixins, or documentation (like a changelog).
