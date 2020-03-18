@@ -25,14 +25,15 @@
 
 .selected-entry header {
   background-color: #eee;
-  padding: 0 5px;
+  padding-left: 9px;
   border-bottom: 1px solid #ccc;
   color: hsla(0, 0%, 32%, 1);
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  line-height: 22px;
+  line-height: 25px;
   font-size: 12px;
+  font-weight: 500;
 }
 
 .selected-entry section {
