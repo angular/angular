@@ -84,3 +84,7 @@
 .entry-statistics div label {
   opacity: 0.7;
 }
+
+.txt-total-time {
+  font-weight: bold;
+}
