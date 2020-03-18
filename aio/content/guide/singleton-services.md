@@ -83,7 +83,7 @@ throughout the app. Though you may see it coded this way, using the `providedIn`
 
 
 {@a forRoot}
-
+{@a the-forroot-pattern}
 <!--
 ## The `forRoot()` pattern
 -->
