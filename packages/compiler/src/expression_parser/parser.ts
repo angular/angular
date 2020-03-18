@@ -317,7 +317,7 @@ export class _ParseAST {
     //   - end index of the current token
     //   - start of the first token (this can happen e.g. when creating an implicit receiver)
     const curToken = this.peek(-1);
-    const end = curToken ? curToken.end + this.offset : this.inputIndex;
+    const end = this.index > 0 ? curToken.end + this.offset : this.inputIndex;
     return new ParseSpan(start, end);
   }
 
