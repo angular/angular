@@ -14,6 +14,8 @@ ts_library(
         "//packages:types",
         "//packages/core",
         "@npm//@types/node",
+        "@npm//@types/q",
+        "@npm//q",
         "@npm//reflect-metadata",
     ],
 )
