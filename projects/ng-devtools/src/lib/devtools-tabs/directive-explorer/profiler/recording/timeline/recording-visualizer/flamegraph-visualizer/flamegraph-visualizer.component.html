@@ -12,12 +12,18 @@
 <div class="selected-entry" *ngIf="selectedEntry">
   <header>{{ selectedEntry.label }} details</header>
   <section class="entry-statistics">
-    <div class="txt-total-time"><label>Total time spent:</label> {{ selectedEntry.value | number }}</div>
-    <div *ngFor="let dir of selectedEntry.original.directives">
-      <label>{{ dir.name }}#changeDetection:</label> {{ dir.changeDetection | number }}
-      <span *ngFor="let item of dir.lifecycle | keyvalue">
-        <label>{{ dir.name }}#{{ item.key }}:</label> {{ item.value | number }}
-      </span>
+    <div class="txt-total-time"><label>Total time spent:</label> {{ selectedEntry.value | number }}ms</div>
+    <div *ngIf="selectedEntry.value > 0">
+      <ngx-charts-pie-chart
+        legendTitle=""
+        [view]="view"
+        [scheme]="colorScheme"
+        [results]="graphData"
+        [tooltipText]="formatToolTip"
+        legend="true"
+        legendPosition="bottom"
+      >
+      </ngx-charts-pie-chart>
     </div>
   </section>
 </div>
