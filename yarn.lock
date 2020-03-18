@@ -11,16 +11,14 @@
     rxjs "6.5.3"
 
 "@angular-devkit/architect@github:angular/angular-devkit-architect-builds#523a20d92":
-  version "0.901.0-next.3+7.523a20d"
-  uid "02fa64354f0b9a25d8c3d3003069ad19fdb6f626"
+  version "0.901.0-next.3"
   resolved "https://codeload.github.com/angular/angular-devkit-architect-builds/tar.gz/02fa64354f0b9a25d8c3d3003069ad19fdb6f626"
   dependencies:
     "@angular-devkit/core" "github:angular/angular-devkit-core-builds#523a20d92"
     rxjs "6.5.4"
 
 "@angular-devkit/build-angular@github:angular/angular-devkit-build-angular-builds#1404f53453c9557e20605783c01515f895e50f25":
-  version "0.901.0-next.3+7.523a20d"
-  uid "1404f53453c9557e20605783c01515f895e50f25"
+  version "0.901.0-next.3"
   resolved "https://codeload.github.com/angular/angular-devkit-build-angular-builds/tar.gz/1404f53453c9557e20605783c01515f895e50f25"
   dependencies:
     "@angular-devkit/architect" "github:angular/angular-devkit-architect-builds#523a20d92"
@@ -93,8 +91,7 @@
     rxjs "6.5.3"
 
 "@angular-devkit/build-optimizer@github:angular/angular-devkit-build-optimizer-builds#523a20d92":
-  version "0.901.0-next.3+7.523a20d"
-  uid b05234134130bd1471676e3da9c660112f398f5a
+  version "0.901.0-next.3"
   resolved "https://codeload.github.com/angular/angular-devkit-build-optimizer-builds/tar.gz/b05234134130bd1471676e3da9c660112f398f5a"
   dependencies:
     loader-utils "1.4.0"
@@ -104,8 +101,7 @@
     webpack-sources "1.4.3"
 
 "@angular-devkit/build-webpack@github:angular/angular-devkit-build-webpack-builds#523a20d92":
-  version "0.901.0-next.3+7.523a20d"
-  uid e816b80364267aaa0999a379cd22793c82cdce02
+  version "0.901.0-next.3"
   resolved "https://codeload.github.com/angular/angular-devkit-build-webpack-builds/tar.gz/e816b80364267aaa0999a379cd22793c82cdce02"
   dependencies:
     "@angular-devkit/architect" "github:angular/angular-devkit-architect-builds#523a20d92"
@@ -135,8 +131,7 @@
     source-map "0.7.3"
 
 "@angular-devkit/core@github:angular/angular-devkit-core-builds#523a20d92":
-  version "9.1.0-next.3+7.523a20d"
-  uid "69431c0f13b356608da135491b7adde42cb6603f"
+  version "9.1.0-next.3"
   resolved "https://codeload.github.com/angular/angular-devkit-core-builds/tar.gz/69431c0f13b356608da135491b7adde42cb6603f"
   dependencies:
     ajv "6.12.0"
@@ -154,8 +149,7 @@
     rxjs "6.4.0"
 
 "@angular-devkit/schematics@github:angular/angular-devkit-schematics-builds#523a20d92":
-  version "9.1.0-next.3+7.523a20d"
-  uid e97fbcb9ef8003c784edd85b24972cd68fad4c23
+  version "9.1.0-next.3"
   resolved "https://codeload.github.com/angular/angular-devkit-schematics-builds/tar.gz/e97fbcb9ef8003c784edd85b24972cd68fad4c23"
   dependencies:
     "@angular-devkit/core" "github:angular/angular-devkit-core-builds#523a20d92"
@@ -163,8 +157,7 @@
     rxjs "6.5.4"
 
 "@angular/animations@github:angular/animations-builds#f8c1d1bdd5f1086623f0489081ebe181abff3155":
-  version "9.1.0-next.4+62.sha-168a393"
-  uid f8c1d1bdd5f1086623f0489081ebe181abff3155
+  version "9.1.0-next.4"
   resolved "https://codeload.github.com/angular/animations-builds/tar.gz/f8c1d1bdd5f1086623f0489081ebe181abff3155"
 
 "@angular/cdk@~9.1.0":
@@ -175,8 +168,7 @@
     parse5 "^5.0.0"
 
 "@angular/cli@github:angular/cli-builds#490fb9242c2e8d7b4036a98f09f4d177a8a0da78":
-  version "9.1.0-next.3+7.523a20d"
-  uid "490fb9242c2e8d7b4036a98f09f4d177a8a0da78"
+  version "9.1.0-next.3"
   resolved "https://codeload.github.com/angular/cli-builds/tar.gz/490fb9242c2e8d7b4036a98f09f4d177a8a0da78"
   dependencies:
     "@angular-devkit/architect" "github:angular/angular-devkit-architect-builds#523a20d92"
@@ -201,13 +193,11 @@
     uuid "7.0.2"
 
 "@angular/common@github:angular/common-builds#6ce1c5364b22a305e92b48015c403d472f2d678f":
-  version "9.1.0-next.4+62.sha-168a393"
-  uid "6ce1c5364b22a305e92b48015c403d472f2d678f"
+  version "9.1.0-next.4"
   resolved "https://codeload.github.com/angular/common-builds/tar.gz/6ce1c5364b22a305e92b48015c403d472f2d678f"
 
 "@angular/compiler-cli@github:angular/compiler-cli-builds#efca68105f77e60733dd02d84f0ee2fec60fcd61":
-  version "9.1.0-next.4+62.sha-168a393"
-  uid efca68105f77e60733dd02d84f0ee2fec60fcd61
+  version "9.1.0-next.4"
   resolved "https://codeload.github.com/angular/compiler-cli-builds/tar.gz/efca68105f77e60733dd02d84f0ee2fec60fcd61"
   dependencies:
     canonical-path "1.0.0"
@@ -224,28 +214,23 @@
     yargs "15.3.0"
 
 "@angular/compiler@github:angular/compiler-builds#bc43a5ba996b43e8b3368c68673818b383b7d0e0":
-  version "9.1.0-next.4+62.sha-168a393"
-  uid bc43a5ba996b43e8b3368c68673818b383b7d0e0
+  version "9.1.0-next.4"
   resolved "https://codeload.github.com/angular/compiler-builds/tar.gz/bc43a5ba996b43e8b3368c68673818b383b7d0e0"
 
 "@angular/core@github:angular/core-builds#e31ba992b6e72c611de7ba29e793c4042fa9e498":
-  version "9.1.0-next.4+62.sha-168a393"
-  uid e31ba992b6e72c611de7ba29e793c4042fa9e498
+  version "9.1.0-next.4"
   resolved "https://codeload.github.com/angular/core-builds/tar.gz/e31ba992b6e72c611de7ba29e793c4042fa9e498"
 
 "@angular/elements@github:angular/elements-builds#10e28e0120b4fb90594e18e633197c1e7f34dad8":
-  version "9.1.0-next.4+62.sha-168a393"
-  uid "10e28e0120b4fb90594e18e633197c1e7f34dad8"
+  version "9.1.0-next.4"
   resolved "https://codeload.github.com/angular/elements-builds/tar.gz/10e28e0120b4fb90594e18e633197c1e7f34dad8"
 
 "@angular/forms@github:angular/forms-builds#ff55c94d0a3d27751cc3a869d2671a624db09d12":
-  version "9.1.0-next.4+62.sha-168a393"
-  uid ff55c94d0a3d27751cc3a869d2671a624db09d12
+  version "9.1.0-next.4"
   resolved "https://codeload.github.com/angular/forms-builds/tar.gz/ff55c94d0a3d27751cc3a869d2671a624db09d12"
 
 "@angular/language-service@github:angular/language-service-builds#edecc0eedf17ed37d50731f2b71bf7e417db4813":
-  version "9.1.0-next.4+62.sha-168a393"
-  uid edecc0eedf17ed37d50731f2b71bf7e417db4813
+  version "9.1.0-next.4"
   resolved "https://codeload.github.com/angular/language-service-builds/tar.gz/edecc0eedf17ed37d50731f2b71bf7e417db4813"
 
 "@angular/material@~9.1.0":
@@ -254,18 +239,15 @@
   integrity sha512-8uwwkSnsg/YlhqxD/+0Cj+1S97Xf5WUcgxSEXmC1r0/AD+o6PGL5ImIk4n+3tdgYqm7MoJZQthlIB2J0EVLjVw==
 
 "@angular/platform-browser-dynamic@github:angular/platform-browser-dynamic-builds#4b02c69b6e3cffd6d4b0c1b05cac45b4a31ad063":
-  version "9.1.0-next.4+62.sha-168a393"
-  uid "4b02c69b6e3cffd6d4b0c1b05cac45b4a31ad063"
+  version "9.1.0-next.4"
   resolved "https://codeload.github.com/angular/platform-browser-dynamic-builds/tar.gz/4b02c69b6e3cffd6d4b0c1b05cac45b4a31ad063"
 
 "@angular/platform-browser@github:angular/platform-browser-builds#cc3d3dbc2e6266450b18bd1736f1da98db4ae9a7":
-  version "9.1.0-next.4+62.sha-168a393"
-  uid cc3d3dbc2e6266450b18bd1736f1da98db4ae9a7
+  version "9.1.0-next.4"
   resolved "https://codeload.github.com/angular/platform-browser-builds/tar.gz/cc3d3dbc2e6266450b18bd1736f1da98db4ae9a7"
 
 "@angular/router@github:angular/router-builds#8dd7594180ce8b8869a09630e9232b91c50db062":
-  version "9.1.0-next.4+62.sha-168a393"
-  uid "8dd7594180ce8b8869a09630e9232b91c50db062"
+  version "9.1.0-next.4"
   resolved "https://codeload.github.com/angular/router-builds/tar.gz/8dd7594180ce8b8869a09630e9232b91c50db062"
 
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.8.3":
@@ -1174,8 +1156,7 @@
     schema-utils "^2.6.4"
 
 "@ngtools/webpack@github:angular/ngtools-webpack-builds#523a20d92":
-  version "9.1.0-next.3+7.523a20d"
-  uid "5089f56c8f554fc146a514bbfb8160b203942cb0"
+  version "9.1.0-next.3"
   resolved "https://codeload.github.com/angular/ngtools-webpack-builds/tar.gz/5089f56c8f554fc146a514bbfb8160b203942cb0"
   dependencies:
     "@angular-devkit/core" "github:angular/angular-devkit-core-builds#523a20d92"
@@ -1270,16 +1251,14 @@
     "@angular-devkit/schematics" "8.0.0"
 
 "@schematics/angular@github:angular/schematics-angular-builds#523a20d92":
-  version "9.1.0-next.3+7.523a20d"
-  uid "53a36a0fba881ccbf4d41716a532b2bcc86c579b"
+  version "9.1.0-next.3"
   resolved "https://codeload.github.com/angular/schematics-angular-builds/tar.gz/53a36a0fba881ccbf4d41716a532b2bcc86c579b"
   dependencies:
     "@angular-devkit/core" "github:angular/angular-devkit-core-builds#523a20d92"
     "@angular-devkit/schematics" "github:angular/angular-devkit-schematics-builds#523a20d92"
 
 "@schematics/update@github:angular/schematics-update-builds#523a20d92":
-  version "0.901.0-next.3+7.523a20d"
-  uid "703210a4ed5e5e06bfd4e8995a5fba245d0ade72"
+  version "0.901.0-next.3"
   resolved "https://codeload.github.com/angular/schematics-update-builds/tar.gz/703210a4ed5e5e06bfd4e8995a5fba245d0ade72"
   dependencies:
     "@angular-devkit/core" "github:angular/angular-devkit-core-builds#523a20d92"
@@ -1296,6 +1275,23 @@
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
   integrity sha512-9NET910DNaIPngYnLLPeg+Ogzqsi9uM4mSboU5y6p8S5DzMTVEsJZrawi+BoDNUVBa2DhJqQYUFvMDfgU062LQ==
+
+"@swimlane/ngx-charts@^13.0.2":
+  version "13.0.2"
+  resolved "https://registry.yarnpkg.com/@swimlane/ngx-charts/-/ngx-charts-13.0.2.tgz#2ef02c7e8e37f782a7a962352bd27ce2bc2094dd"
+  integrity sha512-pKHw3DLsO2eso3SqMlHt9vumaU8gaDYZbrC8PNWteU49AFkX8kLVJIvsgjMSKwW/n3VpgHBpTMGnLkSlzHJORg==
+  dependencies:
+    d3-array "^2.4.0"
+    d3-brush "^1.1.5"
+    d3-color "^1.4.0"
+    d3-format "^1.4.2"
+    d3-hierarchy "^1.1.9"
+    d3-interpolate "^1.4.0"
+    d3-scale "^3.2.1"
+    d3-selection "^1.4.1"
+    d3-shape "^1.3.7"
+    d3-time-format "^2.2.2"
+    d3-transition "^1.3.2"
 
 "@szmarczak/http-timer@^1.1.2":
   version "1.1.2"
@@ -3516,6 +3512,119 @@ cypress@^4.0.0:
     untildify "4.0.0"
     url "0.11.0"
     yauzl "2.10.0"
+
+"d3-array@1.2.0 - 2", d3-array@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/d3-array/-/d3-array-2.4.0.tgz#87f8b9ad11088769c82b5ea846bcb1cc9393f242"
+  integrity sha512-KQ41bAF2BMakf/HdKT865ALd4cgND6VcIztVQZUTt0+BH3RWy6ZYnHghVXf6NFjt2ritLr8H1T8LreAAlfiNcw==
+
+d3-brush@^1.1.5:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/d3-brush/-/d3-brush-1.1.5.tgz#066b8e84d17b192986030446c97c0fba7e1bacdc"
+  integrity sha512-rEaJ5gHlgLxXugWjIkolTA0OyMvw8UWU1imYXy1v642XyyswmI1ybKOv05Ft+ewq+TFmdliD3VuK0pRp1VT/5A==
+  dependencies:
+    d3-dispatch "1"
+    d3-drag "1"
+    d3-interpolate "1"
+    d3-selection "1"
+    d3-transition "1"
+
+d3-color@1, d3-color@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/d3-color/-/d3-color-1.4.0.tgz#89c45a995ed773b13314f06460df26d60ba0ecaf"
+  integrity sha512-TzNPeJy2+iEepfiL92LAAB7fvnp/dV2YwANPVHdDWmYMm23qIJBYww3qT8I8C1wXrmrg4UWs7BKc2tKIgyjzHg==
+
+d3-dispatch@1:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/d3-dispatch/-/d3-dispatch-1.0.6.tgz#00d37bcee4dd8cd97729dd893a0ac29caaba5d58"
+  integrity sha512-fVjoElzjhCEy+Hbn8KygnmMS7Or0a9sI2UzGwoB7cCtvI1XpVN9GpoYlnb3xt2YV66oXYb1fLJ8GMvP4hdU1RA==
+
+d3-drag@1:
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/d3-drag/-/d3-drag-1.2.5.tgz#2537f451acd39d31406677b7dc77c82f7d988f70"
+  integrity sha512-rD1ohlkKQwMZYkQlYVCrSFxsWPzI97+W+PaEIBNTMxRuxz9RF0Hi5nJWHGVJ3Om9d2fRTe1yOBINJyy/ahV95w==
+  dependencies:
+    d3-dispatch "1"
+    d3-selection "1"
+
+d3-ease@1:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/d3-ease/-/d3-ease-1.0.6.tgz#ebdb6da22dfac0a22222f2d4da06f66c416a0ec0"
+  integrity sha512-SZ/lVU7LRXafqp7XtIcBdxnWl8yyLpgOmzAk0mWBI9gXNzLDx5ybZgnRbH9dN/yY5tzVBqCQ9avltSnqVwessQ==
+
+d3-format@1, d3-format@^1.4.2:
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/d3-format/-/d3-format-1.4.3.tgz#4e8eb4dff3fdcb891a8489ec6e698601c41b96f1"
+  integrity sha512-mm/nE2Y9HgGyjP+rKIekeITVgBtX97o1nrvHCWX8F/yBYyevUTvu9vb5pUnKwrcSw7o7GuwMOWjS9gFDs4O+uQ==
+
+d3-hierarchy@^1.1.9:
+  version "1.1.9"
+  resolved "https://registry.yarnpkg.com/d3-hierarchy/-/d3-hierarchy-1.1.9.tgz#2f6bee24caaea43f8dc37545fa01628559647a83"
+  integrity sha512-j8tPxlqh1srJHAtxfvOUwKNYJkQuBFdM1+JAUfq6xqH5eAqf93L7oG1NVqDa4CpFZNvnNKtCYEUC8KY9yEn9lQ==
+
+d3-interpolate@1, d3-interpolate@^1.2.0, d3-interpolate@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/d3-interpolate/-/d3-interpolate-1.4.0.tgz#526e79e2d80daa383f9e0c1c1c7dcc0f0583e987"
+  integrity sha512-V9znK0zc3jOPV4VD2zZn0sDhZU3WAE2bmlxdIwwQPPzPjvyLkd8B3JUVdS1IDUFDkWZ72c9qnv1GK2ZagTZ8EA==
+  dependencies:
+    d3-color "1"
+
+d3-path@1:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/d3-path/-/d3-path-1.0.9.tgz#48c050bb1fe8c262493a8caf5524e3e9591701cf"
+  integrity sha512-VLaYcn81dtHVTjEHd8B+pbe9yHWpXKZUC87PzoFmsFrJqgFwDe/qxfp5MlfsfM1V5E/iVt0MmEbWQ7FVIXh/bg==
+
+d3-scale@^3.2.1:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/d3-scale/-/d3-scale-3.2.1.tgz#da1684adce7261b4bc7a76fe193d887f0e909e69"
+  integrity sha512-huz5byJO/6MPpz6Q8d4lg7GgSpTjIZW/l+1MQkzKfu2u8P6hjaXaStOpmyrD6ymKoW87d2QVFCKvSjLwjzx/rA==
+  dependencies:
+    d3-array "1.2.0 - 2"
+    d3-format "1"
+    d3-interpolate "^1.2.0"
+    d3-time "1"
+    d3-time-format "2"
+
+d3-selection@1, d3-selection@^1.1.0, d3-selection@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/d3-selection/-/d3-selection-1.4.1.tgz#98eedbbe085fbda5bafa2f9e3f3a2f4d7d622a98"
+  integrity sha512-BTIbRjv/m5rcVTfBs4AMBLKs4x8XaaLkwm28KWu9S2vKNqXkXt2AH2Qf0sdPZHjFxcWg/YL53zcqAz+3g4/7PA==
+
+d3-shape@^1.3.7:
+  version "1.3.7"
+  resolved "https://registry.yarnpkg.com/d3-shape/-/d3-shape-1.3.7.tgz#df63801be07bc986bc54f63789b4fe502992b5d7"
+  integrity sha512-EUkvKjqPFUAZyOlhY5gzCxCeI0Aep04LwIRpsZ/mLFelJiUfnK56jo5JMDSE7yyP2kLSb6LtF+S5chMk7uqPqw==
+  dependencies:
+    d3-path "1"
+
+d3-time-format@2, d3-time-format@^2.2.2:
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/d3-time-format/-/d3-time-format-2.2.3.tgz#0c9a12ee28342b2037e5ea1cf0b9eb4dd75f29cb"
+  integrity sha512-RAHNnD8+XvC4Zc4d2A56Uw0yJoM7bsvOlJR33bclxq399Rak/b9bhvu/InjxdWhPtkgU53JJcleJTGkNRnN6IA==
+  dependencies:
+    d3-time "1"
+
+d3-time@1:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/d3-time/-/d3-time-1.1.0.tgz#b1e19d307dae9c900b7e5b25ffc5dcc249a8a0f1"
+  integrity sha512-Xh0isrZ5rPYYdqhAVk8VLnMEidhz5aP7htAADH6MfzgmmicPkTo8LhkLxci61/lCB7n7UmE3bN0leRt+qvkLxA==
+
+d3-timer@1:
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/d3-timer/-/d3-timer-1.0.10.tgz#dfe76b8a91748831b13b6d9c793ffbd508dd9de5"
+  integrity sha512-B1JDm0XDaQC+uvo4DT79H0XmBskgS3l6Ve+1SBCfxgmtIb1AVrPIoqd+nPSv+loMX8szQ0sVUhGngL7D5QPiXw==
+
+d3-transition@1, d3-transition@^1.3.2:
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/d3-transition/-/d3-transition-1.3.2.tgz#a98ef2151be8d8600543434c1ca80140ae23b398"
+  integrity sha512-sc0gRU4PFqZ47lPVHloMn9tlPcv8jxgOQg+0zjhfZXMQuvppjG6YuwdMBE0TuqCZjeJkLecku/l9R0JPcRhaDA==
+  dependencies:
+    d3-color "1"
+    d3-dispatch "1"
+    d3-ease "1"
+    d3-interpolate "1"
+    d3-selection "^1.1.0"
+    d3-timer "1"
 
 damerau-levenshtein@^1.0.4:
   version "1.0.6"
