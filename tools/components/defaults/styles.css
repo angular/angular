@@ -1,0 +1,7 @@
+/*
+ * This file exists so that if the default index.html is used a 404 will not
+ * throw.
+ *
+ * We leave an import for "styles.css" in the default index.html for the case
+ * where someone wants to use index.html and provide their own styles.
+ */

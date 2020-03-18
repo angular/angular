@@ -1,56 +1,31 @@
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 
-load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle", "ts_devserver", "ts_library")
-load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
+load("@io_bazel_rules_sass//sass:sass.bzl", "sass_binary")
+load("//tools/components:component_benchmark.bzl", "component_benchmark")
 
-ng_module(
-    name = "application_lib",
-    srcs = glob(
-        ["**/*.ts"],
-        exclude = ["**/*.perf-spec.ts"],
-    ),
-    generate_ve_shims = True,
-    deps = [
+sass_binary(
+    name = "class_bindings_styles",
+    src = ":styles.scss",
+)
+
+component_benchmark(
+    name = "benchmark",
+    driver = ":class_bindings.perf-spec.ts",
+    driver_deps = [
+        "//modules/e2e_util",
+        "@npm//protractor",
+    ],
+    ng_deps = [
         "//packages:types",
         "//packages/common",
         "//packages/core",
         "//packages/platform-browser",
         "@npm//rxjs",
     ],
-)
-
-ts_library(
-    name = "perf_lib",
-    testonly = 1,
-    srcs = ["class_bindings.perf-spec.ts"],
-    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
-    deps = [
-        "//modules/e2e_util",
-        "@npm//protractor",
-    ],
-)
-
-ng_rollup_bundle(
-    name = "bundle",
-    entry_point = ":index_aot.ts",
-    deps = [
-        ":application_lib",
-        "@npm//rxjs",
-    ],
-)
-
-ts_devserver(
-    name = "prodserver",
-    bootstrap = ["//packages/zone.js/dist:zone.js"],
-    port = 4200,
-    static_files = ["index.html"],
-    deps = [":bundle.min_debug.es2015.js"],
-)
-
-benchmark_test(
-    name = "perf",
-    server = ":prodserver",
-    deps = [
-        ":perf_lib",
-    ],
+    ng_srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.perf-spec.ts"],
+    ),
+    prefix = "",
+    styles = [":class_bindings_styles"],
 )
