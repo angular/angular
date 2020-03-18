@@ -3,13 +3,15 @@
 -->
 # 싱글턴 서비스 (Singleton services)
 
+<!--
 A singleton service is a service for which only one instance exists in an app.
 
-<!--
 For a sample app using the app-wide singleton service that this page describes, see the
 <live-example name="ngmodules"></live-example> showcasing all the documented features of NgModules.
 -->
-이 문서에서는 앱 전역에서 싱글턴으로 동작하는 서비스를 만들어봅니다.
+싱글턴 서비스는 앱 전체에서 단 하나의 인스턴스만 존재하는 서비스를 말합니다.
+
+이 문서에서는 싱글턴으로 동작하는 서비스를 만들어봅시다.
 이 문서에서 다루는 모든 예제 코드는 <live-example name="ngmodules"></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
 <!--
@@ -19,21 +21,24 @@ For a sample app using the app-wide singleton service that this page describes, 
 
 <!--
 There are two ways to make a service a singleton in Angular:
--->
-Angular에서 서비스를 싱글턴으로 사용하는 방법은 두 가지가 있습니다:
 
-<!--
 * Declare `root` for the value of the `@Injectable()` `providedIn` property
 * Include the service in the `AppModule` or in a module that is only imported by the `AppModule`
 -->
+Angular에서 서비스를 싱글턴으로 사용하는 방법은 두 가지가 있습니다:
+
 * `@Injectable()` `providedIn` 프로퍼티에 `root`를 지정해서 서비스 프로바이더를 애플리케이션 루트에 등록하는 방법
 * 서비스를 `AppModule`에 선언하고 다른 모듈에서 `AppModule`만 로드하는 방법
 
 
 {@a providedIn}
 
+<!--
 ### Using `providedIn`
+-->
+### `providedIn` 사용하기
 
+<!--
 Beginning with Angular 6.0, the preferred way to create a singleton service is to set `providedIn` to `root` on the service's `@Injectable()` decorator. This tells Angular
 to provide the service in the application root.
 
@@ -41,10 +46,24 @@ to provide the service in the application root.
 
 For more detailed information on services, see the [Services](tutorial/toh-pt4) chapter of the
 [Tour of Heroes tutorial](tutorial).
+-->
+Angular 6.0 버전부터 Angular CLI로 서비스를 생성하면 `@Injectable()`데코레이터의 `providedIn` 메타데이터 값이 `root`로 설정됩니다.
+그래서 이 서비스는 앱 전역에서 사용할 수 있습니다.
 
+<code-example path="providers/src/app/user.service.0.ts"  header="src/app/user.service.ts"></code-example>
+
+더 자세한 내용은 [히어로들의 여행](tutorial) 튜토리얼의 [서비스](tutorial/toh-pt4) 챕터를 참고하세요.
+
+
+<!--
 ### NgModule `providers` array
+-->
+### NgModule의 `providers` 배열
 
+<!--
 In apps built with Angular versions prior to 6.0, services are registered NgModule `providers` arrays as follows:
+-->
+Angular 6.0 버전 이전에는 Angular CLI로 서비스를 생성했을 때 이 서비스가 NgModule의 `providers` 배열에 추가됐습니다:
 
 ```ts
 @NgModule({
@@ -55,13 +74,22 @@ In apps built with Angular versions prior to 6.0, services are registered NgModu
 
 ```
 
+<!--
 If this NgModule were the root `AppModule`, the `UserService` would be a singleton and available
 throughout the app. Though you may see it coded this way, using the `providedIn` property of the `@Injectable()` decorator on the service itself is preferable as of Angular 6.0 as it makes your services tree-shakable.
+-->
+이 경우에도 서비스가 추가되는 모듈은 `AppModule`이기 때문에 `UserService`는 앱 전역에서 인스턴스 하나만 존재합니다.
+동작은 동일하지만, Angular 6.0부터는 트리 셰이킹이 가능한 서비스를 명확하게 지정하기 위해 서비스 클래스의 `@Injectable()` 데코레이터에 `providedIn` 메타데이터를 지정하는 방법을 더 권장합니다.
+
 
 {@a forRoot}
 
+<!--
 ## The `forRoot()` pattern
+-->
+## `forRoot()` 패턴
 
+<!--
 Generally, you'll only need `providedIn` for providing services and `forRoot()`/`forChild()` for routing. However, understanding how `forRoot()` works to make sure a service is a singleton will inform your development at a deeper level.
 
 If a module defines both providers and declarations (components, directives, pipes),
@@ -88,12 +116,40 @@ with `providers` and child modules without `providers`.
 2. Place the providers into the `forRoot()` method.
 
 <code-example path="ngmodules/src/app/greeting/greeting.module.ts" region="for-root" header="src/app/greeting/greeting.module.ts"></code-example>
+-->
+일반적으로 서비스 프로바이더를 등록할 때는 `providedIn`만 알면 되고 라우팅할 때는 `forRoot()`와 `forChild()`만 알면 됩니다.
+그런데 `forRoot()`가 어떻게 동작해서 싱글턴이 되는지 제대로 알면 서비스가 동작하는 과정을 좀 더 자세하게 이해할 수 있습니다.
 
+서비스 프로바이더와 Angular 구성요소(컴포넌트, 디렉티브, 파이프)를 등록하는 모듈이 많다면 이 모듈들의 관계에 따라 서비스 프로바이더가 중복 등록되는 경우가 생길 수 있습니다.
+그러면 각 모듈마다 서비스의 인스턴스를 생성하기 때문에 더이상 이 서비스는 싱글턴이 아니게 됩니다.
+
+서비스를 싱글턴으로 유지하는 방법이 몇가지 있습니다:
+
+* 모듈에 서비스를 직접 등록하는 대신 [`providedIn` 문법](guide/singleton-services#providedIn)을 사용합니다.
+* 모듈마다 서비스를 분리합니다.
+* 모듈에 `forRoot()`와 `forChild()` 메소드를 정의합니다.
+
+<div class="alert is-helpful">
+
+**참고:** 미리 준비해둔 예제가 있습니다. <live-example noDownload name="ngmodules">NgModules 예제</live-example>에서는 `GreetingModule`을 라우팅 모듈에 등록할 때 `forRoot()`와 `forChild()`를 사용합니다. 그리고 <live-example name="lazy-loading-ngmodules" noDownload>지연 로딩 예제</live-example>에서는 좀 더 단순한 방법을 사용합니다. 자세한 내용은 [기능모듈 지연 로딩](guide/lazy-loading-ngmodules) 문서를 참고하세요.
+
+</div>
+
+서비스 프로바이더를 모듈과 분리하기 위해 `forRoot()` 패턴을 사용하면 이제 최상위 모듈의 `providers`에는 모듈의 서비스를 등록하고 자식 모듈의 `providers`에는 모듈의 서비스를 등록하지 않습니다.
+
+1. 모듈에 `static`으로 `forRoot` 메소드를 정의합니다.
+2. 모듈의 서비스 프로바이더는 `forRoot()` 메소드에 둡니다.
+
+<code-example path="ngmodules/src/app/greeting/greeting.module.ts" region="for-root" header="src/app/greeting/greeting.module.ts"></code-example>
 
 {@a forRoot-router}
 
+<!--
 ### `forRoot()` and the `Router`
+-->
+### `forRoot()`와 `Router`
 
+<!--
 `RouterModule` provides the `Router` service, as well as router directives, such as `RouterOutlet` and `routerLink`. The root application module imports `RouterModule` so that the application has a `Router` and the root application components can access the router directives. Any feature modules must also import `RouterModule` so that their components can place router directives into their templates.
 
 If the `RouterModule` didn’t have `forRoot()` then each feature module would instantiate a new `Router` instance, which would break the application as there can only be one `Router`. By using the `forRoot()` method, the root application module imports `RouterModule.forRoot(...)` and gets a `Router`, and all feature modules import `RouterModule.forChild(...)` which does not instantiate another `Router`.
@@ -107,6 +163,21 @@ However, since Angular 6.0, the best practice for providing services is with the
 `@Injectable()` `providedIn` property.
 
 </div>
+-->
+`RouterModule`을 `Router` 서비스도 제공하고 `RouterOutlet`이나 `routerLink`같은 라우터 관련 디렉티브도 프로바이더로 등록합니다.
+그래서 애플리케이션 최상위 모듈에서 `RouterModule`을 로드하면 앱에 있는 모듈 전체에서 `Router` 서비스를 사용할 수 있습니다.
+그런데 모듈에 있는 컴포넌트가 템플릿에서 라우터 관련 디렉티브를 사용한다면 `RouterModule`을 다시 로드해야 하는 경우가 있습니다.
+
+이 때 `RouterModule`이 `forRoot()` 패턴을 제공하지 않는다면 기능모듈에서 `RouterModule`을 로드할 때마다 `Router` 인스턴스가 새로 생성되기 때문에 애플리케이션 전역에서 동작해야 하는 `Router`는 제대로 동작하지 않습니다.
+그래서 `RouterModule`은 `forRoot()` 메소드를 사용했을 때만 `Router` 서비스 프로바이더를 등록해서 인스턴스를 생성하며 다른 기능모듈에서 `forChild()`를 사용할 때는 `Router` 서비스의 인스턴스를 다시 생성하지 않습니다.
+
+<div class="alert is-helpful">
+
+**참고:** `providers`와 `declarations` 배열을 동시에 사용하는 모듈은 `forRoot()` 패턴을 적용하는 것이 좋습니다.
+하지만, Angular 6.0부터는 서비스 클래스의 데코레이터 `@Injectable()`에 `providedIn` 프로퍼티 값을 `root`로 지정하는 방식을 더 권장합니다.
+
+</div>
+
 
 ### How `forRoot()` works
 
@@ -134,7 +205,7 @@ This sequence ensures that whatever you add explicitly to
 the `AppModule` providers takes precedence over the providers
 of imported modules.
 -->
-이 문서와 관련된 예제를 <live-example name="ngmodules">live example</live-example>에서 열어보면, `AppModule`이 `GreetingModule`을 로드하고, `GreetingModule`에서 제공하는 서비스 프로바이더도 `Appmodule`에 로드합니다. 좀 더 정확하게 설명하면, `AppModule`의 `providers` 목록은 아무것도 없지만, 모듈의 `imports`로 불러오는 다른 모듈에 서비스 프로바이더가 존재하면 이 서비스 프로바이더를 현재 모듈의 `@NgModule.providers`보다 먼저 등록합니다. 그래서 현재 모듈이 다른 모듈의 서비스를 의존성으로 주입받을 때, 이 의존성은 현재 모듈의 프로바이더보다 먼저 등록되었기 때문에 문제없이 사용할 수 있습니다.
+이 문서와 관련된 예제를 <live-example name="ngmodules">예제 앱</live-example>에서 열어보면, `AppModule`이 `GreetingModule`을 로드하고, `GreetingModule`에서 제공하는 서비스 프로바이더도 `Appmodule`에 로드합니다. 좀 더 정확하게 설명하면, `AppModule`의 `providers` 목록은 아무것도 없지만, 모듈의 `imports`로 불러오는 다른 모듈에 서비스 프로바이더가 존재하면 이 서비스 프로바이더를 현재 모듈의 `@NgModule.providers`보다 먼저 등록합니다. 그래서 현재 모듈이 다른 모듈의 서비스를 의존성으로 주입받을 때, 이 의존성은 현재 모듈의 프로바이더보다 먼저 등록되었기 때문에 문제없이 사용할 수 있습니다.
 
 <!--
 The sample app imports `GreetingModule` and uses its `forRoot()` method one time, in `AppModule`. Registering it once like this prevents multiple instances.
@@ -168,10 +239,13 @@ Here's `forRoot()` that takes a `UserServiceConfig` object:
 Lastly, call it within the `imports` list of the `AppModule`. In the following
 snippet, other parts of the file are left out. For the complete file, see the <live-example name="ngmodules"></live-example>, or continue to the next section of this document.
 -->
-Lastly, call it within the `imports` list of the `AppModule`.
-In the following snippet, other parts of the file are left out. For the complete file, see the <live-example name="ngmodules"></live-example>, or continue to the next section of this document.
+마지막으로 아래 코드 처럼 `AppModule`의 `imports` 배열에서 이 메소드를 실행합니다.
+이 코드는 일부만 표시되었으며 완전한 파일 내용을 보려면 <live-example name="ngmodules"></live-example>를 참고하거나 다음 섹션을 참고하세요.
 
+<!--
 <code-example path="ngmodules/src/app/app.module.ts" region="import-for-root" header="src/app/app.module.ts (imports)"></code-example>
+-->
+<code-example path="ngmodules/src/app/app.module.ts" region="import-for-root" header="src/app/app.module.ts (imports 배열)"></code-example>
 
 <!--
 The app displays "Miss Marple" as the user instead of the default "Sherlock Holmes".

@@ -37,7 +37,7 @@ JavaScript modules help you namespace, preventing accidental global variables.
 -->
 JavaScript 모듈은 네임스페이스를 지원하기 때문에, 전역 변수와 충돌하는 것을 방지하는 용도로도 사용합니다.
 
-For more information on JavaScript modules, see [JavaScript/ECMAScript modules](https://hacks.mozilla.org/2015/08/es6-in-depth-modules/).
+JavaScript 모듈에 대해 자세하게 알아보려면 [JavaScript/ECMAScript modules](https://hacks.mozilla.org/2015/08/es6-in-depth-modules/) 문서를 참고하세요.
 
 ## NgModules
 
