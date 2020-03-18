@@ -9,10 +9,11 @@ import { DirectiveExplorerComponent } from './directive-explorer/directive-explo
   styleUrls: ['./devtools-tabs.component.css'],
 })
 export class DevToolsTabsComponent {
-  @Input() messageBus: MessageBus<Events>;
   @Input() angularVersion: string | undefined = undefined;
   @ViewChild(MatTabGroup) tabGroup: MatTabGroup;
   @ViewChild(DirectiveExplorerComponent) directiveExplorer: DirectiveExplorerComponent;
+
+  constructor(private _messageBus: MessageBus<Events>) {}
 
   inspectorRunning = false;
 
@@ -23,10 +24,10 @@ export class DevToolsTabsComponent {
 
   emitInspectorEvent(): void {
     if (this.inspectorRunning) {
-      this.messageBus.emit('inspectorStart');
+      this._messageBus.emit('inspectorStart');
       this.tabGroup.selectedIndex = 0;
     } else {
-      this.messageBus.emit('inspectorEnd');
+      this._messageBus.emit('inspectorEnd');
     }
   }
 

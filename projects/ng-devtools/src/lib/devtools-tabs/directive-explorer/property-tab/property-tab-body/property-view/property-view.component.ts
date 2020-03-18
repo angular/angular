@@ -1,7 +1,6 @@
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
-import { Descriptor, MessageBus, Events, DirectivePosition, NestedProp } from 'protocol';
+import { Component, Input } from '@angular/core';
 import { FlatTreeControl } from '@angular/cdk/tree';
-import { FlatNode, Property, PropertyDataSource } from './property-data-source';
+import { FlatNode, PropertyDataSource } from '../../../property-data-source';
 import { NestedPropertyResolver } from '../../../nested-property-resolver';
 
 @Component({

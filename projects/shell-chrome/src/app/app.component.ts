@@ -7,25 +7,27 @@ import { ZoneAwareChromeMessageBus } from './zone-aware-chrome-message-bus';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
+  providers: [
+    {
+      provide: MessageBus,
+      useFactory(ngZone: NgZone): MessageBus<Events> {
+        const port = chrome.runtime.connect({
+          name: '' + chrome.devtools.inspectedWindow.tabId,
+        });
+        return new ZoneAwareChromeMessageBus(port, ngZone);
+      },
+      deps: [NgZone],
+    },
+  ],
 })
 export class AppComponent implements OnInit {
-  messageBus: MessageBus<Events> | null;
-
-  constructor(private _cd: ChangeDetectorRef, private _ngZone: NgZone) {}
+  constructor(private _cd: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     console.log('Initializing Angular DevTools');
-
-    const port = chrome.runtime.connect({
-      name: '' + chrome.devtools.inspectedWindow.tabId,
-    });
-
     chrome.devtools.network.onNavigated.addListener(() => {
       window.location.reload();
     });
-
-    this.messageBus = new ZoneAwareChromeMessageBus(port, this._ngZone);
-
     injectScripts(['backend.js', 'runtime.js']);
     this._cd.detectChanges();
   }

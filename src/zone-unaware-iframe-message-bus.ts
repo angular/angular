@@ -14,7 +14,7 @@ const runOutsideAngular = (f: () => any) => {
 export class ZoneUnawareIFrameMessageBus extends MessageBus<Events> {
   private _delegate: IFrameMessageBus;
 
-  constructor(source: string, destination: string, docWindow: Window) {
+  constructor(source: string, destination: string, docWindow: () => Window) {
     super();
     this._delegate = new IFrameMessageBus(source, destination, docWindow);
   }

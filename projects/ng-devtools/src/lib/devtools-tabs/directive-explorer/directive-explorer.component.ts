@@ -1,4 +1,4 @@
-import { Component, HostListener, Input, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import {
   MessageBus,
   Events,
@@ -22,8 +22,6 @@ import { NestedPropertyResolver } from './nested-property-resolver';
   styleUrls: ['./directive-explorer.component.css'],
 })
 export class DirectiveExplorerComponent implements OnInit {
-  @Input() messageBus: MessageBus<Events>;
-
   directivesData: DirectivesProperties | null = null;
   currentSelectedElement: IndexedNode = null;
   forest: DevToolsNode[];
@@ -36,6 +34,7 @@ export class DirectiveExplorerComponent implements OnInit {
   constructor(
     private _appOperations: ApplicationOperations,
     private _snackBar: MatSnackBar,
+    private _messageBus: MessageBus<Events>,
     private _propResolver: NestedPropertyResolver
   ) {
     this.changeSize
@@ -51,33 +50,33 @@ export class DirectiveExplorerComponent implements OnInit {
   handleNodeSelection(node: IndexedNode): void {
     this.currentSelectedElement = node;
     if (this.currentSelectedElement) {
-      this.messageBus.emit('getElementDirectivesProperties', [node.position]);
-      this.messageBus.emit('setSelectedComponent', [node.position]);
+      this._messageBus.emit('getElementDirectivesProperties', [node.position]);
+      this._messageBus.emit('setSelectedComponent', [node.position]);
     }
   }
 
   subscribeToBackendEvents(): void {
-    this.messageBus.on('elementDirectivesProperties', (data: DirectivesProperties) => {
+    this._messageBus.on('elementDirectivesProperties', (data: DirectivesProperties) => {
       this.directivesData = data;
       this._propResolver.setProperties(data);
     });
 
-    this.messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
+    this._messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
       this.forest = view.forest;
       this.directivesData = view.properties;
       this._propResolver.setProperties(view.properties);
     });
 
-    this.messageBus.on('highlightComponentInTreeFromElement', (position: ElementPosition) => {
+    this._messageBus.on('highlightComponentInTreeFromElement', (position: ElementPosition) => {
       this.highlightIDinTreeFromElement = position;
     });
-    this.messageBus.on('removeHighlightFromComponentTree', () => {
+    this._messageBus.on('removeHighlightFromComponentTree', () => {
       this.highlightIDinTreeFromElement = null;
     });
 
     // Only one refresh per 50ms.
     let buffering = false;
-    this.messageBus.on('componentTreeDirty', () => {
+    this._messageBus.on('componentTreeDirty', () => {
       if (buffering) {
         return;
       }
@@ -91,7 +90,7 @@ export class DirectiveExplorerComponent implements OnInit {
   }
 
   refresh(): void {
-    this.messageBus.emit('getLatestComponentExplorerView', [this._constructViewQuery()]);
+    this._messageBus.emit('getLatestComponentExplorerView', [this._constructViewQuery()]);
   }
 
   viewSource(): void {
@@ -126,11 +125,11 @@ export class DirectiveExplorerComponent implements OnInit {
   }
 
   handleHighlightFromComponent(position: ElementPosition): void {
-    this.messageBus.emit('highlightElementFromComponentTree', [position]);
+    this._messageBus.emit('highlightElementFromComponentTree', [position]);
   }
 
   handleUnhighlightFromComponent(_: ElementPosition | null): void {
-    this.messageBus.emit('removeHighlightFromElement');
+    this._messageBus.emit('removeHighlightFromElement');
   }
 
   @HostListener('window:resize', ['$event'])

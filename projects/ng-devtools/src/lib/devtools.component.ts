@@ -19,12 +19,13 @@ export class DevToolsComponent implements OnInit, OnDestroy {
   angularExists: boolean | null = null;
   angularVersion: string | boolean | undefined = undefined;
   prodMode: boolean;
-  @Input() messageBus: MessageBus<Events>;
+
+  constructor(private _messageBus: MessageBus<Events>) {}
 
   private _interval$ = interval(500)
     .pipe(take(10))
     .subscribe({
-      next: () => this.messageBus.emit('queryNgAvailability'),
+      next: () => this._messageBus.emit('queryNgAvailability'),
       complete: () => {
         if (this.angularExists === null) {
           this.angularExists = false;
@@ -35,7 +36,7 @@ export class DevToolsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     console.log('Initialized the devtools UI');
 
-    this.messageBus.once('ngAvailability', ({ version, prodMode }) => {
+    this._messageBus.once('ngAvailability', ({ version, prodMode }) => {
       this.angularExists = !!version;
       this.angularVersion = version;
       this.prodMode = prodMode;

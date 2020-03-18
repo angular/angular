@@ -11,12 +11,14 @@ export class NestedPropertyResolver {
 
   setProperties(data: DirectivesProperties) {}
 
-  getExpandedProperties(): ComponentExplorerViewProperties {}
+  getExpandedProperties(): ComponentExplorerViewProperties {
+    return {} as any;
+  }
 
   updateValue(node: FlatNode, value: any) {}
 
   getDirectiveControls(directive: string): { dataSource: PropertyDataSource; treeControl: FlatTreeControl<FlatNode> } {
-    return {};
+    return {} as any;
   }
 }
 

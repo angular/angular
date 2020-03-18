@@ -34,4 +34,6 @@ export class DemoAppModule {
   }
 }
 
-initializeMessageBus(new ZoneUnawareIFrameMessageBus('angular-devtools-backend', 'angular-devtools', window.parent));
+initializeMessageBus(
+  new ZoneUnawareIFrameMessageBus('angular-devtools-backend', 'angular-devtools', () => window.parent)
+);

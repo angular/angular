@@ -1,7 +1,7 @@
 <ng-container *ngIf="angularExists === true; else errorOrLoad">
   <ng-container *ngIf="supportedVersion; else notSupported">
     <div class="devtools-wrapper noselect" [@enterAnimation]>
-      <ng-devtools-tabs [messageBus]="messageBus" [angularVersion]="angularVersion"></ng-devtools-tabs>
+      <ng-devtools-tabs [angularVersion]="angularVersion"></ng-devtools-tabs>
     </div>
   </ng-container>
   <ng-template #notSupported>
