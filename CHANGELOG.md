@@ -1,3 +1,28 @@
+<a name="9.0.7"></a>
+## [9.0.7](https://github.com/angular/angular/compare/9.0.6...9.0.7) (2020-03-18)
+
+
+### Bug Fixes
+
+* **compiler:** do not recurse to find static symbols of same module ([#35262](https://github.com/angular/angular/issues/35262)) ([a52b568](https://github.com/angular/angular/commit/a52b568))
+* **compiler:** support directive inputs with interpolations on `<ng-template>`s ([#35984](https://github.com/angular/angular/issues/35984)) ([a6bf31b](https://github.com/angular/angular/commit/a6bf31b)), closes [#35752](https://github.com/angular/angular/issues/35752)
+* **core:** don't re-invoke pure pipes that throw and arguments are the same ([#35827](https://github.com/angular/angular/issues/35827)) ([3fa632b](https://github.com/angular/angular/commit/3fa632b))
+* **core:** verify parsed ICU expression at runtime before executing it ([#35923](https://github.com/angular/angular/issues/35923)) ([9cd115d](https://github.com/angular/angular/commit/9cd115d)), closes [#35689](https://github.com/angular/angular/issues/35689)
+* **language-service:** infer $implicit value for ngIf template contexts ([#35941](https://github.com/angular/angular/issues/35941)) ([f5e4410](https://github.com/angular/angular/commit/f5e4410))
+* **ngcc:** a new LockFile implementation that uses a child-process ([#35934](https://github.com/angular/angular/issues/35934)) ([743ce7b](https://github.com/angular/angular/commit/743ce7b)), closes [#35761](https://github.com/angular/angular/issues/35761)
+* **ngcc:** consistently delegate to TypeScript host for typing files ([#36089](https://github.com/angular/angular/issues/36089)) ([76d7188](https://github.com/angular/angular/commit/76d7188)), closes [#35078](https://github.com/angular/angular/issues/35078)
+* **ngcc:** handle multiple original sources when flattening source-maps ([#36027](https://github.com/angular/angular/issues/36027)) ([e6167cf](https://github.com/angular/angular/commit/e6167cf))
+
+
+### Performance Improvements
+
+* **ngcc:** link segment markers for faster traversal ([#36027](https://github.com/angular/angular/issues/36027)) ([a0fa63b](https://github.com/angular/angular/commit/a0fa63b))
+* **ngcc:** store the position of SegmentMarkers to avoid unnecessary computation ([#36027](https://github.com/angular/angular/issues/36027)) ([4ce9098](https://github.com/angular/angular/commit/4ce9098))
+* **ngcc:** use binary search when flattening mappings ([#36027](https://github.com/angular/angular/issues/36027)) ([8768fc4](https://github.com/angular/angular/commit/8768fc4))
+* **ngcc:** use line start positions for computing offsets in source-map flattening ([#36027](https://github.com/angular/angular/issues/36027)) ([daa2a08](https://github.com/angular/angular/commit/daa2a08))
+
+
+
 <a name="9.1.0-next.4"></a>
 # [9.1.0-next.4](https://github.com/angular/angular/compare/9.1.0-next.2...9.1.0-next.4) (2020-03-10)
 
