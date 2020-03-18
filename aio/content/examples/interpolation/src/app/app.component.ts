@@ -12,7 +12,7 @@ export class AppComponent {
 
   currentCustomer = 'Maria';
   title = 'Featured product:';
-  itemImageUrl = '../assets/pottedPlant.png';
+  itemImageUrl = '../assets/potted-plant.png';
 
   recommended = 'You might also like:';
   itemImageUrl2 = '../assets/lamp.png';
