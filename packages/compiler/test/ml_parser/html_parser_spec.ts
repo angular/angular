@@ -313,6 +313,26 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
           expect(p.errors.length).toEqual(0);
         });
 
+        it(`should support ICU expressions with cases that contain any character except '}'`,
+           () => {
+             const p = parser.parse(
+                 `{a, select, b {foo} % bar {% bar}}`, 'TestComp', {tokenizeExpansionForms: true});
+             expect(p.errors.length).toEqual(0);
+           });
+
+        it('should error when expansion case is not properly closed', () => {
+          const p = parser.parse(
+              `{a, select, b {foo} % { bar {% bar}}`, 'TestComp', {tokenizeExpansionForms: true});
+          expect(humanizeErrors(p.errors)).toEqual([
+            [
+              6,
+              'Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ \'{\' }}") to escape it.)',
+              '0:36'
+            ],
+            [null, 'Invalid ICU message. Missing \'}\'.', '0:22']
+          ]);
+        });
+
         it('should error when expansion case is not closed', () => {
           const p = parser.parse(
               `{messages.length, plural, =0 {one`, 'TestComp', {tokenizeExpansionForms: true});

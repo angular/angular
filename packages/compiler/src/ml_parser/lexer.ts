@@ -747,7 +747,7 @@ function isNamedEntityEnd(code: number): boolean {
 }
 
 function isExpansionCaseStart(peek: number): boolean {
-  return peek === chars.$EQ || chars.isAsciiLetter(peek) || chars.isDigit(peek);
+  return peek !== chars.$RBRACE;
 }
 
 function compareCharCodeCaseInsensitive(code1: number, code2: number): boolean {
