@@ -9,6 +9,11 @@
   top: 0;
   left: 300px;
   white-space: nowrap;
+  padding: 5px;
+}
+
+.controls label {
+  font-weight: 500;
 }
 
 .warning-no {
