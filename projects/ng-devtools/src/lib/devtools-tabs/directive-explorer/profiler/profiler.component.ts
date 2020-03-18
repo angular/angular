@@ -16,34 +16,36 @@ const PROFILER_VERSION = 1;
   styleUrls: ['./profiler.component.css'],
 })
 export class ProfilerComponent implements OnInit, OnDestroy {
-  @Input() messageBus: MessageBus<Events>;
-
   state: State = 'idle';
   stream: ProfilerFrame[] = [];
   buffer: ProfilerFrame[] = [];
 
   @ViewChildren(RecordingModalComponent) recordingRef: QueryList<RecordingModalComponent>;
 
-  constructor(private _fileApiService: FileApiService, public dialog: MatDialog) {}
+  constructor(
+    private _fileApiService: FileApiService,
+    private _messageBus: MessageBus<Events>,
+    public dialog: MatDialog
+  ) {}
 
   startRecording(): void {
     this.state = 'recording';
     this.recordingRef.forEach(r => r.start());
-    this.messageBus.emit('startProfiling');
+    this._messageBus.emit('startProfiling');
   }
 
   stopRecording(): void {
     this.state = 'idle';
     this.recordingRef.forEach(r => r.stop());
-    this.messageBus.emit('stopProfiling');
+    this._messageBus.emit('stopProfiling');
   }
 
   ngOnInit(): void {
-    this.messageBus.on('profilerResults', remainingRecords => {
+    this._messageBus.on('profilerResults', remainingRecords => {
       this._profilerFinished(remainingRecords);
     });
 
-    this.messageBus.on('sendProfilerChunk', (chunkOfRecords: ProfilerFrame) => {
+    this._messageBus.on('sendProfilerChunk', (chunkOfRecords: ProfilerFrame) => {
       this.buffer.push(chunkOfRecords);
     });
 

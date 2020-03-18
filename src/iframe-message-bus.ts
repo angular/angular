@@ -5,7 +5,7 @@ type AnyEventCallback<Ev> = <E extends keyof Ev>(topic: E, args: Parameters<Ev[E
 export class IFrameMessageBus extends MessageBus<Events> {
   private _listeners: any[] = [];
 
-  constructor(private _source: string, private _destination: string, private _docWindow: Window) {
+  constructor(private _source: string, private _destination: string, private _docWindow: () => Window) {
     super();
   }
 
@@ -55,7 +55,7 @@ export class IFrameMessageBus extends MessageBus<Events> {
   }
 
   emit<E extends keyof Events>(topic: E, args?: Parameters<Events[E]>): void {
-    this._docWindow.postMessage(
+    this._docWindow().postMessage(
       {
         source: this._source,
         topic,
