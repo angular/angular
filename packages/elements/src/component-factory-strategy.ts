@@ -133,7 +133,11 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
       return;
     }
 
-    if (strictEquals(value, this.getInputValue(property))) {
+    // Ignore the value if it is strictly equal to the current value, except if it is `undefined`
+    // and this is the first change to the value (because an explicit `undefined` _is_ strictly
+    // equal to not having a value set at all, but we still need to record this as a change).
+    if (strictEquals(value, this.getInputValue(property)) &&
+        !((value === undefined) && this.unchangedInputs.has(property))) {
       return;
     }
 
