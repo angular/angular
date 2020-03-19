@@ -109,9 +109,9 @@ class ExampleBoilerPlate {
 
       // Copy ViewEngine (pre-Ivy) specific files
       if (viewengine) {
-        const veBoilerPlateType = boilerPlateType === 'systemjs' ? 'systemjs' : 'cli';
-        const veBoilerPlateBasePath =
-            path.resolve(BOILERPLATE_BASE_PATH, 'viewengine', veBoilerPlateType);
+        const [veBoilerPlateType, veBoilerPlateBasePath] = [boilerPlateType, 'cli']
+          .map(type => [type, path.resolve(BOILERPLATE_BASE_PATH, 'viewengine', type)])
+          .find(([, p]) => fs.existsSync(p));
         BOILERPLATE_PATHS.viewengine[veBoilerPlateType].forEach(
             filePath => this.copyFile(veBoilerPlateBasePath, exampleFolder, filePath));
       }
