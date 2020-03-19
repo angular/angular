@@ -132,7 +132,7 @@ class ExampleZipper {
           return basePath + file;
         });
 
-        if (json.files[0].substr(0, 1) === '!') {
+        if (json.files[0][0] === '!') {
           json.files = defaultIncludes.concat(json.files);
         }
       }
@@ -144,16 +144,16 @@ class ExampleZipper {
 
     let gpaths = json.files.map((fileName) => {
       fileName = fileName.trim();
-      if (fileName.substr(0, 1) === '!') {
+      if (fileName[0] === '!') {
         return '!' + path.join(exampleDirName, fileName.substr(1));
       } else {
         return path.join(exampleDirName, fileName);
       }
     });
 
-    Array.prototype.push.apply(gpaths, alwaysExcludes);
+    gpaths.push(...alwaysExcludes);
 
-    let fileNames = globby.sync(gpaths, { ignore: ['**/node_modules/**']});
+    let fileNames = globby.sync(gpaths, { ignore: ['**/node_modules/**'] });
 
     let zip = this._createZipArchive(outputFileName);
     fileNames.forEach((fileName) => {
@@ -165,7 +165,7 @@ class ExampleZipper {
       // zip.append(fs.createReadStream(fileName), { name: relativePath });
       let output = regionExtractor()(content, extn).contents;
 
-      zip.append(output, { name: relativePath } )
+      zip.append(output, { name: relativePath } );
     });
 
     // we need the package.json from _examples root, not the _boilerplate one
