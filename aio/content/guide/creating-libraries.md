@@ -1,16 +1,13 @@
 ﻿# Creating libraries
 
-You can create and publish new libraries to extend Angular functionality. If you find that you need to solve the same problem in more than one app (or want to share your solution with other developers), you have a candidate for a library.
+This page provides a conceptual overview of how you can create and publish new libraries to extend Angular functionality.
 
+If you find that you need to solve the same problem in more than one app (or want to share your solution with other developers), you have a candidate for a library.
 A simple example might be a button that sends users to your company website, that would be included in all apps that your company builds.
-
-<div class="alert is-helpful">
-     <p>For more details on how a library project is structured you can refer the <a href="guide/file-structure#library-project-files">Library Project Files</a></p>
-</div>
 
 ## Getting started
 
-Use the Angular CLI to generate a new library skeleton with the following command:
+Use the Angular CLI to generate a new library skeleton in a new workspace with the following commands.
 
 <code-example language="bash">
  ng new my-workspace --create-application=false
@@ -18,12 +15,18 @@ Use the Angular CLI to generate a new library skeleton with the following comman
  ng generate library my-lib
 </code-example>
 
+The `ng generate` command creates the `projects/my-lib` folder in your workspace, which contains a component and a service inside an NgModule.
+
 <div class="alert is-helpful">
-     <p>You can use the monorepo model to use the same workspace for multiple projects. See <a href="guide/file-structure#multiple-projects">Setting up for a multi-project workspace</a>.</p>
+
+     For more details on how a library project is structured, refer to the [Library project files](guide/file-structure#library-project-files) section of the [Project File Structure guide](guide/file-structure).
+
+     You can use the monorepo model to use the same workspace for multiple projects.
+     See [Setting up for a multi-project workspace](guide/file-structure#multiple-projects).
+
 </div>
 
-This creates the `projects/my-lib` folder in your workspace, which contains a component and a service inside an NgModule.
-The workspace configuration file, `angular.json`, is updated with a project of type 'library'.
+When you generate a new library, the workspace configuration file, `angular.json`, is updated with a project of type 'library'.
 
 <code-example format="json">
 "projects": {
@@ -69,35 +72,30 @@ Here are some things to consider in migrating application functionality to a lib
 
 * Components should expose their interactions through inputs for providing context, and outputs for communicating events to other components.
 
-* Services should declare their own providers (rather than declaring providers in the NgModule or a component), so that they are *tree-shakable*. This allows the compiler to leave the service out of the bundle if it never gets injected into the application that imports the library. For more about this, see [Tree-shakable providers](guide/dependency-injection-providers#tree-shakable-providers).
-
-* If you register global service providers or share providers across multiple NgModules, use the [`forRoot()` and `forChild()` patterns](guide/singleton-services) provided by the [RouterModule](api/router/RouterModule).
-
 * Check all internal dependencies.
    * For custom classes or interfaces used in components or service, check whether they depend on additional classes or interfaces that also need to be migrated.
    * Similarly, if your library code depends on a service, that service needs to be migrated.
-   * If your library code or its templates depend on other libraries (such a Angular Material, for instance), you must configure your library with those dependencies.
+   * If your library code or its templates depend on other libraries (such as Angular Material, for instance), you must configure your library with those dependencies.
 
-## Reusable code and schematics
+* Consider how you provide services to client applications.
 
-A library typically includes *reusable code* that defines components, services, and other Angular artifacts (pipes, directives, and so on) that you simply import into a project.
-A library is packaged into an npm package for publishing and sharing, and this package can also include [schematics](guide/glossary#schematic) that provide instructions for generating or transforming code directly in your project, in the same way that the CLI creates a generic skeleton app with `ng generate component`.
-A schematic that is combined with a library can, for example, provide the Angular CLI with the information it needs to generate a particular component defined in that library.
+   * Services should declare their own providers (rather than declaring providers in the NgModule or a component), so that they are *tree-shakable*. This allows the compiler to leave the service out of the bundle if it never gets injected into the application that imports the library. For more about this, see [Tree-shakable providers](guide/dependency-injection-providers#tree-shakable-providers).
 
-What you include in your library is determined by the kind of task you are trying to accomplish.
-For example, if you want a dropdown with some canned data to show how to add it to your app, your library could define a schematic to create it.
-For a component like a dropdown that would contain different passed-in values each time, you could provide it as a component in a shared library.
+   * If you register global service providers or share providers across multiple NgModules, use the [`forRoot()` and `forChild()` design patterns](guide/singleton-services) provided by the [RouterModule](api/router/RouterModule).
 
-Suppose you want to read a configuration file and then generate a form based on that configuration.
-If that form will need additional customization by the user, it might work best as a schematic.
-However, if the forms will always be the same and not need much customization by developers, then you could create a dynamic component that takes the configuration and generates the form.
-In general, the more complex the customization, the more useful the schematic approach.
+   * If your library provides optional services that might not be used by all client applications, support proper tree-shaking for that case by using the [lightweight token design pattern](guide/lightweight-injection-tokens).
 
 {@a integrating-with-the-cli}
 
-## Integrating with the CLI
+## Integrating with the CLI using code-generation schematics
 
-A library can include [schematics](guide/glossary#schematic) that allow it to integrate with the Angular CLI.
+A library typically includes *reusable code* that defines components, services, and other Angular artifacts (pipes, directives, and so on) that you simply import into a project.
+A library is packaged into an npm package for publishing and sharing.
+This package can also include [schematics](guide/glossary#schematic) that provide instructions for generating or transforming code directly in your project, in the same way that the CLI creates a generic new component with `ng generate component`.
+A schematic that is packaged with a library can, for example, provide the Angular CLI with the information it needs to generate a component that configures and uses a particular feature, or set of features, defined in that library.
+One example of this is Angular Material's navigation schematic which configures the CDK's `BreakpointObserver` and uses it with Material's `MatSideNav` and `MatToolbar` components.
+
+You can create and include the following kinds of schematics.
 
 * Include an installation schematic so that `ng add` can add your library to a project.
 
@@ -105,11 +103,20 @@ A library can include [schematics](guide/glossary#schematic) that allow it to in
 
 * Include an update schematic so that `ng update` can update your library’s dependencies and provide migrations for breaking changes in new releases.
 
+What you include in your library depends on your task.
+For example, you could define a schematic to create a dropdown that is pre-populated with canned data to show how to add it to an app.
+If you want a dropdown that would contain different passed-in values each time, your library could define a schematic to create it with a given configuration. Developers could then use `ng generate` to configure an instance for their own app.
+
+Suppose you want to read a configuration file and then generate a form based on that configuration.
+If that form will need additional customization by the developer who is using your library, it might work best as a schematic.
+However, if the forms will always be the same and not need much customization by developers, then you could create a dynamic component that takes the configuration and generates the form.
+In general, the more complex the customization, the more useful the schematic approach.
+
 To learn more, see [Schematics Overview](guide/schematics) and [Schematics for Libraries](guide/schematics-for-libraries).
 
 ## Publishing your library
 
-Use the Angular CLI and the npm package manager to build and publish your library as an npm package. 
+Use the Angular CLI and the npm package manager to build and publish your library as an npm package.
 
 Before publishing a library to NPM, build it using the `--prod` flag which will use the older compiler and runtime known as View Engine instead of Ivy.
 
