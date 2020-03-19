@@ -20,6 +20,11 @@ export class TodosComponent implements OnInit, OnDestroy {
       completed: false,
       id: '42',
     },
+    {
+      label: 'Save the world',
+      completed: false,
+      id: '43',
+    },
   ];
 
   @Output() update = new EventEmitter();
