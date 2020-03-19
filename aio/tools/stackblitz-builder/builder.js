@@ -13,16 +13,8 @@ class StackblitzBuilder {
     this.basePath = basePath;
     this.destPath = destPath;
 
-    // Extract npm package dependencies
-    const packageJson = require(path.join(__dirname, '../examples/shared/boilerplate/cli/package.json'));
-    this.examplePackageDependencies = packageJson.dependencies;
-
-    // Add unit test packages from devDependency for unit test examples
-    const devDependencies = packageJson.devDependencies;
-    this.examplePackageDependencies['jasmine-core'] = devDependencies['jasmine-core'];
-    this.examplePackageDependencies['jasmine-marbles'] = devDependencies['jasmine-marbles'];
-
     this.copyrights = this._buildCopyrightStrings();
+    this._boilerplatePackageJsons = {};
   }
 
   build() {
@@ -42,8 +34,34 @@ class StackblitzBuilder {
     });
   }
 
-  _addDependencies(postData) {
-    postData['dependencies'] = JSON.stringify(this.examplePackageDependencies);
+  _addDependencies(config, postData) {
+    // Extract npm package dependencies
+    const exampleType = this._getExampleType(config.basePath);
+    const packageJson = this._getBoilerplatePackageJson(exampleType) || this._getBoilerplatePackageJson('cli');
+    const exampleDependencies = packageJson.dependencies;
+
+    // Add unit test packages from devDependencies for unit test examples
+    const devDependencies = packageJson.devDependencies;
+    ['jasmine-core', 'jasmine-marbles'].forEach(dep => exampleDependencies[dep] = devDependencies[dep]);
+
+    postData.dependencies = JSON.stringify(exampleDependencies);
+  }
+
+  _getExampleType(exampleDir) {
+    const configPath = `${exampleDir}/example-config.json`;
+    const configSrc = fs.existsSync(configPath) && fs.readFileSync(configPath, 'utf-8').trim();
+    const config = configSrc ? JSON.parse(configSrc) : {};
+
+    return config.projectType || 'cli';
+  }
+
+  _getBoilerplatePackageJson(exampleType) {
+    if (!this._boilerplatePackageJsons.hasOwnProperty(exampleType)) {
+      const pkgJsonPath = `${__dirname}/../examples/shared/boilerplate/${exampleType}/package.json`;
+      this._boilerplatePackageJsons[exampleType] = fs.existsSync(pkgJsonPath) ? require(pkgJsonPath) : null;
+    }
+
+    return this._boilerplatePackageJsons[exampleType];
   }
 
   _buildCopyrightStrings() {
@@ -76,7 +94,7 @@ class StackblitzBuilder {
     try {
       const config = this._initConfigAndCollectFileNames(configFileName);
       const postData = this._createPostData(config, configFileName);
-      this._addDependencies(postData);
+      this._addDependencies(config, postData);
       const html = this._createStackblitzHtml(config, postData);
       fs.writeFileSync(outputFileName, html, 'utf-8');
       if (altFileName) {
