@@ -129,6 +129,22 @@ export class TypeCheckContext {
   private typeCtorPending = new Set<ts.ClassDeclaration>();
 
   /**
+   * Map of data for file paths which was adopted from a prior compilation.
+   *
+   * This data allows the `TypeCheckContext` to generate a `TypeCheckRequest` which can interpret
+   * diagnostics from type-checking shims included in the prior compilation.
+   */
+  private adoptedFiles = new Map<AbsoluteFsPath, FileTypeCheckingData>();
+
+  /**
+   * Record the `FileTypeCheckingData` from a previous program that's associated with a particular
+   * source file.
+   */
+  adoptPriorResults(sf: ts.SourceFile, data: FileTypeCheckingData): void {
+    this.adoptedFiles.set(absoluteFromSourceFile(sf), data);
+  }
+
+  /**
    * Record a template for the given component `node`, with a `SelectorMatcher` for directive
    * matching.
    *
@@ -272,6 +288,10 @@ export class TypeCheckContext {
         sourceResolver: fileData.sourceManager,
         typeCheckFile: fileData.typeCheckFile.fileName,
       });
+    }
+
+    for (const [sfPath, fileData] of this.adoptedFiles.entries()) {
+      results.perFileData.set(sfPath, fileData);
     }
 
     return results;

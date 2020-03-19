@@ -70,6 +70,7 @@ runInEachFileSystem(() => {
     });
 
     it('should rebuild components that have changed', () => {
+      env.tsconfig({strictTemplates: true});
       env.write('component1.ts', `
       import {Component} from '@angular/core';
 
@@ -470,6 +471,261 @@ runInEachFileSystem(() => {
       // program, this would fail due to an assertion failure in TS.
       env.invalidateCachedFile('test.ts');
       env.driveMain();
+    });
+
+    describe('template type-checking', () => {
+      beforeEach(() => {
+        env.tsconfig({strictTemplates: true});
+      });
+
+      it('should repeat type errors across rebuilds, even if nothing has changed', () => {
+        // This test verifies that when a project is rebuilt multiple times with no changes, all
+        // template diagnostics are produced each time. Different types of errors are checked:
+        // - a general type error
+        // - an unmatched binding
+        // - a DOM schema error
+        env.write('component.ts', `
+          import {Component} from '@angular/core';
+          @Component({
+            selector: 'test-cmp',
+            template: \`
+              {{notAProperty}}
+              <not-a-component></not-a-component>
+              <div [notMatched]="1"></div>
+            \`,
+          })
+          export class TestCmp {}
+        `);
+
+        let diags = env.driveDiagnostics();
+        // Should get a diagnostic for each line in the template.
+        expect(diags.length).toBe(3);
+
+        // Now rebuild without any changes, and verify they're still produced.
+        diags = env.driveDiagnostics();
+        expect(diags.length).toBe(3);
+
+        // If it's worth testing, it's worth overtesting.
+        //
+        // Actually, the above only tests the transition from "initial" to "incremental"
+        // compilation. The next build verifies that an "incremental to incremental" transition
+        // preserves the diagnostics as well.
+        diags = env.driveDiagnostics();
+        expect(diags.length).toBe(3);
+      });
+
+      it('should pick up errors caused by changing an unrelated interface', () => {
+        // The premise of this test is that `iface.ts` declares an interface which is used to type
+        // a property of a component. The interface is then changed in a subsequent compilation in
+        // a way that introduces a type error in the template. The test verifies the resulting
+        // diagnostic is produced.
+        env.write('iface.ts', `
+          export interface SomeType {
+            field: string;
+          }
+        `);
+        env.write('component.ts', `
+          import {Component} from '@angular/core';
+          import {SomeType} from './iface';
+          
+          @Component({
+            selector: 'test-cmp',
+            template: '{{ doSomething(value.field) }}',
+          })
+          export class TestCmp {
+            value!: SomeType;
+            // Takes a string value only.
+            doSomething(param: string): string {
+              return param;
+            }
+          }
+        `);
+
+        expect(env.driveDiagnostics().length).toBe(0);
+        env.flushWrittenFileTracking();
+
+        // Change the interface.
+        env.write('iface.ts', `
+          export interface SomeType {
+            field: number;
+          }
+        `);
+
+        expect(env.driveDiagnostics().length).toBe(1);
+      });
+
+      it('should recompile when a remote change happens to a scope', () => {
+        // The premise of this test is that the component Cmp has a template error (a binding to an
+        // unknown property). Cmp is in ModuleA, which imports ModuleB, which declares Dir that has
+        // the property. Because ModuleB doesn't export Dir, it's not visible to Cmp - hence the
+        // error.
+        // In the test, during the incremental rebuild Dir is exported from ModuleB. This is a
+        // change to the scope of ModuleA made by changing ModuleB (hence, a "remote change"). The
+        // test verifies that incremental template type-checking.
+        env.write('cmp.ts', `
+          import {Component} from '@angular/core';
+  
+          @Component({
+            selector: 'test-cmp',
+            template: '<div dir [someInput]="1"></div>',
+          })
+          export class Cmp {}
+        `);
+        env.write('module-a.ts', `
+          import {NgModule} from '@angular/core';
+          import {Cmp} from './cmp';
+          import {ModuleB} from './module-b';
+  
+          @NgModule({
+            declarations: [Cmp],
+            imports: [ModuleB],
+          })
+          export class ModuleA {}
+        `);
+
+        // Declare ModuleB and a directive Dir, but ModuleB does not yet export Dir.
+        env.write('module-b.ts', `
+          import {NgModule} from '@angular/core';
+          import {Dir} from './dir';
+  
+          @NgModule({
+            declarations: [Dir],
+          })
+          export class ModuleB {}
+        `);
+        env.write('dir.ts', `
+          import {Directive, Input} from '@angular/core';
+  
+          @Directive({selector: '[dir]'})
+          export class Dir {
+            @Input() someInput!: any;
+          }
+        `);
+
+        let diags = env.driveDiagnostics();
+        // Should get a diagnostic about [dir] not being a valid binding.
+        expect(diags.length).toBe(1);
+
+
+        // As a precautionary check, run the build a second time with no changes, to ensure the
+        // diagnostic is repeated.
+        diags = env.driveDiagnostics();
+        // Should get a diagnostic about [dir] not being a valid binding.
+        expect(diags.length).toBe(1);
+
+        // Modify ModuleB to now export Dir.
+        env.write('module-b.ts', `
+          import {NgModule} from '@angular/core';
+          import {Dir} from './dir';
+  
+          @NgModule({
+            declarations: [Dir],
+            exports: [Dir],
+          })
+          export class ModuleB {}
+        `);
+
+        diags = env.driveDiagnostics();
+        // Diagnostic should be gone, as the error has been fixed.
+        expect(diags.length).toBe(0);
+      });
+
+      describe('inline operations', () => {
+        it('should still pick up on errors from inlined type check blocks', () => {
+          // In certain cases the template type-checker has to inline type checking blocks into user
+          // code, instead of placing it in a parallel template type-checking file. In these cases
+          // incremental checking cannot be used, and the type-checking code must be regenerated on
+          // each build. This test verifies that the above mechanism works properly, by performing
+          // type-checking on an unexported class (not exporting the class forces the inline
+          // checking de-optimization).
+          env.write('cmp.ts', `
+            import {Component} from '@angular/core';
+  
+            @Component({
+              selector: 'test-cmp',
+              template: '{{test}}',
+            })
+            class Cmp {}
+          `);
+
+          // On the first compilation, an error should be produced.
+          let diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+
+          // Next, two more builds are run, one with no changes made to the file, and the other with
+          // changes made that should remove the error.
+
+          // The error should still be present when rebuilding.
+          diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+
+          // Now, correct the error by adding the 'test' property to the component.
+          env.write('cmp.ts', `
+            import {Component} from '@angular/core';
+  
+            @Component({
+              selector: 'test-cmp',
+              template: '{{test}}',
+            })
+            class Cmp {
+              test!: string;
+            }
+          `);
+
+          env.driveMain();
+
+          // The error should be gone.
+          diags = env.driveDiagnostics();
+          expect(diags.length).toBe(0);
+        });
+
+        it('should still pick up on errors caused by inlined type constructors', () => {
+          // In certain cases the template type-checker cannot generate a type constructor for a
+          // directive within the template type-checking file which requires it, but must inline the
+          // type constructor within its original source file. In these cases, template type
+          // checking cannot be performed incrementally. This test verifies that such cases still
+          // work correctly, by repeatedly performing diagnostics on a component which depends on a
+          // directive with an inlined type constructor.
+          env.write('dir.ts', `
+            import {Directive, Input} from '@angular/core';
+            export interface Keys {
+              alpha: string;
+              beta: string;
+            }
+            @Directive({
+              selector: '[dir]'
+            })
+            export class Dir<T extends keyof Keys> {
+              // The use of 'keyof' in the generic bound causes a deopt to an inline type
+              // constructor.
+              @Input() dir: T;
+            }
+          `);
+
+          env.write('cmp.ts', `
+            import {Component, NgModule} from '@angular/core';
+            import {Dir} from './dir';
+            @Component({
+              selector: 'test-cmp',
+              template: '<div dir="gamma"></div>',
+            })
+            export class Cmp {}
+            @NgModule({
+              declarations: [Cmp, Dir],
+            })
+            export class Module {}
+          `);
+
+          let diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain('"alpha" | "beta"');
+
+          // On a rebuild, the same errors should be present.
+          diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain('"alpha" | "beta"');
+        });
+      });
     });
   });
 

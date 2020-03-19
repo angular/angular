@@ -8,8 +8,9 @@
 
 import * as ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath} from '../../file_system';
+import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath} from '../../file_system';
 import {ClassRecord, TraitCompiler} from '../../transform';
+import {FileTypeCheckingData} from '../../typecheck/src/context';
 import {IncrementalBuild} from '../api';
 
 import {FileDependencyGraph} from './dependency_tracking';
@@ -17,7 +18,7 @@ import {FileDependencyGraph} from './dependency_tracking';
 /**
  * Drives an incremental build, by tracking changes and determining which files need to be emitted.
  */
-export class IncrementalDriver implements IncrementalBuild<ClassRecord> {
+export class IncrementalDriver implements IncrementalBuild<ClassRecord, FileTypeCheckingData> {
   /**
    * State of the current build.
    *
@@ -190,8 +191,19 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord> {
       lastGood: {
         depGraph: this.depGraph,
         traitCompiler: traitCompiler,
-      }
+        typeCheckingResults: null,
+      },
+
+      priorTypeCheckingResults:
+          this.state.lastGood !== null ? this.state.lastGood.typeCheckingResults : null,
     };
+  }
+
+  recordSuccessfulTypeCheck(results: Map<AbsoluteFsPath, FileTypeCheckingData>): void {
+    if (this.state.lastGood === null || this.state.kind !== BuildStateKind.Analyzed) {
+      return;
+    }
+    this.state.lastGood.typeCheckingResults = results;
   }
 
   recordSuccessfulEmit(sf: ts.SourceFile): void {
@@ -213,6 +225,28 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord> {
       // Prior work might exist, and if it does then it's usable!
       return this.state.lastGood.traitCompiler.recordsFor(sf);
     }
+  }
+
+  priorTypeCheckingResultsFor(sf: ts.SourceFile): FileTypeCheckingData|null {
+    if (this.state.kind !== BuildStateKind.Analyzed ||
+        this.state.priorTypeCheckingResults === null || this.logicalChanges === null) {
+      return null;
+    }
+
+    if (this.logicalChanges.has(sf.fileName)) {
+      return null;
+    }
+
+    const fileName = absoluteFromSourceFile(sf);
+    if (!this.state.priorTypeCheckingResults.has(fileName)) {
+      return null;
+    }
+    const data = this.state.priorTypeCheckingResults.get(fileName)!;
+    if (data.hasInlines) {
+      return null;
+    }
+
+    return data;
   }
 }
 
@@ -236,7 +270,8 @@ interface BaseBuildState {
    * After analysis, it's updated to include any files which might have changed and need a re-emit
    * as a result of incremental changes.
    *
-   * If an emit happens, any written files are removed from the `Set`, as they're no longer pending.
+   * If an emit happens, any written files are removed from the `Set`, as they're no longer
+   * pending.
    *
    * Thus, after compilation `pendingEmit` should be empty (on a successful build) or contain the
    * files which still need to be emitted but have not yet been (due to errors).
@@ -267,6 +302,11 @@ interface BaseBuildState {
      * This is used to extract "prior work" which might be reusable in this compilation.
      */
     traitCompiler: TraitCompiler;
+
+    /**
+     * Type checking results which will be passed onto the next build.
+     */
+    typeCheckingResults: Map<AbsoluteFsPath, FileTypeCheckingData>| null;
   }|null;
 }
 
@@ -306,6 +346,11 @@ interface AnalyzedBuildState extends BaseBuildState {
    * analyzed build.
    */
   pendingEmit: Set<string>;
+
+  /**
+   * Type checking results from the previous compilation, which can be reused in this one.
+   */
+  priorTypeCheckingResults: Map<AbsoluteFsPath, FileTypeCheckingData>|null;
 }
 
 function tsOnlyFiles(program: ts.Program): ReadonlyArray<ts.SourceFile> {

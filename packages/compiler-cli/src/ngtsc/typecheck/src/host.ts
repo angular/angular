@@ -8,13 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath, resolve} from '../../file_system';
-import {ShimAdapter, ShimReferenceTagger} from '../../shims';
-
-import {TypeCheckContext} from './context';
-import {TypeCheckShimGenerator} from './shim';
-
-
+import {copyFileShimData, ShimReferenceTagger} from '../../shims';
 
 /**
  * A `ts.CompilerHost` which augments source files with type checking code from a
@@ -26,21 +20,16 @@ export class TypeCheckProgramHost implements ts.CompilerHost {
    */
   private sfMap: Map<string, ts.SourceFile>;
 
-  // A special `ShimAdapter` is constructed to cause fresh type-checking shims to be generated for
-  // every input file in the program.
-  //
-  // tsRootFiles is explicitly passed empty here. This is okay because at type-checking time, shim
-  // root files have already been included in the ts.Program's root files by the `NgCompilerHost`'s
-  // `ShimAdapter`.
-  //
-  // The oldProgram is also explicitly not passed here, even though one exists. This is because:
-  // - ngfactory/ngsummary shims, if present, should be treated effectively as original files. As
-  //   they are still marked as shims, they won't have a typecheck shim generated for them, but
-  //   otherwise they should be reused as-is.
-  // - ngtypecheck shims are always generated as fresh, and not reused.
-  private shimAdapter = new ShimAdapter(
-      this.delegate, /* tsRootFiles */[], [], [new TypeCheckShimGenerator()],
-      /* oldProgram */ null);
+  /**
+   * The `ShimReferenceTagger` responsible for tagging `ts.SourceFile`s loaded via this host.
+   *
+   * The `TypeCheckProgramHost` is used in the creation of a new `ts.Program`. Even though this new
+   * program is based on a prior one, TypeScript will still start from the root files and enumerate
+   * all source files to include in the new program.  This means that just like during the original
+   * program's creation, these source files must be tagged with references to per-file shims in
+   * order for those shims to be loaded, and then cleaned up afterwards. Thus the
+   * `TypeCheckProgramHost` has its own `ShimReferenceTagger` to perform this function.
+   */
   private shimTagger = new ShimReferenceTagger(this.shimExtensionPrefixes);
 
   readonly resolveModuleNames?: ts.CompilerHost['resolveModuleNames'];
@@ -63,25 +52,19 @@ export class TypeCheckProgramHost implements ts.CompilerHost {
       fileName: string, languageVersion: ts.ScriptTarget,
       onError?: ((message: string) => void)|undefined,
       shouldCreateNewSourceFile?: boolean|undefined): ts.SourceFile|undefined {
-    // Look in the cache for the source file.
+    const delegateSf =
+        this.delegate.getSourceFile(fileName, languageVersion, onError, shouldCreateNewSourceFile)!;
+    if (delegateSf === undefined) {
+      return undefined;
+    }
+
+    // Look for replacements.
     let sf: ts.SourceFile;
     if (this.sfMap.has(fileName)) {
       sf = this.sfMap.get(fileName)!;
+      copyFileShimData(delegateSf, sf);
     } else {
-      const sfShim = this.shimAdapter.maybeGenerate(absoluteFrom(fileName));
-
-      if (sfShim === undefined) {
-        return undefined;
-      } else if (sfShim === null) {
-        const maybeSf = this.delegate.getSourceFile(
-            fileName, languageVersion, onError, shouldCreateNewSourceFile)!;
-        if (maybeSf === undefined) {
-          return undefined;
-        }
-        sf = maybeSf;
-      } else {
-        sf = sfShim;
-      }
+      sf = delegateSf;
     }
     // TypeScript doesn't allow returning redirect source files. To avoid unforseen errors we
     // return the original source file instead of the redirect target.

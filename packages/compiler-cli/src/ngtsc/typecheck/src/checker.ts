@@ -10,10 +10,12 @@ import * as ts from 'typescript';
 
 import {absoluteFromSourceFile, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
 import {ReferenceEmitter} from '../../imports';
+import {IncrementalBuild} from '../../incremental/api';
 import {ReflectionHost} from '../../reflection';
+import {isShim} from '../../shims';
 
 import {TypeCheckingConfig, TypeCheckingProgramStrategy, UpdateMode} from './api';
-import {FileTypeCheckingData, TypeCheckContext} from './context';
+import {FileTypeCheckingData, TypeCheckContext, TypeCheckRequest} from './context';
 import {shouldReportDiagnostic, translateDiagnostic} from './diagnostics';
 
 /**
@@ -21,7 +23,7 @@ import {shouldReportDiagnostic, translateDiagnostic} from './diagnostics';
  * `TypeCheckContext`.
  */
 export interface ProgramTypeCheckAdapter {
-  typeCheck(ctx: TypeCheckContext): void;
+  typeCheck(sf: ts.SourceFile, ctx: TypeCheckContext): void;
 }
 
 /**
@@ -36,26 +38,42 @@ export class TemplateTypeChecker {
       private originalProgram: ts.Program,
       private typeCheckingStrategy: TypeCheckingProgramStrategy,
       private typeCheckAdapter: ProgramTypeCheckAdapter, private config: TypeCheckingConfig,
-      private refEmitter: ReferenceEmitter, private reflector: ReflectionHost) {}
+      private refEmitter: ReferenceEmitter, private reflector: ReflectionHost,
+      private priorBuild: IncrementalBuild<unknown, FileTypeCheckingData>) {}
 
   /**
    * Reset the internal type-checking program by generating type-checking code from the user's
    * program.
    */
-  refresh(): void {
+  refresh(): TypeCheckRequest {
     this.files.clear();
 
     const ctx =
         new TypeCheckContext(this.config, this.originalProgram, this.refEmitter, this.reflector);
 
     // Typecheck all the files.
-    this.typeCheckAdapter.typeCheck(ctx);
+    for (const sf of this.originalProgram.getSourceFiles()) {
+      if (sf.isDeclarationFile || isShim(sf)) {
+        continue;
+      }
+
+      const previousResults = this.priorBuild.priorTypeCheckingResultsFor(sf);
+      if (previousResults === null) {
+        // Previous results were not available, so generate new type-checking code for this file.
+        this.typeCheckAdapter.typeCheck(sf, ctx);
+      } else {
+        // Previous results were available, and can be adopted into the current build.
+        ctx.adoptPriorResults(sf, previousResults);
+      }
+    }
 
     const results = ctx.finalize();
     this.typeCheckingStrategy.updateFiles(results.updates, UpdateMode.Complete);
     for (const [file, fileData] of results.perFileData) {
-      this.files.set(file, {...fileData});
+      this.files.set(file, fileData);
     }
+
+    return results;
   }
 
   /**
