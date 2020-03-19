@@ -100,3 +100,13 @@ export function isFileShimSourceFile(sf: ts.SourceFile): sf is NgFileShimSourceF
 export function isShim(sf: ts.SourceFile): boolean {
   return isExtended(sf) && (sf[NgExtension].fileShim !== null || sf[NgExtension].isTopLevelShim);
 }
+
+/**
+ * Copy any shim data from one `ts.SourceFile` to another.
+ */
+export function copyFileShimData(from: ts.SourceFile, to: ts.SourceFile): void {
+  if (!isFileShimSourceFile(from)) {
+    return;
+  }
+  sfExtensionData(to).fileShim = sfExtensionData(from).fileShim;
+}

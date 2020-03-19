@@ -482,8 +482,6 @@ export class NgCompiler {
   }
 
   private getTemplateDiagnostics(): ReadonlyArray<ts.Diagnostic> {
-    const host = this.host;
-
     // Skip template type-checking if it's disabled.
     if (this.options.ivyTemplateTypeCheck === false && !this.fullTemplateTypeCheck) {
       return [];
@@ -493,7 +491,8 @@ export class NgCompiler {
 
     // Execute the typeCheck phase of each decorator in the program.
     const prepSpan = this.perfRecorder.start('typeCheckPrep');
-    compilation.templateTypeChecker.refresh();
+    const results = compilation.templateTypeChecker.refresh();
+    this.incrementalDriver.recordSuccessfulTypeCheck(results.perFileData);
     this.perfRecorder.stop(prepSpan);
 
     // Get the diagnostics.
@@ -728,7 +727,7 @@ export class NgCompiler {
 
     const templateTypeChecker = new TemplateTypeChecker(
         this.tsProgram, this.typeCheckingProgramStrategy, traitCompiler,
-        this.getTypeCheckingConfig(), refEmitter, reflector);
+        this.getTypeCheckingConfig(), refEmitter, reflector, this.incrementalDriver);
 
     return {
       isCore,

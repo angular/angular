@@ -33,6 +33,22 @@ If the file is logically unchanged, ngtsc will reuse the previous analysis and o
 
 If the file is logically changed, ngtsc will re-analyze it.
 
+## Reuse of template type-checking code
+
+Generally speaking, the generation of a template type-checking "shim" for an input component file is a time-consuming operation. Such generation produces several outputs:
+
+1) The text of the template type-checking shim file, which can later be fed to TypeScript for the production of raw diagnostics.
+2) Metadata regarding source mappings within the template type-checking shim, which can be used to convert the raw diagnostics into mapped template diagnostics.
+3) "Construction" diagnostics, which are diagnostics produced as a side effect of generation of the shim itself.
+
+When a component file is logically unchanged, ngtsc attempts to reuse this generation work. As part of creating both the new emit program and template type-checking program, the `ts.SourceFile` of the shim for the component file is included directly and not re-generated.
+
+At the same time, the metadata and construction diagnostics are passed via the incremental build system. When TS gets diagnostics for the shim file, this metadata is used to convert them into mapped template diagnostics for delivery to the user.
+
+### Limitations on template type-checking reuse
+
+In certain cases the template type-checking system is unable to use the existing shim code. If the component is logically changed, the shim is regenerated in case its contents may have changed. If generating the shim itself required the use of any "inline" code (type-checking code which needs to be inserted into the component file instead for some reason), it also becomes ineligible for reuse.
+
 ## Skipping emit
 
 ngtsc makes a decision to skip the emit of a file if it can prove that the contents of the file will not have changed since the last good compilation. To prove this, two conditions must be true.
@@ -135,13 +151,4 @@ Currently the compiler does not distinguish these two cases, and conservatively 
 
 ## Skipping template type-checking
 
-For certain kinds of changes, it may be possible to avoid the cost of generating and checking template type-checking files. Several levels of this can be imagined.
-
-For resource-only changes, only the component(s) which have changed resources need to be re-checked. No other components could be affected, so previously produced diagnostics are still valid.
-
-For arbitrary source changes, things get a bit more complicated. A change to any .ts file could affect types anywhere in the program (think `declare global ...`). If a set of affected components can be determined (perhaps via the import graph that the cycle analyzer extracts?) and it can be proven that the change does not impact any global types (exactly how to do this is left as an exercise for  the reader), then type-checking could be skipped for other components in the mix.
-
-If the above is too complex, then certain kinds of type changes might allow for the reuse of the text of some template type-checking files, if it can be proven that none of the inputs to their generation have changed. This is useful for two very important reasons.
-
-1) Generating (and subsequently parsing) the template type-checking files is expensive.
-2) Under ideal conditions, after an initial template type-checking program is created, it may be possible to reuse it for emit _and_ type-checking in subsequent builds. This would be a pretty advanced optimization but would save creation of a second `ts.Program` on each valid rebuild.
+Under ideal conditions, after an initial template type-checking program is created, it may be possible to reuse it for emit _and_ type-checking in subsequent builds. This would be a pretty advanced optimization but would save creation of a second `ts.Program` on each valid rebuild.

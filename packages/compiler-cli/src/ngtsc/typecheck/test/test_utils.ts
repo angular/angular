@@ -12,6 +12,7 @@ import * as ts from 'typescript';
 import {absoluteFrom, AbsoluteFsPath, LogicalFileSystem} from '../../file_system';
 import {TestFile} from '../../file_system/testing';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
+import {NOOP_INCREMENTAL_BUILD} from '../../incremental';
 import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
@@ -301,14 +302,21 @@ export function typecheck(
 
   const programStrategy = new ReusedProgramStrategy(program, host, options, []);
   const templateTypeChecker = new TemplateTypeChecker(
-      program, programStrategy, checkAdapter, fullConfig, emitter, reflectionHost);
+      program, programStrategy, checkAdapter, fullConfig, emitter, reflectionHost,
+      NOOP_INCREMENTAL_BUILD);
   templateTypeChecker.refresh();
   return templateTypeChecker.getDiagnosticsForFile(sf);
 }
 
 function createTypeCheckAdapter(fn: (ctx: TypeCheckContext) => void): ProgramTypeCheckAdapter {
+  let called = false;
   return {
-    typeCheck: fn,
+    typeCheck: (sf: ts.SourceFile, ctx: TypeCheckContext) => {
+      if (!called) {
+        fn(ctx);
+      }
+      called = true;
+    },
   };
 }
 
