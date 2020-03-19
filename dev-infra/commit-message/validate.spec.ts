@@ -15,7 +15,7 @@ import {validateCommitMessage} from './validate';
 // Constants
 const config = {
   'commitMessage': {
-    'maxLength': 120,
+    'maxLineLength': 120,
     'minBodyLength': 0,
     'types': [
       'feat',
@@ -75,15 +75,14 @@ describe('validate-commit-message.js', () => {
 
       expect(validateCommitMessage(msg)).toBe(INVALID);
       expect(lastError).toContain(
-          `The commit message header is longer than ${config.commitMessage.maxLength} characters`);
+          `The commit message header is longer than ${config.commitMessage.maxLineLength} characters`);
     });
 
     it('should validate "<type>(<scope>): <subject>" format', () => {
       const msg = 'not correct format';
 
       expect(validateCommitMessage(msg)).toBe(INVALID);
-      expect(lastError).toContain(
-          `The commit message header does not match the format of '<type>(<scope>): <subject>' or 'Revert: "<type>(<scope>): <subject>"'`, );
+      expect(lastError).toContain(`The commit message header does not match the expected format.`);
     });
 
     it('should fail when type is invalid', () => {
@@ -167,8 +166,7 @@ describe('validate-commit-message.js', () => {
     describe('(squash)', () => {
 
       it('should strip the `squash! ` prefix and validate the rest', () => {
-        const errorMessage = `The commit message header does not match the format of ` +
-            '\'<type>(<scope>): <subject>\' or \'Revert: "<type>(<scope>): <subject>"\'';
+        const errorMessage = `The commit message header does not match the expected format.`;
 
         // Valid messages.
         expect(validateCommitMessage('squash! feat(core): add feature')).toBe(VALID);
@@ -202,8 +200,7 @@ describe('validate-commit-message.js', () => {
       describe('without `nonFixupCommitHeaders`', () => {
 
         it('should strip the `fixup! ` prefix and validate the rest', () => {
-          const errorMessage = `The commit message header does not match the format of ` +
-              '\'<type>(<scope>): <subject>\' or \'Revert: "<type>(<scope>): <subject>"\'';
+          const errorMessage = `The commit message header does not match the expected format.`;
 
           // Valid messages.
           expect(validateCommitMessage('fixup! feat(core): add feature')).toBe(VALID);

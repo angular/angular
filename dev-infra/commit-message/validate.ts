@@ -9,6 +9,7 @@ import {getAngularDevConfig} from '../utils/config';
 import {CommitMessageConfig} from './config';
 
 const FIXUP_PREFIX_RE = /^fixup! /i;
+const GITHUB_LINKING_RE = /((closed?s?)|(fix(es)?(ed)?)|(resolved?s?))\s\#(\d+)/ig;
 const SQUASH_PREFIX_RE = /^squash! /i;
 const REVERT_PREFIX_RE = /^revert:? /i;
 const TYPE_SCOPE_RE = /^(\w+)(?:\(([^)]+)\))?\:\s(.+)$/;
@@ -19,9 +20,10 @@ const COMMIT_BODY_RE = /^.*\n\n(.*)/i;
 export function parseCommitMessage(commitMsg: string) {
   let header = '';
   let body = '';
+  let bodyWithoutLinking = '';
   let type = '';
   let scope = '';
-  let title = '';
+  let subject = '';
 
   if (COMMIT_HEADER_RE.test(commitMsg)) {
     header = COMMIT_HEADER_RE.exec(commitMsg) ![1]
@@ -30,20 +32,22 @@ export function parseCommitMessage(commitMsg: string) {
   }
   if (COMMIT_BODY_RE.test(commitMsg)) {
     body = COMMIT_BODY_RE.exec(commitMsg) ![1];
+    bodyWithoutLinking = body.replace(GITHUB_LINKING_RE, '');
   }
 
   if (TYPE_SCOPE_RE.test(header)) {
     const parsedCommitHeader = TYPE_SCOPE_RE.exec(header) !;
     type = parsedCommitHeader[1];
     scope = parsedCommitHeader[2];
-    title = parsedCommitHeader[3];
+    subject = parsedCommitHeader[3];
   }
   return {
     header,
     body,
+    bodyWithoutLinking,
     type,
     scope,
-    title,
+    subject,
     isFixup: FIXUP_PREFIX_RE.test(commitMsg),
     isSquash: SQUASH_PREFIX_RE.test(commitMsg),
     isRevert: REVERT_PREFIX_RE.test(commitMsg),
@@ -57,9 +61,9 @@ export function validateCommitMessage(
   function error(errorMessage: string) {
     console.error(
         `INVALID COMMIT MSG: \n` +
-        `${Array(40).fill('─').join('')}\n` +
+        `${'─'.repeat(40)}\n` +
         `${commitMsg}\n` +
-        `${Array(40).fill('─').join('')}\n` +
+        `${'─'.repeat(40)}\n` +
         `ERROR: \n` +
         `  ${errorMessage}` +
         `\n\n` +
@@ -79,11 +83,6 @@ export function validateCommitMessage(
     return false;
   }
 
-  if (commit.header.length > config.maxLength) {
-    error(`The commit message header is longer than ${config.maxLength} characters`);
-    return false;
-  }
-
   // If it is a fixup commit and `nonFixupCommitHeaders` is not empty, we only care to check whether
   // there is a corresponding non-fixup commit (i.e. a commit whose header is identical to this
   // commit's header after stripping the `fixup! ` prefix).
@@ -98,10 +97,13 @@ export function validateCommitMessage(
     return true;
   }
 
+  if (commit.header.length > config.maxLineLength) {
+    error(`The commit message header is longer than ${config.maxLineLength} characters`);
+    return false;
+  }
+
   if (!commit.type) {
-    const format = '<type>(<scope>): <subject>';
-    error(
-        `The commit message header does not match the format of '${format}' or 'Revert: "${format}"'`);
+    error(`The commit message header does not match the expected format.`);
     return false;
   }
 
@@ -115,15 +117,16 @@ export function validateCommitMessage(
     return false;
   }
 
-  if (commit.body.trim().length < config.minBodyLength) {
+  if (commit.bodyWithoutLinking.trim().length < config.minBodyLength) {
     error(
         `The commit message body does not meet the minimum length of ${config.minBodyLength} characters`);
     return false;
   }
 
   const bodyByLine = commit.body.split('\n');
-  if (bodyByLine.some(line => line.length > config.maxLength)) {
-    error(`The commit messsage body contains lines greater than ${config.maxLength} characters`);
+  if (bodyByLine.some(line => line.length > config.maxLineLength)) {
+    error(
+        `The commit messsage body contains lines greater than ${config.maxLineLength} characters`);
     return false;
   }
 

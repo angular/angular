@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 export interface CommitMessageConfig {
-  maxLength: number;
+  maxLineLength: number;
   minBodyLength: number;
   types: string[];
   scopes: string[];

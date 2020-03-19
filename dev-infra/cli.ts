@@ -20,9 +20,7 @@ switch (args[0]) {
   case 'pullapprove:verify':
     verify();
     break;
-  case 'commit-message:validate':
-    // The expectation is this command will be used for automatic commit
-    // message validation during git commit process.
+  case 'commit-message:pre-commit-validate':
     const commitMessage = readFileSync(join(getRepoBaseDir(), '.git/COMMIT_EDITMSG'), 'utf8');
     if (validateCommitMessage(commitMessage)) {
       console.info('√  Valid commit message');
