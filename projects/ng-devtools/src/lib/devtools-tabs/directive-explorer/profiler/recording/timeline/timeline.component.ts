@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { MatSlider, MatSliderChange } from '@angular/material/slider';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ElementRef, ViewChild } from '@angular/core';
 import { ProfilerFrame } from 'protocol';
 import { FlamegraphFormatter, FlamegraphNode } from './record-formatter/flamegraph-formatter';
-import { AppEntry, TimelineView } from './record-formatter/record-formatter';
+import { AppEntry, TimelineView, GraphNode } from './record-formatter/record-formatter';
 import { WebtreegraphFormatter, WebtreegraphNode } from './record-formatter/webtreegraph-formatter';
+import { DomSanitizer } from '@angular/platform-browser';
 
 export enum VisualizationMode {
   FlameGraph,
@@ -15,6 +15,8 @@ const formatters = {
   [VisualizationMode.WebTreeGraph]: new WebtreegraphFormatter(),
 };
 
+const MAX_HEIGHT = 50;
+
 @Component({
   selector: 'ng-recording-timeline',
   templateUrl: './timeline.component.html',
@@ -22,6 +24,8 @@ const formatters = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimelineComponent {
+  @ViewChild('barContainer') barContainer: ElementRef;
+
   @Input() set records(data: ProfilerFrame[]) {
     this.unFormattedRecords = data;
     this.formatRecords();
@@ -29,17 +33,18 @@ export class TimelineComponent {
 
   @Output() exportProfile = new EventEmitter<void>();
 
-  @ViewChild(MatSlider) slider: MatSlider;
-
   @Input() unFormattedRecords: ProfilerFrame[];
 
   profileRecords: TimelineView<FlamegraphNode> | TimelineView<WebtreegraphNode> = {
     timeline: [],
   };
-  currentView = 1;
+  currentView = 0;
 
   cmpVisualizationModes = VisualizationMode;
   visualizationMode = VisualizationMode.FlameGraph;
+  graphData: GraphNode<FlamegraphNode | WebtreegraphNode>[] = [];
+
+  constructor(private sanitizer: DomSanitizer) {}
 
   get formatter(): FlamegraphFormatter | WebtreegraphFormatter {
     return formatters[this.visualizationMode];
@@ -54,23 +59,53 @@ export class TimelineComponent {
     return Math.floor(64 / 2 ** multiplier);
   }
 
-  updateView($event: MatSliderChange): void {
-    if ($event.value === undefined || $event.value > this.profileRecords.timeline.length) {
-      return;
+  move(value: number): void {
+    const newVal = this.currentView + value;
+    if (newVal > -1 && newVal < this.profileRecords.timeline.length) {
+      this.currentView = newVal;
+      this.barContainer.nativeElement.children[newVal].scrollIntoView({
+        behavior: 'auto',
+        block: 'end',
+        inline: 'nearest',
+      });
     }
-    this.currentView = $event.value;
-    this.slider.value = this.currentView;
   }
 
-  move(number: number): void {
-    const newVal = this.currentView + number;
-    if (newVal > 0 && newVal < this.profileRecords.timeline.length) {
-      this.currentView = newVal;
-      this.slider.value = this.currentView;
-    }
+  updateView(value: number): void {
+    this.currentView = value;
   }
 
   formatRecords(): void {
     this.profileRecords = this.formatter.format(this.unFormattedRecords);
+    this.renderBarChart(this.profileRecords.timeline);
+  }
+
+  renderBarChart(timeline: AppEntry<FlamegraphNode | WebtreegraphNode>[]): void {
+    const maxValue = timeline.reduce(
+      (acc: number, node: AppEntry<FlamegraphNode | WebtreegraphNode>) => Math.max(acc, node.timeSpent),
+      0
+    );
+    const multiplicationFactor = parseFloat((MAX_HEIGHT / maxValue).toFixed(2));
+    this.graphData = timeline.map(d => {
+      const height = d.timeSpent * multiplicationFactor;
+      let backgroundColor = 'rgb(237, 213, 94)';
+      if (height > 33) {
+        backgroundColor = 'rgb(240, 117, 117)';
+      } else if (height > 16) {
+        backgroundColor = 'rgb(238, 189, 99)';
+      }
+
+      const style = {
+        'margin-left': '1px',
+        'margin-right': '1px',
+        'background-color': backgroundColor,
+        cursor: 'pointer',
+        'min-width': '25px',
+        width: '25px',
+        height: `${height}px`,
+      };
+      const toolTip = `${d.source} TimeSpent: ${d.timeSpent.toFixed(3)}ms`;
+      return { ...d, style, toolTip };
+    });
   }
 }
