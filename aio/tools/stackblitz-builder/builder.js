@@ -1,14 +1,12 @@
 'use strict';
 
 // Canonical path provides a consistent path (i.e. always forward slashes) across different OSes
-var path = require('canonical-path');
-var Q = require('q');
-var _ = require('lodash');
-var jsdom = require("jsdom");
-var fs = require("fs-extra");
-var globby = require('globby');
+const path = require('canonical-path');
+const fs = require('fs-extra');
+const globby = require('globby');
+const jsdom = require('jsdom');
 
-var regionExtractor = require('../transforms/examples-package/services/region-parser');
+const regionExtractor = require('../transforms/examples-package/services/region-parser');
 
 class StackblitzBuilder {
   constructor(basePath, destPath) {
@@ -16,26 +14,24 @@ class StackblitzBuilder {
     this.destPath = destPath;
 
     // Extract npm package dependencies
-    var packageJson = require(path.join(__dirname, '../examples/shared/boilerplate/cli/package.json'));
+    const packageJson = require(path.join(__dirname, '../examples/shared/boilerplate/cli/package.json'));
     this.examplePackageDependencies = packageJson.dependencies;
 
     // Add unit test packages from devDependency for unit test examples
-    var devDependencies = packageJson.devDependencies;
+    const devDependencies = packageJson.devDependencies;
     this.examplePackageDependencies['jasmine-core'] = devDependencies['jasmine-core'];
     this.examplePackageDependencies['jasmine-marbles'] = devDependencies['jasmine-marbles'];
 
-    this.copyrights = {};
-
-    this._buildCopyrightStrings();
+    this.copyrights = this._buildCopyrightStrings();
   }
 
   build() {
     this._checkForOutdatedConfig();
 
     // When testing it sometimes helps to look a just one example directory like so:
-    // var stackblitzPaths = path.join(this.basePath, '**/testing/*stackblitz.json');
-    var stackblitzPaths = path.join(this.basePath, '**/*stackblitz.json');
-    var fileNames = globby.sync(stackblitzPaths, { ignore: ['**/node_modules/**'] });
+    // const stackblitzPaths = path.join(this.basePath, '**/testing/*stackblitz.json');
+    const stackblitzPaths = path.join(this.basePath, '**/*stackblitz.json');
+    const fileNames = globby.sync(stackblitzPaths, { ignore: ['**/node_modules/**'] });
     fileNames.forEach((configFileName) => {
       try {
         // console.log('***'+configFileName)
@@ -51,12 +47,15 @@ class StackblitzBuilder {
   }
 
   _buildCopyrightStrings() {
-    var copyright = 'Copyright Google LLC. All Rights Reserved.\n' +
+    const copyright = 'Copyright Google LLC. All Rights Reserved.\n' +
         'Use of this source code is governed by an MIT-style license that\n' +
         'can be found in the LICENSE file at http://angular.io/license';
-    var pad = '\n\n';
-    this.copyrights.jsCss = `${pad}/*\n${copyright}\n*/`;
-    this.copyrights.html = `${pad}<!-- \n${copyright}\n-->`;
+    const pad = '\n\n';
+
+    return {
+      jsCss: `${pad}/*\n${copyright}\n*/`,
+      html: `${pad}<!-- \n${copyright}\n-->`,
+    };
   }
 
   // Build stackblitz from JSON configuration file (e.g., stackblitz.json):
@@ -68,30 +67,29 @@ class StackblitzBuilder {
   //   file: string - name of file to display within the stackblitz (e.g. `"file": "app/app.module.ts"`)
   _buildStackblitzFrom(configFileName) {
     // replace ending 'stackblitz.json' with 'stackblitz.no-link.html' to create output file name;
-    var outputFileName = `stackblitz.no-link.html`;
-    outputFileName = configFileName.replace(/stackblitz\.json$/, outputFileName);
-    var altFileName;
+    const outputFileName = configFileName.replace(/stackblitz\.json$/, 'stackblitz.no-link.html');
+    let altFileName;
     if (this.destPath && this.destPath.length > 0) {
-      var partPath = path.dirname(path.relative(this.basePath, outputFileName));
-      var altFileName = path.join(this.destPath, partPath, path.basename(outputFileName)).replace('.no-link.', '.');
+      const partPath = path.dirname(path.relative(this.basePath, outputFileName));
+      altFileName = path.join(this.destPath, partPath, path.basename(outputFileName)).replace('.no-link.', '.');
     }
     try {
-      var config = this._initConfigAndCollectFileNames(configFileName);
-      var postData = this._createPostData(config, configFileName);
+      const config = this._initConfigAndCollectFileNames(configFileName);
+      const postData = this._createPostData(config, configFileName);
       this._addDependencies(postData);
-      var html = this._createStackblitzHtml(config, postData);
+      const html = this._createStackblitzHtml(config, postData);
       fs.writeFileSync(outputFileName, html, 'utf-8');
       if (altFileName) {
-        var altDirName = path.dirname(altFileName);
+        const altDirName = path.dirname(altFileName);
         fs.ensureDirSync(altDirName);
         fs.writeFileSync(altFileName, html, 'utf-8');
       }
     } catch (e) {
       // if we fail delete the outputFile if it exists because it is an old one.
-      if (this._existsSync(outputFileName)) {
+      if (fs.existsSync(outputFileName)) {
         fs.unlinkSync(outputFileName);
       }
-      if (altFileName && this._existsSync(altFileName)) {
+      if (altFileName && fs.existsSync(altFileName)) {
         fs.unlinkSync(altFileName);
       }
       throw e;
@@ -100,8 +98,8 @@ class StackblitzBuilder {
 
   _checkForOutdatedConfig() {
     // Ensure that nobody is trying to use the old config filenames (i.e. `plnkr.json`).
-    var plunkerPaths = path.join(this.basePath, '**/*plnkr.json');
-    var fileNames = globby.sync(plunkerPaths, { ignore: ['**/node_modules/**'] });
+    const plunkerPaths = path.join(this.basePath, '**/*plnkr.json');
+    const fileNames = globby.sync(plunkerPaths, { ignore: ['**/node_modules/**'] });
 
     if (fileNames.length) {
       const readmePath = path.join(__dirname, 'README.md');
@@ -118,85 +116,87 @@ class StackblitzBuilder {
 
   _getPrimaryFile(config) {
     if (config.file) {
-      if (!this._existsSync(path.join(config.basePath, config.file))) {
+      if (!fs.existsSync(path.join(config.basePath, config.file))) {
         throw new Error(`The specified primary file (${config.file}) does not exist in '${config.basePath}'.`);
       }
       return config.file;
     } else {
       const defaultPrimaryFiles = ['src/app/app.component.html', 'src/app/app.component.ts', 'src/app/main.ts'];
-      const primaryFile = defaultPrimaryFiles.find(fileName =>  this._existsSync(path.join(config.basePath, fileName)));
-  
+      const primaryFile = defaultPrimaryFiles.find(fileName =>  fs.existsSync(path.join(config.basePath, fileName)));
+
       if (!primaryFile) {
         throw new Error(`None of the default primary files (${defaultPrimaryFiles.join(', ')}) exists in '${config.basePath}'.`);
       }
- 
+
       return primaryFile;
     }
   }
 
   _createBaseStackblitzHtml(config) {
-    var file = `?file=${this._getPrimaryFile(config)}`;
-    var action = `https://run.stackblitz.com/api/angular/v1${file}`;
-    var html = `<!DOCTYPE html><html lang="en"><body>
-    <form id="mainForm" method="post" action="${action}" target="_self"></form>
-    <script>
-      var embedded = 'ctl=1';
-      var isEmbedded = window.location.search.indexOf(embedded) > -1;
+    const file = `?file=${this._getPrimaryFile(config)}`;
+    const action = `https://run.stackblitz.com/api/angular/v1${file}`;
 
-      if (isEmbedded) {
-        var form = document.getElementById('mainForm');
-        var action = form.action;
-        var actionHasParams = action.indexOf('?') > -1;
-        var symbol = actionHasParams ? '&' : '?'
-        form.action = form.action + symbol + embedded;
-      }
-      document.getElementById("mainForm").submit();
-    </script>
-    </body></html>`;
-    return html;
+    return `
+      <!DOCTYPE html><html lang="en"><body>
+        <form id="mainForm" method="post" action="${action}" target="_self"></form>
+        <script>
+          var embedded = 'ctl=1';
+          var isEmbedded = window.location.search.indexOf(embedded) > -1;
+
+          if (isEmbedded) {
+            var form = document.getElementById('mainForm');
+            var action = form.action;
+            var actionHasParams = action.indexOf('?') > -1;
+            var symbol = actionHasParams ? '&' : '?'
+            form.action = form.action + symbol + embedded;
+          }
+          document.getElementById("mainForm").submit();
+        </script>
+      </body></html>
+    `.trim();
   }
 
   _createPostData(config, configFileName) {
-    var postData = {};
+    const postData = {};
 
     // If `config.main` is specified, ensure that it points to an existing file.
-    if (config.main && !this._existsSync(path.join(config.basePath, config.main))) {
+    if (config.main && !fs.existsSync(path.join(config.basePath, config.main))) {
       throw Error(`The main file ('${config.main}') specified in '${configFileName}' does not exist.`);
     }
 
     config.fileNames.forEach((fileName) => {
-      var content;
-      var extn = path.extname(fileName);
-      if (extn == '.png') {
+      let content;
+      const extn = path.extname(fileName);
+      if (extn === '.png') {
         content = this._encodeBase64(fileName);
-        fileName = fileName.substr(0, fileName.length - 4) + '.base64.png'
+        fileName = `${fileName.slice(0, -extn.length)}.base64${extn}`;
       } else {
         content = fs.readFileSync(fileName, 'utf-8');
       }
 
-      if (extn == '.js' || extn == '.ts' || extn == '.css') {
+      if (extn === '.js' || extn === '.ts' || extn === '.css') {
         content = content + this.copyrights.jsCss;
-      } else if (extn == '.html') {
+      } else if (extn === '.html') {
         content = content + this.copyrights.html;
       }
-      // var escapedValue = escapeHtml(content);
+      // const escapedValue = escapeHtml(content);
 
-      var relativeFileName = path.relative(config.basePath, fileName);
+      let relativeFileName = path.relative(config.basePath, fileName);
 
       // Is the main a custom index-xxx.html file? Rename it
-      if (relativeFileName == config.main) {
+      if (relativeFileName === config.main) {
         relativeFileName = 'src/index.html';
       }
 
       // A custom main.ts file? Rename it
       if (/src\/main[-.]\w+\.ts$/.test(relativeFileName)) {
-        relativeFileName = 'src/main.ts'
+        relativeFileName = 'src/main.ts';
       }
 
-      if (relativeFileName == 'index.html') {
+      if (relativeFileName === 'index.html') {
         if (config.description == null) {
           // set config.description to title from index.html
-          var matches = /<title>(.*)<\/title>/.exec(content);
+          const matches = /<title>(.*)<\/title>/.exec(content);
           if (matches) {
             config.description = matches[1];
           }
@@ -208,28 +208,26 @@ class StackblitzBuilder {
       postData[`files[${relativeFileName}]`] = content;
     });
 
-    var tags = ['angular', 'example'].concat(config.tags || []);
-    tags.forEach(function(tag,ix) {
-      postData['tags[' + ix + ']'] = tag;
-    });
+    const tags = ['angular', 'example', ...config.tags || []];
+    tags.forEach((tag, ix) => postData[`tags[${ix}]`] = tag);
 
-    postData.description = "Angular Example - " + config.description;
+    postData.description = `Angular Example - ${config.description}`;
 
     return postData;
   }
 
   _createStackblitzHtml(config, postData) {
-    var baseHtml = this._createBaseStackblitzHtml(config);
-    var doc = jsdom.jsdom(baseHtml);
-    var form = doc.querySelector('form');
-    _.forEach(postData, (value, key) => {
-      var ele = this._htmlToElement(doc, '<input type="hidden" name="' + key + '">');
-      ele.setAttribute('value', value);
-      form.appendChild(ele)
-    });
-    var html = doc.documentElement.outerHTML;
+    const baseHtml = this._createBaseStackblitzHtml(config);
+    const doc = jsdom.jsdom(baseHtml);
+    const form = doc.querySelector('form');
 
-    return html;
+    for(const [key, value] of Object.entries(postData)) {
+      const ele = this._htmlToElement(doc, `<input type="hidden" name="${key}">`);
+      ele.setAttribute('value', value);
+      form.appendChild(ele);
+    }
+
+    return doc.documentElement.outerHTML;
   }
 
   _encodeBase64(file) {
@@ -237,36 +235,20 @@ class StackblitzBuilder {
     return fs.readFileSync(file, { encoding: 'base64' });
   }
 
-  _existsSync(filename) {
-    try {
-      fs.accessSync(filename);
-      return true;
-    } catch(ex) {
-      return false;
-    }
-  }
-
   _htmlToElement(document, html) {
-    var div = document.createElement('div');
+    const div = document.createElement('div');
     div.innerHTML = html;
     return div.firstChild;
   }
 
   _initConfigAndCollectFileNames(configFileName) {
-    var configDir = path.dirname(configFileName);
-    var configSrc = fs.readFileSync(configFileName, 'utf-8');
-    try {
-      var config = (configSrc && configSrc.trim().length) ? JSON.parse(configSrc) : {};
-      config.basePath = configDir; // assumes 'stackblitz.json' is at `/src` level.
-    } catch (e) {
-      throw new Error(`Stackblitz config - unable to parse json file: ${configFileName}\n${e}`);
-    }
+    const config = this._parseConfig(configFileName);
 
-    var defaultIncludes = ['**/*.ts', '**/*.js', '**/*.css', '**/*.html', '**/*.md', '**/*.json', '**/*.png', '**/*.svg'];
-    var boilerplateIncludes = ['src/environments/*.*', 'angular.json', 'src/polyfills.ts'];
+    const defaultIncludes = ['**/*.ts', '**/*.js', '**/*.css', '**/*.html', '**/*.md', '**/*.json', '**/*.png', '**/*.svg'];
+    const boilerplateIncludes = ['src/environments/*.*', 'angular.json', 'src/polyfills.ts'];
     if (config.files) {
       if (config.files.length > 0) {
-        if (config.files[0].substr(0, 1) == '!') {
+        if (config.files[0][0] === '!') {
           config.files = defaultIncludes.concat(config.files);
         }
       }
@@ -275,10 +257,10 @@ class StackblitzBuilder {
     }
     config.files = config.files.concat(boilerplateIncludes);
 
-    var includeSpec = false;
-    var gpaths = config.files.map(function(fileName) {
+    let includeSpec = false;
+    const gpaths = config.files.map((fileName) => {
       fileName = fileName.trim();
-      if (fileName.substr(0,1) == '!') {
+      if (fileName[0] === '!') {
         return '!' + path.join(config.basePath, fileName.substr(1));
       } else {
         includeSpec = includeSpec || /\.spec\.(ts|js)$/.test(fileName);
@@ -286,7 +268,7 @@ class StackblitzBuilder {
       }
     });
 
-    var defaultExcludes = [
+    const defaultExcludes = [
       '!**/e2e/**/*.*',
       '!**/tsconfig.json',
       '!**/package.json',
@@ -308,9 +290,20 @@ class StackblitzBuilder {
 
     gpaths.push(...defaultExcludes);
 
-    config.fileNames = globby.sync(gpaths, { ignore: ["**/node_modules/**"] });
+    config.fileNames = globby.sync(gpaths, { ignore: ['**/node_modules/**'] });
 
     return config;
+  }
+
+  _parseConfig(configFileName) {
+    try {
+      const configSrc = fs.readFileSync(configFileName, 'utf-8');
+      const config = (configSrc && configSrc.trim().length) ? JSON.parse(configSrc) : {};
+      config.basePath = path.dirname(configFileName); // assumes 'stackblitz.json' is at `/src` level.
+      return config;
+    } catch (e) {
+      throw new Error(`Stackblitz config - unable to parse json file: ${configFileName}\n${e}`);
+    }
   }
 }
 
