@@ -2,6 +2,7 @@
   "name": "angular-devtools",
   "version": "0.0.0",
   "scripts": {
+    "postinstall": "ngcc --async false --properties es2015 browser module main --first-only --create-ivy-entry-points",
     "ng": "ng",
     "cypress:verify": "cypress verify",
     "start": "ng serve",
