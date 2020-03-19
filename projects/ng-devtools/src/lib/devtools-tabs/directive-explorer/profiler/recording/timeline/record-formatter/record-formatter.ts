@@ -10,6 +10,11 @@ export interface AppEntry<T> {
   source: string;
 }
 
+export interface GraphNode<T> extends AppEntry<T> {
+  toolTip: string;
+  style: any;
+}
+
 export abstract class RecordFormatter<T> {
   abstract format(records: ProfilerFrame[]): TimelineView<T>;
   abstract insertTimelineRecord(result: AppEntry<T>[], record: ProfilerFrame): void;

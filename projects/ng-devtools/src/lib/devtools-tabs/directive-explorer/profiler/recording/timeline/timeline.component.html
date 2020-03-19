@@ -14,7 +14,6 @@
   <div class="controls">
     <button mat-stroked-button (click)="exportProfile.emit()">Export to JSON</button>
     <mat-form-field>
-      <mat-label>Select View</mat-label>
       <mat-select (selectionChange)="formatRecords()" [(ngModel)]="visualizationMode">
         <mat-option [value]="cmpVisualizationModes.FlameGraph">
           Flamegraph
@@ -24,18 +23,6 @@
         </mat-option>
       </mat-select>
     </mat-form-field>
-
-    <ng-container *ngIf="showControls">
-      <mat-slider
-        [max]="profileRecords.timeline.length - 1"
-        [min]="1"
-        [(ngModel)]="currentView"
-        (change)="updateView($event)"
-      ></mat-slider>
-      &nbsp;
-      <button mat-stroked-button (click)="move(-1)"><</button>
-      <button mat-stroked-button (click)="move(1)">></button>
-    </ng-container>
 
     <label
       [class.warning-no]="record.timeSpent < 16"
@@ -56,6 +43,24 @@
       Frame rate: {{ frameRate(record.timeSpent) }} fps
     </label>
     <label *ngIf="record.source">Source: {{ record.source }}</label>
+  </div>
+  <div class="bar-graph-container">
+    <p class="txt-frames">{{ currentView + 1 }}/{{ graphData.length }}</p>
+    <button mat-icon-button (click)="move(-1)" [disabled]="currentView == 0">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <div #barContainer class="bar-container">
+      <div
+        *ngFor="let d of graphData; let i = index"
+        [matTooltip]="d.toolTip"
+        [ngStyle]="d.style"
+        [class.selected]="i == currentView"
+        (click)="updateView(i)"
+      ></div>
+    </div>
+    <button mat-icon-button (click)="move(1)" [disabled]="currentView == graphData.length - 1">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
   </div>
   <ng-timeline-visualizer [visualizationMode]="visualizationMode" [records]="record.app"></ng-timeline-visualizer>
 </ng-template>
