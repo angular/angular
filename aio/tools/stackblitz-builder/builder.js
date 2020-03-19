@@ -208,7 +208,7 @@ class StackblitzBuilder {
       postData[`files[${relativeFileName}]`] = content;
     });
 
-    const tags = ['angular', 'example'].concat(config.tags || []);
+    const tags = ['angular', 'example', ...config.tags || []];
     tags.forEach((tag, ix) => postData[`tags[${ix}]`] = tag);
 
     postData.description = `Angular Example - ${config.description}`;
@@ -221,11 +221,11 @@ class StackblitzBuilder {
     const doc = jsdom.jsdom(baseHtml);
     const form = doc.querySelector('form');
 
-    Object.entries(postData).forEach(([key, value]) => {
+    for(const [key, value] of Object.entries(postData)) {
       const ele = this._htmlToElement(doc, `<input type="hidden" name="${key}">`);
       ele.setAttribute('value', value);
       form.appendChild(ele);
-    });
+    }
 
     return doc.documentElement.outerHTML;
   }
@@ -242,16 +242,7 @@ class StackblitzBuilder {
   }
 
   _initConfigAndCollectFileNames(configFileName) {
-    const configDir = path.dirname(configFileName);
-    const configSrc = fs.readFileSync(configFileName, 'utf-8');
-    let config;
-
-    try {
-      config = (configSrc && configSrc.trim().length) ? JSON.parse(configSrc) : {};
-      config.basePath = configDir; // assumes 'stackblitz.json' is at `/src` level.
-    } catch (e) {
-      throw new Error(`Stackblitz config - unable to parse json file: ${configFileName}\n${e}`);
-    }
+    const config = this._parseConfig(configFileName);
 
     const defaultIncludes = ['**/*.ts', '**/*.js', '**/*.css', '**/*.html', '**/*.md', '**/*.json', '**/*.png', '**/*.svg'];
     const boilerplateIncludes = ['src/environments/*.*', 'angular.json', 'src/polyfills.ts'];
@@ -302,6 +293,17 @@ class StackblitzBuilder {
     config.fileNames = globby.sync(gpaths, { ignore: ['**/node_modules/**'] });
 
     return config;
+  }
+
+  _parseConfig(configFileName) {
+    try {
+      const configSrc = fs.readFileSync(configFileName, 'utf-8');
+      const config = (configSrc && configSrc.trim().length) ? JSON.parse(configSrc) : {};
+      config.basePath = path.dirname(configFileName); // assumes 'stackblitz.json' is at `/src` level.
+      return config;
+    } catch (e) {
+      throw new Error(`Stackblitz config - unable to parse json file: ${configFileName}\n${e}`);
+    }
   }
 }
 
