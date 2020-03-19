@@ -100,6 +100,7 @@ export class ComponentDataSource extends DataSource<FlatNode> {
 
     movedItems.forEach(i => this._nodeToFlat.set(i.original, i));
     newItems.forEach(i => (i.newItem = true));
+    removedItems.forEach(i => this._nodeToFlat.delete(i.original));
 
     return { newItems, movedItems, removedItems };
   }

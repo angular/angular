@@ -11,7 +11,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { PropertyTabModule } from './property-tab/property-tab.module';
 import { AngularSplitModule } from 'angular-split';
 import { DirectiveForestModule } from './directive-forest/directive-forest.module';
-import { NestedPropertyResolver } from './nested-property-resolver';
+import { ElementPropertyResolver } from './property-resolver/element-property-resolver';
 
 @NgModule({
   declarations: [DirectiveExplorerComponent, DirectiveForestComponent, FilterComponent],

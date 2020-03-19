@@ -112,11 +112,9 @@ export class DirectiveForestComponent {
       this._initialized = true;
       result.newItems.forEach(item => (item.newItem = false));
     }
-    if (result.newItems && result.newItems.length) {
-      result.newItems.forEach(item => {
-        this.treeControl.expand(item);
-      });
-    }
+    result.newItems.forEach(item => {
+      this.treeControl.expand(item);
+    });
     return result;
   }
 

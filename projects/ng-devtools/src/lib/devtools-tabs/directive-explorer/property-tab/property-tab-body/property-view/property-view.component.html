@@ -1,4 +1,4 @@
-<mat-tree class="property-list" [dataSource]="dataSource" [treeControl]="treeControl">
+<mat-tree *ngIf="treeControl" class="property-list" [dataSource]="dataSource" [treeControl]="treeControl">
   <mat-tree-node matTreeNodePaddingIndent="14" *matTreeNodeDef="let node" matTreeNodePadding>
     <span class="name non-expandable"> {{ node.prop.name }} </span>:&nbsp;
     <ng-container *ngIf="!node.prop.descriptor.editable; else editable">

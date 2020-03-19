@@ -1,33 +1,9 @@
-import { Injectable } from '@angular/core';
-import {
-  DirectivesProperties,
-  ComponentExplorerViewProperties,
-  Descriptor,
-  MessageBus,
-  Events,
-  PropType,
-  Properties,
-  DirectivePosition,
-  NestedProp,
-} from 'protocol';
-import { PropertyDataSource } from './property-data-source';
-import { FlatTreeControl } from '@angular/cdk/tree';
+import { Descriptor, PropType, MessageBus, Events, Properties, DirectivePosition, NestedProp } from 'protocol';
 import { MatTreeFlattener } from '@angular/material/tree';
-import { Observable } from 'rxjs';
+import { Property, FlatNode, PropertyDataSource } from './property-data-source';
+import { FlatTreeControl } from '@angular/cdk/tree';
 import { getExpandedDirectiveProperties } from './property-expanded-directive-properties';
-import { IndexedNode } from './directive-forest/index-forest';
-
-export interface FlatNode {
-  expandable: boolean;
-  prop: Property;
-  level: number;
-}
-
-export interface Property {
-  name: string;
-  descriptor: Descriptor;
-  parent: Property;
-}
+import { Observable } from 'rxjs';
 
 const expandable = (prop: Descriptor) => {
   if (!prop) {
@@ -39,7 +15,7 @@ const expandable = (prop: Descriptor) => {
   return !(prop.type !== PropType.Object && prop.type !== PropType.Array);
 };
 
-export class PropertyController {
+export class DirectivePropertyResolver {
   _treeFlattener = new MatTreeFlattener(
     (node: Property, level: number): FlatNode => {
       return {
@@ -124,43 +100,5 @@ export class PropertyController {
     } else {
       console.error('Unexpected data type', descriptor, 'in property', prop);
     }
-  }
-}
-
-@Injectable()
-export class NestedPropertyResolver {
-  private _directivePropertiesController: Map<string, PropertyController>;
-
-  constructor(private _messageBus: MessageBus<Events>) {}
-
-  setProperties(indexedNode: IndexedNode, data: DirectivesProperties): void {
-    this._directivePropertiesController = new Map<string, PropertyController>();
-    Object.keys(data).forEach(key => {
-      const position: DirectivePosition = {
-        element: indexedNode.position,
-        directive: undefined,
-      };
-      if (!indexedNode.component || indexedNode.component.name !== key) {
-        position.directive = indexedNode.directives.findIndex(d => d.name === key);
-      }
-      this._directivePropertiesController.set(key, new PropertyController(this._messageBus, data[key], position));
-    });
-  }
-
-  getExpandedProperties(): ComponentExplorerViewProperties {
-    const result: ComponentExplorerViewProperties = {};
-    for (const [directive] of this._directivePropertiesController) {
-      const controller = this._directivePropertiesController.get(directive);
-      if (!controller) {
-        console.error('Unable to find nested properties controller for', directive);
-        continue;
-      }
-      result[directive] = controller.getExpandedProperties();
-    }
-    return {} as any;
-  }
-
-  getDirectiveController(directive: string): PropertyController | undefined {
-    return this._directivePropertiesController.get(directive);
   }
 }

@@ -1,7 +1,5 @@
-import { Component, EventEmitter, Input, Output, QueryList, ViewChildren } from '@angular/core';
-import { Descriptor, DirectivesProperties } from 'protocol';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { IndexedNode } from '../../directive-forest/index-forest';
-import { PropertyViewComponent } from './property-view/property-view.component';
 
 @Component({
   templateUrl: './property-tab-body.component.html',
@@ -9,14 +7,21 @@ import { PropertyViewComponent } from './property-view/property-view.component';
   styleUrls: ['./property-tab-body.component.css'],
 })
 export class PropertyTabBodyComponent {
-  @Input() directivesData: DirectivesProperties | null = null;
-  @Input() currentSelectedElement: IndexedNode;
-
-  @Output() copyPropData = new EventEmitter<{ [key: string]: Descriptor }>();
-
-  @ViewChildren(PropertyViewComponent) propertyViews: QueryList<PropertyViewComponent>;
+  @Input() currentSelectedElement: IndexedNode | null;
+  @Output() copyPropData = new EventEmitter<string>();
 
   nameTracking(_: number, item: { key: string }): string {
     return item.key;
+  }
+
+  getCurrentDirectives(): string[] {
+    if (!this.currentSelectedElement) {
+      return;
+    }
+    const directives = this.currentSelectedElement.directives.map(d => d.name);
+    if (this.currentSelectedElement.component) {
+      directives.push(this.currentSelectedElement.component.name);
+    }
+    return directives;
   }
 }

@@ -5,7 +5,6 @@ import { IndexedNode } from '../../directive-forest/index-forest';
   templateUrl: './property-tab-header.component.html',
   selector: 'ng-property-tab-header',
   styleUrls: ['./property-tab-header.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PropertyTabHeaderComponent {
   @Input() currentSelectedElement: IndexedNode;

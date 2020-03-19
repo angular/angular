@@ -9,10 +9,9 @@ import { PropertyTabBodyComponent } from './property-tab-body/property-tab-body.
 })
 export class PropertyTabComponent {
   @Input() currentSelectedElement: IndexedNode;
-  @Input() directivesData: DirectivesProperties | null = null;
 
   @Output() viewSource = new EventEmitter<void>();
-  @Output() copyPropData = new EventEmitter<{ [key: string]: Descriptor }>();
+  @Output() copyPropData = new EventEmitter<string>();
 
   @ViewChild(PropertyTabBodyComponent) propertyTabBody: PropertyTabBodyComponent;
 }
