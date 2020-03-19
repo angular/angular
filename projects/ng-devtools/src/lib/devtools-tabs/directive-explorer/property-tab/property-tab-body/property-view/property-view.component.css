@@ -7,6 +7,9 @@
 :host mat-tree {
   display: table;
 }
+.name {
+  margin-left: -9px;
+}
 .non-expandable {
   margin-left: 13px;
 }
