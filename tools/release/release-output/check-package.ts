@@ -9,12 +9,12 @@ import {
   checkMaterialPackage,
   checkPackageJsonFile,
   checkPackageJsonMigrations,
-  checkReleaseBundle,
+  checkJavaScriptOutput,
   checkTypeDefinitionFile
 } from './output-validations';
 
-/** Glob that matches all JavaScript bundle files within a release package. */
-const releaseBundlesGlob = '+(fesm5|fesm2015|esm5|esm2015|bundles)/*.js';
+/** Glob that matches all JavaScript files within a release package. */
+const releaseJsFilesGlob = '+(fesm5|fesm2015|esm5|esm2015|bundles)/**/*.js';
 
 /** Glob that matches all TypeScript definition files within a release package. */
 const releaseTypeDefinitionsGlob = '**/*.d.ts';
@@ -46,14 +46,14 @@ export function checkReleasePackage(
     failures.set(message, filePaths);
   };
 
-  const bundlePaths = glob(releaseBundlesGlob, {cwd: packagePath, absolute: true});
+  const jsFiles = glob(releaseJsFilesGlob, {cwd: packagePath, absolute: true});
   const typeDefinitions = glob(releaseTypeDefinitionsGlob, {cwd: packagePath, absolute: true});
   const packageJsonFiles = glob(packageJsonFilesGlob, {cwd: packagePath, absolute: true});
 
   // We want to walk through each bundle within the current package and run
   // release validations that ensure that the bundles are not invalid.
-  bundlePaths.forEach(bundlePath => {
-    checkReleaseBundle(bundlePath).forEach(message => addFailure(message, bundlePath));
+  jsFiles.forEach(bundlePath => {
+    checkJavaScriptOutput(bundlePath).forEach(message => addFailure(message, bundlePath));
   });
 
   // Run output validations for all TypeScript definition files within the release output.
