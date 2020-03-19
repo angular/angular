@@ -5,8 +5,8 @@ describe('DevtoolsTabsComponent', () => {
   let comp: DevToolsTabsComponent;
 
   beforeEach(() => {
-    comp = new DevToolsTabsComponent();
     messageBusMock = jasmine.createSpyObj('messageBus', ['on', 'once', 'emit', 'destroy']);
+    comp = new DevToolsTabsComponent(messageBusMock);
   });
 
   it('should create instance from class', () => {
@@ -23,13 +23,12 @@ describe('DevtoolsTabsComponent', () => {
 
   it('emits inspector event', () => {
     comp.tabGroup = jasmine.createSpyObj('tabGroup', ['selectedIndex']);
-    comp.messageBus = messageBusMock;
     comp.toggleInspector();
-    expect(comp.messageBus.emit).toHaveBeenCalledTimes(1);
-    expect(comp.messageBus.emit).toHaveBeenCalledWith('inspectorStart');
+    expect(messageBusMock.emit).toHaveBeenCalledTimes(1);
+    expect(messageBusMock.emit).toHaveBeenCalledWith('inspectorStart');
     comp.toggleInspector();
-    expect(comp.messageBus.emit).toHaveBeenCalledTimes(2);
-    expect(comp.messageBus.emit).toHaveBeenCalledWith('inspectorEnd');
+    expect(messageBusMock.emit).toHaveBeenCalledTimes(2);
+    expect(messageBusMock.emit).toHaveBeenCalledWith('inspectorEnd');
   });
 
   it('calls child refresh method', () => {
