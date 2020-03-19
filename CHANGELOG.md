@@ -1,3 +1,31 @@
+# 9.2.0-next.0 "twine-tornado" (2020-03-18)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **testing:** don't send unnecessary `Key.chord`s to protractor ([#18685](https://github.com/angular/components/issues/18685)) ([427e91f](https://github.com/angular/components/commit/427e91f)), closes [mozilla/geckodriver#1502](https://github.com/mozilla/geckodriver/issues/1502) |
+| feature |  **testing:** Allow custom `querySelectorAll` method ([#18178](https://github.com/angular/components/issues/18178)) ([40ae1b1](https://github.com/angular/components/commit/40ae1b1)) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **column-resize:** don't allow dragging using the right mouse button ([#18758](https://github.com/angular/components/issues/18758)) ([c538354](https://github.com/angular/components/commit/c538354)) |
+| bug fix |  **datepicker:** prevent default dialog options from affecting touch ui calendar ([#18657](https://github.com/angular/components/issues/18657)) ([aca2533](https://github.com/angular/components/commit/aca2533)), closes [#18648](https://github.com/angular/components/issues/18648) |
+| bug fix |  **radio:** clicks not landing correctly in some cases on Chrome ([#18357](https://github.com/angular/components/issues/18357)) ([fe29835](https://github.com/angular/components/commit/fe29835)), closes [#18285](https://github.com/angular/components/issues/18285) |
+| feature |  **focus-monitor:** Add eventual detection mode option to focus monitor ([#18684](https://github.com/angular/components/issues/18684)) ([b3a2c56](https://github.com/angular/components/commit/b3a2c56)) |
+| feature |  **form-field:** use injection token for providing form-field ([#18777](https://github.com/angular/components/issues/18777)) ([8ec44a1](https://github.com/angular/components/commit/8ec44a1)) |
+| feature |  **snackbar:** add `isDismissed` harness method ([#18766](https://github.com/angular/components/issues/18766)) ([6e70cc7](https://github.com/angular/components/commit/6e70cc7)) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  rename sass mixins to mat-mdc-* ([#18615](https://github.com/angular/components/issues/18615)) ([b91e88f](https://github.com/angular/components/commit/b91e88f)) |
+| bug fix |  **form-field:** avoid expression changed after check ([#18741](https://github.com/angular/components/issues/18741)) ([eae5cf8](https://github.com/angular/components/commit/eae5cf8)) |
+
+
 ## 9.1.3 "plastic-juice" (2020-03-16)
 
 ### cdk
