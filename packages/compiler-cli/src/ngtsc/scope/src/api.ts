@@ -7,6 +7,7 @@
  */
 
 import {DirectiveMeta, PipeMeta} from '../../metadata';
+import {ClassDeclaration} from '../../reflection';
 
 
 /**
@@ -22,6 +23,11 @@ export interface ScopeData {
    * Pipes in the exported scope of the module.
    */
   pipes: PipeMeta[];
+
+  /**
+   * NgModules which contributed to the scope of the module.
+   */
+  ngModules: ClassDeclaration[];
 }
 
 /**

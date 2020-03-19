@@ -251,6 +251,84 @@ runInEachFileSystem(() => {
       expect(written).toContain('/foo_module.js');
     });
 
+    it('should rebuild a component if one of its deep NgModule dependencies changes', () => {
+      // This test constructs a chain of NgModules:
+      // - EntryModule imports MiddleAModule
+      // - MiddleAModule exports MiddleBModule
+      // - MiddleBModule exports DirModule
+      // The last link (MiddleBModule exports DirModule) is not present initially, but is added
+      // during a recompilation.
+      //
+      // Since the dependency from EntryModule on the contents of MiddleBModule is not "direct"
+      // (meaning MiddleBModule is not discovered during analysis of EntryModule), this test is
+      // verifying that NgModule dependency tracking correctly accounts for this situation.
+      env.write('entry.ts', `
+        import {Component, NgModule} from '@angular/core';
+        import {MiddleAModule} from './middle-a';
+
+        @Component({
+          selector: 'test-cmp',
+          template: '<div dir>',
+        })
+        export class TestCmp {}
+
+        @NgModule({
+          declarations: [TestCmp],
+          imports: [MiddleAModule],
+        })
+        export class EntryModule {}
+      `);
+      env.write('middle-a.ts', `
+        import {NgModule} from '@angular/core';
+        import {MiddleBModule} from './middle-b';
+
+        @NgModule({
+          exports: [MiddleBModule],
+        })
+        export class MiddleAModule {}
+      `);
+      env.write('middle-b.ts', `
+        import {NgModule} from '@angular/core';
+
+        @NgModule({})
+        export class MiddleBModule {}
+      `);
+      env.write('dir_module.ts', `
+        import {NgModule} from '@angular/core';
+        import {Dir} from './dir';
+
+        @NgModule({
+          declarations: [Dir],
+          exports: [Dir],
+        })
+        export class DirModule {}
+      `);
+      env.write('dir.ts', `
+        import {Directive} from '@angular/core';
+
+        @Directive({
+          selector: '[dir]',
+        })
+        export class Dir {}
+      `);
+
+      env.driveMain();
+      expect(env.getContents('entry.js')).not.toContain('Dir');
+
+      env.write('middle-b.ts', `
+        import {NgModule} from '@angular/core';
+        import {DirModule} from './dir_module';
+
+        @NgModule({
+          exports: [DirModule],
+        })
+        export class MiddleBModule {}
+      `);
+
+      env.driveMain();
+      expect(env.getContents('entry.js')).toContain('Dir');
+    });
+
     it('should rebuild a component if removed from an NgModule', () => {
       // This test consists of a component with a dependency (the directive DepDir) provided via an
       // NgModule. Initially this configuration is built, then the component is removed from its

@@ -58,6 +58,7 @@ export class MetadataDtsModuleScopeResolver implements DtsModuleScopeResolver {
     // Build up the export scope - those directives and pipes made visible by this module.
     const directives: DirectiveMeta[] = [];
     const pipes: PipeMeta[] = [];
+    const ngModules = new Set<ClassDeclaration>([clazz]);
 
     const meta = this.dtsMetaReader.getNgModuleMetadata(ref);
     if (meta === null) {
@@ -114,6 +115,9 @@ export class MetadataDtsModuleScopeResolver implements DtsModuleScopeResolver {
           for (const pipe of exportScope.exported.pipes) {
             pipes.push(this.maybeAlias(pipe, sourceFile, /* isReExport */ true));
           }
+          for (const ngModule of exportScope.exported.ngModules) {
+            ngModules.add(ngModule);
+          }
         }
       }
       continue;
@@ -124,7 +128,11 @@ export class MetadataDtsModuleScopeResolver implements DtsModuleScopeResolver {
     }
 
     const exportScope: ExportScope = {
-      exported: {directives, pipes},
+      exported: {
+        directives,
+        pipes,
+        ngModules: Array.from(ngModules),
+      },
     };
     this.cache.set(clazz, exportScope);
     return exportScope;
