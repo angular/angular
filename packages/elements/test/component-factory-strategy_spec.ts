@@ -93,21 +93,21 @@ describe('ComponentFactoryNgElementStrategy', () => {
 
     it('should call ngOnChanges with the change', () => {
       expectSimpleChanges(componentRef.instance.simpleChanges[0], {
-        fooFoo: new SimpleChange(undefined, 'fooFoo-1', false),
-        falsyNull: new SimpleChange(undefined, null, false),
-        falsyEmpty: new SimpleChange(undefined, '', false),
-        falsyFalse: new SimpleChange(undefined, false, false),
-        falsyZero: new SimpleChange(undefined, 0, false),
+        fooFoo: new SimpleChange(undefined, 'fooFoo-1', true),
+        falsyNull: new SimpleChange(undefined, null, true),
+        falsyEmpty: new SimpleChange(undefined, '', true),
+        falsyFalse: new SimpleChange(undefined, false, true),
+        falsyZero: new SimpleChange(undefined, 0, true),
       });
     });
 
     it('should call ngOnChanges with proper firstChange value', fakeAsync(() => {
-         strategy.setInputValue('falsyUndefined', 'notanymore');
+         strategy.setInputValue('fooFoo', 'fooFoo-2');
          strategy.setInputValue('barBar', 'barBar-1');
          tick(16);  // scheduler waits 16ms if RAF is unavailable
          (strategy as any).detectChanges();
          expectSimpleChanges(componentRef.instance.simpleChanges[1], {
-           falsyUndefined: new SimpleChange(undefined, 'notanymore', false),
+           fooFoo: new SimpleChange('fooFoo-1', 'fooFoo-2', false),
            barBar: new SimpleChange(undefined, 'barBar-1', true),
          });
        }));
@@ -296,9 +296,9 @@ function expectSimpleChanges(actual: SimpleChanges, expected: SimpleChanges) {
   Object.keys(expected).forEach(key => {
     expect(actual[key]).toBeTruthy(`Change should have included key ${key}`);
     if (actual[key]) {
-      expect(actual[key].previousValue).toBe(expected[key].previousValue);
-      expect(actual[key].currentValue).toBe(expected[key].currentValue);
-      expect(actual[key].firstChange).toBe(expected[key].firstChange);
+      expect(actual[key].previousValue).toBe(expected[key].previousValue, `${key}.previousValue`);
+      expect(actual[key].currentValue).toBe(expected[key].currentValue, `${key}.currentValue`);
+      expect(actual[key].firstChange).toBe(expected[key].firstChange, `${key}.firstChange`);
     }
   });
 }

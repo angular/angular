@@ -66,8 +66,11 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
   /** Initial input values that were set before the component was created. */
   private readonly initialInputValues = new Map<string, any>();
 
-  /** Set of inputs that were not initially set when the component was created. */
-  private readonly uninitializedInputs = new Set<string>();
+  /**
+   * Set of component inputs that have not yet changed, i.e. for which `ngOnChanges()` has not
+   * fired. (This is used to determine the value of `fistChange` in `SimpleChange` instances.)
+   */
+  private readonly unchangedInputs = new Set<string>();
 
   constructor(private componentFactory: ComponentFactory<any>, private injector: Injector) {}
 
@@ -164,12 +167,16 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
   /** Set any stored initial inputs on the component's properties. */
   protected initializeInputs(): void {
     this.componentFactory.inputs.forEach(({propName}) => {
+      if (this.implementsOnChanges) {
+        // If the component implements `ngOnChanges()`, keep track of which inputs have never
+        // changed so far.
+        this.unchangedInputs.add(propName);
+      }
+
       if (this.initialInputValues.has(propName)) {
+        // Call `setInputValue()` now that the component has been instantiated to update its
+        // properties and fire `ngOnChanges()`.
         this.setInputValue(propName, this.initialInputValues.get(propName));
-      } else {
-        // Keep track of inputs that were not initialized in case we need to know this for
-        // calling ngOnChanges with SimpleChanges
-        this.uninitializedInputs.add(propName);
       }
     });
 
@@ -235,8 +242,8 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
       return;
     }
 
-    const isFirstChange = this.uninitializedInputs.has(property);
-    this.uninitializedInputs.delete(property);
+    const isFirstChange = this.unchangedInputs.has(property);
+    this.unchangedInputs.delete(property);
 
     const previousValue = isFirstChange ? undefined : this.getInputValue(property);
     this.inputChanges[property] = new SimpleChange(previousValue, currentValue, isFirstChange);
