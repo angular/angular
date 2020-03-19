@@ -1,3 +1,24 @@
+<a name="9.1.0-rc.0"></a>
+# [9.1.0-rc.0](https://github.com/angular/angular/compare/9.1.0-next.5...9.1.0-rc.0) (2020-03-19)
+
+### Release Highlights
+
+* TypeScript 3.8 update
+* ngcc improvements
+  * performance optimizations
+  * concurrency & reliability improvements for monorepo use-cases (npm postinstall script no longer recommended)
+* i18n now supports RTL locale info
+* Ivy compatibility fixes
+
+
+### Bug Fixes
+
+* **core:** adhere to bootstrap options for JIT compiled components ([#35534](https://github.com/angular/angular/issues/35534)) ([e342ffd](https://github.com/angular/angular/commit/e342ffd)), closes [#35230](https://github.com/angular/angular/issues/35230)
+* **ngcc:** do not crash on entry-point that fails to compile ([#36083](https://github.com/angular/angular/issues/36083)) ([ff665b9](https://github.com/angular/angular/commit/ff665b9))
+* **ngcc:** do not crash on overlapping entry-points ([#36083](https://github.com/angular/angular/issues/36083)) ([c9f554c](https://github.com/angular/angular/commit/c9f554c))
+
+
+
 <a name="9.1.0-next.5"></a>
 # [9.1.0-next.5](https://github.com/angular/angular/compare/9.1.0-next.4...9.1.0-next.5) (2020-03-18)
 
