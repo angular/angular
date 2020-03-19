@@ -20,6 +20,12 @@ import { NestedPropertyResolver } from './nested-property-resolver';
   selector: 'ng-directive-explorer',
   templateUrl: './directive-explorer.component.html',
   styleUrls: ['./directive-explorer.component.css'],
+  providers: [
+    {
+      provide: NestedPropertyResolver,
+      useClass: NestedPropertyResolver,
+    },
+  ],
 })
 export class DirectiveExplorerComponent implements OnInit {
   directivesData: DirectivesProperties | null = null;
@@ -58,13 +64,17 @@ export class DirectiveExplorerComponent implements OnInit {
   subscribeToBackendEvents(): void {
     this._messageBus.on('elementDirectivesProperties', (data: DirectivesProperties) => {
       this.directivesData = data;
-      this._propResolver.setProperties(data);
+      if (this.currentSelectedElement && data) {
+        this._propResolver.setProperties(this.currentSelectedElement, data);
+      }
     });
 
     this._messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
       this.forest = view.forest;
       this.directivesData = view.properties;
-      this._propResolver.setProperties(view.properties);
+      if (this.currentSelectedElement && view.properties) {
+        this._propResolver.setProperties(this.currentSelectedElement, view.properties);
+      }
     });
 
     this._messageBus.on('highlightComponentInTreeFromElement', (position: ElementPosition) => {
@@ -111,9 +121,14 @@ export class DirectiveExplorerComponent implements OnInit {
     };
   }
 
-  copyPropData(propData: { [name: string]: Descriptor }): void {
+  copyPropData(directive: string): void {
     const handler = (e: ClipboardEvent) => {
-      e.clipboardData.setData('text/plain', JSON.stringify(cleanPropDataForCopying(propData)));
+      let data = {};
+      const controller = this._propResolver.getDirectiveController(directive);
+      if (controller) {
+        data = controller.getDirectiveProperties();
+      }
+      e.clipboardData.setData('text/plain', JSON.stringify(cleanPropDataForCopying(data)));
       e.preventDefault();
       document.removeEventListener('copy', handler);
       this._snackBar.open('Copied to clipboard!', '', {

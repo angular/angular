@@ -45,27 +45,15 @@ export class PropertyDataSource extends DataSource<FlatNode> {
   private _expandedData = new BehaviorSubject<FlatNode[]>([]);
   private _differ = new DefaultIterableDiffer(trackBy);
 
-  treeFlattener = new MatTreeFlattener(
-    (node: Property, level: number): FlatNode => {
-      return {
-        expandable: expandable(node.descriptor, this._messageBus),
-        prop: node,
-        level,
-      };
-    },
-    node => node.level,
-    node => node.expandable,
-    node => this._getChildren(node)
-  );
-
   constructor(
     props: { [prop: string]: Descriptor },
+    private _treeFlattener: MatTreeFlattener<Property, FlatNode>,
     private _treeControl: FlatTreeControl<FlatNode>,
     private _entityPosition: DirectivePosition,
-    private _messageBus?: MessageBus<Events>
+    private _messageBus: MessageBus<Events>
   ) {
     super();
-    this._data.next(this.treeFlattener.flattenNodes(this._arrayify(props)));
+    this._data.next(this._treeFlattener.flattenNodes(this._arrayify(props)));
   }
 
   get data(): FlatNode[] {
@@ -73,7 +61,7 @@ export class PropertyDataSource extends DataSource<FlatNode> {
   }
 
   update(props: { [prop: string]: Descriptor }): void {
-    const newData = this.treeFlattener.flattenNodes(this._arrayify(props));
+    const newData = this._treeFlattener.flattenNodes(this._arrayify(props));
 
     diff(this._differ, this.data, newData);
 
@@ -99,7 +87,7 @@ export class PropertyDataSource extends DataSource<FlatNode> {
 
     return merge(...changes).pipe(
       map(() => {
-        this._expandedData.next(this.treeFlattener.expandFlattenedNodes(this.data, this._treeControl));
+        this._expandedData.next(this._treeFlattener.expandFlattenedNodes(this.data, this._treeControl));
         return this._expandedData.value;
       })
     );
@@ -137,7 +125,7 @@ export class PropertyDataSource extends DataSource<FlatNode> {
       node.prop.descriptor.value = data.props;
       this._treeControl.expand(node);
       const props = this._arrayify(data.props, node.prop);
-      const flatNodes = this.treeFlattener.flattenNodes(props);
+      const flatNodes = this._treeFlattener.flattenNodes(props);
       flatNodes.forEach(f => (f.level += node.level + 1));
       this.data.splice(index + 1, 0, ...flatNodes);
       this._data.next(this.data);

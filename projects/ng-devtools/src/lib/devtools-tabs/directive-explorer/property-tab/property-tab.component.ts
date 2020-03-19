@@ -6,10 +6,8 @@ import { PropertyTabBodyComponent } from './property-tab-body/property-tab-body.
 @Component({
   templateUrl: './property-tab.component.html',
   selector: 'ng-property-tab',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PropertyTabComponent {
-  @Input() messageBus: MessageBus<Events>;
   @Input() currentSelectedElement: IndexedNode;
   @Input() directivesData: DirectivesProperties | null = null;
 
