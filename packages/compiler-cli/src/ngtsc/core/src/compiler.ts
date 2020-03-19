@@ -541,6 +541,29 @@ export class NgCompiler {
           // pipe's name may have changed.
           depGraph.addTransitiveDependency(file, pipe.ref.node.getSourceFile());
         }
+
+        // Components depend on the entire export scope. In addition to transitive dependencies on
+        // all directives/pipes in the export scope, they also depend on every NgModule in the
+        // scope, as changes to a module may add new directives/pipes to the scope.
+        for (const depModule of scope.ngModules) {
+          // There is a correctness issue here. To be correct, this should be a transitive
+          // dependency on the depModule file, since the depModule's exports might change via one of
+          // its dependencies, even if depModule's file itself doesn't change. However, doing this
+          // would also trigger recompilation if a non-exported component or directive changed,
+          // which causes performance issues for rebuilds.
+          //
+          // Given the rebuild issue is an edge case, currently we err on the side of performance
+          // instead of correctness. A correct and performant design would distinguish between
+          // changes to the depModule which affect its export scope and changes which do not, and
+          // only add a dependency for the former. This concept is currently in development.
+          //
+          // TODO(alxhub): fix correctness issue by understanding the semantics of the dependency.
+          depGraph.addDependency(file, depModule.getSourceFile());
+        }
+      } else {
+        // Directives (not components) and pipes only depend on the NgModule which directly declares
+        // them.
+        depGraph.addDependency(file, ngModuleFile);
       }
     }
     this.perfRecorder.stop(recordSpan);
