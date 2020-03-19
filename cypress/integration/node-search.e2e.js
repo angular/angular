@@ -41,7 +41,7 @@ describe('Search items in component tree', () => {
 
   it('should highlight correct nodes when searching and clear out', () => {
     inputSearchText('todo');
-    checkSearchedNodesLength('.matched', 3);
+    checkSearchedNodesLength('.matched', 4);
 
     // clear search input
     inputSearchText('{backspace}{backspace}{backspace}{backspace}');
@@ -50,7 +50,7 @@ describe('Search items in component tree', () => {
 
   it('should highlight correct nodes when searching and using arrow keys', () => {
     inputSearchText('todo');
-    checkSearchedNodesLength('.matched', 3);
+    checkSearchedNodesLength('.matched', 4);
 
     // press down arrow
     clickSearchArrows(false);

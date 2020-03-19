@@ -10,18 +10,9 @@ import { DirectivePropertyResolver } from '../../../property-resolver/directive-
   styleUrls: ['./property-view.component.css'],
 })
 export class PropertyViewComponent {
-  @Input() set name(name: string) {
-    this._controller = this._nestedProps.getDirectiveController(name);
-    const result = this._controller.getDirectiveControls();
-    this.dataSource = result.dataSource;
-    this.treeControl = result.treeControl;
-  }
-  dataSource: PropertyDataSource;
-  treeControl: FlatTreeControl<FlatNode>;
-
-  private _controller: DirectivePropertyResolver;
-
-  constructor(private _nestedProps: ElementPropertyResolver) {}
+  @Input() dataSource: PropertyDataSource;
+  @Input() treeControl: FlatTreeControl<FlatNode>;
+  @Input() controller: DirectivePropertyResolver;
 
   hasChild = (_: number, node: FlatNode): boolean => node.expandable;
 
@@ -42,6 +33,6 @@ export class PropertyViewComponent {
   }
 
   updateValue(newValue: any, node: FlatNode): void {
-    this._controller.updateValue(newValue, node);
+    this.controller.updateValue(newValue, node);
   }
 }

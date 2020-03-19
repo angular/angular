@@ -11,6 +11,7 @@ describe('node selection', () => {
 
       cy.get('mat-tree')
         .find('mat-tree-node:contains("app-todo[TooltipDirective]")')
+        .first()
         .click();
 
       cy.get('mat-tree')
@@ -54,6 +55,29 @@ describe('node selection', () => {
 
       cy.get('mat-tree')
         .find('mat-tree-node.selected')
+        .its('length')
+        .should('eq', 1);
+    });
+
+    it('should select nodes with same name', () => {
+      cy.get('mat-tree')
+        .find('mat-tree-node:contains("app-todo[TooltipDirective]")')
+        .first()
+        .click();
+
+      cy.get('mat-tree')
+        .find('mat-tree-node:contains("app-todo[TooltipDirective]")')
+        .last()
+        .click();
+
+      cy.get('ng-property-view')
+        .last()
+        .find('mat-tree-node:contains("todo")')
+        .click();
+
+      cy.get('ng-property-view')
+        .last()
+        .find('mat-tree-node:contains("Save the world")')
         .its('length')
         .should('eq', 1);
     });

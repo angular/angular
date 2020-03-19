@@ -18,6 +18,10 @@
         </svg>
       </button>
     </header>
-    <ng-property-view [name]="directive"></ng-property-view>
+    <ng-property-view
+      [controller]="getController(directive)"
+      [dataSource]="getDataSource(directive)"
+      [treeControl]="getTreeControl(directive)"
+    ></ng-property-view>
   </div>
 </ng-container>

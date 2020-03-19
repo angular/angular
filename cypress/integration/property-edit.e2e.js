@@ -8,6 +8,7 @@ describe('edit properties of directive in the property view tab', () => {
       // select todo node in component tree
       cy.get('mat-tree')
         .find('mat-tree-node:contains("app-todo[TooltipDirective]")')
+        .first()
         .click();
     });
 
@@ -79,7 +80,7 @@ describe('edit properties of directive in the property view tab', () => {
             .find('app-todo li')
             .not('.completed')
             .its('length')
-            .should('eq', 1);
+            .should('eq', 2);
         });
 
         // find completed variable and run through edit logic
