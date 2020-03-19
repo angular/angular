@@ -30,7 +30,7 @@ describe('Interpolation e2e tests', () => {
     let pottedPlant = element.all(by.css('img')).get(0);
     let lamp = element.all(by.css('img')).get(1);
 
-    expect(pottedPlant.getAttribute('src')).toContain('pottedPlant');
+    expect(pottedPlant.getAttribute('src')).toContain('potted-plant');
     expect(pottedPlant.isDisplayed()).toBe(true);
 
     expect(lamp.getAttribute('src')).toContain('lamp');
