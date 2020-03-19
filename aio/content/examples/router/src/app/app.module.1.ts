@@ -9,16 +9,16 @@ import { RouterModule, Routes } from '@angular/router';
 // #enddocregion import-router
 
 import { AppComponent }          from './app.component';
-import { CrisisListComponent }   from './crisis-list/crisis-list.component';
-import { HeroListComponent }     from './hero-list/hero-list.component';
+import { ClearanceListComponent }   from './clearance-list/clearance-list.component';
+import { ItemListComponent }     from './item-list/item-list.component';
 // #enddocregion first-config
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 // #docregion first-config
 
 // #docregion appRoutes
 const appRoutes: Routes = [
-  { path: 'crisis-center', component: CrisisListComponent },
-  { path: 'heroes', component: HeroListComponent },
+  { path: 'clearance-center', component: ClearanceListComponent },
+  { path: 'items', component: ItemListComponent },
 // #enddocregion first-config
 
   { path: '',   redirectTo: '/heroes', pathMatch: 'full' },
@@ -40,8 +40,8 @@ const appRoutes: Routes = [
   ],
   declarations: [
     AppComponent,
-    HeroListComponent,
-    CrisisListComponent,
+    ItemListComponent,
+    ClearanceListComponent,
 // #enddocregion first-config
     PageNotFoundComponent
 // #docregion first-config

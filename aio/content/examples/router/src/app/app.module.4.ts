@@ -10,8 +10,8 @@ import { PageNotFoundComponent }   from './page-not-found/page-not-found.compone
 import { ComposeMessageComponent } from './compose-message/compose-message.component';
 
 import { AppRoutingModule }        from './app-routing.module';
-import { HeroesModule }            from './heroes/heroes.module';
-import { CrisisCenterModule }      from './crisis-center/crisis-center.module';
+import { ItemsModule }            from './items/items.module';
+import { ClearanceCenterModule }      from './clearance-center/clearance-center.module';
 // #enddocregion crisis-center-module
 
 import { AdminModule }             from './admin/admin.module';
@@ -21,8 +21,8 @@ import { AdminModule }             from './admin/admin.module';
   imports: [
     CommonModule,
     FormsModule,
-    HeroesModule,
-    CrisisCenterModule,
+    ItemsModule,
+    ClearanceCenterModule,
 // #enddocregion crisis-center-module
     AdminModule,
 // #docregion crisis-center-module

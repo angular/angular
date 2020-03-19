@@ -22,12 +22,12 @@ const appRoutes: Routes = [
   },
   // #docregion preload-v2
   {
-    path: 'crisis-center',
-    loadChildren: () => import('./crisis-center/crisis-center.module').then(m => m.CrisisCenterModule),
+    path: 'clearance-center',
+    loadChildren: () => import('./clearance-center/clearance-center.module').then(m => m.ClearanceCenterModule),
     data: { preload: true }
   },
   // #enddocregion preload-v2
-  { path: '',   redirectTo: '/superheroes', pathMatch: 'full' },
+  { path: '',   redirectTo: '/exclusive-items', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent }
 ];
 

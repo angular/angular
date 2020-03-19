@@ -3,22 +3,22 @@
 import { NgModule }             from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { HeroListComponent }      from './hero-list/hero-list.component';
-import { CrisisListComponent }    from './crisis-list/crisis-list.component';
+import { ItemListComponent }      from './item-list/item-list.component';
+import { ClearanceListComponent }    from './clearance-list/clearance-list.component';
 import { PageNotFoundComponent }  from './page-not-found/page-not-found.component';
-import { PageNotFoundComponent as HeroDetailComponent } from './page-not-found/page-not-found.component';
+import { PageNotFoundComponent as ItemDetailComponent } from './page-not-found/page-not-found.component';
 
 // #docregion
 const appRoutes: Routes = [
-  { path: 'crisis-center', component: CrisisListComponent },
-  { path: 'hero/:id',      component: HeroDetailComponent },
+  { path: 'clearance-center', component: ClearanceListComponent },
+  { path: 'item/:id',      component: ItemDetailComponent },
   {
-    path: 'heroes',
-    component: HeroListComponent,
-    data: { title: 'Heroes List' }
+    path: 'items',
+    component: ItemListComponent,
+    data: { title: 'Item List' }
   },
   { path: '',
-    redirectTo: '/heroes',
+    redirectTo: '/items',
     pathMatch: 'full'
   },
   { path: '**', component: PageNotFoundComponent }

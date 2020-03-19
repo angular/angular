@@ -8,7 +8,7 @@ import {
 // Routable animations
 export const slideInAnimation =
   trigger('routeAnimation', [
-    transition('heroes <=> hero', [
+    transition('items <=> item', [
       style({ position: 'relative' }),
       query(':enter, :leave', [
         style({

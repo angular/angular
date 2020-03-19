@@ -15,7 +15,7 @@ const routes: Routes = [
   imports: [
     BrowserModule,
     FormsModule,
-    RouterModule.forRoot(routes, { useHash: true })  // .../#/crisis-center/
+    RouterModule.forRoot(routes, { useHash: true })  // .../#/clearance-center/
   ],
   declarations: [
     AppComponent,

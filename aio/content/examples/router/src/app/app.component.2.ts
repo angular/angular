@@ -1,4 +1,4 @@
-/* Second Heroes version */
+/* Second version */
 // #docregion
 import { Component } from '@angular/core';
 // #docregion animation-imports

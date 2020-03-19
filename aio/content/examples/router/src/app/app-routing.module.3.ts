@@ -18,7 +18,7 @@ const appRoutes: Routes = [
   },
 // #enddocregion compose
 // #docregion v3
-  { path: '',   redirectTo: '/heroes', pathMatch: 'full' },
+  { path: '',   redirectTo: '/items', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent }
 ];
 

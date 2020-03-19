@@ -9,16 +9,16 @@ import { PageNotFoundComponent }   from './page-not-found/page-not-found.compone
 import { ComposeMessageComponent } from './compose-message/compose-message.component';
 
 import { AppRoutingModule }        from './app-routing.module';
-import { HeroesModule }            from './heroes/heroes.module';
-import { CrisisCenterModule }      from './crisis-center/crisis-center.module';
+import { ItemsModule }            from './items/items.module';
+import { ClearanceCenterModule }      from './clearance-center/clearance-center.module';
 import { AuthModule }              from './auth/auth.module';
 
 @NgModule({
   imports: [
     BrowserModule,
     FormsModule,
-    HeroesModule,
-    CrisisCenterModule,
+    ItemsModule,
+    ClearanceCenterModule,
     AuthModule,
     AppRoutingModule
   ],

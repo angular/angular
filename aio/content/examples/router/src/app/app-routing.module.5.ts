@@ -26,7 +26,7 @@ const appRoutes: Routes = [
 // #docregion admin-1
   },
 // #enddocregion admin, admin-1
-  { path: '',   redirectTo: '/heroes', pathMatch: 'full' },
+  { path: '',   redirectTo: '/items', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent }
 ];
 

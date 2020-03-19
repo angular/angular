@@ -17,7 +17,7 @@ import { PageNotFoundComponent }   from './page-not-found/page-not-found.compone
 import { ComposeMessageComponent } from './compose-message/compose-message.component';
 
 import { AppRoutingModule }        from './app-routing.module';
-import { HeroesModule }            from './heroes/heroes.module';
+import { ItemsModule }            from './items/items.module';
 import { AuthModule }              from './auth/auth.module';
 
 // #docregion animations-module
@@ -29,7 +29,7 @@ import { AuthModule }              from './auth/auth.module';
     BrowserAnimationsModule,
     // #enddocregion animations-module
     FormsModule,
-    HeroesModule,
+    ItemsModule,
     AuthModule,
     AppRoutingModule,
     // #docregion animations-module

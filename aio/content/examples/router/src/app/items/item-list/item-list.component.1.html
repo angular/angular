@@ -1,0 +1,16 @@
+<!-- #docregion template -->
+<h2>ITEMS</h2>
+<ul class="items">
+  <li *ngFor="let item of items$ | async">
+    <!-- #docregion nav-to-detail -->
+    <!-- #docregion link-parameters-array -->
+    <a [routerLink]="['/item', item.id]">
+    <!-- #enddocregion link-parameters-array -->
+      <span class="badge">{{ item.id }}</span>{{ item.name }}
+    </a>
+    <!-- #enddocregion nav-to-detail -->
+  </li>
+</ul>
+
+<button routerLink="/mystery-items">Go to mystery items</button>
+<!-- #enddocregion template -->

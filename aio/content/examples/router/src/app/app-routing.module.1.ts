@@ -2,15 +2,15 @@
 import { NgModule }              from '@angular/core';
 import { RouterModule, Routes }  from '@angular/router';
 
-import { CrisisListComponent }   from './crisis-list/crisis-list.component';
-import { HeroListComponent }     from './hero-list/hero-list.component';
+import { ClearanceListComponent }   from './clearance-list/clearance-list.component';
+import { ItemListComponent }     from './item-list/item-list.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
 // #docregion appRoutes
 const appRoutes: Routes = [
-  { path: 'crisis-center', component: CrisisListComponent },
-  { path: 'heroes',        component: HeroListComponent },
-  { path: '',   redirectTo: '/heroes', pathMatch: 'full' },
+  { path: 'clearance-center', component: ClearanceListComponent },
+  { path: 'items',        component: ItemListComponent },
+  { path: '',   redirectTo: '/clearance', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent }
 ];
 // #enddocregion appRoutes

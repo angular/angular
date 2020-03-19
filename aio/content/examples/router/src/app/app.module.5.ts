@@ -7,8 +7,8 @@ import { FormsModule }    from '@angular/forms';
 import { AppComponent }            from './app.component';
 import { AppRoutingModule }        from './app-routing.module';
 
-import { HeroesModule }            from './heroes/heroes.module';
-import { CrisisCenterModule }      from './crisis-center/crisis-center.module';
+import { ItemsModule }            from './items/items.module';
+import { ClearanceCenterModule }      from './clearance-center/clearance-center.module';
 
 import { ComposeMessageComponent } from './compose-message/compose-message.component';
 import { PageNotFoundComponent }   from './page-not-found/page-not-found.component';
@@ -19,8 +19,8 @@ import { AdminModule }             from './admin/admin.module';
   imports: [
     CommonModule,
     FormsModule,
-    HeroesModule,
-    CrisisCenterModule,
+    ItemsModule,
+    ClearanceCenterModule,
     AdminModule,
     AppRoutingModule
   ],

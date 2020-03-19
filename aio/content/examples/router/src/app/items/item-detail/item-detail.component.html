@@ -1,0 +1,13 @@
+<h2>ITEMS</h2>
+<div *ngIf="item$ | async as item">
+  <h3>"{{ item.name }}"</h3>
+  <div>
+    <label>Id: </label>{{ item.id }}</div>
+  <div>
+    <label>Name: </label>
+    <input [(ngModel)]="item.name" placeholder="name"/>
+  </div>
+  <p>
+    <button (click)="gotoItems(item)">Back</button>
+  </p>
+</div>

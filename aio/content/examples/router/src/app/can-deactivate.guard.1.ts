@@ -5,26 +5,27 @@ import { CanDeactivate,
          ActivatedRouteSnapshot,
          RouterStateSnapshot }  from '@angular/router';
 
-import { CrisisDetailComponent } from './crisis-center/crisis-detail/crisis-detail.component';
+// import { ClearanceDetailComponent } from './clearance-center/clearance-detail/clearance-detail.component';
+import { ClearanceDetailComponent} from './clearance-center/clearance-detail/clearance-detail.component';
 
 @Injectable({
   providedIn: 'root',
 })
-export class CanDeactivateGuard implements CanDeactivate<CrisisDetailComponent> {
+export class CanDeactivateGuard implements CanDeactivate<ClearanceDetailComponent> {
 
   canDeactivate(
-    component: CrisisDetailComponent,
+    component: ClearanceDetailComponent,
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | boolean {
-    // Get the Crisis Center ID
+    // Get the Clearance Center ID
     console.log(route.paramMap.get('id'));
 
     // Get the current URL
     console.log(state.url);
 
-    // Allow synchronous navigation (`true`) if no crisis or the crisis is unchanged
-    if (!component.crisis || component.crisis.name === component.editName) {
+    // Allow synchronous navigation (`true`) if no clearance or the clearance is unchanged
+    if (!component.clearanceItem || component.clearanceItem.name === component.editName) {
       return true;
     }
     // Otherwise ask the user with the dialog service and return its

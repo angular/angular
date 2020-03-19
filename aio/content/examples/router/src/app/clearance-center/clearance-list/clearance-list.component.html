@@ -1,0 +1,12 @@
+<!-- #docregion relative-navigation-router-link -->
+  <ul class="clearance-items">
+    <li *ngFor="let clearanceItem of clearanceItems$ | async"
+      [class.selected]="clearanceItem.id === selectedId">
+      <a [routerLink]="[clearanceItem.id]">
+        <span class="badge">{{ clearanceItem.id }}</span>{{ clearanceItem.name }}
+      </a>
+    </li>
+  </ul>
+
+  <router-outlet></router-outlet>
+<!-- #enddocregion relative-navigation-router-link -->
