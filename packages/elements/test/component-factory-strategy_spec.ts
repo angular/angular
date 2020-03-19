@@ -94,6 +94,7 @@ describe('ComponentFactoryNgElementStrategy', () => {
     it('should call ngOnChanges with the change', () => {
       expectSimpleChanges(componentRef.instance.simpleChanges[0], {
         fooFoo: new SimpleChange(undefined, 'fooFoo-1', true),
+        falsyUndefined: new SimpleChange(undefined, undefined, true),
         falsyNull: new SimpleChange(undefined, null, true),
         falsyEmpty: new SimpleChange(undefined, '', true),
         falsyFalse: new SimpleChange(undefined, false, true),
@@ -104,11 +105,13 @@ describe('ComponentFactoryNgElementStrategy', () => {
     it('should call ngOnChanges with proper firstChange value', fakeAsync(() => {
          strategy.setInputValue('fooFoo', 'fooFoo-2');
          strategy.setInputValue('barBar', 'barBar-1');
+         strategy.setInputValue('falsyUndefined', 'notanymore');
          tick(16);  // scheduler waits 16ms if RAF is unavailable
          (strategy as any).detectChanges();
          expectSimpleChanges(componentRef.instance.simpleChanges[1], {
            fooFoo: new SimpleChange('fooFoo-1', 'fooFoo-2', false),
            barBar: new SimpleChange(undefined, 'barBar-1', true),
+           falsyUndefined: new SimpleChange(undefined, 'notanymore', false),
          });
        }));
   });
