@@ -74,11 +74,6 @@ describe('DirectiveExplorerComponent', () => {
       nodeMock = jasmine.createSpyObj('node', ['position', 'children']);
     });
 
-    it('sets current selected element', () => {
-      comp.handleNodeSelection(nodeMock);
-      expect(comp.currentSelectedElement).toBe(nodeMock);
-    });
-
     it('fires node selection events', () => {
       nodeMock.position = [0];
       comp.handleNodeSelection(nodeMock);
