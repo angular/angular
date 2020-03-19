@@ -100,6 +100,12 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
       return true;
     }
 
+    // If we're in a browser that doesn't support URL at this point, don't go any further
+    // since browser builds use requirejs which will fail on the `require` call below.
+    if (typeof window !== 'undefined' && window) {
+      return false;
+    }
+
     // In older Node.js versions, the `URL` global does not exist. We can use `url` instead.
     const url = (typeof require === 'function') && require('url');
     return url && (typeof url.parse === 'function') && (typeof url.resolve === 'function');
