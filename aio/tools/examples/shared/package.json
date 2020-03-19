@@ -26,6 +26,7 @@
     "@angular/core": "~9.0.6",
     "@angular/elements": "~9.0.6",
     "@angular/forms": "~9.0.6",
+    "@angular/localize": "~9.0.6",
     "@angular/platform-browser": "~9.0.6",
     "@angular/platform-browser-dynamic": "~9.0.6",
     "@angular/platform-server": "~9.0.6",

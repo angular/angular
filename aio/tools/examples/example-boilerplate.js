@@ -32,7 +32,7 @@ const cliRelativePath = BOILERPLATE_PATHS.cli.map(file => `../cli/${file}`);
 
 BOILERPLATE_PATHS.elements = [...cliRelativePath, 'package.json'];
 
-BOILERPLATE_PATHS.i18n = [...cliRelativePath, 'angular.json', 'package.json'];
+BOILERPLATE_PATHS.i18n = [...cliRelativePath, 'src/polyfills.ts', 'angular.json', 'package.json'];
 
 BOILERPLATE_PATHS['service-worker'] = [...cliRelativePath, 'angular.json', 'package.json'];
 
@@ -62,6 +62,7 @@ BOILERPLATE_PATHS['cli-ajs'] = [
 
 BOILERPLATE_PATHS.viewengine = {
   systemjs: ['rollup-config.js', 'tsconfig-aot.json'],
+  i18n: ['src/polyfills.ts'],
   cli: ['tsconfig.json']
 };
 
