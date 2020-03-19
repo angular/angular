@@ -14,7 +14,7 @@ import { ApplicationOperations } from '../../application-operations';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
 import { throttleTime } from 'rxjs/operators';
-import { NestedPropertyResolver } from './nested-property-resolver';
+import { ElementPropertyResolver } from './property-resolver/element-property-resolver';
 
 @Component({
   selector: 'ng-directive-explorer',
@@ -22,28 +22,29 @@ import { NestedPropertyResolver } from './nested-property-resolver';
   styleUrls: ['./directive-explorer.component.css'],
   providers: [
     {
-      provide: NestedPropertyResolver,
-      useClass: NestedPropertyResolver,
+      provide: ElementPropertyResolver,
+      useClass: ElementPropertyResolver,
     },
   ],
 })
 export class DirectiveExplorerComponent implements OnInit {
   directivesData: DirectivesProperties | null = null;
-  currentSelectedElement: IndexedNode = null;
+  currentSelectedElement: IndexedNode | null = null;
   forest: DevToolsNode[];
   highlightIDinTreeFromElement: ElementPosition | null = null;
 
   splitDirection = 'horizontal';
 
-  private changeSize = new Subject<Event>();
+  private _changeSize = new Subject<Event>();
+  private _clickedElement: IndexedNode | null = null;
 
   constructor(
     private _appOperations: ApplicationOperations,
     private _snackBar: MatSnackBar,
     private _messageBus: MessageBus<Events>,
-    private _propResolver: NestedPropertyResolver
+    private _propResolver: ElementPropertyResolver
   ) {
-    this.changeSize
+    this._changeSize
       .asObservable()
       .pipe(throttleTime(100))
       .subscribe(event => this.handleResize(event));
@@ -53,26 +54,33 @@ export class DirectiveExplorerComponent implements OnInit {
     this.subscribeToBackendEvents();
   }
 
-  handleNodeSelection(node: IndexedNode): void {
-    this.currentSelectedElement = node;
-    if (this.currentSelectedElement) {
+  unselectNode(): void {
+    console.log('unselectNode');
+    this.currentSelectedElement = this._clickedElement = null;
+  }
+
+  handleNodeSelection(node: IndexedNode | null): void {
+    if (node) {
+      this._clickedElement = node;
       this._messageBus.emit('getElementDirectivesProperties', [node.position]);
       this._messageBus.emit('setSelectedComponent', [node.position]);
+    } else {
+      this._clickedElement = this.currentSelectedElement = null;
     }
   }
 
   subscribeToBackendEvents(): void {
     this._messageBus.on('elementDirectivesProperties', (data: DirectivesProperties) => {
-      this.directivesData = data;
-      if (this.currentSelectedElement && data) {
+      this.currentSelectedElement = this._clickedElement;
+      if (data) {
         this._propResolver.setProperties(this.currentSelectedElement, data);
       }
     });
 
     this._messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
       this.forest = view.forest;
-      this.directivesData = view.properties;
-      if (this.currentSelectedElement && view.properties) {
+      this.currentSelectedElement = this._clickedElement;
+      if (view.properties) {
         this._propResolver.setProperties(this.currentSelectedElement, view.properties);
       }
     });
@@ -149,7 +157,7 @@ export class DirectiveExplorerComponent implements OnInit {
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event): void {
-    this.changeSize.next(event);
+    this._changeSize.next(event);
   }
 
   handleResize(event: Event): void {

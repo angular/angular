@@ -1,7 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { FlatTreeControl } from '@angular/cdk/tree';
-import { PropertyDataSource } from '../../../property-data-source';
-import { NestedPropertyResolver, FlatNode, PropertyController } from '../../../nested-property-resolver';
+import { PropertyDataSource } from '../../../property-resolver/property-data-source';
+import { ElementPropertyResolver, FlatNode } from '../../../property-resolver/element-property-resolver';
+import { DirectivePropertyResolver } from '../../../property-resolver/directive-property-resolver';
 
 @Component({
   selector: 'ng-property-view',
@@ -18,9 +19,9 @@ export class PropertyViewComponent {
   dataSource: PropertyDataSource;
   treeControl: FlatTreeControl<FlatNode>;
 
-  private _controller: PropertyController;
+  private _controller: DirectivePropertyResolver;
 
-  constructor(private _nestedProps: NestedPropertyResolver) {}
+  constructor(private _nestedProps: ElementPropertyResolver) {}
 
   hasChild = (_: number, node: FlatNode): boolean => node.expandable;
 
@@ -42,6 +43,5 @@ export class PropertyViewComponent {
 
   updateValue(newValue: any, node: FlatNode): void {
     this._controller.updateValue(newValue, node);
-    node.prop.descriptor.value = newValue;
   }
 }

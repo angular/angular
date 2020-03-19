@@ -5,7 +5,7 @@ import { MatTreeFlattener } from '@angular/material/tree';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { map } from 'rxjs/operators';
 import { DefaultIterableDiffer } from '@angular/core';
-import { diff } from '../diffing';
+import { diff } from '../../diffing';
 
 const expandable = (prop: Descriptor, messageBus?: MessageBus<Events>) => {
   if (!prop) {
