@@ -6,6 +6,12 @@ import { getExpandedDirectiveProperties } from './property-expanded-directive-pr
 import { Observable } from 'rxjs';
 import { Property, FlatNode } from './element-property-resolver';
 
+export enum PropertyViewFilterOptions {
+  INPUTS,
+  OUTPUTS,
+  STATE,
+}
+
 const expandable = (prop: Descriptor) => {
   if (!prop) {
     return false;
@@ -60,8 +66,16 @@ export class DirectivePropertyResolver {
     };
   }
 
-  getDirectiveProperties(): { [name: string]: Descriptor } {
+  get directiveProperties(): { [name: string]: Descriptor } {
     return this._props.props;
+  }
+
+  get directiveInputs(): string[] {
+    return Object.keys(this._props.inputs || {});
+  }
+
+  get directiveOutputs(): string[] {
+    return Object.keys(this._props.outputs || {});
   }
 
   getExpandedProperties(): NestedProp[] {
@@ -91,19 +105,14 @@ export class DirectivePropertyResolver {
 
   private _getChildren(prop: Property): Property[] | undefined {
     const descriptor = prop.descriptor;
-    if (descriptor.type === PropType.Object && !(descriptor.value instanceof Observable)) {
+    if (
+      (descriptor.type === PropType.Object || descriptor.type === PropType.Array) &&
+      !(descriptor.value instanceof Observable)
+    ) {
       return Object.keys(descriptor.value || {}).map(name => {
         return {
           name,
           descriptor: descriptor.value ? descriptor.value[name] : null,
-          parent: prop,
-        };
-      });
-    } else if (descriptor.type === PropType.Array && !(descriptor.value instanceof Observable)) {
-      return (descriptor.value || []).map((el: Descriptor, idx: number) => {
-        return {
-          name: idx.toString(),
-          descriptor: el,
           parent: prop,
         };
       });

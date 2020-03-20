@@ -1,4 +1,4 @@
-.explorer-panel header {
+header {
   background-color: #eee;
   padding-left: 9px;
   border-top: 1px solid #ccc;
@@ -21,4 +21,8 @@
   width: 18px;
   line-height: 15px;
   margin-right: 7px;
+}
+
+:host /deep/ .mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
+  line-height: 25px;
 }
