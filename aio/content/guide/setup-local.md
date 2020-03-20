@@ -18,10 +18,18 @@ If you are new to Angular, see [Getting Started](start). Getting Started helps y
 {@a prerequisites}
 ## Prerequisites
 
-Before you begin, make sure your development environment includes `Node.js®` and an npm package manager.
+To use the Angular framework, you should be familiar with the following:
+
+* [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/A_re-introduction_to_JavaScript)
+* [HTML](https://developer.mozilla.org/docs/Learn/HTML/Introduction_to_HTML)
+* [CSS](https://developer.mozilla.org/docs/Learn/CSS/First_steps)
+
+Knowledge of [TypeScript](https://www.typescriptlang.org/) is helpful, but not required.
 
 {@a nodejs}
 ### Node.js
+
+Make sure your development environment includes `Node.js®` and an npm package manager.
 
 Angular requires a [current, active LTS, or maintenance LTS](https://nodejs.org/about/releases/) version of `Node.js`. See the `engines` key for the specific version requirements in our [package.json](https://unpkg.com/@angular/cli/package.json).
 
