@@ -153,7 +153,7 @@ It marks that `<li>` element (and its children) as the "repeater template":
 <div class="alert is-important">
 
 Don't forget the leading asterisk (\*) in `*ngFor`. It is an essential part of the syntax.
-For more information, see the [Template Syntax](guide/template-syntax#ngFor) page.
+Read more about `ngFor` and `*` in the [ngFor section](guide/template-syntax#ngfor) of the [Template Syntax](guide/template-syntax) page.
 
 </div>
 
