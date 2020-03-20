@@ -17,11 +17,11 @@ const extendWindowOperations = <T>(target, classImpl: T) => {
 };
 
 const chromeWindowExtensions = {
-  findConstructorByPosition: (serializedId: string): Element => {
+  findConstructorByPosition: (serializedId: string): Element | undefined => {
     const node = findNodeFromSerializedPosition(serializedId);
     if (node === null) {
       console.error(`Cannot find element associated with node ${serializedId}`);
-      return null;
+      return;
     }
     const root = node.nativeElement instanceof HTMLElement && ng.getComponent(node.nativeElement);
     if (root) {
@@ -30,11 +30,11 @@ const chromeWindowExtensions = {
       console.error('This component has no instance and therefore no constructor');
     }
   },
-  findDomElementByPosition: (serializedId: string): Node => {
+  findDomElementByPosition: (serializedId: string): Node | undefined => {
     const node = findNodeFromSerializedPosition(serializedId);
     if (node === null) {
       console.error(`Cannot find element associated with node ${serializedId}`);
-      return null;
+      return undefined;
     }
     return node.nativeElement;
   },

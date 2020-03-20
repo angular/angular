@@ -1,37 +1,48 @@
 const ports: {
-  [tab: string]: {
-    'content-script': chrome.runtime.Port;
-    devtools: chrome.runtime.Port;
-  };
+  [tab: string]:
+    | {
+        'content-script': chrome.runtime.Port | null;
+        devtools: chrome.runtime.Port | null;
+      }
+    | undefined;
 } = {};
 
 chrome.runtime.onConnect.addListener(port => {
-  let tab = null;
-  let name = null;
+  let tab: string | null = null;
+  let name: string | null = null;
   console.log('Connection event in the background script');
   if (isNumeric(port.name)) {
     tab = port.name;
     console.log('Angular devtools connected, injecting the content script', port.name, ports[tab]);
     name = 'devtools';
-    installContentScript(+port.name);
+    installContentScript(parseInt(port.name, 10));
   } else {
+    if (!port.sender || !port.sender.tab) {
+      console.error('Unable to access the port sender and sender tab');
+      return;
+    }
+    if (port.sender.tab.id === undefined) {
+      console.error('Sender tab id is undefined');
+      return;
+    }
     console.log('Content script connected', port.sender.tab.id);
-    tab = port.sender.tab.id;
+    tab = port.sender.tab.id.toString();
     name = 'content-script';
   }
 
-  if (!ports[tab]) {
+  let portsTab = ports[tab];
+  if (!portsTab) {
     console.log('Creating a tab port');
-    ports[tab] = {
+    portsTab = ports[tab] = {
       devtools: null,
       'content-script': null,
     };
   }
 
-  ports[tab][name] = port;
+  portsTab[name] = port;
 
-  if (ports[tab].devtools && ports[tab]['content-script']) {
-    doublePipe(ports[tab].devtools, ports[tab]['content-script'], tab);
+  if (portsTab.devtools && portsTab['content-script']) {
+    doublePipe(portsTab.devtools, portsTab['content-script'], tab);
   }
 });
 
@@ -44,7 +55,11 @@ const installContentScript = (tabId: number) => {
   chrome.tabs.executeScript(tabId, { file: '/content-script.js' }, () => {});
 };
 
-const doublePipe = (devtoolsPort: chrome.runtime.Port, contentScriptPort: chrome.runtime.Port, tab: string) => {
+const doublePipe = (devtoolsPort: chrome.runtime.Port | null, contentScriptPort: chrome.runtime.Port, tab: string) => {
+  if (devtoolsPort === null) {
+    console.warn('DevTools port is equal to null');
+    return;
+  }
   console.log('Creating two-way communication channel', Date.now(), ports);
 
   const onDevToolsMessage = (message: chrome.runtime.Port) => {
