@@ -13,6 +13,10 @@ export class TooltipDirective {
     },
   };
 
+  constructor() {
+    setInterval(() => this.nested.child.grandchild.prop++, 500);
+  }
+
   @HostListener('click')
   handleClick(): void {
     this.visible = !this.visible;

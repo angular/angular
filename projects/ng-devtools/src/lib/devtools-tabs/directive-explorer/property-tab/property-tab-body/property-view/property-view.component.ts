@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { PropertyDataSource } from '../../../property-resolver/property-data-source';
-import { ElementPropertyResolver, FlatNode } from '../../../property-resolver/element-property-resolver';
+import { FlatNode } from '../../../property-resolver/element-property-resolver';
 import { DirectivePropertyResolver } from '../../../property-resolver/directive-property-resolver';
 
 @Component({

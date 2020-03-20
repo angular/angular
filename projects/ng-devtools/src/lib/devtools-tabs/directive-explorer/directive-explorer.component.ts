@@ -8,6 +8,8 @@ import {
   ComponentExplorerView,
   ElementPosition,
   Descriptor,
+  PropertyQuery,
+  PropertyQueryTypes,
 } from 'protocol';
 import { IndexedNode } from './directive-forest/index-forest';
 import { ApplicationOperations } from '../../application-operations';
@@ -51,32 +53,21 @@ export class DirectiveExplorerComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // setInterval(() => this.refresh(), 1);
     this.subscribeToBackendEvents();
-  }
-
-  unselectNode(): void {
-    console.log('unselectNode');
-    this.currentSelectedElement = this._clickedElement = null;
   }
 
   handleNodeSelection(node: IndexedNode | null): void {
     if (node) {
       this._clickedElement = node;
-      this._messageBus.emit('getElementDirectivesProperties', [node.position]);
       this._messageBus.emit('setSelectedComponent', [node.position]);
+      this.refresh();
     } else {
       this._clickedElement = this.currentSelectedElement = null;
     }
   }
 
   subscribeToBackendEvents(): void {
-    this._messageBus.on('elementDirectivesProperties', (data: DirectivesProperties) => {
-      this.currentSelectedElement = this._clickedElement;
-      if (data && this.currentSelectedElement) {
-        this._propResolver.setProperties(this.currentSelectedElement, data);
-      }
-    });
-
     this._messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
       this.forest = view.forest;
       this.currentSelectedElement = this._clickedElement;
@@ -122,13 +113,25 @@ export class DirectiveExplorerComponent implements OnInit {
     this._appOperations.selectDomElement(node.position);
   }
 
-  private _constructViewQuery(): ComponentExplorerViewQuery {
-    if (!this.currentSelectedElement) {
-      return { selectedElement: null, expandedProperties: null };
+  private _constructViewQuery(): ComponentExplorerViewQuery | undefined {
+    if (!this._clickedElement) {
+      return;
     }
     return {
-      selectedElement: this.currentSelectedElement.position,
-      expandedProperties: this._propResolver.getExpandedProperties(),
+      selectedElement: this._clickedElement.position,
+      propertyQuery: this._getPropertyQuery(),
+    };
+  }
+
+  private _getPropertyQuery(): PropertyQuery {
+    if (this._clickedElement !== this.currentSelectedElement) {
+      return {
+        type: PropertyQueryTypes.All,
+      };
+    }
+    return {
+      type: PropertyQueryTypes.Specified,
+      properties: this._propResolver.getExpandedProperties(),
     };
   }
 
