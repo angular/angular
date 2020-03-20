@@ -17,5 +17,8 @@ export function validateFile(filePath: string) {
   const commitMessage = readFileSync(join(getRepoBaseDir(), filePath), 'utf8');
   if (validateCommitMessage(commitMessage)) {
     console.info('√  Valid commit message');
+    return;
   }
+  // If the validation did not return true, exit as a failure.
+  process.exit(1);
 }

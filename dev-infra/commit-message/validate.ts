@@ -8,6 +8,12 @@
 import {getAngularDevConfig} from '../utils/config';
 import {CommitMessageConfig} from './config';
 
+/** Options for commit message validation. */
+export interface ValidateCommitMessageOptions {
+  disallowSquash?: boolean;
+  nonFixupCommitHeaders?: string[];
+}
+
 const FIXUP_PREFIX_RE = /^fixup! /i;
 const GITHUB_LINKING_RE = /((closed?s?)|(fix(es)?(ed)?)|(resolved?s?))\s\#(\d+)/ig;
 const SQUASH_PREFIX_RE = /^squash! /i;
@@ -26,17 +32,17 @@ export function parseCommitMessage(commitMsg: string) {
   let subject = '';
 
   if (COMMIT_HEADER_RE.test(commitMsg)) {
-    header = COMMIT_HEADER_RE.exec(commitMsg) ![1]
+    header = COMMIT_HEADER_RE.exec(commitMsg)![1]
                  .replace(FIXUP_PREFIX_RE, '')
                  .replace(SQUASH_PREFIX_RE, '');
   }
   if (COMMIT_BODY_RE.test(commitMsg)) {
-    body = COMMIT_BODY_RE.exec(commitMsg) ![1];
+    body = COMMIT_BODY_RE.exec(commitMsg)![1];
     bodyWithoutLinking = body.replace(GITHUB_LINKING_RE, '');
   }
 
   if (TYPE_SCOPE_RE.test(header)) {
-    const parsedCommitHeader = TYPE_SCOPE_RE.exec(header) !;
+    const parsedCommitHeader = TYPE_SCOPE_RE.exec(header)!;
     type = parsedCommitHeader[1];
     scope = parsedCommitHeader[2];
     subject = parsedCommitHeader[3];
@@ -54,10 +60,9 @@ export function parseCommitMessage(commitMsg: string) {
   };
 }
 
-
 /** Validate a commit message against using the local repo's config. */
 export function validateCommitMessage(
-    commitMsg: string, disallowSquash: boolean = false, nonFixupCommitHeaders?: string[]) {
+    commitMsg: string, options: ValidateCommitMessageOptions = {}) {
   function error(errorMessage: string) {
     console.error(
         `INVALID COMMIT MSG: \n` +
@@ -78,7 +83,7 @@ export function validateCommitMessage(
     return true;
   }
 
-  if (commit.isSquash && disallowSquash) {
+  if (commit.isSquash && options.disallowSquash) {
     error('The commit must be manually squashed into the target commit');
     return false;
   }
@@ -86,11 +91,11 @@ export function validateCommitMessage(
   // If it is a fixup commit and `nonFixupCommitHeaders` is not empty, we only care to check whether
   // there is a corresponding non-fixup commit (i.e. a commit whose header is identical to this
   // commit's header after stripping the `fixup! ` prefix).
-  if (commit.isFixup && nonFixupCommitHeaders) {
-    if (!nonFixupCommitHeaders.includes(commit.header)) {
+  if (commit.isFixup && options.nonFixupCommitHeaders) {
+    if (!options.nonFixupCommitHeaders.includes(commit.header)) {
       error(
           'Unable to find match for fixup commit among prior commits: ' +
-          (nonFixupCommitHeaders.map(x => `\n      ${x}`).join('') || '-'));
+          (options.nonFixupCommitHeaders.map(x => `\n      ${x}`).join('') || '-'));
       return false;
     }
 
@@ -118,8 +123,8 @@ export function validateCommitMessage(
   }
 
   if (commit.bodyWithoutLinking.trim().length < config.minBodyLength) {
-    error(
-        `The commit message body does not meet the minimum length of ${config.minBodyLength} characters`);
+    error(`The commit message body does not meet the minimum length of ${
+        config.minBodyLength} characters`);
     return false;
   }
 

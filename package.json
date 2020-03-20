@@ -22,7 +22,7 @@
     "preinstall": "node tools/yarn/check-yarn.js",
     "postinstall": "node scripts/webdriver-manager-update.js && node --preserve-symlinks --preserve-symlinks-main ./tools/postinstall-patches.js",
     "check-env": "gulp check-env",
-    "commitmsg": "node ./scripts/git/commit-msg.js",
+    "commitmsg": "yarn -s ng-dev commit-message pre-commit-validate",
     "test-ivy-aot": "bazelisk test --config=ivy --build_tag_filters=-no-ivy-aot,-fixme-ivy-aot --test_tag_filters=-no-ivy-aot,-fixme-ivy-aot",
     "test-non-ivy": "bazelisk test --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only",
     "test-fixme-ivy-aot": "bazelisk test --config=ivy --build_tag_filters=-no-ivy-aot --test_tag_filters=-no-ivy-aot",
