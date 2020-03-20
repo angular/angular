@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { PropertyDataSource } from '../../../../property-resolver/property-data-source';
 import { FlatNode } from '../../../../property-resolver/element-property-resolver';
@@ -9,12 +9,21 @@ import { DirectivePropertyResolver } from '../../../../property-resolver/directi
   templateUrl: './property-view-body.component.html',
   styleUrls: ['./property-view-body.component.css'],
 })
-export class PropertyViewBodyComponent {
+export class PropertyViewBodyComponent implements OnChanges {
   @Input() dataSource: PropertyDataSource;
   @Input() treeControl: FlatTreeControl<FlatNode>;
   @Input() controller: DirectivePropertyResolver;
+  @Input() filterList: string[] | null = null;
 
   hasChild = (_: number, node: FlatNode): boolean => node.expandable;
+
+  ngOnChanges(): void {
+    this.filterTreeNodes();
+  }
+
+  filterTreeNodes(): void {
+    this.dataSource.filterDataSource(this.filterList);
+  }
 
   toggle(node: FlatNode): void {
     if (this.treeControl.isExpanded(node)) {

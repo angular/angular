@@ -86,7 +86,7 @@ describe('Search items in component tree', () => {
     checkComponentName('app-todos');
 
     // should display correct title for properties panel
-    cy.get('header').should('have.text', ' Properties of app-todos ');
+    cy.get('header span').should('have.text', ' Properties of app-todos ');
 
     // should show correct component properties
     cy.get('ng-property-view').find('mat-tree-node');

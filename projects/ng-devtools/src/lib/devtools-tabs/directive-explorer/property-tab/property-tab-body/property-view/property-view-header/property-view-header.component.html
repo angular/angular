@@ -1,5 +1,16 @@
 <header>
-  Properties of {{ directive }}
+  <span> Properties of {{ directive }} </span>
+  <mat-button-toggle-group [multiple]="true" (change)="filterProperties($event)">
+    <mat-button-toggle [value]="cmpFilterOptions.INPUTS" [checked]="true">
+      Inputs
+    </mat-button-toggle>
+    <mat-button-toggle [value]="cmpFilterOptions.OUTPUTS" [checked]="true">
+      Outputs
+    </mat-button-toggle>
+    <mat-button-toggle [value]="cmpFilterOptions.STATE" [checked]="true">
+      State
+    </mat-button-toggle>
+  </mat-button-toggle-group>
   <button mat-icon-button (click)="copyPropData.emit(directive)">
     <svg
       xmlns="http://www.w3.org/2000/svg"

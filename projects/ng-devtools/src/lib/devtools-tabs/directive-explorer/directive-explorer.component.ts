@@ -46,7 +46,6 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
   ],
 })
 export class DirectiveExplorerComponent implements OnInit {
-  directivesData: DirectivesProperties | null = null;
   currentSelectedElement: IndexedNode | null = null;
   forest: DevToolsNode[];
   highlightIDinTreeFromElement: ElementPosition | null = null;
@@ -189,7 +188,7 @@ export class DirectiveExplorerComponent implements OnInit {
       let data = {};
       const controller = this._propResolver.getDirectiveController(directive);
       if (controller) {
-        data = controller.getDirectiveProperties();
+        data = controller.directiveProperties;
       }
       if (!e.clipboardData) {
         return;

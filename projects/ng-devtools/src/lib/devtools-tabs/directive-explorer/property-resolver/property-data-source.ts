@@ -7,6 +7,20 @@ import { map } from 'rxjs/operators';
 import { DefaultIterableDiffer } from '@angular/core';
 import { diff } from '../../diffing';
 import { FlatNode, Property } from './element-property-resolver';
+import { PropertyViewFilterOptions } from './directive-property-resolver';
+
+const expandable = (prop: Descriptor, messageBus?: MessageBus<Events>) => {
+  if (!prop) {
+    return false;
+  }
+  if (!prop.value && !messageBus) {
+    return false;
+  }
+  if (!prop.expandable) {
+    return false;
+  }
+  return !(prop.type !== PropType.Object && prop.type !== PropType.Array);
+};
 
 const trackBy = (_: number, item: FlatNode) => {
   return `#${item.prop.name}#${item.level}`;
@@ -18,6 +32,8 @@ export class PropertyDataSource extends DataSource<FlatNode> {
   private _expandedData = new BehaviorSubject<FlatNode[]>([]);
   private _differ = new DefaultIterableDiffer(trackBy);
 
+  private readonly _originalData: FlatNode[];
+
   constructor(
     props: { [prop: string]: Descriptor },
     private _treeFlattener: MatTreeFlattener<Property, FlatNode>,
@@ -28,7 +44,8 @@ export class PropertyDataSource extends DataSource<FlatNode> {
     private _onReceivedNestedProperties: () => void
   ) {
     super();
-    this._data.next(this._treeFlattener.flattenNodes(this._arrayify(props)));
+    this._originalData = this._treeFlattener.flattenNodes(this._arrayify(props));
+    this._data.next(this._originalData);
   }
 
   get data(): FlatNode[] {
@@ -110,25 +127,23 @@ export class PropertyDataSource extends DataSource<FlatNode> {
     });
   }
 
-  private _getChildren(prop: Property): Property[] {
-    const descriptor = prop.descriptor;
-    if (descriptor.type === PropType.Object && !(descriptor.value instanceof Observable)) {
-      return Object.keys(descriptor.value || {}).map(name => {
-        return {
-          name,
-          descriptor: descriptor.value ? descriptor.value[name] : null,
-          parent: prop,
-        };
-      });
-    } else if (descriptor.type === PropType.Array && !(descriptor.value instanceof Observable)) {
-      return (descriptor.value || []).map((el: Descriptor, idx: number) => {
-        return {
-          name: idx.toString(),
-          descriptor: el,
-          parent: prop,
-        };
-      });
+  filterDataSource(filter: string[] | null): void {
+    if (filter === null) {
+      return;
     }
-    throw new Error('Unexpected data type');
+    let pushFlag = false;
+    const filteredData: FlatNode[] = [];
+
+    // tslint:disable-next-line:prefer-for-of
+    for (let i = 0; i < this._originalData.length; i++) {
+      const node = this._originalData[i];
+      if (node.level === 0) {
+        pushFlag = filter.includes(node.prop.name);
+      }
+      if (pushFlag) {
+        filteredData.push(node);
+      }
+    }
+    this._data.next(filteredData);
   }
 }
