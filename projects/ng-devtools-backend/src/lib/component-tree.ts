@@ -41,11 +41,15 @@ export const getLatestComponentState = (query: ComponentExplorerViewQuery): Dire
     if (query.propertyQuery.type === PropertyQueryTypes.All) {
       result[dir.name] = {
         props: serializeDirectiveState(dir.instance),
+        inputs: getDirectiveMetaData(dir.instance).inputs(),
+        outputs: getDirectiveMetaData(dir.instance).outputs(),
       };
     }
     if (query.propertyQuery.type === PropertyQueryTypes.Specified) {
       result[dir.name] = {
         props: deeplySerializeSelectedProperties(dir.instance, query.propertyQuery.properties[dir.name] || []),
+        inputs: getDirectiveMetaData(dir.instance).inputs(),
+        outputs: getDirectiveMetaData(dir.instance).outputs(),
       };
     }
   };
@@ -56,6 +60,22 @@ export const getLatestComponentState = (query: ComponentExplorerViewQuery): Dire
   }
 
   return result;
+};
+
+export const getDirectiveMetaData = (dir: any) => {
+  const getDirInputOrOutput = (inputOrOutputKey: 'inputs' | 'outputs') => {
+    try {
+      return dir.constructor.ɵcmp ? dir.constructor.ɵcmp[inputOrOutputKey] : dir.constructor.ɵdir[inputOrOutputKey];
+    } catch {
+      console.warn('Could not find metadata for: ', dir);
+      return {};
+    }
+  };
+
+  return {
+    inputs: () => getDirInputOrOutput('inputs'),
+    outputs: () => getDirInputOrOutput('outputs'),
+  };
 };
 
 const getRootLViewsHelper = (element: Element, rootLViews = new Set<any>()): Set<any> => {

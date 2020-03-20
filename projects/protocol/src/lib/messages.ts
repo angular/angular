@@ -47,6 +47,8 @@ export interface DirectivesProperties {
 
 export interface Properties {
   props: { [name: string]: Descriptor };
+  inputs?: { [name: string]: string };
+  outputs?: { [name: string]: string };
 }
 
 export type ElementPosition = number[];
