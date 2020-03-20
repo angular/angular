@@ -1,12 +1,23 @@
+<!--
 # Hierarchical injectors
+-->
+# 인젝터 계층
 
+<!--
 Injectors in Angular have rules that you can leverage to
 achieve the desired visibility of injectables in your apps.
 By understanding these rules, you can determine in which
 NgModule, Component or Directive you should declare a provider.
+-->
+인젝터(injector)는 어떤 규칙을 갖고 필요한 곳에 의존성으로 무언가를 주입합니다.
+인젝터가 동작하는 규칙은 프로바이더를 등록한 NgModule, Component, Directive에 따라 달라집니다.
 
+<!--
 ## Two injector hierarchies
+-->
+## 두 종류의 인젝터 계층
 
+<!--
 There are two injector hierarchies in Angular:
 
 1. `ModuleInjector` hierarchy&mdash;configure a `ModuleInjector`
@@ -15,11 +26,18 @@ in this hierarchy using an `@NgModule()` or `@Injectable()` annotation.
 DOM element. An `ElementInjector` is empty by default
 unless you configure it in the `providers` property on
 `@Directive()` or `@Component()`.
+-->
+Angular의 인젝터 계층은 두 종류로 구분할 수 있습니다:
+
+1. `ModuleInjector` 계층&dash;`@NgModule`이나 `@Injectable()` 어노테이션을 사용하면 `ModuleInjector`에 등록됩니다.
+1. `ElementInjector` 계층&mdash;`@Directive()`나 `@Component()`의 `providers` 프로퍼티를 설정하면 `ElementInjector`에 등록됩니다. 따로 등록하지 않으면 이 계층은 비어있으며, 프로바이더가 등록되면 개별 DOM 엘리먼트마다 구성됩니다.
+
 
 {@a register-providers-injectable}
 
 ### `ModuleInjector`
 
+<!--
 The `ModuleInjector` can be configured in one of two ways:
 
 * Using the `@Injectable()` `providedIn` property to
@@ -70,9 +88,54 @@ export class ItemService {
 The `@Injectable()` decorator identifies a service class.
 The `providedIn` property configures a specific `ModuleInjector`,
 here `root`, which makes the service available in the `root` `ModuleInjector`.
+-->
+`ModuleInjector`는 두가지 방법으로 설정할 수 있습니다:
 
+* `@Injectable()` 데코레이터의 `providedIn` 프로퍼티에 `@NgModule()`이나 `root`를 지정합니다.
+* `@NgModule`의 `providers` 배열을 사용합니다.
+
+<div class="is-helpful alert">
+
+<h4>트리 셰이킹(tree-shaking)과 <code>@Injectable()</code></h4>
+
+`@NgModule()`에 `providers`를 등록하는 방법보다는 `@Injectable()`의 `providedIn` 프로퍼티를 사용하는 방법을 더 권장합니다.
+`@Injectable()`의 `providedIn` 프로퍼티를 `root`로 설정하면 최적화 툴이 트리 셰이킹 대상인지 검사하고 사용되지 않는 빌드 결과물에서 제거하기 때문에 빌드 결과물의 크기를 더 줄일 수 있습니다.
+
+특히 트리 셰이킹은 다른 라이브러리를 많이 활용하는 라이브러리 프로젝트에 더 효율적입니다.
+자세한 내용은 [트리 셰이킹 대상이 되는 프로바이더](guide/dependency-injection-providers#tree-shakable-providers) 문서와 [의존성 프로바이더](guide/dependency-injection-providers) 문서를 참고하세요.
+
+</div>
+
+`ModuleInjector`는 `@NgModule.providers`나 `@NgModule.imports` 프로퍼티에 의해 구성됩니다.
+모듈에서 `imports` 배열로 로드하는 모든 프로바이더는 중첩된 모듈을 순회하며 이 계층에 병렬로 구성됩니다.
+
+그리고 지연로딩되는 `@NgModules`가 있다면 자식 `ModuleInjector`가 따로 구성됩니다.
+
+서비스 프로바이더를 등록하려면 `@Injectable()`의 `providedIn` 프로퍼티를 다음과 같이 구성하면 됩니다:
+
+```ts
+
+import { Injectable } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root'  // <--이 서비스를 root ModuleInjector에 등록합니다.
+})
+export class ItemService {
+  name = 'telephone';
+}
+
+```
+
+`@Injectable()` 데코레이터는 서비스 클래스를 구분하는 데코레이터입니다.
+그리고 `providedIn` 프로퍼티 값을 `root`로 설정하면 이 서비스가 `root` `ModuleInjector`에 등록됩니다.
+
+
+<!--
 #### Platform injector
+-->
+#### 플랫폼 인젝터
 
+<!--
 There are two more injectors above `root`, an
 additional `ModuleInjector` and `NullInjector()`.
 
@@ -141,9 +204,60 @@ in the `providers` list of the `AppModule`.
 </code-example>
 
 </div>
+-->
+`root` 인젝터보다 더 상위 계층에 존재하는 인젝터가 있습니다.
+`ModuleInjector`와 `NullInjector()`가 이 계층에 존재합니다.
+
+Angular 앱이 부트스트랩되는 `main.ts` 파일을 보면 이런 코드가 있습니다:
+
+```javascript
+platformBrowserDynamic().bootstrapModule(AppModule).then(ref => {...})
+```
+
+`bootstrapModule()` 메소드는 플랫폼 인젝터를 기준으로 `AppModule`부터 자식 모듈을 순회하며 자식 인젝터를 생성합니다.
+그리고 이때 처음 구성되는 것이 `root` `ModuleInjector` 입니다.
+
+`platformBrowserDynamic()` 메소드는 플랫폼마다 다르게 구성되는 `PlatformModule` 설정에 따라 인젝터를 생성합니다.
+그리고 이 플랫폼 설정은 여러 앱이 공유할 수도 있습니다.
+예를 들어 브라우저라면 주소표시줄이 하나밖에 없기 때문에 앱이 여러개 실행되더라도 관계없습니다.
+그리고 `platformBrowser()` 함수에 `extraProviders` 옵션을 사용하면 플랫폼마다 필요한 서비스 프로바이더를 따로 등록할 수도 있습니다.
+
+플랫폼 인젝터 바로 아래 계층에는 `NulInjector()`가 있습니다.
+그래서 서비스 인스턴스를 찾아서 인젝터 트리를 쭉 따라 올라가다보면 마지막 단계에서 `NullInjector()`를 만나게 되며, `@Optional()` 데코레이터가 사용되지 않았다면 에러가 발생합니다.
+`@Optional()` 데코레이터에 대해 자세하게 알아보려면 이 문서의 [`@Optional()` 섹션](guide/hierarchical-dependency-injection#optional)을 참고하세요.
+
+`root` `ModuleInjector`와 플랫폼, `NullInjector`의 관계는 아래 그림으로 확인해 보세요.
+
+<div class="lightbox">
+  <img src="generated/images/guide/dependency-injection/injectors.svg" alt="NullInjector, ModuleInjector, root injector">
+</div>
+
+`root` 인젝터는 다른 `ModuleInjector`와는 다르게 `root`라는 이름을 갖습니다.
+다른 `ModuleInjector`는 이름이 없습니다.
+모듈이 지연로딩되는 경우에는 컴포넌트도 동적으로 생성되기 때문에 라우터 설정이 따로 필요할 수 있습니다.
+그래서 자식 `ModuleInjector`를 생성할 때 이 인젝터에 대한 옵션을 지정할 수 있습니다.
+
+`bootstrapModule()` 메소드를 구성했거나 서비스 프로바이더를 `root`에 등록한 경우 모두 의존성 객체를 찾는 요청은 `root` 인젝터까지 올라갑니다.
+
+<div class="alert is-helpful">
+
+<h4><code>@Injectable()</code> vs. <code>@NgModule()</code></h4>
+
+`@Injectable()`에 `providedIn: root`를 설정하는 것보다 `AppModule`의 `@NgModule()` 설정이 더 우선순위가 높습니다.
+그래서 여러 앱에서 사용하지만 기본값을 변경하는 프로바이더는 이런 방식으로 등록하는 것이 더 좋습니다.
+
+[로케이션 정책](guide/router#location-strategy)의 기본값을 바꾸는 라우터 설정이 필요하다면 다음과 같이 사용하면 됩니다:
+
+<code-example path="dependency-injection-in-action/src/app/app.module.ts" region="providers" header="src/app/app.module.ts (providers 배열)">
+
+</code-example>
+
+</div>
+
 
 ### `ElementInjector`
 
+<!--
 Angular creates `ElementInjector`s implicitly for each DOM element.
 
 Providing a service in the `@Component()` decorator using
@@ -177,9 +291,39 @@ It may also be visible at
 child component/directives based on visibility rules described in the [resolution rules](guide/hierarchical-dependency-injection#resolution-rules) section.
 
 When the component instance is destroyed, so is that service instance.
+-->
+개별 DOM 엘리먼트에는 `ElementInjector`가 생성됩니다.
 
+`@Component()` 데코레이터의 `providers`나 `viewProviders`를 설정하면 `ElementInjector`에 서비스 프로바이더가 등록됩니다.
+그래서 `TestComponent`에 `ElementInjector`를 구성하려면 다음과 같이 서비스 프로바이더를 등록하면 됩니다:
+
+```ts
+@Component({
+  ...
+  providers: [{ provide: ItemService, useValue: { name: 'lamp' } }]
+})
+export class TestComponent
+
+```
+
+<div class="alert is-helpful">
+
+**참고:** `ModuleInjector` 트리와 `ElementInjector` 트리의 관계에 대해 자세하게 알아보려면 [의존성 토큰 결정 규칙](guide/hierarchical-dependency-injection#resolution-rules) 섹션을 참고하세요.
+
+</div>
+
+컴포넌트에 서비스 프로바이더를 등록하면 이 컴포넌트에 `ElementInjector`가 구성되기 때문에 서비스 인스턴스를 사용할 수 있습니다.
+그리고 [의존성 토큰 결정 규칙](guide/hierarchical-dependency-injection#resolution-rules)에 따라 이 컴포넌트의 자식 컴포넌트나 디렉티브에서도 서비스의 인스턴스를 사용할 수 있습니다.
+
+컴포넌트 인스턴스가 종료되면 컴포넌트에 등록된 서비스의 인스턴스도 함께 종료됩니다.
+
+
+<!--
 #### `@Directive()` and `@Component()`
+-->
+#### `@Directive()`와 `@Component()`
 
+<!--
 A component is a special type of directive, which means that
 just as `@Directive()` has a `providers` property, `@Component()` does too.
 This means that directives as well as components can configure
@@ -189,12 +333,21 @@ using the `providers` property,
 that provider belongs to the `ElementInjector` of that component or
 directive.
 Components and directives on the same element share an injector.
+-->
+컴포넌트는 디렉티브의 종류 중 하나라고 볼 수 있습니다.
+그래서 `@Directive()`와 `@Component()`는 모두 `providers` 프로퍼티를 사용할 수 있습니다.
+컴포넌트나 디렉티브의 `providers` 프로퍼티를 설정하면 서비스 프로바이더는 해당 컴포넌트나 디렉티브의 `ElementInjector`에 등록됩니다.
+엘리먼트에 컴포넌트와 디렉티브가 함께 사용되었다면 같은 인젝터를 공유합니다.
 
 
 {@a resolution-rules}
 
+<!--
 ## Resolution rules
+-->
+## 의존성 토큰 결정 규칙
 
+<!--
 When resolving a token for a component/directive, Angular
 resolves it in two phases:
 
@@ -219,19 +372,48 @@ different levels, the first one Angular encounters is the one
 it uses to resolve the dependency. If, for example, a provider
 is registered locally in the component that needs a service,
 Angular doesn't look for another provider of the same service.
+-->
+컴포넌트나 디렉티브에 의존성 토큰이 사용되면 인젝터는 다음 규칙에 따라 토큰을 결정합니다:
+
+1. (부모를 따라가며) `ElementInjector` 계층에 따라
+1. (부모를 따라가며) `ModuleInjector` 계층에 따라
+
+컴포넌트가 의존성 객체를 요구하면 Angular는 먼저 이 객체의 프로바이더를 `ElementInjector`에서 찾습니다.
+그리고 컴포넌트 인젝터에서 프로바이더를 찾지 못하면 부모 컴포넌트의 `ElementInjector`를 따라 올라가며 프로바이더를 찾습니다.
+
+이 요청은 부모 인젝터를 따라가다가 원하는 프로바이더를 찾을 때까지 계속되며, 찾지 못하면 `ElementInjector` 계층이 끝날때까지 계속됩니다.
+
+그리고 `ElementInjector` 트리 전체에서 원하는 프로바이더를 찾지 못하면 다시 원래 엘리먼트로 돌아가서 `ModuleInjector` 계층을 탐색합니다.
+`ModuleInjector` 계층에서도 프로바이더를 찾지 못하면 에러가 발생합니다.
+
+같은 의존성 토큰을 여러번 사용하면 프로바이더를 찾는 탐색과정에서 먼저 만나는 프로바이더가 사용됩니다.
+그래서 서비스 프로바이더가 등록된 컴포넌트에서 이 서비스의 의존성 객체를 요청하면 언제나 같은 서비스 프로바이더를 사용합니다.
 
 
+<!--
 ## Resolution modifiers
+-->
+## 의존성 토큰 결정 규칙을 변경하는 데코레이터
 
+<!--
 Angular's resolution behavior can be modified with `@Optional()`, `@Self()`,
 `@SkipSelf()` and `@Host()`. Import each of them from `@angular/core`
 and use each in the component class constructor when you inject your service.
 
 For a working app showcasing the resolution modifiers that
 this section covers, see the <live-example name="resolution-modifiers">resolution modifiers example</live-example>.
+-->
+`@Optional()`, `@Self()`, `SkipSelf()`, `@Host()` 데코레이터를 사용하면 의존성 토큰을 결정하는 규칙을 변경할 수 있습니다.
+이 데코레이터들은 `@angular/core` 패키지에서 로드할 수 있으며 클래스 생성자에서 의존성으로 주입하려는 서비스 앞에 붙이면 됩니다.
 
+각 데코레이터가 어떻게 동작하는지 직접 확인하려면 <live-example name="resolution-modifiers">의존성 토큰 결정 규칙을 변경하는 데코레이터 예제</live-example>를 참고하세요.
+
+<!--
 ### Types of modifiers
+-->
+### 타입
 
+<!--
 Resolution modifiers fall into three categories:
 
 1. What to do if Angular doesn't find what you're
@@ -244,17 +426,33 @@ searching all the way up. Modifiers allow you to change the starting
 (self) or ending location.
 
 Additionally, you can combine all of the modifiers except `@Host()` and `@Self()` and of course `@SkipSelf()` and `@Self()`.
+-->
+데코레이터는 용도에 따라 3종류로 구분할 수 있습니다:
+
+1. `@Optional()` &mdash; 프로바이더를 찾지 못하면 생략해도 된다는 것을 의미합니다.
+1. `@SkipSelf()` &mdash; 탐색을 시작할 지점을 변경합니다.
+1. `@Host()`, `@Self()` &mdash; 탐색을 멈출 지점을 변경합니다.
+
+기본적으로 Angular는 의존성 주입을 요구한 계층의 `Injector` 부터 탐색을 시작하며, 부모 인젝터를 따라 올라가는 방향으로 동작합니다.
+위에서 언급한 데코레이터를 사용하면 이 탐색이 시작되는 위치나 종료되는 위치를 조정할 수 있습니다.
+
+그리고 위 데코레이터 중에 역할이 충돌하는 `@Host()`와 `@Self()`, `@SkipSelf()`와 `@Self()`를 제외하면 함께 사용할 수 있습니다.
+
 
 {@a optional}
 
 ### `@Optional()`
 
+<!--
 `@Optional()` allows Angular to consider a service you inject to be optional.
 This way, if it can't be resolved at runtime, Angular simply
 resolves the service as `null`, rather than throwing an error. In
 the following example, the service, `OptionalService`, isn't provided in
 the service, `@NgModule()`, or component class, so it isn't available
 anywhere in the app.
+-->
+`@Optional()` 데코레이터를 사용하면 Angular가 서비스 프로바이더를 찾지 못했을 때 에러가 발생하는 대신 `null` 값을 주입합니다.
+아래 예제에서 `OptionalService`는 `@NgModule()`이나 컴포넌트 클래스 어디에도 프로바이더가 등록되어 있지 않지만 에러 없이 실행됩니다.
 
 <code-example path="resolution-modifiers/src/app/optional/optional.component.ts" header="resolution-modifiers/src/app/optional/optional.component.ts" region="optional-component">
 
@@ -263,6 +461,7 @@ anywhere in the app.
 
 ### `@Self()`
 
+<!--
 Use `@Self()` so that Angular will only look at the `ElementInjector` for the current component or directive.
 
 A good use case for `@Self()` is to inject a service but only if it is
@@ -272,11 +471,19 @@ combine `@Self()` with `@Optional()`.
 For example, in the following `SelfComponent`, notice
 the injected `LeafService` in
 the constructor.
+-->
+`@Self()` 데코레이터를 사용하면 Angular는 현재 계층의 컴포넌트/디렉티브의 `ElementInjector`에서만 서비스 프로바이더를 찾습니다.
+
+이 데코레이터는 의존성으로 주입하는 서비스가 현재 계층에서 유효할 때만 주입하는 용도로 사용합니다.
+그래서 보통 `@Optional()`과 함께 사용합니다.
+
+아래 예제에서 `SelfComponent`는 `LeafService`가 현재 계층에 존재할 때만 의존성으로 주입받습니다.
 
 <code-example path="resolution-modifiers/src/app/self-no-data/self-no-data.component.ts" header="resolution-modifiers/src/app/self-no-data/self-no-data.component.ts" region="self-no-data-component">
 
 </code-example>
 
+<!--
 In this example, there is a parent provider and injecting the
 service will return the value, however, injecting the service
 with `@Self()` and `@Optional()` will return `null` because
@@ -286,6 +493,12 @@ host element.
 Another example shows the component class with a provider
 for `FlowerService`. In this case, the injector looks no further
 than the current `ElementInjector` because it finds the `FlowerService` and returns the yellow flower 🌼.
+-->
+이렇게 구현하면 부모 컴포넌트에 서비스 프로바이더가 있더라도 `null`이 주입됩니다.
+왜냐하면 현재 계층에서만 서비스 프로바이더를 탐색하도록 `@Self()` 데코레이터를 사용했기 때문입니다.
+
+아래 코드에서는 컴포넌트 클래스에 `FlowerService`의 프로바이더가 등록되어 있습니다.
+그러면 현재 계층의 `ElementInjector`에서 서비스 프로바이더를 찾을 수 있기 때문에 `FlowerService`에 🌼가 주입됩니다.
 
 
 <code-example path="resolution-modifiers/src/app/self/self.component.ts" header="resolution-modifiers/src/app/self/self.component.ts" region="self-component">
@@ -294,6 +507,7 @@ than the current `ElementInjector` because it finds the `FlowerService` and retu
 
 ### `@SkipSelf()`
 
+<!--
 `@SkipSelf()` is the opposite of `@Self()`. With `@SkipSelf()`, Angular
 starts its search for a service in the parent `ElementInjector`, rather than
 in the current one. So if the parent `ElementInjector` were using the value  `🌿`  (fern)
@@ -313,10 +527,38 @@ Imagine that in the child component, you had a different value, `🍁` (maple le
 </code-example>
 
 In this case, the value you'd get for `emoji` would be `🌿` (fern), not `🍁` (maple leaf).
+-->
+`@SkipSelf()`는 `@Self()`와 반대입니다.
+`@SkipSelf()`를 사용하면 서비스 프로바이더를 찾을 때 현재 계층을 건너 뛰고 부모 계층의 `ElementInjector` 부터 탐색합니다.
+그래서 부모 `@lementInjector`에 `emoji` 값이 `🌿`로 지정되어 있기 때문에 현재 컴포넌트 `providers` 배열에 지정된 `🍁` 대신 `🌿`가 주입됩니다.
 
+이 내용을 코드로 봅시다.
+아래 코드에서 `LeafService` 안에 지정된 `emoji`의 값은 `🌿`입니다:
+
+<code-example path="resolution-modifiers/src/app/leaf.service.ts" header="resolution-modifiers/src/app/leaf.service.ts" region="leafservice">
+
+</code-example>
+
+자식 컴포넌트에는 이 값이 `🍁`로 지정되어 있지만, 현재 계층이 아니라 부모 계층에서 주입하는 값을 사용하도록 구현하려면 `@SkipSelf()` 데코레이터를 다음과 같이 사용하면 됩니다:
+
+<code-example path="resolution-modifiers/src/app/skipself/skipself.component.ts" header="resolution-modifiers/src/app/skipself/skipself.component.ts" region="skipself-component">
+
+</code-example>
+
+그래서 이 코드가 실행되었을 때 받는 서비스의 `emoji` 프로퍼티 값은 `🍁`가 아니라 `🌿` 입니다.
+
+
+<!--
 #### `@SkipSelf()` with `@Optional()`
+-->
+#### `@SkipSelf()`과 함께 사용하는 `@Optional()`
 
+<!--
 Use `@SkipSelf()` with `@Optional()` to prevent an error if the value is `null`. In the following example, the `Person` service is injected in the constructor. `@SkipSelf()` tells Angular to skip the current injector and `@Optional()` will prevent an error should the `Person` service be `null`.
+-->
+의존성으로 주입되는 객체가 `null`이어도 괜찮다면 `@SkipSelf()`를 사용할 때 `@Optional()` 데코레이터도 함께 사용해야 합니다.
+아래 예제에서 `Person` 클래스 생성자에는 `parent`가 의존성으로 주입되어야 합니다.
+이 때 `@SkipSelf()`를 사용했기 때문에 현재 계층의 인젝터를 건너뛰고 프로바이더를 찾게 되며, 원하는 의존성 객체를 찾지 못하더라도 `@Optional()`을 사용했기 때문에 에러가 발생하지 않고 `null`이 주입됩니다.
 
 ``` ts
 class Person {
@@ -326,6 +568,7 @@ class Person {
 
 ### `@Host()`
 
+<!--
 `@Host()` lets you designate a component as the last stop in the injector tree when searching for providers. Even if there is a service instance further up the tree, Angular won't continue looking. Use `@Host()` as follows:
 
 <code-example path="resolution-modifiers/src/app/host/host.component.ts" header="resolution-modifiers/src/app/host/host.component.ts" region="host-component">
@@ -337,6 +580,17 @@ Since `HostComponent` has `@Host()` in its constructor, no
 matter what the parent of `HostComponent` might have as a
 `flower.emoji` value,
 the `HostComponent` will use `🌼` (yellow flower).
+-->
+`@Host()` 데코레이터를 사용하면 의존성으로 주입하는 객체의 프로바이더를 찾는 범위를 호스트 엘리먼트까지로 제한합니다.
+그 위쪽에 실제로 서비스 인스턴스가 있더라도 이 인스턴스는 탐색대상이 아닙니다.
+`@Host()`는 이렇게 사용합니다:
+
+<code-example path="resolution-modifiers/src/app/host/host.component.ts" header="resolution-modifiers/src/app/host/host.component.ts" region="host-component">
+
+</code-example>
+
+`HostComponent`의 생성자에는 `@Host()` 데코레이터가 사용되었기 때문에 `HostComponent`의 부모 계층에 있는 `flower.emoji`의 값은 고려할 대상이 아닙니다.
+`HostComponent`에는 `🌼`가 주입됩니다.
 
 
 ## Logical structure of the template

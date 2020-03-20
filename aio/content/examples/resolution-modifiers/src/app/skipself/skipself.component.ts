@@ -6,11 +6,11 @@ import { LeafService } from '../leaf.service';
   selector: 'app-skipself',
   templateUrl: './skipself.component.html',
   styleUrls: ['./skipself.component.css'],
-  // Angular would ignore this LeafService instance
+  // 이 계층에 선언된 LeafService 인스턴스는 무시됩니다.
   providers: [{ provide: LeafService, useValue: { emoji: '🍁' } }]
 })
 export class SkipselfComponent {
-  // Use @SkipSelf() in the constructor
+  // 생성자에 @SkipSelf()를 사용했습니다.
   constructor(@SkipSelf() public leaf: LeafService) { }
 }
 // #enddocregion skipself-component

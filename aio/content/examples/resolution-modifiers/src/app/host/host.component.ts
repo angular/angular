@@ -6,11 +6,11 @@ import { FlowerService } from '../flower.service';
   selector: 'app-host',
   templateUrl: './host.component.html',
   styleUrls: ['./host.component.css'],
-  //  provide the service
+  //  서비스 프로바이더를 등록합니다.
   providers: [{ provide: FlowerService, useValue: { emoji: '🌼' } }]
 })
 export class HostComponent {
-  // use @Host() in the constructor when injecting the service
+  // 생성자에 @Host()를 사용했습니다.
   constructor(@Host() @Optional() public flower?: FlowerService) { }
 
 }
