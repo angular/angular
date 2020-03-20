@@ -66,7 +66,7 @@ const shallowPropTypeToTreeMetaData = {
     editable: false,
     expandable: false,
   },
-  [PropType.HTMLElement]: {
+  [PropType.HTMLNode]: {
     editable: false,
     expandable: false,
   },
@@ -158,7 +158,7 @@ const getDataByType = (type: PropType, valueByType: any, defaultValue?: any) => 
         return valueByType.functionCase();
       case PropType.Date:
         return valueByType.dateCase();
-      case PropType.HTMLElement:
+      case PropType.HTMLNode:
         return valueByType.htmlElementCase();
       case PropType.Null:
         return valueByType.nullCase();

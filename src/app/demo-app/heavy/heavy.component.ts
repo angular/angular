@@ -13,6 +13,14 @@ const fib = (n: number) => {
   styleUrls: ['./heavy.component.css'],
 })
 export class HeavyComponent {
+  state = {
+    nested: {
+      props: {
+        foo: 1,
+        bar: 2,
+      },
+    },
+  };
   calculate(): number {
     return fib(15);
   }
