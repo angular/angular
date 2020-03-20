@@ -381,7 +381,7 @@
             {
               "url": "guide/observables-in-angular",
               "!title": "Observables in Angular",
-              "title": "Angular에서 옵저버블 활용하기",
+              "title": "Angular가 제공하는 옵저버블",
               "tooltip": ""
             },
             {

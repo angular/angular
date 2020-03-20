@@ -1,7 +1,7 @@
 <!--
 # Observables in Angular
 -->
-# Angular에서 옵저버블 활용하기
+# Angular가 제공하는 옵저버블
 
 <!--
 Angular makes use of observables as an interface to handle a variety of common asynchronous operations. For example:
