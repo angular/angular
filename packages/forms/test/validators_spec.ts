@@ -225,6 +225,26 @@ describe('Validators', () => {
         'minlength': {'requiredLength': 2, 'actualLength': 1}
       });
     });
+
+    it('should always return null with numeric values', () => {
+      expect(Validators.minLength(1)(new FormControl(0))).toBeNull();
+      expect(Validators.minLength(1)(new FormControl(1))).toBeNull();
+      expect(Validators.minLength(1)(new FormControl(-1))).toBeNull();
+      expect(Validators.minLength(1)(new FormControl(+1))).toBeNull();
+    });
+
+    it('should trigger validation for an object that contains numeric length property', () => {
+      const value = {length: 5, someValue: [1, 2, 3, 4, 5]};
+      expect(Validators.minLength(1)(new FormControl(value))).toBeNull();
+      expect(Validators.minLength(10)(new FormControl(value))).toEqual({
+        'minlength': {'requiredLength': 10, 'actualLength': 5}
+      });
+    });
+
+    it('should return null when passing a boolean', () => {
+      expect(Validators.minLength(1)(new FormControl(true))).toBeNull();
+      expect(Validators.minLength(1)(new FormControl(false))).toBeNull();
+    });
   });
 
   describe('maxLength', () => {
@@ -260,6 +280,26 @@ describe('Validators', () => {
       expect(Validators.maxLength(1)(fa)).toEqual({
         'maxlength': {'requiredLength': 1, 'actualLength': 2}
       });
+    });
+
+    it('should always return null with numeric values', () => {
+      expect(Validators.maxLength(1)(new FormControl(0))).toBeNull();
+      expect(Validators.maxLength(1)(new FormControl(1))).toBeNull();
+      expect(Validators.maxLength(1)(new FormControl(-1))).toBeNull();
+      expect(Validators.maxLength(1)(new FormControl(+1))).toBeNull();
+    });
+
+    it('should trigger validation for an object that contains numeric length property', () => {
+      const value = {length: 5, someValue: [1, 2, 3, 4, 5]};
+      expect(Validators.maxLength(10)(new FormControl(value))).toBeNull();
+      expect(Validators.maxLength(1)(new FormControl(value))).toEqual({
+        'maxlength': {'requiredLength': 1, 'actualLength': 5}
+      });
+    });
+
+    it('should return null when passing a boolean', () => {
+      expect(Validators.maxLength(1)(new FormControl(true))).toBeNull();
+      expect(Validators.maxLength(1)(new FormControl(false))).toBeNull();
     });
   });
 
