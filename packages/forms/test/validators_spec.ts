@@ -225,6 +225,13 @@ describe('Validators', () => {
         'minlength': {'requiredLength': 2, 'actualLength': 1}
       });
     });
+
+    it('should always return null with numeric values', () => {
+      expect(Validators.minLength(1)(new FormControl(0))).toBeNull();
+      expect(Validators.minLength(1)(new FormControl(1))).toBeNull();
+      expect(Validators.minLength(1)(new FormControl(-1))).toBeNull();
+      expect(Validators.minLength(1)(new FormControl(+1))).toBeNull();
+    });
   });
 
   describe('maxLength', () => {
@@ -250,6 +257,11 @@ describe('Validators', () => {
       });
     });
 
+    it('should return null when passing an object that contains a length property', () => {
+      const value = {length: 5, someValue: [1, 2, 3, 4, 5]};
+      expect(Validators.minLength(1)(new FormControl(value))).toBeNull();
+    });
+
     it('should not error when FormArray has valid length', () => {
       const fa = new FormArray([new FormControl(''), new FormControl('')]);
       expect(Validators.maxLength(2)(fa)).toBeNull();
@@ -260,6 +272,18 @@ describe('Validators', () => {
       expect(Validators.maxLength(1)(fa)).toEqual({
         'maxlength': {'requiredLength': 1, 'actualLength': 2}
       });
+    });
+
+    it('should always return null with numeric values', () => {
+      expect(Validators.maxLength(1)(new FormControl(0))).toBeNull();
+      expect(Validators.maxLength(1)(new FormControl(1))).toBeNull();
+      expect(Validators.maxLength(1)(new FormControl(-1))).toBeNull();
+      expect(Validators.maxLength(1)(new FormControl(+1))).toBeNull();
+    });
+
+    it('should return null when passing an object that contains a length property', () => {
+      const value = {length: 1, someValue: [1, 2, 3, 4, 5]};
+      expect(Validators.maxLength(1)(new FormControl(value))).toBeNull();
     });
   });
 

@@ -11,11 +11,16 @@ import {forkJoin, from, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {AsyncValidatorFn, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
-import {AbstractControl, FormControl} from './model';
+import {AbstractControl} from './model';
 
 function isEmptyInputValue(value: any): boolean {
   // we don't check for string here so it also works with arrays
   return value == null || value.length === 0;
+}
+
+function hasValidLength(value: any): boolean {
+  // non-strict comparison is intentional, to check for both `null` and `undefined` values
+  return value != null && typeof value.length === 'number';
 }
 
 /**
@@ -294,13 +299,15 @@ export class Validators {
    *
    */
   static minLength(minLength: number): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors|null => {
-      if (isEmptyInputValue(control.value)) {
-        return null;  // don't validate empty values to allow optional controls
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (isEmptyInputValue(control.value) || !hasValidLength(control.value)) {
+        // don't validate empty values to allow optional controls
+        // don't validate values without `length` property
+        return null;
       }
-      const length: number = control.value ? control.value.length : 0;
-      return length < minLength ?
-          {'minlength': {'requiredLength': minLength, 'actualLength': length}} :
+
+      return control.value.length < minLength ?
+          {'minlength': {'requiredLength': minLength, 'actualLength': control.value.length}} :
           null;
     };
   }
@@ -333,10 +340,9 @@ export class Validators {
    *
    */
   static maxLength(maxLength: number): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors|null => {
-      const length: number = control.value ? control.value.length : 0;
-      return length > maxLength ?
-          {'maxlength': {'requiredLength': maxLength, 'actualLength': length}} :
+    return (control: AbstractControl): ValidationErrors | null => {
+      return hasValidLength(control.value) && control.value.length > maxLength ?
+          {'maxlength': {'requiredLength': maxLength, 'actualLength': control.value.length}} :
           null;
     };
   }
