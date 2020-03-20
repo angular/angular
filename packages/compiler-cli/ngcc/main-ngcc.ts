@@ -92,6 +92,19 @@ if (require.main === module) {
             type: 'boolean',
             default: false,
           })
+          .option('tsconfig', {
+            describe:
+                'A path to a tsconfig.json file that will be used to configure the Angular compiler and module resolution used by ngcc.\n' +
+                'If not provided, ngcc will attempt to read a `tsconfig.json` file from the folder above that given by the `-s` option.\n' +
+                'Set to false (via `--no-tsconfig`) if you do not want ngcc to use any `tsconfig.json` file.',
+            type: 'string',
+            default: '',
+          })
+          .option('no-tsconfig', {
+            describe: 'This option is to support forcing ngcc not to use any `tsconfig.json` file.',
+            type: 'boolean',
+            hidden: true,
+          })
           .strict()
           .help()
           .parse(args);
@@ -113,6 +126,9 @@ if (require.main === module) {
   const enableI18nLegacyMessageIdFormat = options['legacy-message-ids'];
   const invalidateEntryPointManifest = options['invalidate-entry-point-manifest'];
   const errorOnFailedEntryPoint = options['error-on-failed-entry-point'];
+  // yargs is not so great at mixed string+boolean types, so we have to test tsconfig against a
+  // string "false" to capture the `no-tsconfig` option
+  const tsConfigPath = (options['tsconfig'] === 'false') ? null : options['tsconfig'];
 
   (async() => {
     try {
@@ -126,7 +142,7 @@ if (require.main === module) {
         createNewEntryPointFormats,
         logger,
         enableI18nLegacyMessageIdFormat,
-        async: options['async'], invalidateEntryPointManifest, errorOnFailedEntryPoint,
+        async: options['async'], invalidateEntryPointManifest, errorOnFailedEntryPoint, tsConfigPath
       });
 
       if (logger) {

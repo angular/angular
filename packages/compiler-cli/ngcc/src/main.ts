@@ -12,6 +12,7 @@ import {DepGraph} from 'dependency-graph';
 import * as os from 'os';
 import * as ts from 'typescript';
 
+import {readConfiguration} from '../..';
 import {replaceTsWithNgInErrors} from '../../src/ngtsc/diagnostics';
 import {AbsoluteFsPath, FileSystem, absoluteFrom, dirname, getFileSystem, resolve} from '../../src/ngtsc/file_system';
 
@@ -143,6 +144,17 @@ export interface SyncNgccOptions {
    * Default: `false` (i.e. the manifest will be used if available)
    */
   invalidateEntryPointManifest?: boolean;
+
+  /**
+   * An absolte path to a TS config file (e.g. `tsconfig.json`) or a directory containing one that
+   * will be used to configure module resolution with things like path mappings.
+   *
+   * If `undefined`, ngcc will attempt to load a `tsconfig.json` file from the directory above the
+   * `basePath`.
+   *
+   * If `null`, ngcc will not attempt to load any TS config file at all.
+   */
+  tsConfigPath?: AbsoluteFsPath|null;
 }
 
 /**
@@ -165,12 +177,12 @@ export type NgccOptions = AsyncNgccOptions | SyncNgccOptions;
  */
 export function mainNgcc(options: AsyncNgccOptions): Promise<void>;
 export function mainNgcc(options: SyncNgccOptions): void;
-export function mainNgcc({basePath, targetEntryPointPath,
-                          propertiesToConsider = SUPPORTED_FORMAT_PROPERTIES,
-                          compileAllFormats = true, createNewEntryPointFormats = false,
-                          logger = new ConsoleLogger(LogLevel.info), pathMappings, async = false,
-                          errorOnFailedEntryPoint = false, enableI18nLegacyMessageIdFormat = true,
-                          invalidateEntryPointManifest = false}: NgccOptions): void|Promise<void> {
+export function mainNgcc(
+    {basePath, targetEntryPointPath, propertiesToConsider = SUPPORTED_FORMAT_PROPERTIES,
+     compileAllFormats = true, createNewEntryPointFormats = false,
+     logger = new ConsoleLogger(LogLevel.info), pathMappings, async = false,
+     errorOnFailedEntryPoint = false, enableI18nLegacyMessageIdFormat = true,
+     invalidateEntryPointManifest = false, tsConfigPath}: NgccOptions): void|Promise<void> {
   if (!!targetEntryPointPath) {
     // targetEntryPointPath forces us to error if an entry-point fails.
     errorOnFailedEntryPoint = true;
@@ -185,6 +197,19 @@ export function mainNgcc({basePath, targetEntryPointPath,
   const fileSystem = getFileSystem();
   const absBasePath = absoluteFrom(basePath);
   const config = new NgccConfiguration(fileSystem, dirname(absBasePath));
+  const tsConfig =
+      tsConfigPath !== null ? readConfiguration(tsConfigPath || dirname(absBasePath)) : null;
+
+  // If pathMapping is not provided directly and there is a loaded tsConfig with path mappings then
+  // use them instead.
+  if (tsConfig !== null && pathMappings === undefined && tsConfig.options.baseUrl !== undefined &&
+      tsConfig.options.paths) {
+    pathMappings = {
+      baseUrl: resolve(absBasePath, tsConfig.options.baseUrl || './'),
+      paths: tsConfig.options.paths,
+    };
+  }
+
   const dependencyResolver = getDependencyResolver(fileSystem, logger, config, pathMappings);
   const entryPointManifest = invalidateEntryPointManifest ?
       new InvalidatingEntryPointManifest(fileSystem, config, logger) :

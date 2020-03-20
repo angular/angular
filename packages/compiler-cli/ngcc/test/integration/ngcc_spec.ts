@@ -1246,6 +1246,58 @@ runInEachFileSystem(() => {
           typings: '0.0.0-PLACEHOLDER',
         });
       });
+
+      it('should infer the pathMapping from a local tsconfig.json path', () => {
+        fs.writeFile(
+            _('/tsconfig.json'),
+            JSON.stringify({compilerOptions: {paths: {'@app/*': ['dist/*']}, baseUrl: './'}}));
+        mainNgcc({basePath: '/dist', propertiesToConsider: ['es2015']});
+        expect(loadPackage('local-package', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
+          es2015: '0.0.0-PLACEHOLDER',
+          typings: '0.0.0-PLACEHOLDER',
+        });
+        expect(loadPackage('local-package-2', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
+          es2015: '0.0.0-PLACEHOLDER',
+          typings: '0.0.0-PLACEHOLDER',
+        });
+      });
+
+      it('should infer the pathMapping from a specified tsconfig.json path', () => {
+        fs.writeFile(
+            _('/tsconfig.app.json'),
+            JSON.stringify({compilerOptions: {paths: {'@app/*': ['dist/*']}, baseUrl: './'}}));
+        mainNgcc({
+          basePath: '/dist',
+          propertiesToConsider: ['es2015'],
+          tsConfigPath: _('/tsconfig.app.json'),
+        });
+        expect(loadPackage('local-package', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
+          es2015: '0.0.0-PLACEHOLDER',
+          typings: '0.0.0-PLACEHOLDER',
+        });
+        expect(loadPackage('local-package-2', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
+          es2015: '0.0.0-PLACEHOLDER',
+          typings: '0.0.0-PLACEHOLDER',
+        });
+      });
+
+      it('should not use pathMappings from a local tsconfig.json path if tsConfigPath is null',
+         () => {
+           fs.writeFile(
+               _('/tsconfig.json'),
+               JSON.stringify({compilerOptions: {paths: {'@app/*': ['dist/*']}, baseUrl: './'}}));
+           mainNgcc({
+             basePath: '/dist',
+             propertiesToConsider: ['es2015'],
+             tsConfigPath: null,
+           });
+           expect(loadPackage('local-package', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
+             es2015: '0.0.0-PLACEHOLDER',
+             typings: '0.0.0-PLACEHOLDER',
+           });
+           expect(loadPackage('local-package-2', _('/dist')).__processed_by_ivy_ngcc__)
+               .toBeUndefined();
+         });
     });
 
     describe('with configuration files', () => {
@@ -1748,7 +1800,7 @@ runInEachFileSystem(() => {
         },
       ]);
 
-      // An Angular package that has been built locally and stored in the `dist` directory.
+      // Angular packages that have been built locally and stored in the `dist` directory.
       loadTestFiles([
         {
           name: _('/dist/local-package/package.json'),
@@ -1763,6 +1815,23 @@ runInEachFileSystem(() => {
         {
           name: _('/dist/local-package/index.d.ts'),
           contents: `export declare class AppComponent {};`
+        },
+        // local-package-2 just depends upon local-package, which can be used to test that
+        // path-mappings are working.
+        {
+          name: _('/dist/local-package-2/package.json'),
+          contents: '{"name": "local-package-2", "es2015": "./index.js", "typings": "./index.d.ts"}'
+        },
+        {name: _('/dist/local-package-2/index.metadata.json'), contents: 'DUMMY DATA'},
+        {
+          name: _('/dist/local-package-2/index.js'),
+          contents:
+              `import {Component} from '@angular/core';\export {AppComponent} from '@app/local-package';`
+        },
+        {
+          name: _('/dist/local-package-2/index.d.ts'),
+          contents:
+              `import {Component} from '@angular/core';\export {AppComponent} from '@app/local-package';`
         },
       ]);
 
