@@ -981,7 +981,6 @@ groups:
           'tools/ts-api-guardian/**',
           'tools/tslint/**',
           'tools/utils/**',
-          'tools/validate-commit-message/**',
           'tools/yarn/**',
           'tools/*',
           '**/*.bzl',

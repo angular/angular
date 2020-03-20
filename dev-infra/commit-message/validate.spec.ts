@@ -50,7 +50,6 @@ describe('validate-commit-message.js', () => {
   });
 
   describe('validateMessage()', () => {
-
     it('should be valid', () => {
       expect(validateCommitMessage('feat(packaging): something')).toBe(VALID);
       expect(lastError).toBe('');
@@ -66,7 +65,6 @@ describe('validate-commit-message.js', () => {
 
       expect(validateCommitMessage('Revert: "release(packaging): something"')).toBe(VALID);
       expect(lastError).toBe('');
-
     });
 
     it('should validate max length', () => {
@@ -74,8 +72,8 @@ describe('validate-commit-message.js', () => {
           'fix(compiler): something super mega extra giga tera long, maybe even longer and longer and longer and longer and longer and longer...';
 
       expect(validateCommitMessage(msg)).toBe(INVALID);
-      expect(lastError).toContain(
-          `The commit message header is longer than ${config.commitMessage.maxLineLength} characters`);
+      expect(lastError).toContain(`The commit message header is longer than ${
+          config.commitMessage.maxLineLength} characters`);
     });
 
     it('should validate "<type>(<scope>): <subject>" format', () => {
@@ -130,7 +128,6 @@ describe('validate-commit-message.js', () => {
     });
 
     describe('(revert)', () => {
-
       it('should allow valid "revert: ..." syntaxes', () => {
         expect(validateCommitMessage('revert: anything')).toBe(VALID);
         expect(lastError).toBe('');
@@ -143,7 +140,6 @@ describe('validate-commit-message.js', () => {
 
         expect(validateCommitMessage('rEvErT anything')).toBe(VALID);
         expect(lastError).toBe('');
-
       });
 
       it('should not allow "revert(scope): ..." syntax', () => {
@@ -164,31 +160,29 @@ describe('validate-commit-message.js', () => {
     });
 
     describe('(squash)', () => {
-
       it('should strip the `squash! ` prefix and validate the rest', () => {
         const errorMessage = `The commit message header does not match the expected format.`;
 
         // Valid messages.
         expect(validateCommitMessage('squash! feat(core): add feature')).toBe(VALID);
-        expect(validateCommitMessage('squash! fix: a bug', false)).toBe(VALID);
+        expect(validateCommitMessage('squash! fix: a bug', {disallowSquash: false})).toBe(VALID);
 
         // Invalid messages.
-        expect(validateCommitMessage('squash! fix a typo', false)).toBe(INVALID);
+        expect(validateCommitMessage('squash! fix a typo', {disallowSquash: false})).toBe(INVALID);
         expect(lastError).toContain('squash! fix a typo');
         expect(lastError).toContain(errorMessage);
 
         expect(validateCommitMessage('squash! squash! fix: a bug')).toBe(INVALID);
         expect(lastError).toContain('squash! squash! fix: a bug');
         expect(lastError).toContain(errorMessage);
-
-
       });
 
       describe('with `disallowSquash`', () => {
-
         it('should fail', () => {
-          expect(validateCommitMessage('fix(core): something', true)).toBe(VALID);
-          expect(validateCommitMessage('squash! fix(core): something', true)).toBe(INVALID);
+          expect(validateCommitMessage('fix(core): something', {disallowSquash: true})).toBe(VALID);
+          expect(validateCommitMessage('squash! fix(core): something', {
+            disallowSquash: true
+          })).toBe(INVALID);
           expect(lastError).toContain(
               'The commit must be manually squashed into the target commit');
         });
@@ -196,9 +190,7 @@ describe('validate-commit-message.js', () => {
     });
 
     describe('(fixup)', () => {
-
       describe('without `nonFixupCommitHeaders`', () => {
-
         it('should strip the `fixup! ` prefix and validate the rest', () => {
           const errorMessage = `The commit message header does not match the expected format.`;
 
@@ -214,21 +206,26 @@ describe('validate-commit-message.js', () => {
           expect(validateCommitMessage('fixup! fixup! fix: a bug')).toBe(INVALID);
           expect(lastError).toContain('fixup! fixup! fix: a bug');
           expect(lastError).toContain(errorMessage);
-
-
         });
       });
 
       describe('with `nonFixupCommitHeaders`', () => {
-
         it('should check that the fixup commit matches a non-fixup one', () => {
           const msg = 'fixup! foo';
 
-          expect(validateCommitMessage(msg, false, ['foo', 'bar', 'baz'])).toBe(VALID);
-          expect(validateCommitMessage(msg, false, ['bar', 'baz', 'foo'])).toBe(VALID);
-          expect(validateCommitMessage(msg, false, ['baz', 'foo', 'bar'])).toBe(VALID);
+          expect(validateCommitMessage(
+                     msg, {disallowSquash: false, nonFixupCommitHeaders: ['foo', 'bar', 'baz']}))
+              .toBe(VALID);
+          expect(validateCommitMessage(
+                     msg, {disallowSquash: false, nonFixupCommitHeaders: ['bar', 'baz', 'foo']}))
+              .toBe(VALID);
+          expect(validateCommitMessage(
+                     msg, {disallowSquash: false, nonFixupCommitHeaders: ['baz', 'foo', 'bar']}))
+              .toBe(VALID);
 
-          expect(validateCommitMessage(msg, false, ['qux', 'quux', 'quuux'])).toBe(INVALID);
+          expect(validateCommitMessage(
+                     msg, {disallowSquash: false, nonFixupCommitHeaders: ['qux', 'quux', 'quuux']}))
+              .toBe(INVALID);
           expect(lastError).toContain(
               'Unable to find match for fixup commit among prior commits: \n' +
               '      qux\n' +
@@ -237,8 +234,13 @@ describe('validate-commit-message.js', () => {
         });
 
         it('should fail if `nonFixupCommitHeaders` is empty', () => {
-          expect(validateCommitMessage('refactor(core): make reactive', false, [])).toBe(VALID);
-          expect(validateCommitMessage('fixup! foo', false, [])).toBe(INVALID);
+          expect(validateCommitMessage('refactor(core): make reactive', {
+            disallowSquash: false,
+            nonFixupCommitHeaders: []
+          })).toBe(VALID);
+          expect(validateCommitMessage(
+                     'fixup! foo', {disallowSquash: false, nonFixupCommitHeaders: []}))
+              .toBe(INVALID);
           expect(lastError).toContain(
               `Unable to find match for fixup commit among prior commits: -`);
         });
