@@ -11,7 +11,13 @@ import {
   ComponentExplorerViewQuery,
 } from 'protocol';
 import { onChangeDetection } from './change-detection-tracker';
-import { ComponentTreeNode, getLatestComponentState, queryDirectiveForest, updateState } from './component-tree';
+import {
+  ComponentTreeNode,
+  getDirectiveMetaData,
+  getLatestComponentState,
+  queryDirectiveForest,
+  updateState,
+} from './component-tree';
 import { start as startProfiling, stop as stopProfiling } from './observer';
 import { serializeDirectiveState } from './state-serializer/state-serializer';
 import { ComponentInspector, ComponentInspectorOptions } from './component-inspector/component-inspector';
@@ -42,13 +48,13 @@ export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void =>
   }
 };
 
-const shutdownCallback = (messageBus: MessageBus<Events>) => () => {
-  messageBus.destroy();
-};
-
 //
 // Callback Definitions
 //
+
+const shutdownCallback = (messageBus: MessageBus<Events>) => () => {
+  messageBus.destroy();
+};
 
 const getLatestComponentExplorerViewCallback = (messageBus: MessageBus<Events>) => (
   query?: ComponentExplorerViewQuery
@@ -136,11 +142,15 @@ const serializeNodeDirectiveProperties = (node: ComponentTreeNode): DirectivesPr
   node.directives.forEach(dir => {
     result[dir.name] = {
       props: serializeDirectiveState(dir.instance),
-    };
+      inputs: getDirectiveMetaData(dir.instance).inputs(),
+      outputs: getDirectiveMetaData(dir.instance).outputs()
+   };
   });
   if (node.component) {
     result[node.component.name] = {
       props: serializeDirectiveState(node.component.instance),
+      inputs: getDirectiveMetaData(node.component.instance).inputs(),
+      outputs: getDirectiveMetaData(node.component.instance).outputs(),
     };
   }
   return result;
