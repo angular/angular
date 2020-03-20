@@ -1,8 +1,8 @@
-import { Component, Input } from '@angular/core';
-import { FlatTreeControl } from '@angular/cdk/tree';
-import { PropertyDataSource } from '../../../property-resolver/property-data-source';
-import { FlatNode } from '../../../property-resolver/element-property-resolver';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { DirectivePropertyResolver } from '../../../property-resolver/directive-property-resolver';
+import { FlatNode, PropertyDataSource } from '../../../property-resolver/property-data-source';
+import { TreeControl } from '@angular/cdk/tree';
+import { ElementPropertyResolver } from '../../../property-resolver/element-property-resolver';
 
 @Component({
   selector: 'ng-property-view',
@@ -10,29 +10,20 @@ import { DirectivePropertyResolver } from '../../../property-resolver/directive-
   styleUrls: ['./property-view.component.css'],
 })
 export class PropertyViewComponent {
-  @Input() dataSource: PropertyDataSource;
-  @Input() treeControl: FlatTreeControl<FlatNode>;
-  @Input() controller: DirectivePropertyResolver;
+  @Input() directive: string;
+  @Output() copyPropData = new EventEmitter<string>();
 
-  hasChild = (_: number, node: FlatNode): boolean => node.expandable;
+  constructor(private _nestedProps: ElementPropertyResolver) {}
 
-  toggle(node: FlatNode): void {
-    if (this.treeControl.isExpanded(node)) {
-      this.treeControl.collapse(node);
-      return;
-    }
-    this.expand(node);
+  get controller(): DirectivePropertyResolver {
+    return this._nestedProps.getDirectiveController(this.directive);
   }
 
-  expand(node: FlatNode): void {
-    const { prop } = node;
-    if (!prop.descriptor.expandable) {
-      return;
-    }
-    this.treeControl.expand(node);
+  get dataSource(): PropertyDataSource {
+    return this.controller.getDirectiveControls().dataSource;
   }
 
-  updateValue(newValue: any, node: FlatNode): void {
-    this.controller.updateValue(newValue, node);
+  get treeControl(): TreeControl<FlatNode> {
+    return this.controller.getDirectiveControls().treeControl;
   }
 }

@@ -16,10 +16,6 @@ export class PropertyTabBodyComponent {
 
   constructor(private _nestedProps: ElementPropertyResolver) {}
 
-  nameTracking(_: number, item: { key: string }): string {
-    return item.key;
-  }
-
   getCurrentDirectives(): string[] | undefined {
     if (!this.currentSelectedElement) {
       return;
