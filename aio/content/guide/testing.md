@@ -507,10 +507,11 @@ Consider this `LightswitchComponent` which toggles a light on and off
 You might decide only to test that the `clicked()` method
 toggles the light's _on/off_ state and sets the message appropriately.
 
-This component class has no dependencies.
-To test a service with no dependencies, you create it with `new`, poke at its API,
-and assert expectations on its public state.
-Do the same with the component class.
+This component class has no dependencies. To test these types of classes, follow the same steps as you would for a service that has no dependencies:
+
+1. Create a component using the new keyword.
+2. Poke at its API.
+3. Assert expectations on its public state.
 
 <code-example
   path="testing/src/app/demo/demo.spec.ts"
