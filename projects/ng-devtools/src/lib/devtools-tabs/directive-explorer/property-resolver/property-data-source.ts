@@ -11,8 +11,7 @@ import { FlatNode, Property } from './element-property-resolver';
 const trackBy = (idx: number, item: FlatNode) => {
   const desc = item.prop.descriptor;
   const name = item.prop.name;
-  const res = `${idx}#${name}#${desc.type}#${desc.preview}`;
-  return res;
+  return `${idx}#${name}#${item.level}#${desc.type}#${desc.preview}`;
 };
 
 export class PropertyDataSource extends DataSource<FlatNode> {

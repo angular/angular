@@ -103,7 +103,7 @@ export const levelSerializer = (
   return createShallowSerializedDescriptor(propData);
 };
 
-export const serializeComponentState = (instance: object, levels = MAX_LEVEL): { [key: string]: Descriptor } => {
+export const serializeDirectiveState = (instance: object, levels = MAX_LEVEL): { [key: string]: Descriptor } => {
   const result = {};
   for (const prop in instance) {
     if (instance.hasOwnProperty(prop) && !ignoreList.has(prop)) {

@@ -1,4 +1,4 @@
-import { deeplySerializeSelectedProperties } from './state-serializer/state-serializer';
+import { deeplySerializeSelectedProperties, serializeDirectiveState } from './state-serializer/state-serializer';
 
 import {
   DevToolsNode,
@@ -6,6 +6,7 @@ import {
   ComponentExplorerViewQuery,
   DirectivesProperties,
   UpdatedStateData,
+  PropertyQueryTypes,
 } from 'protocol';
 import { DebuggingAPI } from './interfaces';
 import { IndexedNode } from './observer/identity-tracker';
@@ -29,42 +30,31 @@ export interface ComponentTreeNode extends DevToolsNode<DirectiveInstanceType, C
 }
 
 export const getLatestComponentState = (query: ComponentExplorerViewQuery): DirectivesProperties | undefined => {
-  let result: DirectivesProperties | undefined;
-  if (query.selectedElement && query.expandedProperties) {
-    const node = queryDirectiveForest(query.selectedElement, buildDirectiveForest((window as any).ng));
-    if (!node) {
-      return undefined;
-    }
-
-    result = {};
-    node.directives.forEach(dir => {
-      // TypeScript's type inference does not detect
-      // the assignment above, which requires this check.
-      if (!result) {
-        return;
-      }
-      if (!query.expandedProperties) {
-        return;
-      }
-      const props = query.expandedProperties[dir.name];
-      if (!props) {
-        return;
-      }
-      result[dir.name] = {
-        props: deeplySerializeSelectedProperties(dir.instance, props),
-      };
-    });
-
-    if (node.component) {
-      const props = query.expandedProperties[node.component.name];
-      if (!props) {
-        return;
-      }
-      result[node.component.name] = {
-        props: deeplySerializeSelectedProperties(node.component.instance, props),
-      };
-    }
+  const node = queryDirectiveForest(query.selectedElement, buildDirectiveForest((window as any).ng));
+  if (!node) {
+    return;
   }
+
+  const result: DirectivesProperties = {};
+
+  const populateResultSet = (dir: DirectiveInstanceType | ComponentInstanceType) => {
+    if (query.propertyQuery.type === PropertyQueryTypes.All) {
+      result[dir.name] = {
+        props: serializeDirectiveState(dir.instance),
+      };
+    }
+    if (query.propertyQuery.type === PropertyQueryTypes.Specified) {
+      result[dir.name] = {
+        props: deeplySerializeSelectedProperties(dir.instance, query.propertyQuery.properties[dir.name]),
+      };
+    }
+  };
+
+  node.directives.forEach(populateResultSet);
+  if (node.component) {
+    populateResultSet(node.component);
+  }
+
   return result;
 };
 

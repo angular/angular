@@ -29,8 +29,21 @@ export class ElementPropertyResolver {
   constructor(private _messageBus: MessageBus<Events>) {}
 
   setProperties(indexedNode: IndexedNode, data: DirectivesProperties): void {
-    this._directivePropertiesController = new Map<string, DirectivePropertyResolver>();
+    // To prevent memory leaks when a directive no longer exists on an element
+    const currentProps = [...this._directivePropertiesController.keys()];
+    const incomingProps = new Set(Object.keys(data));
+    for (const prop of currentProps) {
+      if (!incomingProps.has(prop)) {
+        this._directivePropertiesController.delete(prop);
+      }
+    }
+
     Object.keys(data).forEach(key => {
+      const controller = this._directivePropertiesController.get(key);
+      if (controller) {
+        controller.updateProperties(data[key]);
+        return;
+      }
       const position: DirectivePosition = {
         element: indexedNode.position,
         directive: undefined,
@@ -55,7 +68,7 @@ export class ElementPropertyResolver {
       }
       result[directive] = controller.getExpandedProperties();
     }
-    return {} as any;
+    return result;
   }
 
   getDirectiveController(directive: string): DirectivePropertyResolver | undefined {

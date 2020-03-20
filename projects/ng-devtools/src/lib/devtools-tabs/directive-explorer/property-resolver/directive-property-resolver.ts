@@ -64,6 +64,11 @@ export class DirectivePropertyResolver {
     return getExpandedDirectiveProperties(this._dataSource.data);
   }
 
+  updateProperties(newProps: Properties): void {
+    this._dataSource.update(newProps.props);
+    this._props = newProps;
+  }
+
   updateValue(node: FlatNode, newValue: any): void {
     const directiveId = this._directivePosition;
     const keyPath = this._constructPathOfKeysToPropertyValue(node.prop);

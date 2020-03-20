@@ -62,17 +62,33 @@ export interface NestedProp {
 }
 
 export interface ComponentExplorerViewProperties {
-  [directive: string]: NestedProp[] | null;
+  [directive: string]: NestedProp[];
 }
 
+export enum PropertyQueryTypes {
+  All,
+  Specified,
+}
+
+export interface AllPropertiesQuery {
+  type: PropertyQueryTypes.All;
+}
+
+export interface SelectedPropertiesQuery {
+  type: PropertyQueryTypes.Specified;
+  properties: ComponentExplorerViewProperties;
+}
+
+export type PropertyQuery = AllPropertiesQuery | SelectedPropertiesQuery;
+
 export interface ComponentExplorerViewQuery {
-  selectedElement: ElementPosition | null;
-  expandedProperties: ComponentExplorerViewProperties | null;
+  selectedElement: ElementPosition;
+  propertyQuery: PropertyQuery;
 }
 
 export interface ComponentExplorerView {
   forest: DevToolsNode[];
-  properties: DirectivesProperties | undefined;
+  properties?: DirectivesProperties;
 }
 
 export interface LifecycleProfile {
@@ -119,15 +135,13 @@ export interface Events {
   inspectorStart: () => void;
   inspectorEnd: () => void;
 
-  getElementDirectivesProperties: (position: ElementPosition) => void;
-  elementDirectivesProperties: (data: DirectivesProperties) => void;
   getNestedProperties: (position: DirectivePosition, path: string[]) => void;
   nestedProperties: (position: DirectivePosition, data: Properties, path: string[]) => void;
 
   setSelectedComponent: (position: ElementPosition) => void;
 
   componentTreeDirty: () => void;
-  getLatestComponentExplorerView: (query: ComponentExplorerViewQuery) => void;
+  getLatestComponentExplorerView: (query?: ComponentExplorerViewQuery) => void;
   latestComponentExplorerView: (view: ComponentExplorerView) => void;
 
   updateState: (value: UpdatedStateData) => void;
