@@ -6,6 +6,7 @@ ts_library(
     module_name = "@angular/dev-infra-private/ts-circular-dependencies",
     visibility = ["//dev-infra:__subpackages__"],
     deps = [
+        "//dev-infra/utils:config",
         "@npm//@types/glob",
         "@npm//@types/node",
         "@npm//@types/yargs",

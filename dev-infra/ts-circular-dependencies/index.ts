@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -17,7 +18,9 @@ import {Analyzer, ReferenceChain} from './analyzer';
 import {compareGoldens, convertReferenceChainToGolden, Golden} from './golden';
 import {convertPathToForwardSlash} from './file_system';
 
-const projectDir = join(__dirname, '../../');
+import {getRepoBaseDir} from '../utils/config';
+
+const projectDir = getRepoBaseDir();
 const packagesDir = join(projectDir, 'packages/');
 // The default glob does not capture deprecated packages such as http, or the webworker platform.
 const defaultGlob =
