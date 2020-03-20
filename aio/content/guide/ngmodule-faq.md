@@ -101,7 +101,7 @@ should import `BrowserModule` from `@angular/platform-browser`.
 `BrowserModule` provides services that are essential to launch and run a browser app.
 
 `BrowserModule` also re-exports `CommonModule` from `@angular/common`,
-which means that components in the `AppModule` module also have access to
+which means that components in the `AppModule` also have access to
 the Angular directives every app needs, such as `NgIf` and `NgFor`.
 
 Do not import `BrowserModule` in any other module.
@@ -140,7 +140,7 @@ declared in this NgModule.
 You _can_ export any declarable class&mdash;components, directives, and pipes&mdash;whether
 it's declared in this NgModule or in an imported NgModule.
 
-You _can_ re-export entire imported NgModules, which effectively re-exports all of their exported classes.
+You _can_ re-export entire imported NgModules, which effectively re-export all of their exported classes.
 An NgModule can even export a module that it doesn't import.
 
 <hr/>
@@ -192,7 +192,7 @@ Its only purpose is to add http service providers to the application as a whole.
 
 The `forRoot()` static method is a convention that makes it easy for developers to configure services and providers that are intended to be singletons. A good example of `forRoot()` is the `RouterModule.forRoot()` method.
 
-Apps pass a `Routes` object to `RouterModule.forRoot()` in order to configure the app-wide `Router` service with routes.
+Apps pass a `Routes` array to `RouterModule.forRoot()` in order to configure the app-wide `Router` service with routes.
 `RouterModule.forRoot()` returns a [ModuleWithProviders](api/core/ModuleWithProviders).
 You add that result to the `imports` list of the root `AppModule`.
 
