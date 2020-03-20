@@ -12,6 +12,7 @@ import {DepGraph} from 'dependency-graph';
 import * as os from 'os';
 import * as ts from 'typescript';
 
+import {readConfiguration} from '../..';
 import {replaceTsWithNgInErrors} from '../../src/ngtsc/diagnostics';
 import {AbsoluteFsPath, FileSystem, absoluteFrom, dirname, getFileSystem, resolve} from '../../src/ngtsc/file_system';
 
@@ -94,6 +95,9 @@ export interface SyncNgccOptions {
   /**
    * Paths mapping configuration (`paths` and `baseUrl`), as found in `ts.CompilerOptions`.
    * These are used to resolve paths to locally built Angular libraries.
+   *
+   * Note that `pathMappings` specified here take precedence over any `pathMappings` loaded from a
+   * TS config file.
    */
   pathMappings?: PathMappings;
 
@@ -143,6 +147,18 @@ export interface SyncNgccOptions {
    * Default: `false` (i.e. the manifest will be used if available)
    */
   invalidateEntryPointManifest?: boolean;
+
+  /**
+   * An absolute path to a TS config file (e.g. `tsconfig.json`) or a directory containing one, that
+   * will be used to configure module resolution with things like path mappings, if not specified
+   * explicitly via the `pathMappings` property to `mainNgcc`.
+   *
+   * If `undefined`, ngcc will attempt to load a `tsconfig.json` file from the directory above the
+   * `basePath`.
+   *
+   * If `null`, ngcc will not attempt to load any TS config file at all.
+   */
+  tsConfigPath?: string|null;
 }
 
 /**
@@ -165,12 +181,12 @@ export type NgccOptions = AsyncNgccOptions | SyncNgccOptions;
  */
 export function mainNgcc(options: AsyncNgccOptions): Promise<void>;
 export function mainNgcc(options: SyncNgccOptions): void;
-export function mainNgcc({basePath, targetEntryPointPath,
-                          propertiesToConsider = SUPPORTED_FORMAT_PROPERTIES,
-                          compileAllFormats = true, createNewEntryPointFormats = false,
-                          logger = new ConsoleLogger(LogLevel.info), pathMappings, async = false,
-                          errorOnFailedEntryPoint = false, enableI18nLegacyMessageIdFormat = true,
-                          invalidateEntryPointManifest = false}: NgccOptions): void|Promise<void> {
+export function mainNgcc(
+    {basePath, targetEntryPointPath, propertiesToConsider = SUPPORTED_FORMAT_PROPERTIES,
+     compileAllFormats = true, createNewEntryPointFormats = false,
+     logger = new ConsoleLogger(LogLevel.info), pathMappings, async = false,
+     errorOnFailedEntryPoint = false, enableI18nLegacyMessageIdFormat = true,
+     invalidateEntryPointManifest = false, tsConfigPath}: NgccOptions): void|Promise<void> {
   if (!!targetEntryPointPath) {
     // targetEntryPointPath forces us to error if an entry-point fails.
     errorOnFailedEntryPoint = true;
@@ -184,7 +200,19 @@ export function mainNgcc({basePath, targetEntryPointPath,
   //       master/worker process.
   const fileSystem = getFileSystem();
   const absBasePath = absoluteFrom(basePath);
-  const config = new NgccConfiguration(fileSystem, dirname(absBasePath));
+  const projectPath = dirname(absBasePath);
+  const config = new NgccConfiguration(fileSystem, projectPath);
+  const tsConfig = tsConfigPath !== null ? readConfiguration(tsConfigPath || projectPath) : null;
+
+  // If `pathMappings` is not provided directly, then try getting it from `tsConfig`, if available.
+  if (tsConfig !== null && pathMappings === undefined && tsConfig.options.baseUrl !== undefined &&
+      tsConfig.options.paths) {
+    pathMappings = {
+      baseUrl: resolve(projectPath, tsConfig.options.baseUrl),
+      paths: tsConfig.options.paths,
+    };
+  }
+
   const dependencyResolver = getDependencyResolver(fileSystem, logger, config, pathMappings);
   const entryPointManifest = invalidateEntryPointManifest ?
       new InvalidatingEntryPointManifest(fileSystem, config, logger) :
