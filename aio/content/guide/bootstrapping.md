@@ -12,7 +12,7 @@ Every application has at least one Angular module, the _root_ module,
 which must be present for bootstrapping the application on launch.
 By convention and by default, this NgModule is named `AppModule`.
 
-When you use the [Angular CLI](cli) command `ng new` to generate an app, the default `AppModule` is as follows.
+When you use the [Angular CLI](cli) command `ng new` to generate an app, the default `AppModule` looks like the following:
 
 ```typescript
 /* JavaScript imports */
@@ -90,8 +90,6 @@ A declarable can only belong to one module, so only declare it in
 one `@NgModule`. When you need it elsewhere,
 import the module that has the declarable you need in it.
 
-**Only `@NgModule` references** go in the `imports` array.
-
 
 ### Using directives with `@NgModule`
 
@@ -133,7 +131,7 @@ The module's `imports` array appears exclusively in the `@NgModule` metadata obj
 It tells Angular about other NgModules that this particular module needs to function properly.
 
 This list of modules are those that export components, directives, or pipes
-that the component templates in this module reference. In this case, the component is
+that component templates in this module reference. In this case, the component is
 `AppComponent`, which references components, directives, or pipes in `BrowserModule`,
 `FormsModule`, or  `HttpClientModule`.
 A component template can reference another component, directive,
