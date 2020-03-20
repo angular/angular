@@ -18,10 +18,16 @@ If you are new to Angular, see [Getting Started](start). Getting Started helps y
 {@a prerequisites}
 ## Prerequisites
 
-Before you begin, make sure your development environment includes `Node.js®` and an npm package manager.
+Before you begin, make sure that you already know how to use your terminal:
+
+*  [Terminal on a Mac](https://support.apple.com/guide/terminal/welcome/mac).
+*  Windows console: [Windows commands](https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/windows-commands)
+*  [Linux command line for beginners ](https://ubuntu.com/tutorials/command-line-for-beginners#1-overview)
 
 {@a nodejs}
 ### Node.js
+
+Make sure your development environment includes `Node.js®` and an npm package manager.
 
 Angular requires a [current, active LTS, or maintenance LTS](https://nodejs.org/about/releases/) version of `Node.js`. See the `engines` key for the specific version requirements in our [package.json](https://unpkg.com/@angular/cli/package.json).
 
