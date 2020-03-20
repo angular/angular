@@ -8,10 +8,8 @@ import { DefaultIterableDiffer } from '@angular/core';
 import { diff } from '../../diffing';
 import { FlatNode, Property } from './element-property-resolver';
 
-const trackBy = (idx: number, item: FlatNode) => {
-  const desc = item.prop.descriptor;
-  const name = item.prop.name;
-  return `${idx}#${name}#${item.level}#${desc.type}#${desc.preview}`;
+const trackBy = (_: number, item: FlatNode) => {
+  return `#${item.prop.name}#${item.level}#${item.prop.descriptor.value}`;
 };
 
 export class PropertyDataSource extends DataSource<FlatNode> {
@@ -37,9 +35,7 @@ export class PropertyDataSource extends DataSource<FlatNode> {
 
   update(props: { [prop: string]: Descriptor }): void {
     const newData = this._treeFlattener.flattenNodes(this._arrayify(props));
-
     diff(this._differ, this.data, newData);
-
     this._data.next(this.data);
   }
 

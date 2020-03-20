@@ -23,7 +23,7 @@ export enum PropType {
   Null,
   Undefined,
   Symbol,
-  HTMLElement,
+  HTMLNode,
   Boolean,
   BigInt,
   Function,

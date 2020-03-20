@@ -27,7 +27,7 @@ const getPropType = (prop: any): PropType => {
     return PropType.Null;
   }
   if (prop instanceof HTMLElement) {
-    return PropType.HTMLElement;
+    return PropType.HTMLNode;
   }
   const type = typeof prop;
   if (commonTypes[type] !== undefined) {
@@ -38,6 +38,8 @@ const getPropType = (prop: any): PropType => {
       return PropType.Array;
     } else if (Object.prototype.toString.call(prop) === '[object Date]') {
       return PropType.Date;
+    } else if (prop instanceof Node) {
+      return PropType.HTMLNode;
     } else {
       return PropType.Object;
     }

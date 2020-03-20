@@ -28,6 +28,10 @@ export class ElementPropertyResolver {
 
   constructor(private _messageBus: MessageBus<Events>) {}
 
+  clearProperties(): void {
+    this._directivePropertiesController = new Map();
+  }
+
   setProperties(indexedNode: IndexedNode, data: DirectivesProperties): void {
     // To prevent memory leaks when a directive no longer exists on an element
     const currentProps = [...this._directivePropertiesController.keys()];
