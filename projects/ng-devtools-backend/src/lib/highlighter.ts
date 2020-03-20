@@ -31,25 +31,28 @@ function init(): void {
   overlay.appendChild(overlayContent);
 }
 
-export const findComponentAndHost = (el: Node): { component: any; host: HTMLElement } => {
+export const findComponentAndHost = (el: Node | undefined): { component: any; host: HTMLElement | null } => {
   if (!el) {
-    return;
+    return { component: null, host: null };
   }
   while (el) {
     const component = el instanceof HTMLElement && ng.getComponent(el);
     if (component) {
       return { component, host: el as HTMLElement };
     }
+    if (!el.parentElement) {
+      break;
+    }
     el = el.parentElement;
   }
   return { component: null, host: null };
 };
 
-export const getDirectiveName = (dir: Type<unknown>): string | null => {
+export const getDirectiveName = (dir: Type<unknown> | undefined | null): string => {
   if (dir) {
     return dir.constructor.name;
   }
-  return null;
+  return 'unknown';
 };
 
 export const highlight = (el: HTMLElement): void => {
@@ -58,7 +61,7 @@ export const highlight = (el: HTMLElement): void => {
 
   init();
   if (rect) {
-    const content = [];
+    const content: Node[] = [];
     const name = getDirectiveName(cmp);
     if (name) {
       const pre = document.createElement('span');
@@ -89,7 +92,7 @@ export function inDoc(node: any): boolean {
   return doc === node || doc === parent || !!(parent && parent.nodeType === 1 && doc.contains(parent));
 }
 
-export function getComponentRect(el: Node): DOMRect | ClientRect {
+export function getComponentRect(el: Node): DOMRect | ClientRect | undefined {
   if (!(el instanceof HTMLElement)) {
     return;
   }

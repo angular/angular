@@ -96,19 +96,23 @@ const getNestedPropertiesCallback = (messageBus: MessageBus<Events>) => (
   position: DirectivePosition,
   propPath: string[]
 ) => {
+  const emitEmpty = () => messageBus.emit('nestedProperties', [position, { props: {} }, propPath]);
   const node = queryDirectiveForest(position.element, getDirectiveForest());
-  if (node) {
-    let current = (position.directive === undefined ? node.component : node.directives[position.directive]).instance;
-    for (const prop of propPath) {
-      current = current[prop];
-      if (!current) {
-        console.error('Cannot access the properties', propPath, 'of', node);
-      }
-    }
-    messageBus.emit('nestedProperties', [position, { props: serializeComponentState(current) }, propPath]);
-  } else {
-    messageBus.emit('nestedProperties', [position, { props: {} }, propPath]);
+  if (!node) {
+    return emitEmpty();
   }
+  const current = position.directive === undefined ? node.component : node.directives[position.directive];
+  if (!current) {
+    return emitEmpty();
+  }
+  let data = current.instance;
+  for (const prop of propPath) {
+    data = data[prop];
+    if (!data) {
+      console.error('Cannot access the properties', propPath, 'of', node);
+    }
+  }
+  messageBus.emit('nestedProperties', [position, { props: serializeComponentState(data) }, propPath]);
 };
 
 //
@@ -117,8 +121,7 @@ const getNestedPropertiesCallback = (messageBus: MessageBus<Events>) => (
 
 const checkForAngular = (messageBus: MessageBus<Events>, attempt = 0): void => {
   const ngVersion = getAngularVersion();
-  const hasAngular = !!ngVersion;
-  if (hasAngular) {
+  if (!!ngVersion) {
     observeDOM();
     messageBus.emit('ngAvailability', [{ version: ngVersion.toString(), prodMode: false }]);
     return;

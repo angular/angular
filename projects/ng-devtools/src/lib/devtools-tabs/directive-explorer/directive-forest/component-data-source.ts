@@ -63,9 +63,9 @@ export class ComponentDataSource extends DataSource<FlatNode> {
       this._nodeToFlat.set(node, flatNode);
       return flatNode;
     },
-    node => node.level,
-    node => node.expandable,
-    node => node.children
+    node => (node ? node.level : -1),
+    node => (node ? node.expandable : false),
+    node => (node ? node.children : [])
   );
 
   constructor(private _treeControl: FlatTreeControl<FlatNode>) {
@@ -80,7 +80,7 @@ export class ComponentDataSource extends DataSource<FlatNode> {
     return this._expandedData.value;
   }
 
-  getFlatNodeFromIndexedNode(indexedNode: IndexedNode): FlatNode {
+  getFlatNodeFromIndexedNode(indexedNode: IndexedNode): FlatNode | undefined {
     return this._nodeToFlat.get(indexedNode);
   }
 
@@ -90,11 +90,11 @@ export class ComponentDataSource extends DataSource<FlatNode> {
     }
 
     const indexedForest = indexForest(forest);
-    const flattenedCollection = this._treeFlattener.flattenNodes(indexedForest);
+    const flattenedCollection = this._treeFlattener.flattenNodes(indexedForest) as FlatNode[];
 
     this.data.forEach(i => (i.newItem = false));
 
-    const { newItems, removedItems, movedItems } = diff(this._differ, this.data, flattenedCollection);
+    const { newItems, movedItems, removedItems } = diff<FlatNode>(this._differ, this.data, flattenedCollection);
     this._treeControl.dataNodes = this.data;
     this._flattenedData.next(this.data);
 
@@ -109,7 +109,7 @@ export class ComponentDataSource extends DataSource<FlatNode> {
     const changes = [collectionViewer.viewChange, this._treeControl.expansionModel.changed, this._flattenedData];
     return merge(...changes).pipe(
       map(() => {
-        this._expandedData.next(this._treeFlattener.expandFlattenedNodes(this.data, this._treeControl));
+        this._expandedData.next(this._treeFlattener.expandFlattenedNodes(this.data, this._treeControl) as FlatNode[]);
         return this._expandedData.value;
       })
     );

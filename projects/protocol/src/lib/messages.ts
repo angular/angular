@@ -67,12 +67,12 @@ export interface ComponentExplorerViewProperties {
 
 export interface ComponentExplorerViewQuery {
   selectedElement: ElementPosition | null;
-  expandedProperties: ComponentExplorerViewProperties;
+  expandedProperties: ComponentExplorerViewProperties | null;
 }
 
 export interface ComponentExplorerView {
   forest: DevToolsNode[];
-  properties: DirectivesProperties;
+  properties: DirectivesProperties | undefined;
 }
 
 export interface LifecycleProfile {

@@ -3,7 +3,7 @@ import * as highlighter from './highlighter';
 describe('highlighter', () => {
   describe('findComponentAndHost', () => {
     it('should return undefined when no node is provided', () => {
-      expect(highlighter.findComponentAndHost(undefined)).toBeFalsy();
+      expect(highlighter.findComponentAndHost(undefined)).toEqual({ component: null, host: null });
     });
 
     it('should return same component and host if component exists', () => {
@@ -31,10 +31,10 @@ describe('highlighter', () => {
   describe('getComponentName', () => {
     it('should return null when called with null values', () => {
       let name = highlighter.getDirectiveName(null);
-      expect(name).toBeFalsy();
+      expect(name).toBe('unknown');
 
       name = highlighter.getDirectiveName(undefined);
-      expect(name).toBeFalsy();
+      expect(name).toBe('unknown');
     });
 
     it('should return correct component name', () => {

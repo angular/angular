@@ -48,7 +48,11 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
         });
       }
       const profile = eventMap.get(component);
-      profile.changeDetection += duration;
+      if (profile) {
+        profile.changeDetection += duration;
+      } else {
+        console.warn('Could not find profile for', component);
+      }
     },
     onDestroy(directive: any, node: Node, _: number, isComponent: boolean, __: ElementPosition): void {
       // Make sure we reflect such directives in the report.
@@ -79,8 +83,12 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
           lifecycle: {},
         });
       }
-      eventMap.get(directive).lifecycle[hook] = eventMap.get(directive).lifecycle[hook] || 0;
-      eventMap.get(directive).lifecycle[hook] += duration;
+      const dir = eventMap.get(directive);
+      if (!dir) {
+        console.warn('Could not find directive in onLifecycleHook callback', directive, hook);
+        return;
+      }
+      dir.lifecycle[hook] = (dir.lifecycle[hook] || 0) + duration;
     },
   });
   observer.initialize();
@@ -147,11 +155,14 @@ const prepareInitialFrame = (source: string) => {
   };
   const directiveForest = observer.getDirectiveForest();
   const traverse = (node: ComponentTreeNode, children = frame.directives) => {
-    let position: ElementPosition;
+    let position: ElementPosition | undefined;
     if (node.component) {
       position = observer.getDirectivePosition(node.component.instance);
     } else {
       position = observer.getDirectivePosition(node.directives[0].instance);
+    }
+    if (position === undefined) {
+      return;
     }
     const directives = node.directives.map(d => {
       return {
@@ -188,6 +199,9 @@ const flushBuffer = (obs: DirectiveForestObserver, source: string = '') => {
   const positionDirective = new Map<ElementPosition, any>();
   items.forEach(dir => {
     const position = obs.getDirectivePosition(dir);
+    if (position === undefined) {
+      return;
+    }
     positions.push(position);
     positionDirective.set(position, dir);
   });

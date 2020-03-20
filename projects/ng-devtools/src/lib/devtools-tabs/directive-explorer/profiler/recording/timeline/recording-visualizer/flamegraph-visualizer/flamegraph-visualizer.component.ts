@@ -14,10 +14,10 @@ export interface GraphNode {
 })
 export class FlamegraphVisualizerComponent {
   profilerBars: FlamegraphNode[] = [];
-  selectedEntry: FlamegraphNode = null;
+  selectedEntry: FlamegraphNode | null = null;
 
   // graph options
-  graphData = [];
+  graphData: GraphNode[] = [];
   view: [number, number] = [235, 200];
   colorScheme = {
     domain: ['#E71D36', '#2EC4B6', '#FF9F1C', '#011627'],

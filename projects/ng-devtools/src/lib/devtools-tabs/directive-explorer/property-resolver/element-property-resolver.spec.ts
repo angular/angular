@@ -95,7 +95,9 @@ describe('ElementPropertyResolver', () => {
       },
     });
     const fooController = resolver.getDirectiveController('FooCmp');
-    const fooProps = fooController.getExpandedProperties();
+    expect(fooController).toBeTruthy();
+    // tslint:disable-next-line: no-non-null-assertion
+    const fooProps = fooController!.getExpandedProperties();
     expect(fooProps).toEqual([
       {
         name: 'foo',
@@ -113,7 +115,9 @@ describe('ElementPropertyResolver', () => {
     ]);
 
     const barController = resolver.getDirectiveController('BarDir');
-    const barProps = barController.getExpandedProperties();
+    expect(barController).toBeTruthy();
+    // tslint:disable-next-line: no-non-null-assertion
+    const barProps = barController!.getExpandedProperties();
     expect(barProps).toEqual([
       {
         name: 'bar',

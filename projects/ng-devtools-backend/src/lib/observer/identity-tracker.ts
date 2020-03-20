@@ -22,11 +22,11 @@ export class IdentityTracker {
 
   constructor(private _ng: DebuggingAPI) {}
 
-  getDirectivePosition(dir: any): ElementPosition {
+  getDirectivePosition(dir: any): ElementPosition | undefined {
     return this._currentDirectivePosition.get(dir);
   }
 
-  getDirectiveId(dir: any): number {
+  getDirectiveId(dir: any): number | undefined {
     return this._currentDirectiveId.get(dir);
   }
 
@@ -42,7 +42,7 @@ export class IdentityTracker {
     indexedForest.forEach(root => this._index(root, null, newNodes, allNodes));
     this._currentDirectiveId.forEach((_: number, dir: any) => {
       if (!allNodes.has(dir)) {
-        removedNodes.push({ directive: dir, isComponent: this._isComponent.get(dir) });
+        removedNodes.push({ directive: dir, isComponent: !!this._isComponent.get(dir) });
         // We can't clean these up because during profiling
         // they might be requested for removed components
         // this._currentDirectiveId.delete(dir);
@@ -74,7 +74,7 @@ export class IdentityTracker {
   private _indexNode(directive: any, position: ElementPosition, newNodes: NodeArray): void {
     this._currentDirectivePosition.set(directive, position);
     if (!this._currentDirectiveId.has(directive)) {
-      newNodes.push({ directive, isComponent: this._isComponent.get(directive) });
+      newNodes.push({ directive, isComponent: !!this._isComponent.get(directive) });
       this._currentDirectiveId.set(directive, this._directiveIdCounter++);
     }
   }
@@ -93,7 +93,7 @@ export interface IndexedNode extends DevToolsNode<DirectiveInstanceType, Compone
 const indexTree = <T extends DevToolsNode<DirectiveInstanceType, ComponentInstanceType>>(
   node: T,
   idx: number,
-  parentPosition = []
+  parentPosition: number[] = []
 ): IndexedNode => {
   const position = parentPosition.concat([idx]);
   return {

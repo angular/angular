@@ -38,23 +38,30 @@ export const getLatestComponentState = (query: ComponentExplorerViewQuery): Dire
 
     result = {};
     node.directives.forEach(dir => {
-      if (!query.expandedProperties[dir.name]) {
+      // TypeScript's type inference does not detect
+      // the assignment above, which requires this check.
+      if (!result) {
+        return;
+      }
+      if (!query.expandedProperties) {
+        return;
+      }
+      const props = query.expandedProperties[dir.name];
+      if (!props) {
         return;
       }
       result[dir.name] = {
-        props: deeplySerializeSelectedProperties(dir.instance, query.expandedProperties[dir.name]),
+        props: deeplySerializeSelectedProperties(dir.instance, props),
       };
     });
 
     if (node.component) {
-      if (!query.expandedProperties[node.component.name]) {
+      const props = query.expandedProperties[node.component.name];
+      if (!props) {
         return;
       }
       result[node.component.name] = {
-        props: deeplySerializeSelectedProperties(
-          node.component.instance,
-          query.expandedProperties[node.component.name]
-        ),
+        props: deeplySerializeSelectedProperties(node.component.instance, props),
       };
     }
   }
@@ -115,7 +122,7 @@ export const queryDirectiveForest = (
 };
 
 export const findNodeInForest = (position: ElementPosition, forest: ComponentTreeNode[]): HTMLElement | null => {
-  const foundComponent: ComponentTreeNode = queryDirectiveForest(position, forest);
+  const foundComponent: ComponentTreeNode | null = queryDirectiveForest(position, forest);
   return foundComponent ? (foundComponent.nativeElement as HTMLElement) : null;
 };
 
@@ -123,7 +130,7 @@ export const getIndexForNativeElementInForest = (
   nativeElement: HTMLElement,
   forest: IndexedNode[]
 ): ElementPosition | null => {
-  const foundElementPosition: ElementPosition = findElementIDFromNativeElementInForest(forest, nativeElement);
+  const foundElementPosition: ElementPosition | null = findElementIDFromNativeElementInForest(forest, nativeElement);
   return foundElementPosition || null;
 };
 
@@ -150,22 +157,32 @@ export const findNodeFromSerializedPosition = (serializedPosition: string) => {
   return queryDirectiveForest(position, buildDirectiveForest(ngDebug()));
 };
 
-export const updateState = (updatedStateData: UpdatedStateData) => {
+export const updateState = (updatedStateData: UpdatedStateData): void => {
   const ngd = ngDebug();
   const node = queryDirectiveForest(updatedStateData.directiveId.element, buildDirectiveForest(ngd));
-  if (updatedStateData.directiveId.directive === undefined) {
-    const comp = node.component.instance;
-    mutateComponentOrDirective(updatedStateData, comp);
-    ngd.applyChanges(comp);
-  } else {
+  if (!node) {
+    console.warn('Could not update the state of component', updateState, 'because the component was not found');
+    return;
+  }
+  if (updatedStateData.directiveId.directive !== undefined) {
     const directive = node.directives[updatedStateData.directiveId.directive].instance;
     mutateComponentOrDirective(updatedStateData, directive);
     ngd.applyChanges(ngd.getOwningComponent(directive));
+    return;
+  }
+  if (node.component) {
+    const comp = node.component.instance;
+    mutateComponentOrDirective(updatedStateData, comp);
+    ngd.applyChanges(comp);
+    return;
   }
 };
 
-const mutateComponentOrDirective = (updatedStateData: UpdatedStateData, compOrDirective) => {
+const mutateComponentOrDirective = (updatedStateData: UpdatedStateData, compOrDirective: any) => {
   const valueKey = updatedStateData.keyPath.pop();
+  if (valueKey === undefined) {
+    return;
+  }
 
   let parentObjectOfValueToUpdate = compOrDirective;
   updatedStateData.keyPath.forEach(key => {

@@ -108,7 +108,7 @@ export const createLevelSerializedDescriptor = (
     preview: getDescriptorPreview(propData),
   };
 
-  if (levelOptions.currentLevel < levelOptions.level) {
+  if (levelOptions.level !== undefined && levelOptions.currentLevel < levelOptions.level) {
     const value = getLevelDescriptorValue(propData, levelOptions, continuation);
     if (value !== undefined) {
       levelSerializedDescriptor.value = value;
@@ -142,7 +142,8 @@ export const createNestedSerializedDescriptor = (
   return nestedSerializedDescriptor;
 };
 
-const getDataByType = (type: PropType, valueByType: CommonTypeCases, defaultValue?: any) => {
+// TODO: set proper types.
+const getDataByType = (type: PropType, valueByType: any, defaultValue?: any) => {
   try {
     switch (type) {
       case PropType.Array:

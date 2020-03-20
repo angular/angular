@@ -72,7 +72,7 @@ export class DirectiveExplorerComponent implements OnInit {
   subscribeToBackendEvents(): void {
     this._messageBus.on('elementDirectivesProperties', (data: DirectivesProperties) => {
       this.currentSelectedElement = this._clickedElement;
-      if (data) {
+      if (data && this.currentSelectedElement) {
         this._propResolver.setProperties(this.currentSelectedElement, data);
       }
     });
@@ -80,7 +80,7 @@ export class DirectiveExplorerComponent implements OnInit {
     this._messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
       this.forest = view.forest;
       this.currentSelectedElement = this._clickedElement;
-      if (view.properties) {
+      if (view.properties && this.currentSelectedElement) {
         this._propResolver.setProperties(this.currentSelectedElement, view.properties);
       }
     });
@@ -112,6 +112,9 @@ export class DirectiveExplorerComponent implements OnInit {
   }
 
   viewSource(): void {
+    if (!this.currentSelectedElement) {
+      return;
+    }
     this._appOperations.viewSource(this.currentSelectedElement.position);
   }
 
@@ -135,6 +138,9 @@ export class DirectiveExplorerComponent implements OnInit {
       const controller = this._propResolver.getDirectiveController(directive);
       if (controller) {
         data = controller.getDirectiveProperties();
+      }
+      if (!e.clipboardData) {
+        return;
       }
       e.clipboardData.setData('text/plain', JSON.stringify(cleanPropDataForCopying(data)));
       e.preventDefault();

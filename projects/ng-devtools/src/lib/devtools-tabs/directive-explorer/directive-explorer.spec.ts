@@ -59,8 +59,10 @@ describe('DirectiveExplorerComponent', () => {
         },
       };
       comp.refresh();
+      expect(comp.currentSelectedElement).toBeTruthy();
       const viewQuery: ComponentExplorerViewQuery = {
-        selectedElement: comp.currentSelectedElement.position,
+        // tslint:disable-next-line: no-non-null-assertion
+        selectedElement: comp.currentSelectedElement!.position,
         expandedProperties: {},
       };
       expect(messageBusMock.emit).toHaveBeenCalledWith('getLatestComponentExplorerView', [viewQuery]);

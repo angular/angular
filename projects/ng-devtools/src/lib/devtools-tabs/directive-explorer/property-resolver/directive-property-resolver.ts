@@ -1,9 +1,10 @@
 import { Descriptor, PropType, MessageBus, Events, Properties, DirectivePosition, NestedProp } from 'protocol';
 import { MatTreeFlattener } from '@angular/material/tree';
-import { Property, FlatNode, PropertyDataSource } from './property-data-source';
+import { PropertyDataSource } from './property-data-source';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { getExpandedDirectiveProperties } from './property-expanded-directive-properties';
 import { Observable } from 'rxjs';
+import { Property, FlatNode } from './element-property-resolver';
 
 const expandable = (prop: Descriptor) => {
   if (!prop) {
@@ -79,7 +80,7 @@ export class DirectivePropertyResolver {
     return keys;
   }
 
-  private _getChildren(prop: Property): Property[] {
+  private _getChildren(prop: Property): Property[] | undefined {
     const descriptor = prop.descriptor;
     if (descriptor.type === PropType.Object && !(descriptor.value instanceof Observable)) {
       return Object.keys(descriptor.value || {}).map(name => {
