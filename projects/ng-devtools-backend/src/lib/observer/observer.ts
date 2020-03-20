@@ -102,12 +102,20 @@ export class DirectiveForestObserver {
 
   constructor(private _config: Partial<Config>) {}
 
-  getDirectivePosition(dir: any): ElementPosition {
-    return this._tracker.getDirectivePosition(dir);
+  getDirectivePosition(dir: any): ElementPosition | undefined {
+    const result = this._tracker.getDirectivePosition(dir);
+    if (result === undefined) {
+      console.warn('Unable to find position of', dir);
+    }
+    return result;
   }
 
-  getDirectiveId(dir: any): number {
-    return this._tracker.getDirectiveId(dir);
+  getDirectiveId(dir: any): number | undefined {
+    const result = this._tracker.getDirectiveId(dir);
+    if (result === undefined) {
+      console.warn('Unable to find ID of', result);
+    }
+    return result;
   }
 
   getDirectiveForest(): IndexedNode[] {
@@ -168,13 +176,14 @@ export class DirectiveForestObserver {
       return;
     }
     const position = this._tracker.getDirectivePosition(component);
-    this._config.onCreate(
-      component,
-      getDirectiveHostElement(component),
-      this._tracker.getDirectiveId(component),
-      isComponent,
-      position
-    );
+    if (position === undefined) {
+      return;
+    }
+    const id = this._tracker.getDirectiveId(component);
+    if (id === undefined) {
+      return;
+    }
+    this._config.onCreate(component, getDirectiveHostElement(component), id, isComponent, position);
   }
 
   private _fireDestroyCallback(component: any, isComponent: boolean): void {
@@ -182,13 +191,14 @@ export class DirectiveForestObserver {
       return;
     }
     const position = this._tracker.getDirectivePosition(component);
-    this._config.onDestroy(
-      component,
-      getDirectiveHostElement(component),
-      this._tracker.getDirectiveId(component),
-      isComponent,
-      position
-    );
+    if (position === undefined) {
+      return;
+    }
+    const id = this._tracker.getDirectiveId(component);
+    if (id === undefined) {
+      return;
+    }
+    this._config.onDestroy(component, getDirectiveHostElement(component), id, isComponent, position);
   }
 
   private _observeComponent(cmp: any): void {
@@ -201,12 +211,21 @@ export class DirectiveForestObserver {
     declarations.tView.template = function(_: any, component: any): void {
       const start = performance.now();
       original.apply(this, arguments);
-      if (self._tracker.hasDirective(component)) {
+      if (self._tracker.hasDirective(component) && self._config.onChangeDetection) {
+        const id = self._tracker.getDirectiveId(component);
+        if (id === undefined) {
+          return;
+        }
+
+        const position = self._tracker.getDirectivePosition(component);
+        if (position === undefined) {
+          return;
+        }
         self._config.onChangeDetection(
           component,
           getDirectiveHostElement(component),
-          self._tracker.getDirectiveId(component),
-          self._tracker.getDirectivePosition(component),
+          id,
+          position,
           performance.now() - start
         );
       } else {
@@ -219,6 +238,9 @@ export class DirectiveForestObserver {
 
   private _observeLifecycle(directive: any, isComponent: boolean): void {
     const ctx = getLViewFromDirectiveOrElementInstance(directive);
+    if (!ctx) {
+      return;
+    }
     const tview = ctx[1];
     hookTViewProperties.forEach(hook => {
       const current = tview[hook];
@@ -234,11 +256,15 @@ export class DirectiveForestObserver {
           current[idx] = function(): any {
             const start = performance.now();
             const result = el.apply(this, arguments);
-            if (self._tracker.hasDirective(this)) {
+            if (self._tracker.hasDirective(this) && self._config.onLifecycleHook) {
+              const id = self._tracker.getDirectiveId(this);
+              if (id === undefined) {
+                return;
+              }
               self._config.onLifecycleHook(
                 this,
                 getDirectiveHostElement(this),
-                self._tracker.getDirectiveId(this),
+                id,
                 isComponent,
                 getLifeCycleName(this, el),
                 performance.now() - start

@@ -15,7 +15,7 @@ export interface ComponentInspectorOptions {
 }
 
 export class ComponentInspector {
-  private _selectedComponent: { component: Type<unknown>; host: HTMLElement };
+  private _selectedComponent: { component: Type<unknown>; host: HTMLElement | null };
   private readonly _onComponentEnter;
   private readonly _onComponentLeave;
 
@@ -59,10 +59,13 @@ export class ComponentInspector {
     }
 
     unHighlight();
-    if (this._selectedComponent.component) {
+    if (this._selectedComponent.component && this._selectedComponent.host) {
       highlight(this._selectedComponent.host);
       const forest: IndexedNode[] = indexForest(buildDirectiveForest((window as any).ng));
-      const elementPosition: ElementPosition = getIndexForNativeElementInForest(this._selectedComponent.host, forest);
+      const elementPosition: ElementPosition | null = getIndexForNativeElementInForest(
+        this._selectedComponent.host,
+        forest
+      );
       this._onComponentEnter(elementPosition);
     }
   }
@@ -82,7 +85,9 @@ export class ComponentInspector {
 
   highlightByPosition(position: ElementPosition): void {
     const forest: ComponentTreeNode[] = buildDirectiveForest((window as any).ng);
-    const elementToHighlight: HTMLElement = findNodeInForest(position, forest);
-    highlight(elementToHighlight);
+    const elementToHighlight: HTMLElement | null = findNodeInForest(position, forest);
+    if (elementToHighlight) {
+      highlight(elementToHighlight);
+    }
   }
 }

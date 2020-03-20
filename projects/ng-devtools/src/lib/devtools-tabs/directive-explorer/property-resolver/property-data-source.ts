@@ -6,31 +6,7 @@ import { FlatTreeControl } from '@angular/cdk/tree';
 import { map } from 'rxjs/operators';
 import { DefaultIterableDiffer } from '@angular/core';
 import { diff } from '../../diffing';
-
-const expandable = (prop: Descriptor, messageBus?: MessageBus<Events>) => {
-  if (!prop) {
-    return false;
-  }
-  if (!prop.value && !messageBus) {
-    return false;
-  }
-  if (!prop.expandable) {
-    return false;
-  }
-  return !(prop.type !== PropType.Object && prop.type !== PropType.Array);
-};
-
-export interface FlatNode {
-  expandable: boolean;
-  prop: Property;
-  level: number;
-}
-
-export interface Property {
-  name: string;
-  descriptor: Descriptor;
-  parent: Property;
-}
+import { FlatNode, Property } from './element-property-resolver';
 
 const trackBy = (idx: number, item: FlatNode) => {
   const desc = item.prop.descriptor;
@@ -98,7 +74,7 @@ export class PropertyDataSource extends DataSource<FlatNode> {
     this._subscriptions = [];
   }
 
-  private _arrayify(props: { [prop: string]: Descriptor }, parent: Property = null): Property[] {
+  private _arrayify(props: { [prop: string]: Descriptor }, parent: Property | null = null): Property[] {
     return Object.keys(props).map(name => ({ name, descriptor: props[name], parent }));
   }
 
@@ -111,10 +87,13 @@ export class PropertyDataSource extends DataSource<FlatNode> {
       return;
     }
 
-    let parentPath = [];
+    let parentPath: string[] = [];
     let current = node.prop;
     while (current) {
       parentPath.push(current.name);
+      if (!current.parent) {
+        break;
+      }
       current = current.parent;
     }
     parentPath = parentPath.reverse();

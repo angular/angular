@@ -6,7 +6,7 @@ export interface WebtreegraphNode {
   value: number;
   size: number;
   children: WebtreegraphNode[];
-  original: ElementProfile;
+  original: ElementProfile | null;
 }
 
 export class WebtreegraphFormatter extends RecordFormatter<WebtreegraphNode> {
@@ -45,7 +45,7 @@ export class WebtreegraphFormatter extends RecordFormatter<WebtreegraphNode> {
     result.push(entry);
   }
 
-  addFrame(nodes: WebtreegraphNode[], elements: ElementProfile[], prev: WebtreegraphNode = null): void {
+  addFrame(nodes: WebtreegraphNode[], elements: ElementProfile[], prev: WebtreegraphNode | null = null): void {
     elements.forEach(element => {
       if (!element) {
         console.error('Unable to insert undefined element');

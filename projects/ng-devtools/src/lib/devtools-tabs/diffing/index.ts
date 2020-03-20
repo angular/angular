@@ -5,17 +5,31 @@ export interface MovedRecord {
   previousIndex: number;
 }
 
-export const diff = <T>(differ: DefaultIterableDiffer<T>, a: T[], b: T[]) => {
+export const diff = <T>(
+  differ: DefaultIterableDiffer<T>,
+  a: T[],
+  b: T[]
+): {
+  newItems: T[];
+  removedItems: T[];
+  movedItems: T[];
+} => {
   differ.diff(a);
   differ.diff(b);
 
-  const alreadySet = [];
+  const alreadySet: boolean[] = [];
   const movedItems: T[] = [];
 
   // We first have to set the moved items to their correct positions.
   // Keep in mind that the track by function may not guarantee
   // that we haven't changed any of the items' props.
   differ.forEachMovedItem(record => {
+    if (record.currentIndex === null) {
+      return;
+    }
+    if (record.previousIndex === null) {
+      return;
+    }
     // We want to preserve the reference so that a default
     // track by function used by the CDK, for instance, can
     // recognize that this item's identity hasn't changed.
@@ -30,10 +44,15 @@ export const diff = <T>(differ: DefaultIterableDiffer<T>, a: T[], b: T[]) => {
       a[record.currentIndex] = {} as T;
     }
     Object.keys(b[record.currentIndex]).forEach(prop => {
+      // TypeScript's type inference didn't follow the check from above.
+      if (record.currentIndex === null) {
+        return;
+      }
       a[record.currentIndex][prop] = b[record.currentIndex][prop];
     });
     if (!alreadySet[record.previousIndex]) {
-      a[record.previousIndex] = null;
+      // tslint:disable-next-line: no-non-null-assertion
+      a[record.previousIndex] = null!;
     }
     alreadySet[record.currentIndex] = true;
     movedItems.push(a[record.currentIndex]);
@@ -51,8 +70,12 @@ export const diff = <T>(differ: DefaultIterableDiffer<T>, a: T[], b: T[]) => {
   });
 
   differ.forEachRemovedItem(record => {
+    if (record.previousIndex === null) {
+      return;
+    }
     if (record.currentIndex === null && !alreadySet[record.previousIndex]) {
-      a[record.previousIndex] = null;
+      // tslint:disable-next-line: no-non-null-assertion
+      a[record.previousIndex] = null!;
     }
     removedItems.push(record.item);
   });

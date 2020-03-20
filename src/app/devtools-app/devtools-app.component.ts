@@ -12,7 +12,8 @@ import { MessageBus, Events } from 'protocol';
         return new IFrameMessageBus(
           'angular-devtools',
           'angular-devtools-backend',
-          () => (document.querySelector('#sample-app') as HTMLIFrameElement).contentWindow
+          // tslint:disable-next-line: no-non-null-assertion
+          () => (document.querySelector('#sample-app') as HTMLIFrameElement).contentWindow!
         ) as any;
       },
     },

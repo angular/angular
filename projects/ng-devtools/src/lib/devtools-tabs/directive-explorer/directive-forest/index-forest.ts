@@ -5,7 +5,7 @@ export interface IndexedNode extends DevToolsNode {
   children: IndexedNode[];
 }
 
-const indexTree = (node: DevToolsNode, idx: number, parentPosition = []): IndexedNode => {
+const indexTree = (node: DevToolsNode, idx: number, parentPosition: ElementPosition = []): IndexedNode => {
   const position = parentPosition.concat([idx]);
   return {
     position,

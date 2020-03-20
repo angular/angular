@@ -5,6 +5,7 @@
     "outDir": "./dist",
     "sourceMap": true,
     "declaration": false,
+    "strictNullChecks": true,
     "downlevelIteration": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,

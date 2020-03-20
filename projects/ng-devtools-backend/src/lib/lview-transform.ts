@@ -1,4 +1,4 @@
-import { ComponentTreeNode, ComponentInstanceType } from './component-tree';
+import { ComponentTreeNode, ComponentInstanceType, DirectiveInstanceType } from './component-tree';
 import { isCustomElement } from './utils';
 import { getDirectiveName } from './highlighter';
 
@@ -43,7 +43,7 @@ export const getDirectiveHostElement = (dir: any) => {
 };
 
 const getNode = (lView: any, data: any, idx: number): ComponentTreeNode => {
-  const directives = [];
+  const directives: DirectiveInstanceType[] = [];
   let component: ComponentInstanceType | null = null;
   const tNode = data[idx];
   const node = lView[idx][ELEMENT] || lView[idx][ELEMENT];
@@ -73,7 +73,7 @@ const getNode = (lView: any, data: any, idx: number): ComponentTreeNode => {
   };
 };
 
-const extractNodes = (lViewOrLContainer: any, nodes = []): ComponentTreeNode[] => {
+const extractNodes = (lViewOrLContainer: any, nodes: ComponentTreeNode[] = []): ComponentTreeNode[] => {
   if (isLContainer(lViewOrLContainer)) {
     for (let i = 9; i < lViewOrLContainer.length; i++) {
       extractNodes(lViewOrLContainer[i], nodes);

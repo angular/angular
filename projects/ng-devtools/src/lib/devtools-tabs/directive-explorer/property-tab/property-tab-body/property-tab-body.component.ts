@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { IndexedNode } from '../../directive-forest/index-forest';
-import { ElementPropertyResolver } from '../../property-resolver/element-property-resolver';
+import { ElementPropertyResolver, FlatNode } from '../../property-resolver/element-property-resolver';
 import { DirectivePropertyResolver } from '../../property-resolver/directive-property-resolver';
-import { PropertyDataSource, FlatNode } from '../../property-resolver/property-data-source';
+import { PropertyDataSource } from '../../property-resolver/property-data-source';
 import { TreeControl } from '@angular/cdk/tree';
 
 @Component({
@@ -20,7 +20,7 @@ export class PropertyTabBodyComponent {
     return item.key;
   }
 
-  getCurrentDirectives(): string[] {
+  getCurrentDirectives(): string[] | undefined {
     if (!this.currentSelectedElement) {
       return;
     }
@@ -31,15 +31,23 @@ export class PropertyTabBodyComponent {
     return directives;
   }
 
-  getController(directive: string): DirectivePropertyResolver {
+  getController(directive: string): DirectivePropertyResolver | undefined {
     return this._nestedProps.getDirectiveController(directive);
   }
 
-  getDataSource(directive: string): PropertyDataSource {
-    return this.getController(directive).getDirectiveControls().dataSource;
+  getDataSource(directive: string): PropertyDataSource | undefined {
+    const controller = this.getController(directive);
+    if (!controller) {
+      return;
+    }
+    return controller.getDirectiveControls().dataSource;
   }
 
-  getTreeControl(directive: string): TreeControl<FlatNode> {
-    return this.getController(directive).getDirectiveControls().treeControl;
+  getTreeControl(directive: string): TreeControl<FlatNode> | undefined {
+    const controller = this.getController(directive);
+    if (!controller) {
+      return;
+    }
+    return controller.getDirectiveControls().treeControl;
   }
 }

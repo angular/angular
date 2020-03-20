@@ -101,12 +101,16 @@ export class PropertyEditorComponent implements OnChanges, AfterViewChecked {
 
     this.updateValue.emit(parsed);
 
+    if (parsed === undefined) {
+      return;
+    }
+
     this.initialValue = parsed;
 
     this.transition(PropertyEditorState.Read);
   }
 
-  private parseValue(value: EditorResult): EditorResult {
+  private parseValue(value: EditorResult): EditorResult | undefined {
     if (value === 'undefined') {
       return undefined;
     } else {

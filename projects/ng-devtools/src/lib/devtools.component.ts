@@ -45,6 +45,9 @@ export class DevToolsComponent implements OnInit, OnDestroy {
   }
 
   majorAngularVersion(): number {
+    if (!this.angularVersion) {
+      return -1;
+    }
     return +this.angularVersion.toString().split('.')[0];
   }
 

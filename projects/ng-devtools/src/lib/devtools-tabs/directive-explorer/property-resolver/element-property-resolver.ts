@@ -19,7 +19,7 @@ export interface FlatNode {
 export interface Property {
   name: string;
   descriptor: Descriptor;
-  parent: Property;
+  parent: Property | null;
 }
 
 @Injectable()

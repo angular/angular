@@ -144,7 +144,7 @@ export class DirectiveForestComponent {
     }
 
     const data = this.dataSource.data;
-    let prevIdx = data.findIndex(e => e.id === this.selectedNode.id) - 1;
+    let prevIdx = data.findIndex(e => this.selectedNode && e.id === this.selectedNode.id) - 1;
     if (prevIdx < 0) {
       return;
     }
@@ -169,7 +169,7 @@ export class DirectiveForestComponent {
     }
 
     const data = this.dataSource.data;
-    let idx = data.findIndex(e => e.id === this.selectedNode.id);
+    let idx = data.findIndex(e => this.selectedNode && e.id === this.selectedNode.id);
     const currentNode = data[idx];
     if (!this.treeControl.isExpanded(currentNode) && currentNode.expandable) {
       for (let i = idx + 1; i < data.length; i++) {
@@ -195,6 +195,9 @@ export class DirectiveForestComponent {
     if (this.isEditingDirectiveState(event)) {
       return;
     }
+    if (!this.selectedNode) {
+      return;
+    }
     this.treeControl.collapse(this.selectedNode);
     event.preventDefault();
   }
@@ -202,6 +205,9 @@ export class DirectiveForestComponent {
   @HostListener('document:keydown.ArrowRight', ['$event'])
   expandCurrent(event: KeyboardEvent): void {
     if (this.isEditingDirectiveState(event)) {
+      return;
+    }
+    if (!this.selectedNode) {
       return;
     }
     this.treeControl.expand(this.selectedNode);
@@ -276,6 +282,9 @@ export class DirectiveForestComponent {
       const parentNode = this.dataSource.data.find(node =>
         arrayEquals(node.position, nodeToExpand.position.slice(0, nodeToExpand.position.length - 1))
       );
+      if (!parentNode) {
+        return;
+      }
       this.treeControl.expand(parentNode);
       this.expandParents(parentNode);
     }
@@ -295,7 +304,7 @@ export class DirectiveForestComponent {
     );
   }
 
-  isElement(node: FlatNode) {
+  isElement(node: FlatNode): boolean | null {
     return node.original.component && node.original.component.isElement;
   }
 }
