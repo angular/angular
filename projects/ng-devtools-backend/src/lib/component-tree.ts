@@ -45,7 +45,7 @@ export const getLatestComponentState = (query: ComponentExplorerViewQuery): Dire
     }
     if (query.propertyQuery.type === PropertyQueryTypes.Specified) {
       result[dir.name] = {
-        props: deeplySerializeSelectedProperties(dir.instance, query.propertyQuery.properties[dir.name]),
+        props: deeplySerializeSelectedProperties(dir.instance, query.propertyQuery.properties[dir.name] || []),
       };
     }
   };

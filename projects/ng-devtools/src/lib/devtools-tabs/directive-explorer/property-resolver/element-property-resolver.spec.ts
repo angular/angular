@@ -69,17 +69,22 @@ describe('ElementPropertyResolver', () => {
 
   it('should register directives', () => {
     const resolver = new ElementPropertyResolver(messageBusMock);
-    resolver.setProperties(mockIndexedNode, {
-      FooCmp: {
-        props: {},
+    resolver.setProperties(
+      mockIndexedNode,
+      {
+        FooCmp: {
+          props: {},
+        },
+        BarDir: {
+          props: {},
+        },
+        BazDir: {
+          props: {},
+        },
       },
-      BarDir: {
-        props: {},
-      },
-      BazDir: {
-        props: {},
-      },
-    });
+      () => {},
+      () => {}
+    );
     expect(resolver.getDirectiveController('FooCmp')).not.toBeFalsy();
     expect(resolver.getDirectiveController('BarDir')).not.toBeFalsy();
     expect(resolver.getDirectiveController('BazDir')).not.toBeFalsy();
@@ -87,13 +92,18 @@ describe('ElementPropertyResolver', () => {
 
   it('should provide nested props', () => {
     const resolver = new ElementPropertyResolver(messageBusMock);
-    resolver.setProperties(mockIndexedNode, {
-      FooCmp: fooNestedProperties,
-      BarDir: barNestedProps,
-      BazDir: {
-        props: {},
+    resolver.setProperties(
+      mockIndexedNode,
+      {
+        FooCmp: fooNestedProperties,
+        BarDir: barNestedProps,
+        BazDir: {
+          props: {},
+        },
       },
-    });
+      () => {},
+      () => {}
+    );
     const fooController = resolver.getDirectiveController('FooCmp');
     expect(fooController).toBeTruthy();
     // tslint:disable-next-line: no-non-null-assertion

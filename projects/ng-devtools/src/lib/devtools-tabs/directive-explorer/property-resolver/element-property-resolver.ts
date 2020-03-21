@@ -32,7 +32,12 @@ export class ElementPropertyResolver {
     this._directivePropertiesController = new Map();
   }
 
-  setProperties(indexedNode: IndexedNode, data: DirectivesProperties): void {
+  setProperties(
+    indexedNode: IndexedNode,
+    data: DirectivesProperties,
+    onRequestProps: () => void,
+    onReceivedProps: () => void
+  ): void {
     // To prevent memory leaks when a directive no longer exists on an element
     const currentProps = [...this._directivePropertiesController.keys()];
     const incomingProps = new Set(Object.keys(data));
@@ -57,7 +62,7 @@ export class ElementPropertyResolver {
       }
       this._directivePropertiesController.set(
         key,
-        new DirectivePropertyResolver(this._messageBus, data[key], position)
+        new DirectivePropertyResolver(this._messageBus, data[key], position, onRequestProps, onReceivedProps)
       );
     });
   }
