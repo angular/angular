@@ -61,15 +61,19 @@
     visibility: hidden;
   }
 
-  // Fixes an issue on iOS where the following input types will collapse to 1px,
-  // if they're empty, because we've overridden their background color.
-  // See: https://stackoverflow.com/questions/18381594/input-type-date-appearance-in-safari-on-ios
   &[type='date'],
   &[type='datetime'],
   &[type='datetime-local'],
   &[type='month'],
   &[type='week'],
   &[type='time'] {
+    // Due to the native input masking these inputs can be slightly taller than
+    // the plain text inputs. We normalize it by resetting the line height.
+    line-height: 1;
+
+    // Fixes an issue on iOS where the following input types will collapse to 1px,
+    // if they're empty, because we've overridden their background color.
+    // See: https://stackoverflow.com/questions/18381594/input-type-date-appearance-in-safari-on-ios
     &::after {
       content: ' ';
       white-space: pre;
