@@ -10,27 +10,27 @@
   $accent: mat-color(map-get($theme, accent));
   $warn: mat-color(map-get($theme, warn));
   $background: map-get($theme, background);
-
   $unselected-background: mat-color($background, unselected-chip);
 
   .mat-mdc-chip {
-    @include mdc-chip-fill-color-accessible($unselected-background);
+    @include mdc-chip-fill-color-accessible($unselected-background,
+      $query: $mat-theme-styles-query);
 
     &.mat-primary {
       &.mdc-chip--selected, &.mat-mdc-chip-highlighted {
-         @include mdc-chip-fill-color-accessible($primary);
+        @include mdc-chip-fill-color-accessible($primary, $query: $mat-theme-styles-query);
       }
     }
 
     &.mat-accent {
       &.mdc-chip--selected, &.mat-mdc-chip-highlighted {
-         @include mdc-chip-fill-color-accessible($accent);
+        @include mdc-chip-fill-color-accessible($accent, $query: $mat-theme-styles-query);
       }
     }
 
     &.mat-warn {
       &.mdc-chip--selected, &.mat-mdc-chip-highlighted {
-         @include mdc-chip-fill-color-accessible($warn);
+        @include mdc-chip-fill-color-accessible($warn, $query: $mat-theme-styles-query);
       }
     }
   }
