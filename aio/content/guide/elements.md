@@ -2,7 +2,7 @@
 
 _Angular elements_ are Angular components packaged as _custom elements_ (also called Web Components), a web standard for defining new HTML elements in a framework-agnostic way.
 
-[Custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) are a Web Platform feature currently supported by Chrome, Firefox, Opera, and Safari, and available in other browsers through polyfills (see [Browser Support](#browser-support)).
+[Custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) are a Web Platform feature currently supported by Chrome, Edge (Chromium-based), Firefox, Opera, and Safari, and available in other browsers through polyfills (see [Browser Support](#browser-support)).
 A custom element extends HTML by allowing you to define a tag whose content is created and controlled by JavaScript code.
 The browser maintains a `CustomElementRegistry` of defined custom elements, which maps an instantiable JavaScript class to an HTML tag.
 
@@ -82,7 +82,7 @@ For more information, see Web Component documentation for [Creating custom event
 
 ## Browser support for custom elements
 
-The recently-developed [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) Web Platform feature is currently supported natively in a number of browsers. Support is pending or planned in other browsers.
+The recently-developed [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) Web Platform feature is currently supported natively in a number of browsers.
 
 <table>
 <tr>
@@ -94,11 +94,7 @@ The recently-developed [custom elements](https://developer.mozilla.org/en-US/doc
   <td>Supported natively.</td>
 </tr>
 <tr>
-  <td>Opera</td>
-  <td>Supported natively.</td>
-</tr>
-<tr>
-  <td>Safari</td>
+  <td>Edge (Chromium-based)</td>
   <td>Supported natively.</td>
 </tr>
 <tr>
@@ -106,10 +102,12 @@ The recently-developed [custom elements](https://developer.mozilla.org/en-US/doc
   <td>Supported natively.</td>
 </tr>
 <tr>
-  <td>Edge</td>
-  <td>Working on an implementation. <br>
-
-  </td>
+  <td>Opera</td>
+  <td>Supported natively.</td>
+</tr>
+<tr>
+  <td>Safari</td>
+  <td>Supported natively.</td>
 </tr>
 </table>
 
