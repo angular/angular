@@ -235,7 +235,7 @@ export class MomentDateAdapter extends DateAdapter<Moment> {
     return super.deserialize(value);
   }
 
-  isDateInstance(obj: any): boolean {
+  isDateInstance(obj: any): obj is _moment.Moment {
     return moment.isMoment(obj);
   }
 
