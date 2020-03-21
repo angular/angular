@@ -8,6 +8,7 @@
 import {ConstantPool} from '@angular/compiler';
 import * as ts from 'typescript';
 
+import {ParsedConfiguration} from '../../..';
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader} from '../../../src/ngtsc/annotations';
 import {CycleAnalyzer, ImportGraph} from '../../../src/ngtsc/cycles';
 import {isFatalDiagnosticError} from '../../../src/ngtsc/diagnostics';
@@ -55,6 +56,7 @@ export class DecorationAnalyzer {
   private rootDirs = this.bundle.rootDirs;
   private packagePath = this.bundle.entryPoint.package;
   private isCore = this.bundle.isCore;
+  private compilerOptions = this.tsConfig !== null? this.tsConfig.options: {};
 
   moduleResolver =
       new ModuleResolver(this.program, this.options, this.host, /* moduleResolutionCache */ null);
@@ -87,7 +89,7 @@ export class DecorationAnalyzer {
     new ComponentDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullRegistry, this.fullMetaReader,
         this.scopeRegistry, this.scopeRegistry, this.isCore, this.resourceManager, this.rootDirs,
-        /* defaultPreserveWhitespaces */ false,
+        !!this.compilerOptions.preserveWhitespaces,
         /* i18nUseExternalIds */ true, this.bundle.enableI18nLegacyMessageIdFormat,
         this.moduleResolver, this.cycleAnalyzer, this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER,
         NOOP_DEPENDENCY_TRACKER, this.injectableRegistry, /* annotateForClosureCompiler */ false),
@@ -123,7 +125,8 @@ export class DecorationAnalyzer {
   constructor(
       private fs: FileSystem, private bundle: EntryPointBundle,
       private reflectionHost: NgccReflectionHost, private referencesRegistry: ReferencesRegistry,
-      private diagnosticHandler: (error: ts.Diagnostic) => void = () => {}) {}
+      private diagnosticHandler: (error: ts.Diagnostic) => void = () => {},
+      private tsConfig: ParsedConfiguration|null = null) {}
 
   /**
    * Analyze a program to find all the decorated files should be transformed.
