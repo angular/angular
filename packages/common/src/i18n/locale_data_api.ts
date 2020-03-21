@@ -365,6 +365,22 @@ export function getLocaleTimeFormat(locale: string, width: FormatWidth): string 
 }
 
 /**
+ * Retrieves a boolean value corresponding to locale's time format.
+ *
+ * @param locale A locale code for the locale format rules to use.
+ * @param width The format type.
+ * @returns The boolean value if the given locale has 24 Hour Time Format or not .
+ * @see `FormatWidth`
+ * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n)
+
+ * @publicApi
+ */
+export function Is24HourTimeFormat(locale: string, width: FormatWidth): boolean {
+  let timeFormat:string = getLocaleTimeFormat(locale,width);
+  return !timeFormat.includes("a");
+}
+
+/**
  * Retrieves a localized date-time formatting string.
  *
  * @param locale A locale code for the locale format rules to use.
