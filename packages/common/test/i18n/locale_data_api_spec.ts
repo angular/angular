@@ -13,7 +13,7 @@ import localeFr from '@angular/common/locales/fr';
 import localeZh from '@angular/common/locales/zh';
 import localeEnAU from '@angular/common/locales/en-AU';
 import localeHe from '@angular/common/locales/he';
-import {getCurrencySymbol, getLocaleDateFormat, FormatWidth, getNumberOfCurrencyDigits, getLocaleDirection} from '../../src/i18n/locale_data_api';
+import {getCurrencySymbol, getLocaleDateFormat, FormatWidth, getNumberOfCurrencyDigits, getLocaleDirection,Is24HourTimeFormat} from '../../src/i18n/locale_data_api';
 
 {
   describe('locale data api', () => {
@@ -66,5 +66,13 @@ import {getCurrencySymbol, getLocaleDateFormat, FormatWidth, getNumberOfCurrency
       it('should have correct direction for ltr languages',
          () => { expect(getLocaleDirection('en')).toEqual('ltr'); });
     });
+
+    describe('Is24HourTimeFormat', () => {
+      it('should find the last defined date format when format not defined',
+         () => { expect(Is24HourTimeFormat('en', FormatWidth.Long)).toEqual('false'); });
+
+      it('should find the last defined date format when format not defined',
+         () => { expect(Is24HourTimeFormat('fr', FormatWidth.Long)).toEqual('true'); });   
+    });   
   });
 }
