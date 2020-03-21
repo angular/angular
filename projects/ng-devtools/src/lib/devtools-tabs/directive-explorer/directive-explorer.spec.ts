@@ -1,5 +1,5 @@
 import { DirectiveExplorerComponent } from './directive-explorer.component';
-import { ComponentExplorerViewQuery } from 'protocol';
+import { ComponentExplorerViewQuery, PropertyQueryTypes } from 'protocol';
 import { IndexedNode } from './directive-forest/index-forest';
 import SpyObj = jasmine.SpyObj;
 import { ElementPropertyResolver } from './property-resolver/element-property-resolver';
@@ -28,8 +28,7 @@ describe('DirectiveExplorerComponent', () => {
 
   it('subscribe to backend events', () => {
     comp.subscribeToBackendEvents();
-    expect(messageBusMock.on).toHaveBeenCalledTimes(5);
-    expect(messageBusMock.on).toHaveBeenCalledWith('elementDirectivesProperties', jasmine.any(Function));
+    expect(messageBusMock.on).toHaveBeenCalledTimes(4);
     expect(messageBusMock.on).toHaveBeenCalledWith('latestComponentExplorerView', jasmine.any(Function));
     expect(messageBusMock.on).toHaveBeenCalledWith('highlightComponentInTreeFromElement', jasmine.any(Function));
     expect(messageBusMock.on).toHaveBeenCalledWith('removeHighlightFromComponentTree', jasmine.any(Function));
@@ -44,8 +43,7 @@ describe('DirectiveExplorerComponent', () => {
 
     it('should emit getLatestComponentExplorerView event with null view query', () => {
       comp.refresh();
-      const nullViewQuery: ComponentExplorerViewQuery = { selectedElement: null, expandedProperties: null };
-      expect(messageBusMock.emit).toHaveBeenCalledWith('getLatestComponentExplorerView', [nullViewQuery]);
+      expect(messageBusMock.emit).toHaveBeenCalledWith('getLatestComponentExplorerView', [undefined]);
     });
 
     it('should emit getLatestComponentExplorerView event on refresh with view query no properties', () => {
@@ -60,12 +58,7 @@ describe('DirectiveExplorerComponent', () => {
       };
       comp.refresh();
       expect(comp.currentSelectedElement).toBeTruthy();
-      const viewQuery: ComponentExplorerViewQuery = {
-        // tslint:disable-next-line: no-non-null-assertion
-        selectedElement: comp.currentSelectedElement!.position,
-        expandedProperties: {},
-      };
-      expect(messageBusMock.emit).toHaveBeenCalledWith('getLatestComponentExplorerView', [viewQuery]);
+      expect(messageBusMock.emit).toHaveBeenCalledWith('getLatestComponentExplorerView', [undefined]);
     });
   });
 
@@ -77,11 +70,19 @@ describe('DirectiveExplorerComponent', () => {
     });
 
     it('fires node selection events', () => {
-      nodeMock.position = [0];
+      const position = [0];
+      nodeMock.position = position;
       comp.handleNodeSelection(nodeMock);
       expect(messageBusMock.emit).toHaveBeenCalledTimes(2);
-      expect(messageBusMock.emit).toHaveBeenCalledWith('getElementDirectivesProperties', [nodeMock.position]);
       expect(messageBusMock.emit).toHaveBeenCalledWith('setSelectedComponent', [nodeMock.position]);
+      expect(messageBusMock.emit).toHaveBeenCalledWith('getLatestComponentExplorerView', [
+        {
+          selectedElement: position,
+          propertyQuery: {
+            type: PropertyQueryTypes.All,
+          },
+        },
+      ]);
     });
   });
 });

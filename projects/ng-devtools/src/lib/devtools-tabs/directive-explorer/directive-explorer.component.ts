@@ -55,6 +55,8 @@ export class DirectiveExplorerComponent implements OnInit {
 
   private _changeSize = new Subject<Event>();
   private _clickedElement: IndexedNode | null = null;
+  private _requestingNestedProperties = false;
+  private _refreshScheduled = false;
 
   constructor(
     private _appOperations: ApplicationOperations,
@@ -69,7 +71,6 @@ export class DirectiveExplorerComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // setInterval(() => this.refresh(), 1);
     this.subscribeToBackendEvents();
   }
 
@@ -95,7 +96,19 @@ export class DirectiveExplorerComponent implements OnInit {
       this.forest = view.forest;
       this.currentSelectedElement = this._clickedElement;
       if (view.properties && this.currentSelectedElement) {
-        this._propResolver.setProperties(this.currentSelectedElement, view.properties);
+        this._propResolver.setProperties(
+          this.currentSelectedElement,
+          view.properties,
+          () => {
+            this._requestingNestedProperties = true;
+          },
+          () => {
+            this._requestingNestedProperties = false;
+            if (this._refreshScheduled) {
+              this.refresh();
+            }
+          }
+        );
       }
     });
 
@@ -106,7 +119,7 @@ export class DirectiveExplorerComponent implements OnInit {
       this.highlightIDinTreeFromElement = null;
     });
 
-    // Only one refresh per 50ms.
+    // Only one refresh per 0.5 seconds.
     let buffering = false;
     this._messageBus.on('componentTreeDirty', () => {
       if (buffering) {
@@ -116,13 +129,18 @@ export class DirectiveExplorerComponent implements OnInit {
       setTimeout(() => {
         buffering = false;
         this.refresh();
-      }, 50);
+      }, 500);
     });
     this.refresh();
   }
 
   refresh(): void {
+    if (this._requestingNestedProperties) {
+      this._refreshScheduled = true;
+      return;
+    }
     this._messageBus.emit('getLatestComponentExplorerView', [this._constructViewQuery()]);
+    this._refreshScheduled = false;
   }
 
   viewSource(): void {
@@ -162,7 +180,7 @@ export class DirectiveExplorerComponent implements OnInit {
     }
     return {
       type: PropertyQueryTypes.Specified,
-      properties: this._propResolver.getExpandedProperties(),
+      properties: this._propResolver.getExpandedProperties() || {},
     };
   }
 

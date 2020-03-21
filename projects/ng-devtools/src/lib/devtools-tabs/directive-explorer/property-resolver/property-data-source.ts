@@ -9,7 +9,7 @@ import { diff } from '../../diffing';
 import { FlatNode, Property } from './element-property-resolver';
 
 const trackBy = (_: number, item: FlatNode) => {
-  return `#${item.prop.name}#${item.level}#${item.prop.descriptor.value}`;
+  return `#${item.prop.name}#${item.level}`;
 };
 
 export class PropertyDataSource extends DataSource<FlatNode> {
@@ -23,7 +23,9 @@ export class PropertyDataSource extends DataSource<FlatNode> {
     private _treeFlattener: MatTreeFlattener<Property, FlatNode>,
     private _treeControl: FlatTreeControl<FlatNode>,
     private _entityPosition: DirectivePosition,
-    private _messageBus: MessageBus<Events>
+    private _messageBus: MessageBus<Events>,
+    private _onRequestingNestedProperties: () => void,
+    private _onReceivedNestedProperties: () => void
   ) {
     super();
     this._data.next(this._treeFlattener.flattenNodes(this._arrayify(props)));
@@ -93,6 +95,7 @@ export class PropertyDataSource extends DataSource<FlatNode> {
     }
     parentPath = parentPath.reverse();
 
+    this._onRequestingNestedProperties();
     this._messageBus.emit('getNestedProperties', [this._entityPosition, parentPath]);
 
     this._messageBus.once('nestedProperties', (position: DirectivePosition, data: Properties, path: string[]) => {
@@ -103,6 +106,7 @@ export class PropertyDataSource extends DataSource<FlatNode> {
       flatNodes.forEach(f => (f.level += node.level + 1));
       this.data.splice(index + 1, 0, ...flatNodes);
       this._data.next(this.data);
+      this._onReceivedNestedProperties();
     });
   }
 

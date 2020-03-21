@@ -40,13 +40,17 @@ export class DirectivePropertyResolver {
     this._treeFlattener,
     this._treeControl,
     this._directivePosition,
-    this._messageBus
+    this._messageBus,
+    this._onRequestingNestedProperties,
+    this._onReceivedNestedProperties
   );
 
   constructor(
     private _messageBus: MessageBus<Events>,
     private _props: Properties,
-    private _directivePosition: DirectivePosition
+    private _directivePosition: DirectivePosition,
+    private _onRequestingNestedProperties: () => void,
+    private _onReceivedNestedProperties: () => void
   ) {}
 
   getDirectiveControls(): { dataSource: PropertyDataSource; treeControl: FlatTreeControl<FlatNode> } {
