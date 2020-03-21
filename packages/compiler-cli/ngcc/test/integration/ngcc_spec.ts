@@ -1373,6 +1373,44 @@ runInEachFileSystem(() => {
          });
     });
 
+    describe('whitespace preservation', () => {
+      it('should default not to preserve whitespace', () => {
+        mainNgcc({basePath: '/dist', propertiesToConsider: ['es2015']});
+        expect(loadPackage('local-package', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
+          es2015: '0.0.0-PLACEHOLDER',
+          typings: '0.0.0-PLACEHOLDER',
+        });
+        expect(fs.readFile(_('/dist/local-package/index.js')))
+            .toMatch(/ɵɵtext\(\d+, " Hello\\n"\);/);
+      });
+
+      it('should preserve whitespace if set in a loaded tsconfig.json', () => {
+        fs.writeFile(
+            _('/tsconfig.json'),
+            JSON.stringify({angularCompilerOptions: {preserveWhitespaces: true}}));
+        mainNgcc({basePath: '/dist', propertiesToConsider: ['es2015']});
+        expect(loadPackage('local-package', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
+          es2015: '0.0.0-PLACEHOLDER',
+          typings: '0.0.0-PLACEHOLDER',
+        });
+        expect(fs.readFile(_('/dist/local-package/index.js')))
+            .toMatch(/ɵɵtext\(\d+, "\\n  Hello\\n"\);/);
+      });
+
+      it('should not preserve whitespace if set to false in a loaded tsconfig.json', () => {
+        fs.writeFile(
+            _('/tsconfig.json'),
+            JSON.stringify({angularCompilerOptions: {preserveWhitespaces: false}}));
+        mainNgcc({basePath: '/dist', propertiesToConsider: ['es2015']});
+        expect(loadPackage('local-package', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
+          es2015: '0.0.0-PLACEHOLDER',
+          typings: '0.0.0-PLACEHOLDER',
+        });
+        expect(fs.readFile(_('/dist/local-package/index.js')))
+            .toMatch(/ɵɵtext\(\d+, " Hello\\n"\);/);
+      });
+    });
+
     describe('with configuration files', () => {
       it('should process a configured deep-import as an entry-point', () => {
         loadTestFiles([
@@ -1883,7 +1921,7 @@ runInEachFileSystem(() => {
         {
           name: _('/dist/local-package/index.js'),
           contents:
-              `import {Component} from '@angular/core';\nexport class AppComponent {};\nAppComponent.decorators = [\n{ type: Component, args: [{selector: 'app', template: '<h2>Hello</h2>'}] }\n];`
+              `import {Component} from '@angular/core';\nexport class AppComponent {};\nAppComponent.decorators = [\n{ type: Component, args: [{selector: 'app', template: '<h2>\\n  Hello\\n</h2>'}] }\n];`
         },
         {
           name: _('/dist/local-package/index.d.ts'),

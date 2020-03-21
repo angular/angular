@@ -307,7 +307,7 @@ export function mainNgcc(
   const createCompileFn: CreateCompileFn = onTaskCompleted => {
     const fileWriter = getFileWriter(
         fileSystem, logger, pkgJsonUpdater, createNewEntryPointFormats, errorOnFailedEntryPoint);
-    const transformer = new Transformer(fileSystem, logger);
+    const transformer = new Transformer(fileSystem, logger, tsConfig);
 
     return (task: Task) => {
       const {entryPoint, formatProperty, formatPropertiesToMarkAsProcessed, processDts} = task;

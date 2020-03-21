@@ -7,6 +7,7 @@
  */
 import * as ts from 'typescript';
 
+import {ParsedConfiguration} from '../../..';
 import {FileSystem} from '../../../src/ngtsc/file_system';
 import {TypeScriptReflectionHost} from '../../../src/ngtsc/reflection';
 import {DecorationAnalyzer} from '../analysis/decoration_analyzer';
@@ -63,7 +64,9 @@ export type TransformResult = {
  * - Some formats may contain multiple "modules" in a single file.
  */
 export class Transformer {
-  constructor(private fs: FileSystem, private logger: Logger) {}
+  constructor(
+      private fs: FileSystem, private logger: Logger,
+      private tsConfig: ParsedConfiguration|null = null) {}
 
   /**
    * Transform the source (and typings) files of a bundle.
@@ -146,7 +149,7 @@ export class Transformer {
     const diagnostics: ts.Diagnostic[] = [];
     const decorationAnalyzer = new DecorationAnalyzer(
         this.fs, bundle, reflectionHost, referencesRegistry,
-        diagnostic => diagnostics.push(diagnostic));
+        diagnostic => diagnostics.push(diagnostic), this.tsConfig);
     const decorationAnalyses = decorationAnalyzer.analyzeProgram();
 
     const moduleWithProvidersAnalyzer =
