@@ -65,6 +65,7 @@ import {
   getTableUnknownColumnError,
   getTableUnknownDataSourceError
 } from './table-errors';
+import {CDK_TABLE} from './tokens';
 
 /** Interface used to provide an outlet for rows to be inserted into. */
 export interface RowOutlet {
@@ -171,6 +172,7 @@ export interface RenderRow<T> {
   // declared elsewhere, they are checked when their declaration points are checked.
   // tslint:disable-next-line:validate-decorators
   changeDetection: ChangeDetectionStrategy.Default,
+  providers: [{provide: CDK_TABLE, useExisting: CdkTable}]
 })
 export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDestroy, OnInit {
   private _document: Document;
@@ -752,7 +754,8 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
   private _cacheColumnDefs() {
     this._columnDefsByName.clear();
 
-    const columnDefs = mergeQueryListAndSet(this._contentColumnDefs, this._customColumnDefs);
+    const columnDefs = mergeArrayAndSet(
+        this._getOwnDefs(this._contentColumnDefs), this._customColumnDefs);
     columnDefs.forEach(columnDef => {
       if (this._columnDefsByName.has(columnDef.name)) {
         throw getTableDuplicateColumnNameError(columnDef.name);
@@ -763,11 +766,12 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
 
   /** Update the list of all available row definitions that can be used. */
   private _cacheRowDefs() {
-    this._headerRowDefs =
-        mergeQueryListAndSet(this._contentHeaderRowDefs, this._customHeaderRowDefs);
-    this._footerRowDefs =
-        mergeQueryListAndSet(this._contentFooterRowDefs, this._customFooterRowDefs);
-    this._rowDefs = mergeQueryListAndSet(this._contentRowDefs, this._customRowDefs);
+    this._headerRowDefs = mergeArrayAndSet(
+        this._getOwnDefs(this._contentHeaderRowDefs), this._customHeaderRowDefs);
+    this._footerRowDefs = mergeArrayAndSet(
+        this._getOwnDefs(this._contentFooterRowDefs), this._customFooterRowDefs);
+    this._rowDefs = mergeArrayAndSet(
+        this._getOwnDefs(this._contentRowDefs), this._customRowDefs);
 
     // After all row definitions are determined, find the row definition to be considered default.
     const defaultRowDefs = this._rowDefs.filter(def => !def.when);
@@ -1084,10 +1088,15 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
         });
   }
 
+  /** Filters definitions that belong to this table from a QueryList. */
+  private _getOwnDefs<I extends {_table?: any}>(items: QueryList<I>): I[] {
+    return items.filter(item => !item._table || item._table === this);
+  }
+
   static ngAcceptInputType_multiTemplateDataRows: BooleanInput;
 }
 
-/** Utility function that gets a merged list of the entries in a QueryList and values of a Set. */
-function mergeQueryListAndSet<T>(queryList: QueryList<T>, set: Set<T>): T[] {
-  return queryList.toArray().concat(Array.from(set));
+/** Utility function that gets a merged list of the entries in an array and values of a Set. */
+function mergeArrayAndSet<T>(array: T[], set: Set<T>): T[] {
+  return array.concat(Array.from(set));
 }

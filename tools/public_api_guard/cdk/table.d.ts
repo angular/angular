@@ -25,6 +25,8 @@ export declare type CanStickCtor = Constructor<CanStick>;
 
 export declare const CDK_ROW_TEMPLATE = "<ng-container cdkCellOutlet></ng-container>";
 
+export declare const CDK_TABLE: InjectionToken<any>;
+
 export declare const CDK_TABLE_TEMPLATE = "\n  <ng-content select=\"caption\"></ng-content>\n  <ng-container headerRowOutlet></ng-container>\n  <ng-container rowOutlet></ng-container>\n  <ng-container footerRowOutlet></ng-container>\n";
 
 export declare class CdkCell extends BaseCdkCell {
@@ -75,6 +77,7 @@ export interface CdkCellOutletRowContext<T> {
 export declare class CdkColumnDef extends _CdkColumnDefBase implements CanStick {
     _name: string;
     _stickyEnd: boolean;
+    _table?: any;
     cell: CdkCellDef;
     cssClassFriendlyName: string;
     footerCell: CdkFooterCellDef;
@@ -83,6 +86,7 @@ export declare class CdkColumnDef extends _CdkColumnDefBase implements CanStick 
     set name(name: string);
     get stickyEnd(): boolean;
     set stickyEnd(v: boolean);
+    constructor(_table?: any);
     static ngAcceptInputType_sticky: BooleanInput;
     static ngAcceptInputType_stickyEnd: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkColumnDef, "[cdkColumnDef]", never, { "sticky": "sticky"; "name": "cdkColumnDef"; "stickyEnd": "stickyEnd"; }, {}, ["cell", "headerCell", "footerCell"]>;
@@ -108,7 +112,8 @@ export declare class CdkFooterRow {
 }
 
 export declare class CdkFooterRowDef extends _CdkFooterRowDefBase implements CanStick, OnChanges {
-    constructor(template: TemplateRef<any>, _differs: IterableDiffers);
+    _table?: any;
+    constructor(template: TemplateRef<any>, _differs: IterableDiffers, _table?: any);
     ngOnChanges(changes: SimpleChanges): void;
     static ngAcceptInputType_sticky: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkFooterRowDef, "[cdkFooterRowDef]", never, { "columns": "cdkFooterRowDef"; "sticky": "cdkFooterRowDefSticky"; }, {}, never>;
@@ -134,7 +139,8 @@ export declare class CdkHeaderRow {
 }
 
 export declare class CdkHeaderRowDef extends _CdkHeaderRowDefBase implements CanStick, OnChanges {
-    constructor(template: TemplateRef<any>, _differs: IterableDiffers);
+    _table?: any;
+    constructor(template: TemplateRef<any>, _differs: IterableDiffers, _table?: any);
     ngOnChanges(changes: SimpleChanges): void;
     static ngAcceptInputType_sticky: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkHeaderRowDef, "[cdkHeaderRowDef]", never, { "columns": "cdkHeaderRowDef"; "sticky": "cdkHeaderRowDefSticky"; }, {}, never>;
@@ -147,8 +153,9 @@ export declare class CdkRow {
 }
 
 export declare class CdkRowDef<T> extends BaseRowDef {
+    _table?: any;
     when: (index: number, rowData: T) => boolean;
-    constructor(template: TemplateRef<any>, _differs: IterableDiffers);
+    constructor(template: TemplateRef<any>, _differs: IterableDiffers, _table?: any);
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkRowDef<any>, "[cdkRowDef]", never, { "columns": "cdkRowDefColumns"; "when": "cdkRowDefWhen"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkRowDef<any>>;
 }

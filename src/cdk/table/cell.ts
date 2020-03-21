@@ -7,8 +7,17 @@
  */
 
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
-import {ContentChild, Directive, ElementRef, Input, TemplateRef} from '@angular/core';
+import {
+  ContentChild,
+  Directive,
+  ElementRef,
+  Input,
+  TemplateRef,
+  Inject,
+  Optional,
+} from '@angular/core';
 import {CanStick, CanStickCtor, mixinHasStickyInput} from './can-stick';
+import {CDK_TABLE} from './tokens';
 
 
 /** Base interface for a cell definition. Captures a column's cell template definition. */
@@ -67,12 +76,10 @@ export class CdkColumnDef extends _CdkColumnDefBase implements CanStick {
   set name(name: string) {
     // If the directive is set without a name (updated programatically), then this setter will
     // trigger with an empty string and should not overwrite the programatically set value.
-    if (!name) {
-      return;
+    if (name) {
+      this._name = name;
+      this.cssClassFriendlyName = name.replace(/[^a-z0-9_-]/ig, '-');
     }
-
-    this._name = name;
-    this.cssClassFriendlyName = name.replace(/[^a-z0-9_-]/ig, '-');
   }
   _name: string;
 
@@ -107,6 +114,10 @@ export class CdkColumnDef extends _CdkColumnDefBase implements CanStick {
    * do not match are replaced by the '-' character.
    */
   cssClassFriendlyName: string;
+
+  constructor(@Inject(CDK_TABLE) @Optional() public _table?: any) {
+    super();
+  }
 
   static ngAcceptInputType_sticky: BooleanInput;
   static ngAcceptInputType_stickyEnd: BooleanInput;

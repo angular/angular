@@ -7,7 +7,7 @@ import {
 } from './table-errors';
 import {CdkTableModule} from './table-module';
 import {expectTableToMatchContent} from './table.spec';
-import {TEXT_COLUMN_OPTIONS, TextColumnOptions} from './text-column';
+import {TEXT_COLUMN_OPTIONS, TextColumnOptions} from './tokens';
 
 
 describe('CdkTextColumn', () => {

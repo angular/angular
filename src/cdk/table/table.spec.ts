@@ -482,6 +482,21 @@ describe('CdkTable', () => {
     ]);
   });
 
+  it('should be able to nest tables', () => {
+    const thisFixture = createComponent(NestedHtmlTableApp);
+    thisFixture.detectChanges();
+    const outerTable = thisFixture.nativeElement.querySelector('table');
+    const innerTable = outerTable.querySelector('table');
+    const outerRows = Array.from<HTMLTableRowElement>(outerTable.querySelector('tbody').rows);
+    const innerRows = Array.from<HTMLTableRowElement>(innerTable.querySelector('tbody').rows);
+
+    expect(outerTable).toBeTruthy();
+    expect(outerRows.map(row => row.cells.length)).toEqual([3, 3, 3]);
+
+    expect(innerTable).toBeTruthy();
+    expect(innerRows.map(row => row.cells.length)).toEqual([3, 3, 3]);
+  });
+
   it('should apply correct roles for native table elements', () => {
     const thisFixture = createComponent(NativeHtmlTableApp);
     const thisTableElement: HTMLTableElement = thisFixture.nativeElement.querySelector('table');
@@ -2274,6 +2289,55 @@ class NativeHtmlTableApp {
   columnsToRender = ['column_a', 'column_b', 'column_c'];
 
   @ViewChild(CdkTable) table: CdkTable<TestData>;
+}
+
+
+@Component({
+  template: `
+    <table cdk-table [dataSource]="dataSource">
+      <ng-container cdkColumnDef="column_a">
+        <th cdk-header-cell *cdkHeaderCellDef> Column A</th>
+        <td cdk-cell *cdkCellDef="let row">{{row.a}}</td>
+      </ng-container>
+
+      <ng-container cdkColumnDef="column_b">
+        <th cdk-header-cell *cdkHeaderCellDef> Column B</th>
+        <td cdk-cell *cdkCellDef="let row">
+          <table cdk-table [dataSource]="dataSource">
+            <ng-container cdkColumnDef="column_a">
+              <th cdk-header-cell *cdkHeaderCellDef> Column A</th>
+              <td cdk-cell *cdkCellDef="let row"> {{row.a}}</td>
+            </ng-container>
+
+            <ng-container cdkColumnDef="column_b">
+              <th cdk-header-cell *cdkHeaderCellDef> Column B</th>
+              <td cdk-cell *cdkCellDef="let row"> {{row.b}}</td>
+            </ng-container>
+
+            <ng-container cdkColumnDef="column_c">
+              <th cdk-header-cell *cdkHeaderCellDef> Column C</th>
+              <td cdk-cell *cdkCellDef="let row"> {{row.c}}</td>
+            </ng-container>
+
+            <tr cdk-header-row *cdkHeaderRowDef="columnsToRender"></tr>
+            <tr cdk-row *cdkRowDef="let row; columns: columnsToRender" class="customRowClass"></tr>
+          </table>
+        </td>
+      </ng-container>
+
+      <ng-container cdkColumnDef="column_c">
+        <th cdk-header-cell *cdkHeaderCellDef> Column C</th>
+        <td cdk-cell *cdkCellDef="let row">{{row.c}}</td>
+      </ng-container>
+
+      <tr cdk-header-row *cdkHeaderRowDef="columnsToRender"></tr>
+      <tr cdk-row *cdkRowDef="let row; columns: columnsToRender" class="customRowClass"></tr>
+    </table>
+  `
+})
+class NestedHtmlTableApp {
+  dataSource: FakeDataSource | undefined = new FakeDataSource();
+  columnsToRender = ['column_a', 'column_b', 'column_c'];
 }
 
 @Component({

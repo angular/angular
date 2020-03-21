@@ -10,7 +10,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   Inject,
-  InjectionToken,
   Input,
   OnDestroy,
   OnInit,
@@ -25,23 +24,8 @@ import {
   getTableTextColumnMissingParentTableError,
   getTableTextColumnMissingNameError,
 } from './table-errors';
+import {TEXT_COLUMN_OPTIONS, TextColumnOptions} from './tokens';
 
-
-/** Configurable options for `CdkTextColumn`. */
-export interface TextColumnOptions<T> {
-  /**
-   * Default function that provides the header text based on the column name if a header
-   * text is not provided.
-   */
-  defaultHeaderTextTransform?: (name: string) => string;
-
-  /** Default data accessor to use if one is not provided. */
-  defaultDataAccessor?: (data: T, name: string) => string;
-}
-
-/** Injection token that can be used to specify the text column options. */
-export const TEXT_COLUMN_OPTIONS =
-    new InjectionToken<TextColumnOptions<any>>('text-column-options');
 
 /**
  * Column that simply shows text content for the header and row cells. Assumes that the table

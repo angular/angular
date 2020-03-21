@@ -30,6 +30,7 @@ describe('MatTable', () => {
         MatTableWithPaginatorApp,
         StickyTableApp,
         TableWithNgContainerRow,
+        NestedHtmlTableApp,
       ],
     }).compileComponents();
   }));
@@ -97,6 +98,21 @@ describe('MatTable', () => {
       [data[2].a, data[2].b, data[2].c],
       [data[3].a, data[3].b, data[3].c],
     ]);
+  });
+
+  it('should be able to nest tables', () => {
+    const fixture = TestBed.createComponent(NestedHtmlTableApp);
+    fixture.detectChanges();
+    const outerTable = fixture.nativeElement.querySelector('table');
+    const innerTable = outerTable.querySelector('table');
+    const outerRows = Array.from<HTMLTableRowElement>(outerTable.querySelector('tbody').rows);
+    const innerRows = Array.from<HTMLTableRowElement>(innerTable.querySelector('tbody').rows);
+
+    expect(outerTable).toBeTruthy();
+    expect(outerRows.map(row => row.cells.length)).toEqual([3, 3, 3, 3]);
+
+    expect(innerTable).toBeTruthy();
+    expect(innerRows.map(row => row.cells.length)).toEqual([3, 3, 3, 3]);
   });
 
   it('should render with MatTableDataSource and sort', () => {
@@ -596,6 +612,54 @@ class NativeHtmlTableApp {
   columnsToRender = ['column_a', 'column_b', 'column_c'];
 
   @ViewChild(MatTable, {static: true}) table: MatTable<TestData>;
+}
+
+@Component({
+  template: `
+    <table mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="column_a">
+        <th mat-header-cell *matHeaderCellDef> Column A</th>
+        <td mat-cell *matCellDef="let row">{{row.a}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="column_b">
+        <th mat-header-cell *matHeaderCellDef> Column B</th>
+        <td mat-cell *matCellDef="let row">
+          <table mat-table [dataSource]="dataSource">
+            <ng-container matColumnDef="column_a">
+              <th mat-header-cell *matHeaderCellDef> Column A</th>
+              <td mat-cell *matCellDef="let row"> {{row.a}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="column_b">
+              <th mat-header-cell *matHeaderCellDef> Column B</th>
+              <td mat-cell *matCellDef="let row"> {{row.b}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="column_c">
+              <th mat-header-cell *matHeaderCellDef> Column C</th>
+              <td mat-cell *matCellDef="let row"> {{row.c}}</td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="columnsToRender"></tr>
+            <tr mat-row *matRowDef="let row; columns: columnsToRender"></tr>
+          </table>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="column_c">
+        <th mat-header-cell *matHeaderCellDef> Column C</th>
+        <td mat-cell *matCellDef="let row">{{row.c}}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnsToRender"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnsToRender"></tr>
+    </table>
+  `
+})
+class NestedHtmlTableApp {
+  dataSource: FakeDataSource | null = new FakeDataSource();
+  columnsToRender = ['column_a', 'column_b', 'column_c'];
 }
 
 @Component({
