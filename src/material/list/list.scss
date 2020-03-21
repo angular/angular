@@ -325,6 +325,27 @@ mat-action-list {
       outline: dotted 1px;
     }
   }
+
+  // In single selection mode, the selected option is indicated by changing its
+  // background color, but that doesn't work in high contrast mode. We add an
+  // alternate indication by rendering out a circle.
+  .mat-list-single-selected-option::after {
+    $size: 10px;
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: $mat-list-side-padding;
+    transform: translateY(-50%);
+    width: $size;
+    height: 0;
+    border-bottom: solid $size;
+    border-radius: $size;
+  }
+
+  [dir='rtl'] .mat-list-single-selected-option::after {
+    right: auto;
+    left: $mat-list-side-padding;
+  }
 }
 
 
