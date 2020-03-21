@@ -28,7 +28,11 @@ import {MatDialogContainer} from './dialog-container';
 import {OverlayContainer, ScrollStrategy, Overlay} from '@angular/cdk/overlay';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {A, ESCAPE} from '@angular/cdk/keycodes';
-import {dispatchKeyboardEvent, createKeyboardEvent} from '@angular/cdk/testing/private';
+import {
+  dispatchKeyboardEvent,
+  createKeyboardEvent,
+  dispatchEvent
+} from '@angular/cdk/testing/private';
 import {
   MAT_DIALOG_DATA,
   MatDialog,
@@ -268,6 +272,7 @@ describe('MatDialog', () => {
 
     const event = createKeyboardEvent('keydown', ESCAPE);
     Object.defineProperty(event, 'altKey', {get: () => true});
+    dispatchEvent(document.body, event);
     viewContainerFixture.detectChanges();
     flush();
 
