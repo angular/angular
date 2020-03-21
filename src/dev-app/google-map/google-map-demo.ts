@@ -66,6 +66,14 @@ export class GoogleMapDemo {
   circleOptions: google.maps.CircleOptions =
       {center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, strokeColor: 'grey', strokeOpacity: 0.8};
 
+  mapTypeId: google.maps.MapTypeId;
+  mapTypeIds = [
+    google.maps.MapTypeId.HYBRID,
+    google.maps.MapTypeId.ROADMAP,
+    google.maps.MapTypeId.SATELLITE,
+    google.maps.MapTypeId.TERRAIN
+  ];
+
   handleClick(event: google.maps.MouseEvent) {
     this.markerPositions.push(event.latLng.toJSON());
   }
@@ -129,5 +137,9 @@ export class GoogleMapDemo {
       center: this.circle.getCenter(),
       radius: this.circle.getRadius(),
     };
+  }
+
+  mapTypeChanged(event: Event) {
+    this.mapTypeId = (event.target as HTMLSelectElement).value as unknown as google.maps.MapTypeId;
   }
 }

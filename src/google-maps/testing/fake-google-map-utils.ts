@@ -28,7 +28,7 @@ export function createMapSpy(options: google.maps.MapOptions): jasmine.SpyObj<Up
   const mapSpy = jasmine.createSpyObj('google.maps.Map', [
     'setOptions', 'setCenter', 'setZoom', 'setMap', 'addListener', 'fitBounds', 'panBy', 'panTo',
     'panToBounds', 'getBounds', 'getCenter', 'getClickableIcons', 'getHeading', 'getMapTypeId',
-    'getProjection', 'getStreetView', 'getTilt', 'getZoom'
+    'getProjection', 'getStreetView', 'getTilt', 'getZoom', 'setMapTypeId'
   ]);
   mapSpy.addListener.and.returnValue({remove: () => {}});
   return mapSpy;

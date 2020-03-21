@@ -46,6 +46,7 @@ export interface UpdatedGoogleMap extends google.maps.Map {
 export const DEFAULT_OPTIONS: google.maps.MapOptions = {
   center: {lat: 37.421995, lng: -122.084092},
   zoom: 17,
+  mapTypeId: undefined
 };
 
 /** Arbitrary default height for the map element */
@@ -79,9 +80,17 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
   /** Whether we're currently rendering inside a browser. */
   _isBrowser: boolean;
 
+  /** Height of the map. */
   @Input() height: string | number = DEFAULT_HEIGHT;
 
+  /** Width of the map. */
   @Input() width: string | number = DEFAULT_WIDTH;
+
+  /**
+   * Type of map that should be rendered. E.g. hybrid map, terrain map etc.
+   * See: https://developers.google.com/maps/documentation/javascript/reference/map#MapTypeId
+   */
+  @Input() mapTypeId: google.maps.MapTypeId | undefined;
 
   @Input()
   set center(center: google.maps.LatLngLiteral|google.maps.LatLng) {
@@ -249,6 +258,9 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
 
   ngOnChanges() {
     this._setSize();
+    if (this._googleMap && this.mapTypeId) {
+      this._googleMap.setMapTypeId(this.mapTypeId);
+    }
   }
 
   ngOnInit() {
@@ -447,6 +459,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
             ...options,
             center: center || options.center,
             zoom: zoom !== undefined ? zoom : options.zoom,
+            mapTypeId: this.mapTypeId
           };
           return combinedOptions;
         }));

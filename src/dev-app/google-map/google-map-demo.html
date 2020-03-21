@@ -5,7 +5,8 @@
               [zoom]="zoom"
               (mapClick)="handleClick($event)"
               (mapMousemove)="handleMove($event)"
-              (mapRightclick)="handleRightclick()">
+              (mapRightclick)="handleRightclick()"
+              [mapTypeId]="mapTypeId">
     <map-marker #firstMarker [position]="center" (mapClick)="clickMarker(firstMarker)"></map-marker>
     <map-marker #marker
                 *ngFor="let markerPosition of markerPositions"
@@ -21,6 +22,16 @@
 
   <p><label>Latitude:</label> {{display?.lat}}</p>
   <p><label>Longitude:</label> {{display?.lng}}</p>
+
+  <div>
+    <label for="map-type">
+      Select map type
+
+      <select id="map-type" (change)="mapTypeChanged($event)" #mapType>
+        <option *ngFor="let type of mapTypeIds" [value]="type">{{type}}</option>
+      </select>
+    </label>
+  </div>
 
   <div>
     <label for="polyline-checkbox">

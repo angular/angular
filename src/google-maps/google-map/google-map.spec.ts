@@ -122,7 +122,7 @@ describe('GoogleMap', () => {
   });
 
   it('sets center and zoom of the map', () => {
-    const options = {center: {lat: 3, lng: 5}, zoom: 7};
+    const options = {center: {lat: 3, lng: 5}, zoom: 7, mapTypeId: undefined};
     mapSpy = createMapSpy(options);
     mapConstructorSpy = createMapConstructorSpy(mapSpy).and.callThrough();
 
@@ -143,7 +143,7 @@ describe('GoogleMap', () => {
   });
 
   it('sets map options', () => {
-    const options = {center: {lat: 3, lng: 5}, zoom: 7, draggable: false};
+    const options = {center: {lat: 3, lng: 5}, zoom: 7, draggable: false, mapTypeId: undefined};
     mapSpy = createMapSpy(options);
     mapConstructorSpy = createMapConstructorSpy(mapSpy).and.callThrough();
 
@@ -162,7 +162,12 @@ describe('GoogleMap', () => {
 
   it('gives precedence to center and zoom over options', () => {
     const inputOptions = {center: {lat: 3, lng: 5}, zoom: 7, heading: 170};
-    const correctedOptions = {center: {lat: 12, lng: 15}, zoom: 5, heading: 170};
+    const correctedOptions = {
+      center: {lat: 12, lng: 15},
+      zoom: 5,
+      heading: 170,
+      mapTypeId: undefined
+    };
     mapSpy = createMapSpy(correctedOptions);
     mapConstructorSpy = createMapConstructorSpy(mapSpy);
 
@@ -280,6 +285,23 @@ describe('GoogleMap', () => {
     expect(addSpy).toHaveBeenCalledWith('projection_changed', jasmine.any(Function));
     subscription.unsubscribe();
   });
+
+  it('should set the map type', () => {
+    mapSpy = createMapSpy(DEFAULT_OPTIONS);
+    mapConstructorSpy = createMapConstructorSpy(mapSpy).and.callThrough();
+
+    const fixture = TestBed.createComponent(TestApp);
+    fixture.componentInstance.mapTypeId = 'terrain' as unknown as google.maps.MapTypeId;
+    fixture.detectChanges();
+
+    expect(mapConstructorSpy).toHaveBeenCalledWith(jasmine.any(HTMLElement),
+      jasmine.objectContaining({mapTypeId: 'terrain'}));
+
+    fixture.componentInstance.mapTypeId = 'roadmap' as unknown as google.maps.MapTypeId;
+    fixture.detectChanges();
+
+    expect(mapSpy.setMapTypeId).toHaveBeenCalledWith('roadmap');
+  });
 });
 
 @Component({
@@ -289,6 +311,7 @@ describe('GoogleMap', () => {
                          [center]="center"
                          [zoom]="zoom"
                          [options]="options"
+                         [mapTypeId]="mapTypeId"
                          (mapClick)="handleClick($event)"
                          (centerChanged)="handleCenterChanged()"
                          (mapRightclick)="handleRightclick($event)">
@@ -301,6 +324,7 @@ class TestApp {
   center?: google.maps.LatLngLiteral;
   zoom?: number;
   options?: google.maps.MapOptions;
+  mapTypeId?: google.maps.MapTypeId;
 
   handleClick(event: google.maps.MouseEvent) {}
   handleCenterChanged() {}
