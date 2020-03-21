@@ -1600,6 +1600,14 @@ The following example shows `NgFor` applied to a simple `<div>`. (Don't forget t
 
 <code-example path="built-in-directives/src/app/app.component.html" region="NgFor-1" header="src/app/app.component.html"></code-example>
 
+<div class="alert is-helpful">
+
+Don't forget the asterisk (`*`) in front of `ngFor`. For more information
+on the asterisk, see the [asterisk (*) prefix](guide/structural-directives#the-asterisk--prefix) section of
+[Structural Directives](guide/structural-directives).
+
+</div>
+
 You can also apply an `NgFor` to a component element, as in the following example.
 
 <code-example path="built-in-directives/src/app/app.component.html" region="NgFor-2" header="src/app/app.component.html"></code-example>
