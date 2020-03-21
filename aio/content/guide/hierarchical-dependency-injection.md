@@ -593,8 +593,12 @@ the `HostComponent` will use `🌼` (yellow flower).
 `HostComponent`에는 `🌼`가 주입됩니다.
 
 
+<!--
 ## Logical structure of the template
+-->
+## 템플릿의 논리 구조
 
+<!--
 When you provide services in the component class, services are
 visible within the `ElementInjector` tree relative to where
 and how you provide those services.
@@ -604,6 +608,12 @@ template will give you a foundation for configuring services
 and in turn control their visibility.
 
 Components are used in your templates, as in the following example:
+-->
+컴포넌트 클래스에 서비스 프로바이더가 등록되면 서비스는 `ElementInjector` 트리에 등록되기 때문에 자식 컴포넌트에서 이 서비스를 사용할 수 있습니다.
+
+이번에는 이 서비스가 템플릿의 논리 구조 관점에서는 어떻게 구성되는지 살펴봅시다.
+
+컴포넌트 템플릿 코드는 이렇게 작성되었습니다:
 
 ```
 <app-root>
@@ -613,6 +623,7 @@ Components are used in your templates, as in the following example:
 
 <div class="alert is-helpful">
 
+<!--
 **Note:** Usually, you declare the components and their
 templates in separate files. For the purposes of understanding
 how the injection system works, it is useful to look at them
@@ -622,10 +633,19 @@ DOM tree). To mark the locations of where the component
 templates are located, this guide uses the `<#VIEW>`
 pseudo element, which doesn't actually exist in the render tree
 and is present for mental model purposes only.
+-->
+**참고:** 일반적으로 컴포넌트 클래스 파일과 템플릿 파일은 별개로 구성합니다.
+그리고 의존성 주입 시스템의 관점에서, 논리적 트리를 구성하는 관점에서는 이 방식이 더 효율적입니다.
+이 때 논리적이라는 말은 렌더링되는 DOM 트리와 구별하기 위해 사용한 단어입니다.
+컴포넌트 템플릿이 위치하는 곳을 표시하기 위해 이 섹션에서는 `<#VIEW>`라는 유사 엘리먼트를 사용해 봅시다.
+이 엘리먼트가 실제로 존재하는 것은 아니며, 어떤 개념인지 설명하기 위한 것입니다.
 
 </div>
 
+<!--
 The following is an example of how the `<app-root>` and `<app-child>` view trees are combined into a single logical tree:
+-->
+아래 예제에서 `<app-root>`와 `<app-child>` 뷰 트리는 다음과 같은 논리 트리로 구성됩니다:
 
 ```
 <app-root>
@@ -639,10 +659,18 @@ The following is an example of how the `<app-root>` and `<app-child>` view trees
 </app-root>
  ```
 
+<!--
 Understanding the idea of the `<#VIEW>` demarcation is especially significant when you configure services in the component class.
+-->
+컴포넌트 클래스에 등록되는 서비스 프로바이더가 어떤 범위까지 유효한지 `<#VIEW>`가 위치하는 곳을 기준으로 생각해 보세요.
 
+
+<!--
 ## Providing services in `@Component()`
+-->
+## `@Component()`에 서비스 프로바이더 등록하기
 
+<!--
 How you provide services via an `@Component()` (or `@Directive()`)
 decorator determines their visibility. The following sections
 demonstrate `providers` and `viewProviders` along with ways to
@@ -692,35 +720,88 @@ this location in the logical tree its value would be `Value`.
 should be used at this location.
 
 </div>
+-->
+`@Component()`(또는 `@Directive()`)에 서비스 프로바이더를 등록하면 이 서비스를 의존성으로 주입받을 수 있습니다.
+다음 섹션에서는 `providers`, `viewProviders`를 `@SkipSelf()`, `@Host()`와 함께 사용할 때 어떻게 달라지는지 알아봅시다.
+
+서비스 프로바이더를 컴포넌트 클래스에 등록하는 방법은 두 가지 입니다:
+
+1. `providers` 배열을 사용하는 방법
+
+```typescript=
+@Component({
+  ...
+  providers: [
+    {provide: FlowerService, useValue: {emoji: '🌺'}}
+  ]
+})
+```
+
+2. `viewProviders` 배열을 사용하는 방법
+
+```typescript=
+@Component({
+  ...
+  viewProviders: [
+    {provide: AnimalService, useValue: {emoji: '🐶'}}
+  ]
+})
+```
+
+`providers`와 `viewProviders`의 차이점을 살펴보려면 다음 섹션부터 설명하는 내용을 <live-example name="providers-viewproviders"></live-example>와 참고하면서 알아보세요.
+
+<div class="alert is-helpful">
+
+**참고:** 논리 트리의 관점에서는 `@Provide`, `@Inject`, `@NgModule`가 존재하지 않지만 이 섹션에서는 설명을 위해 잠시 개념을 가져오겠습니다.
+
+- `@Inject(Token)=>Value`는 해당 논리 트리의 `Token`에 `Value`를 주입한다는 것을 의미합니다.
+- `@Provide(Token=Value)`는 해당 논리 트리의 `Token` 프로바이더로 `Value`를 사용한다는 것을 의미합니다.
+- `@NgModule(Token)`은 해당 논리 트리에서 사용하는 인젝터가 `NgModule`까지 도달한다는 것을 의미합니다.
+
+</div>
 
 
+<!--
 ### Example app structure
+-->
+### 예제 앱 구조
 
+<!--
 The example app has a `FlowerService` provided in `root` with an `emoji`
 value of `🌺` (red hibiscus).
+-->
+이제부터 살펴볼 예제 앱에서 `FlowerService`는 `root`에 등록되어 있으며 이 서비스의 `emijo` 프로퍼티 값은 `🌺`가 할당되어 있습니다.
 
 <code-example path="providers-viewproviders/src/app/flower.service.ts" header="providers-viewproviders/src/app/flower.service.ts" region="flowerservice">
 
 </code-example>
 
+<!--
 Consider a simple app with only an `AppComponent` and a `ChildComponent`.
 The most basic rendered view would look like nested HTML elements such as
 the following:
+-->
+그리고 `AppComponent`와 `ChildComponent`로 구성된 앱을 생각해 봅시다.
+기본적으로 다음과 같이 구성할 것입니다:
 
 ```
-<app-root> <!-- AppComponent selector -->
-    <app-child> <!-- ChildComponent selector -->
+<app-root> <!-- AppComponent 셀렉터 -->
+    <app-child> <!-- ChildComponent 셀렉터 -->
     </app-child>
 </app-root>
 ```
 
+<!--
 However, behind the scenes, Angular uses a logical view
 representation as follows when resolving injection requests:
+-->
+그런데 이와 별개로 Angular는 의존성 주입을 처리하기 위해 다음과 같은 논리 구조의 화면을 구성합니다:
+
 
 ```
-<app-root> <!-- AppComponent selector -->
+<app-root> <!-- AppComponent 셀렉터 -->
     <#VIEW>
-        <app-child> <!-- ChildComponent selector -->
+        <app-child> <!-- ChildComponent 셀렉터 -->
             <#VIEW>
             </#VIEW>
         </app-child>
@@ -728,6 +809,7 @@ representation as follows when resolving injection requests:
 </app-root>
  ```
 
+<!--
 The `<#VIEW>` here represents an instance of a template.
 Notice that each component has its own `<#VIEW>`.
 
@@ -735,26 +817,41 @@ Knowledge of this structure can inform how you provide and
 inject your services, and give you complete control of service visibility.
 
 Now, consider that `<app-root>` simply injects the `FlowerService`:
+-->
+이 코드에서 사용한 `<#VIEW>`는 템플릿 인스턴스를 표현한 것입니다.
+컴포넌트마다 `<#VIEW>`가 존재하는 것을 자세히 보세요.
+
+이 구조를 명심하고 있어야 프로바이더가 어떻게 등록되는지, 어떻게 의존성 객체로 주입되는지, 서비스를 어느 범위까지 접근할 수 있을지 제대로 이해할 수 있습니다.
+
+`<app-root>`에 `FlowerService`를 주입해 봅시다:
 
 
 <code-example path="providers-viewproviders/src/app/app.component.1.ts" header="providers-viewproviders/src/app/app.component.ts" region="injection">
 
 </code-example>
 
+<!--
 Add a binding to the `<app-root>` template to visualize the result:
+-->
+그리고 `<app-root>` 템플릿은 이렇게 작성합니다:
 
 <code-example path="providers-viewproviders/src/app/app.component.html" header="providers-viewproviders/src/app/app.component.html" region="binding-flower">
 
 </code-example>
 
-
+<!--
 The output in the view would be:
+-->
+이 예제 앱은 이렇게 표시됩니다:
 
 ```
 Emoji from FlowerService: 🌺
 ```
 
+<!--
 In the logical tree, this would be represented as follows:
+-->
+그리고 논리 트리 관점에서는 이렇게 구성됩니다:
 
 ```
 <app-root @NgModule(AppModule)
@@ -769,6 +866,7 @@ In the logical tree, this would be represented as follows:
 </app-root>
 ```
 
+<!--
 When `<app-root>` requests the `FlowerService`, it is the injector's job
 to resolve the `FlowerService` token. The resolution of the token happens
 in two phases:
@@ -794,36 +892,71 @@ In the example case, the constraints are:
 
 2. The `AppModule` acts as the fallback injector when the
 injection token can't be found in the `ElementInjector`s.
+-->
+`<app-root>`에서 `FlowerService`를 의존성으로 주입하도록 요청하면 인젝터가 `FlowerService` 토큰을 탐색하기 시작하는데, 이 탐색 과정은 두 단계로 진행됩니다:
 
+1. 논리 트리를 기준으로 인젝터가 탐색을 시작할 위치와 탐색을 종료할 위치를 결정합니다.
+그 이후에 인젝터는 이 범위에서 의존성 토큰을 찾아서 반환합니다.
+
+2. 토큰을 찾지 못하면 이 요청을 가까운 부모 `@NgModule()`에게 위임합니다.
+
+이 과정이 예제 앱의 경우에는 이렇습니다:
+
+1. `<app-root>`에 속한 `<#VIEW>` 범위에서 의존성 토큰을 찾습니다.
+
+  - 기본적으로 탐색이 시작되는 지점은 의존성 주입이 선언된 부분입니다. 그런데 `<app-root>`의 `@Component`는 `viewProviders` 프로퍼티가 사용되었기 때문에 탐색 시작점이 `<app-root>`의 `<#VIEW>`가 됩니다. 같은 계층에 사용된 디렉티브는 이렇게 동작하지 않습니다.
+  - 탐색이 종료되는 지점은 컴포넌트가 끝나는 지점입니다. 예제 앱에서 `<app-root>`는 최상위 컴포넌트입니다.
+
+2. `ElementInjector`가 의존성 토큰을 찾지 못했기 때문에 의존성 주입 요청은 `AppModule`에게 넘어갑니다.
+
+
+<!--
 ### Using the `providers` array
+-->
+### `providers` 배열 사용하기
 
+<!--
 Now, in the `ChildComponent` class, add a provider for `FlowerService`
 to demonstrate more complex resolution rules in the upcoming sections:
+-->
+이제 `ChildComponent` 클래스에 `FlowerService`의 프로바이더를 등록해서 의존성 토큰 규칙을 조금 복잡하게 만들어 봅시다:
 
 <code-example path="providers-viewproviders/src/app/child/child.component.1.ts" header="providers-viewproviders/src/app/child.component.ts" region="flowerservice">
 
 </code-example>
 
+<!--
 Now that the `FlowerService` is provided in the `@Component()` decorator,
 when the `<app-child>` requests the service, the injector has only to look
 as far as the `<app-child>`'s own `ElementInjector`. It won't have to
 continue the search any further through the injector tree.
 
 The next step is to add a binding to the `ChildComponent` template.
+-->
+이제는 `FlowerService`의 프로바이더가 `@Component()` 데코레이터에 등록되었기 때문에 `<app-child>`가 의존성으로 요청하는 서비스의 인스턴스는 `<app-child>`에 구성되는 `ElementInjector`만 봐도 찾을 수 있습니다.
+아직까지는 인젝터 트리를 따라 올라갈 필요가 없습니다.
+
+이 서비스를 `ChildComponent`의 템플릿에 다음과 같이 바인딩합니다.
 
 <code-example path="providers-viewproviders/src/app/child/child.component.html" header="providers-viewproviders/src/app/child.component.html" region="flower-binding">
 
 </code-example>
 
+<!--
 To render the new values, add `<app-child>` to the bottom of
 the `AppComponent` template so the view also displays the sunflower:
+-->
+그리고 화면에 `AppComponent` 템플릿 제일 아래에 `<app-child>`를 추가하면 다음과 같은 문구가 표시됩니다:
 
 ```
 Child Component
 Emoji from FlowerService: 🌻
 ```
 
+<!--
 In the logical tree, this would be represented as follows:
+-->
+이 내용을 논리 트리에서 보면 이렇게 표현할 수 있습니다:
 
 ```
 <app-root @NgModule(AppModule)
@@ -831,8 +964,8 @@ In the logical tree, this would be represented as follows:
   <#VIEW>
     <p>Emoji from FlowerService: {{flower.emoji}} (🌺)</p>
     <app-child @Provide(FlowerService="🌻")
-               @Inject(FlowerService)=>"🌻"> <!-- search ends here -->
-      <#VIEW> <!-- search starts here -->
+               @Inject(FlowerService)=>"🌻"> <!-- 검색은 여기에서 끝납니다. -->
+      <#VIEW> <!-- 검색이 여기에서 시작합니다. -->
         <h2>Parent Component</h2>
         <p>Emoji from FlowerService: {{flower.emoji}} (🌻)</p>
       </#VIEW>
@@ -841,6 +974,7 @@ In the logical tree, this would be represented as follows:
 </app-root>
 ```
 
+<!--
 When `<app-child>` requests the `FlowerService`, the injector begins
 its search at the `<#VIEW>` belonging to `<app-child>` (`<#VIEW>` is
 included because it is injected from `@Component()`) and ends with
@@ -848,11 +982,20 @@ included because it is injected from `@Component()`) and ends with
 `<app-child>`'s `providers` array with sunflower 🌻. The injector doesn't
 have to look any further in the injector tree. It stops as soon as it
 finds the `FlowerService` and never sees the 🌺 (red hibiscus).
+-->
+`<app-child>`가 `FlowerService`를 요청하면 인젝터는 `<app-child>` 안에 있는 `<#VIEW>` 범위에서 인스턴스를 찾기 시작합니다.
+이 때 `<#VIEW>`는 `@Component()` 데코레이터를 통해 `<app-child>` 안으로 주입되었기 때문에 탐색 대상이 됩니다.
+이 예제의 경우에는 `FlowerService`는 `<app-child>`의 `providers` 배열에 등록된 🌻로 결정됩니다.
+그리고 더 상위 인젝터를 탐색할 필요도 없습니다.
+의존성 토큰 탐색은 중단되고 `FlowerService`를 주입하기 위해 🌺를 만날 일은 없습니다.
 
 
 {@a use-view-providers}
 
+<!--
 ### Using the `viewProviders` array
+-->
+### `viewProviders` 배열 사용하기
 
 Use the `viewProviders` array as another way to provide services in the
 `@Component()` decorator. Using `viewProviders` makes services

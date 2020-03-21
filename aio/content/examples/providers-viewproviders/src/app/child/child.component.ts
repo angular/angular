@@ -8,13 +8,13 @@ import { AnimalService } from '../animal.service';
   selector: 'app-child',
   templateUrl: './child.component.html',
   styleUrls: ['./child.component.css'],
-  // provide services
+  // 서비스 프로바이더를 등록합니다.
   providers: [{ provide: FlowerService, useValue: { emoji: '🌻' } }],
   viewProviders: [{ provide: AnimalService, useValue: { emoji: '🐶' } }]
 })
 
 export class ChildComponent {
-  // inject service
+  // 서비스를 의존성으로 주입합니다.
   constructor( public flower: FlowerService, public animal: AnimalService) { }
 // #enddocregion provide-animal-service
 

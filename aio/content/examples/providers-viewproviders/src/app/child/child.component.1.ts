@@ -6,12 +6,12 @@ import { FlowerService } from '../flower.service';
   selector: 'app-child',
   templateUrl: './child.component.html',
   styleUrls: ['./child.component.css'],
-  // use the providers array to provide a service
+  // providers 배열을 사용해서 서비스 프로바이더를 등록합니다.
   providers: [{ provide: FlowerService, useValue: { emoji: '🌻' } }]
 })
 
 export class ChildComponent {
-  // inject the service
+  // 서비스를 의존성으로 주입합니다.
   constructor( public flower: FlowerService) { }
 }
 
