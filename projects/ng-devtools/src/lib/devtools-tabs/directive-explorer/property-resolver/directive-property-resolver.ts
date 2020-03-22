@@ -6,12 +6,6 @@ import { getExpandedDirectiveProperties } from './property-expanded-directive-pr
 import { Observable } from 'rxjs';
 import { Property, FlatNode } from './element-property-resolver';
 
-export enum PropertyViewFilterOptions {
-  INPUTS,
-  OUTPUTS,
-  STATE,
-}
-
 export interface DirectiveTreeData {
   dataSource: PropertyDataSource;
   treeControl: FlatTreeControl<FlatNode>;
@@ -101,14 +95,6 @@ export class DirectivePropertyResolver {
 
   get directiveProperties(): { [name: string]: Descriptor } {
     return this._props.props;
-  }
-
-  get directiveInputs1(): string[] {
-    return Object.keys(this._props.inputs || {});
-  }
-
-  get directiveOutputs1(): string[] {
-    return Object.keys(this._props.outputs || {});
   }
 
   getExpandedProperties(): NestedProp[] {
