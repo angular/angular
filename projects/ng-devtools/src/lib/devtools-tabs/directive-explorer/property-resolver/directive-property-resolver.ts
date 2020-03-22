@@ -74,13 +74,6 @@ export class DirectivePropertyResolver {
     this._createDataSources();
   }
 
-  getDirectiveControls1(): { dataSource: PropertyDataSource; treeControl: FlatTreeControl<FlatNode> } {
-    return {
-      dataSource: this._dataSource,
-      treeControl: this._treeControl,
-    };
-  }
-
   get directiveInputControls(): DirectiveTreeData {
     return getDirectiveControls(this._inputsDataSource);
   }
@@ -185,6 +178,14 @@ export class DirectivePropertyResolver {
       node => node.expandable
     );
 
-    return new PropertyDataSource(props, treeFlattener, treeControl, this._directivePosition, this._messageBus);
+    return new PropertyDataSource(
+      props,
+      treeFlattener,
+      treeControl,
+      this._directivePosition,
+      this._messageBus,
+      this._onRequestingNestedProperties,
+      this._onReceivedNestedProperties
+    );
   }
 }
