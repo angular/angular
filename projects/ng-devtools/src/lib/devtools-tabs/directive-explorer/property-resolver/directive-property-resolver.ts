@@ -91,11 +91,34 @@ export class DirectivePropertyResolver {
   }
 
   getExpandedProperties(): NestedProp[] {
-    return getExpandedDirectiveProperties(this._dataSource.data);
+    return [
+      ...getExpandedDirectiveProperties(this._inputsDataSource.data),
+      ...getExpandedDirectiveProperties(this._outputsDataSource.data),
+      ...getExpandedDirectiveProperties(this._stateDataSource.data),
+    ];
   }
 
   updateProperties(newProps: Properties): void {
-    this._dataSource.update(newProps.props);
+    const inputLabels: string[] = Object.keys(newProps.inputs || {});
+    const outputLabels: string[] = Object.keys(newProps.outputs || {});
+
+    const inputProps = {};
+    const outputProps = {};
+    const stateProps = {};
+    let propPointer;
+
+    Object.keys(this.directiveProperties).forEach(propName => {
+      propPointer = inputLabels.includes(propName)
+        ? inputProps
+        : outputLabels.includes(propName)
+        ? outputProps
+        : stateProps;
+      propPointer[propName] = this.directiveProperties[propName];
+    });
+
+    this._inputsDataSource.update(inputProps);
+    this._outputsDataSource.update(outputProps);
+    this._stateDataSource.update(stateProps);
     this._props = newProps;
   }
 
