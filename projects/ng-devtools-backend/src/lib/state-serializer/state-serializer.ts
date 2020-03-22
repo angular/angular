@@ -3,6 +3,7 @@ import {
   createLevelSerializedDescriptor,
   createNestedSerializedDescriptor,
   createShallowSerializedDescriptor,
+  PropertyData,
 } from './serialized-descriptor-factory';
 import { METADATA_PROPERTY_NAME } from '../lview-transform';
 
@@ -53,8 +54,7 @@ export const nestedSerializer = (
   currentLevel = 0,
   level = MAX_LEVEL
 ): Descriptor => {
-  const type: PropType = getPropType(serializableInstance);
-  const propData = { prop: serializableInstance, type };
+  const propData: PropertyData = { prop: serializableInstance, type: getPropType(serializableInstance) };
   const levelOptions = { level, currentLevel };
 
   if (currentLevel < level) {
@@ -67,11 +67,13 @@ export const nestedSerializer = (
     );
   }
 
-  if (type === PropType.Array || type === PropType.Object) {
-    return createNestedSerializedDescriptor(propData, levelOptions, nodes, nestedSerializer);
+  switch (propData.type) {
+    case PropType.Array:
+    case PropType.Object:
+      return createNestedSerializedDescriptor(propData, levelOptions, nodes, nestedSerializer);
+    default:
+      return createShallowSerializedDescriptor(propData);
   }
-
-  return createShallowSerializedDescriptor(propData);
 };
 
 const nestedSerializerContinuation = (nodes: NestedProp[], level: number) => (
@@ -94,15 +96,16 @@ export const levelSerializer = (
   level = MAX_LEVEL,
   continuation = levelSerializer
 ): Descriptor => {
-  const type = getPropType(serializableInstance);
-  const propData = { prop: serializableInstance, type };
+  const propData: PropertyData = { prop: serializableInstance, type: getPropType(serializableInstance) };
   const levelOptions = { level, currentLevel };
 
-  if (type === PropType.Array || type === PropType.Object) {
-    return createLevelSerializedDescriptor(propData, levelOptions, continuation);
+  switch (propData.type) {
+    case PropType.Array:
+    case PropType.Object:
+      return createLevelSerializedDescriptor(propData, levelOptions, continuation);
+    default:
+      return createShallowSerializedDescriptor(propData);
   }
-
-  return createShallowSerializedDescriptor(propData);
 };
 
 export const serializeDirectiveState = (instance: object, levels = MAX_LEVEL): { [key: string]: Descriptor } => {
