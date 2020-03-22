@@ -1303,6 +1303,23 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
         server.assertSawRequestFor('/foo.txt');
       });
 
+
+      it('enters degraded mode when cache is full', async() => {
+        spyOn(MockCache.prototype, 'put').and.throwError('Quota exceeded');
+
+        // Initialize the SW.
+        await makeRequest(scope, '/foo.txt');
+        await driver.initialized;
+        expect(driver.state).toBe(DriverReadyState.EXISTING_CLIENTS_ONLY);
+
+        server.clearRequests();
+
+        // Operate normally.
+        expect(await makeRequest(scope, '/foo.txt')).toBe('this is foo');
+        expect(driver.state).toBe(DriverReadyState.EXISTING_CLIENTS_ONLY);
+        server.assertSawRequestFor('/foo.txt');
+      });
+
       it('keeps serving api requests with freshness strategy when failing to write to cache',
          async() => {
            // Initialize the SW.

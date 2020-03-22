@@ -384,7 +384,7 @@ export class Driver implements Debuggable, UpdateSource {
 
     // Set the current version used by the client, and sync the mapping to disk.
     this.clientVersionMap.set(client.id, this.latestHash !);
-    await this.sync();
+    await this.safeSync();
 
     // Notify the client about this activation.
     const current = this.versions.get(this.latestHash !) !;
@@ -510,11 +510,15 @@ export class Driver implements Debuggable, UpdateSource {
       latest = {latest: hash};
 
       // Save the initial state to the DB.
-      await Promise.all([
-        table.write('manifests', manifests),
-        table.write('assignments', assignments),
-        table.write('latest', latest),
-      ]);
+      try {
+        await Promise.all([
+          table.write('manifests', manifests),
+          table.write('assignments', assignments),
+          table.write('latest', latest),
+        ]);
+      } catch (err) {
+        this.debugger.log(err, `initialize - save initial state`);
+      }
     }
 
     // At this point, either the state has been loaded successfully, or fresh state
@@ -656,7 +660,7 @@ export class Driver implements Debuggable, UpdateSource {
 
         // Pin this client ID to the current latest version, indefinitely.
         this.clientVersionMap.set(clientId, this.latestHash);
-        await this.sync();
+        await this.safeSync();
 
         // Return the latest `AppVersion`.
         return this.lookupVersionByHash(this.latestHash, 'assignVersion');
@@ -808,7 +812,7 @@ export class Driver implements Debuggable, UpdateSource {
       this.stateMessage = '(nominal)';
     }
 
-    await this.sync();
+    await this.safeSync();
     await this.notifyClientsAboutUpdate(newVersion);
   }
 
@@ -873,6 +877,14 @@ export class Driver implements Debuggable, UpdateSource {
     ]);
   }
 
+  private async safeSync(): Promise<void> {
+    try {
+      return this.sync();
+    } catch (err) {
+      this.debugger.log(err, `Driver.sync()`);
+    }
+  }
+
   async cleanupCaches(): Promise<void> {
     // Query for all currently active clients, and list the client ids. This may skip
     // some clients in the browser back-forward cache, but not much can be done about
@@ -923,7 +935,7 @@ export class Driver implements Debuggable, UpdateSource {
     }, Promise.resolve());
 
     // Commit all the changes to the saved state.
-    await this.sync();
+    await this.safeSync();
   }
 
   /**
