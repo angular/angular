@@ -7,7 +7,6 @@ import { map } from 'rxjs/operators';
 import { DefaultIterableDiffer } from '@angular/core';
 import { diff } from '../../diffing';
 import { FlatNode, Property } from './element-property-resolver';
-import { PropertyViewFilterOptions } from './directive-property-resolver';
 
 const expandable = (prop: Descriptor, messageBus?: MessageBus<Events>) => {
   if (!prop) {
@@ -32,8 +31,6 @@ export class PropertyDataSource extends DataSource<FlatNode> {
   private _expandedData = new BehaviorSubject<FlatNode[]>([]);
   private _differ = new DefaultIterableDiffer(trackBy);
 
-  private readonly _originalData: FlatNode[];
-
   constructor(
     props: { [prop: string]: Descriptor },
     private _treeFlattener: MatTreeFlattener<Property, FlatNode>,
@@ -44,8 +41,7 @@ export class PropertyDataSource extends DataSource<FlatNode> {
     private _onReceivedNestedProperties: () => void
   ) {
     super();
-    this._originalData = this._treeFlattener.flattenNodes(this._arrayify(props));
-    this._data.next(this._originalData);
+    this._data.next(this._treeFlattener.flattenNodes(this._arrayify(props)));
   }
 
   get data(): FlatNode[] {
@@ -129,25 +125,5 @@ export class PropertyDataSource extends DataSource<FlatNode> {
       this._data.next(this.data);
       this._onReceivedNestedProperties();
     });
-  }
-
-  filterDataSource(filter: string[] | null): void {
-    if (filter === null) {
-      return;
-    }
-    let pushFlag = false;
-    const filteredData: FlatNode[] = [];
-
-    // tslint:disable-next-line:prefer-for-of
-    for (let i = 0; i < this._originalData.length; i++) {
-      const node = this._originalData[i];
-      if (node.level === 0) {
-        pushFlag = filter.includes(node.prop.name);
-      }
-      if (pushFlag) {
-        filteredData.push(node);
-      }
-    }
-    this._data.next(filteredData);
   }
 }

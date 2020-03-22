@@ -1,4 +1,4 @@
-<mat-tree *ngIf="_treeControl" class="property-list" [dataSource]="_dataSource" [treeControl]="_treeControl">
+<mat-tree *ngIf="treeControl" class="property-list" [dataSource]="dataSource" [treeControl]="treeControl">
   <mat-tree-node matTreeNodePaddingIndent="14" *matTreeNodeDef="let node" matTreeNodePadding>
     <span class="name non-expandable"> {{ node.prop.name }} </span>:&nbsp;
     <ng-container *ngIf="!node.prop.descriptor.editable; else editable">
@@ -17,15 +17,14 @@
   </mat-tree-node>
 
   <mat-tree-node matTreeNodePaddingIndent="14" *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding>
-    LOL
     <div (click)="toggle(node)">
       <span class="arrow">
-        {{ _treeControl.isExpanded(node) ? '▼' : '►' }}
+        {{ treeControl.isExpanded(node) ? '▼' : '►' }}
       </span>
       &nbsp;
       <span class="name"> {{ node.prop.name }} </span>:&nbsp;
       <span class="value">
-        {{ _treeControl.isExpanded(node) ? '' : node.prop.descriptor.preview }}
+        {{ treeControl.isExpanded(node) ? '' : node.prop.descriptor.preview }}
       </span>
     </div>
   </mat-tree-node>

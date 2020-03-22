@@ -9,21 +9,15 @@ import { FlatTreeControl } from '@angular/cdk/tree';
   styleUrls: ['./property-view-tree.component.css'],
 })
 export class PropertyViewTreeComponent {
-  @Input() set dataSource(dataSource: PropertyDataSource) {
-    this._dataSource = dataSource;
-  }
+  @Input() dataSource: PropertyDataSource;
+  @Input() treeControl: FlatTreeControl<FlatNode>;
   @Output() updateValue = new EventEmitter<any>();
 
-  _dataSource: PropertyDataSource;
-  _treeControl: FlatTreeControl<FlatNode>;
-
-  hasChild = (_: number, node: FlatNode): boolean => {
-    return node.expandable;
-  };
+  hasChild = (_: number, node: FlatNode): boolean => node.expandable;
 
   toggle(node: FlatNode): void {
-    if (this._treeControl.isExpanded(node)) {
-      this._treeControl.collapse(node);
+    if (this.treeControl.isExpanded(node)) {
+      this.treeControl.collapse(node);
       return;
     }
     this.expand(node);
@@ -34,13 +28,13 @@ export class PropertyViewTreeComponent {
     if (!prop.descriptor.expandable) {
       return;
     }
-    this._treeControl.expand(node);
+    this.treeControl.expand(node);
   }
 
-  handleUpdate(node: FlatNode, updatedValue: any): void {
+  handleUpdate(node: FlatNode, newValue: any): void {
     this.updateValue.emit({
       node,
-      updatedValue,
+      newValue,
     });
   }
 }

@@ -1,6 +1,4 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { MatButtonToggleChange } from '@angular/material/button-toggle';
-import { PropertyViewFilterOptions } from '../../../../property-resolver/directive-property-resolver';
 
 @Component({
   selector: 'ng-property-view-header',
@@ -9,12 +7,5 @@ import { PropertyViewFilterOptions } from '../../../../property-resolver/directi
 })
 export class PropertyViewHeaderComponent {
   @Input() directive: string;
-  @Output() filter = new EventEmitter<PropertyViewFilterOptions[]>();
   @Output() copyPropData = new EventEmitter<string>();
-
-  cmpFilterOptions = PropertyViewFilterOptions;
-
-  filterProperties(event: MatButtonToggleChange): void {
-    this.filter.emit(event.value);
-  }
 }

@@ -1,11 +1,7 @@
-<ng-property-view-header
-  [directive]="directive"
-  (copyPropData)="copyPropData.emit($event)"
-  (filter)="filter($event)"
-></ng-property-view-header>
+<ng-property-view-header [directive]="directive" (copyPropData)="copyPropData.emit($event)"></ng-property-view-header>
 <ng-property-view-body
   [controller]="controller"
-  [dataSource]="dataSource"
-  [filterList]="allowedList"
-  [treeControl]="treeControl"
+  [directiveInputControls]="directiveInputControls"
+  [directiveOutputControls]="directiveOutputControls"
+  [directiveStateControls]="directiveStateControls"
 ></ng-property-view-body>

@@ -1,31 +1,26 @@
-<mat-tree *ngIf="treeControl" class="property-list" [dataSource]="dataSource" [treeControl]="treeControl">
-  <mat-tree-node matTreeNodePaddingIndent="14" *matTreeNodeDef="let node" matTreeNodePadding>
-    <span class="name non-expandable"> {{ node.prop.name }} </span>:&nbsp;
-    <ng-container *ngIf="!node.prop.descriptor.editable; else editable">
-      <span class="value">
-        {{ node.prop.descriptor.preview }}
-      </span>
-    </ng-container>
-    <ng-template #editable>
-      <ng-property-editor
-        [key]="node.prop.name"
-        [initialValue]="node.prop.descriptor.value || node.prop.descriptor.preview"
-        (updateValue)="updateValue(node, $event)"
-      >
-      </ng-property-editor>
-    </ng-template>
-  </mat-tree-node>
+<div *ngIf="directiveInputControls.dataSource.data.length > 0">
+  Inputs
+  <ng-property-view-tree
+    [dataSource]="directiveInputControls.dataSource"
+    [treeControl]="directiveInputControls.treeControl"
+    (updateValue)="updateValue($event)"
+  ></ng-property-view-tree>
+</div>
 
-  <mat-tree-node matTreeNodePaddingIndent="14" *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding>
-    <div (click)="toggle(node)">
-      <span class="arrow">
-        {{ treeControl.isExpanded(node) ? '▼' : '►' }}
-      </span>
-      &nbsp;
-      <span class="name"> {{ node.prop.name }} </span>:&nbsp;
-      <span class="value">
-        {{ treeControl.isExpanded(node) ? '' : node.prop.descriptor.preview }}
-      </span>
-    </div>
-  </mat-tree-node>
-</mat-tree>
+<div *ngIf="directiveOutputControls.dataSource.data.length > 0">
+  Outputs
+  <ng-property-view-tree
+    [dataSource]="directiveOutputControls.dataSource"
+    [treeControl]="directiveOutputControls.treeControl"
+    (updateValue)="updateValue($event)"
+  ></ng-property-view-tree>
+</div>
+
+<div *ngIf="directiveStateControls.dataSource.data.length > 0">
+  State
+  <ng-property-view-tree
+    [dataSource]="directiveStateControls.dataSource"
+    [treeControl]="directiveStateControls.treeControl"
+    (updateValue)="updateValue($event)"
+  ></ng-property-view-tree>
+</div>

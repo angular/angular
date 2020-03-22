@@ -22,7 +22,3 @@ header {
   line-height: 15px;
   margin-right: 7px;
 }
-
-:host /deep/ .mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
-  line-height: 25px;
-}
