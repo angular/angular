@@ -23,8 +23,8 @@ const _setConsoleReference = (node: ComponentTreeNode) => {
 };
 
 const prepareCurrentReferencesForInsertion = (node: ComponentTreeNode) => {
-  const foundIndex = nodesForConsoleReference.findIndex(nodeToLookFor =>
-    arrayEquals(nodeToLookFor.position, node.position)
+  const foundIndex = nodesForConsoleReference.findIndex(
+    nodeToLookFor => nodeToLookFor.position && node.position && arrayEquals(nodeToLookFor.position, node.position)
   );
   if (foundIndex !== -1) {
     nodesForConsoleReference.splice(foundIndex, 1);

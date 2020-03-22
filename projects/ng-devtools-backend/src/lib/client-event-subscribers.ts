@@ -83,6 +83,7 @@ const stopProfilingCallback = (messageBus: MessageBus<Events>) => () => {
 };
 
 const selectedComponentCallback = (position: ElementPosition) => {
+  // TODO: figure out proper typing of the node variable.
   const node = queryDirectiveForest(position, getDirectiveForest());
   setConsoleReference(node);
 };
