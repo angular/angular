@@ -3,3 +3,7 @@
   width: 85%;
   margin: auto;
 }
+
+/deep/ .webtreemap-caption {
+  font-size: 12px !important;
+}
