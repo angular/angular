@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   DirectivePropertyResolver,
+  DirectiveTreeData,
   PropertyViewFilterOptions,
 } from '../../../property-resolver/directive-property-resolver';
 import { PropertyDataSource } from '../../../property-resolver/property-data-source';
@@ -16,56 +17,21 @@ export class PropertyViewComponent {
   @Input() directive: string;
   @Output() copyPropData = new EventEmitter<string>();
 
-  currentFilter: PropertyViewFilterOptions[] = [
-    PropertyViewFilterOptions.INPUTS,
-    PropertyViewFilterOptions.OUTPUTS,
-    PropertyViewFilterOptions.STATE,
-  ];
-  allowedList: string[] | null = null;
-
   constructor(private _nestedProps: ElementPropertyResolver) {}
 
   get controller(): DirectivePropertyResolver | undefined {
     return this._nestedProps.getDirectiveController(this.directive);
   }
 
-  get dataSource(): PropertyDataSource | void {
-    if (!this.controller) {
-      return;
-    }
-    return this.controller.getDirectiveControls1().dataSource;
+  get directiveInputControls(): DirectiveTreeData | void {
+    return this.controller?.directiveInputControls;
   }
 
-  get treeControl(): TreeControl<FlatNode> | void {
-    if (!this.controller) {
-      return;
-    }
-    return this.controller.getDirectiveControls1().treeControl;
+  get directiveOutputControls(): DirectiveTreeData | void {
+    return this.controller?.directiveOutputControls;
   }
 
-  filter(evt: PropertyViewFilterOptions[]): void {
-    this.currentFilter = evt;
-    this.computeAllowedList();
-  }
-
-  computeAllowedList(): void {
-    if (!this.controller || !this.controller.directiveProperties) {
-      return;
-    }
-    const inputList = this.controller.directiveInputs1;
-    const outputList = this.controller.directiveOutputs1;
-    const stateList = Object.keys(this.controller.directiveProperties).filter(
-      prop => !inputList.includes(prop) && !outputList.includes(prop)
-    );
-    const propList = {
-      [PropertyViewFilterOptions.INPUTS]: inputList,
-      [PropertyViewFilterOptions.OUTPUTS]: outputList,
-      [PropertyViewFilterOptions.STATE]: stateList,
-    };
-
-    this.allowedList = [].concat.apply(
-      [],
-      this.currentFilter.map(filterOption => propList[filterOption])
-    );
+  get directiveStateControls(): DirectiveTreeData | void {
+    return this.controller?.directiveStateControls;
   }
 }

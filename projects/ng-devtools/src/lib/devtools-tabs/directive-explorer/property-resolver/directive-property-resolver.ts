@@ -12,6 +12,11 @@ export enum PropertyViewFilterOptions {
   STATE,
 }
 
+export interface DirectiveTreeData {
+  dataSource: PropertyDataSource;
+  treeControl: FlatTreeControl<FlatNode>;
+}
+
 const expandable = (prop: Descriptor) => {
   if (!prop) {
     return false;
@@ -61,9 +66,9 @@ export class DirectivePropertyResolver {
     this._onReceivedNestedProperties
   );
 
-  _inputsDataSource: PropertyDataSource;
-  _outputsDataSource: PropertyDataSource;
-  _stateDataSource: PropertyDataSource;
+  private _inputsDataSource: PropertyDataSource;
+  private _outputsDataSource: PropertyDataSource;
+  private _stateDataSource: PropertyDataSource;
 
   constructor(
     private _messageBus: MessageBus<Events>,
@@ -82,15 +87,15 @@ export class DirectivePropertyResolver {
     };
   }
 
-  get directiveInputControls(): { dataSource: PropertyDataSource; treeControl: FlatTreeControl<FlatNode> } {
+  get directiveInputControls(): DirectiveTreeData {
     return getDirectiveControls(this._inputsDataSource);
   }
 
-  get directiveOutputControls(): { dataSource: PropertyDataSource; treeControl: FlatTreeControl<FlatNode> } {
+  get directiveOutputControls(): DirectiveTreeData {
     return getDirectiveControls(this._outputsDataSource);
   }
 
-  get directiveStateControls(): { dataSource: PropertyDataSource; treeControl: FlatTreeControl<FlatNode> } {
+  get directiveStateControls(): DirectiveTreeData {
     return getDirectiveControls(this._stateDataSource);
   }
 
