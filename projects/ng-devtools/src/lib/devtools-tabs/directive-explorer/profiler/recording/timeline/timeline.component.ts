@@ -88,6 +88,7 @@ export class TimelineComponent {
     const multiplicationFactor = parseFloat((MAX_HEIGHT / maxValue).toFixed(2));
     this.graphData = timeline.map(d => {
       const height = d.timeSpent * multiplicationFactor;
+      const colorPercentage = Math.round((height / MAX_HEIGHT) * 100);
       let backgroundColor = 'rgb(237, 213, 94)';
       if (height > 33) {
         backgroundColor = 'rgb(240, 117, 117)';
@@ -98,11 +99,12 @@ export class TimelineComponent {
       const style = {
         'margin-left': '1px',
         'margin-right': '1px',
-        'background-color': backgroundColor,
+        background: `-webkit-linear-gradient(bottom, ${backgroundColor} ${colorPercentage}%, #f3f3f3 ${colorPercentage}%)`,
+        border: '1px solid #d0d0d0',
         cursor: 'pointer',
         'min-width': '25px',
         width: '25px',
-        height: `${height}px`,
+        height: '50px',
       };
       const toolTip = `${d.source} TimeSpent: ${d.timeSpent.toFixed(3)}ms`;
       return { ...d, style, toolTip };
