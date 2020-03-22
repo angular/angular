@@ -1,4 +1,5 @@
 import { ComponentTreeNode } from './component-tree';
+import { arrayEquals } from 'shared-utils';
 
 declare const ng: any;
 
@@ -6,18 +7,34 @@ const SELECTED_COMPONENT_PROPERTY_KEY_PREFIX = '$ng';
 let selectedComponentKeyPostfix = 0;
 const getSelectedComponentKey = () => `${SELECTED_COMPONENT_PROPERTY_KEY_PREFIX}${selectedComponentKeyPostfix}`;
 
-const selectedNodes: (ComponentTreeNode | null)[] = [];
+const nodesForConsoleReference: ComponentTreeNode[] = [];
 
 export const setConsoleReference = (node: ComponentTreeNode | null) => {
-  if (selectedNodes.length === 5) {
-    selectedNodes.pop();
+  if (node === null) {
+    return;
   }
-  selectedNodes.unshift(node);
-  assignConsoleReferencesFromSelectedNodesArray();
+  _setConsoleReference(node);
 };
 
-const assignConsoleReferencesFromSelectedNodesArray = () => {
-  selectedNodes.forEach((node, index) => {
+const _setConsoleReference = (node: ComponentTreeNode) => {
+  prepareCurrentReferencesForInsertion(node);
+  nodesForConsoleReference.unshift(node);
+  assignConsoleReferencesFrom(nodesForConsoleReference);
+};
+
+const prepareCurrentReferencesForInsertion = (node: ComponentTreeNode) => {
+  const foundIndex = nodesForConsoleReference.findIndex(nodeToLookFor =>
+    arrayEquals(nodeToLookFor.position, node.position)
+  );
+  if (foundIndex !== -1) {
+    nodesForConsoleReference.splice(foundIndex, 1);
+  } else if (nodesForConsoleReference.length === 5) {
+    nodesForConsoleReference.pop();
+  }
+};
+
+const assignConsoleReferencesFrom = (nodes: ComponentTreeNode[]) => {
+  nodes.forEach((node, index) => {
     selectedComponentKeyPostfix = index;
     setDirectiveKey(node, getSelectedComponentKey());
   });
