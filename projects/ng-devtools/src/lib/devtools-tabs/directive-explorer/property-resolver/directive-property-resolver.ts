@@ -156,8 +156,8 @@ export class DirectivePropertyResolver {
     outputProps: { [name: string]: Descriptor };
     stateProps: { [name: string]: Descriptor };
   } {
-    const inputLabels: string[] = Object.keys(this._props.inputs || {});
-    const outputLabels: string[] = Object.keys(this._props.outputs || {});
+    const inputLabels: Set<string> = new Set(Object.keys(this._props.inputs || {}));
+    const outputLabels: Set<string> = new Set(Object.keys(this._props.outputs || {}));
 
     const inputProps = {};
     const outputProps = {};
@@ -165,11 +165,7 @@ export class DirectivePropertyResolver {
     let propPointer: { [name: string]: Descriptor };
 
     Object.keys(this.directiveProperties).forEach(propName => {
-      propPointer = inputLabels.includes(propName)
-        ? inputProps
-        : outputLabels.includes(propName)
-        ? outputProps
-        : stateProps;
+      propPointer = inputLabels.has(propName) ? inputProps : outputLabels.has(propName) ? outputProps : stateProps;
       propPointer[propName] = this.directiveProperties[propName];
     });
 
