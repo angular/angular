@@ -22,7 +22,7 @@ describe('edit properties of directive in the property view tab', () => {
       cy.get('.explorer-panel:contains("Properties of app-todo")')
         .find('ng-property-view mat-tree-node:contains("editMode")')
         .find('ng-property-editor .editor')
-        .click()
+        .click({ force: true })
         .find('.editor-input')
         .clear()
         .type('true')
