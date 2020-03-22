@@ -1,31 +1,58 @@
 import { Descriptor, NestedProp, PropType } from 'protocol';
 import { METADATA_PROPERTY_NAME } from '../lview-transform';
 
-interface PropData {
-  type: PropType;
+export interface CompositeType {
+  type: Extract<PropType, PropType.Array | PropType.Object>;
   prop: any;
 }
+
+export interface TerminalType {
+  type: Exclude<PropType, PropType.Array | PropType.Object>;
+  prop: any;
+}
+
+export type PropertyData = TerminalType | CompositeType;
+
+export type Formatter<Result> = {
+  [key in PropType]: (data: any) => Result;
+};
 
 interface LevelOptions {
   currentLevel: number;
   level?: number;
 }
 
-interface CommonTypeCases {
-  arrayCase?: () => any;
-  bigIntCase?: () => any;
-  booleanCase?: () => any;
-  stringCase?: () => any;
-  dateCase?: () => any;
-  functionCase?: () => any;
-  htmlElementCase?: () => any;
-  nullCase?: () => any;
-  numberCase?: () => any;
-  objectCase?: () => any;
-  symbolCase?: () => any;
-  undefinedCase?: () => any;
-  unknownCase?: () => any;
-}
+const serializable: { [key in PropType]: boolean } = {
+  [PropType.Boolean]: true,
+  [PropType.String]: true,
+  [PropType.Null]: true,
+  [PropType.Number]: true,
+  [PropType.Object]: true,
+  [PropType.Undefined]: true,
+  [PropType.Unknown]: true,
+  [PropType.Array]: false,
+  [PropType.BigInt]: false,
+  [PropType.Function]: false,
+  [PropType.HTMLNode]: false,
+  [PropType.Symbol]: false,
+  [PropType.Date]: false,
+};
+
+const typeToDescriptorPreview: Formatter<string> = {
+  [PropType.Array]: (prop: any) => `Array(${prop.length})`,
+  [PropType.BigInt]: (prop: any) => truncate(prop.toString()),
+  [PropType.Boolean]: (prop: any) => truncate(prop.toString()),
+  [PropType.String]: (prop: any) => `"${prop}"`,
+  [PropType.Function]: (prop: any) => `${prop.name}(...)`,
+  [PropType.HTMLNode]: (prop: any) => prop.constructor.name,
+  [PropType.Null]: (_: any) => 'null',
+  [PropType.Number]: (prop: any) => parseInt(prop, 10).toString(),
+  [PropType.Object]: (prop: any) => (Object.keys(prop).length > 0 ? '{...}' : '{}'),
+  [PropType.Symbol]: (_: any) => 'Symbol()',
+  [PropType.Undefined]: (_: any) => 'undefined',
+  [PropType.Date]: (_: any) => 'Date()',
+  [PropType.Unknown]: (_: any) => 'unknown',
+};
 
 const ignoreList = new Set([METADATA_PROPERTY_NAME, '__ngSimpleChanges__']);
 
@@ -76,26 +103,25 @@ const shallowPropTypeToTreeMetaData = {
   },
 };
 
-export const createShallowSerializedDescriptor = (propData: PropData): Descriptor => {
+export const createShallowSerializedDescriptor = (propData: TerminalType): Descriptor => {
   const { type } = propData;
 
   const shallowSerializedDescriptor: Descriptor = {
     type,
     expandable: shallowPropTypeToTreeMetaData[type].expandable,
     editable: shallowPropTypeToTreeMetaData[type].editable,
-    preview: getDescriptorPreview(propData),
+    preview: typeToDescriptorPreview[propData.type](propData.prop),
   };
 
-  const value = getShallowDescriptorValue(propData);
-  if (value !== undefined) {
-    shallowSerializedDescriptor.value = value;
+  if (propData.prop !== undefined && serializable[type]) {
+    shallowSerializedDescriptor.value = propData.prop;
   }
 
   return shallowSerializedDescriptor;
 };
 
 export const createLevelSerializedDescriptor = (
-  propData: PropData,
+  propData: CompositeType,
   levelOptions: LevelOptions,
   continuation: any
 ): Descriptor => {
@@ -105,7 +131,7 @@ export const createLevelSerializedDescriptor = (
     type,
     editable: false,
     expandable: Object.keys(prop).length > 0,
-    preview: getDescriptorPreview(propData),
+    preview: typeToDescriptorPreview[propData.type](propData.prop),
   };
 
   if (levelOptions.level !== undefined && levelOptions.currentLevel < levelOptions.level) {
@@ -119,7 +145,7 @@ export const createLevelSerializedDescriptor = (
 };
 
 export const createNestedSerializedDescriptor = (
-  propData: PropData,
+  propData: CompositeType,
   levelOptions: LevelOptions,
   nodes: NestedProp[],
   nestedSerializer: any
@@ -130,7 +156,7 @@ export const createNestedSerializedDescriptor = (
     type,
     editable: false,
     expandable: Object.keys(prop).length > 0,
-    preview: getDescriptorPreview(propData),
+    preview: typeToDescriptorPreview[propData.type](propData.prop),
   };
 
   if (nodes && nodes.length) {
@@ -142,83 +168,8 @@ export const createNestedSerializedDescriptor = (
   return nestedSerializedDescriptor;
 };
 
-// TODO: set proper types.
-const getDataByType = (type: PropType, valueByType: any, defaultValue?: any) => {
-  try {
-    switch (type) {
-      case PropType.Array:
-        return valueByType.arrayCase();
-      case PropType.BigInt:
-        return valueByType.bigIntCase();
-      case PropType.Boolean:
-        return valueByType.booleanCase();
-      case PropType.String:
-        return valueByType.stringCase();
-      case PropType.Function:
-        return valueByType.functionCase();
-      case PropType.Date:
-        return valueByType.dateCase();
-      case PropType.HTMLNode:
-        return valueByType.htmlElementCase();
-      case PropType.Null:
-        return valueByType.nullCase();
-      case PropType.Number:
-        return valueByType.numberCase();
-      case PropType.Object:
-        return valueByType.objectCase();
-      case PropType.Symbol:
-        return valueByType.symbolCase();
-      case PropType.Undefined:
-        return valueByType.undefinedCase();
-      case PropType.Unknown:
-        return valueByType.unknownCase();
-    }
-  } catch {
-    return defaultValue;
-  }
-};
-
-const getDescriptorPreview = (propData: PropData) => {
-  const { type, prop } = propData;
-
-  return getDataByType(
-    type,
-    {
-      arrayCase: () => `Array(${prop.length})`,
-      bigIntCase: () => truncate(prop.toString()),
-      booleanCase: () => truncate(prop.toString()),
-      stringCase: () => `"${prop}"`,
-      functionCase: () => `${prop.name}(...)`,
-      htmlElementCase: () => prop.constructor.name,
-      nullCase: () => 'null',
-      numberCase: () => parseInt(prop, 10).toString(),
-      objectCase: () => (Object.keys(prop).length > 0 ? '{...}' : '{}'),
-      symbolCase: () => 'Symbol()',
-      undefinedCase: () => 'undefined',
-      unknownCase: () => 'unknown',
-    },
-    ''
-  );
-};
-
-const getShallowDescriptorValue = (propData: PropData) => {
-  const { type, prop } = propData;
-
-  return getDataByType(
-    type,
-    {
-      bigIntCase: () => prop,
-      booleanCase: () => prop,
-      stringCase: () => prop,
-      dateCase: () => prop,
-      numberCase: () => prop,
-    },
-    undefined
-  );
-};
-
 const getNestedDescriptorValue = (
-  propData: PropData,
+  propData: CompositeType,
   levelOptions: LevelOptions,
   nodes: NestedProp[],
   nestedSerializer: any
@@ -226,11 +177,11 @@ const getNestedDescriptorValue = (
   const { type, prop } = propData;
   const { currentLevel } = levelOptions;
 
-  return getDataByType(type, {
-    arrayCase: () =>
-      nodes.map(nestedProp => nestedSerializer(prop[nestedProp.name], nestedProp.children, currentLevel + 1)),
-    objectCase: () =>
-      nodes.reduce((accumulator, nestedProp) => {
+  switch (type) {
+    case PropType.Array:
+      return nodes.map(nestedProp => nestedSerializer(prop[nestedProp.name], nestedProp.children, currentLevel + 1));
+    case PropType.Object:
+      return nodes.reduce((accumulator, nestedProp) => {
         if (
           prop.hasOwnProperty(nestedProp.name) &&
           typeof nestedProp.name === 'string' &&
@@ -239,24 +190,25 @@ const getNestedDescriptorValue = (
           accumulator[nestedProp.name] = nestedSerializer(prop[nestedProp.name], nestedProp.children, currentLevel + 1);
         }
         return accumulator;
-      }, {}),
-  });
+      }, {});
+  }
 };
 
-const getLevelDescriptorValue = (propData: PropData, levelOptions: LevelOptions, continuation: any) => {
+const getLevelDescriptorValue = (propData: CompositeType, levelOptions: LevelOptions, continuation: any) => {
   const { type, prop } = propData;
   const { currentLevel, level } = levelOptions;
 
-  return getDataByType(type, {
-    arrayCase: () => prop.map((nested: any, idx: number) => continuation(nested, idx, currentLevel + 1, level)),
-    objectCase: () =>
-      Object.keys(prop).reduce((accumulator, propName) => {
+  switch (type) {
+    case PropType.Array:
+      return prop.map((nested: any, idx: number) => continuation(nested, idx, currentLevel + 1, level));
+    case PropType.Object:
+      return Object.keys(prop).reduce((accumulator, propName) => {
         if (typeof propName === 'string' && !ignoreList.has(propName)) {
           accumulator[propName] = continuation(prop[propName], propName, currentLevel + 1, level);
         }
         return accumulator;
-      }, {}),
-  });
+      }, {});
+  }
 };
 
 const truncate = (str: string, max = 20): string => {
