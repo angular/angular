@@ -26,7 +26,7 @@
       <span class="element-name" [class.angular-element]="isElement(node)">{{ node.name }}</span>
       <span *ngIf="node.directives" class="dir-names">[{{ node.directives }}]</span>
       <ng-container *ngIf="{ index: getNodeSelectionIndexForConsoleReference(node) } as selectionIndex">
-        <span *ngIf="selectionIndex.index > -1"> $ng{{ selectionIndex.index }} </span>
+        <span class="console-reference" *ngIf="selectionIndex.index > -1"> - $ng{{ selectionIndex.index }} </span>
       </ng-container>
     </mat-tree-node>
     <mat-tree-node
@@ -52,7 +52,7 @@
       <span class="element-name" [class.angular-element]="isElement(node)">{{ node.name }}</span>
       <span *ngIf="node.directives" class="dir-names">[{{ node.directives }}]</span>
       <ng-container *ngIf="{ index: getNodeSelectionIndexForConsoleReference(node) } as selectionIndex">
-        <span *ngIf="selectionIndex.index > -1"> $ng{{ selectionIndex.index }} </span>
+        <span class="console-reference" *ngIf="selectionIndex.index > -1"> - $ng{{ selectionIndex.index }} </span>
       </ng-container>
     </mat-tree-node>
   </mat-tree>
