@@ -162,7 +162,7 @@ export class DirectivePropertyResolver {
     const inputProps = {};
     const outputProps = {};
     const stateProps = {};
-    let propPointer;
+    let propPointer: { [name: string]: Descriptor };
 
     Object.keys(this.directiveProperties).forEach(propName => {
       propPointer = inputLabels.includes(propName)

@@ -4,7 +4,7 @@ import {
   DirectiveTreeData,
 } from '../../../../property-resolver/directive-property-resolver';
 import { FlatNode } from '../../../../property-resolver/element-property-resolver';
-import { moveItemInArray } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'ng-property-view-body',
@@ -47,7 +47,7 @@ export class PropertyViewBodyComponent {
     this.controller.updateValue(node, newValue);
   }
 
-  drop(event: any): void {
+  drop(event: CdkDragDrop<any, any>): void {
     moveItemInArray(this.categoryOrder, event.previousIndex, event.currentIndex);
   }
 }
