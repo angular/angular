@@ -42,6 +42,7 @@ export class WebtreegraphVisualizerComponent implements AfterViewInit, OnInit {
 
   createTree(): void {
     treemap.render(this.tree.nativeElement, this.webTreeRecords as any, {
+      padding: [20, 5, 5, 5],
       caption: node => `${node.id}: ${node.size.toFixed(3)} ms`,
     });
   }
