@@ -1,26 +1,16 @@
-<div *ngIf="directiveInputControls.dataSource.data.length > 0">
-  Inputs
-  <ng-property-view-tree
-    [dataSource]="directiveInputControls.dataSource"
-    [treeControl]="directiveInputControls.treeControl"
-    (updateValue)="updateValue($event)"
-  ></ng-property-view-tree>
-</div>
-
-<div *ngIf="directiveOutputControls.dataSource.data.length > 0">
-  Outputs
-  <ng-property-view-tree
-    [dataSource]="directiveOutputControls.dataSource"
-    [treeControl]="directiveOutputControls.treeControl"
-    (updateValue)="updateValue($event)"
-  ></ng-property-view-tree>
-</div>
-
-<div *ngIf="directiveStateControls.dataSource.data.length > 0">
-  State
-  <ng-property-view-tree
-    [dataSource]="directiveStateControls.dataSource"
-    [treeControl]="directiveStateControls.treeControl"
-    (updateValue)="updateValue($event)"
-  ></ng-property-view-tree>
-</div>
+<mat-accordion cdkDropList (cdkDropListDropped)="drop($event)" *ngIf="controlsLoaded" [multi]="true">
+  <div *ngFor="let index of categoryOrder" cdkDrag>
+    <mat-expansion-panel *ngIf="!panels[index].hidden">
+      <mat-expansion-panel-header collapsedHeight="32px" expandedHeight="32px">
+        <mat-panel-title>
+          {{ panels[index].title }}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <ng-property-view-tree
+        [dataSource]="panels[index].controls.dataSource"
+        [treeControl]="panels[index].controls.treeControl"
+        (updateValue)="updateValue($event)"
+      ></ng-property-view-tree>
+    </mat-expansion-panel>
+  </div>
+</mat-accordion>

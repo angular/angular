@@ -1,12 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import {
-  DirectivePropertyResolver,
-  DirectiveTreeData,
-  PropertyViewFilterOptions,
-} from '../../../property-resolver/directive-property-resolver';
-import { PropertyDataSource } from '../../../property-resolver/property-data-source';
-import { TreeControl } from '@angular/cdk/tree';
-import { ElementPropertyResolver, FlatNode } from '../../../property-resolver/element-property-resolver';
+import { DirectivePropertyResolver, DirectiveTreeData } from '../../../property-resolver/directive-property-resolver';
+import { ElementPropertyResolver } from '../../../property-resolver/element-property-resolver';
 
 @Component({
   selector: 'ng-property-view',
