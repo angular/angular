@@ -52,6 +52,10 @@ export class PropertyDataSource extends DataSource<FlatNode> {
     return this._data.value;
   }
 
+  get treeControl(): FlatTreeControl<FlatNode> {
+    return this._treeControl;
+  }
+
   update(props: { [prop: string]: Descriptor }): void {
     const newData = this._treeFlattener.flattenNodes(this._arrayify(props));
     diff(this._differ, this.data, newData);

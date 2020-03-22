@@ -36,7 +36,7 @@ export class PropertyTabBodyComponent {
     if (!controller) {
       return;
     }
-    return controller.getDirectiveControls().dataSource;
+    return controller.getDirectiveControls1().dataSource;
   }
 
   getTreeControl(directive: string): TreeControl<FlatNode> | undefined {
@@ -44,6 +44,6 @@ export class PropertyTabBodyComponent {
     if (!controller) {
       return;
     }
-    return controller.getDirectiveControls().treeControl;
+    return controller.getDirectiveControls1().treeControl;
   }
 }

@@ -22,6 +22,16 @@ const expandable = (prop: Descriptor) => {
   return !(prop.type !== PropType.Object && prop.type !== PropType.Array);
 };
 
+const getDirectiveControls = (
+  dataSource: PropertyDataSource
+): { dataSource: PropertyDataSource; treeControl: FlatTreeControl<FlatNode> } => {
+  const treeControl = dataSource.treeControl;
+  return {
+    dataSource,
+    treeControl,
+  };
+};
+
 export class DirectivePropertyResolver {
   _treeFlattener = new MatTreeFlattener(
     (node: Property, level: number): FlatNode => {
@@ -51,30 +61,48 @@ export class DirectivePropertyResolver {
     this._onReceivedNestedProperties
   );
 
+  _inputsDataSource: PropertyDataSource;
+  _outputsDataSource: PropertyDataSource;
+  _stateDataSource: PropertyDataSource;
+
   constructor(
     private _messageBus: MessageBus<Events>,
     private _props: Properties,
     private _directivePosition: DirectivePosition,
     private _onRequestingNestedProperties: () => void,
     private _onReceivedNestedProperties: () => void
-  ) {}
+  ) {
+    this._createDataSources();
+  }
 
-  getDirectiveControls(): { dataSource: PropertyDataSource; treeControl: FlatTreeControl<FlatNode> } {
+  getDirectiveControls1(): { dataSource: PropertyDataSource; treeControl: FlatTreeControl<FlatNode> } {
     return {
       dataSource: this._dataSource,
       treeControl: this._treeControl,
     };
   }
 
+  get directiveInputControls(): { dataSource: PropertyDataSource; treeControl: FlatTreeControl<FlatNode> } {
+    return getDirectiveControls(this._inputsDataSource);
+  }
+
+  get directiveOutputControls(): { dataSource: PropertyDataSource; treeControl: FlatTreeControl<FlatNode> } {
+    return getDirectiveControls(this._outputsDataSource);
+  }
+
+  get directiveStateControls(): { dataSource: PropertyDataSource; treeControl: FlatTreeControl<FlatNode> } {
+    return getDirectiveControls(this._stateDataSource);
+  }
+
   get directiveProperties(): { [name: string]: Descriptor } {
     return this._props.props;
   }
 
-  get directiveInputs(): string[] {
+  get directiveInputs1(): string[] {
     return Object.keys(this._props.inputs || {});
   }
 
-  get directiveOutputs(): string[] {
+  get directiveOutputs1(): string[] {
     return Object.keys(this._props.outputs || {});
   }
 
@@ -119,5 +147,53 @@ export class DirectivePropertyResolver {
     } else {
       console.error('Unexpected data type', descriptor, 'in property', prop);
     }
+  }
+
+  private _createDataSources(): void {
+    if (!this._props || !this.directiveProperties) {
+      return;
+    }
+    const inputLabels: string[] = Object.keys(this._props.inputs || {});
+    const outputLabels: string[] = Object.keys(this._props.outputs || {});
+
+    const inputProps = {};
+    const outputProps = {};
+    const stateProps = {};
+    let propPointer;
+
+    Object.keys(this.directiveProperties).forEach(propName => {
+      propPointer = inputLabels.includes(propName)
+        ? inputProps
+        : outputLabels.includes(propName)
+        ? outputProps
+        : stateProps;
+      propPointer[propName] = this.directiveProperties[propName];
+    });
+
+    this._inputsDataSource = this._createDataSourceFromProps(inputProps);
+    this._outputsDataSource = this._createDataSourceFromProps(outputProps);
+    this._stateDataSource = this._createDataSourceFromProps(stateProps);
+  }
+
+  private _createDataSourceFromProps(props: { [name: string]: Descriptor }): PropertyDataSource {
+    const treeFlattener = new MatTreeFlattener(
+      (node: Property, level: number): FlatNode => {
+        return {
+          expandable: expandable(node.descriptor),
+          prop: node,
+          level,
+        };
+      },
+      node => node.level,
+      node => node.expandable,
+      node => this._getChildren(node)
+    );
+
+    const treeControl = new FlatTreeControl<FlatNode>(
+      node => node.level,
+      node => node.expandable
+    );
+
+    return new PropertyDataSource(props, treeFlattener, treeControl, this._directivePosition, this._messageBus);
   }
 }
