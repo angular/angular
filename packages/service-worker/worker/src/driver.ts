@@ -198,6 +198,8 @@ export class Driver implements Debuggable, UpdateSource {
       // Even though the worker is in safe mode, idle tasks still need to happen so
       // things like update checks, etc. can take place.
       event.waitUntil(this.idle.trigger());
+      // Should still return a response even while in SAFE_MODE
+      event.respondWith(this.handleFetch(event));
       return;
     }
 
@@ -516,8 +518,10 @@ export class Driver implements Debuggable, UpdateSource {
           table.write('assignments', assignments),
           table.write('latest', latest),
         ]);
-      } catch (err) {
-        this.debugger.log(err, `initialize - save initial state`);
+      } catch (error) {
+        this.state = DriverReadyState.SAFE_MODE;
+        this.stateMessage = `Initialization failed due to error: ${errorToString(error)}`;
+        this.debugger.log(error, `initialize - save initial state`);
       }
     }
 
@@ -763,8 +767,10 @@ export class Driver implements Debuggable, UpdateSource {
       // The latest manifest is broken. This means that new clients are at the mercy of the
       // network, but caches continue to be valid for previous versions. This is
       // unfortunate but unavoidable.
-      this.state = DriverReadyState.EXISTING_CLIENTS_ONLY;
-      this.stateMessage = `Degraded due to: ${errorToString(err)}`;
+      if (this.state === DriverReadyState.NORMAL) {
+        this.state = DriverReadyState.EXISTING_CLIENTS_ONLY;
+        this.stateMessage = `Degraded due to: ${errorToString(err)}`;
+      }
 
       // Cancel the binding for the affected clients.
       affectedClients.forEach(clientId => this.clientVersionMap.delete(clientId));
@@ -841,8 +847,11 @@ export class Driver implements Debuggable, UpdateSource {
     } catch (err) {
       this.debugger.log(err, `Error occurred while updating to manifest ${hash}`);
 
-      this.state = DriverReadyState.EXISTING_CLIENTS_ONLY;
-      this.stateMessage = `Degraded due to failed initialization: ${errorToString(err)}`;
+      // ensure we only update the state if previously in the NORMAL state
+      if (this.state === DriverReadyState.NORMAL) {
+        this.state = DriverReadyState.EXISTING_CLIENTS_ONLY;
+        this.stateMessage = `Degraded due to failed initialization: ${errorToString(err)}`;
+      }
 
       return false;
     }
@@ -879,8 +888,10 @@ export class Driver implements Debuggable, UpdateSource {
 
   private async safeSync(): Promise<void> {
     try {
-      return this.sync();
+      return await this.sync();
     } catch (err) {
+      this.state = DriverReadyState.SAFE_MODE;
+      this.stateMessage = `Sync failed due to error: ${errorToString(err)}`;
       this.debugger.log(err, `Driver.sync()`);
     }
   }

@@ -1310,13 +1310,29 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
         // Initialize the SW.
         await makeRequest(scope, '/foo.txt');
         await driver.initialized;
-        expect(driver.state).toBe(DriverReadyState.EXISTING_CLIENTS_ONLY);
+        expect(driver.state).toBe(DriverReadyState.SAFE_MODE);
 
         server.clearRequests();
 
-        // Operate normally.
+        // Requests should still work
         expect(await makeRequest(scope, '/foo.txt')).toBe('this is foo');
-        expect(driver.state).toBe(DriverReadyState.EXISTING_CLIENTS_ONLY);
+        expect(driver.state).toBe(DriverReadyState.SAFE_MODE);
+        server.assertSawRequestFor('/foo.txt');
+      });
+
+      
+      it('enters degraded mode when cache is full for second client', async() => {
+        // Initialize the SW.
+        await makeRequest(scope, '/foo.txt');
+        await driver.initialized;
+        expect(driver.state).toBe(DriverReadyState.NORMAL);
+        
+        // Ensure cache is unwritable
+        spyOn(MockCache.prototype, 'put').and.throwError('Quota exceeded');
+
+        // Requests should still work
+        expect(await makeRequest(scope, '/foo.txt', 'second-client')).toBe('this is foo');
+        expect(driver.state).toBe(DriverReadyState.SAFE_MODE);
         server.assertSawRequestFor('/foo.txt');
       });
 
