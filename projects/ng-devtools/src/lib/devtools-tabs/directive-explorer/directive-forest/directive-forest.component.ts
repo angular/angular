@@ -45,6 +45,7 @@ export class DirectiveForestComponent {
   currentlyMatchedIndex = -1;
 
   selectedNode: FlatNode | null = null;
+  nodesForConsoleReference: (FlatNode | null)[] = [];
   parents: FlatNode[];
 
   treeControl = new FlatTreeControl<FlatNode>(
@@ -73,6 +74,7 @@ export class DirectiveForestComponent {
     this.populateParents(node.position);
     this.selectNode.emit(node.original);
     this.selectedNode = node;
+    this.setNodeSelectionForConsoleReference(node);
 
     // We wait for the CD to run.
     setTimeout(() => {
@@ -92,6 +94,20 @@ export class DirectiveForestComponent {
     this.selectNode.emit(null);
     this.selectedNode = null;
     this.parents = [];
+  }
+
+  setNodeSelectionForConsoleReference(node: FlatNode): void {
+    const foundIndex = this.nodesForConsoleReference.findIndex(nodeToLookFor => nodeToLookFor === node);
+    if (foundIndex !== -1) {
+      this.nodesForConsoleReference.splice(foundIndex, 1);
+    } else if (this.nodesForConsoleReference.length === 5) {
+      this.nodesForConsoleReference.pop();
+    }
+    this.nodesForConsoleReference.unshift(this.selectedNode);
+  }
+
+  getNodeSelectionIndexForConsoleReference(node: FlatNode): number {
+    return this.nodesForConsoleReference.findIndex(flatNode => flatNode === node);
   }
 
   private _reselectNodeOnUpdate(): void {
