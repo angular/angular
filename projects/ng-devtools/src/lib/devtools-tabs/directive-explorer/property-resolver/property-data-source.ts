@@ -8,19 +8,6 @@ import { DefaultIterableDiffer } from '@angular/core';
 import { diff } from '../../diffing';
 import { FlatNode, Property } from './element-property-resolver';
 
-const expandable = (prop: Descriptor, messageBus?: MessageBus<Events>) => {
-  if (!prop) {
-    return false;
-  }
-  if (!prop.value && !messageBus) {
-    return false;
-  }
-  if (!prop.expandable) {
-    return false;
-  }
-  return !(prop.type !== PropType.Object && prop.type !== PropType.Array);
-};
-
 const trackBy = (_: number, item: FlatNode) => {
   return `#${item.prop.name}#${item.level}`;
 };
