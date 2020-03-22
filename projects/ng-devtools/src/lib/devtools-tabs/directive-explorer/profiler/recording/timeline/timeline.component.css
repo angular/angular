@@ -64,7 +64,7 @@
 }
 
 .selected {
-  border: 1px solid #00000050;
+  border: 1px solid #00000050 !important;
 }
 
 .txt-frames {
