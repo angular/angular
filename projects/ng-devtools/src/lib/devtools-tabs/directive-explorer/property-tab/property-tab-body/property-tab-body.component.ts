@@ -1,9 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { IndexedNode } from '../../directive-forest/index-forest';
-import { ElementPropertyResolver, FlatNode } from '../../property-resolver/element-property-resolver';
-import { DirectivePropertyResolver } from '../../property-resolver/directive-property-resolver';
-import { PropertyDataSource } from '../../property-resolver/property-data-source';
-import { TreeControl } from '@angular/cdk/tree';
+import { ElementPropertyResolver } from '../../property-resolver/element-property-resolver';
 
 @Component({
   templateUrl: './property-tab-body.component.html',
@@ -25,25 +22,5 @@ export class PropertyTabBodyComponent {
       directives.push(this.currentSelectedElement.component.name);
     }
     return directives;
-  }
-
-  getController(directive: string): DirectivePropertyResolver | undefined {
-    return this._nestedProps.getDirectiveController(directive);
-  }
-
-  getDataSource(directive: string): PropertyDataSource | undefined {
-    const controller = this.getController(directive);
-    if (!controller) {
-      return;
-    }
-    return controller.getDirectiveControls1().dataSource;
-  }
-
-  getTreeControl(directive: string): TreeControl<FlatNode> | undefined {
-    const controller = this.getController(directive);
-    if (!controller) {
-      return;
-    }
-    return controller.getDirectiveControls1().treeControl;
   }
 }

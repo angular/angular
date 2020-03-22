@@ -135,27 +135,6 @@ const checkForAngular = (messageBus: MessageBus<Events>, attempt = 0): void => {
   setTimeout(() => checkForAngular(messageBus, attempt + 1), 500);
 };
 
-// Might be problematic if there are many directives with the same
-// name on this node which is quite unlikely.
-const serializeNodeDirectiveProperties = (node: ComponentTreeNode): DirectivesProperties => {
-  const result: DirectivesProperties = {};
-  node.directives.forEach(dir => {
-    result[dir.name] = {
-      props: serializeDirectiveState(dir.instance),
-      inputs: getDirectiveMetaData(dir.instance).inputs(),
-      outputs: getDirectiveMetaData(dir.instance).outputs()
-   };
-  });
-  if (node.component) {
-    result[node.component.name] = {
-      props: serializeDirectiveState(node.component.instance),
-      inputs: getDirectiveMetaData(node.component.instance).inputs(),
-      outputs: getDirectiveMetaData(node.component.instance).outputs(),
-    };
-  }
-  return result;
-};
-
 const setupInspector = (messageBus: MessageBus<Events>) => {
   const onComponentEnter = (position: ElementPosition) => {
     messageBus.emit('highlightComponentInTreeFromElement', [position]);
