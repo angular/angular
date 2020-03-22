@@ -130,3 +130,12 @@
 .angular-element::after {
   content: '/>';
 }
+
+:host /deep/ mat-tree-node.matched .console-reference {
+  opacity: 0.8;
+}
+
+.console-reference {
+  padding-left: 8px;
+  opacity: 0.4;
+}
