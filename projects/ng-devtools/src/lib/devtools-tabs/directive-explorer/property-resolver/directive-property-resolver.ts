@@ -50,16 +50,6 @@ export class DirectivePropertyResolver {
     node => node.expandable
   );
 
-  private _dataSource = new PropertyDataSource(
-    this._props.props,
-    this._treeFlattener,
-    this._treeControl,
-    this._directivePosition,
-    this._messageBus,
-    this._onRequestingNestedProperties,
-    this._onReceivedNestedProperties
-  );
-
   private _inputsDataSource: PropertyDataSource;
   private _outputsDataSource: PropertyDataSource;
   private _stateDataSource: PropertyDataSource;
@@ -71,7 +61,7 @@ export class DirectivePropertyResolver {
     private _onRequestingNestedProperties: () => void,
     private _onReceivedNestedProperties: () => void
   ) {
-    this._createDataSources();
+    this._initDataSources();
   }
 
   get directiveInputControls(): DirectiveTreeData {
@@ -99,27 +89,12 @@ export class DirectivePropertyResolver {
   }
 
   updateProperties(newProps: Properties): void {
-    const inputLabels: string[] = Object.keys(newProps.inputs || {});
-    const outputLabels: string[] = Object.keys(newProps.outputs || {});
-
-    const inputProps = {};
-    const outputProps = {};
-    const stateProps = {};
-    let propPointer;
-
-    Object.keys(this.directiveProperties).forEach(propName => {
-      propPointer = inputLabels.includes(propName)
-        ? inputProps
-        : outputLabels.includes(propName)
-        ? outputProps
-        : stateProps;
-      propPointer[propName] = this.directiveProperties[propName];
-    });
+    this._props = newProps;
+    const { inputProps, outputProps, stateProps } = this._sortPropsIntoCategories();
 
     this._inputsDataSource.update(inputProps);
     this._outputsDataSource.update(outputProps);
     this._stateDataSource.update(stateProps);
-    this._props = newProps;
   }
 
   updateValue(node: FlatNode, newValue: any): void {
@@ -156,10 +131,31 @@ export class DirectivePropertyResolver {
     }
   }
 
-  private _createDataSources(): void {
-    if (!this._props || !this.directiveProperties) {
-      return;
-    }
+  private _initDataSources(): void {
+    const { inputProps, outputProps, stateProps } = this._sortPropsIntoCategories();
+
+    this._inputsDataSource = this._createDataSourceFromProps(inputProps);
+    this._outputsDataSource = this._createDataSourceFromProps(outputProps);
+    this._stateDataSource = this._createDataSourceFromProps(stateProps);
+  }
+
+  private _createDataSourceFromProps(props: { [name: string]: Descriptor }): PropertyDataSource {
+    return new PropertyDataSource(
+      props,
+      this._treeFlattener,
+      this._treeControl,
+      this._directivePosition,
+      this._messageBus,
+      this._onRequestingNestedProperties,
+      this._onReceivedNestedProperties
+    );
+  }
+
+  private _sortPropsIntoCategories(): {
+    inputProps: { [name: string]: Descriptor };
+    outputProps: { [name: string]: Descriptor };
+    stateProps: { [name: string]: Descriptor };
+  } {
     const inputLabels: string[] = Object.keys(this._props.inputs || {});
     const outputLabels: string[] = Object.keys(this._props.outputs || {});
 
@@ -177,38 +173,10 @@ export class DirectivePropertyResolver {
       propPointer[propName] = this.directiveProperties[propName];
     });
 
-    this._inputsDataSource = this._createDataSourceFromProps(inputProps);
-    this._outputsDataSource = this._createDataSourceFromProps(outputProps);
-    this._stateDataSource = this._createDataSourceFromProps(stateProps);
-  }
-
-  private _createDataSourceFromProps(props: { [name: string]: Descriptor }): PropertyDataSource {
-    const treeFlattener = new MatTreeFlattener(
-      (node: Property, level: number): FlatNode => {
-        return {
-          expandable: expandable(node.descriptor),
-          prop: node,
-          level,
-        };
-      },
-      node => node.level,
-      node => node.expandable,
-      node => this._getChildren(node)
-    );
-
-    const treeControl = new FlatTreeControl<FlatNode>(
-      node => node.level,
-      node => node.expandable
-    );
-
-    return new PropertyDataSource(
-      props,
-      treeFlattener,
-      treeControl,
-      this._directivePosition,
-      this._messageBus,
-      this._onRequestingNestedProperties,
-      this._onReceivedNestedProperties
-    );
+    return {
+      inputProps,
+      outputProps,
+      stateProps,
+    };
   }
 }
