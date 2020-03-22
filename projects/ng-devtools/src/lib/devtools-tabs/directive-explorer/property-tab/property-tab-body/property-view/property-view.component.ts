@@ -33,14 +33,14 @@ export class PropertyViewComponent {
     if (!this.controller) {
       return;
     }
-    return this.controller.getDirectiveControls().dataSource;
+    return this.controller.getDirectiveControls1().dataSource;
   }
 
   get treeControl(): TreeControl<FlatNode> | void {
     if (!this.controller) {
       return;
     }
-    return this.controller.getDirectiveControls().treeControl;
+    return this.controller.getDirectiveControls1().treeControl;
   }
 
   filter(evt: PropertyViewFilterOptions[]): void {
@@ -52,8 +52,8 @@ export class PropertyViewComponent {
     if (!this.controller || !this.controller.directiveProperties) {
       return;
     }
-    const inputList = this.controller.directiveInputs;
-    const outputList = this.controller.directiveOutputs;
+    const inputList = this.controller.directiveInputs1;
+    const outputList = this.controller.directiveOutputs1;
     const stateList = Object.keys(this.controller.directiveProperties).filter(
       prop => !inputList.includes(prop) && !outputList.includes(prop)
     );

@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { PropertyDataSource } from '../../../../../property-resolver/property-data-source';
 import { FlatNode } from '../../../../../property-resolver/element-property-resolver';
-import { UpdateEvent } from '../property-view-body.component';
 import { FlatTreeControl } from '@angular/cdk/tree';
 
 @Component({
@@ -12,15 +11,13 @@ import { FlatTreeControl } from '@angular/cdk/tree';
 export class PropertyViewTreeComponent {
   @Input() set dataSource(dataSource: PropertyDataSource) {
     this._dataSource = dataSource;
-    this._treeControl = dataSource.getTreeControl();
   }
-  @Output() updateValue = new EventEmitter<UpdateEvent>();
+  @Output() updateValue = new EventEmitter<any>();
 
   _dataSource: PropertyDataSource;
   _treeControl: FlatTreeControl<FlatNode>;
 
   hasChild = (_: number, node: FlatNode): boolean => {
-    debugger;
     return node.expandable;
   };
 
