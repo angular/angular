@@ -18,6 +18,7 @@ import { setConsoleReference } from './selected-component';
 import { unHighlight } from './highlighter';
 import { getAngularVersion, appIsAngularInDevMode, appIsSupportedAngularVersion } from './angular-check';
 import { observeDOM, getDirectiveId, getDirectiveForest, indexDirectiveForest } from './component-tree-identifiers';
+import { IndexedNode } from './observer/identity-tracker';
 
 export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void => {
   messageBus.on('shutdown', shutdownCallback(messageBus));
@@ -83,9 +84,8 @@ const stopProfilingCallback = (messageBus: MessageBus<Events>) => () => {
 };
 
 const selectedComponentCallback = (position: ElementPosition) => {
-  // TODO: figure out proper typing of the node variable.
   const node = queryDirectiveForest(position, getDirectiveForest());
-  setConsoleReference(node);
+  setConsoleReference(node as IndexedNode);
 };
 
 const getNestedPropertiesCallback = (messageBus: MessageBus<Events>) => (
