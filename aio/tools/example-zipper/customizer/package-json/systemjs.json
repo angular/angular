@@ -25,6 +25,7 @@
     "@angular/platform-browser-dynamic",
     "@angular/router",
     "@angular/upgrade",
+    "core-js",
     "rxjs",
     "systemjs",
     "tslib",

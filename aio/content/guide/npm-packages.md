@@ -93,9 +93,6 @@ features that Angular requires.
 The [Browser Support](guide/browser-support) guide explains which browsers need polyfills and
 how you can add them.
 
-The `package.json` for a new Angular workspace installs the [core-js](https://github.com/zloirock/core-js) package,
-which polyfills missing features for several popular browser.
-
 
 {@a dev-dependencies}
 
