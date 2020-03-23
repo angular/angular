@@ -265,7 +265,7 @@ function runE2eTestsCLI(appDir, outputFile, bufferOutput, port) {
 
   // `--no-webdriver-update` is needed to preserve the ChromeDriver version already installed.
   const config = loadExampleConfig(appDir);
-  const commands = config.e2e || [{
+  const testCommands = config.tests || [{
     cmd: 'yarn',
     args: [
       'e2e',
@@ -277,7 +277,7 @@ function runE2eTestsCLI(appDir, outputFile, bufferOutput, port) {
   }];
   let bufferedOutput = `\n\n============== AIO example output for: ${appDir}\n\n`;
 
-  const e2eSpawnPromise = commands.reduce((prevSpawnPromise, {cmd, args}) => {
+  const e2eSpawnPromise = testCommands.reduce((prevSpawnPromise, {cmd, args}) => {
     // Replace the port placeholder with the specified port if present. Specs that
     // define their e2e test commands in the example config are able to use the
     // given available port. This ensures that the CLI tests can be run concurrently.
