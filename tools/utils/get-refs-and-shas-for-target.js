@@ -6,6 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+// NOTE: When invoked directly via node, this script will take the first positional
+// arguement as to be the PR number, and log out the ref and sha information in its
+// JSON format.  For other usages, the function to get the ref and sha information
+// may be imported by another script to be invoked.
+
 // This script uses `console` to print messages to the user.
 // tslint:disable:no-console
 
@@ -16,7 +21,18 @@ const exec = util.promisify(child_process.exec);
 
 async function requestDataFromGithub(url) {
   // GitHub requires a user agent: https://developer.github.com/v3/#user-agent-required
-  const options = {headers: {'User-Agent': 'angular'}};
+  let options = {headers: {'User-Agent': 'angular'}};
+
+  // If a github token is present, use it for authorization.
+  const githubToken = process.env.TOKEN || process.env.GITHUB_TOKEN || '';
+  if (githubToken) {
+    options = {
+      headers: {
+        Authorization: `token ${githubToken}`,
+        ...options.headers,
+      }
+    };
+  }
 
   return new Promise((resolve, reject) => {
     https
@@ -54,9 +70,19 @@ async function requestDataFromGithub(url) {
         .on('error', (e) => { reject(e); });
   });
 }
+// clang-format off
+// clang keeps trying to put the function name on the next line.
+async function getRefsAndShasForTarget(prNumber, suppressLog) {
+  // clang-format on
+  // If the environment variable already contains the refs and shas, reuse them.
+  if (process.env['GITHUB_REFS_AND_SHAS']) {
+    suppressLog ||
+        console.info(`Retrieved refs and SHAs for PR ${prNumber} from environment variables.`);
+    return JSON.parse(process.env['GITHUB_REFS_AND_SHAS']);
+  }
 
-module.exports = async function getRefsAndShasForTarget(prNumber) {
-  console.log(`Getting refs and SHAs for PR ${prNumber} on angular/angular.`);
+  suppressLog ||
+      console.info(`Getting refs and SHAs for PR ${prNumber} on angular/angular from Github.`);
   const pullsUrl = `https://api.github.com/repos/angular/angular/pulls/${prNumber}`;
   const result = await requestDataFromGithub(pullsUrl);
 
@@ -84,6 +110,19 @@ module.exports = async function getRefsAndShasForTarget(prNumber) {
     latestShaOfTargetBranch: latestShaOfTargetBranch.trim(),
     latestShaOfPrBranch: latestShaOfPrBranch.trim(),
   };
-
   return output;
-};
+}
+
+// If the script is called directly, log the output of the refs and sha for the
+// requested PR.
+if (require.main === module) {
+  const run = async() => {
+    const prNumber = Number.parseInt(process.argv[2], 10);
+    if (!!prNumber) {
+      console.info(JSON.stringify(await getRefsAndShasForTarget(prNumber, true)));
+    }
+  };
+  run();
+}
+
+module.exports = getRefsAndShasForTarget;
