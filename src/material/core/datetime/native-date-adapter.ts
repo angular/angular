@@ -267,7 +267,7 @@ export class NativeDateAdapter extends DateAdapter<Date> {
     return super.deserialize(value);
   }
 
-  isDateInstance(obj: any): obj is Date {
+  isDateInstance(obj: any) {
     return obj instanceof Date;
   }
 

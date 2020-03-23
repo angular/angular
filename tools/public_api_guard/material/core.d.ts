@@ -70,7 +70,7 @@ export declare abstract class DateAdapter<D> {
     abstract getYear(date: D): number;
     abstract getYearName(date: D): string;
     abstract invalid(): D;
-    abstract isDateInstance(obj: any): obj is D;
+    abstract isDateInstance(obj: any): boolean;
     abstract isValid(date: D): boolean;
     abstract parse(value: any, parseFormat: any): D | null;
     sameDate(first: D | null, second: D | null): boolean;
@@ -377,7 +377,7 @@ export declare class NativeDateAdapter extends DateAdapter<Date> {
     getYear(date: Date): number;
     getYearName(date: Date): string;
     invalid(): Date;
-    isDateInstance(obj: any): obj is Date;
+    isDateInstance(obj: any): boolean;
     isValid(date: Date): boolean;
     parse(value: any): Date | null;
     toIso8601(date: Date): string;
