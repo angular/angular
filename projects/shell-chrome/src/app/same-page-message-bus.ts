@@ -54,7 +54,7 @@ export class SamePageMessageBus extends MessageBus<Events> {
     window.addEventListener('message', listener);
   }
 
-  emit<E extends keyof Events>(topic: E, args?: Parameters<Events[E]>): void {
+  emit<E extends keyof Events>(topic: E, args?: Parameters<Events[E]>): boolean {
     window.postMessage(
       {
         source: this._source,
@@ -63,10 +63,11 @@ export class SamePageMessageBus extends MessageBus<Events> {
       },
       '*'
     );
+    return true;
   }
 
   destroy(): void {
-    this._listeners.forEach(l => window.removeEventListener('message', l));
+    this._listeners.forEach((l) => window.removeEventListener('message', l));
     this._listeners = [];
   }
 }

@@ -24,7 +24,7 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
   if (a.component && b.component && a.component.id !== b.component.id) {
     return false;
   }
-  const aDirectives = new Set(a.directives.map(d => d.id));
+  const aDirectives = new Set(a.directives.map((d) => d.id));
   for (const dir of b.directives) {
     if (!aDirectives.has(dir.id)) {
       return false;
@@ -53,8 +53,6 @@ export class DirectiveExplorerComponent implements OnInit {
 
   private _changeSize = new Subject<Event>();
   private _clickedElement: IndexedNode | null = null;
-  private _requestingNestedProperties = false;
-  private _refreshScheduled = false;
 
   constructor(
     private _appOperations: ApplicationOperations,
@@ -65,7 +63,7 @@ export class DirectiveExplorerComponent implements OnInit {
     this._changeSize
       .asObservable()
       .pipe(throttleTime(100))
-      .subscribe(event => this.handleResize(event));
+      .subscribe((event) => this.handleResize(event));
   }
 
   ngOnInit(): void {
@@ -94,19 +92,7 @@ export class DirectiveExplorerComponent implements OnInit {
       this.forest = view.forest;
       this.currentSelectedElement = this._clickedElement;
       if (view.properties && this.currentSelectedElement) {
-        this._propResolver.setProperties(
-          this.currentSelectedElement,
-          view.properties,
-          () => {
-            this._requestingNestedProperties = true;
-          },
-          () => {
-            this._requestingNestedProperties = false;
-            if (this._refreshScheduled) {
-              this.refresh();
-            }
-          }
-        );
+        this._propResolver.setProperties(this.currentSelectedElement, view.properties);
       }
     });
 
@@ -117,28 +103,15 @@ export class DirectiveExplorerComponent implements OnInit {
       this.highlightIDinTreeFromElement = null;
     });
 
-    // Only one refresh per 0.5 seconds.
-    let buffering = false;
-    this._messageBus.on('componentTreeDirty', () => {
-      if (buffering) {
-        return;
-      }
-      buffering = true;
-      setTimeout(() => {
-        buffering = false;
-        this.refresh();
-      }, 500);
-    });
+    this._messageBus.on('componentTreeDirty', () => this.refresh());
     this.refresh();
   }
 
   refresh(): void {
-    if (this._requestingNestedProperties) {
-      this._refreshScheduled = true;
-      return;
+    const success = this._messageBus.emit('getLatestComponentExplorerView', [this._constructViewQuery()]);
+    if (!success) {
+      setTimeout(() => this.refresh(), 500);
     }
-    this._messageBus.emit('getLatestComponentExplorerView', [this._constructViewQuery()]);
-    this._refreshScheduled = false;
   }
 
   viewSource(): void {
@@ -226,7 +199,7 @@ export class DirectiveExplorerComponent implements OnInit {
 }
 
 const cleanPropDataForCopying = (propData: { [name: string]: Descriptor }, cleanedPropData = {}): object => {
-  Object.keys(propData).forEach(key => {
+  Object.keys(propData).forEach((key) => {
     if (typeof propData[key].value === 'object') {
       cleanedPropData[key] = {};
       cleanPropDataForCopying(propData[key].value, cleanedPropData[key]);
