@@ -9,6 +9,9 @@ const findFreePort = require('find-free-port');
 
 shelljs.set('-e');
 
+// Set `CHROME_BIN` as an environment variable for Karma to pick up in unit tests.
+process.env.CHROME_BIN = require('puppeteer').executablePath();
+
 const AIO_PATH = path.join(__dirname, '../../');
 const SHARED_PATH = path.join(__dirname, '/shared');
 const EXAMPLES_PATH = path.join(AIO_PATH, './content/examples/');
