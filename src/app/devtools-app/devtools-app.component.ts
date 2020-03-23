@@ -1,6 +1,6 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { IFrameMessageBus } from 'src/iframe-message-bus';
-import { MessageBus, Events } from 'protocol';
+import { PriorityAwareMessageBus, MessageBus, Events } from 'protocol';
 
 @Component({
   templateUrl: './devtools-app.component.html',
@@ -9,12 +9,14 @@ import { MessageBus, Events } from 'protocol';
     {
       provide: MessageBus,
       useFactory(): MessageBus<Events> {
-        return new IFrameMessageBus(
-          'angular-devtools',
-          'angular-devtools-backend',
-          // tslint:disable-next-line: no-non-null-assertion
-          () => (document.querySelector('#sample-app') as HTMLIFrameElement).contentWindow!
-        ) as any;
+        return new PriorityAwareMessageBus(
+          new IFrameMessageBus(
+            'angular-devtools',
+            'angular-devtools-backend',
+            // tslint:disable-next-line: no-non-null-assertion
+            () => (document.querySelector('#sample-app') as HTMLIFrameElement).contentWindow!
+          )
+        );
       },
     },
   ],

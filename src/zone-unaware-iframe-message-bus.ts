@@ -45,7 +45,7 @@ export class ZoneUnawareIFrameMessageBus extends MessageBus<Events> {
 
   // Need to be run in the zone because otherwise it won't be caught by the
   // listener in the extension.
-  emit<E extends keyof Events>(topic: E, args?: Parameters<Events[E]>): void {
+  emit<E extends keyof Events>(topic: E, args?: Parameters<Events[E]>): boolean {
     return this._delegate.emit(topic, args);
   }
 

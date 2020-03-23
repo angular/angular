@@ -23,9 +23,7 @@ export class PropertyDataSource extends DataSource<FlatNode> {
     private _treeFlattener: MatTreeFlattener<Property, FlatNode>,
     private _treeControl: FlatTreeControl<FlatNode>,
     private _entityPosition: DirectivePosition,
-    private _messageBus: MessageBus<Events>,
-    private _onRequestingNestedProperties: () => void,
-    private _onReceivedNestedProperties: () => void
+    private _messageBus: MessageBus<Events>
   ) {
     super();
     this._data.next(this._treeFlattener.flattenNodes(this._arrayify(props)));
@@ -52,10 +50,10 @@ export class PropertyDataSource extends DataSource<FlatNode> {
     }
     const s = changed.subscribe((change: SelectionChange<FlatNode>) => {
       if (change.added) {
-        change.added.forEach(node => this._toggleNode(node, true));
+        change.added.forEach((node) => this._toggleNode(node, true));
       }
       if (change.removed) {
-        change.removed.reverse().forEach(node => this._toggleNode(node, false));
+        change.removed.reverse().forEach((node) => this._toggleNode(node, false));
       }
     });
     this._subscriptions.push(s);
@@ -71,12 +69,12 @@ export class PropertyDataSource extends DataSource<FlatNode> {
   }
 
   disconnect(): void {
-    this._subscriptions.forEach(s => s.unsubscribe());
+    this._subscriptions.forEach((s) => s.unsubscribe());
     this._subscriptions = [];
   }
 
   private _arrayify(props: { [prop: string]: Descriptor }, parent: Property | null = null): Property[] {
-    return Object.keys(props).map(name => ({ name, descriptor: props[name], parent }));
+    return Object.keys(props).map((name) => ({ name, descriptor: props[name], parent }));
   }
 
   private _toggleNode(node: FlatNode, expand: boolean): void {
@@ -99,7 +97,6 @@ export class PropertyDataSource extends DataSource<FlatNode> {
     }
     parentPath = parentPath.reverse();
 
-    this._onRequestingNestedProperties();
     this._messageBus.emit('getNestedProperties', [this._entityPosition, parentPath]);
 
     this._messageBus.once('nestedProperties', (position: DirectivePosition, data: Properties, _path: string[]) => {
@@ -107,10 +104,9 @@ export class PropertyDataSource extends DataSource<FlatNode> {
       this._treeControl.expand(node);
       const props = this._arrayify(data.props, node.prop);
       const flatNodes = this._treeFlattener.flattenNodes(props);
-      flatNodes.forEach(f => (f.level += node.level + 1));
+      flatNodes.forEach((f) => (f.level += node.level + 1));
       this.data.splice(index + 1, 0, ...flatNodes);
       this._data.next(this.data);
-      this._onReceivedNestedProperties();
     });
   }
 }

@@ -40,14 +40,14 @@ export class DirectivePropertyResolver {
         level,
       };
     },
-    node => node.level,
-    node => node.expandable,
-    node => this._getChildren(node)
+    (node) => node.level,
+    (node) => node.expandable,
+    (node) => this._getChildren(node)
   );
 
   _treeControl = new FlatTreeControl<FlatNode>(
-    node => node.level,
-    node => node.expandable
+    (node) => node.level,
+    (node) => node.expandable
   );
 
   private _inputsDataSource: PropertyDataSource;
@@ -57,9 +57,7 @@ export class DirectivePropertyResolver {
   constructor(
     private _messageBus: MessageBus<Events>,
     private _props: Properties,
-    private _directivePosition: DirectivePosition,
-    private _onRequestingNestedProperties: () => void,
-    private _onReceivedNestedProperties: () => void
+    private _directivePosition: DirectivePosition
   ) {
     this._initDataSources();
   }
@@ -119,7 +117,7 @@ export class DirectivePropertyResolver {
       (descriptor.type === PropType.Object || descriptor.type === PropType.Array) &&
       !(descriptor.value instanceof Observable)
     ) {
-      return Object.keys(descriptor.value || {}).map(name => {
+      return Object.keys(descriptor.value || {}).map((name) => {
         return {
           name,
           descriptor: descriptor.value ? descriptor.value[name] : null,
@@ -145,9 +143,7 @@ export class DirectivePropertyResolver {
       this._treeFlattener,
       this._treeControl,
       this._directivePosition,
-      this._messageBus,
-      this._onRequestingNestedProperties,
-      this._onReceivedNestedProperties
+      this._messageBus
     );
   }
 
@@ -164,7 +160,7 @@ export class DirectivePropertyResolver {
     const stateProps = {};
     let propPointer: { [name: string]: Descriptor };
 
-    Object.keys(this.directiveProperties).forEach(propName => {
+    Object.keys(this.directiveProperties).forEach((propName) => {
       propPointer = inputLabels.has(propName) ? inputProps : outputLabels.has(propName) ? outputProps : stateProps;
       propPointer[propName] = this.directiveProperties[propName];
     });

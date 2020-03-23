@@ -32,12 +32,7 @@ export class ElementPropertyResolver {
     this._directivePropertiesController = new Map();
   }
 
-  setProperties(
-    indexedNode: IndexedNode,
-    data: DirectivesProperties,
-    onRequestProps: () => void,
-    onReceivedProps: () => void
-  ): void {
+  setProperties(indexedNode: IndexedNode, data: DirectivesProperties): void {
     // To prevent memory leaks when a directive no longer exists on an element
     const currentProps = [...this._directivePropertiesController.keys()];
     const incomingProps = new Set(Object.keys(data));
@@ -47,7 +42,7 @@ export class ElementPropertyResolver {
       }
     }
 
-    Object.keys(data).forEach(key => {
+    Object.keys(data).forEach((key) => {
       const controller = this._directivePropertiesController.get(key);
       if (controller) {
         controller.updateProperties(data[key]);
@@ -58,11 +53,11 @@ export class ElementPropertyResolver {
         directive: undefined,
       };
       if (!indexedNode.component || indexedNode.component.name !== key) {
-        position.directive = indexedNode.directives.findIndex(d => d.name === key);
+        position.directive = indexedNode.directives.findIndex((d) => d.name === key);
       }
       this._directivePropertiesController.set(
         key,
-        new DirectivePropertyResolver(this._messageBus, data[key], position, onRequestProps, onReceivedProps)
+        new DirectivePropertyResolver(this._messageBus, data[key], position)
       );
     });
   }

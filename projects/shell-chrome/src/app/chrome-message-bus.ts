@@ -56,18 +56,19 @@ export class ChromeMessageBus extends MessageBus<Events> {
     this._port.onMessage.addListener(listener);
   }
 
-  emit<E extends keyof Events>(topic: E, args?: Parameters<Events[E]>): void {
+  emit<E extends keyof Events>(topic: E, args?: Parameters<Events[E]>): boolean {
     if (this._disconnected) {
-      return;
+      return false;
     }
     this._port.postMessage({
       topic,
       args,
     });
+    return true;
   }
 
   destroy(): void {
-    this._listeners.forEach(l => window.removeEventListener('message', l));
+    this._listeners.forEach((l) => window.removeEventListener('message', l));
     this._listeners = [];
   }
 }

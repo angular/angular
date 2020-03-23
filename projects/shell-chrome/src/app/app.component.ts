@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { injectScripts } from '../inject';
-import { MessageBus, Events } from 'protocol';
+import { PriorityAwareMessageBus, MessageBus, Events } from 'protocol';
 import { ZoneAwareChromeMessageBus } from './zone-aware-chrome-message-bus';
 
 @Component({
@@ -14,7 +14,7 @@ import { ZoneAwareChromeMessageBus } from './zone-aware-chrome-message-bus';
         const port = chrome.runtime.connect({
           name: '' + chrome.devtools.inspectedWindow.tabId,
         });
-        return new ZoneAwareChromeMessageBus(port, ngZone);
+        return new PriorityAwareMessageBus(new ZoneAwareChromeMessageBus(port, ngZone));
       },
       deps: [NgZone],
     },

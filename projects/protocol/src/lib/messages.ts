@@ -128,6 +128,8 @@ export interface UpdatedStateData {
   newValue: any;
 }
 
+export type Topic = keyof Events;
+
 export interface Events {
   handshake: () => void;
   shutdown: () => void;
