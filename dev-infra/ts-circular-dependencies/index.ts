@@ -29,10 +29,9 @@ const defaultGlob =
 if (require.main === module) {
   const {_: command, goldenFile, glob, baseDir, warnings} =
       yargs.help()
-          .version(false)
           .strict()
-          .command('check <golden-file>', 'Checks if the circular dependencies have changed.')
-          .command('approve <golden-file>', 'Approves the current circular dependencies.')
+          .command('check <goldenFile>', 'Checks if the circular dependencies have changed.')
+          .command('approve <goldenFile>', 'Approves the current circular dependencies.')
           .demandCommand()
           .option(
               'approve',
