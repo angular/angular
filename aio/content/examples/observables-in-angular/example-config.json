@@ -1,5 +1,5 @@
 {
-  "e2e": [
+  "tests": [
     {
       "cmd": "yarn",
       "args": [ "tsc", "--project", "./tsconfig.app.json" ]
