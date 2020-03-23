@@ -226,6 +226,7 @@ jobs:
     executor: default-executor
     steps:
       - checkout
+      - init_environment
       - run:
           name: Rebase PR on target branch
           # After checkout, rebase on top of target branch.
@@ -244,7 +245,6 @@ jobs:
           keys:
             - *cache_key
             - *cache_key_fallback
-      - init_environment
       - run:
           name: Running Yarn install
           command: yarn install --frozen-lockfile --non-interactive
