@@ -98,12 +98,6 @@ if (require.main === module) {
                 'If not provided, ngcc will attempt to read a `tsconfig.json` file from the folder above that given by the `-s` option.\n' +
                 'Set to false (via `--no-tsconfig`) if you do not want ngcc to use any `tsconfig.json` file.',
             type: 'string',
-            default: '',
-          })
-          .option('no-tsconfig', {
-            describe: 'This option is to support forcing ngcc not to use any `tsconfig.json` file.',
-            type: 'boolean',
-            hidden: true,
           })
           .strict()
           .help()
@@ -127,7 +121,7 @@ if (require.main === module) {
   const invalidateEntryPointManifest = options['invalidate-entry-point-manifest'];
   const errorOnFailedEntryPoint = options['error-on-failed-entry-point'];
   // yargs is not so great at mixed string+boolean types, so we have to test tsconfig against a
-  // string "false" to capture the `no-tsconfig` option
+  // string "false" to capture the `tsconfig=false` option
   const tsConfigPath = (options['tsconfig'] === 'false') ? null : options['tsconfig'];
 
   (async() => {

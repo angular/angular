@@ -1230,28 +1230,12 @@ runInEachFileSystem(() => {
     });
 
     describe('with pathMappings', () => {
-      it('should find and compile packages accessible via the pathMappings', () => {
-        mainNgcc({
-          basePath: '/node_modules',
-          propertiesToConsider: ['es2015'],
-          pathMappings: {paths: {'*': ['dist/*']}, baseUrl: '/'},
-        });
-        expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
-          es2015: '0.0.0-PLACEHOLDER',
-          fesm2015: '0.0.0-PLACEHOLDER',
-          typings: '0.0.0-PLACEHOLDER',
-        });
-        expect(loadPackage('local-package', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
-          es2015: '0.0.0-PLACEHOLDER',
-          typings: '0.0.0-PLACEHOLDER',
-        });
-      });
-
-      it('should infer the pathMapping from a local tsconfig.json path', () => {
+      it('should infer the @app pathMapping from a local tsconfig.json path', () => {
         fs.writeFile(
             _('/tsconfig.json'),
             JSON.stringify({compilerOptions: {paths: {'@app/*': ['dist/*']}, baseUrl: './'}}));
-        mainNgcc({basePath: '/dist', propertiesToConsider: ['es2015']});
+        const logger = new MockLogger();
+        mainNgcc({basePath: '/dist', propertiesToConsider: ['es2015'], logger});
         expect(loadPackage('local-package', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
           es2015: '0.0.0-PLACEHOLDER',
           typings: '0.0.0-PLACEHOLDER',
@@ -1260,43 +1244,119 @@ runInEachFileSystem(() => {
           es2015: '0.0.0-PLACEHOLDER',
           typings: '0.0.0-PLACEHOLDER',
         });
+        // The local-package-3 and local-package-4 will not be processed because there is no path
+        // mappings for `@x` and plain local imports.
+        expect(loadPackage('local-package-3', _('/dist')).__processed_by_ivy_ngcc__)
+            .toBeUndefined();
+        expect(logger.logs.debug).toContain([
+          `Invalid entry-point ${_('/dist/local-package-3')}.`,
+          'It is missing required dependencies:\n - @x/local-package'
+        ]);
+        expect(loadPackage('local-package-4', _('/dist')).__processed_by_ivy_ngcc__)
+            .toBeUndefined();
+        expect(logger.logs.debug).toContain([
+          `Invalid entry-point ${_('/dist/local-package-4')}.`,
+          'It is missing required dependencies:\n - local-package'
+        ]);
       });
 
-      it('should infer the pathMapping from a specified tsconfig.json path', () => {
+      it('should read the @x pathMapping from a specified tsconfig.json path', () => {
         fs.writeFile(
             _('/tsconfig.app.json'),
-            JSON.stringify({compilerOptions: {paths: {'@app/*': ['dist/*']}, baseUrl: './'}}));
+            JSON.stringify({compilerOptions: {paths: {'@x/*': ['dist/*']}, baseUrl: './'}}));
+        const logger = new MockLogger();
         mainNgcc({
           basePath: '/dist',
           propertiesToConsider: ['es2015'],
-          tsConfigPath: _('/tsconfig.app.json'),
+          tsConfigPath: _('/tsconfig.app.json'), logger
         });
         expect(loadPackage('local-package', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
           es2015: '0.0.0-PLACEHOLDER',
           typings: '0.0.0-PLACEHOLDER',
         });
-        expect(loadPackage('local-package-2', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
+        expect(loadPackage('local-package-3', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
           es2015: '0.0.0-PLACEHOLDER',
           typings: '0.0.0-PLACEHOLDER',
         });
+        // The local-package-2 and local-package-4 will not be processed because there is no path
+        // mappings for `@app` and plain local imports.
+        expect(loadPackage('local-package-2', _('/dist')).__processed_by_ivy_ngcc__)
+            .toBeUndefined();
+        expect(logger.logs.debug).toContain([
+          `Invalid entry-point ${_('/dist/local-package-2')}.`,
+          'It is missing required dependencies:\n - @app/local-package'
+        ]);
+        expect(loadPackage('local-package-4', _('/dist')).__processed_by_ivy_ngcc__)
+            .toBeUndefined();
+        expect(logger.logs.debug).toContain([
+          `Invalid entry-point ${_('/dist/local-package-4')}.`,
+          'It is missing required dependencies:\n - local-package'
+        ]);
       });
+
+      it('should use the explicit `pathMappings`, ignoring the local tsconfig.json settings',
+         () => {
+           const logger = new MockLogger();
+           fs.writeFile(
+               _('/tsconfig.json'),
+               JSON.stringify({compilerOptions: {paths: {'@app/*': ['dist/*']}, baseUrl: './'}}));
+           mainNgcc({
+             basePath: '/node_modules',
+             propertiesToConsider: ['es2015'],
+             pathMappings: {paths: {'*': ['dist/*']}, baseUrl: '/'}, logger
+           });
+           expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
+             es2015: '0.0.0-PLACEHOLDER',
+             fesm2015: '0.0.0-PLACEHOLDER',
+             typings: '0.0.0-PLACEHOLDER',
+           });
+           expect(loadPackage('local-package', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
+             es2015: '0.0.0-PLACEHOLDER',
+             typings: '0.0.0-PLACEHOLDER',
+           });
+           expect(loadPackage('local-package-4', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
+             es2015: '0.0.0-PLACEHOLDER',
+             typings: '0.0.0-PLACEHOLDER',
+           });
+           // The local-package-2 and local-package-3 will not be processed because there is no path
+           // mappings for `@app` and `@x` local imports.
+           expect(loadPackage('local-package-2', _('/dist')).__processed_by_ivy_ngcc__)
+               .toBeUndefined();
+           expect(logger.logs.debug).toContain([
+             `Invalid entry-point ${_('/dist/local-package-2')}.`,
+             'It is missing required dependencies:\n - @app/local-package'
+           ]);
+           expect(loadPackage('local-package-3', _('/dist')).__processed_by_ivy_ngcc__)
+               .toBeUndefined();
+           expect(logger.logs.debug).toContain([
+             `Invalid entry-point ${_('/dist/local-package-3')}.`,
+             'It is missing required dependencies:\n - @x/local-package'
+           ]);
+         });
 
       it('should not use pathMappings from a local tsconfig.json path if tsConfigPath is null',
          () => {
+           const logger = new MockLogger();
            fs.writeFile(
                _('/tsconfig.json'),
                JSON.stringify({compilerOptions: {paths: {'@app/*': ['dist/*']}, baseUrl: './'}}));
            mainNgcc({
              basePath: '/dist',
              propertiesToConsider: ['es2015'],
-             tsConfigPath: null,
+             tsConfigPath: null, logger,
            });
            expect(loadPackage('local-package', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
              es2015: '0.0.0-PLACEHOLDER',
              typings: '0.0.0-PLACEHOLDER',
            });
+           // Since the tsconfig is not loaded, the `@app/local-package` import in `local-package-2`
+           // is not path-mapped correctly, and so it fails to be processed.
            expect(loadPackage('local-package-2', _('/dist')).__processed_by_ivy_ngcc__)
                .toBeUndefined();
+           expect(logger.logs.debug).toContain([
+             `Invalid entry-point ${_('/dist/local-package-2')}.`,
+             'It is missing required dependencies:\n - @app/local-package'
+           ]);
          });
     });
 
@@ -1816,8 +1876,7 @@ runInEachFileSystem(() => {
           name: _('/dist/local-package/index.d.ts'),
           contents: `export declare class AppComponent {};`
         },
-        // local-package-2 just depends upon local-package, which can be used to test that
-        // path-mappings are working.
+        // local-package-2 depends upon local-package, via an `@app` aliased import.
         {
           name: _('/dist/local-package-2/package.json'),
           contents: '{"name": "local-package-2", "es2015": "./index.js", "typings": "./index.d.ts"}'
@@ -1826,12 +1885,44 @@ runInEachFileSystem(() => {
         {
           name: _('/dist/local-package-2/index.js'),
           contents:
-              `import {Component} from '@angular/core';\export {AppComponent} from '@app/local-package';`
+              `import {Component} from '@angular/core';\nexport {AppComponent} from '@app/local-package';`
         },
         {
           name: _('/dist/local-package-2/index.d.ts'),
           contents:
-              `import {Component} from '@angular/core';\export {AppComponent} from '@app/local-package';`
+              `import {Component} from '@angular/core';\nexport {AppComponent} from '@app/local-package';`
+        },
+        // local-package-3 depends upon local-package, via an `@x` aliased import.
+        {
+          name: _('/dist/local-package-3/package.json'),
+          contents: '{"name": "local-package-3", "es2015": "./index.js", "typings": "./index.d.ts"}'
+        },
+        {name: _('/dist/local-package-3/index.metadata.json'), contents: 'DUMMY DATA'},
+        {
+          name: _('/dist/local-package-3/index.js'),
+          contents:
+              `import {Component} from '@angular/core';\nexport {AppComponent} from '@x/local-package';`
+        },
+        {
+          name: _('/dist/local-package-3/index.d.ts'),
+          contents:
+              `import {Component} from '@angular/core';\nexport {AppComponent} from '@x/local-package';`
+        },
+        // local-package-4 depends upon local-package, via a plain import.
+        {
+          name: _('/dist/local-package-4/package.json'),
+          contents: '{"name": "local-package-", "es2015": "./index.js", "typings": "./index.d.ts"}'
+        },
+        {name: _('/dist/local-package-4/index.metadata.json'), contents: 'DUMMY DATA'},
+        {
+          name: _('/dist/local-package-4/index.js'),
+          contents:
+              `import {Component} from '@angular/core';\nexport {AppComponent} from 'local-package';`
+        },
+        {
+          name: _('/dist/local-package-4/index.d.ts'),
+          contents:
+              `import {Component} from '@angular/core';\nexport {AppComponent} from 'local-package';`
         },
       ]);
 

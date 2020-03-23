@@ -95,6 +95,9 @@ export interface SyncNgccOptions {
   /**
    * Paths mapping configuration (`paths` and `baseUrl`), as found in `ts.CompilerOptions`.
    * These are used to resolve paths to locally built Angular libraries.
+   *
+   * Note that `pathMappings` specified here take precedence over any `pathMappings` loaded from a
+   * TS config file.
    */
   pathMappings?: PathMappings;
 
@@ -146,15 +149,16 @@ export interface SyncNgccOptions {
   invalidateEntryPointManifest?: boolean;
 
   /**
-   * An absolte path to a TS config file (e.g. `tsconfig.json`) or a directory containing one that
-   * will be used to configure module resolution with things like path mappings.
+   * An absolute path to a TS config file (e.g. `tsconfig.json`) or a directory containing one, that
+   * will be used to configure module resolution with things like path mappings, if not specified
+   * explicitly via the `pathMappings` property to `mainNgcc`.
    *
    * If `undefined`, ngcc will attempt to load a `tsconfig.json` file from the directory above the
    * `basePath`.
    *
    * If `null`, ngcc will not attempt to load any TS config file at all.
    */
-  tsConfigPath?: AbsoluteFsPath|null;
+  tsConfigPath?: string|null;
 }
 
 /**
@@ -196,16 +200,15 @@ export function mainNgcc(
   //       master/worker process.
   const fileSystem = getFileSystem();
   const absBasePath = absoluteFrom(basePath);
-  const config = new NgccConfiguration(fileSystem, dirname(absBasePath));
-  const tsConfig =
-      tsConfigPath !== null ? readConfiguration(tsConfigPath || dirname(absBasePath)) : null;
+  const projectPath = dirname(absBasePath);
+  const config = new NgccConfiguration(fileSystem, projectPath);
+  const tsConfig = tsConfigPath !== null ? readConfiguration(tsConfigPath || projectPath) : null;
 
-  // If pathMapping is not provided directly and there is a loaded tsConfig with path mappings then
-  // use them instead.
+  // If `pathMappings` is not provided directly, then try getting it from `tsConfig`, if available.
   if (tsConfig !== null && pathMappings === undefined && tsConfig.options.baseUrl !== undefined &&
       tsConfig.options.paths) {
     pathMappings = {
-      baseUrl: resolve(absBasePath, tsConfig.options.baseUrl || './'),
+      baseUrl: resolve(projectPath, tsConfig.options.baseUrl),
       paths: tsConfig.options.paths,
     };
   }
