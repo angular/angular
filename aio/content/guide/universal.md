@@ -279,24 +279,9 @@ So, you don't need to do anything to make relative URLs work on the server.
 
 If, for some reason, you are not using an `@nguniversal/*-engine` package, you may need to handle it yourself.
 
-One solution would be to provide the full URL to your application on the server (e.g. as a server-side only extra provider) and write an interceptor that can retrieve this value and prepend it to the request URL.
-How to provide the full URL to requests depends on what you are using to render the app on the server-side and is outside the scope of this guide.
+There are several ways to achieve that.
+The recommended solution, which is also the least intrusive as it does not require any changes to the app, is to pass the full request URL to the `options` argument of [renderModule()](api/platform-server/renderModule) or [renderModuleFactory()](api/platform-server/renderModuleFactory) (depending on what you use to render `AppServerModule` on the server).
+Here, "request URL" refers to the URL of the request as a response to which the app is being rendered on the server.
+For example, if the client requested `https://my-server.com/dashboard` and you are rendering the app on the server to respond to that request, `options.url` should be set to `https://my-server.com/dashboard`.
 
-This is half of the work.
-The other half is using the provided full URL in the app.
-This can be achieved by creating an [HttpInterceptor](api/common/http/HttpInterceptor).
-
-<code-example
-    header="src/app/absolute-url.interceptor.ts"
-    path="universal/src/app/absolute-url.interceptor.ts">
-</code-example>
-
-This interceptor needs to be provided to the app on the server only, which can be done by adding it to the providers array of `AppServerModule`.
-
-<code-example
-    header="src/app/app.server.module.ts"
-    path="universal/src/app/app.server.module.ts"
-    region="absolute-url-interceptor">
-</code-example>
-
-Now, on every HTTP request made on the server, this interceptor will fire and replace the request URL with the absolute URL using the provided `fullUrl`.
+Now, on every HTTP request made as part of rendering the app on the server, Angular will be able to correctly resolve the request URL to an absolute URL, using the provided `options.url`.
