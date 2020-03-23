@@ -121,8 +121,9 @@ if (require.main === module) {
   const invalidateEntryPointManifest = options['invalidate-entry-point-manifest'];
   const errorOnFailedEntryPoint = options['error-on-failed-entry-point'];
   // yargs is not so great at mixed string+boolean types, so we have to test tsconfig against a
-  // string "false" to capture the `tsconfig=false` option
-  const tsConfigPath = (options['tsconfig'] === 'false') ? null : options['tsconfig'];
+  // string "false" to capture the `tsconfig=false` option.
+  // And we have to convert the option to a string to handle `no-tsconfig`, which will be `false`.
+  const tsConfigPath = `${options['tsconfig']}` === 'false' ? null : options['tsconfig'];
 
   (async() => {
     try {
