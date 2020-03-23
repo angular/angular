@@ -69,19 +69,23 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           throw new Error(error.join('\n'));
         }
 
-        const jitOptions = getJitOptions();
+        // This const was called `jitOptions` previously but had to be renamed to `options` because
+        // of a bug with Terser that caused optimized JIT builds to throw a `ReferenceError`.
+        // This bug was investigated in https://github.com/angular/angular-cli/issues/17264.
+        // We should not rename it back until https://github.com/terser/terser/issues/615 is fixed.
+        const options = getJitOptions();
         let preserveWhitespaces = metadata.preserveWhitespaces;
         if (preserveWhitespaces === undefined) {
-          if (jitOptions !== null && jitOptions.preserveWhitespaces !== undefined) {
-            preserveWhitespaces = jitOptions.preserveWhitespaces;
+          if (options !== null && options.preserveWhitespaces !== undefined) {
+            preserveWhitespaces = options.preserveWhitespaces;
           } else {
             preserveWhitespaces = false;
           }
         }
         let encapsulation = metadata.encapsulation;
         if (encapsulation === undefined) {
-          if (jitOptions !== null && jitOptions.defaultEncapsulation !== undefined) {
-            encapsulation = jitOptions.defaultEncapsulation;
+          if (options !== null && options.defaultEncapsulation !== undefined) {
+            encapsulation = options.defaultEncapsulation;
           } else {
             encapsulation = ViewEncapsulation.Emulated;
           }
