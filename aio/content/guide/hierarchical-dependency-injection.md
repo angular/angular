@@ -913,7 +913,7 @@ injection token can't be found in the `ElementInjector`s.
 <!--
 ### Using the `providers` array
 -->
-### `providers` 배열 사용하기
+### `providers` 사용하기
 
 <!--
 Now, in the `ChildComponent` class, add a provider for `FlowerService`
@@ -995,8 +995,9 @@ finds the `FlowerService` and never sees the 🌺 (red hibiscus).
 <!--
 ### Using the `viewProviders` array
 -->
-### `viewProviders` 배열 사용하기
+### `viewProviders` 사용하기
 
+<!--
 Use the `viewProviders` array as another way to provide services in the
 `@Component()` decorator. Using `viewProviders` makes services
 visible in the `<#VIEW>`.
@@ -1016,14 +1017,35 @@ The example app features a second service, the `AnimalService` to
 demonstrate `viewProviders`.
 
 First, create an `AnimalService` with an `emoji` property of 🐳 (whale):
+-->
+서비스 프로바이더는 `@Component()` 데코레이터의 `providers` 대신 `viewProviders`에 등록해서 사용할 수도 있습니다.
+`viewProviders`를 사용하면 `<#VIEW>` 범위에서 서비스에 접근할 수 있습니다.
+
+
+<div class="is-helpful alert">
+
+이 섹션에서 진행하는 과정은 `providers` 배열 대신 `viewProviders` 배열을 사용한다는 것만 빼면 이전과 같습니다.
+
+설명하는 과정을 직접 진행해 보세요.
+이 내용을 이미 이해하고 있다면 [서비스 접근가능 범위 조정하기](guide/hierarchical-dependency-injection#modify-visibility) 섹션으로 넘어가세요.
+
+</div>
+
+이번 섹션에서는 `viewProviders`를 설명하기 위해 또 다른 서비스 `AnimalService`를 만들어 봅니다.
+
+먼저, `emoji` 프로퍼티 값이 `🐳`(고래)인 `AnimalService` 서비스를 생성합니다:
+
 
 <code-example path="providers-viewproviders/src/app/animal.service.ts" header="providers-viewproviders/src/app/animal.service.ts" region="animal-service">
 
 </code-example>
 
 
+<!--
 Following the same pattern as with the `FlowerService`, inject the
 `AnimalService` in the `AppComponent` class:
+-->
+그리고 `FlowerService` 때와 마찬가지로 `AnimalService`도 `AppComponent` 클래스에 의존성으로 주입합니다:
 
 <code-example path="providers-viewproviders/src/app/app.component.ts" header="providers-viewproviders/src/app/app.component.ts" region="inject-animal-service">
 
@@ -1031,34 +1053,49 @@ Following the same pattern as with the `FlowerService`, inject the
 
 <div class="alert is-helpful">
 
+<!--
 **Note:** You can leave all the `FlowerService` related code in place
 as it will allow a comparison with the `AnimalService`.
+-->
+**참고:** `FlowerService`는 이번 섹션에서 다루지 않기 때문에 제거해도 되지만, `AnimalService`와 비교하면서 보기 위해 이 문서에서는 그대로 두겠습니다.
 
 </div>
 
+<!--
 Add a `viewProviders` array and inject the `AnimalService` in the
 `<app-child>` class, too, but give `emoji` a different value. Here,
 it has a value of 🐶 (puppy).
-
+-->
+`<app-child>` 클래스의 `viewProviders` 배열에 `AnimalService`를 추가하하는데 `emoji`에는 다른 값을 할당해 봅시다.
+이번 예제에서는 🐶(강아지)를 할당했습니다.
 
 <code-example path="providers-viewproviders/src/app/child/child.component.ts" header="providers-viewproviders/src/app/child.component.ts" region="provide-animal-service">
 
 </code-example>
 
+<!--
 Add bindings to the `ChildComponent` and the `AppComponent` templates.
 In the `ChildComponent` template, add the following binding:
+-->
+그리고 `AppComponent` 템플릿에 `ChildComponent`를 바인딩하고 `ChildComponent` 템플릿에는 다음과 같은 내용을 추가합니다:
 
 <code-example path="providers-viewproviders/src/app/child/child.component.html" header="providers-viewproviders/src/app/child.component.html" region="animal-binding">
 
 </code-example>
 
+<!--
 Additionally, add the same to the `AppComponent` template:
+-->
+그리고 같은 내용을 `AppComponent` 템플릿에도 추가합니다:
 
 <code-example path="providers-viewproviders/src/app/app.component.html" header="providers-viewproviders/src/app/app.component.html" region="binding-animal">
 
 </code-example>
 
+<!--
 Now you should see both values in the browser:
+-->
+그러면 브라우저에 이런 내용이 표시됩니다.
 
 ```
 AppComponent
@@ -1069,7 +1106,10 @@ Emoji from AnimalService: 🐶
 
 ```
 
+<!--
 The logic tree for this example of `viewProviders` is as follows:
+-->
+이 예제에서 `viewProviders`의 논리 트리를 따져보면 이렇습니다:
 
 
 ```
@@ -1080,7 +1120,7 @@ The logic tree for this example of `viewProviders` is as follows:
       <#VIEW
        @Provide(AnimalService="🐶")
        @Inject(AnimalService=>"🐶")>
-       <!-- ^^using viewProviders means AnimalService is available in <#VIEW>-->
+       <!-- viewProviders를 사용한다는 것은 <#VIEW>에서 AnimalService를 사용할 수 있도록 등록하는 것을 의미합니다. -->
        <p>Emoji from AnimalService: {{animal.emoji}} (🐶)</p>
       </#VIEW>
      </app-child>
@@ -1088,45 +1128,65 @@ The logic tree for this example of `viewProviders` is as follows:
 </app-root>
 ```
 
+<!--
 Just as with the `FlowerService` example, the `AnimalService` is provided
 in the `<app-child>` `@Component()` decorator. This means that since the
 injector first looks in the `ElementInjector` of the component, it finds the
 `AnimalService` value of 🐶 (puppy). It doesn't need to continue searching the
 `ElementInjector` tree, nor does it need to search the `ModuleInjector`.
+-->
+`FlowerService`와 마찬가지로 `AnimalService`도 `<app-child>`의 `@Component()` 데코레이터에 등록되었습니다.
+그래서 인젝터는 제일 먼저 이 컴포넌트의 `ElementInjector`에서 의존성 토큰을 찾게 되며 `AnimalService`의 값이 🐶(강아지)가 됩니다.
+그 위쪽으로 `ElementInjector` 트리를 탐색할 필요가 없으며 `ModuleInjector`도 탐색할 필요가 없습니다.
+
 
 ### `providers` vs. `viewProviders`
 
+<!--
 To see the difference between using `providers` and `viewProviders`, add
 another component to the example and call it `InspectorComponent`.
 `InspectorComponent` will be a child of the `ChildComponent`. In
 `inspector.component.ts`, inject the `FlowerService` and `AnimalService` in
 the constructor:
-
+-->
+`providers`와 `viewProviders`가 어떻게 다른지 알아보기 위해 예제 앱에 `InspectorComponent`라는 컴포넌트를 추가해 봅시다.
+`InspectorComponent`는 `ChildComponent`의 자식 컴포넌트로 구성하는데, `inspector.component.ts` 파일의 생성자에 `FlowerService`와 `AnimalService`를 의존성으로 주입합니다:
 
 <code-example path="providers-viewproviders/src/app/inspector/inspector.component.ts" header="providers-viewproviders/src/app/inspector/inspector.component.ts" region="injection">
 
 </code-example>
 
+<!--
 You do not need a `providers` or `viewProviders` array. Next, in
 `inspector.component.html`, add the same markup from previous components:
+-->
+이 컴포넌트에는 `providers`나 `viewProviders`를 사용할 필요가 없습니다.
+그리고 `inspector.component.html`에 이전과 같은 내용을 추가합니다:
 
 <code-example path="providers-viewproviders/src/app/inspector/inspector.component.html" header="providers-viewproviders/src/app/inspector/inspector.component.html" region="binding">
 
 </code-example>
 
+<!--
 Remember to add the `InspectorComponent` to the `AppModule` `declarations` array.
+-->
+`AppModule`의 `declarations` 배열에 `InspectorComponent`를 등록해야 한다는 것을 잊지 마세요.
 
 <code-example path="providers-viewproviders/src/app/app.module.ts" header="providers-viewproviders/src/app/app.module.ts" region="appmodule">
 
 </code-example>
 
 
+<!--
 Next, make sure your `child.component.html` contains the following:
+-->
+그리고 `child.component.html` 파일을 다음과 같이 수정합니다:
 
 <code-example path="providers-viewproviders/src/app/child/child.component.html" header="providers-viewproviders/src/app/child/child.component.html" region="child-component">
 
 </code-example>
 
+<!--
 The first two lines, with the bindings, are there from previous steps. The
 new parts are  `<ng-content>` and `<app-inspector>`. `<ng-content>` allows
 you to project content, and `<app-inspector>` inside the `ChildComponent`
@@ -1134,11 +1194,18 @@ you to project content, and `<app-inspector>` inside the `ChildComponent`
  `ChildComponent`.
 
 Next, add the following to `app.component.html` to take advantage of content projection.
+-->
+처음 두 줄에는 이전에 설명했던 대로 바인딩이 사용되었습니다.
+그리고 그 다음에는 `<ng-content>`와 `<app-inspector>`가 추가되었습니다.
+`<ng-content>`는 컴포넌트에 프로젝션된 템플릿 조각이 표시되며 `<app-inspector>`는 `ChildComponent`의 자식 컴포넌트로 `InspectorComponent`가 표시되는 부분입니다.
+
+이제 템플릿 조각을 프로젝션하기 위해 `app.component.html` 파일을 다음과 같이 수정합니다.
 
 <code-example path="providers-viewproviders/src/app/app.component.html" header="providers-viewproviders/src/app/app.component.html" region="content-projection">
 
 </code-example>
 
+<!--
 The browser now renders the following, omitting the previous examples
 for brevity:
 
@@ -1167,7 +1234,36 @@ of `ChildComponent`, `InspectorComponent` is inside the `<#VIEW>`, so
 when it asks for the `AnimalService`, it sees the 🐶 (puppy).
 
 The `AnimalService` in the logical tree would look like this:
+-->
+이제 브라우저 화면은 다음과 같이 표시됩니다.
+간단하게 표시하기 위해 이전에 설명한 내용은 생략했습니다:
 
+```
+
+//...이전에 설명한 내용은 생략합니다. 이번 섹션에서 추가한 내용은 아래부터입니다.
+
+컨텐츠 프로젝션(content projection): HTML 템플릿을를 전달하는 기능입니다.
+프로젝션된 템플릿에는 🐶(강아지)가 표시되지 않습니다.
+🐶는 화면에만 선언되어 있습니다.
+
+Emoji from FlowerService: 🌻
+Emoji from AnimalService: 🐳
+
+Emoji from FlowerService: 🌻
+Emoji from AnimalService: 🐶
+
+```
+
+바인딩이 사용된 곳을 보면 `providers`와 `viewProviders`의 차이를 알 수 있습니다.
+이 결과로 볼 때 🐶(강아지)는 <#VIEW> 안에만 선언되어 있기 때문에 프로젝션된 템플릿으로 전달되지 않습니다.
+프로젝션된 템플릿에는 🐳(고래)가 표시됩니다.
+
+그 다음 부분은 `ChildComponent`의 자식 컴포넌트인 `InspectorComponent`가 표시되는 부분입니다.
+`InspectorComponent`는 `<#VIEW>`에 속한 컴포넌트이기 때문에 `AnimalService`에서 가져온 값은 🐶(강아지)가 됩니다.
+
+이 때 `AnimalService`를 논리 트리 관점에서 살펴보면 이렇습니다:
+
+<!--
 ```
 <app-root @NgModule(AppModule)
         @Inject(AnimalService) animal=>"🐳">
@@ -1176,7 +1272,7 @@ The `AnimalService` in the logical tree would look like this:
       <#VIEW
        @Provide(AnimalService="🐶")
        @Inject(AnimalService=>"🐶")>
-       <!-- ^^using viewProviders means AnimalService is available in <#VIEW>-->
+       <!- ^^using viewProviders means AnimalService is available in <#VIEW>->
        <p>Emoji from AnimalService: {{animal.emoji}} (🐶)</p>
        <app-inspector>
         <p>Emoji from AnimalService: {{animal.emoji}} (🐶)</p>
@@ -1197,14 +1293,50 @@ the 🐶 (puppy), because the
 🐶 (puppy) is inside the `<app-child>` `<#VIEW>`. The `<app-inspector>` can
 only see the 🐶 (puppy)
 if it is also within the `<#VIEW>`.
+-->
+```
+<app-root @NgModule(AppModule)
+        @Inject(AnimalService) animal=>"🐳">
+  <#VIEW>
+    <app-child>
+      <#VIEW
+       @Provide(AnimalService="🐶")
+       @Inject(AnimalService=>"🐶")>
+       <!-- viewProviders를 사용한다는 것은 <#VIEW>에서 AnimalService를 사용할 수 있도록 등록하는 것을 의미합니다. -->
+       <p>Emoji from AnimalService: {{animal.emoji}} (🐶)</p>
+       <app-inspector>
+        <p>Emoji from AnimalService: {{animal.emoji}} (🐶)</p>
+       </app-inspector>
+      </#VIEW>
+      <app-inspector>
+        <#VIEW>
+          <p>Emoji from AnimalService: {{animal.emoji}} (🐳)</p>
+        </#VIEW>
+      </app-inspector>
+     </app-child>
+  </#VIEW>
+</app-root>
+```
+
+`<app-inspector>`에 프로젝션되는 값은 🐶(강아지)가 아니라 🐳(고래)입니다.
+왜냐하면 🐶는 `<app-child>`의 `<#VIEW>`에서만 사용할 수 있기 때문입니다.
+하지만 `<app-inspector>`는 `<#VIEW>` 안에 포함된 컴포넌트이기 때문에 🐶(강아지)가 표시됩니다.
+
 
 {@a modify-visibility}
 
+<!--
 ## Modifying service visibility
+-->
+## 서비스 접근가능 범위 변경하기
 
+<!--
 This section describes how to limit the scope of the beginning and
 ending `ElementInjector` using the visibility decorators `@Host()`,
 `@Self()`, and `@SkipSelf()`.
+-->
+이번 섹션에서는 `ElementInjector`의 탐색 시작지점과 종료지점을 변경할 때 사용하는 `@Host()`, `@Self()`, `@SkipSelf()` 데코레이터에 대해 알아봅시다.
+
 
 ### Visibility of provided tokens
 
