@@ -1,3 +1,15 @@
+<a name="9.1.0-rc.1"></a>
+# [9.1.0-rc.1](https://github.com/angular/angular/compare/9.1.0-rc.0...9.1.0-rc.1) (2020-03-23)
+
+
+### Bug Fixes
+
+* **compiler:** record correct end of expression ([#34690](https://github.com/angular/angular/issues/34690)) ([df890d7](https://github.com/angular/angular/commit/df890d7)), closes [#33477](https://github.com/angular/angular/issues/33477)
+* **core:** workaround Terser inlining bug ([#36200](https://github.com/angular/angular/issues/36200)) ([f71d132](https://github.com/angular/angular/commit/f71d132))
+* **localize:** allow ICU expansion case to start with any character except `}` ([#36123](https://github.com/angular/angular/issues/36123)) ([0767d37](https://github.com/angular/angular/commit/0767d37)), closes [#31586](https://github.com/angular/angular/issues/31586)
+* **compiler:** Propagate value span of ExpressionBinding to ParsedProperty ([#36133](https://github.com/angular/angular/issues/36133)) ([2ce5fa3](https://github.com/angular/angular/commit/2ce5fa3))
+
+
 <a name="9.1.0-rc.0"></a>
 # [9.1.0-rc.0](https://github.com/angular/angular/compare/9.1.0-next.5...9.1.0-rc.0) (2020-03-19)
 
