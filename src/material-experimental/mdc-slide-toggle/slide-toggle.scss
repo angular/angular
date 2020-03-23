@@ -48,6 +48,10 @@
     opacity: map-get($mdc-ripple-dark-ink-opacities, press);
   }
 
+  .mat-ripple {
+    border-radius: 50%;
+  }
+
   // Angular Material supports disabling all animations when NoopAnimationsModule is imported.
   // TODO(mmalerba): Look into using MDC's Sass queries to separate the animation styles and
   //  conditionally add them. Consider the size cost when deciding whether to switch.
