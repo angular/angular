@@ -28,7 +28,7 @@ const fixmeIvyExamples = [
   'i18n',
 ];
 
-if (argv.ivy) {
+if (!argv.viewengine) {
   IGNORED_EXAMPLES.push(...fixmeIvyExamples);
 }
 
@@ -46,7 +46,7 @@ if (argv.ivy) {
  *    Must be used in conjunction with --setup as this is when the packages are copied.
  *    e.g. --setup --local
  *
- *  --ivy to turn on `ivy` mode
+ *  --viewengine to turn on `ViewEngine` mode
  *
  *  --shard to shard the specs into groups to allow you to run them in parallel
  *    e.g. --shard=0/2 // the even specs: 0, 2, 4, etc
@@ -64,7 +64,7 @@ function runE2e() {
     // Run setup.
     console.log('runE2e: setup boilerplate');
     const installPackagesCommand = `example-use-${argv.local ? 'local' : 'npm'}`;
-    const addBoilerplateCommand = `boilerplate:add${argv.ivy ? ':ivy' : ''}`;
+    const addBoilerplateCommand = `boilerplate:add${argv.viewengine ? ':viewengine' : ''}`;
     shelljs.exec(`yarn ${installPackagesCommand}`, {cwd: AIO_PATH});
     shelljs.exec(`yarn ${addBoilerplateCommand}`, {cwd: AIO_PATH});
   }
@@ -185,7 +185,7 @@ function runE2eTestsSystemJS(appDir, outputFile) {
 
   // Only run AOT tests in ViewEngine mode. The current AOT setup does not work in Ivy.
   // See https://github.com/angular/angular/issues/35989.
-  if (!argv.ivy && fs.existsSync(appDir + '/aot/index.html')) {
+  if (argv.viewengine && fs.existsSync(appDir + '/aot/index.html')) {
     run = run.then((ok) => ok && runProtractorAoT(appDir, outputFile));
   }
   return run;
@@ -311,7 +311,7 @@ function reportStatus(status, outputFile) {
   IGNORED_EXAMPLES.filter(example => !fixmeIvyExamples.find(ex => ex.startsWith(example)))
       .forEach(function(val) { log.push('  ' + val); });
 
-  if (argv.ivy) {
+  if (!argv.viewengine) {
     log.push('');
     log.push('Suites ignored due to breakage with Ivy:');
     fixmeIvyExamples.forEach(function(val) { log.push('  ' + val); });

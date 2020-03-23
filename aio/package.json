@@ -66,7 +66,7 @@
     "preserve-and-sync": "yarn docs",
     "serve-and-sync": "run-p \"start\" \"docs-watch --watch-only\"",
     "boilerplate:add": "node ./tools/examples/example-boilerplate add",
-    "boilerplate:add:ivy": "yarn boilerplate:add --ivy",
+    "boilerplate:add:viewengine": "yarn boilerplate:add --viewengine",
     "boilerplate:remove": "node ./tools/examples/example-boilerplate remove",
     "boilerplate:test": "node tools/examples/test.js",
     "generate-stackblitz": "node ./tools/stackblitz-builder/generateStackblitz",
