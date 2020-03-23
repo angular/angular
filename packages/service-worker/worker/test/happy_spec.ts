@@ -1320,13 +1320,13 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
         server.assertSawRequestFor('/foo.txt');
       });
 
-      
+
       it('enters degraded mode when cache is full for second client', async() => {
         // Initialize the SW.
         await makeRequest(scope, '/foo.txt');
         await driver.initialized;
         expect(driver.state).toBe(DriverReadyState.NORMAL);
-        
+
         // Ensure cache is unwritable
         spyOn(MockCache.prototype, 'put').and.throwError('Quota exceeded');
 
