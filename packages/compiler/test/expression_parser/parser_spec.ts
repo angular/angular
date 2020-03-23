@@ -477,6 +477,18 @@ describe('parser', () => {
           ['l-b', 'k-b', true],
         ]);
       });
+
+      it('should support literal attributes', () => {
+        const bindings = parseTemplateBindings('*ngFor="let item of items, of1; of2, of3"');
+        expect(humanize(bindings)).toEqual([
+          ['ngFor', null, false],       // literal attribute
+          ['item', null, true],         // variable binding
+          ['ngForOf', 'items', false],  // bound attribute
+          ['ngForOf1', null, false],    // literal attribute
+          ['ngForOf2', null, false],    // literal attribute
+          ['ngForOf3', null, false],    // literal attribute
+        ]);
+      });
     });
 
     describe('source, key, value spans', () => {
@@ -549,6 +561,19 @@ describe('parser', () => {
           ['of: [1,2,3] | pipe as items; ', 'items', 'of'],
           ['let i=index, ', 'i', 'index'],
           ['count as len, ', 'len', 'count'],
+        ]);
+      });
+
+      it('should map literal attributes', () => {
+        const attr = '*ngFor="let item of items, of1; of2, of3"';
+        const bindings = parseTemplateBindings(attr);
+        expect(humanizeSpans(bindings, attr)).toEqual([
+          ['ngFor="', 'ngFor', null],
+          ['let item ', 'item', null],
+          ['of items, ', 'of', 'items'],
+          ['of1; ', 'of1', null],
+          ['of2, ', 'of2', null],
+          ['of3', 'of3', null],
         ]);
       });
     });

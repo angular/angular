@@ -858,6 +858,11 @@ export class _ParseAST {
    */
   private parseDirectiveKeywordBindings(key: TemplateBindingIdentifier): TemplateBinding[] {
     const bindings: TemplateBinding[] = [];
+    if (this.consumeStatementTerminator()) {
+      const sourceSpan = new AbsoluteSourceSpan(key.span.start, this.currentAbsoluteOffset);
+      bindings.push(new ExpressionBinding(sourceSpan, key, null /* value */));
+      return bindings;
+    }
     this.consumeOptionalCharacter(chars.$COLON);  // trackBy: trackByFunction
     const value = this.getDirectiveBoundTarget();
     let spanEnd = this.currentAbsoluteOffset;
@@ -947,10 +952,12 @@ export class _ParseAST {
   }
 
   /**
-   * Consume the optional statement terminator: semicolon or comma.
+   * Consume the optional statement terminator: semicolon or comma, and return
+   * true if it is present.
    */
   private consumeStatementTerminator() {
-    this.consumeOptionalCharacter(chars.$SEMICOLON) || this.consumeOptionalCharacter(chars.$COMMA);
+    return this.consumeOptionalCharacter(chars.$SEMICOLON) ||
+        this.consumeOptionalCharacter(chars.$COMMA);
   }
 
   error(message: string, index: number|null = null) {
