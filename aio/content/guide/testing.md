@@ -1103,18 +1103,6 @@ explains when and why you must get the service from the component's injector ins
 
 </div>
 
-{@a service-from-injector}
-
-#### Always get the service from an injector
-
-Do _not_ reference the `userServiceStub` object
-that's provided to the testing module in the body of your test.
-**It does not work!**
-The `userService` instance injected into the component is a completely _different_ object,
-a clone of the provided `userServiceStub`.
-
-<code-example path="testing/src/app/welcome/welcome.component.spec.ts" region="stub-not-injected" header="app/welcome/welcome.component.spec.ts"></code-example>
-
 {@a welcome-spec-setup}
 
 #### Final setup and tests
