@@ -38,6 +38,7 @@
     "@angular/platform-browser-dynamic": "~9.0.3",
     "@angular/router": "~9.0.3",
     "@angular/upgrade": "~9.0.3",
+    "core-js": "^2.5.4",
     "rxjs": "~6.5.4",
     "tslib": "^1.10.0",
     "zone.js": "~0.10.3"
