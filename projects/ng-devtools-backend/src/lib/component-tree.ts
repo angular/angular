@@ -27,7 +27,6 @@ export interface ComponentInstanceType {
 
 export interface ComponentTreeNode extends DevToolsNode<DirectiveInstanceType, ComponentInstanceType> {
   children: ComponentTreeNode[];
-  position?: ElementPosition;
 }
 
 export const getLatestComponentState = (query: ComponentExplorerViewQuery): DirectivesProperties | undefined => {

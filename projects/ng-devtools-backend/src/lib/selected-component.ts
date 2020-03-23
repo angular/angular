@@ -1,46 +1,41 @@
-import { ComponentTreeNode } from './component-tree';
 import { arrayEquals } from 'shared-utils';
+import { IndexedNode } from './observer/identity-tracker';
 
 declare const ng: any;
 
-const SELECTED_COMPONENT_PROPERTY_KEY_PREFIX = '$ng';
-let selectedComponentKeyPostfix = 0;
-const getSelectedComponentKey = () => `${SELECTED_COMPONENT_PROPERTY_KEY_PREFIX}${selectedComponentKeyPostfix}`;
+const CONSOLE_REFERENCE_PREFIX = '$ng';
+const CAPACITY = 5;
+const nodesForConsoleReference: IndexedNode[] = [];
 
-const nodesForConsoleReference: ComponentTreeNode[] = [];
-
-export const setConsoleReference = (node: ComponentTreeNode | null) => {
+export const setConsoleReference = (node: IndexedNode | null) => {
   if (node === null) {
     return;
   }
   _setConsoleReference(node);
 };
 
-const _setConsoleReference = (node: ComponentTreeNode) => {
+const _setConsoleReference = (node: IndexedNode) => {
   prepareCurrentReferencesForInsertion(node);
   nodesForConsoleReference.unshift(node);
   assignConsoleReferencesFrom(nodesForConsoleReference);
 };
 
-const prepareCurrentReferencesForInsertion = (node: ComponentTreeNode) => {
-  const foundIndex = nodesForConsoleReference.findIndex(
-    nodeToLookFor => nodeToLookFor.position && node.position && arrayEquals(nodeToLookFor.position, node.position)
+const prepareCurrentReferencesForInsertion = (node: IndexedNode) => {
+  const foundIndex = nodesForConsoleReference.findIndex(nodeToLookFor =>
+    arrayEquals(nodeToLookFor.position, node.position)
   );
   if (foundIndex !== -1) {
     nodesForConsoleReference.splice(foundIndex, 1);
-  } else if (nodesForConsoleReference.length === 5) {
+  } else if (nodesForConsoleReference.length === CAPACITY) {
     nodesForConsoleReference.pop();
   }
 };
 
-const assignConsoleReferencesFrom = (nodes: ComponentTreeNode[]) => {
-  nodes.forEach((node, index) => {
-    selectedComponentKeyPostfix = index;
-    setDirectiveKey(node, getSelectedComponentKey());
-  });
+const assignConsoleReferencesFrom = (nodes: IndexedNode[]) => {
+  nodes.forEach((node, index) => setDirectiveKey(node, getConsoleReferenceWithIndexOf(index)));
 };
 
-const setDirectiveKey = (node: ComponentTreeNode | null, key) => {
+const setDirectiveKey = (node: IndexedNode | null, key) => {
   Object.defineProperty(window, key, {
     get: () => {
       if (node && node.nativeElement instanceof HTMLElement) {
@@ -54,3 +49,6 @@ const setDirectiveKey = (node: ComponentTreeNode | null, key) => {
     configurable: true,
   });
 };
+
+const getConsoleReferenceWithIndexOf = (consoleReferenceIndex: number) =>
+  `${CONSOLE_REFERENCE_PREFIX}${consoleReferenceIndex}`;
