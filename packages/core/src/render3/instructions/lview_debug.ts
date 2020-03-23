@@ -7,7 +7,8 @@
  */
 
 import {AttributeMarker, ComponentTemplate} from '..';
-import {SchemaMetadata} from '../../core';
+import {Injector, SchemaMetadata} from '../../core';
+import {Sanitizer} from '../../sanitization/sanitizer';
 import {KeyValueArray} from '../../util/array_utils';
 import {assertDefined} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
@@ -17,8 +18,8 @@ import {DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, TIcu} from '../interfaces/i18n';
 import {PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TViewNode} from '../interfaces/node';
 import {SelectorFlags} from '../interfaces/projection';
-import {TQueries} from '../interfaces/query';
-import {RComment, RElement, RNode} from '../interfaces/renderer';
+import {LQueries, TQueries} from '../interfaces/query';
+import {RComment, RElement, RNode, Renderer3, RendererFactory3} from '../interfaces/renderer';
 import {TStylingKey, TStylingRange, getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate} from '../interfaces/styling';
 import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, HookData, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TData, TVIEW, TView as ITView, TView, TViewType, T_HOST} from '../interfaces/view';
 import {attachDebugObject} from '../util/debug_utils';
@@ -404,18 +405,18 @@ export class LViewDebug {
     return toDebugNodes(tNode, lView);
   }
 
-  get tView() { return this._raw_lView[TVIEW]; }
-  get cleanup() { return this._raw_lView[CLEANUP]; }
-  get injector() { return this._raw_lView[INJECTOR]; }
-  get rendererFactory() { return this._raw_lView[RENDERER_FACTORY]; }
-  get renderer() { return this._raw_lView[RENDERER]; }
-  get sanitizer() { return this._raw_lView[SANITIZER]; }
-  get childHead() { return toDebug(this._raw_lView[CHILD_HEAD]); }
-  get next() { return toDebug(this._raw_lView[NEXT]); }
-  get childTail() { return toDebug(this._raw_lView[CHILD_TAIL]); }
-  get declarationView() { return toDebug(this._raw_lView[DECLARATION_VIEW]); }
-  get queries() { return this._raw_lView[QUERIES]; }
-  get tHost() { return this._raw_lView[T_HOST]; }
+  get tView(): ITView { return this._raw_lView[TVIEW]; }
+  get cleanup(): any[]|null { return this._raw_lView[CLEANUP]; }
+  get injector(): Injector|null { return this._raw_lView[INJECTOR]; }
+  get rendererFactory(): RendererFactory3 { return this._raw_lView[RENDERER_FACTORY]; }
+  get renderer(): Renderer3 { return this._raw_lView[RENDERER]; }
+  get sanitizer(): Sanitizer|null { return this._raw_lView[SANITIZER]; }
+  get childHead(): LViewDebug|LContainerDebug|null { return toDebug(this._raw_lView[CHILD_HEAD]); }
+  get next(): LViewDebug|LContainerDebug|null { return toDebug(this._raw_lView[NEXT]); }
+  get childTail(): LViewDebug|LContainerDebug|null { return toDebug(this._raw_lView[CHILD_TAIL]); }
+  get declarationView(): LViewDebug|null { return toDebug(this._raw_lView[DECLARATION_VIEW]); }
+  get queries(): LQueries|null { return this._raw_lView[QUERIES]; }
+  get tHost(): TViewNode|TElementNode|null { return this._raw_lView[T_HOST]; }
 
   /**
    * Normalized view of child views (and containers) attached at this location.
