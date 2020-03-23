@@ -92,6 +92,34 @@ module.exports = {
         format.checkFormat('file', clangFormat, {verbose: true, fail: true}));
   },
 
+  // Format only the untracked source code files with clang-format (see .clang-format)
+  'enforce-untracked': (gulp) => () => {
+    const format = require('gulp-clang-format');
+    const clangFormat = require('clang-format');
+    const gulpFilter = require('gulp-filter');
+
+    return gulpStatus()
+        .pipe(gulpFilter(srcsToFmt))
+        .pipe(format.checkFormat('file', clangFormat, {verbose: true, fail: true}));
+  },
+
+  // Format only the changed source code files diffed from the provided branch with clang-format
+  // (see .clang-format)
+  'enforce-diff': (gulp) => () => {
+    const format = require('gulp-clang-format');
+    const clangFormat = require('clang-format');
+    const gulpFilter = require('gulp-filter');
+    const minimist = require('minimist');
+    const gulpGit = require('gulp-git');
+
+    const args = minimist(process.argv.slice(2));
+    const branch = args.branch || 'master';
+
+    return gulpGit.diff(branch, {log: false})
+        .pipe(gulpFilter(srcsToFmt))
+        .pipe(format.checkFormat('file', clangFormat, {verbose: true, fail: true}));
+  },
+
   // Format the source code with clang-format (see .clang-format)
   format: (gulp) => () => {
     const format = require('gulp-clang-format');
