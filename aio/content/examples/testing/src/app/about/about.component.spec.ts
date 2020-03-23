@@ -10,7 +10,7 @@ describe('AboutComponent (highlightDirective)', () => {
   // #docregion tests
   beforeEach(() => {
     fixture = TestBed.configureTestingModule({
-      declarations: [ AboutComponent, HighlightDirective],
+      declarations: [ AboutComponent, HighlightDirective ],
       schemas:      [ NO_ERRORS_SCHEMA ]
     })
     .createComponent(AboutComponent);
