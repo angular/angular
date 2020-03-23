@@ -2,10 +2,9 @@ import { TimelineComponent } from './timeline.component';
 
 describe('TimelineComponent', () => {
   let comp: TimelineComponent;
-  const sanitizer = {};
 
   beforeEach(() => {
-    comp = new TimelineComponent(sanitizer as any);
+    comp = new TimelineComponent();
   });
 
   it('should calculate the framerate from passed duration', () => {

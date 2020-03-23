@@ -3,7 +3,6 @@ import { ProfilerFrame } from 'protocol';
 import { FlamegraphFormatter, FlamegraphNode } from './record-formatter/flamegraph-formatter';
 import { AppEntry, TimelineView, GraphNode } from './record-formatter/record-formatter';
 import { WebtreegraphFormatter, WebtreegraphNode } from './record-formatter/webtreegraph-formatter';
-import { DomSanitizer } from '@angular/platform-browser';
 
 export enum VisualizationMode {
   FlameGraph,
@@ -43,8 +42,6 @@ export class TimelineComponent {
   cmpVisualizationModes = VisualizationMode;
   visualizationMode = VisualizationMode.FlameGraph;
   graphData: GraphNode<FlamegraphNode | WebtreegraphNode>[] = [];
-
-  constructor(private sanitizer: DomSanitizer) {}
 
   get formatter(): FlamegraphFormatter | WebtreegraphFormatter {
     return formatters[this.visualizationMode];

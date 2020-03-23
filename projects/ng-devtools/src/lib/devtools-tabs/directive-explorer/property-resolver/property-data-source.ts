@@ -1,4 +1,4 @@
-import { Descriptor, DirectivePosition, Events, MessageBus, Properties, PropType } from 'protocol';
+import { Descriptor, DirectivePosition, Events, MessageBus, Properties } from 'protocol';
 import { CollectionViewer, DataSource, SelectionChange } from '@angular/cdk/collections';
 import { BehaviorSubject, merge, Observable, Subscription } from 'rxjs';
 import { MatTreeFlattener } from '@angular/material/tree';
@@ -102,7 +102,7 @@ export class PropertyDataSource extends DataSource<FlatNode> {
     this._onRequestingNestedProperties();
     this._messageBus.emit('getNestedProperties', [this._entityPosition, parentPath]);
 
-    this._messageBus.once('nestedProperties', (position: DirectivePosition, data: Properties, path: string[]) => {
+    this._messageBus.once('nestedProperties', (position: DirectivePosition, data: Properties, _path: string[]) => {
       node.prop.descriptor.value = data.props;
       this._treeControl.expand(node);
       const props = this._arrayify(data.props, node.prop);

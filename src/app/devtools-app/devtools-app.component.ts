@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { IFrameMessageBus } from 'src/iframe-message-bus';
 import { MessageBus, Events } from 'protocol';
 

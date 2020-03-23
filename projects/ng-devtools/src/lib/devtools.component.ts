@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MessageBus, Events } from 'protocol';
 import { interval } from 'rxjs';
 import { animate, style, transition, trigger } from '@angular/animations';

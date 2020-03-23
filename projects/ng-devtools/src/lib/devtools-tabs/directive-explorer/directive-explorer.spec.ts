@@ -1,5 +1,5 @@
 import { DirectiveExplorerComponent } from './directive-explorer.component';
-import { ComponentExplorerViewQuery, PropertyQueryTypes } from 'protocol';
+import { PropertyQueryTypes } from 'protocol';
 import { IndexedNode } from './directive-forest/index-forest';
 import SpyObj = jasmine.SpyObj;
 import { ElementPropertyResolver } from './property-resolver/element-property-resolver';
@@ -51,11 +51,6 @@ describe('DirectiveExplorerComponent', () => {
       currentSelectedElement.position = [0];
       currentSelectedElement.children = [];
       comp.currentSelectedElement = currentSelectedElement;
-      const propertyTab = {
-        propertyTabBody: {
-          propertyViews: jasmine.createSpyObj('propertyTab', ['toArray']),
-        },
-      };
       comp.refresh();
       expect(comp.currentSelectedElement).toBeTruthy();
       expect(messageBusMock.emit).toHaveBeenCalledWith('getLatestComponentExplorerView', [undefined]);

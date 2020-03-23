@@ -37,8 +37,6 @@ export type DestroyCallback = (
   position: ElementPosition
 ) => void;
 
-declare const ng: any;
-
 export interface Config {
   onCreate: CreationCallback;
   onDestroy: DestroyCallback;
