@@ -1,6 +1,5 @@
 import {
   DirectivePosition,
-  DirectivesProperties,
   ElementPosition,
   Events,
   MessageBus,
@@ -11,13 +10,7 @@ import {
   ComponentExplorerViewQuery,
 } from 'protocol';
 import { onChangeDetection } from './change-detection-tracker';
-import {
-  ComponentTreeNode,
-  getDirectiveMetaData,
-  getLatestComponentState,
-  queryDirectiveForest,
-  updateState,
-} from './component-tree';
+import { ComponentTreeNode, getLatestComponentState, queryDirectiveForest, updateState } from './component-tree';
 import { start as startProfiling, stop as stopProfiling } from './observer';
 import { serializeDirectiveState } from './state-serializer/state-serializer';
 import { ComponentInspector, ComponentInspectorOptions } from './component-inspector/component-inspector';

@@ -1,6 +1,5 @@
-import { FlamegraphFormatter } from './flamegraph-formatter';
 import { ElementProfile, ProfilerFrame } from 'protocol';
-import { AppEntry, RecordFormatter, TimelineView } from './record-formatter';
+import { AppEntry, RecordFormatter } from './record-formatter';
 
 class MockFormatter extends RecordFormatter<any> {
   addFrame(nodes: any[], elements: ElementProfile[], prev?: any): void {

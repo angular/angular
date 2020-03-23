@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { IndexedNode } from '../../directive-forest/index-forest';
-import { ElementPropertyResolver } from '../../property-resolver/element-property-resolver';
 
 @Component({
   templateUrl: './property-tab-body.component.html',
@@ -10,8 +9,6 @@ import { ElementPropertyResolver } from '../../property-resolver/element-propert
 export class PropertyTabBodyComponent {
   @Input() currentSelectedElement: IndexedNode | null;
   @Output() copyPropData = new EventEmitter<string>();
-
-  constructor(private _nestedProps: ElementPropertyResolver) {}
 
   getCurrentDirectives(): string[] | undefined {
     if (!this.currentSelectedElement) {

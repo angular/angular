@@ -1,4 +1,4 @@
-import { Component, Input, ViewChildren, QueryList, OnInit, OnDestroy } from '@angular/core';
+import { Component, ViewChildren, QueryList, OnInit, OnDestroy } from '@angular/core';
 import { RecordingModalComponent } from './recording/recording-modal/recording-modal.component';
 import { MessageBus, Events, ProfilerFrame } from 'protocol';
 import { FileApiService } from '../../../file-api-service';

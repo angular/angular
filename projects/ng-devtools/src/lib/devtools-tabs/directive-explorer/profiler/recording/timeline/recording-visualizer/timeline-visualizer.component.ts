@@ -1,6 +1,5 @@
 import { Component, Input } from '@angular/core';
 import { VisualizationMode } from '../timeline.component';
-import { TimelineView } from '../record-formatter/record-formatter';
 import { FlamegraphNode } from '../record-formatter/flamegraph-formatter';
 import { WebtreegraphNode } from '../record-formatter/webtreegraph-formatter';
 

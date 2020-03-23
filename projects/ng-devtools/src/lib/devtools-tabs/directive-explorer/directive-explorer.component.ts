@@ -3,7 +3,6 @@ import {
   MessageBus,
   Events,
   DevToolsNode,
-  DirectivesProperties,
   ComponentExplorerViewQuery,
   ComponentExplorerView,
   ElementPosition,
