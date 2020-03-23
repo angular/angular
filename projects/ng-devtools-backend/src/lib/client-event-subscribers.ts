@@ -85,7 +85,7 @@ const stopProfilingCallback = (messageBus: MessageBus<Events>) => () => {
 
 const selectedComponentCallback = (position: ElementPosition) => {
   const node = queryDirectiveForest(position, getDirectiveForest());
-  setConsoleReference(node as IndexedNode);
+  setConsoleReference({ node, position });
 };
 
 const getNestedPropertiesCallback = (messageBus: MessageBus<Events>) => (
