@@ -2906,6 +2906,12 @@ In the test we need to follow the same principe to simplify it.
  expect(spy).toHaveBeenCalledWith(param); // failed #valid
 ```
 
+<code-example
+  path="testing/src/app/hero/hero-list.component.no-testbed.spec.ts"
+  region="test-with-spies"
+  header="app/hero/hero-list.component.no-testbed.spec.ts (tests as pure javascript)">
+</code-example>
+
 ## Attribute Directive Testing
 
 An _attribute directive_ modifies the behavior of an element, component or another directive.
