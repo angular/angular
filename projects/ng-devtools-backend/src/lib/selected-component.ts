@@ -1,28 +1,35 @@
 import { arrayEquals } from 'shared-utils';
-import { IndexedNode } from './observer/identity-tracker';
+import { ElementPosition } from 'protocol';
+import { ComponentTreeNode } from './component-tree';
+
+interface ConsoleReferenceNode {
+  node: ComponentTreeNode | null;
+  position: ElementPosition;
+}
 
 declare const ng: any;
 
 const CONSOLE_REFERENCE_PREFIX = '$ng';
 const CAPACITY = 5;
-const nodesForConsoleReference: IndexedNode[] = [];
 
-export const setConsoleReference = (node: IndexedNode | null) => {
-  if (node === null) {
+const nodesForConsoleReference: ConsoleReferenceNode[] = [];
+
+export const setConsoleReference = (referenceNode: ConsoleReferenceNode) => {
+  if (referenceNode.node === null) {
     return;
   }
-  _setConsoleReference(node);
+  _setConsoleReference(referenceNode);
 };
 
-const _setConsoleReference = (node: IndexedNode) => {
-  prepareCurrentReferencesForInsertion(node);
-  nodesForConsoleReference.unshift(node);
+const _setConsoleReference = (referenceNode: ConsoleReferenceNode) => {
+  prepareCurrentReferencesForInsertion(referenceNode);
+  nodesForConsoleReference.unshift(referenceNode);
   assignConsoleReferencesFrom(nodesForConsoleReference);
 };
 
-const prepareCurrentReferencesForInsertion = (node: IndexedNode) => {
+const prepareCurrentReferencesForInsertion = (referenceNode: ConsoleReferenceNode) => {
   const foundIndex = nodesForConsoleReference.findIndex(nodeToLookFor =>
-    arrayEquals(nodeToLookFor.position, node.position)
+    arrayEquals(nodeToLookFor.position, referenceNode.position)
   );
   if (foundIndex !== -1) {
     nodesForConsoleReference.splice(foundIndex, 1);
@@ -31,11 +38,13 @@ const prepareCurrentReferencesForInsertion = (node: IndexedNode) => {
   }
 };
 
-const assignConsoleReferencesFrom = (nodes: IndexedNode[]) => {
-  nodes.forEach((node, index) => setDirectiveKey(node, getConsoleReferenceWithIndexOf(index)));
+const assignConsoleReferencesFrom = (referenceNodes: ConsoleReferenceNode[]) => {
+  referenceNodes.forEach((referenceNode, index) =>
+    setDirectiveKey(referenceNode.node, getConsoleReferenceWithIndexOf(index))
+  );
 };
 
-const setDirectiveKey = (node: IndexedNode | null, key) => {
+const setDirectiveKey = (node: ComponentTreeNode | null, key) => {
   Object.defineProperty(window, key, {
     get: () => {
       if (node && node.nativeElement instanceof HTMLElement) {
