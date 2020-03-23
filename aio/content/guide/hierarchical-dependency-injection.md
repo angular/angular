@@ -1338,8 +1338,12 @@ ending `ElementInjector` using the visibility decorators `@Host()`,
 이번 섹션에서는 `ElementInjector`의 탐색 시작지점과 종료지점을 변경할 때 사용하는 `@Host()`, `@Self()`, `@SkipSelf()` 데코레이터에 대해 알아봅시다.
 
 
+<!--
 ### Visibility of provided tokens
+-->
+### 의존성 토큰의 접근가능 범위
 
+<!--
 Visibility decorators influence where the search for the injection
 token begins and ends in the logic tree. To do this, place
 visibility decorators at the point of injection, that is, the
@@ -1367,14 +1371,36 @@ Emoji from FlowerService: 🌺
 ```
 
 In a logical tree, this same idea might look like this:
+-->
+의존성 토큰의 접근가능 범위를 조정하는 데코레이터를 사용하면 의존성 토큰을 탐색하는 논리 트리의 시작 지점과 종료 지점을 변경할 수 있습니다.
+그리고 이렇게 탐색 범위를 변경하는 데코레이터는 의존성 객체가 선언된 부분이 아니라 의존성 객체를 주입하는 `constructor()`에 사용합니다.
 
+`FlowerService`를 탐색하는 시작 지점을 변경하려면 `<app-child>`에 `FlowerService`를 주입하는 `@Inject()` 데코레이터에 `@SkipSelf()`를 사용하면 됩니다.
+`child.component.ts` 파일에 사용된 코드를 보면 이렇습니다:
+
+```typescript
+  constructor(@SkipSelf() public flower : FlowerService) { }
+```
+
+`<app-child>`에 주입되는 `FlowerService`에 `@SkipSelf()`를 사용하면 이 서비스의 프로바이더를 찾을 때 이 컴포넌트를 건너뜁니다.
+그리고 이 컴포넌트의 부모 컴포넌트인 `<app-root>`의 `ElementInjector`에서 서비스 프로바이더를 찾지만, 부모 컴포넌트에는 서비스 프로바이더가 등록되어 있지 않기 때문에 탐색 요청이 `<app-child>`의 `ModuleInjector`로 넘겨지는데, 이 인젝터에서 🌺를 찾을 수 있습니다.
+그래서 화면에는 다음과 같은 내용이 표시됩니다:
+
+```
+Emoji from FlowerService: 🌺
+```
+
+그리고 이 내용을 논리 트리 관점에서 보면 이렇게 표현할 수 있습니다:
+
+
+<!--
 ```
 <app-root @NgModule(AppModule)
         @Inject(FlowerService) flower=>"🌺">
   <#VIEW>
     <app-child @Provide(FlowerService="🌻")>
       <#VIEW @Inject(FlowerService, SkipSelf)=>"🌺">
-      <!-- With SkipSelf, the injector looks to the next injector up the tree -->
+      <!- With SkipSelf, the injector looks to the next injector up the tree ->
       </#VIEW>
       </app-child>
   </#VIEW>
@@ -1394,8 +1420,8 @@ because `@Host()` limits the upper bound of the search to the
 ```
 <app-root @NgModule(AppModule)
         @Inject(FlowerService) flower=>"🌺">
-  <#VIEW> <!-- end search here with null-->
-    <app-child @Provide(FlowerService="🌻")> <!-- start search here -->
+  <#VIEW> <!- end search here with null->
+    <app-child @Provide(FlowerService="🌻")> <!- start search here ->
       <#VIEW @Inject(FlowerService, @SkipSelf, @Host, @Optional)=>null>
       </#VIEW>
       </app-parent>
@@ -1413,9 +1439,54 @@ for `FlowerService`, so it doesn't find it and returns `null`.
 not throw an error, but the principles are the same.
 
 </div>
+-->
+```
+<app-root @NgModule(AppModule)
+        @Inject(FlowerService) flower=>"🌺">
+  <#VIEW>
+    <app-child @Provide(FlowerService="🌻")>
+      <#VIEW @Inject(FlowerService, SkipSelf)=>"🌺">
+      <!-- SkipSelf를 사용하면 다음 인젝터로 넘어갑니다. -->
+      </#VIEW>
+      </app-child>
+  </#VIEW>
+</app-root>
+```
 
+`<app-child>`에도 🌻 값으로 프로바이더가 등록되어있긴 하지만 이 코드에서는 `@SkipSelf()`를 사용했기 때문에 해당 컴포넌트를 건너뛰고 부모 컴포넌트에 등록된 값인 🌺가 주입됩니다.
+
+그리고 이 때 `@Host()`를 함께 사용하면 `FlowerService`에는 `null`이 주입됩니다.
+왜냐하면 `@Host()`는 의존성 토큰의 탐색 범위를 `<#VIEW>`까지로 제한하기 때문입니다.
+논리 트리로 보면 이렇습니다:
+
+```
+<app-root @NgModule(AppModule)
+        @Inject(FlowerService) flower=>"🌺">
+  <#VIEW> <!-- 탐색이 중단되고 null이 반환됩니다.-->
+    <app-child @Provide(FlowerService="🌻")> <!-- 탐색이 여기에서 시작됩니다. -->
+      <#VIEW @Inject(FlowerService, @SkipSelf, @Host, @Optional)=>null>
+      </#VIEW>
+      </app-parent>
+  </#VIEW>
+</app-root>
+```
+
+이 코드로 볼 때 서비스 프로바이더마다 어떤 값이 할당되어 있지만 `@Host()`를 사용하면 의존성 객체 탐색이 `<#VIEW>` 위쪽으로 진행되지 않습니다.
+그래서 적절한 프로바이더를 찾지 못했기 때문에 `null`이 반환됩니다.
+
+<div class="alert is-helpful">
+
+**참고:** 이 예제 코드에서는 `@Optional()`을 사용했기 때문에 에러가 발생하지 않습니다.
+
+</div>
+
+
+<!--
 ### `@SkipSelf()` and `viewProviders`
+-->
+### `@SkipSelf()`와 `viewProviders`
 
+<!--
 The `<app-child>` currently provides the `AnimalService` in
 the `viewProviders` array with the value of 🐶 (puppy). Because
 the injector has only to look at the `<app-child>`'s `ElementInjector`
@@ -1454,12 +1525,12 @@ The logical tree looks like this with `@SkipSelf()` in `<app-child>`:
 ```
   <app-root @NgModule(AppModule)
           @Inject(AnimalService=>"🐳")>
-    <#VIEW><!-- search begins here -->
+    <#VIEW><!- search begins here ->
       <app-child>
         <#VIEW
          @Provide(AnimalService="🐶")
          @Inject(AnimalService, SkipSelf=>"🐳")>
-         <!--Add @SkipSelf -->
+         <!-Add @SkipSelf ->
         </#VIEW>
         </app-child>
     </#VIEW>
@@ -1469,13 +1540,67 @@ The logical tree looks like this with `@SkipSelf()` in `<app-child>`:
 With `@SkipSelf()` in the `<app-child>`, the injector begins its
 search for the `AnimalService` in the `<app-root>` `ElementInjector`
 and finds 🐳 (whale).
+-->
+`<app-child>`에는 `viewProviders`에 `AnimalService` 프로바이더가 🐶(강아지)라는 값으로 등록되어있습니다.
+그래서 `<app-child>`에 `AnimalService`를 의존성으로 요청할 때 항상 이 값을 사용하며 🐳(고래)라는 값을 만날 일은 없습니다.
 
+그리고 `FlowerService` 예제와 마찬가지로 생성자에 주입하는 `AnimalService`에 `@SkipSelf()`를 추가하면 인젝터는 현재 컴포넌트인 `<app-child>`의 `ElementInjector`에 등록된 `AnimalService`를 건너뜁니다.
+
+```typescript=
+export class ChildComponent {
+
+// @SkipSelf()를 추가합니다.
+  constructor(@SkipSelf() public animal : AnimalService) { }
+
+}
+```
+
+대신, 인젝터는 `<app-root>`의 `ElementInjector`에서 서비스 프로바이더를 찾기 시작합니다.
+`<app-child>` 클래스에는 `viewProviders`에 🐶라는 값으로 `AnimalService`를 등록했던 것을 잊지 마세요:
+
+```ts
+@Component({
+  selector: 'app-child',
+  ...
+  viewProviders:
+  [{ provide: AnimalService, useValue: { emoji: '🐶' } }]
+})
+```
+
+`<app-child>`에 `@SkipSelf()`를 사용했을 때 논리 트리를 표현해보면 이렇습니다:
+
+```
+  <app-root @NgModule(AppModule)
+          @Inject(AnimalService=>"🐳")>
+    <#VIEW><!-- 탐색이 여기에서 시작됩니다. -->
+      <app-child>
+        <#VIEW
+         @Provide(AnimalService="🐶")
+         @Inject(AnimalService, SkipSelf=>"🐳")>
+         <!-- @SkipSelf가 추가되었습니다. -->
+        </#VIEW>
+        </app-child>
+    </#VIEW>
+  </app-root>
+```
+
+`<app-child>`에 주입되는 `AnimalService`에 `@SkipSelf()`를 사용하면 현재 컴포넌트를 건너뛰고 `<app-root>`의 `ElementInjector`를 찾게되며, 이 인젝터에서 🐳(고래) 값을 찾을 수 있습니다.
+
+
+<!--
 ### `@Host()` and `viewProviders`
+-->
+### `@Host()`와 `viewProviders`
 
+<!--
 If you add `@Host()` to the constructor for `AnimalService`, the
 result is 🐶 (puppy) because the injector finds the `AnimalService`
 in the `<app-child>` `<#VIEW>`. Here is the `viewProviders` array
 in the `<app-child>` class and `@Host()` in the constructor:
+-->
+클래스 생성자에 주입하는 `AnimalService`에 `@Host()`를 사용하면 🐶(강아지) 값을 갖는 서비스가 주입됩니다.
+왜냐하면 `<app-child>` 클래스의 `viewProviders` 배열에 `AnimalService`가 등록되어 있기 때문입니다.
+클래스 선언부 코드는 이렇습니다. 이 코드의 의존성 주입 부분에는 `@Host()` 데코레이터도 사용되었습니다:
 
 ```typescript=
 @Component({
@@ -1490,6 +1615,7 @@ export class ChildComponent {
 }
 ```
 
+<!--
 `@Host()` causes the injector to look until it encounters the edge of the `<#VIEW>`.
 
 ```
@@ -1499,15 +1625,35 @@ export class ChildComponent {
       <app-child>
         <#VIEW
          @Provide(AnimalService="🐶")
-         @Inject(AnimalService, @Host=>"🐶")> <!-- @Host stops search here -->
+         @Inject(AnimalService, @Host=>"🐶")> <!- @Host stops search here ->
+        </#VIEW>
+        </app-child>
+    </#VIEW>
+  </app-root>
+```
+-->
+`@Host()` 데코레이터는 인젝터가 `<#VIEW>` 범위까지만 의존성 토큰을 탐색하도록 탐색 범위를 조정합니다.
+
+```
+  <app-root @NgModule(AppModule)
+          @Inject(AnimalService=>"🐳")>
+    <#VIEW>
+      <app-child>
+        <#VIEW
+         @Provide(AnimalService="🐶")
+         @Inject(AnimalService, @Host=>"🐶")> <!-- @Host를 사용했기 때문에 탐색은 여기에서 멈춥니다. -->
         </#VIEW>
         </app-child>
     </#VIEW>
   </app-root>
 ```
 
+<!--
 Add a `viewProviders` array with a third animal, 🦔 (hedgehog), to the
 `app.component.ts` `@Component()` metadata:
+-->
+이제 `app.component.ts` 파일의 `@Component()` 메타데이터 `viewProviders` 배열에 또 다른 서비스 프로바이더를 추가해 봅시다.
+이 서비스 프로바이더의 `emoji` 프로퍼티 값은 🦔(고슴도치)로 할당되어 있습니다:
 
 ```typescript
 @Component({
@@ -1518,10 +1664,14 @@ Add a `viewProviders` array with a third animal, 🦔 (hedgehog), to the
 })
 ```
 
+<!--
 Next, add `@SkipSelf()` along with `@Host()` to the constructor for the
 `Animal Service` in `child.component.ts`. Here are `@Host()`
 and `@SkipSelf()` in the `<app-child>`
 constructor :
+-->
+그리고 `child.component.ts` 파일의 생성자에 주입되는 `AnimalService`에 `@SkipSelf()` 데코레이터와 `@Host()` 데코레이터를 추가해 봅시다.
+그러면 클래스 생성자 부분은 이렇습니다:
 
 ```ts
 export class ChildComponent {
@@ -1532,6 +1682,7 @@ export class ChildComponent {
 }
 ```
 
+<!--
 When `@Host()` and `SkipSelf()` were applied to the `FlowerService`,
 which is in the `providers` array, the result was `null` because
 `@SkipSelf()` starts its search in the `<app-child>` injector, but
@@ -1543,40 +1694,82 @@ However, the `AnimalService`, which is provided in the
 `AppComponent` `viewProviders` array, is visible.
 
 The logical tree representation shows why this is:
+-->
+`providers` 배열에 등록된 `FlowerService`에 `@Host()`와 `@SkipSelf()`를 적용하면 `null`이 주입됩니다.
+왜냐하면 `@SkipSelf()`를 사용했기 때문에 `<app-child>` 인젝터를 건너 뛰며, `@Host()`를 사용했기 때문에 `<#VIEW>`를 범위 밖에서는 프로바이더를 찾지 않기 때문입니다.
+이 범위 안에서는 `FlowerService`를 찾을 수 없기 때문에 의존성으로 주입되는 값은 `null`이 됩니다.
+`FlowerService`는 `<app-child>`에서 접근할 수 있지 `<#VIEW>`에서 접근할 수 있는 것이 아닙니다.
 
+그런데 `AnimalService`는 `AppComponent`의 `viewProviders` 배열에 등록되어 있기 때문에 접근할 수 있습니다.
+
+이 내용을 논리 트리로 표현해보면 이렇습니다:
+
+<!--
 ```html
 <app-root @NgModule(AppModule)
         @Inject(AnimalService=>"🐳")>
   <#VIEW @Provide(AnimalService="🦔")
          @Inject(AnimalService, @SkipSelf, @Host, @Optional)=>"🦔">
-    <!-- ^^@SkipSelf() starts here,  @Host() stops here^^ -->
+    <!- ^^@SkipSelf() starts here,  @Host() stops here^^ ->
     <app-child>
       <#VIEW @Provide(AnimalService="🐶")
              @Inject(AnimalService, @SkipSelf, @Host, @Optional)=>"🐶">
-               <!-- Add @SkipSelf ^^-->
+               <!- Add @SkipSelf ^^->
+      </#VIEW>
+      </app-child>
+  </#VIEW>
+</app-root>
+```
+-->
+```html
+<app-root @NgModule(AppModule)
+        @Inject(AnimalService=>"🐳")>
+  <#VIEW @Provide(AnimalService="🦔")
+         @Inject(AnimalService, @SkipSelf, @Host, @Optional)=>"🦔">
+    <!-- 의존성 토큰 탐색은 여기에서 시작되고(@SkipSelf) 여기에서 끝납니다.(@Host) -->
+    <app-child>
+      <#VIEW @Provide(AnimalService="🐶")
+             @Inject(AnimalService, @SkipSelf, @Host, @Optional)=>"🐶">
+               <!-- @SkipSelf가 사용되었습니다. -->
       </#VIEW>
       </app-child>
   </#VIEW>
 </app-root>
 ```
 
+<!--
 `@SkipSelf()`, causes the injector to start its search for
 the `AnimalService` at the `<app-root>`, not the `<app-child>`,
 where the request originates, and `@Host()` stops the search
 at the `<app-root>` `<#VIEW>`. Since `AnimalService` is
 provided via the `viewProviders` array, the injector finds 🦔
 (hedgehog) in the `<#VIEW>`.
+-->
+`@SkipSelf()`를 사용하면 `AnimalService` 탐색범위의 시작 지점이 `<app-child>`가 아니라 `<app-root>`로 변경됩니다.
+그리고 `@Host()`를 사용하면 탐색범위의 종료 지점이 `<app-root>`의 `<@VIEW>`로 변경됩니다.
+이 범위에서는 `viewProviders` 배열에 `AnimalService` 프로바이더가 등록되어 있기 때문에 `<#VIEW>`에서 찾을 수 있는 값은 🦔(고슴도치)입니다.
 
 
 {@a component-injectors}
 
+<!--
 ## `ElementInjector` use case examples
+-->
+## `ElementInjector` 예제
 
+<!--
 The ability to configure one or more providers at different levels
 opens up useful possibilities.
 For a look at the following scenarios in a working app, see the <live-example>heroes use case examples</live-example>.
+-->
+서비스 프로바이더는 여러 계층에 등록할 수 있기 때문에 여러 방식으로 서비스를 활용할 수 있습니다.
+과정을 진행하는 동안 설명하는 내용은 <live-example>히어로 예제</live-example>에서 참고할 수 있습니다.
 
+
+<!--
 ### Scenario: service isolation
+-->
+### 시나리오: 독립 서비스 만들기
 
 Architectural reasons may lead you to restrict access to a service to the application domain where it belongs.
 For example, the guide sample includes a `VillainsListComponent` that displays a list of villains.
@@ -1604,7 +1797,6 @@ because that is where it is declared. As long as `VillainsListComponent`
 does not get destroyed it will be the same instance of `VillainService`
 but if there are multilple instances of `VillainsListComponent`, then each
 instance of `VillainsListComponent` will have its own instance of `VillainService`.
-
 
 
 ### Scenario: multiple edit sessions
