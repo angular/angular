@@ -3570,19 +3570,10 @@ cjson@^0.3.1:
   dependencies:
     json-parse-helpfulerror "^1.0.3"
 
-clang-format@1.0.41:
-  version "1.0.41"
-  resolved "https://registry.yarnpkg.com/clang-format/-/clang-format-1.0.41.tgz#28552e50b0c9e44d23f85aebe3d2fbd06c93620c"
-  integrity sha1-KFUuULDJ5E0j+Frr49L70GyTYgw=
-  dependencies:
-    async "^1.5.2"
-    glob "^7.0.0"
-    resolve "^1.1.6"
-
-clang-format@^1.0.32:
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/clang-format/-/clang-format-1.2.3.tgz#2763561aa7449c43737480f8df3a2b5b66e6cf37"
-  integrity sha512-x90Hac4ERacGDcZSvHKK58Ga0STuMD+Doi5g0iG2zf7wlJef5Huvhs/3BvMRFxwRYyYSdl6mpQNrtfMxE8MQzw==
+clang-format@^1.0.32, clang-format@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/clang-format/-/clang-format-1.4.0.tgz#1ee2f10637eb5bb0bd7d0b82c949af68e848367e"
+  integrity sha512-NrdyUnHJOGvMa60vbWk7GJTvOdhibj3uK5C0FlwdNG4301OUvqEJTFce9I9x8qw2odBbIVrJ+9xbsFS3a4FbDA==
   dependencies:
     async "^1.5.2"
     glob "^7.0.0"
@@ -7020,18 +7011,17 @@ gtoken@^4.1.0:
     jws "^4.0.0"
     mime "^2.2.0"
 
-gulp-clang-format@1.0.23:
-  version "1.0.23"
-  resolved "https://registry.yarnpkg.com/gulp-clang-format/-/gulp-clang-format-1.0.23.tgz#fe258586b83998491e632fc0c4fc0ecdfa10c89f"
-  integrity sha1-/iWFhrg5mEkeYy/AxPwOzfoQyJ8=
+gulp-clang-format@^1.0.27:
+  version "1.0.27"
+  resolved "https://registry.yarnpkg.com/gulp-clang-format/-/gulp-clang-format-1.0.27.tgz#c89716c26745703356c4ff3f2b0964393c73969e"
+  integrity sha512-Jj4PGuNXKdqVCh9fijvL7wdzma5TQRJz1vv8FjOjnSkfq3s/mvbdE/jq+5HG1c/q+jcYkXTEGkYT3CrdnJOLaQ==
   dependencies:
     clang-format "^1.0.32"
+    fancy-log "^1.3.2"
     gulp-diff "^1.0.0"
-    gulp-util "^3.0.4"
-    pkginfo "^0.3.0"
+    plugin-error "^1.0.1"
     stream-combiner2 "^1.1.1"
-    stream-equal "0.1.6"
-    through2 "^0.6.3"
+    through2 "^2.0.3"
 
 gulp-conventional-changelog@^2.0.3:
   version "2.0.3"
@@ -7089,7 +7079,7 @@ gulp-tslint@8.1.2:
     map-stream "~0.0.7"
     through "~2.3.8"
 
-gulp-util@^3.0.0, gulp-util@^3.0.4, gulp-util@^3.0.6, gulp-util@~3.0.8:
+gulp-util@^3.0.0, gulp-util@^3.0.6, gulp-util@~3.0.8:
   version "3.0.8"
   resolved "https://registry.yarnpkg.com/gulp-util/-/gulp-util-3.0.8.tgz#0054e1e744502e27c04c187c3ecc505dd54bbb4f"
   integrity sha1-AFTh50RQLifATBh8PsxQXdVLu08=
@@ -11459,7 +11449,7 @@ pkg-dir@^4.1.0:
   dependencies:
     find-up "^4.0.0"
 
-pkginfo@0.3.x, pkginfo@^0.3.0:
+pkginfo@0.3.x:
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/pkginfo/-/pkginfo-0.3.1.tgz#5b29f6a81f70717142e09e765bbeab97b4f81e21"
   integrity sha1-Wyn2qB9wcXFC4J52W76rl7T4HiE=
@@ -13853,11 +13843,6 @@ stream-each@^1.1.0:
     end-of-stream "^1.1.0"
     stream-shift "^1.0.0"
 
-stream-equal@0.1.6:
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/stream-equal/-/stream-equal-0.1.6.tgz#cc522fab38516012e4d4ee47513b147b72359019"
-  integrity sha1-zFIvqzhRYBLk1O5HUTsUe3I1kBk=
-
 stream-http@^2.7.2:
   version "2.8.3"
   resolved "https://registry.yarnpkg.com/stream-http/-/stream-http-2.8.3.tgz#b2d242469288a5a27ec4fe8933acf623de6514fc"
@@ -14445,7 +14430,7 @@ through2@2.0.1:
     readable-stream "~2.0.0"
     xtend "~4.0.0"
 
-through2@^0.6.1, through2@^0.6.3:
+through2@^0.6.1:
   version "0.6.5"
   resolved "https://registry.yarnpkg.com/through2/-/through2-0.6.5.tgz#41ab9c67b29d57209071410e1d7a7a968cd3ad48"
   integrity sha1-QaucZ7KdVyCQcUEOHXp6lozTrUg=
