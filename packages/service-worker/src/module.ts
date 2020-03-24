@@ -55,11 +55,12 @@ export abstract class SwRegistrationOptions {
    * registered (e.g. there might be a long-running timeout or polling interval, preventing the app
    * to stabilize). The available option are:
    *
-   * - `registerWhenStable`: Register as soon as the application stabilizes (no pending
-   *      micro-/macro-tasks).
-   * - `registerWhenStable:<timeout>`: Register when the app becomes stable or with a delay
-   *     of `<timeout>` milliseconds. This will ensure that the ServiceWorker will register
-   *     after the specified timeout, regardless of if the app is stable or not.
+   * - `registerWhenStable:<timeout>`: Register as soon as the application stabilizes (no pending
+   *     micro-/macro-tasks) but no later than `<timeout>` milliseconds. If the app hasn't
+   *     stabilized after `<timeout>` milliseconds (for example, due to a recurrent asynchronous
+   *     task), the ServiceWorker will be registered anyway.
+   *     If `<timeout>` is omitted, the ServiceWorker will only be registered once the app
+   *     stabilizes.
    * - `registerImmediately`: Register immediately.
    * - `registerWithDelay:<timeout>`: Register with a delay of `<timeout>` milliseconds. For
    *     example, use `registerWithDelay:5000` to register the ServiceWorker after 5 seconds. If
@@ -105,10 +106,11 @@ export function ngswAppInitializer(
           readyToRegister$ = of (null);
           break;
         case 'registerWithDelay':
-          readyToRegister$ = delayWithTimeout(+args[0]);
+          readyToRegister$ = delayWithTimeout(+args[0] || 0);
           break;
         case 'registerWhenStable':
-          readyToRegister$ = merge(whenStable(injector), delayWithTimeout(+args[0]));
+          readyToRegister$ = !args[0] ? whenStable(injector) :
+                                        merge(whenStable(injector), delayWithTimeout(+args[0]));
           break;
         default:
           // Unknown strategy.
@@ -126,12 +128,12 @@ export function ngswAppInitializer(
   return initializer;
 }
 
-function delayWithTimeout(timeout: number) {
-  return of (null).pipe(delay(timeout || 0));
+function delayWithTimeout(timeout: number): Observable<unknown> {
+  return of (null).pipe(delay(timeout));
 }
 
-function whenStable(injector: Injector) {
-  const appRef = injector.get<ApplicationRef>(ApplicationRef);
+function whenStable(injector: Injector): Observable<unknown> {
+  const appRef = injector.get(ApplicationRef);
   return appRef.isStable.pipe(filter(stable => stable));
 }
 
