@@ -1,17 +1,20 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ElementRef, ViewChild } from '@angular/core';
 import { ProfilerFrame } from 'protocol';
 import { FlamegraphFormatter, FlamegraphNode } from './record-formatter/flamegraph-formatter';
+import { BarGraphFormatter, BargraphNode } from './record-formatter/bargraph-formatter';
 import { AppEntry, TimelineView, GraphNode } from './record-formatter/record-formatter';
 import { WebtreegraphFormatter, WebtreegraphNode } from './record-formatter/webtreegraph-formatter';
 
 export enum VisualizationMode {
   FlameGraph,
   WebTreeGraph,
+  BarGraph,
 }
 
 const formatters = {
   [VisualizationMode.FlameGraph]: new FlamegraphFormatter(),
   [VisualizationMode.WebTreeGraph]: new WebtreegraphFormatter(),
+  [VisualizationMode.BarGraph]: new BarGraphFormatter(),
 };
 
 const MAX_HEIGHT = 50;
@@ -34,20 +37,20 @@ export class TimelineComponent {
 
   @Input() unFormattedRecords: ProfilerFrame[];
 
-  profileRecords: TimelineView<FlamegraphNode> | TimelineView<WebtreegraphNode> = {
+  profileRecords: TimelineView<FlamegraphNode> | TimelineView<WebtreegraphNode> | TimelineView<BargraphNode> = {
     timeline: [],
   };
   currentView = 0;
 
   cmpVisualizationModes = VisualizationMode;
   visualizationMode = VisualizationMode.FlameGraph;
-  graphData: GraphNode<FlamegraphNode | WebtreegraphNode>[] = [];
+  graphData: GraphNode<FlamegraphNode | WebtreegraphNode | BargraphNode>[] = [];
 
-  get formatter(): FlamegraphFormatter | WebtreegraphFormatter {
+  get formatter(): FlamegraphFormatter | WebtreegraphFormatter | BarGraphFormatter {
     return formatters[this.visualizationMode];
   }
 
-  get recordsView(): AppEntry<FlamegraphNode> | AppEntry<WebtreegraphNode> {
+  get recordsView(): AppEntry<FlamegraphNode> | AppEntry<WebtreegraphNode> | AppEntry<BargraphNode> {
     return this.profileRecords.timeline[this.currentView] || { app: [], timeSpent: 0, source: '' };
   }
 
@@ -77,13 +80,13 @@ export class TimelineComponent {
     this.renderBarChart(this.profileRecords.timeline);
   }
 
-  renderBarChart(timeline: AppEntry<FlamegraphNode | WebtreegraphNode>[]): void {
+  renderBarChart(timeline: AppEntry<FlamegraphNode | WebtreegraphNode | BargraphNode>[]): void {
     const maxValue = timeline.reduce(
-      (acc: number, node: AppEntry<FlamegraphNode | WebtreegraphNode>) => Math.max(acc, node.timeSpent),
+      (acc: number, node: AppEntry<FlamegraphNode | WebtreegraphNode | BargraphNode>) => Math.max(acc, node.timeSpent),
       0
     );
     const multiplicationFactor = parseFloat((MAX_HEIGHT / maxValue).toFixed(2));
-    this.graphData = timeline.map(d => {
+    this.graphData = timeline.map((d) => {
       const height = d.timeSpent * multiplicationFactor;
       const colorPercentage = Math.round((height / MAX_HEIGHT) * 100);
       let backgroundColor = 'rgb(237, 213, 94)';

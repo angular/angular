@@ -5,4 +5,7 @@
   <ng-container *ngSwitchCase="cmpVisualizationModes.WebTreeGraph">
     <ng-webtreegraph-visualizer [records]="records"></ng-webtreegraph-visualizer>
   </ng-container>
+  <ng-container *ngSwitchCase="cmpVisualizationModes.BarGraph">
+    <ng-bargraph-visualizer [records]="records"></ng-bargraph-visualizer>
+  </ng-container>
 </ng-container>
