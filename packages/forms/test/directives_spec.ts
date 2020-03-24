@@ -15,11 +15,13 @@ import {SpyNgControl, SpyValueAccessor} from './spies';
 
 class DummyControlValueAccessor implements ControlValueAccessor {
   writtenValue: any;
+  disabled: boolean = false;
 
   registerOnChange(fn: any) {}
   registerOnTouched(fn: any) {}
 
   writeValue(obj: any): void { this.writtenValue = obj; }
+  setDisabledState?(isDisabled: boolean): void { this.disabled = isDisabled; }
 }
 
 class CustomValidatorDirective implements Validator {
@@ -604,6 +606,38 @@ function asyncValidator(expected: any, timeout = 0) {
 
            expect(ngModel.control.errors).toEqual({'async': true});
          }));
+
+      it('should toggle enable/disable status on control', () => {
+        const controlDir =
+            new FormControlDirective([Validators.required], [], [defaultAccessor], null);
+        controlDir.valueAccessor = new DummyControlValueAccessor();
+        const spyOnDisabledState = spyOn(controlDir.valueAccessor, 'setDisabledState');
+
+        let enabledControl = new FormControl(1);
+        controlDir.form = enabledControl;
+        controlDir.ngOnChanges({'form': new SimpleChange(undefined, enabledControl, true)});
+
+        expect(enabledControl.status).toEqual('VALID');
+        expect(spyOnDisabledState).toHaveBeenCalledWith(false);
+        spyOnDisabledState.calls.reset();
+
+        const disabledControl = new FormControl(2);
+        controlDir.form = disabledControl;
+        disabledControl.disable();
+        controlDir.ngOnChanges({'form': new SimpleChange(enabledControl, disabledControl, false)});
+
+        expect(disabledControl.status).toEqual('DISABLED');
+        expect(spyOnDisabledState).toHaveBeenCalledWith(true);
+        spyOnDisabledState.calls.reset();
+
+        enabledControl = new FormControl(3);
+        controlDir.form = enabledControl;
+        enabledControl.enable();
+        controlDir.ngOnChanges({'form': new SimpleChange(disabledControl, enabledControl, false)});
+
+        expect(enabledControl.status).toEqual('VALID');
+        expect(spyOnDisabledState).toHaveBeenCalledWith(false);
+      });
 
       it('should mark as disabled properly', fakeAsync(() => {
            ngModel.ngOnChanges({isDisabled: new SimpleChange('', undefined, false)});
