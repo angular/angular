@@ -43,7 +43,7 @@ export class PriorityAwareMessageBus extends MessageBus<Events> {
   private _throttled: ThrottledTopics = {};
   private _inProgress: TopicsInProgress = {};
 
-  constructor(private _bus: MessageBus<Events>) {
+  constructor(private _bus: MessageBus<Events>, private _setTimeout: typeof setTimeout = setTimeout) {
     super();
   }
 
@@ -67,10 +67,6 @@ export class PriorityAwareMessageBus extends MessageBus<Events> {
     if (this._throttled[topic]) {
       return false;
     }
-    if (THROTTLE_METHODS[topic]) {
-      this._throttled[topic] = true;
-      setTimeout(() => (this._throttled[topic] = false), THROTTLE_METHODS[topic]);
-    }
     if (TOPIC_RESPONSE[topic]) {
       this._inProgress[topic] = true;
     }
@@ -84,6 +80,10 @@ export class PriorityAwareMessageBus extends MessageBus<Events> {
           return false;
         }
       }
+    }
+    if (THROTTLE_METHODS[topic]) {
+      this._throttled[topic] = true;
+      this._setTimeout(() => (this._throttled[topic] = false), THROTTLE_METHODS[topic]);
     }
     return this._bus.emit(topic, args);
   }
