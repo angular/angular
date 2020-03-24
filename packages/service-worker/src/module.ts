@@ -7,7 +7,7 @@
  */
 
 import {isPlatformBrowser} from '@angular/common';
-import {APP_INITIALIZER, ApplicationRef, InjectionToken, Injector, ModuleWithProviders, NgModule, PLATFORM_ID} from '@angular/core';
+import {APP_INITIALIZER, ApplicationRef, InjectionToken, Injector, ModuleWithProviders, NgModule, NgZone, PLATFORM_ID} from '@angular/core';
 import {Observable, merge, of } from 'rxjs';
 import {delay, filter, take} from 'rxjs/operators';
 
@@ -108,11 +108,14 @@ export function ngswAppInitializer(
           readyToRegister$ = of (null);
           break;
         case 'registerWithDelay':
-          readyToRegister$ = delayWithTimeout(+args[0] || 0);
+          readyToRegister$ =
+              injector.get<NgZone>(NgZone).runOutsideAngular(() => delayWithTimeout(+args[0] || 0));
           break;
         case 'registerWhenStable':
-          readyToRegister$ = !args[0] ? whenStable(injector) :
-                                        merge(whenStable(injector), delayWithTimeout(+args[0]));
+          readyToRegister$ = !args[0] ?
+              whenStable(injector) :
+              injector.get<NgZone>(NgZone).runOutsideAngular(
+                  () => merge(whenStable(injector), delayWithTimeout(+args[0])));
           break;
         default:
           // Unknown strategy.
