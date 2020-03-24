@@ -19,12 +19,10 @@
     "pretest:once": "npm run build",
     "test:once": "karma start karma.conf.js --single-run",
     "lint": "tslint ./src/**/*.ts -t verbose",
-
     "build:upgrade": "tsc",
     "serve:upgrade": "http-server",
     "build:aot": "ngc -p tsconfig-aot.json && rollup -c rollup-config.js",
     "serve:aot": "lite-server -c bs-config.aot.json",
-
     "copy-dist-files": "node ./copy-dist-files.js"
   },
   "keywords": [],
@@ -42,7 +40,7 @@
     "@angular/upgrade": "~9.0.3",
     "rxjs": "~6.5.4",
     "tslib": "^1.10.0",
-    "zone.js": "~0.10.2"
+    "zone.js": "~0.10.3"
   },
   "devDependencies": {
     "@angular/compiler-cli": "~9.0.3",
