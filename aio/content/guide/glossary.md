@@ -732,7 +732,7 @@ The alternative is a [template-driven form](#template-driven-forms).
 When using reactive forms:
 
 * The "source of truth", the form model, is defined in the component class.
-* Validation is set up through validation functions rather than valdation directives.
+* Validation is set up through validation functions rather than validation directives.
 * Each control is explicitly created in the component class by creating a `FormControl` instance manually or with `FormBuilder`.
 * The template input elements do *not* use `ngModel`.
 * The associated Angular directives are prefixed with `form`, such as `formControl`, `formGroup`, and `formControlName`.
