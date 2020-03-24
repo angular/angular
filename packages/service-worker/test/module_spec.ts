@@ -147,7 +147,7 @@ describe('ServiceWorkerModule', () => {
             return isStableSub;
           };
 
-      it('defaults to registering the SW when the app stabilizes', fakeAsync(() => {
+      it('defaults to registering the SW when the app stabilizes (under 30s)', fakeAsync(() => {
            const isStableSub = configTestBedWithMockedStability();
 
            isStableSub.next(false);
@@ -156,12 +156,23 @@ describe('ServiceWorkerModule', () => {
            tick();
            expect(swRegisterSpy).not.toHaveBeenCalled();
 
-           tick(60000);
+           tick(20000);
            expect(swRegisterSpy).not.toHaveBeenCalled();
 
            isStableSub.next(true);
 
            tick();
+           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+         }));
+
+      it('defaults to registering the SW after 30s if the app does not stabilize sooner',
+         fakeAsync(() => {
+           const isStableSub = configTestBedWithMockedStability();
+
+           tick(29999);
+           expect(swRegisterSpy).not.toHaveBeenCalled();
+
+           tick(1);
            expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
          }));
 

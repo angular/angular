@@ -100,7 +100,9 @@ export function ngswAppInitializer(
     if (typeof options.registrationStrategy === 'function') {
       readyToRegister$ = options.registrationStrategy();
     } else {
-      const [strategy, ...args] = (options.registrationStrategy || 'registerWhenStable').split(':');
+      const [strategy, ...args] =
+          (options.registrationStrategy || 'registerWhenStable:30000').split(':');
+
       switch (strategy) {
         case 'registerImmediately':
           readyToRegister$ = of (null);
