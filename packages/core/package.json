@@ -15,7 +15,7 @@
   "peerDependencies": {
     "rxjs": "^6.5.3",
     "tslib": "^1.10.0",
-    "zone.js": "~0.10.2"
+    "zone.js": "~0.10.3"
   },
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },
   "sideEffects": false,
-  "publishConfig":{
-    "registry":"https://wombat-dressing-room.appspot.com"
+  "publishConfig": {
+    "registry": "https://wombat-dressing-room.appspot.com"
   }
 }
