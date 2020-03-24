@@ -1298,6 +1298,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       }
     }
 
+    function addTemplateAttrs(
+        marker: core.AttributeMarker, attrs: (t.TextAttribute | t.BoundAttribute)[]) {
+      attrExprs.push(o.literal(marker));
+      attrs.forEach(attr => addAttrExpr(attr.name));
+    }
+
     // it's important that this occurs before BINDINGS and TEMPLATE because once `elementStart`
     // comes across the BINDINGS or TEMPLATE markers then it will continue reading each value as
     // as single property value cell by cell.
@@ -1334,8 +1340,21 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
 
     if (templateAttrs.length) {
-      attrExprs.push(o.literal(core.AttributeMarker.Template));
-      templateAttrs.forEach(attr => addAttrExpr(attr.name));
+      const staticAttrs: t.TextAttribute[] = [];
+      const boundAttrs: t.BoundAttribute[] = [];
+      templateAttrs.forEach((attr) => {
+        if (attr instanceof t.TextAttribute) {
+          staticAttrs.push(attr);
+        } else {
+          boundAttrs.push(attr);
+        }
+      });
+      if (staticAttrs.length > 0) {
+        addTemplateAttrs(core.AttributeMarker.StaticTemplateAttrs, staticAttrs);
+      }
+      if (boundAttrs.length > 0) {
+        addTemplateAttrs(core.AttributeMarker.BoundTemplateAttrs, boundAttrs);
+      }
     }
 
     if (i18nAttrs.length) {

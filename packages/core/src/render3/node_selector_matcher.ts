@@ -13,7 +13,7 @@ import {assertDefined, assertEqual, assertNotEqual} from '../util/assert';
 import {AttributeMarker, TAttributes, TNode, TNodeType, unusedValueExportToPlacateAjd as unused1} from './interfaces/node';
 import {CssSelector, CssSelectorList, SelectorFlags, unusedValueExportToPlacateAjd as unused2} from './interfaces/projection';
 import {classIndexOf} from './styling/class_differ';
-import {isNameOnlyAttributeMarker} from './util/attrs_utils';
+import {isNameOnlyAttributeMarker, isTemplateAttributeMarker} from './util/attrs_utils';
 
 const unusedValueToPlacateAjd = unused1 + unused2;
 
@@ -240,7 +240,7 @@ function findAttrIndexInNode(
           value = attrs[++i];
         }
         continue;
-      } else if (maybeAttrName === AttributeMarker.Template) {
+      } else if (isTemplateAttributeMarker(maybeAttrName)) {
         // We do not care about Template attributes in this scenario.
         break;
       } else if (maybeAttrName === AttributeMarker.NamespaceURI) {
@@ -293,17 +293,22 @@ function getNameOnlyMarkerIndex(nodeAttrs: TAttributes) {
 }
 
 function matchTemplateAttribute(attrs: TAttributes, name: string): number {
-  let i = attrs.indexOf(AttributeMarker.Template);
-  if (i > -1) {
-    i++;
-    while (i < attrs.length) {
-      const attr = attrs[i];
-      // Return in case we checked all template attrs and are switching to the next section in the
-      // attrs array (that starts with a number that represents an attribute marker).
-      if (typeof attr === 'number') return -1;
-      if (attr === name) return i;
-      i++;
+  let i = 0;
+  let isTemplateSection = false;
+  while (i < attrs.length) {
+    const attr = attrs[i];
+    if (typeof attr === 'number') {  // AttributeMarker
+      const _isTemplateSection = isTemplateSection;
+      isTemplateSection = isTemplateAttributeMarker(attr);
+      // If we were in a template attrs section and came across non-template marker, that means that
+      // the template attrs section is over, so we should exit the function.
+      if (_isTemplateSection && !isTemplateSection) {
+        return -1;
+      }
+    } else if (isTemplateSection && attrs[i] === name) {
+      return i;
     }
+    i++;
   }
   return -1;
 }

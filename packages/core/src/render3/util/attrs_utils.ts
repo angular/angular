@@ -96,9 +96,15 @@ export function setUpAttributes(renderer: Renderer3, native: RElement, attrs: TA
  * @param marker The attribute marker to test.
  * @returns true if the marker is a "name-only" marker (e.g. `Bindings`, `Template` or `I18n`).
  */
-export function isNameOnlyAttributeMarker(marker: string|AttributeMarker|CssSelector) {
-  return marker === AttributeMarker.Bindings || marker === AttributeMarker.Template ||
+export function isNameOnlyAttributeMarker(marker: string|AttributeMarker|CssSelector): boolean {
+  return marker === AttributeMarker.Bindings || isTemplateAttributeMarker(marker) ||
       marker === AttributeMarker.I18n;
+}
+
+// TODO: add docs for this function.
+export function isTemplateAttributeMarker(marker: string|AttributeMarker|CssSelector): boolean {
+  return marker === AttributeMarker.StaticTemplateAttrs ||
+      marker === AttributeMarker.BoundTemplateAttrs;
 }
 
 export function isAnimationProp(name: string): boolean {

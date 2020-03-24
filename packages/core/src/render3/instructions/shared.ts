@@ -1548,13 +1548,16 @@ function setInputsFromAttrs<T>(
  *
  * @param inputs The list of inputs from the directive def
  * @param attrs The static attrs on this node
+ *
+ * TODO: update docs to describe that we take static template attrs into account as well.
  */
 function generateInitialInputs(inputs: {[key: string]: string}, attrs: TAttributes): InitialInputs|
     null {
   let inputsToStore: InitialInputs|null = null;
+  let isStaticTemplateAttrs = false;
   let i = 0;
   while (i < attrs.length) {
-    const attrName = attrs[i];
+    let attrName = attrs[i];
     if (attrName === AttributeMarker.NamespaceURI) {
       // We do not allow inputs on namespaced attributes.
       i += 4;
@@ -1563,17 +1566,33 @@ function generateInitialInputs(inputs: {[key: string]: string}, attrs: TAttribut
       // Skip over the `ngProjectAs` value.
       i += 2;
       continue;
+    } else if (attrName === AttributeMarker.StaticTemplateAttrs) {
+      // Skip marker itself and shift `attrName` to the first item in the section.
+      i++;
+      attrName = attrs[i];
+      isStaticTemplateAttrs = true;
     }
 
-    // If we hit any other attribute markers, we're done anyway. None of those are valid inputs.
-    if (typeof attrName === 'number') break;
+    if (typeof attrName === 'number') {
+      // If we hit an attribute marker and we already seen the `StaticTemplateAttrs` marker, we exit
+      // since none of other items in attrs array is a valid input.
+      if (isStaticTemplateAttrs) {
+        break;
+      } else {
+        // Skip until the `StaticTemplateAttrs` marker (if present) or until the end of `attrs`
+        // array.
+        while (i < attrs.length && attrs[i + 1] !== AttributeMarker.StaticTemplateAttrs) i++;
+      }
+    } else {
+      if (inputs.hasOwnProperty(attrName as string)) {
+        if (inputsToStore === null) inputsToStore = [];
+        const value = isStaticTemplateAttrs ? '' : attrs[i + 1] as string;
+        inputsToStore.push(attrName as string, inputs[attrName as string], value);
+      }
 
-    if (inputs.hasOwnProperty(attrName as string)) {
-      if (inputsToStore === null) inputsToStore = [];
-      inputsToStore.push(attrName as string, inputs[attrName as string], attrs[i + 1] as string);
+      // TODO: add comment
+      i += isStaticTemplateAttrs ? 1 : 2;
     }
-
-    i += 2;
   }
   return inputsToStore;
 }

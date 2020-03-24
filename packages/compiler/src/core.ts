@@ -496,8 +496,11 @@ export const enum AttributeMarker {
    * ```
    * ['dirA', '', AttributeMarker.Bindings, 'dirB']
    * ```
+   *
+   * TODO: update docs to describe `StaticTemplateAttrs` and `BoundTemplateAttrs`
    */
-  Template = 4,
+  StaticTemplateAttrs = 4,
+  BoundTemplateAttrs = 5,
 
   /**
    * Signals that the following attribute is `ngProjectAs` and its value is a parsed `CssSelector`.
@@ -514,7 +517,7 @@ export const enum AttributeMarker {
    * ['attr', 'value', AttributeMarker.ProjectAs, ['', 'title', '']]
    * ```
    */
-  ProjectAs = 5,
+  ProjectAs = 6,
 
   /**
    * Signals that the following attribute will be translated by runtime i18n
@@ -530,5 +533,5 @@ export const enum AttributeMarker {
    * ```
    * var _c1 = ['moo', 'car', AttributeMarker.I18n, 'foo', 'bar'];
    */
-  I18n = 6,
+  I18n = 7,
 }
