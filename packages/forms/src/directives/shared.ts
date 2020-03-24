@@ -10,6 +10,7 @@ import {isDevMode} from '@angular/core';
 
 import {FormArray, FormControl, FormGroup} from '../model';
 import {Validators} from '../validators';
+
 import {AbstractControlDirective} from './abstract_control_directive';
 import {AbstractFormGroupDirective} from './abstract_form_group_directive';
 import {CheckboxControlValueAccessor} from './checkbox_value_accessor';
@@ -21,6 +22,7 @@ import {normalizeAsyncValidator, normalizeValidator} from './normalize_validator
 import {NumberValueAccessor} from './number_value_accessor';
 import {RadioControlValueAccessor} from './radio_control_value_accessor';
 import {RangeValueAccessor} from './range_value_accessor';
+import {FormControlDirective} from './reactive_directives/form_control_directive';
 import {FormArrayName} from './reactive_directives/form_group_name';
 import {ReactiveErrors} from './reactive_errors';
 import {SelectControlValueAccessor} from './select_control_value_accessor';
@@ -46,6 +48,15 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
   setUpBlurPipeline(control, dir);
 
   if (dir.valueAccessor!.setDisabledState) {
+    if ((<FormControlDirective>dir)._allowEnableFormControl) {
+      // new functionality allowing the control to be enabled/disabled
+      dir.valueAccessor!.setDisabledState!(control.disabled);
+    } else {
+      // backwards compatibility which allowed only to disable the control, but not to enable it back.
+      if (dir.disabled) {
+        dir.valueAccessor!.setDisabledState!(true);
+      }
+    }
     control.registerOnDisabledChange((isDisabled: boolean) => {
       dir.valueAccessor!.setDisabledState!(isDisabled);
     });

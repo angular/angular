@@ -10,6 +10,7 @@ import {ModuleWithProviders, NgModule} from '@angular/core';
 
 import {InternalFormsSharedModule, NG_MODEL_WITH_FORM_CONTROL_WARNING, REACTIVE_DRIVEN_DIRECTIVES, TEMPLATE_DRIVEN_DIRECTIVES} from './directives';
 import {RadioControlRegistry} from './directives/radio_control_value_accessor';
+import {ALLOW_ENABLE_FORM_CONTROL} from './directives/reactive_directives/form_control_directive';
 import {FormBuilder} from './form_builder';
 
 /**
@@ -53,12 +54,14 @@ export class ReactiveFormsModule {
    * binding is used with reactive form directives.
    */
   static withConfig(opts: {
-    /** @deprecated as of v6 */ warnOnNgModelWithFormControl: 'never'|'once'|'always'
+    /** @deprecated as of v6 */ warnOnNgModelWithFormControl: 'never'|'once'|'always',
+    allowEnableFormControl?: boolean
   }): ModuleWithProviders<ReactiveFormsModule> {
     return {
       ngModule: ReactiveFormsModule,
       providers: [
-        {provide: NG_MODEL_WITH_FORM_CONTROL_WARNING, useValue: opts.warnOnNgModelWithFormControl}
+        {provide: NG_MODEL_WITH_FORM_CONTROL_WARNING, useValue: opts.warnOnNgModelWithFormControl},
+        {provide: ALLOW_ENABLE_FORM_CONTROL, useValue: opts.allowEnableFormControl}
       ]
     };
   }

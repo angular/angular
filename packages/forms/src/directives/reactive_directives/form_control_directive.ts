@@ -23,6 +23,11 @@ import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../valid
 export const NG_MODEL_WITH_FORM_CONTROL_WARNING =
     new InjectionToken('NgModelWithFormControlWarning');
 
+/**
+ * Token to provide allowing the formControl to be enabled after it was disabled on initialization.
+ */
+export const ALLOW_ENABLE_FORM_CONTROL = new InjectionToken('AllowEnableFormControl');
+
 export const formControlBinding: any = {
   provide: NgControl,
   useExisting: forwardRef(() => FormControlDirective)
@@ -101,17 +106,29 @@ export class FormControlDirective extends NgControl implements OnChanges {
    */
   _ngModelWarningSent = false;
 
+  /**
+   * @description
+   * Instance property used to allow enabling  ngModel warning has been sent out for this
+   * particular `FormControlDirective` instance. Used to support warning config of "always".
+   *
+   * @internal
+   */
+  _allowEnableFormControl: boolean|null = false;
+
   constructor(
       @Optional() @Self() @Inject(NG_VALIDATORS) validators: Array<Validator|ValidatorFn>,
       @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators:
           Array<AsyncValidator|AsyncValidatorFn>,
       @Optional() @Self() @Inject(NG_VALUE_ACCESSOR) valueAccessors: ControlValueAccessor[],
       @Optional() @Inject(NG_MODEL_WITH_FORM_CONTROL_WARNING) private _ngModelWarningConfig: string|
-      null) {
+      null,
+      @Optional() @Inject(ALLOW_ENABLE_FORM_CONTROL) _allowEnableFormControlConfig:
+          boolean|null) {
     super();
     this._rawValidators = validators || [];
     this._rawAsyncValidators = asyncValidators || [];
     this.valueAccessor = selectValueAccessor(this, valueAccessors);
+    this._allowEnableFormControl = _allowEnableFormControlConfig;
   }
 
   /**
@@ -124,9 +141,6 @@ export class FormControlDirective extends NgControl implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (this._isControlChanged(changes)) {
       setUpControl(this.form, this);
-      if (this.control.disabled && this.valueAccessor!.setDisabledState) {
-        this.valueAccessor!.setDisabledState!(true);
-      }
       this.form.updateValueAndValidity({emitEvent: false});
     }
     if (isPropertyUpdated(changes, this.viewModel)) {
