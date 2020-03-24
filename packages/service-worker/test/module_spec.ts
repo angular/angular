@@ -247,6 +247,22 @@ describe('ServiceWorkerModule', () => {
            expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
          }));
 
+      it('registers the SW when the app does not stabilize after `<timeout>` with `registerWhenStable:<timeout>`',
+         fakeAsync(() => {
+           const isStableSub = configTestBedWithMockedStability('registerWhenStable:30000');
+
+           isStableSub.next(false);
+           isStableSub.next(false);
+
+           tick();
+           expect(swRegisterSpy).not.toHaveBeenCalled();
+
+           // App did not stabalize, kick in the timeout to make sure that the
+           // SW registers.
+           tick(30000);
+           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+         }));
+
       it('registers the SW immediatelly (synchronously) with `registerImmediately`', () => {
         configTestBedWithMockedStability('registerImmediately');
         expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
