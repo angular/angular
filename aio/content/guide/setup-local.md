@@ -20,7 +20,7 @@ If you are new to Angular, see [Getting Started](start). Getting Started helps y
 
 Before you begin, make sure that you already know how to use your terminal:
 
-*  [Terminal on a Mac](https://support.apple.com/guide/terminal/welcome/mac).
+*  [Terminal on a Mac](https://support.apple.com/guide/terminal/welcome/mac)
 *  Windows console: [Windows commands](https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/windows-commands)
 *  [Linux command line for beginners ](https://ubuntu.com/tutorials/command-line-for-beginners#1-overview)
 
