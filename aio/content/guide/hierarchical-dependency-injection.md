@@ -1771,6 +1771,7 @@ For a look at the following scenarios in a working app, see the <live-example>he
 -->
 ### 시나리오: 독립 서비스 만들기
 
+<!--
 Architectural reasons may lead you to restrict access to a service to the application domain where it belongs.
 For example, the guide sample includes a `VillainsListComponent` that displays a list of villains.
 It gets those villains from a `VillainsService`.
@@ -1797,10 +1798,32 @@ because that is where it is declared. As long as `VillainsListComponent`
 does not get destroyed it will be the same instance of `VillainService`
 but if there are multilple instances of `VillainsListComponent`, then each
 instance of `VillainsListComponent` will have its own instance of `VillainService`.
+-->
+설계를 하다보면 어떤 서비스를 애플리케이션의 특정 도메인에서만 접근하도록 제한해야 하는 경우가 있습니다.
+예재 앱을 보면 빌런의 목록을 화면에 표시하는 `VillainsListComponent`가 있습니다.
+그리고 이 컴포넌트는 `VillainsService`에서 빌런의 목록을 가져옵니다.
+
+그런데 `HeroService`와 마찬가지로 `VillainsService`를 `Appmodule`에 등록하면 `VillainsService`를 애플리케이션 전역에서 접근할 수 있습니다.
+그래서 나중에 `VillainsService`를 수정하면 히어로와 관련된 컴포넌트 어딘가가 동작하지 않을 가능성도 함께 존재합니다.
+
+이 때 `VillainsService`를 `VillainsListComponent`의 `providers` 메타데이터에 등록하면 어떻게 될까요:
+
+<code-example path="hierarchical-dependency-injection/src/app/villains-list.component.ts" header="src/app/villains-list.component.ts (메타데이터)" region="metadata">
+
+</code-example>
+
+이렇게 구현하면 `VillainsService`는 이제 `VVillainsListComponent`와 그 자식 컴포넌트 트리에서만 접근할 수 있습니다.
+
+그리고 `VillainsService`는 `VillainsListComponent`에 대해서 싱글턴으로 존재합니다.
+`VillainsListComponent`가 종료되지 않는 한 `VillainsService`의 인스턴스도 계속 유지되며, `VillainsListComponent`의 인스턴스가 여러개 생성되면 `VillainsService`의 인스턴스도 각각 생성됩니다.
 
 
+<!--
 ### Scenario: multiple edit sessions
+-->
+### 시나리오: 편집 세션 여러개 유지하기
 
+<!--
 Many applications allow users to work on several open tasks at the same time.
 For example, in a tax preparation application, the preparer could be working on several tax returns,
 switching from one to the other throughout the day.
@@ -1869,11 +1892,82 @@ The rest of the scenario code relies on other Angular features and techniques th
 You can review it and download it from the <live-example></live-example>.
 
 </div>
+-->
+애플리케이션은 보통 한 번에 여러 작업을 할 수 있도록 구현합니다.
+세금을 정산하는 애플리케이션이라면 대상을 바꿔가면서 여러명의 세금을 동시에 계산하도록 구현하는 식입니다.
+
+이번 섹션에서는 히어로들의 여행 앱을 기준으로 이 내용에 대해 살펴봅시다.
+`HeroListComponent`는 슈퍼 히어로의 목록이 표시되는 컴포넌트입니다.
+
+이 화면에서 히어로의 이름을 클릭하면 히어로의 세금 계산 영역이 표시됩니다.
+히어로마다 내야 할 세금을 이 영역에서 처리해 봅시다.
+
+세금 계산 컴포넌트는 다음과 같이 동작합니다:
+
+* 세금 계산 세션을 개별로 유지합니다.
+* 다른 컴포넌트에 영향을 받지 않고 세금을 계산할 수 있습니다.
+* 변경사항을 저장하거나 취소할 수 있습니다.
+
+<div class="lightbox">
+  <img src="generated/images/guide/dependency-injection/hid-heroes-anim.gif" alt="Heroes in action">
+</div>
+
+변경사항을 관리하고 원복하는 로직은 `HeroTaxReturnComponent`에 있다고 합시다.
+현업에 사용하는 앱이라면 복잡한 데이터 모델을 처리해야 하며 변경사항을 관리하는 것도 까다롭겠지만, 이번 예제에서는 간단하게 개념만 가져와 봅시다.
+세금을 계산하는 로직은 헬퍼 서비스에 모두 넘기는 방식으로 구현할 것입니다.
+
+`HeroTaxReturnService`는 `HeroTaxReturn` 객체 하나를 캐싱하고 있으며, 이 객체가 변경되는 것을 관리하다가 저장하거나 원복합니다.
+이 때 변경사항을 저장하는 기능은 앱 전역에 싱글턴으로 존재하는 `HeroService`가 처리합니다.
 
 
+<code-example path="hierarchical-dependency-injection/src/app/hero-tax-return.service.ts" header="src/app/hero-tax-return.service.ts">
 
+</code-example>
+
+그리고 `HeroTaxReturnComponent`는 `HeroTaxReturnService`를 활용해서 다음과 같이 구현합니다.
+
+
+<code-example path="hierarchical-dependency-injection/src/app/hero-tax-return.component.ts" header="src/app/hero-tax-return.component.ts">
+
+</code-example>
+
+편집에 사용되는 `taxReturn` 프로퍼티는 게터(getter)와 세터(setter)로 구성되었으며, 이 때 세터에는 `@Input()` 데코레이터가 사용되었습니다.
+세터는 컴포넌트에 있는 값을 변경하고 `HeroTaxReturnService`에 저장합니다.
+게터는 현재 캐싱하고 있는 값을 반환합니다.
+컴포넌트가 서비스와 통신하면서 값을 저장하거나 원복할 때도 이 게터/세터를 사용합니다.
+
+만약 서비스가 앱 전역에 싱글턴으로 존재한다면 이 기능은 동작하지 않을 것입니다.
+왜냐하면 이렇게 구현했을때 모든 컴포넌트가 같은 서비스 인스턴스를 공유하기 때문에 히어로가 누구냐에 관계없이 모든 컴포넌트가 같은 값을 다루기 때문입니다.
+
+이런 상황을 방지하려면 컴포넌트 계층인 `HeroTaxReturnComponent`의 메타데이터 중 `providers`에 `HeroTaxReturnService` 서비스의 프로바이더를 등록하면 됩니다.
+
+
+<code-example path="hierarchical-dependency-injection/src/app/hero-tax-return.component.ts" header="src/app/hero-tax-return.component.ts (providers 배열)" region="providers">
+
+</code-example>
+
+그러면 `HeroTaxReturnComponent`에 `HeroTaxReturnService` 프로바이더가 직접 등록되었기 때문에 컴포넌트의 _인스턴스_ 마다 인젝터를 구성하며, 이 인젝터가 제공하는 서비스의 인스턴스도 컴포넌트마다 생성됩니다.
+이제 컴포넌트마다 별개로 서비스의 인스턴스가 생성되었기 때문에 다른 컴포넌트의 영향을 받지 않습니다.
+
+
+<div class="alert is-helpful">
+
+<!--
+The rest of the scenario code relies on other Angular features and techniques that you can learn about elsewhere in the documentation.
+You can review it and download it from the <live-example></live-example>.
+-->
+이후부터는 의존성 주입 이외의 Angular 기능을 활용한 것이니 의존성 주입에 관련된 내용만 보려면 건너뛰어도 됩니다.
+동작하는 앱에서 직접 확인하려면 <live-example></live-example>를 참고하세요.
+
+</div>
+
+
+<!--
 ### Scenario: specialized providers
+-->
+### 시나리오: 서비스 구체화하기
 
+<!--
 Another reason to re-provide a service at another level is to substitute a _more specialized_ implementation of that service, deeper in the component tree.
 
 Consider a Car component that depends on several services.
@@ -1898,6 +1992,30 @@ When you resolve an instance of `Car` at the deepest component (C),
 its injector produces an instance of `Car` resolved by injector (C) with an `Engine` resolved by injector (B) and
 `Tires` resolved by the root injector (A).
 
+<div class="lightbox">
+  <img src="generated/images/guide/dependency-injection/injector-tree.png" alt="car injector tree">
+</div>
+-->
+서비스 프로바이더를 컴포넌트 트리의 다른 계층에 등록하면 트리 더 아래쪽에 더 _구체적인_ 서비스를 주입할 수 있습니다.
+
+서비스 여러개를 활용하는 자동차 컴포넌트가 있다고 합시다.
+그리고 루트 인젝터(A)에는 `CarService`, `EngineService`, `TiresService`가 _제네릭(generic)_ 프로바이더로 등록되어 있습니다.
+
+이 상태에서 자동차 컴포넌트(A)를 생성한다는 것은 3개의 서비스를 모두 활용한다는 것을 의미합니다.
+
+그런데 자식 컴포넌트 (B)에는 이 컴포넌트의 사양에 맞는 `CarService`와 `EngineService`를 _더 구체적으로_ 구현한 서비스 프로바이더가 등록되어 있습니다.
+
+그리고 이 컴포넌트(B)는 또 다른 컴포넌트(C)의 부모 컴포넌트이기도 합니다.
+컴포넌트 C에는 `CarService`를 _더 구체적으로_ 구현한 서비스 프로바이더가 등록되어 있습니다.
+
+<div class="lightbox">
+  <img src="generated/images/guide/dependency-injection/car-components.png" alt="car components">
+</div>
+
+이 관계로 보면 각 컴포넌트는 독립적으로 인젝터를 구성하며 여러개의 서비스 프로바이더를 관리하기도 합니다.
+
+이제 가장 안쪽에 있는 컴포넌트 C에서 자동차 만들려고 하면 `CarService`는 컴포넌트 C에 등록된 서비스의 인스턴스를 사용하고, `EngineService`는 인젝터 B에 있는 것을 사용하며, `TiresService`는 루트 인젝터 A에 있는 것을 사용합니다.
+
 
 <div class="lightbox">
   <img src="generated/images/guide/dependency-injection/injector-tree.png" alt="car injector tree">
@@ -1906,6 +2024,13 @@ its injector produces an instance of `Car` resolved by injector (C) with an `Eng
 
 <hr />
 
-## More on dependency injection
 
+<!--
+## More on dependency injection
+-->
+## 의존성 주입 더 알아보기
+
+<!--
 For more information on Angular dependency injection, see the [DI Providers](guide/dependency-injection-providers) and [DI in Action](guide/dependency-injection-in-action) guides.
+-->
+의존성 주입에 대해 더 알아보려면 [의존성 프로바이더](guide/dependency-injection-providers) 문서나 [실전 의존성 주입](guide/dependency-injection-in-action) 문서를 참고하세요.
