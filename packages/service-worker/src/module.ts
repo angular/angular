@@ -8,7 +8,7 @@
 
 import {isPlatformBrowser} from '@angular/common';
 import {APP_INITIALIZER, ApplicationRef, InjectionToken, Injector, ModuleWithProviders, NgModule, PLATFORM_ID} from '@angular/core';
-import {Observable, of } from 'rxjs';
+import {Observable, merge, of } from 'rxjs';
 import {delay, filter, take} from 'rxjs/operators';
 
 import {NgswCommChannel} from './low_level';
@@ -57,6 +57,9 @@ export abstract class SwRegistrationOptions {
    *
    * - `registerWhenStable`: Register as soon as the application stabilizes (no pending
    *      micro-/macro-tasks).
+   * - `registerWhenStable:<timeout>`: Register when the app becomes stable or with a delay
+   *     of `<timeout>` milliseconds. This will ensure that the ServiceWorker will register
+   *     after the specified timeout, regardless of if the app is stable or not.
    * - `registerImmediately`: Register immediately.
    * - `registerWithDelay:<timeout>`: Register with a delay of `<timeout>` milliseconds. For
    *     example, use `registerWithDelay:5000` to register the ServiceWorker after 5 seconds. If
@@ -102,11 +105,10 @@ export function ngswAppInitializer(
           readyToRegister$ = of (null);
           break;
         case 'registerWithDelay':
-          readyToRegister$ = of (null).pipe(delay(+args[0] || 0));
+          readyToRegister$ = delayWithTimeout(+args[0]);
           break;
         case 'registerWhenStable':
-          const appRef = injector.get<ApplicationRef>(ApplicationRef);
-          readyToRegister$ = appRef.isStable.pipe(filter(stable => stable));
+          readyToRegister$ = merge(whenStable(injector), delayWithTimeout(+args[0]));
           break;
         default:
           // Unknown strategy.
@@ -122,6 +124,15 @@ export function ngswAppInitializer(
                   .catch(err => console.error('Service worker registration failed with:', err)));
   };
   return initializer;
+}
+
+function delayWithTimeout(timeout: number) {
+  return of (null).pipe(delay(timeout || 0));
+}
+
+function whenStable(injector: Injector) {
+  const appRef = injector.get<ApplicationRef>(ApplicationRef);
+  return appRef.isStable.pipe(filter(stable => stable));
 }
 
 export function ngswCommChannelFactory(
