@@ -203,6 +203,17 @@ let thisArg: any;
          detectChangesAndExpectText('0123456789');
        }));
 
+    it('should display count correctly', async(() => {
+         const template = '<span *ngFor="let item of items; let len=count">{{len}}</span>';
+         fixture = createTestComponent(template);
+
+         getComponent().items = [0, 1, 2];
+         detectChangesAndExpectText('333');
+
+         getComponent().items = [4, 3, 2, 1, 0, -1];
+         detectChangesAndExpectText('666666');
+       }));
+
     it('should display first item correctly', async(() => {
          const template =
              '<span *ngFor="let item of items; let isFirst=first">{{isFirst.toString()}}</span>';
