@@ -2908,7 +2908,6 @@ In the test we need to follow the same principe to simplify it.
 
 <code-example
   path="testing/src/app/hero/hero-list.component.no-testbed.spec.ts"
-  region="test-with-spies"
   header="app/hero/hero-list.component.no-testbed.spec.ts (tests as pure javascript)">
 </code-example>
 
