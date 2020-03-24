@@ -19,7 +19,8 @@
     "test:backend": "ng test ng-devtools-backend --watch=false",
     "test:devtools": "ng test ng-devtools --watch=false",
     "test:shared-utils": "ng test shared-utils --watch=false",
-    "test:ci": "npm run test:backend && npm run test:devtools && npm run test:shared-utils",
+    "test:protocol": "ng test protocol --watch=false",
+    "test:ci": "npm run test:backend && npm run test:devtools && npm run test:shared-utils && npm run test:protocol",
     "prettier": "prettier --write \"{,!(node_modules|dist|build|coverage)/**/}*.{js,jsx,ts,tsx,json}\"",
     "prettier:fix": "pretty-quick --staged"
   },
