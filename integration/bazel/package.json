@@ -16,7 +16,7 @@
     "reflect-metadata": "0.1.12",
     "rxjs": "file:../../node_modules/rxjs",
     "tslib": "file:../../node_modules/tslib",
-    "zone.js": "0.10.2"
+    "zone.js": "0.10.3"
   },
   "devDependencies": {
     "@angular/bazel": "file:../../dist/packages-dist/bazel",
