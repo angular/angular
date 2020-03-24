@@ -278,7 +278,7 @@ jobs:
       - run: 'yarn bazel:lint ||
               (echo -e "\n.bzl files have lint errors. Please run ''yarn bazel:lint-fix''"; exit 1)'
 
-      - run: yarn lint
+      - run: yarn lint --branch $CI_GIT_BASE_REVISION
       - run: yarn ts-circular-deps:check
       - run: yarn -s ng-dev pullapprove:verify
 

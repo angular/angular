@@ -42,8 +42,7 @@ gulp.task('format:untracked:enforce', loadTask('format', 'enforce-untracked'));
 gulp.task('format:diff', loadTask('format', 'format-diff'));
 gulp.task('format:diff:enforce', loadTask('format', 'enforce-diff'));
 
-// Changed lines based on the diff from the provided --branch
-// argument (or `master` by default).
+// Changed, both tracked and untracked, source code files.
 gulp.task('format:changed', ['format:untracked', 'format:diff']);
 gulp.task('format:changed:enforce', ['format:untracked:enforce', 'format:diff:enforce']);
 

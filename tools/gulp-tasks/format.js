@@ -84,7 +84,7 @@ function gulpStatus() {
 }
 
 module.exports = {
-  // Check source code for formatting errors (clang-format)
+  // Check source code for formatting errors with clang-format
   enforce: (gulp) => () => {
     const format = require('gulp-clang-format');
     const clangFormat = require('clang-format');
@@ -92,7 +92,7 @@ module.exports = {
         format.checkFormat('file', clangFormat, {verbose: true, fail: true}));
   },
 
-  // Format only the untracked source code files with clang-format (see .clang-format)
+  // Check only the untracked source code files for formatting errors with .clang-format
   'enforce-untracked': (gulp) => () => {
     const format = require('gulp-clang-format');
     const clangFormat = require('clang-format');
@@ -103,8 +103,8 @@ module.exports = {
         .pipe(format.checkFormat('file', clangFormat, {verbose: true, fail: true}));
   },
 
-  // Format only the changed source code files diffed from the provided branch with clang-format
-  // (see .clang-format)
+  // Check only the changed source code files diffed from the provided branch for formatting
+  // errors with clang-format
   'enforce-diff': (gulp) => () => {
     const format = require('gulp-clang-format');
     const clangFormat = require('clang-format');
