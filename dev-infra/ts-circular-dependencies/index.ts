@@ -9,7 +9,7 @@
 
 import {existsSync, readFileSync, writeFileSync} from 'fs';
 import {sync as globSync} from 'glob';
-import {join, relative, resolve} from 'path';
+import {isAbsolute, relative, resolve} from 'path';
 import * as ts from 'typescript';
 import * as yargs from 'yargs';
 import chalk from 'chalk';
@@ -17,56 +17,36 @@ import chalk from 'chalk';
 import {Analyzer, ReferenceChain} from './analyzer';
 import {compareGoldens, convertReferenceChainToGolden, Golden} from './golden';
 import {convertPathToForwardSlash} from './file_system';
-
-import {getRepoBaseDir} from '../utils/config';
-
-const projectDir = getRepoBaseDir();
-const packagesDir = join(projectDir, 'packages/');
-// The default glob does not capture deprecated packages such as http, or the webworker platform.
-const defaultGlob =
-    join(packagesDir, '!(http|platform-webworker|platform-webworker-dynamic)/**/*.ts');
+import {loadTestConfig, CircularDependenciesTestConfig} from './config';
 
 if (require.main === module) {
-  const {_: command, goldenFile, glob, baseDir, warnings} =
+  const {_: command, config: configArg, warnings} =
       yargs.help()
           .strict()
-          .command('check <goldenFile>', 'Checks if the circular dependencies have changed.')
-          .command('approve <goldenFile>', 'Approves the current circular dependencies.')
+          .command('check', 'Checks if the circular dependencies have changed.')
+          .command('approve', 'Approves the current circular dependencies.')
           .demandCommand()
           .option(
-              'approve',
-              {type: 'boolean', description: 'Approves the current circular dependencies.'})
+              'config',
+              {type: 'string', demandOption: true, description: 'Path to the configuration file.'})
           .option('warnings', {type: 'boolean', description: 'Prints all warnings.'})
-          .option('base-dir', {
-            type: 'string',
-            description: 'Base directory used for shortening paths in the golden file.',
-            default: projectDir,
-            defaultDescription: 'Project directory'
-          })
-          .option('glob', {
-            type: 'string',
-            description: 'Glob that matches source files which should be checked.',
-            default: defaultGlob,
-            defaultDescription: 'All release packages'
-          })
           .argv;
+  const configPath = isAbsolute(configArg) ? configArg : resolve(configArg);
+  const config = loadTestConfig(configPath);
   const isApprove = command.includes('approve');
-  process.exit(main(baseDir, isApprove, goldenFile, glob, warnings));
+  process.exit(main(isApprove, config, warnings));
 }
 
 /**
  * Runs the ts-circular-dependencies tool.
- * @param baseDir Base directory which is used to build up relative file paths in goldens.
  * @param approve Whether the detected circular dependencies should be approved.
- * @param goldenFile Path to the golden file.
- * @param glob Glob that is used to collect all source files which should be checked/approved.
- * @param printWarnings Whether warnings should be printed. Warnings for unresolved modules/files
- *     are not printed by default.
+ * @param config Configuration for the current circular dependencies test.
+ * @param printWarnings Whether warnings should be printed out.
  * @returns Status code.
  */
 export function main(
-    baseDir: string, approve: boolean, goldenFile: string, glob: string,
-    printWarnings: boolean): number {
+    approve: boolean, config: CircularDependenciesTestConfig, printWarnings: boolean): number {
+  const {baseDir, goldenFile, glob, resolveModule, approveCommand} = config;
   const analyzer = new Analyzer(resolveModule);
   const cycles: ReferenceChain[] = [];
   const checkedNodes = new WeakSet<ts.SourceFile>();
@@ -90,17 +70,21 @@ export function main(
     return 1;
   }
 
+  const warningsCount = analyzer.unresolvedFiles.size + analyzer.unresolvedModules.size;
+
   // By default, warnings for unresolved files or modules are not printed. This is because
   // it's common that third-party modules are not resolved/visited. Also generated files
   // from the View Engine compiler (i.e. factories, summaries) cannot be resolved.
-  if (printWarnings &&
-      (analyzer.unresolvedFiles.size !== 0 || analyzer.unresolvedModules.size !== 0)) {
-    console.info(chalk.yellow('The following imports could not be resolved:'));
+  if (printWarnings && warningsCount !== 0) {
+    console.info(chalk.yellow('⚠  The following imports could not be resolved:'));
     analyzer.unresolvedModules.forEach(specifier => console.info(`  • ${specifier}`));
     analyzer.unresolvedFiles.forEach((value, key) => {
       console.info(`  • ${getRelativePath(baseDir, key)}`);
       value.forEach(specifier => console.info(`      ${specifier}`));
     });
+  } else {
+    console.info(chalk.yellow(`⚠  ${warningsCount} imports could not be resolved.`));
+    console.info(chalk.yellow(`   Please rerun with "--warnings" to inspect unresolved imports.`));
   }
 
   const expected: Golden = JSON.parse(readFileSync(goldenFile, 'utf8'));
@@ -122,16 +106,12 @@ export function main(
         chalk.yellow(`   Fixed circular dependencies that need to be removed from the golden:`));
     fixedCircularDeps.forEach(c => console.error(`     • ${convertReferenceChainToString(c)}`));
     console.info();
-    // Print the command for updating the golden. Note that we hard-code the script name for
-    // approving default packages golden in `goldens/`. We cannot infer the script name passed to
-    // Yarn automatically since script are launched in a child process where `argv0` is different.
-    if (resolve(goldenFile) === resolve(projectDir, 'goldens/packages-circular-deps.json')) {
-      console.info(
-          chalk.yellow(`   Please approve the new golden with: yarn ts-circular-deps:approve`));
+    if (approveCommand) {
+      console.info(chalk.yellow(`   Please approve the new golden with: ${approveCommand}`));
     } else {
       console.info(chalk.yellow(
           `   Please update the golden. The following command can be ` +
-          `run: yarn ts-circular-deps approve ${getRelativePath(baseDir, goldenFile)}.`));
+          `run: yarn ts-circular-deps approve ${getRelativePath(process.cwd(), goldenFile)}.`));
     }
   }
   return 1;
@@ -145,15 +125,4 @@ function getRelativePath(baseDir: string, path: string) {
 /** Converts the given reference chain to its string representation. */
 function convertReferenceChainToString(chain: ReferenceChain<string>) {
   return chain.join(' → ');
-}
-
-/**
- * Custom module resolver that maps specifiers starting with `@angular/` to the
- * local packages folder.
- */
-function resolveModule(specifier: string) {
-  if (specifier.startsWith('@angular/')) {
-    return packagesDir + specifier.substr('@angular/'.length);
-  }
-  return null;
 }
