@@ -108,14 +108,11 @@ export function ngswAppInitializer(
           readyToRegister$ = of (null);
           break;
         case 'registerWithDelay':
-          readyToRegister$ =
-              injector.get<NgZone>(NgZone).runOutsideAngular(() => delayWithTimeout(+args[0] || 0));
+          readyToRegister$ = delayWithTimeout(+args[0] || 0);
           break;
         case 'registerWhenStable':
-          readyToRegister$ = !args[0] ?
-              whenStable(injector) :
-              injector.get<NgZone>(NgZone).runOutsideAngular(
-                  () => merge(whenStable(injector), delayWithTimeout(+args[0])));
+          readyToRegister$ = !args[0] ? whenStable(injector) :
+                                        merge(whenStable(injector), delayWithTimeout(+args[0]));
           break;
         default:
           // Unknown strategy.
@@ -125,10 +122,15 @@ export function ngswAppInitializer(
     }
 
     // Don't return anything to avoid blocking the application until the SW is registered.
+    // Also, run outside the Angular zone to avoid preventing the app from stabilizing (especially
+    // given that some registration strategies wait for the app to stabilize).
     // Catch and log the error if SW registration fails to avoid uncaught rejection warning.
-    readyToRegister$.pipe(take(1)).subscribe(
-        () => navigator.serviceWorker.register(script, {scope: options.scope})
-                  .catch(err => console.error('Service worker registration failed with:', err)));
+    const ngZone = injector.get(NgZone);
+    ngZone.runOutsideAngular(
+        () => readyToRegister$.pipe(take(1)).subscribe(
+            () =>
+                navigator.serviceWorker.register(script, {scope: options.scope})
+                    .catch(err => console.error('Service worker registration failed with:', err))));
   };
   return initializer;
 }
