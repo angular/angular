@@ -43,7 +43,7 @@
     "stylelint": "stylelint \"src/**/*.+(css|scss)\" --config .stylelintrc.json --syntax scss",
     "resync-caretaker-app": "ts-node --project scripts scripts/caretaking/resync-caretaker-app-prs.ts"
   },
-  "version": "9.2.0-next.0",
+  "version": "9.2.0",
   "dependencies": {
     "@angular/animations": "^9.1.0",
     "@angular/common": "^9.1.0",

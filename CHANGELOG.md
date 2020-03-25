@@ -1,3 +1,39 @@
+# 9.2.0 "metal-man" (2020-03-25)
+
+This release introduces support for TypeScript 3.8.
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **coercion:** add the support for readonly array coercion ([#18807](https://github.com/angular/components/issues/18807)) ([cd96886](https://github.com/angular/components/commit/cd96886)), closes [#18806](https://github.com/angular/components/issues/18806) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **form-field:** incorrectly calculating start gap in RTL in the presence of a prefix ([#18867](https://github.com/angular/components/issues/18867)) ([6275339](https://github.com/angular/components/commit/6275339)), closes [#18857](https://github.com/angular/components/issues/18857) |
+| bug fix |  **form-field:** some input types taller than plain text input ([#18825](https://github.com/angular/components/issues/18825)) ([e311791](https://github.com/angular/components/commit/e311791)), closes [#18787](https://github.com/angular/components/issues/18787) |
+| bug fix |  **list:** no selected indication in high contrast mode while in single selection ([#18585](https://github.com/angular/components/issues/18585)) ([76e8a38](https://github.com/angular/components/commit/76e8a38)) |
+| bug fix |  **table:** error when nesting tables ([#18832](https://github.com/angular/components/issues/18832)) ([32aec93](https://github.com/angular/components/commit/32aec93)), closes [#18768](https://github.com/angular/components/issues/18768) |
+
+### google-maps
+
+|            |                       |
+| ---------- | --------------------- |
+| feature |  support setting the map type ([#18578](https://github.com/angular/components/issues/18578)) ([2a6aae1](https://github.com/angular/components/commit/2a6aae1)), closes [#18577](https://github.com/angular/components/issues/18577) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-chips:** add feature targeting to theme styles ([#18830](https://github.com/angular/components/issues/18830)) ([54bbb90](https://github.com/angular/components/commit/54bbb90)) |
+| bug fix |  **radio:** redefine theme variables ([#18907](https://github.com/angular/components/issues/18907)) ([cc9793f](https://github.com/angular/components/commit/cc9793f)) |
+| bug fix |  **radio:** remove input click handler ([#18868](https://github.com/angular/components/issues/18868)) ([7c75d6e](https://github.com/angular/components/commit/7c75d6e)) |
+| bug fix |  **slide-toggle:** allow different densities ([#18895](https://github.com/angular/components/issues/18895)) ([4d7ffaa](https://github.com/angular/components/commit/4d7ffaa)) |
+| bug fix |  **slide-toggle:** redefine more variables ([#18908](https://github.com/angular/components/issues/18908)) ([1cca459](https://github.com/angular/components/commit/1cca459)) |
+
+
 # 9.2.0-next.0 "twine-tornado" (2020-03-18)
 
 ### cdk
