@@ -6,11 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isAbsolute, dirname, resolve} from 'path';
+import {dirname, isAbsolute, resolve} from 'path';
+
 import {ModuleResolver} from './analyzer';
 
+
 /** Configuration for a circular dependencies test. */
-export interface TestConfig {
+export interface CircularDependenciesTestConfig {
   /** Base directory used for shortening paths in the golden file. */
   baseDir: string;
   /** Path to the golden file that is used for checking and approving. */
@@ -33,12 +35,12 @@ export interface TestConfig {
  * Loads the configuration for the circular dependencies test. If the config cannot be
  * loaded, an error will be printed and the process exists with a non-zero exit code.
  */
-export function loadTestConfig(configPath: string): TestConfig {
+export function loadTestConfig(configPath: string): CircularDependenciesTestConfig {
   const configBaseDir = dirname(configPath);
   const resolveRelativePath = (relativePath: string) => resolve(configBaseDir, relativePath);
 
   try {
-    const config = require(configPath) as TestConfig;
+    const config = require(configPath) as CircularDependenciesTestConfig;
     if (!isAbsolute(config.baseDir)) {
       config.baseDir = resolveRelativePath(config.baseDir);
     }

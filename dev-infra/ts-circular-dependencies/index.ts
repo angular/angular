@@ -17,7 +17,7 @@ import chalk from 'chalk';
 import {Analyzer, ReferenceChain} from './analyzer';
 import {compareGoldens, convertReferenceChainToGolden, Golden} from './golden';
 import {convertPathToForwardSlash} from './file_system';
-import {loadTestConfig, TestConfig} from './config';
+import {loadTestConfig, CircularDependenciesTestConfig} from './config';
 
 if (require.main === module) {
   const {_: command, config: configArg, warnings} =
@@ -26,11 +26,9 @@ if (require.main === module) {
           .command('check', 'Checks if the circular dependencies have changed.')
           .command('approve', 'Approves the current circular dependencies.')
           .demandCommand()
-          .option('config', {
-            type: 'string',
-            demandOption: true,
-            description: 'Path to the configuration file.'
-          })
+          .option(
+              'config',
+              {type: 'string', demandOption: true, description: 'Path to the configuration file.'})
           .option('warnings', {type: 'boolean', description: 'Prints all warnings.'})
           .argv;
   const configPath = isAbsolute(configArg) ? configArg : resolve(configArg);
@@ -46,7 +44,8 @@ if (require.main === module) {
  * @param printWarnings Whether warnings should be printed out.
  * @returns Status code.
  */
-export function main(approve: boolean, config: TestConfig, printWarnings: boolean): number {
+export function main(
+    approve: boolean, config: CircularDependenciesTestConfig, printWarnings: boolean): number {
   const {baseDir, goldenFile, glob, resolveModule, approveCommand} = config;
   const analyzer = new Analyzer(resolveModule);
   const cycles: ReferenceChain[] = [];
@@ -71,12 +70,12 @@ export function main(approve: boolean, config: TestConfig, printWarnings: boolea
     return 1;
   }
 
-  const warningsAmount = analyzer.unresolvedFiles.size + analyzer.unresolvedModules.size;
+  const warningsCount = analyzer.unresolvedFiles.size + analyzer.unresolvedModules.size;
 
   // By default, warnings for unresolved files or modules are not printed. This is because
   // it's common that third-party modules are not resolved/visited. Also generated files
   // from the View Engine compiler (i.e. factories, summaries) cannot be resolved.
-  if (printWarnings && warningsAmount !== 0) {
+  if (printWarnings && warningsCount !== 0) {
     console.info(chalk.yellow('⚠  The following imports could not be resolved:'));
     analyzer.unresolvedModules.forEach(specifier => console.info(`  • ${specifier}`));
     analyzer.unresolvedFiles.forEach((value, key) => {
@@ -84,7 +83,7 @@ export function main(approve: boolean, config: TestConfig, printWarnings: boolea
       value.forEach(specifier => console.info(`      ${specifier}`));
     });
   } else {
-    console.info(chalk.yellow(`⚠  ${warningsAmount} imports could not be resolved.`));
+    console.info(chalk.yellow(`⚠  ${warningsCount} imports could not be resolved.`));
     console.info(chalk.yellow(`   Please rerun with "--warnings" to inspect unresolved imports.`));
   }
 
@@ -108,8 +107,7 @@ export function main(approve: boolean, config: TestConfig, printWarnings: boolea
     fixedCircularDeps.forEach(c => console.error(`     • ${convertReferenceChainToString(c)}`));
     console.info();
     if (approveCommand) {
-      console.info(
-          chalk.yellow(`   Please approve the new golden with: ${approveCommand}`));
+      console.info(chalk.yellow(`   Please approve the new golden with: ${approveCommand}`));
     } else {
       console.info(chalk.yellow(
           `   Please update the golden. The following command can be ` +
