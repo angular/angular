@@ -18,7 +18,7 @@ export declare abstract class BasePortalOutlet implements PortalOutlet {
 export declare class CdkPortal extends TemplatePortal {
     constructor(templateRef: TemplateRef<any>, viewContainerRef: ViewContainerRef);
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkPortal, "[cdkPortal]", ["cdkPortal"], {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<CdkPortal>;
+    static ɵfac: i0.ɵɵFactoryDef<CdkPortal, never>;
 }
 
 export declare class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestroy {
@@ -35,7 +35,7 @@ export declare class CdkPortalOutlet extends BasePortalOutlet implements OnInit,
     ngOnInit(): void;
     static ngAcceptInputType_portal: Portal<any> | null | undefined | '';
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkPortalOutlet, "[cdkPortalOutlet]", ["cdkPortalOutlet"], { "portal": "cdkPortalOutlet"; }, { "attached": "attached"; }, never>;
-    static ɵfac: i0.ɵɵFactoryDef<CdkPortalOutlet>;
+    static ɵfac: i0.ɵɵFactoryDef<CdkPortalOutlet, never>;
 }
 
 export declare type CdkPortalOutletAttachedRef = ComponentRef<any> | EmbeddedViewRef<any> | null;
@@ -82,7 +82,7 @@ export declare type PortalHost = PortalOutlet;
 
 export declare class PortalHostDirective extends CdkPortalOutlet {
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<PortalHostDirective, "[cdkPortalHost], [portalHost]", ["cdkPortalHost"], { "portal": "cdkPortalHost"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<PortalHostDirective>;
+    static ɵfac: i0.ɵɵFactoryDef<PortalHostDirective, never>;
 }
 
 export declare class PortalInjector implements Injector {
@@ -114,5 +114,5 @@ export declare class TemplatePortal<C = any> extends Portal<EmbeddedViewRef<C>> 
 
 export declare class TemplatePortalDirective extends CdkPortal {
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<TemplatePortalDirective, "[cdk-portal], [portal]", ["cdkPortal"], {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<TemplatePortalDirective>;
+    static ɵfac: i0.ɵɵFactoryDef<TemplatePortalDirective, never>;
 }

@@ -38,8 +38,8 @@ export declare class MatDrawer implements AfterContentInit, AfterContentChecked,
     static ngAcceptInputType_autoFocus: BooleanInput;
     static ngAcceptInputType_disableClose: BooleanInput;
     static ngAcceptInputType_opened: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDrawer, "mat-drawer", ["matDrawer"], { "position": "position"; "mode": "mode"; "disableClose": "disableClose"; "autoFocus": "autoFocus"; "opened": "opened"; }, { "openedChange": "openedChange"; "_openedStream": "opened"; "openedStart": "openedStart"; "_closedStream": "closed"; "closedStart": "closedStart"; "onPositionChanged": "positionChanged"; }, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatDrawer>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDrawer, "mat-drawer", ["matDrawer"], { "position": "position"; "mode": "mode"; "disableClose": "disableClose"; "autoFocus": "autoFocus"; "opened": "opened"; }, { "openedChange": "openedChange"; "_openedStream": "opened"; "openedStart": "openedStart"; "_closedStream": "closed"; "closedStart": "closedStart"; "onPositionChanged": "positionChanged"; }, never, ["*"]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatDrawer, [null, null, null, null, null, { optional: true; }, { optional: true; }]>;
 }
 
 export declare const matDrawerAnimations: {
@@ -80,16 +80,16 @@ export declare class MatDrawerContainer implements AfterContentInit, DoCheck, On
     updateContentMargins(): void;
     static ngAcceptInputType_autosize: BooleanInput;
     static ngAcceptInputType_hasBackdrop: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDrawerContainer, "mat-drawer-container", ["matDrawerContainer"], { "autosize": "autosize"; "hasBackdrop": "hasBackdrop"; }, { "backdropClick": "backdropClick"; }, ["_content", "_allDrawers"]>;
-    static ɵfac: i0.ɵɵFactoryDef<MatDrawerContainer>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDrawerContainer, "mat-drawer-container", ["matDrawerContainer"], { "autosize": "autosize"; "hasBackdrop": "hasBackdrop"; }, { "backdropClick": "backdropClick"; }, ["_content", "_allDrawers"], ["mat-drawer", "mat-drawer-content", "*"]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatDrawerContainer, [{ optional: true; }, null, null, null, null, null, { optional: true; }]>;
 }
 
 export declare class MatDrawerContent extends CdkScrollable implements AfterContentInit {
     _container: MatDrawerContainer;
     constructor(_changeDetectorRef: ChangeDetectorRef, _container: MatDrawerContainer, elementRef: ElementRef<HTMLElement>, scrollDispatcher: ScrollDispatcher, ngZone: NgZone);
     ngAfterContentInit(): void;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDrawerContent, "mat-drawer-content", never, {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatDrawerContent>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDrawerContent, "mat-drawer-content", never, {}, {}, never, ["*"]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatDrawerContent, never>;
 }
 
 export declare type MatDrawerMode = 'over' | 'push' | 'side';
@@ -106,22 +106,22 @@ export declare class MatSidenav extends MatDrawer {
     static ngAcceptInputType_fixedBottomGap: NumberInput;
     static ngAcceptInputType_fixedInViewport: BooleanInput;
     static ngAcceptInputType_fixedTopGap: NumberInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSidenav, "mat-sidenav", ["matSidenav"], { "fixedInViewport": "fixedInViewport"; "fixedTopGap": "fixedTopGap"; "fixedBottomGap": "fixedBottomGap"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatSidenav>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSidenav, "mat-sidenav", ["matSidenav"], { "fixedInViewport": "fixedInViewport"; "fixedTopGap": "fixedTopGap"; "fixedBottomGap": "fixedBottomGap"; }, {}, never, ["*"]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatSidenav, never>;
 }
 
 export declare class MatSidenavContainer extends MatDrawerContainer {
     _allDrawers: QueryList<MatSidenav>;
     _content: MatSidenavContent;
     static ngAcceptInputType_hasBackdrop: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSidenavContainer, "mat-sidenav-container", ["matSidenavContainer"], {}, {}, ["_content", "_allDrawers"]>;
-    static ɵfac: i0.ɵɵFactoryDef<MatSidenavContainer>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSidenavContainer, "mat-sidenav-container", ["matSidenavContainer"], {}, {}, ["_content", "_allDrawers"], ["mat-sidenav", "mat-sidenav-content", "*"]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatSidenavContainer, never>;
 }
 
 export declare class MatSidenavContent extends MatDrawerContent {
     constructor(changeDetectorRef: ChangeDetectorRef, container: MatSidenavContainer, elementRef: ElementRef<HTMLElement>, scrollDispatcher: ScrollDispatcher, ngZone: NgZone);
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSidenavContent, "mat-sidenav-content", never, {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatSidenavContent>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSidenavContent, "mat-sidenav-content", never, {}, {}, never, ["*"]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatSidenavContent, never>;
 }
 
 export declare class MatSidenavModule {

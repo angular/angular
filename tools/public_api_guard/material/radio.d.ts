@@ -42,8 +42,8 @@ export declare class MatRadioButton extends _MatRadioButtonMixinBase implements 
     static ngAcceptInputType_disableRipple: BooleanInput;
     static ngAcceptInputType_disabled: BooleanInput;
     static ngAcceptInputType_required: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatRadioButton, "mat-radio-button", ["matRadioButton"], { "disableRipple": "disableRipple"; "tabIndex": "tabIndex"; "id": "id"; "name": "name"; "ariaLabel": "aria-label"; "ariaLabelledby": "aria-labelledby"; "ariaDescribedby": "aria-describedby"; "checked": "checked"; "value": "value"; "labelPosition": "labelPosition"; "disabled": "disabled"; "required": "required"; "color": "color"; }, { "change": "change"; }, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatRadioButton>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatRadioButton, "mat-radio-button", ["matRadioButton"], { "disableRipple": "disableRipple"; "tabIndex": "tabIndex"; "id": "id"; "name": "name"; "ariaLabel": "aria-label"; "ariaLabelledby": "aria-labelledby"; "ariaDescribedby": "aria-describedby"; "checked": "checked"; "value": "value"; "labelPosition": "labelPosition"; "disabled": "disabled"; "required": "required"; "color": "color"; }, { "change": "change"; }, never, ["*"]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatRadioButton, [{ optional: true; }, null, null, null, null, { optional: true; }, { optional: true; }]>;
 }
 
 export declare class MatRadioChange {
@@ -89,7 +89,7 @@ export declare class MatRadioGroup implements AfterContentInit, ControlValueAcce
     static ngAcceptInputType_disabled: BooleanInput;
     static ngAcceptInputType_required: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatRadioGroup, "mat-radio-group", ["matRadioGroup"], { "color": "color"; "name": "name"; "labelPosition": "labelPosition"; "value": "value"; "selected": "selected"; "disabled": "disabled"; "required": "required"; }, { "change": "change"; }, ["_radios"]>;
-    static ɵfac: i0.ɵɵFactoryDef<MatRadioGroup>;
+    static ɵfac: i0.ɵɵFactoryDef<MatRadioGroup, never>;
 }
 
 export declare class MatRadioModule {

@@ -14,7 +14,7 @@ export declare class FakeMatIconRegistry implements PublicApi<MatIconRegistry>, 
     ngOnDestroy(): void;
     registerFontClassAlias(): this;
     setDefaultFontSetClass(): this;
-    static ɵfac: i0.ɵɵFactoryDef<FakeMatIconRegistry>;
+    static ɵfac: i0.ɵɵFactoryDef<FakeMatIconRegistry, never>;
     static ɵprov: i0.ɵɵInjectableDef<FakeMatIconRegistry>;
 }
 

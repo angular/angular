@@ -19,7 +19,7 @@ export declare class Platform {
     WEBKIT: boolean;
     isBrowser: boolean;
     constructor(_platformId?: Object | undefined);
-    static ɵfac: i0.ɵɵFactoryDef<Platform>;
+    static ɵfac: i0.ɵɵFactoryDef<Platform, [{ optional: true; }]>;
     static ɵprov: i0.ɵɵInjectableDef<Platform>;
 }
 

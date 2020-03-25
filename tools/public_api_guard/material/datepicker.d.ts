@@ -50,8 +50,8 @@ export declare class MatCalendar<D> implements AfterContentInit, AfterViewChecke
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     updateTodaysDate(): void;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatCalendar<any>, "mat-calendar", ["matCalendar"], { "headerComponent": "headerComponent"; "startAt": "startAt"; "startView": "startView"; "selected": "selected"; "minDate": "minDate"; "maxDate": "maxDate"; "dateFilter": "dateFilter"; "dateClass": "dateClass"; }, { "selectedChange": "selectedChange"; "yearSelected": "yearSelected"; "monthSelected": "monthSelected"; "_userSelection": "_userSelection"; }, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatCalendar<any>>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatCalendar<any>, "mat-calendar", ["matCalendar"], { "headerComponent": "headerComponent"; "startAt": "startAt"; "startView": "startView"; "selected": "selected"; "minDate": "minDate"; "maxDate": "maxDate"; "dateFilter": "dateFilter"; "dateClass": "dateClass"; }, { "selectedChange": "selectedChange"; "yearSelected": "yearSelected"; "monthSelected": "monthSelected"; "_userSelection": "_userSelection"; }, never, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatCalendar<any>, [null, { optional: true; }, { optional: true; }, null]>;
 }
 
 export declare class MatCalendarBody implements OnChanges {
@@ -72,8 +72,8 @@ export declare class MatCalendarBody implements OnChanges {
     _focusActiveCell(): void;
     _isActiveCell(rowIndex: number, colIndex: number): boolean;
     ngOnChanges(changes: SimpleChanges): void;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatCalendarBody, "[mat-calendar-body]", ["matCalendarBody"], { "label": "label"; "rows": "rows"; "todayValue": "todayValue"; "selectedValue": "selectedValue"; "labelMinRequiredCells": "labelMinRequiredCells"; "numCols": "numCols"; "activeCell": "activeCell"; "cellAspectRatio": "cellAspectRatio"; }, { "selectedValueChange": "selectedValueChange"; }, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatCalendarBody>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatCalendarBody, "[mat-calendar-body]", ["matCalendarBody"], { "label": "label"; "rows": "rows"; "todayValue": "todayValue"; "selectedValue": "selectedValue"; "labelMinRequiredCells": "labelMinRequiredCells"; "numCols": "numCols"; "activeCell": "activeCell"; "cellAspectRatio": "cellAspectRatio"; }, { "selectedValueChange": "selectedValueChange"; }, never, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatCalendarBody, never>;
 }
 
 export declare class MatCalendarCell {
@@ -101,8 +101,8 @@ export declare class MatCalendarHeader<D> {
     nextEnabled(): boolean;
     previousClicked(): void;
     previousEnabled(): boolean;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatCalendarHeader<any>, "mat-calendar-header", ["matCalendarHeader"], {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatCalendarHeader<any>>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatCalendarHeader<any>, "mat-calendar-header", ["matCalendarHeader"], {}, {}, never, ["*"]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatCalendarHeader<any>, [null, null, { optional: true; }, { optional: true; }, null]>;
 }
 
 export declare type MatCalendarView = 'month' | 'year' | 'multi-year';
@@ -146,8 +146,8 @@ export declare class MatDatepicker<D> implements OnDestroy, CanColor {
     select(date: D): void;
     static ngAcceptInputType_disabled: BooleanInput;
     static ngAcceptInputType_touchUi: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDatepicker<any>, "mat-datepicker", ["matDatepicker"], { "calendarHeaderComponent": "calendarHeaderComponent"; "startAt": "startAt"; "startView": "startView"; "color": "color"; "touchUi": "touchUi"; "disabled": "disabled"; "panelClass": "panelClass"; "dateClass": "dateClass"; "opened": "opened"; }, { "yearSelected": "yearSelected"; "monthSelected": "monthSelected"; "openedStream": "opened"; "closedStream": "closed"; }, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatDatepicker<any>>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDatepicker<any>, "mat-datepicker", ["matDatepicker"], { "calendarHeaderComponent": "calendarHeaderComponent"; "startAt": "startAt"; "startView": "startView"; "color": "color"; "touchUi": "touchUi"; "disabled": "disabled"; "panelClass": "panelClass"; "dateClass": "dateClass"; "opened": "opened"; }, { "yearSelected": "yearSelected"; "monthSelected": "monthSelected"; "openedStream": "opened"; "closedStream": "closed"; }, never, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatDatepicker<any>, [null, null, null, null, null, { optional: true; }, { optional: true; }, { optional: true; }]>;
 }
 
 export declare const matDatepickerAnimations: {
@@ -166,8 +166,8 @@ export declare class MatDatepickerContent<D> extends _MatDatepickerContentMixinB
     _startExitAnimation(): void;
     ngAfterViewInit(): void;
     ngOnDestroy(): void;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDatepickerContent<any>, "mat-datepicker-content", ["matDatepickerContent"], { "color": "color"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatDatepickerContent<any>>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDatepickerContent<any>, "mat-datepicker-content", ["matDatepickerContent"], { "color": "color"; }, {}, never, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatDatepickerContent<any>, never>;
 }
 
 export declare class MatDatepickerInput<D> implements ControlValueAccessor, OnDestroy, Validator {
@@ -207,7 +207,7 @@ export declare class MatDatepickerInput<D> implements ControlValueAccessor, OnDe
     static ngAcceptInputType_disabled: BooleanInput;
     static ngAcceptInputType_value: any;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatDatepickerInput<any>, "input[matDatepicker]", ["matDatepickerInput"], { "matDatepicker": "matDatepicker"; "matDatepickerFilter": "matDatepickerFilter"; "value": "value"; "min": "min"; "max": "max"; "disabled": "disabled"; }, { "dateChange": "dateChange"; "dateInput": "dateInput"; }, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatDatepickerInput<any>>;
+    static ɵfac: i0.ɵɵFactoryDef<MatDatepickerInput<any>, [null, { optional: true; }, { optional: true; }, { optional: true; }]>;
 }
 
 export declare class MatDatepickerInputEvent<D> {
@@ -232,7 +232,7 @@ export declare class MatDatepickerIntl {
     switchToMonthViewLabel: string;
     switchToMultiYearViewLabel: string;
     formatYearRange(start: string, end: string): string;
-    static ɵfac: i0.ɵɵFactoryDef<MatDatepickerIntl>;
+    static ɵfac: i0.ɵɵFactoryDef<MatDatepickerIntl, never>;
     static ɵprov: i0.ɵɵInjectableDef<MatDatepickerIntl>;
 }
 
@@ -256,13 +256,13 @@ export declare class MatDatepickerToggle<D> implements AfterContentInit, OnChang
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     static ngAcceptInputType_disabled: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDatepickerToggle<any>, "mat-datepicker-toggle", ["matDatepickerToggle"], { "datepicker": "for"; "tabIndex": "tabIndex"; "disabled": "disabled"; "disableRipple": "disableRipple"; }, {}, ["_customIcon"]>;
-    static ɵfac: i0.ɵɵFactoryDef<MatDatepickerToggle<any>>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDatepickerToggle<any>, "mat-datepicker-toggle", ["matDatepickerToggle"], { "datepicker": "for"; "tabIndex": "tabIndex"; "disabled": "disabled"; "disableRipple": "disableRipple"; }, {}, ["_customIcon"], ["[matDatepickerToggleIcon]"]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatDatepickerToggle<any>, [null, null, { attribute: "tabindex"; }]>;
 }
 
 export declare class MatDatepickerToggleIcon {
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatDatepickerToggleIcon, "[matDatepickerToggleIcon]", never, {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatDatepickerToggleIcon>;
+    static ɵfac: i0.ɵɵFactoryDef<MatDatepickerToggleIcon, never>;
 }
 
 export declare class MatMonthView<D> implements AfterContentInit, OnDestroy {
@@ -297,8 +297,8 @@ export declare class MatMonthView<D> implements AfterContentInit, OnDestroy {
     _init(): void;
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatMonthView<any>, "mat-month-view", ["matMonthView"], { "activeDate": "activeDate"; "selected": "selected"; "minDate": "minDate"; "maxDate": "maxDate"; "dateFilter": "dateFilter"; "dateClass": "dateClass"; }, { "selectedChange": "selectedChange"; "_userSelection": "_userSelection"; "activeDateChange": "activeDateChange"; }, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatMonthView<any>>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatMonthView<any>, "mat-month-view", ["matMonthView"], { "activeDate": "activeDate"; "selected": "selected"; "minDate": "minDate"; "maxDate": "maxDate"; "dateFilter": "dateFilter"; "dateClass": "dateClass"; }, { "selectedChange": "selectedChange"; "_userSelection": "_userSelection"; "activeDateChange": "activeDateChange"; }, never, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatMonthView<any>, [null, { optional: true; }, { optional: true; }, { optional: true; }]>;
 }
 
 export declare class MatMultiYearView<D> implements AfterContentInit, OnDestroy {
@@ -327,8 +327,8 @@ export declare class MatMultiYearView<D> implements AfterContentInit, OnDestroy 
     _yearSelected(year: number): void;
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatMultiYearView<any>, "mat-multi-year-view", ["matMultiYearView"], { "activeDate": "activeDate"; "selected": "selected"; "minDate": "minDate"; "maxDate": "maxDate"; "dateFilter": "dateFilter"; }, { "selectedChange": "selectedChange"; "yearSelected": "yearSelected"; "activeDateChange": "activeDateChange"; }, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatMultiYearView<any>>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatMultiYearView<any>, "mat-multi-year-view", ["matMultiYearView"], { "activeDate": "activeDate"; "selected": "selected"; "minDate": "minDate"; "maxDate": "maxDate"; "dateFilter": "dateFilter"; }, { "selectedChange": "selectedChange"; "yearSelected": "yearSelected"; "activeDateChange": "activeDateChange"; }, never, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatMultiYearView<any>, [null, { optional: true; }, { optional: true; }]>;
 }
 
 export declare class MatYearView<D> implements AfterContentInit, OnDestroy {
@@ -357,8 +357,8 @@ export declare class MatYearView<D> implements AfterContentInit, OnDestroy {
     _monthSelected(month: number): void;
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatYearView<any>, "mat-year-view", ["matYearView"], { "activeDate": "activeDate"; "selected": "selected"; "minDate": "minDate"; "maxDate": "maxDate"; "dateFilter": "dateFilter"; }, { "selectedChange": "selectedChange"; "monthSelected": "monthSelected"; "activeDateChange": "activeDateChange"; }, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatYearView<any>>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatYearView<any>, "mat-year-view", ["matYearView"], { "activeDate": "activeDate"; "selected": "selected"; "minDate": "minDate"; "maxDate": "maxDate"; "dateFilter": "dateFilter"; }, { "selectedChange": "selectedChange"; "monthSelected": "monthSelected"; "activeDateChange": "activeDateChange"; }, never, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatYearView<any>, [null, { optional: true; }, { optional: true; }, { optional: true; }]>;
 }
 
 export declare const yearsPerPage = 24;

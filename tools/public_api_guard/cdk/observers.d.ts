@@ -10,7 +10,7 @@ export declare class CdkObserveContent implements AfterContentInit, OnDestroy {
     static ngAcceptInputType_debounce: BooleanInput;
     static ngAcceptInputType_disabled: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkObserveContent, "[cdkObserveContent]", ["cdkObserveContent"], { "disabled": "cdkObserveContentDisabled"; "debounce": "debounce"; }, { "event": "cdkObserveContent"; }, never>;
-    static ɵfac: i0.ɵɵFactoryDef<CdkObserveContent>;
+    static ɵfac: i0.ɵɵFactoryDef<CdkObserveContent, never>;
 }
 
 export declare class ContentObserver implements OnDestroy {
@@ -18,13 +18,13 @@ export declare class ContentObserver implements OnDestroy {
     ngOnDestroy(): void;
     observe(element: Element): Observable<MutationRecord[]>;
     observe(element: ElementRef<Element>): Observable<MutationRecord[]>;
-    static ɵfac: i0.ɵɵFactoryDef<ContentObserver>;
+    static ɵfac: i0.ɵɵFactoryDef<ContentObserver, never>;
     static ɵprov: i0.ɵɵInjectableDef<ContentObserver>;
 }
 
 export declare class MutationObserverFactory {
     create(callback: MutationCallback): MutationObserver | null;
-    static ɵfac: i0.ɵɵFactoryDef<MutationObserverFactory>;
+    static ɵfac: i0.ɵɵFactoryDef<MutationObserverFactory, never>;
     static ɵprov: i0.ɵɵInjectableDef<MutationObserverFactory>;
 }
 

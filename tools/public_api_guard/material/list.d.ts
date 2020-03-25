@@ -8,18 +8,18 @@ export declare class MatList extends _MatListMixinBase implements CanDisable, Ca
     ngOnDestroy(): void;
     static ngAcceptInputType_disableRipple: BooleanInput;
     static ngAcceptInputType_disabled: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatList, "mat-list, mat-action-list", ["matList"], { "disableRipple": "disableRipple"; "disabled": "disabled"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatList>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatList, "mat-list, mat-action-list", ["matList"], { "disableRipple": "disableRipple"; "disabled": "disabled"; }, {}, never, ["*"]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatList, never>;
 }
 
 export declare class MatListAvatarCssMatStyler {
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatListAvatarCssMatStyler, "[mat-list-avatar], [matListAvatar]", never, {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatListAvatarCssMatStyler>;
+    static ɵfac: i0.ɵɵFactoryDef<MatListAvatarCssMatStyler, never>;
 }
 
 export declare class MatListIconCssMatStyler {
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatListIconCssMatStyler, "[mat-list-icon], [matListIcon]", never, {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatListIconCssMatStyler>;
+    static ɵfac: i0.ɵɵFactoryDef<MatListIconCssMatStyler, never>;
 }
 
 export declare class MatListItem extends _MatListItemMixinBase implements AfterContentInit, CanDisableRipple, OnDestroy {
@@ -35,8 +35,8 @@ export declare class MatListItem extends _MatListItemMixinBase implements AfterC
     ngOnDestroy(): void;
     static ngAcceptInputType_disableRipple: BooleanInput;
     static ngAcceptInputType_disabled: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatListItem, "mat-list-item, a[mat-list-item], button[mat-list-item]", ["matListItem"], { "disableRipple": "disableRipple"; "disabled": "disabled"; }, {}, ["_avatar", "_icon", "_lines"]>;
-    static ɵfac: i0.ɵɵFactoryDef<MatListItem>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatListItem, "mat-list-item, a[mat-list-item], button[mat-list-item]", ["matListItem"], { "disableRipple": "disableRipple"; "disabled": "disabled"; }, {}, ["_avatar", "_icon", "_lines"], ["[mat-list-avatar], [mat-list-icon], [matListAvatar], [matListIcon]", "[mat-line], [matLine]", "*"]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatListItem, [null, null, { optional: true; }, { optional: true; }]>;
 }
 
 export declare class MatListModule {
@@ -77,13 +77,13 @@ export declare class MatListOption extends _MatListOptionMixinBase implements Af
     static ngAcceptInputType_disableRipple: BooleanInput;
     static ngAcceptInputType_disabled: BooleanInput;
     static ngAcceptInputType_selected: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatListOption, "mat-list-option", ["matListOption"], { "disableRipple": "disableRipple"; "checkboxPosition": "checkboxPosition"; "color": "color"; "value": "value"; "disabled": "disabled"; "selected": "selected"; }, {}, ["_avatar", "_icon", "_lines"]>;
-    static ɵfac: i0.ɵɵFactoryDef<MatListOption>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatListOption, "mat-list-option", ["matListOption"], { "disableRipple": "disableRipple"; "checkboxPosition": "checkboxPosition"; "color": "color"; "value": "value"; "disabled": "disabled"; "selected": "selected"; }, {}, ["_avatar", "_icon", "_lines"], ["*", "[mat-list-avatar], [mat-list-icon], [matListAvatar], [matListIcon]"]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatListOption, never>;
 }
 
 export declare class MatListSubheaderCssMatStyler {
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatListSubheaderCssMatStyler, "[mat-subheader], [matSubheader]", never, {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatListSubheaderCssMatStyler>;
+    static ɵfac: i0.ɵɵFactoryDef<MatListSubheaderCssMatStyler, never>;
 }
 
 export declare class MatNavList extends _MatListMixinBase implements CanDisable, CanDisableRipple, OnChanges, OnDestroy {
@@ -92,8 +92,8 @@ export declare class MatNavList extends _MatListMixinBase implements CanDisable,
     ngOnDestroy(): void;
     static ngAcceptInputType_disableRipple: BooleanInput;
     static ngAcceptInputType_disabled: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatNavList, "mat-nav-list", ["matNavList"], { "disableRipple": "disableRipple"; "disabled": "disabled"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatNavList>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatNavList, "mat-nav-list", ["matNavList"], { "disableRipple": "disableRipple"; "disabled": "disabled"; }, {}, never, ["*"]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatNavList, never>;
 }
 
 export declare class MatSelectionList extends _MatSelectionListMixinBase implements CanDisableRipple, AfterContentInit, ControlValueAccessor, OnDestroy, OnChanges {
@@ -131,8 +131,8 @@ export declare class MatSelectionList extends _MatSelectionListMixinBase impleme
     static ngAcceptInputType_disableRipple: BooleanInput;
     static ngAcceptInputType_disabled: BooleanInput;
     static ngAcceptInputType_multiple: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSelectionList, "mat-selection-list", ["matSelectionList"], { "disableRipple": "disableRipple"; "tabIndex": "tabIndex"; "color": "color"; "compareWith": "compareWith"; "disabled": "disabled"; "multiple": "multiple"; }, { "selectionChange": "selectionChange"; }, ["options"]>;
-    static ɵfac: i0.ɵɵFactoryDef<MatSelectionList>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSelectionList, "mat-selection-list", ["matSelectionList"], { "disableRipple": "disableRipple"; "tabIndex": "tabIndex"; "color": "color"; "compareWith": "compareWith"; "disabled": "disabled"; "multiple": "multiple"; }, { "selectionChange": "selectionChange"; }, ["options"], ["*"]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatSelectionList, [null, { attribute: "tabindex"; }, null]>;
 }
 
 export declare class MatSelectionListChange {

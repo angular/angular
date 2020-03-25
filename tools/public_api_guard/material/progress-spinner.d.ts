@@ -22,8 +22,8 @@ export declare class MatProgressSpinner extends _MatProgressSpinnerMixinBase imp
     static ngAcceptInputType_diameter: NumberInput;
     static ngAcceptInputType_strokeWidth: NumberInput;
     static ngAcceptInputType_value: NumberInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatProgressSpinner, "mat-progress-spinner", ["matProgressSpinner"], { "color": "color"; "diameter": "diameter"; "strokeWidth": "strokeWidth"; "mode": "mode"; "value": "value"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatProgressSpinner>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatProgressSpinner, "mat-progress-spinner", ["matProgressSpinner"], { "color": "color"; "diameter": "diameter"; "strokeWidth": "strokeWidth"; "mode": "mode"; "value": "value"; }, {}, never, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatProgressSpinner, [null, null, { optional: true; }, { optional: true; }, null]>;
 }
 
 export interface MatProgressSpinnerDefaultOptions {
@@ -39,8 +39,8 @@ export declare class MatProgressSpinnerModule {
 
 export declare class MatSpinner extends MatProgressSpinner {
     constructor(elementRef: ElementRef<HTMLElement>, platform: Platform, document: any, animationMode: string, defaults?: MatProgressSpinnerDefaultOptions);
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSpinner, "mat-spinner", never, { "color": "color"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatSpinner>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSpinner, "mat-spinner", never, { "color": "color"; }, {}, never, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatSpinner, [null, null, { optional: true; }, { optional: true; }, null]>;
 }
 
 export declare type ProgressSpinnerMode = 'determinate' | 'indeterminate';

@@ -1,6 +1,6 @@
 export declare class MatGridAvatarCssMatStyler {
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatGridAvatarCssMatStyler, "[mat-grid-avatar], [matGridAvatar]", never, {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatGridAvatarCssMatStyler>;
+    static ɵfac: i0.ɵɵFactoryDef<MatGridAvatarCssMatStyler, never>;
 }
 
 export declare class MatGridList implements MatGridListBase, OnInit, AfterContentChecked {
@@ -16,8 +16,8 @@ export declare class MatGridList implements MatGridListBase, OnInit, AfterConten
     ngAfterContentChecked(): void;
     ngOnInit(): void;
     static ngAcceptInputType_cols: NumberInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatGridList, "mat-grid-list", ["matGridList"], { "cols": "cols"; "gutterSize": "gutterSize"; "rowHeight": "rowHeight"; }, {}, ["_tiles"]>;
-    static ɵfac: i0.ɵɵFactoryDef<MatGridList>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatGridList, "mat-grid-list", ["matGridList"], { "cols": "cols"; "gutterSize": "gutterSize"; "rowHeight": "rowHeight"; }, {}, ["_tiles"], ["*"]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatGridList, [null, { optional: true; }]>;
 }
 
 export declare class MatGridListModule {
@@ -37,24 +37,24 @@ export declare class MatGridTile {
     _setStyle(property: string, value: any): void;
     static ngAcceptInputType_colspan: NumberInput;
     static ngAcceptInputType_rowspan: NumberInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatGridTile, "mat-grid-tile", ["matGridTile"], { "rowspan": "rowspan"; "colspan": "colspan"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatGridTile>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatGridTile, "mat-grid-tile", ["matGridTile"], { "rowspan": "rowspan"; "colspan": "colspan"; }, {}, never, ["*"]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatGridTile, [null, { optional: true; }]>;
 }
 
 export declare class MatGridTileFooterCssMatStyler {
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatGridTileFooterCssMatStyler, "mat-grid-tile-footer", never, {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatGridTileFooterCssMatStyler>;
+    static ɵfac: i0.ɵɵFactoryDef<MatGridTileFooterCssMatStyler, never>;
 }
 
 export declare class MatGridTileHeaderCssMatStyler {
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatGridTileHeaderCssMatStyler, "mat-grid-tile-header", never, {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatGridTileHeaderCssMatStyler>;
+    static ɵfac: i0.ɵɵFactoryDef<MatGridTileHeaderCssMatStyler, never>;
 }
 
 export declare class MatGridTileText implements AfterContentInit {
     _lines: QueryList<MatLine>;
     constructor(_element: ElementRef<HTMLElement>);
     ngAfterContentInit(): void;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatGridTileText, "mat-grid-tile-header, mat-grid-tile-footer", never, {}, {}, ["_lines"]>;
-    static ɵfac: i0.ɵɵFactoryDef<MatGridTileText>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatGridTileText, "mat-grid-tile-header, mat-grid-tile-footer", never, {}, {}, ["_lines"], ["[mat-grid-avatar], [matGridAvatar]", "[mat-line], [matLine]", "*"]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatGridTileText, never>;
 }

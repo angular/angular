@@ -13,7 +13,7 @@ export declare class MatSnackBar implements OnDestroy {
     open(message: string, action?: string, config?: MatSnackBarConfig): MatSnackBarRef<SimpleSnackBar>;
     openFromComponent<T>(component: ComponentType<T>, config?: MatSnackBarConfig): MatSnackBarRef<T>;
     openFromTemplate(template: TemplateRef<any>, config?: MatSnackBarConfig): MatSnackBarRef<EmbeddedViewRef<any>>;
-    static ɵfac: i0.ɵɵFactoryDef<MatSnackBar>;
+    static ɵfac: i0.ɵɵFactoryDef<MatSnackBar, [null, null, null, null, { optional: true; skipSelf: true; }, null]>;
     static ɵprov: i0.ɵɵInjectableDef<MatSnackBar>;
 }
 
@@ -49,8 +49,8 @@ export declare class MatSnackBarContainer extends BasePortalOutlet implements On
     exit(): Observable<void>;
     ngOnDestroy(): void;
     onAnimationEnd(event: AnimationEvent): void;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSnackBarContainer, "snack-bar-container", never, {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatSnackBarContainer>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSnackBarContainer, "snack-bar-container", never, {}, {}, never, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatSnackBarContainer, never>;
 }
 
 export interface MatSnackBarDismiss {
@@ -89,6 +89,6 @@ export declare class SimpleSnackBar {
     snackBarRef: MatSnackBarRef<SimpleSnackBar>;
     constructor(snackBarRef: MatSnackBarRef<SimpleSnackBar>, data: any);
     action(): void;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<SimpleSnackBar, "simple-snack-bar", never, {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<SimpleSnackBar>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<SimpleSnackBar, "simple-snack-bar", never, {}, {}, never, never>;
+    static ɵfac: i0.ɵɵFactoryDef<SimpleSnackBar, never>;
 }

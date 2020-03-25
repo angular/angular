@@ -33,7 +33,7 @@ export declare class MatSort extends _MatSortMixinBase implements CanDisable, Ha
     static ngAcceptInputType_disableClear: BooleanInput;
     static ngAcceptInputType_disabled: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatSort, "[matSort]", ["matSort"], { "disabled": "matSortDisabled"; "active": "matSortActive"; "start": "matSortStart"; "direction": "matSortDirection"; "disableClear": "matSortDisableClear"; }, { "sortChange": "matSortChange"; }, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatSort>;
+    static ɵfac: i0.ɵɵFactoryDef<MatSort, never>;
 }
 
 export interface MatSortable {
@@ -80,14 +80,14 @@ export declare class MatSortHeader extends _MatSortHeaderMixinBase implements Ca
     ngOnInit(): void;
     static ngAcceptInputType_disableClear: BooleanInput;
     static ngAcceptInputType_disabled: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSortHeader, "[mat-sort-header]", ["matSortHeader"], { "disabled": "disabled"; "id": "mat-sort-header"; "arrowPosition": "arrowPosition"; "start": "start"; "disableClear": "disableClear"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatSortHeader>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSortHeader, "[mat-sort-header]", ["matSortHeader"], { "disabled": "disabled"; "id": "mat-sort-header"; "arrowPosition": "arrowPosition"; "start": "start"; "disableClear": "disableClear"; }, {}, never, ["*"]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatSortHeader, [null, null, { optional: true; }, { optional: true; }, null, null]>;
 }
 
 export declare class MatSortHeaderIntl {
     readonly changes: Subject<void>;
     sortButtonLabel: (id: string) => string;
-    static ɵfac: i0.ɵɵFactoryDef<MatSortHeaderIntl>;
+    static ɵfac: i0.ɵɵFactoryDef<MatSortHeaderIntl, never>;
     static ɵprov: i0.ɵɵInjectableDef<MatSortHeaderIntl>;
 }
 

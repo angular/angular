@@ -88,7 +88,7 @@ export declare const defaultRippleAnimationConfig: {
 
 export declare class ErrorStateMatcher {
     isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean;
-    static ɵfac: i0.ɵɵFactoryDef<ErrorStateMatcher>;
+    static ɵfac: i0.ɵɵFactoryDef<ErrorStateMatcher, never>;
     static ɵprov: i0.ɵɵInjectableDef<ErrorStateMatcher>;
 }
 
@@ -100,7 +100,7 @@ export declare class GestureConfig extends HammerGestureConfig {
     events: string[];
     constructor(_hammerOptions?: HammerOptions | undefined, _commonModule?: MatCommonModule);
     buildHammer(element: HTMLElement): HammerInstance;
-    static ɵfac: i0.ɵɵFactoryDef<GestureConfig>;
+    static ɵfac: i0.ɵɵFactoryDef<GestureConfig, [{ optional: true; }, { optional: true; }]>;
     static ɵprov: i0.ɵɵInjectableDef<GestureConfig>;
 }
 
@@ -224,7 +224,7 @@ export declare const MATERIAL_SANITY_CHECKS: InjectionToken<SanityChecks>;
 
 export declare class MatLine {
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatLine, "[mat-line], [matLine]", never, {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatLine>;
+    static ɵfac: i0.ɵɵFactoryDef<MatLine, never>;
 }
 
 export declare class MatLineModule {
@@ -245,8 +245,8 @@ export declare class MatOptgroup extends _MatOptgroupMixinBase implements CanDis
     _labelId: string;
     label: string;
     static ngAcceptInputType_disabled: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatOptgroup, "mat-optgroup", ["matOptgroup"], { "disabled": "disabled"; "label": "label"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatOptgroup>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatOptgroup, "mat-optgroup", ["matOptgroup"], { "disabled": "disabled"; "label": "label"; }, {}, never, ["*", "mat-option, ng-container"]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatOptgroup, never>;
 }
 
 export declare class MatOption implements FocusableOption, AfterViewChecked, OnDestroy {
@@ -277,8 +277,8 @@ export declare class MatOption implements FocusableOption, AfterViewChecked, OnD
     setActiveStyles(): void;
     setInactiveStyles(): void;
     static ngAcceptInputType_disabled: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatOption, "mat-option", ["matOption"], { "value": "value"; "id": "id"; "disabled": "disabled"; }, { "onSelectionChange": "onSelectionChange"; }, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatOption>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatOption, "mat-option", ["matOption"], { "value": "value"; "id": "id"; "disabled": "disabled"; }, { "onSelectionChange": "onSelectionChange"; }, never, ["*"]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatOption, [null, null, { optional: true; }, { optional: true; }]>;
 }
 
 export declare class MatOptionModule {
@@ -304,8 +304,8 @@ export declare class MatPseudoCheckbox {
     disabled: boolean;
     state: MatPseudoCheckboxState;
     constructor(_animationMode?: string | undefined);
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatPseudoCheckbox, "mat-pseudo-checkbox", never, { "state": "state"; "disabled": "disabled"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatPseudoCheckbox>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatPseudoCheckbox, "mat-pseudo-checkbox", never, { "state": "state"; "disabled": "disabled"; }, {}, never, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatPseudoCheckbox, [{ optional: true; }]>;
 }
 
 export declare class MatPseudoCheckboxModule {
@@ -334,7 +334,7 @@ export declare class MatRipple implements OnInit, OnDestroy, RippleTarget {
     ngOnDestroy(): void;
     ngOnInit(): void;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatRipple, "[mat-ripple], [matRipple]", ["matRipple"], { "color": "matRippleColor"; "unbounded": "matRippleUnbounded"; "centered": "matRippleCentered"; "radius": "matRippleRadius"; "animation": "matRippleAnimation"; "disabled": "matRippleDisabled"; "trigger": "matRippleTrigger"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatRipple>;
+    static ɵfac: i0.ɵɵFactoryDef<MatRipple, [null, null, null, { optional: true; }, { optional: true; }]>;
 }
 
 export declare class MatRippleModule {
@@ -382,7 +382,7 @@ export declare class NativeDateAdapter extends DateAdapter<Date> {
     parse(value: any): Date | null;
     toIso8601(date: Date): string;
     today(): Date;
-    static ɵfac: i0.ɵɵFactoryDef<NativeDateAdapter>;
+    static ɵfac: i0.ɵɵFactoryDef<NativeDateAdapter, [{ optional: true; }, null]>;
     static ɵprov: i0.ɵɵInjectableDef<NativeDateAdapter>;
 }
 
@@ -463,7 +463,7 @@ export declare function setLines(lines: QueryList<unknown>, element: ElementRef<
 
 export declare class ShowOnDirtyErrorStateMatcher implements ErrorStateMatcher {
     isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean;
-    static ɵfac: i0.ɵɵFactoryDef<ShowOnDirtyErrorStateMatcher>;
+    static ɵfac: i0.ɵɵFactoryDef<ShowOnDirtyErrorStateMatcher, never>;
     static ɵprov: i0.ɵɵInjectableDef<ShowOnDirtyErrorStateMatcher>;
 }
 

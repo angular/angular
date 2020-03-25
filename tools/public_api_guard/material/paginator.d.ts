@@ -44,8 +44,8 @@ export declare class MatPaginator extends _MatPaginatorBase implements OnInit, O
     static ngAcceptInputType_pageIndex: NumberInput;
     static ngAcceptInputType_pageSize: NumberInput;
     static ngAcceptInputType_showFirstLastButtons: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatPaginator, "mat-paginator", ["matPaginator"], { "disabled": "disabled"; "color": "color"; "pageIndex": "pageIndex"; "length": "length"; "pageSize": "pageSize"; "pageSizeOptions": "pageSizeOptions"; "hidePageSize": "hidePageSize"; "showFirstLastButtons": "showFirstLastButtons"; }, { "page": "page"; }, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatPaginator>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatPaginator, "mat-paginator", ["matPaginator"], { "disabled": "disabled"; "color": "color"; "pageIndex": "pageIndex"; "length": "length"; "pageSize": "pageSize"; "pageSizeOptions": "pageSizeOptions"; "hidePageSize": "hidePageSize"; "showFirstLastButtons": "showFirstLastButtons"; }, { "page": "page"; }, never, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatPaginator, [null, null, { optional: true; }]>;
 }
 
 export interface MatPaginatorDefaultOptions {
@@ -63,7 +63,7 @@ export declare class MatPaginatorIntl {
     lastPageLabel: string;
     nextPageLabel: string;
     previousPageLabel: string;
-    static ɵfac: i0.ɵɵFactoryDef<MatPaginatorIntl>;
+    static ɵfac: i0.ɵɵFactoryDef<MatPaginatorIntl, never>;
     static ɵprov: i0.ɵɵInjectableDef<MatPaginatorIntl>;
 }
 

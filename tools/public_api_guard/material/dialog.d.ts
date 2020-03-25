@@ -34,13 +34,13 @@ export declare class MatDialog implements OnDestroy {
     getDialogById(id: string): MatDialogRef<any> | undefined;
     ngOnDestroy(): void;
     open<T, D = any, R = any>(componentOrTemplateRef: ComponentType<T> | TemplateRef<T>, config?: MatDialogConfig<D>): MatDialogRef<T, R>;
-    static ɵfac: i0.ɵɵFactoryDef<MatDialog>;
+    static ɵfac: i0.ɵɵFactoryDef<MatDialog, [null, null, { optional: true; }, { optional: true; }, null, { optional: true; skipSelf: true; }, null]>;
     static ɵprov: i0.ɵɵInjectableDef<MatDialog>;
 }
 
 export declare class MatDialogActions {
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatDialogActions, "[mat-dialog-actions], mat-dialog-actions, [matDialogActions]", never, {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatDialogActions>;
+    static ɵfac: i0.ɵɵFactoryDef<MatDialogActions, never>;
 }
 
 export declare const matDialogAnimations: {
@@ -57,7 +57,7 @@ export declare class MatDialogClose implements OnInit, OnChanges {
     ngOnChanges(changes: SimpleChanges): void;
     ngOnInit(): void;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatDialogClose, "[mat-dialog-close], [matDialogClose]", ["matDialogClose"], { "ariaLabel": "aria-label"; "type": "type"; "dialogResult": "mat-dialog-close"; "_matDialogClose": "matDialogClose"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatDialogClose>;
+    static ɵfac: i0.ɵɵFactoryDef<MatDialogClose, [{ optional: true; }, null, null]>;
 }
 
 export declare class MatDialogConfig<D = any> {
@@ -102,13 +102,13 @@ export declare class MatDialogContainer extends BasePortalOutlet {
     _startExitAnimation(): void;
     attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T>;
     attachTemplatePortal<C>(portal: TemplatePortal<C>): EmbeddedViewRef<C>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDialogContainer, "mat-dialog-container", never, {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatDialogContainer>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDialogContainer, "mat-dialog-container", never, {}, {}, never, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatDialogContainer, [null, null, null, { optional: true; }, null]>;
 }
 
 export declare class MatDialogContent {
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatDialogContent, "[mat-dialog-content], mat-dialog-content, [matDialogContent]", never, {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatDialogContent>;
+    static ɵfac: i0.ɵɵFactoryDef<MatDialogContent, never>;
 }
 
 export declare class MatDialogModule {
@@ -146,7 +146,7 @@ export declare class MatDialogTitle implements OnInit {
     constructor(_dialogRef: MatDialogRef<any>, _elementRef: ElementRef<HTMLElement>, _dialog: MatDialog);
     ngOnInit(): void;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatDialogTitle, "[mat-dialog-title], [matDialogTitle]", ["matDialogTitle"], { "id": "id"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatDialogTitle>;
+    static ɵfac: i0.ɵɵFactoryDef<MatDialogTitle, [{ optional: true; }, null, null]>;
 }
 
 export declare function throwMatDialogContentAlreadyAttachedError(): void;

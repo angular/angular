@@ -49,7 +49,7 @@ export declare class CdkConnectedOverlay implements OnDestroy, OnChanges {
     static ngAcceptInputType_lockPosition: BooleanInput;
     static ngAcceptInputType_push: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkConnectedOverlay, "[cdk-connected-overlay], [connected-overlay], [cdkConnectedOverlay]", ["cdkConnectedOverlay"], { "origin": "cdkConnectedOverlayOrigin"; "positions": "cdkConnectedOverlayPositions"; "positionStrategy": "cdkConnectedOverlayPositionStrategy"; "offsetX": "cdkConnectedOverlayOffsetX"; "offsetY": "cdkConnectedOverlayOffsetY"; "width": "cdkConnectedOverlayWidth"; "height": "cdkConnectedOverlayHeight"; "minWidth": "cdkConnectedOverlayMinWidth"; "minHeight": "cdkConnectedOverlayMinHeight"; "backdropClass": "cdkConnectedOverlayBackdropClass"; "panelClass": "cdkConnectedOverlayPanelClass"; "viewportMargin": "cdkConnectedOverlayViewportMargin"; "scrollStrategy": "cdkConnectedOverlayScrollStrategy"; "open": "cdkConnectedOverlayOpen"; "transformOriginSelector": "cdkConnectedOverlayTransformOriginOn"; "hasBackdrop": "cdkConnectedOverlayHasBackdrop"; "lockPosition": "cdkConnectedOverlayLockPosition"; "flexibleDimensions": "cdkConnectedOverlayFlexibleDimensions"; "growAfterOpen": "cdkConnectedOverlayGrowAfterOpen"; "push": "cdkConnectedOverlayPush"; }, { "backdropClick": "backdropClick"; "positionChange": "positionChange"; "attach": "attach"; "detach": "detach"; "overlayKeydown": "overlayKeydown"; }, never>;
-    static ɵfac: i0.ɵɵFactoryDef<CdkConnectedOverlay>;
+    static ɵfac: i0.ɵɵFactoryDef<CdkConnectedOverlay, [null, null, null, null, { optional: true; }]>;
 }
 
 export declare class CdkOverlayOrigin {
@@ -57,7 +57,7 @@ export declare class CdkOverlayOrigin {
     constructor(
     elementRef: ElementRef);
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkOverlayOrigin, "[cdk-overlay-origin], [overlay-origin], [cdkOverlayOrigin]", ["cdkOverlayOrigin"], {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<CdkOverlayOrigin>;
+    static ɵfac: i0.ɵɵFactoryDef<CdkOverlayOrigin, never>;
 }
 
 export declare class CloseScrollStrategy implements ScrollStrategy {
@@ -157,7 +157,7 @@ export declare class FullscreenOverlayContainer extends OverlayContainer impleme
     protected _createContainer(): void;
     getFullscreenElement(): Element;
     ngOnDestroy(): void;
-    static ɵfac: i0.ɵɵFactoryDef<FullscreenOverlayContainer>;
+    static ɵfac: i0.ɵɵFactoryDef<FullscreenOverlayContainer, never>;
     static ɵprov: i0.ɵɵInjectableDef<FullscreenOverlayContainer>;
 }
 
@@ -194,7 +194,7 @@ export declare class Overlay {
     scrollStrategies: ScrollStrategyOptions, _overlayContainer: OverlayContainer, _componentFactoryResolver: ComponentFactoryResolver, _positionBuilder: OverlayPositionBuilder, _keyboardDispatcher: OverlayKeyboardDispatcher, _injector: Injector, _ngZone: NgZone, _document: any, _directionality: Directionality, _location?: Location | undefined);
     create(config?: OverlayConfig): OverlayRef;
     position(): OverlayPositionBuilder;
-    static ɵfac: i0.ɵɵFactoryDef<Overlay>;
+    static ɵfac: i0.ɵɵFactoryDef<Overlay, [null, null, null, null, null, null, null, null, null, { optional: true; }]>;
     static ɵprov: i0.ɵɵInjectableDef<Overlay>;
 }
 
@@ -231,7 +231,7 @@ export declare class OverlayContainer implements OnDestroy {
     protected _createContainer(): void;
     getContainerElement(): HTMLElement;
     ngOnDestroy(): void;
-    static ɵfac: i0.ɵɵFactoryDef<OverlayContainer>;
+    static ɵfac: i0.ɵɵFactoryDef<OverlayContainer, never>;
     static ɵprov: i0.ɵɵInjectableDef<OverlayContainer>;
 }
 
@@ -241,7 +241,7 @@ export declare class OverlayKeyboardDispatcher implements OnDestroy {
     add(overlayRef: OverlayRef): void;
     ngOnDestroy(): void;
     remove(overlayRef: OverlayRef): void;
-    static ɵfac: i0.ɵɵFactoryDef<OverlayKeyboardDispatcher>;
+    static ɵfac: i0.ɵɵFactoryDef<OverlayKeyboardDispatcher, never>;
     static ɵprov: i0.ɵɵInjectableDef<OverlayKeyboardDispatcher>;
 }
 
@@ -255,7 +255,7 @@ export declare class OverlayPositionBuilder {
     connectedTo(elementRef: ElementRef, originPos: OriginConnectionPosition, overlayPos: OverlayConnectionPosition): ConnectedPositionStrategy;
     flexibleConnectedTo(origin: FlexibleConnectedPositionStrategyOrigin): FlexibleConnectedPositionStrategy;
     global(): GlobalPositionStrategy;
-    static ɵfac: i0.ɵɵFactoryDef<OverlayPositionBuilder>;
+    static ɵfac: i0.ɵɵFactoryDef<OverlayPositionBuilder, never>;
     static ɵprov: i0.ɵɵInjectableDef<OverlayPositionBuilder>;
 }
 
@@ -337,7 +337,7 @@ export declare class ScrollStrategyOptions {
     noop: () => NoopScrollStrategy;
     reposition: (config?: RepositionScrollStrategyConfig | undefined) => RepositionScrollStrategy;
     constructor(_scrollDispatcher: ScrollDispatcher, _viewportRuler: ViewportRuler, _ngZone: NgZone, document: any);
-    static ɵfac: i0.ɵɵFactoryDef<ScrollStrategyOptions>;
+    static ɵfac: i0.ɵɵFactoryDef<ScrollStrategyOptions, never>;
     static ɵprov: i0.ɵɵInjectableDef<ScrollStrategyOptions>;
 }
 

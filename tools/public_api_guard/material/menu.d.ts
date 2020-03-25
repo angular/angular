@@ -1,7 +1,7 @@
 export declare class _MatMenu extends MatMenu {
     constructor(elementRef: ElementRef<HTMLElement>, ngZone: NgZone, defaultOptions: MatMenuDefaultOptions);
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<_MatMenu, "mat-menu", ["matMenu"], {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<_MatMenu>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<_MatMenu, "mat-menu", ["matMenu"], {}, {}, never, ["*"]>;
+    static ɵfac: i0.ɵɵFactoryDef<_MatMenu, never>;
 }
 
 export declare class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>, OnInit, OnDestroy {
@@ -54,7 +54,7 @@ export declare class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatM
     static ngAcceptInputType_hasBackdrop: BooleanInput;
     static ngAcceptInputType_overlapTrigger: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatMenuBase, never, never, { "backdropClass": "backdropClass"; "ariaLabel": "aria-label"; "ariaLabelledby": "aria-labelledby"; "ariaDescribedby": "aria-describedby"; "xPosition": "xPosition"; "yPosition": "yPosition"; "overlapTrigger": "overlapTrigger"; "hasBackdrop": "hasBackdrop"; "panelClass": "class"; "classList": "classList"; }, { "closed": "closed"; "close": "close"; }, ["lazyContent", "_allItems", "items"]>;
-    static ɵfac: i0.ɵɵFactoryDef<_MatMenuBase>;
+    static ɵfac: i0.ɵɵFactoryDef<_MatMenuBase, never>;
 }
 
 export declare class _MatMenuDirectivesModule {
@@ -72,7 +72,7 @@ export declare const MAT_MENU_SCROLL_STRATEGY: InjectionToken<() => ScrollStrate
 
 export declare class MatMenu extends _MatMenuBase {
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatMenu, never, never, {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatMenu>;
+    static ɵfac: i0.ɵɵFactoryDef<MatMenu, never>;
 }
 
 export declare const matMenuAnimations: {
@@ -87,7 +87,7 @@ export declare class MatMenuContent implements OnDestroy {
     detach(): void;
     ngOnDestroy(): void;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatMenuContent, "ng-template[matMenuContent]", never, {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatMenuContent>;
+    static ɵfac: i0.ɵɵFactoryDef<MatMenuContent, never>;
 }
 
 export interface MatMenuDefaultOptions {
@@ -115,8 +115,8 @@ export declare class MatMenuItem extends _MatMenuItemMixinBase implements Focusa
     ngOnDestroy(): void;
     static ngAcceptInputType_disableRipple: BooleanInput;
     static ngAcceptInputType_disabled: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatMenuItem, "[mat-menu-item]", ["matMenuItem"], { "disabled": "disabled"; "disableRipple": "disableRipple"; "role": "role"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatMenuItem>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatMenuItem, "[mat-menu-item]", ["matMenuItem"], { "disabled": "disabled"; "disableRipple": "disableRipple"; "role": "role"; }, {}, never, ["*"]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatMenuItem, [null, null, null, { optional: true; }]>;
 }
 
 export declare class MatMenuModule {
@@ -170,7 +170,7 @@ export declare class MatMenuTrigger implements AfterContentInit, OnDestroy {
     toggleMenu(): void;
     triggersSubmenu(): boolean;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatMenuTrigger, "[mat-menu-trigger-for], [matMenuTriggerFor]", ["matMenuTrigger"], { "_deprecatedMatMenuTriggerFor": "mat-menu-trigger-for"; "menu": "matMenuTriggerFor"; "menuData": "matMenuTriggerData"; "restoreFocus": "matMenuTriggerRestoreFocus"; }, { "menuOpened": "menuOpened"; "onMenuOpen": "onMenuOpen"; "menuClosed": "menuClosed"; "onMenuClose": "onMenuClose"; }, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatMenuTrigger>;
+    static ɵfac: i0.ɵɵFactoryDef<MatMenuTrigger, [null, null, null, null, { optional: true; }, { optional: true; self: true; }, { optional: true; }, null]>;
 }
 
 export declare type MenuPositionX = 'before' | 'after';
