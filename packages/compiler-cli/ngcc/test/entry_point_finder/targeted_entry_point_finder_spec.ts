@@ -166,6 +166,81 @@ runInEachFileSystem(() => {
             ]);
       });
 
+      it('should handle external node_modules folders (e.g. in a yarn workspace)', () => {
+        // Note that neither the basePath and targetPath contain each other
+        const basePath = _Abs('/nested_node_modules/packages/app/node_modules');
+        const targetPath = _Abs('/nested_node_modules/node_modules/package/entry-point');
+        loadTestFiles([
+          ...createPackage(_Abs('/nested_node_modules/node_modules'), 'package'),
+          ...createPackage(_Abs('/nested_node_modules/node_modules/package'), 'entry-point'),
+        ]);
+        const finder = new TargetedEntryPointFinder(
+            fs, config, logger, resolver, basePath, targetPath, undefined);
+        const {entryPoints} = finder.findEntryPoints();
+        expect(dumpEntryPointPaths(_Abs('/nested_node_modules'), entryPoints)).toEqual([
+          ['node_modules/package', 'node_modules/package/entry-point'],
+        ]);
+      });
+
+      it('should handle external node_modules folders (e.g. in a yarn workspace) for dependencies',
+         () => {
+           // The application being compiled is at `/project/packages/app` so the basePath sent to
+           // ngcc is the `node_modules` below it
+           const basePath = _Abs('/project/packages/app/node_modules');
+           // `packages/app` depends upon lib1, which has a private dependency on lib2 in its
+           // own `node_modules` folder
+           const lib2 = createPackage(
+               _Abs('/project/node_modules/lib1/node_modules'), 'lib2', ['lib3/entry-point']);
+           // `lib2` depends upon `lib3/entry-point` which has been hoisted all the way up to the
+           // top level `node_modules`
+           const lib3 = createPackage(_Abs('/project/node_modules'), 'lib3');
+           const lib3EntryPoint = createPackage(_Abs('/project/node_modules/lib3'), 'entry-point');
+           loadTestFiles([...lib2, ...lib3, ...lib3EntryPoint]);
+           // The targetPath being processed is `lib2` and we expect it to find the correct
+           // entry-point info for the `lib3/entry-point` dependency.
+           const targetPath = _Abs('/project/node_modules/lib1/node_modules/lib2');
+           const finder = new TargetedEntryPointFinder(
+               fs, config, logger, resolver, basePath, targetPath, undefined);
+           const {entryPoints} = finder.findEntryPoints();
+           expect(dumpEntryPointPaths(_Abs('/project/node_modules'), entryPoints)).toEqual([
+             ['lib3', 'lib3/entry-point'],
+             ['lib1/node_modules/lib2', 'lib1/node_modules/lib2'],
+           ]);
+         });
+
+      it('should handle external node_modules folders (e.g. in a yarn workspace) for scoped dependencies',
+         () => {
+           // The application being compiled is at `/project/packages/app` so the basePath sent to
+           // ngcc is the `node_modules` below it
+           const basePath = _Abs('/project/packages/app/node_modules');
+           // `packages/app` depends upon lib1, which has a private dependency on lib2 in its
+           // own `node_modules` folder
+           const lib2 = createPackage(
+               _Abs('/project/node_modules/lib1/node_modules'), 'lib2',
+               ['@scope/lib3/entry-point']);
+           // `lib2` depends upon `lib3/entry-point` which has been hoisted all the way up to the
+           // top level `node_modules`
+           const lib3 = createPackage(_Abs('/project/node_modules/@scope'), 'lib3');
+           const lib3EntryPoint = createPackage(
+               _Abs('/project/node_modules/@scope/lib3'), 'entry-point', ['lib4/entry-point']);
+           const lib4 =
+               createPackage(_Abs('/project/node_modules/@scope/lib3/node_modules'), 'lib4');
+           const lib4EntryPoint = createPackage(
+               _Abs('/project/node_modules/@scope/lib3/node_modules/lib4'), 'entry-point');
+           loadTestFiles([...lib2, ...lib3, ...lib3EntryPoint, ...lib4, ...lib4EntryPoint]);
+           // The targetPath being processed is `lib2` and we expect it to find the correct
+           // entry-point info for the `lib3/entry-point` dependency.
+           const targetPath = _Abs('/project/node_modules/lib1/node_modules/lib2');
+           const finder = new TargetedEntryPointFinder(
+               fs, config, logger, resolver, basePath, targetPath, undefined);
+           const {entryPoints} = finder.findEntryPoints();
+           expect(dumpEntryPointPaths(_Abs('/project/node_modules'), entryPoints)).toEqual([
+             ['@scope/lib3/node_modules/lib4', '@scope/lib3/node_modules/lib4/entry-point'],
+             ['@scope/lib3', '@scope/lib3/entry-point'],
+             ['lib1/node_modules/lib2', 'lib1/node_modules/lib2'],
+           ]);
+         });
+
       it('should handle dependencies via pathMappings', () => {
         const basePath = _Abs('/path_mapped/node_modules');
         const targetPath = _Abs('/path_mapped/node_modules/test');
