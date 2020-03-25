@@ -186,6 +186,19 @@ code {
   color: $darkgray;
 }
 
+h1, h2, h3, h4, h5, h6, p, ol, ul, table {
+  code {
+    background-color: $backgroundgray;
+    color: $darkgray;
+    padding: 0 3px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    border: 1px solid $lightgray;
+  }
+}
+
+
 .sidenav-content a {
   color: $blue;
   &:hover {
