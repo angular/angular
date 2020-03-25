@@ -26,11 +26,12 @@ scss_bundle(
     name = "theming_bundle",
     outs = ["_theming.scss"],
     args = [
-        "--entryFile=$(execpath //src/material/core:theming/_all-theme.scss)",
+        "--entryFile=$(execpath :theming-bundle.scss)",
         "--outFile=$(execpath :_theming.scss)",
     ],
     data = CDK_SCSS_LIBS + MATERIAL_SCSS_LIBS + [
-        "//src/material/core:theming/_all-theme.scss",
+        "theming-bundle.scss",
+        "//src/material/core:theming_scss_lib",
         # Config file is required by "scss-bundle" and will be automatically
         # loaded by the CLI. It expects the config to be in the execroot.
         "//:scss-bundle.config.json",

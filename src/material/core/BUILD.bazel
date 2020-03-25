@@ -41,11 +41,21 @@ ng_module(
     ],
 )
 
+ALL_THEMING_FILES = [
+    # The `_core.scss` file needs to be added here too because it depends
+    # on the `_all-typography` file.
+    "_core.scss",
+    "color/_all-color.scss",
+    "density/_all-density.scss",
+    "theming/_all-theme.scss",
+    "typography/_all-typography.scss",
+]
+
 sass_library(
     name = "core_scss_lib",
     srcs = glob(
         ["**/_*.scss"],
-        exclude = ["theming/_all-theme.scss"],
+        exclude = ALL_THEMING_FILES,
     ),
     deps = [
         "//src/cdk/a11y:a11y_scss_lib",
@@ -56,9 +66,7 @@ sass_library(
 
 sass_library(
     name = "theming_scss_lib",
-    srcs = [
-        "theming/_all-theme.scss",
-    ],
+    srcs = ALL_THEMING_FILES,
     deps = MATERIAL_SCSS_LIBS,
 )
 

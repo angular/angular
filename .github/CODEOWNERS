@@ -42,6 +42,7 @@
 /src/material/core/*                               @jelbourn
 /src/material/core/testing/**                      @crisbeto
 /src/material/core/animation/**                    @jelbourn
+/src/material/core/color/**                        @jelbourn @devversion
 /src/material/core/common-behaviors/**             @jelbourn @devversion
 /src/material/core/datetime/**                     @mmalerba
 /src/material/core/density/**                      @devversion

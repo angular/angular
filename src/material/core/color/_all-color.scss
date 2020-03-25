@@ -1,0 +1,20 @@
+@import '../theming/all-theme';
+
+// Includes all of the color styles.
+@mixin angular-material-color($config) {
+  // In case a theme object has been passed instead of a configuration for
+  // the color system, extract the color config from the theme object.
+  @if type_of($config) == 'map' {
+    $config: map_get($config, color);
+  }
+  // If no actual color configuration has been specified, report an error.
+  @if not $config {
+    @error 'No color configuration specified.';
+  }
+
+  @include angular-material-theme((
+    color: $config,
+    typography: null,
+    density: null,
+  ));
+}
