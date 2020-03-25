@@ -214,6 +214,13 @@ Read more about component classes, templates, and views in [Introduction to Angu
 
 See  [workspace configuration](#cli-config)
 
+{@a content-projection}
+
+## content projection
+
+A way to insert DOM content from outside a component into the component's view in a designated spot.
+
+For more information, see [Responding to changes in content](guide/lifecycle-hooks#content-projection).
 
 {@a custom-element}
 
@@ -946,6 +953,19 @@ Read more about TypeScript at [typescriptlang.org](http://www.typescriptlang.org
 
 {@a U}
 
+{@a unidirectional-data-flow}
+
+## unidirectional data flow
+
+A data flow model where the component tree is always checked for changes in one direction (parent to child), which prevents cycles in the change detection graph.
+
+In practice, this means that data in Angular flows downward during change detection.
+A parent component can easily change values in its child components because the parent is checked first.
+A failure could occur, however, if a child component tries to change a value in its parent during change detection (inverting the expected data flow), because the parent component has already been rendered.
+In development mode, Angular throws the `ExpressionChangedAfterItHasBeenCheckedError` error if your app attempts to do this, rather than silently failing to render the new value.
+
+To avoid this error, a [lifecycle hook](guide/lifecycle-hooks) method that seeks to make such a change should trigger a new change detection run. The new run follows the same direction as before, but succeeds in picking up the new value.
+
 {@a universal}
 
 ## Universal
@@ -968,7 +988,7 @@ Angular renders a view under the control of one or more [directives](#directive)
 A [component](#component) class and its associated [template](#template) define a view.
 A view is specifically represented by a `ViewRef` instance associated with a component.
 A view that belongs immediately to a component is called a *host view*.
-Views are typically collected into [view hierarchies](#view-tree). 
+Views are typically collected into [view hierarchies](#view-tree).
 
 Properties of elements in a view can change dynamically, in response to user actions;
 the structure (number and order) of elements in a view can't.
