@@ -16,13 +16,13 @@
     <mat-form-field>
       <mat-select (selectionChange)="formatRecords()" [(ngModel)]="visualizationMode">
         <mat-option [value]="cmpVisualizationModes.FlameGraph">
-          Flamegraph
+          Flame graph
         </mat-option>
         <mat-option [value]="cmpVisualizationModes.WebTreeGraph">
-          Treegraph
+          Tree map
         </mat-option>
         <mat-option [value]="cmpVisualizationModes.BarGraph">
-          Bargraph
+          Bar chart
         </mat-option>
       </mat-select>
     </mat-form-field>
