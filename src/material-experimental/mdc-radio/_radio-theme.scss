@@ -1,14 +1,19 @@
 @import '../mdc-helpers/mdc-helpers';
 @import '@material/radio/mixins';
 @import '@material/radio/variables';
+@import '@material/theme/functions.import';
 
 @mixin mat-mdc-radio-theme($theme) {
   // Save original values of MDC global variables. We need to save these so we can restore the
   // variables to their original values and prevent unintended side effects from using this mixin.
   $orig-mdc-radio-baseline-theme-color: $mdc-radio-baseline-theme-color;
+  $orig-mdc-radio-unchecked-color: $mdc-radio-unchecked-color;
+  $orig-mdc-radio-disabled-circle-color: $mdc-radio-disabled-circle-color;
 
   @include mat-using-mdc-theme($theme) {
     $mdc-radio-baseline-theme-color: primary !global;
+    $mdc-radio-unchecked-color: rgba(mdc-theme-prop-value(on-surface), 0.54) !global;
+    $mdc-radio-disabled-circle-color: rgba(mdc-theme-prop-value(on-surface), 0.38) !global;
 
     .mat-mdc-radio-button {
       &.mat-primary {
@@ -29,6 +34,8 @@
 
   // Restore original values of MDC global variables.
   $mdc-radio-baseline-theme-color: $orig-mdc-radio-baseline-theme-color !global;
+  $mdc-radio-unchecked-color: $orig-mdc-radio-unchecked-color !global;
+  $mdc-radio-disabled-circle-color: $orig-mdc-radio-disabled-circle-color !global;
 }
 
 @mixin mat-mdc-radio-typography($config) {
