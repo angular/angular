@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, Compiler, Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Injector, Input, ModuleWithProviders, NgModule, Optional, Pipe, Type, ViewChild, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵsetNgModuleScope as setNgModuleScope, ɵɵtext as text} from '@angular/core';
+import {APP_INITIALIZER, ChangeDetectorRef, Compiler, Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, Optional, Pipe, Type, ViewChild, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵsetNgModuleScope as setNgModuleScope, ɵɵtext as text} from '@angular/core';
 import {TestBed, getTestBed} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -243,6 +243,21 @@ describe('TestBed', () => {
     hello = TestBed.createComponent(HelloWorld);
     hello.detectChanges();
     expect(hello.nativeElement).toHaveText('Hello World!');
+  });
+
+  it('should run `APP_INITIALIZER` before accessing `LOCALE_ID` provider', () => {
+    let locale: string = '';
+    @NgModule({
+      providers: [
+        {provide: APP_INITIALIZER, useValue: () => locale = 'fr-FR', multi: true},
+        {provide: LOCALE_ID, useFactory: () => locale}
+      ]
+    })
+    class TestModule {
+    }
+
+    TestBed.configureTestingModule({imports: [TestModule]});
+    expect(TestBed.inject(LOCALE_ID)).toBe('fr-FR');
   });
 
   it('allow to override a provider', () => {
