@@ -150,13 +150,35 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
         break;
       }
     }
-    // If we get here then none of the `basePaths` matched the `entryPointPath`, which
-    // is somewhat unexpected and means that this entry-point lives completely outside
-    // any of the `basePaths`.
-    // All we can do is assume that his entry-point is a primary entry-point to a package.
-    return entryPointPath;
-  }
 
+    // We couldn't find a `packagePath` using `basePaths` so try to find the nearest `node_modules`
+    // that contains the `entryPointPath`, if there is one, and use it as a `basePath`.
+    let packagePath = entryPointPath;
+    let scopedPackagePath = packagePath;
+    let containerPath = this.fs.dirname(packagePath);
+    while (!this.fs.isRoot(containerPath) && !containerPath.endsWith('node_modules')) {
+      scopedPackagePath = packagePath;
+      packagePath = containerPath;
+      containerPath = this.fs.dirname(containerPath);
+    }
+
+    if (this.fs.exists(join(packagePath, 'package.json'))) {
+      // The directory directly below `node_modules` is a package - use it
+      return packagePath;
+    } else if (
+        this.fs.basename(packagePath).startsWith('@') &&
+        this.fs.exists(join(scopedPackagePath, 'package.json'))) {
+      // The directory directly below the `node_modules` is a scope and the directory directly
+      // below that is a scoped package - use it
+      return scopedPackagePath;
+    } else {
+      // If we get here then none of the `basePaths` contained the `entryPointPath` and the
+      // `entryPointPath` contains no `node_modules` that contains a package or a scoped
+      // package. All we can do is assume that this entry-point is a primary entry-point to a
+      // package.
+      return entryPointPath;
+    }
+  }
 
   /**
    * Split the given `path` into path segments using an FS independent algorithm.
