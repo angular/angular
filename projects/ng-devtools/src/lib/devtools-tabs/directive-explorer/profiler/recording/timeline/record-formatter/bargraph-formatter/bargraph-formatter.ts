@@ -18,9 +18,10 @@ export class BarGraphFormatter extends RecordFormatter<BargraphNode> {
     result.timeline = result.timeline
       .filter((entry) => entry.app.length > 0 && entry.timeSpent > 0)
       .map((entry) => {
-        entry.app.sort((a, b) => b.value - a.value);
+        entry.app = entry.app.filter((element) => element.value > 0).sort((a, b) => b.value - a.value);
         return entry;
       });
+    console.log(result);
     return result;
   }
 
@@ -45,21 +46,24 @@ export class BarGraphFormatter extends RecordFormatter<BargraphNode> {
       }
       const node: BargraphNode = {
         value: super.getValue(element),
-        name: super.getLabel(element),
+        name: super.getLabel(element) + addSpaces(nodes.length),
         original: element,
       };
+      // nodes.push(node);
       timeSpent += this.addFrame(nodes, element.children);
       timeSpent += node.value;
 
-      const index = nodes.findIndex((filteredNode) => filteredNode.name === node.name);
-      if (node.value > 0) {
-        if (index === -1) {
-          nodes.push(node);
-        } else {
-          nodes[index].value += node.value;
-        }
-      }
+      element.directives.forEach((dir) => {
+        const innerNode: BargraphNode = {
+          value: dir.changeDetection,
+          name: dir.name + addSpaces(nodes.length),
+          original: element,
+        };
+        nodes.push(innerNode);
+      });
     });
     return timeSpent;
   }
 }
+
+const addSpaces = (length: number) => Array.from(Array(length).keys()).reduce((acc, _) => acc + ' ', '');
