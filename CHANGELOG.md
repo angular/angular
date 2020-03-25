@@ -1,3 +1,9 @@
+<a name="9.1.0"></a>
+# [9.1.0](https://github.com/angular/angular/compare/9.1.0-rc.2...9.1.0) (2020-03-25)
+
+Promoted `9.1.0-rc.2` to `9.1.0`.
+
+
 <a name="9.1.0-rc.2"></a>
 # [9.1.0-rc.2](https://github.com/angular/angular/compare/9.1.0-rc.1...9.1.0-rc.2) (2020-03-24)
 
