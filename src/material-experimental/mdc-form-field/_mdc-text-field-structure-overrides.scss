@@ -126,4 +126,14 @@
   .mat-mdc-form-field .mat-mdc-text-field-wrapper.mdc-text-field .mdc-notched-outline__notch {
     padding-top: 0;
   }
+
+  // Unset the baseline adjustment styles that are applied to the `.mdc-text-field` before
+  // pseudo element. We control the vertical alignment of form field controls using infix
+  // spacing since we support custom form-field controls. Those don't necessarily have an
+  // explicit height that matches with the Material Design specification. If the height isn't
+  // explicitly set to a specific value by MDC, the control will not align correctly vertically.
+  // e.g. No vertical spacing to the bottom-line if the control is too large.
+  .mat-mdc-text-field-wrapper::before {
+    content: none;
+  }
 }
