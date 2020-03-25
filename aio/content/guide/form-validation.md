@@ -100,6 +100,14 @@ Note that:
 * This example adds a few getter methods. In a reactive form, you can always access any form control through the `get` method on its parent group, but sometimes it's useful to define getters as shorthands
 for the template.
 
+<div class="alert is-helpful">
+
+  #### A quick note about `minLength` and `maxLength`
+
+  * The `minLength` and `maxLength` validators are _only_ applicable to string and array types
+  * The `minLength` validator does not check for empty values. Use the `required` validator instead
+
+</div>
 
 If you look at the template for the name input again, it is fairly similar to the template-driven example.
 

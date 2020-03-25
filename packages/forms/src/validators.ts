@@ -262,7 +262,7 @@ export class Validators {
    * @description
    * Validator that requires the length of the control's value to be greater than or equal
    * to the provided minimum length. This validator is also provided by default if you use the
-   * the HTML5 `minlength` attribute.
+   * the HTML5 `minlength` attribute. 
    *
    * @usageNotes
    *
@@ -300,7 +300,7 @@ export class Validators {
    * @description
    * Validator that requires the length of the control's value to be less than or equal
    * to the provided maximum length. This validator is also provided by default if you use the
-   * the HTML5 `maxlength` attribute.
+   * the HTML5 `maxlength` attribute. 
    *
    * @usageNotes
    *
