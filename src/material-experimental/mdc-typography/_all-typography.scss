@@ -1,6 +1,10 @@
 @import '../mdc-theming/all-theme';
 
-@mixin angular-material-mdc-typography($config: null) {
+@mixin angular-material-mdc-typography($config-or-theme: null) {
+  $config: if(_mat-is-theme-object($config-or-theme),
+      mat-get-typography-config($config-or-theme), $config-or-theme);
+
+  // If no actual color configuration has been specified, create a default one.
   @if $config == null {
     $config: mat-typography-config();
   }

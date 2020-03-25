@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "sass_binary")
+load("//tools:defaults.bzl", "sass_binary", "sass_library")
 
 # Test theme used to ensure that our themes will compile using CSS variables in
 # the palettes.
@@ -19,4 +19,20 @@ sass_binary(
     testonly = True,
     src = "test-theming-api.scss",
     deps = ["//src/material/core:theming_scss_lib"],
+)
+
+# Exposes the theming bundle as a Sass library. The theming bundle output does not
+# have the proper Sass info provider set. To fix this, we wrap the file in a `sass_library`.
+sass_library(
+    name = "theming_bundle_scss_lib",
+    srcs = ["//src/material:theming_bundle"],
+)
+
+# Sass binary which is used to ensure that the theming bundle exposes the necessary
+# mixins and variables for creating themes.
+sass_binary(
+    name = "test-theming-bundle",
+    testonly = True,
+    src = "test-theming-bundle.scss",
+    deps = [":theming_bundle_scss_lib"],
 )

@@ -1,3 +1,5 @@
+@import '../material/core/core';
+@import '../material/core/theming/all-theme';
 @import '../material/core/density/all-density';
 @import '../material/core/focus-indicators/focus-indicators';
 @import '../material/core/theming/all-theme';
@@ -82,6 +84,6 @@ $density-scales: (-1, -2, minimum, maximum);
 @each $density in$density-scales {
   .demo-density-#{$density} {
     @include _angular-material-density($density);
-    @include angular-material-density-mdc($density);
+    @include angular-material-mdc-density($density);
   }
 }

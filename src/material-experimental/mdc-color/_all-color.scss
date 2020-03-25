@@ -1,7 +1,6 @@
-@import '../theming/all-theme';
+@import '../mdc-theming/all-theme';
 
-// Includes all of the color styles.
-@mixin angular-material-color($config-or-theme) {
+@mixin angular-material-mdc-color($config-or-theme) {
   // In case a theme object has been passed instead of a configuration for
   // the color system, extract the color config from the theme object.
   $config: if(_mat-is-theme-object($config-or-theme),
@@ -11,7 +10,7 @@
     @error 'No color configuration specified.';
   }
 
-  @include angular-material-theme((
+  @include angular-material-mdc-theme((
     color: $config,
     typography: null,
     density: null,

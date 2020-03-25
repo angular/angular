@@ -1,14 +1,8 @@
-@import '../../cdk/overlay/overlay';
 @import '../../cdk/a11y/a11y';
+@import '../../cdk/overlay/overlay';
 @import '../../cdk/text-field/text-field';
-
-// Core styles that can be used to apply material design treatments to any element.
-@import 'style/elevation';
-@import 'ripple/ripple';
-@import 'option/option-theme';
-@import 'option/optgroup-theme';
-@import 'selection/pseudo-checkbox/pseudo-checkbox-theme';
-@import 'typography/all-typography';
+@import './ripple/ripple';
+@import './typography/all-typography';
 
 // Mixin that renders all of the core styles that are not theme-dependent.
 @mixin mat-core($typography-config: null) {
@@ -17,46 +11,4 @@
   @include cdk-a11y();
   @include cdk-overlay();
   @include cdk-text-field();
-}
-
-@mixin mat-core-color($config) {
-  // Wrapper element that provides the theme background when the user's content isn't
-  // inside of a `mat-sidenav-container`. Note that we need to exclude the ampersand
-  // selector in case the mixin is included at the top level.
-  .mat-app-background#{if(&, ', &.mat-app-background', '')} {
-    $background: map-get($config, background);
-    $foreground: map-get($config, foreground);
-
-    background-color: mat-color($background, background);
-    color: mat-color($foreground, text);
-  }
-
-  // Provides external CSS classes for each elevation value. Each CSS class is formatted as
-  // `mat-elevation-z$zValue` where `$zValue` corresponds to the z-space to which the element is
-  // elevated.
-  @for $zValue from 0 through 24 {
-    .#{$_mat-elevation-prefix}#{$zValue} {
-      @include _mat-theme-elevation($zValue, $config);
-    }
-  }
-
-  // Marker that is used to determine whether the user has added a theme to their page.
-  @at-root {
-    .mat-theme-loaded-marker {
-      display: none;
-    }
-  }
-}
-
-// Mixin that renders all of the core styles that depend on the theme.
-@mixin mat-core-theme($theme) {
-  @include mat-ripple-theme($theme);
-  @include mat-option-theme($theme);
-  @include mat-optgroup-theme($theme);
-  @include mat-pseudo-checkbox-theme($theme);
-
-  $color: mat-get-color-config($theme);
-  @if $color != null {
-    @include mat-core-color($color);
-  }
 }

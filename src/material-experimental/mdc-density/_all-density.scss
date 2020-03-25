@@ -1,6 +1,15 @@
 @import '../mdc-theming/all-theme';
 
-@mixin angular-material-density-mdc($config: null) {
+@mixin angular-material-mdc-density($config-or-theme) {
+  // In case a theme object has been passed instead of a configuration for
+  // the density system, extract the density config from the theme object.
+  $config: if(_mat-is-theme-object($config-or-theme),
+      mat-get-density-config($config-or-theme), $config-or-theme);
+
+  @if $config == null {
+    @error 'No density configuration specified.';
+  }
+
   @include angular-material-mdc-theme((
     color: null,
     typography: null,

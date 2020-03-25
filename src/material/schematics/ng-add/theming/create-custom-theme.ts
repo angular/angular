@@ -28,8 +28,15 @@ $${name}-accent: mat-palette($mat-pink, A200, A100, A400);
 // The warn palette is optional (defaults to red).
 $${name}-warn: mat-palette($mat-red);
 
-// Create the theme object (a Sass map containing all of the palettes).
-$${name}-theme: mat-light-theme($${name}-primary, $${name}-accent, $${name}-warn);
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$${name}-theme: mat-light-theme((
+  color: (
+    primary: $${name}-primary,
+    accent: $${name}-accent,
+    warn: $${name}-warn,
+  )
+));
 
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component

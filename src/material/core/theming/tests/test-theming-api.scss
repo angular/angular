@@ -1,3 +1,6 @@
+@import '../../density/all-density';
+@import '../../color/all-color';
+@import '../../typography/all-typography';
 @import '../all-theme';
 
 // A new way to configure themes has been introduced. This Sass file ensures that the theming
@@ -202,6 +205,27 @@ $dark-theme-only-typography: mat-dark-theme((typography: $typography-config));
   @include _my-custom-theme-new-api($new-api-dark-theme);
 }
 
+// Test which ensures that either theme objects, or individual system configurations
+// can be passed to the all-density, all-typography or all-color mixins.
+@mixin test-all-theme-mixins-arguments() {
+  $test-themes: (
+    $legacy-light-theme,
+    $legacy-dark-theme,
+    $new-api-light-theme,
+    $new-api-dark-theme
+  );
+
+  @each $theme in $test-themes {
+    @include angular-material-typography($theme);
+    @include angular-material-color($theme);
+    @include _angular-material-density($theme);
+  }
+
+  @include angular-material-typography(map_get($light-theme-only-typography, typography));
+  @include _angular-material-density(map_get($light-theme-only-density, density));
+  @include angular-material-color(map_get($new-api-dark-theme, color));
+}
+
 // Include all tests. Sass will throw if one of the tests fails.
 @include test-create-color-config();
 @include test-default-theming-system-configs();
@@ -211,3 +235,4 @@ $dark-theme-only-typography: mat-dark-theme((typography: $typography-config));
 @include test-get-density-config();
 @include test-get-typography-config();
 @include test-custom-theme-backwards-compatibility();
+@include test-all-theme-mixins-arguments();

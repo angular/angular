@@ -3,31 +3,30 @@ In order to style your own components with Angular Material's tooling, the compo
 be defined with Sass.
 
 #### 1. Define all color and typography styles in a "theme file" for the component
-First, create a Sass mixin that accepts an Angular Material theme and outputs the color-specific
-styles for the component. An Angular Material theme definition is a Sass map.
+First, create a Sass mixin that accepts an Angular Material color configuration and
+outputs the color-specific styles for the component. A color configuration is a Sass map.
 
 For example, if building a custom carousel component:
 ```scss
 // Import library functions for theme creation.
 @import '~@angular/material/theming';
 
-// Define a mixin that accepts a theme and outputs the theme-specific styles.
-@mixin candy-carousel-theme($theme) {
+@mixin candy-carousel-color($config) {
   // Extract the palettes you need from the theme definition.
-  $primary: map-get($theme, primary);
-  $accent: map-get($theme, accent);
+  $primary: map-get($config, primary);
+  $accent: map-get($config, accent);
   
   // Define any styles affected by the theme.
   .candy-carousel {
     // Use mat-color to extract individual colors from a palette.
-    background-color: mat-color($primary);
-    border-color: mat-color($accent, A400);
+    background-color: mat-color($config);
+    border-color: mat-color($config, A400);
   }
 }
 ```
 
-Second, create another Sass mixin that accepts an Angular Material typography definition and outputs
-typographic styles. For example:
+Second, create another Sass mixin that accepts an Angular Material typography configuration
+and outputs typographic styles. For example:
 
 ```scss
 @mixin candy-carousel-typography($config) {
@@ -37,6 +36,27 @@ typographic styles. For example:
       size: mat-font-size($config, body-1);
       weight: mat-font-weight($config, body-1);
     }
+  }
+}
+```
+
+Finally, create a mixin that accepts an Angular Material theme, and delegates to the individual
+theming system mixins based on the configurations. A theme consists of configurations for
+individual theming systems (`color` and `typography`).
+
+```scss
+@mixin candy-carousel-theme($theme) {
+  // Extracts the color and typography configurations from the theme.
+  $color: mat-get-color-config($theme);
+  $typography: mat-get-typography-config($theme);
+
+  // Do not generate styles if configurations for individual theming
+  // systems have been explicitly set to `null`.
+  @if $color != null {
+    @include candy-carousel-color($color); 
+  }
+  @if $typography != null {
+    @include candy-carousel-typography($typography);
   }
 }
 ```
@@ -63,7 +83,12 @@ including Angular Material's built-in theme mixins.
 // Define your application's custom theme.
 $primary: mat-palette($mat-indigo);
 $accent:  mat-palette($mat-pink, A200, A100, A400);
-$theme: mat-light-theme($primary, $accent);
+$theme: mat-light-theme((
+  color: (
+    primary: $primary,
+    accent: $accent,
+  )
+));
 
 // Include theme styles for Angular Material components.
 @include angular-material-theme($theme);

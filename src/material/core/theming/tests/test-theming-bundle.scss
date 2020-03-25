@@ -1,0 +1,23 @@
+// Imports the theming bundle. Needs to be an absolute bin-dir import path as on Windows,
+// runfiles are not symlinked, so the Sass compilation happens in the workspace directory
+// with the include paths being set to the `bazel-bin` directory.
+@import 'src/material/theming';
+
+@include mat-core();
+
+$theme: mat-light-theme((
+  color: (
+    primary: $mat-red,
+    accent: $mat-blue,
+  ),
+  density: -2,
+));
+
+// If one of these mixins is not available, the compilation will fail and the
+// test will be reported as failing.
+@include angular-material-theme($theme);
+@include angular-material-typography();
+@include angular-material-color($theme);
+@include _angular-material-density($theme);
+@include mat-core-theme($theme);
+@include mat-button-theme($theme);
