@@ -30,7 +30,7 @@ import {PathMappings} from '../utils';
 export function getBasePaths(
     sourceDirectory: AbsoluteFsPath, pathMappings: PathMappings | undefined): AbsoluteFsPath[] {
   const fs = getFileSystem();
-  let basePaths = [sourceDirectory];
+  const basePaths = [sourceDirectory];
   if (pathMappings) {
     const baseUrl = resolve(pathMappings.baseUrl);
     Object.values(pathMappings.paths).forEach(paths => paths.forEach(path => {
