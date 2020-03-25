@@ -43,7 +43,7 @@ export class TimelineComponent {
   currentView = 0;
 
   cmpVisualizationModes = VisualizationMode;
-  visualizationMode = VisualizationMode.FlameGraph;
+  visualizationMode = VisualizationMode.BarGraph;
   graphData: GraphNode<FlamegraphNode | WebtreegraphNode | BargraphNode>[] = [];
 
   get formatter(): FlamegraphFormatter | WebtreegraphFormatter | BarGraphFormatter {
