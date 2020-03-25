@@ -257,13 +257,15 @@ export class R3TestBedCompiler {
     const parentInjector = this.platform.injector;
     this.testModuleRef = new NgModuleRef(this.testModuleType, parentInjector);
 
-    // Set the locale ID, it can be overridden for the tests
-    const localeId = this.testModuleRef.injector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
-    setLocaleId(localeId);
-
     // ApplicationInitStatus.runInitializers() is marked @internal to core.
     // Cast it to any before accessing it.
     (this.testModuleRef.injector.get(ApplicationInitStatus) as any).runInitializers();
+
+    // Set locale ID after running app initializers, since locale information might be updated while
+    // running initializers. This is also consistent with the execution order while bootstrapping an
+    // app (see `packages/core/src/application_ref.ts` file).
+    const localeId = this.testModuleRef.injector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
+    setLocaleId(localeId);
 
     return this.testModuleRef;
   }
