@@ -215,7 +215,7 @@
             },
             {
               "url": "guide/lifecycle-hooks",
-              "title": "Lifecycle Hooks",
+              "title": "Hook into the Component Lifecycle",
               "tooltip": "Angular calls lifecycle hook methods on directives and components as it creates, changes, and destroys them."
             },
             {
