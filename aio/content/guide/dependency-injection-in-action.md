@@ -53,7 +53,10 @@ The following example shows that `AppComponent` declares its dependence on `Logg
 -->
 그런데 `UserContext`에서도 `LoggerService`와 `UserService`를 의존성으로 주입받도록 요청합니다. 이 서비스는 특정 사용자에 대한 정보를 가져올 때 사용합니다.
 
+<!--
 <code-example path="dependency-injection-in-action/src/app/user-context.service.ts" region="injectables" header="user-context.service.ts (injection)"></code-example>
+-->
+<code-example path="dependency-injection-in-action/src/app/user-context.service.ts" region="injectables" header="user-context.service.ts (의존성 주입)"></code-example>
 
 <!--
 When Angular creates `AppComponent`, the DI framework creates an instance of `LoggerService` and starts to create `UserContextService`.
@@ -112,7 +115,12 @@ Angular 애플리케이션의 인젝터는 동시에 여러 개가 존재하며,
 서비스 프로바이더를 *컴포넌트 트리의 특정 브랜치*에 등록하면 해당 *브랜치* 범위에 이 서비스를 사용하도록 지정할 수 있습니다.
 아래 예제는 `HeroService`의 프로바이더를 `HeroesBaseComponent` 계층의 `@Component()` 데코레이터 `providers` 배열에 등록한 예제 코드입니다. 이렇게 구현하면 `HeroesBaseComponent` 상위 컴포넌트 트리와는 별개로 이 계층에 새로운 `HeroService`의 인스턴스가 생성됩니다.
 
+<!--
 <code-example path="dependency-injection-in-action/src/app/sorted-heroes.component.ts" region="injection" header="src/app/sorted-heroes.component.ts (HeroesBaseComponent excerpt)">
+
+</code-example>
+-->
+<code-example path="dependency-injection-in-action/src/app/sorted-heroes.component.ts" region="injection" header="src/app/sorted-heroes.component.ts (HeroesBaseComponent 일부)">
 
 </code-example>
 
@@ -320,7 +328,10 @@ placing it in the `<ng-content>` slot of the `HeroBioComponent` template.
 템플릿에는 `<hero-bio>` 태그 안에 `<hero-contact>` 엘리먼트가 선언되어 있습니다.
 그러면 `HeroBioComponent`의 뷰에 있는 `<ng-content>` 안에 `HeroContactComponent`가 *프로젝트(project, transclude)* 됩니다.
 
+<!--
 <code-example path="dependency-injection-in-action/src/app/hero-bio.component.ts" region="template" header="src/app/hero-bio.component.ts (template)"></code-example>
+-->
+<code-example path="dependency-injection-in-action/src/app/hero-bio.component.ts" region="template" header="src/app/hero-bio.component.ts (템플릿)"></code-example>
 
 <!--
 The result is shown below, with the hero's telephone number from `HeroContactComponent` projected above the hero description.
@@ -762,7 +773,10 @@ The following example puts `MinimalLogger` to use in a simplified version of `He
 -->
 그러면 `HeroOfTheMonthComponent`는 `MinimalLogger`를 주입받아 간단한 로그 서비스를 사용할 수 잇습니다.
 
+<!--
 <code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.1.ts" header="src/app/hero-of-the-month.component.ts (minimal version)"></code-example>
+-->
+<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.1.ts" header="src/app/hero-of-the-month.component.ts (수정된 버전)"></code-example>
 
 <!--
 The `HeroOfTheMonthComponent` constructor's `logger` parameter is typed as `MinimalLogger`, so only the `logs` and `logInfo` members are visible in a TypeScript-aware editor.
@@ -1163,7 +1177,10 @@ TypeScript에서는 클래스가 정의되는 순서도 신경써야 합니다.
 
 이 경우에도 `forwardRef`를 사용하면 순환 참조를 해결할 수 있습니다.
 
+<!--
 <code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-providers" header="parent-finder.component.ts (AlexComponent providers)"></code-example>
+-->
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-providers" header="parent-finder.component.ts (AlexComponent providers 배열)"></code-example>
 
 
 <!--- Waiting for good examples

@@ -61,10 +61,17 @@ into an application class as shown in the following `ConfigService` example.
 -->
 `AppModule`에 `HttpClientModule`을 불러오고 나면 애플리케이션 클레스에 `HttpClient`를 의존성으로 주입할 수 있습니다. 예를 들어 `ConfigService`에서 사용한다면 다음과 같이 작성합니다.
 
+<!--
 <code-example
   path="http/src/app/config/config.service.ts"
   region="proto"
   header="app/config/config.service.ts (excerpt)">
+</code-example>
+-->
+<code-example
+  path="http/src/app/config/config.service.ts"
+  region="proto"
+  header="app/config/config.service.ts (일부)">
 </code-example>
 
 <!--
@@ -153,13 +160,23 @@ the component, even in simple cases like this one.
 
 </div>
 
+<!--=
 ### Requesting a typed response
+-->
+### 응답으로 받을 객체 타입 지정하기
 
+<!--
 You can structure your `HttpClient` request to declare the type of the response object, to make consuming the output easier and more obvious.
 Specifying the response type acts as a type assertion during the compile time.
 
 To specify the response object type, first define an interface with the required properties.
 (Use an interface rather than a class; a response cannot be automatically converted to an instance of a class.)
+-->
+`HttpClient` 요청을 보낼때 받을 객체를 지정하면 요청하고 받은 응답을 더 명확하게 처리할 수 있습니다.
+그리고 이렇게 타입을 지정하면 컴파일할 때 발생하는 에러도 미리 방지할 수 있습니다.
+
+응답으로 받을 객체의 타입을 지정하기 위해 먼저 인터페이스를 정의합니다.
+이 때 클래스보다는 인터페이스를 사용하세요. 응답으로 받은 객체는 클래스 인스턴스가 아닙니다.
 
 <code-example
   path="http/src/app/config/config.service.ts"
@@ -177,10 +194,12 @@ Next, specify that interface as the `HttpClient.get()` call's type parameter in 
   header="app/config/config.service.ts (getConfig v.2)">
 </code-example>
 
-<!--
 <div class="alert is-helpful">
 
+<!--
  When you pass an interface as a type parameter to the `HttpClient.get()` method, use the RxJS `map` operator to transform the response data as needed by the UI. You can then pass the transformed data to the [async pipe](api/common/AsyncPipe).
+-->
+ `HttpClient.get()` 메소드에 제네릭 타입을 지정하면, 이후에 화면에 맞게 객체를 변환할 때 RxJs `map` 연산자를 사용한 뒤에 [async 파이프](api/common/AsyncPipe)에 전달하면 됩니다.
 
 </div>
 
@@ -198,13 +217,22 @@ easier and safer to consume:
 
 <div class="alert is-important">
 
+<!--
 Specifying the response type is a declaration to TypeScript that it should expect your response to be of the given type.
 This is a build-time check and doesn't guarantee that the server will actually respond with an object of this type. It is up to the server to ensure that the type specified by the server API is returned.
+-->
+응답으로 받을 객체에 타입을 지정하면 TypeScript 컴파일러도 이 객체의 타입이 제대로 사용되었는지 애플리케이션을 빌드할 때 검사할 수 있습니다.
+그런데 이렇게 작성했다고 해서 서버에서 실제로 보내는 객체가 이 타입이라는 것을 보장하지는 않습니다.
+서버가 반환하는 객체가 이 타입인지 보장해야 하는 것은 서버 API의 몫입니다.
 
 </div>
 
+<!--
 To access properties that are defined in an interface, you must explicitly convert the Object you get from the JSON to the required response type.
 For example, the following `subscribe` callback receives `data` as an Object, and then type-casts it in order to access the properties.
+-->
+객체 프로퍼티에 접근하려면 응답으로 받은 JSON 객체를 인터페이스에 맞는 형식으로 변환해야 합니다.
+그래서 아래 `subscribe` 콜백 함수에서 받는 `data` 객체는 다음과 같이 변환할 수 있습니다.
 
 <code-example>
    .subscribe(data => this.config = {
@@ -255,8 +283,13 @@ As you can see, the response object has a `body` property of the correct type.
 -->
 이 때 `HttpResponse` 객체의 `body` 프로퍼티는 이전에 지정했던 타입과 같습니다.
 
-### Making a JSONP request
 
+<!--
+### Making a JSONP request
+-->
+### JSONP 요청 보내기
+
+<!--
 Apps can use the `HttpClient` to make [JSONP](https://en.wikipedia.org/wiki/JSONP) requests across domains when the server doesn't support [CORS protocol](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS).
 
 Angular JSONP requests return an `Observable`.
@@ -279,9 +312,37 @@ searchHeroes(term: string): Observable {
 
 This request passes the `heroesURL` as the first parameter and the callback function name as the second parameter.
 The response is wrapped in the callback function, which takes the observables returned by the JSONP method and pipes them through to the error handler.
+-->
+서버가 [CORS 프로토콜](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)을 지원하지 않는다면 `HttpClient`로 [JSONP](https://en.wikipedia.org/wiki/JSONP) 요청을 보낼 수 있습니다.
 
+Angular JSONP 요청은 `Observable`을 반환합니다.
+그래서 옵저버블을 구독하고 RxJS `map` 연산자를 사용하면 이전처럼 [async 파이프](api/common/AsyncPipe)도 그대로 사용할 수 있습니다.
+
+JSONP 요청을 보내려면 `HttpClientJsonpModule`을 `NgModule`에 로드해야 합니다.
+아래 예제 코드에서 `searchHeroes()` 메소드는 JSONP 요청을 보내서 특정 키워드가 포함된 히어로의 이름을 쿼리하는 메소드입니다.
+
+```ts
+/* 특정 키워드가 포함된 히어로의 이름을 검색합니다. */
+searchHeroes(term: string): Observable {
+  term = term.trim();
+
+  let heroesURL = `${this.heroesURL}?${term}`;
+  return this.http.jsonp(heroesUrl, 'callback').pipe(
+      catchError(this.handleError('searchHeroes', []) // 에러는 여기에서 처리합니다.
+    );
+};
+```
+
+`http.jsonp()` 메소드는 첫번째 인자로 `heroesURL`을 받고 두번째 인자로 콜백함수를 받습니다.
+그리고 서버에서 받은 응답은 콜백함수에서 받아서 옵저버블로 반환하거나 에러 핸들러가 처리합니다.
+
+
+<!--
 ### Requesting non-JSON data
+-->
+### JSON 형식이 아닌 응답 처리하기
 
+<!--
 Not all APIs return JSON data.
 In this next example, a `DownloaderService` method reads a text file from the server and logs the file contents, before returning those contents to the caller as an `Observable<string>`.
 
@@ -302,6 +363,28 @@ A `download()` method in the `DownloaderComponent` initiates the request by subs
   region="download"
   header="app/downloader/downloader.component.ts (download)" linenums="false">
 </code-example>
+-->
+모든 HTTP 요청이 JSON 데이터를 반환하는 것은 아닙니다.
+아래 예제에서 `DownloaderService`의 `getTextFile()` 메소드는 서버에 있는 텍스트 파일의 내용을 받아온 후에 로그에 출력하고 `Observable<string>` 타입으로 반환하는 함수입니다.
+
+<code-example
+  path="http/src/app/downloader/downloader.service.ts"
+  region="getTextFile"
+  header="app/downloader/downloader.service.ts (getTextFile())" linenums="false">
+</code-example>
+
+이 때 `HttpClient.get()` 메소드에는 `responseType` 옵션이 사용되었기 때문에 기본 형식인 JSON 형식이 아니라 문자열 타입을 반환합니다.
+
+그리고 나서 RxJS `tap` 연산자를 사용해서 성공했을 때와 에러가 발생했을 때를 처리하고 있습니다.
+
+이 메소드는 `DownloaderComponent`에 있는 `download()` 메소드가 시작합니다.
+
+<code-example
+  path="http/src/app/downloader/downloader.component.ts"
+  region="download"
+  header="app/downloader/downloader.component.ts (download())" linenums="false">
+</code-example>
+
 
 <!--
 ## Error handling
@@ -397,7 +480,10 @@ and _pipe them through_ to the error handler.
   header="app/config/config.service.ts (getConfig v.3 with error handler)">
 </code-example>
 
+<!--
 ### Retrying
+-->
+### 재시도
 
 <!--
 Sometimes the error is transient and will go away automatically if you try again.

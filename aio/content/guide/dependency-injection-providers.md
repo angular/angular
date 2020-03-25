@@ -259,7 +259,10 @@ One alternative is to provide and inject the configuration object in an NgModule
 -->
 객체를 프로바이더로 등록하는 방식은 `AppModule`과 같은 NgModule에도 사용할 수 있습니다.
 
+<!--
 <code-example path="dependency-injection/src/app/app.module.ts" region="providers" header="src/app/app.module.ts (providers)"></code-example>
+-->
+<code-example path="dependency-injection/src/app/app.module.ts" region="providers" header="src/app/app.module.ts (providers 배열)"></code-example>
 
 <!--
 Another solution to choosing a provider token for non-class dependencies is
@@ -354,7 +357,10 @@ To resolve this, we give the `HeroService` constructor a boolean flag to control
 
 그래서 이런 경우에 `HeroService`의 생성자에 `boolean` 플래그를 사용해서 비밀 히어로의 명단을 화면에 표시할지, 표시하지 않을지 결정하려고 합니다.
 
+<!--
 <code-example path="dependency-injection/src/app/heroes/hero.service.ts" region="internals" header="src/app/heroes/hero.service.ts (excerpt)"></code-example>
+-->
+<code-example path="dependency-injection/src/app/heroes/hero.service.ts" region="internals" header="src/app/heroes/hero.service.ts (일부)"></code-example>
 
 <!--
 You can inject `Logger`, but you can't inject the  `isAuthorized` flag. Instead, you can use a factory provider to create a new logger instance for `HeroService`.
@@ -365,7 +371,10 @@ A factory provider needs a factory function.
 
 팩토리 프로바이더는 팩토리 함수를 사용합니다.
 
+<!--
 <code-example path="dependency-injection/src/app/heroes/hero.service.provider.ts" region="factory" header="src/app/heroes/hero.service.provider.ts (excerpt)"></code-example>
+-->
+<code-example path="dependency-injection/src/app/heroes/hero.service.provider.ts" region="factory" header="src/app/heroes/hero.service.provider.ts (일부)"></code-example>
 
 <!--
 Although `HeroService` has no access to `UserService`, the factory function does.
@@ -375,7 +384,10 @@ and let the injector pass them along to the factory function.
 이 코드에서 `HeroService`는 `UserService`에 직접 접근할 수 없지만, 팩토리 함수는 접근할 수 있습니다.
 그러면 이 팩토리 함수가 동작하기 위한 의존성을 다음과 같이 지정해야 합니다.
 
+<!--
 <code-example path="dependency-injection/src/app/heroes/hero.service.provider.ts" region="provider" header="src/app/heroes/hero.service.provider.ts (excerpt)"></code-example>
+-->
+<code-example path="dependency-injection/src/app/heroes/hero.service.provider.ts" region="provider" header="src/app/heroes/hero.service.provider.ts (일부)"></code-example>
 
 <!--
 * The `useFactory` field tells Angular that the provider is a factory function whose implementation is `heroServiceFactory`.

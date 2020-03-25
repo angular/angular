@@ -150,7 +150,10 @@ you see that the `Alex` component *extends* (*inherits*) from a class named `Bas
 이번 섹션은 `CraigComponent`를 사용해서 확인합니다.
 [이전에 본 것과 마찬가지로](#alex) `AlexComponent`는 `Base` 클래스를 상속받아 구현한 클래스입니다.
 
+<!--
 <code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-class-signature" header="parent-finder.component.ts (Alex class signature)"></code-example>
+-->
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-class-signature" header="parent-finder.component.ts (Alex 클래스 선언부)"></code-example>
 
 
 <!--
@@ -203,7 +206,10 @@ Angular는 컴포넌트 인스턴스를 이 컴포넌트의 인젝터에 관리�
 {@a alex-providers}
 
 
+<!--
 <code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-providers" header="parent-finder.component.ts (AlexComponent providers)"></code-example>
+-->
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-providers" header="parent-finder.component.ts (AlexComponent providers 배열)"></code-example>
 
 <!--
 [Parent](#parent-token) is the provider's class interface token.
@@ -333,7 +339,7 @@ The example defines a `Parent` class interface.
 <!--
 <code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="parent" header="parent-finder.component.ts (Parent class-interface)"></code-example>
 -->
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="parent" header="parent-finder.component.ts (부모 클래스-인터페이스)"></code-example>
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="parent" header="parent-finder.component.ts (부모 클래스 인터페이스)"></code-example>
 
 
 <!--
