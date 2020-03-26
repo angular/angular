@@ -549,10 +549,19 @@ If you're following along with these code snippets, note that you must import th
   header="app/config/config.service.ts (RxJS imports)">
 </code-example>
 
-## HTTP headers
 
+<!--
+## HTTP headers
+-->
+## HTTP 헤더
+
+<!--
 Many servers require extra headers for save operations.
 For example, they may require a "Content-Type" header to explicitly declare the MIME type of the request body; or the server may require an authorization token.
+-->
+서버와 통신할 때는 추가 정보를 전달하는 용도로 헤더를 활용하는 경우가 많습니다.
+요청으로 보내는 내용물의 MIME 타입을 정확하게 지정하기 위해 "Content-Type" 헤더를 사용하기도 하고, 서버에 필요한 인증 토큰을 전달하는 용도로 사용하기도 합니다.
+
 
 {@a adding-headers}
 <!--
@@ -560,9 +569,11 @@ For example, they may require a "Content-Type" header to explicitly declare the 
 -->
 ### 헤더 추가하기
 
+<!--
 The `HeroesService` defines such headers in an `httpOptions` object that will be passed
 to every `HttpClient` save method.
-
+-->
+`HeroesService`에서 사용하는 `HttpClient` 메소드에는 헤더를 활용하기 위해 `httpOptions` 객체를 활용하는 코드가 다음과 같이 있습니다.
 
 <code-example
   path="http/src/app/heroes/heroes.service.ts"
@@ -570,14 +581,25 @@ to every `HttpClient` save method.
   header="app/heroes/heroes.service.ts (httpOptions)">
 </code-example>
 
+<!--
 ### Updating headers
+-->
+### 헤더 수정학
 
+<!--
 You can't directly modify the existing headers within the previous options
 object because instances of the `HttpHeaders` class are immutable.
 
 Use the `set()` method instead, to return a clone of the current instance with the new changes applied.
 
 Here's how you might update the authorization header (after the old token expired) before making the next request.
+-->
+`HttpHeadaers` 클래스의 인스턴스는 이뮤터블(immutable)이기 때문에 이미 존재하는 헤더의 내용을 바로 수정할 수는 없습니다.
+
+그래서 이 클래스가 제공하는 `set()` 메소드를 사용하면 현재 인스턴스를 복제하면서 원하는 값으로 변경할 수 있습니다.
+
+기존에 사용하던 토큰이 만료된 이후에 헤더를 갱신하는 로직은 다음과 같이 구현합니다.
+
 
 <code-example
   path="http/src/app/heroes/heroes.service.ts"
@@ -815,7 +837,10 @@ We have discussed the basic HTTP functionality in `@angular/common/http`, but so
 지금까지 `@angular/common/http`에서 제공하는 기본 HTTP 기능을 살펴봤습니다. 이제부터는 HttpClient를 실제 상황에 맞게 좀 더 활용하는 방법에 대해 알아봅시다.
 
 {@a intercepting-requests-and-responses }
+<!--
 ### HTTP interceptors
+-->
+### HTTP 인터셉터
 
 <!--
 _HTTP Interception_ is a major feature of `@angular/common/http`.
@@ -1412,17 +1437,32 @@ Subscribers see a sequence of _two_ responses.
 그리고 캐싱된 서버 응답이 있는 경우에는 캐싱된 서버 응답을 _파이프_ 로 연결해서 `results$`와 합치는데, 이 때 캐싱된 서버 응답이 즉시 반환되고, 서버에서 응답이 왔을 때 추가 응답이 다음으로 반환됩니다.
 HTTP 요청을 시작한 쪽에서는 서버 응답을 _두 번_ 받게 됩니다.
 
-### Configuring the request
 
+<!--
+### Configuring the request
+-->
+### 옵션 사용하기
+
+<!--
 Other aspects of an outgoing request can be configured via the options object
 passed as the last argument to the `HttpClient` method.
 
 In [Adding headers](#adding-headers), the `HeroesService` set the default headers by
 passing an options object (`httpOptions`) to its save methods.
 You can do more.
+-->
+`HttpClient` 메소드의 마지막 인자로 옵션 객체를 전달하면 서버로 보내는 요청을 다양하게 활용할 수 있습니다.
 
+[헤더 추가하기](#adding-headers) 섹션에서는 `HeroesService`가 옵션 객체(`httpOptions`)를 전달하는 방식으로 기본 헤더를 설정했습니다.
+다른 방식에 대해서도 알아봅시다.
+
+
+<!--
 #### URL query strings
+-->
+#### URL 쿼리 스트링
 
+<!--
 In this section, you will see how to use the `HttpParams` class to add URL query strings in your `HttpRequest`.
 
 The following `searchHeroes` method queries for heroes whose names contain the search term.
@@ -1441,17 +1481,48 @@ If there is a search term, the code constructs an options object with an HTML UR
 If the term were "foo", the GET request URL would be `api/heroes?name=foo`.
 
 The `HttpParams` are immutable so you'll have to save the returned value of the `.set()` method in order to update the options.
+-->
+이번 섹션에서는 `HttpParams` 클래스를 사용해서 `HttpRequest`에 URL 쿼리 스트링을 추가해 봅시다.
 
+아래 코드에서 `searchHeroes` 메소드는 특정 키워드가 있는 히어로의 이름을 쿼리하는 함수입니다.
+`HttpParams` 클래스를 사용하기 위해 심볼을 로드합니다.
+
+<code-example hideCopy language="typescript">
+import {HttpParams} from "@angular/common/http";
+</code-example>
+
+<code-example
+  path="http/src/app/heroes/heroes.service.ts"
+  region="searchHeroes" linenums="false">
+</code-example>
+
+이제 검색어가 있으면 이 코드는 URL 인코딩된 검색어로 옵션 객체를 구성합니다.
+그래서 "foo"라는 검색어를 입력했다면 GET 요청이 발생하는 URL은 `api/heroes?name=foo`가 됩니다.
+
+`HttpParams`도 이뮤터블이기 때문에 옵션 내용을 수정하려면 `.set()` 메소드를 사용해야 합니다.
+
+
+<!--
 #### Use `fromString` to create HttpParams
+-->
+#### HttpParams 생성할 때 `fromString` 사용하기
 
+<!--
 You can also create HTTP parameters directly from a query string by using the `fromString` variable:
+-->
+`fromString` 옵션을 사용하면 쿼리 스트링 형식의 문자열을 그대로 쿼리 스트링으로 변환할 수 있습니다.
 
 <code-example hideCopy language="typescript">
 const params = new HttpParams({fromString: 'name=foo'});
 </code-example>
 
-### Debouncing requests
 
+<!--
+### Debouncing requests
+-->
+### 과도한 요청 제한하기
+
+<!--
 The sample includes an _npm package search_ feature.
 
 When the user enters a name in a search-box, the `PackageSearchComponent` sends
@@ -1502,9 +1573,57 @@ A search value reaches the service only if it's a new value and the user has sto
 The `withRefresh` option is explained [below](#cache-refresh).
 
 </div>
+-->
+이 문서에서 작성한 앱에는 _npm 패키지 검색_ 기능이 있습니다.
+
+사용자가 검색어를 입력하면 `PackageSearchComponent`가 이 검색어를 NPM 웹 API로 보내서 해당되는 패키지가 있는지 찾습니다.
+
+이 컴포넌트의 템플릿의 일부를 살펴보면 이렇습니다:
+
+<code-example
+  path="http/src/app/package-search/package-search.component.html"
+  region="search"
+  header="app/package-search/package-search.component.html (search)">
+</code-example>
+
+이 코드에는 `keyup` 이벤트가 바인딩되었기 때문에 키가 입력될 때마다 컴포넌트의 `search()` 메소드가 실행됩니다.
+
+그러면 키입력마다 요청을 보내기 때문에 과도한 동작을 하게 됩니다.
+이 경우에는 사용자가 입력을 멈출때까지 기다린 후에 요청을 한 번만 보내는 것이 효율적입니다.
+이 동작은 RxJS 연산자를 활용하면 간단하게 구현할 수 있습니다.
+
+<code-example
+  path="http/src/app/package-search/package-search.component.ts"
+  region="debounce"
+  header="app/package-search/package-search.component.ts (일부)">
+</code-example>
+
+이 코드에서 `searchText$`는 검색박스에서 사용자가 입력하는 값이 전달되는 스트림입니다.
+이 프로퍼티는 RxJS `Subject` 클래스이기 때문에 멀티캐스팅할 수 있는 `Observable`이며, `next(value)` 메소드로 값을 보낼 수 있어서 그때마다 `search()` 메소드를 실행할 수 있습니다.
+
+이번에는 매번 전달되는 `searchText` 값을 `PackageSearchService`로 보내지 않고 `ngOnInit()` 에서 _파이프 3개_ 를 조합해서 이렇게 처리해 봅시다:
+
+1. `debounceTime(500)` - 사용자의 입력이 멈춘 이후로 0.5초 기다립니다.
+
+2. `distinctUntilChanged()` - 검색어가 변경될때까지 기다립니다.
+
+3. `switchMap()` - 검색어를 서비스로 보냅니다.
+
+이런 연산자들을 거친 후에 `packages$`가 구성됩니다.
+그리고 템플릿은 [AsyncPipe](api/common/AsyncPipe)로 `packages$`를 구독하며 검색 결과를 받는 대로 화면에 내용을 표시합니다.
+
+이제는 사용자가 새로운 검색어를 입력하고 멈춘 후에야 검색 결과를 받습니다.
+
+<div class="alert is-helpful">
+
+`withRefresh` 옵션은 [아래](#cache-refresh)에서 설명합니다.
+
+</div>
+
 
 #### _switchMap()_
 
+<!--
 The `switchMap()` operator has three important characteristics.
 
 1. It takes a function argument that returns an `Observable`.
@@ -1522,6 +1641,21 @@ If you think you'll reuse this debouncing logic,
 consider moving it to a utility function or into the `PackageSearchService` itself.
 
 </div>
+-->
+`switchMap()` 연산자는 3가지 특징이 있습니다.
+
+1. `Observable`을 반환합니다. 그래서 다른 HttpClient 메소드와 마찬가지로 `PackageSearchService.search()`도 `Observable`을 반환합니다.
+
+2. 네트워크 연결이 불안정하거나 속도가 느려서 이전에 보낸 요청이 아직 _처리중_ 이라면 이 요청을 취소하고 새로운 요청을 보냅니다.
+
+3. 요청이 들어온 순서대로 응답을 보냅니다. 서버에서 순서를 바꿔 보내도 그렇습니다.
+
+<div class="alert is-helpful">
+
+요청을 제한하는 로직을 재사용하려면 이 로직을 유틸리티 함수로 옮기거나 `PackageSearchSearvice`로 옮기는 것도 좋습니다.
+
+</div>
+
 
 <!--
 ### Listening to progress events
@@ -1553,11 +1687,13 @@ with the `reportProgress` option set true to enable tracking of progress events.
 
 <!--
 Every progress event triggers change detection, so only turn them on if you truly intend to report progress in the UI.
--->
-진행률 이벤트가 발생할 때마다 변화 감지 싸이클이 동작하기 때문에, 실제로 UI에서 활용할 필요가 있을 때만 이 옵션을 사용하세요.
 
 When using [`HttpClient#request()`](api/common/http/HttpClient#request) with an HTTP method, configure with
 [`observe: 'events'`](api/common/http/HttpClient#request) to see all events, including the progress of transfers.
+-->
+진행률 이벤트가 발생할 때마다 변화 감지 싸이클이 동작하기 때문에, 실제로 UI에서 활용할 필요가 있을 때만 이 옵션을 사용하세요.
+
+HTTP 메소드로 [`HttpClient#request()`](api/common/http/HttpClient#request) 요청을 보낼 때 [`observe: 'events'`](api/common/http/HttpClient#request) 옵션을 지정하면 진행률을 포함해서 HttpClient에서 발생하는 모든 이벤트를 확인할 수 있습니다.
 
 </div>
 
@@ -1631,7 +1767,7 @@ Angular에서 제공하는 `HttpClient`는 [XSRF 공격을 방어하는 기능](
 그래야 클라이언트에서 토큰을 위조하는 것도 방어할 수 있습니다.
 서버에서 토큰을 생성할 때 인증키를 활용하면 좀 더 확실합니다.
 
-In order to prevent collisions in environments where multiple Angular apps share the same domain or subdomain, give each application a unique cookie name.
+Angular 앱 여러개가 같은 도메인이나 서브도메인을 사용해서 이 부분에 충돌이 발생한다면 애플리케이션마다 유일한 쿠키 이름을 사용해야 합니다.
 
 <div class="alert is-important">
 
