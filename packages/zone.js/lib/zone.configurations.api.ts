@@ -512,7 +512,7 @@ interface ZoneGlobalConfigurations {
    * Users can achieve this goal by defining `__zone_symbol__UNPATCHED_EVENTS = ['scroll',
    * 'mousemove'];` before importing `zone.js`.
    */
-  __zone_symbol__UNPATCHED_EVENTS?: boolean;
+  __zone_symbol__UNPATCHED_EVENTS?: string[];
 
   /**
    * Define the event names of the passive listeners.
@@ -528,7 +528,7 @@ interface ZoneGlobalConfigurations {
    *
    * The preceding code makes all scroll event listeners passive.
    */
-  __zone_symbol__PASSIVE_EVENTS?: boolean;
+  __zone_symbol__PASSIVE_EVENTS?: string[];
 
   /**
    * Disable wrapping uncaught promise rejection.
