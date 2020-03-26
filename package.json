@@ -35,9 +35,10 @@
     "tslint": "tsc -p tools/tsconfig.json && tslint -c tslint.json \"+(packages|modules|scripts|tools)/**/*.+(js|ts)\"",
     "public-api:check": "node goldens/public-api/manage.js test",
     "public-api:update": "node goldens/public-api/manage.js accept",
-    "ts-circular-deps": "ts-node dev-infra/ts-circular-dependencies/index.ts --config ./packages/circular-deps-test.conf.js",
+    "ts-circular-deps": "ts-node --transpile-only -- dev-infra/ts-circular-dependencies/index.ts --config ./packages/circular-deps-test.conf.js",
     "ts-circular-deps:check": "yarn -s ts-circular-deps check",
-    "ts-circular-deps:approve": "yarn -s ts-circular-deps approve"
+    "ts-circular-deps:approve": "yarn -s ts-circular-deps approve",
+    "ng-dev": "ts-node --transpile-only -- dev-infra/cli.ts"
   },
   "// 1": "dependencies are used locally and by bazel",
   "dependencies": {
