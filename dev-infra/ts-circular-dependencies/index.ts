@@ -19,22 +19,30 @@ import {compareGoldens, convertReferenceChainToGolden, Golden} from './golden';
 import {convertPathToForwardSlash} from './file_system';
 import {loadTestConfig, CircularDependenciesTestConfig} from './config';
 
-if (require.main === module) {
-  const {_: command, config: configArg, warnings} =
-      yargs.help()
-          .strict()
-          .command('check', 'Checks if the circular dependencies have changed.')
-          .command('approve', 'Approves the current circular dependencies.')
-          .demandCommand()
-          .option(
-              'config',
-              {type: 'string', demandOption: true, description: 'Path to the configuration file.'})
-          .option('warnings', {type: 'boolean', description: 'Prints all warnings.'})
-          .argv;
-  const configPath = isAbsolute(configArg) ? configArg : resolve(configArg);
-  const config = loadTestConfig(configPath);
-  const isApprove = command.includes('approve');
-  process.exit(main(isApprove, config, warnings));
+
+export function tsCircularDependenciesBuilder(localYargs: yargs.Argv) {
+  return localYargs.help()
+      .strict()
+      .demandCommand()
+      .option(
+          'config',
+          {type: 'string', demandOption: true, description: 'Path to the configuration file.'})
+      .option('warnings', {type: 'boolean', description: 'Prints all warnings.'})
+      .command(
+          'check', 'Checks if the circular dependencies have changed.', {},
+          (argv: yargs.Arguments) => {
+            const {config: configArg, warnings} = argv;
+            const configPath = isAbsolute(configArg) ? configArg : resolve(configArg);
+            const config = loadTestConfig(configPath);
+            process.exit(main(false, config, warnings));
+          })
+      .command(
+          'approve', 'Approves the current circular dependencies.', {}, (argv: yargs.Arguments) => {
+            const {config: configArg, warnings} = argv;
+            const configPath = isAbsolute(configArg) ? configArg : resolve(configArg);
+            const config = loadTestConfig(configPath);
+            process.exit(main(true, config, warnings));
+          });
 }
 
 /**
@@ -125,4 +133,8 @@ function getRelativePath(baseDir: string, path: string) {
 /** Converts the given reference chain to its string representation. */
 function convertReferenceChainToString(chain: ReferenceChain<string>) {
   return chain.join(' → ');
+}
+
+if (require.main === module) {
+  tsCircularDependenciesBuilder(yargs).parse();
 }

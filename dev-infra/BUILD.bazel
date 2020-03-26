@@ -10,8 +10,11 @@ ts_library(
     deps = [
         "//dev-infra/commit-message",
         "//dev-infra/pullapprove",
+        "//dev-infra/ts-circular-dependencies",
         "//dev-infra/utils:config",
         "@npm//@types/node",
+        "@npm//@types/yargs",
+        "@npm//yargs",
     ],
 )
 
