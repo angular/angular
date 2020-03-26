@@ -3,6 +3,8 @@
 
 ### Release Highlights
 
+To learn about the release highlights and our CLI-powered automated update workflow for your projects please check out the [v9.1 release announcement](https://blog.angular.io/version-9-1-of-angular-now-available-typescript-3-8-faster-builds-and-more-eb292f989428).
+
 * TypeScript 3.8 update
 * ngcc improvements
   * performance optimizations
