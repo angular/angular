@@ -9,12 +9,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 
-import { AppComponent } from './app.component';
+import { AppTodoComponent } from './app-todo.component';
 
 import { DialogComponent } from './dialog.component';
 
 @NgModule({
-  declarations: [AppComponent, DialogComponent],
+  declarations: [AppTodoComponent, DialogComponent],
   imports: [
     MatDialogModule,
     MatFormFieldModule,
@@ -24,15 +24,15 @@ import { DialogComponent } from './dialog.component';
     RouterModule.forChild([
       {
         path: 'todos',
-        component: AppComponent,
+        component: AppTodoComponent,
         children: [
           {
             path: 'app',
-            loadChildren: () => import('./home/home.module').then(m => m.HomeModule),
+            loadChildren: () => import('./home/home.module').then((m) => m.HomeModule),
           },
           {
             path: 'about',
-            loadChildren: () => import('./about/about.module').then(m => m.AboutModule),
+            loadChildren: () => import('./about/about.module').then((m) => m.AboutModule),
           },
           {
             path: '**',
@@ -46,7 +46,7 @@ import { DialogComponent } from './dialog.component';
       },
     ]),
   ],
-  exports: [AppComponent],
-  bootstrap: [AppComponent],
+  exports: [AppTodoComponent],
+  bootstrap: [AppTodoComponent],
 })
 export class AppModule {}
