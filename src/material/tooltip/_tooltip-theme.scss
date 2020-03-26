@@ -1,5 +1,6 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
+@import '../core/theming/check-duplicate-styles';
 @import '../core/typography/typography-utils';
 
 $mat-tooltip-target-height: 22px;
@@ -11,7 +12,8 @@ $mat-tooltip-handset-font-size: 14px;
 $mat-tooltip-handset-vertical-padding:
     ($mat-tooltip-handset-target-height - $mat-tooltip-handset-font-size) / 2;
 
-@mixin mat-tooltip-color($config) {
+@mixin mat-tooltip-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
   $background: map-get($config, background);
 
   .mat-tooltip {
@@ -19,7 +21,8 @@ $mat-tooltip-handset-vertical-padding:
   }
 }
 
-@mixin mat-tooltip-typography($config) {
+@mixin mat-tooltip-typography($config-or-theme) {
+  $config: mat-get-typography-config($config-or-theme);
   .mat-tooltip {
     font-family: mat-font-family($config);
     font-size: $mat-tooltip-font-size;
@@ -34,9 +37,13 @@ $mat-tooltip-handset-vertical-padding:
   }
 }
 
-@mixin _mat-tooltip-density($density-scale) {}
+@mixin _mat-tooltip-density($config-or-theme) {
+  $density-scale: mat-get-density-config($config-or-theme);
+}
 
-@mixin mat-tooltip-theme($theme) {
+@mixin mat-tooltip-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-tooltip');
   $color: mat-get-color-config($theme);
   $density: mat-get-density-config($theme);
   $typography: mat-get-typography-config($theme);

@@ -192,6 +192,8 @@ styles for all configured theming system parts. For example, typography styles w
 multiple times, even though the configuration did not change. Instead, use fine-grained mixins such
 as `angular-material-color` that only result in styles being generated for the [color system][2].
 
+Read more about duplicated theme styles in the [dedicated guide](./duplicate-theming-styles.md).
+
 ##### Multiple themes and overlay-based components
 Since certain components (e.g. menu, select, dialog, etc.) are inside of a global overlay container,
 an additional step is required for those components to be affected by the theme's css class selector
@@ -247,12 +249,20 @@ $candy-app-theme:   mat-light-theme((
 #### Changing styles at run-time
 
 ##### Toggling classes
-You can use the mixins described above to define styles to customize any part of your application
-with standard CSS selectors. For example, let's say you want to toggle alternate colors on a button.
+You can use the theming mixins to customize any part of your application with standard
+CSS selectors. For example, let's say you want to toggle alternate colors on a button.
 You would first define a CSS class with the alternate colors.
+
+Note that `mat-button-color` should be used instead of `mat-button-theme` as we only
+want to have alternate colors for the button. Using the theme mixin could result in
+duplicative theme styles if the `mat-button-theme` has been included before. Read more about
+this in the [dedicated guide](./duplicate-theming-styles.md).
+
 ```scss
 .alternate-button {
-  @include mat-button-theme($alternate-theme);
+  // Extract the color configuration from the theme and generate
+  // the color theme styles for `mat-button`.
+  @include mat-button-color($alternate-theme);
 }
 ```
 

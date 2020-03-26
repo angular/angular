@@ -2,6 +2,7 @@
 @import '../core/style/variables';
 @import '../core/theming/palette';
 @import '../core/theming/theming';
+@import '../core/theming/check-duplicate-styles';
 @import '../core/typography/typography-utils';
 @import './toolbar-variables';
 
@@ -39,7 +40,8 @@
   }
 }
 
-@mixin mat-toolbar-color($config) {
+@mixin mat-toolbar-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
   $primary: map-get($config, primary);
   $accent: map-get($config, accent);
   $warn: map-get($config, warn);
@@ -66,7 +68,8 @@
   }
 }
 
-@mixin mat-toolbar-typography($config) {
+@mixin mat-toolbar-typography($config-or-theme) {
+  $config: mat-get-typography-config($config-or-theme);
   .mat-toolbar,
   .mat-toolbar h1,
   .mat-toolbar h2,
@@ -79,7 +82,8 @@
   }
 }
 
-@mixin _mat-toolbar-density($density-scale) {
+@mixin _mat-toolbar-density($config-or-theme) {
+  $density-scale: mat-get-density-config($config-or-theme);
   $height-desktop: _mat-density-prop-value(
       $mat-toolbar-desktop-density-config, $density-scale, height);
   $height-mobile: _mat-density-prop-value(
@@ -96,7 +100,9 @@
   }
 }
 
-@mixin mat-toolbar-theme($theme) {
+@mixin mat-toolbar-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-toolbar');
   $color: mat-get-color-config($theme);
   $density: mat-get-density-config($theme);
   $typography: mat-get-typography-config($theme);

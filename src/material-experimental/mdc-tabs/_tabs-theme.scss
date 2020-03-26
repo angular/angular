@@ -5,7 +5,8 @@
 @import '@material/tab-bar/mixins.import';
 @import '../mdc-helpers/mdc-helpers';
 
-@mixin mat-mdc-tabs-color($config) {
+@mixin mat-mdc-tabs-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
   // Save original values of MDC global variables. We need to save these so we can restore the
   // variables to their original values and prevent unintended side effects from using this mixin.
   $orig-mdc-tab-text-label-color-active: $mdc-tab-text-label-color-active;
@@ -92,20 +93,24 @@
   }
 }
 
-@mixin mat-mdc-tabs-typography($config) {
+@mixin mat-mdc-tabs-typography($config-or-theme) {
+  $config: mat-get-typography-config($config-or-theme);
   @include mat-using-mdc-typography($config) {
     @include mdc-tab-without-ripple($query: $mat-typography-styles-query);
     @include mdc-tab-indicator-core-styles($query: $mat-typography-styles-query);
   }
 }
 
-@mixin mat-mdc-tabs-density($density-scale) {
+@mixin mat-mdc-tabs-density($config-or-theme) {
+  $density-scale: mat-get-density-config($config-or-theme);
   .mat-mdc-tab-header {
     @include mdc-tab-bar-density($density-scale);
   }
 }
 
-@mixin mat-mdc-tabs-theme($theme) {
+@mixin mat-mdc-tabs-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-mdc-tabs');
   $color: mat-get-color-config($theme);
   $density: mat-get-density-config($theme);
   $typography: mat-get-typography-config($theme);

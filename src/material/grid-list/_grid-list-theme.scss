@@ -1,13 +1,17 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
+@import '../core/theming/check-duplicate-styles';
 @import '../core/typography/typography-utils';
 @import '../core/style/list-common';
 
 
 // Include this empty mixin for consistency with the other components.
-@mixin mat-grid-list-color($config) { }
+@mixin mat-grid-list-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
+ }
 
-@mixin mat-grid-list-typography($config) {
+@mixin mat-grid-list-typography($config-or-theme) {
+  $config: mat-get-typography-config($config-or-theme);
   .mat-grid-tile-header,
   .mat-grid-tile-footer {
     @include mat-line-base(mat-font-size($config, caption));
@@ -15,9 +19,13 @@
   }
 }
 
-@mixin _mat-grid-list-density($density-scale) {}
+@mixin _mat-grid-list-density($config-or-theme) {
+  $density-scale: mat-get-density-config($config-or-theme);
+}
 
-@mixin mat-grid-list-theme($theme) {
+@mixin mat-grid-list-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-grid-list');
   $color: mat-get-color-config($theme);
   $density: mat-get-density-config($theme);
   $typography: mat-get-typography-config($theme);

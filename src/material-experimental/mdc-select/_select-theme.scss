@@ -1,20 +1,26 @@
 @import '../mdc-helpers/mdc-helpers';
 
-@mixin mat-mdc-select-color($config) {
+@mixin mat-mdc-select-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
   @include mat-using-mdc-theme($config) {
     // TODO: implement MDC-based select.
   }
 }
 
-@mixin mat-mdc-select-typography($config) {
+@mixin mat-mdc-select-typography($config-or-theme) {
+  $config: mat-get-typography-config($config-or-theme);
   @include mat-using-mdc-typography($config) {
     // TODO: implement MDC-based select.
   }
 }
 
-@mixin mat-mdc-select-density($density-scale) {}
+@mixin mat-mdc-select-density($config-or-theme) {
+  $density-scale: mat-get-density-config($config-or-theme);
+}
 
-@mixin mat-mdc-select-theme($theme) {
+@mixin mat-mdc-select-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-mdc-select');
   $color: mat-get-color-config($theme);
   $density: mat-get-density-config($theme);
   $typography: mat-get-typography-config($theme);

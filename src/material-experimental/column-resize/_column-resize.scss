@@ -3,7 +3,8 @@
 @import '../../material/core/theming/palette';
 @import '../../material/core/theming/theming';
 
-@mixin mat-column-resize-color($config) {
+@mixin mat-column-resize-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
   $primary: map-get($config, primary);
   $foreground: map-get($config, foreground);
 
@@ -95,11 +96,17 @@
   }
 }
 
-@mixin mat-column-resize-typography($config) {}
+@mixin mat-column-resize-typography($config-or-theme) {
+  $config: mat-get-typography-config($config-or-theme);
+}
 
-@mixin mat-column-resize-density($density-scale) {}
+@mixin mat-column-resize-density($config-or-theme) {
+  $density-scale: mat-get-density-config($config-or-theme);
+}
 
-@mixin mat-column-resize-theme($theme) {
+@mixin mat-column-resize-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-column-resize');
   $color: mat-get-color-config($theme);
   $density: mat-get-density-config($theme);
   $typography: mat-get-typography-config($theme);

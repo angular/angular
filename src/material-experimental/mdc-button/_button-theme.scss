@@ -49,7 +49,8 @@ $mat-button-state-target: '.mdc-button__ripple';
 }
 
 
-@mixin mat-mdc-button-color($config) {
+@mixin mat-mdc-button-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
   @include mat-using-mdc-theme($config) {
     // Add state interactions for hover, focus, press, active. Colors are changed based on
     // the mixin mdc-states-base-color
@@ -164,13 +165,15 @@ $mat-button-state-target: '.mdc-button__ripple';
   }
 }
 
-@mixin mat-mdc-button-typography($config) {
+@mixin mat-mdc-button-typography($config-or-theme) {
+  $config: mat-get-typography-config($config-or-theme);
   @include mat-using-mdc-typography($config) {
     @include mdc-button-without-ripple($query: $mat-typography-styles-query);
   }
 }
 
-@mixin mat-mdc-button-density($density-scale) {
+@mixin mat-mdc-button-density($config-or-theme) {
+  $density-scale: mat-get-density-config($config-or-theme);
   .mat-mdc-button,
   .mat-mdc-raised-button,
   .mat-mdc-unelevated-button,
@@ -179,7 +182,9 @@ $mat-button-state-target: '.mdc-button__ripple';
   }
 }
 
-@mixin mat-mdc-button-theme($theme) {
+@mixin mat-mdc-button-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-mdc-button');
   $color: mat-get-color-config($theme);
   $density: mat-get-density-config($theme);
   $typography: mat-get-typography-config($theme);
@@ -195,7 +200,8 @@ $mat-button-state-target: '.mdc-button__ripple';
   }
 }
 
-@mixin mat-mdc-fab-color($config) {
+@mixin mat-mdc-fab-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
   @include mat-using-mdc-theme($config) {
     .mat-mdc-fab, .mat-mdc-mini-fab {
       @include mdc-states(
@@ -244,15 +250,20 @@ $mat-button-state-target: '.mdc-button__ripple';
   }
 }
 
-@mixin mat-mdc-fab-typography($config) {
+@mixin mat-mdc-fab-typography($config-or-theme) {
+  $config: mat-get-typography-config($config-or-theme);
   @include mat-using-mdc-typography($config) {
     @include mdc-fab-without-ripple($query: $mat-typography-styles-query);
   }
 }
 
-@mixin mat-mdc-fab-density($density-scale) {}
+@mixin mat-mdc-fab-density($config-or-theme) {
+  $density-scale: mat-get-density-config($config-or-theme);
+}
 
-@mixin mat-mdc-fab-theme($theme) {
+@mixin mat-mdc-fab-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-mdc-fab');
   $color: mat-get-color-config($theme);
   $density: mat-get-density-config($theme);
   $typography: mat-get-typography-config($theme);
@@ -269,7 +280,8 @@ $mat-button-state-target: '.mdc-button__ripple';
 }
 
 
-@mixin mat-mdc-icon-button-color($config) {
+@mixin mat-mdc-icon-button-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
   @include mat-using-mdc-theme($config) {
     .mat-mdc-icon-button {
       @include mdc-states(
@@ -312,19 +324,23 @@ $mat-button-state-target: '.mdc-button__ripple';
   }
 }
 
-@mixin mat-mdc-icon-button-typography($config) {
+@mixin mat-mdc-icon-button-typography($config-or-theme) {
+  $config: mat-get-typography-config($config-or-theme);
   @include mat-using-mdc-typography($config) {
     @include mdc-icon-button-without-ripple($query: $mat-typography-styles-query);
   }
 }
 
-@mixin mat-mdc-icon-button-density($density-scale) {
+@mixin mat-mdc-icon-button-density($config-or-theme) {
+  $density-scale: mat-get-density-config($config-or-theme);
   .mat-mdc-icon-button {
     @include mdc-icon-button-density($density-scale);
   }
 }
 
-@mixin mat-mdc-icon-button-theme($theme) {
+@mixin mat-mdc-icon-button-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-mdc-icon-button');
   $color: mat-get-color-config($theme);
   $density: mat-get-density-config($theme);
   $typography: mat-get-typography-config($theme);

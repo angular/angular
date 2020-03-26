@@ -35,7 +35,8 @@
   $mdc-text-field-focused-label-color: $_mdc-text-field-focused-label-color !global;
 }
 
-@mixin mat-mdc-form-field-color($config) {
+@mixin mat-mdc-form-field-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
   @include mat-using-mdc-theme($config) {
     @include _mdc-text-field-refresh-theme-variables() {
       @include mdc-text-field-without-ripple($query: $mat-theme-styles-query);
@@ -57,7 +58,8 @@
   }
 }
 
-@mixin mat-mdc-form-field-typography($config) {
+@mixin mat-mdc-form-field-typography($config-or-theme) {
+  $config: mat-get-typography-config($config-or-theme);
   @include mat-using-mdc-typography($config) {
     @include mdc-text-field-without-ripple($query: $mat-typography-styles-query);
     @include mdc-floating-label-core-styles($query: $mat-typography-styles-query);
@@ -71,11 +73,14 @@
   }
 }
 
-@mixin mat-mdc-form-field-density($density-scale) {
+@mixin mat-mdc-form-field-density($config-or-theme) {
+  $density-scale: mat-get-density-config($config-or-theme);
   @include _mat-form-field-density($density-scale);
 }
 
-@mixin mat-mdc-form-field-theme($theme) {
+@mixin mat-mdc-form-field-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-mdc-form-field');
   $color: mat-get-color-config($theme);
   $density: mat-get-density-config($theme);
   $typography: mat-get-typography-config($theme);

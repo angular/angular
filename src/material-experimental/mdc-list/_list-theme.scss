@@ -6,7 +6,8 @@
 
 // TODO: implement mat-list[dense] once density system is in master
 
-@mixin mat-mdc-list-color($config) {
+@mixin mat-mdc-list-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
   $is-dark-theme: map-get($config, is-dark);
   $state-opacities:
       if($is-dark-theme, $mdc-ripple-light-ink-opacities, $mdc-ripple-dark-ink-opacities);
@@ -31,13 +32,9 @@
     }
   }
 }
-@mixin mat-mdc-list-typography($config: null) {
-  @include mat-using-mdc-typography($config) {
-    @include mdc-list-without-ripple($query: $mat-typography-styles-query);
-  }
-}
 
-@mixin mat-mdc-list-density($density-scale) {
+@mixin mat-mdc-list-density($config-or-theme) {
+  $density-scale: mat-get-density-config($config-or-theme);
   $height: mdc-density-prop-value(
     $density-config: $mdc-list-single-line-density-config,
     $density-scale: $density-scale,
@@ -53,7 +50,16 @@
   }
 }
 
-@mixin mat-mdc-list-theme($theme) {
+@mixin mat-mdc-list-typography($config-or-theme) {
+  $config: mat-get-typography-config($config-or-theme);
+  @include mat-using-mdc-typography($config) {
+    @include mdc-list-without-ripple($query: $mat-typography-styles-query);
+  }
+}
+
+@mixin mat-mdc-list-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-mdc-list');
   $color: mat-get-color-config($theme);
   $density: mat-get-density-config($theme);
   $typography: mat-get-typography-config($theme);

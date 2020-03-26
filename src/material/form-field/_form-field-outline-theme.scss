@@ -1,12 +1,14 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
+@import '../core/theming/check-duplicate-styles';
 @import '../core/style/form-common';
 @import '../core/typography/typography-utils';
 
 
 // Theme styles that only apply to the outline appearance of the form-field.
 
-@mixin mat-form-field-outline-color($config) {
+@mixin mat-form-field-outline-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
   $primary: map-get($config, primary);
   $accent: map-get($config, accent);
   $warn: map-get($config, warn);
@@ -78,7 +80,8 @@ $mat-form-field-outline-dedupe: 0;
   $mat-form-field-outline-dedupe: $mat-form-field-outline-dedupe + 0.00001 !global;
 }
 
-@mixin mat-form-field-outline-typography($config) {
+@mixin mat-form-field-outline-typography($config-or-theme) {
+  $config: mat-get-typography-config($config-or-theme);
   // The unit-less line-height from the font config.
   $line-height: mat-line-height($config, input);
   // The amount to scale the font for the floating label and subscript.
@@ -129,9 +132,13 @@ $mat-form-field-outline-dedupe: 0;
   }
 }
 
-@mixin _mat-form-field-outline-density($density-scale) {}
+@mixin _mat-form-field-outline-density($config-or-theme) {
+  $density-scale: mat-get-density-config($config-or-theme);
+}
 
-@mixin mat-form-field-outline-theme($theme) {
+@mixin mat-form-field-outline-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-form-field-outline');
   $color: mat-get-color-config($theme);
   $density: mat-get-density-config($theme);
   $typography: mat-get-typography-config($theme);

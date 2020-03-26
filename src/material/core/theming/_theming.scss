@@ -1,6 +1,5 @@
 @import 'palette';
 
-
 // For a given hue in a palette, return the contrast color from the map of contrast palettes.
 // @param $color-map
 // @param $hue
@@ -201,10 +200,9 @@
   @return _mat-create-backwards-compatibility-theme(_mat-validate-theme($result));
 }
 
+/// Gets the color configuration from the given theme or configuration.
 @function mat-get-color-config($theme, $default: null) {
-  // Before we introduced the new pattern for constructing a theme, developers passed the color
-  // configuration directly to the theme mixins. This can be still the case if developers construct
-  // a theme manually and pass it to a theme. We support this for backwards compatibility.
+  // If a configuration has been passed, return the config directly.
   @if not _mat-is-theme-object($theme) {
     @return $theme;
   }
@@ -214,17 +212,31 @@
   @return $default;
 }
 
-@function mat-get-density-config($theme, $default: 0) {
-  @if map_has_key($theme, density) {
-    @return map_get($theme, density);
+/// Gets the density configuration from the given theme or configuration.
+@function mat-get-density-config($theme-or-config, $default: 0) {
+  // If a configuration has been passed, return the config directly.
+  @if not _mat-is-theme-object($theme-or-config) {
+    @return $theme-or-config;
+  }
+  // In case a theme has been passed, extract the configuration if present,
+  // or fall back to the default density config.
+  @if map_has_key($theme-or-config, density) {
+    @return map_get($theme-or-config, density);
   }
   @return $default;
 }
 
-// For backwards compatibility, typography is not included by default.
-@function mat-get-typography-config($theme, $default: null) {
-  @if (map_has_key($theme, typography)) {
-    @return map_get($theme, typography);
+/// Gets the typography configuration from the given theme or configuration.
+/// For backwards compatibility, typography is not included by default.
+@function mat-get-typography-config($theme-or-config, $default: null) {
+  // If a configuration has been passed, return the config directly.
+  @if not _mat-is-theme-object($theme-or-config) {
+    @return $theme-or-config;
+  }
+  // In case a theme has been passed, extract the configuration if present,
+  // or fall back to the default typography config.
+  @if (map_has_key($theme-or-config, typography)) {
+    @return map_get($theme-or-config, typography);
   }
   @return $default;
 }
@@ -238,4 +250,18 @@
     map_has_key($value, typography) or
     length($value) == 0
   );
+}
+
+// Gets the theme from the given value that is either already a theme, or a color configuration.
+// This handles the legacy case where developers pass a color configuration directly to the
+// theme mixin. Before we introduced the new pattern for constructing a theme, developers passed
+// the color configuration directly to the theme mixins. This can be still the case if developers
+// construct a theme manually and pass it to a theme. We support this for backwards compatibility.
+// TODO(devversion): remove this in the future. Constructing themes manually is rare,
+// and the code can be easily updated to the new API.
+@function _mat-legacy-get-theme($theme-or-color-config) {
+  @if _mat-is-theme-object($theme-or-color-config) {
+    @return $theme-or-color-config;
+  }
+  @return (color: $theme-or-color-config);
 }

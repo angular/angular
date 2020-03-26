@@ -1,8 +1,10 @@
 @import '../theming/palette';
 @import '../theming/theming';
+@import '../theming/check-duplicate-styles';
 @import '../typography/typography-utils';
 
-@mixin mat-option-color($config) {
+@mixin mat-option-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
   $foreground: map-get($config, foreground);
   $background: map-get($config, background);
   $primary: map-get($config, primary);
@@ -45,7 +47,8 @@
   }
 }
 
-@mixin mat-option-typography($config) {
+@mixin mat-option-typography($config-or-theme) {
+  $config: mat-get-typography-config($config-or-theme);
   .mat-option {
     font: {
       family: mat-font-family($config);
@@ -54,9 +57,13 @@
   }
 }
 
-@mixin _mat-option-density($density-scale) {}
+@mixin _mat-option-density($config-or-theme) {
+  $density-scale: mat-get-density-config($config-or-theme);
+}
 
-@mixin mat-option-theme($theme) {
+@mixin mat-option-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-option');
   $color: mat-get-color-config($theme);
   $density: mat-get-density-config($theme);
   $typography: mat-get-typography-config($theme);

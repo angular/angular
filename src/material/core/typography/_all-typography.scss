@@ -1,5 +1,41 @@
-@import '../theming/all-theme';
 @import './typography';
+@import '../../autocomplete/autocomplete-theme';
+@import '../../badge/badge-theme';
+@import '../../bottom-sheet/bottom-sheet-theme';
+@import '../../button/button-theme';
+@import '../../button-toggle/button-toggle-theme';
+@import '../../card/card-theme';
+@import '../../checkbox/checkbox-theme';
+@import '../../chips/chips-theme';
+@import '../../divider/divider-theme';
+@import '../../table/table-theme';
+@import '../../datepicker/datepicker-theme';
+@import '../../dialog/dialog-theme';
+@import '../../expansion/expansion-theme';
+@import '../../grid-list/grid-list-theme';
+@import '../../icon/icon-theme';
+@import '../../input/input-theme';
+@import '../../list/list-theme';
+@import '../../menu/menu-theme';
+@import '../../paginator/paginator-theme';
+@import '../../progress-bar/progress-bar-theme';
+@import '../../progress-spinner/progress-spinner-theme';
+@import '../../radio/radio-theme';
+@import '../../select/select-theme';
+@import '../../sidenav/sidenav-theme';
+@import '../../slide-toggle/slide-toggle-theme';
+@import '../../slider/slider-theme';
+@import '../../stepper/stepper-theme';
+@import '../../sort/sort-theme';
+@import '../../tabs/tabs-theme';
+@import '../../toolbar/toolbar-theme';
+@import '../../tooltip/tooltip-theme';
+@import '../../snack-bar/snack-bar-theme';
+@import '../option/option-theme';
+@import '../option/optgroup-theme';
+@import '../../form-field/form-field-theme';
+@import '../../tree/tree-theme';
+
 
 // Includes all of the typographic styles.
 @mixin angular-material-typography($config-or-theme: null) {
@@ -11,9 +47,47 @@
     $config: mat-typography-config();
   }
 
-  @include angular-material-theme((
-    color: null,
-    density: null,
-    typography: $config,
-  ));
+  // TODO: COMP-309: Do not use individual mixins. Instead, use the all-theme mixin and only
+  // specify a `typography` config while setting `color` and `density` to `null`. This is currently
+  // not possible as it would introduce a circular dependency for typography because the `mat-core`
+  // mixin that is transitively loaded by the `all-theme` file, imports `all-typography` which
+  // would then load `all-theme` again. This ultimately results a circular dependency.
+
+  @include mat-badge-typography($config);
+  @include mat-base-typography($config);
+  @include mat-autocomplete-typography($config);
+  @include mat-bottom-sheet-typography($config);
+  @include mat-button-typography($config);
+  @include mat-button-toggle-typography($config);
+  @include mat-card-typography($config);
+  @include mat-checkbox-typography($config);
+  @include mat-chips-typography($config);
+  @include mat-divider-typography($config);
+  @include mat-table-typography($config);
+  @include mat-datepicker-typography($config);
+  @include mat-dialog-typography($config);
+  @include mat-expansion-panel-typography($config);
+  @include mat-form-field-typography($config);
+  @include mat-grid-list-typography($config);
+  @include mat-icon-typography($config);
+  @include mat-input-typography($config);
+  @include mat-menu-typography($config);
+  @include mat-paginator-typography($config);
+  @include mat-progress-bar-typography($config);
+  @include mat-progress-spinner-typography($config);
+  @include mat-radio-typography($config);
+  @include mat-select-typography($config);
+  @include mat-sidenav-typography($config);
+  @include mat-slide-toggle-typography($config);
+  @include mat-slider-typography($config);
+  @include mat-stepper-typography($config);
+  @include mat-sort-typography($config);
+  @include mat-tabs-typography($config);
+  @include mat-toolbar-typography($config);
+  @include mat-tooltip-typography($config);
+  @include mat-list-typography($config);
+  @include mat-option-typography($config);
+  @include mat-optgroup-typography($config);
+  @include mat-snack-bar-typography($config);
+  @include mat-tree-typography($config);
 }

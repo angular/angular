@@ -1,6 +1,7 @@
 @import '../core/style/elevation';
 @import '../core/theming/palette';
 @import '../core/theming/theming';
+@import '../core/theming/check-duplicate-styles';
 @import '../core/typography/typography-utils';
 
 @mixin _mat-slide-toggle-checked($palette, $thumb-checked-hue) {
@@ -23,7 +24,8 @@
   }
 }
 
-@mixin mat-slide-toggle-color($config) {
+@mixin mat-slide-toggle-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
   $is-dark: map_get($config, is-dark);
   $primary: map-get($config, primary);
   $accent: map-get($config, accent);
@@ -71,15 +73,20 @@
   }
 }
 
-@mixin mat-slide-toggle-typography($config) {
+@mixin mat-slide-toggle-typography($config-or-theme) {
+  $config: mat-get-typography-config($config-or-theme);
   .mat-slide-toggle-content {
     font-family: mat-font-family($config);
   }
 }
 
-@mixin _mat-slide-toggle-density($density-scale) {}
+@mixin _mat-slide-toggle-density($config-or-theme) {
+  $density-scale: mat-get-density-config($config-or-theme);
+}
 
-@mixin mat-slide-toggle-theme($theme) {
+@mixin mat-slide-toggle-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-slide-toggle');
   $color: mat-get-color-config($theme);
   $density: mat-get-density-config($theme);
   $typography: mat-get-typography-config($theme);

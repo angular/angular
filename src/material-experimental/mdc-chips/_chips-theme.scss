@@ -2,7 +2,8 @@
 @import '../mdc-helpers/mdc-helpers';
 @import '@material/theme/functions.import';
 
-@mixin mat-mdc-chips-color($config) {
+@mixin mat-mdc-chips-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
   $primary: mat-color(map-get($config, primary));
   $accent: mat-color(map-get($config, accent));
   $warn: mat-color(map-get($config, warn));
@@ -54,20 +55,24 @@
   $mdc-chips-icon-color: $orig-mdc-chips-icon-color !global;
 }
 
-@mixin mat-mdc-chips-typography($config) {
+@mixin mat-mdc-chips-typography($config-or-theme) {
+  $config: mat-get-typography-config($config-or-theme);
   @include mdc-chip-set-core-styles($query: $mat-typography-styles-query);
   @include mat-using-mdc-typography($config) {
     @include mdc-chip-without-ripple($query: $mat-typography-styles-query);
   }
 }
 
-@mixin mat-mdc-chips-density($density-scale) {
+@mixin mat-mdc-chips-density($config-or-theme) {
+  $density-scale: mat-get-density-config($config-or-theme);
   .mat-mdc-chip {
     @include mdc-chip-density($density-scale);
   }
 }
 
-@mixin mat-mdc-chips-theme($theme) {
+@mixin mat-mdc-chips-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-mdc-chips');
   $color: mat-get-color-config($theme);
   $density: mat-get-density-config($theme);
   $typography: mat-get-typography-config($theme);

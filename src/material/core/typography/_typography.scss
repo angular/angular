@@ -70,6 +70,7 @@
 }
 
 // Adds the base typography styles, based on a config.
+/* stylelint-disable-next-line material/theme-mixin-api */
 @mixin mat-base-typography($config, $selector: '.mat-typography') {
   .mat-h1, .mat-headline, #{$selector} h1 {
     @include mat-typography-level-to-styles($config, headline);

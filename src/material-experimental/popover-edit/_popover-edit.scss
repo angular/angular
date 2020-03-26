@@ -9,7 +9,8 @@
   @return linear-gradient($direction, rgba($background-color, 0), $background-color 8px);
 }
 
-@mixin mat-popover-edit-color($config) {
+@mixin mat-popover-edit-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
   $background: map-get($config, background);
   $foreground: map-get($config, foreground);
   $primary: map-get($config, primary);
@@ -141,16 +142,21 @@
   }
 }
 
-@mixin mat-popover-edit-typography($config) {
+@mixin mat-popover-edit-typography($config-or-theme) {
+  $config: mat-get-typography-config($config-or-theme);
   [mat-edit-title] {
     @include mat-typography-level-to-styles($config, title);
   }
 }
 
 
-@mixin mat-popover-edit-density($density-scale) {}
+@mixin mat-popover-edit-density($config-or-theme) {
+  $density-scale: mat-get-density-config($config-or-theme);
+}
 
-@mixin mat-popover-edit-theme($theme) {
+@mixin mat-popover-edit-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-popover-edit');
   $color: mat-get-color-config($theme);
   $density: mat-get-density-config($theme);
   $typography: mat-get-typography-config($theme);

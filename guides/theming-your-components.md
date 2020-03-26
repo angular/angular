@@ -11,7 +11,10 @@ For example, if building a custom carousel component:
 // Import library functions for theme creation.
 @import '~@angular/material/theming';
 
-@mixin candy-carousel-color($config) {
+@mixin candy-carousel-color($config-or-theme) {
+  // Extract the color configuration in case a theme has been passed.
+  // This allows consumers to either pass a theme object or a color configuration.
+  $config: mat-get-color-config($config-or-theme);
   // Extract the palettes you need from the theme definition.
   $primary: map-get($config, primary);
   $accent: map-get($config, accent);
@@ -29,7 +32,10 @@ Second, create another Sass mixin that accepts an Angular Material typography co
 and outputs typographic styles. For example:
 
 ```scss
-@mixin candy-carousel-typography($config) {
+@mixin candy-carousel-typography($config-or-theme) {
+  // Extract the typography configuration in case a theme has been passed.
+  $config: mat-get-typography-config($config-or-theme);
+
   .candy-carousel {
     font: {
       family: mat-font-family($config, body-1);

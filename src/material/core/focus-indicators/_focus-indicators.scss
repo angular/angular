@@ -1,4 +1,5 @@
 @import '../theming/theming';
+@import '../theming/check-duplicate-styles';
 @import '../style/layout-common';
 
 /// Mixin that turns on strong focus indicators.
@@ -86,7 +87,8 @@
   }
 }
 
-@mixin mat-strong-focus-indicators-color($config) {
+@mixin mat-strong-focus-indicators-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
   @include _mat-strong-focus-indicators-border-color(mat-color(map_get($config, primary)));
 }
 
@@ -105,12 +107,15 @@
 ///   .demo-red-theme {
 ///     @include mat-strong-focus-indicators-theme(#f00);
 ///   }
+/* stylelint-disable-next-line material/theme-mixin-api */
 @mixin mat-strong-focus-indicators-theme($theme-or-color) {
   @if type-of($theme-or-color) != 'map' {
     @include _mat-strong-focus-indicators-border-color($theme-or-color);
   }
   @else {
-    $color: mat-get-color-config($theme-or-color);
+    $theme: _mat-legacy-get-theme($theme-or-color);
+    @include _mat-check-duplicate-theme-styles($theme, 'mat-strong-focus-indicators');
+    $color: mat-get-color-config($theme);
     @if $color != null {
       @include mat-strong-focus-indicators-color($color);
     }

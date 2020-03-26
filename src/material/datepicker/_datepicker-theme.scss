@@ -1,6 +1,7 @@
 @import '../core/style/elevation';
 @import '../core/theming/palette';
 @import '../core/theming/theming';
+@import '../core/theming/check-duplicate-styles';
 @import '../core/typography/typography-utils';
 
 
@@ -39,7 +40,8 @@ $mat-calendar-weekday-table-font-size: 11px !default;
   }
 }
 
-@mixin mat-datepicker-color($config) {
+@mixin mat-datepicker-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
   $foreground: map-get($config, foreground);
   $background: map-get($config, background);
 
@@ -156,7 +158,8 @@ $mat-calendar-weekday-table-font-size: 11px !default;
   }
 }
 
-@mixin mat-datepicker-typography($config) {
+@mixin mat-datepicker-typography($config-or-theme) {
+  $config: mat-get-typography-config($config-or-theme);
   .mat-calendar {
     font-family: mat-font-family($config);
   }
@@ -215,9 +218,13 @@ $mat-calendar-weekday-table-font-size: 11px !default;
   }
 }
 
-@mixin _mat-datepicker-density($density-scale) {}
+@mixin _mat-datepicker-density($config-or-theme) {
+  $density-scale: mat-get-density-config($config-or-theme);
+}
 
-@mixin mat-datepicker-theme($theme) {
+@mixin mat-datepicker-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-datepicker');
   $color: mat-get-color-config($theme);
   $density: mat-get-density-config($theme);
   $typography: mat-get-typography-config($theme);

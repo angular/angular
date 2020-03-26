@@ -3,6 +3,10 @@
 @import '../../typography/all-typography';
 @import '../all-theme';
 
+// Disable theme style duplication warnings. This test intentionally generates
+// the same themes multiple times.
+$mat-theme-ignore-duplication-warnings: true;
+
 // A new way to configure themes has been introduced. This Sass file ensures that the theming
 // API is backwards compatible, so that the old pattern for configuring themes can be still
 // used. The Sass compilation of this file will fail if one of the tests/assertions fails.
@@ -180,17 +184,35 @@ $dark-theme-only-typography: mat-dark-theme((typography: $typography-config));
   }
 }
 
-@mixin _my-custom-theme-new-api-color($config) {
+@mixin _my-custom-theme-new-api-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
+
   .demo-custom-comp {
     border-color: mat-color(map_get($config, primary));
   }
 }
 
+@mixin _my-custom-theme-new-api-density($config-or-theme) {
+  $density-scale: mat-get-density-config($config-or-theme);
+
+  .demo-custom-comp {
+    // Simulates logic for computing density according to the Material Design
+    // specification.
+    height: 48 - (4px * $density-scale);
+  }
+}
+
 // Custom theme mixin used by the custom theme backwards compatibility test.
-@mixin _my-custom-theme-new-api($theme) {
+@mixin _my-custom-theme-new-api($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
   $color: mat-get-color-config($theme);
+  $density: mat-get-density-config($theme);
+
   @if $color != null {
     @include _my-custom-theme-new-api-color($color);
+  }
+  @if $density != null {
+    @include _my-custom-theme-new-api-density($density);
   }
 }
 
@@ -222,8 +244,23 @@ $dark-theme-only-typography: mat-dark-theme((typography: $typography-config));
   }
 
   @include angular-material-typography(map_get($light-theme-only-typography, typography));
+  @include angular-material-typography($light-theme-only-typography);
+
   @include _angular-material-density(map_get($light-theme-only-density, density));
+  @include _angular-material-density($light-theme-only-density);
+
   @include angular-material-color(map_get($new-api-dark-theme, color));
+  @include angular-material-color($new-api-dark-theme);
+}
+
+@mixin test-individual-system-mixins-unwrap() {
+  @include _my-custom-theme-new-api-color($new-api-dark-theme);
+  @include _my-custom-theme-new-api-color(map_get($new-api-dark-theme, color));
+  @include _my-custom-theme-new-api($new-api-dark-theme);
+  @include _my-custom-theme-new-api(map_get($new-api-dark-theme, color));
+
+  @include angular-material-theme($new-api-dark-theme);
+  @include angular-material-theme(map_get($new-api-dark-theme, color));
 }
 
 // Include all tests. Sass will throw if one of the tests fails.
@@ -236,3 +273,4 @@ $dark-theme-only-typography: mat-dark-theme((typography: $typography-config));
 @include test-get-typography-config();
 @include test-custom-theme-backwards-compatibility();
 @include test-all-theme-mixins-arguments();
+@include test-individual-system-mixins-unwrap();

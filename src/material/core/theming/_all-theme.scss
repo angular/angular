@@ -1,5 +1,5 @@
 // Import all the theming functionality.
-@import '../core-theme';
+@import '../core';
 @import '../../autocomplete/autocomplete-theme';
 @import '../../badge/badge-theme';
 @import '../../bottom-sheet/bottom-sheet-theme';
@@ -34,43 +34,45 @@
 @import '../../tree/tree-theme';
 @import '../../snack-bar/snack-bar-theme';
 @import '../../form-field/form-field-theme';
-
+@import './check-duplicate-styles';
 
 // Create a theme.
-@mixin angular-material-theme($theme) {
-  @include mat-core-theme($theme);
-  @include mat-autocomplete-theme($theme);
-  @include mat-badge-theme($theme);
-  @include mat-bottom-sheet-theme($theme);
-  @include mat-button-theme($theme);
-  @include mat-button-toggle-theme($theme);
-  @include mat-card-theme($theme);
-  @include mat-checkbox-theme($theme);
-  @include mat-chips-theme($theme);
-  @include mat-table-theme($theme);
-  @include mat-datepicker-theme($theme);
-  @include mat-dialog-theme($theme);
-  @include mat-divider-theme($theme);
-  @include mat-expansion-panel-theme($theme);
-  @include mat-form-field-theme($theme);
-  @include mat-grid-list-theme($theme);
-  @include mat-icon-theme($theme);
-  @include mat-input-theme($theme);
-  @include mat-list-theme($theme);
-  @include mat-menu-theme($theme);
-  @include mat-paginator-theme($theme);
-  @include mat-progress-bar-theme($theme);
-  @include mat-progress-spinner-theme($theme);
-  @include mat-radio-theme($theme);
-  @include mat-select-theme($theme);
-  @include mat-sidenav-theme($theme);
-  @include mat-slide-toggle-theme($theme);
-  @include mat-slider-theme($theme);
-  @include mat-stepper-theme($theme);
-  @include mat-sort-theme($theme);
-  @include mat-tabs-theme($theme);
-  @include mat-toolbar-theme($theme);
-  @include mat-tooltip-theme($theme);
-  @include mat-tree-theme($theme);
-  @include mat-snack-bar-theme($theme);
+@mixin angular-material-theme($theme-or-color-config) {
+  @include _mat-check-duplicate-theme-styles($theme-or-color-config, 'angular-material-theme') {
+    @include mat-core-theme($theme-or-color-config);
+    @include mat-autocomplete-theme($theme-or-color-config);
+    @include mat-badge-theme($theme-or-color-config);
+    @include mat-bottom-sheet-theme($theme-or-color-config);
+    @include mat-button-theme($theme-or-color-config);
+    @include mat-button-toggle-theme($theme-or-color-config);
+    @include mat-card-theme($theme-or-color-config);
+    @include mat-checkbox-theme($theme-or-color-config);
+    @include mat-chips-theme($theme-or-color-config);
+    @include mat-table-theme($theme-or-color-config);
+    @include mat-datepicker-theme($theme-or-color-config);
+    @include mat-dialog-theme($theme-or-color-config);
+    @include mat-divider-theme($theme-or-color-config);
+    @include mat-expansion-panel-theme($theme-or-color-config);
+    @include mat-form-field-theme($theme-or-color-config);
+    @include mat-grid-list-theme($theme-or-color-config);
+    @include mat-icon-theme($theme-or-color-config);
+    @include mat-input-theme($theme-or-color-config);
+    @include mat-list-theme($theme-or-color-config);
+    @include mat-menu-theme($theme-or-color-config);
+    @include mat-paginator-theme($theme-or-color-config);
+    @include mat-progress-bar-theme($theme-or-color-config);
+    @include mat-progress-spinner-theme($theme-or-color-config);
+    @include mat-radio-theme($theme-or-color-config);
+    @include mat-select-theme($theme-or-color-config);
+    @include mat-sidenav-theme($theme-or-color-config);
+    @include mat-slide-toggle-theme($theme-or-color-config);
+    @include mat-slider-theme($theme-or-color-config);
+    @include mat-stepper-theme($theme-or-color-config);
+    @include mat-sort-theme($theme-or-color-config);
+    @include mat-tabs-theme($theme-or-color-config);
+    @include mat-toolbar-theme($theme-or-color-config);
+    @include mat-tooltip-theme($theme-or-color-config);
+    @include mat-tree-theme($theme-or-color-config);
+    @include mat-snack-bar-theme($theme-or-color-config);
+  }
 }

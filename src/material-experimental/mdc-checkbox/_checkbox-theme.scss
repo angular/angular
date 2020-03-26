@@ -5,7 +5,8 @@
 @import '@material/theme/functions.import';
 @import '../mdc-helpers/mdc-helpers';
 
-@mixin mat-mdc-checkbox-color($config) {
+@mixin mat-mdc-checkbox-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
   $primary: mat-color(map-get($config, primary));
   $accent: mat-color(map-get($config, accent));
   $warn: mat-color(map-get($config, warn));
@@ -70,20 +71,24 @@
   $mdc-checkbox-disabled-color: $orig-mdc-checkbox-disabled-color !global;
 }
 
-@mixin mat-mdc-checkbox-typography($config) {
+@mixin mat-mdc-checkbox-typography($config-or-theme) {
+  $config: mat-get-typography-config($config-or-theme);
   @include mat-using-mdc-typography($config) {
     @include mdc-checkbox-without-ripple($query: $mat-typography-styles-query);
     @include mdc-form-field-core-styles($query: $mat-typography-styles-query);
   }
 }
 
-@mixin mat-mdc-checkbox-density($density-scale) {
+@mixin mat-mdc-checkbox-density($config-or-theme) {
+  $density-scale: mat-get-density-config($config-or-theme);
   .mat-mdc-checkbox .mdc-checkbox {
     @include mdc-checkbox-density($density-scale);
   }
 }
 
-@mixin mat-mdc-checkbox-theme($theme) {
+@mixin mat-mdc-checkbox-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-mdc-checkbox');
   $color: mat-get-color-config($theme);
   $density: mat-get-density-config($theme);
   $typography: mat-get-typography-config($theme);

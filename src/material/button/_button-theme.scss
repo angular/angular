@@ -1,14 +1,16 @@
 @import '../core/theming/theming';
 @import '../core/style/elevation';
 @import '../core/typography/typography-utils';
+@import '../core/theming/check-duplicate-styles';
 
 $_mat-button-ripple-opacity: 0.1;
 
 // Applies a focus style to an mat-button element for each of the supported palettes.
-@mixin _mat-button-focus-overlay-color($theme) {
-  $primary: map-get($theme, primary);
-  $accent: map-get($theme, accent);
-  $warn: map-get($theme, warn);
+@mixin _mat-button-focus-overlay-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
+  $primary: map-get($config, primary);
+  $accent: map-get($config, accent);
+  $warn: map-get($config, warn);
 
   &.mat-primary .mat-button-focus-overlay {
     background-color: mat-color($primary);
@@ -82,7 +84,8 @@ $_mat-button-ripple-opacity: 0.1;
   }
 }
 
-@mixin mat-button-color($config) {
+@mixin mat-button-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
   $primary: map-get($config, primary);
   $accent: map-get($config, accent);
   $warn: map-get($config, warn);
@@ -158,7 +161,8 @@ $_mat-button-ripple-opacity: 0.1;
   }
 }
 
-@mixin mat-button-typography($config) {
+@mixin mat-button-typography($config-or-theme) {
+  $config: mat-get-typography-config($config-or-theme);
   .mat-button, .mat-raised-button, .mat-icon-button, .mat-stroked-button,
   .mat-flat-button, .mat-fab, .mat-mini-fab {
     font: {
@@ -169,9 +173,13 @@ $_mat-button-ripple-opacity: 0.1;
   }
 }
 
-@mixin _mat-button-density($density-scale) {}
+@mixin _mat-button-density($config-or-theme) {
+  $density-scale: mat-get-density-config($config-or-theme);
+}
 
-@mixin mat-button-theme($theme) {
+@mixin mat-button-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-button');
   $color: mat-get-color-config($theme);
   $density: mat-get-density-config($theme);
   $typography: mat-get-typography-config($theme);

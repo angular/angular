@@ -41,7 +41,8 @@
   }
 }
 
-@mixin _mat-form-field-subscript-typography($config) {
+@mixin _mat-form-field-subscript-typography($config-or-theme) {
+  $config: mat-get-typography-config($config-or-theme);
   // The unit-less line-height from the font config.
   $line-height: mat-line-height($config, input);
   // The amount to scale the font for the subscript.

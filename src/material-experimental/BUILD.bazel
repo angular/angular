@@ -24,6 +24,8 @@ ng_package(
     name = "npm_package",
     srcs = ["package.json"],
     data = MATERIAL_EXPERIMENTAL_SCSS_LIBS + [
+        "//src/material-experimental/mdc-color",
+        "//src/material-experimental/mdc-density",
         "//src/material-experimental/mdc-helpers",
         "//src/material-experimental/mdc-theming",
         "//src/material-experimental/mdc-typography",

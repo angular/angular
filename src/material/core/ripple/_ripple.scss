@@ -1,4 +1,5 @@
 @import '../theming/theming';
+@import '../theming/check-duplicate-styles';
 @import '../../../cdk/a11y/a11y';
 
 $mat-ripple-color-opacity: 0.1;
@@ -44,7 +45,8 @@ $mat-ripple-color-opacity: 0.1;
 }
 
 /* Colors for the ripple elements.*/
-@mixin mat-ripple-color($config) {
+@mixin mat-ripple-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
   $foreground: map_get($config, foreground);
   $foreground-base: map_get($foreground, base);
 
@@ -61,7 +63,9 @@ $mat-ripple-color-opacity: 0.1;
   }
 }
 
-@mixin mat-ripple-theme($theme) {
+@mixin mat-ripple-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-ripple');
   $color: mat-get-color-config($theme);
   @if $color != null {
     @include mat-ripple-color($color);

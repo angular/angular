@@ -1,11 +1,13 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
+@import '../core/theming/check-duplicate-styles';
 @import '../core/style/elevation';
 @import '../core/style/form-common';
 @import '../core/typography/typography-utils';
 
 
-@mixin mat-select-color($config) {
+@mixin mat-select-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
   $foreground: map-get($config, foreground);
   $background: map-get($config, background);
   $primary: map-get($config, primary);
@@ -62,7 +64,8 @@
   }
 }
 
-@mixin mat-select-typography($config) {
+@mixin mat-select-typography($config-or-theme) {
+  $config: mat-get-typography-config($config-or-theme);
   // The unit-less line-height from the font config.
   $line-height: mat-line-height($config, input);
 
@@ -75,9 +78,13 @@
   }
 }
 
-@mixin _mat-select-density($density-scale) {}
+@mixin _mat-select-density($config-or-theme) {
+  $density-scale: mat-get-density-config($config-or-theme);
+}
 
-@mixin mat-select-theme($theme) {
+@mixin mat-select-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-select');
   $color: mat-get-color-config($theme);
   $density: mat-get-density-config($theme);
   $typography: mat-get-typography-config($theme);

@@ -1,8 +1,10 @@
 @import '../theming/palette';
 @import '../theming/theming';
+@import '../theming/check-duplicate-styles';
 @import '../typography/typography-utils';
 
-@mixin mat-optgroup-color($config) {
+@mixin mat-optgroup-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
   $foreground: map-get($config, foreground);
 
   .mat-optgroup-label {
@@ -14,15 +16,20 @@
   }
 }
 
-@mixin mat-optgroup-typography($config) {
+@mixin mat-optgroup-typography($config-or-theme) {
+  $config: mat-get-typography-config($config-or-theme);
   .mat-optgroup-label {
     @include mat-typography-level-to-styles($config, body-2);
   }
 }
 
-@mixin _mat-optgroup-density($density-scale) {}
+@mixin _mat-optgroup-density($config-or-theme) {
+  $density-scale: mat-get-density-config($config-or-theme);
+}
 
-@mixin mat-optgroup-theme($theme) {
+@mixin mat-optgroup-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-optgroup');
   $color: mat-get-color-config($theme);
   $density: mat-get-density-config($theme);
   $typography: mat-get-typography-config($theme);

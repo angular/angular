@@ -1,12 +1,14 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
+@import '../core/theming/check-duplicate-styles';
 @import '../core/style/form-common';
 @import '../core/typography/typography-utils';
 
 
 // Theme styles that only apply to the standard appearance of the form-field.
 
-@mixin mat-form-field-standard-color($config) {
+@mixin mat-form-field-standard-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
   $foreground: map-get($config, foreground);
   $is-dark-theme: map-get($config, is-dark);
 
@@ -23,11 +25,17 @@
   }
 }
 
-@mixin mat-form-field-standard-typography($config) {}
+@mixin mat-form-field-standard-typography($config-or-theme) {
+  $config: mat-get-typography-config($config-or-theme);
+}
 
-@mixin _mat-form-field-standard-density($density-scale) {}
+@mixin _mat-form-field-standard-density($config-or-theme) {
+  $density-scale: mat-get-density-config($config-or-theme);
+}
 
-@mixin mat-form-field-standard-theme($theme) {
+@mixin mat-form-field-standard-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-form-field-standard');
   $color: mat-get-color-config($theme);
   $density: mat-get-density-config($theme);
   $typography: mat-get-typography-config($theme);

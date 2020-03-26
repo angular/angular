@@ -35,7 +35,8 @@
 // provide spacing that makes arbitrary controls align as specified in the Material Design
 // specification. In order to support density, we need to adjust the vertical spacing to be
 // based on the density scale.
-@mixin _mat-form-field-density($density-scale) {
+@mixin _mat-form-field-density($config-or-theme) {
+  $density-scale: mat-get-density-config($config-or-theme);
   // Height of the form field that is based on the current density scale.
   $height: mdc-density-prop-value(
     $density-config: $mdc-text-field-density-config,

@@ -1,5 +1,6 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
+@import '../core/theming/check-duplicate-styles';
 @import '../core/style/form-common';
 @import '../core/typography/typography-utils';
 
@@ -9,7 +10,8 @@
 @import './form-field-standard-theme.scss';
 
 // Color styles that apply to all appearances of the form-field.
-@mixin mat-form-field-color($config) {
+@mixin mat-form-field-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
   $primary: map-get($config, primary);
   $accent: map-get($config, accent);
   $warn: map-get($config, warn);
@@ -128,7 +130,8 @@ $mat-form-field-dedupe: 0;
   $mat-form-field-dedupe: $mat-form-field-dedupe + 0.00001 !global;
 }
 
-@mixin mat-form-field-typography($config) {
+@mixin mat-form-field-typography($config-or-theme) {
+  $config: mat-get-typography-config($config-or-theme);
   // The unit-less line-height from the font config.
   $line-height: mat-line-height($config, input);
 
@@ -235,14 +238,17 @@ $mat-form-field-dedupe: 0;
   @include mat-form-field-outline-typography($config);
 }
 
-@mixin _mat-form-field-density($density-scale) {
+@mixin _mat-form-field-density($config-or-theme) {
+  $density-scale: mat-get-density-config($config-or-theme);
   @include _mat-form-field-legacy-density($density-scale);
   @include _mat-form-field-standard-density($density-scale);
   @include _mat-form-field-fill-density($density-scale);
   @include _mat-form-field-outline-density($density-scale);
 }
 
-@mixin mat-form-field-theme($theme) {
+@mixin mat-form-field-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-form-field');
   $color: mat-get-color-config($theme);
   $density: mat-get-density-config($theme);
   $typography: mat-get-typography-config($theme);

@@ -1,11 +1,13 @@
 @import '../core/density/index';
 @import '../core/theming/palette';
 @import '../core/theming/theming';
+@import '../core/theming/check-duplicate-styles';
 @import '../core/style/elevation';
 @import '../core/typography/typography-utils';
 @import './expansion-variables';
 
-@mixin mat-expansion-panel-color($config) {
+@mixin mat-expansion-panel-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
   $background: map-get($config, background);
   $foreground: map-get($config, foreground);
 
@@ -57,7 +59,8 @@
   }
 }
 
-@mixin mat-expansion-panel-typography($config) {
+@mixin mat-expansion-panel-typography($config-or-theme) {
+  $config: mat-get-typography-config($config-or-theme);
   .mat-expansion-panel-header {
     font: {
       family: mat-font-family($config, subheading-1);
@@ -71,7 +74,8 @@
   }
 }
 
-@mixin _mat-expansion-panel-density($density-scale) {
+@mixin _mat-expansion-panel-density($config-or-theme) {
+  $density-scale: mat-get-density-config($config-or-theme);
   $expanded-height: _mat-density-prop-value(
         $mat-expansion-panel-header-density-config, $density-scale, expanded-height);
   $collapsed-height: _mat-density-prop-value(
@@ -86,7 +90,9 @@
   }
 }
 
-@mixin mat-expansion-panel-theme($theme) {
+@mixin mat-expansion-panel-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-expansion-panel');
   $color: mat-get-color-config($theme);
   $density: mat-get-density-config($theme);
   $typography: mat-get-typography-config($theme);
