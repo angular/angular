@@ -4,10 +4,10 @@ import { DialogComponent } from './dialog.component';
 
 @Component({
   selector: 'app-todo-demo',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
+  templateUrl: './app-todo.component.html',
+  styleUrls: ['./app-todo.component.css'],
 })
-export class AppComponent {
+export class AppTodoComponent {
   name: string;
   animal: string;
 
@@ -19,7 +19,7 @@ export class AppComponent {
       data: { name: this.name, animal: this.animal },
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       console.log('The dialog was closed');
       this.animal = result;
     });
