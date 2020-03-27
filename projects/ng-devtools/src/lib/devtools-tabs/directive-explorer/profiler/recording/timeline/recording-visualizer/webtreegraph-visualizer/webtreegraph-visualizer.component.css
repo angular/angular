@@ -1,7 +1,7 @@
 .web-tree {
-  height: 85%;
+  height: 70%;
   width: 85%;
-  margin: auto;
+  margin: 20px auto;
 }
 
 /deep/ .webtreemap-caption {
