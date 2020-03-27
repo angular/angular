@@ -386,7 +386,7 @@ export declare class RouterLink {
         [k: string]: any;
     };
     get urlTree(): UrlTree;
-    constructor(router: Router, route: ActivatedRoute, tabIndex: string, renderer: Renderer2, el: ElementRef);
+    constructor(router: Router, route: ActivatedRoute, tabIndex: string, renderer: Renderer2, el: ElementRef, location: Location);
     onClick(): boolean;
 }
 
@@ -421,7 +421,7 @@ export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
     };
     target: string;
     get urlTree(): UrlTree;
-    constructor(router: Router, route: ActivatedRoute, locationStrategy: LocationStrategy);
+    constructor(router: Router, route: ActivatedRoute, locationStrategy: LocationStrategy, location: Location);
     ngOnChanges(changes: {}): any;
     ngOnDestroy(): any;
     onClick(button: number, ctrlKey: boolean, metaKey: boolean, shiftKey: boolean): boolean;

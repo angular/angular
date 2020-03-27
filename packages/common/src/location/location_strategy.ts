@@ -38,6 +38,10 @@ export abstract class LocationStrategy {
   abstract back(): void;
   abstract onPopState(fn: LocationChangeListener): void;
   abstract getBaseHref(): string;
+
+  isExternalUrl(url: string): boolean {
+    return url.indexOf('http://') === 0 || url.indexOf('https://') === 0;
+  }
 }
 
 export function provideLocationStrategy(platformLocation: PlatformLocation) {

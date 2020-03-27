@@ -65,3 +65,7 @@ export function stripTrailingSlash(url: string): string {
 export function normalizeQueryParams(params: string): string {
   return params && params[0] !== '?' ? '?' + params : params;
 }
+
+export function isExternalUrl(url: string): boolean {
+  return url.indexOf('http://') === 0 || url.indexOf('https://') === 0;
+}
