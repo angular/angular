@@ -129,7 +129,7 @@ import {SpyChangeDetectorRef} from '../spies';
           reject = rej;
         });
         ref = new SpyChangeDetectorRef();
-        pipe = new AsyncPipe(<any>ref);
+        pipe = new AsyncPipe(ref as any);
       });
 
       describe('transform', () => {
@@ -218,10 +218,17 @@ import {SpyChangeDetectorRef} from '../spies';
       });
     });
 
+    describe('undefined', () => {
+      it('should return null when given undefined', () => {
+        const pipe = new AsyncPipe(null as any);
+        expect(pipe.transform(undefined)).toEqual(null);
+      });
+    });
+
     describe('other types', () => {
       it('should throw when given an invalid object', () => {
         const pipe = new AsyncPipe(null as any);
-        expect(() => pipe.transform(<any>'some bogus object')).toThrowError();
+        expect(() => pipe.transform('some bogus object' as any)).toThrowError();
       });
     });
   });
