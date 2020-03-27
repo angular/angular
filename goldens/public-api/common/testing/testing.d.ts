@@ -50,6 +50,7 @@ export declare class SpyLocation implements Location {
     forward(): void;
     getState(): unknown;
     go(path: string, query?: string, state?: any): void;
+    goExternal(url: string): void;
     isCurrentPathEqualTo(path: string, query?: string): boolean;
     normalize(url: string): string;
     onUrlChange(fn: (url: string, state: unknown) => void): void;

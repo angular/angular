@@ -158,6 +158,7 @@ export declare class Location {
     forward(): void;
     getState(): unknown;
     go(path: string, query?: string, state?: any): void;
+    goExternal(url: string): void;
     isCurrentPathEqualTo(path: string, query?: string): boolean;
     normalize(url: string): string;
     onUrlChange(fn: (url: string, state: unknown) => void): void;
@@ -168,6 +169,7 @@ export declare class Location {
     static joinWithSlash: (start: string, end: string) => string;
     static normalizeQueryParams: (params: string) => string;
     static stripTrailingSlash: (url: string) => string;
+    static isExternalUrl(url: string): boolean;
 }
 
 export declare const LOCATION_INITIALIZED: InjectionToken<Promise<any>>;
