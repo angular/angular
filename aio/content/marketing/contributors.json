@@ -44,15 +44,6 @@
     "groups": ["Angular"],
     "lead": "juleskremer"
   },
-  "robwormald": {
-    "name": "Rob Wormald",
-    "picture": "rob-wormald.jpg",
-    "twitter": "robwormald",
-    "website": "http://github.com/robwormald",
-    "bio": "Rob is a Developer Advocate on the Angular team at Google. He's the Angular team's resident reactive programming geek and founded the Reactive Extensions for Angular project, ngrx.",
-    "groups": ["Angular"],
-    "lead": "stephenfluin"
-  },
   "alexeagle": {
     "name": "Alex Eagle",
     "picture": "alex-eagle.jpg",
