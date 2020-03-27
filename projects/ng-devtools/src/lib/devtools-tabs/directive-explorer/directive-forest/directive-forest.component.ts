@@ -15,7 +15,6 @@ import { ComponentDataSource, FlatNode } from './component-data-source';
 import scrollIntoViewIfNeeded from 'scroll-into-view-if-needed';
 import { isChildOf, parentCollapsed } from './directive-forest-utils';
 import { IndexedNode } from './index-forest';
-import { arrayEquals } from 'shared-utils';
 
 @Component({
   selector: 'ng-directive-forest',
@@ -48,8 +47,8 @@ export class DirectiveForestComponent {
   parents: FlatNode[];
 
   treeControl = new FlatTreeControl<FlatNode>(
-    node => node.level,
-    node => node.expandable
+    (node) => node.level,
+    (node) => node.expandable
   );
   dataSource = new ComponentDataSource(this.treeControl);
 
@@ -61,7 +60,7 @@ export class DirectiveForestComponent {
 
   handleSelect(node: FlatNode): void {
     const matchedTree: FlatNode[] = this._findMatchedNodes();
-    this.currentlyMatchedIndex = matchedTree.findIndex(matchedNode => matchedNode.id === node.id);
+    this.currentlyMatchedIndex = matchedTree.findIndex((matchedNode) => matchedNode.id === node.id);
     this.select(node);
   }
 
@@ -110,9 +109,9 @@ export class DirectiveForestComponent {
     if (!this._initialized && forest && forest.length) {
       this.treeControl.expandAll();
       this._initialized = true;
-      result.newItems.forEach(item => (item.newItem = false));
+      result.newItems.forEach((item) => (item.newItem = false));
     }
-    result.newItems.forEach(item => {
+    result.newItems.forEach((item) => {
       this.treeControl.expand(item);
     });
     return result;
@@ -127,7 +126,7 @@ export class DirectiveForestComponent {
       // It's possible selectedNode to be undefined
       // In this case, we don't want to push it to the list
       // of parent nodes. Instead, we want to report a warning.
-      const selectedNode = this.dataSource.data.find(item => item.position.toString() === nodePosition.toString());
+      const selectedNode = this.dataSource.data.find((item) => item.position.toString() === nodePosition.toString());
       if (selectedNode) {
         nodes.push(selectedNode);
       } else {
@@ -144,7 +143,7 @@ export class DirectiveForestComponent {
     }
 
     const data = this.dataSource.data;
-    let prevIdx = data.findIndex(e => this.selectedNode && e.id === this.selectedNode.id) - 1;
+    let prevIdx = data.findIndex((e) => this.selectedNode && e.id === this.selectedNode.id) - 1;
     if (prevIdx < 0) {
       return;
     }
@@ -169,7 +168,7 @@ export class DirectiveForestComponent {
     }
 
     const data = this.dataSource.data;
-    let idx = data.findIndex(e => this.selectedNode && e.id === this.selectedNode.id);
+    let idx = data.findIndex((e) => this.selectedNode && e.id === this.selectedNode.id);
     const currentNode = data[idx];
     if (!this.treeControl.isExpanded(currentNode) && currentNode.expandable) {
       for (let i = idx + 1; i < data.length; i++) {
@@ -244,7 +243,7 @@ export class DirectiveForestComponent {
   }
 
   _findMatchedNodes(): FlatNode[] {
-    return this.dataSource.data.filter(node => this.isMatched(node));
+    return this.dataSource.data.filter((node) => this.isMatched(node));
   }
 
   hasMatched(): boolean {
@@ -255,12 +254,12 @@ export class DirectiveForestComponent {
     const matchedTree: FlatNode[] = this._findMatchedNodes();
     this.currentlyMatchedIndex = (this.currentlyMatchedIndex + 1) % matchedTree.length;
     const nodeToSelect = matchedTree[this.currentlyMatchedIndex];
-    const nodeIsVisible = this.dataSource.expandedDataValues.find(node => node === nodeToSelect);
-    if (!nodeIsVisible) {
-      this.expandParents(nodeToSelect);
-    }
     if (nodeToSelect) {
       this.select(nodeToSelect);
+    }
+    const nodeIsVisible = this.dataSource.expandedDataValues.find((node) => node === nodeToSelect);
+    if (!nodeIsVisible) {
+      this.parents.forEach((parent) => this.treeControl.expand(parent));
     }
   }
 
@@ -268,25 +267,12 @@ export class DirectiveForestComponent {
     const matchedTree: FlatNode[] = this._findMatchedNodes();
     this.currentlyMatchedIndex = (this.currentlyMatchedIndex - 1 + matchedTree.length) % matchedTree.length;
     const nodeToSelect = matchedTree[this.currentlyMatchedIndex];
-    const nodeIsVisible = this.dataSource.expandedDataValues.find(node => node === nodeToSelect);
-    if (!nodeIsVisible) {
-      this.expandParents(nodeToSelect);
-    }
     if (nodeToSelect) {
       this.select(nodeToSelect);
     }
-  }
-
-  expandParents(nodeToExpand: FlatNode): void {
-    if (nodeToExpand) {
-      const parentNode = this.dataSource.data.find(node =>
-        arrayEquals(node.position, nodeToExpand.position.slice(0, nodeToExpand.position.length - 1))
-      );
-      if (!parentNode) {
-        return;
-      }
-      this.treeControl.expand(parentNode);
-      this.expandParents(parentNode);
+    const nodeIsVisible = this.dataSource.expandedDataValues.find((node) => node === nodeToSelect);
+    if (!nodeIsVisible) {
+      this.parents.forEach((parent) => this.treeControl.expand(parent));
     }
   }
 
