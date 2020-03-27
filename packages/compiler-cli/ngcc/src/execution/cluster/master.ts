@@ -105,14 +105,14 @@ export class ClusterMaster {
     }
 
     if (!isWorkerAvailable) {
-      if (this.taskAssignments.size < this.workerCount) {
+      const spawnedWorkerCount = Object.keys(cluster.workers).length;
+      if (spawnedWorkerCount < this.workerCount) {
         this.logger.debug('Spawning another worker process as there is more work to be done.');
         cluster.fork();
       } else {
         // If there are no available workers or no available tasks, log (for debugging purposes).
         this.logger.debug(
-            `All ${this.taskAssignments.size} workers are currently busy and cannot take on more ` +
-            'work.');
+            `All ${spawnedWorkerCount} workers are currently busy and cannot take on more work.`);
       }
     } else {
       const busyWorkers = Array.from(this.taskAssignments)
