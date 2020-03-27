@@ -22,6 +22,7 @@ import * as ParsingCases from './parsing-cases';
     ParsingCases.StringModel,
     ParsingCases.TemplateReference,
     ParsingCases.TestComponent,
+    ParsingCases.TestPipe,
     ParsingCases.WithContextDirective,
   ]
 })
