@@ -222,13 +222,35 @@ function signaturesOf(type: ts.Type, context: TypeContext): Signature[] {
   return type.getCallSignatures().map(s => new SignatureWrapper(s, context));
 }
 
-function selectSignature(type: ts.Type, context: TypeContext, _types: Symbol[]): Signature|
+function selectSignature(type: ts.Type, context: TypeContext, types: Symbol[]): Signature|
     undefined {
   // TODO: Do a better job of selecting the right signature. TypeScript does not currently support a
   // Type Relationship API (see https://github.com/angular/vscode-ng-language-service/issues/143).
   // Consider creating a TypeCheckBlock host in the language service that may also act as a
   // scratchpad for type comparisons.
   const signatures = type.getCallSignatures();
+  const passedInTypes: Array<ts.Type|undefined> = types.map(type => {
+    if (type instanceof TypeWrapper) {
+      return type.tsType;
+    }
+  });
+  // Try to select a matching signature in which all parameter types match.
+  // Note that this is just a best-effort approach, because we're checking for
+  // strict type equality rather than compatibility.
+  // For example, if the signature contains a ReadonlyArray<number> and the
+  // passed parameter type is an Array<number>, this will fail.
+  function allParameterTypesMatch(signature: ts.Signature) {
+    const tc = context.checker;
+    return signature.getParameters().every((parameter: ts.Symbol, i: number) => {
+      const type = tc.getTypeOfSymbolAtLocation(parameter, parameter.valueDeclaration);
+      return type === passedInTypes[i];
+    });
+  }
+  const exactMatch = signatures.find(allParameterTypesMatch);
+  if (exactMatch) {
+    return new SignatureWrapper(exactMatch, context);
+  }
+  // If not, fallback to a naive selection
   return signatures.length ? new SignatureWrapper(signatures[0], context) : undefined;
 }
 

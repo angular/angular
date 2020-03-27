@@ -832,6 +832,20 @@ describe('completions', () => {
       expectContain(completions, CompletionKind.METHOD, ['charAt', 'substring']);
     });
   });
+
+  it('should select the right signature for a pipe given exact type', () => {
+    mockHost.override(TEST_TEMPLATE, '{{ ("world" | prefixPipe:"hello").~{cursor} }}');
+    const m1 = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+    const c1 = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, m1.start);
+    // should resolve to transform(value: string, prefix: string): string
+    expectContain(c1, CompletionKind.METHOD, ['charCodeAt', 'trim']);
+
+    mockHost.override(TEST_TEMPLATE, '{{ (456 | prefixPipe:123).~{cursor} }}');
+    const m2 = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+    const c2 = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, m2.start);
+    // should resolve to transform(value: number, prefix: number): number
+    expectContain(c2, CompletionKind.METHOD, ['toFixed', 'toExponential']);
+  });
 });
 
 function expectContain(
