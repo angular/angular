@@ -67,8 +67,12 @@ export class DecimalPipe implements PipeTransform {
    * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
    * See [Setting your app locale](guide/i18n#setting-up-the-locale-of-your-app).
    */
-  transform(value: any, digitsInfo?: string, locale?: string): string|null {
-    if (isEmpty(value)) return null;
+  transform(value: number|string, digitsInfo?: string, locale?: string): string|null;
+  transform(value: null|undefined, digitsInfo?: string, locale?: string): null;
+  transform(value: number|string|null|undefined, digitsInfo?: string, locale?: string): string|null;
+  transform(value: number|string|null|undefined, digitsInfo?: string, locale?: string): string
+      |null {
+    if (!isValue(value)) return null;
 
     locale = locale || this._locale;
 
@@ -121,8 +125,12 @@ export class PercentPipe implements PipeTransform {
    * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
    * See [Setting your app locale](guide/i18n#setting-up-the-locale-of-your-app).
    */
-  transform(value: any, digitsInfo?: string, locale?: string): string|null {
-    if (isEmpty(value)) return null;
+  transform(value: number|string, digitsInfo?: string, locale?: string): string|null;
+  transform(value: null|undefined, digitsInfo?: string, locale?: string): null;
+  transform(value: number|string|null|undefined, digitsInfo?: string, locale?: string): string|null;
+  transform(value: number|string|null|undefined, digitsInfo?: string, locale?: string): string
+      |null {
+    if (!isValue(value)) return null;
     locale = locale || this._locale;
     try {
       const num = strToNumber(value);
@@ -213,10 +221,22 @@ export class CurrencyPipe implements PipeTransform {
    * See [Setting your app locale](guide/i18n#setting-up-the-locale-of-your-app).
    */
   transform(
-      value: any, currencyCode?: string,
+      value: number|string, currencyCode?: string,
+      display?: 'code'|'symbol'|'symbol-narrow'|string|boolean, digitsInfo?: string,
+      locale?: string): string|null;
+  transform(
+      value: null|undefined, currencyCode?: string,
+      display?: 'code'|'symbol'|'symbol-narrow'|string|boolean, digitsInfo?: string,
+      locale?: string): null;
+  transform(
+      value: number|string|null|undefined, currencyCode?: string,
+      display?: 'code'|'symbol'|'symbol-narrow'|string|boolean, digitsInfo?: string,
+      locale?: string): string|null;
+  transform(
+      value: number|string|null|undefined, currencyCode?: string,
       display: 'code'|'symbol'|'symbol-narrow'|string|boolean = 'symbol', digitsInfo?: string,
       locale?: string): string|null {
-    if (isEmpty(value)) return null;
+    if (!isValue(value)) return null;
 
     locale = locale || this._locale;
 
@@ -246,8 +266,8 @@ export class CurrencyPipe implements PipeTransform {
   }
 }
 
-function isEmpty(value: any): boolean {
-  return value == null || value === '' || value !== value;
+function isValue(value: number|string|null|undefined): value is number|string {
+  return !(value == null || value === '' || value !== value);
 }
 
 /**
