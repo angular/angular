@@ -640,7 +640,10 @@ describe('directives', () => {
 
       @Directive({selector: '[dir]'})
       class StructuralDir {
+        /** @internal */
         _dir: any;
+
+        /** @internal */
         _dirOf: any;
 
         constructor() { dirInstances.push(this); }
@@ -649,14 +652,14 @@ describe('directives', () => {
         set dir(value: any) {
           this._dir = value;
           callsCount.dir++;
-        };
+        }
         get dir() { return this._dir; }
 
         @Input()
         set dirOf(value: any) {
           this._dirOf = value;
           callsCount.dirOf++;
-        };
+        }
         get dirOf() { return this._dirOf; }
       }
 
