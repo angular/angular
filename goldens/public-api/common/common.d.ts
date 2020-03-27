@@ -381,9 +381,10 @@ export declare function registerLocaleData(data: any, localeId?: string | any, e
 
 export declare class SlicePipe implements PipeTransform {
     transform<T>(value: ReadonlyArray<T>, start: number, end?: number): Array<T>;
+    transform(value: null | undefined, start: number, end?: number): null;
+    transform<T>(value: ReadonlyArray<T> | null | undefined, start: number, end?: number): Array<T> | null;
     transform(value: string, start: number, end?: number): string;
-    transform(value: null, start: number, end?: number): null;
-    transform(value: undefined, start: number, end?: number): undefined;
+    transform(value: string | null | undefined, start: number, end?: number): string | null;
 }
 
 export declare type Time = {
