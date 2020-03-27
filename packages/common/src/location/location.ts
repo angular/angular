@@ -10,7 +10,7 @@ import {EventEmitter, Injectable, ɵɵinject} from '@angular/core';
 import {SubscriptionLike} from 'rxjs';
 import {LocationStrategy} from './location_strategy';
 import {PlatformLocation} from './platform_location';
-import {isExternalUrl, joinWithSlash, normalizeQueryParams, stripTrailingSlash} from './util';
+import {joinWithSlash, normalizeQueryParams, stripTrailingSlash} from './util';
 
 /** @publicApi */
 export interface PopStateEvent {
@@ -213,7 +213,7 @@ export class Location {
   }
 
   public static isExternalUrl(url: string): boolean {
-    return isExternalUrl(url);
+    return url.indexOf('http://') === 0 || url.indexOf('https://') === 0;
   }
 
   /**

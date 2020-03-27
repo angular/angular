@@ -230,8 +230,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
 
   constructor(
       private router: Router, private route: ActivatedRoute,
-      private locationStrategy: LocationStrategy,
-      private location: Location) {
+      private locationStrategy: LocationStrategy, private location: Location) {
     this.subscription = router.events.subscribe((s: Event) => {
       if (s instanceof NavigationEnd) {
         this.updateTargetUrlAndHref();
