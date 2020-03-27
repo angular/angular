@@ -171,7 +171,15 @@ export class DatePipe implements PipeTransform {
    * See [Setting your app locale](guide/i18n#setting-up-the-locale-of-your-app).
    * @returns A date string in the desired format.
    */
-  transform(value: any, format = 'mediumDate', timezone?: string, locale?: string): string|null {
+  transform(value: Date|string|number, format?: string, timezone?: string, locale?: string): string
+      |null;
+  transform(value: null|undefined, format?: string, timezone?: string, locale?: string): null;
+  transform(
+      value: Date|string|number|null|undefined, format?: string, timezone?: string,
+      locale?: string): string|null;
+  transform(
+      value: Date|string|number|null|undefined, format = 'mediumDate', timezone?: string,
+      locale?: string): string|null {
     if (value == null || value === '' || value !== value) return null;
 
     try {
