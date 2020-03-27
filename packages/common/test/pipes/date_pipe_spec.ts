@@ -59,12 +59,20 @@ import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_refle
         expect(pipe.transform(Number.NaN)).toEqual(null);
       });
 
+      it('should return null for null', () => {
+        expect(pipe.transform(null)).toEqual(null);
+      });
+
+      it('should return null for undefined', () => {
+        expect(pipe.transform(undefined)).toEqual(null);
+      });
+
       it('should support ISO string without time', () => {
         expect(() => pipe.transform(isoStringWithoutTime)).not.toThrow();
       });
 
       it('should not support other objects', () => {
-        expect(() => pipe.transform({})).toThrowError(/InvalidPipeArgument/);
+        expect(() => pipe.transform({} as any)).toThrowError(/InvalidPipeArgument/);
       });
     });
 
