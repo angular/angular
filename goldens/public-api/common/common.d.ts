@@ -194,6 +194,8 @@ export declare abstract class LocationStrategy {
 
 export declare class LowerCasePipe implements PipeTransform {
     transform(value: string): string;
+    transform(value: null | undefined): null;
+    transform(value: string | null | undefined): string | null;
 }
 
 export declare class NgClass implements DoCheck {
@@ -392,6 +394,8 @@ export declare type Time = {
 
 export declare class TitleCasePipe implements PipeTransform {
     transform(value: string): string;
+    transform(value: null | undefined): null;
+    transform(value: string | null | undefined): string | null;
 }
 
 export declare enum TranslationWidth {
@@ -403,6 +407,8 @@ export declare enum TranslationWidth {
 
 export declare class UpperCasePipe implements PipeTransform {
     transform(value: string): string;
+    transform(value: null | undefined): null;
+    transform(value: string | null | undefined): string | null;
 }
 
 export declare const VERSION: Version;
