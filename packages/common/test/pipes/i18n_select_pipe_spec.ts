@@ -40,7 +40,7 @@ import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_refle
       });
 
       it('should throw on bad arguments', () => {
-        expect(() => pipe.transform('male', <any>'hey')).toThrowError();
+        expect(() => pipe.transform('male', 'hey' as any)).toThrowError();
       });
     });
   });
