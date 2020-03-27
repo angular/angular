@@ -250,7 +250,7 @@ describe('compiler compliance: directives', () => {
         …
         MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
           …
-          consts: [["directiveA", "", ${AttributeMarker.Template}, "ngIf"], ["directiveA", ""]],
+          consts: [["directiveA", "", ${AttributeMarker.TemplateBindings}, "ngIf"], ["directiveA", ""]],
           template: function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵɵtemplate(0, MyComponent_ng_container_0_Template, 2, 0, "ng-container", 0);
@@ -341,7 +341,7 @@ describe('compiler compliance: directives', () => {
           …
           MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
               …
-              consts: [[${AttributeMarker.Template}, "someDirective"]],
+              consts: [[${AttributeMarker.TemplateUnboundAttrs}, "someDirective"]],
               template: function MyComponent_Template(rf, ctx) {
                   if (rf & 1) {
                       $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 1, 0, "div", 0);

@@ -4270,8 +4270,8 @@ runInEachFileSystem(os => {
       env.driveMain();
 
       // Include `dir` into static attribute list in case of empty args
-      expect(env.getContents('test-no-args.js')).toContain('consts: [["dir", "", 4, "dir"]]');
-      expect(env.getContents('test-empty-exp.js')).toContain('consts: [["dir", "", 4, "dir"]]');
+      expect(env.getContents('test-no-args.js')).toContain('consts: [[4, "dir"]]');
+      expect(env.getContents('test-empty-exp.js')).toContain('consts: [[4, "dir"]]');
 
       // Generate `property` instruction for false-y values
       expect(env.getContents('test-empty-str.js')).toContain(`ɵɵproperty("dir", "")`);
