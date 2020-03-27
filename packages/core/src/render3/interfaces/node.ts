@@ -195,10 +195,10 @@ export const enum AttributeMarker {
    * ['dirA', '', AttributeMarker.Bindings, 'dirB']
    * ```
    *
-   * TODO: update docs to describe `StaticTemplateAttrs` and `BoundTemplateAttrs`
+   * TODO: update docs to describe `TemplateUnboundAttrs` and `TemplateBindings`
    */
-  StaticTemplateAttrs = 4,
-  BoundTemplateAttrs = 5,
+  TemplateUnboundAttrs = 4,
+  TemplateBindings = 5,
 
   /**
    * Signals that the following attribute is `ngProjectAs` and its value is a parsed `CssSelector`.

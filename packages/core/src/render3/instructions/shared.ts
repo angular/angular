@@ -1554,7 +1554,7 @@ function setInputsFromAttrs<T>(
 function generateInitialInputs(inputs: {[key: string]: string}, attrs: TAttributes): InitialInputs|
     null {
   let inputsToStore: InitialInputs|null = null;
-  let isStaticTemplateAttrs = false;
+  let isUnboundTemplateAttr = false;
   let i = 0;
   while (i < attrs.length) {
     let attrName = attrs[i];
@@ -1566,32 +1566,32 @@ function generateInitialInputs(inputs: {[key: string]: string}, attrs: TAttribut
       // Skip over the `ngProjectAs` value.
       i += 2;
       continue;
-    } else if (attrName === AttributeMarker.StaticTemplateAttrs) {
+    } else if (attrName === AttributeMarker.TemplateUnboundAttrs) {
       // Skip marker itself and shift `attrName` to the first item in the section.
       i++;
       attrName = attrs[i];
-      isStaticTemplateAttrs = true;
+      isUnboundTemplateAttr = true;
     }
 
     if (typeof attrName === 'number') {
-      // If we hit an attribute marker and we already seen the `StaticTemplateAttrs` marker, we exit
-      // since none of other items in attrs array is a valid input.
-      if (isStaticTemplateAttrs) {
+      // If we hit an attribute marker and we already seen the `TemplateUnboundAttrs` marker, we
+      // exit since none of other items in the attrs array is a valid input.
+      if (isUnboundTemplateAttr) {
         break;
       } else {
-        // Skip until the `StaticTemplateAttrs` marker (if present) or until the end of `attrs`
+        // Skip until the `TemplateUnboundAttrs` marker (if present) or until the end of `attrs`
         // array.
-        while (i < attrs.length && attrs[i + 1] !== AttributeMarker.StaticTemplateAttrs) i++;
+        while (i < attrs.length && attrs[i + 1] !== AttributeMarker.TemplateUnboundAttrs) i++;
       }
     } else {
       if (inputs.hasOwnProperty(attrName as string)) {
         if (inputsToStore === null) inputsToStore = [];
-        const value = isStaticTemplateAttrs ? '' : attrs[i + 1] as string;
+        const value = isUnboundTemplateAttr ? '' : attrs[i + 1] as string;
         inputsToStore.push(attrName as string, inputs[attrName as string], value);
       }
 
       // TODO: add comment
-      i += isStaticTemplateAttrs ? 1 : 2;
+      i += isUnboundTemplateAttr ? 1 : 2;
     }
   }
   return inputsToStore;

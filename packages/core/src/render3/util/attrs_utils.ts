@@ -103,8 +103,8 @@ export function isNameOnlyAttributeMarker(marker: string|AttributeMarker|CssSele
 
 // TODO: add docs for this function.
 export function isTemplateAttributeMarker(marker: string|AttributeMarker|CssSelector): boolean {
-  return marker === AttributeMarker.StaticTemplateAttrs ||
-      marker === AttributeMarker.BoundTemplateAttrs;
+  return marker === AttributeMarker.TemplateUnboundAttrs ||
+      marker === AttributeMarker.TemplateBindings;
 }
 
 export function isAnimationProp(name: string): boolean {

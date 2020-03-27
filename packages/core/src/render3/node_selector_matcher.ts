@@ -294,18 +294,18 @@ function getNameOnlyMarkerIndex(nodeAttrs: TAttributes) {
 
 function matchTemplateAttribute(attrs: TAttributes, name: string): number {
   let i = 0;
-  let isTemplateSection = false;
+  let isTemplateAttrsSection = false;
   while (i < attrs.length) {
     const attr = attrs[i];
     if (typeof attr === 'number') {  // AttributeMarker
-      const _isTemplateSection = isTemplateSection;
-      isTemplateSection = isTemplateAttributeMarker(attr);
+      const _isTemplateAttrsSection = isTemplateAttrsSection;
+      isTemplateAttrsSection = isTemplateAttributeMarker(attr);
       // If we were in a template attrs section and came across non-template marker, that means that
       // the template attrs section is over, so we should exit the function.
-      if (_isTemplateSection && !isTemplateSection) {
+      if (_isTemplateAttrsSection && !isTemplateAttrsSection) {
         return -1;
       }
-    } else if (isTemplateSection && attrs[i] === name) {
+    } else if (isTemplateAttrsSection && attrs[i] === name) {
       return i;
     }
     i++;

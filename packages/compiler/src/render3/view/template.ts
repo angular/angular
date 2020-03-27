@@ -1340,20 +1340,20 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
 
     if (templateAttrs.length) {
-      const staticAttrs: t.TextAttribute[] = [];
+      const textAttrs: t.TextAttribute[] = [];
       const boundAttrs: t.BoundAttribute[] = [];
       templateAttrs.forEach((attr) => {
         if (attr instanceof t.TextAttribute) {
-          staticAttrs.push(attr);
+          textAttrs.push(attr);
         } else {
           boundAttrs.push(attr);
         }
       });
-      if (staticAttrs.length > 0) {
-        addTemplateAttrs(core.AttributeMarker.StaticTemplateAttrs, staticAttrs);
+      if (textAttrs.length > 0) {
+        addTemplateAttrs(core.AttributeMarker.TemplateUnboundAttrs, textAttrs);
       }
       if (boundAttrs.length > 0) {
-        addTemplateAttrs(core.AttributeMarker.BoundTemplateAttrs, boundAttrs);
+        addTemplateAttrs(core.AttributeMarker.TemplateBindings, boundAttrs);
       }
     }
 
