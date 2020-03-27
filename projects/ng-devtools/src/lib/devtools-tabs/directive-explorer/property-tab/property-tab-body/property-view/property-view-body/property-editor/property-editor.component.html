@@ -9,6 +9,7 @@
       <input
         type="text"
         class="editor-input"
+        (mousedown)="$event.stopPropagation()"
         [ngClass]="{ editable: true }"
         [(ngModel)]="valueToSubmit"
         (keydown.enter)="accept()"

@@ -163,7 +163,7 @@ const findElementIDFromNativeElementInForest = (
 };
 
 export const findNodeFromSerializedPosition = (serializedPosition: string) => {
-  const position: number[] = serializedPosition.split(',').map(index => parseInt(index, 10));
+  const position: number[] = serializedPosition.split(',').map((index) => parseInt(index, 10));
   return queryDirectiveForest(position, buildDirectiveForest(ngDebug()));
 };
 
@@ -171,7 +171,7 @@ export const updateState = (updatedStateData: UpdatedStateData): void => {
   const ngd = ngDebug();
   const node = queryDirectiveForest(updatedStateData.directiveId.element, buildDirectiveForest(ngd));
   if (!node) {
-    console.warn('Could not update the state of component', updateState, 'because the component was not found');
+    console.warn('Could not update the state of component', updatedStateData, 'because the component was not found');
     return;
   }
   if (updatedStateData.directiveId.directive !== undefined) {
@@ -195,7 +195,7 @@ const mutateComponentOrDirective = (updatedStateData: UpdatedStateData, compOrDi
   }
 
   let parentObjectOfValueToUpdate = compOrDirective;
-  updatedStateData.keyPath.forEach(key => {
+  updatedStateData.keyPath.forEach((key) => {
     parentObjectOfValueToUpdate = parentObjectOfValueToUpdate[key];
   });
 
