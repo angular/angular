@@ -9,10 +9,11 @@ import {readFileSync} from 'fs';
 import * as path from 'path';
 import {cd, exec, set} from 'shelljs';
 
+import {getRepoBaseDir} from '../utils/config';
+
 import {PullApproveGroup} from './group';
 import {logGroup, logHeader} from './logging';
 import {parsePullApproveYaml} from './parse-yaml';
-import {getRepoBaseDir} from '../utils/config';
 
 export function verify() {
   // Exit early on shelljs errors
