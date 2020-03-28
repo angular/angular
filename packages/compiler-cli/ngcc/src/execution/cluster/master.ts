@@ -33,7 +33,7 @@ export class ClusterMaster {
   private onTaskCompleted: TaskCompletedCallback;
 
   constructor(
-      private workerCount: number, private logger: Logger,
+      private maxWorkerCount: number, private logger: Logger,
       private pkgJsonUpdater: PackageJsonUpdater, analyzeEntryPoints: AnalyzeEntryPointsFn,
       createTaskCompletedCallback: CreateTaskCompletedCallback) {
     if (!cluster.isMaster) {
@@ -106,7 +106,7 @@ export class ClusterMaster {
 
     if (!isWorkerAvailable) {
       const spawnedWorkerCount = Object.keys(cluster.workers).length;
-      if (spawnedWorkerCount < this.workerCount) {
+      if (spawnedWorkerCount < this.maxWorkerCount) {
         this.logger.debug('Spawning another worker process as there is more work to be done.');
         cluster.fork();
       } else {
