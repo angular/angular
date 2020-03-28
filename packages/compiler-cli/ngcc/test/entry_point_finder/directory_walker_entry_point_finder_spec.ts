@@ -103,15 +103,37 @@ runInEachFileSystem(() => {
         expect(entryPoints).toEqual([]);
       });
 
-      it('should write an entry-point manifest file if none was found', () => {
-        const basePath = _Abs('/sub_entry_points/node_modules');
+      it('should write an entry-point manifest file if none was found and basePath is `node_modules`',
+         () => {
+           const basePath = _Abs('/sub_entry_points/node_modules');
+           loadTestFiles([
+             ...createPackage(basePath, 'common'),
+             ...createPackage(fs.resolve(basePath, 'common'), 'http', ['common']),
+             ...createPackage(
+                 fs.resolve(basePath, 'common/http'), 'testing', ['common/http', 'common/testing']),
+             ...createPackage(fs.resolve(basePath, 'common'), 'testing', ['common']),
+             {name: _Abs('/sub_entry_points/yarn.lock'), contents: 'MOCK LOCK FILE'},
+           ]);
+           spyOn(manifest, 'readEntryPointsUsingManifest').and.callThrough();
+           spyOn(manifest, 'writeEntryPointManifest').and.callThrough();
+           const finder = new DirectoryWalkerEntryPointFinder(
+               fs, config, logger, resolver, manifest, basePath, undefined);
+           finder.findEntryPoints();
+           expect(manifest.readEntryPointsUsingManifest).toHaveBeenCalled();
+           expect(manifest.writeEntryPointManifest).toHaveBeenCalled();
+           expect(fs.exists(_Abs('/sub_entry_points/node_modules/__ngcc_entry_points__.json')))
+               .toBe(true);
+         });
+
+      it('should not write an entry-point manifest file if basePath is not `node_modules`', () => {
+        const basePath = _Abs('/sub_entry_points/dist');
         loadTestFiles([
           ...createPackage(basePath, 'common'),
           ...createPackage(fs.resolve(basePath, 'common'), 'http', ['common']),
           ...createPackage(
               fs.resolve(basePath, 'common/http'), 'testing', ['common/http', 'common/testing']),
           ...createPackage(fs.resolve(basePath, 'common'), 'testing', ['common']),
-          {name: _Abs('/sub_entry_points/yarn.lock'), contents: 'MOCM LOCK FILE'},
+          {name: _Abs('/sub_entry_points/yarn.lock'), contents: 'MOCK LOCK FILE'},
         ]);
         spyOn(manifest, 'readEntryPointsUsingManifest').and.callThrough();
         spyOn(manifest, 'writeEntryPointManifest').and.callThrough();
@@ -120,8 +142,7 @@ runInEachFileSystem(() => {
         finder.findEntryPoints();
         expect(manifest.readEntryPointsUsingManifest).toHaveBeenCalled();
         expect(manifest.writeEntryPointManifest).toHaveBeenCalled();
-        expect(fs.exists(_Abs('/sub_entry_points/node_modules/__ngcc_entry_points__.json')))
-            .toBe(true);
+        expect(fs.exists(_Abs('/sub_entry_points/dist/__ngcc_entry_points__.json'))).toBe(false);
       });
 
       it('should read from the entry-point manifest file if found', () => {
@@ -132,7 +153,7 @@ runInEachFileSystem(() => {
           ...createPackage(
               fs.resolve(basePath, 'common/http'), 'testing', ['common/http', 'common/testing']),
           ...createPackage(fs.resolve(basePath, 'common'), 'testing', ['common']),
-          {name: _Abs('/sub_entry_points/yarn.lock'), contents: 'MOCM LOCK FILE'},
+          {name: _Abs('/sub_entry_points/yarn.lock'), contents: 'MOCK LOCK FILE'},
         ]);
         const finder = new DirectoryWalkerEntryPointFinder(
             fs, config, logger, resolver, manifest, basePath, undefined);
