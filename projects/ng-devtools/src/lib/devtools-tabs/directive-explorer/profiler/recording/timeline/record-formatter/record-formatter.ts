@@ -1,4 +1,4 @@
-import { ElementProfile, ProfilerFrame } from 'protocol';
+import { ElementProfile, DirectiveProfile, ProfilerFrame } from 'protocol';
 
 export interface TimelineView<T> {
   timeline: AppEntry<T>[];
@@ -22,23 +22,29 @@ export abstract class RecordFormatter<T> {
 
   getLabel(element: ElementProfile): string {
     const name = element.directives
-      .filter(d => d.isComponent)
-      .map(c => c.name)
+      .filter((d) => d.isComponent)
+      .map((c) => c.name)
       .join(', ');
-    const attributes = [...new Set(element.directives.filter(d => !d.isComponent).map(d => d.name))].join(', ');
+    const attributes = [...new Set(element.directives.filter((d) => !d.isComponent).map((d) => d.name))].join(', ');
     return attributes === '' ? name : `${name}[${attributes}]`;
   }
 
   getValue(element: ElementProfile): number {
     let result = 0;
-    element.directives.forEach(dir => {
-      result += dir.changeDetection;
-      Object.keys(dir.lifecycle).forEach(key => {
-        const value = parseFloat(dir.lifecycle[key]);
-        if (!isNaN(value)) {
-          result += value;
-        }
-      });
+    element.directives.forEach((dir) => {
+      result += this.getDirectiveValue(dir);
+    });
+    return result;
+  }
+
+  getDirectiveValue(directive: DirectiveProfile): number {
+    let result = 0;
+    result += directive.changeDetection;
+    Object.keys(directive.lifecycle).forEach((key) => {
+      const value = parseFloat(directive.lifecycle[key]);
+      if (!isNaN(value)) {
+        result += value;
+      }
     });
     return result;
   }
