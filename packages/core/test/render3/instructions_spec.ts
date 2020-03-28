@@ -290,7 +290,10 @@ describe('instructions', () => {
           selectors: [['nested-loops']],
           decls: 1,
           vars: 1,
-          consts: [[AttributeMarker.Template, 'ngFor', 'ngForOf']],
+          consts: [[
+            AttributeMarker.TemplateUnboundAttrs, 'ngFor', AttributeMarker.TemplateBindings,
+            'ngForOf'
+          ]],
           template:
               function ToDoAppComponent_Template(rf: RenderFlags, ctx: NestedLoops) {
                 if (rf & RenderFlags.Create) {
