@@ -283,8 +283,8 @@ describe('bluebird promise', () => {
       BluebirdPromise
           .each(
               BluebirdPromise.map(arr, (item: number) => BluebirdPromise.resolve(item)),
-              (r: number[], idx: number) => {
-                expect(r[idx] === arr[idx]);
+              (r: number, idx: number) => {
+                expect(r).toBe(arr[idx]);
                 expect(Zone.current.name).toEqual('bluebird');
               })
           .then((r: any) => {
@@ -304,8 +304,8 @@ describe('bluebird promise', () => {
       BluebirdPromise
           .mapSeries(
               BluebirdPromise.map(arr, (item: number) => BluebirdPromise.resolve(item)),
-              (r: number[], idx: number) => {
-                expect(r[idx] === arr[idx]);
+              (r: number, idx: number) => {
+                expect(r).toBe(arr[idx]);
                 expect(Zone.current.name).toEqual('bluebird');
               })
           .then((r: any) => {
