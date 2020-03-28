@@ -165,6 +165,12 @@ runInEachFileSystem(() => {
         expect(fs.exists(_Abs('/project/node_modules/__ngcc_entry_points__.json'))).toBe(false);
       });
 
+      it('should do nothing if the basePath is not node_modules', () => {
+        fs.writeFile(_Abs('/project/yarn.lock'), 'LOCK FILE CONTENTS');
+        manifest.writeEntryPointManifest(_Abs('/project/dist'), []);
+        expect(fs.exists(_Abs('/project/dist/__ngcc_entry_points__.json'))).toBe(false);
+      });
+
       it('should write an __ngcc_entry_points__.json file below the base path if there is a yarn.lock file',
          () => {
            fs.writeFile(_Abs('/project/yarn.lock'), 'LOCK FILE CONTENTS');

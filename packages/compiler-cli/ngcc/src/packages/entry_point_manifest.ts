@@ -99,6 +99,10 @@ export class EntryPointManifest {
    * @param entryPoints A collection of entry-points to record in the manifest.
    */
   writeEntryPointManifest(basePath: AbsoluteFsPath, entryPoints: EntryPoint[]): void {
+    if (this.fs.basename(basePath) !== 'node_modules') {
+      return;
+    }
+
     const lockFileHash = this.computeLockFileHash(basePath);
     if (lockFileHash === null) {
       return;
