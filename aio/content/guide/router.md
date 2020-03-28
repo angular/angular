@@ -105,12 +105,14 @@ set the `href` value *exactly* as shown here.
 The Angular Router is an optional service that presents a particular component view for a given URL.
 It is not part of the Angular core. It is in its own library package, `@angular/router`.
 Import what you need from it as you would from any other Angular package.
+
+<code-example path="router/src/app/app.module.1.ts" header="src/app/app.module.ts (import)" region="import-router"></code-example>
 -->
 라우터는 URL과 컴포넌트를 연결하는 서비스지만, Angular 애플리케이션을 구현하면서 꼭 사용해야 하는 서비스는 아닙니다.
 그래서 라우터는 Angular 코어에서 제외되었으며, `@angular/router` 라이브러리 패키지로 제공됩니다.
 라우터를 사용하려면 다른 Angular 패키지와 마찬가지로 다음과 같이 로드합니다.
 
-<code-example path="router/src/app/app.module.1.ts" header="src/app/app.module.ts (import)" region="import-router"></code-example>
+<code-example path="router/src/app/app.module.1.ts" header="src/app/app.module.ts (심볼 로드하기)" region="import-router"></code-example>
 
 
 
@@ -1458,10 +1460,12 @@ The application will fail if the user clicks that button because you haven't def
 
 <!--
 Instead of adding the `"/sidekicks"` route, define a `wildcard` route instead and have it navigate to a simple `PageNotFoundComponent`.
+
+<code-example path="router/src/app/app.module.1.ts" header="src/app/app.module.ts (wildcard)" region="wildcard"></code-example>
 -->
 그러면 `"/sidekicks"` 라우팅 규칙을 추가하는 대신 와일드카드 라우팅 규칙을 추가하고, 이 라우팅 규칙을 `PageNotFoundComponent`와 연결합시다.
 
-<code-example path="router/src/app/app.module.1.ts" header="src/app/app.module.ts (wildcard)" region="wildcard"></code-example>
+<code-example path="router/src/app/app.module.1.ts" header="src/app/app.module.ts (와일드카드 라우팅 규칙)" region="wildcard"></code-example>
 
 <!--
 Create the `PageNotFoundComponent` to display when users visit invalid URLs.
@@ -1472,7 +1476,10 @@ Create the `PageNotFoundComponent` to display when users visit invalid URLs.
   ng generate component page-not-found
 </code-example>
 
+<!--
 <code-example path="router/src/app/page-not-found/page-not-found.component.html" header="src/app/page-not-found.component.html (404 component)"></code-example>
+-->
+<code-example path="router/src/app/page-not-found/page-not-found.component.html" header="src/app/page-not-found.component.html (404 컴포넌트)"></code-example>
 
 <!--
 Now when the user visits `/sidekicks`, or any other invalid URL, the browser displays "Page not found".
@@ -5176,7 +5183,10 @@ Add the `Guard` to the crisis detail route in `crisis-center-routing.module.ts` 
 -->
 이제 이 라우팅 가드를 `crisis-center-routing.module.ts`에 다음과 같이 추가합니다.
 
+<!--
 <code-example path="router/src/app/crisis-center/crisis-center-routing.module.3.ts" header="src/app/crisis-center/crisis-center-routing.module.ts (can deactivate guard)"></code-example>
+-->
+<code-example path="router/src/app/crisis-center/crisis-center-routing.module.3.ts" header="src/app/crisis-center/crisis-center-routing.module.ts (canDeactivate 가드)"></code-example>
 
 <!--
 Now you have given the user a safeguard against unsaved changes.
@@ -5254,7 +5264,10 @@ Generate a `CrisisDetailResolver` service file within the `Crisis Center` featur
 </code-example>
 
 
+<!--
 <code-example path="router/src/app/crisis-center/crisis-detail-resolver.service.1.ts" header="src/app/crisis-center/crisis-detail-resolver.service.ts (generated)"></code-example>
+-->
+<code-example path="router/src/app/crisis-center/crisis-detail-resolver.service.1.ts" header="src/app/crisis-center/crisis-detail-resolver.service.ts (자동생성된 코드)"></code-example>
 
 
 <!--
@@ -5578,18 +5591,11 @@ you should only load it when requested by the right people.
 
 <!--
 Change the `admin` **path** in the `admin-routing.module.ts` from `'admin'` to an empty string, `''`, the _empty path_.
--->
-`admin-routing.module.ts` 파일에서 `admin`에 해당하는 라우팅 규칙의 주소를 `admin`이 아니라 `''` 빈 문자열로 변경합니다.
 
-<!--
 The `Router` supports  *empty path* routes;
 use them to group routes together without adding any additional path segments to the URL.
 Users will still visit `/admin` and the `AdminComponent` still serves as the *Routing Component* containing child routes.
--->
-`Router`는 *빈 주소* 를 사용하는 라우팅 규칙을 지원합니다. 이 방식을 사용하면 현재 URL을 변경하지 않으면서 여러 라우팅 경로를 그룹으로 묶을 수 있습니다.
-이 기능을 사용하는 사용자는 여전히 `/admin`으로 접속할 것이며 자식 라우팅 규칙에 해당하는 *라우팅 컴포넌트* 도 여전히 `AdminComponent`로 제공됩니다.
 
-<!--
 Open the `AppRoutingModule` and add a new `admin` route to its `appRoutes` array.
 
 Give it a `loadChildren` property instead of a `children` property.
@@ -5597,12 +5603,17 @@ The `loadChildren` property takes a function that returns a promise using the br
 The path is the location of the `AdminModule` (relative to the app root).
 After the code is requested and loaded, the `Promise` resolves an object that contains the `NgModule`, in this case the `AdminModule`.
 -->
+`admin-routing.module.ts` 파일에서 `admin`에 해당하는 라우팅 규칙의 주소를 `admin`이 아니라 `''` 빈 문자열로 변경합니다.
+
+`Router`는 *빈 주소* 를 사용하는 라우팅 규칙을 지원합니다. 이 방식을 사용하면 현재 URL을 변경하지 않으면서 여러 라우팅 경로를 그룹으로 묶을 수 있습니다.
+이 기능을 사용하는 사용자는 여전히 `/admin`으로 접속할 것이며 자식 라우팅 규칙에 해당하는 *라우팅 컴포넌트* 도 여전히 `AdminComponent`로 제공됩니다.
+
 `AppRoutingModule`을 열고 `appRoutes` 배열에 새로운 `admin` 라우팅을 추가합니다.
 
-Give it a `loadChildren` property instead of a `children` property.
-The `loadChildren` property takes a function that returns a promise using the browser's built-in syntax for lazy loading code using dynamic imports `import('...')`.
-The path is the location of the `AdminModule` (relative to the app root).
-After the code is requested and loaded, the `Promise` resolves an object that contains the `NgModule`, in this case the `AdminModule`.
+그리고 이 라우팅 규칙에는 `children` 프로퍼티 대신 `loadChildren` 프로퍼티를 사용합니다.
+`loadChildren` 프로퍼티에는 브라우저가 자체적으로 지원하는 모듈 동적 지연 로딩 기능인 `import('...')`를 사용해서 프로미스 형태로 모듈을 반환하는 함수를 지정합니다.
+이 때 경로는 앱 최상위 경로의 상대주소로 `AdminModule`의 위치를 지정합니다.
+이제 이 모듈이 요청되어 로드된 후에는 `AdminModule`이 `Promise` 형태로 반환됩니다.
 
 <!--
 <code-example path="router/src/app/app-routing.module.5.ts" region="admin-1" header="app-routing.module.ts (load children)"></code-example>
