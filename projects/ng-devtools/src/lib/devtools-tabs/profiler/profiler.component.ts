@@ -1,7 +1,7 @@
 import { Component, ViewChildren, QueryList, OnInit, OnDestroy } from '@angular/core';
 import { RecordingModalComponent } from './recording/recording-modal/recording-modal.component';
 import { MessageBus, Events, ProfilerFrame } from 'protocol';
-import { FileApiService } from '../../../file-api-service';
+import { FileApiService } from '../../file-api-service';
 import { MatDialog } from '@angular/material/dialog';
 import { ProfilerImportDialogComponent } from './profiler-import-dialog/profiler-import-dialog.component';
 
@@ -30,18 +30,18 @@ export class ProfilerComponent implements OnInit, OnDestroy {
 
   startRecording(): void {
     this.state = 'recording';
-    this.recordingRef.forEach(r => r.start());
+    this.recordingRef.forEach((r) => r.start());
     this._messageBus.emit('startProfiling');
   }
 
   stopRecording(): void {
     this.state = 'idle';
-    this.recordingRef.forEach(r => r.stop());
+    this.recordingRef.forEach((r) => r.stop());
     this._messageBus.emit('stopProfiling');
   }
 
   ngOnInit(): void {
-    this._messageBus.on('profilerResults', remainingRecords => {
+    this._messageBus.on('profilerResults', (remainingRecords) => {
       this._profilerFinished(remainingRecords);
     });
 
@@ -49,7 +49,7 @@ export class ProfilerComponent implements OnInit, OnDestroy {
       this.buffer.push(chunkOfRecords);
     });
 
-    this._fileApiService.uploadedData.subscribe(importedFile => {
+    this._fileApiService.uploadedData.subscribe((importedFile) => {
       if (importedFile.error) {
         console.error('Could not process uploaded file');
         console.error(importedFile.error);
@@ -67,7 +67,7 @@ export class ProfilerComponent implements OnInit, OnDestroy {
           data: { importedVersion: importedFile.version, profilerVersion: PROFILER_VERSION, status: 'INVALID_VERSION' },
         });
 
-        processDataDialog.afterClosed().subscribe(result => {
+        processDataDialog.afterClosed().subscribe((result) => {
           if (result) {
             this._viewProfilerData(importedFile.stream);
           }

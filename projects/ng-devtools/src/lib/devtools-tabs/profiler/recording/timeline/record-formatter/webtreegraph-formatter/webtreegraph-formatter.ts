@@ -14,10 +14,10 @@ export class WebtreegraphFormatter extends RecordFormatter<WebtreegraphNode> {
     const result: TimelineView<WebtreegraphNode> = {
       timeline: [],
     };
-    records.forEach(record => {
+    records.forEach((record) => {
       this.insertTimelineRecord(result.timeline, record);
     });
-    result.timeline = result.timeline.filter(entry => entry.app.length > 0 && entry.timeSpent > 0);
+    result.timeline = result.timeline.filter((entry) => entry.app.length > 0 && entry.timeSpent > 0);
     return result;
   }
 
@@ -46,7 +46,7 @@ export class WebtreegraphFormatter extends RecordFormatter<WebtreegraphNode> {
   }
 
   addFrame(nodes: WebtreegraphNode[], elements: ElementProfile[], prev: WebtreegraphNode | null = null): void {
-    elements.forEach(element => {
+    elements.forEach((element) => {
       if (!element) {
         console.error('Unable to insert undefined element');
         return;
