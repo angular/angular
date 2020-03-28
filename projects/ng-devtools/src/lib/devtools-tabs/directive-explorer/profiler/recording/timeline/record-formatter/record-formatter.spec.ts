@@ -121,3 +121,45 @@ describe('getLabel cases', () => {
     expect(formatter.getLabel(element)).toBe('TodoComponent[TooltipDirective, RandomDirective]');
   });
 });
+
+describe('getDirectiveValue cases', () => {
+  let directive;
+
+  it('calculates value with  no lifecycle hooks', () => {
+    directive = { changeDetection: 10, isElement: false, isComponent: true, lifecycle: {}, name: 'AppComponent' };
+    expect(formatter.getDirectiveValue(directive)).toBe(10);
+  });
+
+  it('calculates value with 0 change detection and existing lifecycle hooks', () => {
+    directive = {
+      isComponent: false,
+      isElement: false,
+      name: 'NgForOf',
+      lifecycle: { ngDoCheck: 5 },
+      changeDetection: 0,
+    };
+    expect(formatter.getDirectiveValue(directive)).toBe(5);
+  });
+
+  it('calculates value with non 0 change detection and one lifecycle hook', () => {
+    directive = {
+      isComponent: false,
+      isElement: false,
+      name: 'NgForOf',
+      lifecycle: { ngDoCheck: 5 },
+      changeDetection: 10,
+    };
+    expect(formatter.getDirectiveValue(directive)).toBe(15);
+  });
+
+  it('calculates value with non 0 change detection and multiple lifecycle hooks', () => {
+    directive = {
+      isComponent: false,
+      isElement: false,
+      name: 'NgForOf',
+      lifecycle: { ngDoCheck: 5, ngAfterViewInit: 100 },
+      changeDetection: 10,
+    };
+    expect(formatter.getDirectiveValue(directive)).toBe(115);
+  });
+});

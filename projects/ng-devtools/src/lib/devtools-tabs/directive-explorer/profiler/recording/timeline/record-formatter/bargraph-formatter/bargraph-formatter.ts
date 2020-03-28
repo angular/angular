@@ -21,7 +21,6 @@ export class BarGraphFormatter extends RecordFormatter<BargraphNode> {
         entry.app = entry.app.filter((element) => element.value > 0).sort((a, b) => b.value - a.value);
         return entry;
       });
-    console.log(result);
     return result;
   }
 
@@ -44,18 +43,13 @@ export class BarGraphFormatter extends RecordFormatter<BargraphNode> {
         console.error('Unable to insert undefined element');
         return;
       }
-      const node: BargraphNode = {
-        value: super.getValue(element),
-        name: super.getLabel(element) + addSpaces(nodes.length),
-        original: element,
-      };
-      // nodes.push(node);
+
       timeSpent += this.addFrame(nodes, element.children);
-      timeSpent += node.value;
+      timeSpent += super.getValue(element);
 
       element.directives.forEach((dir) => {
         const innerNode: BargraphNode = {
-          value: dir.changeDetection,
+          value: super.getDirectiveValue(dir),
           name: dir.name + addSpaces(nodes.length),
           original: element,
         };
