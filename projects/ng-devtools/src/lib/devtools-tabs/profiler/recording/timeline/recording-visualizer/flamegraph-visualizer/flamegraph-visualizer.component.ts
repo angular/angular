@@ -41,12 +41,12 @@ export class FlamegraphVisualizerComponent {
 
   formatPieChartData(flameGraphNode: FlamegraphNode): GraphNode[] {
     const graphData: GraphNode[] = [];
-    flameGraphNode.original.directives.forEach(node => {
+    flameGraphNode.original.directives.forEach((node) => {
       graphData.push({
         name: `${node.name} changeDetection`,
         value: +node.changeDetection.toFixed(2),
       });
-      Object.keys(node.lifecycle).forEach(key => {
+      Object.keys(node.lifecycle).forEach((key) => {
         graphData.push({
           name: `${node.name} ${key}`,
           value: +node.lifecycle[key].toFixed(2),

@@ -14,10 +14,10 @@ export class FlamegraphFormatter extends RecordFormatter<FlamegraphNode> {
     const result: TimelineView<FlamegraphNode> = {
       timeline: [],
     };
-    records.forEach(record => {
+    records.forEach((record) => {
       this.insertTimelineRecord(result.timeline, record);
     });
-    result.timeline = result.timeline.filter(entry => entry.app.length > 0 && entry.timeSpent > 0);
+    result.timeline = result.timeline.filter((entry) => entry.app.length > 0 && entry.timeSpent > 0);
     return result;
   }
 
@@ -33,7 +33,7 @@ export class FlamegraphFormatter extends RecordFormatter<FlamegraphNode> {
 
   addFrame(nodes: FlamegraphNode[], elements: ElementProfile[]): number {
     let timeSpent = 0;
-    elements.forEach(element => {
+    elements.forEach((element) => {
       // Possibly undefined because of
       // the insertion on the backend.
       if (!element) {

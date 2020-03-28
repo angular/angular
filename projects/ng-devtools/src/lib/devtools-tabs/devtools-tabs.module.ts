@@ -6,7 +6,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
 
 import { DirectiveExplorerModule } from './directive-explorer/directive-explorer.module';
-import { ProfilerModule } from './directive-explorer/profiler/profiler.module';
+import { ProfilerModule } from './profiler/profiler.module';
 
 @NgModule({
   declarations: [DevToolsTabsComponent],

@@ -32,7 +32,7 @@ export class WebtreegraphVisualizerComponent implements AfterViewInit, OnInit {
     this.changeSize
       .asObservable()
       .pipe(throttleTime(100))
-      .subscribe(_ => this.handleResize());
+      .subscribe((_) => this.handleResize());
   }
 
   updateTree(): void {
@@ -43,7 +43,7 @@ export class WebtreegraphVisualizerComponent implements AfterViewInit, OnInit {
   createTree(): void {
     treemap.render(this.tree.nativeElement, this.webTreeRecords as any, {
       padding: [20, 5, 5, 5],
-      caption: node => `${node.id}: ${node.size.toFixed(3)} ms`,
+      caption: (node) => `${node.id}: ${node.size.toFixed(3)} ms`,
     });
   }
 
