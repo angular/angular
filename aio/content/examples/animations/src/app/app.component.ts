@@ -23,7 +23,7 @@ import { slideInAnimation } from './animations';
 // #enddocregion decorator
     slideInAnimation
 // #docregion decorator
-    // animation triggers go here
+    // 애니메이션 트리거는 여기에 작성합니다.
   ]
 })
 // #enddocregion decorator, define

@@ -1,5 +1,9 @@
+<!--
 # Introduction to Angular animations
+-->
+# Angular 애니메이션 소개
 
+<!--
 Animation provides the illusion of motion: HTML elements change styling over time. Well-designed animations can make your application more fun and easier to use, but they aren't just cosmetic. Animations can improve your app and user experience in a number of ways:
 
 * Without animations, web page transitions can seem abrupt and jarring.
@@ -11,70 +15,165 @@ Animation provides the illusion of motion: HTML elements change styling over tim
 Typically, animations involve multiple style *transformations* over time. An HTML element can move, change color, grow or shrink, fade, or slide off the page. These changes can occur simultaneously or sequentially. You can control the timing of each transformation.
 
 Angular's animation system is built on CSS functionality, which means you can animate any property that the browser considers animatable. This includes positions, sizes, transforms, colors, borders, and more. The W3C maintains a list of animatable properties on its [CSS Transitions](https://www.w3.org/TR/css-transitions-1/) page.
+-->
+애니메이션은 HTML 엘리먼트의 스타일이 시간이 가면서 변하는 것을 의미합니다.
+애니메이션이 잘 활용된다면 애플리케이션을 좀 더 재미있고 사용성 좋게 만들 수 있기 때문에 겉치레인 것만은 아닙니다.
+애니메이션은 이런 방식으로 도움이 됩니다:
+
+* 애니메이션이 없으면 화면이 갑작스럽게 전환되어 부자연스러울 수 있습니다.
+
+* 애니메이션이 있으면 사용자의 동작에 반응하는 것을 표현할 수 있기 때문에 사용자가 느끼는 앱 사용성을 크게 향상시킵니다.
+
+* 애니메이션을 적절하게 사용하면 사용자의 관심을 앱 기획 의도에 맞게 집중시킬 수 있습니다.
+
+일반적으로 애니메이션은 여러 스타일이 시간에 따라 *변경되는 것*을 의미합니다.
+HTML 엘리먼트는 이동할 수도 있고 색이 변경될 수도 있으며, 나타나거나 사라질 수 있고 화면 밖으로 사라질 수도 있습니다.
+그리고 이런 스타일은 동시에 변할 수도 있고 순차적으로 변할 수도 있습니다.
+물론 변하는 시점을 세밀하게 조정할 수도 있습니다.
+
+Angular가 제공하는 애니메이션 시스템은 CSS를 활용하기 때문에 브라우저가 지원한다면 어떤 프로퍼티에도 애니메이션을 적용할 수 있습니다.
+위치, 크기, 색상, 외곽선 등의 프로퍼티가 모두 애니메이션 대상입니다.
+애니메이션을 적용할 수 있는 프로퍼티 목록에 대해 알아보려면 [CSS Transitions](https://www.w3.org/TR/css-transitions-1/) 문서를 참고하세요.
 
 
+<!--
 ## About this guide
+-->
+## 이 문서에 대해
 
+<!--
 This guide covers the basic Angular animation features to get you started on adding Angular animations to your project.
 
 The features described in this guide &mdash; and the more advanced features described in the related Angular animations guides &mdash; are demonstrated in an example app available as a <live-example></live-example>.
+-->
+이 가이드 문서는 프로젝트에 Angular 애니메이션을 처음 적용해보는 개발자를 위해 작성되었습니다.
 
+그리고 더 복잡한 애니메이션 기능에 대해서는 다른 문서에서 자세하게 알아봅니다.
+<live-example></live-example>에서도 확인할 수 있습니다.
+
+
+<!--
 #### Prerequisites
+-->
+#### 사전지식
 
+<!--
 The guide assumes that you're familiar with building basic Angular apps, as described in the following sections:
 
 * [Tutorial](tutorial)
 * [Architecture Overview](guide/architecture)
+-->
+이 문서는 Angular에 대해 이미 익숙한 개발자를 대상으로 합니다.
+다음 내용에 대해서는 충분히 이해하고 있는 좋습니다:
+
+* [튜토리얼](tutorial)
+* [아키텍처 개요](guide/architecture)
 
 
+<!--
 ## Getting started
+-->
+## 시작하기
 
+<!--
 The main Angular modules for animations are `@angular/animations` and `@angular/platform-browser`. When you create a new project using the CLI, these dependencies are automatically added to your project.
 
 To get started with adding Angular animations to your project, import the animation-specific modules along with standard Angular functionality.
+-->
+Angular 애니메이션 모듈은 `@angular/animations`과 `@angular/platform-browser`로 구성됩니다.
+Angular CLI로 프로젝트를 생성하면 이 패키지들은 자동으로 프로젝트에 설치됩니다.
 
+프로젝트에 Angular 애니메이션을 추가하려면 먼저 애니메이션과 관련된 모듈을 Angular 애플리케이션에 추가해야 합니다.
+
+
+<!--
 ### Step 1: Enabling the animations module
+-->
+### 1단계: 애니메이션 모듈 활성화하기
 
+<!--
 Import `BrowserAnimationsModule`, which introduces the animation capabilities into your Angular root application module.
+-->
+Angular 애플리케이션 최상위 모듈에 `BrowserAnimationsModule`을 추가합니다.
 
 <code-example path="animations/src/app/app.module.1.ts" header="src/app/app.module.ts" language="typescript"></code-example>
 
 <div class="alert is-helpful">
 
+<!--
 **Note:** When you use the CLI to create your app, the root application module `app.module.ts` is placed in the `src/app` folder.
+-->
+**참고:** Angular CLI로 애플리케이션을 생성했다면 최상위 모듈은 `src/app/app.module.ts` 파일에 정의되어 있습니다.
+
 </div>
 
-### Step 2: Importing animation functions into component files
 
+<!--
+### Step 2: Importing animation functions into component files
+-->
+### 2단계: 컴포넌트 파일에 애니메이션 기능 로드하기
+
+<!--
 If you plan to use specific animation functions in component files, import those functions from `@angular/animations`.
+-->
+컴포넌트에 애니메이션을 적용하려면 `@angular/animations` 패키지에서 다음 심볼들을 로드합니다.
 
 <code-example path="animations/src/app/app.component.ts" header="src/app/app.component.ts" region="imports" language="typescript">
 </code-example>
 
 <div class="alert is-helpful">
 
+<!--
 **Note:** See a [summary of available animation functions](guide/animations#animation-api-summary) at the end of this guide.
+-->
+**참고:** 이 문서 마지막에서 설명하는 [애니메이션 API 목록](guide/animations#animation-api-summary)을 참고하세요.
+
 </div>
 
+<!--
 ### Step 3: Adding the animation metadata property
+-->
+### 3단계: 애니메이션 메타데이터 프로퍼티 추가하기
 
+<!--
 In the component file, add a metadata property called `animations:` within the `@Component()` decorator. You put the trigger that defines an animation within the `animations` metadata property.
+-->
+그리고 컴포넌트 파일의 `@Component()` 데코레이터에 `animations:`로 시작하는 메타데이터 프로퍼티를 추가합니다.
+애니메이션의 세부 설정은 이 프로퍼티에 정의합니다.
 
 <code-example path="animations/src/app/app.component.ts" header="src/app/app.component.ts" region="decorator" language="typescript">
 </code-example>
 
-## Animating a simple transition
 
+<!--
+## Animating a simple transition
+-->
+## 간단한 트랜지션 구현하기
+
+<!--
 Let's animate a simple transition that changes a single HTML element from one state to another. For example, you can specify that a button displays either **Open** or **Closed** based on the user's last action. When the button is in the `open` state, it's visible and yellow. When it's the `closed` state, it's transparent and green.
 
 In HTML, these attributes are set using ordinary CSS styles such as color and opacity. In Angular, use the `style()` function to specify a set of CSS styles for use with animations. You can collect a set of styles in an animation state, and give the state a name, such as `open` or `closed`.
+-->
+간단한 트랜지션을 구현해보기 위해 HTML 엘리먼트의 상태를 변경해 봅시다.
+사용자의 마지막 동작에 따라 화면에는 버튼에 **Open**이나 **Closed**라는 문구가 표시됩니다.
+그리고 `open` 상태일 때는 버튼이 노란색이 되고 `closed` 상태일 때는 녹색이 될 것입니다.
+
+투명도나 색상은 HTML 파일에서 일반적인 CSS 스타일을 지정하면 구현할 수 있습니다.
+그리고 Angular는 이런 CSS 스타일을 애니메이션과 연결하기 위해 `style()` 함수를 사용합니다.
+먼저 애니메이션 상태를 정의하기 위해 `open`이나 `closed`와 같은 상태의 이름을 선언합니다.
 
 <div class="lightbox">
   <img src="generated/images/guide/animations/open-closed.png" alt="open and closed states">
 </div>
 
-### Animation state and styles
 
+<!--
+### Animation state and styles
+-->
+### 애니메이션 상태와 스타일
+
+<!--
 Use Angular's `state()` function to define different states to call at the end of each transition. This function takes two arguments: a unique name like `open` or `closed` and a `style()` function.
 
 Use the `style()` function to define a set of styles to associate with a given state name. Note that the style attributes must be in [*camelCase*](guide/glossary#case-conventions).
@@ -88,18 +187,55 @@ In the `closed` state, shown below, the button has a height of 100 pixels, an op
 
 <code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" region="state2" language="typescript">
 </code-example>
+-->
+트랜지션의 각 지점을 의미하는 애니메이션 상태는 `state()` 함수로 정의합니다.
+이 함수는 두 개의 인자를 받는데, 첫번째 인자는 `open`이나 `closed`와 같은 상태 이름이고 두번째 인자는 `style()` 함수입니다.
 
+`style()` 함수를 사용하면 상태 이름과 스타일셋을 연결할 수 있습니다.
+이 때 사용하는 스타일의 이름은 반드시 [*캐멀-케이스(camelCase)*](guide/glossary#case-conventions)인 것에 주의하세요.
+
+`state()` 함수와 `style()` 함수가 어떻게 동작하는지 확인해 봅시다.
+이 예제 코드에는 상태마다 여러 스타일 어트리뷰트가 동시에 지정되어 있습니다.
+`open` 상태에서 버튼의 높이는 200px이며 투명도는 1, 배경색은 노란색입니다.
+
+<code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" region="state1" language="typescript">
+</code-example>
+
+그리고 `closed` 상태에서 버튼의 높이는 100px이며 투명도는 0.5, 배경색은 녹색입니다.
+
+<code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" region="state2" language="typescript">
+</code-example>
+
+
+<!--
 ### Transitions and timing
+-->
+### 트랜지션 타이밍
 
+<!--
 In Angular, you can set multiple styles without any animation. However, without further refinement, the button instantly transforms with no fade, no shrinkage, or other visible indicator that a change is occurring.
 
 To make the change less abrupt, we need to define an animation *transition* to specify the changes that occur between one state and another over a period of time. The `transition()` function accepts two arguments: the first argument accepts an expression that defines the direction between two transition states, and the second argument accepts one or a series of `animate()` steps.
 
 
 Use the `animate()` function to define the length, delay, and easing of a transition, and to designate the style function for defining styles while transitions are taking place. You can also use the `animate()` function to define the `keyframes()` function for multi-step animations. These definitions are placed in the second argument of the `animate()` function.
+-->
+스타일은 애니메이션 없이도 적용할 수 있습니다.
+하지만 이렇게 사용하면 버튼 스타일이 변경될 때 전환효과도 없고 크기도 갑자기 변하게 됩니다.
 
+이런 방식 대신 일정 시간동안 애니메이션이 한 상태에서 다른 상태로 천천히 변하게 하려면 애니메이션 *트랜지션*을 정의하면 됩니다.
+트랜지션은 `transition()` 함수로 정의하는데, 이 함수는 두 개의 인자를 받습니다.
+첫번째 인자는 상태가 변하는 방향을 정의하는 표현식이며, 두번째 인자는 `animate()` 단계를 정의합니다.
+
+`animate()` 함수를 사용하면 트랜지션의 길이나 시작 지연시간, 가속도를 지정할 수 있습니다.
+그리고 애니메이션이 여러 단계로 구성된다면 `animate()` 함수의 두번째 인자에 `keyframes()` 함수를 사용할 수도 있습니다.
+
+<!--
 #### Animation metadata: duration, delay, and easing
+-->
+#### 애니메이션 메타데이터: 지속시간, 딜레이, 가속도
 
+<!--
 The `animate()` function (second argument of the transition function) accepts the `timings` and `styles` input parameters.
 
 The `timings` parameter takes a string defined in three parts.
@@ -125,12 +261,43 @@ The third argument, `easing`, controls how the animation [accelerates and decele
 * Run for 200ms, with no delay. Use a standard curve to start slow, accelerate in the middle, and then decelerate slowly at the end: `'0.2s ease-in-out'`
 
 * Start immediately, run for 200ms. Use an acceleration curve to start slow and end at full velocity: `'0.2s ease-in'`
+-->
+트랜지션 함수의 두 번째 인자에 사용하는 `animate()` 함수는 `timings`와 `syltes`를 인자로 받습니다.
+
+그리고 `timings` 인자는 지속시간(duration), 시작 딜레이(delay), 가속도(easing) 부분으로 구성된 문자열로 형식입니다.
+
+>`animate ('duration delay easing')`
+
+첫번째 인자 `duration`은 필수 항목입니다. 트랜지션 지속시간을 단위 없이 사용하면 밀리초단위이고 단위를 붙여 지정할 수도 있습니다:
+
+* 숫자만 사용하면 밀리초단위입니다: `100`
+
+* 밀리초 단위를 명시할 수 있습니다: `'100ms'`
+
+* 초단위로 지정할 수 있습니다: `'0.1s'`
+
+두번째 인자 `delay`는 트랜지션이 시작되기 전 지연시간을 의미하며 `duration`과 비슷하게 사용합니다:
+
+* 100ms 기다렸다가 200ms 동안 지속한다면 이렇게 지정합니다: `'0.2s 100ms'`
+
+세번째 인자 `easing`은 애니메이션이 어떤 [가속도](http://easings.net/)로 진행될지 지정합니다. 예를 들어 `ease-in`을 사용하면 느리게 시작했다가 점점 빨라집니다.
+
+* 100ms 기다렸다가 200ms 시작하는데, 처음에는 빠르게 진행되다가 천천히 마무리하려면 이렇게 지정합니다: `'0.2s 100ms ease-out'`
+
+* 딜레이 없이 200ms 동안 진행되는데, 천천히 시작되었다가 중간에 가장 빠르고 다시 천천히 느려지도록 하려면 이렇게 지정합니다: `'0.2 ease-in-out'`
+
+* 즉시 시작해서 200ms 동안 진행되는데, 천천히 시작하고 최대속도로 마무리하려면 이렇게 지정합니다: `0.2s ease-in`
 
 <div class="alert is-helpful">
 
+<!--
 **Note:** See the Material Design website's topic on [Natural easing curves](https://material.io/design/motion/speed.html#easing) for general information on easing curves.
+-->
+**참고:** 가속도 커브에 대해 자세하게 알아보려면 Material Design 웹사이트가 제공하는 [Natural easing curves](https://material.io/design/motion/speed.html#easing) 문서를 참고하세요.
+
 </div>
 
+<!--
 This example provides a state transition from `open` to `closed` with a one second transition between states.
 
 <code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" language="typescript"
@@ -144,9 +311,26 @@ This example adds a state transition from the `closed` state to the `open` state
 <code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" language="typescript"
 region="transition2">
 </code-example>
+-->
+이 가이드 문서에서 설명하는 앱은 `open` 상태에서 `closed` 상태로 1초동안 진행됩니다.
+
+<code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" language="typescript"
+region="transition1">
+</code-example>
+
+이 코드에서 `=>` 연산자는 단방향 트랜지션을 의미하며 `<=>` 연산자는 양방향 트랜지션을 의미합니다.
+그리고 트랜지션이 진행되는 시간은 `animate()` 함수로 지정하는데, `open` 상태에서 `closed` 상태로 변할 때는 `1s`가 지정되었습니다.
+
+그리고 `closed` 상태에서 `open` 상태로 변하는 것은 0.5초가 지정되었습니다.
+
+<code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" language="typescript"
+region="transition2">
+</code-example>
+
 
 <div class="alert is-helpful">
 
+<!--
 **Note:** Some additional notes on using styles within `state` and `transition` functions.
 
 * Use `state()` to define styles that are applied at the end of each transition, they persist after the animation has completed.
@@ -156,7 +340,19 @@ region="transition2">
 * When animations are disabled, `transition()` styles can be skipped, but `state()` styles can't.
 
 * You can include multiple state pairs within the same `transition()` argument:<br/> `transition( 'on => off, off => void' )`.
+-->
+**참고:** `state`와 `transition` 함수를 사용할 때 이런 내용을 참고하세요.
+
+* `state()` 함수에는 트랜지션이 완료된 시점의 스타일을 지정합니다. 애니메이션이 종료되면 이 스타일은 그대로 남습니다.
+
+* `transition()` 함수에는 애니메이션이 진행되는 동안 표시될 스타일을 지정합니다. 이 스타일은 애니메이션이 진행되는 동안에만 표시됩니다.
+
+* 애니메이션을 비활성화하면 `transition()`에 지정된 스타일은 생략되고 `state()`에 지정한 스타일만 적용됩니다.
+
+* `transition()` 함수에는 상태가 전환되는 것을 여러번 표현할 수도 있습니다:<br/> `transition( 'on => off, off => void' )`
+
 </div>
+
 
 ### Triggering the animation
 
