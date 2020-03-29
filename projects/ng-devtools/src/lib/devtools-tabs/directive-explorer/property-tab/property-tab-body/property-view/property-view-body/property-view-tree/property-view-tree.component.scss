@@ -1,0 +1,58 @@
+:host {
+  width: 100%;
+  display: block;
+  overflow: auto;
+  height: calc(100% - 24px);
+
+  mat-tree {
+    display: table;
+  }
+
+  ::ng-deep {
+    .mat-tree-node {
+      min-height: 20px !important;
+      cursor: default;
+      font-family: Menlo, monospace;
+      border-radius: 5px;
+
+      .mat-icon {
+        font-size: 12px;
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+}
+
+.name {
+  margin-left: -9px;
+}
+
+.non-expandable {
+  margin-left: 13px;
+}
+
+.property-list {
+  margin: 5px 5px 5px 15px;
+  mat-tree-node {
+    .name {
+      color: #b82519;
+    }
+  }
+}
+
+.property-list mat-tree-node.disabled .name,
+.disabled {
+  color: #333;
+}
+
+.arrow {
+  font-family: monospace;
+  font-size: 7px;
+  color: #6e6e6e;
+}
+
+:host ::ng-deep .mat-tree-node,
+.mat-nested-tree-node {
+  font-size: 11px;
+}

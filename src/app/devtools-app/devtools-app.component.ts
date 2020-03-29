@@ -4,7 +4,7 @@ import { PriorityAwareMessageBus, MessageBus, Events } from 'protocol';
 
 @Component({
   templateUrl: './devtools-app.component.html',
-  styleUrls: ['./devtools-app.component.css'],
+  styleUrls: ['./devtools-app.component.scss'],
   providers: [
     {
       provide: MessageBus,

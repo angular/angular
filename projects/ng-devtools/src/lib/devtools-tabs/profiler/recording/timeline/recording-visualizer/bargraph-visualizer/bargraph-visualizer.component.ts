@@ -4,7 +4,7 @@ import { BargraphNode } from '../../record-formatter/bargraph-formatter';
 @Component({
   selector: 'ng-bargraph-visualizer',
   templateUrl: './bargraph-visualizer.component.html',
-  styleUrls: ['./bargraph-visualizer.component.css'],
+  styleUrls: ['./bargraph-visualizer.component.scss'],
 })
 export class BargraphVisualizerComponent {
   view: [number, number] = [600, 600];

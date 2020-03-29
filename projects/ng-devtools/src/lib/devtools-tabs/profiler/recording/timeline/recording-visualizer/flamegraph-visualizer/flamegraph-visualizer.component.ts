@@ -10,7 +10,7 @@ export interface GraphNode {
 @Component({
   selector: 'ng-flamegraph-visualizer',
   templateUrl: './flamegraph-visualizer.component.html',
-  styleUrls: ['./flamegraph-visualizer.component.css'],
+  styleUrls: ['./flamegraph-visualizer.component.scss'],
 })
 export class FlamegraphVisualizerComponent {
   profilerBars: FlamegraphNode[] = [];

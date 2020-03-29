@@ -4,7 +4,7 @@ import { Todo } from '../../models/todo';
 @Component({
   templateUrl: 'todo.component.html',
   selector: 'app-todo',
-  styleUrls: ['./todo.component.css'],
+  styleUrls: ['./todo.component.scss'],
 })
 export class TodoComponent {
   @Input() todo: Todo;

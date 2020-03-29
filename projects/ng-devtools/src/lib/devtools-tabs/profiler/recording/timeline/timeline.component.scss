@@ -10,15 +10,15 @@
   left: 300px;
   white-space: nowrap;
   padding: 5px;
-}
 
-.controls mat-form-field {
-  margin-left: 15px;
-  margin-right: 15px;
-}
+  mat-form-field {
+    margin-left: 15px;
+    margin-right: 15px;
+  }
 
-.controls label {
-  font-weight: 500;
+  label {
+    font-weight: 500;
+  }
 }
 
 .warning-no {
@@ -46,10 +46,10 @@
   border-top: 1px solid #d0d0d0;
   border-bottom: 1px solid #d0d0d0;
   margin-bottom: 4px;
-}
 
-.bar-graph-container button {
-  margin-bottom: 5px;
+  button {
+    margin-bottom: 5px;
+  }
 }
 
 .bar-container {
@@ -57,10 +57,10 @@
   display: flex;
   align-items: baseline;
   overflow-x: auto;
-}
 
-.bar-container::-webkit-scrollbar {
-  display: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .selected {

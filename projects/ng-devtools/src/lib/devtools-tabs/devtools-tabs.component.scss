@@ -1,0 +1,90 @@
+:host {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+mat-tab-group {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+#inspect-component {
+  position: absolute;
+  top: 5px;
+  left: 4px;
+  border: 0;
+  outline: none;
+  width: 18px;
+  height: 18px;
+
+  div {
+    width: 18px;
+    height: 18px;
+  }
+
+  svg {
+    path {
+      fill: #6e6e6e;
+    }
+
+    path.active {
+      fill: #2a76e4;
+    }
+  }
+}
+
+#refresh-component-tree {
+  position: absolute;
+  left: 35px;
+  top: 7px;
+  border: 0;
+  outline: none;
+  width: 18px;
+  height: 18px;
+
+  div {
+    width: 18px;
+    height: 18px;
+  }
+
+  svg {
+    path {
+      fill: #6e6e6e;
+    }
+  }
+}
+#app-angular-version {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  font-size: 11px;
+  font-weight: bold;
+  color: #5128a5;
+}
+
+::ng-deep {
+  .mat-tab-body-wrapper {
+    height: calc(100% - 30px);
+  }
+
+  .mat-tab-header {
+    height: 30px;
+  }
+
+  .mat-tab-label-container {
+    margin-left: 70px;
+  }
+
+  mat-tab-header {
+    .mat-tab-label {
+      min-width: unset;
+      line-height: 30px;
+      height: 30px;
+      font-size: 12px;
+      padding: 0px 10px;
+    }
+  }
+}

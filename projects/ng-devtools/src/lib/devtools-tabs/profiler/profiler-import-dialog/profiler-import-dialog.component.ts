@@ -11,7 +11,7 @@ interface DialogData {
 @Component({
   selector: 'ng-profiler-import-dialog',
   templateUrl: './profiler-import-dialog.component.html',
-  styleUrls: ['./profiler-import-dialog.component.css'],
+  styleUrls: ['./profiler-import-dialog.component.scss'],
 })
 export class ProfilerImportDialogComponent {
   constructor(

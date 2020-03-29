@@ -5,7 +5,7 @@ import { ElementPropertyResolver } from '../../../property-resolver/element-prop
 @Component({
   selector: 'ng-property-view',
   templateUrl: './property-view.component.html',
-  styleUrls: ['./property-view.component.css'],
+  styleUrls: ['./property-view.component.scss'],
 })
 export class PropertyViewComponent {
   @Input() directive: string;

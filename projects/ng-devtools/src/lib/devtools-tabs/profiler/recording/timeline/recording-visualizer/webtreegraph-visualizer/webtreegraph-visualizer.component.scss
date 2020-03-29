@@ -1,0 +1,11 @@
+.web-tree {
+  height: 70%;
+  width: 85%;
+  margin: 20px auto;
+}
+
+::ng-deep {
+  .webtreemap-caption {
+    font-size: 12px !important;
+  }
+}

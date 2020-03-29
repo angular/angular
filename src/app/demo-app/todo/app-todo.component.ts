@@ -5,7 +5,7 @@ import { DialogComponent } from './dialog.component';
 @Component({
   selector: 'app-todo-demo',
   templateUrl: './app-todo.component.html',
-  styleUrls: ['./app-todo.component.css'],
+  styleUrls: ['./app-todo.component.scss'],
 })
 export class AppTodoComponent {
   name: string;

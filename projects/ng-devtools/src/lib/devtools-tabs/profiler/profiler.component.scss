@@ -12,6 +12,10 @@ label {
 
 .instructions {
   text-align: center;
+
+  .start-recording-button {
+    top: 2px;
+  }
 }
 
 .start-recording-button,
@@ -34,10 +38,6 @@ label {
 .recording-button {
   background-color: #c7291c;
   box-shadow: 0px 0px 3px #c7291c;
-}
-
-.instructions .start-recording-button {
-  top: 2px;
 }
 
 menu .start-recording-button,

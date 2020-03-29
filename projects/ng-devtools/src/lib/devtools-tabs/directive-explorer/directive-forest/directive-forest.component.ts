@@ -19,7 +19,7 @@ import { IndexedNode } from './index-forest';
 @Component({
   selector: 'ng-directive-forest',
   templateUrl: './directive-forest.component.html',
-  styleUrls: ['./directive-forest.component.css'],
+  styleUrls: ['./directive-forest.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DirectiveForestComponent {

@@ -4,7 +4,7 @@ import { FlatNode } from '../component-data-source';
 @Component({
   selector: 'ng-breadcrumbs',
   templateUrl: './breadcrumbs.component.html',
-  styleUrls: ['./breadcrumbs.component.css'],
+  styleUrls: ['./breadcrumbs.component.scss'],
 })
 export class BreadcrumbsComponent {
   @Input() parents: FlatNode[];

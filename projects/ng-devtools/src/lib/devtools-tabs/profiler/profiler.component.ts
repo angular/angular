@@ -13,7 +13,7 @@ const PROFILER_VERSION = 1;
 @Component({
   selector: 'ng-profiler',
   templateUrl: './profiler.component.html',
-  styleUrls: ['./profiler.component.css'],
+  styleUrls: ['./profiler.component.scss'],
 })
 export class ProfilerComponent implements OnInit, OnDestroy {
   state: State = 'idle';

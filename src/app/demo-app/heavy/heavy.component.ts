@@ -10,7 +10,7 @@ const fib = (n: number) => {
 @Component({
   selector: 'app-heavy',
   templateUrl: './heavy.component.html',
-  styleUrls: ['./heavy.component.css'],
+  styleUrls: ['./heavy.component.scss'],
 })
 export class HeavyComponent {
   state = {

@@ -1,0 +1,33 @@
+:host {
+  ::ng-deep {
+    .mat-expansion-panel-body {
+      padding: 0;
+    }
+
+    mat-expansion-panel {
+      &:not([class*='mat-elevation-z']) {
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+      }
+    }
+
+    .mat-expansion-panel-spacing {
+      margin: 0;
+    }
+
+    .mat-expansion-panel-header {
+      padding: 0 15px;
+    }
+
+    .mat-expansion-panel-header-title {
+      font-size: 11px;
+      font-family: Menlo, monospace;
+    }
+
+    .mat-expansion-indicator {
+      &::after {
+        padding: 2.5px;
+        margin-bottom: 4.5px;
+      }
+    }
+  }
+}

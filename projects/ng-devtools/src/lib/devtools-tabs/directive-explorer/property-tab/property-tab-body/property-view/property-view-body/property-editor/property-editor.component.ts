@@ -22,7 +22,7 @@ export enum PropertyEditorState {
 @Component({
   templateUrl: './property-editor.component.html',
   selector: 'ng-property-editor',
-  styleUrls: ['./property-editor.component.css'],
+  styleUrls: ['./property-editor.component.scss'],
 })
 export class PropertyEditorComponent implements OnChanges, AfterViewChecked {
   @Input() key: string;

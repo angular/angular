@@ -36,7 +36,7 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
 @Component({
   selector: 'ng-directive-explorer',
   templateUrl: './directive-explorer.component.html',
-  styleUrls: ['./directive-explorer.component.css'],
+  styleUrls: ['./directive-explorer.component.scss'],
   providers: [
     {
       provide: ElementPropertyResolver,
