@@ -340,7 +340,7 @@ def jasmine_node_test(bootstrap = [], **kwargs):
     templated_args = kwargs.pop("templated_args", [])
     for label in bootstrap:
         deps += [label]
-        templated_args += ["--node_options=--require=$(rlocation $(location %s))" % label]
+        templated_args += ["--node_options=--require=$$(rlocation $(rootpath %s))" % label]
         if label.endswith("_es5"):
             # If this label is a filegroup derived from a ts_library then automatically
             # add the ts_library target (which is the label sans `_es5`) to deps so we pull

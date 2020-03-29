@@ -23,8 +23,8 @@ genrule(
     ],
     outs = ["package.json"],
     cmd = """
-        $(location //tools:inline-package-json-deps) $(location tmpl-package.json) \
-            $(location //:package.json) $@
+        $(execpath //tools:inline-package-json-deps) $(execpath tmpl-package.json) \
+            $(execpath //:package.json) $@
     """,
     tools = ["//tools:inline-package-json-deps"],
 )

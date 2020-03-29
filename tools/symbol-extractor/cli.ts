@@ -9,6 +9,8 @@
 import * as fs from 'fs';
 import {SymbolExtractor} from './symbol_extractor';
 
+const runfiles = require(process.env['BAZEL_NODE_RUNFILES_HELPER'] as string);
+
 if (require.main === module) {
   const args = process.argv.slice(2) as[string, string];
   process.exitCode = main(args) ? 0 : 1;
@@ -22,8 +24,8 @@ if (require.main === module) {
  * ```
  */
 function main(argv: [string, string, string] | [string, string]): boolean {
-  const javascriptFilePath = require.resolve(argv[0]);
-  const goldenFilePath = require.resolve(argv[1]);
+  const javascriptFilePath = runfiles.resolveWorkspaceRelative(argv[0]);
+  const goldenFilePath = runfiles.resolveWorkspaceRelative(argv[1]);
   const doUpdate = argv[2] == '--accept';
 
   const javascriptContent = fs.readFileSync(javascriptFilePath).toString();
