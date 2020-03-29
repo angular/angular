@@ -157,7 +157,7 @@ Here's *Alex* and family in action.
 ### Find a parent in a tree with _@SkipSelf()_
 
 Imagine one branch of a component hierarchy: *Alice* -> *Barry* -> *Carol*.
-Both *Alice* and *Barry* implement the `Parent' class interface.
+Both *Alice* and *Barry* implement the `Parent` class interface.
 
 *Barry* is the problem. He needs to reach his parent, *Alice*, and also be a parent to *Carol*.
 That means he must both *inject* the `Parent` class interface to get *Alice* and
