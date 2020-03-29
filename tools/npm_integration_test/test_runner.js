@@ -340,7 +340,7 @@ class TestRunner {
   }
 }
 
-const config = require(process.argv[2]);
+const config = require(runfiles.resolveWorkspaceRelative(process.argv[2]));
 
 // set env vars passed from --define
 for (const k of Object.keys(config.envVars)) {

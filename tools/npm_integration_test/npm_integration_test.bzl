@@ -181,7 +181,7 @@ def npm_integration_test(name, **kwargs):
         name = name,
         data = data + npm_deps + [":%s.config" % name, ":%s.config.js" % name],
         tags = tags,
-        templated_args = ["$(location :%s.config.js)" % name],
+        templated_args = ["$(rootpath :%s.config.js)" % name],
         entry_point = "//tools/npm_integration_test:test_runner.js",
         **kwargs
     )
@@ -192,7 +192,7 @@ def npm_integration_test(name, **kwargs):
         name = name + ".debug",
         data = data + npm_deps + [":%s.debug.config" % name, ":%s.debug.config.js" % name],
         tags = tags + ["manual", "local"],
-        templated_args = ["$(location :%s.debug.config.js)" % name],
+        templated_args = ["$(rootpath :%s.debug.config.js)" % name],
         entry_point = "//tools/npm_integration_test:test_runner.js",
         **kwargs
     )
