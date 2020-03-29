@@ -354,13 +354,27 @@ region="transition2">
 </div>
 
 
+<!--
 ### Triggering the animation
+-->
+### 애니메이션 트리거하기
 
+<!--
 An animation requires a *trigger*, so that it knows when to start. The `trigger()` function collects the states and transitions, and gives the animation a name, so that you can attach it to the triggering element in the HTML template.
 
 The `trigger()` function describes the property name to watch for changes. When a change occurs, the trigger initiates the actions included in its definition. These actions can be transitions or other functions, as we'll see later on.
 
 In this example, we'll name the trigger `openClose`, and attach it to the `button` element. The trigger describes the open and closed states, and the timings for the two transitions.
+-->
+애니메이션을 시작하려면 *트리거(trigger)*가 필요합니다.
+트리거 함수인 `trigger()`는 애니메이션 상태와 트랜지션, 그리고 애니메이션의 이름을 인자로 받아서 HTML 템플릿에 있는 엘리먼트에 트리거를 연결합니다.
+
+`trigger()` 함수는 템플릿에서 변화를 감지할 프로퍼티 이름과 연결됩니다.
+그리고 이후에 이 프로퍼티의 값이 변경되면 트리거가 실행되면서 정의된 동작이 시작됩니다.
+이 동작은 트랜지션일 수도 있지만 함수일 수도 있습니다.
+
+이 예제에서는 `openClose`라는 이름의 트리거를 `button` 엘리먼트에 연결해 봅시다.
+이 트리거는 `open` 상태와 `closed` 상태를 전환하는 트리거이며, 두 방향으로 진행되는 트랜지션입니다.
 
 <div class="lightbox">
   <img src="generated/images/guide/animations/triggering-the-animation.png" alt="triggering the animation">
@@ -368,11 +382,20 @@ In this example, we'll name the trigger `openClose`, and attach it to the `butto
 
 <div class="alert is-helpful">
 
+<!--
 **Note:** Within each `trigger()` function call, an element can only be in one state at any given time. However, it's possible for multiple triggers to be active at once.
+-->
+**참고:** `trigger()` 함수가 실행되는 동안 엘리먼트의 상태는 한 번만 바뀌어야 합니다. 그렇지 않으면 동시에 여러 트리거가 실행될 수 있습니다.
+
 </div>
 
-### Defining animations and attaching them to the HTML template
 
+<!--
+### Defining animations and attaching them to the HTML template
+-->
+### 애니메이션 정의하기, HTML 템플릿과 연결하기
+
+<!--
 Animations are defined in the metadata of the component that controls the HTML element to be animated. Put the code that defines your animations under the `animations:` property within the `@Component()` decorator.
 
 <code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" language="typescript" region="component"></code-example>
@@ -394,18 +417,56 @@ region="compare">
 In this example, when the `isOpen` expression evaluates to a defined state of `open` or `closed`, it notifies the trigger `openClose` of a state change. Then it's up to the `openClose` code to handle the state change and kick off a state change animation.
 
 For elements entering or leaving a page (inserted or removed from the DOM), you can make the animations conditional. For example, use `*ngIf` with the animation trigger in the HTML template.
+-->
+애니메이션은 컴포넌트 메타데이터에 정의되어 HTML 엘리먼트의 스타일을 조작합니다.
+좀 더 자세하게 설명하면 애니메이션을 정의하는 코드는 `@Component()` 데코레이터의 `animations:` 프로퍼티에 정의합니다.
+
+<code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" language="typescript" region="component"></code-example>
+
+컴포넌트에 정의한 애니메이션 트리거는 트리거 이름을 대괄호로 감싸고 `@` 심볼을 붙여서 컴포넌트 템플릿에 연결합니다.
+그러면 이 트리거와 템플릿 표현식이 Angular 프로퍼티 바인딩 문법으로 연결되는데, 아래 코드에서 `triggerName`은 애니메이션 트리거 이름이며 `expression`은 애니메이션 상태를 선택하는 평가식입니다.
+
+```
+<div [@triggerName]="expression">...</div>;
+```
+
+그러면 이제 이 평가식이 실행되어 새로운 상태로 변경될 때 트리거가 발생하면서 애니매이션이 시작됩니다.
+
+아래 코드에서는 애니메이션 트리거가 `isOpen` 프로퍼티에 반응합니다.
+
+<code-example path="animations/src/app/open-close.component.1.html" header="src/app/open-close.component.html"
+region="compare">
+</code-example>
+
+이 예제 코드에서 `isOpen` 표현식의 평가 결과에 따라 상태는 `open`이나 `closed`가 되며, 이 상태가 `openClose` 트리거로 전달됩니다.
+그리고 이렇게 변경된 상태에 따라 `openClose`에 정의된 애니케이션 코드가 실행됩니다.
+
+엘리먼트가 화면에 나타나거나(DOM에 추가될 때) 화면에서 벗어날 때(DOM에서 제거될 때)도 애니메이션을 적용할 수 있습니다.
+애니메이션 트리거는 `*ngIf`로도 시작할 수 있습니다.
 
 <div class="alert is-helpful">
 
+<!--
 **Note:** In the component file, set the trigger that defines the animations as the value of the `animations:` property in the `@Component()` decorator.
 
 In the HTML template file, use the trigger name to attach the defined animations to the HTML element to be animated.
+-->
+**참고:** 애니메이션은 컴포넌트 파일의 `@Component()` 데코레이터에서 `animations:` 프로퍼티에 정의합니다.
+
+그리고 HTML 템플릿 파일에서 애니메이션 트리거 이름과 HTML 엘리먼트를 연결하면 됩니다.
 
 </div>
 
-### Code review
 
+<!--
+### Code review
+-->
+### 코드 리뷰
+
+<!--
 Here are the code files discussed in the transition example.
+-->
+이 문서에서 다룬 앱 코드를 확인해 보세요.
 
 <code-tabs>
 
@@ -422,17 +483,35 @@ region="trigger">
 
 </code-tabs>
 
-### Summary
 
+<!--
+### Summary
+-->
+### 정리
+
+<!--
 You learned to add animation to a simple transition between two states, using `style()` and `state()` along with `animate()` for the timing.
 
 You can learn about more advanced features in Angular animations under the Animation section, beginning with advanced techniques in [transition and triggers](guide/transition-and-triggers).
+-->
+이 가이드 문서에서는 두 상태를 전환할 때 애니메이션을 어떻게 적용할 수 있는지 알아봤으며, 애니메이션을 정의하는 `style()`, `state()`, `animate()` 함수에 대해 알아봤습니다.
+
+이 문서는 애니메이션의 기본 개념에 대해서만 다뤘습니다. 좀 더 복잡한 테크닉은 [트랜지션과 트리거](guide/transition-and-triggers) 문서를 참고하세요.
+
 
 {@a animation-api-summary}
+<!--
 ## Animations API summary
+-->
+## 애니메이션 API
 
+<!--
 The functional API provided by the `@angular/animations` module provides a domain-specific language (DSL) for creating and controlling animations in Angular applications. See the [API reference](api/animations) for a complete listing and syntax details of the core functions and related data structures.
+-->
+`@angular/animations` 모듈이 제공하는 애니메이션 API는 모두 Angular 애플리케이션의 애니메이션 도메인에서만 사용하는 언어라고 볼 수 있습니다.
+전체 목록은 [API 문서](api/animations)에서 확인할 수 있으며 이 문서에서는 중요한 것들만 추려서 확인해 봅시다.
 
+<!--
 <table>
 
 <tr>
@@ -511,9 +590,93 @@ What it does
 </tr>
 
 </table>
+-->
+<table>
 
+<tr>
+<th style="vertical-align: top">
+함수 이름
+</th>
+
+<th style="vertical-align: top">
+용도
+</th>
+</tr>
+
+<tr>
+<td><code>trigger()</code></td>
+<td>애니메이션 관련 함수를 관리하는 컨테이너의 역할을 하며 애니메이션을 시작합니다. HTML 템플릿에 <code>triggerName</code>을 바인딩하는 방식으로 사용합니다. 첫번째 인자로 트리거 이름을 전달하며 두번째 인자는 배열을 받습니다.</td>
+</tr>
+
+<tr>
+<td><code>style()</code></td>
+<td>애니메이션이 진행되는동안 HTML 엘리먼트에 적용될 CSS 스타일을 정의합니다. 객체 형식의 문법을 사용합니다.</td>
+</tr>
+
+<tr>
+<td><code><a href="api/animations/state" class="code-anchor">state()</a></code></td>
+<td>트랜지션하는 각 지점의 이름과 각 지점에서 적용될 CSS 스타일을 지정합니다. 이 때 지정하는 상태의 이름은 애니메이션 함수 안에서 사용할 수 있습니다.</td>
+</tr>
+
+<tr>
+<td><code>animate()</code></td>
+<td>트랜지션 타이밍을 지정합니다. 이 떄 시작 지연시간과 가속도 문자열은 생략할 수 있으며, 내부적으로 <code>style()</code>을 실행할 수 있습니다.</td>
+</tr>
+
+<tr>
+<td><code>transition()</code></td>
+<td>두 상태를 전환할 때 실행될 애니메이션을 지정합니다. 배열 형태의 문법을 사용합니다.</td>
+</tr>
+
+<tr>
+<td><code>keyframes()</code></td>
+<td>특정 시점에 적용될 스타일을 지정할 수 있으며 <code>animate()</code> 함수 안에서 사용합니다. 이 함수 안에서 <code>style()</code>를 여러번 사용할 수 있으며, 배열 형태의 문법을 사용합니다.</td>
+</tr>
+
+<tr>
+<td><code><a href="api/animations/group" class="code-anchor">group()</a></code></td>
+<td>병렬로 실행될 애니메이션(세부 애니메이션)을 각각 그룹으로 묶을 때 사용합니다. 전체 애니메이션은 세부 애니메이션이 전부 끝나야 종료되며 <code>sequence()</code>나 <code>transition()</code> 함수 안에서 사용합니다.</td>
+</tr>
+
+<tr>
+<td><code>query()</code></td>
+<td>HTML 엘리먼트를 탐색할 때 사용합니다.</td>
+</tr>
+
+<tr>
+<td><code>sequence()</code></td>
+<td>순서대로 실행될 애니메이션을 지정합니다.</td>
+</tr>
+
+<tr>
+<td><code>stagger()</code></td>
+<td>엘리먼트 여러개에 애니메이션을 적용할 때 시작 시점을 설정할 수 있습니다.</td>
+</tr>
+
+<tr>
+<td><code>animation()</code></td>
+<td>애니메이션을 다른 곳에서 재사용할 때 <code>useAnimation()</code>과 함께 사용합니다.</td>
+</tr>
+
+<tr>
+<td><code>useAnimation()</code></td>
+<td>다른 곳에 정의된 애니메이션을 사용합니다. <code>animation()</code>과 함께 사용합니다.</td>
+</tr>
+
+<tr>
+<td><code>animateChild()</code></td>
+<td>부모 컴포넌트와 자식 컴포넌트의 애니메이션을 동시에 실행할 때 사용합니다.</td>
+</tr>
+
+</table>
+
+
+<!--
 ## More on Angular animations
+-->
+## 더 알아보기
 
+<!--
 You may also be interested in the following:
 
 * [Transition and triggers](guide/transition-and-triggers)
@@ -524,4 +687,17 @@ You may also be interested in the following:
 <div class="alert is-helpful">
 
 Check out this full animation [demo](http://animationsftw.in/#/) with accompanying [presentation](https://www.youtube.com/watch?v=JhNo3Wvj6UQ&feature=youtu.be&t=2h47m53s), shown at the AngularConnect conference in November 2017.
+</div>
+-->
+다음 내용에 대해서도 알아보세요:
+
+* [트랜지션과 트리거](guide/transition-and-triggers)
+* [복잡한 애니메이션 시퀀스](guide/complex-animation-sequences)
+* [애니메이션 재사용하기](guide/reusable-animations)
+* [라우팅 애니메이션](guide/route-animations)
+
+<div class="alert is-helpful">
+
+Angular 애니메이션으로 만든 [데모 사이트](http://animationsftw.in/#/)와 2017년 11월 AngularConnect 컨퍼런스 [발표 영상](https://www.youtube.com/watch?v=JhNo3Wvj6UQ&feature=youtu.be&t=2h47m53s)도 확인해 보세요.
+
 </div>
