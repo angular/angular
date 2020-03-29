@@ -17,18 +17,17 @@ describe('Tracking items from application to component tree', () => {
         getBody().find('input.new-todo').type('Buy cookies{enter}');
       })
       .then(() => {
-        cy.enter('#sample-app')
-          .then((getBody) => {
-            getBody().find('app-todo').contains('Buy milk');
+        cy.enter('#sample-app').then((getBody) => {
+          getBody().find('app-todo').contains('Buy milk');
 
-            getBody().find('app-todo').contains('Buy cookies');
-          })
-          .then(() => {
-            cy.get('mat-tree')
-              .find('mat-tree-node:contains("app-todo[TooltipDirective]")')
-              .its('length')
-              .should('eq', 3);
-          });
+          getBody().find('app-todo').contains('Save the world');
+
+          getBody().find('app-todo').contains('Buy cookies');
+        });
       });
+
+    cy.wait(500);
+
+    cy.get('mat-tree').find('mat-tree-node:contains("app-todo[TooltipDirective]")').its('length').should('eq', 3);
   });
 });
