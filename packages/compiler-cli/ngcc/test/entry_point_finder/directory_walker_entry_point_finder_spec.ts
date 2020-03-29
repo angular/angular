@@ -230,7 +230,7 @@ runInEachFileSystem(() => {
         const finder = new DirectoryWalkerEntryPointFinder(
             fs, config, logger, resolver, manifest, _Abs('/nested_node_modules/node_modules'),
             undefined);
-        const spy = spyOn(finder, 'walkDirectoryForEntryPoints').and.callThrough();
+        const spy = spyOn(finder, 'walkDirectoryForPackages').and.callThrough();
         const {entryPoints} = finder.findEntryPoints();
         expect(spy.calls.allArgs()).toEqual([
           [_Abs(basePath)],
@@ -252,7 +252,7 @@ runInEachFileSystem(() => {
 
         const finder = new DirectoryWalkerEntryPointFinder(
             fs, config, logger, resolver, manifest, basePath, undefined);
-        const spy = spyOn(finder, 'walkDirectoryForEntryPoints').and.callThrough();
+        const spy = spyOn(finder, 'walkDirectoryForPackages').and.callThrough();
         const {entryPoints} = finder.findEntryPoints();
         expect(spy.calls.allArgs()).toEqual([
           [_Abs(basePath)],
@@ -276,7 +276,7 @@ runInEachFileSystem(() => {
 
         const finder = new DirectoryWalkerEntryPointFinder(
             fs, config, logger, resolver, manifest, basePath, undefined);
-        const spy = spyOn(finder, 'walkDirectoryForEntryPoints').and.callThrough();
+        const spy = spyOn(finder, 'walkDirectoryForPackages').and.callThrough();
         const {entryPoints} = finder.findEntryPoints();
         expect(spy.calls.allArgs()).toEqual([
           [_Abs(basePath)],
