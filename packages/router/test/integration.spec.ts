@@ -3046,6 +3046,44 @@ describe('Integration', () => {
              expect(location.path()).toEqual('/two-outlets/(a)');
            })));
 
+        it('should call canDeactivate handler with each deactivated component',
+           fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+             const fixture = createRoot(router, TwoOutletsCmp);
+
+             router.resetConfig([
+               {
+                 path: 'a',
+                 children: [
+                   {
+                     path: 'b1',
+                     component: BlankCmp,
+                     canDeactivate: ['RecordingDeactivate'],
+                   },
+                   {
+                     path: 'b2',
+                     canDeactivate: ['RecordingDeactivate'],
+                     component: SimpleCmp,
+                     outlet: 'aux',
+                   },
+                 ],
+               },
+               {
+                 path: 'c',
+                 component: BlankCmp,
+               },
+             ]);
+
+             router.navigate(['/a', {outlets: {primary: ['b1'], aux: ['b2']}}]);
+             advance(fixture);
+             expect(location.path()).toEqual('/a/(b1//aux:b2)');
+
+             router.navigate(['/c']);
+             advance(fixture);
+
+             expect(log[0].component).toBeAnInstanceOf(BlankCmp);
+             expect(log[1].component).toBeAnInstanceOf(SimpleCmp);
+           })));
+
         it('works with a nested route',
            fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
              const fixture = createRoot(router, RootCmp);
