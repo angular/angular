@@ -6,7 +6,7 @@ import { DirectiveExplorerComponent } from './directive-explorer/directive-explo
 @Component({
   selector: 'ng-devtools-tabs',
   templateUrl: './devtools-tabs.component.html',
-  styleUrls: ['./devtools-tabs.component.css'],
+  styleUrls: ['./devtools-tabs.component.scss'],
 })
 export class DevToolsTabsComponent {
   @Input() angularVersion: string | undefined = undefined;

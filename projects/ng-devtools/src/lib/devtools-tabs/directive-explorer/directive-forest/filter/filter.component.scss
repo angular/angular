@@ -1,0 +1,53 @@
+.filter {
+  display: flex;
+  padding-left: 4px;
+  border-bottom: 1px solid #dddddd;
+
+  .icon-outer {
+    vertical-align: middle;
+    display: flex;
+
+    .icon {
+      width: 16px;
+      height: 16px;
+      margin: auto;
+      opacity: 0.7;
+    }
+  }
+
+  .filter-input {
+    border: none;
+    width: 100%;
+    font-size: 12px;
+    font-family: inherit;
+    font-weight: inherit;
+    color: inherit;
+    padding: 5px;
+    outline: none;
+  }
+}
+
+.up-down-buttons {
+  display: flex;
+
+  button {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+:host {
+  ::ng-deep {
+    .up-down-buttons {
+      .mat-icon-button {
+        line-height: 25px;
+      }
+
+      button {
+        mat-icon {
+          opacity: 0.5;
+        }
+      }
+    }
+  }
+}

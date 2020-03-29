@@ -22,7 +22,7 @@ const MAX_HEIGHT = 50;
 @Component({
   selector: 'ng-recording-timeline',
   templateUrl: './timeline.component.html',
-  styleUrls: ['./timeline.component.css'],
+  styleUrls: ['./timeline.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimelineComponent {

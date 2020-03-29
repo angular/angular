@@ -7,7 +7,7 @@ import { throttleTime } from 'rxjs/operators';
 @Component({
   selector: 'ng-webtreegraph-visualizer',
   templateUrl: './webtreegraph-visualizer.component.html',
-  styleUrls: ['./webtreegraph-visualizer.component.css'],
+  styleUrls: ['./webtreegraph-visualizer.component.scss'],
 })
 export class WebtreegraphVisualizerComponent implements AfterViewInit, OnInit {
   @Input() set records(data: WebtreegraphNode[]) {

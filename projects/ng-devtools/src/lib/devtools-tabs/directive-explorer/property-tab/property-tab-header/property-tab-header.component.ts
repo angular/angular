@@ -4,7 +4,7 @@ import { IndexedNode } from '../../directive-forest/index-forest';
 @Component({
   templateUrl: './property-tab-header.component.html',
   selector: 'ng-property-tab-header',
-  styleUrls: ['./property-tab-header.component.css'],
+  styleUrls: ['./property-tab-header.component.scss'],
 })
 export class PropertyTabHeaderComponent {
   @Input() currentSelectedElement: IndexedNode;

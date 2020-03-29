@@ -15,10 +15,18 @@ header {
   justify-content: space-between;
 }
 
-/deep/ .mat-button,
-.mat-icon-button {
-  height: 18px;
-  width: 18px;
-  line-height: 15px;
-  margin-right: 7px;
+::ng-deep {
+  .mat-button {
+    height: 18px;
+    width: 18px;
+    line-height: 15px;
+    margin-right: 7px;
+  }
+
+  .mat-icon-button {
+    height: 18px;
+    width: 18px;
+    line-height: 15px;
+    margin-right: 7px;
+  }
 }

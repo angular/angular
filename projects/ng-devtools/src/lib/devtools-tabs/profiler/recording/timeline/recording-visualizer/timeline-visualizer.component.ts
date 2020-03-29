@@ -7,7 +7,7 @@ import { BargraphNode } from '../record-formatter/bargraph-formatter';
 @Component({
   selector: 'ng-timeline-visualizer',
   templateUrl: './timeline-visualizer.component.html',
-  styleUrls: ['./timeline-visualizer.component.css'],
+  styleUrls: ['./timeline-visualizer.component.scss'],
 })
 export class TimelineVisualizerComponent {
   @Input() visualizationMode: VisualizationMode;

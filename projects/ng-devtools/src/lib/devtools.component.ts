@@ -7,7 +7,7 @@ import { take } from 'rxjs/operators';
 @Component({
   selector: 'ng-devtools',
   templateUrl: './devtools.component.html',
-  styleUrls: ['./devtools.component.css'],
+  styleUrls: ['./devtools.component.scss'],
   animations: [
     trigger('enterAnimation', [
       transition(':enter', [style({ opacity: 0 }), animate('200ms', style({ opacity: 1 }))]),

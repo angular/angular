@@ -1,0 +1,34 @@
+.element-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+
+  .component-name {
+    margin-left: 10px;
+    font-weight: 700;
+    line-height: 25px;
+  }
+
+  .element-name {
+    margin-left: 10px;
+    line-height: 25px;
+    font-weight: 700;
+  }
+}
+
+::ng-deep {
+  .mat-button {
+    height: 25px;
+    width: 25px;
+    line-height: 25px;
+    margin-right: 5px;
+  }
+}
+
+.mat-icon-button {
+  height: 25px;
+  width: 25px;
+  line-height: 25px;
+  margin-right: 5px;
+}

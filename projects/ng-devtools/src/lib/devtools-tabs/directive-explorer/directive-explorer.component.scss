@@ -2,18 +2,19 @@
   display: flex;
   height: 100%;
   justify-content: space-between;
-}
 
+  ::ng-deep {
+    as-split-area {
+      overflow-y: hidden;
+    }
+
+    .as-split-gutter-icon {
+      display: none;
+    }
+  }
+}
 .property-tab-wrapper {
   overflow: auto;
   height: 100%;
   width: 100%;
-}
-
-:host /deep/ as-split-area {
-  overflow-y: hidden;
-}
-
-:host /deep/ .as-split-gutter-icon {
-  display: none;
 }

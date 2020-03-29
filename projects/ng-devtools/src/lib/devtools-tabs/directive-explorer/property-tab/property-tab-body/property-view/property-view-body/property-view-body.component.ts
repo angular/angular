@@ -9,7 +9,7 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 @Component({
   selector: 'ng-property-view-body',
   templateUrl: './property-view-body.component.html',
-  styleUrls: ['./property-view-body.component.css'],
+  styleUrls: ['./property-view-body.component.scss'],
 })
 export class PropertyViewBodyComponent {
   @Input() controller: DirectivePropertyResolver;

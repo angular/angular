@@ -6,7 +6,7 @@ import { FlatTreeControl } from '@angular/cdk/tree';
 @Component({
   selector: 'ng-property-view-tree',
   templateUrl: './property-view-tree.component.html',
-  styleUrls: ['./property-view-tree.component.css'],
+  styleUrls: ['./property-view-tree.component.scss'],
 })
 export class PropertyViewTreeComponent {
   @Input() dataSource: PropertyDataSource;
