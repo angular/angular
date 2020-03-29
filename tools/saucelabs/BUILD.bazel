@@ -60,5 +60,5 @@ nodejs_binary(
         "@npm//shelljs",
     ],
     entry_point = "karma-saucelabs.js",
-    templated_args = ["$(location sauce-service.sh)"],
+    templated_args = ["$(rootpath sauce-service.sh)"],
 )
