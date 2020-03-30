@@ -74,15 +74,19 @@ export class PullApproveGroup {
         } else if (condition.match(CONDITION_TYPES.ATTR_LENGTH)) {
           // Currently a noop as we do not take any action on this condition type.
         } else if (condition.match(CONDITION_TYPES.GLOBAL_APPROVAL)) {
-          // Currently a noop as we don't take any for global approval conditions.
+          // Currently a noop as we don't take any action for global approval conditions.
         } else {
-          const errMessage = `Unrecognized condition found, unable to parse the following condition: \n\n` +
-          `From the [${groupName}] group:\n` +
-          ` - ${condition}` +
-          `\n\n` +
-          `Known condition regexs:\n` + 
-          `${Object.entries(CONDITION_TYPES).map(([k, v]) => `  ${k}  -  ${v}`).join('\n')}` +
-          `\n\n`;
+          const errMessage =
+              `Unrecognized condition found, unable to parse the following condition: \n\n` +
+              `From the [${groupName}] group:\n` +
+              ` - ${condition}` +
+              `\n\n` +
+              `Known condition regexs:\n` +
+              `${Object.entries(CONDITION_TYPES).map(([k, v]) => ` ${k} - $ {
+            v
+          }
+          `).join('\n')}` +
+              `\n\n`;
           console.error(errMessage);
           process.exit(1);
         }
