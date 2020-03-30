@@ -126,6 +126,15 @@ describe('autoLinkCode post-processor', () => {
     expect(doc.renderedContent).toEqual('<code>MyClass</code>');
   });
 
+  it('should ignore code items that match an API doc but have no path set',
+     () => {
+       aliasMap.addDoc(
+           {docType: 'class', id: 'MyClass', aliases: ['MyClass'], path: ''});
+       const doc = {docType: 'test-doc', renderedContent: '<code>MyClass</code>'};
+       processor.$process([doc]);
+       expect(doc.renderedContent).toEqual('<code>MyClass</code>');
+     });
+
   it('should insert anchors for individual text nodes within a code block', () => {
     aliasMap.addDoc({docType: 'class', id: 'MyClass', aliases: ['MyClass'], path: 'a/b/myclass'});
     const doc = {
