@@ -34,6 +34,7 @@ const CONDITION_TYPES = {
   INCLUDE_GLOBS: /^contains_any_globs/,
   EXCLUDE_GLOBS: /^not contains_any_globs/,
   ATTR_LENGTH: /^len\(.*\)/,
+  GLOBAL_APPROVAL: /^global-(docs-)?approvers not in groups.approved$/,
 };
 
 /** A PullApprove group to be able to test files against. */
@@ -48,43 +49,47 @@ export class PullApproveGroup {
   public hasMatchers = false;
 
   constructor(public groupName: string, group: PullApproveGroupConfig) {
-    for (let condition of group.conditions) {
-      condition = condition.trim();
+    if (group.conditions) {
+      for (let condition of group.conditions) {
+        condition = condition.trim();
 
-      if (condition.match(CONDITION_TYPES.INCLUDE_GLOBS)) {
-        const [conditions, misconfiguredLines] = getLinesForContainsAnyGlobs(condition);
-        conditions.forEach(globString => this.includeConditions.push({
-          glob: globString,
-          matcher: new Minimatch(globString, {dot: true}),
-          matchedFiles: new Set<string>(),
-        }));
-        this.misconfiguredLines.push(...misconfiguredLines);
-        this.hasMatchers = true;
-      } else if (condition.match(CONDITION_TYPES.EXCLUDE_GLOBS)) {
-        const [conditions, misconfiguredLines] = getLinesForContainsAnyGlobs(condition);
-        conditions.forEach(globString => this.excludeConditions.push({
-          glob: globString,
-          matcher: new Minimatch(globString, {dot: true}),
-          matchedFiles: new Set<string>(),
-        }));
-        this.misconfiguredLines.push(...misconfiguredLines);
-        this.hasMatchers = true;
-      } else if (condition.match(CONDITION_TYPES.ATTR_LENGTH)) {
-        // Currently a noop as we do not take any action on this condition type.
-      } else {
-        const errMessage =
-            `Unrecognized condition found, unable to parse the following condition: \n\n` +
-            `From the [${groupName}] group:\n` +
-            ` - ${condition}` +
-            `\n\n` +
-            `Known condition regexs:\n` +
-            `${Object.entries(CONDITION_TYPES).map(([k, v]) => ` ${k} - $ {
-          v
+        if (condition.match(CONDITION_TYPES.INCLUDE_GLOBS)) {
+          const [conditions, misconfiguredLines] = getLinesForContainsAnyGlobs(condition);
+          conditions.forEach(globString => this.includeConditions.push({
+            glob: globString,
+            matcher: new Minimatch(globString, {dot: true}),
+            matchedFiles: new Set<string>(),
+          }));
+          this.misconfiguredLines.push(...misconfiguredLines);
+          this.hasMatchers = true;
+        } else if (condition.match(CONDITION_TYPES.EXCLUDE_GLOBS)) {
+          const [conditions, misconfiguredLines] = getLinesForContainsAnyGlobs(condition);
+          conditions.forEach(globString => this.excludeConditions.push({
+            glob: globString,
+            matcher: new Minimatch(globString, {dot: true}),
+            matchedFiles: new Set<string>(),
+          }));
+          this.misconfiguredLines.push(...misconfiguredLines);
+          this.hasMatchers = true;
+        } else if (condition.match(CONDITION_TYPES.ATTR_LENGTH)) {
+          // Currently a noop as we do not take any action on this condition type.
+        } else if (condition.match(CONDITION_TYPES.GLOBAL_APPROVAL)) {
+          // Currently a noop as we don't take any action for global approval conditions.
+        } else {
+          const errMessage =
+              `Unrecognized condition found, unable to parse the following condition: \n\n` +
+              `From the [${groupName}] group:\n` +
+              ` - ${condition}` +
+              `\n\n` +
+              `Known condition regexs:\n` +
+              `${Object.entries(CONDITION_TYPES).map(([k, v]) => ` ${k} - $ {
+            v
+          }
+          `).join('\n')}` +
+              `\n\n`;
+          console.error(errMessage);
+          process.exit(1);
         }
-        `).join('\n')}` +
-            `\n\n`;
-        console.error(errMessage);
-        process.exit(1);
       }
     }
   }
