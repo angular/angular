@@ -63,7 +63,7 @@
     "@angular/cli": "github:angular/cli-builds#8b09ac76f8989c8b4f3e0bc61c2278c0af25599d",
     "@angular/compiler-cli": "github:angular/compiler-cli-builds#1336ad7aff4e4a7a7ce3b549e0cc577527e0f14b",
     "@angular/language-service": "github:angular/language-service-builds#e4c45a027958642903873913bdeb5a321b1a2220",
-    "@types/chrome": "^0.0.102",
+    "@types/chrome": "^0.0.103",
     "@types/clone-deep": "^4.0.1",
     "@types/jasmine": "~3.5.0",
     "@types/jasminewd2": "~2.0.3",
