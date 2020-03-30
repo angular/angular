@@ -1,5 +1,8 @@
 import { Component, ElementRef, Input } from '@angular/core';
-import { FlamegraphNode } from '../../record-formatter/flamegraph-formatter/flamegraph-formatter';
+import {
+  FlamegraphNode,
+  ROOT_LEVEL_ELEMENT_LABEL,
+} from '../../record-formatter/flamegraph-formatter/flamegraph-formatter';
 import { RawData } from 'ngx-flamegraph/lib/utils';
 
 export interface GraphNode {
@@ -31,6 +34,9 @@ export class FlamegraphVisualizerComponent {
   constructor(private _el: ElementRef) {}
 
   selectFrame(frame: RawData): void {
+    if (frame.label === ROOT_LEVEL_ELEMENT_LABEL) {
+      return;
+    }
     this.selectedEntry = frame as FlamegraphNode;
     this.renderGraph(this.selectedEntry);
   }
