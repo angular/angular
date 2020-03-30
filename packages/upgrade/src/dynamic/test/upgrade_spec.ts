@@ -117,7 +117,7 @@ withEachNg1Version(() => {
              expect(platformRef.bootstrapModuleFactory)
                  .toHaveBeenCalledWith(
                      jasmine.any(NgModuleFactory),
-                     jasmine.objectContaining({ngZone: jasmine.any(NgZone)}));
+                     jasmine.objectContaining({ngZone: jasmine.any(NgZone), providers: []}));
              ref.dispose();
            });
          }));
