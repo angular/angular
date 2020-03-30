@@ -1030,7 +1030,9 @@ groups:
           'aio/content/guide/docs-style-guide.md',
           'aio/content/examples/docs-style-guide/**',
           'aio/content/images/guide/docs-style-guide/**',
-          'aio/content/guide/visual-studio-2015.md'
+          'aio/content/guide/visual-studio-2015.md',
+          'aio/content/guide/docs-running-locally.md',
+          'aio/content/images/guide/docs-running-locally/**'
           ])
     reviewers:
       users:

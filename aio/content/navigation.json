@@ -52,6 +52,12 @@
       "hidden": false
     },
     {
+      "url": "guide/docs-running-locally",
+      "title": "Running docs locally",
+      "tooltip": "How to build and run the Angular documentation app locally.",
+      "hidden": false
+    },
+    {
       "title": "Getting Started",
       "tooltip": "Set up your environment and learn basic concepts",
       "children": [
