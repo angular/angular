@@ -141,6 +141,7 @@ export class DirectiveForestComponent {
     if (this.isEditingDirectiveState(event)) {
       return;
     }
+    event.preventDefault();
 
     const data = this.dataSource.data;
     let prevIdx = data.findIndex((e) => this.selectedNode && e.id === this.selectedNode.id) - 1;
@@ -157,8 +158,6 @@ export class DirectiveForestComponent {
       prevNode = data[prevIdx];
     }
     this.select(data[prevIdx]);
-
-    event.preventDefault();
   }
 
   @HostListener('document:keydown.ArrowDown', ['$event'])
@@ -166,6 +165,7 @@ export class DirectiveForestComponent {
     if (this.isEditingDirectiveState(event)) {
       return;
     }
+    event.preventDefault();
 
     const data = this.dataSource.data;
     let idx = data.findIndex((e) => this.selectedNode && e.id === this.selectedNode.id);
@@ -185,8 +185,6 @@ export class DirectiveForestComponent {
       return;
     }
     this.select(data[idx]);
-
-    event.preventDefault();
   }
 
   @HostListener('document:keydown.ArrowLeft', ['$event'])
