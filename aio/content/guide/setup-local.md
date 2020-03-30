@@ -18,11 +18,13 @@ If you are new to Angular, see [Getting Started](start). Getting Started helps y
 {@a prerequisites}
 ## Prerequisites
 
-Before you begin, make sure that you already know how to use your terminal:
+To use the Angular framework, you should already be familiar with the following:
 
-*  [Terminal on a Mac](https://support.apple.com/guide/terminal/welcome/mac)
-*  Windows console: [Windows commands](https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/windows-commands)
-*  [Linux command line for beginners ](https://ubuntu.com/tutorials/command-line-for-beginners#1-overview)
+* [HTML](https://developer.mozilla.org/docs/Learn/HTML/Introduction_to_HTML)
+* [CSS](https://developer.mozilla.org/docs/Learn/CSS/First_steps)
+* [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/A_re-introduction_to_JavaScript)
+* [JavaScript language resources](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Language_Resources) (such as [using classes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes) and [importing modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import))
+* [TypeScript](https://www.typescriptlang.org/) (used in code samples)
 
 {@a nodejs}
 ### Node.js
