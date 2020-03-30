@@ -303,7 +303,7 @@ runInEachFileSystem(() => {
         const pathMappings: PathMappings = {
           baseUrl: '/path_mapped/dist',
           paths: {
-            '@test': ['pkg2/fesm2015/pkg2.js'],
+            '@test': ['pkg2/pkg2.d.ts'],
             '@missing': ['pkg3'],
           }
         };
@@ -333,6 +333,10 @@ runInEachFileSystem(() => {
               typings: `./${packageName}.d.ts`,
               fesm2015: `./fesm2015/${packageName}.js`,
             })
+          },
+          {
+            name: _Abs(`${basePath}/${packageName}/${packageName}.d.ts`),
+            contents: deps.map((dep, i) => `import * as i${i} from '${dep}';`).join('\n'),
           },
           {
             name: _Abs(`${basePath}/${packageName}/fesm2015/${packageName}.js`),

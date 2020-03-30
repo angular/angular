@@ -25,7 +25,7 @@ import {getBasePaths} from './utils';
 export class TargetedEntryPointFinder implements EntryPointFinder {
   private unprocessedPaths: AbsoluteFsPath[] = [];
   private unsortedEntryPoints = new Map<AbsoluteFsPath, EntryPoint>();
-  private basePaths = getBasePaths(this.basePath, this.pathMappings);
+  private basePaths = getBasePaths(this.logger, this.basePath, this.pathMappings);
 
   constructor(
       private fs: FileSystem, private config: NgccConfiguration, private logger: Logger,
