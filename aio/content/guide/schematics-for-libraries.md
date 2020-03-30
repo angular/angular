@@ -249,7 +249,7 @@ A `Rule` can use external template files, transform them, and return another `Ru
   * The `url()` method reads source files from your filesystem, relative to the schematic.
   * The `applyTemplates()` method receives an argument of methods and properties you want make available to the schematic template and the schematic filenames. It returns a `Rule`. This is where you define the `classify()` and `dasherize()` methods, and the `name` property.
   * The `classify()` method takes a value and returns the value in title case. For example, if the provided name is `my service`, it is returned as `MyService`
-  * The `dasherize()` method takes a value and returns the value in dashed and lowercase. For example, if the provided name is MyService, it is returned as `my-service.
+  * The `dasherize()` method takes a value and returns the value in dashed and lowercase. For example, if the provided name is MyService, it is returned as `my-service`.
   * The `move` method moves the provided source files to their destination when the schematic is applied.
 
 1. Finally, the rule factory must return a rule.
