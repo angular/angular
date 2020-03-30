@@ -1,7 +1,5 @@
 :host {
-  display: flex;
   height: 100%;
-  justify-content: space-between;
 
   ::ng-deep {
     as-split-area {
@@ -13,6 +11,7 @@
     }
   }
 }
+
 .property-tab-wrapper {
   overflow: auto;
   height: 100%;

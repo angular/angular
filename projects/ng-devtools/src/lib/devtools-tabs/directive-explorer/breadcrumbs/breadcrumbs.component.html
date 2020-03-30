@@ -1,4 +1,4 @@
-<div class="parent-nodes" *ngIf="parents">
+<div class="parent-nodes">
   <button mat-button class="btn-node" *ngFor="let node of parents" (click)="handleSelect.emit(node)">
     {{ node.original.component?.name || node.original.element }}
   </button>

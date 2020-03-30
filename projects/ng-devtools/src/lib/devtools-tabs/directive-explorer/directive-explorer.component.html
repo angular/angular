@@ -1,8 +1,9 @@
-<as-split unit="percent" [direction]="splitDirection" [gutterSize]="1">
+<as-split [class.space-for-bread-crumbs]="parents" unit="percent" [direction]="splitDirection" [gutterSize]="1">
   <as-split-area size="60">
     <ng-directive-forest
       (selectNode)="handleNodeSelection($event)"
       (selectDomElement)="handleSelectDomElement($event)"
+      (setParents)="handleSetParents($event)"
       (highlightFromComponent)="handleHighlightFromComponent($event)"
       (unhighlightFromComponent)="handleUnhighlightFromComponent($event)"
       [forest]="forest"
@@ -20,3 +21,4 @@
     </div>
   </as-split-area>
 </as-split>
+<ng-breadcrumbs *ngIf="parents" (handleSelect)="handleSelect($event)" [parents]="parents"></ng-breadcrumbs>

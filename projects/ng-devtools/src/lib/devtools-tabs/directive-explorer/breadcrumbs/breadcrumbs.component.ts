@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { FlatNode } from '../component-data-source';
+import { FlatNode } from '../directive-forest/component-data-source';
 
 @Component({
   selector: 'ng-breadcrumbs',

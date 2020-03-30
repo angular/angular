@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import {
   MessageBus,
   Events,
@@ -16,6 +16,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
 import { throttleTime } from 'rxjs/operators';
 import { ElementPropertyResolver } from './property-resolver/element-property-resolver';
+import { FlatNode } from './directive-forest/component-data-source';
+import { DirectiveForestComponent } from './directive-forest/directive-forest.component';
 
 const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
   if ((a.component && !b.component) || (!a.component && b.component)) {
@@ -48,11 +50,13 @@ export class DirectiveExplorerComponent implements OnInit {
   currentSelectedElement: IndexedNode | null = null;
   forest: DevToolsNode[];
   highlightIDinTreeFromElement: ElementPosition | null = null;
-
   splitDirection = 'horizontal';
 
   private _changeSize = new Subject<Event>();
   private _clickedElement: IndexedNode | null = null;
+  parents: FlatNode[] | null = null;
+
+  @ViewChild(DirectiveForestComponent) directiveForest: DirectiveForestComponent;
 
   constructor(
     private _appOperations: ApplicationOperations,
@@ -195,6 +199,14 @@ export class DirectiveExplorerComponent implements OnInit {
     } else {
       this.splitDirection = 'horizontal';
     }
+  }
+
+  handleSelect(node: FlatNode): void {
+    this.directiveForest.handleSelect(node);
+  }
+
+  handleSetParents(parents: FlatNode[] | null): void {
+    this.parents = parents;
   }
 }
 

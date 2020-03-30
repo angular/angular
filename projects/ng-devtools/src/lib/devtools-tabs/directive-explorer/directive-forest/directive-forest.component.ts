@@ -12,7 +12,7 @@ import { DevToolsNode, ElementPosition } from 'protocol';
 import { CdkTree, FlatTreeControl } from '@angular/cdk/tree';
 import { ComponentDataSource, FlatNode } from './component-data-source';
 
-import scrollIntoViewIfNeeded from 'scroll-into-view-if-needed';
+import scrollIntoView from 'scroll-into-view-if-needed';
 import { isChildOf, parentCollapsed } from './directive-forest-utils';
 import { IndexedNode } from './index-forest';
 
@@ -33,8 +33,9 @@ export class DirectiveForestComponent {
   @Input() highlightIDinTreeFromElement: ElementPosition | null = null;
   @Input() currentSelectedElement: IndexedNode;
 
-  @Output() selectNode = new EventEmitter();
-  @Output() selectDomElement = new EventEmitter();
+  @Output() selectNode = new EventEmitter<IndexedNode | null>();
+  @Output() selectDomElement = new EventEmitter<IndexedNode>();
+  @Output() setParents = new EventEmitter<FlatNode[] | null>();
   @Output() highlightFromComponent = new EventEmitter<ElementPosition>();
   @Output() unhighlightFromComponent = new EventEmitter<null>();
 
@@ -75,11 +76,11 @@ export class DirectiveForestComponent {
 
     // We wait for the CD to run.
     setTimeout(() => {
-      const el = this._host.nativeElement.querySelector('.selected');
-      if (!el) {
+      const element = this._host.nativeElement.querySelector('.selected');
+      if (!element) {
         return;
       }
-      scrollIntoViewIfNeeded(el, {
+      scrollIntoView(element, {
         scrollMode: 'if-needed',
         block: 'nearest',
         inline: 'nearest',
@@ -91,6 +92,7 @@ export class DirectiveForestComponent {
     this.selectNode.emit(null);
     this.selectedNode = null;
     this.parents = [];
+    this.setParents.emit(null);
   }
 
   private _reselectNodeOnUpdate(): void {
@@ -134,6 +136,7 @@ export class DirectiveForestComponent {
       }
       return nodes;
     }, []);
+    this.setParents.emit(this.parents);
   }
 
   @HostListener('document:keydown.ArrowUp', ['$event'])
