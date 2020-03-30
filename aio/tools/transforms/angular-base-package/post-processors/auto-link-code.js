@@ -28,7 +28,7 @@ module.exports = function autoLinkCode(getDocFromAlias) {
   return autoLinkCodeImpl;
 
   function autoLinkCodeImpl() {
-    return (ast) => {
+    return (ast, file) => {
       visit(ast, 'element', (node, ancestors) => {
         // Only interested in code elements that:
         // * do not have `no-auto-link` class
@@ -46,7 +46,7 @@ module.exports = function autoLinkCode(getDocFromAlias) {
 
               // Can we convert the whole text node into a doc link?
               const docs = getDocFromAlias(node.value);
-              if (foundValidDoc(docs)) {
+              if (foundValidDoc(docs, node.value, file)) {
                 parent.children.splice(index, 1, createLinkNode(docs[0], node.value));
               } else {
                 // Parse the text for words that we can convert to links
@@ -58,7 +58,7 @@ module.exports = function autoLinkCode(getDocFromAlias) {
                           // remove docs that fail the custom filter tests
                           const filteredDocs = autoLinkCodeImpl.customFilters.reduce(
                               (docs, filter) => filter(docs, words, index), getDocFromAlias(word));
-                          return foundValidDoc(filteredDocs) ?
+                          return foundValidDoc(filteredDocs, word, file) ?
                               // Create a link wrapping the text node.
                               createLinkNode(filteredDocs[0], word) :
                               // this is just text so push a new text node
@@ -75,9 +75,31 @@ module.exports = function autoLinkCode(getDocFromAlias) {
     };
   }
 
-  function foundValidDoc(docs) {
-    return docs.length === 1 && !docs[0].internal &&
-        autoLinkCodeImpl.docTypes.indexOf(docs[0].docType) !== -1;
+  /**
+   * Validates the docs to be used to generate the links. The validation ensures
+   * that the docs are not `internal` and that the `docType` is supported. The `path`
+   * can be empty when the `API` is not public.
+   *
+   * @param {Array<Object>} docs An array of objects containing the doc details
+   *
+   * @param {string} keyword The keyword the doc applies to
+   */
+  function foundValidDoc(docs, keyword, file) {
+    if (docs.length !== 1) {
+      return false;
+    }
+
+    var doc = docs[0];
+    if (doc.path === '') {
+      var message = `
+      autoLinkCode: Doc path is empty for "${doc.id}" - link will not be generated for "${keyword}".
+      Please make sure if the doc should be public. If not, it should probably not be referenced in the docs.`;
+
+      file.message(message);
+      return false;
+    }
+
+    return !doc.internal && autoLinkCodeImpl.docTypes.includes(doc.docType);
   }
 
   function createLinkNode(doc, text) {
