@@ -12,24 +12,21 @@ import {AttributeMarker, TAttributes, TNode, TNodeType} from '../../src/render3/
 import {CssSelector, CssSelectorList, SelectorFlags} from '../../src/render3/interfaces/projection';
 import {extractAttrsAndClassesFromSelector, getProjectAsAttrValue, isNodeMatchingSelector, isNodeMatchingSelectorList, stringifyCSSSelectorList} from '../../src/render3/node_selector_matcher';
 
-function testLStaticData(tagName: string, attrs: TAttributes | null): TNode {
-  return createTNode(null !, null, TNodeType.Element, 0, tagName, attrs);
+function testLStaticData(tagName: string, attrs: TAttributes|null): TNode {
+  return createTNode(null!, null, TNodeType.Element, 0, tagName, attrs);
 }
 
 describe('css selector matching', () => {
   function isMatching(
-      tagName: string, attrsOrTNode: TAttributes | TNode | null, selector: CssSelector): boolean {
+      tagName: string, attrsOrTNode: TAttributes|TNode|null, selector: CssSelector): boolean {
     const tNode = (!attrsOrTNode || Array.isArray(attrsOrTNode)) ?
-        createTNode(null !, null, TNodeType.Element, 0, tagName, attrsOrTNode as TAttributes) :
+        createTNode(null!, null, TNodeType.Element, 0, tagName, attrsOrTNode as TAttributes) :
         (attrsOrTNode as TNode);
     return isNodeMatchingSelector(tNode, selector, true);
   }
 
   describe('isNodeMatchingSimpleSelector', () => {
-
-
     describe('element matching', () => {
-
       it('should match element name only if names are the same', () => {
         expect(isMatching('span', null, ['span']))
             .toBeTruthy(`Selector 'span' should match <span>`);
@@ -55,11 +52,9 @@ describe('css selector matching', () => {
     });
 
     describe('attributes matching', () => {
-
       // TODO: do we need to differentiate no value and empty value? that is: title vs. title="" ?
 
       it('should match single attribute without value', () => {
-
         expect(isMatching('span', ['title', ''], [
           '', 'title', ''
         ])).toBeTruthy(`Selector '[title]' should match <span title>`);
@@ -81,7 +76,8 @@ describe('css selector matching', () => {
         ])).toBeFalsy(`Selector '[other]' should NOT match <span title="">'`);
       });
 
-      // TODO: Not sure how to fix this cases.
+      // TODO: this case will not work, need more discussion
+      // https://github.com/angular/angular/pull/34625#discussion_r401791275
       xit('should match namespaced attributes', () => {
         expect(isMatching(
                    'span', [AttributeMarker.NamespaceURI, 'http://some/uri', 'title', 'name'],
@@ -228,7 +224,6 @@ describe('css selector matching', () => {
     });
 
     describe('class matching', () => {
-
       it('should match with a class selector when an element has multiple classes', () => {
         expect(isMatching('span', ['class', 'foo bar'], [
           '', SelectorFlags.CLASS, 'foo'
@@ -328,7 +323,6 @@ describe('css selector matching', () => {
   });
 
   describe('negations', () => {
-
     it('should match when negation part is null', () => {
       expect(isMatching('span', null, ['span'])).toBeTruthy(`Selector 'span' should match <span>`);
     });
@@ -436,13 +430,11 @@ describe('css selector matching', () => {
       expect(isMatching('div', ['name', 'name', 'title', '', 'class', 'foo bar'], selector))
           .toBeFalsy();
     });
-
   });
 
   describe('isNodeMatchingSelectorList', () => {
-
     function isAnyMatching(
-        tagName: string, attrs: string[] | null, selector: CssSelectorList): boolean {
+        tagName: string, attrs: string[]|null, selector: CssSelectorList): boolean {
       return isNodeMatchingSelectorList(testLStaticData(tagName, attrs), selector, false);
     }
 
@@ -468,16 +460,18 @@ describe('css selector matching', () => {
   });
 
   describe('reading the ngProjectAs attribute value', function() {
-
-    function testTNode(attrs: TAttributes | null) { return testLStaticData('tag', attrs); }
+    function testTNode(attrs: TAttributes|null) {
+      return testLStaticData('tag', attrs);
+    }
 
     it('should get ngProjectAs value if present', function() {
       expect(getProjectAsAttrValue(testTNode([AttributeMarker.ProjectAs, ['tag', 'foo', 'bar']])))
           .toEqual(['tag', 'foo', 'bar']);
     });
 
-    it('should return null if there are no attributes',
-       function() { expect(getProjectAsAttrValue(testTNode(null))).toBe(null); });
+    it('should return null if there are no attributes', function() {
+      expect(getProjectAsAttrValue(testTNode(null))).toBe(null);
+    });
 
     it('should return if ngProjectAs is not present', function() {
       expect(getProjectAsAttrValue(testTNode(['foo', 'bar']))).toBe(null);
@@ -486,15 +480,13 @@ describe('css selector matching', () => {
     it('should not accidentally identify ngProjectAs in attribute values', function() {
       expect(getProjectAsAttrValue(testTNode(['foo', AttributeMarker.ProjectAs]))).toBe(null);
     });
-
   });
-
 });
 
 describe('stringifyCSSSelectorList', () => {
-
-  it('should stringify selector with a tag name only',
-     () => { expect(stringifyCSSSelectorList([['button']])).toBe('button'); });
+  it('should stringify selector with a tag name only', () => {
+    expect(stringifyCSSSelectorList([['button']])).toBe('button');
+  });
 
   it('should stringify selector with attributes', () => {
     expect(stringifyCSSSelectorList([['', 'id', '']])).toBe('[id]');
