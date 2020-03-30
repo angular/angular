@@ -13,8 +13,8 @@ describe('convertValueToOutputAst', () => {
   it('should convert all array elements, including undefined', () => {
     const ctx = null;
     const value = new Array(3).concat('foo');
-    const expr = convertValueToOutputAst(ctx !, value) as o.LiteralArrayExpr;
-    expect(expr instanceof o.LiteralArrayExpr);
+    const expr = convertValueToOutputAst(ctx!, value) as o.LiteralArrayExpr;
+    expect(expr instanceof o.LiteralArrayExpr).toBe(true);
     expect(expr.entries.length).toBe(4);
     for (let i = 0; i < 4; ++i) {
       expect(expr.entries[i] instanceof o.Expression).toBe(true);

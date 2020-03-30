@@ -38,7 +38,7 @@ runInEachFileSystem(() => {
       initMockFileSystem(fs, testFiles);
 
       // Force single-process execution in unit tests by mocking available CPUs to 1.
-      spyOn(os, 'cpus').and.returnValue([{ model: 'Mock CPU' } as any]);
+      spyOn(os, 'cpus').and.returnValue([{model: 'Mock CPU'} as any]);
     });
 
     it('should run ngcc without errors for esm2015', () => {

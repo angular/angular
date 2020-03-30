@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, ReflectiveInjector, forwardRef, resolveForwardRef} from '@angular/core';
+import {forwardRef, Inject, ReflectiveInjector, resolveForwardRef} from '@angular/core';
 
 {
   describe('forwardRef examples', () => {
@@ -26,7 +26,9 @@ import {Inject, ReflectiveInjector, forwardRef, resolveForwardRef} from '@angula
 
         // Door attempts to inject Lock, despite it not being defined yet.
         // forwardRef makes this possible.
-        constructor(@Inject(forwardRef(() => Lock)) lock: Lock) { this.lock = lock; }
+        constructor(@Inject(forwardRef(() => Lock)) lock: Lock) {
+          this.lock = lock;
+        }
       }
 
       // Only at this point Lock is defined.

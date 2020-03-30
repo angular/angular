@@ -9,7 +9,7 @@
 import {PLATFORM_ID} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {NgswCommChannel} from '@angular/service-worker/src/low_level';
-import {SwRegistrationOptions, ngswCommChannelFactory} from '@angular/service-worker/src/module';
+import {ngswCommChannelFactory, SwRegistrationOptions} from '@angular/service-worker/src/module';
 import {SwPush} from '@angular/service-worker/src/push';
 import {SwUpdate} from '@angular/service-worker/src/update';
 import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockServiceWorkerRegistration, patchDecodeBase64} from '@angular/service-worker/testing/mock';
@@ -32,14 +32,18 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
 
         mock.setupSw();
 
-        (comm as any).registration.subscribe((reg: any) => { done(); });
+        (comm as any).registration.subscribe((reg: any) => {
+          done();
+        });
       });
       it('can access the registration when it comes after subscription', done => {
         const mock = new MockServiceWorkerContainer();
         const comm = new NgswCommChannel(mock as any);
         const regPromise = mock.getRegistration() as any as MockServiceWorkerRegistration;
 
-        (comm as any).registration.subscribe((reg: any) => { done(); });
+        (comm as any).registration.subscribe((reg: any) => {
+          done();
+        });
 
         mock.setupSw();
       });
@@ -158,7 +162,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
       });
 
       describe('requestSubscription()', () => {
-        it('returns a promise that resolves to the subscription', async() => {
+        it('returns a promise that resolves to the subscription', async () => {
           const promise = push.requestSubscription({serverPublicKey: 'test'});
           expect(promise).toEqual(jasmine.any(Promise));
 
@@ -166,7 +170,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           expect(sub).toEqual(jasmine.any(MockPushSubscription));
         });
 
-        it('calls `PushManager.subscribe()` (with appropriate options)', async() => {
+        it('calls `PushManager.subscribe()` (with appropriate options)', async () => {
           const decode = (charCodeArr: Uint8Array) =>
               Array.from(charCodeArr).map(c => String.fromCharCode(c)).join('');
 
@@ -183,12 +187,12 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
             userVisibleOnly: true,
           });
 
-          const actualAppServerKey = pmSubscribeSpy.calls.first().args[0] !.applicationServerKey;
+          const actualAppServerKey = pmSubscribeSpy.calls.first().args[0]!.applicationServerKey;
           const actualAppServerKeyStr = decode(actualAppServerKey as Uint8Array);
           expect(actualAppServerKeyStr).toBe(appServerKeyStr);
         });
 
-        it('emits the new `PushSubscription` on `SwPush.subscription`', async() => {
+        it('emits the new `PushSubscription` on `SwPush.subscription`', async () => {
           const subscriptionSpy = jasmine.createSpy('subscriptionSpy');
           push.subscription.subscribe(subscriptionSpy);
           const sub = await push.requestSubscription({serverPublicKey: 'test'});
@@ -204,7 +208,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           psUnsubscribeSpy = spyOn(MockPushSubscription.prototype, 'unsubscribe').and.callThrough();
         });
 
-        it('rejects if currently not subscribed to push notifications', async() => {
+        it('rejects if currently not subscribed to push notifications', async () => {
           try {
             await push.unsubscribe();
             throw new Error('`unsubscribe()` should fail');
@@ -213,15 +217,17 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           }
         });
 
-        it('calls `PushSubscription.unsubscribe()`', async() => {
+        it('calls `PushSubscription.unsubscribe()`', async () => {
           await push.requestSubscription({serverPublicKey: 'test'});
           await push.unsubscribe();
 
           expect(psUnsubscribeSpy).toHaveBeenCalledTimes(1);
         });
 
-        it('rejects if `PushSubscription.unsubscribe()` fails', async() => {
-          psUnsubscribeSpy.and.callFake(() => { throw new Error('foo'); });
+        it('rejects if `PushSubscription.unsubscribe()` fails', async () => {
+          psUnsubscribeSpy.and.callFake(() => {
+            throw new Error('foo');
+          });
 
           try {
             await push.requestSubscription({serverPublicKey: 'test'});
@@ -232,7 +238,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           }
         });
 
-        it('rejects if `PushSubscription.unsubscribe()` returns false', async() => {
+        it('rejects if `PushSubscription.unsubscribe()` returns false', async () => {
           psUnsubscribeSpy.and.returnValue(Promise.resolve(false));
 
           try {
@@ -244,7 +250,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           }
         });
 
-        it('emits `null` on `SwPush.subscription`', async() => {
+        it('emits `null` on `SwPush.subscription`', async () => {
           const subscriptionSpy = jasmine.createSpy('subscriptionSpy');
           push.subscription.subscribe(subscriptionSpy);
 
@@ -254,7 +260,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           expect(subscriptionSpy).toHaveBeenCalledWith(null);
         });
 
-        it('does not emit on `SwPush.subscription` on failure', async() => {
+        it('does not emit on `SwPush.subscription` on failure', async () => {
           const subscriptionSpy = jasmine.createSpy('subscriptionSpy');
           const initialSubEmit = new Promise(resolve => subscriptionSpy.and.callFake(resolve));
 
@@ -271,7 +277,9 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           subscriptionSpy.calls.reset();
 
           // Error due to `PushSubscription.unsubscribe()` error.
-          psUnsubscribeSpy.and.callFake(() => { throw new Error('foo'); });
+          psUnsubscribeSpy.and.callFake(() => {
+            throw new Error('foo');
+          });
           await push.unsubscribe().catch(() => undefined);
           expect(subscriptionSpy).not.toHaveBeenCalled();
 
@@ -338,7 +346,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           push.subscription.subscribe(subscriptionSpy);
         });
 
-        it('emits on worker-driven changes (i.e. when the controller changes)', async() => {
+        it('emits on worker-driven changes (i.e. when the controller changes)', async () => {
           // Initial emit for the current `ServiceWorkerController`.
           await nextSubEmitPromise;
           expect(subscriptionSpy).toHaveBeenCalledTimes(1);
@@ -353,7 +361,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           expect(subscriptionSpy).toHaveBeenCalledWith(null);
         });
 
-        it('emits on subscription changes (i.e. when subscribing/unsubscribing)', async() => {
+        it('emits on subscription changes (i.e. when subscribing/unsubscribing)', async () => {
           await nextSubEmitPromise;
           subscriptionSpy.calls.reset();
 
@@ -391,11 +399,16 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
         });
 
         it('gives an error when registering', done => {
-          push.requestSubscription({serverPublicKey: 'test'}).catch(err => { done(); });
+          push.requestSubscription({serverPublicKey: 'test'}).catch(err => {
+            done();
+          });
         });
 
-        it('gives an error when unsubscribing',
-           done => { push.unsubscribe().catch(err => { done(); }); });
+        it('gives an error when unsubscribing', done => {
+          push.unsubscribe().catch(err => {
+            done();
+          });
+        });
       });
     });
 
@@ -461,7 +474,9 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           });
         });
         return update.activateUpdate()
-            .catch(err => { expect(err.message).toEqual('Failed to activate'); })
+            .catch(err => {
+              expect(err.message).toEqual('Failed to activate');
+            })
             .then(() => done())
             .catch(err => done.fail(err));
       });
@@ -475,8 +490,12 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
         expect(() => TestBed.inject(SwUpdate)).not.toThrow();
       });
       describe('with no SW', () => {
-        beforeEach(() => { comm = new NgswCommChannel(undefined); });
-        it('can be instantiated', () => { update = new SwUpdate(comm); });
+        beforeEach(() => {
+          comm = new NgswCommChannel(undefined);
+        });
+        it('can be instantiated', () => {
+          update = new SwUpdate(comm);
+        });
         it('does not crash on subscription to observables', () => {
           update = new SwUpdate(comm);
           update.available.toPromise().catch(err => fail(err));
@@ -484,11 +503,15 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
         });
         it('gives an error when checking for updates', done => {
           update = new SwUpdate(comm);
-          update.checkForUpdate().catch(err => { done(); });
+          update.checkForUpdate().catch(err => {
+            done();
+          });
         });
         it('gives an error when activating updates', done => {
           update = new SwUpdate(comm);
-          update.activateUpdate().catch(err => { done(); });
+          update.activateUpdate().catch(err => {
+            done();
+          });
         });
       });
     });

@@ -3708,8 +3708,7 @@ describe('Integration', () => {
          router.navigate(['/user/:fedor']);
          advance(fixture);
 
-         expect(navigateSpy.calls.mostRecent().args[1] !.queryParams);
-
+         expect(navigateSpy.calls.mostRecent().args[1]!.queryParams);
        })));
   });
 
