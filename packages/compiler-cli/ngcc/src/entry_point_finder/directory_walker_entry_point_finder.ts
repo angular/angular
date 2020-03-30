@@ -68,8 +68,9 @@ export class DirectoryWalkerEntryPointFinder implements EntryPointFinder {
     const primaryEntryPoint =
         getEntryPointInfo(this.fs, this.config, this.logger, sourceDirectory, sourceDirectory);
 
-    // If there is an entry-point but it is not a TypeScript one then exit
-    // It is unlikely that a non TypeScript entry point has a dependency on an Angular library.
+    // If there is an entry-point but it is not compatible with ngcc (it has a bad package.json or
+    // invalid typings) then exit. It is unlikely that such an entry point has a dependency on an
+    // Angular library.
     if (primaryEntryPoint === INCOMPATIBLE_ENTRY_POINT) {
       return [];
     }
@@ -150,8 +151,7 @@ export class DirectoryWalkerEntryPointFinder implements EntryPointFinder {
       let isEntryPoint = false;
       const subEntryPoint =
           getEntryPointInfo(this.fs, this.config, this.logger, packagePath, possibleEntryPointPath);
-      if (subEntryPoint !== NO_ENTRY_POINT && subEntryPoint !== INCOMPATIBLE_ENTRY_POINT &&
-          subEntryPoint.compiledByAngular) {
+      if (subEntryPoint !== NO_ENTRY_POINT && subEntryPoint !== INCOMPATIBLE_ENTRY_POINT) {
         entryPoints.push(subEntryPoint);
         isEntryPoint = true;
       }
