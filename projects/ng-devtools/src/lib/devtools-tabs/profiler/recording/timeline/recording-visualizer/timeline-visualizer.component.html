@@ -2,8 +2,8 @@
   <ng-container *ngSwitchCase="cmpVisualizationModes.FlameGraph">
     <ng-flamegraph-visualizer [bars]="records"></ng-flamegraph-visualizer>
   </ng-container>
-  <ng-container *ngSwitchCase="cmpVisualizationModes.WebTreeGraph">
-    <ng-webtreegraph-visualizer [records]="records"></ng-webtreegraph-visualizer>
+  <ng-container *ngSwitchCase="cmpVisualizationModes.TreeMap">
+    <ng-tree-map-visualizer [records]="records"></ng-tree-map-visualizer>
   </ng-container>
   <ng-container *ngSwitchCase="cmpVisualizationModes.BarGraph">
     <ng-bargraph-visualizer [records]="records"></ng-bargraph-visualizer>

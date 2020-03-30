@@ -1,18 +1,18 @@
 import { AfterViewInit, Component, ElementRef, HostListener, Input, OnInit, ViewChild } from '@angular/core';
 import * as treemap from 'webtreemap/build/webtreemap';
-import { WebtreegraphNode } from '../../record-formatter/webtreegraph-formatter';
+import { TreeMapNode } from '../../record-formatter/tree-map-formatter';
 import { Subject } from 'rxjs';
 import { throttleTime } from 'rxjs/operators';
 
 @Component({
-  selector: 'ng-webtreegraph-visualizer',
-  templateUrl: './webtreegraph-visualizer.component.html',
-  styleUrls: ['./webtreegraph-visualizer.component.scss'],
+  selector: 'ng-tree-map-visualizer',
+  templateUrl: './tree-map-visualizer.component.html',
+  styleUrls: ['./tree-map-visualizer.component.scss'],
 })
-export class WebtreegraphVisualizerComponent implements AfterViewInit, OnInit {
-  @Input() set records(data: WebtreegraphNode[]) {
+export class TreeMapVisualizerComponent implements AfterViewInit, OnInit {
+  @Input() set records(data: TreeMapNode[]) {
     // first element in data is the Application node
-    this.webTreeRecords = data[0];
+    this.treeMapRecords = data[0];
     if (this.tree) {
       this.updateTree();
     }
@@ -20,7 +20,7 @@ export class WebtreegraphVisualizerComponent implements AfterViewInit, OnInit {
 
   private changeSize = new Subject<void>();
 
-  webTreeRecords: WebtreegraphNode;
+  treeMapRecords: TreeMapNode;
 
   @ViewChild('webTree') tree: ElementRef;
 
@@ -41,7 +41,7 @@ export class WebtreegraphVisualizerComponent implements AfterViewInit, OnInit {
   }
 
   createTree(): void {
-    treemap.render(this.tree.nativeElement, this.webTreeRecords as any, {
+    treemap.render(this.tree.nativeElement, this.treeMapRecords as any, {
       padding: [20, 5, 5, 5],
       caption: (node) => `${node.id}: ${node.size.toFixed(3)} ms`,
       showNode: () => true,
