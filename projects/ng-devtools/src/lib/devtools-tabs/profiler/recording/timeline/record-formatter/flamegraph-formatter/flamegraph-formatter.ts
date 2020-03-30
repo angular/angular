@@ -3,11 +3,14 @@ import { ElementProfile, ProfilerFrame } from 'protocol';
 
 export interface FlamegraphNode {
   value: number;
+  color?: string;
   children: FlamegraphNode[];
   label: string;
   instances: number;
   original: ElementProfile;
 }
+
+export const ROOT_LEVEL_ELEMENT_LABEL = 'Entire application';
 
 export class FlamegraphFormatter extends RecordFormatter<FlamegraphNode> {
   format(records: ProfilerFrame[]): TimelineView<FlamegraphNode> {
@@ -16,6 +19,23 @@ export class FlamegraphFormatter extends RecordFormatter<FlamegraphNode> {
     };
     records.forEach((record) => {
       this.insertTimelineRecord(result.timeline, record);
+      const last = result.timeline[result.timeline.length - 1];
+      if (last.app.length > 1) {
+        const roots = last.app;
+        last.app = [
+          {
+            value: 0,
+            label: ROOT_LEVEL_ELEMENT_LABEL,
+            children: roots,
+            color: '#ccc',
+            instances: 1,
+            original: {
+              children: [],
+              directives: [],
+            },
+          },
+        ];
+      }
     });
     result.timeline = result.timeline.filter((entry) => entry.app.length > 0 && entry.timeSpent > 0);
     return result;
