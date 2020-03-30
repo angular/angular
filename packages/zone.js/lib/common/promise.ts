@@ -1,3 +1,5 @@
+import {patchMethod} from './utils';
+
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -500,8 +502,8 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
   api.patchThen = patchThen;
 
   function zoneify(fn: Function) {
-    return function(this: unknown) {
-      let resultPromise = fn.apply(this, arguments);
+    return function(self: any, args: any[]) {
+      let resultPromise = fn.apply(self, args);
       if (resultPromise instanceof ZoneAwarePromise) {
         return resultPromise;
       }
@@ -515,11 +517,7 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
 
   if (NativePromise) {
     patchThen(NativePromise);
-    const fetch = global['fetch'];
-    if (typeof fetch == 'function') {
-      global[api.symbol('fetch')] = fetch;
-      global['fetch'] = zoneify(fetch);
-    }
+    patchMethod(global, 'fetch', delegate => zoneify(delegate));
   }
 
   // This is not part of public API, but it is useful for tests, so we expose it.
