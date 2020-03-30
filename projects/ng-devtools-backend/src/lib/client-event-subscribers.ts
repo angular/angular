@@ -18,7 +18,6 @@ import { setConsoleReference } from './selected-component';
 import { unHighlight } from './highlighter';
 import { getAngularVersion, appIsAngularInDevMode, appIsSupportedAngularVersion } from './angular-check';
 import { observeDOM, getDirectiveId, getDirectiveForest, indexDirectiveForest } from './component-tree-identifiers';
-import { IndexedNode } from './observer/identity-tracker';
 
 export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void => {
   messageBus.on('shutdown', shutdownCallback(messageBus));
@@ -166,7 +165,7 @@ export interface SerializableComponentTreeNode
 // We don't need the component instance, so we just traverse the tree
 // and leave the component name.
 export const prepareForestForSerialization = (roots: ComponentTreeNode[]): SerializableComponentTreeNode[] => {
-  return roots.map(node => {
+  return roots.map((node) => {
     return {
       element: node.element,
       component: node.component
@@ -176,7 +175,7 @@ export const prepareForestForSerialization = (roots: ComponentTreeNode[]): Seria
             id: getDirectiveId(node.component.instance),
           }
         : null,
-      directives: node.directives.map(d => ({ name: d.name, id: getDirectiveId(d.instance) })),
+      directives: node.directives.map((d) => ({ name: d.name, id: getDirectiveId(d.instance) })),
       children: prepareForestForSerialization(node.children),
     } as SerializableComponentTreeNode;
   });
