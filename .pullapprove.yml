@@ -506,7 +506,7 @@ groups:
   # =========================================================
   #  Framework: Service Worker
   # =========================================================
-  fw-server-worker:
+  fw-service-worker:
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
