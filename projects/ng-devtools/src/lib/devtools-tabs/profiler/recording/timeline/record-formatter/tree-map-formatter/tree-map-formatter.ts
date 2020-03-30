@@ -1,17 +1,17 @@
 import { AppEntry, RecordFormatter, TimelineView } from '../record-formatter';
 import { ElementProfile, ProfilerFrame } from 'protocol';
 
-export interface WebtreegraphNode {
+export interface TreeMapNode {
   id: string;
   value: number;
   size: number;
-  children: WebtreegraphNode[];
+  children: TreeMapNode[];
   original: ElementProfile | null;
 }
 
-export class WebtreegraphFormatter extends RecordFormatter<WebtreegraphNode> {
+export class TreeMapFormatter extends RecordFormatter<TreeMapNode> {
   format(records: ProfilerFrame[]): any {
-    const result: TimelineView<WebtreegraphNode> = {
+    const result: TimelineView<TreeMapNode> = {
       timeline: [],
     };
     records.forEach((record) => {
@@ -21,8 +21,8 @@ export class WebtreegraphFormatter extends RecordFormatter<WebtreegraphNode> {
     return result;
   }
 
-  insertTimelineRecord(result: AppEntry<WebtreegraphNode>[], record: ProfilerFrame): void {
-    const entry: AppEntry<WebtreegraphNode> = {
+  insertTimelineRecord(result: AppEntry<TreeMapNode>[], record: ProfilerFrame): void {
+    const entry: AppEntry<TreeMapNode> = {
       app: [],
       timeSpent: 0,
       source: record.source,
@@ -45,14 +45,14 @@ export class WebtreegraphFormatter extends RecordFormatter<WebtreegraphNode> {
     result.push(entry);
   }
 
-  addFrame(nodes: WebtreegraphNode[], elements: ElementProfile[], prev: WebtreegraphNode | null = null): void {
+  addFrame(nodes: TreeMapNode[], elements: ElementProfile[], prev: TreeMapNode | null = null): void {
     elements.forEach((element) => {
       if (!element) {
         console.error('Unable to insert undefined element');
         return;
       }
       const nodeVal = super.getValue(element);
-      const node: WebtreegraphNode = {
+      const node: TreeMapNode = {
         id: super.getLabel(element),
         size: nodeVal,
         value: nodeVal,

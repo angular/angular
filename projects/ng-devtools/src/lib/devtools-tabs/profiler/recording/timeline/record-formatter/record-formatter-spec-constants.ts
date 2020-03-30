@@ -49,7 +49,7 @@ export const SIMPLE_FORMATTED_FLAMEGRAPH_RECORD = [
     original: SIMPLE_RECORD[0],
   },
 ];
-export const SIMPLE_FORMATTED_WEBTREEGRAPH_RECORD = [
+export const SIMPLE_FORMATTED_TREE_MAP_RECORD = [
   Object({
     id: '[NgForOf]',
     size: 17,

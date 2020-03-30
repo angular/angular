@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { VisualizationMode } from '../timeline.component';
 import { FlamegraphNode } from '../record-formatter/flamegraph-formatter';
-import { WebtreegraphNode } from '../record-formatter/webtreegraph-formatter';
+import { TreeMapNode } from '../record-formatter/tree-map-formatter';
 import { BargraphNode } from '../record-formatter/bargraph-formatter';
 
 @Component({
@@ -11,7 +11,7 @@ import { BargraphNode } from '../record-formatter/bargraph-formatter';
 })
 export class TimelineVisualizerComponent {
   @Input() visualizationMode: VisualizationMode;
-  @Input() records: FlamegraphNode[] | WebtreegraphNode[] | BargraphNode[];
+  @Input() records: FlamegraphNode[] | TreeMapNode[] | BargraphNode[];
 
   cmpVisualizationModes = VisualizationMode;
 }

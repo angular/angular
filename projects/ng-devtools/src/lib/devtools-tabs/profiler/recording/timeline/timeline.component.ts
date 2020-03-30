@@ -3,17 +3,17 @@ import { ProfilerFrame } from 'protocol';
 import { FlamegraphFormatter, FlamegraphNode } from './record-formatter/flamegraph-formatter';
 import { BarGraphFormatter, BargraphNode } from './record-formatter/bargraph-formatter';
 import { AppEntry, TimelineView, GraphNode } from './record-formatter/record-formatter';
-import { WebtreegraphFormatter, WebtreegraphNode } from './record-formatter/webtreegraph-formatter';
+import { TreeMapFormatter, TreeMapNode } from './record-formatter/tree-map-formatter';
 
 export enum VisualizationMode {
   FlameGraph,
-  WebTreeGraph,
+  TreeMap,
   BarGraph,
 }
 
 const formatters = {
   [VisualizationMode.FlameGraph]: new FlamegraphFormatter(),
-  [VisualizationMode.WebTreeGraph]: new WebtreegraphFormatter(),
+  [VisualizationMode.TreeMap]: new TreeMapFormatter(),
   [VisualizationMode.BarGraph]: new BarGraphFormatter(),
 };
 
@@ -37,20 +37,20 @@ export class TimelineComponent {
 
   @Input() unFormattedRecords: ProfilerFrame[];
 
-  profileRecords: TimelineView<FlamegraphNode> | TimelineView<WebtreegraphNode> | TimelineView<BargraphNode> = {
+  profileRecords: TimelineView<FlamegraphNode> | TimelineView<TreeMapNode> | TimelineView<BargraphNode> = {
     timeline: [],
   };
   currentView = 0;
 
   cmpVisualizationModes = VisualizationMode;
   visualizationMode = VisualizationMode.BarGraph;
-  graphData: GraphNode<FlamegraphNode | WebtreegraphNode | BargraphNode>[] = [];
+  graphData: GraphNode<FlamegraphNode | TreeMapNode | BargraphNode>[] = [];
 
-  get formatter(): FlamegraphFormatter | WebtreegraphFormatter | BarGraphFormatter {
+  get formatter(): FlamegraphFormatter | TreeMapFormatter | BarGraphFormatter {
     return formatters[this.visualizationMode];
   }
 
-  get recordsView(): AppEntry<FlamegraphNode> | AppEntry<WebtreegraphNode> | AppEntry<BargraphNode> {
+  get recordsView(): AppEntry<FlamegraphNode> | AppEntry<TreeMapNode> | AppEntry<BargraphNode> {
     return this.profileRecords.timeline[this.currentView] || { app: [], timeSpent: 0, source: '' };
   }
 
@@ -80,9 +80,9 @@ export class TimelineComponent {
     this.renderBarChart(this.profileRecords.timeline);
   }
 
-  renderBarChart(timeline: AppEntry<FlamegraphNode | WebtreegraphNode | BargraphNode>[]): void {
+  renderBarChart(timeline: AppEntry<FlamegraphNode | TreeMapNode | BargraphNode>[]): void {
     const maxValue = timeline.reduce(
-      (acc: number, node: AppEntry<FlamegraphNode | WebtreegraphNode | BargraphNode>) => Math.max(acc, node.timeSpent),
+      (acc: number, node: AppEntry<FlamegraphNode | TreeMapNode | BargraphNode>) => Math.max(acc, node.timeSpent),
       0
     );
     const multiplicationFactor = parseFloat((MAX_HEIGHT / maxValue).toFixed(2));
