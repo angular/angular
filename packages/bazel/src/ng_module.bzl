@@ -14,6 +14,7 @@ load(
     "DEFAULT_NG_COMPILER",
     "DEFAULT_NG_XI18N",
     "DEPS_ASPECTS",
+    "LinkablePackageInfo",
     "NpmPackageInfo",
     "TsConfigInfo",
     "compile_ts",
@@ -649,6 +650,15 @@ def _ng_module_impl(ctx):
         # (JSModuleInfo) and remove legacy "typescript" provider
         # once it is no longer needed.
     ])
+
+    if ctx.attr.module_name:
+        path = "/".join([p for p in [ctx.bin_dir.path, ctx.label.workspace_root, ctx.label.package] if p])
+        ts_providers["providers"].append(LinkablePackageInfo(
+            package_name = ctx.attr.module_name,
+            path = path,
+            files = ts_providers["typescript"]["es5_sources"],
+            _tslibrary = True,
+        ))
 
     return ts_providers_dict_to_struct(ts_providers)
 
