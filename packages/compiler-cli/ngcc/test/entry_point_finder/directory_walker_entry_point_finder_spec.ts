@@ -287,6 +287,22 @@ runInEachFileSystem(() => {
         expect(entryPoints).toEqual([]);
       });
 
+      it('should process sub-entry-points within a non-entry-point containing folder in a package',
+         () => {
+           const basePath = _Abs('/containing_folders/node_modules');
+           loadTestFiles([
+             ...createPackage(basePath, 'package'),
+             ...createPackage(fs.resolve(basePath, 'package/container'), 'entry-point-1'),
+           ]);
+           const finder = new DirectoryWalkerEntryPointFinder(
+               fs, config, logger, resolver, manifest, basePath, undefined);
+           const {entryPoints} = finder.findEntryPoints();
+           expect(dumpEntryPointPaths(basePath, entryPoints)).toEqual([
+             ['package', 'package'],
+             ['package', 'package/container/entry-point-1'],
+           ]);
+         });
+
       it('should handle dependencies via pathMappings', () => {
         const basePath = _Abs('/path_mapped/node_modules');
         const pathMappings: PathMappings = {
