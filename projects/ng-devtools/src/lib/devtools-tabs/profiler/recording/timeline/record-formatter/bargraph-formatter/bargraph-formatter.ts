@@ -36,6 +36,7 @@ export class BarGraphFormatter extends RecordFormatter<BargraphNode> {
 
   addFrame(nodes: BargraphNode[], elements: ElementProfile[]): number {
     let timeSpent = 0;
+    const suffix = addSpaces(nodes.length);
     elements.forEach((element) => {
       // Possibly undefined because of
       // the insertion on the backend.
@@ -50,7 +51,7 @@ export class BarGraphFormatter extends RecordFormatter<BargraphNode> {
       element.directives.forEach((dir) => {
         const innerNode: BargraphNode = {
           value: super.getDirectiveValue(dir),
-          name: dir.name + addSpaces(nodes.length),
+          name: dir.name + suffix,
           original: element,
         };
         nodes.push(innerNode);
@@ -60,4 +61,4 @@ export class BarGraphFormatter extends RecordFormatter<BargraphNode> {
   }
 }
 
-const addSpaces = (length: number) => Array.from(Array(length).keys()).reduce((acc, _) => acc + ' ', '');
+const addSpaces = (length: number) => ' '.repeat(length);
