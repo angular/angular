@@ -174,6 +174,8 @@ export class TemplateReference {
   index = null;
   myClick(event: any) {}
   birthday = new Date();
+  readonlyHeroes: ReadonlyArray<Readonly<Hero>> = this.heroes;
+  constNames = [{name: 'name'}] as const ;
 }
 
 @Component({

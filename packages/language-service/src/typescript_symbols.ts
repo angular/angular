@@ -127,10 +127,13 @@ class TypeScriptSymbolQuery implements SymbolQuery {
 
   getElementType(type: Symbol): Symbol|undefined {
     if (type instanceof TypeWrapper) {
-      const tSymbol = type.tsType.symbol;
-      const tArgs = type.typeArguments();
-      if (!tSymbol || tSymbol.name !== 'Array' || !tArgs || tArgs.length != 1) return;
-      return tArgs[0];
+      const ty = type.tsType;
+      const tyArgs = type.typeArguments();
+      // The type should be Array-like, like Array<T> or ReadonlyArray<T>.
+      // Since arrays are actually objects in JavaScript (and TypeScript doesn't expose a more
+      // specific type), check if the type is object-like and has one type argument.
+      if (!(ty.flags & ts.TypeFlags.Object) || tyArgs?.length != 1) return;
+      return tyArgs[0];
     }
   }
 
