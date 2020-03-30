@@ -25,26 +25,41 @@ describe('global utils', () => {
   describe('publishDefaultGlobalUtils', () => {
     beforeEach(() => publishDefaultGlobalUtils());
 
-    it('should publish getComponent', () => { assertPublished('getComponent', getComponent); });
+    it('should publish getComponent', () => {
+      assertPublished('getComponent', getComponent);
+    });
 
-    it('should publish getContext', () => { assertPublished('getContext', getContext); });
+    it('should publish getContext', () => {
+      assertPublished('getContext', getContext);
+    });
 
-    it('should publish getListeners', () => { assertPublished('getListeners', getListeners); });
+    it('should publish getListeners', () => {
+      assertPublished('getListeners', getListeners);
+    });
 
-    it('should publish getOwningComponent',
-       () => { assertPublished('getOwningComponent', getOwningComponent); });
+    it('should publish getOwningComponent', () => {
+      assertPublished('getOwningComponent', getOwningComponent);
+    });
 
-    it('should publish getRootComponents',
-       () => { assertPublished('getRootComponents', getRootComponents); });
+    it('should publish getRootComponents', () => {
+      assertPublished('getRootComponents', getRootComponents);
+    });
 
-    it('should publish getDirectives', () => { assertPublished('getDirectives', getDirectives); });
+    it('should publish getDirectives', () => {
+      assertPublished('getDirectives', getDirectives);
+    });
 
-    it('should publish getHostComponent',
-       () => { assertPublished('getHostElement', getHostElement); });
+    it('should publish getHostComponent', () => {
+      assertPublished('getHostElement', getHostElement);
+    });
 
-    it('should publish getInjector', () => { assertPublished('getInjector', getInjector); });
+    it('should publish getInjector', () => {
+      assertPublished('getInjector', getInjector);
+    });
 
-    it('should publish applyChanges', () => { assertPublished('applyChanges', applyChanges); });
+    it('should publish applyChanges', () => {
+      assertPublished('applyChanges', applyChanges);
+    });
   });
 });
 

@@ -7,7 +7,7 @@
  */
 
 import {ApplicationRef, PLATFORM_ID} from '@angular/core';
-import {TestBed, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
+import {fakeAsync, flushMicrotasks, TestBed, tick} from '@angular/core/testing';
 import {Subject} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
 
@@ -33,7 +33,7 @@ describe('ServiceWorkerModule', () => {
           spyOn(navigator.serviceWorker, 'register').and.returnValue(Promise.resolve(null as any)));
 
   describe('register()', () => {
-    const configTestBed = async(opts: SwRegistrationOptions) => {
+    const configTestBed = async (opts: SwRegistrationOptions) => {
       TestBed.configureTestingModule({
         imports: [ServiceWorkerModule.register('sw.js', opts)],
         providers: [{provide: PLATFORM_ID, useValue: 'browser'}],
@@ -42,35 +42,35 @@ describe('ServiceWorkerModule', () => {
       await untilStable();
     };
 
-    it('sets the registration options', async() => {
+    it('sets the registration options', async () => {
       await configTestBed({enabled: true, scope: 'foo'});
 
       expect(TestBed.inject(SwRegistrationOptions)).toEqual({enabled: true, scope: 'foo'});
       expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: 'foo'});
     });
 
-    it('can disable the SW', async() => {
+    it('can disable the SW', async () => {
       await configTestBed({enabled: false});
 
       expect(TestBed.inject(SwUpdate).isEnabled).toBe(false);
       expect(swRegisterSpy).not.toHaveBeenCalled();
     });
 
-    it('can enable the SW', async() => {
+    it('can enable the SW', async () => {
       await configTestBed({enabled: true});
 
       expect(TestBed.inject(SwUpdate).isEnabled).toBe(true);
       expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
     });
 
-    it('defaults to enabling the SW', async() => {
+    it('defaults to enabling the SW', async () => {
       await configTestBed({});
 
       expect(TestBed.inject(SwUpdate).isEnabled).toBe(true);
       expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
     });
 
-    it('catches and a logs registration errors', async() => {
+    it('catches and a logs registration errors', async () => {
       const consoleErrorSpy = spyOn(console, 'error');
       swRegisterSpy.and.returnValue(Promise.reject('no reason'));
 
@@ -92,7 +92,7 @@ describe('ServiceWorkerModule', () => {
           });
         };
 
-    it('sets the registration options (and overwrites those set via `.register()`', async() => {
+    it('sets the registration options (and overwrites those set via `.register()`', async () => {
       configTestBed({enabled: true, scope: 'provider'});
       await untilStable();
 
@@ -100,7 +100,7 @@ describe('ServiceWorkerModule', () => {
       expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: 'provider'});
     });
 
-    it('can disable the SW', async() => {
+    it('can disable the SW', async () => {
       configTestBed({enabled: false}, {enabled: true});
       await untilStable();
 
@@ -108,7 +108,7 @@ describe('ServiceWorkerModule', () => {
       expect(swRegisterSpy).not.toHaveBeenCalled();
     });
 
-    it('can enable the SW', async() => {
+    it('can enable the SW', async () => {
       configTestBed({enabled: true}, {enabled: false});
       await untilStable();
 
@@ -116,7 +116,7 @@ describe('ServiceWorkerModule', () => {
       expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
     });
 
-    it('defaults to enabling the SW', async() => {
+    it('defaults to enabling the SW', async () => {
       configTestBed({}, {enabled: false});
       await untilStable();
 

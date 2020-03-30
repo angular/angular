@@ -29,8 +29,8 @@ const XSSI_PREFIX = ')]}\'\n';
 
 {
   describe('XhrBackend', () => {
-    let factory: MockXhrFactory = null !;
-    let backend: HttpXhrBackend = null !;
+    let factory: MockXhrFactory = null!;
+    let backend: HttpXhrBackend = null!;
     beforeEach(() => {
       factory = new MockXhrFactory();
       backend = new HttpXhrBackend(factory);
@@ -92,7 +92,7 @@ const XSSI_PREFIX = ')]}\'\n';
       factory.mock.mockFlush(200, 'OK', JSON.stringify({data: 'some data'}));
       expect(events.length).toBe(2);
       const res = events[1] as HttpResponse<{data: string}>;
-      expect(res.body !.data).toBe('some data');
+      expect(res.body!.data).toBe('some data');
     });
     it('handles a blank json response', () => {
       const events = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
@@ -106,14 +106,14 @@ const XSSI_PREFIX = ')]}\'\n';
       factory.mock.mockFlush(500, 'Error', JSON.stringify({data: 'some data'}));
       expect(events.length).toBe(2);
       const res = events[1] as any as HttpErrorResponse;
-      expect(res.error !.data).toBe('some data');
+      expect(res.error!.data).toBe('some data');
     });
     it('handles a json error response with XSSI prefix', () => {
       const events = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
       factory.mock.mockFlush(500, 'Error', XSSI_PREFIX + JSON.stringify({data: 'some data'}));
       expect(events.length).toBe(2);
       const res = events[1] as any as HttpErrorResponse;
-      expect(res.error !.data).toBe('some data');
+      expect(res.error!.data).toBe('some data');
     });
     it('handles a json string response', () => {
       const events = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
@@ -128,7 +128,7 @@ const XSSI_PREFIX = ')]}\'\n';
       factory.mock.mockFlush(200, 'OK', XSSI_PREFIX + JSON.stringify({data: 'some data'}));
       expect(events.length).toBe(2);
       const res = events[1] as HttpResponse<{data: string}>;
-      expect(res.body !.data).toBe('some data');
+      expect(res.body!.data).toBe('some data');
     });
     it('emits unsuccessful responses via the error path', done => {
       backend.handle(TEST_POST).subscribe(undefined, (err: HttpErrorResponse) => {
