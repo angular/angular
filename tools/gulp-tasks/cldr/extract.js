@@ -138,7 +138,7 @@ function generateGlobalLocale(locale, localeData, baseCurrencies) {
   global.ng = global.ng || {};
   global.ng.common = global.ng.common || {};
   global.ng.common.locales = global.ng.common.locales || {};
-  const u = undefined;
+  var u = undefined;
   ${getPluralFunction(locale, false)}
   global.ng.common.locales['${normalizeLocale(locale)}'] = ${data};
 })(typeof globalThis !== 'undefined' && globalThis || typeof global !== 'undefined' && global || typeof window !== 'undefined' && window);
@@ -559,18 +559,21 @@ function toRegExp(s) {
  * todo(ocombe): replace "cldr" extractPluralRuleFunction with our own extraction using "CldrJS"
  * because the 2 libs can become out of sync if they use different versions of the cldr database
  */
-function getPluralFunction(locale, withTypes = true) {
+function getPluralFunction(locale, typescript = true) {
   let fn = cldr.extractPluralRuleFunction(locale).toString();
 
   if (fn === EMPTY_RULE) {
     fn = DEFAULT_RULE;
   }
 
-  const numberType = withTypes ? ': number' : '';
+  const numberType = typescript ? ': number' : '';
   fn = fn.replace(/function anonymous\(n[^}]+{/g, `function plural(n${numberType})${numberType} {`)
-           .replace(toRegExp('var'), 'let')
            .replace(toRegExp('if(typeof n==="string")n=parseInt(n,10);'), '')
            .replace(toRegExp('\n}'), ';\n}');
+
+  if (typescript) {
+    fn = fn.replace(toRegExp('var'), 'let');
+  }
 
   // The replacement values must match the `Plural` enum from common.
   // We do not use the enum directly to avoid depending on that package.

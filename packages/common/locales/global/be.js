@@ -13,7 +13,7 @@
   global.ng = global.ng || {};
   global.ng.common = global.ng.common || {};
   global.ng.common.locales = global.ng.common.locales || {};
-  const u = undefined;
+  var u = undefined;
   function plural(n) {
     if (n % 10 === 1 && !(n % 100 === 11)) return 1;
     if (n % 10 === Math.floor(n % 10) && n % 10 >= 2 && n % 10 <= 4 &&

@@ -13,7 +13,7 @@
   global.ng = global.ng || {};
   global.ng.common = global.ng.common || {};
   global.ng.common.locales = global.ng.common.locales || {};
-  const u = undefined;
+  var u = undefined;
   function plural(n) {
     if (n === 1 || n === 11) return 1;
     if (n === 2 || n === 12) return 2;
