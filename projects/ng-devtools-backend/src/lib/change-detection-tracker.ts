@@ -7,7 +7,7 @@ export const onChangeDetection = (callback: () => void): void => {
   if (hookInitialized) {
     return;
   }
-  const forest = buildDirectiveForest((window as any).ng);
+  const forest = buildDirectiveForest();
   listenAndNotifyOnUpdates(forest, callback);
   hookInitialized = true;
 };
@@ -15,7 +15,7 @@ export const onChangeDetection = (callback: () => void): void => {
 // We patch the component tView template function reference
 // to detect when the change detection has completed and notify the client.
 const listenAndNotifyOnUpdates = (roots: ComponentTreeNode[], callback: () => void): void => {
-  roots.forEach(root => {
+  roots.forEach((root) => {
     const { component } = root;
     if (!component) {
       console.warn('Could not find component instance on root');

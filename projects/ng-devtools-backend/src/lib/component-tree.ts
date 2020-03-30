@@ -1,14 +1,13 @@
 import { deeplySerializeSelectedProperties, serializeDirectiveState } from './state-serializer/state-serializer';
 
 import {
-  DevToolsNode,
-  ElementPosition,
   ComponentExplorerViewQuery,
+  DevToolsNode,
   DirectivesProperties,
-  UpdatedStateData,
+  ElementPosition,
   PropertyQueryTypes,
+  UpdatedStateData,
 } from 'protocol';
-import { DebuggingAPI } from './interfaces';
 import { IndexedNode } from './observer/identity-tracker';
 import { buildDirectiveTree, getLViewFromDirectiveOrElementInstance } from './lview-transform';
 
@@ -30,7 +29,7 @@ export interface ComponentTreeNode extends DevToolsNode<DirectiveInstanceType, C
 }
 
 export const getLatestComponentState = (query: ComponentExplorerViewQuery): DirectivesProperties | undefined => {
-  const node = queryDirectiveForest(query.selectedElement, buildDirectiveForest((window as any).ng));
+  const node = queryDirectiveForest(query.selectedElement, buildDirectiveForest());
   if (!node) {
     return;
   }
@@ -105,10 +104,9 @@ const getRootLViews = (element: Element): Set<any> => {
   return getRootLViewsHelper(element, new Set(Array.from(roots).map(getLViewFromDirectiveOrElementInstance)));
 };
 
-export const buildDirectiveForest = (ngd: DebuggingAPI): ComponentTreeNode[] => {
+export const buildDirectiveForest = (): ComponentTreeNode[] => {
   const roots = getRootLViews(document.documentElement);
-  const result = Array.prototype.concat.apply([], [...roots].map(buildDirectiveTree));
-  return result;
+  return Array.prototype.concat.apply([], [...roots].map(buildDirectiveTree));
 };
 
 // Based on an ElementID we return a specific component node.
@@ -164,12 +162,12 @@ const findElementIDFromNativeElementInForest = (
 
 export const findNodeFromSerializedPosition = (serializedPosition: string) => {
   const position: number[] = serializedPosition.split(',').map((index) => parseInt(index, 10));
-  return queryDirectiveForest(position, buildDirectiveForest(ngDebug()));
+  return queryDirectiveForest(position, buildDirectiveForest());
 };
 
 export const updateState = (updatedStateData: UpdatedStateData): void => {
   const ngd = ngDebug();
-  const node = queryDirectiveForest(updatedStateData.directiveId.element, buildDirectiveForest(ngd));
+  const node = queryDirectiveForest(updatedStateData.directiveId.element, buildDirectiveForest());
   if (!node) {
     console.warn('Could not update the state of component', updatedStateData, 'because the component was not found');
     return;

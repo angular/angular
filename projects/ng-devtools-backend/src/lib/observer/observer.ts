@@ -55,7 +55,7 @@ const hookNames = [
   'AfterViewChecked',
 ];
 
-const hookMethodNames = new Set(hookNames.map(hook => `ng${hook}`));
+const hookMethodNames = new Set(hookNames.map((hook) => `ng${hook}`));
 
 const hookTViewProperties = [
   'preOrderHooks',
@@ -95,7 +95,7 @@ export class DirectiveForestObserver {
   private _patched = new Map<any, () => void>();
   private _undoLifecyclePatch: (() => void)[] = [];
   private _lastChangeDetection = new Map<any, number>();
-  private _tracker = new IdentityTracker((window as any).ng);
+  private _tracker = new IdentityTracker();
   private _forest: IndexedNode[] = [];
 
   constructor(private _config: Partial<Config>) {}
@@ -140,14 +140,14 @@ export class DirectiveForestObserver {
     }
 
     this._patched = new Map<any, () => void>();
-    this._undoLifecyclePatch.forEach(p => p());
+    this._undoLifecyclePatch.forEach((p) => p());
     this._undoLifecyclePatch = [];
   }
 
   indexForest(): void {
     const { newNodes, removedNodes, indexedForest } = this._tracker.index();
     this._forest = indexedForest;
-    newNodes.forEach(node => {
+    newNodes.forEach((node) => {
       if (this._config.onLifecycleHook) {
         this._observeLifecycle(node.directive, node.isComponent);
       }
@@ -156,7 +156,7 @@ export class DirectiveForestObserver {
       }
       this._fireCreationCallback(node.directive, node.isComponent);
     });
-    removedNodes.forEach(node => {
+    removedNodes.forEach((node) => {
       this._patched.delete(node.directive);
       this._fireDestroyCallback(node.directive, node.isComponent);
     });
@@ -206,7 +206,7 @@ export class DirectiveForestObserver {
     if (original.patched) {
       return;
     }
-    declarations.tView.template = function(_: any, component: any): void {
+    declarations.tView.template = function (_: any, component: any): void {
       const start = performance.now();
       original.apply(this, arguments);
       if (self._tracker.hasDirective(component) && self._config.onChangeDetection) {
@@ -240,7 +240,7 @@ export class DirectiveForestObserver {
       return;
     }
     const tview = ctx[1];
-    hookTViewProperties.forEach(hook => {
+    hookTViewProperties.forEach((hook) => {
       const current = tview[hook];
       if (!Array.isArray(current)) {
         return;
@@ -251,7 +251,7 @@ export class DirectiveForestObserver {
         }
         if (typeof el === 'function') {
           const self = this;
-          current[idx] = function(): any {
+          current[idx] = function (): any {
             const start = performance.now();
             const result = el.apply(this, arguments);
             if (self._tracker.hasDirective(this) && self._config.onLifecycleHook) {

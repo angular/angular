@@ -1,7 +1,6 @@
 import { ElementPosition, DevToolsNode } from 'protocol';
 import { buildDirectiveForest, DirectiveInstanceType, ComponentInstanceType } from '../component-tree';
 import { Type } from '@angular/core';
-import { DebuggingAPI } from '../interfaces';
 
 interface TreeNode {
   parent: TreeNode;
@@ -20,8 +19,6 @@ export class IdentityTracker {
   private _currentDirectiveId = new Map<any, number>();
   private _isComponent = new Map<any, boolean>();
 
-  constructor(private _ng: DebuggingAPI) {}
-
   getDirectivePosition(dir: any): ElementPosition | undefined {
     return this._currentDirectivePosition.get(dir);
   }
@@ -35,11 +32,11 @@ export class IdentityTracker {
   }
 
   index(): { newNodes: NodeArray; removedNodes: NodeArray; indexedForest: IndexedNode[] } {
-    const indexedForest = indexForest(buildDirectiveForest(this._ng));
+    const indexedForest = indexForest(buildDirectiveForest());
     const newNodes: NodeArray = [];
     const removedNodes: NodeArray = [];
     const allNodes = new Set<any>();
-    indexedForest.forEach(root => this._index(root, null, newNodes, allNodes));
+    indexedForest.forEach((root) => this._index(root, null, newNodes, allNodes));
     this._currentDirectiveId.forEach((_: number, dir: any) => {
       if (!allNodes.has(dir)) {
         removedNodes.push({ directive: dir, isComponent: !!this._isComponent.get(dir) });
@@ -63,12 +60,12 @@ export class IdentityTracker {
       this._isComponent.set(node.component.instance, true);
       this._indexNode(node.component.instance, node.position, newNodes);
     }
-    (node.directives || []).forEach(dir => {
+    (node.directives || []).forEach((dir) => {
       allNodes.add(dir.instance);
       this._isComponent.set(dir.instance, false);
       this._indexNode(dir.instance, node.position, newNodes);
     });
-    node.children.forEach(child => this._index(child, parent, newNodes, allNodes));
+    node.children.forEach((child) => this._index(child, parent, newNodes, allNodes));
   }
 
   private _indexNode(directive: any, position: ElementPosition, newNodes: NodeArray): void {
@@ -100,7 +97,7 @@ const indexTree = <T extends DevToolsNode<DirectiveInstanceType, ComponentInstan
     position,
     element: node.element,
     component: node.component,
-    directives: node.directives.map(d => ({ position, ...d })),
+    directives: node.directives.map((d) => ({ position, ...d })),
     children: node.children.map((n, i) => indexTree(n, i, position)),
     nativeElement: node.nativeElement,
   } as IndexedNode;
