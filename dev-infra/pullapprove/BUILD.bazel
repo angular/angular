@@ -8,7 +8,9 @@ ts_library(
         "parse-yaml.ts",
         "verify.ts",
     ],
+    devmode_target = "es5",
     module_name = "@angular/dev-infra-private/pullapprove",
+    tsconfig = "//dev-infra:tsconfig.json",
     visibility = ["//dev-infra:__subpackages__"],
     deps = [
         "//dev-infra/utils:config",

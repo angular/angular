@@ -26,6 +26,14 @@ load(
 _FLAT_DTS_FILE_SUFFIX = ".bundle.d.ts"
 _R3_SYMBOLS_DTS_FILE = "src/r3_symbols.d.ts"
 
+_TYPESCRIPT_SCRIPT_TARGETS = ["es3", "es5", "es2015", "es2016", "es2017", "es2018", "esnext"]
+_TYPESCRIPT_MODULE_KINDS = ["none", "commonjs", "amd", "umd", "system", "es2015", "esnext"]
+
+_DEVMODE_TARGET_DEFAULT = "es2015"
+_DEVMODE_MODULE_DEFAULT = "umd"
+_PRODMODE_TARGET_DEFAULT = "es2015"
+_PRODMODE_MODULE_DEFAULT = "esnext"
+
 def is_ivy_enabled(ctx):
     """Determine if the ivy compiler should be used to by the ng_module.
 
@@ -330,7 +338,20 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
             [ctx.workspace_name] + ctx.label.package.split("/") + [ctx.label.name, ""],
         )
 
-    return dict(tsc_wrapped_tsconfig(ctx, files, srcs, **kwargs), **{
+    devmode_manifest = kwargs.pop("devmode_manifest", None)
+    config = tsc_wrapped_tsconfig(ctx, files, srcs, devmode_manifest, **kwargs)
+
+    # Control target & module via attributes
+    if devmode_manifest:
+        # NB: devmode target may still be overriden with a tsconfig bazelOpts.devmodeTargetOverride but that
+        #     configuration settings will be removed in a future major release
+        config["compilerOptions"]["target"] = ctx.attr.devmode_target if hasattr(ctx.attr, "devmode_target") else _DEVMODE_TARGET_DEFAULT
+        config["compilerOptions"]["module"] = ctx.attr.devmode_module if hasattr(ctx.attr, "devmode_module") else _DEVMODE_MODULE_DEFAULT
+    else:
+        config["compilerOptions"]["target"] = ctx.attr.prodmode_target if hasattr(ctx.attr, "prodmode_target") else _PRODMODE_TARGET_DEFAULT
+        config["compilerOptions"]["module"] = ctx.attr.prodmode_module if hasattr(ctx.attr, "prodmode_module") else _PRODMODE_MODULE_DEFAULT
+
+    return dict(config, **{
         "angularCompilerOptions": angular_compiler_options,
     })
 
@@ -752,6 +773,34 @@ NG_MODULE_RULE_ATTRS = dict(dict(COMMON_ATTRIBUTES, **NG_MODULE_ATTRIBUTES), **{
         default = Label("@npm//typescript:typescript__typings"),
     ),
     "entry_point": attr.label(allow_single_file = True),
+    "devmode_module": attr.string(
+        doc = """Set the typescript `module` compiler option for devmode output.
+
+            This value will override the `module` option in the user supplied tsconfig.""",
+        values = _TYPESCRIPT_MODULE_KINDS,
+        default = _DEVMODE_MODULE_DEFAULT,
+    ),
+    "devmode_target": attr.string(
+        doc = """Set the typescript `target` compiler option for devmode output.
+
+            This value will override the `target` option in the user supplied tsconfig.""",
+        values = _TYPESCRIPT_SCRIPT_TARGETS,
+        default = _DEVMODE_TARGET_DEFAULT,
+    ),
+    "prodmode_module": attr.string(
+        doc = """Set the typescript `module` compiler option for prodmode output.
+
+            This value will override the `module` option in the user supplied tsconfig.""",
+        values = _TYPESCRIPT_MODULE_KINDS,
+        default = _PRODMODE_MODULE_DEFAULT,
+    ),
+    "prodmode_target": attr.string(
+        doc = """Set the typescript `target` compiler option for prodmode output.
+
+            This value will override the `target` option in the user supplied tsconfig.""",
+        values = _TYPESCRIPT_SCRIPT_TARGETS,
+        default = _PRODMODE_TARGET_DEFAULT,
+    ),
 
     # Default is %{name}_public_index
     # The suffix points to the generated "bundle index" files that users import from

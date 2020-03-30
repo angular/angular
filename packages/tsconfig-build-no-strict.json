@@ -4,7 +4,6 @@
     "strict": false
   },
   "bazelOptions": {
-    "suppressTsconfigOverrideWarnings": true,
-    "devmodeTargetOverride": "es5"
+    "suppressTsconfigOverrideWarnings": true
   }
 }

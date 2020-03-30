@@ -5,7 +5,9 @@ ts_library(
     srcs = [
         "config.ts",
     ],
+    devmode_target = "es5",
     module_name = "@angular/dev-infra-private/utils",
+    tsconfig = "//dev-infra:tsconfig.json",
     visibility = ["//dev-infra:__subpackages__"],
     deps = [
         "@npm//@types/json5",

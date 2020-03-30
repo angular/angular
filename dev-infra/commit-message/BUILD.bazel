@@ -7,7 +7,9 @@ ts_library(
         "config.ts",
         "validate.ts",
     ],
+    devmode_target = "es5",
     module_name = "@angular/dev-infra-private/commit-message",
+    tsconfig = "//dev-infra:tsconfig.json",
     visibility = ["//dev-infra:__subpackages__"],
     deps = [
         "//dev-infra/utils:config",
@@ -20,6 +22,8 @@ ts_library(
     name = "validate-test",
     testonly = True,
     srcs = ["validate.spec.ts"],
+    devmode_target = "es5",
+    tsconfig = "//dev-infra:tsconfig.json",
     deps = [
         ":commit-message",
         "//dev-infra/utils:config",

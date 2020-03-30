@@ -15,6 +15,7 @@ load("//tools:ng_benchmark.bzl", _ng_benchmark = "ng_benchmark")
 load("//tools/ts-api-guardian:index.bzl", _ts_api_guardian_test = "ts_api_guardian_test", _ts_api_guardian_test_npm_package = "ts_api_guardian_test_npm_package")
 
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
+_DEFAULT_TSCONFIG_BUILD = "//packages:tsconfig-build.json"
 _INTERNAL_NG_MODULE_API_EXTRACTOR = "//packages/bazel/src/api-extractor:api_extractor"
 _INTERNAL_NG_MODULE_COMPILER = "//packages/bazel/src/ngc-wrapped"
 _INTERNAL_NG_MODULE_XI18N = "//packages/bazel/src/ngc-wrapped:xi18n"
@@ -103,11 +104,16 @@ def ts_library(name, tsconfig = None, testonly = False, deps = [], module_name =
         deps.append("@npm//@types/jasmine")
         deps.append("@npm//@types/node")
         deps.append("@npm//@types/events")
-    if not tsconfig and testonly:
-        tsconfig = _DEFAULT_TSCONFIG_TEST
+    if not tsconfig:
+        tsconfig = _DEFAULT_TSCONFIG_TEST if testonly else _DEFAULT_TSCONFIG_BUILD
+    else:
+        print("//%s:%s using tsconfig %s" % (native.package_name(), name, tsconfig))
 
     if not module_name:
         module_name = _default_module_name(testonly)
+
+    # default to es5 unless otherwise specified
+    devmode_target = kwargs.pop("devmode_target", "es5")
 
     _ts_library(
         name = name,
@@ -115,6 +121,7 @@ def ts_library(name, tsconfig = None, testonly = False, deps = [], module_name =
         testonly = testonly,
         deps = deps,
         module_name = module_name,
+        devmode_target = devmode_target,
         **kwargs
     )
 
@@ -137,13 +144,19 @@ def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps 
         deps.append("@npm//@types/jasmine")
         deps.append("@npm//@types/node")
         deps.append("@npm//@types/events")
-    if not tsconfig and testonly:
-        tsconfig = _DEFAULT_TSCONFIG_TEST
+    if not tsconfig:
+        tsconfig = _DEFAULT_TSCONFIG_TEST if testonly else _DEFAULT_TSCONFIG_BUILD
+    else:
+        print("//%s:%s using tsconfig %s" % (native.package_name(), name, tsconfig))
 
     if not module_name:
         module_name = _default_module_name(testonly)
     if not entry_point:
         entry_point = "public_api.ts"
+
+    # default to es5 unless otherwise specified
+    devmode_target = kwargs.pop("devmode_target", "es5")
+
     _ng_module(
         name = name,
         flat_module_out_file = name,
@@ -156,6 +169,7 @@ def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps 
         api_extractor = _INTERNAL_NG_MODULE_API_EXTRACTOR,
         ng_xi18n = _INTERNAL_NG_MODULE_XI18N,
         module_name = module_name,
+        devmode_target = devmode_target,
         **kwargs
     )
 

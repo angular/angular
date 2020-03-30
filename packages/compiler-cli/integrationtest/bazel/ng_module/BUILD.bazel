@@ -8,6 +8,7 @@ ng_module(
     srcs = glob(["*.ts"]),
     api_extractor = "//packages/bazel/src/api-extractor:api_extractor",
     compiler = "//packages/bazel/src/ngc-wrapped",
+    devmode_target = "es5",
     entry_point = "index.ts",
     flat_module_out_file = "flat_module_filename",
     module_name = "some_npm_module",
@@ -18,6 +19,7 @@ ng_module(
         # the old ngc compiler does. Ivy has no metadata.json files so this test does not apply.
         "no-ivy-aot",
     ],
+    tsconfig = "//packages:tsconfig-build.json",
     deps = [
         "//packages/core",
         "@npm//tslib",

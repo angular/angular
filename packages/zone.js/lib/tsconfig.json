@@ -1,5 +1,5 @@
 /**
- * Root tsconfig file for use building all Angular packages. Note there is no rootDir
+ * Root tsconfig file for use building all zone.js packages. Note there is no rootDir
  * and therefore any tsconfig in the package directory will need to define its own
  * rootDir.
  */

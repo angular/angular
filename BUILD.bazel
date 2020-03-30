@@ -11,11 +11,6 @@ exports_files([
     "package.json",
 ])
 
-alias(
-    name = "tsconfig.json",
-    actual = "//packages:tsconfig-build.json",
-)
-
 filegroup(
     name = "web_test_bootstrap_scripts",
     # do not sort

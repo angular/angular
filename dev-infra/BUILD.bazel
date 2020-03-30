@@ -1,12 +1,16 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
 load("@npm_bazel_typescript//:index.bzl", "ts_library")
 
+exports_files(["tsconfig.json"])
+
 ts_library(
     name = "cli",
     srcs = [
         "cli.ts",
     ],
+    devmode_target = "es5",
     module_name = "@angular/dev-infra-private",
+    tsconfig = ":tsconfig.json",
     deps = [
         "//dev-infra/commit-message",
         "//dev-infra/pullapprove",

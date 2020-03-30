@@ -3,6 +3,7 @@ load("//tools:defaults.bzl", "ts_library")
 ts_library(
     name = "module-with-providers",
     srcs = glob(["**/*.ts"]),
+    devmode_target = "es2015",
     tsconfig = "//packages/core/schematics:tsconfig.json",
     visibility = [
         "//packages/core/schematics:__pkg__",

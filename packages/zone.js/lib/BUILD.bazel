@@ -9,6 +9,8 @@ exports_files(glob([
 ts_library(
     name = "zone_d_ts",
     srcs = [":zone.ts"],
+    devmode_target = "es5",
+    tsconfig = ":tsconfig.json",
     deps = [
         "@npm//@types/node",
     ],
@@ -20,7 +22,9 @@ ts_library(
         ["**/*.ts"],
         exclude = ["zone.ts"],
     ),
+    devmode_target = "es5",
     module_name = "zone.js/lib",
+    tsconfig = ":tsconfig.json",
     deps = [
         ":zone_d_ts",
         "@npm//@types/jasmine",
