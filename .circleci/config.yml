@@ -280,7 +280,7 @@ jobs:
 
       - run: yarn lint --branch $CI_GIT_BASE_REVISION
       - run: yarn ts-circular-deps:check
-      - run: yarn -s ng-dev pullapprove:verify
+      - run: yarn -s ng-dev pullapprove verify
 
   test:
     executor:

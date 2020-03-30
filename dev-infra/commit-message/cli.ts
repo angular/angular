@@ -11,8 +11,9 @@ import {validateFile} from './validate-file';
 /** Build the parser for the commit-message commands. */
 export function buildCommitMessageParser(localYargs: yargs.Argv) {
   return localYargs.help().strict().command(
-      'pre-commit-validate', 'Validate the most recent commit message', {},
-      () => { validateFile('.git/COMMIT_EDITMSG'); });
+      'pre-commit-validate', 'Validate the most recent commit message', {}, () => {
+        validateFile('.git/COMMIT_EDITMSG');
+      });
 }
 
 if (require.main == module) {

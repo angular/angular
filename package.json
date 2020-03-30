@@ -148,7 +148,6 @@
   "// 2": "devDependencies are not used under Bazel. Many can be removed after test.sh is deleted.",
   "devDependencies": {
     "@angular/cli": "9.0.3",
-    "@angular/dev-infra-private": "angular/dev-infra-private-builds#3724a71",
     "@bazel/bazelisk": "^1.3.0",
     "@bazel/buildifier": "^0.29.0",
     "@bazel/ibazel": "^0.12.3",
