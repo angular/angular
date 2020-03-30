@@ -61,10 +61,14 @@ menu {
 }
 
 .recording,
-.visualization,
 #profiler-content-wrapper {
   margin: 0;
   height: calc(100% - 24px);
+}
+
+.visualization {
+  margin: 0;
+  height: 100%;
 }
 
 .hidden {
