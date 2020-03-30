@@ -706,6 +706,60 @@ describe('directives', () => {
       expect(callsCount).toEqual({dir: 2, dirOf: 4});
     });
 
+    it('should set unbound template inputs in creation mode only', () => {
+      let dirInstance: StructuralDir;
+      let staticAttrSetCallsCount: number = 0;
+      @Directive({selector: '[dir]'})
+      class StructuralDir {
+        /** @internal */
+        _dirUnboundInputA: any;
+
+        constructor() { dirInstance = this; }
+
+        @Input() dirOf: any;  // bound input
+
+        @Input()
+        set dirUnboundInputA(value: any) {
+          this._dirUnboundInputA = value;
+          staticAttrSetCallsCount++;
+        }
+        get dirUnboundInputA() { return this._dirUnboundInputA; }
+      }
+
+      @Component({
+        template: `
+          <div *dir="let item of items; unboundInputA"></div>
+        `,
+      })
+      class App {
+        items: number[] = [1, 2, 3];
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [App, StructuralDir],
+      });
+      const fixture = TestBed.createComponent(App);
+
+      // Verify that unbound input is set in creation mode in Ivy.
+      // In View Engine such static attrs are set in update mode.
+      expect(dirInstance !.dirUnboundInputA).toBe(ivyEnabled ? '' : undefined);
+      expect(staticAttrSetCallsCount).toBe(ivyEnabled ? 1 : 0);
+
+      // Verify that bound input is not *yet* set, since it's a creation mode
+      expect(dirInstance !.dirOf).toBe(undefined);
+
+      fixture.detectChanges();
+
+      // Verify that bound input value is preserved.
+      // Check that static attribute setter was not called again in Ivy and in View Engine it's
+      // called once at this point.
+      expect(dirInstance !.dirUnboundInputA).toBe(ivyEnabled ? '' : null);
+      expect(staticAttrSetCallsCount).toBe(1);
+
+      // Verify that bound input value is now set
+      expect(dirInstance !.dirOf).toEqual([1, 2, 3]);
+    });
+
     it('should set the directive input only, shadowing the title property of the div, for `[title]="value"`',
        () => {
          @Component({template: `<div dir-with-title [title]="value"></div>`})

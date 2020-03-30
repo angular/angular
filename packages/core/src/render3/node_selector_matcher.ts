@@ -298,11 +298,11 @@ function matchTemplateAttribute(attrs: TAttributes, name: string): number {
   while (i < attrs.length) {
     const attr = attrs[i];
     if (typeof attr === 'number') {  // AttributeMarker
-      const _isTemplateAttrsSection = isTemplateAttrsSection;
+      const wasInTemplateAttrsSection = isTemplateAttrsSection;
       isTemplateAttrsSection = isTemplateAttributeMarker(attr);
       // If we were in a template attrs section and came across non-template marker, that means that
       // the template attrs section is over, so we should exit the function.
-      if (_isTemplateAttrsSection && !isTemplateAttrsSection) {
+      if (wasInTemplateAttrsSection && !isTemplateAttrsSection) {
         return -1;
       }
     } else if (isTemplateAttrsSection && attrs[i] === name) {
