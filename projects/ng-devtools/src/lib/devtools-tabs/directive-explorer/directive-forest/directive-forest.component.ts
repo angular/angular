@@ -11,8 +11,6 @@ import {
 import { DevToolsNode, ElementPosition } from 'protocol';
 import { CdkTree, FlatTreeControl } from '@angular/cdk/tree';
 import { ComponentDataSource, FlatNode } from './component-data-source';
-
-import scrollIntoView from 'scroll-into-view-if-needed';
 import { isChildOf, parentCollapsed } from './directive-forest-utils';
 import { IndexedNode } from './index-forest';
 
@@ -80,11 +78,8 @@ export class DirectiveForestComponent {
       if (!element) {
         return;
       }
-      scrollIntoView(element, {
-        scrollMode: 'if-needed',
-        block: 'nearest',
-        inline: 'nearest',
-      });
+
+      element.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'nearest' });
     }, 0);
   }
 

@@ -50,7 +50,6 @@
     "ngx-vis": "3.0.3",
     "pretty-quick": "^2.0.1",
     "rxjs": "~6.5.3",
-    "scroll-into-view-if-needed": "^2.2.22",
     "tslib": "^1.10.0",
     "uuid": "^7.0.0",
     "webtreemap": "^2.0.1",
