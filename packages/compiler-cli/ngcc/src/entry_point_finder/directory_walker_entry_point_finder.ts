@@ -21,7 +21,7 @@ import {getBasePaths, trackDuration} from './utils';
  * `pathMappings`.
  */
 export class DirectoryWalkerEntryPointFinder implements EntryPointFinder {
-  private basePaths = getBasePaths(this.sourceDirectory, this.pathMappings);
+  private basePaths = getBasePaths(this.logger, this.sourceDirectory, this.pathMappings);
   constructor(
       private fs: FileSystem, private config: NgccConfiguration, private logger: Logger,
       private resolver: DependencyResolver, private entryPointManifest: EntryPointManifest,
