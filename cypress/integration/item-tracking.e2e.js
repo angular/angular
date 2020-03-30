@@ -26,8 +26,6 @@ describe('Tracking items from application to component tree', () => {
         });
       });
 
-    cy.wait(500);
-
-    cy.get('mat-tree').find('mat-tree-node:contains("app-todo[TooltipDirective]")').its('length').should('eq', 3);
+    cy.get('mat-tree mat-tree-node:contains("app-todo[TooltipDirective]")', { timeout: 500 }).should('have.length', 3);
   });
 });
