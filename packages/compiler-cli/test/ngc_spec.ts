@@ -2325,14 +2325,17 @@ describe('ngc transformer command-line', () => {
       }));
       write('lib1/index.ts', `
         import {Directive} from '@angular/core';
+
         @Directive()
         export class BaseClass {}
       `);
       write('index.ts', `
         import {NgModule, Directive} from '@angular/core';
         import {BaseClass} from 'lib1_built';
+
         @Directive({selector: 'my-dir'})
         export class MyDirective extends BaseClass {}
+
         @NgModule({declarations: [MyDirective]})
         export class AppModule {}
       `);
