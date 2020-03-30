@@ -766,27 +766,6 @@
       "title": "API",
       "tooltip": "Details of the Angular packages, classes, interfaces, and other types.",
       "url": "api"
-    },
-    {
-      "title": "Contributing",
-      "tooltip": "How to contribute to the Angular documentation.",
-      "children": [
-        {
-          "title": "Create great Angular docs",
-          "tooltip": "Learn how to create great Angular documentation.",
-          "url": "doc-contributor-guide/overview"
-        },
-        {
-          "title": "Set up your environment",
-          "tooltip": "Set up your environment to contribute to the Angular documentation.",
-          "url": "doc-contributor-guide/set-up-your-environment"
-        },
-        {
-          "title": "Start contributing",
-          "tooltip": "Learn how to start contributing to the Angular documentation set.",
-          "url": "doc-contributor-guide/start-contributing"
-        }
-      ]
     }
   ],
   "Footer": [
