@@ -37,6 +37,10 @@ const setClassMetadataRegExp = (expectedType: string): RegExp =>
 
 const testFiles = loadStandardTestFiles();
 
+function getDiagnosticSourceCode(diag: ts.Diagnostic): string {
+  return diag.file !.text.substr(diag.start !, diag.length !);
+}
+
 runInEachFileSystem(os => {
   describe('ngtsc behavioral tests', () => {
     let env !: NgtscTestEnvironment;
@@ -2898,7 +2902,7 @@ runInEachFileSystem(os => {
     });
 
     it('should provide error location for invalid host properties', () => {
-      const compSrc = `
+      env.write('test.ts', `
         import {Component} from '@angular/core';
 
         @Component({
@@ -2908,12 +2912,12 @@ runInEachFileSystem(os => {
             '(click)': 'act() | pipe',
           }
         })
-        class FooCmp {}`;
+        class FooCmp {}
+      `);
 
-      env.write(`test.ts`, compSrc);
       const errors = env.driveDiagnostics();
-      expect(errors[0].start).toBe(143);
-      expect(trim(errors[0].messageText as string)).toContain('/test.ts@7:17');
+      expect(getDiagnosticSourceCode(errors[0])).toBe('FooCmp');
+      expect(errors[0].messageText).toContain('/test.ts@7:17');
     });
 
     it('should throw in case pipes are used in host listeners', () => {

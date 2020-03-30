@@ -580,51 +580,59 @@ type StringMap<T> = {
   [key: string]: T;
 };
 
+function evaluateHostExpressionBindings(
+    hostExpr: ts.Expression, evaluator: PartialEvaluator): ParsedHostBindings {
+  const hostMetaMap = evaluator.evaluate(hostExpr);
+  if (!(hostMetaMap instanceof Map)) {
+    throw new FatalDiagnosticError(
+        ErrorCode.VALUE_HAS_WRONG_TYPE, hostExpr, `Decorator host metadata must be an object`);
+  }
+  const hostMetadata: StringMap<string|Expression> = {};
+  hostMetaMap.forEach((value, key) => {
+    // Resolve Enum references to their declared value.
+    if (value instanceof EnumValue) {
+      value = value.resolved;
+    }
+
+    if (typeof key !== 'string') {
+      throw new FatalDiagnosticError(
+          ErrorCode.VALUE_HAS_WRONG_TYPE, hostExpr,
+          `Decorator host metadata must be a string -> string object, but found unparseable key`);
+    }
+
+    if (typeof value == 'string') {
+      hostMetadata[key] = value;
+    } else if (value instanceof DynamicValue) {
+      hostMetadata[key] = new WrappedNodeExpr(value.node as ts.Expression);
+    } else {
+      throw new FatalDiagnosticError(
+          ErrorCode.VALUE_HAS_WRONG_TYPE, hostExpr,
+          `Decorator host metadata must be a string -> string object, but found unparseable value`);
+    }
+  });
+
+  const bindings = parseHostBindings(hostMetadata);
+
+  const errors = verifyHostBindings(bindings, createSourceSpan(hostExpr));
+  if (errors.length > 0) {
+    throw new FatalDiagnosticError(
+        // TODO: provide more granular diagnostic and output specific host expression that
+        // triggered an error instead of the whole host object.
+        ErrorCode.HOST_BINDING_PARSE_ERROR, hostExpr,
+        errors.map((error: ParseError) => error.msg).join('\n'));
+  }
+
+  return bindings;
+}
+
 export function extractHostBindings(
     members: ClassMember[], evaluator: PartialEvaluator, coreModule: string | undefined,
     metadata?: Map<string, ts.Expression>): ParsedHostBindings {
-  let bindings: ParsedHostBindings = parseHostBindings({});
+  let bindings: ParsedHostBindings;
   if (metadata && metadata.has('host')) {
-    const expr = metadata.get('host') !;
-    const hostMetaMap = evaluator.evaluate(expr);
-    if (!(hostMetaMap instanceof Map)) {
-      throw new FatalDiagnosticError(
-          ErrorCode.VALUE_HAS_WRONG_TYPE, expr, `Decorator host metadata must be an object`);
-    }
-    const hostMetadata: StringMap<string|Expression> = {};
-    hostMetaMap.forEach((value, key) => {
-      // Resolve Enum references to their declared value.
-      if (value instanceof EnumValue) {
-        value = value.resolved;
-      }
-
-      if (typeof key !== 'string') {
-        throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, expr,
-            `Decorator host metadata must be a string -> string object, but found unparseable key`);
-      }
-
-      if (typeof value == 'string') {
-        hostMetadata[key] = value;
-      } else if (value instanceof DynamicValue) {
-        hostMetadata[key] = new WrappedNodeExpr(value.node as ts.Expression);
-      } else {
-        throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, expr,
-            `Decorator host metadata must be a string -> string object, but found unparseable value`);
-      }
-    });
-
-    bindings = parseHostBindings(hostMetadata);
-
-    const errors = verifyHostBindings(bindings, createSourceSpan(expr));
-    if (errors.length > 0) {
-      throw new FatalDiagnosticError(
-          // TODO: provide more granular diagnostic and output specific host expression that
-          // triggered an error instead of the whole host object.
-          ErrorCode.HOST_BINDING_PARSE_ERROR, metadata !.get('host') !,
-          errors.map((error: ParseError) => error.msg).join('\n'));
-    }
+    bindings = evaluateHostExpressionBindings(metadata.get('host') !, evaluator);
+  } else {
+    bindings = parseHostBindings({});
   }
 
   filterToMembersWithDecorator(members, 'HostBinding', coreModule).forEach(({member, decorators}) => {

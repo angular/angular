@@ -479,11 +479,10 @@ export function wrapTypeReference(reflector: ReflectionHost, clazz: ClassDeclara
 /** Creates a ParseSourceSpan for a TypeScript node. */
 export function createSourceSpan(node: ts.Node): ParseSourceSpan {
   const sf = node.getSourceFile();
-  const [startOffset, endOffset] = [node.getStart(), node.end];
+  const [startOffset, endOffset] = [node.getStart(), node.getEnd()];
   const {line: startLine, character: startCol} = sf.getLineAndCharacterOfPosition(startOffset);
   const {line: endLine, character: endCol} = sf.getLineAndCharacterOfPosition(endOffset);
-  const parseSf =
-      new ParseSourceFile(node.getSourceFile().getFullText(), node.getSourceFile().fileName);
+  const parseSf = new ParseSourceFile(sf.getFullText(), sf.fileName);
 
   // +1 because values are zero-indexed.
   return new ParseSourceSpan(

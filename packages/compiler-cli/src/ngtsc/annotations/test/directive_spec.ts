@@ -18,10 +18,9 @@ import {DirectiveDecoratorHandler} from '../src/directive';
 
 runInEachFileSystem(() => {
   let _: typeof absoluteFrom;
+  beforeEach(() => _ = absoluteFrom);
 
   describe('DirectiveDecoratorHandler', () => {
-    beforeEach(() => _ = absoluteFrom);
-
     it('should use the `ReflectionHost` to detect class inheritance', () => {
       const {program} = makeProgram([
         {
@@ -42,17 +41,11 @@ runInEachFileSystem(() => {
         },
       ]);
 
-      // By default, `TestReflectionHost#hasBaseClass()` returns `false`.
-      const analysis1 = analyzeDirective(program, 'TestDir1');
+      const analysis1 = analyzeDirective(program, 'TestDir1', /*hasBaseClass*/ false);
       expect(analysis1.meta.usesInheritance).toBe(false);
 
-      // Tweak `TestReflectionHost#hasBaseClass()` to return true.
-      TestReflectionHost.hasBaseClassReturnValue = true;
-
-      const analysis2 = analyzeDirective(program, 'TestDir2');
+      const analysis2 = analyzeDirective(program, 'TestDir2', /*hasBaseClass*/ true);
       expect(analysis2.meta.usesInheritance).toBe(true);
-
-      TestReflectionHost.hasBaseClassReturnValue = false;
     });
 
     it('should record the source span of a Directive class type', () => {
@@ -82,17 +75,17 @@ runInEachFileSystem(() => {
   });
 
   // Helpers
-  class TestReflectionHost extends TypeScriptReflectionHost {
-    static hasBaseClassReturnValue = false;
+  function analyzeDirective(program: ts.Program, dirName: string, hasBaseClass: boolean = false) {
+    class TestReflectionHost extends TypeScriptReflectionHost {
+      constructor(checker: ts.TypeChecker, private hasBaseClassReturnValue: boolean) {
+        super(checker);
+      }
 
-    hasBaseClass(_clazz: ClassDeclaration): boolean {
-      return TestReflectionHost.hasBaseClassReturnValue;
+      hasBaseClass(_class: ClassDeclaration): boolean { return this.hasBaseClassReturnValue; }
     }
-  }
 
-  function analyzeDirective(program: ts.Program, dirName: string) {
     const checker = program.getTypeChecker();
-    const reflectionHost = new TestReflectionHost(checker);
+    const reflectionHost = new TestReflectionHost(checker, hasBaseClass);
     const evaluator = new PartialEvaluator(reflectionHost, checker, /*dependencyTracker*/ null);
     const metaReader = new LocalMetadataRegistry();
     const dtsReader = new DtsMetadataReader(checker, reflectionHost);
