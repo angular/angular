@@ -10,7 +10,7 @@ import {AbsoluteFsPath, FileSystem, absoluteFrom, getFileSystem} from '../../../
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {NgccConfiguration} from '../../src/packages/configuration';
-import {EntryPoint, INVALID_ENTRY_POINT, NO_ENTRY_POINT, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat, getEntryPointInfo} from '../../src/packages/entry_point';
+import {EntryPoint, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat, getEntryPointInfo} from '../../src/packages/entry_point';
 import {MockLogger} from '../helpers/mock_logger';
 
 runInEachFileSystem(() => {
@@ -165,7 +165,7 @@ runInEachFileSystem(() => {
        });
 
 
-    it('should return `INVALID_ENTRY_POINT` if there is no typings or types field in the package.json',
+    it('should return `INCOMPATIBLE_ENTRY_POINT` if there is no typings or types field in the package.json',
        () => {
          loadTestFiles([
            {
@@ -182,10 +182,10 @@ runInEachFileSystem(() => {
          const entryPoint = getEntryPointInfo(
              fs, config, new MockLogger(), SOME_PACKAGE,
              _('/project/node_modules/some_package/missing_typings'));
-         expect(entryPoint).toBe(INVALID_ENTRY_POINT);
+         expect(entryPoint).toBe(INCOMPATIBLE_ENTRY_POINT);
        });
 
-    it('should return `INVALID_ENTRY_POINT` if the typings or types field is not a string in the package.json',
+    it('should return `INCOMPATIBLE_ENTRY_POINT` if the typings or types field is not a string in the package.json',
        () => {
          loadTestFiles([
            {
@@ -202,7 +202,7 @@ runInEachFileSystem(() => {
          const entryPoint = getEntryPointInfo(
              fs, config, new MockLogger(), SOME_PACKAGE,
              _('/project/node_modules/some_package/typings_array'));
-         expect(entryPoint).toBe(INVALID_ENTRY_POINT);
+         expect(entryPoint).toBe(INCOMPATIBLE_ENTRY_POINT);
        });
 
     for (let prop of SUPPORTED_FORMAT_PROPERTIES) {
@@ -359,7 +359,7 @@ runInEachFileSystem(() => {
       });
     });
 
-    it('should return `INVALID_ENTRY_POINT` if the package.json is not valid JSON', () => {
+    it('should return `INCOMPATIBLE_ENTRY_POINT` if the package.json is not valid JSON', () => {
       loadTestFiles([
         // package.json might not be a valid JSON
         // for example, @schematics/angular contains a package.json blueprint
@@ -373,7 +373,7 @@ runInEachFileSystem(() => {
       const entryPoint = getEntryPointInfo(
           fs, config, new MockLogger(), SOME_PACKAGE,
           _('/project/node_modules/some_package/unexpected_symbols'));
-      expect(entryPoint).toBe(INVALID_ENTRY_POINT);
+      expect(entryPoint).toBe(INCOMPATIBLE_ENTRY_POINT);
     });
   });
 
@@ -395,7 +395,7 @@ runInEachFileSystem(() => {
       const result = getEntryPointInfo(
           fs, config, new MockLogger(), SOME_PACKAGE,
           _('/project/node_modules/some_package/valid_entry_point'));
-      if (result === NO_ENTRY_POINT || result === INVALID_ENTRY_POINT) {
+      if (result === NO_ENTRY_POINT || result === INCOMPATIBLE_ENTRY_POINT) {
         return fail(`Expected an entry point but got ${result}`);
       }
       entryPoint = result;

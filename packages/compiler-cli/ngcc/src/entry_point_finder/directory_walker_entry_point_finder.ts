@@ -9,7 +9,7 @@ import {AbsoluteFsPath, FileSystem, join, resolve} from '../../../src/ngtsc/file
 import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver';
 import {Logger} from '../logging/logger';
 import {NgccConfiguration} from '../packages/configuration';
-import {EntryPoint, INVALID_ENTRY_POINT, NO_ENTRY_POINT, getEntryPointInfo} from '../packages/entry_point';
+import {EntryPoint, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT, getEntryPointInfo} from '../packages/entry_point';
 import {EntryPointManifest} from '../packages/entry_point_manifest';
 import {PathMappings} from '../utils';
 import {NGCC_DIRECTORY} from '../writing/new_entry_point_file_writer';
@@ -111,7 +111,7 @@ export class DirectoryWalkerEntryPointFinder implements EntryPointFinder {
       return [];
     }
 
-    if (topLevelEntryPoint === INVALID_ENTRY_POINT) {
+    if (topLevelEntryPoint === INCOMPATIBLE_ENTRY_POINT) {
       return null;
     }
 
@@ -126,7 +126,7 @@ export class DirectoryWalkerEntryPointFinder implements EntryPointFinder {
       const possibleEntryPointPath = isDirectory ? path : stripJsExtension(path);
       const subEntryPoint =
           getEntryPointInfo(this.fs, this.config, this.logger, packagePath, possibleEntryPointPath);
-      if (subEntryPoint === NO_ENTRY_POINT || subEntryPoint === INVALID_ENTRY_POINT) {
+      if (subEntryPoint === NO_ENTRY_POINT || subEntryPoint === INCOMPATIBLE_ENTRY_POINT) {
         return false;
       }
       entryPoints.push(subEntryPoint);
