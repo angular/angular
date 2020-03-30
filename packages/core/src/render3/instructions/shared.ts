@@ -1581,11 +1581,12 @@ function generateInitialInputs(inputs: {[key: string]: string}, attrs: TAttribut
       } else {
         // Skip until the `TemplateUnboundAttrs` marker (if present) or until the end of `attrs`
         // array.
-        while (i < attrs.length && attrs[i + 1] !== AttributeMarker.TemplateUnboundAttrs) i++;
+        while (i < attrs.length && attrs[i] !== AttributeMarker.TemplateUnboundAttrs) i++;
       }
     } else {
       if (inputs.hasOwnProperty(attrName as string)) {
         if (inputsToStore === null) inputsToStore = [];
+        // TODO: document default value choice for unbound template attrs
         const value = isUnboundTemplateAttr ? '' : attrs[i + 1] as string;
         inputsToStore.push(attrName as string, inputs[attrName as string], value);
       }
