@@ -2916,7 +2916,9 @@ runInEachFileSystem(os => {
       `);
 
       const errors = env.driveDiagnostics();
-      expect(getDiagnosticSourceCode(errors[0])).toBe('FooCmp');
+      expect(getDiagnosticSourceCode(errors[0])).toBe(`{
+            '(click)': 'act() | pipe',
+          }`);
       expect(errors[0].messageText).toContain('/test.ts@7:17');
     });
 
