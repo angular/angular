@@ -96,15 +96,47 @@ describe('hover', () => {
       expect(documentation).toBe('This is the title of the `TemplateReference` Component.');
     });
 
-    it('should work for property reads', () => {
-      mockHost.override(TEST_TEMPLATE, `<div>{{«title»}}</div>`);
-      const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'title');
-      const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
-      expect(quickInfo).toBeTruthy();
-      const {textSpan, displayParts} = quickInfo !;
-      expect(textSpan).toEqual(marker);
-      expect(textSpan.length).toBe('title'.length);
-      expect(toText(displayParts)).toBe('(property) TemplateReference.title: string');
+    describe('property reads', () => {
+      it('should work for class members', () => {
+        mockHost.override(TEST_TEMPLATE, `<div>{{«title»}}</div>`);
+        const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'title');
+        const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+        expect(quickInfo).toBeTruthy();
+        const {textSpan, displayParts} = quickInfo !;
+        expect(textSpan).toEqual(marker);
+        expect(toText(displayParts)).toBe('(property) TemplateReference.title: string');
+      });
+
+      it('should work for array members', () => {
+        mockHost.override(TEST_TEMPLATE, `<div *ngFor="let hero of heroes">{{«hero»}}</div>`);
+        const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'hero');
+        const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+        expect(quickInfo).toBeTruthy();
+        const {textSpan, displayParts} = quickInfo !;
+        expect(textSpan).toEqual(marker);
+        expect(toText(displayParts)).toBe('(variable) hero: Hero');
+      });
+
+      it('should work for ReadonlyArray members (#36191)', () => {
+        mockHost.override(
+            TEST_TEMPLATE, `<div *ngFor="let hero of readonlyHeroes">{{«hero»}}</div>`);
+        const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'hero');
+        const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+        expect(quickInfo).toBeTruthy();
+        const {textSpan, displayParts} = quickInfo !;
+        expect(textSpan).toEqual(marker);
+        expect(toText(displayParts)).toBe('(variable) hero: Readonly<Hero>');
+      });
+
+      it('should work for const array members (#36191)', () => {
+        mockHost.override(TEST_TEMPLATE, `<div *ngFor="let name of constNames">{{«name»}}</div>`);
+        const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'name');
+        const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+        expect(quickInfo).toBeTruthy();
+        const {textSpan, displayParts} = quickInfo !;
+        expect(textSpan).toEqual(marker);
+        expect(toText(displayParts)).toBe('(variable) name: { readonly name: "name"; }');
+      });
     });
 
     it('should work for method calls', () => {
