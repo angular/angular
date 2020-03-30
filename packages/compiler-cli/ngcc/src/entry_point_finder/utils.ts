@@ -5,7 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, getFileSystem, join, relative, resolve} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, getFileSystem, relative, resolve} from '../../../src/ngtsc/file_system';
+import {Logger} from '../logging/logger';
 import {PathMappings} from '../utils';
 
 /**
@@ -28,22 +29,44 @@ import {PathMappings} from '../utils';
  * @param pathMappings Path mapping configuration, from which to extract additional base-paths.
  */
 export function getBasePaths(
-    sourceDirectory: AbsoluteFsPath, pathMappings: PathMappings | undefined): AbsoluteFsPath[] {
+    logger: Logger, sourceDirectory: AbsoluteFsPath,
+    pathMappings: PathMappings | undefined): AbsoluteFsPath[] {
   const fs = getFileSystem();
   const basePaths = [sourceDirectory];
   if (pathMappings) {
     const baseUrl = resolve(pathMappings.baseUrl);
+    if (fs.isRoot(baseUrl)) {
+      logger.warn(
+          `The provided pathMappings baseUrl is the root path ${baseUrl}.\n` +
+          `This is likely to mess up how ngcc finds entry-points and is probably not correct.\n` +
+          `Please check your path mappings configuration such as in the tsconfig.json file.`);
+    }
     Object.values(pathMappings.paths).forEach(paths => paths.forEach(path => {
       // We only want base paths that exist and are not files
-      let basePath = join(baseUrl, extractPathPrefix(path));
-      while (basePath !== baseUrl && (!fs.exists(basePath) || fs.stat(basePath).isFile())) {
+      let basePath = fs.resolve(baseUrl, extractPathPrefix(path));
+      if (fs.exists(basePath) && fs.stat(basePath).isFile()) {
         basePath = fs.dirname(basePath);
       }
-      basePaths.push(basePath);
+      if (fs.exists(basePath)) {
+        basePaths.push(basePath);
+      } else {
+        logger.warn(
+            `The basePath "${basePath}" computed from baseUrl "${baseUrl}" and path mapping "${path}" does not exist in the file-system.\n` +
+            `It will not be scanned for entry-points.`);
+      }
     }));
   }
   basePaths.sort().reverse();  // Get the paths in order with the longer ones first.
-  return basePaths.filter(removeContainedPaths);
+  const dedupedBasePaths = basePaths.filter(removeContainedPaths);
+
+  // We want to ensure that the `sourceDirectory` is included when it is a node_modules folder.
+  // Otherwise our entry-point finding algorithm would fail to walk that folder.
+  if (fs.basename(sourceDirectory) === 'node_modules' &&
+      !dedupedBasePaths.includes(sourceDirectory)) {
+    dedupedBasePaths.unshift(sourceDirectory);
+  }
+
+  return dedupedBasePaths;
 }
 
 /**
