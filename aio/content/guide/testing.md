@@ -1242,7 +1242,7 @@ The following test confirms the expected behavior when the service returns an `E
 Note that the `it()` function receives an argument of the following form.
 
 ```javascript
-fakeAsync(() => { /* test body */ })`
+fakeAsync(() => { /* test body */ })
 ```
 
 The `fakeAsync()` function enables a linear coding style by running the test body in a special `fakeAsync test zone`.
@@ -3159,7 +3159,7 @@ Here are the most important static methods, in order of likely utility.
 
     </td>
   </tr>
-</table
+</table>
 
 A few of the `TestBed` instance methods are not covered by static `TestBed` _class_ methods.
 These are rarely needed.
