@@ -156,12 +156,21 @@ export class DirectoryWalkerEntryPointFinder implements EntryPointFinder {
         isEntryPoint = true;
       }
 
-      if (!isDirectory || !isEntryPoint) {
-        // This path is not an entry-point directory so we are done
+      if (!isDirectory) {
+        // This path is not a directory so we are done.
         continue;
       }
 
+      // This directory may contain entry-points of its own.
       const childPaths = this.fs.readdir(absolutePath);
+      if (!isEntryPoint &&
+          childPaths.some(
+              childPath => childPath.endsWith('.js') &&
+                  this.fs.stat(this.fs.resolve(absolutePath, childPath)).isFile())) {
+        // We do not consider non-entry-point directories that contain JS files as they are very
+        // unlikely to be containers for sub-entry-points.
+        continue;
+      }
       this.collectSecondaryEntryPoints(entryPoints, packagePath, absolutePath, childPaths);
     }
   }
