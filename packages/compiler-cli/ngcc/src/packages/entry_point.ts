@@ -86,7 +86,7 @@ export const NO_ENTRY_POINT = 'no-entry-point';
 /**
  * The path has a package.json, but it is not a valid entry-point for ngcc processing.
  */
-export const INVALID_ENTRY_POINT = 'invalid-entry-point';
+export const INCOMPATIBLE_ENTRY_POINT = 'incompatible-entry-point';
 
 /**
  * The result of calling `getEntryPointInfo()`.
@@ -94,10 +94,11 @@ export const INVALID_ENTRY_POINT = 'invalid-entry-point';
  * This will be an `EntryPoint` object if an Angular entry-point was identified;
  * Otherwise it will be a flag indicating one of:
  * * NO_ENTRY_POINT - the path is not an entry-point or ngcc is configured to ignore it
- * * INVALID_ENTRY_POINT - the path was a non-processable entry-point that should be searched
+ * * INCOMPATIBLE_ENTRY_POINT - the path was a non-processable entry-point that should be searched
  * for sub-entry-points
  */
-export type GetEntryPointResult = EntryPoint | typeof INVALID_ENTRY_POINT | typeof NO_ENTRY_POINT;
+export type GetEntryPointResult =
+    EntryPoint | typeof INCOMPATIBLE_ENTRY_POINT | typeof NO_ENTRY_POINT;
 
 
 /**
@@ -107,9 +108,10 @@ export type GetEntryPointResult = EntryPoint | typeof INVALID_ENTRY_POINT | type
  * @param entryPointPath the absolute path to the potential entry-point.
  * @returns
  * - An entry-point if it is valid.
- * - `undefined` when there is no package.json at the path and there is no config to force an
+ * - `NO_ENTRY_POINT` when there is no package.json at the path and there is no config to force an
  * entry-point or the entrypoint is `ignored`.
- * - `null` there is a package.json but it is not a valid Angular compiled entry-point.
+ * - `INCOMPATIBLE_ENTRY_POINT` there is a package.json but it is not a valid Angular compiled
+ * entry-point.
  */
 export function getEntryPointInfo(
     fs: FileSystem, config: NgccConfiguration, logger: Logger, packagePath: AbsoluteFsPath,
@@ -138,14 +140,14 @@ export function getEntryPointInfo(
 
   if (entryPointPackageJson === null) {
     // package.json exists but could not be parsed and there was no redeeming config
-    return INVALID_ENTRY_POINT;
+    return INCOMPATIBLE_ENTRY_POINT;
   }
 
   const typings = entryPointPackageJson.typings || entryPointPackageJson.types ||
       guessTypingsFromPackageJson(fs, entryPointPath, entryPointPackageJson);
   if (typeof typings !== 'string') {
     // Missing the required `typings` property
-    return INVALID_ENTRY_POINT;
+    return INCOMPATIBLE_ENTRY_POINT;
   }
 
   // An entry-point is assumed to be compiled by Angular if there is either:

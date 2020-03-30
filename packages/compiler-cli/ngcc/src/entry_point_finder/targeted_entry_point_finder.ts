@@ -10,7 +10,7 @@ import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/depende
 import {Logger} from '../logging/logger';
 import {hasBeenProcessed} from '../packages/build_marker';
 import {NgccConfiguration} from '../packages/configuration';
-import {EntryPoint, EntryPointJsonProperty, INVALID_ENTRY_POINT, NO_ENTRY_POINT, getEntryPointInfo} from '../packages/entry_point';
+import {EntryPoint, EntryPointJsonProperty, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT, getEntryPointInfo} from '../packages/entry_point';
 import {PathMappings} from '../utils';
 import {EntryPointFinder} from './interface';
 import {getBasePaths} from './utils';
@@ -94,7 +94,7 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
     const packagePath = this.computePackagePath(entryPointPath);
     const entryPoint =
         getEntryPointInfo(this.fs, this.config, this.logger, packagePath, entryPointPath);
-    if (entryPoint === NO_ENTRY_POINT || entryPoint === INVALID_ENTRY_POINT) {
+    if (entryPoint === NO_ENTRY_POINT || entryPoint === INCOMPATIBLE_ENTRY_POINT) {
       return null;
     }
     return entryPoint;
