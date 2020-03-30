@@ -9,7 +9,7 @@ import { BargraphNode } from '../../record-formatter/bargraph-formatter';
 export class BargraphVisualizerComponent {
   view: [number, number] = [600, 600];
   colorScheme = {
-    domain: ['rgb(237, 213, 94)', 'rgb(240, 117, 117)', 'rgb(238, 189, 99)'],
+    domain: ['rgb(237, 213, 94)'],
   };
   profileRecords: BargraphNode[];
 
