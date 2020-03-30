@@ -19,12 +19,14 @@ load(
 )
 load(
     "@build_bazel_rules_nodejs//:providers.bzl",
+    _LinkablePackageInfo = "LinkablePackageInfo",
     _NpmPackageInfo = "NpmPackageInfo",
     _js_ecma_script_module_info = "js_ecma_script_module_info",
     _js_named_module_info = "js_named_module_info",
     _node_modules_aspect = "node_modules_aspect",
 )
 
+LinkablePackageInfo = _LinkablePackageInfo
 NpmPackageInfo = _NpmPackageInfo
 node_modules_aspect = _node_modules_aspect
 
