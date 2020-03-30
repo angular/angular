@@ -1,12 +1,10 @@
 .parent-nodes {
   background-color: #ddd;
   padding: 2px;
-  position: fixed;
   width: 100%;
   height: 20px;
   overflow-x: auto;
   white-space: nowrap;
-  z-index: 2;
 
   &::-webkit-scrollbar {
     display: none;
