@@ -13,7 +13,7 @@
   global.ng = global.ng || {};
   global.ng.common = global.ng.common || {};
   global.ng.common.locales = global.ng.common.locales || {};
-  const u = undefined;
+  var u = undefined;
   function plural(n) { return 5; }
   global.ng.common.locales['ko'] = [
     'ko',
