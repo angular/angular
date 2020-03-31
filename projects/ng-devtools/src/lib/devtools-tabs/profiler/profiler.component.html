@@ -17,13 +17,8 @@
     <p class="recording" [class.hidden]="state !== 'recording'">
       <ng-recording-modal></ng-recording-modal>
     </p>
-    <p class="visualization" [class.hidden]="state !== 'visualizing'">
-      <ng-recording-timeline
-        [class.hidden]="state !== 'visualizing'"
-        [records]="stream"
-        (exportProfile)="exportProfilerResults()"
-      >
-      </ng-recording-timeline>
+    <p class="visualization" *ngIf="state === 'visualizing'">
+      <ng-recording-timeline [records]="stream" (exportProfile)="exportProfilerResults()"> </ng-recording-timeline>
     </p>
   </div>
 </div>
