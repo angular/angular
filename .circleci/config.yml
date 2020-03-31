@@ -292,6 +292,7 @@ jobs:
       - run: yarn ownerslint
       - run: yarn stylelint
       - run: yarn tslint
+      - run: yarn -s ts-circular-deps:check
 
       - *save_cache
 

@@ -69,6 +69,10 @@
   resolved "https://registry.yarnpkg.com/@angular/core/-/core-9.1.0.tgz#9dfc386bd1461e0fd4786031fd245da04371421c"
   integrity sha512-RVlyegdIAij0P1wLY5ObIdsBAzvmHkHfElnmfiNKhaDftP6U/3zRtaKDu0bq0jvn1WCQ8zXxFQ8AWyKZwyFS+w==
 
+"@angular/dev-infra-private@angular/dev-infra-private-builds#cdf6637":
+  version "0.0.0"
+  resolved "https://codeload.github.com/angular/dev-infra-private-builds/tar.gz/cdf6637ad14278a32f1b644de5abb4a58002478b"
+
 "@angular/elements@^9.1.0":
   version "9.1.0"
   resolved "https://registry.yarnpkg.com/@angular/elements/-/elements-9.1.0.tgz#fc18691306ca7d1e1257c5817b6ca04901988eff"

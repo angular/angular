@@ -41,7 +41,9 @@
     "ownerslint": "ts-node --project scripts/ scripts/ownerslint.ts",
     "tslint": "tslint -c tslint.json --project ./tsconfig.json",
     "stylelint": "stylelint \"src/**/*.+(css|scss)\" --config .stylelintrc.json --syntax scss",
-    "resync-caretaker-app": "ts-node --project scripts scripts/caretaking/resync-caretaker-app-prs.ts"
+    "resync-caretaker-app": "ts-node --project scripts scripts/caretaking/resync-caretaker-app-prs.ts",
+    "ts-circular-deps:check": "yarn -s ts-circular-deps check --config ./src/circular-deps-test.conf.js",
+    "ts-circular-deps:approve": "yarn -s ts-circular-deps approve --config ./src/circular-deps-test.conf.js"
   },
   "version": "9.2.0",
   "dependencies": {
@@ -67,6 +69,7 @@
     "@angular-devkit/schematics": "^9.0.7",
     "@angular/bazel": "^9.1.0",
     "@angular/compiler-cli": "^9.1.0",
+    "@angular/dev-infra-private": "angular/dev-infra-private-builds#cdf6637",
     "@angular/platform-browser-dynamic": "^9.1.0",
     "@angular/platform-server": "^9.1.0",
     "@angular/router": "^9.1.0",
