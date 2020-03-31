@@ -1,5 +1,6 @@
-import { AppEntry, RecordFormatter, TimelineView } from '../record-formatter';
+import { RecordFormatter } from '../record-formatter';
 import { ElementProfile, ProfilerFrame } from 'protocol';
+import memo from 'memo-decorator';
 
 export interface FlamegraphNode {
   value: number;
@@ -13,7 +14,7 @@ export interface FlamegraphNode {
 export const ROOT_LEVEL_ELEMENT_LABEL = 'Entire application';
 
 export class FlamegraphFormatter extends RecordFormatter<FlamegraphNode> {
-  formatFrame(frame: ProfilerFrame): FlamegraphNode {
+  @memo() formatFrame(frame: ProfilerFrame): FlamegraphNode {
     const result: FlamegraphNode = {
       value: 0,
       label: ROOT_LEVEL_ELEMENT_LABEL,

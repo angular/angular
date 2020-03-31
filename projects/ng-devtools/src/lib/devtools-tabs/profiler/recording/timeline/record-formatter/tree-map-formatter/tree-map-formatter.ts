@@ -1,5 +1,6 @@
-import { AppEntry, RecordFormatter, TimelineView } from '../record-formatter';
+import { RecordFormatter } from '../record-formatter';
 import { ElementProfile, ProfilerFrame } from 'protocol';
+import memo from 'memo-decorator';
 
 export interface TreeMapNode {
   id: string;
@@ -10,7 +11,7 @@ export interface TreeMapNode {
 }
 
 export class TreeMapFormatter extends RecordFormatter<TreeMapNode> {
-  formatFrame(record: ProfilerFrame): TreeMapNode {
+  @memo() formatFrame(record: ProfilerFrame): TreeMapNode {
     const children: TreeMapNode[] = [];
     this.addFrame(children, record.directives);
     const size = children.reduce((accum, curr) => {

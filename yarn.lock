@@ -6662,6 +6662,13 @@ mem@^4.0.0:
     mimic-fn "^2.0.0"
     p-is-promise "^2.0.0"
 
+memo-decorator@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/memo-decorator/-/memo-decorator-1.0.2.tgz#d687243b9bf873be6565936961d1a0b2722fff19"
+  integrity sha512-wIwrRH1NebSdDM46KCJNe8MgMjaukjrh3rYkVhoTh3LmC9r7miiT0wqwfBOWobmDd5LMc7DRirmqqPYK/EYspA==
+  dependencies:
+    lodash.memoize "^4.1.2"
+
 memory-fs@^0.4.1:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/memory-fs/-/memory-fs-0.4.1.tgz#3a9a20b8462523e447cfbc7e8bb80ed667bfc552"

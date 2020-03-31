@@ -1,5 +1,6 @@
-import { AppEntry, RecordFormatter, TimelineView } from '../record-formatter';
+import { RecordFormatter } from '../record-formatter';
 import { ElementProfile, ProfilerFrame } from 'protocol';
+import memo from 'memo-decorator';
 
 export interface BargraphNode {
   parents: ElementProfile[];
@@ -9,7 +10,7 @@ export interface BargraphNode {
 }
 
 export class BarGraphFormatter extends RecordFormatter<BargraphNode[]> {
-  formatFrame(frame: ProfilerFrame): BargraphNode[] {
+  @memo() formatFrame(frame: ProfilerFrame): BargraphNode[] {
     const result: BargraphNode[] = [];
     this.addFrame(result, frame.directives);
     return result.filter((element) => element.value > 0).sort((a, b) => b.value - a.value);
