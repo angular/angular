@@ -261,7 +261,7 @@
             },
             {
               "url": "guide/form-validation",
-              "title": "Form Validation",
+              "title": "Validate form input",
               "tooltip": "Validate user's form entries."
             },
             {
