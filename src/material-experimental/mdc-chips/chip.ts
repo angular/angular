@@ -107,8 +107,8 @@ const _MatChipMixinBase:
     '[class.mat-mdc-chip-highlighted]': 'highlighted',
     '[class.mat-mdc-chip-with-avatar]': 'leadingIcon',
     '[class.mat-mdc-chip-with-trailing-icon]': 'trailingIcon || removeIcon',
-    '[class.mat-mdc-basic-chip]': '_isBasicChip()',
-    '[class.mat-mdc-standard-chip]': '!_isBasicChip()',
+    '[class.mat-mdc-basic-chip]': '_isBasicChip',
+    '[class.mat-mdc-standard-chip]': '!_isBasicChip',
     '[class._mat-animation-noopable]': '_animationsDisabled',
     '[id]': 'id',
     '[attr.disabled]': 'disabled || null',
@@ -132,6 +132,9 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
   readonly _onBlur = new Subject<MatChipEvent>();
 
   readonly HANDLED_KEYS: number[] = [];
+
+  /** Whether this chip is a basic (unstyled) chip. */
+  readonly _isBasicChip: boolean;
 
   /** Whether the chip has focus. */
   protected _hasFocusInternal = false;
@@ -316,6 +319,9 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
     super(_elementRef);
     this._chipFoundation = new MDCChipFoundation(this._chipAdapter);
     this._animationsDisabled = animationMode === 'NoopAnimations';
+    this._isBasicChip = _elementRef.nativeElement.hasAttribute(this.basicChipAttrName) ||
+                        _elementRef.nativeElement.tagName.toLowerCase() === this.basicChipAttrName;
+
   }
 
   ngAfterContentInit() {
@@ -382,13 +388,6 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
     }
   }
 
-  /** Whether this chip is a basic (unstyled) chip. */
-  _isBasicChip() {
-    const element = this._elementRef.nativeElement as HTMLElement;
-    return element.hasAttribute(this.basicChipAttrName) ||
-      element.tagName.toLowerCase() === this.basicChipAttrName;
-  }
-
   /** Sets whether the given CSS class should be applied to the MDC chip. */
   private _setMdcClass(cssClass: string, active: boolean) {
       const classes = this._elementRef.nativeElement.classList;
@@ -405,7 +404,7 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
 
   /** Whether or not the ripple should be disabled. */
   _isRippleDisabled(): boolean {
-    return this.disabled || this.disableRipple || this._isBasicChip();
+    return this.disabled || this.disableRipple || this._isBasicChip;
   }
 
   static ngAcceptInputType_disabled: BooleanInput;
