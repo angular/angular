@@ -2,7 +2,7 @@
 
 [Web workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) allow you to run CPU-intensive computations in a background thread,
 freeing the main thread to update the user interface.
-If you find your application performs a lot of computations, such as generating CAD drawings or doing heavy geometrical calculations, using web workers can help increase the performance.
+If you find your application performs a lot of computations, such as generating CAD drawings or doing heavy geometrical calculations, using web workers can help increase your application's performance.
 
 <div class="alert is-helpful>
 
@@ -12,7 +12,7 @@ The CLI does not support running Angular itself in a web worker.
 
 ## Adding a web worker
 
-To add a web worker to an existing project use the Angular CLI `ng generate` command.
+To add a web worker to an existing project, use the Angular CLI `ng generate` command.
 
 `ng generate web-worker` *location*
 
