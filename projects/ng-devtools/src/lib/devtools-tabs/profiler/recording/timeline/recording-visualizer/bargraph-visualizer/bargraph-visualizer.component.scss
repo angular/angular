@@ -44,40 +44,6 @@
   }
 }
 
-.level-profile {
-  display: flex;
-  text-align: center;
-  border-bottom: 1px solid #fff;
-}
-
-.component-profile {
-  padding: 5px;
-  box-shadow: 0 0 0px #000;
-  transition: 0.1s box-shadow;
-  cursor: pointer;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-
-  &:hover {
-    box-shadow: 0 0 2px #000;
-    position: relative;
-  }
-
-  &.selected {
-    box-shadow: 0 0 4px #000;
-    position: relative;
-  }
-
-  &:not(:first-child) {
-    border-left: 1px solid #fff;
-  }
-
-  .duration {
-    opacity: 0.3;
-  }
-}
-
 .entry-statistics {
   div {
     padding: 3px;

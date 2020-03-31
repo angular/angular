@@ -27,5 +27,13 @@
       >
       </ngx-charts-pie-chart>
     </div>
+    <div *ngIf="parentHierarchy.length > 0">
+      <div class="txt-total-time"><label>Parent Hierarchy</label></div>
+      <ul>
+        <li *ngFor="let parent of parentHierarchy">
+          {{ parent.name }}
+        </li>
+      </ul>
+    </div>
   </section>
 </div>

@@ -23,6 +23,7 @@ export class BargraphVisualizerComponent {
     domain: ['#E71D36', '#2EC4B6', '#FF9F1C', '#011627'],
   };
   pieChartData: GraphNode[] = [];
+  parentHierarchy: { name: string }[] = [];
 
   @Input() set records(data: BargraphNode[]) {
     this.profileRecords = data;
@@ -50,6 +51,9 @@ export class BargraphVisualizerComponent {
   selectNode(data: any): void {
     const index = this.profileRecords.findIndex((element) => element.name === data.name);
     this.selectedEntry = this.profileRecords[index];
+    this.parentHierarchy = this.selectedEntry.parents.map((element) => {
+      return { name: element.directives[0].name };
+    });
     this.pieChartData = this.formatPieChartData(this.selectedEntry);
   }
 
