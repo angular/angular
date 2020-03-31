@@ -57,7 +57,16 @@ export function getBasePaths(
     }));
   }
   basePaths.sort().reverse();  // Get the paths in order with the longer ones first.
-  return basePaths.filter(removeContainedPaths);
+  const dedupedBasePaths = basePaths.filter(removeContainedPaths);
+
+  // We want to ensure that the `sourceDirectory` is included when it is a node_modules folder.
+  // Otherwise our entry-point finding algorithm would fail to walk that folder.
+  if (fs.basename(sourceDirectory) === 'node_modules' &&
+      !dedupedBasePaths.includes(sourceDirectory)) {
+    dedupedBasePaths.unshift(sourceDirectory);
+  }
+
+  return dedupedBasePaths;
 }
 
 /**

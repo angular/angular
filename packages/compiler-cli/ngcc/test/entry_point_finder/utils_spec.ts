@@ -82,6 +82,21 @@ runInEachFileSystem(() => {
       ]);
     });
 
+    it('should alway include the `sourceDirectory` if it is a node_modules directory in the returned basePaths, even if it is contained by another basePath',
+       () => {
+         const projectDirectory = _('/path/to/project');
+         const sourceDirectory = _('/path/to/project/node_modules');
+         const fs = getFileSystem();
+         fs.ensureDir(fs.resolve(sourceDirectory));
+
+         const pathMappings = {baseUrl: projectDirectory, paths: {'*': ['./*']}};
+         const basePaths = getBasePaths(logger, sourceDirectory, pathMappings);
+         expect(basePaths).toEqual([
+           sourceDirectory,
+           projectDirectory,
+         ]);
+       });
+
     it('should log a warning if baseUrl is the root path', () => {
       const fs = getFileSystem();
       fs.ensureDir(fs.resolve('/dist'));
@@ -121,7 +136,7 @@ runInEachFileSystem(() => {
          `It will not be scanned for entry-points.`],
         [`The basePath "${fs.resolve(projectDirectory, 'libs')}" computed from baseUrl "${projectDirectory}" and path mapping "libs/*" does not exist in the file-system.\n` +
          `It will not be scanned for entry-points.`],
-      ])
+      ]);
     });
   });
 });
