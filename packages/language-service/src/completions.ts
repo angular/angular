@@ -9,8 +9,8 @@
 import {AST, AbsoluteSourceSpan, AstPath, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, Element, ElementAst, EmptyExpr, ExpressionBinding, HtmlAstPath, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ParseSpan, ReferenceAst, TagContentType, TemplateBinding, Text, VariableBinding, getHtmlTagDefinition} from '@angular/compiler';
 import {$$, $_, isAsciiLetter, isDigit} from '@angular/compiler/src/chars';
 
+import {ATTR, getBindingDescriptor} from './binding_utils';
 import {AstResult} from './common';
-import {ATTR, getBindingKind} from './compiler_utils';
 import {getExpressionScope} from './expression_diagnostics';
 import {getExpressionCompletions} from './expressions';
 import {attributeNames, elementNames, eventNames, propertyNames} from './html_info';
@@ -204,27 +204,39 @@ function attributeCompletions(info: AstResult, path: AstPath<HtmlAst>): ng.Compl
   // matching using regex. This is because the regexp would incorrectly identify
   // bind parts for cases like [()|]
   //                              ^ cursor is here
-  const binding = getBindingKind(attr.name);
+  const binding = getBindingDescriptor(attr.name);
   if (!binding) {
     // This is a normal HTML attribute, not an Angular attribute.
     return attributeCompletionsForElement(info, elem.name);
   }
 
-  const {bindingKind} = binding;
   const results: string[] = [];
   const ngAttrs = angularAttributes(info, elem.name);
-  if (bindingKind === ATTR.KW_TEMPLATE_ATTR) {
-    results.push(...ngAttrs.templateRefs);
-  } else if (bindingKind === ATTR.KW_BIND || bindingKind === ATTR.IDENT_PROPERTY) {
-    // property binding via bind- or []
-    results.push(...propertyNames(elem.name), ...ngAttrs.inputs);
-  } else if (bindingKind === ATTR.KW_ON || bindingKind === ATTR.IDENT_EVENT) {
-    // event binding via on- or ()
-    results.push(...eventNames(elem.name), ...ngAttrs.outputs);
-  } else if (bindingKind === ATTR.KW_BINDON || bindingKind === ATTR.IDENT_BANANA_BOX) {
-    // banana-in-a-box binding via bindon- or [()]
-    results.push(...ngAttrs.bananas);
+  switch (binding.kind) {
+    case ATTR.KW_MICROSYNTAX:
+      // template reference attribute: *attrName
+      results.push(...ngAttrs.templateRefs);
+      break;
+
+    case ATTR.KW_BIND:
+    case ATTR.IDENT_PROPERTY:
+      // property binding via bind- or []
+      results.push(...propertyNames(elem.name), ...ngAttrs.inputs);
+      break;
+
+    case ATTR.KW_ON:
+    case ATTR.IDENT_EVENT:
+      // event binding via on- or ()
+      results.push(...eventNames(elem.name), ...ngAttrs.outputs);
+      break;
+
+    case ATTR.KW_BINDON:
+    case ATTR.IDENT_BANANA_BOX:
+      // banana-in-a-box binding via bindon- or [()]
+      results.push(...ngAttrs.bananas);
+      break;
   }
+
   return results.map(name => {
     return {
       name,
@@ -285,8 +297,8 @@ function attributeValueCompletions(info: AstResult, htmlPath: HtmlAstPath): ng.C
   // In order to provide accurate attribute value completion, we need to know
   // what the LHS is, and construct the proper AST if it is missing.
   const htmlAttr = htmlPath.tail as Attribute;
-  const binding = getBindingKind(htmlAttr.name);
-  if (binding && binding.bindingKind === ATTR.KW_REF) {
+  const binding = getBindingDescriptor(htmlAttr.name);
+  if (binding && binding.kind === ATTR.KW_REF) {
     let refAst: ReferenceAst|undefined;
     let elemAst: ElementAst|undefined;
     if (templatePath.tail instanceof ReferenceAst) {
@@ -416,12 +428,12 @@ class ExpressionVisitor extends NullTemplateVisitor {
   }
 
   visitAttr(ast: AttrAst) {
-    const binding = getBindingKind(ast.name);
-    if (binding && binding.bindingKind === ATTR.KW_TEMPLATE_ATTR) {
+    const binding = getBindingDescriptor(ast.name);
+    if (binding && binding.kind === ATTR.KW_MICROSYNTAX) {
       // This a template binding given by micro syntax expression.
       // First, verify the attribute consists of some binding we can give completions for.
       // The sourceSpan of AttrAst points to the RHS of the attribute
-      const templateKey = binding.bindingName;
+      const templateKey = binding.name;
       const templateValue = ast.sourceSpan.toString();
       const templateUrl = ast.sourceSpan.start.file.url;
       // TODO(kyliau): We are unable to determine the absolute offset of the key

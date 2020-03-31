@@ -34,7 +34,7 @@ export enum ATTR {
    * "*"
    * Microsyntax template starts with '*'. See https://angular.io/api/core/TemplateRef
    */
-  KW_TEMPLATE_ATTR = 7,
+  KW_MICROSYNTAX = 7,
   /** The identifier after "bind-", "let-", "ref-/#", "on-", "bindon-", "@", or "*" */
   IDENT_KW = 8,
   /** Identifier inside [()] */
@@ -45,17 +45,25 @@ export enum ATTR {
   IDENT_EVENT = 11,
 }
 
+export interface BindingDescriptor {
+  kind: ATTR;
+  name: string;
+}
 /**
- * Returns an Angular binding kind and name of a given attribute, or undefined if the attribute is
+ * Returns a descriptor for a given Angular attribute, or undefined if the attribute is
  * not an Angular attribute.
  */
-export function getBindingKind(attribute: string): {bindingKind: ATTR, bindingName: string}|
-    undefined {
+export function getBindingDescriptor(attribute: string): BindingDescriptor|undefined {
   const bindParts = attribute.match(BIND_NAME_REGEXP);
-  if (!bindParts) return undefined;
-  const bindingKind = bindParts.findIndex((val, i) => i !== 0 && val !== undefined);
+  if (!bindParts) return;
+  // The first match element is skipped because it matches the entire attribute text, including the
+  // binding part.
+  const kind = bindParts.findIndex((val, i) => i > 0 && val !== undefined);
+  if (!(kind in ATTR)) {
+    throw TypeError(`"${kind}" is not a valid Angular binding kind for "${attribute}"`);
+  }
   return {
-    bindingKind,
-    bindingName: bindParts[ATTR.IDENT_KW],
+    kind,
+    name: bindParts[ATTR.IDENT_KW],
   };
 }
