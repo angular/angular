@@ -43,7 +43,7 @@ export class PropertyViewBodyComponent {
     return !!this.directiveStateControls && !!this.directiveOutputControls && !!this.directiveInputControls;
   }
 
-  updateValue({ node, newValue }: { newValue: any; node: FlatNode }): void {
+  updateValue({ node, newValue }: { node: FlatNode; newValue: any }): void {
     this.controller.updateValue(node, newValue);
   }
 

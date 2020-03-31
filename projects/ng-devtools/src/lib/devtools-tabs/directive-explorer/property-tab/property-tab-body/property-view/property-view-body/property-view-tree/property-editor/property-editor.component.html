@@ -8,9 +8,8 @@
     <span *ngSwitchCase="writeState">
       <input
         type="text"
-        class="editor-input"
+        class="editor-input editable"
         (mousedown)="$event.stopPropagation()"
-        [ngClass]="{ editable: true }"
         [(ngModel)]="valueToSubmit"
         (keydown.enter)="accept()"
         (keydown.escape)="reject()"
