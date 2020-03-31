@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import {
   MessageBus,
   Events,
@@ -59,7 +59,8 @@ export class DirectiveExplorerComponent implements OnInit {
   constructor(
     private _appOperations: ApplicationOperations,
     private _messageBus: MessageBus<Events>,
-    private _propResolver: ElementPropertyResolver
+    private _propResolver: ElementPropertyResolver,
+    private _cdr: ChangeDetectorRef
   ) {
     this._changeSize
       .asObservable()
@@ -183,5 +184,6 @@ export class DirectiveExplorerComponent implements OnInit {
 
   handleSetParents(parents: FlatNode[] | null): void {
     this.parents = parents;
+    this._cdr.detectChanges();
   }
 }
