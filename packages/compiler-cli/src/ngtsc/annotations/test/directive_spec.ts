@@ -77,15 +77,13 @@ runInEachFileSystem(() => {
   // Helpers
   function analyzeDirective(program: ts.Program, dirName: string, hasBaseClass: boolean = false) {
     class TestReflectionHost extends TypeScriptReflectionHost {
-      constructor(checker: ts.TypeChecker, private hasBaseClassReturnValue: boolean) {
-        super(checker);
-      }
+      constructor(checker: ts.TypeChecker) { super(checker); }
 
-      hasBaseClass(_class: ClassDeclaration): boolean { return this.hasBaseClassReturnValue; }
+      hasBaseClass(_class: ClassDeclaration): boolean { return hasBaseClass; }
     }
 
     const checker = program.getTypeChecker();
-    const reflectionHost = new TestReflectionHost(checker, hasBaseClass);
+    const reflectionHost = new TestReflectionHost(checker);
     const evaluator = new PartialEvaluator(reflectionHost, checker, /*dependencyTracker*/ null);
     const metaReader = new LocalMetadataRegistry();
     const dtsReader = new DtsMetadataReader(checker, reflectionHost);
