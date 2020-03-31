@@ -1,13 +1,31 @@
-<ngx-charts-bar-horizontal
-  [view]="view"
-  [scheme]="colorScheme"
-  [results]="profileRecords"
-  [xAxis]="true"
-  [yAxis]="true"
-  [roundEdges]="false"
->
-</ngx-charts-bar-horizontal>
+<div class="level-profile-wrapper" [class.split-width]="selectedEntry">
+  <ngx-charts-bar-horizontal
+    [view]="view"
+    [scheme]="colorScheme"
+    [results]="profileRecords"
+    [xAxis]="true"
+    [yAxis]="true"
+    [roundEdges]="false"
+    (select)="selectNode($event)"
+  >
+  </ngx-charts-bar-horizontal>
+</div>
 
-<ng-template #tooltipTemplate>
-  <p>Yoyo</p>
-</ng-template>
+<div class="selected-entry" *ngIf="selectedEntry">
+  <header>{{ selectedEntry.name }} details</header>
+  <section class="entry-statistics">
+    <div class="txt-total-time"><label>Total time spent:</label> {{ selectedEntry.value | number }}ms</div>
+    <div *ngIf="selectedEntry.value > 0">
+      <ngx-charts-pie-chart
+        legendTitle=""
+        [view]="pieChartView"
+        [scheme]="pieChartColorScheme"
+        [results]="pieChartData"
+        [tooltipText]="formatToolTip"
+        legend="true"
+        legendPosition="bottom"
+      >
+      </ngx-charts-pie-chart>
+    </div>
+  </section>
+</div>
