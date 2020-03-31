@@ -709,16 +709,19 @@ export class MatSlider extends _MatSliderMixinBase
    * as they're swiping across the screen.
    */
   private _bindGlobalEvents(triggerEvent: TouchEvent | MouseEvent) {
-    if (typeof this._document !== 'undefined' && this._document) {
-      const body = this._document.body;
+    // Note that we bind the events to the `document`, because it allows us to capture
+    // drag cancel events where the user's pointer is outside the browser window.
+    const document = this._document;
+
+    if (typeof document !== 'undefined' && document) {
       const isTouch = isTouchEvent(triggerEvent);
       const moveEventName = isTouch ? 'touchmove' : 'mousemove';
       const endEventName = isTouch ? 'touchend' : 'mouseup';
-      body.addEventListener(moveEventName, this._pointerMove, activeEventOptions);
-      body.addEventListener(endEventName, this._pointerUp, activeEventOptions);
+      document.addEventListener(moveEventName, this._pointerMove, activeEventOptions);
+      document.addEventListener(endEventName, this._pointerUp, activeEventOptions);
 
       if (isTouch) {
-        body.addEventListener('touchcancel', this._pointerUp, activeEventOptions);
+        document.addEventListener('touchcancel', this._pointerUp, activeEventOptions);
       }
     }
 
@@ -731,13 +734,14 @@ export class MatSlider extends _MatSliderMixinBase
 
   /** Removes any global event listeners that we may have added. */
   private _removeGlobalEvents() {
-    if (typeof this._document !== 'undefined' && this._document) {
-      const body = this._document.body;
-      body.removeEventListener('mousemove', this._pointerMove, activeEventOptions);
-      body.removeEventListener('mouseup', this._pointerUp, activeEventOptions);
-      body.removeEventListener('touchmove', this._pointerMove, activeEventOptions);
-      body.removeEventListener('touchend', this._pointerUp, activeEventOptions);
-      body.removeEventListener('touchcancel', this._pointerUp, activeEventOptions);
+    const document = this._document;
+
+    if (typeof document !== 'undefined' && document) {
+      document.removeEventListener('mousemove', this._pointerMove, activeEventOptions);
+      document.removeEventListener('mouseup', this._pointerUp, activeEventOptions);
+      document.removeEventListener('touchmove', this._pointerMove, activeEventOptions);
+      document.removeEventListener('touchend', this._pointerUp, activeEventOptions);
+      document.removeEventListener('touchcancel', this._pointerUp, activeEventOptions);
     }
 
     const window = this._getWindow();
