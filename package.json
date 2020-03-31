@@ -47,7 +47,6 @@
     "document-register-element": "^1.7.2",
     "file-saver": "^2.0.2",
     "ngx-flamegraph": "0.0.6",
-    "ngx-vis": "3.0.3",
     "pretty-quick": "^2.0.1",
     "rxjs": "~6.5.3",
     "tslib": "^1.10.0",
