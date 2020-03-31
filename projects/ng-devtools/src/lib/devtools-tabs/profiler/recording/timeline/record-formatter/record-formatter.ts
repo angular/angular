@@ -17,7 +17,7 @@ export interface GraphNode {
 
 export abstract class RecordFormatter<T> {
   abstract formatFrame(frame: ProfilerFrame): T;
-  abstract addFrame(nodes: T | T[], elements: ElementProfile[], prev?: T): number | void;
+  abstract addFrame(nodes: T | T[], elements: ElementProfile[]): number | void;
 
   getLabel(element: ElementProfile): string {
     const name = element.directives

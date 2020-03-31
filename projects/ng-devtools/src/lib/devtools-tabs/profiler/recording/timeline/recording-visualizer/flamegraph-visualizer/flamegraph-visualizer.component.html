@@ -1,3 +1,5 @@
+<mat-checkbox (change)="updateView($event)" class="show-change-detection">Change detection</mat-checkbox>
+
 <div class="level-profile-wrapper" [class.split-width]="selectedEntry">
   <ngx-flamegraph
     (frameClick)="selectFrame($event)"
@@ -11,7 +13,12 @@
 <div class="selected-entry" *ngIf="selectedEntry">
   <header>{{ selectedEntry.label }} details</header>
   <section class="entry-statistics">
-    <div class="txt-total-time"><label>Total time spent:</label> {{ selectedEntry.value | number }}ms</div>
+    <div class="txt-total-time" *ngIf="selectedEntry.changeDetected">
+      <label>Total time spent:</label> {{ selectedEntry.value | number }}ms
+    </div>
+    <div class="txt-total-time" *ngIf="!selectedEntry.changeDetected">
+      <label>Did not run change detection</label>
+    </div>
     <div *ngIf="selectedEntry.value > 0">
       <ngx-charts-pie-chart
         legendTitle=""
