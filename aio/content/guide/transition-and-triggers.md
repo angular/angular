@@ -23,7 +23,7 @@ This chapter also explores multiple animation triggers, animation callbacks, and
 <!--
 In Angular, transition states can be defined explicitly through the `state()` function, or using the predefined `*` (wildcard) and `void` states.
 -->
-Angular에서 트랜지션 상태는 `state()` 함수로 지정할 수 있지만 이 외에도 와일드카드(`*`) 상태와 보이드(`void`) 상태가 미리 정의되어 있습니다.
+Angular에서 트랜지션 상태는 `state()` 함수로 선언할 수 있지만 이 외에도 와일드카드(`*`) 상태와 보이드(`void`) 상태가 미리 정의되어 있습니다.
 
 
 <!--
@@ -51,7 +51,7 @@ Use a double arrow syntax to specify state-to-state transitions in both directio
 
 <code-example header="src/app/open-close.component.ts" path="animations/src/app/open-close.component.ts" region="trigger-wildcard2" language="typescript"></code-example>
 -->
-와일드카드(`*`)는 모든 애니메이션 상태와 매칭됩니다. 그래서 이 상태는 엘리먼트의 초기 상태나 종료 상태와 관계없이 트랜지션을 적용할 때 사용할 수 있습니다.
+와일드카드(`*`)는 모든 애니메이션 상태와 매칭됩니다. 그래서 이 상태는 엘리먼트의 초기 상태나 종료 상태에 관계없이 특정 조건의 트랜지션을 적용할 때 사용할 수 있습니다.
 
 예를 들어 `open => *` 과 같은 트랜지션은 엘리먼트가 `open` 상태였다가 다른 상태로 전환되는 경우에 모두 매칭됩니다.
 
@@ -95,8 +95,8 @@ Transitions are matched in the order in which they are defined. Thus, you can ap
 
 To do this, list the more specific transitions *before* `* => *`.
 -->
-버튼의 상태를 전환하는 예제에서는 와일드카드 상태가 크게 유용하지 않습니다. 이 예제에는 `open`, `closed` 두 상태만 있기 때문입니다.
-와일드카드 상태는 특정 상태에서 다른 상태로 전환되는 경우가 많을 때 유용합니다.
+이 예제는 버튼의 상태가 `open`과 `closed`두 개만 있기 때문에 와일드카드 상태가 크게 유용하지 않습니다.
+와일드카드 상태는 다른 상태로 전환되는 경우가 많을 때 유용합니다.
 그래서 버튼이 `open`에서 전환되는 상태가 `closed` 외에 `inProgress` 상태도 있다면 와일드카드를 사용해서 코드의 양을 줄일 수 있습니다.
 
 <div class="lightbox">
@@ -109,9 +109,9 @@ To do this, list the more specific transitions *before* `* => *`.
 `* => *` 트랜지션은 모든 상태 전환과 매칭됩니다.
 
 트랜지션은 정의된 순서대로 매칭되기 때문에 `* => *` 트랜지션은 다른 트랜지션보다 제일 나중에 정의해야 합니다.
-그래서 이 예제로 보면 `open => closed` 트랜지션을 가장 먼저 정의하고 그 다음에 `closed => open` 트랜지션을 그 다음에 정의한 후에 `* => *` 트랜지션을 정의하면 앞에 두 경우에 해당되지 않는 트랜지션은 모두 `* => *`와 매칭됩니다.
+그래서 이 예제로 보면 `open => closed` 트랜지션이 가장 먼저 적용되고 그 다음에 `closed => open` 트랜지션이 그 다음 우선순위로 적용되며 상태가 정확하게 지정되지 않은 트랜지션은 모두 `* => *`와 매칭됩니다.
 
-마찬가지로 이 코드에 트랜지션 규칙을 더 추가하려면 `* => *` 앞에 추가해야 합니다.
+이 코드에 트랜지션 규칙을 더 추가하려면 `* => *` 앞에 추가해야 합니다.
 
 
 <!--
@@ -122,7 +122,7 @@ To do this, list the more specific transitions *before* `* => *`.
 <!--
 Use the wildcard `*` with a style to tell the animation to use whatever the current style value is, and animate with that. Wildcard is a fallback value that's used if the state being animated isn't declared within the trigger.
 -->
-와일드카드 `*`는 스타일을 지정할 때도 사용할 수 있습니다. 스타일에 와일드카드를 사용하면 트리거 안에 지정되지 않은 스타일을 현재 스타일 값으로 변경합니다.
+와일드카드 `*`는 스타일을 지정할 때도 사용할 수 있습니다. 스타일에 와일드카드를 사용하면 트리거 안에 지정되지 않은 스타일이 현재 스타일 값으로 대체됩니다.
 
 <code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" region="transition4" language="typescript"></code-example>
 
@@ -197,7 +197,7 @@ In the above code, you applied the `void` state when the HTML element isn't atta
 
 <code-example path="animations/src/app/hero-list-enter-leave.component.ts" header="src/app/hero-list-enter-leave.component.ts" region="animationdef" language="typescript"></code-example>
 
-이전에 살펴봤던 것처럼 `void => *`나 `* => void`를 사용하면 이런 동작을 구현할 수 있습니다.
+이전에 살펴봤던 것처럼 `void => *`나 `* => void`를 사용하면 이런 동작을 간단하게 구현할 수 있습니다.
 
 
 {@a enter-leave-view}
@@ -218,7 +218,7 @@ transition ( ':leave', [ ... ] );  // alias for * => void
 It's harder to target an element that is entering a view because it isn't in the DOM yet.
 So, use the aliases `:enter` and `:leave` to target HTML elements that are inserted or removed from a view.
 -->
-`void => *`는 `:enter`로, `* => void`는 `:leave`로 대신 사용할 수 있습니다. `:enter`와 `:leave`는 별칭으로 미리 정의되어 있습니다.
+`void => *`는 `:enter`로, `* => void`는 `:leave`로 대신 사용할 수 있습니다. `:enter`와 `:leave`는 별칭으로 미리 정의되어 있는 셀렉터 입니다.
 
 <code-example hideCopy language="typescript">
 transition ( ':enter', [ ... ] );  // void => * 와 같은 의미
@@ -309,7 +309,7 @@ In the component code, in the `@Component` metadata under the `animations:` prop
 <code-example path="animations/src/app/open-close.component.2.html" header="src/app/open-close.component.html" region="trigger-boolean">
 </code-example>
 
-위 예제 코드에서 HTML 템플릿의 `<div>` 엘리먼트에는 `openClose` 트리거가 `isOpen` 표현식으로 연결되어 있는데, `isOpen` 프로퍼티는 불리언 타입이기 때문에 `true` 값이거나 `false` 값이 됩니다. `isOpen` 프로퍼티 값에 따라 `open`/`close` 상태를 지정하는 것과 같은 로직이라고 볼 수 있습니다.
+위 예제 코드에서 HTML 템플릿의 `<div>` 엘리먼트에는 `openClose` 트리거가 `isOpen` 표현식으로 연결되어 있는데, `isOpen` 프로퍼티는 불리언 타입이기 때문에 `true` 값이거나 `false` 값이 됩니다. `isOpen` 프로퍼티 값에 따라 `open`/`close` 상태를 문자열로 지정하는 것과 같은 로직이라고 볼 수 있습니다.
 
 그리고 컴포넌트 코드에서 `Component`의 메타데이터 `animations:` 프로퍼티에는 `true`로 평가되는 상태에 엘리먼트 높이를 와일드카드 스타일이나 기본값으로 지정합니다. 이번 예제에서는 애니메이션이 시작하기 전에 갖고 있던 값을 그대로 사용했습니다. 그리고 엘리먼트가 "close" 상태가 되면 높이를 0으로 만들어서 보이지 않게 구현했습니다.
 
@@ -317,19 +317,41 @@ In the component code, in the `@Component` metadata under the `animations:` prop
 </code-example>
 
 
+<!--
 ## Multiple animation triggers
+-->
+## 다중 애니메이션 트리거
 
+<!--
 You can define more than one animation trigger for a component. You can attach animation triggers to different elements, and the parent-child relationships among the elements affect how and when the animations run.
+-->
+애니메이션 트리거는 한번에 여러개를 정의할 수도 있습니다.
+여러 엘리먼트에 트리거를 연결하거나 부모-자식 관계의 엘리먼트에 트리거를 연결하면 애니메이션 여러개를 동시에 실행할 수 있습니다.
 
+<!--
 ### Parent-child animations
+-->
+### 부모-자식 애니메이션
 
+<!--
 Each time an animation is triggered in Angular, the parent animation always get priority and child animations are blocked. In order for a child animation to run, the parent animation must query each of the elements containing child animations and then allow the animations to run using the [`animateChild()`](https://angular.io/api/animations/animateChild) function.
+-->
+Angular에서 애니메이션이 시작되면 부모 애니메이션이 항상 우선권을 가지며 자식 애니메이션은 중단됩니다. 그래서 자식 애니메이션을 시작하려면 부모 애니메이션이 각각의 자식 애니메이션을 찾아서 [`animateChild()`](https://angular.io/api/animations/animateChild)으로 실행해줘야 합니다.
 
+<!--
 #### Disabling an animation on an HTML element
+-->
+#### 애니메이션 비활성화하기
 
+<!--
 A special animation control binding called `@.disabled` can be placed on an HTML element to disable animations on that element, as well as any nested elements. When true, the `@.disabled` binding prevents all animations from rendering.
 
 The code sample below shows how to use this feature.
+-->
+HTML 엘리먼트에 `@.disabled`를 바인딩하면 애니메이션을 비활성화 할 수 있으며, 이 때 자식 엘리먼트도 모두 영향을 받습니다. 그래서 `@.disabled`에 `true` 값을 바인딩하면 해당 엘리먼트와 해당 엘리먼트의 자식 엘리먼트에서는 모든 애니메이션이 비활성화됩니다.
+
+이 내용에 대해 살펴봅시다.
+
 
 <code-tabs>
 
@@ -341,6 +363,7 @@ The code sample below shows how to use this feature.
 
 </code-tabs>
 
+<!--
 When the `@.disabled` binding is true, the `@childAnimation` trigger doesn't kick off.
 
 When an element within an HTML template has animations disabled using the `@.disabled` host binding, animations are disabled on all inner elements as well.
@@ -352,20 +375,47 @@ However, selective child animations can still be run on a disabled parent in one
 Those elements can still animate.
 
 * A subanimation can be queried by a parent and then later animated with the `animateChild()` function.
+-->
+`@.disabled`가 `true` 값으로 바인딩되면 `@childAnimation` 트리거는 시작되지 않습니다.
 
+그리고 호스트 엘리먼트에 `@.disabled`가 바인딩되면 이 엘리먼트의 자식 엘리먼트에의 모든 애니메이션도 비활성화됩니다.
+이 때 비활성화는 엘리먼트 단위로만 할 수 있으며, 한 엘리먼트의 일부 애니매이션만 실행할 수는 없습니다.
+
+그런데 부모 엘리먼트의 애니메이션은 비활성화하고 자식 엘리먼트의 애니메이션만 실행할 수 있는 방법이 있습니다:
+
+* 부모 애니메이션에서 [`query()`](https://angular.io/api/animations/query) 함수를 실행해서 자식 엘리먼트의 애니메이션을 모은 후에 직접 시작할 수 있습니다.
+
+* 서브 애니메이션도 쿼리한 후에 `animateChild()` 함수로 시작할 수 있습니다.
+
+
+<!--
 #### Disabling all animations
+-->
+#### 모든 애니메이션 비활성화하기
 
+<!--
 To disable all animations for an Angular app, place the `@.disabled` host binding on the topmost Angular component.
+-->
+Angular 앱에 있는 애니메이션을 모두 비활성화 하려면 최상위 컴포넌트에 `@.disabled`를 바인딩하면 됩니다.
 
 <code-example path="animations/src/app/app.component.ts" header="src/app/app.component.ts" region="toggle-app-animations" language="typescript"></code-example>
 
 <div class="alert is-helpful">
 
+<!--
 **Note:** Disabling animations application-wide is useful during end-to-end (E2E) testing.
+-->
+**참고:** 앱 전체에 애니메이션을 비활성화하는 기능은 엔드-투-엔드(E2E) 테스트를 실행할 때 활용하면 좋습니다.
+
 </div>
 
-## Animation callbacks
 
+<!--
+## Animation callbacks
+-->
+## 애니메이션 콜백
+
+<!--
 The animation `trigger()` function emits *callbacks* when it starts and when it finishes. The example below features a component that contains an `openClose` trigger.
 
 <code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" region="events1" language="typescript"></code-example>
@@ -389,11 +439,41 @@ Callbacks can serve as a debugging tool, for example in conjunction with `consol
 The following code snippet creates console log output for the original example, a button with the two states of `open` and `closed`.
 
 <code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" region="events" language="typescript"></code-example>
+-->
+`trigger()` 함수는 시작할 때와 종료될 때 *콜백* 함수를 실행합니다. 이번에는 `openClose` 트리거에 콜백 함수를 연결하는 방법에 대해 알아봅시다.
+
+<code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" region="events1" language="typescript"></code-example>
+
+애니메이션 트리거의 이름이 `trigger`라면 애니메이션 이벤트는 HTML 템플릿에서 `$event` 객체에 담겨 `@trigger.start`나 `@trigger.done` 함수로 전달됩니다.
+그래서 이번 예제에서는 트리거의 이름이 `openClose`이기 때문에 이 트리거의 콜백은 다음과 같이 연결할 수 있습니다.
+
+<code-example path="animations/src/app/open-close.component.3.html" header="src/app/open-close.component.html" region="callbacks">
+</code-example>
+
+애니메이션 콜백은 데이터베이스 쿼리와 같이 시간이 오래 걸리는 API를 실행할 때도 유용합니다.
+예를 들면 백엔드에서 어떤 작업을 하는 동안 버튼이 깜빡이는 등 시각적 효과를 표현할 수 있습니다.
+
+아니면 어떤 애니메이션이 끝나고 나서 다른 애니메이션을 시작할 때도 애니메이션 콜백 함수를 사용할 수 있습니다.
+버튼이 `inProgress` 상태에서 깜빡이다가 API 호출이 완료되면 `closed` 상태가 되면서 다른 애니메이션을 시작할 수 있습니다.
+
+애니메이션을 활용하면 작업이 실제로 끝나지 않았더라도 작업이 좀 더 빠르게 진행되는 것처럼 느껴집니다.
+그래서 애니메이션을 약간만 추가해도 사용자의 만족도를 크게 개선할 수 있습니다. 서버의 실행속도나 네트워크 연결 상태와 같이 개선하기 어려운 문제를 신경쓰는 것보다 훨씬 효율적입니다.
+
+콜백 함수는 디버깅 용도로 사용할 수도 있습니다. 애니메이션 콜백 함수에 맞춰서 애플리케이션의 진행정보를 `console.warn()`과 같은 함수로 출력해볼 수도 있습니다.
+
+아래 예제 코드는 애니메이션 이벤트에 맞춰서 애니메이션 정보를 로그로 출력하는 컴포넌트 코드입니다.
+
+<code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" region="events" language="typescript"></code-example>
+
 
 {@a keyframes}
 
+<!--
 ## Keyframes
+-->
+## 키프레임(keyframes)
 
+<!--
 The previous section features a simple two-state transition. Now create an animation with multiple steps run in sequence using *keyframes*.
 
 Angular's `keyframe()` function is similar to keyframes in CSS. Keyframes allow several style changes within a single timing segment.
@@ -406,9 +486,27 @@ For example, the button, instead of fading, could change color several times ove
 The code for this color change might look like this.
 
 <code-example path="animations/src/app/status-slider.component.ts" header="src/app/status-slider.component.ts" region="keyframes" language="typescript"></code-example>
+-->
+이전 섹션에서는 두 상태를 전환하는 간단한 트랜지션에 대해 알아봤습니다. 이번에는 키프레임을 사용해서 여러 단계로 실행되는 애니메이션을 만들어 봅시다.
 
+Angular의 `keyframe()` 함수는 CSS에서 사용하는 키프레임과 비슷합니다. 키프레임은 한 재생시간 안에서 여러번 스타일을 변경할 때 사용합니다.
+예를 들면 버튼의 투명도를 조절하는 대신 2초에 걸쳐 색상을 변경하는 식으로 활용할 수 있습니다.
+
+<div class="lightbox">
+  <img src="generated/images/guide/animations/keyframes-500.png" alt="keyframes">
+</div>
+
+이 애니메이션은 다음과 같이 구현합니다.
+
+<code-example path="animations/src/app/status-slider.component.ts" header="src/app/status-slider.component.ts" region="keyframes" language="typescript"></code-example>
+
+
+<!--
 ### Offset
+-->
+### 오프셋(offset)
 
+<!--
 Keyframes include an *offset* that defines the point in the animation where each style change occurs.
 Offsets are relative measures from zero to one, marking the beginning and end of the animation, respectively and should be applied to each of the keyframe's steps if used at least once.
 
@@ -427,9 +525,32 @@ The code with offsets specified would be as follows.
 </code-example>
 
 You can combine keyframes with `duration`, `delay`, and `easing` within a single animation.
+-->
+애니메이션의 키프레임 타이밍을 조절하려면 *오프셋(offset)*을 지정하면 됩니다.
+오프셋은 애니메이션이 시작되는 지점부터 종료되는 지점을 0부터 1사이의 상대값으로 표현합니다.
 
+키프레임 오프셋은 생략할 수 있는데 오프셋을 생략하면 남은 시간을 같은 비율로 나눠서 자동으로 할당됩니다.
+그래서 3개의 키프레임을 오프셋 선언 없이 사용하면 이 키프레임들의 오프셋은 0, 0.5, 1이 됩니다.
+그리고 가운데 오프셋을 0.8로 지정하면 이 애니메이션은 이렇게 표현됩니다.
+
+<div class="lightbox">
+  <img src="generated/images/guide/animations/keyframes-offset-500.png" alt="keyframes with offset">
+</div>
+
+이 애니메이션은 다음과 같이 구현합니다:
+
+<code-example path="animations/src/app/status-slider.component.ts" header="src/app/status-slider.component.ts" region="keyframesWithOffsets" language="typescript">
+</code-example>
+
+물론 키프레임은 `duration`, `delay`, `easing`과 함께 사용할 수도 있습니다.
+
+
+<!--
 ### Keyframes with a pulsation
+-->
+### 깜빡이는 애니메이션
 
+<!--
 Use keyframes to create a pulse effect in your animations by defining styles at specific offset throughout the animation.
 
 Here's an example of using keyframes to create a pulse effect:
@@ -445,9 +566,28 @@ Here's an example of using keyframes to create a pulse effect:
 The code snippet for this animation might look like this.
 
 <code-example path="animations/src/app/open-close.component.1.ts" header="src/app/open-close.component.ts" region="trigger" language="typescript"></code-example>
+-->
+키프레임에 오프셋을 활용하면 깜빡이는 애니메이션을 구현할 수 있습니다.
 
+* 원래 `open`, `closed` 상태에는 버튼으 높이, 색상, 투명도를 1초동안 변경하는 애니메이션이 적용되어 있습니다.
+
+* 이 애니메이션 중간에 투명도를 조절하면서 버튼이 깜빡이는 효과를 추가해 봅시다.
+
+<div class="lightbox">
+  <img src="generated/images/guide/animations/keyframes-pulsation.png" alt="keyframes with irregular pulsation">
+</div>
+
+이 애니메이션은 이렇게 구현합니다.
+
+<code-example path="animations/src/app/open-close.component.1.ts" header="src/app/open-close.component.ts" region="trigger" language="typescript"></code-example>
+
+
+<!--
 ### Animatable properties and units
+-->
+### 애니메이션을 적용할 수 있는 프로퍼티와 단위
 
+<!--
 Angular's animation support builds on top of web animations, so you can animate any property that the browser considers animatable.
 This includes positions, sizes, transforms, colors, borders, and more. The W3C maintains a list of animatable properties on its [CSS Transitions](https://www.w3.org/TR/css-transitions-1/) page.
 
@@ -459,9 +599,26 @@ For positional properties with a numeric value, define a unit by providing the v
 
 If you don't provide a unit when specifying dimension, Angular assumes a default unit of pixels, or px.
 Expressing 50 pixels as `50` is the same as saying `'50px'`.
+-->
+Angular 애니메이션은 웹 표준 애니메이션을 기반으로 동작합니다. 그래서 브라우저에서 애니메이션을 지원하는 프로퍼티는 모두 Angular 애니메이션 대상이 될 수 있습니다.
+엘리먼트의 위치나 크기, transform 속성, 색상, 외곽선 등이 대상이 될 수 있습니다. 애니메이션을 적용할 수 있는 프로퍼티 전체 목록은 [CSS Transitions](https://www.w3.org/TR/css-transitions-1/) 문서를 참고하세요.
 
+그리고 위치나 크기와 관련된 프로퍼티는 단위를 붙여서 다음과 같이 문자열로 지정할 수도 있습니다:
+
+* 50픽셀: `'50px'`
+* 상대 폰트 크기: `'3em'`
+* 퍼센트: `'100%'`
+
+단위를 생략했을 때 Angular가 기본으로 붙이는 단위는 픽셀입니다.
+그래서 `50`이라고 지정한 것과 `'50px'`은 같은 의미입니다.
+
+
+<!--
 ### Automatic property calculation with wildcards
+-->
+### 와일드카드로 프로퍼티값 자동 계산하기
 
+<!--
 Sometimes you don't know the value of a dimensional style property until runtime.
 For example, elements often have widths and heights that depend on their content and the screen size.
 These properties are often challenging to animate using CSS.
@@ -470,18 +627,45 @@ In these cases, you can use a special wildcard `*` property value under `style()
 
 The following example has a trigger called `shrinkOut`, used when an HTML element leaves the page.
 The animation takes whatever height the element has before it leaves, and animates from that height to zero.
+-->
+스타일 프로퍼티의 값은 실행시점에서만 알 수 있는 경우가 있습니다.
+내용의 양이나 화면 크기에 따라서 엘리먼트의 너비와 높이가 조절되기도 합니다.
+이런 프로퍼티에 CSS 애니메이션을 적용하는 것은 까다로운 일입니다.
+
+이런 경우에 `style()` 함수와 와일드카드 `*` 프로퍼티 값을 활용하면 애니메이션에 사용되는 프로퍼티 값이 실행시점에 자동으로 계산되어 애니메이션에 적용됩니다.
+
+아래 예제는 HTML 엘리먼트가 화면에서 사라질 때 실행되는 `shrinkOut` 트리거를 정의한 코드입니다.
+이 트리거가 적용된 엘리먼트는 화면에서 사라지기 전의 높이가 어떤 값이냐에 관계없이 0으로 변경됩니다.
 
 <code-example path="animations/src/app/hero-list-auto.component.ts" header="src/app/hero-list-auto.component.ts" region="auto-calc" language="typescript"></code-example>
 
+
+<!--
 ### Keyframes summary
+-->
+### 키프레임 정리
 
+<!--
 The `keyframes()` function in Angular allows you to specify multiple interim styles within a single transition, with an optional offset to define the point in the animation where each style change occurs.
+-->
+`keyframes()` 함수를 활용하면 한 트랜지션 안에서 여러 스타일을 다양하게 적용할 수 있습니다. 그리고 오프셋을 활용하면 각 스타일이 어느 시점에 적용될지도 지정할 수 있습니다.
 
+<!--
 ## More on Angular animations
+-->
+## Angular 애니메이션 더 알아보기
 
+<!--
 You may also be interested in the following:
 
 * [Introduction to Angular animations](guide/animations)
 * [Complex animation sequences](guide/complex-animation-sequences)
 * [Reusable animations](guide/reusable-animations)
 * [Route transition animations](guide/route-animations)
+-->
+다음 내용에 대해서도 알아보세요:
+
+* [Angular 애니메이션 소개](guide/animations)
+* [복잡한 애니메이션 시퀀스](guide/complex-animation-sequences)
+* [애니메이션 재사용하기](guide/reusable-animations)
+* [페이지 전환 애니메이션](guide/route-animations)

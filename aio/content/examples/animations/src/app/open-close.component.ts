@@ -86,22 +86,22 @@ export class OpenCloseComponent {
       return;
     }
 // #docregion events
-    // openClose is trigger name in this example
+    // 이 예제에서 트리거 이름은 openClose입니다.
     console.warn(`Animation Trigger: ${event.triggerName}`);
 
-    // phaseName is start or done
+    // phaseName은 start나 done 문자열입니다.
     console.warn(`Phase: ${event.phaseName}`);
 
-    // in our example, totalTime is 1000 or 1 second
+    // 이 예제에서 totalTime은 1초이거나 0.5초입니다.
     console.warn(`Total time: ${event.totalTime}`);
 
-    // in our example, fromState is either open or closed
+    // 이 예제에서 fromState는 open이거나 closed입니다.
     console.warn(`From: ${event.fromState}`);
 
-    // in our example, toState either open or closed
+    // 이 예제에서 toState는 open이거나 closed입니다.
     console.warn(`To: ${event.toState}`);
 
-    // the HTML element itself, the button in this case
+    // 이 예제에서 이벤트가 발생한 HTML 엘리먼트는 버튼입니다.
     console.warn(`Element: ${event.element}`);
 // #docregion events1
   }
