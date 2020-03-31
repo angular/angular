@@ -302,7 +302,7 @@ describe('processCliCommands processor', () => {
             navigation));
   });
 
-  it('should collect potential search terms from options for indexing', () => {
+  it('should collect potential search terms from options and its subcommands for indexing', () => {
     const doc = {
       docType: 'cli-command',
       name: 'name',
