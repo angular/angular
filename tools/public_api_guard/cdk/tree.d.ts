@@ -113,7 +113,8 @@ export declare class CdkTreeNodePadding<T> implements OnDestroy {
     indentUnits: string;
     get level(): number;
     set level(value: number);
-    constructor(_treeNode: CdkTreeNode<T>, _tree: CdkTree<T>, _renderer: Renderer2, _element: ElementRef<HTMLElement>, _dir: Directionality);
+    constructor(_treeNode: CdkTreeNode<T>, _tree: CdkTree<T>,
+    _renderer: Renderer2, _element: ElementRef<HTMLElement>, _dir: Directionality);
     _paddingIndent(): string | null;
     _setPadding(forceChange?: boolean): void;
     ngOnDestroy(): void;

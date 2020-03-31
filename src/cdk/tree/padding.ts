@@ -69,7 +69,11 @@ export class CdkTreeNodePadding<T> implements OnDestroy {
 
   constructor(private _treeNode: CdkTreeNode<T>,
               private _tree: CdkTree<T>,
-              private _renderer: Renderer2,
+              /**
+               * @deprecated _renderer parameter no longer being used. To be removed.
+               * @breaking-change 11.0.0
+               */
+              _renderer: Renderer2,
               private _element: ElementRef<HTMLElement>,
               @Optional() private _dir: Directionality) {
     this._setPadding();
@@ -104,8 +108,8 @@ export class CdkTreeNodePadding<T> implements OnDestroy {
       const element = this._element.nativeElement;
       const paddingProp = this._dir && this._dir.value === 'rtl' ? 'paddingRight' : 'paddingLeft';
       const resetProp = paddingProp === 'paddingLeft' ? 'paddingRight' : 'paddingLeft';
-      this._renderer.setStyle(element, paddingProp, padding);
-      this._renderer.setStyle(element, resetProp, null);
+      element.style[paddingProp] = padding || '';
+      element.style[resetProp] = '';
       this._currentPadding = padding;
     }
   }
