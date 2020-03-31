@@ -400,6 +400,20 @@ describe('MatBottomSheet', () => {
     expect(spy).toHaveBeenCalledWith(1337);
   }));
 
+  it('should be able to pass data when dismissing through the service', fakeAsync(() => {
+    const bottomSheetRef = bottomSheet.open<PizzaMsg, any, number>(PizzaMsg);
+    const spy = jasmine.createSpy('afterDismissed spy');
+
+    bottomSheetRef.afterDismissed().subscribe(spy);
+    viewContainerFixture.detectChanges();
+
+    bottomSheet.dismiss(1337);
+    viewContainerFixture.detectChanges();
+    flush();
+
+    expect(spy).toHaveBeenCalledWith(1337);
+  }));
+
   it('should close the bottom sheet when going forwards/backwards in history', fakeAsync(() => {
     bottomSheet.open(PizzaMsg);
 

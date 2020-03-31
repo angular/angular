@@ -112,10 +112,11 @@ export class MatBottomSheet implements OnDestroy {
 
   /**
    * Dismisses the currently-visible bottom sheet.
+   * @param result Data to pass to the bottom sheet instance.
    */
-  dismiss(): void {
+  dismiss<R = any>(result?: R): void {
     if (this._openedBottomSheetRef) {
-      this._openedBottomSheetRef.dismiss();
+      this._openedBottomSheetRef.dismiss(result);
     }
   }
 
