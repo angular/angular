@@ -5,9 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationPlayer, AnimationTriggerMetadata, animate, state, style, transition, trigger} from '@angular/animations';
-import {ɵAnimationEngine as AnimationEngine} from '@angular/animations/browser';
-import {Component, Injectable, NgZone, RendererFactory2, RendererType2, ViewChild} from '@angular/core';
+import {AnimationPlayer, AnimationTriggerMetadata, animate, style, transition, trigger} from '@angular/animations';
+import {AnimationDriver, ɵAnimationEngine as AnimationEngine, ɵAnimationStyleNormalizer as AnimationStyleNormalizer} from '@angular/animations/browser';
+import {DOCUMENT} from '@angular/common';
+import {Component, Inject, Injectable, NgZone, RendererFactory2, RendererType2, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {BrowserAnimationsModule, ɵAnimationRendererFactory as AnimationRendererFactory, ɵInjectableAnimationEngine as InjectableAnimationEngine} from '@angular/platform-browser/animations';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
@@ -321,9 +322,14 @@ import {el} from '../../testing/src/browser_util';
 })();
 
 @Injectable()
-class MockAnimationEngine extends InjectableAnimationEngine {
+class MockAnimationEngine extends AnimationEngine {
   captures: {[method: string]: any[]} = {};
   triggers: AnimationTriggerMetadata[] = [];
+
+  constructor(
+      @Inject(DOCUMENT) doc: any, driver: AnimationDriver, normalizer: AnimationStyleNormalizer) {
+    super(doc.body, driver, normalizer);
+  }
 
   private _capture(name: string, args: any[]) {
     const data = this.captures[name] = this.captures[name] || [];
