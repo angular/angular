@@ -216,6 +216,7 @@ export interface DragDropConfig extends Partial<DragRefConfig> {
     previewClass?: string | string[];
     rootElementSelector?: string;
     sortingDisabled?: boolean;
+    zIndex?: number;
 }
 
 export declare class DragDropModule {
@@ -317,6 +318,7 @@ export declare class DragRef<T = any> {
 export interface DragRefConfig {
     dragStartThreshold: number;
     pointerDirectionChangeThreshold: number;
+    zIndex?: number;
 }
 
 export declare type DragStartDelay = number | {

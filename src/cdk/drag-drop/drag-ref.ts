@@ -31,6 +31,9 @@ export interface DragRefConfig {
    * considers them to have changed the drag direction.
    */
   pointerDirectionChangeThreshold: number;
+
+  /** `z-index` for the absolutely-positioned elements that are created by the drag item. */
+  zIndex?: number;
 }
 
 /** Options that can be used to bind a passive event listener. */
@@ -909,7 +912,7 @@ export class DragRef<T = any> {
       position: 'fixed',
       top: '0',
       left: '0',
-      zIndex: '1000'
+      zIndex: `${this._config.zIndex || 1000}`
     });
 
     toggleNativeDragInteractions(preview, false);

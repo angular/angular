@@ -1929,6 +1929,7 @@ describe('CdkDrag', () => {
       expect(previewRect.height).toBe(itemRect.height, 'Expected preview height to match element');
       expect(preview.style.pointerEvents)
           .toBe('none', 'Expected pointer events to be disabled on the preview');
+      expect(preview.style.zIndex).toBe('1000', 'Expected preview to have a high default zIndex.');
       // Use a regex here since some browsers normalize 0 to 0px, but others don't.
       expect(preview.style.margin).toMatch(/^0(px)?$/, 'Expected the preview margin to be reset.');
 
@@ -1940,6 +1941,22 @@ describe('CdkDrag', () => {
           .toBe(initialParent, 'Expected element to be moved back into its old parent');
       expect(item.style.display).toBeFalsy('Expected element to be visible');
       expect(preview.parentNode).toBeFalsy('Expected preview to be removed from the DOM');
+    }));
+
+    it('should be able to configure the preview z-index', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone, [{
+        provide: CDK_DRAG_CONFIG,
+        useValue: {
+          dragStartThreshold: 0,
+          zIndex: 3000
+        }
+      }]);
+      fixture.detectChanges();
+      const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+      startDraggingViaMouse(fixture, item);
+
+      const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
+      expect(preview.style.zIndex).toBe('3000');
     }));
 
     it('should create the preview inside the fullscreen element when in fullscreen mode',
