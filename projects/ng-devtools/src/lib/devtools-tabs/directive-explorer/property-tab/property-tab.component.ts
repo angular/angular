@@ -8,9 +8,7 @@ import { PropertyTabBodyComponent } from './property-tab-body/property-tab-body.
 })
 export class PropertyTabComponent {
   @Input() currentSelectedElement: IndexedNode;
-
   @Output() viewSource = new EventEmitter<void>();
-  @Output() copyPropData = new EventEmitter<string>();
 
   @ViewChild(PropertyTabBodyComponent) propertyTabBody: PropertyTabBodyComponent;
 }

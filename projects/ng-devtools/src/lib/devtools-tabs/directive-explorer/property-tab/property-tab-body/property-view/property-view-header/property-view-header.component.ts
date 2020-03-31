@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'ng-property-view-header',
@@ -7,5 +7,4 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class PropertyViewHeaderComponent {
   @Input() directive: string;
-  @Output() copyPropData = new EventEmitter<string>();
 }

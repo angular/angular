@@ -8,15 +8,12 @@ describe('DirectiveExplorerComponent', () => {
   let messageBusMock: any;
   let comp: DirectiveExplorerComponent;
   let applicationOperationsSpy: any;
-  let snackBarSpy: any;
 
   beforeEach(() => {
     applicationOperationsSpy = jasmine.createSpyObj('_appOperations', ['viewSource', 'selectDomElement']);
-    snackBarSpy = jasmine.createSpyObj('_snackBar', ['show']);
     messageBusMock = jasmine.createSpyObj('messageBus', ['on', 'once', 'emit', 'destroy']);
     comp = new DirectiveExplorerComponent(
       applicationOperationsSpy,
-      snackBarSpy,
       messageBusMock,
       new ElementPropertyResolver(messageBusMock)
     );
