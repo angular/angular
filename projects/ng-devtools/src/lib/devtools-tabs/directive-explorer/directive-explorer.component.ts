@@ -6,13 +6,11 @@ import {
   ComponentExplorerViewQuery,
   ComponentExplorerView,
   ElementPosition,
-  Descriptor,
   PropertyQuery,
   PropertyQueryTypes,
 } from 'protocol';
 import { IndexedNode } from './directive-forest/index-forest';
 import { ApplicationOperations } from '../../application-operations';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
 import { throttleTime } from 'rxjs/operators';
 import { ElementPropertyResolver } from './property-resolver/element-property-resolver';
@@ -60,7 +58,6 @@ export class DirectiveExplorerComponent implements OnInit {
 
   constructor(
     private _appOperations: ApplicationOperations,
-    private _snackBar: MatSnackBar,
     private _messageBus: MessageBus<Events>,
     private _propResolver: ElementPropertyResolver
   ) {
@@ -159,27 +156,6 @@ export class DirectiveExplorerComponent implements OnInit {
     };
   }
 
-  copyPropData(directive: string): void {
-    const handler = (e: ClipboardEvent) => {
-      let data = {};
-      const controller = this._propResolver.getDirectiveController(directive);
-      if (controller) {
-        data = controller.directiveProperties;
-      }
-      if (!e.clipboardData) {
-        return;
-      }
-      e.clipboardData.setData('text/plain', JSON.stringify(cleanPropDataForCopying(data)));
-      e.preventDefault();
-      document.removeEventListener('copy', handler);
-      this._snackBar.open('Copied to clipboard!', '', {
-        duration: 1000,
-      });
-    };
-    document.addEventListener('copy', handler);
-    document.execCommand('copy');
-  }
-
   handleHighlightFromComponent(position: ElementPosition): void {
     this._messageBus.emit('highlightElementFromComponentTree', [position]);
   }
@@ -209,15 +185,3 @@ export class DirectiveExplorerComponent implements OnInit {
     this.parents = parents;
   }
 }
-
-const cleanPropDataForCopying = (propData: { [name: string]: Descriptor }, cleanedPropData = {}): object => {
-  Object.keys(propData).forEach((key) => {
-    if (typeof propData[key].value === 'object') {
-      cleanedPropData[key] = {};
-      cleanPropDataForCopying(propData[key].value, cleanedPropData[key]);
-    } else {
-      cleanedPropData[key] = propData[key].value || propData[key].preview;
-    }
-  });
-  return cleanedPropData;
-};
