@@ -394,6 +394,14 @@ describe('MDC-based MatRadio', () => {
       expect(radioNativeElements[2].classList).toContain('mat-warn');
     });
 
+    it('should have a focus indicator', () => {
+      const radioRippleNativeElements =
+          radioNativeElements.map(element => element.querySelector('.mat-radio-ripple')!);
+
+      expect(radioRippleNativeElements
+          .every(element => element.classList.contains('mat-focus-indicator'))).toBe(true);
+    });
+
   });
 
   describe('group with ngModel', () => {
