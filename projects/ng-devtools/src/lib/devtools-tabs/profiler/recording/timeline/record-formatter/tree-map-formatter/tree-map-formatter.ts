@@ -10,39 +10,19 @@ export interface TreeMapNode {
 }
 
 export class TreeMapFormatter extends RecordFormatter<TreeMapNode> {
-  format(records: ProfilerFrame[]): any {
-    const result: TimelineView<TreeMapNode> = {
-      timeline: [],
-    };
-    records.forEach((record) => {
-      this.insertTimelineRecord(result.timeline, record);
-    });
-    result.timeline = result.timeline.filter((entry) => entry.app.length > 0 && entry.timeSpent > 0);
-    return result;
-  }
-
-  insertTimelineRecord(result: AppEntry<TreeMapNode>[], record: ProfilerFrame): void {
-    const entry: AppEntry<TreeMapNode> = {
-      app: [],
-      timeSpent: 0,
-      source: record.source,
-    };
-    this.addFrame(entry.app, record.directives);
-
-    const size = entry.app.reduce((accum, curr) => {
+  formatFrame(record: ProfilerFrame): TreeMapNode {
+    const children: TreeMapNode[] = [];
+    this.addFrame(children, record.directives);
+    const size = children.reduce((accum, curr) => {
       return accum + curr.size;
     }, 0);
-    entry.app = [
-      {
-        id: 'Application',
-        size,
-        value: size,
-        children: entry.app,
-        original: null,
-      },
-    ];
-    entry.timeSpent = size;
-    result.push(entry);
+    return {
+      id: 'Application',
+      size,
+      value: size,
+      children,
+      original: null,
+    };
   }
 
   addFrame(nodes: TreeMapNode[], elements: ElementProfile[], prev: TreeMapNode | null = null): void {

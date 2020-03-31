@@ -1,8 +1,9 @@
 import { AfterViewInit, Component, ElementRef, HostListener, Input, OnInit, ViewChild } from '@angular/core';
 import * as treemap from 'webtreemap/build/webtreemap';
-import { TreeMapNode } from '../../record-formatter/tree-map-formatter';
+import { TreeMapNode, TreeMapFormatter } from '../../record-formatter/tree-map-formatter';
 import { Subject } from 'rxjs';
 import { throttleTime } from 'rxjs/operators';
+import { ProfilerFrame } from 'protocol';
 
 @Component({
   selector: 'ng-tree-map-visualizer',
@@ -10,9 +11,11 @@ import { throttleTime } from 'rxjs/operators';
   styleUrls: ['./tree-map-visualizer.component.scss'],
 })
 export class TreeMapVisualizerComponent implements AfterViewInit, OnInit {
-  @Input() set records(data: TreeMapNode[]) {
+  private _formatter = new TreeMapFormatter();
+
+  @Input() set frame(frame: ProfilerFrame) {
     // first element in data is the Application node
-    this.treeMapRecords = data[0];
+    this.treeMapRecords = this._formatter.formatFrame(frame);
     if (this.tree) {
       this.updateTree();
     }

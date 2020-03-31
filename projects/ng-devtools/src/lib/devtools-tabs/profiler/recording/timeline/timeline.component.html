@@ -1,9 +1,9 @@
-<ng-container *ngIf="profileRecords.timeline.length > 1; else resultsWithoutControls">
-  <ng-container *ngTemplateOutlet="recordView; context: { record: recordsView, showControls: true }"></ng-container>
+<ng-container *ngIf="profilerFrames.length > 1; else resultsWithoutControls">
+  <ng-container *ngTemplateOutlet="recordView; context: { record: frame, showControls: true }"></ng-container>
 </ng-container>
 <ng-template #resultsWithoutControls>
-  <ng-container *ngIf="profileRecords.timeline.length === 1; else noRecords">
-    <ng-container *ngTemplateOutlet="recordView; context: { record: profileRecords.timeline[0] }"></ng-container>
+  <ng-container *ngIf="profilerFrames.length === 1; else noRecords">
+    <ng-container *ngTemplateOutlet="recordView; context: { record: profilerFrames[0] }"></ng-container>
   </ng-container>
   <ng-template #noRecords>
     Nothing was profiled
@@ -14,7 +14,7 @@
   <div class="controls">
     <button mat-stroked-button (click)="exportProfile.emit()">Export to JSON</button>
     <mat-form-field>
-      <mat-select (selectionChange)="formatRecords()" [(ngModel)]="visualizationMode">
+      <mat-select [(ngModel)]="visualizationMode">
         <mat-option [value]="cmpVisualizationModes.FlameGraph">
           Flame graph
         </mat-option>
@@ -28,28 +28,28 @@
     </mat-form-field>
 
     <label
-      [class.warning-no]="record.timeSpent < 16"
-      [class.warning-low]="record.timeSpent >= 16"
-      [class.warning-mid]="record.timeSpent >= 32"
-      [class.warning-high]="record.timeSpent >= 64"
+      [class.warning-no]="record.duration < 16"
+      [class.warning-low]="record.duration >= 16"
+      [class.warning-mid]="record.duration >= 32"
+      [class.warning-high]="record.duration >= 64"
     >
-      Time spent: {{ record.timeSpent | number }} ms
+      Time spent: {{ record.duration | number }} ms
     </label>
 
     <label
-      [class.warning-no]="record.timeSpent < 16"
-      [class.warning-low]="record.timeSpent >= 16"
-      [class.warning-mid]="record.timeSpent >= 32"
-      [class.warning-high]="record.timeSpent >= 64"
-      *ngIf="frameRate(record.timeSpent) < 64"
+      [class.warning-no]="record.duration < 16"
+      [class.warning-low]="record.duration >= 16"
+      [class.warning-mid]="record.duration >= 32"
+      [class.warning-high]="record.duration >= 64"
+      *ngIf="frameRate(record.duration) < 64"
     >
-      Frame rate: {{ frameRate(record.timeSpent) }} fps
+      Frame rate: {{ frameRate(record.duration) }} fps
     </label>
     <label *ngIf="record.source">Source: {{ record.source }}</label>
   </div>
   <div class="bar-graph-container">
-    <p class="txt-frames">{{ currentView + 1 }}/{{ graphData.length }}</p>
-    <button mat-icon-button (click)="move(-1)" [disabled]="currentView == 0">
+    <p class="txt-frames">{{ currentFrameIndex + 1 }}/{{ graphData.length }}</p>
+    <button mat-icon-button (click)="move(-1)" [disabled]="currentFrameIndex == 0">
       <mat-icon>chevron_left</mat-icon>
     </button>
     <div #barContainer class="bar-container">
@@ -57,13 +57,13 @@
         *ngFor="let d of graphData; let i = index"
         [matTooltip]="d.toolTip"
         [ngStyle]="d.style"
-        [class.selected]="i == currentView"
-        (click)="updateView(i)"
+        [class.selected]="i == currentFrameIndex"
+        (click)="selectFrame(i)"
       ></div>
     </div>
-    <button mat-icon-button (click)="move(1)" [disabled]="currentView == graphData.length - 1">
+    <button mat-icon-button (click)="move(1)" [disabled]="currentFrameIndex == graphData.length - 1">
       <mat-icon>chevron_right</mat-icon>
     </button>
   </div>
-  <ng-timeline-visualizer [visualizationMode]="visualizationMode" [records]="record.app"></ng-timeline-visualizer>
+  <ng-timeline-visualizer [visualizationMode]="visualizationMode" [frame]="record"></ng-timeline-visualizer>
 </ng-template>
