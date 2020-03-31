@@ -129,10 +129,9 @@ class TypeScriptSymbolQuery implements SymbolQuery {
     if (type instanceof TypeWrapper) {
       const ty = type.tsType;
       const tyArgs = type.typeArguments();
-      // The type should be Array-like, like Array<T> or ReadonlyArray<T>.
-      // Since arrays are actually objects in JavaScript (and TypeScript doesn't expose a more
-      // specific type), check if the type is object-like and has one type argument.
-      if (!(ty.flags & ts.TypeFlags.Object) || tyArgs?.length != 1) return;
+      // TODO(ayazhafiz): Track https://github.com/microsoft/TypeScript/issues/37711 to expose
+      // `isArrayLikeType` as a public method.
+      if (!(this.checker as any).isArrayLikeType(ty) || tyArgs?.length !== 1) return;
       return tyArgs[0];
     }
   }
