@@ -145,7 +145,7 @@ export interface CdkDragStart<T = any> {
     source: CdkDrag<T>;
 }
 
-export declare class CdkDropList<T = any> implements AfterContentInit, OnDestroy {
+export declare class CdkDropList<T = any> implements OnDestroy {
     _dropListRef: DropListRef<CdkDropList<T>>;
     autoScrollDisabled: boolean;
     connectedTo: (CdkDropList | string)[] | CdkDropList | string;
@@ -171,7 +171,6 @@ export declare class CdkDropList<T = any> implements AfterContentInit, OnDestroy
     exit(item: CdkDrag): void;
     getItemIndex(item: CdkDrag): number;
     getSortedItems(): CdkDrag[];
-    ngAfterContentInit(): void;
     ngOnDestroy(): void;
     removeItem(item: CdkDrag): void;
     start(): void;

@@ -17,7 +17,6 @@ import {
   Directive,
   ChangeDetectorRef,
   SkipSelf,
-  AfterContentInit,
   Inject,
 } from '@angular/core';
 import {Directionality} from '@angular/cdk/bidi';
@@ -59,9 +58,12 @@ export interface CdkDropListInternal extends CdkDropList {}
     '[class.cdk-drop-list-receiving]': '_dropListRef.isReceiving()',
   }
 })
-export class CdkDropList<T = any> implements AfterContentInit, OnDestroy {
+export class CdkDropList<T = any> implements OnDestroy {
   /** Emits when the list has been destroyed. */
   private _destroyed = new Subject<void>();
+
+  /** Whether the element's scrollable parents have been resolved. */
+  private _scrollableParentsResolved: boolean;
 
   /** Keeps track of the drop lists that are currently on the page. */
   private static _dropLists: CdkDropList[] = [];
@@ -180,16 +182,6 @@ export class CdkDropList<T = any> implements AfterContentInit, OnDestroy {
 
     if (_group) {
       _group._items.add(this);
-    }
-  }
-
-  ngAfterContentInit() {
-    // @breaking-change 11.0.0 Remove null check for _scrollDispatcher once it's required.
-    if (this._scrollDispatcher) {
-      const scrollableParents = this._scrollDispatcher
-        .getAncestorScrollContainers(this.element)
-        .map(scrollable => scrollable.getElementRef().nativeElement);
-      this._dropListRef.withScrollableParents(scrollableParents);
     }
   }
 
@@ -319,6 +311,20 @@ export class CdkDropList<T = any> implements AfterContentInit, OnDestroy {
             siblings.push(drop);
           }
         });
+      }
+
+      // Note that we resolve the scrollable parents here so that we delay the resolution
+      // as long as possible, ensuring that the element is in its final place in the DOM.
+      // @breaking-change 11.0.0 Remove null check for _scrollDispatcher once it's required.
+      if (!this._scrollableParentsResolved && this._scrollDispatcher) {
+        const scrollableParents = this._scrollDispatcher
+          .getAncestorScrollContainers(this.element)
+          .map(scrollable => scrollable.getElementRef().nativeElement);
+        this._dropListRef.withScrollableParents(scrollableParents);
+
+        // Only do this once since it involves traversing the DOM and the parents
+        // shouldn't be able to change without the drop list being destroyed.
+        this._scrollableParentsResolved = true;
       }
 
       ref.disabled = this.disabled;
