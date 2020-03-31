@@ -24,7 +24,6 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
         isElement: isCustomElement(node),
         name: getDirectiveName(directive),
         isComponent,
-        changeDetection: 0,
         lifecycle: {},
       });
     },
@@ -67,7 +66,6 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
           isElement: isComponent && isCustomElement(node),
           name: getDirectiveName(directive),
           isComponent,
-          changeDetection: 0,
           lifecycle: {},
         });
       }
@@ -85,7 +83,6 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
           isElement: isCustomElement(node),
           name: getDirectiveName(directive),
           isComponent,
-          changeDetection: 0,
           lifecycle: {},
         });
       }
@@ -182,12 +179,10 @@ const prepareInitialFrame = (source: string, duration: number) => {
         isElement: false,
         name: getDirectiveName(d.instance),
         lifecycle: {},
-        changeDetection: 0,
       };
     });
     if (node.component) {
       directives.push({
-        changeDetection: 0,
         isElement: node.component.isElement,
         isComponent: true,
         lifecycle: {},

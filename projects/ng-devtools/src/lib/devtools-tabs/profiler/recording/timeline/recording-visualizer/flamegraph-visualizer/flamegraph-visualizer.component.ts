@@ -1,4 +1,6 @@
 import { Component, ElementRef, Input } from '@angular/core';
+import { MatCheckboxChange } from '@angular/material/checkbox';
+
 import {
   FlamegraphNode,
   ROOT_LEVEL_ELEMENT_LABEL,
@@ -29,10 +31,13 @@ export class FlamegraphVisualizerComponent {
   };
 
   private _formatter = new FlamegraphFormatter();
+  private _showChangeDetection = false;
+  private _frame: ProfilerFrame;
 
   @Input() set frame(frame: ProfilerFrame) {
     this.selectedEntry = null;
-    this.profilerBars = [this._formatter.formatFrame(frame)];
+    this._frame = frame;
+    this._selectFrame();
   }
 
   constructor(private _el: ElementRef) {}
@@ -75,5 +80,14 @@ export class FlamegraphVisualizerComponent {
 
   formatToolTip(data: any): string {
     return `${data.data.name} ${data.data.value}ms`;
+  }
+
+  updateView(event: MatCheckboxChange): void {
+    this._showChangeDetection = event.checked;
+    this._selectFrame();
+  }
+
+  private _selectFrame(): void {
+    this.profilerBars = [this._formatter.formatFrame(this._frame, this._showChangeDetection)];
   }
 }

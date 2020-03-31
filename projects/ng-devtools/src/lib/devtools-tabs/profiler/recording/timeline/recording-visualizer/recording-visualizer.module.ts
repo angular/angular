@@ -6,6 +6,7 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { FlamegraphVisualizerComponent } from './flamegraph-visualizer/flamegraph-visualizer.component';
 import { BargraphVisualizerComponent } from './bargraph-visualizer/bargraph-visualizer.component';
 import { TreeMapVisualizerComponent } from './tree-map-visualizer/tree-map-visualizer.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,7 @@ import { TreeMapVisualizerComponent } from './tree-map-visualizer/tree-map-visua
     TreeMapVisualizerComponent,
     BargraphVisualizerComponent,
   ],
-  imports: [CommonModule, NgxFlamegraphModule, NgxChartsModule],
+  imports: [CommonModule, NgxFlamegraphModule, NgxChartsModule, MatCheckboxModule],
   exports: [TimelineVisualizerComponent],
 })
 export class RecordingVisualizerModule {}

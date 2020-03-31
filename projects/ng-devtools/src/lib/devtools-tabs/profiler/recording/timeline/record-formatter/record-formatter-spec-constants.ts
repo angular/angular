@@ -10,6 +10,7 @@ export const SIMPLE_RECORD = [
             name: 'TooltipDirective',
             lifecycle: {},
             changeDetection: 5,
+            changeDetected: true,
           },
           {
             changeDetection: 5,
@@ -17,6 +18,7 @@ export const SIMPLE_RECORD = [
             isComponent: true,
             lifecycle: {},
             name: 'TodoComponent',
+            changeDetected: true,
           },
         ],
       },
@@ -26,6 +28,7 @@ export const SIMPLE_RECORD = [
         isComponent: false,
         isElement: false,
         name: 'NgForOf',
+        changeDetected: false,
         lifecycle: { ngDoCheck: 7 },
         changeDetection: 0,
       },
@@ -36,6 +39,7 @@ export const SIMPLE_FORMATTED_FLAMEGRAPH_RECORD = [
   {
     value: 7,
     label: '[NgForOf]',
+    changeDetected: false,
     children: [
       {
         value: 10,
@@ -43,6 +47,7 @@ export const SIMPLE_FORMATTED_FLAMEGRAPH_RECORD = [
         children: [],
         instances: 1,
         original: SIMPLE_RECORD[0].children[0],
+        changeDetected: true,
       },
     ],
     instances: 1,
@@ -243,38 +248,47 @@ export const NESTED_FORMATTED_FLAMEGRAPH_RECORD = [
   {
     value: 1,
     label: 'AppComponent',
+    changeDetected: true,
     children: [
       {
         value: 0,
         label: '[RouterOutlet]',
+        changeDetected: false,
         children: [
           {
             value: 1,
             label: 'DemoAppComponent',
+            changeDetected: true,
             children: [
               {
                 value: 0,
                 label: '[RouterOutlet]',
+                changeDetected: false,
                 children: [
                   {
                     value: 1,
                     label: 'AppComponent',
+                    changeDetected: true,
                     children: [
                       {
                         value: 0,
                         label: '[RouterOutlet]',
+                        changeDetected: false,
                         children: [
                           {
                             value: 9,
                             label: 'TodosComponent',
+                            changeDetected: true,
                             children: [
                               {
                                 value: 7,
                                 label: '[NgForOf]',
+                                changeDetected: false,
                                 children: [
                                   {
                                     value: 0,
                                     label: 'TodoComponent[TooltipDirective]',
+                                    changeDetected: true,
                                     children: [],
                                     instances: 1,
                                     original:
@@ -284,6 +298,7 @@ export const NESTED_FORMATTED_FLAMEGRAPH_RECORD = [
                                   {
                                     value: 0,
                                     label: 'TodoComponent[TooltipDirective]',
+                                    changeDetected: true,
                                     children: [],
                                     instances: 1,
                                     original:
@@ -293,6 +308,7 @@ export const NESTED_FORMATTED_FLAMEGRAPH_RECORD = [
                                   {
                                     value: 0,
                                     label: 'TodoComponent[TooltipDirective]',
+                                    changeDetected: true,
                                     children: [],
                                     instances: 1,
                                     original:
@@ -325,6 +341,7 @@ export const NESTED_FORMATTED_FLAMEGRAPH_RECORD = [
               {
                 value: 1,
                 label: 'HeavyComponent',
+                changeDetected: true,
                 children: [],
                 instances: 1,
                 original: NESTED_RECORD[0].children[0].children[0].children[1],
@@ -345,12 +362,14 @@ export const NESTED_FORMATTED_FLAMEGRAPH_RECORD = [
     value: 1,
     label: 'ZippyComponent',
     children: [],
+    changeDetected: true,
     instances: 1,
     original: {
       children: [],
       directives: [
         {
           changeDetection: 1,
+          changeDetected: true,
           isElement: true,
           isComponent: true,
           lifecycle: {},

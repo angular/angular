@@ -9,29 +9,31 @@ export interface FlamegraphNode {
   label: string;
   instances: number;
   original: ElementProfile;
+  changeDetected: boolean;
 }
 
 export const ROOT_LEVEL_ELEMENT_LABEL = 'Entire application';
 
 export class FlamegraphFormatter extends RecordFormatter<FlamegraphNode> {
-  @memo() formatFrame(frame: ProfilerFrame): FlamegraphNode {
+  formatFrame(frame: ProfilerFrame, showChangeDetection?: boolean): FlamegraphNode {
     const result: FlamegraphNode = {
       value: 0,
       label: ROOT_LEVEL_ELEMENT_LABEL,
       children: [],
       color: '#ccc',
       instances: 1,
+      changeDetected: false,
       original: {
         children: [],
         directives: [],
       },
     };
 
-    this.addFrame(result.children, frame.directives);
+    this.addFrame(result.children, frame.directives, showChangeDetection);
     return result;
   }
 
-  addFrame(nodes: FlamegraphNode[], elements: ElementProfile[]): number {
+  addFrame(nodes: FlamegraphNode[], elements: ElementProfile[], showChangeDetection?: boolean): number {
     let timeSpent = 0;
     elements.forEach((element) => {
       // Possibly undefined because of
@@ -40,17 +42,31 @@ export class FlamegraphFormatter extends RecordFormatter<FlamegraphNode> {
         console.error('Unable to insert undefined element');
         return;
       }
+      const changeDetected = didRunChangeDetection(element);
       const node: FlamegraphNode = {
         value: super.getValue(element),
         label: super.getLabel(element),
         children: [],
         instances: 1,
         original: element,
+        changeDetected,
+        color: showChangeDetection ? (changeDetected ? CHANGE_DETECTION_COLOR : NO_CHANGE_DETECTION_COLOR) : undefined,
       };
-      timeSpent += this.addFrame(node.children, element.children);
+      timeSpent += this.addFrame(node.children, element.children, showChangeDetection);
       timeSpent += node.value;
       nodes.push(node);
     });
     return timeSpent;
   }
 }
+
+const CHANGE_DETECTION_COLOR = '#3A8249';
+const NO_CHANGE_DETECTION_COLOR = '#ccc';
+
+const didRunChangeDetection = (profile: ElementProfile) => {
+  const components = profile.directives.filter((d) => d.isComponent);
+  if (!components.length) {
+    return false;
+  }
+  return components.some((c) => c.changeDetection !== undefined);
+};
