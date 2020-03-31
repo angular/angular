@@ -104,21 +104,25 @@ export class CdkEditable implements AfterViewInit, OnDestroy {
 
       // Track focus within the table to hide/show/make focusable hover content.
       fromEventPattern<FocusEvent>(
-          (handler) => element.addEventListener('focus', handler, true),
-          (handler) => element.removeEventListener('focus', handler, true)
+          handler => element.addEventListener('focus', handler, true),
+          handler => element.removeEventListener('focus', handler, true)
           ).pipe(
               takeUntil(this.destroyed),
               toClosest(ROW_SELECTOR),
               share(),
               ).subscribe(this.editEventDispatcher.focused);
-      fromEventPattern<FocusEvent>(
-          (handler) => element.addEventListener('blur', handler, true),
-          (handler) => element.removeEventListener('blur', handler, true)
-          ).pipe(
-              takeUntil(this.destroyed),
-              mapTo(null),
-              share(),
-              ).subscribe(this.editEventDispatcher.focused);
+
+      merge(
+        fromEventPattern<FocusEvent>(
+          handler => element.addEventListener('blur', handler, true),
+          handler => element.removeEventListener('blur', handler, true)
+        ),
+        fromEvent<KeyboardEvent>(element, 'keydown').pipe(filter(event => event.key === 'Escape'))
+      ).pipe(
+        takeUntil(this.destroyed),
+        mapTo(null),
+        share(),
+      ).subscribe(this.editEventDispatcher.focused);
 
       // Keep track of rows within the table. This is used to know which rows with hover content
       // are first or last in the table. They are kept focusable in case focus enters from above

@@ -441,6 +441,21 @@ describe('CDK Popover Edit', () => {
           expect(component.hoverContentStateForRow(4)).toBe(HoverContentState.FOCUSABLE);
         }));
 
+        it('should close the focus content when pressing escape', fakeAsync(() => {
+          expect(component.hoverContentStateForRow(2)).toBe(HoverContentState.OFF);
+
+          component.focusEditCell(2);
+          tick(1);
+
+          expect(component.hoverContentStateForRow(2)).toBe(HoverContentState.ON);
+
+          const event = new KeyboardEvent('keydown', {bubbles: true, key: 'Escape'});
+          component.getEditCell(2).dispatchEvent(event);
+          tick(1);
+
+          expect(component.hoverContentStateForRow(2)).toBe(HoverContentState.OFF);
+        }));
+
         it('shows hover content for the editing row and makes the rows above and below ' +
             'focusable unless focus is in a different table row in which case it takes priority',
             fakeAsync(() => {
