@@ -11,9 +11,11 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import {RouterModule} from '@angular/router';
 import {ButtonDemo} from './button-demo';
+import {ButtonExamplesModule} from '@angular/components-examples/material/button';
 
 @NgModule({
   imports: [
+    ButtonExamplesModule,
     MatButtonModule,
     MatIconModule,
     RouterModule.forChild([{path: '', component: ButtonDemo}]),
