@@ -1,4 +1,6 @@
 @import '@material/card/mixins.import';
+@import '@material/theme/functions.import';
+@import '@material/card/variables.import';
 @import '@material/typography/mixins.import';
 @import '../mdc-helpers/mdc-helpers';
 
@@ -6,7 +8,15 @@
   $foreground: map-get($theme, foreground);
   $is-dark-theme: map-get($theme, is-dark);
 
+  $orig-mdc-card-action-icon-color: $mdc-card-action-icon-color;
+  $orig-mdc-card-outline-color: $mdc-card-outline-color;
+
   @include mat-using-mdc-theme($theme) {
+    $mdc-card-action-icon-color:
+        rgba(mdc-theme-prop-value(on-surface), mdc-theme-text-emphasis(medium)) !global;
+    $mdc-card-outline-color:
+        mix(mdc-theme-prop-value(on-surface), mdc-theme-prop-value(surface), 12%) !global;
+
     @include mdc-card-without-ripple($query: $mat-theme-styles-query);
 
     // Card subtitles are an Angular Material construct (not MDC), so we explicitly set their
@@ -15,6 +25,9 @@
       color: mat-color($foreground, secondary-text);
     }
   }
+
+  $mdc-card-action-icon-color: $orig-mdc-card-action-icon-color !global;
+  $mdc-card-outline-color: $orig-mdc-card-outline-color !global;
 }
 
 @mixin mat-mdc-card-typography($config) {
