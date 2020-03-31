@@ -109,7 +109,7 @@ export interface DirectiveProfile {
   isElement: boolean;
   isComponent: boolean;
   lifecycle: LifecycleProfile;
-  changeDetection: number;
+  changeDetection?: number;
 }
 
 export interface ElementProfile {

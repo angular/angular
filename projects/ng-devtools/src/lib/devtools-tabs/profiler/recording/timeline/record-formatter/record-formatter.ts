@@ -39,7 +39,11 @@ export abstract class RecordFormatter<T> {
 
   getDirectiveValue(directive: DirectiveProfile): number {
     let result = 0;
-    result += directive.changeDetection;
+    let current = directive.changeDetection;
+    if (current === undefined) {
+      current = 0;
+    }
+    result += current;
     Object.keys(directive.lifecycle).forEach((key) => {
       const value = parseFloat(directive.lifecycle[key]);
       if (!isNaN(value)) {

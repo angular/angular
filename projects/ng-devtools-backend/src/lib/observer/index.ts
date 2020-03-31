@@ -49,7 +49,11 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
       }
       const profile = eventMap.get(component);
       if (profile) {
-        profile.changeDetection += duration;
+        let current = profile.changeDetection;
+        if (current === undefined) {
+          current = 0;
+        }
+        profile.changeDetection = current + duration;
       } else {
         console.warn('Could not find profile for', component);
       }
@@ -104,10 +108,14 @@ export const stop = (): ProfilerFrame => {
 
 const insertOrMerge = (lastFrame: ElementProfile, profile: DirectiveProfile) => {
   let exists = false;
-  lastFrame.directives.forEach(d => {
+  lastFrame.directives.forEach((d) => {
     if (d.name === profile.name) {
       exists = true;
-      d.changeDetection += profile.changeDetection;
+      let current = d.changeDetection;
+      if (current === undefined) {
+        current = 0;
+      }
+      d.changeDetection = current + (profile.changeDetection ?? 0);
       for (const key of Object.keys(profile.lifecycle)) {
         if (!d.lifecycle[key]) {
           d.lifecycle[key] = 0;
@@ -164,7 +172,7 @@ const prepareInitialFrame = (source: string) => {
     if (position === undefined) {
       return;
     }
-    const directives = node.directives.map(d => {
+    const directives = node.directives.map((d) => {
       return {
         isComponent: false,
         isElement: false,
@@ -187,9 +195,9 @@ const prepareInitialFrame = (source: string) => {
       directives,
     };
     children[position[position.length - 1]] = result;
-    node.children.forEach(n => traverse(n, result.children));
+    node.children.forEach((n) => traverse(n, result.children));
   };
-  directiveForest.forEach(n => traverse(n));
+  directiveForest.forEach((n) => traverse(n));
   return frame;
 };
 
@@ -197,7 +205,7 @@ const flushBuffer = (obs: DirectiveForestObserver, source: string = '') => {
   const items = Array.from(eventMap.keys());
   const positions: ElementPosition[] = [];
   const positionDirective = new Map<ElementPosition, any>();
-  items.forEach(dir => {
+  items.forEach((dir) => {
     const position = obs.getDirectivePosition(dir);
     if (position === undefined) {
       return;
@@ -207,7 +215,7 @@ const flushBuffer = (obs: DirectiveForestObserver, source: string = '') => {
   });
   positions.sort(lexicographicOrder);
   const result = prepareInitialFrame(source);
-  positions.forEach(position => {
+  positions.forEach((position) => {
     const dir = positionDirective.get(position);
     insertElementProfile(result.directives, position, eventMap.get(dir));
   });
