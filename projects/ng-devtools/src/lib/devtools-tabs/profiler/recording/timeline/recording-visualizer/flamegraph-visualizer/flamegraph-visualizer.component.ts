@@ -48,10 +48,13 @@ export class FlamegraphVisualizerComponent {
   formatPieChartData(flameGraphNode: FlamegraphNode): GraphNode[] {
     const graphData: GraphNode[] = [];
     flameGraphNode.original.directives.forEach((node) => {
-      graphData.push({
-        name: `${node.name} changeDetection`,
-        value: +node.changeDetection.toFixed(2),
-      });
+      const changeDetection = node.changeDetection;
+      if (changeDetection !== undefined) {
+        graphData.push({
+          name: `${node.name} changeDetection`,
+          value: parseFloat(changeDetection.toFixed(2)),
+        });
+      }
       Object.keys(node.lifecycle).forEach((key) => {
         graphData.push({
           name: `${node.name} ${key}`,
