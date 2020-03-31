@@ -2,8 +2,10 @@ import { Component, ElementRef, Input } from '@angular/core';
 import {
   FlamegraphNode,
   ROOT_LEVEL_ELEMENT_LABEL,
+  FlamegraphFormatter,
 } from '../../record-formatter/flamegraph-formatter/flamegraph-formatter';
 import { RawData } from 'ngx-flamegraph/lib/utils';
+import { ProfilerFrame } from 'protocol';
 
 export interface GraphNode {
   name: string;
@@ -26,9 +28,11 @@ export class FlamegraphVisualizerComponent {
     domain: ['#E71D36', '#2EC4B6', '#FF9F1C', '#011627'],
   };
 
-  @Input() set bars(data: FlamegraphNode[]) {
+  private _formatter = new FlamegraphFormatter();
+
+  @Input() set frame(frame: ProfilerFrame) {
     this.selectedEntry = null;
-    this.profilerBars = data;
+    this.profilerBars = [this._formatter.formatFrame(frame)];
   }
 
   constructor(private _el: ElementRef) {}

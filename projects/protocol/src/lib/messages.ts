@@ -119,6 +119,7 @@ export interface ElementProfile {
 
 export interface ProfilerFrame {
   source: string;
+  duration: number;
   directives: ElementProfile[];
 }
 

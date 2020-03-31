@@ -8,32 +8,11 @@ export interface BargraphNode {
   original: ElementProfile;
 }
 
-export class BarGraphFormatter extends RecordFormatter<BargraphNode> {
-  format(records: ProfilerFrame[]): TimelineView<BargraphNode> {
-    const result: TimelineView<BargraphNode> = {
-      timeline: [],
-    };
-    records.forEach((record) => {
-      this.insertTimelineRecord(result.timeline, record);
-    });
-    result.timeline = result.timeline
-      .filter((entry) => entry.app.length > 0 && entry.timeSpent > 0)
-      .map((entry) => {
-        entry.app = entry.app.filter((element) => element.value > 0).sort((a, b) => b.value - a.value);
-        return entry;
-      });
-    console.log(result);
-    return result;
-  }
-
-  insertTimelineRecord(result: AppEntry<BargraphNode>[], record: ProfilerFrame): void {
-    const entry: AppEntry<BargraphNode> = {
-      app: [],
-      timeSpent: 0,
-      source: record.source,
-    };
-    entry.timeSpent = this.addFrames(entry.app, record.directives, []);
-    result.push(entry);
+export class BarGraphFormatter extends RecordFormatter<BargraphNode[]> {
+  formatFrame(frame: ProfilerFrame): BargraphNode[] {
+    const result: BargraphNode[] = [];
+    this.addFrame(result, frame.directives);
+    return result.filter((element) => element.value > 0).sort((a, b) => b.value - a.value);
   }
 
   addFrame(nodes: BargraphNode[], elements: ElementProfile[]): number {

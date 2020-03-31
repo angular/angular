@@ -2,21 +2,19 @@ import { ElementProfile, ProfilerFrame } from 'protocol';
 import { AppEntry, RecordFormatter } from './record-formatter';
 
 class MockFormatter extends RecordFormatter<any> {
-  addFrame(nodes: any[], elements: ElementProfile[], prev?: any): void {
+  addFrame(nodes: any[], elements: ElementProfile[]): void {
     return;
   }
 
-  format(records: ProfilerFrame[]): any {
+  formatFrame(frame: ProfilerFrame): any {
     return;
   }
-
-  insertTimelineRecord(result: AppEntry<any>[], record: ProfilerFrame): void {}
 }
 
 const formatter = new MockFormatter();
 
 describe('getValue cases', () => {
-  let element;
+  let element: any;
 
   it('calculates value with  no lifecycle hooks', () => {
     element = {

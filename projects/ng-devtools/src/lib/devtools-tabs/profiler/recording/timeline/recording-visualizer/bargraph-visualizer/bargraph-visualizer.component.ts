@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { BargraphNode } from '../../record-formatter/bargraph-formatter';
+import { BargraphNode, BarGraphFormatter } from '../../record-formatter/bargraph-formatter';
+import { ProfilerFrame } from 'protocol';
 
 export interface GraphNode {
   name: string;
@@ -25,19 +26,24 @@ export class BargraphVisualizerComponent {
   pieChartData: GraphNode[] = [];
   parentHierarchy: { name: string }[] = [];
 
-  @Input() set records(data: BargraphNode[]) {
-    this.profileRecords = data;
+  private _formatter = new BarGraphFormatter();
+
+  @Input() set frame(data: ProfilerFrame) {
+    this.profileRecords = this._formatter.formatFrame(data);
     this.selectedEntry = null;
-    this.view = [1000, data.length * 30];
+    this.view = [1000, this.profileRecords.length * 30];
   }
 
   formatPieChartData(bargraphNode: BargraphNode): GraphNode[] {
     const graphData: GraphNode[] = [];
     bargraphNode.original.directives.forEach((node) => {
-      graphData.push({
-        name: `${node.name} changeDetection`,
-        value: +node.changeDetection.toFixed(2),
-      });
+      const {changeDetection} = node;
+      if (changeDetection) {
+        graphData.push({
+          name: `${node.name} changeDetection`,
+          value: parseFloat(changeDetection.toFixed(2)),
+        });
+      }
       Object.keys(node.lifecycle).forEach((key) => {
         graphData.push({
           name: `${node.name} ${key}`,

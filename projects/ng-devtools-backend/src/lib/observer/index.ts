@@ -8,6 +8,7 @@ let observer: DirectiveForestObserver;
 let inProgress = false;
 let inChangeDetection = false;
 let eventMap: Map<any, DirectiveProfile>;
+let frameDuration = 0;
 
 export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
   if (inProgress) {
@@ -54,6 +55,7 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
           current = 0;
         }
         profile.changeDetection = current + duration;
+        frameDuration += duration;
       } else {
         console.warn('Could not find profile for', component);
       }
@@ -93,6 +95,7 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
         return;
       }
       dir.lifecycle[hook] = (dir.lifecycle[hook] || 0) + duration;
+      frameDuration += duration;
     },
   });
   observer.initialize();
@@ -156,9 +159,10 @@ const insertElementProfile = (frames: ElementProfile[], position: ElementPositio
   insertOrMerge(lastFrame, profile);
 };
 
-const prepareInitialFrame = (source: string) => {
+const prepareInitialFrame = (source: string, duration: number) => {
   const frame: ProfilerFrame = {
     source,
+    duration,
     directives: [],
   };
   const directiveForest = observer.getDirectiveForest();
@@ -214,7 +218,10 @@ const flushBuffer = (obs: DirectiveForestObserver, source: string = '') => {
     positionDirective.set(position, dir);
   });
   positions.sort(lexicographicOrder);
-  const result = prepareInitialFrame(source);
+
+  const result = prepareInitialFrame(source, frameDuration);
+  frameDuration = 0;
+
   positions.forEach((position) => {
     const dir = positionDirective.get(position);
     insertElementProfile(result.directives, position, eventMap.get(dir));

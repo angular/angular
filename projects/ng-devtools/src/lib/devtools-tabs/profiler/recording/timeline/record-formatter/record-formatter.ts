@@ -10,15 +10,14 @@ export interface AppEntry<T> {
   source: string;
 }
 
-export interface GraphNode<T> extends AppEntry<T> {
+export interface GraphNode {
   toolTip: string;
   style: any;
 }
 
 export abstract class RecordFormatter<T> {
-  abstract format(records: ProfilerFrame[]): TimelineView<T>;
-  abstract insertTimelineRecord(result: AppEntry<T>[], record: ProfilerFrame): void;
-  abstract addFrame(nodes: T[], elements: ElementProfile[], prev?: T): number | void;
+  abstract formatFrame(frame: ProfilerFrame): T;
+  abstract addFrame(nodes: T | T[], elements: ElementProfile[], prev?: T): number | void;
 
   getLabel(element: ElementProfile): string {
     const name = element.directives

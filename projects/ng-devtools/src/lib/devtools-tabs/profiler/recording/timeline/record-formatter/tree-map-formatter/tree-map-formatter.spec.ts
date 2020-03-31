@@ -1,10 +1,4 @@
-import {
-  NESTED_FORMATTED_FLAMEGRAPH_RECORD,
-  NESTED_RECORD,
-  SIMPLE_FORMATTED_FLAMEGRAPH_RECORD,
-  SIMPLE_FORMATTED_TREE_MAP_RECORD,
-  SIMPLE_RECORD,
-} from '../record-formatter-spec-constants';
+import { SIMPLE_FORMATTED_TREE_MAP_RECORD, SIMPLE_RECORD } from '../record-formatter-spec-constants';
 import { AppEntry } from '../record-formatter';
 import { TreeMapFormatter, TreeMapNode } from './tree-map-formatter';
 
