@@ -14,7 +14,7 @@ type TopicsInProgress = {
 };
 
 const THROTTLE_METHODS: ThrottleTopicDuration = {
-  getLatestComponentExplorerView: 500,
+  getLatestComponentExplorerView: 100,
 };
 
 type TopicBlockSequence = {
