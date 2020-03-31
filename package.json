@@ -58,9 +58,9 @@
   "devDependencies": {
     "@angular/router": "github:angular/router-builds#3dea8bb66e4c05e729b35ff9d8f4335c0c719e50",
     "@angular/elements": "github:angular/elements-builds#19d9e77c59b0df87b21715209cc359e18b49d4a5",
-    "@angular-devkit/build-angular": "github:angular/angular-devkit-build-angular-builds#4032a546bac2471243e6fa61c2e5a895e3a8f232",
+    "@angular-devkit/build-angular": "github:angular/angular-devkit-build-angular-builds#15856cc5410cb9bc9565326a8a6e2dbdb325e89b",
     "@angular-devkit/build-ng-packagr": "~0.901.0",
-    "@angular/cli": "github:angular/cli-builds#8b09ac76f8989c8b4f3e0bc61c2278c0af25599d",
+    "@angular/cli": "github:angular/cli-builds#8f50afd05a8d4003d50588ad9be3a1d580ed2290",
     "@angular/compiler-cli": "github:angular/compiler-cli-builds#1336ad7aff4e4a7a7ce3b549e0cc577527e0f14b",
     "@angular/language-service": "github:angular/language-service-builds#e4c45a027958642903873913bdeb5a321b1a2220",
     "@types/chrome": "^0.0.103",
