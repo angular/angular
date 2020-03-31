@@ -82,7 +82,7 @@ runInEachFileSystem(() => {
       ]);
     });
 
-    it('should alway include the `sourceDirectory` if it is a node_modules directory in the returned basePaths, even if it is contained by another basePath',
+    it('should always include the `sourceDirectory` if it is a node_modules directory in the returned basePaths, even if it is contained by another basePath',
        () => {
          const projectDirectory = _('/path/to/project');
          const sourceDirectory = _('/path/to/project/node_modules');
