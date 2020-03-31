@@ -16,11 +16,7 @@ export class BarGraphFormatter extends RecordFormatter<BargraphNode[]> {
     return result.filter((element) => element.value > 0).sort((a, b) => b.value - a.value);
   }
 
-  addFrame(nodes: BargraphNode[], elements: ElementProfile[]): number {
-    return -1;
-  }
-
-  addFrames(nodes: BargraphNode[], elements: ElementProfile[], parents: ElementProfile[]): number {
+  addFrame(nodes: BargraphNode[], elements: ElementProfile[], parents: ElementProfile[] = []): number {
     let timeSpent = 0;
     const suffix = addSpaces(nodes.length);
     elements.forEach((element) => {
@@ -31,7 +27,7 @@ export class BarGraphFormatter extends RecordFormatter<BargraphNode[]> {
         return;
       }
 
-      timeSpent += this.addFrames(nodes, element.children, parents.concat(element));
+      timeSpent += this.addFrame(nodes, element.children, parents.concat(element));
       timeSpent += super.getValue(element);
 
       element.directives.forEach((dir) => {
