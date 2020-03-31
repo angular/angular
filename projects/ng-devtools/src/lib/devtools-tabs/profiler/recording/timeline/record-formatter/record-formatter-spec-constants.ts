@@ -1,3 +1,5 @@
+import { FlamegraphNode } from './flamegraph-formatter';
+
 export const SIMPLE_RECORD = [
   {
     children: [
@@ -244,7 +246,7 @@ export const NESTED_RECORD = [
     ],
   },
 ];
-export const NESTED_FORMATTED_FLAMEGRAPH_RECORD = [
+export const NESTED_FORMATTED_FLAMEGRAPH_RECORD: FlamegraphNode[] = [
   {
     value: 1,
     label: 'AppComponent',
@@ -369,7 +371,6 @@ export const NESTED_FORMATTED_FLAMEGRAPH_RECORD = [
       directives: [
         {
           changeDetection: 1,
-          changeDetected: true,
           isElement: true,
           isComponent: true,
           lifecycle: {},

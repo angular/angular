@@ -50,8 +50,10 @@ export class FlamegraphFormatter extends RecordFormatter<FlamegraphNode> {
         instances: 1,
         original: element,
         changeDetected,
-        color: showChangeDetection ? (changeDetected ? CHANGE_DETECTION_COLOR : NO_CHANGE_DETECTION_COLOR) : undefined,
       };
+      if (showChangeDetection) {
+        node.color = changeDetected ? CHANGE_DETECTION_COLOR : NO_CHANGE_DETECTION_COLOR;
+      }
       timeSpent += this.addFrame(node.children, element.children, showChangeDetection);
       timeSpent += node.value;
       nodes.push(node);
