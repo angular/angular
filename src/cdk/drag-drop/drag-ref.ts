@@ -367,8 +367,10 @@ export class DragRef<T = any> {
         this._removeRootElementListeners(this._rootElement);
       }
 
-      element.addEventListener('mousedown', this._pointerDown, activeEventListenerOptions);
-      element.addEventListener('touchstart', this._pointerDown, passiveEventListenerOptions);
+      this._ngZone.runOutsideAngular(() => {
+        element.addEventListener('mousedown', this._pointerDown, activeEventListenerOptions);
+        element.addEventListener('touchstart', this._pointerDown, passiveEventListenerOptions);
+      });
       this._initialTransform = undefined;
       this._rootElement = element;
     }
