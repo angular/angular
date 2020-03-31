@@ -1302,15 +1302,15 @@ function getPreviewInsertionPoint(documentRef: any): HTMLElement {
  * If the root is not an HTML element it gets wrapped in one.
  */
 function getRootNode(viewRef: EmbeddedViewRef<any>, _document: Document): HTMLElement {
-  const rootNode: Node = viewRef.rootNodes[0];
+  const rootNodes: Node[] = viewRef.rootNodes;
 
-  if (rootNode.nodeType !== _document.ELEMENT_NODE) {
-    const wrapper = _document.createElement('div');
-    wrapper.appendChild(rootNode);
-    return wrapper;
+  if (rootNodes.length === 1 && rootNodes[0].nodeType === _document.ELEMENT_NODE) {
+    return rootNodes[0] as HTMLElement;
   }
 
-  return rootNode as HTMLElement;
+  const wrapper = _document.createElement('div');
+  rootNodes.forEach(node => wrapper.appendChild(node));
+  return wrapper;
 }
 
 /**

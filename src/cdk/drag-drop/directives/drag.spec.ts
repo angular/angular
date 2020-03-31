@@ -2995,6 +2995,21 @@ describe('CdkDrag', () => {
       expect(preview.textContent!.trim()).toContain('Hello One');
     }));
 
+    it('should handle custom preview with multiple root nodes', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZoneWithCustomMultiNodePreview);
+      fixture.detectChanges();
+      const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+
+      expect(() => {
+        startDraggingViaMouse(fixture, item);
+      }).not.toThrow();
+
+      const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
+
+      expect(preview).toBeTruthy();
+      expect(preview.textContent!.trim()).toContain('HelloOne');
+    }));
+
     it('should be able to customize the placeholder', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZoneWithCustomPlaceholder);
       fixture.detectChanges();
@@ -3065,6 +3080,21 @@ describe('CdkDrag', () => {
 
       expect(placeholder).toBeTruthy();
       expect(placeholder.textContent!.trim()).toContain('Hello One');
+    }));
+
+    it('should handle custom placeholder with multiple root nodes', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZoneWithCustomMultiNodePlaceholder);
+      fixture.detectChanges();
+      const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+
+      expect(() => {
+        startDraggingViaMouse(fixture, item);
+      }).not.toThrow();
+
+      const placeholder = document.querySelector('.cdk-drag-placeholder')! as HTMLElement;
+
+      expect(placeholder).toBeTruthy();
+      expect(placeholder.textContent!.trim()).toContain('HelloOne');
     }));
 
     it('should clear the `transform` value from siblings when item is dropped`', fakeAsync(() => {
@@ -5211,6 +5241,28 @@ class DraggableInDropZoneWithCustomTextOnlyPreview {
 
 @Component({
   template: `
+    <div cdkDropList style="width: 100px; background: pink;">
+      <div
+        *ngFor="let item of items"
+        cdkDrag
+        style="width: 100%; height: ${ITEM_HEIGHT}px; background: red;">
+          {{item}}
+          <ng-template cdkDragPreview>
+            <span>Hello</span>
+            <span>{{item}}</span>
+          </ng-template>
+      </div>
+    </div>
+  `
+})
+class DraggableInDropZoneWithCustomMultiNodePreview {
+  @ViewChild(CdkDropList) dropInstance: CdkDropList;
+  @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
+  items = ['Zero', 'One', 'Two', 'Three'];
+}
+
+@Component({
+  template: `
     <div
       cdkDropList
       (cdkDropListDropped)="droppedSpy($event)"
@@ -5253,6 +5305,25 @@ class DraggableInDropZoneWithCustomPlaceholder {
   `
 })
 class DraggableInDropZoneWithCustomTextOnlyPlaceholder {
+  @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
+  items = ['Zero', 'One', 'Two', 'Three'];
+}
+
+@Component({
+  template: `
+    <div cdkDropList style="width: 100px; background: pink;">
+      <div *ngFor="let item of items" cdkDrag
+        style="width: 100%; height: ${ITEM_HEIGHT}px; background: red;">
+          {{item}}
+          <ng-template cdkDragPlaceholder>
+            <span>Hello</span>
+            <span>{{item}}</span>
+          </ng-template>
+      </div>
+    </div>
+  `
+})
+class DraggableInDropZoneWithCustomMultiNodePlaceholder {
   @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
   items = ['Zero', 'One', 'Two', 'Three'];
 }
