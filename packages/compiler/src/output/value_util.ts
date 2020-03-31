@@ -21,7 +21,16 @@ export function convertValueToOutputAst(
 class _ValueOutputAstTransformer implements ValueTransformer {
   constructor(private ctx: OutputContext) {}
   visitArray(arr: any[], type: o.Type): o.Expression {
-    return o.literalArr(arr.map(value => visitValue(value, this, null)), type);
+    const values: o.Expression[] = [];
+    // Note Array.map() must not be used to convert the values because it will
+    // skip over empty elements in arrays constructed using `new Array(length)`,
+    // resulting in `undefined` elements. This breaks the type guarantee that
+    // all values in `o.LiteralArrayExpr` are of type `o.Expression`.
+    // See test case in `value_util_spec.ts`.
+    for (let i = 0; i < arr.length; ++i) {
+      values.push(visitValue(arr[i], this, null /* context */));
+    }
+    return o.literalArr(values, type);
   }
 
   visitStringMap(map: {[key: string]: any}, type: o.MapType): o.Expression {
