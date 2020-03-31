@@ -1,18 +1,15 @@
 .parent-nodes {
   background-color: #ddd;
-  padding: 2px;
+  padding: 2px 0;
   width: 100%;
   height: 20px;
   overflow-x: auto;
   white-space: nowrap;
+  bottom: 0;
 
   &::-webkit-scrollbar {
     display: none;
   }
-}
-
-.parent-nodes {
-  bottom: 0;
 }
 
 .btn-node {
