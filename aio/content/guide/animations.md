@@ -691,7 +691,7 @@ Check out this full animation [demo](http://animationsftw.in/#/) with accompanyi
 -->
 다음 내용에 대해서도 알아보세요:
 
-* [트랜지션과 트리거](guide/transition-and-triggers)
+* [트랜지션 & 트리거](guide/transition-and-triggers)
 * [복잡한 애니메이션 시퀀스](guide/complex-animation-sequences)
 * [애니메이션 재사용하기](guide/reusable-animations)
 * [라우팅 애니메이션](guide/route-animations)
