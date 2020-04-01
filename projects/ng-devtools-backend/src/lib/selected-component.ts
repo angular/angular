@@ -28,7 +28,7 @@ const _setConsoleReference = (referenceNode: ConsoleReferenceNode) => {
 };
 
 const prepareCurrentReferencesForInsertion = (referenceNode: ConsoleReferenceNode) => {
-  const foundIndex = nodesForConsoleReference.findIndex(nodeToLookFor =>
+  const foundIndex = nodesForConsoleReference.findIndex((nodeToLookFor) =>
     arrayEquals(nodeToLookFor.position, referenceNode.position)
   );
   if (foundIndex !== -1) {
@@ -44,13 +44,13 @@ const assignConsoleReferencesFrom = (referenceNodes: ConsoleReferenceNode[]) => 
   );
 };
 
-const setDirectiveKey = (node: ComponentTreeNode | null, key) => {
+const setDirectiveKey = (node: ComponentTreeNode | null, key: string) => {
   Object.defineProperty(window, key, {
     get: () => {
-      if (node && node.nativeElement instanceof HTMLElement) {
-        return ng.getComponent(node.nativeElement) || node;
+      if (node?.component) {
+        return node.component.instance;
       }
-      if (node) {
+      if (node?.nativeElement) {
         return node.nativeElement;
       }
       return node;

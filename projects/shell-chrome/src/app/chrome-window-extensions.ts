@@ -23,9 +23,8 @@ const chromeWindowExtensions = {
       console.error(`Cannot find element associated with node ${serializedId}`);
       return;
     }
-    const root = node.nativeElement instanceof HTMLElement && ng.getComponent(node.nativeElement);
-    if (root) {
-      return root.constructor;
+    if (node.component) {
+      return node.component.instance.constructor;
     } else {
       console.error('This component has no instance and therefore no constructor');
     }

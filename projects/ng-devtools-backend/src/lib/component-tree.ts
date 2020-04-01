@@ -160,7 +160,7 @@ const findElementIDFromNativeElementInForest = (
   return null;
 };
 
-export const findNodeFromSerializedPosition = (serializedPosition: string) => {
+export const findNodeFromSerializedPosition = (serializedPosition: string): ComponentTreeNode | null => {
   const position: number[] = serializedPosition.split(',').map((index) => parseInt(index, 10));
   return queryDirectiveForest(position, buildDirectiveForest());
 };
