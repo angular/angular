@@ -7,7 +7,7 @@
  */
 import * as ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath, FileSystem} from '../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, isRooted} from '../../src/ngtsc/file_system';
 import {KnownDeclaration} from '../../src/ngtsc/reflection';
 
 /**
@@ -85,10 +85,11 @@ export type PathMappings = {
 /**
  * Test whether a path is "relative".
  *
- * Relative paths start with `/`, `./` or `../`; or are simply `.` or `..`.
+ * Relative paths start with `/`, `./` or `../` (or the Windows equivalents); or are simply `.` or
+ * `..`.
  */
 export function isRelativePath(path: string): boolean {
-  return /^\/|^\.\.?($|\/)/.test(path);
+  return isRooted(path) || /^\.\.?(\/|\\|$)/.test(path);
 }
 
 /**
