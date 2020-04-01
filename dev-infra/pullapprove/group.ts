@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {IMinimatch, Minimatch, match} from 'minimatch';
+import {IMinimatch, Minimatch} from 'minimatch';
 
 import {PullApproveGroupConfig} from './parse-yaml';
 
@@ -34,7 +34,7 @@ const CONDITION_TYPES = {
   INCLUDE_GLOBS: /^contains_any_globs/,
   EXCLUDE_GLOBS: /^not contains_any_globs/,
   ATTR_LENGTH: /^len\(.*\)/,
-  GLOBAL_APPROVAL: /^global-(docs-)?approvers not in groups.approved$/,
+  GLOBAL_APPROVAL: /^"global-(docs-)?approvers" not in groups.approved$/,
 };
 
 /** A PullApprove group to be able to test files against. */
@@ -82,10 +82,7 @@ export class PullApproveGroup {
               ` - ${condition}` +
               `\n\n` +
               `Known condition regexs:\n` +
-              `${Object.entries(CONDITION_TYPES).map(([k, v]) => ` ${k} - $ {
-            v
-          }
-          `).join('\n')}` +
+              `${Object.entries(CONDITION_TYPES).map(([k, v]) => ` ${k} - ${v}`).join('\n')}` +
               `\n\n`;
           console.error(errMessage);
           process.exit(1);
@@ -95,7 +92,9 @@ export class PullApproveGroup {
   }
 
   /** Retrieve all of the lines which were not able to be parsed. */
-  getBadLines(): string[] { return this.misconfiguredLines; }
+  getBadLines(): string[] {
+    return this.misconfiguredLines;
+  }
 
   /** Retrieve the results for the Group, all matched and unmatched conditions. */
   getResults(): PullApproveGroupResult {
