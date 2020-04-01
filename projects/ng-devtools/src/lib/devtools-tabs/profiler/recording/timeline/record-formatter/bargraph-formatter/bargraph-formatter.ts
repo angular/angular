@@ -10,7 +10,8 @@ export interface BargraphNode {
 }
 
 export class BarGraphFormatter extends RecordFormatter<BargraphNode[]> {
-  @memo() formatFrame(frame: ProfilerFrame): BargraphNode[] {
+  @memo({ cache: new WeakMap() })
+  formatFrame(frame: ProfilerFrame): BargraphNode[] {
     const result: BargraphNode[] = [];
     this.addFrame(result, frame.directives);
     return result.filter((element) => element.value > 0).sort((a, b) => b.value - a.value);
