@@ -79,8 +79,8 @@ else
   setPublicVar COMPONENTS_REPO_URL "https://github.com/angular/components.git"
   setPublicVar COMPONENTS_REPO_BRANCH "master"
   # **NOTE**: When updating the commit SHA, also update the cache key in the CircleCI `config.yml`.
-  setPublicVar COMPONENTS_REPO_COMMIT "598db096e668aa7e9debd56eedfd127b7a55e371"
-  
+  setPublicVar COMPONENTS_REPO_COMMIT "93f6b30206ebc30df6ced69ae994b0669f759ee9"
+
   # Save the created BASH_ENV into the bash env cache file.
   cat "$BASH_ENV" >> $bashEnvCachePath;
 fi
