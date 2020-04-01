@@ -55,11 +55,21 @@ function isIdentifierPart(code: number) {
  * Gets the span of word in a template that surrounds `position`. If there is no word around
  * `position`, nothing is returned.
  */
-function getBoundedWordSpan(templateInfo: AstResult, position: number): ts.TextSpan|undefined {
+function getBoundedWordSpan(
+    templateInfo: AstResult, position: number, ast: HtmlAst|undefined): ts.TextSpan|undefined {
   const {template} = templateInfo;
   const templateSrc = template.source;
 
   if (!templateSrc) return;
+
+  if (ast instanceof Element) {
+    // The HTML tag may include `-` (e.g. `app-root`),
+    // so use the HtmlAst to get the span before ayazhafiz refactor the code.
+    return {
+      start: templateInfo.template.span.start + ast.startSourceSpan!.start.offset + 1,
+      length: ast.name.length
+    };
+  }
 
   // TODO(ayazhafiz): A solution based on word expansion will always be expensive compared to one
   // based on ASTs. Whatever penalty we incur is probably manageable for small-length (i.e. the
@@ -185,7 +195,7 @@ export function getTemplateCompletions(
         null);
   }
 
-  const replacementSpan = getBoundedWordSpan(templateInfo, position);
+  const replacementSpan = getBoundedWordSpan(templateInfo, position, mostSpecific);
   return result.map(entry => {
     return {
       ...entry,
