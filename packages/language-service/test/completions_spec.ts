@@ -670,18 +670,18 @@ describe('completions', () => {
         @Component({
           selector: 'foo-component',
           template: \`
-            <di~{div}></div>
+            <test-comp~{test-comp}></test-comp>
           \`,
         })
         export class FooComponent {}
       `);
-      const location = mockHost.getLocationMarkerFor(fileName, 'div');
+      const location = mockHost.getLocationMarkerFor(fileName, 'test-comp');
       const completions = ngLS.getCompletionsAtPosition(fileName, location.start)!;
       expect(completions).toBeDefined();
-      const completion = completions.entries.find(entry => entry.name === 'div')!;
+      const completion = completions.entries.find(entry => entry.name === 'test-comp')!;
       expect(completion).toBeDefined();
-      expect(completion.kind).toBe('html element');
-      expect(completion.replacementSpan).toEqual({start: location.start - 2, length: 2});
+      expect(completion.kind).toBe('component');
+      expect(completion.replacementSpan).toEqual({start: location.start - 9, length: 9});
     });
 
     it('should work for bindings', () => {
