@@ -214,6 +214,114 @@ runInEachFileSystem(() => {
                  .toEqual({versionRange: '*', entryPoints: {}});
            });
 
+        it('should correctly handle pre-release versions and version ranges', () => {
+          loadTestFiles([
+            {
+              name: _Abs('/project-1/ngcc.config.js'),
+              contents: `
+                module.exports = {
+                  packages: {
+                    'package-1': {
+                      entryPoints: {
+                        './entry-point-1': {},
+                      },
+                    },
+                    'package-2@1.0.0-beta.2': {
+                      entryPoints: {
+                        './entry-point-2': {},
+                      },
+                    },
+                    'package-3@>=1.0.0-beta.2': {
+                      entryPoints: {
+                        './entry-point-3': {},
+                      },
+                    },
+                  },
+                };
+              `,
+            },
+          ]);
+
+          const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
+          const getConfig = (packageName: string, version: string | null) =>
+              configuration.getConfig(_Abs(`/project-1/node_modules/${packageName}`), version);
+
+          // Default version range: *
+          expect(getConfig('package-1', '1.0.0-beta.2'))
+              .toEqual(
+                  {
+                    versionRange: '*',
+                    entryPoints: {[_Abs('/project-1/node_modules/package-1/entry-point-1')]: {}},
+                  },
+                  'Config for package-1@1.0.0-beta.2');
+
+          // Version range: 1.0.0-beta.2
+          expect(getConfig('package-2', '1.0.0-beta.2'))
+              .toEqual(
+                  {
+                    versionRange: '1.0.0-beta.2',
+                    entryPoints: {[_Abs('/project-1/node_modules/package-2/entry-point-2')]: {}},
+                  },
+                  'Config for package-2@1.0.0-beta.2');
+
+          expect(getConfig('package-2', '1.0.0'))
+              .toEqual(
+                  {
+                    versionRange: '*',
+                    entryPoints: {},
+                  },
+                  'Config for package-2@1.0.0');
+
+          expect(getConfig('package-2', null))
+              .toEqual(
+                  {
+                    versionRange: '1.0.0-beta.2',
+                    entryPoints: {[_Abs('/project-1/node_modules/package-2/entry-point-2')]: {}},
+                  },
+                  'Config for package-2@null');
+
+          // Version range: >=1.0.0-beta.2
+          expect(getConfig('package-3', '1.0.0-beta.2'))
+              .toEqual(
+                  {
+                    versionRange: '>=1.0.0-beta.2',
+                    entryPoints: {[_Abs('/project-1/node_modules/package-3/entry-point-3')]: {}},
+                  },
+                  'Config for package-3@1.0.0-beta.2');
+
+          expect(getConfig('package-3', '1.0.0'))
+              .toEqual(
+                  {
+                    versionRange: '>=1.0.0-beta.2',
+                    entryPoints: {[_Abs('/project-1/node_modules/package-3/entry-point-3')]: {}},
+                  },
+                  'Config for package-3@1.0.0');
+
+          expect(getConfig('package-3', '2.0.0'))
+              .toEqual(
+                  {
+                    versionRange: '>=1.0.0-beta.2',
+                    entryPoints: {[_Abs('/project-1/node_modules/package-3/entry-point-3')]: {}},
+                  },
+                  'Config for package-3@2.0.0');
+
+          expect(getConfig('package-3', '1.0.0-beta.1'))
+              .toEqual(
+                  {
+                    versionRange: '*',
+                    entryPoints: {},
+                  },
+                  'Config for package-3@1.0.0-beta.1');
+
+          expect(getConfig('package-3', '0.9.99'))
+              .toEqual(
+                  {
+                    versionRange: '*',
+                    entryPoints: {},
+                  },
+                  'Config for package-3@0.9.99');
+        });
+
         it('should not get confused by the @ in namespaced packages', () => {
           loadTestFiles([{
             name: _Abs('/project-1/ngcc.config.js'),
@@ -287,13 +395,13 @@ runInEachFileSystem(() => {
       });
 
       describe('at the default level', () => {
-        const originalDefaultConfig = DEFAULT_NGCC_CONFIG.packages['package-1'];
+        const originalDefaultConfig = JSON.stringify(DEFAULT_NGCC_CONFIG.packages);
         beforeEach(() => {
           DEFAULT_NGCC_CONFIG.packages['package-1'] = {
             entryPoints: {'./default-level-entry-point': {}},
           };
         });
-        afterEach(() => { DEFAULT_NGCC_CONFIG.packages['package-1'] = originalDefaultConfig; });
+        afterEach(() => DEFAULT_NGCC_CONFIG.packages = JSON.parse(originalDefaultConfig));
 
         it('should return configuration for a package found in the default config', () => {
           const readFileSpy = spyOn(fs, 'readFile').and.callThrough();
@@ -360,6 +468,105 @@ runInEachFileSystem(() => {
             entryPoints:
                 {[_Abs('/project-1/node_modules/package-1/project-level-entry-point')]: {}}
           });
+        });
+
+        it('should correctly handle pre-release versions and version ranges', () => {
+          Object.assign(DEFAULT_NGCC_CONFIG.packages, {
+            'package-1': {
+              entryPoints: {
+                './entry-point-1': {},
+              },
+            },
+            'package-2@1.0.0-beta.2': {
+              entryPoints: {
+                './entry-point-2': {},
+              },
+            },
+            'package-3@>=1.0.0-beta.2': {
+              entryPoints: {
+                './entry-point-3': {},
+              },
+            },
+          });
+
+          const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
+          const getConfig = (packageName: string, version: string | null) =>
+              configuration.getConfig(_Abs(`/project-1/node_modules/${packageName}`), version);
+
+          // Default version range: *
+          expect(getConfig('package-1', '1.0.0-beta.2'))
+              .toEqual(
+                  {
+                    versionRange: '*',
+                    entryPoints: {[_Abs('/project-1/node_modules/package-1/entry-point-1')]: {}},
+                  },
+                  'Config for package-1@1.0.0-beta.2');
+
+          // Version range: 1.0.0-beta.2
+          expect(getConfig('package-2', '1.0.0-beta.2'))
+              .toEqual(
+                  {
+                    versionRange: '1.0.0-beta.2',
+                    entryPoints: {[_Abs('/project-1/node_modules/package-2/entry-point-2')]: {}},
+                  },
+                  'Config for package-2@1.0.0-beta.2');
+
+          expect(getConfig('package-2', '1.0.0'))
+              .toEqual(
+                  {
+                    versionRange: '*',
+                    entryPoints: {},
+                  },
+                  'Config for package-2@1.0.0');
+
+          expect(getConfig('package-2', null))
+              .toEqual(
+                  {
+                    versionRange: '1.0.0-beta.2',
+                    entryPoints: {[_Abs('/project-1/node_modules/package-2/entry-point-2')]: {}},
+                  },
+                  'Config for package-2@null');
+
+          // Version range: >=1.0.0-beta.2
+          expect(getConfig('package-3', '1.0.0-beta.2'))
+              .toEqual(
+                  {
+                    versionRange: '>=1.0.0-beta.2',
+                    entryPoints: {[_Abs('/project-1/node_modules/package-3/entry-point-3')]: {}},
+                  },
+                  'Config for package-3@1.0.0-beta.2');
+
+          expect(getConfig('package-3', '1.0.0'))
+              .toEqual(
+                  {
+                    versionRange: '>=1.0.0-beta.2',
+                    entryPoints: {[_Abs('/project-1/node_modules/package-3/entry-point-3')]: {}},
+                  },
+                  'Config for package-3@1.0.0');
+
+          expect(getConfig('package-3', '2.0.0'))
+              .toEqual(
+                  {
+                    versionRange: '>=1.0.0-beta.2',
+                    entryPoints: {[_Abs('/project-1/node_modules/package-3/entry-point-3')]: {}},
+                  },
+                  'Config for package-3@2.0.0');
+
+          expect(getConfig('package-3', '1.0.0-beta.1'))
+              .toEqual(
+                  {
+                    versionRange: '*',
+                    entryPoints: {},
+                  },
+                  'Config for package-3@1.0.0-beta.1');
+
+          expect(getConfig('package-3', '0.9.99'))
+              .toEqual(
+                  {
+                    versionRange: '*',
+                    entryPoints: {},
+                  },
+                  'Config for package-3@0.9.99');
         });
       });
     });
