@@ -106,8 +106,10 @@ To fetch this kind of data, the `get()` call needs the following options: `{obse
 These are the default values for those options, so the following examples do not pass the options object.
 Later sections show some of the additional option possibilities.
 
-The example conforms to best practice for creating scalable solutions by defining a re-usable [injectable service](guide/glossary#service "service definition") to perform the data-handling functionality.
-In addition to fetching data, the service can post-process the data, add error handling, and add retry logic to cope with intermittent connectivity.
+{@a config-service}
+
+The example conforms to the best practices for creating scalable solutions by defining a re-usable [injectable service](guide/glossary#service "service definition") to perform the data-handling functionality.
+In addition to fetching data, the service can post-process the data, add error handling, and add retry logic.
 
 The `ConfigService` fetches this file using the `HttpClient.get()` method.
 
@@ -141,12 +143,12 @@ Specifying the response type acts as a type assertion at compile time.
 <div class="alert is-important">
 
 Specifying the response type is a declaration to TypeScript that it should expect your response to be of the given type.
-This is a build-time check and doesn't guarantee that the server will actually respond with an object of this type. It is up to the server to ensure that the type specified by the server API is returned.
+This is a build-time check and doesn't guarantee that the server can actually respond with an object of this type. It is up to the server to ensure that the type specified by the server API is returned.
 
 </div>
 
 To specify the response object type, first define an interface with the required properties.
-(Use an interface rather than a class, because you cannot automatically convert the response to an instance of a class.)
+Use an interface rather than a class, because you cannot automatically convert the response to an instance of a class.
 
 <code-example
   path="http/src/app/config/config.service.ts"
@@ -264,7 +266,7 @@ A `download()` method in the `DownloaderComponent` initiates the request by subs
 
 ## Handling request errors
 
-If the request fails on the server, or if a poor network connection prevents it from even reaching the server, `HttpClient` returns an _error_ object instead of a successful response.
+If the request fails on the server, `HttpClient` returns an _error_ object instead of a successful response.
 
 The same service that performs your server transactions should also perform error inspection, interpretation, and resolution.
 
@@ -275,7 +277,7 @@ When an error occurs, you can obtain details of what failed in order to inform y
 
 An app should give the user useful feedback when data access fails.
 A raw error object is not particularly useful as feedback.
-In addition to detecting that an error has occurred, you will need to get error details and use that compose a user-friendly response.
+In addition to detecting that an error has occurred, you need to get error details and use those details to compose a user-friendly response.
 
 Two types of errors can occur.
 
@@ -283,9 +285,9 @@ Two types of errors can occur.
 
 * Something could go wrong on the client-side such as a network error that prevents the request from completing successfully or an exception thrown in an RxJS operator. These errors produce JavaScript `ErrorEvent` objects.
 
-`HttpClient` captures both kinds of errors in its `HttpErrorResponse`. You can inspect that response to figure out what really happened.
+`HttpClient` captures both kinds of errors in its `HttpErrorResponse`. You can inspect that response to identify the error's cause.
 
-The following example defines an error handler in the previously defined ConfigService.
+The following example defines an error handler in the previously defined [ConfigService](#config-service "ConfigService defined").
 
 <code-example
   path="http/src/app/config/config.service.ts"
@@ -305,14 +307,14 @@ The following code updates the `getConfig()` method, using a [pipe](guide/pipes 
 {@a retry}
 ### Retrying a failed request
 
-Sometimes the error is transient and will go away automatically if you try again.
+Sometimes the error is transient and goes away automatically if you try again.
 For example, network interruptions are common in mobile scenarios, and trying again
 can produce a successful result.
 
-The [RxJS library](guide/rx-library) offers several _retry_ operators that are worth exploring.
+The [RxJS library](guide/rx-library) offers several _retry_ operators.
 For example, the `retry()` operator automatically re-subscribes to a failed `Observable` a specified number of times. _Re-subscribing_ to the result of an `HttpClient` method call has the effect of reissuing the HTTP request.
 
-The following example shows how you can pipe a failed request to the `retry()` operator before handing it on to the error handler.
+The following example shows how you can pipe a failed request to the `retry()` operator before passing it to the error handler.
 
 <code-example
   path="http/src/app/config/config.service.ts"
@@ -323,17 +325,16 @@ The following example shows how you can pipe a failed request to the `retry()` o
 
 ## Sending data to a server
 
-In addition to fetching data from a server, `HttpClient` supports mutating requests, that is, sending data to a server with other HTTP methods such as PUT, POST, and DELETE.
+In addition to fetching data from a server, `HttpClient` supports other HTTP methods such as PUT, POST, and DELETE, which you can use to modify the remote data.
 
 The sample app for this guide includes a simplified version of the "Tour of Heroes" example
 that fetches heroes and enables users to add, delete, and update them.
-
-The following sections excerpt methods of the sample's `HeroesService`.
+The following sections show examples of the data-update methods from the sample's `HeroesService`.
 
 ### Making a POST request
 
-Apps often POST data to a server. They POST when submitting a form.
-In the following example, the `HeroesService` posts when adding a hero to the database.
+Apps often send data to a server with a POST request when submitting a form.
+In the following example, the `HeroesService` makes an HTTP POST request when adding a hero to the database.
 
 <code-example
   path="http/src/app/heroes/heroes.service.ts"
@@ -341,16 +342,12 @@ In the following example, the `HeroesService` posts when adding a hero to the da
   header="app/heroes/heroes.service.ts (addHero)">
 </code-example>
 
-The `HttpClient.post()` method is similar to `get()` in that it has a type parameter
-(you're expecting the server to return the new hero)
-and it takes a resource URL.
+The `HttpClient.post()` method is similar to `get()` in that it has a type parameter, which you can use to specify that you expect the server to return data of a given type. The method takes a resource URL and two additional parameters:
 
-It takes two more parameters:
+* *body* - The data to POST in the body of the request.
+* *options*` - An object containing method options which, in this case, [specify required headers](#adding-headers).
 
-1. `hero` - the data to POST in the body of the request.
-1. `httpOptions` - the method options which, in this case, [specify required headers](#adding-headers).
-
-Of course it catches errors in much the same manner [described above](#error-details).
+The example catches errors as [described above](#error-details).
 
 The `HeroesComponent` initiates the actual POST operation by subscribing to
 the `Observable` returned by this service method.
@@ -388,7 +385,7 @@ The component isn't expecting a result from the delete operation, so it subscrib
 
 <div class="alert is-important">
 
-You must call _subscribe()_ or nothing happens. Just calling `HeroesService.deleteHero()` **does not initiate the DELETE request.**
+You must call _subscribe()_ or nothing happens. Just calling `HeroesService.deleteHero()` does not initiate the DELETE request.
 
 </div>
 
@@ -435,7 +432,7 @@ req.subscribe();
 
 ### Making a PUT request
 
-An app will send a PUT request to completely replace a resource with updated data.
+An app can send a PUT request to completely replace a resource with updated data.
 The following `HeroesService` example is just like the POST example.
 
 <code-example
@@ -444,7 +441,7 @@ The following `HeroesService` example is just like the POST example.
   header="app/heroes/heroes.service.ts (updateHero)">
 </code-example>
 
-For the reasons [explained above](#always-subscribe), the caller (`HeroesComponent.update()` in this case) must `subscribe()` to the observable returned from the `HttpClient.put()`
+For the reasons [explained above](#always-subscribe), the caller, `HeroesComponent.update()` in this case, must `subscribe()` to the observable returned from the `HttpClient.put()`
 in order to initiate the request.
 
 ### Adding and updating headers
@@ -454,7 +451,7 @@ For example, a server might require an authorization token, or "Content-Type" he
 
 ##### Adding headers
 
-The `HeroesService` defines such headers in an `httpOptions` object that will be passed
+The `HeroesService` defines such headers in an `httpOptions` object that are passed
 to every `HttpClient` save method.
 
 <code-example
@@ -483,6 +480,7 @@ The following example shows how, when an old token has expired, you can update t
 Use the `HttpParams` class with the `params` request option to add URL query strings in your `HttpRequest`.
 
 The following example, the `searchHeroes()` method queries for heroes whose names contain the search term.
+
 Start by importing `HttpParams` class.
 
 <code-example hideCopy language="typescript">
@@ -509,9 +507,8 @@ const params = new HttpParams({fromString: 'name=foo'});
 {@a intercepting-requests-and-responses}
 ## Intercepting requests and responses
 
-_HTTP Interception_ is a major feature of `@angular/common/http`.
 With interception, you declare _interceptors_ that inspect and transform HTTP requests from your application to a server.
-The same interceptors may also inspect and transform a server's responses on their way back to the application.
+The same interceptors can also inspect and transform a server's responses on their way back to the application.
 Multiple interceptors form a _forward-and-backward_ chain of request/response handlers.
 
 Interceptors can perform a variety of  _implicit_ tasks, from authentication to logging, in a routine, standard way, for every HTTP request/response.
@@ -613,8 +610,8 @@ There are many more interceptors in the complete sample code.
 ### Interceptor order
 
 Angular applies interceptors in the order that you provide them.
-If you provide interceptors _A_, then _B_, then _C_,  requests will flow in _A->B->C_ and
-responses will flow out _C->B->A_.
+If you provide interceptors _A_, then _B_, then _C_,  requests flow in _A->B->C_ and
+responses flow out _C->B->A_.
 
 You cannot change the order or remove interceptors later.
 If you need to enable and disable an interceptor dynamically, you'll have to build that capability into the interceptor itself.
@@ -623,10 +620,10 @@ If you need to enable and disable an interceptor dynamically, you'll have to bui
 
 ### Handling interceptor events
 
-While most other `HttpClient` methods return observables of `HttpResponse<any>`, the `intercept()` and `handle()` methods to return observables of `HttpEvent<any>`.
-
+Most `HttpClient` methods return observables of `HttpResponse<any>`.
 The `HttpResponse` class itself is actually an event, whose type is `HttpEventType.Response`.
 A single HTTP request can, however, generate multiple events of other types, including upload and download progress events.
+The methods  `HttpInterceptor.intercept()` and `HttpHandler.handle()` return observables of `HttpEvent<any>`.
 
 Many interceptors are only concerned with the outgoing request and return the event stream from `next.handle()` without modifying it.
 Some interceptors, however, need to examine and modify the response from `next.handle()`; these operations can see all of these events in the stream.
@@ -636,7 +633,7 @@ Some interceptors, however, need to examine and modify the response from `next.h
 Although interceptors are capable of modifying requests and responses,
 the `HttpRequest` and `HttpResponse` instance properties are `readonly`,
 rendering them largely immutable.
-They are immutable for a good reason: an app might retry a request several times before it succeeds, which means that the interceptor chain may re-process the same request multiple times.
+They are immutable for a good reason: an app might retry a request several times before it succeeds, which means that the interceptor chain can re-process the same request multiple times.
 If an interceptor could modify the original request object, the re-tried operation would start from the modified request rather than the original. Immutability ensures that interceptors see the same request for each try.
 
 <div class="alert is-helpful">
@@ -663,7 +660,7 @@ You can clone and modify the request in a single step, as shown in the following
 
 The `clone()` method's hash argument allows you to mutate specific properties of the request while copying the others.
 
-#### Mutating a request body
+#### Modifying a request body
 
 The `readonly` assignment guard can't prevent deep updates and, in particular,
 it can't prevent you from modifying a property of a request body object.
@@ -672,7 +669,7 @@ it can't prevent you from modifying a property of a request body object.
   req.body.name = req.body.name.trim(); // bad idea!
 ```
 
-If you must mutate the request body, use the method shown in the following example.
+If you must modify the request body, follow these steps.
 
 1. Copy the body and make your change in the copy.
 1. Clone the request object, using its `clone()` method.
@@ -688,7 +685,12 @@ If you must mutate the request body, use the method shown in the following examp
 
 Sometimes you need to clear the request body rather than replace it.
 To do this, set the cloned request body to `null`.
-Note that if you set the cloned request body to `undefined`, Angular assumes you intend to leave the body as is.
+
+<div class="alert is-helpful">
+
+**Tip**: If you set the cloned request body to `undefined`, Angular assumes you intend to leave the body as is.
+
+</div>
 
 ```javascript
   newReq = req.clone({ ... }); // body not mentioned => preserve original body
@@ -725,7 +727,7 @@ An interceptor that alters headers can be used for a number of different operati
 
 ### Using interceptors for logging
 
-Because interceptors can process the request and response _together_, they can do things like time and log an entire HTTP operation.
+Because interceptors can process the request and response _together_, they can perform tasks such as timing and logging an entire HTTP operation.
 
 Consider the following `LoggingInterceptor`, which captures the time of the request,
 the time of the response, and logs the outcome with the elapsed time
@@ -770,8 +772,8 @@ to the next handler in the chain.
 the cached response, by-passing the `next` handler (and all other interceptors downstream).
 
 * If a cachable request is not in cache, the code calls `sendRequest()`.
-This function creates a [request clone](#immutability) without headers (because the npm API forbids them).
-It forwards the clone of the request to `next.handle()` which ultimately calls the server and returns the server's response.
+This function creates a [request clone](#immutability) without headers, because the npm API forbids them.
+The function then forwards the clone of the request to `next.handle()` which ultimately calls the server and returns the server's response.
 
 {@a send-request}
 <code-example
@@ -780,7 +782,7 @@ It forwards the clone of the request to `next.handle()` which ultimately calls t
 </code-example>
 
 Note how `sendRequest()` intercepts the response on its way back to the application.
-It  pipes the response through the `tap()` operator, whose callback adds the response to the cache.
+This method pipes the response through the `tap()` operator, whose callback adds the response to the cache.
 
 The original response continues untouched back up through the chain of interceptors
 to the application caller.
@@ -833,7 +835,7 @@ Subscribers see a sequence of two responses.
 
 Sometimes applications transfer large amounts of data and those transfers can take a long time.
 File uploads are a typical example.
-Give the users a better experience by providing feedback on the progress of such transfers.
+You can give the users a better experience by providing feedback on the progress of such transfers.
 
 To make a request with progress events enabled, you can create an instance of `HttpRequest`
 with the `reportProgress` option set true to enable tracking of progress events.
@@ -846,9 +848,9 @@ with the `reportProgress` option set true to enable tracking of progress events.
 
 <div class="alert is-important">
 
-Every progress event triggers change detection, so only turn them on if you need to report progress in the UI.
+**Tip**: Every progress event triggers change detection, so only turn them on if you need to report progress in the UI.
 
-When using [`HttpClient.request()`](api/common/http/HttpClient#request) with an HTTP method, configure with
+When using [`HttpClient.request()`](api/common/http/HttpClient#request) with an HTTP method, configure the method with
 [`observe: 'events'`](api/common/http/HttpClient#request) to see all events, including the progress of transfers.
 
 </div>
@@ -969,7 +971,7 @@ In order to prevent collisions in environments where multiple Angular apps share
 *`HttpClient` supports only the client half of the XSRF protection scheme.*
 Your backend service must be configured to set the cookie for your page, and to verify that
 the header is present on all eligible requests.
-If not, Angular's default protection will be ineffective.
+Failing to do so renders Angular's default protection ineffective.
 
 </div>
 
@@ -994,7 +996,7 @@ The test then expects that certain requests have or have not been made,
 performs assertions against those requests,
 and finally provides responses by "flushing" each expected request.
 
-At the end, tests may verify that the app has made no unexpected requests.
+At the end, tests can verify that the app has made no unexpected requests.
 
 <div class="alert is-helpful">
 
@@ -1028,7 +1030,7 @@ the setup of the _service-under-test_.
   header="app/testing/http-client.spec.ts(setup)">
 </code-example>
 
-Now requests made in the course of your tests will hit the testing backend instead of the normal backend.
+Now requests made in the course of your tests hit the testing backend instead of the normal backend.
 
 This setup also calls `TestBed.inject()` to inject the `HttpClient` service and the mocking controller
 so they can be referenced during the tests.
@@ -1061,7 +1063,7 @@ For example, you could look for an outgoing request that has an authorization he
 </code-example>
 
 As with the previous `expectOne()`,
-the test will fail if 0 or 2+ requests satisfy this predicate.
+the test fails if 0 or 2+ requests satisfy this predicate.
 
 #### Handling more than one request
 
