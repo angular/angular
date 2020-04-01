@@ -11,7 +11,8 @@ export interface TreeMapNode {
 }
 
 export class TreeMapFormatter extends RecordFormatter<TreeMapNode> {
-  @memo() formatFrame(record: ProfilerFrame): TreeMapNode {
+  @memo({ cache: new WeakMap() })
+  formatFrame(record: ProfilerFrame): TreeMapNode {
     const children: TreeMapNode[] = [];
     this.addFrame(children, record.directives);
     const size = children.reduce((accum, curr) => {

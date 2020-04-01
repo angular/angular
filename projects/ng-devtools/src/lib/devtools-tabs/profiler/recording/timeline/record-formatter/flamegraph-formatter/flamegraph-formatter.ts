@@ -1,6 +1,5 @@
 import { RecordFormatter } from '../record-formatter';
 import { ElementProfile, ProfilerFrame } from 'protocol';
-import memo from 'memo-decorator';
 
 export interface FlamegraphNode {
   value: number;
