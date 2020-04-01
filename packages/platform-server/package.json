@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "domino": "^2.1.2",
-    "xhr2": "^0.1.4"
+    "xhr2": "^0.2.0"
   },
   "repository": {
     "type": "git",
