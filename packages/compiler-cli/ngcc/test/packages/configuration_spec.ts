@@ -214,6 +214,34 @@ runInEachFileSystem(() => {
                  .toEqual({versionRange: '*', entryPoints: {}});
            });
 
+        it('should match pre-release versions of a package', () => {
+          loadTestFiles([
+            {
+              name: _Abs('/project-1/ngcc.config.js'),
+              contents: `
+                module.exports = {
+                  packages: {
+                    'package-1': {
+                      entryPoints: {
+                        './entry-point-1': {},
+                      },
+                    },
+                  },
+                };
+              `,
+            },
+          ]);
+
+          const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
+          const config =
+              configuration.getConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0-beta.2');
+
+          expect(config).toEqual({
+            versionRange: '*',
+            entryPoints: {[_Abs('/project-1/node_modules/package-1/entry-point-1')]: {}},
+          });
+        });
+
         it('should not get confused by the @ in namespaced packages', () => {
           loadTestFiles([{
             name: _Abs('/project-1/ngcc.config.js'),
@@ -359,6 +387,21 @@ runInEachFileSystem(() => {
             versionRange: '*',
             entryPoints:
                 {[_Abs('/project-1/node_modules/package-1/project-level-entry-point')]: {}}
+          });
+        });
+
+        it('should match pre-release versions of a package', () => {
+          DEFAULT_NGCC_CONFIG.packages['package-1'] = {
+            entryPoints: {'./entry-point-1': {}},
+          };
+
+          const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
+          const config =
+              configuration.getConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0-beta.2');
+
+          expect(config).toEqual({
+            versionRange: '*',
+            entryPoints: {[_Abs('/project-1/node_modules/package-1/entry-point-1')]: {}},
           });
         });
       });
