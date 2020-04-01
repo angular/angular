@@ -85,10 +85,12 @@ export function main(
   // from the View Engine compiler (i.e. factories, summaries) cannot be resolved.
   if (printWarnings && warningsCount !== 0) {
     console.info(chalk.yellow('⚠  The following imports could not be resolved:'));
-    analyzer.unresolvedModules.forEach(specifier => console.info(`  • ${specifier}`));
+    Array.from(analyzer.unresolvedModules)
+        .sort()
+        .forEach(specifier => console.info(`  • ${specifier}`));
     analyzer.unresolvedFiles.forEach((value, key) => {
       console.info(`  • ${getRelativePath(baseDir, key)}`);
-      value.forEach(specifier => console.info(`      ${specifier}`));
+      value.sort().forEach(specifier => console.info(`      ${specifier}`));
     });
   } else {
     console.info(chalk.yellow(`⚠  ${warningsCount} imports could not be resolved.`));
@@ -108,12 +110,13 @@ export function main(
   if (newCircularDeps.length !== 0) {
     console.error(chalk.yellow(`   New circular dependencies which are not allowed:`));
     newCircularDeps.forEach(c => console.error(`     • ${convertReferenceChainToString(c)}`));
+    console.error();
   }
   if (fixedCircularDeps.length !== 0) {
     console.error(
         chalk.yellow(`   Fixed circular dependencies that need to be removed from the golden:`));
     fixedCircularDeps.forEach(c => console.error(`     • ${convertReferenceChainToString(c)}`));
-    console.info();
+    console.error();
     if (approveCommand) {
       console.info(chalk.yellow(`   Please approve the new golden with: ${approveCommand}`));
     } else {
