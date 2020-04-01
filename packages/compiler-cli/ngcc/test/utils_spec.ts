@@ -7,6 +7,8 @@
  */
 
 import * as ts from 'typescript';
+import {absoluteFrom as _abs} from '../../src/ngtsc/file_system';
+import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {KnownDeclaration} from '../../src/ngtsc/reflection';
 import {FactoryMap, getTsHelperFnFromDeclaration, getTsHelperFnFromIdentifier, isRelativePath, stripExtension} from '../src/utils';
 
@@ -167,30 +169,36 @@ describe('getTsHelperFnFromIdentifier()', () => {
   });
 });
 
-describe('isRelativePath()', () => {
-  it('should return true for relative paths', () => {
-    expect(isRelativePath('.')).toBe(true);
-    expect(isRelativePath('..')).toBe(true);
-    expect(isRelativePath('./')).toBe(true);
-    expect(isRelativePath('../')).toBe(true);
-    expect(isRelativePath('./abc/xyz')).toBe(true);
-    expect(isRelativePath('../abc/xyz')).toBe(true);
-  });
+runInEachFileSystem(() => {
+  describe('isRelativePath()', () => {
+    it('should return true for relative paths', () => {
+      expect(isRelativePath('.')).toBe(true);
+      expect(isRelativePath('..')).toBe(true);
+      expect(isRelativePath('./')).toBe(true);
+      expect(isRelativePath('.\\')).toBe(true);
+      expect(isRelativePath('../')).toBe(true);
+      expect(isRelativePath('..\\')).toBe(true);
+      expect(isRelativePath('./abc/xyz')).toBe(true);
+      expect(isRelativePath('.\\abc\\xyz')).toBe(true);
+      expect(isRelativePath('../abc/xyz')).toBe(true);
+      expect(isRelativePath('..\\abc\\xyz')).toBe(true);
+    });
 
-  it('should return true for absolute paths', () => {
-    expect(isRelativePath('/')).toBe(true);
-    expect(isRelativePath('/abc/xyz')).toBe(true);
-  });
+    it('should return true for absolute paths', () => {
+      expect(isRelativePath(_abs('/'))).toBe(true);
+      expect(isRelativePath(_abs('/abc/xyz'))).toBe(true);
+    });
 
-  it('should return false for other paths', () => {
-    expect(isRelativePath('abc')).toBe(false);
-    expect(isRelativePath('abc/xyz')).toBe(false);
-    expect(isRelativePath('.abc')).toBe(false);
-    expect(isRelativePath('..abc')).toBe(false);
-    expect(isRelativePath('@abc')).toBe(false);
-    expect(isRelativePath('.abc/xyz')).toBe(false);
-    expect(isRelativePath('..abc/xyz')).toBe(false);
-    expect(isRelativePath('@abc/xyz')).toBe(false);
+    it('should return false for other paths', () => {
+      expect(isRelativePath('abc')).toBe(false);
+      expect(isRelativePath('abc/xyz')).toBe(false);
+      expect(isRelativePath('.abc')).toBe(false);
+      expect(isRelativePath('..abc')).toBe(false);
+      expect(isRelativePath('@abc')).toBe(false);
+      expect(isRelativePath('.abc/xyz')).toBe(false);
+      expect(isRelativePath('..abc/xyz')).toBe(false);
+      expect(isRelativePath('@abc/xyz')).toBe(false);
+    });
   });
 });
 
