@@ -10,7 +10,7 @@ import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../../
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {NgccConfiguration} from '../../src/packages/configuration';
-import {EntryPoint, getEntryPointFormat, getEntryPointInfo, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT, SUPPORTED_FORMAT_PROPERTIES} from '../../src/packages/entry_point';
+import {EntryPoint, EntryPointJsonProperty, getEntryPointFormat, getEntryPointInfo, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT, SUPPORTED_FORMAT_PROPERTIES} from '../../src/packages/entry_point';
 import {MockLogger} from '../helpers/mock_logger';
 
 runInEachFileSystem(() => {
@@ -206,7 +206,7 @@ runInEachFileSystem(() => {
 
     for (let prop of SUPPORTED_FORMAT_PROPERTIES) {
       // Ignore the UMD format
-      if (prop === 'main') continue;
+      if (prop === 'main' || prop === 'browser') continue;
       // Let's give 'module' a specific path, otherwise compute it based on the property.
       const typingsPath = prop === 'module' ? 'index' : `${prop}/missing_typings`;
 
@@ -425,67 +425,80 @@ runInEachFileSystem(() => {
       expect(getEntryPointFormat(fs, entryPoint, 'module')).toBe('esm5');
     });
 
-    it('should return `esm5` for `main` if the file contains import or export statements', () => {
-      const name = _(
-          '/project/node_modules/some_package/valid_entry_point/bundles/valid_entry_point/index.js');
-      loadTestFiles([{name, contents: `import * as core from '@angular/core;`}]);
-      expect(getEntryPointFormat(fs, entryPoint, 'main')).toBe('esm5');
+    (['browser', 'main'] as EntryPointJsonProperty[]).forEach(browserOrMain => {
+      it('should return `esm5` for `' + browserOrMain +
+             '` if the file contains import or export statements',
+         () => {
+           const name = _(
+               '/project/node_modules/some_package/valid_entry_point/bundles/valid_entry_point/index.js');
+           loadTestFiles([{name, contents: `import * as core from '@angular/core;`}]);
+           expect(getEntryPointFormat(fs, entryPoint, browserOrMain)).toBe('esm5');
 
-      loadTestFiles([{name, contents: `import {Component} from '@angular/core;`}]);
-      expect(getEntryPointFormat(fs, entryPoint, 'main')).toBe('esm5');
+           loadTestFiles([{name, contents: `import {Component} from '@angular/core;`}]);
+           expect(getEntryPointFormat(fs, entryPoint, browserOrMain)).toBe('esm5');
 
-      loadTestFiles([{name, contents: `export function foo() {}`}]);
-      expect(getEntryPointFormat(fs, entryPoint, 'main')).toBe('esm5');
+           loadTestFiles([{name, contents: `export function foo() {}`}]);
+           expect(getEntryPointFormat(fs, entryPoint, browserOrMain)).toBe('esm5');
 
-      loadTestFiles([{name, contents: `export * from 'abc';`}]);
-      expect(getEntryPointFormat(fs, entryPoint, 'main')).toBe('esm5');
-    });
+           loadTestFiles([{name, contents: `export * from 'abc';`}]);
+           expect(getEntryPointFormat(fs, entryPoint, browserOrMain)).toBe('esm5');
+         });
 
-    it('should return `umd` for `main` if the file contains a UMD wrapper function', () => {
-      loadTestFiles([{
-        name: _(
-            '/project/node_modules/some_package/valid_entry_point/bundles/valid_entry_point/index.js'),
-        contents: `
+      it('should return `umd` for `' + browserOrMain +
+             '` if the file contains a UMD wrapper function',
+         () => {
+           loadTestFiles([{
+             name: _(
+                 '/project/node_modules/some_package/valid_entry_point/bundles/valid_entry_point/index.js'),
+             contents: `
         (function (global, factory) {
           typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
           typeof define === 'function' && define.amd ? define('@angular/common', ['exports', '@angular/core'], factory) :
           (global = global || self, factory((global.ng = global.ng || {}, global.ng.common = {}), global.ng.core));
         }(this, function (exports, core) { 'use strict'; }));
       `
-      }]);
-      expect(getEntryPointFormat(fs, entryPoint, 'main')).toBe('umd');
-    });
+           }]);
+           expect(getEntryPointFormat(fs, entryPoint, browserOrMain)).toBe('umd');
+         });
 
-    it('should return `commonjs` for `main` if the file does not contain a UMD wrapper function', () => {
-      loadTestFiles([{
-        name: _(
-            '/project/node_modules/some_package/valid_entry_point/bundles/valid_entry_point/index.js'),
-        contents: `
+      it('should return `commonjs` for `' + browserOrMain +
+             '` if the file does not contain a UMD wrapper function',
+         () => {
+           loadTestFiles([{
+             name: _(
+                 '/project/node_modules/some_package/valid_entry_point/bundles/valid_entry_point/index.js'),
+             contents: `
           const core = require('@angular/core);
           module.exports = {};
         `
-      }]);
-      expect(getEntryPointFormat(fs, entryPoint, 'main')).toBe('commonjs');
-    });
+           }]);
+           expect(getEntryPointFormat(fs, entryPoint, browserOrMain)).toBe('commonjs');
+         });
 
-    it('should resolve the format path with suitable postfixes', () => {
-      loadTestFiles([{
-        name: _(
-            '/project/node_modules/some_package/valid_entry_point/bundles/valid_entry_point/index.js'),
-        contents: `
+      it('should resolve the format path with suitable postfixes', () => {
+        loadTestFiles([{
+          name: _(
+              '/project/node_modules/some_package/valid_entry_point/bundles/valid_entry_point/index.js'),
+          contents: `
         (function (global, factory) {
           typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
           typeof define === 'function' && define.amd ? define('@angular/common', ['exports', '@angular/core'], factory) :
           (global = global || self, factory((global.ng = global.ng || {}, global.ng.common = {}), global.ng.core));
         }(this, function (exports, core) { 'use strict'; }));
       `
-      }]);
+        }]);
 
-      entryPoint.packageJson.main = './bundles/valid_entry_point/index';
-      expect(getEntryPointFormat(fs, entryPoint, 'main')).toBe('umd');
+        entryPoint.packageJson.main = './bundles/valid_entry_point/index';
+        expect(getEntryPointFormat(fs, entryPoint, browserOrMain)).toBe('umd');
 
-      entryPoint.packageJson.main = './bundles/valid_entry_point';
-      expect(getEntryPointFormat(fs, entryPoint, 'main')).toBe('umd');
+        entryPoint.packageJson.main = './bundles/valid_entry_point';
+        expect(getEntryPointFormat(fs, entryPoint, browserOrMain)).toBe('umd');
+      });
+    });
+
+    it('should return `undefined` if the `browser` property is not a string', () => {
+      entryPoint.packageJson.browser = {} as any;
+      expect(getEntryPointFormat(fs, entryPoint, 'browser')).toBeUndefined();
     });
   });
 });
@@ -503,6 +516,7 @@ export function createPackageJson(
     fesm5: `./fesm5/${packageName}.js`,
     esm5: `./esm5/${packageName}.js`,
     main: `./bundles/${packageName}/index.js`,
+    browser: `./bundles/${packageName}/index.js`,
     module: './index.js',
   };
   if (excludes) {
