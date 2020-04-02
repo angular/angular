@@ -1,0 +1,11 @@
+@import '../mdc-helpers/mdc-helpers';
+@import '@material/dialog/mixins.import';
+
+@mixin mat-mdc-dialog-theme($theme) {
+  @include mat-using-mdc-theme($theme) {
+}
+
+@mixin mat-mdc-dialog-typography($config) {
+  @include mat-using-mdc-typography($config) {
+  }
+}

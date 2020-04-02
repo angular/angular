@@ -1,0 +1,1 @@
+describe('MDC-based MatDialog', () => {});
