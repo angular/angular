@@ -43,4 +43,7 @@
   </mat-icon>
 </button>
 
-<section *ngIf="angularVersion" id="app-angular-version">Angular version: {{ angularVersion }}</section>
+<section *ngIf="angularVersion" id="app-angular-version">
+  Angular version: {{ angularVersion }}
+  <ng-container *ngIf="latestSHA; let sha"> | DevTools SHA: {{ sha }} </ng-container>
+</section>

@@ -1,9 +1,10 @@
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
-import { ApplicationOperations, DevToolsModule } from 'ng-devtools';
+import { ApplicationEnvironment, ApplicationOperations, DevToolsModule } from 'ng-devtools';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ChromeApplicationOperations } from './chrome-application-operations';
+import { ChromeApplicationEnvironment } from './chrome-application-environment';
 
 @NgModule({
   declarations: [AppComponent],
@@ -13,6 +14,10 @@ import { ChromeApplicationOperations } from './chrome-application-operations';
     {
       provide: ApplicationOperations,
       useClass: ChromeApplicationOperations,
+    },
+    {
+      provide: ApplicationEnvironment,
+      useClass: ChromeApplicationEnvironment,
     },
   ],
 })
