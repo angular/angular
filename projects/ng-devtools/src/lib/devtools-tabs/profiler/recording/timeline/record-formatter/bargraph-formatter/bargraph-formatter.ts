@@ -19,7 +19,6 @@ export class BarGraphFormatter extends RecordFormatter<BargraphNode[]> {
 
   addFrame(nodes: BargraphNode[], elements: ElementProfile[], parents: ElementProfile[] = []): number {
     let timeSpent = 0;
-    const suffix = addSpaces(nodes.length);
     elements.forEach((element) => {
       // Possibly undefined because of
       // the insertion on the backend.
@@ -32,6 +31,7 @@ export class BarGraphFormatter extends RecordFormatter<BargraphNode[]> {
       timeSpent += super.getValue(element);
 
       element.directives.forEach((dir) => {
+        const suffix = addSpaces(nodes.length);
         const innerNode: BargraphNode = {
           parents,
           value: super.getDirectiveValue(dir),
