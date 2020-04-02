@@ -8,13 +8,11 @@
 
 import {logging, normalize} from '@angular-devkit/core';
 import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
-import {dirname, relative} from 'path';
-import * as ts from 'typescript';
+import {relative} from 'path';
 
 import {NgComponentTemplateVisitor} from '../../utils/ng_component_template';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
-import {createMigrationCompilerHost} from '../../utils/typescript/compiler_host';
-import {parseTsconfigFile} from '../../utils/typescript/parse_tsconfig';
+import {createMigrationProgram} from '../../utils/typescript/compiler_host';
 
 import {analyzeResolvedTemplate} from './analyze_template';
 
@@ -47,9 +45,7 @@ export default function(): Rule {
  */
 function runTemplateVariableAssignmentCheck(
     tree: Tree, tsconfigPath: string, basePath: string, logger: Logger) {
-  const parsed = parseTsconfigFile(tsconfigPath, dirname(tsconfigPath));
-  const host = createMigrationCompilerHost(tree, parsed.options, basePath);
-  const program = ts.createProgram(parsed.fileNames, parsed.options, host);
+  const {program} = createMigrationProgram(tree, tsconfigPath, basePath);
   const typeChecker = program.getTypeChecker();
   const templateVisitor = new NgComponentTemplateVisitor(typeChecker);
   const sourceFiles = program.getSourceFiles().filter(

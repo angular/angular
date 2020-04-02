@@ -7,13 +7,14 @@
  */
 
 import {Rule, SchematicsException, Tree,} from '@angular-devkit/schematics';
-import {dirname, relative} from 'path';
+import {relative} from 'path';
 import * as ts from 'typescript';
+
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
-import {createMigrationCompilerHost} from '../../utils/typescript/compiler_host';
-import {parseTsconfigFile} from '../../utils/typescript/parse_tsconfig';
-import {UpdateRecorder} from './update_recorder';
+import {createMigrationProgram} from '../../utils/typescript/compiler_host';
+
 import {UndecoratedClassesWithDecoratedFieldsTransform} from './transform';
+import {UpdateRecorder} from './update_recorder';
 
 /**
  * Migration that adds an Angular decorator to classes that have Angular field decorators.
@@ -37,9 +38,7 @@ export default function(): Rule {
 }
 
 function runUndecoratedClassesMigration(tree: Tree, tsconfigPath: string, basePath: string) {
-  const parsed = parseTsconfigFile(tsconfigPath, dirname(tsconfigPath));
-  const host = createMigrationCompilerHost(tree, parsed.options, basePath);
-  const program = ts.createProgram(parsed.fileNames, parsed.options, host);
+  const {program} = createMigrationProgram(tree, tsconfigPath, basePath);
   const typeChecker = program.getTypeChecker();
   const sourceFiles = program.getSourceFiles().filter(
       file => !file.isDeclarationFile && !program.isSourceFileFromExternalLibrary(file));
@@ -61,7 +60,7 @@ function runUndecoratedClassesMigration(tree: Tree, tsconfigPath: string, basePa
   /** Gets the update recorder for the specified source file. */
   function getUpdateRecorder(sourceFile: ts.SourceFile): UpdateRecorder {
     if (updateRecorders.has(sourceFile)) {
-      return updateRecorders.get(sourceFile) !;
+      return updateRecorders.get(sourceFile)!;
     }
     const treeRecorder = tree.beginUpdate(relative(basePath, sourceFile.fileName));
     const recorder: UpdateRecorder = {
@@ -81,7 +80,9 @@ function runUndecoratedClassesMigration(tree: Tree, tsconfigPath: string, basePa
         treeRecorder.remove(namedBindings.getStart(), namedBindings.getWidth());
         treeRecorder.insertRight(namedBindings.getStart(), newNamedBindings);
       },
-      commitUpdate() { tree.commitUpdate(treeRecorder); }
+      commitUpdate() {
+        tree.commitUpdate(treeRecorder);
+      }
     };
     updateRecorders.set(sourceFile, recorder);
     return recorder;
