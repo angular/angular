@@ -32,6 +32,7 @@ const commitMessage = {
     'http',
     'language-service',
     'localize',
+    'migrations',
     'ngcc',
     'packaging',
     'platform-browser',
