@@ -267,12 +267,12 @@ function declareTests(config?: {useJit: boolean}) {
                 .toThrowError(/Can't bind to 'xlink:href'/);
           });
 
-      onlyInIvy('Unknown property warning logged instead of throwing an error')
+      onlyInIvy('Unknown property logs an error message instead of throwing')
           .it('should escape unsafe SVG attributes', () => {
             const template = `<svg:circle [xlink:href]="ctxProp">Text</svg:circle>`;
             TestBed.overrideComponent(SecuredComponent, {set: {template}});
 
-            const spy = spyOn(console, 'warn');
+            const spy = spyOn(console, 'error');
             const fixture = TestBed.createComponent(SecuredComponent);
             fixture.detectChanges();
             expect(spy.calls.mostRecent().args[0]).toMatch(/Can't bind to 'xlink:href'/);

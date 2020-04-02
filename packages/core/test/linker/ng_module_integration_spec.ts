@@ -279,7 +279,7 @@ function declareTests(config?: {useJit: boolean}) {
             expect(() => createModule(SomeModule)).toThrowError(/Can't bind to 'someUnknownProp'/);
           });
 
-      onlyInIvy('Unknown property warning logged, instead of throwing an error')
+      onlyInIvy('Unknown property error logged, instead of throwing')
           .it('should error on unknown bound properties on custom elements by default', () => {
             @Component({template: '<div [someUnknownProp]="true"></div>'})
             class ComponentUsingInvalidProperty {
@@ -289,7 +289,7 @@ function declareTests(config?: {useJit: boolean}) {
             class SomeModule {
             }
 
-            const spy = spyOn(console, 'warn');
+            const spy = spyOn(console, 'error');
             const fixture = createComp(ComponentUsingInvalidProperty, SomeModule);
             fixture.detectChanges();
             expect(spy.calls.mostRecent().args[0]).toMatch(/Can't bind to 'someUnknownProp'/);
