@@ -18,13 +18,13 @@ If you are new to Angular, see [Getting Started](start). Getting Started helps y
 {@a prerequisites}
 ## Prerequisites
 
-To use the Angular framework, you should already be familiar with the following:
+To use the Angular framework, you should be familiar with the following:
 
+* [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/A_re-introduction_to_JavaScript)
 * [HTML](https://developer.mozilla.org/docs/Learn/HTML/Introduction_to_HTML)
 * [CSS](https://developer.mozilla.org/docs/Learn/CSS/First_steps)
-* [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/A_re-introduction_to_JavaScript)
-* [JavaScript language resources](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Language_Resources) (such as [using classes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes) and [importing modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import))
-* [TypeScript](https://www.typescriptlang.org/) (used in code samples)
+
+Knowledge of [TypeScript](https://www.typescriptlang.org/) is helpful, but not required.
 
 {@a nodejs}
 ### Node.js
