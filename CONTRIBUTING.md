@@ -236,6 +236,7 @@ There are currently a few exceptions to the "use package name" rule:
 * **docs-infra**: used for docs-app (angular.io) related changes within the /aio directory of the
   repo
 * **dev-infra**: used for dev-infra related changes within the directories /scripts, /tools and /dev-infra
+* **migrations**: used for changes to the `ng update` migrations.
 * **ngcc**: used for changes to the [Angular Compatibility Compiler](./packages/compiler-cli/ngcc/README.md)
 * **ve**: used for changes specific to ViewEngine (legacy compiler/renderer).
 * none/empty string: useful for `style`, `test` and `refactor` changes that are done across all
