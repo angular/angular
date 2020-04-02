@@ -195,13 +195,17 @@ export function getEntryPointFormat(
     case 'esm5':
       return 'esm5';
     case 'browser':
+      const browserFile = entryPoint.packageJson['browser'];
+      if (typeof browserFile !== 'string') {
+        return undefined;
+      }
+      return sniffModuleFormat(fs, join(entryPoint.path, browserFile));
     case 'main':
       const mainFile = entryPoint.packageJson['main'];
       if (mainFile === undefined) {
         return undefined;
       }
-      const pathToMain = join(entryPoint.path, mainFile);
-      return sniffModuleFormat(fs, pathToMain);
+      return sniffModuleFormat(fs, join(entryPoint.path, mainFile));
     case 'module':
       return 'esm5';
     default:

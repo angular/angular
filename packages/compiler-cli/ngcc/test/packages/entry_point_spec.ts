@@ -495,6 +495,11 @@ runInEachFileSystem(() => {
         expect(getEntryPointFormat(fs, entryPoint, browserOrMain)).toBe('umd');
       });
     });
+
+    it('should return `undefined` if the `browser` property is not a string', () => {
+      entryPoint.packageJson.browser = {} as any;
+      expect(getEntryPointFormat(fs, entryPoint, 'browser')).toBeUndefined();
+    });
   });
 });
 
@@ -511,6 +516,7 @@ export function createPackageJson(
     fesm5: `./fesm5/${packageName}.js`,
     esm5: `./esm5/${packageName}.js`,
     main: `./bundles/${packageName}/index.js`,
+    browser: `./bundles/${packageName}/index.js`,
     module: './index.js',
   };
   if (excludes) {
