@@ -50,6 +50,7 @@ export interface JsonObject {
 }
 
 export interface PackageJsonFormatPropertiesMap {
+  browser?: string;
   fesm2015?: string;
   fesm5?: string;
   es2015?: string;  // if exists then it is actually FESM2015
@@ -75,7 +76,7 @@ export interface EntryPointPackageJson extends JsonObject, PackageJsonFormatProp
 export type EntryPointJsonProperty = Exclude<PackageJsonFormatProperties, 'types'|'typings'>;
 // We need to keep the elements of this const and the `EntryPointJsonProperty` type in sync.
 export const SUPPORTED_FORMAT_PROPERTIES: EntryPointJsonProperty[] =
-    ['fesm2015', 'fesm5', 'es2015', 'esm2015', 'esm5', 'main', 'module'];
+    ['fesm2015', 'fesm5', 'es2015', 'esm2015', 'esm5', 'main', 'module', 'browser'];
 
 
 /**
@@ -193,13 +194,18 @@ export function getEntryPointFormat(
       return 'esm2015';
     case 'esm5':
       return 'esm5';
+    case 'browser':
+      const browserFile = entryPoint.packageJson['browser'];
+      if (typeof browserFile !== 'string') {
+        return undefined;
+      }
+      return sniffModuleFormat(fs, join(entryPoint.path, browserFile));
     case 'main':
       const mainFile = entryPoint.packageJson['main'];
       if (mainFile === undefined) {
         return undefined;
       }
-      const pathToMain = join(entryPoint.path, mainFile);
-      return sniffModuleFormat(fs, pathToMain);
+      return sniffModuleFormat(fs, join(entryPoint.path, mainFile));
     case 'module':
       return 'esm5';
     default:
