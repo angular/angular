@@ -7,11 +7,10 @@
  */
 
 import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
-import {dirname, relative} from 'path';
+import {relative} from 'path';
 import * as ts from 'typescript';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
-import {createMigrationCompilerHost} from '../../utils/typescript/compiler_host';
-import {parseTsconfigFile} from '../../utils/typescript/parse_tsconfig';
+import {createMigrationProgram} from '../../utils/typescript/compiler_host';
 import {NgDefinitionCollector} from './definition_collector';
 import {MissingInjectableTransform} from './transform';
 import {UpdateRecorder} from './update_recorder';
@@ -43,11 +42,8 @@ export default function(): Rule {
 
 function runMissingInjectableMigration(
     tree: Tree, tsconfigPath: string, basePath: string): string[] {
-  const parsed = parseTsconfigFile(tsconfigPath, dirname(tsconfigPath));
-  const host = createMigrationCompilerHost(tree, parsed.options, basePath);
+  const {program} = createMigrationProgram(tree, tsconfigPath, basePath);
   const failures: string[] = [];
-
-  const program = ts.createProgram(parsed.fileNames, parsed.options, host);
   const typeChecker = program.getTypeChecker();
   const definitionCollector = new NgDefinitionCollector(typeChecker);
   const sourceFiles = program.getSourceFiles().filter(
@@ -83,7 +79,7 @@ function runMissingInjectableMigration(
   /** Gets the update recorder for the specified source file. */
   function getUpdateRecorder(sourceFile: ts.SourceFile): UpdateRecorder {
     if (updateRecorders.has(sourceFile)) {
-      return updateRecorders.get(sourceFile) !;
+      return updateRecorders.get(sourceFile)!;
     }
     const treeRecorder = tree.beginUpdate(relative(basePath, sourceFile.fileName));
     const recorder: UpdateRecorder = {
@@ -111,7 +107,9 @@ function runMissingInjectableMigration(
         treeRecorder.remove(node.getStart(), node.getWidth());
         treeRecorder.insertRight(node.getStart(), newText);
       },
-      commitUpdate() { tree.commitUpdate(treeRecorder); }
+      commitUpdate() {
+        tree.commitUpdate(treeRecorder);
+      }
     };
     updateRecorders.set(sourceFile, recorder);
     return recorder;

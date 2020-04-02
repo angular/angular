@@ -7,16 +7,14 @@
  */
 
 import {Rule, SchematicContext, SchematicsException, Tree, UpdateRecorder} from '@angular-devkit/schematics';
-import {dirname, relative} from 'path';
+import {relative} from 'path';
 import * as ts from 'typescript';
 
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
-import {createMigrationCompilerHost} from '../../utils/typescript/compiler_host';
-import {parseTsconfigFile} from '../../utils/typescript/parse_tsconfig';
+import {createMigrationProgram} from '../../utils/typescript/compiler_host';
 
 import {Collector} from './collector';
 import {AnalysisFailure, ModuleWithProvidersTransform} from './transform';
-
 
 
 /**
@@ -47,11 +45,8 @@ export default function(): Rule {
 }
 
 function runModuleWithProvidersMigration(tree: Tree, tsconfigPath: string, basePath: string) {
-  const parsed = parseTsconfigFile(tsconfigPath, dirname(tsconfigPath));
-  const host = createMigrationCompilerHost(tree, parsed.options, basePath);
+  const {program} = createMigrationProgram(tree, tsconfigPath, basePath);
   const failures: string[] = [];
-
-  const program = ts.createProgram(parsed.fileNames, parsed.options, host);
   const typeChecker = program.getTypeChecker();
   const collector = new Collector(typeChecker);
   const sourceFiles = program.getSourceFiles().filter(
@@ -86,7 +81,7 @@ function runModuleWithProvidersMigration(tree: Tree, tsconfigPath: string, baseP
   /** Gets the update recorder for the specified source file. */
   function getUpdateRecorder(sourceFile: ts.SourceFile): UpdateRecorder {
     if (updateRecorders.has(sourceFile)) {
-      return updateRecorders.get(sourceFile) !;
+      return updateRecorders.get(sourceFile)!;
     }
     const recorder = tree.beginUpdate(relative(basePath, sourceFile.fileName));
     updateRecorders.set(sourceFile, recorder);
