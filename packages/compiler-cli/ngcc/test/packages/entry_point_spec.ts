@@ -425,6 +425,22 @@ runInEachFileSystem(() => {
       expect(getEntryPointFormat(fs, entryPoint, 'module')).toBe('esm5');
     });
 
+    it('should return `esm5` for `main` if the file contains import or export statements', () => {
+      const name = _(
+          '/project/node_modules/some_package/valid_entry_point/bundles/valid_entry_point/index.js');
+      loadTestFiles([{name, contents: `import * as core from '@angular/core;`}]);
+      expect(getEntryPointFormat(fs, entryPoint, 'main')).toBe('esm5');
+
+      loadTestFiles([{name, contents: `import {Component} from '@angular/core;`}]);
+      expect(getEntryPointFormat(fs, entryPoint, 'main')).toBe('esm5');
+
+      loadTestFiles([{name, contents: `export function foo() {}`}]);
+      expect(getEntryPointFormat(fs, entryPoint, 'main')).toBe('esm5');
+
+      loadTestFiles([{name, contents: `export * from 'abc';`}]);
+      expect(getEntryPointFormat(fs, entryPoint, 'main')).toBe('esm5');
+    });
+
     it('should return `umd` for `main` if the file contains a UMD wrapper function', () => {
       loadTestFiles([{
         name: _(

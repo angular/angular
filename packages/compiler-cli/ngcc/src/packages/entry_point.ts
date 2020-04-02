@@ -199,7 +199,7 @@ export function getEntryPointFormat(
         return undefined;
       }
       const pathToMain = join(entryPoint.path, mainFile);
-      return isUmdModule(fs, pathToMain) ? 'umd' : 'commonjs';
+      return sniffModuleFormat(fs, pathToMain);
     case 'module':
       return 'esm5';
     default:
@@ -226,15 +226,25 @@ function loadEntryPointPackage(
   }
 }
 
-function isUmdModule(fs: FileSystem, sourceFilePath: AbsoluteFsPath): boolean {
+function sniffModuleFormat(fs: FileSystem, sourceFilePath: AbsoluteFsPath): EntryPointFormat|
+    undefined {
   const resolvedPath = resolveFileWithPostfixes(fs, sourceFilePath, ['', '.js', '/index.js']);
   if (resolvedPath === null) {
-    return false;
+    return undefined;
   }
+
   const sourceFile =
       ts.createSourceFile(sourceFilePath, fs.readFile(resolvedPath), ts.ScriptTarget.ES5);
-  return sourceFile.statements.length > 0 &&
-      parseStatementForUmdModule(sourceFile.statements[0]) !== null;
+  if (sourceFile.statements.length === 0) {
+    return undefined;
+  }
+  if (ts.isExternalModule(sourceFile)) {
+    return 'esm5';
+  } else if (parseStatementForUmdModule(sourceFile.statements[0]) !== null) {
+    return 'umd';
+  } else {
+    return 'commonjs';
+  }
 }
 
 function mergeConfigAndPackageJson(
