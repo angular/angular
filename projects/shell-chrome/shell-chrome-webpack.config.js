@@ -1,3 +1,5 @@
+const webpack = require('webpack');
+
 module.exports = {
   entry: {
     'content-script': 'projects/shell-chrome/src/app/content-script.ts',
@@ -9,4 +11,11 @@ module.exports = {
   output: {
     jsonpFunction: '___ngDevToolsRuntime',
   },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env': {
+        LATEST_SHA: JSON.stringify(process.env.LATEST_SHA),
+      },
+    }),
+  ],
 };

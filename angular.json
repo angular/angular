@@ -15,7 +15,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "ngx-build-plus:browser",
           "options": {
             "outputPath": "dist/shell-dev",
             "index": "src/index.html",
@@ -63,8 +63,9 @@
           }
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "ngx-build-plus:dev-server",
           "options": {
+            "extraWebpackConfig": "shell-dev-webpack.config.js",
             "browserTarget": "shell-dev:build"
           },
           "configurations": {

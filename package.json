@@ -5,8 +5,9 @@
     "postinstall": "ngcc --async false --properties es2015 browser module main --first-only --create-ivy-entry-points",
     "ng": "ng",
     "cypress:verify": "cypress verify",
-    "start": "ng serve",
+    "start": "cross-env LATEST_SHA=`git rev-parse --short HEAD` ng serve",
     "build": "ng build",
+    "build:chrome": "cross-env LATEST_SHA=`git rev-parse --short HEAD` ng build shell-chrome",
     "test": "ng test",
     "lint": "ng lint",
     "lint:fix": "ng lint --fix",
@@ -48,7 +49,6 @@
     "file-saver": "^2.0.2",
     "memo-decorator": "^2.0.1",
     "ngx-flamegraph": "0.0.6",
-    "pretty-quick": "^2.0.1",
     "rxjs": "~6.5.3",
     "tslib": "^1.10.0",
     "uuid": "^7.0.0",
@@ -68,6 +68,7 @@
     "@types/jasmine": "~3.5.0",
     "@types/jasminewd2": "~2.0.3",
     "codelyzer": "^5.2.1",
+    "cross-env": "^7.0.2",
     "cypress": "^4.0.0",
     "cypress-browser-extension-plugin": "^0.1.0",
     "cypress-iframe": "^1.0.1",
@@ -82,6 +83,7 @@
     "ng-packagr": "^9.0.0",
     "ngx-build-plus": "^9.0.4",
     "prettier": "^2.0.0",
+    "pretty-quick": "^2.0.1",
     "protractor": "~5.4.2",
     "todomvc-app-css": "^2.3.0",
     "todomvc-common": "^1.0.5",
@@ -89,6 +91,7 @@
     "tsickle": "^0.35.0",
     "tslint": "~5.18.0",
     "typescript": "~3.7.0",
-    "wait-on": "^4.0.1"
+    "wait-on": "^4.0.1",
+    "webpack": "^4.42.1"
   }
 }
