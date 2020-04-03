@@ -39,10 +39,3 @@ export class PrivateReference {
 })
 export class ExpectNumericType {
 }
-
-@Component({
-  template: '{{ (name | lowercase).~{string-pipe}substring }}',
-})
-export class LowercasePipe {
-  name: string = 'name';
-}
