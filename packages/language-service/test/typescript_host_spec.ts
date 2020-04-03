@@ -94,7 +94,7 @@ describe('TypeScriptServiceHost', () => {
     const tsLS = ts.createLanguageService(tsLSHost);
     const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
     const templates = ngLSHost.getTemplates('/app/parsing-cases.ts');
-    expect(templates.length).toBe(9);
+    expect(templates.length).toBe(8);
   });
 
   it('should be able to find external template', () => {
