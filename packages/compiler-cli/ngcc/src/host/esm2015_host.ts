@@ -599,10 +599,11 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @param decl The `Declaration` to check.
    * @return The passed in `Declaration` (potentially enhanced with a `KnownDeclaration`).
    */
-  addKnownDeclaration<T extends Declaration|null>(decl: T): T {
-    if (decl !== null && decl.known === null &&
-        // For some reason, TS cannot infer that `decl` is not `null`chere :/
-        this.isJavaScriptObjectDeclaration(decl!)) {
+  detectKnownDeclaration(decl: null): null;
+  detectKnownDeclaration<T extends Declaration>(decl: T): T;
+  detectKnownDeclaration<T extends Declaration>(decl: T|null): T|null;
+  detectKnownDeclaration<T extends Declaration>(decl: T|null): T|null {
+    if (decl !== null && decl.known === null && this.isJavaScriptObjectDeclaration(decl)) {
       // If the identifier resolves to the global JavaScript `Object`, update the declaration to
       // denote it as the known `JsGlobalObject` declaration.
       decl.known = KnownDeclaration.JsGlobalObject;
@@ -620,7 +621,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    */
   protected getDeclarationOfSymbol(symbol: ts.Symbol, originalId: ts.Identifier|null): Declaration
       |null {
-    return this.addKnownDeclaration(super.getDeclarationOfSymbol(symbol, originalId));
+    return this.detectKnownDeclaration(super.getDeclarationOfSymbol(symbol, originalId));
   }
 
   /**
