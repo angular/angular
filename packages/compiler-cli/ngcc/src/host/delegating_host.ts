@@ -32,7 +32,7 @@ export class DelegatingReflectionHost implements NgccReflectionHost {
 
   getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
     if (isFromDtsFile(id)) {
-      return this.tsHost.getDeclarationOfIdentifier(id);
+      return this.addKnownDeclaration(this.tsHost.getDeclarationOfIdentifier(id));
     }
     return this.ngccHost.getDeclarationOfIdentifier(id);
   }
@@ -60,7 +60,13 @@ export class DelegatingReflectionHost implements NgccReflectionHost {
 
   getExportsOfModule(module: ts.Node): Map<string, Declaration>|null {
     if (isFromDtsFile(module)) {
-      return this.tsHost.getExportsOfModule(module);
+      const exportMap = this.tsHost.getExportsOfModule(module);
+
+      if (exportMap !== null) {
+        exportMap.forEach(decl => this.addKnownDeclaration(decl));
+      }
+
+      return exportMap;
     }
     return this.ngccHost.getExportsOfModule(module);
   }
@@ -153,5 +159,9 @@ export class DelegatingReflectionHost implements NgccReflectionHost {
 
   getEndOfClass(classSymbol: NgccClassSymbol): ts.Node {
     return this.ngccHost.getEndOfClass(classSymbol);
+  }
+
+  addKnownDeclaration<T extends Declaration|null>(decl: T): T {
+    return this.ngccHost.addKnownDeclaration(decl);
   }
 }
