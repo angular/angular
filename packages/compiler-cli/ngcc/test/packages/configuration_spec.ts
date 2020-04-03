@@ -102,6 +102,20 @@ runInEachFileSystem(() => {
                  .toHaveBeenCalledWith(_Abs('/project-1/node_modules/package-1/ngcc.config.js'));
            });
 
+        it('should read extra package config from package level file', () => {
+          loadTestFiles(packageWithConfigFiles(
+              'package-1', 'entry-point-1', '1.0.0', 'ignorableDeepImportMatchers: [ /xxx/ ]'));
+          const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
+          const config =
+              configuration.getConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
+
+          expect(config).toEqual({
+            versionRange: '1.0.0',
+            entryPoints: {[_Abs('/project-1/node_modules/package-1/entry-point-1')]: {}},
+            ignorableDeepImportMatchers: [/xxx/],
+          });
+        });
+
         it('should used cached configuration for a package if available', () => {
           loadTestFiles(packageWithConfigFiles('package-1', 'entry-point-1', '1.0.0'));
           const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
@@ -166,6 +180,31 @@ runInEachFileSystem(() => {
           expect(config).toEqual({
             versionRange: '*',
             entryPoints: {[_Abs('/project-1/node_modules/package-1/entry-point-1')]: {}}
+          });
+        });
+
+        it('should return configuration for a package found in a project level file', () => {
+          loadTestFiles([{
+            name: _Abs('/project-1/ngcc.config.js'),
+            contents: `
+              module.exports = {
+                packages: {
+                  'package-1': {
+                    entryPoints: {
+                      './entry-point-1': {}
+                    },
+                    ignorableDeepImportMatchers: [ /xxx/ ],
+                  },
+                },
+              };`
+          }]);
+          const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
+          const config =
+              configuration.getConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
+          expect(config).toEqual({
+            versionRange: '*',
+            entryPoints: {[_Abs('/project-1/node_modules/package-1/entry-point-1')]: {}},
+            ignorableDeepImportMatchers: [/xxx/],
           });
         });
 
@@ -569,11 +608,16 @@ runInEachFileSystem(() => {
     });
   });
 
-  function packageWithConfigFiles(packageName: string, entryPointName: string, version: string) {
+  function packageWithConfigFiles(
+      packageName: string, entryPointName: string, version: string, extraConfig: string = '') {
     return [
       {
         name: _Abs(`/project-1/node_modules/${packageName}/ngcc.config.js`),
-        contents: `module.exports = {entryPoints: { './${entryPointName}': {}}}`
+        contents: `
+        module.exports = {
+          entryPoints: { './${entryPointName}': {} },
+          ${extraConfig}
+        };`
       },
       {
         name: _Abs(`/project-1/node_modules/${packageName}/package.json`),
