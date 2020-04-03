@@ -337,8 +337,6 @@ describe('i18n support in the template compiler', () => {
         <ng-template i18n-title title="Hello"></ng-template>
       `;
 
-      // TODO (FW-1942): update the code to avoid adding `title` attribute in plain form
-      // into the `consts` array on Component def.
       const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
@@ -350,7 +348,7 @@ describe('i18n support in the template compiler', () => {
         }
         const $_c2$ = ["title", $I18N_0$];
         …
-        consts: [["title", "Hello"]],
+        consts: [[${AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵtemplate(0, MyComponent_ng_template_0_Template, 0, 0, "ng-template", 0);
@@ -367,8 +365,6 @@ describe('i18n support in the template compiler', () => {
             <ng-template *ngIf="visible" i18n-title title="Hello">Test</ng-template>
           `;
 
-         // TODO (FW-1942): update the code to avoid adding `title` attribute in plain form
-         // into the `consts` array on Component def.
          const output = String.raw`
             var $I18N_0$;
             if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
@@ -391,7 +387,7 @@ describe('i18n support in the template compiler', () => {
               }
             }
             …
-            consts: [[${AttributeMarker.Template}, "ngIf"], ["title", "Hello"]],
+            consts: [[${AttributeMarker.Template}, "ngIf"], [${AttributeMarker.I18n}, "title"]],
             template: function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵɵtemplate(0, MyComponent_0_Template, 2, 0, undefined, 0);

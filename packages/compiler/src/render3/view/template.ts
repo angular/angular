@@ -26,7 +26,7 @@ import {ParseError, ParseSourceSpan} from '../../parse_util';
 import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
 import {CssSelector, SelectorMatcher} from '../../selector';
 import {BindingParser} from '../../template_parser/binding_parser';
-import {error} from '../../util';
+import {error, partitionArray} from '../../util';
 import * as t from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 import {htmlAstToRender3Ast} from '../r3_template_transform';
@@ -36,7 +36,7 @@ import {I18nContext} from './i18n/context';
 import {createGoogleGetMsgStatements} from './i18n/get_msg_utils';
 import {createLocalizeStatements} from './i18n/localize_utils';
 import {I18nMetaVisitor} from './i18n/meta';
-import {assembleBoundTextPlaceholders, assembleI18nBoundString, declareI18nVariable, getTranslationConstPrefix, I18N_ICU_MAPPING_PREFIX, i18nFormatPlaceholderNames, icuFromI18nMessage, isI18nRootNode, isSingleI18nIcu, placeholdersToParams, TRANSLATION_PREFIX, wrapI18nPlaceholder} from './i18n/util';
+import {assembleBoundTextPlaceholders, assembleI18nBoundString, declareI18nVariable, getTranslationConstPrefix, hasI18nMeta, I18N_ICU_MAPPING_PREFIX, i18nFormatPlaceholderNames, icuFromI18nMessage, isI18nRootNode, isSingleI18nIcu, placeholdersToParams, TRANSLATION_PREFIX, wrapI18nPlaceholder} from './i18n/util';
 import {StylingBuilder, StylingInstruction} from './styling_builder';
 import {asLiteral, chainedInstruction, CONTEXT_NAME, getAttrsForDirectiveMatching, getInterpolationArgsLength, IMPLICIT_REFERENCE, invalid, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, trimTrailingNulls, unsupported} from './util';
 
@@ -848,11 +848,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     this.matchDirectives(NG_TEMPLATE_TAG_NAME, template);
 
     // prepare attributes parameter (including attributes used for directive matching)
-    // TODO (FW-1942): exclude i18n attributes from the main attribute list and pass them
-    // as an `i18nAttrs` argument of the `getAttributeExpressions` function below.
+    const [i18nStaticAttrs, staticAttrs] = partitionArray(template.attributes, hasI18nMeta);
     const attrsExprs: o.Expression[] = this.getAttributeExpressions(
-        template.attributes, template.inputs, template.outputs, undefined, template.templateAttrs,
-        undefined);
+        staticAttrs, template.inputs, template.outputs, undefined /* styles */,
+        template.templateAttrs, i18nStaticAttrs);
     parameters.push(this.addAttrsToConsts(attrsExprs));
 
     // local refs (ex.: <ng-template #foo>)
@@ -896,12 +895,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     // Only add normal input/output binding instructions on explicit <ng-template> elements.
     if (template.tagName === NG_TEMPLATE_TAG_NAME) {
-      const inputs: t.BoundAttribute[] = [];
-      const i18nAttrs: (t.TextAttribute|t.BoundAttribute)[] =
-          template.attributes.filter(attr => !!attr.i18n);
-
-      template.inputs.forEach(
-          (input: t.BoundAttribute) => (input.i18n ? i18nAttrs : inputs).push(input));
+      const [i18nInputs, inputs] = partitionArray(template.inputs, hasI18nMeta);
+      const i18nAttrs = [...i18nStaticAttrs, ...i18nInputs];
 
       // Add i18n attributes that may act as inputs to directives. If such attributes are present,
       // generate `i18nAttributes` instruction. Note: we generate it only for explicit <ng-template>
