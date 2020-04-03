@@ -13,6 +13,9 @@
 
 /// <reference types="node"/>
 
+import {MacroTask, Task, TaskData, Zone} from '../zone';
+
+
 // issue #989, to reduce bundle size, use short name
 /** Object.getOwnPropertyDescriptor */
 export const ObjectGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;

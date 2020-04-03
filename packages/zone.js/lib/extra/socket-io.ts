@@ -5,6 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {Zone, ZoneType, _ZonePrivate} from '../zone';
+
 Zone.__load_patch('socketio', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   (Zone as any)[Zone.__symbol__('socketio')] = function patchSocketIO(io: any) {
     // patch io.Socket.prototype event listener related method

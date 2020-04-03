@@ -13,6 +13,7 @@ import './fs';
 import {findEventTasks} from '../common/events';
 import {patchTimer} from '../common/timers';
 import {ArraySlice, isMix, patchMacroTask, patchMicroTask} from '../common/utils';
+import {Zone, ZoneType, _ZonePrivate} from '../zone';
 
 const set = 'set';
 const clear = 'clear';

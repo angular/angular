@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Zone, ZoneType, _ZonePrivate} from '../zone';
+
 /**
  * Promise for async/fakeAsync zoneSpec test
  * can support async operation which not supported by zone.js
@@ -25,6 +27,7 @@
  *   });
  * });
  */
+
 Zone.__load_patch('promisefortest', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   const symbolState: string = api.symbol('state');
   const UNRESOLVED: null = null;

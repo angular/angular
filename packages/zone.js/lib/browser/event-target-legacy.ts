@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {Zone, _ZonePrivate} from '../zone';
 
 export function eventTargetLegacyPatch(_global: any, api: _ZonePrivate) {
   const {eventNames, globalSources, zoneSymbolEventNames, TRUE_STR, FALSE_STR, ZONE_SYMBOL_PREFIX} =

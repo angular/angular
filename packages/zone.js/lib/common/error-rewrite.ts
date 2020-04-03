@@ -10,10 +10,13 @@
  * @suppress {globalThis,undefinedVars}
  */
 
+import {Task, Zone, ZoneDelegate, ZoneType, _ZoneFrame, _ZonePrivate} from '../zone';
+
+
 /**
  * Extend the Error with additional fields for rewritten stack frames
  */
-interface Error {
+interface ZoneAwareError extends Error {
   /**
    * Stack trace where extra frames have been removed and zone names added.
    */
@@ -117,9 +120,9 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
    */
   function ZoneAwareError(this: unknown | typeof NativeError): Error {
     // We always have to return native error otherwise the browser console will not work.
-    let error: Error = NativeError.apply(this, arguments);
+    let error: ZoneAwareError = NativeError.apply(this, arguments);
     // Save original stack trace
-    const originalStack = (error as any)['originalStack'] = error.stack;
+    const originalStack = error.originalStack = error.stack;
 
     // Process the stack trace and rewrite the frames.
     if ((ZoneAwareError as any)[stackRewrite] && originalStack) {

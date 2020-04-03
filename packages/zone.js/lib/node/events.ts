@@ -7,6 +7,7 @@
  */
 
 import {patchEventTarget} from '../common/events';
+import {Zone} from '../zone';
 
 Zone.__load_patch('EventEmitter', (global: any) => {
   // For EventEmitter

@@ -5,6 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {Task, TaskData, UncaughtPromiseError, Zone, ZoneType, _ZonePrivate} from '../zone';
+
 Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   const ObjectGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
   const ObjectDefineProperty = Object.defineProperty;

@@ -7,6 +7,7 @@
  */
 
 import {Observable, Subscriber, Subscription} from 'rxjs';
+import {Zone, ZoneType, _ZonePrivate} from '../zone';
 
 type ZoneSubscriberContext = {
   _zone: Zone

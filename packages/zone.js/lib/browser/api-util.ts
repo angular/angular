@@ -8,6 +8,7 @@
 
 import {globalSources, patchEventPrototype, patchEventTarget, zoneSymbolEventNames} from '../common/events';
 import {ADD_EVENT_LISTENER_STR, ArraySlice, FALSE_STR, ObjectCreate, ObjectDefineProperty, ObjectGetOwnPropertyDescriptor, REMOVE_EVENT_LISTENER_STR, TRUE_STR, ZONE_SYMBOL_PREFIX, attachOriginToPatched, bindArguments, isBrowser, isIEOrEdge, isMix, isNode, patchClass, patchMacroTask, patchMethod, patchOnProperties, wrapWithCurrentZone} from '../common/utils';
+import {Zone, ZoneType, _ZonePrivate} from '../zone';
 
 import {patchCallbacks} from './browser-util';
 import {eventNames, filterProperties} from './property-descriptor';

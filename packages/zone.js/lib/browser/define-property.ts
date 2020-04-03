@@ -10,6 +10,7 @@
  * This is necessary for Chrome and Chrome mobile, to enable
  * things like redefining `createdCallback` on an element.
  */
+import {Zone} from '../zone';
 
 let zoneSymbol: any;
 let _defineProperty: any;

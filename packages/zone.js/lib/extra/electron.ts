@@ -5,6 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {Zone, ZoneType, _ZonePrivate} from '../zone';
+
 Zone.__load_patch('electron', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   function patchArguments(target: any, name: string, source: string): Function|null {
     return api.patchMethod(target, name, (delegate: Function) => (self: any, args: any[]) => {

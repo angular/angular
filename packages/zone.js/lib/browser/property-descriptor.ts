@@ -11,6 +11,7 @@
  */
 
 import {ObjectGetPrototypeOf, isBrowser, isIE, isMix, isNode, patchOnProperties} from '../common/utils';
+import {Zone, _ZonePrivate} from '../zone';
 
 const globalEventHandlersEventNames = [
   'abort',

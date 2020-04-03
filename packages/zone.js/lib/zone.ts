@@ -133,7 +133,7 @@
  * zones are children of the root zone.
  *
  */
-interface Zone {
+export interface Zone {
   /**
    *
    * @returns {Zone} The parent Zone.
@@ -286,7 +286,7 @@ interface Zone {
   cancelTask(task: Task): any;
 }
 
-interface ZoneType {
+export interface ZoneType {
   /**
    * @returns {Zone} Returns the current [Zone]. The only way to change
    * the current zone is by invoking a run() method, which will update the current zone for the
@@ -324,13 +324,13 @@ interface ZoneType {
 /**
  * Patch Function to allow user define their own monkey patch module.
  */
-type _PatchFn = (global: Window, Zone: ZoneType, api: _ZonePrivate) => void;
+export type _PatchFn = (global: Window, Zone: ZoneType, api: _ZonePrivate) => void;
 
 /**
  * _ZonePrivate interface to provide helper method to help user implement
  * their own monkey patch module.
  */
-interface _ZonePrivate {
+export interface _ZonePrivate {
   currentZoneFrame: () => _ZoneFrame;
   symbol: (name: string) => string;
   scheduleMicroTask: (task?: MicroTask) => void;
@@ -374,12 +374,12 @@ interface _ZonePrivate {
 /**
  * _ZoneFrame represents zone stack frame information
  */
-interface _ZoneFrame {
+export interface _ZoneFrame {
   parent: _ZoneFrame|null;
   zone: Zone;
 }
 
-interface UncaughtPromiseError extends Error {
+export interface UncaughtPromiseError extends Error {
   zone: Zone;
   task: Task;
   promise: Promise<any>;
@@ -391,7 +391,7 @@ interface UncaughtPromiseError extends Error {
  *
  * Only the `name` property is required (all other are optional).
  */
-interface ZoneSpec {
+export interface ZoneSpec {
   /**
    * The name of the zone. Useful when debugging Zones.
    */
@@ -527,7 +527,7 @@ interface ZoneSpec {
  *  Note: The ZoneDelegate treats ZoneSpec as class. This allows the ZoneSpec to use its `this` to
  *  store internal state.
  */
-interface ZoneDelegate {
+export interface ZoneDelegate {
   zone: Zone;
   fork(targetZone: Zone, zoneSpec: ZoneSpec): Zone;
   intercept(targetZone: Zone, callback: Function, source: string): Function;
@@ -540,24 +540,25 @@ interface ZoneDelegate {
   hasTask(targetZone: Zone, isEmpty: HasTaskState): void;
 }
 
-type HasTaskState = {
+export type HasTaskState = {
   microTask: boolean; macroTask: boolean; eventTask: boolean; change: TaskType;
 };
 
 /**
  * Task type: `microTask`, `macroTask`, `eventTask`.
  */
-type TaskType = 'microTask' | 'macroTask' | 'eventTask';
+export type TaskType = 'microTask' | 'macroTask' | 'eventTask';
 
 /**
  * Task type: `notScheduled`, `scheduling`, `scheduled`, `running`, `canceling`, 'unknown'.
  */
-type TaskState = 'notScheduled' | 'scheduling' | 'scheduled' | 'running' | 'canceling' | 'unknown';
+export type TaskState =
+    'notScheduled' | 'scheduling' | 'scheduled' | 'running' | 'canceling' | 'unknown';
 
 
 /**
  */
-interface TaskData {
+export interface TaskData {
   /**
    * A periodic [MacroTask] is such which get automatically rescheduled after it is executed.
    */
@@ -591,7 +592,7 @@ interface TaskData {
  *   queue. This happens when the event fires.
  *
  */
-interface Task {
+export interface Task {
   /**
    * Task type: `microTask`, `macroTask`, `eventTask`.
    */
@@ -658,22 +659,16 @@ interface Task {
   cancelScheduleRequest(): void;
 }
 
-interface MicroTask extends Task {
-  type: 'microTask';
-}
+export interface MicroTask extends Task { type: 'microTask'; }
 
-interface MacroTask extends Task {
-  type: 'macroTask';
-}
+export interface MacroTask extends Task { type: 'macroTask'; }
 
-interface EventTask extends Task {
-  type: 'eventTask';
-}
+export interface EventTask extends Task { type: 'eventTask'; }
 
 /** @internal */
-type AmbientZone = Zone;
+export type AmbientZone = Zone;
 /** @internal */
-type AmbientZoneDelegate = ZoneDelegate;
+export type AmbientZoneDelegate = ZoneDelegate;
 
 // CommonJS / Node have global context exposed as "global" variable.
 // This code should run in a Browser, so we don't want to include the whole node.d.ts
@@ -681,7 +676,7 @@ type AmbientZoneDelegate = ZoneDelegate;
 // We'll just fake the global "global" var for now.
 declare var global: NodeJS.Global;
 
-const Zone: ZoneType = (function(global: any) {
+export const Zone: ZoneType = (function(global: any) {
   const performance: {mark(name: string): void; measure(name: string, label: string): void;} =
       global['performance'];
   function mark(name: string) { performance && performance['mark'] && performance['mark'](name); }

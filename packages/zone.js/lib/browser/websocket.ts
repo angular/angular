@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Zone, _ZonePrivate} from '../zone';
+
 // we have to patch the instance since the proto is non-configurable
 export function apply(api: _ZonePrivate, _global: any) {
   const {ADD_EVENT_LISTENER_STR, REMOVE_EVENT_LISTENER_STR} = api.getGlobalObjects() !;

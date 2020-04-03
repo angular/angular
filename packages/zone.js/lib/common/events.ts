@@ -10,8 +10,8 @@
  * @suppress {missingRequire}
  */
 
+import {Task, TaskData, Zone, _ZonePrivate} from '../zone';
 import {ADD_EVENT_LISTENER_STR, FALSE_STR, ObjectGetPrototypeOf, REMOVE_EVENT_LISTENER_STR, TRUE_STR, ZONE_SYMBOL_PREFIX, attachOriginToPatched, isNode, zoneSymbol} from './utils';
-
 
 /** @internal **/
 interface EventTaskData extends TaskData {

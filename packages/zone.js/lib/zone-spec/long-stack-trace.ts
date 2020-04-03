@@ -9,6 +9,7 @@
  * @fileoverview
  * @suppress {globalThis}
  */
+import {Task, Zone, ZoneDelegate, ZoneSpec} from '../zone';
 
 const NEWLINE = '\n';
 const IGNORE_FRAMES: {[k: string]: true} = {};

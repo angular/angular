@@ -5,6 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {HasTaskState, Task, Zone, ZoneDelegate, ZoneSpec} from '../zone';
+
 class ProxyZoneSpec implements ZoneSpec {
   name: string = 'ProxyZone';
 

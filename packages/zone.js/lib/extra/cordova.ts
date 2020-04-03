@@ -5,6 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {Zone, ZoneType, _ZonePrivate} from '../zone';
+
 Zone.__load_patch('cordova', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   if (global.cordova) {
     const SUCCESS_SOURCE = 'cordova.exec.success';

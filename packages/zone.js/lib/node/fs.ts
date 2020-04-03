@@ -7,6 +7,7 @@
  */
 
 import {patchMacroTask} from '../common/utils';
+import {Zone} from '../zone';
 
 Zone.__load_patch('fs', () => {
   let fs: any;

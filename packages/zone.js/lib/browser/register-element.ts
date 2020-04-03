@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {_ZonePrivate} from '../zone';
+
 export function registerElementPatch(_global: any, api: _ZonePrivate) {
   const {isBrowser, isMix} = api.getGlobalObjects() !;
   if ((!isBrowser && !isMix) || !('registerElement' in (<any>_global).document)) {

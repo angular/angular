@@ -5,6 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {Zone, ZoneType, _ZonePrivate} from '../zone';
+
 Zone.__load_patch('notification', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   const Notification = global['Notification'];
   if (!Notification || !Notification.prototype) {

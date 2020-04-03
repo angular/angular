@@ -12,6 +12,7 @@ import {isIEOrEdge, zoneSymbol} from '../../lib/common/utils';
 import {getEdgeVersion, getIEVersion, ifEnvSupports, ifEnvSupportsWithDone, isEdge} from '../test-util';
 
 import Spy = jasmine.Spy;
+import {Zone, ZoneDelegate, Task} from '../../lib/zone';
 declare const global: any;
 
 const noop = function() {};

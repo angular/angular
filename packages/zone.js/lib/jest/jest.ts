@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-'use strict';
+import {Zone, ZoneType} from '../zone';
+declare let jest: any;
 
+'use strict';
 Zone.__load_patch('jest', (context: any, Zone: ZoneType) => {
   if (typeof jest === 'undefined' || jest['__zone_patch__']) {
     return;

@@ -9,6 +9,7 @@
  * @fileoverview
  * @suppress {missingRequire}
  */
+import {TaskData, Zone, ZoneType, _ZonePrivate} from '../zone';
 
 Zone.__load_patch('fetch', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   interface FetchTaskData extends TaskData {

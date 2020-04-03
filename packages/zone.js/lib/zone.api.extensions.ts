@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Zone} from './zone';
+
 /**
  * Additional `EventTarget` methods added by `Zone.js`.
  *
@@ -42,3 +44,5 @@ interface EventTarget {
    */
   eventListeners?(eventName?: string): EventListenerOrEventListenerObject[];
 }
+
+export interface ZoneGlobal { Zone?: Zone; }

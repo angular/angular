@@ -7,6 +7,7 @@
  */
 
 /// <reference types="jasmine"/>
+import {Zone, ZoneSpec, ZoneType, _ZonePrivate} from '../zone';
 
 'use strict';
 declare let jest: any;

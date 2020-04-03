@@ -10,6 +10,8 @@
  * @suppress {missingRequire}
  */
 
+import {ZoneType, _ZonePrivate} from '../zone';
+
 import {_redefineProperty, propertyPatch} from './define-property';
 import {eventTargetLegacyPatch} from './event-target-legacy';
 import {propertyDescriptorLegacyPatch} from './property-descriptor-legacy';

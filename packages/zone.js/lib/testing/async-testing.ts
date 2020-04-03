@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import '../zone-spec/async-test';
+import {Zone, ZoneSpec, ZoneType, _ZonePrivate} from '../zone';
 
 Zone.__load_patch('asynctest', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   /**

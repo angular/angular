@@ -5,6 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {Task, Zone, ZoneType, _ZonePrivate} from '../zone';
+
 Zone.__load_patch('jsonp', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   const noop = function() {};
   // because jsonp is not a standard api, there are a lot of

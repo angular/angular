@@ -5,6 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {Zone, ZoneType, _ZonePrivate} from '../zone';
+
 Zone.__load_patch('canvas', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   const HTMLCanvasElement = global['HTMLCanvasElement'];
   if (typeof HTMLCanvasElement !== 'undefined' && HTMLCanvasElement.prototype &&

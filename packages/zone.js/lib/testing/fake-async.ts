@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import '../zone-spec/fake-async-test';
+import {Zone, ZoneSpec, ZoneType, _ZonePrivate} from '../zone';
 
 Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   const FakeAsyncTestZoneSpec = Zone && (Zone as any)['FakeAsyncTestZoneSpec'];

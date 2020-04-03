@@ -10,6 +10,7 @@
  * @suppress {missingRequire}
  */
 
+import {Task, TaskData} from '../zone';
 import {patchMethod, scheduleMacroTaskWithCurrentZone, zoneSymbol} from './utils';
 
 const taskSymbol = zoneSymbol('zoneTask');

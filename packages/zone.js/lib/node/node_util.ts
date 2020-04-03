@@ -7,6 +7,7 @@
  */
 
 import {bindArguments, patchMacroTask, patchMethod, patchOnProperties, setShouldCopySymbolProperties} from '../common/utils';
+import {Zone, ZoneType, _ZonePrivate} from '../zone';
 
 Zone.__load_patch('node_util', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   api.patchOnProperties = patchOnProperties;

@@ -10,6 +10,7 @@
  * @suppress {globalThis}
  */
 
+import {Zone, _ZonePrivate} from '../zone';
 import * as webSocketPatch from './websocket';
 
 export function propertyDescriptorLegacyPatch(api: _ZonePrivate, _global: any) {

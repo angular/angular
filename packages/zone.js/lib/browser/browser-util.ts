@@ -5,6 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {Zone, _ZonePrivate} from '../zone';
+
 export function patchCallbacks(
     api: _ZonePrivate, target: any, targetName: string, method: string, callbacks: string[]) {
   const symbol = Zone.__symbol__(method);

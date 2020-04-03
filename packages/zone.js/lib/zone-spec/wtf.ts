@@ -10,6 +10,8 @@
  * @suppress {missingRequire}
  */
 
+import {Task, Zone, ZoneDelegate, ZoneSpec} from '../zone';
+
 (function(global: any) {
   interface Wtf {
     trace: WtfTrace;

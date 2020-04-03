@@ -5,6 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {Zone, _ZonePrivate} from '../zone';
+
 Zone.__load_patch('ResizeObserver', (global: any, Zone: any, api: _ZonePrivate) => {
   const ResizeObserver = global['ResizeObserver'];
   if (!ResizeObserver) {
