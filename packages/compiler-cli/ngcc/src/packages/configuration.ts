@@ -241,9 +241,11 @@ export class NgccConfiguration {
     const configFilePath = join(packagePath, NGCC_CONFIG_FILENAME);
     if (this.fs.exists(configFilePath)) {
       try {
+        const packageConfig = this.evalSrcFile(configFilePath);
         return {
+          ...packageConfig,
           versionRange: version || '*',
-          entryPoints: this.processEntryPoints(packagePath, this.evalSrcFile(configFilePath)),
+          entryPoints: this.processEntryPoints(packagePath, packageConfig),
         };
       } catch (e) {
         throw new Error(`Invalid package configuration file at "${configFilePath}": ` + e.message);
