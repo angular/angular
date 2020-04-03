@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import { Task, Zone, ZoneDelegate } from "../../lib/zone";
+
 describe('Microtasks', function() {
   if (!global.Promise) return;
 

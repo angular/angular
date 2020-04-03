@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {Zone} from '../../lib/zone';
 describe('cordova test', () => {
   it('cordova.exec() should be patched as macroTask', (done) => {
     const cordova = (window as any).cordova;
@@ -21,10 +22,15 @@ describe('cordova test', () => {
             expect(Zone.current.name).toEqual('cordova');
             done();
           },
-          () => { fail('should not fail'); }, 'service', 'successAction', ['arg0', 'arg1']);
+          () => {
+            fail('should not fail');
+          },
+          'service', 'successAction', ['arg0', 'arg1']);
 
       cordova.exec(
-          () => { fail('should not success'); },
+          () => {
+            fail('should not success');
+          },
           () => {
             expect(Zone.current.name).toEqual('cordova');
             done();

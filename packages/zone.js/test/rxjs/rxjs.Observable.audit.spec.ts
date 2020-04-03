@@ -5,16 +5,19 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Observable, interval} from 'rxjs';
+import {interval, Observable} from 'rxjs';
 import {audit, auditTime} from 'rxjs/operators';
 
+import {Zone} from '../../lib/zone';
 import {asyncTest} from '../test-util';
 
 xdescribe('Observable.audit', () => {
   let log: any[];
   let observable1: Observable<any>;
 
-  beforeEach(() => { log = []; });
+  beforeEach(() => {
+    log = [];
+  });
 
   it('audit func callback should run in the correct zone', asyncTest((done: any) => {
        const constructorZone1: Zone = Zone.current.fork({name: 'Constructor Zone1'});
@@ -36,7 +39,9 @@ xdescribe('Observable.audit', () => {
                  subscriber.unsubscribe();
                }
              },
-             () => { fail('should not call error'); },
+             () => {
+               fail('should not call error');
+             },
              () => {
                log.push('completed');
                expect(Zone.current.name).toEqual(subscriptionZone.name);
@@ -65,7 +70,9 @@ xdescribe('Observable.audit', () => {
                   subscriber.unsubscribe();
                 }
               },
-              () => { fail('should not call error'); },
+              () => {
+                fail('should not call error');
+              },
               () => {
                 log.push('completed');
                 expect(Zone.current.name).toEqual(subscriptionZone.name);

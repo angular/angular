@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Zone} from '../../lib/zone';
 import {ifEnvSupports} from '../test-util';
+
 declare const window: any;
 
 describe('requestAnimationFrame', function() {
@@ -16,14 +18,20 @@ describe('requestAnimationFrame', function() {
   functions.forEach(function(fnName) {
     describe(fnName, ifEnvSupports(fnName, function() {
                const originalTimeout: number = (<any>jasmine).DEFAULT_TIMEOUT_INTERVAL;
-               beforeEach(() => { (<any>jasmine).DEFAULT_TIMEOUT_INTERVAL = 10000; });
+               beforeEach(() => {
+                 (<any>jasmine).DEFAULT_TIMEOUT_INTERVAL = 10000;
+               });
 
-               afterEach(() => { (<any>jasmine).DEFAULT_TIMEOUT_INTERVAL = originalTimeout; });
+               afterEach(() => {
+                 (<any>jasmine).DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+               });
                const rAF = window[fnName];
 
                it('should be tolerant of invalid arguments', function() {
                  // rAF throws an error on invalid arguments, so expect that.
-                 expect(function() { rAF(null); }).toThrow();
+                 expect(function() {
+                   rAF(null);
+                 }).toThrow();
                });
 
                it('should bind to same zone when called recursively', function(done) {

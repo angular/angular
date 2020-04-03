@@ -7,6 +7,7 @@
  */
 
 import {isNode, zoneSymbol} from '../../lib/common/utils';
+import {Zone} from '../../lib/zone';
 declare const global: any;
 const wtfMock = global.wtfMock;
 

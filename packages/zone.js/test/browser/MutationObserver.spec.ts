@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Zone} from '../../lib/zone';
 import {ifEnvSupports} from '../test-util';
+
 declare const global: any;
 
 
@@ -14,7 +16,9 @@ describe('MutationObserver', ifEnvSupports('MutationObserver', function() {
            let elt: HTMLDivElement;
            const testZone = Zone.current.fork({name: 'test'});
 
-           beforeEach(function() { elt = document.createElement('div'); });
+           beforeEach(function() {
+             elt = document.createElement('div');
+           });
 
            it('should run observers within the zone', function(done) {
              let ob;
@@ -35,12 +39,18 @@ describe('MutationObserver', ifEnvSupports('MutationObserver', function() {
              let ob: MutationObserver;
              let flag = false;
              const elt = document.createElement('div');
-             const childZone =
-                 Zone.current.fork({name: 'test', onInvokeTask: function() { flag = true; }});
+             const childZone = Zone.current.fork({
+               name: 'test',
+               onInvokeTask: function() {
+                 flag = true;
+               }
+             });
 
-             childZone.run(function() { ob = new MutationObserver(function() {}); });
+             childZone.run(function() {
+               ob = new MutationObserver(function() {});
+             });
 
-             ob !.disconnect();
+             ob!.disconnect();
              expect(flag).toBe(false);
            });
          }));
@@ -62,6 +72,6 @@ describe('WebKitMutationObserver', ifEnvSupports('WebKitMutationObserver', funct
                ob.observe(elt, {childList: true});
              });
 
-             elt !.innerHTML = '<p>hey</p>';
+             elt!.innerHTML = '<p>hey</p>';
            });
          }));

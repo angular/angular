@@ -8,6 +8,7 @@
 
 'use strict';
 import {isNode, zoneSymbol} from '../../lib/common/utils';
+import {Zone, HasTaskState, ZoneDelegate} from '../../lib/zone';
 declare const global: any;
 const wtfMock = global.wtfMock;
 

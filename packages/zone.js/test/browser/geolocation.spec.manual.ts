@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Zone} from '../../lib/zone';
 import {ifEnvSupports} from '../test-util';
 
 function supportsGeolocation() {

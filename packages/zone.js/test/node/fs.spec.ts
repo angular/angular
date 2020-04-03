@@ -6,8 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {error} from 'console';
 import {closeSync, exists, fstatSync, openSync, read, unlink, unlinkSync, unwatchFile, watch, watchFile, write, writeFile} from 'fs';
 import * as util from 'util';
+
+import {Task, Zone, ZoneDelegate} from '../../lib/zone';
 
 describe('nodejs file system', () => {
   describe('async method patch test', () => {
@@ -25,7 +28,9 @@ describe('nodejs file system', () => {
       const zoneASpec = {
         name: 'A',
         onScheduleTask: (delegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
-                            Task => { return delegate.scheduleTask(targetZone, task); }
+            Task => {
+              return delegate.scheduleTask(targetZone, task);
+            }
       };
       const zoneA = Zone.current.fork(zoneASpec);
       spyOn(zoneASpec, 'onScheduleTask').and.callThrough();
@@ -42,7 +47,9 @@ describe('nodejs file system', () => {
     const zoneASpec = {
       name: 'A',
       onScheduleTask: (delegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
-                          Task => { return delegate.scheduleTask(targetZone, task); }
+          Task => {
+            return delegate.scheduleTask(targetZone, task);
+          }
     };
 
     it('fs.watch has been patched as eventTask', (done) => {
@@ -56,7 +63,9 @@ describe('nodejs file system', () => {
             expect(zoneASpec.onScheduleTask).toHaveBeenCalled();
             expect(Zone.current.name).toBe('A');
             watcher.close();
-            unlink('testfile', () => { done(); });
+            unlink('testfile', () => {
+              done();
+            });
           });
           writeFile('testfile', 'test new content', () => {});
         });
@@ -74,7 +83,9 @@ describe('nodejs file system', () => {
             expect(zoneASpec.onScheduleTask).toHaveBeenCalled();
             expect(Zone.current.name).toBe('A');
             unwatchFile('testfile');
-            unlink('testfile', () => { done(); });
+            unlink('testfile', () => {
+              done();
+            });
           });
           writeFile('testfile', 'test new content', () => {});
         });
@@ -92,7 +103,9 @@ describe('util.promisify', () => {
               expect(r).toBe(true);
               done();
             },
-            err => { fail(`should not be here with error: ${err}`); });
+            err => {
+              fail(`should not be here with error: ${err}`);
+            });
   });
 
   it('fs.read should work with util.promisify', (done: DoneFn) => {

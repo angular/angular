@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Zone} from '../../lib/zone';
+
 /**
  * Test MessagePort monkey patch.
  */

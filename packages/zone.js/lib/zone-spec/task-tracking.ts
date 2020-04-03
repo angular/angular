@@ -14,14 +14,16 @@ import {Task, Zone, ZoneDelegate, ZoneSpec} from '../zone';
  * or an automated way of releasing all of the event listeners at the end of the test.
  */
 
-class TaskTrackingZoneSpec implements ZoneSpec {
+export class TaskTrackingZoneSpec implements ZoneSpec {
   name = 'TaskTrackingZone';
   microTasks: Task[] = [];
   macroTasks: Task[] = [];
   eventTasks: Task[] = [];
   properties: {[key: string]: any} = {'TaskTrackingZone': this};
 
-  static get() { return Zone.current.get('TaskTrackingZone'); }
+  static get() {
+    return Zone.current.get('TaskTrackingZone');
+  }
 
   private getTasksFor(type: string): Task[] {
     switch (type) {

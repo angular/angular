@@ -8,6 +8,7 @@
 
 import {asapScheduler, bindCallback} from 'rxjs';
 
+import {Zone} from '../../lib/zone';
 import {asyncTest} from '../test-util';
 
 describe('Observable.bindCallback', () => {
@@ -18,7 +19,9 @@ describe('Observable.bindCallback', () => {
   let boundFunc: any;
   let observable: any;
 
-  beforeEach(() => { log = []; });
+  beforeEach(() => {
+    log = [];
+  });
 
   it('bindCallback func callback should run in the correct zone', () => {
     constructorZone.run(() => {

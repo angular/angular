@@ -7,6 +7,7 @@
  */
 
 import {ifEnvSupports} from '../test-util';
+import { Zone } from '../../lib/zone';
 declare const global: any;
 
 describe('FileReader', ifEnvSupports('FileReader', function() {

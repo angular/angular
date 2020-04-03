@@ -6,10 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {_ZonePrivate, Zone, ZoneType} from '../zone';
+
 /**
  * Monkey patch `MessagePort.prototype.onmessage` and `MessagePort.prototype.onmessageerror`
  * properties to make the callback in the zone when the value are set.
  */
+
 Zone.__load_patch('MessagePort', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   const MessagePort = global['MessagePort'];
   if (typeof MessagePort !== 'undefined' && MessagePort.prototype) {

@@ -5,6 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {Task, Zone, ZoneDelegate} from '../../lib/zone';
+
 describe('node console', () => {
   const log: string[] = [];
   const zone = Zone.current.fork({
@@ -16,7 +18,9 @@ describe('node console', () => {
     }
   });
 
-  beforeEach(() => { log.length = 0; });
+  beforeEach(() => {
+    log.length = 0;
+  });
 
   it('console methods should run in root zone', () => {
     zone.run(() => {

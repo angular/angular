@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {zoneSymbol} from '../../lib/common/utils';
+import {Zone} from '../../lib/zone';
 import {asyncTest, ifEnvSupports} from '../test-util';
 
 function workerSupport() {

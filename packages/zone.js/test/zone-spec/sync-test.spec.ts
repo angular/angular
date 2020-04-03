@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Zone} from '../../lib/zone';
 import {ifEnvSupports} from '../test-util';
 
 describe('SyncTestZoneSpec', () => {
@@ -41,7 +42,9 @@ describe('SyncTestZoneSpec', () => {
                  document.body.appendChild(button);
                  let x = 1;
                  try {
-                   button.addEventListener('click', () => { x++; });
+                   button.addEventListener('click', () => {
+                     x++;
+                   });
 
                    button.click();
                    expect(x).toEqual(2);

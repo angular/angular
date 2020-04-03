@@ -7,6 +7,7 @@
  */
 
 import {zoneSymbol} from '../../lib/common/utils';
+import {Task, Zone, ZoneDelegate} from '../../lib/zone';
 import {ifEnvSupports} from '../test-util';
 
 const g: any =
@@ -32,8 +33,9 @@ describe('global function patch', () => {
   });
 
   describe('isNative', () => {
-    it('ZoneAwareError toString should look like native',
-       () => { expect(Function.prototype.toString.call(Error)).toContain('[native code]'); });
+    it('ZoneAwareError toString should look like native', () => {
+      expect(Function.prototype.toString.call(Error)).toContain('[native code]');
+    });
 
     it('Function toString should look like native', () => {
       expect(Function.prototype.toString.call(Function.prototype.toString))

@@ -38,6 +38,7 @@ ts_library(
     ),
     deps = [
         ":common_spec_util",
+        "//packages/zone.js/lib:zone_d_ts",
         "//packages/zone.js/lib",
         "@npm//rxjs",
     ],
@@ -48,6 +49,7 @@ ts_library(
     testonly = True,
     srcs = ["test-util.ts"],
     deps = [
+        "//packages/zone.js/lib:zone_d_ts",
         "//packages/zone.js/lib",
     ],
 )
@@ -60,6 +62,7 @@ ts_library(
     ],
     deps = [
         ":common_spec_util",
+        "//packages/zone.js/lib:zone_d_ts",
         "//packages/zone.js/lib",
     ],
 )
@@ -75,6 +78,7 @@ ts_library(
         ":common_spec_env",
         ":common_spec_srcs",
         ":common_spec_util",
+        "//packages/zone.js/lib:zone_d_ts",
         "//packages/zone.js/lib",
         "@npm//@types/shelljs",
         "@npm//@types/systemjs",
@@ -92,6 +96,7 @@ ts_library(
         ":common_spec_env",
         ":common_spec_srcs",
         ":common_spec_util",
+        "//packages/zone.js/lib:zone_d_ts",
         "//packages/zone.js/lib",
         "@npm//@types/shelljs",
         "@npm//@types/systemjs",
@@ -109,6 +114,7 @@ ts_library(
         ":common_spec_env",
         ":common_spec_srcs",
         ":common_spec_util",
+        "//packages/zone.js/lib:zone_d_ts",
         "//packages/zone.js/lib",
         "@npm//@types/shelljs",
         "@npm//@types/systemjs",
@@ -126,6 +132,7 @@ ts_library(
     ],
     deps = [
         ":common_spec_env",
+        "//packages/zone.js/lib:zone_d_ts",
         "//packages/zone.js/lib",
         "@npm//bluebird",
     ],
@@ -137,6 +144,7 @@ ts_library(
     srcs = ["node_bluebird_entry_point.ts"],
     deps = [
         ":common_spec_env",
+        "//packages/zone.js/lib:zone_d_ts",
         "//packages/zone.js/lib",
         "@npm//bluebird",
     ],
@@ -151,6 +159,7 @@ ts_library(
         ":common_spec_util",
         ":error_spec_srcs",
         ":node_error_entry_point",
+        "//packages/zone.js/lib:zone_d_ts",
         "//packages/zone.js/lib",
     ],
 )
@@ -163,6 +172,7 @@ ts_library(
         ":common_spec_env",
         ":common_spec_util",
         ":error_spec_srcs",
+        "//packages/zone.js/lib:zone_d_ts",
         "//packages/zone.js/lib",
     ],
 )
@@ -176,6 +186,7 @@ ts_library(
         ":common_spec_util",
         ":error_spec_srcs",
         ":node_error_entry_point",
+        "//packages/zone.js/lib:zone_d_ts",
         "//packages/zone.js/lib",
     ],
 )
@@ -340,6 +351,7 @@ karma_test(
     env_entry_point = ":browser_disable_wrap_uncaught_promise_rejection_setup.ts",
     env_srcs = ["browser_disable_wrap_uncaught_promise_rejection_setup.ts"],
     test_deps = [
+        "//packages/zone.js/lib:zone_d_ts",
         "//packages/zone.js/lib",
     ],
     test_entry_point = ":browser_disable_wrap_uncaught_promise_rejection_entry_point.ts",

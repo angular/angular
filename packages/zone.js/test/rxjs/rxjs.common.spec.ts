@@ -8,6 +8,7 @@
 
 import {Observable, Subject} from 'rxjs';
 import {map} from 'rxjs/operators';
+import {Zone} from '../../lib/zone';
 
 /**
  * The point of these tests, is to ensure that all callbacks execute in the Zone which was active
@@ -157,7 +158,9 @@ describe('Zone interaction', () => {
       };
     }));
 
-    observable.subscribe(() => { log.push('next'); });
+    observable.subscribe(() => {
+      log.push('next');
+    });
 
     expect(log).toEqual(['next', 'cleanup']);
   });
@@ -170,7 +173,9 @@ describe('Zone interaction', () => {
 
     let subject: any;
 
-    constructorZone.run(() => { subject = new Subject(); });
+    constructorZone.run(() => {
+      subject = new Subject();
+    });
 
     let subscription1: any;
     let subscription2: any;

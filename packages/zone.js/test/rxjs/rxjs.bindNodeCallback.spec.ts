@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Observable, asapScheduler, bindCallback, bindNodeCallback} from 'rxjs';
+import {asapScheduler, bindCallback, bindNodeCallback, Observable} from 'rxjs';
 
+import {Zone} from '../../lib/zone';
 import {asyncTest} from '../test-util';
 
 describe('Observable.bindNodeCallback', () => {
@@ -18,7 +19,9 @@ describe('Observable.bindNodeCallback', () => {
   let boundFunc: any;
   let observable: any;
 
-  beforeEach(() => { log = []; });
+  beforeEach(() => {
+    log = [];
+  });
 
   it('bindNodeCallback func callback should run in the correct zone', () => {
     constructorZone.run(() => {
@@ -100,7 +103,9 @@ describe('Observable.bindNodeCallback', () => {
             expect(Zone.current.name).toEqual(subscriptionZone.name);
             log.push('next' + arg);
           },
-          (error: any) => { log.push('error' + error); });
+          (error: any) => {
+            log.push('error' + error);
+          });
     });
 
     expect(log).toEqual(['nexttest,']);

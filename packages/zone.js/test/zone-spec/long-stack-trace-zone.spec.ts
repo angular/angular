@@ -7,6 +7,7 @@
  */
 
 import {isBrowser, isIE, zoneSymbol} from '../../lib/common/utils';
+import {Zone, ZoneDelegate} from '../../lib/zone';
 import {ifEnvSupports, isSafari, isSupportSetErrorStack} from '../test-util';
 
 const defineProperty = (Object as any)[zoneSymbol('defineProperty')] || Object.defineProperty;
@@ -21,19 +22,22 @@ describe(
       beforeEach(function() {
         lstz = Zone.current.fork(longStackTraceZoneSpec).fork({
           name: 'long-stack-trace-zone-test',
-          onHandleError: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                          error: any): boolean => {
-            parentZoneDelegate.handleError(targetZone, error);
-            log.push(error);
-            return false;
-          }
+          onHandleError:
+              (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, error: any):
+                  boolean => {
+                    parentZoneDelegate.handleError(targetZone, error);
+                    log.push(error);
+                    return false;
+                  }
         });
 
         log = [];
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
       });
 
-      afterEach(function() { jasmine.DEFAULT_TIMEOUT_INTERVAL = defaultTimeout; });
+      afterEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = defaultTimeout;
+      });
 
       function expectElapsed(stack: string, expectedCount: number) {
         try {
@@ -52,7 +56,7 @@ describe(
           setTimeout(function() {
             setTimeout(function() {
               setTimeout(function() {
-                expectElapsed(log[0].stack !, 3);
+                expectElapsed(log[0].stack!, 3);
                 done();
               }, 0);
               throw new Error('Hello');
@@ -69,7 +73,9 @@ describe(
              clickEvent.initEvent('click', true, true);
              document.body.appendChild(button);
 
-             button.addEventListener('click', function() { expectElapsed(log[0].stack !, 1); });
+             button.addEventListener('click', function() {
+               expectElapsed(log[0].stack!, 1);
+             });
 
              button.dispatchEvent(clickEvent);
 
@@ -90,9 +96,13 @@ describe(
              enterEvent.initEvent('mouseenter', true, true);
              document.body.appendChild(div);
 
-             button.addEventListener('click', function() { throw new Error('clickError'); });
+             button.addEventListener('click', function() {
+               throw new Error('clickError');
+             });
 
-             div.addEventListener('mouseenter', function() { throw new Error('enterError'); });
+             div.addEventListener('mouseenter', function() {
+               throw new Error('enterError');
+             });
 
              button.dispatchEvent(clickEvent);
              div.dispatchEvent(enterEvent);
@@ -113,9 +123,15 @@ describe(
         defineProperty(error, 'stack', {
           configurable: false,
           get: () => 'someStackTrace',
-          set: (v: any) => { throw new Error('no writes'); }
+          set: (v: any) => {
+            throw new Error('no writes');
+          }
         });
-        lstz.run(() => { setTimeout(() => { throw error; }); });
+        lstz.run(() => {
+          setTimeout(() => {
+            throw error;
+          });
+        });
         setTimeout(() => {
           const e = log[0];
           expect((e as any).longStack).toBeTruthy();
@@ -128,11 +144,15 @@ describe(
           setTimeout(function() {
             setTimeout(function() {
               let promise = new Promise(function(resolve, reject) {
-                setTimeout(function() { reject(new Error('Hello Promise')); }, 0);
+                setTimeout(function() {
+                  reject(new Error('Hello Promise'));
+                }, 0);
               });
-              promise.then(function() { fail('should not get here'); });
+              promise.then(function() {
+                fail('should not get here');
+              });
               setTimeout(function() {
-                expectElapsed(log[0].stack !, 5);
+                expectElapsed(log[0].stack!, 5);
                 done();
               }, 0);
             }, 0);
@@ -171,7 +191,7 @@ describe(
             setTimeout(function() {
               setTimeout(function() {
                 if (log[0].stack) {
-                  expectElapsed(log[0].stack !, 1);
+                  expectElapsed(log[0].stack!, 1);
                 }
                 Error.stackTraceLimit = originalStackTraceLimit;
                 done();

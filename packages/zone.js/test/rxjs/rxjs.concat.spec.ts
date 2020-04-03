@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Observable, asapScheduler, concat, range} from 'rxjs';
+import {asapScheduler, concat, Observable, range} from 'rxjs';
 
+import {Zone} from '../../lib/zone';
 import {asyncTest} from '../test-util';
 
 describe('Observable.concat', () => {
@@ -21,7 +22,9 @@ describe('Observable.concat', () => {
 
   let concatObservable: any;
 
-  beforeEach(() => { log = []; });
+  beforeEach(() => {
+    log = [];
+  });
 
   it('concat func callback should run in the correct zone', () => {
     observable1 = constructorZone1.run(() => {
@@ -33,9 +36,13 @@ describe('Observable.concat', () => {
       });
     });
 
-    observable2 = constructorZone2.run(() => { return range(3, 4); });
+    observable2 = constructorZone2.run(() => {
+      return range(3, 4);
+    });
 
-    constructorZone3.run(() => { concatObservable = concat(observable1, observable2); });
+    constructorZone3.run(() => {
+      concatObservable = concat(observable1, observable2);
+    });
 
     subscriptionZone.run(() => {
       concatObservable.subscribe((concat: any) => {
@@ -62,10 +69,13 @@ describe('Observable.concat', () => {
          });
        });
 
-       observable2 = constructorZone2.run(() => { return range(3, 4); });
+       observable2 = constructorZone2.run(() => {
+         return range(3, 4);
+       });
 
-       constructorZone3.run(
-           () => { concatObservable = concat(observable1, observable2, asapScheduler); });
+       constructorZone3.run(() => {
+         concatObservable = concat(observable1, observable2, asapScheduler);
+       });
 
        subscriptionZone.run(() => {
          concatObservable.subscribe(
@@ -73,7 +83,9 @@ describe('Observable.concat', () => {
                expect(Zone.current.name).toEqual(subscriptionZone.name);
                log.push(concat);
              },
-             (error: any) => { fail('subscribe failed' + error); },
+             (error: any) => {
+               fail('subscribe failed' + error);
+             },
              () => {
                expect(Zone.current.name).toEqual(subscriptionZone.name);
                expect(log).toEqual([1, 2, 3, 4, 5, 6]);

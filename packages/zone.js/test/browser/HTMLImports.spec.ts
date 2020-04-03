@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Zone} from '../../lib/zone';
 import {ifEnvSupports} from '../test-util';
 
 function supportsImports() {
@@ -30,7 +31,7 @@ describe('HTML Imports', ifEnvSupports(supportsImports, function() {
                });
              });
 
-             document.head.appendChild(link !);
+             document.head.appendChild(link!);
            });
 
            function supportsOnEvents() {
@@ -56,7 +57,7 @@ describe('HTML Imports', ifEnvSupports(supportsImports, function() {
                  };
                });
 
-               document.head.appendChild(link !);
+               document.head.appendChild(link!);
              });
 
              it('should work with onload', function(done) {
@@ -73,7 +74,7 @@ describe('HTML Imports', ifEnvSupports(supportsImports, function() {
                  };
                });
 
-               document.head.appendChild(link !);
+               document.head.appendChild(link!);
              });
            });
          }));

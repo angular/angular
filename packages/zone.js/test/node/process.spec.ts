@@ -7,6 +7,7 @@
  */
 
 import {zoneSymbol} from '../../lib/common/utils';
+import {Task, Zone, ZoneDelegate} from '../../lib/zone';
 
 describe('process related test', () => {
   let zoneA: Zone, result: any[];
@@ -24,8 +25,12 @@ describe('process related test', () => {
   });
   it('process.nextTick should be executed before macroTask and promise', (done) => {
     zoneA.run(function() {
-      setTimeout(() => { result.push('timeout'); }, 0);
-      process.nextTick(() => { result.push('tick'); });
+      setTimeout(() => {
+        result.push('timeout');
+      }, 0);
+      process.nextTick(() => {
+        result.push('tick');
+      });
       setTimeout(() => {
         expect(result).toEqual(['tick', 'timeout']);
         done();
@@ -35,18 +40,24 @@ describe('process related test', () => {
   it('process.nextTick should be treated as microTask', (done) => {
     let zoneTick = Zone.current.fork({
       name: 'zoneTick',
-      onScheduleTask: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                       task: Task): Task => {
-        result.push({callback: 'scheduleTask', targetZone: targetZone.name, task: task.source});
-        return parentZoneDelegate.scheduleTask(targetZone, task);
-      },
-      onInvokeTask: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                     task: Task, applyThis?: any, applyArgs?: any): any => {
-        result.push({callback: 'invokeTask', targetZone: targetZone.name, task: task.source});
-        return parentZoneDelegate.invokeTask(targetZone, task, applyThis, applyArgs);
-      }
+      onScheduleTask: (
+          parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
+          Task => {
+            result.push({callback: 'scheduleTask', targetZone: targetZone.name, task: task.source});
+            return parentZoneDelegate.scheduleTask(targetZone, task);
+          },
+      onInvokeTask:
+          (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task,
+           applyThis?: any, applyArgs?: any): any => {
+            result.push({callback: 'invokeTask', targetZone: targetZone.name, task: task.source});
+            return parentZoneDelegate.invokeTask(targetZone, task, applyThis, applyArgs);
+          }
     });
-    zoneTick.run(() => { process.nextTick(() => { result.push('tick'); }); });
+    zoneTick.run(() => {
+      process.nextTick(() => {
+        result.push('tick');
+      });
+    });
     setTimeout(() => {
       expect(result.length).toBe(3);
       expect(result[0]).toEqual(
@@ -66,7 +77,9 @@ describe('process related test', () => {
         process.removeListener('unhandledRejection', listener);
       };
       process.on('unhandledRejection', listener);
-      const p = new Promise((resolve, reject) => { throw new Error('promise error'); });
+      const p = new Promise((resolve, reject) => {
+        throw new Error('promise error');
+      });
 
       setTimeout(function() {
         expect(hookSpy).toHaveBeenCalledWith(p, 'promise error');
@@ -84,9 +97,13 @@ describe('process related test', () => {
         done();
       };
       process.on('rejectionHandled', listener);
-      const p = new Promise((resolve, reject) => { throw new Error('promise error'); });
+      const p = new Promise((resolve, reject) => {
+        throw new Error('promise error');
+      });
 
-      setTimeout(function() { p.catch(reason => {}); }, 10);
+      setTimeout(function() {
+        p.catch(reason => {});
+      }, 10);
     });
   });
 
@@ -104,7 +121,9 @@ describe('process related test', () => {
       };
       process.on('unhandledRejection', listener1);
       process.on('unhandledRejection', listener2);
-      const p = new Promise((resolve, reject) => { throw new Error('promise error'); });
+      const p = new Promise((resolve, reject) => {
+        throw new Error('promise error');
+      });
 
       setTimeout(function() {
         expect(hookSpy.calls.count()).toBe(2);

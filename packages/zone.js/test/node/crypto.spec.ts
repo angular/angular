@@ -5,6 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {Task, Zone, ZoneDelegate, ZoneSpec} from '../../lib/zone';
+
 describe('crypto test', () => {
   let crypto: any = null;
 
@@ -21,7 +23,9 @@ describe('crypto test', () => {
     const zoneASpec = {
       name: 'A',
       onScheduleTask: (delegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
-                          Task => { return delegate.scheduleTask(targetZone, task); }
+          Task => {
+            return delegate.scheduleTask(targetZone, task);
+          }
     };
     const zoneA = Zone.current.fork(zoneASpec);
     spyOn(zoneASpec, 'onScheduleTask').and.callThrough();
@@ -44,7 +48,9 @@ describe('crypto test', () => {
     const zoneASpec: ZoneSpec = {
       name: 'A',
       onScheduleTask: (delegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
-                          Task => { return delegate.scheduleTask(targetZone, task); }
+          Task => {
+            return delegate.scheduleTask(targetZone, task);
+          }
     };
     const zoneA = Zone.current.fork(zoneASpec);
     spyOn(zoneASpec, 'onScheduleTask').and.callThrough();
