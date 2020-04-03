@@ -7,12 +7,12 @@
  */
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ConcreteDeclaration, Decorator, ReflectionHost} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ConcreteDeclaration, Declaration, Decorator, ReflectionHost} from '../../../src/ngtsc/reflection';
 
 export const PRE_R3_MARKER = '__PRE_R3__';
 export const POST_R3_MARKER = '__POST_R3__';
 
-export type SwitchableVariableDeclaration = ts.VariableDeclaration & {initializer: ts.Identifier};
+export type SwitchableVariableDeclaration = ts.VariableDeclaration&{initializer: ts.Identifier};
 export function isSwitchableVariableDeclaration(node: ts.Node):
     node is SwitchableVariableDeclaration {
   return ts.isVariableDeclaration(node) && !!node.initializer &&
@@ -47,7 +47,7 @@ export interface ModuleWithProvidersFunction {
  * The symbol corresponding to a "class" declaration. I.e. a `ts.Symbol` whose `valueDeclaration` is
  * a `ClassDeclaration`.
  */
-export type ClassSymbol = ts.Symbol & {valueDeclaration: ClassDeclaration};
+export type ClassSymbol = ts.Symbol&{valueDeclaration: ClassDeclaration};
 
 /**
  * A representation of a class that accounts for the potential existence of two `ClassSymbol`s for a
@@ -128,4 +128,13 @@ export interface NgccReflectionHost extends ReflectionHost {
    * @param classSymbol The class whose statements we want.
    */
   getEndOfClass(classSymbol: NgccClassSymbol): ts.Node;
+
+  /**
+   * Check whether a `Declaration` corresponds with a known declaration and set its `known` property
+   * to the appropriate `KnownDeclaration`.
+   *
+   * @param decl The `Declaration` to check or `null` if there is no declaration.
+   * @return The passed in `Declaration` (potentially enhanced with a `KnownDeclaration`).
+   */
+  detectKnownDeclaration<T extends Declaration>(decl: T|null): T|null;
 }
