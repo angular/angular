@@ -98,6 +98,10 @@ searchAndReplace(
 // Workaround for: https://github.com/bazelbuild/rules_nodejs/issues/1208.
 applyPatch(path.join(__dirname, './manifest_externs_hermeticity.patch'));
 
+// Pre-req for https://github.com/angular/angular/pull/36333. Can be removed
+// once @angular/bazel is updated here to include this patch.
+applyPatch(path.join(__dirname, './@angular_bazel_ng_module.patch'));
+
 // Workaround for https://github.com/angular/angular/issues/33452:
 searchAndReplace(/angular_compiler_options = {/, `$&
         "strictTemplates": True,`, 'node_modules/@angular/bazel/src/ng_module.bzl');

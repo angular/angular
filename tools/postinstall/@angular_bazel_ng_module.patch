@@ -1,0 +1,47 @@
+diff --git node_modules/@angular/bazel/src/external.bzl node_modules/@angular/bazel/src/external.bzl
+index 32b640a..84d37b3 100755
+--- node_modules/@angular/bazel/src/external.bzl
++++ node_modules/@angular/bazel/src/external.bzl
+@@ -19,12 +19,14 @@ load(
+ )
+ load(
+     "@build_bazel_rules_nodejs//:providers.bzl",
++    _LinkablePackageInfo = "LinkablePackageInfo",
+     _NpmPackageInfo = "NpmPackageInfo",
+     _js_ecma_script_module_info = "js_ecma_script_module_info",
+     _js_named_module_info = "js_named_module_info",
+     _node_modules_aspect = "node_modules_aspect",
+ )
+ 
++LinkablePackageInfo = _LinkablePackageInfo
+ NpmPackageInfo = _NpmPackageInfo
+ node_modules_aspect = _node_modules_aspect
+ 
+diff --git node_modules/@angular/bazel/src/ng_module.bzl node_modules/@angular/bazel/src/ng_module.bzl
+index 9480c4b..0f67f18 100755
+--- node_modules/@angular/bazel/src/ng_module.bzl
++++ node_modules/@angular/bazel/src/ng_module.bzl
+@@ -13,6 +13,7 @@ load(
+     "DEFAULT_NG_COMPILER",
+     "DEFAULT_NG_XI18N",
+     "DEPS_ASPECTS",
++    "LinkablePackageInfo",
+     "NpmPackageInfo",
+     "TsConfigInfo",
+     "compile_ts",
+@@ -631,6 +632,15 @@ def _ng_module_impl(ctx):
+         # once it is no longer needed.
+     ])
+ 
++    if ctx.attr.module_name:
++        path = "/".join([p for p in [ctx.bin_dir.path, ctx.label.workspace_root, ctx.label.package] if p])
++        ts_providers["providers"].append(LinkablePackageInfo(
++            package_name = ctx.attr.module_name,
++            path = path,
++            files = ts_providers["typescript"]["es5_sources"],
++            _tslibrary = True,
++        ))
++
+     return ts_providers_dict_to_struct(ts_providers)
+ 
+ local_deps_aspects = [node_modules_aspect, _collect_summaries_aspect]
