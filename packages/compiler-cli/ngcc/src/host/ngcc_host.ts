@@ -136,5 +136,5 @@ export interface NgccReflectionHost extends ReflectionHost {
    * @param decl The `Declaration` to check or `null` if there is no declaration.
    * @return The passed in `Declaration` (potentially enhanced with a `KnownDeclaration`).
    */
-  addKnownDeclaration<T extends Declaration|null>(decl: T): T;
+  detectKnownDeclaration<T extends Declaration>(decl: T|null): T|null;
 }
