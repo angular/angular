@@ -26,8 +26,8 @@ scss_bundle(
     name = "theming_bundle",
     outs = ["_theming.scss"],
     args = [
-        "--entryFile=$(location //src/material/core:theming/_all-theme.scss)",
-        "--outFile=$(location :_theming.scss)",
+        "--entryFile=$(execpath //src/material/core:theming/_all-theme.scss)",
+        "--outFile=$(execpath :_theming.scss)",
     ],
     data = CDK_SCSS_LIBS + MATERIAL_SCSS_LIBS + [
         "//src/material/core:theming/_all-theme.scss",

@@ -120,13 +120,13 @@ genrule(
     ],
     cmd = """
       # Create source file manifest
-      echo "$(locations //src/components-examples:example-source-files)" \
-          > $(location _example_module.MF)
+      echo "$(execpaths //src/components-examples:example-source-files)" \
+          > $(execpath _example_module.MF)
 
       # Run the bazel entry-point for generating the example module.
-      ./$(location //tools/example-module:bazel-bin) \
-          "$(location _example_module.MF)" \
-          "$(location example-module.ts)" \
+      ./$(execpath //tools/example-module:bazel-bin) \
+          "$(execpath _example_module.MF)" \
+          "$(execpath example-module.ts)" \
           "$$PWD/src/components-examples"
     """,
     output_to_bindir = True,

@@ -227,7 +227,7 @@ def ng_web_test_suite(deps = [], static_css = [], bootstrap = [], tags = [], **k
             outs = ["%s.js" % css_id],
             output_to_bindir = True,
             cmd = """
-        files=($(locations %s))
+        files=($(execpaths %s))
         # Escape all double-quotes so that the content can be safely inlined into the
         # JS template. Note that it needs to be escaped a second time because the string
         # will be evaluated first in Bash and will then be stored in the JS output.
