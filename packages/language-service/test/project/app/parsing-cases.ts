@@ -32,13 +32,6 @@ export class CaseUnknown {
 }
 
 @Component({
-  template: '<h1>{{data | ~{before-pipe}lowe~{in-pipe}rcase~{after-pipe} }}',
-})
-export class Pipes {
-  data = 'Some string';
-}
-
-@Component({
   template: '<h1 h~{no-value-attribute}></h1>',
 })
 export class NoValueAttribute {
@@ -175,7 +168,7 @@ export class TemplateReference {
   myClick(event: any) {}
   birthday = new Date();
   readonlyHeroes: ReadonlyArray<Readonly<Hero>> = this.heroes;
-  constNames = [{name: 'name'}] as const ;
+  constNames = [{name: 'name'}] as const;
 }
 
 @Component({

@@ -21,7 +21,6 @@ import * as ParsingCases from './parsing-cases';
   declarations: [
     AppComponent,
     ExpressionCases.ExpectNumericType,
-    ExpressionCases.LowercasePipe,
     ExpressionCases.PrivateReference,
     ExpressionCases.WrongFieldReference,
     ExpressionCases.WrongSubFieldReference,
@@ -38,7 +37,6 @@ import * as ParsingCases from './parsing-cases';
     ParsingCases.HintModel,
     ParsingCases.NoValueAttribute,
     ParsingCases.NumberModel,
-    ParsingCases.Pipes,
     ParsingCases.References,
     ParsingCases.StringModel,
     ParsingCases.TemplateReference,
@@ -51,4 +49,4 @@ export class AppModule {
 
 declare function bootstrap(v: any): void;
 
-    bootstrap(AppComponent);
+bootstrap(AppComponent);
