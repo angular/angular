@@ -1,16 +1,11 @@
-<ng-container *ngIf="profilerFrames.length > 1; else resultsWithoutControls">
-  <ng-container *ngTemplateOutlet="recordView; context: { record: frame, showControls: true }"></ng-container>
+<ng-container *ngIf="profilerFrames.length > 0; else noRecords">
+  <ng-container *ngTemplateOutlet="recordView; context: { record: frame }"></ng-container>
 </ng-container>
-<ng-template #resultsWithoutControls>
-  <ng-container *ngIf="profilerFrames.length === 1; else noRecords">
-    <ng-container *ngTemplateOutlet="recordView; context: { record: profilerFrames[0] }"></ng-container>
-  </ng-container>
-  <ng-template #noRecords>
-    Nothing was profiled
-  </ng-template>
+<ng-template #noRecords>
+  Nothing was profiled
 </ng-template>
 
-<ng-template let-record="record" let-showControls="showControls" #recordView>
+<ng-template let-record="record" #recordView>
   <div class="controls">
     <button mat-stroked-button (click)="exportProfile.emit()">Export to JSON</button>
     <mat-form-field>
