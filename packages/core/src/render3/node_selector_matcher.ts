@@ -290,7 +290,11 @@ function matchTemplateAttribute(attrs: TAttributes, name: string): number {
   if (i > -1) {
     i++;
     while (i < attrs.length) {
-      if (attrs[i] === name) return i;
+      const attr = attrs[i];
+      // Return in case we checked all template attrs and are switching to the next section in the
+      // attrs array (that starts with a number that represents an attribute marker).
+      if (typeof attr === 'number') return -1;
+      if (attr === name) return i;
       i++;
     }
   }
