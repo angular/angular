@@ -161,8 +161,12 @@ Object.keys(PATCHES_PER_FILE).forEach(filePath => {
  * not apply cleanly.
  */
 function applyPatch(patchFile) {
-  const patchMarkerFileName = `${path.basename(patchFile)}.patch_marker`;
-  const patchMarkerPath = path.join(projectDir, 'node_modules/', patchMarkerFileName);
+  // Note: We replace non-word characters from the patch marker file name.
+  // This is necessary because Yarn throws if cached node modules are restored
+  // which contain files with special characters. Below is an example error:
+  // ENOTDIR: not a directory, scandir '/<...>/node_modules/@angular_bazel_ng_module.<..>'".
+  const patchMarkerBasename = `${path.basename(patchFile).replace(/[^\w]/, '_')}`;
+  const patchMarkerPath = path.join(projectDir, 'node_modules/', patchMarkerBasename);
 
   if (hasFileBeenPatched(patchMarkerPath)) {
     return;
