@@ -1009,7 +1009,6 @@ groups:
           'tools/circular_dependency_test/**',
           'tools/contributing-stats/**',
           'tools/gulp-tasks/**',
-          'tools/ngcontainer/**',
           'tools/npm/**',
           'tools/npm_integration_test/**',
           'tools/rxjs/**',
