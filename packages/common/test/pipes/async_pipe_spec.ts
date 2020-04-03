@@ -10,12 +10,12 @@ import {AsyncPipe, ɵgetDOM as getDOM} from '@angular/common';
 import {EventEmitter, WrappedValue} from '@angular/core';
 import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
+import {Observable} from 'rxjs';
 
 import {SpyChangeDetectorRef} from '../spies';
 
 {
   describe('AsyncPipe', () => {
-
     describe('Observable', () => {
       let emitter: EventEmitter<any>;
       let pipe: AsyncPipe;
@@ -29,8 +29,9 @@ import {SpyChangeDetectorRef} from '../spies';
       });
 
       describe('transform', () => {
-        it('should return null when subscribing to an observable',
-           () => { expect(pipe.transform(emitter)).toBe(null); });
+        it('should return null when subscribing to an observable', () => {
+          expect(pipe.transform(emitter)).toBe(null);
+        });
 
         it('should return the latest available value wrapped',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
@@ -96,8 +97,9 @@ import {SpyChangeDetectorRef} from '../spies';
       });
 
       describe('ngOnDestroy', () => {
-        it('should do nothing when no subscription',
-           () => { expect(() => pipe.ngOnDestroy()).not.toThrow(); });
+        it('should do nothing when no subscription', () => {
+          expect(() => pipe.ngOnDestroy()).not.toThrow();
+        });
 
         it('should dispose of the existing subscription',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
@@ -133,8 +135,9 @@ import {SpyChangeDetectorRef} from '../spies';
       });
 
       describe('transform', () => {
-        it('should return null when subscribing to a promise',
-           () => { expect(pipe.transform(promise)).toBe(null); });
+        it('should return null when subscribing to a promise', () => {
+          expect(pipe.transform(promise)).toBe(null);
+        });
 
         it('should return the latest available value',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
@@ -189,8 +192,9 @@ import {SpyChangeDetectorRef} from '../spies';
            }));
 
         describe('ngOnDestroy', () => {
-          it('should do nothing when no source',
-             () => { expect(() => pipe.ngOnDestroy()).not.toThrow(); });
+          it('should do nothing when no source', () => {
+            expect(() => pipe.ngOnDestroy()).not.toThrow();
+          });
 
           it('should dispose of the existing source',
              inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
@@ -221,6 +225,16 @@ import {SpyChangeDetectorRef} from '../spies';
       it('should throw when given an invalid object', () => {
         const pipe = new AsyncPipe(null as any);
         expect(() => pipe.transform(<any>'some bogus object')).toThrowError();
+      });
+    });
+
+    describe('Observable or Promise', () => {
+      it('should allow Observable<T> | Promise<T>', () => {
+        const pipe = new AsyncPipe(null as any);
+        const input: Promise<number>|Observable<number> = Promise.resolve(10) as any;
+        // we're really just ensuring the type is valid here
+        // rather than any runtime value
+        expect(() => pipe.transform(input)).not.toThrowError();
       });
     });
   });

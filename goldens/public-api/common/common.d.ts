@@ -7,6 +7,7 @@ export declare class AsyncPipe implements OnDestroy, PipeTransform {
     transform<T>(obj: undefined): undefined;
     transform<T>(obj: Observable<T> | null | undefined): T | null;
     transform<T>(obj: Promise<T> | null | undefined): T | null;
+    transform<T>(obj: Observable<T> | Promise<T> | null | undefined): T | null;
 }
 
 export declare class CommonModule {
