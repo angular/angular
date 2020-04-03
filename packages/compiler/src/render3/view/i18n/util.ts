@@ -9,6 +9,7 @@ import * as i18n from '../../../i18n/i18n_ast';
 import {toPublicName} from '../../../i18n/serializers/xmb';
 import * as html from '../../../ml_parser/ast';
 import * as o from '../../../output/output_ast';
+import * as t from '../../r3_ast';
 
 /* Closure variables holding messages must be named `MSG_[A-Z0-9]+` */
 const CLOSURE_TRANSLATION_PREFIX = 'MSG_';
@@ -39,6 +40,10 @@ export function isI18nRootNode(meta?: i18n.I18nMeta): meta is i18n.Message {
 
 export function isSingleI18nIcu(meta?: i18n.I18nMeta): boolean {
   return isI18nRootNode(meta) && meta.nodes.length === 1 && meta.nodes[0] instanceof i18n.Icu;
+}
+
+export function hasI18nMeta(node: t.Node&{i18n?: i18n.I18nMeta}): boolean {
+  return !!node.i18n;
 }
 
 export function hasI18nAttrs(element: html.Element): boolean {
