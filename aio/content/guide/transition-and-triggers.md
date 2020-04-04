@@ -668,4 +668,4 @@ You may also be interested in the following:
 * [Angular 애니메이션 소개](guide/animations)
 * [복잡한 애니메이션 시퀀스](guide/complex-animation-sequences)
 * [애니메이션 재사용하기](guide/reusable-animations)
-* [페이지 전환 애니메이션](guide/route-animations)
+* [라우팅 애니메이션](guide/route-animations)

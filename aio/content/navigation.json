@@ -588,7 +588,7 @@
             {
               "url": "guide/route-animations",
               "!title": "Route Transition Animations",
-              "title": "페이지 전환 애니메이션",
+              "title": "라우팅 애니메이션",
               "!tooltip": "Animate route transitions.",
               "tooltip": "페이지를 전환할 때도 애니메이션을 사용할 수 있습니다."
             }

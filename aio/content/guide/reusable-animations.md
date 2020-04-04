@@ -84,4 +84,4 @@ You may also be interested in the following:
 * [Angular 애니메이션 소개](guide/animations)
 * [트랜지션 & 트리거](guide/transition-and-triggers)
 * [복잡한 애니메이션 시퀀스](guide/complex-animation-sequences)
-* [페이지 전환 애니메이션](guide/route-animations)
+* [라우팅 애니메이션](guide/route-animations)

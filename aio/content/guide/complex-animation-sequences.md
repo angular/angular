@@ -227,4 +227,4 @@ You may also be interested in the following:
 * [Angular 애니메이션 소개](guide/animations)
 * [트랜지션 & 트리거](guide/transition-and-triggers)
 * [애니메이션 재사용하기](guide/reusable-animations)
-* [페이지 전환 애니메이션](guide/route-animations)
+* [라우팅 애니메이션](guide/route-animations)
