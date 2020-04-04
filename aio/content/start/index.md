@@ -351,7 +351,7 @@ See [Component Interaction](guide/component-interaction "Components & Templates 
 {@a next-steps}
 ## Next steps
 
-Congratulations! You've completed your first Angular app!
+Congratulations! You've completed your first Angular app! 
 
 You have a basic online store catalog with a product list, "Share" button, and "Notify Me" button.
 You've learned about the foundation of Angular: components and template syntax.
