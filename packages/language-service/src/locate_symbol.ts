@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, Attribute, BoundDirectivePropertyAst, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, RecursiveTemplateAstVisitor, SelectorMatcher, StaticSymbol, TemplateAst, TemplateAstPath, VariableBinding, templateVisitAll, tokenReference} from '@angular/compiler';
+import {AST, Attribute, BoundDirectivePropertyAst, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, RecursiveTemplateAstVisitor, SelectorMatcher, StaticSymbol, TemplateAst, TemplateAstPath, templateVisitAll, tokenReference, VariableBinding} from '@angular/compiler';
 import * as tss from 'typescript/lib/tsserverlibrary';
 
 import {AstResult} from './common';
@@ -77,7 +77,7 @@ function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult):
         }
         if (result) {
           symbol = result.symbol;
-          span = offsetSpan(result.span, attribute.valueSpan !.start.offset);
+          span = offsetSpan(result.span, attribute.valueSpan!.start.offset);
         }
         return true;
       }
@@ -121,7 +121,9 @@ function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult):
             span = spanOf(ast);
           }
         },
-        visitElementProperty(ast) { attributeValueSymbol(ast.value); },
+        visitElementProperty(ast) {
+          attributeValueSymbol(ast.value);
+        },
         visitAttr(ast) {
           const element = path.first(ElementAst);
           if (!element) return;
@@ -188,7 +190,8 @@ function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult):
     const {start, end} = offsetSpan(span, info.template.span.start);
     return {
       symbol,
-      span: tss.createTextSpanFromBounds(start, end), staticSymbol,
+      span: tss.createTextSpanFromBounds(start, end),
+      staticSymbol,
     };
   }
 }
@@ -216,7 +219,7 @@ function getSymbolInMicrosyntax(info: AstResult, path: TemplateAstPath, attribut
     if (inSpan(path.position, tb.value?.ast.sourceSpan)) {
       const dinfo = diagnosticInfoFromTemplateInfo(info);
       const scope = getExpressionScope(dinfo, path);
-      result = getExpressionSymbol(scope, tb.value !, path.position, info.template);
+      result = getExpressionSymbol(scope, tb.value!, path.position, info.template);
     } else if (inSpan(path.position, tb.sourceSpan)) {
       const template = path.first(EmbeddedTemplateAst);
       if (template) {
@@ -277,7 +280,9 @@ function findParentOfBinding(
     }
 
     visitDirective(ast: DirectiveAst) {
-      const result = this.visitChildren(ast, visit => { visit(ast.inputs); });
+      const result = this.visitChildren(ast, visit => {
+        visit(ast.inputs);
+      });
       return result;
     }
 
@@ -309,33 +314,63 @@ function findInputBinding(info: AstResult, name: string, directiveAst: Directive
  */
 class OverrideKindSymbol implements Symbol {
   public readonly kind: DirectiveKind;
-  constructor(private sym: Symbol, kindOverride: DirectiveKind) { this.kind = kindOverride; }
+  constructor(private sym: Symbol, kindOverride: DirectiveKind) {
+    this.kind = kindOverride;
+  }
 
-  get name(): string { return this.sym.name; }
+  get name(): string {
+    return this.sym.name;
+  }
 
-  get language(): string { return this.sym.language; }
+  get language(): string {
+    return this.sym.language;
+  }
 
-  get type(): Symbol|undefined { return this.sym.type; }
+  get type(): Symbol|undefined {
+    return this.sym.type;
+  }
 
-  get container(): Symbol|undefined { return this.sym.container; }
+  get container(): Symbol|undefined {
+    return this.sym.container;
+  }
 
-  get public(): boolean { return this.sym.public; }
+  get public(): boolean {
+    return this.sym.public;
+  }
 
-  get callable(): boolean { return this.sym.callable; }
+  get callable(): boolean {
+    return this.sym.callable;
+  }
 
-  get nullable(): boolean { return this.sym.nullable; }
+  get nullable(): boolean {
+    return this.sym.nullable;
+  }
 
-  get definition(): Definition { return this.sym.definition; }
+  get definition(): Definition {
+    return this.sym.definition;
+  }
 
-  get documentation(): ts.SymbolDisplayPart[] { return this.sym.documentation; }
+  get documentation(): ts.SymbolDisplayPart[] {
+    return this.sym.documentation;
+  }
 
-  members() { return this.sym.members(); }
+  members() {
+    return this.sym.members();
+  }
 
-  signatures() { return this.sym.signatures(); }
+  signatures() {
+    return this.sym.signatures();
+  }
 
-  selectSignature(types: Symbol[]) { return this.sym.selectSignature(types); }
+  selectSignature(types: Symbol[]) {
+    return this.sym.selectSignature(types);
+  }
 
-  indexed(argument: Symbol) { return this.sym.indexed(argument); }
+  indexed(argument: Symbol) {
+    return this.sym.indexed(argument);
+  }
 
-  typeArguments(): Symbol[]|undefined { return this.sym.typeArguments(); }
+  typeArguments(): Symbol[]|undefined {
+    return this.sym.typeArguments();
+  }
 }

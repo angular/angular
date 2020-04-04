@@ -10,7 +10,7 @@
 
 // This section defines the HTML elements and attribute surface of HTML 4
 // which is derived from https://www.w3.org/TR/html4/strict.dtd
-type attrType = string | string[];
+type attrType = string|string[];
 type hash<T> = {
   [name: string]: T
 };
@@ -104,7 +104,9 @@ const groups: hash<number>[] = [
   {class: 1, style: 1},
   {hreflang: 2, rel: 1, rev: 1},
   {ismap: 7},
-  { defer: 25, event: 1, for : 1 }
+  {
+    defer: 25, event: 1, for: 1
+  }
 ];
 
 const elements: {[name: string]: number[]} = {
@@ -193,7 +195,7 @@ export function elementNames(): string[] {
   return Object.keys(elements).sort().map(v => v.toLowerCase());
 }
 
-function compose(indexes: number[] | undefined): hash<attrType> {
+function compose(indexes: number[]|undefined): hash<attrType> {
   const result: hash<attrType> = {};
   if (indexes) {
     for (let index of indexes) {
@@ -415,7 +417,9 @@ export class SchemaInformation {
     });
   }
 
-  allKnownElements(): string[] { return Object.keys(this.schema); }
+  allKnownElements(): string[] {
+    return Object.keys(this.schema);
+  }
 
   eventsOf(elementName: string): string[] {
     const elementType = this.schema[elementName.toLowerCase()] || {};

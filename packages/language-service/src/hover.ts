@@ -37,14 +37,15 @@ export function getTemplateHover(
   // The container is either the symbol's container (for example, 'AppComponent'
   // is the container of the symbol 'title' in its template) or the NgModule
   // that the directive belongs to (the container of AppComponent is AppModule).
-  let containerName: string|undefined = symbol.container ?.name;
+  let containerName: string|undefined = symbol.container?.name;
   if (!containerName && staticSymbol) {
     // If there is a static symbol then the target is a directive.
     const ngModule = analyzedModules.ngModuleByPipeOrDirective.get(staticSymbol);
-    containerName = ngModule ?.type.reference.name;
+    containerName = ngModule?.type.reference.name;
   }
 
-  return createQuickInfo(symbol.name, symbol.kind, span, containerName, symbol.type?.name, symbol.documentation);
+  return createQuickInfo(
+      symbol.name, symbol.kind, span, containerName, symbol.type?.name, symbol.documentation);
 }
 
 /**
@@ -63,7 +64,7 @@ export function getTsHover(
       const kind = metadata.isComponent ? 'component' : 'directive';
       const textSpan = ts.createTextSpanFromBounds(declarationSpan.start, declarationSpan.end);
       const ngModule = analyzedModules.ngModuleByPipeOrDirective.get(staticSymbol);
-      const moduleName = ngModule ?.type.reference.name;
+      const moduleName = ngModule?.type.reference.name;
       return createQuickInfo(
           directiveName, kind, textSpan, moduleName, ts.ScriptElementKind.classElement);
     }

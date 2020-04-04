@@ -7,7 +7,8 @@
  */
 
 import * as ts from 'typescript';
-import {DiagnosticMessage, createDiagnostic} from '../src/diagnostic_messages';
+
+import {createDiagnostic, DiagnosticMessage} from '../src/diagnostic_messages';
 
 describe('create diagnostic', () => {
   it('should format and create diagnostics correctly', () => {
