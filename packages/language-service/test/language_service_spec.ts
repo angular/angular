@@ -21,20 +21,25 @@ describe('service without angular', () => {
   const fileName = '/app/test.ng';
   const position = mockHost.getLocationMarkerFor(fileName, 'h1-content').start;
 
-  beforeEach(() => { mockHost.reset(); });
+  beforeEach(() => {
+    mockHost.reset();
+  });
 
-  it('should not crash a get diagnostics',
-     () => { expect(() => ngService.getSemanticDiagnostics(fileName)).not.toThrow(); });
+  it('should not crash a get diagnostics', () => {
+    expect(() => ngService.getSemanticDiagnostics(fileName)).not.toThrow();
+  });
 
-  it('should not crash a completion',
-     () => { expect(() => ngService.getCompletionsAtPosition(fileName, position)).not.toThrow(); });
+  it('should not crash a completion', () => {
+    expect(() => ngService.getCompletionsAtPosition(fileName, position)).not.toThrow();
+  });
 
   it('should not crash a get definition', () => {
     expect(() => ngService.getDefinitionAndBoundSpan(fileName, position)).not.toThrow();
   });
 
-  it('should not crash a hover',
-     () => { expect(() => ngService.getQuickInfoAtPosition(fileName, position)).not.toThrow(); });
+  it('should not crash a hover', () => {
+    expect(() => ngService.getQuickInfoAtPosition(fileName, position)).not.toThrow();
+  });
 
   it('should not crash with an incomplete class', () => {
     mockHost.addCode('\nexport class');

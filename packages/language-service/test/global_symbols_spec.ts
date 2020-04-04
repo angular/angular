@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript/lib/tsserverlibrary';
 
-import {EMPTY_SYMBOL_TABLE, createGlobalSymbolTable} from '../src/global_symbols';
+import {createGlobalSymbolTable, EMPTY_SYMBOL_TABLE} from '../src/global_symbols';
 import {getSymbolQuery} from '../src/typescript_symbols';
 
 import {MockTypescriptHost} from './test_utils';
@@ -18,7 +18,7 @@ describe('GlobalSymbolTable', () => {
   const tsLS = ts.createLanguageService(mockHost);
 
   it(`contains $any()`, () => {
-    const program = tsLS.getProgram() !;
+    const program = tsLS.getProgram()!;
     const typeChecker = program.getTypeChecker();
     const source = ts.createSourceFile('foo.ts', '', ts.ScriptTarget.ES2015);
     const query = getSymbolQuery(program, typeChecker, source, () => EMPTY_SYMBOL_TABLE);

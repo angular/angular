@@ -28,7 +28,7 @@ describe('getDirectiveClassLike', () => {
       }
     });
     expect(result).toBeTruthy();
-    const {decoratorId, classId} = result !;
+    const {decoratorId, classId} = result!;
     expect(decoratorId.kind).toBe(ts.SyntaxKind.Identifier);
     expect(decoratorId.text).toBe('NgModule');
     expect(classId.text).toBe('AppModule');

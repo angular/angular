@@ -7,7 +7,7 @@
  */
 
 import {StaticSymbolResolverHost} from '@angular/compiler';
-import {MetadataCollector, MetadataReaderHost, createMetadataReaderCache, readMetadata} from '@angular/compiler-cli/src/language_services';
+import {createMetadataReaderCache, MetadataCollector, MetadataReaderHost, readMetadata} from '@angular/compiler-cli/src/language_services';
 import * as path from 'path';
 import * as ts from 'typescript';
 
@@ -26,10 +26,10 @@ class ReflectorModuleModuleResolutionHost implements ts.ModuleResolutionHost, Me
       private readonly tsLSHost: ts.LanguageServiceHost,
       private readonly getProgram: () => ts.Program) {
     if (tsLSHost.directoryExists) {
-      this.directoryExists = directoryName => tsLSHost.directoryExists !(directoryName);
+      this.directoryExists = directoryName => tsLSHost.directoryExists!(directoryName);
     }
     if (tsLSHost.realpath) {
-      this.realpath = path => tsLSHost.realpath !(path);
+      this.realpath = path => tsLSHost.realpath!(path);
     }
   }
 
@@ -53,14 +53,14 @@ class ReflectorModuleModuleResolutionHost implements ts.ModuleResolutionHost, Me
     // resolution, and it's used by Angular to read metadata.json during
     // metadata resolution.
     if (this.tsLSHost.readFile) {
-      return this.tsLSHost.readFile(fileName) !;
+      return this.tsLSHost.readFile(fileName)!;
     }
     // As a fallback, read the JSON files from the editor snapshot.
     const snapshot = this.tsLSHost.getScriptSnapshot(fileName);
     if (!snapshot) {
       // MetadataReaderHost readFile() declaration should be
       // `readFile(fileName: string): string | undefined`
-      return undefined !;
+      return undefined!;
     }
     return snapshot.getText(0, snapshot.getLength());
   }
@@ -120,5 +120,7 @@ export class ReflectorHost implements StaticSymbolResolverHost {
     return resolved ? resolved.resolvedFileName : null;
   }
 
-  getOutputName(filePath: string) { return filePath; }
+  getOutputName(filePath: string) {
+    return filePath;
+  }
 }
