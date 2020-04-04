@@ -627,6 +627,9 @@
     "name": "getIsParent"
   },
   {
+    "name": "getIsPipe"
+  },
+  {
     "name": "getLCleanup"
   },
   {
