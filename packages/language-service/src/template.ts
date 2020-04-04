@@ -39,7 +39,9 @@ abstract class BaseTemplate implements ng.TemplateSource {
   /**
    * Return the Angular StaticSymbol for the class that contains this template.
    */
-  get type() { return this.classSymbol; }
+  get type() {
+    return this.classSymbol;
+  }
 
   /**
    * Return a Map-like data structure that allows users to retrieve some or all

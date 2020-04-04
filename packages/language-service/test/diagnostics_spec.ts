@@ -34,7 +34,9 @@ describe('diagnostics', () => {
   const ngHost = new TypeScriptServiceHost(mockHost, tsLS);
   const ngLS = createLanguageService(ngHost);
 
-  beforeEach(() => { mockHost.reset(); });
+  beforeEach(() => {
+    mockHost.reset();
+  });
 
   it('should produce no diagnostics for test.ng', () => {
     // there should not be any errors on existing external template
@@ -300,7 +302,8 @@ describe('diagnostics', () => {
       expect(messageText)
           .toBe(
               `The template context of 'CounterDirective' does not define an implicit value.\n` +
-                  `If the context type is a base type or 'any', consider refining it to a more specific type.`, );
+                  `If the context type is a base type or 'any', consider refining it to a more specific type.`,
+          );
 
       const span = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'emb');
       expect(start).toBe(span.start);
@@ -337,7 +340,8 @@ describe('diagnostics', () => {
       expect(category).toBe(ts.DiagnosticCategory.Error);
       expect(messageText)
           .toBe(
-              `Identifier 'missingField' is not defined. '{ implicitPerson: Person; }' does not contain such a member`, );
+              `Identifier 'missingField' is not defined. '{ implicitPerson: Person; }' does not contain such a member`,
+          );
       const span = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'emb');
       expect(start).toBe(span.start);
       expect(length).toBe(span.length);
@@ -355,7 +359,8 @@ describe('diagnostics', () => {
       expect(category).toBe(ts.DiagnosticCategory.Error);
       expect(messageText)
           .toBe(
-              `Identifier 'missingField' is not defined. 'Person' does not contain such a member`, );
+              `Identifier 'missingField' is not defined. 'Person' does not contain such a member`,
+          );
       const span = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'emb');
       expect(start).toBe(span.start);
       expect(length).toBe(span.length);
@@ -396,7 +401,7 @@ describe('diagnostics', () => {
 
     it('should reject it when not in an event binding', () => {
       const content = mockHost.override(TEST_TEMPLATE, '<div [tabIndex]="$event"></div>');
-      const diagnostics = ngLS.getSemanticDiagnostics(TEST_TEMPLATE) !;
+      const diagnostics = ngLS.getSemanticDiagnostics(TEST_TEMPLATE)!;
       expect(diagnostics.length).toBe(1);
       const {messageText, start, length} = diagnostics[0];
       expect(messageText)
@@ -410,7 +415,7 @@ describe('diagnostics', () => {
     it('should reject invalid properties on an event type', () => {
       const content = mockHost.override(
           TEST_TEMPLATE, '<div string-model (modelChange)="$event.notSubstring()"></div>');
-      const diagnostics = ngLS.getSemanticDiagnostics(TEST_TEMPLATE) !;
+      const diagnostics = ngLS.getSemanticDiagnostics(TEST_TEMPLATE)!;
       expect(diagnostics.length).toBe(1);
       const {messageText, start, length} = diagnostics[0];
       expect(messageText)
@@ -436,14 +441,14 @@ describe('diagnostics', () => {
         template: '<div></div>'
       })
       export class MyComponent {}`);
-    const diagnostics = ngLS.getSemanticDiagnostics(fileName) !;
+    const diagnostics = ngLS.getSemanticDiagnostics(fileName)!;
     expect(diagnostics.length).toBe(1);
     const {messageText, start, length} = diagnostics[0];
     expect(messageText)
         .toBe(
             `Component 'MyComponent' is not included in a module and will not be available inside a template. Consider adding it to a NgModule declaration.`);
-    const content = mockHost.readFile(fileName) !;
-    expect(content.substring(start !, start ! + length !)).toBe('MyComponent');
+    const content = mockHost.readFile(fileName)!;
+    expect(content.substring(start!, start! + length!)).toBe('MyComponent');
   });
 
 
@@ -495,7 +500,7 @@ describe('diagnostics', () => {
       }`);
     const tsDiags = tsLS.getSemanticDiagnostics(APP_COMPONENT);
     expect(tsDiags).toEqual([]);
-    const ngDiags = ngLS.getSemanticDiagnostics(APP_COMPONENT) !;
+    const ngDiags = ngLS.getSemanticDiagnostics(APP_COMPONENT)!;
     expect(ngDiags.length).toBe(1);
     const {messageText, start, length} = ngDiags[0];
     const keyword = `() => 'foo'`;
@@ -504,9 +509,9 @@ describe('diagnostics', () => {
     // messageText is a three-part chain
     const firstPart = messageText as ts.DiagnosticMessageChain;
     expect(firstPart.messageText).toBe(`Error during template compile of 'AppComponent'`);
-    const secondPart = firstPart.next !;
+    const secondPart = firstPart.next!;
     expect(secondPart[0].messageText).toBe('Function expressions are not supported in decorators');
-    const thirdPart = secondPart[0].next !;
+    const thirdPart = secondPart[0].next!;
     expect(thirdPart[0].messageText)
         .toBe('Consider changing the function expression into an exported function');
     expect(thirdPart[0].next).toBeFalsy();
@@ -568,7 +573,7 @@ describe('diagnostics', () => {
       export class AppComponent {
         onClick() { }
       }`);
-    const diagnostics = ngLS.getSemanticDiagnostics(APP_COMPONENT) !;
+    const diagnostics = ngLS.getSemanticDiagnostics(APP_COMPONENT)!;
     const {messageText, start, length} = diagnostics[0];
     expect(messageText).toBe('Unexpected callable expression. Expected a method call');
     const keyword = `"onClick"`;
@@ -682,7 +687,7 @@ describe('diagnostics', () => {
         .toBe(
             'Invalid providers for "AppComponent in /app/app.component.ts" - only instances of Provider and Type are allowed, got: [?null?]');
     // TODO: Looks like this is the wrong span. Should point to 'null' instead.
-    expect(content.substring(start !, start ! + length !)).toBe('AppComponent');
+    expect(content.substring(start!, start! + length!)).toBe('AppComponent');
   });
 
   // Issue #15768
@@ -815,12 +820,12 @@ describe('diagnostics', () => {
 
       const marker = mockHost.getReferenceMarkerFor(fileName, 'notAFile');
 
-      const diagnostics = ngLS.getSemanticDiagnostics(fileName) !;
+      const diagnostics = ngLS.getSemanticDiagnostics(fileName)!;
       const urlDiagnostic =
           diagnostics.find(d => d.messageText === 'URL does not point to a valid file');
       expect(urlDiagnostic).toBeDefined();
 
-      const {start, length} = urlDiagnostic !;
+      const {start, length} = urlDiagnostic!;
       expect(start).toBe(marker.start);
       expect(length).toBe(marker.length);
     });
@@ -832,7 +837,7 @@ describe('diagnostics', () => {
         })
         export class MyComponent {}`);
 
-      const diagnostics = ngLS.getSemanticDiagnostics(fileName) !;
+      const diagnostics = ngLS.getSemanticDiagnostics(fileName)!;
       const urlDiagnostic =
           diagnostics.find(d => d.messageText === 'URL does not point to a valid file');
       expect(urlDiagnostic).toBeUndefined();
@@ -849,9 +854,9 @@ describe('diagnostics', () => {
       const diags = ngLS.getSemanticDiagnostics(APP_COMPONENT);
       expect(diags.length).toBe(1);
       const {file, messageText, start, length} = diags[0];
-      expect(file !.fileName).toBe(APP_COMPONENT);
+      expect(file!.fileName).toBe(APP_COMPONENT);
       expect(messageText).toBe(`Component 'AppComponent' must have a template or templateUrl`);
-      expect(content.substring(start !, start ! + length !)).toBe('AppComponent');
+      expect(content.substring(start!, start! + length!)).toBe('AppComponent');
     });
 
     it('should report diagnostic for both template and templateUrl', () => {
@@ -867,10 +872,10 @@ describe('diagnostics', () => {
       const diags = ngLS.getSemanticDiagnostics(APP_COMPONENT);
       expect(diags.length).toBe(1);
       const {file, messageText, start, length} = diags[0];
-      expect(file !.fileName).toBe(APP_COMPONENT);
+      expect(file!.fileName).toBe(APP_COMPONENT);
       expect(messageText)
           .toBe(`Component 'AppComponent' must not have both template and templateUrl`);
-      expect(content.substring(start !, start ! + length !)).toBe('AppComponent');
+      expect(content.substring(start!, start! + length!)).toBe('AppComponent');
     });
 
     it('should report errors for invalid styleUrls', () => {
@@ -882,12 +887,12 @@ describe('diagnostics', () => {
 
       const marker = mockHost.getReferenceMarkerFor(fileName, 'notAFile');
 
-      const diagnostics = ngLS.getSemanticDiagnostics(fileName) !;
+      const diagnostics = ngLS.getSemanticDiagnostics(fileName)!;
       const urlDiagnostic =
           diagnostics.find(d => d.messageText === 'URL does not point to a valid file');
       expect(urlDiagnostic).toBeDefined();
 
-      const {start, length} = urlDiagnostic !;
+      const {start, length} = urlDiagnostic!;
       expect(start).toBe(marker.start);
       expect(length).toBe(marker.length);
     });
@@ -902,7 +907,7 @@ describe('diagnostics', () => {
         })
         export class AppComponent {}`);
 
-      const diagnostics = ngLS.getSemanticDiagnostics(APP_COMPONENT) !;
+      const diagnostics = ngLS.getSemanticDiagnostics(APP_COMPONENT)!;
       expect(diagnostics.length).toBe(0);
     });
   });
@@ -926,14 +931,14 @@ describe('diagnostics', () => {
               `element references do not contain such a member`);
       // Assert that the span is actually highlight the bounded text. The span
       // would be off if CRLF endings are not handled properly.
-      expect(content.substring(start !, start ! + length !)).toBe(`line${i}`);
+      expect(content.substring(start!, start! + length!)).toBe(`line${i}`);
     }
   });
 
   it('should work correctly with CRLF endings in inline template', () => {
     const fileName = mockHost.addCode(
         '\n@Component({template:`\r\n\r\n{{line}}`})export class ComponentCRLF {}');
-    const content = mockHost.readFile(fileName) !;
+    const content = mockHost.readFile(fileName)!;
     const ngDiags = ngLS.getSemanticDiagnostics(fileName);
     expect(ngDiags.length).toBeGreaterThan(0);
     const {messageText, start, length} = ngDiags[0];
@@ -942,7 +947,7 @@ describe('diagnostics', () => {
             `Identifier 'line' is not defined. ` +
             `The component declaration, template variable declarations, and ` +
             `element references do not contain such a member`);
-    expect(content.substring(start !, start ! + length !)).toBe('line');
+    expect(content.substring(start!, start! + length!)).toBe('line');
   });
 
   it('should not produce diagnostics for non-exported directives', () => {
@@ -972,8 +977,7 @@ describe('diagnostics', () => {
             `Consider using the safe navigation operator (optional?.toLowerCase) ` +
             `or non-null assertion operator (optional!.toLowerCase).`);
     expect(category).toBe(ts.DiagnosticCategory.Suggestion);
-    expect(content.substring(start !, start ! + length !)).toBe('optional.toLowerCase()');
-
+    expect(content.substring(start!, start! + length!)).toBe('optional.toLowerCase()');
   });
 
   it('should suggest ? or ! operator if property receiver is nullable', () => {
@@ -987,7 +991,7 @@ describe('diagnostics', () => {
             `Consider using the safe navigation operator (optional?.length) ` +
             `or non-null assertion operator (optional!.length).`);
     expect(category).toBe(ts.DiagnosticCategory.Suggestion);
-    expect(content.substring(start !, start ! + length !)).toBe('optional.length');
+    expect(content.substring(start!, start! + length!)).toBe('optional.length');
   });
 
   it('should report error if method is not found on non-nullable receiver', () => {
@@ -1003,7 +1007,7 @@ describe('diagnostics', () => {
       expect(messageText)
           .toBe(`Identifier 'someMethod' is not defined. 'string' does not contain such a member`);
       expect(category).toBe(ts.DiagnosticCategory.Error);
-      expect(content.substring(start !, start ! + length !)).toBe(expression);
+      expect(content.substring(start!, start! + length!)).toBe(expression);
     }
   });
 
@@ -1020,7 +1024,7 @@ describe('diagnostics', () => {
       expect(messageText)
           .toBe(`Identifier 'someProp' is not defined. 'string' does not contain such a member`);
       expect(category).toBe(ts.DiagnosticCategory.Error);
-      expect(content.substring(start !, start ! + length !)).toBe(expression);
+      expect(content.substring(start!, start! + length!)).toBe(expression);
     }
   });
 
@@ -1030,12 +1034,12 @@ describe('diagnostics', () => {
         <p>{{myClick()()}}</p>
       `);
 
-      const content = mockHost.readFile(TEST_TEMPLATE) !;
+      const content = mockHost.readFile(TEST_TEMPLATE)!;
       const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
       expect(diags.length).toBe(1);
-      const {messageText, start, length} = diags[0] !;
+      const {messageText, start, length} = diags[0]!;
       expect(messageText).toBe(`Call target 'myClick()' has non-callable type 'void'.`);
-      expect(content.substring(start !, start ! + length !)).toBe('myClick()()');
+      expect(content.substring(start!, start! + length!)).toBe('myClick()()');
     });
   });
 });

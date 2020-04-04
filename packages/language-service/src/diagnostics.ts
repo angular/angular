@@ -11,7 +11,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {AstResult} from './common';
-import {Diagnostic, createDiagnostic} from './diagnostic_messages';
+import {createDiagnostic, Diagnostic} from './diagnostic_messages';
 import {getTemplateExpressionDiagnostics} from './expression_diagnostics';
 import * as ng from './types';
 import {TypeScriptServiceHost} from './typescript_host';
@@ -193,7 +193,7 @@ function chainDiagnostics(chain: ng.DiagnosticMessageChain): ts.DiagnosticMessag
  * @param file
  */
 export function ngDiagnosticToTsDiagnostic(
-    d: ng.Diagnostic, file: ts.SourceFile | undefined): ts.Diagnostic {
+    d: ng.Diagnostic, file: ts.SourceFile|undefined): ts.Diagnostic {
   return {
     file,
     start: d.span.start,

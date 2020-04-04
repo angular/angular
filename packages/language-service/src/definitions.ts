@@ -7,7 +7,7 @@
  */
 
 import * as path from 'path';
-import * as ts from 'typescript'; // used as value and is provided at runtime
+import * as ts from 'typescript';  // used as value and is provided at runtime
 import {AstResult} from './common';
 import {locateSymbols} from './locate_symbol';
 import {getPropertyAssignmentFromValue, isClassDecoratorProperty} from './template';

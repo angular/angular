@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 
 import {TypeScriptServiceHost} from '../src/typescript_host';
 
-import {MockTypescriptHost, findDirectiveMetadataByName} from './test_utils';
+import {findDirectiveMetadataByName, MockTypescriptHost} from './test_utils';
 
 
 describe('TypeScriptServiceHost', () => {
@@ -62,7 +62,7 @@ describe('TypeScriptServiceHost', () => {
     expect(oldModules.ngModules).toEqual([]);
     // Now add a script, this would change the program
     const fileName = '/app/main.ts';
-    const content = tsLSHost.readFile(fileName) !;
+    const content = tsLSHost.readFile(fileName)!;
     tsLSHost.addScript(fileName, content);
     // If the caches are not cleared, we would get back an empty array.
     // But if the caches are cleared then the analyzed modules will be non-empty.
@@ -121,8 +121,8 @@ describe('TypeScriptServiceHost', () => {
     expect(oldModules.symbolsMissingModule).toEqual([]);
     // Expect to find AppComponent in the old modules
     const oldFile = oldModules.files.find(f => f.fileName === fileName);
-    expect(oldFile !.directives.length).toBe(1);
-    const appComp = oldFile !.directives[0];
+    expect(oldFile!.directives.length).toBe(1);
+    const appComp = oldFile!.directives[0];
     expect(appComp.name).toBe('AppComponent');
     expect(oldModules.ngModuleByPipeOrDirective.has(appComp)).toBe(true);
 
@@ -154,8 +154,8 @@ describe('TypeScriptServiceHost', () => {
     expect(newModules.symbolsMissingModule).toEqual([]);
     // Expect to find HelloComponent in the new modules
     const newFile = newModules.files.find(f => f.fileName === fileName);
-    expect(newFile !.directives.length).toBe(1);
-    const helloComp = newFile !.directives[0];
+    expect(newFile!.directives.length).toBe(1);
+    const helloComp = newFile!.directives[0];
     expect(helloComp.name).toBe('HelloComponent');
     expect(newModules.ngModuleByPipeOrDirective.has(helloComp)).toBe(true);
     expect(newModules.ngModuleByPipeOrDirective.has(appComp)).toBe(false);

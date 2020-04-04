@@ -57,11 +57,11 @@ function isFile(path: string) {
 function loadTourOfHeroes(): ReadonlyMap<string, string> {
   const {TEST_SRCDIR} = process.env;
   const root =
-      path.join(TEST_SRCDIR !, 'angular', 'packages', 'language-service', 'test', 'project');
+      path.join(TEST_SRCDIR!, 'angular', 'packages', 'language-service', 'test', 'project');
   const dirs = [root];
   const files = new Map<string, string>();
   while (dirs.length) {
-    const dirPath = dirs.pop() !;
+    const dirPath = dirs.pop()!;
     for (const filePath of fs.readdirSync(dirPath)) {
       const absPath = path.join(dirPath, filePath);
       if (isFile(absPath)) {
@@ -140,11 +140,17 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     this.projectVersion++;
   }
 
-  getCompilationSettings(): ts.CompilerOptions { return {...this.options}; }
+  getCompilationSettings(): ts.CompilerOptions {
+    return {...this.options};
+  }
 
-  getProjectVersion(): string { return this.projectVersion.toString(); }
+  getProjectVersion(): string {
+    return this.projectVersion.toString();
+  }
 
-  getScriptFileNames(): string[] { return this.scriptNames; }
+  getScriptFileNames(): string[] {
+    return this.scriptNames;
+  }
 
   getScriptVersion(fileName: string): string {
     return (this.scriptVersion.get(fileName) || 0).toString();
@@ -156,9 +162,13 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     return undefined;
   }
 
-  getCurrentDirectory(): string { return '/'; }
+  getCurrentDirectory(): string {
+    return '/';
+  }
 
-  getDefaultLibFileName(options: ts.CompilerOptions): string { return 'lib.d.ts'; }
+  getDefaultLibFileName(options: ts.CompilerOptions): string {
+    return 'lib.d.ts';
+  }
 
   directoryExists(directoryName: string): boolean {
     if (this.overrideDirectory.has(directoryName)) return true;
@@ -172,7 +182,9 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     return this.pathExists(effectiveName);
   }
 
-  fileExists(fileName: string): boolean { return this.getRawFileContent(fileName) != null; }
+  fileExists(fileName: string): boolean {
+    return this.getRawFileContent(fileName) != null;
+  }
 
   readFile(fileName: string): string|undefined {
     const content = this.getRawFileContent(fileName);
@@ -242,7 +254,7 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
 
   private pathExists(path: string): boolean {
     if (this.existsCache.has(path)) {
-      return this.existsCache.get(path) !;
+      return this.existsCache.get(path)!;
     }
 
     const exists = fs.existsSync(path);
@@ -411,8 +423,9 @@ function getReferenceMarkers(value: string): ReferenceResult {
 
   let adjustment = 0;
   const text = value.replace(
-      referenceMarker, (match: string, text: string, reference: string, _: string,
-                        definition: string, definitionName: string, index: number): string => {
+      referenceMarker,
+      (match: string, text: string, reference: string, _: string, definition: string,
+       definitionName: string, index: number): string => {
         const result = reference ? text : text.replace(/ᐱ/g, '');
         const span: Span = {start: index - adjustment, end: index - adjustment + result.length};
         const markers = reference ? references : definitions;

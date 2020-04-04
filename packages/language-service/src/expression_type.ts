@@ -8,11 +8,13 @@
 
 import {AST, AstVisitor, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '@angular/compiler';
 
-import {Diagnostic, createDiagnostic} from './diagnostic_messages';
+import {createDiagnostic, Diagnostic} from './diagnostic_messages';
 import {BuiltinType, Signature, Symbol, SymbolQuery, SymbolTable} from './symbols';
 import * as ng from './types';
 
-export interface ExpressionDiagnosticsContext { inEvent?: boolean; }
+export interface ExpressionDiagnosticsContext {
+  inEvent?: boolean;
+}
 
 // AstType calculatetype of the ast given AST element.
 export class AstType implements AstVisitor {
@@ -22,7 +24,9 @@ export class AstType implements AstVisitor {
       private scope: SymbolTable, private query: SymbolQuery,
       private context: ExpressionDiagnosticsContext, private source: string) {}
 
-  getType(ast: AST): Symbol { return ast.visit(this); }
+  getType(ast: AST): Symbol {
+    return ast.visit(this);
+  }
 
   getDiagnostics(ast: AST): ng.Diagnostic[] {
     const type: Symbol = ast.visit(this);
@@ -204,10 +208,10 @@ export class AstType implements AstVisitor {
     // support contextual typing of arguments so this is simpler than TypeScript's
     // version.
     const args = ast.args.map(arg => this.getType(arg));
-    const target = this.getType(ast.target !);
+    const target = this.getType(ast.target!);
     if (!target || !target.callable) {
       this.diagnostics.push(createDiagnostic(
-          ast.span, Diagnostic.call_target_not_callable, this.sourceOf(ast.target !), target.name));
+          ast.span, Diagnostic.call_target_not_callable, this.sourceOf(ast.target!), target.name));
       return this.anyType;
     }
     const signature = target.selectSignature(args);
@@ -237,11 +241,24 @@ export class AstType implements AstVisitor {
       public: true,
       definition: undefined,
       documentation: [],
-      members(): SymbolTable{return _this.scope;},
-      signatures(): Signature[]{return [];},
-      selectSignature(types): Signature | undefined{return undefined;},
-      indexed(argument): Symbol | undefined{return undefined;},
-      typeArguments(): Symbol[] | undefined{return undefined;},
+      members(): SymbolTable {
+        return _this.scope;
+      },
+      signatures(): Signature[] {
+        return [];
+      },
+      selectSignature(types): Signature |
+          undefined {
+            return undefined;
+          },
+      indexed(argument): Symbol |
+          undefined {
+            return undefined;
+          },
+      typeArguments(): Symbol[] |
+          undefined {
+            return undefined;
+          },
     };
   }
 

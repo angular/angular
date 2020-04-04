@@ -32,7 +32,6 @@ describe('html_info', () => {
       }
     }
   });
-
 });
 
 function uniqueElements<T>(a: T[], b: T[]): T[] {

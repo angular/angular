@@ -74,7 +74,7 @@ export interface TemplateSource {
  *
  * @publicApi
  */
-export type TemplateSources = TemplateSource[] | undefined;
+export type TemplateSources = TemplateSource[]|undefined;
 
 /**
  * Error information found getting declaration information
@@ -264,7 +264,7 @@ export enum CompletionKind {
   VARIABLE = 'variable',
 }
 
-export type CompletionEntry = Omit<ts.CompletionEntry, 'kind'>& {
+export type CompletionEntry = Omit<ts.CompletionEntry, 'kind'>&{
   kind: CompletionKind,
 };
 
@@ -361,5 +361,6 @@ export interface Hover {
  * @publicApi
  */
 export type LanguageService = Pick<
-    ts.LanguageService, 'getCompletionsAtPosition'|'getDefinitionAndBoundSpan'|
-    'getQuickInfoAtPosition'|'getSemanticDiagnostics'>;
+    ts.LanguageService,
+    'getCompletionsAtPosition'|'getDefinitionAndBoundSpan'|'getQuickInfoAtPosition'|
+    'getSemanticDiagnostics'>;

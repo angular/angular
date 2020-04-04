@@ -22,7 +22,9 @@ describe('hover', () => {
   const ngLSHost = new TypeScriptServiceHost(mockHost, tsLS);
   const ngLS = createLanguageService(ngLSHost);
 
-  beforeEach(() => { mockHost.reset(); });
+  beforeEach(() => {
+    mockHost.reset();
+  });
 
   describe('location of hover', () => {
     it('should find members in a text interpolation', () => {
@@ -30,7 +32,7 @@ describe('hover', () => {
       const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'title');
       const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
       expect(quickInfo).toBeTruthy();
-      const {textSpan, displayParts} = quickInfo !;
+      const {textSpan, displayParts} = quickInfo!;
       expect(textSpan).toEqual(marker);
       expect(toText(displayParts)).toBe('(property) TemplateReference.title: string');
     });
@@ -40,7 +42,7 @@ describe('hover', () => {
       const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'title');
       const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
       expect(quickInfo).toBeTruthy();
-      const {textSpan, displayParts} = quickInfo !;
+      const {textSpan, displayParts} = quickInfo!;
       expect(textSpan).toEqual(marker);
       expect(toText(displayParts)).toBe('(property) TemplateReference.title: string');
     });
@@ -50,7 +52,7 @@ describe('hover', () => {
       const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'title');
       const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
       expect(quickInfo).toBeTruthy();
-      const {textSpan, displayParts} = quickInfo !;
+      const {textSpan, displayParts} = quickInfo!;
       expect(textSpan).toEqual(marker);
       expect(toText(displayParts)).toBe('(property) TemplateReference.title: string');
     });
@@ -60,7 +62,7 @@ describe('hover', () => {
       const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'title');
       const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
       expect(quickInfo).toBeTruthy();
-      const {textSpan, displayParts} = quickInfo !;
+      const {textSpan, displayParts} = quickInfo!;
       expect(textSpan).toEqual(marker);
       expect(toText(displayParts)).toBe('(property) TemplateReference.title: string');
     });
@@ -70,7 +72,7 @@ describe('hover', () => {
       const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'title');
       const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
       expect(quickInfo).toBeTruthy();
-      const {textSpan, displayParts} = quickInfo !;
+      const {textSpan, displayParts} = quickInfo!;
       expect(textSpan).toEqual(marker);
       expect(toText(displayParts)).toBe('(property) TemplateReference.title: string');
     });
@@ -80,7 +82,7 @@ describe('hover', () => {
       const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'anyValue');
       const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
       expect(quickInfo).toBeTruthy();
-      const {textSpan, displayParts} = quickInfo !;
+      const {textSpan, displayParts} = quickInfo!;
       expect(textSpan).toEqual(marker);
       expect(toText(displayParts)).toBe('(property) TemplateReference.anyValue: any');
     });
@@ -92,7 +94,7 @@ describe('hover', () => {
       const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
       const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
       expect(quickInfo).toBeDefined();
-      const documentation = toText(quickInfo !.documentation);
+      const documentation = toText(quickInfo!.documentation);
       expect(documentation).toBe('This is the title of the `TemplateReference` Component.');
     });
 
@@ -102,7 +104,7 @@ describe('hover', () => {
         const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'title');
         const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
         expect(quickInfo).toBeTruthy();
-        const {textSpan, displayParts} = quickInfo !;
+        const {textSpan, displayParts} = quickInfo!;
         expect(textSpan).toEqual(marker);
         expect(toText(displayParts)).toBe('(property) TemplateReference.title: string');
       });
@@ -112,7 +114,7 @@ describe('hover', () => {
         const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'hero');
         const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
         expect(quickInfo).toBeTruthy();
-        const {textSpan, displayParts} = quickInfo !;
+        const {textSpan, displayParts} = quickInfo!;
         expect(textSpan).toEqual(marker);
         expect(toText(displayParts)).toBe('(variable) hero: Hero');
       });
@@ -123,7 +125,7 @@ describe('hover', () => {
         const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'hero');
         const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
         expect(quickInfo).toBeTruthy();
-        const {textSpan, displayParts} = quickInfo !;
+        const {textSpan, displayParts} = quickInfo!;
         expect(textSpan).toEqual(marker);
         expect(toText(displayParts)).toBe('(variable) hero: Readonly<Hero>');
       });
@@ -133,7 +135,7 @@ describe('hover', () => {
         const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'name');
         const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
         expect(quickInfo).toBeTruthy();
-        const {textSpan, displayParts} = quickInfo !;
+        const {textSpan, displayParts} = quickInfo!;
         expect(textSpan).toEqual(marker);
         expect(toText(displayParts)).toBe('(variable) name: { readonly name: "name"; }');
       });
@@ -144,7 +146,7 @@ describe('hover', () => {
       const marker = mockHost.getDefinitionMarkerFor(TEST_TEMPLATE, 'myClick');
       const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
       expect(quickInfo).toBeTruthy();
-      const {textSpan, displayParts} = quickInfo !;
+      const {textSpan, displayParts} = quickInfo!;
       expect(textSpan).toEqual(marker);
       expect(toText(displayParts)).toBe('(method) TemplateReference.myClick: (event: any) => void');
     });
@@ -154,7 +156,7 @@ describe('hover', () => {
       const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'trackBy');
       const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
       expect(quickInfo).toBeTruthy();
-      const {textSpan, displayParts} = quickInfo !;
+      const {textSpan, displayParts} = quickInfo!;
       expect(textSpan).toEqual(marker);
       expect(toText(displayParts)).toBe('(method) NgForOf<T, U>.ngForTrackBy: TrackByFunction<T>');
     });
@@ -164,7 +166,7 @@ describe('hover', () => {
       const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'heroes');
       const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
       expect(quickInfo).toBeTruthy();
-      const {textSpan, displayParts} = quickInfo !;
+      const {textSpan, displayParts} = quickInfo!;
       expect(textSpan).toEqual(marker);
       expect(toText(displayParts)).toBe('(property) TemplateReference.heroes: Hero[]');
     });
@@ -175,7 +177,7 @@ describe('hover', () => {
       const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'date');
       const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
       expect(quickInfo).toBeTruthy();
-      const {textSpan, displayParts} = quickInfo !;
+      const {textSpan, displayParts} = quickInfo!;
       expect(textSpan).toEqual(marker);
       expect(toText(displayParts))
           .toBe(
@@ -187,7 +189,7 @@ describe('hover', () => {
       const position = content.indexOf('$any');
       const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, position);
       expect(quickInfo).toBeDefined();
-      const {textSpan, displayParts} = quickInfo !;
+      const {textSpan, displayParts} = quickInfo!;
       expect(textSpan).toEqual({
         start: position,
         length: '$any(title)'.length,
@@ -202,7 +204,7 @@ describe('hover', () => {
       const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
       const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
       expect(quickInfo).toBeDefined();
-      const documentation = toText(quickInfo !.documentation);
+      const documentation = toText(quickInfo!.documentation);
       expect(documentation).toBe('This Component provides the `test-comp` selector.');
     });
 
@@ -211,7 +213,7 @@ describe('hover', () => {
       const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
       const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
       expect(quickInfo).toBeDefined();
-      const {displayParts, documentation} = quickInfo !;
+      const {displayParts, documentation} = quickInfo!;
       expect(toText(displayParts))
           .toBe('(component) AppModule.TestComponent: typeof TestComponent');
       expect(toText(documentation)).toBe('This Component provides the `test-comp` selector.');
@@ -222,7 +224,7 @@ describe('hover', () => {
       const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
       const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
       expect(quickInfo).toBeDefined();
-      const {displayParts, textSpan} = quickInfo !;
+      const {displayParts, textSpan} = quickInfo!;
       expect(toText(displayParts)).toBe('(directive) AppModule.StringModel: typeof StringModel');
       expect(content.substring(textSpan.start, textSpan.start + textSpan.length))
           .toBe('string-model');
@@ -233,7 +235,7 @@ describe('hover', () => {
       const marker = mockHost.getDefinitionMarkerFor(TEST_TEMPLATE, 'test');
       const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
       expect(quickInfo).toBeTruthy();
-      const {textSpan, displayParts} = quickInfo !;
+      const {textSpan, displayParts} = quickInfo!;
       expect(textSpan).toEqual(marker);
       expect(toText(displayParts)).toBe('(event) TestComponent.testEvent: EventEmitter<any>');
     });
@@ -243,7 +245,7 @@ describe('hover', () => {
       const marker = mockHost.getDefinitionMarkerFor(TEST_TEMPLATE, 'tcName');
       const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
       expect(quickInfo).toBeTruthy();
-      const {textSpan, displayParts} = quickInfo !;
+      const {textSpan, displayParts} = quickInfo!;
       expect(textSpan).toEqual(marker);
       expect(toText(displayParts)).toBe('(property) TestComponent.name: string');
     });
@@ -254,7 +256,7 @@ describe('hover', () => {
       const marker = mockHost.getDefinitionMarkerFor(TEST_TEMPLATE, 'model');
       const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
       expect(quickInfo).toBeTruthy();
-      const {textSpan, displayParts} = quickInfo !;
+      const {textSpan, displayParts} = quickInfo!;
       expect(textSpan).toEqual(marker);
       expect(toText(displayParts)).toBe('(property) StringModel.model: string');
     });
@@ -264,7 +266,7 @@ describe('hover', () => {
       const marker = mockHost.getDefinitionMarkerFor(TEST_TEMPLATE, 'ngFor');
       const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
       expect(quickInfo).toBeTruthy();
-      const {textSpan, displayParts} = quickInfo !;
+      const {textSpan, displayParts} = quickInfo!;
       expect(textSpan).toEqual(marker);
       expect(toText(displayParts)).toBe('(directive) NgForOf: typeof NgForOf');
     });
@@ -272,12 +274,12 @@ describe('hover', () => {
 
   describe('hovering on TypeScript nodes', () => {
     it('should work for component TypeScript declarations', () => {
-      const content = mockHost.readFile(PARSING_CASES) !;
+      const content = mockHost.readFile(PARSING_CASES)!;
       const position = content.indexOf('TemplateReference');
       expect(position).toBeGreaterThan(0);
       const quickInfo = ngLS.getQuickInfoAtPosition(PARSING_CASES, position);
       expect(quickInfo).toBeTruthy();
-      const {textSpan, displayParts} = quickInfo !;
+      const {textSpan, displayParts} = quickInfo!;
       expect(textSpan).toEqual({
         start: position,
         length: 'TemplateReference'.length,
@@ -286,12 +288,12 @@ describe('hover', () => {
     });
 
     it('should work for directive TypeScript declarations', () => {
-      const content = mockHost.readFile(PARSING_CASES) !;
+      const content = mockHost.readFile(PARSING_CASES)!;
       const position = content.indexOf('StringModel');
       expect(position).toBeGreaterThan(0);
       const quickInfo = ngLS.getQuickInfoAtPosition(PARSING_CASES, position);
       expect(quickInfo).toBeTruthy();
-      const {textSpan, displayParts} = quickInfo !;
+      const {textSpan, displayParts} = quickInfo!;
       expect(textSpan).toEqual({
         start: position,
         length: 'StringModel'.length,
@@ -313,7 +315,7 @@ describe('hover', () => {
       const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'title');
       const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
       expect(quickInfo).toBeTruthy();
-      const {textSpan, displayParts} = quickInfo !;
+      const {textSpan, displayParts} = quickInfo!;
       expect(textSpan).toEqual(marker);
       expect(toText(displayParts)).toBe('(property) TemplateReference.title: string');
     });
