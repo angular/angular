@@ -88,7 +88,7 @@ This section walks you through using the cart service to add a product to the ca
 
     The `addToCart()` method does the following three things:
     * Receives the current `product`.
-    * Uses the cart service's `addToCart()` method to add the product the cart.
+    * Uses the cart service's `addToCart()` method to add the product to the cart.
     * Displays a message that you've added a product to the cart.
 
     <code-example path="getting-started/src/app/product-details/product-details.component.ts" header="src/app/product-details/product-details.component.ts" region="add-to-cart"></code-example>
