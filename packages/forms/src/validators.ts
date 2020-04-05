@@ -299,7 +299,7 @@ export class Validators {
    *
    */
   static minLength(minLength: number): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
+    return (control: AbstractControl): ValidationErrors|null => {
       if (isEmptyInputValue(control.value) || !hasValidLength(control.value)) {
         // don't validate empty values to allow optional controls
         // don't validate values without `length` property
@@ -340,7 +340,7 @@ export class Validators {
    *
    */
   static maxLength(maxLength: number): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
+    return (control: AbstractControl): ValidationErrors|null => {
       return hasValidLength(control.value) && control.value.length > maxLength ?
           {'maxlength': {'requiredLength': maxLength, 'actualLength': control.value.length}} :
           null;
