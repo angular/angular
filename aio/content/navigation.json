@@ -617,7 +617,7 @@
         },
         {
           "url": "guide/accessibility",
-          "title": "Accessibility",
+          "title": "접근성",
           "!tooltip": "Design apps to be accessible to all users.",
           "tooltip": "모든 사용자가 앱에 접근할 수 있게 개선해 보세요."
         },

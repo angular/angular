@@ -2,26 +2,26 @@
 import { Component, Input } from '@angular/core';
 
 /**
- * Example progressbar component.
+ * 진행률 표시 UI 컴포넌트 예제
  */
 @Component({
   selector: 'app-example-progressbar',
   template: `<div class="bar" [style.width.%]="value"></div>`,
   styleUrls: ['./progress-bar.component.css'],
   host: {
-    // Sets the role for this component to "progressbar"
+    // 컴포넌트의 role은 "progressbar"로 지정합니다.
     role: 'progressbar',
 
-    // Sets the minimum and maximum values for the progressbar role.
+    // 진행률의 최소값과 최대값을 지정합니다.
     'aria-valuemin': '0',
     'aria-valuemax': '100',
 
-    // Binding that updates the current value of the progressbar.
+    // 현재값을 ARIA 어트리뷰트에 바인딩합니다.
     '[attr.aria-valuenow]': 'value',
   }
 })
 export class ExampleProgressbarComponent  {
-  /** Current value of the progressbar. */
+  /** 현재 진행률 */
   @Input() value = 0;
 }
 
