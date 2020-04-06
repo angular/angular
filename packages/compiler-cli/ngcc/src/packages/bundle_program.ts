@@ -6,17 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
-import {AbsoluteFsPath, FileSystem, dirname, resolve} from '../../../src/ngtsc/file_system';
+
+import {AbsoluteFsPath, dirname, FileSystem, resolve} from '../../../src/ngtsc/file_system';
+
 import {patchTsGetExpandoInitializer, restoreGetExpandoInitializer} from './patch_ts_expando_initializer';
 
 /**
-* An entry point bundle contains one or two programs, e.g. `src` and `dts`,
-* that are compiled via TypeScript.
-*
-* To aid with processing the program, this interface exposes the program itself,
-* as well as path and TS file of the entry-point to the program and the r3Symbols
-* file, if appropriate.
-*/
+ * An entry point bundle contains one or two programs, e.g. `src` and `dts`,
+ * that are compiled via TypeScript.
+ *
+ * To aid with processing the program, this interface exposes the program itself,
+ * as well as path and TS file of the entry-point to the program and the r3Symbols
+ * file, if appropriate.
+ */
 export interface BundleProgram {
   program: ts.Program;
   options: ts.CompilerOptions;
@@ -46,7 +48,7 @@ export function makeBundleProgram(
   program.getTypeChecker();
   restoreGetExpandoInitializer(originalGetExpandoInitializer);
 
-  const file = program.getSourceFile(path) !;
+  const file = program.getSourceFile(path)!;
   const r3SymbolsFile = r3SymbolsPath && program.getSourceFile(r3SymbolsPath) || null;
 
   return {program, options, host, package: pkg, path, file, r3SymbolsPath, r3SymbolsFile};

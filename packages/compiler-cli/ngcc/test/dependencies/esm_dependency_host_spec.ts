@@ -16,7 +16,6 @@ import {EsmDependencyHost, hasImportOrReexportStatements, isStringImportOrReexpo
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
 
 runInEachFileSystem(() => {
-
   describe('EsmDependencyHost', () => {
     let _: typeof absoluteFrom;
     let host: EsmDependencyHost;

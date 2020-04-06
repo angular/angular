@@ -7,8 +7,8 @@
  */
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath, absoluteFrom} from '../../../src/ngtsc/file_system';
-import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {absoluteFrom, AbsoluteFsPath} from '../../../src/ngtsc/file_system';
+import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {Reference} from '../../../src/ngtsc/imports';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadTestFiles} from '../../../test/helpers/src/mock_file_loading';
@@ -192,6 +192,6 @@ runInEachFileSystem(() => {
       program: ts.Program, registry: NgccReferencesRegistry, fileName: AbsoluteFsPath,
       componentName: string) {
     const declaration = getDeclaration(program, fileName, componentName, ts.isClassDeclaration);
-    registry.add(null !, new Reference(declaration));
+    registry.add(null!, new Reference(declaration));
   }
 });

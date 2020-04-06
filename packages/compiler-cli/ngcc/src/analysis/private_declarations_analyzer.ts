@@ -7,10 +7,11 @@
  */
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath, absoluteFromSourceFile} from '../../../src/ngtsc/file_system';
+import {absoluteFromSourceFile, AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {ConcreteDeclaration} from '../../../src/ngtsc/reflection';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {hasNameIdentifier, isDefined} from '../utils';
+
 import {NgccReferencesRegistry} from './ngcc_references_registry';
 
 export interface ExportInfo {
@@ -48,7 +49,7 @@ export class PrivateDeclarationsAnalyzer {
         exports.forEach((declaration, exportedName) => {
           if (declaration.node !== null && hasNameIdentifier(declaration.node)) {
             if (privateDeclarations.has(declaration.node.name)) {
-              const privateDeclaration = privateDeclarations.get(declaration.node.name) !;
+              const privateDeclaration = privateDeclarations.get(declaration.node.name)!;
               if (privateDeclaration.node !== declaration.node) {
                 throw new Error(`${declaration.node.name.text} is declared multiple times.`);
               }
@@ -62,7 +63,7 @@ export class PrivateDeclarationsAnalyzer {
 
     return Array.from(privateDeclarations.keys()).map(id => {
       const from = absoluteFromSourceFile(id.getSourceFile());
-      const declaration = privateDeclarations.get(id) !;
+      const declaration = privateDeclarations.get(id)!;
       const dtsDeclaration = this.host.getDtsDeclaration(declaration.node);
       const dtsFrom = dtsDeclaration && absoluteFromSourceFile(dtsDeclaration.getSourceFile());
 

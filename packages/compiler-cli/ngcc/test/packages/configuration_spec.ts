@@ -7,7 +7,7 @@
  */
 import {createHash} from 'crypto';
 
-import {FileSystem, absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {DEFAULT_NGCC_CONFIG, NgccConfiguration} from '../../src/packages/configuration';
@@ -27,8 +27,8 @@ runInEachFileSystem(() => {
       it('should error if a project level config file is badly formatted', () => {
         loadTestFiles([{name: _Abs('/project-1/ngcc.config.js'), contents: `bad js code`}]);
         expect(() => new NgccConfiguration(fs, _Abs('/project-1')))
-            .toThrowError(
-                `Invalid project configuration file at "${_Abs('/project-1/ngcc.config.js')}": Unexpected identifier`);
+            .toThrowError(`Invalid project configuration file at "${
+                _Abs('/project-1/ngcc.config.js')}": Unexpected identifier`);
       });
     });
 
@@ -50,8 +50,8 @@ runInEachFileSystem(() => {
             };`
         }]);
         const project1Conf = new NgccConfiguration(fs, project1);
-        const expectedProject1Config =
-            `{"packages":{"${project1Package1}":[{"entryPoints":{"${project1Package1EntryPoint1}":{}},"versionRange":"*"}]}}`;
+        const expectedProject1Config = `{"packages":{"${project1Package1}":[{"entryPoints":{"${
+            project1Package1EntryPoint1}":{}},"versionRange":"*"}]}}`;
         expect(project1Conf.hash)
             .toEqual(createHash('md5').update(expectedProject1Config).digest('hex'));
 
@@ -71,8 +71,8 @@ runInEachFileSystem(() => {
               };`
         }]);
         const project2Conf = new NgccConfiguration(fs, project2);
-        const expectedProject2Config =
-            `{"packages":{"${project2Package1}":[{"entryPoints":{"${project2Package1EntryPoint1}":{"ignore":true}},"versionRange":"*"}]}}`;
+        const expectedProject2Config = `{"packages":{"${project2Package1}":[{"entryPoints":{"${
+            project2Package1EntryPoint1}":{"ignore":true}},"versionRange":"*"}]}}`;
         expect(project2Conf.hash)
             .toEqual(createHash('md5').update(expectedProject2Config).digest('hex'));
       });
@@ -136,8 +136,9 @@ runInEachFileSystem(() => {
           }]);
           const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
           expect(() => configuration.getConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0'))
-              .toThrowError(
-                  `Invalid package configuration file at "${_Abs('/project-1/node_modules/package-1/ngcc.config.js')}": Unexpected identifier`);
+              .toThrowError(`Invalid package configuration file at "${
+                  _Abs(
+                      '/project-1/node_modules/package-1/ngcc.config.js')}": Unexpected identifier`);
         });
       });
 
@@ -243,7 +244,7 @@ runInEachFileSystem(() => {
           ]);
 
           const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
-          const getConfig = (packageName: string, version: string | null) =>
+          const getConfig = (packageName: string, version: string|null) =>
               configuration.getConfig(_Abs(`/project-1/node_modules/${packageName}`), version);
 
           // Default version range: *
@@ -343,7 +344,6 @@ runInEachFileSystem(() => {
                 versionRange: '*',
                 entryPoints: {[_Abs('/project-1/node_modules/@angular/common')]: {}}
               });
-
         });
 
         it('should override package level config with project level config per package', () => {
@@ -412,8 +412,7 @@ runInEachFileSystem(() => {
               configuration.getConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
           expect(config).toEqual({
             versionRange: '*',
-            entryPoints:
-                {[_Abs('/project-1/node_modules/package-1/default-level-entry-point')]: {}}
+            entryPoints: {[_Abs('/project-1/node_modules/package-1/default-level-entry-point')]: {}}
           });
         });
 
@@ -427,8 +426,7 @@ runInEachFileSystem(() => {
           // merge entry-points.
           expect(config).toEqual({
             versionRange: '1.0.0',
-            entryPoints:
-                {[_Abs('/project-1/node_modules/package-1/package-level-entry-point')]: {}}
+            entryPoints: {[_Abs('/project-1/node_modules/package-1/package-level-entry-point')]: {}}
           });
         });
 
@@ -465,8 +463,7 @@ runInEachFileSystem(() => {
           // merge entry-points.
           expect(config).toEqual({
             versionRange: '*',
-            entryPoints:
-                {[_Abs('/project-1/node_modules/package-1/project-level-entry-point')]: {}}
+            entryPoints: {[_Abs('/project-1/node_modules/package-1/project-level-entry-point')]: {}}
           });
         });
 
@@ -490,7 +487,7 @@ runInEachFileSystem(() => {
           });
 
           const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
-          const getConfig = (packageName: string, version: string | null) =>
+          const getConfig = (packageName: string, version: string|null) =>
               configuration.getConfig(_Abs(`/project-1/node_modules/${packageName}`), version);
 
           // Default version range: *

@@ -7,7 +7,7 @@
  */
 
 import {absoluteFrom} from '../../../src/ngtsc/file_system';
-import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {ClassMemberKind, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadTestFiles} from '../../../test/helpers';
@@ -81,16 +81,16 @@ runInEachFileSystem(() => {
         const host = new UmdReflectionHost(new MockLogger(), false, bundle);
         const classNode = getDeclaration(
             bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
-        const decorators = host.getDecoratorsOfDeclaration(classNode) !;
+        const decorators = host.getDecoratorsOfDeclaration(classNode)!;
 
         expect(decorators).toBeDefined();
         expect(decorators.length).toEqual(1);
 
         const decorator = decorators[0];
         expect(decorator.name).toEqual('Directive');
-        expect(decorator.identifier !.getText()).toEqual('core.Directive');
+        expect(decorator.identifier!.getText()).toEqual('core.Directive');
         expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
-        expect(decorator.args !.map(arg => arg.getText())).toEqual([
+        expect(decorator.args!.map(arg => arg.getText())).toEqual([
           '{ selector: \'[someDirective]\' }',
         ]);
       });
@@ -102,16 +102,16 @@ runInEachFileSystem(() => {
         const classNode = getDeclaration(
             bundle.program, SOME_DIRECTIVE_FILE.name, 'AliasedDirective$1',
             isNamedVariableDeclaration);
-        const decorators = host.getDecoratorsOfDeclaration(classNode) !;
+        const decorators = host.getDecoratorsOfDeclaration(classNode)!;
 
         expect(decorators).toBeDefined();
         expect(decorators.length).toEqual(1);
 
         const decorator = decorators[0];
         expect(decorator.name).toEqual('Directive');
-        expect(decorator.identifier !.getText()).toEqual('core.Directive');
+        expect(decorator.identifier!.getText()).toEqual('core.Directive');
         expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
-        expect(decorator.args !.map(arg => arg.getText())).toEqual([
+        expect(decorator.args!.map(arg => arg.getText())).toEqual([
           '{ selector: \'[someDirective]\' }',
         ]);
       });
@@ -126,15 +126,15 @@ runInEachFileSystem(() => {
             bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
         const members = host.getMembersOfClass(classNode);
 
-        const input1 = members.find(member => member.name === 'input1') !;
+        const input1 = members.find(member => member.name === 'input1')!;
         expect(input1.kind).toEqual(ClassMemberKind.Property);
         expect(input1.isStatic).toEqual(false);
-        expect(input1.decorators !.map(d => d.name)).toEqual(['Input']);
+        expect(input1.decorators!.map(d => d.name)).toEqual(['Input']);
 
-        const input2 = members.find(member => member.name === 'input2') !;
+        const input2 = members.find(member => member.name === 'input2')!;
         expect(input2.kind).toEqual(ClassMemberKind.Property);
         expect(input2.isStatic).toEqual(false);
-        expect(input1.decorators !.map(d => d.name)).toEqual(['Input']);
+        expect(input1.decorators!.map(d => d.name)).toEqual(['Input']);
       });
 
       describe('getConstructorParameters', () => {
@@ -148,10 +148,10 @@ runInEachFileSystem(() => {
           const parameters = host.getConstructorParameters(classNode);
 
           expect(parameters).toBeDefined();
-          expect(parameters !.map(parameter => parameter.name)).toEqual([
+          expect(parameters!.map(parameter => parameter.name)).toEqual([
             '_viewContainer', '_template', 'injected'
           ]);
-          expectTypeValueReferencesForParameters(parameters !, [
+          expectTypeValueReferencesForParameters(parameters!, [
             'ViewContainerRef',
             'TemplateRef',
             null,

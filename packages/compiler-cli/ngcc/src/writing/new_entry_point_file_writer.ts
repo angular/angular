@@ -6,7 +6,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem, absoluteFromSourceFile, dirname, join, relative} from '../../../src/ngtsc/file_system';
+import {absoluteFromSourceFile, AbsoluteFsPath, dirname, FileSystem, join, relative} from '../../../src/ngtsc/file_system';
 import {isDtsPath} from '../../../src/ngtsc/util/src/typescript';
 import {Logger} from '../logging/logger';
 import {EntryPoint, EntryPointJsonProperty} from '../packages/entry_point';
@@ -83,8 +83,8 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
     const packageJsonPath = join(entryPoint.path, 'package.json');
 
     // All format properties point to the same format-path.
-    const oldFormatProp = formatProperties[0] !;
-    const oldFormatPath = packageJson[oldFormatProp] !;
+    const oldFormatProp = formatProperties[0]!;
+    const oldFormatPath = packageJson[oldFormatProp]!;
     const oldAbsFormatPath = join(entryPoint.path, oldFormatPath);
     const newAbsFormatPath = join(ngccFolder, relative(entryPoint.package, oldAbsFormatPath));
     const newFormatPath = relative(entryPoint.path, newAbsFormatPath);

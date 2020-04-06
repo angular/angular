@@ -30,7 +30,7 @@ import {PathMappings} from '../utils';
  */
 export function getBasePaths(
     logger: Logger, sourceDirectory: AbsoluteFsPath,
-    pathMappings: PathMappings | undefined): AbsoluteFsPath[] {
+    pathMappings: PathMappings|undefined): AbsoluteFsPath[] {
   const fs = getFileSystem();
   const basePaths = [sourceDirectory];
   if (pathMappings) {
@@ -51,7 +51,8 @@ export function getBasePaths(
         basePaths.push(basePath);
       } else {
         logger.warn(
-            `The basePath "${basePath}" computed from baseUrl "${baseUrl}" and path mapping "${path}" does not exist in the file-system.\n` +
+            `The basePath "${basePath}" computed from baseUrl "${baseUrl}" and path mapping "${
+                path}" does not exist in the file-system.\n` +
             `It will not be scanned for entry-points.`);
       }
     }));
@@ -109,8 +110,8 @@ function removeContainedPaths(value: AbsoluteFsPath, index: number, array: Absol
  * @param log The function to call with the duration of the task
  * @returns The result of calling `task`.
  */
-export function trackDuration<T = void>(
-    task: () => T extends Promise<unknown>? never : T, log: (duration: number) => void): T {
+export function trackDuration<T = void>(task: () => T extends Promise<unknown>? never : T,
+                                                              log: (duration: number) => void): T {
   const startTime = Date.now();
   const result = task();
   const duration = Math.round((Date.now() - startTime) / 100) / 10;

@@ -66,7 +66,7 @@ export type CreateTaskCompletedCallback = (taskQueue: TaskQueue) => TaskComplete
  * A function to be called once a task has been processed.
  */
 export type TaskCompletedCallback =
-    (task: Task, outcome: TaskProcessingOutcome, message: string | null) => void;
+    (task: Task, outcome: TaskProcessingOutcome, message: string|null) => void;
 
 /**
  * Represents the outcome of processing a `Task`.

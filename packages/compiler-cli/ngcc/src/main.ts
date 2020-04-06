@@ -14,7 +14,7 @@ import * as ts from 'typescript';
 
 import {readConfiguration} from '../..';
 import {replaceTsWithNgInErrors} from '../../src/ngtsc/diagnostics';
-import {AbsoluteFsPath, FileSystem, absoluteFrom, dirname, getFileSystem, resolve} from '../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, dirname, FileSystem, getFileSystem, resolve} from '../../src/ngtsc/file_system';
 
 import {CommonJsDependencyHost} from './dependencies/commonjs_dependency_host';
 import {DependencyResolver, InvalidEntryPoint} from './dependencies/dependency_resolver';
@@ -38,10 +38,10 @@ import {AsyncLocker} from './locking/async_locker';
 import {LockFileWithChildProcess} from './locking/lock_file_with_child_process';
 import {SyncLocker} from './locking/sync_locker';
 import {ConsoleLogger} from './logging/console_logger';
-import {LogLevel, Logger} from './logging/logger';
+import {Logger, LogLevel} from './logging/logger';
 import {hasBeenProcessed} from './packages/build_marker';
 import {NgccConfiguration} from './packages/configuration';
-import {EntryPoint, EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from './packages/entry_point';
+import {EntryPoint, EntryPointJsonProperty, EntryPointPackageJson, getEntryPointFormat, SUPPORTED_FORMAT_PROPERTIES} from './packages/entry_point';
 import {makeEntryPointBundle} from './packages/entry_point_bundle';
 import {EntryPointManifest, InvalidatingEntryPointManifest} from './packages/entry_point_manifest';
 import {Transformer} from './packages/transformer';
@@ -164,12 +164,12 @@ export interface SyncNgccOptions {
 /**
  * The options to configure the ngcc compiler for asynchronous execution.
  */
-export type AsyncNgccOptions = Omit<SyncNgccOptions, 'async'>& {async: true};
+export type AsyncNgccOptions = Omit<SyncNgccOptions, 'async'>&{async: true};
 
 /**
  * The options to configure the ngcc compiler.
  */
-export type NgccOptions = AsyncNgccOptions | SyncNgccOptions;
+export type NgccOptions = AsyncNgccOptions|SyncNgccOptions;
 
 /**
  * This is the main entry-point into ngcc (aNGular Compatibility Compiler).
@@ -181,12 +181,20 @@ export type NgccOptions = AsyncNgccOptions | SyncNgccOptions;
  */
 export function mainNgcc(options: AsyncNgccOptions): Promise<void>;
 export function mainNgcc(options: SyncNgccOptions): void;
-export function mainNgcc(
-    {basePath, targetEntryPointPath, propertiesToConsider = SUPPORTED_FORMAT_PROPERTIES,
-     compileAllFormats = true, createNewEntryPointFormats = false,
-     logger = new ConsoleLogger(LogLevel.info), pathMappings, async = false,
-     errorOnFailedEntryPoint = false, enableI18nLegacyMessageIdFormat = true,
-     invalidateEntryPointManifest = false, tsConfigPath}: NgccOptions): void|Promise<void> {
+export function mainNgcc({
+  basePath,
+  targetEntryPointPath,
+  propertiesToConsider = SUPPORTED_FORMAT_PROPERTIES,
+  compileAllFormats = true,
+  createNewEntryPointFormats = false,
+  logger = new ConsoleLogger(LogLevel.info),
+  pathMappings,
+  async = false,
+  errorOnFailedEntryPoint = false,
+  enableI18nLegacyMessageIdFormat = true,
+  invalidateEntryPointManifest = false,
+  tsConfigPath
+}: NgccOptions): void|Promise<void> {
   if (!!targetEntryPointPath) {
     // targetEntryPointPath forces us to error if an entry-point fails.
     errorOnFailedEntryPoint = true;
@@ -279,7 +287,7 @@ export function mainNgcc(
           continue;
         }
 
-        const formatPropertiesToMarkAsProcessed = equivalentPropertiesMap.get(formatProperty) !;
+        const formatPropertiesToMarkAsProcessed = equivalentPropertiesMap.get(formatProperty)!;
         tasks.push({entryPoint, formatProperty, formatPropertiesToMarkAsProcessed, processDts});
 
         // Only process typings for the first property (if not already processed).
@@ -442,7 +450,7 @@ function getExecutor(
 
 function getDependencyResolver(
     fileSystem: FileSystem, logger: Logger, config: NgccConfiguration,
-    pathMappings: PathMappings | undefined): DependencyResolver {
+    pathMappings: PathMappings|undefined): DependencyResolver {
   const moduleResolver = new ModuleResolver(fileSystem, pathMappings);
   const esmDependencyHost = new EsmDependencyHost(fileSystem, moduleResolver);
   const umdDependencyHost = new UmdDependencyHost(fileSystem, moduleResolver);
@@ -461,8 +469,8 @@ function getDependencyResolver(
 function getEntryPointFinder(
     fs: FileSystem, logger: Logger, resolver: DependencyResolver, config: NgccConfiguration,
     entryPointManifest: EntryPointManifest, basePath: AbsoluteFsPath,
-    absoluteTargetEntryPointPath: AbsoluteFsPath | null,
-    pathMappings: PathMappings | undefined): EntryPointFinder {
+    absoluteTargetEntryPointPath: AbsoluteFsPath|null,
+    pathMappings: PathMappings|undefined): EntryPointFinder {
   if (absoluteTargetEntryPointPath !== null) {
     return new TargetedEntryPointFinder(
         fs, config, logger, resolver, basePath, absoluteTargetEntryPointPath, pathMappings);
@@ -533,7 +541,7 @@ function getPropertiesToProcess(
 
   const equivalentPropertiesMap = new Map<EntryPointJsonProperty, EntryPointJsonProperty[]>();
   for (const prop of propertiesToConsider) {
-    const formatPath = packageJson[prop] !;
+    const formatPath = packageJson[prop]!;
     const equivalentProperties = formatPathToProperties[formatPath];
     equivalentPropertiesMap.set(prop, equivalentProperties);
   }

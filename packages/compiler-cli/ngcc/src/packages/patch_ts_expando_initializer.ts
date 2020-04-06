@@ -58,17 +58,16 @@ export function patchTsGetExpandoInitializer(): unknown {
   }
 
   // Override the function to add support for recognizing the IIFE structure used in ES5 bundles.
-  (ts as any).getExpandoInitializer =
-      (initializer: ts.Node, isPrototypeAssignment: boolean): ts.Expression | undefined => {
-        // If the initializer is a call expression within parenthesis, unwrap the parenthesis
-        // upfront such that unsupported IIFE syntax `(function(){}())` becomes `function(){}()`,
-        // which is supported.
-        if (ts.isParenthesizedExpression(initializer) &&
-            ts.isCallExpression(initializer.expression)) {
-          initializer = initializer.expression;
-        }
-        return originalGetExpandoInitializer(initializer, isPrototypeAssignment);
-      };
+  (ts as any).getExpandoInitializer = (initializer: ts.Node,
+                                       isPrototypeAssignment: boolean): ts.Expression|undefined => {
+    // If the initializer is a call expression within parenthesis, unwrap the parenthesis
+    // upfront such that unsupported IIFE syntax `(function(){}())` becomes `function(){}()`,
+    // which is supported.
+    if (ts.isParenthesizedExpression(initializer) && ts.isCallExpression(initializer.expression)) {
+      initializer = initializer.expression;
+    }
+    return originalGetExpandoInitializer(initializer, isPrototypeAssignment);
+  };
   return originalGetExpandoInitializer;
 }
 
@@ -125,16 +124,36 @@ function checkIfExpandoPropertyIsPresent(): boolean {
   const sourceFile =
       ts.createSourceFile('test.js', sourceText, ts.ScriptTarget.ES5, true, ts.ScriptKind.JS);
   const host: ts.CompilerHost = {
-    getSourceFile(): ts.SourceFile | undefined{return sourceFile;},
-    fileExists(): boolean{return true;},
-    readFile(): string | undefined{return '';},
+    getSourceFile(): ts.SourceFile |
+        undefined {
+          return sourceFile;
+        },
+    fileExists(): boolean {
+      return true;
+    },
+    readFile(): string |
+        undefined {
+          return '';
+        },
     writeFile() {},
-    getDefaultLibFileName(): string{return '';},
-    getCurrentDirectory(): string{return '';},
-    getDirectories(): string[]{return [];},
-    getCanonicalFileName(fileName: string): string{return fileName;},
-    useCaseSensitiveFileNames(): boolean{return true;},
-    getNewLine(): string{return '\n';},
+    getDefaultLibFileName(): string {
+      return '';
+    },
+    getCurrentDirectory(): string {
+      return '';
+    },
+    getDirectories(): string[] {
+      return [];
+    },
+    getCanonicalFileName(fileName: string): string {
+      return fileName;
+    },
+    useCaseSensitiveFileNames(): boolean {
+      return true;
+    },
+    getNewLine(): string {
+      return '\n';
+    },
   };
   const options = {noResolve: true, noLib: true, noEmit: true, allowJs: true};
   const program = ts.createProgram(['test.js'], options, host);

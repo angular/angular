@@ -29,7 +29,9 @@ export class NgccTraitCompiler extends TraitCompiler {
         /* compileNonExportedClasses */ true, new DtsTransformRegistry());
   }
 
-  get analyzedFiles(): ts.SourceFile[] { return Array.from(this.fileToClasses.keys()); }
+  get analyzedFiles(): ts.SourceFile[] {
+    return Array.from(this.fileToClasses.keys());
+  }
 
   /**
    * Analyzes the source file in search for classes to process. For any class that is found in the
@@ -81,5 +83,7 @@ export class NgccTraitCompiler extends TraitCompiler {
 }
 
 class NoIncrementalBuild implements IncrementalBuild<any> {
-  priorWorkFor(sf: ts.SourceFile): any[]|null { return null; }
+  priorWorkFor(sf: ts.SourceFile): any[]|null {
+    return null;
+  }
 }

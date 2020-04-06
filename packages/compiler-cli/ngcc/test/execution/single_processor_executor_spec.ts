@@ -33,11 +33,13 @@ describe('SingleProcessExecutor', () => {
     executor = new SingleProcessExecutorSync(mockLogger, locker, createTaskCompletedCallback);
   });
 
-  const noTasks = () => ({ allTasksCompleted: true, getNextTask: () => null } as TaskQueue);
+  const noTasks = () => ({allTasksCompleted: true, getNextTask: () => null} as TaskQueue);
   const oneTask = () => {
     let tasksCount = 1;
     return <TaskQueue>{
-      get allTasksCompleted() { return tasksCount === 0; },
+      get allTasksCompleted() {
+        return tasksCount === 0;
+      },
       getNextTask() {
         tasksCount--;
         return {};
@@ -55,7 +57,9 @@ describe('SingleProcessExecutor', () => {
        });
 
     it('should call LockFile.write() and LockFile.remove() if `analyzeEntryPoints` fails', () => {
-      const errorFn: () => never = () => { throw new Error('analyze error'); };
+      const errorFn: () => never = () => {
+        throw new Error('analyze error');
+      };
       const createCompileFn: () => any = () => undefined;
       let error: string = '';
       try {
@@ -68,7 +72,9 @@ describe('SingleProcessExecutor', () => {
     });
 
     it('should call LockFile.write() and LockFile.remove() if `createCompileFn` fails', () => {
-      const createErrorCompileFn: () => any = () => { throw new Error('compile error'); };
+      const createErrorCompileFn: () => any = () => {
+        throw new Error('compile error');
+      };
       let error: string = '';
       try {
         executor.execute(oneTask, createErrorCompileFn);
@@ -85,7 +91,9 @@ describe('SingleProcessExecutor', () => {
         throw new Error('LockFile.write() error');
       });
 
-      const analyzeFn: () => any = () => { lockFileLog.push('analyzeFn'); };
+      const analyzeFn: () => any = () => {
+        lockFileLog.push('analyzeFn');
+      };
       const anyFn: () => any = () => undefined;
       executor = new SingleProcessExecutorSync(mockLogger, locker, createTaskCompletedCallback);
       let error = '';

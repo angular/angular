@@ -35,8 +35,8 @@ export class ClusterExecutor implements Executor {
     if (cluster.isMaster) {
       // This process is the cluster master.
       return this.lockFile.lock(() => {
-        this.logger.debug(
-            `Running ngcc on ${this.constructor.name} (using ${this.workerCount} worker processes).`);
+        this.logger.debug(`Running ngcc on ${this.constructor.name} (using ${
+            this.workerCount} worker processes).`);
         const master = new ClusterMaster(
             this.workerCount, this.logger, this.pkgJsonUpdater, analyzeEntryPoints,
             this.createTaskCompletedCallback);

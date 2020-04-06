@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {absoluteFrom, getSourceFileOrError} from '../../../src/ngtsc/file_system';
-import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
@@ -15,7 +15,6 @@ import {makeTestEntryPointBundle} from '../helpers/utils';
 
 runInEachFileSystem(() => {
   describe('SwitchMarkerAnalyzer', () => {
-
     let _: typeof absoluteFrom;
     let TEST_PROGRAM: TestFile[];
 
@@ -87,14 +86,14 @@ runInEachFileSystem(() => {
         expect(analysis.has(entrypoint)).toBe(false);
         expect(analysis.has(a)).toBe(false);
         expect(analysis.has(b)).toBe(true);
-        expect(analysis.get(b) !.sourceFile).toBe(b);
-        expect(analysis.get(b) !.declarations.map(decl => decl.getText())).toEqual([
+        expect(analysis.get(b)!.sourceFile).toBe(b);
+        expect(analysis.get(b)!.declarations.map(decl => decl.getText())).toEqual([
           'factoryB = factory__PRE_R3__'
         ]);
 
         expect(analysis.has(c)).toBe(true);
-        expect(analysis.get(c) !.sourceFile).toBe(c);
-        expect(analysis.get(c) !.declarations.map(decl => decl.getText())).toEqual([
+        expect(analysis.get(c)!.sourceFile).toBe(c);
+        expect(analysis.get(c)!.declarations.map(decl => decl.getText())).toEqual([
           'factoryC = factory__PRE_R3__',
           'factoryD = factory__PRE_R3__',
         ]);

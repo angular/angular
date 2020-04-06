@@ -15,10 +15,14 @@ export class MockLockFile implements LockFile {
   constructor(
       fs: FileSystem, private log: string[] = [], public path = fs.resolve('/lockfile'),
       private pid = '1234') {}
-  write() { this.log.push('write()'); }
+  write() {
+    this.log.push('write()');
+  }
   read(): string {
     this.log.push('read()');
     return this.pid;
   }
-  remove() { this.log.push('remove()'); }
+  remove() {
+    this.log.push('remove()');
+  }
 }

@@ -5,11 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {FileSystem, absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {NgccConfiguration} from '../../src/packages/configuration';
-import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT, getEntryPointInfo} from '../../src/packages/entry_point';
+import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, getEntryPointInfo, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT} from '../../src/packages/entry_point';
 import {EntryPointBundle, makeEntryPointBundle} from '../../src/packages/entry_point_bundle';
 import {FileWriter} from '../../src/writing/file_writer';
 import {NewEntryPointFileWriter} from '../../src/writing/new_entry_point_file_writer';
@@ -19,7 +19,6 @@ import {loadPackageJson} from '../packages/entry_point_spec';
 
 runInEachFileSystem(() => {
   describe('NewEntryPointFileWriter', () => {
-
     let _: typeof absoluteFrom;
     let fs: FileSystem;
     let fileWriter: FileWriter;
@@ -107,7 +106,7 @@ runInEachFileSystem(() => {
             fs, logger, /* errorOnFailedEntryPoint */ true, new DirectPackageJsonUpdater(fs));
         const config = new NgccConfiguration(fs, _('/'));
         const result = getEntryPointInfo(
-            fs, config, logger, _('/node_modules/test'), _('/node_modules/test')) !;
+            fs, config, logger, _('/node_modules/test'), _('/node_modules/test'))!;
         if (result === NO_ENTRY_POINT || result === INCOMPATIBLE_ENTRY_POINT) {
           return fail(`Expected an entry point but got ${result}`);
         }
@@ -247,7 +246,7 @@ runInEachFileSystem(() => {
             fs, logger, /* errorOnFailedEntryPoint */ true, new DirectPackageJsonUpdater(fs));
         const config = new NgccConfiguration(fs, _('/'));
         const result = getEntryPointInfo(
-            fs, config, logger, _('/node_modules/test'), _('/node_modules/test/a')) !;
+            fs, config, logger, _('/node_modules/test'), _('/node_modules/test/a'))!;
         if (result === NO_ENTRY_POINT || result === INCOMPATIBLE_ENTRY_POINT) {
           return fail(`Expected an entry point but got ${result}`);
         }
@@ -376,7 +375,7 @@ runInEachFileSystem(() => {
             fs, logger, /* errorOnFailedEntryPoint */ true, new DirectPackageJsonUpdater(fs));
         const config = new NgccConfiguration(fs, _('/'));
         const result = getEntryPointInfo(
-            fs, config, new MockLogger(), _('/node_modules/test'), _('/node_modules/test/b')) !;
+            fs, config, new MockLogger(), _('/node_modules/test'), _('/node_modules/test/b'))!;
         if (result === NO_ENTRY_POINT || result === INCOMPATIBLE_ENTRY_POINT) {
           return fail(`Expected an entry point but got ${result}`);
         }
@@ -501,6 +500,6 @@ runInEachFileSystem(() => {
       fs: FileSystem, entryPoint: EntryPoint, formatProperty: EntryPointJsonProperty,
       format: EntryPointFormat): EntryPointBundle {
     return makeEntryPointBundle(
-        fs, entryPoint, entryPoint.packageJson[formatProperty] !, false, format, true);
+        fs, entryPoint, entryPoint.packageJson[formatProperty]!, false, format, true);
   }
 });

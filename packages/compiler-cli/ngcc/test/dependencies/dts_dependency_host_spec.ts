@@ -14,7 +14,6 @@ import {createDependencyInfo} from '../../src/dependencies/dependency_host';
 import {DtsDependencyHost} from '../../src/dependencies/dts_dependency_host';
 
 runInEachFileSystem(() => {
-
   describe('DtsDependencyHost', () => {
     let _: typeof absoluteFrom;
     let host: DtsDependencyHost;

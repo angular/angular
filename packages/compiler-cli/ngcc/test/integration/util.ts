@@ -234,11 +234,21 @@ class MockCompilerHost implements ts.CompilerHost {
     this.fs.writeFile(this.fs.resolve(fileName), data);
   }
 
-  getCurrentDirectory(): string { return this.fs.pwd(); }
-  getCanonicalFileName(fileName: string): string { return fileName; }
-  useCaseSensitiveFileNames(): boolean { return true; }
-  getNewLine(): string { return '\n'; }
-  fileExists(fileName: string): boolean { return this.fs.exists(this.fs.resolve(fileName)); }
+  getCurrentDirectory(): string {
+    return this.fs.pwd();
+  }
+  getCanonicalFileName(fileName: string): string {
+    return fileName;
+  }
+  useCaseSensitiveFileNames(): boolean {
+    return true;
+  }
+  getNewLine(): string {
+    return '\n';
+  }
+  fileExists(fileName: string): boolean {
+    return this.fs.exists(this.fs.resolve(fileName));
+  }
   readFile(fileName: string): string|undefined {
     const abs = this.fs.resolve(fileName);
     return this.fs.exists(abs) ? this.fs.readFile(abs) : undefined;

@@ -387,7 +387,7 @@ runInEachFileSystem(() => {
     reExportsWithoutRequire?: string[];
   }
 
-  function commonJs(importsPerType: ImportsPerType | string[], exportNames: string[] = []): string {
+  function commonJs(importsPerType: ImportsPerType|string[], exportNames: string[] = []): string {
     if (Array.isArray(importsPerType)) {
       importsPerType = {varDeclaration: importsPerType};
     }
@@ -414,8 +414,9 @@ runInEachFileSystem(() => {
     } = importsPerType;
 
     // var foo = require('...');
-    importsOfTypeVarDeclaration.forEach(
-        p => { importStatements.push(`var ${pathToVarName(p)} = require('${p}');`); });
+    importsOfTypeVarDeclaration.forEach(p => {
+      importStatements.push(`var ${pathToVarName(p)} = require('${p}');`);
+    });
 
     // var foo = require('...'), bar = require('...');
     importsOfTypeVarDeclarations.forEach(pp => {
@@ -424,8 +425,9 @@ runInEachFileSystem(() => {
     });
 
     // exports.foo = require('...');
-    importsOfTypePropAssignment.forEach(
-        p => { importStatements.push(`exports.${pathToVarName(p)} = require('${p}');`); });
+    importsOfTypePropAssignment.forEach(p => {
+      importStatements.push(`exports.${pathToVarName(p)} = require('${p}');`);
+    });
 
     // module.exports = {foo: require('...')};
     const propAssignments =
@@ -434,15 +436,19 @@ runInEachFileSystem(() => {
     importStatements.push(`module.exports = {${propAssignments}\n};`);
 
     // require('...');
-    importsOfTypeForSideEffects.forEach(p => { importStatements.push(`require('${p}');`); });
+    importsOfTypeForSideEffects.forEach(p => {
+      importStatements.push(`require('${p}');`);
+    });
 
     // __export(require('...'));
-    importsOfTypeReExportsWithEmittedHelper.forEach(
-        p => { importStatements.push(`__export(require('${p}'));`); });
+    importsOfTypeReExportsWithEmittedHelper.forEach(p => {
+      importStatements.push(`__export(require('${p}'));`);
+    });
 
     // tslib_1.__exportStar(require('...'), exports);
-    importsOfTypeReExportsWithImportedHelper.forEach(
-        p => { importStatements.push(`tslib_1.__exportStar(require('${p}'), exports);`); });
+    importsOfTypeReExportsWithImportedHelper.forEach(p => {
+      importStatements.push(`tslib_1.__exportStar(require('${p}'), exports);`);
+    });
 
     // var foo = require('...');
     // __export(foo);

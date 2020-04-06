@@ -8,7 +8,7 @@
 
 import {DepGraph} from 'dependency-graph';
 
-import {AbsoluteFsPath, FileSystem, absoluteFrom, getFileSystem, relativeFrom} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, relativeFrom} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {DependencyInfo} from '../../src/dependencies/dependency_host';
 import {DependencyResolver, SortedEntryPointsInfo} from '../../src/dependencies/dependency_resolver';
@@ -254,7 +254,8 @@ runInEachFileSystem(() => {
         const result = resolver.sortEntryPointsByDependency([first]);
         expect(result.entryPoints).toEqual([first]);
         expect(logger.logs.warn).toEqual([[
-          `Entry point 'first' contains deep imports into '${_('/deep/one')}'. This is probably not a problem, but may cause the compilation of entry points to be out of order.`
+          `Entry point 'first' contains deep imports into '${
+              _('/deep/one')}'. This is probably not a problem, but may cause the compilation of entry points to be out of order.`
         ]]);
       });
 
@@ -292,14 +293,14 @@ runInEachFileSystem(() => {
         const result = resolver.sortEntryPointsByDependency([testEntryPoint]);
         expect(result.entryPoints).toEqual([testEntryPoint]);
         expect(logger.logs.warn).toEqual([[
-          `Entry point 'test-package' contains deep imports into '${_('/project/node_modules/deeper/one')}'. This is probably not a problem, but may cause the compilation of entry points to be out of order.`
+          `Entry point 'test-package' contains deep imports into '${
+              _('/project/node_modules/deeper/one')}'. This is probably not a problem, but may cause the compilation of entry points to be out of order.`
         ]]);
-
       });
 
       it('should error if the entry point does not have a suitable format', () => {
         expect(() => resolver.sortEntryPointsByDependency([
-          { path: '/first', packageJson: {}, compiledByAngular: true } as EntryPoint
+          {path: '/first', packageJson: {}, compiledByAngular: true} as EntryPoint
         ])).toThrowError(`There is no appropriate source code format in '/first' entry-point.`);
       });
 
@@ -307,7 +308,8 @@ runInEachFileSystem(() => {
         resolver = new DependencyResolver(fs, new MockLogger(), config, {esm2015: host}, host);
         expect(() => resolver.sortEntryPointsByDependency([first]))
             .toThrowError(
-                `Could not find a suitable format for computing dependencies of entry-point: '${first.path}'.`);
+                `Could not find a suitable format for computing dependencies of entry-point: '${
+                    first.path}'.`);
       });
 
       it('should capture any dependencies that were ignored', () => {
@@ -462,7 +464,7 @@ runInEachFileSystem(() => {
           deps[entryPointPath].missing.forEach(
               dep => missing.add(fs.isRooted(dep) ? absoluteFrom(dep) : relativeFrom(dep)));
           if (deps[entryPointPath].deepImports) {
-            deps[entryPointPath].deepImports !.forEach(dep => deepImports.add(dep));
+            deps[entryPointPath].deepImports!.forEach(dep => deepImports.add(dep));
           }
           return {dependencies, missing, deepImports};
         };

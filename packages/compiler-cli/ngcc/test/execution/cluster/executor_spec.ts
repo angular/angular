@@ -51,7 +51,7 @@ describe('ClusterExecutor', () => {
     describe('(on cluster master)', () => {
       beforeEach(() => runAsClusterMaster(true));
 
-      it('should log debug info about the executor', async() => {
+      it('should log debug info about the executor', async () => {
         const anyFn: () => any = () => undefined;
         await executor.execute(anyFn, anyFn);
 
@@ -60,7 +60,7 @@ describe('ClusterExecutor', () => {
         ]);
       });
 
-      it('should delegate to `ClusterMaster#run()`', async() => {
+      it('should delegate to `ClusterMaster#run()`', async () => {
         const analyzeEntryPointsSpy = jasmine.createSpy('analyzeEntryPoints');
         const createCompilerFnSpy = jasmine.createSpy('createCompilerFn');
 
@@ -75,13 +75,13 @@ describe('ClusterExecutor', () => {
       });
 
       it('should call LockFile.write() and LockFile.remove() if master runner completes successfully',
-         async() => {
+         async () => {
            const anyFn: () => any = () => undefined;
            await executor.execute(anyFn, anyFn);
            expect(lockFileLog).toEqual(['write()', 'remove()']);
          });
 
-      it('should call LockFile.write() and LockFile.remove() if master runner fails', async() => {
+      it('should call LockFile.write() and LockFile.remove() if master runner fails', async () => {
         const anyFn: () => any = () => undefined;
         masterRunSpy.and.returnValue(Promise.reject(new Error('master runner error')));
         let error = '';
@@ -94,7 +94,7 @@ describe('ClusterExecutor', () => {
         expect(lockFileLog).toEqual(['write()', 'remove()']);
       });
 
-      it('should not call master runner if LockFile.write() fails', async() => {
+      it('should not call master runner if LockFile.write() fails', async () => {
         const anyFn: () => any = () => undefined;
         spyOn(mockLockFile, 'write').and.callFake(() => {
           lockFileLog.push('write()');
@@ -114,7 +114,7 @@ describe('ClusterExecutor', () => {
         expect(masterRunSpy).not.toHaveBeenCalled();
       });
 
-      it('should fail if LockFile.remove() fails', async() => {
+      it('should fail if LockFile.remove() fails', async () => {
         const anyFn: () => any = () => undefined;
         spyOn(mockLockFile, 'remove').and.callFake(() => {
           lockFileLog.push('remove()');
@@ -139,14 +139,14 @@ describe('ClusterExecutor', () => {
     describe('(on cluster worker)', () => {
       beforeEach(() => runAsClusterMaster(false));
 
-      it('should not log debug info about the executor', async() => {
+      it('should not log debug info about the executor', async () => {
         const anyFn: () => any = () => undefined;
         await executor.execute(anyFn, anyFn);
 
         expect(mockLogger.logs.debug).toEqual([]);
       });
 
-      it('should delegate to `ClusterWorker#run()`', async() => {
+      it('should delegate to `ClusterWorker#run()`', async () => {
         const analyzeEntryPointsSpy = jasmine.createSpy('analyzeEntryPoints');
         const createCompilerFnSpy = jasmine.createSpy('createCompilerFn');
 
@@ -160,7 +160,7 @@ describe('ClusterExecutor', () => {
         expect(createCompilerFnSpy).toHaveBeenCalledWith(jasmine.any(Function));
       });
 
-      it('should not call LockFile.write() or LockFile.remove()', async() => {
+      it('should not call LockFile.write() or LockFile.remove()', async () => {
         const anyFn: () => any = () => undefined;
         await executor.execute(anyFn, anyFn);
         expect(lockFileLog).toEqual([]);

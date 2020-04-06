@@ -125,7 +125,7 @@ if (require.main === module) {
   // And we have to convert the option to a string to handle `no-tsconfig`, which will be `false`.
   const tsConfigPath = `${options['tsconfig']}` === 'false' ? null : options['tsconfig'];
 
-  (async() => {
+  (async () => {
     try {
       const logger = logLevel && new ConsoleLogger(LogLevel[logLevel]);
 
@@ -137,7 +137,10 @@ if (require.main === module) {
         createNewEntryPointFormats,
         logger,
         enableI18nLegacyMessageIdFormat,
-        async: options['async'], invalidateEntryPointManifest, errorOnFailedEntryPoint, tsConfigPath
+        async: options['async'],
+        invalidateEntryPointManifest,
+        errorOnFailedEntryPoint,
+        tsConfigPath
       });
 
       if (logger) {

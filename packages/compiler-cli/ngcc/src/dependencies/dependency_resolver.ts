@@ -7,12 +7,14 @@
  */
 
 import {DepGraph} from 'dependency-graph';
+
 import {AbsoluteFsPath, FileSystem, resolve} from '../../../src/ngtsc/file_system';
 import {Logger} from '../logging/logger';
 import {NgccConfiguration} from '../packages/configuration';
-import {EntryPoint, EntryPointFormat, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from '../packages/entry_point';
+import {EntryPoint, EntryPointFormat, getEntryPointFormat, SUPPORTED_FORMAT_PROPERTIES} from '../packages/entry_point';
 import {PartiallyOrderedList} from '../utils';
-import {DependencyHost, DependencyInfo, createDependencyInfo} from './dependency_host';
+
+import {createDependencyInfo, DependencyHost, DependencyInfo} from './dependency_host';
 
 const builtinNodeJsModules = new Set<string>(require('module').builtinModules);
 
@@ -123,7 +125,8 @@ export class DependencyResolver {
     const host = this.hosts[formatInfo.format];
     if (!host) {
       throw new Error(
-          `Could not find a suitable format for computing dependencies of entry-point: '${entryPoint.path}'.`);
+          `Could not find a suitable format for computing dependencies of entry-point: '${
+              entryPoint.path}'.`);
     }
     const depInfo = createDependencyInfo();
     host.collectDependencies(formatInfo.path, depInfo);
