@@ -23,17 +23,21 @@ export abstract class ControlContainer extends AbstractControlDirective {
    * The name for the control
    */
   // TODO(issue/24571): remove '!'.
-  name !: string | number | null;
+  name!: string|number|null;
 
   /**
    * @description
    * The top-level form directive for the control.
    */
-  get formDirective(): Form|null { return null; }
+  get formDirective(): Form|null {
+    return null;
+  }
 
   /**
    * @description
    * The path to this group.
    */
-  get path(): string[]|null { return null; }
+  get path(): string[]|null {
+    return null;
+  }
 }

@@ -66,7 +66,9 @@ export abstract class NgControl extends AbstractControlDirective {
    *
    * @throws An exception that this method is not implemented
    */
-  get validator(): ValidatorFn|null { return <ValidatorFn>unimplemented(); }
+  get validator(): ValidatorFn|null {
+    return <ValidatorFn>unimplemented();
+  }
 
   /**
    * @description
@@ -74,7 +76,9 @@ export abstract class NgControl extends AbstractControlDirective {
    *
    * @throws An exception that this method is not implemented
    */
-  get asyncValidator(): AsyncValidatorFn|null { return <AsyncValidatorFn>unimplemented(); }
+  get asyncValidator(): AsyncValidatorFn|null {
+    return <AsyncValidatorFn>unimplemented();
+  }
 
   /**
    * @description

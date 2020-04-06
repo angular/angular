@@ -11,8 +11,8 @@ import {Injectable} from '@angular/core';
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {AbstractControl, AbstractControlOptions, FormArray, FormControl, FormGroup, FormHooks} from './model';
 
-function isAbstractControlOptions(options: AbstractControlOptions | {[key: string]: any}):
-    options is AbstractControlOptions {
+function isAbstractControlOptions(options: AbstractControlOptions|
+                                  {[key: string]: any}): options is AbstractControlOptions {
   return (<AbstractControlOptions>options).asyncValidators !== undefined ||
       (<AbstractControlOptions>options).validators !== undefined ||
       (<AbstractControlOptions>options).updateOn !== undefined;
