@@ -14,16 +14,27 @@ describe('example-boilerplate tool', () => {
       i18n: 2,
       universal: 2,
       systemjs: 7,
-      common: 1
+      common: 1,
+      viewengine: {
+        cli: 1,
+        systemjs: 2,
+      },
     };
     const exampleFolders = ['a/b', 'c/d'];
 
     beforeEach(() => {
       spyOn(fs, 'ensureSymlinkSync');
       spyOn(fs, 'existsSync').and.returnValue(true);
+      spyOn(shelljs, 'exec');
       spyOn(exampleBoilerPlate, 'copyFile');
       spyOn(exampleBoilerPlate, 'getFoldersContaining').and.returnValue(exampleFolders);
       spyOn(exampleBoilerPlate, 'loadJsonFile').and.returnValue({});
+    });
+
+    it('should run `ngcc`', () => {
+      exampleBoilerPlate.add();
+      expect(shelljs.exec).toHaveBeenCalledWith(
+          `yarn --cwd ${sharedDir} ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points`);
     });
 
     it('should process all the example folders', () => {
@@ -50,7 +61,7 @@ describe('example-boilerplate tool', () => {
 
     it('should copy all the source boilerplate files for systemjs', () => {
       const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
-      exampleBoilerPlate.loadJsonFile.and.callFake(filePath => filePath.indexOf('a/b') !== -1 ? { projectType: 'systemjs' } : {})
+      exampleBoilerPlate.loadJsonFile.and.callFake(filePath => filePath.indexOf('a/b') !== -1 ? { projectType: 'systemjs' } : {});
       exampleBoilerPlate.add();
       expect(exampleBoilerPlate.copyFile).toHaveBeenCalledTimes(
         (BPFiles.cli) +
@@ -109,6 +120,38 @@ describe('example-boilerplate tool', () => {
       expect(exampleBoilerPlate.loadJsonFile).toHaveBeenCalledTimes(exampleFolders.length);
       expect(exampleBoilerPlate.loadJsonFile).toHaveBeenCalledWith(path.resolve('a/b/example-config.json'));
       expect(exampleBoilerPlate.loadJsonFile).toHaveBeenCalledWith(path.resolve('c/d/example-config.json'));
+    });
+
+    describe('(viewengine: true)', () => {
+      it('should not run `ngcc`', () => {
+        exampleBoilerPlate.add(true);
+        expect(shelljs.exec).not.toHaveBeenCalled();
+      });
+
+      it('should copy all the source boilerplate files for systemjs', () => {
+        const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
+        exampleBoilerPlate.loadJsonFile.and.callFake(filePath => filePath.indexOf('a/b') !== -1 ? { projectType: 'systemjs' } : {});
+        exampleBoilerPlate.add(true);
+        expect(exampleBoilerPlate.copyFile).toHaveBeenCalledTimes(
+          (BPFiles.cli + BPFiles.viewengine.cli) +
+          (BPFiles.systemjs + BPFiles.viewengine.systemjs) +
+          (BPFiles.common * exampleFolders.length)
+        );
+        // for example
+        expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/viewengine/systemjs`, 'a/b', 'tsconfig-aot.json');
+      });
+
+      it('should copy all the source boilerplate files for cli', () => {
+        const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
+        exampleBoilerPlate.add(true);
+        expect(exampleBoilerPlate.copyFile).toHaveBeenCalledTimes(
+          (BPFiles.cli * exampleFolders.length) +
+          (BPFiles.viewengine.cli * exampleFolders.length) +
+          (BPFiles.common * exampleFolders.length)
+        );
+        // for example
+        expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/viewengine/cli`, 'a/b', 'tsconfig.json');
+      });
     });
   });
 

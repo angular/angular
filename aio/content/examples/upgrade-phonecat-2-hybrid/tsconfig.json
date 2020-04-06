@@ -12,14 +12,14 @@
     ],
     "noImplicitAny": true,
     "skipLibCheck": true,
-    "suppressImplicitAnyIndexErrors": true
+    "suppressImplicitAnyIndexErrors": true,
+    "typeRoots": [
+      "node_modules/@types"
+    ]
   },
   "compileOnSave": true,
   "exclude": [
     "node_modules/*",
     "**/*-aot.ts"
-  ],
-  "angularCompilerOptions": {
-    "enableIvy": false
-  }
+  ]
 }

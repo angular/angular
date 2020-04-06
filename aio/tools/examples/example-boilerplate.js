@@ -50,11 +50,6 @@ BOILERPLATE_PATHS['getting-started'] = [
   'src/styles.css'
 ];
 
-BOILERPLATE_PATHS.ivy = {
-  systemjs: ['rollup-config.js', 'tsconfig-aot.json'],
-  cli: ['tsconfig.app.json']
-};
-
 BOILERPLATE_PATHS.schematics = [
   ...cliRelativePath,
   'angular.json'
@@ -65,13 +60,18 @@ BOILERPLATE_PATHS['cli-ajs'] = [
   'package.json'
 ];
 
+BOILERPLATE_PATHS.viewengine = {
+  systemjs: ['rollup-config.js', 'tsconfig-aot.json'],
+  cli: ['tsconfig.json']
+};
+
 const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
 
 class ExampleBoilerPlate {
   /**
    * Add boilerplate files to all the examples
    */
-  add(ivy = false) {
+  add(viewengine = false) {
     // Get all the examples folders, indicated by those that contain a `example-config.json` file
     const exampleFolders =
         this.getFoldersContaining(EXAMPLES_BASE_PATH, EXAMPLE_CONFIG_FILENAME, 'node_modules');
@@ -82,7 +82,7 @@ class ExampleBoilerPlate {
           `Perhaps you need to run "yarn example-use-npm" or "yarn example-use-local" to install the dependencies?`);
     }
 
-    if (ivy) {
+    if (!viewengine) {
       shelljs.exec(`yarn --cwd ${SHARED_PATH} ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points`);
     }
 
@@ -107,13 +107,13 @@ class ExampleBoilerPlate {
         BOILERPLATE_PATHS.common.forEach(filePath => this.copyFile(BOILERPLATE_COMMON_BASE_PATH, exampleFolder, filePath));
       }
 
-      // Copy Ivy specific files
-      if (ivy) {
-        const ivyBoilerPlateType = boilerPlateType === 'systemjs' ? 'systemjs' : 'cli';
-        const ivyBoilerPlateBasePath =
-            path.resolve(BOILERPLATE_BASE_PATH, 'ivy', ivyBoilerPlateType);
-        BOILERPLATE_PATHS.ivy[ivyBoilerPlateType].forEach(
-            filePath => this.copyFile(ivyBoilerPlateBasePath, exampleFolder, filePath));
+      // Copy ViewEngine (pre-Ivy) specific files
+      if (viewengine) {
+        const veBoilerPlateType = boilerPlateType === 'systemjs' ? 'systemjs' : 'cli';
+        const veBoilerPlateBasePath =
+            path.resolve(BOILERPLATE_BASE_PATH, 'viewengine', veBoilerPlateType);
+        BOILERPLATE_PATHS.viewengine[veBoilerPlateType].forEach(
+            filePath => this.copyFile(veBoilerPlateBasePath, exampleFolder, filePath));
       }
     });
   }
@@ -125,7 +125,7 @@ class ExampleBoilerPlate {
 
   main() {
     yargs.usage('$0 <cmd> [args]')
-        .command('add', 'add the boilerplate to each example', (yrgs) => this.add(yrgs.argv.ivy))
+        .command('add', 'add the boilerplate to each example', yrgs => this.add(yrgs.argv.viewengine))
         .command('remove', 'remove the boilerplate from each example', () => this.remove())
         .demandCommand(1, 'Please supply a command from the list above')
         .argv;
