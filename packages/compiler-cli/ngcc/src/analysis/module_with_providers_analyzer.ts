@@ -75,10 +75,9 @@ export class ModuleWithProvidersAnalyzer {
       const dtsClass = this.host.getDtsDeclaration(containerClass.declaration.valueDeclaration);
       // Get the declaration of the matching static method
       dtsFn = dtsClass && ts.isClassDeclaration(dtsClass) ?
-          dtsClass.members
-              .find(
-                  member => ts.isMethodDeclaration(member) && ts.isIdentifier(member.name) &&
-                      member.name.text === fn.name) as ts.Declaration :
+          dtsClass.members.find(
+              member => ts.isMethodDeclaration(member) && ts.isIdentifier(member.name) &&
+                  member.name.text === fn.name) as ts.Declaration :
           null;
     } else {
       dtsFn = this.host.getDtsDeclaration(fn.declaration);
@@ -87,8 +86,8 @@ export class ModuleWithProvidersAnalyzer {
       throw new Error(`Matching type declaration for ${fn.declaration.getText()} is missing`);
     }
     if (!isFunctionOrMethod(dtsFn)) {
-      throw new Error(
-          `Matching type declaration for ${fn.declaration.getText()} is not a function: ${dtsFn.getText()}`);
+      throw new Error(`Matching type declaration for ${
+          fn.declaration.getText()} is not a function: ${dtsFn.getText()}`);
     }
     return dtsFn;
   }
@@ -106,12 +105,14 @@ export class ModuleWithProvidersAnalyzer {
     // to its type declaration.
     const dtsNgModule = this.host.getDtsDeclaration(ngModule.node);
     if (!dtsNgModule) {
-      throw new Error(
-          `No typings declaration can be found for the referenced NgModule class in ${fn.declaration.getText()}.`);
+      throw new Error(`No typings declaration can be found for the referenced NgModule class in ${
+          fn.declaration.getText()}.`);
     }
     if (!ts.isClassDeclaration(dtsNgModule) || !hasNameIdentifier(dtsNgModule)) {
-      throw new Error(
-          `The referenced NgModule in ${fn.declaration.getText()} is not a named class declaration in the typings program; instead we get ${dtsNgModule.getText()}`);
+      throw new Error(`The referenced NgModule in ${
+          fn.declaration
+              .getText()} is not a named class declaration in the typings program; instead we get ${
+          dtsNgModule.getText()}`);
     }
 
     return {node: dtsNgModule, known: null, viaModule: null};

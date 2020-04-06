@@ -7,14 +7,14 @@
  */
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath, absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
-import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {absoluteFrom, AbsoluteFsPath, getFileSystem} from '../../../src/ngtsc/file_system';
+import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {DecorationAnalyses} from '../../src/analysis/types';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
-import {MissingInjectableMigration, getAngularCoreDecoratorName} from '../../src/migrations/missing_injectable_migration';
+import {getAngularCoreDecoratorName, MissingInjectableMigration} from '../../src/migrations/missing_injectable_migration';
 import {MockLogger} from '../helpers/mock_logger';
 import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils';
 
@@ -58,7 +58,7 @@ runInEachFileSystem(() => {
           `,
            }]);
 
-           const index = program.getSourceFile(INDEX_FILENAME) !;
+           const index = program.getSourceFile(INDEX_FILENAME)!;
            expect(hasInjectableDecorator(index, analysis, 'ServiceA')).toBe(true);
            expect(hasInjectableDecorator(index, analysis, 'ServiceB')).toBe(true);
            expect(hasInjectableDecorator(index, analysis, 'ServiceC')).toBe(false);
@@ -66,7 +66,7 @@ runInEachFileSystem(() => {
     });
 
     function runTests(
-        type: 'NgModule' | 'Directive' | 'Component', propName: 'providers' | 'viewProviders') {
+        type: 'NgModule'|'Directive'|'Component', propName: 'providers'|'viewProviders') {
       const args = type === 'Component' ? 'template: "", ' : '';
 
       it(`should migrate type provider in ${type}`, () => {
@@ -85,7 +85,7 @@ runInEachFileSystem(() => {
           `,
         }]);
 
-        const index = program.getSourceFile(INDEX_FILENAME) !;
+        const index = program.getSourceFile(INDEX_FILENAME)!;
         expect(hasInjectableDecorator(index, analysis, 'MyService')).toBe(true);
         expect(hasInjectableDecorator(index, analysis, 'OtherService')).toBe(false);
       });
@@ -106,12 +106,12 @@ runInEachFileSystem(() => {
           `,
         }]);
 
-        const index = program.getSourceFile(INDEX_FILENAME) !;
+        const index = program.getSourceFile(INDEX_FILENAME)!;
         expect(hasInjectableDecorator(index, analysis, 'MyService')).toBe(true);
         expect(hasInjectableDecorator(index, analysis, 'OtherService')).toBe(false);
       });
 
-      it(`should migrate object literal provider with forwardRef in ${type}`, async() => {
+      it(`should migrate object literal provider with forwardRef in ${type}`, async () => {
         const {program, analysis} = setUpAndAnalyzeProgram([{
           name: INDEX_FILENAME,
           contents: `
@@ -121,12 +121,13 @@ runInEachFileSystem(() => {
 
             export class TestClass {}
             TestClass.decorators = [
-              { type: ${type}, args: [{${args}${propName}: [{provide: forwardRef(() => MyService) }]}] }
+              { type: ${type}, args: [{${args}${
+              propName}: [{provide: forwardRef(() => MyService) }]}] }
             ];
           `,
         }]);
 
-        const index = program.getSourceFile(INDEX_FILENAME) !;
+        const index = program.getSourceFile(INDEX_FILENAME)!;
         expect(hasInjectableDecorator(index, analysis, 'MyService')).toBe(true);
       });
 
@@ -140,12 +141,13 @@ runInEachFileSystem(() => {
 
             export class TestClass {}
             TestClass.decorators = [
-              { type: ${type}, args: [{${args}${propName}: [{provide: MyService, useValue: null }]}] }
+              { type: ${type}, args: [{${args}${
+              propName}: [{provide: MyService, useValue: null }]}] }
             ];
           `,
         }]);
 
-        const index = program.getSourceFile(INDEX_FILENAME) !;
+        const index = program.getSourceFile(INDEX_FILENAME)!;
         expect(hasInjectableDecorator(index, analysis, 'MyService')).toBe(false);
       });
 
@@ -159,12 +161,13 @@ runInEachFileSystem(() => {
 
             export class TestClass {}
             TestClass.decorators = [
-              { type: ${type}, args: [{${args}${propName}: [{provide: MyService, useFactory: () => null }]}] }
+              { type: ${type}, args: [{${args}${
+              propName}: [{provide: MyService, useFactory: () => null }]}] }
             ];
           `,
         }]);
 
-        const index = program.getSourceFile(INDEX_FILENAME) !;
+        const index = program.getSourceFile(INDEX_FILENAME)!;
         expect(hasInjectableDecorator(index, analysis, 'MyService')).toBe(false);
       });
 
@@ -189,7 +192,7 @@ runInEachFileSystem(() => {
           `,
         }]);
 
-        const index = program.getSourceFile(INDEX_FILENAME) !;
+        const index = program.getSourceFile(INDEX_FILENAME)!;
         expect(hasInjectableDecorator(index, analysis, 'MyService')).toBe(true);
         expect(hasInjectableDecorator(index, analysis, 'MyToken')).toBe(false);
         expect(hasInjectableDecorator(index, analysis, 'MyTokenAlias')).toBe(false);
@@ -206,12 +209,13 @@ runInEachFileSystem(() => {
 
             export class TestClass {}
             TestClass.decorators = [
-              { type: ${type}, args: [{${args}${propName}: [{provide: MyToken, useClass: MyService}]}] }
+              { type: ${type}, args: [{${args}${
+              propName}: [{provide: MyToken, useClass: MyService}]}] }
             ];
           `,
         }]);
 
-        const index = program.getSourceFile(INDEX_FILENAME) !;
+        const index = program.getSourceFile(INDEX_FILENAME)!;
         expect(hasInjectableDecorator(index, analysis, 'MyService')).toBe(true);
         expect(hasInjectableDecorator(index, analysis, 'MyToken')).toBe(false);
       });
@@ -234,7 +238,7 @@ runInEachFileSystem(() => {
           `,
         }]);
 
-        const index = program.getSourceFile(INDEX_FILENAME) !;
+        const index = program.getSourceFile(INDEX_FILENAME)!;
         expect(getInjectableDecorators(index, analysis, 'MyService').length).toBe(1);
       });
 
@@ -256,7 +260,7 @@ runInEachFileSystem(() => {
           `,
         }]);
 
-        const index = program.getSourceFile(INDEX_FILENAME) !;
+        const index = program.getSourceFile(INDEX_FILENAME)!;
         expect(hasInjectableDecorator(index, analysis, 'MyService')).toBe(false);
       });
 
@@ -278,7 +282,7 @@ runInEachFileSystem(() => {
           `,
         }]);
 
-        const index = program.getSourceFile(INDEX_FILENAME) !;
+        const index = program.getSourceFile(INDEX_FILENAME)!;
         expect(hasInjectableDecorator(index, analysis, 'MyService')).toBe(false);
       });
 
@@ -300,7 +304,7 @@ runInEachFileSystem(() => {
           `,
         }]);
 
-        const index = program.getSourceFile(INDEX_FILENAME) !;
+        const index = program.getSourceFile(INDEX_FILENAME)!;
         expect(hasInjectableDecorator(index, analysis, 'MyService')).toBe(false);
       });
 
@@ -320,7 +324,7 @@ runInEachFileSystem(() => {
           `,
         }]);
 
-        const index = program.getSourceFile(INDEX_FILENAME) !;
+        const index = program.getSourceFile(INDEX_FILENAME)!;
         expect(hasInjectableDecorator(index, analysis, 'ServiceA')).toBe(true);
         expect(hasInjectableDecorator(index, analysis, 'ServiceB')).toBe(true);
       });
@@ -348,7 +352,7 @@ runInEachFileSystem(() => {
           `,
         }]);
 
-        const index = program.getSourceFile(INDEX_FILENAME) !;
+        const index = program.getSourceFile(INDEX_FILENAME)!;
         expect(hasInjectableDecorator(index, analysis, 'ServiceA')).toBe(true);
         expect(hasInjectableDecorator(index, analysis, 'ServiceB')).toBe(true);
         expect(hasInjectableDecorator(index, analysis, 'ServiceC')).toBe(true);
@@ -381,7 +385,7 @@ runInEachFileSystem(() => {
          `,
         }]);
 
-        const index = program.getSourceFile(INDEX_FILENAME) !;
+        const index = program.getSourceFile(INDEX_FILENAME)!;
         expect(hasInjectableDecorator(index, analysis, 'ServiceA')).toBe(true);
         expect(hasInjectableDecorator(index, analysis, 'ServiceB')).toBe(true);
         expect(hasInjectableDecorator(index, analysis, 'ServiceC')).toBe(true);
@@ -407,7 +411,7 @@ runInEachFileSystem(() => {
           `
         }]);
 
-        const index = program.getSourceFile(INDEX_FILENAME) !;
+        const index = program.getSourceFile(INDEX_FILENAME)!;
         expect(hasInjectableDecorator(index, analysis, 'ServiceA')).toBe(true);
         expect(hasInjectableDecorator(index, analysis, 'ServiceB')).toBe(true);
         expect(hasInjectableDecorator(index, analysis, 'ServiceC')).toBe(false);
@@ -434,7 +438,7 @@ runInEachFileSystem(() => {
           `
         }]);
 
-        const index = program.getSourceFile(INDEX_FILENAME) !;
+        const index = program.getSourceFile(INDEX_FILENAME)!;
         expect(getInjectableDecorators(index, analysis, 'ServiceA').length).toBe(1);
         expect(getInjectableDecorators(index, analysis, 'ServiceB').length).toBe(1);
       });
@@ -454,7 +458,7 @@ runInEachFileSystem(() => {
           `,
         }]);
 
-        const index = program.getSourceFile(INDEX_FILENAME) !;
+        const index = program.getSourceFile(INDEX_FILENAME)!;
         expect(hasInjectableDecorator(index, analysis, 'ServiceA')).toBe(false);
       });
 
@@ -481,7 +485,7 @@ runInEachFileSystem(() => {
           }
         ]);
 
-        const index = program.getSourceFile(SERVICE_FILENAME) !;
+        const index = program.getSourceFile(SERVICE_FILENAME)!;
         expect(hasInjectableDecorator(index, analysis, 'MyService')).toBe(true);
       });
 
@@ -508,7 +512,7 @@ runInEachFileSystem(() => {
           }
         ]);
 
-        const index = program.getSourceFile(SERVICE_FILENAME) !;
+        const index = program.getSourceFile(SERVICE_FILENAME)!;
         expect(hasInjectableDecorator(index, analysis, 'MyService')).toBe(false);
       });
 
@@ -527,7 +531,7 @@ runInEachFileSystem(() => {
           `,
         }]);
 
-        const index = program.getSourceFile(INDEX_FILENAME) !;
+        const index = program.getSourceFile(INDEX_FILENAME)!;
         expect(hasInjectableDecorator(index, analysis, 'MyService')).toBe(true);
       });
 
@@ -546,7 +550,7 @@ runInEachFileSystem(() => {
           `,
         }]);
 
-        const index = program.getSourceFile(INDEX_FILENAME) !;
+        const index = program.getSourceFile(INDEX_FILENAME)!;
         expect(hasInjectableDecorator(index, analysis, 'MyService')).toBe(false);
       });
     }

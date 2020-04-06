@@ -10,8 +10,8 @@ import {EntryPoint} from '../../packages/entry_point';
 import {PartiallyOrderedTasks, Task, TaskDependencies} from './api';
 
 /** Stringify a task for debugging purposes. */
-export const stringifyTask = (task: Task): string =>
-    `{entryPoint: ${task.entryPoint.name}, formatProperty: ${task.formatProperty}, processDts: ${task.processDts}}`;
+export const stringifyTask = (task: Task): string => `{entryPoint: ${
+    task.entryPoint.name}, formatProperty: ${task.formatProperty}, processDts: ${task.processDts}}`;
 
 /**
  * Compute a mapping of tasks to the tasks that are dependent on them (if any).
@@ -45,7 +45,7 @@ export function computeTaskDependencies(
     // Find the earlier tasks (`candidateDependencies`) that this task depends upon.
     const deps = graph.dependenciesOf(entryPointPath);
     const taskDependencies = deps.filter(dep => candidateDependencies.has(dep))
-                                 .map(dep => candidateDependencies.get(dep) !);
+                                 .map(dep => candidateDependencies.get(dep)!);
 
     // If this task has dependencies, add it to the dependencies and dependents maps.
     if (taskDependencies.length > 0) {
@@ -61,7 +61,7 @@ export function computeTaskDependencies(
       // dependency of other tasks), so the following should theoretically never happen, but check
       // just in case.
       if (candidateDependencies.has(entryPointPath)) {
-        const otherTask = candidateDependencies.get(entryPointPath) !;
+        const otherTask = candidateDependencies.get(entryPointPath)!;
         throw new Error(
             'Invariant violated: Multiple tasks are assigned generating typings for ' +
             `'${entryPointPath}':\n  - ${stringifyTask(otherTask)}\n  - ${stringifyTask(task)}`);
@@ -73,7 +73,7 @@ export function computeTaskDependencies(
       // This task is not generating typings so we need to add it to the dependents of the task that
       // does generate typings, if that exists
       if (candidateDependencies.has(entryPointPath)) {
-        const typingsTask = candidateDependencies.get(entryPointPath) !;
+        const typingsTask = candidateDependencies.get(entryPointPath)!;
         const typingsTaskDependents = getDependentsSet(dependencies, typingsTask);
         typingsTaskDependents.add(task);
       }
@@ -87,7 +87,7 @@ export function getDependentsSet(map: TaskDependencies, task: Task): Set<Task> {
   if (!map.has(task)) {
     map.set(task, new Set());
   }
-  return map.get(task) !;
+  return map.get(task)!;
 }
 
 /**
@@ -125,13 +125,13 @@ export function sortTasksByPriority(
     tasks: PartiallyOrderedTasks, dependencies: TaskDependencies): PartiallyOrderedTasks {
   const priorityPerTask = new Map<Task, [number, number]>();
   const computePriority = (task: Task, idx: number):
-      [number, number] => [dependencies.has(task) ? dependencies.get(task) !.size : 0, idx];
+      [number, number] => [dependencies.has(task) ? dependencies.get(task)!.size : 0, idx];
 
   tasks.forEach((task, i) => priorityPerTask.set(task, computePriority(task, i)));
 
   return tasks.slice().sort((task1, task2) => {
-    const [p1, idx1] = priorityPerTask.get(task1) !;
-    const [p2, idx2] = priorityPerTask.get(task2) !;
+    const [p1, idx1] = priorityPerTask.get(task1)!;
+    const [p2, idx2] = priorityPerTask.get(task2)!;
 
     return (p2 - p1) || (idx1 - idx2);
   });

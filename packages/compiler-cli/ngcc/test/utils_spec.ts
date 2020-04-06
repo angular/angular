@@ -126,7 +126,7 @@ describe('getTsHelperFnFromDeclaration()', () => {
     const classDecl =
         ts.createClassDeclaration(undefined, undefined, '__assign', undefined, undefined, []);
 
-    expect(classDecl.name !.text).toBe('__assign');
+    expect(classDecl.name!.text).toBe('__assign');
     expect(getTsHelperFnFromDeclaration(classDecl)).toBe(null);
   });
 });

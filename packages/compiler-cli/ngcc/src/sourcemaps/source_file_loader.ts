@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {commentRegex, fromComment, mapFileCommentRegex} from 'convert-source-map';
-import {AbsoluteFsPath, FileSystem, absoluteFrom} from '../../../src/ngtsc/file_system';
+
+import {absoluteFrom, AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
+
 import {RawSourceMap} from './raw_source_map';
 import {SourceFile} from './source_file';
 
@@ -51,8 +53,8 @@ export class SourceFileLoader {
       // Track source file paths if we have loaded them from disk so that we don't get into an
       // infinite recursion
       if (previousPaths.includes(sourcePath)) {
-        throw new Error(
-            `Circular source file mapping dependency: ${previousPaths.join(' -> ')} -> ${sourcePath}`);
+        throw new Error(`Circular source file mapping dependency: ${
+            previousPaths.join(' -> ')} -> ${sourcePath}`);
       }
       previousPaths = previousPaths.concat([sourcePath]);
 
@@ -66,7 +68,7 @@ export class SourceFileLoader {
 
     let map: RawSourceMap|null = null;
     let inline = true;
-    let sources: (SourceFile | null)[] = [];
+    let sources: (SourceFile|null)[] = [];
     if (mapAndPath !== null) {
       const basePath = mapAndPath.mapPath || sourcePath;
       sources = this.processSources(basePath, mapAndPath.map, previousPaths);
@@ -87,7 +89,7 @@ export class SourceFileLoader {
   private loadSourceMap(sourcePath: AbsoluteFsPath, contents: string): MapAndPath|null {
     const inline = commentRegex.exec(contents);
     if (inline !== null) {
-      return {map: fromComment(inline.pop() !).sourcemap, mapPath: null};
+      return {map: fromComment(inline.pop()!).sourcemap, mapPath: null};
     }
 
     const external = mapFileCommentRegex.exec(contents);

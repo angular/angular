@@ -6,13 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {dirname, relative} from 'canonical-path';
-import * as ts from 'typescript';
 import MagicString from 'magic-string';
+import * as ts from 'typescript';
+
 import {Reexport} from '../../../src/ngtsc/imports';
 import {Import, ImportManager} from '../../../src/ngtsc/translator';
 import {ExportInfo} from '../analysis/private_declarations_analyzer';
 import {isRequireCall} from '../host/commonjs_umd_utils';
 import {NgccReflectionHost} from '../host/ngcc_host';
+
 import {Esm5RenderingFormatter} from './esm5_rendering_formatter';
 import {stripExtension} from './utils';
 

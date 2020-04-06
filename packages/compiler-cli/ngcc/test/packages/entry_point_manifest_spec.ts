@@ -7,7 +7,7 @@
  */
 import {createHash} from 'crypto';
 
-import {FileSystem, absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {NGCC_VERSION} from '../../src/packages/build_marker';
@@ -135,13 +135,15 @@ runInEachFileSystem(() => {
             _Abs('/project/node_modules/__ngcc_entry_points__.json'), JSON.stringify(manifestFile));
         const entryPoints = manifest.readEntryPointsUsingManifest(_Abs('/project/node_modules'));
         expect(entryPoints).toEqual([{
-          name: 'some_package/valid_entry_point', packageJson: jasmine.any(Object),
-              package: _Abs('/project/node_modules/some_package'),
-              path: _Abs('/project/node_modules/some_package/valid_entry_point'),
-              typings: _Abs(
-                  '/project/node_modules/some_package/valid_entry_point/valid_entry_point.d.ts'),
-              compiledByAngular: true, ignoreMissingDependencies: false,
-              generateDeepReexports: false,
+          name: 'some_package/valid_entry_point',
+          packageJson: jasmine.any(Object),
+          package: _Abs('/project/node_modules/some_package'),
+          path: _Abs('/project/node_modules/some_package/valid_entry_point'),
+          typings:
+              _Abs('/project/node_modules/some_package/valid_entry_point/valid_entry_point.d.ts'),
+          compiledByAngular: true,
+          ignoreMissingDependencies: false,
+          generateDeepReexports: false,
         } as any]);
       });
 

@@ -262,7 +262,7 @@ export class ClusterMaster {
    */
   private wrapEventHandler<Args extends unknown[]>(fn: (...args: Args) => void|Promise<void>):
       (...args: Args) => Promise<void> {
-    return async(...args: Args) => {
+    return async (...args: Args) => {
       try {
         await fn(...args);
       } catch (err) {

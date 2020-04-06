@@ -16,7 +16,12 @@ export interface ExportDeclaration {
 }
 
 export interface ExportStatement extends ts.ExpressionStatement {
-  expression: ts.BinaryExpression&{left: ts.PropertyAccessExpression & {expression: ts.Identifier}};
+  expression: ts.BinaryExpression&{
+    left: ts.PropertyAccessExpression &
+        {
+          expression: ts.Identifier
+        }
+  };
 }
 
 /**
@@ -34,7 +39,9 @@ export interface ExportStatement extends ts.ExpressionStatement {
  * expression and can be either a `require('...')` call or an identifier (initialized via a
  * `require('...')` call).
  */
-export interface ReexportStatement extends ts.ExpressionStatement { expression: ts.CallExpression; }
+export interface ReexportStatement extends ts.ExpressionStatement {
+  expression: ts.CallExpression;
+}
 
 export interface RequireCall extends ts.CallExpression {
   arguments: ts.CallExpression['arguments']&[ts.StringLiteral];

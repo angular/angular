@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem, PathSegment, absoluteFrom, getFileSystem} from '../../../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, PathSegment} from '../../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../../src/ngtsc/file_system/testing';
 import {EntryPointPackageJson} from '../../../src/packages/entry_point';
 import {BackupFileCleaner, NgccDirectoryCleaner, PackageJsonCleaner} from '../../../src/writing/cleaning/cleaning_strategies';
@@ -21,9 +21,10 @@ runInEachFileSystem(() => {
     });
 
     describe('PackageJsonCleaner', () => {
-
       let packageJsonPath: AbsoluteFsPath;
-      beforeEach(() => { packageJsonPath = _abs('/node_modules/pkg/package.json'); });
+      beforeEach(() => {
+        packageJsonPath = _abs('/node_modules/pkg/package.json');
+      });
 
       describe('canClean()', () => {
         it('should return true if the basename is package.json', () => {
@@ -150,7 +151,6 @@ runInEachFileSystem(() => {
       });
 
       describe('canClean()', () => {
-
         it('should return true if the file name ends in .__ivy_ngcc_bak and the processed file exists',
            () => {
              const strategy = new BackupFileCleaner(fs);
@@ -192,7 +192,9 @@ runInEachFileSystem(() => {
 
     describe('NgccDirectoryCleaner', () => {
       let ivyDirectory: AbsoluteFsPath;
-      beforeEach(() => { ivyDirectory = _abs('/node_modules/pkg/__ivy_ngcc__'); });
+      beforeEach(() => {
+        ivyDirectory = _abs('/node_modules/pkg/__ivy_ngcc__');
+      });
 
       describe('canClean()', () => {
         it('should return true if the path is a directory and is called __ivy_ngcc__', () => {

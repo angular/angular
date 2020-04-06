@@ -23,7 +23,7 @@ runInEachFileSystem(() => {
     class LockFileUnderTest extends LockFileWithChildProcess {
       // Note that log is initialized in the `createUnlocker()` function that is called from
       // super(), so we can't initialize it here.
-      log !: string[];
+      log!: string[];
       constructor(fs: FileSystem) {
         super(fs, new MockLogger());
         fs.ensureDir(fs.dirname(this.path));
@@ -47,7 +47,11 @@ runInEachFileSystem(() => {
         const log = this.log;
         // Normally this would fork a child process and return it.
         // But we don't want to do that in these tests.
-        return <any>{disconnect() { log.push('unlocker.disconnect()'); }};
+        return <any>{
+          disconnect() {
+            log.push('unlocker.disconnect()');
+          }
+        };
       }
     }
 

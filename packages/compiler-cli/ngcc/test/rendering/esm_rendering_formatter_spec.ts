@@ -8,20 +8,21 @@
 import {DeclareVarStmt, LiteralExpr, StmtModifier} from '@angular/compiler';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
-import {NoopImportRewriter} from '../../../src/ngtsc/imports';
+
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
-import {loadTestFiles, loadFakeCore} from '../../../test/helpers';
-import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
+import {NoopImportRewriter} from '../../../src/ngtsc/imports';
 import {ImportManager} from '../../../src/ngtsc/translator';
+import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
+import {ModuleWithProvidersAnalyzer} from '../../src/analysis/module_with_providers_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
 import {IMPORT_PREFIX} from '../../src/constants';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {EsmRenderingFormatter} from '../../src/rendering/esm_rendering_formatter';
-import {makeTestEntryPointBundle, getRootFiles} from '../helpers/utils';
 import {MockLogger} from '../helpers/mock_logger';
-import {ModuleWithProvidersAnalyzer} from '../../src/analysis/module_with_providers_analyzer';
+import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils';
 
 function setup(files: TestFile[], dtsFiles?: TestFile[]) {
   const fs = getFileSystem();
@@ -32,7 +33,7 @@ function setup(files: TestFile[], dtsFiles?: TestFile[]) {
   }
   const logger = new MockLogger();
   const bundle = makeTestEntryPointBundle(
-      'test-package', 'esm2015', false, getRootFiles(files), dtsFiles && getRootFiles(dtsFiles)) !;
+      'test-package', 'esm2015', false, getRootFiles(files), dtsFiles && getRootFiles(dtsFiles))!;
   const host = new Esm2015ReflectionHost(logger, false, bundle.src, bundle.dts);
   const referencesRegistry = new NgccReferencesRegistry(host);
   const decorationAnalyses =
@@ -45,13 +46,16 @@ function setup(files: TestFile[], dtsFiles?: TestFile[]) {
     host,
     bundle,
     program: bundle.src.program,
-    sourceFile: bundle.src.file, renderer, decorationAnalyses, switchMarkerAnalyses, importManager,
+    sourceFile: bundle.src.file,
+    renderer,
+    decorationAnalyses,
+    switchMarkerAnalyses,
+    importManager,
   };
 }
 
 runInEachFileSystem(() => {
   describe('EsmRenderingFormatter', () => {
-
     let _: typeof absoluteFrom;
     let PROGRAM: TestFile;
 
@@ -195,7 +199,7 @@ export class A {`);
         const file = getSourceFileOrError(program, _('/node_modules/test-package/some/file.js'));
         const output = new MagicString(PROGRAM.contents);
         renderer.rewriteSwitchableDeclarations(
-            output, file, switchMarkerAnalyses.get(sourceFile) !.declarations);
+            output, file, switchMarkerAnalyses.get(sourceFile)!.declarations);
         expect(output.toString())
             .not.toContain(`let compileNgModuleFactory = compileNgModuleFactory__PRE_R3__;`);
         expect(output.toString())
@@ -216,7 +220,7 @@ export class A {`);
         const {renderer, decorationAnalyses, sourceFile} = setup([PROGRAM]);
         const output = new MagicString(PROGRAM.contents);
         const compiledClass =
-            decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'A') !;
+            decorationAnalyses.get(sourceFile)!.compiledClasses.find(c => c.name === 'A')!;
         renderer.addDefinitions(output, compiledClass, 'SOME DEFINITION TEXT');
         expect(output.toString()).toContain(`
 export class A {}
@@ -230,7 +234,7 @@ A.decorators = [
            const {renderer, decorationAnalyses, sourceFile} = setup([PROGRAM]);
            const output = new MagicString(PROGRAM.contents);
            const compiledClass =
-               decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'C') !;
+               decorationAnalyses.get(sourceFile)!.compiledClasses.find(c => c.name === 'C')!;
            renderer.addDefinitions(output, compiledClass, 'SOME DEFINITION TEXT');
            expect(output.toString()).toContain(`
 let C = C_1 = class C {};
@@ -259,8 +263,8 @@ C.decorators = [
         const program = {name: _('/node_modules/test-package/some/file.js'), contents};
         const {renderer, decorationAnalyses, sourceFile} = setup([program]);
         const output = new MagicString(contents);
-        const compiledClass = decorationAnalyses.get(sourceFile) !.compiledClasses.find(
-            c => c.name === 'SomeDirective') !;
+        const compiledClass = decorationAnalyses.get(sourceFile)!.compiledClasses.find(
+            c => c.name === 'SomeDirective')!;
         renderer.addAdjacentStatements(output, compiledClass, 'SOME STATEMENTS');
         expect(output.toString())
             .toContain(
@@ -275,8 +279,8 @@ C.decorators = [
         const program = {name: _('/node_modules/test-package/some/file.js'), contents};
         const {renderer, decorationAnalyses, sourceFile} = setup([program]);
         const output = new MagicString(contents);
-        const compiledClass = decorationAnalyses.get(sourceFile) !.compiledClasses.find(
-            c => c.name === 'SomeDirective') !;
+        const compiledClass = decorationAnalyses.get(sourceFile)!.compiledClasses.find(
+            c => c.name === 'SomeDirective')!;
         renderer.addDefinitions(output, compiledClass, 'SOME DEFINITIONS');
         renderer.addAdjacentStatements(output, compiledClass, 'SOME STATEMENTS');
         const definitionsPosition = output.toString().indexOf('SOME DEFINITIONS');
@@ -294,10 +298,10 @@ C.decorators = [
              const {decorationAnalyses, sourceFile, renderer} = setup([PROGRAM]);
              const output = new MagicString(PROGRAM.contents);
              const compiledClass =
-                 decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'A') !;
-             const decorator = compiledClass.decorators ![0];
+                 decorationAnalyses.get(sourceFile)!.compiledClasses.find(c => c.name === 'A')!;
+             const decorator = compiledClass.decorators![0];
              const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-             decoratorsToRemove.set(decorator.node !.parent !, [decorator.node !]);
+             decoratorsToRemove.set(decorator.node!.parent!, [decorator.node!]);
              renderer.removeDecorators(output, decoratorsToRemove);
              expect(output.toString())
                  .not.toContain(`{ type: Directive, args: [{ selector: '[a]' }] },`);
@@ -315,10 +319,10 @@ C.decorators = [
              const {decorationAnalyses, sourceFile, renderer} = setup([PROGRAM]);
              const output = new MagicString(PROGRAM.contents);
              const compiledClass =
-                 decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'B') !;
-             const decorator = compiledClass.decorators ![0];
+                 decorationAnalyses.get(sourceFile)!.compiledClasses.find(c => c.name === 'B')!;
+             const decorator = compiledClass.decorators![0];
              const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-             decoratorsToRemove.set(decorator.node !.parent !, [decorator.node !]);
+             decoratorsToRemove.set(decorator.node!.parent!, [decorator.node!]);
              renderer.removeDecorators(output, decoratorsToRemove);
              expect(output.toString())
                  .toContain(`{ type: Directive, args: [{ selector: '[a]' }] },`);
@@ -343,10 +347,10 @@ A.decorators = [
           const {decorationAnalyses, sourceFile, renderer} = setup([file]);
           const output = new MagicString(text);
           const compiledClass =
-              decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'A') !;
-          const decorator = compiledClass.decorators ![0];
+              decorationAnalyses.get(sourceFile)!.compiledClasses.find(c => c.name === 'A')!;
+          const decorator = compiledClass.decorators![0];
           const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-          decoratorsToRemove.set(decorator.node !.parent !, [decorator.node !]);
+          decoratorsToRemove.set(decorator.node!.parent!, [decorator.node!]);
           renderer.removeDecorators(output, decoratorsToRemove);
           // The decorator should have been removed correctly.
           expect(output.toString()).toContain('A.decorators = [ { type: OtherA }');
@@ -358,10 +362,10 @@ A.decorators = [
              const {decorationAnalyses, sourceFile, renderer} = setup([PROGRAM]);
              const output = new MagicString(PROGRAM.contents);
              const compiledClass =
-                 decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'C') !;
-             const decorator = compiledClass.decorators ![0];
+                 decorationAnalyses.get(sourceFile)!.compiledClasses.find(c => c.name === 'C')!;
+             const decorator = compiledClass.decorators![0];
              const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-             decoratorsToRemove.set(decorator.node !.parent !, [decorator.node !]);
+             decoratorsToRemove.set(decorator.node!.parent!, [decorator.node!]);
              renderer.removeDecorators(output, decoratorsToRemove);
              expect(output.toString())
                  .toContain(`{ type: Directive, args: [{ selector: '[a]' }] },`);
@@ -424,10 +428,10 @@ export { D };
            const {renderer, decorationAnalyses, sourceFile} = setup([PROGRAM_DECORATE_HELPER]);
            const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
            const compiledClass =
-               decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'A') !;
-           const decorator = compiledClass.decorators !.find(d => d.name === 'Directive') !;
+               decorationAnalyses.get(sourceFile)!.compiledClasses.find(c => c.name === 'A')!;
+           const decorator = compiledClass.decorators!.find(d => d.name === 'Directive')!;
            const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-           decoratorsToRemove.set(decorator.node !.parent !, [decorator.node !]);
+           decoratorsToRemove.set(decorator.node!.parent!, [decorator.node!]);
            renderer.removeDecorators(output, decoratorsToRemove);
            expect(output.toString()).not.toContain(`Directive({ selector: '[a]' }),`);
            expect(output.toString()).toContain(`OtherA()`);
@@ -441,10 +445,10 @@ export { D };
            const {renderer, decorationAnalyses, sourceFile} = setup([PROGRAM_DECORATE_HELPER]);
            const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
            const compiledClass =
-               decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'B') !;
-           const decorator = compiledClass.decorators !.find(d => d.name === 'Directive') !;
+               decorationAnalyses.get(sourceFile)!.compiledClasses.find(c => c.name === 'B')!;
+           const decorator = compiledClass.decorators!.find(d => d.name === 'Directive')!;
            const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-           decoratorsToRemove.set(decorator.node !.parent !, [decorator.node !]);
+           decoratorsToRemove.set(decorator.node!.parent!, [decorator.node!]);
            renderer.removeDecorators(output, decoratorsToRemove);
            expect(output.toString()).toContain(`Directive({ selector: '[a]' }),`);
            expect(output.toString()).toContain(`OtherA()`);
@@ -459,10 +463,10 @@ export { D };
            const {renderer, decorationAnalyses, sourceFile} = setup([PROGRAM_DECORATE_HELPER]);
            const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
            const compiledClass =
-               decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'C') !;
-           const decorator = compiledClass.decorators !.find(d => d.name === 'Directive') !;
+               decorationAnalyses.get(sourceFile)!.compiledClasses.find(c => c.name === 'C')!;
+           const decorator = compiledClass.decorators!.find(d => d.name === 'Directive')!;
            const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-           decoratorsToRemove.set(decorator.node !.parent !, [decorator.node !]);
+           decoratorsToRemove.set(decorator.node!.parent!, [decorator.node!]);
            renderer.removeDecorators(output, decoratorsToRemove);
            expect(output.toString()).toContain(`Directive({ selector: '[a]' }),`);
            expect(output.toString()).toContain(`OtherA()`);
@@ -573,8 +577,8 @@ export { D };
             new ModuleWithProvidersAnalyzer(host, referencesRegistry, true)
                 .analyzeProgram(bundle.src.program);
         const typingsFile = getSourceFileOrError(
-            bundle.dts !.program, _('/node_modules/test-package/typings/index.d.ts'));
-        const moduleWithProvidersInfo = moduleWithProvidersAnalyses.get(typingsFile) !;
+            bundle.dts!.program, _('/node_modules/test-package/typings/index.d.ts'));
+        const moduleWithProvidersInfo = moduleWithProvidersAnalyses.get(typingsFile)!;
 
         const output = new MagicString(MODULE_WITH_PROVIDERS_DTS_PROGRAM[0].contents);
         const importManager = new ImportManager(new NoopImportRewriter(), 'i');
@@ -610,8 +614,8 @@ export { D };
                new ModuleWithProvidersAnalyzer(host, referencesRegistry, true)
                    .analyzeProgram(bundle.src.program);
            const typingsFile = getSourceFileOrError(
-               bundle.dts !.program, _('/node_modules/test-package/typings/module.d.ts'));
-           const moduleWithProvidersInfo = moduleWithProvidersAnalyses.get(typingsFile) !;
+               bundle.dts!.program, _('/node_modules/test-package/typings/module.d.ts'));
+           const moduleWithProvidersInfo = moduleWithProvidersAnalyses.get(typingsFile)!;
 
            const output = new MagicString(MODULE_WITH_PROVIDERS_DTS_PROGRAM[1].contents);
            const importManager = new ImportManager(new NoopImportRewriter(), 'i');

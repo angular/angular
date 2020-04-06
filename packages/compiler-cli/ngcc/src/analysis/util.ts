@@ -7,7 +7,7 @@
  */
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath, absoluteFromSourceFile, relative} from '../../../src/ngtsc/file_system';
+import {absoluteFromSourceFile, AbsoluteFsPath, relative} from '../../../src/ngtsc/file_system';
 import {DependencyTracker} from '../../../src/ngtsc/incremental/api';
 
 export function isWithinPackage(packagePath: AbsoluteFsPath, sourceFile: ts.SourceFile): boolean {

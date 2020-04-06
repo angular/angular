@@ -45,5 +45,7 @@ export class NgccReferencesRegistry implements ReferencesRegistry {
    * Create and return a mapping for the registered resolved references.
    * @returns A map of reference identifiers to reference declarations.
    */
-  getDeclarationMap(): Map<ts.Identifier, ConcreteDeclaration> { return this.map; }
+  getDeclarationMap(): Map<ts.Identifier, ConcreteDeclaration> {
+    return this.map;
+  }
 }

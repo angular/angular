@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LogLevel, Logger} from '../../src/logging/logger';
+import {Logger, LogLevel} from '../../src/logging/logger';
 
 export class MockLogger implements Logger {
   constructor(public level = LogLevel.info) {}
@@ -17,8 +17,16 @@ export class MockLogger implements Logger {
     warn: [],
     error: [],
   };
-  debug(...args: string[]) { this.logs.debug.push(args); }
-  info(...args: string[]) { this.logs.info.push(args); }
-  warn(...args: string[]) { this.logs.warn.push(args); }
-  error(...args: string[]) { this.logs.error.push(args); }
+  debug(...args: string[]) {
+    this.logs.debug.push(args);
+  }
+  info(...args: string[]) {
+    this.logs.info.push(args);
+  }
+  warn(...args: string[]) {
+    this.logs.warn.push(args);
+  }
+  error(...args: string[]) {
+    this.logs.error.push(args);
+  }
 }

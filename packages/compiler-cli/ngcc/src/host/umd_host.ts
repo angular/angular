@@ -13,7 +13,8 @@ import {Declaration, Import} from '../../../src/ngtsc/reflection';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
 import {FactoryMap, getTsHelperFnFromIdentifier, stripExtension} from '../utils';
-import {ExportDeclaration, ExportStatement, ReexportStatement, findNamespaceOfIdentifier, findRequireCallReference, isExportStatement, isReexportStatement, isRequireCall} from './commonjs_umd_utils';
+
+import {ExportDeclaration, ExportStatement, findNamespaceOfIdentifier, findRequireCallReference, isExportStatement, isReexportStatement, isRequireCall, ReexportStatement} from './commonjs_umd_utils';
 import {Esm5ReflectionHost, stripParentheses} from './esm5_host';
 
 export class UmdReflectionHost extends Esm5ReflectionHost {
@@ -61,7 +62,8 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     return this.umdImportPaths.get(importParameter);
   }
 
-  /** Get the top level statements for a module.
+  /**
+   * Get the top level statements for a module.
    *
    * In UMD modules these are the body of the UMD factory function.
    *

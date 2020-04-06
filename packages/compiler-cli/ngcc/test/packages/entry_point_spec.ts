@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteFsPath, FileSystem, absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {NgccConfiguration} from '../../src/packages/configuration';
-import {EntryPoint, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat, getEntryPointInfo} from '../../src/packages/entry_point';
+import {EntryPoint, getEntryPointFormat, getEntryPointInfo, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT, SUPPORTED_FORMAT_PROPERTIES} from '../../src/packages/entry_point';
 import {MockLogger} from '../helpers/mock_logger';
 
 runInEachFileSystem(() => {
@@ -69,8 +69,7 @@ runInEachFileSystem(() => {
       ]);
       const config = new NgccConfiguration(fs, _('/project'));
       spyOn(config, 'getConfig').and.returnValue({
-        entryPoints:
-            {[_('/project/node_modules/some_package/valid_entry_point')]: {ignore: true}}
+        entryPoints: {[_('/project/node_modules/some_package/valid_entry_point')]: {ignore: true}}
       });
       const entryPoint = getEntryPointInfo(
           fs, config, new MockLogger(), SOME_PACKAGE,
@@ -102,8 +101,9 @@ runInEachFileSystem(() => {
           fs, config, new MockLogger(), SOME_PACKAGE,
           _('/project/node_modules/some_package/valid_entry_point'));
       const overriddenPackageJson = {
-          ...loadPackageJson(fs, '/project/node_modules/some_package/valid_entry_point'),
-          ...override};
+        ...loadPackageJson(fs, '/project/node_modules/some_package/valid_entry_point'),
+        ...override
+      };
       expect(entryPoint).toEqual({
         name: 'some_package/valid_entry_point',
         package: SOME_PACKAGE,
@@ -145,8 +145,7 @@ runInEachFileSystem(() => {
          const override =
              JSON.parse(createPackageJson('missing_package_json', {excludes: ['name']}));
          spyOn(config, 'getConfig').and.returnValue({
-           entryPoints:
-               {[_('/project/node_modules/some_package/missing_package_json')]: {override}}
+           entryPoints: {[_('/project/node_modules/some_package/missing_package_json')]: {override}}
          });
          const entryPoint = getEntryPointInfo(
              fs, config, new MockLogger(), SOME_PACKAGE,
@@ -211,37 +210,38 @@ runInEachFileSystem(() => {
       // Let's give 'module' a specific path, otherwise compute it based on the property.
       const typingsPath = prop === 'module' ? 'index' : `${prop}/missing_typings`;
 
-      it(`should return an object if it can guess the typings path from the "${prop}" field`, () => {
-        loadTestFiles([
-          {
-            name: _('/project/node_modules/some_package/missing_typings/package.json'),
-            contents: createPackageJson('missing_typings', {excludes: ['typings']}),
-          },
-          {
-            name: _(
-                `/project/node_modules/some_package/missing_typings/${typingsPath}.metadata.json`),
-            contents: 'some meta data',
-          },
-          {
-            name: _(`/project/node_modules/some_package/missing_typings/${typingsPath}.d.ts`),
-            contents: '// some typings file',
-          },
-        ]);
-        const config = new NgccConfiguration(fs, _('/project'));
-        const entryPoint = getEntryPointInfo(
-            fs, config, new MockLogger(), SOME_PACKAGE,
-            _('/project/node_modules/some_package/missing_typings'));
-        expect(entryPoint).toEqual({
-          name: 'some_package/missing_typings',
-          package: SOME_PACKAGE,
-          path: _('/project/node_modules/some_package/missing_typings'),
-          typings: _(`/project/node_modules/some_package/missing_typings/${typingsPath}.d.ts`),
-          packageJson: loadPackageJson(fs, '/project/node_modules/some_package/missing_typings'),
-          compiledByAngular: true,
-          ignoreMissingDependencies: false,
-          generateDeepReexports: false,
-        });
-      });
+      it(`should return an object if it can guess the typings path from the "${prop}" field`,
+         () => {
+           loadTestFiles([
+             {
+               name: _('/project/node_modules/some_package/missing_typings/package.json'),
+               contents: createPackageJson('missing_typings', {excludes: ['typings']}),
+             },
+             {
+               name: _(`/project/node_modules/some_package/missing_typings/${
+                   typingsPath}.metadata.json`),
+               contents: 'some meta data',
+             },
+             {
+               name: _(`/project/node_modules/some_package/missing_typings/${typingsPath}.d.ts`),
+               contents: '// some typings file',
+             },
+           ]);
+           const config = new NgccConfiguration(fs, _('/project'));
+           const entryPoint = getEntryPointInfo(
+               fs, config, new MockLogger(), SOME_PACKAGE,
+               _('/project/node_modules/some_package/missing_typings'));
+           expect(entryPoint).toEqual({
+             name: 'some_package/missing_typings',
+             package: SOME_PACKAGE,
+             path: _('/project/node_modules/some_package/missing_typings'),
+             typings: _(`/project/node_modules/some_package/missing_typings/${typingsPath}.d.ts`),
+             packageJson: loadPackageJson(fs, '/project/node_modules/some_package/missing_typings'),
+             compiledByAngular: true,
+             ignoreMissingDependencies: false,
+             generateDeepReexports: false,
+           });
+         });
     }
 
     it('should return an object with `compiledByAngular` set to false if there is no metadata.json file next to the typing file',
@@ -401,23 +401,29 @@ runInEachFileSystem(() => {
       entryPoint = result;
     });
 
-    it('should return `esm2015` format for `fesm2015` property',
-       () => { expect(getEntryPointFormat(fs, entryPoint, 'fesm2015')).toBe('esm2015'); });
+    it('should return `esm2015` format for `fesm2015` property', () => {
+      expect(getEntryPointFormat(fs, entryPoint, 'fesm2015')).toBe('esm2015');
+    });
 
-    it('should return `esm5` format for `fesm5` property',
-       () => { expect(getEntryPointFormat(fs, entryPoint, 'fesm5')).toBe('esm5'); });
+    it('should return `esm5` format for `fesm5` property', () => {
+      expect(getEntryPointFormat(fs, entryPoint, 'fesm5')).toBe('esm5');
+    });
 
-    it('should return `esm2015` format for `es2015` property',
-       () => { expect(getEntryPointFormat(fs, entryPoint, 'es2015')).toBe('esm2015'); });
+    it('should return `esm2015` format for `es2015` property', () => {
+      expect(getEntryPointFormat(fs, entryPoint, 'es2015')).toBe('esm2015');
+    });
 
-    it('should return `esm2015` format for `esm2015` property',
-       () => { expect(getEntryPointFormat(fs, entryPoint, 'esm2015')).toBe('esm2015'); });
+    it('should return `esm2015` format for `esm2015` property', () => {
+      expect(getEntryPointFormat(fs, entryPoint, 'esm2015')).toBe('esm2015');
+    });
 
-    it('should return `esm5` format for `esm5` property',
-       () => { expect(getEntryPointFormat(fs, entryPoint, 'esm5')).toBe('esm5'); });
+    it('should return `esm5` format for `esm5` property', () => {
+      expect(getEntryPointFormat(fs, entryPoint, 'esm5')).toBe('esm5');
+    });
 
-    it('should return `esm5` format for `module` property',
-       () => { expect(getEntryPointFormat(fs, entryPoint, 'module')).toBe('esm5'); });
+    it('should return `esm5` format for `module` property', () => {
+      expect(getEntryPointFormat(fs, entryPoint, 'module')).toBe('esm5');
+    });
 
     it('should return `umd` for `main` if the file contains a UMD wrapper function', () => {
       loadTestFiles([{

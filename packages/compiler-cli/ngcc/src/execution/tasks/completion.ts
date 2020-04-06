@@ -8,8 +8,9 @@
 import {FileSystem, resolve} from '../../../../src/ngtsc/file_system';
 import {Logger} from '../../logging/logger';
 import {markAsProcessed} from '../../packages/build_marker';
-import {PackageJsonFormatProperties, getEntryPointFormat} from '../../packages/entry_point';
+import {getEntryPointFormat, PackageJsonFormatProperties} from '../../packages/entry_point';
 import {PackageJsonUpdater} from '../../writing/package_json_updater';
+
 import {Task, TaskCompletedCallback, TaskProcessingOutcome, TaskQueue} from './api';
 
 /**
@@ -18,7 +19,7 @@ import {Task, TaskCompletedCallback, TaskProcessingOutcome, TaskQueue} from './a
  * These functions can be composed using the `composeTaskCompletedCallbacks()`
  * to create a `TaskCompletedCallback` function that can be passed to an `Executor`.
  */
-export type TaskCompletedHandler = (task: Task, message: string | null) => void;
+export type TaskCompletedHandler = (task: Task, message: string|null) => void;
 
 /**
  * Compose a group of TaskCompletedHandlers into a single TaskCompletedCallback.
@@ -30,11 +31,11 @@ export type TaskCompletedHandler = (task: Task, message: string | null) => void;
  */
 export function composeTaskCompletedCallbacks(
     callbacks: Record<TaskProcessingOutcome, TaskCompletedHandler>): TaskCompletedCallback {
-  return (task: Task, outcome: TaskProcessingOutcome, message: string | null): void => {
+  return (task: Task, outcome: TaskProcessingOutcome, message: string|null): void => {
     const callback = callbacks[outcome];
     if (callback === undefined) {
-      throw new Error(
-          `Unknown task outcome: "${outcome}" - supported outcomes: ${JSON.stringify(Object.keys(callbacks))}`);
+      throw new Error(`Unknown task outcome: "${outcome}" - supported outcomes: ${
+          JSON.stringify(Object.keys(callbacks))}`);
     }
     callback(task, message);
   };
@@ -64,10 +65,11 @@ export function createMarkAsProcessedHandler(pkgJsonUpdater: PackageJsonUpdater)
  * Create a handler that will throw an error.
  */
 export function createThrowErrorHandler(fs: FileSystem): TaskCompletedHandler {
-  return (task: Task, message: string | null): void => {
+  return (task: Task, message: string|null): void => {
     const format = getEntryPointFormat(fs, task.entryPoint, task.formatProperty);
     throw new Error(
-        `Failed to compile entry-point ${task.entryPoint.name} (${task.formatProperty} as ${format})` +
+        `Failed to compile entry-point ${task.entryPoint.name} (${task.formatProperty} as ${
+            format})` +
         (message !== null ? ` due to ${message}` : ''));
   };
 }
@@ -77,11 +79,12 @@ export function createThrowErrorHandler(fs: FileSystem): TaskCompletedHandler {
  */
 export function createLogErrorHandler(
     logger: Logger, fs: FileSystem, taskQueue: TaskQueue): TaskCompletedHandler {
-  return (task: Task, message: string | null): void => {
+  return (task: Task, message: string|null): void => {
     taskQueue.markAsFailed(task);
     const format = getEntryPointFormat(fs, task.entryPoint, task.formatProperty);
     logger.error(
-        `Failed to compile entry-point ${task.entryPoint.name} (${task.formatProperty} as ${format})` +
+        `Failed to compile entry-point ${task.entryPoint.name} (${task.formatProperty} as ${
+            format})` +
         (message !== null ? ` due to ${message}` : ''));
   };
 }

@@ -7,21 +7,22 @@
  */
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
+
 import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
-import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {Reexport} from '../../../src/ngtsc/imports';
-import {loadTestFiles} from '../../../test/helpers';
 import {Import, ImportManager} from '../../../src/ngtsc/translator';
+import {loadTestFiles} from '../../../test/helpers';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
-import {CompiledClass} from '../../src/analysis/types';
-import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {ModuleWithProvidersAnalyzer, ModuleWithProvidersInfo} from '../../src/analysis/module_with_providers_analyzer';
-import {PrivateDeclarationsAnalyzer, ExportInfo} from '../../src/analysis/private_declarations_analyzer';
+import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
+import {ExportInfo, PrivateDeclarationsAnalyzer} from '../../src/analysis/private_declarations_analyzer';
+import {CompiledClass} from '../../src/analysis/types';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
-import {RenderingFormatter, RedundantDecoratorMap} from '../../src/rendering/rendering_formatter';
 import {DtsRenderer} from '../../src/rendering/dts_renderer';
+import {RedundantDecoratorMap, RenderingFormatter} from '../../src/rendering/rendering_formatter';
 import {MockLogger} from '../helpers/mock_logger';
-import {makeTestEntryPointBundle, getRootFiles} from '../helpers/utils';
+import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils';
 
 class TestRenderingFormatter implements RenderingFormatter {
   addImports(output: MagicString, imports: Import[], sf: ts.SourceFile) {
@@ -53,7 +54,9 @@ class TestRenderingFormatter implements RenderingFormatter {
       importManager: ImportManager): void {
     output.prepend('\n// ADD MODUlE WITH PROVIDERS PARAMS\n');
   }
-  printStatement(): string { return 'IGNORED'; }
+  printStatement(): string {
+    return 'IGNORED';
+  }
 }
 
 function createTestRenderer(
@@ -92,12 +95,14 @@ function createTestRenderer(
 
   const renderer = new DtsRenderer(testFormatter, fs, logger, host, bundle);
 
-  return {renderer,
-          testFormatter,
-          decorationAnalyses,
-          moduleWithProvidersAnalyses,
-          privateDeclarationsAnalyses,
-          bundle};
+  return {
+    renderer,
+    testFormatter,
+    decorationAnalyses,
+    moduleWithProvidersAnalyses,
+    privateDeclarationsAnalyses,
+    bundle
+  };
 }
 
 runInEachFileSystem(() => {
@@ -120,35 +125,44 @@ runInEachFileSystem(() => {
     });
 
     it('should render extract types into typings files', () => {
-      const {renderer, decorationAnalyses, privateDeclarationsAnalyses,
-             moduleWithProvidersAnalyses} =
-          createTestRenderer('test-package', [INPUT_PROGRAM], [INPUT_DTS_PROGRAM]);
+      const {
+        renderer,
+        decorationAnalyses,
+        privateDeclarationsAnalyses,
+        moduleWithProvidersAnalyses
+      } = createTestRenderer('test-package', [INPUT_PROGRAM], [INPUT_DTS_PROGRAM]);
       const result = renderer.renderProgram(
           decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses);
 
       const typingsFile =
-          result.find(f => f.path === _('/node_modules/test-package/typings/file.d.ts')) !;
+          result.find(f => f.path === _('/node_modules/test-package/typings/file.d.ts'))!;
       expect(typingsFile.contents)
           .toContain(
               'foo(x: number): number;\n    static ɵfac: ɵngcc0.ɵɵFactoryDef<A, never>;\n    static ɵdir: ɵngcc0.ɵɵDirectiveDefWithMeta');
     });
 
     it('should render imports into typings files', () => {
-      const {renderer, decorationAnalyses, privateDeclarationsAnalyses,
-             moduleWithProvidersAnalyses} =
-          createTestRenderer('test-package', [INPUT_PROGRAM], [INPUT_DTS_PROGRAM]);
+      const {
+        renderer,
+        decorationAnalyses,
+        privateDeclarationsAnalyses,
+        moduleWithProvidersAnalyses
+      } = createTestRenderer('test-package', [INPUT_PROGRAM], [INPUT_DTS_PROGRAM]);
       const result = renderer.renderProgram(
           decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses);
 
       const typingsFile =
-          result.find(f => f.path === _('/node_modules/test-package/typings/file.d.ts')) !;
+          result.find(f => f.path === _('/node_modules/test-package/typings/file.d.ts'))!;
       expect(typingsFile.contents).toContain(`\n// ADD IMPORTS\n`);
     });
 
     it('should render exports into typings files', () => {
-      const {renderer, decorationAnalyses, privateDeclarationsAnalyses,
-             moduleWithProvidersAnalyses} =
-          createTestRenderer('test-package', [INPUT_PROGRAM], [INPUT_DTS_PROGRAM]);
+      const {
+        renderer,
+        decorationAnalyses,
+        privateDeclarationsAnalyses,
+        moduleWithProvidersAnalyses
+      } = createTestRenderer('test-package', [INPUT_PROGRAM], [INPUT_DTS_PROGRAM]);
 
       // Add a mock export to trigger export rendering
       privateDeclarationsAnalyses.push({
@@ -161,20 +175,23 @@ runInEachFileSystem(() => {
           decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses);
 
       const typingsFile =
-          result.find(f => f.path === _('/node_modules/test-package/typings/file.d.ts')) !;
+          result.find(f => f.path === _('/node_modules/test-package/typings/file.d.ts'))!;
       expect(typingsFile.contents).toContain(`\n// ADD EXPORTS\n`);
     });
 
     it('should render ModuleWithProviders type params', () => {
-      const {renderer, decorationAnalyses, privateDeclarationsAnalyses,
-             moduleWithProvidersAnalyses} =
-          createTestRenderer('test-package', [INPUT_PROGRAM], [INPUT_DTS_PROGRAM]);
+      const {
+        renderer,
+        decorationAnalyses,
+        privateDeclarationsAnalyses,
+        moduleWithProvidersAnalyses
+      } = createTestRenderer('test-package', [INPUT_PROGRAM], [INPUT_DTS_PROGRAM]);
 
       const result = renderer.renderProgram(
           decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses);
 
       const typingsFile =
-          result.find(f => f.path === _('/node_modules/test-package/typings/file.d.ts')) !;
+          result.find(f => f.path === _('/node_modules/test-package/typings/file.d.ts'))!;
       expect(typingsFile.contents).toContain(`\n// ADD MODUlE WITH PROVIDERS PARAMS\n`);
     });
   });

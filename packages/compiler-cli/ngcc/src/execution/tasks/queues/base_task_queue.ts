@@ -38,9 +38,9 @@ export abstract class BaseTaskQueue implements TaskQueue {
       }
       // We are skipping this task so mark it as complete
       this.markTaskCompleted(nextTask);
-      const failedTask = this.tasksToSkip.get(nextTask) !;
-      this.logger.warn(
-          `Skipping processing of ${nextTask.entryPoint.name} because its dependency ${failedTask.entryPoint.name} failed to compile.`);
+      const failedTask = this.tasksToSkip.get(nextTask)!;
+      this.logger.warn(`Skipping processing of ${nextTask.entryPoint.name} because its dependency ${
+          failedTask.entryPoint.name} failed to compile.`);
       nextTask = this.computeNextTask();
     }
     return nextTask;
@@ -48,7 +48,7 @@ export abstract class BaseTaskQueue implements TaskQueue {
 
   markAsFailed(task: Task) {
     if (this.dependencies.has(task)) {
-      for (const dependentTask of this.dependencies.get(task) !) {
+      for (const dependentTask of this.dependencies.get(task)!) {
         this.skipDependentTasks(dependentTask, task);
       }
     }
@@ -81,7 +81,7 @@ export abstract class BaseTaskQueue implements TaskQueue {
   protected skipDependentTasks(task: Task, failedTask: Task) {
     this.tasksToSkip.set(task, failedTask);
     if (this.dependencies.has(task)) {
-      for (const dependentTask of this.dependencies.get(task) !) {
+      for (const dependentTask of this.dependencies.get(task)!) {
         this.skipDependentTasks(dependentTask, failedTask);
       }
     }

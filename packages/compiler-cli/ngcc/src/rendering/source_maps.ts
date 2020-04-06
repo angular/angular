@@ -5,14 +5,16 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {SourceMapConverter, fromObject, generateMapFileComment} from 'convert-source-map';
+import {fromObject, generateMapFileComment, SourceMapConverter} from 'convert-source-map';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
-import {FileSystem, absoluteFromSourceFile, basename, absoluteFrom} from '../../../src/ngtsc/file_system';
-import {FileToWrite} from './utils';
-import {SourceFileLoader} from '../sourcemaps/source_file_loader';
-import {RawSourceMap} from '../sourcemaps/raw_source_map';
+
+import {absoluteFrom, absoluteFromSourceFile, basename, FileSystem} from '../../../src/ngtsc/file_system';
 import {Logger} from '../logging/logger';
+import {RawSourceMap} from '../sourcemaps/raw_source_map';
+import {SourceFileLoader} from '../sourcemaps/source_file_loader';
+
+import {FileToWrite} from './utils';
 
 export interface SourceMapInfo {
   source: string;
@@ -53,8 +55,8 @@ export function renderSourceAndMap(
       ];
     }
   } catch (e) {
-    logger.error(
-        `Error when flattening the source-map "${generatedMapPath}" for "${generatedPath}": ${e.toString()}`);
+    logger.error(`Error when flattening the source-map "${generatedMapPath}" for "${
+        generatedPath}": ${e.toString()}`);
     return [
       {path: generatedPath, contents: generatedContent},
       {path: generatedMapPath, contents: fromObject(generatedMap).toJSON()},

@@ -43,7 +43,7 @@ export function hasConstructor(host: MigrationHost, clazz: ClassDeclaration): bo
  */
 export function createDirectiveDecorator(
     clazz: ClassDeclaration,
-    metadata?: {selector: string | null, exportAs: string[] | null}): Decorator {
+    metadata?: {selector: string|null, exportAs: string[]|null}): Decorator {
   const args: ts.Expression[] = [];
   if (metadata !== undefined) {
     const metaArgs: ts.PropertyAssignment[] = [];
@@ -60,7 +60,8 @@ export function createDirectiveDecorator(
     identifier: null,
     import: {name: 'Directive', from: '@angular/core'},
     node: null,
-    synthesizedFor: clazz.name, args,
+    synthesizedFor: clazz.name,
+    args,
   };
 }
 
@@ -69,7 +70,7 @@ export function createDirectiveDecorator(
  */
 export function createComponentDecorator(
     clazz: ClassDeclaration,
-    metadata: {selector: string | null, exportAs: string[] | null}): Decorator {
+    metadata: {selector: string|null, exportAs: string[]|null}): Decorator {
   const metaArgs: ts.PropertyAssignment[] = [
     property('template', ''),
   ];
@@ -127,5 +128,5 @@ function reifySourceFile(expr: ts.Expression): ts.Expression {
   if (!ts.isVariableStatement(stmt)) {
     throw new Error(`Expected VariableStatement, got ${ts.SyntaxKind[stmt.kind]}`);
   }
-  return stmt.declarationList.declarations[0].initializer !;
+  return stmt.declarationList.declarations[0].initializer!;
 }

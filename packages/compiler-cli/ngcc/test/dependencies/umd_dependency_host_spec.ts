@@ -251,8 +251,10 @@ runInEachFileSystem(() => {
         exportNames.map(e => `  exports.${e.replace(/.+\./, '')} = ${e};`).join('\n');
     return `
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports${commonJsRequires}) :
-  typeof define === 'function' && define.amd ? define('${moduleName}', ['exports'${amdDeps}], factory) :
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports${
+        commonJsRequires}) :
+  typeof define === 'function' && define.amd ? define('${moduleName}', ['exports'${
+        amdDeps}], factory) :
   (factory(global.${moduleName}${globalParams}));
 }(this, (function (exports${params}) { 'use strict';
 ${exportStatements}
