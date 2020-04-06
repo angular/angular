@@ -1,8 +1,8 @@
-package(default_visibility = ["//visibility:public"])
-
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_test")
 load("//integration/ts-compat:import-all-entry-points.bzl", "generate_import_all_entry_points_file")
+
+package(default_visibility = ["//visibility:public"])
 
 write_file(
     name = "import-all-entry-points-file",

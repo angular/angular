@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
+
+package(default_visibility = ["//visibility:public"])
 
 exports_files([
     "system-config-tmpl.js",

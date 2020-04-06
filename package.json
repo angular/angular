@@ -74,7 +74,7 @@
     "@angular/platform-server": "^9.1.0",
     "@angular/router": "^9.1.0",
     "@bazel/bazelisk": "^1.3.0",
-    "@bazel/buildifier": "^0.29.0",
+    "@bazel/buildifier": "^2.2.1",
     "@bazel/ibazel": "^0.12.3",
     "@bazel/jasmine": "^1.5.0",
     "@bazel/karma": "^1.5.0",

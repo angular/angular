@@ -1,5 +1,3 @@
-package(default_visibility = ["//visibility:public"])
-
 load("@npm//scss-bundle:index.bzl", "scss_bundle")
 load("//src/cdk:config.bzl", "CDK_SCSS_LIBS")
 load(
@@ -10,6 +8,8 @@ load(
     "MATERIAL_TESTING_TARGETS",
 )
 load("//tools:defaults.bzl", "ng_package", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
 
 ts_library(
     name = "material",

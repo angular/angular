@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
 
 ng_module(
     name = "testing",

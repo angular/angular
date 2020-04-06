@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "ng_e2e_test_library")
+
+package(default_visibility = ["//visibility:public"])
 
 exports_files(["tsconfig-e2e.json"])
 

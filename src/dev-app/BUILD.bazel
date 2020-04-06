@@ -1,10 +1,10 @@
-package(default_visibility = ["//visibility:public"])
-
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
 load("@build_bazel_rules_nodejs//internal/common:devmode_js_sources.bzl", "devmode_js_sources")
 load("//tools:create-system-config.bzl", "create_system_config")
 load("//tools:defaults.bzl", "ng_module", "sass_binary")
 load("//tools/dev-server:index.bzl", "dev_server")
+
+package(default_visibility = ["//visibility:public"])
 
 ng_module(
     name = "dev-app",

@@ -1,7 +1,7 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//src/cdk-experimental:config.bzl", "CDK_EXPERIMENTAL_TARGETS")
 load("//tools:defaults.bzl", "ng_package", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
 
 ts_library(
     name = "cdk-experimental",

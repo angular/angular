@@ -70,14 +70,14 @@ def _dgeni_api_docs(ctx):
 dgeni_api_docs = rule(
     implementation = _dgeni_api_docs,
     attrs = {
-        # List of labels that need to be available when Dgeni processes the entry points.
-        # This usually contains the source files and Angular packages which will be read
-        # by the dgeni-packages typeScript processor.
-        "srcs": attr.label_list(allow_files = True),
 
         # String dictionary that defines a package and its entry points. e.g.
         # { "cdk": ["a11y", "platform", "bidi"] }.
         "entry_points": attr.string_list_dict(mandatory = True),
+        # List of labels that need to be available when Dgeni processes the entry points.
+        # This usually contains the source files and Angular packages which will be read
+        # by the dgeni-packages typeScript processor.
+        "srcs": attr.label_list(allow_files = True),
 
         # NodeJS binary target that runs Dgeni and parses the passed command arguments.
         "_dgeni_bin": attr.label(

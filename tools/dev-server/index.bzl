@@ -69,15 +69,17 @@ dev_server_rule = rule(
         "launcher": "%{name}.sh",
     },
     attrs = {
-        "srcs": attr.label_list(allow_files = True, doc = """
-          Sources that should be available to the dev-server. This attribute can be
-          used for explicit files. This attribute only uses the files exposed by the
-          DefaultInfo provider (i.e. TypeScript targets should be added to "deps").
-        """),
         "additional_root_paths": attr.string_list(doc = """
           Additionally paths to serve files from. The paths should be formatted
           as manifest paths (e.g. "my_workspace/src")
         """),
+        "deps": attr.label_list(
+            allow_files = True,
+            doc = """
+              Dependencies that need to be available to the dev-server. This attribute can be
+              used for TypeScript targets which provide multiple flavors of output.
+            """,
+        ),
         "historyApiFallback": attr.bool(
             default = True,
             doc = """
@@ -89,13 +91,11 @@ dev_server_rule = rule(
             default = 4200,
             doc = """The port that the devserver will listen on.""",
         ),
-        "deps": attr.label_list(
-            allow_files = True,
-            doc = """
-              Dependencies that need to be available to the dev-server. This attribute can be
-              used for TypeScript targets which provide multiple flavors of output.
-            """,
-        ),
+        "srcs": attr.label_list(allow_files = True, doc = """
+          Sources that should be available to the dev-server. This attribute can be
+          used for explicit files. This attribute only uses the files exposed by the
+          DefaultInfo provider (i.e. TypeScript targets should be added to "deps").
+        """),
         "_bash_runfile_helpers": attr.label(default = Label("@bazel_tools//tools/bash/runfiles")),
         "_dev_server_bin": attr.label(
             default = Label("//tools/dev-server:dev-server_bin"),

@@ -1,8 +1,8 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "ng_module", "ng_package")
 load("//tools/highlight-files:index.bzl", "highlight_files")
 load("//tools/package-docs-content:index.bzl", "package_docs_content")
+
+package(default_visibility = ["//visibility:public"])
 
 ALL_EXAMPLES = [
     # TODO(devversion): try to have for each entry-point a bazel package so that
