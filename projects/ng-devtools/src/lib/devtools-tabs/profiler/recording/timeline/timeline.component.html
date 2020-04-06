@@ -22,23 +22,20 @@
       </mat-select>
     </mat-form-field>
 
+    <label *ngIf="estimateFrameRate(record.duration) >= 60"> Time spent: {{ record.duration | number }} ms </label>
+
     <label
-      [class.warning-no]="record.duration < 16"
-      [class.warning-low]="record.duration >= 16"
-      [class.warning-mid]="record.duration >= 32"
-      [class.warning-high]="record.duration >= 64"
+      [style.color]="getColorByFrameRate(estimateFrameRate(record.duration))"
+      *ngIf="estimateFrameRate(record.duration) < 60"
     >
       Time spent: {{ record.duration | number }} ms
     </label>
 
     <label
-      [class.warning-no]="record.duration < 16"
-      [class.warning-low]="record.duration >= 16"
-      [class.warning-mid]="record.duration >= 32"
-      [class.warning-high]="record.duration >= 64"
-      *ngIf="frameRate(record.duration) < 64"
+      [style.color]="getColorByFrameRate(estimateFrameRate(record.duration))"
+      *ngIf="estimateFrameRate(record.duration) < 60"
     >
-      Frame rate: {{ frameRate(record.duration) }} fps
+      Frame rate: {{ estimateFrameRate(record.duration) }} fps
     </label>
     <label *ngIf="record.source">Source: {{ record.source }}</label>
   </div>
