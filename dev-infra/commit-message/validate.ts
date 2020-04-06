@@ -82,20 +82,29 @@ export function validateCommitMessage(
   ////////////////////////////////////
   // Checking revert, squash, fixup //
   ////////////////////////////////////
+
+  // All revert commits are considered valid.
   if (commit.isRevert) {
     return true;
   }
 
-  if (commit.isSquash && options.disallowSquash) {
-    error('The commit must be manually squashed into the target commit');
-    return false;
+  // All squashes are considered valid, as the commit will be squashed into another in
+  // the git history anyway, unless the options provided to not allow squash commits.
+  if (commit.isSquash) {
+    if (options.disallowSquash) {
+      error('The commit must be manually squashed into the target commit');
+      return false;
+    }
+    return true;
   }
 
-  // If it is a fixup commit and `nonFixupCommitHeaders` is not empty, we only care to check whether
-  // there is a corresponding non-fixup commit (i.e. a commit whose header is identical to this
-  // commit's header after stripping the `fixup! ` prefix).
-  if (commit.isFixup && options.nonFixupCommitHeaders) {
-    if (!options.nonFixupCommitHeaders.includes(commit.header)) {
+  // Fixups commits are considered valid, unless nonFixupCommitHeaders are provided to check
+  // against. If `nonFixupCommitHeaders` is not empty, we check whether there is a corresponding
+  // non-fixup commit (i.e. a commit whose header is identical to this commit's header after
+  // stripping the `fixup! ` prefix), otherwise we assume this verification will happen in another
+  // check.
+  if (commit.isFixup) {
+    if (options.nonFixupCommitHeaders && !options.nonFixupCommitHeaders.includes(commit.header)) {
       error(
           'Unable to find match for fixup commit among prior commits: ' +
           (options.nonFixupCommitHeaders.map(x => `\n      ${x}`).join('') || '-'));
@@ -131,12 +140,6 @@ export function validateCommitMessage(
   //////////////////////////
   // Checking commit body //
   //////////////////////////
-
-  // Commit bodies are not checked for fixups and squashes as they will be squashed into
-  // another commit in the history anyway.
-  if (commit.isFixup || commit.isSquash) {
-    return true;
-  }
 
   if (commit.bodyWithoutLinking.trim().length < config.minBodyLength) {
     error(`The commit message body does not meet the minimum length of ${

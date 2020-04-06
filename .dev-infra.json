@@ -1,7 +1,7 @@
 {
   "commitMessage": {
     "maxLength": 120,
-    "minBodyLength": 0,
+    "minBodyLength": 100,
     "types": [
       "build",
       "ci",
