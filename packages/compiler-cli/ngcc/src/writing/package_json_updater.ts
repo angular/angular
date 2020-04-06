@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteFsPath, FileSystem, dirname} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, dirname, FileSystem} from '../../../src/ngtsc/file_system';
 import {JsonObject, JsonValue} from '../packages/entry_point';
 
 
 export type PackageJsonChange = [string[], JsonValue, PackageJsonPropertyPositioning];
-export type PackageJsonPropertyPositioning = 'unimportant' | 'alphabetic' | {before: string};
+export type PackageJsonPropertyPositioning = 'unimportant'|'alphabetic'|{before: string};
 export type WritePackageJsonChangesFn =
     (changes: PackageJsonChange[], packageJsonPath: AbsoluteFsPath, parsedJson?: JsonObject) =>
         void;

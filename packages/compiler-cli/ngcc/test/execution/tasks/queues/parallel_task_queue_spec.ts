@@ -77,9 +77,9 @@ describe('ParallelTaskQueue', () => {
     it('should be `true`, when there are no unprocess or in-progress tasks', () => {
       const {queue} = createQueue(3);
 
-      const task1 = queue.getNextTask() !;
-      const task2 = queue.getNextTask() !;
-      const task3 = queue.getNextTask() !;
+      const task1 = queue.getNextTask()!;
+      const task2 = queue.getNextTask()!;
+      const task3 = queue.getNextTask()!;
       expect(queue.allTasksCompleted).toBe(false);
 
       queue.markTaskCompleted(task1);
@@ -266,8 +266,8 @@ describe('ParallelTaskQueue', () => {
     it('should mark a task as completed', () => {
       const {queue} = createQueue(2);
 
-      const task1 = queue.getNextTask() !;
-      const task2 = queue.getNextTask() !;
+      const task1 = queue.getNextTask()!;
+      const task2 = queue.getNextTask()!;
       expect(queue.allTasksCompleted).toBe(false);
 
       queue.markTaskCompleted(task1);
@@ -327,7 +327,7 @@ describe('ParallelTaskQueue', () => {
 
       processNextTask(queue2);
       processNextTask(queue2);
-      const task = queue2.getNextTask() !;
+      const task = queue2.getNextTask()!;
 
       expect(queue2.toString()).toContain('  All tasks completed: false\n');
 
@@ -344,7 +344,7 @@ describe('ParallelTaskQueue', () => {
               '    - {entryPoint: entry-point-1, formatProperty: prop-0, processDts: true}\n' +
               '    - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: true}\n');
 
-      const task1 = queue.getNextTask() !;
+      const task1 = queue.getNextTask()!;
       expect(queue.toString())
           .toContain(
               '  Unprocessed tasks (2): \n' +
@@ -352,7 +352,7 @@ describe('ParallelTaskQueue', () => {
               '    - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: true}\n');
 
       queue.markTaskCompleted(task1);
-      const task2 = queue.getNextTask() !;
+      const task2 = queue.getNextTask()!;
       expect(queue.toString())
           .toContain(
               '  Unprocessed tasks (1): \n' +
@@ -367,14 +367,14 @@ describe('ParallelTaskQueue', () => {
       const {queue} = createQueue(3);
       expect(queue.toString()).toContain('  In-progress tasks (0): \n');
 
-      const task1 = queue.getNextTask() !;
+      const task1 = queue.getNextTask()!;
       expect(queue.toString())
           .toContain(
               '  In-progress tasks (1): \n' +
               '    - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: true}\n');
 
       queue.markTaskCompleted(task1);
-      const task2 = queue.getNextTask() !;
+      const task2 = queue.getNextTask()!;
       expect(queue.toString())
           .toContain(
               '  In-progress tasks (1): \n' +

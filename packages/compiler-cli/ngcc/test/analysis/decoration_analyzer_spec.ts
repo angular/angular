@@ -9,7 +9,7 @@ import * as ts from 'typescript';
 
 import {FatalDiagnosticError, makeDiagnostic} from '../../../src/ngtsc/diagnostics';
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
-import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../../src/ngtsc/transform';
 import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
@@ -21,7 +21,7 @@ import {Migration, MigrationHost} from '../../src/migrations/migration';
 import {MockLogger} from '../helpers/mock_logger';
 import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils';
 
-type DecoratorHandlerWithResolve = DecoratorHandler<unknown, unknown, unknown>& {
+type DecoratorHandlerWithResolve = DecoratorHandler<unknown, unknown, unknown>&{
   resolve: NonNullable<DecoratorHandler<unknown, unknown, unknown>['resolve']>;
 };
 
@@ -29,7 +29,9 @@ runInEachFileSystem(() => {
   describe('DecorationAnalyzer', () => {
     let _: typeof absoluteFrom;
 
-    beforeEach(() => { _ = absoluteFrom; });
+    beforeEach(() => {
+      _ = absoluteFrom;
+    });
 
     describe('analyzeProgram()', () => {
       let logs: string[];
@@ -50,8 +52,8 @@ runInEachFileSystem(() => {
         ]);
         // Only detect the Component and Directive decorators
         handler.detect.and.callFake(
-            (node: ts.Declaration, decorators: Decorator[] | null): DetectResult<unknown>|
-                undefined => {
+            (node: ts.Declaration, decorators: Decorator[]|null): DetectResult<unknown>|
+            undefined => {
               const className = (node as any).name.text;
               if (decorators === null) {
                 logs.push(`detect: ${className} (no decorators)`);
@@ -94,17 +96,17 @@ runInEachFileSystem(() => {
         // The "test" compilation result is just the name of the decorator being compiled
         // (suffixed with `(compiled)`)
         handler.compile.and.callFake((decl: ts.Declaration, analysis: any) => {
-          logs.push(
-              `compile: ${(decl as any).name.text}@${analysis.decoratorName} (resolved: ${analysis.resolved})`);
+          logs.push(`compile: ${(decl as any).name.text}@${analysis.decoratorName} (resolved: ${
+              analysis.resolved})`);
           return `@${analysis.decoratorName} (compiled)`;
         });
         return handler;
       };
 
-      function setUpAnalyzer(
-          testFiles: TestFile[],
-          options: {analyzeError: boolean,
-                    resolveError: boolean} = {analyzeError: false, resolveError: false}) {
+      function setUpAnalyzer(testFiles: TestFile[], options: {
+        analyzeError: boolean,
+        resolveError: boolean
+      } = {analyzeError: false, resolveError: false}) {
         logs = [];
         loadTestFiles(testFiles);
         loadFakeCore(getFileSystem());
@@ -173,9 +175,9 @@ runInEachFileSystem(() => {
 
         it('should return an object containing a reference to the original source file', () => {
           const testFile = getSourceFileOrError(program, _('/node_modules/test-package/test.js'));
-          expect(result.get(testFile) !.sourceFile).toBe(testFile);
+          expect(result.get(testFile)!.sourceFile).toBe(testFile);
           const otherFile = getSourceFileOrError(program, _('/node_modules/test-package/other.js'));
-          expect(result.get(otherFile) !.sourceFile).toBe(otherFile);
+          expect(result.get(otherFile)!.sourceFile).toBe(otherFile);
         });
 
         it('should call detect on the decorator handlers with each class from the parsed file',
@@ -192,20 +194,23 @@ runInEachFileSystem(() => {
 
         it('should return an object containing the classes that were analyzed', () => {
           const file1 = getSourceFileOrError(program, _('/node_modules/test-package/test.js'));
-          const compiledFile1 = result.get(file1) !;
+          const compiledFile1 = result.get(file1)!;
           expect(compiledFile1.compiledClasses.length).toEqual(2);
           expect(compiledFile1.compiledClasses[0]).toEqual(jasmine.objectContaining({
-            name: 'MyComponent', compilation: ['@Component (compiled)'],
+            name: 'MyComponent',
+            compilation: ['@Component (compiled)'],
           } as unknown as CompiledClass));
           expect(compiledFile1.compiledClasses[1]).toEqual(jasmine.objectContaining({
-            name: 'MyDirective', compilation: ['@Directive (compiled)'],
+            name: 'MyDirective',
+            compilation: ['@Directive (compiled)'],
           } as unknown as CompiledClass));
 
           const file2 = getSourceFileOrError(program, _('/node_modules/test-package/other.js'));
-          const compiledFile2 = result.get(file2) !;
+          const compiledFile2 = result.get(file2)!;
           expect(compiledFile2.compiledClasses.length).toEqual(1);
           expect(compiledFile2.compiledClasses[0]).toEqual(jasmine.objectContaining({
-            name: 'MyOtherComponent', compilation: ['@Component (compiled)'],
+            name: 'MyOtherComponent',
+            compilation: ['@Component (compiled)'],
           } as unknown as CompiledClass));
         });
 
@@ -284,18 +289,18 @@ runInEachFileSystem(() => {
            () => {
              const file =
                  getSourceFileOrError(program, _('/node_modules/test-package/component.js'));
-             const analysis = result.get(file) !;
+             const analysis = result.get(file)!;
              expect(analysis).toBeDefined();
              const ImportedComponent =
-                 analysis.compiledClasses.find(f => f.name === 'ImportedComponent') !;
+                 analysis.compiledClasses.find(f => f.name === 'ImportedComponent')!;
              expect(ImportedComponent).toBeDefined();
            });
 
         it('should analyze an internally defined component, which is not exported at all', () => {
           const file = getSourceFileOrError(program, _('/node_modules/test-package/entrypoint.js'));
-          const analysis = result.get(file) !;
+          const analysis = result.get(file)!;
           expect(analysis).toBeDefined();
-          const LocalComponent = analysis.compiledClasses.find(f => f.name === 'LocalComponent') !;
+          const LocalComponent = analysis.compiledClasses.find(f => f.name === 'LocalComponent')!;
           expect(LocalComponent).toBeDefined();
         });
       });
@@ -341,7 +346,7 @@ runInEachFileSystem(() => {
         });
 
         it('should ignore classes from an externally imported file', () => {
-          const file = program.getSourceFile(_('/node_modules/other/component.js')) !;
+          const file = program.getSourceFile(_('/node_modules/other/component.js'))!;
           expect(result.has(file)).toBe(false);
         });
       });
@@ -427,11 +432,15 @@ runInEachFileSystem(() => {
             name = 'FakeDecoratorHandler';
             precedence = HandlerPrecedence.PRIMARY;
 
-            detect(): undefined { throw new Error('detect should not have been called'); }
+            detect(): undefined {
+              throw new Error('detect should not have been called');
+            }
             analyze(): AnalysisOutput<unknown> {
               throw new Error('analyze should not have been called');
             }
-            compile(): CompileResult { throw new Error('compile should not have been called'); }
+            compile(): CompileResult {
+              throw new Error('compile should not have been called');
+            }
           }
 
           const analyzer = setUpAnalyzer([{

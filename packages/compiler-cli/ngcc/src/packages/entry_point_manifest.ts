@@ -12,7 +12,7 @@ import {Logger} from '../logging/logger';
 
 import {NGCC_VERSION} from './build_marker';
 import {NgccConfiguration} from './configuration';
-import {EntryPoint, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT, getEntryPointInfo} from './entry_point';
+import {EntryPoint, getEntryPointInfo, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT} from './entry_point';
 
 /**
  * Manages reading and writing a manifest file that contains a list of all the entry-points that
@@ -63,8 +63,8 @@ export class EntryPointManifest {
         return null;
       }
 
-      this.logger.debug(
-          `Entry-point manifest found for ${basePath} so loading entry-point information directly.`);
+      this.logger.debug(`Entry-point manifest found for ${
+          basePath} so loading entry-point information directly.`);
       const startTime = Date.now();
 
       const entryPoints: EntryPoint[] = [];
@@ -72,8 +72,9 @@ export class EntryPointManifest {
         const result =
             getEntryPointInfo(this.fs, this.config, this.logger, packagePath, entryPointPath);
         if (result === NO_ENTRY_POINT || result === INCOMPATIBLE_ENTRY_POINT) {
-          throw new Error(
-              `The entry-point manifest at ${manifestPath} contained an invalid pair of package paths: [${packagePath}, ${entryPointPath}]`);
+          throw new Error(`The entry-point manifest at ${
+              manifestPath} contained an invalid pair of package paths: [${packagePath}, ${
+              entryPointPath}]`);
         } else {
           entryPoints.push(result);
         }
@@ -142,7 +143,9 @@ export class EntryPointManifest {
  * called.
  */
 export class InvalidatingEntryPointManifest extends EntryPointManifest {
-  readEntryPointsUsingManifest(basePath: AbsoluteFsPath): EntryPoint[]|null { return null; }
+  readEntryPointsUsingManifest(basePath: AbsoluteFsPath): EntryPoint[]|null {
+    return null;
+  }
 }
 
 /**

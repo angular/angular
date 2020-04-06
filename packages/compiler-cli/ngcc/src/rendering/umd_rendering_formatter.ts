@@ -6,17 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {dirname, relative} from 'canonical-path';
-import * as ts from 'typescript';
 import MagicString from 'magic-string';
+import * as ts from 'typescript';
+
+import {Reexport} from '../../../src/ngtsc/imports';
 import {Import, ImportManager} from '../../../src/ngtsc/translator';
 import {ExportInfo} from '../analysis/private_declarations_analyzer';
 import {UmdReflectionHost} from '../host/umd_host';
+
 import {Esm5RenderingFormatter} from './esm5_rendering_formatter';
 import {stripExtension} from './utils';
-import {Reexport} from '../../../src/ngtsc/imports';
 
-type CommonJsConditional = ts.ConditionalExpression & {whenTrue: ts.CallExpression};
-type AmdConditional = ts.ConditionalExpression & {whenTrue: ts.CallExpression};
+type CommonJsConditional = ts.ConditionalExpression&{whenTrue: ts.CallExpression};
+type AmdConditional = ts.ConditionalExpression&{whenTrue: ts.CallExpression};
 
 /**
  * A RenderingFormatter that works with UMD files, instead of `import` and `export` statements
@@ -24,7 +26,9 @@ type AmdConditional = ts.ConditionalExpression & {whenTrue: ts.CallExpression};
  * wrapper function for AMD, CommonJS and global module formats.
  */
 export class UmdRenderingFormatter extends Esm5RenderingFormatter {
-  constructor(protected umdHost: UmdReflectionHost, isCore: boolean) { super(umdHost, isCore); }
+  constructor(protected umdHost: UmdReflectionHost, isCore: boolean) {
+    super(umdHost, isCore);
+  }
 
   /**
    * Add the imports to the UMD module IIFE.

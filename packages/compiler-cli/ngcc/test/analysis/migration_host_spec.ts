@@ -62,7 +62,7 @@ runInEachFileSystem(() => {
         const {host, compiler} = createMigrationHost({entryPoint, handlers: [handler]});
         host.injectSyntheticDecorator(mockClazz, injectedDecorator);
 
-        const record = compiler.recordFor(mockClazz) !;
+        const record = compiler.recordFor(mockClazz)!;
         expect(record).toBeDefined();
         expect(record.traits.length).toBe(1);
         expect(record.traits[0].detected.decorator).toBe(injectedDecorator);
@@ -77,7 +77,7 @@ runInEachFileSystem(() => {
         const decorator = createComponentDecorator(mockClazz, {selector: 'comp', exportAs: null});
         host.injectSyntheticDecorator(mockClazz, decorator);
 
-        const record = compiler.recordFor(mockClazz) !;
+        const record = compiler.recordFor(mockClazz)!;
         const migratedTrait = record.traits[0];
         if (migratedTrait.state !== TraitState.ERRORED) {
           return fail('Expected migrated class trait to be in an error state');
@@ -120,7 +120,7 @@ runInEachFileSystem(() => {
 
         host.injectSyntheticDecorator(myClass, injectedDecorator);
 
-        const decorators = host.getAllDecorators(myClass) !;
+        const decorators = host.getAllDecorators(myClass)!;
         expect(decorators.length).toBe(2);
         expect(decorators[0].name).toBe('Directive');
         expect(decorators[1].name).toBe('InjectedDecorator');
@@ -183,9 +183,13 @@ class DetectDecoratorHandler implements DecoratorHandler<unknown, unknown, unkno
     return {trigger: node, decorator, metadata: {}};
   }
 
-  analyze(node: ClassDeclaration): AnalysisOutput<unknown> { return {}; }
+  analyze(node: ClassDeclaration): AnalysisOutput<unknown> {
+    return {};
+  }
 
-  compile(node: ClassDeclaration): CompileResult|CompileResult[] { return []; }
+  compile(node: ClassDeclaration): CompileResult|CompileResult[] {
+    return [];
+  }
 }
 
 class DiagnosticProducingHandler implements DecoratorHandler<unknown, unknown, unknown> {
@@ -201,5 +205,7 @@ class DiagnosticProducingHandler implements DecoratorHandler<unknown, unknown, u
     return {diagnostics: [makeDiagnostic(9999, node, 'test diagnostic')]};
   }
 
-  compile(node: ClassDeclaration): CompileResult|CompileResult[] { return []; }
+  compile(node: ClassDeclaration): CompileResult|CompileResult[] {
+    return [];
+  }
 }

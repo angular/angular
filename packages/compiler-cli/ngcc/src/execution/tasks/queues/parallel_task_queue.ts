@@ -49,9 +49,9 @@ export class ParallelTaskQueue extends BaseTaskQueue {
     }
 
     // Unblock the tasks that are dependent upon `task`
-    for (const dependentTask of this.dependencies.get(task) !) {
+    for (const dependentTask of this.dependencies.get(task)!) {
       if (this.blockedTasks.has(dependentTask)) {
-        const blockingTasks = this.blockedTasks.get(dependentTask) !;
+        const blockingTasks = this.blockedTasks.get(dependentTask)!;
         // Remove the completed task from the lists of tasks blocking other tasks.
         blockingTasks.delete(task);
         if (blockingTasks.size === 0) {

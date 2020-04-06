@@ -30,7 +30,7 @@ export abstract class SingleProcessorExecutorBase {
     const startTime = Date.now();
 
     while (!taskQueue.allTasksCompleted) {
-      const task = taskQueue.getNextTask() !;
+      const task = taskQueue.getNextTask()!;
       compile(task);
       taskQueue.markTaskCompleted(task);
     }
@@ -65,6 +65,6 @@ export class SingleProcessExecutorAsync extends SingleProcessorExecutorBase impl
   }
   async execute(analyzeEntryPoints: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn):
       Promise<void> {
-    await this.lockFile.lock(async() => this.doExecute(analyzeEntryPoints, createCompileFn));
+    await this.lockFile.lock(async () => this.doExecute(analyzeEntryPoints, createCompileFn));
   }
 }

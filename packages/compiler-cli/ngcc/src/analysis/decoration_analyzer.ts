@@ -12,7 +12,7 @@ import {ParsedConfiguration} from '../../..';
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader} from '../../../src/ngtsc/annotations';
 import {CycleAnalyzer, ImportGraph} from '../../../src/ngtsc/cycles';
 import {isFatalDiagnosticError} from '../../../src/ngtsc/diagnostics';
-import {FileSystem, LogicalFileSystem, absoluteFrom, dirname, resolve} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, dirname, FileSystem, LogicalFileSystem, resolve} from '../../../src/ngtsc/file_system';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, PrivateExportAliasingHost, Reexport, ReferenceEmitter} from '../../../src/ngtsc/imports';
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry} from '../../../src/ngtsc/metadata';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
@@ -28,7 +28,7 @@ import {EntryPointBundle} from '../packages/entry_point_bundle';
 import {DefaultMigrationHost} from './migration_host';
 import {NgccTraitCompiler} from './ngcc_trait_compiler';
 import {CompiledClass, CompiledFile, DecorationAnalyses} from './types';
-import {NOOP_DEPENDENCY_TRACKER, isWithinPackage} from './util';
+import {isWithinPackage, NOOP_DEPENDENCY_TRACKER} from './util';
 
 
 
@@ -38,8 +38,12 @@ import {NOOP_DEPENDENCY_TRACKER, isWithinPackage} from './util';
 class NgccResourceLoader implements ResourceLoader {
   constructor(private fs: FileSystem) {}
   canPreload = false;
-  preload(): undefined|Promise<void> { throw new Error('Not implemented.'); }
-  load(url: string): string { return this.fs.readFile(resolve(url)); }
+  preload(): undefined|Promise<void> {
+    throw new Error('Not implemented.');
+  }
+  load(url: string): string {
+    return this.fs.readFile(resolve(url));
+  }
   resolve(url: string, containingFile: string): string {
     return resolve(dirname(absoluteFrom(containingFile)), url);
   }
@@ -56,7 +60,7 @@ export class DecorationAnalyzer {
   private rootDirs = this.bundle.rootDirs;
   private packagePath = this.bundle.entryPoint.package;
   private isCore = this.bundle.isCore;
-  private compilerOptions = this.tsConfig !== null? this.tsConfig.options: {};
+  private compilerOptions = this.tsConfig !== null ? this.tsConfig.options : {};
 
   moduleResolver =
       new ModuleResolver(this.program, this.options, this.host, /* moduleResolutionCache */ null);
@@ -73,8 +77,9 @@ export class DecorationAnalyzer {
     // based on whether a bestGuessOwningModule is present in the Reference.
     new LogicalProjectStrategy(this.reflectionHost, new LogicalFileSystem(this.rootDirs)),
   ]);
-  aliasingHost = this.bundle.entryPoint.generateDeepReexports?
-                 new PrivateExportAliasingHost(this.reflectionHost): null;
+  aliasingHost = this.bundle.entryPoint.generateDeepReexports ?
+      new PrivateExportAliasingHost(this.reflectionHost) :
+      null;
   dtsModuleScopeResolver =
       new MetadataDtsModuleScopeResolver(this.dtsMetaReader, this.aliasingHost);
   scopeRegistry = new LocalModuleScopeRegistry(
@@ -191,7 +196,9 @@ export class DecorationAnalyzer {
     });
   }
 
-  protected reportDiagnostics() { this.compiler.diagnostics.forEach(this.diagnosticHandler); }
+  protected reportDiagnostics() {
+    this.compiler.diagnostics.forEach(this.diagnosticHandler);
+  }
 
   protected compileFile(sourceFile: ts.SourceFile): CompiledFile {
     const constantPool = new ConstantPool();
@@ -211,7 +218,8 @@ export class DecorationAnalyzer {
       compiledClasses.push({
         name: record.node.name.text,
         decorators: this.compiler.getAllDecorators(record.node),
-        declaration: record.node, compilation
+        declaration: record.node,
+        compilation
       });
     }
 
@@ -224,7 +232,7 @@ export class DecorationAnalyzer {
     if (!exportStatements.has(sf.fileName)) {
       return [];
     }
-    const exports = exportStatements.get(sf.fileName) !;
+    const exports = exportStatements.get(sf.fileName)!;
 
     const reexports: Reexport[] = [];
     exports.forEach(([fromModule, symbolName], asAlias) => {

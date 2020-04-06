@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem, absoluteFrom, dirname, isRoot, join, resolve} from '../../../src/ngtsc/file_system';
-import {PathMappings, isRelativePath, resolveFileWithPostfixes} from '../utils';
+import {absoluteFrom, AbsoluteFsPath, dirname, FileSystem, isRoot, join, resolve} from '../../../src/ngtsc/file_system';
+import {isRelativePath, PathMappings, resolveFileWithPostfixes} from '../utils';
 
 /**
  * This is a very cut-down implementation of the TypeScript module resolution strategy.
@@ -222,7 +222,7 @@ export class ModuleResolver {
 }
 
 /** The result of resolving an import to a module. */
-export type ResolvedModule = ResolvedExternalModule | ResolvedRelativeModule | ResolvedDeepImport;
+export type ResolvedModule = ResolvedExternalModule|ResolvedRelativeModule|ResolvedDeepImport;
 
 /**
  * A module that is external to the package doing the importing.

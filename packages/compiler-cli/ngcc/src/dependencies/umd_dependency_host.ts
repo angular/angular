@@ -84,5 +84,7 @@ export class UmdDependencyHost extends DependencyHostBase {
    * @returns false if there are definitely no require calls
    * in this file, true otherwise.
    */
-  private hasRequireCalls(source: string): boolean { return /require\(['"]/.test(source); }
+  private hasRequireCalls(source: string): boolean {
+    return /require\(['"]/.test(source);
+  }
 }

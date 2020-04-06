@@ -20,14 +20,14 @@ const fs = new NodeJSFileSystem();
 
 // We create a logger that has the same logging level as the parent process, since it should have
 // been passed through as one of the args
-const logLevel = parseInt(process.argv.pop() !, 10);
+const logLevel = parseInt(process.argv.pop()!, 10);
 const logger = new ConsoleLogger(logLevel);
 
 // We must store the parent PID now as it changes if the parent process is killed early
 const ppid = process.ppid.toString();
 
 // The path to the lock-file to remove should have been passed as one of the args
-const lockFilePath = fs.resolve(process.argv.pop() !);
+const lockFilePath = fs.resolve(process.argv.pop()!);
 
 logger.debug(`Starting unlocker at process ${process.pid} on behalf of process ${ppid}`);
 logger.debug(`The lock-file path is ${lockFilePath}`);
@@ -36,4 +36,6 @@ logger.debug(`The lock-file path is ${lockFilePath}`);
  * When the parent process exits (for whatever reason) remove the loc-file if it exists and as long
  * as it was one that was created by the parent process.
  */
-process.on('disconnect', () => { removeLockFile(fs, logger, lockFilePath, ppid); });
+process.on('disconnect', () => {
+  removeLockFile(fs, logger, lockFilePath, ppid);
+});

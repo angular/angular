@@ -14,7 +14,6 @@ import {MockLogger} from '../helpers/mock_logger';
 
 runInEachFileSystem(() => {
   describe('InPlaceFileWriter', () => {
-
     let _: typeof absoluteFrom;
 
     beforeEach(() => {
@@ -79,8 +78,8 @@ runInEachFileSystem(() => {
              () => fileWriter.writeBundle(
                  {} as EntryPointBundle,
                  [{path: absoluteBackupPath, contents: 'MODIFIED BACKED UP'}]))
-             .toThrowError(
-                 `Tried to overwrite ${absoluteBackupPath}.__ivy_ngcc_bak with an ngcc back up file, which is disallowed.`);
+             .toThrowError(`Tried to overwrite ${
+                 absoluteBackupPath}.__ivy_ngcc_bak with an ngcc back up file, which is disallowed.`);
        });
 
     it('should log an error, and skip writing the file, if the backup file already exists and errorOnFailedEntryPoint is false',
@@ -95,7 +94,9 @@ runInEachFileSystem(() => {
          expect(fs.readFile(absoluteBackupPath)).toEqual('ORIGINAL ALREADY BACKED UP');
          expect(fs.readFile(_(absoluteBackupPath + '.__ivy_ngcc_bak'))).toEqual('BACKED UP');
          expect(logger.logs.error).toEqual([[
-           `Tried to write ${absoluteBackupPath}.__ivy_ngcc_bak with an ngcc back up file but it already exists so not writing, nor backing up, ${absoluteBackupPath}.\n` +
+           `Tried to write ${
+               absoluteBackupPath}.__ivy_ngcc_bak with an ngcc back up file but it already exists so not writing, nor backing up, ${
+               absoluteBackupPath}.\n` +
            `This error may be because two or more entry-points overlap and ngcc has been asked to process some files more than once.\n` +
            `You should check other entry-points in this package and set up a config to ignore any that you are not using.`
          ]]);

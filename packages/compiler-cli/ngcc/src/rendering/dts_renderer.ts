@@ -7,20 +7,22 @@
  */
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
+
 import {FileSystem} from '../../../src/ngtsc/file_system';
 import {Reexport} from '../../../src/ngtsc/imports';
 import {CompileResult} from '../../../src/ngtsc/transform';
-import {translateType, ImportManager} from '../../../src/ngtsc/translator';
+import {ImportManager, translateType} from '../../../src/ngtsc/translator';
+import {ModuleWithProvidersAnalyses, ModuleWithProvidersInfo} from '../analysis/module_with_providers_analyzer';
+import {ExportInfo, PrivateDeclarationsAnalyses} from '../analysis/private_declarations_analyzer';
 import {DecorationAnalyses} from '../analysis/types';
-import {ModuleWithProvidersInfo, ModuleWithProvidersAnalyses} from '../analysis/module_with_providers_analyzer';
-import {PrivateDeclarationsAnalyses, ExportInfo} from '../analysis/private_declarations_analyzer';
 import {IMPORT_PREFIX} from '../constants';
 import {NgccReflectionHost} from '../host/ngcc_host';
-import {EntryPointBundle} from '../packages/entry_point_bundle';
 import {Logger} from '../logging/logger';
-import {FileToWrite, getImportRewriter} from './utils';
+import {EntryPointBundle} from '../packages/entry_point_bundle';
+
 import {RenderingFormatter} from './rendering_formatter';
 import {renderSourceAndMap} from './source_maps';
+import {FileToWrite, getImportRewriter} from './utils';
 
 /**
  * A structure that captures information about what needs to be rendered
@@ -84,7 +86,7 @@ export class DtsRenderer {
     const outputText = new MagicString(dtsFile.text);
     const printer = ts.createPrinter();
     const importManager = new ImportManager(
-        getImportRewriter(this.bundle.dts !.r3SymbolsFile, this.bundle.isCore, false),
+        getImportRewriter(this.bundle.dts!.r3SymbolsFile, this.bundle.isCore, false),
         IMPORT_PREFIX);
 
     renderInfo.classInfo.forEach(dtsClass => {
@@ -129,7 +131,7 @@ export class DtsRenderer {
         const dtsDeclaration = this.host.getDtsDeclaration(compiledClass.declaration);
         if (dtsDeclaration) {
           const dtsFile = dtsDeclaration.getSourceFile();
-          const renderInfo = dtsMap.has(dtsFile) ? dtsMap.get(dtsFile) ! : new DtsRenderInfo();
+          const renderInfo = dtsMap.has(dtsFile) ? dtsMap.get(dtsFile)! : new DtsRenderInfo();
           renderInfo.classInfo.push({dtsDeclaration, compilation: compiledClass.compilation});
           // Only add re-exports if the .d.ts tree is overlayed with the .js tree, as re-exports in
           // ngcc are only used to support deep imports into e.g. commonjs code. For a deep import
@@ -150,7 +152,7 @@ export class DtsRenderer {
     // Capture the ModuleWithProviders functions/methods that need updating
     if (moduleWithProvidersAnalyses !== null) {
       moduleWithProvidersAnalyses.forEach((moduleWithProvidersToFix, dtsFile) => {
-        const renderInfo = dtsMap.has(dtsFile) ? dtsMap.get(dtsFile) ! : new DtsRenderInfo();
+        const renderInfo = dtsMap.has(dtsFile) ? dtsMap.get(dtsFile)! : new DtsRenderInfo();
         renderInfo.moduleWithProviders = moduleWithProvidersToFix;
         dtsMap.set(dtsFile, renderInfo);
       });
@@ -167,9 +169,9 @@ export class DtsRenderer {
               `The simplest fix for this is to ensure that this class is exported from the package's entry-point.`);
         }
       });
-      const dtsEntryPoint = this.bundle.dts !.file;
+      const dtsEntryPoint = this.bundle.dts!.file;
       const renderInfo =
-          dtsMap.has(dtsEntryPoint) ? dtsMap.get(dtsEntryPoint) ! : new DtsRenderInfo();
+          dtsMap.has(dtsEntryPoint) ? dtsMap.get(dtsEntryPoint)! : new DtsRenderInfo();
       renderInfo.privateExports = privateDeclarationsAnalyses;
       dtsMap.set(dtsEntryPoint, renderInfo);
     }

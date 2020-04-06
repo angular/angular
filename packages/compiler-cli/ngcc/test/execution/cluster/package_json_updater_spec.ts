@@ -39,8 +39,9 @@ runInEachFileSystem(() => {
           isMaster => describe(`(on cluster ${isMaster ? 'master' : 'worker'})`, () => {
             beforeEach(() => runAsClusterMaster(isMaster));
 
-            it('should return a `PackageJsonUpdate` instance',
-               () => { expect(updater.createUpdate()).toEqual(jasmine.any(PackageJsonUpdate)); });
+            it('should return a `PackageJsonUpdate` instance', () => {
+              expect(updater.createUpdate()).toEqual(jasmine.any(PackageJsonUpdate));
+            });
 
             it('should wire up the `PackageJsonUpdate` with its `writeChanges()` method', () => {
               const writeChangesSpy = spyOn(updater, 'writeChanges');

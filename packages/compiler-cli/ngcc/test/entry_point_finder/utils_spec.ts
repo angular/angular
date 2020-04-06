@@ -132,9 +132,12 @@ runInEachFileSystem(() => {
         fs.resolve(projectDirectory, 'dist-1'),
       ]);
       expect(logger.logs.warn).toEqual([
-        [`The basePath "${fs.resolve(projectDirectory, 'sub-folder/dist-2')}" computed from baseUrl "${projectDirectory}" and path mapping "sub-folder/dist-2" does not exist in the file-system.\n` +
+        [`The basePath "${
+             fs.resolve(projectDirectory, 'sub-folder/dist-2')}" computed from baseUrl "${
+             projectDirectory}" and path mapping "sub-folder/dist-2" does not exist in the file-system.\n` +
          `It will not be scanned for entry-points.`],
-        [`The basePath "${fs.resolve(projectDirectory, 'libs')}" computed from baseUrl "${projectDirectory}" and path mapping "libs/*" does not exist in the file-system.\n` +
+        [`The basePath "${fs.resolve(projectDirectory, 'libs')}" computed from baseUrl "${
+             projectDirectory}" and path mapping "libs/*" does not exist in the file-system.\n` +
          `It will not be scanned for entry-points.`],
       ]);
     });

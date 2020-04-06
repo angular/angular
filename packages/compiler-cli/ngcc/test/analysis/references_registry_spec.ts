@@ -8,7 +8,7 @@
 import * as ts from 'typescript';
 
 import {absoluteFrom} from '../../../src/ngtsc/file_system';
-import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {Reference} from '../../../src/ngtsc/imports';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
 import {TypeScriptReflectionHost} from '../../../src/ngtsc/reflection';
@@ -44,19 +44,19 @@ runInEachFileSystem(() => {
           getDeclaration(program, indexPath, 'someFunction', ts.isFunctionDeclaration);
       const someVariableDecl =
           getDeclaration(program, indexPath, 'someVariable', ts.isVariableDeclaration);
-      const testArrayExpression = testArrayDeclaration.initializer !;
+      const testArrayExpression = testArrayDeclaration.initializer!;
 
       const reflectionHost = new TypeScriptReflectionHost(checker);
       const evaluator = new PartialEvaluator(reflectionHost, checker, /* dependencyTracker */ null);
       const registry = new NgccReferencesRegistry(reflectionHost);
 
       const references = (evaluator.evaluate(testArrayExpression) as any[]).filter(isReference);
-      registry.add(null !, ...references);
+      registry.add(null!, ...references);
 
       const map = registry.getDeclarationMap();
       expect(map.size).toEqual(2);
-      expect(map.get(someClassDecl.name !) !.node).toBe(someClassDecl);
-      expect(map.get(someFunctionDecl.name !) !.node).toBe(someFunctionDecl);
+      expect(map.get(someClassDecl.name!)!.node).toBe(someClassDecl);
+      expect(map.get(someFunctionDecl.name!)!.node).toBe(someFunctionDecl);
       expect(map.has(someVariableDecl.name as ts.Identifier)).toBe(false);
     });
   });

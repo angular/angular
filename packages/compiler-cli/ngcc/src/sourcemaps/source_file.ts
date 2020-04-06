@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {removeComments, removeMapFileComments} from 'convert-source-map';
-import {SourceMapMappings, SourceMapSegment, decode, encode} from 'sourcemap-codec';
+import {decode, encode, SourceMapMappings, SourceMapSegment} from 'sourcemap-codec';
+
 import {AbsoluteFsPath, dirname, relative} from '../../../src/ngtsc/file_system';
+
 import {RawSourceMap} from './raw_source_map';
-import {SegmentMarker, compareSegments, offsetSegment} from './segment_marker';
+import {compareSegments, offsetSegment, SegmentMarker} from './segment_marker';
 
 export function removeSourceMapComments(contents: string): string {
   return removeMapFileComments(removeComments(contents)).replace(/\n\n$/, '\n');
@@ -77,7 +79,8 @@ export class SourceFile {
     const sourceMap: RawSourceMap = {
       version: 3,
       file: relative(sourcePathDir, this.sourcePath),
-      sources: sources.map(sf => relative(sourcePathDir, sf.sourcePath)), names,
+      sources: sources.map(sf => relative(sourcePathDir, sf.sourcePath)),
+      names,
       mappings: encode(mappings),
       sourcesContent: sources.map(sf => sf.contents),
     };
@@ -302,7 +305,7 @@ export function mergeMappings(generatedSource: SourceFile, ab: Mapping, bc: Mapp
  * in the `sources` parameter.
  */
 export function parseMappings(
-    rawMap: RawSourceMap | null, sources: (SourceFile | null)[],
+    rawMap: RawSourceMap|null, sources: (SourceFile|null)[],
     generatedSourceStartOfLinePositions: number[]): Mapping[] {
   if (rawMap === null) {
     return [];
@@ -318,15 +321,15 @@ export function parseMappings(
     const generatedLineMappings = rawMappings[generatedLine];
     for (const rawMapping of generatedLineMappings) {
       if (rawMapping.length >= 4) {
-        const originalSource = sources[rawMapping[1] !];
+        const originalSource = sources[rawMapping[1]!];
         if (originalSource === null || originalSource === undefined) {
           // the original source is missing so ignore this mapping
           continue;
         }
         const generatedColumn = rawMapping[0];
         const name = rawMapping.length === 5 ? rawMap.names[rawMapping[4]] : undefined;
-        const line = rawMapping[2] !;
-        const column = rawMapping[3] !;
+        const line = rawMapping[2]!;
+        const column = rawMapping[3]!;
         const generatedSegment: SegmentMarker = {
           line: generatedLine,
           column: generatedColumn,
@@ -361,7 +364,7 @@ export function extractOriginalSegments(mappings: Mapping[]): Map<SourceFile, Se
     if (!originalSegments.has(originalSource)) {
       originalSegments.set(originalSource, []);
     }
-    const segments = originalSegments.get(originalSource) !;
+    const segments = originalSegments.get(originalSource)!;
     segments.push(mapping.originalSegment);
   }
   originalSegments.forEach(segmentMarkers => segmentMarkers.sort(compareSegments));

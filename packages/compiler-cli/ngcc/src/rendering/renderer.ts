@@ -8,16 +8,18 @@
 import {ConstantPool, Expression, Statement, WrappedNodeExpr, WritePropExpr} from '@angular/compiler';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
+
+import {FileSystem} from '../../../src/ngtsc/file_system';
 import {ImportManager} from '../../../src/ngtsc/translator';
-import {CompiledClass, CompiledFile, DecorationAnalyses} from '../analysis/types';
 import {PrivateDeclarationsAnalyses} from '../analysis/private_declarations_analyzer';
 import {SwitchMarkerAnalyses, SwitchMarkerAnalysis} from '../analysis/switch_marker_analyzer';
+import {CompiledClass, CompiledFile, DecorationAnalyses} from '../analysis/types';
 import {IMPORT_PREFIX} from '../constants';
-import {FileSystem} from '../../../src/ngtsc/file_system';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {Logger} from '../logging/logger';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
-import {RenderingFormatter, RedundantDecoratorMap} from './rendering_formatter';
+
+import {RedundantDecoratorMap, RenderingFormatter} from './rendering_formatter';
 import {renderSourceAndMap} from './source_maps';
 import {FileToWrite, getImportRewriter, stripExtension} from './utils';
 
@@ -138,11 +140,11 @@ export class Renderer {
         if (dec.node === null) {
           return;
         }
-        const decoratorArray = dec.node.parent !;
+        const decoratorArray = dec.node.parent!;
         if (!decoratorsToRemove.has(decoratorArray)) {
           decoratorsToRemove.set(decoratorArray, [dec.node]);
         } else {
-          decoratorsToRemove.get(decoratorArray) !.push(dec.node);
+          decoratorsToRemove.get(decoratorArray)!.push(dec.node);
         }
       });
     });
@@ -160,8 +162,9 @@ export class Renderer {
   private renderDefinitions(
       sourceFile: ts.SourceFile, compiledClass: CompiledClass, imports: ImportManager): string {
     const name = this.host.getInternalNameOfClass(compiledClass.declaration);
-    const statements: Statement[] = compiledClass.compilation.map(
-        c => { return createAssignmentStatement(name, c.name, c.initializer); });
+    const statements: Statement[] = compiledClass.compilation.map(c => {
+      return createAssignmentStatement(name, c.name, c.initializer);
+    });
     return this.renderStatements(sourceFile, statements, imports);
   }
 

@@ -14,9 +14,8 @@ import {CtorParameter} from '../../../src/ngtsc/reflection';
  * names.
  */
 export function expectTypeValueReferencesForParameters(
-    parameters: CtorParameter[], expectedParams: (string | null)[],
-    fromModule: string | null = null) {
-  parameters !.forEach((param, idx) => {
+    parameters: CtorParameter[], expectedParams: (string|null)[], fromModule: string|null = null) {
+  parameters!.forEach((param, idx) => {
     const expected = expectedParams[idx];
     if (expected !== null) {
       if (param.typeValueReference === null) {
@@ -32,7 +31,7 @@ export function expectTypeValueReferencesForParameters(
           expect(param.typeValueReference.expression.text).toEqual(expected);
         }
       } else if (param.typeValueReference !== null) {
-        expect(param.typeValueReference.moduleName).toBe(fromModule !);
+        expect(param.typeValueReference.moduleName).toBe(fromModule!);
         expect(param.typeValueReference.name).toBe(expected);
       }
     }

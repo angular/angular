@@ -60,11 +60,9 @@ describe('ClusterWorker', () => {
 
         onTaskCompleted(null as any, TaskProcessingOutcome.Processed, null);
         expect(processSendSpy).toHaveBeenCalledTimes(1);
-        expect(processSendSpy).toHaveBeenCalledWith({
-          type: 'task-completed',
-          outcome: TaskProcessingOutcome.Processed,
-          message: null
-        });
+        expect(processSendSpy)
+            .toHaveBeenCalledWith(
+                {type: 'task-completed', outcome: TaskProcessingOutcome.Processed, message: null});
 
         processSendSpy.calls.reset();
 
@@ -137,7 +135,9 @@ describe('ClusterWorker', () => {
         } as unknown as Task;
 
         let err: string|Error;
-        compileFnSpy.and.callFake(() => { throw err; });
+        compileFnSpy.and.callFake(() => {
+          throw err;
+        });
 
         worker.run();
 
