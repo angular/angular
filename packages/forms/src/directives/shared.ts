@@ -28,43 +28,44 @@ import {SelectMultipleControlValueAccessor} from './select_multiple_control_valu
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 
-export function controlPath(name: string | null, parent: ControlContainer): string[] {
-  return [...parent.path !, name !];
+export function controlPath(name: string|null, parent: ControlContainer): string[] {
+  return [...parent.path!, name!];
 }
 
 export function setUpControl(control: FormControl, dir: NgControl): void {
   if (!control) _throwError(dir, 'Cannot find control with');
   if (!dir.valueAccessor) _throwError(dir, 'No value accessor for form control with');
 
-  control.validator = Validators.compose([control.validator !, dir.validator]);
-  control.asyncValidator = Validators.composeAsync([control.asyncValidator !, dir.asyncValidator]);
-  dir.valueAccessor !.writeValue(control.value);
+  control.validator = Validators.compose([control.validator!, dir.validator]);
+  control.asyncValidator = Validators.composeAsync([control.asyncValidator!, dir.asyncValidator]);
+  dir.valueAccessor!.writeValue(control.value);
 
   setUpViewChangePipeline(control, dir);
   setUpModelChangePipeline(control, dir);
 
   setUpBlurPipeline(control, dir);
 
-  if (dir.valueAccessor !.setDisabledState) {
-    control.registerOnDisabledChange(
-        (isDisabled: boolean) => { dir.valueAccessor !.setDisabledState !(isDisabled); });
+  if (dir.valueAccessor!.setDisabledState) {
+    control.registerOnDisabledChange((isDisabled: boolean) => {
+      dir.valueAccessor!.setDisabledState!(isDisabled);
+    });
   }
 
   // re-run validation when validator binding changes, e.g. minlength=3 -> minlength=4
-  dir._rawValidators.forEach((validator: Validator | ValidatorFn) => {
+  dir._rawValidators.forEach((validator: Validator|ValidatorFn) => {
     if ((<Validator>validator).registerOnValidatorChange)
-      (<Validator>validator).registerOnValidatorChange !(() => control.updateValueAndValidity());
+      (<Validator>validator).registerOnValidatorChange!(() => control.updateValueAndValidity());
   });
 
-  dir._rawAsyncValidators.forEach((validator: AsyncValidator | AsyncValidatorFn) => {
+  dir._rawAsyncValidators.forEach((validator: AsyncValidator|AsyncValidatorFn) => {
     if ((<Validator>validator).registerOnValidatorChange)
-      (<Validator>validator).registerOnValidatorChange !(() => control.updateValueAndValidity());
+      (<Validator>validator).registerOnValidatorChange!(() => control.updateValueAndValidity());
   });
 }
 
 export function cleanUpControl(control: FormControl, dir: NgControl) {
-  dir.valueAccessor !.registerOnChange(() => _noControlError(dir));
-  dir.valueAccessor !.registerOnTouched(() => _noControlError(dir));
+  dir.valueAccessor!.registerOnChange(() => _noControlError(dir));
+  dir.valueAccessor!.registerOnTouched(() => _noControlError(dir));
 
   dir._rawValidators.forEach((validator: any) => {
     if (validator.registerOnValidatorChange) {
@@ -82,7 +83,7 @@ export function cleanUpControl(control: FormControl, dir: NgControl) {
 }
 
 function setUpViewChangePipeline(control: FormControl, dir: NgControl): void {
-  dir.valueAccessor !.registerOnChange((newValue: any) => {
+  dir.valueAccessor!.registerOnChange((newValue: any) => {
     control._pendingValue = newValue;
     control._pendingChange = true;
     control._pendingDirty = true;
@@ -92,7 +93,7 @@ function setUpViewChangePipeline(control: FormControl, dir: NgControl): void {
 }
 
 function setUpBlurPipeline(control: FormControl, dir: NgControl): void {
-  dir.valueAccessor !.registerOnTouched(() => {
+  dir.valueAccessor!.registerOnTouched(() => {
     control._pendingTouched = true;
 
     if (control.updateOn === 'blur' && control._pendingChange) updateControl(control, dir);
@@ -110,7 +111,7 @@ function updateControl(control: FormControl, dir: NgControl): void {
 function setUpModelChangePipeline(control: FormControl, dir: NgControl): void {
   control.registerOnChange((newValue: any, emitModelEvent: boolean) => {
     // control -> view
-    dir.valueAccessor !.writeValue(newValue);
+    dir.valueAccessor!.writeValue(newValue);
 
     // control -> ngModel
     if (emitModelEvent) dir.viewToModelUpdate(newValue);
@@ -118,7 +119,7 @@ function setUpModelChangePipeline(control: FormControl, dir: NgControl): void {
 }
 
 export function setUpFormContainer(
-    control: FormGroup | FormArray, dir: AbstractFormGroupDirective | FormArrayName) {
+    control: FormGroup|FormArray, dir: AbstractFormGroupDirective|FormArrayName) {
   if (control == null) _throwError(dir, 'Cannot find control with');
   control.validator = Validators.compose([control.validator, dir.validator]);
   control.asyncValidator = Validators.composeAsync([control.asyncValidator, dir.asyncValidator]);
@@ -130,9 +131,9 @@ function _noControlError(dir: NgControl) {
 
 function _throwError(dir: AbstractControlDirective, message: string): void {
   let messageEnd: string;
-  if (dir.path !.length > 1) {
+  if (dir.path!.length > 1) {
     messageEnd = `path: '${dir.path!.join(' -> ')}'`;
-  } else if (dir.path ![0]) {
+  } else if (dir.path![0]) {
     messageEnd = `name: '${dir.path}'`;
   } else {
     messageEnd = 'unspecified name attribute';
@@ -226,7 +227,7 @@ export function removeDir<T>(list: T[], el: T): void {
 // TODO(kara): remove after deprecation period
 export function _ngModelWarning(
     name: string, type: {_ngModelWarningSentOnce: boolean},
-    instance: {_ngModelWarningSent: boolean}, warningConfig: string | null) {
+    instance: {_ngModelWarningSent: boolean}, warningConfig: string|null) {
   if (!isDevMode() || warningConfig === 'never') return;
 
   if (((warningConfig === null || warningConfig === 'once') && !type._ngModelWarningSentOnce) ||
