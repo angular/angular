@@ -72,6 +72,7 @@ Angular 애플리케이션에 Angular 서비스 워커를 적용하는 것은 `N
 -->
 ## 동작 환경
 
+<!--
 To make use of all the features of Angular service worker, use the latest versions of Angular and the Angular CLI.
 
 In order for service workers to be registered, the app must be accessed over HTTPS, not HTTP.
@@ -79,9 +80,23 @@ Browsers ignore service workers on pages that are served over an insecure connec
 The reason is that service workers are quite powerful, so extra care needs to be taken to ensure the service worker script has not been tampered with.
 
 There is one exception to this rule: to make local development easier, browsers do _not_ require a secure connection when accessing an app on `localhost`.
+-->
+Angular 서비스 워커가 제공하는 기능을 모두 사용하려면 Angular 패키지와 Angular CLI를 모두 최신버전으로 유지해야 합니다.
 
+그리고 서비스 워커를 등록하려면 HTTP가 아니라 HTTPS로 앱을 제공해야 합니다.
+안전하지 않은 프로토콜을 사용하면 브라우저가 서비스 워커 자체를 무시합니다.
+이렇게 동작하는 이유는 간단합니다.
+서비스 워커는 아주 강력한 도구이기 때문에 서비스 워커 스크립트 자체의 안전성이 특히 중요합니다.
+
+다만 예외가 한가지 있습니다: 로컬 개발을 돕기 위해 `localhost`에서 동작하는 앱에 대해서는 브라우저가 보안 프로토콜을 강제하지 않습니다.
+
+
+<!--
 ### Browser support
+-->
+### 브라우저 지원
 
+<!--
 To benefit from the Angular service worker, your app must run in a web browser that supports service workers in general.
 Currently, service workers are supported in the latest versions of Chrome, Firefox, Edge, Safari, Opera, UC Browser (Android version) and Samsung Internet.
 Browsers like IE and Opera Mini do not support service workers.
@@ -99,6 +114,24 @@ For example, calling `SwUpdate.checkForUpdate()` will return rejected promises.
 To avoid such an error, you can check whether the Angular service worker is enabled using `SwUpdate.isEnabled()`.
 
 To learn more about other browsers that are service worker ready, see the [Can I Use](https://caniuse.com/#feat=serviceworkers) page and [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API).
+-->
+Angular 서비스 워커를 제대로 활용하려면 서비스 워커를 지원하는 웹 브라우저를 사용해야 합니다.
+현재 서비스 워커는 최신 버전의 Chrome, Firefox, Edge, Safari, Opera, UC Browser(안드로이드 버전), Samsung Internet에서 모두 지원합니다.
+그리고 IE와 Opera Mini는 서비스 워커를 지원하지 않습니다.
+
+서비스 워커를 지원하지 않는 브라우저로 앱을 실행하면 서비스워커가 등록되지 않기 때문에 캐시 관리나 푸시 알림과 같은 기능도 동작하지 않습니다.
+좀 더 자세하게 살펴보면:
+
+* 브라우저는 서비스 워커 스크립트와 `ngsw.json` 매니페스트 파일을 내려받지 않습니다.
+* 이미 동작하고 있는 서비스 워커가 실행하는 `SwUpdate.checkForUpdate()`와 같은 동작은 모두 `rejected` 상태의 Promise로 반환됩니다.
+* 이미 동작하고 있는 서비스 워커에서 발생하는 `SwUpdate.available`와 같은 옵저버블은 트리거되지 않습니다.
+
+그래서 애플리케이션은 서비스 워커를 지원하지 않는 브라우저에서도 온전히 동작할 수 있게 구현하는 것이 중요합니다.
+브라우저가 서비스 워커를 지원하지 않아서 캐싱 기능이 제대로 동작하지 않는다고 해도 앱은 계속해서 서비스 워커를 사용하려고 하기 때문에 에러 메시지가 계속 표시될 것입니다.
+그래서 `SwUpdate.checkForUpdate()`가 실행될 때마다 계속 `rejected` 상태로 Promise가 반환될 것입니다.
+이런 에러를 방지하려면 `SwUpdate.isEnabled()`를 사용해서 Angular 서비스 워커가 동작할 수 있는 환경인지 먼저 검사하는 것이 좋습니다.
+
+서비스 워커를 지원하는 브라우저에 대해 더 알아보려면 [Can I Use](https://caniuse.com/#feat=serviceworkers) 문서와 [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) 문서를 참고하세요.
 
 
 <!--
@@ -106,6 +139,7 @@ To learn more about other browsers that are service worker ready, see the [Can I
 -->
 ## 관련 자료
 
+<!--
 The rest of the articles in this section specifically address the Angular implementation of service workers.
 
 * [App Shell](guide/app-shell)
@@ -122,7 +156,29 @@ For additional recommendations and examples, see:
 
 * [Precaching with Angular Service Worker](https://web.dev/precaching-with-the-angular-service-worker/)
 * [Creating a PWA with Angular CLI](https://web.dev/creating-pwa-with-angular-cli/)
+-->
+Angular가 제공하는 서비스 워커를 활용하는 방법을 더 알아보려면 다음 자료를 참고하세요.
 
+* [애플리케이션 기본 틀](guide/app-shell)
+* [서비스 워커 통신](guide/service-worker-communications)
+* [운영환경에 서비스 워커 활용하기](guide/service-worker-devops)
+* [서비스 워커 설정](guide/service-worker-config)
+
+그리고 서비스 워커의 일반적인 내용에 대해 알아보려면 [Service Workers: an Introduction](https://developers.google.com/web/fundamentals/primers/service-workers/) 문서를 참고하세요.
+
+브라우저 지원사항에 대해 알아보려면 [Service Workers: an Introduction](https://developers.google.com/web/fundamentals/primers/service-workers/) 문서의 [browser support](https://developers.google.com/web/fundamentals/primers/service-workers/#browser_support) 섹션이나 Jake Archibald가 작성한 [Is Serviceworker ready?](https://jakearchibald.github.io/isserviceworkerready/), [Can I Use](http://caniuse.com/#feat=serviceworkers) 문서를 참고하세요.
+
+추가로 이런 내용도 확인해 보세요:
+
+* [Precaching with Angular Service Worker](https://web.dev/precaching-with-the-angular-service-worker/)
+* [Creating a PWA with Angular CLI](https://web.dev/creating-pwa-with-angular-cli/)
+
+<!--
 ## Next steps
+-->
+## 더 알아보기
 
+<!--
 To begin using Angular service workers, see [Getting Started with service workers](guide/service-worker-getting-started).
+-->
+Angular에서 서비스 워커를 시작하는 방법은 [서비스 워커 시작하기](guide/service-worker-getting-started) 문서를 참고하세요.
