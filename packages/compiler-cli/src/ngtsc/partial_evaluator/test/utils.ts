@@ -31,7 +31,7 @@ export function makeExpression(code: string, expr: string, supportingFiles: Test
   const decl =
       getDeclaration(program, absoluteFrom('/entry.ts'), 'target$', ts.isVariableDeclaration);
   return {
-    expression: decl.initializer !,
+    expression: decl.initializer!,
     host,
     options,
     checker,
