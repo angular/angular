@@ -17,7 +17,7 @@ import {ResolvedValue} from './result';
 
 export type ForeignFunctionResolver =
     (node: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
-     args: ReadonlyArray<ts.Expression>) => ts.Expression | null;
+     args: ReadonlyArray<ts.Expression>) => ts.Expression|null;
 
 export class PartialEvaluator {
   constructor(
@@ -31,7 +31,8 @@ export class PartialEvaluator {
       originatingFile: sourceFile,
       absoluteModuleName: null,
       resolutionContext: sourceFile.fileName,
-      scope: new Map<ts.ParameterDeclaration, ResolvedValue>(), foreignFunctionResolver,
+      scope: new Map<ts.ParameterDeclaration, ResolvedValue>(),
+      foreignFunctionResolver,
     });
   }
 }
