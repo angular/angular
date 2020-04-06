@@ -861,6 +861,9 @@
     "name": "isInHostBindings"
   },
   {
+    "name": "isInlineTemplate"
+  },
+  {
     "name": "isJsObject"
   },
   {

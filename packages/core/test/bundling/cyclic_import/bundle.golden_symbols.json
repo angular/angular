@@ -462,6 +462,9 @@
     "name": "isFactory"
   },
   {
+    "name": "isInlineTemplate"
+  },
+  {
     "name": "isLContainer"
   },
   {

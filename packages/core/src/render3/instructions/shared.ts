@@ -30,7 +30,7 @@ import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentDef, isComponentHost, isContentQueryHost, isLContainer, isRootView} from '../interfaces/type_checks';
 import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, InitPhaseState, INJECTOR, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, T_HOST, TData, TVIEW, TView, TViewType} from '../interfaces/view';
 import {assertNodeOfPossibleTypes} from '../node_assert';
-import {isNodeMatchingSelectorList} from '../node_selector_matcher';
+import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
 import {enterView, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getPreviousOrParentTNode, getSelectedIndex, getTView, leaveView, setBindingIndex, setBindingRootForHostBindings, setCheckNoChangesMode, setCurrentQueryIndex, setPreviousOrParentTNode, setSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {isAnimationProp, mergeHostAttrs} from '../util/attrs_utils';
@@ -900,8 +900,14 @@ function initializeInputAndOutputAliases(tView: TView, tNode: TNode): void {
   for (let i = start; i < end; i++) {
     const directiveDef = defs[i] as DirectiveDef<any>;
     const directiveInputs = directiveDef.inputs;
-    inputsFromAttrs.push(
-        tNodeAttrs !== null ? generateInitialInputs(directiveInputs, tNodeAttrs) : null);
+    // Do not use unbound attributes as inputs to structural directives, since structural
+    // directive inputs can only be set using microsyntax (e.g. `<div *dir="exp">`).
+    // TODO(FW-1930): microsyntax expressions may also contain unbound/static attributes, which
+    // should be set for inline templates.
+    const initialInputs = (tNodeAttrs !== null && !isInlineTemplate(tNode)) ?
+        generateInitialInputs(directiveInputs, tNodeAttrs) :
+        null;
+    inputsFromAttrs.push(initialInputs);
     inputsStore = generatePropertyAliases(directiveInputs, i, inputsStore);
     outputsStore = generatePropertyAliases(directiveDef.outputs, i, outputsStore);
   }

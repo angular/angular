@@ -420,6 +420,93 @@ describe('directives', () => {
 
          expect(dirInstance!.dir).toBe('Hello');
        });
+
+    it('should not set structural directive inputs from static element attrs', () => {
+      const dirInstances: StructuralDir[] = [];
+
+      @Directive({selector: '[dir]'})
+      class StructuralDir {
+        constructor() {
+          dirInstances.push(this);
+        }
+        @Input() dirOf!: number[];
+        @Input() dirUnboundInput: any;
+      }
+
+      @Component({
+        template: `
+          <!-- Regular form of structural directive -->
+          <div *dir="let item of items" dirUnboundInput>Some content</div>
+
+          <!-- De-sugared version of the same structural directive -->
+          <ng-template dir let-item [dirOf]="items" dirUnboundInput>
+            <div>Some content</div>
+          </ng-template>
+        `,
+      })
+      class App {
+        items: number[] = [1, 2, 3];
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [App, StructuralDir],
+      });
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      const [regularDir, desugaredDir] = dirInstances;
+
+      // When directive is used as a structural one, the `dirUnboundInput` should not be treated as
+      // an input.
+      expect(regularDir.dirUnboundInput).toBe(undefined);
+
+      // In de-sugared version the `dirUnboundInput` acts as a regular input, so it should be set
+      // to an empty string.
+      expect(desugaredDir.dirUnboundInput).toBe('');
+    });
+
+    it('should not set structural directive inputs from element bindings', () => {
+      const dirInstances: StructuralDir[] = [];
+
+      @Directive({selector: '[dir]'})
+      class StructuralDir {
+        constructor() {
+          dirInstances.push(this);
+        }
+        @Input() dirOf!: number[];
+        @Input() title: any;
+      }
+
+      @Component({
+        template: `
+          <!-- Regular form of structural directive -->
+          <div *dir="let item of items" [title]="title">Some content</div>
+
+          <!-- De-sugared version of the same structural directive -->
+          <ng-template dir let-item [dirOf]="items" [title]="title">
+            <div>Some content</div>
+          </ng-template>
+        `,
+      })
+      class App {
+        items: number[] = [1, 2, 3];
+        title: string = 'element title';
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [App, StructuralDir],
+      });
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      const [regularDir, desugaredDir] = dirInstances;
+
+      // When directive is used as a structural one, the `title` should not be treated as an input.
+      expect(regularDir.title).toBe(undefined);
+
+      // In de-sugared version the `title` acts as a regular input, so it should be set.
+      expect(desugaredDir.title).toBe('element title');
+    });
   });
 
   describe('outputs', () => {
