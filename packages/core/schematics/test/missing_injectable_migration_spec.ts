@@ -350,6 +350,24 @@ describe('Missing injectable migration', () => {
       expect(tree.readContent('/index.ts')).not.toContain('@Injectable');
     });
 
+    it('should not migrate provider which is already decorated with @NgModule', async () => {
+      const importedSymbols = type !== 'NgModule' ? ['NgModule', type] : ['NgModule'];
+      writeFile('/index.ts', `
+        import {${importedSymbols.join(', ')}} from '@angular/core';
+
+        @NgModule()
+        export class MyOtherModule {}
+
+        @${type}({${propName}: [MyOtherModule]})
+        export class TestClass {}
+      `);
+
+      await runMigration();
+
+      expect(warnOutput.length).toBe(0);
+      expect(tree.readContent('/index.ts')).not.toContain('@Injectable');
+    });
+
     it(`should migrate multiple providers in same ${type}`, async () => {
       writeFile('/index.ts', `
       import {${type}} from '@angular/core';

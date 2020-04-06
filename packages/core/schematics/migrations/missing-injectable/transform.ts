@@ -18,10 +18,14 @@ import {ResolvedDirective, ResolvedNgModule} from './definition_collector';
 import {ProviderLiteral, ProvidersEvaluator} from './providers_evaluator';
 import {UpdateRecorder} from './update_recorder';
 
-
-
-/** Name of decorators which imply that a given class does not need to be migrated. */
-const NO_MIGRATE_DECORATORS = ['Injectable', 'Directive', 'Component', 'Pipe'];
+/**
+ * Name of decorators which imply that a given class does not need to be migrated.
+ *    - `@Injectable`, `@Directive`, `@Component` and `@Pipe` instruct the compiler
+ *       to generate a factory definition.
+ *    - `@NgModule` instructs the compiler to generate a provider definition that holds
+ *       the factory function.
+ */
+const NO_MIGRATE_DECORATORS = ['Injectable', 'Directive', 'Component', 'Pipe', 'NgModule'];
 
 export interface AnalysisFailure {
   node: ts.Node;
