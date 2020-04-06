@@ -448,6 +448,31 @@ runInEachFileSystem(() => {
       expect(evaluate('const a = 2, b = 4;', '`1${a}3${b}5`')).toEqual('12345');
     });
 
+    it('template expressions should resolve enums', () => {
+      expect(evaluate('enum Test { VALUE = "test" };', '`a.${Test.VALUE}.b`')).toBe('a.test.b');
+    });
+
+    it('string concatenation should resolve enums', () => {
+      expect(evaluate('enum Test { VALUE = "test" };', '"a." + Test.VALUE + ".b"'))
+          .toBe('a.test.b');
+    });
+
+    it('should resolve non-literals as dynamic string', () => {
+      const value = evaluate(`const a: any = [];`, '`a.${a}.b`');
+
+      if (!(value instanceof DynamicValue)) {
+        return fail(`Should have resolved to a DynamicValue`);
+      }
+      expect(value.node.getText()).toEqual('`a.${a}.b`');
+
+      if (!value.isFromDynamicInput()) {
+        return fail('Should originate from dynamic input');
+      } else if (!value.reason.isFromDynamicString()) {
+        return fail('Should refer to a dynamic string part');
+      }
+      expect(value.reason.node.getText()).toEqual('a');
+    });
+
     it('enum resolution works', () => {
       const result = evaluate(
           `
@@ -510,12 +535,6 @@ runInEachFileSystem(() => {
       }
       const prop = expr.properties[0] as ts.PropertyAssignment;
       expect(value.node).toBe(prop.initializer);
-    });
-
-    it('should resolve enums in template expressions', () => {
-      const value =
-          evaluate(`enum Test { VALUE = 'test', } const value = \`a.\${Test.VALUE}.b\`;`, 'value');
-      expect(value).toBe('a.test.b');
     });
 
     it('should not attach identifiers to FFR-resolved values', () => {
