@@ -1031,8 +1031,7 @@ groups:
       - *can-be-global-approved
       - >
         contains_any_globs(files, [
-          'aio/scripts/_payload-limits.json',
-          'integration/_payload-limits.json'
+          'goldens/size-tracking/**'
           ])
     reviewers:
       users:
