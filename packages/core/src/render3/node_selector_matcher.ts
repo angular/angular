@@ -57,6 +57,15 @@ function isCssClassMatching(
 }
 
 /**
+ * Checks whether the `tNode` represents an inline template (e.g. `*ngFor`).
+ *
+ * @param tNode current TNode
+ */
+export function isInlineTemplate(tNode: TNode): boolean {
+  return tNode.type === TNodeType.Container && tNode.tagName !== NG_TEMPLATE_SELECTOR;
+}
+
+/**
  * Function that checks whether a given tNode matches tag-based selector and has a valid type.
  *
  * Matching can be performed in 2 modes: projection mode (when we project nodes) and regular
@@ -134,11 +143,9 @@ export function isNodeMatchingSelector(
         continue;
       }
 
-      const isInlineTemplate =
-          tNode.type == TNodeType.Container && tNode.tagName !== NG_TEMPLATE_SELECTOR;
       const attrName = (mode & SelectorFlags.CLASS) ? 'class' : current;
       const attrIndexInNode =
-          findAttrIndexInNode(attrName, nodeAttrs, isInlineTemplate, isProjectionMode);
+          findAttrIndexInNode(attrName, nodeAttrs, isInlineTemplate(tNode), isProjectionMode);
 
       if (attrIndexInNode === -1) {
         if (isPositive(mode)) return false;
