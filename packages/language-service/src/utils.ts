@@ -10,7 +10,6 @@ import {AstPath, BoundEventAst, CompileDirectiveSummary, CompileTypeMetadata, Cs
 import * as ts from 'typescript';
 
 import {AstResult, SelectorInfo} from './common';
-import {DiagnosticTemplateInfo} from './expression_diagnostics';
 import {Span, Symbol, SymbolQuery} from './types';
 
 export interface SpanHolder {
@@ -89,18 +88,6 @@ export function isTypescriptVersion(low: string, high?: string) {
   if (high && (version.substring(0, high.length) > high)) return false;
 
   return true;
-}
-
-export function diagnosticInfoFromTemplateInfo(info: AstResult): DiagnosticTemplateInfo {
-  return {
-    fileName: info.template.fileName,
-    offset: info.template.span.start,
-    query: info.template.query,
-    members: info.template.members,
-    htmlAst: info.htmlAst,
-    templateAst: info.templateAst,
-    source: info.template.source,
-  };
 }
 
 export function findTemplateAstAt(ast: TemplateAst[], position: number): TemplateAstPath {

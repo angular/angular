@@ -10,10 +10,10 @@ import {AST, Attribute, BoundDirectivePropertyAst, CssSelector, DirectiveAst, El
 import * as tss from 'typescript/lib/tsserverlibrary';
 
 import {AstResult} from './common';
-import {getExpressionScope} from './expression_diagnostics';
+import {diagnosticInfoFromTemplateInfo, getExpressionScope} from './expression_diagnostics';
 import {getExpressionSymbol} from './expressions';
 import {Definition, DirectiveKind, Span, Symbol} from './types';
-import {diagnosticInfoFromTemplateInfo, findOutputBinding, findTemplateAstAt, getPathToNodeAtPosition, inSpan, invertMap, isNarrower, offsetSpan, spanOf} from './utils';
+import {findOutputBinding, findTemplateAstAt, getPathToNodeAtPosition, inSpan, invertMap, isNarrower, offsetSpan, spanOf} from './utils';
 
 export interface SymbolInfo {
   symbol: Symbol;
