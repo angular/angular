@@ -15,6 +15,8 @@ import {LogLevel} from './src/logging/logger';
 
 // CLI entry point
 if (require.main === module) {
+  process.title = 'ngcc';
+
   const startTime = Date.now();
 
   const args = process.argv.slice(2);
