@@ -203,19 +203,13 @@ export class StaticInterpreter {
     const pieces: string[] = [node.head.text];
     for (let i = 0; i < node.templateSpans.length; i++) {
       const span = node.templateSpans[i];
-      let value = this.visit(span.expression, context);
-      if (value instanceof EnumValue) {
-        value = value.resolved;
-      }
-      if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean' ||
-          value == null) {
-        pieces.push(`${value}`);
-      } else if (value instanceof DynamicValue) {
+      const value = literal(
+          this.visit(span.expression, context),
+          () => DynamicValue.fromDynamicString(span.expression));
+      if (value instanceof DynamicValue) {
         return DynamicValue.fromDynamicInput(node, value);
-      } else {
-        return DynamicValue.fromDynamicInput(node, DynamicValue.fromDynamicString(span.expression));
       }
-      pieces.push(span.literal.text);
+      pieces.push(`${value}`, span.literal.text);
     }
     return pieces.join('');
   }
@@ -520,8 +514,12 @@ export class StaticInterpreter {
     const opRecord = BINARY_OPERATORS.get(tokenKind)!;
     let lhs: ResolvedValue, rhs: ResolvedValue;
     if (opRecord.literal) {
-      lhs = literal(this.visitExpression(node.left, context), node.left);
-      rhs = literal(this.visitExpression(node.right, context), node.right);
+      lhs = literal(
+          this.visitExpression(node.left, context),
+          value => DynamicValue.fromInvalidExpressionType(node.left, value));
+      rhs = literal(
+          this.visitExpression(node.right, context),
+          value => DynamicValue.fromInvalidExpressionType(node.right, value));
     } else {
       lhs = this.visitExpression(node.left, context);
       rhs = this.visitExpression(node.right, context);
@@ -585,12 +583,16 @@ function isFunctionOrMethodReference(ref: Reference<ts.Node>):
       ts.isFunctionExpression(ref.node);
 }
 
-function literal(value: ResolvedValue, node: ts.Node): any {
+function literal(
+    value: ResolvedValue, reject: (value: ResolvedValue) => ResolvedValue): ResolvedValue {
+  if (value instanceof EnumValue) {
+    value = value.resolved;
+  }
   if (value instanceof DynamicValue || value === null || value === undefined ||
       typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
     return value;
   }
-  return DynamicValue.fromInvalidExpressionType(node, value);
+  return reject(value);
 }
 
 function isVariableDeclarationDeclared(node: ts.VariableDeclaration): boolean {
