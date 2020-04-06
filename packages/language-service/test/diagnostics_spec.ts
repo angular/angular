@@ -246,30 +246,32 @@ describe('diagnostics', () => {
     expect(diags).toEqual([]);
   });
 
-  describe('in expression-cases.ts', () => {
-    it('should report access to an unknown field', () => {
-      const diags = ngLS.getSemanticDiagnostics(EXPRESSION_CASES).map(d => d.messageText);
-      expect(diags).toContain(
-          `Identifier 'foo' is not defined. ` +
-          `The component declaration, template variable declarations, ` +
-          `and element references do not contain such a member`);
-    });
+  it('should report access to an unknown field', () => {
+    mockHost.override(TEST_TEMPLATE, `{{ foo }}`);
+    const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE).map(d => d.messageText);
+    expect(diags).toContain(
+        `Identifier 'foo' is not defined. ` +
+        `The component declaration, template variable declarations, ` +
+        `and element references do not contain such a member`);
+  });
 
-    it('should report access to an unknown sub-field', () => {
-      const diags = ngLS.getSemanticDiagnostics(EXPRESSION_CASES).map(d => d.messageText);
-      expect(diags).toContain(
-          `Identifier 'nam' is not defined. 'Person' does not contain such a member`);
-    });
+  it('should report access to an unknown sub-field', () => {
+    mockHost.override(TEST_TEMPLATE, `{{ hero.nam }}`);
+    const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE).map(d => d.messageText);
+    expect(diags).toContain(
+        `Identifier 'nam' is not defined. 'Hero' does not contain such a member`);
+  });
 
-    it('should report access to a private member', () => {
-      const diags = ngLS.getSemanticDiagnostics(EXPRESSION_CASES).map(d => d.messageText);
-      expect(diags).toContain(`Identifier 'myField' refers to a private member of the component`);
-    });
+  it('should report access to a private member', () => {
+    mockHost.override(TEST_TEMPLATE, `{{ myField }}`);
+    const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE).map(d => d.messageText);
+    expect(diags).toContain(`Identifier 'myField' refers to a private member of the component`);
+  });
 
-    it('should report numeric operator errors', () => {
-      const diags = ngLS.getSemanticDiagnostics(EXPRESSION_CASES).map(d => d.messageText);
-      expect(diags).toContain('Expected a number type');
-    });
+  it('should report numeric operator errors', () => {
+    mockHost.override(TEST_TEMPLATE, `{{ 'a' % 2 }}`);
+    const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE).map(d => d.messageText);
+    expect(diags).toContain('Expected a number type');
   });
 
   describe('in ng-for-cases.ts', () => {

@@ -9,9 +9,7 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-
 import {AppComponent} from './app.component';
-import * as ExpressionCases from './expression-cases';
 import * as NgForCases from './ng-for-cases';
 import * as NgIfCases from './ng-if-cases';
 import * as ParsingCases from './parsing-cases';
@@ -20,10 +18,6 @@ import * as ParsingCases from './parsing-cases';
   imports: [CommonModule, FormsModule],
   declarations: [
     AppComponent,
-    ExpressionCases.ExpectNumericType,
-    ExpressionCases.PrivateReference,
-    ExpressionCases.WrongFieldReference,
-    ExpressionCases.WrongSubFieldReference,
     NgForCases.UnknownEven,
     NgForCases.UnknownPeople,
     NgForCases.UnknownTrackBy,

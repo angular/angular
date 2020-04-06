@@ -169,6 +169,7 @@ export class TemplateReference {
   birthday = new Date();
   readonlyHeroes: ReadonlyArray<Readonly<Hero>> = this.heroes;
   constNames = [{name: 'name'}] as const;
+  private myField = 'My Field';
 }
 
 @Component({
