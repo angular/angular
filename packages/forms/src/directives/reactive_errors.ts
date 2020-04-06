@@ -83,8 +83,9 @@ export class ReactiveErrors {
     in Angular v7.
     
     For more information on this, see our API docs here:
-    https://angular.io/api/forms/${directiveName === 'formControl' ? 'FormControlDirective' 
-      : 'FormControlName'}#use-with-ngmodel
+    https://angular.io/api/forms/${
+        directiveName === 'formControl' ? 'FormControlDirective' :
+                                          'FormControlName'}#use-with-ngmodel
     `);
   }
 }

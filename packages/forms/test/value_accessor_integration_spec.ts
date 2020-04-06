@@ -7,14 +7,13 @@
  */
 
 import {Component, Directive, EventEmitter, Input, Output, Type, ViewChild} from '@angular/core';
-import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/testing';
+import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {AbstractControl, ControlValueAccessor, FormControl, FormGroup, FormsModule, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, NgForm, NgModel, ReactiveFormsModule, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 
 {
   describe('value accessors', () => {
-
     function initTest<T>(component: Type<T>, ...directives: Type<any>[]): ComponentFixture<T> {
       TestBed.configureTestingModule(
           {declarations: [component, ...directives], imports: [FormsModule, ReactiveFormsModule]});
@@ -64,7 +63,11 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
       fixture.detectChanges();
 
       const input = fixture.debugElement.query(By.css('input'));
-      form.valueChanges.subscribe({next: (value) => { throw 'Should not happen'; }});
+      form.valueChanges.subscribe({
+        next: (value) => {
+          throw 'Should not happen';
+        }
+      });
       input.nativeElement.value = 'updatedValue';
 
       dispatchEvent(input.nativeElement, 'change');
@@ -160,9 +163,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
     });
 
     describe('select controls', () => {
-
       describe('in reactive forms', () => {
-
         it(`should support primitive values`, () => {
           if (isNode) return;
           const fixture = initTest(FormControlNameSelect);
@@ -197,7 +198,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
 
         it('should throw an error if compareWith is not a function', () => {
           const fixture = initTest(FormControlSelectWithCompareFn);
-          fixture.componentInstance.compareFn = null !;
+          fixture.componentInstance.compareFn = null!;
           expect(() => fixture.detectChanges())
               .toThrowError(/compareWith must be a function, but received null/);
         });
@@ -238,7 +239,6 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           expect(select.nativeElement.value).toEqual('3: Object');
           expect(nyOption.nativeElement.selected).toBe(true);
         });
-
       });
 
       describe('in template-driven forms', () => {
@@ -336,7 +336,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
              dispatchEvent(select.nativeElement, 'change');
              fixture.detectChanges();
              tick();
-             expect(comp.selectedCity !['name']).toEqual('NYC');
+             expect(comp.selectedCity!['name']).toEqual('NYC');
 
              select.nativeElement.value = '0: null';
              dispatchEvent(select.nativeElement, 'change');
@@ -348,7 +348,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
         it('should throw an error when compareWith is not a function', () => {
           const fixture = initTest(NgModelSelectWithCustomCompareFnForm);
           const comp = fixture.componentInstance;
-          comp.compareFn = null !;
+          comp.compareFn = null!;
           expect(() => fixture.detectChanges())
               .toThrowError(/compareWith must be a function, but received null/);
         });
@@ -398,16 +398,11 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
              expect(select.nativeElement.value).toEqual('3: Object');
              expect(nyOption.nativeElement.selected).toBe(true);
            }));
-
-
       });
-
     });
 
     describe('select multiple controls', () => {
-
       describe('in reactive forms', () => {
-
         it('should support primitive values', () => {
           if (isNode) return;
           const fixture = initTest(FormControlSelectMultiple);
@@ -432,7 +427,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
 
         it('should throw an error when compareWith is not a function', () => {
           const fixture = initTest(FormControlSelectMultipleWithCompareFn);
-          fixture.componentInstance.compareFn = null !;
+          fixture.componentInstance.compareFn = null!;
           expect(() => fixture.detectChanges())
               .toThrowError(/compareWith must be a function, but received null/);
         });
@@ -448,7 +443,6 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
              expect(select.nativeElement.value).toEqual('0: Object');
              expect(sfOption.nativeElement.selected).toBe(true);
            }));
-
       });
 
       describe('in template-driven forms', () => {
@@ -520,7 +514,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
       it('should throw an error when compareWith is not a function', () => {
         const fixture = initTest(NgModelSelectMultipleWithCustomCompareFnForm);
         const comp = fixture.componentInstance;
-        comp.compareFn = null !;
+        comp.compareFn = null!;
         expect(() => fixture.detectChanges())
             .toThrowError(/compareWith must be a function, but received null/);
       });
@@ -539,13 +533,10 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
            expect(select.nativeElement.value).toEqual('0: Object');
            expect(sfOption.nativeElement.selected).toBe(true);
          }));
-
     });
 
     describe('should support <type=radio>', () => {
-
       describe('in reactive forms', () => {
-
         it('should support basic functionality', () => {
           const fixture = initTest(FormControlRadioButtons);
           const form =
@@ -562,10 +553,10 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           fixture.detectChanges();
 
           // view -> model
-          expect(form.get('food') !.value).toEqual('chicken');
+          expect(form.get('food')!.value).toEqual('chicken');
           expect(inputs[1].nativeElement.checked).toEqual(false);
 
-          form.get('food') !.setValue('fish');
+          form.get('food')!.setValue('fish');
           fixture.detectChanges();
 
           // programmatic change -> view
@@ -606,16 +597,16 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           fixture.componentInstance.form = form;
           fixture.detectChanges();
 
-          form.get('food') !.setValue(null);
+          form.get('food')!.setValue(null);
           fixture.detectChanges();
 
           const inputs = fixture.debugElement.queryAll(By.css('input'));
           expect(inputs[0].nativeElement.checked).toEqual(false);
 
-          form.get('food') !.setValue('chicken');
+          form.get('food')!.setValue('chicken');
           fixture.detectChanges();
 
-          form.get('food') !.setValue(undefined);
+          form.get('food')!.setValue(undefined);
           fixture.detectChanges();
           expect(inputs[0].nativeElement.checked).toEqual(false);
         });
@@ -706,13 +697,12 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           fixture.detectChanges();
 
           // view -> model
-          expect(form.get('food') !.value).toEqual('chicken');
-          expect(form.get('nested.food') !.value).toEqual('fish');
+          expect(form.get('food')!.value).toEqual('chicken');
+          expect(form.get('nested.food')!.value).toEqual('fish');
 
           expect(inputs[1].nativeElement.checked).toEqual(false);
           expect(inputs[2].nativeElement.checked).toEqual(false);
           expect(inputs[3].nativeElement.checked).toEqual(true);
-
         });
 
         it('should disable all radio buttons when disable() is called', () => {
@@ -728,7 +718,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           expect(inputs[2].nativeElement.disabled).toEqual(false);
           expect(inputs[3].nativeElement.disabled).toEqual(false);
 
-          form.get('food') !.disable();
+          form.get('food')!.disable();
           expect(inputs[0].nativeElement.disabled).toEqual(true);
           expect(inputs[1].nativeElement.disabled).toEqual(true);
           expect(inputs[2].nativeElement.disabled).toEqual(false);
@@ -780,7 +770,6 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           expect(inputs[0].nativeElement.checked).toBe(false);
           expect(inputs[1].nativeElement.checked).toBe(true);
         });
-
       });
 
       describe('in template-driven forms', () => {
@@ -860,7 +849,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
              fixture.detectChanges();
              tick();
 
-             fixture.componentInstance.food = null !;
+             fixture.componentInstance.food = null!;
              fixture.detectChanges();
              tick();
 
@@ -872,7 +861,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
              fixture.detectChanges();
              tick();
 
-             fixture.componentInstance.food = undefined !;
+             fixture.componentInstance.food = undefined!;
              fixture.detectChanges();
              tick();
              expect(inputs[0].nativeElement.checked).toEqual(false);
@@ -886,7 +875,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
              tick();
 
              const form = fixture.debugElement.children[0].injector.get(NgForm);
-             form.control.get('food') !.disable();
+             form.control.get('food')!.disable();
              tick();
 
              const inputs = fixture.debugElement.queryAll(By.css('input'));
@@ -911,15 +900,11 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
              expect(inputs[2].nativeElement.disabled).toBe(false);
              expect(inputs[3].nativeElement.disabled).toBe(false);
            }));
-
       });
-
     });
 
     describe('should support <type=range>', () => {
-
       describe('in reactive forms', () => {
-
         it('with basic use case', () => {
           const fixture = initTest(FormControlRangeInput);
           const control = new FormControl(10);
@@ -968,7 +953,6 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           const input = fixture.debugElement.query(By.css('input'));
           expect(input.nativeElement.value).toEqual('');
         });
-
       });
 
       describe('in template-driven forms', () => {
@@ -987,15 +971,12 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
              tick();
              // view -> model
              fixture.detectChanges();
-             expect(typeof(fixture.componentInstance.val)).toBe('number');
+             expect(typeof (fixture.componentInstance.val)).toBe('number');
            }));
-
       });
-
     });
 
     describe('custom value accessors', () => {
-
       describe('in reactive forms', () => {
         it('should support basic functionality', () => {
           const fixture = initTest(WrappedValueForm, WrappedValue);
@@ -1014,9 +995,9 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           expect(form.value).toEqual({'login': 'bb'});
 
           // custom validator
-          expect(form.get('login') !.errors).toEqual({'err': true});
+          expect(form.get('login')!.errors).toEqual({'err': true});
           form.setValue({login: 'expected'});
-          expect(form.get('login') !.errors).toEqual(null);
+          expect(form.get('login')!.errors).toEqual(null);
         });
 
         it('should support non builtin input elements that fire a change event without a \'target\' property',
@@ -1042,7 +1023,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           });
           fixture.detectChanges();
           expect(fixture.componentInstance.form.status).toEqual('DISABLED');
-          expect(fixture.componentInstance.form.get('login') !.status).toEqual('DISABLED');
+          expect(fixture.componentInstance.form.get('login')!.status).toEqual('DISABLED');
         });
 
         it('should support custom accessors without setDisabledState - formControlDirective',
@@ -1061,9 +1042,9 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           fixture.componentInstance.form = new FormGroup({'login': new FormControl('aa')});
           fixture.detectChanges();
 
-          expect(fixture.componentInstance.myInput !.control).toBeDefined();
-          expect(fixture.componentInstance.myInput !.control)
-              .toEqual(fixture.componentInstance.myInput !.controlDir.control);
+          expect(fixture.componentInstance.myInput!.control).toBeDefined();
+          expect(fixture.componentInstance.myInput!.control)
+              .toEqual(fixture.componentInstance.myInput!.controlDir.control);
         });
       });
 
@@ -1089,16 +1070,14 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
              });
            }));
       });
-
     });
-
   });
 }
 
 @Component({selector: 'form-control-comp', template: `<input type="text" [formControl]="control">`})
 export class FormControlComp {
   // TODO(issue/24571): remove '!'.
-  control !: FormControl;
+  control!: FormControl;
 }
 
 @Component({
@@ -1110,13 +1089,13 @@ export class FormControlComp {
 })
 export class FormGroupComp {
   // TODO(issue/24571): remove '!'.
-  control !: FormControl;
+  control!: FormControl;
   // TODO(issue/24571): remove '!'.
-  form !: FormGroup;
+  form!: FormGroup;
   // TODO(issue/24571): remove '!'.
-  myGroup !: FormGroup;
+  myGroup!: FormGroup;
   // TODO(issue/24571): remove '!'.
-  event !: Event;
+  event!: Event;
 }
 
 @Component({
@@ -1125,7 +1104,7 @@ export class FormGroupComp {
 })
 class FormControlNumberInput {
   // TODO(issue/24571): remove '!'.
-  control !: FormControl;
+  control!: FormControl;
 }
 
 @Component({
@@ -1167,7 +1146,7 @@ class FormControlSelectNgValue {
 })
 class FormControlSelectWithCompareFn {
   compareFn:
-      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2
+      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2 ? o1.id === o2.id : o1 === o2
   cities = [{id: 1, name: 'SF'}, {id: 2, name: 'NY'}];
   form = new FormGroup({city: new FormControl({id: 1, name: 'SF'})});
 }
@@ -1211,7 +1190,7 @@ class FormControlSelectMultipleNgValue {
 })
 class FormControlSelectMultipleWithCompareFn {
   compareFn:
-      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2
+      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2 ? o1.id === o2.id : o1 === o2
   cities = [{id: 1, name: 'SF'}, {id: 2, name: 'NY'}];
   form = new FormGroup({city: new FormControl([{id: 1, name: 'SF'}])});
 }
@@ -1254,7 +1233,7 @@ class NgModelSelectWithNullForm {
 })
 class NgModelSelectWithCustomCompareFnForm {
   compareFn:
-      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2
+      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2 ? o1.id === o2.id : o1 === o2
   selectedCity: any = {};
   cities: any[] = [];
 }
@@ -1270,7 +1249,7 @@ class NgModelSelectWithCustomCompareFnForm {
 })
 class NgModelSelectMultipleWithCustomCompareFnForm {
   compareFn:
-      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2
+      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2 ? o1.id === o2.id : o1 === o2
   selectedCities: any[] = [];
   cities: any[] = [];
 }
@@ -1285,7 +1264,7 @@ class NgModelSelectMultipleWithCustomCompareFnForm {
 })
 class NgModelSelectMultipleForm {
   // TODO(issue/24571): remove '!'.
-  selectedCities !: any[];
+  selectedCities!: any[];
   cities: any[] = [];
 }
 
@@ -1295,7 +1274,7 @@ class NgModelSelectMultipleForm {
 })
 class FormControlRangeInput {
   // TODO(issue/24571): remove '!'.
-  control !: FormControl;
+  control!: FormControl;
 }
 
 @Component({selector: 'ng-model-range-form', template: '<input type="range" [(ngModel)]="val">'})
@@ -1317,7 +1296,7 @@ class NgModelRangeForm {
 })
 export class FormControlRadioButtons {
   // TODO(issue/24571): remove '!'.
-  form !: FormGroup;
+  form!: FormGroup;
   showRadio = new FormControl('yes');
 }
 
@@ -1335,9 +1314,9 @@ export class FormControlRadioButtons {
 })
 class NgModelRadioForm {
   // TODO(issue/24571): remove '!'.
-  food !: string;
+  food!: string;
   // TODO(issue/24571): remove '!'.
-  drink !: string;
+  drink!: string;
 }
 
 @Directive({
@@ -1351,37 +1330,55 @@ class NgModelRadioForm {
 class WrappedValue implements ControlValueAccessor {
   value: any;
   // TODO(issue/24571): remove '!'.
-  onChange !: Function;
+  onChange!: Function;
 
-  writeValue(value: any) { this.value = `!${value}!`; }
+  writeValue(value: any) {
+    this.value = `!${value}!`;
+  }
 
-  registerOnChange(fn: (value: any) => void) { this.onChange = fn; }
+  registerOnChange(fn: (value: any) => void) {
+    this.onChange = fn;
+  }
   registerOnTouched(fn: any) {}
 
-  handleOnInput(value: any) { this.onChange(value.substring(1, value.length - 1)); }
+  handleOnInput(value: any) {
+    this.onChange(value.substring(1, value.length - 1));
+  }
 
-  validate(c: AbstractControl) { return c.value === 'expected' ? null : {'err': true}; }
+  validate(c: AbstractControl) {
+    return c.value === 'expected' ? null : {'err': true};
+  }
 }
 
 @Component({selector: 'my-input', template: ''})
 export class MyInput implements ControlValueAccessor {
   @Output('input') onInput = new EventEmitter();
   // TODO(issue/24571): remove '!'.
-  value !: string;
+  value!: string;
 
   control: AbstractControl|null = null;
 
-  constructor(public controlDir: NgControl) { controlDir.valueAccessor = this; }
+  constructor(public controlDir: NgControl) {
+    controlDir.valueAccessor = this;
+  }
 
-  ngOnInit() { this.control = this.controlDir.control; }
+  ngOnInit() {
+    this.control = this.controlDir.control;
+  }
 
-  writeValue(value: any) { this.value = `!${value}!`; }
+  writeValue(value: any) {
+    this.value = `!${value}!`;
+  }
 
-  registerOnChange(fn: (value: any) => void) { this.onInput.subscribe({next: fn}); }
+  registerOnChange(fn: (value: any) => void) {
+    this.onInput.subscribe({next: fn});
+  }
 
   registerOnTouched(fn: any) {}
 
-  dispatchChangeEvent() { this.onInput.emit(this.value.substring(1, this.value.length - 1)); }
+  dispatchChangeEvent() {
+    this.onInput.emit(this.value.substring(1, this.value.length - 1));
+  }
 }
 
 @Component({
@@ -1393,7 +1390,7 @@ export class MyInput implements ControlValueAccessor {
 })
 export class MyInputForm {
   // TODO(issue/24571): remove '!'.
-  form !: FormGroup;
+  form!: FormGroup;
   @ViewChild(MyInput) myInput: MyInput|null = null;
 }
 
@@ -1406,7 +1403,7 @@ export class MyInputForm {
 })
 class WrappedValueForm {
   // TODO(issue/24571): remove '!'.
-  form !: FormGroup;
+  form!: FormGroup;
 }
 
 @Component({
@@ -1418,18 +1415,24 @@ class WrappedValueForm {
 })
 export class NgModelCustomComp implements ControlValueAccessor {
   // TODO(issue/24571): remove '!'.
-  model !: string;
+  model!: string;
   @Input('disabled') isDisabled: boolean = false;
   // TODO(issue/24571): remove '!'.
-  changeFn !: (value: any) => void;
+  changeFn!: (value: any) => void;
 
-  writeValue(value: any) { this.model = value; }
+  writeValue(value: any) {
+    this.model = value;
+  }
 
-  registerOnChange(fn: (value: any) => void) { this.changeFn = fn; }
+  registerOnChange(fn: (value: any) => void) {
+    this.changeFn = fn;
+  }
 
   registerOnTouched() {}
 
-  setDisabledState(isDisabled: boolean) { this.isDisabled = isDisabled; }
+  setDisabledState(isDisabled: boolean) {
+    this.isDisabled = isDisabled;
+  }
 }
 
 @Component({
@@ -1442,6 +1445,6 @@ export class NgModelCustomComp implements ControlValueAccessor {
 })
 export class NgModelCustomWrapper {
   // TODO(issue/24571): remove '!'.
-  name !: string;
+  name!: string;
   isDisabled = false;
 }

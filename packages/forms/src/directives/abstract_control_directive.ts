@@ -31,7 +31,9 @@ export abstract class AbstractControlDirective {
    * @description
    * Reports the value of the control if it is present, otherwise null.
    */
-  get value(): any { return this.control ? this.control.value : null; }
+  get value(): any {
+    return this.control ? this.control.value : null;
+  }
 
   /**
    * @description
@@ -39,14 +41,18 @@ export abstract class AbstractControlDirective {
    * validation errors exist with the current value.
    * If the control is not present, null is returned.
    */
-  get valid(): boolean|null { return this.control ? this.control.valid : null; }
+  get valid(): boolean|null {
+    return this.control ? this.control.valid : null;
+  }
 
   /**
    * @description
    * Reports whether the control is invalid, meaning that an error exists in the input value.
    * If the control is not present, null is returned.
    */
-  get invalid(): boolean|null { return this.control ? this.control.invalid : null; }
+  get invalid(): boolean|null {
+    return this.control ? this.control.invalid : null;
+  }
 
   /**
    * @description
@@ -54,7 +60,9 @@ export abstract class AbstractControlDirective {
    * errors are not yet available for the input value. If the control is not present, null is
    * returned.
    */
-  get pending(): boolean|null { return this.control ? this.control.pending : null; }
+  get pending(): boolean|null {
+    return this.control ? this.control.pending : null;
+  }
 
   /**
    * @description
@@ -62,41 +70,53 @@ export abstract class AbstractControlDirective {
    * in the UI and is exempt from validation checks and excluded from aggregate
    * values of ancestor controls. If the control is not present, null is returned.
    */
-  get disabled(): boolean|null { return this.control ? this.control.disabled : null; }
+  get disabled(): boolean|null {
+    return this.control ? this.control.disabled : null;
+  }
 
   /**
    * @description
    * Reports whether the control is enabled, meaning that the control is included in ancestor
    * calculations of validity or value. If the control is not present, null is returned.
    */
-  get enabled(): boolean|null { return this.control ? this.control.enabled : null; }
+  get enabled(): boolean|null {
+    return this.control ? this.control.enabled : null;
+  }
 
   /**
    * @description
    * Reports the control's validation errors. If the control is not present, null is returned.
    */
-  get errors(): ValidationErrors|null { return this.control ? this.control.errors : null; }
+  get errors(): ValidationErrors|null {
+    return this.control ? this.control.errors : null;
+  }
 
   /**
    * @description
    * Reports whether the control is pristine, meaning that the user has not yet changed
    * the value in the UI. If the control is not present, null is returned.
    */
-  get pristine(): boolean|null { return this.control ? this.control.pristine : null; }
+  get pristine(): boolean|null {
+    return this.control ? this.control.pristine : null;
+  }
 
   /**
    * @description
    * Reports whether the control is dirty, meaning that the user has changed
    * the value in the UI. If the control is not present, null is returned.
    */
-  get dirty(): boolean|null { return this.control ? this.control.dirty : null; }
+  get dirty(): boolean|null {
+    return this.control ? this.control.dirty : null;
+  }
 
   /**
    * @description
    * Reports whether the control is touched, meaning that the user has triggered
    * a `blur` event on it. If the control is not present, null is returned.
    */
-  get touched(): boolean|null { return this.control ? this.control.touched : null; }
+  get touched(): boolean|null {
+    return this.control ? this.control.touched : null;
+  }
 
   /**
    * @description
@@ -104,14 +124,18 @@ export abstract class AbstractControlDirective {
    * 'VALID', 'INVALID', 'DISABLED', and 'PENDING'.
    * If the control is not present, null is returned.
    */
-  get status(): string|null { return this.control ? this.control.status : null; }
+  get status(): string|null {
+    return this.control ? this.control.status : null;
+  }
 
   /**
    * @description
    * Reports whether the control is untouched, meaning that the user has not yet triggered
    * a `blur` event on it. If the control is not present, null is returned.
    */
-  get untouched(): boolean|null { return this.control ? this.control.untouched : null; }
+  get untouched(): boolean|null {
+    return this.control ? this.control.untouched : null;
+  }
 
   /**
    * @description
@@ -137,7 +161,9 @@ export abstract class AbstractControlDirective {
    * Returns an array that represents the path from the top-level form to this control.
    * Each index is the string name of the control on that level.
    */
-  get path(): string[]|null { return null; }
+  get path(): string[]|null {
+    return null;
+  }
 
   /**
    * @description

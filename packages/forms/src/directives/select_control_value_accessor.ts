@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Host, Input, OnDestroy, Optional, Renderer2, StaticProvider, forwardRef, ɵlooseIdentical as looseIdentical} from '@angular/core';
+import {Directive, ElementRef, forwardRef, Host, Input, OnDestroy, Optional, Renderer2, StaticProvider, ɵlooseIdentical as looseIdentical} from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
@@ -16,7 +16,7 @@ export const SELECT_VALUE_ACCESSOR: StaticProvider = {
   multi: true
 };
 
-function _buildValueString(id: string | null, value: any): string {
+function _buildValueString(id: string|null, value: any): string {
   if (id == null) return `${value}`;
   if (value && typeof value === 'object') value = 'Object';
   return `${id}: ${value}`.slice(0, 50);
@@ -160,7 +160,9 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
    *
    * @param fn The callback function
    */
-  registerOnTouched(fn: () => any): void { this.onTouched = fn; }
+  registerOnTouched(fn: () => any): void {
+    this.onTouched = fn;
+  }
 
   /**
    * Sets the "disabled" property on the select input element.
@@ -172,7 +174,9 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
   }
 
   /** @internal */
-  _registerOption(): string { return (this._idCounter++).toString(); }
+  _registerOption(): string {
+    return (this._idCounter++).toString();
+  }
 
   /** @internal */
   _getOptionId(value: any): string|null {
@@ -206,7 +210,7 @@ export class NgSelectOption implements OnDestroy {
    * ID of the option element
    */
   // TODO(issue/24571): remove '!'.
-  id !: string;
+  id!: string;
 
   constructor(
       private _element: ElementRef, private _renderer: Renderer2,

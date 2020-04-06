@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterViewInit, Directive, EventEmitter, Inject, Input, Optional, Self, forwardRef} from '@angular/core';
+import {AfterViewInit, Directive, EventEmitter, forwardRef, Inject, Input, Optional, Self} from '@angular/core';
 
 import {AbstractControl, FormControl, FormGroup, FormHooks} from '../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
@@ -96,8 +96,7 @@ const resolvedPromise = (() => Promise.resolve(null))();
   outputs: ['ngSubmit'],
   exportAs: 'ngForm'
 })
-export class NgForm extends ControlContainer implements Form,
-    AfterViewInit {
+export class NgForm extends ControlContainer implements Form, AfterViewInit {
   /**
    * @description
    * Returns whether the form submission has been triggered.
@@ -128,7 +127,7 @@ export class NgForm extends ControlContainer implements Form,
    *
    */
   // TODO(issue/24571): remove '!'.
-  @Input('ngFormOptions') options !: {updateOn?: FormHooks};
+  @Input('ngFormOptions') options!: {updateOn?: FormHooks};
 
   constructor(
       @Optional() @Self() @Inject(NG_VALIDATORS) validators: any[],
@@ -142,32 +141,42 @@ export class NgForm extends ControlContainer implements Form,
    * @description
    * Lifecycle method called after the view is initialized. For internal use only.
    */
-  ngAfterViewInit() { this._setUpdateStrategy(); }
+  ngAfterViewInit() {
+    this._setUpdateStrategy();
+  }
 
   /**
    * @description
    * The directive instance.
    */
-  get formDirective(): Form { return this; }
+  get formDirective(): Form {
+    return this;
+  }
 
   /**
    * @description
    * The internal `FormGroup` instance.
    */
-  get control(): FormGroup { return this.form; }
+  get control(): FormGroup {
+    return this.form;
+  }
 
   /**
    * @description
    * Returns an array representing the path to this group. Because this directive
    * always lives at the top level of a form, it is always an empty array.
    */
-  get path(): string[] { return []; }
+  get path(): string[] {
+    return [];
+  }
 
   /**
    * @description
    * Returns a map of the controls in this group.
    */
-  get controls(): {[key: string]: AbstractControl} { return this.form.controls; }
+  get controls(): {[key: string]: AbstractControl} {
+    return this.form.controls;
+  }
 
   /**
    * @description
@@ -179,7 +188,7 @@ export class NgForm extends ControlContainer implements Form,
   addControl(dir: NgModel): void {
     resolvedPromise.then(() => {
       const container = this._findContainer(dir.path);
-      (dir as{control: FormControl}).control =
+      (dir as {control: FormControl}).control =
           <FormControl>container.registerControl(dir.name, dir.control);
       setUpControl(dir.control, dir);
       dir.control.updateValueAndValidity({emitEvent: false});
@@ -193,7 +202,9 @@ export class NgForm extends ControlContainer implements Form,
    *
    * @param dir The `NgModel` directive instance.
    */
-  getControl(dir: NgModel): FormControl { return <FormControl>this.form.get(dir.path); }
+  getControl(dir: NgModel): FormControl {
+    return <FormControl>this.form.get(dir.path);
+  }
 
   /**
    * @description
@@ -248,7 +259,9 @@ export class NgForm extends ControlContainer implements Form,
    *
    * @param dir The `NgModelGroup` directive instance.
    */
-  getFormGroup(dir: NgModelGroup): FormGroup { return <FormGroup>this.form.get(dir.path); }
+  getFormGroup(dir: NgModelGroup): FormGroup {
+    return <FormGroup>this.form.get(dir.path);
+  }
 
   /**
    * Sets the new value for the provided `NgControl` directive.
@@ -258,7 +271,7 @@ export class NgForm extends ControlContainer implements Form,
    */
   updateModel(dir: NgControl, value: any): void {
     resolvedPromise.then(() => {
-      const ctrl = <FormControl>this.form.get(dir.path !);
+      const ctrl = <FormControl>this.form.get(dir.path!);
       ctrl.setValue(value);
     });
   }
@@ -269,7 +282,9 @@ export class NgForm extends ControlContainer implements Form,
    *
    * @param value The new value
    */
-  setValue(value: {[key: string]: any}): void { this.control.setValue(value); }
+  setValue(value: {[key: string]: any}): void {
+    this.control.setValue(value);
+  }
 
   /**
    * @description
@@ -279,7 +294,7 @@ export class NgForm extends ControlContainer implements Form,
    * @param $event The "submit" event object
    */
   onSubmit($event: Event): boolean {
-    (this as{submitted: boolean}).submitted = true;
+    (this as {submitted: boolean}).submitted = true;
     syncPendingControls(this.form, this._directives);
     this.ngSubmit.emit($event);
     return false;
@@ -289,7 +304,9 @@ export class NgForm extends ControlContainer implements Form,
    * @description
    * Method called when the "reset" event is triggered on the form.
    */
-  onReset(): void { this.resetForm(); }
+  onReset(): void {
+    this.resetForm();
+  }
 
   /**
    * @description
@@ -299,7 +316,7 @@ export class NgForm extends ControlContainer implements Form,
    */
   resetForm(value: any = undefined): void {
     this.form.reset(value);
-    (this as{submitted: boolean}).submitted = false;
+    (this as {submitted: boolean}).submitted = false;
   }
 
   private _setUpdateStrategy() {

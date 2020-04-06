@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Host, Inject, Input, OnDestroy, OnInit, Optional, Self, SkipSelf, forwardRef} from '@angular/core';
+import {Directive, forwardRef, Host, Inject, Input, OnDestroy, OnInit, Optional, Self, SkipSelf} from '@angular/core';
 
 import {FormArray} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
@@ -82,7 +82,7 @@ export class FormGroupName extends AbstractFormGroupDirective implements OnInit,
    * to indices when iterating over groups in a `FormArray`.
    */
   // TODO(issue/24571): remove '!'.
-  @Input('formGroupName') name !: string | number | null;
+  @Input('formGroupName') name!: string|number|null;
 
   constructor(
       @Optional() @Host() @SkipSelf() parent: ControlContainer,
@@ -152,7 +152,7 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
    * to indices when iterating over arrays in a `FormArray`.
    */
   // TODO(issue/24571): remove '!'.
-  @Input('formArrayName') name !: string | number | null;
+  @Input('formArrayName') name!: string|number|null;
 
   constructor(
       @Optional() @Host() @SkipSelf() parent: ControlContainer,
@@ -172,7 +172,7 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
    */
   ngOnInit(): void {
     this._checkParentType();
-    this.formDirective !.addFormArray(this);
+    this.formDirective!.addFormArray(this);
   }
 
   /**
@@ -189,7 +189,9 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
    * @description
    * The `FormArray` bound to this directive.
    */
-  get control(): FormArray { return this.formDirective !.getFormArray(this); }
+  get control(): FormArray {
+    return this.formDirective!.getFormArray(this);
+  }
 
   /**
    * @description
@@ -213,7 +215,9 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
    * Synchronous validator function composed of all the synchronous validators registered with this
    * directive.
    */
-  get validator(): ValidatorFn|null { return composeValidators(this._validators); }
+  get validator(): ValidatorFn|null {
+    return composeValidators(this._validators);
+  }
 
   /**
    * @description
