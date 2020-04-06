@@ -2019,35 +2019,43 @@ describe('Integration', () => {
          expect(location.path()).toEqual('/team/22/simple?q=1#f');
        })));
 
-    it('should support history state',
-       fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
-         const fixture = createRoot(router, RootCmp);
+    describe('should support history and state', () => {
+      let component: typeof LinkWithState|typeof DivLinkWithState;
+      it('for anchor elements', () => {
+        component = LinkWithState;
+      });
 
-         router.resetConfig([{
-           path: 'team/:id',
-           component: TeamCmp,
-           children: [
-             {path: 'link', component: LinkWithState}, {path: 'simple', component: SimpleCmp}
-           ]
-         }]);
+      it('for non-anchor elements', ()=> {
+        component = DivLinkWithState;
+      });
 
-         router.navigateByUrl('/team/22/link');
-         advance(fixture);
+      afterEach(
+        fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
+          const fixture = createRoot(router, RootCmp);
 
-         const native = fixture.nativeElement.querySelector('a');
-         expect(native.getAttribute('href')).toEqual('/team/22/simple');
-         native.click();
-         advance(fixture);
+          router.resetConfig([{
+            path: 'team/:id',
+            component: TeamCmp,
+            children: [
+              {path: 'link', component}, {path: 'simple', component: SimpleCmp}
+            ]
+          }]);
 
-         expect(fixture.nativeElement).toHaveText('team 22 [ simple, right:  ]');
+          router.navigateByUrl('/team/22/link');
+          advance(fixture);
 
-         // Check the history entry
-         const history = (location as any)._history;
+          const native = fixture.nativeElement.querySelector('#link');
+          native.click();
+          advance(fixture);
 
-         expect(history[history.length - 1].state.foo).toBe('bar');
-         expect(history[history.length - 1].state)
-             .toEqual({foo: 'bar', navigationId: history.length});
-       })));
+          expect(fixture.nativeElement).toHaveText('team 22 [ simple, right:  ]');
+
+          // Check the history entry
+          const history = (location as any)._history;
+          expect(history[history.length - 1].state)
+            .toEqual({foo: 'bar', navigationId: history.length});
+      })));
+    });
 
     it('should set href on area elements', fakeAsync(() => {
          @Component({
@@ -4951,9 +4959,16 @@ class LinkWithQueryParamsAndFragment {
 
 @Component({
   selector: 'link-cmp',
-  template: `<a [routerLink]="['../simple']" [state]="{foo: 'bar'}">link</a>`
+  template: `<a id="link" [routerLink]="['../simple']" [state]="{foo: 'bar'}">link</a>`
 })
 class LinkWithState {
+}
+
+@Component({
+  selector: 'div-link-cmp',
+  template: `<div id="link" [routerLink]="['../simple']" [state]="{foo: 'bar'}">link</div>`
+})
+class DivLinkWithState {
 }
 
 @Component({selector: 'simple-cmp', template: `simple`})
@@ -5155,6 +5170,7 @@ class LazyComponent {
     RelativeLinkCmp,
     DummyLinkWithParentCmp,
     LinkWithQueryParamsAndFragment,
+    DivLinkWithState,
     LinkWithState,
     CollectParamsCmp,
     QueryParamsAndFragmentCmp,
@@ -5185,6 +5201,7 @@ class LazyComponent {
     RelativeLinkCmp,
     DummyLinkWithParentCmp,
     LinkWithQueryParamsAndFragment,
+    DivLinkWithState,
     LinkWithState,
     CollectParamsCmp,
     QueryParamsAndFragmentCmp,
@@ -5217,6 +5234,7 @@ class LazyComponent {
     RelativeLinkCmp,
     DummyLinkWithParentCmp,
     LinkWithQueryParamsAndFragment,
+    DivLinkWithState,
     LinkWithState,
     CollectParamsCmp,
     QueryParamsAndFragmentCmp,
