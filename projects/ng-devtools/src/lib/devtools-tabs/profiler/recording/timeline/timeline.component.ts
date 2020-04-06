@@ -35,9 +35,9 @@ export class TimelineComponent {
     return this.profilerFrames[this.currentFrameIndex];
   }
 
-  frameRate(timeSpent: number): number {
+  estimateFrameRate(timeSpent: number): number {
     const multiplier = Math.max(Math.ceil(timeSpent / 16) - 1, 0);
-    return Math.floor(64 / 2 ** multiplier);
+    return Math.floor(60 / 2 ** multiplier);
   }
 
   move(value: number): void {
@@ -56,18 +56,24 @@ export class TimelineComponent {
     this.currentFrameIndex = index;
   }
 
+  getColorByFrameRate(framerate: number): string {
+    if (framerate >= 60) {
+      return 'green';
+    } else if (framerate < 60 && framerate >= 30) {
+      return 'orange';
+    } else if (framerate < 30 && framerate >= 15) {
+      return 'darkorange';
+    }
+    return 'red';
+  }
+
   renderBarChart(records: ProfilerFrame[]): void {
     const maxValue = records.reduce((acc: number, frame: ProfilerFrame) => Math.max(acc, frame.duration), 0);
     const multiplicationFactor = parseFloat((MAX_HEIGHT / maxValue).toFixed(2));
     this.graphData = records.map((r) => {
       const height = r.duration * multiplicationFactor;
       const colorPercentage = Math.round((height / MAX_HEIGHT) * 100);
-      let backgroundColor = 'rgb(237, 213, 94)';
-      if (height > 33) {
-        backgroundColor = 'rgb(240, 117, 117)';
-      } else if (height > 16) {
-        backgroundColor = 'rgb(238, 189, 99)';
-      }
+      const backgroundColor = this.getColorByFrameRate(this.estimateFrameRate(r.duration));
 
       const style = {
         'margin-left': '1px',
