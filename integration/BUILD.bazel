@@ -1,9 +1,5 @@
 load(":angular_integration_test.bzl", "angular_integration_test")
 
-exports_files([
-    "_payload-limits.json",
-])
-
 # Some integration ports must be managed manually to be unique and in other
 # cases the tests are able to select a random free port.
 #
