@@ -36,7 +36,7 @@ export function renderSourceAndMap(
       {file: generatedPath, source: generatedPath, includeContent: true});
 
   try {
-    const loader = new SourceFileLoader(fs);
+    const loader = new SourceFileLoader(fs, logger);
     const generatedFile = loader.loadSourceFile(
         generatedPath, generatedContent, {map: generatedMap, mapPath: generatedMapPath});
 

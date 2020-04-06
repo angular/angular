@@ -11,16 +11,19 @@ import {fromObject} from 'convert-source-map';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {RawSourceMap} from '../../src/sourcemaps/raw_source_map';
 import {SourceFileLoader as SourceFileLoader} from '../../src/sourcemaps/source_file_loader';
+import {MockLogger} from '../helpers/mock_logger';
 
 runInEachFileSystem(() => {
   describe('SourceFileLoader', () => {
     let fs: FileSystem;
+    let logger: MockLogger;
     let _: typeof absoluteFrom;
     let registry: SourceFileLoader;
     beforeEach(() => {
       fs = getFileSystem();
+      logger = new MockLogger();
       _ = absoluteFrom;
-      registry = new SourceFileLoader(fs);
+      registry = new SourceFileLoader(fs, logger);
     });
 
     describe('loadSourceFile', () => {
@@ -182,31 +185,75 @@ runInEachFileSystem(() => {
       });
     });
 
-    it('should fail if there is a cyclic dependency in files loaded from disk', () => {
-      fs.ensureDir(_('/foo/src'));
+    it('should log a warning if there is a cyclic dependency in source files loaded from disk',
+       () => {
+         fs.ensureDir(_('/foo/src'));
 
-      const aPath = _('/foo/src/a.js');
-      fs.writeFile(
-          aPath,
-          'a content\n' +
-              fromObject(createRawSourceMap({file: 'a.js', sources: ['b.js']})).toComment());
+         const aMap = createRawSourceMap({file: 'a.js', sources: ['b.js']});
 
-      const bPath = _('/foo/src/b.js');
-      fs.writeFile(
-          bPath,
-          'b content\n' +
-              fromObject(createRawSourceMap({file: 'b.js', sources: ['c.js']})).toComment());
+         const aPath = _('/foo/src/a.js');
+         fs.writeFile(aPath, 'a content\n' + fromObject(aMap).toComment());
 
-      const cPath = _('/foo/src/c.js');
-      fs.writeFile(
-          cPath,
-          'c content\n' +
-              fromObject(createRawSourceMap({file: 'c.js', sources: ['a.js']})).toComment());
+         const bPath = _('/foo/src/b.js');
+         fs.writeFile(
+             bPath,
+             'b content\n' +
+                 fromObject(createRawSourceMap({file: 'b.js', sources: ['c.js']})).toComment());
 
-      expect(() => registry.loadSourceFile(aPath))
-          .toThrowError(`Circular source file mapping dependency: ${aPath} -> ${bPath} -> ${
-              cPath} -> ${aPath}`);
-    });
+         const cPath = _('/foo/src/c.js');
+         fs.writeFile(
+             cPath,
+             'c content\n' +
+                 fromObject(createRawSourceMap({file: 'c.js', sources: ['a.js']})).toComment());
+
+         const sourceFile = registry.loadSourceFile(aPath)!;
+         expect(sourceFile).not.toBe(null!);
+         expect(sourceFile.contents).toEqual('a content\n');
+         expect(sourceFile.sourcePath).toEqual(_('/foo/src/a.js'));
+         expect(sourceFile.rawMap).toEqual(aMap);
+         expect(sourceFile.sources.length).toEqual(1);
+
+         expect(logger.logs.warn[0][0])
+             .toContain(
+                 `Circular source file mapping dependency: ` +
+                 `${aPath} -> ${bPath} -> ${cPath} -> ${aPath}`);
+       });
+
+    it('should log a warning if there is a cyclic dependency in source maps loaded from disk',
+       () => {
+         fs.ensureDir(_('/foo/src'));
+
+         // Create a self-referencing source-map
+         const aMap = createRawSourceMap({
+           file: 'a.js',
+           sources: ['a.js'],
+           sourcesContent: ['inline a.js content\n//# sourceMappingURL=a.js.map']
+         });
+         const aMapPath = _('/foo/src/a.js.map');
+         fs.writeFile(aMapPath, JSON.stringify(aMap));
+
+         const aPath = _('/foo/src/a.js');
+         fs.writeFile(aPath, 'a.js content\n//# sourceMappingURL=a.js.map');
+
+         const sourceFile = registry.loadSourceFile(aPath)!;
+         expect(sourceFile).not.toBe(null!);
+         expect(sourceFile.contents).toEqual('a.js content\n');
+         expect(sourceFile.sourcePath).toEqual(_('/foo/src/a.js'));
+         expect(sourceFile.rawMap).toEqual(aMap);
+         expect(sourceFile.sources.length).toEqual(1);
+
+         expect(logger.logs.warn[0][0])
+             .toContain(
+                 `Circular source file mapping dependency: ` +
+                 `${aPath} -> ${aMapPath} -> ${aMapPath}`);
+
+         const innerSourceFile = sourceFile.sources[0]!;
+         expect(innerSourceFile).not.toBe(null!);
+         expect(innerSourceFile.contents).toEqual('inline a.js content\n');
+         expect(innerSourceFile.sourcePath).toEqual(_('/foo/src/a.js'));
+         expect(innerSourceFile.rawMap).toEqual(null);
+         expect(innerSourceFile.sources.length).toEqual(0);
+       });
 
     it('should not fail if there is a cyclic dependency in filenames of inline sources', () => {
       fs.ensureDir(_('/foo/src'));

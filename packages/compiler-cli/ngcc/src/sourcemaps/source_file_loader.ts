@@ -8,6 +8,7 @@
 import {commentRegex, fromComment, mapFileCommentRegex} from 'convert-source-map';
 
 import {absoluteFrom, AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
+import {Logger} from '../logging/logger';
 
 import {RawSourceMap} from './raw_source_map';
 import {SourceFile} from './source_file';
@@ -22,7 +23,9 @@ import {SourceFile} from './source_file';
  * mappings to other `SourceFile` objects as necessary.
  */
 export class SourceFileLoader {
-  constructor(private fs: FileSystem) {}
+  private currentPaths: AbsoluteFsPath[] = [];
+
+  constructor(private fs: FileSystem, private logger: Logger) {}
 
   /**
    * Load a source file, compute its source map, and recursively load any referenced source files.
@@ -43,40 +46,42 @@ export class SourceFileLoader {
       sourcePath: AbsoluteFsPath, contents: string|null, mapAndPath: null,
       previousPaths: AbsoluteFsPath[]): SourceFile|null;
   loadSourceFile(
-      sourcePath: AbsoluteFsPath, contents: string|null = null, mapAndPath: MapAndPath|null = null,
-      previousPaths: AbsoluteFsPath[] = []): SourceFile|null {
-    if (contents === null) {
-      if (!this.fs.exists(sourcePath)) {
-        return null;
+      sourcePath: AbsoluteFsPath, contents: string|null = null,
+      mapAndPath: MapAndPath|null = null): SourceFile|null {
+    const previousPaths = this.currentPaths.slice();
+    try {
+      if (contents === null) {
+        if (!this.fs.exists(sourcePath)) {
+          return null;
+        }
+        this.trackPath(sourcePath);
+        contents = this.fs.readFile(sourcePath);
       }
 
-      // Track source file paths if we have loaded them from disk so that we don't get into an
-      // infinite recursion
-      if (previousPaths.includes(sourcePath)) {
-        throw new Error(`Circular source file mapping dependency: ${
-            previousPaths.join(' -> ')} -> ${sourcePath}`);
+      // If not provided try to load the source map based on the source itself
+      if (mapAndPath === null) {
+        mapAndPath = this.loadSourceMap(sourcePath, contents);
       }
-      previousPaths = previousPaths.concat([sourcePath]);
 
-      contents = this.fs.readFile(sourcePath);
+      let map: RawSourceMap|null = null;
+      let inline = true;
+      let sources: (SourceFile|null)[] = [];
+      if (mapAndPath !== null) {
+        const basePath = mapAndPath.mapPath || sourcePath;
+        sources = this.processSources(basePath, mapAndPath.map, previousPaths);
+        map = mapAndPath.map;
+        inline = mapAndPath.mapPath === null;
+      }
+
+      return new SourceFile(sourcePath, contents, map, inline, sources);
+    } catch (e) {
+      this.logger.warn(
+          `Unable to fully load ${sourcePath} for source-map flattening: ${e.message}`);
+      return null;
+    } finally {
+      // We are finished with this recursion so revert the paths being tracked
+      this.currentPaths = previousPaths;
     }
-
-    // If not provided try to load the source map based on the source itself
-    if (mapAndPath === null) {
-      mapAndPath = this.loadSourceMap(sourcePath, contents);
-    }
-
-    let map: RawSourceMap|null = null;
-    let inline = true;
-    let sources: (SourceFile|null)[] = [];
-    if (mapAndPath !== null) {
-      const basePath = mapAndPath.mapPath || sourcePath;
-      sources = this.processSources(basePath, mapAndPath.map, previousPaths);
-      map = mapAndPath.map;
-      inline = mapAndPath.mapPath === null;
-    }
-
-    return new SourceFile(sourcePath, contents, map, inline, sources);
   }
 
   /**
@@ -97,18 +102,35 @@ export class SourceFileLoader {
       try {
         const fileName = external[1] || external[2];
         const externalMapPath = this.fs.resolve(this.fs.dirname(sourcePath), fileName);
-        return {map: this.loadRawSourceMap(externalMapPath), mapPath: externalMapPath};
-      } catch {
+        const map = this.loadRawSourceMap(externalMapPath);
+        this.trackPath(externalMapPath);
+        return {map, mapPath: externalMapPath};
+      } catch (e) {
+        this.logger.warn(
+            `Unable to fully load ${sourcePath} for source-map flattening: ${e.message}`);
         return null;
       }
     }
 
     const impliedMapPath = absoluteFrom(sourcePath + '.map');
     if (this.fs.exists(impliedMapPath)) {
+      this.trackPath(impliedMapPath);
       return {map: this.loadRawSourceMap(impliedMapPath), mapPath: impliedMapPath};
     }
 
     return null;
+  }
+
+  /**
+   * Track source file paths if we have loaded them from disk so that we don't get into an infinite
+   * recursion.
+   */
+  private trackPath(path: AbsoluteFsPath): void {
+    if (this.currentPaths.includes(path)) {
+      throw new Error(
+          `Circular source file mapping dependency: ${this.currentPaths.join(' -> ')} -> ${path}`);
+    }
+    this.currentPaths.push(path);
   }
 
   /**
