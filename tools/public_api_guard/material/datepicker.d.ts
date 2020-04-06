@@ -170,7 +170,7 @@ export declare class MatDatepickerContent<D> extends _MatDatepickerContentMixinB
     static ɵfac: i0.ɵɵFactoryDef<MatDatepickerContent<any>, never>;
 }
 
-export declare class MatDatepickerInput<D> implements ControlValueAccessor, OnDestroy, Validator {
+export declare class MatDatepickerInput<D> implements ControlValueAccessor, OnDestroy, AfterViewInit, Validator {
     _dateAdapter: DateAdapter<D>;
     _dateFilter: (date: D | null) => boolean;
     _datepicker: MatDatepicker<D>;
@@ -197,6 +197,7 @@ export declare class MatDatepickerInput<D> implements ControlValueAccessor, OnDe
     _onKeydown(event: KeyboardEvent): void;
     getConnectedOverlayOrigin(): ElementRef;
     getPopupConnectionElementRef(): ElementRef;
+    ngAfterViewInit(): void;
     ngOnDestroy(): void;
     registerOnChange(fn: (value: any) => void): void;
     registerOnTouched(fn: () => void): void;
