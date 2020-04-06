@@ -31,6 +31,15 @@ const getDirectiveControls = (
   };
 };
 
+export const constructPathOfKeysToPropertyValue = (nodePropToGetKeysFor: Property, keys: string[] = []): string[] => {
+  keys.unshift(nodePropToGetKeysFor.name);
+  const parentNodeProp = nodePropToGetKeysFor.parent;
+  if (parentNodeProp) {
+    constructPathOfKeysToPropertyValue(parentNodeProp, keys);
+  }
+  return keys;
+};
+
 export class DirectivePropertyResolver {
   _treeFlattener = new MatTreeFlattener(
     (node: Property, level: number): FlatNode => {
@@ -78,6 +87,10 @@ export class DirectivePropertyResolver {
     return this._props.props;
   }
 
+  get directivePosition(): DirectivePosition {
+    return this._directivePosition;
+  }
+
   getExpandedProperties(): NestedProp[] {
     return [
       ...getExpandedDirectiveProperties(this._inputsDataSource.data),
@@ -97,18 +110,9 @@ export class DirectivePropertyResolver {
 
   updateValue(node: FlatNode, newValue: any): void {
     const directiveId = this._directivePosition;
-    const keyPath = this._constructPathOfKeysToPropertyValue(node.prop);
+    const keyPath = constructPathOfKeysToPropertyValue(node.prop);
     this._messageBus.emit('updateState', [{ directiveId, keyPath, newValue }]);
     node.prop.descriptor.value = newValue;
-  }
-
-  private _constructPathOfKeysToPropertyValue(nodePropToGetKeysFor: Property, keys: string[] = []): string[] {
-    keys.unshift(nodePropToGetKeysFor.name);
-    const parentNodeProp = nodePropToGetKeysFor.parent;
-    if (parentNodeProp) {
-      this._constructPathOfKeysToPropertyValue(parentNodeProp, keys);
-    }
-    return keys;
   }
 
   private _getChildren(prop: Property): Property[] | undefined {

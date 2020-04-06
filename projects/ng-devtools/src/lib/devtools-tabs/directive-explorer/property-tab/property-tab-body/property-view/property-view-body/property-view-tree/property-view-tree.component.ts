@@ -12,6 +12,7 @@ export class PropertyViewTreeComponent {
   @Input() dataSource: PropertyDataSource;
   @Input() treeControl: FlatTreeControl<FlatNode>;
   @Output() updateValue = new EventEmitter<any>();
+  @Output() inspectFunction = new EventEmitter<any>();
 
   hasChild = (_: number, node: FlatNode): boolean => node.expandable;
 

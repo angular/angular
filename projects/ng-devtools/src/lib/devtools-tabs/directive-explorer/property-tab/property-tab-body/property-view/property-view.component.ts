@@ -1,6 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { DirectivePropertyResolver, DirectiveTreeData } from '../../../property-resolver/directive-property-resolver';
-import { ElementPropertyResolver } from '../../../property-resolver/element-property-resolver';
+import { ElementPropertyResolver, FlatNode } from '../../../property-resolver/element-property-resolver';
+import { DirectivePosition } from 'protocol';
 
 @Component({
   selector: 'ng-property-view',
@@ -9,6 +10,7 @@ import { ElementPropertyResolver } from '../../../property-resolver/element-prop
 })
 export class PropertyViewComponent {
   @Input() directive: string;
+  @Output() inspectFunction = new EventEmitter<{ node: FlatNode; directivePosition: DirectivePosition }>();
 
   constructor(private _nestedProps: ElementPropertyResolver) {}
 

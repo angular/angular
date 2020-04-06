@@ -1,5 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { IndexedNode } from '../../directive-forest/index-forest';
+import { FlatNode } from '../../property-resolver/element-property-resolver';
+import { DirectivePosition } from 'protocol';
 
 @Component({
   templateUrl: './property-tab-body.component.html',
@@ -8,6 +10,7 @@ import { IndexedNode } from '../../directive-forest/index-forest';
 })
 export class PropertyTabBodyComponent {
   @Input() currentSelectedElement: IndexedNode | null;
+  @Output() inspectFunction = new EventEmitter<{ node: FlatNode; directivePosition: DirectivePosition }>();
 
   getCurrentDirectives(): string[] | undefined {
     if (!this.currentSelectedElement) {
