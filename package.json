@@ -22,7 +22,6 @@
     "preinstall": "node tools/yarn/check-yarn.js",
     "postinstall": "node scripts/webdriver-manager-update.js && node --preserve-symlinks --preserve-symlinks-main ./tools/postinstall-patches.js",
     "check-env": "gulp check-env",
-    "commitmsg": "yarn -s ng-dev commit-message pre-commit-validate",
     "test-ivy-aot": "bazelisk test --config=ivy --build_tag_filters=-no-ivy-aot,-fixme-ivy-aot --test_tag_filters=-no-ivy-aot,-fixme-ivy-aot",
     "test-non-ivy": "bazelisk test --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only",
     "test-fixme-ivy-aot": "bazelisk test --config=ivy --build_tag_filters=-no-ivy-aot --test_tag_filters=-no-ivy-aot",
@@ -172,7 +171,7 @@
     "gulp-filter": "^5.1.0",
     "gulp-git": "^2.7.0",
     "gulp-tslint": "8.1.2",
-    "husky": "^0.14.3",
+    "husky": "^4.2.3",
     "jpm": "1.3.1",
     "json5": "^2.1.2",
     "karma-browserstack-launcher": "^1.3.0",
@@ -197,5 +196,10 @@
     "**/graceful-fs": "4.2.2",
     "**/webdriver-manager": "12.1.7"
   },
-  "cldr-data-coverage": "full"
+  "cldr-data-coverage": "full",
+  "husky": {
+    "hooks": {
+      "commit-msg": "yarn -s ng-dev commit-message pre-commit-validate"
+    }
+  }
 }
