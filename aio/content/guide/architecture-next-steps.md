@@ -3,7 +3,7 @@
 After you understand the basic Angular building blocks, you can learn more
 about the features and tools that can help you develop and deliver Angular applications.
 
-* Work through the [Tour of Heroes](tutorial/index) tutorial to get a feel for how to fit the basic building blocks together to create a well-designed application.
+* Work through the [Tour of Heroes](tutorial) tutorial to get a feel for how to fit the basic building blocks together to create a well-designed application.
 
 * Check out the [Glossary](guide/glossary) to understand Angular-specific terms and usage.
 
