@@ -8,6 +8,7 @@ import {
   ElementPosition,
   PropertyQuery,
   PropertyQueryTypes,
+  DirectivePosition,
 } from 'protocol';
 import { IndexedNode } from './directive-forest/index-forest';
 import { ApplicationOperations } from '../../application-operations';
@@ -15,7 +16,9 @@ import { Subject } from 'rxjs';
 import { throttleTime } from 'rxjs/operators';
 import { ElementPropertyResolver } from './property-resolver/element-property-resolver';
 import { FlatNode } from './directive-forest/component-data-source';
+import { FlatNode as PropertyFlatNode } from './property-resolver/element-property-resolver';
 import { DirectiveForestComponent } from './directive-forest/directive-forest.component';
+import { constructPathOfKeysToPropertyValue } from './property-resolver/directive-property-resolver';
 
 const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
   if ((a.component && !b.component) || (!a.component && b.component)) {
@@ -185,5 +188,10 @@ export class DirectiveExplorerComponent implements OnInit {
   handleSetParents(parents: FlatNode[] | null): void {
     this.parents = parents;
     this._cdr.detectChanges();
+  }
+
+  inspectFunction({ node, directivePosition }: { node: PropertyFlatNode; directivePosition: DirectivePosition }): void {
+    const keyPath = constructPathOfKeysToPropertyValue(node.prop);
+    this._appOperations.inspectFunction(directivePosition, keyPath);
   }
 }

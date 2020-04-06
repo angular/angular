@@ -1,4 +1,5 @@
 import { findNodeFromSerializedPosition } from 'ng-devtools-backend';
+import { buildDirectiveForest, queryDirectiveForest } from '../../../ng-devtools-backend/src/lib/component-tree';
 
 declare const ng: any;
 
@@ -37,4 +38,33 @@ const chromeWindowExtensions = {
     }
     return node.nativeElement;
   },
+  findFunctionByPosition: (args): any => {
+    const { directivePosition, keyPath } = JSON.parse(args);
+    const node = queryDirectiveForest(directivePosition.element, buildDirectiveForest());
+    if (node === null) {
+      console.error(`Cannot find element associated with node ${directivePosition}`);
+      return undefined;
+    }
+
+    const isDirective =
+      directivePosition.directive !== undefined &&
+      node.directives[directivePosition.directive] &&
+      typeof node.directives[directivePosition.directive] === 'object';
+    if (isDirective) {
+      return traverseDirective(node.directives[directivePosition.directive].instance, keyPath);
+    }
+    if (node.component) {
+      return traverseDirective(node.component.instance, keyPath);
+    }
+  },
+};
+
+const traverseDirective = (dir: any, keyPath: string[]): any => {
+  for (const key of keyPath) {
+    if (!dir[key]) {
+      return;
+    }
+    dir = dir[key];
+  }
+  return dir;
 };

@@ -10,6 +10,7 @@
         [dataSource]="panels[index].controls.dataSource"
         [treeControl]="panels[index].controls.treeControl"
         (updateValue)="updateValue($event)"
+        (inspectFunction)="handleInspectFunction($event)"
       ></ng-property-view-tree>
     </mat-expansion-panel>
   </div>

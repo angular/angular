@@ -13,7 +13,11 @@
   </as-split-area>
   <as-split-area size="40" minSize="25">
     <div class="property-tab-wrapper">
-      <ng-property-tab [currentSelectedElement]="currentSelectedElement" (viewSource)="viewSource()"></ng-property-tab>
+      <ng-property-tab
+        [currentSelectedElement]="currentSelectedElement"
+        (inspectFunction)="inspectFunction($event)"
+        (viewSource)="viewSource()"
+      ></ng-property-tab>
     </div>
   </as-split-area>
 </as-split>

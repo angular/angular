@@ -9,6 +9,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { PropertyEditorComponent } from './property-view-body/property-view-tree/property-editor/property-editor.component';
 import { FormsModule } from '@angular/forms';
+import { PropertyPreviewComponent } from './property-view-body/property-view-tree/property-preview/property-preview.component';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { FormsModule } from '@angular/forms';
     PropertyViewComponent,
     PropertyViewTreeComponent,
     PropertyEditorComponent,
+    PropertyPreviewComponent,
   ],
   imports: [MatTreeModule, CommonModule, MatExpansionModule, DragDropModule, FormsModule],
   exports: [PropertyViewBodyComponent, PropertyViewHeaderComponent, PropertyViewComponent],

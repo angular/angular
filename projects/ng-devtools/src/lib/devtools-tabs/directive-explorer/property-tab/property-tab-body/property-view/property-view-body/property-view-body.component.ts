@@ -1,10 +1,11 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   DirectivePropertyResolver,
   DirectiveTreeData,
 } from '../../../../property-resolver/directive-property-resolver';
 import { FlatNode } from '../../../../property-resolver/element-property-resolver';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { DirectivePosition } from 'protocol';
 
 @Component({
   selector: 'ng-property-view-body',
@@ -16,6 +17,8 @@ export class PropertyViewBodyComponent {
   @Input() directiveInputControls: DirectiveTreeData;
   @Input() directiveOutputControls: DirectiveTreeData;
   @Input() directiveStateControls: DirectiveTreeData;
+
+  @Output() inspectFunction = new EventEmitter<{ node: FlatNode; directivePosition: DirectivePosition }>();
 
   categoryOrder = [0, 1, 2];
 
@@ -49,5 +52,12 @@ export class PropertyViewBodyComponent {
 
   drop(event: CdkDragDrop<any, any>): void {
     moveItemInArray(this.categoryOrder, event.previousIndex, event.currentIndex);
+  }
+
+  handleInspectFunction(node: FlatNode): void {
+    this.inspectFunction.emit({
+      node,
+      directivePosition: this.controller.directivePosition,
+    });
   }
 }
