@@ -57,8 +57,8 @@ describe('plugin', () => {
     const compilerDiags = tsLS.getCompilerOptionsDiagnostics();
     expect(compilerDiags).toEqual([]);
     const sourceFiles = program.getSourceFiles().filter(f => !f.fileName.endsWith('.d.ts'));
-    // there are six .ts files in the test project
-    expect(sourceFiles.length).toBe(6);
+    // there are five .ts files in the test project
+    expect(sourceFiles.length).toBe(5);
     for (const {fileName} of sourceFiles) {
       const syntacticDiags = tsLS.getSyntacticDiagnostics(fileName);
       expect(syntacticDiags).toEqual([]);
