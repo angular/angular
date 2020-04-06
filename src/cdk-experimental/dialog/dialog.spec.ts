@@ -791,6 +791,25 @@ describe('Dialog', () => {
 
       expect(overlayContainerElement.querySelector('cdk-dialog-container')).toBeFalsy();
     }));
+
+    it('should work when opening from a template', fakeAsync(() => {
+      const templateRefFixture = TestBed.createComponent(ComponentWithTemplateRef);
+      templateRefFixture.detectChanges();
+
+      dialog.openFromTemplate(templateRefFixture.componentInstance.templateRef, {
+        disableClose: true
+      });
+
+      templateRefFixture.detectChanges();
+
+      let backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
+      backdrop.click();
+      templateRefFixture.detectChanges();
+      flush();
+
+      expect(overlayContainerElement.querySelector('cdk-dialog-container')).toBeTruthy();
+    }));
+
   });
 
   describe('hasBackdrop option', () => {

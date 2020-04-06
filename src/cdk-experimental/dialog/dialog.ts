@@ -226,17 +226,11 @@ export class Dialog implements OnDestroy {
 
     // Create a reference to the dialog we're creating in order to give the user a handle
     // to modify and close it.
-    const dialogRef = new this._dialogRefConstructor(overlayRef, dialogContainer, config.id);
+    const dialogRef = this._createDialogRef(overlayRef, dialogContainer, config);
     const injector = this._createInjector<T>(config, dialogRef, dialogContainer);
     const contentRef = dialogContainer.attachComponentPortal(
         new ComponentPortal(componentOrTemplateRef, undefined, injector));
-
     dialogRef.componentInstance = contentRef.instance;
-    dialogRef.disableClose = config.disableClose;
-
-    dialogRef.updateSize({width: config.width, height: config.height})
-             .updatePosition(config.position);
-
     return dialogRef;
   }
 
@@ -257,14 +251,10 @@ export class Dialog implements OnDestroy {
 
     // Create a reference to the dialog we're creating in order to give the user a handle
     // to modify and close it.
-    const dialogRef = new this._dialogRefConstructor(overlayRef, dialogContainer, config.id);
-
+    const dialogRef = this._createDialogRef(overlayRef, dialogContainer, config);
     dialogContainer.attachTemplatePortal(
       new TemplatePortal<T>(componentOrTemplateRef, null!,
         <any>{$implicit: config.data, dialogRef}));
-    dialogRef.updateSize({width: config.width, height: config.height})
-             .updatePosition(config.position);
-
     return dialogRef;
   }
 
@@ -298,6 +288,16 @@ export class Dialog implements OnDestroy {
     }
 
     return new PortalInjector(userInjector || this._injector, injectionTokens);
+  }
+
+  /** Creates a new dialog ref. */
+  private _createDialogRef(overlayRef: OverlayRef,
+                           dialogContainer: CdkDialogContainer,
+                           config: DialogConfig) {
+    const dialogRef = new this._dialogRefConstructor(overlayRef, dialogContainer, config.id);
+    dialogRef.disableClose = config.disableClose;
+    dialogRef.updateSize(config).updatePosition(config.position);
+    return dialogRef;
   }
 
   /**
