@@ -323,14 +323,6 @@
     "bio": "Sander is a versed developer with over 4 decades of practice under his belt. He is also an Google Developer Expert for web, specializing in Angular. Organizer of meetups and conferences. Helping out others wherever he can. When he is not breathing code, he is fiddling around with IOT, photography, science and anything that might vaguely is gadget-like! Thinks he a master of the grill, but in reality you probably don't get a food-poisoning ;) Also, and actually the most important thing to him, he is a father of 4, and has the most patient girlfriend in the universe.",
     "groups": ["GDE"]
   },
-  "filipbech": {
-    "name": "Filip Bruun Bech-Larsen",
-    "picture": "filipbech.jpg",
-    "twitter": "filipbech",
-    "website": "http://filipbech.github.io/",
-    "bio": "Filip is a Frontend developer from Denmark. He works at IMPACT, delivering large-scale, high-performance e-commerce to international clients - most often build in Angular. He runs the local Angular usergroup - ngAarhus, and gives talks/workshops around and beyond the country of Denmark.",
-    "groups": ["GDE"]
-  },
   "cironunes": {
     "name": "Ciro Nunes",
     "picture": "cironunes.jpg",
@@ -398,14 +390,6 @@
     "twitter": "jecelynyeen",
     "website": "https://developers.google.com/experts/people/jecelyn-yeen",
     "bio": "GDE (Google Developer Expert) Angular and Web Technologies, Women Who Code KL Director, Jecelyn specializes in professional application development with technologies, including Angular, HTML5, Typescript, JavaScript, CSS, C#, NodeJs, Cloud and ASP.NET.",
-    "groups": ["GDE"]
-  },
-  "areai51": {
-    "name": "Vinci Rufus",
-    "picture": "vincirufus.jpg",
-    "twitter": "areai51",
-    "website": "https://developers.google.com/experts/people/vinci-rufus",
-    "bio": "Director of Experience Technology at SapientRazorfish. Consults various brands on their frontend and mobile web architecture. A speaker at various forums and mentor at Launchpad Accelerator and ngGirls India. Spends free time playing with Angular, Preact, web-components  ",
     "groups": ["GDE"]
   },
   "tchatel": {
@@ -518,14 +502,6 @@
     "twitter": "brian_love",
     "website": "https://brianflove.com",
     "bio": "Brian is a software engineer and GDE in Angular with a passion for learning, writing, speaking, teaching and mentoring. Brian has been building web applications for over 20 years and has long been a fanboy of JavaScript. When not in front of his Macbook Pro Brian is in the Rocky Mountains skiing or hiking.",
-    "groups": ["GDE"]
-  },
-  "jeffbcross": {
-    "name": "Jeff Cross",
-    "picture": "jeff-cross.jpg",
-    "twitter": "jeffbcross",
-    "website": "https://nrwl.io/",
-    "bio": "Jeff is an Angular Consultant at nrwl.io where he helps enterprise teams succeed with Angular. Prior to founding Nrwl, Jeff was one of the earliest members of the Angular Core Team at Google, and contributed to many of the early state management and performance efforts of AngularJS and Angular.",
     "groups": ["GDE"]
   },
   "keilla": {
