@@ -108,10 +108,10 @@ def _angular_integration_test(name, **kwargs):
     elif commands == "payload_size_tracking":
         commands = DEFAULT_COMMANDS + [
             "$(rootpath @nodejs//:yarn_bin) build",
-            "$(rootpath //:scripts/ci/track-payload-size.sh) %s dist/*.js true ${RUNFILES}/angular/$(rootpath //integration:_payload-limits.json)" % name,
+            "$(rootpath //:scripts/ci/track-payload-size.sh) %s dist/*.js true ${RUNFILES}/angular/$(rootpath //goldens:size-tracking/integration-payloads.json)" % name,
         ]
         data = data + [
-            "//integration:_payload-limits.json",
+            "//goldens:size-tracking/integration-payloads.json",
             "//:scripts/ci/track-payload-size.sh",
             "//:scripts/ci/payload-size.sh",
             "//:scripts/ci/payload-size.js",
