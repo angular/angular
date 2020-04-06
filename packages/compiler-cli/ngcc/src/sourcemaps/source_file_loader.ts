@@ -31,20 +31,26 @@ export class SourceFileLoader {
    * Load a source file, compute its source map, and recursively load any referenced source files.
    *
    * @param sourcePath The path to the source file to load.
-   * @param contents The contents of the source file to load (if known).
-   * The contents may be known because the source file was inlined into a source map.
+   * @param contents The contents of the source file to load.
+   * @param mapAndPath The raw source-map and the path to the source-map file.
+   * @returns a SourceFile object created from the `contents` and provided source-map info.
+   */
+  loadSourceFile(sourcePath: AbsoluteFsPath, contents: string, mapAndPath: MapAndPath): SourceFile;
+  /**
+   * The overload used internally to load source files referenced in a source-map.
+   *
+   * In this case there is no guarantee that it will return a non-null SourceMap.
+   *
+   * @param sourcePath The path to the source file to load.
+   * @param contents The contents of the source file to load, if provided inline.
    * If it is not known the contents will be read from the file at the `sourcePath`.
-   * @param mapAndPath The raw source-map and the path to the source-map file, if known.
-   * @param previousPaths An internal parameter used for cyclic dependency tracking.
+   * @param mapAndPath The raw source-map and the path to the source-map file.
+   *
    * @returns a SourceFile if the content for one was provided or able to be loaded from disk,
    * `null` otherwise.
    */
-  loadSourceFile(sourcePath: AbsoluteFsPath, contents: string, mapAndPath: MapAndPath): SourceFile;
-  loadSourceFile(sourcePath: AbsoluteFsPath, contents: string|null): SourceFile|null;
-  loadSourceFile(sourcePath: AbsoluteFsPath): SourceFile|null;
-  loadSourceFile(
-      sourcePath: AbsoluteFsPath, contents: string|null, mapAndPath: null,
-      previousPaths: AbsoluteFsPath[]): SourceFile|null;
+  loadSourceFile(sourcePath: AbsoluteFsPath, contents?: string|null, mapAndPath?: null): SourceFile
+      |null;
   loadSourceFile(
       sourcePath: AbsoluteFsPath, contents: string|null = null,
       mapAndPath: MapAndPath|null = null): SourceFile|null {
@@ -54,8 +60,7 @@ export class SourceFileLoader {
         if (!this.fs.exists(sourcePath)) {
           return null;
         }
-        this.trackPath(sourcePath);
-        contents = this.fs.readFile(sourcePath);
+        contents = this.readSourceFile(sourcePath);
       }
 
       // If not provided try to load the source map based on the source itself
@@ -68,7 +73,7 @@ export class SourceFileLoader {
       let sources: (SourceFile|null)[] = [];
       if (mapAndPath !== null) {
         const basePath = mapAndPath.mapPath || sourcePath;
-        sources = this.processSources(basePath, mapAndPath.map, previousPaths);
+        sources = this.processSources(basePath, mapAndPath.map);
         map = mapAndPath.map;
         inline = mapAndPath.mapPath === null;
       }
@@ -102,9 +107,7 @@ export class SourceFileLoader {
       try {
         const fileName = external[1] || external[2];
         const externalMapPath = this.fs.resolve(this.fs.dirname(sourcePath), fileName);
-        const map = this.loadRawSourceMap(externalMapPath);
-        this.trackPath(externalMapPath);
-        return {map, mapPath: externalMapPath};
+        return {map: this.readRawSourceMap(externalMapPath), mapPath: externalMapPath};
       } catch (e) {
         this.logger.warn(
             `Unable to fully load ${sourcePath} for source-map flattening: ${e.message}`);
@@ -114,11 +117,44 @@ export class SourceFileLoader {
 
     const impliedMapPath = absoluteFrom(sourcePath + '.map');
     if (this.fs.exists(impliedMapPath)) {
-      this.trackPath(impliedMapPath);
-      return {map: this.loadRawSourceMap(impliedMapPath), mapPath: impliedMapPath};
+      return {map: this.readRawSourceMap(impliedMapPath), mapPath: impliedMapPath};
     }
 
     return null;
+  }
+
+  /**
+   * Iterate over each of the "sources" for this source file's source map, recursively loading each
+   * source file and its associated source map.
+   */
+  private processSources(basePath: AbsoluteFsPath, map: RawSourceMap): (SourceFile|null)[] {
+    const sourceRoot = this.fs.resolve(this.fs.dirname(basePath), map.sourceRoot || '');
+    return map.sources.map((source, index) => {
+      const path = this.fs.resolve(sourceRoot, source);
+      const content = map.sourcesContent && map.sourcesContent[index] || null;
+      return this.loadSourceFile(path, content, null);
+    });
+  }
+
+  /**
+   * Load the contents of the source file from disk.
+   *
+   * @param sourcePath The path to the source file.
+   */
+  private readSourceFile(sourcePath: AbsoluteFsPath): string {
+    this.trackPath(sourcePath);
+    return this.fs.readFile(sourcePath);
+  }
+
+  /**
+   * Load the source map from the file at `mapPath`, parsing its JSON contents into a `RawSourceMap`
+   * object.
+   *
+   * @param mapPath The path to the source-map file.
+   */
+  private readRawSourceMap(mapPath: AbsoluteFsPath): RawSourceMap {
+    this.trackPath(mapPath);
+    return JSON.parse(this.fs.readFile(mapPath));
   }
 
   /**
@@ -131,29 +167,6 @@ export class SourceFileLoader {
           `Circular source file mapping dependency: ${this.currentPaths.join(' -> ')} -> ${path}`);
     }
     this.currentPaths.push(path);
-  }
-
-  /**
-   * Iterate over each of the "sources" for this source file's source map, recursively loading each
-   * source file and its associated source map.
-   */
-  private processSources(
-      basePath: AbsoluteFsPath, map: RawSourceMap,
-      previousPaths: AbsoluteFsPath[]): (SourceFile|null)[] {
-    const sourceRoot = this.fs.resolve(this.fs.dirname(basePath), map.sourceRoot || '');
-    return map.sources.map((source, index) => {
-      const path = this.fs.resolve(sourceRoot, source);
-      const content = map.sourcesContent && map.sourcesContent[index] || null;
-      return this.loadSourceFile(path, content, null, previousPaths);
-    });
-  }
-
-  /**
-   * Load the source map from the file at `mapPath`, parsing its JSON contents into a `RawSourceMap`
-   * object.
-   */
-  private loadRawSourceMap(mapPath: AbsoluteFsPath): RawSourceMap {
-    return JSON.parse(this.fs.readFile(mapPath));
   }
 }
 
