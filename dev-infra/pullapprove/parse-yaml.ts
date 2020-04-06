@@ -9,7 +9,7 @@ import {parse as parseYaml} from 'yaml';
 
 export interface PullApproveGroupConfig {
   conditions?: string[];
-  reviewers: {
+  reviewers?: {
     users: string[],
     teams?: string[],
   }|{
