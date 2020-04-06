@@ -394,7 +394,7 @@ const _MatButtonToggleMixinBase: CanDisableRippleCtor & typeof MatButtonToggleBa
     '[class.mat-button-toggle-checked]': 'checked',
     '[class.mat-button-toggle-disabled]': 'disabled',
     '[class.mat-button-toggle-appearance-standard]': 'appearance === "standard"',
-    'class': 'mat-button-toggle mat-focus-indicator',
+    'class': 'mat-button-toggle',
     // Always reset the tabindex to -1 so it doesn't conflict with the one on the `button`,
     // but can still receive focus from things like cdkFocusInitial.
     '[attr.tabindex]': '-1',
