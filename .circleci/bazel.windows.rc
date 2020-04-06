@@ -10,6 +10,10 @@ try-import %workspace%/.circleci/bazel.common.rc
 # speeding up the analysis time significantly with Bazel managed node dependencies on the CI.
 build --repository_cache=C:/Users/circleci/bazel_repository_cache
 
+# Manually set the local resources used in windows CI runs
+build --local_ram_resources=13500
+build --local_cpu_resources=4
+
 # All windows jobs run on master and should use http caching
 build --remote_http_cache=https://storage.googleapis.com/angular-team-cache
 build --remote_accept_cached=true
