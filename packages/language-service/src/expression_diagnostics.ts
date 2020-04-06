@@ -8,6 +8,7 @@
 
 import {AST, AstPath, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, CompileDirectiveSummary, CompileTypeMetadata, DirectiveAst, ElementAst, EmbeddedTemplateAst, identifierName, Node, ParseSourceSpan, RecursiveTemplateAstVisitor, ReferenceAst, TemplateAst, TemplateAstPath, templateVisitAll, tokenReference, VariableAst} from '@angular/compiler';
 
+import {AstResult} from './common';
 import {createDiagnostic, Diagnostic} from './diagnostic_messages';
 import {AstType} from './expression_type';
 import {BuiltinType, Definition, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from './symbols';
@@ -384,4 +385,17 @@ function hasTemplateReference(type: CompileTypeMetadata): boolean {
 
 function spanOf(sourceSpan: ParseSourceSpan): Span {
   return {start: sourceSpan.start.offset, end: sourceSpan.end.offset};
+}
+
+
+export function diagnosticInfoFromTemplateInfo(info: AstResult): DiagnosticTemplateInfo {
+  return {
+    fileName: info.template.fileName,
+    offset: info.template.span.start,
+    query: info.template.query,
+    members: info.template.members,
+    htmlAst: info.htmlAst,
+    templateAst: info.templateAst,
+    source: info.template.source,
+  };
 }
