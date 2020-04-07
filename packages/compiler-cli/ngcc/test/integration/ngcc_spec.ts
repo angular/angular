@@ -1107,7 +1107,12 @@ runInEachFileSystem(() => {
         // had removed earlier.
         manifest = JSON.parse(fs.readFile(_('/node_modules/__ngcc_entry_points__.json')));
         expect(manifest.entryPointPaths).toContain([
-          _('/node_modules/@angular/common'), _('/node_modules/@angular/common/testing')
+          _('/node_modules/@angular/common'), _('/node_modules/@angular/common/testing'),
+          [
+            _('/node_modules/@angular/core'), _('/node_modules/@angular/common'),
+            _('/node_modules/rxjs')
+          ],
+          [], []
         ]);
       });
     });

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AbsoluteFsPath, FileSystem, PathSegment} from '../../../src/ngtsc/file_system';
+import {EntryPoint} from '../packages/entry_point';
 import {resolveFileWithPostfixes} from '../utils';
 
 import {ModuleResolver} from './module_resolver';
@@ -19,6 +20,11 @@ export interface DependencyInfo {
   dependencies: Set<AbsoluteFsPath>;
   missing: Set<AbsoluteFsPath|PathSegment>;
   deepImports: Set<AbsoluteFsPath>;
+}
+
+export interface EntryPointWithDependencies {
+  entryPoint: EntryPoint;
+  depInfo: DependencyInfo;
 }
 
 export function createDependencyInfo(): DependencyInfo {

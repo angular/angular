@@ -7,12 +7,12 @@
  */
 import {createHash} from 'crypto';
 
-import {absoluteFrom, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, FileSystem, getFileSystem, relativeFrom} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
+import {EntryPointWithDependencies} from '../../src/dependencies/dependency_host';
 import {NGCC_VERSION} from '../../src/packages/build_marker';
 import {NgccConfiguration} from '../../src/packages/configuration';
-import {EntryPoint} from '../../src/packages/entry_point';
 import {EntryPointManifest, EntryPointManifestFile} from '../../src/packages/entry_point_manifest';
 import {MockLogger} from '../helpers/mock_logger';
 
@@ -129,22 +129,48 @@ runInEachFileSystem(() => {
         ]);
         manifestFile.entryPointPaths.push([
           _Abs('/project/node_modules/some_package'),
-          _Abs('/project/node_modules/some_package/valid_entry_point')
+          _Abs('/project/node_modules/some_package/valid_entry_point'),
+          [
+            _Abs('/project/node_modules/other_package_1'),
+            _Abs('/project/node_modules/other_package_2'),
+          ],
+          [
+            _Abs('/project/node_modules/missing_1'),
+            relativeFrom('missing_2'),
+          ],
+          [
+            _Abs('/project/node_modules/deep/import/path'),
+          ],
         ]);
         fs.writeFile(
             _Abs('/project/node_modules/__ngcc_entry_points__.json'), JSON.stringify(manifestFile));
         const entryPoints = manifest.readEntryPointsUsingManifest(_Abs('/project/node_modules'));
         expect(entryPoints).toEqual([{
-          name: 'some_package/valid_entry_point',
-          packageJson: jasmine.any(Object),
-          package: _Abs('/project/node_modules/some_package'),
-          path: _Abs('/project/node_modules/some_package/valid_entry_point'),
-          typings:
-              _Abs('/project/node_modules/some_package/valid_entry_point/valid_entry_point.d.ts'),
-          compiledByAngular: true,
-          ignoreMissingDependencies: false,
-          generateDeepReexports: false,
-        } as any]);
+          entryPoint: {
+            name: 'some_package/valid_entry_point',
+            packageJson: jasmine.any(Object),
+            package: _Abs('/project/node_modules/some_package'),
+            path: _Abs('/project/node_modules/some_package/valid_entry_point'),
+            typings:
+                _Abs('/project/node_modules/some_package/valid_entry_point/valid_entry_point.d.ts'),
+            compiledByAngular: true,
+            ignoreMissingDependencies: false,
+            generateDeepReexports: false,
+          } as any,
+          depInfo: {
+            dependencies: new Set([
+              _Abs('/project/node_modules/other_package_1'),
+              _Abs('/project/node_modules/other_package_2'),
+            ]),
+            missing: new Set([
+              _Abs('/project/node_modules/missing_1'),
+              relativeFrom('missing_2'),
+            ]),
+            deepImports: new Set([
+              _Abs('/project/node_modules/deep/import/path'),
+            ])
+          }
+        }]);
       });
 
       it('should return null if any of the entry-points are not valid', () => {
@@ -152,7 +178,7 @@ runInEachFileSystem(() => {
         fs.writeFile(_Abs('/project/yarn.lock'), 'LOCK FILE CONTENTS');
         manifestFile.entryPointPaths.push([
           _Abs('/project/node_modules/some_package'),
-          _Abs('/project/node_modules/some_package/valid_entry_point')
+          _Abs('/project/node_modules/some_package/valid_entry_point'), [], [], []
         ]);
         fs.writeFile(
             _Abs('/project/node_modules/__ngcc_entry_points__.json'), JSON.stringify(manifestFile));
@@ -223,14 +249,36 @@ runInEachFileSystem(() => {
 
       it('should write the package path and entry-point path of each entry-point provided', () => {
         fs.writeFile(_Abs('/project/package-lock.json'), 'LOCK FILE CONTENTS');
-        const entryPoint1 = {
-          package: _Abs('/project/node_modules/package-1/'),
-          path: _Abs('/project/node_modules/package-1/'),
-        } as unknown as EntryPoint;
-        const entryPoint2 = {
-          package: _Abs('/project/node_modules/package-2/'),
-          path: _Abs('/project/node_modules/package-2/entry-point'),
-        } as unknown as EntryPoint;
+        const entryPoint1: EntryPointWithDependencies = {
+          entryPoint: {
+            package: _Abs('/project/node_modules/package-1/'),
+            path: _Abs('/project/node_modules/package-1/'),
+          } as any,
+          depInfo: {
+            dependencies: new Set([
+              _Abs('/project/node_modules/other_package_1'),
+              _Abs('/project/node_modules/other_package_2'),
+            ]),
+            missing: new Set(),
+            deepImports: new Set()
+          }
+        };
+        const entryPoint2: EntryPointWithDependencies = {
+          entryPoint: {
+            package: _Abs('/project/node_modules/package-2/'),
+            path: _Abs('/project/node_modules/package-2/entry-point'),
+          } as any,
+          depInfo: {
+            dependencies: new Set(),
+            missing: new Set([
+              _Abs('/project/node_modules/missing_1'),
+              relativeFrom('missing_2'),
+            ]),
+            deepImports: new Set([
+              _Abs('/project/node_modules/deep/import/path'),
+            ])
+          }
+        };
         manifest.writeEntryPointManifest(_Abs('/project/node_modules'), [entryPoint1, entryPoint2]);
         const file: EntryPointManifestFile =
             JSON.parse(fs.readFile(_Abs('/project/node_modules/__ngcc_entry_points__.json')));
@@ -238,10 +286,24 @@ runInEachFileSystem(() => {
           [
             _Abs('/project/node_modules/package-1/'),
             _Abs('/project/node_modules/package-1/'),
+            [
+              _Abs('/project/node_modules/other_package_1'),
+              _Abs('/project/node_modules/other_package_2'),
+            ],
+            [],
+            [],
           ],
           [
             _Abs('/project/node_modules/package-2/'),
             _Abs('/project/node_modules/package-2/entry-point'),
+            [],
+            [
+              _Abs('/project/node_modules/missing_1'),
+              relativeFrom('missing_2'),
+            ],
+            [
+              _Abs('/project/node_modules/deep/import/path'),
+            ],
           ]
         ]);
       });

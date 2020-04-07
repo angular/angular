@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AbsoluteFsPath, FileSystem, join, PathSegment, relative, relativeFrom} from '../../../src/ngtsc/file_system';
+import {EntryPointWithDependencies} from '../dependencies/dependency_host';
 import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver';
 import {Logger} from '../logging/logger';
 import {hasBeenProcessed} from '../packages/build_marker';
@@ -25,7 +26,7 @@ import {getBasePaths} from './utils';
  */
 export class TargetedEntryPointFinder implements EntryPointFinder {
   private unprocessedPaths: AbsoluteFsPath[] = [];
-  private unsortedEntryPoints = new Map<AbsoluteFsPath, EntryPoint>();
+  private unsortedEntryPoints = new Map<AbsoluteFsPath, EntryPointWithDependencies>();
   private basePaths = getBasePaths(this.logger, this.basePath, this.pathMappings);
 
   constructor(
@@ -40,7 +41,7 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
     }
     const targetEntryPoint = this.unsortedEntryPoints.get(this.targetPath);
     const entryPoints = this.resolver.sortEntryPointsByDependency(
-        Array.from(this.unsortedEntryPoints.values()), targetEntryPoint);
+        Array.from(this.unsortedEntryPoints.values()), targetEntryPoint?.entryPoint);
 
     const invalidTarget =
         entryPoints.invalidEntryPoints.find(i => i.entryPoint.path === this.targetPath);
@@ -82,9 +83,9 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
     if (entryPoint === null || !entryPoint.compiledByAngular) {
       return;
     }
-    this.unsortedEntryPoints.set(entryPoint.path, entryPoint);
-    const deps = this.resolver.getEntryPointDependencies(entryPoint);
-    deps.dependencies.forEach(dep => {
+    const entryPointWithDeps = this.resolver.getEntryPointWithDependencies(entryPoint);
+    this.unsortedEntryPoints.set(entryPoint.path, entryPointWithDeps);
+    entryPointWithDeps.depInfo.dependencies.forEach(dep => {
       if (!this.unsortedEntryPoints.has(dep)) {
         this.unprocessedPaths.push(dep);
       }
