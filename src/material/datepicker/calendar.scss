@@ -35,6 +35,10 @@ $mat-calendar-next-icon-transform: translateX(-2px) rotate(45deg);
 .mat-calendar-controls {
   display: flex;
   margin: $mat-calendar-controls-vertical-padding $mat-calendar-controls-side-margin;
+
+  .mat-icon-button:hover .mat-button-focus-overlay {
+    opacity: 0.04;
+  }
 }
 
 .mat-calendar-spacer {
