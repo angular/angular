@@ -6,11 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Inject, Injectable, InjectionToken, NgModule, forwardRef, inject} from '@angular/core';
+import {Component, forwardRef, Inject, inject, Injectable, InjectionToken, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {ServerModule} from '@angular/platform-server';
 
-export interface IService { readonly dep: {readonly data: string;}; }
+export interface IService {
+  readonly dep: {readonly data: string;};
+}
 
 @NgModule({})
 export class TokenModule {
@@ -28,7 +30,9 @@ export const TOKEN = new InjectionToken('test', {
 })
 export class AppComponent {
   data: string;
-  constructor(@Inject(TOKEN) service: IService) { this.data = service.dep.data; }
+  constructor(@Inject(TOKEN) service: IService) {
+    this.data = service.dep.data;
+  }
 }
 
 @NgModule({

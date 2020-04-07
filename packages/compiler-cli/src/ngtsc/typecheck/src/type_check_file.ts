@@ -78,7 +78,9 @@ export class TypeCheckFile extends Environment {
         this.fileName, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
   }
 
-  getPreludeStatements(): ts.Statement[] { return []; }
+  getPreludeStatements(): ts.Statement[] {
+    return [];
+  }
 }
 
 export function typeCheckFilePath(rootDirs: AbsoluteFsPath[]): AbsoluteFsPath {

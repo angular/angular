@@ -71,12 +71,14 @@ export class NgTscPlugin implements TscPlugin {
     return this._compiler;
   }
 
-  constructor(private ngOptions: {}) { setFileSystem(new NodeJSFileSystem()); }
+  constructor(private ngOptions: {}) {
+    setFileSystem(new NodeJSFileSystem());
+  }
 
   wrapHost(
       host: ts.CompilerHost&UnifiedModulesHost, inputFiles: readonly string[],
       options: ts.CompilerOptions): PluginCompilerHost {
-    this.options = {...this.ngOptions, ...options } as NgCompilerOptions;
+    this.options = {...this.ngOptions, ...options} as NgCompilerOptions;
     this.host = NgCompilerHost.wrap(host, inputFiles, this.options);
     return this.host;
   }
@@ -100,9 +102,15 @@ export class NgTscPlugin implements TscPlugin {
     return this.compiler.getDiagnostics(file);
   }
 
-  getOptionDiagnostics(): ts.Diagnostic[] { return this.compiler.getOptionDiagnostics(); }
+  getOptionDiagnostics(): ts.Diagnostic[] {
+    return this.compiler.getOptionDiagnostics();
+  }
 
-  getNextProgram(): ts.Program { return this.compiler.getNextProgram(); }
+  getNextProgram(): ts.Program {
+    return this.compiler.getNextProgram();
+  }
 
-  createTransformers(): ts.CustomTransformers { return this.compiler.prepareEmit().transformers; }
+  createTransformers(): ts.CustomTransformers {
+    return this.compiler.prepareEmit().transformers;
+  }
 }

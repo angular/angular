@@ -11,7 +11,7 @@ import {Component, Directive, Injectable, NgModule, Pipe} from '@angular/core';
 const instances = new Map<any, Base>();
 
 export function expectInstanceCreated(type: any) {
-  const instance = instances.get(type) !;
+  const instance = instances.get(type)!;
   expect(instance).toBeDefined();
   expect(instance.dep instanceof SomeDep).toBe(true);
 }
@@ -19,7 +19,9 @@ export function expectInstanceCreated(type: any) {
 export class SomeDep {}
 
 export class Base {
-  constructor(public dep: SomeDep) { instances.set(Object.getPrototypeOf(this).constructor, this); }
+  constructor(public dep: SomeDep) {
+    instances.set(Object.getPrototypeOf(this).constructor, this);
+  }
 }
 
 @Component({templateUrl: './jit_summaries.html'})
@@ -36,7 +38,9 @@ export class SomeDirective extends Base {
 
 @Pipe({name: 'somePipe'})
 export class SomePipe extends Base {
-  transform(value: any) { return value; }
+  transform(value: any) {
+    return value;
+  }
 }
 
 @Injectable()

@@ -12,23 +12,23 @@ import * as ts from 'typescript';
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, NoopReferencesRegistry, PipeDecoratorHandler, ReferencesRegistry} from '../../annotations';
 import {CycleAnalyzer, ImportGraph} from '../../cycles';
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
-import {ReferenceGraph, checkForPrivateExports} from '../../entry_point';
-import {LogicalFileSystem, getSourceFileOrError} from '../../file_system';
-import {AbsoluteModuleStrategy, AliasStrategy, AliasingHost, DefaultImportTracker, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, PrivateExportAliasingHost, R3SymbolsImportRewriter, Reference, ReferenceEmitStrategy, ReferenceEmitter, RelativePathStrategy, UnifiedModulesAliasingHost, UnifiedModulesStrategy} from '../../imports';
+import {checkForPrivateExports, ReferenceGraph} from '../../entry_point';
+import {getSourceFileOrError, LogicalFileSystem} from '../../file_system';
+import {AbsoluteModuleStrategy, AliasingHost, AliasStrategy, DefaultImportTracker, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, PrivateExportAliasingHost, R3SymbolsImportRewriter, Reference, ReferenceEmitStrategy, ReferenceEmitter, RelativePathStrategy, UnifiedModulesAliasingHost, UnifiedModulesStrategy} from '../../imports';
 import {IncrementalDriver} from '../../incremental';
-import {IndexedComponent, IndexingContext, generateAnalysis} from '../../indexer';
+import {generateAnalysis, IndexedComponent, IndexingContext} from '../../indexer';
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, MetadataReader} from '../../metadata';
 import {ModuleWithProvidersScanner} from '../../modulewithproviders';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {NOOP_PERF_RECORDER, PerfRecorder} from '../../perf';
 import {TypeScriptReflectionHost} from '../../reflection';
 import {HostResourceLoader} from '../../resource';
-import {NgModuleRouteAnalyzer, entryPointKeyFor} from '../../routing';
+import {entryPointKeyFor, NgModuleRouteAnalyzer} from '../../routing';
 import {ComponentScopeReader, LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
 import {generatedFactoryTransform} from '../../shims';
 import {ivySwitchTransform} from '../../switch';
-import {DecoratorHandler, DtsTransformRegistry, TraitCompiler, aliasTransformFactory, declarationTransformFactory, ivyTransformFactory} from '../../transform';
-import {TypeCheckContext, TypeCheckingConfig, isTemplateDiagnostic} from '../../typecheck';
+import {aliasTransformFactory, declarationTransformFactory, DecoratorHandler, DtsTransformRegistry, ivyTransformFactory, TraitCompiler} from '../../transform';
+import {isTemplateDiagnostic, TypeCheckContext, TypeCheckingConfig} from '../../typecheck';
 import {getSourceFileOrNull, isDtsPath, resolveModuleName} from '../../util/src/typescript';
 import {LazyRoute, NgCompilerOptions} from '../api';
 
@@ -191,7 +191,9 @@ export class NgCompiler {
   /**
    * Get all setup-related diagnostics for this compilation.
    */
-  getOptionDiagnostics(): ts.Diagnostic[] { return this.constructionDiagnostics; }
+  getOptionDiagnostics(): ts.Diagnostic[] {
+    return this.constructionDiagnostics;
+  }
 
   /**
    * Get the `ts.Program` to use as a starting point when spawning a subsequent incremental
@@ -202,7 +204,9 @@ export class NgCompiler {
    * operation, the consumer's `ts.Program` is no longer usable for starting a new incremental
    * compilation. `getNextProgram` retrieves the `ts.Program` which can be used instead.
    */
-  getNextProgram(): ts.Program { return this.nextProgram; }
+  getNextProgram(): ts.Program {
+    return this.nextProgram;
+  }
 
   /**
    * Perform Angular's analysis step (as a precursor to `getDiagnostics` or `prepareEmit`)
@@ -262,8 +266,8 @@ export class NgCompiler {
 
       // Relative entry paths are disallowed.
       if (entryRoute.startsWith('.')) {
-        throw new Error(
-            `Failed to list lazy routes: Resolution of relative paths (${entryRoute}) is not supported.`);
+        throw new Error(`Failed to list lazy routes: Resolution of relative paths (${
+            entryRoute}) is not supported.`);
       }
 
       // Non-relative entry paths fall into one of the following categories:
@@ -349,7 +353,7 @@ export class NgCompiler {
     if (this.compilation === null) {
       this.analyzeSync();
     }
-    return this.compilation !;
+    return this.compilation!;
   }
 
   private analyzeSync(): void {
@@ -482,7 +486,7 @@ export class NgCompiler {
     // Execute the typeCheck phase of each decorator in the program.
     const prepSpan = this.perfRecorder.start('typeCheckPrep');
     const ctx = new TypeCheckContext(
-        typeCheckingConfig, compilation.refEmitter !, compilation.reflector, host.typeCheckFile);
+        typeCheckingConfig, compilation.refEmitter!, compilation.reflector, host.typeCheckFile);
     compilation.traitCompiler.typeCheck(ctx);
     this.perfRecorder.stop(prepSpan);
 
@@ -505,7 +509,7 @@ export class NgCompiler {
     const recordSpan = this.perfRecorder.start('recordDependencies');
     const depGraph = this.incrementalDriver.depGraph;
 
-    for (const scope of this.compilation !.scopeRegistry !.getCompilationScopes()) {
+    for (const scope of this.compilation!.scopeRegistry!.getCompilationScopes()) {
       const file = scope.declaration.getSourceFile();
       const ngModuleFile = scope.ngModule.getSourceFile();
 
@@ -517,7 +521,7 @@ export class NgCompiler {
       depGraph.addDependency(file, ngModuleFile);
 
       const meta =
-          this.compilation !.metaReader.getDirectiveMetadata(new Reference(scope.declaration));
+          this.compilation!.metaReader.getDirectiveMetadata(new Reference(scope.declaration));
       if (meta !== null && meta.isComponent) {
         // If a component's template changes, it might have affected the import graph, and thus the
         // remote scoping feature which is activated in the event of potential import cycles. Thus,
@@ -543,12 +547,11 @@ export class NgCompiler {
   }
 
   private scanForMwp(sf: ts.SourceFile): void {
-    this.compilation !.mwpScanner.scan(sf, {
+    this.compilation!.mwpScanner.scan(sf, {
       addTypeReplacement: (node: ts.Declaration, type: Type): void => {
         // Only obtain the return type transform for the source file once there's a type to replace,
         // so that no transform is allocated when there's nothing to do.
-        this.compilation !.dtsTransforms !.getReturnTypeTransform(sf).addTypeReplacement(
-            node, type);
+        this.compilation!.dtsTransforms!.getReturnTypeTransform(sf).addTypeReplacement(node, type);
       }
     });
   }
@@ -686,9 +689,18 @@ export class NgCompiler {
         this.options.compileNonExportedClasses !== false, dtsTransforms);
 
     return {
-        isCore,        traitCompiler,        reflector,     scopeRegistry,
-        dtsTransforms, exportReferenceGraph, routeAnalyzer, mwpScanner,
-        metaReader,    defaultImportTracker, aliasingHost,  refEmitter,
+      isCore,
+      traitCompiler,
+      reflector,
+      scopeRegistry,
+      dtsTransforms,
+      exportReferenceGraph,
+      routeAnalyzer,
+      mwpScanner,
+      metaReader,
+      defaultImportTracker,
+      aliasingHost,
+      refEmitter,
     };
   }
 }

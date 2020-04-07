@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CssSelector, ParseSourceFile, ParseSourceSpan, R3TargetBinder, SchemaMetadata, SelectorMatcher, TmplAstElement, TmplAstReference, Type, parseTemplate} from '@angular/compiler';
+import {CssSelector, ParseSourceFile, ParseSourceSpan, parseTemplate, R3TargetBinder, SchemaMetadata, SelectorMatcher, TmplAstElement, TmplAstReference, Type} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath, LogicalFileSystem, absoluteFrom} from '../../file_system';
+import {absoluteFrom, AbsoluteFsPath, LogicalFileSystem} from '../../file_system';
 import {TestFile} from '../../file_system/testing';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
-import {ClassDeclaration, TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
+import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
-import {TemplateId, TemplateSourceMapping, TypeCheckBlockMetadata, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../src/api';
+import {TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckingConfig} from '../src/api';
 import {TypeCheckContext} from '../src/context';
 import {DomSchemaChecker} from '../src/dom';
 import {Environment} from '../src/environment';
@@ -168,23 +168,20 @@ export const ALL_ENABLED_CONFIG: TypeCheckingConfig = {
 };
 
 // Remove 'ref' from TypeCheckableDirectiveMeta and add a 'selector' instead.
-export type TestDirective =
-    Partial<Pick<
-        TypeCheckableDirectiveMeta,
-        Exclude<keyof TypeCheckableDirectiveMeta, 'ref'|'coercedInputFields'>>>&
-    {
-      selector: string,
-      name: string, file?: AbsoluteFsPath,
-      type: 'directive', coercedInputFields?: string[],
-    };
+export type TestDirective = Partial<Pick<
+    TypeCheckableDirectiveMeta,
+    Exclude<keyof TypeCheckableDirectiveMeta, 'ref'|'coercedInputFields'>>>&{
+  selector: string,
+  name: string,
+  file?: AbsoluteFsPath, type: 'directive',
+  coercedInputFields?: string[],
+};
 export type TestPipe = {
   name: string,
-  file?: AbsoluteFsPath,
-  pipeName: string,
-  type: 'pipe',
+  file?: AbsoluteFsPath, pipeName: string, type: 'pipe',
 };
 
-export type TestDeclaration = TestDirective | TestPipe;
+export type TestDeclaration = TestDirective|TestPipe;
 
 export function tcb(
     template: string, declarations: TestDeclaration[] = [], config?: TypeCheckingConfig,
@@ -252,7 +249,7 @@ export function typecheck(
   ];
   const {program, host, options} =
       makeProgram(files, {strictNullChecks: true, noImplicitAny: true, ...opts}, undefined, false);
-  const sf = program.getSourceFile(absoluteFrom('/main.ts')) !;
+  const sf = program.getSourceFile(absoluteFrom('/main.ts'))!;
   const checker = program.getTypeChecker();
   const logicalFs = new LogicalFileSystem(getRootDirs(host, options));
   const reflectionHost = new TypeScriptReflectionHost(checker);
@@ -277,7 +274,7 @@ export function typecheck(
   const {matcher, pipes} = prepareDeclarations(declarations, decl => {
     let declFile = sf;
     if (decl.file !== undefined) {
-      declFile = program.getSourceFile(decl.file) !;
+      declFile = program.getSourceFile(decl.file)!;
       if (declFile === undefined) {
         throw new Error(`Unable to locate ${decl.file} for ${decl.type} ${decl.name}`);
       }
@@ -356,7 +353,9 @@ class FakeEnvironment /* implements Environment */ {
     return ts.createParen(ts.createAsExpression(ts.createNull(), this.referenceType(ref)));
   }
 
-  declareOutputHelper(): ts.Expression { return ts.createIdentifier('_outputHelper'); }
+  declareOutputHelper(): ts.Expression {
+    return ts.createIdentifier('_outputHelper');
+  }
 
   reference(ref: Reference<ClassDeclaration<ts.ClassDeclaration>>): ts.Expression {
     return ref.node.name;
@@ -379,7 +378,9 @@ class FakeEnvironment /* implements Environment */ {
     return ts.createTypeReferenceNode(qName, typeArgs.length > 0 ? typeArgs : undefined);
   }
 
-  getPreludeStatements(): ts.Statement[] { return []; }
+  getPreludeStatements(): ts.Statement[] {
+    return [];
+  }
 
   static newFake(config: TypeCheckingConfig): Environment {
     return new FakeEnvironment(config) as Environment;
@@ -387,7 +388,9 @@ class FakeEnvironment /* implements Environment */ {
 }
 
 export class NoopSchemaChecker implements DomSchemaChecker {
-  get diagnostics(): ReadonlyArray<ts.Diagnostic> { return []; }
+  get diagnostics(): ReadonlyArray<ts.Diagnostic> {
+    return [];
+  }
 
   checkElement(id: string, element: TmplAstElement, schemas: SchemaMetadata[]): void {}
   checkProperty(
@@ -396,7 +399,9 @@ export class NoopSchemaChecker implements DomSchemaChecker {
 }
 
 export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
-  get diagnostics(): ReadonlyArray<ts.Diagnostic> { return []; }
+  get diagnostics(): ReadonlyArray<ts.Diagnostic> {
+    return [];
+  }
   missingReferenceTarget(): void {}
   missingPipe(): void {}
   illegalAssignmentToTemplateVar(): void {}

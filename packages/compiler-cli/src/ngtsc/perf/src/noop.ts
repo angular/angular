@@ -12,9 +12,11 @@ import {PerfRecorder} from './api';
 
 export const NOOP_PERF_RECORDER: PerfRecorder = {
   enabled: false,
-  mark: (name: string, node: ts.SourceFile | ts.Declaration, category?: string, detail?: string):
-            void => {},
-  start: (name: string, node: ts.SourceFile | ts.Declaration, category?: string, detail?: string):
-             number => { return 0;},
-  stop: (span: number | false): void => {},
+  mark: (name: string, node: ts.SourceFile|ts.Declaration, category?: string, detail?: string):
+      void => {},
+  start: (name: string, node: ts.SourceFile|ts.Declaration, category?: string, detail?: string):
+      number => {
+        return 0;
+      },
+  stop: (span: number|false): void => {},
 };

@@ -32,7 +32,7 @@ export class FactoryTracker {
 
   track(sf: ts.SourceFile, factorySymbolName: string): void {
     if (this.sourceToFactorySymbols.has(sf.fileName)) {
-      this.sourceToFactorySymbols.get(sf.fileName) !.add(factorySymbolName);
+      this.sourceToFactorySymbols.get(sf.fileName)!.add(factorySymbolName);
     }
   }
 }

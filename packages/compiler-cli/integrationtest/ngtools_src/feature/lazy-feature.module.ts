@@ -16,10 +16,8 @@ export class LazyFeatureComponent {
 @NgModule({
   imports: [RouterModule.forChild([
     {path: '', component: LazyFeatureComponent, pathMatch: 'full'},
-    {path: 'feature', loadChildren: './feature.module#FeatureModule'}, {
-      path: 'nested-feature',
-      loadChildren: './lazy-feature-nested.module#LazyFeatureNestedModule'
-    }
+    {path: 'feature', loadChildren: './feature.module#FeatureModule'},
+    {path: 'nested-feature', loadChildren: './lazy-feature-nested.module#LazyFeatureNestedModule'}
   ])],
   declarations: [LazyFeatureComponent]
 })

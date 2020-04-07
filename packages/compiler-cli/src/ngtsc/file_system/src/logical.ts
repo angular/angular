@@ -91,7 +91,7 @@ export class LogicalFileSystem {
       }
       this.cache.set(physicalFile, logicalFile);
     }
-    return this.cache.get(physicalFile) !;
+    return this.cache.get(physicalFile)!;
   }
 
   private createLogicalProjectPath(file: AbsoluteFsPath, rootDir: AbsoluteFsPath):

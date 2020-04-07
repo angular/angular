@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {DefaultImportRecorder, ImportRewriter} from '../../imports';
 import {Decorator, ReflectionHost} from '../../reflection';
 import {ImportManager, translateExpression, translateStatement} from '../../translator';
-import {VisitListEntryResult, Visitor, visit} from '../../util/src/visitor';
+import {visit, VisitListEntryResult, Visitor} from '../../util/src/visitor';
 
 import {TraitCompiler} from './compilation';
 import {addImports} from './utils';
@@ -285,7 +285,7 @@ function setFileOverviewComment(sf: ts.SourceFile, fileoverview: FileOverviewMet
 }
 
 function maybeFilterDecorator(
-    decorators: ts.NodeArray<ts.Decorator>| undefined,
+    decorators: ts.NodeArray<ts.Decorator>|undefined,
     toRemove: ts.Decorator[]): ts.NodeArray<ts.Decorator>|undefined {
   if (decorators === undefined) {
     return undefined;

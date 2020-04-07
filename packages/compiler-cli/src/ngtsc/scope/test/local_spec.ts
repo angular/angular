@@ -34,8 +34,8 @@ function registerFakeRefs(registry: MetadataRegistry):
 
 describe('LocalModuleScopeRegistry', () => {
   const refEmitter = new ReferenceEmitter([]);
-  let scopeRegistry !: LocalModuleScopeRegistry;
-  let metaRegistry !: MetadataRegistry;
+  let scopeRegistry!: LocalModuleScopeRegistry;
+  let metaRegistry!: MetadataRegistry;
 
   beforeEach(() => {
     const localRegistry = new LocalMetadataRegistry();
@@ -230,7 +230,7 @@ describe('LocalModuleScopeRegistry', () => {
 });
 
 function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
-  const name = ref.debugName !;
+  const name = ref.debugName!;
   return {
     ref,
     name,
@@ -248,16 +248,18 @@ function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
 }
 
 function fakePipe(ref: Reference<ClassDeclaration>): PipeMeta {
-  const name = ref.debugName !;
+  const name = ref.debugName!;
   return {ref, name};
 }
 
 class MockDtsModuleScopeResolver implements DtsModuleScopeResolver {
-  resolve(ref: Reference<ClassDeclaration>): null { return null; }
+  resolve(ref: Reference<ClassDeclaration>): null {
+    return null;
+  }
 }
 
 function scopeToRefs(scopeData: ScopeData): Reference<ClassDeclaration>[] {
   const directives = scopeData.directives.map(dir => dir.ref);
   const pipes = scopeData.pipes.map(pipe => pipe.ref);
-  return [...directives, ...pipes].sort((a, b) => a.debugName !.localeCompare(b.debugName !));
+  return [...directives, ...pipes].sort((a, b) => a.debugName!.localeCompare(b.debugName!));
 }

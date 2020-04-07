@@ -17,7 +17,7 @@ export function aliasTransformFactory(exportStatements: Map<string, Map<string, 
       }
 
       const statements = [...file.statements];
-      exportStatements.get(file.fileName) !.forEach(([moduleName, symbolName], aliasName) => {
+      exportStatements.get(file.fileName)!.forEach(([moduleName, symbolName], aliasName) => {
         const stmt = ts.createExportDeclaration(
             /* decorators */ undefined,
             /* modifiers */ undefined,

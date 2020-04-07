@@ -15,7 +15,6 @@ import {ClassMetadata, MetadataEntry, MetadataGlobalReferenceExpression, ModuleM
 import {Directory, MockAotContext, MockCompilerHost} from '../mocks';
 
 describe('compiler host adapter', () => {
-
   it('should retrieve metadata for an explicit index relative path reference', () => {
     const context = new MockAotContext('.', SIMPLE_LIBRARY);
     const host = new MockCompilerHost(context);
@@ -28,7 +27,7 @@ describe('compiler host adapter', () => {
     const metadata = adapter.getMetadataFor('./lib/src/two/index', '.');
 
     expect(metadata).toBeDefined();
-    expect(Object.keys(metadata !.metadata).sort()).toEqual([
+    expect(Object.keys(metadata!.metadata).sort()).toEqual([
       'PrivateTwo',
       'TWO_CLASSES',
       'Two',
@@ -48,7 +47,7 @@ describe('compiler host adapter', () => {
     const metadata = adapter.getMetadataFor('./lib/src/two', '.');
 
     expect(metadata).toBeDefined();
-    expect(Object.keys(metadata !.metadata).sort()).toEqual([
+    expect(Object.keys(metadata!.metadata).sort()).toEqual([
       'PrivateTwo',
       'TWO_CLASSES',
       'Two',
@@ -82,7 +81,7 @@ describe('compiler host adapter', () => {
     const metadata = adapter.getMetadataFor('./lib/src/index', '.');
 
     expect(metadata).toBeDefined();
-    expect(metadata !.exports !.map(e => e.export !)
+    expect(metadata!.exports!.map(e => e.export !)
                .reduce((prev, next) => prev.concat(next), [])
                .sort())
         .toEqual([
@@ -127,13 +126,13 @@ describe('compiler host adapter', () => {
     const metadata = adapter.getMetadataFor('./lib', '.');
 
     expect(metadata).toBeDefined();
-    expect(Object.keys(metadata !.metadata).sort()).toEqual([
+    expect(Object.keys(metadata!.metadata).sort()).toEqual([
       'ONE_CLASSES',
       'One',
       'OneMore',
       'PrivateOne',
     ]);
-    expect(Array.isArray(metadata !.metadata !['ONE_CLASSES'])).toBeTruthy();
+    expect(Array.isArray(metadata!.metadata!['ONE_CLASSES'])).toBeTruthy();
   });
 
   it('should look for non-declaration file when resolving metadata via a package.json "types" entry',
@@ -180,19 +179,17 @@ describe('compiler host adapter', () => {
        const metadata = adapter.getMetadataFor('./lib', '.');
 
        expect(metadata).toBeDefined();
-       expect(Object.keys(metadata !.metadata).sort()).toEqual([
+       expect(Object.keys(metadata!.metadata).sort()).toEqual([
          'ONE_CLASSES',
          'One',
          'OneMore',
          'PrivateOne',
        ]);
-       expect(Array.isArray(metadata !.metadata !['ONE_CLASSES'])).toBeTruthy();
-
+       expect(Array.isArray(metadata!.metadata!['ONE_CLASSES'])).toBeTruthy();
      });
 });
 
 describe('metadata bundler', () => {
-
   it('should be able to bundle a simple library', () => {
     const host = new MockStringBundlerHost('/', SIMPLE_LIBRARY);
     const bundler = new MetadataBundler('/lib/index', undefined, host, 'prfx_');
@@ -203,9 +200,9 @@ describe('metadata bundler', () => {
 
     const originalOne = './src/one';
     const originalTwo = './src/two/index';
-    expect(Object.keys(result.metadata.origins !)
+    expect(Object.keys(result.metadata.origins!)
                .sort()
-               .map(name => ({name, value: result.metadata.origins ![name]})))
+               .map(name => ({name, value: result.metadata.origins![name]})))
         .toEqual([
           {name: 'ONE_CLASSES', value: originalOne}, {name: 'One', value: originalOne},
           {name: 'OneMore', value: originalOne}, {name: 'TWO_CLASSES', value: originalTwo},
@@ -239,7 +236,7 @@ describe('metadata bundler', () => {
     });
     const bundler = new MetadataBundler('/lib/index', undefined, host);
     const bundledMetadata = bundler.getMetadataBundle().metadata;
-    const deepIndexMetadata = host.getMetadataFor('/lib/deep/index') !;
+    const deepIndexMetadata = host.getMetadataFor('/lib/deep/index')!;
 
     // The unbundled metadata should reference symbols using the relative module path.
     expect(deepIndexMetadata.metadata['MyClass']).toEqual(jasmine.objectContaining<MetadataEntry>({
@@ -419,7 +416,7 @@ describe('metadata bundler', () => {
         from: 'external_one'
       }
     ]);
-    expect(result.metadata.origins !['E']).toBeUndefined();
+    expect(result.metadata.origins!['E']).toBeUndefined();
   });
 
   it('should be able to bundle a library with multiple unnamed re-exports', () => {
@@ -456,7 +453,7 @@ describe('metadata bundler', () => {
 
     const bundler = new MetadataBundler('/public-api', undefined, host);
     const result = bundler.getMetadataBundle();
-    const {A, A2, A3, B1, B2} = result.metadata.metadata as{
+    const {A, A2, A3, B1, B2} = result.metadata.metadata as {
       A: ClassMetadata,
       A2: MetadataGlobalReferenceExpression,
       A3: ClassMetadata,

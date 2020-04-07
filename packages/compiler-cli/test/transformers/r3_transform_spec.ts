@@ -30,8 +30,9 @@ describe('r3_transform_spec', () => {
         .toContain('static someMethod(v) { return v; }');
   });
 
-  it('should be able to generate a static field declaration',
-     () => { expect(emitStaticField(o.literal(10))).toContain('SomeClass.someField = 10'); });
+  it('should be able to generate a static field declaration', () => {
+    expect(emitStaticField(o.literal(10))).toContain('SomeClass.someField = 10');
+  });
 
   it('should be able to import a symbol', () => {
     expect(emitStaticMethod(new o.ReturnStatement(
@@ -90,8 +91,8 @@ describe('r3_transform_spec', () => {
   }
 
   function emitStaticMethod(
-      stmt: o.Statement | o.Statement[], parameters: string[] = [],
-      methodName: string = 'someMethod', className: string = 'SomeClass'): string {
+      stmt: o.Statement|o.Statement[], parameters: string[] = [], methodName: string = 'someMethod',
+      className: string = 'SomeClass'): string {
     const module: PartialModule = {
       fileName: someGenFileName,
       statements: [classMethod(stmt, parameters, methodName, className)]
@@ -122,7 +123,7 @@ const FILES: Directory = {
 };
 
 function classMethod(
-    stmt: o.Statement | o.Statement[], parameters: string[] = [], methodName: string = 'someMethod',
+    stmt: o.Statement|o.Statement[], parameters: string[] = [], methodName: string = 'someMethod',
     className: string = 'SomeClass'): o.ClassStmt {
   const statements = Array.isArray(stmt) ? stmt : [stmt];
   return new o.ClassStmt(

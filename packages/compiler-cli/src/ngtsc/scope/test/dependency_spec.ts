@@ -22,7 +22,7 @@ const MODULE_FROM_NODE_MODULES_PATH = /.*node_modules\/(\w+)\/index\.d\.ts$/;
 
 const testHost: UnifiedModulesHost = {
   fileNameToModuleName: function(imported: string): string {
-    const res = MODULE_FROM_NODE_MODULES_PATH.exec(imported) !;
+    const res = MODULE_FROM_NODE_MODULES_PATH.exec(imported)!;
     return 'root/' + res[1];
   }
 };
@@ -44,7 +44,7 @@ export declare type PipeMeta<A, B> = never;
  * destructured to retrieve references to specific declared classes.
  */
 function makeTestEnv(
-    modules: {[module: string]: string}, aliasGenerator: AliasingHost | null = null): {
+    modules: {[module: string]: string}, aliasGenerator: AliasingHost|null = null): {
   refs: {[name: string]: Reference<ClassDeclaration>},
   resolver: MetadataDtsModuleScopeResolver,
 } {
@@ -64,11 +64,11 @@ function makeTestEnv(
   // Resolver for the refs object.
   const get = (target: {}, name: string): Reference<ts.ClassDeclaration> => {
     for (const sf of program.getSourceFiles()) {
-      const symbol = checker.getSymbolAtLocation(sf) !;
-      const exportedSymbol = symbol.exports !.get(name as ts.__String);
+      const symbol = checker.getSymbolAtLocation(sf)!;
+      const exportedSymbol = symbol.exports!.get(name as ts.__String);
       if (exportedSymbol !== undefined) {
         const decl = exportedSymbol.valueDeclaration as ts.ClassDeclaration;
-        const specifier = MODULE_FROM_NODE_MODULES_PATH.exec(sf.fileName) ![1];
+        const specifier = MODULE_FROM_NODE_MODULES_PATH.exec(sf.fileName)![1];
         return new Reference(decl, {specifier, resolutionContext: sf.fileName});
       }
     }
@@ -97,7 +97,7 @@ runInEachFileSystem(() => {
       `
       });
       const {Dir, Module} = refs;
-      const scope = resolver.resolve(Module) !;
+      const scope = resolver.resolve(Module)!;
       expect(scopeToRefs(scope)).toEqual([Dir]);
     });
 
@@ -118,7 +118,7 @@ runInEachFileSystem(() => {
       `
       });
       const {Dir, ModuleB} = refs;
-      const scope = resolver.resolve(ModuleB) !;
+      const scope = resolver.resolve(ModuleB)!;
       expect(scopeToRefs(scope)).toEqual([Dir]);
     });
 
@@ -142,7 +142,7 @@ runInEachFileSystem(() => {
         `
       });
       const {Dir, ModuleB} = refs;
-      const scope = resolver.resolve(ModuleB) !;
+      const scope = resolver.resolve(ModuleB)!;
       expect(scopeToRefs(scope)).toEqual([Dir]);
 
       // Explicitly verify that the directive has the correct owning module.
@@ -186,7 +186,7 @@ runInEachFileSystem(() => {
           },
           new UnifiedModulesAliasingHost(testHost));
       const {ShallowModule} = refs;
-      const scope = resolver.resolve(ShallowModule) !;
+      const scope = resolver.resolve(ShallowModule)!;
       const [DeepDir, MiddleDir, ShallowDir] = scopeToRefs(scope);
       expect(getAlias(DeepDir)).toEqual({
         moduleName: 'root/shallow',
@@ -236,7 +236,7 @@ runInEachFileSystem(() => {
           },
           new UnifiedModulesAliasingHost(testHost));
       const {ShallowModule} = refs;
-      const scope = resolver.resolve(ShallowModule) !;
+      const scope = resolver.resolve(ShallowModule)!;
       const [DeepDir, MiddleDir, ShallowDir] = scopeToRefs(scope);
       expect(getAlias(DeepDir)).toEqual({
         moduleName: 'root/shallow',
@@ -269,7 +269,7 @@ runInEachFileSystem(() => {
              },
              new UnifiedModulesAliasingHost(testHost));
          const {DeepExportModule} = refs;
-         const scope = resolver.resolve(DeepExportModule) !;
+         const scope = resolver.resolve(DeepExportModule)!;
          const [DeepDir] = scopeToRefs(scope);
          expect(getAlias(DeepDir)).toBeNull();
        });
@@ -278,7 +278,7 @@ runInEachFileSystem(() => {
   function scopeToRefs(scope: ExportScope): Reference<ClassDeclaration>[] {
     const directives = scope.exported.directives.map(dir => dir.ref);
     const pipes = scope.exported.pipes.map(pipe => pipe.ref);
-    return [...directives, ...pipes].sort((a, b) => a.debugName !.localeCompare(b.debugName !));
+    return [...directives, ...pipes].sort((a, b) => a.debugName!.localeCompare(b.debugName!));
   }
 
   function getAlias(ref: Reference<ClassDeclaration>): ExternalReference|null {

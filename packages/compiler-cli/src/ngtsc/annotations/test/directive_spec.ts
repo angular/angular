@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
+
 import {absoluteFrom} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../imports';
 import {DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
-import {ClassDeclaration, TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
+import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
 import {getDeclaration, makeProgram} from '../../testing';
 import {DirectiveDecoratorHandler} from '../src/directive';
@@ -77,9 +78,13 @@ runInEachFileSystem(() => {
   // Helpers
   function analyzeDirective(program: ts.Program, dirName: string, hasBaseClass: boolean = false) {
     class TestReflectionHost extends TypeScriptReflectionHost {
-      constructor(checker: ts.TypeChecker) { super(checker); }
+      constructor(checker: ts.TypeChecker) {
+        super(checker);
+      }
 
-      hasBaseClass(_class: ClassDeclaration): boolean { return hasBaseClass; }
+      hasBaseClass(_class: ClassDeclaration): boolean {
+        return hasBaseClass;
+      }
     }
 
     const checker = program.getTypeChecker();

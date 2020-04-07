@@ -9,13 +9,13 @@
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
-import {ClassDeclaration, ClassMember, ClassMemberKind, ReflectionHost, isNamedClassDeclaration, reflectTypeEntityToDeclaration} from '../../reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, isNamedClassDeclaration, ReflectionHost, reflectTypeEntityToDeclaration} from '../../reflection';
 import {nodeDebugInfo} from '../../util/src/typescript';
 
 import {DirectiveMeta, MetadataReader, NgModuleMeta, PipeMeta, TemplateGuardMeta} from './api';
 
 export function extractReferencesFromType(
-    checker: ts.TypeChecker, def: ts.TypeNode, ngModuleImportedFrom: string | null,
+    checker: ts.TypeChecker, def: ts.TypeNode, ngModuleImportedFrom: string|null,
     resolutionContext: string): Reference<ClassDeclaration>[] {
   if (!ts.isTupleTypeNode(def)) {
     return [];
@@ -122,7 +122,7 @@ function extractTemplateGuard(member: ClassMember): TemplateGuardMeta|null {
 
 function extractCoercedInput(member: ClassMember): string|null {
   if (member.kind !== ClassMemberKind.Property || !member.name.startsWith('ngAcceptInputType_')) {
-    return null !;
+    return null!;
   }
   return afterUnderscore(member.name);
 }

@@ -94,9 +94,13 @@ export class TraitCompiler {
     }
   }
 
-  analyzeSync(sf: ts.SourceFile): void { this.analyze(sf, false); }
+  analyzeSync(sf: ts.SourceFile): void {
+    this.analyze(sf, false);
+  }
 
-  analyzeAsync(sf: ts.SourceFile): Promise<void>|undefined { return this.analyze(sf, true); }
+  analyzeAsync(sf: ts.SourceFile): Promise<void>|undefined {
+    return this.analyze(sf, true);
+  }
 
   private analyze(sf: ts.SourceFile, preanalyze: false): void;
   private analyze(sf: ts.SourceFile, preanalyze: true): Promise<void>|undefined;
@@ -138,7 +142,7 @@ export class TraitCompiler {
 
   recordFor(clazz: ClassDeclaration): ClassRecord|null {
     if (this.classes.has(clazz)) {
-      return this.classes.get(clazz) !;
+      return this.classes.get(clazz)!;
     } else {
       return null;
     }
@@ -149,8 +153,8 @@ export class TraitCompiler {
       return null;
     }
     const records: ClassRecord[] = [];
-    for (const clazz of this.fileToClasses.get(sf) !) {
-      records.push(this.classes.get(clazz) !);
+    for (const clazz of this.fileToClasses.get(sf)!) {
+      records.push(this.classes.get(clazz)!);
     }
     return records;
   }
@@ -173,7 +177,7 @@ export class TraitCompiler {
     };
 
     for (const priorTrait of priorRecord.traits) {
-      const handler = this.handlersByName.get(priorTrait.handler.name) !;
+      const handler = this.handlersByName.get(priorTrait.handler.name)!;
       let trait: Trait<unknown, unknown, unknown> = Trait.pending(handler, priorTrait.detected);
 
       if (priorTrait.state === TraitState.ANALYZED || priorTrait.state === TraitState.RESOLVED) {
@@ -195,7 +199,7 @@ export class TraitCompiler {
     if (!this.fileToClasses.has(sf)) {
       this.fileToClasses.set(sf, new Set<ClassDeclaration>());
     }
-    this.fileToClasses.get(sf) !.add(record.node);
+    this.fileToClasses.get(sf)!.add(record.node);
   }
 
   private scanClassForTraits(clazz: ClassDeclaration):
@@ -242,7 +246,7 @@ export class TraitCompiler {
         if (!this.fileToClasses.has(sf)) {
           this.fileToClasses.set(sf, new Set<ClassDeclaration>());
         }
-        this.fileToClasses.get(sf) !.add(clazz);
+        this.fileToClasses.get(sf)!.add(clazz);
       } else {
         // This is at least the second handler to match this class. This is a slower path that some
         // classes will go through, which validates that the set of decorators applied to the class
@@ -317,7 +321,7 @@ export class TraitCompiler {
         }
       }
       if (preanalysis !== null) {
-        preanalyzeQueue !.push(preanalysis.then(analyze));
+        preanalyzeQueue!.push(preanalysis.then(analyze));
       } else {
         analyze();
       }
@@ -328,8 +332,8 @@ export class TraitCompiler {
       clazz: ClassDeclaration, trait: Trait<unknown, unknown, unknown>,
       flags?: HandlerFlags): void {
     if (trait.state !== TraitState.PENDING) {
-      throw new Error(
-          `Attempt to analyze trait of ${clazz.name.text} in state ${TraitState[trait.state]} (expected DETECTED)`);
+      throw new Error(`Attempt to analyze trait of ${clazz.name.text} in state ${
+          TraitState[trait.state]} (expected DETECTED)`);
     }
 
     // Attempt analysis. This could fail with a `FatalDiagnosticError`; catch it if it does.
@@ -363,7 +367,7 @@ export class TraitCompiler {
   resolve(): void {
     const classes = Array.from(this.classes.keys());
     for (const clazz of classes) {
-      const record = this.classes.get(clazz) !;
+      const record = this.classes.get(clazz)!;
       for (let trait of record.traits) {
         const handler = trait.handler;
         switch (trait.state) {
@@ -371,8 +375,8 @@ export class TraitCompiler {
           case TraitState.ERRORED:
             continue;
           case TraitState.PENDING:
-            throw new Error(
-                `Resolving a trait that hasn't been analyzed: ${clazz.name.text} / ${Object.getPrototypeOf(trait.handler).constructor.name}`);
+            throw new Error(`Resolving a trait that hasn't been analyzed: ${clazz.name.text} / ${
+                Object.getPrototypeOf(trait.handler).constructor.name}`);
           case TraitState.RESOLVED:
             throw new Error(`Resolving an already resolved trait`);
         }
@@ -410,7 +414,7 @@ export class TraitCompiler {
           if (!this.reexportMap.has(fileName)) {
             this.reexportMap.set(fileName, new Map<string, [string, string]>());
           }
-          const fileReexports = this.reexportMap.get(fileName) !;
+          const fileReexports = this.reexportMap.get(fileName)!;
           for (const reexport of result.reexports) {
             fileReexports.set(reexport.asAlias, [reexport.fromModule, reexport.symbolName]);
           }
@@ -421,7 +425,7 @@ export class TraitCompiler {
 
   typeCheck(ctx: TypeCheckContext): void {
     for (const clazz of this.classes.keys()) {
-      const record = this.classes.get(clazz) !;
+      const record = this.classes.get(clazz)!;
       for (const trait of record.traits) {
         if (trait.state !== TraitState.RESOLVED) {
           continue;
@@ -435,7 +439,7 @@ export class TraitCompiler {
 
   index(ctx: IndexingContext): void {
     for (const clazz of this.classes.keys()) {
-      const record = this.classes.get(clazz) !;
+      const record = this.classes.get(clazz)!;
       for (const trait of record.traits) {
         if (trait.state !== TraitState.RESOLVED) {
           // Skip traits that haven't been resolved successfully.
@@ -457,7 +461,7 @@ export class TraitCompiler {
       return null;
     }
 
-    const record = this.classes.get(original) !;
+    const record = this.classes.get(original)!;
 
     let res: CompileResult[] = [];
 
@@ -496,7 +500,7 @@ export class TraitCompiler {
       return [];
     }
 
-    const record = this.classes.get(original) !;
+    const record = this.classes.get(original)!;
     const decorators: ts.Decorator[] = [];
 
     for (const trait of record.traits) {
@@ -515,7 +519,7 @@ export class TraitCompiler {
   get diagnostics(): ReadonlyArray<ts.Diagnostic> {
     const diagnostics: ts.Diagnostic[] = [];
     for (const clazz of this.classes.keys()) {
-      const record = this.classes.get(clazz) !;
+      const record = this.classes.get(clazz)!;
       if (record.metaDiagnostics !== null) {
         diagnostics.push(...record.metaDiagnostics);
       }
@@ -528,5 +532,7 @@ export class TraitCompiler {
     return diagnostics;
   }
 
-  get exportStatements(): Map<string, Map<string, [string, string]>> { return this.reexportMap; }
+  get exportStatements(): Map<string, Map<string, [string, string]>> {
+    return this.reexportMap;
+  }
 }

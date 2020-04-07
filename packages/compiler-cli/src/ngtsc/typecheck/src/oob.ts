@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
 
 import {TemplateId} from './api';
-import {TemplateSourceResolver, makeTemplateDiagnostic} from './diagnostics';
+import {makeTemplateDiagnostic, TemplateSourceResolver} from './diagnostics';
 
 
 
@@ -68,7 +68,9 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
 
   constructor(private resolver: TemplateSourceResolver) {}
 
-  get diagnostics(): ReadonlyArray<ts.Diagnostic> { return this._diagnostics; }
+  get diagnostics(): ReadonlyArray<ts.Diagnostic> {
+    return this._diagnostics;
+  }
 
   missingReferenceTarget(templateId: TemplateId, ref: TmplAstReference): void {
     const mapping = this.resolver.getSourceMapping(templateId);
@@ -97,8 +99,9 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
   illegalAssignmentToTemplateVar(
       templateId: TemplateId, assignment: PropertyWrite, target: TmplAstVariable): void {
     const mapping = this.resolver.getSourceMapping(templateId);
-    const errorMsg =
-        `Cannot use variable '${assignment.name}' as the left-hand side of an assignment expression. Template variables are read-only.`;
+    const errorMsg = `Cannot use variable '${
+        assignment
+            .name}' as the left-hand side of an assignment expression. Template variables are read-only.`;
 
     const sourceSpan = this.resolver.toParseSourceSpan(templateId, assignment.sourceSpan);
     if (sourceSpan === null) {
@@ -115,8 +118,8 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
   duplicateTemplateVar(
       templateId: TemplateId, variable: TmplAstVariable, firstDecl: TmplAstVariable): void {
     const mapping = this.resolver.getSourceMapping(templateId);
-    const errorMsg =
-        `Cannot redeclare variable '${variable.name}' as it was previously declared elsewhere for the same template.`;
+    const errorMsg = `Cannot redeclare variable '${
+        variable.name}' as it was previously declared elsewhere for the same template.`;
 
     // The allocation of the error here is pretty useless for variables declared in microsyntax,
     // since the sourceSpan refers to the entire microsyntax property, not a span for the specific

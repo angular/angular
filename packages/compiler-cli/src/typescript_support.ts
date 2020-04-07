@@ -49,8 +49,8 @@ export function restoreTypeScriptVersionForTesting(): void {
  */
 export function checkVersion(version: string, minVersion: string, maxVersion: string) {
   if ((compareVersions(version, minVersion) < 0 || compareVersions(version, maxVersion) >= 0)) {
-    throw new Error(
-        `The Angular Compiler requires TypeScript >=${minVersion} and <${maxVersion} but ${version} was found instead.`);
+    throw new Error(`The Angular Compiler requires TypeScript >=${minVersion} and <${
+        maxVersion} but ${version} was found instead.`);
   }
 }
 

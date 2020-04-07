@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath, absoluteFrom} from '../../file_system';
+import {absoluteFrom, AbsoluteFsPath} from '../../file_system';
 import {isNonDeclarationTsPath} from '../../util/src/typescript';
 
 import {ShimGenerator} from './api';
@@ -17,13 +17,17 @@ import {generatedModuleName} from './util';
 export class SummaryGenerator implements ShimGenerator {
   private constructor(private map: Map<AbsoluteFsPath, AbsoluteFsPath>) {}
 
-  getSummaryFileNames(): AbsoluteFsPath[] { return Array.from(this.map.keys()); }
+  getSummaryFileNames(): AbsoluteFsPath[] {
+    return Array.from(this.map.keys());
+  }
 
-  recognize(fileName: AbsoluteFsPath): boolean { return this.map.has(fileName); }
+  recognize(fileName: AbsoluteFsPath): boolean {
+    return this.map.has(fileName);
+  }
 
   generate(genFilePath: AbsoluteFsPath, readFile: (fileName: string) => ts.SourceFile | null):
       ts.SourceFile|null {
-    const originalPath = this.map.get(genFilePath) !;
+    const originalPath = this.map.get(genFilePath)!;
     const original = readFile(originalPath);
     if (original === null) {
       return null;

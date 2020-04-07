@@ -1,10 +1,10 @@
 /**
-* @license
-* Copyright Google Inc. All Rights Reserved.
-*
-* Use of this source code is governed by an MIT-style license that can be
-* found in the LICENSE file at https://angular.io/license
-*/
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
 import * as ts from 'typescript';
 
@@ -96,7 +96,7 @@ export class DefaultImportTracker implements DefaultImportRecorder {
     if (!this.sourceFileToImportMap.has(sf)) {
       this.sourceFileToImportMap.set(sf, new Map<ts.Identifier, ts.ImportDeclaration>());
     }
-    this.sourceFileToImportMap.get(sf) !.set(id, decl);
+    this.sourceFileToImportMap.get(sf)!.set(id, decl);
   }
 
   recordUsedIdentifier(id: ts.Identifier): void {
@@ -105,18 +105,18 @@ export class DefaultImportTracker implements DefaultImportRecorder {
       // The identifier's source file has no registered default imports at all.
       return;
     }
-    const identiferToDeclaration = this.sourceFileToImportMap.get(sf) !;
+    const identiferToDeclaration = this.sourceFileToImportMap.get(sf)!;
     if (!identiferToDeclaration.has(id)) {
       // The identifier isn't from a registered default import.
       return;
     }
-    const decl = identiferToDeclaration.get(id) !;
+    const decl = identiferToDeclaration.get(id)!;
 
     // Add the default import declaration to the set of used import declarations for the file.
     if (!this.sourceFileToUsedImports.has(sf)) {
       this.sourceFileToUsedImports.set(sf, new Set<ts.ImportDeclaration>());
     }
-    this.sourceFileToUsedImports.get(sf) !.add(decl);
+    this.sourceFileToUsedImports.get(sf)!.add(decl);
   }
 
   /**
@@ -127,7 +127,9 @@ export class DefaultImportTracker implements DefaultImportRecorder {
    */
   importPreservingTransformer(): ts.TransformerFactory<ts.SourceFile> {
     return (context: ts.TransformationContext) => {
-      return (sf: ts.SourceFile) => { return this.transformSourceFile(sf); };
+      return (sf: ts.SourceFile) => {
+        return this.transformSourceFile(sf);
+      };
     };
   }
 
@@ -142,7 +144,7 @@ export class DefaultImportTracker implements DefaultImportRecorder {
     }
 
     // There are declarations that need to be preserved.
-    const importsToPreserve = this.sourceFileToUsedImports.get(originalSf) !;
+    const importsToPreserve = this.sourceFileToUsedImports.get(originalSf)!;
 
     // Generate a new statement list which preserves any imports present in `importsToPreserve`.
     const statements = sf.statements.map(stmt => {

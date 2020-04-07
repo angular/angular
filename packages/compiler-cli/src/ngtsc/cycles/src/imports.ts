@@ -30,7 +30,7 @@ export class ImportGraph {
     if (!this.map.has(sf)) {
       this.map.set(sf, this.scanImports(sf));
     }
-    return this.map.get(sf) !;
+    return this.map.get(sf)!;
   }
 
   /**
@@ -47,7 +47,9 @@ export class ImportGraph {
       return;
     }
     results.add(sf);
-    this.importsOf(sf).forEach(imported => { this.transitiveImportsOfHelper(imported, results); });
+    this.importsOf(sf).forEach(imported => {
+      this.transitiveImportsOfHelper(imported, results);
+    });
   }
 
   /**

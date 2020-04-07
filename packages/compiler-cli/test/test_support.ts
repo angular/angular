@@ -15,7 +15,7 @@ import {NodeJSFileSystem, setFileSystem} from '../src/ngtsc/file_system';
 import {getAngularPackagesFromRunfiles, resolveNpmTreeArtifact} from '../test/helpers';
 
 // TEST_TMPDIR is always set by Bazel.
-const tmpdir = process.env.TEST_TMPDIR !;
+const tmpdir = process.env.TEST_TMPDIR!;
 
 export function makeTempDir(): string {
   let dir: string;
@@ -97,8 +97,11 @@ function createTestSupportFor(basePath: string) {
   }
 
   function writeFiles(...mockDirs: {[fileName: string]: string}[]) {
-    mockDirs.forEach(
-        (dir) => { Object.keys(dir).forEach((fileName) => { write(fileName, dir[fileName]); }); });
+    mockDirs.forEach((dir) => {
+      Object.keys(dir).forEach((fileName) => {
+        write(fileName, dir[fileName]);
+      });
+    });
   }
 
   function createCompilerOptions(overrideOptions: ng.CompilerOptions = {}): ng.CompilerOptions {

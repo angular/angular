@@ -20,7 +20,9 @@ export class PerfTracker implements PerfRecorder {
 
   private constructor(private zeroTime: HrTime) {}
 
-  static zeroedToNow(): PerfTracker { return new PerfTracker(mark()); }
+  static zeroedToNow(): PerfTracker {
+    return new PerfTracker(mark());
+  }
 
   mark(name: string, node?: ts.SourceFile|ts.Declaration, category?: string, detail?: string):
       void {
@@ -73,7 +75,9 @@ export class PerfTracker implements PerfRecorder {
     return msg;
   }
 
-  asJson(): unknown { return this.log; }
+  asJson(): unknown {
+    return this.log;
+  }
 
   serializeToFile(target: string, host: ts.CompilerHost): void {
     const json = JSON.stringify(this.log, null, 2);

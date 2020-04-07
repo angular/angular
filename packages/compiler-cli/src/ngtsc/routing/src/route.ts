@@ -22,10 +22,14 @@ export abstract class RouterEntryPoint {
 class RouterEntryPointImpl implements RouterEntryPoint {
   constructor(readonly filePath: string, readonly moduleName: string) {}
 
-  get name(): string { return this.moduleName; }
+  get name(): string {
+    return this.moduleName;
+  }
 
   // For debugging purposes.
-  toString(): string { return `RouterEntryPoint(name: ${this.name}, filePath: ${this.filePath})`; }
+  toString(): string {
+    return `RouterEntryPoint(name: ${this.name}, filePath: ${this.filePath})`;
+  }
 }
 
 export class RouterEntryPointManager {
@@ -51,7 +55,7 @@ export class RouterEntryPointManager {
     if (!this.map.has(key)) {
       this.map.set(key, new RouterEntryPointImpl(sf.fileName, moduleName));
     }
-    return this.map.get(key) !;
+    return this.map.get(key)!;
   }
 }
 

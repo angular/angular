@@ -12,7 +12,7 @@ import * as ts from 'typescript';
  * Metadata extracted from an instance of a decorator on another declaration, or synthesized from
  * other information about a class.
  */
-export type Decorator = ConcreteDecorator | SyntheticDecorator;
+export type Decorator = ConcreteDecorator|SyntheticDecorator;
 
 export interface BaseDecorator {
   /**
@@ -28,11 +28,11 @@ export interface BaseDecorator {
    */
   identifier: DecoratorIdentifier|null;
 
-  /**
-   * `Import` by which the decorator was brought into the module in which it was invoked, or `null`
-   * if the decorator was declared in the same module and not imported.
-   */
-  import : Import | null;
+/**
+ * `Import` by which the decorator was brought into the module in which it was invoked, or `null`
+ * if the decorator was declared in the same module and not imported.
+ */
+import: Import|null;
 
   /**
    * TypeScript reference to the decorator itself, or `null` if the decorator is synthesized (e.g.
@@ -87,8 +87,8 @@ export const Decorator = {
  * A decorator is identified by either a simple identifier (e.g. `Decorator`) or, in some cases,
  * a namespaced property access (e.g. `core.Decorator`).
  */
-export type DecoratorIdentifier = ts.Identifier | NamespacedIdentifier;
-export type NamespacedIdentifier = ts.PropertyAccessExpression & {
+export type DecoratorIdentifier = ts.Identifier|NamespacedIdentifier;
+export type NamespacedIdentifier = ts.PropertyAccessExpression&{
   expression: ts.Identifier;
   name: ts.Identifier
 };
@@ -113,7 +113,7 @@ export function isDecoratorIdentifier(exp: ts.Expression): exp is DecoratorIdent
  * For `ReflectionHost` purposes, a class declaration should always have a `name` identifier,
  * because we need to be able to reference it in other parts of the program.
  */
-export type ClassDeclaration<T extends ts.Declaration = ts.Declaration> = T & {name: ts.Identifier};
+export type ClassDeclaration<T extends ts.Declaration = ts.Declaration> = T&{name: ts.Identifier};
 
 /**
  * An enumeration of possible kinds of class members.
@@ -241,8 +241,7 @@ export interface ClassMember {
  */
 export type TypeValueReference = {
   local: true; expression: ts.Expression; defaultImportStatement: ts.ImportDeclaration | null;
-} |
-{
+}|{
   local: false;
   name: string;
   moduleName: string;
@@ -447,7 +446,7 @@ export interface InlineDeclaration extends BaseDeclaration {
  * downlevelings to a `ts.Expression` instead.
  */
 export type Declaration<T extends ts.Declaration = ts.Declaration> =
-    ConcreteDeclaration<T>| InlineDeclaration;
+    ConcreteDeclaration<T>|InlineDeclaration;
 
 /**
  * Abstracts reflection operations on a TypeScript AST.

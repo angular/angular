@@ -386,8 +386,7 @@ describe('compiler compliance: dependency injection', () => {
 
        expectEmit(source, MyPipeDefs, 'Invalid pipe factory function');
        expectEmit(source, MyOtherPipeDefs, 'Invalid pipe factory function');
-       expect(source.match(/MyPipe\.ɵfac =/g) !.length).toBe(1);
-       expect(source.match(/MyOtherPipe\.ɵfac =/g) !.length).toBe(1);
+       expect(source.match(/MyPipe\.ɵfac =/g)!.length).toBe(1);
+       expect(source.match(/MyOtherPipe\.ɵfac =/g)!.length).toBe(1);
      });
-
 });

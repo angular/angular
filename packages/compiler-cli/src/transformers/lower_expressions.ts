@@ -9,7 +9,8 @@
 import {createLoweredSymbol, isLoweredSymbol} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {CollectorOptions, MetadataCollector, MetadataValue, ModuleMetadata, isMetadataGlobalReferenceExpression} from '../metadata/index';
+import {CollectorOptions, isMetadataGlobalReferenceExpression, MetadataCollector, MetadataValue, ModuleMetadata} from '../metadata/index';
+
 import {MetadataCache, MetadataTransformer, ValueTransform} from './metadata_cache';
 
 export interface LoweringRequest {
@@ -21,7 +22,10 @@ export interface LoweringRequest {
 
 export type RequestLocationMap = Map<number, LoweringRequest>;
 
-const enum DeclarationOrder { BeforeStmt, AfterStmt }
+const enum DeclarationOrder {
+  BeforeStmt,
+  AfterStmt
+}
 
 interface Declaration {
   name: string;
@@ -201,14 +205,16 @@ export function getExpressionLoweringTransformFactory(
   };
 }
 
-export interface RequestsMap { getRequests(sourceFile: ts.SourceFile): RequestLocationMap; }
+export interface RequestsMap {
+  getRequests(sourceFile: ts.SourceFile): RequestLocationMap;
+}
 
 interface MetadataAndLoweringRequests {
   metadata: ModuleMetadata|undefined;
   requests: RequestLocationMap;
 }
 
-function isEligibleForLowering(node: ts.Node | undefined): boolean {
+function isEligibleForLowering(node: ts.Node|undefined): boolean {
   if (node) {
     switch (node.kind) {
       case ts.SyntaxKind.SourceFile:
@@ -232,10 +238,11 @@ function isEligibleForLowering(node: ts.Node | undefined): boolean {
         // example) might also require lowering even if the top-level declaration is already
         // properly exported.
         const varNode = node as ts.VariableDeclaration;
-        return isExported || (varNode.initializer !== undefined &&
-                              (ts.isObjectLiteralExpression(varNode.initializer) ||
-                               ts.isArrayLiteralExpression(varNode.initializer) ||
-                               ts.isCallExpression(varNode.initializer)));
+        return isExported ||
+            (varNode.initializer !== undefined &&
+             (ts.isObjectLiteralExpression(varNode.initializer) ||
+              ts.isArrayLiteralExpression(varNode.initializer) ||
+              ts.isCallExpression(varNode.initializer)));
     }
     return isEligibleForLowering(node.parent);
   }
@@ -264,7 +271,7 @@ function isLiteralFieldNamed(node: ts.Node, names: Set<string>): boolean {
 
 export class LowerMetadataTransform implements RequestsMap, MetadataTransformer {
   // TODO(issue/24571): remove '!'.
-  private cache !: MetadataCache;
+  private cache!: MetadataCache;
   private requests = new Map<string, RequestLocationMap>();
   private lowerableFieldNames: Set<string>;
 
@@ -288,7 +295,9 @@ export class LowerMetadataTransform implements RequestsMap, MetadataTransformer 
   }
 
   // MetadataTransformer
-  connect(cache: MetadataCache): void { this.cache = cache; }
+  connect(cache: MetadataCache): void {
+    this.cache = cache;
+  }
 
   start(sourceFile: ts.SourceFile): ValueTransform|undefined {
     let identNumber = 0;
@@ -329,7 +338,7 @@ export class LowerMetadataTransform implements RequestsMap, MetadataTransformer 
 
     const hasLowerableParentCache = new Map<ts.Node, boolean>();
 
-    const shouldBeLowered = (node: ts.Node | undefined): boolean => {
+    const shouldBeLowered = (node: ts.Node|undefined): boolean => {
       if (node === undefined) {
         return false;
       }
@@ -346,7 +355,7 @@ export class LowerMetadataTransform implements RequestsMap, MetadataTransformer 
       return lowerable;
     };
 
-    const hasLowerableParent = (node: ts.Node | undefined): boolean => {
+    const hasLowerableParent = (node: ts.Node|undefined): boolean => {
       if (node === undefined) {
         return false;
       }
@@ -354,10 +363,10 @@ export class LowerMetadataTransform implements RequestsMap, MetadataTransformer 
         hasLowerableParentCache.set(
             node, shouldBeLowered(node.parent) || hasLowerableParent(node.parent));
       }
-      return hasLowerableParentCache.get(node) !;
+      return hasLowerableParentCache.get(node)!;
     };
 
-    const isLowerable = (node: ts.Node | undefined): boolean => {
+    const isLowerable = (node: ts.Node|undefined): boolean => {
       if (node === undefined) {
         return false;
       }
@@ -383,7 +392,7 @@ function createExportTableFor(sourceFile: ts.SourceFile): Set<string> {
       case ts.SyntaxKind.InterfaceDeclaration:
         if ((ts.getCombinedModifierFlags(node as ts.Declaration) & ts.ModifierFlags.Export) != 0) {
           const classDeclaration =
-              node as(ts.ClassDeclaration | ts.FunctionDeclaration | ts.InterfaceDeclaration);
+              node as (ts.ClassDeclaration | ts.FunctionDeclaration | ts.InterfaceDeclaration);
           const name = classDeclaration.name;
           if (name) exportTable.add(name.text);
         }
@@ -406,7 +415,9 @@ function createExportTableFor(sourceFile: ts.SourceFile): Set<string> {
         const exportDeclaration = node as ts.ExportDeclaration;
         const {moduleSpecifier, exportClause} = exportDeclaration;
         if (!moduleSpecifier && exportClause && ts.isNamedExports(exportClause)) {
-          exportClause.elements.forEach(spec => { exportTable.add(spec.name.text); });
+          exportClause.elements.forEach(spec => {
+            exportTable.add(spec.name.text);
+          });
         }
     }
   });

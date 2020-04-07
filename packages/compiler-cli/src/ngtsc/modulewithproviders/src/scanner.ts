@@ -13,7 +13,9 @@ import {ImportFlags, Reference, ReferenceEmitter} from '../../imports';
 import {PartialEvaluator, ResolvedValueMap} from '../../partial_evaluator';
 import {ReflectionHost} from '../../reflection';
 
-export interface DtsHandler { addTypeReplacement(node: ts.Declaration, type: Type): void; }
+export interface DtsHandler {
+  addTypeReplacement(node: ts.Declaration, type: Type): void;
+}
 
 export class ModuleWithProvidersScanner {
   constructor(

@@ -24,7 +24,9 @@ export class FlatIndexGenerator implements ShimGenerator {
         join(dirname(entryPoint), relativeFlatIndexPath).replace(/\.js$/, '') + '.ts';
   }
 
-  recognize(fileName: string): boolean { return fileName === this.flatIndexPath; }
+  recognize(fileName: string): boolean {
+    return fileName === this.flatIndexPath;
+  }
 
   generate(): ts.SourceFile {
     const relativeEntryPoint = relativePathBetween(this.flatIndexPath, this.entryPoint);

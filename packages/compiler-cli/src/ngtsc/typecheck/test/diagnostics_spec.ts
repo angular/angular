@@ -8,10 +8,10 @@
 
 import * as ts from 'typescript';
 
-import {TestFile, runInEachFileSystem} from '../../file_system/testing';
+import {runInEachFileSystem, TestFile} from '../../file_system/testing';
 import {TypeCheckingConfig} from '../src/api';
 
-import {TestDeclaration, ngForDeclaration, ngForDts, typecheck} from './test_utils';
+import {ngForDeclaration, ngForDts, TestDeclaration, typecheck} from './test_utils';
 
 runInEachFileSystem(() => {
   describe('template diagnostics', () => {
@@ -377,8 +377,8 @@ function diagnose(
   return diagnostics.map(diag => {
     const text =
         typeof diag.messageText === 'string' ? diag.messageText : diag.messageText.messageText;
-    const fileName = diag.file !.fileName;
-    const {line, character} = ts.getLineAndCharacterOfPosition(diag.file !, diag.start !);
+    const fileName = diag.file!.fileName;
+    const {line, character} = ts.getLineAndCharacterOfPosition(diag.file!, diag.start!);
     return `${fileName}(${line + 1}, ${character + 1}): ${text}`;
   });
 }

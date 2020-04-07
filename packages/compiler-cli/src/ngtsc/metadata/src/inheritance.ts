@@ -25,7 +25,7 @@ export function flattenInheritedDirectiveMetadata(
     throw new Error(`Metadata not found for directive: ${dir.debugName}`);
   }
 
-  let inputs: {[key: string]: string | [string, string]} = {};
+  let inputs: {[key: string]: string|[string, string]} = {};
   let outputs: {[key: string]: string} = {};
   let coercedInputFields = new Set<string>();
   let isDynamic = false;

@@ -18,7 +18,7 @@ import {TypeValueReference} from './host';
  * declaration, or if it is not possible to statically understand.
  */
 export function typeToValue(
-    typeNode: ts.TypeNode | null, checker: ts.TypeChecker): TypeValueReference|null {
+    typeNode: ts.TypeNode|null, checker: ts.TypeChecker): TypeValueReference|null {
   // It's not possible to get a value expression if the parameter doesn't even have a type.
   if (typeNode === null || !ts.isTypeReferenceNode(typeNode)) {
     return null;
@@ -95,7 +95,7 @@ export function typeNodeToValueExpr(node: ts.TypeNode): ts.Expression|null {
  * give the identifier name within the current file by which the import is known.
  */
 function resolveTypeSymbols(typeRef: ts.TypeReferenceNode, checker: ts.TypeChecker):
-    {local: ts.Symbol, decl: ts.Symbol, importName: string | null}|null {
+    {local: ts.Symbol, decl: ts.Symbol, importName: string|null}|null {
   const typeName = typeRef.typeName;
   // typeRefSymbol is the ts.Symbol of the entire type reference.
   const typeRefSymbol: ts.Symbol|undefined = checker.getSymbolAtLocation(typeName);
@@ -156,8 +156,8 @@ function isImportSource(node: ts.Declaration): node is(ts.ImportSpecifier | ts.N
 }
 
 function extractModuleAndNameFromImport(
-    node: ts.ImportSpecifier | ts.NamespaceImport | ts.ImportClause,
-    localName: string | null): {name: string, moduleName: string} {
+    node: ts.ImportSpecifier|ts.NamespaceImport|ts.ImportClause,
+    localName: string|null): {name: string, moduleName: string} {
   let name: string;
   let moduleSpecifier: ts.Expression;
   switch (node.kind) {

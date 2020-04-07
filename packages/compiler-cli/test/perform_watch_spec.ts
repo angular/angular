@@ -14,7 +14,7 @@ import * as ts from 'typescript';
 import * as ng from '../index';
 import {FileChangeEvent, performWatchCompilation} from '../src/perform_watch';
 
-import {TestSupport, expectNoDiagnostics, setup} from './test_support';
+import {expectNoDiagnostics, setup, TestSupport} from './test_support';
 
 describe('perform watch', () => {
   let testSupport: TestSupport;
@@ -105,23 +105,23 @@ describe('perform watch', () => {
 
     performWatchCompilation(host);
     expect(fs.existsSync(mainNgFactory)).toBe(true);
-    expect(fileExistsSpy !).toHaveBeenCalledWith(mainTsPath);
-    expect(fileExistsSpy !).toHaveBeenCalledWith(utilTsPath);
-    expect(getSourceFileSpy !).toHaveBeenCalledWith(mainTsPath, ts.ScriptTarget.ES5);
-    expect(getSourceFileSpy !).toHaveBeenCalledWith(utilTsPath, ts.ScriptTarget.ES5);
+    expect(fileExistsSpy!).toHaveBeenCalledWith(mainTsPath);
+    expect(fileExistsSpy!).toHaveBeenCalledWith(utilTsPath);
+    expect(getSourceFileSpy!).toHaveBeenCalledWith(mainTsPath, ts.ScriptTarget.ES5);
+    expect(getSourceFileSpy!).toHaveBeenCalledWith(utilTsPath, ts.ScriptTarget.ES5);
 
-    fileExistsSpy !.calls.reset();
-    getSourceFileSpy !.calls.reset();
+    fileExistsSpy!.calls.reset();
+    getSourceFileSpy!.calls.reset();
 
     // trigger a single file change
     // -> all other files should be cached
     host.triggerFileChange(FileChangeEvent.Change, utilTsPath);
     expectNoDiagnostics(config.options, host.diagnostics);
 
-    expect(fileExistsSpy !).not.toHaveBeenCalledWith(mainTsPath);
-    expect(fileExistsSpy !).toHaveBeenCalledWith(utilTsPath);
-    expect(getSourceFileSpy !).not.toHaveBeenCalledWith(mainTsPath, ts.ScriptTarget.ES5);
-    expect(getSourceFileSpy !).toHaveBeenCalledWith(utilTsPath, ts.ScriptTarget.ES5);
+    expect(fileExistsSpy!).not.toHaveBeenCalledWith(mainTsPath);
+    expect(fileExistsSpy!).toHaveBeenCalledWith(utilTsPath);
+    expect(getSourceFileSpy!).not.toHaveBeenCalledWith(mainTsPath, ts.ScriptTarget.ES5);
+    expect(getSourceFileSpy!).toHaveBeenCalledWith(utilTsPath, ts.ScriptTarget.ES5);
 
     // trigger a folder change
     // -> nothing should be cached
@@ -129,10 +129,10 @@ describe('perform watch', () => {
         FileChangeEvent.CreateDeleteDir, path.resolve(testSupport.basePath, 'src'));
     expectNoDiagnostics(config.options, host.diagnostics);
 
-    expect(fileExistsSpy !).toHaveBeenCalledWith(mainTsPath);
-    expect(fileExistsSpy !).toHaveBeenCalledWith(utilTsPath);
-    expect(getSourceFileSpy !).toHaveBeenCalledWith(mainTsPath, ts.ScriptTarget.ES5);
-    expect(getSourceFileSpy !).toHaveBeenCalledWith(utilTsPath, ts.ScriptTarget.ES5);
+    expect(fileExistsSpy!).toHaveBeenCalledWith(mainTsPath);
+    expect(fileExistsSpy!).toHaveBeenCalledWith(utilTsPath);
+    expect(getSourceFileSpy!).toHaveBeenCalledWith(mainTsPath, ts.ScriptTarget.ES5);
+    expect(getSourceFileSpy!).toHaveBeenCalledWith(utilTsPath, ts.ScriptTarget.ES5);
   });
 
   // https://github.com/angular/angular/pull/26036
@@ -239,10 +239,18 @@ class MockWatchHost {
   diagnostics: ng.Diagnostic[] = [];
   constructor(public config: ng.ParsedConfiguration) {}
 
-  reportDiagnostics(diags: ng.Diagnostics) { this.diagnostics.push(...(diags as ng.Diagnostic[])); }
-  readConfiguration() { return this.config; }
-  createCompilerHost(options: ng.CompilerOptions) { return ng.createCompilerHost({options}); }
-  createEmitCallback() { return undefined; }
+  reportDiagnostics(diags: ng.Diagnostics) {
+    this.diagnostics.push(...(diags as ng.Diagnostic[]));
+  }
+  readConfiguration() {
+    return this.config;
+  }
+  createCompilerHost(options: ng.CompilerOptions) {
+    return ng.createCompilerHost({options});
+  }
+  createEmitCallback() {
+    return undefined;
+  }
   onFileChange(
       options: ng.CompilerOptions, listener: (event: FileChangeEvent, fileName: string) => void,
       ready: () => void) {
@@ -258,7 +266,9 @@ class MockWatchHost {
     this.timeoutListeners[id] = callback;
     return id;
   }
-  clearTimeout(timeoutId: any): void { delete this.timeoutListeners[timeoutId]; }
+  clearTimeout(timeoutId: any): void {
+    delete this.timeoutListeners[timeoutId];
+  }
   flushTimeouts() {
     const listeners = this.timeoutListeners;
     this.timeoutListeners = {};

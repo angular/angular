@@ -7,7 +7,7 @@
  */
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath, absoluteFrom, basename} from '../../file_system';
+import {absoluteFrom, AbsoluteFsPath, basename} from '../../file_system';
 import {ImportRewriter} from '../../imports';
 import {isNonDeclarationTsPath} from '../../util/src/typescript';
 
@@ -24,15 +24,21 @@ const STRIP_NG_FACTORY = /(.*)NgFactory$/;
 export class FactoryGenerator implements ShimGenerator {
   private constructor(private map: Map<AbsoluteFsPath, AbsoluteFsPath>) {}
 
-  get factoryFileMap(): Map<AbsoluteFsPath, AbsoluteFsPath> { return this.map; }
+  get factoryFileMap(): Map<AbsoluteFsPath, AbsoluteFsPath> {
+    return this.map;
+  }
 
-  get factoryFileNames(): AbsoluteFsPath[] { return Array.from(this.map.keys()); }
+  get factoryFileNames(): AbsoluteFsPath[] {
+    return Array.from(this.map.keys());
+  }
 
-  recognize(fileName: AbsoluteFsPath): boolean { return this.map.has(fileName); }
+  recognize(fileName: AbsoluteFsPath): boolean {
+    return this.map.has(fileName);
+  }
 
   generate(genFilePath: AbsoluteFsPath, readFile: (fileName: string) => ts.SourceFile | null):
       ts.SourceFile|null {
-    const originalPath = this.map.get(genFilePath) !;
+    const originalPath = this.map.get(genFilePath)!;
     const original = readFile(originalPath);
     if (original === null) {
       return null;
@@ -53,7 +59,7 @@ export class FactoryGenerator implements ShimGenerator {
                                 decl => isExported(decl) && decl.decorators !== undefined &&
                                     decl.name !== undefined)
                             // Grab the symbol name.
-                            .map(decl => decl.name !.text);
+                            .map(decl => decl.name!.text);
 
 
     let sourceText = '';
@@ -71,8 +77,8 @@ export class FactoryGenerator implements ShimGenerator {
       // This will encompass a lot of symbols which don't need factories, but that's okay
       // because it won't miss any that do.
       const varLines = symbolNames.map(
-          name =>
-              `export const ${name}NgFactory: i0.ɵNgModuleFactory<any> = new i0.ɵNgModuleFactory(${name});`);
+          name => `export const ${
+              name}NgFactory: i0.ɵNgModuleFactory<any> = new i0.ɵNgModuleFactory(${name});`);
       sourceText += [
         // This might be incorrect if the current package being compiled is Angular core, but it's
         // okay to leave in at type checking time. TypeScript can handle this reference via its path
@@ -136,7 +142,7 @@ function transformFactorySourceFile(
     return file;
   }
 
-  const {moduleSymbolNames, sourceFilePath} = factoryMap.get(file.fileName) !;
+  const {moduleSymbolNames, sourceFilePath} = factoryMap.get(file.fileName)!;
 
   file = ts.getMutableClone(file);
 

@@ -34,7 +34,7 @@ runInEachFileSystem(() => {
         const clazz = getDeclaration(program, _('/entry.ts'), 'Foo', isNamedClassDeclaration);
         const checker = program.getTypeChecker();
         const host = new TypeScriptReflectionHost(checker);
-        const args = host.getConstructorParameters(clazz) !;
+        const args = host.getConstructorParameters(clazz)!;
         expect(args.length).toBe(1);
         expectParameter(args[0], 'bar', 'Bar');
       });
@@ -63,7 +63,7 @@ runInEachFileSystem(() => {
         const clazz = getDeclaration(program, _('/entry.ts'), 'Foo', isNamedClassDeclaration);
         const checker = program.getTypeChecker();
         const host = new TypeScriptReflectionHost(checker);
-        const args = host.getConstructorParameters(clazz) !;
+        const args = host.getConstructorParameters(clazz)!;
         expect(args.length).toBe(1);
         expectParameter(args[0], 'bar', 'Bar', 'dec', './dec');
       });
@@ -92,7 +92,7 @@ runInEachFileSystem(() => {
         const clazz = getDeclaration(program, _('/entry.ts'), 'Foo', isNamedClassDeclaration);
         const checker = program.getTypeChecker();
         const host = new TypeScriptReflectionHost(checker);
-        const args = host.getConstructorParameters(clazz) !;
+        const args = host.getConstructorParameters(clazz)!;
         expect(args.length).toBe(1);
         expectParameter(args[0], 'bar', 'Bar', 'dec', './dec');
       });
@@ -120,7 +120,7 @@ runInEachFileSystem(() => {
         const clazz = getDeclaration(program, _('/entry.ts'), 'Foo', isNamedClassDeclaration);
         const checker = program.getTypeChecker();
         const host = new TypeScriptReflectionHost(checker);
-        const args = host.getConstructorParameters(clazz) !;
+        const args = host.getConstructorParameters(clazz)!;
         expect(args.length).toBe(2);
         expectParameter(args[0], 'bar', {moduleName: './bar', name: 'Bar'});
         expectParameter(args[1], 'otherBar', {moduleName: './bar', name: 'Bar'});
@@ -148,7 +148,7 @@ runInEachFileSystem(() => {
         const clazz = getDeclaration(program, _('/entry.ts'), 'Foo', isNamedClassDeclaration);
         const checker = program.getTypeChecker();
         const host = new TypeScriptReflectionHost(checker);
-        const args = host.getConstructorParameters(clazz) !;
+        const args = host.getConstructorParameters(clazz)!;
         expect(args.length).toBe(1);
         expectParameter(args[0], 'bar', {moduleName: './bar', name: 'Bar'});
       });
@@ -175,7 +175,7 @@ runInEachFileSystem(() => {
         const clazz = getDeclaration(program, _('/entry.ts'), 'Foo', isNamedClassDeclaration);
         const checker = program.getTypeChecker();
         const host = new TypeScriptReflectionHost(checker);
-        const args = host.getConstructorParameters(clazz) !;
+        const args = host.getConstructorParameters(clazz)!;
         expect(args.length).toBe(1);
         const param = args[0].typeValueReference;
         if (param === null || !param.local) {
@@ -207,7 +207,7 @@ runInEachFileSystem(() => {
         const clazz = getDeclaration(program, _('/entry.ts'), 'Foo', isNamedClassDeclaration);
         const checker = program.getTypeChecker();
         const host = new TypeScriptReflectionHost(checker);
-        const args = host.getConstructorParameters(clazz) !;
+        const args = host.getConstructorParameters(clazz)!;
         expect(args.length).toBe(1);
         expectParameter(args[0], 'bar', {moduleName: './bar', name: 'Bar'});
       });
@@ -228,12 +228,11 @@ runInEachFileSystem(() => {
         const clazz = getDeclaration(program, _('/entry.ts'), 'Foo', isNamedClassDeclaration);
         const checker = program.getTypeChecker();
         const host = new TypeScriptReflectionHost(checker);
-        const args = host.getConstructorParameters(clazz) !;
+        const args = host.getConstructorParameters(clazz)!;
         expect(args.length).toBe(2);
         expectParameter(args[0], 'bar', 'Bar');
         expectParameter(args[1], 'baz', 'Baz');
       });
-
     });
 
 
@@ -330,9 +329,9 @@ runInEachFileSystem(() => {
         } else if (directTargetDecl === null) {
           return fail('No declaration found for DirectTarget');
         }
-        expect(targetDecl.node !.getSourceFile().fileName)
+        expect(targetDecl.node!.getSourceFile().fileName)
             .toBe(_('/node_modules/absolute/index.ts'));
-        expect(ts.isClassDeclaration(targetDecl.node !)).toBe(true);
+        expect(ts.isClassDeclaration(targetDecl.node!)).toBe(true);
         expect(directTargetDecl.viaModule).toBe('absolute');
         expect(directTargetDecl.node).toBe(targetDecl.node);
       });
@@ -415,9 +414,9 @@ runInEachFileSystem(() => {
         const checker = program.getTypeChecker();
         const host = new TypeScriptReflectionHost(checker);
         const exportedDeclarations =
-            host.getExportsOfModule(program.getSourceFile(_('/entry.ts')) !);
-        expect(Array.from(exportedDeclarations !.keys())).toEqual(['foo', 'x', 'T', 'I', 'E']);
-        expect(Array.from(exportedDeclarations !.values()).map(v => v.viaModule)).toEqual([
+            host.getExportsOfModule(program.getSourceFile(_('/entry.ts'))!);
+        expect(Array.from(exportedDeclarations!.keys())).toEqual(['foo', 'x', 'T', 'I', 'E']);
+        expect(Array.from(exportedDeclarations!.values()).map(v => v.viaModule)).toEqual([
           null, null, null, null, null
         ]);
       });
@@ -440,11 +439,11 @@ runInEachFileSystem(() => {
         const checker = program.getTypeChecker();
         const host = new TypeScriptReflectionHost(checker);
         const exportedDeclarations =
-            host.getExportsOfModule(program.getSourceFile(_('/entry.ts')) !);
-        expect(Array.from(exportedDeclarations !.keys())).toEqual([
+            host.getExportsOfModule(program.getSourceFile(_('/entry.ts'))!);
+        expect(Array.from(exportedDeclarations!.keys())).toEqual([
           'Target1', 'AliasTarget', 'AliasTarget2', 'Target'
         ]);
-        expect(Array.from(exportedDeclarations !.values()).map(v => v.viaModule)).toEqual([
+        expect(Array.from(exportedDeclarations!.values()).map(v => v.viaModule)).toEqual([
           null, null, null, null
         ]);
       });
@@ -452,9 +451,9 @@ runInEachFileSystem(() => {
   });
 
   function expectParameter(
-      param: CtorParameter, name: string, type?: string | {name: string, moduleName: string},
+      param: CtorParameter, name: string, type?: string|{name: string, moduleName: string},
       decorator?: string, decoratorFrom?: string): void {
-    expect(param.name !).toEqual(name);
+    expect(param.name!).toEqual(name);
     if (type === undefined) {
       expect(param.typeValueReference).toBeNull();
     } else {
@@ -467,21 +466,21 @@ runInEachFileSystem(() => {
         expect(param.typeValueReference.moduleName).toEqual(type.moduleName);
         expect(param.typeValueReference.name).toEqual(type.name);
       } else {
-        return fail(
-            `Mismatch between typeValueReference and expected type: ${param.name} / ${param.typeValueReference.local}`);
+        return fail(`Mismatch between typeValueReference and expected type: ${param.name} / ${
+            param.typeValueReference.local}`);
       }
     }
     if (decorator !== undefined) {
       expect(param.decorators).not.toBeNull();
-      expect(param.decorators !.length).toBeGreaterThan(0);
-      expect(param.decorators !.some(
+      expect(param.decorators!.length).toBeGreaterThan(0);
+      expect(param.decorators!.some(
                  dec => dec.name === decorator && dec.import !== null &&
                      dec.import.from === decoratorFrom))
           .toBe(true);
     }
   }
 
-  function argExpressionToString(name: ts.Node | null): string {
+  function argExpressionToString(name: ts.Node|null): string {
     if (name == null) {
       throw new Error('\'name\' argument can\'t be null');
     }
