@@ -206,6 +206,9 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
   }
   protected _value: Array<any> = [];
 
+  /** An object used to control when error messages are shown. */
+  @Input() errorStateMatcher: ErrorStateMatcher;
+
   /** Combined stream of all of the child chips' blur events. */
   get chipBlurChanges(): Observable<MatChipEvent> {
     return merge(...this._chips.map(chip => chip._onBlur));
