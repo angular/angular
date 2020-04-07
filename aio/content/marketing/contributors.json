@@ -317,6 +317,14 @@
     "bio": "Chris is a Full Stack Developer at McKinsey. A Google Developer Expert in Web Technologies and Angular. He is also a Nativescript Developer Expert. He is one of the organizers of the Angular conference ngVikings and an author of the book RxJS 5 Ultimate",
     "groups": ["GDE"]
   },
+  "nishugoel": {
+    "name": "Nishu Goel",
+    "picture": "nishugoel.jpg",
+    "twitter": "dcoustawilson",
+    "website": "nishugoel.wordpress.com",
+    "bio": "Nishu is a front-end (Angular, Web Components, Polymer...) engineer at IBM. A Google Developer Expert in Web Technologies and Angular. She is enthusiastic about writing technical blog posts, code labs, and speaking at meetups/events. She is an author of the book `Step-by-Step Angular Routing`.",
+    "groups": ["GDE"]
+  },
   "jorgeucano": {
     "name": "Jorge Cano",
     "picture": "jorgeucano.jpg",
