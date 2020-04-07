@@ -11,7 +11,6 @@ import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {AppComponent} from './app.component';
 import * as NgForCases from './ng-for-cases';
-import * as NgIfCases from './ng-if-cases';
 import * as ParsingCases from './parsing-cases';
 
 @NgModule({
@@ -21,7 +20,6 @@ import * as ParsingCases from './parsing-cases';
     NgForCases.UnknownEven,
     NgForCases.UnknownPeople,
     NgForCases.UnknownTrackBy,
-    NgIfCases.ShowIf,
     ParsingCases.AsyncForUsingComponent,
     ParsingCases.CaseIncompleteOpen,
     ParsingCases.CaseMissingClosing,
