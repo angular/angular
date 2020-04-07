@@ -10,7 +10,11 @@
 </div>
 
 <div class="mat-tab-link-container" #tabListContainer (keydown)="_handleKeydown($event)">
-  <div class="mat-tab-list" #tabList (cdkObserveContent)="_onContentChanges()">
+  <div
+    class="mat-tab-list"
+    [class._mat-animation-noopable]="_animationMode === 'NoopAnimations'"
+    #tabList
+    (cdkObserveContent)="_onContentChanges()">
     <div class="mat-tab-links">
       <ng-content></ng-content>
     </div>
