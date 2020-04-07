@@ -14,7 +14,7 @@ import {NgccConfiguration} from '../packages/configuration';
 import {EntryPoint, EntryPointFormat, getEntryPointFormat, SUPPORTED_FORMAT_PROPERTIES} from '../packages/entry_point';
 import {PartiallyOrderedList} from '../utils';
 
-import {createDependencyInfo, DependencyHost, DependencyInfo} from './dependency_host';
+import {createDependencyInfo, DependencyHost, EntryPointWithDependencies} from './dependency_host';
 
 const builtinNodeJsModules = new Set<string>(require('module').builtinModules);
 
@@ -94,7 +94,7 @@ export class DependencyResolver {
    * @param target If provided, only return entry-points depended on by this entry-point.
    * @returns the result of sorting the entry points by dependency.
    */
-  sortEntryPointsByDependency(entryPoints: EntryPoint[], target?: EntryPoint):
+  sortEntryPointsByDependency(entryPoints: EntryPointWithDependencies[], target?: EntryPoint):
       SortedEntryPointsInfo {
     const {invalidEntryPoints, ignoredDependencies, graph} =
         this.computeDependencyGraph(entryPoints);
@@ -120,18 +120,21 @@ export class DependencyResolver {
     };
   }
 
-  getEntryPointDependencies(entryPoint: EntryPoint): DependencyInfo {
-    const formatInfo = this.getEntryPointFormatInfo(entryPoint);
-    const host = this.hosts[formatInfo.format];
-    if (!host) {
-      throw new Error(
-          `Could not find a suitable format for computing dependencies of entry-point: '${
-              entryPoint.path}'.`);
+  getEntryPointWithDependencies(entryPoint: EntryPoint): EntryPointWithDependencies {
+    const dependencies = createDependencyInfo();
+    if (entryPoint.compiledByAngular) {
+      // Only bother to compute dependencies of entry-points that have been compiled by Angular
+      const formatInfo = this.getEntryPointFormatInfo(entryPoint);
+      const host = this.hosts[formatInfo.format];
+      if (!host) {
+        throw new Error(
+            `Could not find a suitable format for computing dependencies of entry-point: '${
+                entryPoint.path}'.`);
+      }
+      host.collectDependencies(formatInfo.path, dependencies);
+      this.typingsHost.collectDependencies(entryPoint.typings, dependencies);
     }
-    const depInfo = createDependencyInfo();
-    host.collectDependencies(formatInfo.path, depInfo);
-    this.typingsHost.collectDependencies(entryPoint.typings, depInfo);
-    return depInfo;
+    return {entryPoint, depInfo: dependencies};
   }
 
   /**
@@ -140,20 +143,18 @@ export class DependencyResolver {
    * The graph only holds entry-points that ngcc cares about and whose dependencies
    * (direct and transitive) all exist.
    */
-  private computeDependencyGraph(entryPoints: EntryPoint[]): DependencyGraph {
+  private computeDependencyGraph(entryPoints: EntryPointWithDependencies[]): DependencyGraph {
     const invalidEntryPoints: InvalidEntryPoint[] = [];
     const ignoredDependencies: IgnoredDependency[] = [];
     const graph = new DepGraph<EntryPoint>();
 
-    const angularEntryPoints = entryPoints.filter(entryPoint => entryPoint.compiledByAngular);
+    const angularEntryPoints = entryPoints.filter(e => e.entryPoint.compiledByAngular);
 
     // Add the Angular compiled entry points to the graph as nodes
-    angularEntryPoints.forEach(entryPoint => graph.addNode(entryPoint.path, entryPoint));
+    angularEntryPoints.forEach(e => graph.addNode(e.entryPoint.path, e.entryPoint));
 
     // Now add the dependencies between them
-    angularEntryPoints.forEach(entryPoint => {
-      const {dependencies, missing, deepImports} = this.getEntryPointDependencies(entryPoint);
-
+    angularEntryPoints.forEach(({entryPoint, depInfo: {dependencies, missing, deepImports}}) => {
       const missingDependencies = Array.from(missing).filter(dep => !builtinNodeJsModules.has(dep));
 
       if (missingDependencies.length > 0 && !entryPoint.ignoreMissingDependencies) {
