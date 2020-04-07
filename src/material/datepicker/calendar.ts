@@ -364,7 +364,7 @@ export class MatCalendar<D> implements AfterContentInit, AfterViewChecked, OnDes
       view = this.multiYearView;
     }
 
-    view.ngAfterContentInit();
+    view._init();
   }
 
   /** Handles date selection in the month view. */

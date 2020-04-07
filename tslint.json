@@ -119,6 +119,7 @@
     "class-list-signatures": true,
     "no-nested-ternary": true,
     "prefer-const-enum": true,
+    "no-lifecycle-invocation": [true, "**/!(*.spec).ts"],
     "coercion-types": [true,
       ["coerceBooleanProperty", "coerceCssPixelValue", "coerceNumberProperty"],
       {
