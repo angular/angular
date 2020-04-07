@@ -2000,6 +2000,74 @@ exports.ExternalModule = ExternalModule;
           testForHelper('b', '__spread', KnownDeclaration.TsHelperSpread, 'tslib');
           testForHelper('c', '__spreadArrays', KnownDeclaration.TsHelperSpreadArrays, 'tslib');
         });
+
+        it('should recognize undeclared, unimported TypeScript helpers (by name)', () => {
+          const file: TestFile = {
+            name: _('/test.js'),
+            contents: `
+              var a = __assign({foo: 'bar'}, {baz: 'qux'});
+              var b = __spread(['foo', 'bar'], ['baz', 'qux']);
+              var c = __spreadArrays(['foo', 'bar'], ['baz', 'qux']);
+            `,
+          };
+          loadTestFiles([file]);
+          const bundle = makeTestBundleProgram(file.name);
+          const host =
+              createHost(bundle, new CommonJsReflectionHost(new MockLogger(), false, bundle));
+
+          const testForHelper =
+              (varName: string, helperName: string, knownAs: KnownDeclaration) => {
+                const node =
+                    getDeclaration(bundle.program, file.name, varName, ts.isVariableDeclaration);
+                const helperIdentifier = getIdentifierFromCallExpression(node);
+                const helperDeclaration = host.getDeclarationOfIdentifier(helperIdentifier);
+
+                expect(helperDeclaration).toEqual({
+                  known: knownAs,
+                  expression: helperIdentifier,
+                  node: null,
+                  viaModule: null,
+                });
+              };
+
+          testForHelper('a', '__assign', KnownDeclaration.TsHelperAssign);
+          testForHelper('b', '__spread', KnownDeclaration.TsHelperSpread);
+          testForHelper('c', '__spreadArrays', KnownDeclaration.TsHelperSpreadArrays);
+        });
+
+        it('should recognize suffixed, undeclared, unimported TypeScript helpers (by name)', () => {
+          const file: TestFile = {
+            name: _('/test.js'),
+            contents: `
+              var a = __assign$1({foo: 'bar'}, {baz: 'qux'});
+              var b = __spread$2(['foo', 'bar'], ['baz', 'qux']);
+              var c = __spreadArrays$3(['foo', 'bar'], ['baz', 'qux']);
+            `,
+          };
+          loadTestFiles([file]);
+          const bundle = makeTestBundleProgram(file.name);
+          const host =
+              createHost(bundle, new CommonJsReflectionHost(new MockLogger(), false, bundle));
+
+          const testForHelper =
+              (varName: string, helperName: string, knownAs: KnownDeclaration) => {
+                const node =
+                    getDeclaration(bundle.program, file.name, varName, ts.isVariableDeclaration);
+                const helperIdentifier = getIdentifierFromCallExpression(node);
+                const helperDeclaration = host.getDeclarationOfIdentifier(helperIdentifier);
+
+                expect(helperDeclaration).toEqual({
+                  known: knownAs,
+                  expression: helperIdentifier,
+                  node: null,
+                  viaModule: null,
+                });
+              };
+
+          testForHelper('a', '__assign$1', KnownDeclaration.TsHelperAssign);
+          testForHelper('b', '__spread$2', KnownDeclaration.TsHelperSpread);
+          testForHelper('c', '__spreadArrays$3', KnownDeclaration.TsHelperSpreadArrays);
+        });
       });
 
       describe('getExportsOfModule()', () => {

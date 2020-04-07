@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {ClassDeclaration, ClassMember, ClassMemberKind, Declaration, Decorator, FunctionDefinition, isNamedVariableDeclaration, Parameter, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
-import {getNameText, getTsHelperFnFromDeclaration, hasNameIdentifier} from '../utils';
+import {getNameText, getTsHelperFnFromDeclaration, getTsHelperFnFromIdentifier, hasNameIdentifier} from '../utils';
 
 import {Esm2015ReflectionHost, getPropertyValueFromSymbol, isAssignment, isAssignmentStatement, ParamInfo} from './esm2015_host';
 import {NgccClassSymbol} from './ngcc_host';
@@ -191,6 +191,22 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    */
   getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
     const superDeclaration = super.getDeclarationOfIdentifier(id);
+
+    if (superDeclaration === null) {
+      const nonEmittedNorImportedTsHelperDeclaration = getTsHelperFnFromIdentifier(id);
+      if (nonEmittedNorImportedTsHelperDeclaration !== null) {
+        // No declaration could be found for this identifier and its name matches a known TS helper
+        // function. This can happen if a package is compiled with `noEmitHelpers: true` and
+        // `importHelpers: false` (the default). This is, for example, the case with
+        // `@nativescript/angular@9.0.0-next-2019-11-12-155500-01`.
+        return {
+          expression: id,
+          known: nonEmittedNorImportedTsHelperDeclaration,
+          node: null,
+          viaModule: null,
+        };
+      }
+    }
 
     if (superDeclaration === null || superDeclaration.node === null ||
         superDeclaration.known !== null) {
