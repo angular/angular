@@ -8,6 +8,7 @@
 
 import {Location, LocationStrategy, PlatformLocation} from '@angular/common';
 import {UpgradeModule} from '@angular/upgrade/static';
+import {ReplaySubject} from 'rxjs';
 
 import {UrlCodec} from './params';
 import {deepEqual, isAnchor, isPromise} from './utils';
@@ -50,7 +51,7 @@ export class $locationShim {
 
   private cachedState: unknown = null;
 
-
+  private urlChanges = new ReplaySubject<{newUrl: string, newState: unknown}>(1);
 
   constructor(
       $injector: any, private location: Location, private platformLocation: PlatformLocation,
@@ -71,6 +72,10 @@ export class $locationShim {
     this.cacheState();
     this.$$state = this.browserState();
 
+    this.location.onUrlChange((newUrl, newState) => {
+      this.urlChanges.next({newUrl, newState});
+    });
+
     if (isPromise($injector)) {
       $injector.then($i => this.initialize($i));
     } else {
@@ -88,7 +93,7 @@ export class $locationShim {
         return;
       }
 
-      let elm: (Node & ParentNode)|null = event.target;
+      let elm: (Node&ParentNode)|null = event.target;
 
       // traverse the DOM up to find first A tag
       while (elm && elm.nodeName.toLowerCase() !== 'a') {
@@ -124,9 +129,9 @@ export class $locationShim {
       }
     });
 
-    this.location.onUrlChange((newUrl, newState) => {
-      let oldUrl = this.absUrl();
-      let oldState = this.$$state;
+    this.urlChanges.subscribe(({newUrl, newState}) => {
+      const oldUrl = this.absUrl();
+      const oldState = this.$$state;
       this.$$parse(newUrl);
       newUrl = this.absUrl();
       this.$$state = newState;
@@ -286,7 +291,9 @@ export class $locationShim {
    * This function emulates the $browser.state() function from AngularJS. It will cause
    * history.state to be cached unless changed with deep equality check.
    */
-  private browserState(): unknown { return this.cachedState; }
+  private browserState(): unknown {
+    return this.cachedState;
+  }
 
   private stripBaseUrl(base: string, url: string) {
     if (url.startsWith(base)) {
@@ -446,7 +453,9 @@ export class $locationShim {
    * // => "http://example.com/#/some/path?foo=bar&baz=xoxo"
    * ```
    */
-  absUrl(): string { return this.$$absUrl; }
+  absUrl(): string {
+    return this.$$absUrl;
+  }
 
   /**
    * Retrieves the current URL, or sets a new URL. When setting a URL,
@@ -488,7 +497,9 @@ export class $locationShim {
    * // => "http"
    * ```
    */
-  protocol(): string { return this.$$protocol; }
+  protocol(): string {
+    return this.$$protocol;
+  }
 
   /**
    * Retrieves the protocol of the current URL.
@@ -509,7 +520,9 @@ export class $locationShim {
    * // => "example.com:8080"
    * ```
    */
-  host(): string { return this.$$host; }
+  host(): string {
+    return this.$$host;
+  }
 
   /**
    * Retrieves the port of the current URL.
@@ -520,7 +533,9 @@ export class $locationShim {
    * // => 80
    * ```
    */
-  port(): number|null { return this.$$port; }
+  port(): number|null {
+    return this.$$port;
+  }
 
   /**
    * Retrieves the path of the current URL, or changes the path and returns a reference to its own
@@ -553,7 +568,7 @@ export class $locationShim {
   }
 
   /**
-   * Retrieves a map of the search parameters of the current URL, or changes a search 
+   * Retrieves a map of the search parameters of the current URL, or changes a search
    * part and returns a reference to its own instance.
    *
    *
@@ -576,7 +591,8 @@ export class $locationShim {
    * If the argument is a hash object containing an array of values, these values will be encoded
    * as duplicate search parameters in the URL.
    *
-   * @param {(string|Number|Array<string>|boolean)=} paramValue If `search` is a string or number, then `paramValue`
+   * @param {(string|Number|Array<string>|boolean)=} paramValue If `search` is a string or number,
+   *     then `paramValue`
    * will override only a single search property.
    *
    * If `paramValue` is an array, it will override the property of the `search` component of
