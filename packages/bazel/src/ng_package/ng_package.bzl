@@ -397,10 +397,10 @@ def _ng_package_impl(ctx):
             # file and the typings entry point from the flat module metadata which is set by
             # the "ng_module" rule.
             ng_module_metadata = dep.angular.flat_module_metadata
-            module_name = ng_module_metadata.module_name
-            index_file = ng_module_metadata.flat_module_out_file + ".js"
-            typings_path = ng_module_metadata.typings_file.path
-            metadata_file = ng_module_metadata.metadata_file
+            module_name = ng_module_metadata["module_name"]
+            index_file = ng_module_metadata["flat_module_out_file"] + ".js"
+            typings_path = ng_module_metadata["typings_file"].path
+            metadata_file = getattr(ng_module_metadata, "metadata_file", None)
             guessed_paths = False
             _debug(
                 ctx.var,
