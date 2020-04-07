@@ -8,31 +8,7 @@ $mat-paginator-selector-margin: 6px 4px 0 4px;
 $mat-paginator-selector-trigger-width: 56px;
 $mat-paginator-selector-trigger-outline-width: 64px;
 $mat-paginator-selector-trigger-fill-width: 64px;
-
-/** @deprecated Use `$mat-paginator-selector-trigger-width` instead. @breaking-change 8.0.0 */
-$mat-paginator-selector-trigger-min-width: $mat-paginator-selector-trigger-width;
-
-/** @deprecated Unused. To be removed */
-$mat-paginator-range-actions-min-height: 48px;
-
 $mat-paginator-range-label-margin: 0 32px 0 24px;
-
-$mat-paginator-button-margin: 8px;
-$mat-paginator-button-icon-height: 8px;
-$mat-paginator-button-icon-width: 8px;
-
-$mat-paginator-button-increment-icon-margin: 12px;
-$mat-paginator-button-decrement-icon-margin: 16px;
-
-$mat-paginator-button-first-last-icon-width: 14px;
-
-$mat-paginator-button-first-icon-margin: 3px;
-$mat-paginator-button-last-icon-margin: 15px;
-
-
-$mat-paginator-button-first-decrement-icon-margin: 21px;
-$mat-paginator-button-last-increment-icon-margin: 9px;
-
 
 .mat-paginator {
   display: block;
