@@ -110,7 +110,6 @@ By default the CLI will generate projects which stricter file inclusions intende
 
 </div>
 
-
 ### Add another feature module
 
 Use the same command to create a second lazy-loaded feature module with routing, along with its stub component.
