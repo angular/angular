@@ -3,7 +3,7 @@
 Most front-end applications need to communicate with a server over the HTTP protocol, in order to download or upload data and accesss other back-end services.
 Angular provides a simplified client HTTP API for Angular applications, the `HttpClient` service class in `@angular/common/http`.
 
-Modern browsers support two different APIs for making HTTP requests: the `XMLHttpRequest` interface and the `fetch()` API. `HttpClient` is built on the `XMLHttpRequest` interface exposed by browsers. Major features include:
+The HTTP client service offers the following major features.
 
 * The ability to request [typed response objects](#typed-response).
 * Streamlined [error handling](#error-handling).
@@ -142,13 +142,13 @@ Specifying the response type acts as a type assertion at compile time.
 
 <div class="alert is-important">
 
-Specifying the response type is a declaration to TypeScript that it should expect your response to be of the given type.
-This is a build-time check and doesn't guarantee that the server can actually respond with an object of this type. It is up to the server to ensure that the type specified by the server API is returned.
+Specifying the response type is a declaration to TypeScript that it should treat your response as being of the given type.
+This is a build-time check and doesn't guarantee that the server will actually respond with an object of this type. It is up to the server to ensure that the type specified by the server API is returned.
 
 </div>
 
 To specify the response object type, first define an interface with the required properties.
-Use an interface rather than a class, because you cannot automatically convert the response to an instance of a class.
+Use an interface rather than a class, because the response is a plain object that cannot be automatically converted to an instance of a class.
 
 <code-example
   path="http/src/app/config/config.service.ts"
@@ -178,7 +178,7 @@ easier and safer to consume:
   header="app/config/config.component.ts (showConfig v.2)">
 </code-example>
 
-To access properties that are defined in an interface, you must explicitly convert the Object you get from the JSON to the required response type.
+To access properties that are defined in an interface, you must explicitly convert the plain object you get from the JSON to the required response type.
 For example, the following `subscribe` callback receives `data` as an Object, and then type-casts it in order to access the properties.
 
 <code-example>
@@ -187,6 +187,50 @@ For example, the following `subscribe` callback receives `data` as an Object, an
      textfile:  (data as any).textfile,
    });
 </code-example>
+
+{@a string-union-types}
+
+<div class="callout is-important">
+<header>*observe* and *response* types</header>
+
+The types of the `observe` and `response` options are *string unions*, rather than plain strings.
+
+```
+options: {
+    ...
+    observe?: 'body' | 'events' | 'response',
+    ...
+    responseType?: 'arraybuffer'|'blob'|'json'|'text',
+    ...
+  }
+```
+This can cause confusion. For example:
+
+```typescript
+// this works
+client.get('/foo', {responseType: 'text'})
+
+// but this does NOT work
+const options = {
+  responseType: 'text',
+};
+client.get('/foo', options)
+```
+
+In the second case, TypeScript infers the type of `options` to be `{responseType: string}`.
+The type is too wide to pass to `HttpClient.get` which is expecting the type of `responseType` to be one of the _specific_ strings.
+`HttpClient` is typed explicitly this way so that the compiler can report the correct return type based on the options you provided.
+
+Use `as const` to let TypeScript know that you really do mean to use a constant string type:
+
+```typescript
+const options = {
+  responseType: 'text' as const,
+};
+client.get('/foo', options);
+```
+
+</div>
 
 ### Reading the full response
 
@@ -432,8 +476,8 @@ req.subscribe();
 
 ### Making a PUT request
 
-An app can send a PUT request to completely replace a resource with updated data.
-The following `HeroesService` example is just like the POST example.
+An app can send PUT requests using the HTTP client service.
+The following `HeroesService` example, like the POST example, replaces a resource with updated data.
 
 <code-example
   path="http/src/app/heroes/heroes.service.ts"
@@ -441,8 +485,7 @@ The following `HeroesService` example is just like the POST example.
   header="app/heroes/heroes.service.ts (updateHero)">
 </code-example>
 
-For the reasons [explained above](#always-subscribe), the caller, `HeroesComponent.update()` in this case, must `subscribe()` to the observable returned from the `HttpClient.put()`
-in order to initiate the request.
+As for any of the HTTP methods that return an observable, the caller, `HeroesComponent.update()` [must `subscribe()`](#always-subscribe "Why you must always subscribe.") to the observable returned from the `HttpClient.put()` in order to initiate the request.
 
 ### Adding and updating headers
 
@@ -623,7 +666,7 @@ If you need to enable and disable an interceptor dynamically, you'll have to bui
 Most `HttpClient` methods return observables of `HttpResponse<any>`.
 The `HttpResponse` class itself is actually an event, whose type is `HttpEventType.Response`.
 A single HTTP request can, however, generate multiple events of other types, including upload and download progress events.
-The methods  `HttpInterceptor.intercept()` and `HttpHandler.handle()` return observables of `HttpEvent<any>`.
+The methods `HttpInterceptor.intercept()` and `HttpHandler.handle()` return observables of `HttpEvent<any>`.
 
 Many interceptors are only concerned with the outgoing request and return the event stream from `next.handle()` without modifying it.
 Some interceptors, however, need to examine and modify the response from `next.handle()`; these operations can see all of these events in the stream.
@@ -672,8 +715,8 @@ it can't prevent you from modifying a property of a request body object.
 If you must modify the request body, follow these steps.
 
 1. Copy the body and make your change in the copy.
-1. Clone the request object, using its `clone()` method.
-1. Replace the clone's body with the modified copy.
+2. Clone the request object, using its `clone()` method.
+3. Replace the clone's body with the modified copy.
 
 <code-example
   path="http/src/app/http-interceptors/trim-name-interceptor.ts"
