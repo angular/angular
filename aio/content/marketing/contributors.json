@@ -860,7 +860,7 @@
     "website": "https://github.com/juarezpaf",
     "bio": "Juarez is passionate about California and Web. A Traveler who loves to tell his adventures with Google Technologies, including Firebase, Polymer, and Angular all over the world. He joined the Google Developers Group program in 2014 helping communities to learn, discover and share everything related to Technology. Juarez also has spoken and taught at conferences like DevFests, Google Dev Summit Brazil, Front-end Conferences and other activities.",
     "groups": ["GDE"],
-    "picture": "juarezpaf.png"
+    "picture": "juarezpaf.jpg"
   },
   "gionkunz": {
     "name": "Gion Kunz",
@@ -868,7 +868,7 @@
     "website": "https://syncrea.ch/",
     "bio": "Gion Kunz has years of experience with web technologies and is totally in love with web standards. With over 10 years of experience of writing interactive user interfaces using JavaScript, he constantly evaluates new approaches and frameworks. He's worked with the Angular Framework for over 5 years and was one of the early adopters of the second major version of the framework. Gion speaks about Angular 2 at conferences, and he helps with the organization of the Zurich Angular Meetup group in Switzerland. He's working as a freelance developer and consultant in Zurich Switzerland, where he helps customers building websites and web applications. Besides working for clients, Gion is an instructor at the SAE Institute in Zurich and loves to get his students enthusiastic about the Web. He is also the creator of the responsive charting library Chartist, and he loves to contribute to the open source community whenever he finds time.",
     "groups": ["GDE"],
-    "picture": "gionkunz.png"
+    "picture": "gionkunz.jpg"
   },
   "biondifabio": {
     "name": "Fabio Biondi",
@@ -894,14 +894,6 @@
     "groups": ["GDE"],
     "picture": "loiane.jpg"
   },
-  "zchapple": {
-    "name": "Zack Chapple",
-    "twitter": "ZChapple",
-    "website": "https://github.com/zackarychapple",
-    "bio": "Zack Chapple - in his current role as a Principal Architect at Ultimate Software Zack is responsible for enterprise strategy for the UI. Zack has a strong passion for software craftsmanship, testing and a contagious excitement for living on the bleeding edge of software. Zack also has a very strong passion for Diversity and Inclusion, this is evident through his organization of the ngAtlanta conference, an Angular conference with 82% of the speakers identifying as diversity speakers of which 62% are women in technology. Zack is also the founder of a nonprofit called the ngAtlanta Foundation which is working on paving the road of access to tech for underrepresented individuals in tech.",
-    "groups": ["GDE"],
-    "picture": "zchapple.jpg"
-  },
   "will_huang": {
     "name": "Will Huang",
     "twitter": "@will_huang",
@@ -916,7 +908,7 @@
     "website": "https://github.com/gonzaloruizdevilla",
     "bio": "Gonzalo is CIO and co-founder of Adesis Netlife, a Spanish company founded in 2000 offering internet and technology services. During the last 15 years, he has worked with both server and front technologies. More recently, he's been involved in the development of huge Single Page Application websites for Spanish and Mexican financial institutions. Here he used new MVC frameworks such as Backbone.js and AngularJS, and new backend solutions like ElasticSearch, Apache Storm, Apache Spark, as well as no-sql storage solutions including MongoDB, Redis or Cassandra.",
     "groups": ["GDE"],
-    "picture": "gruizdevilla.png"
+    "picture": "gruizdevilla.jpg"
   },
   "chrisoncode": {
     "name": "Chris Sevilleja",
@@ -948,7 +940,7 @@
     "website": "https://github.com/jeado",
     "bio": "Jeado Ko is a software engineer with a strong passion to learn and experience new technologies. He has extensive experience building enterprise development framework in JavaScript and Java. And he is the author of Beginning AngularJS (http://wikibook.co.kr/beginning-angularjs/) from wikibook in Korea. He currently works at Kaoaobank of Korea and he develops bigdata software. Also, he loves to have a technical discussion with his team member and discover a solution or new way of building up software. Previously, He worked at kt and led Iot Platform development. Also he had the IAESTE traineeship in the Czech Republic as a JavaScript Developer.",
     "groups": ["GDE"],
-    "picture": "jeado.png"
+    "picture": "jeado.jpg"
   },
   "willgmbr": {
     "name": "William Grasel",
@@ -987,7 +979,7 @@
     "website": "https://goo.gl/ZbfuHG",
     "bio": "Monty is a senior-level application developer with 25+ years programming experience. He has a passion for technology, especially for cross-platform solutions and reactive programming principles. Monty has worked in a number of software industries, including education, process simulation, web design, medical software, and even gaming. He has many tech articles published on SitePoint and Dart Academy on topics such as web application architecture, the Polymer library, the Angular framework, crafting web games, and creating cross-platform applications with the Flutter framework. At Azova, Monty oversees the design and development of real-time chat and appointment software for the medical industry using Dart and Flutter.",
     "groups": ["GDE"],
-    "picture": "monty.png"
+    "picture": "monty.jpg"
   },
   "ayssomething": {
     "name": "Ayşegül Yönet",
@@ -1011,7 +1003,7 @@
     "website": "https://stackoverflow.com/users/1709647",
     "bio": "Eugene Mutai is currently a software engineer/consultant at Andela. He has also been a consultant for iHub Consulting in Nairobi, where he also leads the JavaScript community. His journey, 4 years in, which began on a Nokia feature phone, has taken him though varied, intensive and demanding projects that have sharpened his skills, gaining him in-depth knowledge in architecturing, creating, testing and debugging web application. Eugene says he values the international standards that ensure products deliver the best value to clients. He has come a long way in a short time, always eager to learn and contribute to a rich knowledge pool. He is yet another story that inspires aspiring developers — provide an example for the good, maverick or veteran, to become better. He believes in sharing, and dedicates his spare time to share his experiences and web technologies knowledge wherever he can.",
     "groups": ["GDE"],
-    "picture": "kn9ts.png"
+    "picture": "kn9ts.jpg"
   },
   "saniyusuf": {
     "name": "Sani Yusuf",
@@ -1019,7 +1011,7 @@
     "website": "https://saniyusuf.com/",
     "bio": "Sani Yusuf is a Software Engineer, Trainer & Speaker in Web, Mobile & Cloud Technologies. Sani is the founder of Haibrid, a London based consultancy that offers IT training and consultancy services around web & mobile technologies. Sani is very active in the Ionic & Angular open source communities and enjoys travelling to different countries to share his knowledge and learn more about what people are building around the world. A published author, Sani also enjoys content creation with works done on Lynda.COM. In the past, Sani has worked with companies like Microsoft, Anritsu & Huddlebuy/Perkbox. Some of the applications he developed, like Sworkit & Perkbox, have had almost 30 million downloads in the Google & Apple App stores in total. Being Nigerian, Sani has a passion for bringing tech to more people in the developing world, as well as trying to contribute towards a more diverse tech industry. In his free time, Sani loves to paddleboard on the ocean, travel and learn about different cultures from around the world.",
     "groups": ["GDE"],
-    "picture": "saniyusuf.png"
+    "picture": "saniyusuf.jpg"
   },
   "ryanchenkie": {
     "name": "Ryan Chenkie",
