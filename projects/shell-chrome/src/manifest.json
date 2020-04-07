@@ -3,32 +3,23 @@
   "short_name": "Angular DevTools Alpha",
   "name": "Angular Developer Tools Alpha",
   "description": "Extends the Developer Tools, adding tools for debugging and profiling Angular applications.",
-  "version": "1.0.0",
-  "version_name": "1.0.0",
-
+  "version": "1.0.2",
+  "version_name": "1.0.2",
   "minimum_chrome_version": "50",
-
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
-
   "icons": {
     "16": "favicon.ico"
   },
-
   "browser_action": {
     "default_popup": "popups/disabled.html"
   },
-
   "devtools_page": "devtools.html",
-
   "web_accessible_resources": ["backend.js", "runtime.js", "devtools.html"],
-
   "background": {
     "scripts": ["background.js", "runtime.js"],
     "persistent": false
   },
-
   "permissions": ["activeTab", "http://*/*", "https://*/*", "file:///*"],
-
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
