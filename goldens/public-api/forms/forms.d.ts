@@ -52,6 +52,10 @@ export declare abstract class AbstractControl {
     abstract patchValue(value: any, options?: Object): void;
     abstract reset(value?: any, options?: Object): void;
     setAsyncValidators(newValidator: AsyncValidatorFn | AsyncValidatorFn[] | null): void;
+    setEnable(enabled: boolean, opts?: {
+        onlySelf?: boolean;
+        emitEvent?: boolean;
+    }): void;
     setErrors(errors: ValidationErrors | null, opts?: {
         emitEvent?: boolean;
     }): void;

@@ -1234,6 +1234,49 @@ describe('FormControl', () => {
       });
     });
   });
+  describe('setEnable()', () => {
+    it('should call enable() if enabled is true', () => {
+      const enable = jasmine.createSpy('enable');
+      const c = new FormControl(null);
+      c.enable = enable;
+
+      c.setEnable(true);
+
+      expect(enable).toHaveBeenCalled();
+    });
+
+    it('should call enable() if enabled is true with opts', () => {
+      const enable = jasmine.createSpy('enable');
+      const c = new FormControl(null);
+      const opts = {onlySelf: true, emitEvent: true};
+      c.enable = enable;
+
+      c.setEnable(true, opts);
+
+      expect(enable).toHaveBeenCalledWith(opts);
+    });
+
+    it('should call disable() if enabled is false', () => {
+      const disable = jasmine.createSpy('disable');
+      const c = new FormControl(null);
+      c.disable = disable;
+
+      c.setEnable(false);
+
+      expect(disable).toHaveBeenCalled();
+    });
+
+    it('should call disable() if enabled is false with opts', () => {
+      const disable = jasmine.createSpy('disable');
+      const c = new FormControl(null);
+      const opts = {onlySelf: true, emitEvent: true};
+      c.disable = disable;
+
+      c.setEnable(false, opts);
+
+      expect(disable).toHaveBeenCalledWith(opts);
+    });
+  });
   describe('pending', () => {
     let c: FormControl;
 

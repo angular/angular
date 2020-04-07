@@ -594,6 +594,31 @@ export abstract class AbstractControl {
     this._onDisabledChange.forEach((changeFn) => changeFn(false));
   }
 
+  /**
+   * Enable/disable the control. This means the control is included in validation checks and
+   * the aggregate value of its parent. Its status recalculates based on its value and
+   * its validators.
+   *
+   * By default, if the control has children, all children are enabled.
+   *
+   * @param enabled
+   * @param opts Configure options that control how the control propagates changes and
+   * emits events when marked as untouched
+   * * `onlySelf`: When true, mark only this control. When false or not supplied,
+   * marks all direct ancestors. Default is false..
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges`
+   * observables emit events with the latest status and value when the control is enabled.
+   * When false, no events are emitted.
+   */
+  setEnable(enabled: boolean, opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+    if (enabled) {
+      this.enable(opts);
+    } else {
+      this.disable(opts);
+    }
+  }
+
   private _updateAncestors(
       opts: {onlySelf?: boolean, emitEvent?: boolean, skipPristineCheck?: boolean}) {
     if (this._parent && !opts.onlySelf) {
