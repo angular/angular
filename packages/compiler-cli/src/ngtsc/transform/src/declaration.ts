@@ -28,14 +28,14 @@ export class DtsTransformRegistry {
     if (!this.ivyDeclarationTransforms.has(sf)) {
       this.ivyDeclarationTransforms.set(sf, new IvyDeclarationDtsTransform());
     }
-    return this.ivyDeclarationTransforms.get(sf) !;
+    return this.ivyDeclarationTransforms.get(sf)!;
   }
 
   getReturnTypeTransform(sf: ts.SourceFile): ReturnTypeTransform {
     if (!this.returnTypeTransforms.has(sf)) {
       this.returnTypeTransforms.set(sf, new ReturnTypeTransform());
     }
-    return this.returnTypeTransforms.get(sf) !;
+    return this.returnTypeTransforms.get(sf)!;
   }
 
   /**
@@ -55,11 +55,11 @@ export class DtsTransformRegistry {
     let transforms: DtsTransform[]|null = null;
     if (this.ivyDeclarationTransforms.has(originalSf)) {
       transforms = [];
-      transforms.push(this.ivyDeclarationTransforms.get(originalSf) !);
+      transforms.push(this.ivyDeclarationTransforms.get(originalSf)!);
     }
     if (this.returnTypeTransforms.has(originalSf)) {
       transforms = transforms || [];
-      transforms.push(this.returnTypeTransforms.get(originalSf) !);
+      transforms.push(this.returnTypeTransforms.get(originalSf)!);
     }
     return transforms;
   }
@@ -200,7 +200,7 @@ export class IvyDeclarationDtsTransform implements DtsTransform {
     if (!this.declarationFields.has(original)) {
       return clazz;
     }
-    const fields = this.declarationFields.get(original) !;
+    const fields = this.declarationFields.get(original)!;
 
     const newMembers = fields.map(decl => {
       const modifiers = [ts.createModifier(ts.SyntaxKind.StaticKeyword)];
@@ -247,7 +247,7 @@ export class ReturnTypeTransform implements DtsTransform {
     if (!this.typeReplacements.has(original)) {
       return element;
     }
-    const returnType = this.typeReplacements.get(original) !;
+    const returnType = this.typeReplacements.get(original)!;
     const tsReturnType = translateType(returnType, imports);
 
     const methodSignature = ts.updateMethodSignature(
@@ -273,7 +273,7 @@ export class ReturnTypeTransform implements DtsTransform {
     if (!this.typeReplacements.has(original)) {
       return element;
     }
-    const returnType = this.typeReplacements.get(original) !;
+    const returnType = this.typeReplacements.get(original)!;
     const tsReturnType = translateType(returnType, imports);
 
     return ts.updateFunctionDeclaration(

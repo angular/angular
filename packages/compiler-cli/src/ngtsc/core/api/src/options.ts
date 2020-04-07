@@ -36,7 +36,8 @@ export interface TestOnlyOptions {
    */
   ivyTemplateTypeCheck?: boolean;
 
-  /** An option to enable ngtsc's internal performance tracing.
+  /**
+   * An option to enable ngtsc's internal performance tracing.
    *
    * This should be a path to a JSON file where trace information will be written. An optional 'ts:'
    * prefix will cause the trace to be written via the TS host instead of directly to the filesystem
@@ -54,4 +55,5 @@ export interface TestOnlyOptions {
  * Also includes a few miscellaneous options.
  */
 export interface NgCompilerOptions extends ts.CompilerOptions, LegacyNgcOptions, BazelAndG3Options,
-    NgcCompatibilityOptions, StrictTemplateOptions, TestOnlyOptions, I18nOptions, MiscOptions {}
+                                           NgcCompatibilityOptions, StrictTemplateOptions,
+                                           TestOnlyOptions, I18nOptions, MiscOptions {}

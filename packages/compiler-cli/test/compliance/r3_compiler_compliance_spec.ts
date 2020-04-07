@@ -16,7 +16,6 @@ import {compile, expectEmit} from './mock_compile';
  * test in compiler_canonical_spec.ts should have a corresponding test here.
  */
 describe('compiler compliance', () => {
-
   const angularFiles = setup({
     compileAngular: false,
     compileAnimations: false,
@@ -49,7 +48,8 @@ describe('compiler compliance', () => {
       // The template should look like this (where IDENT is a wild card for an identifier):
       const template = `
         …
-        consts: [["title", "Hello", ${AttributeMarker.Classes}, "my-app"], ["cx", "20", "cy", "30", "r", "50"]],
+        consts: [["title", "Hello", ${
+          AttributeMarker.Classes}, "my-app"], ["cx", "20", "cy", "30", "r", "50"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div", 0);
@@ -536,7 +536,6 @@ describe('compiler compliance', () => {
       const result = compile(files, angularFiles);
       expectEmit(result.source, template, 'Incorrect template');
     });
-
   });
 
   describe('components & directives', () => {
@@ -867,7 +866,6 @@ describe('compiler compliance', () => {
     });
 
     describe('value composition', () => {
-
       it('should support array literals', () => {
         const files = {
           app: {
@@ -1143,7 +1141,6 @@ describe('compiler compliance', () => {
     });
 
     describe('content projection', () => {
-
       it('should support content projection in root template', () => {
         const files = {
           app: {
@@ -1319,7 +1316,8 @@ describe('compiler compliance', () => {
           }
           const $_c4$ = [[["span", "title", "tofirst"]], "*"];
           …
-          consts: [["id", "second", ${AttributeMarker.Template}, "ngIf"], ["id", "third", ${AttributeMarker.Template}, "ngIf"], ["id", "second"], ["id", "third"]],
+          consts: [["id", "second", ${AttributeMarker.Template}, "ngIf"], ["id", "third", ${
+            AttributeMarker.Template}, "ngIf"], ["id", "second"], ["id", "third"]],
           template: function Cmp_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵɵprojectionDef($_c4$);
@@ -1534,7 +1532,8 @@ describe('compiler compliance', () => {
             decls: 1,
             vars: 1,
             consts: [
-                ["ngProjectAs", ".someclass", ${AttributeMarker.ProjectAs}, ["", 8, "someclass"], ${AttributeMarker.Template}, "ngIf"],
+                ["ngProjectAs", ".someclass", ${AttributeMarker.ProjectAs}, ["", 8, "someclass"], ${
+            AttributeMarker.Template}, "ngIf"],
                 ["ngProjectAs", ".someclass", ${AttributeMarker.ProjectAs}, ["", 8, "someclass"]]
             ],
             template: function MyApp_Template(rf, ctx) {
@@ -1552,7 +1551,6 @@ describe('compiler compliance', () => {
         const result = compile(files, angularFiles);
         expectEmit(result.source, SimpleComponentDefinition, 'Incorrect MyApp definition');
       });
-
     });
 
     describe('queries', () => {
@@ -2044,9 +2042,7 @@ describe('compiler compliance', () => {
     });
 
     describe('pipes', () => {
-
       it('should render pipes', () => {
-
         const files = {
           app: {
             'spec.ts': `
@@ -2217,7 +2213,6 @@ describe('compiler compliance', () => {
 
       it('should generate the proper instruction when injecting ChangeDetectorRef into a pipe',
          () => {
-
            const files = {
              app: {
                'spec.ts': `
@@ -2282,7 +2277,6 @@ describe('compiler compliance', () => {
            expectEmit(source, MyOtherPipeDefinition, 'Invalid alternate pipe definition');
            expectEmit(source, MyOtherPipeFactory, 'Invalid alternate pipe factory function');
          });
-
     });
 
     it('local reference', () => {
@@ -2477,7 +2471,8 @@ describe('compiler compliance', () => {
       }
 
       // ...
-      consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], ["foo", ""], [${AttributeMarker.Template}, "ngIf"]],
+      consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], ["foo", ""], [${
+          AttributeMarker.Template}, "ngIf"]],
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
           $i0$.ɵɵtemplate(0, MyComponent_div_0_Template, 4, 1, "div", 0);
@@ -3280,7 +3275,6 @@ describe('compiler compliance', () => {
       const result = compile(files, angularFiles);
       expectEmit(result.source, MyAppDeclaration, 'Invalid component definition');
     });
-
   });
 
   describe('inherited base classes', () => {
@@ -3849,7 +3843,7 @@ describe('compiler compliance', () => {
         }
       };
       const result = compile(files, angularFiles);
-      expect(result.source.match(/ɵdir/g) !.length).toBe(1);
+      expect(result.source.match(/ɵdir/g)!.length).toBe(1);
     });
   });
 });

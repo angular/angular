@@ -14,7 +14,7 @@ import {NgtscTestEnvironment} from './env';
 
 runInEachFileSystem(() => {
   describe('ngtsc component indexing', () => {
-    let env !: NgtscTestEnvironment;
+    let env!: NgtscTestEnvironment;
     let testSourceFile: AbsoluteFsPath;
     let testTemplateFile: AbsoluteFsPath;
 
@@ -177,10 +177,10 @@ runInEachFileSystem(() => {
         expect(testComp).toBeDefined();
         expect(testImportComp).toBeDefined();
 
-        expect(testComp !.template.usedComponents.size).toBe(0);
-        expect(testImportComp !.template.usedComponents.size).toBe(1);
+        expect(testComp!.template.usedComponents.size).toBe(0);
+        expect(testImportComp!.template.usedComponents.size).toBe(1);
 
-        const [usedComp] = Array.from(testImportComp !.template.usedComponents);
+        const [usedComp] = Array.from(testImportComp!.template.usedComponents);
         expect(indexed.get(usedComp)).toEqual(testComp);
       });
     });

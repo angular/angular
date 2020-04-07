@@ -47,7 +47,9 @@ function runInFileSystem(os: string, callback: (os: string) => void, error: bool
     afterEach(() => setFileSystem(new InvalidFileSystem()));
     callback(os);
     if (error) {
-      afterAll(() => { throw new Error(`runInFileSystem limited to ${os}, cannot pass`); });
+      afterAll(() => {
+        throw new Error(`runInFileSystem limited to ${os}, cannot pass`);
+      });
     }
   });
 }
@@ -125,14 +127,16 @@ function monkeyPatchTypeScript(os: string, fs: MockFileSystem) {
     return {files, directories};
   }
 
-  function realPath(path: string): string { return fs.realpath(fs.resolve(path)); }
+  function realPath(path: string): string {
+    return fs.realpath(fs.resolve(path));
+  }
 
   // Rather than completely re-implementing we are using the `ts.matchFiles` function,
   // which is internal to the `ts` namespace.
   const tsMatchFiles: (
-      path: string, extensions: ReadonlyArray<string>| undefined,
-      excludes: ReadonlyArray<string>| undefined, includes: ReadonlyArray<string>| undefined,
-      useCaseSensitiveFileNames: boolean, currentDirectory: string, depth: number | undefined,
+      path: string, extensions: ReadonlyArray<string>|undefined,
+      excludes: ReadonlyArray<string>|undefined, includes: ReadonlyArray<string>|undefined,
+      useCaseSensitiveFileNames: boolean, currentDirectory: string, depth: number|undefined,
       getFileSystemEntries: (path: string) => FileSystemEntries,
       realpath: (path: string) => string) => string[] = (ts as any).matchFiles;
 

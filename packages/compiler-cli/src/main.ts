@@ -24,9 +24,9 @@ import {NodeJSFileSystem, setFileSystem} from './ngtsc/file_system';
 export function main(
     args: string[], consoleError: (s: string) => void = console.error,
     config?: NgcParsedConfiguration, customTransformers?: api.CustomTransformers, programReuse?: {
-      program: api.Program | undefined,
+      program: api.Program|undefined,
     },
-    modifiedResourceFiles?: Set<string>| null): number {
+    modifiedResourceFiles?: Set<string>|null): number {
   let {project, rootNames, options, errors: configErrors, watch, emitFlags} =
       config || readNgcCommandLineAndConfiguration(args);
   if (configErrors.length) {
@@ -47,7 +47,9 @@ export function main(
     options,
     emitFlags,
     oldProgram,
-    emitCallback: createEmitCallback(options), customTransformers, modifiedResourceFiles
+    emitCallback: createEmitCallback(options),
+    customTransformers,
+    modifiedResourceFiles
   });
   if (programReuse !== undefined) {
     programReuse.program = program;
@@ -57,8 +59,8 @@ export function main(
 
 export function mainDiagnosticsForTest(
     args: string[], config?: NgcParsedConfiguration,
-    programReuse?: {program: api.Program | undefined},
-    modifiedResourceFiles?: Set<string>| null): ReadonlyArray<ts.Diagnostic|api.Diagnostic> {
+    programReuse?: {program: api.Program|undefined},
+    modifiedResourceFiles?: Set<string>|null): ReadonlyArray<ts.Diagnostic|api.Diagnostic> {
   let {project, rootNames, options, errors: configErrors, watch, emitFlags} =
       config || readNgcCommandLineAndConfiguration(args);
   if (configErrors.length) {
@@ -100,9 +102,10 @@ function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|un
     options.emitDecoratorMetadata = true;
   }
   const tsickleHost: Pick<
-      tsickle.TsickleHost, 'shouldSkipTsickleProcessing'|'pathToModuleName'|
-      'shouldIgnoreWarningsForPath'|'fileNameToModuleId'|'googmodule'|'untyped'|
-      'convertIndexImportShorthand'|'transformDecorators'|'transformTypesToClosure'> = {
+      tsickle.TsickleHost,
+      'shouldSkipTsickleProcessing'|'pathToModuleName'|'shouldIgnoreWarningsForPath'|
+      'fileNameToModuleId'|'googmodule'|'untyped'|'convertIndexImportShorthand'|
+      'transformDecorators'|'transformTypesToClosure'> = {
     shouldSkipTsickleProcessing: (fileName) => /\.d\.ts$/.test(fileName) ||
         // View Engine's generated files were never intended to be processed with tsickle.
         (!options.enableIvy && GENERATED_FILES.test(fileName)),
@@ -111,7 +114,9 @@ function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|un
     fileNameToModuleId: (fileName) => fileName,
     googmodule: false,
     untyped: true,
-    convertIndexImportShorthand: false, transformDecorators, transformTypesToClosure,
+    convertIndexImportShorthand: false,
+    transformDecorators,
+    transformTypesToClosure,
   };
 
   if (options.annotateForClosureCompiler || options.annotationsAs === 'static fields') {
@@ -147,7 +152,9 @@ function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|un
   }
 }
 
-export interface NgcParsedConfiguration extends ParsedConfiguration { watch?: boolean; }
+export interface NgcParsedConfiguration extends ParsedConfiguration {
+  watch?: boolean;
+}
 
 export function readNgcCommandLineAndConfiguration(args: string[]): NgcParsedConfiguration {
   const options: api.CompilerOptions = {};
@@ -194,7 +201,8 @@ export function readCommandLineAndConfiguration(
   }
   return {
     project,
-    rootNames: config.rootNames, options,
+    rootNames: config.rootNames,
+    options,
     errors: config.errors,
     emitFlags: config.emitFlags
   };
@@ -237,7 +245,7 @@ export function watchMode(
 
 function printDiagnostics(
     diagnostics: ReadonlyArray<ts.Diagnostic|api.Diagnostic>,
-    options: api.CompilerOptions | undefined, consoleError: (s: string) => void): void {
+    options: api.CompilerOptions|undefined, consoleError: (s: string) => void): void {
   if (diagnostics.length === 0) {
     return;
   }

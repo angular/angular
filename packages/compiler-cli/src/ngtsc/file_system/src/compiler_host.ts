@@ -26,7 +26,9 @@ export class NgtscCompilerHost implements ts.CompilerHost {
     return this.fs.join(this.getDefaultLibLocation(), ts.getDefaultLibFileName(options));
   }
 
-  getDefaultLibLocation(): string { return this.fs.getDefaultLibLocation(); }
+  getDefaultLibLocation(): string {
+    return this.fs.getDefaultLibLocation();
+  }
 
   writeFile(
       fileName: string, data: string, writeByteOrderMark: boolean,
@@ -37,13 +39,17 @@ export class NgtscCompilerHost implements ts.CompilerHost {
     this.fs.writeFile(path, data);
   }
 
-  getCurrentDirectory(): string { return this.fs.pwd(); }
+  getCurrentDirectory(): string {
+    return this.fs.pwd();
+  }
 
   getCanonicalFileName(fileName: string): string {
     return this.useCaseSensitiveFileNames ? fileName : fileName.toLowerCase();
   }
 
-  useCaseSensitiveFileNames(): boolean { return this.fs.isCaseSensitive(); }
+  useCaseSensitiveFileNames(): boolean {
+    return this.fs.isCaseSensitive();
+  }
 
   getNewLine(): string {
     switch (this.options.newLine) {

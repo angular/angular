@@ -622,7 +622,6 @@ describe('compiler compliance: styling', () => {
       const result = compile(files, angularFiles);
       expect(result.source).not.toContain('styling');
     });
-
   });
 
   describe('[class]', () => {
@@ -743,7 +742,8 @@ describe('compiler compliance: styling', () => {
               selectors:[["my-component"]],
               decls: 1,
               vars: 2,
-              consts: [[${AttributeMarker.Classes}, "foo", ${AttributeMarker.Styles}, "width", "100px"]],
+              consts: [[${AttributeMarker.Classes}, "foo", ${
+             AttributeMarker.Styles}, "width", "100px"]],
               template:  function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
                   $r3$.ɵɵelement(0, "div", 0);
@@ -782,7 +782,6 @@ describe('compiler compliance: styling', () => {
       const result = compile(files, angularFiles);
       expect(result.source).not.toContain('styling');
     });
-
   });
 
   describe('[style] mixed with [class]', () => {
@@ -1005,7 +1004,8 @@ describe('compiler compliance: styling', () => {
       };
 
       const template = `
-          hostAttrs: [${AttributeMarker.Classes}, "foo", "baz", ${AttributeMarker.Styles}, "width", "200px", "height", "500px"],
+          hostAttrs: [${AttributeMarker.Classes}, "foo", "baz", ${
+          AttributeMarker.Styles}, "width", "200px", "height", "500px"],
           hostVars: 8,
           hostBindings: function MyComponent_HostBindings(rf, ctx) {
             if (rf & 2) {
@@ -1594,7 +1594,6 @@ describe('compiler compliance: styling', () => {
 
          expectEmit(result.source, template, 'Incorrect handling of interpolated style properties');
        });
-
   });
 
   describe('instruction chaining', () => {
@@ -1981,7 +1980,8 @@ describe('compiler compliance: styling', () => {
     };
 
     const template = `
-      hostAttrs: ["title", "foo title", ${AttributeMarker.Classes}, "foo", "baz", ${AttributeMarker.Styles}, "width", "200px", "height", "500px"],
+      hostAttrs: ["title", "foo title", ${AttributeMarker.Classes}, "foo", "baz", ${
+        AttributeMarker.Styles}, "width", "200px", "height", "500px"],
       hostVars: 6,
       hostBindings: function MyComponent_HostBindings(rf, ctx) {
         if (rf & 2) {

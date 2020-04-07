@@ -103,7 +103,10 @@ describe('compiler compliance: template', () => {
         }
       }
       // ...
-      consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.Bindings}, "title", "click", ${AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.Bindings}, "title", "click"]],
+      consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${
+        AttributeMarker.Bindings}, "title", "click", ${
+        AttributeMarker.Template}, "ngFor", "ngForOf"], [${
+        AttributeMarker.Bindings}, "title", "click"]],
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
           $i0$.ɵɵtemplate(0, MyComponent_ul_0_Template, 2, 1, "ul", 0);
@@ -157,7 +160,8 @@ describe('compiler compliance: template', () => {
           }
         }
         // ...
-        consts: [[${AttributeMarker.Bindings}, "click", ${AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.Bindings}, "click"]],
+        consts: [[${AttributeMarker.Bindings}, "click", ${
+        AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.Bindings}, "click"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 1, 0, "div", 0);
@@ -329,7 +333,8 @@ describe('compiler compliance: template', () => {
       }
 
       // ...
-      consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.Template}, "ngIf"]],
+      consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${
+        AttributeMarker.Template}, "ngIf"]],
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
           $i0$.ɵɵtemplate(0, MyComponent_div_0_Template, 2, 1, "div", 0);
@@ -472,7 +477,6 @@ describe('compiler compliance: template', () => {
   });
 
   it('should support local refs on <ng-template>', () => {
-
     const files = {
       app: {
         'spec.ts': `
@@ -511,7 +515,6 @@ describe('compiler compliance: template', () => {
   });
 
   it('should support directive outputs on <ng-template>', () => {
-
     const files = {
       app: {
         'spec.ts': `
@@ -545,7 +548,6 @@ describe('compiler compliance: template', () => {
     const result = compile(files, angularFiles);
 
     expectEmit(result.source, template, 'Incorrect template');
-
   });
 
   it('should allow directive inputs as an interpolated prop on <ng-template>', () => {

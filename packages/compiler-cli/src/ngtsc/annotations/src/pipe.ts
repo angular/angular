@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Identifiers, R3FactoryTarget, R3PipeMetadata, Statement, WrappedNodeExpr, compilePipeFromMetadata} from '@angular/compiler';
+import {compilePipeFromMetadata, Identifiers, R3FactoryTarget, R3PipeMetadata, Statement, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -79,7 +79,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<Decorator, PipeHan
       throw new FatalDiagnosticError(
           ErrorCode.PIPE_MISSING_NAME, meta, `@Pipe decorator is missing name field`);
     }
-    const pipeNameExpr = pipe.get('name') !;
+    const pipeNameExpr = pipe.get('name')!;
     const pipeName = this.evaluator.evaluate(pipeNameExpr);
     if (typeof pipeName !== 'string') {
       throw new FatalDiagnosticError(
@@ -88,7 +88,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<Decorator, PipeHan
 
     let pure = true;
     if (pipe.has('pure')) {
-      const expr = pipe.get('pure') !;
+      const expr = pipe.get('pure')!;
       const pureValue = this.evaluator.evaluate(expr);
       if (typeof pureValue !== 'boolean') {
         throw new FatalDiagnosticError(
@@ -103,7 +103,8 @@ export class PipeDecoratorHandler implements DecoratorHandler<Decorator, PipeHan
           name,
           type,
           internalType,
-          typeArgumentCount: this.reflector.getGenericArityOfClass(clazz) || 0, pipeName,
+          typeArgumentCount: this.reflector.getGenericArityOfClass(clazz) || 0,
+          pipeName,
           deps: getValidConstructorDependencies(
               clazz, this.reflector, this.defaultImportRecorder, this.isCore),
           pure,

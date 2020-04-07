@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic} from '../../diagnostics';
 import {DefaultImportRecorder, ImportFlags, Reference, ReferenceEmitter} from '../../imports';
 import {ForeignFunctionResolver, PartialEvaluator} from '../../partial_evaluator';
-import {ClassDeclaration, CtorParameter, Decorator, Import, ReflectionHost, TypeValueReference, isNamedClassDeclaration} from '../../reflection';
+import {ClassDeclaration, CtorParameter, Decorator, Import, isNamedClassDeclaration, ReflectionHost, TypeValueReference} from '../../reflection';
 import {DeclarationData} from '../../scope';
 
 export enum ConstructorDepErrorKind {
@@ -21,8 +21,7 @@ export enum ConstructorDepErrorKind {
 
 export type ConstructorDeps = {
   deps: R3DependencyMetadata[];
-} |
-{
+}|{
   deps: null;
   errors: ConstructorDepError[];
 };
@@ -53,7 +52,7 @@ export function getConstructorDependencies(
     let resolved = R3ResolvedDependencyType.Token;
 
     (param.decorators || []).filter(dec => isCore || isAngularCore(dec)).forEach(dec => {
-      const name = isCore || dec.import === null ? dec.name : dec.import !.name;
+      const name = isCore || dec.import === null ? dec.name : dec.import!.name;
       if (name === 'Inject') {
         if (dec.args === null || dec.args.length !== 1) {
           throw new FatalDiagnosticError(
@@ -97,7 +96,8 @@ export function getConstructorDependencies(
     if (token === null) {
       errors.push({
         index: idx,
-        kind: ConstructorDepErrorKind.NO_SUITABLE_TOKEN, param,
+        kind: ConstructorDepErrorKind.NO_SUITABLE_TOKEN,
+        param,
       });
     } else {
       deps.push({token, attribute, optional, self, skipSelf, host, resolved});
@@ -122,10 +122,10 @@ export function valueReferenceToExpression(
 export function valueReferenceToExpression(
     valueRef: null, defaultImportRecorder: DefaultImportRecorder): null;
 export function valueReferenceToExpression(
-    valueRef: TypeValueReference | null, defaultImportRecorder: DefaultImportRecorder): Expression|
+    valueRef: TypeValueReference|null, defaultImportRecorder: DefaultImportRecorder): Expression|
     null;
 export function valueReferenceToExpression(
-    valueRef: TypeValueReference | null, defaultImportRecorder: DefaultImportRecorder): Expression|
+    valueRef: TypeValueReference|null, defaultImportRecorder: DefaultImportRecorder): Expression|
     null {
   if (valueRef === null) {
     return null;
@@ -138,7 +138,7 @@ export function valueReferenceToExpression(
     return new WrappedNodeExpr(valueRef.expression);
   } else {
     // TODO(alxhub): this cast is necessary because the g3 typescript version doesn't narrow here.
-    return new ExternalExpr(valueRef as{moduleName: string, name: string});
+    return new ExternalExpr(valueRef as {moduleName: string, name: string});
   }
 }
 
@@ -148,7 +148,7 @@ export function valueReferenceToExpression(
  *
  * This is a companion function to `validateConstructorDependencies` which accepts invalid deps.
  */
-export function unwrapConstructorDependencies(deps: ConstructorDeps | null): R3DependencyMetadata[]|
+export function unwrapConstructorDependencies(deps: ConstructorDeps|null): R3DependencyMetadata[]|
     'invalid'|null {
   if (deps === null) {
     return null;
@@ -176,18 +176,19 @@ export function getValidConstructorDependencies(
  * deps.
  */
 export function validateConstructorDependencies(
-    clazz: ClassDeclaration, deps: ConstructorDeps | null): R3DependencyMetadata[]|null {
+    clazz: ClassDeclaration, deps: ConstructorDeps|null): R3DependencyMetadata[]|null {
   if (deps === null) {
     return null;
   } else if (deps.deps !== null) {
     return deps.deps;
   } else {
     // TODO(alxhub): this cast is necessary because the g3 typescript version doesn't narrow here.
-    const {param, index} = (deps as{errors: ConstructorDepError[]}).errors[0];
+    const {param, index} = (deps as {errors: ConstructorDepError[]}).errors[0];
     // There is at least one error.
     throw new FatalDiagnosticError(
         ErrorCode.PARAM_MISSING_TOKEN, param.nameNode,
-        `No suitable injection token for parameter '${param.name || index}' of class '${clazz.name.text}'.\n` +
+        `No suitable injection token for parameter '${param.name || index}' of class '${
+            clazz.name.text}'.\n` +
             (param.typeNode !== null ? `Found ${param.typeNode.getText()}` :
                                        'no type or decorator'));
   }
@@ -319,8 +320,7 @@ export function forwardRefResolver(
  */
 export function combineResolvers(resolvers: ForeignFunctionResolver[]): ForeignFunctionResolver {
   return (ref: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
-          args: ReadonlyArray<ts.Expression>): ts.Expression |
-      null => {
+          args: ReadonlyArray<ts.Expression>): ts.Expression|null => {
     for (const resolver of resolvers) {
       const resolved = resolver(ref, args);
       if (resolved !== null) {
@@ -406,8 +406,8 @@ export function makeDuplicateDeclarationError(
     const contextNode = decl.ref.getOriginForDiagnostics(decl.rawDeclarations, decl.ngModule.name);
     context.push({
       node: contextNode,
-      messageText:
-          `'${node.name.text}' is listed in the declarations of the NgModule '${decl.ngModule.name.text}'.`,
+      messageText: `'${node.name.text}' is listed in the declarations of the NgModule '${
+          decl.ngModule.name.text}'.`,
     });
   }
 
@@ -441,7 +441,7 @@ export function resolveProvidersRequiringFactory(
     } else if (provider instanceof Reference) {
       tokenClass = provider;
     } else if (provider instanceof Map && provider.has('useClass') && !provider.has('deps')) {
-      const useExisting = provider.get('useClass') !;
+      const useExisting = provider.get('useClass')!;
       if (useExisting instanceof Reference) {
         tokenClass = useExisting;
       }

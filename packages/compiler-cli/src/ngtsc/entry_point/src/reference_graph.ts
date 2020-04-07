@@ -15,7 +15,7 @@ export class ReferenceGraph<T = ts.Declaration> {
     if (!this.references.has(from)) {
       this.references.set(from, new Set());
     }
-    this.references.get(from) !.add(to);
+    this.references.get(from)!.add(to);
   }
 
   transitiveReferencesOf(target: T): Set<T> {
@@ -47,7 +47,7 @@ export class ReferenceGraph<T = ts.Declaration> {
       // Look through the outgoing edges of `source`.
       // TODO(alxhub): use proper iteration when the legacy build is removed. (#27762)
       let candidatePath: T[]|null = null;
-      this.references.get(source) !.forEach(edge => {
+      this.references.get(source)!.forEach(edge => {
         // Early exit if a path has already been found.
         if (candidatePath !== null) {
           return;
@@ -67,7 +67,7 @@ export class ReferenceGraph<T = ts.Declaration> {
   private collectTransitiveReferences(set: Set<T>, decl: T): void {
     if (this.references.has(decl)) {
       // TODO(alxhub): use proper iteration when the legacy build is removed. (#27762)
-      this.references.get(decl) !.forEach(ref => {
+      this.references.get(decl)!.forEach(ref => {
         if (!set.has(ref)) {
           set.add(ref);
           this.collectTransitiveReferences(set, ref);

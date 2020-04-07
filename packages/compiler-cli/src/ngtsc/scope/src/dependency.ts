@@ -47,12 +47,12 @@ export class MetadataDtsModuleScopeResolver implements DtsModuleScopeResolver {
     const clazz = ref.node;
     const sourceFile = clazz.getSourceFile();
     if (!sourceFile.isDeclarationFile) {
-      throw new Error(
-          `Debug error: DtsModuleScopeResolver.read(${ref.debugName} from ${sourceFile.fileName}), but not a .d.ts file`);
+      throw new Error(`Debug error: DtsModuleScopeResolver.read(${ref.debugName} from ${
+          sourceFile.fileName}), but not a .d.ts file`);
     }
 
     if (this.cache.has(clazz)) {
-      return this.cache.get(clazz) !;
+      return this.cache.get(clazz)!;
     }
 
     // Build up the export scope - those directives and pipes made visible by this module.

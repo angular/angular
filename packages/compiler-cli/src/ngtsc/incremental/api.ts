@@ -25,7 +25,7 @@ export interface IncrementalBuild<W> {
 /**
  * Tracks dependencies between source files or resources in the application.
  */
-export interface DependencyTracker<T extends{fileName: string} = ts.SourceFile> {
+export interface DependencyTracker<T extends {fileName: string} = ts.SourceFile> {
   /**
    * Record that the file `from` depends on the file `on`.
    */

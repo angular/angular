@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Position, isSyntaxError} from '@angular/compiler';
+import {isSyntaxError, Position} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath, absoluteFrom, getFileSystem, relative, resolve} from '../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, getFileSystem, relative, resolve} from '../src/ngtsc/file_system';
 
 import {replaceTsWithNgInErrors} from './ngtsc/diagnostics';
 import * as api from './transformers/api';
@@ -35,7 +35,7 @@ function displayFileName(fileName: string, host: ts.FormatDiagnosticsHost): stri
 
 export function formatDiagnosticPosition(
     position: Position, host: ts.FormatDiagnosticsHost = defaultFormatHost): string {
-  return `${displayFileName(position.fileName, host)}(${position.line + 1},${position.column+1})`;
+  return `${displayFileName(position.fileName, host)}(${position.line + 1},${position.column + 1})`;
 }
 
 export function flattenDiagnosticMessageChain(
@@ -73,11 +73,10 @@ export function formatDiagnostic(
   const newLine = host.getNewLine();
   const span = diagnostic.span;
   if (span) {
-    result += `${formatDiagnosticPosition({
-      fileName: span.start.file.url,
-      line: span.start.line,
-      column: span.start.col
-    }, host)}: `;
+    result += `${
+        formatDiagnosticPosition(
+            {fileName: span.start.file.url, line: span.start.line, column: span.start.col},
+            host)}: `;
   } else if (diagnostic.position) {
     result += `${formatDiagnosticPosition(diagnostic.position, host)}: `;
   }
@@ -156,8 +155,10 @@ export function readConfiguration(
           // other options like 'compilerOptions' are merged by TS
           const baseConfig = existingConfig || config;
           if (existingConfig) {
-            baseConfig.angularCompilerOptions = {...config.angularCompilerOptions,
-                                                 ...baseConfig.angularCompilerOptions};
+            baseConfig.angularCompilerOptions = {
+              ...config.angularCompilerOptions,
+              ...baseConfig.angularCompilerOptions
+            };
           }
 
           if (config.extends) {
@@ -223,7 +224,7 @@ export interface PerformCompilationResult {
   emitResult?: ts.EmitResult;
 }
 
-export function exitCodeFromResult(diags: Diagnostics | undefined): number {
+export function exitCodeFromResult(diags: Diagnostics|undefined): number {
   if (!diags || filterErrorsAndWarnings(diags).length === 0) {
     // If we have a result and didn't get any errors, we succeeded.
     return 0;
@@ -233,21 +234,29 @@ export function exitCodeFromResult(diags: Diagnostics | undefined): number {
   return diags.some(d => d.source === 'angular' && d.code === api.UNKNOWN_ERROR_CODE) ? 2 : 1;
 }
 
-export function performCompilation(
-    {rootNames, options, host, oldProgram, emitCallback, mergeEmitResultsCallback,
-     gatherDiagnostics = defaultGatherDiagnostics, customTransformers,
-     emitFlags = api.EmitFlags.Default, modifiedResourceFiles = null}: {
-      rootNames: string[],
-      options: api.CompilerOptions,
-      host?: api.CompilerHost,
-      oldProgram?: api.Program,
-      emitCallback?: api.TsEmitCallback,
-      mergeEmitResultsCallback?: api.TsMergeEmitResultsCallback,
-      gatherDiagnostics?: (program: api.Program) => Diagnostics,
-      customTransformers?: api.CustomTransformers,
-      emitFlags?: api.EmitFlags,
-      modifiedResourceFiles?: Set<string>| null,
-    }): PerformCompilationResult {
+export function performCompilation({
+  rootNames,
+  options,
+  host,
+  oldProgram,
+  emitCallback,
+  mergeEmitResultsCallback,
+  gatherDiagnostics = defaultGatherDiagnostics,
+  customTransformers,
+  emitFlags = api.EmitFlags.Default,
+  modifiedResourceFiles = null
+}: {
+  rootNames: string[],
+  options: api.CompilerOptions,
+  host?: api.CompilerHost,
+  oldProgram?: api.Program,
+  emitCallback?: api.TsEmitCallback,
+  mergeEmitResultsCallback?: api.TsMergeEmitResultsCallback,
+  gatherDiagnostics?: (program: api.Program) => Diagnostics,
+  customTransformers?: api.CustomTransformers,
+  emitFlags?: api.EmitFlags,
+  modifiedResourceFiles?: Set<string>| null,
+}): PerformCompilationResult {
   let program: api.Program|undefined;
   let emitResult: ts.EmitResult|undefined;
   let allDiagnostics: Array<ts.Diagnostic|api.Diagnostic> = [];
@@ -262,7 +271,7 @@ export function performCompilation(
     program = ng.createProgram({rootNames, host, options, oldProgram});
 
     const beforeDiags = Date.now();
-    allDiagnostics.push(...gatherDiagnostics(program !));
+    allDiagnostics.push(...gatherDiagnostics(program!));
     if (options.diagnostics) {
       const afterDiags = Date.now();
       allDiagnostics.push(
@@ -271,7 +280,7 @@ export function performCompilation(
 
     if (!hasErrors(allDiagnostics)) {
       emitResult =
-          program !.emit({emitCallback, mergeEmitResultsCallback, customTransformers, emitFlags});
+          program!.emit({emitCallback, mergeEmitResultsCallback, customTransformers, emitFlags});
       allDiagnostics.push(...emitResult.diagnostics);
       return {diagnostics: allDiagnostics, program, emitResult};
     }
@@ -297,7 +306,7 @@ export function performCompilation(
 export function defaultGatherDiagnostics(program: api.Program): Diagnostics {
   const allDiagnostics: Array<ts.Diagnostic|api.Diagnostic> = [];
 
-  function checkDiagnostics(diags: Diagnostics | undefined) {
+  function checkDiagnostics(diags: Diagnostics|undefined) {
     if (diags) {
       allDiagnostics.push(...diags);
       return !hasErrors(diags);

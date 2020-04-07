@@ -19,24 +19,26 @@ export class ServiceUsingLibModule {
 
 @Directive({selector: '[someDir]', host: {'[title]': 'someDir'}})
 export class SomeDirectiveInRootModule {
-  @Input()
-  someDir: string;
+  @Input() someDir: string;
 }
 
 @Directive({selector: '[someDir]', host: {'[title]': 'someDir'}})
 export class SomeDirectiveInLibModule {
-  @Input()
-  someDir: string;
+  @Input() someDir: string;
 }
 
 @Pipe({name: 'somePipe'})
 export class SomePipeInRootModule {
-  transform(value: string): any { return `transformed ${value}`; }
+  transform(value: string): any {
+    return `transformed ${value}`;
+  }
 }
 
 @Pipe({name: 'somePipe'})
 export class SomePipeInLibModule {
-  transform(value: string): any { return `transformed ${value}`; }
+  transform(value: string): any {
+    return `transformed ${value}`;
+  }
 }
 
 @Component({selector: 'comp', template: `<div  [someDir]="'someValue' | somePipe"></div>`})
@@ -66,8 +68,8 @@ export class SomeLibModule {
     return {
       ngModule: SomeLibModule,
       providers: [
-        ServiceUsingLibModule, provideValueWithEntryComponents(
-                                   [{a: 'b', component: CompUsingLibModuleDirectiveAndPipe}])
+        ServiceUsingLibModule,
+        provideValueWithEntryComponents([{a: 'b', component: CompUsingLibModuleDirectiveAndPipe}])
       ]
     };
   }

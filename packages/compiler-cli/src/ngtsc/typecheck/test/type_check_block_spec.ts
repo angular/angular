@@ -8,12 +8,13 @@
 
 import {TypeCheckingConfig} from '../src/api';
 
-import {ALL_ENABLED_CONFIG, TestDeclaration, TestDirective, tcb} from './test_utils';
+import {ALL_ENABLED_CONFIG, tcb, TestDeclaration, TestDirective} from './test_utils';
 
 
 describe('type check blocks', () => {
-  it('should generate a basic block for a binding',
-     () => { expect(tcb('{{hello}} {{world}}')).toContain('"" + (ctx).hello + (ctx).world;'); });
+  it('should generate a basic block for a binding', () => {
+    expect(tcb('{{hello}} {{world}}')).toContain('"" + (ctx).hello + (ctx).world;');
+  });
 
   it('should generate literal map expressions', () => {
     const TEMPLATE = '{{ method({foo: a, bar: b}) }}';
@@ -264,7 +265,6 @@ describe('type check blocks', () => {
   });
 
   describe('outputs', () => {
-
     it('should emit subscribe calls for directive outputs', () => {
       const DIRECTIVES: TestDeclaration[] = [{
         type: 'directive',
@@ -305,7 +305,6 @@ describe('type check blocks', () => {
       expect(block).toContain(
           '_t3.addEventListener("event", function ($event): any { (_t2 = 3); });');
     });
-
   });
 
   describe('config', () => {
@@ -385,7 +384,6 @@ describe('type check blocks', () => {
     });
 
     describe('config.checkTypeOfBindings', () => {
-
       it('should check types of bindings when enabled', () => {
         const TEMPLATE = `<div dir [dirInput]="a" [nonDirInput]="b"></div>`;
         const block = tcb(TEMPLATE, DIRECTIVES);

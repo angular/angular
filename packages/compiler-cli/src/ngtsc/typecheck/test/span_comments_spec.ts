@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TestDeclaration, tcb} from './test_utils';
+import {tcb, TestDeclaration} from './test_utils';
 
 describe('type check blocks diagnostics', () => {
   describe('parse spans', () => {

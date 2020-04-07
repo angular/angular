@@ -47,8 +47,7 @@ function createSyntheticIndexHost<H extends ts.CompilerHost>(
 
   newHost.writeFile =
       (fileName: string, data: string, writeByteOrderMark: boolean,
-       onError: ((message: string) => void) | undefined,
-       sourceFiles: Readonly<ts.SourceFile>[]) => {
+       onError: ((message: string) => void)|undefined, sourceFiles: Readonly<ts.SourceFile>[]) => {
         delegate.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
         if (fileName.match(DTS) && sourceFiles && sourceFiles.length == 1 &&
             path.normalize(sourceFiles[0].fileName) === normalSyntheticIndexName) {
@@ -103,7 +102,7 @@ export function createBundleIndexHost<H extends ts.CompilerHost>(
   // contents of the flat module index. The bundle produced during emit does use the metadata cache
   // with associated transforms, so the metadata will have lowered expressions, resource inlining,
   // etc.
-  const getMetadataBundle = (cache: MetadataCache | null) => {
+  const getMetadataBundle = (cache: MetadataCache|null) => {
     const bundler = new MetadataBundler(
         indexModule, ngOptions.flatModuleId, new CompilerHostAdapter(host, cache, ngOptions),
         ngOptions.flatModulePrivateSymbolPrefix);
@@ -113,7 +112,7 @@ export function createBundleIndexHost<H extends ts.CompilerHost>(
   // First, produce the bundle with no MetadataCache.
   const metadataBundle = getMetadataBundle(/* MetadataCache */ null);
   const name =
-      path.join(path.dirname(indexModule), ngOptions.flatModuleOutFile !.replace(JS_EXT, '.ts'));
+      path.join(path.dirname(indexModule), ngOptions.flatModuleOutFile!.replace(JS_EXT, '.ts'));
   const libraryIndex = `./${path.basename(indexModule)}`;
   const content = privateEntriesToIndex(libraryIndex, metadataBundle.privates);
 

@@ -16,9 +16,9 @@ runInEachFileSystem(() => {
     beforeEach(() => _ = absoluteFrom);
 
     describe('findFlatIndexEntryPoint', () => {
-
-      it('should use the only source file if only a single one is specified',
-         () => { expect(findFlatIndexEntryPoint([_('/src/index.ts')])).toBe(_('/src/index.ts')); });
+      it('should use the only source file if only a single one is specified', () => {
+        expect(findFlatIndexEntryPoint([_('/src/index.ts')])).toBe(_('/src/index.ts'));
+      });
 
       it('should use the shortest source file ending with "index.ts" for multiple files', () => {
         expect(findFlatIndexEntryPoint([

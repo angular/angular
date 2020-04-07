@@ -15,7 +15,7 @@ const testFiles = loadStandardTestFiles();
 
 runInEachFileSystem(() => {
   describe('ngtsc incremental compilation', () => {
-    let env !: NgtscTestEnvironment;
+    let env!: NgtscTestEnvironment;
 
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);

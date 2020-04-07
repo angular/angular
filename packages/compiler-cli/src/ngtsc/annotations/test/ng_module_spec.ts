@@ -14,7 +14,7 @@ import {runInEachFileSystem} from '../../file_system/testing';
 import {LocalIdentifierStrategy, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../imports';
 import {CompoundMetadataReader, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
-import {TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
+import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
 import {getDeclaration, makeProgram} from '../../testing';
 import {NgModuleDecoratorHandler} from '../src/ng_module';
@@ -79,7 +79,7 @@ runInEachFileSystem(() => {
       if (detected === undefined) {
         return fail('Failed to recognize @NgModule');
       }
-      const moduleDef = handler.analyze(TestModule, detected.metadata).analysis !.mod;
+      const moduleDef = handler.analyze(TestModule, detected.metadata).analysis!.mod;
 
       expect(getReferenceIdentifierTexts(moduleDef.declarations)).toEqual(['TestComp']);
       expect(getReferenceIdentifierTexts(moduleDef.exports)).toEqual(['TestComp']);

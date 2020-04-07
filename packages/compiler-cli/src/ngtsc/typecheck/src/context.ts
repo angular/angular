@@ -14,7 +14,7 @@ import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
 
-import {TemplateSourceMapping, TypeCheckBlockMetadata, TypeCheckableDirectiveMeta, TypeCheckingConfig, TypeCtorMetadata} from './api';
+import {TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckingConfig, TypeCtorMetadata} from './api';
 import {shouldReportDiagnostic, translateDiagnostic} from './diagnostics';
 import {DomSchemaChecker, RegistryDomSchemaChecker} from './dom';
 import {Environment} from './environment';
@@ -125,7 +125,7 @@ export class TypeCheckContext {
     if (!this.opMap.has(sf)) {
       this.opMap.set(sf, []);
     }
-    const ops = this.opMap.get(sf) !;
+    const ops = this.opMap.get(sf)!;
 
     // Push a `TypeCtorOp` into the operation queue for the source file.
     ops.push(new TypeCtorOp(ref, ctorMeta));
@@ -152,7 +152,7 @@ export class TypeCheckContext {
     // Each Op has a splitPoint index into the text where it needs to be inserted. Split the
     // original source text into chunks at these split points, where code will be inserted between
     // the chunks.
-    const ops = this.opMap.get(sf) !.sort(orderOps);
+    const ops = this.opMap.get(sf)!.sort(orderOps);
     const textParts = splitStringAtPoints(sf.text, ops.map(op => op.splitPoint));
 
     // Use a `ts.Printer` to generate source code.
@@ -238,7 +238,7 @@ export class TypeCheckContext {
     if (!this.opMap.has(sf)) {
       this.opMap.set(sf, []);
     }
-    const ops = this.opMap.get(sf) !;
+    const ops = this.opMap.get(sf)!;
     ops.push(new TcbOp(
         ref, tcbMeta, this.config, this.reflector, this.domSchemaChecker, this.oobRecorder));
   }
@@ -278,7 +278,9 @@ class TcbOp implements Op {
   /**
    * Type check blocks are inserted immediately after the end of the component class.
    */
-  get splitPoint(): number { return this.ref.node.end + 1; }
+  get splitPoint(): number {
+    return this.ref.node.end + 1;
+  }
 
   execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter, printer: ts.Printer):
       string {
@@ -301,7 +303,9 @@ class TypeCtorOp implements Op {
   /**
    * Type constructor operations are inserted immediately before the end of the directive class.
    */
-  get splitPoint(): number { return this.ref.node.end - 1; }
+  get splitPoint(): number {
+    return this.ref.node.end - 1;
+  }
 
   execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter, printer: ts.Printer):
       string {

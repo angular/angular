@@ -190,8 +190,12 @@ export interface TsEmitArguments {
   customTransformers?: ts.CustomTransformers;
 }
 
-export interface TsEmitCallback { (args: TsEmitArguments): ts.EmitResult; }
-export interface TsMergeEmitResultsCallback { (results: ts.EmitResult[]): ts.EmitResult; }
+export interface TsEmitCallback {
+  (args: TsEmitArguments): ts.EmitResult;
+}
+export interface TsMergeEmitResultsCallback {
+  (results: ts.EmitResult[]): ts.EmitResult;
+}
 
 export interface LibrarySummary {
   fileName: string;
@@ -283,14 +287,14 @@ export interface Program {
    *
    * Angular structural information is required to emit files.
    */
-  emit({emitFlags, cancellationToken, customTransformers, emitCallback,
-        mergeEmitResultsCallback}?: {
-    emitFlags?: EmitFlags,
-    cancellationToken?: ts.CancellationToken,
-    customTransformers?: CustomTransformers,
-    emitCallback?: TsEmitCallback,
-    mergeEmitResultsCallback?: TsMergeEmitResultsCallback
-  }): ts.EmitResult;
+  emit({emitFlags, cancellationToken, customTransformers, emitCallback, mergeEmitResultsCallback}?:
+           {
+             emitFlags?: EmitFlags,
+             cancellationToken?: ts.CancellationToken,
+             customTransformers?: CustomTransformers,
+             emitCallback?: TsEmitCallback,
+             mergeEmitResultsCallback?: TsMergeEmitResultsCallback
+           }): ts.EmitResult;
 
   /**
    * Returns the .d.ts / .ngsummary.json / .ngfactory.d.ts files of libraries that have been emitted

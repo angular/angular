@@ -28,8 +28,8 @@ export function stripExtension(path: string): string {
 export function getSourceFileOrError(program: ts.Program, fileName: AbsoluteFsPath): ts.SourceFile {
   const sf = program.getSourceFile(fileName);
   if (sf === undefined) {
-    throw new Error(
-        `Program does not contain "${fileName}" - available files are ${program.getSourceFiles().map(sf => sf.fileName).join(', ')}`);
+    throw new Error(`Program does not contain "${fileName}" - available files are ${
+        program.getSourceFiles().map(sf => sf.fileName).join(', ')}`);
   }
   return sf;
 }

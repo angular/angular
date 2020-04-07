@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {MetadataCollector, ModuleMetadata} from '../../src/metadata/index';
-import {LowerMetadataTransform, LoweringRequest, RequestLocationMap, getExpressionLoweringTransformFactory} from '../../src/transformers/lower_expressions';
+import {getExpressionLoweringTransformFactory, LoweringRequest, LowerMetadataTransform, RequestLocationMap} from '../../src/transformers/lower_expressions';
 import {MetadataCache} from '../../src/transformers/metadata_cache';
 import {Directory, MockAotContext, MockCompilerHost} from '../mocks';
 
@@ -196,14 +196,16 @@ function convert(annotatedSource: string) {
 
   const program = ts.createProgram(
       [fileName], {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2017}, host);
-  const moduleSourceFile = program.getSourceFile(fileName) !;
+  const moduleSourceFile = program.getSourceFile(fileName)!;
   const transformers: ts.CustomTransformers = {
     before: [getExpressionLoweringTransformFactory(
         {
-          getRequests(sourceFile: ts.SourceFile): RequestLocationMap{
+          getRequests(sourceFile: ts.SourceFile): RequestLocationMap {
             if (sourceFile.fileName == moduleSourceFile.fileName) {
               return requests;
-            } else {return new Map();}
+            } else {
+              return new Map();
+            }
           }
         },
         program)]
@@ -254,6 +256,7 @@ function collect(annotatedSource: string) {
       'someName.ts', unannotatedSource, ts.ScriptTarget.Latest, /* setParentNodes */ true);
   return {
     metadata: cache.getMetadata(sourceFile),
-    requests: transformer.getRequests(sourceFile), annotations
+    requests: transformer.getRequests(sourceFile),
+    annotations
   };
 }

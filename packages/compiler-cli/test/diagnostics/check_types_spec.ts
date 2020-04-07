@@ -11,7 +11,8 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import * as ts from 'typescript';
-import {TestSupport, expectNoDiagnostics, setup} from '../test_support';
+
+import {expectNoDiagnostics, setup, TestSupport} from '../test_support';
 
 type MockFiles = {
   [fileName: string]: string
@@ -47,19 +48,19 @@ describe('ng type checker', () => {
   }
 
   function reject(
-      message: string | RegExp, location: RegExp | null, files: MockFiles,
+      message: string|RegExp, location: RegExp|null, files: MockFiles,
       overrideOptions: ng.CompilerOptions = {}) {
     const diagnostics = compileAndCheck([QUICKSTART, files], overrideOptions);
     if (!diagnostics || !diagnostics.length) {
       throw new Error('Expected a diagnostic error message');
     } else {
-      const matches: (d: ng.Diagnostic | ts.Diagnostic) => boolean = typeof message === 'string' ?
+      const matches: (d: ng.Diagnostic|ts.Diagnostic) => boolean = typeof message === 'string' ?
           d => ng.isNgDiagnostic(d)&& d.messageText == message :
           d => ng.isNgDiagnostic(d) && message.test(d.messageText);
       const matchingDiagnostics = diagnostics.filter(matches) as ng.Diagnostic[];
       if (!matchingDiagnostics || !matchingDiagnostics.length) {
-        throw new Error(
-            `Expected a diagnostics matching ${message}, received\n  ${diagnostics.map(d => d.messageText).join('\n  ')}`);
+        throw new Error(`Expected a diagnostics matching ${message}, received\n  ${
+            diagnostics.map(d => d.messageText).join('\n  ')}`);
       }
 
       if (location) {
@@ -72,7 +73,9 @@ describe('ng type checker', () => {
     }
   }
 
-  it('should accept unmodified QuickStart', () => { accept(); });
+  it('should accept unmodified QuickStart', () => {
+    accept();
+  });
 
   it('should accept unmodified QuickStart with tests for unused variables', () => {
     accept({}, {
@@ -523,7 +526,7 @@ describe('ng type checker', () => {
     };
 
     const r =
-        (message: string | RegExp, location: RegExp | null, files: MockFiles,
+        (message: string|RegExp, location: RegExp|null, files: MockFiles,
          options: ng.AngularCompilerOptions = {}) => {
           reject(
               message, location, {'src/app.component.ts': '', 'src/lib.ts': '', ...files},
@@ -712,16 +715,18 @@ describe('ng type checker', () => {
   });
 
   function addTests(config: {fullTemplateTypeCheck: boolean}) {
-    function a(template: string) { accept({'src/app.component.html': template}, config); }
+    function a(template: string) {
+      accept({'src/app.component.html': template}, config);
+    }
 
-    function r(template: string, message: string | RegExp, location: string) {
+    function r(template: string, message: string|RegExp, location: string) {
       reject(
           message, new RegExp(`app\.component\.html\@${location}$`),
           {'src/app.component.html': template}, config);
     }
 
     function rejectOnlyWithFullTemplateTypeCheck(
-        template: string, message: string | RegExp, location: string) {
+        template: string, message: string|RegExp, location: string) {
       if (config.fullTemplateTypeCheck) {
         r(template, message, location);
       } else {
@@ -732,23 +737,33 @@ describe('ng type checker', () => {
     it('should report an invalid field access', () => {
       r('<div>{{fame}}<div>', `Property 'fame' does not exist on type 'AppComponent'.`, '0:5');
     });
-    it('should reject a reference to a field of a nullable',
-       () => { r('<div>{{maybePerson.name}}</div>', `Object is possibly 'undefined'.`, '0:5'); });
-    it('should accept a reference to a field of a nullable using using non-null-assert',
-       () => { a('{{maybePerson!.name}}'); });
-    it('should accept a safe property access of a nullable person',
-       () => { a('{{maybePerson?.name}}'); });
+    it('should reject a reference to a field of a nullable', () => {
+      r('<div>{{maybePerson.name}}</div>', `Object is possibly 'undefined'.`, '0:5');
+    });
+    it('should accept a reference to a field of a nullable using using non-null-assert', () => {
+      a('{{maybePerson!.name}}');
+    });
+    it('should accept a safe property access of a nullable person', () => {
+      a('{{maybePerson?.name}}');
+    });
 
-    it('should accept using a library pipe', () => { a('{{1 | libPipe}}'); });
-    it('should accept using a library directive',
-       () => { a('<div libDir #libDir="libDir">{{libDir.name}}</div>'); });
+    it('should accept using a library pipe', () => {
+      a('{{1 | libPipe}}');
+    });
+    it('should accept using a library directive', () => {
+      a('<div libDir #libDir="libDir">{{libDir.name}}</div>');
+    });
 
-    it('should accept a function call', () => { a('{{getName()}}'); });
+    it('should accept a function call', () => {
+      a('{{getName()}}');
+    });
     it('should reject an invalid method', () => {
       r('<div>{{getFame()}}</div>',
         `Property 'getFame' does not exist on type 'AppComponent'. Did you mean 'getName'?`, '0:5');
     });
-    it('should accept a field access of a method result', () => { a('{{getPerson().name}}'); });
+    it('should accept a field access of a method result', () => {
+      a('{{getPerson().name}}');
+    });
     it('should reject an invalid field reference of a method result', () => {
       r('<div>{{getPerson().fame}}</div>', `Property 'fame' does not exist on type 'Person'.`,
         '0:5');
@@ -756,10 +771,13 @@ describe('ng type checker', () => {
     it('should reject an access to a nullable field of a method result', () => {
       r('<div>{{getMaybePerson().name}}</div>', `Object is possibly 'undefined'.`, '0:5');
     });
-    it('should accept a nullable assert of a nullable field references of a method result',
-       () => { a('{{getMaybePerson()!.name}}'); });
+    it('should accept a nullable assert of a nullable field references of a method result', () => {
+      a('{{getMaybePerson()!.name}}');
+    });
     it('should accept a safe property access of a nullable field reference of a method result',
-       () => { a('{{getMaybePerson()?.name}}'); });
+       () => {
+         a('{{getMaybePerson()?.name}}');
+       });
 
     it('should report an invalid field access inside of an ng-template', () => {
       rejectOnlyWithFullTemplateTypeCheck(
@@ -779,8 +797,9 @@ describe('ng type checker', () => {
   }
 
   describe('with lowered expressions', () => {
-    it('should not report lowered expressions as errors',
-       () => { expectNoDiagnostics({}, compileAndCheck([LOWERING_QUICKSTART])); });
+    it('should not report lowered expressions as errors', () => {
+      expectNoDiagnostics({}, compileAndCheck([LOWERING_QUICKSTART]));
+    });
   });
 });
 

@@ -18,8 +18,9 @@ describe('toNumbers', () => {
 });
 
 describe('compareNumbers', () => {
-
-  it('should handle empty arrays', () => { expect(compareNumbers([], [])).toEqual(0); });
+  it('should handle empty arrays', () => {
+    expect(compareNumbers([], [])).toEqual(0);
+  });
 
   it('should handle arrays of same length', () => {
     expect(compareNumbers([1], [3])).toEqual(-1);

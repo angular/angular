@@ -33,7 +33,8 @@ export function makeDiagnostic(code: ErrorCode, node: ts.Node, messageText: stri
     code: Number('-99' + code.valueOf()),
     file: ts.getOriginalNode(node).getSourceFile(),
     start: node.getStart(undefined, false),
-    length: node.getWidth(), messageText,
+    length: node.getWidth(),
+    messageText,
   };
   if (relatedInfo !== undefined) {
     diag.relatedInformation = relatedInfo.map(info => {

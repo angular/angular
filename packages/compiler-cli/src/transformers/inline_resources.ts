@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {MetadataObject, MetadataValue, isClassMetadata, isMetadataImportedSymbolReferenceExpression, isMetadataSymbolicCallExpression} from '../metadata/index';
+import {isClassMetadata, isMetadataImportedSymbolReferenceExpression, isMetadataSymbolicCallExpression, MetadataObject, MetadataValue} from '../metadata/index';
 
 import {MetadataTransformer, ValueTransform} from './metadata_cache';
 
@@ -17,27 +17,29 @@ const PRECONDITIONS_TEXT =
 
 /** A subset of members from AotCompilerHost */
 export type ResourcesHost = {
-  resourceNameToFileName(resourceName: string, containingFileName: string): string | null;
+  resourceNameToFileName(resourceName: string, containingFileName: string): string|null;
   loadResource(path: string): Promise<string>| string;
 };
 
 export type StaticResourceLoader = {
-  get(url: string | MetadataValue): string;
+  get(url: string|MetadataValue): string;
 };
 
 function getResourceLoader(host: ResourcesHost, containingFileName: string): StaticResourceLoader {
   return {
-    get(url: string | MetadataValue): string{
+    get(url: string|MetadataValue): string {
       if (typeof url !== 'string') {
         throw new Error('templateUrl and stylesUrl must be string literals. ' + PRECONDITIONS_TEXT);
-      } const fileName = host.resourceNameToFileName(url, containingFileName);
+      }
+      const fileName = host.resourceNameToFileName(url, containingFileName);
       if (fileName) {
         const content = host.loadResource(fileName);
         if (typeof content !== 'string') {
           throw new Error('Cannot handle async resource. ' + PRECONDITIONS_TEXT);
         }
         return content;
-      } throw new Error(`Failed to resolve ${url} from ${containingFileName}. ${PRECONDITIONS_TEXT}`);
+      }
+      throw new Error(`Failed to resolve ${url} from ${containingFileName}. ${PRECONDITIONS_TEXT}`);
     }
   };
 }
@@ -249,8 +251,7 @@ function isComponentSymbol(identifier: ts.Node, typeChecker: ts.TypeChecker) {
   const name = (declaration.propertyName || declaration.name).text;
   // We know that parent pointers are set because we created the SourceFile ourselves.
   // The number of parent references here match the recursion depth at this point.
-  const moduleId =
-      (declaration.parent !.parent !.parent !.moduleSpecifier as ts.StringLiteral).text;
+  const moduleId = (declaration.parent!.parent!.parent!.moduleSpecifier as ts.StringLiteral).text;
   return moduleId === '@angular/core' && name === 'Component';
 }
 

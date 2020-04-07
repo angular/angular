@@ -16,7 +16,7 @@ const testFiles = loadStandardTestFiles();
 
 runInEachFileSystem(() => {
   describe('ngtsc incremental compilation with errors', () => {
-    let env !: NgtscTestEnvironment;
+    let env!: NgtscTestEnvironment;
 
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
@@ -66,7 +66,7 @@ runInEachFileSystem(() => {
       `);
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].file !.fileName).toBe(_('/other.ts'));
+      expect(diags[0].file!.fileName).toBe(_('/other.ts'));
       expectToHaveWritten([]);
 
       // Remove the error. /other.js should now be emitted again.
@@ -92,7 +92,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].file !.fileName).toBe(_('/other.ts'));
+      expect(diags[0].file!.fileName).toBe(_('/other.ts'));
       expectToHaveWritten([]);
 
       // Remove the error. All files should be emitted.
@@ -128,7 +128,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].file !.fileName).toBe(_('/other.ts'));
+      expect(diags[0].file!.fileName).toBe(_('/other.ts'));
       expectToHaveWritten([]);
 
       // Remove the error. All files should be emitted.
@@ -175,7 +175,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].file !.fileName).toBe(_('/other.ts'));
+      expect(diags[0].file!.fileName).toBe(_('/other.ts'));
       expectToHaveWritten([]);
 
       // Remove the error. All files should be emitted.

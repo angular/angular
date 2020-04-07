@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 
 import {MetadataCollector} from '../../src/metadata/collector';
 import {CompilerHost, CompilerOptions, LibrarySummary} from '../../src/transformers/api';
-import {TsCompilerAotCompilerTypeCheckHostAdapter, createCompilerHost} from '../../src/transformers/compiler_host';
+import {createCompilerHost, TsCompilerAotCompilerTypeCheckHostAdapter} from '../../src/transformers/compiler_host';
 import {Directory, Entry, MockAotContext, MockCompilerHost} from '../mocks';
 
 const dummyModule = 'export let foo: any[];';
@@ -53,12 +53,15 @@ describe('NgCompilerHost', () => {
   } = {}) {
     return new TsCompilerAotCompilerTypeCheckHostAdapter(
         rootNames, options, ngHost, new MetadataCollector(), codeGenerator,
-        new Map(librarySummaries.map(entry => [entry.fileName, entry] as[string, LibrarySummary])));
+        new Map(
+            librarySummaries.map(entry => [entry.fileName, entry] as [string, LibrarySummary])));
   }
 
   describe('fileNameToModuleName', () => {
     let host: TsCompilerAotCompilerTypeCheckHostAdapter;
-    beforeEach(() => { host = createHost(); });
+    beforeEach(() => {
+      host = createHost();
+    });
 
     it('should use a package import when accessing a package from a source file', () => {
       expect(host.fileNameToModuleName('/tmp/node_modules/@angular/core.d.ts', '/tmp/main.ts'))
@@ -239,9 +242,8 @@ describe('NgCompilerHost', () => {
 
     it('should not get tripped on nested node_modules', () => {
       const genSf = generate('/tmp/node_modules/lib1/node_modules/lib2/thing', {
-        'tmp': {
-          'node_modules': {'lib1': {'node_modules': {'lib2': {'thing.ts': `// some content`}}}}
-        }
+        'tmp':
+            {'node_modules': {'lib1': {'node_modules': {'lib2': {'thing.ts': `// some content`}}}}}
       });
       expect(genSf.moduleName).toBe('lib2/thing.ngfactory');
     });
@@ -387,8 +389,9 @@ describe('NgCompilerHost', () => {
           () => host.updateGeneratedFile(new compiler.GeneratedFile(
               '/tmp/src/index.ts', '/tmp/src/index.ngfactory.ts',
               [new compiler.DeclareVarStmt(
-                  'x', new compiler.ExternalExpr(
-                           new compiler.ExternalReference('otherModule', 'aName')))])))
+                  'x',
+                  new compiler.ExternalExpr(
+                      new compiler.ExternalReference('otherModule', 'aName')))])))
           .toThrowError([
             `Illegal State: external references changed in /tmp/src/index.ngfactory.ts.`,
             `Old: aModule.`, `New: otherModule`

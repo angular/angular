@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {FileSystem, NgtscCompilerHost, absoluteFrom as _, getFileSystem, getSourceFileOrError, setFileSystem} from '../../file_system';
+import {absoluteFrom as _, FileSystem, getFileSystem, getSourceFileOrError, NgtscCompilerHost, setFileSystem} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {NgCompilerOptions} from '../api';
 import {NgCompiler} from '../src/compiler';
@@ -16,7 +16,6 @@ import {NgCompilerHost} from '../src/host';
 
 
 runInEachFileSystem(() => {
-
   describe('NgCompiler', () => {
     let fs: FileSystem;
 

@@ -19,7 +19,6 @@ describe('child queries', () => {
     debugElement.query(By.directive(CompWithChildQuery));
     expect(childQueryCompFixture.componentInstance.child).toBeDefined();
     expect(childQueryCompFixture.componentInstance.child instanceof CompForChildQuery).toBe(true);
-
   });
 
   it('should support compiling children queries', () => {

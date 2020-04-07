@@ -10,8 +10,8 @@ import {setup} from '@angular/compiler/test/aot/test_util';
 import {compile, expectEmit} from './mock_compile';
 
 /* These tests are codified version of the tests in compiler_canonical_spec.ts. Every
-  * test in compiler_canonical_spec.ts should have a corresponding test here.
-  */
+ * test in compiler_canonical_spec.ts should have a corresponding test here.
+ */
 describe('compiler compliance: listen()', () => {
   const angularFiles = setup({
     compileAngular: false,
@@ -292,7 +292,8 @@ describe('compiler compliance: listen()', () => {
 
     const template = `
         …
-        consts: [[${AttributeMarker.Bindings}, "click", "change"], [${AttributeMarker.Bindings}, "update", "delete"]],
+        consts: [[${AttributeMarker.Bindings}, "click", "change"], [${
+        AttributeMarker.Bindings}, "update", "delete"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div", 0);
@@ -446,5 +447,4 @@ describe('compiler compliance: listen()', () => {
     const result = compile(files, angularFiles);
     expectEmit(result.source, template, 'Incorrect host bindings');
   });
-
 });

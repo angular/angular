@@ -12,7 +12,7 @@ import {Reference} from '../../imports';
  * A resolved type reference can either be a `Reference`, the original `ts.TypeReferenceNode` itself
  * or null to indicate the no reference could be resolved.
  */
-export type ResolvedTypeReference = Reference | ts.TypeReferenceNode | null;
+export type ResolvedTypeReference = Reference|ts.TypeReferenceNode|null;
 
 /**
  * A type reference resolver function is responsible for finding the declaration of the type
@@ -111,7 +111,9 @@ export class TypeEmitter {
       visitTypeReferenceNode: type => this.emitTypeReference(type),
       visitArrayTypeNode: type => ts.updateArrayTypeNode(type, this.emitType(type.elementType)),
       visitKeywordType: type => type,
-      visitOtherType: () => { throw new Error('Unable to emit a complex type'); },
+      visitOtherType: () => {
+        throw new Error('Unable to emit a complex type');
+      },
     });
   }
 
@@ -137,8 +139,8 @@ export class TypeEmitter {
 
       const emittedType = this.emitReference(reference);
       if (!ts.isTypeReferenceNode(emittedType)) {
-        throw new Error(
-            `Expected TypeReferenceNode for emitted reference, got ${ts.SyntaxKind[emittedType.kind]}`);
+        throw new Error(`Expected TypeReferenceNode for emitted reference, got ${
+            ts.SyntaxKind[emittedType.kind]}`);
       }
 
       typeName = emittedType.typeName;

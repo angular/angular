@@ -85,7 +85,7 @@ export function getMappedSegments(
   while (currentMapping) {
     const nextMapping = mappings.shift();
     if (nextMapping) {
-      const source = sources.get(currentMapping.source) !;
+      const source = sources.get(currentMapping.source)!;
       const segment = {
         generated: generated.getSegment('generated', currentMapping, nextMapping),
         source: source.getSegment('original', currentMapping, nextMapping),

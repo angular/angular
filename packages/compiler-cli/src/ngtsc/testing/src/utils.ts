@@ -10,7 +10,7 @@
 
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath, NgtscCompilerHost, dirname, getFileSystem, getSourceFileOrError} from '../../file_system';
+import {AbsoluteFsPath, dirname, getFileSystem, getSourceFileOrError, NgtscCompilerHost} from '../../file_system';
 
 export function makeProgram(
     files: {name: AbsoluteFsPath, contents: string, isRoot?: boolean}[],
@@ -25,7 +25,8 @@ export function makeProgram(
   const compilerOptions = {
     noLib: true,
     experimentalDecorators: true,
-    moduleResolution: ts.ModuleResolutionKind.NodeJs, ...options
+    moduleResolution: ts.ModuleResolutionKind.NodeJs,
+    ...options
   };
   const compilerHost = new NgtscCompilerHost(fs, compilerOptions);
   const rootNames = files.filter(file => file.isRoot !== false)
@@ -38,7 +39,7 @@ export function makeProgram(
         let message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
         if (diagnostic.file) {
           const {line, character} =
-              diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start !);
+              diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start!);
           message = `${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`;
         }
         return `Error: ${message}`;

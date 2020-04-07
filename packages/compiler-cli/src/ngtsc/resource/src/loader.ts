@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 
 import {ResourceLoader} from '../../annotations';
 import {ExtendedTsCompilerHost} from '../../core/api';
-import {AbsoluteFsPath, PathSegment, join} from '../../file_system';
+import {AbsoluteFsPath, join, PathSegment} from '../../file_system';
 import {getRootDirs} from '../../util/src/typescript';
 
 const CSS_PREPROCESSOR_EXT = /(\.scss|\.sass|\.less|\.styl)$/;
@@ -101,7 +101,7 @@ export class HostResourceLoader implements ResourceLoader {
    */
   load(resolvedUrl: string): string {
     if (this.cache.has(resolvedUrl)) {
-      return this.cache.get(resolvedUrl) !;
+      return this.cache.get(resolvedUrl)!;
     }
 
     const result = this.host.readResource ? this.host.readResource(resolvedUrl) :
@@ -169,14 +169,15 @@ export class HostResourceLoader implements ResourceLoader {
     // but is marked @internal in TypeScript. See
     // https://github.com/Microsoft/TypeScript/issues/28770.
     type ResolvedModuleWithFailedLookupLocations =
-        ts.ResolvedModuleWithFailedLookupLocations & {failedLookupLocations: ReadonlyArray<string>};
+        ts.ResolvedModuleWithFailedLookupLocations&{failedLookupLocations: ReadonlyArray<string>};
 
     // clang-format off
     const failedLookup = ts.resolveModuleName(url + '.$ngresource$', fromFile, this.options, this.host) as ResolvedModuleWithFailedLookupLocations;
     // clang-format on
     if (failedLookup.failedLookupLocations === undefined) {
       throw new Error(
-          `Internal error: expected to find failedLookupLocations during resolution of resource '${url}' in context of ${fromFile}`);
+          `Internal error: expected to find failedLookupLocations during resolution of resource '${
+              url}' in context of ${fromFile}`);
     }
 
     return failedLookup.failedLookupLocations
