@@ -831,5 +831,13 @@
     "bio": "Cindy is a Program Manager on the Angular team at Google. She is passionate about improving team processes and overall execution. She enjoys dance fitness, movies and travel.",
     "groups": ["Angular"],
     "lead": "juleskremer"
+  },
+  "wellwind": {
+    "name": "Mike Huang",
+    "picture": "wellwind.jpg",
+    "twitter": "wellwind",
+    "website": "https://wellwind.idv.tw/blog/",
+    "bio": "Mike is a full-stack developer, consultant, blogger, instructor, and conference speaker. He has over 10 years of web development experience and passion to share his knowledge.",
+    "groups": ["GDE"]
   }
 }
