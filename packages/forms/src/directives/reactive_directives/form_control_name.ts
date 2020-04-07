@@ -31,13 +31,13 @@ export const controlNameBinding: any = {
  * @description
  * Syncs a `FormControl` in an existing `FormGroup` to a form control
  * element by name.
- * 
+ *
  * @see [Reactive Forms Guide](guide/reactive-forms)
  * @see `FormControl`
  * @see `AbstractControl`
  *
  * @usageNotes
- * 
+ *
  * ### Register `FormControl` within a group
  *
  * The following example shows how to register multiple form controls within a form group
@@ -283,8 +283,8 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   private _setUpControl() {
     this._checkParentType();
     (this as{control: FormControl}).control = this.formDirective.addControl(this);
-    if (this.control.disabled && this.valueAccessor !.setDisabledState) {
-      this.valueAccessor !.setDisabledState !(true);
+    if (this.valueAccessor !.setDisabledState) {
+      this.valueAccessor !.setDisabledState !(this.control.disabled);
     }
     this._added = true;
   }

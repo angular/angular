@@ -31,7 +31,7 @@ export const formControlBinding: any = {
 /**
  * @description
  * * Syncs a standalone `FormControl` instance to a form control element.
- * 
+ *
  * @see [Reactive Forms Guide](guide/reactive-forms)
  * @see `FormControl`
  * @see `AbstractControl`
@@ -39,7 +39,7 @@ export const formControlBinding: any = {
  * @usageNotes
  *
  * ### Registering a single form control
- * 
+ *
  * The following examples shows how to register a standalone control and set its value.
  *
  * {@example forms/ts/simpleFormControl/simple_form_control_example.ts region='Component'}
@@ -185,8 +185,8 @@ export class FormControlDirective extends NgControl implements OnChanges {
               ngOnChanges(changes: SimpleChanges): void {
                 if (this._isControlChanged(changes)) {
                   setUpControl(this.form, this);
-                  if (this.control.disabled && this.valueAccessor !.setDisabledState) {
-                    this.valueAccessor !.setDisabledState !(true);
+                  if (this.valueAccessor !.setDisabledState) {
+                    this.valueAccessor !.setDisabledState !(this.control.disabled);
                   }
                   this.form.updateValueAndValidity({emitEvent: false});
                 }
