@@ -208,7 +208,7 @@ The `@Component()` decorator extends the `@Directive()` decorator with template-
 
 An Angular component class is responsible for exposing data and handling most of the view's display and user-interaction logic through [data binding](#data-binding).
 
-Read more about component classes, templates, and views in [Introduction to Angular concepts](guide/architecture).
+For in-depth information about components and Angular template syntax, see the [Components and templates guide](guide/architecture-components "Introduction to components and templates").
 
 ## configuration
 
@@ -610,7 +610,7 @@ NgModules are typically named after the file in which the exported thing is defi
 
 Every Angular application has a root module. By convention, the class is called `AppModule` and resides in a file named `app.module.ts`.
 
-To learn more, see [NgModules](guide/ngmodules).
+For in-depth information about NgModule usage in Angular, see the [NgModules guide](/guide/architecture-modules#introduction-to-modules "Introduction to modules").
 
 {@a npm-package}
 
